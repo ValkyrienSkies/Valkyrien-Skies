@@ -1,0 +1,146 @@
+{
+    "__comment": "Model generated using MrCrayfish's Model Creator (http://mrcrayfish.com/modelcreator/)",
+    "textures": {
+        "particle": "blocks/blocks/blocks/blocks/Rusty shaft",
+        "0": "blocks/Rusty metal panel",
+        "1": "blocks/Slightly rusty shiny metal panel",
+        "2": "blocks/Other metal thing",
+        "3": "blocks/Rusty metal plate 3",
+        "4": "blocks/Rusty shaft",
+        "5": "blocks/Red lamp",
+        "6": "blocks/Green lamp"
+    },
+    "elements": [
+        {
+            "name": "Driveshaft",
+            "from": [ 7.0, 5.0, -3.0 ], 
+            "to": [ 9.0, 7.0, 6.0 ], 
+            "rotation": { "origin": [ 8.0, 6.0, 1.0 ], "axis": "z", "angle": -45.0 },
+            "faces": {
+                "north": { "texture": "#4", "uv": [ 0.0, 0.0, 2.0, 2.0 ] },
+                "east": { "texture": "#4", "uv": [ 0.0, 0.0, 9.0, 2.0 ] },
+                "south": { "texture": "#4", "uv": [ 0.0, 0.0, 2.0, 2.0 ] },
+                "west": { "texture": "#4", "uv": [ 0.0, 0.0, 9.0, 2.0 ] },
+                "up": { "texture": "#4", "uv": [ 0.0, 0.0, 2.0, 9.0 ] },
+                "down": { "texture": "#4", "uv": [ 0.0, 0.0, 2.0, 9.0 ] }
+            }
+        },
+        {
+            "name": "Driveshaft part 2",
+            "from": [ 7.0, 5.0, -3.0 ], 
+            "to": [ 9.0, 7.0, 6.0 ], 
+            "faces": {
+                "north": { "texture": "#4", "uv": [ 0.0, 0.0, 2.0, 2.0 ] },
+                "east": { "texture": "#4", "uv": [ 0.0, 0.0, 9.0, 2.0 ] },
+                "south": { "texture": "#4", "uv": [ 0.0, 0.0, 2.0, 2.0 ] },
+                "west": { "texture": "#4", "uv": [ 0.0, 0.0, 9.0, 2.0 ] },
+                "up": { "texture": "#4", "uv": [ 0.0, 0.0, 2.0, 9.0 ] },
+                "down": { "texture": "#4", "uv": [ 0.0, 0.0, 2.0, 9.0 ] }
+            }
+        },
+        {
+            "name": "Rotor blade bottom",
+            "from": [ 7.0, 0.0, -2.8 ], 
+            "to": [ 8.0, 5.0, -1.9999999999999998 ], 
+            "faces": {
+                "north": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 5.0 ] },
+                "east": { "texture": "#4", "uv": [ 0.0, 0.0, 0.8, 5.0 ] },
+                "south": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 5.0 ] },
+                "west": { "texture": "#4", "uv": [ 0.0, 0.0, 0.8, 5.0 ] },
+                "up": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 0.8 ] },
+                "down": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 0.8 ] }
+            }
+        },
+        {
+            "name": "Rotor blade top",
+            "from": [ 8.0, 7.0, -2.8 ], 
+            "to": [ 9.0, 12.0, -1.9999999999999998 ], 
+            "faces": {
+                "north": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 5.0 ] },
+                "east": { "texture": "#4", "uv": [ 0.0, 0.0, 0.8, 5.0 ] },
+                "south": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 5.0 ] },
+                "west": { "texture": "#4", "uv": [ 0.0, 0.0, 0.8, 5.0 ] },
+                "up": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 0.8 ] },
+                "down": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 0.8 ] }
+            }
+        },
+        {
+            "name": "Rotor blade left",
+            "from": [ 2.0, 6.0, -2.8 ], 
+            "to": [ 7.0, 7.0, -1.9999999999999998 ], 
+            "faces": {
+                "north": { "texture": "#4", "uv": [ 0.0, 0.0, 5.0, 1.0 ] },
+                "east": { "texture": "#4", "uv": [ 0.0, 0.0, 0.8, 1.0 ] },
+                "south": { "texture": "#4", "uv": [ 0.0, 0.0, 5.0, 1.0 ] },
+                "west": { "texture": "#4", "uv": [ 0.0, 0.0, 0.8, 1.0 ] },
+                "up": { "texture": "#4", "uv": [ 0.0, 0.0, 5.0, 0.8 ] },
+                "down": { "texture": "#4", "uv": [ 0.0, 0.0, 5.0, 0.8 ] }
+            }
+        },
+        {
+            "name": "Rotor blade right",
+            "from": [ 9.0, 5.0, -2.8 ], 
+            "to": [ 14.0, 6.0, -1.9999999999999998 ], 
+            "faces": {
+                "north": { "texture": "#4", "uv": [ 0.0, 0.0, 5.0, 1.0 ] },
+                "east": { "texture": "#4", "uv": [ 0.0, 0.0, 0.8, 1.0 ] },
+                "south": { "texture": "#4", "uv": [ 0.0, 0.0, 5.0, 1.0 ] },
+                "west": { "texture": "#4", "uv": [ 0.0, 0.0, 0.8, 1.0 ] },
+                "up": { "texture": "#4", "uv": [ 0.0, 0.0, 5.0, 0.8 ] },
+                "down": { "texture": "#4", "uv": [ 0.0, 0.0, 5.0, 0.8 ] }
+            }
+        },
+        {
+            "name": "Rotor surface bottom",
+            "from": [ 8.0, 1.0, -2.5 ], 
+            "to": [ 9.0, 5.0, -2.0 ], 
+            "faces": {
+                "north": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 4.0 ] },
+                "east": { "texture": "#4", "uv": [ 0.0, 0.0, 0.5, 4.0 ] },
+                "south": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 4.0 ] },
+                "west": { "texture": "#4", "uv": [ 0.0, 0.0, 0.5, 4.0 ] },
+                "up": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 0.5 ] },
+                "down": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 0.5 ] }
+            }
+        },
+        {
+            "name": "Rotor surface top",
+            "from": [ 7.0, 7.0, -2.5 ], 
+            "to": [ 8.0, 11.0, -2.0 ], 
+            "faces": {
+                "north": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 4.0 ] },
+                "east": { "texture": "#4", "uv": [ 0.0, 0.0, 0.5, 4.0 ] },
+                "south": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 4.0 ] },
+                "west": { "texture": "#4", "uv": [ 0.0, 0.0, 0.5, 4.0 ] },
+                "up": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 0.5 ] },
+                "down": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 0.5 ] }
+            }
+        },
+        {
+            "name": "Rotor surface left",
+            "from": [ 3.0, 5.0, -2.5 ], 
+            "to": [ 7.0, 6.0, -2.0 ], 
+            "faces": {
+                "north": { "texture": "#4", "uv": [ 0.0, 0.0, 4.0, 1.0 ] },
+                "east": { "texture": "#4", "uv": [ 0.0, 0.0, 0.5, 1.0 ] },
+                "south": { "texture": "#4", "uv": [ 0.0, 0.0, 4.0, 1.0 ] },
+                "west": { "texture": "#4", "uv": [ 0.0, 0.0, 0.5, 1.0 ] },
+                "up": { "texture": "#4", "uv": [ 0.0, 0.0, 4.0, 0.5 ] },
+                "down": { "texture": "#4", "uv": [ 0.0, 0.0, 4.0, 0.5 ] }
+            }
+        },
+        {
+            "name": "Rotor surface right",
+            "from": [ 9.0, 6.0, -2.5 ], 
+            "to": [ 13.0, 7.0, -2.0 ], 
+            "faces": {
+                "north": { "texture": "#4", "uv": [ 0.0, 0.0, 4.0, 1.0 ] },
+                "east": { "texture": "#4", "uv": [ 0.0, 0.0, 0.5, 1.0 ] },
+                "south": { "texture": "#4", "uv": [ 0.0, 0.0, 4.0, 1.0 ] },
+                "west": { "texture": "#4", "uv": [ 0.0, 0.0, 0.5, 1.0 ] },
+                "up": { "texture": "#4", "uv": [ 0.0, 0.0, 4.0, 0.5 ] },
+                "down": { "texture": "#4", "uv": [ 0.0, 0.0, 4.0, 0.5 ] }
+            }
+        }
+    ]
+}

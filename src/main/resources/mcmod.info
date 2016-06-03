@@ -2,15 +2,15 @@
 {
   "modid": "valkyrienwarfare",
   "name": "Valkyrien Warfare",
-  "description": "Claim The Skies",
-  "version": "",
-  "mcversion": "",
+  "description": "Claim The Skies!",
+  "version": "0.1a",
+  "mcversion": "1.9",
   "url": "",
   "updateUrl": "",
-  "authorList": ["thebest108,MarvinMegavolt"],
-  "credits": "Credits",
+  "authorList": ["thebest108"],
+  "credits": "thebest108 and Marvin_Megavolt",
   "logoFile": "",
   "screenshots": [],
-  "dependencies": [""]
+  "dependencies": []
 }
 ]

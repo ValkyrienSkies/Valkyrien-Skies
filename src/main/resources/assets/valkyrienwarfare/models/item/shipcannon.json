@@ -1,0 +1,10 @@
+{
+    "parent": "valkyrienwarfare:block/shipcannon",
+    "display": {
+        "thirdperson": {
+            "rotation": [ 10, 45, -10 ],
+            "translation": [ 0, 1.5, -2.75 ],
+            "scale": [ 1, 1, 1 ]
+        }
+    }
+}

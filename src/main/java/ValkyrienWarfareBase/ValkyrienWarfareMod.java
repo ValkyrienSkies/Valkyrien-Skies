@@ -2,6 +2,10 @@ package ValkyrienWarfareBase;
 
 import java.io.File;
 
+import ValkyrienWarfareBase.ChunkManagement.DimensionPhysicsChunkManager;
+import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
+import ValkyrienWarfareBase.PhysicsManagement.Network.PhysWrapperSpawnHandler;
+import ValkyrienWarfareBase.PhysicsManagement.Network.PhysWrapperSpawnMessage;
 import ValkyrienWarfareBase.Proxy.CommonProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -18,17 +22,22 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
 
 @Mod(modid=ValkyrienWarfareMod.MODID, name=ValkyrienWarfareMod.MODNAME, version=ValkyrienWarfareMod.MODVER, guiFactory = "ValkyrienWarfareBase.GUI.GuiFactoryValkyrienWarfare")
 public class ValkyrienWarfareMod{
 
 	@SidedProxy(clientSide="ValkyrienWarfareBase.Proxy.ClientProxy", serverSide="ValkyrienWarfareBase.Proxy.ServerProxy")
 	public static CommonProxy proxy;
-	
+
 	public static final String MODID = "valkyrienwarfare";
     public static final String MODNAME = "Valkyrien Warfare";
     public static final String MODVER = "0.1a";
+
     public static File configFile;
     public static Configuration config;
 	public static boolean dynamicLighting,spawnParticles;
@@ -36,6 +45,10 @@ public class ValkyrienWarfareMod{
 
     public static Block physicsInfuser;
 
+    public static SimpleNetworkWrapper physWrapperNetwork;
+
+    public static DimensionPhysicsChunkManager chunkManager;
+    
     public static ValkyrienWarfareMod instance;
 
     @EventHandler
@@ -43,12 +56,14 @@ public class ValkyrienWarfareMod{
     	proxy.preInit(event);
     	instance = this;
     	registerBlocks(event);
+    	registerNetworks(event);
     	runConfiguration(event);
     }
 
     @EventHandler
     public void init(FMLInitializationEvent event){
     	proxy.init(event);
+    	EntityRegistry.registerModEntity(PhysicsWrapperEntity.class,"PhysWrapper",70,this,120,1,false);
     }
 
     @EventHandler
@@ -61,6 +76,11 @@ public class ValkyrienWarfareMod{
     	MinecraftServer server = event.getServer();
         ServerCommandManager manager = (ServerCommandManager)server.getCommandManager();
 //        manager.registerCommand(command)
+    }
+
+    public void registerNetworks(FMLStateEvent event){
+    	physWrapperNetwork = NetworkRegistry.INSTANCE.newSimpleChannel("physChannel");
+    	physWrapperNetwork.registerMessage(PhysWrapperSpawnHandler.class, PhysWrapperSpawnMessage.class, 0, Side.CLIENT);
     }
 
     public void registerBlocks(FMLStateEvent event){

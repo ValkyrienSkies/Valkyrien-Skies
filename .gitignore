@@ -1,4 +1,4 @@
-#eclipse
+eclipse
 .project
 .classpath
 .settings/
@@ -6,6 +6,12 @@
 *.launch
 org.*
 bin
+config
+logs
+saves
+options.txt
+usernamecache.json
+usercache.json
 
 #idea
 *.iml

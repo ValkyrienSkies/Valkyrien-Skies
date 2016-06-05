@@ -1,5 +1,6 @@
 package ValkyrienWarfareBase;
 
+import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -19,8 +20,11 @@ public class BlockPhysicsInfuser extends Block {
 	@Override
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
     {
-		
-        return false;
+		if(!worldIn.isRemote){
+			PhysicsWrapperEntity wrapper = new PhysicsWrapperEntity(worldIn,pos.getX(),pos.getY(),pos.getZ());
+        	worldIn.spawnEntityInWorld(wrapper);
+		}
+		return true;
     }
 
 }

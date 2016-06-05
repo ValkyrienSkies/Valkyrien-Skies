@@ -3,6 +3,11 @@ package ValkyrienWarfareBase.ChunkManagement;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
+/**
+ * This stores the chunk claims for a PhysicsObject
+ * @author thebest108
+ *
+ */
 public class ChunkSet {
 
 	public World world;
@@ -32,6 +37,11 @@ public class ChunkSet {
 		toSave.setInteger("centerX", centerX);
 		toSave.setInteger("centerZ", centerZ);
 		toSave.setInteger("radius", radius);
+	}
+	
+	@Override
+	public String toString(){
+		return centerX+":"+centerZ+":"+radius;
 	}
 	
 }

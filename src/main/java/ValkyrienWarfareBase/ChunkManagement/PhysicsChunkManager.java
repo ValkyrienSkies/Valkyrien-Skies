@@ -34,7 +34,6 @@ public class PhysicsChunkManager {
 		nextChunkSetKey += chunkSetIncrement;
 		data.chunkKey = nextChunkSetKey;
 		data.markDirty();
-		System.out.println(nextChunkSetKey);
 		return new ChunkSet(chunkX,chunkZ,chunkRadius);
 	}
 	
@@ -45,12 +44,5 @@ public class PhysicsChunkManager {
 		data = ChunkKeysWorldData.get(dimension);
 		nextChunkSetKey = data.chunkKey;
 	}
-	
-	/**
-	 * This saves the ChunkSetKey data to the specific world
-	 */
-	public void saveDataToWorld(){
-		
-	}
-	
+
 }

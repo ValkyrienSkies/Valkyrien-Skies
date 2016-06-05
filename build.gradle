@@ -80,3 +80,11 @@ processResources
         exclude 'mcmod.info'
     }
 }
+
+jar {
+        manifest {
+        attributes 'FMLAT': 'ValkyrienWarfare_At.cfg',
+		'FMLCorePlugin': 'ValkyrienWarfareBase.CoreMod.ValkyrienWarfarePlugin' ,
+		'FMLCorePluginContainsFMLMod': 'false'
+    }
+}

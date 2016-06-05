@@ -1,8 +1,11 @@
 package ValkyrienWarfareBase.PhysicsManagement;
 
+import ValkyrienWarfareBase.ChunkManagement.ChunkSet;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
 /**
  * This entity's only purpose is to use the functionality of sending itself
@@ -11,14 +14,17 @@ import net.minecraft.world.World;
  * @author thebest108
  *
  */
-public class PhysicsWrapperEntity extends Entity{
+public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpawnData{
 
 	public PhysicsObject wrapping;
-	public double pitch,yaw,roll;
 	
 	public PhysicsWrapperEntity(World worldIn) {
 		super(worldIn);
 		wrapping = new PhysicsObject(this);
+		if(!worldObj.isRemote){
+			//Send all nearby clients the chunk watcher packets before this
+			//ever arrives
+		}
 	}
 	
 	public PhysicsWrapperEntity(World worldIn,double x,double y,double z) {
@@ -26,9 +32,15 @@ public class PhysicsWrapperEntity extends Entity{
 		posX = x;
 		posY = y;
 		posZ = z;
-		wrapping.generateNewChunks();
+		wrapping.claimNewChunks();
+//		wrapping.processChunkClaims();
 	}
 
+	@Override
+	public void onUpdate(){
+		super.onUpdate();
+	}
+	
 	@Override
 	protected void entityInit() {
 		
@@ -42,5 +54,15 @@ public class PhysicsWrapperEntity extends Entity{
 	@Override
 	protected void writeEntityToNBT(NBTTagCompound tagCompound) {
 		wrapping.writeToNBTTag(tagCompound);
+	}
+
+	@Override
+	public void writeSpawnData(ByteBuf buffer) {
+		wrapping.writeSpawnData(buffer);
+	}
+
+	@Override
+	public void readSpawnData(ByteBuf additionalData) {
+		wrapping.readSpawnData(additionalData);
 	}
 }

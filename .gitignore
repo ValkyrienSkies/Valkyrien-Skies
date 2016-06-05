@@ -12,6 +12,7 @@ saves
 options.txt
 usernamecache.json
 usercache.json
+crash-reports
 
 #idea
 *.iml

@@ -14,7 +14,7 @@ public class PhysicsChunkManager {
 	public int chunkSetIncrement;
 	public int xChunkStartingPos = -31250;
 	public int zChunkStartingPos = -31250;
-	public int chunkRadius = 8;
+	public int chunkRadius = 4;
 	public ChunkKeysWorldData data;
 	
 	public PhysicsChunkManager(World worldFor){

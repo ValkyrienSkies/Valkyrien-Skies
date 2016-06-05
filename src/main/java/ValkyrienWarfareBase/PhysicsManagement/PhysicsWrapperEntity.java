@@ -17,23 +17,24 @@ import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpawnData{
 
 	public PhysicsObject wrapping;
+	public boolean isNew = false;
 	
 	public PhysicsWrapperEntity(World worldIn) {
 		super(worldIn);
 		wrapping = new PhysicsObject(this);
 		if(!worldObj.isRemote){
-			//Send all nearby clients the chunk watcher packets before this
-			//ever arrives
+			
 		}
 	}
 	
 	public PhysicsWrapperEntity(World worldIn,double x,double y,double z) {
 		this(worldIn);
+		isNew = true;
 		posX = x;
 		posY = y;
 		posZ = z;
 		wrapping.claimNewChunks();
-//		wrapping.processChunkClaims();
+		wrapping.processChunkClaims();
 	}
 
 	@Override
@@ -58,6 +59,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 
 	@Override
 	public void writeSpawnData(ByteBuf buffer) {
+		wrapping.sendChunksToPlayers();
 		wrapping.writeSpawnData(buffer);
 	}
 

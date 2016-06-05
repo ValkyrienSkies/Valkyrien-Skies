@@ -28,9 +28,7 @@ public class ChunkSet {
 	}
 	
 	public ChunkSet(NBTTagCompound readFrom){
-		centerX = readFrom.getInteger("centerX");
-		centerZ = readFrom.getInteger("centerZ");
-		radius = readFrom.getInteger("radius");
+		this(readFrom.getInteger("centerX"),readFrom.getInteger("centerZ"),readFrom.getInteger("radius"));
 	}
 	
 	public void writeToNBT(NBTTagCompound toSave){

@@ -1,9 +1,11 @@
 package ValkyrienWarfareBase.PhysicsManagement;
 
-import ValkyrienWarfareBase.ChunkManagement.ChunkSet;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.play.server.SPacketUnloadChunk;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
@@ -59,7 +61,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 
 	@Override
 	public void writeSpawnData(ByteBuf buffer) {
-		wrapping.sendChunksToPlayers();
+		wrapping.preloadNewPlayers();
 		wrapping.writeSpawnData(buffer);
 	}
 

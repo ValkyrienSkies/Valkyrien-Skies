@@ -1,13 +1,16 @@
 package ValkyrienWarfareBase.PhysicsManagement;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.ChunkManagement.ChunkSet;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.server.SPacketChunkData;
+import net.minecraft.network.play.server.SPacketUnloadChunk;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -24,6 +27,8 @@ public class PhysicsObject {
 	public double pitch,yaw,roll;
 	//Used for faster memory access to the Chunks this object 'owns'
 	public Chunk[][] claimedChunks;
+	public HashSet<EntityPlayerMP> watchingPlayers = new HashSet<EntityPlayerMP>();
+	public HashSet<EntityPlayerMP> newWatchers = new HashSet<EntityPlayerMP>();
 	
 	public PhysicsObject(PhysicsWrapperEntity host){
 		wrapper = host;
@@ -57,7 +62,7 @@ public class PhysicsObject {
 		MinecraftForge.EVENT_BUS.post(new ChunkEvent.Load(chunk));
 	}
 	
-	public void sendChunksToPlayers(){
+	public void preloadNewPlayers(){
 		Set<EntityPlayerMP> newWatchers = getPlayersThatJustWatched();
 //		System.out.println(newWatchers.size());
 		for(Chunk[] chunkArray: claimedChunks){
@@ -70,8 +75,32 @@ public class PhysicsObject {
 		}
 	}
 	
+	/**
+	 * TODO: Make this further get the player to stop all further tracking of this 
+	 * object
+	 * @param EntityPlayer that stopped tracking
+	 */
+	public void onPlayerUntracking(EntityPlayer untracking){
+//		System.out.println(untracking.getDisplayNameString()+" has stopped tracking this entity");
+		watchingPlayers.remove(untracking);
+		for(int x = ownedChunks.minX;x<=ownedChunks.maxX;x++){
+			for(int z = ownedChunks.minZ;z<=ownedChunks.maxZ;z++){
+				SPacketUnloadChunk unloadPacket = new SPacketUnloadChunk(x,z);
+				((EntityPlayerMP)untracking).playerNetServerHandler.sendPacket(unloadPacket);
+			}
+		}
+	}
+	
 	private Set getPlayersThatJustWatched(){
-		return ((WorldServer)worldObj).getEntityTracker().getTrackingPlayers(wrapper);
+		HashSet newPlayers = new HashSet();
+		for(Object o:((WorldServer)worldObj).getEntityTracker().getTrackingPlayers(wrapper)){
+			EntityPlayerMP player = (EntityPlayerMP) o;
+			if(!watchingPlayers.contains(player)){
+				newPlayers.add(player);
+				watchingPlayers.add(player);
+			}
+		}
+		return newPlayers;
 	}
 	
 	public void loadClaimedChunks(){

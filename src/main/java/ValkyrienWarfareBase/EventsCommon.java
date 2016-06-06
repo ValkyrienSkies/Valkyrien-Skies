@@ -1,6 +1,9 @@
 package ValkyrienWarfareBase;
 
+import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.world.ChunkDataEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -32,6 +35,16 @@ public class EventsCommon {
 	public void onChunkNBTUnload(ChunkDataEvent.Save event){
 		NBTTagCompound data = event.getData();
 		
+	}
+
+	@SubscribeEvent(priority=EventPriority.HIGHEST)
+	public void onEntityUntrack(PlayerEvent.StopTracking event){
+		if(!event.getEntityPlayer().worldObj.isRemote){
+			Entity ent = event.getTarget();
+			if(ent instanceof PhysicsWrapperEntity){
+				((PhysicsWrapperEntity)ent).wrapping.onPlayerUntracking(event.getEntityPlayer());
+			}
+		}
 	}
 
 }

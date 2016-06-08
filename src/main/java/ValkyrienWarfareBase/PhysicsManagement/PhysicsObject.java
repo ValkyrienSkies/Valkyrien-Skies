@@ -73,7 +73,7 @@ public class PhysicsObject {
 			IBlockState state = detector.cache.getBlockState(pos);
 			pos.set(pos.getX()+centerDifference.getX(), pos.getY()+centerDifference.getY(), pos.getZ()+centerDifference.getZ());
 //			System.out.println(pos);
-			chunkCache.setBlockState(pos, Blocks.air.getDefaultState());
+			chunkCache.setBlockState(pos, state);
 //			worldObj.setBlockState(pos, state);
 		}
 		iter = detector.foundSet.iterator();
@@ -86,7 +86,8 @@ public class PhysicsObject {
 			//TODO: Get this to update on clientside as well, you bastard!
 			worldObj.setBlockState(pos, Blocks.air.getDefaultState(),2);
 		}
-		
+//		centerDifference = new BlockPos(claimedChunks[ownedChunks.radius+1][ownedChunks.radius+1].xPosition*16,128,claimedChunks[ownedChunks.radius+1][ownedChunks.radius+1].zPosition*16);
+//		System.out.println(chunkCache.getBlockState(centerDifference).getBlock());
 	}
 	
 	public void injectChunkIntoWorld(Chunk chunk,int x,int z){
@@ -104,10 +105,9 @@ public class PhysicsObject {
 	 */
 	public void preloadNewPlayers(){
 		Set<EntityPlayerMP> newWatchers = getPlayersThatJustWatched();
-//		System.out.println(newWatchers.size());
 		for(Chunk[] chunkArray: claimedChunks){
 			for(Chunk chunk: chunkArray){
-				SPacketChunkData data = new SPacketChunkData(chunk, true, 0);
+				SPacketChunkData data = new SPacketChunkData(chunk, true, 65535);
 				for(EntityPlayerMP player:newWatchers){
 					player.playerNetServerHandler.sendPacket(data);
 				}
@@ -172,6 +172,7 @@ public class PhysicsObject {
 		pitch = additionalData.readDouble();
 		yaw = additionalData.readDouble();
 		roll = additionalData.readDouble();
+		loadClaimedChunks();
 	}
 	
 	public void writeSpawnData(ByteBuf buffer){

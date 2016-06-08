@@ -2,10 +2,7 @@ package ValkyrienWarfareBase.PhysicsManagement;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.play.server.SPacketUnloadChunk;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
@@ -19,7 +16,6 @@ import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpawnData{
 
 	public PhysicsObject wrapping;
-	public boolean isNew = false;
 	
 	public PhysicsWrapperEntity(World worldIn) {
 		super(worldIn);
@@ -31,7 +27,6 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 	
 	public PhysicsWrapperEntity(World worldIn,double x,double y,double z) {
 		this(worldIn);
-		isNew = true;
 		posX = x;
 		posY = y;
 		posZ = z;

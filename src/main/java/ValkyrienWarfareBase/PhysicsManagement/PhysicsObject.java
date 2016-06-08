@@ -5,12 +5,19 @@ import java.util.Set;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.ChunkManagement.ChunkSet;
+import ValkyrienWarfareBase.Relocation.ChunkCache;
+import ValkyrienWarfareBase.Relocation.ShipSpawnDetector;
+import gnu.trove.iterator.TIntIterator;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.server.SPacketChunkData;
 import net.minecraft.network.play.server.SPacketUnloadChunk;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -29,6 +36,7 @@ public class PhysicsObject {
 	public Chunk[][] claimedChunks;
 	public HashSet<EntityPlayerMP> watchingPlayers = new HashSet<EntityPlayerMP>();
 	public HashSet<EntityPlayerMP> newWatchers = new HashSet<EntityPlayerMP>();
+	public ChunkCache chunkCache;
 	
 	public PhysicsObject(PhysicsWrapperEntity host){
 		wrapper = host;
@@ -48,8 +56,37 @@ public class PhysicsObject {
 			for(int z = ownedChunks.minZ;z<=ownedChunks.maxZ;z++){
 				Chunk chunk = new Chunk(worldObj, x, z);
 				injectChunkIntoWorld(chunk,x,z);
+				claimedChunks[x-ownedChunks.minX][z-ownedChunks.minZ] = chunk;
 			}
 		}
+		chunkCache = new ChunkCache(worldObj, claimedChunks);
+		BlockPos centerInWorld = new BlockPos(wrapper.posX,wrapper.posY,wrapper.posZ);
+		ShipSpawnDetector detector = new ShipSpawnDetector(centerInWorld, worldObj, 5000, true);
+		MutableBlockPos pos = new MutableBlockPos();
+		TIntIterator iter = detector.foundSet.iterator();
+		BlockPos centerDifference = new BlockPos(claimedChunks[ownedChunks.radius+1][ownedChunks.radius+1].xPosition*16,128,claimedChunks[ownedChunks.radius+1][ownedChunks.radius+1].zPosition*16);
+		centerDifference = centerDifference.subtract(centerInWorld);
+		while(iter.hasNext()){
+			int i = iter.next();
+			detector.setPosWithRespectTo(i, centerInWorld, pos);
+			
+			IBlockState state = detector.cache.getBlockState(pos);
+			pos.set(pos.getX()+centerDifference.getX(), pos.getY()+centerDifference.getY(), pos.getZ()+centerDifference.getZ());
+//			System.out.println(pos);
+			chunkCache.setBlockState(pos, Blocks.air.getDefaultState());
+//			worldObj.setBlockState(pos, state);
+		}
+		iter = detector.foundSet.iterator();
+		short[][] changes = new short[claimedChunks.length][claimedChunks[0].length];
+		while(iter.hasNext()){
+			int i = iter.next();
+//			BlockPos respectTo = detector.getPosWithRespectTo(i, centerInWorld);
+			detector.setPosWithRespectTo(i, centerInWorld, pos);
+//			detector.cache.setBlockState(pos, Blocks.air.getDefaultState());
+			//TODO: Get this to update on clientside as well, you bastard!
+			worldObj.setBlockState(pos, Blocks.air.getDefaultState(),2);
+		}
+		
 	}
 	
 	public void injectChunkIntoWorld(Chunk chunk,int x,int z){
@@ -62,6 +99,9 @@ public class PhysicsObject {
 		MinecraftForge.EVENT_BUS.post(new ChunkEvent.Load(chunk));
 	}
 	
+	/**
+	 * TODO: Add the methods that send the tileEntities in each given chunk
+	 */
 	public void preloadNewPlayers(){
 		Set<EntityPlayerMP> newWatchers = getPlayersThatJustWatched();
 //		System.out.println(newWatchers.size());
@@ -76,8 +116,8 @@ public class PhysicsObject {
 	}
 	
 	/**
-	 * TODO: Make this further get the player to stop all further tracking of this 
-	 * object
+	 * TODO: Make this further get the player to stop all further tracking of 
+	 * thos physObject
 	 * @param EntityPlayer that stopped tracking
 	 */
 	public void onPlayerUntracking(EntityPlayer untracking){

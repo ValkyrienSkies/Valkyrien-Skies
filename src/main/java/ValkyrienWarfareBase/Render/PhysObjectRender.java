@@ -11,7 +11,6 @@ import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -28,7 +27,7 @@ public class PhysObjectRender extends Render<PhysicsWrapperEntity>{
 	public void doRender(PhysicsWrapperEntity entity, double x, double y, double z, float entityYaw, float partialTicks){
 		if (entity.wrapping.claimedChunks!=null)
         {
-			BlockPos centerDifference = new BlockPos(entity.wrapping.claimedChunks[entity.wrapping.ownedChunks.radius+1][entity.wrapping.ownedChunks.radius+1].xPosition*16,128,entity.wrapping.claimedChunks[entity.wrapping.ownedChunks.radius+1][entity.wrapping.ownedChunks.radius+1].zPosition*16);
+			BlockPos centerDifference = entity.wrapping.getRegionCenter();
             IBlockState iblockstate = entity.worldObj.getBlockState(centerDifference);
 //            System.out.println(entity.worldObj.getBlockState(centerDifference).getBlock());
             if (iblockstate.getRenderType() == EnumBlockRenderType.MODEL)

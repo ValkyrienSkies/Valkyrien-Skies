@@ -1,5 +1,6 @@
 package ValkyrienWarfareBase.Proxy;
 
+import ValkyrienWarfareBase.EventsClient;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.Render.PhysObjectRenderFactory;
@@ -7,6 +8,7 @@ import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -14,6 +16,8 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 public class ClientProxy extends CommonProxy{
 
+	EventsClient eventsClient = new EventsClient();
+	
 	@Override
 	public void preInit(FMLPreInitializationEvent e) {
 		super.preInit(e);
@@ -23,6 +27,7 @@ public class ClientProxy extends CommonProxy{
 	@Override
     public void init(FMLInitializationEvent e) {
 		super.init(e);
+		MinecraftForge.EVENT_BUS.register(eventsClient);
         registerBlockItem(ValkyrienWarfareMod.physicsInfuser);
     }
 

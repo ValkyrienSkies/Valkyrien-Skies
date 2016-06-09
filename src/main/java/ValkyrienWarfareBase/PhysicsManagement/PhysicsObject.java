@@ -10,6 +10,7 @@ import ValkyrienWarfareBase.Relocation.ShipSpawnDetector;
 import gnu.trove.iterator.TIntIterator;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
@@ -64,7 +65,7 @@ public class PhysicsObject {
 		ShipSpawnDetector detector = new ShipSpawnDetector(centerInWorld, worldObj, 5000, true);
 		MutableBlockPos pos = new MutableBlockPos();
 		TIntIterator iter = detector.foundSet.iterator();
-		BlockPos centerDifference = new BlockPos(claimedChunks[ownedChunks.radius+1][ownedChunks.radius+1].xPosition*16,128,claimedChunks[ownedChunks.radius+1][ownedChunks.radius+1].zPosition*16);
+		BlockPos centerDifference = getRegionCenter();
 		centerDifference = centerDifference.subtract(centerInWorld);
 		while(iter.hasNext()){
 			int i = iter.next();
@@ -113,6 +114,10 @@ public class PhysicsObject {
 				}
 			}
 		}
+	}
+	
+	public BlockPos getRegionCenter(){
+		return new BlockPos(claimedChunks[ownedChunks.radius+1][ownedChunks.radius+1].xPosition*16,128,claimedChunks[ownedChunks.radius+1][ownedChunks.radius+1].zPosition*16);
 	}
 	
 	/**

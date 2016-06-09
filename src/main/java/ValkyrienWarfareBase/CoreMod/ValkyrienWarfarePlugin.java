@@ -12,7 +12,8 @@ import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin.TransformerExclusions
 public class ValkyrienWarfarePlugin implements IFMLLoadingPlugin{
 
 	public static Boolean isObfuscatedEnvironment = null;
-	public static final String Path = "ValkyrienWarfareBase/CoreMod/CallRunner";
+	public static final String PathClient = "ValkyrienWarfareBase/CoreMod/CallRunnerClient";
+	public static final String PathCommon = "ValkyrienWarfareBase/CoreMod/CallRunner";
 	
     @Override
     public String[] getASMTransformerClass() {

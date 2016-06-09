@@ -32,6 +32,11 @@ public class TransformAdapter extends ClassVisitor{
 	private String m_className;
 	public boolean m_isObfuscatedEnvironment;
 
+	private final String ChunkRenderContainerName;
+	private final String RenderChunkName;
+	private final String RenderGlobalName;
+	private final String ICameraName;
+	
 	public TransformAdapter( int api, boolean isObfuscatedEnvironment ){
 		super( api, null );
 		m_isObfuscatedEnvironment = isObfuscatedEnvironment;
@@ -47,6 +52,10 @@ public class TransformAdapter extends ClassVisitor{
 		PacketName = getRuntimeClassName("net/minecraft/network/Packet");
 		EntityPlayerName = getRuntimeClassName("net/minecraft/entity/player/EntityPlayer");
 		ServerConfigurationManagerName = getRuntimeClassName("net/minecraft/server/management/ServerConfigurationManager");
+		ChunkRenderContainerName = getRuntimeClassName("net/minecraft/client/renderer/ChunkRenderContainer");
+		RenderChunkName = getRuntimeClassName("net/minecraft/client/renderer/chunk/RenderChunk");
+		RenderGlobalName = getRuntimeClassName("net/minecraft/client/renderer/RenderGlobal");
+		ICameraName = getRuntimeClassName("net/minecraft/client/renderer/culling/ICamera");
 //		progressManager = getRuntimeClassName("net/minecraftforge/fml/common/ProgressManager");
 //		progressBar = getRuntimeClassName("net/minecraftforge/fml/common/ProgressManager$ProgressBar");
 	}
@@ -74,6 +83,19 @@ public class TransformAdapter extends ClassVisitor{
 	}
 
 	private boolean runTransformer(String calledName,String calledDesc,String calledOwner,MethodVisitor mv){
+		if(calledDesc.equals("(L"+RenderChunkName+";)V")
+			&& calledName.equals(getRuntimeMethodName(m_className,"preRenderChunk","func_178003_a"))
+			&& InheritanceUtils.extendsClass( calledOwner, ChunkRenderContainerName)){
+				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onPreRenderChunk", String.format( "(L%s;L"+RenderChunkName+";)V", ChunkRenderContainerName ) );
+				return false;
+		}
+		
+		if(calledDesc.equals("(L"+EntityClassName+";DL"+ICameraName+";IZ)V")
+			&& calledName.equals(getRuntimeMethodName(m_className,"setupTerrain","func_174970_a"))
+			&& InheritanceUtils.extendsClass( calledOwner, RenderGlobalName)){
+				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onSetupTerrain", String.format( "(L%s;L"+EntityClassName+";DL"+ICameraName+";IZ)V", RenderGlobalName ) );
+				return false;
+		}
 		/*if(calledDesc.equals("(L"+EntityPlayerName+";DDDDIL"+PacketName+";)V")
 			&& calledName.equals(getRuntimeMethodName(m_className,"sendToAllNearExcept","func_148543_a"))
 			&& InheritanceUtils.extendsClass( calledOwner, ServerConfigurationManagerName)){

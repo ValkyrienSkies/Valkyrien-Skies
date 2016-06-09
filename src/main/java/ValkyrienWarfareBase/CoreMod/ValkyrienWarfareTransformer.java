@@ -11,10 +11,11 @@ import net.minecraft.launchwrapper.IClassTransformer;
 
 public class ValkyrienWarfareTransformer implements IClassTransformer{
 
+	private static final List<String> privilegedPackages = Arrays.asList("ValkyrienWarfareBase");
+	
     @Override
     public byte[] transform(String name,String transformedName, byte[] classData){
     	try{
-			List<String> privilegedPackages = Arrays.asList("ValkyrienWarfareBase");
 			for(String privilegedPackage:privilegedPackages ){
 				if(name.startsWith(privilegedPackage)){
 					return classData;
@@ -28,7 +29,6 @@ public class ValkyrienWarfareTransformer implements IClassTransformer{
 			}catch(Exception e){}
 				return classWriter.toByteArray();
 		}catch(Throwable t){
-			System.out.println("We fucked up");
 			return classData;
 		}
     }

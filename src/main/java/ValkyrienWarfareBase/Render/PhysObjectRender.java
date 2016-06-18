@@ -89,18 +89,31 @@ public class PhysObjectRender extends Render<PhysicsWrapperEntity>{
 //		System.out.println(moddedX);
 		
 		GlStateManager.translate(-p0+moddedX, -p1+moddedY, -p2+moddedZ);
-		GL11.glTranslated(-center.getX(), -center.getY(), -center.getZ());
+//		GL11.glTranslated(x,y,z);
 		
+		if(entity.wrapping.renderer.offsetPos!=null){
+			double offsetX = entity.wrapping.renderer.offsetPos.getX()-center.getX();
+			double offsetY = entity.wrapping.renderer.offsetPos.getY()-center.getY();
+			double offsetZ = entity.wrapping.renderer.offsetPos.getZ()-center.getZ();
+			GL11.glTranslated(offsetX,offsetY,offsetZ);
+		}
 	}
 	
 	public void renderBlocks(PhysicsWrapperEntity entity, double x, double y, double z, float entityYaw, float partialTicks){
 		GlStateManager.pushMatrix();
 		GlStateManager.disableLighting();
-
 		
 		
+		if (this.renderOutlines)
+        {
+            GlStateManager.enableColorMaterial();
+            GlStateManager.enableOutlineMode(this.getTeamColor(entity));
+        }
 		
-		GL11.glCallList(entity.wrapping.renderer.glCallListSolid);
+		if(entity.wrapping.renderer.offsetPos!=null){
+			GL11.glCallList(entity.wrapping.renderer.glCallListSolid);
+		}
+		
 		if (this.renderOutlines)
         {
             GlStateManager.disableOutlineMode();

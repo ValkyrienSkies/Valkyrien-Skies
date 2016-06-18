@@ -208,6 +208,7 @@ public class PhysicsObject {
 		roll = additionalData.readDouble();
 		loadClaimedChunks();
 		renderer.markForUpdate();
+		renderer.updateOffsetPos(centerBlockPos);
 	}
 	
 	public void writeSpawnData(ByteBuf buffer){

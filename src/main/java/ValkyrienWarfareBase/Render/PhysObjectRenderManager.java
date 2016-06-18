@@ -22,14 +22,27 @@ public class PhysObjectRenderManager {
 	public boolean needsSolidUpdate = true;
 	public int glCallListSolid = -1;
 	public PhysicsObject parent;
+	//This pos is used to prevent Z-Buffer Errors D:
+	//It's actual value is completely irrelevant as long as it's close to the 
+	//Ship's centerBlockPos
+	public BlockPos offsetPos;
 	
 	public PhysObjectRenderManager(PhysicsObject toRender){
 		parent = toRender;
 	}
 	
+	public void updateOffsetPos(BlockPos newPos){
+		offsetPos = newPos;
+	}
+	
 	public void updateSolidList(){
+		if(offsetPos==null){
+			return;
+		}
 		Tessellator tessellator = Tessellator.getInstance();
 		VertexBuffer worldrenderer = tessellator.getBuffer();
+		
+		worldrenderer.setTranslation(-offsetPos.getX(), -offsetPos.getY(), -offsetPos.getZ());
 		
 		GLAllocation.deleteDisplayLists(glCallListSolid);
 		glCallListSolid = GLAllocation.generateDisplayLists(1);
@@ -47,14 +60,13 @@ public class PhysObjectRenderManager {
 			    	iblockstate=parent.worldObj.getBlockState(pos);
 		            if(!iblockstate.getBlock().isTranslucent(iblockstate)){
 		            	Minecraft.getMinecraft().getBlockRendererDispatcher().renderBlock(iblockstate, pos, parent.worldObj, worldrenderer);
-		            	System.out.println(iblockstate.getBlock());
 		            }
 		        }
 			    tessellator.draw();
 			    GlStateManager.popMatrix();
-			    GL11.glEndList();
-			    
+			GL11.glEndList();
 		GL11.glPopMatrix();
+		worldrenderer.setTranslation(0,0,0);
 		needsSolidUpdate = false;
 	}
 	

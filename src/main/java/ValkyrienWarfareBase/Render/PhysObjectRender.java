@@ -7,6 +7,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.entity.Render;
@@ -28,6 +29,12 @@ public class PhysObjectRender extends Render<PhysicsWrapperEntity>{
 	@Override
 	public void doRender(PhysicsWrapperEntity entity, double x, double y, double z, float entityYaw, float partialTicks){
 		GL11.glPushMatrix();
+		int i = 15728880;//entity.getBrightnessForRender(partialTicks);
+        int j = i % 65536;
+        int k = i / 65536;
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)j, (float)k);
+		
+		bindTexture(TextureMap.locationBlocksTexture);
 		setupTransform(entity,x,y,z,entityYaw,partialTicks);
 		renderBlocks(entity,x,y,z,entityYaw,partialTicks);
 		if (entity.wrapping.claimedChunks!=null&&false)
@@ -110,16 +117,34 @@ public class PhysObjectRender extends Render<PhysicsWrapperEntity>{
             GlStateManager.enableOutlineMode(this.getTeamColor(entity));
         }
 		
+		Tessellator tessellator = Tessellator.getInstance();
+        VertexBuffer worldRendererIn = tessellator.getBuffer();
+		
+		worldRendererIn.begin(7, DefaultVertexFormats.BLOCK);
+		
 		if(entity.wrapping.renderer.offsetPos!=null){
+			GlStateManager.disableAlpha();
 			GL11.glCallList(entity.wrapping.renderer.glCallListSolid);
+			GlStateManager.enableAlpha();
+			GL11.glCallList(entity.wrapping.renderer.glCallListCutoutMipped);
+			Minecraft.getMinecraft().getTextureManager().getTexture(TextureMap.locationBlocksTexture).setBlurMipmap(false, false);
+			GL11.glCallList(entity.wrapping.renderer.glCallListCutout);
+			Minecraft.getMinecraft().getTextureManager().getTexture(TextureMap.locationBlocksTexture).restoreLastBlurMipmap();
+			GlStateManager.shadeModel(7424);
+	        GlStateManager.alphaFunc(516, 0.1F);
+	        GlStateManager.enableBlend();
+	        GL11.glCallList(entity.wrapping.renderer.glCallListTranslucent);
+	        GlStateManager.disableBlend();
 		}
+		
+		worldRendererIn.finishDrawing();
 		
 		if (this.renderOutlines)
         {
             GlStateManager.disableOutlineMode();
             GlStateManager.disableColorMaterial();
         }
-
+		GlStateManager.resetColor();
         GlStateManager.enableLighting();
         GlStateManager.popMatrix();
         super.doRender(entity, x, y, z, entityYaw, partialTicks);

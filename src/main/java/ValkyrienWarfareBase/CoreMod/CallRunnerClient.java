@@ -17,17 +17,24 @@ public class CallRunnerClient {
 				PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity)ent;
 				switch(blockLayerIn){
 				case CUTOUT:
+					if(wrapper.wrapping.renderer.needsCutoutUpdate){
+						wrapper.wrapping.renderer.updateList(blockLayerIn);
+					}
 					break;
 				case CUTOUT_MIPPED:
+					if(wrapper.wrapping.renderer.needsCutoutMippedUpdate){
+						wrapper.wrapping.renderer.updateList(blockLayerIn);
+					}
 					break;
 				case SOLID:
 					if(wrapper.wrapping.renderer.needsSolidUpdate){
-						if(blockLayerIn==BlockRenderLayer.SOLID){
-							wrapper.wrapping.renderer.updateSolidList();
-						}
+						wrapper.wrapping.renderer.updateList(blockLayerIn);
 					}
 					break;
 				case TRANSLUCENT:
+					if(wrapper.wrapping.renderer.needsTranslucentUpdate){
+						wrapper.wrapping.renderer.updateList(blockLayerIn);
+					}
 					break;
 				default:
 					break;

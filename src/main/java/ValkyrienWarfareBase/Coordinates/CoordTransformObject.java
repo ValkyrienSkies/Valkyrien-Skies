@@ -12,8 +12,11 @@ import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
 public class CoordTransformObject {
 	
 	public PhysicsObject parent;
-	public double[] lToWTransform;
-	public double[] wToLTransform;
+	public double[] lToWTransform = RotationMatrices.getDoubleIdentity();
+	public double[] wToLTransform = RotationMatrices.getDoubleIdentity();;
+	
+	public double[] prevlToWTransform;
+	public double[] prevwToLTransform;
 	
 	public CoordTransformObject(PhysicsObject object){
 		parent = object;
@@ -21,6 +24,8 @@ public class CoordTransformObject {
 	}
 	//TODO: Implement this
 	public void updateTransforms(){
+		prevlToWTransform = lToWTransform;
+		prevwToLTransform = wToLTransform;
 		lToWTransform = RotationMatrices.getDoubleIdentity();
 		
 		

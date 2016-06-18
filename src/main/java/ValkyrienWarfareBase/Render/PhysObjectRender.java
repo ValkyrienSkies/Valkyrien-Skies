@@ -130,7 +130,7 @@ public class PhysObjectRender extends Render<PhysicsWrapperEntity>{
 			Minecraft.getMinecraft().getTextureManager().getTexture(TextureMap.locationBlocksTexture).setBlurMipmap(false, false);
 			GL11.glCallList(entity.wrapping.renderer.glCallListCutout);
 			Minecraft.getMinecraft().getTextureManager().getTexture(TextureMap.locationBlocksTexture).restoreLastBlurMipmap();
-			GlStateManager.shadeModel(7424);
+//			GlStateManager.shadeModel(7424);
 	        GlStateManager.alphaFunc(516, 0.1F);
 	        GlStateManager.enableBlend();
 	        GL11.glCallList(entity.wrapping.renderer.glCallListTranslucent);

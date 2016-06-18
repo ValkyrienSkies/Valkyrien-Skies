@@ -26,6 +26,7 @@ import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.ChunkEvent;
@@ -73,6 +74,8 @@ public class PhysicsObject {
 			}
 		}
 		chunkCache = new ChunkCache(worldObj, claimedChunks);
+		int minChunkX = claimedChunks[0][0].xPosition;
+		int minChunkZ = claimedChunks[0][0].zPosition;
 		BlockPos centerInWorld = new BlockPos(wrapper.posX,wrapper.posY,wrapper.posZ);
 		ShipSpawnDetector detector = new ShipSpawnDetector(centerInWorld, worldObj, 5000, true);
 		MutableBlockPos pos = new MutableBlockPos();
@@ -87,6 +90,7 @@ public class PhysicsObject {
 			IBlockState state = detector.cache.getBlockState(pos);
 			pos.set(pos.getX()+centerDifference.getX(), pos.getY()+centerDifference.getY(), pos.getZ()+centerDifference.getZ());
 //			System.out.println(pos);
+			ownedChunks.chunkOccupiedInLocal[(pos.getX()>>4)-minChunkX][(pos.getZ()>>4)-minChunkZ] = true;
 			chunkCache.setBlockState(pos, state);
 //			worldObj.setBlockState(pos, state);
 		}
@@ -183,21 +187,50 @@ public class PhysicsObject {
 	
 	//Generates the blockPos array; must be loaded DIRECTLY after the chunks are setup
 	public void detectBlockPositions(){
-		ShipBlockPosFinder finder = new ShipBlockPosFinder(centerBlockPos, worldObj, 10000, true);
-		TIntIterator iterator = finder.foundSet.iterator();
-		int temp;
-		while(iterator.hasNext()){
-			temp = iterator.next();
-			blockPositions.add(finder.getPosWithRespectTo(temp, centerBlockPos));
+		int minChunkX = claimedChunks[0][0].xPosition;
+		int minChunkZ = claimedChunks[0][0].zPosition;
+		for(int chunkX = claimedChunks.length-1;chunkX>-1;chunkX--){
+			for(int chunkZ = claimedChunks[0].length-1;chunkZ>-1;chunkZ--){
+				Chunk chunk = claimedChunks[chunkX][chunkZ];
+				if(chunk!=null&&ownedChunks.chunkOccupiedInLocal[chunkX][chunkZ]){
+					for(int index=0;index<16;index++){
+			        	ExtendedBlockStorage storage = chunk.getBlockStorageArray()[index];
+			        	if(storage!=null){
+			        		for(int y=0;y<16;y++){
+			        			for(int x=0;x<16;x++){
+			        				for(int z=0;z<16;z++){
+			            				if(storage.data.bits.func_188142_a(y << 8 | z << 4 | x)!=ValkyrienWarfareMod.airStateIndex){
+			            					BlockPos pos = new BlockPos(chunk.xPosition*16+x,index*16+y,chunk.zPosition*16+z);
+			            					blockPositions.add(pos);
+			            				}
+			            			}
+			        			}
+			        		}
+			        	}
+			        }
+				}
+			}
 		}
 	}
 	
 	public void writeToNBTTag(NBTTagCompound compound){
 		ownedChunks.writeToNBT(compound);
+		for(int row = 0;row<ownedChunks.chunkOccupiedInLocal.length;row++){
+			boolean[] curArray = ownedChunks.chunkOccupiedInLocal[row];
+			for(int column = 0;column<curArray.length;column++){
+				compound.setBoolean("CC:"+row+":"+column, curArray[column]);
+			}
+		}
 	}
 	
 	public void readFromNBTTag(NBTTagCompound compound){
 		ownedChunks = new ChunkSet(compound);
+		for(int row = 0;row<ownedChunks.chunkOccupiedInLocal.length;row++){
+			boolean[] curArray = ownedChunks.chunkOccupiedInLocal[row];
+			for(int column = 0;column<curArray.length;column++){
+				curArray[column] = compound.getBoolean("CC:"+row+":"+column);
+			}
+		}
 		loadClaimedChunks();
 	}
 	
@@ -206,6 +239,11 @@ public class PhysicsObject {
 		pitch = additionalData.readDouble();
 		yaw = additionalData.readDouble();
 		roll = additionalData.readDouble();
+		for(boolean[] array:ownedChunks.chunkOccupiedInLocal){
+			for(int i=0;i<array.length;i++){
+				array[i] = additionalData.readBoolean();
+			}
+		}
 		loadClaimedChunks();
 		renderer.markForUpdate();
 		renderer.updateOffsetPos(centerBlockPos);
@@ -218,6 +256,11 @@ public class PhysicsObject {
 		buffer.writeDouble(pitch);
 		buffer.writeDouble(yaw);
 		buffer.writeDouble(roll);
+		for(boolean[] array:ownedChunks.chunkOccupiedInLocal){
+			for(boolean b:array){
+				buffer.writeBoolean(b);
+			}
+		}
 	}
 	
 }

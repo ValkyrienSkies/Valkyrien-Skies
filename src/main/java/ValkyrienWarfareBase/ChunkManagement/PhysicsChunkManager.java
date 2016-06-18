@@ -15,6 +15,8 @@ public class PhysicsChunkManager {
 	public int xChunkStartingPos = -31250;
 	public int zChunkStartingPos = -31250;
 	public int chunkRadius = 4;
+	//Currently at 3 to be safe, this is important because Ships could start affecting
+	//eachother remotely if this value is too small (ex. 0)
 	public int distanceBetweenSets = 3;
 	public ChunkKeysWorldData data;
 	

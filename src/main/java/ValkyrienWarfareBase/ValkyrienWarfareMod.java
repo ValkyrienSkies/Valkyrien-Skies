@@ -11,6 +11,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.command.ServerCommandManager;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.init.Blocks;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
@@ -50,6 +51,8 @@ public class ValkyrienWarfareMod{
     public static DimensionPhysicsChunkManager chunkManager;
     
     public static ValkyrienWarfareMod instance;
+    
+    public static int airStateIndex;
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event){
@@ -69,6 +72,7 @@ public class ValkyrienWarfareMod{
     @EventHandler
     public void postInit(FMLPostInitializationEvent event){
     	proxy.postInit(event);
+    	airStateIndex = Block.getStateId(Blocks.air.getDefaultState());
     }
 
     @EventHandler

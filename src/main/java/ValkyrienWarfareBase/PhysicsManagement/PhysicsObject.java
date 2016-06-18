@@ -1,16 +1,19 @@
 package ValkyrienWarfareBase.PhysicsManagement;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.ChunkManagement.ChunkSet;
+import ValkyrienWarfareBase.Coordinates.CoordTransformObject;
 import ValkyrienWarfareBase.Relocation.ChunkCache;
+import ValkyrienWarfareBase.Relocation.ShipBlockPosFinder;
 import ValkyrienWarfareBase.Relocation.ShipSpawnDetector;
+import ValkyrienWarfareBase.Render.PhysObjectRenderManager;
 import gnu.trove.iterator.TIntIterator;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
@@ -38,10 +41,19 @@ public class PhysicsObject {
 	public HashSet<EntityPlayerMP> watchingPlayers = new HashSet<EntityPlayerMP>();
 	public HashSet<EntityPlayerMP> newWatchers = new HashSet<EntityPlayerMP>();
 	public ChunkCache chunkCache;
+	//It is from this position that the x,y,z coords in local are 0; and that the posX,
+	//posY and posZ align with in the global coords
+	public BlockPos centerBlockPos;
+	public CoordTransformObject coordTransform;
+	public PhysObjectRenderManager renderer;
+	public ArrayList<BlockPos> blockPositions = new ArrayList<BlockPos>();
 	
 	public PhysicsObject(PhysicsWrapperEntity host){
 		wrapper = host;
 		worldObj = host.worldObj;
+		if(host.worldObj.isRemote){
+			renderer = new PhysObjectRenderManager(this);
+		}
 	}
 	
 	public void claimNewChunks(){
@@ -65,8 +77,9 @@ public class PhysicsObject {
 		ShipSpawnDetector detector = new ShipSpawnDetector(centerInWorld, worldObj, 5000, true);
 		MutableBlockPos pos = new MutableBlockPos();
 		TIntIterator iter = detector.foundSet.iterator();
-		BlockPos centerDifference = getRegionCenter();
-		centerDifference = centerDifference.subtract(centerInWorld);
+		centerBlockPos = getRegionCenter();
+		coordTransform = new CoordTransformObject(this);
+		BlockPos centerDifference = centerBlockPos.subtract(centerInWorld);
 		while(iter.hasNext()){
 			int i = iter.next();
 			detector.setPosWithRespectTo(i, centerInWorld, pos);
@@ -89,6 +102,8 @@ public class PhysicsObject {
 		}
 //		centerDifference = new BlockPos(claimedChunks[ownedChunks.radius+1][ownedChunks.radius+1].xPosition*16,128,claimedChunks[ownedChunks.radius+1][ownedChunks.radius+1].zPosition*16);
 //		System.out.println(chunkCache.getBlockState(centerDifference).getBlock());
+		
+		detectBlockPositions();
 	}
 	
 	public void injectChunkIntoWorld(Chunk chunk,int x,int z){
@@ -161,6 +176,20 @@ public class PhysicsObject {
 				claimedChunks[x-ownedChunks.minX][z-ownedChunks.minZ] = chunk;
 			}
 		}
+		centerBlockPos = getRegionCenter();
+		coordTransform = new CoordTransformObject(this);
+		detectBlockPositions();
+	}
+	
+	//Generates the blockPos array; must be loaded DIRECTLY after the chunks are setup
+	public void detectBlockPositions(){
+		ShipBlockPosFinder finder = new ShipBlockPosFinder(centerBlockPos, worldObj, 10000, true);
+		TIntIterator iterator = finder.foundSet.iterator();
+		int temp;
+		while(iterator.hasNext()){
+			temp = iterator.next();
+			blockPositions.add(finder.getPosWithRespectTo(temp, centerBlockPos));
+		}
 	}
 	
 	public void writeToNBTTag(NBTTagCompound compound){
@@ -178,6 +207,7 @@ public class PhysicsObject {
 		yaw = additionalData.readDouble();
 		roll = additionalData.readDouble();
 		loadClaimedChunks();
+		renderer.markForUpdate();
 	}
 	
 	public void writeSpawnData(ByteBuf buffer){

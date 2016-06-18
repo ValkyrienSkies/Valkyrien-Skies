@@ -15,11 +15,12 @@ public class PhysicsChunkManager {
 	public int xChunkStartingPos = -31250;
 	public int zChunkStartingPos = -31250;
 	public int chunkRadius = 4;
+	public int distanceBetweenSets = 3;
 	public ChunkKeysWorldData data;
 	
 	public PhysicsChunkManager(World worldFor){
 		dimension = worldFor;
-		chunkSetIncrement = (chunkRadius*2)+1;
+		chunkSetIncrement = (chunkRadius*2)+distanceBetweenSets;
 		loadDataFromWorld();
 	}
 	

@@ -1,25 +1,43 @@
 package ValkyrienWarfareBase.CoreMod;
 
-import java.util.Queue;
-import java.util.Set;
-
-import org.lwjgl.util.vector.Vector3f;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-
+import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ChunkRenderContainer;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.chunk.RenderChunk;
-import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.BlockRenderLayer;
 
 public class CallRunnerClient {
 
+	public static int onRenderBlockLayer(RenderGlobal renderer,BlockRenderLayer blockLayerIn, double partialTicks, int pass, Entity entityIn){
+		for(Entity ent:Minecraft.getMinecraft().theWorld.loadedEntityList){
+			if(ent instanceof PhysicsWrapperEntity){
+				PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity)ent;
+				switch(blockLayerIn){
+				case CUTOUT:
+					break;
+				case CUTOUT_MIPPED:
+					break;
+				case SOLID:
+					if(wrapper.wrapping.renderer.needsSolidUpdate){
+						if(blockLayerIn==BlockRenderLayer.SOLID){
+							wrapper.wrapping.renderer.updateSolidList();
+						}
+					}
+					break;
+				case TRANSLUCENT:
+					break;
+				default:
+					break;
+				}
+				
+			}
+		}
+		return renderer.renderBlockLayer(blockLayerIn, partialTicks, pass, entityIn);
+	}
+	
 	public static void onPreRenderChunk(ChunkRenderContainer container,RenderChunk toRender){
 		container.preRenderChunk(toRender);
 	}

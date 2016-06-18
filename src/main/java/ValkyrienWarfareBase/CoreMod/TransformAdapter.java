@@ -36,6 +36,7 @@ public class TransformAdapter extends ClassVisitor{
 	private final String RenderChunkName;
 	private final String RenderGlobalName;
 	private final String ICameraName;
+	private final String BlockRenderLayerName;
 	
 	public TransformAdapter( int api, boolean isObfuscatedEnvironment ){
 		super( api, null );
@@ -56,6 +57,7 @@ public class TransformAdapter extends ClassVisitor{
 		RenderChunkName = getRuntimeClassName("net/minecraft/client/renderer/chunk/RenderChunk");
 		RenderGlobalName = getRuntimeClassName("net/minecraft/client/renderer/RenderGlobal");
 		ICameraName = getRuntimeClassName("net/minecraft/client/renderer/culling/ICamera");
+		BlockRenderLayerName = getRuntimeClassName("net/minecraft/util/BlockRenderLayer");
 //		progressManager = getRuntimeClassName("net/minecraftforge/fml/common/ProgressManager");
 //		progressBar = getRuntimeClassName("net/minecraftforge/fml/common/ProgressManager$ProgressBar");
 	}
@@ -83,6 +85,13 @@ public class TransformAdapter extends ClassVisitor{
 	}
 
 	private boolean runTransformer(String calledName,String calledDesc,String calledOwner,MethodVisitor mv){
+		if(calledDesc.equals("(L"+BlockRenderLayerName+";DIL"+EntityClassName+";)I")
+			&& calledName.equals(getRuntimeMethodName(m_className,"renderBlockLayer","CHANGEME!!"))
+			&& InheritanceUtils.extendsClass( calledOwner, RenderGlobalName)){
+				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onRenderBlockLayer", String.format( "(L%s;L"+BlockRenderLayerName+";DIL"+EntityClassName+";)I", RenderGlobalName ) );
+				return false;
+		}
+		
 		if(calledDesc.equals("(L"+RenderChunkName+";)V")
 			&& calledName.equals(getRuntimeMethodName(m_className,"preRenderChunk","func_178003_a"))
 			&& InheritanceUtils.extendsClass( calledOwner, ChunkRenderContainerName)){

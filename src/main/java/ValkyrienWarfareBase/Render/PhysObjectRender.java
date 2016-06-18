@@ -1,5 +1,7 @@
 package ValkyrienWarfareBase.Render;
 
+import org.lwjgl.opengl.GL11;
+
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -25,18 +27,21 @@ public class PhysObjectRender extends Render<PhysicsWrapperEntity>{
 	
 	@Override
 	public void doRender(PhysicsWrapperEntity entity, double x, double y, double z, float entityYaw, float partialTicks){
-		if (entity.wrapping.claimedChunks!=null)
+		GL11.glPushMatrix();
+		setupTransform(entity,x,y,z,entityYaw,partialTicks);
+		renderBlocks(entity,x,y,z,entityYaw,partialTicks);
+		if (entity.wrapping.claimedChunks!=null&&false)
         {
 			BlockPos centerDifference = entity.wrapping.getRegionCenter();
             IBlockState iblockstate = entity.worldObj.getBlockState(centerDifference);
-//            System.out.println(entity.worldObj.getBlockState(centerDifference).getBlock());
+            bindTexture(TextureMap.locationBlocksTexture);
+            //System.out.println(entity.worldObj.getBlockState(centerDifference).getBlock());
             if (iblockstate.getRenderType() == EnumBlockRenderType.MODEL)
             {
                 World world = entity.worldObj;
 
                 if (iblockstate != world.getBlockState(new BlockPos(entity)) && iblockstate.getRenderType() != EnumBlockRenderType.INVISIBLE)
                 {
-                    this.bindTexture(TextureMap.locationBlocksTexture);
                     GlStateManager.pushMatrix();
                     GlStateManager.disableLighting();
                     Tessellator tessellator = Tessellator.getInstance();
@@ -47,7 +52,7 @@ public class PhysObjectRender extends Render<PhysicsWrapperEntity>{
                         GlStateManager.enableColorMaterial();
                         GlStateManager.enableOutlineMode(this.getTeamColor(entity));
                     }
-
+                    
                     vertexbuffer.begin(7, DefaultVertexFormats.BLOCK);
                     BlockPos blockpos = new BlockPos(entity.posX, entity.getEntityBoundingBox().maxY, entity.posZ);
                     GlStateManager.translate((float)(x - (double)blockpos.getX() - 0.5D), (float)(y - (double)blockpos.getY()), (float)(z - (double)blockpos.getZ() - 0.5D));
@@ -67,7 +72,45 @@ public class PhysObjectRender extends Render<PhysicsWrapperEntity>{
                 }
             }
         }
+		GL11.glPopMatrix();
     }
+	
+	public void setupTransform(PhysicsWrapperEntity entity, double x, double y, double z, float entityYaw, float partialTicks){
+		BlockPos center = entity.wrapping.centerBlockPos;
+		
+		
+		double moddedX = entity.lastTickPosX+(entity.posX-entity.lastTickPosX)*partialTicks;
+		double moddedY = entity.lastTickPosY+(entity.posY-entity.lastTickPosY)*partialTicks;
+		double moddedZ = entity.lastTickPosZ+(entity.posZ-entity.lastTickPosZ)*partialTicks;
+		double p0 = Minecraft.getMinecraft().thePlayer.lastTickPosX + (Minecraft.getMinecraft().thePlayer.posX - Minecraft.getMinecraft().thePlayer.lastTickPosX) * (double)partialTicks;
+		double p1 = Minecraft.getMinecraft().thePlayer.lastTickPosY + (Minecraft.getMinecraft().thePlayer.posY - Minecraft.getMinecraft().thePlayer.lastTickPosY) * (double)partialTicks;
+		double p2 = Minecraft.getMinecraft().thePlayer.lastTickPosZ + (Minecraft.getMinecraft().thePlayer.posZ - Minecraft.getMinecraft().thePlayer.lastTickPosZ) * (double)partialTicks;
+		
+//		System.out.println(moddedX);
+		
+		GlStateManager.translate(-p0+moddedX, -p1+moddedY, -p2+moddedZ);
+		GL11.glTranslated(-center.getX(), -center.getY(), -center.getZ());
+		
+	}
+	
+	public void renderBlocks(PhysicsWrapperEntity entity, double x, double y, double z, float entityYaw, float partialTicks){
+		GlStateManager.pushMatrix();
+		GlStateManager.disableLighting();
+
+		
+		
+		
+		GL11.glCallList(entity.wrapping.renderer.glCallListSolid);
+		if (this.renderOutlines)
+        {
+            GlStateManager.disableOutlineMode();
+            GlStateManager.disableColorMaterial();
+        }
+
+        GlStateManager.enableLighting();
+        GlStateManager.popMatrix();
+        super.doRender(entity, x, y, z, entityYaw, partialTicks);
+	}
 
 	@Override
 	protected ResourceLocation getEntityTexture(PhysicsWrapperEntity entity) {

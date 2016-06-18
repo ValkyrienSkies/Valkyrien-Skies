@@ -46,3 +46,11 @@ eclipse/.recommenders/index/http___download_eclipse_org_recommenders_models_mars
 *.fdx
 eclipse/.recommenders/index/http___download_eclipse_org_recommenders_models_mars_/_0.nrm
 *.frq
+banned-ips.json
+banned-players.json
+eula.txt
+server.properties
+ops.json
+*.lock
+*.mca
+whitelist.json

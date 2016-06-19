@@ -7,8 +7,8 @@ import java.util.Set;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.ChunkManagement.ChunkSet;
 import ValkyrienWarfareBase.Coordinates.CoordTransformObject;
+import ValkyrienWarfareBase.Math.Vector;
 import ValkyrienWarfareBase.Relocation.ChunkCache;
-import ValkyrienWarfareBase.Relocation.ShipBlockPosFinder;
 import ValkyrienWarfareBase.Relocation.ShipSpawnDetector;
 import ValkyrienWarfareBase.Render.PhysObjectRenderManager;
 import gnu.trove.iterator.TIntIterator;
@@ -44,7 +44,8 @@ public class PhysicsObject {
 	public ChunkCache chunkCache;
 	//It is from this position that the x,y,z coords in local are 0; and that the posX,
 	//posY and posZ align with in the global coords
-	public BlockPos centerBlockPos;
+	public BlockPos refrenceBlockPos;
+	public Vector centerCoord;
 	public CoordTransformObject coordTransform;
 	public PhysObjectRenderManager renderer;
 	public ArrayList<BlockPos> blockPositions = new ArrayList<BlockPos>();
@@ -73,6 +74,7 @@ public class PhysicsObject {
 				claimedChunks[x-ownedChunks.minX][z-ownedChunks.minZ] = chunk;
 			}
 		}
+		
 		chunkCache = new ChunkCache(worldObj, claimedChunks);
 		int minChunkX = claimedChunks[0][0].xPosition;
 		int minChunkZ = claimedChunks[0][0].zPosition;
@@ -80,9 +82,10 @@ public class PhysicsObject {
 		ShipSpawnDetector detector = new ShipSpawnDetector(centerInWorld, worldObj, 5000, true);
 		MutableBlockPos pos = new MutableBlockPos();
 		TIntIterator iter = detector.foundSet.iterator();
-		centerBlockPos = getRegionCenter();
+		refrenceBlockPos = getRegionCenter();
+		centerCoord = new Vector(refrenceBlockPos.getX(),refrenceBlockPos.getY(),refrenceBlockPos.getZ());
 		coordTransform = new CoordTransformObject(this);
-		BlockPos centerDifference = centerBlockPos.subtract(centerInWorld);
+		BlockPos centerDifference = refrenceBlockPos.subtract(centerInWorld);
 		while(iter.hasNext()){
 			int i = iter.next();
 			detector.setPosWithRespectTo(i, centerInWorld, pos);
@@ -91,7 +94,17 @@ public class PhysicsObject {
 			pos.set(pos.getX()+centerDifference.getX(), pos.getY()+centerDifference.getY(), pos.getZ()+centerDifference.getZ());
 //			System.out.println(pos);
 			ownedChunks.chunkOccupiedInLocal[(pos.getX()>>4)-minChunkX][(pos.getZ()>>4)-minChunkZ] = true;
-			chunkCache.setBlockState(pos, state);
+			
+			Chunk chunkToSet = claimedChunks[(pos.getX()>>4)-minChunkX][(pos.getZ()>>4)-minChunkZ];
+			int storageIndex = pos.getY() >> 4;
+			
+			if (chunkToSet.storageArrays[storageIndex] == chunkToSet.NULL_BLOCK_STORAGE)
+            {
+				chunkToSet.storageArrays[storageIndex] = new ExtendedBlockStorage(storageIndex << 4, true);
+            }
+
+			chunkToSet.storageArrays[storageIndex].set(pos.getX()& 15, pos.getY()& 15, pos.getZ()& 15, state);
+//			chunkCache.setBlockState(pos, state);
 //			worldObj.setBlockState(pos, state);
 		}
 		iter = detector.foundSet.iterator();
@@ -106,6 +119,14 @@ public class PhysicsObject {
 		}
 //		centerDifference = new BlockPos(claimedChunks[ownedChunks.radius+1][ownedChunks.radius+1].xPosition*16,128,claimedChunks[ownedChunks.radius+1][ownedChunks.radius+1].zPosition*16);
 //		System.out.println(chunkCache.getBlockState(centerDifference).getBlock());
+		
+		for(int x = ownedChunks.minX;x<=ownedChunks.maxX;x++){
+			for(int z = ownedChunks.minZ;z<=ownedChunks.maxZ;z++){
+				claimedChunks[x-ownedChunks.minX][z-ownedChunks.minZ].isTerrainPopulated = true;
+				claimedChunks[x-ownedChunks.minX][z-ownedChunks.minZ].generateSkylightMap();
+//				claimedChunks[x-ownedChunks.minX][z-ownedChunks.minZ].checkLight();
+			}
+		}
 		
 		detectBlockPositions();
 	}
@@ -180,7 +201,7 @@ public class PhysicsObject {
 				claimedChunks[x-ownedChunks.minX][z-ownedChunks.minZ] = chunk;
 			}
 		}
-		centerBlockPos = getRegionCenter();
+		refrenceBlockPos = getRegionCenter();
 		coordTransform = new CoordTransformObject(this);
 		detectBlockPositions();
 	}
@@ -189,19 +210,21 @@ public class PhysicsObject {
 	public void detectBlockPositions(){
 		int minChunkX = claimedChunks[0][0].xPosition;
 		int minChunkZ = claimedChunks[0][0].zPosition;
-		for(int chunkX = claimedChunks.length-1;chunkX>-1;chunkX--){
-			for(int chunkZ = claimedChunks[0].length-1;chunkZ>-1;chunkZ--){
-				Chunk chunk = claimedChunks[chunkX][chunkZ];
+		int chunkX,chunkZ,index,x,y,z;
+		Chunk chunk;
+		ExtendedBlockStorage storage;
+		for(chunkX = claimedChunks.length-1;chunkX>-1;chunkX--){
+			for(chunkZ = claimedChunks[0].length-1;chunkZ>-1;chunkZ--){
+				chunk = claimedChunks[chunkX][chunkZ];
 				if(chunk!=null&&ownedChunks.chunkOccupiedInLocal[chunkX][chunkZ]){
-					for(int index=0;index<16;index++){
-			        	ExtendedBlockStorage storage = chunk.getBlockStorageArray()[index];
+					for(index=0;index<16;index++){
+			        	storage = chunk.getBlockStorageArray()[index];
 			        	if(storage!=null){
-			        		for(int y=0;y<16;y++){
-			        			for(int x=0;x<16;x++){
-			        				for(int z=0;z<16;z++){
+			        		for(y=0;y<16;y++){
+			        			for(x=0;x<16;x++){
+			        				for(z=0;z<16;z++){
 			            				if(storage.data.bits.func_188142_a(y << 8 | z << 4 | x)!=ValkyrienWarfareMod.airStateIndex){
-			            					BlockPos pos = new BlockPos(chunk.xPosition*16+x,index*16+y,chunk.zPosition*16+z);
-			            					blockPositions.add(pos);
+			            					blockPositions.add(new BlockPos(chunk.xPosition*16+x,index*16+y,chunk.zPosition*16+z));
 			            				}
 			            			}
 			        			}
@@ -215,6 +238,9 @@ public class PhysicsObject {
 	
 	public void writeToNBTTag(NBTTagCompound compound){
 		ownedChunks.writeToNBT(compound);
+		compound.setDouble("cX", centerCoord.X);
+		compound.setDouble("cY", centerCoord.Y);
+		compound.setDouble("cZ", centerCoord.Z);
 		for(int row = 0;row<ownedChunks.chunkOccupiedInLocal.length;row++){
 			boolean[] curArray = ownedChunks.chunkOccupiedInLocal[row];
 			for(int column = 0;column<curArray.length;column++){
@@ -225,6 +251,7 @@ public class PhysicsObject {
 	
 	public void readFromNBTTag(NBTTagCompound compound){
 		ownedChunks = new ChunkSet(compound);
+		centerCoord = new Vector(compound.getDouble("cX"),compound.getDouble("cY"),compound.getDouble("cZ"));
 		for(int row = 0;row<ownedChunks.chunkOccupiedInLocal.length;row++){
 			boolean[] curArray = ownedChunks.chunkOccupiedInLocal[row];
 			for(int column = 0;column<curArray.length;column++){
@@ -239,6 +266,7 @@ public class PhysicsObject {
 		pitch = additionalData.readDouble();
 		yaw = additionalData.readDouble();
 		roll = additionalData.readDouble();
+		centerCoord = new Vector(additionalData);
 		for(boolean[] array:ownedChunks.chunkOccupiedInLocal){
 			for(int i=0;i<array.length;i++){
 				array[i] = additionalData.readBoolean();
@@ -246,7 +274,7 @@ public class PhysicsObject {
 		}
 		loadClaimedChunks();
 		renderer.markForUpdate();
-		renderer.updateOffsetPos(centerBlockPos);
+		renderer.updateOffsetPos(refrenceBlockPos);
 	}
 	
 	public void writeSpawnData(ByteBuf buffer){
@@ -256,6 +284,7 @@ public class PhysicsObject {
 		buffer.writeDouble(pitch);
 		buffer.writeDouble(yaw);
 		buffer.writeDouble(roll);
+		centerCoord.writeToByteBuf(buffer);
 		for(boolean[] array:ownedChunks.chunkOccupiedInLocal){
 			for(boolean b:array){
 				buffer.writeBoolean(b);

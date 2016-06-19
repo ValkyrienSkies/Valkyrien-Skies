@@ -1,5 +1,6 @@
 package ValkyrienWarfareBase.Math;
  
+import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -165,6 +166,16 @@ public class Vector{
 	public static Vector[] generateAxisAlignedNorms(){
 		Vector[] norms = new Vector[]{new Vector(1.0D,0.0D,0.0D),new Vector(0.0D,1.0D,0.0D),new Vector(0.0D,0.0D,1.0D)};
 		return norms;
+	}
+	
+	public void writeToByteBuf(ByteBuf toWrite){
+		toWrite.writeDouble(X);
+		toWrite.writeDouble(Y);
+		toWrite.writeDouble(Z);
+	}
+	
+	public Vector(ByteBuf toRead){
+		this(toRead.readDouble(),toRead.readDouble(),toRead.readDouble());
 	}
 
 }

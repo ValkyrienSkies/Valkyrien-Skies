@@ -188,6 +188,13 @@ public class PhysicsObject {
 		return newPlayers;
 	}
 	
+	public void onTick(){
+		//Move xyz here
+		
+		//Update coordinate transforms
+		coordTransform.updateTransforms();
+	}
+	
 	public void loadClaimedChunks(){
 		claimedChunks = new Chunk[(ownedChunks.radius*2)+1][(ownedChunks.radius*2)+1];
 		for(int x = ownedChunks.minX;x<=ownedChunks.maxX;x++){
@@ -196,6 +203,9 @@ public class PhysicsObject {
 				if(chunk==null){
 					System.out.println("Just a loaded a null chunk");
 					chunk = new Chunk(worldObj,x,z);
+				}
+				//Do this to get it re-integrated into the world
+				if(!worldObj.isRemote){
 					injectChunkIntoWorld(chunk,x,z);
 				}
 				claimedChunks[x-ownedChunks.minX][z-ownedChunks.minZ] = chunk;

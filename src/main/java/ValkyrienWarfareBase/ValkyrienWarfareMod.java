@@ -54,6 +54,8 @@ public class ValkyrienWarfareMod{
     
     public static int airStateIndex;
 
+	public static double standingTolerance = .3D;
+
     @EventHandler
     public void preInit(FMLPreInitializationEvent event){
     	proxy.preInit(event);

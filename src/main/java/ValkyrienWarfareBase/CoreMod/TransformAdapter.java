@@ -105,6 +105,13 @@ public class TransformAdapter extends ClassVisitor{
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onSetupTerrain", String.format( "(L%s;L"+EntityClassName+";DL"+ICameraName+";IZ)V", RenderGlobalName ) );
 				return false;
 		}
+		
+		if(calledDesc.equals("(DDD)V")
+			&& calledName.equals( getRuntimeMethodName( m_className, "moveEntity", "func_70091_d" ) )
+			&& InheritanceUtils.extendsClass( calledOwner, EntityClassName)){
+				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onEntityMove", String.format( "(L%s;DDD)V", EntityClassName ) );
+				return false;
+		}
 		/*if(calledDesc.equals("(L"+EntityPlayerName+";DDDDIL"+PacketName+";)V")
 			&& calledName.equals(getRuntimeMethodName(m_className,"sendToAllNearExcept","func_148543_a"))
 			&& InheritanceUtils.extendsClass( calledOwner, ServerConfigurationManagerName)){

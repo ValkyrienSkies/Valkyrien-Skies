@@ -47,11 +47,18 @@ public class RotationMatrices{
    		return matrix;
    	}
 
-   	public static double[] rotateAndTranslate(double[] input,double pitch, double yaw, double roll, Vec3d localOrigin){
+   	public static double[] rotateAndTranslate(double[] input,double pitch, double yaw, double roll, Vector localOrigin){
    		input = RotationMatrices.getMatrixProduct(input,RotationMatrices.getRotationMatrix(1.0D, 0.0D, 0.0D, Math.toRadians(pitch)));
    		input = RotationMatrices.getMatrixProduct(input,RotationMatrices.getRotationMatrix(0.0D, 1.0D, 0.0D, Math.toRadians(yaw)));
    		input = RotationMatrices.getMatrixProduct(input,RotationMatrices.getRotationMatrix(0.0D, 0.0D, 1.0D, Math.toRadians(roll)));
-   		input = RotationMatrices.getMatrixProduct(input, RotationMatrices.getTranslationMatrix(-localOrigin.xCoord,-localOrigin.yCoord,-localOrigin.zCoord));
+   		input = RotationMatrices.getMatrixProduct(input, RotationMatrices.getTranslationMatrix(-localOrigin.X,-localOrigin.Y,-localOrigin.Z));
+   		return input;
+   	}
+   	
+   	public static double[] rotateOnly(double[] input,double pitch, double yaw, double roll){
+   		input = RotationMatrices.getMatrixProduct(input,RotationMatrices.getRotationMatrix(1.0D, 0.0D, 0.0D, Math.toRadians(pitch)));
+   		input = RotationMatrices.getMatrixProduct(input,RotationMatrices.getRotationMatrix(0.0D, 1.0D, 0.0D, Math.toRadians(yaw)));
+   		input = RotationMatrices.getMatrixProduct(input,RotationMatrices.getRotationMatrix(0.0D, 0.0D, 1.0D, Math.toRadians(roll)));
    		return input;
    	}
 

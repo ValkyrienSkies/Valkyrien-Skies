@@ -1,4 +1,4 @@
-package ValkyrienWarfareBase;
+package ValkyrienWarfareBase.Block;
 
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import net.minecraft.block.Block;

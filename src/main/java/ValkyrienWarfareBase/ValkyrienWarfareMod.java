@@ -2,6 +2,7 @@ package ValkyrienWarfareBase;
 
 import java.io.File;
 
+import ValkyrienWarfareBase.Block.BlockPhysicsInfuser;
 import ValkyrienWarfareBase.ChunkManagement.DimensionPhysicsChunkManager;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.Network.PhysWrapperSpawnHandler;
@@ -90,8 +91,8 @@ public class ValkyrienWarfareMod{
     }
 
     public void registerBlocks(FMLStateEvent event){
-    	physicsInfuser = new BlockPhysicsInfuser(Material.rock).setUnlocalizedName("shipblock").setCreativeTab(CreativeTabs.tabBlock);
-    	GameRegistry.registerBlock(physicsInfuser, physicsInfuser.getUnlocalizedName().substring(5));
+    	physicsInfuser = new BlockPhysicsInfuser(Material.rock).setUnlocalizedName("shipblock").setRegistryName(MODID, "shipblock").setCreativeTab(CreativeTabs.tabBlock);
+    	GameRegistry.registerBlock(physicsInfuser);
     }
 
     public void runConfiguration(FMLPreInitializationEvent event){

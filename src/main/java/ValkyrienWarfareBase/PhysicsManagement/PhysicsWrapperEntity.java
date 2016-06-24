@@ -3,6 +3,7 @@ package ValkyrienWarfareBase.PhysicsManagement;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
@@ -45,6 +46,11 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 		
 	}
 
+	@Override
+	public AxisAlignedBB getEntityBoundingBox(){
+        return wrapping.collisionBB;
+    }
+	
 	@Override
 	protected void readEntityFromNBT(NBTTagCompound tagCompund) {
 		wrapping.readFromNBTTag(tagCompund);

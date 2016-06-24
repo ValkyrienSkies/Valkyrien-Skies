@@ -3,7 +3,8 @@ package ValkyrienWarfareBase.Coordinates;
 import ValkyrienWarfareBase.Math.RotationMatrices;
 import ValkyrienWarfareBase.Math.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
-import net.minecraft.util.Rotation;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 
 /**
  * Handles ALL functions for moving between Ship coordinates and world coordinates
@@ -98,8 +99,42 @@ public class CoordTransformObject {
 	
 	//TODO: FinishME
 	public void updateParentAABB(){
-		double mnX,mnY,mnZ,mxX,mxY,mxZ;
-		Vector currentLocation = new Vector();
+		double mnX=0,mnY=0,mnZ=0,mxX=0,mxY=0,mxZ=0;
+		boolean first = true;
+		for(BlockPos pos:parent.blockPositions){
+			Vector currentLocation = new Vector(pos.getX()+.5D,pos.getY()+.5D,pos.getZ()+.5D);
+			fromLocalToGlobal(currentLocation);
+			
+			if(first){
+				mnX=mxX=currentLocation.X;
+				mnY=mxY=currentLocation.Y;
+				mnZ=mxZ=currentLocation.Z;
+				first = false;
+			}
+			
+			if(currentLocation.X<mnX){
+				mnX = currentLocation.X;
+			}
+			if(currentLocation.X>mxX){
+				mxX = currentLocation.X;
+			}
+			
+			if(currentLocation.Y<mnY){
+				mnY = currentLocation.Y;
+			}
+			if(currentLocation.Y>mxY){
+				mxY = currentLocation.Y;
+			}
+			
+			if(currentLocation.Z<mnZ){
+				mnZ = currentLocation.Z;
+			}
+			if(currentLocation.Z>mxZ){
+				mxZ = currentLocation.Z;
+			}
+		}
+		AxisAlignedBB enclosingBB = new AxisAlignedBB(mnX,mnY,mnZ,mxX,mxY,mxZ);
+		parent.collisionBB = enclosingBB;
 	}
 	
 	public void fromGlobalToLocal(Vector inGlobal){

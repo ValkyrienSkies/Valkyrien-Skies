@@ -5,16 +5,13 @@ import java.util.List;
 
 import ValkyrienWarfareBase.Math.BigBastardMath;
 import ValkyrienWarfareBase.Math.Vector;
+import ValkyrienWarfareBase.PhysicsManagement.PhysObjectManager;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos.PooledMutableBlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-import net.minecraft.world.gen.ChunkProviderServer;
 
 public class EntityCollisionInjector {
 
@@ -22,6 +19,9 @@ public class EntityCollisionInjector {
 	
 	//Returns false if game should use default collision
 	public static boolean alterEntityMovement(Entity entity,double dx,double dy,double dz){
+		if(entity instanceof PhysicsWrapperEntity){
+			return true;
+		}
 		Vector velVec = new Vector(dx,dy,dz);
 		double origDx = dx;
 		double origDy = dy;
@@ -138,21 +138,20 @@ public class EntityCollisionInjector {
 	public static ArrayList<Polygon> getCollidingPolygons(Entity entity, Vec3d velocity){
 		ArrayList<Polygon> collisions = new  ArrayList<Polygon>();
 		AxisAlignedBB entityBB = entity.getEntityBoundingBox().addCoord(velocity.xCoord, velocity.yCoord, velocity.zCoord).expand(1, 1, 1);
-		for(Entity e:entity.worldObj.loadedEntityList){
-			if(e instanceof PhysicsWrapperEntity){
-				PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity)e;
-				
-				Polygon playerInLocal = new Polygon(entityBB, wrapper.wrapping.coordTransform.wToLTransform);
-				AxisAlignedBB bb = playerInLocal.getEnclosedAABB();
+		List<PhysicsWrapperEntity> ships = PhysObjectManager.getNearbyPhysObjects(entity.worldObj, entityBB);
+		
+		for(PhysicsWrapperEntity wrapper:ships){
+			Polygon playerInLocal = new Polygon(entityBB, wrapper.wrapping.coordTransform.wToLTransform);
+			AxisAlignedBB bb = playerInLocal.getEnclosedAABB();
 
-				List<AxisAlignedBB> collidingBBs = entity.worldObj.getCollisionBoxes(bb);
+			List<AxisAlignedBB> collidingBBs = entity.worldObj.getCollisionBoxes(bb);
 
-				for(AxisAlignedBB inLocal:collidingBBs){
-					ShipPolygon poly = new ShipPolygon(inLocal,wrapper.wrapping.coordTransform.lToWTransform, wrapper.wrapping.coordTransform.normals, wrapper.wrapping);
-					collisions.add(poly);
-				}
+			for(AxisAlignedBB inLocal:collidingBBs){
+				ShipPolygon poly = new ShipPolygon(inLocal,wrapper.wrapping.coordTransform.lToWTransform, wrapper.wrapping.coordTransform.normals, wrapper.wrapping);
+				collisions.add(poly);
 			}
 		}
+
 		return collisions;
 	}
 	

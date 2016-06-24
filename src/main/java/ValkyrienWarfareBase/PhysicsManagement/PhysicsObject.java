@@ -25,6 +25,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketChunkData;
 import net.minecraft.network.play.server.SPacketUnloadChunk;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.world.ChunkCoordIntPair;
@@ -33,8 +34,6 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraft.world.gen.ChunkProviderServer;
-import net.minecraftforge.common.ForgeChunkManager;
-import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.ChunkEvent;
 
@@ -56,7 +55,8 @@ public class PhysicsObject {
 	public CoordTransformObject coordTransform;
 	public PhysObjectRenderManager renderer;
 	public ArrayList<BlockPos> blockPositions = new ArrayList<BlockPos>();
-//	public Ticket chunkLoadingTicket;
+	public AxisAlignedBB collisionBB = new AxisAlignedBB(0,0,0,0,0,0);
+	//	public Ticket chunkLoadingTicket;
 	
 	public PhysicsObject(PhysicsWrapperEntity host){
 		wrapper = host;
@@ -254,6 +254,7 @@ public class PhysicsObject {
 		refrenceBlockPos = getRegionCenter();
 		coordTransform = new CoordTransformObject(this);
 		detectBlockPositions();
+		coordTransform.updateTransforms();
 	}
 	
 	//Generates the blockPos array; must be loaded DIRECTLY after the chunks are setup

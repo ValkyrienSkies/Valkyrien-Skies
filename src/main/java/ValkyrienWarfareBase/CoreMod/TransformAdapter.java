@@ -37,6 +37,8 @@ public class TransformAdapter extends ClassVisitor{
 	private final String RenderGlobalName;
 	private final String ICameraName;
 	private final String BlockRenderLayerName;
+	private final String WorldProviderName;
+	private final String ChunkProviderServerName;
 	
 	public TransformAdapter( int api, boolean isObfuscatedEnvironment ){
 		super( api, null );
@@ -58,6 +60,8 @@ public class TransformAdapter extends ClassVisitor{
 		RenderGlobalName = getRuntimeClassName("net/minecraft/client/renderer/RenderGlobal");
 		ICameraName = getRuntimeClassName("net/minecraft/client/renderer/culling/ICamera");
 		BlockRenderLayerName = getRuntimeClassName("net/minecraft/util/BlockRenderLayer");
+		WorldProviderName = getRuntimeClassName("net/minecraft/world/WorldProvider");
+		ChunkProviderServerName = getRuntimeClassName("net/minecraft/world/gen/ChunkProviderServer");
 //		progressManager = getRuntimeClassName("net/minecraftforge/fml/common/ProgressManager");
 //		progressBar = getRuntimeClassName("net/minecraftforge/fml/common/ProgressManager$ProgressBar");
 	}
@@ -105,6 +109,15 @@ public class TransformAdapter extends ClassVisitor{
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onSetupTerrain", String.format( "(L%s;L"+EntityClassName+";DL"+ICameraName+";IZ)V", RenderGlobalName ) );
 				return false;
 		}
+		
+		
+		if(calledDesc.equals("(II)V")
+			&& calledName.equals( getRuntimeMethodName( m_className, "dropChunk", "RENAMEME" ) )
+			&& InheritanceUtils.extendsClass( calledOwner, ChunkProviderServerName)){
+				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onDropChunk", String.format( "(L%s;II)V", ChunkProviderServerName ) );
+				return false;
+		}
+		
 		
 		if(calledDesc.equals("(DDD)V")
 			&& calledName.equals( getRuntimeMethodName( m_className, "moveEntity", "func_70091_d" ) )

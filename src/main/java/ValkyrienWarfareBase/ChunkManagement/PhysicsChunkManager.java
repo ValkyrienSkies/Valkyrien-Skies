@@ -3,25 +3,26 @@ package ValkyrienWarfareBase.ChunkManagement;
 import net.minecraft.world.World;
 
 /**
- * This class is responsible for finding/allocating the Chunks for PhysicsObjects
+ * This class is responsible for finding/allocating the Chunks for PhysicsObjects;
+ * also ensures the custom chunk-loading system in place
  * @author thebest108
  *
  */
 public class PhysicsChunkManager {
 
-	public World dimension;
+	public World worldObj;
 	public int nextChunkSetKey;
 	public int chunkSetIncrement;
 	public int xChunkStartingPos = -31250;
 	public int zChunkStartingPos = -31250;
 	public int chunkRadius = 4;
 	//Currently at 3 to be safe, this is important because Ships could start affecting
-	//eachother remotely if this value is too small (ex. 0)
+	//each other remotely if this value is too small (ex. 0)
 	public int distanceBetweenSets = 3;
 	public ChunkKeysWorldData data;
 	
 	public PhysicsChunkManager(World worldFor){
-		dimension = worldFor;
+		worldObj = worldFor;
 		chunkSetIncrement = (chunkRadius*2)+distanceBetweenSets;
 		loadDataFromWorld();
 	}
@@ -44,8 +45,18 @@ public class PhysicsChunkManager {
 	 * This retrieves the ChunkSetKey data for the specific world
 	 */
 	public void loadDataFromWorld(){
-		data = ChunkKeysWorldData.get(dimension);
+		data = ChunkKeysWorldData.get(worldObj);
 		nextChunkSetKey = data.chunkKey;
+	}
+	
+	public boolean isChunkInShipRange(int x,int z){
+		int nextChunkX = xChunkStartingPos+nextChunkSetKey+chunkRadius;
+		int nextChunkZ = zChunkStartingPos+chunkRadius;
+		
+		boolean xInRange = x<nextChunkX&&x>=(xChunkStartingPos-chunkRadius);
+		boolean zInRange = z<nextChunkX&&z>=(xChunkStartingPos-chunkRadius);
+		
+		return xInRange&&zInRange;
 	}
 
 }

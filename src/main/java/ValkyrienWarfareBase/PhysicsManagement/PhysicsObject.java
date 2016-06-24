@@ -2,7 +2,10 @@ package ValkyrienWarfareBase.PhysicsManagement;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+
+import com.google.common.collect.Lists;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.ChunkManagement.ChunkSet;
@@ -18,8 +21,10 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketChunkData;
 import net.minecraft.network.play.server.SPacketUnloadChunk;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.world.ChunkCoordIntPair;
@@ -28,6 +33,8 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraft.world.gen.ChunkProviderServer;
+import net.minecraftforge.common.ForgeChunkManager;
+import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.ChunkEvent;
 
@@ -49,13 +56,17 @@ public class PhysicsObject {
 	public CoordTransformObject coordTransform;
 	public PhysObjectRenderManager renderer;
 	public ArrayList<BlockPos> blockPositions = new ArrayList<BlockPos>();
+//	public Ticket chunkLoadingTicket;
 	
 	public PhysicsObject(PhysicsWrapperEntity host){
 		wrapper = host;
 		worldObj = host.worldObj;
 		if(host.worldObj.isRemote){
 			renderer = new PhysObjectRenderManager(this);
+		}else{
+//			chunkLoadingTicket = ForgeChunkManager.requestTicket(ValkyrienWarfareMod.instance, worldObj, ForgeChunkManager.Type.NORMAL);
 		}
+//		yaw = 45D;
 	}
 	
 	public void claimNewChunks(){
@@ -139,6 +150,7 @@ public class PhysicsObject {
 		provider.id2ChunkMap.add(ChunkCoordIntPair.chunkXZ2Int(x, z), chunk);
 		provider.loadedChunks.add(chunk);
 		MinecraftForge.EVENT_BUS.post(new ChunkEvent.Load(chunk));
+//		ForgeChunkManager.forceChunk(chunkLoadingTicket, chunk.getChunkCoordIntPair());
 	}
 	
 	/**
@@ -146,11 +158,30 @@ public class PhysicsObject {
 	 */
 	public void preloadNewPlayers(){
 		Set<EntityPlayerMP> newWatchers = getPlayersThatJustWatched();
+		
 		for(Chunk[] chunkArray: claimedChunks){
 			for(Chunk chunk: chunkArray){
 				SPacketChunkData data = new SPacketChunkData(chunk, true, 65535);
 				for(EntityPlayerMP player:newWatchers){
 					player.playerNetServerHandler.sendPacket(data);
+					((WorldServer)worldObj).getEntityTracker().sendLeashedEntitiesInChunk(player, chunk);
+				}
+			}
+		}
+		
+		int minX,maxX,minZ,maxZ;
+		minX = claimedChunks[0][0].xPosition*16;
+		minZ = claimedChunks[0][0].zPosition*16;
+		maxX = claimedChunks[claimedChunks.length-1][claimedChunks[claimedChunks.length-1].length-1].xPosition*16+15;
+		maxZ = claimedChunks[claimedChunks.length-1][claimedChunks[claimedChunks.length-1].length-1].zPosition*16+15;
+		
+		List<TileEntity> wholeList = Lists.newArrayList(((WorldServer) worldObj).getTileEntitiesIn(minX,0,minZ,maxX,256,maxZ));
+		
+		for(TileEntity tileentity:wholeList){
+			Packet<?> packet = tileentity.getDescriptionPacket();
+			if(packet!=null){
+				for(EntityPlayerMP player:newWatchers){
+					player.playerNetServerHandler.sendPacket(packet);
 				}
 			}
 		}
@@ -190,9 +221,18 @@ public class PhysicsObject {
 	
 	public void onTick(){
 		//Move xyz here
-		
+		yaw = 0D;
 		//Update coordinate transforms
 		coordTransform.updateTransforms();
+		if(!worldObj.isRemote){
+			for(int x = ownedChunks.minX;x<=ownedChunks.maxX;x++){
+				for(int z = ownedChunks.minZ;z<=ownedChunks.maxZ;z++){
+					//TODO: WORLD CHUNKS NOT LOADING CORRECTLY!!!
+//					System.out.println(((ChunkProviderServer)worldObj.getChunkProvider()).chunkExists(x, z));
+					
+				}
+			}
+		}
 	}
 	
 	public void loadClaimedChunks(){

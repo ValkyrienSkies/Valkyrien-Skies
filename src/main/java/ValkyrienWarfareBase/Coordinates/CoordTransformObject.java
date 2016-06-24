@@ -34,18 +34,21 @@ public class CoordTransformObject {
 	public void updateTransforms(){
 		prevlToWTransform = lToWTransform;
 		prevwToLTransform = wToLTransform;
+
+		lToWTransform = RotationMatrices.getTranslationMatrix(parent.wrapper.posX,parent.wrapper.posY,parent.wrapper.posZ);
+		
+		
+		
 		
 //		lToWTransform = RotationMatrices.getTranslationMatrix(parent.centerCoord.X,parent.centerCoord.Y,parent.centerCoord.Z);
 		
 		lToWTransform = RotationMatrices.rotateAndTranslate(lToWTransform,parent.pitch, parent.yaw, parent.roll, parent.centerCoord);
 		
-		lToWTransform = RotationMatrices.getMatrixProduct(lToWTransform, RotationMatrices.getTranslationMatrix(parent.wrapper.posX,parent.wrapper.posY,parent.wrapper.posZ));
 		
-		
+			
+		lToWRotation = RotationMatrices.getDoubleIdentity();
 		
 		lToWRotation = RotationMatrices.rotateOnly(lToWRotation,parent.pitch, parent.yaw, parent.roll);
-		
-		
 		
 		wToLTransform = RotationMatrices.inverse(lToWTransform);
 		wToLRotation = RotationMatrices.inverse(lToWRotation);

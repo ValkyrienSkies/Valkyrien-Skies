@@ -84,7 +84,7 @@ public class PhysObjectRender extends Render<PhysicsWrapperEntity>{
     }
 	
 	public void setupTransform(PhysicsWrapperEntity entity, double x, double y, double z, float entityYaw, float partialTicks){
-		BlockPos refrencePos = entity.wrapping.refrenceBlockPos;
+//		BlockPos refrencePos = entity.wrapping.refrenceBlockPos;
 		Vector centerOfRotation = entity.wrapping.centerCoord;
 		double moddedX = entity.lastTickPosX+(entity.posX-entity.lastTickPosX)*partialTicks;
 		double moddedY = entity.lastTickPosY+(entity.posY-entity.lastTickPosY)*partialTicks;

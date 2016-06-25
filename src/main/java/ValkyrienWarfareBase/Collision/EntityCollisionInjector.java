@@ -3,10 +3,11 @@ package ValkyrienWarfareBase.Collision;
 import java.util.ArrayList;
 import java.util.List;
 
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.Math.BigBastardMath;
 import ValkyrienWarfareBase.Math.Vector;
-import ValkyrienWarfareBase.PhysicsManagement.PhysObjectManager;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
+import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -138,7 +139,10 @@ public class EntityCollisionInjector {
 	public static ArrayList<Polygon> getCollidingPolygons(Entity entity, Vec3d velocity){
 		ArrayList<Polygon> collisions = new  ArrayList<Polygon>();
 		AxisAlignedBB entityBB = entity.getEntityBoundingBox().addCoord(velocity.xCoord, velocity.yCoord, velocity.zCoord).expand(1, 1, 1);
-		List<PhysicsWrapperEntity> ships = PhysObjectManager.getNearbyPhysObjects(entity.worldObj, entityBB);
+		
+		WorldPhysObjectManager localPhysManager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(entity.worldObj);
+		
+		List<PhysicsWrapperEntity> ships = localPhysManager.getNearbyPhysObjects(entity.worldObj, entityBB);
 		
 		for(PhysicsWrapperEntity wrapper:ships){
 			Polygon playerInLocal = new Polygon(entityBB, wrapper.wrapping.coordTransform.wToLTransform);

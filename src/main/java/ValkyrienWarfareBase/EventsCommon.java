@@ -16,13 +16,15 @@ public class EventsCommon {
 		if(!event.getWorld().isRemote){
 			ValkyrienWarfareMod.chunkManager.initWorld(event.getWorld());
 		}
+		ValkyrienWarfareMod.physicsManager.initWorld(event.getWorld());
 	}
 	
 	@SubscribeEvent(priority=EventPriority.HIGHEST)
-	public void onWorldSave(WorldEvent.Unload event){
+	public void onWorldUnload(WorldEvent.Unload event){
 		if(!event.getWorld().isRemote){
 			ValkyrienWarfareMod.chunkManager.removeWorld(event.getWorld());
 		}
+		ValkyrienWarfareMod.physicsManager.removeWorld(event.getWorld());
 	}
 	
 	@SubscribeEvent(priority=EventPriority.HIGHEST)

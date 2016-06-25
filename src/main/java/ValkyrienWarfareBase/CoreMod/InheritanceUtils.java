@@ -27,6 +27,32 @@ public class InheritanceUtils{
 		}
 		return false;
 	}
+	
+	public static boolean implementsClass( String className, String interfaceClassName ){
+		if( className.equalsIgnoreCase( interfaceClassName ) ){
+			return true;
+		}else if( isLeafPackage( className ) ){
+			return false;
+		}
+		if( className.startsWith( "[" ) ){
+			return false;
+		}
+		try{
+			ClassReader classReader = new ClassReader( className.replace( '.', '/' ) );
+			String[] interfaces = classReader.getInterfaces();
+			
+			for(String theInterface:interfaces){
+				if(theInterface.equalsIgnoreCase(interfaceClassName)){
+					return true;
+				}
+			}
+		}
+		catch(Exception ex){
+//			System.out.println( "Unable to read class: " + className + ". Assuming it's not a " + targetClassName );
+//			ex.printStackTrace( System.out );
+		}
+		return false;
+	}
 
 	private static boolean isLeafPackage( String name ){
 		for(String prefix:leafPackages){

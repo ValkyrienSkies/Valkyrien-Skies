@@ -1,13 +1,12 @@
 package ValkyrienWarfareBase;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 
-import ValkyrienWarfareBase.PhysicsManagement.PhysObjectManager;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
+import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -37,8 +36,11 @@ public class EventsClient {
 	
 	@SubscribeEvent(priority=EventPriority.HIGHEST)
 	public void onDrawBlockHighlightEvent(DrawBlockHighlightEvent event){
+		WorldPhysObjectManager physManager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(event.getPlayer().worldObj);
+		
 		AxisAlignedBB playerRangeBB = event.getPlayer().getEntityBoundingBox();
-		List<PhysicsWrapperEntity> nearbyShips = PhysObjectManager.getNearbyPhysObjects(event.getPlayer().worldObj, playerRangeBB);
+		
+		List<PhysicsWrapperEntity> nearbyShips = physManager.getNearbyPhysObjects(event.getPlayer().worldObj, playerRangeBB);
 		float partialTick = event.getPartialTicks();
 		boolean changed = false;
 		for(PhysicsWrapperEntity wrapper:nearbyShips){

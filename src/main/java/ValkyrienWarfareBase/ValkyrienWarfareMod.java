@@ -4,6 +4,7 @@ import java.io.File;
 
 import ValkyrienWarfareBase.Block.BlockPhysicsInfuser;
 import ValkyrienWarfareBase.ChunkManagement.DimensionPhysicsChunkManager;
+import ValkyrienWarfareBase.PhysicsManagement.DimensionPhysObjectManager;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.Network.PhysWrapperSpawnHandler;
 import ValkyrienWarfareBase.PhysicsManagement.Network.PhysWrapperSpawnMessage;
@@ -50,6 +51,7 @@ public class ValkyrienWarfareMod{
     public static SimpleNetworkWrapper physWrapperNetwork;
 
     public static DimensionPhysicsChunkManager chunkManager;
+    public static DimensionPhysObjectManager physicsManager;
     
     public static ValkyrienWarfareMod instance;
     

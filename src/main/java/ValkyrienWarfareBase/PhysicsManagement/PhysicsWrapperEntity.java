@@ -1,5 +1,6 @@
 package ValkyrienWarfareBase.PhysicsManagement;
 
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
@@ -24,6 +25,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 		if(!worldObj.isRemote){
 			
 		}
+		ValkyrienWarfareMod.physicsManager.onShipLoad(this);
 	}
 	
 	public PhysicsWrapperEntity(World worldIn,double x,double y,double z) {

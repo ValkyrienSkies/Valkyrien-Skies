@@ -5,6 +5,7 @@ import java.util.Map;
 
 import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
 
+import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
@@ -89,8 +90,21 @@ public class TransformAdapter extends ClassVisitor{
 	}
 
 	private boolean runTransformer(String calledName,String calledDesc,String calledOwner,MethodVisitor mv){
+		if(calledDesc.equals("(L"+EntityClassName+";)V")
+			&& calledName.equals(getRuntimeMethodName(m_className,"onEntityRemoved","func_72847_b"))
+			&& InheritanceUtils.extendsClass( calledOwner, WorldClassName)){
+				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onEntityRemoved", String.format( "(L%s;L"+EntityClassName+";)V", WorldClassName ) );
+				return false;
+		}
+		if(calledDesc.equals("(L"+EntityClassName+";)V")
+			&& calledName.equals(getRuntimeMethodName(m_className,"onEntityAdded","func_72923_a"))
+			&& InheritanceUtils.extendsClass( calledOwner, WorldClassName)){
+				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onEntityAdded", String.format( "(L%s;L"+EntityClassName+";)V", WorldClassName ) );
+				return false;
+		}
+		
 		if(calledDesc.equals("(L"+BlockRenderLayerName+";DIL"+EntityClassName+";)I")
-			&& calledName.equals(getRuntimeMethodName(m_className,"renderBlockLayer","CHANGEME!!"))
+			&& calledName.equals(getRuntimeMethodName(m_className,"renderBlockLayer","func_174977_a"))
 			&& InheritanceUtils.extendsClass( calledOwner, RenderGlobalName)){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onRenderBlockLayer", String.format( "(L%s;L"+BlockRenderLayerName+";DIL"+EntityClassName+";)I", RenderGlobalName ) );
 				return false;
@@ -112,7 +126,7 @@ public class TransformAdapter extends ClassVisitor{
 		
 		
 		if(calledDesc.equals("(II)V")
-			&& calledName.equals( getRuntimeMethodName( m_className, "dropChunk", "RENAMEME" ) )
+			&& calledName.equals( getRuntimeMethodName( m_className, "dropChunk", "func_73241_b" ) )
 			&& InheritanceUtils.extendsClass( calledOwner, ChunkProviderServerName)){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onDropChunk", String.format( "(L%s;II)V", ChunkProviderServerName ) );
 				return false;

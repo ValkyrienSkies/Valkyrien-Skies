@@ -207,6 +207,24 @@ public class PhysicsObject {
 		}
 	}
 	
+	/**
+	 * Called when this entity has been unloaded from the world
+	 */
+	public void onThisUnload(){
+		if(!worldObj.isRemote){
+			unloadShipChunksFromWorld();
+		}
+	}
+	
+	public void unloadShipChunksFromWorld(){
+		ChunkProviderServer provider = (ChunkProviderServer) worldObj.getChunkProvider();
+		for(int x = ownedChunks.minX;x<=ownedChunks.maxX;x++){
+			for(int z = ownedChunks.minZ;z<=ownedChunks.maxZ;z++){
+				provider.dropChunk(x, z);
+			}
+		}
+	}
+	
 	private Set getPlayersThatJustWatched(){
 		HashSet newPlayers = new HashSet();
 		for(Object o:((WorldServer)worldObj).getEntityTracker().getTrackingPlayers(wrapper)){

@@ -2,8 +2,9 @@ package ValkyrienWarfareBase.PhysicsManagement;
 
 import java.util.HashMap;
 
-import ValkyrienWarfareBase.ChunkManagement.PhysicsChunkManager;
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
 
 public class DimensionPhysObjectManager {
 
@@ -32,11 +33,7 @@ public HashMap<World,WorldPhysObjectManager> managerPerWorld;
 	}
 	
 	public WorldPhysObjectManager getManagerForWorld(World world){
-		if(cachedManager!=null){
-			if(cachedManager.worldObj!=world){
-				cachedManager = managerPerWorld.get(world);
-			}
-		}else{
+		if(cachedManager==null||cachedManager.worldObj!=world){
 			cachedManager = managerPerWorld.get(world);
 		}
 		return cachedManager;
@@ -47,6 +44,19 @@ public HashMap<World,WorldPhysObjectManager> managerPerWorld;
 			getManagerForWorld(world).physicsEntities.clear();
 		}
 		managerPerWorld.remove(world);
+	}
+	
+	/**
+	 * Returns the PhysicsWrapperEntity that claims this chunk if there is one;
+	 * returns null if there is no loaded entity managing it
+	 * @param chunk
+	 * @return
+	 */
+	public PhysicsWrapperEntity getObjectManagingChunk(Chunk chunk){
+		if(ValkyrienWarfareMod.chunkManager.isChunkInShipRange(chunk.worldObj, chunk.xPosition, chunk.zPosition)){
+			return getManagerForWorld(chunk.worldObj).getManagingObjectForChunk(chunk);
+		}
+		return null;
 	}
 	
 }

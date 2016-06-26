@@ -305,6 +305,10 @@ public class PhysicsObject {
 		}
 	}
 	
+	public boolean ownsChunk(int chunkX,int chunkZ){
+		return ownedChunks.isChunkEnclosedInSet(chunkX,chunkZ);
+	}
+	
 	public void writeToNBTTag(NBTTagCompound compound){
 		ownedChunks.writeToNBT(compound);
 		compound.setDouble("cX", centerCoord.X);

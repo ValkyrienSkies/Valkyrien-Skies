@@ -2,8 +2,8 @@ package ValkyrienWarfareBase.ChunkManagement;
 
 import java.util.HashMap;
 
-import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
 
 public class DimensionPhysicsChunkManager {
 
@@ -20,12 +20,12 @@ public class DimensionPhysicsChunkManager {
 		}
 	}
 	
+	public boolean isChunkInShipRange(World world,int x,int z){
+		return getManagerForWorld(world).isChunkInShipRange(x, z);
+	}
+	
 	public PhysicsChunkManager getManagerForWorld(World world){
-		if(cachedManager!=null){
-			if(cachedManager.worldObj!=world){
-				cachedManager = managerPerWorld.get(world);
-			}
-		}else{
+		if(cachedManager==null||cachedManager.worldObj!=world){
 			cachedManager = managerPerWorld.get(world);
 		}
 		return cachedManager;

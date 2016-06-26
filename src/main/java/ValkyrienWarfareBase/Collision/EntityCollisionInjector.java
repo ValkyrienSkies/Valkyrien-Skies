@@ -149,7 +149,10 @@ public class EntityCollisionInjector {
 			AxisAlignedBB bb = playerInLocal.getEnclosedAABB();
 
 			List<AxisAlignedBB> collidingBBs = entity.worldObj.getCollisionBoxes(bb);
-
+			
+			//TODO: Fix the performance of this!
+			BigBastardMath.mergeAABBList(collidingBBs);
+			
 			for(AxisAlignedBB inLocal:collidingBBs){
 				ShipPolygon poly = new ShipPolygon(inLocal,wrapper.wrapping.coordTransform.lToWTransform, wrapper.wrapping.coordTransform.normals, wrapper.wrapping);
 				collisions.add(poly);

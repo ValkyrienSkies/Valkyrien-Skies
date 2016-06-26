@@ -29,7 +29,7 @@ public class CallRunner {
 	}
 	
 	public static void onDropChunk(ChunkProviderServer provider,int x,int z){
-		if(!ValkyrienWarfareMod.chunkManager.getManagerForWorld(provider.worldObj).isChunkInShipRange(x, z)){
+		if(!ValkyrienWarfareMod.chunkManager.isChunkInShipRange(provider.worldObj,x, z)){
 			provider.dropChunk(x, z);
 		}
 	}

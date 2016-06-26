@@ -2,6 +2,7 @@ package ValkyrienWarfareBase.ChunkManagement;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
 
 /**
  * This stores the chunk claims for a PhysicsObject
@@ -35,6 +36,12 @@ public class ChunkSet {
 		toSave.setInteger("centerX", centerX);
 		toSave.setInteger("centerZ", centerZ);
 		toSave.setInteger("radius", radius);
+	}
+	
+	public boolean isChunkEnclosedInSet(int chunkX,int chunkZ){
+		boolean inX = (chunkX>=minX)&&(chunkX<=maxX);
+		boolean inZ = (chunkZ>=minZ)&&(chunkZ<=maxZ);
+		return inX&&inZ;
 	}
 	
 	@Override

@@ -1,22 +1,18 @@
 package ValkyrienWarfareBase;
 
-import java.util.List;
-
-import ValkyrienWarfareBase.Math.RotationMatrices;
-import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
-import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
+import ValkyrienWarfareBase.Interaction.CustomPlayerControllerMP;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.RenderTickEvent;
 
 public class EventsClient {
 
+	private final static Minecraft mc = Minecraft.getMinecraft();
+	
 	@SubscribeEvent
 	public void onChunkLoadClient(ChunkEvent.Load event){
 		
@@ -27,9 +23,20 @@ public class EventsClient {
 		
 	}
 	
+	@SubscribeEvent
+	public void onRenderTickEvent(RenderTickEvent event){
+		if(mc.thePlayer!=null&&mc.playerController!=null){
+			if(!(mc.playerController instanceof CustomPlayerControllerMP)){
+				PlayerControllerMP oldController = mc.playerController;
+				mc.playerController = new CustomPlayerControllerMP(mc, mc.getNetHandler());
+				mc.playerController.setGameType(oldController.getCurrentGameType());
+			}
+		}
+	}
+	
 	@SubscribeEvent(priority=EventPriority.HIGHEST)
 	public void onDrawBlockHighlightEvent(DrawBlockHighlightEvent event){
-		WorldPhysObjectManager physManager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(event.getPlayer().worldObj);
+		/*WorldPhysObjectManager physManager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(event.getPlayer().worldObj);
 		
 		AxisAlignedBB playerRangeBB = event.getPlayer().getEntityBoundingBox();
 		
@@ -39,15 +46,22 @@ public class EventsClient {
 		
 		Entity entity = event.getPlayer();
 		
+		double d0 = (double)Minecraft.getMinecraft().playerController.getBlockReachDistance();
+		
 		Vec3d playerEyesPos = entity.getPositionEyes(event.getPartialTicks());
         Vec3d playerReachVector = entity.getLook(event.getPartialTicks());
+        
+        if(Minecraft.getMinecraft().pointedEntity!=null&&Minecraft.getMinecraft().pointedEntity instanceof PhysicsWrapperEntity){
+        	Minecraft.getMinecraft().pointedEntity = null;
+        	Minecraft.getMinecraft().entityRenderer.pointedEntity = null;
+        	Minecraft.getMinecraft().objectMouseOver = entity.rayTrace(d0, event.getPartialTicks());
+        }
         
         double worldResultDistFromPlayer = Minecraft.getMinecraft().objectMouseOver.hitVec.distanceTo(playerEyesPos);
 		
 		for(PhysicsWrapperEntity wrapper:nearbyShips){
 			
-			double d0 = (double)Minecraft.getMinecraft().playerController.getBlockReachDistance();
-            
+			
             playerEyesPos = entity.getPositionEyes(event.getPartialTicks());
             playerReachVector = entity.getLook(event.getPartialTicks());
             
@@ -65,7 +79,7 @@ public class EventsClient {
             	worldResultDistFromPlayer = shipResultDistFromPlayer;
             	Minecraft.getMinecraft().objectMouseOver = resultInShip;
             }
-		}
+		}*/
 	}
 	
 }

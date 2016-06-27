@@ -1,16 +1,79 @@
 package ValkyrienWarfareBase.CoreMod;
 
+import java.util.List;
+
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
+import ValkyrienWarfareBase.Math.RotationMatrices;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
+import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.renderer.ChunkRenderContainer;
+import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.chunk.RenderChunk;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.entity.Entity;
+import net.minecraft.network.play.server.SPacketJoinGame;
 import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 
 public class CallRunnerClient {
 
+	public static void onGetMouseOver(EntityRenderer renderer,float partialTicks){
+		renderer.getMouseOver(partialTicks);
+		
+		Entity renderViewEntity = renderer.mc.getRenderViewEntity();
+		if(renderViewEntity==null){
+			return;
+		}
+		WorldPhysObjectManager physManager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(renderViewEntity.worldObj);
+		
+		AxisAlignedBB playerRangeBB = renderViewEntity.getEntityBoundingBox();
+		
+		List<PhysicsWrapperEntity> nearbyShips = physManager.getNearbyPhysObjects(renderViewEntity.worldObj, playerRangeBB);
+		boolean changed = false;
+		
+		
+		double d0 = (double)Minecraft.getMinecraft().playerController.getBlockReachDistance();
+		
+		Vec3d playerEyesPos = renderViewEntity.getPositionEyes(partialTicks);
+        Vec3d playerReachVector = renderViewEntity.getLook(partialTicks);
+        
+        if(Minecraft.getMinecraft().pointedEntity!=null&&Minecraft.getMinecraft().pointedEntity instanceof PhysicsWrapperEntity){
+        	Minecraft.getMinecraft().pointedEntity = null;
+        	Minecraft.getMinecraft().entityRenderer.pointedEntity = null;
+        	Minecraft.getMinecraft().objectMouseOver = renderViewEntity.rayTrace(d0,partialTicks);
+        }
+        
+        double worldResultDistFromPlayer = Minecraft.getMinecraft().objectMouseOver.hitVec.distanceTo(playerEyesPos);
+		
+		for(PhysicsWrapperEntity wrapper:nearbyShips){
+			
+			
+            playerEyesPos = renderViewEntity.getPositionEyes(partialTicks);
+            playerReachVector = renderViewEntity.getLook(partialTicks);
+            
+            //Transform the coordinate system for the player eye pos
+            playerEyesPos = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, playerEyesPos);
+            playerReachVector = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLRotation, playerReachVector);
+            
+            Vec3d playerEyesReachAdded = playerEyesPos.addVector(playerReachVector.xCoord * d0, playerReachVector.yCoord * d0, playerReachVector.zCoord * d0);
+            
+            RayTraceResult resultInShip = renderViewEntity.worldObj.rayTraceBlocks(playerEyesPos, playerEyesReachAdded, false, false, true);
+            
+            double shipResultDistFromPlayer = resultInShip.hitVec.distanceTo(playerEyesPos);
+            
+            if(shipResultDistFromPlayer<worldResultDistFromPlayer){
+            	worldResultDistFromPlayer = shipResultDistFromPlayer;
+            	Minecraft.getMinecraft().objectMouseOver = resultInShip;
+            }
+		}
+		
+	}
+	
 	public static int onRenderBlockLayer(RenderGlobal renderer,BlockRenderLayer blockLayerIn, double partialTicks, int pass, Entity entityIn){
 		for(Entity ent:Minecraft.getMinecraft().theWorld.loadedEntityList){
 			if(ent instanceof PhysicsWrapperEntity){

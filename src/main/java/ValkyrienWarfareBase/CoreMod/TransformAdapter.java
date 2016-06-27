@@ -40,6 +40,13 @@ public class TransformAdapter extends ClassVisitor{
 	private final String BlockRenderLayerName;
 	private final String WorldProviderName;
 	private final String ChunkProviderServerName;
+	private final String EntityRendererName;
+	private final String PlayerListName;
+	private final String GameProfileName;
+	private final String EntityPlayerMPName;
+	private final String NetHandlerPlayClientName;
+	private final String SPacketJoinGameName;
+	private final String INetHandlerPlayClientName;
 	
 	public TransformAdapter( int api, boolean isObfuscatedEnvironment ){
 		super( api, null );
@@ -63,6 +70,14 @@ public class TransformAdapter extends ClassVisitor{
 		BlockRenderLayerName = getRuntimeClassName("net/minecraft/util/BlockRenderLayer");
 		WorldProviderName = getRuntimeClassName("net/minecraft/world/WorldProvider");
 		ChunkProviderServerName = getRuntimeClassName("net/minecraft/world/gen/ChunkProviderServer");
+		EntityRendererName = getRuntimeClassName("net/minecraft/client/renderer/EntityRenderer");
+		
+		PlayerListName = getRuntimeClassName("net/minecraft/server/management/PlayerList");
+		GameProfileName = getRuntimeClassName("com/mojang/authlib/GameProfile");
+		EntityPlayerMPName = getRuntimeClassName("net/minecraft/entity/player/EntityPlayerMP");
+		NetHandlerPlayClientName = getRuntimeClassName("net/minecraft/client/network/NetHandlerPlayClient");
+		SPacketJoinGameName = getRuntimeClassName("net/minecraft/network/play/server/SPacketJoinGame");
+		INetHandlerPlayClientName = getRuntimeClassName("net/minecraft/network/play/INetHandlerPlayClient");
 //		progressManager = getRuntimeClassName("net/minecraftforge/fml/common/ProgressManager");
 //		progressBar = getRuntimeClassName("net/minecraftforge/fml/common/ProgressManager$ProgressBar");
 	}
@@ -90,6 +105,29 @@ public class TransformAdapter extends ClassVisitor{
 	}
 
 	private boolean runTransformer(String calledName,String calledDesc,String calledOwner,MethodVisitor mv){
+		
+		//Method that creates a playerInteractionManager
+		if(calledDesc.equals("(L"+GameProfileName+";)L"+EntityPlayerMPName+";")
+			&& calledName.equals(getRuntimeMethodName(m_className,"createPlayerForUser","func_148545_a"))
+			&& InheritanceUtils.extendsClass( calledOwner, PlayerListName)){
+				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onCreatePlayerForUser", String.format( "(L%s;L"+GameProfileName+";)L"+EntityPlayerMPName+";", PlayerListName ) );
+				return false;
+		}
+		//Method that creates a playerInteractionManager
+		if(calledDesc.equals("(L"+EntityPlayerMPName+";IZ)L"+EntityPlayerMPName+";")
+			&& calledName.equals(getRuntimeMethodName(m_className,"recreatePlayerEntity","func_72368_a"))
+			&& InheritanceUtils.extendsClass( calledOwner, PlayerListName)){
+				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onRecreatePlayerEntity", String.format( "(L%s;L"+EntityPlayerMPName+";IZ)L"+EntityPlayerMPName+";", PlayerListName ) );
+				return false;
+		}
+		
+		if(calledDesc.equals("(F)V")
+			&& calledName.equals(getRuntimeMethodName(m_className,"getMouseOver","RENAMEME"))
+			&& InheritanceUtils.extendsClass( calledOwner, EntityRendererName)){
+				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onGetMouseOver", String.format( "(L%s;F)V", EntityRendererName ) );
+				return false;
+		}
+		
 		if(calledDesc.equals("(L"+EntityClassName+";)V")
 			&& calledName.equals(getRuntimeMethodName(m_className,"onEntityRemoved","func_72847_b"))
 			&& InheritanceUtils.extendsClass( calledOwner, WorldClassName)){

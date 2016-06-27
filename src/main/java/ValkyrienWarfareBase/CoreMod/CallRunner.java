@@ -1,5 +1,7 @@
 package ValkyrienWarfareBase.CoreMod;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.UUID;
 
@@ -8,11 +10,14 @@ import com.mojang.authlib.GameProfile;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.Collision.EntityCollisionInjector;
+import ValkyrienWarfareBase.Interaction.CustomNetHandlerPlayServer;
 import ValkyrienWarfareBase.Interaction.CustomPlayerInteractionManager;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.network.NetHandlerPlayServer;
+import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketChangeGameState;
 import net.minecraft.network.play.server.SPacketRespawn;
 import net.minecraft.network.play.server.SPacketSetExperience;
@@ -24,9 +29,10 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.demo.DemoWorldManager;
 import net.minecraft.world.gen.ChunkProviderServer;
+import net.minecraftforge.fml.common.network.handshake.NetworkDispatcher;
 
 public class CallRunner {
-	
+
 	public static EntityPlayerMP onCreatePlayerForUser(PlayerList playerList,GameProfile profile){
 		UUID uuid = EntityPlayer.getUUID(profile);
         List<EntityPlayerMP> list = Lists.<EntityPlayerMP>newArrayList();

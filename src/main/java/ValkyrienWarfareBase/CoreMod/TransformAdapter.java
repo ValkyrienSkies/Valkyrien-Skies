@@ -78,34 +78,13 @@ public class TransformAdapter extends ClassVisitor{
 		NetHandlerPlayClientName = getRuntimeClassName("net/minecraft/client/network/NetHandlerPlayClient");
 		SPacketJoinGameName = getRuntimeClassName("net/minecraft/network/play/server/SPacketJoinGame");
 		INetHandlerPlayClientName = getRuntimeClassName("net/minecraft/network/play/INetHandlerPlayClient");
+
 //		progressManager = getRuntimeClassName("net/minecraftforge/fml/common/ProgressManager");
 //		progressBar = getRuntimeClassName("net/minecraftforge/fml/common/ProgressManager$ProgressBar");
 	}
 
-	@Override
-	public void visit( int version, int access, String name, String signature, String superName, String[] interfaces ){
-		super.visit( version, access, name, signature, superName, interfaces );
-		m_className = name;
-	}
-
-	@Override
-	public MethodVisitor visitMethod( int access, final String methodName, String methodDesc, String signature, String[] exceptions ){
-		return new MethodVisitor(api, cv.visitMethod( access, methodName, methodDesc, signature, exceptions)){
-			@Override
-			public void visitMethodInsn( int opcode, String calledOwner, String calledName, String calledDesc ){
-				if( opcode == Opcodes.INVOKEVIRTUAL){
-					if(runTransformer(calledName,calledDesc,calledOwner,mv)){
-						super.visitMethodInsn( opcode, calledOwner, calledName, calledDesc );
-					}					
-				}else{
-					super.visitMethodInsn( opcode, calledOwner, calledName, calledDesc );
-				}
-			}
-		};
-	}
-
 	private boolean runTransformer(String calledName,String calledDesc,String calledOwner,MethodVisitor mv){
-		
+
 		//Method that creates a playerInteractionManager
 		if(calledDesc.equals("(L"+GameProfileName+";)L"+EntityPlayerMPName+";")
 			&& calledName.equals(getRuntimeMethodName(m_className,"createPlayerForUser","func_148545_a"))
@@ -325,5 +304,29 @@ public class TransformAdapter extends ClassVisitor{
 		// return empty string so it fails comparisons with expected values, but doesn't throw exceptions
 		return "";
 	}
+	
+
+	@Override
+	public void visit( int version, int access, String name, String signature, String superName, String[] interfaces ){
+		super.visit( version, access, name, signature, superName, interfaces );
+		m_className = name;
+	}
+
+	@Override
+	public MethodVisitor visitMethod( int access, final String methodName, String methodDesc, String signature, String[] exceptions ){
+		return new MethodVisitor(api, cv.visitMethod( access, methodName, methodDesc, signature, exceptions)){
+			@Override
+			public void visitMethodInsn( int opcode, String calledOwner, String calledName, String calledDesc ){
+				if( opcode == Opcodes.INVOKEVIRTUAL){
+					if(runTransformer(calledName,calledDesc,calledOwner,mv)){
+						super.visitMethodInsn( opcode, calledOwner, calledName, calledDesc );
+					}					
+				}else{
+					super.visitMethodInsn( opcode, calledOwner, calledName, calledDesc );
+				}
+			}
+		};
+	}
+
 
 }

@@ -1,7 +1,5 @@
 package ValkyrienWarfareBase.CoreMod;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.UUID;
 
@@ -10,14 +8,12 @@ import com.mojang.authlib.GameProfile;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.Collision.EntityCollisionInjector;
-import ValkyrienWarfareBase.Interaction.CustomNetHandlerPlayServer;
 import ValkyrienWarfareBase.Interaction.CustomPlayerInteractionManager;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.network.NetHandlerPlayServer;
-import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketChangeGameState;
 import net.minecraft.network.play.server.SPacketRespawn;
 import net.minecraft.network.play.server.SPacketSetExperience;
@@ -27,9 +23,9 @@ import net.minecraft.server.management.PlayerList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.demo.DemoWorldManager;
 import net.minecraft.world.gen.ChunkProviderServer;
-import net.minecraftforge.fml.common.network.handshake.NetworkDispatcher;
 
 public class CallRunner {
 
@@ -56,7 +52,7 @@ public class CallRunner {
 
         for (EntityPlayerMP entityplayermp1 : list)
         {
-            entityplayermp1.playerNetServerHandler.kickPlayerFromServer("You logged in from another location");
+            entityplayermp1.connection.kickPlayerFromServer("You logged in from another location");
         }
 
         PlayerInteractionManager playerinteractionmanager;
@@ -87,11 +83,11 @@ public class CallRunner {
             dimension = world.provider.getRespawnDimension(playerIn);
         }
 
-        playerIn.getServerForPlayer().getEntityTracker().removePlayerFromTrackers(playerIn);
-        playerIn.getServerForPlayer().getEntityTracker().untrackEntity(playerIn);
-        playerIn.getServerForPlayer().getPlayerChunkManager().removePlayer(playerIn);
+        playerIn.getServerWorld().getEntityTracker().removePlayerFromTrackers(playerIn);
+        playerIn.getServerWorld().getEntityTracker().untrackEntity(playerIn);
+        playerIn.getServerWorld().getPlayerChunkMap().removePlayer(playerIn);
         playerList.playerEntityList.remove(playerIn);
-        playerList.mcServer.worldServerForDimension(playerIn.dimension).removePlayerEntityDangerously(playerIn);
+        playerList.mcServer.worldServerForDimension(playerIn.dimension).removeEntityDangerously(playerIn);
         BlockPos blockpos = playerIn.getBedLocation(dimension);
         boolean flag = playerIn.isSpawnForced(dimension);
         playerIn.dimension = dimension;
@@ -103,11 +99,11 @@ public class CallRunner {
         }
         else
         {
-            playerinteractionmanager = new CustomPlayerInteractionManager(playerList.mcServer.worldServerForDimension(playerIn.dimension));
+            playerinteractionmanager = new PlayerInteractionManager(playerList.mcServer.worldServerForDimension(playerIn.dimension));
         }
 
         EntityPlayerMP entityplayermp = new EntityPlayerMP(playerList.mcServer, playerList.mcServer.worldServerForDimension(playerIn.dimension), playerIn.getGameProfile(), playerinteractionmanager);
-        entityplayermp.playerNetServerHandler = playerIn.playerNetServerHandler;
+        entityplayermp.connection = playerIn.connection;
         entityplayermp.clonePlayer(playerIn, conqueredEnd);
         entityplayermp.dimension = dimension;
        entityplayermp.setEntityId(playerIn.getEntityId());
@@ -121,7 +117,8 @@ public class CallRunner {
 
         WorldServer worldserver = playerList.mcServer.worldServerForDimension(playerIn.dimension);
 //        playerList.setPlayerGameTypeBasedOnOther(entityplayermp, playerIn, worldserver);
-
+        
+        
         
         if (playerIn != null)
         {
@@ -134,8 +131,7 @@ public class CallRunner {
 
         entityplayermp.interactionManager.initializeGameType(worldserver.getWorldInfo().getGameType());
         
-        
-        
+
         if (blockpos != null)
         {
             BlockPos blockpos1 = EntityPlayer.getBedSpawnLocation(playerList.mcServer.worldServerForDimension(playerIn.dimension), blockpos, flag);
@@ -147,25 +143,25 @@ public class CallRunner {
             }
             else
             {
-                entityplayermp.playerNetServerHandler.sendPacket(new SPacketChangeGameState(0, 0.0F));
+                entityplayermp.connection.sendPacket(new SPacketChangeGameState(0, 0.0F));
             }
         }
 
         worldserver.getChunkProvider().provideChunk((int)entityplayermp.posX >> 4, (int)entityplayermp.posZ >> 4);
 
-        while (!worldserver.getCubes(entityplayermp, entityplayermp.getEntityBoundingBox()).isEmpty() && entityplayermp.posY < 256.0D)
+        while (!worldserver.getCollisionBoxes(entityplayermp, entityplayermp.getEntityBoundingBox()).isEmpty() && entityplayermp.posY < 256.0D)
         {
             entityplayermp.setPosition(entityplayermp.posX, entityplayermp.posY + 1.0D, entityplayermp.posZ);
         }
 
-        entityplayermp.playerNetServerHandler.sendPacket(new SPacketRespawn(entityplayermp.dimension, entityplayermp.worldObj.getDifficulty(), entityplayermp.worldObj.getWorldInfo().getTerrainType(), entityplayermp.interactionManager.getGameType()));
+        entityplayermp.connection.sendPacket(new SPacketRespawn(entityplayermp.dimension, entityplayermp.worldObj.getDifficulty(), entityplayermp.worldObj.getWorldInfo().getTerrainType(), entityplayermp.interactionManager.getGameType()));
         BlockPos blockpos2 = worldserver.getSpawnPoint();
-        entityplayermp.playerNetServerHandler.setPlayerLocation(entityplayermp.posX, entityplayermp.posY, entityplayermp.posZ, entityplayermp.rotationYaw, entityplayermp.rotationPitch);
-        entityplayermp.playerNetServerHandler.sendPacket(new SPacketSpawnPosition(blockpos2));
-        entityplayermp.playerNetServerHandler.sendPacket(new SPacketSetExperience(entityplayermp.experience, entityplayermp.experienceTotal, entityplayermp.experienceLevel));
+        entityplayermp.connection.setPlayerLocation(entityplayermp.posX, entityplayermp.posY, entityplayermp.posZ, entityplayermp.rotationYaw, entityplayermp.rotationPitch);
+        entityplayermp.connection.sendPacket(new SPacketSpawnPosition(blockpos2));
+        entityplayermp.connection.sendPacket(new SPacketSetExperience(entityplayermp.experience, entityplayermp.experienceTotal, entityplayermp.experienceLevel));
         playerList.updateTimeAndWeatherForPlayer(entityplayermp, worldserver);
         playerList.updatePermissionLevel(entityplayermp);
-        worldserver.getPlayerChunkManager().addPlayer(entityplayermp);
+        worldserver.getPlayerChunkMap().addPlayer(entityplayermp);
         worldserver.spawnEntityInWorld(entityplayermp);
         playerList.playerEntityList.add(entityplayermp);
         playerList.uuidToPlayerMap.put(entityplayermp.getUniqueID(), entityplayermp);
@@ -192,10 +188,10 @@ public class CallRunner {
 	public static void onEntityAdded(World world,Entity added){
 		world.onEntityAdded(added);
 	}
-	
-	public static void onDropChunk(ChunkProviderServer provider,int x,int z){
-		if(!ValkyrienWarfareMod.chunkManager.isChunkInShipRange(provider.worldObj,x, z)){
-			provider.dropChunk(x, z);
+
+	public static void onChunkUnload(ChunkProviderServer provider,Chunk chunk){
+		if(!ValkyrienWarfareMod.chunkManager.isChunkInShipRange(provider.worldObj,chunk.xPosition, chunk.zPosition)){
+			provider.unload(chunk);
 		}
 	}
 

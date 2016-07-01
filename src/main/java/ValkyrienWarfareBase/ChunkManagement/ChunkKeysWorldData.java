@@ -23,8 +23,9 @@ public class ChunkKeysWorldData extends WorldSavedData {
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbt) {
+	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
 		nbt.setInteger("chunkKey", chunkKey);
+		return nbt;
 	}
 
 	public static ChunkKeysWorldData get(World world) {

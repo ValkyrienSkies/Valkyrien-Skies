@@ -77,7 +77,7 @@ public class ValkyrienWarfareMod{
     @EventHandler
     public void postInit(FMLPostInitializationEvent event){
     	proxy.postInit(event);
-    	airStateIndex = Block.getStateId(Blocks.air.getDefaultState());
+    	airStateIndex = Block.getStateId(Blocks.AIR.getDefaultState());
     }
 
     @EventHandler
@@ -93,7 +93,7 @@ public class ValkyrienWarfareMod{
     }
 
     public void registerBlocks(FMLStateEvent event){
-    	physicsInfuser = new BlockPhysicsInfuser(Material.rock).setUnlocalizedName("shipblock").setRegistryName(MODID, "shipblock").setCreativeTab(CreativeTabs.tabBlock);
+    	physicsInfuser = new BlockPhysicsInfuser(Material.ROCK).setUnlocalizedName("shipblock").setRegistryName(MODID, "shipblock").setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
     	GameRegistry.registerBlock(physicsInfuser);
     }
 

@@ -3,12 +3,14 @@ package ValkyrienWarfareBase.CoreMod;
 import java.util.Map;
 
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
+import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin.MCVersion;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin.Name;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin.TransformerExclusions;
 
-@Name("ValkyrianWarfareBase CoreMod")
+@Name("ValkyrienWarfareBase CoreMod")
 @IFMLLoadingPlugin.SortingIndex(1000)
 @TransformerExclusions({"ValkyrienWarfareBase"})
+@MCVersion("1.9.4")
 public class ValkyrienWarfarePlugin implements IFMLLoadingPlugin{
 
 	public static Boolean isObfuscatedEnvironment = null;

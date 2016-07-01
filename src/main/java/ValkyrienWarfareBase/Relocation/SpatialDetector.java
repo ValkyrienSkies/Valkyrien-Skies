@@ -125,7 +125,7 @@ public abstract class SpatialDetector{
 		x-=maxRangeHalved;
 		y-=start.getY();
 		z-=maxRangeHalved;
-		toSet.set(x, y, z);
+		toSet.setPos(x, y, z);
 	}
 
 	public static BlockPos getPosWithRespectTo(int hash,BlockPos start){
@@ -145,7 +145,7 @@ public abstract class SpatialDetector{
 		x-=maxRangeHalved;
 		y-=start.getY();
 		z-=maxRangeHalved;
-		toSet.set(x+start.getX(),y+start.getY(),z+start.getZ());
+		toSet.setPos(x+start.getX(),y+start.getY(),z+start.getZ());
 	}
 	
 	public ArrayList<BlockPos> getBlockPosArrayList(){

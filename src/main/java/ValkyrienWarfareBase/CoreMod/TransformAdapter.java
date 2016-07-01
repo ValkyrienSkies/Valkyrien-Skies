@@ -47,6 +47,7 @@ public class TransformAdapter extends ClassVisitor{
 	private final String NetHandlerPlayClientName;
 	private final String SPacketJoinGameName;
 	private final String INetHandlerPlayClientName;
+	private final String ChunkName;
 	
 	public TransformAdapter( int api, boolean isObfuscatedEnvironment ){
 		super( api, null );
@@ -78,17 +79,22 @@ public class TransformAdapter extends ClassVisitor{
 		NetHandlerPlayClientName = getRuntimeClassName("net/minecraft/client/network/NetHandlerPlayClient");
 		SPacketJoinGameName = getRuntimeClassName("net/minecraft/network/play/server/SPacketJoinGame");
 		INetHandlerPlayClientName = getRuntimeClassName("net/minecraft/network/play/INetHandlerPlayClient");
-
+		ChunkName = getRuntimeClassName("net/minecraft/world/chunk/Chunk");
+		
+		
 //		progressManager = getRuntimeClassName("net/minecraftforge/fml/common/ProgressManager");
 //		progressBar = getRuntimeClassName("net/minecraftforge/fml/common/ProgressManager$ProgressBar");
 	}
 
 	private boolean runTransformer(String calledName,String calledDesc,String calledOwner,MethodVisitor mv){
-
+		if(InheritanceUtils.extendsClass( calledOwner, EntityRendererName)){
+//			int i = 10;
+//			i/=0;
+		}
 		//Method that creates a playerInteractionManager
 		if(calledDesc.equals("(L"+GameProfileName+";)L"+EntityPlayerMPName+";")
 			&& calledName.equals(getRuntimeMethodName(m_className,"createPlayerForUser","func_148545_a"))
-			&& InheritanceUtils.extendsClass( calledOwner, PlayerListName)){
+			&& (InheritanceUtils.extendsClass( calledOwner, PlayerListName)||InheritanceUtils.extendsClass( m_className, PlayerListName))){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onCreatePlayerForUser", String.format( "(L%s;L"+GameProfileName+";)L"+EntityPlayerMPName+";", PlayerListName ) );
 				return false;
 		}
@@ -99,14 +105,14 @@ public class TransformAdapter extends ClassVisitor{
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onRecreatePlayerEntity", String.format( "(L%s;L"+EntityPlayerMPName+";IZ)L"+EntityPlayerMPName+";", PlayerListName ) );
 				return false;
 		}
-		
+
 		if(calledDesc.equals("(F)V")
-			&& calledName.equals(getRuntimeMethodName(m_className,"getMouseOver","RENAMEME"))
+			&& (calledName.equals(getRuntimeMethodName(m_className,"getMouseOver","func_78473_a"))||calledName.equals(getRuntimeMethodName(calledOwner,"getMouseOver","func_78473_a")))
 			&& InheritanceUtils.extendsClass( calledOwner, EntityRendererName)){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onGetMouseOver", String.format( "(L%s;F)V", EntityRendererName ) );
 				return false;
 		}
-		
+
 		if(calledDesc.equals("(L"+EntityClassName+";)V")
 			&& calledName.equals(getRuntimeMethodName(m_className,"onEntityRemoved","func_72847_b"))
 			&& InheritanceUtils.extendsClass( calledOwner, WorldClassName)){
@@ -121,9 +127,9 @@ public class TransformAdapter extends ClassVisitor{
 		}
 		
 		if(calledDesc.equals("(L"+BlockRenderLayerName+";DIL"+EntityClassName+";)I")
-			&& calledName.equals(getRuntimeMethodName(m_className,"renderBlockLayer","func_174977_a"))
+			&& ( calledName.equals(getRuntimeMethodName(m_className,"renderBlockLayer","func_174977_a")) || calledName.equals(getRuntimeMethodName(calledOwner,"renderBlockLayer","func_174977_a")) )
 			&& InheritanceUtils.extendsClass( calledOwner, RenderGlobalName)){
-				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onRenderBlockLayer", String.format( "(L%s;L"+BlockRenderLayerName+";DIL"+EntityClassName+";)I", RenderGlobalName ) );
+			mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onRenderBlockLayer", String.format( "(L%s;L"+BlockRenderLayerName+";DIL"+EntityClassName+";)I", RenderGlobalName ) );
 				return false;
 		}
 		
@@ -142,10 +148,10 @@ public class TransformAdapter extends ClassVisitor{
 		}
 		
 		
-		if(calledDesc.equals("(II)V")
-			&& calledName.equals( getRuntimeMethodName( m_className, "dropChunk", "func_73241_b" ) )
+		if(calledDesc.equals("(L"+ChunkName+";)V")
+			&& calledName.equals( getRuntimeMethodName( m_className, "unload", "func_189549_a" ) )
 			&& InheritanceUtils.extendsClass( calledOwner, ChunkProviderServerName)){
-				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onDropChunk", String.format( "(L%s;II)V", ChunkProviderServerName ) );
+				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onChunkUnload", String.format( "(L%s;L"+ChunkName+";)V", ChunkProviderServerName ) );
 				return false;
 		}
 		
@@ -248,7 +254,7 @@ public class TransformAdapter extends ClassVisitor{
 	}
 
 	protected String getRuntimeClassName( String clearClassName ){
-		if( m_isObfuscatedEnvironment ){
+		if(m_isObfuscatedEnvironment ){
 			return getObfuscatedClassName( clearClassName );
 		}else{
 			return clearClassName;
@@ -256,7 +262,7 @@ public class TransformAdapter extends ClassVisitor{
 	}
 
 	protected String getRuntimeMethodName( String runtimeClassName, String clearMethodName, String idMethodName ){
-		if( m_isObfuscatedEnvironment ){
+		if(m_isObfuscatedEnvironment ){
 			return methodMapReverseLookup( getMethodMap( runtimeClassName ), idMethodName );
 		}else{
 			return clearMethodName;

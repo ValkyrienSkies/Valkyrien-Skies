@@ -28,7 +28,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
-import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
@@ -102,7 +102,7 @@ public class PhysicsObject {
 			detector.setPosWithRespectTo(i, centerInWorld, pos);
 			
 			IBlockState state = detector.cache.getBlockState(pos);
-			pos.set(pos.getX()+centerDifference.getX(), pos.getY()+centerDifference.getY(), pos.getZ()+centerDifference.getZ());
+			pos.setPos(pos.getX()+centerDifference.getX(), pos.getY()+centerDifference.getY(), pos.getZ()+centerDifference.getZ());
 //			System.out.println(pos);
 			ownedChunks.chunkOccupiedInLocal[(pos.getX()>>4)-minChunkX][(pos.getZ()>>4)-minChunkZ] = true;
 			
@@ -126,7 +126,7 @@ public class PhysicsObject {
 			detector.setPosWithRespectTo(i, centerInWorld, pos);
 //			detector.cache.setBlockState(pos, Blocks.air.getDefaultState());
 			//TODO: Get this to update on clientside as well, you bastard!
-			worldObj.setBlockState(pos, Blocks.air.getDefaultState(),2);
+			worldObj.setBlockState(pos, Blocks.AIR.getDefaultState(),2);
 		}
 //		centerDifference = new BlockPos(claimedChunks[ownedChunks.radius+1][ownedChunks.radius+1].xPosition*16,128,claimedChunks[ownedChunks.radius+1][ownedChunks.radius+1].zPosition*16);
 //		System.out.println(chunkCache.getBlockState(centerDifference).getBlock());
@@ -147,8 +147,7 @@ public class PhysicsObject {
 		chunk.setChunkLoaded(true);
 		chunk.isModified = true;
 		claimedChunks[x-ownedChunks.minX][z-ownedChunks.minZ] = chunk;
-		provider.id2ChunkMap.add(ChunkCoordIntPair.chunkXZ2Int(x, z), chunk);
-		provider.loadedChunks.add(chunk);
+		provider.id2ChunkMap.put(ChunkPos.chunkXZ2Int(x, z), chunk);
 		MinecraftForge.EVENT_BUS.post(new ChunkEvent.Load(chunk));
 //		ForgeChunkManager.forceChunk(chunkLoadingTicket, chunk.getChunkCoordIntPair());
 	}
@@ -161,27 +160,10 @@ public class PhysicsObject {
 		
 		for(Chunk[] chunkArray: claimedChunks){
 			for(Chunk chunk: chunkArray){
-				SPacketChunkData data = new SPacketChunkData(chunk, true, 65535);
+				SPacketChunkData data = new SPacketChunkData(chunk, 65535);
 				for(EntityPlayerMP player:newWatchers){
-					player.playerNetServerHandler.sendPacket(data);
+					player.connection.sendPacket(data);
 					((WorldServer)worldObj).getEntityTracker().sendLeashedEntitiesInChunk(player, chunk);
-				}
-			}
-		}
-		
-		int minX,maxX,minZ,maxZ;
-		minX = claimedChunks[0][0].xPosition*16;
-		minZ = claimedChunks[0][0].zPosition*16;
-		maxX = claimedChunks[claimedChunks.length-1][claimedChunks[claimedChunks.length-1].length-1].xPosition*16+15;
-		maxZ = claimedChunks[claimedChunks.length-1][claimedChunks[claimedChunks.length-1].length-1].zPosition*16+15;
-		
-		List<TileEntity> wholeList = Lists.newArrayList(((WorldServer) worldObj).getTileEntitiesIn(minX,0,minZ,maxX,256,maxZ));
-		
-		for(TileEntity tileentity:wholeList){
-			Packet<?> packet = tileentity.getDescriptionPacket();
-			if(packet!=null){
-				for(EntityPlayerMP player:newWatchers){
-					player.playerNetServerHandler.sendPacket(packet);
 				}
 			}
 		}
@@ -202,7 +184,7 @@ public class PhysicsObject {
 		for(int x = ownedChunks.minX;x<=ownedChunks.maxX;x++){
 			for(int z = ownedChunks.minZ;z<=ownedChunks.maxZ;z++){
 				SPacketUnloadChunk unloadPacket = new SPacketUnloadChunk(x,z);
-				((EntityPlayerMP)untracking).playerNetServerHandler.sendPacket(unloadPacket);
+				((EntityPlayerMP)untracking).connection.sendPacket(unloadPacket);
 			}
 		}
 	}
@@ -220,7 +202,7 @@ public class PhysicsObject {
 		ChunkProviderServer provider = (ChunkProviderServer) worldObj.getChunkProvider();
 		for(int x = ownedChunks.minX;x<=ownedChunks.maxX;x++){
 			for(int z = ownedChunks.minZ;z<=ownedChunks.maxZ;z++){
-				provider.dropChunk(x, z);
+				provider.unload(claimedChunks[x-ownedChunks.minX][z-ownedChunks.minZ]);
 			}
 		}
 	}
@@ -292,7 +274,7 @@ public class PhysicsObject {
 			        		for(y=0;y<16;y++){
 			        			for(x=0;x<16;x++){
 			        				for(z=0;z<16;z++){
-			            				if(storage.data.bits.func_188142_a(y << 8 | z << 4 | x)!=ValkyrienWarfareMod.airStateIndex){
+			            				if(storage.data.storage.getAt(y << 8 | z << 4 | x)!=ValkyrienWarfareMod.airStateIndex){
 			            					blockPositions.add(new BlockPos(chunk.xPosition*16+x,index*16+y,chunk.zPosition*16+z));
 			            				}
 			            			}

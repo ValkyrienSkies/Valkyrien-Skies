@@ -35,14 +35,14 @@ public class PhysObjectRender extends Render<PhysicsWrapperEntity>{
         int k = i / 65536;
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)j, (float)k);
 		
-		bindTexture(TextureMap.locationBlocksTexture);
+		bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 		setupTransform(entity,x,y,z,entityYaw,partialTicks);
 		renderBlocks(entity,x,y,z,entityYaw,partialTicks);
 		if (entity.wrapping.claimedChunks!=null&&false)
         {
 			BlockPos centerDifference = entity.wrapping.getRegionCenter();
             IBlockState iblockstate = entity.worldObj.getBlockState(centerDifference);
-            bindTexture(TextureMap.locationBlocksTexture);
+            bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
             //System.out.println(entity.worldObj.getBlockState(centerDifference).getBlock());
             if (iblockstate.getRenderType() == EnumBlockRenderType.MODEL)
             {
@@ -135,9 +135,9 @@ public class PhysObjectRender extends Render<PhysicsWrapperEntity>{
 			GL11.glCallList(entity.wrapping.renderer.glCallListSolid);
 			GlStateManager.enableAlpha();
 			GL11.glCallList(entity.wrapping.renderer.glCallListCutoutMipped);
-			Minecraft.getMinecraft().getTextureManager().getTexture(TextureMap.locationBlocksTexture).setBlurMipmap(false, false);
+			Minecraft.getMinecraft().getTextureManager().getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).setBlurMipmap(false, false);
 			GL11.glCallList(entity.wrapping.renderer.glCallListCutout);
-			Minecraft.getMinecraft().getTextureManager().getTexture(TextureMap.locationBlocksTexture).restoreLastBlurMipmap();
+			Minecraft.getMinecraft().getTextureManager().getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).restoreLastBlurMipmap();
 //			GlStateManager.shadeModel(7424);
 	        GlStateManager.alphaFunc(516, 0.1F);
 	        GlStateManager.enableBlend();
@@ -160,7 +160,7 @@ public class PhysObjectRender extends Render<PhysicsWrapperEntity>{
 
 	@Override
 	protected ResourceLocation getEntityTexture(PhysicsWrapperEntity entity) {
-		return TextureMap.locationBlocksTexture;
+		return TextureMap.LOCATION_BLOCKS_TEXTURE;
 	}
 
 }

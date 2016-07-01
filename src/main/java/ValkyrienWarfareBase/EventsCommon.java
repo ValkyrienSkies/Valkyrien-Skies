@@ -24,8 +24,8 @@ public class EventsCommon {
 	public void onPlayerTickEvent(PlayerTickEvent event){
 		if(!event.player.worldObj.isRemote){
 			EntityPlayerMP player = (EntityPlayerMP) event.player;
-			if(!(player.playerNetServerHandler instanceof CustomNetHandlerPlayServer)){
-				player.playerNetServerHandler = new CustomNetHandlerPlayServer(player.playerNetServerHandler);
+			if(!(player.connection instanceof CustomNetHandlerPlayServer)){
+				player.connection = new CustomNetHandlerPlayServer(player.connection);
 			}
 		}
 	}

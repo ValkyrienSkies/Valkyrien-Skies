@@ -12,7 +12,7 @@ public class ShipSpawnDetector extends SpatialDetector{
 
 	@Override
 	public boolean isValidExpansion(int x, int y, int z) {
-		return !cache.getBlockState(x,y,z).getBlock().equals(Blocks.air);
+		return !cache.getBlockState(x,y,z).getBlock().equals(Blocks.AIR);
 	}
 
 }

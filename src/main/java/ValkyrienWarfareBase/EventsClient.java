@@ -28,7 +28,7 @@ public class EventsClient {
 		if(mc.thePlayer!=null&&mc.playerController!=null){
 			if(!(mc.playerController instanceof CustomPlayerControllerMP)){
 				PlayerControllerMP oldController = mc.playerController;
-				mc.playerController = new CustomPlayerControllerMP(mc, mc.getNetHandler());
+				mc.playerController = new CustomPlayerControllerMP(mc, mc.getConnection());
 				mc.playerController.setGameType(oldController.getCurrentGameType());
 			}
 		}

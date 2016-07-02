@@ -86,71 +86,40 @@ public class TransformAdapter extends ClassVisitor{
 		
 		RayTraceResult = getRuntimeClassName("net/minecraft/util/math/RayTraceResult");
 		Vec3dName = getRuntimeClassName("net/minecraft/util/math/Vec3d");
-//		progressManager = getRuntimeClassName("net/minecraftforge/fml/common/ProgressManager");
-//		progressBar = getRuntimeClassName("net/minecraftforge/fml/common/ProgressManager$ProgressBar");
 	}
 
 	private boolean runTransformer(String calledName,String calledDesc,String calledOwner,MethodVisitor mv){
 		
-//		if(calledDesc.equals("(DF)L"+RayTraceResult+";")
-//			&& calledName.equals( getRuntimeMethodName( m_className, "rayTrace", "func_174822_a" ) )
-//			&& (InheritanceUtils.extendsClass( calledOwner, EntityClassName))){
-//				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onRayTrace", String.format( "(L%s;DF)L"+RayTraceResult+";", EntityClassName ) );
-//				return false;
-//		}
-//		
-//		if(calledDesc.equals("(L"+Vec3dName+";L"+Vec3dName+";)L"+RayTraceResult+";")
-//			&& calledName.equals(getRuntimeMethodName(m_className,"rayTraceBlocks","func_72933_a"))
-//			&& InheritanceUtils.extendsClass( calledOwner, WorldClassName)){
-//				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onRayTraceBlocks", String.format( "(L%s;L"+Vec3dName+";L"+Vec3dName+";)L"+RayTraceResult+";", WorldClassName ) );
-//				return false;
-//		}
-//		
-//		if(calledDesc.equals("(L"+Vec3dName+";L"+Vec3dName+";Z)L"+RayTraceResult+";")
-//			&& calledName.equals(getRuntimeMethodName(m_className,"rayTraceBlocks","func_72901_a"))
-//			&& InheritanceUtils.extendsClass( calledOwner, WorldClassName)){
-//				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onRayTraceBlocks", String.format( "(L%s;L"+Vec3dName+";L"+Vec3dName+";Z)L"+RayTraceResult+";", WorldClassName ) );
-//				return false;
-//		}
-		
 		if(calledDesc.equals("(L"+Vec3dName+";L"+Vec3dName+";ZZZ)L"+RayTraceResult+";")
-			&& calledName.equals(getRuntimeMethodName(m_className,"rayTraceBlocks","func_147447_a"))
+			&& calledName.equals(getRuntimeMethodName(calledOwner,"rayTraceBlocks","func_147447_a"))
 			&& InheritanceUtils.extendsClass( calledOwner, WorldClassName)){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onRayTraceBlocks", String.format( "(L%s;L"+Vec3dName+";L"+Vec3dName+";ZZZ)L"+RayTraceResult+";", WorldClassName ) );
 				return false;
 		}
 		
-		
 		//Method that creates a playerInteractionManager
 		if(calledDesc.equals("(L"+GameProfileName+";)L"+EntityPlayerMPName+";")
-			&& calledName.equals(getRuntimeMethodName(m_className,"createPlayerForUser","func_148545_a"))
+			&& calledName.equals(getRuntimeMethodName(calledOwner,"createPlayerForUser","func_148545_a"))
 			&& (InheritanceUtils.extendsClass( calledOwner, PlayerListName)||InheritanceUtils.extendsClass( m_className, PlayerListName))){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onCreatePlayerForUser", String.format( "(L%s;L"+GameProfileName+";)L"+EntityPlayerMPName+";", PlayerListName ) );
 				return false;
 		}
 		//Method that creates a playerInteractionManager
 		if(calledDesc.equals("(L"+EntityPlayerMPName+";IZ)L"+EntityPlayerMPName+";")
-			&& calledName.equals(getRuntimeMethodName(m_className,"recreatePlayerEntity","func_72368_a"))
+			&& calledName.equals(getRuntimeMethodName(calledOwner,"recreatePlayerEntity","func_72368_a"))
 			&& InheritanceUtils.extendsClass( calledOwner, PlayerListName)){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onRecreatePlayerEntity", String.format( "(L%s;L"+EntityPlayerMPName+";IZ)L"+EntityPlayerMPName+";", PlayerListName ) );
 				return false;
 		}
 
-//		if(calledDesc.equals("(F)V")
-//			&& (calledName.equals(getRuntimeMethodName(m_className,"getMouseOver","func_78473_a"))||calledName.equals(getRuntimeMethodName(calledOwner,"getMouseOver","func_78473_a")))
-//			&& InheritanceUtils.extendsClass( calledOwner, EntityRendererName)){
-//				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onGetMouseOver", String.format( "(L%s;F)V", EntityRendererName ) );
-//				return false;
-//		}
-
 		if(calledDesc.equals("(L"+EntityClassName+";)V")
-			&& calledName.equals(getRuntimeMethodName(m_className,"onEntityRemoved","func_72847_b"))
+			&& calledName.equals(getRuntimeMethodName(calledOwner,"onEntityRemoved","func_72847_b"))
 			&& InheritanceUtils.extendsClass( calledOwner, WorldClassName)){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onEntityRemoved", String.format( "(L%s;L"+EntityClassName+";)V", WorldClassName ) );
 				return false;
 		}
 		if(calledDesc.equals("(L"+EntityClassName+";)V")
-			&& calledName.equals(getRuntimeMethodName(m_className,"onEntityAdded","func_72923_a"))
+			&& calledName.equals(getRuntimeMethodName(calledOwner,"onEntityAdded","func_72923_a"))
 			&& InheritanceUtils.extendsClass( calledOwner, WorldClassName)){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onEntityAdded", String.format( "(L%s;L"+EntityClassName+";)V", WorldClassName ) );
 				return false;
@@ -163,21 +132,6 @@ public class TransformAdapter extends ClassVisitor{
 				return false;
 		}
 		
-		if(calledDesc.equals("(L"+RenderChunkName+";)V")
-			&& calledName.equals(getRuntimeMethodName(m_className,"preRenderChunk","func_178003_a"))
-			&& InheritanceUtils.extendsClass( calledOwner, ChunkRenderContainerName)){
-				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onPreRenderChunk", String.format( "(L%s;L"+RenderChunkName+";)V", ChunkRenderContainerName ) );
-				return false;
-		}
-		
-		if(calledDesc.equals("(L"+EntityClassName+";DL"+ICameraName+";IZ)V")
-			&& calledName.equals(getRuntimeMethodName(m_className,"setupTerrain","func_174970_a"))
-			&& InheritanceUtils.extendsClass( calledOwner, RenderGlobalName)){
-				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onSetupTerrain", String.format( "(L%s;L"+EntityClassName+";DL"+ICameraName+";IZ)V", RenderGlobalName ) );
-				return false;
-		}
-		
-		
 		if(calledDesc.equals("(L"+ChunkName+";)V")
 			&& calledName.equals( getRuntimeMethodName( m_className, "unload", "func_189549_a" ) )
 			&& InheritanceUtils.extendsClass( calledOwner, ChunkProviderServerName)){
@@ -185,101 +139,13 @@ public class TransformAdapter extends ClassVisitor{
 				return false;
 		}
 		
-		
 		if(calledDesc.equals("(DDD)V")
-			&& calledName.equals( getRuntimeMethodName( m_className, "moveEntity", "func_70091_d" ) )
+			&& calledName.equals( getRuntimeMethodName( calledOwner, "moveEntity", "func_70091_d" ) )
 			&& InheritanceUtils.extendsClass( calledOwner, EntityClassName)){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onEntityMove", String.format( "(L%s;DDD)V", EntityClassName ) );
 				return false;
 		}
-		/*if(calledDesc.equals("(L"+EntityPlayerName+";DDDDIL"+PacketName+";)V")
-			&& calledName.equals(getRuntimeMethodName(m_className,"sendToAllNearExcept","func_148543_a"))
-			&& InheritanceUtils.extendsClass( calledOwner, ServerConfigurationManagerName)){
-				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.Path, "onSendToAllNearExcept", String.format( "(L%s;L"+EntityPlayerName+";DDDDIL"+PacketName+";)V", ServerConfigurationManagerName ) );
-				return false;
-		}*/
-		/*if(calledDesc.equals("(IFJ)V")
-			&& calledName.equals(getRuntimeMethodName(m_className,"renderWorldPass","func_175068_a"))
-			&& InheritanceUtils.extendsClass( calledOwner, EntityRendererClassName)){
-				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrianWarfarePlugin.Path, "onRenderWorldPass", String.format( "(L%s;IFJ)V", EntityRendererClassName ) );
-				return false;
-		}
-		if(calledDesc.equals("(F)V")
-			&& calledName.equals(getRuntimeMethodName(m_className,"getMouseOver","func_78473_a"))
-			&& InheritanceUtils.extendsClass( calledOwner, EntityRendererClassName)){
-				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrianWarfarePlugin.Path, "onGetMouseOver", String.format( "(L%s;F)V", EntityRendererClassName ) );
-				return false;
-		}
-		if(calledDesc.equals("(F)V")
-			&& calledName.equals(getRuntimeMethodName(m_className,"orientCamera","func_78467_g"))
-			&& InheritanceUtils.extendsClass( calledOwner, EntityRendererClassName)){
-				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrianWarfarePlugin.Path, "onOrientCamera", String.format( "(L%s;F)V", EntityRendererClassName ) );
-				return false;
-		}*/
-		/*if(calledDesc.equals("(DDD)V")
-			&& calledName.equals( getRuntimeMethodName( m_className, "moveEntity", "func_70091_d" ) )
-			&& InheritanceUtils.extendsClass( calledOwner, EntityClassName)){
-				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.Path, "onEntityMove", String.format( "(L%s;DDD)V", EntityClassName ) );
-				return false;
-		}
-		if(calledDesc.equals("()Z")
-				&& calledName.equals( getRuntimeMethodName( EntityLivingBaseName, "isOnLadder", "func_70617_f_" ) )
-				&& InheritanceUtils.extendsClass( calledOwner, EntityClassName)){
-					mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.Path, "isEntityOnLadder", String.format("(L%s;)Z", EntityLivingBaseName ) );
-					return false;
-			}
-		if(calledDesc.equals("()V")
-			&& calledName.equals( getRuntimeMethodName( EntityClassName, "onUpdate", "func_70071_h_" ) )
-			&& InheritanceUtils.extendsClass( calledOwner, EntityClassName)){
-				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.Path, "onEntityUpdate", String.format( "(L%s;)V", EntityClassName ) );
-				return false;
-		}
-		if(calledDesc.equals("(L"+BlockPosClassName+";I)I")
-			&& calledName.equals( getRuntimeMethodName( WorldClassName, "getCombinedLight", "func_175626_b" ) )
-			&& InheritanceUtils.extendsClass( calledOwner, WorldClassName)){
-				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.Path, "onGetCombinedLight", String.format( "(L%s;L"+BlockPosClassName+";I)I", WorldClassName ) );
-				return false;
-		}
-		if(calledDesc.equals("()V")
-			&& calledName.equals(getRuntimeMethodName(ExplosionClassName,"doExplosionA","func_77278_a"))
-			&& InheritanceUtils.extendsClass( calledOwner, ExplosionClassName)){
-				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.Path, "onExplosionA", String.format("(L%s;)V", ExplosionClassName ) );
-				return false;	
-		}
 
-		/*if(calledDesc.equals("()Ljava/lang/String;")
-			&& calledName.equals("getTitle")
-			&& InheritanceUtils.extendsClass( calledOwner, progressBar)){
-				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrianWarfarePlugin.Path, "getProgressTitle", String.format( "(L%s;)Ljava/lang/String;", progressBar ) );
-				return false;
-		}
-		if(calledDesc.equals("()Ljava/lang/String;")
-			&& calledName.equals("getMessage")
-			&& InheritanceUtils.extendsClass( calledOwner, progressBar)){
-				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrianWarfarePlugin.Path, "getProgressMessage", String.format( "(L%s;)Ljava/lang/String;", progressBar ) );
-				return false;
-		}
-		if(calledDesc.equals("()I")
-			&& calledName.equals("getStep")
-			&& InheritanceUtils.extendsClass( calledOwner, progressBar)){
-				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrianWarfarePlugin.Path, "getProgressStep", String.format( "(L%s;)I", progressBar ) );
-				return false;
-		}
-		if(calledDesc.equals("()I")
-			&& calledName.equals("getSteps")
-			&& InheritanceUtils.extendsClass( calledOwner, progressBar)){
-				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrianWarfarePlugin.Path, "getProgressSteps", String.format( "(L%s;)I", progressBar ) );
-				return false;
-		}*/
-		
-		
-		
-		/*if(calledDesc.equals("(L"+EnumSkyBlockName+";L"+BlockPosClassName+";)Z")
-				&& calledName.equals( getRuntimeMethodName( WorldClassName, "checkLightFor", "func_180500_c"))
-				&& InheritanceUtils.extendsClass( calledOwner, WorldClassName)){
-					mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrianWarfarePlugin.Path, "onCheckLight", String.format( "(L%s;L"+EnumSkyBlockName+";L"+BlockPosClassName+";)Z", WorldClassName ) );
-					return false;
-			}*/
 		return true;
 	}
 

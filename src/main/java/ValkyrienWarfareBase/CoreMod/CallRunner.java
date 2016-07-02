@@ -12,7 +12,6 @@ import ValkyrienWarfareBase.Interaction.CustomPlayerInteractionManager;
 import ValkyrienWarfareBase.Math.RotationMatrices;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -33,18 +32,10 @@ import net.minecraft.world.demo.DemoWorldManager;
 import net.minecraft.world.gen.ChunkProviderServer;
 
 public class CallRunner {
-
-	public RayTraceResult onRayTraceBlocks(World world, Vec3d start, Vec3d end)
-    {
-        return onRayTraceBlocks(world,start, end, false, false, false);
-    }
-	
-	public static RayTraceResult onRayTraceBlocks(World world,Vec3d start, Vec3d end, boolean stopOnLiquid){
-		return onRayTraceBlocks(world, start, end, stopOnLiquid, false, false);
-	}
 	
 	public static RayTraceResult onRayTraceBlocks(World world,Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock)
     {
+		
 		RayTraceResult vanillaTrace = world.rayTraceBlocks(vec31, vec32, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
 		
 		WorldPhysObjectManager physManager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(world);
@@ -79,15 +70,16 @@ public class CallRunner {
             
             RayTraceResult resultInShip = world.rayTraceBlocks(playerEyesPos, playerEyesReachAdded, false, false, true);
             
-            double shipResultDistFromPlayer = resultInShip.hitVec.distanceTo(playerEyesPos);
-            
-            if(shipResultDistFromPlayer<worldResultDistFromPlayer){
-            	worldResultDistFromPlayer = shipResultDistFromPlayer;
-            	
-            	resultInShip.hitVec = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, resultInShip.hitVec);
-            	
-            	
-            	vanillaTrace = resultInShip;
+            if(resultInShip.hitVec!=null){
+	            double shipResultDistFromPlayer = resultInShip.hitVec.distanceTo(playerEyesPos);
+	            
+	            if(shipResultDistFromPlayer<worldResultDistFromPlayer){
+	            	worldResultDistFromPlayer = shipResultDistFromPlayer;
+	            	
+	            	resultInShip.hitVec = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, resultInShip.hitVec);
+	            	
+	            	vanillaTrace = resultInShip;
+	            }
             }
 		}
 		

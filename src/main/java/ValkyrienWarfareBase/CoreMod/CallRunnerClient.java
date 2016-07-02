@@ -20,6 +20,15 @@ import net.minecraft.util.math.Vec3d;
 
 public class CallRunnerClient {
 
+	public static RayTraceResult onRayTrace(Entity entity,double blockReachDistance, float partialTicks)
+    {
+        Vec3d vec3d = entity.getPositionEyes(partialTicks);
+        Vec3d vec3d1 = entity.getLook(partialTicks);
+        Vec3d vec3d2 = vec3d.addVector(vec3d1.xCoord * blockReachDistance, vec3d1.yCoord * blockReachDistance, vec3d1.zCoord * blockReachDistance);
+        
+        return CallRunner.onRayTraceBlocks(entity.worldObj,vec3d, vec3d2, false, false, true);
+    }
+	
 	public static void onGetMouseOver(EntityRenderer renderer,float partialTicks){
 		renderer.getMouseOver(partialTicks);
 		
@@ -100,7 +109,7 @@ public class CallRunnerClient {
 				default:
 					break;
 				}
-				
+				wrapper.wrapping.renderer.renderBlockLayer(blockLayerIn,partialTicks,pass);
 			}
 		}
 		return renderer.renderBlockLayer(blockLayerIn, partialTicks, pass, entityIn);

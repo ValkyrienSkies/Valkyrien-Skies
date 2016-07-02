@@ -221,7 +221,7 @@ public class PhysicsObject {
 	
 	public void onTick(){
 		//Move xyz here
-		yaw = 0D;
+//		yaw = 0D;
 		//Update coordinate transforms
 		coordTransform.updateTransforms();
 		if(!worldObj.isRemote){

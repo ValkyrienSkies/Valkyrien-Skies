@@ -9,8 +9,10 @@ import com.mojang.authlib.GameProfile;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.Collision.EntityCollisionInjector;
 import ValkyrienWarfareBase.Interaction.CustomPlayerInteractionManager;
+import ValkyrienWarfareBase.Math.RotationMatrices;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -32,6 +34,15 @@ import net.minecraft.world.gen.ChunkProviderServer;
 
 public class CallRunner {
 
+	public RayTraceResult onRayTraceBlocks(World world, Vec3d start, Vec3d end)
+    {
+        return onRayTraceBlocks(world,start, end, false, false, false);
+    }
+	
+	public static RayTraceResult onRayTraceBlocks(World world,Vec3d start, Vec3d end, boolean stopOnLiquid){
+		return onRayTraceBlocks(world, start, end, stopOnLiquid, false, false);
+	}
+	
 	public static RayTraceResult onRayTraceBlocks(World world,Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock)
     {
 		RayTraceResult vanillaTrace = world.rayTraceBlocks(vec31, vec32, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
@@ -43,7 +54,42 @@ public class CallRunner {
 		List<PhysicsWrapperEntity> nearbyShips = physManager.getNearbyPhysObjects(world, playerRangeBB);
 		boolean changed = false;
 		
+		Vec3d playerEyesPos = vec31;
+        Vec3d playerReachVector = vec32.subtract(vec31);
+        
+        double reachDistance = playerReachVector.lengthVector();
 		
+		
+		double worldResultDistFromPlayer = 420D;
+		
+		if(vanillaTrace!=null&&vanillaTrace.hitVec!=null){
+			worldResultDistFromPlayer = vanillaTrace.hitVec.distanceTo(vec31);
+		}
+		
+		for(PhysicsWrapperEntity wrapper:nearbyShips){
+			
+            playerEyesPos = vec31;
+            playerReachVector = vec32.subtract(vec31);
+            
+            //Transform the coordinate system for the player eye pos
+            playerEyesPos = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, playerEyesPos);
+            playerReachVector = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLRotation, playerReachVector);
+            
+            Vec3d playerEyesReachAdded = playerEyesPos.addVector(playerReachVector.xCoord * reachDistance, playerReachVector.yCoord * reachDistance, playerReachVector.zCoord * reachDistance);
+            
+            RayTraceResult resultInShip = world.rayTraceBlocks(playerEyesPos, playerEyesReachAdded, false, false, true);
+            
+            double shipResultDistFromPlayer = resultInShip.hitVec.distanceTo(playerEyesPos);
+            
+            if(shipResultDistFromPlayer<worldResultDistFromPlayer){
+            	worldResultDistFromPlayer = shipResultDistFromPlayer;
+            	
+            	resultInShip.hitVec = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, resultInShip.hitVec);
+            	
+            	
+            	vanillaTrace = resultInShip;
+            }
+		}
 		
 		
 		return vanillaTrace;

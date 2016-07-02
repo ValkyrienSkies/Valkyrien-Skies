@@ -91,9 +91,31 @@ public class TransformAdapter extends ClassVisitor{
 	}
 
 	private boolean runTransformer(String calledName,String calledDesc,String calledOwner,MethodVisitor mv){
+		
+//		if(calledDesc.equals("(DF)L"+RayTraceResult+";")
+//			&& calledName.equals( getRuntimeMethodName( m_className, "rayTrace", "func_174822_a" ) )
+//			&& (InheritanceUtils.extendsClass( calledOwner, EntityClassName))){
+//				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onRayTrace", String.format( "(L%s;DF)L"+RayTraceResult+";", EntityClassName ) );
+//				return false;
+//		}
+//		
+//		if(calledDesc.equals("(L"+Vec3dName+";L"+Vec3dName+";)L"+RayTraceResult+";")
+//			&& calledName.equals(getRuntimeMethodName(m_className,"rayTraceBlocks","func_72933_a"))
+//			&& InheritanceUtils.extendsClass( calledOwner, WorldClassName)){
+//				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onRayTraceBlocks", String.format( "(L%s;L"+Vec3dName+";L"+Vec3dName+";)L"+RayTraceResult+";", WorldClassName ) );
+//				return false;
+//		}
+//		
+//		if(calledDesc.equals("(L"+Vec3dName+";L"+Vec3dName+";Z)L"+RayTraceResult+";")
+//			&& calledName.equals(getRuntimeMethodName(m_className,"rayTraceBlocks","func_72901_a"))
+//			&& InheritanceUtils.extendsClass( calledOwner, WorldClassName)){
+//				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onRayTraceBlocks", String.format( "(L%s;L"+Vec3dName+";L"+Vec3dName+";Z)L"+RayTraceResult+";", WorldClassName ) );
+//				return false;
+//		}
+		
 		if(calledDesc.equals("(L"+Vec3dName+";L"+Vec3dName+";ZZZ)L"+RayTraceResult+";")
-			&& calledName.equals(getRuntimeMethodName(m_className,"rayTraceBlocks","RENAMEME"))
-			&& (InheritanceUtils.extendsClass( calledOwner, WorldClassName)||InheritanceUtils.extendsClass( m_className, WorldClassName))){
+			&& calledName.equals(getRuntimeMethodName(m_className,"rayTraceBlocks","func_147447_a"))
+			&& InheritanceUtils.extendsClass( calledOwner, WorldClassName)){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onRayTraceBlocks", String.format( "(L%s;L"+Vec3dName+";L"+Vec3dName+";ZZZ)L"+RayTraceResult+";", WorldClassName ) );
 				return false;
 		}

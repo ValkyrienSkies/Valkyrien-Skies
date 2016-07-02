@@ -5,7 +5,7 @@ import org.objectweb.asm.ClassReader;
 public class InheritanceUtils{
 	private static final String[] leafPackages = { "java/", "javax/" };
 	
-	public static boolean extendsClass( String className, String targetClassName ){
+	public static boolean extendsClass( String className, String targetClassName ){		
 		if( className.equalsIgnoreCase( targetClassName ) ){
 			return true;
 		}else if( isLeafPackage( className ) ){

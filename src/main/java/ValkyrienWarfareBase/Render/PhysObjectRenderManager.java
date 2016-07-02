@@ -2,7 +2,9 @@ package ValkyrienWarfareBase.Render;
 
 import org.lwjgl.opengl.GL11;
 
+import ValkyrienWarfareBase.Math.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
+import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GLAllocation;
@@ -108,6 +110,62 @@ public class PhysObjectRenderManager {
 				break;
 			default:
 				break;
+		}
+	}
+	
+	public void renderBlockLayer(BlockRenderLayer layerToRender,double partialTicks,int pass){
+		GL11.glPushMatrix();
+		setupTranslation(partialTicks);
+		switch(layerToRender){
+			case CUTOUT:
+				GL11.glCallList(glCallListCutout);
+				break;
+			case CUTOUT_MIPPED:
+				GL11.glCallList(glCallListCutoutMipped);
+				break;
+			case SOLID:
+				GL11.glCallList(glCallListSolid);
+				break;
+			case TRANSLUCENT:
+				GL11.glCallList(glCallListTranslucent);
+				break;
+			default:
+				break;
+		}
+		GL11.glPopMatrix();
+	}
+	
+	public void setupTranslation(double partialTicks){
+		PhysicsWrapperEntity entity = parent.wrapper;
+		
+//		entity.wrapping.yaw++;
+		
+		Vector centerOfRotation = entity.wrapping.centerCoord;
+		double moddedX = entity.lastTickPosX+(entity.posX-entity.lastTickPosX)*partialTicks;
+		double moddedY = entity.lastTickPosY+(entity.posY-entity.lastTickPosY)*partialTicks;
+		double moddedZ = entity.lastTickPosZ+(entity.posZ-entity.lastTickPosZ)*partialTicks;
+		double p0 = Minecraft.getMinecraft().thePlayer.lastTickPosX + (Minecraft.getMinecraft().thePlayer.posX - Minecraft.getMinecraft().thePlayer.lastTickPosX) * (double)partialTicks;
+		double p1 = Minecraft.getMinecraft().thePlayer.lastTickPosY + (Minecraft.getMinecraft().thePlayer.posY - Minecraft.getMinecraft().thePlayer.lastTickPosY) * (double)partialTicks;
+		double p2 = Minecraft.getMinecraft().thePlayer.lastTickPosZ + (Minecraft.getMinecraft().thePlayer.posZ - Minecraft.getMinecraft().thePlayer.lastTickPosZ) * (double)partialTicks;
+		
+		double moddedPitch = entity.wrapping.pitch;
+		double moddedYaw = entity.wrapping.yaw;
+		double moddedRoll = entity.wrapping.roll;
+		
+		if(entity.wrapping.renderer.offsetPos!=null){
+			double offsetX = entity.wrapping.renderer.offsetPos.getX()-centerOfRotation.X;
+			double offsetY = entity.wrapping.renderer.offsetPos.getY()-centerOfRotation.Y;
+			double offsetZ = entity.wrapping.renderer.offsetPos.getZ()-centerOfRotation.Z;
+			//This happens first
+			GL11.glTranslated(offsetX,offsetY,offsetZ);
+			GlStateManager.translate(-p0+moddedX, -p1+moddedY, -p2+moddedZ);
+			//This happens BETWEEN
+			GL11.glRotated(moddedPitch, 1D, 0, 0);
+			GL11.glRotated(moddedYaw, 0, 1D, 0);
+			GL11.glRotated(moddedRoll, 0, 0, 1D);
+			
+			//This is supposed to happen last
+			
 		}
 	}
 	

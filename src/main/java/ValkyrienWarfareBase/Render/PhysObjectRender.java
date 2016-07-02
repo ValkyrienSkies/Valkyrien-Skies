@@ -30,7 +30,7 @@ public class PhysObjectRender extends Render<PhysicsWrapperEntity>{
 	@Override
 	public void doRender(PhysicsWrapperEntity entity, double x, double y, double z, float entityYaw, float partialTicks){
 		GL11.glPushMatrix();
-		int i = 15728880;//entity.getBrightnessForRender(partialTicks);
+		/*int i = 15728880;//entity.getBrightnessForRender(partialTicks);
         int j = i % 65536;
         int k = i / 65536;
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)j, (float)k);
@@ -79,7 +79,7 @@ public class PhysObjectRender extends Render<PhysicsWrapperEntity>{
                     super.doRender(entity, x, y, z, entityYaw, partialTicks);
                 }
             }
-        }
+        }*/
 		GL11.glPopMatrix();
     }
 	

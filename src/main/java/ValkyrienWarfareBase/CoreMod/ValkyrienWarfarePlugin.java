@@ -8,7 +8,7 @@ import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin.Name;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin.TransformerExclusions;
 
 @Name("ValkyrienWarfareBase CoreMod")
-@IFMLLoadingPlugin.SortingIndex(1000)
+@IFMLLoadingPlugin.SortingIndex(0)
 @TransformerExclusions({"ValkyrienWarfareBase"})
 @MCVersion("1.9.4")
 public class ValkyrienWarfarePlugin implements IFMLLoadingPlugin{

@@ -3,13 +3,12 @@ package ValkyrienWarfareBase.CoreMod;
 import java.lang.reflect.Field;
 import java.util.Map;
 
-import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
-
-import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
+
+import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
 
 /**
  * Basically handles all the byte transforms
@@ -48,6 +47,9 @@ public class TransformAdapter extends ClassVisitor{
 	private final String SPacketJoinGameName;
 	private final String INetHandlerPlayClientName;
 	private final String ChunkName;
+	private final String MinecraftName;
+	private final String RayTraceResult;
+	private final String Vec3dName;
 	
 	public TransformAdapter( int api, boolean isObfuscatedEnvironment ){
 		super( api, null );
@@ -80,17 +82,23 @@ public class TransformAdapter extends ClassVisitor{
 		SPacketJoinGameName = getRuntimeClassName("net/minecraft/network/play/server/SPacketJoinGame");
 		INetHandlerPlayClientName = getRuntimeClassName("net/minecraft/network/play/INetHandlerPlayClient");
 		ChunkName = getRuntimeClassName("net/minecraft/world/chunk/Chunk");
+		MinecraftName = getRuntimeClassName("net/minecraft/client/Minecraft");
 		
-		
+		RayTraceResult = getRuntimeClassName("net/minecraft/util/math/RayTraceResult");
+		Vec3dName = getRuntimeClassName("net/minecraft/util/math/Vec3d");
 //		progressManager = getRuntimeClassName("net/minecraftforge/fml/common/ProgressManager");
 //		progressBar = getRuntimeClassName("net/minecraftforge/fml/common/ProgressManager$ProgressBar");
 	}
 
 	private boolean runTransformer(String calledName,String calledDesc,String calledOwner,MethodVisitor mv){
-		if(InheritanceUtils.extendsClass( calledOwner, EntityRendererName)){
-//			int i = 10;
-//			i/=0;
+		if(calledDesc.equals("(L"+Vec3dName+";L"+Vec3dName+";ZZZ)L"+RayTraceResult+";")
+			&& calledName.equals(getRuntimeMethodName(m_className,"rayTraceBlocks","RENAMEME"))
+			&& (InheritanceUtils.extendsClass( calledOwner, WorldClassName)||InheritanceUtils.extendsClass( m_className, WorldClassName))){
+				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onRayTraceBlocks", String.format( "(L%s;L"+Vec3dName+";L"+Vec3dName+";ZZZ)L"+RayTraceResult+";", WorldClassName ) );
+				return false;
 		}
+		
+		
 		//Method that creates a playerInteractionManager
 		if(calledDesc.equals("(L"+GameProfileName+";)L"+EntityPlayerMPName+";")
 			&& calledName.equals(getRuntimeMethodName(m_className,"createPlayerForUser","func_148545_a"))
@@ -106,12 +114,12 @@ public class TransformAdapter extends ClassVisitor{
 				return false;
 		}
 
-		if(calledDesc.equals("(F)V")
-			&& (calledName.equals(getRuntimeMethodName(m_className,"getMouseOver","func_78473_a"))||calledName.equals(getRuntimeMethodName(calledOwner,"getMouseOver","func_78473_a")))
-			&& InheritanceUtils.extendsClass( calledOwner, EntityRendererName)){
-				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onGetMouseOver", String.format( "(L%s;F)V", EntityRendererName ) );
-				return false;
-		}
+//		if(calledDesc.equals("(F)V")
+//			&& (calledName.equals(getRuntimeMethodName(m_className,"getMouseOver","func_78473_a"))||calledName.equals(getRuntimeMethodName(calledOwner,"getMouseOver","func_78473_a")))
+//			&& InheritanceUtils.extendsClass( calledOwner, EntityRendererName)){
+//				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onGetMouseOver", String.format( "(L%s;F)V", EntityRendererName ) );
+//				return false;
+//		}
 
 		if(calledDesc.equals("(L"+EntityClassName+";)V")
 			&& calledName.equals(getRuntimeMethodName(m_className,"onEntityRemoved","func_72847_b"))

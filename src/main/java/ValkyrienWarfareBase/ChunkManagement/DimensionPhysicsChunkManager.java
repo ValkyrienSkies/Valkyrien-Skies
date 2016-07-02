@@ -21,7 +21,7 @@ public class DimensionPhysicsChunkManager {
 	}
 	
 	public boolean isChunkInShipRange(World world,int x,int z){
-		return getManagerForWorld(world).isChunkInShipRange(x, z);
+		return getManagerForWorld(world).isChunkInShipRange(x, z, world.isRemote);
 	}
 	
 	public PhysicsChunkManager getManagerForWorld(World world){

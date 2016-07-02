@@ -33,6 +33,19 @@ import net.minecraft.world.gen.ChunkProviderServer;
 
 public class CallRunner {
 	
+	public static void onMarkBlockRangeForRenderUpdate(World worldFor,int x1, int y1, int z1, int x2, int y2, int z2){
+//		if(worldFor.isRemote){	
+//			int midX = (x1+x2)/2;
+//			int midZ = (z1+z2)/2;
+//			Chunk chunk = worldFor.getChunkFromChunkCoords((midX>>4),(midZ)>>4);
+//			PhysicsWrapperEntity chunkOwner = ValkyrienWarfareMod.physicsManager.getObjectManagingChunk(chunk);
+//			if(chunkOwner!=null){
+//				chunkOwner.wrapping.renderer.markForUpdate();
+//			}
+//		}
+		worldFor.markBlockRangeForRenderUpdate(x1, y1, z1, x2, y2, z2);
+	}
+	
 	public static RayTraceResult onRayTraceBlocks(World world,Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock)
     {
 		

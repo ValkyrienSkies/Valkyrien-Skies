@@ -89,6 +89,12 @@ public class TransformAdapter extends ClassVisitor{
 	}
 
 	private boolean runTransformer(String calledName,String calledDesc,String calledOwner,MethodVisitor mv){
+		if(calledDesc.equals("(IIIIII)V")
+			&& calledName.equals( getRuntimeMethodName( calledOwner, "markBlockRangeForRenderUpdate", "func_147458_c" ) )
+			&& InheritanceUtils.extendsClass( calledOwner, WorldClassName)){
+				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onMarkBlockRangeForRenderUpdate", String.format( "(L%s;IIIIII)V", WorldClassName ) );
+				return false;
+		}
 		
 		if(calledDesc.equals("(L"+Vec3dName+";L"+Vec3dName+";ZZZ)L"+RayTraceResult+";")
 			&& calledName.equals(getRuntimeMethodName(calledOwner,"rayTraceBlocks","func_147447_a"))
@@ -126,7 +132,7 @@ public class TransformAdapter extends ClassVisitor{
 		}
 		
 		if(calledDesc.equals("(L"+BlockRenderLayerName+";DIL"+EntityClassName+";)I")
-			&& ( calledName.equals(getRuntimeMethodName(m_className,"renderBlockLayer","func_174977_a")) || calledName.equals(getRuntimeMethodName(calledOwner,"renderBlockLayer","func_174977_a")) )
+			&& ( calledName.equals(getRuntimeMethodName(calledOwner,"renderBlockLayer","func_174977_a")) || calledName.equals(getRuntimeMethodName(calledOwner,"renderBlockLayer","func_174977_a")) )
 			&& InheritanceUtils.extendsClass( calledOwner, RenderGlobalName)){
 			mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onRenderBlockLayer", String.format( "(L%s;L"+BlockRenderLayerName+";DIL"+EntityClassName+";)I", RenderGlobalName ) );
 				return false;

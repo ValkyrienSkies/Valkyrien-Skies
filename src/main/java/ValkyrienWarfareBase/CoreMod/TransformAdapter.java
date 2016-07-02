@@ -133,7 +133,7 @@ public class TransformAdapter extends ClassVisitor{
 		}
 		
 		if(calledDesc.equals("(L"+ChunkName+";)V")
-			&& calledName.equals( getRuntimeMethodName( m_className, "unload", "func_189549_a" ) )
+			&& calledName.equals( getRuntimeMethodName( calledOwner, "unload", "func_189549_a" ) )
 			&& InheritanceUtils.extendsClass( calledOwner, ChunkProviderServerName)){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onChunkUnload", String.format( "(L%s;L"+ChunkName+";)V", ChunkProviderServerName ) );
 				return false;

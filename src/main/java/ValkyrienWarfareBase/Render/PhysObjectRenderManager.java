@@ -9,6 +9,8 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -75,23 +77,23 @@ public class PhysObjectRenderManager {
 				break;
 		}
 			
-		    	GlStateManager.pushMatrix();
-		    	worldrenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-			    IBlockState iblockstate;
-		        if (Minecraft.isAmbientOcclusionEnabled()) {
-		            GlStateManager.shadeModel(GL11.GL_SMOOTH);
-		        } else {
-		            GlStateManager.shadeModel(GL11.GL_FLAT);
-		        }
-			    for(BlockPos pos:parent.blockPositions){
-			    	iblockstate=parent.worldObj.getBlockState(pos);
-		            if(iblockstate.getBlock().canRenderInLayer(iblockstate, layerToUpdate)){
-		            	Minecraft.getMinecraft().getBlockRendererDispatcher().renderBlock(iblockstate, pos, parent.worldObj, worldrenderer);
-		            }
-		        }
-			    tessellator.draw();
-			    GlStateManager.popMatrix();
-			GL11.glEndList();
+		GlStateManager.pushMatrix();
+		worldrenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+		IBlockState iblockstate;
+//		if (Minecraft.isAmbientOcclusionEnabled()) {
+//			GlStateManager.shadeModel(GL11.GL_SMOOTH);
+//		} else {
+//			GlStateManager.shadeModel(GL11.GL_FLAT);
+//		}
+		for(BlockPos pos:parent.blockPositions){
+			iblockstate=parent.worldObj.getBlockState(pos);
+			if(iblockstate.getBlock().canRenderInLayer(iblockstate, layerToUpdate)){
+				Minecraft.getMinecraft().getBlockRendererDispatcher().renderBlock(iblockstate, pos, parent.worldObj, worldrenderer);
+			}
+		}
+		tessellator.draw();
+		GlStateManager.popMatrix();
+		GL11.glEndList();
 		GL11.glPopMatrix();
 		worldrenderer.setTranslation(0,0,0);
 
@@ -115,6 +117,14 @@ public class PhysObjectRenderManager {
 	
 	public void renderBlockLayer(BlockRenderLayer layerToRender,double partialTicks,int pass){
 		GL11.glPushMatrix();
+		Minecraft.getMinecraft().entityRenderer.enableLightmap();
+		int i = parent.wrapper.getBrightnessForRender((float) partialTicks);
+
+        int j = i % 65536;
+        int k = i / 65536;
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)j, (float)k);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		
 		setupTranslation(partialTicks);
 		switch(layerToRender){
 			case CUTOUT:
@@ -132,6 +142,7 @@ public class PhysObjectRenderManager {
 			default:
 				break;
 		}
+		Minecraft.getMinecraft().entityRenderer.disableLightmap();
 		GL11.glPopMatrix();
 	}
 	

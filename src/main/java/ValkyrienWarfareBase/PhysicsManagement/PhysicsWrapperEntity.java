@@ -49,11 +49,6 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 	}
 
 	@Override
-	public AxisAlignedBB getEntityBoundingBox(){
-        return wrapping.collisionBB;
-    }
-	
-	@Override
 	protected void readEntityFromNBT(NBTTagCompound tagCompund) {
 		wrapping.readFromNBTTag(tagCompund);
 	}

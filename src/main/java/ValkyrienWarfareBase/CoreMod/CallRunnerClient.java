@@ -10,6 +10,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ChunkRenderContainer;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.RenderGlobal;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.chunk.RenderChunk;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.entity.Entity;
@@ -82,10 +84,11 @@ public class CallRunnerClient {
 	}
 	
 	public static int onRenderBlockLayer(RenderGlobal renderer,BlockRenderLayer blockLayerIn, double partialTicks, int pass, Entity entityIn){
-		for(Entity ent:Minecraft.getMinecraft().theWorld.loadedEntityList){
-			if(ent instanceof PhysicsWrapperEntity){
-				PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity)ent;
-				switch(blockLayerIn){
+		for(PhysicsWrapperEntity wrapper:ValkyrienWarfareMod.physicsManager.getManagerForWorld(renderer.theWorld).physicsEntities){
+			Tessellator tessellator = Tessellator.getInstance();
+			VertexBuffer worldrenderer = tessellator.getBuffer();
+//			wrapper.wrapping.renderer.markForUpdate();
+			switch(blockLayerIn){
 				case CUTOUT:
 					if(wrapper.wrapping.renderer.needsCutoutUpdate){
 						wrapper.wrapping.renderer.updateList(blockLayerIn);
@@ -108,9 +111,9 @@ public class CallRunnerClient {
 					break;
 				default:
 					break;
-				}
-				wrapper.wrapping.renderer.renderBlockLayer(blockLayerIn,partialTicks,pass);
 			}
+//			worldrenderer.setTranslation(0,0,0);
+			wrapper.wrapping.renderer.renderBlockLayer(blockLayerIn,partialTicks,pass);
 		}
 		return renderer.renderBlockLayer(blockLayerIn, partialTicks, pass, entityIn);
 	}

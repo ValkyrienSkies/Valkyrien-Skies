@@ -56,7 +56,6 @@ public class PhysicsChunkManager {
 		
 		boolean xInRange = (x<nextChunkX&&x>=(xChunkStartingPos-chunkRadius))||isClient;
 		boolean zInRange = z<nextChunkZ&&z>=(zChunkStartingPos-chunkRadius);
-		
 		return xInRange&&zInRange;
 	}
 

@@ -27,9 +27,10 @@ public class PhysObjectRender extends Render<PhysicsWrapperEntity>{
 		super(renderManager);
 	}
 	
+	//Do Nothing
 	@Override
 	public void doRender(PhysicsWrapperEntity entity, double x, double y, double z, float entityYaw, float partialTicks){
-		GL11.glPushMatrix();
+//		GL11.glPushMatrix();
 		/*int i = 15728880;//entity.getBrightnessForRender(partialTicks);
         int j = i % 65536;
         int k = i / 65536;
@@ -80,7 +81,7 @@ public class PhysObjectRender extends Render<PhysicsWrapperEntity>{
                 }
             }
         }*/
-		GL11.glPopMatrix();
+//		GL11.glPopMatrix();
     }
 	
 	public void setupTransform(PhysicsWrapperEntity entity, double x, double y, double z, float entityYaw, float partialTicks){

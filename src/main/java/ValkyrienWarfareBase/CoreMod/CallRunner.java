@@ -12,6 +12,7 @@ import ValkyrienWarfareBase.Interaction.CustomPlayerInteractionManager;
 import ValkyrienWarfareBase.Math.RotationMatrices;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -33,6 +34,20 @@ import net.minecraft.world.gen.ChunkProviderServer;
 
 public class CallRunner {
 	
+	public static boolean onSetBlockState(World world,BlockPos pos, IBlockState newState, int flags)
+    {
+		Chunk chunkFor = world.getChunkFromBlockCoords(pos);
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingChunk(chunkFor);
+		if(wrapper!=null){
+			wrapper.wrapping.onSetBlockState(world.getBlockState(pos), newState, pos);
+			if(world.isRemote){
+				wrapper.wrapping.renderer.markForUpdate();
+			}
+		}
+		return world.setBlockState(pos, newState, flags);
+    }
+	
+	
 	public static void onMarkBlockRangeForRenderUpdate(World worldFor,int x1, int y1, int z1, int x2, int y2, int z2){
 //		if(worldFor.isRemote){	
 //			int midX = (x1+x2)/2;
@@ -40,6 +55,8 @@ public class CallRunner {
 //			Chunk chunk = worldFor.getChunkFromChunkCoords((midX>>4),(midZ)>>4);
 //			PhysicsWrapperEntity chunkOwner = ValkyrienWarfareMod.physicsManager.getObjectManagingChunk(chunk);
 //			if(chunkOwner!=null){
+//				chunkOwner.wrapping.blockPositions.clear();
+//				chunkOwner.wrapping.detectBlockPositions();
 //				chunkOwner.wrapping.renderer.markForUpdate();
 //			}
 //		}

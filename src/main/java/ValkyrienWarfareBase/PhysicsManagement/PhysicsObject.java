@@ -2,10 +2,7 @@ package ValkyrienWarfareBase.PhysicsManagement;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-
-import com.google.common.collect.Lists;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.ChunkManagement.ChunkSet;
@@ -21,10 +18,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketChunkData;
 import net.minecraft.network.play.server.SPacketUnloadChunk;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
@@ -54,19 +49,41 @@ public class PhysicsObject {
 	public Vector centerCoord;
 	public CoordTransformObject coordTransform;
 	public PhysObjectRenderManager renderer;
+	public PhysicsCalculations physicsProcessor;
 	public ArrayList<BlockPos> blockPositions = new ArrayList<BlockPos>();
 	public AxisAlignedBB collisionBB = new AxisAlignedBB(0,0,0,0,0,0);
-	//	public Ticket chunkLoadingTicket;
 	
 	public PhysicsObject(PhysicsWrapperEntity host){
 		wrapper = host;
 		worldObj = host.worldObj;
 		if(host.worldObj.isRemote){
 			renderer = new PhysObjectRenderManager(this);
-		}else{
-//			chunkLoadingTicket = ForgeChunkManager.requestTicket(ValkyrienWarfareMod.instance, worldObj, ForgeChunkManager.Type.NORMAL);
 		}
-//		yaw = 45D;
+	}
+	
+	public void onSetBlockState(IBlockState oldState,IBlockState newState,BlockPos posAt){
+		boolean isOldAir = oldState==null||oldState.getBlock().equals(Blocks.AIR);
+		boolean isNewAir = newState==null||newState.getBlock().equals(Blocks.AIR);
+		
+		if(isOldAir&&isNewAir){
+			blockPositions.remove(posAt);
+		}
+		
+		if(!isOldAir&&isNewAir){
+			blockPositions.remove(posAt);
+		}
+		
+		if(isOldAir&&!isNewAir){
+			blockPositions.add(posAt);
+		}
+		
+		if(!worldObj.isRemote){
+			if(physicsProcessor!=null){
+				physicsProcessor.onSetBlockState(oldState, newState, posAt);
+			}
+		}else{
+			renderer.markForUpdate();
+		}
 	}
 	
 	public void claimNewChunks(){
@@ -96,6 +113,7 @@ public class PhysicsObject {
 		refrenceBlockPos = getRegionCenter();
 		centerCoord = new Vector(refrenceBlockPos.getX(),refrenceBlockPos.getY(),refrenceBlockPos.getZ());
 		coordTransform = new CoordTransformObject(this);
+		physicsProcessor = new PhysicsCalculations(this);
 		BlockPos centerDifference = refrenceBlockPos.subtract(centerInWorld);
 		while(iter.hasNext()){
 			int i = iter.next();
@@ -253,6 +271,9 @@ public class PhysicsObject {
 		}
 		refrenceBlockPos = getRegionCenter();
 		coordTransform = new CoordTransformObject(this);
+		if(!worldObj.isRemote){
+			physicsProcessor = new PhysicsCalculations(this);
+		}
 		detectBlockPositions();
 		coordTransform.updateTransforms();
 	}

@@ -50,6 +50,8 @@ public class TransformAdapter extends ClassVisitor{
 	private final String MinecraftName;
 	private final String RayTraceResult;
 	private final String Vec3dName;
+	private final String IBlockStateName;
+	private final String BlockPosName;
 	
 	public TransformAdapter( int api, boolean isObfuscatedEnvironment ){
 		super( api, null );
@@ -86,9 +88,18 @@ public class TransformAdapter extends ClassVisitor{
 		
 		RayTraceResult = getRuntimeClassName("net/minecraft/util/math/RayTraceResult");
 		Vec3dName = getRuntimeClassName("net/minecraft/util/math/Vec3d");
+		IBlockStateName = getRuntimeClassName("net/minecraft/block/state/IBlockState");
+		BlockPosName = getRuntimeClassName("net/minecraft/util/math/BlockPos");
 	}
 
 	private boolean runTransformer(String calledName,String calledDesc,String calledOwner,MethodVisitor mv){
+		if(calledDesc.equals("(L"+BlockPosName+";L"+IBlockStateName+";I)Z")
+			&& calledName.equals( getRuntimeMethodName( calledOwner, "setBlockState", "RENAMEME" ) )
+			&& InheritanceUtils.extendsClass( calledOwner, WorldClassName)){
+				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onSetBlockState", String.format( "(L%s;L"+BlockPosName+";L"+IBlockStateName+";I)Z", WorldClassName ) );
+				return false;
+		}
+
 		if(calledDesc.equals("(IIIIII)V")
 			&& calledName.equals( getRuntimeMethodName( calledOwner, "markBlockRangeForRenderUpdate", "func_147458_c" ) )
 			&& InheritanceUtils.extendsClass( calledOwner, WorldClassName)){

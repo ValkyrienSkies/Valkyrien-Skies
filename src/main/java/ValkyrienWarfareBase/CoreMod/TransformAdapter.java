@@ -94,7 +94,7 @@ public class TransformAdapter extends ClassVisitor{
 
 	private boolean runTransformer(String calledName,String calledDesc,String calledOwner,MethodVisitor mv){
 		if(calledDesc.equals("(L"+BlockPosName+";L"+IBlockStateName+";I)Z")
-			&& calledName.equals( getRuntimeMethodName( calledOwner, "setBlockState", "RENAMEME" ) )
+			&& calledName.equals( getRuntimeMethodName( calledOwner, "setBlockState", "func_180501_a" ) )
 			&& InheritanceUtils.extendsClass( calledOwner, WorldClassName)){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onSetBlockState", String.format( "(L%s;L"+BlockPosName+";L"+IBlockStateName+";I)Z", WorldClassName ) );
 				return false;

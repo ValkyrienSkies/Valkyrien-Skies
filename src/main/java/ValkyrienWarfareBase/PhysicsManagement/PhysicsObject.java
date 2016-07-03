@@ -75,6 +75,9 @@ public class PhysicsObject {
 		
 		if(isOldAir&&!isNewAir){
 			blockPositions.add(posAt);
+			int chunkX = (posAt.getX()>>4)-claimedChunks[0][0].xPosition;
+			int chunkZ = (posAt.getZ()>>4)-claimedChunks[0][0].zPosition;
+			ownedChunks.chunkOccupiedInLocal[chunkX][chunkZ] = true;
 		}
 		
 		if(!worldObj.isRemote){
@@ -280,8 +283,8 @@ public class PhysicsObject {
 	
 	//Generates the blockPos array; must be loaded DIRECTLY after the chunks are setup
 	public void detectBlockPositions(){
-		int minChunkX = claimedChunks[0][0].xPosition;
-		int minChunkZ = claimedChunks[0][0].zPosition;
+//		int minChunkX = claimedChunks[0][0].xPosition;
+//		int minChunkZ = claimedChunks[0][0].zPosition;
 		int chunkX,chunkZ,index,x,y,z;
 		Chunk chunk;
 		ExtendedBlockStorage storage;

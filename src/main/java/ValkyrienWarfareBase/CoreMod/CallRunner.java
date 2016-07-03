@@ -3,6 +3,8 @@ package ValkyrienWarfareBase.CoreMod;
 import java.util.List;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
 
@@ -10,12 +12,14 @@ import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.Collision.EntityCollisionInjector;
 import ValkyrienWarfareBase.Interaction.CustomPlayerInteractionManager;
 import ValkyrienWarfareBase.Math.RotationMatrices;
+import ValkyrienWarfareBase.Math.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketChangeGameState;
 import net.minecraft.network.play.server.SPacketRespawn;
 import net.minecraft.network.play.server.SPacketSetExperience;
@@ -31,8 +35,27 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.demo.DemoWorldManager;
 import net.minecraft.world.gen.ChunkProviderServer;
+import net.minecraftforge.common.DimensionManager;
 
 public class CallRunner {
+	
+	public static void onSendToAllNearExcept(PlayerList list,@Nullable EntityPlayer except, double x, double y, double z, double radius, int dimension, Packet<?> packetIn)
+    {
+		BlockPos pos = new BlockPos(x,y,z);
+		World worldIn=null;
+		if(except==null){
+			worldIn = DimensionManager.getWorld(dimension);
+		}else{
+			worldIn = except.worldObj;
+		}
+		Chunk chunk = worldIn.getChunkFromBlockCoords(pos);
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingChunk(chunk);
+		Vector packetPosition = new Vector(x,y,z);
+		if(wrapper!=null&&wrapper.wrapping.coordTransform!=null){
+			wrapper.wrapping.coordTransform.fromLocalToGlobal(packetPosition);
+		}
+		list.sendToAllNearExcept(except, packetPosition.X, packetPosition.Y, packetPosition.Z, radius, dimension, packetIn);
+    }
 	
 	public static boolean onSetBlockState(World world,BlockPos pos, IBlockState newState, int flags)
     {
@@ -274,6 +297,19 @@ public class CallRunner {
 	}
 	
 	public static void onEntityAdded(World world,Entity added){
+//		BlockPos posAt = new BlockPos(added);
+//		Chunk chunkIn = world.getChunkFromBlockCoords(posAt);
+//		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingChunk(chunkIn);
+//		if(wrapper!=null&&wrapper.wrapping.coordTransform!=null){
+//			Vector entityPos = new Vector(added.posX,added.posY,added.posZ);
+//			Vector entityVel = new Vector(added.motionX,added.motionY,added.motionZ);
+//			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, entityPos);
+//			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWRotation, entityVel);
+//			added.posX = entityPos.X;
+//			added.posY = entityPos.Y;
+//			added.posZ = entityPos.Z;
+//			System.out.println("test");
+//		}
 		world.onEntityAdded(added);
 	}
 

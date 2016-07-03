@@ -93,6 +93,20 @@ public class TransformAdapter extends ClassVisitor{
 	}
 
 	private boolean runTransformer(String calledName,String calledDesc,String calledOwner,MethodVisitor mv){
+		if(calledDesc.equals("(L"+BlockPosName+";L"+IBlockStateName+";)Z")
+			&& calledName.equals( getRuntimeMethodName( calledOwner, "invalidateRegionAndSetBlock", "func_180503_b" ) )
+			&& InheritanceUtils.extendsClass( calledOwner, WorldClientName)){
+				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onInvalidateRegionAndSetBlock", String.format( "(L%s;L"+BlockPosName+";L"+IBlockStateName+";)Z", WorldClientName) );
+				return false;
+		}
+		
+		if(calledDesc.equals("(L"+EntityPlayerName+";DDDDIL"+PacketName+";)V")
+			&& calledName.equals( getRuntimeMethodName( calledOwner, "sendToAllNearExcept", "func_148543_a" ) )
+			&& InheritanceUtils.extendsClass( calledOwner, PlayerListName)){
+				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onSendToAllNearExcept", String.format( "(L%s;L"+EntityPlayerName+";DDDDIL"+PacketName+";)V", PlayerListName ) );
+				return false;
+		}
+		
 		if(calledDesc.equals("(L"+BlockPosName+";L"+IBlockStateName+";I)Z")
 			&& calledName.equals( getRuntimeMethodName( calledOwner, "setBlockState", "func_180501_a" ) )
 			&& InheritanceUtils.extendsClass( calledOwner, WorldClassName)){

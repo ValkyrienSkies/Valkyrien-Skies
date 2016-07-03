@@ -2,12 +2,24 @@ package ValkyrienWarfareBase.CoreMod;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.math.BlockPos;
 
 public class CallRunnerClient {
 
+	public static boolean onInvalidateRegionAndSetBlock(WorldClient client,BlockPos pos, IBlockState state)
+    {
+		int i = pos.getX();
+        int j = pos.getY();
+        int k = pos.getZ();
+        client.invalidateBlockReceiveRegion(i, j, k, i, j, k);
+        return CallRunner.onSetBlockState(client,pos, state, 3);
+    }
+	
 	public static int onRenderBlockLayer(RenderGlobal renderer,BlockRenderLayer blockLayerIn, double partialTicks, int pass, Entity entityIn){
 		for(PhysicsWrapperEntity wrapper:ValkyrienWarfareMod.physicsManager.getManagerForWorld(renderer.theWorld).physicsEntities){
 			switch(blockLayerIn){

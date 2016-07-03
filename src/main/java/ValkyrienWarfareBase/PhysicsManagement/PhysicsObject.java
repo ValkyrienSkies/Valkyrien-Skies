@@ -20,6 +20,8 @@ import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.server.SPacketChunkData;
 import net.minecraft.network.play.server.SPacketUnloadChunk;
+import net.minecraft.server.management.PlayerChunkMap;
+import net.minecraft.server.management.PlayerChunkMapEntry;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
@@ -40,6 +42,8 @@ public class PhysicsObject {
 	public double pitch,yaw,roll;
 	//Used for faster memory access to the Chunks this object 'owns'
 	public Chunk[][] claimedChunks;
+	//This handles sending packets to players involving block changes in the Ship space
+	public PlayerChunkMapEntry[][] claimedChunksEntries;
 	public HashSet<EntityPlayerMP> watchingPlayers = new HashSet<EntityPlayerMP>();
 	public HashSet<EntityPlayerMP> newWatchers = new HashSet<EntityPlayerMP>();
 	public ChunkCache chunkCache;
@@ -64,7 +68,6 @@ public class PhysicsObject {
 	public void onSetBlockState(IBlockState oldState,IBlockState newState,BlockPos posAt){
 		boolean isOldAir = oldState==null||oldState.getBlock().equals(Blocks.AIR);
 		boolean isNewAir = newState==null||newState.getBlock().equals(Blocks.AIR);
-		
 		if(isOldAir&&isNewAir){
 			blockPositions.remove(posAt);
 		}
@@ -98,6 +101,7 @@ public class PhysicsObject {
 	 */
 	public void processChunkClaims(){
 		claimedChunks = new Chunk[(ownedChunks.radius*2)+1][(ownedChunks.radius*2)+1];
+		claimedChunksEntries = new PlayerChunkMapEntry[(ownedChunks.radius*2)+1][(ownedChunks.radius*2)+1];
 		for(int x = ownedChunks.minX;x<=ownedChunks.maxX;x++){
 			for(int z = ownedChunks.minZ;z<=ownedChunks.maxZ;z++){
 				Chunk chunk = new Chunk(worldObj, x, z);
@@ -169,8 +173,20 @@ public class PhysicsObject {
 		chunk.isModified = true;
 		claimedChunks[x-ownedChunks.minX][z-ownedChunks.minZ] = chunk;
 		provider.id2ChunkMap.put(ChunkPos.chunkXZ2Int(x, z), chunk);
+		
+		
+		PlayerChunkMapEntry entry = new PlayerChunkMapEntry(((WorldServer)worldObj).getPlayerChunkMap(), x, z);
+		entry.sentToPlayers = true;
+		PlayerChunkMap map = ((WorldServer)worldObj).getPlayerChunkMap();
+		map.addEntry(entry);
+		long i = map.getIndex(x, z);
+		map.playerInstances.put(i, entry);
+		map.playerInstanceList.add(entry);
+		
+//		System.out.println(((WorldServer)worldObj).getPlayerChunkMap().contains(x, z));
+		
+		claimedChunksEntries[x-ownedChunks.minX][z-ownedChunks.minZ] = entry;
 		MinecraftForge.EVENT_BUS.post(new ChunkEvent.Load(chunk));
-//		ForgeChunkManager.forceChunk(chunkLoadingTicket, chunk.getChunkCoordIntPair());
 	}
 	
 	/**
@@ -178,7 +194,15 @@ public class PhysicsObject {
 	 */
 	public void preloadNewPlayers(){
 		Set<EntityPlayerMP> newWatchers = getPlayersThatJustWatched();
-		
+		for(EntityPlayerMP player:newWatchers){
+			if(!worldObj.isRemote){
+				for(PlayerChunkMapEntry[] entries:claimedChunksEntries){
+					for(PlayerChunkMapEntry entry:entries){
+						entry.addPlayer(player);
+					}
+				}
+			}
+		}
 		for(Chunk[] chunkArray: claimedChunks){
 			for(Chunk chunk: chunkArray){
 				SPacketChunkData data = new SPacketChunkData(chunk, 65535);
@@ -206,6 +230,13 @@ public class PhysicsObject {
 			for(int z = ownedChunks.minZ;z<=ownedChunks.maxZ;z++){
 				SPacketUnloadChunk unloadPacket = new SPacketUnloadChunk(x,z);
 				((EntityPlayerMP)untracking).connection.sendPacket(unloadPacket);
+			}
+		}
+		if(!worldObj.isRemote){
+			for(PlayerChunkMapEntry[] entries:claimedChunksEntries){
+				for(PlayerChunkMapEntry entry:entries){
+					entry.removePlayer((EntityPlayerMP) untracking);
+				}
 			}
 		}
 	}
@@ -246,18 +277,16 @@ public class PhysicsObject {
 		//Update coordinate transforms
 		coordTransform.updateTransforms();
 		if(!worldObj.isRemote){
-			for(int x = ownedChunks.minX;x<=ownedChunks.maxX;x++){
-				for(int z = ownedChunks.minZ;z<=ownedChunks.maxZ;z++){
-					//TODO: WORLD CHUNKS NOT LOADING CORRECTLY!!!
-//					System.out.println(((ChunkProviderServer)worldObj.getChunkProvider()).chunkExists(x, z));
-					
-				}
-			}
+//			System.out.println(((WorldServer)worldObj).getPlayerChunkMap().contains(claimedChunks[0][0].xPosition, claimedChunks[0][0].zPosition));
+//			for(BlockPos pos:blockPositions){
+//				((WorldServer)worldObj).getPlayerChunkMap().markBlockForUpdate(pos);
+//			}
 		}
 	}
 	
 	public void loadClaimedChunks(){
 		claimedChunks = new Chunk[(ownedChunks.radius*2)+1][(ownedChunks.radius*2)+1];
+		claimedChunksEntries = new PlayerChunkMapEntry[(ownedChunks.radius*2)+1][(ownedChunks.radius*2)+1];
 		for(int x = ownedChunks.minX;x<=ownedChunks.maxX;x++){
 			for(int z = ownedChunks.minZ;z<=ownedChunks.maxZ;z++){
 				Chunk chunk = worldObj.getChunkFromChunkCoords(x, z);

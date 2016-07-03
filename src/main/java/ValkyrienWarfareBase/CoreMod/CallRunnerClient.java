@@ -5,12 +5,18 @@ import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.RenderGlobal;
+import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
 
 public class CallRunnerClient {
 
+	public static void onRenderEntities(RenderGlobal renderGlobal,Entity renderViewEntity, ICamera camera, float partialTicks)
+    {
+		renderGlobal.renderEntities(renderViewEntity, camera, partialTicks);
+    }
+	
 	public static boolean onInvalidateRegionAndSetBlock(WorldClient client,BlockPos pos, IBlockState state)
     {
 		int i = pos.getX();

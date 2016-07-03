@@ -39,6 +39,25 @@ import net.minecraftforge.common.DimensionManager;
 
 public class CallRunner {
 	
+	public static boolean onSpawnEntityInWorld(World world,Entity entity){
+		BlockPos posAt = new BlockPos(entity);
+		Chunk chunkIn = world.getChunkFromBlockCoords(posAt);
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingChunk(chunkIn);
+		if(wrapper!=null&&wrapper.wrapping.coordTransform!=null){
+			Vector entityPos = new Vector(entity.posX,entity.posY,entity.posZ);
+			Vector entityVel = new Vector(entity.motionX,entity.motionY,entity.motionZ);
+			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, entityPos);
+			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWRotation, entityVel);
+			entity.setPosition(entityPos.X, entityPos.Y, entityPos.Z);
+			if(true){
+				entity.motionX = entityVel.X;
+				entity.motionY = entityVel.Y;
+				entity.motionZ = entityVel.Z;
+			}
+		}
+		return world.spawnEntityInWorld(entity);
+	}
+	
 	public static void onSendToAllNearExcept(PlayerList list,@Nullable EntityPlayer except, double x, double y, double z, double radius, int dimension, Packet<?> packetIn)
     {
 		BlockPos pos = new BlockPos(x,y,z);

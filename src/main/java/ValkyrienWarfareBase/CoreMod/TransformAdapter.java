@@ -93,6 +93,20 @@ public class TransformAdapter extends ClassVisitor{
 	}
 
 	private boolean runTransformer(String calledName,String calledDesc,String calledOwner,MethodVisitor mv){
+		if(calledDesc.equals("(L"+EntityClassName+";L"+ICameraName+";F)V")
+			&& calledName.equals( getRuntimeMethodName( calledOwner, "renderEntities", "func_180446_a" ) )
+			&& InheritanceUtils.extendsClass( calledOwner, RenderGlobalName)){
+				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onRenderEntities", String.format( "(L%s;L"+EntityClassName+";L"+ICameraName+";F)V", RenderGlobalName) );
+				return false;
+		}
+		
+		if(calledDesc.equals("(L"+EntityClassName+";)Z")
+			&& calledName.equals( getRuntimeMethodName( calledOwner, "spawnEntityInWorld", "func_72838_d" ) )
+			&& InheritanceUtils.extendsClass( calledOwner, WorldClassName)){
+				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onSpawnEntityInWorld", String.format( "(L%s;L"+EntityClassName+";)Z", WorldClassName ) );
+				return false;
+		}
+		
 		if(calledDesc.equals("(L"+BlockPosName+";L"+IBlockStateName+";)Z")
 			&& calledName.equals( getRuntimeMethodName( calledOwner, "invalidateRegionAndSetBlock", "func_180503_b" ) )
 			&& InheritanceUtils.extendsClass( calledOwner, WorldClientName)){
@@ -241,8 +255,8 @@ public class TransformAdapter extends ClassVisitor{
 
 	@Override
 	public void visit( int version, int access, String name, String signature, String superName, String[] interfaces ){
-		super.visit( version, access, name, signature, superName, interfaces );
 		m_className = name;
+		super.visit( version, access, name, signature, superName, interfaces );
 	}
 
 	@Override

@@ -10,9 +10,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
@@ -185,6 +185,10 @@ public class PhysObjectRenderManager {
 		needsCutoutMippedUpdate = true;
 		needsSolidUpdate = true;
 		needsTranslucentUpdate = true;
+	}
+	
+	public boolean shouldRender(ICamera camera){
+		return true;
 	}
 	
 }

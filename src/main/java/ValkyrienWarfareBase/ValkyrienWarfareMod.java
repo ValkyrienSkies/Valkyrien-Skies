@@ -59,6 +59,8 @@ public class ValkyrienWarfareMod{
 
 	public static double standingTolerance = .3D;
 
+	public static boolean isObsfucated = false;
+
     @EventHandler
     public void preInit(FMLPreInitializationEvent event){
     	proxy.preInit(event);

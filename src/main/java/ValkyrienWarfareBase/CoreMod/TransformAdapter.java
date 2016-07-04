@@ -94,49 +94,49 @@ public class TransformAdapter extends ClassVisitor{
 
 	private boolean runTransformer(String calledName,String calledDesc,String calledOwner,MethodVisitor mv){
 		if(calledDesc.equals("(L"+EntityClassName+";L"+ICameraName+";F)V")
-			&& calledName.equals( getRuntimeMethodName( calledOwner, "renderEntities", "func_180446_a" ) )
+			&& calledName.equals( getRuntimeMethodName( RenderGlobalName, "renderEntities", "func_180446_a" ) )
 			&& InheritanceUtils.extendsClass( calledOwner, RenderGlobalName)){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onRenderEntities", String.format( "(L%s;L"+EntityClassName+";L"+ICameraName+";F)V", RenderGlobalName) );
 				return false;
 		}
 		
 		if(calledDesc.equals("(L"+EntityClassName+";)Z")
-			&& calledName.equals( getRuntimeMethodName( calledOwner, "spawnEntityInWorld", "func_72838_d" ) )
+			&& calledName.equals( getRuntimeMethodName( WorldClassName, "spawnEntityInWorld", "func_72838_d" ) )
 			&& InheritanceUtils.extendsClass( calledOwner, WorldClassName)){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onSpawnEntityInWorld", String.format( "(L%s;L"+EntityClassName+";)Z", WorldClassName ) );
 				return false;
 		}
 		
 		if(calledDesc.equals("(L"+BlockPosName+";L"+IBlockStateName+";)Z")
-			&& calledName.equals( getRuntimeMethodName( calledOwner, "invalidateRegionAndSetBlock", "func_180503_b" ) )
+			&& calledName.equals( getRuntimeMethodName( WorldClientName, "invalidateRegionAndSetBlock", "func_180503_b" ) )
 			&& InheritanceUtils.extendsClass( calledOwner, WorldClientName)){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onInvalidateRegionAndSetBlock", String.format( "(L%s;L"+BlockPosName+";L"+IBlockStateName+";)Z", WorldClientName) );
 				return false;
 		}
 		
 		if(calledDesc.equals("(L"+EntityPlayerName+";DDDDIL"+PacketName+";)V")
-			&& calledName.equals( getRuntimeMethodName( calledOwner, "sendToAllNearExcept", "func_148543_a" ) )
+			&& calledName.equals( getRuntimeMethodName( PlayerListName, "sendToAllNearExcept", "func_148543_a" ) )
 			&& InheritanceUtils.extendsClass( calledOwner, PlayerListName)){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onSendToAllNearExcept", String.format( "(L%s;L"+EntityPlayerName+";DDDDIL"+PacketName+";)V", PlayerListName ) );
 				return false;
 		}
 		
 		if(calledDesc.equals("(L"+BlockPosName+";L"+IBlockStateName+";I)Z")
-			&& calledName.equals( getRuntimeMethodName( calledOwner, "setBlockState", "func_180501_a" ) )
+			&& calledName.equals( getRuntimeMethodName( WorldClassName, "setBlockState", "func_180501_a" ) )
 			&& InheritanceUtils.extendsClass( calledOwner, WorldClassName)){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onSetBlockState", String.format( "(L%s;L"+BlockPosName+";L"+IBlockStateName+";I)Z", WorldClassName ) );
 				return false;
 		}
 
 		if(calledDesc.equals("(IIIIII)V")
-			&& calledName.equals( getRuntimeMethodName( calledOwner, "markBlockRangeForRenderUpdate", "func_147458_c" ) )
+			&& calledName.equals( getRuntimeMethodName( WorldClassName, "markBlockRangeForRenderUpdate", "func_147458_c" ) )
 			&& InheritanceUtils.extendsClass( calledOwner, WorldClassName)){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onMarkBlockRangeForRenderUpdate", String.format( "(L%s;IIIIII)V", WorldClassName ) );
 				return false;
 		}
 		
 		if(calledDesc.equals("(L"+Vec3dName+";L"+Vec3dName+";ZZZ)L"+RayTraceResult+";")
-			&& calledName.equals(getRuntimeMethodName(calledOwner,"rayTraceBlocks","func_147447_a"))
+			&& calledName.equals(getRuntimeMethodName(WorldClassName,"rayTraceBlocks","func_147447_a"))
 			&& InheritanceUtils.extendsClass( calledOwner, WorldClassName)){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onRayTraceBlocks", String.format( "(L%s;L"+Vec3dName+";L"+Vec3dName+";ZZZ)L"+RayTraceResult+";", WorldClassName ) );
 				return false;
@@ -144,48 +144,48 @@ public class TransformAdapter extends ClassVisitor{
 		
 		//Method that creates a playerInteractionManager
 		if(calledDesc.equals("(L"+GameProfileName+";)L"+EntityPlayerMPName+";")
-			&& calledName.equals(getRuntimeMethodName(calledOwner,"createPlayerForUser","func_148545_a"))
+			&& calledName.equals(getRuntimeMethodName(PlayerListName,"createPlayerForUser","func_148545_a"))
 			&& (InheritanceUtils.extendsClass( calledOwner, PlayerListName)||InheritanceUtils.extendsClass( m_className, PlayerListName))){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onCreatePlayerForUser", String.format( "(L%s;L"+GameProfileName+";)L"+EntityPlayerMPName+";", PlayerListName ) );
 				return false;
 		}
 		//Method that creates a playerInteractionManager
 		if(calledDesc.equals("(L"+EntityPlayerMPName+";IZ)L"+EntityPlayerMPName+";")
-			&& calledName.equals(getRuntimeMethodName(calledOwner,"recreatePlayerEntity","func_72368_a"))
+			&& calledName.equals(getRuntimeMethodName(PlayerListName,"recreatePlayerEntity","func_72368_a"))
 			&& InheritanceUtils.extendsClass( calledOwner, PlayerListName)){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onRecreatePlayerEntity", String.format( "(L%s;L"+EntityPlayerMPName+";IZ)L"+EntityPlayerMPName+";", PlayerListName ) );
 				return false;
 		}
 
 		if(calledDesc.equals("(L"+EntityClassName+";)V")
-			&& calledName.equals(getRuntimeMethodName(calledOwner,"onEntityRemoved","func_72847_b"))
+			&& calledName.equals(getRuntimeMethodName(WorldClassName,"onEntityRemoved","func_72847_b"))
 			&& InheritanceUtils.extendsClass( calledOwner, WorldClassName)){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onEntityRemoved", String.format( "(L%s;L"+EntityClassName+";)V", WorldClassName ) );
 				return false;
 		}
 		if(calledDesc.equals("(L"+EntityClassName+";)V")
-			&& calledName.equals(getRuntimeMethodName(calledOwner,"onEntityAdded","func_72923_a"))
+			&& calledName.equals(getRuntimeMethodName(WorldClassName,"onEntityAdded","func_72923_a"))
 			&& InheritanceUtils.extendsClass( calledOwner, WorldClassName)){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onEntityAdded", String.format( "(L%s;L"+EntityClassName+";)V", WorldClassName ) );
 				return false;
 		}
 		
 		if(calledDesc.equals("(L"+BlockRenderLayerName+";DIL"+EntityClassName+";)I")
-			&& ( calledName.equals(getRuntimeMethodName(calledOwner,"renderBlockLayer","func_174977_a")) || calledName.equals(getRuntimeMethodName(calledOwner,"renderBlockLayer","func_174977_a")) )
+			&& ( calledName.equals(getRuntimeMethodName(RenderGlobalName,"renderBlockLayer","func_174977_a")) || calledName.equals(getRuntimeMethodName(calledOwner,"renderBlockLayer","func_174977_a")) )
 			&& InheritanceUtils.extendsClass( calledOwner, RenderGlobalName)){
 			mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onRenderBlockLayer", String.format( "(L%s;L"+BlockRenderLayerName+";DIL"+EntityClassName+";)I", RenderGlobalName ) );
 				return false;
 		}
 		
 		if(calledDesc.equals("(L"+ChunkName+";)V")
-			&& calledName.equals( getRuntimeMethodName( calledOwner, "unload", "func_189549_a" ) )
+			&& calledName.equals( getRuntimeMethodName( ChunkProviderServerName, "unload", "func_189549_a" ) )
 			&& InheritanceUtils.extendsClass( calledOwner, ChunkProviderServerName)){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onChunkUnload", String.format( "(L%s;L"+ChunkName+";)V", ChunkProviderServerName ) );
 				return false;
 		}
 		
 		if(calledDesc.equals("(DDD)V")
-			&& calledName.equals( getRuntimeMethodName( calledOwner, "moveEntity", "func_70091_d" ) )
+			&& calledName.equals( getRuntimeMethodName( EntityClassName, "moveEntity", "func_70091_d" ) )
 			&& InheritanceUtils.extendsClass( calledOwner, EntityClassName)){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onEntityMove", String.format( "(L%s;DDD)V", EntityClassName ) );
 				return false;

@@ -16,6 +16,7 @@ import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.client.ForgeHooksClient;
 
 /**
  * Object owned by each physObject responsible for handling all rendering operations
@@ -49,7 +50,7 @@ public class PhysObjectRenderManager {
 		}
 		Tessellator tessellator = Tessellator.getInstance();
 		VertexBuffer worldrenderer = tessellator.getBuffer();
-		
+		worldrenderer.begin(7, DefaultVertexFormats.BLOCK);
 		worldrenderer.setTranslation(-offsetPos.getX(), -offsetPos.getY(), -offsetPos.getZ());
 		GL11.glPushMatrix();
 		switch(layerToUpdate){
@@ -78,13 +79,14 @@ public class PhysObjectRenderManager {
 		}
 			
 		GlStateManager.pushMatrix();
-		worldrenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+//		worldrenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
 		IBlockState iblockstate;
 //		if (Minecraft.isAmbientOcclusionEnabled()) {
 //			GlStateManager.shadeModel(GL11.GL_SMOOTH);
 //		} else {
 //			GlStateManager.shadeModel(GL11.GL_FLAT);
 //		}
+		ForgeHooksClient.setRenderLayer(layerToUpdate);
 		for(BlockPos pos:parent.blockPositions){
 			iblockstate=parent.worldObj.getBlockState(pos);
 			if(iblockstate.getBlock().canRenderInLayer(iblockstate, layerToUpdate)){
@@ -92,6 +94,8 @@ public class PhysObjectRenderManager {
 			}
 		}
 		tessellator.draw();
+//		worldrenderer.finishDrawing();
+		ForgeHooksClient.setRenderLayer(null);
 		GlStateManager.popMatrix();
 		GL11.glEndList();
 		GL11.glPopMatrix();

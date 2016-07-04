@@ -1,5 +1,6 @@
 package ValkyrienWarfareBase.PhysicsManagement;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -44,8 +45,8 @@ public class PhysicsObject {
 	public Chunk[][] claimedChunks;
 	//This handles sending packets to players involving block changes in the Ship space
 	public PlayerChunkMapEntry[][] claimedChunksEntries;
-	public HashSet<EntityPlayerMP> watchingPlayers = new HashSet<EntityPlayerMP>();
-	public HashSet<EntityPlayerMP> newWatchers = new HashSet<EntityPlayerMP>();
+	public ArrayList<EntityPlayerMP> watchingPlayers = new ArrayList<EntityPlayerMP>();
+	public ArrayList<EntityPlayerMP> newWatchers = new ArrayList<EntityPlayerMP>();
 	public ChunkCache chunkCache;
 	//It is from this position that the x,y,z coords in local are 0; and that the posX,
 	//posY and posZ align with in the global coords
@@ -56,12 +57,27 @@ public class PhysicsObject {
 	public PhysicsCalculations physicsProcessor;
 	public ArrayList<BlockPos> blockPositions = new ArrayList<BlockPos>();
 	public AxisAlignedBB collisionBB = new AxisAlignedBB(0,0,0,0,0,0);
+	Field playersField = null;
 	
 	public PhysicsObject(PhysicsWrapperEntity host){
 		wrapper = host;
 		worldObj = host.worldObj;
 		if(host.worldObj.isRemote){
 			renderer = new PhysObjectRenderManager(this);
+		}else{
+			if(playersField==null){
+				try{
+					if(!ValkyrienWarfareMod.isObsfucated){
+						playersField = PlayerChunkMapEntry.class.getDeclaredField("players");
+					}else{
+						playersField = PlayerChunkMapEntry.class.getDeclaredField("field_187283_c");
+					}
+					playersField.setAccessible(true);
+				}catch(Exception e){
+					e.printStackTrace();
+					System.exit(0);
+				}
+			}
 		}
 	}
 	
@@ -174,17 +190,20 @@ public class PhysicsObject {
 		claimedChunks[x-ownedChunks.minX][z-ownedChunks.minZ] = chunk;
 		provider.id2ChunkMap.put(ChunkPos.chunkXZ2Int(x, z), chunk);
 		
-		
 		PlayerChunkMapEntry entry = new PlayerChunkMapEntry(((WorldServer)worldObj).getPlayerChunkMap(), x, z);
 		entry.sentToPlayers = true;
+		
+		try{
+			playersField.set(entry, watchingPlayers);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 		PlayerChunkMap map = ((WorldServer)worldObj).getPlayerChunkMap();
 		map.addEntry(entry);
 		long i = map.getIndex(x, z);
 		map.playerInstances.put(i, entry);
 		map.playerInstanceList.add(entry);
-		
-//		System.out.println(((WorldServer)worldObj).getPlayerChunkMap().contains(x, z));
-		
+
 		claimedChunksEntries[x-ownedChunks.minX][z-ownedChunks.minZ] = entry;
 		MinecraftForge.EVENT_BUS.post(new ChunkEvent.Load(chunk));
 	}
@@ -194,15 +213,15 @@ public class PhysicsObject {
 	 */
 	public void preloadNewPlayers(){
 		Set<EntityPlayerMP> newWatchers = getPlayersThatJustWatched();
-		for(EntityPlayerMP player:newWatchers){
-			if(!worldObj.isRemote){
-				for(PlayerChunkMapEntry[] entries:claimedChunksEntries){
-					for(PlayerChunkMapEntry entry:entries){
-						entry.addPlayer(player);
-					}
-				}
-			}
-		}
+//		for(EntityPlayerMP player:newWatchers){
+//			if(!worldObj.isRemote){
+//				for(PlayerChunkMapEntry[] entries:claimedChunksEntries){
+//					for(PlayerChunkMapEntry entry:entries){
+//						entry.addPlayer(player);
+//					}
+//				}
+//			}
+//		}
 		for(Chunk[] chunkArray: claimedChunks){
 			for(Chunk chunk: chunkArray){
 				SPacketChunkData data = new SPacketChunkData(chunk, 65535);
@@ -232,13 +251,13 @@ public class PhysicsObject {
 				((EntityPlayerMP)untracking).connection.sendPacket(unloadPacket);
 			}
 		}
-		if(!worldObj.isRemote){
-			for(PlayerChunkMapEntry[] entries:claimedChunksEntries){
-				for(PlayerChunkMapEntry entry:entries){
-					entry.removePlayer((EntityPlayerMP) untracking);
-				}
-			}
-		}
+//		if(!worldObj.isRemote){
+//			for(PlayerChunkMapEntry[] entries:claimedChunksEntries){
+//				for(PlayerChunkMapEntry entry:entries){
+//					entry.removePlayer((EntityPlayerMP) untracking);
+//				}
+//			}
+//		}
 	}
 	
 	/**

@@ -82,6 +82,7 @@ public class ValkyrienWarfareMod{
     public void postInit(FMLPostInitializationEvent event){
     	proxy.postInit(event);
     	airStateIndex = Block.getStateId(Blocks.AIR.getDefaultState());
+    	BlockMassRegistration.registerVanillaBlocks();
     }
 
     @EventHandler

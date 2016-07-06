@@ -35,7 +35,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.ServerWorldEventHandler;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
@@ -117,14 +116,16 @@ public class CallRunner {
 	
 	public static boolean onSetBlockState(World world,BlockPos pos, IBlockState newState, int flags)
     {
+		IBlockState oldState = world.getBlockState(pos);
+		boolean toReturn = world.setBlockState(pos, newState, flags);
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
 		if(wrapper!=null){
-			wrapper.wrapping.onSetBlockState(world.getBlockState(pos), newState, pos);
+			wrapper.wrapping.onSetBlockState(oldState, newState, pos);
 			if(world.isRemote){
 				wrapper.wrapping.renderer.markForUpdate();
 			}
 		}
-		return world.setBlockState(pos, newState, flags);
+		return toReturn;
     }
 	
 	
@@ -134,7 +135,6 @@ public class CallRunner {
 	
 	public static RayTraceResult onRayTraceBlocks(World world,Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock)
     {
-		
 		RayTraceResult vanillaTrace = world.rayTraceBlocks(vec31, vec32, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
 		
 		WorldPhysObjectManager physManager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(world);
@@ -148,8 +148,6 @@ public class CallRunner {
         Vec3d playerReachVector = vec32.subtract(vec31);
         
         double reachDistance = playerReachVector.lengthVector();
-		
-		
 		double worldResultDistFromPlayer = 420D;
 		
 		if(vanillaTrace!=null&&vanillaTrace.hitVec!=null){
@@ -157,7 +155,6 @@ public class CallRunner {
 		}
 		
 		for(PhysicsWrapperEntity wrapper:nearbyShips){
-			
             playerEyesPos = vec31;
             playerReachVector = vec32.subtract(vec31);
             
@@ -181,8 +178,6 @@ public class CallRunner {
 	            }
             }
 		}
-		
-		
 		return vanillaTrace;
     }
 	

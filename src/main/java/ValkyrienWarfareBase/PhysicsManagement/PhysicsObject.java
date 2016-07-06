@@ -9,6 +9,7 @@ import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.ChunkManagement.ChunkSet;
 import ValkyrienWarfareBase.Coordinates.CoordTransformObject;
 import ValkyrienWarfareBase.Math.Vector;
+import ValkyrienWarfareBase.Physics.PhysicsCalculations;
 import ValkyrienWarfareBase.Relocation.ChunkCache;
 import ValkyrienWarfareBase.Relocation.ShipSpawnDetector;
 import ValkyrienWarfareBase.Render.PhysObjectRenderManager;
@@ -181,6 +182,7 @@ public class PhysicsObject {
 		}
 		
 		detectBlockPositions();
+		physicsProcessor.processInitialPhysicsData();
 	}
 	
 	public void injectChunkIntoWorld(Chunk chunk,int x,int z){
@@ -294,6 +296,7 @@ public class PhysicsObject {
 	
 	public void onTick(){
 		//Move xyz here
+//		wrapper.isDead=true;
 //		yaw = 30D;
 //		roll = -22D;
 		//Update coordinate transforms
@@ -377,6 +380,7 @@ public class PhysicsObject {
 				compound.setBoolean("CC:"+row+":"+column, curArray[column]);
 			}
 		}
+		physicsProcessor.writeToNBTTag(compound);
 	}
 	
 	public void readFromNBTTag(NBTTagCompound compound){
@@ -389,6 +393,7 @@ public class PhysicsObject {
 			}
 		}
 		loadClaimedChunks();
+		physicsProcessor.readFromNBTTag(compound);
 	}
 	
 	public void readSpawnData(ByteBuf additionalData){

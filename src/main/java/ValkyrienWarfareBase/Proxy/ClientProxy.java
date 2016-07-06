@@ -7,6 +7,7 @@ import ValkyrienWarfareBase.Render.PhysObjectRenderFactory;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.item.Item;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
@@ -17,6 +18,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 public class ClientProxy extends CommonProxy{
 
 	EventsClient eventsClient = new EventsClient();
+	public static ICamera lastCamera;
 	
 	@Override
 	public void preInit(FMLPreInitializationEvent e) {

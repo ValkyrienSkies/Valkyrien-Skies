@@ -1,10 +1,15 @@
 package ValkyrienWarfareBase.Render;
 
+import java.nio.FloatBuffer;
+
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.Math.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
+import ValkyrienWarfareBase.Proxy.ClientProxy;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GLAllocation;
@@ -13,7 +18,9 @@ import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.culling.ICamera;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.client.ForgeHooksClient;
@@ -35,6 +42,8 @@ public class PhysObjectRenderManager {
 	//It's actual value is completely irrelevant as long as it's close to the 
 	//Ship's centerBlockPos
 	public BlockPos offsetPos;
+	private double curPartialTick;
+	private FloatBuffer transformBuffer = null;
 	
 	public PhysObjectRenderManager(PhysicsObject toRender){
 		parent = toRender;
@@ -150,12 +159,34 @@ public class PhysObjectRenderManager {
 		GL11.glPopMatrix();
 	}
 	
+	public void renderTileEntities(float partialTicks){
+		for(BlockPos pos:parent.blockPositions){
+			TileEntity tileEnt = parent.worldObj.getTileEntity(pos);
+			if(tileEnt!=null){
+				TileEntityRendererDispatcher.instance.renderTileEntity(tileEnt, partialTicks, -1);
+			}
+		}
+	}
+	
+	public boolean shouldRender(){
+		ICamera camera = ((ClientProxy)ValkyrienWarfareMod.proxy).lastCamera;
+		return camera==null||camera.isBoundingBoxInFrustum(parent.collisionBB);
+	}
+	
 	public void setupTranslation(double partialTicks){
+		if(curPartialTick!=partialTicks){
+			updateTranslation(partialTicks);
+		}else{
+			updateTranslation(partialTicks);
+			curPartialTick = partialTicks;
+		}
+	}
+	
+	public void updateTranslation(double partialTicks){
 		PhysicsWrapperEntity entity = parent.wrapper;
-		
-//		entity.wrapping.yaw++;
-		
 		Vector centerOfRotation = entity.wrapping.centerCoord;
+		curPartialTick = partialTicks;
+		
 		double moddedX = entity.lastTickPosX+(entity.posX-entity.lastTickPosX)*partialTicks;
 		double moddedY = entity.lastTickPosY+(entity.posY-entity.lastTickPosY)*partialTicks;
 		double moddedZ = entity.lastTickPosZ+(entity.posZ-entity.lastTickPosZ)*partialTicks;
@@ -167,32 +198,31 @@ public class PhysObjectRenderManager {
 		double moddedYaw = entity.wrapping.yaw;
 		double moddedRoll = entity.wrapping.roll;
 		
-		if(entity.wrapping.renderer.offsetPos!=null){
-			double offsetX = entity.wrapping.renderer.offsetPos.getX()-centerOfRotation.X;
-			double offsetY = entity.wrapping.renderer.offsetPos.getY()-centerOfRotation.Y;
-			double offsetZ = entity.wrapping.renderer.offsetPos.getZ()-centerOfRotation.Z;
-			//This happens first
+		if(offsetPos!=null){
+			double offsetX = offsetPos.getX()-centerOfRotation.X;
+			double offsetY = offsetPos.getY()-centerOfRotation.Y;
+			double offsetZ = offsetPos.getZ()-centerOfRotation.Z;
 			GL11.glTranslated(offsetX,offsetY,offsetZ);
 			GlStateManager.translate(-p0+moddedX, -p1+moddedY, -p2+moddedZ);
-			//This happens BETWEEN
 			GL11.glRotated(moddedPitch, 1D, 0, 0);
 			GL11.glRotated(moddedYaw, 0, 1D, 0);
 			GL11.glRotated(moddedRoll, 0, 0, 1D);
 			
-			//This is supposed to happen last
-			
+//			transformBuffer = BufferUtils.createFloatBuffer(16);
 		}
 	}
 	
+	//TODO: Program me
+	public void inverseTransform(double partialTicks) {
+		
+	}
+	
 	public void markForUpdate(){
+		curPartialTick = -1D;
 		needsCutoutUpdate = true;
 		needsCutoutMippedUpdate = true;
 		needsSolidUpdate = true;
 		needsTranslucentUpdate = true;
-	}
-	
-	public boolean shouldRender(ICamera camera){
-		return true;
 	}
 	
 }

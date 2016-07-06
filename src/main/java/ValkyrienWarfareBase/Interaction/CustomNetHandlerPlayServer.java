@@ -97,7 +97,7 @@ public class CustomNetHandlerPlayServer extends NetHandlerPlayServer{
             
             Vector blockPosInGlobal = new Vector((double)blockpos.getX() + 0.5D, (double)blockpos.getY() + 0.5D, (double)blockpos.getZ() + 0.5D);
             
-            PhysicsWrapperEntity chunkManager = ValkyrienWarfareMod.physicsManager.getObjectManagingChunk(worldserver.getChunkFromBlockCoords(blockpos));
+            PhysicsWrapperEntity chunkManager = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldserver, blockpos);
             
             if(chunkManager!=null){
             	chunkManager.wrapping.coordTransform.fromLocalToGlobal(blockPosInGlobal);
@@ -178,7 +178,7 @@ public class CustomNetHandlerPlayServer extends NetHandlerPlayServer{
             	
             	Vector blockPosInGlobal = new Vector(((double)blockpos.getX() + 0.5D),((double)blockpos.getY() + 0.5D),((double)blockpos.getZ() + 0.5D));
             	
-            	PhysicsWrapperEntity chunkManager = ValkyrienWarfareMod.physicsManager.getObjectManagingChunk(worldserver.getChunkFromBlockCoords(blockpos));
+            	PhysicsWrapperEntity chunkManager = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldserver, blockpos);
                 
                 if(chunkManager!=null){
                 	chunkManager.wrapping.coordTransform.fromLocalToGlobal(blockPosInGlobal);

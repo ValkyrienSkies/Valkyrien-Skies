@@ -31,10 +31,41 @@ public class EntityCollisionObject{
 
 	public void generateCollision(){
 		velDot = -entityVelocity.dot(axis);
-		playerMinMax = BigBastardMath.getMinMaxOfArray(movable.getProjectionOnVector(axis));
-		blockMinMax = BigBastardMath.getMinMaxOfArray(fixed.getProjectionOnVector(axis));
-		double movMaxFixMin = playerMinMax[0]-blockMinMax[1];
-		double movMinFixMax = playerMinMax[1]-blockMinMax[0];
+//		playerMinMax = BigBastardMath.getMinMaxOfArray(movable.getProjectionOnVector(axis));
+//		blockMinMax = BigBastardMath.getMinMaxOfArray(fixed.getProjectionOnVector(axis));
+//		double movMaxFixMin = playerMinMax[0]-blockMinMax[1];
+//		double movMinFixMax = playerMinMax[1]-blockMinMax[0];
+		
+		
+		
+		//NOTE: This code isnt compatible or readable, but its faster
+		double dot = axis.dot(movable.vertices[0]);
+		double playerMin = dot,playerMax = dot;
+		for(int i = 1;i<movable.vertices.length;i++){
+			dot = axis.dot(movable.vertices[i]);
+			if(dot<playerMin){
+				playerMin = dot;
+			}
+			if(dot>playerMax){
+				playerMax = dot;
+			}
+		}
+		
+		dot = axis.dot(fixed.vertices[0]);
+		double blockMin = dot,blockMax = dot;
+		for(int i = 1;i<fixed.vertices.length;i++){
+			dot = axis.dot(fixed.vertices[i]);
+			if(dot<blockMin){
+				blockMin = dot;
+			}
+			if(dot>blockMax){
+				blockMax = dot;
+			}
+		}
+		
+		double movMaxFixMin = playerMin-blockMax;
+		double movMinFixMax = playerMax-blockMin;
+
 		boolean useDefault = true;
 		if(movMaxFixMin>0||movMinFixMax<0){
 			//Original position not colliding, use velocity based bastards

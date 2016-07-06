@@ -42,7 +42,6 @@ public class EntityCollisionInjector {
 				ShipPolygon shipPoly = (ShipPolygon)poly;
 				EntityPolygonCollider fast = new EntityPolygonCollider(playerBeforeMove, shipPoly, shipPoly.normals,velVec);
 				if(!fast.seperated){
-					
 					fastCollisions.add(fast);
 				}
 			}
@@ -151,7 +150,9 @@ public class EntityCollisionInjector {
 			List<AxisAlignedBB> collidingBBs = entity.worldObj.getCollisionBoxes(bb);
 			
 			//TODO: Fix the performance of this!
-			BigBastardMath.mergeAABBList(collidingBBs);
+			if(entity.worldObj.isRemote||entity instanceof EntityPlayer){
+				BigBastardMath.mergeAABBList(collidingBBs);
+			}
 			
 			for(AxisAlignedBB inLocal:collidingBBs){
 				ShipPolygon poly = new ShipPolygon(inLocal,wrapper.wrapping.coordTransform.lToWTransform, wrapper.wrapping.coordTransform.normals, wrapper.wrapping);

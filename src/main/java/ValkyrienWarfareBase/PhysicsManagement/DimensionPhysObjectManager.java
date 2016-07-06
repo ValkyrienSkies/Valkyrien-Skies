@@ -3,6 +3,7 @@ package ValkyrienWarfareBase.PhysicsManagement;
 import java.util.HashMap;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 
@@ -57,6 +58,11 @@ public HashMap<World,WorldPhysObjectManager> managerPerWorld;
 			return getManagerForWorld(chunk.worldObj).getManagingObjectForChunk(chunk);
 		}
 		return null;
+	}
+	
+	public PhysicsWrapperEntity getObjectManagingPos(World world,BlockPos pos){
+		Chunk chunk = world.getChunkFromBlockCoords(pos);
+		return getObjectManagingChunk(chunk);
 	}
 	
 }

@@ -11,6 +11,7 @@ import ValkyrienWarfareBase.PhysicsManagement.Network.PhysWrapperSpawnMessage;
 import ValkyrienWarfareBase.Proxy.CommonProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.command.ServerCommandManager;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
@@ -30,6 +31,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 @Mod(modid=ValkyrienWarfareMod.MODID, name=ValkyrienWarfareMod.MODNAME, version=ValkyrienWarfareMod.MODVER, guiFactory = "ValkyrienWarfareBase.GUI.GuiFactoryValkyrienWarfare")
 public class ValkyrienWarfareMod{
@@ -60,7 +62,7 @@ public class ValkyrienWarfareMod{
 	public static double standingTolerance = .3D;
 
 	public static boolean isObsfucated = false;
-
+	
     @EventHandler
     public void preInit(FMLPreInitializationEvent event){
     	proxy.preInit(event);

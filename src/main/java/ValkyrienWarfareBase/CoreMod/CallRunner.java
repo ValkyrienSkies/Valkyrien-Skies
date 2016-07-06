@@ -21,15 +21,21 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketChangeGameState;
+import net.minecraft.network.play.server.SPacketEffect;
 import net.minecraft.network.play.server.SPacketRespawn;
 import net.minecraft.network.play.server.SPacketSetExperience;
+import net.minecraft.network.play.server.SPacketSoundEffect;
 import net.minecraft.network.play.server.SPacketSpawnPosition;
 import net.minecraft.server.management.PlayerInteractionManager;
 import net.minecraft.server.management.PlayerList;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.ServerWorldEventHandler;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
@@ -39,10 +45,33 @@ import net.minecraftforge.common.DimensionManager;
 
 public class CallRunner {
 	
+	public static void onPlaySound(World world,double x, double y, double z, SoundEvent soundIn, SoundCategory category, float volume, float pitch, boolean distanceDelay)
+    {
+		BlockPos pos = new BlockPos(x,y,z);
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
+		if(wrapper!=null){
+			Vector posVec = new Vector(x,y,z);
+			wrapper.wrapping.coordTransform.fromLocalToGlobal(posVec);
+			x = posVec.X;
+			y = posVec.Y;
+			z = posVec.Z;
+		}
+		world.playSound(x, y, z, soundIn, category, volume, pitch, distanceDelay);
+    }
+	
+	public static double onGetDistanceSq(TileEntity ent,double x,double y,double z){
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(ent.getWorld(), ent.getPos());
+		if(wrapper!=null){
+			Vector vec = new Vector(x,y,z);
+			wrapper.wrapping.coordTransform.fromGlobalToLocal(vec);
+			return ent.getDistanceSq(vec.X, vec.Y, vec.Z);
+		}
+		return ent.getDistanceSq(x, y, z);
+	}
+	
 	public static boolean onSpawnEntityInWorld(World world,Entity entity){
 		BlockPos posAt = new BlockPos(entity);
-		Chunk chunkIn = world.getChunkFromBlockCoords(posAt);
-		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingChunk(chunkIn);
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, posAt);
 		if(wrapper!=null&&wrapper.wrapping.coordTransform!=null){
 			Vector entityPos = new Vector(entity.posX,entity.posY,entity.posZ);
 			Vector entityVel = new Vector(entity.motionX,entity.motionY,entity.motionZ);
@@ -67,19 +96,28 @@ public class CallRunner {
 		}else{
 			worldIn = except.worldObj;
 		}
-		Chunk chunk = worldIn.getChunkFromBlockCoords(pos);
-		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingChunk(chunk);
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldIn, pos);
 		Vector packetPosition = new Vector(x,y,z);
 		if(wrapper!=null&&wrapper.wrapping.coordTransform!=null){
 			wrapper.wrapping.coordTransform.fromLocalToGlobal(packetPosition);
+			
+			if(packetIn instanceof SPacketSoundEffect){
+				SPacketSoundEffect soundEffect = (SPacketSoundEffect)packetIn;
+				packetIn = new SPacketSoundEffect(soundEffect.getSound(), soundEffect.category, packetPosition.X, packetPosition.Y, packetPosition.Z, soundEffect.getVolume(), soundEffect.getPitch());
+			}
+//			
+			if(packetIn instanceof SPacketEffect){
+				SPacketEffect effect = (SPacketEffect)packetIn;
+				BlockPos blockpos = new BlockPos(packetPosition.X,packetPosition.Y,packetPosition.Z);
+				packetIn = new SPacketEffect(effect.soundType,blockpos,effect.soundData,effect.serverWide);
+			}
 		}
 		list.sendToAllNearExcept(except, packetPosition.X, packetPosition.Y, packetPosition.Z, radius, dimension, packetIn);
     }
 	
 	public static boolean onSetBlockState(World world,BlockPos pos, IBlockState newState, int flags)
     {
-		Chunk chunkFor = world.getChunkFromBlockCoords(pos);
-		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingChunk(chunkFor);
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
 		if(wrapper!=null){
 			wrapper.wrapping.onSetBlockState(world.getBlockState(pos), newState, pos);
 			if(world.isRemote){
@@ -91,17 +129,6 @@ public class CallRunner {
 	
 	
 	public static void onMarkBlockRangeForRenderUpdate(World worldFor,int x1, int y1, int z1, int x2, int y2, int z2){
-//		if(worldFor.isRemote){	
-//			int midX = (x1+x2)/2;
-//			int midZ = (z1+z2)/2;
-//			Chunk chunk = worldFor.getChunkFromChunkCoords((midX>>4),(midZ)>>4);
-//			PhysicsWrapperEntity chunkOwner = ValkyrienWarfareMod.physicsManager.getObjectManagingChunk(chunk);
-//			if(chunkOwner!=null){
-//				chunkOwner.wrapping.blockPositions.clear();
-//				chunkOwner.wrapping.detectBlockPositions();
-//				chunkOwner.wrapping.renderer.markForUpdate();
-//			}
-//		}
 		worldFor.markBlockRangeForRenderUpdate(x1, y1, z1, x2, y2, z2);
 	}
 	
@@ -316,19 +343,6 @@ public class CallRunner {
 	}
 	
 	public static void onEntityAdded(World world,Entity added){
-//		BlockPos posAt = new BlockPos(added);
-//		Chunk chunkIn = world.getChunkFromBlockCoords(posAt);
-//		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingChunk(chunkIn);
-//		if(wrapper!=null&&wrapper.wrapping.coordTransform!=null){
-//			Vector entityPos = new Vector(added.posX,added.posY,added.posZ);
-//			Vector entityVel = new Vector(added.motionX,added.motionY,added.motionZ);
-//			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, entityPos);
-//			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWRotation, entityVel);
-//			added.posX = entityPos.X;
-//			added.posY = entityPos.Y;
-//			added.posZ = entityPos.Z;
-//			System.out.println("test");
-//		}
 		world.onEntityAdded(added);
 	}
 

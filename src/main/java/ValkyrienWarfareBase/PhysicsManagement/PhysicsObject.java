@@ -185,7 +185,9 @@ public class PhysicsObject {
 	
 	public void injectChunkIntoWorld(Chunk chunk,int x,int z){
 		ChunkProviderServer provider = (ChunkProviderServer) worldObj.getChunkProvider();
-		chunk.setChunkLoaded(true);
+		if(worldObj.isRemote){
+			chunk.setChunkLoaded(true);
+		}
 		chunk.isModified = true;
 		claimedChunks[x-ownedChunks.minX][z-ownedChunks.minZ] = chunk;
 		provider.id2ChunkMap.put(ChunkPos.chunkXZ2Int(x, z), chunk);
@@ -292,7 +294,8 @@ public class PhysicsObject {
 	
 	public void onTick(){
 		//Move xyz here
-//		yaw = 0D;
+//		yaw = 30D;
+//		roll = -22D;
 		//Update coordinate transforms
 		coordTransform.updateTransforms();
 		if(!worldObj.isRemote){

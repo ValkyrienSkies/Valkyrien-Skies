@@ -133,7 +133,7 @@ public class CoordTransformObject {
 				mxZ = currentLocation.Z;
 			}
 		}
-		AxisAlignedBB enclosingBB = new AxisAlignedBB(mnX,mnY,mnZ,mxX,mxY,mxZ);
+		AxisAlignedBB enclosingBB = new AxisAlignedBB(mnX,mnY,mnZ,mxX,mxY,mxZ).expand(3, 3, 3);
 		parent.collisionBB = enclosingBB;
 	}
 	

@@ -116,8 +116,7 @@ public class CallRunnerClient extends CallRunner{
             worldRendererIn.setTranslation(0.0D, 0.0D, 0.0D);
             renderGlobal.postRenderDamagedBlocks();
         }
-		
-//		renderGlobal.drawBlockDamageTexture(tessellatorIn, worldRendererIn, entityIn, partialTicks);
+
     }
 	
 	public static void onDrawSelectionBox(RenderGlobal renderGlobal,EntityPlayer player,RayTraceResult movingObjectPositionIn,int execute,float partialTicks){

@@ -1,5 +1,7 @@
 package ValkyrienWarfareBase.Physics;
 
+import javax.vecmath.Matrix3d;
+
 import ValkyrienWarfareBase.NBTUtils;
 import ValkyrienWarfareBase.Math.RotationMatrices;
 import ValkyrienWarfareBase.Math.Vector;
@@ -121,13 +123,70 @@ public class PhysicsCalculations {
 //		System.out.println(MoITensor[6]+":"+MoITensor[7]+":"+MoITensor[8]);
 	}
 	
-	public void rawPhysTick(double newPhysSpeed,int iters){
+	public void rawPhysTickPreCol(double newPhysSpeed,int iters){
+		physSpeed = newPhysSpeed;
+		iterations = iters;
+		
+		updateCenterOfMass();
+		
+		calculateFramedMOITensor();
+		
+		
+		
+	}
+	
+	//The x/y/z variables need to be updated when the centerOfMass location changes
+	public void updateCenterOfMass(){
+		Vector parentCM = parent.centerCoord;
+		if(!parent.centerCoord.equals(centerOfMass)){
+			Vector CMDif = centerOfMass.getSubtraction(parentCM);
+			RotationMatrices.applyTransform(parent.coordTransform.lToWRotation, CMDif);
+			
+			parent.wrapper.posX-=CMDif.X;
+			parent.wrapper.posY-=CMDif.Y;
+			parent.wrapper.posZ-=CMDif.Z;
+			
+			parent.centerCoord = new Vector(centerOfMass);
+			parent.coordTransform.updateTransforms();
+		}
+	}
+
+	public void rawPhysTickPostCol(double newPhysSpeed,int iters){
 		physSpeed = newPhysSpeed;
 		iterations = iters;
 		
 		
 	}
-
+	
+	//Applies the rotation transform onto the Moment of Inertia to generate the REAL MOI at that given instant
+	public void calculateFramedMOITensor(){
+		framedMOI = new double[9];
+		Matrix3d pitch = new Matrix3d();
+		Matrix3d yaw = new Matrix3d();
+		Matrix3d roll = new Matrix3d();
+		pitch.rotX(Math.toRadians(parent.wrapper.pitch));
+		yaw.rotY(Math.toRadians(parent.wrapper.yaw));
+		roll.rotZ(Math.toRadians(parent.wrapper.roll));
+		pitch.mul(yaw);
+		pitch.mul(roll);
+		pitch.normalize();
+		Matrix3d inertiaBodyFrame = new Matrix3d(MoITensor);
+		Matrix3d multipled = new Matrix3d();
+		multipled.mul(pitch,inertiaBodyFrame);
+		pitch.transpose();
+		multipled.mul(pitch);
+		framedMOI[0] = multipled.m00;
+		framedMOI[1] = multipled.m01;
+		framedMOI[2] = multipled.m02;
+		framedMOI[3] = multipled.m10;
+		framedMOI[4] = multipled.m11;
+		framedMOI[5] = multipled.m12;
+		framedMOI[6] = multipled.m20;
+		framedMOI[7] = multipled.m21;
+		framedMOI[8] = multipled.m22;
+		invFramedMOI = RotationMatrices.inverse3by3(framedMOI);
+	}
+	
 	public void writeToNBTTag(NBTTagCompound compound){
 		compound.setDouble("mass", mass);
 		
@@ -156,6 +215,7 @@ public class PhysicsCalculations {
 		invMass = 1D/mass;
 	}
 	
+	//Called upon a Ship being created from the World, and generates the physics data for it
 	public void processInitialPhysicsData(){
 		IBlockState Air = Blocks.AIR.getDefaultState();
 		for(BlockPos pos:parent.blockPositions){

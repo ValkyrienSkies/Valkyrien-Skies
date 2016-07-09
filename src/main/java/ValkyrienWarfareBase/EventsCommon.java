@@ -1,10 +1,12 @@
 package ValkyrienWarfareBase;
 
 import ValkyrienWarfareBase.Interaction.CustomNetHandlerPlayServer;
+import ValkyrienWarfareBase.PhysicsManagement.PhysicsTickHandler;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.HarvestCheck;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -13,13 +15,41 @@ import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
 import net.minecraftforge.event.world.ChunkDataEvent;
 import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.fml.common.eventhandler.Event.Result;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.eventhandler.Event.Result;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
 
 public class EventsCommon {
 
+	@SubscribeEvent(priority=EventPriority.HIGHEST)
+	public void onTickEvent(TickEvent event){
+		if(event instanceof WorldTickEvent){
+			World worldFor = ((WorldTickEvent)event).world;
+			//Only run the WorldTickEvent on Server side
+			if(!worldFor.isRemote){
+				if(event.phase==Phase.START){
+					PhysicsTickHandler.onWorldTickStart(worldFor);
+				}
+				if(event.phase==Phase.END){
+					PhysicsTickHandler.onWorldTickEnd(worldFor);
+				}
+			}
+		}
+		if(event instanceof ClientTickEvent){
+			if(event.phase==Phase.START){
+				PhysicsTickHandler.onClientTickStart();
+			}
+			if(event.phase==Phase.END){
+				PhysicsTickHandler.onClientTickEnd();
+			}
+		}
+	}
+	
 	@SubscribeEvent(priority=EventPriority.HIGHEST)
 	public void onPlayerTickEvent(PlayerTickEvent event){
 		if(!event.player.worldObj.isRemote){

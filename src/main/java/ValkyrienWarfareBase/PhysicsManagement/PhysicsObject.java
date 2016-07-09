@@ -8,7 +8,6 @@ import java.util.Set;
 import ValkyrienWarfareBase.NBTUtils;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.ChunkManagement.ChunkSet;
-import ValkyrienWarfareBase.Coordinates.CoordTransformObject;
 import ValkyrienWarfareBase.Math.Vector;
 import ValkyrienWarfareBase.Physics.PhysicsCalculations;
 import ValkyrienWarfareBase.Relocation.ChunkCache;
@@ -36,13 +35,14 @@ import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.ChunkEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class PhysicsObject {
 
 	public ChunkSet ownedChunks;
 	public World worldObj;
 	public PhysicsWrapperEntity wrapper;
-	public double pitch,yaw,roll;
 	//Used for faster memory access to the Chunks this object 'owns'
 	public Chunk[][] claimedChunks;
 	//This handles sending packets to players involving block changes in the Ship space
@@ -302,12 +302,7 @@ public class PhysicsObject {
 //		roll = -22D;
 		//Update coordinate transforms
 		coordTransform.updateTransforms();
-		if(!worldObj.isRemote){
-//			System.out.println(((WorldServer)worldObj).getPlayerChunkMap().contains(claimedChunks[0][0].xPosition, claimedChunks[0][0].zPosition));
-//			for(BlockPos pos:blockPositions){
-//				((WorldServer)worldObj).getPlayerChunkMap().markBlockForUpdate(pos);
-//			}
-		}
+		
 	}
 	
 	public void loadClaimedChunks(){
@@ -335,7 +330,7 @@ public class PhysicsObject {
 		detectBlockPositions();
 		coordTransform.updateTransforms();
 	}
-	
+
 	//Generates the blockPos array; must be loaded DIRECTLY after the chunks are setup
 	public void detectBlockPositions(){
 //		int minChunkX = claimedChunks[0][0].xPosition;
@@ -373,9 +368,9 @@ public class PhysicsObject {
 	public void writeToNBTTag(NBTTagCompound compound){
 		ownedChunks.writeToNBT(compound);
 		NBTUtils.writeVectorToNBT("c", centerCoord, compound);
-		compound.setDouble("pitch", pitch);
-		compound.setDouble("yaw", yaw);
-		compound.setDouble("roll", roll);
+		compound.setDouble("pitch", wrapper.pitch);
+		compound.setDouble("yaw", wrapper.yaw);
+		compound.setDouble("roll", wrapper.roll);
 		for(int row = 0;row<ownedChunks.chunkOccupiedInLocal.length;row++){
 			boolean[] curArray = ownedChunks.chunkOccupiedInLocal[row];
 			for(int column = 0;column<curArray.length;column++){
@@ -388,9 +383,9 @@ public class PhysicsObject {
 	public void readFromNBTTag(NBTTagCompound compound){
 		ownedChunks = new ChunkSet(compound);
 		centerCoord = NBTUtils.readVectorFromNBT("c", compound);
-		pitch = compound.getDouble("pitch");
-		yaw = compound.getDouble("yaw");
-		roll = compound.getDouble("roll");
+		wrapper.pitch = compound.getDouble("pitch");
+		wrapper.yaw = compound.getDouble("yaw");
+		wrapper.roll = compound.getDouble("roll");
 		for(int row = 0;row<ownedChunks.chunkOccupiedInLocal.length;row++){
 			boolean[] curArray = ownedChunks.chunkOccupiedInLocal[row];
 			for(int column = 0;column<curArray.length;column++){
@@ -403,9 +398,17 @@ public class PhysicsObject {
 	
 	public void readSpawnData(ByteBuf additionalData){
 		ownedChunks = new ChunkSet(additionalData.readInt(),additionalData.readInt(),additionalData.readInt());
-		pitch = additionalData.readDouble();
-		yaw = additionalData.readDouble();
-		roll = additionalData.readDouble();
+		
+		wrapper.posX = additionalData.readDouble();
+		wrapper.posY = additionalData.readDouble();
+		wrapper.posZ = additionalData.readDouble();
+		
+		wrapper.pitch = additionalData.readDouble();
+		wrapper.yaw = additionalData.readDouble();
+		wrapper.roll = additionalData.readDouble();
+		
+		
+		
 		centerCoord = new Vector(additionalData);
 		for(boolean[] array:ownedChunks.chunkOccupiedInLocal){
 			for(int i=0;i<array.length;i++){
@@ -421,9 +424,14 @@ public class PhysicsObject {
 		buffer.writeInt(ownedChunks.centerX);
 		buffer.writeInt(ownedChunks.centerZ);
 		buffer.writeInt(ownedChunks.radius);
-		buffer.writeDouble(pitch);
-		buffer.writeDouble(yaw);
-		buffer.writeDouble(roll);
+		
+		buffer.writeDouble(wrapper.posX);
+		buffer.writeDouble(wrapper.posY);
+		buffer.writeDouble(wrapper.posZ);
+		
+		buffer.writeDouble(wrapper.pitch);
+		buffer.writeDouble(wrapper.yaw);
+		buffer.writeDouble(wrapper.roll);
 		centerCoord.writeToByteBuf(buffer);
 		for(boolean[] array:ownedChunks.chunkOccupiedInLocal){
 			for(boolean b:array){

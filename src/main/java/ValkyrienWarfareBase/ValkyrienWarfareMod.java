@@ -6,12 +6,11 @@ import ValkyrienWarfareBase.Block.BlockPhysicsInfuser;
 import ValkyrienWarfareBase.ChunkManagement.DimensionPhysicsChunkManager;
 import ValkyrienWarfareBase.PhysicsManagement.DimensionPhysObjectManager;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
-import ValkyrienWarfareBase.PhysicsManagement.Network.PhysWrapperSpawnHandler;
-import ValkyrienWarfareBase.PhysicsManagement.Network.PhysWrapperSpawnMessage;
+import ValkyrienWarfareBase.PhysicsManagement.Network.PhysWrapperPositionHandler;
+import ValkyrienWarfareBase.PhysicsManagement.Network.PhysWrapperPositionMessage;
 import ValkyrienWarfareBase.Proxy.CommonProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.command.ServerCommandManager;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
@@ -31,7 +30,6 @@ import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 @Mod(modid=ValkyrienWarfareMod.MODID, name=ValkyrienWarfareMod.MODNAME, version=ValkyrienWarfareMod.MODVER, guiFactory = "ValkyrienWarfareBase.GUI.GuiFactoryValkyrienWarfare")
 public class ValkyrienWarfareMod{
@@ -82,7 +80,7 @@ public class ValkyrienWarfareMod{
     public void postInit(FMLPostInitializationEvent event){
     	proxy.postInit(event);
     	airStateIndex = Block.getStateId(Blocks.AIR.getDefaultState());
-    	BlockMassRegistration.registerVanillaBlocks();
+    	BlockPhysicsRegistration.registerVanillaBlocksMass();
     }
 
     @EventHandler
@@ -94,7 +92,7 @@ public class ValkyrienWarfareMod{
 
     public void registerNetworks(FMLStateEvent event){
     	physWrapperNetwork = NetworkRegistry.INSTANCE.newSimpleChannel("physChannel");
-    	physWrapperNetwork.registerMessage(PhysWrapperSpawnHandler.class, PhysWrapperSpawnMessage.class, 0, Side.CLIENT);
+    	physWrapperNetwork.registerMessage(PhysWrapperPositionHandler.class, PhysWrapperPositionMessage.class, 0, Side.CLIENT);
     }
 
     public void registerBlocks(FMLStateEvent event){

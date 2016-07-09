@@ -3,13 +3,11 @@ package ValkyrienWarfareBase.CoreMod;
 import java.lang.reflect.Field;
 import java.util.Map;
 
-import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
-import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
 
 /**
@@ -21,30 +19,56 @@ public class TransformAdapter extends ClassVisitor{
 	private String m_className;
 	public boolean m_isObfuscatedEnvironment;
 	
-	private final String ParticleName,RawParticleName;
-	private final String ParticleManagerName,RawParticleManagerName;
-	private final String SoundEventName,RawSoundEventName;
-	private final String SoundCategoryName,RawSoundCategoryName;
-	private final String WorldClassName,RawWorldClassName;
-	private final String RenderGlobalName,RawRenderGlobalName;
-	private final String EntityClassName,RawEntityClassName;
-	private final String VertexBufferName,RawVertexBufferName;
-	private final String TessellatorName,RawTessellatorName;
-	private final String EntityPlayerName,RawEntityPlayerName;
-	private final String RayTraceResult,RawRayTraceResult;
-	private final String TileEntityName,RawTileEntityName;
-	private final String ICameraName,RawICameraName;
-	private final String IBlockStateName,RawIBlockStateName;
-	private final String BlockPosName,RawBlockPosName;
-	private final String WorldClientName,RawWorldClientName;
-	private final String PlayerListName,RawPlayerListName;
-	private final String PacketName,RawPacketName;
-	private final String Vec3dName,RawVec3dName;
-	private final String GameProfileName,RawGameProfileName;
-	private final String EntityPlayerMPName,RawEntityPlayerMPName;
-	private final String BlockRenderLayerName,RawBlockRenderLayerName;
-	private final String ChunkName,RawChunkName;
-	private final String ChunkProviderServerName,RawChunkProviderServerName;
+	private static final String RawEntityClassName = "net/minecraft/entity/Entity";
+	private static final String RawWorldClassName = "net/minecraft/world/World";
+	private static final String RawWorldClientName = "net/minecraft/client/multiplayer/WorldClient";
+	private static final String RawPacketName = "net/minecraft/network/Packet";
+	private static final String RawEntityPlayerName = "net/minecraft/entity/player/EntityPlayer";
+	private static final String RawRenderGlobalName = "net/minecraft/client/renderer/RenderGlobal";
+	private static final String RawICameraName = "net/minecraft/client/renderer/culling/ICamera";
+	private static final String RawBlockRenderLayerName = "net/minecraft/util/BlockRenderLayer";
+	private static final String RawChunkProviderServerName = "net/minecraft/world/gen/ChunkProviderServer";
+	private static final String RawPlayerListName = "net/minecraft/server/management/PlayerList";
+	private static final String RawGameProfileName = "com/mojang/authlib/GameProfile";
+	private static final String RawEntityPlayerMPName = "net/minecraft/entity/player/EntityPlayerMP";
+	private static final String RawChunkName = "net/minecraft/world/chunk/Chunk";
+	private static final String RawRayTraceResult = "net/minecraft/util/math/RayTraceResult";
+	private static final String RawVec3dName = "net/minecraft/util/math/Vec3d";
+	private static final String RawIBlockStateName = "net/minecraft/block/state/IBlockState";
+	private static final String RawBlockPosName = "net/minecraft/util/math/BlockPos";
+	private static final String RawTileEntityName = "net/minecraft/tileentity/TileEntity";
+	private static final String RawTessellatorName = "net/minecraft/client/renderer/Tessellator";
+	private static final String RawVertexBufferName = "net/minecraft/client/renderer/VertexBuffer";
+	private static final String RawSoundEventName = "net/minecraft/util/SoundEvent";
+	private static final String RawSoundCategoryName = "net/minecraft/util/SoundCategory";
+	private static final String RawParticleName = "net/minecraft/client/particle/Particle";
+	private static final String RawParticleManagerName = "net/minecraft/client/particle/ParticleManager";
+	
+	
+	private final String ParticleName;
+	private final String ParticleManagerName;
+	private final String SoundEventName;
+	private final String SoundCategoryName;
+	private final String WorldClassName;
+	private final String RenderGlobalName;
+	private final String EntityClassName;
+	private final String VertexBufferName;
+	private final String TessellatorName;
+	private final String EntityPlayerName;
+	private final String RayTraceResult;
+	private final String TileEntityName;
+	private final String ICameraName;
+	private final String IBlockStateName;
+	private final String BlockPosName;
+	private final String WorldClientName;
+	private final String PlayerListName;
+	private final String PacketName;
+	private final String Vec3dName;
+	private final String GameProfileName;
+	private final String EntityPlayerMPName;
+	private final String BlockRenderLayerName;
+	private final String ChunkName;
+	private final String ChunkProviderServerName;
 	
 	private boolean correctDesc,correctName,correctSuperClass;
 
@@ -52,33 +76,6 @@ public class TransformAdapter extends ClassVisitor{
 		super( api, null );
 		m_isObfuscatedEnvironment = isObfuscatedEnvironment;
 		m_className = null;
-		
-		
-		
-		RawEntityClassName = "net/minecraft/entity/Entity";
-		RawWorldClassName = "net/minecraft/world/World";
-		RawWorldClientName = "net/minecraft/client/multiplayer/WorldClient";
-		RawPacketName = "net/minecraft/network/Packet";
-		RawEntityPlayerName = "net/minecraft/entity/player/EntityPlayer";
-		RawRenderGlobalName = "net/minecraft/client/renderer/RenderGlobal";
-		RawICameraName = "net/minecraft/client/renderer/culling/ICamera";
-		RawBlockRenderLayerName = "net/minecraft/util/BlockRenderLayer";
-		RawChunkProviderServerName = "net/minecraft/world/gen/ChunkProviderServer";
-		RawPlayerListName = "net/minecraft/server/management/PlayerList";
-		RawGameProfileName = "com/mojang/authlib/GameProfile";
-		RawEntityPlayerMPName = "net/minecraft/entity/player/EntityPlayerMP";
-		RawChunkName = "net/minecraft/world/chunk/Chunk";
-		RawRayTraceResult = "net/minecraft/util/math/RayTraceResult";
-		RawVec3dName = "net/minecraft/util/math/Vec3d";
-		RawIBlockStateName = "net/minecraft/block/state/IBlockState";
-		RawBlockPosName = "net/minecraft/util/math/BlockPos";
-		RawTileEntityName = "net/minecraft/tileentity/TileEntity";
-		RawTessellatorName = "net/minecraft/client/renderer/Tessellator";
-		RawVertexBufferName = "net/minecraft/client/renderer/VertexBuffer";
-		RawSoundEventName = "net/minecraft/util/SoundEvent";
-		RawSoundCategoryName = "net/minecraft/util/SoundCategory";
-		RawParticleName = "net/minecraft/client/particle/Particle";
-		RawParticleManagerName = "net/minecraft/client/particle/ParticleManager";
 		
 		EntityClassName = getRuntimeClassName(RawEntityClassName);
 		WorldClassName = getRuntimeClassName(RawWorldClassName);
@@ -104,10 +101,6 @@ public class TransformAdapter extends ClassVisitor{
 		SoundCategoryName = getRuntimeClassName(RawSoundCategoryName);
 		ParticleName = getRuntimeClassName(RawParticleName);
 		ParticleManagerName = getRuntimeClassName(RawParticleManagerName);
-	}
-	
-	private void getClassNames(){
-		
 	}
 
 	private boolean runTransformer(String calledName,String calledDesc,String calledOwner,MethodVisitor mv){
@@ -172,8 +165,7 @@ public class TransformAdapter extends ClassVisitor{
 		
 		if(isMethod(calledDesc,"(L"+BlockPosName+";L"+IBlockStateName+";)Z",calledName,WorldClientName,"invalidateRegionAndSetBlock","func_180503_b",calledOwner)
 			||
-			isMethod(calledDesc,"(L"+RawBlockPosName+";L"+RawIBlockStateName+";)Z",calledName,RawWorldClientName,"invalidateRegionAndSetBlock","func_180503_b",calledOwner)
-			){
+			isMethod(calledDesc,"(L"+RawBlockPosName+";L"+RawIBlockStateName+";)Z",calledName,RawWorldClientName,"invalidateRegionAndSetBlock","func_180503_b",calledOwner)){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onInvalidateRegionAndSetBlock", String.format( "(L%s;L"+BlockPosName+";L"+IBlockStateName+";)Z", WorldClientName) );
 				return false;
 		}
@@ -307,7 +299,7 @@ public class TransformAdapter extends ClassVisitor{
 	private String getObfuscatedClassName( String clearClassName ){
 		String obfuscatedClassName = FMLDeobfuscatingRemapper.INSTANCE.unmap( clearClassName );
 		if( obfuscatedClassName == null ){
-			obfuscatedClassName = clearClassName;
+			return clearClassName;
 		}
 		return obfuscatedClassName;
 	}

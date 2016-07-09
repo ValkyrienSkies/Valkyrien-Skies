@@ -15,9 +15,11 @@ import net.minecraft.world.chunk.Chunk;
  */
 public class WorldPhysObjectManager {
 
-	private static double ShipRangeCheck = 120D;
+//	private static double ShipRangeCheck = 120D;
 	public World worldObj;
 	public ArrayList<PhysicsWrapperEntity> physicsEntities = new ArrayList<PhysicsWrapperEntity>();
+	public int physIter = 5;
+	public double physSpeed = .05D;
 	
 	public WorldPhysObjectManager(World toManage){
 		worldObj = toManage;

@@ -1,10 +1,10 @@
-package ValkyrienWarfareBase.Coordinates;
+package ValkyrienWarfareBase.PhysicsManagement;
 
-import ValkyrienWarfareBase.NBTUtils;
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.Math.RotationMatrices;
 import ValkyrienWarfareBase.Math.Vector;
-import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
-import net.minecraft.nbt.NBTTagCompound;
+import ValkyrienWarfareBase.PhysicsManagement.Network.PhysWrapperPositionMessage;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 
@@ -33,6 +33,7 @@ public class CoordTransformObject {
 		prevlToWTransform = lToWTransform;
 		prevwToLTransform = wToLTransform;
 	}
+	
 	//TODO: Implement this
 	public void updateTransforms(){
 		prevlToWTransform = lToWTransform;
@@ -45,18 +46,26 @@ public class CoordTransformObject {
 		
 //		lToWTransform = RotationMatrices.getTranslationMatrix(parent.centerCoord.X,parent.centerCoord.Y,parent.centerCoord.Z);
 		
-		lToWTransform = RotationMatrices.rotateAndTranslate(lToWTransform,parent.pitch, parent.yaw, parent.roll, parent.centerCoord);
+		lToWTransform = RotationMatrices.rotateAndTranslate(lToWTransform,parent.wrapper.pitch, parent.wrapper.yaw, parent.wrapper.roll, parent.centerCoord);
 		
 		
 			
 		lToWRotation = RotationMatrices.getDoubleIdentity();
 		
-		lToWRotation = RotationMatrices.rotateOnly(lToWRotation,parent.pitch, parent.yaw, parent.roll);
+		lToWRotation = RotationMatrices.rotateOnly(lToWRotation,parent.wrapper.pitch, parent.wrapper.yaw, parent.wrapper.roll);
 		
 		wToLTransform = RotationMatrices.inverse(lToWTransform);
 		wToLRotation = RotationMatrices.inverse(lToWRotation);
 		updateParentAABB();
 		updateParentNormals();
+	}
+	
+	public void sendPositionToPlayers(){
+		PhysWrapperPositionMessage posMessage = new PhysWrapperPositionMessage(parent.wrapper);
+		
+		for(EntityPlayerMP player:parent.watchingPlayers){
+			ValkyrienWarfareMod.physWrapperNetwork.sendTo(posMessage, player);
+		}
 	}
 	
 	public void updateParentNormals(){

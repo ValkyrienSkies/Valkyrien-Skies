@@ -6,6 +6,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * This entity's only purpose is to use the functionality of sending itself
@@ -17,6 +18,9 @@ import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpawnData{
 
 	public PhysicsObject wrapping;
+	public double pitch;
+	public double yaw;
+	public double roll;
 	
 	public PhysicsWrapperEntity(World worldIn) {
 		super(worldIn);
@@ -47,6 +51,19 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 		
 	}
 
+	@Override
+	public void setPosition(double x, double y, double z){}
+	
+	@Override
+	public void setLocationAndAngles(double x, double y, double z, float yaw, float pitch){}
+	
+	@Override
+	@SideOnly(net.minecraftforge.fml.relauncher.Side.CLIENT)
+	public void setPositionAndRotationDirect(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean teleport){}
+	
+	@Override
+	public void setPositionAndUpdate(double x, double y, double z){}
+	
 	@Override
 	protected void readEntityFromNBT(NBTTagCompound tagCompund) {
 		wrapping.readFromNBTTag(tagCompund);

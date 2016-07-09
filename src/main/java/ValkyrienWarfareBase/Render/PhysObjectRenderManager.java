@@ -194,9 +194,9 @@ public class PhysObjectRenderManager {
 		double p1 = Minecraft.getMinecraft().thePlayer.lastTickPosY + (Minecraft.getMinecraft().thePlayer.posY - Minecraft.getMinecraft().thePlayer.lastTickPosY) * (double)partialTicks;
 		double p2 = Minecraft.getMinecraft().thePlayer.lastTickPosZ + (Minecraft.getMinecraft().thePlayer.posZ - Minecraft.getMinecraft().thePlayer.lastTickPosZ) * (double)partialTicks;
 		
-		double moddedPitch = entity.wrapping.pitch;
-		double moddedYaw = entity.wrapping.yaw;
-		double moddedRoll = entity.wrapping.roll;
+		double moddedPitch = entity.pitch;
+		double moddedYaw = entity.yaw;
+		double moddedRoll = entity.roll;
 		
 		if(offsetPos!=null){
 			double offsetX = offsetPos.getX()-centerOfRotation.X;
@@ -218,7 +218,6 @@ public class PhysObjectRenderManager {
 	}
 	
 	public void markForUpdate(){
-		curPartialTick = -1D;
 		needsCutoutUpdate = true;
 		needsCutoutMippedUpdate = true;
 		needsSolidUpdate = true;

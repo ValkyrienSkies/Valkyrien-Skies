@@ -9,6 +9,7 @@ import ValkyrienWarfareBase.NBTUtils;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.ChunkManagement.ChunkSet;
 import ValkyrienWarfareBase.Math.Vector;
+import ValkyrienWarfareBase.Physics.BlockForce;
 import ValkyrienWarfareBase.Physics.PhysicsCalculations;
 import ValkyrienWarfareBase.Relocation.ChunkCache;
 import ValkyrienWarfareBase.Relocation.ShipSpawnDetector;
@@ -349,7 +350,13 @@ public class PhysicsObject {
 			        			for(x=0;x<16;x++){
 			        				for(z=0;z<16;z++){
 			            				if(storage.data.storage.getAt(y << 8 | z << 4 | x)!=ValkyrienWarfareMod.airStateIndex){
-			            					blockPositions.add(new BlockPos(chunk.xPosition*16+x,index*16+y,chunk.zPosition*16+z));
+			            					BlockPos pos = new BlockPos(chunk.xPosition*16+x,index*16+y,chunk.zPosition*16+z);
+			            					blockPositions.add(pos);
+				            				if(!worldObj.isRemote){
+			            						if(BlockForce.basicForces.isBlockProvidingForce(worldObj.getBlockState(pos), pos, worldObj)){
+				            						physicsProcessor.activeForcePositions.add(pos);
+				            					}
+				            				}
 			            				}
 			            			}
 			        			}

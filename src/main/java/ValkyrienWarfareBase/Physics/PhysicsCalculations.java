@@ -84,7 +84,7 @@ public class PhysicsCalculations {
 		}
 	}
 	
-	public void addMassAt(double x,double y,double z,double addedMass){
+	private void addMassAt(double x,double y,double z,double addedMass){
 		Vector prevCenterOfMass = new Vector(centerOfMass);
 		if(mass>.0001D){
 			centerOfMass.multiply(mass);

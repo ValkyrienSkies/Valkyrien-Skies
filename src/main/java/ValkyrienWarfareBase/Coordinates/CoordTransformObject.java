@@ -1,8 +1,10 @@
 package ValkyrienWarfareBase.Coordinates;
 
+import ValkyrienWarfareBase.NBTUtils;
 import ValkyrienWarfareBase.Math.RotationMatrices;
 import ValkyrienWarfareBase.Math.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 
@@ -144,5 +146,5 @@ public class CoordTransformObject {
 	public void fromLocalToGlobal(Vector inLocal){
 		RotationMatrices.applyTransform(lToWTransform, inLocal);
 	}
-	
+
 }

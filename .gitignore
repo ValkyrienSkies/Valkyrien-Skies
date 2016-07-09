@@ -62,3 +62,8 @@ mods/industrialcraft-2-2.5.55-ex19-dev.jar
 servers.dat
 world/data/ChunkKeys.dat
 world/stats/e4e5b30f-b972-382c-b5e5-86c2e785a8a6.json
+world/DIM-1/forcedchunks.dat
+world/level.dat
+world/level.dat_old
+world/stats/93bfa0b6-cc14-3c0c-8efa-0bcc48245274.json
+world/forcedchunks.dat

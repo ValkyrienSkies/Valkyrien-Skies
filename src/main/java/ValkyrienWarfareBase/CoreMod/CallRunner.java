@@ -102,7 +102,7 @@ public class CallRunner {
 			
 			if(packetIn instanceof SPacketSoundEffect){
 				SPacketSoundEffect soundEffect = (SPacketSoundEffect)packetIn;
-				packetIn = new SPacketSoundEffect(soundEffect.getSound(), soundEffect.category, packetPosition.X, packetPosition.Y, packetPosition.Z, soundEffect.getVolume(), soundEffect.getPitch());
+				packetIn = new SPacketSoundEffect(soundEffect.sound, soundEffect.category, packetPosition.X, packetPosition.Y, packetPosition.Z, soundEffect.soundVolume, soundEffect.soundPitch);
 			}
 //			
 			if(packetIn instanceof SPacketEffect){
@@ -166,7 +166,7 @@ public class CallRunner {
             
             RayTraceResult resultInShip = world.rayTraceBlocks(playerEyesPos, playerEyesReachAdded, false, false, true);
             
-            if(resultInShip.hitVec!=null){
+            if(resultInShip!=null&&resultInShip.hitVec!=null){
 	            double shipResultDistFromPlayer = resultInShip.hitVec.distanceTo(playerEyesPos);
 	            
 	            if(shipResultDistFromPlayer<worldResultDistFromPlayer){

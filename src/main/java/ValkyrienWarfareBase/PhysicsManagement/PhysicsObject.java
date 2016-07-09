@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import ValkyrienWarfareBase.NBTUtils;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.ChunkManagement.ChunkSet;
 import ValkyrienWarfareBase.Coordinates.CoordTransformObject;
@@ -371,9 +372,10 @@ public class PhysicsObject {
 	
 	public void writeToNBTTag(NBTTagCompound compound){
 		ownedChunks.writeToNBT(compound);
-		compound.setDouble("cX", centerCoord.X);
-		compound.setDouble("cY", centerCoord.Y);
-		compound.setDouble("cZ", centerCoord.Z);
+		NBTUtils.writeVectorToNBT("c", centerCoord, compound);
+		compound.setDouble("pitch", pitch);
+		compound.setDouble("yaw", yaw);
+		compound.setDouble("roll", roll);
 		for(int row = 0;row<ownedChunks.chunkOccupiedInLocal.length;row++){
 			boolean[] curArray = ownedChunks.chunkOccupiedInLocal[row];
 			for(int column = 0;column<curArray.length;column++){
@@ -385,7 +387,10 @@ public class PhysicsObject {
 	
 	public void readFromNBTTag(NBTTagCompound compound){
 		ownedChunks = new ChunkSet(compound);
-		centerCoord = new Vector(compound.getDouble("cX"),compound.getDouble("cY"),compound.getDouble("cZ"));
+		centerCoord = NBTUtils.readVectorFromNBT("c", compound);
+		pitch = compound.getDouble("pitch");
+		yaw = compound.getDouble("yaw");
+		roll = compound.getDouble("roll");
 		for(int row = 0;row<ownedChunks.chunkOccupiedInLocal.length;row++){
 			boolean[] curArray = ownedChunks.chunkOccupiedInLocal[row];
 			for(int column = 0;column<curArray.length;column++){

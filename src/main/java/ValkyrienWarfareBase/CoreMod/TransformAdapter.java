@@ -3,11 +3,13 @@ package ValkyrienWarfareBase.CoreMod;
 import java.lang.reflect.Field;
 import java.util.Map;
 
+import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
+import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
 
 /**
@@ -16,239 +18,273 @@ import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRema
  *
  */
 public class TransformAdapter extends ClassVisitor{
-	private final String EntityClassName;
-	private final String WorldClassName;
-	private final String ExplosionClassName;
-	private final String BlockPosClassName;
-	private final String EnumSkyBlockName;
-	private final String WorldClientName;
-	private final String EntityLivingBaseName;
-//	private final String progressManager;
-//	private final String progressBar;
-	private final String PacketName;
-	private final String EntityPlayerName;
-	private final String EntityRendererClassName;
-	private final String ServerConfigurationManagerName;
 	private String m_className;
 	public boolean m_isObfuscatedEnvironment;
+	
+	private final String ParticleName,RawParticleName;
+	private final String ParticleManagerName,RawParticleManagerName;
+	private final String SoundEventName,RawSoundEventName;
+	private final String SoundCategoryName,RawSoundCategoryName;
+	private final String WorldClassName,RawWorldClassName;
+	private final String RenderGlobalName,RawRenderGlobalName;
+	private final String EntityClassName,RawEntityClassName;
+	private final String VertexBufferName,RawVertexBufferName;
+	private final String TessellatorName,RawTessellatorName;
+	private final String EntityPlayerName,RawEntityPlayerName;
+	private final String RayTraceResult,RawRayTraceResult;
+	private final String TileEntityName,RawTileEntityName;
+	private final String ICameraName,RawICameraName;
+	private final String IBlockStateName,RawIBlockStateName;
+	private final String BlockPosName,RawBlockPosName;
+	private final String WorldClientName,RawWorldClientName;
+	private final String PlayerListName,RawPlayerListName;
+	private final String PacketName,RawPacketName;
+	private final String Vec3dName,RawVec3dName;
+	private final String GameProfileName,RawGameProfileName;
+	private final String EntityPlayerMPName,RawEntityPlayerMPName;
+	private final String BlockRenderLayerName,RawBlockRenderLayerName;
+	private final String ChunkName,RawChunkName;
+	private final String ChunkProviderServerName,RawChunkProviderServerName;
+	
+	private boolean correctDesc,correctName,correctSuperClass;
 
-	private final String ChunkRenderContainerName;
-	private final String RenderChunkName;
-	private final String RenderGlobalName;
-	private final String ICameraName;
-	private final String BlockRenderLayerName;
-	private final String WorldProviderName;
-	private final String ChunkProviderServerName;
-	private final String EntityRendererName;
-	private final String PlayerListName;
-	private final String GameProfileName;
-	private final String EntityPlayerMPName;
-	private final String NetHandlerPlayClientName;
-	private final String SPacketJoinGameName;
-	private final String INetHandlerPlayClientName;
-	private final String ChunkName;
-	private final String MinecraftName;
-	private final String RayTraceResult;
-	private final String Vec3dName;
-	private final String IBlockStateName;
-	private final String BlockPosName;
-	private final String TileEntityName;
-	
-	private final String TessellatorName;
-	private final String VertexBufferName;
-	private final String IWorldEventListenerName;
-	private final String SoundEventName;
-	private final String SoundCategoryName;
-	private final String ServerWorldEventHandlerName;
-	
-	private final String ParticleName;
-	private final String ParticleManagerName;
-	
 	public TransformAdapter( int api, boolean isObfuscatedEnvironment ){
 		super( api, null );
 		m_isObfuscatedEnvironment = isObfuscatedEnvironment;
 		m_className = null;
-		EntityClassName = getRuntimeClassName("net/minecraft/entity/Entity");
-		WorldClassName = getRuntimeClassName("net/minecraft/world/World");
-		ExplosionClassName = getRuntimeClassName("net/minecraft/world/Explosion");
-		BlockPosClassName = getRuntimeClassName("net/minecraft/util/BlockPos");
-		WorldClientName = getRuntimeClassName("net/minecraft/client/multiplayer/WorldClient");
-		EntityLivingBaseName = getRuntimeClassName("net/minecraft/entity/EntityLivingBase");
-		EnumSkyBlockName = getRuntimeClassName("net/minecraft/world/EnumSkyBlock");
-		EntityRendererClassName = getRuntimeClassName("net/minecraft/client/renderer/EntityRenderer");
-		PacketName = getRuntimeClassName("net/minecraft/network/Packet");
-		EntityPlayerName = getRuntimeClassName("net/minecraft/entity/player/EntityPlayer");
-		ServerConfigurationManagerName = getRuntimeClassName("net/minecraft/server/management/ServerConfigurationManager");
-		ChunkRenderContainerName = getRuntimeClassName("net/minecraft/client/renderer/ChunkRenderContainer");
-		RenderChunkName = getRuntimeClassName("net/minecraft/client/renderer/chunk/RenderChunk");
-		RenderGlobalName = getRuntimeClassName("net/minecraft/client/renderer/RenderGlobal");
-		ICameraName = getRuntimeClassName("net/minecraft/client/renderer/culling/ICamera");
-		BlockRenderLayerName = getRuntimeClassName("net/minecraft/util/BlockRenderLayer");
-		WorldProviderName = getRuntimeClassName("net/minecraft/world/WorldProvider");
-		ChunkProviderServerName = getRuntimeClassName("net/minecraft/world/gen/ChunkProviderServer");
-		EntityRendererName = getRuntimeClassName("net/minecraft/client/renderer/EntityRenderer");
 		
-		PlayerListName = getRuntimeClassName("net/minecraft/server/management/PlayerList");
-		GameProfileName = getRuntimeClassName("com/mojang/authlib/GameProfile");
-		EntityPlayerMPName = getRuntimeClassName("net/minecraft/entity/player/EntityPlayerMP");
-		NetHandlerPlayClientName = getRuntimeClassName("net/minecraft/client/network/NetHandlerPlayClient");
-		SPacketJoinGameName = getRuntimeClassName("net/minecraft/network/play/server/SPacketJoinGame");
-		INetHandlerPlayClientName = getRuntimeClassName("net/minecraft/network/play/INetHandlerPlayClient");
-		ChunkName = getRuntimeClassName("net/minecraft/world/chunk/Chunk");
-		MinecraftName = getRuntimeClassName("net/minecraft/client/Minecraft");
 		
-		RayTraceResult = getRuntimeClassName("net/minecraft/util/math/RayTraceResult");
-		Vec3dName = getRuntimeClassName("net/minecraft/util/math/Vec3d");
-		IBlockStateName = getRuntimeClassName("net/minecraft/block/state/IBlockState");
-		BlockPosName = getRuntimeClassName("net/minecraft/util/math/BlockPos");
-		TileEntityName = getRuntimeClassName("net/minecraft/tileentity/TileEntity");
-		TessellatorName = getRuntimeClassName("net/minecraft/client/renderer/Tessellator");
-		VertexBufferName = getRuntimeClassName("net/minecraft/client/renderer/VertexBuffer");
-		IWorldEventListenerName = getRuntimeClassName("net/minecraft/world/IWorldEventListener");
 		
-		SoundEventName = getRuntimeClassName("net/minecraft/util/SoundEvent");
-		SoundCategoryName = getRuntimeClassName("net/minecraft/util/SoundCategory");
-		ServerWorldEventHandlerName = getRuntimeClassName("net/minecraft/world/ServerWorldEventHandler");
-		ParticleName = getRuntimeClassName("net/minecraft/client/particle/Particle");
-		ParticleManagerName = getRuntimeClassName("net/minecraft/client/particle/ParticleManager");
+		RawEntityClassName = "net/minecraft/entity/Entity";
+		RawWorldClassName = "net/minecraft/world/World";
+		RawWorldClientName = "net/minecraft/client/multiplayer/WorldClient";
+		RawPacketName = "net/minecraft/network/Packet";
+		RawEntityPlayerName = "net/minecraft/entity/player/EntityPlayer";
+		RawRenderGlobalName = "net/minecraft/client/renderer/RenderGlobal";
+		RawICameraName = "net/minecraft/client/renderer/culling/ICamera";
+		RawBlockRenderLayerName = "net/minecraft/util/BlockRenderLayer";
+		RawChunkProviderServerName = "net/minecraft/world/gen/ChunkProviderServer";
+		RawPlayerListName = "net/minecraft/server/management/PlayerList";
+		RawGameProfileName = "com/mojang/authlib/GameProfile";
+		RawEntityPlayerMPName = "net/minecraft/entity/player/EntityPlayerMP";
+		RawChunkName = "net/minecraft/world/chunk/Chunk";
+		RawRayTraceResult = "net/minecraft/util/math/RayTraceResult";
+		RawVec3dName = "net/minecraft/util/math/Vec3d";
+		RawIBlockStateName = "net/minecraft/block/state/IBlockState";
+		RawBlockPosName = "net/minecraft/util/math/BlockPos";
+		RawTileEntityName = "net/minecraft/tileentity/TileEntity";
+		RawTessellatorName = "net/minecraft/client/renderer/Tessellator";
+		RawVertexBufferName = "net/minecraft/client/renderer/VertexBuffer";
+		RawSoundEventName = "net/minecraft/util/SoundEvent";
+		RawSoundCategoryName = "net/minecraft/util/SoundCategory";
+		RawParticleName = "net/minecraft/client/particle/Particle";
+		RawParticleManagerName = "net/minecraft/client/particle/ParticleManager";
+		
+		EntityClassName = getRuntimeClassName(RawEntityClassName);
+		WorldClassName = getRuntimeClassName(RawWorldClassName);
+		WorldClientName = getRuntimeClassName(RawWorldClientName);
+		PacketName = getRuntimeClassName(RawPacketName);
+		EntityPlayerName = getRuntimeClassName(RawEntityPlayerName);
+		RenderGlobalName = getRuntimeClassName(RawRenderGlobalName);
+		ICameraName = getRuntimeClassName(RawICameraName);
+		BlockRenderLayerName = getRuntimeClassName(RawBlockRenderLayerName);
+		ChunkProviderServerName = getRuntimeClassName(RawChunkProviderServerName);
+		PlayerListName = getRuntimeClassName(RawPlayerListName);
+		GameProfileName = getRuntimeClassName(RawGameProfileName);
+		EntityPlayerMPName = getRuntimeClassName(RawEntityPlayerMPName);
+		ChunkName = getRuntimeClassName(RawChunkName);
+		RayTraceResult = getRuntimeClassName(RawRayTraceResult);
+		Vec3dName = getRuntimeClassName(RawVec3dName);
+		IBlockStateName = getRuntimeClassName(RawIBlockStateName);
+		BlockPosName = getRuntimeClassName(RawBlockPosName);
+		TileEntityName = getRuntimeClassName(RawTileEntityName);
+		TessellatorName = getRuntimeClassName(RawTessellatorName);
+		VertexBufferName = getRuntimeClassName(RawVertexBufferName);
+		SoundEventName = getRuntimeClassName(RawSoundEventName);
+		SoundCategoryName = getRuntimeClassName(RawSoundCategoryName);
+		ParticleName = getRuntimeClassName(RawParticleName);
+		ParticleManagerName = getRuntimeClassName(RawParticleManagerName);
+	}
+	
+	private void getClassNames(){
 		
 	}
 
 	private boolean runTransformer(String calledName,String calledDesc,String calledOwner,MethodVisitor mv){
-		if(calledDesc.equals("(L"+ParticleName+";)V")
-			&& calledName.equals( getRuntimeMethodName( ParticleManagerName, "addEffect", "RENAMEME" ) )
-			&& InheritanceUtils.extendsClass( calledOwner, ParticleManagerName)){
+		
+//		Logger log = FMLLog.getLogger();
+//		log.debug("Name: "+calledName);
+//		log.debug("Desc: "+calledDesc);
+//		log.debug("Ownr: "+calledOwner);
+//		
+//		log.debug("ClassName: "+EntityPlayerName);
+		
+		if(isMethod(calledDesc,"(L"+ParticleName+";)V",calledName,ParticleManagerName,"addEffect","func_78873_a",calledOwner)
+			||
+			isMethod(calledDesc,"(L"+RawParticleName+";)V",calledName,RawParticleManagerName,"addEffect","func_78873_a",calledOwner)){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onAddEffect", String.format( "(L%s;L"+ParticleName+";)V", ParticleManagerName) );
 				return false;
 		}
 		
-		if(calledDesc.equals("(DDDL"+SoundEventName+";L"+SoundCategoryName+";FFZ)V")
-			&& calledName.equals( getRuntimeMethodName( WorldClassName, "playSound", "RENAMEME" ) )
-			&& InheritanceUtils.extendsClass( calledOwner, WorldClassName)){
+		//TBA
+		if(isMethod(calledDesc,"(DDDL"+SoundEventName+";L"+SoundCategoryName+";FFZ)V",calledName,WorldClassName,"playSound","func_184134_a",calledOwner)
+			||
+			isMethod(calledDesc,"(DDDL"+RawSoundEventName+";L"+RawSoundCategoryName+";FFZ)V",calledName,RawWorldClassName,"playSound","func_184134_a",calledOwner)	){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onPlaySound", String.format( "(L%s;DDDL"+SoundEventName+";L"+SoundCategoryName+";FFZ)V", WorldClassName) );
 				return false;
 		}
 		
-		if(calledDesc.equals("(L"+TessellatorName+";L"+VertexBufferName+";L"+EntityClassName+";F)V")
-			&& calledName.equals( getRuntimeMethodName( RenderGlobalName, "drawBlockDamageTexture", "RENAMEME" ) )
-			&& InheritanceUtils.extendsClass( calledOwner, RenderGlobalName)){
+		if(isMethod(calledDesc,"(L"+TessellatorName+";L"+VertexBufferName+";L"+EntityClassName+";F)V",calledName,RenderGlobalName,"drawBlockDamageTexture","func_174981_a",calledOwner)
+			||
+			isMethod(calledDesc,"(L"+RawTessellatorName+";L"+RawVertexBufferName+";L"+RawEntityClassName+";F)V",calledName,RawRenderGlobalName,"drawBlockDamageTexture","func_174981_a",calledOwner)){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onDrawBlockDamageTexture", String.format( "(L%s;L"+TessellatorName+";L"+VertexBufferName+";L"+EntityClassName+";F)V", RenderGlobalName) );
 				return false;
 		}
 		
-		if(calledDesc.equals("(L"+EntityPlayerName+";L"+RayTraceResult+";IF)V")
-			&& calledName.equals( getRuntimeMethodName( RenderGlobalName, "drawSelectionBox", "RENAMEME" ) )
-			&& InheritanceUtils.extendsClass( calledOwner, RenderGlobalName)){
+		if(isMethod(calledDesc,"(L"+EntityPlayerName+";L"+RayTraceResult+";IF)V",calledName,RenderGlobalName,"drawSelectionBox","func_72731_b",calledOwner)
+			||
+			isMethod(calledDesc,"(L"+RawEntityPlayerName+";L"+RawRayTraceResult+";IF)V",calledName,RawRenderGlobalName,"drawSelectionBox","func_72731_b",calledOwner)){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onDrawSelectionBox", String.format( "(L%s;L"+EntityPlayerName+";L"+RayTraceResult+";IF)V", RenderGlobalName) );
 				return false;
 		}
 		
-		if(calledDesc.equals("(DDD)D")
-			&& calledName.equals( getRuntimeMethodName( TileEntityName, "getDistanceSq", "func_145835_a" ) )
-			&& InheritanceUtils.extendsClass( calledOwner, TileEntityName)){
+		//TBA
+		if(isMethod(calledDesc,"(DDD)D",calledName,TileEntityName,"getDistanceSq","func_145835_a",calledOwner)
+			||
+			isMethod(calledDesc,"(DDD)D",calledName,RawTileEntityName,"getDistanceSq","func_145835_a",calledOwner)){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onGetDistanceSq", String.format( "(L%s;DDD)D", TileEntityName) );
 				return false;
 		}
 		
-		if(calledDesc.equals("(L"+EntityClassName+";L"+ICameraName+";F)V")
-			&& calledName.equals( getRuntimeMethodName( RenderGlobalName, "renderEntities", "func_180446_a" ) )
-			&& InheritanceUtils.extendsClass( calledOwner, RenderGlobalName)){
+		if(isMethod(calledDesc,"(L"+EntityClassName+";L"+ICameraName+";F)V",calledName,RenderGlobalName,"renderEntities","func_180446_a",calledOwner)
+			||
+			isMethod(calledDesc,"(L"+RawEntityClassName+";L"+RawICameraName+";F)V",calledName,RawRenderGlobalName,"renderEntities","func_180446_a",calledOwner)){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onRenderEntities", String.format( "(L%s;L"+EntityClassName+";L"+ICameraName+";F)V", RenderGlobalName) );
 				return false;
 		}
 		
-		if(calledDesc.equals("(L"+EntityClassName+";)Z")
-			&& calledName.equals( getRuntimeMethodName( WorldClassName, "spawnEntityInWorld", "func_72838_d" ) )
-			&& InheritanceUtils.extendsClass( calledOwner, WorldClassName)){
+		if(isMethod(calledDesc,"(L"+EntityClassName+";)Z",calledName,WorldClassName,"spawnEntityInWorld","func_72838_d",calledOwner)
+			||
+			isMethod(calledDesc,"(L"+RawEntityClassName+";)Z",calledName,RawWorldClassName,"spawnEntityInWorld","func_72838_d",calledOwner)){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onSpawnEntityInWorld", String.format( "(L%s;L"+EntityClassName+";)Z", WorldClassName ) );
 				return false;
 		}
 		
-		if(calledDesc.equals("(L"+BlockPosName+";L"+IBlockStateName+";)Z")
-			&& calledName.equals( getRuntimeMethodName( WorldClientName, "invalidateRegionAndSetBlock", "func_180503_b" ) )
-			&& InheritanceUtils.extendsClass( calledOwner, WorldClientName)){
+		if(isMethod(calledDesc,"(L"+BlockPosName+";L"+IBlockStateName+";)Z",calledName,WorldClientName,"invalidateRegionAndSetBlock","func_180503_b",calledOwner)
+			||
+			isMethod(calledDesc,"(L"+RawBlockPosName+";L"+RawIBlockStateName+";)Z",calledName,RawWorldClientName,"invalidateRegionAndSetBlock","func_180503_b",calledOwner)
+			){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onInvalidateRegionAndSetBlock", String.format( "(L%s;L"+BlockPosName+";L"+IBlockStateName+";)Z", WorldClientName) );
 				return false;
 		}
 		
-		if(calledDesc.equals("(L"+EntityPlayerName+";DDDDIL"+PacketName+";)V")
-			&& calledName.equals( getRuntimeMethodName( PlayerListName, "sendToAllNearExcept", "func_148543_a" ) )
-			&& InheritanceUtils.extendsClass( calledOwner, PlayerListName)){
+		//TBA
+		if(isMethod(calledDesc,"(L"+EntityPlayerName+";DDDDIL"+PacketName+";)V",calledName,PlayerListName,"sendToAllNearExcept","func_148543_a",calledOwner)
+			||
+			isMethod(calledDesc,"(L"+RawEntityPlayerName+";DDDDIL"+RawPacketName+";)V",calledName,RawPlayerListName,"sendToAllNearExcept","func_148543_a",calledOwner)){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onSendToAllNearExcept", String.format( "(L%s;L"+EntityPlayerName+";DDDDIL"+PacketName+";)V", PlayerListName ) );
 				return false;
 		}
 		
-		if(calledDesc.equals("(L"+BlockPosName+";L"+IBlockStateName+";I)Z")
-			&& calledName.equals( getRuntimeMethodName( WorldClassName, "setBlockState", "func_180501_a" ) )
-			&& InheritanceUtils.extendsClass( calledOwner, WorldClassName)){
+		//TBA
+		if(isMethod(calledDesc,"(L"+BlockPosName+";L"+IBlockStateName+";I)Z",calledName,WorldClassName,"setBlockState","func_180501_a",calledOwner)
+			||
+			isMethod(calledDesc,"(L"+RawBlockPosName+";L"+RawIBlockStateName+";I)Z",calledName,RawWorldClassName,"setBlockState","func_180501_a",calledOwner)){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onSetBlockState", String.format( "(L%s;L"+BlockPosName+";L"+IBlockStateName+";I)Z", WorldClassName ) );
 				return false;
 		}
 
-		if(calledDesc.equals("(IIIIII)V")
-			&& calledName.equals( getRuntimeMethodName( WorldClassName, "markBlockRangeForRenderUpdate", "func_147458_c" ) )
-			&& InheritanceUtils.extendsClass( calledOwner, WorldClassName)){
+		if(isMethod(calledDesc,"(IIIIII)V",calledName,WorldClassName,"markBlockRangeForRenderUpdate","func_147458_c",calledOwner)
+			||
+			isMethod(calledDesc,"(IIIIII)V",calledName,RawWorldClassName,"markBlockRangeForRenderUpdate","func_147458_c",calledOwner)){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onMarkBlockRangeForRenderUpdate", String.format( "(L%s;IIIIII)V", WorldClassName ) );
 				return false;
 		}
 		
-		if(calledDesc.equals("(L"+Vec3dName+";L"+Vec3dName+";ZZZ)L"+RayTraceResult+";")
-			&& calledName.equals(getRuntimeMethodName(WorldClassName,"rayTraceBlocks","func_147447_a"))
-			&& InheritanceUtils.extendsClass( calledOwner, WorldClassName)){
+		//TBA
+		if(isMethod(calledDesc,"(L"+Vec3dName+";L"+Vec3dName+";ZZZ)L"+RayTraceResult+";",calledName,WorldClassName,"rayTraceBlocks","func_147447_a",calledOwner)
+			||
+			isMethod(calledDesc,"(L"+RawVec3dName+";L"+RawVec3dName+";ZZZ)L"+RawRayTraceResult+";",calledName,RawWorldClassName,"rayTraceBlocks","func_147447_a",calledOwner)){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onRayTraceBlocks", String.format( "(L%s;L"+Vec3dName+";L"+Vec3dName+";ZZZ)L"+RayTraceResult+";", WorldClassName ) );
 				return false;
 		}
 		
-		//Method that creates a playerInteractionManager
-		if(calledDesc.equals("(L"+GameProfileName+";)L"+EntityPlayerMPName+";")
-			&& calledName.equals(getRuntimeMethodName(PlayerListName,"createPlayerForUser","func_148545_a"))
-			&& (InheritanceUtils.extendsClass( calledOwner, PlayerListName)||InheritanceUtils.extendsClass( m_className, PlayerListName))){
+		//TBA
+		if(isMethod(calledDesc,"(L"+GameProfileName+";)L",calledName,EntityPlayerMPName,"createPlayerForUser","func_148545_a",calledOwner)
+			||
+			isMethod(calledDesc,"(L"+RawGameProfileName+";)L",calledName,RawEntityPlayerMPName,"createPlayerForUser","func_148545_a",calledOwner)){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onCreatePlayerForUser", String.format( "(L%s;L"+GameProfileName+";)L"+EntityPlayerMPName+";", PlayerListName ) );
 				return false;
 		}
-		//Method that creates a playerInteractionManager
-		if(calledDesc.equals("(L"+EntityPlayerMPName+";IZ)L"+EntityPlayerMPName+";")
-			&& calledName.equals(getRuntimeMethodName(PlayerListName,"recreatePlayerEntity","func_72368_a"))
-			&& InheritanceUtils.extendsClass( calledOwner, PlayerListName)){
+		
+		//TBA
+		if(isMethod(calledDesc,"(L"+EntityPlayerMPName+";IZ)L"+EntityPlayerMPName+";",calledName,PlayerListName,"recreatePlayerEntity","func_72368_a",calledOwner)
+			||
+			isMethod(calledDesc,"(L"+RawEntityPlayerMPName+";IZ)L"+RawEntityPlayerMPName+";",calledName,RawPlayerListName,"recreatePlayerEntity","func_72368_a",calledOwner)){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onRecreatePlayerEntity", String.format( "(L%s;L"+EntityPlayerMPName+";IZ)L"+EntityPlayerMPName+";", PlayerListName ) );
 				return false;
 		}
 
-		if(calledDesc.equals("(L"+EntityClassName+";)V")
-			&& calledName.equals(getRuntimeMethodName(WorldClassName,"onEntityRemoved","func_72847_b"))
-			&& InheritanceUtils.extendsClass( calledOwner, WorldClassName)){
+		//TBA
+		if(isMethod(calledDesc,"(L"+EntityClassName+";)V",calledName,WorldClassName,"onEntityRemoved","func_72847_b",calledOwner)
+			||
+			isMethod(calledDesc,"(L"+RawEntityClassName+";)V",calledName,RawWorldClassName,"onEntityRemoved","func_72847_b",calledOwner)){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onEntityRemoved", String.format( "(L%s;L"+EntityClassName+";)V", WorldClassName ) );
 				return false;
 		}
-		if(calledDesc.equals("(L"+EntityClassName+";)V")
-			&& calledName.equals(getRuntimeMethodName(WorldClassName,"onEntityAdded","func_72923_a"))
-			&& InheritanceUtils.extendsClass( calledOwner, WorldClassName)){
+		
+		//TBA
+		if(isMethod(calledDesc,"(L"+EntityClassName+";)V",calledName,WorldClassName,"onEntityAdded","func_72923_a",calledOwner)
+			||
+			isMethod(calledDesc,"(L"+RawEntityClassName+";)V",calledName,RawWorldClassName,"onEntityAdded","func_72923_a",calledOwner)){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onEntityAdded", String.format( "(L%s;L"+EntityClassName+";)V", WorldClassName ) );
 				return false;
 		}
-		
-		if(calledDesc.equals("(L"+BlockRenderLayerName+";DIL"+EntityClassName+";)I")
-			&& ( calledName.equals(getRuntimeMethodName(RenderGlobalName,"renderBlockLayer","func_174977_a")) || calledName.equals(getRuntimeMethodName(calledOwner,"renderBlockLayer","func_174977_a")) )
-			&& InheritanceUtils.extendsClass( calledOwner, RenderGlobalName)){
-			mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onRenderBlockLayer", String.format( "(L%s;L"+BlockRenderLayerName+";DIL"+EntityClassName+";)I", RenderGlobalName ) );
+
+		if(isMethod(calledDesc,"(L"+BlockRenderLayerName+";DIL"+EntityClassName+";)I",calledName,RenderGlobalName,"renderBlockLayer","func_174977_a",calledOwner)
+			||
+			isMethod(calledDesc,"(L"+RawBlockRenderLayerName+";DIL"+RawEntityClassName+";)I",calledName,RawRenderGlobalName,"renderBlockLayer","func_174977_a",calledOwner)){
+				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onRenderBlockLayer", String.format( "(L%s;L"+BlockRenderLayerName+";DIL"+EntityClassName+";)I", RenderGlobalName ) );
 				return false;
 		}
 		
-		if(calledDesc.equals("(L"+ChunkName+";)V")
-			&& calledName.equals( getRuntimeMethodName( ChunkProviderServerName, "unload", "func_189549_a" ) )
-			&& InheritanceUtils.extendsClass( calledOwner, ChunkProviderServerName)){
+		//TBA
+		if(isMethod(calledDesc,"(L"+ChunkName+";)V",calledName,ChunkProviderServerName,"unload","func_189549_a",calledOwner)
+			||
+			isMethod(calledDesc,"(L"+RawChunkName+";)V",calledName,RawChunkProviderServerName,"unload","func_189549_a",calledOwner)){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onChunkUnload", String.format( "(L%s;L"+ChunkName+";)V", ChunkProviderServerName ) );
 				return false;
 		}
 		
-		if(calledDesc.equals("(DDD)V")
-			&& calledName.equals( getRuntimeMethodName( EntityClassName, "moveEntity", "func_70091_d" ) )
-			&& InheritanceUtils.extendsClass( calledOwner, EntityClassName)){
+		//TBA
+		if(isMethod(calledDesc,"(DDD)V",calledName,EntityClassName,"moveEntity","func_70091_d",calledOwner)
+			||
+			isMethod(calledDesc,"(DDD)V",calledName,RawEntityClassName,"moveEntity","func_70091_d",calledOwner)){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onEntityMove", String.format( "(L%s;DDD)V", EntityClassName ) );
 				return false;
 		}
 
 		return true;
+	}
+	
+	private boolean isMethod(String calledDesc,String methodDesc,String calledName,String classFrom,String methodNameClear,String methodNameObsf,String calledOwner){
+		correctDesc = calledDesc.equals(methodDesc);
+		if(correctDesc){
+			correctName = pertainsToMethod(calledName,classFrom,methodNameClear,methodNameObsf);
+			if(correctName){
+				correctSuperClass = InheritanceUtils.extendsClass(calledOwner, classFrom);
+				return correctSuperClass;
+			}
+		}
+		return false;
+	}
+	
+	private boolean pertainsToMethod(String calledName,String classOwningMethod,String deobsfName,String obsfName){
+		if(!m_isObfuscatedEnvironment ){
+			return calledName.equals(deobsfName);
+		}
+		String runtimeName = getRuntimeMethodName(classOwningMethod,deobsfName,obsfName);
+		return calledName.equals(runtimeName)||calledName.equals(deobsfName)||calledName.equals(obsfName);
 	}
 
 	protected String getRuntimeClassName( String clearClassName ){
@@ -261,6 +297,7 @@ public class TransformAdapter extends ClassVisitor{
 
 	protected String getRuntimeMethodName( String runtimeClassName, String clearMethodName, String idMethodName ){
 		if(m_isObfuscatedEnvironment ){
+//			return idMethodName;
 			return methodMapReverseLookup( getMethodMap( runtimeClassName ), idMethodName );
 		}else{
 			return clearMethodName;

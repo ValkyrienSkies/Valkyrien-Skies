@@ -1,5 +1,7 @@
 package ValkyrienWarfareBase.Physics;
 
+import java.util.ArrayList;
+
 import javax.vecmath.Matrix3d;
 
 import ValkyrienWarfareBase.NBTUtils;
@@ -32,6 +34,8 @@ public class PhysicsCalculations {
 	//Used to limit the accumulation of motion by an object (Basically Air-Resistance preventing infinite energy)
 	public double drag = .98D;
 	
+	public ArrayList<BlockPos> activeForcePositions = new ArrayList<BlockPos>();
+	
 	public double[] MoITensor,invMoITensor;
 	public double[] framedMOI,invFramedMOI;
 	
@@ -50,6 +54,23 @@ public class PhysicsCalculations {
 	}
 	
 	public void onSetBlockState(IBlockState oldState,IBlockState newState,BlockPos pos){
+		if(oldState.getBlock()==Blocks.AIR){
+			if(BlockForce.basicForces.isBlockProvidingForce(newState, pos, worldObj)){
+				activeForcePositions.add(pos);
+			}
+		}else{
+			int index = activeForcePositions.indexOf(pos);
+			if(BlockForce.basicForces.isBlockProvidingForce(newState, pos, worldObj)){
+				if(index==-1){
+					activeForcePositions.add(pos);
+				}
+			}else{
+				if(index!=-1){
+					activeForcePositions.remove(index);
+				}
+			}
+		}
+		
 		double oldMassAtPos = BlockMass.basicMass.getMassFromState(oldState, pos, worldObj);
 		double newMassAtPos = BlockMass.basicMass.getMassFromState(newState, pos, worldObj);
 		//Don't change anything if the mass is the same

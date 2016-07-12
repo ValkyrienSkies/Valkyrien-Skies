@@ -66,7 +66,7 @@ public class BigBastardMath{
 
 	public static Vector getBodyPosWithOrientation(BlockPos pos,Vector centerOfMass,double[] rotationTransform){
 		Vector inBody = new Vector(pos.getX()+.5D-centerOfMass.X,pos.getY()+.5D-centerOfMass.Y,pos.getZ()+.5D-centerOfMass.Z);
-		RotationMatrices.applyTransform(rotationTransform, inBody);
+		RotationMatrices.doRotationOnly(rotationTransform, inBody);
 		return inBody;
 	}
 

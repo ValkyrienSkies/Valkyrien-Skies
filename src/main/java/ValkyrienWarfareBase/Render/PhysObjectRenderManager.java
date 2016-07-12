@@ -174,12 +174,13 @@ public class PhysObjectRenderManager {
 	}
 	
 	public void setupTranslation(double partialTicks){
-		if(curPartialTick!=partialTicks){
-			updateTranslation(partialTicks);
-		}else{
-			updateTranslation(partialTicks);
-			curPartialTick = partialTicks;
-		}
+		updateTranslation(partialTicks);
+//		if(curPartialTick!=partialTicks){
+//			updateTranslation(partialTicks);
+//		}else{
+//			updateTranslation(partialTicks);
+//			curPartialTick = partialTicks;
+//		}
 	}
 	
 	public void updateTranslation(double partialTicks){
@@ -202,12 +203,12 @@ public class PhysObjectRenderManager {
 			double offsetX = offsetPos.getX()-centerOfRotation.X;
 			double offsetY = offsetPos.getY()-centerOfRotation.Y;
 			double offsetZ = offsetPos.getZ()-centerOfRotation.Z;
-			GL11.glTranslated(offsetX,offsetY,offsetZ);
+			
 			GlStateManager.translate(-p0+moddedX, -p1+moddedY, -p2+moddedZ);
 			GL11.glRotated(moddedPitch, 1D, 0, 0);
 			GL11.glRotated(moddedYaw, 0, 1D, 0);
 			GL11.glRotated(moddedRoll, 0, 0, 1D);
-			
+			GL11.glTranslated(offsetX,offsetY,offsetZ);
 //			transformBuffer = BufferUtils.createFloatBuffer(16);
 		}
 	}

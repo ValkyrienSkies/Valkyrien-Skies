@@ -299,10 +299,10 @@ public class PhysicsObject {
 	public void onTick(){
 		//Move xyz here
 //		wrapper.isDead=true;
-//		yaw = 30D;
-//		roll = -22D;
+//		wrapper.yaw = 30D;
+//		wrapper.roll = -22D;
 		//Update coordinate transforms
-		coordTransform.updateTransforms();
+		coordTransform.updateAllTransforms();
 		
 	}
 	
@@ -323,13 +323,14 @@ public class PhysicsObject {
 				claimedChunks[x-ownedChunks.minX][z-ownedChunks.minZ] = chunk;
 			}
 		}
+		chunkCache = new ChunkCache(worldObj, claimedChunks);
 		refrenceBlockPos = getRegionCenter();
 		coordTransform = new CoordTransformObject(this);
 		if(!worldObj.isRemote){
 			physicsProcessor = new PhysicsCalculations(this);
 		}
 		detectBlockPositions();
-		coordTransform.updateTransforms();
+		coordTransform.updateAllTransforms();
 	}
 
 	//Generates the blockPos array; must be loaded DIRECTLY after the chunks are setup

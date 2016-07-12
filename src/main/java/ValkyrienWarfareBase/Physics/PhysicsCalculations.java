@@ -5,23 +5,31 @@ import java.util.ArrayList;
 import javax.vecmath.Matrix3d;
 
 import ValkyrienWarfareBase.NBTUtils;
+import ValkyrienWarfareBase.Math.BigBastardMath;
+import ValkyrienWarfareBase.Math.Quaternion;
 import ValkyrienWarfareBase.Math.RotationMatrices;
 import ValkyrienWarfareBase.Math.Vector;
+import ValkyrienWarfareBase.PhysicsManagement.CoordTransformObject;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
+import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.FMLLog;
 
 public class PhysicsCalculations {
 
 	public PhysicsObject parent;
+	public PhysicsWrapperEntity wrapperEnt;
 	public World worldObj;
 	
 	public Vector centerOfMass;
-	public Vector linearVelocity;
+	public Vector linearMomentum;
 	public Vector angularVelocity;
+	public Vector torque;
 	
 	public double mass,invMass;
 	public double gravity = -9.8D;
@@ -41,6 +49,7 @@ public class PhysicsCalculations {
 	
 	public PhysicsCalculations(PhysicsObject toProcess){
 		parent = toProcess;
+		wrapperEnt = parent.wrapper;
 		worldObj = toProcess.worldObj;
 		
 		MoITensor = RotationMatrices.getZeroMatrix(3);
@@ -49,8 +58,9 @@ public class PhysicsCalculations {
 		invFramedMOI = RotationMatrices.getZeroMatrix(3);
 		
 		centerOfMass = new Vector(toProcess.centerCoord);
-		linearVelocity = new Vector();
+		linearMomentum = new Vector();
 		angularVelocity = new Vector();
+		torque = new Vector();
 	}
 	
 	public void onSetBlockState(IBlockState oldState,IBlockState newState,BlockPos pos){
@@ -59,14 +69,23 @@ public class PhysicsCalculations {
 				activeForcePositions.add(pos);
 			}
 		}else{
-			int index = activeForcePositions.indexOf(pos);
-			if(BlockForce.basicForces.isBlockProvidingForce(newState, pos, worldObj)){
-				if(index==-1){
-					activeForcePositions.add(pos);
+//			int index = activeForcePositions.indexOf(pos);
+//			if(BlockForce.basicForces.isBlockProvidingForce(newState, pos, worldObj)){
+//				if(index==-1){
+//					activeForcePositions.add(pos);
+//				}
+//			}else{
+//				if(index!=-1){
+//					activeForcePositions.remove(index);
+//				}
+//			}
+			if(activeForcePositions.contains(pos)){
+				if(!BlockForce.basicForces.isBlockProvidingForce(newState, pos, worldObj)){
+					activeForcePositions.remove(pos);
 				}
 			}else{
-				if(index!=-1){
-					activeForcePositions.remove(index);
+				if(BlockForce.basicForces.isBlockProvidingForce(newState, pos, worldObj)){
+					activeForcePositions.add(pos);
 				}
 			}
 		}
@@ -145,13 +164,11 @@ public class PhysicsCalculations {
 	}
 	
 	public void rawPhysTickPreCol(double newPhysSpeed,int iters){
-		physSpeed = newPhysSpeed;
-		iterations = iters;
+		updatePhysSpeedAndIters(physSpeed,iterations);
 		
 		updateCenterOfMass();
-		
 		calculateFramedMOITensor();
-		
+		calculateForces();
 		
 		
 	}
@@ -168,14 +185,15 @@ public class PhysicsCalculations {
 			parent.wrapper.posZ-=CMDif.Z;
 			
 			parent.centerCoord = new Vector(centerOfMass);
-			parent.coordTransform.updateTransforms();
+			parent.coordTransform.updateAllTransforms();
 		}
 	}
 
 	public void rawPhysTickPostCol(double newPhysSpeed,int iters){
-		physSpeed = newPhysSpeed;
-		iterations = iters;
+		updatePhysSpeedAndIters(physSpeed,iterations);
 		
+		applyLinearVelocity();
+		applyAngularVelocity();
 		
 	}
 	
@@ -208,10 +226,81 @@ public class PhysicsCalculations {
 		invFramedMOI = RotationMatrices.inverse3by3(framedMOI);
 	}
 	
+	public void calculateForces(){
+		double modifiedDrag = Math.pow(drag,physSpeed/rawPhysSpeed);
+		linearMomentum.multiply(modifiedDrag);
+		angularVelocity.multiply(modifiedDrag);
+		linearMomentum.Y+=(gravity*mass*physSpeed);
+		
+		for(BlockPos pos:activeForcePositions){
+			IBlockState state = parent.chunkCache.getBlockState(pos);
+			Block blockAt = state.getBlock();
+			Vector inBodyWO = BigBastardMath.getBodyPosWithOrientation(pos, centerOfMass, parent.coordTransform.lToWRotation);
+			
+			Vector blockForce = BlockForce.basicForces.getForceFromState(state, pos, worldObj,rawPhysSpeed);
+			
+			
+			if(blockForce!=null){
+				//TODO: Look into removing this shit
+				blockForce.multiply(iterations);
+				addForceAtPoint(inBodyWO,blockForce);
+			}else{
+				FMLLog.getLogger().warn("BLOCK "+blockAt.getUnlocalizedName()+" didn't have its force properly registered; COMPLAIN TO MOD DEV!!!");
+			}
+			
+		}
+
+		if(!torque.isZero()){
+			angularVelocity.add(RotationMatrices.get3by3TransformedVec(invFramedMOI, torque));
+			torque.zero();
+		}
+	}
+	
+	public void addForceAtPoint(Vector inBodyWO,Vector forceToApply){
+		torque.add(inBodyWO.cross(forceToApply));
+		linearMomentum.add(forceToApply);
+	}
+	
+	public void updatePhysSpeedAndIters(double newPhysSpeed,int iters){
+		physSpeed = newPhysSpeed;
+		iterations = iters;
+		rawPhysSpeed = physSpeed/iterations;
+	}
+	
+	public void applyAngularVelocity(){
+		CoordTransformObject coordTrans = parent.coordTransform;
+		
+		double[] rotationChange = RotationMatrices.getRotationMatrix(angularVelocity.X, angularVelocity.Y, angularVelocity.Z, angularVelocity.length()*physSpeed);
+		Quaternion faggot = Quaternion.QuaternionFromMatrix(RotationMatrices.getMatrixProduct(rotationChange, coordTrans.lToWRotation));
+		double[] radians = faggot.toRadians();
+		if(!(Double.isNaN(radians[0])||Double.isNaN(radians[1])||Double.isNaN(radians[2]))){
+			wrapperEnt.pitch=(float)Math.toDegrees(radians[0]);
+			wrapperEnt.yaw=(float)Math.toDegrees(radians[1]);
+			wrapperEnt.roll=(float)Math.toDegrees(radians[2]);
+			
+//			System.out.println(angularVelocity);
+			
+			coordTrans.updateAllTransforms();
+		}else{
+			wrapperEnt.isDead=true;
+			System.out.println(angularVelocity);
+			System.out.println("Rotational Error?");
+		}
+	}
+
+	public void applyLinearVelocity(){
+		if(mass>0){
+			double momentMod = physSpeed/mass;
+			wrapperEnt.posX+=(linearMomentum.X*momentMod);
+//			wrapperEnt.posY+=(linearMomentum.Y*momentMod);
+			wrapperEnt.posZ+=(linearMomentum.Z*momentMod);
+		}
+	}
+	
 	public void writeToNBTTag(NBTTagCompound compound){
 		compound.setDouble("mass", mass);
 		
-		NBTUtils.writeVectorToNBT("linear", linearVelocity, compound);
+		NBTUtils.writeVectorToNBT("linear", linearMomentum, compound);
 		NBTUtils.writeVectorToNBT("angularVelocity", angularVelocity, compound);
 		NBTUtils.writeVectorToNBT("CM", centerOfMass, compound);
 
@@ -221,7 +310,7 @@ public class PhysicsCalculations {
 	public void readFromNBTTag(NBTTagCompound compound){
 		mass = compound.getDouble("mass");
 		
-		linearVelocity = NBTUtils.readVectorFromNBT("linear", compound);
+		linearMomentum = NBTUtils.readVectorFromNBT("linear", compound);
 		angularVelocity = NBTUtils.readVectorFromNBT("angularVelocity", compound);
 		centerOfMass = NBTUtils.readVectorFromNBT("CM", compound);
 		

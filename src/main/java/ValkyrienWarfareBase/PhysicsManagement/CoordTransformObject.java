@@ -29,26 +29,15 @@ public class CoordTransformObject {
 	
 	public CoordTransformObject(PhysicsObject object){
 		parent = object;
-		updateTransforms();
+		updateAllTransforms();
 		prevlToWTransform = lToWTransform;
 		prevwToLTransform = wToLTransform;
 	}
 	
-	//TODO: Implement this
-	public void updateTransforms(){
-		prevlToWTransform = lToWTransform;
-		prevwToLTransform = wToLTransform;
-
+	public void updateMatricesOnly(){
 		lToWTransform = RotationMatrices.getTranslationMatrix(parent.wrapper.posX,parent.wrapper.posY,parent.wrapper.posZ);
 		
-		
-		
-		
-//		lToWTransform = RotationMatrices.getTranslationMatrix(parent.centerCoord.X,parent.centerCoord.Y,parent.centerCoord.Z);
-		
 		lToWTransform = RotationMatrices.rotateAndTranslate(lToWTransform,parent.wrapper.pitch, parent.wrapper.yaw, parent.wrapper.roll, parent.centerCoord);
-		
-		
 			
 		lToWRotation = RotationMatrices.getDoubleIdentity();
 		
@@ -56,6 +45,14 @@ public class CoordTransformObject {
 		
 		wToLTransform = RotationMatrices.inverse(lToWTransform);
 		wToLRotation = RotationMatrices.inverse(lToWRotation);
+	}
+	
+	//ONLY CALL THIS ON THE PhysObject.TICK();
+	public void updateAllTransforms(){
+		prevlToWTransform = lToWTransform;
+		prevwToLTransform = wToLTransform;
+
+		updateMatricesOnly();
 		updateParentAABB();
 		updateParentNormals();
 	}

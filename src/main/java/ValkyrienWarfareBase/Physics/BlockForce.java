@@ -14,15 +14,20 @@ public class BlockForce {
 	
 	public HashMap<Block,Force> blocksToForces = new HashMap<Block,Force>();
 	
-	public Force getForceFromState(IBlockState state,BlockPos pos,World world){
+	public Vector getForceFromState(IBlockState state,BlockPos pos,World world,double secondsToApply){
 		Block block = state.getBlock();
 		if(block instanceof IBlockForceProvider){
-			Vector forceVector = ((IBlockForceProvider)block).getBlockForce(world, pos, state);
-			boolean isInLocal = ((IBlockForceProvider)block).isForceLocalCoords(world, pos, state);
+			Vector forceVector = ((IBlockForceProvider)block).getBlockForce(world, pos, state,secondsToApply);
+			boolean isInLocal = ((IBlockForceProvider)block).isForceLocalCoords(world, pos, state,secondsToApply);
 			Force toReturn = new Force(forceVector,isInLocal);
-			return toReturn;
+			return toReturn.force;
 		}
-		return basicForces.blocksToForces.get(block);
+		Force force = basicForces.blocksToForces.get(block);
+		if(force!=null){
+			return force.force.getProduct(secondsToApply);
+		}else{
+			return null;
+		}
 	}
 	
 	public boolean isBlockProvidingForce(IBlockState state,BlockPos pos,World world){

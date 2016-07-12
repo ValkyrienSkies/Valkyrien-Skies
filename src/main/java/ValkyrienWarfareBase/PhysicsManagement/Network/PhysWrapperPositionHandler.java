@@ -32,6 +32,8 @@ public class PhysWrapperPositionHandler implements IMessageHandler<PhysWrapperPo
             		wrapper.pitch = message.pitch;
             		wrapper.yaw = message.yaw;
             		wrapper.roll = message.roll;
+            		
+            		wrapper.wrapping.coordTransform.updateAllTransforms();
             	}
             }
         });

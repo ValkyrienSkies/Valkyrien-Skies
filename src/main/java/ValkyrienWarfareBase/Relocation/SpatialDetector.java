@@ -23,7 +23,7 @@ public abstract class SpatialDetector{
 	public TIntHashSet nextQueue = new TIntHashSet();
 	public final BlockPos firstBlock;
 	public final MutableBlockPos tempPos = new MutableBlockPos();
-	public final ChunkCache cache;
+	public final VWChunkCache cache;
 	public final World worldObj;
 	public final int maxSize;
 	public final boolean corners;
@@ -35,7 +35,7 @@ public abstract class SpatialDetector{
 		worldObj = worldIn;
 		maxSize = maximum;
 		corners = checkCorners;
-		cache = new ChunkCache(worldIn,start.getX()-128,start.getZ()-128,start.getX()+128,start.getZ()+128);
+		cache = new VWChunkCache(worldIn,start.getX()-128,start.getZ()-128,start.getX()+128,start.getZ()+128);
 		calculateSpatialOccupation();
 		if(cleanHouse){
 			foundSet.clear();

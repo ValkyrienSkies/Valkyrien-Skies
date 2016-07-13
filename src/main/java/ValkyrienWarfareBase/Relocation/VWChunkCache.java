@@ -19,7 +19,7 @@ import net.minecraft.world.chunk.Chunk;
  * @author thebest108
  *
  */
-public class ChunkCache{
+public class VWChunkCache{
 
 	public Chunk[][] cachedChunks;
 	public boolean[][] isChunkLoaded;
@@ -27,7 +27,7 @@ public class ChunkCache{
 	public World worldFor;
 	int minChunkX,minChunkZ,maxChunkX,maxChunkZ;
 
-	public ChunkCache(World world,int mnX,int mnZ,int mxX,int mxZ){
+	public VWChunkCache(World world,int mnX,int mnZ,int mxX,int mxZ){
 		worldFor = world;
 		minChunkX = mnX >> 4;
 		minChunkZ = mnZ >> 4;
@@ -46,7 +46,7 @@ public class ChunkCache{
 	    }
 	}
 	
-	public ChunkCache(World world,Chunk[][] toCache){
+	public VWChunkCache(World world,Chunk[][] toCache){
 		minChunkX = toCache[0][0].xPosition;
 		minChunkZ = toCache[0][0].zPosition;
 		maxChunkX = toCache[toCache.length-1][toCache[0].length-1].xPosition;
@@ -56,6 +56,10 @@ public class ChunkCache{
 	    cachedChunks = toCache.clone();
 	}
 
+	public Chunk getChunkAt(int x,int z){
+		return cachedChunks[x-minChunkX][z-minChunkZ];
+	}
+	
 	public IBlockState getBlockState(BlockPos pos){
 		Chunk chunkForPos = cachedChunks[(pos.getX()>>4)-minChunkX][(pos.getZ()>>4)-minChunkZ];
 		return chunkForPos.getBlockState(pos);

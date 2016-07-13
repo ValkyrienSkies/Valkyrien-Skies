@@ -11,7 +11,7 @@ import ValkyrienWarfareBase.ChunkManagement.ChunkSet;
 import ValkyrienWarfareBase.Math.Vector;
 import ValkyrienWarfareBase.Physics.BlockForce;
 import ValkyrienWarfareBase.Physics.PhysicsCalculations;
-import ValkyrienWarfareBase.Relocation.ChunkCache;
+import ValkyrienWarfareBase.Relocation.VWChunkCache;
 import ValkyrienWarfareBase.Relocation.ShipSpawnDetector;
 import ValkyrienWarfareBase.Render.PhysObjectRenderManager;
 import gnu.trove.iterator.TIntIterator;
@@ -36,8 +36,6 @@ import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.ChunkEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class PhysicsObject {
 
@@ -50,7 +48,7 @@ public class PhysicsObject {
 	public PlayerChunkMapEntry[][] claimedChunksEntries;
 	public ArrayList<EntityPlayerMP> watchingPlayers = new ArrayList<EntityPlayerMP>();
 	public ArrayList<EntityPlayerMP> newWatchers = new ArrayList<EntityPlayerMP>();
-	public ChunkCache chunkCache;
+	public VWChunkCache chunkCache;
 	//It is from this position that the x,y,z coords in local are 0; and that the posX,
 	//posY and posZ align with in the global coords
 	public BlockPos refrenceBlockPos;
@@ -68,19 +66,7 @@ public class PhysicsObject {
 		if(host.worldObj.isRemote){
 			renderer = new PhysObjectRenderManager(this);
 		}else{
-			if(playersField==null){
-				try{
-					if(!ValkyrienWarfareMod.isObsfucated){
-						playersField = PlayerChunkMapEntry.class.getDeclaredField("players");
-					}else{
-						playersField = PlayerChunkMapEntry.class.getDeclaredField("field_187283_c");
-					}
-					playersField.setAccessible(true);
-				}catch(Exception e){
-					e.printStackTrace();
-					System.exit(0);
-				}
-			}
+			grabPlayerField();
 		}
 	}
 	
@@ -129,7 +115,7 @@ public class PhysicsObject {
 			}
 		}
 		
-		chunkCache = new ChunkCache(worldObj, claimedChunks);
+		chunkCache = new VWChunkCache(worldObj, claimedChunks);
 		int minChunkX = claimedChunks[0][0].xPosition;
 		int minChunkZ = claimedChunks[0][0].zPosition;
 		BlockPos centerInWorld = new BlockPos(wrapper.posX,wrapper.posY,wrapper.posZ);
@@ -323,7 +309,7 @@ public class PhysicsObject {
 				claimedChunks[x-ownedChunks.minX][z-ownedChunks.minZ] = chunk;
 			}
 		}
-		chunkCache = new ChunkCache(worldObj, claimedChunks);
+		chunkCache = new VWChunkCache(worldObj, claimedChunks);
 		refrenceBlockPos = getRegionCenter();
 		coordTransform = new CoordTransformObject(this);
 		if(!worldObj.isRemote){
@@ -371,6 +357,22 @@ public class PhysicsObject {
 	
 	public boolean ownsChunk(int chunkX,int chunkZ){
 		return ownedChunks.isChunkEnclosedInSet(chunkX,chunkZ);
+	}
+	
+	private void grabPlayerField(){
+		if(playersField==null){
+			try{
+				if(!ValkyrienWarfareMod.isObsfucated){
+					playersField = PlayerChunkMapEntry.class.getDeclaredField("players");
+				}else{
+					playersField = PlayerChunkMapEntry.class.getDeclaredField("field_187283_c");
+				}
+				playersField.setAccessible(true);
+			}catch(Exception e){
+				e.printStackTrace();
+				System.exit(0);
+			}
+		}
 	}
 	
 	public void writeToNBTTag(NBTTagCompound compound){

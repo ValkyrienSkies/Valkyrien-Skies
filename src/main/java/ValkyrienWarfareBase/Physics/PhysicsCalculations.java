@@ -295,7 +295,7 @@ public class PhysicsCalculations {
 		if(mass>0){
 			double momentMod = physTickSpeed/mass;
 			wrapperEnt.posX+=(linearMomentum.X*momentMod);
-			wrapperEnt.posY+=(linearMomentum.Y*momentMod);
+//			wrapperEnt.posY+=(linearMomentum.Y*momentMod);
 			wrapperEnt.posZ+=(linearMomentum.Z*momentMod);
 		}
 	}

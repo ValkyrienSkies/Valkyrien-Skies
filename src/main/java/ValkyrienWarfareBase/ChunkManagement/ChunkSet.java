@@ -5,7 +5,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 
 /**
- * This stores the chunk claims for a PhysicsObject
+ * This stores the chunk claims for a PhysicsObject; not the chunks themselves
  * @author thebest108
  *
  */

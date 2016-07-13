@@ -90,7 +90,7 @@ public class ValkyrienWarfareMod{
         ServerCommandManager manager = (ServerCommandManager)server.getCommandManager();
 //        manager.registerCommand(command)
     }
-
+    
     public void registerNetworks(FMLStateEvent event){
     	physWrapperNetwork = NetworkRegistry.INSTANCE.newSimpleChannel("physChannel");
     	physWrapperNetwork.registerMessage(PhysWrapperPositionHandler.class, PhysWrapperPositionMessage.class, 0, Side.CLIENT);

@@ -1,6 +1,7 @@
 package ValkyrienWarfareBase.PhysicsManagement;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
+import ValkyrienWarfareBase.Collision.Polygon;
 import ValkyrienWarfareBase.Math.RotationMatrices;
 import ValkyrienWarfareBase.Math.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.Network.PhysWrapperPositionMessage;
@@ -110,38 +111,44 @@ public class CoordTransformObject {
 		double mnX=0,mnY=0,mnZ=0,mxX=0,mxY=0,mxZ=0;
 		boolean first = true;
 		for(BlockPos pos:parent.blockPositions){
-			Vector currentLocation = new Vector(pos.getX()+.5D,pos.getY()+.5D,pos.getZ()+.5D);
-			fromLocalToGlobal(currentLocation);
 			
-			if(first){
-				mnX=mxX=currentLocation.X;
-				mnY=mxY=currentLocation.Y;
-				mnZ=mxZ=currentLocation.Z;
-				first = false;
-			}
+			AxisAlignedBB bbFor = new AxisAlignedBB(pos.getX(),pos.getY(),pos.getZ(),pos.getX()+1D,pos.getY()+1D,pos.getZ()+1D);
 			
-			if(currentLocation.X<mnX){
-				mnX = currentLocation.X;
-			}
-			if(currentLocation.X>mxX){
-				mxX = currentLocation.X;
-			}
+			Polygon polyFor = new Polygon(bbFor,lToWTransform);
 			
-			if(currentLocation.Y<mnY){
-				mnY = currentLocation.Y;
-			}
-			if(currentLocation.Y>mxY){
-				mxY = currentLocation.Y;
-			}
+			for(Vector currentLocation:polyFor.vertices){
 			
-			if(currentLocation.Z<mnZ){
-				mnZ = currentLocation.Z;
-			}
-			if(currentLocation.Z>mxZ){
-				mxZ = currentLocation.Z;
+				if(first){
+					mnX=mxX=currentLocation.X;
+					mnY=mxY=currentLocation.Y;
+					mnZ=mxZ=currentLocation.Z;
+					first = false;
+				}
+				
+				if(currentLocation.X<mnX){
+					mnX = currentLocation.X;
+				}
+				if(currentLocation.X>mxX){
+					mxX = currentLocation.X;
+				}
+				
+				if(currentLocation.Y<mnY){
+					mnY = currentLocation.Y;
+				}
+				if(currentLocation.Y>mxY){
+					mxY = currentLocation.Y;
+				}
+				
+				if(currentLocation.Z<mnZ){
+					mnZ = currentLocation.Z;
+				}
+				if(currentLocation.Z>mxZ){
+					mxZ = currentLocation.Z;
+				}
+			
 			}
 		}
-		AxisAlignedBB enclosingBB = new AxisAlignedBB(mnX,mnY,mnZ,mxX,mxY,mxZ).expand(3, 3, 3);
+		AxisAlignedBB enclosingBB = new AxisAlignedBB(mnX,mnY,mnZ,mxX,mxY,mxZ);
 		parent.collisionBB = enclosingBB;
 	}
 	

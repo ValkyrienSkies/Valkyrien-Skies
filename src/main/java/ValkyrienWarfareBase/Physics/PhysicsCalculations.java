@@ -9,6 +9,7 @@ import ValkyrienWarfareBase.Math.BigBastardMath;
 import ValkyrienWarfareBase.Math.Quaternion;
 import ValkyrienWarfareBase.Math.RotationMatrices;
 import ValkyrienWarfareBase.Math.Vector;
+import ValkyrienWarfareBase.PhysCollision.WorldPhysicsCollider;
 import ValkyrienWarfareBase.PhysicsManagement.CoordTransformObject;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
@@ -25,6 +26,7 @@ public class PhysicsCalculations {
 	public PhysicsObject parent;
 	public PhysicsWrapperEntity wrapperEnt;
 	public World worldObj;
+	public WorldPhysicsCollider worldCollision;
 	
 	public Vector centerOfMass;
 	public Vector linearMomentum;
@@ -34,11 +36,11 @@ public class PhysicsCalculations {
 	public double mass,invMass;
 	public double gravity = -9.8D;
 	//The time occurring on each PhysTick
-	public double physSpeed;
+	public double physRawSpeed;
 	//Number of iterations the solver runs on each game tick
 	public int iterations = 5;
 	//The amount of time to be simulated on each rawPhysTick *(Its physSpeed/iterations)
-	public double rawPhysSpeed = physSpeed/iterations;
+	public double physTickSpeed = physRawSpeed/iterations;
 	//Used to limit the accumulation of motion by an object (Basically Air-Resistance preventing infinite energy)
 	public double drag = .98D;
 	
@@ -51,6 +53,7 @@ public class PhysicsCalculations {
 		parent = toProcess;
 		wrapperEnt = parent.wrapper;
 		worldObj = toProcess.worldObj;
+		worldCollision = new WorldPhysicsCollider(this);
 		
 		MoITensor = RotationMatrices.getZeroMatrix(3);
 		invMoITensor = RotationMatrices.getZeroMatrix(3);
@@ -88,6 +91,9 @@ public class PhysicsCalculations {
 					activeForcePositions.add(pos);
 				}
 			}
+		}
+		if(newState.getBlock()==Blocks.AIR){
+			activeForcePositions.remove(pos);
 		}
 		
 		double oldMassAtPos = BlockMass.basicMass.getMassFromState(oldState, pos, worldObj);
@@ -164,13 +170,21 @@ public class PhysicsCalculations {
 	}
 	
 	public void rawPhysTickPreCol(double newPhysSpeed,int iters){
-		updatePhysSpeedAndIters(physSpeed,iterations);
-		
+		updatePhysSpeedAndIters(newPhysSpeed,iters);
 		updateCenterOfMass();
 		calculateFramedMOITensor();
 		calculateForces();
-		
-		
+	}
+	
+	public void processWorldCollision(double newPhysSpeed, int iters) {
+		updatePhysSpeedAndIters(newPhysSpeed,iters);
+		worldCollision.runPhysCollision();
+	}
+
+	public void rawPhysTickPostCol(double newPhysSpeed,int iters){
+		updatePhysSpeedAndIters(newPhysSpeed,iters);
+		applyLinearVelocity();
+		applyAngularVelocity();
 	}
 	
 	//The x/y/z variables need to be updated when the centerOfMass location changes
@@ -187,14 +201,6 @@ public class PhysicsCalculations {
 			parent.centerCoord = new Vector(centerOfMass);
 			parent.coordTransform.updateAllTransforms();
 		}
-	}
-
-	public void rawPhysTickPostCol(double newPhysSpeed,int iters){
-		updatePhysSpeedAndIters(physSpeed,iterations);
-		
-		applyLinearVelocity();
-		applyAngularVelocity();
-		
 	}
 	
 	//Applies the rotation transform onto the Moment of Inertia to generate the REAL MOI at that given instant
@@ -227,22 +233,22 @@ public class PhysicsCalculations {
 	}
 	
 	public void calculateForces(){
-		double modifiedDrag = Math.pow(drag,physSpeed/rawPhysSpeed);
+		double modifiedDrag = Math.pow(drag,physTickSpeed/physRawSpeed);
 		linearMomentum.multiply(modifiedDrag);
 		angularVelocity.multiply(modifiedDrag);
-		linearMomentum.Y+=(gravity*mass*physSpeed);
+		linearMomentum.Y+=(gravity*mass*physTickSpeed);
 		
 		for(BlockPos pos:activeForcePositions){
 			IBlockState state = parent.chunkCache.getBlockState(pos);
 			Block blockAt = state.getBlock();
 			Vector inBodyWO = BigBastardMath.getBodyPosWithOrientation(pos, centerOfMass, parent.coordTransform.lToWRotation);
 			
-			Vector blockForce = BlockForce.basicForces.getForceFromState(state, pos, worldObj,rawPhysSpeed);
+			Vector blockForce = BlockForce.basicForces.getForceFromState(state, pos, worldObj,physTickSpeed);
 			
 			
 			if(blockForce!=null){
 				//TODO: Look into removing this shit
-				blockForce.multiply(iterations);
+//				blockForce.multiply(iterations);
 				addForceAtPoint(inBodyWO,blockForce);
 			}else{
 				FMLLog.getLogger().warn("BLOCK "+blockAt.getUnlocalizedName()+" didn't have its force properly registered; COMPLAIN TO MOD DEV!!!");
@@ -262,24 +268,21 @@ public class PhysicsCalculations {
 	}
 	
 	public void updatePhysSpeedAndIters(double newPhysSpeed,int iters){
-		physSpeed = newPhysSpeed;
+		physRawSpeed = newPhysSpeed;
 		iterations = iters;
-		rawPhysSpeed = physSpeed/iterations;
+		physTickSpeed = physRawSpeed/iterations;
 	}
 	
 	public void applyAngularVelocity(){
 		CoordTransformObject coordTrans = parent.coordTransform;
 		
-		double[] rotationChange = RotationMatrices.getRotationMatrix(angularVelocity.X, angularVelocity.Y, angularVelocity.Z, angularVelocity.length()*physSpeed);
+		double[] rotationChange = RotationMatrices.getRotationMatrix(angularVelocity.X, angularVelocity.Y, angularVelocity.Z, angularVelocity.length()*physTickSpeed);
 		Quaternion faggot = Quaternion.QuaternionFromMatrix(RotationMatrices.getMatrixProduct(rotationChange, coordTrans.lToWRotation));
 		double[] radians = faggot.toRadians();
 		if(!(Double.isNaN(radians[0])||Double.isNaN(radians[1])||Double.isNaN(radians[2]))){
 			wrapperEnt.pitch=(float)Math.toDegrees(radians[0]);
 			wrapperEnt.yaw=(float)Math.toDegrees(radians[1]);
 			wrapperEnt.roll=(float)Math.toDegrees(radians[2]);
-			
-//			System.out.println(angularVelocity);
-			
 			coordTrans.updateAllTransforms();
 		}else{
 			wrapperEnt.isDead=true;
@@ -290,9 +293,9 @@ public class PhysicsCalculations {
 
 	public void applyLinearVelocity(){
 		if(mass>0){
-			double momentMod = physSpeed/mass;
+			double momentMod = physTickSpeed/mass;
 			wrapperEnt.posX+=(linearMomentum.X*momentMod);
-//			wrapperEnt.posY+=(linearMomentum.Y*momentMod);
+			wrapperEnt.posY+=(linearMomentum.Y*momentMod);
 			wrapperEnt.posZ+=(linearMomentum.Z*momentMod);
 		}
 	}

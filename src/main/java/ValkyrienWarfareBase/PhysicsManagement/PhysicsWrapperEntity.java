@@ -4,6 +4,7 @@ import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -51,6 +52,14 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 		
 	}
 
+	@Override
+	public AxisAlignedBB getEntityBoundingBox(){
+        if(wrapping.coordTransform!=null){
+        	return wrapping.collisionBB;
+        }
+		return this.boundingBox;
+    }
+	
 	@Override
 	public void setPosition(double x, double y, double z){}
 	

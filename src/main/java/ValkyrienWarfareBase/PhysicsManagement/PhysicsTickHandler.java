@@ -15,7 +15,6 @@ public class PhysicsTickHandler{
 		
 		int iters = manager.physIter;
 		double newPhysSpeed = manager.physSpeed;
-		
 		for(int pass = 0;pass<iters;pass++){
 			//Run PRE-Col
 			for(PhysicsWrapperEntity wrapper:physicsEntities){
@@ -23,9 +22,9 @@ public class PhysicsTickHandler{
 			}
 			
 			//TODO: Implement
-	//		for(PhysicsWrapperEntity wrapper:physicsEntities){
-	//			wrapper.wrapping.physicsProcessor.processWorldCollision(newPhysSpeed, iters);
-	//		}
+			for(PhysicsWrapperEntity wrapper:physicsEntities){
+				wrapper.wrapping.physicsProcessor.processWorldCollision(newPhysSpeed, iters);
+			}
 			
 			for(PhysicsWrapperEntity wrapper:physicsEntities){
 				wrapper.wrapping.physicsProcessor.rawPhysTickPostCol(newPhysSpeed, iters);

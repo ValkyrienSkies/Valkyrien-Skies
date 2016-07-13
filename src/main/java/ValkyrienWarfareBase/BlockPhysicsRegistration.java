@@ -19,7 +19,7 @@ public class BlockPhysicsRegistration {
 	}
 	
 	public static void registerVanillaBlockForces(){
-		blockForces.registerBlockForce(Blocks.WOOL, new Vector(0,400,0), false);
+		blockForces.registerBlockForce(Blocks.WOOL, new Vector(0,600D,0), false);
 	}
 	
 }

@@ -295,9 +295,17 @@ public class PhysicsCalculations {
 		if(mass>0){
 			double momentMod = physTickSpeed/mass;
 			wrapperEnt.posX+=(linearMomentum.X*momentMod);
-//			wrapperEnt.posY+=(linearMomentum.Y*momentMod);
+			wrapperEnt.posY+=(linearMomentum.Y*momentMod);
 			wrapperEnt.posZ+=(linearMomentum.Z*momentMod);
 		}
+	}
+	
+	public Vector getMomentumAtPoint(Vector inBodyWO){
+		Vector speed = angularVelocity.cross(inBodyWO);
+		speed.X+=(linearMomentum.X*invMass);
+		speed.Y+=(linearMomentum.Y*invMass);
+		speed.Z+=(linearMomentum.Z*invMass);
+		return speed;
 	}
 	
 	public void writeToNBTTag(NBTTagCompound compound){

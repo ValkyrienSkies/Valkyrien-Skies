@@ -2,8 +2,11 @@ package ValkyrienWarfareBase.PhysCollision;
 
 import java.util.ArrayList;
 
+import ValkyrienWarfareBase.Collision.PhysCollisionObject;
 import ValkyrienWarfareBase.Collision.PhysPolygonCollider;
 import ValkyrienWarfareBase.Collision.Polygon;
+import ValkyrienWarfareBase.Math.BigBastardMath;
+import ValkyrienWarfareBase.Math.RotationMatrices;
 import ValkyrienWarfareBase.Math.Vector;
 import ValkyrienWarfareBase.Physics.PhysicsCalculations;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
@@ -29,6 +32,10 @@ public class WorldPhysicsCollider {
 	
 	public static final double collisionCacheTickUpdateFrequency = 2D;
 	private static final double expansion = 1D;
+	
+	public static double axisTolerance = .3D;
+	
+	public double e = .5D;
 	
 	public WorldPhysicsCollider(PhysicsCalculations calculations){
 		calculator = calculations;
@@ -92,8 +99,55 @@ public class WorldPhysicsCollider {
 		PhysPolygonCollider collider = new PhysPolygonCollider(shipInWorld,worldPoly,parent.coordTransform.normals,new Vector());
 		
 		if(!collider.seperated){
-			System.out.println("Active collision");
+			handleActualCollision(collider);
 		}
+	}
+	
+	private void handleActualCollision(PhysPolygonCollider collider){
+		//The default <0,1,0> normal collision
+		PhysCollisionObject toCollideWith = collider.collisions[1];
+		if(toCollideWith.penetrationDistance>axisTolerance||toCollideWith.penetrationDistance<-axisTolerance){
+			toCollideWith = collider.getIdealCollisionObject();
+		}
+		
+		Vector collisionPos = toCollideWith.movable.vertices[toCollideWith.shipContactPoint];
+		
+		//TODO: Maybe use Ship center of mass instead
+		Vector inBody = collisionPos.getSubtraction(new Vector(parent.wrapper.posX,parent.wrapper.posY,parent.wrapper.posZ));
+		
+		inBody.multiply(-1D);
+		
+		Vector momentumAtPoint = calculator.getMomentumAtPoint(inBody);
+		Vector axis = toCollideWith.axis;
+		Vector offsetVector = toCollideWith.getResponse();
+		
+		processCollisionData(inBody, momentumAtPoint, axis, offsetVector);
+	}
+	
+	private void processCollisionData(Vector inBody,Vector momentumAtPoint,Vector axis,Vector offsetVector){
+		
+		Vector firstCross = inBody.cross(axis);
+		RotationMatrices.applyTransform3by3(calculator.invFramedMOI, firstCross);
+		
+		Vector secondCross = firstCross.cross(inBody);
+		
+//		momentumAtPoint.multiply(5D);
+		
+		double j = -momentumAtPoint.dot(axis)*(e+1D)/(calculator.invMass+secondCross.dot(axis));
+		
+		Vector simpleImpulse = new Vector(axis,j);
+		
+//		if(simpleImpulse.dot(offsetVector)<0){
+			calculator.linearMomentum.add(simpleImpulse);
+			Vector thirdCross = inBody.cross(simpleImpulse);
+			
+			
+			
+			RotationMatrices.applyTransform3by3(calculator.invFramedMOI,thirdCross);
+			calculator.angularVelocity.add(thirdCross);
+//			return true;
+//		}
+		
 	}
 	
 	private boolean shouldUpdateCollisonCache(){
@@ -104,12 +158,13 @@ public class WorldPhysicsCollider {
 		AxisAlignedBB collisionBB = parent.collisionBB.expand(expansion, expansion, expansion);
 		ticksSinceCacheUpdate = 0D;
 		cachedPotentialHits = new ArrayList<BlockPos>();
-		if(collisionBB.maxY<0){
+		//Ship is outside of world blockSpace, just skip this all together
+		if(collisionBB.maxY<0||collisionBB.minY>255){
 			return;
 		}
 		
 		BlockPos min = new BlockPos(collisionBB.minX,Math.max(collisionBB.minY,0),collisionBB.minZ);
-		BlockPos max = new BlockPos(collisionBB.maxX,collisionBB.maxY,collisionBB.maxZ);
+		BlockPos max = new BlockPos(collisionBB.maxX,Math.min(collisionBB.maxY, 255),collisionBB.maxZ);
 		cache = new ChunkCache(worldObj,min,max,0);
 		
 		for(int x = min.getX();x<=max.getX();x++){

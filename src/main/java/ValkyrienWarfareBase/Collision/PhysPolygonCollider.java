@@ -55,5 +55,17 @@ public class PhysPolygonCollider{
 			}
 		}
 	}
+	
+	public PhysCollisionObject getIdealCollisionObject(){
+		double penDist = 420D;
+		PhysCollisionObject ideal = null;
+		for(PhysCollisionObject object:collisions){
+			if(Math.abs(object.penetrationDistance)<penDist){
+				penDist = Math.abs(object.penetrationDistance);
+				ideal = object;
+			}
+		}
+		return ideal;
+	}
 
 }

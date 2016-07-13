@@ -2,6 +2,8 @@ package ValkyrienWarfareBase.PhysCollision;
 
 import java.util.ArrayList;
 
+import ValkyrienWarfareBase.Collision.PhysPolygonCollider;
+import ValkyrienWarfareBase.Collision.Polygon;
 import ValkyrienWarfareBase.Math.Vector;
 import ValkyrienWarfareBase.Physics.PhysicsCalculations;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
@@ -11,7 +13,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ChunkCache;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 
 public class WorldPhysicsCollider {
 
@@ -81,8 +82,18 @@ public class WorldPhysicsCollider {
 	//TODO: Code this
 	private void handleLikelyCollision(BlockPos inWorldPos,BlockPos inLocalPos,IBlockState inWorldState,IBlockState inLocalState){
 //		System.out.println("Handling a likely collision");
+		AxisAlignedBB inLocalBB = new AxisAlignedBB(inLocalPos.getX(),inLocalPos.getY(),inLocalPos.getZ(),inLocalPos.getX()+1,inLocalPos.getY()+1,inLocalPos.getZ()+1);
+		AxisAlignedBB inGlobalBB  = new AxisAlignedBB(inWorldPos.getX(),inWorldPos.getY(),inWorldPos.getZ(),inWorldPos.getX()+1,inWorldPos.getY()+1,inWorldPos.getZ()+1);
+		
+		Polygon shipInWorld = new Polygon(inLocalBB,parent.coordTransform.lToWTransform);
+		Polygon worldPoly = new Polygon(inGlobalBB);
 		
 		
+		PhysPolygonCollider collider = new PhysPolygonCollider(shipInWorld,worldPoly,parent.coordTransform.normals,new Vector());
+		
+		if(!collider.seperated){
+			System.out.println("Active collision");
+		}
 	}
 	
 	private boolean shouldUpdateCollisonCache(){

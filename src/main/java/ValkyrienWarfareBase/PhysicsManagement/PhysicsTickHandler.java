@@ -28,7 +28,12 @@ public class PhysicsTickHandler{
 			//TODO: Implement
 			for(PhysicsWrapperEntity wrapper:physicsEntities){
 //				wrapper.wrapping.physicsProcessor.processWorldCollision();
-				wrapper.wrapping.physicsProcessor.collisionRunnable.run();
+//				wrapper.wrapping.physicsProcessor.collisionRunnable.run();
+			}
+			try {
+				ValkyrienWarfareMod.MultiThreadExecutor.invokeAll(manager.physCollisonCallables);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 			
 			for(PhysicsWrapperEntity wrapper:physicsEntities){

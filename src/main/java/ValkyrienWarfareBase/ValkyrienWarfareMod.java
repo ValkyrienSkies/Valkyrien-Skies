@@ -1,6 +1,8 @@
 package ValkyrienWarfareBase;
 
 import java.io.File;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import ValkyrienWarfareBase.Block.BlockPhysicsInfuser;
 import ValkyrienWarfareBase.ChunkManagement.DimensionPhysicsChunkManager;
@@ -56,10 +58,12 @@ public class ValkyrienWarfareMod{
     public static ValkyrienWarfareMod instance;
     
     public static int airStateIndex;
-
 	public static double standingTolerance = .3D;
-
 	public static boolean isObsfucated = false;
+	
+	//NOTE: These only calculate physics, so they are only relevant to the Server end
+	public static int threadCount = 8;
+	public static ExecutorService MultiThreadExecutor = Executors.newFixedThreadPool(threadCount);
 	
     @EventHandler
     public void preInit(FMLPreInitializationEvent event){

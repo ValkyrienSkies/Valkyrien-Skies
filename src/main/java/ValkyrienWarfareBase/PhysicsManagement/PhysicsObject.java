@@ -64,6 +64,8 @@ public class PhysicsObject {
 	
 	private Field playersField = null;
 	
+	public PhysCollisionCallable collisionCallable = new PhysCollisionCallable(this);
+	
 	public PhysicsObject(PhysicsWrapperEntity host){
 		wrapper = host;
 		worldObj = host.worldObj;

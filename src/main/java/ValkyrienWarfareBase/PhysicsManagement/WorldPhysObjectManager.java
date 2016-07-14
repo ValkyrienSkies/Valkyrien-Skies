@@ -2,6 +2,7 @@ package ValkyrienWarfareBase.PhysicsManagement;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
@@ -18,6 +19,7 @@ public class WorldPhysObjectManager {
 //	private static double ShipRangeCheck = 120D;
 	public World worldObj;
 	public ArrayList<PhysicsWrapperEntity> physicsEntities = new ArrayList<PhysicsWrapperEntity>();
+	public ArrayList<Callable<Void>> physCollisonCallables = new ArrayList<Callable<Void>>();
 	public int physIter = 5;
 	public double physSpeed = .05D;
 	
@@ -27,10 +29,12 @@ public class WorldPhysObjectManager {
 	
 	public void onLoad(PhysicsWrapperEntity loaded){
 		physicsEntities.add(loaded);
+		physCollisonCallables.add(loaded.wrapping.collisionCallable);
 	}
 	
 	public void onUnload(PhysicsWrapperEntity loaded){
 		physicsEntities.remove(loaded);
+		physCollisonCallables.remove(loaded.wrapping.collisionCallable);
 		loaded.wrapping.onThisUnload();
 	}
 	

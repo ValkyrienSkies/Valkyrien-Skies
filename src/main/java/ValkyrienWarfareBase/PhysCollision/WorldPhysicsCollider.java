@@ -35,7 +35,7 @@ public class WorldPhysicsCollider {
 	
 	public static double axisTolerance = .3D;
 	
-	public double e = .5D;
+	public double e = .25D;
 	
 	public WorldPhysicsCollider(PhysicsCalculations calculations){
 		calculator = calculations;
@@ -96,7 +96,7 @@ public class WorldPhysicsCollider {
 		Polygon worldPoly = new Polygon(inGlobalBB);
 		
 		
-		PhysPolygonCollider collider = new PhysPolygonCollider(shipInWorld,worldPoly,parent.coordTransform.normals,new Vector());
+		PhysPolygonCollider collider = new PhysPolygonCollider(shipInWorld,worldPoly,parent.coordTransform.normals);
 		
 		if(!collider.seperated){
 			handleActualCollision(collider);
@@ -107,10 +107,10 @@ public class WorldPhysicsCollider {
 		//The default <0,1,0> normal collision
 		PhysCollisionObject toCollideWith = collider.collisions[1];
 		if(toCollideWith.penetrationDistance>axisTolerance||toCollideWith.penetrationDistance<-axisTolerance){
-			toCollideWith = collider.getIdealCollisionObject();
+			toCollideWith = collider.collisions[collider.minDistanceIndex];
 		}
 		
-		Vector collisionPos = toCollideWith.movable.vertices[toCollideWith.shipContactPoint];
+		Vector collisionPos = toCollideWith.firstContactPoint;
 		
 		//TODO: Maybe use Ship center of mass instead
 		Vector inBody = collisionPos.getSubtraction(new Vector(parent.wrapper.posX,parent.wrapper.posY,parent.wrapper.posZ));
@@ -126,6 +126,8 @@ public class WorldPhysicsCollider {
 	
 	private void processCollisionData(Vector inBody,Vector momentumAtPoint,Vector axis,Vector offsetVector){
 		
+		
+		
 		Vector firstCross = inBody.cross(axis);
 		RotationMatrices.applyTransform3by3(calculator.invFramedMOI, firstCross);
 		
@@ -137,16 +139,16 @@ public class WorldPhysicsCollider {
 		
 		Vector simpleImpulse = new Vector(axis,j);
 		
-//		if(simpleImpulse.dot(offsetVector)<0){
+//		System.out.println(simpleImpulse);
+		
+		if(simpleImpulse.dot(offsetVector)<0){
 			calculator.linearMomentum.add(simpleImpulse);
 			Vector thirdCross = inBody.cross(simpleImpulse);
-			
-			
 			
 			RotationMatrices.applyTransform3by3(calculator.invFramedMOI,thirdCross);
 			calculator.angularVelocity.add(thirdCross);
 //			return true;
-//		}
+		}
 		
 	}
 	

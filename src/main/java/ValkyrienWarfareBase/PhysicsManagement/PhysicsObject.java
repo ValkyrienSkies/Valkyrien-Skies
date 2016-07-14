@@ -58,7 +58,8 @@ public class PhysicsObject {
 	public PhysicsCalculations physicsProcessor;
 	public ArrayList<BlockPos> blockPositions = new ArrayList<BlockPos>();
 	public AxisAlignedBB collisionBB = new AxisAlignedBB(0,0,0,0,0,0);
-	Field playersField = null;
+	
+	private static Field playersField = null;
 	
 	public PhysicsObject(PhysicsWrapperEntity host){
 		wrapper = host;

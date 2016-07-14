@@ -43,6 +43,9 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 
 	@Override
 	public void onUpdate(){
+		if(isDead){
+			return;
+		}
 		super.onUpdate();
 		wrapping.onTick();
 	}

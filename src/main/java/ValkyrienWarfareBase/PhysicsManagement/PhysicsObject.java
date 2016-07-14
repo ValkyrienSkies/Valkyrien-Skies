@@ -89,6 +89,10 @@ public class PhysicsObject {
 			ownedChunks.chunkOccupiedInLocal[chunkX][chunkZ] = true;
 		}
 		
+		if(blockPositions.size()==0){
+			destroy();
+		}
+		
 		if(!worldObj.isRemote){
 			if(physicsProcessor!=null){
 				physicsProcessor.onSetBlockState(oldState, newState, posAt);
@@ -96,6 +100,23 @@ public class PhysicsObject {
 		}else{
 			renderer.markForUpdate();
 		}
+	}
+	
+	public void destroy(){
+		wrapper.setDead();
+		ArrayList<EntityPlayerMP> watchersCopy = (ArrayList<EntityPlayerMP>) watchingPlayers.clone();
+		for(EntityPlayerMP wachingPlayer:watchersCopy){
+			for(int x = ownedChunks.minX;x<=ownedChunks.maxX;x++){
+				for(int z = ownedChunks.minZ;z<=ownedChunks.maxZ;z++){
+					SPacketUnloadChunk unloadPacket = new SPacketUnloadChunk(x,z);
+					((EntityPlayerMP)wachingPlayer).connection.sendPacket(unloadPacket);
+				}
+			}
+			//NOTICE: This method isnt being called to avoid the watchingPlayers.remove(player) call, which is a waste of CPU time
+			//onPlayerUntracking(wachingPlayer);
+		}
+		watchingPlayers.clear();
+		ValkyrienWarfareMod.physicsManager.onShipUnload(wrapper);
 	}
 	
 	public void claimNewChunks(){
@@ -236,7 +257,6 @@ public class PhysicsObject {
 	 * @param EntityPlayer that stopped tracking
 	 */
 	public void onPlayerUntracking(EntityPlayer untracking){
-//		System.out.println(untracking.getDisplayNameString()+" has stopped tracking this entity");
 		watchingPlayers.remove(untracking);
 		for(int x = ownedChunks.minX;x<=ownedChunks.maxX;x++){
 			for(int z = ownedChunks.minZ;z<=ownedChunks.maxZ;z++){
@@ -244,13 +264,6 @@ public class PhysicsObject {
 				((EntityPlayerMP)untracking).connection.sendPacket(unloadPacket);
 			}
 		}
-//		if(!worldObj.isRemote){
-//			for(PlayerChunkMapEntry[] entries:claimedChunksEntries){
-//				for(PlayerChunkMapEntry entry:entries){
-//					entry.removePlayer((EntityPlayerMP) untracking);
-//				}
-//			}
-//		}
 	}
 	
 	/**

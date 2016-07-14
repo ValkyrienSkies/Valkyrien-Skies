@@ -13,6 +13,10 @@ public class PhysicsTickHandler{
 		
 		ArrayList<PhysicsWrapperEntity> physicsEntities = manager.physicsEntities;
 		
+		for(PhysicsWrapperEntity wrapper:physicsEntities){
+			wrapper.wrapping.updateChunkCache();
+		}
+		
 		int iters = manager.physIter;
 		double newPhysSpeed = manager.physSpeed;
 		for(int pass = 0;pass<iters;pass++){
@@ -23,7 +27,8 @@ public class PhysicsTickHandler{
 			
 			//TODO: Implement
 			for(PhysicsWrapperEntity wrapper:physicsEntities){
-				wrapper.wrapping.physicsProcessor.processWorldCollision();
+//				wrapper.wrapping.physicsProcessor.processWorldCollision();
+				wrapper.wrapping.physicsProcessor.collisionRunnable.run();
 			}
 			
 			for(PhysicsWrapperEntity wrapper:physicsEntities){

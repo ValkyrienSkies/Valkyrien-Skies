@@ -11,6 +11,7 @@ import ValkyrienWarfareBase.Math.RotationMatrices;
 import ValkyrienWarfareBase.Math.Vector;
 import ValkyrienWarfareBase.PhysCollision.WorldPhysicsCollider;
 import ValkyrienWarfareBase.PhysicsManagement.CoordTransformObject;
+import ValkyrienWarfareBase.PhysicsManagement.PhysCollisionRunnable;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import net.minecraft.block.Block;
@@ -27,6 +28,7 @@ public class PhysicsCalculations {
 	public PhysicsWrapperEntity wrapperEnt;
 	public World worldObj;
 	public WorldPhysicsCollider worldCollision;
+	public final PhysCollisionRunnable collisionRunnable;
 	
 	public Vector centerOfMass;
 	public Vector linearMomentum;
@@ -54,6 +56,7 @@ public class PhysicsCalculations {
 		wrapperEnt = parent.wrapper;
 		worldObj = toProcess.worldObj;
 		worldCollision = new WorldPhysicsCollider(this);
+		collisionRunnable = new PhysCollisionRunnable(this);
 		
 		MoITensor = RotationMatrices.getZeroMatrix(3);
 		invMoITensor = RotationMatrices.getZeroMatrix(3);

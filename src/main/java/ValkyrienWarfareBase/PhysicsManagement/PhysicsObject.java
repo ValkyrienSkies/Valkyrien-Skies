@@ -196,7 +196,6 @@ public class PhysicsObject {
 		
 		detectBlockPositions();
 		coordTransform = new CoordTransformObject(this);
-		updateChunkCache();
 		physicsProcessor.processInitialPhysicsData();
 	}
 	
@@ -308,10 +307,9 @@ public class PhysicsObject {
 //		wrapper.roll = -22D;
 		//Update coordinate transforms
 		coordTransform.updateAllTransforms();
-		updateChunkCache();
 	}
 	
-	private void updateChunkCache(){
+	public void updateChunkCache(){
 		BlockPos min = new BlockPos(collisionBB.minX,Math.max(collisionBB.minY,0),collisionBB.minZ);
 		BlockPos max = new BlockPos(collisionBB.maxX,Math.min(collisionBB.maxY, 255),collisionBB.maxZ);
 		surroundingWorldChunksCache = new ChunkCache(worldObj,min,max,0);
@@ -342,7 +340,6 @@ public class PhysicsObject {
 		}
 		detectBlockPositions();
 		coordTransform.updateAllTransforms();
-		updateChunkCache();
 	}
 
 	//Generates the blockPos array; must be loaded DIRECTLY after the chunks are setup

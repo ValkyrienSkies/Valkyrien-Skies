@@ -23,7 +23,7 @@ public class PhysicsTickHandler{
 			
 			//TODO: Implement
 			for(PhysicsWrapperEntity wrapper:physicsEntities){
-				wrapper.wrapping.physicsProcessor.processWorldCollision(newPhysSpeed, iters);
+				wrapper.wrapping.physicsProcessor.processWorldCollision();
 			}
 			
 			for(PhysicsWrapperEntity wrapper:physicsEntities){

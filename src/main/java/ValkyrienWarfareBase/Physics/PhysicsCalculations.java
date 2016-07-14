@@ -176,8 +176,7 @@ public class PhysicsCalculations {
 		calculateForces();
 	}
 	
-	public void processWorldCollision(double newPhysSpeed, int iters) {
-		updatePhysSpeedAndIters(newPhysSpeed,iters);
+	public void processWorldCollision() {
 		worldCollision.runPhysCollision();
 	}
 

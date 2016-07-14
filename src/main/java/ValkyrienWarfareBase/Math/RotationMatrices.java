@@ -11,7 +11,6 @@ import net.minecraft.util.math.Vec3d;
  */
 public class RotationMatrices{
 
-	private static double x,y,z,xx,yy,zz;
 	 /**
 	  * The difference between 1 and the smallest exactly representable number
 	  * greater than one. Gives an upper bound on the relative error due to
@@ -154,9 +153,9 @@ public class RotationMatrices{
    	}
 
    	public static final void applyTransform(double[] M, Vector vec){
-   		x = vec.X;
-   		y = vec.Y;
-   		z = vec.Z;
+   		double x = vec.X;
+   		double y = vec.Y;
+   		double z = vec.Z;
    		vec.X = x * M[0] + y * M[1] + z * M[2] + M[3];
    		vec.Y = x * M[4] + y * M[5] + z * M[6] + M[7];
    		vec.Z = x * M[8] + y * M[9] + z * M[10] + M[11];
@@ -177,18 +176,18 @@ public class RotationMatrices{
 	}
 
 	public static final void applyTransform3by3(double[] M, Vector vec){
-		xx = vec.X;
-		yy = vec.Y;
-		zz = vec.Z; 
+		double xx = vec.X;
+		double yy = vec.Y;
+		double zz = vec.Z; 
 		vec.X = (xx * M[0] + yy * M[1] + zz * M[2]);
 		vec.Y = (xx * M[3] + yy * M[4] + zz * M[5]);
 		vec.Z = (xx * M[6] + yy * M[7] + zz * M[8]);
 	}
 
    	public static final void doRotationOnly(double[] M, Vector vec){
-   		x = vec.X;
-   		y = vec.Y;
-   		z = vec.Z;
+   		double x = vec.X;
+   		double y = vec.Y;
+   		double z = vec.Z;
    		vec.X = x * M[0] + y * M[1] + z * M[2];
    		vec.Y = x * M[4] + y * M[5] + z * M[6];
    		vec.Z = x * M[8] + y * M[9] + z * M[10];

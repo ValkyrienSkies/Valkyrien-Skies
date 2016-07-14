@@ -239,7 +239,7 @@ public class PhysicsCalculations {
 		linearMomentum.Y+=(gravity*mass*physTickSpeed);
 		
 		for(BlockPos pos:activeForcePositions){
-			IBlockState state = parent.chunkCache.getBlockState(pos);
+			IBlockState state = parent.VKChunkCache.getBlockState(pos);
 			Block blockAt = state.getBlock();
 			Vector inBodyWO = BigBastardMath.getBodyPosWithOrientation(pos, centerOfMass, parent.coordTransform.lToWRotation);
 			
@@ -340,7 +340,7 @@ public class PhysicsCalculations {
 	public void processInitialPhysicsData(){
 		IBlockState Air = Blocks.AIR.getDefaultState();
 		for(BlockPos pos:parent.blockPositions){
-			onSetBlockState(Air,parent.chunkCache.getBlockState(pos),pos);
+			onSetBlockState(Air,parent.VKChunkCache.getBlockState(pos),pos);
 		}
 	}
 	

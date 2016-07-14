@@ -11,8 +11,8 @@ import ValkyrienWarfareBase.ChunkManagement.ChunkSet;
 import ValkyrienWarfareBase.Math.Vector;
 import ValkyrienWarfareBase.Physics.BlockForce;
 import ValkyrienWarfareBase.Physics.PhysicsCalculations;
-import ValkyrienWarfareBase.Relocation.VWChunkCache;
 import ValkyrienWarfareBase.Relocation.ShipSpawnDetector;
+import ValkyrienWarfareBase.Relocation.VWChunkCache;
 import ValkyrienWarfareBase.Render.PhysObjectRenderManager;
 import gnu.trove.iterator.TIntIterator;
 import io.netty.buffer.ByteBuf;
@@ -29,6 +29,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.ChunkCache;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
@@ -48,7 +49,7 @@ public class PhysicsObject {
 	public PlayerChunkMapEntry[][] claimedChunksEntries;
 	public ArrayList<EntityPlayerMP> watchingPlayers = new ArrayList<EntityPlayerMP>();
 	public ArrayList<EntityPlayerMP> newWatchers = new ArrayList<EntityPlayerMP>();
-	public VWChunkCache chunkCache;
+	public VWChunkCache VKChunkCache;
 	//It is from this position that the x,y,z coords in local are 0; and that the posX,
 	//posY and posZ align with in the global coords
 	public BlockPos refrenceBlockPos;
@@ -59,7 +60,9 @@ public class PhysicsObject {
 	public ArrayList<BlockPos> blockPositions = new ArrayList<BlockPos>();
 	public AxisAlignedBB collisionBB = new AxisAlignedBB(0,0,0,0,0,0);
 	
-	private static Field playersField = null;
+	public ChunkCache surroundingWorldChunksCache;
+	
+	private Field playersField = null;
 	
 	public PhysicsObject(PhysicsWrapperEntity host){
 		wrapper = host;
@@ -137,7 +140,7 @@ public class PhysicsObject {
 			}
 		}
 		
-		chunkCache = new VWChunkCache(worldObj, claimedChunks);
+		VKChunkCache = new VWChunkCache(worldObj, claimedChunks);
 		int minChunkX = claimedChunks[0][0].xPosition;
 		int minChunkZ = claimedChunks[0][0].zPosition;
 		BlockPos centerInWorld = new BlockPos(wrapper.posX,wrapper.posY,wrapper.posZ);
@@ -146,7 +149,7 @@ public class PhysicsObject {
 		TIntIterator iter = detector.foundSet.iterator();
 		refrenceBlockPos = getRegionCenter();
 		centerCoord = new Vector(refrenceBlockPos.getX(),refrenceBlockPos.getY(),refrenceBlockPos.getZ());
-		coordTransform = new CoordTransformObject(this);
+		
 		physicsProcessor = new PhysicsCalculations(this);
 		BlockPos centerDifference = refrenceBlockPos.subtract(centerInWorld);
 		while(iter.hasNext()){
@@ -192,6 +195,8 @@ public class PhysicsObject {
 		}
 		
 		detectBlockPositions();
+		coordTransform = new CoordTransformObject(this);
+		updateChunkCache();
 		physicsProcessor.processInitialPhysicsData();
 	}
 	
@@ -303,7 +308,13 @@ public class PhysicsObject {
 //		wrapper.roll = -22D;
 		//Update coordinate transforms
 		coordTransform.updateAllTransforms();
-		
+		updateChunkCache();
+	}
+	
+	private void updateChunkCache(){
+		BlockPos min = new BlockPos(collisionBB.minX,Math.max(collisionBB.minY,0),collisionBB.minZ);
+		BlockPos max = new BlockPos(collisionBB.maxX,Math.min(collisionBB.maxY, 255),collisionBB.maxZ);
+		surroundingWorldChunksCache = new ChunkCache(worldObj,min,max,0);
 	}
 	
 	public void loadClaimedChunks(){
@@ -323,7 +334,7 @@ public class PhysicsObject {
 				claimedChunks[x-ownedChunks.minX][z-ownedChunks.minZ] = chunk;
 			}
 		}
-		chunkCache = new VWChunkCache(worldObj, claimedChunks);
+		VKChunkCache = new VWChunkCache(worldObj, claimedChunks);
 		refrenceBlockPos = getRegionCenter();
 		coordTransform = new CoordTransformObject(this);
 		if(!worldObj.isRemote){
@@ -331,6 +342,7 @@ public class PhysicsObject {
 		}
 		detectBlockPositions();
 		coordTransform.updateAllTransforms();
+		updateChunkCache();
 	}
 
 	//Generates the blockPos array; must be loaded DIRECTLY after the chunks are setup

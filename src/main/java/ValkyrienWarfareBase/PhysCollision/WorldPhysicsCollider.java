@@ -28,8 +28,6 @@ public class WorldPhysicsCollider {
 	//Ensures this always updates the first tick after creation
 	private double ticksSinceCacheUpdate = 420;
 	
-	private ChunkCache cache;
-	
 	public static final double collisionCacheTickUpdateFrequency = 2D;
 	private static final double expansion = 1D;
 	
@@ -72,12 +70,12 @@ public class WorldPhysicsCollider {
 				for(int z = minZ;z<=maxZ;z++){
 					for(int y = minY;y<=maxY;y++){
 						if(parent.ownsChunk(x>>4, z>>4)){
-							Chunk chunkIn = parent.chunkCache.getChunkAt(x>>4, z>>4);
+							Chunk chunkIn = parent.VKChunkCache.getChunkAt(x>>4, z>>4);
 							IBlockState state = chunkIn.getBlockState(x,y,z);
 							if(state.getMaterial().isSolid()){
 								BlockPos localCollisionPos = new BlockPos(x,y,z);
 								
-								handleLikelyCollision(pos,localCollisionPos,cache.getBlockState(pos),state);
+								handleLikelyCollision(pos,localCollisionPos,parent.surroundingWorldChunksCache.getBlockState(pos),state);
 							}
 						}
 					}
@@ -167,15 +165,20 @@ public class WorldPhysicsCollider {
 		
 		BlockPos min = new BlockPos(collisionBB.minX,Math.max(collisionBB.minY,0),collisionBB.minZ);
 		BlockPos max = new BlockPos(collisionBB.maxX,Math.min(collisionBB.maxY, 255),collisionBB.maxZ);
-		cache = new ChunkCache(worldObj,min,max,0);
+		
+		ChunkCache cache = parent.surroundingWorldChunksCache;
 		
 		for(int x = min.getX();x<=max.getX();x++){
 			for(int z = min.getZ();z<max.getZ();z++){
-				Chunk chunk = cache.chunkArray[(x>>4)-cache.chunkX][(z>>4)-cache.chunkZ];
-				for(int y = min.getY();y<max.getY();y++){
-					IBlockState state = chunk.getBlockState(x, y, z);
-					if(state.getMaterial().isSolid()){
-						cachedPotentialHits.add(new BlockPos(x,y,z));
+				int chunkX = (x>>4)-cache.chunkX;
+				int chunkZ = (z>>4)-cache.chunkZ;
+				if(!(chunkX<0||chunkZ<0||chunkX>cache.chunkArray.length-1||chunkZ>cache.chunkArray[0].length-1)){
+					Chunk chunk = cache.chunkArray[chunkX][chunkZ];
+					for(int y = min.getY();y<max.getY();y++){
+						IBlockState state = chunk.getBlockState(x, y, z);
+						if(state.getMaterial().isSolid()){
+							cachedPotentialHits.add(new BlockPos(x,y,z));
+						}
 					}
 				}
 			}

@@ -2,10 +2,11 @@ package ValkyrienWarfareBase.Render;
 
 import java.nio.FloatBuffer;
 
-import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
+import ValkyrienWarfareBase.Math.Quaternion;
+import ValkyrienWarfareBase.Math.RotationMatrices;
 import ValkyrienWarfareBase.Math.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
@@ -23,6 +24,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.ForgeHooksClient;
 
 /**
@@ -195,9 +197,12 @@ public class PhysObjectRenderManager {
 		double p1 = Minecraft.getMinecraft().thePlayer.lastTickPosY + (Minecraft.getMinecraft().thePlayer.posY - Minecraft.getMinecraft().thePlayer.lastTickPosY) * (double)partialTicks;
 		double p2 = Minecraft.getMinecraft().thePlayer.lastTickPosZ + (Minecraft.getMinecraft().thePlayer.posZ - Minecraft.getMinecraft().thePlayer.lastTickPosZ) * (double)partialTicks;
 		
-		double moddedPitch = entity.pitch;
-		double moddedYaw = entity.yaw;
-		double moddedRoll = entity.roll;
+		Quaternion smoothRotation = getSmoothRotationQuat(partialTicks);
+		double[] radians = smoothRotation.toRadians();
+		
+		double moddedPitch = Math.toDegrees(radians[0]);
+		double moddedYaw = Math.toDegrees(radians[1]);
+		double moddedRoll = Math.toDegrees(radians[2]);
 		
 		if(offsetPos!=null){
 			double offsetX = offsetPos.getX()-centerOfRotation.X;
@@ -211,6 +216,17 @@ public class PhysObjectRenderManager {
 			GL11.glTranslated(offsetX,offsetY,offsetZ);
 //			transformBuffer = BufferUtils.createFloatBuffer(16);
 		}
+	}
+	
+	public Quaternion getSmoothRotationQuat(double partialTick){
+		PhysicsWrapperEntity entity = parent.wrapper;
+		double[] oldRotation = RotationMatrices.getDoubleIdentity();
+		oldRotation = RotationMatrices.rotateAndTranslate(oldRotation, entity.prevPitch, entity.prevYaw, entity.prevRoll, new Vector());
+		Quaternion oneTickBefore = Quaternion.QuaternionFromMatrix(oldRotation);
+		double[] newRotation = RotationMatrices.getDoubleIdentity();
+		newRotation = RotationMatrices.rotateAndTranslate(newRotation, entity.pitch, entity.yaw, entity.roll, new Vector());
+		Quaternion nextQuat = Quaternion.QuaternionFromMatrix(newRotation);
+		return  Quaternion.getBetweenQuat(oneTickBefore, nextQuat, partialTick);
 	}
 	
 	//TODO: Program me

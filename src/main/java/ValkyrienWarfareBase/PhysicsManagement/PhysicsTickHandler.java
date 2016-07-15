@@ -11,7 +11,8 @@ public class PhysicsTickHandler{
 	public static void onWorldTickStart(World world){
 		WorldPhysObjectManager manager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(world);
 		
-		ArrayList<PhysicsWrapperEntity> physicsEntities = manager.physicsEntities;
+		//Do this to prevent a ConcurrentModificationException from other threads spawning entities
+		ArrayList<PhysicsWrapperEntity> physicsEntities = (ArrayList<PhysicsWrapperEntity>) manager.physicsEntities.clone();
 		
 		for(PhysicsWrapperEntity wrapper:physicsEntities){
 			wrapper.wrapping.updateChunkCache();
@@ -53,8 +54,14 @@ public class PhysicsTickHandler{
 	}
 
 	public static void onClientTickStart(){
-		WorldPhysObjectManager manager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(Minecraft.getMinecraft().theWorld);
-		
+		if(Minecraft.getMinecraft().thePlayer!=null&&Minecraft.getMinecraft().isGamePaused()){
+			WorldPhysObjectManager manager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(Minecraft.getMinecraft().theWorld);
+			ArrayList<PhysicsWrapperEntity> physicsEntities = manager.physicsEntities;
+			
+			for(PhysicsWrapperEntity wrapper:physicsEntities){
+				wrapper.wrapping.onPreTick();
+			}
+		}
 	}
 	
 	public static void onClientTickEnd(){

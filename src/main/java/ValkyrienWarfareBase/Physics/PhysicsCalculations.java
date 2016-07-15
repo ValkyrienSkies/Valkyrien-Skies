@@ -171,19 +171,25 @@ public class PhysicsCalculations {
 	}
 	
 	public void rawPhysTickPreCol(double newPhysSpeed,int iters){
-		updatePhysSpeedAndIters(newPhysSpeed,iters);
-		updateCenterOfMass();
-		calculateFramedMOITensor();
-		calculateForces();
+		if(parent.doPhysics){
+			updatePhysSpeedAndIters(newPhysSpeed,iters);
+			updateCenterOfMass();
+			calculateFramedMOITensor();
+			calculateForces();
+		}
 	}
 	
 	public void processWorldCollision() {
-		worldCollision.runPhysCollision();
+		if(parent.doPhysics){
+			worldCollision.runPhysCollision();
+		}
 	}
 
 	public void rawPhysTickPostCol(){
-		applyLinearVelocity();
-		applyAngularVelocity();
+		if(parent.doPhysics){
+			applyLinearVelocity();
+			applyAngularVelocity();
+		}
 	}
 	
 	//The x/y/z variables need to be updated when the centerOfMass location changes

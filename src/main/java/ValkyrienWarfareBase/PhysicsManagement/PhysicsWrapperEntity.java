@@ -23,14 +23,15 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 	public double yaw;
 	public double roll;
 	
+	public double prevPitch;
+	public double prevYaw;
+	public double prevRoll;
+	
 	private static final AxisAlignedBB zeroBB = new AxisAlignedBB(0,0,0,0,0,0);
 	
 	public PhysicsWrapperEntity(World worldIn) {
 		super(worldIn);
 		wrapping = new PhysicsObject(this);
-		if(!worldObj.isRemote){
-			
-		}
 		ValkyrienWarfareMod.physicsManager.onShipLoad(this);
 	}
 	
@@ -48,7 +49,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 		if(isDead){
 			return;
 		}
-		super.onUpdate();
+//		super.onUpdate();
 		wrapping.onTick();
 	}
 	

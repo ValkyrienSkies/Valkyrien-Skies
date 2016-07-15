@@ -15,6 +15,7 @@ public class PhysWrapperPositionHandler implements IMessageHandler<PhysWrapperPo
 		if(Minecraft.getMinecraft().thePlayer==null){
 			return null;
 		}
+
 		IThreadListener mainThread = Minecraft.getMinecraft();
 		mainThread.addScheduledTask(new Runnable(){
             @Override
@@ -23,17 +24,19 @@ public class PhysWrapperPositionHandler implements IMessageHandler<PhysWrapperPo
             	if(ent!=null && ent instanceof PhysicsWrapperEntity){
             		PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity) ent;
             		
-            		wrapper.wrapping.centerCoord = message.centerOfMass;
+            		wrapper.wrapping.coordTransform.stack.pushMessage(message);
             		
-            		wrapper.posX = message.posX;
-            		wrapper.posY = message.posY;
-            		wrapper.posZ = message.posZ;
-            		
-            		wrapper.pitch = message.pitch;
-            		wrapper.yaw = message.yaw;
-            		wrapper.roll = message.roll;
-            		
-            		wrapper.wrapping.coordTransform.updateAllTransforms();
+//            		wrapper.wrapping.centerCoord = message.centerOfMass;
+//            		
+//            		wrapper.posX = message.posX;
+//            		wrapper.posY = message.posY;
+//            		wrapper.posZ = message.posZ;
+//            		
+//            		wrapper.pitch = message.pitch;
+//            		wrapper.yaw = message.yaw;
+//            		wrapper.roll = message.roll;
+//            		
+//            		wrapper.wrapping.coordTransform.updateAllTransforms();
             	}
             }
         });

@@ -1,6 +1,7 @@
 package ValkyrienWarfareBase.PhysicsManagement.Network;
 
 import ValkyrienWarfareBase.Math.Vector;
+import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import io.netty.buffer.ByteBuf;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -9,15 +10,27 @@ public class PhysWrapperPositionMessage implements IMessage{
 
 	public PhysicsWrapperEntity toSpawn;
 	
-	int entityID;
-	double posX,posY,posZ;
-	double pitch,yaw,roll;
-	Vector centerOfMass;
+	public int entityID;
+	public double posX,posY,posZ;
+	public double pitch,yaw,roll;
+	public Vector centerOfMass;
 
 	public PhysWrapperPositionMessage(){}
 
 	public PhysWrapperPositionMessage(PhysicsWrapperEntity toSend){
 		toSpawn = toSend;
+	}
+	
+	public PhysWrapperPositionMessage(PhysicsObject toRunLocally){
+		posX = toRunLocally.wrapper.posX;
+		posY = toRunLocally.wrapper.posY;
+		posZ = toRunLocally.wrapper.posZ;
+		
+		pitch = toRunLocally.wrapper.pitch;
+		yaw = toRunLocally.wrapper.yaw;
+		roll = toRunLocally.wrapper.roll;
+		
+		centerOfMass = toRunLocally.centerCoord;
 	}
 
 	@Override

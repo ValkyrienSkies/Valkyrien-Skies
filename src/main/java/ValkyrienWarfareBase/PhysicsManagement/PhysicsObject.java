@@ -8,9 +8,11 @@ import java.util.Set;
 import ValkyrienWarfareBase.NBTUtils;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.ChunkManagement.ChunkSet;
+import ValkyrienWarfareBase.Math.RotationMatrices;
 import ValkyrienWarfareBase.Math.Vector;
 import ValkyrienWarfareBase.Physics.BlockForce;
 import ValkyrienWarfareBase.Physics.PhysicsCalculations;
+import ValkyrienWarfareBase.PhysicsManagement.Network.PhysWrapperPositionMessage;
 import ValkyrienWarfareBase.Relocation.ShipSpawnDetector;
 import ValkyrienWarfareBase.Relocation.VWChunkCache;
 import ValkyrienWarfareBase.Render.PhysObjectRenderManager;
@@ -53,12 +55,14 @@ public class PhysicsObject {
 	//It is from this position that the x,y,z coords in local are 0; and that the posX,
 	//posY and posZ align with in the global coords
 	public BlockPos refrenceBlockPos;
-	public Vector centerCoord;
+	public Vector centerCoord,lastTickCenterCoord;
 	public CoordTransformObject coordTransform;
 	public PhysObjectRenderManager renderer;
 	public PhysicsCalculations physicsProcessor;
 	public ArrayList<BlockPos> blockPositions = new ArrayList<BlockPos>();
 	public AxisAlignedBB collisionBB = new AxisAlignedBB(0,0,0,0,0,0);
+	
+	public boolean doPhysics = true;
 	
 	public ChunkCache surroundingWorldChunksCache;
 	
@@ -199,6 +203,7 @@ public class PhysicsObject {
 		detectBlockPositions();
 		coordTransform = new CoordTransformObject(this);
 		physicsProcessor.processInitialPhysicsData();
+		physicsProcessor.updateCenterOfMass();
 	}
 	
 	public void injectChunkIntoWorld(Chunk chunk,int x,int z){
@@ -302,13 +307,37 @@ public class PhysicsObject {
 		return newPlayers;
 	}
 	
+	public void onPreTick(){
+		
+	}
+	
 	public void onTick(){
-		//Move xyz here
-//		wrapper.isDead=true;
-//		wrapper.yaw = 30D;
-//		wrapper.roll = -22D;
-		//Update coordinate transforms
+		if(worldObj.isRemote){
+			wrapper.prevPitch = wrapper.pitch;
+			wrapper.prevYaw = wrapper.yaw;
+			wrapper.prevRoll = wrapper.roll;
+			
+			wrapper.lastTickPosX = wrapper.posX;
+			wrapper.lastTickPosY = wrapper.posY;
+			wrapper.lastTickPosZ = wrapper.posZ;
+			
+			lastTickCenterCoord = centerCoord;
+			
+			ShipTransformData toUse = coordTransform.stack.getDataForTick();
+			
+			if(toUse!=null){
+				Vector CMDif = toUse.centerOfRotation.getSubtraction(centerCoord);
+				RotationMatrices.applyTransform(coordTransform.lToWRotation, CMDif);
+				
+				wrapper.lastTickPosX-=CMDif.X;
+				wrapper.lastTickPosY-=CMDif.Y;
+				wrapper.lastTickPosZ-=CMDif.Z;
+				toUse.applyToPhysObject(this);
+			}
+
+		}
 		coordTransform.updateAllTransforms();
+		
 	}
 	
 	public void updateChunkCache(){
@@ -406,6 +435,7 @@ public class PhysicsObject {
 		compound.setDouble("pitch", wrapper.pitch);
 		compound.setDouble("yaw", wrapper.yaw);
 		compound.setDouble("roll", wrapper.roll);
+		compound.setBoolean("doPhysics", doPhysics);
 		for(int row = 0;row<ownedChunks.chunkOccupiedInLocal.length;row++){
 			boolean[] curArray = ownedChunks.chunkOccupiedInLocal[row];
 			for(int column = 0;column<curArray.length;column++){
@@ -417,10 +447,11 @@ public class PhysicsObject {
 	
 	public void readFromNBTTag(NBTTagCompound compound){
 		ownedChunks = new ChunkSet(compound);
-		centerCoord = NBTUtils.readVectorFromNBT("c", compound);
+		lastTickCenterCoord = centerCoord = NBTUtils.readVectorFromNBT("c", compound);
 		wrapper.pitch = compound.getDouble("pitch");
 		wrapper.yaw = compound.getDouble("yaw");
 		wrapper.roll = compound.getDouble("roll");
+		doPhysics = compound.getBoolean("doPhysics");
 		for(int row = 0;row<ownedChunks.chunkOccupiedInLocal.length;row++){
 			boolean[] curArray = ownedChunks.chunkOccupiedInLocal[row];
 			for(int column = 0;column<curArray.length;column++){
@@ -442,7 +473,13 @@ public class PhysicsObject {
 		wrapper.yaw = additionalData.readDouble();
 		wrapper.roll = additionalData.readDouble();
 		
+		wrapper.prevPitch = wrapper.pitch;
+		wrapper.prevYaw = wrapper.yaw;
+		wrapper.prevRoll = wrapper.roll;
 		
+		wrapper.lastTickPosX = wrapper.posX;
+		wrapper.lastTickPosY = wrapper.posY;
+		wrapper.lastTickPosZ = wrapper.posZ;
 		
 		centerCoord = new Vector(additionalData);
 		for(boolean[] array:ownedChunks.chunkOccupiedInLocal){
@@ -453,6 +490,8 @@ public class PhysicsObject {
 		loadClaimedChunks();
 		renderer.markForUpdate();
 		renderer.updateOffsetPos(refrenceBlockPos);
+		
+		coordTransform.stack.pushMessage(new PhysWrapperPositionMessage(this));
 	}
 	
 	public void writeSpawnData(ByteBuf buffer){

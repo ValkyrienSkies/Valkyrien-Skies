@@ -28,6 +28,8 @@ public class CoordTransformObject {
 	
 	public Vector[] normals = Vector.generateAxisAlignedNorms();
 	
+	public ShipTransformationStack stack = new ShipTransformationStack();
+	
 	public CoordTransformObject(PhysicsObject object){
 		parent = object;
 		updateAllTransforms();

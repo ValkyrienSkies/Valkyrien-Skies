@@ -2,6 +2,7 @@ package ValkyrienWarfareBase;
 
 import ValkyrienWarfareBase.Interaction.CustomNetHandlerPlayServer;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsTickHandler;
+import ValkyrienWarfareBase.PhysicsManagement.PhysicsTickHandlerClient;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -42,10 +43,10 @@ public class EventsCommon {
 		}
 		if(event instanceof ClientTickEvent){
 			if(event.phase==Phase.START){
-				PhysicsTickHandler.onClientTickStart();
+				PhysicsTickHandlerClient.onClientTickStart();
 			}
 			if(event.phase==Phase.END){
-				PhysicsTickHandler.onClientTickEnd();
+				PhysicsTickHandlerClient.onClientTickEnd();
 			}
 		}
 	}

@@ -25,16 +25,19 @@ public class PhysicsTickHandler{
 				wrapper.wrapping.physicsProcessor.rawPhysTickPreCol(newPhysSpeed, iters);
 			}
 			
-			//TODO: Implement
-			for(PhysicsWrapperEntity wrapper:physicsEntities){
-//				wrapper.wrapping.physicsProcessor.processWorldCollision();
-//				wrapper.wrapping.physicsProcessor.collisionRunnable.run();
+			
+			if(ValkyrienWarfareMod.multiThreadedPhysics){
+				try {
+					ValkyrienWarfareMod.MultiThreadExecutor.invokeAll(manager.physCollisonCallables);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}else{
+				for(PhysicsWrapperEntity wrapper:physicsEntities){
+					wrapper.wrapping.physicsProcessor.processWorldCollision();
+				}
 			}
-			try {
-				ValkyrienWarfareMod.MultiThreadExecutor.invokeAll(manager.physCollisonCallables);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			
 			
 			for(PhysicsWrapperEntity wrapper:physicsEntities){
 				wrapper.wrapping.physicsProcessor.rawPhysTickPostCol(newPhysSpeed, iters);

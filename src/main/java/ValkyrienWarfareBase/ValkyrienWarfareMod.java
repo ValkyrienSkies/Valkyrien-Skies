@@ -41,13 +41,16 @@ public class ValkyrienWarfareMod{
 
 	public static final String MODID = "valkyrienwarfare";
     public static final String MODNAME = "Valkyrien Warfare";
-    public static final String MODVER = "0.1a";
+    public static final String MODVER = "0.2a";
 
     public static File configFile;
     public static Configuration config;
 	public static boolean dynamicLighting,spawnParticles;
     public static int shipTickDelay,maxMissedPackets;
-
+    
+    public static int threadCount;
+    public static boolean multiThreadedPhysics;
+    
     public static Block physicsInfuser;
 
     public static SimpleNetworkWrapper physWrapperNetwork;
@@ -62,8 +65,7 @@ public class ValkyrienWarfareMod{
 	public static boolean isObsfucated = false;
 	
 	//NOTE: These only calculate physics, so they are only relevant to the Server end
-	public static int threadCount = 8;
-	public static ExecutorService MultiThreadExecutor = Executors.newFixedThreadPool(threadCount);
+	public static ExecutorService MultiThreadExecutor;
 	
     @EventHandler
     public void preInit(FMLPreInitializationEvent event){
@@ -111,6 +113,7 @@ public class ValkyrienWarfareMod{
     	config.load();
     	applyConfig(config);
     	config.save();
+    	MultiThreadExecutor = Executors.newFixedThreadPool(threadCount);
     }
 
     public static void applyConfig(Configuration conf){
@@ -118,15 +121,21 @@ public class ValkyrienWarfareMod{
         Property shipTickDelayProperty = config.get(Configuration.CATEGORY_GENERAL, "Ticks Delay Between Client and Server", 1);
         Property missedPacketsTolerance = config.get(Configuration.CATEGORY_GENERAL, "Missed packets threshold", 1);
         Property spawnParticlesParticle = config.get(Configuration.CATEGORY_GENERAL, "Ships spawn particles", false);
+        Property useMultiThreadedPhysics = config.get(Configuration.CATEGORY_GENERAL, "Multi-Threaded Physics", true);
+        Property physicsThreads = config.get(Configuration.CATEGORY_GENERAL, "Physics Thread Count", Runtime.getRuntime().availableProcessors());
         
         dynamiclightProperty.setComment("Dynamic Lighting");
-        shipTickDelayProperty.setComment("Tick delay between client and server physics; raise if physics loop choppy");
+        shipTickDelayProperty.setComment("Tick delay between client and server physics; raise if physics look choppy");
         missedPacketsTolerance.setComment("Higher values gaurantee virutally no choppyness, but also comes with a large delay. Only change if you have unstable internet");
         spawnParticlesParticle.setComment("Ships spawn particles");
+        useMultiThreadedPhysics.setComment( "Use Multi-Threaded Physics");
+        physicsThreads.setComment( "Number of threads to run physics on; RESTART GAME TO APPLY");
         
         dynamicLighting = dynamiclightProperty.getBoolean();
         shipTickDelay = shipTickDelayProperty.getInt()%20;
         maxMissedPackets = missedPacketsTolerance.getInt();
         spawnParticles = spawnParticlesParticle.getBoolean();
+        multiThreadedPhysics = useMultiThreadedPhysics.getBoolean();
+        threadCount = physicsThreads.getInt();
     }
 }

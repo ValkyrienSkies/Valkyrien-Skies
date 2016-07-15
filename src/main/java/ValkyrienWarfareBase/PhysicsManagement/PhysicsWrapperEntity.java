@@ -23,6 +23,8 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 	public double yaw;
 	public double roll;
 	
+	private static final AxisAlignedBB zeroBB = new AxisAlignedBB(0,0,0,0,0,0);
+	
 	public PhysicsWrapperEntity(World worldIn) {
 		super(worldIn);
 		wrapping = new PhysicsObject(this);
@@ -57,10 +59,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 
 	@Override
 	public AxisAlignedBB getEntityBoundingBox(){
-        if(wrapping.coordTransform!=null){
-        	return wrapping.collisionBB;
-        }
-		return this.boundingBox;
+        return zeroBB;
     }
 	
 	@Override

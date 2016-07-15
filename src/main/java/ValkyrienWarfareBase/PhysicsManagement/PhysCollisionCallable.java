@@ -15,6 +15,7 @@ public class PhysCollisionCallable implements Callable<Void>{
 	@Override
 	public Void call() throws Exception {
 		toRun.physicsProcessor.worldCollision.runPhysCollision();
+		toRun.physicsProcessor.rawPhysTickPostCol();
 		return null;
 	}
 

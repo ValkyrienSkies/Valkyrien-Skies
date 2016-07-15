@@ -181,8 +181,7 @@ public class PhysicsCalculations {
 		worldCollision.runPhysCollision();
 	}
 
-	public void rawPhysTickPostCol(double newPhysSpeed,int iters){
-		updatePhysSpeedAndIters(newPhysSpeed,iters);
+	public void rawPhysTickPostCol(){
 		applyLinearVelocity();
 		applyAngularVelocity();
 	}

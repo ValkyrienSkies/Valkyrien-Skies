@@ -248,7 +248,7 @@ public class PhysicsCalculations {
 			Block blockAt = state.getBlock();
 			Vector inBodyWO = BigBastardMath.getBodyPosWithOrientation(pos, centerOfMass, parent.coordTransform.lToWRotation);
 			
-			Vector blockForce = BlockForce.basicForces.getForceFromState(state, pos, worldObj,physTickSpeed);
+			Vector blockForce = BlockForce.basicForces.getForceFromState(state, pos, worldObj,physTickSpeed,parent);
 			
 			
 			if(blockForce!=null){

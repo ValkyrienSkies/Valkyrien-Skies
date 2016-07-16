@@ -34,6 +34,7 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.RayTraceResult.Type;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -72,16 +73,7 @@ public class CallRunner {
 		BlockPos posAt = new BlockPos(entity);
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, posAt);
 		if(wrapper!=null&&wrapper.wrapping.coordTransform!=null){
-			Vector entityPos = new Vector(entity.posX,entity.posY,entity.posZ);
-			Vector entityVel = new Vector(entity.motionX,entity.motionY,entity.motionZ);
-			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, entityPos);
-			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWRotation, entityVel);
-			entity.setPosition(entityPos.X, entityPos.Y, entityPos.Z);
-			if(true){
-				entity.motionX = entityVel.X;
-				entity.motionY = entityVel.Y;
-				entity.motionZ = entityVel.Z;
-			}
+			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, entity);
 		}
 		return world.spawnEntityInWorld(entity);
 	}
@@ -166,7 +158,7 @@ public class CallRunner {
             
             RayTraceResult resultInShip = world.rayTraceBlocks(playerEyesPos, playerEyesReachAdded, false, false, true);
             
-            if(resultInShip!=null&&resultInShip.hitVec!=null){
+            if(resultInShip!=null&&resultInShip.hitVec!=null&&resultInShip.typeOfHit==Type.BLOCK){
 	            double shipResultDistFromPlayer = resultInShip.hitVec.distanceTo(playerEyesPos);
 	            
 	            if(shipResultDistFromPlayer<worldResultDistFromPlayer){

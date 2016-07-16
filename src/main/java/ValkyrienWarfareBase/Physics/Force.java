@@ -2,13 +2,12 @@ package ValkyrienWarfareBase.Physics;
 
 import ValkyrienWarfareBase.Math.Vector;
 
-public class Force {
+public class Force extends Vector{
 
-	public final Vector force;
 	public final boolean inLocal;
 	
-	public Force(Vector theForce,boolean isInLocalCoords){
-		force = theForce;
+	public Force(double x,double y,double z,boolean isInLocalCoords){
+		super(x,y,z);
 		inLocal = isInLocalCoords;
 	}
 	

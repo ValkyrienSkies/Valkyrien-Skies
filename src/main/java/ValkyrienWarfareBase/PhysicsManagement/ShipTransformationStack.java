@@ -38,7 +38,7 @@ public class ShipTransformationStack {
 			}
 		}
 		curRelativeTick = recentTransforms[0].relativeTick-2;
-		System.out.println("Re-adjusting offsets for packets received on Client");
+//		System.out.println("Re-adjusting offsets for packets received on Client");
 
 		return recentTransforms[0];
 	}

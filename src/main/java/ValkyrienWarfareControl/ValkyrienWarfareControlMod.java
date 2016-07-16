@@ -20,7 +20,8 @@ public class ValkyrienWarfareControlMod {
     public static final String MODNAME = "Valkyrien Warfare Control";
     public static final String MODVER = "0.1";
     
-    public Block airshipEngine;
+    public Block basicEngine;
+    public Block hoverCraftController;
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event){
@@ -38,8 +39,9 @@ public class ValkyrienWarfareControlMod {
     }
     
     private void registerBlocks(FMLStateEvent event){
-    	airshipEngine = new AirShipEngine(Material.ROCK).setUnlocalizedName("airshipengine").setRegistryName(ValkyrienWarfareMod.MODID, "airshipengine").setCreativeTab(CreativeTabs.REDSTONE);
-    	GameRegistry.registerBlock(airshipEngine);
+    	basicEngine = new AirShipEngine(Material.ROCK).setUnlocalizedName("basicengine").setRegistryName(ValkyrienWarfareMod.MODID, "basicengine").setCreativeTab(CreativeTabs.REDSTONE);
+    	
+    	GameRegistry.registerBlock(basicEngine);
     }
 
     

@@ -1,6 +1,6 @@
 package ValkyrienWarfareBase.Math;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
@@ -159,6 +159,25 @@ public class RotationMatrices{
    		vec.X = x * M[0] + y * M[1] + z * M[2] + M[3];
    		vec.Y = x * M[4] + y * M[5] + z * M[6] + M[7];
    		vec.Z = x * M[8] + y * M[9] + z * M[10] + M[11];
+   	}
+   	
+   	public static final void applyTransform(double[] M,Entity ent){
+   		Vector entityPos = new Vector(ent.posX,ent.posY,ent.posZ);
+   		Vector entityLook = new Vector(ent.getLook(1.0F));
+   		Vector entityMotion = new Vector(ent.motionX,ent.motionY,ent.motionZ);
+   		
+   		applyTransform(M, entityPos);
+   		doRotationOnly(M, entityLook);
+   		doRotationOnly(M, entityMotion);
+   		
+   		ent.rotationPitch = (float) Math.toDegrees(Math.asin(-entityLook.Y));
+   		ent.rotationYaw = (float) Math.toDegrees(-Math.atan2(entityLook.X, entityLook.Z));
+   		
+   		ent.motionX = entityMotion.X;
+   		ent.motionY = entityMotion.Y;
+   		ent.motionZ = entityMotion.Z;
+   		
+   		ent.setPosition(entityPos.X, entityPos.Y, entityPos.Z);
    	}
 
    	public static final BlockPos applyTransform(double[] M,BlockPos pos){

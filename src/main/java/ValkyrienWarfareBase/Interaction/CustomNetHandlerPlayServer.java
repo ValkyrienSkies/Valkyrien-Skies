@@ -3,6 +3,7 @@ package ValkyrienWarfareBase.Interaction;
 import java.lang.reflect.Field;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
+import ValkyrienWarfareBase.Math.RotationMatrices;
 import ValkyrienWarfareBase.Math.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import net.minecraft.block.material.Material;
@@ -83,6 +84,16 @@ public class CustomNetHandlerPlayServer extends NetHandlerPlayServer{
 	public void processRightClickBlock(CPacketPlayerTryUseItemOnBlock packetIn)
     {
         PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.playerEntity.getServerWorld());
+        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(playerEntity.worldObj, packetIn.getPos());
+        if(wrapper!=null&&wrapper.wrapping.coordTransform!=null){
+        	RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, playerEntity);
+        	super.processRightClickBlock(packetIn);
+        	RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, playerEntity);
+        }else{
+        	super.processRightClickBlock(packetIn);
+        }
+        
+        /*
         WorldServer worldserver = this.serverController.worldServerForDimension(this.playerEntity.dimension);
         EnumHand enumhand = packetIn.getHand();
         ItemStack itemstack = this.playerEntity.getHeldItem(enumhand);
@@ -124,117 +135,19 @@ public class CustomNetHandlerPlayServer extends NetHandlerPlayServer{
             this.playerEntity.setHeldItem(enumhand, (ItemStack)null);
             net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem(this.playerEntity, itemstack, enumhand);
             itemstack = null;
-        }
+        }*/
     }
 	
 	@Override
     public void processPlayerDigging(CPacketPlayerDigging packetIn){
 		PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.playerEntity.getServerWorld());
-        WorldServer worldserver = this.serverController.worldServerForDimension(this.playerEntity.dimension);
-        BlockPos blockpos = packetIn.getPosition();
-        this.playerEntity.markPlayerActive();
-
-        switch (packetIn.getAction())
-        {
-            case SWAP_HELD_ITEMS:
-
-                if (!this.playerEntity.isSpectator())
-                {
-                    ItemStack itemstack1 = this.playerEntity.getHeldItem(EnumHand.OFF_HAND);
-                    this.playerEntity.setHeldItem(EnumHand.OFF_HAND, this.playerEntity.getHeldItem(EnumHand.MAIN_HAND));
-                    this.playerEntity.setHeldItem(EnumHand.MAIN_HAND, itemstack1);
-                }
-
-                return;
-            case DROP_ITEM:
-
-                if (!this.playerEntity.isSpectator())
-                {
-                    this.playerEntity.dropItem(false);
-                }
-
-                return;
-            case DROP_ALL_ITEMS:
-
-                if (!this.playerEntity.isSpectator())
-                {
-                    this.playerEntity.dropItem(true);
-                }
-
-                return;
-            case RELEASE_USE_ITEM:
-                this.playerEntity.stopActiveHand();
-                ItemStack itemstack = this.playerEntity.getHeldItemMainhand();
-
-                if (itemstack != null && itemstack.stackSize == 0)
-                {
-                    this.playerEntity.setHeldItem(EnumHand.MAIN_HAND, (ItemStack)null);
-                }
-
-                return;
-            case START_DESTROY_BLOCK:
-            case ABORT_DESTROY_BLOCK:
-            case STOP_DESTROY_BLOCK:
-            	
-            	Vector blockPosInGlobal = new Vector(((double)blockpos.getX() + 0.5D),((double)blockpos.getY() + 0.5D),((double)blockpos.getZ() + 0.5D));
-            	
-            	PhysicsWrapperEntity chunkManager = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldserver, blockpos);
-                
-                if(chunkManager!=null){
-                	chunkManager.wrapping.coordTransform.fromLocalToGlobal(blockPosInGlobal);
-                }
-            	
-                double d0 = this.playerEntity.posX - blockPosInGlobal.X;
-                double d1 = this.playerEntity.posY - blockPosInGlobal.Y + 1.5D;
-                double d2 = this.playerEntity.posZ - blockPosInGlobal.Z;
-                double d3 = d0 * d0 + d1 * d1 + d2 * d2;
-
-                double dist = playerEntity.interactionManager.getBlockReachDistance() + 1;
-                dist *= dist;
-
-                if (d3 > dist)
-                {
-                    return;
-                }
-                else if (blockpos.getY() >= this.serverController.getBuildLimit())
-                {
-                    return;
-                }
-                else
-                {
-                    if (packetIn.getAction() == CPacketPlayerDigging.Action.START_DESTROY_BLOCK)
-                    {
-                        if (!this.serverController.isBlockProtected(worldserver, blockpos, this.playerEntity) && worldserver.getWorldBorder().contains(blockpos))
-                        {
-                            this.playerEntity.interactionManager.onBlockClicked(blockpos, packetIn.getFacing());
-                        }
-                        else
-                        {
-                            this.playerEntity.connection.sendPacket(new SPacketBlockChange(worldserver, blockpos));
-                        }
-                    }
-                    else
-                    {
-                        if (packetIn.getAction() == CPacketPlayerDigging.Action.STOP_DESTROY_BLOCK)
-                        {
-                            this.playerEntity.interactionManager.blockRemoving(blockpos);
-                        }
-                        else if (packetIn.getAction() == CPacketPlayerDigging.Action.ABORT_DESTROY_BLOCK)
-                        {
-                            this.playerEntity.interactionManager.cancelDestroyingBlock();
-                        }
-
-                        if (worldserver.getBlockState(blockpos).getMaterial() != Material.AIR)
-                        {
-                            this.playerEntity.connection.sendPacket(new SPacketBlockChange(worldserver, blockpos));
-                        }
-                    }
-
-                    return;
-                }
-
-            default:
-                throw new IllegalArgumentException("Invalid player action");
+        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(playerEntity.worldObj, packetIn.getPosition());
+        if(wrapper!=null&&wrapper.wrapping.coordTransform!=null){
+        	RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, playerEntity);
+        	super.processPlayerDigging(packetIn);
+        	RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, playerEntity);
+        }else{
+        	super.processPlayerDigging(packetIn);
         }
 	}
 	
@@ -250,6 +163,14 @@ public class CustomNetHandlerPlayServer extends NetHandlerPlayServer{
 	
 	@Override
 	public void processUpdateSign(CPacketUpdateSign packetIn){
-		super.processUpdateSign(packetIn);
+		PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.playerEntity.getServerWorld());
+        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(playerEntity.worldObj, packetIn.getPosition());
+        if(wrapper!=null&&wrapper.wrapping.coordTransform!=null){
+        	RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, playerEntity);
+        	super.processUpdateSign(packetIn);
+        	RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, playerEntity);
+        }else{
+        	super.processUpdateSign(packetIn);
+        }
 	}
 }

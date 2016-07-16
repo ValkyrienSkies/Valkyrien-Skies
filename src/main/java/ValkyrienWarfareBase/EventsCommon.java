@@ -2,7 +2,6 @@ package ValkyrienWarfareBase;
 
 import ValkyrienWarfareBase.Interaction.CustomNetHandlerPlayServer;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsTickHandler;
-import ValkyrienWarfareBase.PhysicsManagement.PhysicsTickHandlerClient;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -20,7 +19,6 @@ import net.minecraftforge.fml.common.eventhandler.Event.Result;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
@@ -39,14 +37,6 @@ public class EventsCommon {
 				if(event.phase==Phase.END){
 					PhysicsTickHandler.onWorldTickEnd(worldFor);
 				}
-			}
-		}
-		if(event instanceof ClientTickEvent){
-			if(event.phase==Phase.START){
-				PhysicsTickHandlerClient.onClientTickStart();
-			}
-			if(event.phase==Phase.END){
-				PhysicsTickHandlerClient.onClientTickEnd();
 			}
 		}
 	}

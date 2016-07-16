@@ -48,6 +48,16 @@ public class AirShipEngine extends Block implements IBlockForceProvider{
 	}
 
 	@Override
+	public boolean isFullCube(IBlockState state){
+        return false;
+    }
+
+	@Override
+    public boolean isOpaqueCube(IBlockState state){
+        return false;
+    }
+	
+	@Override
 	public Vector getBlockForce(World world, BlockPos pos, IBlockState state, double secondsToApply) {
 		EnumFacing enumfacing = (EnumFacing)state.getValue(FACING);
 		Vector acting = new Vector(0,0,0);

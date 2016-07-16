@@ -43,7 +43,7 @@ public class PhysicsCalculations {
 	//The amount of time to be simulated on each rawPhysTick *(Its physSpeed/iterations)
 	public double physTickSpeed = physRawSpeed/iterations;
 	//Used to limit the accumulation of motion by an object (Basically Air-Resistance preventing infinite energy)
-	public double drag = .98D;
+	public double drag = .985D;
 	
 	public ArrayList<BlockPos> activeForcePositions = new ArrayList<BlockPos>();
 	

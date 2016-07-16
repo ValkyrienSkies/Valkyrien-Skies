@@ -104,14 +104,7 @@ public class TransformAdapter extends ClassVisitor{
 	}
 
 	private boolean runTransformer(String calledName,String calledDesc,String calledOwner,MethodVisitor mv){
-		
-//		Logger log = FMLLog.getLogger();
-//		log.debug("Name: "+calledName);
-//		log.debug("Desc: "+calledDesc);
-//		log.debug("Ownr: "+calledOwner);
-//		
-//		log.debug("ClassName: "+EntityPlayerName);
-		
+
 		if(isMethod(calledDesc,"(L"+ParticleName+";)V",calledName,ParticleManagerName,"addEffect","func_78873_a",calledOwner)
 			||
 			isMethod(calledDesc,"(L"+RawParticleName+";)V",calledName,RawParticleManagerName,"addEffect","func_78873_a",calledOwner)){

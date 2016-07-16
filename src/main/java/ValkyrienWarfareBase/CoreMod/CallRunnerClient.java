@@ -224,7 +224,9 @@ public class CallRunnerClient extends CallRunner{
 				wrapper.wrapping.renderer.renderBlockLayer(blockLayerIn,partialTicks,pass);
 			}
 		}
-		return renderer.renderBlockLayer(blockLayerIn, partialTicks, pass, entityIn);
+		int toReturn = renderer.renderBlockLayer(blockLayerIn, partialTicks, pass, entityIn);
+		GlStateManager.resetColor();
+		return toReturn;
 	}
 
 }

@@ -1,17 +1,35 @@
 package ValkyrienWarfareBase;
 
 import ValkyrienWarfareBase.Interaction.CustomPlayerControllerMP;
+import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
+import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.RenderTickEvent;
 
 public class EventsClient {
 
 	private final static Minecraft mc = Minecraft.getMinecraft();
+
+	@SubscribeEvent(priority=EventPriority.HIGHEST)
+	public void onClientTickEvent(ClientTickEvent event){
+		if(event.phase==Phase.END){
+			if (mc.theWorld != null){
+	            if (!mc.isGamePaused()){
+	            	WorldPhysObjectManager manager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(mc.theWorld);
+	            	for(PhysicsWrapperEntity wrapper:manager.physicsEntities){
+	            		wrapper.wrapping.onPostEntityTick();
+	            	}
+	            }
+			}
+		}
+	}
 	
 	@SubscribeEvent
 	public void onChunkLoadClient(ChunkEvent.Load event){

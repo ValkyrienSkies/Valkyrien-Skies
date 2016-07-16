@@ -1,5 +1,6 @@
 package ValkyrienWarfareBase.PhysicsManagement;
 
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.Math.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.Network.PhysWrapperPositionMessage;
 
@@ -13,7 +14,6 @@ public class ShipTransformationStack {
 
 	public ShipTransformData[] recentTransforms = new ShipTransformData[20];
 	//Number of ticks the parent ship has been active for
-	public int curRelativeTick;
 	//Increases by 1 for every message pushed onto the stack
 	public int messageRelativeTick;
 	
@@ -27,19 +27,25 @@ public class ShipTransformationStack {
 		
 	}
 	
-	public ShipTransformData getDataForTick(){
-		curRelativeTick++;
-		for(int i = 0;i<20;i++){
-			ShipTransformData data = recentTransforms[i];
-			if(data!=null){
-				if(data.relativeTick==curRelativeTick){
-					return data;
+	//TODO: Make this auto-adjust to best settings for the server
+	public ShipTransformData getDataForTick(int lastTick){
+		if(ValkyrienWarfareMod.shipTickDelay==0){
+			return recentTransforms[0];
+		}		
+		int tickToGet = lastTick+1;
+		int idealTick = recentTransforms[0].relativeTick-ValkyrienWarfareMod.shipTickDelay;
+		if(recentTransforms[0].relativeTick-tickToGet+ValkyrienWarfareMod.shipTickDelay>ValkyrienWarfareMod.maxMissedPackets){
+//			System.out.println("bad"+ValkyrienWarfareMod.maxMissedPackets);
+			tickToGet = idealTick;
+		}
+		for(ShipTransformData transform:recentTransforms){
+			if(transform!=null){
+				if(transform.relativeTick==tickToGet){
+					return transform;
 				}
 			}
 		}
-		curRelativeTick = recentTransforms[0].relativeTick-2;
-//		System.out.println("Re-adjusting offsets for packets received on Client");
-
+		
 		return recentTransforms[0];
 	}
 	

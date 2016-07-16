@@ -70,6 +70,8 @@ public class PhysicsObject {
 	
 	public PhysCollisionCallable collisionCallable = new PhysCollisionCallable(this);
 	
+	public int lastMessageTick;
+	
 	public PhysicsObject(PhysicsWrapperEntity host){
 		wrapper = host;
 		worldObj = host.worldObj;
@@ -307,11 +309,7 @@ public class PhysicsObject {
 		return newPlayers;
 	}
 	
-	public void onPreTick(){
-		
-	}
-	
-	public void onTick(){
+	public void onPostEntityTick(){
 		if(worldObj.isRemote){
 			wrapper.prevPitch = wrapper.pitch;
 			wrapper.prevYaw = wrapper.yaw;
@@ -323,7 +321,9 @@ public class PhysicsObject {
 			
 			lastTickCenterCoord = centerCoord;
 			
-			ShipTransformData toUse = coordTransform.stack.getDataForTick();
+			ShipTransformData toUse = coordTransform.stack.getDataForTick(lastMessageTick);
+			
+			lastMessageTick = toUse.relativeTick;
 			
 			if(toUse!=null){
 				Vector CMDif = toUse.centerOfRotation.getSubtraction(centerCoord);
@@ -334,9 +334,18 @@ public class PhysicsObject {
 				wrapper.lastTickPosZ-=CMDif.Z;
 				toUse.applyToPhysObject(this);
 			}
-
+			coordTransform.updateAllTransforms();
+//			System.out.println("pretick");
 		}
-		coordTransform.updateAllTransforms();
+		
+		
+		
+	}
+	
+	public void onTick(){
+		if(worldObj.isRemote){
+//			System.out.println("tick");
+		}
 		
 	}
 	

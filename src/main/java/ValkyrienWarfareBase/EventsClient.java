@@ -24,7 +24,7 @@ public class EventsClient {
 	            if (!mc.isGamePaused()){
 	            	WorldPhysObjectManager manager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(mc.theWorld);
 	            	for(PhysicsWrapperEntity wrapper:manager.physicsEntities){
-	            		wrapper.wrapping.onPostEntityTick();
+	            		wrapper.wrapping.onPostTickClient();
 	            	}
 	            }
 			}

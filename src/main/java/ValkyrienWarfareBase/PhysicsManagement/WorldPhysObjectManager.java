@@ -19,6 +19,7 @@ public class WorldPhysObjectManager {
 //	private static double ShipRangeCheck = 120D;
 	public World worldObj;
 	public ArrayList<PhysicsWrapperEntity> physicsEntities = new ArrayList<PhysicsWrapperEntity>();
+	public ArrayList<PhysicsWrapperEntity> physicsEntitiesToUnload = new ArrayList<PhysicsWrapperEntity>();
 	public ArrayList<Callable<Void>> physCollisonCallables = new ArrayList<Callable<Void>>();
 	public int physIter = 5;
 	public double physSpeed = .05D;

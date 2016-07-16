@@ -86,9 +86,9 @@ public class CustomNetHandlerPlayServer extends NetHandlerPlayServer{
         PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.playerEntity.getServerWorld());
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(playerEntity.worldObj, packetIn.getPos());
         if(wrapper!=null&&wrapper.wrapping.coordTransform!=null){
-        	RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, playerEntity);
+        	RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform,wrapper.wrapping.coordTransform.wToLRotation, playerEntity);
         	super.processRightClickBlock(packetIn);
-        	RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, playerEntity);
+        	RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform,wrapper.wrapping.coordTransform.lToWRotation, playerEntity);
         }else{
         	super.processRightClickBlock(packetIn);
         }
@@ -143,9 +143,9 @@ public class CustomNetHandlerPlayServer extends NetHandlerPlayServer{
 		PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.playerEntity.getServerWorld());
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(playerEntity.worldObj, packetIn.getPosition());
         if(wrapper!=null&&wrapper.wrapping.coordTransform!=null){
-        	RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, playerEntity);
+        	RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform,wrapper.wrapping.coordTransform.wToLRotation, playerEntity);
         	super.processPlayerDigging(packetIn);
-        	RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, playerEntity);
+        	RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform,wrapper.wrapping.coordTransform.lToWRotation, playerEntity);
         }else{
         	super.processPlayerDigging(packetIn);
         }
@@ -166,9 +166,9 @@ public class CustomNetHandlerPlayServer extends NetHandlerPlayServer{
 		PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.playerEntity.getServerWorld());
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(playerEntity.worldObj, packetIn.getPosition());
         if(wrapper!=null&&wrapper.wrapping.coordTransform!=null){
-        	RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, playerEntity);
+        	RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform,wrapper.wrapping.coordTransform.wToLRotation, playerEntity);
         	super.processUpdateSign(packetIn);
-        	RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, playerEntity);
+        	RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform,wrapper.wrapping.coordTransform.lToWRotation, playerEntity);
         }else{
         	super.processUpdateSign(packetIn);
         }

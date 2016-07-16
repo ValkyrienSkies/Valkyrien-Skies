@@ -3,6 +3,7 @@ package ValkyrienWarfareBase.PhysicsManagement;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import ValkyrienWarfareBase.NBTUtils;
@@ -19,6 +20,7 @@ import ValkyrienWarfareBase.Render.PhysObjectRenderManager;
 import gnu.trove.iterator.TIntIterator;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
@@ -31,6 +33,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.ChunkCache;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -309,44 +313,94 @@ public class PhysicsObject {
 		return newPlayers;
 	}
 	
-	public void onPostEntityTick(){
-		if(worldObj.isRemote){
-			wrapper.prevPitch = wrapper.pitch;
-			wrapper.prevYaw = wrapper.yaw;
-			wrapper.prevRoll = wrapper.roll;
-			
-			wrapper.lastTickPosX = wrapper.posX;
-			wrapper.lastTickPosY = wrapper.posY;
-			wrapper.lastTickPosZ = wrapper.posZ;
-			
-			lastTickCenterCoord = centerCoord;
-			
-			ShipTransformData toUse = coordTransform.stack.getDataForTick(lastMessageTick);
-			
-			lastMessageTick = toUse.relativeTick;
-			
-			if(toUse!=null){
-				Vector CMDif = toUse.centerOfRotation.getSubtraction(centerCoord);
-				RotationMatrices.applyTransform(coordTransform.lToWRotation, CMDif);
-				
-				wrapper.lastTickPosX-=CMDif.X;
-				wrapper.lastTickPosY-=CMDif.Y;
-				wrapper.lastTickPosZ-=CMDif.Z;
-				toUse.applyToPhysObject(this);
-			}
-			coordTransform.updateAllTransforms();
-//			System.out.println("pretick");
-		}
-		
-		
-		
-	}
-	
 	public void onTick(){
 		if(worldObj.isRemote){
 //			System.out.println("tick");
 		}
 		
+	}
+	
+	public void onPostTickClient(){
+		wrapper.prevPitch = wrapper.pitch;
+		wrapper.prevYaw = wrapper.yaw;
+		wrapper.prevRoll = wrapper.roll;
+		
+		wrapper.lastTickPosX = wrapper.posX;
+		wrapper.lastTickPosY = wrapper.posY;
+		wrapper.lastTickPosZ = wrapper.posZ;
+			
+		lastTickCenterCoord = centerCoord;
+			
+		ShipTransformData toUse = coordTransform.stack.getDataForTick(lastMessageTick);
+			
+		lastMessageTick = toUse.relativeTick;
+			
+		if(toUse!=null){
+			Vector CMDif = toUse.centerOfRotation.getSubtraction(centerCoord);
+			RotationMatrices.applyTransform(coordTransform.lToWRotation, CMDif);
+				
+			wrapper.lastTickPosX-=CMDif.X;
+			wrapper.lastTickPosY-=CMDif.Y;
+			wrapper.lastTickPosZ-=CMDif.Z;
+			toUse.applyToPhysObject(this);
+		}
+		coordTransform.setPrevMatrices();
+		coordTransform.updateAllTransforms();
+		moveEntities();
+	}
+	
+	//TODO: Fix the lag here
+	public void moveEntities(){
+		List<Entity> riders = worldObj.getEntitiesWithinAABB(Entity.class, collisionBB);
+		for(Entity ent:riders){
+			if(!(ent instanceof PhysicsWrapperEntity)){
+				float rotYaw = ent.rotationYaw;
+				float rotPitch = ent.rotationPitch;
+				
+				RotationMatrices.applyTransform(coordTransform.prevwToLTransform,coordTransform.prevWToLRotation, ent);
+				RotationMatrices.applyTransform(coordTransform.lToWTransform,coordTransform.lToWRotation, ent);
+				
+				ent.rotationYaw = rotYaw;
+				ent.rotationPitch = rotPitch;
+				
+				Vector oldLookingPos = new Vector(ent.getLook(1.0F));
+				RotationMatrices.applyTransform(coordTransform.prevWToLRotation, oldLookingPos);
+				RotationMatrices.applyTransform(coordTransform.lToWRotation, oldLookingPos);
+				
+				double newPitch = Math.asin(oldLookingPos.Y)* -180D/Math.PI;
+				double f4 = -Math.cos(-newPitch * 0.017453292D);
+				double radianYaw = Math.atan2((oldLookingPos.X/f4), (oldLookingPos.Z/f4));
+				radianYaw+=Math.PI;
+				radianYaw*= -180D/Math.PI;
+				if(!(Double.isNaN(radianYaw)||Math.abs(newPitch)>85)){
+					double wrappedYaw = MathHelper.wrapDegrees(radianYaw);
+					double wrappedRotYaw = MathHelper.wrapDegrees(ent.rotationYaw);
+					double yawDif = wrappedYaw-wrappedRotYaw;
+					if(Math.abs(yawDif)>180D){
+						if(yawDif<0){
+							yawDif+=360D;
+						}else{
+							yawDif-=360D;
+						}
+					}
+					yawDif%=360D;
+					final double threshold = .1D;
+					if(Math.abs(yawDif)<threshold){
+						yawDif = 0D;
+					}
+					if(!(ent instanceof EntityPlayer)){
+						ent.prevRotationYaw = ent.rotationYaw;
+						ent.rotationYaw+=yawDif;
+					}else{
+						if(worldObj.isRemote){
+							ent.prevRotationYaw = ent.rotationYaw;
+							ent.rotationYaw+=yawDif;
+						}
+					}
+				}
+
+			}
+		}
 	}
 	
 	public void updateChunkCache(){

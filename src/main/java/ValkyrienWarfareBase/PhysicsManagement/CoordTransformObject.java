@@ -22,6 +22,8 @@ public class CoordTransformObject {
 	
 	public double[] prevlToWTransform;
 	public double[] prevwToLTransform;
+	public double[] prevLToWRotation;
+	public double[] prevWToLRotation;
 	
 	public double[] lToWRotation = RotationMatrices.getDoubleIdentity();
 	public double[] wToLRotation = RotationMatrices.getDoubleIdentity();
@@ -50,11 +52,15 @@ public class CoordTransformObject {
 		wToLRotation = RotationMatrices.inverse(lToWRotation);
 	}
 	
-	//ONLY CALL THIS ON THE PhysObject.TICK();
-	public void updateAllTransforms(){
+	//Used for the moveRiders() method
+	public void setPrevMatrices(){
 		prevlToWTransform = lToWTransform;
 		prevwToLTransform = wToLTransform;
-
+		prevLToWRotation = lToWRotation;
+		prevWToLRotation = wToLRotation;
+	}
+	
+	public void updateAllTransforms(){
 		updateMatricesOnly();
 		updateParentAABB();
 		updateParentNormals();

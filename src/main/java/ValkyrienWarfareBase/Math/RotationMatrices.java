@@ -2,6 +2,7 @@ package ValkyrienWarfareBase.Math;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 /**
@@ -161,17 +162,17 @@ public class RotationMatrices{
    		vec.Z = x * M[8] + y * M[9] + z * M[10] + M[11];
    	}
    	
-   	public static final void applyTransform(double[] M,Entity ent){
+   	public static final void applyTransform(double[] wholeTransform,double[] rotationTransform,Entity ent){
    		Vector entityPos = new Vector(ent.posX,ent.posY,ent.posZ);
    		Vector entityLook = new Vector(ent.getLook(1.0F));
    		Vector entityMotion = new Vector(ent.motionX,ent.motionY,ent.motionZ);
    		
-   		applyTransform(M, entityPos);
-   		doRotationOnly(M, entityLook);
-   		doRotationOnly(M, entityMotion);
+   		applyTransform(wholeTransform, entityPos);
+   		doRotationOnly(rotationTransform, entityLook);
+   		doRotationOnly(rotationTransform, entityMotion);
    		
-   		ent.rotationPitch = (float) Math.toDegrees(Math.asin(-entityLook.Y));
-   		ent.rotationYaw = (float) Math.toDegrees(-Math.atan2(entityLook.X, entityLook.Z));
+   		ent.rotationPitch = (float) MathHelper.wrapDegrees(Math.toDegrees(-Math.asin(entityLook.Y)));
+   		ent.rotationYaw = (float) MathHelper.wrapDegrees( (Math.atan2(-entityLook.X, -entityLook.Z)+Math.PI)*-180D/Math.PI );
    		
    		ent.motionX = entityMotion.X;
    		ent.motionY = entityMotion.Y;

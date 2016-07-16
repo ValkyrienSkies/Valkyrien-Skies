@@ -1,5 +1,6 @@
 package ValkyrienWarfareBase.CoreMod;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,6 +30,7 @@ import net.minecraft.network.play.server.SPacketSpawnPosition;
 import net.minecraft.server.management.PlayerInteractionManager;
 import net.minecraft.server.management.PlayerList;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.IThreadListener;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -73,7 +75,7 @@ public class CallRunner {
 		BlockPos posAt = new BlockPos(entity);
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, posAt);
 		if(wrapper!=null&&wrapper.wrapping.coordTransform!=null){
-			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, entity);
+			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform,wrapper.wrapping.coordTransform.lToWRotation, entity);
 		}
 		return world.spawnEntityInWorld(entity);
 	}
@@ -335,6 +337,15 @@ public class CallRunner {
 
 	public static void onChunkUnload(ChunkProviderServer provider,Chunk chunk){
 		if(!ValkyrienWarfareMod.chunkManager.isChunkInShipRange(provider.worldObj,chunk.xPosition, chunk.zPosition)){
+			for (int i = 0; i < chunk.entityLists.length; ++i)
+	        {
+	            Collection<Entity> c = chunk.entityLists[i];
+	            for(Entity entity:c){
+	            	if(entity instanceof PhysicsWrapperEntity){
+	            		ValkyrienWarfareMod.physicsManager.getManagerForWorld(entity.worldObj).physicsEntitiesToUnload.add((PhysicsWrapperEntity) entity);
+	            	}
+	            }
+	        }
 			provider.unload(chunk);
 		}
 	}

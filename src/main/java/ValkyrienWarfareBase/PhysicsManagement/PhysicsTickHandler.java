@@ -11,10 +11,18 @@ public class PhysicsTickHandler{
 	public static void onWorldTickStart(World world){
 		WorldPhysObjectManager manager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(world);
 		
-		//Do this to prevent a ConcurrentModificationException from other threads spawning entities
+		ArrayList<PhysicsWrapperEntity> toUnload = (ArrayList<PhysicsWrapperEntity>) manager.physicsEntitiesToUnload.clone();
+		manager.physicsEntitiesToUnload.clear();
+		
+		for(PhysicsWrapperEntity wrapper:toUnload){
+			manager.onUnload(wrapper);
+		}
+		
+		//Do this to prevent a ConcurrentModificationException from other threads spawning entities (ChunkLoading thread does this)
 		ArrayList<PhysicsWrapperEntity> physicsEntities = (ArrayList<PhysicsWrapperEntity>) manager.physicsEntities.clone();
 		
 		for(PhysicsWrapperEntity wrapper:physicsEntities){
+			wrapper.wrapping.coordTransform.setPrevMatrices();
 			wrapper.wrapping.updateChunkCache();
 		}
 		
@@ -44,6 +52,7 @@ public class PhysicsTickHandler{
 		
 		for(PhysicsWrapperEntity wrapper:physicsEntities){
 			wrapper.wrapping.coordTransform.sendPositionToPlayers();
+			wrapper.wrapping.moveEntities();
 		}
 		
 	}

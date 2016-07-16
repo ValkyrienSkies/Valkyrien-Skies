@@ -41,7 +41,7 @@ public class ValkyrienWarfareMod{
 
 	public static final String MODID = "valkyrienwarfare";
     public static final String MODNAME = "Valkyrien Warfare";
-    public static final String MODVER = "0.2a";
+    public static final String MODVER = "0.3a";
 
     public static File configFile;
     public static Configuration config;
@@ -97,17 +97,17 @@ public class ValkyrienWarfareMod{
 //        manager.registerCommand(command)
     }
     
-    public void registerNetworks(FMLStateEvent event){
+    private void registerNetworks(FMLStateEvent event){
     	physWrapperNetwork = NetworkRegistry.INSTANCE.newSimpleChannel("physChannel");
     	physWrapperNetwork.registerMessage(PhysWrapperPositionHandler.class, PhysWrapperPositionMessage.class, 0, Side.CLIENT);
     }
 
-    public void registerBlocks(FMLStateEvent event){
+    private void registerBlocks(FMLStateEvent event){
     	physicsInfuser = new BlockPhysicsInfuser(Material.ROCK).setUnlocalizedName("shipblock").setRegistryName(MODID, "shipblock").setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
     	GameRegistry.registerBlock(physicsInfuser);
     }
 
-    public void runConfiguration(FMLPreInitializationEvent event){
+    private void runConfiguration(FMLPreInitializationEvent event){
     	configFile = event.getSuggestedConfigurationFile();
     	config = new Configuration(configFile);
     	config.load();

@@ -105,6 +105,24 @@ public class TransformAdapter extends ClassVisitor{
 
 	private boolean runTransformer(String calledName,String calledDesc,String calledOwner,MethodVisitor mv){
 
+		//TBA
+		if(isMethod(calledDesc,"(L"+EntityPlayerName+";DDDL"+SoundEventName+";L"+SoundCategoryName+";FF)V",calledName,WorldClassName,"playSound","func_184148_a",calledOwner)
+			||
+			isMethod(calledDesc,"(L"+RawEntityPlayerName+";DDDL"+RawSoundEventName+";L"+RawSoundCategoryName+";FF)V",calledName,RawWorldClassName,"playSound","func_184148_a",calledOwner)	){
+
+				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onPlaySound2", String.format( "(L%s;L"+EntityPlayerName+";DDDL"+SoundEventName+";L"+SoundCategoryName+";FF)V", WorldClassName) );
+				return false;
+		}
+		
+		//TBA
+		if(isMethod(calledDesc,"(L"+EntityPlayerName+";L"+BlockPosName+";L"+SoundEventName+";L"+SoundCategoryName+";FF)V",calledName,WorldClassName,"playSound","func_184133_a",calledOwner)
+			||
+			isMethod(calledDesc,"(L"+RawEntityPlayerName+";L"+RawBlockPosName+";L"+RawSoundEventName+";L"+RawSoundCategoryName+";FF)V",calledName,RawWorldClassName,"playSound","func_184133_a",calledOwner)	){
+
+				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onPlaySound1", String.format( "(L%s;L"+EntityPlayerName+";L"+BlockPosName+";L"+SoundEventName+";L"+SoundCategoryName+";FF)V", WorldClassName) );
+				return false;
+		}
+		
 		if(isMethod(calledDesc,"(L"+ParticleName+";)V",calledName,ParticleManagerName,"addEffect","func_78873_a",calledOwner)
 			||
 			isMethod(calledDesc,"(L"+RawParticleName+";)V",calledName,RawParticleManagerName,"addEffect","func_78873_a",calledOwner)){

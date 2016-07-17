@@ -30,7 +30,6 @@ import net.minecraft.network.play.server.SPacketSpawnPosition;
 import net.minecraft.server.management.PlayerInteractionManager;
 import net.minecraft.server.management.PlayerList;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IThreadListener;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -46,6 +45,28 @@ import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraftforge.common.DimensionManager;
 
 public class CallRunner {
+	
+	public static void onPlaySound1(World world,@Nullable EntityPlayer player, BlockPos pos, SoundEvent soundIn, SoundCategory category, float volume, float pitch)
+    {
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
+		if(wrapper!=null){
+			Vector posVec = new Vector(pos.getX()+.5D,pos.getY()+.5D,pos.getZ()+.5D);
+			wrapper.wrapping.coordTransform.fromLocalToGlobal(posVec);
+			world.playSound(player, posVec.X, posVec.Y, posVec.Z, soundIn, category, volume, pitch);
+		}else{
+			world.playSound(player, pos, soundIn, category, volume, pitch);
+		}
+    }
+	
+	public static void onPlaySound2(World world,@Nullable EntityPlayer player, double x, double y, double z, SoundEvent soundIn, SoundCategory category, float volume, float pitch){
+		Vector posVec = new Vector(x,y,z);
+		BlockPos pos = new BlockPos(x,y,z);
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
+		if(wrapper!=null){
+			wrapper.wrapping.coordTransform.fromLocalToGlobal(posVec);
+		}
+		world.playSound(player, posVec.X, posVec.Y, posVec.Z, soundIn, category, volume, pitch);
+	}
 	
 	public static void onPlaySound(World world,double x, double y, double z, SoundEvent soundIn, SoundCategory category, float volume, float pitch, boolean distanceDelay)
     {
@@ -105,7 +126,38 @@ public class CallRunner {
 				packetIn = new SPacketEffect(effect.soundType,blockpos,effect.soundData,effect.serverWide);
 			}
 		}
-		list.sendToAllNearExcept(except, packetPosition.X, packetPosition.Y, packetPosition.Z, radius, dimension, packetIn);
+		
+		x = packetPosition.X;
+		y = packetPosition.Y;
+		z = packetPosition.Z;
+		
+//		list.sendToAllNearExcept(except, packetPosition.X, packetPosition.Y, packetPosition.Z, radius, dimension, packetIn);
+		
+		for (int i = 0; i < list.playerEntityList.size(); ++i)
+        {
+            EntityPlayerMP entityplayermp = (EntityPlayerMP)list.playerEntityList.get(i);
+
+            if (entityplayermp != except && entityplayermp.dimension == dimension)
+            {
+            	//NOTE: These are set to use the last variables for a good reason; dont change them
+                double d0 = x - entityplayermp.posX;
+                double d1 = y - entityplayermp.posY;
+                double d2 = z - entityplayermp.posZ;
+                
+                if (d0 * d0 + d1 * d1 + d2 * d2 < radius * radius)
+                {
+                    entityplayermp.connection.sendPacket(packetIn);
+                }else{
+                	d0 = x - entityplayermp.lastTickPosX;
+                    d1 = y - entityplayermp.lastTickPosY;
+                    d2 = z - entityplayermp.lastTickPosZ;
+                    if (d0 * d0 + d1 * d1 + d2 * d2 < radius * radius)
+                    {
+                        entityplayermp.connection.sendPacket(packetIn);
+                    }
+                }
+            }
+        }
     }
 	
 	public static boolean onSetBlockState(World world,BlockPos pos, IBlockState newState, int flags)

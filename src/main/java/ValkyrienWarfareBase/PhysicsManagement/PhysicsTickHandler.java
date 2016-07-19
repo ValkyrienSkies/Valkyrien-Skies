@@ -3,7 +3,6 @@ package ValkyrienWarfareBase.PhysicsManagement;
 import java.util.ArrayList;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
-import net.minecraft.client.Minecraft;
 import net.minecraft.world.World;
 
 public class PhysicsTickHandler{

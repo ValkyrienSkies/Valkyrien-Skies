@@ -9,17 +9,18 @@ import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class AirShipEngine extends Block implements IBlockForceProvider{
+public class BlockAirShipEngine extends Block implements IBlockForceProvider{
 
 	public static final PropertyDirection FACING = PropertyDirection.create("facing");
 
-	public AirShipEngine(Material materialIn){
+	public BlockAirShipEngine(Material materialIn){
 		super(materialIn);
 	}
 
@@ -58,7 +59,7 @@ public class AirShipEngine extends Block implements IBlockForceProvider{
     }
 	
 	@Override
-	public Vector getBlockForce(World world, BlockPos pos, IBlockState state, double secondsToApply) {
+	public Vector getBlockForce(World world, BlockPos pos, IBlockState state, Entity shipEntity, double secondsToApply) {
 		EnumFacing enumfacing = (EnumFacing)state.getValue(FACING);
 		Vector acting = new Vector(0,0,0);
 		if(!world.isBlockPowered(pos)){

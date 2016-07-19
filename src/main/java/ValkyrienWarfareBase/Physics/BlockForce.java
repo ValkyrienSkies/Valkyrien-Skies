@@ -19,9 +19,14 @@ public class BlockForce {
 	public Vector getForceFromState(IBlockState state,BlockPos pos,World world,double secondsToApply,PhysicsObject obj){
 		Block block = state.getBlock();
 		if(block instanceof IBlockForceProvider){
-			Vector forceVector = ((IBlockForceProvider)block).getBlockForce(world, pos, state,secondsToApply);
+			Vector forceVector = ((IBlockForceProvider)block).getBlockForce(world, pos, state, obj.wrapper, secondsToApply);
+			if(forceVector==null){
+				return null;
+			}
 			boolean isInLocal = ((IBlockForceProvider)block).isForceLocalCoords(world, pos, state,secondsToApply);
-			RotationMatrices.applyTransform(obj.coordTransform.lToWRotation, forceVector);
+			if(isInLocal){
+				RotationMatrices.applyTransform(obj.coordTransform.lToWRotation, forceVector);
+			}
 			return forceVector;
 		}
 		Force force = basicForces.blocksToForces.get(block);

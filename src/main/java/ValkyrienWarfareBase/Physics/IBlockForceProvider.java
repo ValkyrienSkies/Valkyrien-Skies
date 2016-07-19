@@ -2,6 +2,7 @@ package ValkyrienWarfareBase.Physics;
 
 import ValkyrienWarfareBase.Math.Vector;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -16,7 +17,7 @@ public interface IBlockForceProvider {
 	 * @param secondsToApply
 	 * @return
 	 */
-	Vector getBlockForce(World world,BlockPos pos,IBlockState state,double secondsToApply);
+	Vector getBlockForce(World world,BlockPos pos,IBlockState state,Entity shipEntity,double secondsToApply);
 	
 	boolean isForceLocalCoords(World world,BlockPos pos,IBlockState state,double secondsToApply);
 	

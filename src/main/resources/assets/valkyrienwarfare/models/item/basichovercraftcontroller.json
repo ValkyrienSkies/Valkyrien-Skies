@@ -1,5 +1,5 @@
 {
-    "parent": "valkyrienwarfare:block/systemcontrolinput",
+    "parent": "valkyrienwarfare:block/basichovercraftcontroller",
     "display": {
         "thirdperson": {
             "rotation": [ 10, -45, 170 ],

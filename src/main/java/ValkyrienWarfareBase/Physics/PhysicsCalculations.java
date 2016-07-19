@@ -256,7 +256,7 @@ public class PhysicsCalculations {
 //				blockForce.multiply(iterations);
 				addForceAtPoint(inBodyWO,blockForce);
 			}else{
-				FMLLog.getLogger().warn("BLOCK "+blockAt.getUnlocalizedName()+" didn't have its force properly registered; COMPLAIN TO MOD DEV!!!");
+//				FMLLog.getLogger().warn("BLOCK "+blockAt.getUnlocalizedName()+" didn't have its force properly registered; COMPLAIN TO MOD DEV!!!");
 			}
 			
 		}

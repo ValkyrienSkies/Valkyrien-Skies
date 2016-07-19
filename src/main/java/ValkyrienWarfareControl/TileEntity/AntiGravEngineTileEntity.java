@@ -1,5 +1,6 @@
 package ValkyrienWarfareControl.TileEntity;
 
+import ValkyrienWarfareBase.NBTUtils;
 import ValkyrienWarfareBase.Math.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import net.minecraft.block.state.IBlockState;
@@ -11,10 +12,12 @@ import net.minecraft.world.World;
 public class AntiGravEngineTileEntity extends TileEntity{
 
 	public BlockPos controllerPos = BlockPos.ORIGIN;
-	public boolean hasController = false;
-	public double currentPower;
-	public double maxPower = 1500D;
+	public Vector angularThrust = new Vector();
+	public Vector linearThrust = new Vector();
+	public double maxThrust = 10000D;
 	public TileEntityHoverController controller;
+	
+	private double idealY;
 	
 	public AntiGravEngineTileEntity(){
 		validate();
@@ -24,38 +27,31 @@ public class AntiGravEngineTileEntity extends TileEntity{
 		if(controllerPos.equals(BlockPos.ORIGIN)){
 			return null;
 		}
-		System.out.println("test");
-		TileEntity tile = shipEntity.wrapping.surroundingWorldChunksCache.getTileEntity(controllerPos);
-		controller = (TileEntityHoverController) tile;
-		if(tile!=null){
-			System.out.println("linked");
+		controller = (TileEntityHoverController) shipEntity.wrapping.VKChunkCache.getTileEntity(controllerPos);
+		if(controller!=null){
+			
+			return controller.getForceForEngine(this,world,pos,state,shipEntity.wrapping,secondsToApply);
 		}
 		return null;
 	}
 	
-	//TODO: Code way to add controllers
 	public void setController(BlockPos newPos){
 		controllerPos = newPos;
 	}
 	
 	public void readFromNBT(NBTTagCompound compound){
-		int controllerX = compound.getInteger("controllerPosX");
-		int controllerY = compound.getInteger("controllerPosY");
-		int controllerZ = compound.getInteger("controllerPosZ");
-		hasController = compound.getBoolean("hasController");
-		controllerPos = new BlockPos(controllerX,controllerY,controllerZ);
-		maxPower = compound.getDouble("maxPower");
-		currentPower = compound.getDouble("currentPower");
+		linearThrust = NBTUtils.readVectorFromNBT("linearThrust", compound);
+		angularThrust = NBTUtils.readVectorFromNBT("angularThrust", compound);
+		controllerPos = NBTUtils.readBlockPosFromNBT("controllerPos", compound);
+		maxThrust = compound.getDouble("maxThrust");
 		super.readFromNBT(compound);
     }
 
     public NBTTagCompound writeToNBT(NBTTagCompound compound){
-    	compound.setInteger("controllerPosX", controllerPos.getX());
-    	compound.setInteger("controllerPosY", controllerPos.getY());
-    	compound.setInteger("controllerPosZ", controllerPos.getZ());
-    	compound.setBoolean("hasController", hasController);
-    	compound.setDouble("maxPower", maxPower);
-    	compound.setDouble("currentPower", currentPower);
+    	NBTUtils.writeVectorToNBT("linearThrust", linearThrust, compound);
+    	NBTUtils.writeVectorToNBT("angularThrust", angularThrust, compound);
+    	NBTUtils.writeBlockPosToNBT("controllerPos", controllerPos, compound);
+    	compound.setDouble("maxThrust", maxThrust);
         return super.writeToNBT(compound);
     }
 

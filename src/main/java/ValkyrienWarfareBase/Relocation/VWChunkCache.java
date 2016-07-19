@@ -2,10 +2,13 @@ package ValkyrienWarfareBase.Relocation;
 
 import java.util.concurrent.Callable;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ReportedException;
 import net.minecraft.util.math.BlockPos;
@@ -55,6 +58,16 @@ public class VWChunkCache{
 	    isChunkLoaded = new boolean[maxChunkX-minChunkX+1][maxChunkZ-minChunkZ+1];
 	    cachedChunks = toCache.clone();
 	}
+	
+	@Nullable
+    public TileEntity getTileEntity(BlockPos pos)
+    {
+        int i = (pos.getX() >> 4) - this.minChunkX;
+        int j = (pos.getZ() >> 4) - this.minChunkZ;
+        if (i < 0 || i >= cachedChunks.length || j < 0 || j >= cachedChunks[i].length) return null;
+        if (cachedChunks[i][j] == null) return null;
+        return this.cachedChunks[i][j].getTileEntity(pos, Chunk.EnumCreateEntityType.IMMEDIATE);
+    }
 
 	public Chunk getChunkAt(int x,int z){
 		return cachedChunks[x-minChunkX][z-minChunkZ];

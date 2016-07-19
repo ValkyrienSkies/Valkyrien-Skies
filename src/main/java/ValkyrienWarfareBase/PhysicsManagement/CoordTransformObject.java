@@ -17,6 +17,9 @@ import net.minecraft.util.math.BlockPos;
 public class CoordTransformObject {
 	
 	public PhysicsObject parent;
+	
+	public double[] lToWRotation = RotationMatrices.getDoubleIdentity();
+	public double[] wToLRotation = RotationMatrices.getDoubleIdentity();
 	public double[] lToWTransform = RotationMatrices.getDoubleIdentity();
 	public double[] wToLTransform = RotationMatrices.getDoubleIdentity();
 	
@@ -24,9 +27,6 @@ public class CoordTransformObject {
 	public double[] prevwToLTransform;
 	public double[] prevLToWRotation;
 	public double[] prevWToLRotation;
-	
-	public double[] lToWRotation = RotationMatrices.getDoubleIdentity();
-	public double[] wToLRotation = RotationMatrices.getDoubleIdentity();
 	
 	public Vector[] normals = Vector.generateAxisAlignedNorms();
 	

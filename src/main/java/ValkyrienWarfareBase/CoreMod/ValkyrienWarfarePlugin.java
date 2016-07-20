@@ -11,7 +11,6 @@ import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin.TransformerExclusions
 @Name("ValkyrienWarfareBase CoreMod")
 @IFMLLoadingPlugin.SortingIndex(0)
 @TransformerExclusions({"ValkyrienWarfareBase"})
-@MCVersion("1.9.4")
 public class ValkyrienWarfarePlugin implements IFMLLoadingPlugin{
 
 	public static Boolean isObfuscatedEnvironment = null;

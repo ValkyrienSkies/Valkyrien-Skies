@@ -142,7 +142,7 @@ public class CallRunnerClient extends CallRunner{
 	                double d0 = wrapper.wrapping.renderer.offsetPos.getX();
 	                double d1 = wrapper.wrapping.renderer.offsetPos.getY();
 	                double d2 = wrapper.wrapping.renderer.offsetPos.getZ();
-	            	renderGlobal.drawSelectionBoundingBox(iblockstate.getSelectedBoundingBox(renderGlobal.theWorld, blockpos).expandXyz(0.0020000000949949026D).offset(-d0, -d1, -d2));
+	            	renderGlobal.func_189697_a(iblockstate.getSelectedBoundingBox(renderGlobal.theWorld, blockpos).expandXyz(0.0020000000949949026D).offset(-d0, -d1, -d2),0,0,0,0.4f);
 	            }
 	            GlStateManager.depthMask(true);
 	            GlStateManager.enableTexture2D();

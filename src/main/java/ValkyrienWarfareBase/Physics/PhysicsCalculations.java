@@ -6,7 +6,7 @@ import java.util.Collections;
 import javax.vecmath.Matrix3d;
 
 import ValkyrienWarfareBase.NBTUtils;
-import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareBase.Vector;
 import ValkyrienWarfareBase.Math.BigBastardMath;
 import ValkyrienWarfareBase.Math.Quaternion;
 import ValkyrienWarfareBase.Math.RotationMatrices;

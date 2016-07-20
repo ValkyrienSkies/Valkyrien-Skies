@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
-import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareBase.Vector;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 

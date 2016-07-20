@@ -1,4 +1,4 @@
-package ValkyrienWarfareBase.API;
+package ValkyrienWarfareBase;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;

@@ -1,7 +1,7 @@
 package ValkyrienWarfareControl.Block;
 
-import ValkyrienWarfareBase.API.IBlockForceProvider;
-import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareBase.IBlockForceProvider;
+import ValkyrienWarfareBase.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareControl.TileEntity.AntiGravEngineTileEntity;

@@ -1,6 +1,6 @@
 package ValkyrienWarfareBase.Collision;
 
-import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareBase.Vector;
 
 /**
  * Heavily modified version of the original Polygon Collider, with checks on polygons passing

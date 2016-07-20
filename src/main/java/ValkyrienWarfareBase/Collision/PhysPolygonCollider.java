@@ -1,6 +1,6 @@
 package ValkyrienWarfareBase.Collision;
 
-import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareBase.Vector;
 
 public class PhysPolygonCollider{
 

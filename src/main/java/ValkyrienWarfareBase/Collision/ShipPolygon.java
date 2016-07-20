@@ -1,6 +1,6 @@
 package ValkyrienWarfareBase.Collision;
 
-import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareBase.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
 import net.minecraft.util.math.AxisAlignedBB;
 

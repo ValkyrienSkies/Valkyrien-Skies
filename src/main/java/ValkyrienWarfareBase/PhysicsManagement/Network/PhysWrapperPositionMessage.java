@@ -1,6 +1,6 @@
 package ValkyrienWarfareBase.PhysicsManagement.Network;
 
-import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareBase.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import io.netty.buffer.ByteBuf;

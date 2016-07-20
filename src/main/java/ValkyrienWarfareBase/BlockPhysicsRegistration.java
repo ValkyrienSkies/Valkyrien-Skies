@@ -1,6 +1,6 @@
 package ValkyrienWarfareBase;
 
-import ValkyrienWarfareBase.Math.Vector;
+import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Physics.BlockForce;
 import ValkyrienWarfareBase.Physics.BlockMass;
 import net.minecraft.init.Blocks;

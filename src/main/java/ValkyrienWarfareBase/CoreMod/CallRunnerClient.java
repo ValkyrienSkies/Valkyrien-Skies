@@ -5,7 +5,7 @@ import java.util.Iterator;
 import org.lwjgl.opengl.GL11;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
-import ValkyrienWarfareBase.Math.Vector;
+import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.Proxy.ClientProxy;
 import net.minecraft.block.Block;

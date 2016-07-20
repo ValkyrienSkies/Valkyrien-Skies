@@ -1,7 +1,7 @@
 package ValkyrienWarfareBase.PhysicsManagement;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
-import ValkyrienWarfareBase.Math.Vector;
+import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.Network.PhysWrapperPositionMessage;
 
 /**

@@ -3,8 +3,8 @@ package ValkyrienWarfareControl.TileEntity;
 import java.util.ArrayList;
 
 import ValkyrienWarfareBase.NBTUtils;
+import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Math.RotationMatrices;
-import ValkyrienWarfareBase.Math.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
@@ -34,13 +34,16 @@ public class TileEntityHoverController extends TileEntity{
 	 * Returns the Force Vector the engine will send to the Physics Engine
 	 */
 	public Vector getForceForEngine(AntiGravEngineTileEntity engine,World world, BlockPos enginePos, IBlockState state, PhysicsObject physObj, double secondsToApply){
-		physObj.physicsProcessor.convertTorqueToVelocity();
+//		physObj.physicsProcessor.convertTorqueToVelocity();
 		
 //		secondsToApply*=5D;
 		
+		idealHeight = 16D;
 		
-		angularVelocityBias = 3D;
-		stabilityBias = .4D;
+		angularVelocityBias = 20D;
+		linearVelocityBias = 1D;
+		
+		stabilityBias = .3D;
 		
 		engine.maxThrust = 10000D;
 		

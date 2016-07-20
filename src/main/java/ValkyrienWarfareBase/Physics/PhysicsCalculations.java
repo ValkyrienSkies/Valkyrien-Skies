@@ -1,14 +1,15 @@
 package ValkyrienWarfareBase.Physics;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import javax.vecmath.Matrix3d;
 
 import ValkyrienWarfareBase.NBTUtils;
+import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Math.BigBastardMath;
 import ValkyrienWarfareBase.Math.Quaternion;
 import ValkyrienWarfareBase.Math.RotationMatrices;
-import ValkyrienWarfareBase.Math.Vector;
 import ValkyrienWarfareBase.PhysCollision.WorldPhysicsCollider;
 import ValkyrienWarfareBase.PhysicsManagement.CoordTransformObject;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
@@ -240,6 +241,8 @@ public class PhysicsCalculations {
 		linearMomentum.multiply(modifiedDrag);
 		angularVelocity.multiply(modifiedDrag);
 		linearMomentum.Y+=(gravity*mass*physTickSpeed);
+		
+//		Collections.shuffle(activeForcePositions);
 		
 		for(BlockPos pos:activeForcePositions){
 			IBlockState state = parent.VKChunkCache.getBlockState(pos);

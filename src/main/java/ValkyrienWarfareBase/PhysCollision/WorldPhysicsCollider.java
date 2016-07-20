@@ -2,12 +2,12 @@ package ValkyrienWarfareBase.PhysCollision;
 
 import java.util.ArrayList;
 
+import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Collision.PhysCollisionObject;
 import ValkyrienWarfareBase.Collision.PhysPolygonCollider;
 import ValkyrienWarfareBase.Collision.Polygon;
 import ValkyrienWarfareBase.Math.BigBastardMath;
 import ValkyrienWarfareBase.Math.RotationMatrices;
-import ValkyrienWarfareBase.Math.Vector;
 import ValkyrienWarfareBase.Physics.PhysicsCalculations;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
 import net.minecraft.block.state.IBlockState;

@@ -1,4 +1,4 @@
-package ValkyrienWarfareBase.Math;
+package ValkyrienWarfareBase.API;
  
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;

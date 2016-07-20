@@ -1,7 +1,7 @@
 package ValkyrienWarfareControl.Block;
 
-import ValkyrienWarfareBase.Math.Vector;
-import ValkyrienWarfareBase.Physics.IBlockForceProvider;
+import ValkyrienWarfareBase.API.IBlockForceProvider;
+import ValkyrienWarfareBase.API.Vector;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockPistonBase;
 import net.minecraft.block.material.Material;
@@ -65,7 +65,7 @@ public class BlockAirShipEngine extends Block implements IBlockForceProvider{
 		if(!world.isBlockPowered(pos)){
 			return acting;
 		}
-		double power = 1000D*secondsToApply;
+		double power = 4000D*secondsToApply;
 		switch(enumfacing){
 			case DOWN: acting = new Vector(0,power,0);
 			break;

@@ -2,8 +2,9 @@ package ValkyrienWarfareBase.Physics;
 
 import java.util.HashMap;
 
+import ValkyrienWarfareBase.API.IBlockForceProvider;
+import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Math.RotationMatrices;
-import ValkyrienWarfareBase.Math.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;

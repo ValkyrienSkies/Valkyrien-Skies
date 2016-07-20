@@ -1,7 +1,7 @@
 package ValkyrienWarfareBase.Collision;
 
+import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Math.BigBastardMath;
-import ValkyrienWarfareBase.Math.Vector;
 
 public class PhysCollisionObject{
 

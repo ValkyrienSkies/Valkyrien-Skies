@@ -1,6 +1,5 @@
-package ValkyrienWarfareBase.Physics;
+package ValkyrienWarfareBase.API;
 
-import ValkyrienWarfareBase.Math.Vector;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;

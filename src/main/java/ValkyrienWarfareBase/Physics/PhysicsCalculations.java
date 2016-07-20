@@ -250,8 +250,6 @@ public class PhysicsCalculations {
 			
 			
 			if(blockForce!=null){
-				//TODO: Look into removing this shit
-//				blockForce.multiply(iterations);
 				addForceAtPoint(inBodyWO,blockForce);
 			}else{
 //				FMLLog.getLogger().warn("BLOCK "+blockAt.getUnlocalizedName()+" didn't have its force properly registered; COMPLAIN TO MOD DEV!!!");
@@ -259,6 +257,10 @@ public class PhysicsCalculations {
 			
 		}
 
+		convertTorqueToVelocity();
+	}
+	
+	public void convertTorqueToVelocity(){
 		if(!torque.isZero()){
 			angularVelocity.add(RotationMatrices.get3by3TransformedVec(invFramedMOI, torque));
 			torque.zero();

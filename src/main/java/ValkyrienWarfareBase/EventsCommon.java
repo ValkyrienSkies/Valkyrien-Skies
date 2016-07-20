@@ -7,10 +7,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.HarvestCheck;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.event.entity.player.PlayerOpenContainerEvent;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
 import net.minecraftforge.event.world.ChunkDataEvent;
@@ -93,7 +93,7 @@ public class EventsCommon {
 	}
 	
 	@SubscribeEvent(priority=EventPriority.HIGHEST)
-	public void onPlayerOpenContainerEvent(PlayerOpenContainerEvent event){
+	public void onPlayerOpenContainerEvent(PlayerContainerEvent event){
 		event.setResult(Result.ALLOW);
 	}
 	

@@ -3,7 +3,7 @@ package ValkyrienWarfareControl.TileEntity;
 import java.util.ArrayList;
 
 import ValkyrienWarfareBase.NBTUtils;
-import ValkyrienWarfareBase.Vector;
+import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Math.RotationMatrices;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
 import net.minecraft.block.state.IBlockState;

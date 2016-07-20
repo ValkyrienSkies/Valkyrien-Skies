@@ -10,7 +10,7 @@ import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
-import ValkyrienWarfareBase.Vector;
+import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Collision.EntityCollisionInjector;
 import ValkyrienWarfareBase.Interaction.CustomPlayerInteractionManager;
 import ValkyrienWarfareBase.Math.RotationMatrices;

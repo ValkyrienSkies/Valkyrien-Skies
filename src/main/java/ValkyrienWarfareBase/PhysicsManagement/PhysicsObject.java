@@ -8,7 +8,7 @@ import java.util.Set;
 
 import ValkyrienWarfareBase.NBTUtils;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
-import ValkyrienWarfareBase.Vector;
+import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.ChunkManagement.ChunkSet;
 import ValkyrienWarfareBase.Math.RotationMatrices;
 import ValkyrienWarfareBase.Physics.BlockForce;

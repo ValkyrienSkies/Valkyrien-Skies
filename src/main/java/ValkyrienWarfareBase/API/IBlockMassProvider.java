@@ -1,4 +1,4 @@
-package ValkyrienWarfareBase;
+package ValkyrienWarfareBase.API;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;

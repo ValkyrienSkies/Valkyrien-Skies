@@ -1,7 +1,7 @@
 package ValkyrienWarfareControl.Block;
 
-import ValkyrienWarfareBase.IBlockForceProvider;
-import ValkyrienWarfareBase.Vector;
+import ValkyrienWarfareBase.API.IBlockForceProvider;
+import ValkyrienWarfareBase.API.Vector;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockPistonBase;
 import net.minecraft.block.material.Material;

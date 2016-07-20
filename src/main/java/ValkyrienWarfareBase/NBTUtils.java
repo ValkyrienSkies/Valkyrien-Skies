@@ -2,6 +2,7 @@ package ValkyrienWarfareBase;
 
 import java.util.ArrayList;
 
+import ValkyrienWarfareBase.API.Vector;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 

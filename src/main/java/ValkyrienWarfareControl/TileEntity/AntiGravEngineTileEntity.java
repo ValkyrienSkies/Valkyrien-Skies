@@ -1,7 +1,7 @@
 package ValkyrienWarfareControl.TileEntity;
 
 import ValkyrienWarfareBase.NBTUtils;
-import ValkyrienWarfareBase.Vector;
+import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;

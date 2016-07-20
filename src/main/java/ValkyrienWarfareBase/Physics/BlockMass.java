@@ -2,7 +2,7 @@ package ValkyrienWarfareBase.Physics;
 
 import java.util.HashMap;
 
-import ValkyrienWarfareBase.IBlockMassProvider;
+import ValkyrienWarfareBase.API.IBlockMassProvider;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;

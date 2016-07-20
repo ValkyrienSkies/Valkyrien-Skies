@@ -3,7 +3,7 @@ package ValkyrienWarfareBase.Interaction;
 import java.lang.reflect.Field;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
-import ValkyrienWarfareBase.Vector;
+import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Math.RotationMatrices;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import net.minecraft.block.material.Material;

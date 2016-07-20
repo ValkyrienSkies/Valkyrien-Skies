@@ -2,7 +2,7 @@ package ValkyrienWarfareBase.PhysCollision;
 
 import java.util.ArrayList;
 
-import ValkyrienWarfareBase.Vector;
+import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Collision.PhysCollisionObject;
 import ValkyrienWarfareBase.Collision.PhysPolygonCollider;
 import ValkyrienWarfareBase.Collision.Polygon;

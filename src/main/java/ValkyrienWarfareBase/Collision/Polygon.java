@@ -2,7 +2,7 @@ package ValkyrienWarfareBase.Collision;
 
 import java.util.List;
 
-import ValkyrienWarfareBase.Vector;
+import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Math.RotationMatrices;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.AxisAlignedBB;

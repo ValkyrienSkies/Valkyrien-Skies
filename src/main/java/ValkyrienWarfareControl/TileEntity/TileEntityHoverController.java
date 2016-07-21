@@ -95,6 +95,7 @@ public class TileEntityHoverController extends TileEntity{
 		idealHeight = message.newIdealHeight;
 		stabilityBias = message.newStablitiyBias;
 		linearVelocityBias = message.newLinearVelocityBias;
+		markDirty();
 	}
 	
 	@Override

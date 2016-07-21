@@ -36,6 +36,7 @@ public class AntiGravEngineTileEntity extends TileEntity{
 	
 	public void setController(BlockPos newPos){
 		controllerPos = newPos;
+		markDirty();
 	}
 	
 	public void readFromNBT(NBTTagCompound compound){

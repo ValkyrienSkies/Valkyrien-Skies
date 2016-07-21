@@ -4,7 +4,10 @@ import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareControl.Block.BlockAirShipEngine;
 import ValkyrienWarfareControl.Block.BlockAntiGravEngine;
 import ValkyrienWarfareControl.Block.BlockHovercraftController;
+import ValkyrienWarfareControl.GUI.ControlGUIHandler;
 import ValkyrienWarfareControl.Item.ItemSystemLinker;
+import ValkyrienWarfareControl.Network.HovercraftControllerGUIInputHandler;
+import ValkyrienWarfareControl.Network.HovercraftControllerGUIInputMessage;
 import ValkyrienWarfareControl.TileEntity.AntiGravEngineTileEntity;
 import ValkyrienWarfareControl.TileEntity.TileEntityHoverController;
 import net.minecraft.block.Block;
@@ -19,7 +22,10 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
 
 @Mod(modid=ValkyrienWarfareControlMod.MODID, name=ValkyrienWarfareControlMod.MODNAME, version=ValkyrienWarfareControlMod.MODVER)
 public class ValkyrienWarfareControlMod {
@@ -29,6 +35,8 @@ public class ValkyrienWarfareControlMod {
     public static final String MODVER = "0.2";
     
     public static ValkyrienWarfareControlMod instance;
+    
+    public static SimpleNetworkWrapper controlNetwork;
     
     public Block basicEngine;
     public Block basicHoverController;
@@ -45,12 +53,14 @@ public class ValkyrienWarfareControlMod {
     	registerBlocks(event);
     	registerTileEntities(event);
     	registerItems(event);
+    	registerNetworks(event);
     	proxy.preInit(event);
     }
 
     @EventHandler
     public void init(FMLInitializationEvent event){
     	proxy.init(event);
+    	NetworkRegistry.INSTANCE.registerGuiHandler(this, new ControlGUIHandler());
     }
 
     @EventHandler
@@ -76,6 +86,11 @@ public class ValkyrienWarfareControlMod {
     private void registerItems(FMLStateEvent event){
     	systemLinker = new ItemSystemLinker().setUnlocalizedName("systemlinker").setCreativeTab(CreativeTabs.REDSTONE).setMaxStackSize(1);
     	GameRegistry.registerItem(systemLinker, "systemLinker");
+    }
+    
+    private void registerNetworks(FMLStateEvent event){
+    	controlNetwork = NetworkRegistry.INSTANCE.newSimpleChannel("controlNetwork");
+    	controlNetwork.registerMessage(HovercraftControllerGUIInputHandler.class, HovercraftControllerGUIInputMessage.class, 0, Side.SERVER);
     }
     
 }

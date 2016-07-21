@@ -2,15 +2,20 @@ package ValkyrienWarfareControl.TileEntity;
 
 import java.util.ArrayList;
 
+import javax.annotation.Nullable;
+
 import ValkyrienWarfareBase.NBTUtils;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Math.RotationMatrices;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
+import ValkyrienWarfareControl.Network.HovercraftControllerGUIInputMessage;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 public class TileEntityHoverController extends TileEntity{
 
@@ -86,6 +91,26 @@ public class TileEntityHoverController extends TileEntity{
 		return idealHeight-(controllerPos.Y+(physObj.physicsProcessor.linearMomentum.Y*physObj.physicsProcessor.invMass*linearVelocityBias));
 	}
 
+	public void handleGUIInput(HovercraftControllerGUIInputMessage message, MessageContext ctx){
+		idealHeight = message.newIdealHeight;
+		stabilityBias = message.newStablitiyBias;
+		linearVelocityBias = message.newLinearVelocityBias;
+	}
+	
+	@Override
+    public SPacketUpdateTileEntity getUpdatePacket()
+    {
+		SPacketUpdateTileEntity packet = new SPacketUpdateTileEntity(pos,0,writeToNBT(new NBTTagCompound()));
+        return packet;
+    }
+	
+	@Override
+	public void onDataPacket(net.minecraft.network.NetworkManager net, net.minecraft.network.play.server.SPacketUpdateTileEntity pkt)
+    {
+		readFromNBT(pkt.getNbtCompound());
+    }
+	
+	@Override
 	public void readFromNBT(NBTTagCompound compound){
 		enginePositions = NBTUtils.readBlockPosArrayListFromNBT("enginePositions", compound);
     	normalVector = NBTUtils.readVectorFromNBT("normalVector", compound);
@@ -93,13 +118,20 @@ public class TileEntityHoverController extends TileEntity{
     		normalVector = new Vector(0,1,0);
     	}
     	idealHeight = compound.getDouble("idealHeight");
+    	stabilityBias = compound.getDouble("stabilityBias");
+    	linearVelocityBias = compound.getDouble("linearVelocityBias");
+    	angularVelocityBias = compound.getDouble("angularVelocityBias");
 		super.readFromNBT(compound);
     }
 
+	@Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound){
     	NBTUtils.writeBlockPosArrayListToNBT("enginePositions", enginePositions, compound);
 		NBTUtils.writeVectorToNBT("normalVector", normalVector, compound);
 		compound.setDouble("idealHeight", idealHeight);
+		compound.setDouble("stabilityBias", stabilityBias);
+		compound.setDouble("linearVelocityBias", linearVelocityBias);
+		compound.setDouble("angularVelocityBias", angularVelocityBias);
     	return super.writeToNBT(compound);
     }
 	

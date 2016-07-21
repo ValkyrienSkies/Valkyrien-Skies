@@ -1,6 +1,10 @@
 package ValkyrienWarfareControl.Block;
 
 
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
+import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
+import ValkyrienWarfareControl.ValkyrienWarfareControlMod;
+import ValkyrienWarfareControl.GUI.ControlGUIEnum;
 import ValkyrienWarfareControl.TileEntity.TileEntityHoverController;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
@@ -23,7 +27,13 @@ public class BlockHovercraftController extends Block implements ITileEntityProvi
 	@Override
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
     {
-		//Open GUI on client side and request TileData from the server
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldIn, pos);
+		if(wrapper!=null){
+			if(!worldIn.isRemote){
+				playerIn.openGui(ValkyrienWarfareControlMod.instance, ControlGUIEnum.HoverCraftController.ordinal(), worldIn, pos.getX(), pos.getY(), pos.getZ());
+			}
+			return true;
+		}
 		return false;
     }
 	

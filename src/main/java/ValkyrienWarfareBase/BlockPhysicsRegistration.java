@@ -12,6 +12,8 @@ public class BlockPhysicsRegistration {
 	
 	public static void registerVanillaBlocksMass(){
 		blockMass.registerBlockMass(Blocks.AIR, 0D);
+		blockMass.registerBlockMass(Blocks.WATER, 0D);
+		blockMass.registerBlockMass(Blocks.LAVA, 0D);
 		blockMass.registerBlockMass(Blocks.WOOL, 10D);
 		blockMass.registerBlockMass(Blocks.PLANKS, 50D);
 		blockMass.registerBlockMass(Blocks.IRON_BLOCK, 250D);

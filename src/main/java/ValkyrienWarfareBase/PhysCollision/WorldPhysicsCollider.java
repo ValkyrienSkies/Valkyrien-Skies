@@ -1,12 +1,13 @@
 package ValkyrienWarfareBase.PhysCollision;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Random;
 
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Collision.PhysCollisionObject;
 import ValkyrienWarfareBase.Collision.PhysPolygonCollider;
 import ValkyrienWarfareBase.Collision.Polygon;
-import ValkyrienWarfareBase.Math.BigBastardMath;
 import ValkyrienWarfareBase.Math.RotationMatrices;
 import ValkyrienWarfareBase.Physics.PhysicsCalculations;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
@@ -47,6 +48,9 @@ public class WorldPhysicsCollider {
 		ticksSinceCacheUpdate += (20D*calculator.physTickSpeed);
 		if(shouldUpdateCollisonCache()){
 			updatePotentialCollisionCache();
+		}
+		if(true){
+			Collections.shuffle(cachedPotentialHits);
 		}
 		processPotentialCollisions();
 	}
@@ -118,6 +122,19 @@ public class WorldPhysicsCollider {
 		Vector momentumAtPoint = calculator.getMomentumAtPoint(inBody);
 		Vector axis = toCollideWith.axis;
 		Vector offsetVector = toCollideWith.getResponse();
+		
+		processCollisionData(inBody, momentumAtPoint, axis, offsetVector);
+		
+		collisionPos = toCollideWith.getSecondContactPoint();
+		
+		//TODO: Maybe use Ship center of mass instead
+		inBody = collisionPos.getSubtraction(new Vector(parent.wrapper.posX,parent.wrapper.posY,parent.wrapper.posZ));
+		
+		inBody.multiply(-1D);
+		
+		momentumAtPoint = calculator.getMomentumAtPoint(inBody);
+		axis = toCollideWith.axis;
+		offsetVector = toCollideWith.getResponse();
 		
 		processCollisionData(inBody, momentumAtPoint, axis, offsetVector);
 	}

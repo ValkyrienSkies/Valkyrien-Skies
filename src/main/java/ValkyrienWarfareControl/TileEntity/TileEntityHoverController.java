@@ -15,11 +15,11 @@ import net.minecraft.world.World;
 public class TileEntityHoverController extends TileEntity{
 
 	public ArrayList<BlockPos> enginePositions = new ArrayList<BlockPos>();
-	public double idealHeight = 10D;
+	public double idealHeight = 16D;
 	public double stabilityBias = .5D;
 
-	public double linearVelocityBias = 3D;
-	public double angularVelocityBias = 1D;
+	public double linearVelocityBias = 1D;
+	public double angularVelocityBias = 20D;
 	
 	public Vector normalVector = new Vector(0D,1D,0D);
 	
@@ -35,18 +35,9 @@ public class TileEntityHoverController extends TileEntity{
 	 */
 	public Vector getForceForEngine(AntiGravEngineTileEntity engine,World world, BlockPos enginePos, IBlockState state, PhysicsObject physObj, double secondsToApply){
 //		physObj.physicsProcessor.convertTorqueToVelocity();
-		
 //		secondsToApply*=5D;
-		
-		idealHeight = 16D;
-		
-		angularVelocityBias = 20D;
-		linearVelocityBias = 1D;
-		
-		stabilityBias = .3D;
-		
-		engine.maxThrust = 10000D;
-		
+//		idealHeight = 100D;
+
 		double linearDist = -getControllerDistFromIdealY(physObj);
 		double angularDist = -getEngineDistFromIdealAngular(enginePos,physObj,secondsToApply);
 		
@@ -96,16 +87,19 @@ public class TileEntityHoverController extends TileEntity{
 	}
 
 	public void readFromNBT(NBTTagCompound compound){
-		NBTUtils.writeBlockPosArrayListToNBT("enginePositions", enginePositions, compound);
-		NBTUtils.writeVectorToNBT("normalVector", normalVector, compound);
-		idealHeight = compound.getDouble("idealHeight");
+		enginePositions = NBTUtils.readBlockPosArrayListFromNBT("enginePositions", compound);
+    	normalVector = NBTUtils.readVectorFromNBT("normalVector", compound);
+    	if(normalVector.isZero()){
+    		normalVector = new Vector(0,1,0);
+    	}
+    	idealHeight = compound.getDouble("idealHeight");
 		super.readFromNBT(compound);
     }
 
     public NBTTagCompound writeToNBT(NBTTagCompound compound){
-    	enginePositions = NBTUtils.readBlockPosArrayListFromNBT("enginePositions", compound);
-    	normalVector = NBTUtils.readVectorFromNBT("normalVector", compound);
-    	compound.setDouble("idealHeight", idealHeight);
+    	NBTUtils.writeBlockPosArrayListToNBT("enginePositions", enginePositions, compound);
+		NBTUtils.writeVectorToNBT("normalVector", normalVector, compound);
+		compound.setDouble("idealHeight", idealHeight);
     	return super.writeToNBT(compound);
     }
 	

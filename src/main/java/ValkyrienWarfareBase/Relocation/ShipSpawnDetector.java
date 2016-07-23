@@ -17,12 +17,18 @@ public class ShipSpawnDetector extends SpatialDetector{
 		blackList.add(Blocks.GRASS);
 		blackList.add(Blocks.STONE);
 		blackList.add(Blocks.TALLGRASS);
-		blackList.add(Blocks.LEAVES);
-		blackList.add(Blocks.LEAVES2);
+//		blackList.add(Blocks.LEAVES);
+//		blackList.add(Blocks.LEAVES2);
 		blackList.add(Blocks.WATER);
+		blackList.add(Blocks.FLOWING_WATER);
 		blackList.add(Blocks.SAND);
 		blackList.add(Blocks.SANDSTONE);
 		blackList.add(Blocks.GRAVEL);
+		blackList.add(Blocks.ICE);
+		blackList.add(Blocks.SNOW);
+		blackList.add(Blocks.SNOW_LAYER);
+		blackList.add(Blocks.LAVA);
+		blackList.add(Blocks.FLOWING_LAVA);
 	}
 
 	public ShipSpawnDetector(BlockPos start, World worldIn, int maximum, boolean checkCorners) {

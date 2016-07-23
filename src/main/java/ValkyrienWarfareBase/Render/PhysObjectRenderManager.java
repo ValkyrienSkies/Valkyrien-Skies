@@ -165,6 +165,8 @@ public class PhysObjectRenderManager {
 		for(BlockPos pos:parent.blockPositions){
 			TileEntity tileEnt = parent.worldObj.getTileEntity(pos);
 			if(tileEnt!=null){
+				GlStateManager.disableAlpha();
+				GlStateManager.disableBlend();
 				TileEntityRendererDispatcher.instance.renderTileEntity(tileEnt, partialTicks, -1);
 			}
 		}
@@ -203,6 +205,8 @@ public class PhysObjectRenderManager {
 		double moddedPitch = Math.toDegrees(radians[0]);
 		double moddedYaw = Math.toDegrees(radians[1]);
 		double moddedRoll = Math.toDegrees(radians[2]);
+		
+		parent.coordTransform.updateRenderMatrices(moddedX, moddedY, moddedZ, moddedPitch, moddedYaw, moddedRoll);
 		
 		if(offsetPos!=null){
 			double offsetX = offsetPos.getX()-centerOfRotation.X;

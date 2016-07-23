@@ -23,6 +23,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.server.SPacketChunkData;
@@ -34,7 +35,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.ChunkCache;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -356,12 +356,16 @@ public class PhysicsObject {
 			if(!(ent instanceof PhysicsWrapperEntity)){
 				float rotYaw = ent.rotationYaw;
 				float rotPitch = ent.rotationPitch;
+				float prevYaw = ent.prevRotationYaw;
+				float prevPitch = ent.prevRotationPitch;
 				
 				RotationMatrices.applyTransform(coordTransform.prevwToLTransform,coordTransform.prevWToLRotation, ent);
 				RotationMatrices.applyTransform(coordTransform.lToWTransform,coordTransform.lToWRotation, ent);
 				
 				ent.rotationYaw = rotYaw;
 				ent.rotationPitch = rotPitch;
+				ent.prevRotationYaw = prevYaw;
+				ent.prevRotationPitch = prevPitch;
 				
 				Vector oldLookingPos = new Vector(ent.getLook(1.0F));
 				RotationMatrices.applyTransform(coordTransform.prevWToLRotation, oldLookingPos);
@@ -389,8 +393,13 @@ public class PhysicsObject {
 						yawDif = 0D;
 					}
 					if(!(ent instanceof EntityPlayer)){
-						ent.prevRotationYaw = ent.rotationYaw;
-						ent.rotationYaw+=yawDif;
+						if(ent instanceof EntityArrow){
+							ent.prevRotationYaw = ent.rotationYaw;
+							ent.rotationYaw-=yawDif;
+						}else{
+							ent.prevRotationYaw = ent.rotationYaw;
+							ent.rotationYaw+=yawDif;
+						}
 					}else{
 						if(worldObj.isRemote){
 							ent.prevRotationYaw = ent.rotationYaw;
@@ -398,7 +407,6 @@ public class PhysicsObject {
 						}
 					}
 				}
-
 			}
 		}
 	}

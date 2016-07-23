@@ -104,12 +104,26 @@ public class TransformAdapter extends ClassVisitor{
 	}
 
 	private boolean runTransformer(String calledName,String calledDesc,String calledOwner,MethodVisitor mv){
-
+		//TBA
+		if(isMethod(calledDesc,"(DDD)D",calledName,EntityClassName,"getDistanceSq","func_70092_e",calledOwner)
+			||
+			isMethod(calledDesc,"(DDD)D",calledName,RawEntityClassName,"getDistanceSq","func_70092_e",calledOwner)){
+				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onGetDistanceSq", String.format( "(L%s;DDD)D", EntityClassName ) );
+				return false;
+		}
+		
+		//TBA
+		if(isMethod(calledDesc,"(L"+BlockPosName+";)D",calledName,EntityClassName,"getDistanceSq","func_177954_c",calledOwner)
+			||
+			isMethod(calledDesc,"(L"+RawBlockPosName+";)D",calledName,RawEntityClassName,"getDistanceSq","func_177954_c",calledOwner)){
+				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onGetDistanceSq", String.format( "(L%s;L"+BlockPosName+";)D", EntityClassName ) );
+				return false;
+		}
+		
 		//TBA
 		if(isMethod(calledDesc,"(L"+EntityPlayerName+";DDDL"+SoundEventName+";L"+SoundCategoryName+";FF)V",calledName,WorldClassName,"playSound","func_184148_a",calledOwner)
 			||
 			isMethod(calledDesc,"(L"+RawEntityPlayerName+";DDDL"+RawSoundEventName+";L"+RawSoundCategoryName+";FF)V",calledName,RawWorldClassName,"playSound","func_184148_a",calledOwner)	){
-
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onPlaySound2", String.format( "(L%s;L"+EntityPlayerName+";DDDL"+SoundEventName+";L"+SoundCategoryName+";FF)V", WorldClassName) );
 				return false;
 		}
@@ -118,7 +132,6 @@ public class TransformAdapter extends ClassVisitor{
 		if(isMethod(calledDesc,"(L"+EntityPlayerName+";L"+BlockPosName+";L"+SoundEventName+";L"+SoundCategoryName+";FF)V",calledName,WorldClassName,"playSound","func_184133_a",calledOwner)
 			||
 			isMethod(calledDesc,"(L"+RawEntityPlayerName+";L"+RawBlockPosName+";L"+RawSoundEventName+";L"+RawSoundCategoryName+";FF)V",calledName,RawWorldClassName,"playSound","func_184133_a",calledOwner)	){
-
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onPlaySound1", String.format( "(L%s;L"+EntityPlayerName+";L"+BlockPosName+";L"+SoundEventName+";L"+SoundCategoryName+";FF)V", WorldClassName) );
 				return false;
 		}

@@ -43,4 +43,8 @@ public class ClientProxy extends CommonProxy{
 		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(item, 0, new ModelResourceLocation(ValkyrienWarfareMod.MODID + ":" + item.getUnlocalizedName(), "inventory"));
 	}
 
+	@Override
+	public void updateShipPartialTicks(PhysicsWrapperEntity wrapper){
+    	
+    }
 }

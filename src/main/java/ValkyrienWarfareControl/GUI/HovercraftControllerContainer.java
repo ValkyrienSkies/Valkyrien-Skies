@@ -15,7 +15,7 @@ public class HovercraftControllerContainer extends Container{
 	}
 	
 	@Override
-	public boolean canInteractWith(EntityPlayer playerIn) {
+	public boolean canInteractWith(EntityPlayer playerIn){
 		return true;
 	}
 

@@ -1,6 +1,8 @@
 package ValkyrienWarfareControl.Item;
 
 import ValkyrienWarfareBase.NBTUtils;
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
+import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareControl.Block.BlockAntiGravEngine;
 import ValkyrienWarfareControl.Block.BlockHovercraftController;
 import ValkyrienWarfareControl.TileEntity.AntiGravEngineTileEntity;
@@ -43,6 +45,13 @@ public class ItemSystemLinker extends Item{
 				if(controllerPos.equals(BlockPos.ORIGIN)){
 					playerIn.addChatMessage(new TextComponentString("No selected Controller"));
 				}else{
+					PhysicsWrapperEntity controllerWrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldIn, controllerPos);
+					PhysicsWrapperEntity engineWrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldIn, pos);
+					
+					if(controllerWrapper!=engineWrapper){
+						playerIn.addChatMessage(new TextComponentString("Controller and Engine are on seperate ships"));
+						return EnumActionResult.SUCCESS;
+					}
 					AntiGravEngineTileEntity tileEntity = (AntiGravEngineTileEntity) worldIn.getTileEntity(pos);
 					BlockPos gravControllerPos = tileEntity.controllerPos;
 					if(gravControllerPos.equals(BlockPos.ORIGIN)){

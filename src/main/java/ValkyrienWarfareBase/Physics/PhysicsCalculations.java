@@ -1,7 +1,6 @@
 package ValkyrienWarfareBase.Physics;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 import javax.vecmath.Matrix3d;
 
@@ -10,6 +9,7 @@ import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Math.BigBastardMath;
 import ValkyrienWarfareBase.Math.Quaternion;
 import ValkyrienWarfareBase.Math.RotationMatrices;
+import ValkyrienWarfareBase.PhysCollision.ShipPhysicsCollider;
 import ValkyrienWarfareBase.PhysCollision.WorldPhysicsCollider;
 import ValkyrienWarfareBase.PhysicsManagement.CoordTransformObject;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
@@ -27,6 +27,7 @@ public class PhysicsCalculations {
 	public PhysicsWrapperEntity wrapperEnt;
 	public World worldObj;
 	public WorldPhysicsCollider worldCollision;
+	public ShipPhysicsCollider shipCollision;
 	
 	public Vector centerOfMass;
 	public Vector linearMomentum;
@@ -54,6 +55,7 @@ public class PhysicsCalculations {
 		wrapperEnt = parent.wrapper;
 		worldObj = toProcess.worldObj;
 		worldCollision = new WorldPhysicsCollider(this);
+		shipCollision = new ShipPhysicsCollider(this);
 		
 		MoITensor = RotationMatrices.getZeroMatrix(3);
 		invMoITensor = RotationMatrices.getZeroMatrix(3);

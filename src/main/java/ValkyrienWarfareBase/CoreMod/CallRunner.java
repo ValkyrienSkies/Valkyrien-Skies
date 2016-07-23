@@ -17,6 +17,7 @@ import ValkyrienWarfareBase.Math.RotationMatrices;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityFallingBlock;
 import net.minecraft.entity.player.EntityPlayer;
@@ -46,6 +47,49 @@ import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraftforge.common.DimensionManager;
 
 public class CallRunner {
+	
+	public static double onGetDistanceSq(Entity entity, double x, double y, double z)
+    {
+		double vanilla = entity.getDistanceSq(x, y, z);
+		if(vanilla<64.0D){
+    		return vanilla;
+    	}else{
+    		BlockPos pos = new BlockPos(x,y,z);
+    		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(entity.worldObj, pos);
+    		if(wrapper!=null){
+    			Vector posVec = new Vector(x,y,z);
+    			wrapper.wrapping.coordTransform.fromLocalToGlobal(posVec);
+    			posVec.X-=entity.posX;
+    			posVec.Y-=entity.posY;
+    			posVec.Z-=entity.posZ;
+    			if(vanilla>posVec.lengthSq()){
+    				return posVec.lengthSq();
+    			}
+    		}
+    	}
+        return vanilla;
+    }
+
+    public static double onGetDistanceSq(Entity entity, BlockPos pos)
+    {
+    	double vanilla = pos.distanceSq(entity.posX, entity.posY, entity.posZ);
+    	if(vanilla<64.0D){
+    		return vanilla;
+    	}else{
+    		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(entity.worldObj, pos);
+    		if(wrapper!=null){
+    			Vector posVec = new Vector(pos.getX()+.5D,pos.getY()+.5D,pos.getZ()+.5D);
+    			wrapper.wrapping.coordTransform.fromLocalToGlobal(posVec);
+    			posVec.X-=entity.posX;
+    			posVec.Y-=entity.posY;
+    			posVec.Z-=entity.posZ;
+    			if(vanilla>posVec.lengthSq()){
+    				return posVec.lengthSq();
+    			}
+    		}
+    	}
+    	return vanilla;
+    }
 	
 	public static void onPlaySound1(World world,@Nullable EntityPlayer player, BlockPos pos, SoundEvent soundIn, SoundCategory category, float volume, float pitch)
     {
@@ -186,7 +230,7 @@ public class CallRunner {
 		
 		WorldPhysObjectManager physManager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(world);
 		
-		AxisAlignedBB playerRangeBB = new AxisAlignedBB(vec31.xCoord-1D,vec31.yCoord-1D,vec31.zCoord-1D,vec31.xCoord,vec31.yCoord,vec31.zCoord);
+		AxisAlignedBB playerRangeBB = new AxisAlignedBB(vec31.xCoord-1D,vec31.yCoord-1D,vec31.zCoord-1D,vec31.xCoord+1D,vec31.yCoord+1D,vec31.zCoord+1D);
 		
 		List<PhysicsWrapperEntity> nearbyShips = physManager.getNearbyPhysObjects(world, playerRangeBB);
 		boolean changed = false;
@@ -205,9 +249,13 @@ public class CallRunner {
             playerEyesPos = vec31;
             playerReachVector = vec32.subtract(vec31);
             
+            if(world.isRemote){
+            	ValkyrienWarfareMod.proxy.updateShipPartialTicks(wrapper);
+            }
+            
             //Transform the coordinate system for the player eye pos
-            playerEyesPos = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, playerEyesPos);
-            playerReachVector = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLRotation, playerReachVector);
+            playerEyesPos = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.RwToLTransform, playerEyesPos);
+            playerReachVector = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.RwToLRotation, playerReachVector);
             
             Vec3d playerEyesReachAdded = playerEyesPos.addVector(playerReachVector.xCoord * reachDistance, playerReachVector.yCoord * reachDistance, playerReachVector.zCoord * reachDistance);
             
@@ -215,11 +263,10 @@ public class CallRunner {
             
             if(resultInShip!=null&&resultInShip.hitVec!=null&&resultInShip.typeOfHit==Type.BLOCK){
 	            double shipResultDistFromPlayer = resultInShip.hitVec.distanceTo(playerEyesPos);
-	            
 	            if(shipResultDistFromPlayer<worldResultDistFromPlayer){
 	            	worldResultDistFromPlayer = shipResultDistFromPlayer;
 	            	
-	            	resultInShip.hitVec = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, resultInShip.hitVec);
+	            	resultInShip.hitVec = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.RlToWTransform, resultInShip.hitVec);
 	            	
 	            	vanillaTrace = resultInShip;
 	            }

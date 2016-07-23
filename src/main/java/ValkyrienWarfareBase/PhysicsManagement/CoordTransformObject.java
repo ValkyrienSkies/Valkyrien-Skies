@@ -23,6 +23,11 @@ public class CoordTransformObject {
 	public double[] lToWTransform = RotationMatrices.getDoubleIdentity();
 	public double[] wToLTransform = RotationMatrices.getDoubleIdentity();
 	
+	public double[] RlToWRotation = RotationMatrices.getDoubleIdentity();
+	public double[] RwToLRotation = RotationMatrices.getDoubleIdentity();
+	public double[] RlToWTransform = RotationMatrices.getDoubleIdentity();
+	public double[] RwToLTransform = RotationMatrices.getDoubleIdentity();
+	
 	public double[] prevlToWTransform;
 	public double[] prevwToLTransform;
 	public double[] prevLToWRotation;
@@ -50,6 +55,22 @@ public class CoordTransformObject {
 		
 		wToLTransform = RotationMatrices.inverse(lToWTransform);
 		wToLRotation = RotationMatrices.inverse(lToWRotation);
+		
+		RlToWTransform = lToWTransform;
+		RwToLTransform = wToLTransform;
+		RlToWRotation = lToWRotation;
+		RwToLRotation = wToLRotation;
+	}
+	
+	public void updateRenderMatrices(double x,double y,double z,double pitch,double yaw,double roll){
+		RlToWTransform = RotationMatrices.getTranslationMatrix(x,y,z);
+		
+		RlToWTransform = RotationMatrices.rotateAndTranslate(RlToWTransform, pitch, yaw, roll, parent.centerCoord);
+		
+		RwToLTransform = RotationMatrices.inverse(RlToWTransform);
+		
+		RlToWRotation = RotationMatrices.rotateOnly(RotationMatrices.getDoubleIdentity(),pitch, yaw, roll);
+		RwToLRotation = RotationMatrices.inverse(RlToWRotation);
 	}
 	
 	//Used for the moveRiders() method
@@ -112,6 +133,33 @@ public class CoordTransformObject {
 			RotationMatrices.applyTransform(lToWRotation, norms[i]);
 		}
 		return norms;
+	}
+	
+	public Vector[] getSeperatingAxisWithShip(PhysicsObject other){
+		//Note: This Vector array still contains potential 0 vectors, those are removed later
+		Vector[] normals = new Vector[15];
+		Vector[] otherNorms = other.coordTransform.normals;
+		Vector[] rotatedNorms = normals;
+		for(int i = 0;i<6;i++){
+			if(i<3){
+				normals[i] = otherNorms[i];
+			}else{
+				normals[i] = rotatedNorms[i-3];
+			}
+		}
+		int cont = 6;
+		for(int i=0;i<3;i++){
+			for(int j=0;j<3;j++){
+				Vector norm = normals[i].crossAndUnit(normals[j+3]);
+				if(!norm.isZero()){	
+					normals[cont] = norm;
+				}else{
+					normals[cont] =normals[1];
+				}
+				cont++;
+			}
+		}
+		return normals;
 	}
 	
 	//TODO: FinishME

@@ -1,6 +1,6 @@
-package ValkyrienWarfareBase.Math;
+package ValkyrienWarfareBase.API;
 
-import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareBase.Math.BigBastardMath;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.util.math.BlockPos;
@@ -8,18 +8,11 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 /**
- * This class creates and processes rotation matrix transforms
+ * This class creates and processes rotation matrix transforms used by Valkyrien Warfare
  * @author thebest108
  *
  */
 public class RotationMatrices{
-
-	 /**
-	  * The difference between 1 and the smallest exactly representable number
-	  * greater than one. Gives an upper bound on the relative error due to
-	  * rounding of floating point numbers.
-	  */
-	public static double MACHEPS = 2E-16;
 
    	public static final float[] transpose(float[] matrix){
    		float[] transpose = new float[16];
@@ -94,19 +87,6 @@ public class RotationMatrices{
 	   	matrix[9] = (t * uy * uz + S * ux);
 	   	matrix[10] = (t * uz * uz + C);
 	   	return matrix;
-   	}
-
-	public static final double[] getRotationMatrixAboutAxisAndPoint(double ux, double uy, double uz, double px, double py, double pz, double angle){
-		double[] matrix2 = getRotationMatrix(ux, uy, uz, angle);
-		double[] matrix3 = getTranslationMatrix(px, py, pz);
-		return getMatrixProduct(matrix3, matrix2);
-	}
-
-   	public static final double[] getRotationMatrixAboutAxisAndPoint(Vector axis, Vector point, double angle){
-   		double[] matrix1 = getTranslationMatrix(-point.X, -point.Y, -point.Z);
-     	double[] matrix2 = getRotationMatrix(axis.X, axis.Y, axis.Z, angle);
-     	double[] matrix3 = getTranslationMatrix(point.X, point.Y, point.Z);
-     	return getMatrixProduct(matrix3, getMatrixProduct(matrix2, matrix1));
    	}
 
    	public static final double[] getDoubleIdentity(){

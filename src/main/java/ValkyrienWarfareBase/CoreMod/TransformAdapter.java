@@ -43,6 +43,7 @@ public class TransformAdapter extends ClassVisitor{
 	private static final String RawSoundCategoryName = "net/minecraft/util/SoundCategory";
 	private static final String RawParticleName = "net/minecraft/client/particle/Particle";
 	private static final String RawParticleManagerName = "net/minecraft/client/particle/ParticleManager";
+	private static final String RawContainerName = "net/minecraft/inventory/Container";
 	
 	
 	private final String ParticleName;
@@ -69,6 +70,7 @@ public class TransformAdapter extends ClassVisitor{
 	private final String BlockRenderLayerName;
 	private final String ChunkName;
 	private final String ChunkProviderServerName;
+	private final String ContainerName;
 	
 	private boolean correctDesc,correctName,correctSuperClass;
 
@@ -101,9 +103,18 @@ public class TransformAdapter extends ClassVisitor{
 		SoundCategoryName = getRuntimeClassName(RawSoundCategoryName);
 		ParticleName = getRuntimeClassName(RawParticleName);
 		ParticleManagerName = getRuntimeClassName(RawParticleManagerName);
+		ContainerName = getRuntimeClassName(RawContainerName);
 	}
 
 	private boolean runTransformer(String calledName,String calledDesc,String calledOwner,MethodVisitor mv){
+		//TBA
+		if(isMethod(calledDesc,"(L"+EntityPlayerName+";)Z",calledName,ContainerName,"canInteractWith","func_75145_c",calledOwner)
+			||
+			isMethod(calledDesc,"(L"+RawEntityPlayerName+";)Z",calledName,RawContainerName,"canInteractWith","func_75145_c",calledOwner)){
+				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onCanInteractWith", String.format( "(L%s;L"+EntityPlayerName+";)Z", ContainerName ) );
+				return false;
+		}
+		
 		//TBA
 		if(isMethod(calledDesc,"(DDD)D",calledName,EntityClassName,"getDistanceSq","func_70092_e",calledOwner)
 			||
@@ -286,7 +297,7 @@ public class TransformAdapter extends ClassVisitor{
 	private boolean isMethod(String calledDesc,String methodDesc,String calledName,String classFrom,String methodNameClear,String methodNameObsf,String calledOwner){
 		correctDesc = calledDesc.equals(methodDesc);
 		if(correctDesc){
-			correctName = pertainsToMethod(calledName,classFrom,methodNameClear,methodNameObsf);
+			correctName = pertainsToMethod(calledName,classFrom,methodNameClear,methodNameObsf)||pertainsToMethod(calledOwner,classFrom,methodNameClear,methodNameObsf);
 			if(correctName){
 				correctSuperClass = InheritanceUtils.extendsClass(calledOwner, classFrom);
 				return correctSuperClass;

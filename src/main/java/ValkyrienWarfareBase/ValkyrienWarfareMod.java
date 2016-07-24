@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import ValkyrienWarfareBase.API.PhysicsEntityHooks;
 import ValkyrienWarfareBase.Block.BlockPhysicsInfuser;
 import ValkyrienWarfareBase.ChunkManagement.DimensionPhysicsChunkManager;
 import ValkyrienWarfareBase.PhysicsManagement.DimensionPhysObjectManager;
@@ -16,6 +17,9 @@ import net.minecraft.block.material.Material;
 import net.minecraft.command.ServerCommandManager;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
@@ -72,8 +76,10 @@ public class ValkyrienWarfareMod{
     	proxy.preInit(event);
     	instance = this;
     	registerBlocks(event);
+    	registerRecipies(event);
     	registerNetworks(event);
     	runConfiguration(event);
+    	PhysicsEntityHooks.methods = new RealMethods();
     }
 
     @EventHandler
@@ -106,6 +112,10 @@ public class ValkyrienWarfareMod{
     	physicsInfuser = new BlockPhysicsInfuser(Material.ROCK).setHardness(12f).setUnlocalizedName("shipblock").setRegistryName(MODID, "shipblock").setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
     	GameRegistry.registerBlock(physicsInfuser);
     }
+    
+    private void registerRecipies(FMLStateEvent event){
+    	GameRegistry.addRecipe(new ItemStack(physicsInfuser), new Object[] {"RRR", "RDR","RRR",'R',Items.REDSTONE, 'D', Item.getItemFromBlock(Blocks.DIAMOND_BLOCK)});
+    }
 
     private void runConfiguration(FMLPreInitializationEvent event){
     	configFile = event.getSuggestedConfigurationFile();
@@ -113,6 +123,9 @@ public class ValkyrienWarfareMod{
     	config.load();
     	applyConfig(config);
     	config.save();
+    	if(MultiThreadExecutor!=null){
+        	MultiThreadExecutor.shutdown();
+        }
     	MultiThreadExecutor = Executors.newFixedThreadPool(threadCount);
     }
 
@@ -137,7 +150,9 @@ public class ValkyrienWarfareMod{
         spawnParticles = spawnParticlesParticle.getBoolean();
         multiThreadedPhysics = useMultiThreadedPhysics.getBoolean();
         threadCount = physicsThreads.getInt();
-        MultiThreadExecutor.shutdown();
+        if(MultiThreadExecutor!=null){
+        	MultiThreadExecutor.shutdown();
+        }
         MultiThreadExecutor = Executors.newFixedThreadPool(threadCount);
     }
 }

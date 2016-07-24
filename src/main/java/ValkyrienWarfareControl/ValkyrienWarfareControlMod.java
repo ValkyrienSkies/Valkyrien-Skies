@@ -13,7 +13,10 @@ import ValkyrienWarfareControl.TileEntity.TileEntityHoverController;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -53,6 +56,7 @@ public class ValkyrienWarfareControlMod {
     	registerBlocks(event);
     	registerTileEntities(event);
     	registerItems(event);
+    	registerRecipies(event);
     	registerNetworks(event);
     	proxy.preInit(event);
     }
@@ -86,6 +90,11 @@ public class ValkyrienWarfareControlMod {
     private void registerItems(FMLStateEvent event){
     	systemLinker = new ItemSystemLinker().setUnlocalizedName("systemlinker").setRegistryName(MODID, "systemlinker").setCreativeTab(CreativeTabs.REDSTONE).setMaxStackSize(1);
     	GameRegistry.registerItem(systemLinker);
+    }
+    
+    private void registerRecipies(FMLStateEvent event){
+    	GameRegistry.addRecipe(new ItemStack(basicEngine), new Object[] {"IWW", "IPP","IWW",'W',Item.getItemFromBlock(Blocks.PLANKS), 'P', Item.getItemFromBlock(Blocks.PISTON),'I',Items.IRON_INGOT});
+    	
     }
     
     private void registerNetworks(FMLStateEvent event){

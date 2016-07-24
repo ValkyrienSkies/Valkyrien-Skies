@@ -6,7 +6,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 /**
- * Custom Vector Class
+ * Custom Vector Class used by Valkyrien Warfare
  * @author thebest108
  */
 public class Vector{

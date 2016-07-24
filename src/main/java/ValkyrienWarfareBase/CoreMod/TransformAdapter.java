@@ -113,9 +113,9 @@ public class TransformAdapter extends ClassVisitor{
 		}
 		
 		//TBA
-		if(isMethod(calledDesc,"(L"+BlockPosName+";)D",calledName,EntityClassName,"getDistanceSq","func_177954_c",calledOwner)
+		if(isMethod(calledDesc,"(L"+BlockPosName+";)D",calledName,EntityClassName,"getDistanceSq","func_174818_b",calledOwner)
 			||
-			isMethod(calledDesc,"(L"+RawBlockPosName+";)D",calledName,RawEntityClassName,"getDistanceSq","func_177954_c",calledOwner)){
+			isMethod(calledDesc,"(L"+RawBlockPosName+";)D",calledName,RawEntityClassName,"getDistanceSq","func_174818_b",calledOwner)){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onGetDistanceSq", String.format( "(L%s;L"+BlockPosName+";)D", EntityClassName ) );
 				return false;
 		}

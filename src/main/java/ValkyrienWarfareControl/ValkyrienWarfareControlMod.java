@@ -69,9 +69,9 @@ public class ValkyrienWarfareControlMod {
     }
     
     private void registerBlocks(FMLStateEvent event){
-    	basicEngine = new BlockAirShipEngine(Material.ROCK).setUnlocalizedName("basicengine").setRegistryName(ValkyrienWarfareMod.MODID, "basicengine").setCreativeTab(CreativeTabs.REDSTONE);
-    	basicHoverController = new BlockHovercraftController(Material.ROCK).setUnlocalizedName("basichovercraftcontroller").setRegistryName(ValkyrienWarfareMod.MODID, "basichovercraftcontroller").setCreativeTab(CreativeTabs.REDSTONE);
-    	antigravityEngine = new BlockAntiGravEngine(Material.ROCK).setUnlocalizedName("antigravengine").setUnlocalizedName("antigravengine").setRegistryName(ValkyrienWarfareMod.MODID, "antigravengine").setCreativeTab(CreativeTabs.REDSTONE);
+    	basicEngine = new BlockAirShipEngine(Material.WOOD).setHardness(5f).setUnlocalizedName("basicengine").setRegistryName(ValkyrienWarfareMod.MODID, "basicengine").setCreativeTab(CreativeTabs.REDSTONE);
+    	basicHoverController = new BlockHovercraftController(Material.IRON).setHardness(10f).setUnlocalizedName("basichovercraftcontroller").setRegistryName(ValkyrienWarfareMod.MODID, "basichovercraftcontroller").setCreativeTab(CreativeTabs.REDSTONE);
+    	antigravityEngine = new BlockAntiGravEngine(Material.IRON).setHardness(8f).setUnlocalizedName("antigravengine").setUnlocalizedName("antigravengine").setRegistryName(ValkyrienWarfareMod.MODID, "antigravengine").setCreativeTab(CreativeTabs.REDSTONE);
     	
     	GameRegistry.registerBlock(basicEngine);
     	GameRegistry.registerBlock(basicHoverController);
@@ -84,8 +84,8 @@ public class ValkyrienWarfareControlMod {
     }
 
     private void registerItems(FMLStateEvent event){
-    	systemLinker = new ItemSystemLinker().setUnlocalizedName("systemlinker").setCreativeTab(CreativeTabs.REDSTONE).setMaxStackSize(1);
-    	GameRegistry.registerItem(systemLinker, "systemLinker");
+    	systemLinker = new ItemSystemLinker().setUnlocalizedName("systemlinker").setRegistryName(MODID, "systemlinker").setCreativeTab(CreativeTabs.REDSTONE).setMaxStackSize(1);
+    	GameRegistry.registerItem(systemLinker);
     }
     
     private void registerNetworks(FMLStateEvent event){

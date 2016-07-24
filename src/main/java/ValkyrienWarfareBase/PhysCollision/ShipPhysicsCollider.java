@@ -6,8 +6,8 @@ import java.util.List;
 
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Collision.PhysCollisionObject;
+import ValkyrienWarfareBase.Collision.PhysPolygonCollider;
 import ValkyrienWarfareBase.Collision.Polygon;
-import ValkyrienWarfareBase.Collision.ReverseEntityPolyCollider;
 import ValkyrienWarfareBase.Math.BigBastardMath;
 import ValkyrienWarfareBase.Math.RotationMatrices;
 import ValkyrienWarfareBase.Physics.PhysicsCalculations;
@@ -79,13 +79,18 @@ public class ShipPhysicsCollider {
 					
 				velAtFirst.subtract(velAtSecond);
 				
-				ReverseEntityPolyCollider polyCol = new ReverseEntityPolyCollider(firstInWorld,secondInWorld,axes,velAtFirst);
+				PhysPolygonCollider polyCol = new PhysPolygonCollider(firstInWorld,secondInWorld,axes);
 				if(!polyCol.seperated){
-					Vector minAxis = polyCol.potentialSeperatingAxes[polyCol.minDistanceIndex];
-					PhysCollisionObject physCol = new PhysCollisionObject(firstInWorld,secondInWorld,minAxis);
-					processCollisionAtPoint(toCollideWith, physCol);
-					physCol.firstContactPoint = physCol.getSecondContactPoint();
-					processCollisionAtPoint(toCollideWith, physCol);
+					PhysCollisionObject polyColObj = polyCol.collisions[1];
+					if(polyColObj.penetrationDistance>axisTolerance||polyColObj.penetrationDistance<-axisTolerance){
+						polyColObj = polyCol.collisions[polyCol.minDistanceIndex];
+					}
+					
+					
+//					PhysCollisionObject physCol = new PhysCollisionObject(firstInWorld,secondInWorld,polyColObj.axis);
+					processCollisionAtPoint(toCollideWith, polyColObj);
+//					physCol.firstContactPoint = physCol.getSecondContactPoint();
+//					processCollisionAtPoint(toCollideWith, physCol);
 				}
 			}
 		}
@@ -115,6 +120,8 @@ public class ShipPhysicsCollider {
 		
 		//COULD BE WRONG!!!
 		Vector netVelocity = momentumInFirst.getSubtraction(momentumInSecond);
+		
+		e=.9;
 		
 		double topJ = -(e+1D)*netVelocity.dot(object.axis);
 		

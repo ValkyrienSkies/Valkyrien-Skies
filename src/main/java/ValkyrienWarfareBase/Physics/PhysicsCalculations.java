@@ -1,6 +1,7 @@
 package ValkyrienWarfareBase.Physics;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import javax.vecmath.Matrix3d;
 
@@ -244,7 +245,7 @@ public class PhysicsCalculations {
 		angularVelocity.multiply(modifiedDrag);
 		linearMomentum.Y+=(gravity*mass*physTickSpeed);
 		
-//		Collections.shuffle(activeForcePositions);
+		Collections.shuffle(activeForcePositions);
 		
 		for(BlockPos pos:activeForcePositions){
 			IBlockState state = parent.VKChunkCache.getBlockState(pos);

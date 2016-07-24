@@ -18,8 +18,8 @@ public class ClientProxyControl extends CommonProxyControl{
 	
 	public void init(FMLInitializationEvent event){
     	super.init(event);
-    	Minecraft.getMinecraft().getRenderItem().getItemModelMesher()
-        .register(ValkyrienWarfareControlMod.instance.systemLinker, 0, new ModelResourceLocation(ValkyrienWarfareMod.MODID+":systemLinker", "inventory"));
+//    	Minecraft.getMinecraft().getRenderItem().getItemModelMesher()
+//        .register(ValkyrienWarfareControlMod.instance.systemLinker, 0, new ModelResourceLocation(ValkyrienWarfareMod.MODID+":systemLinker", "inventory"));
     }
 
     public void postInit(FMLPostInitializationEvent event){
@@ -28,7 +28,7 @@ public class ClientProxyControl extends CommonProxyControl{
 		registerBlockItem(ValkyrienWarfareControlMod.instance.basicHoverController);
 		registerBlockItem(ValkyrienWarfareControlMod.instance.antigravityEngine);
 		
-//		registerItemModel(ValkyrienWarfareControlMod.instance.systemLinker);
+		registerItemModel(ValkyrienWarfareControlMod.instance.systemLinker);
     }
 	
 	private void registerBlockItem(Block toRegister){
@@ -39,6 +39,6 @@ public class ClientProxyControl extends CommonProxyControl{
 	private void registerItemModel(Item toRegister){
     	RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
         
-    	renderItem.getItemModelMesher().register(toRegister, 0, new ModelResourceLocation(ValkyrienWarfareMod.MODID + ":" + toRegister.getUnlocalizedName(), "inventory"));
+    	renderItem.getItemModelMesher().register(toRegister, 0, new ModelResourceLocation(ValkyrienWarfareControlMod.MODID + ":" + toRegister.getUnlocalizedName().substring(5), "inventory"));;
 	}
 }

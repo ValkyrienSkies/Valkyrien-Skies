@@ -72,7 +72,7 @@ public class CallRunner {
 
     public static double onGetDistanceSq(Entity entity, BlockPos pos)
     {
-    	double vanilla = pos.distanceSq(entity.posX, entity.posY, entity.posZ);
+    	double vanilla = entity.getDistanceSq(pos);
     	if(vanilla<64.0D){
     		return vanilla;
     	}else{

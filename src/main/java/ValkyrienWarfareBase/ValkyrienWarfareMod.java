@@ -41,7 +41,7 @@ public class ValkyrienWarfareMod{
 
 	public static final String MODID = "valkyrienwarfare";
     public static final String MODNAME = "Valkyrien Warfare";
-    public static final String MODVER = "0.3b";
+    public static final String MODVER = "0.4";
 
     public static File configFile;
     public static Configuration config;
@@ -103,7 +103,7 @@ public class ValkyrienWarfareMod{
     }
 
     private void registerBlocks(FMLStateEvent event){
-    	physicsInfuser = new BlockPhysicsInfuser(Material.ROCK).setUnlocalizedName("shipblock").setRegistryName(MODID, "shipblock").setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
+    	physicsInfuser = new BlockPhysicsInfuser(Material.ROCK).setHardness(12f).setUnlocalizedName("shipblock").setRegistryName(MODID, "shipblock").setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
     	GameRegistry.registerBlock(physicsInfuser);
     }
 
@@ -122,14 +122,14 @@ public class ValkyrienWarfareMod{
         Property missedPacketsTolerance = config.get(Configuration.CATEGORY_GENERAL, "Missed packets threshold", 1);
         Property spawnParticlesParticle = config.get(Configuration.CATEGORY_GENERAL, "Ships spawn particles", false);
         Property useMultiThreadedPhysics = config.get(Configuration.CATEGORY_GENERAL, "Multi-Threaded Physics", true);
-        Property physicsThreads = config.get(Configuration.CATEGORY_GENERAL, "Physics Thread Count", Runtime.getRuntime().availableProcessors());
+        Property physicsThreads = config.get(Configuration.CATEGORY_GENERAL, "Physics Thread Count", (int)Math.max(1, Runtime.getRuntime().availableProcessors()-2));
         
         dynamiclightProperty.setComment("Dynamic Lighting");
         shipTickDelayProperty.setComment("Tick delay between client and server physics; raise if physics look choppy");
         missedPacketsTolerance.setComment("Higher values gaurantee virutally no choppyness, but also comes with a large delay. Only change if you have unstable internet");
         spawnParticlesParticle.setComment("Ships spawn particles");
         useMultiThreadedPhysics.setComment( "Use Multi-Threaded Physics");
-        physicsThreads.setComment( "Number of threads to run physics on; RESTART GAME TO APPLY");
+        physicsThreads.setComment( "Number of threads to run physics on;");
         
         dynamicLighting = dynamiclightProperty.getBoolean();
         shipTickDelay = shipTickDelayProperty.getInt()%20;
@@ -137,5 +137,7 @@ public class ValkyrienWarfareMod{
         spawnParticles = spawnParticlesParticle.getBoolean();
         multiThreadedPhysics = useMultiThreadedPhysics.getBoolean();
         threadCount = physicsThreads.getInt();
+        MultiThreadExecutor.shutdown();
+        MultiThreadExecutor = Executors.newFixedThreadPool(threadCount);
     }
 }

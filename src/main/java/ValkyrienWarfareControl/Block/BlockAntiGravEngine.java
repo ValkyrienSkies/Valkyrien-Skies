@@ -29,11 +29,12 @@ public class BlockAntiGravEngine extends Block implements ITileEntityProvider,IB
 	public Vector getBlockForce(World world, BlockPos pos, IBlockState state, Entity shipEntity, double secondsToApply) {
 		PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity) shipEntity;
 		PhysicsObject obj = wrapper.wrapping;
-
-		AntiGravEngineTileEntity engineTile = (AntiGravEngineTileEntity) obj.VKChunkCache.getTileEntity(pos);
-		if(engineTile==null){
+		IBlockState controllerState = obj.VKChunkCache.getBlockState(pos);
+		TileEntity worldTile = obj.VKChunkCache.getTileEntity(pos);
+		if(worldTile==null){
 			return null;
 		}
+		AntiGravEngineTileEntity engineTile = (AntiGravEngineTileEntity) worldTile;
 		return engineTile.getForceOutput(world, pos, state, wrapper, secondsToApply);
 	}
 

@@ -60,6 +60,9 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 
 	@Override
 	public AxisAlignedBB getEntityBoundingBox(){
+		if(wrapping.collisionBB!=null){
+			return wrapping.collisionBB;
+		}
 		return zeroBB;
     }
 	

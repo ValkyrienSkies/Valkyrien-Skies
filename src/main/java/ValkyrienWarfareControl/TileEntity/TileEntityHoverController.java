@@ -32,7 +32,7 @@ public class TileEntityHoverController extends TileEntity{
 	public double linearConstant = 1000000D;
 	
 	public TileEntityHoverController(){
-		validate();
+//		validate();
 	}
 	
 	/*

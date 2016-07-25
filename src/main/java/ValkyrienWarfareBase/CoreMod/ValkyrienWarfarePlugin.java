@@ -14,7 +14,7 @@ public class ValkyrienWarfarePlugin implements IFMLLoadingPlugin{
 
 	public static Boolean isObfuscatedEnvironment = null;
 	public static final String PathClient = "ValkyrienWarfareBase/CoreMod/CallRunnerClient";
-//	public static final String PathCommon = "ValkyrienWarfareBase/CoreMod/CallRunner";
+	public static final String PathCommon = "ValkyrienWarfareBase/CoreMod/CallRunner";
 	
     @Override
     public String[] getASMTransformerClass() {

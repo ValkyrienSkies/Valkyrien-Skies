@@ -3,6 +3,7 @@ package ValkyrienWarfareControl.TileEntity;
 import ValkyrienWarfareBase.NBTUtils;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
+import ValkyrienWarfareControl.Block.BlockHovercraftController;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -27,7 +28,15 @@ public class AntiGravEngineTileEntity extends TileEntity{
 		if(controllerPos.equals(BlockPos.ORIGIN)){
 			return null;
 		}
-		controller = (TileEntityHoverController) shipEntity.wrapping.VKChunkCache.getTileEntity(controllerPos);
+		IBlockState controllerState = shipEntity.wrapping.VKChunkCache.getBlockState(controllerPos);
+		TileEntity tileEnt = shipEntity.wrapping.VKChunkCache.getTileEntity(controllerPos);
+		if(!(controllerState.getBlock() instanceof BlockHovercraftController)){
+			if(tileEnt instanceof TileEntityHoverController){
+				tileEnt.invalidate();
+			}
+			return null;
+		}
+		controller = (TileEntityHoverController) tileEnt;
 		if(controller!=null){
 			return controller.getForceForEngine(this,world,pos,state,shipEntity.wrapping,secondsToApply);
 		}

@@ -53,6 +53,11 @@ import net.minecraftforge.common.DimensionManager;
 
 public class CallRunner {
 
+	public static double partialTicks;
+	static{
+		partialTicks = Minecraft.getMinecraft().getRenderPartialTicks();
+	}
+	
 	public static <T extends Entity> List<T> onGetEntitiesWithinAABB(World world,Class <? extends T > clazz, AxisAlignedBB aabb, @Nullable Predicate <? super T > filter)
     {
 		BlockPos pos = new BlockPos((aabb.minX+aabb.maxX)/2D,(aabb.minY+aabb.maxY)/2D,(aabb.minZ+aabb.maxZ)/2D);
@@ -278,7 +283,9 @@ public class CallRunner {
 	public static RayTraceResult onRayTraceBlocks(World world,Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock)
     {
 		RayTraceResult vanillaTrace = world.rayTraceBlocks(vec31, vec32, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
-		
+		if(true){
+			
+		}
 		WorldPhysObjectManager physManager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(world);
 		
 		AxisAlignedBB playerRangeBB = new AxisAlignedBB(vec31.xCoord-1D,vec31.yCoord-1D,vec31.zCoord-1D,vec31.xCoord+1D,vec31.yCoord+1D,vec31.zCoord+1D);
@@ -300,9 +307,9 @@ public class CallRunner {
             playerEyesPos = vec31;
             playerReachVector = vec32.subtract(vec31);
             
-            if(world.isRemote){
+//            if(world.isRemote){
             	ValkyrienWarfareMod.proxy.updateShipPartialTicks(wrapper);
-            }
+//            }
             
             //Transform the coordinate system for the player eye pos
             playerEyesPos = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.RwToLTransform, playerEyesPos);

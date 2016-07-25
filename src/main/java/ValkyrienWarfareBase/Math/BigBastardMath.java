@@ -20,14 +20,14 @@ public class BigBastardMath{
 	public static final int maxPasses = 5;
 	public static final int[] primes = {3,31,19,2,5,7,11,13,17,23,29};
 
-	public static double getPitchFromVec3d(Vec3d vec){
-		double pitchFromRotVec = -Math.asin(vec.yCoord)/0.017453292F;
+	public static double getPitchFromVec3d(Vector vec){
+		double pitchFromRotVec = -Math.asin(vec.Y)/0.017453292F;
 		return pitchFromRotVec;
 	}
 	
-	public static double getYawFromVec3d(Vec3d vec,double rotPitch){
+	public static double getYawFromVec3d(Vector vec,double rotPitch){
 		double f2 = -Math.cos(-rotPitch * 0.017453292F);
-		double yawFromRotVec = Math.atan2(vec.xCoord/f2, vec.zCoord/f2);
+		double yawFromRotVec = Math.atan2(vec.X/f2, vec.Z/f2);
 		yawFromRotVec+=Math.PI;
 		yawFromRotVec/= -0.017453292F;
 		return yawFromRotVec;

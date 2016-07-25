@@ -3,6 +3,7 @@ package ValkyrienWarfareBase.API;
 import ValkyrienWarfareBase.Math.BigBastardMath;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.projectile.EntityFireball;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -145,50 +146,43 @@ public class RotationMatrices{
    	}
    	
    	public static final void applyTransform(double[] wholeTransform,double[] rotationTransform,Entity ent){
-//   		rotationTransform = getDoubleIdentity();
-   		
-//   		ent.rotationYaw = MathHelper.wrapDegrees(ent.rotationYaw);
-   		
    		Vector entityPos = new Vector(ent.posX,ent.posY,ent.posZ);
    		Vector entityLook = new Vector(ent.getLook(1.0F));
    		Vector entityMotion = new Vector(ent.motionX,ent.motionY,ent.motionZ);
    		
-//   		System.out.println("Original: "+ent.rotationYaw);
-   		
+   		if(ent instanceof EntityFireball){
+   			EntityFireball ball = (EntityFireball)ent;
+   			entityMotion.X = ball.accelerationX;
+   			entityMotion.Y = ball.accelerationY;
+   			entityMotion.Z = ball.accelerationZ;
+   		}
+
    		applyTransform(wholeTransform, entityPos);
    		doRotationOnly(rotationTransform, entityLook);
    		doRotationOnly(rotationTransform, entityMotion);
 
    		entityLook.normalize();
    		
-   		Vec3d newLook = new Vec3d(entityLook.X,entityLook.Y,entityLook.Z);
-   		
-//   		System.out.println(newLook);
-   		
    		//This is correct
-   		ent.rotationPitch = (float) MathHelper.wrapDegrees(BigBastardMath.getPitchFromVec3d(newLook));
+   		ent.rotationPitch = (float) MathHelper.wrapDegrees(BigBastardMath.getPitchFromVec3d(entityLook));
    		ent.prevRotationPitch = ent.rotationPitch;
    		
-   		ent.rotationYaw = (float) MathHelper.wrapDegrees(BigBastardMath.getYawFromVec3d(newLook, ent.rotationPitch));
+   		ent.rotationYaw = (float) MathHelper.wrapDegrees(BigBastardMath.getYawFromVec3d(entityLook, ent.rotationPitch));
    		ent.prevRotationYaw = ent.rotationYaw;
 
    		if(ent instanceof EntityLiving){
    			EntityLiving living = (EntityLiving)ent;
    			living.rotationYawHead = ent.rotationYaw;
    			living.prevRotationYawHead = ent.rotationYaw;
-   			
    		}
-//   		System.out.println(ent.getLook(1.0F));
    		
-//   		float f = MathHelper.cos(-ent.rotationYaw * 0.017453292F - (float)Math.PI);
-//        float f1 = MathHelper.sin(-ent.rotationYaw * 0.017453292F - (float)Math.PI);
-//        float f2 = -MathHelper.cos(-ent.rotationPitch * 0.017453292F);
-//        float f3 = MathHelper.sin(-ent.rotationPitch * 0.017453292F);
-//        Vec3d result = new Vec3d((double)(f1 * f2), (double)f3, (double)(f * f2));
-//   		
-//   		System.out.println(result);
-   		
-   		
+   		if(ent instanceof EntityFireball){
+   			EntityFireball ball = (EntityFireball)ent;
+   			ball.accelerationX = entityMotion.X;
+   			ball.accelerationY = entityMotion.Y;
+   			ball.accelerationZ = entityMotion.Z;
+   		}
+
    		ent.motionX = entityMotion.X;
    		ent.motionY = entityMotion.Y;
    		ent.motionZ = entityMotion.Z;

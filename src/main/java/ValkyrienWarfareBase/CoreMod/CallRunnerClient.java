@@ -214,8 +214,9 @@ public class CallRunnerClient extends CallRunner{
     {
 		((ClientProxy)ValkyrienWarfareMod.proxy).lastCamera = camera;
 		
-		renderGlobal.renderEntities(renderViewEntity, camera, partialTicks);
 		
+		
+		GL11.glPushMatrix();
 		GlStateManager.disableAlpha();
 		GlStateManager.disableBlend();
 		GlStateManager.enableLighting();
@@ -239,6 +240,9 @@ public class CallRunnerClient extends CallRunner{
 		TileEntityRendererDispatcher.instance.staticPlayerX = playerX;
 		TileEntityRendererDispatcher.instance.staticPlayerY = playerY;
 		TileEntityRendererDispatcher.instance.staticPlayerZ = playerZ;
+		GL11.glPopMatrix();
+		
+		renderGlobal.renderEntities(renderViewEntity, camera, partialTicks);
     }
 
 	public static boolean onInvalidateRegionAndSetBlock(WorldClient client,BlockPos pos, IBlockState state)
@@ -252,6 +256,7 @@ public class CallRunnerClient extends CallRunner{
 	
 	public static int onRenderBlockLayer(RenderGlobal renderer,BlockRenderLayer blockLayerIn, double partialTicks, int pass, Entity entityIn){
 		for(PhysicsWrapperEntity wrapper:ValkyrienWarfareMod.physicsManager.getManagerForWorld(renderer.theWorld).physicsEntities){
+			GL11.glPushMatrix();
 			if(wrapper.wrapping.renderer!=null&&wrapper.wrapping.renderer.shouldRender()){
 				switch(blockLayerIn){
 					case CUTOUT:
@@ -279,6 +284,7 @@ public class CallRunnerClient extends CallRunner{
 				}
 				wrapper.wrapping.renderer.renderBlockLayer(blockLayerIn,partialTicks,pass);
 			}
+			GL11.glPopMatrix();
 		}
 		int toReturn = renderer.renderBlockLayer(blockLayerIn, partialTicks, pass, entityIn);
 		GlStateManager.resetColor();

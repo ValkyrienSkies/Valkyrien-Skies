@@ -43,7 +43,7 @@ public class PhysObjectRenderManager {
 	//It's actual value is completely irrelevant as long as it's close to the 
 	//Ship's centerBlockPos
 	public BlockPos offsetPos;
-	private double curPartialTick;
+	public double curPartialTick;
 	private FloatBuffer transformBuffer = null;
 	
 	public PhysObjectRenderManager(PhysicsObject toRender){

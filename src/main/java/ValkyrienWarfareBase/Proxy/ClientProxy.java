@@ -2,6 +2,8 @@ package ValkyrienWarfareBase.Proxy;
 
 import ValkyrienWarfareBase.EventsClient;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
+import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareBase.Math.Quaternion;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.Render.PhysObjectRenderFactory;
 import net.minecraft.block.Block;
@@ -51,8 +53,26 @@ public class ClientProxy extends CommonProxy{
 	}
 
 	@Override
-	public void updateShipPartialTicks(PhysicsWrapperEntity wrapper){
+	public void updateShipPartialTicks(PhysicsWrapperEntity entity){
 		double partialTicks = Minecraft.getMinecraft().getRenderPartialTicks();
-    	wrapper.wrapping.renderer.updateTranslation(partialTicks);
+//		entity.wrapping.renderer.updateTranslation(partialTicks);
+		Vector centerOfRotation = entity.wrapping.centerCoord;
+		entity.wrapping.renderer.curPartialTick = partialTicks;
+		
+		double moddedX = entity.lastTickPosX+(entity.posX-entity.lastTickPosX)*partialTicks;
+		double moddedY = entity.lastTickPosY+(entity.posY-entity.lastTickPosY)*partialTicks;
+		double moddedZ = entity.lastTickPosZ+(entity.posZ-entity.lastTickPosZ)*partialTicks;
+		double p0 = Minecraft.getMinecraft().thePlayer.lastTickPosX + (Minecraft.getMinecraft().thePlayer.posX - Minecraft.getMinecraft().thePlayer.lastTickPosX) * (double)partialTicks;
+		double p1 = Minecraft.getMinecraft().thePlayer.lastTickPosY + (Minecraft.getMinecraft().thePlayer.posY - Minecraft.getMinecraft().thePlayer.lastTickPosY) * (double)partialTicks;
+		double p2 = Minecraft.getMinecraft().thePlayer.lastTickPosZ + (Minecraft.getMinecraft().thePlayer.posZ - Minecraft.getMinecraft().thePlayer.lastTickPosZ) * (double)partialTicks;
+		
+		Quaternion smoothRotation = entity.wrapping.renderer.getSmoothRotationQuat(partialTicks);
+		double[] radians = smoothRotation.toRadians();
+		
+		double moddedPitch = Math.toDegrees(radians[0]);
+		double moddedYaw = Math.toDegrees(radians[1]);
+		double moddedRoll = Math.toDegrees(radians[2]);
+		
+		entity.wrapping.coordTransform.updateRenderMatrices(moddedX, moddedY, moddedZ, moddedPitch, moddedYaw, moddedRoll);
     }
 }

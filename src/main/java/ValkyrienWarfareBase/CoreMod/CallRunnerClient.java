@@ -1,10 +1,12 @@
 package ValkyrienWarfareBase.CoreMod;
 
 import java.util.Iterator;
+import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
+import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.Proxy.ClientProxy;
@@ -36,9 +38,60 @@ import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.world.EnumSkyBlock;
+import net.minecraft.world.World;
 
 public class CallRunnerClient extends CallRunner{
 
+	//TODO: This may become a performance issue
+	public static int onGetCombinedLight(World world,BlockPos pos, int lightValue)
+    {
+		int i = world.getLightFromNeighborsFor(EnumSkyBlock.SKY, pos);
+        int j = world.getLightFromNeighborsFor(EnumSkyBlock.BLOCK, pos);
+		AxisAlignedBB lightBB = new AxisAlignedBB(pos.getX()-2,pos.getY()-2,pos.getZ()-2,pos.getX()+2,pos.getY()+2,pos.getZ()+2);
+		List<PhysicsWrapperEntity> physEnts = ValkyrienWarfareMod.physicsManager.getManagerForWorld(world).getNearbyPhysObjects(world, lightBB);
+		
+		for(PhysicsWrapperEntity physEnt:physEnts){
+			BlockPos posInLocal = RotationMatrices.applyTransform(physEnt.wrapping.coordTransform.wToLTransform, pos);
+			int localI = world.getLightFromNeighborsFor(EnumSkyBlock.SKY, posInLocal);
+			int localJ = world.getLightFromNeighborsFor(EnumSkyBlock.BLOCK, posInLocal);
+			if(localI==0&&localJ==0){
+				localI = world.getLightFromNeighborsFor(EnumSkyBlock.SKY,posInLocal.up());
+				localJ = world.getLightFromNeighborsFor(EnumSkyBlock.BLOCK, posInLocal.up());
+			}
+			if(localI==0&&localJ==0){
+				localI = world.getLightFromNeighborsFor(EnumSkyBlock.SKY,posInLocal.down());
+				localJ = world.getLightFromNeighborsFor(EnumSkyBlock.BLOCK, posInLocal.down());
+			}
+			if(localI==0&&localJ==0){
+				localI = world.getLightFromNeighborsFor(EnumSkyBlock.SKY,posInLocal.north());
+				localJ = world.getLightFromNeighborsFor(EnumSkyBlock.BLOCK, posInLocal.north());
+			}
+			if(localI==0&&localJ==0){
+				localI = world.getLightFromNeighborsFor(EnumSkyBlock.SKY,posInLocal.south());
+				localJ = world.getLightFromNeighborsFor(EnumSkyBlock.BLOCK, posInLocal.south());
+			}
+			if(localI==0&&localJ==0){
+				localI = world.getLightFromNeighborsFor(EnumSkyBlock.SKY,posInLocal.east());
+				localJ = world.getLightFromNeighborsFor(EnumSkyBlock.BLOCK, posInLocal.east());
+			}
+			if(localI==0&&localJ==0){
+				localI = world.getLightFromNeighborsFor(EnumSkyBlock.SKY,posInLocal.west());
+				localJ = world.getLightFromNeighborsFor(EnumSkyBlock.BLOCK, posInLocal.west());
+			}
+			
+			i = Math.min(localI,i);
+			j = Math.max(localJ,j);
+		}
+
+        if (j < lightValue)
+        {
+            j = lightValue;
+        }
+
+        return i << 20 | j << 4;
+    }
+	
 	public static void onAddEffect(ParticleManager manager,Particle effect)
     {
 		BlockPos pos = new BlockPos(effect.posX,effect.posY,effect.posZ);

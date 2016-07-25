@@ -7,6 +7,7 @@ import java.util.concurrent.Executors;
 import ValkyrienWarfareBase.API.PhysicsEntityHooks;
 import ValkyrienWarfareBase.Block.BlockPhysicsInfuser;
 import ValkyrienWarfareBase.ChunkManagement.DimensionPhysicsChunkManager;
+import ValkyrienWarfareBase.Commands.PhysicsSpeedCommand;
 import ValkyrienWarfareBase.PhysicsManagement.DimensionPhysObjectManager;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.Network.PhysWrapperPositionHandler;
@@ -45,7 +46,7 @@ public class ValkyrienWarfareMod{
 
 	public static final String MODID = "valkyrienwarfare";
     public static final String MODNAME = "Valkyrien Warfare";
-    public static final String MODVER = "0.4";
+    public static final String MODVER = "0.7a";
 
     public static File configFile;
     public static Configuration config;
@@ -100,7 +101,7 @@ public class ValkyrienWarfareMod{
     public void serverStart(FMLServerStartingEvent event){
     	MinecraftServer server = event.getServer();
         ServerCommandManager manager = (ServerCommandManager)server.getCommandManager();
-//        manager.registerCommand(command)
+        manager.registerCommand(new PhysicsSpeedCommand());
     }
     
     private void registerNetworks(FMLStateEvent event){

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
+import ValkyrienWarfareBase.API.Vector;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
@@ -23,6 +24,7 @@ public class WorldPhysObjectManager {
 	public ArrayList<Callable<Void>> physCollisonCallables = new ArrayList<Callable<Void>>();
 	public int physIter = 5;
 	public double physSpeed = .05D;
+	public Vector gravity = new Vector(0,-9.8D,0);
 	
 	public WorldPhysObjectManager(World toManage){
 		worldObj = toManage;

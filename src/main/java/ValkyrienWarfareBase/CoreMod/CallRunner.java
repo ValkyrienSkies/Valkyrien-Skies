@@ -1,11 +1,14 @@
 package ValkyrienWarfareBase.CoreMod;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
 
@@ -13,10 +16,12 @@ import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Collision.EntityCollisionInjector;
+import ValkyrienWarfareBase.Collision.Polygon;
 import ValkyrienWarfareBase.Interaction.CustomPlayerInteractionManager;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityFallingBlock;
 import net.minecraft.entity.player.EntityPlayer;
@@ -47,6 +52,53 @@ import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraftforge.common.DimensionManager;
 
 public class CallRunner {
+	
+	public static double partialTicks;
+	//NOTE: DO NOT REMOVE, Server crash isnt being caused here, ASM is messed up at the moment
+	static{
+		partialTicks = Minecraft.getMinecraft().getRenderPartialTicks();
+	}
+	
+	public static <T extends Entity> List<T> onGetEntitiesWithinAABB(World world,Class <? extends T > clazz, AxisAlignedBB aabb, @Nullable Predicate <? super T > filter)
+    {
+		BlockPos pos = new BlockPos((aabb.minX+aabb.maxX)/2D,(aabb.minY+aabb.maxY)/2D,(aabb.minZ+aabb.maxZ)/2D);
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
+		if(wrapper!=null){
+			Polygon poly = new Polygon(aabb,wrapper.wrapping.coordTransform.lToWTransform);
+			aabb = poly.getEnclosedAABB().contract(.3D);
+		}
+		return world.getEntitiesWithinAABB(clazz, aabb, filter);
+    }
+	
+	public static List<Entity> onGetEntitiesInAABBexcluding(World world,@Nullable Entity entityIn, AxisAlignedBB boundingBox, @Nullable Predicate <? super Entity > predicate)
+    {
+		BlockPos pos = new BlockPos((boundingBox.minX+boundingBox.maxX)/2D,(boundingBox.minY+boundingBox.maxY)/2D,(boundingBox.minZ+boundingBox.maxZ)/2D);
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
+		if(wrapper!=null){
+			Polygon poly = new Polygon(boundingBox,wrapper.wrapping.coordTransform.lToWTransform);
+			boundingBox = poly.getEnclosedAABB().contract(.3D);
+		}
+		return world.getEntitiesInAABBexcluding(entityIn, boundingBox, predicate);
+    }
+	
+	public static Iterator<Chunk> onGetPersistentChunkIterable(World world,Iterator<Chunk> chunkIterator)
+    {
+		Iterator<Chunk> vanillaResult = world.getPersistentChunkIterable(chunkIterator);
+		ArrayList<Chunk> newResultArray = new ArrayList<Chunk>();
+		while(vanillaResult.hasNext()){
+			newResultArray.add(vanillaResult.next());
+		}
+		WorldPhysObjectManager manager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(world);
+		ArrayList<PhysicsWrapperEntity> physEntities = (ArrayList<PhysicsWrapperEntity>) manager.physicsEntities.clone();
+		for(PhysicsWrapperEntity wrapper:physEntities){
+			for(Chunk[] chunkArray:wrapper.wrapping.claimedChunks){
+				for(Chunk chunk:chunkArray){
+					newResultArray.add(chunk);
+				}
+			}
+		}
+        return newResultArray.iterator();
+    }
 	
 	public static boolean onCanInteractWith(Container con,EntityPlayer player){
 		return true;

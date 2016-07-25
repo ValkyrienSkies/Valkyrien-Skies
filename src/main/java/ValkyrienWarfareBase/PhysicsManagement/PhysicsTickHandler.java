@@ -3,6 +3,7 @@ package ValkyrienWarfareBase.PhysicsManagement;
 import java.util.ArrayList;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
+import ValkyrienWarfareBase.API.Vector;
 import net.minecraft.world.World;
 
 public class PhysicsTickHandler{
@@ -27,9 +28,11 @@ public class PhysicsTickHandler{
 		
 		int iters = manager.physIter;
 		double newPhysSpeed = manager.physSpeed;
+		Vector newGravity = manager.gravity;
 		for(int pass = 0;pass<iters;pass++){
 			//Run PRE-Col
 			for(PhysicsWrapperEntity wrapper:physicsEntities){
+				wrapper.wrapping.physicsProcessor.gravity = newGravity;
 				wrapper.wrapping.physicsProcessor.rawPhysTickPreCol(newPhysSpeed, iters);
 			}
 			

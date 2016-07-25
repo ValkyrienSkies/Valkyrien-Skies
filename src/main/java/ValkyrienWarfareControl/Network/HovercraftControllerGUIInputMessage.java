@@ -20,9 +20,13 @@ public class HovercraftControllerGUIInputMessage implements IMessage{
 	public HovercraftControllerGUIInputMessage(HovercraftControllerGUI guiIn){
 		tilePos = guiIn.tileEnt.getPos();
 		physEntId = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(guiIn.mc.theWorld, tilePos).getEntityId();
-		newIdealHeight = Double.parseDouble(guiIn.textFields.get(0).getText());
-		newStablitiyBias = Double.parseDouble(guiIn.textFields.get(1).getText());
-		newLinearVelocityBias = Double.parseDouble(guiIn.textFields.get(2).getText());
+		try{
+			newIdealHeight = Double.parseDouble(guiIn.textFields.get(0).getText());
+			newStablitiyBias = Double.parseDouble(guiIn.textFields.get(1).getText());
+			newLinearVelocityBias = Double.parseDouble(guiIn.textFields.get(2).getText());
+		}catch(Exception e){
+			guiIn.updateTextFields();
+		}
 	}
 	
 	@Override

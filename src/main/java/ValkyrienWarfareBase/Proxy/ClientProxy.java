@@ -52,6 +52,7 @@ public class ClientProxy extends CommonProxy{
 
 	@Override
 	public void updateShipPartialTicks(PhysicsWrapperEntity wrapper){
-    	
+		double partialTicks = Minecraft.getMinecraft().getRenderPartialTicks();
+    	wrapper.wrapping.renderer.updateTranslation(partialTicks);
     }
 }

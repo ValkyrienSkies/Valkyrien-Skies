@@ -44,7 +44,12 @@ public class TransformAdapter extends ClassVisitor{
 	private static final String RawParticleName = "net/minecraft/client/particle/Particle";
 	private static final String RawParticleManagerName = "net/minecraft/client/particle/ParticleManager";
 	private static final String RawContainerName = "net/minecraft/inventory/Container";
+	private static final String RawAxisAlignedBBName = "net/minecraft/util/math/AxisAlignedBB";
 	
+	private static final String IteratorName = "java/util/Iterator";
+	private static final String PredicateName = "com/google/common/base/Predicate";
+	private static final String ListName = "java/util/List";
+	private static final String ClassName = "java/lang/Class";
 	
 	private final String ParticleName;
 	private final String ParticleManagerName;
@@ -71,6 +76,7 @@ public class TransformAdapter extends ClassVisitor{
 	private final String ChunkName;
 	private final String ChunkProviderServerName;
 	private final String ContainerName;
+	private final String AxisAlignedBBName;
 	
 	private boolean correctDesc,correctName,correctSuperClass;
 
@@ -104,9 +110,47 @@ public class TransformAdapter extends ClassVisitor{
 		ParticleName = getRuntimeClassName(RawParticleName);
 		ParticleManagerName = getRuntimeClassName(RawParticleManagerName);
 		ContainerName = getRuntimeClassName(RawContainerName);
+		AxisAlignedBBName = getRuntimeClassName(RawAxisAlignedBBName);
 	}
 
 	private boolean runTransformer(String calledName,String calledDesc,String calledOwner,MethodVisitor mv){
+		//TBA
+		if(calledName.equals("getEntitiesWithinAABB")){
+			for(int i=0;i<100;i++){
+//				System.out.println(calledDesc);
+			}
+		}
+		if(isMethod(calledDesc,"(L"+BlockPosName+";I)I",calledName,WorldClassName,"getCombinedLight","func_175626_b",calledOwner)
+			||
+			isMethod(calledDesc,"(L"+RawBlockPosName+";I)I",calledName,RawWorldClassName,"getCombinedLight","func_175626_b",calledOwner)){
+				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onGetCombinedLight", String.format( "(L%s;L"+BlockPosName+";I)I", WorldClassName ) );
+				return false;
+		}
+		
+		//TBA
+		if(isMethod(calledDesc,"(L"+ClassName+";L"+AxisAlignedBBName+";L"+PredicateName+";)L"+ListName+";", calledName,WorldClassName,"getEntitiesWithinAABB","func_175647_a",calledOwner)
+			||
+			isMethod(calledDesc,"(L"+ClassName+";L"+RawAxisAlignedBBName+";L"+PredicateName+";)L"+ListName+";",calledName,RawWorldClassName,"getEntitiesWithinAABB","func_175647_a",calledOwner)){
+				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onGetEntitiesWithinAABB", String.format( "(L%s;L"+ClassName+";L"+AxisAlignedBBName+";L"+PredicateName+";)L"+ListName+";", WorldClassName ) );
+				return false;
+		}
+		
+		//TBA
+		if(isMethod(calledDesc,"(L"+EntityClassName+";L"+AxisAlignedBBName+";L"+PredicateName+";)L"+ListName+";", calledName,WorldClassName,"getEntitiesInAABBexcluding","func_175674_a",calledOwner)
+			||
+			isMethod(calledDesc,"(L"+RawEntityClassName+";L"+RawAxisAlignedBBName+";L"+PredicateName+";)L"+ListName+";",calledName,RawWorldClassName,"getEntitiesInAABBexcluding","func_175674_a",calledOwner)){
+				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onGetEntitiesInAABBexcluding", String.format( "(L%s;L"+EntityClassName+";L"+AxisAlignedBBName+";L"+PredicateName+";)L"+ListName+";", WorldClassName ) );
+				return false;
+		}
+		
+		//TBA
+		if(isMethod(calledDesc,"(L"+IteratorName+";)L"+IteratorName+";",calledName,WorldClassName,"getPersistentChunkIterable","getPersistentChunkIterable",calledOwner)
+			||
+			isMethod(calledDesc,"(L"+IteratorName+";)L"+IteratorName+";",calledName,RawWorldClassName,"getPersistentChunkIterable","getPersistentChunkIterable",calledOwner)){
+				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onGetPersistentChunkIterable", String.format( "(L%s;L"+IteratorName+";)L"+IteratorName+";", WorldClassName ) );
+				return false;
+		}
+		
 		//TBA
 		if(isMethod(calledDesc,"(L"+EntityPlayerName+";)Z",calledName,ContainerName,"canInteractWith","func_75145_c",calledOwner)
 			||

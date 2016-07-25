@@ -36,7 +36,7 @@ public class PhysicsCalculations {
 	public Vector torque;
 	
 	public double mass,invMass;
-	public double gravity = -9.8D;
+	public Vector gravity = new Vector(0,-9.8D,0);
 	//The time occurring on each PhysTick
 	public double physRawSpeed;
 	//Number of iterations the solver runs on each game tick
@@ -243,8 +243,7 @@ public class PhysicsCalculations {
 		double modifiedDrag = Math.pow(drag,physTickSpeed/physRawSpeed);
 		linearMomentum.multiply(modifiedDrag);
 		angularVelocity.multiply(modifiedDrag);
-		linearMomentum.Y+=(gravity*mass*physTickSpeed);
-		
+		linearMomentum.add(gravity.getProduct(mass*physTickSpeed));
 		Collections.shuffle(activeForcePositions);
 		
 		for(BlockPos pos:activeForcePositions){
@@ -253,7 +252,6 @@ public class PhysicsCalculations {
 			Vector inBodyWO = BigBastardMath.getBodyPosWithOrientation(pos, centerOfMass, parent.coordTransform.lToWRotation);
 			
 			Vector blockForce = BlockForce.basicForces.getForceFromState(state, pos, worldObj,physTickSpeed,parent);
-			
 			
 			if(blockForce!=null){
 				addForceAtPoint(inBodyWO,blockForce);

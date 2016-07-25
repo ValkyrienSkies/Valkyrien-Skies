@@ -30,8 +30,7 @@ public class CommonProxy {
     }
 
     public void updateShipPartialTicks(PhysicsWrapperEntity wrapper){
-    	double partialTicks = Minecraft.getMinecraft().getRenderPartialTicks();
-    	wrapper.wrapping.renderer.updateTranslation(partialTicks);
+    	
     }
     
 }

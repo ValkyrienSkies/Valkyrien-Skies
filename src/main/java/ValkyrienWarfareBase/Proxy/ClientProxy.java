@@ -57,6 +57,9 @@ public class ClientProxy extends CommonProxy{
 		double partialTicks = Minecraft.getMinecraft().getRenderPartialTicks();
 //		entity.wrapping.renderer.updateTranslation(partialTicks);
 		Vector centerOfRotation = entity.wrapping.centerCoord;
+		if(entity.wrapping.renderer==null){
+			return;
+		}
 		entity.wrapping.renderer.curPartialTick = partialTicks;
 		
 		double moddedX = entity.lastTickPosX+(entity.posX-entity.lastTickPosX)*partialTicks;

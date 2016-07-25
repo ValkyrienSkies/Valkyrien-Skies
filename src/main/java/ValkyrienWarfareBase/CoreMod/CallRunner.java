@@ -307,9 +307,9 @@ public class CallRunner {
             playerEyesPos = vec31;
             playerReachVector = vec32.subtract(vec31);
             
-//            if(world.isRemote){
+            if(world.isRemote){
             	ValkyrienWarfareMod.proxy.updateShipPartialTicks(wrapper);
-//            }
+            }
             
             //Transform the coordinate system for the player eye pos
             playerEyesPos = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.RwToLTransform, playerEyesPos);

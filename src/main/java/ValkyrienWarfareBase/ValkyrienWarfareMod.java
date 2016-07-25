@@ -111,7 +111,7 @@ public class ValkyrienWarfareMod{
     }
 
     private void registerBlocks(FMLStateEvent event){
-    	physicsInfuser = new BlockPhysicsInfuser(Material.ROCK).setHardness(12f).setUnlocalizedName("shipblock").setRegistryName(MODID, "shipblock").setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
+    	physicsInfuser = new BlockPhysicsInfuser(Material.ROCK).setHardness(12f).setUnlocalizedName("shipblock").setRegistryName(MODID, "shipblock").setCreativeTab(CreativeTabs.TRANSPORTATION);
     	GameRegistry.registerBlock(physicsInfuser);
     }
     

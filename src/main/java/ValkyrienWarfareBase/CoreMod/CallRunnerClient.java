@@ -214,8 +214,6 @@ public class CallRunnerClient extends CallRunner{
     {
 		((ClientProxy)ValkyrienWarfareMod.proxy).lastCamera = camera;
 		
-		
-		
 		GL11.glPushMatrix();
 		GlStateManager.disableAlpha();
 		GlStateManager.disableBlend();

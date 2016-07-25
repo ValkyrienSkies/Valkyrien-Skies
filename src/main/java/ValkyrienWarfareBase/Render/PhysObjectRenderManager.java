@@ -24,7 +24,6 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.ForgeHooksClient;
 
 /**
@@ -165,8 +164,6 @@ public class PhysObjectRenderManager {
 		for(BlockPos pos:parent.blockPositions){
 			TileEntity tileEnt = parent.worldObj.getTileEntity(pos);
 			if(tileEnt!=null){
-				GlStateManager.disableAlpha();
-				GlStateManager.disableBlend();
 				TileEntityRendererDispatcher.instance.renderTileEntity(tileEnt, partialTicks, -1);
 			}
 		}
@@ -230,7 +227,7 @@ public class PhysObjectRenderManager {
 		double[] newRotation = RotationMatrices.getDoubleIdentity();
 		newRotation = RotationMatrices.rotateAndTranslate(newRotation, entity.pitch, entity.yaw, entity.roll, new Vector());
 		Quaternion nextQuat = Quaternion.QuaternionFromMatrix(newRotation);
-		return  Quaternion.getBetweenQuat(oneTickBefore, nextQuat, partialTick);
+		return Quaternion.getBetweenQuat(oneTickBefore, nextQuat, partialTick);
 	}
 	
 	//TODO: Program me

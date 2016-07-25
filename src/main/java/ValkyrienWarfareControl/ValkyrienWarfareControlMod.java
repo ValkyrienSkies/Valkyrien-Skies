@@ -94,7 +94,10 @@ public class ValkyrienWarfareControlMod {
     
     private void registerRecipies(FMLStateEvent event){
     	GameRegistry.addRecipe(new ItemStack(basicEngine), new Object[] {"IWW", "IPP","IWW",'W',Item.getItemFromBlock(Blocks.PLANKS), 'P', Item.getItemFromBlock(Blocks.PISTON),'I',Items.IRON_INGOT});
+    	GameRegistry.addRecipe(new ItemStack(basicHoverController), new Object[] {"III", "TCT","III",'I',Item.getItemFromBlock(Blocks.IRON_BLOCK),'C',Items.COMPASS,'T',Item.getItemFromBlock(Blocks.CRAFTING_TABLE)});
+    	GameRegistry.addRecipe(new ItemStack(antigravityEngine,3), new Object[] {"IWI", "GDG","IWI",'W',Item.getItemFromBlock(Blocks.PLANKS), 'G', Item.getItemFromBlock(Blocks.GOLD_BLOCK),'I',Item.getItemFromBlock(Blocks.IRON_BLOCK),'D',Item.getItemFromBlock(Blocks.DIAMOND_BLOCK)});
     	
+    	GameRegistry.addRecipe(new ItemStack(systemLinker), new Object[] {"IR ", " DR","I I",'I',Items.IRON_INGOT,'D',Items.DIAMOND,'R',Items.REDSTONE});
     }
     
     private void registerNetworks(FMLStateEvent event){

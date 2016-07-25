@@ -52,13 +52,7 @@ import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraftforge.common.DimensionManager;
 
 public class CallRunner {
-	
-	public static double partialTicks;
-	//NOTE: DO NOT REMOVE, Server crash isnt being caused here, ASM is messed up at the moment
-	static{
-		partialTicks = Minecraft.getMinecraft().getRenderPartialTicks();
-	}
-	
+
 	public static <T extends Entity> List<T> onGetEntitiesWithinAABB(World world,Class <? extends T > clazz, AxisAlignedBB aabb, @Nullable Predicate <? super T > filter)
     {
 		BlockPos pos = new BlockPos((aabb.minX+aabb.maxX)/2D,(aabb.minY+aabb.maxY)/2D,(aabb.minZ+aabb.maxZ)/2D);
@@ -101,6 +95,7 @@ public class CallRunner {
     }
 	
 	public static boolean onCanInteractWith(Container con,EntityPlayer player){
+		boolean vanilla = con.canInteractWith(player);
 		return true;
 	}
 	

@@ -7,11 +7,11 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 
-public class PhysicsSpeedCommand extends CommandBase{
+public class PhysicsIterCommand extends CommandBase{
 
 	@Override
 	public String getCommandName(){
-		return "setPhysSpeed";
+		return "setPhysIter";
 	}
 
 	@Override
@@ -29,20 +29,20 @@ public class PhysicsSpeedCommand extends CommandBase{
 		try{
 			World commandWorld = sender.getEntityWorld();
 			
-			double sentNum = ValkyrienWarfareMod.physicsManager.getManagerForWorld(commandWorld).physSpeed;
+			int sentNum = ValkyrienWarfareMod.physicsManager.getManagerForWorld(commandWorld).physIter;
 			String s = null;
             s = getChatComponentFromNthArg(sender, args, 0).getUnformattedText();
-	        try{
+            try{
             	if(s!=null){
-	            	sentNum = Double.parseDouble(s);
-	            }
-	        }catch(Exception e){
-	        	notifyCommandListener(sender, this, "Invalid Input", new Object[] {args[0]});
+            		sentNum = Integer.parseInt(s);
+            	}
+            }catch(Exception e){
+            	notifyCommandListener(sender, this, "Invalid Input", new Object[] {args[0]});
         		return;
-	        }
+            }
             if(sentNum>=0&&sentNum<=100){
-            	ValkyrienWarfareMod.physicsManager.getManagerForWorld(commandWorld).physSpeed = sentNum;
-            	notifyCommandListener(sender, this, "Physics Speed set to "+sentNum+" :Default (.05)", new Object[] {args[0]});
+            	ValkyrienWarfareMod.physicsManager.getManagerForWorld(commandWorld).physIter = sentNum;
+            	notifyCommandListener(sender, this, "Physics Iters set to "+sentNum+" :Default (5)", new Object[] {args[0]});
             }
 		}catch(Exception e){
 			System.out.println(e);

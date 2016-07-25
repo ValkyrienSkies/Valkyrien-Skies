@@ -1,5 +1,10 @@
 package ValkyrienWarfareBase.Proxy;
 
+import ValkyrienWarfareBase.Commands.PhysicsGravityCommand;
+import ValkyrienWarfareBase.Commands.PhysicsIterCommand;
+import ValkyrienWarfareBase.Commands.PhysicsSpeedCommand;
+import net.minecraft.command.ServerCommandManager;
+import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;

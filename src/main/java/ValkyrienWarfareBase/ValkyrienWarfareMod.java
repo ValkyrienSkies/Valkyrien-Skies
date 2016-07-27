@@ -128,24 +128,24 @@ public class ValkyrienWarfareMod{
     }
 
     public static void applyConfig(Configuration conf){
-        Property dynamiclightProperty = config.get(Configuration.CATEGORY_GENERAL, "DynamicLighting", false);
+//        Property dynamiclightProperty = config.get(Configuration.CATEGORY_GENERAL, "DynamicLighting", false);
         Property shipTickDelayProperty = config.get(Configuration.CATEGORY_GENERAL, "Ticks Delay Between Client and Server", 1);
         Property missedPacketsTolerance = config.get(Configuration.CATEGORY_GENERAL, "Missed packets threshold", 1);
-        Property spawnParticlesParticle = config.get(Configuration.CATEGORY_GENERAL, "Ships spawn particles", false);
+//        Property spawnParticlesParticle = config.get(Configuration.CATEGORY_GENERAL, "Ships spawn particles", false);
         Property useMultiThreadedPhysics = config.get(Configuration.CATEGORY_GENERAL, "Multi-Threaded Physics", true);
         Property physicsThreads = config.get(Configuration.CATEGORY_GENERAL, "Physics Thread Count", (int)Math.max(1, Runtime.getRuntime().availableProcessors()-2));
         
-        dynamiclightProperty.setComment("Dynamic Lighting");
+//        dynamiclightProperty.setComment("Dynamic Lighting");
         shipTickDelayProperty.setComment("Tick delay between client and server physics; raise if physics look choppy");
         missedPacketsTolerance.setComment("Higher values gaurantee virutally no choppyness, but also comes with a large delay. Only change if you have unstable internet");
-        spawnParticlesParticle.setComment("Ships spawn particles");
+//        spawnParticlesParticle.setComment("Ships spawn particles");
         useMultiThreadedPhysics.setComment( "Use Multi-Threaded Physics");
         physicsThreads.setComment( "Number of threads to run physics on;");
         
-        dynamicLighting = dynamiclightProperty.getBoolean();
+//        dynamicLighting = dynamiclightProperty.getBoolean();
         shipTickDelay = shipTickDelayProperty.getInt()%20;
         maxMissedPackets = missedPacketsTolerance.getInt();
-        spawnParticles = spawnParticlesParticle.getBoolean();
+//        spawnParticles = spawnParticlesParticle.getBoolean();
         multiThreadedPhysics = useMultiThreadedPhysics.getBoolean();
         threadCount = physicsThreads.getInt();
         if(MultiThreadExecutor!=null){

@@ -8,8 +8,8 @@ import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin.Name;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin.TransformerExclusions;
 
 @Name("ValkyrienWarfareBase Mod Compatibility Hack")
-@IFMLLoadingPlugin.SortingIndex(1337)
-@TransformerExclusions({"ValkyrienWarfareBase"})
+@IFMLLoadingPlugin.SortingIndex(1001)
+@TransformerExclusions({"ValkyrienWarfareBase","CuckServatives"})
 public class ValkyrienWarfarePluginHack implements IFMLLoadingPlugin{
 
 	public static Boolean isObfuscatedEnvironment = null;

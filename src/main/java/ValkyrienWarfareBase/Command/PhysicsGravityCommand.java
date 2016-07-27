@@ -1,4 +1,4 @@
-package ValkyrienWarfareBase.Commands;
+package ValkyrienWarfareBase.Command;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.Vector;
@@ -37,7 +37,7 @@ public class PhysicsGravityCommand extends CommandBase{
 	            	s = s.replace("<","");
 	            	s = s.replace(">","");
 	            	s = s.replace(" ","");
-	            	String[] numbers = s.split(":");
+	            	String[] numbers = s.split(",");
 	            	newVector.X = Double.parseDouble(numbers[0]);
 	            	newVector.Y = Double.parseDouble(numbers[1]);
 	            	newVector.Z = Double.parseDouble(numbers[2]);

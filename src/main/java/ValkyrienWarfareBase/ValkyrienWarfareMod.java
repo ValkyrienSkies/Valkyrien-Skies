@@ -14,7 +14,6 @@ import ValkyrienWarfareBase.PhysicsManagement.Network.PhysWrapperPositionMessage
 import ValkyrienWarfareBase.Proxy.CommonProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.command.ServerCommandManager;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -92,17 +91,14 @@ public class ValkyrienWarfareMod{
     public void postInit(FMLPostInitializationEvent event){
     	proxy.postInit(event);
     	airStateIndex = Block.getStateId(Blocks.AIR.getDefaultState());
-    	BlockPhysicsRegistration.registerVanillaBlocksMass();
+    	BlockPhysicsRegistration.registerCustomBlockMasses();
     	BlockPhysicsRegistration.registerVanillaBlockForces();
     }
 
     @EventHandler
     public void serverStart(FMLServerStartingEvent event){
     	MinecraftServer server = event.getServer();
-        ServerCommandManager manager = (ServerCommandManager)server.getCommandManager();
-//        manager.registerCommand(new PhysicsSpeedCommand());
-//        manager.registerCommand(new PhysicsIterCommand());
-//        manager.registerCommand(new PhysicsGravityCommand());
+        ExtraRegistry.registerCommands(server);
     }
     
     private void registerNetworks(FMLStateEvent event){

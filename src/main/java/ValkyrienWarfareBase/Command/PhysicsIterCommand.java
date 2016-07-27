@@ -1,4 +1,4 @@
-package ValkyrienWarfareBase.Commands;
+package ValkyrienWarfareBase.Command;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import net.minecraft.command.CommandBase;

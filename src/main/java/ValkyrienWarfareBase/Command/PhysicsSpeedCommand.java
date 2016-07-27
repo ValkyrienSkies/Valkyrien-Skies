@@ -1,4 +1,4 @@
-package ValkyrienWarfareBase.Commands;
+package ValkyrienWarfareBase.Command;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import net.minecraft.command.CommandBase;
@@ -42,7 +42,7 @@ public class PhysicsSpeedCommand extends CommandBase{
 	        }
             if(sentNum>=0&&sentNum<=100){
             	ValkyrienWarfareMod.physicsManager.getManagerForWorld(commandWorld).physSpeed = sentNum;
-            	notifyCommandListener(sender, this, "Physics Speed set to "+sentNum+" :Default (.05)", new Object[] {args[0]});
+            	notifyCommandListener(sender, this, "Physics Speed set to "+sentNum+" :Default (.055)", new Object[] {args[0]});
             }
 		}catch(Exception e){
 			System.out.println(e);

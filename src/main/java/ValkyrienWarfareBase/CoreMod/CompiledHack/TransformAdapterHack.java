@@ -1,18 +1,9 @@
 package ValkyrienWarfareBase.CoreMod.CompiledHack;
 
-import java.lang.reflect.Field;
-import java.util.Map;
-
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
-
-import ValkyrienWarfareBase.CoreMod.InheritanceUtils;
 import ValkyrienWarfareBase.CoreMod.TransformAdapter;
-import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
 
 /**
- * Basically handles all the byte transforms
+ * Same thing, but works specifically with other mods
  * @author thebest108
  *
  */

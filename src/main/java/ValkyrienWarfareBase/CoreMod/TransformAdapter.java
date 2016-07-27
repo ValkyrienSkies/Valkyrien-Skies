@@ -16,7 +16,7 @@ import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRema
  *
  */
 public class TransformAdapter extends ClassVisitor{
-	private String m_className;
+	protected String m_className;
 	public boolean m_isObfuscatedEnvironment;
 	
 	private static final String RawEntityClassName = "net/minecraft/entity/Entity";
@@ -78,7 +78,7 @@ public class TransformAdapter extends ClassVisitor{
 	private final String ContainerName;
 	private final String AxisAlignedBBName;
 	
-	private boolean correctDesc,correctName,correctSuperClass;
+//	private boolean correctDesc,correctName,correctSuperClass;
 
 	public TransformAdapter( int api, boolean isObfuscatedEnvironment ){
 		super( api, null );
@@ -113,7 +113,7 @@ public class TransformAdapter extends ClassVisitor{
 		AxisAlignedBBName = getRuntimeClassName(RawAxisAlignedBBName);
 	}
 
-	private boolean runTransformer(String calledName,String calledDesc,String calledOwner,MethodVisitor mv){
+	public boolean runTransformer(String calledName,String calledDesc,String calledOwner,MethodVisitor mv){
 
 		if(isMethod(calledDesc,"(L"+BlockPosName+";I)I",calledName,WorldClassName,"getCombinedLight","func_175626_b",calledOwner)
 			||
@@ -334,11 +334,11 @@ public class TransformAdapter extends ClassVisitor{
 	}
 	
 	private boolean isMethod(String calledDesc,String methodDesc,String calledName,String classFrom,String methodNameClear,String methodNameObsf,String calledOwner){
-		correctDesc = calledDesc.equals(methodDesc);
+		boolean correctDesc = calledDesc.equals(methodDesc);
 		if(correctDesc){
-			correctName = pertainsToMethod(calledName,classFrom,methodNameClear,methodNameObsf)||pertainsToMethod(calledOwner,classFrom,methodNameClear,methodNameObsf);
+			boolean correctName = pertainsToMethod(calledName,classFrom,methodNameClear,methodNameObsf)||pertainsToMethod(calledName,calledOwner,methodNameClear,methodNameObsf);
 			if(correctName){
-				correctSuperClass = InheritanceUtils.extendsClass(calledOwner, classFrom);
+				boolean correctSuperClass = InheritanceUtils.extendsClass(calledOwner, classFrom);
 				return correctSuperClass;
 			}
 		}

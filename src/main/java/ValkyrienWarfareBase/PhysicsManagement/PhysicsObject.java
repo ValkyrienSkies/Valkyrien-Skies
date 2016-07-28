@@ -11,10 +11,14 @@ import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.ChunkManagement.ChunkSet;
+import ValkyrienWarfareBase.CoreMod.CallRunner;
 import ValkyrienWarfareBase.Physics.BlockForce;
 import ValkyrienWarfareBase.Physics.PhysicsCalculations;
+import ValkyrienWarfareBase.Physics.PhysicsQueuedForce;
 import ValkyrienWarfareBase.PhysicsManagement.Network.PhysWrapperPositionMessage;
+import ValkyrienWarfareBase.Relocation.ShipBlockPosFinder;
 import ValkyrienWarfareBase.Relocation.ShipSpawnDetector;
+import ValkyrienWarfareBase.Relocation.SpatialDetector;
 import ValkyrienWarfareBase.Relocation.VWChunkCache;
 import ValkyrienWarfareBase.Render.PhysObjectRenderManager;
 import gnu.trove.iterator.TIntIterator;
@@ -66,6 +70,8 @@ public class PhysicsObject {
 	public ArrayList<BlockPos> blockPositions = new ArrayList<BlockPos>();
 	public AxisAlignedBB collisionBB = new AxisAlignedBB(0,0,0,0,0,0);
 	
+	public ArrayList<PhysicsQueuedForce> queuedPhysForces = new ArrayList<PhysicsQueuedForce>();
+	public ArrayList<BlockPos> explodedPositionsThisTick = new ArrayList<BlockPos>();
 	public boolean doPhysics = true;
 	
 	public ChunkCache surroundingWorldChunksCache;
@@ -89,6 +95,11 @@ public class PhysicsObject {
 	public void onSetBlockState(IBlockState oldState,IBlockState newState,BlockPos posAt){
 		boolean isOldAir = oldState==null||oldState.getBlock().equals(Blocks.AIR);
 		boolean isNewAir = newState==null||newState.getBlock().equals(Blocks.AIR);
+		
+		if(!ownedChunks.isChunkEnclosedInSet(posAt.getX()>>4, posAt.getZ()>>4)){
+			return;
+		}
+		
 		if(isOldAir&&isNewAir){
 			blockPositions.remove(posAt);
 		}
@@ -314,10 +325,85 @@ public class PhysicsObject {
 	}
 	
 	public void onTick(){
-		if(worldObj.isRemote){
-//			System.out.println("tick");
+		
+	}
+	
+	public void queueForce(PhysicsQueuedForce toQueue){
+		queuedPhysForces.add(toQueue);
+	}
+	
+	public void onPostTick(){
+		tickQueuedForces();
+		explodedPositionsThisTick.clear();
+		
+		
+		
+	}
+	
+	public void processPotentialSplitting(){
+		ArrayList<BlockPos> dirtyBlockPositions = new ArrayList(blockPositions);
+		if(dirtyBlockPositions.size()==0){
+			return;
 		}
 		
+		while(dirtyBlockPositions.size()!=0){
+			BlockPos pos = dirtyBlockPositions.get(0);
+			SpatialDetector firstDet = new ShipBlockPosFinder(pos, worldObj, dirtyBlockPositions.size(), false);
+
+			if(firstDet.foundSet.size()!=dirtyBlockPositions.size()){
+				//Set Y to 300 to prevent picking up extra blocks
+				PhysicsWrapperEntity newSplit = new PhysicsWrapperEntity(worldObj,wrapper.posX,300,wrapper.posZ);
+				newSplit.yaw = wrapper.yaw;
+				newSplit.pitch = wrapper.pitch;
+				newSplit.roll = wrapper.roll;
+				newSplit.posX = wrapper.posX;
+				newSplit.posY = wrapper.posY;
+				newSplit.posZ = wrapper.posZ;
+				TIntIterator iter = firstDet.foundSet.iterator();
+				
+				BlockPos oldBlockCenter = this.getRegionCenter();
+				BlockPos newBlockCenter = newSplit.wrapping.getRegionCenter();
+				BlockPos centerDif = newBlockCenter.subtract(oldBlockCenter);
+				
+				ValkyrienWarfareMod.physicsManager.onShipLoad(newSplit);
+				
+				while(iter.hasNext()){
+					int hash = iter.next();
+					BlockPos fromHash = SpatialDetector.getPosWithRespectTo(hash, pos);
+					dirtyBlockPositions.remove(fromHash);
+					CallRunner.onSetBlockState(worldObj, fromHash.add(centerDif), VKChunkCache.getBlockState(fromHash), 3);
+					CallRunner.onSetBlockState(worldObj, fromHash, Blocks.AIR.getDefaultState(), 2);
+				}
+				newSplit.wrapping.centerCoord = new Vector(centerCoord);
+				newSplit.wrapping.centerCoord.X+=centerDif.getX();
+				newSplit.wrapping.centerCoord.Y+=centerDif.getY();
+				newSplit.wrapping.centerCoord.Z+=centerDif.getZ();
+				newSplit.wrapping.coordTransform.lToWRotation = coordTransform.lToWRotation;
+				newSplit.wrapping.physicsProcessor.updateCenterOfMass();
+				newSplit.wrapping.coordTransform.updateAllTransforms();
+				
+				//TODO: THIS MATH IS NOT EVEN REMOTELY CORRECT!!!!!
+				//Also the moment of inertia is wrong too
+				newSplit.wrapping.physicsProcessor.linearMomentum = new Vector(physicsProcessor.linearMomentum);
+				newSplit.wrapping.physicsProcessor.angularVelocity = new Vector(physicsProcessor.angularVelocity);
+				
+				worldObj.spawnEntityInWorld(newSplit);
+			}else{
+				dirtyBlockPositions.clear();
+			}
+		
+		}
+	}
+	
+	public void tickQueuedForces(){
+		for(int i=0;i<queuedPhysForces.size();i++){
+			PhysicsQueuedForce queue = queuedPhysForces.get(i);
+			if(queue.ticksToApply<=0){
+				queuedPhysForces.remove(i);
+				i--;
+			}
+			queue.ticksToApply--;
+		}
 	}
 	
 	public void onPostTickClient(){

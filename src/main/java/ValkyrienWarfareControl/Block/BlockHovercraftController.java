@@ -5,6 +5,7 @@ import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareControl.ValkyrienWarfareControlMod;
 import ValkyrienWarfareControl.GUI.ControlGUIEnum;
+import ValkyrienWarfareControl.Item.ItemSystemLinker;
 import ValkyrienWarfareControl.TileEntity.TileEntityHoverController;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
@@ -28,6 +29,9 @@ public class BlockHovercraftController extends Block implements ITileEntityProvi
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
     {
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldIn, pos);
+		if(heldItem.getItem() instanceof ItemSystemLinker){
+			return false;
+		}
 		if(wrapper!=null){
 			if(!worldIn.isRemote){
 				playerIn.openGui(ValkyrienWarfareControlMod.instance, ControlGUIEnum.HoverCraftController.ordinal(), worldIn, pos.getX(), pos.getY(), pos.getZ());

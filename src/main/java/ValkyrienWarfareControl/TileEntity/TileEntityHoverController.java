@@ -21,7 +21,7 @@ public class TileEntityHoverController extends TileEntity{
 
 	public ArrayList<BlockPos> enginePositions = new ArrayList<BlockPos>();
 	public double idealHeight = 16D;
-	public double stabilityBias = .5D;
+	public double stabilityBias = .3D;
 
 	public double linearVelocityBias = 1D;
 	public double angularVelocityBias = 20D;

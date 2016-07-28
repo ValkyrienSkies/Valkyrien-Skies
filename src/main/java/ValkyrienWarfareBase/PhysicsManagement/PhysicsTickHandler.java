@@ -24,6 +24,7 @@ public class PhysicsTickHandler{
 		for(PhysicsWrapperEntity wrapper:physicsEntities){
 			wrapper.wrapping.coordTransform.setPrevMatrices();
 			wrapper.wrapping.updateChunkCache();
+//			wrapper.wrapping.processPotentialSplitting();
 		}
 		
 		int iters = manager.physIter;
@@ -71,7 +72,10 @@ public class PhysicsTickHandler{
 
 	public static void onWorldTickEnd(World world){
 		WorldPhysObjectManager manager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(world);
-		
+		ArrayList<PhysicsWrapperEntity> physicsEntities = (ArrayList<PhysicsWrapperEntity>) manager.physicsEntities.clone();
+		for(PhysicsWrapperEntity wrapperEnt:physicsEntities){
+			wrapperEnt.wrapping.onPostTick();
+		}
 	}
 
 

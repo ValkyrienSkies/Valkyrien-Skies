@@ -31,8 +31,10 @@ public class WorldPhysObjectManager {
 	}
 	
 	public void onLoad(PhysicsWrapperEntity loaded){
-		physicsEntities.add(loaded);
-		physCollisonCallables.add(loaded.wrapping.collisionCallable);
+		if(!physicsEntities.contains(loaded)){
+			physicsEntities.add(loaded);
+			physCollisonCallables.add(loaded.wrapping.collisionCallable);
+		}
 	}
 	
 	public void onUnload(PhysicsWrapperEntity loaded){

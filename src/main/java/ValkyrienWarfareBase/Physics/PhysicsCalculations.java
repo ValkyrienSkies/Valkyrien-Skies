@@ -244,13 +244,13 @@ public class PhysicsCalculations {
 		linearMomentum.multiply(modifiedDrag);
 		angularVelocity.multiply(modifiedDrag);
 		linearMomentum.add(gravity.getProduct(mass*physTickSpeed));
+		addQueuedForces();
 		Collections.shuffle(activeForcePositions);
 		
 		for(BlockPos pos:activeForcePositions){
 			IBlockState state = parent.VKChunkCache.getBlockState(pos);
 			Block blockAt = state.getBlock();
 			Vector inBodyWO = BigBastardMath.getBodyPosWithOrientation(pos, centerOfMass, parent.coordTransform.lToWRotation);
-			
 			Vector blockForce = BlockForce.basicForces.getForceFromState(state, pos, worldObj,physTickSpeed,parent);
 			
 			if(blockForce!=null){
@@ -262,6 +262,26 @@ public class PhysicsCalculations {
 		}
 
 		convertTorqueToVelocity();
+	}
+	
+	public void addQueuedForces(){
+		Collections.shuffle(parent.queuedPhysForces);
+		for(PhysicsQueuedForce queuedForce:parent.queuedPhysForces){
+			Vector forceVec = new Vector(queuedForce.force);
+			Vector posVec = new Vector(queuedForce.inBodyPos);
+			if(queuedForce.isLocal){
+				RotationMatrices.doRotationOnly(parent.coordTransform.lToWRotation, forceVec);
+			}
+			forceVec.multiply(physTickSpeed);
+			
+			RotationMatrices.applyTransform(parent.coordTransform.lToWTransform, posVec);
+
+			posVec.X-=wrapperEnt.posX;
+			posVec.Y-=wrapperEnt.posY;
+			posVec.Z-=wrapperEnt.posZ;
+			
+			addForceAtPoint(posVec,forceVec);
+		}
 	}
 	
 	public void convertTorqueToVelocity(){

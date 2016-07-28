@@ -18,6 +18,7 @@ import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Collision.EntityCollisionInjector;
 import ValkyrienWarfareBase.Collision.Polygon;
 import ValkyrienWarfareBase.Interaction.CustomPlayerInteractionManager;
+import ValkyrienWarfareBase.Physics.PhysicsQueuedForce;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
 import net.minecraft.block.Block;
@@ -73,17 +74,53 @@ public class CallRunner {
 		for(PhysicsWrapperEntity ship:shipsNear){
 			Vector inLocal = new Vector(center);
 			RotationMatrices.applyTransform(ship.wrapping.coordTransform.wToLTransform, inLocal);
-			Explosion expl = new Explosion(ship.worldObj, e.exploder, inLocal.X, inLocal.Y, inLocal.Z, radius, false, false);
+			Explosion expl = new Explosion(ship.worldObj, null, inLocal.X, inLocal.Y, inLocal.Z, radius, false, false);
 			expl.doExplosionA();
+			
+			double affectedPostions = 0;
+			
+			for(Object o:expl.affectedBlockPositions){
+				IBlockState state = ship.worldObj.getBlockState((BlockPos)o);
+				Block block = state.getBlock();
+				if(!block.isAir(state, worldIn, (BlockPos)o)||ship.wrapping.explodedPositionsThisTick.contains((BlockPos)o)){
+					affectedPostions++;
+				}
+			}
+			
 			for(Object o:expl.affectedBlockPositions){
 				BlockPos pos = (BlockPos)o;
+				
 				IBlockState state = ship.worldObj.getBlockState(pos);
 				Block block = state.getBlock();
-				if (state.getMaterial() != Material.AIR){
+				if (!block.isAir(state, worldIn, (BlockPos)o)||ship.wrapping.explodedPositionsThisTick.contains((BlockPos)o)){
 	                if (block.canDropFromExplosion(expl)){
 	                    block.dropBlockAsItemWithChance(ship.worldObj, pos, state, 1.0F / expl.explosionSize, 0);
 	                }
 	                block.onBlockExploded(ship.worldObj, pos, expl);
+	                if(!worldIn.isRemote){
+	                	Vector posVector = new Vector(pos.getX()+.5,pos.getY()+.5,pos.getZ()+.5);
+	                	ship.wrapping.coordTransform.fromGlobalToLocal(posVector);
+	                	
+//	                	System.out.println(expl.affectedBlockPositions.size());
+	                	
+	                	double explosionForce = e.explosionSize/(affectedPostions*18D);
+	                	
+//	                	System.out.println(posVector);
+	                	
+	                	Vector forceVector = new Vector(pos.getX()+.5-expl.explosionX,pos.getY()+.5-expl.explosionY,pos.getZ()+.5-expl.explosionZ);
+	                	
+	                	forceVector.normalize();
+	                	
+	                	forceVector.multiply(explosionForce);
+	                	
+	                	PhysicsQueuedForce queuedForce = new PhysicsQueuedForce(forceVector, posVector, true, 2);
+	                	
+	                	if(!ship.wrapping.explodedPositionsThisTick.contains(pos)){
+	                		ship.wrapping.explodedPositionsThisTick.add(pos);
+	                	}
+	                	
+	                	ship.wrapping.queueForce(queuedForce);
+	                }
 //	                ship.explodedThisTick.add(pos);
 //	                if(!worldIn.isRemote){
 //	    				PhysicsController shipPhys = ((ShipRegionServer)ship.region).physController;
@@ -360,8 +397,9 @@ public class CallRunner {
             playerEyesPos = vec31;
             playerReachVector = vec32.subtract(vec31);
             
+            //TODO: Re-enable
             if(world.isRemote){
-            	ValkyrienWarfareMod.proxy.updateShipPartialTicks(wrapper);
+//            	ValkyrienWarfareMod.proxy.updateShipPartialTicks(wrapper);
             }
             
             //Transform the coordinate system for the player eye pos

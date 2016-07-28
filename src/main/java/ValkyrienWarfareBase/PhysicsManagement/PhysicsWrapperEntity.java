@@ -32,7 +32,6 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 	public PhysicsWrapperEntity(World worldIn) {
 		super(worldIn);
 		wrapping = new PhysicsObject(this);
-		ValkyrienWarfareMod.physicsManager.onShipLoad(this);
 	}
 	
 	public PhysicsWrapperEntity(World worldIn,double x,double y,double z) {

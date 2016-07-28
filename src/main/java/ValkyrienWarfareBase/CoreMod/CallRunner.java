@@ -490,20 +490,25 @@ public class CallRunner {
 	}
 	
 	public static void onEntityAdded(World world,Entity added){
+		if(added instanceof PhysicsWrapperEntity){
+			ValkyrienWarfareMod.physicsManager.onShipLoad((PhysicsWrapperEntity) added);
+		}
 		world.onEntityAdded(added);
 	}
 
 	public static void onChunkUnload(ChunkProviderServer provider,Chunk chunk){
 		if(!ValkyrienWarfareMod.chunkManager.isChunkInShipRange(provider.worldObj,chunk.xPosition, chunk.zPosition)){
-			for (int i = 0; i < chunk.entityLists.length; ++i)
-	        {
-	            Collection<Entity> c = chunk.entityLists[i];
-	            for(Entity entity:c){
-	            	if(entity instanceof PhysicsWrapperEntity){
-	            		ValkyrienWarfareMod.physicsManager.getManagerForWorld(entity.worldObj).physicsEntitiesToUnload.add((PhysicsWrapperEntity) entity);
-	            	}
-	            }
-	        }
+			if(!chunk.worldObj.isSpawnChunk(chunk.xPosition, chunk.zPosition)){
+				for (int i = 0; i < chunk.entityLists.length; ++i)
+		        {
+		            Collection<Entity> c = chunk.entityLists[i];
+		            for(Entity entity:c){
+		            	if(entity instanceof PhysicsWrapperEntity){
+		            		ValkyrienWarfareMod.physicsManager.getManagerForWorld(entity.worldObj).physicsEntitiesToUnload.add((PhysicsWrapperEntity) entity);
+		            	}
+		            }
+		        }
+			}
 			provider.unload(chunk);
 		}
 	}

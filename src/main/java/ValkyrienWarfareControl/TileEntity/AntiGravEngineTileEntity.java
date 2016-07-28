@@ -15,7 +15,7 @@ public class AntiGravEngineTileEntity extends TileEntity{
 	public BlockPos controllerPos = BlockPos.ORIGIN;
 	public Vector angularThrust = new Vector();
 	public Vector linearThrust = new Vector();
-	public double maxThrust = 15000D;
+	public double maxThrust = 25000D;
 	public TileEntityHoverController controller;
 	
 	private double idealY;

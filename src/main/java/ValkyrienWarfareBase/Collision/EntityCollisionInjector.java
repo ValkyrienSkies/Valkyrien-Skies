@@ -141,7 +141,7 @@ public class EntityCollisionInjector {
 		
 		WorldPhysObjectManager localPhysManager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(entity.worldObj);
 		
-		List<PhysicsWrapperEntity> ships = localPhysManager.getNearbyPhysObjects(entity.worldObj, entityBB);
+		List<PhysicsWrapperEntity> ships = localPhysManager.getNearbyPhysObjects(entityBB);
 		
 		for(PhysicsWrapperEntity wrapper:ships){
 			Polygon playerInLocal = new Polygon(entityBB, wrapper.wrapping.coordTransform.wToLTransform);

@@ -50,7 +50,7 @@ public class WorldPhysObjectManager {
 		return null;
 	}
 	
-	public List<PhysicsWrapperEntity> getNearbyPhysObjects(World world,AxisAlignedBB toCheck){
+	public List<PhysicsWrapperEntity> getNearbyPhysObjects(AxisAlignedBB toCheck){
 		ArrayList<PhysicsWrapperEntity> ships = new ArrayList<PhysicsWrapperEntity>();
 		
 		AxisAlignedBB expandedCheck = toCheck.expand(6, 6, 6);

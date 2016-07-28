@@ -49,7 +49,7 @@ public class CallRunnerClient extends CallRunner{
 		int i = world.getLightFromNeighborsFor(EnumSkyBlock.SKY, pos);
         int j = world.getLightFromNeighborsFor(EnumSkyBlock.BLOCK, pos);
 		AxisAlignedBB lightBB = new AxisAlignedBB(pos.getX()-2,pos.getY()-2,pos.getZ()-2,pos.getX()+2,pos.getY()+2,pos.getZ()+2);
-		List<PhysicsWrapperEntity> physEnts = ValkyrienWarfareMod.physicsManager.getManagerForWorld(world).getNearbyPhysObjects(world, lightBB);
+		List<PhysicsWrapperEntity> physEnts = ValkyrienWarfareMod.physicsManager.getManagerForWorld(world).getNearbyPhysObjects(lightBB);
 		
 		for(PhysicsWrapperEntity physEnt:physEnts){
 			BlockPos posInLocal = RotationMatrices.applyTransform(physEnt.wrapping.coordTransform.wToLTransform, pos);

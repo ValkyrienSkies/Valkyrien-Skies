@@ -20,6 +20,8 @@ import ValkyrienWarfareBase.Collision.Polygon;
 import ValkyrienWarfareBase.Interaction.CustomPlayerInteractionManager;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -44,6 +46,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.RayTraceResult.Type;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
@@ -56,6 +59,56 @@ public class CallRunner {
 	public static double partialTicks;
 	static{
 		partialTicks = Minecraft.getMinecraft().getRenderPartialTicks();
+	}
+	
+	public static void onExplosionA(Explosion e){
+		Vector center = new Vector(e.explosionX,e.explosionY,e.explosionZ);
+		World worldIn = e.worldObj;
+		float radius = e.explosionSize;
+
+		AxisAlignedBB toCheck = new AxisAlignedBB(center.X-radius,center.Y-radius,center.Z-radius,center.X+radius,center.Y+radius,center.Z+radius);
+		List<PhysicsWrapperEntity> shipsNear = ValkyrienWarfareMod.physicsManager.getManagerForWorld(e.worldObj).getNearbyPhysObjects(toCheck);
+		e.doExplosionA();
+		//TODO: Make this compatible and shit!
+		for(PhysicsWrapperEntity ship:shipsNear){
+			Vector inLocal = new Vector(center);
+			RotationMatrices.applyTransform(ship.wrapping.coordTransform.wToLTransform, inLocal);
+			Explosion expl = new Explosion(ship.worldObj, e.exploder, inLocal.X, inLocal.Y, inLocal.Z, radius, false, false);
+			expl.doExplosionA();
+			for(Object o:expl.affectedBlockPositions){
+				BlockPos pos = (BlockPos)o;
+				IBlockState state = ship.worldObj.getBlockState(pos);
+				Block block = state.getBlock();
+				if (state.getMaterial() != Material.AIR){
+	                if (block.canDropFromExplosion(expl)){
+	                    block.dropBlockAsItemWithChance(ship.worldObj, pos, state, 1.0F / expl.explosionSize, 0);
+	                }
+	                block.onBlockExploded(ship.worldObj, pos, expl);
+//	                ship.explodedThisTick.add(pos);
+//	                if(!worldIn.isRemote){
+//	    				PhysicsController shipPhys = ((ShipRegionServer)ship.region).physController;
+//	    				Vector position = new Vector(pos.getX(),pos.getY(),pos.getZ());
+//	    				Vector force = inLocal.getSubtraction(position);
+//	    				force.multiply(80D*e.explosionSize*e.explosionSize);
+//	    				RotationMatrices.doRotationOnly(ship.rotationTransform,force);
+//	    				AppliedForce toApply = new AppliedForce(position, force, true, 1D);
+//	    				shipPhys.queueForce(toApply);
+//	    			}
+	            }//else{
+//	            	if(ship.explodedThisTick.contains(pos)){
+//	            		if(!worldIn.isRemote){
+//		    				PhysicsController shipPhys = ((ShipRegionServer)ship.region).physController;
+//		    				Vector position = new Vector(pos.getX(),pos.getY(),pos.getZ());
+//		    				Vector force = inLocal.getSubtraction(position);
+//		    				force.multiply(80D*e.explosionSize*e.explosionSize);
+//		    				AppliedForce toApply = new AppliedForce(position, force, true, 1D);
+//		    				shipPhys.queueForce(toApply);
+//		    			}
+//	            	}
+//	            }
+			}
+			
+		}
 	}
 	
 	public static <T extends Entity> List<T> onGetEntitiesWithinAABB(World world,Class <? extends T > clazz, AxisAlignedBB aabb, @Nullable Predicate <? super T > filter)
@@ -290,7 +343,7 @@ public class CallRunner {
 		
 		AxisAlignedBB playerRangeBB = new AxisAlignedBB(vec31.xCoord-1D,vec31.yCoord-1D,vec31.zCoord-1D,vec31.xCoord+1D,vec31.yCoord+1D,vec31.zCoord+1D);
 		
-		List<PhysicsWrapperEntity> nearbyShips = physManager.getNearbyPhysObjects(world, playerRangeBB);
+		List<PhysicsWrapperEntity> nearbyShips = physManager.getNearbyPhysObjects(playerRangeBB);
 		boolean changed = false;
 		
 		Vec3d playerEyesPos = vec31;

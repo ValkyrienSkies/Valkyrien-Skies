@@ -40,9 +40,9 @@ public class PhysicsSpeedCommand extends CommandBase{
 	        	notifyCommandListener(sender, this, "Invalid Input", new Object[] {args[0]});
         		return;
 	        }
-            if(sentNum>=0&&sentNum<=100){
+            if(sentNum>=-20&&sentNum<=100){
             	ValkyrienWarfareMod.physicsManager.getManagerForWorld(commandWorld).physSpeed = sentNum;
-            	notifyCommandListener(sender, this, "Physics Speed set to "+sentNum+" :Default (.055)", new Object[] {args[0]});
+            	notifyCommandListener(sender, this, "Physics Speed set to "+sentNum+" :Default (.055); Do not set this to a negative value unless you want to ruin your world", new Object[] {args[0]});
             }
 		}catch(Exception e){
 			System.out.println(e);

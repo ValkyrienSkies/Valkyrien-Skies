@@ -45,6 +45,7 @@ public class TransformAdapter extends ClassVisitor{
 	private static final String RawParticleManagerName = "net/minecraft/client/particle/ParticleManager";
 	private static final String RawContainerName = "net/minecraft/inventory/Container";
 	private static final String RawAxisAlignedBBName = "net/minecraft/util/math/AxisAlignedBB";
+	private static final String RawExplosionName = "net/minecraft/world/Explosion";
 	
 	private static final String IteratorName = "java/util/Iterator";
 	private static final String PredicateName = "com/google/common/base/Predicate";
@@ -77,6 +78,7 @@ public class TransformAdapter extends ClassVisitor{
 	private final String ChunkProviderServerName;
 	private final String ContainerName;
 	private final String AxisAlignedBBName;
+	private final String ExplosionName;
 	
 //	private boolean correctDesc,correctName,correctSuperClass;
 
@@ -111,10 +113,18 @@ public class TransformAdapter extends ClassVisitor{
 		ParticleManagerName = getRuntimeClassName(RawParticleManagerName);
 		ContainerName = getRuntimeClassName(RawContainerName);
 		AxisAlignedBBName = getRuntimeClassName(RawAxisAlignedBBName);
+		ExplosionName = getRuntimeClassName(RawExplosionName);
 	}
 
 	public boolean runTransformer(String calledName,String calledDesc,String calledOwner,MethodVisitor mv){
-
+		//TBA
+		if(isMethod(calledDesc,"()V", calledName,ExplosionName,"doExplosionA","func_77278_a",calledOwner)
+			||
+			isMethod(calledDesc,"()V",calledName,RawExplosionName,"doExplosionA","func_77278_a",calledOwner)){
+				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onExplosionA", String.format( "(L%s;)V", ExplosionName ) );
+				return false;
+		}
+		
 		if(isMethod(calledDesc,"(L"+BlockPosName+";I)I",calledName,WorldClassName,"getCombinedLight","func_175626_b",calledOwner)
 			||
 			isMethod(calledDesc,"(L"+RawBlockPosName+";I)I",calledName,RawWorldClassName,"getCombinedLight","func_175626_b",calledOwner)){

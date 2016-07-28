@@ -1,6 +1,5 @@
 package ValkyrienWarfareBase.PhysicsManagement;
 
-import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;

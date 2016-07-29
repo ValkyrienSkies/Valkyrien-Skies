@@ -31,9 +31,12 @@ public class WorldPhysObjectManager {
 	}
 	
 	public void onLoad(PhysicsWrapperEntity loaded){
-		if(!physicsEntities.contains(loaded)){
+		if(!loaded.wrapping.fromSplit){
 			physicsEntities.add(loaded);
 			physCollisonCallables.add(loaded.wrapping.collisionCallable);
+		}else{
+			//reset check to prevent strange errors
+			loaded.wrapping.fromSplit = false;
 		}
 	}
 	

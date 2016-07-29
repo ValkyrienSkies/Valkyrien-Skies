@@ -268,14 +268,13 @@ public class PhysicsCalculations {
 		Collections.shuffle(parent.queuedPhysForces);
 		for(PhysicsQueuedForce queuedForce:parent.queuedPhysForces){
 			Vector forceVec = new Vector(queuedForce.force);
-			Vector posVec = new Vector(queuedForce.inBodyPos);
 			if(queuedForce.isLocal){
 				RotationMatrices.doRotationOnly(parent.coordTransform.lToWRotation, forceVec);
 			}
 			forceVec.multiply(physTickSpeed);
 			
+			Vector posVec = new Vector(queuedForce.inBodyPos);
 			RotationMatrices.applyTransform(parent.coordTransform.lToWTransform, posVec);
-
 			posVec.X-=wrapperEnt.posX;
 			posVec.Y-=wrapperEnt.posY;
 			posVec.Z-=wrapperEnt.posZ;

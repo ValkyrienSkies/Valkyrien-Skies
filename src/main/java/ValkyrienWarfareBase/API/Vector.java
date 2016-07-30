@@ -75,6 +75,12 @@ public class Vector{
 		Z += v.Z;
 	}
 
+	public final void add(double x,double y,double z){
+		X += x;
+		Y += y;
+		Z += z;
+	}
+	
 	public void add(Vec3d vec){
 		X += vec.xCoord;
 		Y += vec.yCoord;

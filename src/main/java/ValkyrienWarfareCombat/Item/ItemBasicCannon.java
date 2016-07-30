@@ -16,7 +16,9 @@ public class ItemBasicCannon extends Item{
 	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
     {
 		if(!worldIn.isRemote){
+			EnumFacing playerFacing = playerIn.getHorizontalFacing();
 			EntityCannonBasic cannon = new EntityCannonBasic(worldIn);
+			cannon.setFacing(playerFacing);
 			cannon.setPosition(pos.getX()+.5D, pos.getY()+1D, pos.getZ()+.5D);
 			worldIn.spawnEntityInWorld(cannon);
 			stack.stackSize--;

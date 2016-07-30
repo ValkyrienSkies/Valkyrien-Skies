@@ -2,23 +2,30 @@ package ValkyrienWarfareCombat.Entity;
 
 import javax.annotation.Nullable;
 
+import ValkyrienWarfareBase.API.RotationMatrices;
+import ValkyrienWarfareBase.API.Vector;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
 /**
  * Provides a base to easily add more weapons
  *  @author thebest108
  */
-public abstract class EntityMountingWeaponBase extends Entity{
+public abstract class EntityMountingWeaponBase extends Entity implements IEntityAdditionalSpawnData{
 
 	public int delay = 0;
 	public double damage = 0;
+	//Default facing
+	private EnumFacing facing = EnumFacing.NORTH;
 	
 	public EntityMountingWeaponBase(World worldIn) {
 		super(worldIn);
@@ -33,6 +40,22 @@ public abstract class EntityMountingWeaponBase extends Entity{
 		player.startRiding(this);
         return false;
     }
+	
+	public void setFacing(EnumFacing toSet){
+		facing = toSet;
+		rotationYaw = -getBaseAngleOffset()+90F;
+	}
+	
+	public float getBaseAngleOffset(){
+		switch(facing){
+			case WEST: return 0F;
+			case SOUTH: return 90F;
+			case EAST: return 180F;
+			case NORTH: return 270F;
+		default:
+			return 0;
+		}
+	}
 	
 	public abstract void onRiderInteract(EntityPlayer player, @Nullable ItemStack stack, EnumHand hand);
 //
@@ -66,7 +89,7 @@ public abstract class EntityMountingWeaponBase extends Entity{
 
 	@Override
     public void updateRidden(){
-		System.out.println("test");
+//		System.out.println("test");
 	}
 
 //	@Override
@@ -95,7 +118,7 @@ public abstract class EntityMountingWeaponBase extends Entity{
 
 	@Override
     public double getMountedYOffset(){
-        return -.1D;
+        return -.4D;
     }
 
 	@Override
@@ -123,6 +146,28 @@ public abstract class EntityMountingWeaponBase extends Entity{
 			rotationYaw = rider.getRotationYawHead();
 			rotationPitch = rider.rotationPitch;
 		}
+	}
+	
+	@Override
+	public void updatePassenger(Entity passenger){
+        if (this.isPassenger(passenger))
+        {
+        	Vector passengerOffset = getRiderPositionOffset();
+        	passengerOffset.add(posX,posY,posZ);
+            passenger.setPosition(passengerOffset.X,passengerOffset.Y,passengerOffset.Z);
+        }
+    }
+	
+	public Vector getRiderPositionOffset(){
+		Vector riderOffset = new Vector(.55D,0,0);
+		
+		double[] rotMatrix = RotationMatrices.getDoubleIdentity();
+		rotMatrix = RotationMatrices.rotateOnly(rotMatrix, 0, getBaseAngleOffset(), 0);
+		RotationMatrices.applyTransform(rotMatrix, riderOffset);
+		
+		riderOffset.Y+=getMountedYOffset();
+		
+		return riderOffset;
 	}
 
 	@Override
@@ -228,12 +273,25 @@ public abstract class EntityMountingWeaponBase extends Entity{
 	
 	@Override
 	protected void readEntityFromNBT(NBTTagCompound tagCompund) {
-		
+		facing = EnumFacing.getHorizontal(tagCompund.getInteger("facingOrdinal"));
 	}
 
 	@Override
 	protected void writeEntityToNBT(NBTTagCompound tagCompound) {
+		tagCompound.setInteger("facingOrdinal", facing.getHorizontalIndex());
+	}
+
+	@Override
+	public void writeSpawnData(ByteBuf buffer) {
+		buffer.writeInt(facing.getHorizontalIndex());
 		
 	}
 
+	@Override
+	public void readSpawnData(ByteBuf additionalData) {
+		facing = EnumFacing.getHorizontal(additionalData.readInt());
+		
+	}
+
+	
 }

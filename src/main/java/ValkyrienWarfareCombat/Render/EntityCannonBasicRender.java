@@ -21,9 +21,12 @@ import net.minecraft.world.World;
 
 public class EntityCannonBasicRender extends Render<EntityCannonBasic>{
 
+	private final IBlockState baseState,headState;
+	
 	protected EntityCannonBasicRender(RenderManager renderManager) {
 		super(renderManager);
-		// TODO Auto-generated constructor stub
+		baseState = ValkyrienWarfareCombatMod.instance.fakeCannonBlock.getStateFromMeta(0);
+		headState = ValkyrienWarfareCombatMod.instance.fakeCannonBlock.getStateFromMeta(1);
 	}
 	
 	@Override
@@ -49,8 +52,6 @@ public class EntityCannonBasicRender extends Render<EntityCannonBasic>{
             GlStateManager.enableColorMaterial();
             GlStateManager.enableOutlineMode(this.getTeamColor(entity));
         }
-
-        
         
 //        BlockPos blockpos = new BlockPos(entity.posX, entity.getEntityBoundingBox().maxY, entity.posZ);
 //        GlStateManager.translate((float)(x - (double)blockpos.getX() - 0.5D), (float)(y - (double)blockpos.getY()), (float)(z - (double)blockpos.getZ() - 0.5D));
@@ -59,16 +60,20 @@ public class EntityCannonBasicRender extends Render<EntityCannonBasic>{
         
         GL11.glTranslated(x, y, z);
         
+        double offsetAngle = entity.getBaseAngleOffset();
+        GL11.glRotated(offsetAngle, 0, 1D, 0);
+        
         GL11.glPushMatrix();
-        GL11.glTranslated(-.7D,0,0);
-//        GL11.glScaled(1,.8,.8);
+
+        GL11.glTranslated(-.1D,0,0);
         renderBase(entity, x, y, z, entityYaw, partialTicks);
+        
         GL11.glPopMatrix();
         
         GL11.glTranslated(.15D,.5D,0);
-        GL11.glTranslated(-.6D,0,0);
+//        GL11.glTranslated(.1D,0,0);
         
-        GL11.glRotated(renderYaw, 0, 1D, 0);
+        GL11.glRotated(renderYaw-offsetAngle, 0, 1D, 0);
         GL11.glRotated(renderPitch, 0, 0, 1D);
         
         
@@ -95,8 +100,6 @@ public class EntityCannonBasicRender extends Render<EntityCannonBasic>{
 		Tessellator tessellator = Tessellator.getInstance();
         VertexBuffer vertexbuffer = tessellator.getBuffer();
 		vertexbuffer.begin(7, DefaultVertexFormats.BLOCK);
-        
-		IBlockState baseState = ValkyrienWarfareCombatMod.instance.fakeCannonBlock.getStateFromMeta(0);
 		
         BlockPos blockpos = new BlockPos(entity.posX, entity.getEntityBoundingBox().maxY, entity.posZ);
 //        GlStateManager.translate((float)(x - (double)blockpos.getX() - 0.5D), (float)(y - (double)blockpos.getY()), (float)(z - (double)blockpos.getZ() - 0.5D));
@@ -110,13 +113,11 @@ public class EntityCannonBasicRender extends Render<EntityCannonBasic>{
 		Tessellator tessellator = Tessellator.getInstance();
         VertexBuffer vertexbuffer = tessellator.getBuffer();
 		vertexbuffer.begin(7, DefaultVertexFormats.BLOCK);
-        
-		IBlockState baseState = ValkyrienWarfareCombatMod.instance.fakeCannonBlock.getStateFromMeta(1);
 		
         BlockPos blockpos = new BlockPos(entity.posX, entity.getEntityBoundingBox().maxY, entity.posZ);
 //        GlStateManager.translate((float)(x - (double)blockpos.getX() - 0.5D), (float)(y - (double)blockpos.getY()), (float)(z - (double)blockpos.getZ() - 0.5D));
         BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
-        blockrendererdispatcher.getBlockModelRenderer().renderModel(entity.worldObj, blockrendererdispatcher.getModelForState(baseState), baseState, blockpos, vertexbuffer, false, MathHelper.getPositionRandom(new BlockPos(entity)));
+        blockrendererdispatcher.getBlockModelRenderer().renderModel(entity.worldObj, blockrendererdispatcher.getModelForState(headState), headState, blockpos, vertexbuffer, false, MathHelper.getPositionRandom(new BlockPos(entity)));
         
         tessellator.draw();
 	}

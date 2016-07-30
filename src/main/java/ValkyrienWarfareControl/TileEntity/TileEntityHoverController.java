@@ -93,7 +93,7 @@ public class TileEntityHoverController extends TileEntity{
 
 	public void handleGUIInput(HovercraftControllerGUIInputMessage message, MessageContext ctx){
 		idealHeight = message.newIdealHeight;
-		stabilityBias = message.newStablitiyBias;
+		stabilityBias = Math.min(1D, Math.max(message.newStablitiyBias,0));
 		linearVelocityBias = message.newLinearVelocityBias;
 		markDirty();
 	}

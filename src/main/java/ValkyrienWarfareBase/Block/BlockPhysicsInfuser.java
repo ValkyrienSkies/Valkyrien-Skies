@@ -31,7 +31,7 @@ public class BlockPhysicsInfuser extends Block {
 					return true;
 				}
 			}
-			PhysicsWrapperEntity wrapper = new PhysicsWrapperEntity(worldIn,pos.getX(),pos.getY(),pos.getZ());
+			PhysicsWrapperEntity wrapper = new PhysicsWrapperEntity(worldIn,pos.getX(),pos.getY(),pos.getZ(),playerIn);
         	worldIn.spawnEntityInWorld(wrapper);
 		}
 		return true;

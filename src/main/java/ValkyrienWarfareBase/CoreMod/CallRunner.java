@@ -103,7 +103,7 @@ public class CallRunner {
 	                	
 //	                	System.out.println(expl.affectedBlockPositions.size());
 	                	
-	                	double explosionForce = e.explosionSize/(affectedPostions*18D);
+	                	double explosionForce = e.explosionSize/(affectedPostions*.5D);
 	                	
 //	                	System.out.println(posVector);
 	                	

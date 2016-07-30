@@ -39,6 +39,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.ChunkCache;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -73,8 +74,10 @@ public class PhysicsObject {
 	public ArrayList<PhysicsQueuedForce> queuedPhysForces = new ArrayList<PhysicsQueuedForce>();
 	public ArrayList<BlockPos> explodedPositionsThisTick = new ArrayList<BlockPos>();
 	public boolean doPhysics = true;
+	public boolean fromSplit = false;
 	
 	public ChunkCache surroundingWorldChunksCache;
+	public EntityPlayer creator;
 	
 	private Field playersField = null;
 	
@@ -167,7 +170,14 @@ public class PhysicsObject {
 		int minChunkX = claimedChunks[0][0].xPosition;
 		int minChunkZ = claimedChunks[0][0].zPosition;
 		BlockPos centerInWorld = new BlockPos(wrapper.posX,wrapper.posY,wrapper.posZ);
-		ShipSpawnDetector detector = new ShipSpawnDetector(centerInWorld, worldObj, 5000, true);
+		ShipSpawnDetector detector = new ShipSpawnDetector(centerInWorld, worldObj, ValkyrienWarfareMod.maxShipSize+1, true);
+		if(detector.foundSet.size()>ValkyrienWarfareMod.maxShipSize||detector.cleanHouse){
+			if(creator!=null){
+				creator.addChatComponentMessage(new TextComponentString("Ship construction canceled because its exceeding the ship size limit (Raise with /setPhysConstructionLimit (number)) ; Or because it's attatched to bedrock)"));
+			}
+			wrapper.setDead();
+			return;
+		}
 		MutableBlockPos pos = new MutableBlockPos();
 		TIntIterator iter = detector.foundSet.iterator();
 		refrenceBlockPos = getRegionCenter();
@@ -341,58 +351,62 @@ public class PhysicsObject {
 	}
 	
 	public void processPotentialSplitting(){
-		ArrayList<BlockPos> dirtyBlockPositions = new ArrayList(blockPositions);
-		if(dirtyBlockPositions.size()==0){
-			return;
-		}
 		
-		while(dirtyBlockPositions.size()!=0){
-			BlockPos pos = dirtyBlockPositions.get(0);
-			SpatialDetector firstDet = new ShipBlockPosFinder(pos, worldObj, dirtyBlockPositions.size(), false);
-
-			if(firstDet.foundSet.size()!=dirtyBlockPositions.size()){
-				//Set Y to 300 to prevent picking up extra blocks
-				PhysicsWrapperEntity newSplit = new PhysicsWrapperEntity(worldObj,wrapper.posX,300,wrapper.posZ);
-				newSplit.yaw = wrapper.yaw;
-				newSplit.pitch = wrapper.pitch;
-				newSplit.roll = wrapper.roll;
-				newSplit.posX = wrapper.posX;
-				newSplit.posY = wrapper.posY;
-				newSplit.posZ = wrapper.posZ;
-				TIntIterator iter = firstDet.foundSet.iterator();
-				
-				BlockPos oldBlockCenter = this.getRegionCenter();
-				BlockPos newBlockCenter = newSplit.wrapping.getRegionCenter();
-				BlockPos centerDif = newBlockCenter.subtract(oldBlockCenter);
-				
-				ValkyrienWarfareMod.physicsManager.onShipLoad(newSplit);
-				
-				while(iter.hasNext()){
-					int hash = iter.next();
-					BlockPos fromHash = SpatialDetector.getPosWithRespectTo(hash, pos);
-					dirtyBlockPositions.remove(fromHash);
-					CallRunner.onSetBlockState(worldObj, fromHash.add(centerDif), VKChunkCache.getBlockState(fromHash), 3);
-					CallRunner.onSetBlockState(worldObj, fromHash, Blocks.AIR.getDefaultState(), 2);
-				}
-				newSplit.wrapping.centerCoord = new Vector(centerCoord);
-				newSplit.wrapping.centerCoord.X+=centerDif.getX();
-				newSplit.wrapping.centerCoord.Y+=centerDif.getY();
-				newSplit.wrapping.centerCoord.Z+=centerDif.getZ();
-				newSplit.wrapping.coordTransform.lToWRotation = coordTransform.lToWRotation;
-				newSplit.wrapping.physicsProcessor.updateCenterOfMass();
-				newSplit.wrapping.coordTransform.updateAllTransforms();
-				
-				//TODO: THIS MATH IS NOT EVEN REMOTELY CORRECT!!!!!
-				//Also the moment of inertia is wrong too
-				newSplit.wrapping.physicsProcessor.linearMomentum = new Vector(physicsProcessor.linearMomentum);
-				newSplit.wrapping.physicsProcessor.angularVelocity = new Vector(physicsProcessor.angularVelocity);
-				
-				worldObj.spawnEntityInWorld(newSplit);
-			}else{
-				dirtyBlockPositions.clear();
-			}
-		
-		}
+//		ArrayList<BlockPos> dirtyBlockPositions = new ArrayList(blockPositions);
+//		if(dirtyBlockPositions.size()==0){
+//			return;
+//		}
+//		
+//		while(dirtyBlockPositions.size()!=0){
+//			BlockPos pos = dirtyBlockPositions.get(0);
+//			SpatialDetector firstDet = new ShipBlockPosFinder(pos, worldObj, dirtyBlockPositions.size(), true);
+//
+//			if(firstDet.foundSet.size()!=dirtyBlockPositions.size()){
+//				//Set Y to 300 to prevent picking up extra blocks
+//				PhysicsWrapperEntity newSplit = new PhysicsWrapperEntity(worldObj,wrapper.posX,300,wrapper.posZ, null);
+//				newSplit.yaw = wrapper.yaw;
+//				newSplit.pitch = wrapper.pitch;
+//				newSplit.roll = wrapper.roll;
+//				newSplit.posX = wrapper.posX;
+//				newSplit.posY = wrapper.posY;
+//				newSplit.posZ = wrapper.posZ;
+//				TIntIterator iter = firstDet.foundSet.iterator();
+//				
+//				BlockPos oldBlockCenter = this.getRegionCenter();
+//				BlockPos newBlockCenter = newSplit.wrapping.getRegionCenter();
+//				BlockPos centerDif = newBlockCenter.subtract(oldBlockCenter);
+//				
+//				ValkyrienWarfareMod.physicsManager.onShipLoad(newSplit);
+//				
+//				newSplit.wrapping.fromSplit = true;
+//				
+//				while(iter.hasNext()){
+//					int hash = iter.next();
+//					BlockPos fromHash = SpatialDetector.getPosWithRespectTo(hash, pos);
+//					dirtyBlockPositions.remove(fromHash);
+//					CallRunner.onSetBlockState(worldObj, fromHash.add(centerDif), VKChunkCache.getBlockState(fromHash), 3);
+//					CallRunner.onSetBlockState(worldObj, fromHash, Blocks.AIR.getDefaultState(), 2);
+//				}
+//				
+//				newSplit.wrapping.centerCoord = new Vector(centerCoord);
+//				newSplit.wrapping.centerCoord.X+=centerDif.getX();
+//				newSplit.wrapping.centerCoord.Y+=centerDif.getY();
+//				newSplit.wrapping.centerCoord.Z+=centerDif.getZ();
+//				newSplit.wrapping.coordTransform.lToWRotation = coordTransform.lToWRotation;
+//				newSplit.wrapping.physicsProcessor.updateCenterOfMass();
+//				newSplit.wrapping.coordTransform.updateAllTransforms();
+//				
+//				//TODO: THIS MATH IS NOT EVEN REMOTELY CORRECT!!!!!
+//				//Also the moment of inertia is wrong too
+//				newSplit.wrapping.physicsProcessor.linearMomentum = new Vector(physicsProcessor.linearMomentum);
+//				newSplit.wrapping.physicsProcessor.angularVelocity = new Vector(physicsProcessor.angularVelocity);
+//				
+//				worldObj.spawnEntityInWorld(newSplit);
+//			}else{
+//				dirtyBlockPositions.clear();
+//			}
+//		
+//		}
 	}
 	
 	public void tickQueuedForces(){

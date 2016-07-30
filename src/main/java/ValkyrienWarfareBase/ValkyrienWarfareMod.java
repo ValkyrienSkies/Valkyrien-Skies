@@ -44,7 +44,7 @@ public class ValkyrienWarfareMod{
 
 	public static final String MODID = "valkyrienwarfare";
     public static final String MODNAME = "Valkyrien Warfare";
-    public static final String MODVER = "0.7m";
+    public static final String MODVER = "0.7p1";
 
     public static File configFile;
     public static Configuration config;
@@ -66,6 +66,7 @@ public class ValkyrienWarfareMod{
     public static int airStateIndex;
 	public static double standingTolerance = .3D;
 	public static boolean isObsfucated = false;
+	public static int maxShipSize = 15000;
 	
 	//NOTE: These only calculate physics, so they are only relevant to the Server end
 	public static ExecutorService MultiThreadExecutor;

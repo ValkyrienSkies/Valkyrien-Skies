@@ -1,10 +1,12 @@
 package ValkyrienWarfareCombat;
 
+import ValkyrienWarfareCombat.Entity.EntityCannonBasic;
+import ValkyrienWarfareCombat.Item.ItemBasicCannon;
 import ValkyrienWarfareCombat.Proxy.CommonProxyCombat;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraftforge.client.model.obj.OBJLoader;
+import net.minecraft.item.Item;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -12,8 +14,8 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
+import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.relauncher.Side;
 
 @Mod(modid=ValkyrienWarfareCombatMod.MODID, name=ValkyrienWarfareCombatMod.MODNAME, version=ValkyrienWarfareCombatMod.MODVER)
 public class ValkyrienWarfareCombatMod {
@@ -25,11 +27,18 @@ public class ValkyrienWarfareCombatMod {
     public static final String MODNAME = "Valkyrien Warfare Combat";
     public static final String MODVER = "0.0";
     
-    public Block fakeCannonBlock;
+	public static ValkyrienWarfareCombatMod instance;
+    
+	public Item basicCannonSpawner;
+	
+    public static Block fakeCannonBlock;
     
     @EventHandler
     public void preInit(FMLPreInitializationEvent event){
+    	instance = this;
     	registerBlocks(event);
+    	registerItems(event);
+    	registerEntities(event);
     	proxy.preInit(event);
     }
 
@@ -41,6 +50,15 @@ public class ValkyrienWarfareCombatMod {
     @EventHandler
     public void postInit(FMLPostInitializationEvent event){
     	proxy.postInit(event);
+    }
+    
+    private void registerItems(FMLStateEvent event){
+    	basicCannonSpawner = new ItemBasicCannon().setUnlocalizedName("basicCannonSpawner").setRegistryName(MODID, "basicCannonSpawner").setCreativeTab(CreativeTabs.COMBAT).setMaxStackSize(4);
+    	GameRegistry.registerItem(basicCannonSpawner);
+    }
+    
+    private void registerEntities(FMLStateEvent event){
+    	EntityRegistry.registerModEntity(EntityCannonBasic.class,"EntityCannonBasic",71,this,120,1,false);
     }
     
     private void registerBlocks(FMLStateEvent event){

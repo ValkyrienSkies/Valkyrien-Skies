@@ -22,10 +22,12 @@ public class PhysicsTickHandler{
 		ArrayList<PhysicsWrapperEntity> physicsEntities = (ArrayList<PhysicsWrapperEntity>) manager.physicsEntities.clone();
 		
 		for(PhysicsWrapperEntity wrapper:physicsEntities){
+//			wrapper.wrapping.processPotentialSplitting();
 			wrapper.wrapping.coordTransform.setPrevMatrices();
 			wrapper.wrapping.updateChunkCache();
-//			wrapper.wrapping.processPotentialSplitting();
 		}
+		
+//		System.out.println(physicsEntities.size());
 		
 		int iters = manager.physIter;
 		double newPhysSpeed = manager.physSpeed;

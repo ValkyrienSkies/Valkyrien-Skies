@@ -103,7 +103,7 @@ public class CallRunner {
 	                	
 //	                	System.out.println(expl.affectedBlockPositions.size());
 	                	
-	                	double explosionForce = e.explosionSize/(affectedPostions*.5D);
+	                	double explosionForce = e.explosionSize/10D;
 	                	
 //	                	System.out.println(posVector);
 	                	
@@ -113,7 +113,7 @@ public class CallRunner {
 	                	
 	                	forceVector.multiply(explosionForce);
 	                	
-	                	PhysicsQueuedForce queuedForce = new PhysicsQueuedForce(forceVector, posVector, true, 2);
+	                	PhysicsQueuedForce queuedForce = new PhysicsQueuedForce(forceVector, posVector, true, 1);
 	                	
 	                	if(!ship.wrapping.explodedPositionsThisTick.contains(pos)){
 	                		ship.wrapping.explodedPositionsThisTick.add(pos);
@@ -373,7 +373,7 @@ public class CallRunner {
 	public static RayTraceResult onRayTraceBlocks(World world,Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock)
     {
 		RayTraceResult vanillaTrace = world.rayTraceBlocks(vec31, vec32, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
-		if(true){
+		if(world.isRemote){
 			
 		}
 		WorldPhysObjectManager physManager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(world);

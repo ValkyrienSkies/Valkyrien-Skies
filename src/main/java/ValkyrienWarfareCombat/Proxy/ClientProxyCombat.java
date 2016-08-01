@@ -1,6 +1,7 @@
 package ValkyrienWarfareCombat.Proxy;
 
 import ValkyrienWarfareCombat.ValkyrienWarfareCombatMod;
+import ValkyrienWarfareCombat.Entity.EntityCannonBall;
 import ValkyrienWarfareCombat.Entity.EntityCannonBasic;
 import ValkyrienWarfareCombat.Render.EntityCannonBasicRenderFactory;
 import net.minecraftforge.client.model.obj.OBJLoader;
@@ -16,6 +17,7 @@ public class ClientProxyCombat extends CommonProxyCombat{
 		super.preInit(e);
     	OBJLoader.INSTANCE.addDomain(ValkyrienWarfareCombatMod.MODID.toLowerCase());
     	RenderingRegistry.registerEntityRenderingHandler(EntityCannonBasic.class,new EntityCannonBasicRenderFactory());
+    	RenderingRegistry.registerEntityRenderingHandler(EntityCannonBall.class,new EntityCannonBasicRenderFactory.EntityCannonBallRenderFactory());
     }
 
 	@Override

@@ -44,7 +44,7 @@ public class ValkyrienWarfareMod{
 
 	public static final String MODID = "valkyrienwarfare";
     public static final String MODNAME = "Valkyrien Warfare";
-    public static final String MODVER = "0.7p1";
+    public static final String MODVER = "0.7r";
 
     public static File configFile;
     public static Configuration config;
@@ -53,6 +53,7 @@ public class ValkyrienWarfareMod{
     
     public static int threadCount;
     public static boolean multiThreadedPhysics;
+    public static boolean doSplitting = false;
     
     public static Block physicsInfuser;
 

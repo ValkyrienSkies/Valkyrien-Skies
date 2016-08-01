@@ -85,6 +85,8 @@ public class PhysicsObject {
 	
 	public int lastMessageTick;
 	
+	public boolean blocksChanged = false;
+	
 	public PhysicsObject(PhysicsWrapperEntity host){
 		wrapper = host;
 		worldObj = host.worldObj;
@@ -102,6 +104,8 @@ public class PhysicsObject {
 		if(!ownedChunks.isChunkEnclosedInSet(posAt.getX()>>4, posAt.getZ()>>4)){
 			return;
 		}
+		
+		blocksChanged = true;
 		
 		if(isOldAir&&isNewAir){
 			blockPositions.remove(posAt);
@@ -350,63 +354,75 @@ public class PhysicsObject {
 		
 	}
 	
-	public void processPotentialSplitting(){
+	//Returns true if splitting happened
+	public boolean processPotentialSplitting(){
+		if(blocksChanged){
+			blocksChanged = false;
+		}else{
+			return false;
+		}
 		
-//		ArrayList<BlockPos> dirtyBlockPositions = new ArrayList(blockPositions);
-//		if(dirtyBlockPositions.size()==0){
-//			return;
-//		}
-//		
-//		while(dirtyBlockPositions.size()!=0){
-//			BlockPos pos = dirtyBlockPositions.get(0);
-//			SpatialDetector firstDet = new ShipBlockPosFinder(pos, worldObj, dirtyBlockPositions.size(), true);
-//
-//			if(firstDet.foundSet.size()!=dirtyBlockPositions.size()){
-//				//Set Y to 300 to prevent picking up extra blocks
-//				PhysicsWrapperEntity newSplit = new PhysicsWrapperEntity(worldObj,wrapper.posX,300,wrapper.posZ, null);
-//				newSplit.yaw = wrapper.yaw;
-//				newSplit.pitch = wrapper.pitch;
-//				newSplit.roll = wrapper.roll;
-//				newSplit.posX = wrapper.posX;
-//				newSplit.posY = wrapper.posY;
-//				newSplit.posZ = wrapper.posZ;
-//				TIntIterator iter = firstDet.foundSet.iterator();
-//				
-//				BlockPos oldBlockCenter = this.getRegionCenter();
-//				BlockPos newBlockCenter = newSplit.wrapping.getRegionCenter();
-//				BlockPos centerDif = newBlockCenter.subtract(oldBlockCenter);
-//				
-//				ValkyrienWarfareMod.physicsManager.onShipLoad(newSplit);
-//				
-//				newSplit.wrapping.fromSplit = true;
-//				
-//				while(iter.hasNext()){
-//					int hash = iter.next();
-//					BlockPos fromHash = SpatialDetector.getPosWithRespectTo(hash, pos);
-//					dirtyBlockPositions.remove(fromHash);
-//					CallRunner.onSetBlockState(worldObj, fromHash.add(centerDif), VKChunkCache.getBlockState(fromHash), 3);
-//					CallRunner.onSetBlockState(worldObj, fromHash, Blocks.AIR.getDefaultState(), 2);
-//				}
-//				
-//				newSplit.wrapping.centerCoord = new Vector(centerCoord);
-//				newSplit.wrapping.centerCoord.X+=centerDif.getX();
-//				newSplit.wrapping.centerCoord.Y+=centerDif.getY();
-//				newSplit.wrapping.centerCoord.Z+=centerDif.getZ();
-//				newSplit.wrapping.coordTransform.lToWRotation = coordTransform.lToWRotation;
-//				newSplit.wrapping.physicsProcessor.updateCenterOfMass();
-//				newSplit.wrapping.coordTransform.updateAllTransforms();
-//				
-//				//TODO: THIS MATH IS NOT EVEN REMOTELY CORRECT!!!!!
-//				//Also the moment of inertia is wrong too
-//				newSplit.wrapping.physicsProcessor.linearMomentum = new Vector(physicsProcessor.linearMomentum);
-//				newSplit.wrapping.physicsProcessor.angularVelocity = new Vector(physicsProcessor.angularVelocity);
-//				
-//				worldObj.spawnEntityInWorld(newSplit);
-//			}else{
-//				dirtyBlockPositions.clear();
-//			}
-//		
-//		}
+		ArrayList<BlockPos> dirtyBlockPositions = new ArrayList(blockPositions);
+		if(dirtyBlockPositions.size()==0){
+			return false;
+		}
+		
+		boolean hasSplit = false;
+		
+		while(dirtyBlockPositions.size()!=0){
+			BlockPos pos = dirtyBlockPositions.get(0);
+			SpatialDetector firstDet = new ShipBlockPosFinder(pos, worldObj, dirtyBlockPositions.size(), true);
+
+			if(firstDet.foundSet.size()!=dirtyBlockPositions.size()){
+				//Set Y to 300 to prevent picking up extra blocks
+				PhysicsWrapperEntity newSplit = new PhysicsWrapperEntity(worldObj,wrapper.posX,300,wrapper.posZ, null);
+				newSplit.yaw = wrapper.yaw;
+				newSplit.pitch = wrapper.pitch;
+				newSplit.roll = wrapper.roll;
+				newSplit.posX = wrapper.posX;
+				newSplit.posY = wrapper.posY;
+				newSplit.posZ = wrapper.posZ;
+				TIntIterator iter = firstDet.foundSet.iterator();
+				
+				BlockPos oldBlockCenter = this.getRegionCenter();
+				BlockPos newBlockCenter = newSplit.wrapping.getRegionCenter();
+				BlockPos centerDif = newBlockCenter.subtract(oldBlockCenter);
+				
+				ValkyrienWarfareMod.physicsManager.onShipLoad(newSplit);
+				
+				newSplit.wrapping.fromSplit = true;
+				
+				while(iter.hasNext()){
+					int hash = iter.next();
+					BlockPos fromHash = SpatialDetector.getPosWithRespectTo(hash, pos);
+					dirtyBlockPositions.remove(fromHash);
+					CallRunner.onSetBlockState(worldObj, fromHash.add(centerDif), VKChunkCache.getBlockState(fromHash), 3);
+					CallRunner.onSetBlockState(worldObj, fromHash, Blocks.AIR.getDefaultState(), 2);
+				}
+				
+				newSplit.wrapping.centerCoord = new Vector(centerCoord);
+				newSplit.wrapping.centerCoord.X+=centerDif.getX();
+				newSplit.wrapping.centerCoord.Y+=centerDif.getY();
+				newSplit.wrapping.centerCoord.Z+=centerDif.getZ();
+				newSplit.wrapping.coordTransform.lToWRotation = coordTransform.lToWRotation;
+				newSplit.wrapping.physicsProcessor.updateCenterOfMass();
+				newSplit.wrapping.coordTransform.updateAllTransforms();
+				
+				//TODO: THIS MATH IS NOT EVEN REMOTELY CORRECT!!!!!
+				//Also the moment of inertia is wrong too
+				newSplit.wrapping.physicsProcessor.linearMomentum = new Vector(physicsProcessor.linearMomentum);
+				newSplit.wrapping.physicsProcessor.angularVelocity = new Vector(physicsProcessor.angularVelocity);
+				
+				worldObj.spawnEntityInWorld(newSplit);
+				
+				hasSplit = true;
+			}else{
+				dirtyBlockPositions.clear();
+			}
+		
+		}
+		
+		return hasSplit;
 	}
 	
 	public void tickQueuedForces(){

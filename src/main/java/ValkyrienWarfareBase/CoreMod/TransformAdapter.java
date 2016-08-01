@@ -431,7 +431,7 @@ public class TransformAdapter extends ClassVisitor{
 
 	@Override
 	public MethodVisitor visitMethod( int access, final String methodName, String methodDesc, String signature, String[] exceptions ){
-		return new MethodVisitor(api, cv.visitMethod( access, methodName, methodDesc, signature, exceptions)){
+		MethodVisitor toReturn = new MethodVisitor(api, cv.visitMethod( access, methodName, methodDesc, signature, exceptions)){
 			@Override
 			public void visitMethodInsn( int opcode, String calledOwner, String calledName, String calledDesc ){
 				if( opcode == Opcodes.INVOKEVIRTUAL){
@@ -443,6 +443,8 @@ public class TransformAdapter extends ClassVisitor{
 				}
 			}
 		};
+		toReturn.visitMaxs(-1, -1);
+		return toReturn;
 	}
 
 

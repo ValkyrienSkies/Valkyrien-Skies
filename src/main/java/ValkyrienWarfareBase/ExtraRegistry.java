@@ -1,6 +1,7 @@
 package ValkyrienWarfareBase;
 
 import ValkyrienWarfareBase.Command.PhysConstructionLimitCommand;
+import ValkyrienWarfareBase.Command.PhysSplittingToggleCommand;
 import ValkyrienWarfareBase.Command.PhysicsGravityCommand;
 import ValkyrienWarfareBase.Command.PhysicsIterCommand;
 import ValkyrienWarfareBase.Command.PhysicsSpeedCommand;
@@ -15,5 +16,6 @@ public class ExtraRegistry {
 		manager.registerCommand(new PhysicsIterCommand());
 		manager.registerCommand(new PhysicsGravityCommand());
 		manager.registerCommand(new PhysConstructionLimitCommand());
+		manager.registerCommand(new PhysSplittingToggleCommand());
 	}
 }

@@ -20,11 +20,38 @@ public class PhysicsTickHandler{
 		
 		//Do this to prevent a ConcurrentModificationException from other threads spawning entities (ChunkLoading thread does this)
 		ArrayList<PhysicsWrapperEntity> physicsEntities = (ArrayList<PhysicsWrapperEntity>) manager.physicsEntities.clone();
-		
-		for(PhysicsWrapperEntity wrapper:physicsEntities){
-//			wrapper.wrapping.processPotentialSplitting();
-			wrapper.wrapping.coordTransform.setPrevMatrices();
-			wrapper.wrapping.updateChunkCache();
+		if(!ValkyrienWarfareMod.doSplitting){
+			for(PhysicsWrapperEntity wrapper:physicsEntities){
+				wrapper.wrapping.coordTransform.setPrevMatrices();
+				wrapper.wrapping.updateChunkCache();
+			}
+		}else{
+			boolean didSplitOccur = false;
+			for(PhysicsWrapperEntity wrapper:physicsEntities){
+				if(wrapper.wrapping.processPotentialSplitting()){
+					didSplitOccur = true;
+				}
+			}
+			if(didSplitOccur){
+				while(didSplitOccur){
+					didSplitOccur = false;
+					ArrayList oldPhysicsEntities = physicsEntities;
+					ArrayList<PhysicsWrapperEntity> newPhysicsEntities = (ArrayList<PhysicsWrapperEntity>) manager.physicsEntities.clone();
+					newPhysicsEntities.removeAll(oldPhysicsEntities);
+					if(newPhysicsEntities.size()!=0){
+						for(PhysicsWrapperEntity wrapper:newPhysicsEntities){
+							if(wrapper.wrapping.processPotentialSplitting()){
+								didSplitOccur = true;
+							}
+						}
+					}
+				}
+				physicsEntities = (ArrayList<PhysicsWrapperEntity>) manager.physicsEntities.clone();
+			}
+			for(PhysicsWrapperEntity wrapper:physicsEntities){
+				wrapper.wrapping.coordTransform.setPrevMatrices();
+				wrapper.wrapping.updateChunkCache();
+			}
 		}
 		
 //		System.out.println(physicsEntities.size());

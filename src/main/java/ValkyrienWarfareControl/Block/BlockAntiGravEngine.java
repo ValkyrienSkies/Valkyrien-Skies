@@ -31,7 +31,7 @@ public class BlockAntiGravEngine extends Block implements ITileEntityProvider,IB
 		PhysicsObject obj = wrapper.wrapping;
 		IBlockState controllerState = obj.VKChunkCache.getBlockState(pos);
 		TileEntity worldTile = obj.VKChunkCache.getTileEntity(pos);
-		if(worldTile==null){
+		if(worldTile==null&&!(worldTile instanceof AntiGravEngineTileEntity)){
 			return null;
 		}
 		AntiGravEngineTileEntity engineTile = (AntiGravEngineTileEntity) worldTile;

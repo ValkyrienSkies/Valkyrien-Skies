@@ -3,7 +3,7 @@
     "variants": {
         "modelid=0": { "model": "valkyrienwarfarecombat:cannon_base.obj" },
         "modelid=1": { "model": "valkyrienwarfarecombat:cannon_top.obj" },
-        "modelid=2": { "model": "valkyrienwarfarecombat:cannon_base.obj" },
+        "modelid=2": { "model": "valkyrienwarfarecombat:cannonball.obj" },
         "modelid=3": { "model": "valkyrienwarfarecombat:cannon_base.obj" },
         "modelid=4": { "model": "valkyrienwarfarecombat:cannon_base.obj" },
         "modelid=5": { "model": "valkyrienwarfarecombat:cannon_base.obj" },

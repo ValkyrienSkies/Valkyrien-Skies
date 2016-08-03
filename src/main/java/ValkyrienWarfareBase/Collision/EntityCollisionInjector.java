@@ -12,6 +12,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public class EntityCollisionInjector {
@@ -107,9 +108,30 @@ public class EntityCollisionInjector {
 		entity.isCollidedVertically = isDifSignificant(dy,origDy);
 		entity.onGround = entity.isCollidedVertically && origDy < 0||alreadyOnGround;
 		entity.isCollided = entity.isCollidedHorizontally || entity.isCollidedVertically;
-		if(entity instanceof EntityPlayer){
-//			moveEntity(entity,dx,dy,dz);
-			entity.moveEntity(dx,dy,dz);
+		if(entity instanceof EntityLivingBase){
+			EntityLivingBase base = (EntityLivingBase)entity;
+			base.motionY = dy;
+				if (base.isOnLadder())
+             {
+				 
+                 float f9 = 0.15F;
+                 base.motionX = MathHelper.clamp_double(base.motionX, -0.15000000596046448D, 0.15000000596046448D);
+                 base.motionZ = MathHelper.clamp_double(base.motionZ, -0.15000000596046448D, 0.15000000596046448D);
+                 base.fallDistance = 0.0F;
+
+                 if (base.motionY < -0.15D)
+                 {
+                	 base.motionY = -0.15D;
+                 }
+
+                 boolean flag = base.isSneaking() && base instanceof EntityPlayer;
+
+                 if (flag && base.motionY < 0.0D)
+                 {
+                	 base.motionY = 0.0D;
+                 }
+             }
+			entity.moveEntity(dx,base.motionY,dz);
 		}else{
 			entity.moveEntity(dx,dy,dz);
 		}

@@ -46,6 +46,7 @@ public class TransformAdapter extends ClassVisitor{
 	private static final String RawContainerName = "net/minecraft/inventory/Container";
 	private static final String RawAxisAlignedBBName = "net/minecraft/util/math/AxisAlignedBB";
 	private static final String RawExplosionName = "net/minecraft/world/Explosion";
+	private static final String RawEntityLivingBaseName = "net/minecraft/entity/EntityLivingBase";
 	
 	private static final String IteratorName = "java/util/Iterator";
 	private static final String PredicateName = "com/google/common/base/Predicate";
@@ -79,6 +80,7 @@ public class TransformAdapter extends ClassVisitor{
 	private final String ContainerName;
 	private final String AxisAlignedBBName;
 	private final String ExplosionName;
+	private final String EntityLivingBaseName;
 	
 //	private boolean correctDesc,correctName,correctSuperClass;
 
@@ -114,9 +116,18 @@ public class TransformAdapter extends ClassVisitor{
 		ContainerName = getRuntimeClassName(RawContainerName);
 		AxisAlignedBBName = getRuntimeClassName(RawAxisAlignedBBName);
 		ExplosionName = getRuntimeClassName(RawExplosionName);
+		EntityLivingBaseName = getRuntimeClassName(RawEntityLivingBaseName);
 	}
 
 	public boolean runTransformer(String calledName,String calledDesc,String calledOwner,MethodVisitor mv){
+		//TBA
+		if(isMethod(calledDesc,"()Z", calledName,EntityLivingBaseName,"isOnLadder","RENAMEME",calledOwner)
+			||
+			isMethod(calledDesc,"()Z",calledName,RawEntityLivingBaseName,"isOnLadder","RENAMEME",calledOwner)){
+				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onIsOnLadder", String.format( "(L%s;)Z", EntityLivingBaseName ) );
+				return false;
+		}
+		
 		//TBA
 		if(isMethod(calledDesc,"()V", calledName,ExplosionName,"doExplosionA","func_77278_a",calledOwner)
 			||

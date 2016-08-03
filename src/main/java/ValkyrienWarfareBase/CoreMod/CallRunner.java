@@ -16,16 +16,19 @@ import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Collision.EntityCollisionInjector;
+import ValkyrienWarfareBase.Collision.EntityPolygon;
+import ValkyrienWarfareBase.Collision.EntityPolygonCollider;
 import ValkyrienWarfareBase.Collision.Polygon;
 import ValkyrienWarfareBase.Interaction.CustomPlayerInteractionManager;
+import ValkyrienWarfareBase.Physics.BlockMass;
 import ValkyrienWarfareBase.Physics.PhysicsQueuedForce;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityFallingBlock;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -44,6 +47,7 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.RayTraceResult.Type;
 import net.minecraft.util.math.Vec3d;
@@ -54,12 +58,65 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.demo.DemoWorldManager;
 import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.common.ForgeModContainer;
 
 public class CallRunner {
 
 	public static double partialTicks;
 	static{
 		partialTicks = Minecraft.getMinecraft().getRenderPartialTicks();
+	}
+	
+	public static boolean onIsOnLadder(EntityLivingBase base){
+		boolean vanilla = base.isOnLadder();
+		if(vanilla){
+			return true;
+		}
+		if (base instanceof EntityPlayer && ((EntityPlayer)base).isSpectator())
+        {
+            return false;
+        }
+		List<PhysicsWrapperEntity> nearbyPhys = ValkyrienWarfareMod.physicsManager.getManagerForWorld(base.worldObj).getNearbyPhysObjects(base.getEntityBoundingBox());
+		for(PhysicsWrapperEntity physWrapper:nearbyPhys){
+			Vector playerPos = new Vector(base);
+			physWrapper.wrapping.coordTransform.fromGlobalToLocal(playerPos);
+			int i = MathHelper.floor_double(playerPos.X);
+	        int j = MathHelper.floor_double(playerPos.Y);
+	        int k = MathHelper.floor_double(playerPos.Z);
+
+	        BlockPos blockpos = new BlockPos(i, j, k);
+	        IBlockState iblockstate = base.worldObj.getBlockState(blockpos);
+	        Block block = iblockstate.getBlock();
+	        
+	        
+	        boolean isSpectator = (base instanceof EntityPlayer && ((EntityPlayer)base).isSpectator());
+	        if (isSpectator) return false;
+
+	        	EntityPolygon playerPoly = new EntityPolygon(base.getEntityBoundingBox(),physWrapper.wrapping.coordTransform.wToLTransform,base);
+	        	AxisAlignedBB bb = playerPoly.getEnclosedAABB();
+	        	for(int x = MathHelper.floor_double(bb.minX);x<bb.maxX;x++){
+	        		for(int y = MathHelper.floor_double(bb.minY);y<bb.maxY;y++){
+	        			for(int z = MathHelper.floor_double(bb.minZ);z<bb.maxZ;z++){
+	    	        		BlockPos pos = new BlockPos(x,y,z);
+	    	        		IBlockState checkState = base.worldObj.getBlockState(pos);
+	    	        		if(checkState.getBlock().isLadder(checkState, base.worldObj, pos, base)){
+	    	        			return true;
+//	    	        			AxisAlignedBB ladderBB = checkState.getBlock().getBoundingBox(checkState, base.worldObj, pos).offset(pos).expandXyz(.1D);
+//	    	        			Polygon checkBlock = new Polygon(ladderBB);
+//	    	        			EntityPolygonCollider collider = new EntityPolygonCollider(playerPoly, checkBlock, physWrapper.wrapping.coordTransform.normals, new Vector(base.motionX,base.motionY,base.motionZ));
+////	    	        			System.out.println(!collider.seperated);
+//	    	        			if(!collider.seperated){
+//	    	        				return true;
+//	    	        			}
+	    	        			
+	    	        		}
+	    	        	}
+		        	}
+	        	}
+
+//	        return net.minecraftforge.common.ForgeHooks.isLivingOnLadder(iblockstate, base.worldObj, new BlockPos(i, j, k), base);
+		}
+		return false;
 	}
 	
 	public static void onExplosionA(Explosion e){
@@ -77,13 +134,14 @@ public class CallRunner {
 			Explosion expl = new Explosion(ship.worldObj, null, inLocal.X, inLocal.Y, inLocal.Z, radius, false, false);
 			expl.doExplosionA();
 			
-			double affectedPostions = 0;
+			double affectedPositions = 0D;
 			
 			for(Object o:expl.affectedBlockPositions){
-				IBlockState state = ship.worldObj.getBlockState((BlockPos)o);
+				BlockPos pos = (BlockPos)o;
+				IBlockState state = ship.worldObj.getBlockState(pos);
 				Block block = state.getBlock();
-				if(!block.isAir(state, worldIn, (BlockPos)o)||ship.wrapping.explodedPositionsThisTick.contains((BlockPos)o)){
-					affectedPostions++;
+				if (!block.isAir(state, worldIn, (BlockPos)o)||ship.wrapping.explodedPositionsThisTick.contains((BlockPos)o)){
+					affectedPositions++;
 				}
 			}
 			
@@ -99,21 +157,24 @@ public class CallRunner {
 	                block.onBlockExploded(ship.worldObj, pos, expl);
 	                if(!worldIn.isRemote){
 	                	Vector posVector = new Vector(pos.getX()+.5,pos.getY()+.5,pos.getZ()+.5);
-	                	ship.wrapping.coordTransform.fromGlobalToLocal(posVector);
 	                	
-//	                	System.out.println(expl.affectedBlockPositions.size());
+	                	ship.wrapping.coordTransform.fromLocalToGlobal(posVector);
 	                	
-	                	double explosionForce = e.explosionSize/10D;
+	                	double mass = BlockMass.basicMass.getMassFromState(state, pos, ship.worldObj);
 	                	
-//	                	System.out.println(posVector);
-	                	
+	                	double explosionForce = Math.sqrt(e.explosionSize)*4800D*mass/affectedPositions;
+
 	                	Vector forceVector = new Vector(pos.getX()+.5-expl.explosionX,pos.getY()+.5-expl.explosionY,pos.getZ()+.5-expl.explosionZ);
+	                	
+	                	double vectorDist = forceVector.length();
 	                	
 	                	forceVector.normalize();
 	                	
-	                	forceVector.multiply(explosionForce);
+	                	forceVector.multiply(explosionForce/vectorDist);
 	                	
-	                	PhysicsQueuedForce queuedForce = new PhysicsQueuedForce(forceVector, posVector, true, 1);
+	                	RotationMatrices.doRotationOnly(ship.wrapping.coordTransform.lToWRotation, forceVector);
+	                	
+	                	PhysicsQueuedForce queuedForce = new PhysicsQueuedForce(forceVector, posVector, false, 1);
 	                	
 	                	if(!ship.wrapping.explodedPositionsThisTick.contains(pos)){
 	                		ship.wrapping.explodedPositionsThisTick.add(pos);
@@ -121,28 +182,7 @@ public class CallRunner {
 	                	
 	                	ship.wrapping.queueForce(queuedForce);
 	                }
-//	                ship.explodedThisTick.add(pos);
-//	                if(!worldIn.isRemote){
-//	    				PhysicsController shipPhys = ((ShipRegionServer)ship.region).physController;
-//	    				Vector position = new Vector(pos.getX(),pos.getY(),pos.getZ());
-//	    				Vector force = inLocal.getSubtraction(position);
-//	    				force.multiply(80D*e.explosionSize*e.explosionSize);
-//	    				RotationMatrices.doRotationOnly(ship.rotationTransform,force);
-//	    				AppliedForce toApply = new AppliedForce(position, force, true, 1D);
-//	    				shipPhys.queueForce(toApply);
-//	    			}
-	            }//else{
-//	            	if(ship.explodedThisTick.contains(pos)){
-//	            		if(!worldIn.isRemote){
-//		    				PhysicsController shipPhys = ((ShipRegionServer)ship.region).physController;
-//		    				Vector position = new Vector(pos.getX(),pos.getY(),pos.getZ());
-//		    				Vector force = inLocal.getSubtraction(position);
-//		    				force.multiply(80D*e.explosionSize*e.explosionSize);
-//		    				AppliedForce toApply = new AppliedForce(position, force, true, 1D);
-//		    				shipPhys.queueForce(toApply);
-//		    			}
-//	            	}
-//	            }
+	            }
 			}
 			
 		}

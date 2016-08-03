@@ -274,12 +274,15 @@ public class PhysicsCalculations {
 			forceVec.multiply(physTickSpeed);
 			
 			Vector posVec = new Vector(queuedForce.inBodyPos);
-			RotationMatrices.applyTransform(parent.coordTransform.lToWTransform, posVec);
+//			RotationMatrices.applyTransform(parent.coordTransform.lToWTransform, posVec);
 			posVec.X-=wrapperEnt.posX;
 			posVec.Y-=wrapperEnt.posY;
 			posVec.Z-=wrapperEnt.posZ;
 			
 			addForceAtPoint(posVec,forceVec);
+//			System.out.println(posVec);
+//			torque.add(posVec.cross(forceVec));
+//			linearMomentum.add(forceVec);
 		}
 	}
 	

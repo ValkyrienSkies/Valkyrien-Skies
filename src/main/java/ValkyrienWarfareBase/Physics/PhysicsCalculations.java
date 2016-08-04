@@ -6,6 +6,7 @@ import java.util.Collections;
 import javax.vecmath.Matrix3d;
 
 import ValkyrienWarfareBase.NBTUtils;
+import ValkyrienWarfareBase.API.IBlockForceProvider;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Math.BigBastardMath;
@@ -15,10 +16,12 @@ import ValkyrienWarfareBase.PhysCollision.WorldPhysicsCollider;
 import ValkyrienWarfareBase.PhysicsManagement.CoordTransformObject;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
+import ValkyrienWarfareControl.TileEntity.AntiGravEngineTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -246,7 +249,7 @@ public class PhysicsCalculations {
 		linearMomentum.add(gravity.getProduct(mass*physTickSpeed));
 		addQueuedForces();
 		Collections.shuffle(activeForcePositions);
-		
+
 		for(BlockPos pos:activeForcePositions){
 			IBlockState state = parent.VKChunkCache.getBlockState(pos);
 			Block blockAt = state.getBlock();

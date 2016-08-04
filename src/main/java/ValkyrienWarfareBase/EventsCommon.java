@@ -94,7 +94,7 @@ public class EventsCommon {
 	
 	@SubscribeEvent(priority=EventPriority.HIGHEST)
 	public void onPlayerOpenContainerEvent(PlayerContainerEvent event){
-		event.setResult(Result.ALLOW);
+//		event.setResult(Result.ALLOW);
 	}
 	
 	@SubscribeEvent(priority=EventPriority.HIGHEST)

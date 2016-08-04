@@ -42,7 +42,7 @@ public class BlockMass {
 		double hardness = block.blockHardness;
 		double resistance = block.blockResistance;
 		
-		return hardness*20D + 2*Math.sqrt(resistance);
+		return hardness*50D + 2*Math.pow(resistance,1/4);
 	}
 	
 	public static void registerBlockMass(Block block,double mass){

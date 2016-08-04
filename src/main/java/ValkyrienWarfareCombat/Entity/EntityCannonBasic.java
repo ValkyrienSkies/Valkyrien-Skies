@@ -16,12 +16,12 @@ public class EntityCannonBasic extends EntityMountingWeaponBase{
 	@Override
 	public void onRiderInteract(EntityPlayer player, ItemStack stack, EnumHand hand) {
 		if(!player.worldObj.isRemote){
-			Vec3d velocityNormal = getVectorForRotation(rotationPitch, rotationYaw);
-			Vector velocityVector = new Vector(velocityNormal);
-			velocityVector.multiply(.1D);
-			EntityCannonBall projectile = new EntityCannonBall(worldObj, velocityVector,this);
-			worldObj.spawnEntityInWorld(projectile);
-			System.out.println("test");
+//			Vec3d velocityNormal = getVectorForRotation(rotationPitch, rotationYaw);
+//			Vector velocityVector = new Vector(velocityNormal);
+//			velocityVector.multiply(.1D);
+//			EntityCannonBall projectile = new EntityCannonBall(worldObj, velocityVector,this);
+//			worldObj.spawnEntityInWorld(projectile);
+//			System.out.println("test");
 		}
 	}
 	

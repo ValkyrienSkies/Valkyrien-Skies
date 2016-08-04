@@ -121,9 +121,9 @@ public class TransformAdapter extends ClassVisitor{
 
 	public boolean runTransformer(String calledName,String calledDesc,String calledOwner,MethodVisitor mv){
 		//TBA
-		if(isMethod(calledDesc,"()Z", calledName,EntityLivingBaseName,"isOnLadder","RENAMEME",calledOwner)
+		if(isMethod(calledDesc,"()Z", calledName,EntityLivingBaseName,"isOnLadder","func_70617_f_",calledOwner)
 			||
-			isMethod(calledDesc,"()Z",calledName,RawEntityLivingBaseName,"isOnLadder","RENAMEME",calledOwner)){
+			isMethod(calledDesc,"()Z",calledName,RawEntityLivingBaseName,"isOnLadder","func_70617_f_",calledOwner)){
 				mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onIsOnLadder", String.format( "(L%s;)Z", EntityLivingBaseName ) );
 				return false;
 		}

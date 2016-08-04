@@ -34,7 +34,7 @@ public class HovercraftControllerGUI extends GuiContainer{
 	
 	public void updateTextFields(){
 		textFields.get(0).setText(tileEnt.idealHeight+""); //TOP
-		textFields.get(1).setText(tileEnt.stabilityBias+""); //MID
+		textFields.get(1).setText(Math.round(tileEnt.stabilityBias*100D)/100D+""); //MID
 		textFields.get(2).setText(tileEnt.linearVelocityBias+""); //BOT
 	}
 
@@ -105,7 +105,7 @@ public class HovercraftControllerGUI extends GuiContainer{
 	public void onGuiClosed(){
 		updateServer();
 		super.onGuiClosed();
-        Keyboard.enableRepeatEvents(false);
+//        Keyboard.enableRepeatEvents(false);
         
 //        this.inventorySlots.removeCraftingFromCrafters(this);
     }

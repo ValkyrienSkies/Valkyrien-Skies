@@ -1,10 +1,8 @@
 package ValkyrienWarfareBase;
 
-import ValkyrienWarfareBase.Interaction.CustomPlayerControllerMP;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -44,11 +42,11 @@ public class EventsClient {
 	@SubscribeEvent
 	public void onRenderTickEvent(RenderTickEvent event){
 		if(mc.thePlayer!=null&&mc.playerController!=null){
-			if(!(mc.playerController instanceof CustomPlayerControllerMP)){
-				PlayerControllerMP oldController = mc.playerController;
-				mc.playerController = new CustomPlayerControllerMP(mc, mc.getConnection());
-				mc.playerController.setGameType(oldController.getCurrentGameType());
-			}
+//			if(!(mc.playerController instanceof CustomPlayerControllerMP)){
+//				PlayerControllerMP oldController = mc.playerController;
+//				mc.playerController = new CustomPlayerControllerMP(mc, mc.getConnection());
+//				mc.playerController.setGameType(oldController.getCurrentGameType());
+//			}
 		}
 	}
 	

@@ -31,6 +31,8 @@ public class TileEntityHoverController extends TileEntity{
 	public double angularConstant = 100000000D;
 	public double linearConstant = 1000000D;
 	
+	public boolean autoStabalizerControl = true;
+	
 	public TileEntityHoverController(){
 //		validate();
 	}
@@ -42,6 +44,9 @@ public class TileEntityHoverController extends TileEntity{
 //		physObj.physicsProcessor.convertTorqueToVelocity();
 //		secondsToApply*=5D;
 //		idealHeight = 100D;
+		if(autoStabalizerControl){
+			setAutoStabilizationValue(physObj);
+		}
 
 		double linearDist = -getControllerDistFromIdealY(physObj);
 		double angularDist = -getEngineDistFromIdealAngular(enginePos,physObj,secondsToApply);
@@ -93,9 +98,42 @@ public class TileEntityHoverController extends TileEntity{
 
 	public void handleGUIInput(HovercraftControllerGUIInputMessage message, MessageContext ctx){
 		idealHeight = message.newIdealHeight;
-		stabilityBias = Math.min(1D, Math.max(message.newStablitiyBias,0));
+		
+		if(message.newStablitiyBias<0||message.newStablitiyBias>1D){
+			//Out of bounds, set to auto
+			autoStabalizerControl = true;
+		}else{
+			double stabilityDif = Math.abs(stabilityBias-message.newStablitiyBias);
+//			if(stabilityDif>.05D){
+				stabilityBias = message.newStablitiyBias;
+				autoStabalizerControl = false;
+//			}
+		}
+		
 		linearVelocityBias = message.newLinearVelocityBias;
 		markDirty();
+	}
+	
+	private void setAutoStabilizationValue(PhysicsObject physObj){
+//		double epsilon = 5D;
+//		double biasChange = .00005D;
+//		
+//		Vector controllerPos = new Vector(pos.getX()+.5D,pos.getY()+.5D,pos.getZ()+.5D);
+//		physObj.coordTransform.fromLocalToGlobal(controllerPos);
+//	
+//		double controllerDist = idealHeight-controllerPos.Y;
+//		
+//		double yVelocity = physObj.physicsProcessor.linearMomentum.Y*physObj.physicsProcessor.invMass*linearVelocityBias;
+//		
+//		if(Math.abs(controllerDist)>epsilon){
+//			if(Math.signum(controllerDist)!=Math.signum(yVelocity)){
+//				stabilityBias+=(biasChange*controllerDist);
+//			}else{
+//				stabilityBias-=(biasChange*controllerDist);
+//			}
+//		}
+//		//Limit bias to between 0 and 1
+//		stabilityBias = Math.max(Math.min(stabilityBias, 1D), 0D);
 	}
 	
 	@Override
@@ -122,6 +160,7 @@ public class TileEntityHoverController extends TileEntity{
     	stabilityBias = compound.getDouble("stabilityBias");
     	linearVelocityBias = compound.getDouble("linearVelocityBias");
     	angularVelocityBias = compound.getDouble("angularVelocityBias");
+    	autoStabalizerControl = compound.getBoolean("autoStabalizerControl");
 		super.readFromNBT(compound);
     }
 
@@ -133,6 +172,7 @@ public class TileEntityHoverController extends TileEntity{
 		compound.setDouble("stabilityBias", stabilityBias);
 		compound.setDouble("linearVelocityBias", linearVelocityBias);
 		compound.setDouble("angularVelocityBias", angularVelocityBias);
+		compound.setBoolean("autoStabalizerControl", autoStabalizerControl);
     	return super.writeToNBT(compound);
     }
 	

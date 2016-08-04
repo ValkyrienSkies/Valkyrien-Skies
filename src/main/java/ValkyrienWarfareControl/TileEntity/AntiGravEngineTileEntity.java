@@ -16,7 +16,6 @@ public class AntiGravEngineTileEntity extends TileEntity{
 	public Vector angularThrust = new Vector();
 	public Vector linearThrust = new Vector();
 	public double maxThrust = 25000D;
-	public TileEntityHoverController controller;
 	
 	private double idealY;
 	
@@ -39,7 +38,7 @@ public class AntiGravEngineTileEntity extends TileEntity{
 		if(!(tileEnt instanceof TileEntityHoverController)){
 			return null;
 		}
-		controller = (TileEntityHoverController) tileEnt;
+		TileEntityHoverController controller = (TileEntityHoverController) tileEnt;
 		if(controller!=null){
 			return controller.getForceForEngine(this,world,pos,state,shipEntity.wrapping,secondsToApply);
 		}

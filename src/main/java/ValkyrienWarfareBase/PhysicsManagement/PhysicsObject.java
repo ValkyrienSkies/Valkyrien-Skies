@@ -21,6 +21,7 @@ import ValkyrienWarfareBase.Relocation.ShipSpawnDetector;
 import ValkyrienWarfareBase.Relocation.SpatialDetector;
 import ValkyrienWarfareBase.Relocation.VWChunkCache;
 import ValkyrienWarfareBase.Render.PhysObjectRenderManager;
+import ValkyrienWarfareControl.TileEntity.AntiGravEngineTileEntity;
 import gnu.trove.iterator.TIntIterator;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.state.IBlockState;
@@ -34,6 +35,7 @@ import net.minecraft.network.play.server.SPacketChunkData;
 import net.minecraft.network.play.server.SPacketUnloadChunk;
 import net.minecraft.server.management.PlayerChunkMap;
 import net.minecraft.server.management.PlayerChunkMapEntry;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
@@ -194,6 +196,9 @@ public class PhysicsObject {
 			detector.setPosWithRespectTo(i, centerInWorld, pos);
 			
 			IBlockState state = detector.cache.getBlockState(pos);
+			
+			TileEntity worldTile = detector.cache.getTileEntity(pos);
+			
 			pos.setPos(pos.getX()+centerDifference.getX(), pos.getY()+centerDifference.getY(), pos.getZ()+centerDifference.getZ());
 //			System.out.println(pos);
 			ownedChunks.chunkOccupiedInLocal[(pos.getX()>>4)-minChunkX][(pos.getZ()>>4)-minChunkZ] = true;
@@ -207,6 +212,51 @@ public class PhysicsObject {
             }
 
 			chunkToSet.storageArrays[storageIndex].set(pos.getX()& 15, pos.getY()& 15, pos.getZ()& 15, state);
+			
+			if(worldTile!=null){
+				NBTTagCompound tileEntNBT = new NBTTagCompound();
+				tileEntNBT = worldTile.writeToNBT(tileEntNBT);
+				//Change the xyz pos values
+				tileEntNBT.setInteger("x", pos.getX());
+				tileEntNBT.setInteger("y", pos.getY());
+				tileEntNBT.setInteger("z", pos.getZ());
+				//Creates a new TileEntity for the block
+				TileEntity newInstace = VKChunkCache.getTileEntity(pos);
+				newInstace.readFromNBT(tileEntNBT);
+				
+				Class tileClass = newInstace.getClass();
+				
+				Field[] fields = tileClass.getDeclaredFields();
+				
+				for(Field field:fields){
+					try {
+						field.setAccessible(true);
+						Object o = field.get(newInstace);
+						if(o != null){
+							if(o instanceof BlockPos){
+								BlockPos inTilePos = (BlockPos)o;
+								int hash = detector.getHashWithRespectTo(inTilePos.getX(), inTilePos.getY(), inTilePos.getZ(), detector.firstBlock);
+								if(detector.foundSet.contains(hash)){
+									if(!(o instanceof MutableBlockPos)){
+										inTilePos = inTilePos.add(centerDifference.getX(), centerDifference.getY(), centerDifference.getZ());
+										field.set(newInstace, inTilePos);
+									}else{
+										MutableBlockPos mutable = (MutableBlockPos)o;
+										mutable.setPos(inTilePos.getX()+centerDifference.getX(), inTilePos.getY()+centerDifference.getY(), inTilePos.getZ()+centerDifference.getZ());
+									}
+								}
+							}
+						}
+					} catch (IllegalArgumentException e) {
+						e.printStackTrace();
+					} catch (IllegalAccessException e) {
+						e.printStackTrace();
+					}
+				}
+				
+				newInstace.markDirty();
+				worldTile.invalidate();
+			}
 //			chunkCache.setBlockState(pos, state);
 //			worldObj.setBlockState(pos, state);
 		}

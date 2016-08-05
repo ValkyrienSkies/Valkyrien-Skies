@@ -11,9 +11,11 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
@@ -35,11 +37,17 @@ public abstract class EntityMountingWeaponBase extends Entity implements IEntity
 	@Override
 	public boolean processInitialInteract(EntityPlayer player, @Nullable ItemStack stack, EnumHand hand)
     {
-		if(player.isRidingSameEntity(this)){
+		if(player.getLowestRidingEntity()==super.getLowestRidingEntity()){
 			onRiderInteract(player,stack,hand);
 		}
 		player.startRiding(this);
         return false;
+    }
+	
+	@Override
+	public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, @Nullable ItemStack stack, EnumHand hand)
+    {
+        return EnumActionResult.PASS;
     }
 	
 	public void setFacing(EnumFacing toSet){
@@ -128,6 +136,19 @@ public abstract class EntityMountingWeaponBase extends Entity implements IEntity
     }
 
 	@Override
+	public Entity getLowestRidingEntity()
+    {
+        Entity entity;
+
+        for (entity = this; entity.isRiding(); entity = entity.getRidingEntity())
+        {
+            ;
+        }
+
+        return null;
+    }
+	
+	@Override
     public void setPositionAndRotationDirect(double x, double y, double z, float yaw, float pitch, int rotationSteps, boolean p_180426_10_){
 		if(p_180426_10_){
 			posX=x;
@@ -194,9 +215,17 @@ public abstract class EntityMountingWeaponBase extends Entity implements IEntity
 	
 	@Override
 	public boolean canRiderInteract(){
+		System.out.println("test");
         return true;
     }
 
+	@Override
+	@Nullable
+    public Entity getRidingEntity()
+    {
+        return this.ridingEntity;
+    }
+	
 	@Override
 	protected void entityInit() {
 		

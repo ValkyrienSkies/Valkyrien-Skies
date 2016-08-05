@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.BlockRendererDispatcher;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -33,6 +34,10 @@ public class EntityCannonBallRenderer extends Render<EntityCannonBall>{
     {
 		IBlockState iblockstate = ValkyrienWarfareCombatMod.instance.fakeCannonBlock.getStateFromMeta(2);
 
+		double renderX = (entity.posX-entity.lastTickPosX)*partialTicks + entity.lastTickPosX;
+		double renderY = (entity.posY-entity.lastTickPosY)*partialTicks + entity.lastTickPosY;
+		double renderZ = (entity.posZ-entity.lastTickPosZ)*partialTicks + entity.lastTickPosZ;
+		
         if (iblockstate.getRenderType() == EnumBlockRenderType.MODEL)
         {
             World world = entity.worldObj;
@@ -52,12 +57,17 @@ public class EntityCannonBallRenderer extends Render<EntityCannonBall>{
                 }
 
                 vertexbuffer.begin(7, DefaultVertexFormats.BLOCK);
-                BlockPos blockpos = new BlockPos(entity.posX, entity.posY, entity.posZ);
-                GlStateManager.translate((float)(x - entity.posX+.25D), (float)(y - entity.posY-.07D), (float)(z - entity.posZ+.778D));
+//                BlockPos blockpos = new BlockPos(renderX, renderY, renderZ);
+                GlStateManager.translate((float)(x - renderX+.25D), (float)(y - renderY-.07D), (float)(z - renderZ+.778D));
                 BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
-                blockrendererdispatcher.getBlockModelRenderer().renderModel(world, blockrendererdispatcher.getModelForState(iblockstate), iblockstate, blockpos, vertexbuffer, false, 0);
+                
+                vertexbuffer.setTranslation(renderX-.5D, renderY, renderZ-.5D);
+                
+                blockrendererdispatcher.getBlockModelRenderer().renderModel(world, blockrendererdispatcher.getModelForState(iblockstate), iblockstate, BlockPos.ORIGIN, vertexbuffer, false, 0);
                 tessellator.draw();
 
+                vertexbuffer.setTranslation(0,0,0);
+                
                 if (this.renderOutlines)
                 {
                     GlStateManager.disableOutlineMode();
@@ -71,6 +81,12 @@ public class EntityCannonBallRenderer extends Render<EntityCannonBall>{
         }
     }
 
+	@Override
+	public boolean shouldRender(EntityCannonBall livingEntity, ICamera camera, double camX, double camY, double camZ)
+    {
+		return true;
+    }
+	
 	@Override
 	protected ResourceLocation getEntityTexture(EntityCannonBall entity) {
 		return null;

@@ -60,7 +60,7 @@ public class ValkyrienWarfareCombatMod {
     
     private void registerEntities(FMLStateEvent event){
     	EntityRegistry.registerModEntity(EntityCannonBasic.class,"EntityCannonBasic",71,this,120,1,false);
-    	EntityRegistry.registerModEntity(EntityCannonBall.class, "EntityCannonBall", 72, this, 120, 1, true);
+    	EntityRegistry.registerModEntity(EntityCannonBall.class, "EntityCannonBall", 72, this, 120, 5, true);
     }
     
     private void registerBlocks(FMLStateEvent event){

@@ -1,3 +1,11 @@
 {
-"custom_sound": {"category": "ambient","sounds": [{"name": "cannonfire_1","stream": false}]}
+	"fireCannon": {
+    "category": "ambient",
+    "sounds": [
+      {
+        "name": "valkyrienwarfarecombat:cannonfire_1",
+        "stream": true
+      }
+    ]
+  }
 }

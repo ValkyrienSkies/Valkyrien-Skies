@@ -160,7 +160,11 @@ public class CallRunnerClient extends CallRunner{
                             int i = destroyblockprogress.getPartialBlockDamage();
                             TextureAtlasSprite textureatlassprite = renderGlobal.destroyBlockIcons[i];
                             BlockRendererDispatcher blockrendererdispatcher = renderGlobal.mc.getBlockRendererDispatcher();
-                            blockrendererdispatcher.renderBlockDamage(iblockstate, blockpos, textureatlassprite, renderGlobal.theWorld);
+                            try{
+                            	blockrendererdispatcher.renderBlockDamage(iblockstate, blockpos, textureatlassprite, renderGlobal.theWorld);
+                            }catch(Exception e){
+                            	e.printStackTrace();
+                            }
                         }
                         worldRendererIn.setTranslation(-d0, -d1, -d2);
                         //TODO: Reverse the Matrix Transforms here

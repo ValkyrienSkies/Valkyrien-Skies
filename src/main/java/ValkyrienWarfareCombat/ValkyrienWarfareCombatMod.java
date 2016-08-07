@@ -3,6 +3,8 @@ package ValkyrienWarfareCombat;
 import ValkyrienWarfareCombat.Entity.EntityCannonBall;
 import ValkyrienWarfareCombat.Entity.EntityCannonBasic;
 import ValkyrienWarfareCombat.Item.ItemBasicCannon;
+import ValkyrienWarfareCombat.Item.ItemCannonBall;
+import ValkyrienWarfareCombat.Item.ItemPowderPouch;
 import ValkyrienWarfareCombat.Proxy.CommonProxyCombat;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -26,13 +28,15 @@ public class ValkyrienWarfareCombatMod {
 	
 	public static final String MODID = "valkyrienwarfarecombat";
     public static final String MODNAME = "Valkyrien Warfare Combat";
-    public static final String MODVER = "0.0";
+    public static final String MODVER = "0.1";
     
 	public static ValkyrienWarfareCombatMod instance;
     
 	public Item basicCannonSpawner;
+	public Item cannonBall;
+	public Item powderPouch;
 	
-    public static Block fakeCannonBlock;
+    public Block fakeCannonBlock;
     
     @EventHandler
     public void preInit(FMLPreInitializationEvent event){
@@ -54,8 +58,13 @@ public class ValkyrienWarfareCombatMod {
     }
     
     private void registerItems(FMLStateEvent event){
-    	basicCannonSpawner = new ItemBasicCannon().setUnlocalizedName("basicCannonSpawner").setRegistryName(MODID, "basicCannonSpawner").setCreativeTab(CreativeTabs.COMBAT).setMaxStackSize(4);
+    	basicCannonSpawner = new ItemBasicCannon().setUnlocalizedName("basiccannonspawner").setRegistryName(MODID, "basiccannonspawner").setCreativeTab(CreativeTabs.COMBAT).setMaxStackSize(4);
+    	cannonBall = new ItemCannonBall().setUnlocalizedName("cannonball").setRegistryName(MODID, "cannonball").setCreativeTab(CreativeTabs.COMBAT).setMaxStackSize(32);
+    	powderPouch = new ItemPowderPouch().setUnlocalizedName("powderpouch").setRegistryName(MODID, "powderpouch").setCreativeTab(CreativeTabs.COMBAT).setMaxStackSize(32);
+    	
     	GameRegistry.registerItem(basicCannonSpawner);
+    	GameRegistry.registerItem(cannonBall);
+    	GameRegistry.registerItem(powderPouch);
     }
     
     private void registerEntities(FMLStateEvent event){

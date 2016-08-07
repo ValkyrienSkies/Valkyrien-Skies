@@ -85,6 +85,10 @@ public class HovercraftControllerGUI extends GuiContainer{
 	
 	@Override
 	public void initGui(){
+	    super.initGui();
+	    this.mc.thePlayer.openContainer = this.inventorySlots;
+	    this.guiLeft = (this.width - this.xSize) / 2;
+	    this.guiTop = (this.height - this.ySize) / 2;
 		textFields.clear();
 		int fieldWidth = 40;
 		int fieldHeight = 20;
@@ -103,10 +107,11 @@ public class HovercraftControllerGUI extends GuiContainer{
 	
 	@Override
 	public void onGuiClosed(){
-		updateServer();
 		super.onGuiClosed();
-//        Keyboard.enableRepeatEvents(false);
-        
+		updateServer();
+        Keyboard.enableRepeatEvents(false);
+//        Minecraft.getMinecraft().thePlayer.closeScreenAndDropStack();
+//        Minecraft.getMinecraft().thePlayer.cra
 //        this.inventorySlots.removeCraftingFromCrafters(this);
     }
 

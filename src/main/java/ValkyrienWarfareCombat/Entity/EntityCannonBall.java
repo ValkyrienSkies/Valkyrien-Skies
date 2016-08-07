@@ -14,13 +14,14 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class EntityCannonBall extends Entity{
 	
-	public float explosionPower = 5f;
+	public float explosionPower = 4f;
 	private int lerpSteps;
 	private double boatPitch,lerpY,lerpZ,lerpXRot,boatYaw;
 
 	public EntityCannonBall(World worldIn) {
 		super(worldIn);
 		setSize(.4F, .4F);
+		explosionPower = 3f;
 	}
 
 	public EntityCannonBall(World worldIn,Vector velocityVector,Entity parent){

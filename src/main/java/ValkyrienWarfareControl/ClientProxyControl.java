@@ -38,7 +38,6 @@ public class ClientProxyControl extends CommonProxyControl{
 	
 	private void registerItemModel(Item toRegister){
     	RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
-        
     	renderItem.getItemModelMesher().register(toRegister, 0, new ModelResourceLocation(ValkyrienWarfareControlMod.MODID + ":" + toRegister.getUnlocalizedName().substring(5), "inventory"));;
 	}
 }

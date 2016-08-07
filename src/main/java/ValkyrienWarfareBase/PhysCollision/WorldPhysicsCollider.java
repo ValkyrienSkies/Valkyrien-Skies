@@ -2,7 +2,6 @@ package ValkyrienWarfareBase.PhysCollision;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Random;
 
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
@@ -49,15 +48,13 @@ public class WorldPhysicsCollider {
 		if(shouldUpdateCollisonCache()){
 			updatePotentialCollisionCache();
 		}
-		if(true){
-			Collections.shuffle(cachedPotentialHits);
-		}
-		processPotentialCollisions();
+		Collections.shuffle(cachedPotentialHits);
+		processPotentialCollisionsAccurately();
 	}
 	
 	//Runs through the cache ArrayList, checking each possible BlockPos for SOLID blocks that can collide, if it finds any it will
 	//move to the next method
-	private void processPotentialCollisions(){
+	private void processPotentialCollisionsAccurately(){
 		for(BlockPos pos:cachedPotentialHits){
 			Vector inWorld = new Vector(pos.getX()+.5,pos.getY()+.5,pos.getZ()+.5);
 			parent.coordTransform.fromGlobalToLocal(inWorld);
@@ -104,7 +101,7 @@ public class WorldPhysicsCollider {
 			handleActualCollision(collider);
 		}
 	}
-	
+
 	private void handleActualCollision(PhysPolygonCollider collider){
 		//The default <0,1,0> normal collision
 		PhysCollisionObject toCollideWith = collider.collisions[1];

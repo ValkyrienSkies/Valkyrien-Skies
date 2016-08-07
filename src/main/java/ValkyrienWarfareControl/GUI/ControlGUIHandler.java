@@ -19,7 +19,7 @@ public class ControlGUIHandler implements IGuiHandler{
 			}
 			TileEntityHoverController tile = (TileEntityHoverController) tileEnt;
 			((EntityPlayerMP)player).connection.sendPacket(tile.getUpdatePacket());
-			return new HovercraftControllerContainer(tile);
+			return new HovercraftControllerContainer(player.inventory,tile);
 		}
 		return null;
 	}

@@ -290,16 +290,7 @@ public abstract class EntityMountingWeaponBase extends Entity implements IEntity
         }
     }
 	
-	public void doItemDrops(){
-//      ItemStack itemstack = new ItemStack(Items.MINECART, 1);
-//
-//      if (this.getName() != null)
-//      {
-//          itemstack.setStackDisplayName(this.getName());
-//      }
-//
-//      this.entityDropItem(itemstack, 0.0F);
-	}
+	public abstract void doItemDrops();
 	
 	@Override
 	protected void readEntityFromNBT(NBTTagCompound tagCompund) {

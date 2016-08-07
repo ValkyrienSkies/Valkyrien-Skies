@@ -1,10 +1,11 @@
 package ValkyrienWarfareCombat.Entity;
 
 import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareCombat.ValkyrienWarfareCombatMod;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -26,6 +27,18 @@ public class EntityCannonBasic extends EntityMountingWeaponBase{
 //			worldObj.playSound(null, posX, posY, posZ, new SoundEvent(), SoundCategory.AMBIENT, volume, pitch, true);
 //			System.out.println("test");
 		}
+	}
+
+	@Override
+	public void doItemDrops() {
+      ItemStack itemstack = new ItemStack(ValkyrienWarfareCombatMod.instance.basicCannonSpawner, 1);
+
+      if (this.getName() != null)
+      {
+          itemstack.setStackDisplayName(this.getName());
+      }
+
+      this.entityDropItem(itemstack, 0.0F);
 	}
 	
 }

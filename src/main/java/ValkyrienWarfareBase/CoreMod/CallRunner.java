@@ -150,7 +150,7 @@ public class CallRunner {
 	                	
 	                	double mass = BlockMass.basicMass.getMassFromState(state, pos, ship.worldObj);
 	                	
-	                	double explosionForce = Math.sqrt(e.explosionSize)*5000D*mass/affectedPositions;
+	                	double explosionForce = Math.sqrt(e.explosionSize)*5000D*mass;
 
 	                	Vector forceVector = new Vector(pos.getX()+.5-expl.explosionX,pos.getY()+.5-expl.explosionY,pos.getZ()+.5-expl.explosionZ);
 	                	
@@ -398,53 +398,36 @@ public class CallRunner {
 		worldFor.markBlockRangeForRenderUpdate(x1, y1, z1, x2, y2, z2);
 	}
 	
-	public static RayTraceResult onRayTraceBlocks(World world,Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock)
-    {
+	public static RayTraceResult onRayTraceBlocks(World world,Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock){
 		RayTraceResult vanillaTrace = world.rayTraceBlocks(vec31, vec32, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
-		if(world.isRemote){
-			
-		}
 		WorldPhysObjectManager physManager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(world);
-		
 		AxisAlignedBB playerRangeBB = new AxisAlignedBB(vec31.xCoord-1D,vec31.yCoord-1D,vec31.zCoord-1D,vec31.xCoord+1D,vec31.yCoord+1D,vec31.zCoord+1D);
-		
 		List<PhysicsWrapperEntity> nearbyShips = physManager.getNearbyPhysObjects(playerRangeBB);
 		boolean changed = false;
-		
 		Vec3d playerEyesPos = vec31;
         Vec3d playerReachVector = vec32.subtract(vec31);
-        
         double reachDistance = playerReachVector.lengthVector();
 		double worldResultDistFromPlayer = 420D;
-		
 		if(vanillaTrace!=null&&vanillaTrace.hitVec!=null){
 			worldResultDistFromPlayer = vanillaTrace.hitVec.distanceTo(vec31);
 		}
-		
 		for(PhysicsWrapperEntity wrapper:nearbyShips){
             playerEyesPos = vec31;
             playerReachVector = vec32.subtract(vec31);
-            
             //TODO: Re-enable
             if(world.isRemote){
 //            	ValkyrienWarfareMod.proxy.updateShipPartialTicks(wrapper);
             }
-            
             //Transform the coordinate system for the player eye pos
             playerEyesPos = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.RwToLTransform, playerEyesPos);
             playerReachVector = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.RwToLRotation, playerReachVector);
-            
             Vec3d playerEyesReachAdded = playerEyesPos.addVector(playerReachVector.xCoord * reachDistance, playerReachVector.yCoord * reachDistance, playerReachVector.zCoord * reachDistance);
-            
-            RayTraceResult resultInShip = world.rayTraceBlocks(playerEyesPos, playerEyesReachAdded, false, false, true);
-            
+            RayTraceResult resultInShip = world.rayTraceBlocks(playerEyesPos, playerEyesReachAdded, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
             if(resultInShip!=null&&resultInShip.hitVec!=null&&resultInShip.typeOfHit==Type.BLOCK){
 	            double shipResultDistFromPlayer = resultInShip.hitVec.distanceTo(playerEyesPos);
 	            if(shipResultDistFromPlayer<worldResultDistFromPlayer){
 	            	worldResultDistFromPlayer = shipResultDistFromPlayer;
-	            	
 	            	resultInShip.hitVec = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.RlToWTransform, resultInShip.hitVec);
-	            	
 	            	vanillaTrace = resultInShip;
 	            }
             }

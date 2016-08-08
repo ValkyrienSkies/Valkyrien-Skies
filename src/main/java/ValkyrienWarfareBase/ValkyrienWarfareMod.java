@@ -6,6 +6,7 @@ import java.util.concurrent.Executors;
 
 import ValkyrienWarfareBase.API.PhysicsEntityHooks;
 import ValkyrienWarfareBase.Block.BlockPhysicsInfuser;
+import ValkyrienWarfareBase.Block.BlockPhysicsInfuserCreative;
 import ValkyrienWarfareBase.ChunkManagement.DimensionPhysicsChunkManager;
 import ValkyrienWarfareBase.PhysicsManagement.DimensionPhysObjectManager;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
@@ -56,6 +57,7 @@ public class ValkyrienWarfareMod{
     public static boolean doSplitting = false;
     
     public static Block physicsInfuser;
+    public static Block physicsInfuserCreative;
 
     public static SimpleNetworkWrapper physWrapperNetwork;
 
@@ -110,7 +112,10 @@ public class ValkyrienWarfareMod{
 
     private void registerBlocks(FMLStateEvent event){
     	physicsInfuser = new BlockPhysicsInfuser(Material.ROCK).setHardness(12f).setUnlocalizedName("shipblock").setRegistryName(MODID, "shipblock").setCreativeTab(CreativeTabs.TRANSPORTATION);
+    	physicsInfuserCreative = new BlockPhysicsInfuserCreative(Material.ROCK).setHardness(12f).setUnlocalizedName("shipblockcreative").setRegistryName(MODID, "shipblockcreative").setCreativeTab(CreativeTabs.TRANSPORTATION);;
+    	
     	GameRegistry.registerBlock(physicsInfuser);
+    	GameRegistry.registerBlock(physicsInfuserCreative);
     }
     
     private void registerRecipies(FMLStateEvent event){

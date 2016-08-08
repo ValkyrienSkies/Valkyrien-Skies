@@ -14,9 +14,9 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class BlockPhysicsInfuser extends Block {
+public class BlockPhysicsInfuserCreative extends Block {
 
-	public BlockPhysicsInfuser(Material materialIn) {
+	public BlockPhysicsInfuserCreative(Material materialIn) {
 		super(materialIn);
 	}
 
@@ -32,7 +32,7 @@ public class BlockPhysicsInfuser extends Block {
 					return true;
 				}
 			}
-			PhysicsWrapperEntity wrapper = new PhysicsWrapperEntity(worldIn,pos.getX(),pos.getY(),pos.getZ(),playerIn,DetectorManager.DetectorIDs.ShipSpawnerGeneral.ordinal());
+			PhysicsWrapperEntity wrapper = new PhysicsWrapperEntity(worldIn,pos.getX(),pos.getY(),pos.getZ(),playerIn,DetectorManager.DetectorIDs.BlockPosFinder.ordinal());
         	worldIn.spawnEntityInWorld(wrapper);
 		}
 		return true;

@@ -16,6 +16,7 @@ import ValkyrienWarfareBase.Physics.BlockForce;
 import ValkyrienWarfareBase.Physics.PhysicsCalculations;
 import ValkyrienWarfareBase.Physics.PhysicsQueuedForce;
 import ValkyrienWarfareBase.PhysicsManagement.Network.PhysWrapperPositionMessage;
+import ValkyrienWarfareBase.Relocation.DetectorManager;
 import ValkyrienWarfareBase.Relocation.ShipBlockPosFinder;
 import ValkyrienWarfareBase.Relocation.ShipSpawnDetector;
 import ValkyrienWarfareBase.Relocation.SpatialDetector;
@@ -86,6 +87,7 @@ public class PhysicsObject {
 	public PhysCollisionCallable collisionCallable = new PhysCollisionCallable(this);
 	
 	public int lastMessageTick;
+	public int detectorID;
 	
 	public boolean blocksChanged = false;
 	
@@ -176,7 +178,7 @@ public class PhysicsObject {
 		int minChunkX = claimedChunks[0][0].xPosition;
 		int minChunkZ = claimedChunks[0][0].zPosition;
 		BlockPos centerInWorld = new BlockPos(wrapper.posX,wrapper.posY,wrapper.posZ);
-		ShipSpawnDetector detector = new ShipSpawnDetector(centerInWorld, worldObj, ValkyrienWarfareMod.maxShipSize+1, true);
+		SpatialDetector detector = DetectorManager.getDetectorFor(detectorID, centerInWorld, worldObj, ValkyrienWarfareMod.maxShipSize+1, true);
 		if(detector.foundSet.size()>ValkyrienWarfareMod.maxShipSize||detector.cleanHouse){
 			if(creator!=null){
 				creator.addChatComponentMessage(new TextComponentString("Ship construction canceled because its exceeding the ship size limit (Raise with /setPhysConstructionLimit (number)) ; Or because it's attatched to bedrock)"));
@@ -425,7 +427,7 @@ public class PhysicsObject {
 
 			if(firstDet.foundSet.size()!=dirtyBlockPositions.size()){
 				//Set Y to 300 to prevent picking up extra blocks
-				PhysicsWrapperEntity newSplit = new PhysicsWrapperEntity(worldObj,wrapper.posX,300,wrapper.posZ, null);
+				PhysicsWrapperEntity newSplit = new PhysicsWrapperEntity(worldObj,wrapper.posX,300,wrapper.posZ, null,DetectorManager.DetectorIDs.BlockPosFinder.ordinal());
 				newSplit.yaw = wrapper.yaw;
 				newSplit.pitch = wrapper.pitch;
 				newSplit.roll = wrapper.roll;

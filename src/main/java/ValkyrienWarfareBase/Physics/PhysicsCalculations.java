@@ -243,13 +243,13 @@ public class PhysicsCalculations {
 	}
 	
 	public void calculateForces(){
-		double modifiedDrag = Math.pow(drag,physTickSpeed/physRawSpeed);
+		double modifiedDrag = Math.pow(drag,1D/iterations);
 		linearMomentum.multiply(modifiedDrag);
 		angularVelocity.multiply(modifiedDrag);
 		linearMomentum.add(gravity.getProduct(mass*physTickSpeed));
 		addQueuedForces();
+		
 		Collections.shuffle(activeForcePositions);
-
 		for(BlockPos pos:activeForcePositions){
 			IBlockState state = parent.VKChunkCache.getBlockState(pos);
 			Block blockAt = state.getBlock();

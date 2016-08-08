@@ -2,6 +2,7 @@ package ValkyrienWarfareBase.PhysicsManagement;
 
 import javax.annotation.Nullable;
 
+import ValkyrienWarfareBase.Relocation.SpatialDetector;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -31,18 +32,19 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 	public double prevRoll;
 	
 	private static final AxisAlignedBB zeroBB = new AxisAlignedBB(0,0,0,0,0,0);
-	
+
 	public PhysicsWrapperEntity(World worldIn) {
 		super(worldIn);
 		wrapping = new PhysicsObject(this);
 	}
 	
-	public PhysicsWrapperEntity(World worldIn,double x,double y,double z,@Nullable EntityPlayer maker) {
+	public PhysicsWrapperEntity(World worldIn,double x,double y,double z,@Nullable EntityPlayer maker, int detectorID) {
 		this(worldIn);
 		posX = x;
 		posY = y;
 		posZ = z;
 		wrapping.creator = maker;
+		wrapping.detectorID = detectorID;
 		wrapping.claimNewChunks();
 		wrapping.processChunkClaims();
 	}
@@ -63,16 +65,13 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 
 	@Override
 	public AxisAlignedBB getEntityBoundingBox(){
-		return zeroBB;
+		return wrapping.collisionBB;
     }
 	
 	@Override
 	@SideOnly(Side.CLIENT)
     public AxisAlignedBB getRenderBoundingBox(){
-		if(wrapping.collisionBB!=null){
-			return wrapping.collisionBB;
-		}
-		return zeroBB;
+		return wrapping.collisionBB;
     }
 	
 	@Override

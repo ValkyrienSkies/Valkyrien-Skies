@@ -48,6 +48,7 @@ public class PhysicsCalculations {
 	public double physTickSpeed = physRawSpeed/iterations;
 	//Used to limit the accumulation of motion by an object (Basically Air-Resistance preventing infinite energy)
 	public double drag = .985D;
+	private double blocksToMetersConversion = 1.5D;
 	
 	public ArrayList<BlockPos> activeForcePositions = new ArrayList<BlockPos>();
 	
@@ -327,7 +328,7 @@ public class PhysicsCalculations {
 
 	public void applyLinearVelocity(){
 		if(mass>0){
-			double momentMod = physTickSpeed/mass;
+			double momentMod = physTickSpeed*invMass;
 			wrapperEnt.posX+=(linearMomentum.X*momentMod);
 			wrapperEnt.posY+=(linearMomentum.Y*momentMod);
 			wrapperEnt.posZ+=(linearMomentum.Z*momentMod);

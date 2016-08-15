@@ -150,7 +150,7 @@ public class CallRunner {
 	                	
 	                	double mass = BlockMass.basicMass.getMassFromState(state, pos, ship.worldObj);
 	                	
-	                	double explosionForce = Math.sqrt(e.explosionSize)*5000D*mass;
+	                	double explosionForce = Math.sqrt(e.explosionSize)*1000D*mass;
 
 	                	Vector forceVector = new Vector(pos.getX()+.5-expl.explosionX,pos.getY()+.5-expl.explosionY,pos.getZ()+.5-expl.explosionZ);
 	                	
@@ -379,8 +379,7 @@ public class CallRunner {
         }
     }
 	
-	public static boolean onSetBlockState(World world,BlockPos pos, IBlockState newState, int flags)
-    {
+	public static boolean onSetBlockState(World world,BlockPos pos, IBlockState newState, int flags){
 		IBlockState oldState = world.getBlockState(pos);
 		boolean toReturn = world.setBlockState(pos, newState, flags);
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
@@ -392,7 +391,6 @@ public class CallRunner {
 		}
 		return toReturn;
     }
-	
 	
 	public static void onMarkBlockRangeForRenderUpdate(World worldFor,int x1, int y1, int z1, int x2, int y2, int z2){
 		worldFor.markBlockRangeForRenderUpdate(x1, y1, z1, x2, y2, z2);

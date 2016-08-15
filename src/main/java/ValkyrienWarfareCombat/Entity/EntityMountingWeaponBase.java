@@ -311,7 +311,6 @@ public abstract class EntityMountingWeaponBase extends Entity implements IEntity
 	@Override
 	public void readSpawnData(ByteBuf additionalData) {
 		facing = EnumFacing.getHorizontal(additionalData.readInt());
-		
 	}
 
 	

@@ -487,7 +487,7 @@ public class PhysicsObject {
 			queue.ticksToApply--;
 		}
 	}
-	
+
 	public void onPostTickClient(){
 		wrapper.prevPitch = wrapper.pitch;
 		wrapper.prevYaw = wrapper.yaw;

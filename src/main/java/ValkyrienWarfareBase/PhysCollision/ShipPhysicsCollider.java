@@ -26,7 +26,7 @@ public class ShipPhysicsCollider {
 	private double ticksSinceCacheUpdate = 420;
 	
 	public static double axisTolerance = .3D;
-	public double e = .25D;
+	public double e = .35D;
 	
 	public ShipPhysicsCollider(PhysicsCalculations calculations){
 		calculator = calculations;

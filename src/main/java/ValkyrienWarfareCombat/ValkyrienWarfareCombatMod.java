@@ -9,7 +9,10 @@ import ValkyrienWarfareCombat.Proxy.CommonProxyCombat;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -43,6 +46,7 @@ public class ValkyrienWarfareCombatMod {
     	instance = this;
     	registerBlocks(event);
     	registerItems(event);
+    	registerRecipies(event);
     	registerEntities(event);
     	proxy.preInit(event);
     }
@@ -78,4 +82,9 @@ public class ValkyrienWarfareCombatMod {
     	GameRegistry.registerBlock(fakeCannonBlock);
     }
 
+    private void registerRecipies(FMLStateEvent event){
+    	GameRegistry.addRecipe(new ItemStack(cannonBall,4), new Object[] {"II ", "II ","   ",'I',Items.IRON_INGOT});
+    	GameRegistry.addRecipe(new ItemStack(powderPouch,4), new Object[] {" S ", "SGS"," S ",'S',Items.STRING,'G',Items.GUNPOWDER});
+    }
+    
 }

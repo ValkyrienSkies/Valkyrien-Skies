@@ -59,7 +59,7 @@ public class EventsCommon {
 	
 	@SubscribeEvent(priority=EventPriority.HIGHEST)
 	public void onWorldLoad(WorldEvent.Load event){
-		ValkyrienWarfareMod.chunkManager.initWorld(event.getWorld());
+//		ValkyrienWarfareMod.chunkManager.initWorld(event.getWorld());
 		ValkyrienWarfareMod.physicsManager.initWorld(event.getWorld());
 	}
 	

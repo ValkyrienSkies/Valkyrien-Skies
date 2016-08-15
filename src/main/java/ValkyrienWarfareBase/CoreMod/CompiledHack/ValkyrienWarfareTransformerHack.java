@@ -15,7 +15,7 @@ public class ValkyrienWarfareTransformerHack implements IClassTransformer{
 
 	private static final List<String> privilegedPackages = Arrays.asList("ValkyrienWarfareBase","jdk");
 	
-    @Override
+	@Override
     public byte[] transform(String name,String transformedName, byte[] classData){
     	try{
 			for(String privilegedPackage:privilegedPackages ){
@@ -28,17 +28,15 @@ public class ValkyrienWarfareTransformerHack implements IClassTransformer{
 			adapter.setCV(classWriter);
 			try{
 				new ClassReader(classData).accept(adapter,ClassReader.EXPAND_FRAMES);
+				//Unsafe transformed bytes, JVM needs to reformat them
+				byte[] byteArray = classWriter.toByteArray();
+				ClassReader cr = new ClassReader(byteArray);
+				ClassWriter checkedWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+				CheckClassAdapter adapterChecker = new CheckClassAdapter(checkedWriter,true);
+				cr.accept(adapterChecker, ClassReader.EXPAND_FRAMES);
+				return checkedWriter.toByteArray();
 			}catch(Exception e){}
-			//Unsafe transformed bytes, JVM needs to reformat them
-			byte[] byteArray = classWriter.toByteArray();
-			ClassReader cr = new ClassReader(byteArray);
-			ClassWriter checkedWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-			CheckClassAdapter adapterChecker = new CheckClassAdapter(checkedWriter,true);
-			cr.accept(adapterChecker, ClassReader.EXPAND_FRAMES);
-			return checkedWriter.toByteArray();
-//			return classWriter.toByteArray();
-		}catch(Throwable t){
-			return classData;
-		}
+		}catch(Throwable t){}
+    	return classData;
     }
 }

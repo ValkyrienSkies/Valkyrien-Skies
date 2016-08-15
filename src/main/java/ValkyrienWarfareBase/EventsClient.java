@@ -17,16 +17,17 @@ public class EventsClient {
 
 	@SubscribeEvent(priority=EventPriority.HIGHEST)
 	public void onClientTickEvent(ClientTickEvent event){
-		if(event.phase==Phase.END){
-			if (mc.theWorld != null){
-	            if (!mc.isGamePaused()){
-	            	WorldPhysObjectManager manager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(mc.theWorld);
-	            	for(PhysicsWrapperEntity wrapper:manager.physicsEntities){
-	            		wrapper.wrapping.onPostTickClient();
-	            	}
-	            }
-			}
+		if (mc.theWorld != null){
+            if (!mc.isGamePaused()){
+            	WorldPhysObjectManager manager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(mc.theWorld);
+            	if(event.phase==Phase.END){
+            		for(PhysicsWrapperEntity wrapper:manager.physicsEntities){
+                		wrapper.wrapping.onPostTickClient();
+                	}
+        		}
+            }
 		}
+		
 	}
 	
 	@SubscribeEvent

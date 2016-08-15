@@ -33,7 +33,7 @@ public class WorldPhysicsCollider {
 	
 	public static double axisTolerance = .3D;
 	
-	public double e = .25D;
+	public double e = .35D;
 	
 	public WorldPhysicsCollider(PhysicsCalculations calculations){
 		calculator = calculations;
@@ -106,7 +106,7 @@ public class WorldPhysicsCollider {
 		Vector speedAtPoint = calculator.getMomentumAtPoint(collider.collisions[0].firstContactPoint.getSubtraction(new Vector(parent.wrapper.posX,parent.wrapper.posY,parent.wrapper.posZ)));
 		
 		double xDot = Math.abs(speedAtPoint.X);
-		double yDot = Math.abs(speedAtPoint.Y);
+		double yDot = Math.abs(speedAtPoint.Y)/5D;
 		double zDot = Math.abs(speedAtPoint.Z);
 		
 		PhysCollisionObject toCollideWith = null;

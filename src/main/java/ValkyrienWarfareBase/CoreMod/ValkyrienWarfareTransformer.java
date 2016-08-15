@@ -13,7 +13,7 @@ import net.minecraft.launchwrapper.IClassTransformer;
 
 public class ValkyrienWarfareTransformer implements IClassTransformer{
 
-	private static final List<String> privilegedPackages = Arrays.asList("ValkyrienWarfareBase");
+	private static final List<String> privilegedPackages = Arrays.asList("ValkyrienWarfareBase","jdk");
 	
     @Override
     public byte[] transform(String name,String transformedName, byte[] classData){

@@ -103,8 +103,35 @@ public class WorldPhysicsCollider {
 	}
 
 	private void handleActualCollision(PhysPolygonCollider collider){
-		//The default <0,1,0> normal collision
-		PhysCollisionObject toCollideWith = collider.collisions[1];
+		Vector speedAtPoint = calculator.getMomentumAtPoint(collider.collisions[0].firstContactPoint.getSubtraction(new Vector(parent.wrapper.posX,parent.wrapper.posY,parent.wrapper.posZ)));
+		
+		double xDot = Math.abs(speedAtPoint.X);
+		double yDot = Math.abs(speedAtPoint.Y);
+		double zDot = Math.abs(speedAtPoint.Z);
+		
+		PhysCollisionObject toCollideWith = null;
+		
+		//NOTE: This is all EXPERIMENTAL! Could possibly revert 
+		
+		if(yDot>xDot&&yDot>zDot){
+			//Y speed is greatest
+			if(xDot>zDot){
+				toCollideWith = collider.collisions[2];
+			}else{
+				toCollideWith = collider.collisions[0];
+			}
+		}else{
+			if(xDot>zDot){
+				//X speed is greatest
+				toCollideWith = collider.collisions[1];
+			}else{
+				//Z speed is greatest
+				toCollideWith = collider.collisions[1];
+			}
+		}
+		
+//		toCollideWith = collider.collisions[1];
+		
 		if(toCollideWith.penetrationDistance>axisTolerance||toCollideWith.penetrationDistance<-axisTolerance){
 			toCollideWith = collider.collisions[collider.minDistanceIndex];
 		}

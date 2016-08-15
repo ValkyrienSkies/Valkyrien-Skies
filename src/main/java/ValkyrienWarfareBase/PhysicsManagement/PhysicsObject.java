@@ -12,17 +12,16 @@ import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.ChunkManagement.ChunkSet;
 import ValkyrienWarfareBase.CoreMod.CallRunner;
+import ValkyrienWarfareBase.Interaction.FixedEntityData;
 import ValkyrienWarfareBase.Physics.BlockForce;
 import ValkyrienWarfareBase.Physics.PhysicsCalculations;
 import ValkyrienWarfareBase.Physics.PhysicsQueuedForce;
 import ValkyrienWarfareBase.PhysicsManagement.Network.PhysWrapperPositionMessage;
 import ValkyrienWarfareBase.Relocation.DetectorManager;
 import ValkyrienWarfareBase.Relocation.ShipBlockPosFinder;
-import ValkyrienWarfareBase.Relocation.ShipSpawnDetector;
 import ValkyrienWarfareBase.Relocation.SpatialDetector;
 import ValkyrienWarfareBase.Relocation.VWChunkCache;
 import ValkyrienWarfareBase.Render.PhysObjectRenderManager;
-import ValkyrienWarfareControl.TileEntity.AntiGravEngineTileEntity;
 import gnu.trove.iterator.TIntIterator;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.state.IBlockState;
@@ -90,6 +89,7 @@ public class PhysicsObject {
 	public int detectorID;
 	
 	public boolean blocksChanged = false;
+	public ArrayList<FixedEntityData> fixedEntities = new ArrayList<FixedEntityData>();
 	
 	public PhysicsObject(PhysicsWrapperEntity host){
 		wrapper = host;

@@ -81,7 +81,35 @@ public class ShipPhysicsCollider {
 				
 				PhysPolygonCollider polyCol = new PhysPolygonCollider(firstInWorld,secondInWorld,axes);
 				if(!polyCol.seperated){
-					PhysCollisionObject polyColObj = polyCol.collisions[1];
+					
+					Vector speedAtPoint = velAtFirst;
+					
+					double xDot = Math.abs(speedAtPoint.X);
+					double yDot = Math.abs(speedAtPoint.Y);
+					double zDot = Math.abs(speedAtPoint.Z);
+					
+					PhysCollisionObject polyColObj = null;
+					
+					//NOTE: This is all EXPERIMENTAL! Could possibly revert 
+					
+					if(yDot>xDot&&yDot>zDot){
+						//Y speed is greatest
+						if(xDot>zDot){
+							polyColObj = polyCol.collisions[2];
+						}else{
+							polyColObj = polyCol.collisions[0];
+						}
+					}else{
+						if(xDot>zDot){
+							//X speed is greatest
+							polyColObj = polyCol.collisions[1];
+						}else{
+							//Z speed is greatest
+							polyColObj = polyCol.collisions[1];
+						}
+					}
+					
+//					PhysCollisionObject polyColObj = polyCol.collisions[1];
 					if(polyColObj.penetrationDistance>axisTolerance||polyColObj.penetrationDistance<-axisTolerance){
 						polyColObj = polyCol.collisions[polyCol.minDistanceIndex];
 					}
@@ -89,8 +117,24 @@ public class ShipPhysicsCollider {
 					
 //					PhysCollisionObject physCol = new PhysCollisionObject(firstInWorld,secondInWorld,polyColObj.axis);
 					processCollisionAtPoint(toCollideWith, polyColObj);
+					
+					
+					if(Math.abs(polyColObj.movMaxFixMin)>Math.abs(polyColObj.movMinFixMax)){
+						for(Vector v:polyColObj.movable.vertices){
+							if(v.dot(polyColObj.axis)==polyColObj.playerMinMax[1]){
+								polyColObj.firstContactPoint = v;
+							}
+						}
+					}else{
+						for(Vector v:polyColObj.movable.vertices){
+							if(v.dot(polyColObj.axis)==polyColObj.playerMinMax[0]){
+								polyColObj.firstContactPoint = v;
+							}
+						}
+					}
+					
 //					physCol.firstContactPoint = physCol.getSecondContactPoint();
-//					processCollisionAtPoint(toCollideWith, physCol);
+					processCollisionAtPoint(toCollideWith, polyColObj);
 				}
 			}
 		}

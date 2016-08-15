@@ -1,12 +1,14 @@
 package ValkyrienWarfareBase.Render;
 
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
 
 import org.lwjgl.opengl.GL11;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareBase.Interaction.FixedEntityData;
 import ValkyrienWarfareBase.Math.Quaternion;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
@@ -166,6 +168,29 @@ public class PhysObjectRenderManager {
 			if(tileEnt!=null){
 				TileEntityRendererDispatcher.instance.renderTileEntity(tileEnt, partialTicks, -1);
 			}
+		}
+	}
+	
+	public void renderEntities(float partialTicks){
+		ArrayList<FixedEntityData> fixedEntities = (ArrayList<FixedEntityData>) parent.fixedEntities.clone();
+		for(FixedEntityData data:fixedEntities){
+			if(!data.fixed.isDead&&data.fixed!=Minecraft.getMinecraft().getRenderViewEntity()||Minecraft.getMinecraft().gameSettings.thirdPersonView > 0){
+				GL11.glPushMatrix();
+				int i = data.fixed.getBrightnessForRender(partialTicks);
+		        if (data.fixed.isBurning()){
+		            i = 15728880;
+		        }
+		        int j = i % 65536;
+		        int k = i / 65536;
+		        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)j / 1.0F, (float)k / 1.0F);
+		        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		        float yaw = data.fixed.prevRotationYaw + (data.fixed.rotationYaw - data.fixed.prevRotationYaw) * partialTicks;
+		        double x = data.positionInLocal.xCoord;
+		        double y = data.positionInLocal.yCoord;
+		        double z = data.positionInLocal.zCoord;
+				Minecraft.getMinecraft().getRenderManager().doRenderEntity(data.fixed,x,y,z, yaw, partialTicks, false);
+				GL11.glPopMatrix();
+			}	
 		}
 	}
 	

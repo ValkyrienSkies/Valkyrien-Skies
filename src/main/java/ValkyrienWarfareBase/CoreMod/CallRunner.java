@@ -20,6 +20,7 @@ import ValkyrienWarfareBase.Physics.BlockMass;
 import ValkyrienWarfareBase.Physics.PhysicsQueuedForce;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
+import ValkyrienWarfareCombat.Entity.EntityMountingWeaponBase;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -316,6 +317,9 @@ public class CallRunner {
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, posAt);
 		if(!(entity instanceof EntityFallingBlock)&&wrapper!=null&&wrapper.wrapping.coordTransform!=null){
 			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform,wrapper.wrapping.coordTransform.lToWRotation, entity);
+			if(entity instanceof EntityMountingWeaponBase){
+//				wrapper.wrapping.fixEntity(entity);
+			}
 		}
 		return world.spawnEntityInWorld(entity);
 	}

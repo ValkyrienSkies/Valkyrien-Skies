@@ -243,6 +243,7 @@ public class CallRunnerClient extends CallRunner{
 			GL11.glPushMatrix();
 			wrapper.wrapping.renderer.setupTranslation(partialTicks);
 			wrapper.wrapping.renderer.renderTileEntities(partialTicks);
+			wrapper.wrapping.renderer.renderEntities(partialTicks);
 			GL11.glPopMatrix();
 		}
 		GL11.glPopMatrix();

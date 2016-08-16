@@ -41,6 +41,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.ChunkCache;
 import net.minecraft.world.World;
@@ -577,6 +578,28 @@ public class PhysicsObject {
 				}
 			}
 		}
+		ArrayList<FixedEntityData> toRemove = new ArrayList<FixedEntityData>();
+		for(FixedEntityData data:fixedEntities){
+			if(!data.fixed.isSneaking()&&!data.fixed.isDead){
+//				System.out.println("test");
+				Vec3d newPos = RotationMatrices.applyTransform(coordTransform.lToWTransform, data.positionInLocal);
+				data.fixed.setPosition(newPos.xCoord, newPos.yCoord, newPos.zCoord);
+			}else{
+				toRemove.add(data);
+			}		
+		}
+		for(FixedEntityData ent:toRemove){
+			fixedEntities.remove(ent);
+//			ValkyrianWarfareMod.entityFixingManager.unFixEntity(ent);
+		}
+	}
+	
+	public void fixEntity(Entity ent){
+		Vector entityPos = new Vector(ent.posX,ent.posY,ent.posZ);
+		RotationMatrices.applyTransform(this.coordTransform.wToLTransform, entityPos);
+		Vec3d inLocal = entityPos.toVec3d();
+		FixedEntityData data = new FixedEntityData(ent, this, inLocal);
+		fixedEntities.add(data);
 	}
 	
 	public void updateChunkCache(){

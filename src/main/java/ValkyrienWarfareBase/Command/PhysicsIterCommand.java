@@ -40,7 +40,7 @@ public class PhysicsIterCommand extends CommandBase{
             	notifyCommandListener(sender, this, "Invalid Input", new Object[] {args[0]});
         		return;
             }
-            if(sentNum>=0&&sentNum<=100){
+            if(sentNum>=0&&sentNum<=1000){
             	ValkyrienWarfareMod.physicsManager.getManagerForWorld(commandWorld).physIter = sentNum;
             	notifyCommandListener(sender, this, "Physics Iters set to "+sentNum+" :Default (5)", new Object[] {args[0]});
             }

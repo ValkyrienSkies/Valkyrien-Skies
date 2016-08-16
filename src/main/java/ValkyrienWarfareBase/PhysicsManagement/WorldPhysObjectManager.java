@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareBase.Interaction.FixedEntityData;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
@@ -23,7 +25,7 @@ public class WorldPhysObjectManager {
 	public ArrayList<PhysicsWrapperEntity> physicsEntitiesToUnload = new ArrayList<PhysicsWrapperEntity>();
 	public ArrayList<Callable<Void>> physCollisonCallables = new ArrayList<Callable<Void>>();
 	public int physIter = 5;
-	public double physSpeed = .06D;
+	public double physSpeed = .05D;
 	public Vector gravity = new Vector(0,-9.8D,0);
 	
 	public WorldPhysObjectManager(World toManage){
@@ -67,6 +69,17 @@ public class WorldPhysObjectManager {
 		}
 		
 		return ships;
+	}
+	
+	public boolean isEntityFixed(Entity entity){
+		for(PhysicsWrapperEntity wrapper:physicsEntities){
+			for(FixedEntityData fixedData:wrapper.wrapping.fixedEntities){
+				if(fixedData.fixed==entity){
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 	
 }

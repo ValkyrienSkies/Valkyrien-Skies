@@ -47,8 +47,8 @@ public class PhysicsCalculations {
 	//The amount of time to be simulated on each rawPhysTick *(Its physSpeed/iterations)
 	public double physTickSpeed = physRawSpeed/iterations;
 	//Used to limit the accumulation of motion by an object (Basically Air-Resistance preventing infinite energy)
-	public double drag = .985D;
-	private double blocksToMetersConversion = 1.5D;
+	public double drag = .99D;
+	private double blocksToMetersConversion = 2D;
 	
 	public ArrayList<BlockPos> activeForcePositions = new ArrayList<BlockPos>();
 	
@@ -247,7 +247,8 @@ public class PhysicsCalculations {
 		double modifiedDrag = Math.pow(drag,1D/iterations);
 		linearMomentum.multiply(modifiedDrag);
 		angularVelocity.multiply(modifiedDrag);
-		linearMomentum.add(gravity.getProduct(mass*physTickSpeed));
+		
+		addForceAtPoint(new Vector(0,0,0),gravity.getProduct(mass*physTickSpeed));
 		addQueuedForces();
 		
 		Collections.shuffle(activeForcePositions);
@@ -298,6 +299,7 @@ public class PhysicsCalculations {
 	}
 	
 	public void addForceAtPoint(Vector inBodyWO,Vector forceToApply){
+		forceToApply.multiply(blocksToMetersConversion);
 		torque.add(inBodyWO.cross(forceToApply));
 		linearMomentum.add(forceToApply);
 	}

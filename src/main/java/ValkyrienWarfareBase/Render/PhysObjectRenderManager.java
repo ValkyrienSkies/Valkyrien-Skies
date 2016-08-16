@@ -174,7 +174,16 @@ public class PhysObjectRenderManager {
 	public void renderEntities(float partialTicks){
 		ArrayList<FixedEntityData> fixedEntities = (ArrayList<FixedEntityData>) parent.fixedEntities.clone();
 		for(FixedEntityData data:fixedEntities){
+			Vector originalEntityPos = new Vector(data.fixed.posX,data.fixed.posY,data.fixed.posZ);
+			Vector originalLastEntityPos = new Vector(data.fixed.lastTickPosX,data.fixed.lastTickPosY,data.fixed.lastTickPosZ);
+			
+			data.fixed.posX = data.fixed.lastTickPosX = data.positionInLocal.xCoord;
+			data.fixed.posY = data.fixed.lastTickPosY = data.positionInLocal.yCoord;
+			data.fixed.posZ = data.fixed.lastTickPosZ = data.positionInLocal.zCoord;
+			
+			System.out.println("test");
 			if(!data.fixed.isDead&&data.fixed!=Minecraft.getMinecraft().getRenderViewEntity()||Minecraft.getMinecraft().gameSettings.thirdPersonView > 0){
+				
 				GL11.glPushMatrix();
 				int i = data.fixed.getBrightnessForRender(partialTicks);
 		        if (data.fixed.isBurning()){
@@ -190,7 +199,10 @@ public class PhysObjectRenderManager {
 		        double z = data.positionInLocal.zCoord;
 				Minecraft.getMinecraft().getRenderManager().doRenderEntity(data.fixed,x,y,z, yaw, partialTicks, false);
 				GL11.glPopMatrix();
-			}	
+			}
+			
+			data.fixed.posX = originalEntityPos.X; data.fixed.posY = originalEntityPos.Y; data.fixed.posZ = originalEntityPos.Z;
+			data.fixed.lastTickPosX = originalLastEntityPos.X; data.fixed.lastTickPosY = originalLastEntityPos.Y; data.fixed.lastTickPosZ = originalLastEntityPos.Z;
 		}
 	}
 	

@@ -51,10 +51,10 @@ import net.minecraftforge.common.DimensionManager;
 
 public class CallRunner {
 
-	public static double partialTicks;
-	static{
-		partialTicks = Minecraft.getMinecraft().getRenderPartialTicks();
-	}
+//	public static double partialTicks;
+//	static{
+//		partialTicks = Minecraft.getMinecraft().getRenderPartialTicks();
+//	}
 	
 	public static boolean onIsOnLadder(EntityLivingBase base){
 		boolean vanilla = base.isOnLadder();

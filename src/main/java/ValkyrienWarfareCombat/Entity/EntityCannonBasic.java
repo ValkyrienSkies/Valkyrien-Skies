@@ -2,8 +2,11 @@ package ValkyrienWarfareCombat.Entity;
 
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareCombat.ValkyrienWarfareCombatMod;
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -13,8 +16,8 @@ import net.minecraft.world.World;
 
 public class EntityCannonBasic extends EntityMountingWeaponBase{
 
-	int tickDelay = 20;
-	int currentTicksOperated = 0;
+	int tickDelay = 6;
+//	int currentTicksOperated = 0;
 	boolean isCannonLoaded = false;
 	
 	public EntityCannonBasic(World worldIn) {
@@ -43,22 +46,34 @@ public class EntityCannonBasic extends EntityMountingWeaponBase{
 	}
 	
 	public boolean canPlayerInteract(EntityPlayer player, ItemStack stack, EnumHand hand){
+		if(currentTicksOperated<0){
+			currentTicksOperated++;
+			return false;
+		}
 		if(!isCannonLoaded){
 			ItemStack cannonBallStack = new ItemStack(ValkyrienWarfareCombatMod.instance.cannonBall);
 			ItemStack powderStack = new ItemStack(ValkyrienWarfareCombatMod.instance.powderPouch);
 			
 			boolean hasCannonBall = player.inventory.hasItemStack(cannonBallStack);
 			boolean hasPowder = player.inventory.hasItemStack(powderStack);
-			if(hasCannonBall&&hasPowder){
+			if(hasCannonBall&&hasPowder||player.isCreative()){
 				for (ItemStack[] aitemstack : player.inventory.allInventories)
 		        {
 		            for (ItemStack itemstack : aitemstack)
 		            {
 		                if (itemstack != null && itemstack.isItemEqual(cannonBallStack)){
 		                	itemstack.stackSize--;
+		                	if(itemstack.stackSize<=0){
+		                		int index = player.inventory.getSlotFor(itemstack);
+		                		player.inventory.setInventorySlotContents(index, null);
+		                	}
 		                }
 		                if (itemstack != null && itemstack.isItemEqual(powderStack)){
 		                	itemstack.stackSize--;
+		                	if(itemstack.stackSize<=0){
+		                		int index = player.inventory.getSlotFor(itemstack);
+		                		player.inventory.setInventorySlotContents(index, null);
+		                	}
 		                }
 		            }
 		        }
@@ -67,6 +82,7 @@ public class EntityCannonBasic extends EntityMountingWeaponBase{
 		}else{
 			currentTicksOperated++;
 			if(currentTicksOperated>tickDelay){
+//				currentTicksOperated = -4;
 				return true;
 			}
 		}

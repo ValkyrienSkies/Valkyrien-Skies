@@ -10,9 +10,12 @@ import ValkyrienWarfareBase.Collision.PhysPolygonCollider;
 import ValkyrienWarfareBase.Collision.Polygon;
 import ValkyrienWarfareBase.Physics.PhysicsCalculations;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
+import ValkyrienWarfareBase.Relocation.SpatialDetector;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockPos.MutableBlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.ChunkCache;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
@@ -24,6 +27,7 @@ public class WorldPhysicsCollider {
 	public PhysicsObject parent;
 	
 	private ArrayList<BlockPos> cachedPotentialHits;
+	private BlockPos[] internalCachedPotentialHits;
 	
 	//Ensures this always updates the first tick after creation
 	private double ticksSinceCacheUpdate = 420;
@@ -35,6 +39,10 @@ public class WorldPhysicsCollider {
 	
 	public double e = .35D;
 	
+	//New stuff
+	private int[] cachedPotentialHitsInt;
+	private BlockPos centerPotentialHit;
+	
 	public WorldPhysicsCollider(PhysicsCalculations calculations){
 		calculator = calculations;
 		parent = calculations.parent;
@@ -44,37 +52,49 @@ public class WorldPhysicsCollider {
 	//TODO: DO THIS!!!
 	public void runPhysCollision(){
 		//Multiply by 20 to convert seconds (physTickSpeed) into ticks (ticksSinceCacheUpdate)
-		ticksSinceCacheUpdate += (20D*calculator.physTickSpeed);
+		ticksSinceCacheUpdate += 20D*calculator.physTickSpeed;
 		if(shouldUpdateCollisonCache()){
 			updatePotentialCollisionCache();
+			Collections.shuffle(cachedPotentialHits);
 		}
-		Collections.shuffle(cachedPotentialHits);
 		processPotentialCollisionsAccurately();
 	}
 	
 	//Runs through the cache ArrayList, checking each possible BlockPos for SOLID blocks that can collide, if it finds any it will
 	//move to the next method
 	private void processPotentialCollisionsAccurately(){
-		for(BlockPos pos:cachedPotentialHits){
-			Vector inWorld = new Vector(pos.getX()+.5,pos.getY()+.5,pos.getZ()+.5);
+		final MutableBlockPos localCollisionPos = new MutableBlockPos();
+		final Vector inWorld = new Vector();
+		
+		int minX,minY,minZ,maxX,maxY,maxZ,x,y,z;
+		
+		BlockPos pos;
+		final double rangeCheck = .65D;
+		
+//		for (Iterator<BlockPos> i=cachedPotentialHits.iterator(); i.hasNext();){
+//			pos = i.next();
+		for(int i:cachedPotentialHitsInt){
+			pos = SpatialDetector.getPosWithRespectTo(i, centerPotentialHit);
+			
+			inWorld.X = pos.getX()+.5; inWorld.Y = pos.getY()+.5; inWorld.Z = pos.getZ()+.5;
 			parent.coordTransform.fromGlobalToLocal(inWorld);
 			
-			int minX = (int) Math.floor(inWorld.X-1D);
-			int minY = (int) Math.floor(inWorld.Y-1D);
-			int minZ = (int) Math.floor(inWorld.Z-1D);
+//			minX = (int) Math.floor(inWorld.X-1D);
+//			minY = (int) Math.floor(inWorld.Y-1D);
+//			minZ = (int) Math.floor(inWorld.Z-1D);
 			
-			int maxX = (int) Math.floor(inWorld.X+1D);
-			int maxY = (int) Math.floor(inWorld.Y+1D);
-			int maxZ = (int) Math.floor(inWorld.Z+1D);
+			maxX = (int) Math.floor(inWorld.X+rangeCheck);
+			maxY = (int) Math.floor(inWorld.Y+rangeCheck);
+			maxZ = (int) Math.floor(inWorld.Z+rangeCheck);
 			
-			for(int x = minX;x<=maxX;x++){
-				for(int z = minZ;z<=maxZ;z++){
-					for(int y = minY;y<=maxY;y++){
+			for(x = MathHelper.floor_double(inWorld.X-rangeCheck);x<=maxX;x++){
+				for(z = MathHelper.floor_double(inWorld.Z-rangeCheck);z<=maxZ;z++){
+					for(y = MathHelper.floor_double(inWorld.Y-rangeCheck);y<=maxY;y++){
 						if(parent.ownsChunk(x>>4, z>>4)){
-							Chunk chunkIn = parent.VKChunkCache.getChunkAt(x>>4, z>>4);
-							IBlockState state = chunkIn.getBlockState(x,y,z);
+							final Chunk chunkIn = parent.VKChunkCache.getChunkAt(x>>4, z>>4);
+							final IBlockState state = chunkIn.getBlockState(x,y,z);
 							if(state.getMaterial().isSolid()){
-								BlockPos localCollisionPos = new BlockPos(x,y,z);
+								localCollisionPos.setPos(x, y, z);
 								
 								handleLikelyCollision(pos,localCollisionPos,parent.surroundingWorldChunksCache.getBlockState(pos),state);
 							}
@@ -83,6 +103,7 @@ public class WorldPhysicsCollider {
 				}
 			}
 		}
+		
 	}
 	
 	//TODO: Code this
@@ -103,34 +124,33 @@ public class WorldPhysicsCollider {
 	}
 
 	private void handleActualCollision(PhysPolygonCollider collider){
-		Vector speedAtPoint = calculator.getMomentumAtPoint(collider.collisions[0].firstContactPoint.getSubtraction(new Vector(parent.wrapper.posX,parent.wrapper.posY,parent.wrapper.posZ)));
-		
-		double xDot = Math.abs(speedAtPoint.X);
-		double yDot = Math.abs(speedAtPoint.Y)/5D;
-		double zDot = Math.abs(speedAtPoint.Z);
+//		Vector speedAtPoint = calculator.getMomentumAtPoint(collider.collisions[0].firstContactPoint.getSubtraction(new Vector(parent.wrapper.posX,parent.wrapper.posY,parent.wrapper.posZ)));
+//		
+//		double xDot = Math.abs(speedAtPoint.X);
+//		double yDot = Math.abs(speedAtPoint.Y)/5D;
+//		double zDot = Math.abs(speedAtPoint.Z);
 		
 		PhysCollisionObject toCollideWith = null;
 		
 		//NOTE: This is all EXPERIMENTAL! Could possibly revert 
+//		if(yDot>xDot&&yDot>zDot){
+//			//Y speed is greatest
+//			if(xDot>zDot){
+//				toCollideWith = collider.collisions[2];
+//			}else{
+//				toCollideWith = collider.collisions[0];
+//			}
+//		}else{
+//			if(xDot>zDot){
+//				//X speed is greatest
+//				toCollideWith = collider.collisions[1];
+//			}else{
+//				//Z speed is greatest
+//				toCollideWith = collider.collisions[1];
+//			}
+//		}
 		
-		if(yDot>xDot&&yDot>zDot){
-			//Y speed is greatest
-			if(xDot>zDot){
-				toCollideWith = collider.collisions[2];
-			}else{
-				toCollideWith = collider.collisions[0];
-			}
-		}else{
-			if(xDot>zDot){
-				//X speed is greatest
-				toCollideWith = collider.collisions[1];
-			}else{
-				//Z speed is greatest
-				toCollideWith = collider.collisions[1];
-			}
-		}
-		
-//		toCollideWith = collider.collisions[1];
+		toCollideWith = collider.collisions[1];
 		
 		if(toCollideWith.penetrationDistance>axisTolerance||toCollideWith.penetrationDistance<-axisTolerance){
 			toCollideWith = collider.collisions[collider.minDistanceIndex];
@@ -196,34 +216,69 @@ public class WorldPhysicsCollider {
 	}
 	
 	private void updatePotentialCollisionCache(){
-		AxisAlignedBB collisionBB = parent.collisionBB.expand(expansion, expansion, expansion);
+		final AxisAlignedBB collisionBB = parent.collisionBB.expand(expansion, expansion, expansion);
 		ticksSinceCacheUpdate = 0D;
 		cachedPotentialHits = new ArrayList<BlockPos>();
 		//Ship is outside of world blockSpace, just skip this all together
 		if(collisionBB.maxY<0||collisionBB.minY>255){
+//			internalCachedPotentialHits = new BlockPos[0];
+			cachedPotentialHitsInt = new int[0];
 			return;
 		}
 		
-		BlockPos min = new BlockPos(collisionBB.minX,Math.max(collisionBB.minY,0),collisionBB.minZ);
-		BlockPos max = new BlockPos(collisionBB.maxX,Math.min(collisionBB.maxY, 255),collisionBB.maxZ);
+		final BlockPos min = new BlockPos(collisionBB.minX,Math.max(collisionBB.minY,0),collisionBB.minZ);
+		final BlockPos max = new BlockPos(collisionBB.maxX,Math.min(collisionBB.maxY, 255),collisionBB.maxZ);
+		centerPotentialHit = new BlockPos((min.getX()+max.getX())/2D,(min.getY()+max.getY())/2D,(min.getZ()+max.getZ())/2D);
 		
-		ChunkCache cache = parent.surroundingWorldChunksCache;
+		final ChunkCache cache = parent.surroundingWorldChunksCache;
+		final Vector inLocal = new Vector();
+		int maxX,maxY,maxZ;
+		final double rangeCheck = 1.8D;
 		
 		for(int x = min.getX();x<=max.getX();x++){
 			for(int z = min.getZ();z<max.getZ();z++){
 				int chunkX = (x>>4)-cache.chunkX;
 				int chunkZ = (z>>4)-cache.chunkZ;
 				if(!(chunkX<0||chunkZ<0||chunkX>cache.chunkArray.length-1||chunkZ>cache.chunkArray[0].length-1)){
-					Chunk chunk = cache.chunkArray[chunkX][chunkZ];
-					for(int y = min.getY();y<max.getY();y++){
-						IBlockState state = chunk.getBlockState(x, y, z);
+					final Chunk chunk = cache.chunkArray[chunkX][chunkZ];
+					for(int y = min.getY();y<max.getY();y+=1){
+						final IBlockState state = chunk.getBlockState(x, y, z);
 						if(state.getMaterial().isSolid()){
-							cachedPotentialHits.add(new BlockPos(x,y,z));
+							inLocal.X = x+.5D;inLocal.Y = y+.5D;inLocal.Z = z+.5D;
+							parent.coordTransform.fromGlobalToLocal(inLocal);
+							
+							maxX = (int) Math.floor(inLocal.X+rangeCheck);
+							maxY = (int) Math.floor(inLocal.Y+rangeCheck);
+							maxZ = (int) Math.floor(inLocal.Z+rangeCheck);
+							
+							for(int localX = MathHelper.floor_double(inLocal.X-rangeCheck);localX<maxX;localX++){
+								for(int localZ = MathHelper.floor_double(inLocal.Z-rangeCheck);localZ<maxZ;localZ++){
+									for(int localY = MathHelper.floor_double(inLocal.Y-rangeCheck);localY<maxY;localY++){
+										if(parent.ownsChunk(localX>>4, localZ>>4)){
+											final Chunk chunkIn = parent.VKChunkCache.getChunkAt(localX>>4, localZ>>4);
+											final IBlockState localState = chunkIn.getBlockState(localX,localY,localZ);
+											if(localState.getMaterial().isSolid()){
+												cachedPotentialHits.add(new BlockPos(x,y,z));
+												localX = localY = localZ = Integer.MAX_VALUE-420;
+											}
+										}
+									}
+								}
+							}
 						}
 					}
 				}
 			}
 		}
+		cachedPotentialHitsInt = new int[cachedPotentialHits.size()];
+		int i = 0;
+		for(BlockPos pos:cachedPotentialHits){
+			int hash = SpatialDetector.getHashWithRespectTo(pos.getX(), pos.getY(), pos.getZ(), centerPotentialHit);
+			cachedPotentialHitsInt[i] = hash;
+			i++;
+		}
+//		internalCachedPotentialHits = new BlockPos[arrayInternals.length];
+//		internalCachedPotentialHits = (BlockPos[]) Arrays.copyOf(arrayInternals, arrayInternals.length, BlockPos[].class);
 	}
 	
 }

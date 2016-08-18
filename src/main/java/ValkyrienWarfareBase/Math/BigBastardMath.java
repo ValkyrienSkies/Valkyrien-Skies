@@ -40,9 +40,9 @@ public class BigBastardMath{
 			System.out.println("Fix it faggot");
 			return null;
 		}
-		double[] xVals = new double[4];
-		double[] yVals = new double[4];
-		double[] zVals = new double[4];
+		final double[] xVals = new double[4];
+		final double[] yVals = new double[4];
+		final double[] zVals = new double[4];
 		xVals[0] = ship1.minX;
 		xVals[1] = ship1.maxX;
 		xVals[2] = ship2.minX;
@@ -67,9 +67,8 @@ public class BigBastardMath{
 		double[] minMax = new double[2];
 		//Min at 0
 		//Max at 1
-		minMax[0] = distances[0];
-		minMax[1] = distances[0];
-		for(int i =0;i<distances.length;i++){
+		minMax[0] = minMax[1] = distances[0];
+		for(int i = 1;i<distances.length;i++){
 			if(distances[i]<minMax[0]){
 				minMax[0] = distances[i];
 			}
@@ -81,7 +80,7 @@ public class BigBastardMath{
 	}
 
 	public static Vector getBodyPosWithOrientation(BlockPos pos,Vector centerOfMass,double[] rotationTransform){
-		Vector inBody = new Vector(pos.getX()+.5D-centerOfMass.X,pos.getY()+.5D-centerOfMass.Y,pos.getZ()+.5D-centerOfMass.Z);
+		final Vector inBody = new Vector(pos.getX()+.5D-centerOfMass.X,pos.getY()+.5D-centerOfMass.Y,pos.getZ()+.5D-centerOfMass.Z);
 		RotationMatrices.doRotationOnly(rotationTransform, inBody);
 		return inBody;
 	}

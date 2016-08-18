@@ -25,7 +25,7 @@ import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
  */
 public abstract class EntityMountingWeaponBase extends Entity implements IEntityAdditionalSpawnData{
 
-	public int delay = 0;
+	public int currentTicksOperated = 0;
 	public double damage = 0;
 	//Default facing
 	private EnumFacing facing = EnumFacing.NORTH;

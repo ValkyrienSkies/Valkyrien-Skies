@@ -18,7 +18,7 @@ public class Quaternion{
 
 	private Quaternion(){}
 
-	public static Quaternion QuaternionFromMatrix(double[] matrix){
+	public static Quaternion QuaternionFromMatrix(final double[] matrix){
 	    Quaternion q = new Quaternion();
 	    q.w = Math.sqrt(Math.max(0,1+matrix[0]+matrix[5]+matrix[10]))/2; 
 	    q.x = Math.sqrt(Math.max(0,1+matrix[0]-matrix[5]-matrix[10]))/2; 
@@ -97,8 +97,9 @@ public class Quaternion{
 		return quat;
 	}
 
+	//MicroOptimization; avoid creating an extra double
 	public double[] toRadians(){
-		double test = x*y + z*w;
+//		double test = x*y + z*w;
 		double sqw = w*w;
 		double sqx = x*x;
 		double sqy = y*y;
@@ -106,13 +107,14 @@ public class Quaternion{
 		double pitch = -Math.atan2(2.0 * (y*z + x*w),(-sqx - sqy + sqz + sqw));
 		double yaw = -Math.asin(-2.0 * (x*z - y*w)/(sqx + sqy + sqz + sqw));
 		double roll = -Math.atan2(2.0 * (x*y + z*w),(sqx - sqy - sqz + sqw));
-		if(test>.9){
+		sqw = x*y + z*w;
+		if(sqw>.9){
 			System.out.println("Quaternion singularity at North Pole");
 			roll = 2 * Math.atan2(x,w);
             yaw = Math.PI/2;
             pitch = 0;
 		}
-		if(test<-.9){
+		if(sqw<-.9){
 			System.out.println("Quaternion singularity at South Pole");
 			roll = -2 * Math.atan2(x,w);
             yaw = - Math.PI/2;

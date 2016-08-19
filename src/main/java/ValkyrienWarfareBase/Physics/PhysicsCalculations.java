@@ -244,22 +244,26 @@ public class PhysicsCalculations {
 	}
 	
 	public void calculateForces(){
-		double modifiedDrag = Math.pow(drag,1D/iterations);
+		double modifiedDrag = Math.pow(drag,physTickSpeed/.05D);
 		linearMomentum.multiply(modifiedDrag);
 		angularVelocity.multiply(modifiedDrag);
-		
 		addForceAtPoint(new Vector(0,0,0),gravity.getProduct(mass*physTickSpeed));
 		addQueuedForces();
-		
 		Collections.shuffle(activeForcePositions);
+		
+		Vector blockForce = new Vector();
+		Vector inBodyWO = new Vector();
+		Vector crossVector = new Vector();
+		
 		for(BlockPos pos:activeForcePositions){
 			IBlockState state = parent.VKChunkCache.getBlockState(pos);
 			Block blockAt = state.getBlock();
-			Vector inBodyWO = BigBastardMath.getBodyPosWithOrientation(pos, centerOfMass, parent.coordTransform.lToWRotation);
-			Vector blockForce = BlockForce.basicForces.getForceFromState(state, pos, worldObj,physTickSpeed,parent);
+			BigBastardMath.getBodyPosWithOrientation(pos, centerOfMass, parent.coordTransform.lToWRotation,inBodyWO);
+			
+			BlockForce.basicForces.getForceFromState(state, pos, worldObj,physTickSpeed,parent,blockForce);
 			
 			if(blockForce!=null){
-				addForceAtPoint(inBodyWO,blockForce);
+				addForceAtPoint(inBodyWO,blockForce,crossVector);
 			}else{
 //				FMLLog.getLogger().warn("BLOCK "+blockAt.getUnlocalizedName()+" didn't have its force properly registered; COMPLAIN TO MOD DEV!!!");
 			}
@@ -301,6 +305,13 @@ public class PhysicsCalculations {
 	public void addForceAtPoint(Vector inBodyWO,Vector forceToApply){
 		forceToApply.multiply(blocksToMetersConversion);
 		torque.add(inBodyWO.cross(forceToApply));
+		linearMomentum.add(forceToApply);
+	}
+	
+	public void addForceAtPoint(Vector inBodyWO,Vector forceToApply,Vector crossVector){
+		forceToApply.multiply(blocksToMetersConversion);
+		crossVector.setCross(inBodyWO,forceToApply);
+		torque.add(crossVector);
 		linearMomentum.add(forceToApply);
 	}
 	

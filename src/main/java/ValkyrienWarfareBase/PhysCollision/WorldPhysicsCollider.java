@@ -216,7 +216,7 @@ public class WorldPhysicsCollider {
 	}
 	
 	private void updatePotentialCollisionCache(){
-		final AxisAlignedBB collisionBB = parent.collisionBB.expand(expansion, expansion, expansion);
+		final AxisAlignedBB collisionBB = parent.collisionBB.expand(expansion, expansion, expansion).addCoord(calculator.linearMomentum.X*calculator.invMass, calculator.linearMomentum.Y*calculator.invMass, calculator.linearMomentum.Z*calculator.invMass);
 		ticksSinceCacheUpdate = 0D;
 		cachedPotentialHits = new ArrayList<BlockPos>();
 		//Ship is outside of world blockSpace, just skip this all together

@@ -3,6 +3,7 @@ package ValkyrienWarfareControl;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareControl.Block.BlockAirShipEngine;
 import ValkyrienWarfareControl.Block.BlockAntiGravEngine;
+import ValkyrienWarfareControl.Block.BlockDopedEtherium;
 import ValkyrienWarfareControl.Block.BlockHovercraftController;
 import ValkyrienWarfareControl.GUI.ControlGUIHandler;
 import ValkyrienWarfareControl.Item.ItemSystemLinker;
@@ -44,6 +45,7 @@ public class ValkyrienWarfareControlMod {
     public Block basicEngine;
     public Block basicHoverController;
     public Block antigravityEngine;
+    public Block dopedEtherium;
     
     public Item systemLinker;
     
@@ -76,10 +78,12 @@ public class ValkyrienWarfareControlMod {
     	basicEngine = new BlockAirShipEngine(Material.WOOD).setHardness(5f).setUnlocalizedName("basicengine").setRegistryName(ValkyrienWarfareMod.MODID, "basicengine").setCreativeTab(CreativeTabs.TRANSPORTATION);
     	basicHoverController = new BlockHovercraftController(Material.IRON).setHardness(10f).setUnlocalizedName("basichovercraftcontroller").setRegistryName(ValkyrienWarfareMod.MODID, "basichovercraftcontroller").setCreativeTab(CreativeTabs.TRANSPORTATION);
     	antigravityEngine = new BlockAntiGravEngine(Material.IRON).setHardness(8f).setUnlocalizedName("antigravengine").setUnlocalizedName("antigravengine").setRegistryName(ValkyrienWarfareMod.MODID, "antigravengine").setCreativeTab(CreativeTabs.TRANSPORTATION);
+    	dopedEtherium = new BlockDopedEtherium(Material.GLASS).setHardness(4f).setUnlocalizedName("dopedetherium").setRegistryName(MODID, "dopedetherium").setCreativeTab(CreativeTabs.TRANSPORTATION);
     	
     	GameRegistry.registerBlock(basicEngine);
     	GameRegistry.registerBlock(basicHoverController);
     	GameRegistry.registerBlock(antigravityEngine);
+    	GameRegistry.registerBlock(dopedEtherium);
     }
     
     private void registerTileEntities(FMLStateEvent event){

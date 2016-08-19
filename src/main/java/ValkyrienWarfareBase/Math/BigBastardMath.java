@@ -84,6 +84,13 @@ public class BigBastardMath{
 		RotationMatrices.doRotationOnly(rotationTransform, inBody);
 		return inBody;
 	}
+	
+	public static void getBodyPosWithOrientation(BlockPos pos,Vector centerOfMass,double[] rotationTransform,Vector inBody){
+		inBody.X = pos.getX()+.5D-centerOfMass.X;
+		inBody.Y = pos.getY()+.5D-centerOfMass.Y;
+		inBody.Z = pos.getZ()+.5D-centerOfMass.Z;
+		RotationMatrices.doRotationOnly(rotationTransform, inBody);
+	}
 
 	public static Vector getBodyPosWithOrientation(Vector pos,Vector centerOfMass,double[] rotationTransform){
 		Vector inBody = new Vector(pos.X-centerOfMass.X,pos.Y-centerOfMass.Y,pos.Z-centerOfMass.Z);

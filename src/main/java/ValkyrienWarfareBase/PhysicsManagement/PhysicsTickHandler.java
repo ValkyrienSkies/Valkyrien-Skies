@@ -1,6 +1,7 @@
 package ValkyrienWarfareBase.PhysicsManagement;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.Vector;
@@ -24,6 +25,7 @@ public class PhysicsTickHandler{
 			for(PhysicsWrapperEntity wrapper:physicsEntities){
 				wrapper.wrapping.coordTransform.setPrevMatrices();
 				wrapper.wrapping.updateChunkCache();
+//				Collections.shuffle(wrapper.wrapping.physicsProcessor.activeForcePositions);
 			}
 		}else{
 			boolean didSplitOccur = false;
@@ -51,6 +53,7 @@ public class PhysicsTickHandler{
 			for(PhysicsWrapperEntity wrapper:physicsEntities){
 				wrapper.wrapping.coordTransform.setPrevMatrices();
 				wrapper.wrapping.updateChunkCache();
+//				Collections.shuffle(wrapper.wrapping.physicsProcessor.activeForcePositions);
 			}
 		}
 		

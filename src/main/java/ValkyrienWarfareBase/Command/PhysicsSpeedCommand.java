@@ -16,7 +16,7 @@ public class PhysicsSpeedCommand extends CommandBase{
 
 	@Override
 	public String getCommandUsage(ICommandSender sender) {
-		return "Sets seconds simulated per tick";
+		return "ex. /setPhysSpeed 80%";
 	}
 
 	@Override
@@ -32,6 +32,7 @@ public class PhysicsSpeedCommand extends CommandBase{
 			double sentNum = ValkyrienWarfareMod.physicsManager.getManagerForWorld(commandWorld).physSpeed;
 			String s = null;
             s = getChatComponentFromNthArg(sender, args, 0).getUnformattedText();
+            s = s.replace('%', ' ');
 	        try{
             	if(s!=null){
 	            	sentNum = Double.parseDouble(s);
@@ -40,9 +41,9 @@ public class PhysicsSpeedCommand extends CommandBase{
 	        	notifyCommandListener(sender, this, "Invalid Input", new Object[] {args[0]});
         		return;
 	        }
-            if(sentNum>=-20&&sentNum<=100){
-            	ValkyrienWarfareMod.physicsManager.getManagerForWorld(commandWorld).physSpeed = sentNum;
-            	notifyCommandListener(sender, this, "Physics Speed set to "+sentNum+" :Default (.05); Do not set this to a negative value unless you want to ruin your world", new Object[] {args[0]});
+            if(!Double.isNaN(sentNum)){
+            	ValkyrienWarfareMod.physicsManager.getManagerForWorld(commandWorld).physSpeed = sentNum*.05D/100D;
+            	notifyCommandListener(sender, this, "Physics Speed set to "+sentNum+" Percent", new Object[] {args[0]});
             }
 		}catch(Exception e){
 			System.out.println(e);

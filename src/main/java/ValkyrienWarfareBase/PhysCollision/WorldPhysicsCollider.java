@@ -55,7 +55,7 @@ public class WorldPhysicsCollider {
 		ticksSinceCacheUpdate += 20D*calculator.physTickSpeed;
 		if(shouldUpdateCollisonCache()){
 			updatePotentialCollisionCache();
-			Collections.shuffle(cachedPotentialHits);
+//			Collections.shuffle(cachedPotentialHits);
 		}
 		processPotentialCollisionsAccurately();
 	}
@@ -270,6 +270,7 @@ public class WorldPhysicsCollider {
 				}
 			}
 		}
+		Collections.shuffle(cachedPotentialHits);
 		cachedPotentialHitsInt = new int[cachedPotentialHits.size()];
 		int i = 0;
 		for(BlockPos pos:cachedPotentialHits){

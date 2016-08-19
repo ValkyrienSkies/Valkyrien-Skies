@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import org.lwjgl.input.Keyboard;
 
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareControl.ValkyrienWarfareControlMod;
 import ValkyrienWarfareControl.Network.HovercraftControllerGUIInputMessage;
 import ValkyrienWarfareControl.TileEntity.TileEntityHoverController;
@@ -58,7 +59,7 @@ public class HovercraftControllerGUI extends GuiContainer{
 		if(tileEnt==null){
 			return;
 		}
-		HovercraftControllerGUIInputMessage toSend = new HovercraftControllerGUIInputMessage(this);
+		HovercraftControllerGUIInputMessage toSend = getMessage();
 		ValkyrienWarfareControlMod.controlNetwork.sendToServer(toSend);
 	}
 	
@@ -171,5 +172,19 @@ public class HovercraftControllerGUI extends GuiContainer{
         worldrenderer.pos(0.0D, 0.0D, 0.0D).tex(0.0D, (double)tint).color(64, 64, 64, 255).endVertex();
         tessellator.draw();
     }
+	
+	private HovercraftControllerGUIInputMessage getMessage(){
+		HovercraftControllerGUIInputMessage toReturn = new HovercraftControllerGUIInputMessage();
+		toReturn.tilePos = tileEnt.getPos();
+		toReturn.physEntId = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(mc.theWorld, toReturn.tilePos).getEntityId();
+		try{
+			toReturn.newIdealHeight = Double.parseDouble(textFields.get(0).getText());
+			toReturn.newStablitiyBias = Double.parseDouble(textFields.get(1).getText());
+			toReturn.newLinearVelocityBias = Double.parseDouble(textFields.get(2).getText());
+		}catch(Exception e){
+			updateTextFields();
+		}
+		return toReturn;
+	}
 
 }

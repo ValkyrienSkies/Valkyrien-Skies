@@ -23,7 +23,6 @@ import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
 import ValkyrienWarfareCombat.Entity.EntityMountingWeaponBase;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityFallingBlock;
@@ -51,11 +50,6 @@ import net.minecraftforge.common.DimensionManager;
 
 public class CallRunner {
 
-//	public static double partialTicks;
-//	static{
-//		partialTicks = Minecraft.getMinecraft().getRenderPartialTicks();
-//	}
-	
 	public static boolean onIsOnLadder(EntityLivingBase base){
 		boolean vanilla = base.isOnLadder();
 		if(vanilla){

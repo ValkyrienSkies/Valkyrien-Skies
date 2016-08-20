@@ -54,16 +54,13 @@ import net.minecraftforge.event.world.ChunkEvent;
 
 public class PhysicsObject {
 
-	public ChunkSet ownedChunks;
 	public World worldObj;
 	public PhysicsWrapperEntity wrapper;
 	//Used for faster memory access to the Chunks this object 'owns'
-	public Chunk[][] claimedChunks;
 	//This handles sending packets to players involving block changes in the Ship space
-	public PlayerChunkMapEntry[][] claimedChunksEntries;
 	public ArrayList<EntityPlayerMP> watchingPlayers = new ArrayList<EntityPlayerMP>();
 	public ArrayList<EntityPlayerMP> newWatchers = new ArrayList<EntityPlayerMP>();
-	public VWChunkCache VKChunkCache;
+	
 	//It is from this position that the x,y,z coords in local are 0; and that the posX,
 	//posY and posZ align with in the global coords
 	public BlockPos refrenceBlockPos;
@@ -91,6 +88,12 @@ public class PhysicsObject {
 	
 	public boolean blocksChanged = false;
 	public ArrayList<FixedEntityData> fixedEntities = new ArrayList<FixedEntityData>();
+	
+	//TODO: Make for re-organizing these to make Ship sizes Dynamic
+	public ChunkSet ownedChunks;
+	public Chunk[][] claimedChunks;
+	public VWChunkCache VKChunkCache;
+	public PlayerChunkMapEntry[][] claimedChunksEntries;
 	
 	public PhysicsObject(PhysicsWrapperEntity host){
 		wrapper = host;

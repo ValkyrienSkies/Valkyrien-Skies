@@ -19,6 +19,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.ChunkCache;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 
 public class WorldPhysicsCollider {
 
@@ -237,29 +238,32 @@ public class WorldPhysicsCollider {
 		
 		for(int x = min.getX();x<=max.getX();x++){
 			for(int z = min.getZ();z<max.getZ();z++){
-				int chunkX = (x>>4)-cache.chunkX;
-				int chunkZ = (z>>4)-cache.chunkZ;
+				final int chunkX = (x>>4)-cache.chunkX;
+				final int chunkZ = (z>>4)-cache.chunkZ;
 				if(!(chunkX<0||chunkZ<0||chunkX>cache.chunkArray.length-1||chunkZ>cache.chunkArray[0].length-1)){
 					final Chunk chunk = cache.chunkArray[chunkX][chunkZ];
-					for(int y = min.getY();y<max.getY();y+=1){
-						final IBlockState state = chunk.getBlockState(x, y, z);
-						if(state.getMaterial().isSolid()){
-							inLocal.X = x+.5D;inLocal.Y = y+.5D;inLocal.Z = z+.5D;
-							parent.coordTransform.fromGlobalToLocal(inLocal);
-							
-							maxX = (int) Math.floor(inLocal.X+rangeCheck);
-							maxY = (int) Math.floor(inLocal.Y+rangeCheck);
-							maxZ = (int) Math.floor(inLocal.Z+rangeCheck);
-							
-							for(int localX = MathHelper.floor_double(inLocal.X-rangeCheck);localX<maxX;localX++){
-								for(int localZ = MathHelper.floor_double(inLocal.Z-rangeCheck);localZ<maxZ;localZ++){
-									for(int localY = MathHelper.floor_double(inLocal.Y-rangeCheck);localY<maxY;localY++){
-										if(parent.ownsChunk(localX>>4, localZ>>4)){
-											final Chunk chunkIn = parent.VKChunkCache.getChunkAt(localX>>4, localZ>>4);
-											final IBlockState localState = chunkIn.getBlockState(localX,localY,localZ);
-											if(localState.getMaterial().isSolid()){
-												cachedPotentialHits.add(new BlockPos(x,y,z));
-												localX = localY = localZ = Integer.MAX_VALUE-420;
+					for(int y = min.getY();y<max.getY();y++){
+						final ExtendedBlockStorage extendedblockstorage = chunk.storageArrays[y >> 4];
+						if(extendedblockstorage!=null){
+							final IBlockState state = extendedblockstorage.get(x & 15, y & 15, z & 15);;
+							if(state.getMaterial().isSolid()){
+								inLocal.X = x+.5D;inLocal.Y = y+.5D;inLocal.Z = z+.5D;
+								parent.coordTransform.fromGlobalToLocal(inLocal);
+								
+								maxX = (int) Math.floor(inLocal.X+rangeCheck);
+								maxY = (int) Math.floor(inLocal.Y+rangeCheck);
+								maxZ = (int) Math.floor(inLocal.Z+rangeCheck);
+								
+								for(int localX = MathHelper.floor_double(inLocal.X-rangeCheck);localX<maxX;localX++){
+									for(int localZ = MathHelper.floor_double(inLocal.Z-rangeCheck);localZ<maxZ;localZ++){
+										for(int localY = MathHelper.floor_double(inLocal.Y-rangeCheck);localY<maxY;localY++){
+											if(parent.ownsChunk(localX>>4, localZ>>4)){
+												final Chunk chunkIn = parent.VKChunkCache.getChunkAt(localX>>4, localZ>>4);
+												final IBlockState localState = chunkIn.getBlockState(localX,localY,localZ);
+												if(localState.getMaterial().isSolid()){
+													cachedPotentialHits.add(new BlockPos(x,y,z));
+													localX = localY = localZ = Integer.MAX_VALUE-420;
+												}
 											}
 										}
 									}

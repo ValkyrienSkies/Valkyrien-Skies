@@ -15,7 +15,7 @@ public class PhysicsChunkManager {
 	public int chunkSetIncrement;
 	public int xChunkStartingPos = -31250;
 	public int zChunkStartingPos = -31250;
-	public int chunkRadius = 3;
+//	public int chunkRadius = 3;
 	public int maxChunkRadius = 12;
 	//Currently at 3 to be safe, this is important because Ships could start affecting
 	//each other remotely if this value is too small (ex. 0)
@@ -24,7 +24,7 @@ public class PhysicsChunkManager {
 	
 	public PhysicsChunkManager(World worldFor){
 		worldObj = worldFor;
-		chunkSetIncrement = (chunkRadius*2)+distanceBetweenSets;
+		chunkSetIncrement = (maxChunkRadius*2)+distanceBetweenSets;
 		loadDataFromWorld();
 	}
 	
@@ -33,7 +33,7 @@ public class PhysicsChunkManager {
 	 * the xPos to get new positions
 	 * @return
 	 */
-	public ChunkSet getNextAvaliableChunkSet(){
+	public ChunkSet getNextAvaliableChunkSet(int chunkRadius){
 		int chunkX = xChunkStartingPos+nextChunkSetKey;
 		int chunkZ = zChunkStartingPos;
 		nextChunkSetKey += chunkSetIncrement;
@@ -56,7 +56,7 @@ public class PhysicsChunkManager {
 		int nextChunkZ = zChunkStartingPos+maxChunkRadius;
 		
 		boolean xInRange = (x<nextChunkX&&x>=(xChunkStartingPos-maxChunkRadius))||isClient;
-		boolean zInRange = z<nextChunkZ&&z>=(zChunkStartingPos-maxChunkRadius);
+		boolean zInRange = z<nextChunkZ&&z>=(zChunkStartingPos-maxChunkRadius*2);
 		return xInRange&&zInRange;
 	}
 

@@ -44,7 +44,6 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 		posZ = z;
 		wrapping.creator = maker;
 		wrapping.detectorID = detectorID;
-		wrapping.claimNewChunks();
 		wrapping.processChunkClaims();
 	}
 

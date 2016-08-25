@@ -160,14 +160,46 @@ public class PhysicsObject {
 		ValkyrienWarfareMod.physicsManager.onShipUnload(wrapper);
 	}
 	
-	public void claimNewChunks(){
-		ownedChunks = ValkyrienWarfareMod.chunkManager.getManagerForWorld(wrapper.worldObj).getNextAvaliableChunkSet();
+	public void claimNewChunks(int radius){
+		ownedChunks = ValkyrienWarfareMod.chunkManager.getManagerForWorld(wrapper.worldObj).getNextAvaliableChunkSet(radius);
 	}
 	
 	/*
 	 * Generates the new chunks
 	 */
 	public void processChunkClaims(){
+		BlockPos centerInWorld = new BlockPos(wrapper.posX,wrapper.posY,wrapper.posZ);
+		SpatialDetector detector = DetectorManager.getDetectorFor(detectorID, centerInWorld, worldObj, ValkyrienWarfareMod.maxShipSize+1, true);
+		if(detector.foundSet.size()>ValkyrienWarfareMod.maxShipSize||detector.cleanHouse){
+			if(creator!=null){
+				creator.addChatComponentMessage(new TextComponentString("Ship construction canceled because its exceeding the ship size limit (Raise with /setPhysConstructionLimit (number)) ; Or because it's attatched to bedrock)"));
+			}
+			wrapper.setDead();
+			return;
+		}
+		MutableBlockPos pos = new MutableBlockPos();
+		TIntIterator iter = detector.foundSet.iterator();
+		
+		int radiusNeeded = 1;
+		
+		while(iter.hasNext()){
+			int i = iter.next();
+			detector.setPosWithRespectTo(i, BlockPos.ORIGIN, pos);
+			
+			int xRad = pos.getX()>>4;
+			int zRad = pos.getZ()>>4;
+			
+			radiusNeeded = Math.max(Math.max(radiusNeeded, xRad), zRad);
+		}
+		
+		iter = detector.foundSet.iterator();
+		
+		radiusNeeded = Math.min(radiusNeeded, ValkyrienWarfareMod.chunkManager.getManagerForWorld(wrapper.worldObj).maxChunkRadius);
+		
+//		System.out.println(radiusNeeded);
+		
+		claimNewChunks(radiusNeeded);
+		
 		claimedChunks = new Chunk[(ownedChunks.radius*2)+1][(ownedChunks.radius*2)+1];
 		claimedChunksEntries = new PlayerChunkMapEntry[(ownedChunks.radius*2)+1][(ownedChunks.radius*2)+1];
 		for(int x = ownedChunks.minX;x<=ownedChunks.maxX;x++){
@@ -181,17 +213,7 @@ public class PhysicsObject {
 		VKChunkCache = new VWChunkCache(worldObj, claimedChunks);
 		int minChunkX = claimedChunks[0][0].xPosition;
 		int minChunkZ = claimedChunks[0][0].zPosition;
-		BlockPos centerInWorld = new BlockPos(wrapper.posX,wrapper.posY,wrapper.posZ);
-		SpatialDetector detector = DetectorManager.getDetectorFor(detectorID, centerInWorld, worldObj, ValkyrienWarfareMod.maxShipSize+1, true);
-		if(detector.foundSet.size()>ValkyrienWarfareMod.maxShipSize||detector.cleanHouse){
-			if(creator!=null){
-				creator.addChatComponentMessage(new TextComponentString("Ship construction canceled because its exceeding the ship size limit (Raise with /setPhysConstructionLimit (number)) ; Or because it's attatched to bedrock)"));
-			}
-			wrapper.setDead();
-			return;
-		}
-		MutableBlockPos pos = new MutableBlockPos();
-		TIntIterator iter = detector.foundSet.iterator();
+		
 		refrenceBlockPos = getRegionCenter();
 		centerCoord = new Vector(refrenceBlockPos.getX(),refrenceBlockPos.getY(),refrenceBlockPos.getZ());
 		
@@ -346,7 +368,7 @@ public class PhysicsObject {
 	}
 	
 	public BlockPos getRegionCenter(){
-		return new BlockPos(claimedChunks[ownedChunks.radius+1][ownedChunks.radius+1].xPosition*16,128,claimedChunks[ownedChunks.radius+1][ownedChunks.radius+1].zPosition*16);
+		return new BlockPos((claimedChunks[ownedChunks.radius+1][ownedChunks.radius+1].xPosition*16)-8,128,(claimedChunks[ownedChunks.radius+1][ownedChunks.radius+1].zPosition*16)-8);
 	}
 	
 	/**

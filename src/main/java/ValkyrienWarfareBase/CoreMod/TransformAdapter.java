@@ -120,6 +120,12 @@ public class TransformAdapter extends ClassVisitor{
 	}
 
 	public boolean runTransformer(String calledName,String calledDesc,String calledOwner,MethodVisitor mv){
+		
+		if(isMethod(calledDesc,"(L"+BlockPosName+";L"+IBlockStateName+";L"+IBlockStateName+";I)V",calledName,WorldClassName,"notifyBlockUpdate","func_184138_a",calledOwner)){
+			mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onNotifyBlockUpdate", String.format( "(L%s;L"+BlockPosName+";L"+IBlockStateName+";L"+IBlockStateName+";I)V", WorldClassName ) );
+			return false;
+		}
+		
 		//TBA
 		if(isMethod(calledDesc,"()Z", calledName,EntityLivingBaseName,"isOnLadder","func_70617_f_",calledOwner)){
 			mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onIsOnLadder", String.format( "(L%s;)Z", EntityLivingBaseName ) );

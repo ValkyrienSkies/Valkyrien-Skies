@@ -268,30 +268,6 @@ public class CallRunnerClient extends CallRunner{
 		for(PhysicsWrapperEntity wrapper:ValkyrienWarfareMod.physicsManager.getManagerForWorld(renderer.theWorld).physicsEntities){
 			GL11.glPushMatrix();
 			if(wrapper.wrapping.renderer!=null&&wrapper.wrapping.renderer.shouldRender()){
-				switch(blockLayerIn){
-					case CUTOUT:
-						if(wrapper.wrapping.renderer.needsCutoutUpdate){
-							wrapper.wrapping.renderer.updateList(blockLayerIn);
-						}
-						break;
-					case CUTOUT_MIPPED:
-						if(wrapper.wrapping.renderer.needsCutoutMippedUpdate){
-							wrapper.wrapping.renderer.updateList(blockLayerIn);
-						}
-						break;
-					case SOLID:
-						if(wrapper.wrapping.renderer.needsSolidUpdate){
-							wrapper.wrapping.renderer.updateList(blockLayerIn);
-						}
-						break;
-					case TRANSLUCENT:
-						if(wrapper.wrapping.renderer.needsTranslucentUpdate){
-							wrapper.wrapping.renderer.updateList(blockLayerIn);
-						}
-						break;
-					default:
-						break;
-				}
 				wrapper.wrapping.renderer.renderBlockLayer(blockLayerIn,partialTicks,pass);
 			}
 			GL11.glPopMatrix();

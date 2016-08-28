@@ -47,6 +47,7 @@ public class PhysObjectRenderManager {
 	public BlockPos offsetPos;
 	public double curPartialTick;
 	private FloatBuffer transformBuffer = null;
+	public PhysRenderChunk[][] renderChunks;
 	
 	public PhysObjectRenderManager(PhysicsObject toRender){
 		parent = toRender;
@@ -132,6 +133,18 @@ public class PhysObjectRenderManager {
 	}
 	
 	public void renderBlockLayer(BlockRenderLayer layerToRender,double partialTicks,int pass){
+		if(renderChunks==null){
+			if(parent.claimedChunks==null){
+				return;
+			}
+			renderChunks = new PhysRenderChunk[parent.claimedChunks.length][parent.claimedChunks.length];
+			for(int xChunk = 0;xChunk<parent.claimedChunks.length;xChunk++){
+				for(int zChunk = 0;zChunk<parent.claimedChunks.length;zChunk++){
+					renderChunks[xChunk][zChunk] = new PhysRenderChunk(parent, parent.claimedChunks[xChunk][zChunk]);
+				}
+			}
+		}
+		
 		GL11.glPushMatrix();
 		Minecraft.getMinecraft().entityRenderer.enableLightmap();
 		int i = parent.wrapper.getBrightnessForRender((float) partialTicks);
@@ -142,24 +155,31 @@ public class PhysObjectRenderManager {
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		
 		setupTranslation(partialTicks);
-		switch(layerToRender){
-			case CUTOUT:
-				GL11.glCallList(glCallListCutout);
-				break;
-			case CUTOUT_MIPPED:
-				GL11.glCallList(glCallListCutoutMipped);
-				break;
-			case SOLID:
-				GL11.glCallList(glCallListSolid);
-				break;
-			case TRANSLUCENT:
-				GL11.glCallList(glCallListTranslucent);
-				break;
-			default:
-				break;
+		for(PhysRenderChunk[] chunkArray:renderChunks){
+			for(PhysRenderChunk renderChunk:chunkArray){
+				renderChunk.renderBlockLayer(layerToRender, partialTicks, pass);
+			}
 		}
+
 		Minecraft.getMinecraft().entityRenderer.disableLightmap();
 		GL11.glPopMatrix();
+	}
+	
+	public void updateRange(int minX,int minY,int minZ,int maxX,int maxY,int maxZ){
+		int minChunkX = minX>>4;
+		int maxChunkX = maxX>>4;
+		int minChunkZ = minZ>>4;
+		int maxChunkZ = maxZ>>4;
+		
+		int minBlockArrayY = minY>>4;
+		int maxBlockArrayY = maxY>>4;
+
+		for(int chunkX = minChunkX;chunkX<=maxChunkX;chunkX++){
+			for(int chunkZ = minChunkZ;chunkZ<=maxChunkZ;chunkZ++){
+				PhysRenderChunk renderChunk = renderChunks[chunkX-parent.ownedChunks.minX][chunkZ-parent.ownedChunks.minZ];
+				renderChunk.updateLayers(minBlockArrayY, maxBlockArrayY);
+			}
+		}
 	}
 	
 	public void renderTileEntities(float partialTicks){

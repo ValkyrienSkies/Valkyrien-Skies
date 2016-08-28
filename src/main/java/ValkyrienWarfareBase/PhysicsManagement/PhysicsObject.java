@@ -109,7 +109,12 @@ public class PhysicsObject {
 		boolean isOldAir = oldState==null||oldState.getBlock().equals(Blocks.AIR);
 		boolean isNewAir = newState==null||newState.getBlock().equals(Blocks.AIR);
 		
+		if(!ownedChunks.isChunkEnclosedInMaxSet(posAt.getX()>>4, posAt.getZ()>>4)){
+			return;
+		}
+		
 		if(!ownedChunks.isChunkEnclosedInSet(posAt.getX()>>4, posAt.getZ()>>4)){
+		
 			return;
 		}
 		
@@ -186,10 +191,10 @@ public class PhysicsObject {
 			int i = iter.next();
 			detector.setPosWithRespectTo(i, BlockPos.ORIGIN, pos);
 			
-			int xRad = pos.getX()>>4;
-			int zRad = pos.getZ()>>4;
+			int xRad = Math.abs(pos.getX()>>4);
+			int zRad = Math.abs(pos.getZ()>>4);
 			
-			radiusNeeded = Math.max(Math.max(radiusNeeded, xRad), zRad);
+			radiusNeeded = Math.max(Math.max(zRad, xRad), radiusNeeded+1);
 		}
 		
 		iter = detector.foundSet.iterator();

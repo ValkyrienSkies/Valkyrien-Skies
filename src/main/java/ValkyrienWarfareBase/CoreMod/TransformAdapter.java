@@ -47,6 +47,7 @@ public class TransformAdapter extends ClassVisitor{
 	private static final String RawAxisAlignedBBName = "net/minecraft/util/math/AxisAlignedBB";
 	private static final String RawExplosionName = "net/minecraft/world/Explosion";
 	private static final String RawEntityLivingBaseName = "net/minecraft/entity/EntityLivingBase";
+	private static final String RawViewFrustumName = "net/minecraft/client/renderer/ViewFrustum";
 	
 	private static final String IteratorName = "java/util/Iterator";
 	private static final String PredicateName = "com/google/common/base/Predicate";
@@ -81,6 +82,7 @@ public class TransformAdapter extends ClassVisitor{
 	private final String AxisAlignedBBName;
 	private final String ExplosionName;
 	private final String EntityLivingBaseName;
+	private final String ViewFrustumName;
 	
 //	private boolean correctDesc,correctName,correctSuperClass;
 
@@ -117,9 +119,15 @@ public class TransformAdapter extends ClassVisitor{
 		AxisAlignedBBName = getRuntimeClassName(RawAxisAlignedBBName);
 		ExplosionName = getRuntimeClassName(RawExplosionName);
 		EntityLivingBaseName = getRuntimeClassName(RawEntityLivingBaseName);
+		ViewFrustumName = getRuntimeClassName(RawViewFrustumName);
 	}
 
 	public boolean runTransformer(String calledName,String calledDesc,String calledOwner,MethodVisitor mv){
+		if(isMethod(calledDesc,"(IIIIIIZ)V", calledName,ViewFrustumName,"markBlocksForUpdate","func_187474_a",calledOwner)){
+			mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onMarkBlocksForUpdate", String.format( "(L%s;IIIIIIZ)V", ViewFrustumName ) );
+			return false;
+		}
+		
 		
 		if(isMethod(calledDesc,"(L"+BlockPosName+";L"+IBlockStateName+";L"+IBlockStateName+";I)V",calledName,WorldClassName,"notifyBlockUpdate","func_184138_a",calledOwner)){
 			mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onNotifyBlockUpdate", String.format( "(L%s;L"+BlockPosName+";L"+IBlockStateName+";L"+IBlockStateName+";I)V", WorldClassName ) );

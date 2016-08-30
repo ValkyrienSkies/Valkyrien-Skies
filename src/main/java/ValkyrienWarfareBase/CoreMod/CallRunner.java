@@ -407,29 +407,6 @@ public class CallRunner {
 	
 	public static void onNotifyBlockUpdate(World worldFor, BlockPos pos, IBlockState oldState, IBlockState newState, int flags){
 		worldFor.notifyBlockUpdate(pos, oldState, newState, flags);
-//		System.out.println("test");
-		if(worldFor.isRemote){
-			int i = pos.getX();
-	        int j = pos.getY();
-	        int k = pos.getZ();
-	        
-	        int x1 = i-6;
-	        int y1 = j-6;
-	        int z1 = k-6;
-	        int x2 = i+6;
-	        int y2 = j+6;
-	        int z2 = k+6;
-	        
-	        int midX = (x1+x2)/2;
-			int midY = (y1+y2)/2;
-			int midZ = (z1+z2)/2;
-			BlockPos newPos = new BlockPos(midX,midY,midZ);
-			PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldFor, newPos);
-			if(wrapper!=null&&wrapper.wrapping.renderer!=null){
-				
-				wrapper.wrapping.renderer.updateRange(x1, y1, z1, x2, y2, z2);
-			}
-		}
     }
 	
 	public static RayTraceResult onRayTraceBlocks(World world,Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock){

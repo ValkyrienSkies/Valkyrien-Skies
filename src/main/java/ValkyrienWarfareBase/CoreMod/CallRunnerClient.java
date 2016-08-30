@@ -17,6 +17,7 @@ import net.minecraft.block.BlockSign;
 import net.minecraft.block.BlockSkull;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleManager;
@@ -26,6 +27,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.ViewFrustum;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -43,6 +45,21 @@ import net.minecraft.world.World;
 
 public class CallRunnerClient extends CallRunner{
 
+	public static void onMarkBlocksForUpdate(ViewFrustum frustrum,int p_187474_1_, int p_187474_2_, int p_187474_3_, int p_187474_4_, int p_187474_5_, int p_187474_6_, boolean requiresImmediateUpdate){
+		frustrum.markBlocksForUpdate(p_187474_1_, p_187474_2_, p_187474_3_, p_187474_4_, p_187474_5_, p_187474_6_, requiresImmediateUpdate);
+		
+		int midX = (p_187474_1_ + p_187474_4_)/2;
+		int midY = (p_187474_2_ + p_187474_5_)/2;
+		int midZ = (p_187474_3_ + p_187474_6_)/2;
+		BlockPos newPos = new BlockPos(midX,midY,midZ);
+		
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(Minecraft.getMinecraft().theWorld, newPos);
+		if(wrapper!=null&&wrapper.wrapping.renderer!=null){
+			
+			wrapper.wrapping.renderer.updateRange(p_187474_1_, p_187474_2_, p_187474_3_, p_187474_4_, p_187474_5_, p_187474_6_);
+		}
+    }
+	
 	//TODO: This may become a performance issue
 	public static int onGetCombinedLight(World world,BlockPos pos, int lightValue)
     {

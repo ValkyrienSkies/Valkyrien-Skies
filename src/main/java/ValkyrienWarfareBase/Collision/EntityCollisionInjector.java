@@ -56,7 +56,6 @@ public class EntityCollisionInjector {
 		int contZ=0;
 		Vector total = new Vector();
 		for(EntityPolygonCollider col:fastCollisions){
-			
 			Vector response = col.collisions[col.minDistanceIndex].getResponse();
 			//TODO: Add more potential yResponses
 			double stepSquared = entity.stepHeight*entity.stepHeight;
@@ -98,9 +97,11 @@ public class EntityCollisionInjector {
 		if(contZ!=0){
 			total.Z/=contZ;
 		}
+		
 		dx+=total.X;
 		dy+=total.Y;
 		dz+=total.Z;
+		
 		boolean alreadyOnGround = entity.onGround&&(dy==origDy)&&origDy<0;
 		Vector original = new Vector(origDx,origDy,origDz);
 		Vector newMov = new Vector(dx-origDx,dy-origDy,dz-origDz);

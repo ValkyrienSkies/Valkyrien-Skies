@@ -67,7 +67,7 @@ public class ValkyrienWarfareMod{
     public static ValkyrienWarfareMod instance;
     
     public static int airStateIndex;
-	public static double standingTolerance = .3D;
+	public static double standingTolerance = .42D;
 	public static boolean isObsfucated = false;
 	public static int maxShipSize = 15000;
 	

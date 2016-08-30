@@ -171,8 +171,8 @@ public class PhysObjectRenderManager {
 		int minChunkZ = minZ>>4;
 		int maxChunkZ = maxZ>>4;
 		
-		int minBlockArrayY = minY>>4;
-		int maxBlockArrayY = maxY>>4;
+		int minBlockArrayY = Math.max(0, minY>>4);
+		int maxBlockArrayY = Math.min(16, maxY>>4);
 
 		for(int chunkX = minChunkX;chunkX<=maxChunkX;chunkX++){
 			for(int chunkZ = minChunkZ;chunkZ<=maxChunkZ;chunkZ++){

@@ -212,7 +212,7 @@ public class CallRunnerClient extends CallRunner{
             GlStateManager.color(0.0F, 0.0F, 0.0F, 0.4F);
             GlStateManager.glLineWidth(2.0F);
             GlStateManager.disableTexture2D();
-            GlStateManager.depthMask(false);
+//            GlStateManager.depthMask(false);
 			GL11.glPushMatrix();
 			wrapper.wrapping.renderer.setupTranslation(partialTicks);
 			if (execute == 0 && movingObjectPositionIn.typeOfHit == RayTraceResult.Type.BLOCK)
@@ -230,7 +230,7 @@ public class CallRunnerClient extends CallRunner{
 	            }
 	        }
 			GL11.glPopMatrix();
-			GlStateManager.depthMask(true);
+//			GlStateManager.depthMask(true);
             GlStateManager.enableTexture2D();
             GlStateManager.disableBlend();
 		}else{

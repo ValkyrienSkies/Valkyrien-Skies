@@ -373,7 +373,7 @@ public class PhysicsObject {
 	}
 	
 	public BlockPos getRegionCenter(){
-		return new BlockPos((claimedChunks[ownedChunks.radius+1][ownedChunks.radius+1].xPosition*16)-8,128,(claimedChunks[ownedChunks.radius+1][ownedChunks.radius+1].zPosition*16)-8);
+		return new BlockPos((claimedChunks[ownedChunks.radius+1][ownedChunks.radius+1].xPosition*16)-8,127,(claimedChunks[ownedChunks.radius+1][ownedChunks.radius+1].zPosition*16)-8);
 	}
 	
 	/**

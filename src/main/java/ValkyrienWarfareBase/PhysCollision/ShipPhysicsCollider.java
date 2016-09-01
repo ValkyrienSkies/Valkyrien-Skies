@@ -46,7 +46,7 @@ public class ShipPhysicsCollider {
 		if(bbsInFirst.isEmpty()){
 			return;
 		}
-			
+		
 		Vector[] axes = parent.coordTransform.getSeperatingAxisWithShip(toCollideWith);
 		Iterator<AxisAlignedBB> firstRandIter = bbsInFirst.iterator();//RandomIterator.getRandomIteratorForList(bbsInFirst);
 		while(firstRandIter.hasNext()){

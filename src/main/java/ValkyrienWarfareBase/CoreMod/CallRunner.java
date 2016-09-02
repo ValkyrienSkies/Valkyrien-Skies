@@ -22,6 +22,7 @@ import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
 import ValkyrienWarfareCombat.Entity.EntityMountingWeaponBase;
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -43,7 +44,6 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.RayTraceResult.Type;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Explosion;
-import net.minecraft.world.IWorldEventListener;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkProviderServer;
@@ -51,6 +51,56 @@ import net.minecraftforge.common.DimensionManager;
 
 public class CallRunner {
 
+	public static BlockPos onGetPrecipitationHeight(World world,BlockPos pos){
+		BlockPos percipitationHeightPos = world.getPrecipitationHeight(pos);
+		//TODO: Fix this
+		if(world.isRemote&&false){
+			int yRange = 999999;
+			
+			boolean inWorldSpace = !ValkyrienWarfareMod.chunkManager.isChunkInShipRange(world, pos.getX()>>4, pos.getZ()>>4);
+			//Dont run this on any Ship Chunks
+			if(inWorldSpace){
+				AxisAlignedBB rainCheckBB = new AxisAlignedBB(pos.getX(),pos.getY()-yRange,pos.getZ(),pos.getX()+1,pos.getY()+yRange,pos.getZ()+1);
+				List<PhysicsWrapperEntity> wrappers = ValkyrienWarfareMod.physicsManager.getManagerForWorld(world).getNearbyPhysObjects(rainCheckBB);
+				for(PhysicsWrapperEntity wrapper:wrappers){
+					Vector traceStart = new Vector(percipitationHeightPos.getX()+.5D,percipitationHeightPos.getY()+.5D,percipitationHeightPos.getZ()+.5D);
+					RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, traceStart);
+					
+					Vector currentTrace = new Vector(traceStart);
+					
+					Vector rayTraceVector = new Vector(0,1,0);
+					RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWRotation, rayTraceVector);
+					
+					int range = 120;
+					
+					while(range>0&&currentTrace.Y>0&&currentTrace.Y<255){
+						currentTrace.add(rayTraceVector);
+						
+
+						
+						BlockPos toCheck = new BlockPos(Math.round(currentTrace.X),Math.round(currentTrace.Y),Math.round(currentTrace.Z));
+						
+						IBlockState iblockstate = wrapper.wrapping.VKChunkCache.getBlockState(toCheck);
+		                Material material = iblockstate.getMaterial();
+
+		                if (material.blocksMovement())
+		                {
+							Vector currentInWorld = new Vector(currentTrace);
+							RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, currentInWorld);
+//							System.out.println("test");
+							return new BlockPos(Math.round(currentInWorld.X),Math.round(currentInWorld.Y),Math.round(currentInWorld.Z));
+		                }
+						
+						range--;
+					}
+					
+					
+				}
+			}
+		}
+		return percipitationHeightPos;
+    }
+	
 	public static boolean onIsOnLadder(EntityLivingBase base){
 		boolean vanilla = base.isOnLadder();
 		if(vanilla){

@@ -36,21 +36,26 @@ public abstract class SpatialDetector{
 		maxSize = maximum;
 		corners = checkCorners;
 		cache = new VWChunkCache(worldIn,start.getX()-128,start.getZ()-128,start.getX()+128,start.getZ()+128);
+	}
+
+	public final void startDetection(){
 		calculateSpatialOccupation();
 		if(cleanHouse){
 			foundSet.clear();
 		}
 	}
-
+	
 	public void calculateSpatialOccupation(){
 		nextQueue.add(firstBlock.getY() + maxRange*maxRangeHalved + maxRangeSquared*maxRangeHalved);
+		MutableBlockPos inRealWorld = new MutableBlockPos();
+		int hash;
 		while(!nextQueue.isEmpty()&&!cleanHouse){
 			TIntIterator queueIter = nextQueue.iterator();
 			foundSet.addAll(nextQueue);
 			nextQueue = new TIntHashSet();
 			while(queueIter.hasNext()){
-				int hash = (Integer) queueIter.next();
-				BlockPos inRealWorld = getPosWithRespectTo(hash,firstBlock);
+				hash = queueIter.next();
+				setPosWithRespectTo(hash, firstBlock, inRealWorld);
 				if(corners){
 					tryExpanding(inRealWorld.getX()-1,inRealWorld.getY()-1,inRealWorld.getZ()-1,hash-maxRange-1-maxRangeSquared);
 					tryExpanding(inRealWorld.getX()-1,inRealWorld.getY()-1,inRealWorld.getZ(),hash-maxRange-1);

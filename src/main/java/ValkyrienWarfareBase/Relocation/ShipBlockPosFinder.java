@@ -8,6 +8,7 @@ public class ShipBlockPosFinder extends SpatialDetector{
 
 	public ShipBlockPosFinder(BlockPos start, World worldIn, int maximum, boolean checkCorners) {
 		super(start, worldIn, maximum, checkCorners);
+		startDetection();
 	}
 
 	@Override

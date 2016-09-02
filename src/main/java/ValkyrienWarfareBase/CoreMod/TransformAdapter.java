@@ -123,6 +123,11 @@ public class TransformAdapter extends ClassVisitor{
 	}
 
 	public boolean runTransformer(String calledName,String calledDesc,String calledOwner,MethodVisitor mv){
+		if(isMethod(calledDesc,"(L"+BlockPosName+";)L"+BlockPosName+";",calledName,WorldClassName,"getPrecipitationHeight","RENAMEME",calledOwner)){
+			mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onGetPrecipitationHeight", String.format( "(L%s;L"+BlockPosName+";)L"+BlockPosName+";", WorldClassName ) );
+			return false;
+		}
+		
 		if(isMethod(calledDesc,"(IIIIIIZ)V", calledName,ViewFrustumName,"markBlocksForUpdate","func_187474_a",calledOwner)){
 			mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onMarkBlocksForUpdate", String.format( "(L%s;IIIIIIZ)V", ViewFrustumName ) );
 			return false;

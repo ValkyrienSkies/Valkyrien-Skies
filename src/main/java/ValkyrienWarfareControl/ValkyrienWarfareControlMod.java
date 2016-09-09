@@ -11,6 +11,7 @@ import ValkyrienWarfareControl.Item.ItemSystemLinker;
 import ValkyrienWarfareControl.Network.HovercraftControllerGUIInputHandler;
 import ValkyrienWarfareControl.Network.HovercraftControllerGUIInputMessage;
 import ValkyrienWarfareControl.TileEntity.AntiGravEngineTileEntity;
+import ValkyrienWarfareControl.TileEntity.BalloonBurnerTileEntity;
 import ValkyrienWarfareControl.TileEntity.TileEntityHoverController;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -93,6 +94,7 @@ public class ValkyrienWarfareControlMod {
     private void registerTileEntities(FMLStateEvent event){
     	TileEntity.addMapping(TileEntityHoverController.class, "tilehovercontroller");
     	TileEntity.addMapping(AntiGravEngineTileEntity.class, "tileantigravengine");
+    	TileEntity.addMapping(BalloonBurnerTileEntity.class, "tileballoonburner");
     }
 
     private void registerItems(FMLStateEvent event){

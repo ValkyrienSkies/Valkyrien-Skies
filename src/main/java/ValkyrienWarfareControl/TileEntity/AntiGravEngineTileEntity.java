@@ -39,10 +39,7 @@ public class AntiGravEngineTileEntity extends TileEntity{
 			return null;
 		}
 		TileEntityHoverController controller = (TileEntityHoverController) tileEnt;
-		if(controller!=null){
-			return controller.getForceForEngine(this,world,pos,state,shipEntity.wrapping,secondsToApply);
-		}
-		return null;
+		return controller.getForceForEngine(this,world,pos,state,shipEntity.wrapping,secondsToApply);
 	}
 	
 	public void setController(BlockPos newPos){

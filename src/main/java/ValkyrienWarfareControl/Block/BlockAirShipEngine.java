@@ -88,4 +88,9 @@ public class BlockAirShipEngine extends Block implements IBlockForceProvider{
 		return true;
 	}
 
+	@Override
+	public Vector getBlockForcePosition(World world, BlockPos pos, IBlockState state, Entity shipEntity, double secondsToApply) {
+		return null;
+	}
+
 }

@@ -46,4 +46,9 @@ public class BlockAntiGravEngine extends Block implements ITileEntityProvider,IB
 		return false;
 	}
 
+	@Override
+	public Vector getBlockForcePosition(World world, BlockPos pos, IBlockState state, Entity shipEntity, double secondsToApply) {
+		return null;
+	}
+
 }

@@ -13,6 +13,7 @@ import net.minecraft.world.chunk.Chunk;
 public class BalloonDetector extends SpatialDetector{
 
 	private MutableBlockPos mutable = new MutableBlockPos();
+	public final TIntHashSet balloonWalls = new TIntHashSet(250);
 	
 	public BalloonDetector(BlockPos start, World worldIn, int maximum) {
 		super(start, worldIn, maximum, false);
@@ -43,9 +44,22 @@ public class BalloonDetector extends SpatialDetector{
 	}
 	
 	@Override
+	public void tryExpanding(int x, int y, int z, int hash){
+		if(isValidExpansion(x,y,z)){
+			if(!foundSet.contains(hash)&&(foundSet.size()+nextQueue.size()<maxSize)){
+				nextQueue.add(hash);
+			}
+		}else{
+			if(!balloonWalls.contains(hash)){
+				balloonWalls.add(hash);
+			}
+		}
+	}
+	
+	@Override
 	public boolean isValidExpansion(int x, int y, int z) {
 		IBlockState state = cache.getBlockState(x,y,z);
-		if(state.getBlock()==Blocks.AIR){
+		if(!state.getBlock().blockMaterial.blocksMovement()){
 			Chunk chunk = cache.getChunkAt(x>>4, z>>4);
 			mutable.setPos(x, y, z);
 			if(!chunk.canSeeSky(mutable)){

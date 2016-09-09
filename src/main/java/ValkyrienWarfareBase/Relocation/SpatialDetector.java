@@ -27,7 +27,7 @@ public abstract class SpatialDetector{
 	public final World worldObj;
 	public final int maxSize;
 	public final boolean corners;
-	public int totalCalls = 0;
+//	public int totalCalls = 0;
 	public boolean cleanHouse = false;
 
 	public SpatialDetector(BlockPos start,World worldIn,int maximum, boolean checkCorners){
@@ -97,19 +97,9 @@ public abstract class SpatialDetector{
 		}
 	}
 
-	public void tryExpanding(int x, int y, int z){
-		if(isValidExpansion(x,y,z)){
-			totalCalls++;
-			int hash = getHashWithRespectTo(x,y,z,firstBlock);
-			if(!foundSet.contains(hash)&&(foundSet.size()+nextQueue.size()<maxSize)){
-				nextQueue.add(hash);
-			}
-		}
-	}
-
 	public void tryExpanding(int x, int y, int z, int hash){
 		if(isValidExpansion(x,y,z)){
-			totalCalls++;
+//			totalCalls++;
 			if(!foundSet.contains(hash)&&(foundSet.size()+nextQueue.size()<maxSize)){
 				nextQueue.add(hash);
 			}

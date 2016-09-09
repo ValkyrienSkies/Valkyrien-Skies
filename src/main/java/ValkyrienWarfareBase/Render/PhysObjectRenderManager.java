@@ -166,13 +166,17 @@ public class PhysObjectRenderManager {
 	}
 	
 	public void updateRange(int minX,int minY,int minZ,int maxX,int maxY,int maxZ){
+		if(renderChunks==null){
+			return;
+		}
+		
 		int minChunkX = minX>>4;
 		int maxChunkX = maxX>>4;
 		int minChunkZ = minZ>>4;
 		int maxChunkZ = maxZ>>4;
 		
 		int minBlockArrayY = Math.max(0, minY>>4);
-		int maxBlockArrayY = Math.min(16, maxY>>4);
+		int maxBlockArrayY = Math.min(15, maxY>>4);
 
 		for(int chunkX = minChunkX;chunkX<=maxChunkX;chunkX++){
 			for(int chunkZ = minChunkZ;chunkZ<=maxChunkZ;chunkZ++){

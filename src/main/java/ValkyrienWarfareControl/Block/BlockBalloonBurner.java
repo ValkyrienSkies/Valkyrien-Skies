@@ -1,6 +1,9 @@
 package ValkyrienWarfareControl.Block;
 
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
+import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareControl.Balloon.BalloonDetector;
+import ValkyrienWarfareControl.Balloon.BalloonProcessor;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
@@ -21,16 +24,30 @@ public class BlockBalloonBurner extends Block implements ITileEntityProvider{
 	@Override
 	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
     {
-		BlockPos balloonStart = pos.up(2);
-		if(!worldIn.isRemote){
-			BalloonDetector detector = new BalloonDetector(balloonStart, worldIn, 25000);
-			int balloonSize = detector.foundSet.size();
-			if(balloonSize==0){
-				System.out.println("Not enclosed");
-			}else{
-				System.out.println("Balloon Volume is " + balloonSize);
+		PhysicsWrapperEntity wrapperEntity = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldIn, pos);
+		//Balloons can only be made on an active Ship
+		if(wrapperEntity!=null){
+			BlockPos balloonStart = pos.up(2);
+			if(!worldIn.isRemote){
+				BalloonProcessor existingProcessor = wrapperEntity.wrapping.balloonManager.getProcessorAbovePos(pos);
+				if(existingProcessor==null){
+				
+					BalloonDetector detector = new BalloonDetector(balloonStart, worldIn, 25000);
+					int balloonSize = detector.foundSet.size();
+					if(balloonSize==0){
+						placer.addChatMessage(new TextComponentString("No balloon above"));
+					}else{
+						placer.addChatMessage(new TextComponentString("Created a new Balloon"));
+						
+						BalloonProcessor processor = BalloonProcessor.makeProcessorForDetector(wrapperEntity, detector);
+						
+						wrapperEntity.wrapping.balloonManager.addBalloonProcessor(processor);
+	//					System.out.println("Balloon Walls Are " + detector.balloonWalls.size());
+					}
+				}else{
+					System.out.println("Hooked onto Exisiting Balloon");
+				}
 			}
-			placer.addChatMessage(new TextComponentString(worldIn.getBlockState(balloonStart)+""));
 		}
 		return super.onBlockPlaced(worldIn, pos, facing, hitX, hitY, hitZ, meta, placer);
     }

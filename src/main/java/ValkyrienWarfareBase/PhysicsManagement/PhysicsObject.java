@@ -22,6 +22,7 @@ import ValkyrienWarfareBase.Relocation.ShipBlockPosFinder;
 import ValkyrienWarfareBase.Relocation.SpatialDetector;
 import ValkyrienWarfareBase.Relocation.VWChunkCache;
 import ValkyrienWarfareBase.Render.PhysObjectRenderManager;
+import ValkyrienWarfareControl.Balloon.ShipBalloonManager;
 import gnu.trove.iterator.TIntIterator;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.state.IBlockState;
@@ -95,9 +96,12 @@ public class PhysicsObject {
 	public VWChunkCache VKChunkCache;
 	public PlayerChunkMapEntry[][] claimedChunksEntries;
 	
+	public ShipBalloonManager balloonManager;
+	
 	public PhysicsObject(PhysicsWrapperEntity host){
 		wrapper = host;
 		worldObj = host.worldObj;
+		balloonManager = new ShipBalloonManager(this);
 		if(host.worldObj.isRemote){
 			renderer = new PhysObjectRenderManager(this);
 		}else{

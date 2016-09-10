@@ -22,13 +22,19 @@ public class BalloonBurnerTileEntity extends TileEntity{
 		if(balloon==null){
 			PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity) shipEntity;
 			balloon = wrapper.wrapping.balloonManager.getProcessorAbovePos(pos);
-		}else{
-//			System.out.println("I've got a balloon!");
+		}
+		if(balloon!=null){
+			return balloon.currentBalloonCenter;
 		}
 		return null;
 	}
 	
 	public Vector getBlockForce(World world, BlockPos pos, IBlockState state, Entity shipEntity, double secondsToApply) {
+		if(balloon!=null){
+			Vector upForce = new Vector(0D,10D,0D);
+			upForce.multiply(balloon.currentBalloonSize);
+			return upForce;
+		}
 		return null;
 	}
 	

@@ -1,7 +1,10 @@
 package ValkyrienWarfareControl.Balloon;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 
+import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import gnu.trove.iterator.TIntIterator;
 import net.minecraft.util.math.BlockPos;
@@ -16,11 +19,34 @@ public class BalloonProcessor {
 	
 	public int minX,minY,minZ,maxX,maxY,maxZ;
 	
+	public Vector currentBalloonCenter = new Vector();
+	public int currentBalloonSize;
+	
 	public BalloonProcessor(PhysicsWrapperEntity parent,HashSet<BlockPos> balloonWalls,HashSet<BlockPos> internalAirPositons){
+		this.parent = parent;
 		this.balloonWalls = balloonWalls;
 		this.internalAirPositons = internalAirPositons;
 		balloonHoles = new HashSet<BlockPos>();
-		parent = this.parent;
+		updateBalloonCenter();
+	}
+	
+	public void updateBalloonCenter(){
+		currentBalloonCenter.zero();
+		currentBalloonSize = internalAirPositons.size();
+		Iterator<BlockPos> blockPosIterator = internalAirPositons.iterator();
+		while(blockPosIterator.hasNext()){
+			BlockPos current = blockPosIterator.next();
+			currentBalloonCenter.X+=current.getX();
+			currentBalloonCenter.Y+=current.getY();
+			currentBalloonCenter.Z+=current.getZ();
+		}
+		currentBalloonCenter.multiply(1D/currentBalloonSize);
+		currentBalloonCenter.X+=.5D;currentBalloonCenter.Y+=.5D;currentBalloonCenter.Z+=.5D;
+	}
+	
+	public void processBlockUpdates(ArrayList<BlockPos> updates){
+		
+		updateBalloonCenter();
 	}
 	
 	//A fast way to rule out most block positions when looking through the HashSets

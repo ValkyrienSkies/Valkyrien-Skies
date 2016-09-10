@@ -54,6 +54,10 @@ public class ShipBalloonManager {
 	
 	private void processRecentBlockChanges(){
 		if(!recentBlockPositionChanges.isEmpty()){
+			for(BalloonProcessor processor:balloonProcessors){
+				processor.processBlockUpdates(recentBlockPositionChanges);
+			}
+			
 //			System.out.println("Processed "+recentBlockPositionChanges.size()+" block changes");
 			
 			recentBlockPositionChanges.clear();

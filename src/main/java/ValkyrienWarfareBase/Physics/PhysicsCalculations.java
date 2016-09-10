@@ -263,6 +263,12 @@ public class PhysicsCalculations {
 			BlockForce.basicForces.getForceFromState(state, pos, worldObj,physTickSpeed,parent,blockForce);
 			
 			if(blockForce!=null){
+				if(blockAt instanceof IBlockForceProvider){
+					Vector otherPosition = ((IBlockForceProvider)blockAt).getBlockForcePosition(worldObj, pos, state, parent.wrapper, physTickSpeed);
+					if(otherPosition!=null){
+						BigBastardMath.getBodyPosWithOrientation(otherPosition, centerOfMass, parent.coordTransform.lToWRotation,inBodyWO);
+					}
+				}
 				addForceAtPoint(inBodyWO,blockForce,crossVector);
 			}else{
 //				FMLLog.getLogger().warn("BLOCK "+blockAt.getUnlocalizedName()+" didn't have its force properly registered; COMPLAIN TO MOD DEV!!!");

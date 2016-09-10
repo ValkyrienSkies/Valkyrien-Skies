@@ -10,7 +10,9 @@ import net.minecraft.util.math.BlockPos;
 public class ShipBalloonManager {
 
 	public ArrayList<BalloonProcessor> balloonProcessors = new ArrayList<BalloonProcessor>();
+	public ArrayList<BlockPos> recentBlockPositionChanges = new ArrayList<BlockPos>();
 	public PhysicsObject parent;
+	private int curBalloonTick;
 	
 	public ShipBalloonManager(PhysicsObject parent){
 		this.parent = parent;
@@ -40,6 +42,30 @@ public class ShipBalloonManager {
 	
 	public void addBalloonProcessor(BalloonProcessor toAdd){
 		balloonProcessors.add(toAdd);
+	}
+	
+	public void onPostTick(){
+		curBalloonTick++;
+		if(curBalloonTick==20){
+			processRecentBlockChanges();
+			curBalloonTick=0;
+		}
+	}
+	
+	private void processRecentBlockChanges(){
+		if(!recentBlockPositionChanges.isEmpty()){
+//			System.out.println("Processed "+recentBlockPositionChanges.size()+" block changes");
+			
+			recentBlockPositionChanges.clear();
+		}
+	}
+	
+	public void onBlockPositionRemoved(BlockPos justRemoved){
+		recentBlockPositionChanges.add(justRemoved);
+	}
+	
+	public void onBlockPositionAdded(BlockPos justAdded){
+		recentBlockPositionChanges.add(justAdded);
 	}
 	
 }

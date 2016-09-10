@@ -101,10 +101,10 @@ public class PhysicsObject {
 	public PhysicsObject(PhysicsWrapperEntity host){
 		wrapper = host;
 		worldObj = host.worldObj;
-		balloonManager = new ShipBalloonManager(this);
 		if(host.worldObj.isRemote){
 			renderer = new PhysObjectRenderManager(this);
 		}else{
+			balloonManager = new ShipBalloonManager(this);
 			grabPlayerField();
 		}
 	}
@@ -118,22 +118,23 @@ public class PhysicsObject {
 		}
 		
 		if(!ownedChunks.isChunkEnclosedInSet(posAt.getX()>>4, posAt.getZ()>>4)){
-		
 			return;
 		}
 		
 		blocksChanged = true;
 		
-		if(isOldAir&&isNewAir){
+		if(isNewAir){
 			blockPositions.remove(posAt);
-		}
-		
-		if(!isOldAir&&isNewAir){
-			blockPositions.remove(posAt);
+			if(!worldObj.isRemote){
+				balloonManager.onBlockPositionRemoved(posAt);
+			}
 		}
 		
 		if(isOldAir&&!isNewAir){
 			blockPositions.add(posAt);
+			if(!worldObj.isRemote){
+				balloonManager.onBlockPositionAdded(posAt);
+			}
 			int chunkX = (posAt.getX()>>4)-claimedChunks[0][0].xPosition;
 			int chunkZ = (posAt.getZ()>>4)-claimedChunks[0][0].zPosition;
 			ownedChunks.chunkOccupiedInLocal[chunkX][chunkZ] = true;
@@ -435,10 +436,10 @@ public class PhysicsObject {
 	
 	public void onPostTick(){
 		tickQueuedForces();
+		if(!worldObj.isRemote){
+			balloonManager.onPostTick();
+		}
 		explodedPositionsThisTick.clear();
-		
-		
-		
 	}
 	
 	//Returns true if splitting happened

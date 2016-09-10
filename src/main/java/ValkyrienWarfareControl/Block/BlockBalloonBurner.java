@@ -3,9 +3,11 @@ package ValkyrienWarfareControl.Block;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.IBlockForceProvider;
 import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareControl.Balloon.BalloonDetector;
 import ValkyrienWarfareControl.Balloon.BalloonProcessor;
+import ValkyrienWarfareControl.TileEntity.AntiGravEngineTileEntity;
 import ValkyrienWarfareControl.TileEntity.BalloonBurnerTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
@@ -49,7 +51,7 @@ public class BlockBalloonBurner extends Block implements ITileEntityProvider,IBl
 	//					System.out.println("Balloon Walls Are " + detector.balloonWalls.size());
 					}
 				}else{
-					System.out.println("Hooked onto Exisiting Balloon");
+					placer.addChatMessage(new TextComponentString("Hooked onto Exisiting Balloon"));
 				}
 			}
 		}
@@ -63,7 +65,10 @@ public class BlockBalloonBurner extends Block implements ITileEntityProvider,IBl
 
 	@Override
 	public Vector getBlockForce(World world, BlockPos pos, IBlockState state, Entity shipEntity, double secondsToApply) {
-		// TODO Auto-generated method stub
+		BalloonBurnerTileEntity tileEnt = getTileEntity(world,pos,state,shipEntity);
+		if(tileEnt!=null){
+			return tileEnt.getBlockForce(world, pos, state, shipEntity, secondsToApply);
+		}
 		return null;
 	}
 
@@ -74,7 +79,25 @@ public class BlockBalloonBurner extends Block implements ITileEntityProvider,IBl
 
 	@Override
 	public Vector getBlockForcePosition(World world, BlockPos pos, IBlockState state, Entity shipEntity, double secondsToApply) {
-//		TileEntity tileEnt = 
+		BalloonBurnerTileEntity tileEnt = getTileEntity(world,pos,state,shipEntity);
+		if(tileEnt!=null){
+			return tileEnt.getBlockForcePosition(world, pos, state, shipEntity, secondsToApply);
+		}
+		return null;
+	}
+	
+	private BalloonBurnerTileEntity getTileEntity(World world, BlockPos pos, IBlockState state, Entity shipEntity){
+		PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity) shipEntity;
+		PhysicsObject obj = wrapper.wrapping;
+		IBlockState controllerState = obj.VKChunkCache.getBlockState(pos);
+		TileEntity worldTile = obj.VKChunkCache.getTileEntity(pos);
+		if(worldTile==null){
+			return null;
+		}
+		if(worldTile instanceof BalloonBurnerTileEntity){
+			BalloonBurnerTileEntity burnerTile = (BalloonBurnerTileEntity) worldTile;
+			return burnerTile;
+		}
 		return null;
 	}
 

@@ -7,6 +7,8 @@ import java.util.Iterator;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import gnu.trove.iterator.TIntIterator;
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 
 public class BalloonProcessor {
@@ -30,6 +32,38 @@ public class BalloonProcessor {
 		updateBalloonCenter();
 	}
 	
+
+	public void processBlockUpdates(ArrayList<BlockPos> updates){
+		checkHolesForFix();
+		for(BlockPos pos:updates){
+			if(isBlockPosInRange(pos)){
+				IBlockState state = parent.wrapping.VKChunkCache.getBlockState(pos);
+				Block block = state.getBlock();
+				if(block.blockMaterial.blocksMovement()){
+					if(internalAirPositons.contains(block)){
+						//No longer an air position
+						internalAirPositons.remove(block);
+					}else{
+						//Possibly add it to internalAirPositions?
+						//Or maybe fill in a hole?
+					}
+				}else{
+					if(balloonWalls.contains(pos)){
+						//Just created a hole
+						System.out.println("Hole Created");
+						balloonHoles.add(pos);
+					}
+				}
+			}
+		}
+		updateBalloonCenter();
+		updateBalloonRange();
+	}
+	
+	public void checkHolesForFix(){
+		//TODO: Make this method loop through all holes and find fixes
+	}
+	
 	public void updateBalloonCenter(){
 		currentBalloonCenter.zero();
 		currentBalloonSize = internalAirPositons.size();
@@ -44,9 +78,20 @@ public class BalloonProcessor {
 		currentBalloonCenter.X+=.5D;currentBalloonCenter.Y+=.5D;currentBalloonCenter.Z+=.5D;
 	}
 	
-	public void processBlockUpdates(ArrayList<BlockPos> updates){
+	public void updateBalloonRange(){
+		Iterator<BlockPos> blockPosIterator = balloonWalls.iterator();
 		
-		updateBalloonCenter();
+		BlockPos firstPos = blockPosIterator.next();
+		
+		minX = maxX = firstPos.getX();
+		minY = maxY = firstPos.getY();
+		minZ = maxZ = firstPos.getZ();
+		
+		while(blockPosIterator.hasNext()){
+			BlockPos pos = blockPosIterator.next();
+			minX = Math.min(minX, pos.getX());minY = Math.min(minY, pos.getY());minZ = Math.min(minZ, pos.getZ());
+			maxX = Math.max(maxX, pos.getX());maxY = Math.max(maxY, pos.getY());maxZ = Math.max(maxZ, pos.getZ());
+		}
 	}
 	
 	//A fast way to rule out most block positions when looking through the HashSets

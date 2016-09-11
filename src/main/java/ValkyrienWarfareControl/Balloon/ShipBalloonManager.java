@@ -65,11 +65,15 @@ public class ShipBalloonManager {
 	}
 	
 	public void onBlockPositionRemoved(BlockPos justRemoved){
-		recentBlockPositionChanges.add(justRemoved);
+		if(!recentBlockPositionChanges.contains(justRemoved)){
+			recentBlockPositionChanges.add(justRemoved);
+		}
 	}
 	
 	public void onBlockPositionAdded(BlockPos justAdded){
-		recentBlockPositionChanges.add(justAdded);
+		if(!recentBlockPositionChanges.contains(justAdded)){
+			recentBlockPositionChanges.add(justAdded);
+		}
 	}
 	
 }

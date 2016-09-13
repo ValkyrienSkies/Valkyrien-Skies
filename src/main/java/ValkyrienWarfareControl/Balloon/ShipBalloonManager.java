@@ -30,7 +30,7 @@ public class ShipBalloonManager {
 			}else{
 				for(BalloonProcessor processor:balloonProcessors){
 					if(processor.isBlockPosInRange(toCheck)){
-						if(processor.internalAirPositons.contains(toCheck)){
+						if(processor.internalAirPositions.contains(toCheck)){
 							return processor;
 						}
 					}

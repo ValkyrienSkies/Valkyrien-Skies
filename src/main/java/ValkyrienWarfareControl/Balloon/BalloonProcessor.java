@@ -16,7 +16,7 @@ public class BalloonProcessor {
 	public PhysicsWrapperEntity parent;
 	
 	public HashSet<BlockPos> balloonWalls;
-	public HashSet<BlockPos> internalAirPositons;
+	public HashSet<BlockPos> internalAirPositions;
 	public HashSet<BlockPos> balloonHoles;
 	
 	public int minX,minY,minZ,maxX,maxY,maxZ;
@@ -27,7 +27,7 @@ public class BalloonProcessor {
 	public BalloonProcessor(PhysicsWrapperEntity parent,HashSet<BlockPos> balloonWalls,HashSet<BlockPos> internalAirPositons){
 		this.parent = parent;
 		this.balloonWalls = balloonWalls;
-		this.internalAirPositons = internalAirPositons;
+		this.internalAirPositions = internalAirPositons;
 		balloonHoles = new HashSet<BlockPos>();
 		updateBalloonCenter();
 	}
@@ -40,13 +40,15 @@ public class BalloonProcessor {
 				IBlockState state = parent.wrapping.VKChunkCache.getBlockState(pos);
 				Block block = state.getBlock();
 				if(block.blockMaterial.blocksMovement()){
-					if(internalAirPositons.contains(block)){
+					if(internalAirPositions.contains(block)){
 						//No longer an air position
-						internalAirPositons.remove(block);
+						internalAirPositions.remove(pos);
+						balloonWalls.add(pos);
 					}else{
 						//Possibly add it to internalAirPositions?
 						//Or maybe fill in a hole?
 					}
+					balloonHoles.remove(pos);
 				}else{
 					if(balloonWalls.contains(pos)){
 						//Just created a hole
@@ -61,13 +63,114 @@ public class BalloonProcessor {
 	}
 	
 	public void checkHolesForFix(){
-		//TODO: Make this method loop through all holes and find fixes
+
+		ArrayList<BlockPos> balloonHoleCopy = new ArrayList<BlockPos>(balloonHoles);
+		
+		for(BlockPos pos:balloonHoleCopy){
+			BlockPos[] adjacentPositions = getAdjacentPositions(pos);
+			
+			if(!balloonHoles.contains(pos)){
+				break;
+			}
+			
+			if(doFirstHoleCheck(pos,adjacentPositions)){
+				balloonHoles.remove(pos);
+				break;
+			}
+			if(doSecondHoleCheck(pos,adjacentPositions)){
+				balloonHoles.remove(pos);
+				break;
+			}
+			if(doLastHoleCheck(pos,adjacentPositions)){
+				balloonHoles.remove(pos);
+				break;
+			}
+			//continue the condition check
+		}
+		System.out.println("balloonHoles size is "+balloonHoles.size());
+	}
+	
+	//Just check if the hole is even connected to the internal air of the ballon; if not, get rid of it!
+	//return true if you want to verify hole has been fixed (or if you just want it to be removed)
+	private boolean doFirstHoleCheck(BlockPos holeToCheck,BlockPos[] adjacentPositions){
+		for(BlockPos nearbyPosition:adjacentPositions){
+			if(/*balloonWalls.contains(nearbyPosition)||*/internalAirPositions.contains(nearbyPosition)/*||balloonHoles.contains(nearbyPosition)*/){
+				//Connected to balloon, go onto next check
+				return false;
+			}
+		}
+		//Not connected, hole should be removed
+		return true;
+	}
+	
+	//This checks if the adjacentPositions are completely filled
+	private boolean doSecondHoleCheck(BlockPos holeToCheck,BlockPos[] adjacentPositions){
+		for(BlockPos nearbyPosition:adjacentPositions){
+			if(!(balloonWalls.contains(nearbyPosition)||internalAirPositions.contains(nearbyPosition))){
+				//A nearby position isnt included in the balloon, KEEP GOING!
+				return false;
+				
+				//TODO: Maybe re-add this shit, probably not though
+//				IBlockState nearbyState = parent.wrapping.VKChunkCache.getBlockState(nearbyPosition);
+//				if(nearbyState.getBlock().blockMaterial.blocksMovement()){
+//					
+//				}
+			}
+		}
+		return true;
+	}
+	
+	private boolean doLastHoleCheck(BlockPos holeToCheck,BlockPos[] adjacentPositions){
+		BalloonHoleDetector holeDetector = new BalloonHoleDetector(holeToCheck, parent.worldObj, 500, this);
+		if(!holeDetector.cleanHouse){
+			//Wow the hole is actually filled! Add the new positions here!
+			
+			TIntIterator newBallonWallIterator = holeDetector.newBalloonWalls.iterator();
+			TIntIterator newAirPostitionsIterator = holeDetector.foundSet.iterator();
+			
+			while(newAirPostitionsIterator.hasNext()){
+				int hash = newAirPostitionsIterator.next();
+				BlockPos fromHash = holeDetector.getPosWithRespectTo(hash, holeDetector.firstBlock);
+				internalAirPositions.add(fromHash);
+				balloonHoles.remove(fromHash);
+			}
+			
+			while(newBallonWallIterator.hasNext()){
+				int hash = newBallonWallIterator.next();
+				BlockPos fromHash = holeDetector.getPosWithRespectTo(hash, holeDetector.firstBlock);
+				balloonWalls.add(fromHash);
+				balloonHoles.remove(fromHash);
+			}
+			
+			return true;
+		}
+		return false;
+	}
+	
+	private BlockPos[] getAdjacentPositions(BlockPos pos){
+		BlockPos up = pos.up();
+		BlockPos down = pos.down();
+		BlockPos north = pos.north();
+		BlockPos east = pos.east();
+		BlockPos south = pos.south();
+		BlockPos west = pos.west();
+		
+		BlockPos[] positions = new BlockPos[6];
+		
+		positions[0] = up;
+		positions[1] = down;
+		positions[2] = north;
+		positions[3] = east;
+		positions[4] = south;
+		positions[5] = west;
+		
+		return positions;
 	}
 	
 	public void updateBalloonCenter(){
 		currentBalloonCenter.zero();
-		currentBalloonSize = internalAirPositons.size();
-		Iterator<BlockPos> blockPosIterator = internalAirPositons.iterator();
+		currentBalloonSize = internalAirPositions.size();
+		Iterator<BlockPos> blockPosIterator = internalAirPositions.iterator();
 		while(blockPosIterator.hasNext()){
 			BlockPos current = blockPosIterator.next();
 			currentBalloonCenter.X+=current.getX();

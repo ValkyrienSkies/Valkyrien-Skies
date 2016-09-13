@@ -11,7 +11,7 @@ import net.minecraft.world.chunk.Chunk;
 
 public class BalloonDetector extends SpatialDetector{
 
-	private MutableBlockPos mutable = new MutableBlockPos();
+	private final MutableBlockPos mutable = new MutableBlockPos();
 	public final TIntHashSet balloonWalls = new TIntHashSet(250);
 	
 	public BalloonDetector(BlockPos start, World worldIn, int maximum) {

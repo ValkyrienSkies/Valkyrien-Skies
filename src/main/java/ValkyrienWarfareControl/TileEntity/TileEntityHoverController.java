@@ -29,7 +29,7 @@ public class TileEntityHoverController extends TileEntity{
 	public Vector normalVector = new Vector(0D,1D,0D);
 	
 	public double angularConstant = 500000000D;
-	public double linearConstant = 100000D;
+	public double linearConstant = 1000000D;
 	
 	public boolean autoStabalizerControl = true;
 	

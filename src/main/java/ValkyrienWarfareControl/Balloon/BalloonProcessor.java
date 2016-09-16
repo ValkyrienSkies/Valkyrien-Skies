@@ -9,7 +9,9 @@ import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import gnu.trove.iterator.TIntIterator;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockPos.MutableBlockPos;
 
 public class BalloonProcessor {
 
@@ -40,7 +42,7 @@ public class BalloonProcessor {
 				IBlockState state = parent.wrapping.VKChunkCache.getBlockState(pos);
 				Block block = state.getBlock();
 				if(block.blockMaterial.blocksMovement()){
-					if(internalAirPositions.contains(block)){
+					if(internalAirPositions.contains(pos)){
 						//No longer an air position
 						internalAirPositions.remove(pos);
 						balloonWalls.add(pos);
@@ -58,12 +60,51 @@ public class BalloonProcessor {
 				}
 			}
 		}
-		updateBalloonCenter();
-		updateBalloonRange();
+		if(!updates.isEmpty()){
+			checkBalloonForSplit();
+		
+			updateBalloonCenter();
+			updateBalloonRange();
+		}
 	}
 	
-	public void checkHolesForFix(){
+	//Loop through all balloon air positions, and if some are split; remove the smaller group
+	private void checkBalloonForSplit(){
+		//Just get any random blockPosition
+		HashSet<BlockPos> internalAirPositionsRemoved = (HashSet<BlockPos>) internalAirPositions.clone();
+		
+		ArrayList<BalloonAirDetector> foundDetectors = new ArrayList<BalloonAirDetector>();
+		
+		MutableBlockPos mutable = new MutableBlockPos();
+		
+		boolean justStop = false;
+		
+		while(internalAirPositionsRemoved.size()>0&&!justStop){
+			BlockPos startPos = internalAirPositionsRemoved.iterator().next();
+			BalloonAirDetector airDetector = new BalloonAirDetector(startPos, parent.worldObj, currentBalloonSize, this);
+			foundDetectors.add(airDetector);
+//			System.out.println("Detector size "+ airDetector.foundSet.size());
+//			System.out.println("Total size "+ internalAirPositions.size());
+			if(airDetector.foundSet.size()!=internalAirPositions.size()){
+				TIntIterator intIter = airDetector.foundSet.iterator();
+				while(intIter.hasNext()){
+					int hash = intIter.next();
+					airDetector.setPosWithRespectTo(hash, airDetector.firstBlock, mutable);
+					internalAirPositionsRemoved.remove(mutable);
+				}
+			}else{
+				//Seriously! Fucking stop it!
+				justStop = true;
+			}
+		}
+		
+		if(foundDetectors.size()!=1){
+			System.out.println("There is a split man!");
+//			processBalloonSplits(foundDetectors);
+		}
+	}
 
+	public void checkHolesForFix(){
 		ArrayList<BlockPos> balloonHoleCopy = new ArrayList<BlockPos>(balloonHoles);
 		
 		for(BlockPos pos:balloonHoleCopy){

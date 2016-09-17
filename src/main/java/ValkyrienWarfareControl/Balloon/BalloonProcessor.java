@@ -54,7 +54,7 @@ public class BalloonProcessor {
 				}else{
 					if(balloonWalls.contains(pos)){
 						//Just created a hole
-						System.out.println("Hole Created");
+//						System.out.println("Hole Created");
 						balloonHoles.add(pos);
 					}
 				}
@@ -99,9 +99,64 @@ public class BalloonProcessor {
 		}
 		
 		if(foundDetectors.size()!=1){
-			System.out.println("There is a split man!");
-//			processBalloonSplits(foundDetectors);
+//			System.out.println("There is a split man!");
+			doSplitting(foundDetectors);
 		}
+	}
+	
+	private void doSplitting(ArrayList<BalloonAirDetector> sectors){
+		
+//		System.out.println("Initial Air Positions is: "+internalAirPositions.size());
+		
+		//Step 1: Identify the largest sector
+		int maxIndex=0,maxSize=0;
+		for(int index = 0;index<sectors.size();index++){
+			BalloonAirDetector detector = sectors.get(index);
+			if(detector.foundSet.size()>maxSize){
+				maxIndex = index;
+				maxSize = detector.foundSet.size();
+			}
+		}
+		
+//		System.out.println("There are this many sectors: "+sectors.size());
+		
+//		System.out.println("The max sector found was "+sectors.get(maxIndex).foundSet.size() +" Blocks big");
+		
+		for(int index = 0;index<sectors.size();index++){
+			BalloonAirDetector detector = sectors.get(index);
+			if(detector.foundSet.size()==maxSize){
+				sectors.remove(detector);
+				break;
+			}
+		}
+		
+		for(BalloonAirDetector detector:sectors){
+			//Remove any positions in this part
+			TIntIterator hashIterator = detector.foundSet.iterator();
+			while(hashIterator.hasNext()){
+				int hash = hashIterator.next();
+				BlockPos fromHash = detector.getPosWithRespectTo(hash, detector.firstBlock);
+				internalAirPositions.remove(fromHash);
+			}
+		}
+		
+		for(BalloonAirDetector detector:sectors){
+			//Remove any positions in this part
+			TIntIterator hashIterator = detector.foundBalloonWalls.iterator();
+			while(hashIterator.hasNext()){
+				int hash = hashIterator.next();
+				BlockPos fromHash = detector.getPosWithRespectTo(hash, detector.firstBlock);
+				
+				BlockPos[] nearbyPositions = getAdjacentPositions(fromHash);
+				
+				if(!doFirstHoleCheck(fromHash,nearbyPositions)){
+//					this.balloonWalls.remove(fromHash);
+				}
+//				internalAirPositions.remove(fromHash);
+			}
+		}
+		
+//		System.out.println("Post Air Positions is: "+internalAirPositions.size());
 	}
 
 	public void checkHolesForFix(){
@@ -110,25 +165,27 @@ public class BalloonProcessor {
 		for(BlockPos pos:balloonHoleCopy){
 			BlockPos[] adjacentPositions = getAdjacentPositions(pos);
 			
-			if(!balloonHoles.contains(pos)){
-				break;
-			}
-			
-			if(doFirstHoleCheck(pos,adjacentPositions)){
-				balloonHoles.remove(pos);
-				break;
-			}
-			if(doSecondHoleCheck(pos,adjacentPositions)){
-				balloonHoles.remove(pos);
-				break;
-			}
-			if(doLastHoleCheck(pos,adjacentPositions)){
-				balloonHoles.remove(pos);
-				break;
+			if(balloonHoles.contains(pos)){
+				if(doFirstHoleCheck(pos,adjacentPositions)){
+					balloonHoles.remove(pos);
+//					break;
+				}else{
+					if(doSecondHoleCheck(pos,adjacentPositions)){
+						balloonHoles.remove(pos);
+//						break;
+					}else{
+						if(doLastHoleCheck(pos,adjacentPositions)){
+							balloonHoles.remove(pos);
+//							break;
+						}
+					}
+					
+				}
+				
 			}
 			//continue the condition check
 		}
-		System.out.println("balloonHoles size is "+balloonHoles.size());
+//		System.out.println("balloonHoles size is "+balloonHoles.size());
 	}
 	
 	//Just check if the hole is even connected to the internal air of the ballon; if not, get rid of it!

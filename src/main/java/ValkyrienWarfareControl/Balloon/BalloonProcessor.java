@@ -9,7 +9,6 @@ import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import gnu.trove.iterator.TIntIterator;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
 
@@ -26,6 +25,9 @@ public class BalloonProcessor {
 	public Vector currentBalloonCenter = new Vector();
 	public int currentBalloonSize;
 	
+	//This determines thrust given, affected by burners and holes
+	public double balloonTemperature;
+	
 	public BalloonProcessor(PhysicsWrapperEntity parent,HashSet<BlockPos> balloonWalls,HashSet<BlockPos> internalAirPositons){
 		this.parent = parent;
 		this.balloonWalls = balloonWalls;
@@ -34,7 +36,24 @@ public class BalloonProcessor {
 		updateBalloonCenter();
 	}
 	
-
+	public Vector getBalloonForce(){
+		Vector forceVector = new Vector();
+		//TODO: Do math here
+		return forceVector;
+	}
+	
+	public Vector getInBodyPosition(){
+		Vector inBodyWO = new Vector(currentBalloonCenter);
+		//Move the vector into global coordinates
+		parent.wrapping.coordTransform.fromLocalToGlobal(inBodyWO);
+		//Now subtract the position of the parent Center of Mass (Still in global coords)
+		inBodyWO.X-=parent.posX;
+		inBodyWO.Y-=parent.posY;
+		inBodyWO.Z-=parent.posZ;
+		
+		return inBodyWO;
+	}
+	
 	public void processBlockUpdates(ArrayList<BlockPos> updates){
 		checkHolesForFix();
 		for(BlockPos pos:updates){
@@ -100,20 +119,19 @@ public class BalloonProcessor {
 		
 		if(foundDetectors.size()!=1){
 //			System.out.println("There is a split man!");
+			//TODO: In the future, add support for splitting balloons into multiple sections here
 			doSplitting(foundDetectors);
 		}
 	}
 	
 	private void doSplitting(ArrayList<BalloonAirDetector> sectors){
-		
 //		System.out.println("Initial Air Positions is: "+internalAirPositions.size());
 		
 		//Step 1: Identify the largest sector
-		int maxIndex=0,maxSize=0;
+		int maxSize=0;
 		for(int index = 0;index<sectors.size();index++){
 			BalloonAirDetector detector = sectors.get(index);
 			if(detector.foundSet.size()>maxSize){
-				maxIndex = index;
 				maxSize = detector.foundSet.size();
 			}
 		}
@@ -140,7 +158,7 @@ public class BalloonProcessor {
 			}
 		}
 		
-		for(BalloonAirDetector detector:sectors){
+		/*for(BalloonAirDetector detector:sectors){
 			//Remove any positions in this part
 			TIntIterator hashIterator = detector.foundBalloonWalls.iterator();
 			while(hashIterator.hasNext()){
@@ -154,36 +172,28 @@ public class BalloonProcessor {
 				}
 //				internalAirPositions.remove(fromHash);
 			}
-		}
+		}*/
 		
 //		System.out.println("Post Air Positions is: "+internalAirPositions.size());
 	}
 
 	public void checkHolesForFix(){
 		ArrayList<BlockPos> balloonHoleCopy = new ArrayList<BlockPos>(balloonHoles);
-		
 		for(BlockPos pos:balloonHoleCopy){
 			BlockPos[] adjacentPositions = getAdjacentPositions(pos);
-			
 			if(balloonHoles.contains(pos)){
 				if(doFirstHoleCheck(pos,adjacentPositions)){
 					balloonHoles.remove(pos);
-//					break;
 				}else{
 					if(doSecondHoleCheck(pos,adjacentPositions)){
 						balloonHoles.remove(pos);
-//						break;
 					}else{
 						if(doLastHoleCheck(pos,adjacentPositions)){
 							balloonHoles.remove(pos);
-//							break;
 						}
 					}
-					
 				}
-				
 			}
-			//continue the condition check
 		}
 //		System.out.println("balloonHoles size is "+balloonHoles.size());
 	}

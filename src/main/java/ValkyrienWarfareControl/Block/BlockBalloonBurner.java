@@ -21,7 +21,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
-public class BlockBalloonBurner extends Block implements ITileEntityProvider,IBlockForceProvider{
+public class BlockBalloonBurner extends Block implements ITileEntityProvider{
 
 	public BlockBalloonBurner(Material materialIn) {
 		super(materialIn);
@@ -63,29 +63,6 @@ public class BlockBalloonBurner extends Block implements ITileEntityProvider,IBl
 		return new BalloonBurnerTileEntity();
 	}
 
-	@Override
-	public Vector getBlockForce(World world, BlockPos pos, IBlockState state, Entity shipEntity, double secondsToApply) {
-		BalloonBurnerTileEntity tileEnt = getTileEntity(world,pos,state,shipEntity);
-		if(tileEnt!=null){
-			return tileEnt.getBlockForce(world, pos, state, shipEntity, secondsToApply);
-		}
-		return null;
-	}
-
-	@Override
-	public boolean isForceLocalCoords(World world, BlockPos pos, IBlockState state, double secondsToApply) {
-		return false;
-	}
-
-	@Override
-	public Vector getBlockForcePosition(World world, BlockPos pos, IBlockState state, Entity shipEntity, double secondsToApply) {
-		BalloonBurnerTileEntity tileEnt = getTileEntity(world,pos,state,shipEntity);
-		if(tileEnt!=null){
-			return tileEnt.getBlockForcePosition(world, pos, state, shipEntity, secondsToApply);
-		}
-		return null;
-	}
-	
 	private BalloonBurnerTileEntity getTileEntity(World world, BlockPos pos, IBlockState state, Entity shipEntity){
 		PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity) shipEntity;
 		PhysicsObject obj = wrapper.wrapping;

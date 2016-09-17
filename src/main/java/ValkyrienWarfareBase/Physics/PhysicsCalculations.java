@@ -16,12 +16,11 @@ import ValkyrienWarfareBase.PhysCollision.WorldPhysicsCollider;
 import ValkyrienWarfareBase.PhysicsManagement.CoordTransformObject;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
-import ValkyrienWarfareControl.TileEntity.AntiGravEngineTileEntity;
+import ValkyrienWarfareControl.Balloon.BalloonProcessor;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -274,6 +273,13 @@ public class PhysicsCalculations {
 //				FMLLog.getLogger().warn("BLOCK "+blockAt.getUnlocalizedName()+" didn't have its force properly registered; COMPLAIN TO MOD DEV!!!");
 			}
 			
+		}
+		
+		for(BalloonProcessor balloon:parent.balloonManager.balloonProcessors){
+			Vector balloonForce = balloon.getBalloonForce();
+			Vector balloonCenterInBody = balloon.getInBodyPosition();
+			
+			addForceAtPoint(balloonCenterInBody,balloonForce,crossVector);
 		}
 
 		convertTorqueToVelocity();

@@ -28,7 +28,7 @@ public class PhysicsTickHandler{
 //				Collections.shuffle(wrapper.wrapping.physicsProcessor.activeForcePositions);
 			}
 		}else{
-			boolean didSplitOccur = false;
+			/*boolean didSplitOccur = false;
 			for(PhysicsWrapperEntity wrapper:physicsEntities){
 				if(wrapper.wrapping.processPotentialSplitting()){
 					didSplitOccur = true;
@@ -54,7 +54,7 @@ public class PhysicsTickHandler{
 				wrapper.wrapping.coordTransform.setPrevMatrices();
 				wrapper.wrapping.updateChunkCache();
 //				Collections.shuffle(wrapper.wrapping.physicsProcessor.activeForcePositions);
-			}
+			}*/
 		}
 		
 //		System.out.println(physicsEntities.size());

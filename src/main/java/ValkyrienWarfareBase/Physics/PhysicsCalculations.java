@@ -192,8 +192,10 @@ public class PhysicsCalculations {
 
 	public void rawPhysTickPostCol(){
 		if(parent.doPhysics){
-			applyLinearVelocity();
 			applyAngularVelocity();
+		}
+		if(parent.doPhysics){
+			applyLinearVelocity();
 		}
 	}
 	
@@ -276,10 +278,14 @@ public class PhysicsCalculations {
 		}
 		
 		for(BalloonProcessor balloon:parent.balloonManager.balloonProcessors){
-			Vector balloonForce = balloon.getBalloonForce();
-			Vector balloonCenterInBody = balloon.getInBodyPosition();
+			balloon.tickBalloonTemperatures(physTickSpeed,this);
 			
-			addForceAtPoint(balloonCenterInBody,balloonForce,crossVector);
+			Vector balloonForce = balloon.getBalloonForce(physTickSpeed,this);
+			Vector balloonCenterInBody = balloon.getForceCenter();
+			
+			BigBastardMath.getBodyPosWithOrientation(balloonCenterInBody, centerOfMass, parent.coordTransform.lToWRotation,inBodyWO);
+			
+			addForceAtPoint(inBodyWO,balloonForce,crossVector);
 		}
 
 		convertTorqueToVelocity();
@@ -345,7 +351,10 @@ public class PhysicsCalculations {
 			wrapperEnt.roll=(float)Math.toDegrees(radians[2]);
 			coordTrans.updateAllTransforms();
 		}else{
-			wrapperEnt.isDead=true;
+//			wrapperEnt.isDead=true;
+			wrapperEnt.wrapping.doPhysics = false;
+			linearMomentum = new Vector();
+			angularVelocity = new Vector();
 			System.out.println(angularVelocity);
 			System.out.println("Rotational Error?");
 		}

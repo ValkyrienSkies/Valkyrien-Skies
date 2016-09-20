@@ -98,6 +98,8 @@ public class PhysicsObject {
 	
 	public ShipBalloonManager balloonManager;
 	
+	private boolean chunksLoaded = false;
+	
 	public PhysicsObject(PhysicsWrapperEntity host){
 		wrapper = host;
 		worldObj = host.worldObj;
@@ -110,6 +112,10 @@ public class PhysicsObject {
 	}
 	
 	public void onSetBlockState(IBlockState oldState,IBlockState newState,BlockPos posAt){
+		if(!chunksLoaded){
+			return;
+		}
+		
 		boolean isOldAir = oldState==null||oldState.getBlock().equals(Blocks.AIR);
 		boolean isNewAir = newState==null||newState.getBlock().equals(Blocks.AIR);
 		
@@ -154,6 +160,10 @@ public class PhysicsObject {
 	}
 	
 	public void destroy(){
+		if(!chunksLoaded){
+			return;
+		}
+		
 		wrapper.setDead();
 		ArrayList<EntityPlayerMP> watchersCopy = (ArrayList<EntityPlayerMP>) watchingPlayers.clone();
 		for(EntityPlayerMP wachingPlayer:watchersCopy){
@@ -435,6 +445,9 @@ public class PhysicsObject {
 	}
 	
 	public void onPostTick(){
+		if(!chunksLoaded){
+			return;
+		}
 		tickQueuedForces();
 		if(!worldObj.isRemote){
 			balloonManager.onPostTick();
@@ -443,7 +456,7 @@ public class PhysicsObject {
 	}
 	
 	//Returns true if splitting happened
-	public boolean processPotentialSplitting(){
+	/*public boolean processPotentialSplitting(){
 		if(blocksChanged){
 			blocksChanged = false;
 		}else{
@@ -511,7 +524,7 @@ public class PhysicsObject {
 		}
 		
 		return hasSplit;
-	}
+	}*/
 	
 	public void tickQueuedForces(){
 		for(int i=0;i<queuedPhysForces.size();i++){
@@ -757,6 +770,7 @@ public class PhysicsObject {
 		}
 		loadClaimedChunks();
 		physicsProcessor.readFromNBTTag(compound);
+		chunksLoaded = true;
 	}
 	
 	public void readSpawnData(ByteBuf additionalData){

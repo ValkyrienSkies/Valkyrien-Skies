@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareBase.Physics.PhysicsCalculations;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import gnu.trove.iterator.TIntIterator;
 import net.minecraft.block.Block;
@@ -26,7 +27,7 @@ public class BalloonProcessor {
 	public int currentBalloonSize;
 	
 	//This determines thrust given, affected by burners and holes
-	public double balloonTemperature;
+	private double balloonTemperature = 295D;
 	
 	public BalloonProcessor(PhysicsWrapperEntity parent,HashSet<BlockPos> balloonWalls,HashSet<BlockPos> internalAirPositons){
 		this.parent = parent;
@@ -36,22 +37,66 @@ public class BalloonProcessor {
 		updateBalloonCenter();
 	}
 	
-	public Vector getBalloonForce(){
-		Vector forceVector = new Vector();
+	public Vector getBalloonForce(double secondsToSimulate,PhysicsCalculations processor){
+		Vector forceVector = new Vector(processor.gravity);
+		
+		double displacedMass = Math.max(getBalloonAirMassAtAmbient()-getBalloonAirMass(),0D);
+		
 		//TODO: Do math here
+		forceVector.multiply(-displacedMass);
+		
+//		System.out.println(forceVector.Y);
+		
 		return forceVector;
 	}
 	
-	public Vector getInBodyPosition(){
-		Vector inBodyWO = new Vector(currentBalloonCenter);
-		//Move the vector into global coordinates
-		parent.wrapping.coordTransform.fromLocalToGlobal(inBodyWO);
-		//Now subtract the position of the parent Center of Mass (Still in global coords)
-		inBodyWO.X-=parent.posX;
-		inBodyWO.Y-=parent.posY;
-		inBodyWO.Z-=parent.posZ;
+	//TODO: This doesnt work
+	public Vector getForceCenter(){
+		Vector adjustedCenter = new Vector(currentBalloonCenter);
 		
-		return inBodyWO;
+		return adjustedCenter;
+	}
+	
+	public void tickBalloonTemperatures(double secondsToSimulate,PhysicsCalculations processor){
+//		balloonTemperature = 300D;
+	}
+	
+	/**
+	 * Gas Mass in Grams! Gas Temp in Celcius!
+	 * @param gasMass
+	 * @param gasTemp
+	 */
+	public void addGasAtTemp(double gasMass, double gasTemp){
+		double currentMass = getBalloonAirMass();
+		
+		double currentTemp = getBalloonTemperature();
+		
+		double temperatureKg = currentMass*currentTemp + gasMass*(gasTemp-currentTemp);
+		
+		balloonTemperature = temperatureKg/getBalloonAirMass();
+	}
+	
+	public double getBalloonAirMassAtAmbient(){
+		double airMassAtAtmosphere = 15.25D;
+		
+		return airMassAtAtmosphere*internalAirPositions.size();
+		
+	}
+	
+	public double getBalloonAirMass(){
+		double ambientTemperature = 295;
+		
+		double massRatio = ambientTemperature/getBalloonTemperature();
+		
+		return massRatio * getBalloonAirMassAtAmbient();
+	}
+	
+	/**
+	 * This returns a temperature in Kelvin
+	 * @return
+	 */
+	public double getBalloonTemperature(){
+		return balloonTemperature;
 	}
 	
 	public void processBlockUpdates(ArrayList<BlockPos> updates){

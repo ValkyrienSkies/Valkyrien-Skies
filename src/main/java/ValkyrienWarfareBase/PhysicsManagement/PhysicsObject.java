@@ -98,8 +98,6 @@ public class PhysicsObject {
 	
 	public ShipBalloonManager balloonManager;
 	
-	private boolean chunksLoaded = false;
-	
 	public PhysicsObject(PhysicsWrapperEntity host){
 		wrapper = host;
 		worldObj = host.worldObj;
@@ -112,10 +110,7 @@ public class PhysicsObject {
 	}
 	
 	public void onSetBlockState(IBlockState oldState,IBlockState newState,BlockPos posAt){
-		if(!chunksLoaded){
-			return;
-		}
-		
+
 		boolean isOldAir = oldState==null||oldState.getBlock().equals(Blocks.AIR);
 		boolean isNewAir = newState==null||newState.getBlock().equals(Blocks.AIR);
 		
@@ -160,10 +155,7 @@ public class PhysicsObject {
 	}
 	
 	public void destroy(){
-		if(!chunksLoaded){
-			return;
-		}
-		
+
 		wrapper.setDead();
 		ArrayList<EntityPlayerMP> watchersCopy = (ArrayList<EntityPlayerMP>) watchingPlayers.clone();
 		for(EntityPlayerMP wachingPlayer:watchersCopy){
@@ -437,7 +429,9 @@ public class PhysicsObject {
 	}
 	
 	public void onTick(){
-		
+		if(!worldObj.isRemote){
+			balloonManager.onPostTick();
+		}
 	}
 	
 	public void queueForce(PhysicsQueuedForce toQueue){
@@ -445,13 +439,8 @@ public class PhysicsObject {
 	}
 	
 	public void onPostTick(){
-		if(!chunksLoaded){
-			return;
-		}
 		tickQueuedForces();
-		if(!worldObj.isRemote){
-			balloonManager.onPostTick();
-		}
+		
 		explodedPositionsThisTick.clear();
 	}
 	
@@ -770,7 +759,6 @@ public class PhysicsObject {
 		}
 		loadClaimedChunks();
 		physicsProcessor.readFromNBTTag(compound);
-		chunksLoaded = true;
 	}
 	
 	public void readSpawnData(ByteBuf additionalData){
@@ -803,6 +791,7 @@ public class PhysicsObject {
 		renderer.updateOffsetPos(refrenceBlockPos);
 		
 		coordTransform.stack.pushMessage(new PhysWrapperPositionMessage(this));
+
 	}
 	
 	public void writeSpawnData(ByteBuf buffer){

@@ -46,9 +46,10 @@ public class ShipBalloonManager {
 	
 	public void onPostTick(){
 		curBalloonTick++;
-		if(curBalloonTick==20){
-			processRecentBlockChanges();
+		if(curBalloonTick>20){
 			curBalloonTick=0;
+			processRecentBlockChanges();
+//			System.out.println("updated");
 		}
 	}
 	

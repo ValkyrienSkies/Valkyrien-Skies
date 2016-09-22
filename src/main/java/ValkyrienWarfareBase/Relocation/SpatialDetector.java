@@ -108,19 +108,8 @@ public abstract class SpatialDetector{
 
 	public static int getHashWithRespectTo(int realX, int realY, int realZ,BlockPos start){
 		int x = realX-start.getX() + maxRangeHalved;
-		int y = realY-start.getY()+start.getY();
 		int z = realZ-start.getZ() + maxRangeHalved;
-		return y + maxRange*x + maxRangeSquared*z;
-	}
-
-	public static void setCacheGetPosWithRespectTo(int hash,BlockPos start,MutableBlockPos toSet){
-		int y = hash%maxRange;
-		int x = ((hash-y)/maxRange)%maxRange;
-		int z = (hash-(x*maxRange)-y)/(maxRangeSquared);
-		x-=maxRangeHalved;
-		y-=start.getY();
-		z-=maxRangeHalved;
-		toSet.setPos(x, y, z);
+		return realY + maxRange*x + maxRangeSquared*z;
 	}
 
 	public static BlockPos getPosWithRespectTo(int hash,BlockPos start){
@@ -128,9 +117,8 @@ public abstract class SpatialDetector{
 		int x = ((hash-y)/maxRange)%maxRange;
 		int z = (hash-(x*maxRange)-y)/(maxRangeSquared);
 		x-=maxRangeHalved;
-		y-=start.getY();
 		z-=maxRangeHalved;
-		return new BlockPos(x+start.getX(),y+start.getY(),z+start.getZ());
+		return new BlockPos(x+start.getX(),y,z+start.getZ());
 	}
 	
 	public static void setPosWithRespectTo(int hash,BlockPos start,MutableBlockPos toSet){
@@ -138,9 +126,8 @@ public abstract class SpatialDetector{
 		int x = ((hash-y)/maxRange)%maxRange;
 		int z = (hash-(x*maxRange)-y)/(maxRangeSquared);
 		x-=maxRangeHalved;
-		y-=start.getY();
 		z-=maxRangeHalved;
-		toSet.setPos(x+start.getX(),y+start.getY(),z+start.getZ());
+		toSet.setPos(x+start.getX(),y,z+start.getZ());
 	}
 	
 	public ArrayList<BlockPos> getBlockPosArrayList(){

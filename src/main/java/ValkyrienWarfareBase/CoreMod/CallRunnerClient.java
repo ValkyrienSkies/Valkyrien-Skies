@@ -10,6 +10,7 @@ import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.Proxy.ClientProxy;
+import ValkyrienWarfareBase.Render.CameraHijacker;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockChest;
 import net.minecraft.block.BlockEnderChest;
@@ -21,8 +22,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleManager;
+import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
 import net.minecraft.client.renderer.DestroyBlockProgress;
+import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.Tessellator;
@@ -34,17 +37,137 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 
 public class CallRunnerClient extends CallRunner{
 
+	public static void onOrientCamera(EntityRenderer renderer, float partialTicks)
+    {
+		Entity entity = renderer.mc.getRenderViewEntity();
+        float f = entity.getEyeHeight();
+        double d0 = entity.prevPosX + (entity.posX - entity.prevPosX) * (double)partialTicks;
+        double d1 = entity.prevPosY + (entity.posY - entity.prevPosY) * (double)partialTicks + (double)f;
+        double d2 = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * (double)partialTicks;
+
+        if (entity instanceof EntityLivingBase && ((EntityLivingBase)entity).isPlayerSleeping())
+        {
+            f = (float)((double)f + 1.0D);
+            GlStateManager.translate(0.0F, 0.3F, 0.0F);
+
+            if (!renderer.mc.gameSettings.debugCamEnable)
+            {
+                BlockPos blockpos = new BlockPos(entity);
+                IBlockState iblockstate = renderer.mc.theWorld.getBlockState(blockpos);
+                net.minecraftforge.client.ForgeHooksClient.orientBedCamera(renderer.mc.theWorld, blockpos, iblockstate, entity);
+
+                GlStateManager.rotate(entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks + 180.0F, 0.0F, -1.0F, 0.0F);
+                GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, -1.0F, 0.0F, 0.0F);
+            }
+        }
+        else if (renderer.mc.gameSettings.thirdPersonView > 0)
+        {
+        	PhysicsWrapperEntity cameraEntity = CameraHijacker.getMountedWrapperEntity();
+        	
+            double d3 = (double)(renderer.thirdPersonDistancePrev + (4.0F - renderer.thirdPersonDistancePrev) * partialTicks);
+
+            if(cameraEntity!=null){
+            	d3 = CameraHijacker.getThirdPersonViewDist();
+            }
+            
+            if (renderer.mc.gameSettings.debugCamEnable)
+            {
+                GlStateManager.translate(0.0F, 0.0F, (float)(-d3));
+            }
+            else
+            {
+                float f1 = entity.rotationYaw;
+                float f2 = entity.rotationPitch;
+
+                if (renderer.mc.gameSettings.thirdPersonView == 2)
+                {
+                    f2 += 180.0F;
+                }
+
+                double d4 = (double)(-MathHelper.sin(f1 * 0.017453292F) * MathHelper.cos(f2 * 0.017453292F)) * d3;
+                double d5 = (double)(MathHelper.cos(f1 * 0.017453292F) * MathHelper.cos(f2 * 0.017453292F)) * d3;
+                double d6 = (double)(-MathHelper.sin(f2 * 0.017453292F)) * d3;
+
+                for (int i = 0; i < 8; ++i)
+                {
+                    float f3 = (float)((i & 1) * 2 - 1);
+                    float f4 = (float)((i >> 1 & 1) * 2 - 1);
+                    float f5 = (float)((i >> 2 & 1) * 2 - 1);
+                    f3 = f3 * 0.1F;
+                    f4 = f4 * 0.1F;
+                    f5 = f5 * 0.1F;
+                    
+                    RayTraceResult raytraceresult = CameraHijacker.rayTraceExcludingWrapper(renderer.mc.theWorld,new Vec3d(d0 + (double)f3, d1 + (double)f4, d2 + (double)f5), new Vec3d(d0 - d4 + (double)f3 + (double)f5, d1 - d6 + (double)f4, d2 - d5 + (double)f5),false,false,false,cameraEntity);
+
+                    if (raytraceresult != null)
+                    {
+                        double d7 = raytraceresult.hitVec.distanceTo(new Vec3d(d0, d1, d2));
+
+                        if (d7 < d3)
+                        {
+                            d3 = d7;
+                        }
+                    }
+                }
+
+                if (renderer.mc.gameSettings.thirdPersonView == 2)
+                {
+                    GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
+                }
+
+                GlStateManager.rotate(entity.rotationPitch - f2, 1.0F, 0.0F, 0.0F);
+                GlStateManager.rotate(entity.rotationYaw - f1, 0.0F, 1.0F, 0.0F);
+                GlStateManager.translate(0.0F, 0.0F, (float)(-d3));
+                GlStateManager.rotate(f1 - entity.rotationYaw, 0.0F, 1.0F, 0.0F);
+                GlStateManager.rotate(f2 - entity.rotationPitch, 1.0F, 0.0F, 0.0F);
+            }
+        }
+        else
+        {
+            GlStateManager.translate(0.0F, 0.0F, 0.05F);
+        }
+
+        if (!renderer.mc.gameSettings.debugCamEnable)
+        {
+            float yaw = entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks + 180.0F;
+            float pitch = entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks;
+            float roll = 0.0F;
+            if (entity instanceof EntityAnimal)
+            {
+                EntityAnimal entityanimal = (EntityAnimal)entity;
+                yaw = entityanimal.prevRotationYawHead + (entityanimal.rotationYawHead - entityanimal.prevRotationYawHead) * partialTicks + 180.0F;
+            }
+            IBlockState state = ActiveRenderInfo.getBlockStateAtEntityViewpoint(renderer.mc.theWorld, entity, partialTicks);
+            net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup event = new net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup(renderer, entity, state, partialTicks, yaw, pitch, roll);
+            net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
+            GlStateManager.rotate(event.getRoll(), 0.0F, 0.0F, 1.0F);
+            GlStateManager.rotate(event.getPitch(), 1.0F, 0.0F, 0.0F);
+            GlStateManager.rotate(event.getYaw(), 0.0F, 1.0F, 0.0F);
+        }
+
+        GlStateManager.translate(0.0F, -f, 0.0F);
+        d0 = entity.prevPosX + (entity.posX - entity.prevPosX) * (double)partialTicks;
+        d1 = entity.prevPosY + (entity.posY - entity.prevPosY) * (double)partialTicks + (double)f;
+        d2 = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * (double)partialTicks;
+        renderer.cloudFog = renderer.mc.renderGlobal.hasCloudFog(d0, d1, d2, partialTicks);
+//		renderer.orientCamera(partialTicks);
+    }
+	
 	public static void onMarkBlocksForUpdate(ViewFrustum frustrum,int p_187474_1_, int p_187474_2_, int p_187474_3_, int p_187474_4_, int p_187474_5_, int p_187474_6_, boolean requiresImmediateUpdate){
 		frustrum.markBlocksForUpdate(p_187474_1_, p_187474_2_, p_187474_3_, p_187474_4_, p_187474_5_, p_187474_6_, requiresImmediateUpdate);
 		

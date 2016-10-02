@@ -6,6 +6,8 @@ import ValkyrienWarfareControl.Block.BlockAntiGravEngine;
 import ValkyrienWarfareControl.Block.BlockBalloonBurner;
 import ValkyrienWarfareControl.Block.BlockDopedEtherium;
 import ValkyrienWarfareControl.Block.BlockHovercraftController;
+import ValkyrienWarfareControl.FullBalloonControl.ManualShipControllerBlock;
+import ValkyrienWarfareControl.FullBalloonControl.ManualShipControllerTileEntity;
 import ValkyrienWarfareControl.GUI.ControlGUIHandler;
 import ValkyrienWarfareControl.Item.ItemSystemLinker;
 import ValkyrienWarfareControl.Network.HovercraftControllerGUIInputHandler;
@@ -49,6 +51,7 @@ public class ValkyrienWarfareControlMod {
     public Block antigravityEngine;
     public Block dopedEtherium;
     public Block balloonBurner;
+    public Block manualController;
     
     public Item systemLinker;
     
@@ -83,18 +86,21 @@ public class ValkyrienWarfareControlMod {
     	antigravityEngine = new BlockAntiGravEngine(Material.IRON).setHardness(8f).setUnlocalizedName("antigravengine").setUnlocalizedName("antigravengine").setRegistryName(ValkyrienWarfareMod.MODID, "antigravengine").setCreativeTab(CreativeTabs.TRANSPORTATION);
     	dopedEtherium = new BlockDopedEtherium(Material.GLASS).setHardness(4f).setUnlocalizedName("dopedetherium").setRegistryName(MODID, "dopedetherium").setCreativeTab(CreativeTabs.TRANSPORTATION);
     	balloonBurner = new BlockBalloonBurner(Material.IRON).setHardness(4f).setUnlocalizedName("ballonburner").setRegistryName(MODID, "ballonburner").setCreativeTab(CreativeTabs.TRANSPORTATION);
+    	manualController = new ManualShipControllerBlock(Material.IRON).setHardness(4f).setUnlocalizedName("manualshipcontroller").setRegistryName(MODID, "manualshipcontroller").setCreativeTab(CreativeTabs.TRANSPORTATION);
     	
     	GameRegistry.registerBlock(basicEngine);
     	GameRegistry.registerBlock(basicHoverController);
     	GameRegistry.registerBlock(antigravityEngine);
     	GameRegistry.registerBlock(dopedEtherium);
     	GameRegistry.registerBlock(balloonBurner);
+    	GameRegistry.registerBlock(manualController);
     }
     
     private void registerTileEntities(FMLStateEvent event){
     	TileEntity.addMapping(TileEntityHoverController.class, "tilehovercontroller");
     	TileEntity.addMapping(AntiGravEngineTileEntity.class, "tileantigravengine");
     	TileEntity.addMapping(BalloonBurnerTileEntity.class, "tileballoonburner");
+    	TileEntity.addMapping(ManualShipControllerTileEntity.class,"tilemanualshipcontroller");
     }
 
     private void registerItems(FMLStateEvent event){

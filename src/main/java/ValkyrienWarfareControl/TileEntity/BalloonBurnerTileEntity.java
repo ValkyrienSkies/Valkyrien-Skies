@@ -7,10 +7,11 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class BalloonBurnerTileEntity extends TileEntity{
+public class BalloonBurnerTileEntity extends TileEntity implements ITickable{
 
 	public BalloonProcessor balloon;
 	
@@ -47,5 +48,11 @@ public class BalloonBurnerTileEntity extends TileEntity{
     public NBTTagCompound writeToNBT(NBTTagCompound compound){
         return super.writeToNBT(compound);
     }
+
+	@Override
+	public void update() {
+//		System.out.println("works");
+		
+	}
 	
 }

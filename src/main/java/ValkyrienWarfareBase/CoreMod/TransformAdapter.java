@@ -48,6 +48,7 @@ public class TransformAdapter extends ClassVisitor{
 	private static final String RawExplosionName = "net/minecraft/world/Explosion";
 	private static final String RawEntityLivingBaseName = "net/minecraft/entity/EntityLivingBase";
 	private static final String RawViewFrustumName = "net/minecraft/client/renderer/ViewFrustum";
+	private static final String RawEntityRendererName = "net/minecraft/client/renderer/EntityRenderer";
 	
 	private static final String IteratorName = "java/util/Iterator";
 	private static final String PredicateName = "com/google/common/base/Predicate";
@@ -83,6 +84,7 @@ public class TransformAdapter extends ClassVisitor{
 	private final String ExplosionName;
 	private final String EntityLivingBaseName;
 	private final String ViewFrustumName;
+	private final String EntityRendererName;
 	
 //	private boolean correctDesc,correctName,correctSuperClass;
 
@@ -120,9 +122,16 @@ public class TransformAdapter extends ClassVisitor{
 		ExplosionName = getRuntimeClassName(RawExplosionName);
 		EntityLivingBaseName = getRuntimeClassName(RawEntityLivingBaseName);
 		ViewFrustumName = getRuntimeClassName(RawViewFrustumName);
+		EntityRendererName = getRuntimeClassName(RawEntityRendererName);
 	}
 
 	public boolean runTransformer(String calledName,String calledDesc,String calledOwner,MethodVisitor mv){
+		
+		if(isMethod(calledDesc,"(F)V", calledName,EntityRendererName,"orientCamera","RENAMEME",calledOwner)){
+			mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onOrientCamera", String.format( "(L%s;F)V", EntityRendererName ) );
+			return false;
+		}
+		
 		if(isMethod(calledDesc,"(L"+BlockPosName+";)L"+BlockPosName+";",calledName,WorldClassName,"getPrecipitationHeight","RENAMEME",calledOwner)){
 			mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onGetPrecipitationHeight", String.format( "(L%s;L"+BlockPosName+";)L"+BlockPosName+";", WorldClassName ) );
 			return false;

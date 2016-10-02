@@ -59,7 +59,17 @@ public class BalloonProcessor {
 	public void tickBalloonTemperatures(double secondsToSimulate,PhysicsCalculations processor){
 		balloonTemperature = 320D;
 		
+		processBalloonCooling(secondsToSimulate);
 //		System.out.println(internalAirPositions.size());
+	}
+	
+	private void processBalloonCooling(double secondsToSimulate){
+		
+		for(BlockPos holes:balloonHoles){
+			
+		}
+		
+		
 	}
 	
 	/**
@@ -80,16 +90,33 @@ public class BalloonProcessor {
 	public double getBalloonAirMassAtAmbient(){
 		double airMassAtAtmosphere = 15.25D;
 		
-		return airMassAtAtmosphere*internalAirPositions.size();
+		return airMassAtAtmosphere*getAmbientPressure()*internalAirPositions.size();
 		
 	}
 	
 	public double getBalloonAirMass(){
-		double ambientTemperature = 295;
-		
-		double massRatio = ambientTemperature/getBalloonTemperature();
+		double massRatio = getAmbientTemperature()/getBalloonTemperature();
 		
 		return massRatio * getBalloonAirMassAtAmbient();
+	}
+	
+	public double getAmbientTemperature(){
+		return 295D;
+	}
+	
+	/**
+	 * @return Returns the ambient pressure in Atmosphere units
+	 */
+	public double getAmbientPressure(){
+		Vector centerPos = new Vector((minX+maxX)/2D,(minY+maxY)/2D,(minZ+maxZ)/2D);
+		
+		parent.wrapping.coordTransform.fromLocalToGlobal(centerPos);
+		
+		double yPos = centerPos.Y;
+		
+		double pressure = 60D/yPos;
+		
+		return Math.pow(pressure, .25D);
 	}
 	
 	/**

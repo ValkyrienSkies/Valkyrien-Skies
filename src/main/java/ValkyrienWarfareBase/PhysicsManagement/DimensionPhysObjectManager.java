@@ -3,6 +3,7 @@ package ValkyrienWarfareBase.PhysicsManagement;
 import java.util.HashMap;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
+import ValkyrienWarfareBase.Render.CameraHijacker;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -46,6 +47,8 @@ public HashMap<World,WorldPhysObjectManager> managerPerWorld;
 			getManagerForWorld(world).physicsEntities.clear();
 		}
 		managerPerWorld.remove(world);
+//		System.out.println("cleared Mounting Entity");
+		CameraHijacker.mountedEntity = null;
 	}
 	
 	/**

@@ -3,7 +3,7 @@ package ValkyrienWarfareBase.PhysicsManagement;
 import java.util.HashMap;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
-import ValkyrienWarfareBase.Render.CameraHijacker;
+import ValkyrienWarfareControl.PilotShipManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -48,7 +48,7 @@ public HashMap<World,WorldPhysObjectManager> managerPerWorld;
 		}
 		managerPerWorld.remove(world);
 //		System.out.println("cleared Mounting Entity");
-		CameraHijacker.mountedEntity = null;
+		PilotShipManager.mountedEntity = null;
 	}
 	
 	/**
@@ -58,7 +58,7 @@ public HashMap<World,WorldPhysObjectManager> managerPerWorld;
 	 * @return
 	 */
 	public PhysicsWrapperEntity getObjectManagingChunk(Chunk chunk){
-		if(ValkyrienWarfareMod.chunkManager.isChunkInShipRange(chunk.worldObj, chunk.xPosition, chunk.zPosition)){
+		if(ValkyrienWarfareMod.chunkManager.isChunkInShipRange(chunk.worldObj, chunk.xPosition, chunk.zPosition)){	
 			return getManagerForWorld(chunk.worldObj).getManagingObjectForChunk(chunk);
 		}
 		return null;

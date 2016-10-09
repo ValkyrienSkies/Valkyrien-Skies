@@ -153,7 +153,6 @@ public class CustomNetHandlerPlayServer extends NetHandlerPlayServer{
         	super.processPlayerDigging(packetIn);
         	playerEntity.rotationYaw = playerYaw;
         	playerEntity.rotationPitch = playerPitch;RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform,wrapper.wrapping.coordTransform.lToWRotation, playerEntity);
-        	
         }else{
         	super.processPlayerDigging(packetIn);
         }

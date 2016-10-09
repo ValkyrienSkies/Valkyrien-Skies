@@ -77,6 +77,7 @@ public class WorldPhysicsCollider {
 		TIntIterator intIterator = cachedPotentialHits.iterator();
 		
 		while(intIterator.hasNext()){
+			//Converts the int to a mutablePos
 			SpatialDetector.setPosWithRespectTo(intIterator.next(), centerPotentialHit, mutablePos);
 			
 			inWorld.X = mutablePos.getX()+.5; inWorld.Y = mutablePos.getY()+.5; inWorld.Z = mutablePos.getZ()+.5;

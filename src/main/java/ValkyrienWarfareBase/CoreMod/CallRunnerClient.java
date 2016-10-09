@@ -10,7 +10,7 @@ import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.Proxy.ClientProxy;
-import ValkyrienWarfareBase.Render.CameraHijacker;
+import ValkyrienWarfareControl.PilotShipManager;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockChest;
 import net.minecraft.block.BlockEnderChest;
@@ -77,12 +77,12 @@ public class CallRunnerClient extends CallRunner{
         }
         else if (renderer.mc.gameSettings.thirdPersonView > 0)
         {
-        	PhysicsWrapperEntity cameraEntity = CameraHijacker.getMountedWrapperEntity();
+        	PhysicsWrapperEntity cameraEntity = PilotShipManager.getMountedWrapperEntity();
         	
             double d3 = (double)(renderer.thirdPersonDistancePrev + (4.0F - renderer.thirdPersonDistancePrev) * partialTicks);
 
             if(cameraEntity!=null){
-            	d3 = CameraHijacker.getThirdPersonViewDist();
+            	d3 = PilotShipManager.getThirdPersonViewDist();
             }
             
             if (renderer.mc.gameSettings.debugCamEnable)
@@ -112,7 +112,7 @@ public class CallRunnerClient extends CallRunner{
                     f4 = f4 * 0.1F;
                     f5 = f5 * 0.1F;
                     
-                    RayTraceResult raytraceresult = CameraHijacker.rayTraceExcludingWrapper(renderer.mc.theWorld,new Vec3d(d0 + (double)f3, d1 + (double)f4, d2 + (double)f5), new Vec3d(d0 - d4 + (double)f3 + (double)f5, d1 - d6 + (double)f4, d2 - d5 + (double)f5),false,false,false,cameraEntity);
+                    RayTraceResult raytraceresult = PilotShipManager.rayTraceExcludingWrapper(renderer.mc.theWorld,new Vec3d(d0 + (double)f3, d1 + (double)f4, d2 + (double)f5), new Vec3d(d0 - d4 + (double)f3 + (double)f5, d1 - d6 + (double)f4, d2 - d5 + (double)f5),false,false,false,cameraEntity);
 
                     if (raytraceresult != null)
                     {

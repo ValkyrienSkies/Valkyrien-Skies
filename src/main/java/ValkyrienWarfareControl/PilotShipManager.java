@@ -1,4 +1,4 @@
-package ValkyrienWarfareBase.Render;
+package ValkyrienWarfareControl;
 
 import java.util.List;
 
@@ -6,13 +6,14 @@ import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
+import ValkyrienWarfareControl.Network.PilotControlsMessage;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.RayTraceResult.Type;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class CameraHijacker {
+public class PilotShipManager {
 
 	//NOTE: THIS VALUE MUST ALWAYS BE CLEARED UPON WORLD UNLOAD, OTHERWISE IT CREATES A MEMEORY LEAK!
 	public static PhysicsWrapperEntity mountedEntity;
@@ -22,6 +23,10 @@ public class CameraHijacker {
 			return 4D;
 		}
 		return 14D;
+	}
+	
+	public static boolean isPlayerPilotingShip(){
+		return getMountedWrapperEntity()!=null;
 	}
 	
 	public static PhysicsWrapperEntity getMountedWrapperEntity(){
@@ -68,5 +73,12 @@ public class CameraHijacker {
 		}
 		return vanillaTrace;
     }
+	
+	public static void sendPilotKeysToServer(){
+		PilotControlsMessage keyMessage = new PilotControlsMessage();
+		keyMessage.assignKeyBooleans();
+		
+		ValkyrienWarfareControlMod.controlNetwork.sendToServer(keyMessage);
+	}
 	
 }

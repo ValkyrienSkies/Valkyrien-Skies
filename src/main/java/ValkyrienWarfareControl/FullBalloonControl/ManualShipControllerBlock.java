@@ -2,7 +2,7 @@ package ValkyrienWarfareControl.FullBalloonControl;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
-import ValkyrienWarfareBase.Render.CameraHijacker;
+import ValkyrienWarfareControl.PilotShipManager;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
@@ -28,7 +28,7 @@ public class ManualShipControllerBlock extends Block implements ITileEntityProvi
 			PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldIn, pos);
 			if(wrapper!=null){
 //				double cameraRadius = 30D;
-				CameraHijacker.mountedEntity = wrapper;
+				PilotShipManager.mountedEntity = wrapper;
 			}
 		}
 		

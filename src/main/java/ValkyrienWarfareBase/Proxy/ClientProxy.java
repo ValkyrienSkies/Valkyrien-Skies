@@ -1,6 +1,7 @@
 package ValkyrienWarfareBase.Proxy;
 
 import ValkyrienWarfareBase.EventsClient;
+import ValkyrienWarfareBase.KeyHandler;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Math.Quaternion;
@@ -21,6 +22,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 public class ClientProxy extends CommonProxy{
 
 	EventsClient eventsClient = new EventsClient();
+	KeyHandler keyEvents = new KeyHandler();
 	public static ICamera lastCamera;
 	
 	@Override
@@ -33,6 +35,7 @@ public class ClientProxy extends CommonProxy{
     public void init(FMLInitializationEvent e) {
 		super.init(e);
 		MinecraftForge.EVENT_BUS.register(eventsClient);
+		MinecraftForge.EVENT_BUS.register(keyEvents);
         registerBlockItem(ValkyrienWarfareMod.physicsInfuser);
     }
 

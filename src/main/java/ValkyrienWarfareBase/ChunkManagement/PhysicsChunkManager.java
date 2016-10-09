@@ -52,11 +52,8 @@ public class PhysicsChunkManager {
 	
 	//Warning: This may end up becoming an issue in future, possibly move this to a variable in the Chunk class
 	public boolean isChunkInShipRange(int x,int z,boolean isClient){
-		int nextChunkX = xChunkStartingPos+nextChunkSetKey+maxChunkRadius;
-		int nextChunkZ = zChunkStartingPos+maxChunkRadius;
-		
-		boolean xInRange = (x<nextChunkX&&x>=(xChunkStartingPos-maxChunkRadius))||isClient;
-		boolean zInRange = z<nextChunkZ&&z>=(zChunkStartingPos-maxChunkRadius*2);
+		boolean xInRange = x>=(xChunkStartingPos-maxChunkRadius*2);
+		boolean zInRange = z>=(zChunkStartingPos-maxChunkRadius*2);
 		return xInRange&&zInRange;
 	}
 

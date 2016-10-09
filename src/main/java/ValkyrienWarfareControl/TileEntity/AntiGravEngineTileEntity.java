@@ -27,6 +27,9 @@ public class AntiGravEngineTileEntity extends TileEntity{
 		if(controllerPos.equals(BlockPos.ORIGIN)){
 			return null;
 		}
+		if(!shipEntity.wrapping.ownsChunk(controllerPos.getX()>>4, controllerPos.getZ()>>4)){
+			return null;
+		}
 		IBlockState controllerState = shipEntity.wrapping.VKChunkCache.getBlockState(controllerPos);
 		TileEntity tileEnt = shipEntity.wrapping.VKChunkCache.getTileEntity(controllerPos);
 		if(!(controllerState.getBlock() instanceof BlockHovercraftController)){

@@ -12,6 +12,8 @@ import ValkyrienWarfareControl.GUI.ControlGUIHandler;
 import ValkyrienWarfareControl.Item.ItemSystemLinker;
 import ValkyrienWarfareControl.Network.HovercraftControllerGUIInputHandler;
 import ValkyrienWarfareControl.Network.HovercraftControllerGUIInputMessage;
+import ValkyrienWarfareControl.Network.PilotControlsMessage;
+import ValkyrienWarfareControl.Network.PilotControlsMessageHandler;
 import ValkyrienWarfareControl.TileEntity.AntiGravEngineTileEntity;
 import ValkyrienWarfareControl.TileEntity.BalloonBurnerTileEntity;
 import ValkyrienWarfareControl.TileEntity.TileEntityHoverController;
@@ -119,6 +121,7 @@ public class ValkyrienWarfareControlMod {
     private void registerNetworks(FMLStateEvent event){
     	controlNetwork = NetworkRegistry.INSTANCE.newSimpleChannel("controlNetwork");
     	controlNetwork.registerMessage(HovercraftControllerGUIInputHandler.class, HovercraftControllerGUIInputMessage.class, 0, Side.SERVER);
+    	controlNetwork.registerMessage(PilotControlsMessageHandler.class, PilotControlsMessage.class, 1, Side.SERVER);
     }
     
 }

@@ -2,7 +2,9 @@ package ValkyrienWarfareBase.PhysicsManagement;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -11,14 +13,12 @@ import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.ChunkManagement.ChunkSet;
-import ValkyrienWarfareBase.CoreMod.CallRunner;
 import ValkyrienWarfareBase.Interaction.FixedEntityData;
 import ValkyrienWarfareBase.Physics.BlockForce;
 import ValkyrienWarfareBase.Physics.PhysicsCalculations;
 import ValkyrienWarfareBase.Physics.PhysicsQueuedForce;
 import ValkyrienWarfareBase.PhysicsManagement.Network.PhysWrapperPositionMessage;
 import ValkyrienWarfareBase.Relocation.DetectorManager;
-import ValkyrienWarfareBase.Relocation.ShipBlockPosFinder;
 import ValkyrienWarfareBase.Relocation.SpatialDetector;
 import ValkyrienWarfareBase.Relocation.VWChunkCache;
 import ValkyrienWarfareBase.Render.PhysObjectRenderManager;
@@ -97,6 +97,8 @@ public class PhysicsObject {
 	public PlayerChunkMapEntry[][] claimedChunksEntries;
 	
 	public ShipBalloonManager balloonManager;
+	
+	public HashMap<Integer,Vector> entityLocalPositions = new HashMap<Integer,Vector>();
 	
 	public PhysicsObject(PhysicsWrapperEntity host){
 		wrapper = host;
@@ -741,6 +743,7 @@ public class PhysicsObject {
 				compound.setBoolean("CC:"+row+":"+column, curArray[column]);
 			}
 		}
+		NBTUtils.writeEntityPositionHashMapToNBT("entityPosHashMap", entityLocalPositions, compound);
 		physicsProcessor.writeToNBTTag(compound);
 	}
 	
@@ -758,6 +761,7 @@ public class PhysicsObject {
 			}
 		}
 		loadClaimedChunks();
+		entityLocalPositions = NBTUtils.readEntityPositionMap("entityPosHashMap", compound);
 		physicsProcessor.readFromNBTTag(compound);
 	}
 	

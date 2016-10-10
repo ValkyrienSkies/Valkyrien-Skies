@@ -3,7 +3,9 @@ package ValkyrienWarfareBase;
 import org.lwjgl.input.Keyboard;
 
 import ValkyrienWarfareControl.PilotShipManager;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.entity.Entity;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
@@ -21,10 +23,10 @@ public class KeyHandler {
 	public static KeyBinding airshipBackward = new KeyBinding("Airship Backward", Keyboard.KEY_S, keybindIdentifyer);
 	public static KeyBinding airshipLeft = new KeyBinding("Airship Turn Left", Keyboard.KEY_A, keybindIdentifyer);
 	public static KeyBinding airshipRight = new KeyBinding("Airship Turn Right", Keyboard.KEY_D, keybindIdentifyer);
-	public static KeyBinding airshipDown = new KeyBinding("Airship Down", Keyboard.KEY_LSHIFT, keybindIdentifyer);
+	public static KeyBinding airshipDown = new KeyBinding("Airship Down", Keyboard.KEY_X, keybindIdentifyer);
 	
 	//Dismount Key
-	public static KeyBinding airshipDismount = new KeyBinding("Airship Dismount", Keyboard.KEY_K, keybindIdentifyer);
+	public static KeyBinding airshipDismount = new KeyBinding("Airship Dismount", Keyboard.KEY_LSHIFT, keybindIdentifyer);
 	
 	static{
 		ClientRegistry.registerKeyBinding(airshipUp);
@@ -42,7 +44,15 @@ public class KeyHandler {
 		if (event.side == Side.SERVER) return;
 		if (event.phase == Phase.START){
 			if(PilotShipManager.isPlayerPilotingShip()){
-				PilotShipManager.sendPilotKeysToServer();
+//				if(airshipDismount.isKeyDown()){
+//					PilotShipManager.dismountPlayer();
+//				}else{
+				Entity player = Minecraft.getMinecraft().thePlayer;
+				
+				player.setPosition(player.posX,player.posY,player.posZ);
+					
+					PilotShipManager.sendPilotKeysToServer();
+//				}
 			}
 		}
 	}

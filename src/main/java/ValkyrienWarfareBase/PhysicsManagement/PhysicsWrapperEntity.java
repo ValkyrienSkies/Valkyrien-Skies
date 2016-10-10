@@ -2,6 +2,8 @@ package ValkyrienWarfareBase.PhysicsManagement;
 
 import javax.annotation.Nullable;
 
+import ValkyrienWarfareBase.API.RotationMatrices;
+import ValkyrienWarfareBase.API.Vector;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -54,6 +56,17 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 		}
 //		super.onUpdate();
 		wrapping.onTick();
+	}
+	
+	@Override
+	public void updatePassenger(Entity passenger){
+		Vector passengerPosition = new Vector(passenger.posX,passenger.posY,passenger.posZ);
+		RotationMatrices.applyTransform(wrapping.coordTransform.prevwToLTransform, passengerPosition);
+		RotationMatrices.applyTransform(wrapping.coordTransform.lToWTransform, passengerPosition);
+//		passenger.posX = passengerPosition.X;
+//		passenger.posY = passengerPosition.Y;
+//		passenger.posZ = passengerPosition.Z;
+		passenger.dismountRidingEntity();
 	}
 	
 	@Override

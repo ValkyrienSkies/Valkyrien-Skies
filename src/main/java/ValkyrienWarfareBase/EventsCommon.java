@@ -3,6 +3,7 @@ package ValkyrienWarfareBase;
 import ValkyrienWarfareBase.Interaction.CustomNetHandlerPlayServer;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsTickHandler;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
+import ValkyrienWarfareControl.PilotShipManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
@@ -67,6 +68,8 @@ public class EventsCommon {
 	public void onWorldUnload(WorldEvent.Unload event){
 		if(!event.getWorld().isRemote){
 			ValkyrienWarfareMod.chunkManager.removeWorld(event.getWorld());
+		}else{
+			PilotShipManager.dismountPlayer();
 		}
 		ValkyrienWarfareMod.physicsManager.removeWorld(event.getWorld());
 	}

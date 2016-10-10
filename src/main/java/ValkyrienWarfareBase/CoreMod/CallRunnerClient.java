@@ -9,6 +9,7 @@ import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
+import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
 import ValkyrienWarfareBase.Proxy.ClientProxy;
 import ValkyrienWarfareControl.PilotShipManager;
 import net.minecraft.block.Block;
@@ -47,6 +48,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.RayTraceResult.Type;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 
@@ -112,8 +114,53 @@ public class CallRunnerClient extends CallRunner{
                     f4 = f4 * 0.1F;
                     f5 = f5 * 0.1F;
                     
-                    RayTraceResult raytraceresult = PilotShipManager.rayTraceExcludingWrapper(renderer.mc.theWorld,new Vec3d(d0 + (double)f3, d1 + (double)f4, d2 + (double)f5), new Vec3d(d0 - d4 + (double)f3 + (double)f5, d1 - d6 + (double)f4, d2 - d5 + (double)f5),false,false,false,cameraEntity);
-
+                    //Theres some sort of strange java bug here; I'll just avoid calling the method and inline it myself!
+//                    RayTraceResult raytraceresult = PilotShipManager.rayTraceExcludingWrapper(renderer.mc.theWorld,new Vec3d(d0 + (double)f3, d1 + (double)f4, d2 + (double)f5), new Vec3d(d0 - d4 + (double)f3 + (double)f5, d1 - d6 + (double)f4, d2 - d5 + (double)f5),false,false,false,cameraEntity);
+                    
+                    RayTraceResult raytraceresult;
+                    
+                    if(PilotShipManager.getMountedWrapperEntity()==null){
+                    	raytraceresult = CallRunner.onRayTraceBlocks(Minecraft.getMinecraft().theWorld,new Vec3d(d0 + (double)f3, d1 + (double)f4, d2 + (double)f5), new Vec3d(d0 - d4 + (double)f3 + (double)f5, d1 - d6 + (double)f4, d2 - d5 + (double)f5),false,false,false);
+                    }else{
+	                    Vec3d vec31 = new Vec3d(d0 + (double)f3, d1 + (double)f4, d2 + (double)f5);
+	                    Vec3d vec32 = new Vec3d(d0 - d4 + (double)f3 + (double)f5, d1 - d6 + (double)f4, d2 - d5 + (double)f5);
+	                    
+	                    raytraceresult = renderer.mc.theWorld.rayTraceBlocks(vec31, vec32, false, false, false);
+	            		WorldPhysObjectManager physManager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(renderer.mc.theWorld);
+	            		AxisAlignedBB playerRangeBB = new AxisAlignedBB(vec31.xCoord-1D,vec31.yCoord-1D,vec31.zCoord-1D,vec31.xCoord+1D,vec31.yCoord+1D,vec31.zCoord+1D);
+	            		List<PhysicsWrapperEntity> nearbyShips = physManager.getNearbyPhysObjects(playerRangeBB);
+	            		boolean changed = false;
+	            		Vec3d playerEyesPos = vec31;
+	                    Vec3d playerReachVector = vec32.subtract(vec31);
+	                    double reachDistance = playerReachVector.lengthVector();
+	            		double worldResultDistFromPlayer = 420D;
+	            		if(raytraceresult!=null&&raytraceresult.hitVec!=null){
+	            			worldResultDistFromPlayer = raytraceresult.hitVec.distanceTo(vec31);
+	            		}
+	
+	            		for(PhysicsWrapperEntity wrapper:nearbyShips){
+	            			if(PilotShipManager.getMountedWrapperEntity()!=null&&wrapper.getEntityId()!=PilotShipManager.getMountedWrapperEntity().getEntityId()){
+	            	            playerEyesPos = vec31;
+	            	            playerReachVector = vec32.subtract(vec31);
+	            	            
+	            	            //Transform the coordinate system for the player eye pos
+	            	            playerEyesPos = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.RwToLTransform, playerEyesPos);
+	            	            playerReachVector = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.RwToLRotation, playerReachVector);
+	            	            Vec3d playerEyesReachAdded = playerEyesPos.addVector(playerReachVector.xCoord * reachDistance, playerReachVector.yCoord * reachDistance, playerReachVector.zCoord * reachDistance);
+	            	            RayTraceResult resultInShip = renderer.mc.theWorld.rayTraceBlocks(playerEyesPos, playerEyesReachAdded, false, false, false);
+	            	            if(resultInShip!=null&&resultInShip.hitVec!=null&&resultInShip.typeOfHit==Type.BLOCK){
+	            		            double shipResultDistFromPlayer = resultInShip.hitVec.distanceTo(playerEyesPos);
+	            		            if(shipResultDistFromPlayer<worldResultDistFromPlayer){
+	            		            	worldResultDistFromPlayer = shipResultDistFromPlayer;
+	            		            	resultInShip.hitVec = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.RlToWTransform, resultInShip.hitVec);
+	            		            	raytraceresult = resultInShip;
+	            		            }
+	            	            }
+	            			}
+	            		}
+	                    
+                    }
+                    
                     if (raytraceresult != null)
                     {
                         double d7 = raytraceresult.hitVec.distanceTo(new Vec3d(d0, d1, d2));

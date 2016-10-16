@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 import ValkyrienWarfareBase.API.Vector;
 import net.minecraft.nbt.NBTTagCompound;
@@ -85,11 +86,13 @@ public class NBTUtils {
 		double[] entityY = new double[entityLocalPositions.size()];
 		double[] entityZ = new double[entityLocalPositions.size()];
 		
-		Iterator<Integer> keyIterator = entityLocalPositions.keySet().iterator();
+		Iterator<Entry<Integer,Vector>> inputs = entityLocalPositions.entrySet().iterator();
+
 		int cont = 0;
-		while(keyIterator.hasNext()){
-			entityIds[cont] = keyIterator.next();
-			Vector vec = entityLocalPositions.get(entityIds[cont]);
+		while(inputs.hasNext()){
+			Entry<Integer,Vector> currentEntry = inputs.next();
+			entityIds[cont] = currentEntry.getKey();
+			Vector vec = currentEntry.getValue();
 			entityX[cont] = vec.X;entityY[cont] = vec.Y;entityZ[cont] = vec.Z;
 			cont++;
 		}
@@ -134,4 +137,23 @@ public class NBTUtils {
    	    }
    	    return doubles;
    	}
+   	
+   	public static byte[] toByteArray(int[] intArray){
+   		int times = Integer.SIZE / Byte.SIZE;
+   		byte[] bytes = new byte[intArray.length * times];
+   	    for(int i=0;i<intArray.length;i++){
+   	        ByteBuffer.wrap(bytes, i*times, times).putInt(intArray[i]);
+   	    }
+   	    return bytes;
+   	}
+   	
+   	public static int[] toIntArray(byte[] byteArray){
+   		int times = Integer.SIZE / Byte.SIZE;
+   	    int[] doubles = new int[byteArray.length / times];
+   	    for(int i=0;i<doubles.length;i++){
+   	        doubles[i] = ByteBuffer.wrap(byteArray, i*times, times).getInt();
+   	    }
+   	    return doubles;
+   	}
+   	
 }

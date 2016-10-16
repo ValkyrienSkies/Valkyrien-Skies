@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -60,13 +61,38 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 	
 	@Override
 	public void updatePassenger(Entity passenger){
-		Vector passengerPosition = new Vector(passenger.posX,passenger.posY,passenger.posZ);
-		RotationMatrices.applyTransform(wrapping.coordTransform.prevwToLTransform, passengerPosition);
-		RotationMatrices.applyTransform(wrapping.coordTransform.lToWTransform, passengerPosition);
-//		passenger.posX = passengerPosition.X;
-//		passenger.posY = passengerPosition.Y;
-//		passenger.posZ = passengerPosition.Z;
-		passenger.dismountRidingEntity();
+//		System.out.println("entity being updated");
+		Vector inLocal = wrapping.getLocalPositionForEntity(passenger);
+//		if(worldObj.isRemote){
+//			System.out.println(wrapping.entityLocalPositions.size());
+//		}
+		
+		if(inLocal!=null){
+			Vector newEntityPosition = new Vector(inLocal);
+			wrapping.coordTransform.fromLocalToGlobal(newEntityPosition);
+			passenger.posX = newEntityPosition.X;
+			passenger.posY = newEntityPosition.Y;
+			passenger.posZ = newEntityPosition.Z;
+		}
+	}
+	
+	@Override
+	protected void addPassenger(Entity passenger){
+//		System.out.println("entity just mounted");
+		super.addPassenger(passenger);
+	}
+	
+	@Override
+	protected void removePassenger(Entity toRemove){
+		System.out.println("entity just dismounted");
+		super.removePassenger(toRemove);
+		if(!worldObj.isRemote){
+			wrapping.unFixEntity(toRemove);
+		}else{
+			//It doesnt matter if I dont remove these terms from client, and things are problematic
+			//if I do; best to leave this commented
+//			wrapping.removeEntityUUID(toRemove.getPersistentID().hashCode());
+		}
 	}
 	
 	@Override

@@ -10,6 +10,8 @@ import ValkyrienWarfareControl.FullBalloonControl.ManualShipControllerBlock;
 import ValkyrienWarfareControl.FullBalloonControl.ManualShipControllerTileEntity;
 import ValkyrienWarfareControl.GUI.ControlGUIHandler;
 import ValkyrienWarfareControl.Item.ItemSystemLinker;
+import ValkyrienWarfareControl.Network.EntityFixMessage;
+import ValkyrienWarfareControl.Network.EntityFixMessageHandler;
 import ValkyrienWarfareControl.Network.HovercraftControllerGUIInputHandler;
 import ValkyrienWarfareControl.Network.HovercraftControllerGUIInputMessage;
 import ValkyrienWarfareControl.Network.PilotControlsMessage;
@@ -122,6 +124,7 @@ public class ValkyrienWarfareControlMod {
     	controlNetwork = NetworkRegistry.INSTANCE.newSimpleChannel("controlNetwork");
     	controlNetwork.registerMessage(HovercraftControllerGUIInputHandler.class, HovercraftControllerGUIInputMessage.class, 0, Side.SERVER);
     	controlNetwork.registerMessage(PilotControlsMessageHandler.class, PilotControlsMessage.class, 1, Side.SERVER);
+    	controlNetwork.registerMessage(EntityFixMessageHandler.class, EntityFixMessage.class, 2, Side.CLIENT);
     }
     
 }

@@ -1,8 +1,9 @@
 package ValkyrienWarfareControl.FullBalloonControl;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
+import ValkyrienWarfareBase.API.RotationMatrices;
+import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
-import ValkyrienWarfareControl.PilotShipManager;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
@@ -13,6 +14,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class ManualShipControllerBlock extends Block implements ITileEntityProvider{
@@ -24,14 +26,30 @@ public class ManualShipControllerBlock extends Block implements ITileEntityProvi
 	@Override
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
     {
-		if(worldIn.isRemote){
+		if(!worldIn.isRemote){
 			PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldIn, pos);
 			if(wrapper!=null){
-//				double cameraRadius = 30D;
-				PilotShipManager.mountedEntity = wrapper;
+				if(playerIn.getLowestRidingEntity()!=wrapper.getLowestRidingEntity()){
+					Vector playerPos = new Vector(playerIn);
+					
+					wrapper.wrapping.coordTransform.fromLocalToGlobal(playerPos);
+					
+					playerIn.posX = playerPos.X;
+					playerIn.posY = playerPos.Y;
+					playerIn.posZ = playerPos.Z;
+					
+					playerIn.startRiding(wrapper);
+					Vector localMountPos = new Vector(pos.getX()+.5D,pos.getY()+.5D,pos.getZ()+.5D);
+					wrapper.wrapping.fixEntity(playerIn, localMountPos);
+					
+					wrapper.wrapping.coordTransform.fromGlobalToLocal(playerPos);
+					
+					playerIn.posX = playerPos.X;
+					playerIn.posY = playerPos.Y;
+					playerIn.posZ = playerPos.Z;
+				}
 			}
 		}
-		
 		
 		return false;
     }

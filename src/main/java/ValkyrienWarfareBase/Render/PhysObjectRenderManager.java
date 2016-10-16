@@ -196,7 +196,7 @@ public class PhysObjectRenderManager {
 	}
 	
 	public void renderEntities(float partialTicks){
-		ArrayList<FixedEntityData> fixedEntities = (ArrayList<FixedEntityData>) parent.fixedEntities.clone();
+		ArrayList<FixedEntityData> fixedEntities = new ArrayList();//ArrayList<FixedEntityData>) parent.fixedEntities.clone();
 		for(FixedEntityData data:fixedEntities){
 			Vector originalEntityPos = new Vector(data.fixed.posX,data.fixed.posY,data.fixed.posZ);
 			Vector originalLastEntityPos = new Vector(data.fixed.lastTickPosX,data.fixed.lastTickPosY,data.fixed.lastTickPosZ);

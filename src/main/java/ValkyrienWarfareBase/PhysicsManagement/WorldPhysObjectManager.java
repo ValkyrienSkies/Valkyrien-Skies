@@ -73,11 +73,11 @@ public class WorldPhysObjectManager {
 	
 	public boolean isEntityFixed(Entity entity){
 		for(PhysicsWrapperEntity wrapper:physicsEntities){
-			for(FixedEntityData fixedData:wrapper.wrapping.fixedEntities){
-				if(fixedData.fixed==entity){
-					return true;
-				}
-			}
+//			for(FixedEntityData fixedData:wrapper.wrapping.fixedEntities){
+//				if(fixedData.fixed==entity){
+//					return true;
+//				}
+//			}
 		}
 		return false;
 	}

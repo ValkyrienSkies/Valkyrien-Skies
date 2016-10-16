@@ -1,10 +1,10 @@
 package ValkyrienWarfareBase.PhysicsManagement;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -13,7 +13,6 @@ import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.ChunkManagement.ChunkSet;
-import ValkyrienWarfareBase.Interaction.FixedEntityData;
 import ValkyrienWarfareBase.Physics.BlockForce;
 import ValkyrienWarfareBase.Physics.PhysicsCalculations;
 import ValkyrienWarfareBase.Physics.PhysicsQueuedForce;
@@ -22,16 +21,20 @@ import ValkyrienWarfareBase.Relocation.DetectorManager;
 import ValkyrienWarfareBase.Relocation.SpatialDetector;
 import ValkyrienWarfareBase.Relocation.VWChunkCache;
 import ValkyrienWarfareBase.Render.PhysObjectRenderManager;
+import ValkyrienWarfareControl.ValkyrienWarfareControlMod;
 import ValkyrienWarfareControl.Balloon.ShipBalloonManager;
+import ValkyrienWarfareControl.Network.EntityFixMessage;
 import gnu.trove.iterator.TIntIterator;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.server.SPacketChunkData;
 import net.minecraft.network.play.server.SPacketUnloadChunk;
 import net.minecraft.server.management.PlayerChunkMap;
@@ -42,7 +45,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.ChunkCache;
 import net.minecraft.world.World;
@@ -88,8 +90,7 @@ public class PhysicsObject {
 	public int detectorID;
 	
 	public boolean blocksChanged = false;
-	public ArrayList<FixedEntityData> fixedEntities = new ArrayList<FixedEntityData>();
-	
+
 	//TODO: Make for re-organizing these to make Ship sizes Dynamic
 	public ChunkSet ownedChunks;
 	public Chunk[][] claimedChunks;
@@ -617,30 +618,9 @@ public class PhysicsObject {
 				}
 			}
 		}
-		ArrayList<FixedEntityData> toRemove = new ArrayList<FixedEntityData>();
-		for(FixedEntityData data:fixedEntities){
-			if(!data.fixed.isSneaking()&&!data.fixed.isDead){
-//				System.out.println("test");
-				Vec3d newPos = RotationMatrices.applyTransform(coordTransform.lToWTransform, data.positionInLocal);
-				data.fixed.setPosition(newPos.xCoord, newPos.yCoord, newPos.zCoord);
-			}else{
-				toRemove.add(data);
-			}		
-		}
-		for(FixedEntityData ent:toRemove){
-			fixedEntities.remove(ent);
-//			ValkyrianWarfareMod.entityFixingManager.unFixEntity(ent);
-		}
+
 	}
-	
-	public void fixEntity(Entity ent){
-		Vector entityPos = new Vector(ent.posX,ent.posY,ent.posZ);
-		RotationMatrices.applyTransform(this.coordTransform.wToLTransform, entityPos);
-		Vec3d inLocal = entityPos.toVec3d();
-		FixedEntityData data = new FixedEntityData(ent, this, inLocal);
-		fixedEntities.add(data);
-	}
-	
+
 	public void updateChunkCache(){
 		BlockPos min = new BlockPos(collisionBB.minX,Math.max(collisionBB.minY,0),collisionBB.minZ);
 		BlockPos max = new BlockPos(collisionBB.maxX,Math.min(collisionBB.maxY, 255),collisionBB.maxZ);
@@ -730,6 +710,45 @@ public class PhysicsObject {
 		}
 	}
 	
+	/**
+	 * ONLY USE THESE 2 METHODS TO EVER ADD/REMOVE ENTITIES, OTHERWISE YOU'LL RUIN EVERYTHING!
+	 * @param toFix
+	 * @param posInLocal
+	 */
+	public void fixEntity(Entity toFix, Vector posInLocal){
+		EntityFixMessage entityFixingMessage = new EntityFixMessage(wrapper,toFix,true,posInLocal);
+		for(EntityPlayerMP watcher:watchingPlayers){
+			ValkyrienWarfareControlMod.controlNetwork.sendTo(entityFixingMessage, watcher);
+		}
+		entityLocalPositions.put(toFix.getPersistentID().hashCode(), posInLocal);
+	}
+	
+	/**
+	 * ONLY USE THESE 2 METHODS TO EVER ADD/REMOVE ENTITIES, OTHERWISE YOU'LL RUIN EVERYTHING!
+	 * @param toFix
+	 * @param posInLocal
+	 */
+	public void unFixEntity(Entity toUnfix){
+		EntityFixMessage entityUnfixingMessage = new EntityFixMessage(wrapper,toUnfix,false,null);
+		for(EntityPlayerMP watcher:watchingPlayers){
+			ValkyrienWarfareControlMod.controlNetwork.sendTo(entityUnfixingMessage, watcher);
+		}
+		entityLocalPositions.remove(toUnfix.getPersistentID().hashCode());
+	}
+	
+	public void fixEntityUUID(int uuidHash, Vector localPos){
+		entityLocalPositions.put(uuidHash, localPos);
+	}
+	
+	public void removeEntityUUID(int uuidHash){
+		entityLocalPositions.remove(uuidHash);
+	}
+	
+	public Vector getLocalPositionForEntity(Entity getPositionFor){
+		int uuidHash = getPositionFor.getPersistentID().hashCode();
+		return entityLocalPositions.get(uuidHash);
+	}
+	
 	public void writeToNBTTag(NBTTagCompound compound){
 		ownedChunks.writeToNBT(compound);
 		NBTUtils.writeVectorToNBT("c", centerCoord, compound);
@@ -766,15 +785,17 @@ public class PhysicsObject {
 	}
 	
 	public void readSpawnData(ByteBuf additionalData){
-		ownedChunks = new ChunkSet(additionalData.readInt(),additionalData.readInt(),additionalData.readInt());
+		PacketBuffer modifiedBuffer = new PacketBuffer(additionalData);
 		
-		wrapper.posX = additionalData.readDouble();
-		wrapper.posY = additionalData.readDouble();
-		wrapper.posZ = additionalData.readDouble();
+		ownedChunks = new ChunkSet(modifiedBuffer.readInt(),modifiedBuffer.readInt(),modifiedBuffer.readInt());
 		
-		wrapper.pitch = additionalData.readDouble();
-		wrapper.yaw = additionalData.readDouble();
-		wrapper.roll = additionalData.readDouble();
+		wrapper.posX = modifiedBuffer.readDouble();
+		wrapper.posY = modifiedBuffer.readDouble();
+		wrapper.posZ = modifiedBuffer.readDouble();
+		
+		wrapper.pitch = modifiedBuffer.readDouble();
+		wrapper.yaw = modifiedBuffer.readDouble();
+		wrapper.roll = modifiedBuffer.readDouble();
 		
 		wrapper.prevPitch = wrapper.pitch;
 		wrapper.prevYaw = wrapper.yaw;
@@ -784,10 +805,10 @@ public class PhysicsObject {
 		wrapper.lastTickPosY = wrapper.posY;
 		wrapper.lastTickPosZ = wrapper.posZ;
 		
-		centerCoord = new Vector(additionalData);
+		centerCoord = new Vector(modifiedBuffer);
 		for(boolean[] array:ownedChunks.chunkOccupiedInLocal){
 			for(int i=0;i<array.length;i++){
-				array[i] = additionalData.readBoolean();
+				array[i] = modifiedBuffer.readBoolean();
 			}
 		}
 		loadClaimedChunks();
@@ -796,26 +817,43 @@ public class PhysicsObject {
 		
 		coordTransform.stack.pushMessage(new PhysWrapperPositionMessage(this));
 
+		try {
+			NBTTagCompound entityFixedPositionNBT = modifiedBuffer.readNBTTagCompoundFromBuffer();
+			entityLocalPositions = NBTUtils.readEntityPositionMap("entityFixedPosMap", entityFixedPositionNBT);
+			if(worldObj.isRemote){
+				System.out.println(entityLocalPositions.containsKey(Minecraft.getMinecraft().thePlayer.getPersistentID().hashCode()));
+				System.out.println(Minecraft.getMinecraft().thePlayer.getPersistentID().hashCode());
+			}
+		} catch (IOException e) {
+			System.err.println("Couldn't load the entityFixedPosNBT; this is really bad.");
+			e.printStackTrace();
+		}
 	}
 	
 	public void writeSpawnData(ByteBuf buffer){
-		buffer.writeInt(ownedChunks.centerX);
-		buffer.writeInt(ownedChunks.centerZ);
-		buffer.writeInt(ownedChunks.radius);
+		PacketBuffer modifiedBuffer = new PacketBuffer(buffer);
 		
-		buffer.writeDouble(wrapper.posX);
-		buffer.writeDouble(wrapper.posY);
-		buffer.writeDouble(wrapper.posZ);
+		modifiedBuffer.writeInt(ownedChunks.centerX);
+		modifiedBuffer.writeInt(ownedChunks.centerZ);
+		modifiedBuffer.writeInt(ownedChunks.radius);
 		
-		buffer.writeDouble(wrapper.pitch);
-		buffer.writeDouble(wrapper.yaw);
-		buffer.writeDouble(wrapper.roll);
-		centerCoord.writeToByteBuf(buffer);
+		modifiedBuffer.writeDouble(wrapper.posX);
+		modifiedBuffer.writeDouble(wrapper.posY);
+		modifiedBuffer.writeDouble(wrapper.posZ);
+		
+		modifiedBuffer.writeDouble(wrapper.pitch);
+		modifiedBuffer.writeDouble(wrapper.yaw);
+		modifiedBuffer.writeDouble(wrapper.roll);
+		centerCoord.writeToByteBuf(modifiedBuffer);
 		for(boolean[] array:ownedChunks.chunkOccupiedInLocal){
 			for(boolean b:array){
-				buffer.writeBoolean(b);
+				modifiedBuffer.writeBoolean(b);
 			}
 		}
+		
+		NBTTagCompound entityFixedPositionNBT = new NBTTagCompound();
+		NBTUtils.writeEntityPositionHashMapToNBT("entityFixedPosMap", entityLocalPositions, entityFixedPositionNBT);
+		modifiedBuffer.writeNBTTagCompoundToBuffer(entityFixedPositionNBT);
 	}
 	
 }

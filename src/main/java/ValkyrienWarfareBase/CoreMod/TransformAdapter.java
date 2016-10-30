@@ -49,6 +49,7 @@ public class TransformAdapter extends ClassVisitor{
 	private static final String RawEntityLivingBaseName = "net/minecraft/entity/EntityLivingBase";
 	private static final String RawViewFrustumName = "net/minecraft/client/renderer/ViewFrustum";
 	private static final String RawEntityRendererName = "net/minecraft/client/renderer/EntityRenderer";
+	private static final String RawFrustumName = "net/minecraft/client/renderer/culling/Frustum";
 	
 	private static final String IteratorName = "java/util/Iterator";
 	private static final String PredicateName = "com/google/common/base/Predicate";
@@ -85,6 +86,7 @@ public class TransformAdapter extends ClassVisitor{
 	private final String EntityLivingBaseName;
 	private final String ViewFrustumName;
 	private final String EntityRendererName;
+	private final String FrustumName;
 	
 //	private boolean correctDesc,correctName,correctSuperClass;
 
@@ -123,9 +125,20 @@ public class TransformAdapter extends ClassVisitor{
 		EntityLivingBaseName = getRuntimeClassName(RawEntityLivingBaseName);
 		ViewFrustumName = getRuntimeClassName(RawViewFrustumName);
 		EntityRendererName = getRuntimeClassName(RawEntityRendererName);
+		FrustumName = getRuntimeClassName(RawFrustumName);
 	}
 
 	public boolean runTransformer(String calledName,String calledDesc,String calledOwner,MethodVisitor mv){
+		if(calledName.equals("rayTraceEyeHitVec")){
+			for(int i=0;i<25;i++){
+				System.out.println(calledOwner + " : " + calledName);
+			}
+		}
+		
+		if(isMethod(calledDesc,"()L"+Vec3dName+";",calledName,EntityClassName,"getLookVec","RENAMEME",calledOwner)){
+			mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onGetLookVec", String.format( "(L%s;)L"+Vec3dName+";", EntityClassName ) );
+			return false;
+		}
 		
 		if(isMethod(calledDesc,"(F)V", calledName,EntityRendererName,"orientCamera","RENAMEME",calledOwner)){
 			mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onOrientCamera", String.format( "(L%s;F)V", EntityRendererName ) );

@@ -73,4 +73,8 @@ public HashMap<World,WorldPhysObjectManager> managerPerWorld;
 		return getManagerForWorld(entity.worldObj).isEntityFixed(entity);
 	}
 	
+	public PhysicsWrapperEntity getShipFixedOnto(Entity entity){
+		return getManagerForWorld(entity.worldObj).getShipFixedOnto(entity);
+	}
+	
 }

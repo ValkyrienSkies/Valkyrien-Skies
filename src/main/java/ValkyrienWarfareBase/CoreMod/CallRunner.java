@@ -51,6 +51,11 @@ import net.minecraftforge.common.DimensionManager;
 
 public class CallRunner {
 
+	public static Vec3d onGetLookVec(Entity entity){
+//		System.out.println("test");
+		return entity.getLookVec();
+	}
+	
 	public static BlockPos onGetPrecipitationHeight(World world,BlockPos pos){
 		BlockPos percipitationHeightPos = world.getPrecipitationHeight(pos);
 		//TODO: Fix this

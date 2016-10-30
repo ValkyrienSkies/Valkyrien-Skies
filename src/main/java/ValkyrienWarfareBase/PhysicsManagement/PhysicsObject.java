@@ -562,7 +562,7 @@ public class PhysicsObject {
 	public void moveEntities(){
 		List<Entity> riders = worldObj.getEntitiesWithinAABB(Entity.class, collisionBB);
 		for(Entity ent:riders){
-			if(!(ent instanceof PhysicsWrapperEntity)){
+			if(!(ent instanceof PhysicsWrapperEntity)&&!ValkyrienWarfareMod.physicsManager.isEntityFixed(ent)){
 				float rotYaw = ent.rotationYaw;
 				float rotPitch = ent.rotationPitch;
 				float prevYaw = ent.prevRotationYaw;
@@ -820,10 +820,10 @@ public class PhysicsObject {
 		try {
 			NBTTagCompound entityFixedPositionNBT = modifiedBuffer.readNBTTagCompoundFromBuffer();
 			entityLocalPositions = NBTUtils.readEntityPositionMap("entityFixedPosMap", entityFixedPositionNBT);
-			if(worldObj.isRemote){
-				System.out.println(entityLocalPositions.containsKey(Minecraft.getMinecraft().thePlayer.getPersistentID().hashCode()));
-				System.out.println(Minecraft.getMinecraft().thePlayer.getPersistentID().hashCode());
-			}
+//			if(worldObj.isRemote){
+//				System.out.println(entityLocalPositions.containsKey(Minecraft.getMinecraft().thePlayer.getPersistentID().hashCode()));
+//				System.out.println(Minecraft.getMinecraft().thePlayer.getPersistentID().hashCode());
+//			}
 		} catch (IOException e) {
 			System.err.println("Couldn't load the entityFixedPosNBT; this is really bad.");
 			e.printStackTrace();

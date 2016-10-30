@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import ValkyrienWarfareBase.API.Vector;
-import ValkyrienWarfareBase.Interaction.FixedEntityData;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
@@ -72,14 +71,21 @@ public class WorldPhysObjectManager {
 	}
 	
 	public boolean isEntityFixed(Entity entity){
-		for(PhysicsWrapperEntity wrapper:physicsEntities){
-//			for(FixedEntityData fixedData:wrapper.wrapping.fixedEntities){
-//				if(fixedData.fixed==entity){
-//					return true;
-//				}
-//			}
+		if(getShipFixedOnto(entity)!=null){
+			return true;
 		}
 		return false;
+	}
+	
+	public PhysicsWrapperEntity getShipFixedOnto(Entity entity){
+		for(PhysicsWrapperEntity wrapper:physicsEntities){
+			if(wrapper.wrapping.entityLocalPositions.containsKey(entity.getPersistentID().hashCode())){
+				if(wrapper.riddenByEntities.contains(entity)){
+					return wrapper;
+				}
+			}
+		}
+		return null;
 	}
 	
 }

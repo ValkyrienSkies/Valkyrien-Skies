@@ -1,5 +1,6 @@
 package ValkyrienWarfareBase.CoreMod;
 
+import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.List;
 
@@ -8,6 +9,7 @@ import org.lwjgl.opengl.GL11;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareBase.Math.Quaternion;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
 import ValkyrienWarfareBase.Proxy.ClientProxy;
@@ -32,6 +34,7 @@ import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.ViewFrustum;
+import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -47,8 +50,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.RayTraceResult.Type;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 
@@ -59,9 +62,30 @@ public class CallRunnerClient extends CallRunner{
 		Entity entity = renderer.mc.getRenderViewEntity();
         float f = entity.getEyeHeight();
         double d0 = entity.prevPosX + (entity.posX - entity.prevPosX) * (double)partialTicks;
-        double d1 = entity.prevPosY + (entity.posY - entity.prevPosY) * (double)partialTicks + (double)f;
+        double d1 = entity.prevPosY + (entity.posY - entity.prevPosY) * (double)partialTicks;
         double d2 = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * (double)partialTicks;
 
+        Vector eyeVector = new Vector(0D,f,0D);
+        
+        PhysicsWrapperEntity fixedOnto = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(entity);
+		if(fixedOnto!=null){
+			Quaternion orientationQuat = fixedOnto.wrapping.renderer.getSmoothRotationQuat(partialTicks);
+			
+			double[] radians = orientationQuat.toRadians();
+			
+			float moddedPitch = (float) Math.toDegrees(radians[0]);
+			float moddedYaw = (float) Math.toDegrees(radians[1]);
+			float moddedRoll = (float) Math.toDegrees(radians[2]);
+			
+			double[] orientationMatrix = RotationMatrices.getRotationMatrix(moddedPitch, moddedYaw, moddedRoll);
+			
+			RotationMatrices.applyTransform(orientationMatrix, eyeVector);
+		}
+		
+		d0+=eyeVector.X;
+		d1+=eyeVector.Y;
+		d2+=eyeVector.Z;
+		
         if (entity instanceof EntityLivingBase && ((EntityLivingBase)entity).isPlayerSleeping())
         {
             f = (float)((double)f + 1.0D);
@@ -119,7 +143,7 @@ public class CallRunnerClient extends CallRunner{
                     
                     RayTraceResult raytraceresult;
                     
-                    if(PilotShipManager.getMountedWrapperEntity()==null){
+                    if(PilotShipManager.getMountedWrapperEntity()==null||true){
                     	raytraceresult = CallRunner.onRayTraceBlocks(Minecraft.getMinecraft().theWorld,new Vec3d(d0 + (double)f3, d1 + (double)f4, d2 + (double)f5), new Vec3d(d0 - d4 + (double)f3 + (double)f5, d1 - d6 + (double)f4, d2 - d5 + (double)f5),false,false,false);
                     }else{
 	                    Vec3d vec31 = new Vec3d(d0 + (double)f3, d1 + (double)f4, d2 + (double)f5);
@@ -202,12 +226,29 @@ public class CallRunnerClient extends CallRunner{
             IBlockState state = ActiveRenderInfo.getBlockStateAtEntityViewpoint(renderer.mc.theWorld, entity, partialTicks);
             net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup event = new net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup(renderer, entity, state, partialTicks, yaw, pitch, roll);
             net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
+            
             GlStateManager.rotate(event.getRoll(), 0.0F, 0.0F, 1.0F);
             GlStateManager.rotate(event.getPitch(), 1.0F, 0.0F, 0.0F);
             GlStateManager.rotate(event.getYaw(), 0.0F, 1.0F, 0.0F);
+            
+    		if(fixedOnto!=null){
+    			Quaternion orientationQuat = fixedOnto.wrapping.renderer.getSmoothRotationQuat(partialTicks);
+    			
+    			double[] radians = orientationQuat.toRadians();
+    			
+    			float moddedPitch = (float) Math.toDegrees(radians[0]);
+    			float moddedYaw = (float) Math.toDegrees(radians[1]);
+    			float moddedRoll = (float) Math.toDegrees(radians[2]);
+    			
+                
+                
+                GlStateManager.rotate(-moddedRoll, 0.0F, 0.0F, 1.0F);
+                GlStateManager.rotate(-moddedYaw, 0.0F, 1.0F, 0.0F);
+                GlStateManager.rotate(-moddedPitch, 1.0F, 0.0F, 0.0F);
+    		}
         }
-
-        GlStateManager.translate(0.0F, -f, 0.0F);
+        
+        GL11.glTranslated(-eyeVector.X, -eyeVector.Y, -eyeVector.Z);
         d0 = entity.prevPosX + (entity.posX - entity.prevPosX) * (double)partialTicks;
         d1 = entity.prevPosY + (entity.posY - entity.prevPosY) * (double)partialTicks + (double)f;
         d2 = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * (double)partialTicks;

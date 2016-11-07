@@ -55,6 +55,7 @@ public class ValkyrienWarfareMod{
     public static int threadCount;
     public static boolean multiThreadedPhysics;
     public static boolean doSplitting = false;
+    public static boolean doShipCollision = false;
     
     public static Block physicsInfuser;
     public static Block physicsInfuserCreative;
@@ -128,10 +129,6 @@ public class ValkyrienWarfareMod{
     	config.load();
     	applyConfig(config);
     	config.save();
-    	if(MultiThreadExecutor!=null){
-        	MultiThreadExecutor.shutdown();
-        }
-    	MultiThreadExecutor = Executors.newFixedThreadPool(threadCount);
     }
 
     public static void applyConfig(Configuration conf){
@@ -139,8 +136,10 @@ public class ValkyrienWarfareMod{
         Property shipTickDelayProperty = config.get(Configuration.CATEGORY_GENERAL, "Ticks Delay Between Client and Server", 1);
         Property missedPacketsTolerance = config.get(Configuration.CATEGORY_GENERAL, "Missed packets threshold", 1);
 //        Property spawnParticlesParticle = config.get(Configuration.CATEGORY_GENERAL, "Ships spawn particles", false);
-        Property useMultiThreadedPhysics = config.get(Configuration.CATEGORY_GENERAL, "Multi-Threaded Physics", true);
+        Property useMultiThreadedPhysics = config.get(Configuration.CATEGORY_GENERAL, "Multi-Threaded Physics", false);
         Property physicsThreads = config.get(Configuration.CATEGORY_GENERAL, "Physics Thread Count", (int)Math.max(1, Runtime.getRuntime().availableProcessors()-2));
+        
+        Property doShipCollisionProperty = config.get(Configuration.CATEGORY_GENERAL, "Enable Ship Collision", false);
         
 //        dynamiclightProperty.setComment("Dynamic Lighting");
         shipTickDelayProperty.setComment("Tick delay between client and server physics; raise if physics look choppy");
@@ -155,9 +154,14 @@ public class ValkyrienWarfareMod{
 //        spawnParticles = spawnParticlesParticle.getBoolean();
         multiThreadedPhysics = useMultiThreadedPhysics.getBoolean();
         threadCount = physicsThreads.getInt();
+        
+        doShipCollision = doShipCollisionProperty.getBoolean();
+        
         if(MultiThreadExecutor!=null){
         	MultiThreadExecutor.shutdown();
         }
-        MultiThreadExecutor = Executors.newFixedThreadPool(threadCount);
+        if(multiThreadedPhysics){
+        	MultiThreadExecutor = Executors.newFixedThreadPool(threadCount);
+        }
     }
 }

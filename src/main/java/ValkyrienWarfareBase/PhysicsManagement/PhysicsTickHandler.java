@@ -69,14 +69,18 @@ public class PhysicsTickHandler{
 				wrapper.wrapping.physicsProcessor.rawPhysTickPreCol(newPhysSpeed, iters);
 			}
 			
-			for(int i=0;i<physicsEntities.size();i++){
-				PhysicsWrapperEntity first = physicsEntities.get(i);
-				for(int j=i+1;j<physicsEntities.size();j++){
-					PhysicsWrapperEntity second = physicsEntities.get(j);
-					if(first.wrapping.collisionBB.intersectsWith(second.wrapping.collisionBB)){
-						first.wrapping.physicsProcessor.shipCollision.doShipCollision(second.wrapping);
+			if(ValkyrienWarfareMod.doShipCollision){
+			
+				for(int i=0;i<physicsEntities.size();i++){
+					PhysicsWrapperEntity first = physicsEntities.get(i);
+					for(int j=i+1;j<physicsEntities.size();j++){
+						PhysicsWrapperEntity second = physicsEntities.get(j);
+						if(first.wrapping.collisionBB.intersectsWith(second.wrapping.collisionBB)){
+							first.wrapping.physicsProcessor.shipCollision.doShipCollision(second.wrapping);
+						}
 					}
 				}
+				
 			}
 			
 			if(ValkyrienWarfareMod.multiThreadedPhysics){

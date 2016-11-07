@@ -166,11 +166,14 @@ public class CoordTransformObject {
 	public void updateParentAABB(){
 		double mnX=0,mnY=0,mnZ=0,mxX=0,mxY=0,mxZ=0;
 		boolean first = true;
+		
+		AxisAlignedBB oneBB = new AxisAlignedBB(0,0,0,1,1,1);
+		
+		Polygon polyFor = new Polygon(oneBB);
+		
 		for(BlockPos pos:parent.blockPositions){
 			
-			AxisAlignedBB bbFor = new AxisAlignedBB(pos.getX(),pos.getY(),pos.getZ(),pos.getX()+1D,pos.getY()+1D,pos.getZ()+1D);
-			
-			Polygon polyFor = new Polygon(bbFor,lToWTransform);
+			polyFor.offsetCornersAndTransform(oneBB, pos.getX(), pos.getY(), pos.getZ(), lToWTransform);
 			
 			for(Vector currentLocation:polyFor.vertices){
 			

@@ -6,6 +6,7 @@ import java.util.Collections;
 import javax.vecmath.Matrix3d;
 
 import ValkyrienWarfareBase.NBTUtils;
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.IBlockForceProvider;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
@@ -366,6 +367,12 @@ public class PhysicsCalculations {
 			wrapperEnt.posX+=(linearMomentum.X*momentMod);
 			wrapperEnt.posY+=(linearMomentum.Y*momentMod);
 			wrapperEnt.posZ+=(linearMomentum.Z*momentMod);
+		}
+		if(wrapperEnt.posY>ValkyrienWarfareMod.shipUpperLimit){
+			wrapperEnt.posY=ValkyrienWarfareMod.shipUpperLimit;
+		}
+		if(wrapperEnt.posY<ValkyrienWarfareMod.shipLowerLimit){
+			wrapperEnt.posY=ValkyrienWarfareMod.shipLowerLimit;
 		}
 	}
 	

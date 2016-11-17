@@ -541,10 +541,10 @@ public class PhysicsObject {
 		lastTickCenterCoord = centerCoord;
 			
 		ShipTransformData toUse = coordTransform.stack.getDataForTick(lastMessageTick);
-			
-		lastMessageTick = toUse.relativeTick;
-			
+		
 		if(toUse!=null){
+			lastMessageTick = toUse.relativeTick;
+			
 			Vector CMDif = toUse.centerOfRotation.getSubtraction(centerCoord);
 			RotationMatrices.applyTransform(coordTransform.lToWRotation, CMDif);
 				

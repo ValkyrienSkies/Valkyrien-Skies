@@ -45,7 +45,7 @@ public class ValkyrienWarfareMod{
 
 	public static final String MODID = "valkyrienwarfare";
     public static final String MODNAME = "Valkyrien Warfare";
-    public static final String MODVER = "0.7s";
+    public static final String MODVER = "0.85a";
 
     public static File configFile;
     public static Configuration config;
@@ -71,6 +71,8 @@ public class ValkyrienWarfareMod{
 	public static double standingTolerance = .42D;
 	public static boolean isObsfucated = false;
 	public static int maxShipSize = 15000;
+	public static double shipUpperLimit = 1000D;
+	public static double shipLowerLimit = -30D;
 	
 	//NOTE: These only calculate physics, so they are only relevant to the Server end
 	public static ExecutorService MultiThreadExecutor;
@@ -141,6 +143,9 @@ public class ValkyrienWarfareMod{
         
         Property doShipCollisionProperty = config.get(Configuration.CATEGORY_GENERAL, "Enable Ship Collision", false);
         
+        Property shipUpperHeightLimit = config.get(Configuration.CATEGORY_GENERAL, "Ship Y-Height Maximum", 1000D);
+        Property shipLowerHeightLimit = config.get(Configuration.CATEGORY_GENERAL, "Ship Y-Height Minimum", -30D);
+        
 //        dynamiclightProperty.setComment("Dynamic Lighting");
         shipTickDelayProperty.setComment("Tick delay between client and server physics; raise if physics look choppy");
         missedPacketsTolerance.setComment("Higher values gaurantee virutally no choppyness, but also comes with a large delay. Only change if you have unstable internet");
@@ -156,6 +161,9 @@ public class ValkyrienWarfareMod{
         threadCount = physicsThreads.getInt();
         
         doShipCollision = doShipCollisionProperty.getBoolean();
+        
+        shipUpperLimit = shipUpperHeightLimit.getDouble();
+        shipLowerLimit = shipLowerHeightLimit.getDouble();
         
         if(MultiThreadExecutor!=null){
         	MultiThreadExecutor.shutdown();

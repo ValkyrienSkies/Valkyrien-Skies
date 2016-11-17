@@ -190,7 +190,11 @@ public class PhysObjectRenderManager {
 		for(BlockPos pos:parent.blockPositions){
 			TileEntity tileEnt = parent.worldObj.getTileEntity(pos);
 			if(tileEnt!=null){
-				TileEntityRendererDispatcher.instance.renderTileEntity(tileEnt, partialTicks, -1);
+				try{
+					TileEntityRendererDispatcher.instance.renderTileEntity(tileEnt, partialTicks, -1);
+				}catch(Exception e){
+//					e.printStackTrace();
+				}
 			}
 		}
 	}

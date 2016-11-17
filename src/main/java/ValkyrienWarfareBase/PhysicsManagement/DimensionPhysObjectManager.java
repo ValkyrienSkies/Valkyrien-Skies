@@ -39,6 +39,9 @@ public HashMap<World,WorldPhysObjectManager> managerPerWorld;
 		if(cachedManager==null||cachedManager.worldObj!=world){
 			cachedManager = managerPerWorld.get(world);
 		}
+		if(cachedManager==null){
+			System.err.println("getManagerForWorld just requested for a World without one!!! Wtf, how does this even Happen Man!?");
+		}
 		return cachedManager;
 	}
 	
@@ -58,6 +61,9 @@ public HashMap<World,WorldPhysObjectManager> managerPerWorld;
 	 * @return
 	 */
 	public PhysicsWrapperEntity getObjectManagingChunk(Chunk chunk){
+		if(chunk==null){
+			return null;
+		}
 		if(ValkyrienWarfareMod.chunkManager.isChunkInShipRange(chunk.worldObj, chunk.xPosition, chunk.zPosition)){	
 			return getManagerForWorld(chunk.worldObj).getManagingObjectForChunk(chunk);
 		}

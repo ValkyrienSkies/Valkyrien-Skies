@@ -467,6 +467,9 @@ public class CallRunner {
 	public static RayTraceResult onRayTraceBlocks(World world,Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock){
 		RayTraceResult vanillaTrace = world.rayTraceBlocks(vec31, vec32, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
 		WorldPhysObjectManager physManager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(world);
+		if(physManager==null){
+			return vanillaTrace;
+		}
 		AxisAlignedBB playerRangeBB = new AxisAlignedBB(vec31.xCoord-1D,vec31.yCoord-1D,vec31.zCoord-1D,vec31.xCoord+1D,vec31.yCoord+1D,vec31.zCoord+1D);
 		List<PhysicsWrapperEntity> nearbyShips = physManager.getNearbyPhysObjects(playerRangeBB);
 		boolean changed = false;

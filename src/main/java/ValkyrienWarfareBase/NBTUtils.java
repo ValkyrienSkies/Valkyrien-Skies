@@ -1,6 +1,10 @@
 package ValkyrienWarfareBase;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 import ValkyrienWarfareBase.API.Vector;
 import net.minecraft.nbt.NBTTagCompound;
@@ -75,4 +79,81 @@ public class NBTUtils {
    		vector.Z = compound.getDouble(name+"Z");
    		return vector;
    	}
+   	
+   	public static final void writeEntityPositionHashMapToNBT(String name,HashMap<Integer, Vector> entityLocalPositions, NBTTagCompound compound){
+   		int[] entityIds = new int[entityLocalPositions.size()];
+		double[] entityX = new double[entityLocalPositions.size()];
+		double[] entityY = new double[entityLocalPositions.size()];
+		double[] entityZ = new double[entityLocalPositions.size()];
+		
+		Iterator<Entry<Integer,Vector>> inputs = entityLocalPositions.entrySet().iterator();
+
+		int cont = 0;
+		while(inputs.hasNext()){
+			Entry<Integer,Vector> currentEntry = inputs.next();
+			entityIds[cont] = currentEntry.getKey();
+			Vector vec = currentEntry.getValue();
+			entityX[cont] = vec.X;entityY[cont] = vec.Y;entityZ[cont] = vec.Z;
+			cont++;
+		}
+		
+		compound.setIntArray(name+"keys", entityIds);
+		
+		compound.setByteArray(name+"valX", toByteArray(entityX));
+		compound.setByteArray(name+"valY", toByteArray(entityY));
+		compound.setByteArray(name+"valZ", toByteArray(entityZ));
+   	}
+   	
+   	public static final HashMap<Integer, Vector> readEntityPositionMap(String name, NBTTagCompound compound){
+   		int[] entityIds = compound.getIntArray(name+"keys");
+   		
+   		double[] entityX = toDoubleArray(compound.getByteArray(name+"valX"));
+   		double[] entityY = toDoubleArray(compound.getByteArray(name+"valY"));
+   		double[] entityZ = toDoubleArray(compound.getByteArray(name+"valZ"));
+   		
+   		HashMap<Integer, Vector> toReturn = new HashMap<Integer, Vector>(entityIds.length+1);
+   		
+   		for(int i=0;i<entityIds.length;i++){
+   			toReturn.put(entityIds[i], new Vector(entityX[i],entityY[i],entityZ[i]));
+   		}
+   		
+   		return toReturn;
+   	}
+   	
+   	public static byte[] toByteArray(double[] doubleArray){
+   	    int times = Double.SIZE / Byte.SIZE;
+   	    byte[] bytes = new byte[doubleArray.length * times];
+   	    for(int i=0;i<doubleArray.length;i++){
+   	        ByteBuffer.wrap(bytes, i*times, times).putDouble(doubleArray[i]);
+   	    }
+   	    return bytes;
+   	}
+
+   	public static double[] toDoubleArray(byte[] byteArray){
+   	    int times = Double.SIZE / Byte.SIZE;
+   	    double[] doubles = new double[byteArray.length / times];
+   	    for(int i=0;i<doubles.length;i++){
+   	        doubles[i] = ByteBuffer.wrap(byteArray, i*times, times).getDouble();
+   	    }
+   	    return doubles;
+   	}
+   	
+   	public static byte[] toByteArray(int[] intArray){
+   		int times = Integer.SIZE / Byte.SIZE;
+   		byte[] bytes = new byte[intArray.length * times];
+   	    for(int i=0;i<intArray.length;i++){
+   	        ByteBuffer.wrap(bytes, i*times, times).putInt(intArray[i]);
+   	    }
+   	    return bytes;
+   	}
+   	
+   	public static int[] toIntArray(byte[] byteArray){
+   		int times = Integer.SIZE / Byte.SIZE;
+   	    int[] doubles = new int[byteArray.length / times];
+   	    for(int i=0;i<doubles.length;i++){
+   	        doubles[i] = ByteBuffer.wrap(byteArray, i*times, times).getInt();
+   	    }
+   	    return doubles;
+   	}
+   	
 }

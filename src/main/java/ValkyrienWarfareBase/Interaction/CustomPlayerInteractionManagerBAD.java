@@ -8,9 +8,9 @@ import net.minecraft.world.World;
  * @author thebest108
  *
  */
-public class CustomPlayerInteractionManager extends PlayerInteractionManager{
+public class CustomPlayerInteractionManagerBAD extends PlayerInteractionManager{
 
-	public CustomPlayerInteractionManager(World worldIn) {
+	public CustomPlayerInteractionManagerBAD(World worldIn) {
 		super(worldIn);
 	}
 

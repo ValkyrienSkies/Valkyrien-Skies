@@ -4,7 +4,9 @@ import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import ValkyrienWarfareBase.API.PhysicsEntityHooks;
 import ValkyrienWarfareBase.Block.BlockPhysicsInfuser;
+import ValkyrienWarfareBase.Block.BlockPhysicsInfuserCreative;
 import ValkyrienWarfareBase.ChunkManagement.DimensionPhysicsChunkManager;
 import ValkyrienWarfareBase.PhysicsManagement.DimensionPhysObjectManager;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
@@ -13,9 +15,11 @@ import ValkyrienWarfareBase.PhysicsManagement.Network.PhysWrapperPositionMessage
 import ValkyrienWarfareBase.Proxy.CommonProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.command.ServerCommandManager;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
@@ -41,7 +45,7 @@ public class ValkyrienWarfareMod{
 
 	public static final String MODID = "valkyrienwarfare";
     public static final String MODNAME = "Valkyrien Warfare";
-    public static final String MODVER = "0.3a";
+    public static final String MODVER = "0.85a";
 
     public static File configFile;
     public static Configuration config;
@@ -50,8 +54,11 @@ public class ValkyrienWarfareMod{
     
     public static int threadCount;
     public static boolean multiThreadedPhysics;
+    public static boolean doSplitting = false;
+    public static boolean doShipCollision = false;
     
     public static Block physicsInfuser;
+    public static Block physicsInfuserCreative;
 
     public static SimpleNetworkWrapper physWrapperNetwork;
 
@@ -61,8 +68,11 @@ public class ValkyrienWarfareMod{
     public static ValkyrienWarfareMod instance;
     
     public static int airStateIndex;
-	public static double standingTolerance = .3D;
+	public static double standingTolerance = .42D;
 	public static boolean isObsfucated = false;
+	public static int maxShipSize = 15000;
+	public static double shipUpperLimit = 1000D;
+	public static double shipLowerLimit = -30D;
 	
 	//NOTE: These only calculate physics, so they are only relevant to the Server end
 	public static ExecutorService MultiThreadExecutor;
@@ -72,8 +82,10 @@ public class ValkyrienWarfareMod{
     	proxy.preInit(event);
     	instance = this;
     	registerBlocks(event);
+    	registerRecipies(event);
     	registerNetworks(event);
     	runConfiguration(event);
+    	PhysicsEntityHooks.methods = new RealMethods();
     }
 
     @EventHandler
@@ -86,15 +98,14 @@ public class ValkyrienWarfareMod{
     public void postInit(FMLPostInitializationEvent event){
     	proxy.postInit(event);
     	airStateIndex = Block.getStateId(Blocks.AIR.getDefaultState());
-    	BlockPhysicsRegistration.registerVanillaBlocksMass();
+    	BlockPhysicsRegistration.registerCustomBlockMasses();
     	BlockPhysicsRegistration.registerVanillaBlockForces();
     }
 
     @EventHandler
     public void serverStart(FMLServerStartingEvent event){
     	MinecraftServer server = event.getServer();
-        ServerCommandManager manager = (ServerCommandManager)server.getCommandManager();
-//        manager.registerCommand(command)
+        ExtraRegistry.registerCommands(server);
     }
     
     private void registerNetworks(FMLStateEvent event){
@@ -103,8 +114,15 @@ public class ValkyrienWarfareMod{
     }
 
     private void registerBlocks(FMLStateEvent event){
-    	physicsInfuser = new BlockPhysicsInfuser(Material.ROCK).setUnlocalizedName("shipblock").setRegistryName(MODID, "shipblock").setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
+    	physicsInfuser = new BlockPhysicsInfuser(Material.ROCK).setHardness(12f).setUnlocalizedName("shipblock").setRegistryName(MODID, "shipblock").setCreativeTab(CreativeTabs.TRANSPORTATION);
+    	physicsInfuserCreative = new BlockPhysicsInfuserCreative(Material.ROCK).setHardness(12f).setUnlocalizedName("shipblockcreative").setRegistryName(MODID, "shipblockcreative").setCreativeTab(CreativeTabs.TRANSPORTATION);;
+    	
     	GameRegistry.registerBlock(physicsInfuser);
+    	GameRegistry.registerBlock(physicsInfuserCreative);
+    }
+    
+    private void registerRecipies(FMLStateEvent event){
+    	GameRegistry.addRecipe(new ItemStack(physicsInfuser), new Object[] {"RRR", "RDR","RRR",'R',Items.REDSTONE, 'D', Item.getItemFromBlock(Blocks.DIAMOND_BLOCK)});
     }
 
     private void runConfiguration(FMLPreInitializationEvent event){
@@ -113,29 +131,45 @@ public class ValkyrienWarfareMod{
     	config.load();
     	applyConfig(config);
     	config.save();
-    	MultiThreadExecutor = Executors.newFixedThreadPool(threadCount);
     }
 
     public static void applyConfig(Configuration conf){
-        Property dynamiclightProperty = config.get(Configuration.CATEGORY_GENERAL, "DynamicLighting", false);
+//        Property dynamiclightProperty = config.get(Configuration.CATEGORY_GENERAL, "DynamicLighting", false);
         Property shipTickDelayProperty = config.get(Configuration.CATEGORY_GENERAL, "Ticks Delay Between Client and Server", 1);
         Property missedPacketsTolerance = config.get(Configuration.CATEGORY_GENERAL, "Missed packets threshold", 1);
-        Property spawnParticlesParticle = config.get(Configuration.CATEGORY_GENERAL, "Ships spawn particles", false);
-        Property useMultiThreadedPhysics = config.get(Configuration.CATEGORY_GENERAL, "Multi-Threaded Physics", true);
-        Property physicsThreads = config.get(Configuration.CATEGORY_GENERAL, "Physics Thread Count", Runtime.getRuntime().availableProcessors());
+//        Property spawnParticlesParticle = config.get(Configuration.CATEGORY_GENERAL, "Ships spawn particles", false);
+        Property useMultiThreadedPhysics = config.get(Configuration.CATEGORY_GENERAL, "Multi-Threaded Physics", false);
+        Property physicsThreads = config.get(Configuration.CATEGORY_GENERAL, "Physics Thread Count", (int)Math.max(1, Runtime.getRuntime().availableProcessors()-2));
         
-        dynamiclightProperty.setComment("Dynamic Lighting");
+        Property doShipCollisionProperty = config.get(Configuration.CATEGORY_GENERAL, "Enable Ship Collision", false);
+        
+        Property shipUpperHeightLimit = config.get(Configuration.CATEGORY_GENERAL, "Ship Y-Height Maximum", 1000D);
+        Property shipLowerHeightLimit = config.get(Configuration.CATEGORY_GENERAL, "Ship Y-Height Minimum", -30D);
+        
+//        dynamiclightProperty.setComment("Dynamic Lighting");
         shipTickDelayProperty.setComment("Tick delay between client and server physics; raise if physics look choppy");
         missedPacketsTolerance.setComment("Higher values gaurantee virutally no choppyness, but also comes with a large delay. Only change if you have unstable internet");
-        spawnParticlesParticle.setComment("Ships spawn particles");
+//        spawnParticlesParticle.setComment("Ships spawn particles");
         useMultiThreadedPhysics.setComment( "Use Multi-Threaded Physics");
-        physicsThreads.setComment( "Number of threads to run physics on; RESTART GAME TO APPLY");
+        physicsThreads.setComment( "Number of threads to run physics on;");
         
-        dynamicLighting = dynamiclightProperty.getBoolean();
+//        dynamicLighting = dynamiclightProperty.getBoolean();
         shipTickDelay = shipTickDelayProperty.getInt()%20;
         maxMissedPackets = missedPacketsTolerance.getInt();
-        spawnParticles = spawnParticlesParticle.getBoolean();
+//        spawnParticles = spawnParticlesParticle.getBoolean();
         multiThreadedPhysics = useMultiThreadedPhysics.getBoolean();
         threadCount = physicsThreads.getInt();
+        
+        doShipCollision = doShipCollisionProperty.getBoolean();
+        
+        shipUpperLimit = shipUpperHeightLimit.getDouble();
+        shipLowerLimit = shipLowerHeightLimit.getDouble();
+        
+        if(MultiThreadExecutor!=null){
+        	MultiThreadExecutor.shutdown();
+        }
+        if(multiThreadedPhysics){
+        	MultiThreadExecutor = Executors.newFixedThreadPool(threadCount);
+        }
     }
 }

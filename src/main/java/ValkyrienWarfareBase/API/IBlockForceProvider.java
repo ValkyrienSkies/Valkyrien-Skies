@@ -20,4 +20,15 @@ public interface IBlockForceProvider {
 	
 	boolean isForceLocalCoords(World world,BlockPos pos,IBlockState state,double secondsToApply);
 	
+	/**
+	 * This method returns null if no changes are needed, however some blocks like the Balloon Burner need to apply their force in a different position
+	 * @param world
+	 * @param pos
+	 * @param state
+	 * @param shipEntity
+	 * @param secondsToApply
+	 * @return
+	 */
+	Vector getBlockForcePosition(World world,BlockPos pos,IBlockState state,Entity shipEntity,double secondsToApply);
+	
 }

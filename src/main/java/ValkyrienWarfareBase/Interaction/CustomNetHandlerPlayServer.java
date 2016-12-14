@@ -3,8 +3,8 @@ package ValkyrienWarfareBase.Interaction;
 import java.lang.reflect.Field;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
+import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
-import ValkyrienWarfareBase.Math.RotationMatrices;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -153,7 +153,6 @@ public class CustomNetHandlerPlayServer extends NetHandlerPlayServer{
         	super.processPlayerDigging(packetIn);
         	playerEntity.rotationYaw = playerYaw;
         	playerEntity.rotationPitch = playerPitch;RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform,wrapper.wrapping.coordTransform.lToWRotation, playerEntity);
-        	
         }else{
         	super.processPlayerDigging(packetIn);
         }

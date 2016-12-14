@@ -3,6 +3,7 @@ package ValkyrienWarfareControl.TileEntity;
 import ValkyrienWarfareBase.NBTUtils;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
+import ValkyrienWarfareControl.Block.BlockHovercraftController;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -14,8 +15,7 @@ public class AntiGravEngineTileEntity extends TileEntity{
 	public BlockPos controllerPos = BlockPos.ORIGIN;
 	public Vector angularThrust = new Vector();
 	public Vector linearThrust = new Vector();
-	public double maxThrust = 5000D;
-	public TileEntityHoverController controller;
+	public double maxThrust = 25000D;
 	
 	private double idealY;
 	
@@ -27,15 +27,27 @@ public class AntiGravEngineTileEntity extends TileEntity{
 		if(controllerPos.equals(BlockPos.ORIGIN)){
 			return null;
 		}
-		controller = (TileEntityHoverController) shipEntity.wrapping.VKChunkCache.getTileEntity(controllerPos);
-		if(controller!=null){
-			return controller.getForceForEngine(this,world,pos,state,shipEntity.wrapping,secondsToApply);
+		if(!shipEntity.wrapping.ownsChunk(controllerPos.getX()>>4, controllerPos.getZ()>>4)){
+			return null;
 		}
-		return null;
+		IBlockState controllerState = shipEntity.wrapping.VKChunkCache.getBlockState(controllerPos);
+		TileEntity tileEnt = shipEntity.wrapping.VKChunkCache.getTileEntity(controllerPos);
+		if(!(controllerState.getBlock() instanceof BlockHovercraftController)){
+			if(tileEnt instanceof TileEntityHoverController){
+				tileEnt.invalidate();
+			}
+			return null;
+		}
+		if(!(tileEnt instanceof TileEntityHoverController)){
+			return null;
+		}
+		TileEntityHoverController controller = (TileEntityHoverController) tileEnt;
+		return controller.getForceForEngine(this,world,pos,state,shipEntity.wrapping,secondsToApply);
 	}
 	
 	public void setController(BlockPos newPos){
 		controllerPos = newPos;
+		markDirty();
 	}
 	
 	public void readFromNBT(NBTTagCompound compound){

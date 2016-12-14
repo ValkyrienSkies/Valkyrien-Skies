@@ -1,5 +1,4 @@
-tile.shipcannon.name=Ship Cannon
-item.generic.name=Generic Item
 tile.shipblock.name=Physics Infuser
-tile.antigravengine.name=Anti Gravity Engine
+tile.shipblockcreative.name=Physics Infuser Creative
+tile.antigravengine.name=Ether Compressor T1
 tile.basichovercraftcontroller.name=Basic Hovercraft Controller

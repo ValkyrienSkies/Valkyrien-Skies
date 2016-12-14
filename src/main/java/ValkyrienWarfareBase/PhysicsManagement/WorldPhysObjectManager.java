@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
+import ValkyrienWarfareBase.API.Vector;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
@@ -23,14 +25,20 @@ public class WorldPhysObjectManager {
 	public ArrayList<Callable<Void>> physCollisonCallables = new ArrayList<Callable<Void>>();
 	public int physIter = 5;
 	public double physSpeed = .05D;
+	public Vector gravity = new Vector(0,-9.8D,0);
 	
 	public WorldPhysObjectManager(World toManage){
 		worldObj = toManage;
 	}
 	
 	public void onLoad(PhysicsWrapperEntity loaded){
-		physicsEntities.add(loaded);
-		physCollisonCallables.add(loaded.wrapping.collisionCallable);
+		if(!loaded.wrapping.fromSplit){
+			physicsEntities.add(loaded);
+			physCollisonCallables.add(loaded.wrapping.collisionCallable);
+		}else{
+			//reset check to prevent strange errors
+			loaded.wrapping.fromSplit = false;
+		}
 	}
 	
 	public void onUnload(PhysicsWrapperEntity loaded){
@@ -48,7 +56,7 @@ public class WorldPhysObjectManager {
 		return null;
 	}
 	
-	public List<PhysicsWrapperEntity> getNearbyPhysObjects(World world,AxisAlignedBB toCheck){
+	public List<PhysicsWrapperEntity> getNearbyPhysObjects(AxisAlignedBB toCheck){
 		ArrayList<PhysicsWrapperEntity> ships = new ArrayList<PhysicsWrapperEntity>();
 		
 		AxisAlignedBB expandedCheck = toCheck.expand(6, 6, 6);
@@ -60,6 +68,24 @@ public class WorldPhysObjectManager {
 		}
 		
 		return ships;
+	}
+	
+	public boolean isEntityFixed(Entity entity){
+		if(getShipFixedOnto(entity)!=null){
+			return true;
+		}
+		return false;
+	}
+	
+	public PhysicsWrapperEntity getShipFixedOnto(Entity entity){
+		for(PhysicsWrapperEntity wrapper:physicsEntities){
+			if(wrapper.wrapping.entityLocalPositions.containsKey(entity.getPersistentID().hashCode())){
+				if(wrapper.riddenByEntities.contains(entity)){
+					return wrapper;
+				}
+			}
+		}
+		return null;
 	}
 	
 }

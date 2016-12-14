@@ -68,6 +68,13 @@ public class VWChunkCache{
         if (cachedChunks[i][j] == null) return null;
         return this.cachedChunks[i][j].getTileEntity(pos, Chunk.EnumCreateEntityType.IMMEDIATE);
     }
+	
+	public boolean containsPos(BlockPos pos){
+		int i = (pos.getX() >> 4) - this.minChunkX;
+        int j = (pos.getZ() >> 4) - this.minChunkZ;
+        if (i < 0 || i >= cachedChunks.length || j < 0 || j >= cachedChunks[i].length) return false;
+        return true;
+	}
 
 	public Chunk getChunkAt(int x,int z){
 		return cachedChunks[x-minChunkX][z-minChunkZ];

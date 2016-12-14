@@ -21,19 +21,13 @@ public class PhysPolygonCollider{
 
 	//TODO: Fix this, processes the penetration distances backwards from their reality
 	public void processData(){
-		seperated = false;
 		collisions = new PhysCollisionObject[potentialSeperatingAxes.length];
-		for(int i=0;i<potentialSeperatingAxes.length;i++){
-			if(!seperated){
-				collisions[i] = new PhysCollisionObject(entity, block, potentialSeperatingAxes[i]);
-				if(collisions[i].seperated){
-					seperated=true;
-				}
-			}
+		for(int i=0;i<potentialSeperatingAxes.length&&!seperated;i++){
+			collisions[i] = new PhysCollisionObject(entity, block, potentialSeperatingAxes[i]);
+			seperated = collisions[i].seperated;
 		}
 		if(!seperated){
 			minDistance = 420;
-			minDistanceIndex = 0;
 			for(int i=0;i<potentialSeperatingAxes.length;i++){
 				//Take the collision response closest to 0
 				if(Math.abs(collisions[i].penetrationDistance)<minDistance){

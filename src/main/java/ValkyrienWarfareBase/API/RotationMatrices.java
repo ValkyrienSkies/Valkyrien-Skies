@@ -1,24 +1,19 @@
-package ValkyrienWarfareBase.Math;
+package ValkyrienWarfareBase.API;
 
-import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareBase.Math.BigBastardMath;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.projectile.EntityFireball;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 /**
- * This class creates and processes rotation matrix transforms
+ * This class creates and processes rotation matrix transforms used by Valkyrien Warfare
  * @author thebest108
  *
  */
 public class RotationMatrices{
-
-	 /**
-	  * The difference between 1 and the smallest exactly representable number
-	  * greater than one. Gives an upper bound on the relative error due to
-	  * rounding of floating point numbers.
-	  */
-	public static double MACHEPS = 2E-16;
 
    	public static final float[] transpose(float[] matrix){
    		float[] transpose = new float[16];
@@ -95,19 +90,6 @@ public class RotationMatrices{
 	   	return matrix;
    	}
 
-	public static final double[] getRotationMatrixAboutAxisAndPoint(double ux, double uy, double uz, double px, double py, double pz, double angle){
-		double[] matrix2 = getRotationMatrix(ux, uy, uz, angle);
-		double[] matrix3 = getTranslationMatrix(px, py, pz);
-		return getMatrixProduct(matrix3, matrix2);
-	}
-
-   	public static final double[] getRotationMatrixAboutAxisAndPoint(Vector axis, Vector point, double angle){
-   		double[] matrix1 = getTranslationMatrix(-point.X, -point.Y, -point.Z);
-     	double[] matrix2 = getRotationMatrix(axis.X, axis.Y, axis.Z, angle);
-     	double[] matrix3 = getTranslationMatrix(point.X, point.Y, point.Z);
-     	return getMatrixProduct(matrix3, getMatrixProduct(matrix2, matrix1));
-   	}
-
    	public static final double[] getDoubleIdentity(){
    		return new double[]{
    	   		1.0D,0,0,0,0,1.0D,0,0,0,0,1.0D,0,0,0,0,1.0D
@@ -168,13 +150,39 @@ public class RotationMatrices{
    		Vector entityLook = new Vector(ent.getLook(1.0F));
    		Vector entityMotion = new Vector(ent.motionX,ent.motionY,ent.motionZ);
    		
+   		if(ent instanceof EntityFireball){
+   			EntityFireball ball = (EntityFireball)ent;
+   			entityMotion.X = ball.accelerationX;
+   			entityMotion.Y = ball.accelerationY;
+   			entityMotion.Z = ball.accelerationZ;
+   		}
+
    		applyTransform(wholeTransform, entityPos);
    		doRotationOnly(rotationTransform, entityLook);
    		doRotationOnly(rotationTransform, entityMotion);
+
+   		entityLook.normalize();
    		
-   		ent.rotationPitch = (float) MathHelper.wrapDegrees(Math.toDegrees(-Math.asin(entityLook.Y)));
-   		ent.rotationYaw = (float) MathHelper.wrapDegrees( (Math.atan2(-entityLook.X, -entityLook.Z)+Math.PI)*-180D/Math.PI );
+   		//This is correct
+   		ent.rotationPitch = (float) MathHelper.wrapDegrees(BigBastardMath.getPitchFromVec3d(entityLook));
+   		ent.prevRotationPitch = ent.rotationPitch;
    		
+   		ent.rotationYaw = (float) MathHelper.wrapDegrees(BigBastardMath.getYawFromVec3d(entityLook, ent.rotationPitch));
+   		ent.prevRotationYaw = ent.rotationYaw;
+
+   		if(ent instanceof EntityLiving){
+   			EntityLiving living = (EntityLiving)ent;
+   			living.rotationYawHead = ent.rotationYaw;
+   			living.prevRotationYawHead = ent.rotationYaw;
+   		}
+   		
+   		if(ent instanceof EntityFireball){
+   			EntityFireball ball = (EntityFireball)ent;
+   			ball.accelerationX = entityMotion.X;
+   			ball.accelerationY = entityMotion.Y;
+   			ball.accelerationZ = entityMotion.Z;
+   		}
+
    		ent.motionX = entityMotion.X;
    		ent.motionY = entityMotion.Y;
    		ent.motionZ = entityMotion.Z;

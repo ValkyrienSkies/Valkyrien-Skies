@@ -38,6 +38,12 @@ public class ChunkSet {
 		toSave.setInteger("radius", radius);
 	}
 	
+	public boolean isChunkEnclosedInMaxSet(int chunkX,int chunkZ){
+		boolean inX = (chunkX>=centerX - 12)&&(chunkX<=centerX + 12);
+		boolean inZ = (chunkZ>=centerZ - 12)&&(chunkZ<=centerZ + 12);
+		return inX&&inZ;
+	}
+	
 	public boolean isChunkEnclosedInSet(int chunkX,int chunkZ){
 		boolean inX = (chunkX>=minX)&&(chunkX<=maxX);
 		boolean inZ = (chunkZ>=minZ)&&(chunkZ<=maxZ);

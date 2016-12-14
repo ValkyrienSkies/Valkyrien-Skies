@@ -4,9 +4,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
+import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
 /**
  * A lot of useful math functions belong here
@@ -18,6 +20,19 @@ public class BigBastardMath{
 	public static final int maxPasses = 5;
 	public static final int[] primes = {3,31,19,2,5,7,11,13,17,23,29};
 
+	public static double getPitchFromVec3d(Vector vec){
+		double pitchFromRotVec = -Math.asin(vec.Y)/0.017453292F;
+		return pitchFromRotVec;
+	}
+	
+	public static double getYawFromVec3d(Vector vec,double rotPitch){
+		double f2 = -Math.cos(-rotPitch * 0.017453292F);
+		double yawFromRotVec = Math.atan2(vec.X/f2, vec.Z/f2);
+		yawFromRotVec+=Math.PI;
+		yawFromRotVec/= -0.017453292F;
+		return yawFromRotVec;
+	}
+	
 	//Assuming they're colliding, OR ELSE!
 	public static AxisAlignedBB getBetweenAABB(AxisAlignedBB ship1,AxisAlignedBB ship2){
 		if(!ship1.intersectsWith(ship2)){
@@ -25,9 +40,9 @@ public class BigBastardMath{
 			System.out.println("Fix it faggot");
 			return null;
 		}
-		double[] xVals = new double[4];
-		double[] yVals = new double[4];
-		double[] zVals = new double[4];
+		final double[] xVals = new double[4];
+		final double[] yVals = new double[4];
+		final double[] zVals = new double[4];
 		xVals[0] = ship1.minX;
 		xVals[1] = ship1.maxX;
 		xVals[2] = ship2.minX;
@@ -52,9 +67,8 @@ public class BigBastardMath{
 		double[] minMax = new double[2];
 		//Min at 0
 		//Max at 1
-		minMax[0] = distances[0];
-		minMax[1] = distances[0];
-		for(int i =0;i<distances.length;i++){
+		minMax[0] = minMax[1] = distances[0];
+		for(int i = 1;i<distances.length;i++){
 			if(distances[i]<minMax[0]){
 				minMax[0] = distances[i];
 			}
@@ -66,9 +80,23 @@ public class BigBastardMath{
 	}
 
 	public static Vector getBodyPosWithOrientation(BlockPos pos,Vector centerOfMass,double[] rotationTransform){
-		Vector inBody = new Vector(pos.getX()+.5D-centerOfMass.X,pos.getY()+.5D-centerOfMass.Y,pos.getZ()+.5D-centerOfMass.Z);
+		final Vector inBody = new Vector(pos.getX()+.5D-centerOfMass.X,pos.getY()+.5D-centerOfMass.Y,pos.getZ()+.5D-centerOfMass.Z);
 		RotationMatrices.doRotationOnly(rotationTransform, inBody);
 		return inBody;
+	}
+	
+	public static void getBodyPosWithOrientation(BlockPos pos,Vector centerOfMass,double[] rotationTransform,Vector inBody){
+		inBody.X = pos.getX()+.5D-centerOfMass.X;
+		inBody.Y = pos.getY()+.5D-centerOfMass.Y;
+		inBody.Z = pos.getZ()+.5D-centerOfMass.Z;
+		RotationMatrices.doRotationOnly(rotationTransform, inBody);
+	}
+	
+	public static void getBodyPosWithOrientation(Vector pos,Vector centerOfMass,double[] rotationTransform,Vector inBody){
+		inBody.X = pos.X-centerOfMass.X;
+		inBody.Y = pos.Y-centerOfMass.Y;
+		inBody.Z = pos.Z-centerOfMass.Z;
+		RotationMatrices.doRotationOnly(rotationTransform, inBody);
 	}
 
 	public static Vector getBodyPosWithOrientation(Vector pos,Vector centerOfMass,double[] rotationTransform){

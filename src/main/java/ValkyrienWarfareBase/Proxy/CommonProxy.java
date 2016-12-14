@@ -4,6 +4,9 @@ import ValkyrienWarfareBase.EventsCommon;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.ChunkManagement.DimensionPhysicsChunkManager;
 import ValkyrienWarfareBase.PhysicsManagement.DimensionPhysObjectManager;
+import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
+import net.minecraft.client.Minecraft;
+import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -27,4 +30,12 @@ public class CommonProxy {
 
     }
 
+    public void updateShipPartialTicks(PhysicsWrapperEntity wrapper){
+    	
+    }
+    
+    public void registerCommands(MinecraftServer server){
+    	
+    }
+    
 }

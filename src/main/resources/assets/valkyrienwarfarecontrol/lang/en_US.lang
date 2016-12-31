@@ -1,3 +1,8 @@
 item.systemlinker.name=System Linker
-tile.basicengine.name=Basic Craft Engine
 tile.dopedetherium.name=Doped Etherium
+
+#ENGINES
+tile.basicEngine.name=Basic Engine
+tile.advancedEngine.name=Advanced Engine
+tile.eliteEngine.name=Elite Engine
+tile.ultimateEngine.name=Ultimate Engine

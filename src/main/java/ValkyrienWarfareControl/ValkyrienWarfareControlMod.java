@@ -1,7 +1,9 @@
 package ValkyrienWarfareControl;
 
+import java.io.File;
+
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
-import ValkyrienWarfareControl.Block.BlockAirShipEngine;
+import ValkyrienWarfareControl.Block.BlockNormalEngine;
 import ValkyrienWarfareControl.Block.BlockAntiGravEngine;
 import ValkyrienWarfareControl.Block.BlockBalloonBurner;
 import ValkyrienWarfareControl.Block.BlockDopedEtherium;
@@ -21,12 +23,14 @@ import ValkyrienWarfareControl.TileEntity.BalloonBurnerTileEntity;
 import ValkyrienWarfareControl.TileEntity.TileEntityHoverController;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -42,6 +46,8 @@ import net.minecraftforge.fml.relauncher.Side;
 @Mod(modid=ValkyrienWarfareControlMod.MODID, name=ValkyrienWarfareControlMod.MODNAME, version=ValkyrienWarfareControlMod.MODVER)
 public class ValkyrienWarfareControlMod {
 	
+	public static Configuration config;
+	
 	public static final String MODID = "valkyrienwarfarecontrol";
     public static final String MODNAME = "Valkyrien Warfare Control";
     public static final String MODVER = "0.3b";
@@ -51,6 +57,10 @@ public class ValkyrienWarfareControlMod {
     public static SimpleNetworkWrapper controlNetwork;
     
     public Block basicEngine;
+    public Block advancedEngine;
+    public Block eliteEngine;
+    public Block ultimateEngine;
+    
     public Block basicHoverController;
     public Block antigravityEngine;
     public Block dopedEtherium;
@@ -65,15 +75,18 @@ public class ValkyrienWarfareControlMod {
     @EventHandler
     public void preInit(FMLPreInitializationEvent event){
     	instance = this;
+    	config = new Configuration(new File(Minecraft.getMinecraft().mcDataDir + "/valkyrienwarfarecontrol.cfg"));
+    	config.load();
     	registerBlocks(event);
     	registerTileEntities(event);
     	registerItems(event);
     	registerRecipies(event);
     	registerNetworks(event);
     	proxy.preInit(event);
+    	config.save();
     }
 
-    @EventHandler
+	@EventHandler
     public void init(FMLInitializationEvent event){
     	proxy.init(event);
     	NetworkRegistry.INSTANCE.registerGuiHandler(this, new ControlGUIHandler());
@@ -85,7 +98,16 @@ public class ValkyrienWarfareControlMod {
     }
     
     private void registerBlocks(FMLStateEvent event){
-    	basicEngine = new BlockAirShipEngine(Material.WOOD).setHardness(5f).setUnlocalizedName("basicengine").setRegistryName(ValkyrienWarfareMod.MODID, "basicengine").setCreativeTab(CreativeTabs.TRANSPORTATION);
+    	double basicEnginePower = config.get(Configuration.CATEGORY_GENERAL, "basicEnginePower", 4000D, "Engine power for the basic Engine").getDouble();
+    	double advancedEnginePower = config.get(Configuration.CATEGORY_GENERAL, "advancedEnginePower", 6000D, "Engine power for the advanced Engine").getDouble();
+    	double eliteEnginePower = config.get(Configuration.CATEGORY_GENERAL, "eliteEnginePower", 8000D, "Engine power for the elite Engine").getDouble();
+    	double ultimateEnginePower = config.get(Configuration.CATEGORY_GENERAL, "ultimateEnginePower", 16000D, "Engine power for the ultimate Engine").getDouble();
+    	
+    	basicEngine = new BlockNormalEngine(Material.WOOD, basicEnginePower).setHardness(5f).setUnlocalizedName("basicEngine").setRegistryName(ValkyrienWarfareMod.MODID, "basicengine").setCreativeTab(CreativeTabs.TRANSPORTATION);
+    	advancedEngine = new BlockNormalEngine(Material.WOOD, advancedEnginePower).setHardness(5f).setUnlocalizedName("advancedEngine").setRegistryName(ValkyrienWarfareMod.MODID, "advancedEngine").setCreativeTab(CreativeTabs.TRANSPORTATION);
+    	eliteEngine = new BlockNormalEngine(Material.WOOD, eliteEnginePower).setHardness(5f).setUnlocalizedName("eliteEngine").setRegistryName(ValkyrienWarfareMod.MODID, "eliteEngine").setCreativeTab(CreativeTabs.TRANSPORTATION);
+    	ultimateEngine = new BlockNormalEngine(Material.WOOD, ultimateEnginePower).setHardness(5f).setUnlocalizedName("ultimateEngine").setRegistryName(ValkyrienWarfareMod.MODID, "ultimateEngine").setCreativeTab(CreativeTabs.TRANSPORTATION);
+    	
     	basicHoverController = new BlockHovercraftController(Material.IRON).setHardness(10f).setUnlocalizedName("basichovercraftcontroller").setRegistryName(ValkyrienWarfareMod.MODID, "basichovercraftcontroller").setCreativeTab(CreativeTabs.TRANSPORTATION);
     	antigravityEngine = new BlockAntiGravEngine(Material.IRON).setHardness(8f).setUnlocalizedName("antigravengine").setUnlocalizedName("antigravengine").setRegistryName(ValkyrienWarfareMod.MODID, "antigravengine").setCreativeTab(CreativeTabs.TRANSPORTATION);
     	dopedEtherium = new BlockDopedEtherium(Material.GLASS).setHardness(4f).setUnlocalizedName("dopedetherium").setRegistryName(MODID, "dopedetherium").setCreativeTab(CreativeTabs.TRANSPORTATION);
@@ -93,6 +115,10 @@ public class ValkyrienWarfareControlMod {
     	manualController = new ManualShipControllerBlock(Material.IRON).setHardness(4f).setUnlocalizedName("manualshipcontroller").setRegistryName(MODID, "manualshipcontroller").setCreativeTab(CreativeTabs.TRANSPORTATION);
     	
     	GameRegistry.registerBlock(basicEngine);
+    	GameRegistry.registerBlock(advancedEngine);
+    	GameRegistry.registerBlock(eliteEngine);
+    	GameRegistry.registerBlock(ultimateEngine);
+    	
     	GameRegistry.registerBlock(basicHoverController);
     	GameRegistry.registerBlock(antigravityEngine);
     	GameRegistry.registerBlock(dopedEtherium);
@@ -126,5 +152,4 @@ public class ValkyrienWarfareControlMod {
     	controlNetwork.registerMessage(PilotControlsMessageHandler.class, PilotControlsMessage.class, 1, Side.SERVER);
     	controlNetwork.registerMessage(EntityFixMessageHandler.class, EntityFixMessage.class, 2, Side.CLIENT);
     }
-    
 }

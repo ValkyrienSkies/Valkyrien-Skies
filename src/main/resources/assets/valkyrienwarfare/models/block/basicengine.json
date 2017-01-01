@@ -1,306 +1,314 @@
 {
     "textures": {
-        "main": "valkyrienwarfare:blocks/basicengine"
+        "main": "valkyrienwarfare:blocks/basicEngineRotor",
+        "particle": "valkyrienwarfare:blocks/Rusty shaft",
+        "0": "valkyrienwarfare:blocks/Rusty metal panel",
+        "1": "valkyrienwarfare:blocks/Slightly rusty shiny metal panel",
+        "2": "valkyrienwarfare:blocks/Other metal thing",
+        "3": "valkyrienwarfare:blocks/Rusty metal plate 3",
+        "4": "valkyrienwarfare:blocks/Rusty shaft",
+        "5": "valkyrienwarfare:blocks/Red lamp",
+        "6": "valkyrienwarfare:blocks/Green lamp"
     }, 
     "elements": [
         {
-            "name": "Base left", 
-            "from": [ 2, 0, 0 ], 
-            "to":   [ 4, 2, 25 ], 
+            "name": "Base left",
+            "from": [ 2.0, 0.0, 0.0 ], 
+            "to": [ 4.0, 2.0, 25.0 ], 
             "faces": {
-                "north": { "texture": "#main", "uv": [ 0, 0, 0.25, 0.25 ] }, 
-                "east":  { "texture": "#main", "uv": [ 0, 0, 3.125, 0.25 ] }, 
-                "south": { "texture": "#main", "uv": [ 0, 0, 0.25, 0.25 ] }, 
-                "west":  { "texture": "#main", "uv": [ 0, 0, 3.125, 0.25 ] }, 
-                "up":    { "texture": "#main", "uv": [ 0, 0, 0.25, 3.125 ] }, 
-                "down":  { "texture": "#main", "uv": [ 0, 0, 0.25, 3.125 ] }
+                "north": { "texture": "#0", "uv": [ 0.0, 0.0, 2.0, 2.0 ] },
+                "east": { "texture": "#0", "uv": [ 0.0, 0.0, 25.0, 2.0 ] },
+                "south": { "texture": "#0", "uv": [ 0.0, 0.0, 2.0, 2.0 ] },
+                "west": { "texture": "#0", "uv": [ 0.0, 0.0, 25.0, 2.0 ] },
+                "up": { "texture": "#0", "uv": [ 0.0, 0.0, 2.0, 25.0 ] },
+                "down": { "texture": "#0", "uv": [ 0.0, 0.0, 2.0, 25.0 ] }
             }
-        }, 
+        },
         {
-            "name": "Base right", 
-            "from": [ 12, 0, 0 ], 
-            "to":   [ 14, 2, 25 ], 
+            "name": "Base right",
+            "from": [ 12.0, 0.0, 0.0 ], 
+            "to": [ 14.0, 2.0, 25.0 ], 
             "faces": {
-                "north": { "texture": "#main", "uv": [ 0, 0, 0.25, 0.25 ] }, 
-                "east":  { "texture": "#main", "uv": [ 0, 0, 3.125, 0.25 ] }, 
-                "south": { "texture": "#main", "uv": [ 0, 0, 0.25, 0.25 ] }, 
-                "west":  { "texture": "#main", "uv": [ 0, 0, 3.125, 0.25 ] }, 
-                "up":    { "texture": "#main", "uv": [ 0, 0, 0.25, 3.125 ] }, 
-                "down":  { "texture": "#main", "uv": [ 0, 0, 0.25, 3.125 ] }
+                "north": { "texture": "#0", "uv": [ 0.0, 0.0, 2.0, 2.0 ] },
+                "east": { "texture": "#0", "uv": [ 0.0, 0.0, 25.0, 2.0 ] },
+                "south": { "texture": "#0", "uv": [ 0.0, 0.0, 2.0, 2.0 ] },
+                "west": { "texture": "#0", "uv": [ 0.0, 0.0, 25.0, 2.0 ] },
+                "up": { "texture": "#0", "uv": [ 0.0, 0.0, 2.0, 25.0 ] },
+                "down": { "texture": "#0", "uv": [ 0.0, 0.0, 2.0, 25.0 ] }
             }
-        }, 
+        },
         {
-            "name": "Base front", 
-            "from": [ 2, 0, 0 ], 
-            "to":   [ 14, 2, 2 ], 
+            "name": "Base front",
+            "from": [ 2.0, 0.0, 0.0 ], 
+            "to": [ 14.0, 2.0, 2.0 ], 
             "faces": {
-                "north": { "texture": "#main", "uv": [ 0, 0, 1.5, 0.25 ] }, 
-                "east":  { "texture": "#main", "uv": [ 0, 0, 0.25, 0.25 ] }, 
-                "south": { "texture": "#main", "uv": [ 0, 0, 1.5, 0.25 ] }, 
-                "west":  { "texture": "#main", "uv": [ 0, 0, 0.25, 0.25 ] }, 
-                "up":    { "texture": "#main", "uv": [ 0, 0, 1.5, 0.25 ] }, 
-                "down":  { "texture": "#main", "uv": [ 0, 0, 1.5, 0.25 ] }
+                "north": { "texture": "#0", "uv": [ 0.0, 0.0, 12.0, 2.0 ] },
+                "east": { "texture": "#0", "uv": [ 0.0, 0.0, 2.0, 2.0 ] },
+                "south": { "texture": "#0", "uv": [ 0.0, 0.0, 12.0, 2.0 ] },
+                "west": { "texture": "#0", "uv": [ 0.0, 0.0, 2.0, 2.0 ] },
+                "up": { "texture": "#0", "uv": [ 0.0, 0.0, 12.0, 2.0 ] },
+                "down": { "texture": "#0", "uv": [ 0.0, 0.0, 12.0, 2.0 ] }
             }
-        }, 
+        },
         {
-            "name": "Base back", 
-            "from": [ 2, 0, 23 ], 
-            "to":   [ 14, 2, 25 ], 
+            "name": "Base back",
+            "from": [ 2.0, 0.0, 23.0 ], 
+            "to": [ 14.0, 2.0, 25.0 ], 
             "faces": {
-                "north": { "texture": "#main", "uv": [ 0, 0, 1.5, 0.25 ] }, 
-                "east":  { "texture": "#main", "uv": [ 0, 0, 0.25, 0.25 ] }, 
-                "south": { "texture": "#main", "uv": [ 0, 0, 1.5, 0.25 ] }, 
-                "west":  { "texture": "#main", "uv": [ 0, 0, 0.25, 0.25 ] }, 
-                "up":    { "texture": "#main", "uv": [ 0, 0, 1.5, 0.25 ] }, 
-                "down":  { "texture": "#main", "uv": [ 0, 0, 1.5, 0.25 ] }
+                "north": { "texture": "#0", "uv": [ 0.0, 0.0, 12.0, 2.0 ] },
+                "east": { "texture": "#0", "uv": [ 0.0, 0.0, 2.0, 2.0 ] },
+                "south": { "texture": "#0", "uv": [ 0.0, 0.0, 12.0, 2.0 ] },
+                "west": { "texture": "#0", "uv": [ 0.0, 0.0, 2.0, 2.0 ] },
+                "up": { "texture": "#0", "uv": [ 0.0, 0.0, 12.0, 2.0 ] },
+                "down": { "texture": "#0", "uv": [ 0.0, 0.0, 12.0, 2.0 ] }
             }
-        }, 
+        },
         {
-            "name": "Fuel tank main", 
-            "from": [ 5, 3, 17 ], 
-            "to":   [ 11, 8, 22 ], 
+            "name": "Fuel tank main",
+            "from": [ 5.0, 3.0, 17.0 ], 
+            "to": [ 11.0, 8.0, 22.0 ], 
             "faces": {
-                "north": { "texture": "#main", "uv": [ 2, 0, 2.75, 0.625 ] }, 
-                "east":  { "texture": "#main", "uv": [ 2, 0, 2.625, 0.625 ] }, 
-                "south": { "texture": "#main", "uv": [ 2, 0, 2.75, 0.625 ] }, 
-                "west":  { "texture": "#main", "uv": [ 2, 0, 2.625, 0.625 ] }, 
-                "up":    { "texture": "#main", "uv": [ 2, 0, 2.75, 0.625 ] }, 
-                "down":  { "texture": "#main", "uv": [ 2, 0, 2.75, 0.625 ] }
+                "north": { "texture": "#1", "uv": [ 0.0, 0.0, 6.0, 5.0 ] },
+                "east": { "texture": "#1", "uv": [ 0.0, 0.0, 5.0, 5.0 ] },
+                "south": { "texture": "#1", "uv": [ 0.0, 0.0, 6.0, 5.0 ] },
+                "west": { "texture": "#1", "uv": [ 0.0, 0.0, 5.0, 5.0 ] },
+                "up": { "texture": "#1", "uv": [ 0.0, 0.0, 6.0, 5.0 ] },
+                "down": { "texture": "#1", "uv": [ 0.0, 0.0, 6.0, 5.0 ] }
             }
-        }, 
+        },
         {
-            "name": "Fuel tank slope left", 
-            "from": [ 5, 3, 17 ], 
-            "to":   [ 6, 5.4, 22 ], 
-            "rotation": { "origin": [5, 3, 4], "axis": "z", "angle": 22.5, "rescale":true }, 
+            "name": "Fuel tank slope left",
+            "from": [ 5.0, 3.0, 17.0 ], 
+            "to": [ 6.0, 5.4, 22.0 ], 
+            "rotation": { "origin": [ 5.0, 3.0, 4.0 ], "axis": "z", "angle": 22.5, "rescale": true },
             "faces": {
-                "north": { "texture": "#main", "uv": [ 2, 0, 2.125, 0.3 ] }, 
-                "east":  { "texture": "#main", "uv": [ 2, 0, 2.625, 0.3 ] }, 
-                "south": { "texture": "#main", "uv": [ 2, 0, 2.125, 0.30000000000000004 ] }, 
-                "west":  { "texture": "#main", "uv": [ 2, 0, 2.625, 0.3 ] }, 
-                "up":    { "texture": "#main", "uv": [ 2, 0, 2.125, 0.625 ] }, 
-                "down":  { "texture": "#main", "uv": [ 2, 0, 2.125, 0.625 ] }
+                "north": { "texture": "#1", "uv": [ 0.0, 0.0, 1.0, 2.4 ] },
+                "east": { "texture": "#1", "uv": [ 0.0, 0.0, 5.0, 2.4 ] },
+                "south": { "texture": "#1", "uv": [ 0.0, 0.0, 1.0, 2.4000000000000004 ] },
+                "west": { "texture": "#1", "uv": [ 0.0, 0.0, 5.0, 2.4 ] },
+                "up": { "texture": "#1", "uv": [ 0.0, 0.0, 1.0, 5.0 ] },
+                "down": { "texture": "#1", "uv": [ 0.0, 0.0, 1.0, 5.0 ] }
             }
-        }, 
+        },
         {
-            "name": "Fuel tank side left", 
-            "from": [ 4.1, 5, 17 ], 
-            "to":   [ 5.1, 8, 22 ], 
+            "name": "Fuel tank side left",
+            "from": [ 4.1, 5.0, 17.0 ], 
+            "to": [ 5.1, 8.0, 22.0 ], 
             "faces": {
-                "north": { "texture": "#main", "uv": [ 2, 0, 2.125, 0.375 ] }, 
-                "east":  { "texture": "#main", "uv": [ 2, 0, 2.625, 0.375 ] }, 
-                "south": { "texture": "#main", "uv": [ 2, 0, 2.125, 0.375 ] }, 
-                "west":  { "texture": "#main", "uv": [ 2, 0, 2.625, 0.375 ] }, 
-                "up":    { "texture": "#main", "uv": [ 2, 0, 2.125, 0.625 ] }, 
-                "down":  { "texture": "#main", "uv": [ 2, 0, 2.125, 0.625 ] }
+                "north": { "texture": "#1", "uv": [ 0.0, 0.0, 1.0, 3.0 ] },
+                "east": { "texture": "#1", "uv": [ 0.0, 0.0, 5.0, 3.0 ] },
+                "south": { "texture": "#1", "uv": [ 0.0, 0.0, 1.0, 3.0 ] },
+                "west": { "texture": "#1", "uv": [ 0.0, 0.0, 5.0, 3.0 ] },
+                "up": { "texture": "#1", "uv": [ 0.0, 0.0, 1.0, 5.0 ] },
+                "down": { "texture": "#1", "uv": [ 0.0, 0.0, 1.0, 5.0 ] }
             }
-        }, 
+        },
         {
-            "name": "Fuel tank slope right", 
-            "from": [ 10, 3, 17 ], 
-            "to":   [ 11, 5.4, 22 ], 
-            "rotation": { "origin": [11, 3, 4], "axis": "z", "angle": -22.5 }, 
+            "name": "Fuel tank slope right",
+            "from": [ 10.0, 3.0, 17.0 ], 
+            "to": [ 11.0, 5.4, 22.0 ], 
+            "rotation": { "origin": [ 11.0, 3.0, 4.0 ], "axis": "z", "angle": -22.5 },
             "faces": {
-                "north": { "texture": "#main", "uv": [ 2, 0, 2.125, 0.3 ] }, 
-                "east":  { "texture": "#main", "uv": [ 2, 0, 2.625, 0.3 ] }, 
-                "south": { "texture": "#main", "uv": [ 2, 0, 2.125, 0.3 ] }, 
-                "west":  { "texture": "#main", "uv": [ 2, 0, 2.625, 0.3 ] }, 
-                "up":    { "texture": "#main", "uv": [ 2, 0, 2.125, 0.625 ] }, 
-                "down":  { "texture": "#main", "uv": [ 2, 0, 2.125, 0.625 ] }
+                "north": { "texture": "#1", "uv": [ 0.0, 0.0, 1.0, 2.4 ] },
+                "east": { "texture": "#1", "uv": [ 0.0, 0.0, 5.0, 2.4 ] },
+                "south": { "texture": "#1", "uv": [ 0.0, 0.0, 1.0, 2.4 ] },
+                "west": { "texture": "#1", "uv": [ 0.0, 0.0, 5.0, 2.4 ] },
+                "up": { "texture": "#1", "uv": [ 0.0, 0.0, 1.0, 5.0 ] },
+                "down": { "texture": "#1", "uv": [ 0.0, 0.0, 1.0, 5.0 ] }
             }
-        }, 
+        },
         {
-            "name": "Fuel tank side right", 
-            "from": [ 10.9, 5, 17 ], 
-            "to":   [ 11.9, 8, 22 ], 
+            "name": "Fuel tank side right",
+            "from": [ 10.9, 5.0, 17.0 ], 
+            "to": [ 11.9, 8.0, 22.0 ], 
             "faces": {
-                "north": { "texture": "#main", "uv": [ 2, 0, 2.125, 0.375 ] }, 
-                "east":  { "texture": "#main", "uv": [ 2, 0, 2.625, 0.375 ] }, 
-                "south": { "texture": "#main", "uv": [ 2, 0, 2.125, 0.375 ] }, 
-                "west":  { "texture": "#main", "uv": [ 2, 0, 2.625, 0.375 ] }, 
-                "up":    { "texture": "#main", "uv": [ 2, 0, 2.125, 0.625 ] }, 
-                "down":  { "texture": "#main", "uv": [ 2, 0, 2.125, 0.625 ] }
+                "north": { "texture": "#1", "uv": [ 0.0, 0.0, 1.0, 3.0 ] },
+                "east": { "texture": "#1", "uv": [ 0.0, 0.0, 5.0, 3.0 ] },
+                "south": { "texture": "#1", "uv": [ 0.0, 0.0, 1.0, 3.0 ] },
+                "west": { "texture": "#1", "uv": [ 0.0, 0.0, 5.0, 3.0 ] },
+                "up": { "texture": "#1", "uv": [ 0.0, 0.0, 1.0, 5.0 ] },
+                "down": { "texture": "#1", "uv": [ 0.0, 0.0, 1.0, 5.0 ] }
             }
-        }, 
+        },
         {
-            "name": "Fuel tank strut left", 
-            "from": [ 2, 2, 18 ], 
-            "to":   [ 3, 6, 20 ], 
-            "rotation": { "origin": [2, 2, 5], "axis": "z", "angle": -45 }, 
+            "name": "Fuel tank strut left",
+            "from": [ 2.0, 2.0, 18.0 ], 
+            "to": [ 3.0, 6.0, 20.0 ], 
+            "rotation": { "origin": [ 2.0, 2.0, 5.0 ], "axis": "z", "angle": -45.0 },
             "faces": {
-                "north": { "texture": "#main", "uv": [ 0, 0, 0.125, 0.5 ] }, 
-                "east":  { "texture": "#main", "uv": [ 0, 0, 0.25, 0.5 ] }, 
-                "south": { "texture": "#main", "uv": [ 0, 0, 0.125, 0.5 ] }, 
-                "west":  { "texture": "#main", "uv": [ 0, 0, 0.25, 0.5 ] }, 
-                "up":    { "texture": "#main", "uv": [ 0, 0, 0.125, 0.25 ] }, 
-                "down":  { "texture": "#main", "uv": [ 0, 0, 0.125, 0.25 ] }
+                "north": { "texture": "#0", "uv": [ 0.0, 0.0, 1.0, 4.0 ] },
+                "east": { "texture": "#0", "uv": [ 0.0, 0.0, 2.0, 4.0 ] },
+                "south": { "texture": "#0", "uv": [ 0.0, 0.0, 1.0, 4.0 ] },
+                "west": { "texture": "#0", "uv": [ 0.0, 0.0, 2.0, 4.0 ] },
+                "up": { "texture": "#0", "uv": [ 0.0, 0.0, 1.0, 2.0 ] },
+                "down": { "texture": "#0", "uv": [ 0.0, 0.0, 1.0, 2.0 ] }
             }
-        }, 
+        },
         {
-            "name": "Fuel tank strut right", 
-            "from": [ 13, 2, 18 ], 
-            "to":   [ 14, 6, 20 ], 
-            "rotation": { "origin": [14, 2, 5], "axis": "z", "angle": 45 }, 
+            "name": "Fuel tank strut right",
+            "from": [ 13.0, 2.0, 18.0 ], 
+            "to": [ 14.0, 6.0, 20.0 ], 
+            "rotation": { "origin": [ 14.0, 2.0, 5.0 ], "axis": "z", "angle": 45.0 },
             "faces": {
-                "north": { "texture": "#main", "uv": [ 0, 0, 0.125, 0.5 ] }, 
-                "east":  { "texture": "#main", "uv": [ 0, 0, 0.25, 0.5 ] }, 
-                "south": { "texture": "#main", "uv": [ 0, 0, 0.125, 0.5 ] }, 
-                "west":  { "texture": "#main", "uv": [ 0, 0, 0.25, 0.5 ] }, 
-                "up":    { "texture": "#main", "uv": [ 0, 0, 0.125, 0.25 ] }, 
-                "down":  { "texture": "#main", "uv": [ 0, 0, 0.125, 0.25 ] }
+                "north": { "texture": "#0", "uv": [ 0.0, 0.0, 1.0, 4.0 ] },
+                "east": { "texture": "#0", "uv": [ 0.0, 0.0, 2.0, 4.0 ] },
+                "south": { "texture": "#0", "uv": [ 0.0, 0.0, 1.0, 4.0 ] },
+                "west": { "texture": "#0", "uv": [ 0.0, 0.0, 2.0, 4.0 ] },
+                "up": { "texture": "#0", "uv": [ 0.0, 0.0, 1.0, 2.0 ] },
+                "down": { "texture": "#0", "uv": [ 0.0, 0.0, 1.0, 2.0 ] }
             }
-        }, 
+        },
         {
-            "name": "Fuel line", 
-            "from": [ 7.5, 4.5, 12 ], 
-            "to":   [ 8.5, 5.5, 17 ], 
+            "name": "Fuel line",
+            "from": [ 7.5, 4.5, 12.0 ], 
+            "to": [ 8.5, 5.5, 17.0 ], 
             "faces": {
-                "north": { "texture": "#main", "uv": [ 4, 0, 4.125, 0.125 ] }, 
-                "east":  { "texture": "#main", "uv": [ 4, 0, 4.625, 0.125 ] }, 
-                "south": { "texture": "#main", "uv": [ 4, 0, 4.125, 0.125 ] }, 
-                "west":  { "texture": "#main", "uv": [ 4, 0, 4.625, 0.125 ] }, 
-                "up":    { "texture": "#main", "uv": [ 4, 0, 4.125, 0.625 ] }, 
-                "down":  { "texture": "#main", "uv": [ 4, 0, 4.125, 0.625 ] }
+                "north": { "texture": "#2", "uv": [ 0.0, 0.0, 1.0, 1.0 ] },
+                "east": { "texture": "#2", "uv": [ 0.0, 0.0, 5.0, 1.0 ] },
+                "south": { "texture": "#2", "uv": [ 0.0, 0.0, 1.0, 1.0 ] },
+                "west": { "texture": "#2", "uv": [ 0.0, 0.0, 5.0, 1.0 ] },
+                "up": { "texture": "#2", "uv": [ 0.0, 0.0, 1.0, 5.0 ] },
+                "down": { "texture": "#2", "uv": [ 0.0, 0.0, 1.0, 5.0 ] }
             }
-        }, 
+        },
         {
-            "name": "Fuel cap shaft", 
-            "from": [ 6, 8, 19 ], 
-            "to":   [ 7.5, 8.5, 20.5 ], 
-            "rotation": { "origin": [7, 8, 20], "axis": "y", "angle": -45 }, 
+            "name": "Fuel cap shaft",
+            "from": [ 6.0, 8.0, 19.0 ], 
+            "to": [ 7.5, 8.5, 20.5 ], 
+            "rotation": { "origin": [ 7.0, 8.0, 20.0 ], "axis": "y", "angle": -45.0 },
             "faces": {
-                "north": { "texture": "#main", "uv": [ 4, 0, 4.1875, 0.0625 ] }, 
-                "east":  { "texture": "#main", "uv": [ 4, 0, 4.1875, 0.0625 ] }, 
-                "south": { "texture": "#main", "uv": [ 4, 0, 4.1875, 0.0625 ] }, 
-                "west":  { "texture": "#main", "uv": [ 4, 0, 4.1875, 0.0625 ] }, 
-                "up":    { "texture": "#main", "uv": [ 4, 0, 4.1875, 0.1875 ] }, 
-                "down":  { "texture": "#main", "uv": [ 4, 0, 4.1875, 0.1875 ] }
+                "north": { "texture": "#2", "uv": [ 0.0, 0.0, 1.5, 0.5 ] },
+                "east": { "texture": "#2", "uv": [ 0.0, 0.0, 1.5, 0.5 ] },
+                "south": { "texture": "#2", "uv": [ 0.0, 0.0, 1.5, 0.5 ] },
+                "west": { "texture": "#2", "uv": [ 0.0, 0.0, 1.5, 0.5 ] },
+                "up": { "texture": "#2", "uv": [ 0.0, 0.0, 1.5, 1.5 ] },
+                "down": { "texture": "#2", "uv": [ 0.0, 0.0, 1.5, 1.5 ] }
             }
-        }, 
+        },
         {
-            "name": "Fuel cap", 
+            "name": "Fuel cap",
             "from": [ 5.9, 8.2, 18.9 ], 
-            "to":   [ 7.6000000000000005, 8.5, 20.599999999999998 ], 
-            "rotation": { "origin": [7, 8, 20], "axis": "y", "angle": -45 }, 
+            "to": [ 7.6000000000000005, 8.5, 20.599999999999998 ], 
+            "rotation": { "origin": [ 7.0, 8.0, 20.0 ], "axis": "y", "angle": -45.0 },
             "faces": {
-                "north": { "texture": "#main", "uv": [ 4, 0, 4.2125, 0.0375 ] }, 
-                "east":  { "texture": "#main", "uv": [ 4, 0, 4.2125, 0.0375 ] }, 
-                "south": { "texture": "#main", "uv": [ 4, 0, 4.2125, 0.0375 ] }, 
-                "west":  { "texture": "#main", "uv": [ 4, 0, 4.2125, 0.0375 ] }, 
-                "up":    { "texture": "#main", "uv": [ 4, 0, 4.2125, 0.2125 ] }, 
-                "down":  { "texture": "#main", "uv": [ 4, 0, 4.2125, 0.2125 ] }
+                "north": { "texture": "#2", "uv": [ 0.0, 0.0, 1.7, 0.3 ] },
+                "east": { "texture": "#2", "uv": [ 0.0, 0.0, 1.7, 0.3 ] },
+                "south": { "texture": "#2", "uv": [ 0.0, 0.0, 1.7, 0.3 ] },
+                "west": { "texture": "#2", "uv": [ 0.0, 0.0, 1.7, 0.3 ] },
+                "up": { "texture": "#2", "uv": [ 0.0, 0.0, 1.7, 1.7 ] },
+                "down": { "texture": "#2", "uv": [ 0.0, 0.0, 1.7, 1.7 ] }
             }
-        }, 
+        },
         {
-            "name": "Engine base", 
-            "from": [ 5, 3, 6 ], 
-            "to":   [ 11, 6, 16 ], 
+            "name": "Engine base",
+            "from": [ 5.0, 3.0, 6.0 ], 
+            "to": [ 11.0, 6.0, 16.0 ], 
             "faces": {
-                "north": { "texture": "#main", "uv": [ 6, 0, 6.75, 0.375 ] }, 
-                "east":  { "texture": "#main", "uv": [ 6, 0, 7.25, 0.375 ] }, 
-                "south": { "texture": "#main", "uv": [ 6, 0, 6.75, 0.375 ] }, 
-                "west":  { "texture": "#main", "uv": [ 6, 0, 7.25, 0.375 ] }, 
-                "up":    { "texture": "#main", "uv": [ 6, 0, 6.75, 1.25 ] }, 
-                "down":  { "texture": "#main", "uv": [ 6, 0, 6.75, 1.25 ] }
+                "north": { "texture": "#3", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
+                "east": { "texture": "#3", "uv": [ 0.0, 0.0, 10.0, 3.0 ] },
+                "south": { "texture": "#3", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
+                "west": { "texture": "#3", "uv": [ 0.0, 0.0, 10.0, 3.0 ] },
+                "up": { "texture": "#3", "uv": [ 0.0, 0.0, 6.0, 10.0 ] },
+                "down": { "texture": "#3", "uv": [ 0.0, 0.0, 6.0, 10.0 ] }
             }
-        }, 
+        },
         {
-            "name": "Back left cylinder", 
-            "from": [ 5, 5, 13 ], 
-            "to":   [ 7, 9, 15 ], 
-            "rotation": { "origin": [5, 5, 13], "axis": "z", "angle": 22.5 }, 
+            "name": "Back left cylinder",
+            "from": [ 5.0, 5.0, 13.0 ], 
+            "to": [ 7.0, 9.0, 15.0 ], 
+            "rotation": { "origin": [ 5.0, 5.0, 13.0 ], "axis": "z", "angle": 22.5 },
             "faces": {
-                "north": { "texture": "#main", "uv": [ 0, 2, 0.25, 2.5 ] }, 
-                "east":  { "texture": "#main", "uv": [ 0, 2, 0.25, 2.5 ] }, 
-                "south": { "texture": "#main", "uv": [ 0, 2, 0.25, 2.5 ] }, 
-                "west":  { "texture": "#main", "uv": [ 0, 2, 0.25, 2.5 ] }, 
-                "up":    { "texture": "#main", "uv": [ 0, 2, 0.25, 2.25 ] }, 
-                "down":  { "texture": "#main", "uv": [ 0, 2, 0.25, 2.25 ] }
+                "north": { "texture": "#4", "uv": [ 0.0, 0.0, 2.0, 4.0 ] },
+                "east": { "texture": "#4", "uv": [ 0.0, 0.0, 2.0, 4.0 ] },
+                "south": { "texture": "#4", "uv": [ 0.0, 0.0, 2.0, 4.0 ] },
+                "west": { "texture": "#4", "uv": [ 0.0, 0.0, 2.0, 4.0 ] },
+                "up": { "texture": "#4", "uv": [ 0.0, 0.0, 2.0, 2.0 ] },
+                "down": { "texture": "#4", "uv": [ 0.0, 0.0, 2.0, 2.0 ] }
             }
-        }, 
+        },
         {
-            "name": "Middle left cylinder", 
-            "from": [ 5, 5, 10 ], 
-            "to":   [ 7, 9, 12 ], 
-            "rotation": { "origin": [5, 5, 13], "axis": "z", "angle": 22.5 }, 
+            "name": "Middle left cylinder",
+            "from": [ 5.0, 5.0, 10.0 ], 
+            "to": [ 7.0, 9.0, 12.0 ], 
+            "rotation": { "origin": [ 5.0, 5.0, 13.0 ], "axis": "z", "angle": 22.5 },
             "faces": {
-                "north": { "texture": "#main", "uv": [ 0, 2, 0.25, 2.5 ] }, 
-                "east":  { "texture": "#main", "uv": [ 0, 2, 0.25, 2.5 ] }, 
-                "south": { "texture": "#main", "uv": [ 0, 2, 0.25, 2.5 ] }, 
-                "west":  { "texture": "#main", "uv": [ 0, 2, 0.25, 2.5 ] }, 
-                "up":    { "texture": "#main", "uv": [ 0, 2, 0.25, 2.25 ] }, 
-                "down":  { "texture": "#main", "uv": [ 0, 2, 0.25, 2.25 ] }
+                "north": { "texture": "#4", "uv": [ 0.0, 0.0, 2.0, 4.0 ] },
+                "east": { "texture": "#4", "uv": [ 0.0, 0.0, 2.0, 4.0 ] },
+                "south": { "texture": "#4", "uv": [ 0.0, 0.0, 2.0, 4.0 ] },
+                "west": { "texture": "#4", "uv": [ 0.0, 0.0, 2.0, 4.0 ] },
+                "up": { "texture": "#4", "uv": [ 0.0, 0.0, 2.0, 2.0 ] },
+                "down": { "texture": "#4", "uv": [ 0.0, 0.0, 2.0, 2.0 ] }
             }
-        }, 
+        },
         {
-            "name": "Front left cylinder", 
-            "from": [ 5, 5, 7 ], 
-            "to":   [ 7, 9, 9 ], 
-            "rotation": { "origin": [5, 5, 13], "axis": "z", "angle": 22.5 }, 
+            "name": "Front left cylinder",
+            "from": [ 5.0, 5.0, 7.0 ], 
+            "to": [ 7.0, 9.0, 9.0 ], 
+            "rotation": { "origin": [ 5.0, 5.0, 13.0 ], "axis": "z", "angle": 22.5 },
             "faces": {
-                "north": { "texture": "#main", "uv": [ 0, 2, 0.25, 2.5 ] }, 
-                "east":  { "texture": "#main", "uv": [ 0, 2, 0.25, 2.5 ] }, 
-                "south": { "texture": "#main", "uv": [ 0, 2, 0.25, 2.5 ] }, 
-                "west":  { "texture": "#main", "uv": [ 0, 2, 0.25, 2.5 ] }, 
-                "up":    { "texture": "#main", "uv": [ 0, 2, 0.25, 2.25 ] }, 
-                "down":  { "texture": "#main", "uv": [ 0, 2, 0.25, 2.25 ] }
+                "north": { "texture": "#4", "uv": [ 0.0, 0.0, 2.0, 4.0 ] },
+                "east": { "texture": "#4", "uv": [ 0.0, 0.0, 2.0, 4.0 ] },
+                "south": { "texture": "#4", "uv": [ 0.0, 0.0, 2.0, 4.0 ] },
+                "west": { "texture": "#4", "uv": [ 0.0, 0.0, 2.0, 4.0 ] },
+                "up": { "texture": "#4", "uv": [ 0.0, 0.0, 2.0, 2.0 ] },
+                "down": { "texture": "#4", "uv": [ 0.0, 0.0, 2.0, 2.0 ] }
             }
-        }, 
+        },
         {
-            "name": "Back right cylinder", 
-            "from": [ 9, 5, 13 ], 
-            "to":   [ 11, 9, 15 ], 
-            "rotation": { "origin": [11, 5, 13], "axis": "z", "angle": -22.5 }, 
+            "name": "Back right cylinder",
+            "from": [ 9.0, 5.0, 13.0 ], 
+            "to": [ 11.0, 9.0, 15.0 ], 
+            "rotation": { "origin": [ 11.0, 5.0, 13.0 ], "axis": "z", "angle": -22.5 },
             "faces": {
-                "north": { "texture": "#main", "uv": [ 0, 2, 0.25, 2.5 ] }, 
-                "east":  { "texture": "#main", "uv": [ 0, 2, 0.25, 2.5 ] }, 
-                "south": { "texture": "#main", "uv": [ 0, 2, 0.25, 2.5 ] }, 
-                "west":  { "texture": "#main", "uv": [ 0, 2, 0.25, 2.5 ] }, 
-                "up":    { "texture": "#main", "uv": [ 0, 2, 0.25, 2.25 ] }, 
-                "down":  { "texture": "#main", "uv": [ 0, 2, 0.25, 2.25 ] }
+                "north": { "texture": "#4", "uv": [ 0.0, 0.0, 2.0, 4.0 ] },
+                "east": { "texture": "#4", "uv": [ 0.0, 0.0, 2.0, 4.0 ] },
+                "south": { "texture": "#4", "uv": [ 0.0, 0.0, 2.0, 4.0 ] },
+                "west": { "texture": "#4", "uv": [ 0.0, 0.0, 2.0, 4.0 ] },
+                "up": { "texture": "#4", "uv": [ 0.0, 0.0, 2.0, 2.0 ] },
+                "down": { "texture": "#4", "uv": [ 0.0, 0.0, 2.0, 2.0 ] }
             }
-        }, 
+        },
         {
-            "name": "Middle right cylinder", 
-            "from": [ 9, 5, 10 ], 
-            "to":   [ 11, 9, 12 ], 
-            "rotation": { "origin": [11, 5, 13], "axis": "z", "angle": -22.5 }, 
+            "name": "Middle right cylinder",
+            "from": [ 9.0, 5.0, 10.0 ], 
+            "to": [ 11.0, 9.0, 12.0 ], 
+            "rotation": { "origin": [ 11.0, 5.0, 13.0 ], "axis": "z", "angle": -22.5 },
             "faces": {
-                "north": { "texture": "#main", "uv": [ 0, 2, 0.25, 2.5 ] }, 
-                "east":  { "texture": "#main", "uv": [ 0, 2, 0.25, 2.5 ] }, 
-                "south": { "texture": "#main", "uv": [ 0, 2, 0.25, 2.5 ] }, 
-                "west":  { "texture": "#main", "uv": [ 0, 2, 0.25, 2.5 ] }, 
-                "up":    { "texture": "#main", "uv": [ 0, 2, 0.25, 2.25 ] }, 
-                "down":  { "texture": "#main", "uv": [ 0, 2, 0.25, 2.25 ] }
+                "north": { "texture": "#4", "uv": [ 0.0, 0.0, 2.0, 4.0 ] },
+                "east": { "texture": "#4", "uv": [ 0.0, 0.0, 2.0, 4.0 ] },
+                "south": { "texture": "#4", "uv": [ 0.0, 0.0, 2.0, 4.0 ] },
+                "west": { "texture": "#4", "uv": [ 0.0, 0.0, 2.0, 4.0 ] },
+                "up": { "texture": "#4", "uv": [ 0.0, 0.0, 2.0, 2.0 ] },
+                "down": { "texture": "#4", "uv": [ 0.0, 0.0, 2.0, 2.0 ] }
             }
-        }, 
+        },
         {
-            "name": "Front right cylinder", 
-            "from": [ 9, 5, 7 ], 
-            "to":   [ 11, 9, 9 ], 
-            "rotation": { "origin": [11, 5, 13], "axis": "z", "angle": -22.5 }, 
+            "name": "Front right cylinder",
+            "from": [ 9.0, 5.0, 7.0 ], 
+            "to": [ 11.0, 9.0, 9.0 ], 
+            "rotation": { "origin": [ 11.0, 5.0, 13.0 ], "axis": "z", "angle": -22.5 },
             "faces": {
-                "north": { "texture": "#main", "uv": [ 0, 2, 0.25, 2.5 ] }, 
-                "east":  { "texture": "#main", "uv": [ 0, 2, 0.25, 2.5 ] }, 
-                "south": { "texture": "#main", "uv": [ 0, 2, 0.25, 2.5 ] }, 
-                "west":  { "texture": "#main", "uv": [ 0, 2, 0.25, 2.5 ] }, 
-                "up":    { "texture": "#main", "uv": [ 0, 2, 0.25, 2.25 ] }, 
-                "down":  { "texture": "#main", "uv": [ 0, 2, 0.25, 2.25 ] }
+                "north": { "texture": "#4", "uv": [ 0.0, 0.0, 2.0, 4.0 ] },
+                "east": { "texture": "#4", "uv": [ 0.0, 0.0, 2.0, 4.0 ] },
+                "south": { "texture": "#4", "uv": [ 0.0, 0.0, 2.0, 4.0 ] },
+                "west": { "texture": "#4", "uv": [ 0.0, 0.0, 2.0, 4.0 ] },
+                "up": { "texture": "#4", "uv": [ 0.0, 0.0, 2.0, 2.0 ] },
+                "down": { "texture": "#4", "uv": [ 0.0, 0.0, 2.0, 2.0 ] }
             }
-        }, 
+        },
         {
-            "name": "Central engine block", 
-            "from": [ 6, 6, 6 ], 
-            "to":   [ 10, 9, 16 ], 
+            "name": "Central engine block",
+            "from": [ 6.0, 6.0, 6.0 ], 
+            "to": [ 10.0, 9.0, 16.0 ], 
             "faces": {
-                "north": { "texture": "#main", "uv": [ 4, 0, 4.5, 0.375 ] }, 
-                "east":  { "texture": "#main", "uv": [ 4, 0, 5.25, 0.375 ] }, 
-                "south": { "texture": "#main", "uv": [ 4, 0, 4.5, 0.375 ] }, 
-                "west":  { "texture": "#main", "uv": [ 4, 0, 5.25, 0.375 ] }, 
-                "up":    { "texture": "#main", "uv": [ 4, 0, 4.5, 1.25 ] }, 
-                "down":  { "texture": "#main", "uv": [ 4, 0, 4.5, 1.25 ] }
+                "north": { "texture": "#2", "uv": [ 0.0, 0.0, 4.0, 3.0 ] },
+                "east": { "texture": "#2", "uv": [ 0.0, 0.0, 10.0, 3.0 ] },
+                "south": { "texture": "#2", "uv": [ 0.0, 0.0, 4.0, 3.0 ] },
+                "west": { "texture": "#2", "uv": [ 0.0, 0.0, 10.0, 3.0 ] },
+                "up": { "texture": "#2", "uv": [ 0.0, 0.0, 4.0, 10.0 ] },
+                "down": { "texture": "#2", "uv": [ 0.0, 0.0, 4.0, 10.0 ] }
             }
-        }, 
+        },
         {
             "name": "Driveshaft", 
             "from": [ 7, 5, -3 ], 
@@ -316,165 +324,165 @@
             }
         }, 
         {
-            "name": "Front left engine support", 
-            "from": [ 3, 1, 7 ], 
-            "to":   [ 4, 4, 8 ], 
-            "rotation": { "origin": [3, 1, 7], "axis": "z", "angle": -22.5 }, 
+            "name": "Front left engine support",
+            "from": [ 3.0, 1.0, 7.0 ], 
+            "to": [ 4.0, 4.0, 8.0 ], 
+            "rotation": { "origin": [ 3.0, 1.0, 7.0 ], "axis": "z", "angle": -22.5 },
             "faces": {
-                "north": { "texture": "#main", "uv": [ 0, 2, 0.125, 2.375 ] }, 
-                "east":  { "texture": "#main", "uv": [ 0, 2, 0.125, 2.375 ] }, 
-                "south": { "texture": "#main", "uv": [ 0, 2, 0.125, 2.375 ] }, 
-                "west":  { "texture": "#main", "uv": [ 0, 2, 0.125, 2.375 ] }, 
-                "up":    { "texture": "#main", "uv": [ 0, 2, 0.125, 2.125 ] }, 
-                "down":  { "texture": "#main", "uv": [ 0, 2, 0.125, 2.125 ] }
+                "north": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 3.0 ] },
+                "east": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 3.0 ] },
+                "south": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 3.0 ] },
+                "west": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 3.0 ] },
+                "up": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 1.0 ] },
+                "down": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 1.0 ] }
             }
-        }, 
+        },
         {
-            "name": "Back left engine support", 
-            "from": [ 3, 1, 14 ], 
-            "to":   [ 4, 4, 15 ], 
-            "rotation": { "origin": [3, 1, 7], "axis": "z", "angle": -22.5 }, 
+            "name": "Back left engine support",
+            "from": [ 3.0, 1.0, 14.0 ], 
+            "to": [ 4.0, 4.0, 15.0 ], 
+            "rotation": { "origin": [ 3.0, 1.0, 7.0 ], "axis": "z", "angle": -22.5 },
             "faces": {
-                "north": { "texture": "#main", "uv": [ 0, 2, 0.125, 2.375 ] }, 
-                "east":  { "texture": "#main", "uv": [ 0, 2, 0.125, 2.375 ] }, 
-                "south": { "texture": "#main", "uv": [ 0, 2, 0.125, 2.375 ] }, 
-                "west":  { "texture": "#main", "uv": [ 0, 2, 0.125, 2.375 ] }, 
-                "up":    { "texture": "#main", "uv": [ 0, 2, 0.125, 2.125 ] }, 
-                "down":  { "texture": "#main", "uv": [ 0, 2, 0.125, 2.125 ] }
+                "north": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 3.0 ] },
+                "east": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 3.0 ] },
+                "south": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 3.0 ] },
+                "west": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 3.0 ] },
+                "up": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 1.0 ] },
+                "down": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 1.0 ] }
             }
-        }, 
+        },
         {
-            "name": "Front left engine support bolt", 
-            "from": [ 4, 3, 7 ], 
-            "to":   [ 5, 4, 8 ], 
+            "name": "Front left engine support bolt",
+            "from": [ 4.0, 3.0, 7.0 ], 
+            "to": [ 5.0, 4.0, 8.0 ], 
             "faces": {
-                "north": { "texture": "#main", "uv": [ 0, 2, 0.125, 2.125 ] }, 
-                "east":  { "texture": "#main", "uv": [ 0, 2, 0.125, 2.125 ] }, 
-                "south": { "texture": "#main", "uv": [ 0, 2, 0.125, 2.125 ] }, 
-                "west":  { "texture": "#main", "uv": [ 0, 2, 0.125, 2.125 ] }, 
-                "up":    { "texture": "#main", "uv": [ 0, 2, 0.125, 2.125 ] }, 
-                "down":  { "texture": "#main", "uv": [ 0, 2, 0.125, 2.125 ] }
+                "north": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 1.0 ] },
+                "east": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 1.0 ] },
+                "south": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 1.0 ] },
+                "west": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 1.0 ] },
+                "up": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 1.0 ] },
+                "down": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 1.0 ] }
             }
-        }, 
+        },
         {
-            "name": "Back left engine support bolt", 
-            "from": [ 4, 3, 14 ], 
-            "to":   [ 5, 4, 15 ], 
+            "name": "Back left engine support bolt",
+            "from": [ 4.0, 3.0, 14.0 ], 
+            "to": [ 5.0, 4.0, 15.0 ], 
             "faces": {
-                "north": { "texture": "#main", "uv": [ 0, 2, 0.125, 2.125 ] }, 
-                "east":  { "texture": "#main", "uv": [ 0, 2, 0.125, 2.125 ] }, 
-                "south": { "texture": "#main", "uv": [ 0, 2, 0.125, 2.125 ] }, 
-                "west":  { "texture": "#main", "uv": [ 0, 2, 0.125, 2.125 ] }, 
-                "up":    { "texture": "#main", "uv": [ 0, 2, 0.125, 2.125 ] }, 
-                "down":  { "texture": "#main", "uv": [ 0, 2, 0.125, 2.125 ] }
+                "north": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 1.0 ] },
+                "east": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 1.0 ] },
+                "south": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 1.0 ] },
+                "west": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 1.0 ] },
+                "up": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 1.0 ] },
+                "down": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 1.0 ] }
             }
-        }, 
+        },
         {
-            "name": "Front right engine support", 
-            "from": [ 12, 1, 7 ], 
-            "to":   [ 13, 4, 8 ], 
-            "rotation": { "origin": [13, 1, 7], "axis": "z", "angle": 22.5 }, 
+            "name": "Front right engine support",
+            "from": [ 12.0, 1.0, 7.0 ], 
+            "to": [ 13.0, 4.0, 8.0 ], 
+            "rotation": { "origin": [ 13.0, 1.0, 7.0 ], "axis": "z", "angle": 22.5 },
             "faces": {
-                "north": { "texture": "#main", "uv": [ 0, 2, 0.125, 2.375 ] }, 
-                "east":  { "texture": "#main", "uv": [ 0, 2, 0.125, 2.375 ] }, 
-                "south": { "texture": "#main", "uv": [ 0, 2, 0.125, 2.375 ] }, 
-                "west":  { "texture": "#main", "uv": [ 0, 2, 0.125, 2.375 ] }, 
-                "up":    { "texture": "#main", "uv": [ 0, 2, 0.125, 2.125 ] }, 
-                "down":  { "texture": "#main", "uv": [ 0, 2, 0.125, 2.125 ] }
+                "north": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 3.0 ] },
+                "east": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 3.0 ] },
+                "south": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 3.0 ] },
+                "west": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 3.0 ] },
+                "up": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 1.0 ] },
+                "down": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 1.0 ] }
             }
-        }, 
+        },
         {
-            "name": "Back right engine support", 
-            "from": [ 12, 1, 14 ], 
-            "to":   [ 13, 4, 15 ], 
-            "rotation": { "origin": [13, 1, 7], "axis": "z", "angle": 22.5 }, 
+            "name": "Back right engine support",
+            "from": [ 12.0, 1.0, 14.0 ], 
+            "to": [ 13.0, 4.0, 15.0 ], 
+            "rotation": { "origin": [ 13.0, 1.0, 7.0 ], "axis": "z", "angle": 22.5 },
             "faces": {
-                "north": { "texture": "#main", "uv": [ 0, 2, 0.125, 2.375 ] }, 
-                "east":  { "texture": "#main", "uv": [ 0, 2, 0.125, 2.375 ] }, 
-                "south": { "texture": "#main", "uv": [ 0, 2, 0.125, 2.375 ] }, 
-                "west":  { "texture": "#main", "uv": [ 0, 2, 0.125, 2.375 ] }, 
-                "up":    { "texture": "#main", "uv": [ 0, 2, 0.125, 2.125 ] }, 
-                "down":  { "texture": "#main", "uv": [ 0, 2, 0.125, 2.125 ] }
+                "north": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 3.0 ] },
+                "east": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 3.0 ] },
+                "south": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 3.0 ] },
+                "west": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 3.0 ] },
+                "up": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 1.0 ] },
+                "down": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 1.0 ] }
             }
-        }, 
+        },
         {
-            "name": "Front right engine support bolt", 
-            "from": [ 11, 3, 7 ], 
-            "to":   [ 12, 4, 8 ], 
+            "name": "Front right engine support bolt",
+            "from": [ 11.0, 3.0, 7.0 ], 
+            "to": [ 12.0, 4.0, 8.0 ], 
             "faces": {
-                "north": { "texture": "#main", "uv": [ 0, 2, 0.125, 2.125 ] }, 
-                "east":  { "texture": "#main", "uv": [ 0, 2, 0.125, 2.125 ] }, 
-                "south": { "texture": "#main", "uv": [ 0, 2, 0.125, 2.125 ] }, 
-                "west":  { "texture": "#main", "uv": [ 0, 2, 0.125, 2.125 ] }, 
-                "up":    { "texture": "#main", "uv": [ 0, 2, 0.125, 2.125 ] }, 
-                "down":  { "texture": "#main", "uv": [ 0, 2, 0.125, 2.125 ] }
+                "north": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 1.0 ] },
+                "east": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 1.0 ] },
+                "south": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 1.0 ] },
+                "west": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 1.0 ] },
+                "up": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 1.0 ] },
+                "down": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 1.0 ] }
             }
-        }, 
+        },
         {
-            "name": "Back right engine support bolt", 
-            "from": [ 11, 3, 14 ], 
-            "to":   [ 12, 4, 15 ], 
+            "name": "Back right engine support bolt",
+            "from": [ 11.0, 3.0, 14.0 ], 
+            "to": [ 12.0, 4.0, 15.0 ], 
             "faces": {
-                "north": { "texture": "#main", "uv": [ 0, 2, 0.125, 2.125 ] }, 
-                "east":  { "texture": "#main", "uv": [ 0, 2, 0.125, 2.125 ] }, 
-                "south": { "texture": "#main", "uv": [ 0, 2, 0.125, 2.125 ] }, 
-                "west":  { "texture": "#main", "uv": [ 0, 2, 0.125, 2.125 ] }, 
-                "up":    { "texture": "#main", "uv": [ 0, 2, 0.125, 2.125 ] }, 
-                "down":  { "texture": "#main", "uv": [ 0, 2, 0.125, 2.125 ] }
+                "north": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 1.0 ] },
+                "east": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 1.0 ] },
+                "south": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 1.0 ] },
+                "west": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 1.0 ] },
+                "up": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 1.0 ] },
+                "down": { "texture": "#4", "uv": [ 0.0, 0.0, 1.0, 1.0 ] }
             }
-        }, 
+        },
         {
-            "name": "Shaft bearing left", 
-            "from": [ 6, 2, 0 ], 
-            "to":   [ 7, 8, 1 ], 
+            "name": "Shaft bearing left",
+            "from": [ 6.0, 2.0, 0.0 ], 
+            "to": [ 7.0, 8.0, 1.0 ], 
             "faces": {
-                "north": { "texture": "#main", "uv": [ 0, 0, 0.125, 0.75 ] }, 
-                "east":  { "texture": "#main", "uv": [ 0, 0, 0.125, 0.75 ] }, 
-                "south": { "texture": "#main", "uv": [ 0, 0, 0.125, 0.75 ] }, 
-                "west":  { "texture": "#main", "uv": [ 0, 0, 0.125, 0.75 ] }, 
-                "up":    { "texture": "#main", "uv": [ 0, 0, 0.125, 0.125 ] }, 
-                "down":  { "texture": "#main", "uv": [ 0, 0, 0.125, 0.125 ] }
+                "north": { "texture": "#0", "uv": [ 0.0, 0.0, 1.0, 6.0 ] },
+                "east": { "texture": "#0", "uv": [ 0.0, 0.0, 1.0, 6.0 ] },
+                "south": { "texture": "#0", "uv": [ 0.0, 0.0, 1.0, 6.0 ] },
+                "west": { "texture": "#0", "uv": [ 0.0, 0.0, 1.0, 6.0 ] },
+                "up": { "texture": "#0", "uv": [ 0.0, 0.0, 1.0, 1.0 ] },
+                "down": { "texture": "#0", "uv": [ 0.0, 0.0, 1.0, 1.0 ] }
             }
-        }, 
+        },
         {
-            "name": "Shaft bearing right", 
-            "from": [ 9, 2, 0 ], 
-            "to":   [ 10, 8, 1 ], 
+            "name": "Shaft bearing right",
+            "from": [ 9.0, 2.0, 0.0 ], 
+            "to": [ 10.0, 8.0, 1.0 ], 
             "faces": {
-                "north": { "texture": "#main", "uv": [ 0, 0, 0.125, 0.75 ] }, 
-                "east":  { "texture": "#main", "uv": [ 0, 0, 0.125, 0.75 ] }, 
-                "south": { "texture": "#main", "uv": [ 0, 0, 0.125, 0.75 ] }, 
-                "west":  { "texture": "#main", "uv": [ 0, 0, 0.125, 0.75 ] }, 
-                "up":    { "texture": "#main", "uv": [ 0, 0, 0.125, 0.125 ] }, 
-                "down":  { "texture": "#main", "uv": [ 0, 0, 0.125, 0.125 ] }
+                "north": { "texture": "#0", "uv": [ 0.0, 0.0, 1.0, 6.0 ] },
+                "east": { "texture": "#0", "uv": [ 0.0, 0.0, 1.0, 6.0 ] },
+                "south": { "texture": "#0", "uv": [ 0.0, 0.0, 1.0, 6.0 ] },
+                "west": { "texture": "#0", "uv": [ 0.0, 0.0, 1.0, 6.0 ] },
+                "up": { "texture": "#0", "uv": [ 0.0, 0.0, 1.0, 1.0 ] },
+                "down": { "texture": "#0", "uv": [ 0.0, 0.0, 1.0, 1.0 ] }
             }
-        }, 
+        },
         {
-            "name": "Shaft bearing bottom", 
-            "from": [ 6, 4, 0 ], 
-            "to":   [ 9, 5, 1 ], 
+            "name": "Shaft bearing bottom",
+            "from": [ 6.0, 4.0, 0.0 ], 
+            "to": [ 9.0, 5.0, 1.0 ], 
             "faces": {
-                "north": { "texture": "#main", "uv": [ 0, 0, 0.375, 0.125 ] }, 
-                "east":  { "texture": "#main", "uv": [ 0, 0, 0.125, 0.125 ] }, 
-                "south": { "texture": "#main", "uv": [ 0, 0, 0.375, 0.125 ] }, 
-                "west":  { "texture": "#main", "uv": [ 0, 0, 0.125, 0.125 ] }, 
-                "up":    { "texture": "#main", "uv": [ 0, 0, 0.375, 0.125 ] }, 
-                "down":  { "texture": "#main", "uv": [ 0, 0, 0.375, 0.125 ] }
+                "north": { "texture": "#0", "uv": [ 0.0, 0.0, 3.0, 1.0 ] },
+                "east": { "texture": "#0", "uv": [ 0.0, 0.0, 1.0, 1.0 ] },
+                "south": { "texture": "#0", "uv": [ 0.0, 0.0, 3.0, 1.0 ] },
+                "west": { "texture": "#0", "uv": [ 0.0, 0.0, 1.0, 1.0 ] },
+                "up": { "texture": "#0", "uv": [ 0.0, 0.0, 3.0, 1.0 ] },
+                "down": { "texture": "#0", "uv": [ 0.0, 0.0, 3.0, 1.0 ] }
             }
-        }, 
+        },
         {
-            "name": "Shaft bearing top", 
-            "from": [ 6, 7, 0 ], 
-            "to":   [ 9, 8, 1 ], 
+            "name": "Shaft bearing top",
+            "from": [ 6.0, 7.0, 0.0 ], 
+            "to": [ 9.0, 8.0, 1.0 ], 
             "faces": {
-                "north": { "texture": "#main", "uv": [ 0, 0, 0.375, 0.125 ] }, 
-                "east":  { "texture": "#main", "uv": [ 0, 0, 0.125, 0.125 ] }, 
-                "south": { "texture": "#main", "uv": [ 0, 0, 0.375, 0.125 ] }, 
-                "west":  { "texture": "#main", "uv": [ 0, 0, 0.125, 0.125 ] }, 
-                "up":    { "texture": "#main", "uv": [ 0, 0, 0.375, 0.125 ] }, 
-                "down":  { "texture": "#main", "uv": [ 0, 0, 0.375, 0.125 ] }
+                "north": { "texture": "#0", "uv": [ 0.0, 0.0, 3.0, 1.0 ] },
+                "east": { "texture": "#0", "uv": [ 0.0, 0.0, 1.0, 1.0 ] },
+                "south": { "texture": "#0", "uv": [ 0.0, 0.0, 3.0, 1.0 ] },
+                "west": { "texture": "#0", "uv": [ 0.0, 0.0, 1.0, 1.0 ] },
+                "up": { "texture": "#0", "uv": [ 0.0, 0.0, 3.0, 1.0 ] },
+                "down": { "texture": "#0", "uv": [ 0.0, 0.0, 3.0, 1.0 ] }
             }
-        }, 
+        },
         {
             "name": "Driveshaft part 2", 
             "from": [ 7, 5, -3 ], 
@@ -590,154 +598,6 @@
                 "west":  { "texture": "#main", "uv": [ 0, 2, 0.0625, 2.125 ] }, 
                 "up":    { "texture": "#main", "uv": [ 0, 2, 0.5, 2.0625 ] }, 
                 "down":  { "texture": "#main", "uv": [ 0, 2, 0.5, 2.0625 ] }
-            }
-        }, 
-        {
-            "name": "Control box pedestal", 
-            "from": [ 2, 2, 16 ], 
-            "to":   [ 3, 6, 18 ], 
-            "faces": {
-                "north": { "texture": "#main", "uv": [ 0, 0, 0.125, 0.5 ] }, 
-                "east":  { "texture": "#main", "uv": [ 0, 0, 0.25, 0.5 ] }, 
-                "south": { "texture": "#main", "uv": [ 0, 0, 0.125, 0.5 ] }, 
-                "west":  { "texture": "#main", "uv": [ 0, 0, 0.25, 0.5 ] }, 
-                "up":    { "texture": "#main", "uv": [ 0, 0, 0.125, 0.25 ] }, 
-                "down":  { "texture": "#main", "uv": [ 0, 0, 0.125, 0.25 ] }
-            }
-        }, 
-        {
-            "name": "Control box", 
-            "from": [ 1.5, 5, 15 ], 
-            "to":   [ 2.5, 8, 19 ], 
-            "rotation": { "origin": [1.5, 5, 15], "axis": "z", "angle": -22.5 }, 
-            "faces": {
-                "north": { "texture": "#main", "uv": [ 6, 0, 6.125, 0.375 ] }, 
-                "east":  { "texture": "#main", "uv": [ 6, 0, 6.5, 0.375 ] }, 
-                "south": { "texture": "#main", "uv": [ 6, 0, 6.125, 0.375 ] }, 
-                "west":  { "texture": "#main", "uv": [ 6, 0, 6.5, 0.375 ] }, 
-                "up":    { "texture": "#main", "uv": [ 6, 0, 6.125, 0.5 ] }, 
-                "down":  { "texture": "#main", "uv": [ 6, 0, 6.125, 0.5 ] }
-            }
-        }, 
-        {
-            "name": "Button 1", 
-            "from": [ 2, 7, 15.5 ], 
-            "to":   [ 2.3, 7.5, 16 ], 
-            "rotation": { "origin": [1, 7, 16], "axis": "z", "angle": -22.5 }, 
-            "faces": {
-                "north": { "texture": "#main", "uv": [ 2, 2, 2.0375, 2.0625 ] }, 
-                "east":  { "texture": "#main", "uv": [ 2, 2, 2.0625, 2.0625 ] }, 
-                "south": { "texture": "#main", "uv": [ 2, 2, 2.0375, 2.0625 ] }, 
-                "west":  { "texture": "#main", "uv": [ 2, 2, 2.0625, 2.0625 ] }, 
-                "up":    { "texture": "#main", "uv": [ 2, 2, 2.0375, 2.0625 ] }, 
-                "down":  { "texture": "#main", "uv": [ 2, 2, 2.0375, 2.0625 ] }
-            }
-        }, 
-        {
-            "name": "Button 2", 
-            "from": [ 2, 7, 16.5 ], 
-            "to":   [ 2.3, 7.5, 17 ], 
-            "rotation": { "origin": [1, 7, 16], "axis": "z", "angle": -22.5 }, 
-            "faces": {
-                "north": { "texture": "#main", "uv": [ 2, 2, 2.0375, 2.0625 ] }, 
-                "east":  { "texture": "#main", "uv": [ 2, 2, 2.0625, 2.0625 ] }, 
-                "south": { "texture": "#main", "uv": [ 2, 2, 2.0375, 2.0625 ] }, 
-                "west":  { "texture": "#main", "uv": [ 2, 2, 2.0625, 2.0625 ] }, 
-                "up":    { "texture": "#main", "uv": [ 2, 2, 2.0375, 2.0625 ] }, 
-                "down":  { "texture": "#main", "uv": [ 2, 2, 2.0375, 2.0625 ] }
-            }
-        }, 
-        {
-            "name": "Button 3", 
-            "from": [ 2, 7, 17.5 ], 
-            "to":   [ 2.3, 7.5, 18 ], 
-            "rotation": { "origin": [1, 7, 16], "axis": "z", "angle": -22.5 }, 
-            "faces": {
-                "north": { "texture": "#main", "uv": [ 4, 2, 4.0375, 2.0625 ] }, 
-                "east":  { "texture": "#main", "uv": [ 4, 2, 4.0625, 2.0625 ] }, 
-                "south": { "texture": "#main", "uv": [ 4, 2, 4.0375, 2.0625 ] }, 
-                "west":  { "texture": "#main", "uv": [ 4, 2, 4.0625, 2.0625 ] }, 
-                "up":    { "texture": "#main", "uv": [ 4, 2, 4.0375, 2.0625 ] }, 
-                "down":  { "texture": "#main", "uv": [ 4, 2, 4.0375, 2.0625 ] }
-            }
-        }, 
-        {
-            "name": "Switch base", 
-            "from": [ 2.1, 6, 16 ], 
-            "to":   [ 2.2, 6.5, 16.4 ], 
-            "rotation": { "origin": [1, 7, 16], "axis": "z", "angle": -22.5 }, 
-            "faces": {
-                "north": { "texture": "#main", "uv": [ 0, 2, 0.0125, 2.0625 ] }, 
-                "east":  { "texture": "#main", "uv": [ 0, 2, 0.05, 2.0625 ] }, 
-                "south": { "texture": "#main", "uv": [ 0, 2, 0.0125, 2.0625 ] }, 
-                "west":  { "texture": "#main", "uv": [ 0, 2, 0.05, 2.0625 ] }, 
-                "up":    { "texture": "#main", "uv": [ 0, 2, 0.0125, 2.05 ] }, 
-                "down":  { "texture": "#main", "uv": [ 0, 2, 0.0125, 2.05 ] }
-            }
-        }, 
-        {
-            "name": "Switch", 
-            "from": [ 1.4, 5.8, 16.1 ], 
-            "to":   [ 1.9, 5.8999999999999995, 16.3 ], 
-            "faces": {
-                "north": { "texture": "#main", "uv": [ 2, 0, 2.0625, 0.0125 ] }, 
-                "east":  { "texture": "#main", "uv": [ 2, 0, 2.025, 0.0125 ] }, 
-                "south": { "texture": "#main", "uv": [ 2, 0, 2.0625, 0.0125 ] }, 
-                "west":  { "texture": "#main", "uv": [ 2, 0, 2.025, 0.0125 ] }, 
-                "up":    { "texture": "#main", "uv": [ 2, 0, 2.0625, 0.025 ] }, 
-                "down":  { "texture": "#main", "uv": [ 2, 0, 2.0625, 0.025 ] }
-            }
-        }, 
-        {
-            "name": "Engine housing thing 1", 
-            "from": [ 7, 8.3, 7 ], 
-            "to":   [ 9, 9.3, 8 ], 
-            "faces": {
-                "north": { "texture": "#main", "uv": [ 2, 0, 2.25, 0.125 ] }, 
-                "east":  { "texture": "#main", "uv": [ 2, 0, 2.125, 0.125 ] }, 
-                "south": { "texture": "#main", "uv": [ 2, 0, 2.25, 0.125 ] }, 
-                "west":  { "texture": "#main", "uv": [ 2, 0, 2.125, 0.125 ] }, 
-                "up":    { "texture": "#main", "uv": [ 2, 0, 2.25, 0.125 ] }, 
-                "down":  { "texture": "#main", "uv": [ 2, 0, 2.25, 0.125 ] }
-            }
-        }, 
-        {
-            "name": "Engine gousing thing 2", 
-            "from": [ 7, 8.3, 9 ], 
-            "to":   [ 9, 9.3, 10 ], 
-            "faces": {
-                "north": { "texture": "#main", "uv": [ 2, 0, 2.25, 0.125 ] }, 
-                "east":  { "texture": "#main", "uv": [ 2, 0, 2.125, 0.125 ] }, 
-                "south": { "texture": "#main", "uv": [ 2, 0, 2.25, 0.125 ] }, 
-                "west":  { "texture": "#main", "uv": [ 2, 0, 2.125, 0.125 ] }, 
-                "up":    { "texture": "#main", "uv": [ 2, 0, 2.25, 0.125 ] }, 
-                "down":  { "texture": "#main", "uv": [ 2, 0, 2.25, 0.125 ] }
-            }
-        }, 
-        {
-            "name": "Engine housing thing 3", 
-            "from": [ 7, 8.3, 11 ], 
-            "to":   [ 9, 9.3, 12 ], 
-            "faces": {
-                "north": { "texture": "#main", "uv": [ 2, 0, 2.25, 0.125 ] }, 
-                "east":  { "texture": "#main", "uv": [ 2, 0, 2.125, 0.125 ] }, 
-                "south": { "texture": "#main", "uv": [ 2, 0, 2.25, 0.125 ] }, 
-                "west":  { "texture": "#main", "uv": [ 2, 0, 2.125, 0.125 ] }, 
-                "up":    { "texture": "#main", "uv": [ 2, 0, 2.25, 0.125 ] }, 
-                "down":  { "texture": "#main", "uv": [ 2, 0, 2.25, 0.125 ] }
-            }
-        }, 
-        {
-            "name": "Engine housing thing 4", 
-            "from": [ 7, 8.3, 13 ], 
-            "to":   [ 9, 9.3, 14 ], 
-            "faces": {
-                "north": { "texture": "#main", "uv": [ 2, 0, 2.25, 0.125 ] }, 
-                "east":  { "texture": "#main", "uv": [ 2, 0, 2.125, 0.125 ] }, 
-                "south": { "texture": "#main", "uv": [ 2, 0, 2.25, 0.125 ] }, 
-                "west":  { "texture": "#main", "uv": [ 2, 0, 2.125, 0.125 ] }, 
-                "up":    { "texture": "#main", "uv": [ 2, 0, 2.25, 0.125 ] }, 
-                "down":  { "texture": "#main", "uv": [ 2, 0, 2.25, 0.125 ] }
             }
         }, 
         {

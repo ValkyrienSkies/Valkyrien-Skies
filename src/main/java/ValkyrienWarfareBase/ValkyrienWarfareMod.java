@@ -45,7 +45,7 @@ public class ValkyrienWarfareMod{
 
 	public static final String MODID = "valkyrienwarfare";
     public static final String MODNAME = "Valkyrien Warfare";
-    public static final String MODVER = "0.86c";
+    public static final String MODVER = "0.86d";
 
     public static File configFile;
     public static Configuration config;

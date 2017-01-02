@@ -63,7 +63,7 @@ public class BlockNormalEngine extends Block implements IBlockForceProvider {
 		if(!world.isBlockPowered(pos)){
 			return acting;
 		}
-		double power = enginePower * secondsToApply;
+		double power = this.getEnginePower(world, pos, state, shipEntity) * secondsToApply;
 		switch(enumfacing){
 			case DOWN: acting = new Vector(0,power,0);
 			break;
@@ -109,5 +109,14 @@ public class BlockNormalEngine extends Block implements IBlockForceProvider {
 	@Override
 	public boolean canConnectRedstone(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing face)	{
 		return true;
+	}
+	
+	/**
+	 * Used for calculating force applied to the airship by an engine.
+	 * Override this in your subclasses to make engines that are more dynamic than simply being faster engines.
+	 * @return
+	 */
+	public double getEnginePower(World world, BlockPos pos, IBlockState state, Entity shipEntity)	{
+		return this.enginePower;
 	}
 }

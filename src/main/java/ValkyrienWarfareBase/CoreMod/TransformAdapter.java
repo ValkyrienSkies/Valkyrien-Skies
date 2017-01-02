@@ -56,37 +56,37 @@ public class TransformAdapter extends ClassVisitor{
 	private static final String ListName = "java/util/List";
 	private static final String ClassName = "java/lang/Class";
 	
-	private String ParticleName;
-	private String ParticleManagerName;
-	private String SoundEventName;
-	private String SoundCategoryName;
-	private String WorldClassName;
-	private String RenderGlobalName;
-	private String EntityClassName;
-	private String VertexBufferName;
-	private String TessellatorName;
-	private String EntityPlayerName;
-	private String RayTraceResult;
-	private String TileEntityName;
-	private String ICameraName;
-	private String IBlockStateName;
-	private String BlockPosName;
-	private String WorldClientName;
-	private String PlayerListName;
-	private String PacketName;
-	private String Vec3dName;
-	private String GameProfileName;
-	private String EntityPlayerMPName;
-	private String BlockRenderLayerName;
-	private String ChunkName;
-	private String ChunkProviderServerName;
-	private String ContainerName;
-	private String AxisAlignedBBName;
-	private String ExplosionName;
+	private final String ParticleName;
+	private final String ParticleManagerName;
+	private final String SoundEventName;
+	private final String SoundCategoryName;
+	private final String WorldClassName;
+	private final String RenderGlobalName;
+	private final String EntityClassName;
+	private final String VertexBufferName;
+	private final String TessellatorName;
+	private final String EntityPlayerName;
+	private final String RayTraceResult;
+	private final String TileEntityName;
+	private final String ICameraName;
+	private final String IBlockStateName;
+	private final String BlockPosName;
+	private final String WorldClientName;
+	private final String PlayerListName;
+	private final String PacketName;
+	private final String Vec3dName;
+	private final String GameProfileName;
+	private final String EntityPlayerMPName;
+	private final String BlockRenderLayerName;
+	private final String ChunkName;
+	private final String ChunkProviderServerName;
+	private final String ContainerName;
+	private final String AxisAlignedBBName;
+	private final String ExplosionName;
 	private String EntityLivingBaseName;
-	private String ViewFrustumName;
-	private String EntityRendererName;
-	private String FrustumName;
+	private final String ViewFrustumName;
+	private final String EntityRendererName;
+	private final String FrustumName;
 	
 //	private boolean correctDesc,correctName,correctSuperClass;
 
@@ -95,10 +95,42 @@ public class TransformAdapter extends ClassVisitor{
 //		m_isObfuscatedEnvironment = isObfuscatedEnvironment;
 		m_className = null;
 		
+		EntityClassName = (RawEntityClassName);
+		WorldClassName = (RawWorldClassName);
+		WorldClientName = (RawWorldClientName);
+		PacketName = (RawPacketName);
+		EntityPlayerName = (RawEntityPlayerName);
+		RenderGlobalName = (RawRenderGlobalName);
+		ICameraName = (RawICameraName);
+		BlockRenderLayerName = (RawBlockRenderLayerName);
+		ChunkProviderServerName = (RawChunkProviderServerName);
+		PlayerListName = (RawPlayerListName);
+		GameProfileName = (RawGameProfileName);
+		EntityPlayerMPName = (RawEntityPlayerMPName);
+		ChunkName = (RawChunkName);
+		RayTraceResult = (RawRayTraceResult);
+		Vec3dName = (RawVec3dName);
+		IBlockStateName = (RawIBlockStateName);
+		BlockPosName = (RawBlockPosName);
+		TileEntityName = (RawTileEntityName);
+		TessellatorName = (RawTessellatorName);
+		VertexBufferName = (RawVertexBufferName);
+		SoundEventName = (RawSoundEventName);
+		SoundCategoryName = (RawSoundCategoryName);
+		ParticleName = (RawParticleName);
+		ParticleManagerName = (RawParticleManagerName);
+		ContainerName = (RawContainerName);
+		AxisAlignedBBName = (RawAxisAlignedBBName);
+		ExplosionName = (RawExplosionName);
+		EntityLivingBaseName = (RawEntityLivingBaseName);
+		ViewFrustumName = (RawViewFrustumName);
+		EntityRendererName = (RawEntityRendererName);
+		FrustumName = (RawFrustumName);
+		
 		
 	}
 	
-	private void runRealNames(){
+/*	private void runRealNames(){
 		EntityClassName = getRuntimeClassName(RawEntityClassName);
 		WorldClassName = getRuntimeClassName(RawWorldClassName);
 		WorldClientName = getRuntimeClassName(RawWorldClientName);
@@ -164,10 +196,10 @@ public class TransformAdapter extends ClassVisitor{
 		ViewFrustumName = (RawViewFrustumName);
 		EntityRendererName = (RawEntityRendererName);
 		FrustumName = (RawFrustumName);
-	}
+	}*/
 
 	public boolean runTransformerTop(String calledName,String calledDesc,String calledOwner,MethodVisitor mv){
-		runPreNames();
+//		runPreNames();
 //		if(!runTransformer(calledName,calledDesc,calledOwner,mv)){
 //			return false;
 //		}
@@ -390,9 +422,14 @@ public class TransformAdapter extends ClassVisitor{
 			boolean correctName = pertainsToMethod(calledName,classFrom,methodNameClear,methodNameObsf)||pertainsToMethod(calledName,calledOwner,methodNameClear,methodNameObsf)|| pertainsToMethod(calledName,getObfuscatedClassName(classFrom),methodNameClear,methodNameObsf)||pertainsToMethod(calledName,getObfuscatedClassName(calledOwner),methodNameClear,methodNameObsf);
 			if(correctName){
 				boolean correctSuperClass = InheritanceUtils.extendsClass(calledOwner, classFrom)
+				
 				||InheritanceUtils.extendsClass(calledOwner, getRuntimeClassName(classFrom))
 				||InheritanceUtils.extendsClass(getRuntimeClassName(calledOwner), classFrom)
 				||InheritanceUtils.extendsClass(getRuntimeClassName(calledOwner), getRuntimeClassName(classFrom))
+				
+//				||InheritanceUtils.extendsClass(calledOwner, getClearClassName(classFrom))
+//				||InheritanceUtils.extendsClass(getClearClassName(calledOwner), classFrom)
+//				||InheritanceUtils.extendsClass(getClearClassName(calledOwner), getClearClassName(classFrom))
 				;
 				return correctSuperClass;
 			}
@@ -429,6 +466,14 @@ public class TransformAdapter extends ClassVisitor{
 		String obfuscatedClassName = FMLDeobfuscatingRemapper.INSTANCE.unmap( clearClassName );
 		if( obfuscatedClassName == null ){
 			return clearClassName;
+		}
+		return obfuscatedClassName;
+	}
+	
+	private String getClearClassName( String runtimeClassName ){
+		String obfuscatedClassName = FMLDeobfuscatingRemapper.INSTANCE.map( runtimeClassName );
+		if( obfuscatedClassName == null ){
+			return runtimeClassName;
 		}
 		return obfuscatedClassName;
 	}

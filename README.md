@@ -1,5 +1,2 @@
 # Valkyrien-Warfare-Revamped
-The redo
-
-Command Arguments:
--Xincgc -Xmx1024M -Xms1024M -Dfml.coreMods.load=ValkyrienWarfareBase.CoreMod.ValkyrienWarfarePlugin
+The Airships Mod to end all other Airships Mods. Better compatibility, performance, collisions, interactions and physics than anything prior!

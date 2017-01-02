@@ -2,14 +2,14 @@
 {
   "modid": "valkyrienwarfare",
   "name": "Valkyrien Warfare",
-  "description": "Claim The Skies!",
-  "version": "0.86c",
+  "description": "Rule The Skies!",
+  "version": "0.86d",
   "mcversion": "1.10.2",
   "url": "http://www.minecraftforum.net/forums/mapping-and-modding/minecraft-mods/2761225-valkyrien-warfare-airships-physics-subworlds-and",
   "updateUrl": "https://raw.githubusercontent.com/DaMatrix/Valkyrien-Warfare-Revamped/update/update.json",
-  "authorList": ["thebest108"],
+  "authorList": ["thebest108", "DaPorkchop_", "Marvin_Megavolt"],
   "credits": "thebest108, Lemadec, CreativeMD, Lorazaam, Akikaze, and Marvin_Megavolt",
-  "logoFile": "",
+  "logoFile": "VW_Logo2.png",
   "screenshots": [],
   "dependencies": []
 },
@@ -18,13 +18,19 @@
   "name": "Valkyrien Warfare Control",
   "description": "Adds a set of Items and Blocks allowing for more advanced Airship construction",
   "version": "0.3b",
-  "mcversion": "1.10.2",
-  "url": "http://www.minecraftforum.net/forums/mapping-and-modding/minecraft-mods/2761225-valkyrien-warfare-airships-physics-subworlds-and",
-  "updateUrl": "",
-  "authorList": ["thebest108"],
-  "credits": "thebest108, Lemadec, CreativeMD, Lorazaam, Akikaze, and Marvin_Megavolt",
   "logoFile": "",
+  "parent": "valkyrienwarfare",
   "screenshots": [],
-  "dependencies": []
+  "dependencies": ["valkyrienwarfare"]
+},
+{
+  "modid": "valkyrienwarfarecombat",
+  "name": "Valkyrien Warfare Combat",
+  "description": "Airship Weapons",
+  "version": "0.1",
+  "logoFile": "",
+  "parent": "valkyrienwarfare",
+  "screenshots": [],
+  "dependencies": ["valkyrienwarfare"]
 }
 ]

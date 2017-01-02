@@ -6,7 +6,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 /**
- * Custom Vector Class
+ * Custom Vector Class used by Valkyrien Warfare
  * @author thebest108
  */
 public class Vector{
@@ -75,6 +75,12 @@ public class Vector{
 		Z += v.Z;
 	}
 
+	public final void add(double x,double y,double z){
+		X += x;
+		Y += y;
+		Z += z;
+	}
+	
 	public void add(Vec3d vec){
 		X += vec.xCoord;
 		Y += vec.yCoord;
@@ -141,6 +147,10 @@ public class Vector{
 
    	public void zero(){
    		X=Y=Z=0D;
+   	}
+   	
+   	public void roundToWhole(){
+   		X = Math.round(X);Y = Math.round(Y);Z = Math.round(Z);
    	}
 
    	public boolean equals(Vector vec){

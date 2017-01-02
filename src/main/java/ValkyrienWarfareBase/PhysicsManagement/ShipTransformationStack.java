@@ -29,9 +29,14 @@ public class ShipTransformationStack {
 	
 	//TODO: Make this auto-adjust to best settings for the server
 	public ShipTransformData getDataForTick(int lastTick){
+		//TODO: This may cause some horrific error; watch out for recentTransforms[0]==null !
 		if(ValkyrienWarfareMod.shipTickDelay==0){
 			return recentTransforms[0];
-		}		
+		}
+		if(recentTransforms[0]==null){
+			System.err.println("A SHIP JUST RETURNED NULL FOR 'recentTransforms[0]==null'; ANY WEIRD ERRORS PAST HERE ARE DIRECTLY LINKED TO THAT!");
+			return null;
+		}
 		int tickToGet = lastTick+1;
 		int idealTick = recentTransforms[0].relativeTick-ValkyrienWarfareMod.shipTickDelay;
 		if(recentTransforms[0].relativeTick-tickToGet+ValkyrienWarfareMod.shipTickDelay>ValkyrienWarfareMod.maxMissedPackets){

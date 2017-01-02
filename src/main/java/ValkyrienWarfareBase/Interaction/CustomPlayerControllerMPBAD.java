@@ -8,9 +8,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 
-public class CustomPlayerControllerMP extends PlayerControllerMP{
+public class CustomPlayerControllerMPBAD extends PlayerControllerMP{
 
-	public CustomPlayerControllerMP(Minecraft mcIn, NetHandlerPlayClient netHandler) {
+	public CustomPlayerControllerMPBAD(Minecraft mcIn, NetHandlerPlayClient netHandler) {
 		super(mcIn, netHandler);
 	}
 

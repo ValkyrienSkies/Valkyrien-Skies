@@ -11,5 +11,10 @@ public class EntityPolygon extends Polygon{
 		super(bb);
 		entityFor = ent;
 	}
+	
+	public EntityPolygon(AxisAlignedBB bb,double[] matrix,Entity ent){
+		super(bb,matrix);
+		entityFor = ent;
+	}
 
 }

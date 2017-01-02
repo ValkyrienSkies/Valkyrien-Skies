@@ -1,0 +1,21 @@
+{
+    "forge_marker": 1,
+    "variants": {
+        "modelid=0": { "model": "valkyrienwarfarecombat:cannon_base.obj" },
+        "modelid=1": { "model": "valkyrienwarfarecombat:cannon_top.obj" },
+        "modelid=2": { "model": "valkyrienwarfarecombat:cannonball.obj" },
+        "modelid=3": { "model": "valkyrienwarfarecombat:cannon_base.obj" },
+        "modelid=4": { "model": "valkyrienwarfarecombat:cannon_base.obj" },
+        "modelid=5": { "model": "valkyrienwarfarecombat:cannon_base.obj" },
+        "modelid=6": { "model": "valkyrienwarfarecombat:cannon_base.obj" },
+        "modelid=7": { "model": "valkyrienwarfarecombat:cannon_base.obj" },
+        "modelid=8": { "model": "valkyrienwarfarecombat:cannon_base.obj" },
+        "modelid=9": { "model": "valkyrienwarfarecombat:cannon_base.obj" },
+        "modelid=10": { "model": "valkyrienwarfarecombat:cannon_base.obj" },
+        "modelid=11": { "model": "valkyrienwarfarecombat:cannon_base.obj" },
+        "modelid=12": { "model": "valkyrienwarfarecombat:cannon_base.obj" },
+        "modelid=13": { "model": "valkyrienwarfarecombat:cannon_base.obj" },
+        "modelid=14": { "model": "valkyrienwarfarecombat:cannon_base.obj" },
+        "modelid=15": { "model": "valkyrienwarfarecombat:cannon_base.obj" }
+    }
+}

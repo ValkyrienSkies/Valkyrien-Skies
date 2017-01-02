@@ -3,6 +3,8 @@ package ValkyrienWarfareBase.PhysicsManagement;
 import java.util.HashMap;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
+import ValkyrienWarfareControl.PilotShipManager;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
@@ -37,6 +39,9 @@ public HashMap<World,WorldPhysObjectManager> managerPerWorld;
 		if(cachedManager==null||cachedManager.worldObj!=world){
 			cachedManager = managerPerWorld.get(world);
 		}
+		if(cachedManager==null){
+			System.err.println("getManagerForWorld just requested for a World without one!!! Wtf, how does this even Happen Man!?");
+		}
 		return cachedManager;
 	}
 	
@@ -45,6 +50,8 @@ public HashMap<World,WorldPhysObjectManager> managerPerWorld;
 			getManagerForWorld(world).physicsEntities.clear();
 		}
 		managerPerWorld.remove(world);
+//		System.out.println("cleared Mounting Entity");
+		PilotShipManager.mountedEntity = null;
 	}
 	
 	/**
@@ -54,8 +61,15 @@ public HashMap<World,WorldPhysObjectManager> managerPerWorld;
 	 * @return
 	 */
 	public PhysicsWrapperEntity getObjectManagingChunk(Chunk chunk){
-		if(ValkyrienWarfareMod.chunkManager.isChunkInShipRange(chunk.worldObj, chunk.xPosition, chunk.zPosition)){
-			return getManagerForWorld(chunk.worldObj).getManagingObjectForChunk(chunk);
+		if(chunk==null){
+			return null;
+		}
+		if(ValkyrienWarfareMod.chunkManager.isChunkInShipRange(chunk.worldObj, chunk.xPosition, chunk.zPosition)){	
+			WorldPhysObjectManager physManager =  getManagerForWorld(chunk.worldObj);
+			if(physManager==null){
+				return null;
+			}
+			return physManager.getManagingObjectForChunk(chunk);
 		}
 		return null;
 	}
@@ -63,6 +77,14 @@ public HashMap<World,WorldPhysObjectManager> managerPerWorld;
 	public PhysicsWrapperEntity getObjectManagingPos(World world,BlockPos pos){
 		Chunk chunk = world.getChunkFromBlockCoords(pos);
 		return getObjectManagingChunk(chunk);
+	}
+	
+	public boolean isEntityFixed(Entity entity){
+		return getManagerForWorld(entity.worldObj).isEntityFixed(entity);
+	}
+	
+	public PhysicsWrapperEntity getShipFixedOnto(Entity entity){
+		return getManagerForWorld(entity.worldObj).getShipFixedOnto(entity);
 	}
 	
 }

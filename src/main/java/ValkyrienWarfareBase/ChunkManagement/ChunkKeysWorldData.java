@@ -3,6 +3,7 @@ package ValkyrienWarfareBase.ChunkManagement;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSavedData;
+import net.minecraft.world.storage.MapStorage;
 
 public class ChunkKeysWorldData extends WorldSavedData {
 
@@ -29,7 +30,8 @@ public class ChunkKeysWorldData extends WorldSavedData {
 	}
 
 	public static ChunkKeysWorldData get(World world) {
-		ChunkKeysWorldData data = (ChunkKeysWorldData)world.loadItemData(ChunkKeysWorldData.class, key);
+		MapStorage storage = world.getPerWorldStorage();
+		ChunkKeysWorldData data = (ChunkKeysWorldData)storage.getOrLoadData(ChunkKeysWorldData.class, key);
 		if (data == null) {
 			data = new ChunkKeysWorldData();
 			world.setItemData(key, data);

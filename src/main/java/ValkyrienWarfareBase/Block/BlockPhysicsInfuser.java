@@ -3,6 +3,7 @@ package ValkyrienWarfareBase.Block;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
+import ValkyrienWarfareBase.Relocation.DetectorManager;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -31,7 +32,7 @@ public class BlockPhysicsInfuser extends Block {
 					return true;
 				}
 			}
-			PhysicsWrapperEntity wrapper = new PhysicsWrapperEntity(worldIn,pos.getX(),pos.getY(),pos.getZ());
+			PhysicsWrapperEntity wrapper = new PhysicsWrapperEntity(worldIn,pos.getX(),pos.getY(),pos.getZ(),playerIn,DetectorManager.DetectorIDs.ShipSpawnerGeneral.ordinal());
         	worldIn.spawnEntityInWorld(wrapper);
 		}
 		return true;

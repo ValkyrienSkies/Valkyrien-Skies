@@ -1,13 +1,15 @@
 package ValkyrienWarfareBase.Render;
 
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
 
 import org.lwjgl.opengl.GL11;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
+import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareBase.Interaction.FixedEntityData;
 import ValkyrienWarfareBase.Math.Quaternion;
-import ValkyrienWarfareBase.Math.RotationMatrices;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.Proxy.ClientProxy;
@@ -24,7 +26,6 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.ForgeHooksClient;
 
 /**
@@ -44,8 +45,9 @@ public class PhysObjectRenderManager {
 	//It's actual value is completely irrelevant as long as it's close to the 
 	//Ship's centerBlockPos
 	public BlockPos offsetPos;
-	private double curPartialTick;
+	public double curPartialTick;
 	private FloatBuffer transformBuffer = null;
+	public PhysRenderChunk[][] renderChunks;
 	
 	public PhysObjectRenderManager(PhysicsObject toRender){
 		parent = toRender;
@@ -131,6 +133,18 @@ public class PhysObjectRenderManager {
 	}
 	
 	public void renderBlockLayer(BlockRenderLayer layerToRender,double partialTicks,int pass){
+		if(renderChunks==null){
+			if(parent.claimedChunks==null){
+				return;
+			}
+			renderChunks = new PhysRenderChunk[parent.claimedChunks.length][parent.claimedChunks.length];
+			for(int xChunk = 0;xChunk<parent.claimedChunks.length;xChunk++){
+				for(int zChunk = 0;zChunk<parent.claimedChunks.length;zChunk++){
+					renderChunks[xChunk][zChunk] = new PhysRenderChunk(parent, parent.claimedChunks[xChunk][zChunk]);
+				}
+			}
+		}
+		
 		GL11.glPushMatrix();
 		Minecraft.getMinecraft().entityRenderer.enableLightmap();
 		int i = parent.wrapper.getBrightnessForRender((float) partialTicks);
@@ -141,32 +155,82 @@ public class PhysObjectRenderManager {
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		
 		setupTranslation(partialTicks);
-		switch(layerToRender){
-			case CUTOUT:
-				GL11.glCallList(glCallListCutout);
-				break;
-			case CUTOUT_MIPPED:
-				GL11.glCallList(glCallListCutoutMipped);
-				break;
-			case SOLID:
-				GL11.glCallList(glCallListSolid);
-				break;
-			case TRANSLUCENT:
-				GL11.glCallList(glCallListTranslucent);
-				break;
-			default:
-				break;
+		for(PhysRenderChunk[] chunkArray:renderChunks){
+			for(PhysRenderChunk renderChunk:chunkArray){
+				renderChunk.renderBlockLayer(layerToRender, partialTicks, pass);
+			}
 		}
+
 		Minecraft.getMinecraft().entityRenderer.disableLightmap();
 		GL11.glPopMatrix();
+	}
+	
+	public void updateRange(int minX,int minY,int minZ,int maxX,int maxY,int maxZ){
+		if(renderChunks==null||parent==null||parent.ownedChunks==null){
+			return;
+		}
+		
+		int minChunkX = minX>>4;
+		int maxChunkX = maxX>>4;
+		int minChunkZ = minZ>>4;
+		int maxChunkZ = maxZ>>4;
+		
+		int minBlockArrayY = Math.max(0, minY>>4);
+		int maxBlockArrayY = Math.min(15, maxY>>4);
+
+		for(int chunkX = minChunkX;chunkX<=maxChunkX;chunkX++){
+			for(int chunkZ = minChunkZ;chunkZ<=maxChunkZ;chunkZ++){
+				PhysRenderChunk renderChunk = renderChunks[chunkX-parent.ownedChunks.minX][chunkZ-parent.ownedChunks.minZ];
+				renderChunk.updateLayers(minBlockArrayY, maxBlockArrayY);
+			}
+		}
 	}
 	
 	public void renderTileEntities(float partialTicks){
 		for(BlockPos pos:parent.blockPositions){
 			TileEntity tileEnt = parent.worldObj.getTileEntity(pos);
 			if(tileEnt!=null){
-				TileEntityRendererDispatcher.instance.renderTileEntity(tileEnt, partialTicks, -1);
+				try{
+					TileEntityRendererDispatcher.instance.renderTileEntity(tileEnt, partialTicks, -1);
+				}catch(Exception e){
+//					e.printStackTrace();
+				}
 			}
+		}
+	}
+	
+	public void renderEntities(float partialTicks){
+		ArrayList<FixedEntityData> fixedEntities = new ArrayList();//ArrayList<FixedEntityData>) parent.fixedEntities.clone();
+		for(FixedEntityData data:fixedEntities){
+			Vector originalEntityPos = new Vector(data.fixed.posX,data.fixed.posY,data.fixed.posZ);
+			Vector originalLastEntityPos = new Vector(data.fixed.lastTickPosX,data.fixed.lastTickPosY,data.fixed.lastTickPosZ);
+			
+			data.fixed.posX = data.fixed.lastTickPosX = data.positionInLocal.xCoord;
+			data.fixed.posY = data.fixed.lastTickPosY = data.positionInLocal.yCoord;
+			data.fixed.posZ = data.fixed.lastTickPosZ = data.positionInLocal.zCoord;
+			
+			System.out.println("test");
+			if(!data.fixed.isDead&&data.fixed!=Minecraft.getMinecraft().getRenderViewEntity()||Minecraft.getMinecraft().gameSettings.thirdPersonView > 0){
+				
+				GL11.glPushMatrix();
+				int i = data.fixed.getBrightnessForRender(partialTicks);
+		        if (data.fixed.isBurning()){
+		            i = 15728880;
+		        }
+		        int j = i % 65536;
+		        int k = i / 65536;
+		        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)j / 1.0F, (float)k / 1.0F);
+		        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		        float yaw = data.fixed.prevRotationYaw + (data.fixed.rotationYaw - data.fixed.prevRotationYaw) * partialTicks;
+		        double x = data.positionInLocal.xCoord;
+		        double y = data.positionInLocal.yCoord;
+		        double z = data.positionInLocal.zCoord;
+				Minecraft.getMinecraft().getRenderManager().doRenderEntity(data.fixed,x,y,z, yaw, partialTicks, false);
+				GL11.glPopMatrix();
+			}
+			
+			data.fixed.posX = originalEntityPos.X; data.fixed.posY = originalEntityPos.Y; data.fixed.posZ = originalEntityPos.Z;
+			data.fixed.lastTickPosX = originalLastEntityPos.X; data.fixed.lastTickPosY = originalLastEntityPos.Y; data.fixed.lastTickPosZ = originalLastEntityPos.Z;
 		}
 	}
 	
@@ -204,6 +268,8 @@ public class PhysObjectRenderManager {
 		double moddedYaw = Math.toDegrees(radians[1]);
 		double moddedRoll = Math.toDegrees(radians[2]);
 		
+		parent.coordTransform.updateRenderMatrices(moddedX, moddedY, moddedZ, moddedPitch, moddedYaw, moddedRoll);
+		
 		if(offsetPos!=null){
 			double offsetX = offsetPos.getX()-centerOfRotation.X;
 			double offsetY = offsetPos.getY()-centerOfRotation.Y;
@@ -226,7 +292,7 @@ public class PhysObjectRenderManager {
 		double[] newRotation = RotationMatrices.getDoubleIdentity();
 		newRotation = RotationMatrices.rotateAndTranslate(newRotation, entity.pitch, entity.yaw, entity.roll, new Vector());
 		Quaternion nextQuat = Quaternion.QuaternionFromMatrix(newRotation);
-		return  Quaternion.getBetweenQuat(oneTickBefore, nextQuat, partialTick);
+		return Quaternion.getBetweenQuat(oneTickBefore, nextQuat, partialTick);
 	}
 	
 	//TODO: Program me

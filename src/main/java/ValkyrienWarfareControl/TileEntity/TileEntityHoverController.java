@@ -2,32 +2,39 @@ package ValkyrienWarfareControl.TileEntity;
 
 import java.util.ArrayList;
 
+import javax.annotation.Nullable;
+
 import ValkyrienWarfareBase.NBTUtils;
+import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
-import ValkyrienWarfareBase.Math.RotationMatrices;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
+import ValkyrienWarfareControl.Network.HovercraftControllerGUIInputMessage;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 public class TileEntityHoverController extends TileEntity{
 
 	public ArrayList<BlockPos> enginePositions = new ArrayList<BlockPos>();
-	public double idealHeight = 10D;
-	public double stabilityBias = .5D;
+	public double idealHeight = 16D;
+	public double stabilityBias = .3D;
 
-	public double linearVelocityBias = 3D;
-	public double angularVelocityBias = 1D;
+	public double linearVelocityBias = 1D;
+	public double angularVelocityBias = 20D;
 	
 	public Vector normalVector = new Vector(0D,1D,0D);
 	
-	public double angularConstant = 100000000D;
+	public double angularConstant = 500000000D;
 	public double linearConstant = 1000000D;
 	
+	public boolean autoStabalizerControl = true;
+	
 	public TileEntityHoverController(){
-		validate();
+//		validate();
 	}
 	
 	/*
@@ -35,18 +42,12 @@ public class TileEntityHoverController extends TileEntity{
 	 */
 	public Vector getForceForEngine(AntiGravEngineTileEntity engine,World world, BlockPos enginePos, IBlockState state, PhysicsObject physObj, double secondsToApply){
 //		physObj.physicsProcessor.convertTorqueToVelocity();
-		
 //		secondsToApply*=5D;
-		
-		idealHeight = 16D;
-		
-		angularVelocityBias = 20D;
-		linearVelocityBias = 1D;
-		
-		stabilityBias = .3D;
-		
-		engine.maxThrust = 10000D;
-		
+//		idealHeight = 100D;
+		if(autoStabalizerControl){
+			setAutoStabilizationValue(physObj);
+		}
+
 		double linearDist = -getControllerDistFromIdealY(physObj);
 		double angularDist = -getEngineDistFromIdealAngular(enginePos,physObj,secondsToApply);
 		
@@ -95,17 +96,83 @@ public class TileEntityHoverController extends TileEntity{
 		return idealHeight-(controllerPos.Y+(physObj.physicsProcessor.linearMomentum.Y*physObj.physicsProcessor.invMass*linearVelocityBias));
 	}
 
+	public void handleGUIInput(HovercraftControllerGUIInputMessage message, MessageContext ctx){
+		idealHeight = message.newIdealHeight;
+		
+		if(message.newStablitiyBias<0||message.newStablitiyBias>1D){
+			//Out of bounds, set to auto
+			autoStabalizerControl = true;
+		}else{
+			double stabilityDif = Math.abs(stabilityBias-message.newStablitiyBias);
+//			if(stabilityDif>.05D){
+				stabilityBias = message.newStablitiyBias;
+				autoStabalizerControl = false;
+//			}
+		}
+		
+		linearVelocityBias = message.newLinearVelocityBias;
+		markDirty();
+	}
+	
+	private void setAutoStabilizationValue(PhysicsObject physObj){
+//		double epsilon = 5D;
+//		double biasChange = .00005D;
+//		
+//		Vector controllerPos = new Vector(pos.getX()+.5D,pos.getY()+.5D,pos.getZ()+.5D);
+//		physObj.coordTransform.fromLocalToGlobal(controllerPos);
+//	
+//		double controllerDist = idealHeight-controllerPos.Y;
+//		
+//		double yVelocity = physObj.physicsProcessor.linearMomentum.Y*physObj.physicsProcessor.invMass*linearVelocityBias;
+//		
+//		if(Math.abs(controllerDist)>epsilon){
+//			if(Math.signum(controllerDist)!=Math.signum(yVelocity)){
+//				stabilityBias+=(biasChange*controllerDist);
+//			}else{
+//				stabilityBias-=(biasChange*controllerDist);
+//			}
+//		}
+//		//Limit bias to between 0 and 1
+//		stabilityBias = Math.max(Math.min(stabilityBias, 1D), 0D);
+	}
+	
+	@Override
+    public SPacketUpdateTileEntity getUpdatePacket()
+    {
+		SPacketUpdateTileEntity packet = new SPacketUpdateTileEntity(pos,0,writeToNBT(new NBTTagCompound()));
+        return packet;
+    }
+	
+	@Override
+	public void onDataPacket(net.minecraft.network.NetworkManager net, net.minecraft.network.play.server.SPacketUpdateTileEntity pkt)
+    {
+		readFromNBT(pkt.getNbtCompound());
+    }
+	
+	@Override
 	public void readFromNBT(NBTTagCompound compound){
-		NBTUtils.writeBlockPosArrayListToNBT("enginePositions", enginePositions, compound);
-		NBTUtils.writeVectorToNBT("normalVector", normalVector, compound);
-		idealHeight = compound.getDouble("idealHeight");
+		enginePositions = NBTUtils.readBlockPosArrayListFromNBT("enginePositions", compound);
+    	normalVector = NBTUtils.readVectorFromNBT("normalVector", compound);
+    	if(normalVector.isZero()){
+    		normalVector = new Vector(0,1,0);
+    	}
+    	idealHeight = compound.getDouble("idealHeight");
+    	stabilityBias = compound.getDouble("stabilityBias");
+    	linearVelocityBias = compound.getDouble("linearVelocityBias");
+    	angularVelocityBias = compound.getDouble("angularVelocityBias");
+    	autoStabalizerControl = compound.getBoolean("autoStabalizerControl");
 		super.readFromNBT(compound);
     }
 
+	@Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound){
-    	enginePositions = NBTUtils.readBlockPosArrayListFromNBT("enginePositions", compound);
-    	normalVector = NBTUtils.readVectorFromNBT("normalVector", compound);
-    	compound.setDouble("idealHeight", idealHeight);
+    	NBTUtils.writeBlockPosArrayListToNBT("enginePositions", enginePositions, compound);
+		NBTUtils.writeVectorToNBT("normalVector", normalVector, compound);
+		compound.setDouble("idealHeight", idealHeight);
+		compound.setDouble("stabilityBias", stabilityBias);
+		compound.setDouble("linearVelocityBias", linearVelocityBias);
+		compound.setDouble("angularVelocityBias", angularVelocityBias);
+		compound.setBoolean("autoStabalizerControl", autoStabalizerControl);
     	return super.writeToNBT(compound);
     }
 	

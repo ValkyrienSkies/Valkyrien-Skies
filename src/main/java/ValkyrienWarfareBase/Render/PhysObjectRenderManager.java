@@ -166,7 +166,7 @@ public class PhysObjectRenderManager {
 	}
 	
 	public void updateRange(int minX,int minY,int minZ,int maxX,int maxY,int maxZ){
-		if(renderChunks==null){
+		if(renderChunks==null||parent==null||parent.ownedChunks==null){
 			return;
 		}
 		

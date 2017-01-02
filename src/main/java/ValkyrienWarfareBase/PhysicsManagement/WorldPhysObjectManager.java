@@ -23,7 +23,7 @@ public class WorldPhysObjectManager {
 	public ArrayList<PhysicsWrapperEntity> physicsEntities = new ArrayList<PhysicsWrapperEntity>();
 	public ArrayList<PhysicsWrapperEntity> physicsEntitiesToUnload = new ArrayList<PhysicsWrapperEntity>();
 	public ArrayList<Callable<Void>> physCollisonCallables = new ArrayList<Callable<Void>>();
-	public int physIter = 5;
+	public int physIter = 10;
 	public double physSpeed = .05D;
 	public Vector gravity = new Vector(0,-9.8D,0);
 	

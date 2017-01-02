@@ -42,7 +42,7 @@ public class PhysicsIterCommand extends CommandBase{
             }
             if(sentNum>=0&&sentNum<=1000){
             	ValkyrienWarfareMod.physicsManager.getManagerForWorld(commandWorld).physIter = sentNum;
-            	notifyCommandListener(sender, this, "Physics Iters set to "+sentNum+" :Default (5)", new Object[] {args[0]});
+            	notifyCommandListener(sender, this, "Physics Iters set to "+sentNum+" :Default (10)", new Object[] {args[0]});
             }
 		}catch(Exception e){
 			System.out.println(e);

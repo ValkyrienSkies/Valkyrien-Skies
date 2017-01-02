@@ -39,7 +39,7 @@ public class WorldPhysicsCollider {
 	
 	public static double axisTolerance = .3D;
 	
-	public double e = .35D;
+	public double collisionElasticity = .52D;
 	
 	private final Random rand = new Random();
 	
@@ -195,7 +195,7 @@ public class WorldPhysicsCollider {
 		
 //		momentumAtPoint.multiply(5D);
 		
-		double j = -momentumAtPoint.dot(axis)*(e+1D)/(calculator.invMass+secondCross.dot(axis));
+		double j = -momentumAtPoint.dot(axis)*(collisionElasticity+1D)/(calculator.invMass+secondCross.dot(axis));
 		
 		Vector simpleImpulse = new Vector(axis,j);
 		

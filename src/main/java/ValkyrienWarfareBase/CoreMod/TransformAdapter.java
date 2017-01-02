@@ -17,7 +17,7 @@ import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRema
  */
 public class TransformAdapter extends ClassVisitor{
 	protected String m_className;
-	public boolean m_isObfuscatedEnvironment;
+//	public boolean m_isObfuscatedEnvironment;
 	
 	private static final String RawEntityClassName = "net/minecraft/entity/Entity";
 	private static final String RawWorldClassName = "net/minecraft/world/World";
@@ -56,45 +56,49 @@ public class TransformAdapter extends ClassVisitor{
 	private static final String ListName = "java/util/List";
 	private static final String ClassName = "java/lang/Class";
 	
-	private final String ParticleName;
-	private final String ParticleManagerName;
-	private final String SoundEventName;
-	private final String SoundCategoryName;
-	private final String WorldClassName;
-	private final String RenderGlobalName;
-	private final String EntityClassName;
-	private final String VertexBufferName;
-	private final String TessellatorName;
-	private final String EntityPlayerName;
-	private final String RayTraceResult;
-	private final String TileEntityName;
-	private final String ICameraName;
-	private final String IBlockStateName;
-	private final String BlockPosName;
-	private final String WorldClientName;
-	private final String PlayerListName;
-	private final String PacketName;
-	private final String Vec3dName;
-	private final String GameProfileName;
-	private final String EntityPlayerMPName;
-	private final String BlockRenderLayerName;
-	private final String ChunkName;
-	private final String ChunkProviderServerName;
-	private final String ContainerName;
-	private final String AxisAlignedBBName;
-	private final String ExplosionName;
-	private final String EntityLivingBaseName;
-	private final String ViewFrustumName;
-	private final String EntityRendererName;
-	private final String FrustumName;
+	private String ParticleName;
+	private String ParticleManagerName;
+	private String SoundEventName;
+	private String SoundCategoryName;
+	private String WorldClassName;
+	private String RenderGlobalName;
+	private String EntityClassName;
+	private String VertexBufferName;
+	private String TessellatorName;
+	private String EntityPlayerName;
+	private String RayTraceResult;
+	private String TileEntityName;
+	private String ICameraName;
+	private String IBlockStateName;
+	private String BlockPosName;
+	private String WorldClientName;
+	private String PlayerListName;
+	private String PacketName;
+	private String Vec3dName;
+	private String GameProfileName;
+	private String EntityPlayerMPName;
+	private String BlockRenderLayerName;
+	private String ChunkName;
+	private String ChunkProviderServerName;
+	private String ContainerName;
+	private String AxisAlignedBBName;
+	private String ExplosionName;
+	private String EntityLivingBaseName;
+	private String ViewFrustumName;
+	private String EntityRendererName;
+	private String FrustumName;
 	
 //	private boolean correctDesc,correctName,correctSuperClass;
 
 	public TransformAdapter( int api, boolean isObfuscatedEnvironment ){
 		super( api, null );
-		m_isObfuscatedEnvironment = isObfuscatedEnvironment;
+//		m_isObfuscatedEnvironment = isObfuscatedEnvironment;
 		m_className = null;
 		
+		
+	}
+	
+	private void runRealNames(){
 		EntityClassName = getRuntimeClassName(RawEntityClassName);
 		WorldClassName = getRuntimeClassName(RawWorldClassName);
 		WorldClientName = getRuntimeClassName(RawWorldClientName);
@@ -127,12 +131,61 @@ public class TransformAdapter extends ClassVisitor{
 		EntityRendererName = getRuntimeClassName(RawEntityRendererName);
 		FrustumName = getRuntimeClassName(RawFrustumName);
 	}
+	
+	private void runPreNames(){
+		EntityClassName = (RawEntityClassName);
+		WorldClassName = (RawWorldClassName);
+		WorldClientName = (RawWorldClientName);
+		PacketName = (RawPacketName);
+		EntityPlayerName = (RawEntityPlayerName);
+		RenderGlobalName = (RawRenderGlobalName);
+		ICameraName = (RawICameraName);
+		BlockRenderLayerName = (RawBlockRenderLayerName);
+		ChunkProviderServerName = (RawChunkProviderServerName);
+		PlayerListName = (RawPlayerListName);
+		GameProfileName = (RawGameProfileName);
+		EntityPlayerMPName = (RawEntityPlayerMPName);
+		ChunkName = (RawChunkName);
+		RayTraceResult = (RawRayTraceResult);
+		Vec3dName = (RawVec3dName);
+		IBlockStateName = (RawIBlockStateName);
+		BlockPosName = (RawBlockPosName);
+		TileEntityName = (RawTileEntityName);
+		TessellatorName = (RawTessellatorName);
+		VertexBufferName = (RawVertexBufferName);
+		SoundEventName = (RawSoundEventName);
+		SoundCategoryName = (RawSoundCategoryName);
+		ParticleName = (RawParticleName);
+		ParticleManagerName = (RawParticleManagerName);
+		ContainerName = (RawContainerName);
+		AxisAlignedBBName = (RawAxisAlignedBBName);
+		ExplosionName = (RawExplosionName);
+		EntityLivingBaseName = (RawEntityLivingBaseName);
+		ViewFrustumName = (RawViewFrustumName);
+		EntityRendererName = (RawEntityRendererName);
+		FrustumName = (RawFrustumName);
+	}
 
+	public boolean runTransformerTop(String calledName,String calledDesc,String calledOwner,MethodVisitor mv){
+		runPreNames();
+//		if(!runTransformer(calledName,calledDesc,calledOwner,mv)){
+//			return false;
+//		}
+//		runRealNames();
+		
+		return runTransformer(calledName,calledDesc,calledOwner,mv);
+	}
+	
 	public boolean runTransformer(String calledName,String calledDesc,String calledOwner,MethodVisitor mv){
-		if(calledName.equals("rayTraceEyeHitVec")){
-			for(int i=0;i<25;i++){
-				System.out.println(calledOwner + " : " + calledName);
-			}
+//		if(calledName.equals("rayTraceEyeHitVec")){
+//			for(int i=0;i<25;i++){
+//				System.out.println(calledOwner + " : " + calledName);
+//			}
+//		}
+		//TBA
+		if(isMethod(calledDesc,"(DDD)V",calledName,EntityClassName,"moveEntity","func_70091_d",calledOwner)){
+			mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onEntityMove", String.format( "(L%s;DDD)V", EntityClassName ) );
+			return false;
 		}
 		
 		if(isMethod(calledDesc,"()L"+Vec3dName+";",calledName,EntityClassName,"getLookVec","RENAMEME",calledOwner)){
@@ -215,10 +268,10 @@ public class TransformAdapter extends ClassVisitor{
 		}
 		
 		//TBA
-		if(isMethod(calledDesc,"(L"+EntityPlayerName+";DDDL"+SoundEventName+";L"+SoundCategoryName+";FF)V",calledName,WorldClassName,"playSound","func_184148_a",calledOwner)){
+		/*if(isMethod(calledDesc,"(L"+EntityPlayerName+";DDDL"+SoundEventName+";L"+SoundCategoryName+";FF)V",calledName,WorldClassName,"playSound","func_184148_a",calledOwner)){
 			mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onPlaySound2", String.format( "(L%s;L"+EntityPlayerName+";DDDL"+SoundEventName+";L"+SoundCategoryName+";FF)V", WorldClassName) );
 			return false;
-		}
+		}*/
 		
 		//TBA
 		if(isMethod(calledDesc,"(L"+EntityPlayerName+";L"+BlockPosName+";L"+SoundEventName+";L"+SoundCategoryName+";FF)V",calledName,WorldClassName,"playSound","func_184133_a",calledOwner)){
@@ -326,11 +379,7 @@ public class TransformAdapter extends ClassVisitor{
 			return false;
 		}
 		
-		//TBA
-		if(isMethod(calledDesc,"(DDD)V",calledName,EntityClassName,"moveEntity","func_70091_d",calledOwner)){
-			mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onEntityMove", String.format( "(L%s;DDD)V", EntityClassName ) );
-			return false;
-		}
+		
 
 		return true;
 	}
@@ -338,9 +387,13 @@ public class TransformAdapter extends ClassVisitor{
 	private boolean isMethod(String calledDesc,String methodDesc,String calledName,String classFrom,String methodNameClear,String methodNameObsf,String calledOwner){
 		boolean correctDesc = calledDesc.equals(methodDesc);
 		if(correctDesc){
-			boolean correctName = pertainsToMethod(calledName,classFrom,methodNameClear,methodNameObsf)||pertainsToMethod(calledName,calledOwner,methodNameClear,methodNameObsf);
+			boolean correctName = pertainsToMethod(calledName,classFrom,methodNameClear,methodNameObsf)||pertainsToMethod(calledName,calledOwner,methodNameClear,methodNameObsf)|| pertainsToMethod(calledName,getObfuscatedClassName(classFrom),methodNameClear,methodNameObsf)||pertainsToMethod(calledName,getObfuscatedClassName(calledOwner),methodNameClear,methodNameObsf);
 			if(correctName){
-				boolean correctSuperClass = InheritanceUtils.extendsClass(calledOwner, classFrom);
+				boolean correctSuperClass = InheritanceUtils.extendsClass(calledOwner, classFrom)
+				||InheritanceUtils.extendsClass(calledOwner, getRuntimeClassName(classFrom))
+				||InheritanceUtils.extendsClass(getRuntimeClassName(calledOwner), classFrom)
+				||InheritanceUtils.extendsClass(getRuntimeClassName(calledOwner), getRuntimeClassName(classFrom))
+				;
 				return correctSuperClass;
 			}
 		}
@@ -348,28 +401,28 @@ public class TransformAdapter extends ClassVisitor{
 	}
 	
 	private boolean pertainsToMethod(String calledName,String classOwningMethod,String deobsfName,String obsfName){
-		if(!m_isObfuscatedEnvironment ){
-			return calledName.equals(deobsfName);
-		}
+//		if(!m_isObfuscatedEnvironment ){
+//			return calledName.equals(deobsfName);
+//		}
 		String runtimeName = getRuntimeMethodName(classOwningMethod,deobsfName,obsfName);
 		return calledName.equals(runtimeName)||calledName.equals(deobsfName)||calledName.equals(obsfName);
 	}
 
 	protected String getRuntimeClassName( String clearClassName ){
-		if(m_isObfuscatedEnvironment ){
+//		if(m_isObfuscatedEnvironment ){
 			return getObfuscatedClassName( clearClassName );
-		}else{
-			return clearClassName;
-		}
+//		}else{
+//			return clearClassName;
+//		}
 	}
 
 	protected String getRuntimeMethodName( String runtimeClassName, String clearMethodName, String idMethodName ){
-		if(m_isObfuscatedEnvironment ){
+//		if(m_isObfuscatedEnvironment ){
 //			return idMethodName;
 			return methodMapReverseLookup( getMethodMap( runtimeClassName ), idMethodName );
-		}else{
-			return clearMethodName;
-		}
+//		}else{
+//			return clearMethodName;
+//		}
 	}
 
 	private String getObfuscatedClassName( String clearClassName ){
@@ -427,7 +480,7 @@ public class TransformAdapter extends ClassVisitor{
 			@Override
 			public void visitMethodInsn( int opcode, String calledOwner, String calledName, String calledDesc ){
 				if( opcode == Opcodes.INVOKEVIRTUAL){
-					if(runTransformer(calledName,calledDesc,calledOwner,mv)){
+					if(runTransformerTop(calledName,calledDesc,calledOwner,mv)){
 						super.visitMethodInsn( opcode, calledOwner, calledName, calledDesc );
 					}					
 				}else{

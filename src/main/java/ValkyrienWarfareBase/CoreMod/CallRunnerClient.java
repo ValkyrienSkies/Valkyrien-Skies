@@ -256,8 +256,8 @@ public class CallRunnerClient extends CallRunner{
 //		renderer.orientCamera(partialTicks);
     }
 	
-	public static void onMarkBlocksForUpdate(ViewFrustum frustrum,int p_187474_1_, int p_187474_2_, int p_187474_3_, int p_187474_4_, int p_187474_5_, int p_187474_6_, boolean requiresImmediateUpdate){
-		frustrum.markBlocksForUpdate(p_187474_1_, p_187474_2_, p_187474_3_, p_187474_4_, p_187474_5_, p_187474_6_, requiresImmediateUpdate);
+	public static void onMarkBlocksForUpdate(ViewFrustum frustum,int p_187474_1_, int p_187474_2_, int p_187474_3_, int p_187474_4_, int p_187474_5_, int p_187474_6_, boolean requiresImmediateUpdate){
+		frustum.markBlocksForUpdate(p_187474_1_, p_187474_2_, p_187474_3_, p_187474_4_, p_187474_5_, p_187474_6_, requiresImmediateUpdate);
 		
 		int midX = (p_187474_1_ + p_187474_4_)/2;
 		int midY = (p_187474_2_ + p_187474_5_)/2;

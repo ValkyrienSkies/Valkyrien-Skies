@@ -65,7 +65,11 @@ public HashMap<World,WorldPhysObjectManager> managerPerWorld;
 			return null;
 		}
 		if(ValkyrienWarfareMod.chunkManager.isChunkInShipRange(chunk.worldObj, chunk.xPosition, chunk.zPosition)){	
-			return getManagerForWorld(chunk.worldObj).getManagingObjectForChunk(chunk);
+			WorldPhysObjectManager physManager =  getManagerForWorld(chunk.worldObj);
+			if(physManager==null){
+				return null;
+			}
+			return physManager.getManagingObjectForChunk(chunk);
 		}
 		return null;
 	}

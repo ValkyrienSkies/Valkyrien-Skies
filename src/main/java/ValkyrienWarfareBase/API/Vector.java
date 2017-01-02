@@ -148,6 +148,10 @@ public class Vector{
    	public void zero(){
    		X=Y=Z=0D;
    	}
+   	
+   	public void roundToWhole(){
+   		X = Math.round(X);Y = Math.round(Y);Z = Math.round(Z);
+   	}
 
    	public boolean equals(Vector vec){
    		return (vec.X == X) && (vec.Y == Y) && (vec.Z == Z);

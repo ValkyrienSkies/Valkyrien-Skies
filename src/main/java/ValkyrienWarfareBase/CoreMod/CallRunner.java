@@ -22,6 +22,7 @@ import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
 import ValkyrienWarfareCombat.Entity.EntityMountingWeaponBase;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -170,7 +171,26 @@ public class CallRunner {
 		for(PhysicsWrapperEntity ship:shipsNear){
 			Vector inLocal = new Vector(center);
 			RotationMatrices.applyTransform(ship.wrapping.coordTransform.wToLTransform, inLocal);
+//			inLocal.roundToWhole();
 			Explosion expl = new Explosion(ship.worldObj, null, inLocal.X, inLocal.Y, inLocal.Z, radius, false, false);
+			
+			double waterRange = .6D;
+			
+			boolean cancelDueToWater = false;
+			
+			for(int x = (int) Math.floor(expl.explosionX-waterRange);x <= Math.ceil(expl.explosionX+waterRange);x++){
+				for(int y = (int) Math.floor(expl.explosionY-waterRange);y <= Math.ceil(expl.explosionY+waterRange);y++){
+					for(int z = (int) Math.floor(expl.explosionZ-waterRange);z <= Math.ceil(expl.explosionZ+waterRange);z++){
+						if(!cancelDueToWater){
+							IBlockState state = e.worldObj.getBlockState(new BlockPos(x,y,z));
+							if(state.getBlock() instanceof BlockLiquid){
+								cancelDueToWater = true;
+							}
+						}
+					}
+				}
+			}
+			
 			expl.doExplosionA();
 			
 			double affectedPositions = 0D;
@@ -184,44 +204,46 @@ public class CallRunner {
 				}
 			}
 			
-			for(Object o:expl.affectedBlockPositions){
-				BlockPos pos = (BlockPos)o;
-				
-				IBlockState state = ship.worldObj.getBlockState(pos);
-				Block block = state.getBlock();
-				if (!block.isAir(state, worldIn, (BlockPos)o)||ship.wrapping.explodedPositionsThisTick.contains((BlockPos)o)){
-	                if (block.canDropFromExplosion(expl)){
-	                    block.dropBlockAsItemWithChance(ship.worldObj, pos, state, 1.0F / expl.explosionSize, 0);
-	                }
-	                block.onBlockExploded(ship.worldObj, pos, expl);
-	                if(!worldIn.isRemote){
-	                	Vector posVector = new Vector(pos.getX()+.5,pos.getY()+.5,pos.getZ()+.5);
-	                	
-	                	ship.wrapping.coordTransform.fromLocalToGlobal(posVector);
-	                	
-	                	double mass = BlockMass.basicMass.getMassFromState(state, pos, ship.worldObj);
-	                	
-	                	double explosionForce = Math.sqrt(e.explosionSize)*1000D*mass;
-
-	                	Vector forceVector = new Vector(pos.getX()+.5-expl.explosionX,pos.getY()+.5-expl.explosionY,pos.getZ()+.5-expl.explosionZ);
-	                	
-	                	double vectorDist = forceVector.length();
-	                	
-	                	forceVector.normalize();
-	                	
-	                	forceVector.multiply(explosionForce/vectorDist);
-	                	
-	                	RotationMatrices.doRotationOnly(ship.wrapping.coordTransform.lToWRotation, forceVector);
-	                	
-	                	PhysicsQueuedForce queuedForce = new PhysicsQueuedForce(forceVector, posVector, false, 1);
-	                	
-	                	if(!ship.wrapping.explodedPositionsThisTick.contains(pos)){
-	                		ship.wrapping.explodedPositionsThisTick.add(pos);
-	                	}
-	                	
-	                	ship.wrapping.queueForce(queuedForce);
-	                }
-	            }
+			if(!cancelDueToWater){
+				for(Object o:expl.affectedBlockPositions){
+					BlockPos pos = (BlockPos)o;
+					
+					IBlockState state = ship.worldObj.getBlockState(pos);
+					Block block = state.getBlock();
+					if (!block.isAir(state, worldIn, (BlockPos)o)||ship.wrapping.explodedPositionsThisTick.contains((BlockPos)o)){
+		                if (block.canDropFromExplosion(expl)){
+		                    block.dropBlockAsItemWithChance(ship.worldObj, pos, state, 1.0F / expl.explosionSize, 0);
+		                }
+		                block.onBlockExploded(ship.worldObj, pos, expl);
+		                if(!worldIn.isRemote){
+		                	Vector posVector = new Vector(pos.getX()+.5,pos.getY()+.5,pos.getZ()+.5);
+		                	
+		                	ship.wrapping.coordTransform.fromLocalToGlobal(posVector);
+		                	
+		                	double mass = BlockMass.basicMass.getMassFromState(state, pos, ship.worldObj);
+		                	
+		                	double explosionForce = Math.sqrt(e.explosionSize)*1000D*mass;
+	
+		                	Vector forceVector = new Vector(pos.getX()+.5-expl.explosionX,pos.getY()+.5-expl.explosionY,pos.getZ()+.5-expl.explosionZ);
+		                	
+		                	double vectorDist = forceVector.length();
+		                	
+		                	forceVector.normalize();
+		                	
+		                	forceVector.multiply(explosionForce/vectorDist);
+		                	
+		                	RotationMatrices.doRotationOnly(ship.wrapping.coordTransform.lToWRotation, forceVector);
+		                	
+		                	PhysicsQueuedForce queuedForce = new PhysicsQueuedForce(forceVector, posVector, false, 1);
+		                	
+		                	if(!ship.wrapping.explodedPositionsThisTick.contains(pos)){
+		                		ship.wrapping.explodedPositionsThisTick.add(pos);
+		                	}
+		                	
+		                	ship.wrapping.queueForce(queuedForce);
+		                }
+		            }
+				}
 			}
 			
 		}

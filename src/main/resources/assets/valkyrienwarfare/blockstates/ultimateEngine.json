@@ -1,0 +1,11 @@
+{
+    "variants": {
+        "default": { "model": "valkyrienwarfare:basicengine_propeller" },
+        "facing=down": { "model": "valkyrienwarfare:ultimateEngine", "x": 90 },
+        "facing=up": { "model": "valkyrienwarfare:ultimateEngine", "x": 270 },
+        "facing=north": { "model": "valkyrienwarfare:ultimateEngine" },
+        "facing=south": { "model": "valkyrienwarfare:ultimateEngine", "y": 180 },
+        "facing=west": { "model": "valkyrienwarfare:ultimateEngine", "y": 270 },
+        "facing=east": { "model": "valkyrienwarfare:ultimateEngine", "y": 90 }
+    }
+}

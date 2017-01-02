@@ -1,12 +1,12 @@
 {
-    "__comment": "Leaving this here for legacy purposes, so that we can have a file to base other engines off of.",
+    "__comment": "TODO: make new textures for the rotors",
     "textures": {
         "main": "valkyrienwarfare:blocks/basicEngineRotor",
         "particle": "valkyrienwarfare:blocks/Rusty shaft",
-        "0": "valkyrienwarfare:blocks/Rusty metal panel",
-        "1": "valkyrienwarfare:blocks/Slightly rusty shiny metal panel",
-        "2": "valkyrienwarfare:blocks/Other metal thing",
-        "3": "valkyrienwarfare:blocks/Rusty metal plate 3",
+        "0": "minecraft:blocks/stone",
+        "1": "minecraft:blocks/stone",
+        "2": "minecraft:blocks/stonebrick",
+        "3": "minecraft:blocks/cobblestone",
         "4": "valkyrienwarfare:blocks/Rusty shaft",
         "5": "valkyrienwarfare:blocks/Red lamp",
         "6": "valkyrienwarfare:blocks/Green lamp"

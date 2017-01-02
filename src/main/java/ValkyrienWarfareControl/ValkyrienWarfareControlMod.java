@@ -103,7 +103,7 @@ public class ValkyrienWarfareControlMod {
     	double eliteEnginePower = config.get(Configuration.CATEGORY_GENERAL, "eliteEnginePower", 8000D, "Engine power for the elite Engine").getDouble();
     	double ultimateEnginePower = config.get(Configuration.CATEGORY_GENERAL, "ultimateEnginePower", 16000D, "Engine power for the ultimate Engine").getDouble();
     	
-    	basicEngine = new BlockNormalEngine(Material.WOOD, basicEnginePower).setHardness(5f).setUnlocalizedName("basicEngine").setRegistryName(ValkyrienWarfareMod.MODID, "basicengine").setCreativeTab(CreativeTabs.TRANSPORTATION);
+    	basicEngine = new BlockNormalEngine(Material.WOOD, basicEnginePower).setHardness(5f).setUnlocalizedName("basicEngine").setRegistryName(ValkyrienWarfareMod.MODID, "basicEngine").setCreativeTab(CreativeTabs.TRANSPORTATION);
     	advancedEngine = new BlockNormalEngine(Material.WOOD, advancedEnginePower).setHardness(5f).setUnlocalizedName("advancedEngine").setRegistryName(ValkyrienWarfareMod.MODID, "advancedEngine").setCreativeTab(CreativeTabs.TRANSPORTATION);
     	eliteEngine = new BlockNormalEngine(Material.WOOD, eliteEnginePower).setHardness(5f).setUnlocalizedName("eliteEngine").setRegistryName(ValkyrienWarfareMod.MODID, "eliteEngine").setCreativeTab(CreativeTabs.TRANSPORTATION);
     	ultimateEngine = new BlockNormalEngine(Material.WOOD, ultimateEnginePower).setHardness(5f).setUnlocalizedName("ultimateEngine").setRegistryName(ValkyrienWarfareMod.MODID, "ultimateEngine").setCreativeTab(CreativeTabs.TRANSPORTATION);

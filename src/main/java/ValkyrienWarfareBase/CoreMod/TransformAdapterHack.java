@@ -1,6 +1,4 @@
-package ValkyrienWarfareBase.CoreMod.CompiledHack;
-
-import ValkyrienWarfareBase.CoreMod.TransformAdapter;
+package ValkyrienWarfareBase.CoreMod;
 
 /**
  * Same thing, but works specifically with other mods

@@ -1,4 +1,4 @@
-package ValkyrienWarfareBase.CoreMod.CompiledHack;
+package ValkyrienWarfareBase.CoreMod;
 
 import java.util.Arrays;
 import java.util.List;
@@ -8,7 +8,6 @@ import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.util.CheckClassAdapter;
 
-import ValkyrienWarfareBase.CoreMod.ValkyrienWarfarePlugin;
 import net.minecraft.launchwrapper.IClassTransformer;
 
 public class ValkyrienWarfareTransformerHack implements IClassTransformer{

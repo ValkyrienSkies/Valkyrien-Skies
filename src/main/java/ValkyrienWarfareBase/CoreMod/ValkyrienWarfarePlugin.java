@@ -18,7 +18,8 @@ public class ValkyrienWarfarePlugin implements IFMLLoadingPlugin{
 	
     @Override
     public String[] getASMTransformerClass() {
-    	return new String[] {"ValkyrienWarfareBase.CoreMod.ValkyrienWarfareTransformer"};
+    	return new String[] {"ValkyrienWarfareBase.CoreMod.ValkyrienWarfareTransformer", 
+    			"ValkyrienWarfareBase.CoreMod.ValkyrienWarfareTransformerHack"};
     }
 
     @Override

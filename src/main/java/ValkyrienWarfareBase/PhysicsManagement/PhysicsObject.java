@@ -13,6 +13,7 @@ import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.ChunkManagement.ChunkSet;
+import ValkyrienWarfareBase.CoreMod.ValkyrienWarfarePlugin;
 import ValkyrienWarfareBase.Physics.BlockForce;
 import ValkyrienWarfareBase.Physics.PhysicsCalculations;
 import ValkyrienWarfareBase.Physics.PhysicsQueuedForce;
@@ -27,7 +28,6 @@ import ValkyrienWarfareControl.Network.EntityFixMessage;
 import gnu.trove.iterator.TIntIterator;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -697,7 +697,7 @@ public class PhysicsObject {
 	private void grabPlayerField(){
 		if(playersField==null){
 			try{
-				if(!ValkyrienWarfareMod.isObsfucated){
+				if(!ValkyrienWarfarePlugin.isObfuscatedEnvironment){
 					playersField = PlayerChunkMapEntry.class.getDeclaredField("players");
 				}else{
 					playersField = PlayerChunkMapEntry.class.getDeclaredField("field_187283_c");

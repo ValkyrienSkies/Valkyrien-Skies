@@ -45,7 +45,7 @@ public class ValkyrienWarfareMod{
 
 	public static final String MODID = "valkyrienwarfare";
     public static final String MODNAME = "Valkyrien Warfare";
-    public static final String MODVER = "0.85a";
+    public static final String MODVER = "0.86c";
 
     public static File configFile;
     public static Configuration config;
@@ -69,7 +69,6 @@ public class ValkyrienWarfareMod{
     
     public static int airStateIndex;
 	public static double standingTolerance = .42D;
-	public static boolean isObsfucated = false;
 	public static int maxShipSize = 15000;
 	public static double shipUpperLimit = 1000D;
 	public static double shipLowerLimit = -30D;

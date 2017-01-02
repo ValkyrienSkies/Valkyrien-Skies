@@ -15,6 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 /**
@@ -104,4 +105,9 @@ public class BlockNormalEngine extends Block implements IBlockForceProvider {
     public boolean isOpaqueCube(IBlockState state){ 
         return false; 
     } 
+	
+	@Override
+	public boolean canConnectRedstone(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing face)	{
+		return true;
+	}
 }

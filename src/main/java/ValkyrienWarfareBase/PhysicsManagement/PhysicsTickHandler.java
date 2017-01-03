@@ -59,9 +59,9 @@ public class PhysicsTickHandler{
 		
 //		System.out.println(physicsEntities.size());
 		
-		int iters = manager.physIter;
-		double newPhysSpeed = manager.physSpeed;
-		Vector newGravity = manager.gravity;
+		int iters = ValkyrienWarfareMod.physIter;
+		double newPhysSpeed = ValkyrienWarfareMod.physSpeed;
+		Vector newGravity = ValkyrienWarfareMod.gravity;
 		for(int pass = 0;pass<iters;pass++){
 			//Run PRE-Col
 			for(PhysicsWrapperEntity wrapper:physicsEntities){

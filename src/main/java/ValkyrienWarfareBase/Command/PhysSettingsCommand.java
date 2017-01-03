@@ -1,5 +1,6 @@
 package ValkyrienWarfareBase.Command;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -16,6 +17,8 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
 public class PhysSettingsCommand extends CommandBase {
+	
+	public static final ArrayList<String> completionOptions = new ArrayList<String>();
 
 	@Override
 	public String getCommandName() {
@@ -109,19 +112,19 @@ public class PhysSettingsCommand extends CommandBase {
 			} else if (args.length == 2)	{
 				World commandWorld = sender.getEntityWorld();
 				
-				int sentNum = ValkyrienWarfareMod.physIter;
+				double sentNum = ValkyrienWarfareMod.physSpeed;
 				String s = null;
 	            s = getChatComponentFromNthArg(sender, args, 0).getUnformattedText();
 	            try{
 	            	if(s!=null){
-	            		sentNum = Integer.parseInt(s);
+	            		sentNum = Double.parseDouble(s);
 	            	}
 	            }catch(Exception e){
 	            	notifyCommandListener(sender, this, "Invalid Input", new Object[] {args[0]});
 	        		return;
 	            }
 	            if(sentNum>=0&&sentNum<=1000){
-	            	ValkyrienWarfareMod.physIter = sentNum;
+	            	ValkyrienWarfareMod.physSpeed = sentNum;
 					sender.addChatMessage(new TextComponentString("physicsSpeed=" + ValkyrienWarfareMod.maxShipSize + " (Default: 0.5)"));
 	            }
 			}
@@ -170,6 +173,9 @@ public class PhysSettingsCommand extends CommandBase {
 				sender.addChatMessage(new TextComponentString("Set doAirshipMovement to " + (PhysicsSettings.doGravity ? "enabled" : "disabled")));
 				PhysicsSettings.doAirshipMovement = value;
 			}
+		} else if (key.equals("save"))	{
+			ValkyrienWarfareMod.instance.saveConfig();
+			sender.addChatMessage(new TextComponentString("Saved phisics settings"));
 		}
 		
 		sender.addChatMessage(new TextComponentString(this.getCommandUsage(sender)));

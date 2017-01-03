@@ -25,6 +25,11 @@ public class ClientProxyControl extends CommonProxyControl{
     public void postInit(FMLPostInitializationEvent event){
     	super.postInit(event);
     	registerBlockItem(ValkyrienWarfareControlMod.instance.basicEngine);
+    	registerBlockItem(ValkyrienWarfareControlMod.instance.advancedEngine);
+    	registerBlockItem(ValkyrienWarfareControlMod.instance.eliteEngine);
+    	registerBlockItem(ValkyrienWarfareControlMod.instance.redstoneEngine);
+    	registerBlockItem(ValkyrienWarfareControlMod.instance.ultimateEngine);
+    	
 		registerBlockItem(ValkyrienWarfareControlMod.instance.basicHoverController);
 		registerBlockItem(ValkyrienWarfareControlMod.instance.antigravityEngine);
 		

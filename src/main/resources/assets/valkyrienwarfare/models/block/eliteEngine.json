@@ -1,11 +1,12 @@
 {
+    "__comment": "TODO: make new textures for the rotors",
     "textures": {
         "main": "valkyrienwarfare:blocks/basicEngineRotor",
         "particle": "valkyrienwarfare:blocks/Rusty shaft",
-        "0": "valkyrienwarfare:blocks/Rusty metal panel",
-        "1": "valkyrienwarfare:blocks/Slightly rusty shiny metal panel",
-        "2": "valkyrienwarfare:blocks/Other metal thing",
-        "3": "valkyrienwarfare:blocks/Rusty metal plate 3",
+        "0": "minecraft:blocks/iron_block",
+        "1": "minecraft:blocks/iron_block",
+        "2": "minecraft:blocks/hopper_inside",
+        "3": "minecraft:blocks/iron_block",
         "4": "valkyrienwarfare:blocks/Rusty shaft",
         "5": "valkyrienwarfare:blocks/Red lamp",
         "6": "valkyrienwarfare:blocks/Green lamp"

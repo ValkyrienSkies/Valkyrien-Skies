@@ -5,6 +5,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import ValkyrienWarfareBase.API.PhysicsEntityHooks;
+import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Block.BlockPhysicsInfuser;
 import ValkyrienWarfareBase.Block.BlockPhysicsInfuserCreative;
 import ValkyrienWarfareBase.ChunkManagement.DimensionPhysicsChunkManager;
@@ -56,6 +57,10 @@ public class ValkyrienWarfareMod{
     public static boolean multiThreadedPhysics;
     public static boolean doSplitting = false;
     public static boolean doShipCollision = false;
+    
+    public static Vector gravity = new Vector(0,-9.8D,0);
+	public static int physIter = 10;
+	public static double physSpeed = .05D;
     
     public static Block physicsInfuser;
     public static Block physicsInfuserCreative;

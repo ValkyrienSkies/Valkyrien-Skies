@@ -3,12 +3,12 @@ package ValkyrienWarfareControl;
 import java.io.File;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
-import ValkyrienWarfareControl.Block.BlockNormalEngine;
-import ValkyrienWarfareControl.Block.BlockRedstoneEngine;
 import ValkyrienWarfareControl.Block.BlockAntiGravEngine;
 import ValkyrienWarfareControl.Block.BlockBalloonBurner;
 import ValkyrienWarfareControl.Block.BlockDopedEtherium;
 import ValkyrienWarfareControl.Block.BlockHovercraftController;
+import ValkyrienWarfareControl.Block.BlockNormalEngine;
+import ValkyrienWarfareControl.Block.BlockRedstoneEngine;
 import ValkyrienWarfareControl.FullBalloonControl.ManualShipControllerBlock;
 import ValkyrienWarfareControl.FullBalloonControl.ManualShipControllerTileEntity;
 import ValkyrienWarfareControl.GUI.ControlGUIHandler;

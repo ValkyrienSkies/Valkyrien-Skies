@@ -7,7 +7,8 @@ import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin.Name;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin.TransformerExclusions;
 
 @Name("ValkyrienWarfareBase CoreMod")
-@IFMLLoadingPlugin.SortingIndex(1001)
+//Over 9000 meme
+@IFMLLoadingPlugin.SortingIndex(9000)
 @TransformerExclusions({"ValkyrienWarfareBase"})
 public class ValkyrienWarfarePlugin implements IFMLLoadingPlugin{
 

@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import ValkyrienWarfareBase.PhysicsSettings;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.Vector;
 import net.minecraft.command.CommandBase;
@@ -123,6 +124,51 @@ public class PhysSettingsCommand extends CommandBase {
 	            	ValkyrienWarfareMod.physIter = sentNum;
 					sender.addChatMessage(new TextComponentString("physicsSpeed=" + ValkyrienWarfareMod.maxShipSize + " (Default: 0.5)"));
 	            }
+			}
+		} else if (key.equals("doGravity"))	{
+			if (args.length == 1)	{
+				sender.addChatMessage(new TextComponentString("doGravity=" + PhysicsSettings.doGravity + " (Default: true)"));
+				return;
+			} else if (args.length == 2)	{
+				boolean value = Boolean.parseBoolean(args[1]);
+				sender.addChatMessage(new TextComponentString("Set gravity to " + (PhysicsSettings.doGravity ? "enabled" : "disabled")));
+				PhysicsSettings.doGravity = value;
+			}
+		} else if (key.equals("doPhysicsBlocks"))	{
+			if (args.length == 1)	{
+				sender.addChatMessage(new TextComponentString("doPhysicsBlocks=" + PhysicsSettings.doPhysicsBlocks + " (Default: true)"));
+				return;
+			} else if (args.length == 2)	{
+				boolean value = Boolean.parseBoolean(args[1]);
+				sender.addChatMessage(new TextComponentString("Set doPhysicsBlocks to " + (PhysicsSettings.doPhysicsBlocks ? "enabled" : "disabled")));
+				PhysicsSettings.doPhysicsBlocks = value;
+			}
+		} else if (key.equals("doBalloons"))	{
+			if (args.length == 1)	{
+				sender.addChatMessage(new TextComponentString("doBalloons=" + PhysicsSettings.doBalloons + " (Default: true)"));
+				return;
+			} else if (args.length == 2)	{
+				boolean value = Boolean.parseBoolean(args[1]);
+				sender.addChatMessage(new TextComponentString("Set doBalloons to " + (PhysicsSettings.doBalloons ? "enabled" : "disabled")));
+				PhysicsSettings.doBalloons = value;
+			}
+		} else if (key.equals("doAirshipRotation"))	{
+			if (args.length == 1)	{
+				sender.addChatMessage(new TextComponentString("doAirshipRotation=" + PhysicsSettings.doAirshipRotation + " (Default: true)"));
+				return;
+			} else if (args.length == 2)	{
+				boolean value = Boolean.parseBoolean(args[1]);
+				sender.addChatMessage(new TextComponentString("Set doAirshipRotation to " + (PhysicsSettings.doAirshipRotation ? "enabled" : "disabled")));
+				PhysicsSettings.doAirshipRotation = value;
+			}
+		} else if (key.equals("doAirshipMovement"))	{
+			if (args.length == 1)	{
+				sender.addChatMessage(new TextComponentString("doAirshipMovement=" + PhysicsSettings.doAirshipMovement + " (Default: true)"));
+				return;
+			} else if (args.length == 2)	{
+				boolean value = Boolean.parseBoolean(args[1]);
+				sender.addChatMessage(new TextComponentString("Set doAirshipMovement to " + (PhysicsSettings.doGravity ? "enabled" : "disabled")));
+				PhysicsSettings.doAirshipMovement = value;
 			}
 		}
 		

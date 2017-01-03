@@ -1,0 +1,11 @@
+{
+    "variants": {
+        "default": { "model": "valkyrienwarfare:basicengine_propeller" },
+        "facing=down": { "model": "valkyrienwarfare:redstoneEngine", "x": 90 },
+        "facing=up": { "model": "valkyrienwarfare:redstoneEngine", "x": 270 },
+        "facing=north": { "model": "valkyrienwarfare:redstoneEngine" },
+        "facing=south": { "model": "valkyrienwarfare:redstoneEngine", "y": 180 },
+        "facing=west": { "model": "valkyrienwarfare:redstoneEngine", "y": 270 },
+        "facing=east": { "model": "valkyrienwarfare:redstoneEngine", "y": 90 }
+    }
+}

@@ -1,29 +1,29 @@
 package ValkyrienWarfareBase.API;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
-public class DummyMethods {
+public interface DummyMethods {
 	//DO NOT RUN METHODS FROM HERE! USE PhysicsEntityHooks
 	
-	protected Vector getLinearVelocity(Entity shipEnt,double secondsToApply){
-		return new Vector();
-	}
+	public Vector getPositionInShipFromReal(World worldObj, Entity shipEnt, Vector positionInWorld);
 	
-	protected Vector getAngularVelocity(Entity shipEnt){
-		return new Vector();
-	}
+	public Vector getPositionInRealFromShip(World worldObj, Entity shipEnt, Vector posInShip);
+	
+	public boolean isBlockPartOfShip(World worldObj, BlockPos pos);
+	
+	public Entity getShipEntityManagingPos(World worldObj, BlockPos pos);
+	
+	public Vector getLinearVelocity(Entity shipEnt,double secondsToApply);
+	
+	public Vector getAngularVelocity(Entity shipEnt);
 	
 	//Returns the matrix which converts local coordinates (The positions of the blocks in the world) to the entity coordinates (The position in front of the player)
-	protected double[] getShipTransformMatrix(Entity shipEnt){
-		return RotationMatrices.getDoubleIdentity();
-	}
+	public double[] getShipTransformMatrix(Entity shipEnt);
 	
 	//Note, do not call this from World coordinates; first subtract the world coords from the shipEntity xyz and then call!
-	protected Vector getVelocityAtPoint(Entity shipEnt,Vector inBody,double secondsToApply){
-		return new Vector();
-	}
+	public Vector getVelocityAtPoint(Entity shipEnt,Vector inBody,double secondsToApply);
 	
-	protected double getShipMass(Entity shipEnt){
-		return 420;
-	}
+	public double getShipMass(Entity shipEnt);
 }

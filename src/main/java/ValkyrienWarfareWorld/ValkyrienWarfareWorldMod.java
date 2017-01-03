@@ -38,6 +38,7 @@ public class ValkyrienWarfareWorldMod{
     @EventHandler
     public void init(FMLInitializationEvent event){
     	EntityRegistry.registerModEntity(EntityFallingUpBlock.class,"FallingUpBlockEntity",75,this,80,1,true);
+    	proxy.init(event);
     }
 
     @EventHandler

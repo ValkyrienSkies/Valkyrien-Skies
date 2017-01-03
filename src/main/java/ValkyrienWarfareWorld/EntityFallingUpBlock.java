@@ -93,7 +93,7 @@ public class EntityFallingUpBlock extends EntityFallingBlock{
 
                         if (!this.canSetAsBlock)
                         {
-                            if (this.worldObj.canBlockBePlaced(block, blockpos1, true, EnumFacing.UP, (Entity)null, (ItemStack)null) && !BlockFalling.canFallThrough(this.worldObj.getBlockState(blockpos1.up())) && this.worldObj.setBlockState(blockpos1, this.fallTile, 3))
+                            if (this.worldObj.canBlockBePlaced(block, blockpos1, true, EnumFacing.UP, (Entity)null, (ItemStack)null) && !BlockFalling.canFallThrough(this.worldObj.getBlockState(blockpos1.up())) && CallRunner.onSetBlockState(worldObj, blockpos1, this.fallTile, 3))
                             {
                                 if (block instanceof BlockFalling)
                                 {

@@ -2,6 +2,7 @@ package ValkyrienWarfareWorld;
 
 import java.util.Random;
 
+import ValkyrienWarfareBase.CoreMod.CallRunner;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFalling;
 import net.minecraft.block.material.Material;
@@ -68,7 +69,7 @@ public class BlockEtheriumOre extends Block{
 
                 if (blockpos.getY() < 255)
                 {
-                    worldIn.setBlockState(blockpos.down(), state); //Forge: Fix loss of state information during world gen.
+                	CallRunner.onSetBlockState(worldIn, blockpos.down(), state, 3);
                 }
             }
         }

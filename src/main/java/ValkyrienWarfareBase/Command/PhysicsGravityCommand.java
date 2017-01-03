@@ -46,7 +46,7 @@ public class PhysicsGravityCommand extends CommandBase{
             	notifyCommandListener(sender, this, "Invalid Input", new Object[] {args[0]});
         		return;
             }
-            ValkyrienWarfareMod.physicsManager.getManagerForWorld(commandWorld).gravity = newVector;
+            ValkyrienWarfareMod.gravity = newVector;
             notifyCommandListener(sender, this, "Physics Gravity set to "+newVector.toRoundedString()+" :Default: <0,-9.8,0>", new Object[] {args[0]});
 		}catch(Exception e){
 			System.out.println(e);

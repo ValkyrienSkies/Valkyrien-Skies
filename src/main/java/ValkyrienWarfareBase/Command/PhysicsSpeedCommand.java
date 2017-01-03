@@ -29,7 +29,7 @@ public class PhysicsSpeedCommand extends CommandBase{
 		try{
 			World commandWorld = sender.getEntityWorld();
 			
-			double sentNum = ValkyrienWarfareMod.physicsManager.getManagerForWorld(commandWorld).physSpeed;
+			double sentNum = ValkyrienWarfareMod.physSpeed;
 			String s = null;
             s = getChatComponentFromNthArg(sender, args, 0).getUnformattedText();
             s = s.replace('%', ' ');
@@ -42,7 +42,7 @@ public class PhysicsSpeedCommand extends CommandBase{
         		return;
 	        }
             if(!Double.isNaN(sentNum)){
-            	ValkyrienWarfareMod.physicsManager.getManagerForWorld(commandWorld).physSpeed = sentNum*.05D/100D;
+            	ValkyrienWarfareMod.physSpeed = sentNum*.05D/100D;
             	notifyCommandListener(sender, this, "Physics Speed set to "+sentNum+" Percent", new Object[] {args[0]});
             }
 		}catch(Exception e){

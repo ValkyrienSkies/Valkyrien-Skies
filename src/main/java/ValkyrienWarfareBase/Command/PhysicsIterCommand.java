@@ -29,7 +29,7 @@ public class PhysicsIterCommand extends CommandBase{
 		try{
 			World commandWorld = sender.getEntityWorld();
 			
-			int sentNum = ValkyrienWarfareMod.physicsManager.getManagerForWorld(commandWorld).physIter;
+			int sentNum = ValkyrienWarfareMod.physIter;
 			String s = null;
             s = getChatComponentFromNthArg(sender, args, 0).getUnformattedText();
             try{
@@ -41,7 +41,7 @@ public class PhysicsIterCommand extends CommandBase{
         		return;
             }
             if(sentNum>=0&&sentNum<=1000){
-            	ValkyrienWarfareMod.physicsManager.getManagerForWorld(commandWorld).physIter = sentNum;
+            	ValkyrienWarfareMod.physIter = sentNum;
             	notifyCommandListener(sender, this, "Physics Iters set to "+sentNum+" :Default (10)", new Object[] {args[0]});
             }
 		}catch(Exception e){

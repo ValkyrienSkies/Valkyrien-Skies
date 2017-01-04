@@ -9,7 +9,7 @@ import net.minecraft.world.World;
  * @author thebest108
  *
  */
-public class PhysicsEntityHooks {
+public class ValkyrienWarfareHooks {
 
 	//Replaced with an object that does real work in runtime
 	public static DummyMethods methods = null;

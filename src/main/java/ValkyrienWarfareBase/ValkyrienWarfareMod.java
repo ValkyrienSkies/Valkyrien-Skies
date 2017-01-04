@@ -4,8 +4,7 @@ import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import ValkyrienWarfareBase.API.DataTag;
-import ValkyrienWarfareBase.API.PhysicsEntityHooks;
+import ValkyrienWarfareBase.API.ValkyrienWarfareHooks;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Block.BlockPhysicsInfuser;
 import ValkyrienWarfareBase.Block.BlockPhysicsInfuserCreative;
@@ -95,7 +94,8 @@ public class ValkyrienWarfareMod{
     	registerRecipies(event);
     	registerNetworks(event);
     	runConfiguration(event);
-    	PhysicsEntityHooks.methods = new RealMethods();
+    	ValkyrienWarfareHooks.methods = new RealMethods();
+    	ValkyrienWarfareHooks.isValkyrienWarfareInstalled = true;
     }
 
     @EventHandler

@@ -99,31 +99,16 @@ processResources
 }
 
 jar {
-	manifest {
-		attributes 'FMLAT': 'ValkyrienWarfare_At.cfg'
-			attributes 'FMLCorePlugin': 'ValkyrienWarfareBase.CoreMod.ValkyrienWarfarePlugin' 
-			attributes 'FMLCorePluginContainsFMLMod': 'false'
+        manifest {
+			attributes 'FMLAT': 'ValkyrienWarfare_At.cfg'
+				attributes 'FMLCorePlugin': 'ValkyrienWarfareBase.CoreMod.ValkyrienWarfarePlugin' 
+				attributes 'FMLCorePluginContainsFMLMod': 'false'
     }
 }
 
 task deobfJar(type: Jar) {
     from sourceSets.main.output
     classifier = 'dev'
-	manifest {
-		attributes 'FMLAT': 'ValkyrienWarfare_At.cfg'
-			attributes 'FMLCorePlugin': 'ValkyrienWarfareBase.CoreMod.ValkyrienWarfarePlugin' 
-			attributes 'FMLCorePluginContainsFMLMod': 'false'
-    }
-}
-
-task sourceJar(type: Jar) {
-    from sourceSets.main.allSource
-    classifier = 'sources'
-	manifest {
-		attributes 'FMLAT': 'ValkyrienWarfare_At.cfg'
-			attributes 'FMLCorePlugin': 'ValkyrienWarfareBase.CoreMod.ValkyrienWarfarePlugin' 
-			attributes 'FMLCorePluginContainsFMLMod': 'false'
-    }
 }
 
 tasks.build.dependsOn deobfJar, sourceJar

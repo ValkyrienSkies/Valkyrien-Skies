@@ -4,7 +4,7 @@ import ValkyrienWarfareBase.KeyHandler;
 import io.netty.buffer.ByteBuf;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
-public class PilotControlsMessage implements IMessage{
+public class PilotControlsMessage implements IMessage {
 
 	public boolean airshipUp;
 	public boolean airshipDown;
@@ -12,8 +12,9 @@ public class PilotControlsMessage implements IMessage{
 	public boolean airshipBackward;
 	public boolean airshipLeft;
 	public boolean airshipRight;
-	
-	public PilotControlsMessage(){}
+
+	public PilotControlsMessage() {
+	}
 
 	@Override
 	public void fromBytes(ByteBuf buf) {
@@ -34,15 +35,15 @@ public class PilotControlsMessage implements IMessage{
 		buf.writeBoolean(airshipLeft);
 		buf.writeBoolean(airshipRight);
 	}
-	
-	public void assignKeyBooleans(){
+
+	public void assignKeyBooleans() {
 		airshipUp = KeyHandler.airshipUp.isKeyDown();
 		airshipDown = KeyHandler.airshipDown.isKeyDown();
 		airshipForward = KeyHandler.airshipForward.isKeyDown();
 		airshipBackward = KeyHandler.airshipBackward.isKeyDown();
 		airshipLeft = KeyHandler.airshipLeft.isKeyDown();
 		airshipRight = KeyHandler.airshipRight.isKeyDown();
-		
+
 	}
 
 }

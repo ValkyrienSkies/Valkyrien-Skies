@@ -3,4 +3,4 @@ package ValkyrienWarfareBase.API;
 
 import net.minecraftforge.fml.common.API;
 
-//This file keeps the API version up to latest for all mods!
+// This file keeps the API version up to latest for all mods!

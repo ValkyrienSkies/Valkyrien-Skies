@@ -117,7 +117,7 @@ publishing {
     tasks.publish.dependsOn 'build'
     publications {
         mavenJava(MavenPublication) {
-            groupId ""
+            groupId config.mod_id_cap
             artifactId config.mod_id
             artifact jar
             artifact sourceJar

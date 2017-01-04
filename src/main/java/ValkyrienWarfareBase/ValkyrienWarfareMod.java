@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import ValkyrienWarfareBase.API.DataTag;
 import ValkyrienWarfareBase.API.ValkyrienWarfareHooks;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Block.BlockPhysicsInfuser;

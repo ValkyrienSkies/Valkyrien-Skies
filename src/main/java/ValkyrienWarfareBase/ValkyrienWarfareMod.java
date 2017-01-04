@@ -86,18 +86,6 @@ public class ValkyrienWarfareMod {
 	public static ExecutorService MultiThreadExecutor;
 
 	public DataTag tag = null;
-	
-    @EventHandler
-    public void preInit(FMLPreInitializationEvent event){
-    	proxy.preInit(event);
-    	instance = this;
-    	registerBlocks(event);
-    	registerRecipies(event);
-    	registerNetworks(event);
-    	runConfiguration(event);
-    	ValkyrienWarfareHooks.methods = new RealMethods();
-    	ValkyrienWarfareHooks.isValkyrienWarfareInstalled = true;
-    }
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
@@ -107,7 +95,8 @@ public class ValkyrienWarfareMod {
 		registerRecipies(event);
 		registerNetworks(event);
 		runConfiguration(event);
-		PhysicsEntityHooks.methods = new RealMethods();
+		ValkyrienWarfareHooks.methods = new RealMethods();
+		ValkyrienWarfareHooks.isValkyrienWarfareInstalled = true;
 	}
 
 	@EventHandler

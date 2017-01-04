@@ -72,7 +72,7 @@ public class RealMethods implements DummyMethods {
 
 	@Override
 	public Vector getShipCenterOfMass(Entity shipEnt) {
-		return new Vector(((PhysicsWrapperEntity)shipEnt).wrapping.physicsProcessor.centerOfMass);
+		return new Vector(((PhysicsWrapperEntity) shipEnt).wrapping.physicsProcessor.centerOfMass);
 	}
 
 	@Override

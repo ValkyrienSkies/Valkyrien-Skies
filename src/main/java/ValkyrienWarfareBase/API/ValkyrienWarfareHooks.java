@@ -9,10 +9,12 @@ import net.minecraft.world.World;
  * @author thebest108
  *
  */
-public class PhysicsEntityHooks {
+public class ValkyrienWarfareHooks {
 
 	//Replaced with an object that does real work in runtime
-	public static DummyMethods methods;
+	public static DummyMethods methods = null;
+	//Set to true during runtime
+	public static boolean isValkyrienWarfareInstalled = false;
 	
 	public static Entity getShipEntityManagingPos(World worldObj, BlockPos pos){
 		return methods.getShipEntityManagingPos(worldObj, pos);
@@ -51,4 +53,5 @@ public class PhysicsEntityHooks {
 	public static double getShipMass(Entity shipEnt){
 		return methods.getShipMass(shipEnt);
 	}
+
 }

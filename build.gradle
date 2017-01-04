@@ -100,9 +100,9 @@ processResources
 
 jar {
         manifest {
-        attributes 'FMLAT': 'ValkyrienWarfare_At.cfg',
-		'FMLCorePlugin': 'ValkyrienWarfareBase.CoreMod.ValkyrienWarfarePlugin' ,
-		'FMLCorePluginContainsFMLMod': 'false'
+			attributes 'FMLAT': 'ValkyrienWarfare_At.cfg'
+				attributes 'FMLCorePlugin': 'ValkyrienWarfareBase.CoreMod.ValkyrienWarfarePlugin' 
+				attributes 'FMLCorePluginContainsFMLMod': 'false'
     }
 }
 

@@ -13,27 +13,27 @@ import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
-public class ClientProxy extends CommonProxy{
+public class ClientProxy extends CommonProxy {
 
 	@Override
 	public void preInit(FMLPreInitializationEvent e) {
-		RenderingRegistry.registerEntityRenderingHandler(EntityFallingUpBlock.class,new EntityFallingUpBlockRenderFactory());
+		RenderingRegistry.registerEntityRenderingHandler(EntityFallingUpBlock.class, new EntityFallingUpBlockRenderFactory());
 	}
-	
+
 	@Override
-    public void init(FMLInitializationEvent e) {
+	public void init(FMLInitializationEvent e) {
 		registerBlockItem(ValkyrienWarfareWorldMod.etheriumOre);
 	}
-	
-	private void registerBlockItem(Block toRegister){
+
+	private void registerBlockItem(Block toRegister) {
 		Item item = Item.getItemFromBlock(toRegister);
 		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(item, 0, new ModelResourceLocation(ValkyrienWarfareWorldMod.MODID + ":" + item.getUnlocalizedName().substring(5), "inventory"));
 	}
-	
-	private void registerItemModel(Item toRegister){
-    	RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
-        
-    	renderItem.getItemModelMesher().register(toRegister, 0, new ModelResourceLocation(ValkyrienWarfareWorldMod.MODID + ":" + toRegister.getUnlocalizedName(), "inventory"));
+
+	private void registerItemModel(Item toRegister) {
+		RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
+
+		renderItem.getItemModelMesher().register(toRegister, 0, new ModelResourceLocation(ValkyrienWarfareWorldMod.MODID + ":" + toRegister.getUnlocalizedName(), "inventory"));
 	}
 
 }

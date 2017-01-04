@@ -20,73 +20,67 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
-public class EntityCannonBallRenderer extends Render<EntityCannonBall>{
+public class EntityCannonBallRenderer extends Render<EntityCannonBall> {
 
 	private final IBlockState cannonballState;
-	
+
 	protected EntityCannonBallRenderer(RenderManager renderManager) {
 		super(renderManager);
 		cannonballState = ValkyrienWarfareCombatMod.instance.fakeCannonBlock.getStateFromMeta(2);
 	}
-	
+
 	@Override
-	public void doRender(EntityCannonBall entity, double x, double y, double z, float entityYaw, float partialTicks)
-    {
+	public void doRender(EntityCannonBall entity, double x, double y, double z, float entityYaw, float partialTicks) {
 		IBlockState iblockstate = ValkyrienWarfareCombatMod.instance.fakeCannonBlock.getStateFromMeta(2);
 
-		double renderX = (entity.posX-entity.lastTickPosX)*partialTicks + entity.lastTickPosX;
-		double renderY = (entity.posY-entity.lastTickPosY)*partialTicks + entity.lastTickPosY;
-		double renderZ = (entity.posZ-entity.lastTickPosZ)*partialTicks + entity.lastTickPosZ;
-		
-        if (iblockstate.getRenderType() == EnumBlockRenderType.MODEL)
-        {
-            World world = entity.worldObj;
+		double renderX = (entity.posX - entity.lastTickPosX) * partialTicks + entity.lastTickPosX;
+		double renderY = (entity.posY - entity.lastTickPosY) * partialTicks + entity.lastTickPosY;
+		double renderZ = (entity.posZ - entity.lastTickPosZ) * partialTicks + entity.lastTickPosZ;
 
-            if (iblockstate != world.getBlockState(new BlockPos(entity)) && iblockstate.getRenderType() != EnumBlockRenderType.INVISIBLE)
-            {
-                this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-                GlStateManager.pushMatrix();
-                GlStateManager.disableLighting();
-                Tessellator tessellator = Tessellator.getInstance();
-                VertexBuffer vertexbuffer = tessellator.getBuffer();
+		if (iblockstate.getRenderType() == EnumBlockRenderType.MODEL) {
+			World world = entity.worldObj;
 
-                if (this.renderOutlines)
-                {
-                    GlStateManager.enableColorMaterial();
-                    GlStateManager.enableOutlineMode(this.getTeamColor(entity));
-                }
+			if (iblockstate != world.getBlockState(new BlockPos(entity)) && iblockstate.getRenderType() != EnumBlockRenderType.INVISIBLE) {
+				this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+				GlStateManager.pushMatrix();
+				GlStateManager.disableLighting();
+				Tessellator tessellator = Tessellator.getInstance();
+				VertexBuffer vertexbuffer = tessellator.getBuffer();
 
-                vertexbuffer.begin(7, DefaultVertexFormats.BLOCK);
-//                BlockPos blockpos = new BlockPos(renderX, renderY, renderZ);
-                GlStateManager.translate((float)(x - renderX+.25D), (float)(y - renderY-.07D), (float)(z - renderZ+.778D));
-                BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
-                
-                vertexbuffer.setTranslation(renderX-.5D, renderY, renderZ-.5D);
-                
-                blockrendererdispatcher.getBlockModelRenderer().renderModel(world, blockrendererdispatcher.getModelForState(iblockstate), iblockstate, BlockPos.ORIGIN, vertexbuffer, false, 0);
-                tessellator.draw();
+				if (this.renderOutlines) {
+					GlStateManager.enableColorMaterial();
+					GlStateManager.enableOutlineMode(this.getTeamColor(entity));
+				}
 
-                vertexbuffer.setTranslation(0,0,0);
-                
-                if (this.renderOutlines)
-                {
-                    GlStateManager.disableOutlineMode();
-                    GlStateManager.disableColorMaterial();
-                }
+				vertexbuffer.begin(7, DefaultVertexFormats.BLOCK);
+				// BlockPos blockpos = new BlockPos(renderX, renderY, renderZ);
+				GlStateManager.translate((float) (x - renderX + .25D), (float) (y - renderY - .07D), (float) (z - renderZ + .778D));
+				BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
 
-                GlStateManager.enableLighting();
-                GlStateManager.popMatrix();
-                super.doRender(entity, x, y, z, entityYaw, partialTicks);
-            }
-        }
-    }
+				vertexbuffer.setTranslation(renderX - .5D, renderY, renderZ - .5D);
+
+				blockrendererdispatcher.getBlockModelRenderer().renderModel(world, blockrendererdispatcher.getModelForState(iblockstate), iblockstate, BlockPos.ORIGIN, vertexbuffer, false, 0);
+				tessellator.draw();
+
+				vertexbuffer.setTranslation(0, 0, 0);
+
+				if (this.renderOutlines) {
+					GlStateManager.disableOutlineMode();
+					GlStateManager.disableColorMaterial();
+				}
+
+				GlStateManager.enableLighting();
+				GlStateManager.popMatrix();
+				super.doRender(entity, x, y, z, entityYaw, partialTicks);
+			}
+		}
+	}
 
 	@Override
-	public boolean shouldRender(EntityCannonBall livingEntity, ICamera camera, double camX, double camY, double camZ)
-    {
+	public boolean shouldRender(EntityCannonBall livingEntity, ICamera camera, double camX, double camY, double camZ) {
 		return true;
-    }
-	
+	}
+
 	@Override
 	protected ResourceLocation getEntityTexture(EntityCannonBall entity) {
 		return null;

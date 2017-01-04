@@ -7,40 +7,40 @@ import net.minecraft.world.chunk.Chunk;
 
 public class DimensionPhysicsChunkManager {
 
-	public HashMap<World,PhysicsChunkManager> managerPerWorld;
+	public HashMap<World, PhysicsChunkManager> managerPerWorld;
 	private PhysicsChunkManager cachedManager;
-	
-	public DimensionPhysicsChunkManager(){
-		managerPerWorld = new HashMap<World,PhysicsChunkManager>();
+
+	public DimensionPhysicsChunkManager() {
+		managerPerWorld = new HashMap<World, PhysicsChunkManager>();
 	}
-	
-	public void initWorld(World toInit){
-		if(!managerPerWorld.containsKey(toInit)){
+
+	public void initWorld(World toInit) {
+		if (!managerPerWorld.containsKey(toInit)) {
 			managerPerWorld.put(toInit, new PhysicsChunkManager(toInit));
 		}
 	}
-	
-	public boolean isChunkInShipRange(World world,int x,int z){
+
+	public boolean isChunkInShipRange(World world, int x, int z) {
 		PhysicsChunkManager manager = getManagerForWorld(world);
-		if(manager!=null){
+		if (manager != null) {
 			return manager.isChunkInShipRange(x, z, world.isRemote);
-		}else{
+		} else {
 			return false;
 		}
 	}
-	
-	public PhysicsChunkManager getManagerForWorld(World world){
-		if(cachedManager==null||cachedManager.worldObj!=world){
+
+	public PhysicsChunkManager getManagerForWorld(World world) {
+		if (cachedManager == null || cachedManager.worldObj != world) {
 			cachedManager = managerPerWorld.get(world);
-			if(cachedManager==null){
+			if (cachedManager == null) {
 				initWorld(world);
 				cachedManager = managerPerWorld.get(world);
 			}
 		}
 		return cachedManager;
 	}
-	
-	public void removeWorld(World world){
+
+	public void removeWorld(World world) {
 		managerPerWorld.remove(world);
 	}
 }

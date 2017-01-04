@@ -9,11 +9,11 @@ public class ChunkKeysWorldData extends WorldSavedData {
 
 	private static final String key = "ChunkKeys";
 	public int chunkKey;
-	
+
 	public ChunkKeysWorldData() {
 		super(key);
 	}
-	
+
 	public ChunkKeysWorldData(String name) {
 		super(name);
 	}
@@ -31,12 +31,12 @@ public class ChunkKeysWorldData extends WorldSavedData {
 
 	public static ChunkKeysWorldData get(World world) {
 		MapStorage storage = world.getPerWorldStorage();
-		ChunkKeysWorldData data = (ChunkKeysWorldData)storage.getOrLoadData(ChunkKeysWorldData.class, key);
+		ChunkKeysWorldData data = (ChunkKeysWorldData) storage.getOrLoadData(ChunkKeysWorldData.class, key);
 		if (data == null) {
 			data = new ChunkKeysWorldData();
 			world.setItemData(key, data);
 		}
 		return data;
 	}
-	
+
 }

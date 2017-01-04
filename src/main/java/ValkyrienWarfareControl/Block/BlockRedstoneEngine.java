@@ -15,9 +15,9 @@ public class BlockRedstoneEngine extends BlockNormalEngine {
 	public BlockRedstoneEngine(Material materialIn, double powerMultiplier) {
 		super(materialIn, powerMultiplier);
 	}
-	
+
 	@Override
-	public double getEnginePower(World world, BlockPos pos, IBlockState state, Entity shipEntity)	{
+	public double getEnginePower(World world, BlockPos pos, IBlockState state, Entity shipEntity) {
 		return world.isBlockIndirectlyGettingPowered(pos) * this.enginePower;
 	}
 

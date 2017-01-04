@@ -8,18 +8,18 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class ShipSpawnDetector extends SpatialDetector{
-	
+public class ShipSpawnDetector extends SpatialDetector {
+
 	private static final ArrayList<Block> blackList = new ArrayList<Block>();
-	
-	static{
+
+	static {
 		blackList.add(Blocks.AIR);
 		blackList.add(Blocks.DIRT);
 		blackList.add(Blocks.GRASS);
 		blackList.add(Blocks.STONE);
 		blackList.add(Blocks.TALLGRASS);
-//		blackList.add(Blocks.LEAVES);
-//		blackList.add(Blocks.LEAVES2);
+		// blackList.add(Blocks.LEAVES);
+		// blackList.add(Blocks.LEAVES2);
 		blackList.add(Blocks.WATER);
 		blackList.add(Blocks.FLOWING_WATER);
 		blackList.add(Blocks.SAND);
@@ -41,17 +41,17 @@ public class ShipSpawnDetector extends SpatialDetector{
 
 	@Override
 	public boolean isValidExpansion(int x, int y, int z) {
-		IBlockState state = cache.getBlockState(x,y,z);
-		if(state.getBlock()==Blocks.BEDROCK){
+		IBlockState state = cache.getBlockState(x, y, z);
+		if (state.getBlock() == Blocks.BEDROCK) {
 			cleanHouse = true;
 			return false;
 		}
 		return !blackList.contains(state.getBlock());
-//		if(state.getBlock()==Blocks.BEDROCK){
-//			this.cleanHouse = true;
-//			return false;
-//		}
-//		return !cache.getBlockState(x,y,z).getBlock().isAir(state, this.worldObj, this.tempPos.setPos(x, y, z));
+		// if(state.getBlock()==Blocks.BEDROCK){
+		// this.cleanHouse = true;
+		// return false;
+		// }
+		// return !cache.getBlockState(x,y,z).getBlock().isAir(state, this.worldObj, this.tempPos.setPos(x, y, z));
 	}
 
 }

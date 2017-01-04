@@ -6,6 +6,7 @@ import java.util.Collections;
 import javax.vecmath.Matrix3d;
 
 import ValkyrienWarfareBase.NBTUtils;
+import ValkyrienWarfareBase.PhysicsSettings;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.IBlockForceProvider;
 import ValkyrienWarfareBase.API.RotationMatrices;
@@ -193,10 +194,11 @@ public class PhysicsCalculations {
 
 	public void rawPhysTickPostCol(){
 		if(parent.doPhysics){
-			applyAngularVelocity();
-		}
-		if(parent.doPhysics){
-			applyLinearVelocity();
+			if (PhysicsSettings.doAirshipRotation)
+				applyAngularVelocity();
+			
+			if (PhysicsSettings.doAirshipMovement)
+				applyLinearVelocity();
 		}
 	}
 	
@@ -249,7 +251,9 @@ public class PhysicsCalculations {
 		double modifiedDrag = Math.pow(drag,physTickSpeed/.05D);
 		linearMomentum.multiply(modifiedDrag);
 		angularVelocity.multiply(modifiedDrag);
-		addForceAtPoint(new Vector(0,0,0),gravity.getProduct(mass*physTickSpeed));
+		if (PhysicsSettings.doGravity)	{
+			addForceAtPoint(new Vector(0,0,0),ValkyrienWarfareMod.gravity.getProduct(mass*physTickSpeed));
+		}
 		addQueuedForces();
 		Collections.shuffle(activeForcePositions);
 		
@@ -257,36 +261,38 @@ public class PhysicsCalculations {
 		Vector inBodyWO = new Vector();
 		Vector crossVector = new Vector();
 		
-		for(BlockPos pos:activeForcePositions){
-			IBlockState state = parent.VKChunkCache.getBlockState(pos);
-			Block blockAt = state.getBlock();
-			BigBastardMath.getBodyPosWithOrientation(pos, centerOfMass, parent.coordTransform.lToWRotation,inBodyWO);
-			
-			BlockForce.basicForces.getForceFromState(state, pos, worldObj,physTickSpeed,parent,blockForce);
-			
-			if(blockForce!=null){
-				if(blockAt instanceof IBlockForceProvider){
-					Vector otherPosition = ((IBlockForceProvider)blockAt).getBlockForcePosition(worldObj, pos, state, parent.wrapper, physTickSpeed);
-					if(otherPosition!=null){
-						BigBastardMath.getBodyPosWithOrientation(otherPosition, centerOfMass, parent.coordTransform.lToWRotation,inBodyWO);
+		if (PhysicsSettings.doPhysicsBlocks)	{
+			for(BlockPos pos:activeForcePositions){
+				IBlockState state = parent.VKChunkCache.getBlockState(pos);
+				Block blockAt = state.getBlock();
+				BigBastardMath.getBodyPosWithOrientation(pos, centerOfMass, parent.coordTransform.lToWRotation,inBodyWO);
+				
+				BlockForce.basicForces.getForceFromState(state, pos, worldObj,physTickSpeed,parent,blockForce);
+				
+				if(blockForce!=null){
+					if(blockAt instanceof IBlockForceProvider){
+						Vector otherPosition = ((IBlockForceProvider)blockAt).getBlockForcePosition(worldObj, pos, state, parent.wrapper, physTickSpeed);
+						if(otherPosition!=null){
+							BigBastardMath.getBodyPosWithOrientation(otherPosition, centerOfMass, parent.coordTransform.lToWRotation,inBodyWO);
+						}
 					}
+					addForceAtPoint(inBodyWO,blockForce,crossVector);
+				}else{
 				}
-				addForceAtPoint(inBodyWO,blockForce,crossVector);
-			}else{
-//				FMLLog.getLogger().warn("BLOCK "+blockAt.getUnlocalizedName()+" didn't have its force properly registered; COMPLAIN TO MOD DEV!!!");
 			}
-			
 		}
 		
-		for(BalloonProcessor balloon:parent.balloonManager.balloonProcessors){
-			balloon.tickBalloonTemperatures(physTickSpeed,this);
-			
-			Vector balloonForce = balloon.getBalloonForce(physTickSpeed,this);
-			Vector balloonCenterInBody = balloon.getForceCenter();
-			
-			BigBastardMath.getBodyPosWithOrientation(balloonCenterInBody, centerOfMass, parent.coordTransform.lToWRotation,inBodyWO);
-			
-			addForceAtPoint(inBodyWO,balloonForce,crossVector);
+		if (PhysicsSettings.doBalloons)	{
+			for(BalloonProcessor balloon:parent.balloonManager.balloonProcessors){
+				balloon.tickBalloonTemperatures(physTickSpeed,this);
+				
+				Vector balloonForce = balloon.getBalloonForce(physTickSpeed,this);
+				Vector balloonCenterInBody = balloon.getForceCenter();
+				
+				BigBastardMath.getBodyPosWithOrientation(balloonCenterInBody, centerOfMass, parent.coordTransform.lToWRotation,inBodyWO);
+				
+				addForceAtPoint(inBodyWO,balloonForce,crossVector);
+			}
 		}
 
 		convertTorqueToVelocity();

@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import ValkyrienWarfareBase.API.DataTag;
 import ValkyrienWarfareBase.API.PhysicsEntityHooks;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Block.BlockPhysicsInfuser;
@@ -22,6 +23,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.common.Mod;
@@ -30,7 +32,9 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
@@ -80,6 +84,8 @@ public class ValkyrienWarfareMod{
 	
 	//NOTE: These only calculate physics, so they are only relevant to the Server end
 	public static ExecutorService MultiThreadExecutor;
+	
+	public DataTag tag = null;
 	
     @EventHandler
     public void preInit(FMLPreInitializationEvent event){
@@ -175,5 +181,65 @@ public class ValkyrienWarfareMod{
         if(multiThreadedPhysics){
         	MultiThreadExecutor = Executors.newFixedThreadPool(threadCount);
         }
+    }
+    
+    @EventHandler
+    public void onServerStarted(FMLServerStartedEvent event)	{
+    	this.loadConfig();
+    }
+    
+    @EventHandler
+    public void onServerStopping(FMLServerStoppingEvent event)	{
+    	this.saveConfig();
+    }
+    
+    public void loadConfig()	{
+    	File file = new File(DimensionManager.getCurrentSaveRootDirectory(), "/valkyrienwarfaresettings.dat");
+    	
+    	if (file.exists())	{
+    		tag = new DataTag(file);
+    		tag.setBoolean("doGravity", true);
+    		tag.setBoolean("doPhysicsBlocks", true);
+    		tag.setBoolean("doBalloons", true);
+    		tag.setBoolean("doAirshipRotation", true);
+    		tag.setBoolean("doAirshipMovement", true);
+    		tag.setBoolean("doSplitting", false);
+    		tag.setInteger("maxShipSize", 15000);
+    		tag.setDouble("gravityVecX", 0);
+    		tag.setDouble("gravityVecY", 9.8);
+    		tag.setDouble("gravityVecZ", 0);
+    		tag.setInteger("physicsIterations", 10);
+    		tag.setDouble("physicsSpeed", 0.5);
+    		tag.save();
+    	} else {
+    		tag = new DataTag(file);
+    	}
+    	
+    	PhysicsSettings.doGravity = tag.getBoolean("doGravity");
+    	PhysicsSettings.doPhysicsBlocks = tag.getBoolean("doPhysicsBlocks");
+    	PhysicsSettings.doBalloons = tag.getBoolean("doBalloons");
+    	PhysicsSettings.doAirshipRotation = tag.getBoolean("doAirshipRotation");
+    	PhysicsSettings.doAirshipMovement = tag.getBoolean("doAirshipMovement");
+    	ValkyrienWarfareMod.doSplitting = tag.getBoolean("doSplitting");
+    	ValkyrienWarfareMod.maxShipSize = tag.getInteger("maxShipSize");
+    	ValkyrienWarfareMod.physIter = tag.getInteger("physicsIterations");
+    	ValkyrienWarfareMod.physSpeed = tag.getDouble("physicsSpeed");
+    	ValkyrienWarfareMod.gravity = new Vector(tag.getDouble("gravityVecX"), tag.getDouble("gravityVecY"), tag.getDouble("gravityVecZ"));
+    }
+    
+    public void saveConfig()	{
+    	tag.setBoolean("doGravity", PhysicsSettings.doGravity);
+		tag.setBoolean("doPhysicsBlocks", PhysicsSettings.doPhysicsBlocks);
+		tag.setBoolean("doBalloons", PhysicsSettings.doBalloons);
+		tag.setBoolean("doAirshipRotation", PhysicsSettings.doAirshipRotation);
+		tag.setBoolean("doAirshipMovement", PhysicsSettings.doAirshipMovement);
+		tag.setBoolean("doSplitting", ValkyrienWarfareMod.doSplitting);
+		tag.setInteger("maxShipSize", ValkyrienWarfareMod.maxShipSize);
+		tag.setDouble("gravityVecX", ValkyrienWarfareMod.gravity.X);
+		tag.setDouble("gravityVecY", ValkyrienWarfareMod.gravity.Y);
+		tag.setDouble("gravityVecZ", ValkyrienWarfareMod.gravity.Z);
+		tag.setInteger("physicsIterations", ValkyrienWarfareMod.physIter);
+		tag.setDouble("physicsSpeed", ValkyrienWarfareMod.physSpeed);
+		tag.save();
     }
 }

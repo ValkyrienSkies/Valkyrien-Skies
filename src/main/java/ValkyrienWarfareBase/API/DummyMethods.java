@@ -5,8 +5,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public interface DummyMethods {
-	// DO NOT RUN METHODS FROM HERE! USE PhysicsEntityHooks
-
+	//DO NOT RUN METHODS FROM HERE! USE PhysicsEntityHooks
+	
+	public Vector getShipCenterOfMass(Entity shipEnt);
+	
+	public boolean isEntityAShip(Entity entityToTest);
+	
 	public Vector getPositionInShipFromReal(World worldObj, Entity shipEnt, Vector positionInWorld);
 
 	public Vector getPositionInRealFromShip(World worldObj, Entity shipEnt, Vector posInShip);

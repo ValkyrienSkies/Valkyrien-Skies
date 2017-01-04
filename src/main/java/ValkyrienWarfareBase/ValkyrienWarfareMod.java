@@ -5,7 +5,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import ValkyrienWarfareBase.API.DataTag;
-import ValkyrienWarfareBase.API.PhysicsEntityHooks;
+import ValkyrienWarfareBase.API.ValkyrienWarfareHooks;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Block.BlockPhysicsInfuser;
 import ValkyrienWarfareBase.Block.BlockPhysicsInfuserCreative;
@@ -86,6 +86,18 @@ public class ValkyrienWarfareMod {
 	public static ExecutorService MultiThreadExecutor;
 
 	public DataTag tag = null;
+	
+    @EventHandler
+    public void preInit(FMLPreInitializationEvent event){
+    	proxy.preInit(event);
+    	instance = this;
+    	registerBlocks(event);
+    	registerRecipies(event);
+    	registerNetworks(event);
+    	runConfiguration(event);
+    	ValkyrienWarfareHooks.methods = new RealMethods();
+    	ValkyrienWarfareHooks.isValkyrienWarfareInstalled = true;
+    }
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {

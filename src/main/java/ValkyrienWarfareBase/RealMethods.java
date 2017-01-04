@@ -69,4 +69,14 @@ public class RealMethods implements DummyMethods{
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldObj, pos);
 		return wrapper;
 	}
+
+	@Override
+	public Vector getShipCenterOfMass(Entity shipEnt) {
+		return new Vector(((PhysicsWrapperEntity)shipEnt).wrapping.physicsProcessor.centerOfMass);
+	}
+
+	@Override
+	public boolean isEntityAShip(Entity entityToTest) {
+		return entityToTest instanceof PhysicsWrapperEntity;
+	}
 }

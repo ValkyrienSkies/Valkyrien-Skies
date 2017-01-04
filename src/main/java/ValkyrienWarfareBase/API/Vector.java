@@ -34,9 +34,9 @@ public class Vector{
 	}
 
 	public Vector(Vec3d positionVector) {
-		X=positionVector.xCoord;
-		Y=positionVector.yCoord;
-		Z=positionVector.zCoord;
+		X = positionVector.xCoord;
+		Y = positionVector.yCoord;
+		Z = positionVector.zCoord;
 	}
 
 	public Vector(Entity entity){

@@ -208,10 +208,10 @@ public class ValkyrienWarfareMod {
 			tag.setBoolean("doSplitting", false);
 			tag.setInteger("maxShipSize", 15000);
 			tag.setDouble("gravityVecX", 0);
-			tag.setDouble("gravityVecY", 9.8);
+			tag.setDouble("gravityVecY", -9.8);
 			tag.setDouble("gravityVecZ", 0);
 			tag.setInteger("physicsIterations", 10);
-			tag.setDouble("physicsSpeed", 0.5);
+			tag.setDouble("physicsSpeed", 0.05);
 			tag.save();
 		} else {
 			tag = new DataTag(file);

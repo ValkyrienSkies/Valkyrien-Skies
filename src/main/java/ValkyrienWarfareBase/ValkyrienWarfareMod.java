@@ -17,6 +17,7 @@ import ValkyrienWarfareBase.PhysicsManagement.Network.PhysWrapperPositionMessage
 import ValkyrienWarfareBase.Proxy.CommonProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -26,6 +27,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -196,7 +198,7 @@ public class ValkyrienWarfareMod {
 	}
 
 	public void loadConfig() {
-		File file = new File(DimensionManager.getCurrentSaveRootDirectory(), "/valkyrienwarfaresettings.dat");
+		File file = new File(ValkyrienWarfareMod.getWorkingFolder(), "/valkyrienwarfaresettings.dat");
 
 		if (!file.exists()) {
 			tag = new DataTag(file);
@@ -243,5 +245,20 @@ public class ValkyrienWarfareMod {
 		tag.setInteger("physicsIterations", ValkyrienWarfareMod.physIter);
 		tag.setDouble("physicsSpeed", ValkyrienWarfareMod.physSpeed);
 		tag.save();
+	}
+	
+	public static File getWorkingFolder() {
+		File toBeReturned;
+		try {
+			if (FMLCommonHandler.instance().getSide().isClient()) {
+				toBeReturned = Minecraft.getMinecraft().mcDataDir;
+			} else {
+				toBeReturned = FMLCommonHandler.instance().getMinecraftServerInstance().getFile("");
+			}
+			return toBeReturned;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }

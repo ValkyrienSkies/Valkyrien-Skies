@@ -10,7 +10,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.HashMap;
 
-public class DataTag {
+public class DataTag implements Serializable {
 	public static final File USER_FOLDER = new File(System.getProperty("user.dir"));
 	public static final File HOME_FOLDER = new File(System.getProperty("user.home"));
 	private static final long serialVersionUID = 1L;
@@ -84,96 +84,115 @@ public class DataTag {
 	public void setInteger(String name, int value) {
 		check(name);
 		ints.put(name, value);
+		save();
 	}
 
 	public void setString(String name, String value) {
 		check(name);
 		strings.put(name, value);
+		save();
 	}
 
 	public void setBoolean(String name, boolean value) {
 		check(name);
 		booleans.put(name, value);
+		save();
 	}
 
 	public void setByte(String name, byte value) {
 		check(name);
 		bytes.put(name, value);
+		save();
 	}
 
 	public void setFloat(String name, float value) {
 		check(name);
 		floats.put(name, value);
+		save();
 	}
 
 	public void setShort(String name, short value) {
 		check(name);
 		shorts.put(name, value);
+		save();
 	}
 
 	public void setDouble(String name, double value) {
 		check(name);
 		doubles.put(name, value);
+		save();
 	}
 
 	public void setLong(String name, long value) {
 		check(name);
 		longs.put(name, value);
+		save();
 	}
 
 	public void setTag(String name, DataTag value) {
 		check(name);
 		tags.put(name, value);
+		save();
 	}
 
 	public void setSerializable(String name, Serializable obj) {
 		check(name);
 		objs.put(name, obj);
+		save();
 	}
 
 	public void setIntegerArray(String name, int[] value) {
 		check(name);
 		intArrays.put(name, value);
+		save();
 	}
 
 	public void setStringArray(String name, String[] value) {
 		check(name);
 		stringArrays.put(name, value);
+		save();
 	}
 
 	public void setBooleanArray(String name, boolean[] value) {
 		check(name);
 		booleanArrays.put(name, value);
+		save();
 	}
 
 	public void setByteArray(String name, byte[] value) {
 		check(name);
 		byteArrays.put(name, value);
+		save();
 	}
 
 	public void setFloatArray(String name, float[] value) {
 		check(name);
 		floatArrays.put(name, value);
+		save();
 	}
 
 	public void setShortArray(String name, short[] value) {
 		check(name);
 		shortArrays.put(name, value);
+		save();
 	}
 
 	public void setDoubleArray(String name, double[] value) {
 		check(name);
 		doubleArrays.put(name, value);
+		save();
 	}
 
 	public void setLongArray(String name, long[] value) {
 		check(name);
 		longArrays.put(name, value);
+		save();
 	}
 
 	public void setSerializableArray(String name, Serializable[] value) {
 		check(name);
 		objArrays.put(name, value);
+		save();
 	}
 
 	public int getInteger(String name) {

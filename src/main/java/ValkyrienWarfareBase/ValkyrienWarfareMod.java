@@ -198,7 +198,7 @@ public class ValkyrienWarfareMod {
 	public void loadConfig() {
 		File file = new File(DimensionManager.getCurrentSaveRootDirectory(), "/valkyrienwarfaresettings.dat");
 
-		if (file.exists()) {
+		if (!file.exists()) {
 			tag = new DataTag(file);
 			tag.setBoolean("doGravity", true);
 			tag.setBoolean("doPhysicsBlocks", true);

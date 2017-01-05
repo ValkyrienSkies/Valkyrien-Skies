@@ -217,16 +217,16 @@ public class ValkyrienWarfareMod {
 			tag = new DataTag(file);
 		}
 
-		PhysicsSettings.doGravity = tag.getBoolean("doGravity");
-		PhysicsSettings.doPhysicsBlocks = tag.getBoolean("doPhysicsBlocks");
-		PhysicsSettings.doBalloons = tag.getBoolean("doBalloons");
-		PhysicsSettings.doAirshipRotation = tag.getBoolean("doAirshipRotation");
-		PhysicsSettings.doAirshipMovement = tag.getBoolean("doAirshipMovement");
-		ValkyrienWarfareMod.doSplitting = tag.getBoolean("doSplitting");
-		ValkyrienWarfareMod.maxShipSize = tag.getInteger("maxShipSize");
-		ValkyrienWarfareMod.physIter = tag.getInteger("physicsIterations");
-		ValkyrienWarfareMod.physSpeed = tag.getDouble("physicsSpeed");
-		ValkyrienWarfareMod.gravity = new Vector(tag.getDouble("gravityVecX"), tag.getDouble("gravityVecY"), tag.getDouble("gravityVecZ"));
+		PhysicsSettings.doGravity = tag.getBoolean("doGravity", true);
+		PhysicsSettings.doPhysicsBlocks = tag.getBoolean("doPhysicsBlocks", true);
+		PhysicsSettings.doBalloons = tag.getBoolean("doBalloons", true);
+		PhysicsSettings.doAirshipRotation = tag.getBoolean("doAirshipRotation", true);
+		PhysicsSettings.doAirshipMovement = tag.getBoolean("doAirshipMovement", true);
+		ValkyrienWarfareMod.doSplitting = tag.getBoolean("doSplitting", false);
+		ValkyrienWarfareMod.maxShipSize = tag.getInteger("maxShipSize", 15000);
+		ValkyrienWarfareMod.physIter = tag.getInteger("physicsIterations", 10);
+		ValkyrienWarfareMod.physSpeed = tag.getDouble("physicsSpeed", 0.05);
+		ValkyrienWarfareMod.gravity = new Vector(tag.getDouble("gravityVecX", 0.0), tag.getDouble("gravityVecY", -9.8), tag.getDouble("gravityVecZ", 0.0));
 	}
 
 	public void saveConfig() {

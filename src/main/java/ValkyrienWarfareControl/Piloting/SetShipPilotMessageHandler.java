@@ -21,11 +21,14 @@ public class SetShipPilotMessageHandler implements IMessageHandler<SetShipPilotM
 				UUID entityId = message.entityUniqueID;
 				if(entityId.getLeastSignificantBits() == 0L && entityId.getMostSignificantBits() == 0L){
 					ClientPilotingManager.setPilotedWrapperEntity(null);
+//					System.out.println("got set to null");
 				}else{
 					Entity foundEntity = null;
 					for(Entity entity:Minecraft.getMinecraft().theWorld.getLoadedEntityList()){
 						if(entity.entityUniqueID.equals(entityId)){
 							ClientPilotingManager.setPilotedWrapperEntity((PhysicsWrapperEntity) entity);
+//							System.out.println("Found the Pilot on client side");
+							foundEntity = entity;
 						}
 					}
 					if(foundEntity == null){

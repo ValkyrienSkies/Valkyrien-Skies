@@ -35,7 +35,7 @@ public class ShipPilotingController {
 	}
 	
 	/**
-	 * Sets the inputted player as the pilot of this ship
+	 * Sets the inputed player as the pilot of this ship
 	 * @param toSet
 	 * @param ignorePilotConflicts Should be set to false for almost every single case
 	 */
@@ -46,7 +46,7 @@ public class ShipPilotingController {
 		
 		if(toSet != null){
 			//Send packets here or something
-			shipPilot = toSet;
+
 			mostRecentPilotID = toSet.getPersistentID();
 			PhysicsWrapperEntity otherShipPiloted = getShipPlayerIsPiloting(toSet);
 			if(otherShipPiloted != null){
@@ -57,6 +57,7 @@ public class ShipPilotingController {
 		}else{
 			mostRecentPilotID = null;
 		}
+		shipPilot = toSet;
 	}
 	
 	public boolean isShipBeingPiloted(){

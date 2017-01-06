@@ -11,7 +11,7 @@ import net.minecraft.world.chunk.Chunk;
 
 public class DimensionPhysObjectManager {
 
-	public HashMap<World, WorldPhysObjectManager> managerPerWorld;
+	private HashMap<World, WorldPhysObjectManager> managerPerWorld;
 
 	private WorldPhysObjectManager cachedManager;
 

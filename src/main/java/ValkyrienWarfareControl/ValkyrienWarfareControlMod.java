@@ -17,8 +17,10 @@ import ValkyrienWarfareControl.Network.EntityFixMessage;
 import ValkyrienWarfareControl.Network.EntityFixMessageHandler;
 import ValkyrienWarfareControl.Network.HovercraftControllerGUIInputHandler;
 import ValkyrienWarfareControl.Network.HovercraftControllerGUIInputMessage;
-import ValkyrienWarfareControl.Network.PilotControlsMessage;
-import ValkyrienWarfareControl.Network.PilotControlsMessageHandler;
+import ValkyrienWarfareControl.Piloting.PilotControlsMessage;
+import ValkyrienWarfareControl.Piloting.PilotControlsMessageHandler;
+import ValkyrienWarfareControl.Piloting.SetShipPilotMessage;
+import ValkyrienWarfareControl.Piloting.SetShipPilotMessageHandler;
 import ValkyrienWarfareControl.TileEntity.AntiGravEngineTileEntity;
 import ValkyrienWarfareControl.TileEntity.BalloonBurnerTileEntity;
 import ValkyrienWarfareControl.TileEntity.TileEntityHoverController;
@@ -156,5 +158,6 @@ public class ValkyrienWarfareControlMod {
 		controlNetwork.registerMessage(HovercraftControllerGUIInputHandler.class, HovercraftControllerGUIInputMessage.class, 0, Side.SERVER);
 		controlNetwork.registerMessage(PilotControlsMessageHandler.class, PilotControlsMessage.class, 1, Side.SERVER);
 		controlNetwork.registerMessage(EntityFixMessageHandler.class, EntityFixMessage.class, 2, Side.CLIENT);
+		controlNetwork.registerMessage(SetShipPilotMessageHandler.class, SetShipPilotMessage.class, 3, Side.CLIENT);
 	}
 }

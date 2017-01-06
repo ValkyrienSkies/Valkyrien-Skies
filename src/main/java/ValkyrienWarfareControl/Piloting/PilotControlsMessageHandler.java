@@ -1,4 +1,4 @@
-package ValkyrienWarfareControl.Network;
+package ValkyrienWarfareControl.Piloting;
 
 import net.minecraft.util.IThreadListener;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -14,7 +14,7 @@ public class PilotControlsMessageHandler implements IMessageHandler<PilotControl
 			@Override
 			public void run() {
 				if (message.airshipBackward || message.airshipDown || message.airshipForward || message.airshipLeft || message.airshipRight || message.airshipUp) {
-					// System.out.println("Got the keys");
+					 System.out.println("Got the keys");
 				}
 			}
 		});

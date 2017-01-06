@@ -4,6 +4,7 @@ import ValkyrienWarfareWorld.Proxy.CommonProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -27,6 +28,8 @@ public class ValkyrienWarfareWorldMod {
 	public static ValkyrienWarfareWorldMod instance;
 
 	public static Block etheriumOre;
+	
+	private static final WorldEventsCommon worldEventsCommon = new WorldEventsCommon();
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
@@ -38,7 +41,9 @@ public class ValkyrienWarfareWorldMod {
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
 		EntityRegistry.registerModEntity(EntityFallingUpBlock.class, "FallingUpBlockEntity", 75, this, 80, 1, true);
+		MinecraftForge.EVENT_BUS.register(worldEventsCommon);
 		proxy.init(event);
+		
 	}
 
 	@EventHandler

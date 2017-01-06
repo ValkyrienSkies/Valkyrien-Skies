@@ -1,4 +1,4 @@
-package ValkyrienWarfareControl.Network;
+package ValkyrienWarfareControl.Piloting;
 
 import ValkyrienWarfareBase.KeyHandler;
 import io.netty.buffer.ByteBuf;

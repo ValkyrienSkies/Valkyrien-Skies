@@ -1,4 +1,4 @@
-package ValkyrienWarfareControl;
+package ValkyrienWarfareControl.Piloting;
 
 import java.util.List;
 
@@ -6,20 +6,22 @@ import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
-import ValkyrienWarfareControl.Network.PilotControlsMessage;
+import ValkyrienWarfareControl.ValkyrienWarfareControlMod;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.RayTraceResult.Type;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class PilotShipManager {
+public class ClientPilotingManager {
 
-	// NOTE: THIS VALUE MUST ALWAYS BE CLEARED UPON WORLD UNLOAD, OTHERWISE IT CREATES A MEMEORY LEAK!
-	public static PhysicsWrapperEntity mountedEntity;
+	// NOTE: THESE VALUES MUST ALWAYS BE CLEARED UPON WORLD UNLOAD, OTHERWISE IT CREATES A MEMEORY LEAK!
+	private static PhysicsWrapperEntity mountedEntity;
+	//Not the same as MountedEntity, allows for controlling Ships other than the one the player is mounted on, or without having to be mounted at all!
+	private static PhysicsWrapperEntity shipPiloting;
 
 	public static double getThirdPersonViewDist() {
-		if (mountedEntity == null) {
+		if (getPilotedWrapperEntity() == null) {
 			return 4D;
 		}
 		return 14D;
@@ -32,11 +34,24 @@ public class PilotShipManager {
 	public static PhysicsWrapperEntity getMountedWrapperEntity() {
 		return mountedEntity;
 	}
+	
+	public static PhysicsWrapperEntity getPilotedWrapperEntity(){
+		return shipPiloting;
+	}
+	
+	public static void setMountedWrapperEntity(PhysicsWrapperEntity toSet){
+		mountedEntity = toSet;
+	}
+	
+	public static void setPilotedWrapperEntity(PhysicsWrapperEntity toSet){
+		shipPiloting = toSet;
+	}
 
 	public static boolean showFullPhysicsEntity() {
 		return true;
 	}
 
+	//Used to make Pilot 3rd person the 20 block range it is, without stopping on the ship the player is piloting
 	public static final RayTraceResult rayTraceExcludingWrapper(World world, Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock, PhysicsWrapperEntity toExclude) {
 		RayTraceResult vanillaTrace = world.rayTraceBlocks(vec31, vec32, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
 		WorldPhysObjectManager physManager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(world);
@@ -52,7 +67,7 @@ public class PilotShipManager {
 		}
 
 		for (PhysicsWrapperEntity wrapper : nearbyShips) {
-			if (PilotShipManager.getMountedWrapperEntity() != null && wrapper.getEntityId() != PilotShipManager.getMountedWrapperEntity().getEntityId()) {
+			if (ClientPilotingManager.getMountedWrapperEntity() != null && wrapper.getEntityId() != ClientPilotingManager.getMountedWrapperEntity().getEntityId()) {
 				playerEyesPos = vec31;
 				playerReachVector = vec32.subtract(vec31);
 
@@ -70,7 +85,7 @@ public class PilotShipManager {
 					}
 				}
 			} else {
-				if (PilotShipManager.getMountedWrapperEntity() != null) {
+				if (ClientPilotingManager.getMountedWrapperEntity() != null) {
 					// System.out.println("test");
 				}
 			}

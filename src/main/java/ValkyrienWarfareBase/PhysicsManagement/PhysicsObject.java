@@ -25,6 +25,7 @@ import ValkyrienWarfareBase.Render.PhysObjectRenderManager;
 import ValkyrienWarfareControl.ValkyrienWarfareControlMod;
 import ValkyrienWarfareControl.Balloon.ShipBalloonManager;
 import ValkyrienWarfareControl.Network.EntityFixMessage;
+import ValkyrienWarfareControl.Piloting.ShipPilotingController;
 import gnu.trove.iterator.TIntIterator;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.state.IBlockState;
@@ -59,7 +60,6 @@ public class PhysicsObject {
 
 	public World worldObj;
 	public PhysicsWrapperEntity wrapper;
-	// Used for faster memory access to the Chunks this object 'owns'
 	// This handles sending packets to players involving block changes in the Ship space
 	public ArrayList<EntityPlayerMP> watchingPlayers = new ArrayList<EntityPlayerMP>();
 	public ArrayList<EntityPlayerMP> newWatchers = new ArrayList<EntityPlayerMP>();
@@ -79,6 +79,7 @@ public class PhysicsObject {
 	public boolean doPhysics = true;
 	public boolean fromSplit = false;
 
+	//The closest Chunks to the Ship cached in here
 	public ChunkCache surroundingWorldChunksCache;
 	public EntityPlayer creator;
 
@@ -93,14 +94,18 @@ public class PhysicsObject {
 
 	// TODO: Make for re-organizing these to make Ship sizes Dynamic
 	public ChunkSet ownedChunks;
+	// Used for faster memory access to the Chunks this object 'owns'
 	public Chunk[][] claimedChunks;
 	public VWChunkCache VKChunkCache;
+	//Some badly written mods use these Maps to determine who to send packets to, so we need to manually fill them with nearby players
 	public PlayerChunkMapEntry[][] claimedChunksEntries;
 
 	public ShipBalloonManager balloonManager;
 
 	public HashMap<Integer, Vector> entityLocalPositions = new HashMap<Integer, Vector>();
 
+	public ShipPilotingController pilotingController;
+	
 	public PhysicsObject(PhysicsWrapperEntity host) {
 		wrapper = host;
 		worldObj = host.worldObj;
@@ -108,6 +113,7 @@ public class PhysicsObject {
 			renderer = new PhysObjectRenderManager(this);
 		} else {
 			balloonManager = new ShipBalloonManager(this);
+			pilotingController = new ShipPilotingController(this);
 			grabPlayerField();
 		}
 	}

@@ -3,7 +3,7 @@ package ValkyrienWarfareBase.PhysicsManagement;
 import java.util.HashMap;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
-import ValkyrienWarfareControl.PilotShipManager;
+import ValkyrienWarfareControl.Piloting.ClientPilotingManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -11,7 +11,7 @@ import net.minecraft.world.chunk.Chunk;
 
 public class DimensionPhysObjectManager {
 
-	public HashMap<World, WorldPhysObjectManager> managerPerWorld;
+	private HashMap<World, WorldPhysObjectManager> managerPerWorld;
 
 	private WorldPhysObjectManager cachedManager;
 
@@ -51,7 +51,9 @@ public class DimensionPhysObjectManager {
 		}
 		managerPerWorld.remove(world);
 		// System.out.println("cleared Mounting Entity");
-		PilotShipManager.mountedEntity = null;
+		//This is critical!!! Failure to clear these on world unload will force Java to keep the ENTIRE WORLD LOADED. HUGE MEMORY LEAK!!! Don't change
+		ClientPilotingManager.setMountedWrapperEntity(null);
+		ClientPilotingManager.setPilotedWrapperEntity(null);
 	}
 
 	/**

@@ -37,6 +37,7 @@ public class ClientProxy extends CommonProxy {
 		MinecraftForge.EVENT_BUS.register(eventsClient);
 		MinecraftForge.EVENT_BUS.register(keyEvents);
 		registerBlockItem(ValkyrienWarfareMod.physicsInfuser);
+		registerBlockItem(ValkyrienWarfareMod.physicsInfuserCreative);
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package ValkyrienWarfareBase;
 import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Logger;
 
 import ValkyrienWarfareBase.API.DataTag;
 import ValkyrienWarfareBase.API.ValkyrienWarfareHooks;
@@ -86,6 +87,7 @@ public class ValkyrienWarfareMod {
 	public static ExecutorService MultiThreadExecutor;
 
 	public DataTag tag = null;
+	public static Logger VWLogger;
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
@@ -97,6 +99,7 @@ public class ValkyrienWarfareMod {
 		runConfiguration(event);
 		ValkyrienWarfareHooks.methods = new RealMethods();
 		ValkyrienWarfareHooks.isValkyrienWarfareInstalled = true;
+		VWLogger = Logger.getLogger("ValkyrienWarfare");
 	}
 
 	@EventHandler

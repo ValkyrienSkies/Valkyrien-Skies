@@ -2,6 +2,7 @@ package ValkyrienWarfareBase.Render;
 
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import org.lwjgl.opengl.GL11;
 
@@ -181,8 +182,12 @@ public class PhysObjectRenderManager {
 
 		for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
 			for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
-				PhysRenderChunk renderChunk = renderChunks[chunkX - parent.ownedChunks.minX][chunkZ - parent.ownedChunks.minZ];
-				renderChunk.updateLayers(minBlockArrayY, maxBlockArrayY);
+				if(chunkX >= parent.ownedChunks.minX && chunkZ >= parent.ownedChunks.minZ){
+					PhysRenderChunk renderChunk = renderChunks[chunkX - parent.ownedChunks.minX][chunkZ - parent.ownedChunks.minZ];
+					renderChunk.updateLayers(minBlockArrayY, maxBlockArrayY);
+				}else{
+					ValkyrienWarfareMod.VWLogger.info("updateRange Just attempted to update blocks outside of a Ship's Block Range. ANY ERRORS PAST THIS ARE LIKELY RELATED!");
+				}
 			}
 		}
 	}

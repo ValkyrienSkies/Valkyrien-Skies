@@ -2,7 +2,7 @@ package ValkyrienWarfareBase;
 
 import org.lwjgl.input.Keyboard;
 
-import ValkyrienWarfareControl.PilotShipManager;
+import ValkyrienWarfareControl.Piloting.ClientPilotingManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.Entity;
@@ -44,7 +44,7 @@ public class KeyHandler {
 		if (event.side == Side.SERVER)
 			return;
 		if (event.phase == Phase.START) {
-			if (PilotShipManager.isPlayerPilotingShip()) {
+			if (ClientPilotingManager.isPlayerPilotingShip()) {
 				// if(airshipDismount.isKeyDown()){
 				// PilotShipManager.dismountPlayer();
 				// }else{
@@ -52,7 +52,7 @@ public class KeyHandler {
 
 				player.setPosition(player.posX, player.posY, player.posZ);
 
-				PilotShipManager.sendPilotKeysToServer();
+				ClientPilotingManager.sendPilotKeysToServer();
 				// }
 			}
 		}

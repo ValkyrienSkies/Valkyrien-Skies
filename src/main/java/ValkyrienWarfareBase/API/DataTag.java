@@ -10,7 +10,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.HashMap;
 
-public class DataTag {
+public class DataTag implements Serializable {
 	public static final File USER_FOLDER = new File(System.getProperty("user.dir"));
 	public static final File HOME_FOLDER = new File(System.getProperty("user.home"));
 	private static final long serialVersionUID = 1L;
@@ -174,6 +174,82 @@ public class DataTag {
 	public void setSerializableArray(String name, Serializable[] value) {
 		check(name);
 		objArrays.put(name, value);
+	}
+
+	public int getInteger(String name, int def) {
+		return ints.containsKey(name) ? ints.get(name) : def;
+	}
+
+	public String getString(String name, String def) {
+		return strings.containsKey(name) ? strings.get(name) : def;
+	}
+
+	public boolean getBoolean(String name, boolean def) {
+		return booleans.containsKey(name) ? booleans.get(name) : def;
+	}
+
+	public byte getByte(String name, byte def) {
+		return bytes.containsKey(name) ? bytes.get(name) : def;
+	}
+
+	public float getFloat(String name, float def) {
+		return floats.containsKey(name) ? floats.get(name) : def;
+	}
+
+	public short getShort(String name, short def) {
+		return shorts.containsKey(name) ? shorts.get(name) : def;
+	}
+
+	public double getDouble(String name, double def) {
+		return doubles.containsKey(name) ? doubles.get(name) : def;
+	}
+
+	public long getLong(String name, long def) {
+		return longs.containsKey(name) ? longs.get(name) : def;
+	}
+
+	public DataTag getTag(String name, DataTag def) {
+		return tags.containsKey(name) ? tags.get(name).load() : def;
+	}
+
+	public Serializable getSerializable(String name, Serializable def) {
+		return objs.containsKey(name) ? objs.get(name) : def;
+	}
+
+	public int[] getIntegerArray(String name, int[] def) {
+		return intArrays.containsKey(name) ? intArrays.get(name) : def;
+	}
+
+	public String[] getStringArray(String name, String[] def) {
+		return stringArrays.containsKey(name) ? stringArrays.get(name) : def;
+	}
+
+	public boolean[] getBooleanArray(String name, boolean[] def) {
+		return booleanArrays.containsKey(name) ? booleanArrays.get(name) : def;
+	}
+
+	public byte[] getByteArray(String name, byte[] def) {
+		return byteArrays.containsKey(name) ? byteArrays.get(name) : def;
+	}
+
+	public float[] getFloatArray(String name, float[] def) {
+		return floatArrays.containsKey(name) ? floatArrays.get(name) : def;
+	}
+
+	public short[] getShortArray(String name, short[] def) {
+		return shortArrays.containsKey(name) ? shortArrays.get(name) : def;
+	}
+
+	public double[] getDoubleArray(String name, double[] def) {
+		return doubleArrays.containsKey(name) ? doubleArrays.get(name) : def;
+	}
+
+	public long[] getLongArray(String name, long[] def) {
+		return longArrays.containsKey(name) ? longArrays.get(name) : def;
+	}
+
+	public Serializable[] getSerializableArray(String name, Serializable[] def) {
+		return objArrays.containsKey(name) ? objArrays.get(name) : def;
 	}
 
 	public int getInteger(String name) {

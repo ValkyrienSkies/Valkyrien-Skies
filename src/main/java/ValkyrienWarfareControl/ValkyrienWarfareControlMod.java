@@ -79,7 +79,7 @@ public class ValkyrienWarfareControlMod {
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		instance = this;
-		config = new Configuration(new File(Minecraft.getMinecraft().mcDataDir + "/valkyrienwarfarecontrol.cfg"));
+		config = new Configuration(new File(ValkyrienWarfareMod.getWorkingFolder() + "/config/valkyrienwarfarecontrol.cfg"));
 		config.load();
 		registerBlocks(event);
 		registerTileEntities(event);

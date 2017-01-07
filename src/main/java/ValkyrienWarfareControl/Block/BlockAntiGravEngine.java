@@ -14,7 +14,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class BlockAntiGravEngine extends Block implements ITileEntityProvider,IBlockForceProvider{
+public class BlockAntiGravEngine extends Block implements ITileEntityProvider, IBlockForceProvider {
 
 	public BlockAntiGravEngine(Material materialIn) {
 		super(materialIn);
@@ -31,10 +31,10 @@ public class BlockAntiGravEngine extends Block implements ITileEntityProvider,IB
 		PhysicsObject obj = wrapper.wrapping;
 		IBlockState controllerState = obj.VKChunkCache.getBlockState(pos);
 		TileEntity worldTile = obj.VKChunkCache.getTileEntity(pos);
-		if(worldTile==null){
+		if (worldTile == null) {
 			return null;
 		}
-		if(worldTile instanceof AntiGravEngineTileEntity){
+		if (worldTile instanceof AntiGravEngineTileEntity) {
 			AntiGravEngineTileEntity engineTile = (AntiGravEngineTileEntity) worldTile;
 			return engineTile.getForceOutput(world, pos, state, wrapper, secondsToApply);
 		}

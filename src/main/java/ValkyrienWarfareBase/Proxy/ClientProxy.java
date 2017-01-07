@@ -19,66 +19,67 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
-public class ClientProxy extends CommonProxy{
+public class ClientProxy extends CommonProxy {
 
 	EventsClient eventsClient = new EventsClient();
 	KeyHandler keyEvents = new KeyHandler();
 	public static ICamera lastCamera;
-	
+
 	@Override
 	public void preInit(FMLPreInitializationEvent e) {
 		super.preInit(e);
-		RenderingRegistry.registerEntityRenderingHandler(PhysicsWrapperEntity.class,new PhysObjectRenderFactory());
-    }
+		RenderingRegistry.registerEntityRenderingHandler(PhysicsWrapperEntity.class, new PhysObjectRenderFactory());
+	}
 
 	@Override
-    public void init(FMLInitializationEvent e) {
+	public void init(FMLInitializationEvent e) {
 		super.init(e);
 		MinecraftForge.EVENT_BUS.register(eventsClient);
 		MinecraftForge.EVENT_BUS.register(keyEvents);
-        registerBlockItem(ValkyrienWarfareMod.physicsInfuser);
-    }
+		registerBlockItem(ValkyrienWarfareMod.physicsInfuser);
+		registerBlockItem(ValkyrienWarfareMod.physicsInfuserCreative);
+	}
 
 	@Override
-    public void postInit(FMLPostInitializationEvent e) {
+	public void postInit(FMLPostInitializationEvent e) {
 		super.postInit(e);
-    }
+	}
 
-	private void registerBlockItem(Block toRegister){
+	private void registerBlockItem(Block toRegister) {
 		Item item = Item.getItemFromBlock(toRegister);
 		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(item, 0, new ModelResourceLocation(ValkyrienWarfareMod.MODID + ":" + item.getUnlocalizedName().substring(5), "inventory"));
 	}
-	
-	private void registerItemModel(Item toRegister){
-    	RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
-        
-    	renderItem.getItemModelMesher().register(toRegister, 0, new ModelResourceLocation(ValkyrienWarfareMod.MODID + ":" + toRegister.getUnlocalizedName(), "inventory"));
+
+	private void registerItemModel(Item toRegister) {
+		RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
+
+		renderItem.getItemModelMesher().register(toRegister, 0, new ModelResourceLocation(ValkyrienWarfareMod.MODID + ":" + toRegister.getUnlocalizedName(), "inventory"));
 	}
 
 	@Override
-	public void updateShipPartialTicks(PhysicsWrapperEntity entity){
+	public void updateShipPartialTicks(PhysicsWrapperEntity entity) {
 		double partialTicks = Minecraft.getMinecraft().getRenderPartialTicks();
-//		entity.wrapping.renderer.updateTranslation(partialTicks);
+		// entity.wrapping.renderer.updateTranslation(partialTicks);
 		Vector centerOfRotation = entity.wrapping.centerCoord;
-		if(entity.wrapping.renderer==null){
+		if (entity.wrapping.renderer == null) {
 			return;
 		}
 		entity.wrapping.renderer.curPartialTick = partialTicks;
-		
-		double moddedX = entity.lastTickPosX+(entity.posX-entity.lastTickPosX)*partialTicks;
-		double moddedY = entity.lastTickPosY+(entity.posY-entity.lastTickPosY)*partialTicks;
-		double moddedZ = entity.lastTickPosZ+(entity.posZ-entity.lastTickPosZ)*partialTicks;
-		double p0 = Minecraft.getMinecraft().thePlayer.lastTickPosX + (Minecraft.getMinecraft().thePlayer.posX - Minecraft.getMinecraft().thePlayer.lastTickPosX) * (double)partialTicks;
-		double p1 = Minecraft.getMinecraft().thePlayer.lastTickPosY + (Minecraft.getMinecraft().thePlayer.posY - Minecraft.getMinecraft().thePlayer.lastTickPosY) * (double)partialTicks;
-		double p2 = Minecraft.getMinecraft().thePlayer.lastTickPosZ + (Minecraft.getMinecraft().thePlayer.posZ - Minecraft.getMinecraft().thePlayer.lastTickPosZ) * (double)partialTicks;
-		
+
+		double moddedX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks;
+		double moddedY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks;
+		double moddedZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks;
+		double p0 = Minecraft.getMinecraft().thePlayer.lastTickPosX + (Minecraft.getMinecraft().thePlayer.posX - Minecraft.getMinecraft().thePlayer.lastTickPosX) * (double) partialTicks;
+		double p1 = Minecraft.getMinecraft().thePlayer.lastTickPosY + (Minecraft.getMinecraft().thePlayer.posY - Minecraft.getMinecraft().thePlayer.lastTickPosY) * (double) partialTicks;
+		double p2 = Minecraft.getMinecraft().thePlayer.lastTickPosZ + (Minecraft.getMinecraft().thePlayer.posZ - Minecraft.getMinecraft().thePlayer.lastTickPosZ) * (double) partialTicks;
+
 		Quaternion smoothRotation = entity.wrapping.renderer.getSmoothRotationQuat(partialTicks);
 		double[] radians = smoothRotation.toRadians();
-		
+
 		double moddedPitch = Math.toDegrees(radians[0]);
 		double moddedYaw = Math.toDegrees(radians[1]);
 		double moddedRoll = Math.toDegrees(radians[2]);
-		
+
 		entity.wrapping.coordTransform.updateRenderMatrices(moddedX, moddedY, moddedZ, moddedPitch, moddedYaw, moddedRoll);
-    }
+	}
 }

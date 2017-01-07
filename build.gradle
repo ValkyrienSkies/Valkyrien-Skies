@@ -13,6 +13,7 @@ buildscript {
     }
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'maven-publish'
 
 /*
 // for people who want stable - not yet functional for MC 1.8.8 - we require the forgegradle 2.1 snapshot
@@ -20,12 +21,28 @@ plugins {
     id "net.minecraftforge.gradle.forge" version "2.0.2"
 }
 */
-version = "1.0"
-group= "com.yourname.modid" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "modid"
+// define the properties file
+ext.configFile = file "project.properties"
+
+configFile.withReader {
+    // read config.  it shall from now on be referenced as simply config or as project.config
+    def prop = new Properties()
+    prop.load(it)
+    project.ext.config = new ConfigSlurper().parse prop
+}
+
+version = "${config.minecraft_version}-${config.mod_version}"
+if (hasProperty('appendBuildNumber')) {
+    version = version + "-" + appendBuildNumber.toString()
+} else {
+    version = version + "-0"
+}
+
+group = "${config.group_id}" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = "${config.mod_id_cap}"
 
 minecraft {
-    version = "1.10.2-12.18.1.2064"
+    version = "${config.forge_version}"
     runDir = "run"
     
     // the mappings can be changed at any time, and must be in the following format.
@@ -82,9 +99,37 @@ processResources
 }
 
 jar {
-        manifest {
-        attributes 'FMLAT': 'ValkyrienWarfare_At.cfg',
-		'FMLCorePlugin': 'ValkyrienWarfareBase.CoreMod.ValkyrienWarfarePlugin' ,
-		'FMLCorePluginContainsFMLMod': 'false'
+    manifest {
+		attributes 'FMLAT': 'ValkyrienWarfare_At.cfg'
+		attributes 'FMLCorePlugin': 'ValkyrienWarfareBase.CoreMod.ValkyrienWarfarePlugin' 
+		attributes 'FMLCorePluginContainsFMLMod': 'false'
+    }
+}
+
+task deobfJar(type: Jar) {
+    from sourceSets.main.output
+    classifier = 'dev'
+	manifest {
+		attributes 'FMLAT': 'ValkyrienWarfare_At.cfg'
+		attributes 'FMLCorePlugin': 'ValkyrienWarfareBase.CoreMod.ValkyrienWarfarePlugin' 
+		attributes 'FMLCorePluginContainsFMLMod': 'false'
+    }
+}
+
+tasks.build.dependsOn deobfJar, sourceJar
+
+publishing {
+    tasks.publish.dependsOn 'build'
+    publications {
+        mavenJava(MavenPublication) {
+            groupId config.mod_id_cap
+            artifactId config.mod_id
+            artifact jar
+            artifact sourceJar
+            artifact deobfJar
+        }
+    }
+    repositories {
+        mavenLocal()
     }
 }

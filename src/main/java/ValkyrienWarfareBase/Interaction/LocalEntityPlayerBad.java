@@ -5,14 +5,14 @@ import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.WorldServer;
 
-public class LocalEntityPlayerBad extends EntityPlayerMP{
+public class LocalEntityPlayerBad extends EntityPlayerMP {
 
 	EntityPlayerMP realPlayer;
 	PhysicsObject parent;
-	
-	public LocalEntityPlayerBad(PhysicsObject object,EntityPlayerMP realPlayer) {
-//		super(realPlayer.worldObj, realPlayer.getGameProfile());
-		super(((WorldServer)realPlayer.worldObj).mcServer, ((WorldServer)realPlayer.worldObj), realPlayer.getGameProfile(), realPlayer.interactionManager);
+
+	public LocalEntityPlayerBad(PhysicsObject object, EntityPlayerMP realPlayer) {
+		// super(realPlayer.worldObj, realPlayer.getGameProfile());
+		super(((WorldServer) realPlayer.worldObj).mcServer, ((WorldServer) realPlayer.worldObj), realPlayer.getGameProfile(), realPlayer.interactionManager);
 		this.realPlayer = realPlayer;
 		parent = object;
 		this.inventoryContainer = realPlayer.inventoryContainer;
@@ -22,12 +22,12 @@ public class LocalEntityPlayerBad extends EntityPlayerMP{
 		updateVariables();
 	}
 
-	public void updateVariables(){
+	public void updateVariables() {
 		updatePosition();
-		
+
 	}
-	
-	private void updatePosition(){
+
+	private void updatePosition() {
 		posX = realPlayer.posX;
 		posY = realPlayer.posY;
 		posZ = realPlayer.posZ;
@@ -39,7 +39,7 @@ public class LocalEntityPlayerBad extends EntityPlayerMP{
 		motionZ = realPlayer.motionZ;
 		RotationMatrices.applyTransform(parent.coordTransform.wToLTransform, parent.coordTransform.wToLRotation, this);
 	}
-	
+
 	@Override
 	public boolean isSpectator() {
 		// TODO Auto-generated method stub

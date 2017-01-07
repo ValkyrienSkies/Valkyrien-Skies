@@ -86,3 +86,18 @@ world/playerdata/d96b4aa9-1f82-361b-aa8c-47e20e8b716a.dat
 world/stats/d96b4aa9-1f82-361b-aa8c-47e20e8b716a.json
 hs_err_pid12268.log
 mods/industrialcraft-2-2.6.69-ex110-dev.jar
+<<<<<<< HEAD
+valkyrienwarfarecontrol.cfg
+=======
+
+# Other Stuff
+Thumbs.db
+*.hprof
+
+# Mod/Forge related stuff
+libs
+/libs/
+/run/
+/classes/
+out/
+>>>>>>> refs/remotes/origin/master

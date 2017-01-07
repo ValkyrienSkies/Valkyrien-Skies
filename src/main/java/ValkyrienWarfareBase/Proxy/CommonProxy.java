@@ -13,29 +13,29 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 public class CommonProxy {
-	
+
 	EventsCommon eventsCommon = new EventsCommon();
 
 	public void preInit(FMLPreInitializationEvent e) {
 
-    }
+	}
 
-    public void init(FMLInitializationEvent e) {
-    	MinecraftForge.EVENT_BUS.register(eventsCommon);
-    	ValkyrienWarfareMod.chunkManager = new DimensionPhysicsChunkManager();
-    	ValkyrienWarfareMod.physicsManager = new DimensionPhysObjectManager();
-    }
+	public void init(FMLInitializationEvent e) {
+		MinecraftForge.EVENT_BUS.register(eventsCommon);
+		ValkyrienWarfareMod.chunkManager = new DimensionPhysicsChunkManager();
+		ValkyrienWarfareMod.physicsManager = new DimensionPhysObjectManager();
+	}
 
-    public void postInit(FMLPostInitializationEvent e) {
+	public void postInit(FMLPostInitializationEvent e) {
 
-    }
+	}
 
-    public void updateShipPartialTicks(PhysicsWrapperEntity wrapper){
-    	
-    }
-    
-    public void registerCommands(MinecraftServer server){
-    	
-    }
-    
+	public void updateShipPartialTicks(PhysicsWrapperEntity wrapper) {
+
+	}
+
+	public void registerCommands(MinecraftServer server) {
+
+	}
+
 }

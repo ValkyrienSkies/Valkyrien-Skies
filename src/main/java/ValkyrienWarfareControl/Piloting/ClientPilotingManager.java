@@ -20,15 +20,15 @@ public class ClientPilotingManager {
 	//Not the same as MountedEntity, allows for controlling Ships other than the one the player is mounted on, or without having to be mounted at all!
 	private static PhysicsWrapperEntity shipPiloting;
 
-	public static double getThirdPersonViewDist() {
+	public static double getThirdPersonViewDist(double original) {
 		if (getPilotedWrapperEntity() == null) {
-			return 4D;
+			return original;
 		}
 		return 14D;
 	}
 
 	public static boolean isPlayerPilotingShip() {
-		return getMountedWrapperEntity() != null;
+		return getPilotedWrapperEntity() != null;
 	}
 
 	public static PhysicsWrapperEntity getMountedWrapperEntity() {
@@ -67,7 +67,7 @@ public class ClientPilotingManager {
 		}
 
 		for (PhysicsWrapperEntity wrapper : nearbyShips) {
-			if (ClientPilotingManager.getMountedWrapperEntity() != null && wrapper.getEntityId() != ClientPilotingManager.getMountedWrapperEntity().getEntityId()) {
+			if (ClientPilotingManager.getPilotedWrapperEntity() != null && wrapper.getEntityId() != ClientPilotingManager.getPilotedWrapperEntity().getEntityId()) {
 				playerEyesPos = vec31;
 				playerReachVector = vec32.subtract(vec31);
 
@@ -99,7 +99,7 @@ public class ClientPilotingManager {
 
 	public static void sendPilotKeysToServer() {
 		PilotControlsMessage keyMessage = new PilotControlsMessage();
-		keyMessage.assignKeyBooleans();
+		keyMessage.assignKeyBooleans(shipPiloting);
 
 		ValkyrienWarfareControlMod.controlNetwork.sendToServer(keyMessage);
 	}

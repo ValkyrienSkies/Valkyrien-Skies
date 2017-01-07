@@ -34,6 +34,16 @@ public class ShipPilotingController {
 		return shipPilot;
 	}
 	
+	public void receivePilotControlsMessage(PilotControlsMessage message, EntityPlayerMP whoSentIt){
+		if(shipPilot == whoSentIt){
+			handlePilotControlMessage(message, whoSentIt);
+		}
+	}
+	
+	private void handlePilotControlMessage(PilotControlsMessage message, EntityPlayerMP whoSentIt){
+		
+	}
+	
 	/**
 	 * Sets the inputed player as the pilot of this ship
 	 * @param toSet

@@ -2,14 +2,18 @@ package ValkyrienWarfareControl.Piloting;
 
 import java.util.UUID;
 
+import ValkyrienWarfareBase.NBTUtils;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
+import ValkyrienWarfareBase.CoreMod.CallRunner;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
 import ValkyrienWarfareControl.ValkyrienWarfareControlMod;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 /**
@@ -26,6 +30,9 @@ public class ShipPilotingController {
 	private UUID mostRecentPilotID;
 	public static final UUID nullID = new UUID(0L,0L);
 	
+	private boolean hasChair = false;
+	private BlockPos chairPosition = BlockPos.ORIGIN;
+	
 	public ShipPilotingController(PhysicsObject toControl){
 		controlledShip = toControl;
 	}
@@ -41,7 +48,39 @@ public class ShipPilotingController {
 	}
 	
 	private void handlePilotControlMessage(PilotControlsMessage message, EntityPlayerMP whoSentIt){
-		
+		//TODO: Do Stuff Here
+	}
+	
+	/**
+	 * Gets called whenever world.setBlockState is called inside of Ship Space
+	 * @param posChanged
+	 */
+	public void onSetBlockInShip(BlockPos posChanged, IBlockState newState){
+		if(getHasPilotChair()){
+			if(posChanged.equals(chairPosition)){
+				if(!newState.getBlock().equals(ValkyrienWarfareControlMod.instance.pilotsChair)){
+					hasChair = false;
+					chairPosition = BlockPos.ORIGIN;
+				}
+			}else{
+				if(newState.getBlock().equals(ValkyrienWarfareControlMod.instance.pilotsChair)){
+					controlledShip.worldObj.destroyBlock(posChanged, true);
+				}
+			}
+		}else{
+			if(newState.getBlock().equals(ValkyrienWarfareControlMod.instance.pilotsChair)){
+				hasChair = true;
+				chairPosition = posChanged;
+			}
+		}
+	}
+	
+	public BlockPos getPilotChairPosition(){
+		return chairPosition;
+	}
+	
+	public boolean getHasPilotChair(){
+		return hasChair;
 	}
 	
 	/**
@@ -78,6 +117,8 @@ public class ShipPilotingController {
 		if(mostRecentPilotID != null){
 			compound.setUniqueId("mostRecentPilotID", mostRecentPilotID);
 		}
+		compound.setBoolean("hasChair", hasChair);
+		NBTUtils.writeBlockPosToNBT("chairPosition", chairPosition, compound);
 	}
 	
 	public void readFromNBTTag(NBTTagCompound compound) {
@@ -86,6 +127,8 @@ public class ShipPilotingController {
 			//UUID parameter was empty, go back to null
 			mostRecentPilotID = null;
 		}
+		hasChair = compound.getBoolean("hasChair");
+		chairPosition = NBTUtils.readBlockPosFromNBT("chairPosition", compound);
 	}
 	
 	private static void sendPlayerPilotingPacket(EntityPlayerMP toSend, PhysicsWrapperEntity entityPilotingPacket){

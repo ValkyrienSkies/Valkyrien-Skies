@@ -443,6 +443,9 @@ public class CallRunner {
 		boolean toReturn = world.setBlockState(pos, newState, flags);
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
 		if (wrapper != null) {
+			if(!world.isRemote){
+				wrapper.wrapping.pilotingController.onSetBlockInShip(pos, newState);
+			}
 			wrapper.wrapping.onSetBlockState(oldState, newState, pos);
 			if (world.isRemote) {
 				wrapper.wrapping.renderer.markForUpdate();

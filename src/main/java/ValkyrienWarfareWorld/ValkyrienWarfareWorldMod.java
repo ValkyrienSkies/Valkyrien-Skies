@@ -4,6 +4,7 @@ import ValkyrienWarfareWorld.Proxy.CommonProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.Item;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -29,12 +30,15 @@ public class ValkyrienWarfareWorldMod {
 
 	public static Block etheriumOre;
 	
+	public static Item etheriumCrystal;
+	
 	private static final WorldEventsCommon worldEventsCommon = new WorldEventsCommon();
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		instance = this;
 		registerBlocks(event);
+		registerItems(event);
 		proxy.preInit(event);
 	}
 
@@ -48,13 +52,19 @@ public class ValkyrienWarfareWorldMod {
 
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
-
+		proxy.postInit(event);
 	}
 
 	private void registerBlocks(FMLStateEvent event) {
 		etheriumOre = new BlockEtheriumOre(Material.ROCK).setHardness(12f).setUnlocalizedName("etheriumore").setRegistryName(MODID, "etheriumore").setCreativeTab(CreativeTabs.TRANSPORTATION);
 
 		GameRegistry.registerBlock(etheriumOre);
+	}
+	
+	private void registerItems(FMLStateEvent event) {
+		etheriumCrystal = new ItemEtheriumCrystal().setUnlocalizedName("etheriumcrystal").setRegistryName(MODID, "etheriumcrystal").setCreativeTab(CreativeTabs.TRANSPORTATION).setMaxStackSize(16);
+	
+		GameRegistry.registerItem(etheriumCrystal);
 	}
 
 }

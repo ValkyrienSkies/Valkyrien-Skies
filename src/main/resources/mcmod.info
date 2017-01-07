@@ -32,5 +32,15 @@
   "parent": "valkyrienwarfare",
   "screenshots": [],
   "dependencies": ["valkyrienwarfare"]
+},
+{
+  "modid": "valkyrienwarfareworld",
+  "name": "Valkyrien Warfare World",
+  "description": "World Generation for Valkyrien Warfare",
+  "version": "0.0",
+  "logoFile": "",
+  "parent": "valkyrienwarfare",
+  "screenshots": [],
+  "dependencies": ["valkyrienwarfare"]
 }
 ]

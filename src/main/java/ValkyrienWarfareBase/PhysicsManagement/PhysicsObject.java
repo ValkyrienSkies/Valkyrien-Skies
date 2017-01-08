@@ -734,6 +734,7 @@ public class PhysicsObject {
 		}
 		NBTUtils.writeEntityPositionHashMapToNBT("entityPosHashMap", entityLocalPositions, compound);
 		physicsProcessor.writeToNBTTag(compound);
+		pilotingController.writeToNBTTag(compound);
 	}
 
 	public void readFromNBTTag(NBTTagCompound compound) {
@@ -752,6 +753,7 @@ public class PhysicsObject {
 		loadClaimedChunks();
 		entityLocalPositions = NBTUtils.readEntityPositionMap("entityPosHashMap", compound);
 		physicsProcessor.readFromNBTTag(compound);
+		pilotingController.readFromNBTTag(compound);
 	}
 
 	public void readSpawnData(ByteBuf additionalData) {

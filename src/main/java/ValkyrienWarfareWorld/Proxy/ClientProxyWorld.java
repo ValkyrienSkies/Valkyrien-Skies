@@ -1,6 +1,5 @@
 package ValkyrienWarfareWorld.Proxy;
 
-import ValkyrienWarfareCombat.ValkyrienWarfareCombatMod;
 import ValkyrienWarfareWorld.EntityFallingUpBlock;
 import ValkyrienWarfareWorld.ValkyrienWarfareWorldMod;
 import ValkyrienWarfareWorld.Render.EntityFallingUpBlockRenderFactory;
@@ -14,7 +13,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
-public class ClientProxy extends CommonProxy {
+public class ClientProxyWorld extends CommonProxyWorld {
 
 	@Override
 	public void preInit(FMLPreInitializationEvent e) {
@@ -38,8 +37,7 @@ public class ClientProxy extends CommonProxy {
 
 	private void registerItemModel(Item toRegister) {
 		RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
-		renderItem.getItemModelMesher().register(toRegister, 0, new ModelResourceLocation(ValkyrienWarfareCombatMod.MODID + ":" + toRegister.getUnlocalizedName().substring(5), "inventory"));
-		;
+		renderItem.getItemModelMesher().register(toRegister, 0, new ModelResourceLocation(ValkyrienWarfareWorldMod.MODID + ":" + toRegister.getUnlocalizedName().substring(5), "inventory"));
 	}
 
 }

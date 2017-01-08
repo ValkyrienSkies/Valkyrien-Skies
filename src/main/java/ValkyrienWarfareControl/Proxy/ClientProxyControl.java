@@ -1,6 +1,7 @@
-package ValkyrienWarfareControl;
+package ValkyrienWarfareControl.Proxy;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
+import ValkyrienWarfareControl.ValkyrienWarfareControlMod;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderItem;

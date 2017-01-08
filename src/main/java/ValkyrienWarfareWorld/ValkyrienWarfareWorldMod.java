@@ -1,6 +1,6 @@
 package ValkyrienWarfareWorld;
 
-import ValkyrienWarfareWorld.Proxy.CommonProxy;
+import ValkyrienWarfareWorld.Proxy.CommonProxyWorld;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
@@ -19,8 +19,8 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 @Mod(modid = ValkyrienWarfareWorldMod.MODID, name = ValkyrienWarfareWorldMod.MODNAME, version = ValkyrienWarfareWorldMod.MODVER)
 public class ValkyrienWarfareWorldMod {
 
-	@SidedProxy(clientSide = "ValkyrienWarfareWorld.Proxy.ClientProxy", serverSide = "ValkyrienWarfareWorld.Proxy.CommonProxy")
-	public static CommonProxy proxy;
+	@SidedProxy(clientSide = "ValkyrienWarfareWorld.Proxy.ClientProxyWorld", serverSide = "ValkyrienWarfareWorld.Proxy.CommonProxyWorld")
+	public static CommonProxyWorld proxy;
 
 	public static final String MODID = "valkyrienwarfareworld";
 	public static final String MODNAME = "Valkyrien Warfare World";
@@ -56,7 +56,7 @@ public class ValkyrienWarfareWorldMod {
 	}
 
 	private void registerBlocks(FMLStateEvent event) {
-		etheriumOre = new BlockEtheriumOre(Material.ROCK).setHardness(12f).setUnlocalizedName("etheriumore").setRegistryName(MODID, "etheriumore").setCreativeTab(CreativeTabs.TRANSPORTATION);
+		etheriumOre = new BlockEtheriumOre(Material.ROCK).setHardness(3f).setUnlocalizedName("etheriumore").setRegistryName(MODID, "etheriumore").setCreativeTab(CreativeTabs.TRANSPORTATION);
 
 		GameRegistry.registerBlock(etheriumOre);
 	}

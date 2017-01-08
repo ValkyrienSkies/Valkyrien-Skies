@@ -48,6 +48,8 @@ public class BlockShipPilotsChair extends Block implements ITileEntityProvider {
 					playerIn.posX = playerPos.X;
 					playerIn.posY = playerPos.Y;
 					playerIn.posZ = playerPos.Z;
+					
+					return true;
 				}
 			}
 		}

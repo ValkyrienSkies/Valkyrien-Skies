@@ -21,6 +21,7 @@ import ValkyrienWarfareControl.Piloting.PilotControlsMessage;
 import ValkyrienWarfareControl.Piloting.PilotControlsMessageHandler;
 import ValkyrienWarfareControl.Piloting.SetShipPilotMessage;
 import ValkyrienWarfareControl.Piloting.SetShipPilotMessageHandler;
+import ValkyrienWarfareControl.Proxy.CommonProxyControl;
 import ValkyrienWarfareControl.TileEntity.AntiGravEngineTileEntity;
 import ValkyrienWarfareControl.TileEntity.BalloonBurnerTileEntity;
 import ValkyrienWarfareControl.TileEntity.TileEntityHoverController;
@@ -73,7 +74,7 @@ public class ValkyrienWarfareControlMod {
 
 	public Item systemLinker;
 
-	@SidedProxy(clientSide = "ValkyrienWarfareControl.ClientProxyControl", serverSide = "ValkyrienWarfareControl.CommonProxyControl")
+	@SidedProxy(clientSide = "ValkyrienWarfareControl.Proxy.ClientProxyControl", serverSide = "ValkyrienWarfareControl.Proxy.CommonProxyControl")
 	public static CommonProxyControl proxy;
 
 	@EventHandler

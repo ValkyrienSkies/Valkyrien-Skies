@@ -4,7 +4,8 @@ import java.util.UUID;
 
 import ValkyrienWarfareBase.NBTUtils;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
-import ValkyrienWarfareBase.CoreMod.CallRunner;
+import ValkyrienWarfareBase.API.RotationMatrices;
+import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
@@ -48,9 +49,30 @@ public class ShipPilotingController {
 	}
 	
 	private void handlePilotControlMessage(PilotControlsMessage message, EntityPlayerMP whoSentIt){
-		//TODO: Do Stuff Here
+		//Set to whatever the player was pointing at in Ship space
+		Vector playerDirection = new Vector(1,0,0);
+		
+		Vector idealLinearVelocity = new Vector(0,0,0);
+		
+		double something = 100D;
+		
+		if(message.airshipForward){
+			idealLinearVelocity.add(playerDirection.getProduct(something));
+		}
+		if(message.airshipBackward){
+			idealLinearVelocity.subtract(playerDirection.getProduct(something));
+		}
+		RotationMatrices.applyTransform(controlledShip.coordTransform.lToWRotation, idealLinearVelocity);
+		if(message.airshipUp){
+			idealLinearVelocity.Y += something;
+		}
+		if(message.airshipDown){
+			idealLinearVelocity.Y -= something;
+		}
+		
+//		System.out.println(idealLinearVelocity);
 	}
-	
+
 	/**
 	 * Gets called whenever world.setBlockState is called inside of Ship Space
 	 * @param posChanged

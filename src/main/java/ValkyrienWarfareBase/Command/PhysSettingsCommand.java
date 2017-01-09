@@ -187,13 +187,23 @@ public class PhysSettingsCommand extends CommandBase {
 		if (args.length == 1)	{
 			ArrayList<String> possibleArgs = (ArrayList<String>) completionOptions.clone();
 			
-			for (Iterator<String> iterator = possibleArgs.iterator(); iterator.hasNext();) { //Don't like this, but i have to because concurrentmodificationexception			    
+			for (Iterator<String> iterator = possibleArgs.iterator(); iterator.hasNext();) { //Don't like this, but I have to because concurrentmodificationexception			    
 			    if (!iterator.next().startsWith(args[0])) {
 			        iterator.remove();
 			    }
 			}
 			
 			return possibleArgs;
+		} else if (args.length == 2)	{
+			if (args[0].startsWith("do"))	{
+				if (args[1].startsWith("t")	{
+					return Lists.newArrayList("true");
+				} else if (args[1].startsWith("f")	{
+					return Lists.newArrayList("false");
+				} else {
+					return Lists.newArrayList("true", "false");
+				}
+			}
 		}
 		
 		return null;

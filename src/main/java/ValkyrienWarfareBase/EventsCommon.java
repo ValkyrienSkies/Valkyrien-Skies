@@ -15,6 +15,7 @@ import net.minecraft.nbt.NBTPrimitive;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
@@ -37,6 +38,8 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
 
 public class EventsCommon {
+	
+	protected double lastPosX = 0, lastPosZ = 0;
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onEntityInteractEvent(EntityInteract event) {
@@ -62,10 +65,18 @@ public class EventsCommon {
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onPlayerTickEvent(PlayerTickEvent event) {
 		if (!event.player.worldObj.isRemote) {
-			EntityPlayerMP player = (EntityPlayerMP) event.player;
-			if (!(player.connection instanceof CustomNetHandlerPlayServer)) {
-				player.connection = new CustomNetHandlerPlayServer(player.connection);
+			EntityPlayerMP p = (EntityPlayerMP) event.player;
+			if (!(p.connection instanceof CustomNetHandlerPlayServer)) {
+				p.connection = new CustomNetHandlerPlayServer(p.connection);
 			}
+			if (lastPosX != p.posX || lastPosZ != p.posZ)	{ //Player has moved
+				if (Math.abs(p.posX) > 27000000 || Math.abs(p.posZ) > 27000000)	{ //Player is outside of world border, tp them back
+					p.attemptTeleport(lastPosX, p.lastTickPosY, lastPosZ);
+					p.addChatMessage(new TextComponentString("You can't go beyond 27000000 blocks because airships are stored there!"));
+				}
+			}
+			lastPosX = p.posX;
+			lastPosZ = p.posZ;
 		}
 	}
 

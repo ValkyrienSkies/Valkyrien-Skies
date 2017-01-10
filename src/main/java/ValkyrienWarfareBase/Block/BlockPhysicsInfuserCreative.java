@@ -39,7 +39,7 @@ public class BlockPhysicsInfuserCreative extends Block {
 			if (ValkyrienWarfareMod.canChangeAirshipCounter(true, playerIn))	{
 				IAirshipCounterCapability counter = playerIn.getCapability(ValkyrienWarfareMod.airshipCounter, null);
 				counter.onCreate();
-				playerIn.addChatMessage(new TextComponentString("You've made " + counter.getAirshipCount() + " airships!"));
+				//playerIn.addChatMessage(new TextComponentString("You've made " + counter.getAirshipCount() + " airships!"));
 			} else {
 				playerIn.addChatMessage(new TextComponentString("You've made too many airships! The limit per player is " + ValkyrienWarfareMod.maxAirships));
 			}

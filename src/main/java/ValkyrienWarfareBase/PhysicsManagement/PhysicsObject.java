@@ -10,6 +10,7 @@ import java.util.Set;
 
 import ValkyrienWarfareBase.NBTUtils;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
+import ValkyrienWarfareBase.API.EnumChangeOwnerResult;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.ChunkManagement.ChunkSet;
@@ -830,22 +831,22 @@ public class PhysicsObject {
 	/**
 	 * Tries to change the owner of this PhysicsObject.
 	 * @param newOwner
-	 * @return true if the change was successfully performed, false otherwise
+	 * @return
 	 */
-	public boolean changeOwner(EntityPlayer newOwner)	{
+	public EnumChangeOwnerResult changeOwner(EntityPlayer newOwner)	{
 		if (!ValkyrienWarfareMod.canChangeAirshipCounter(true, newOwner))	{
-			return false;
+			return EnumChangeOwnerResult.ERROR_NEWOWNER_NOT_ENOUGH;
 		}
 		
 		if (ValkyrienWarfareMod.canChangeAirshipCounter(false, creator))	{
-			return false;
+			return EnumChangeOwnerResult.ERROR_IMPOSSIBLE_STATUS;
 		}
 		
 		creator.getCapability(ValkyrienWarfareMod.airshipCounter, null).onLose();
 		newOwner.getCapability(ValkyrienWarfareMod.airshipCounter, null).onCreate();
 		
 		creator = newOwner;
-		return true;
+		return EnumChangeOwnerResult.SUCCESS;
 	}
 
 }

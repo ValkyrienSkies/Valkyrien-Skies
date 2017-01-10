@@ -152,7 +152,8 @@ public class PhysicsObject {
 		}
 
 		if (blockPositions.size() == 0) {
-			creator.getCapability(ValkyrienWarfareMod.airshipCounter, null).onLose();
+			if (!worldObj.isRemote)
+				creator.getCapability(ValkyrienWarfareMod.airshipCounter, null).onLose();
 			destroy();
 		}
 

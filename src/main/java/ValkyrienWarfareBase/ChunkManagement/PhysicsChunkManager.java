@@ -26,6 +26,7 @@ public class PhysicsChunkManager {
 		worldObj = worldFor;
 		chunkSetIncrement = (maxChunkRadius * 2) + distanceBetweenSets;
 		loadDataFromWorld();
+		worldObj.getWorldBorder().setSize(20000000); //20 million blocks is more than enough
 	}
 
 	/**

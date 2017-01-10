@@ -1,5 +1,6 @@
 package ValkyrienWarfareBase;
 
+import ValkyrienWarfareBase.Capability.IAirshipCounterCapability;
 import ValkyrienWarfareBase.Interaction.CustomNetHandlerPlayServer;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsTickHandler;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
@@ -10,8 +11,14 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTPrimitive;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.HarvestCheck;
@@ -123,6 +130,33 @@ public class EventsCommon {
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onHarvestCheck(HarvestCheck event) {
 
+	}
+
+	@SubscribeEvent
+	public void onEntityConstruct(AttachCapabilitiesEvent evt) {
+		evt.addCapability(new ResourceLocation(ValkyrienWarfareMod.MODID, "IAirshipCounter"), new ICapabilitySerializable<NBTPrimitive>() {
+			IAirshipCounterCapability inst = ValkyrienWarfareMod.airshipCounter.getDefaultInstance();
+
+			@Override
+			public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
+				return capability == ValkyrienWarfareMod.airshipCounter;
+			}
+
+			@Override
+			public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
+				return capability == ValkyrienWarfareMod.airshipCounter ? ValkyrienWarfareMod.airshipCounter.<T>cast(inst) : null;
+			}
+
+			@Override
+			public NBTPrimitive serializeNBT() {
+				return (NBTPrimitive) ValkyrienWarfareMod.airshipCounter.getStorage().writeNBT(ValkyrienWarfareMod.airshipCounter, inst, null);
+			}
+
+			@Override
+			public void deserializeNBT(NBTPrimitive nbt) {
+				ValkyrienWarfareMod.airshipCounter.getStorage().readNBT(ValkyrienWarfareMod.airshipCounter, inst, null, nbt);
+			}
+		});
 	}
 
 }

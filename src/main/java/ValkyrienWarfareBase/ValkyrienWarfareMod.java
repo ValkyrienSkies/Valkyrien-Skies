@@ -10,6 +10,9 @@ import ValkyrienWarfareBase.API.ValkyrienWarfareHooks;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Block.BlockPhysicsInfuser;
 import ValkyrienWarfareBase.Block.BlockPhysicsInfuserCreative;
+import ValkyrienWarfareBase.Capability.IAirshipCounterCapability;
+import ValkyrienWarfareBase.Capability.ImplAirshipCounterCapability;
+import ValkyrienWarfareBase.Capability.StorageAirshipCounter;
 import ValkyrienWarfareBase.ChunkManagement.DimensionPhysicsChunkManager;
 import ValkyrienWarfareBase.PhysicsManagement.DimensionPhysObjectManager;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
@@ -20,12 +23,16 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -84,12 +91,16 @@ public class ValkyrienWarfareMod {
 	public static int maxShipSize = 15000;
 	public static double shipUpperLimit = 1000D;
 	public static double shipLowerLimit = -30D;
+	public static int maxAirships = -1;
 
 	// NOTE: These only calculate physics, so they are only relevant to the Server end
 	public static ExecutorService MultiThreadExecutor;
 
 	public DataTag tag = null;
 	public static Logger VWLogger;
+	
+	@CapabilityInject(IAirshipCounterCapability.class)
+	public static final Capability<IAirshipCounterCapability> airshipCounter = null;
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
@@ -99,6 +110,7 @@ public class ValkyrienWarfareMod {
 		registerRecipies(event);
 		registerNetworks(event);
 		runConfiguration(event);
+		registerCapibilities();
 		ValkyrienWarfareHooks.methods = new RealMethods();
 		ValkyrienWarfareHooks.isValkyrienWarfareInstalled = true;
 		VWLogger = Logger.getLogger("ValkyrienWarfare");
@@ -163,6 +175,7 @@ public class ValkyrienWarfareMod {
 		Property shipUpperHeightLimit = config.get(Configuration.CATEGORY_GENERAL, "Ship Y-Height Maximum", 1000D);
 		Property shipLowerHeightLimit = config.get(Configuration.CATEGORY_GENERAL, "Ship Y-Height Minimum", -30D);
 
+		maxAirships = config.get(Configuration.CATEGORY_GENERAL, "Max airships per player", -1, "Players can't own more than this many airships at once. Set to -1 to disable.").getInt();
 		// dynamiclightProperty.setComment("Dynamic Lighting");
 		shipTickDelayProperty.setComment("Tick delay between client and server physics; raise if physics look choppy");
 		missedPacketsTolerance.setComment("Higher values gaurantee virutally no choppyness, but also comes with a large delay. Only change if you have unstable internet");
@@ -263,5 +276,35 @@ public class ValkyrienWarfareMod {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public void registerCapibilities()	{
+		CapabilityManager.INSTANCE.register(IAirshipCounterCapability.class, new StorageAirshipCounter(), ImplAirshipCounterCapability.class);
+	}
+	
+	/**
+	 * Checks to see if a player's airship counter can be changed.
+	 * @param isAdding Should be true if you are adding a player, false if removing the player.
+	 * @param player The player to check for
+	 * @return
+	 */
+	public static boolean canChangeAirshipCounter(boolean isAdding, EntityPlayer player)	{
+		if (isAdding)	{
+			if (ValkyrienWarfareMod.maxAirships == -1)	{
+				return true;
+			}
+			
+			if (player.getCapability(ValkyrienWarfareMod.airshipCounter, null).getAirshipCount() >= ValkyrienWarfareMod.maxAirships)	{
+				return false;
+			} else {
+				return true;
+			}
+		} else {
+			if (player.getCapability(ValkyrienWarfareMod.airshipCounter, null).getAirshipCount() > 0)	{
+				return true;
+			} else {
+				return false;
+			}
+		}
 	}
 }

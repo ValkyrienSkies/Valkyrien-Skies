@@ -151,6 +151,7 @@ public class PhysicsObject {
 		}
 
 		if (blockPositions.size() == 0) {
+			creator.getCapability(ValkyrienWarfareMod.airshipCounter, null).onLose();
 			destroy();
 		}
 
@@ -824,6 +825,27 @@ public class PhysicsObject {
 		NBTTagCompound entityFixedPositionNBT = new NBTTagCompound();
 		NBTUtils.writeEntityPositionHashMapToNBT("entityFixedPosMap", entityLocalPositions, entityFixedPositionNBT);
 		modifiedBuffer.writeNBTTagCompoundToBuffer(entityFixedPositionNBT);
+	}
+	
+	/**
+	 * Tries to change the owner of this PhysicsObject.
+	 * @param newOwner
+	 * @return true if the change was successfully performed, false otherwise
+	 */
+	public boolean changeOwner(EntityPlayer newOwner)	{
+		if (!ValkyrienWarfareMod.canChangeAirshipCounter(true, newOwner))	{
+			return false;
+		}
+		
+		if (ValkyrienWarfareMod.canChangeAirshipCounter(false, creator))	{
+			return false;
+		}
+		
+		creator.getCapability(ValkyrienWarfareMod.airshipCounter, null).onLose();
+		newOwner.getCapability(ValkyrienWarfareMod.airshipCounter, null).onCreate();
+		
+		creator = newOwner;
+		return true;
 	}
 
 }

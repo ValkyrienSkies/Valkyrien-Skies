@@ -163,37 +163,19 @@ public class ValkyrienWarfareMod {
 	}
 
 	public static void applyConfig(Configuration conf) {
-		// Property dynamiclightProperty = config.get(Configuration.CATEGORY_GENERAL, "DynamicLighting", false);
-		Property shipTickDelayProperty = config.get(Configuration.CATEGORY_GENERAL, "Ticks Delay Between Client and Server", 1);
-		Property missedPacketsTolerance = config.get(Configuration.CATEGORY_GENERAL, "Missed packets threshold", 1);
-		// Property spawnParticlesParticle = config.get(Configuration.CATEGORY_GENERAL, "Ships spawn particles", false);
-		Property useMultiThreadedPhysics = config.get(Configuration.CATEGORY_GENERAL, "Multi-Threaded Physics", false);
-		Property physicsThreads = config.get(Configuration.CATEGORY_GENERAL, "Physics Thread Count", (int) Math.max(1, Runtime.getRuntime().availableProcessors() - 2));
+		// dynamicLighting = config.get(Configuration.CATEGORY_GENERAL, "DynamicLighting", false).getBoolean();
+		shipTickDelay = config.get(Configuration.CATEGORY_GENERAL, "Ticks Delay Between Client and Server", 1, "Tick delay between client and server physics; raise if physics look choppy").getInt() % 20;
+		maxMissedPackets = config.get(Configuration.CATEGORY_GENERAL, "Missed packets threshold", 1, "Higher values gaurantee virutally no choppyness, but also comes with a large delay. Only change if you have unstable internet").getInt();
+		// Property spawnParticlesParticle = config.get(Configuration.CATEGORY_GENERAL, "Ships spawn particles", false).getBoolean();
+		multiThreadedPhysics = config.get(Configuration.CATEGORY_GENERAL, "Multi-Threaded Physics", false, "Use Multi-Threaded Physics").getBoolean();
+		threadCount = config.get(Configuration.CATEGORY_GENERAL, "Physics Thread Count", (int) Math.max(1, Runtime.getRuntime().availableProcessors() - 2), "Number of threads to run physics on").getInt();
 
-		Property doShipCollisionProperty = config.get(Configuration.CATEGORY_GENERAL, "Enable Ship Collision", false);
+		doShipCollision = config.get(Configuration.CATEGORY_GENERAL, "Enable Ship Collision", false).getBoolean();
 
-		Property shipUpperHeightLimit = config.get(Configuration.CATEGORY_GENERAL, "Ship Y-Height Maximum", 1000D);
-		Property shipLowerHeightLimit = config.get(Configuration.CATEGORY_GENERAL, "Ship Y-Height Minimum", -30D);
+		shipUpperLimit = config.get(Configuration.CATEGORY_GENERAL, "Ship Y-Height Maximum", 1000D).getDouble();
+		shipLowerLimit = config.get(Configuration.CATEGORY_GENERAL, "Ship Y-Height Minimum", -30D).getDouble();
 
 		maxAirships = config.get(Configuration.CATEGORY_GENERAL, "Max airships per player", -1, "Players can't own more than this many airships at once. Set to -1 to disable.").getInt();
-		// dynamiclightProperty.setComment("Dynamic Lighting");
-		shipTickDelayProperty.setComment("Tick delay between client and server physics; raise if physics look choppy");
-		missedPacketsTolerance.setComment("Higher values gaurantee virutally no choppyness, but also comes with a large delay. Only change if you have unstable internet");
-		// spawnParticlesParticle.setComment("Ships spawn particles");
-		useMultiThreadedPhysics.setComment("Use Multi-Threaded Physics");
-		physicsThreads.setComment("Number of threads to run physics on;");
-
-		// dynamicLighting = dynamiclightProperty.getBoolean();
-		shipTickDelay = shipTickDelayProperty.getInt() % 20;
-		maxMissedPackets = missedPacketsTolerance.getInt();
-		// spawnParticles = spawnParticlesParticle.getBoolean();
-		multiThreadedPhysics = useMultiThreadedPhysics.getBoolean();
-		threadCount = physicsThreads.getInt();
-
-		doShipCollision = doShipCollisionProperty.getBoolean();
-
-		shipUpperLimit = shipUpperHeightLimit.getDouble();
-		shipLowerLimit = shipLowerHeightLimit.getDouble();
 
 		if (MultiThreadExecutor != null) {
 			MultiThreadExecutor.shutdown();

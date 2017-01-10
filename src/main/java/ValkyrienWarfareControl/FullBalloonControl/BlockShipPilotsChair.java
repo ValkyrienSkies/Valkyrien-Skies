@@ -7,7 +7,9 @@ import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -15,9 +17,9 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class ManualShipControllerBlock extends Block implements ITileEntityProvider {
+public class BlockShipPilotsChair extends Block implements ITileEntityProvider {
 
-	public ManualShipControllerBlock(Material materialIn) {
+	public BlockShipPilotsChair(Material materialIn) {
 		super(materialIn);
 	}
 
@@ -38,13 +40,16 @@ public class ManualShipControllerBlock extends Block implements ITileEntityProvi
 					playerIn.startRiding(wrapper);
 					Vector localMountPos = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
 					wrapper.wrapping.fixEntity(playerIn, localMountPos);
-//					wrapper.wrapping.pilotingController.setPilotEntity((EntityPlayerMP) playerIn, false);
+					
+					wrapper.wrapping.pilotingController.setPilotEntity((EntityPlayerMP) playerIn, false);
 					
 					wrapper.wrapping.coordTransform.fromGlobalToLocal(playerPos);
 
 					playerIn.posX = playerPos.X;
 					playerIn.posY = playerPos.Y;
 					playerIn.posZ = playerPos.Z;
+					
+					return true;
 				}
 			}
 		}
@@ -54,7 +59,7 @@ public class ManualShipControllerBlock extends Block implements ITileEntityProvi
 
 	@Override
 	public TileEntity createNewTileEntity(World worldIn, int meta) {
-		return new ManualShipControllerTileEntity();
+		return new PilotsChairTileEntity();
 	}
 
 }

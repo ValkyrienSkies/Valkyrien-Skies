@@ -85,6 +85,9 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 		super.removePassenger(toRemove);
 		if (!worldObj.isRemote) {
 			wrapping.unFixEntity(toRemove);
+			if(wrapping.pilotingController.getPilotEntity() == toRemove){
+				wrapping.pilotingController.setPilotEntity(null, false);
+			}
 		} else {
 			// It doesnt matter if I dont remove these terms from client, and things are problematic
 			// if I do; best to leave this commented

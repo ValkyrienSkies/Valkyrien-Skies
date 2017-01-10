@@ -98,12 +98,12 @@ public class CallRunnerClient extends CallRunner {
 				GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, -1.0F, 0.0F, 0.0F);
 			}
 		} else if (renderer.mc.gameSettings.thirdPersonView > 0) {
-			PhysicsWrapperEntity cameraEntity = ClientPilotingManager.getMountedWrapperEntity();
+			PhysicsWrapperEntity cameraEntity = ClientPilotingManager.getPilotedWrapperEntity();
 
 			double d3 = (double) (renderer.thirdPersonDistancePrev + (4.0F - renderer.thirdPersonDistancePrev) * partialTicks);
 
 			if (cameraEntity != null) {
-				d3 = ClientPilotingManager.getThirdPersonViewDist();
+				d3 = ClientPilotingManager.getThirdPersonViewDist(d3);
 			}
 
 			if (renderer.mc.gameSettings.debugCamEnable) {
@@ -133,7 +133,7 @@ public class CallRunnerClient extends CallRunner {
 
 					RayTraceResult raytraceresult;
 
-					if (ClientPilotingManager.getMountedWrapperEntity() == null || true) {
+					if (ClientPilotingManager.getPilotedWrapperEntity() == null) {
 						raytraceresult = CallRunner.onRayTraceBlocks(Minecraft.getMinecraft().theWorld, new Vec3d(d0 + (double) f3, d1 + (double) f4, d2 + (double) f5), new Vec3d(d0 - d4 + (double) f3 + (double) f5, d1 - d6 + (double) f4, d2 - d5 + (double) f5), false, false, false);
 					} else {
 						Vec3d vec31 = new Vec3d(d0 + (double) f3, d1 + (double) f4, d2 + (double) f5);
@@ -153,7 +153,7 @@ public class CallRunnerClient extends CallRunner {
 						}
 
 						for (PhysicsWrapperEntity wrapper : nearbyShips) {
-							if (ClientPilotingManager.getMountedWrapperEntity() != null && wrapper.getEntityId() != ClientPilotingManager.getMountedWrapperEntity().getEntityId()) {
+							if (ClientPilotingManager.getPilotedWrapperEntity() != null && wrapper.getEntityId() != ClientPilotingManager.getPilotedWrapperEntity().getEntityId()) {
 								playerEyesPos = vec31;
 								playerReachVector = vec32.subtract(vec31);
 

@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import com.google.common.collect.Lists;
+
 import ValkyrienWarfareBase.PhysicsSettings;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.Vector;
@@ -102,7 +104,7 @@ public class PhysSettingsCommand extends CommandBase {
 			} else if (args.length == 2) {
 				int value = Integer.parseInt(args[1]);
 				if (value < 0 || value > 1000)	{
-					sender.addChatMessage(new TextComponentString("Please enter a value between 0 and 1000");
+					sender.addChatMessage(new TextComponentString("Please enter a value between 0 and 1000"));
 					return;
 				}
 				sender.addChatMessage(new TextComponentString("Set physicsIterations to " + value));
@@ -116,7 +118,7 @@ public class PhysSettingsCommand extends CommandBase {
 			} else if (args.length == 2) {
 				double value = Double.parseDouble(args[1]);
 				if (value < 0 || value > 1000)	{
-					sender.addChatMessage(new TextComponentString("Please enter a value between 0 and 1000");
+					sender.addChatMessage(new TextComponentString("Please enter a value between 0 and 1000"));
 					return;
 				}
 				sender.addChatMessage(new TextComponentString("Set physicsSpeed to " + value));
@@ -196,9 +198,9 @@ public class PhysSettingsCommand extends CommandBase {
 			return possibleArgs;
 		} else if (args.length == 2)	{
 			if (args[0].startsWith("do"))	{
-				if (args[1].startsWith("t")	{
+				if (args[1].startsWith("t"))	{
 					return Lists.newArrayList("true");
-				} else if (args[1].startsWith("f")	{
+				} else if (args[1].startsWith("f"))	{
 					return Lists.newArrayList("false");
 				} else {
 					return Lists.newArrayList("true", "false");

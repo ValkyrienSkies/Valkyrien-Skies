@@ -39,9 +39,9 @@ public class DimensionPhysObjectManager {
 		if (cachedManager == null || cachedManager.worldObj != world) {
 			cachedManager = managerPerWorld.get(world);
 		}
-		if (cachedManager == null) {
-			System.err.println("getManagerForWorld just requested for a World without one!!! Wtf, how does this even Happen Man!?");
-		}
+//		if (cachedManager == null) {
+//			System.err.println("getManagerForWorld just requested for a World without one!!! Wtf, how does this even Happen Man!?");
+//		}
 		return cachedManager;
 	}
 

@@ -1,5 +1,7 @@
 package ValkyrienWarfareBase;
 
+import java.util.HashMap;
+
 import ValkyrienWarfareBase.Capability.IAirshipCounterCapability;
 import ValkyrienWarfareBase.Interaction.CustomNetHandlerPlayServer;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsTickHandler;
@@ -32,14 +34,16 @@ import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.Event.Result;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
 
 public class EventsCommon {
-	
-	protected double lastPosX = 0, lastPosZ = 0;
+
+	public HashMap<EntityPlayerMP, Double[]> lastPositions = new HashMap<EntityPlayerMP, Double[]>();
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onEntityInteractEvent(EntityInteract event) {
@@ -69,14 +73,18 @@ public class EventsCommon {
 			if (!(p.connection instanceof CustomNetHandlerPlayServer)) {
 				p.connection = new CustomNetHandlerPlayServer(p.connection);
 			}
-			if (lastPosX != p.posX || lastPosZ != p.posZ)	{ //Player has moved
-				if (Math.abs(p.posX) > 27000000 || Math.abs(p.posZ) > 27000000)	{ //Player is outside of world border, tp them back
-					p.attemptTeleport(lastPosX, p.lastTickPosY, lastPosZ);
+
+			Double[] pos = lastPositions.get(p);
+			if (pos[0] != p.posX || pos[2] != p.posZ) { // Player has moved
+				if (Math.abs(p.posX) > 27000000 || Math.abs(p.posZ) > 27000000) { // Player is outside of world border, tp them back
+					p.attemptTeleport(pos[0], pos[1], pos[2]);
 					p.addChatMessage(new TextComponentString("You can't go beyond 27000000 blocks because airships are stored there!"));
 				}
 			}
-			lastPosX = p.posX;
-			lastPosZ = p.posZ;
+
+			pos[0] = p.posX;
+			pos[1] = p.posY;
+			pos[2] = p.posZ;
 		}
 	}
 
@@ -168,6 +176,20 @@ public class EventsCommon {
 				ValkyrienWarfareMod.airshipCounter.getStorage().readNBT(ValkyrienWarfareMod.airshipCounter, inst, null, nbt);
 			}
 		});
+	}
+
+	@SubscribeEvent
+	public void onJoin(PlayerLoggedInEvent event) {
+		if (!event.player.worldObj.isRemote) {
+			lastPositions.put((EntityPlayerMP) event.player, new Double[] { 0d, 256d, 0d });
+		}
+	}
+
+	@SubscribeEvent
+	public void onLeave(PlayerLoggedOutEvent event) {
+		if (!event.player.worldObj.isRemote) {
+			lastPositions.remove((EntityPlayerMP) event.player);
+		}
 	}
 
 }

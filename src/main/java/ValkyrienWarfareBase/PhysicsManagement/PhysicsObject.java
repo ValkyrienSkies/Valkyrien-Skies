@@ -83,7 +83,7 @@ public class PhysicsObject {
 	public ChunkCache surroundingWorldChunksCache;
 	public EntityPlayer creator;
 
-	private Field playersField = null;
+	private static Field playersField = null;
 
 	public PhysCollisionCallable collisionCallable = new PhysCollisionCallable(this);
 
@@ -114,7 +114,9 @@ public class PhysicsObject {
 		} else {
 			balloonManager = new ShipBalloonManager(this);
 			pilotingController = new ShipPilotingController(this);
-			grabPlayerField();
+			if (playersField == null) {
+				grabPlayerField();
+			}
 		}
 	}
 
@@ -662,7 +664,7 @@ public class PhysicsObject {
 		return ownedChunks.isChunkEnclosedInSet(chunkX, chunkZ);
 	}
 
-	private void grabPlayerField() {
+	private static final void grabPlayerField() {
 		if (playersField == null) {
 			try {
 				if (!ValkyrienWarfarePlugin.isObfuscatedEnvironment) {
@@ -784,8 +786,8 @@ public class PhysicsObject {
 			}
 		}
 		loadClaimedChunks();
-		renderer.markForUpdate();
 		renderer.updateOffsetPos(refrenceBlockPos);
+		renderer.markForUpdate();
 
 		coordTransform.stack.pushMessage(new PhysWrapperPositionMessage(this));
 

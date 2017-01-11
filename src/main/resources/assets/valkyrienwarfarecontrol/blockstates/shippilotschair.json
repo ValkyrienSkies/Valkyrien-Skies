@@ -1,0 +1,7 @@
+{
+    "forge_marker": 1,
+    "variants": {
+        "normal": { "model": "valkyrienwarfarecontrol:shippilotschair.obj" , "custom": { "flip-v": true }},
+        "default": { "model": "valkyrienwarfarecontrol:shippilotschair.obj" ,"custom": { "flip-v": true }}
+    }
+}

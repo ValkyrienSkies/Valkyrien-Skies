@@ -8,6 +8,7 @@ import java.util.Map;
 
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareBase.CoreMod.ValkyrienWarfarePlugin;
 import ValkyrienWarfareBase.Interaction.CustomNetHandlerPlayServer;
 import ValkyrienWarfareBase.Physics.BlockMass;
 import ValkyrienWarfareBase.Physics.PhysicsQueuedForce;
@@ -77,31 +78,68 @@ public class EventsCommon {
 		}
 	}
 
-	private static final void setExplosionPosition(Explosion toSet, double x, double y, double z){
+	private static final Field[] getFields(Explosion toSet){
 		try{
+			Field xField,yField,zField,positionField;
+			
+			if(ValkyrienWarfarePlugin.isObfuscatedEnvironment) {
+				xField = toSet.getClass().getDeclaredField("explosionX");
+				xField.setAccessible(true);
+				
+				yField = toSet.getClass().getDeclaredField("explosionY");
+				yField.setAccessible(true);
+				
+				zField = toSet.getClass().getDeclaredField("explosionZ");
+				zField.setAccessible(true);
+				
+				positionField = toSet.getClass().getDeclaredField("position");
+				positionField.setAccessible(true);
+			}else{
+				xField = toSet.getClass().getDeclaredField("field_77284_b");
+				xField.setAccessible(true);
+				
+				yField = toSet.getClass().getDeclaredField("field_77285_c");
+				yField.setAccessible(true);
+
+				zField = toSet.getClass().getDeclaredField("field_77282_d");
+				zField.setAccessible(true);
+
+				positionField = toSet.getClass().getDeclaredField("position");
+				positionField.setAccessible(true);
+			}
+			return new Field[]{xField, yField, zField, positionField};
+		}catch(Exception e){}
+		
+		return null;
+	}
+	
+	private static final boolean setExplosionPosition(Explosion toSet, double x, double y, double z, Field[] fields){ 
+		if(fields == null){
+			return false;
+		}
+		try{
+			Field xField = fields[0], yField = fields[1], zField = fields[2], positionField = fields[3];
+			
 			double testX = toSet.explosionX;
-			Field xField = toSet.getClass().getDeclaredField("explosionX");
-			xField.setAccessible(true);
+			
 			xField.setDouble(toSet, x);
 			
 			double testY = toSet.explosionY;
-			Field yField = toSet.getClass().getDeclaredField("explosionY");
-			yField.setAccessible(true);
+			
 			yField.setDouble(toSet, y);
 			
 			double testZ = toSet.explosionZ;
-			Field zField = toSet.getClass().getDeclaredField("explosionZ");
-			zField.setAccessible(true);
+			
 			zField.setDouble(toSet, z);
 			
-			Field positionField = toSet.getClass().getDeclaredField("position");
-			positionField.setAccessible(true);
+			
 			positionField.set(toSet, new Vec3d(x,y,z));
 			
 			toSet.getAffectedBlockPositions().clear();
 			toSet.getPlayerKnockbackMap().clear();
+			return true;
 		}catch(Exception e){
-			
+			return false;
 		}
 	}
 	
@@ -122,6 +160,8 @@ public class EventsCommon {
 		List<PhysicsWrapperEntity> shipsNear = ValkyrienWarfareMod.physicsManager.getManagerForWorld(e.worldObj).getNearbyPhysObjects(toCheck);
 //		e.doExplosionA();
 		// TODO: Make this compatible and shit!
+		Field[] fields = getFields(e);
+		
 		for (PhysicsWrapperEntity ship : shipsNear) {
 			Vector inLocal = new Vector(center);
 			RotationMatrices.applyTransform(ship.wrapping.coordTransform.wToLTransform, inLocal);
@@ -129,13 +169,12 @@ public class EventsCommon {
 			
 //			Explosion expl = new Explosion(ship.worldObj, null, inLocal.X, inLocal.Y, inLocal.Z, radius, false, false);
 
-			try{
-				Explosion expl = e;
-				
-				setExplosionPosition(e, inLocal.X, inLocal.Y, inLocal.Z);
+			Explosion expl = e;
+
+			if(setExplosionPosition(e, inLocal.X, inLocal.Y, inLocal.Z, fields)){
 				
 				double waterRange = .6D;
-	
+		
 				boolean cancelDueToWater = false;
 	
 				for (int x = (int) Math.floor(expl.explosionX - waterRange); x <= Math.ceil(expl.explosionX + waterRange); x++) {
@@ -150,11 +189,11 @@ public class EventsCommon {
 						}
 					}
 				}
-	
+		
 				expl.doExplosionA();
-	
+		
 				double affectedPositions = 0D;
-	
+		
 				for (Object o : expl.affectedBlockPositions) {
 					BlockPos pos = (BlockPos) o;
 					IBlockState state = ship.worldObj.getBlockState(pos);
@@ -167,7 +206,7 @@ public class EventsCommon {
 				if (!cancelDueToWater) {
 					for (Object o : expl.affectedBlockPositions) {
 						BlockPos pos = (BlockPos) o;
-	
+		
 						IBlockState state = ship.worldObj.getBlockState(pos);
 						Block block = state.getBlock();
 						if (!block.isAir(state, worldIn, (BlockPos) o) || ship.wrapping.explodedPositionsThisTick.contains((BlockPos) o)) {
@@ -177,42 +216,40 @@ public class EventsCommon {
 							block.onBlockExploded(ship.worldObj, pos, expl);
 							if (!worldIn.isRemote) {
 								Vector posVector = new Vector(pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5);
-	
+		
 								ship.wrapping.coordTransform.fromLocalToGlobal(posVector);
-	
+		
 								double mass = BlockMass.basicMass.getMassFromState(state, pos, ship.worldObj);
-	
+		
 								double explosionForce = Math.sqrt(e.explosionSize) * 1000D * mass;
-	
+		
 								Vector forceVector = new Vector(pos.getX() + .5 - expl.explosionX, pos.getY() + .5 - expl.explosionY, pos.getZ() + .5 - expl.explosionZ);
-	
+		
 								double vectorDist = forceVector.length();
-	
+		
 								forceVector.normalize();
-	
+		
 								forceVector.multiply(explosionForce / vectorDist);
-	
+		
 								RotationMatrices.doRotationOnly(ship.wrapping.coordTransform.lToWRotation, forceVector);
-	
+		
 								PhysicsQueuedForce queuedForce = new PhysicsQueuedForce(forceVector, posVector, false, 1);
-	
+		
 								if (!ship.wrapping.explodedPositionsThisTick.contains(pos)) {
 									ship.wrapping.explodedPositionsThisTick.add(pos);
 								}
-	
+		
 								ship.wrapping.queueForce(queuedForce);
 							}
 						}
 					}
 				}
-			e.getAffectedBlockPositions().clear();
-			e.getAffectedBlockPositions().addAll(affectedPositionsList);
-			e.getPlayerKnockbackMap().clear();
-			e.getPlayerKnockbackMap().putAll(playerKnockbackMap);
 				
-			}catch(Exception exception){
-				exception.printStackTrace();
 			}
+		e.getAffectedBlockPositions().clear();
+		e.getAffectedBlockPositions().addAll(affectedPositionsList);
+		e.getPlayerKnockbackMap().clear();
+		e.getPlayerKnockbackMap().putAll(playerKnockbackMap);
 
 		}
 	}

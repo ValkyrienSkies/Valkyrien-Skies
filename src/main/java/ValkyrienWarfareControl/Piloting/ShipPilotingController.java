@@ -86,7 +86,7 @@ public class ShipPilotingController {
 			idealAngularDirection.add(leftDirection);
 		}
 //		RotationMatrices.applyTransform(controlledShip.coordTransform.lToWRotation, idealAngularDirection);
-		System.out.println(idealAngularDirection);
+//		System.out.println(idealAngularDirection);
 	}
 
 	/**

@@ -1,4 +1,4 @@
-package ValkyrienWarfareControl.FullBalloonControl;
+package ValkyrienWarfareControl.TileEntity;
 
 import net.minecraft.tileentity.TileEntity;
 

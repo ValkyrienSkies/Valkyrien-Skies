@@ -82,7 +82,7 @@ public class EventsCommon {
 		try{
 			Field xField,yField,zField,positionField;
 			
-			if(ValkyrienWarfarePlugin.isObfuscatedEnvironment) {
+			if(!ValkyrienWarfarePlugin.isObfuscatedEnvironment) {
 				xField = toSet.getClass().getDeclaredField("explosionX");
 				xField.setAccessible(true);
 				

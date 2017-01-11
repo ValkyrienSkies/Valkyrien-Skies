@@ -32,6 +32,7 @@ public class BlockNormalEngine extends Block implements IBlockForceProvider {
 		this.enginePower = enginePower;
 	}
 
+	@Override
 	public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
 		EnumFacing facing = BlockPistonBase.getFacingFromEntity(pos, placer);
 		if (placer.isSneaking()) {

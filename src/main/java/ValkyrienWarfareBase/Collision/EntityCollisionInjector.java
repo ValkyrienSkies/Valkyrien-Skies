@@ -162,21 +162,23 @@ public class EntityCollisionInjector {
 		WorldPhysObjectManager localPhysManager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(entity.worldObj);
 
 		List<PhysicsWrapperEntity> ships = localPhysManager.getNearbyPhysObjects(entityBB);
-
+		//If a player is riding a Ship, don't process any collision between that Ship and the Player
 		for (PhysicsWrapperEntity wrapper : ships) {
-			Polygon playerInLocal = new Polygon(entityBB, wrapper.wrapping.coordTransform.wToLTransform);
-			AxisAlignedBB bb = playerInLocal.getEnclosedAABB();
-
-			List<AxisAlignedBB> collidingBBs = /* new ArrayList<AxisAlignedBB>(); */entity.worldObj.getCollisionBoxes(bb);
-
-			// TODO: Fix the performance of this!
-			if (entity.worldObj.isRemote || entity instanceof EntityPlayer) {
-				BigBastardMath.mergeAABBList(collidingBBs);
-			}
-
-			for (AxisAlignedBB inLocal : collidingBBs) {
-				ShipPolygon poly = new ShipPolygon(inLocal, wrapper.wrapping.coordTransform.lToWTransform, wrapper.wrapping.coordTransform.normals, wrapper.wrapping);
-				collisions.add(poly);
+			if(!entity.isRidingSameEntity(wrapper)){
+				Polygon playerInLocal = new Polygon(entityBB, wrapper.wrapping.coordTransform.wToLTransform);
+				AxisAlignedBB bb = playerInLocal.getEnclosedAABB();
+	
+				List<AxisAlignedBB> collidingBBs = /* new ArrayList<AxisAlignedBB>(); */entity.worldObj.getCollisionBoxes(bb);
+	
+				// TODO: Fix the performance of this!
+				if (entity.worldObj.isRemote || entity instanceof EntityPlayer) {
+					BigBastardMath.mergeAABBList(collidingBBs);
+				}
+	
+				for (AxisAlignedBB inLocal : collidingBBs) {
+					ShipPolygon poly = new ShipPolygon(inLocal, wrapper.wrapping.coordTransform.lToWTransform, wrapper.wrapping.coordTransform.normals, wrapper.wrapping);
+					collisions.add(poly);
+				}
 			}
 		}
 

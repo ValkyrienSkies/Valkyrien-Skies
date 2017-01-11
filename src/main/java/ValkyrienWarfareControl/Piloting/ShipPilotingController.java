@@ -50,27 +50,43 @@ public class ShipPilotingController {
 	
 	private void handlePilotControlMessage(PilotControlsMessage message, EntityPlayerMP whoSentIt){
 		//Set to whatever the player was pointing at in Ship space
+		//These vectors can be re-arranged depending on the direction the chair was placed
 		Vector playerDirection = new Vector(1,0,0);
 		
-		Vector idealLinearVelocity = new Vector(0,0,0);
+		Vector rightDirection = new Vector(0,0,1);
 		
-		double something = 100D;
+		Vector leftDirection = new Vector(0,0,-1);
+		
+		Vector upDirection = new Vector(0,1,0);
+		
+		Vector downDirection = new Vector(0,-1,0);
+		
+		Vector idealAngularDirection = new Vector();
+		
+		Vector idealLinearVelocity = new Vector();
 		
 		if(message.airshipForward){
-			idealLinearVelocity.add(playerDirection.getProduct(something));
+			idealLinearVelocity.add(playerDirection);
 		}
 		if(message.airshipBackward){
-			idealLinearVelocity.subtract(playerDirection.getProduct(something));
+			idealLinearVelocity.subtract(playerDirection);
 		}
-		RotationMatrices.applyTransform(controlledShip.coordTransform.lToWRotation, idealLinearVelocity);
 		if(message.airshipUp){
-			idealLinearVelocity.Y += something;
+			idealLinearVelocity.add(upDirection);
 		}
 		if(message.airshipDown){
-			idealLinearVelocity.Y -= something;
+			idealLinearVelocity.add(downDirection);
 		}
+		RotationMatrices.applyTransform(controlledShip.coordTransform.lToWRotation, idealLinearVelocity);
 		
-//		System.out.println(idealLinearVelocity);
+		if(message.airshipRight){
+			idealAngularDirection.add(rightDirection);
+		}
+		if(message.airshipLeft){
+			idealAngularDirection.add(leftDirection);
+		}
+//		RotationMatrices.applyTransform(controlledShip.coordTransform.lToWRotation, idealAngularDirection);
+//		System.out.println(idealAngularDirection);
 	}
 
 	/**

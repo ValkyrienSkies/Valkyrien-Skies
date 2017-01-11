@@ -190,10 +190,10 @@ public class TransformAdapter extends ClassVisitor {
 		}
 
 		// TBA
-		if (isMethod(calledDesc, "()V", calledName, ExplosionName, "doExplosionA", "func_77278_a", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onExplosionA", String.format("(L%s;)V", ExplosionName));
-			return false;
-		}
+//		if (isMethod(calledDesc, "()V", calledName, ExplosionName, "doExplosionA", "func_77278_a", calledOwner)) {
+//			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onExplosionA", String.format("(L%s;)V", ExplosionName));
+//			return false;
+//		}
 
 		if (isMethod(calledDesc, "(L" + BlockPosName + ";I)I", calledName, WorldClassName, "getCombinedLight", "func_175626_b", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onGetCombinedLight", String.format("(L%s;L" + BlockPosName + ";I)I", WorldClassName));

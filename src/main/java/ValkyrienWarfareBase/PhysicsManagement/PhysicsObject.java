@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -106,6 +107,8 @@ public class PhysicsObject {
 	public HashMap<Integer, Vector> entityLocalPositions = new HashMap<Integer, Vector>();
 
 	public ShipPilotingController pilotingController;
+	
+	public ArrayList<String> allowedUsers = new ArrayList<String>();
 
 	public PhysicsObject(PhysicsWrapperEntity host) {
 		wrapper = host;
@@ -745,6 +748,13 @@ public class PhysicsObject {
 		NBTUtils.writeEntityPositionHashMapToNBT("entityPosHashMap", entityLocalPositions, compound);
 		physicsProcessor.writeToNBTTag(compound);
 		pilotingController.writeToNBTTag(compound);
+		
+		Iterator<String> iter = allowedUsers.iterator();
+		StringBuilder result = new StringBuilder("");
+		while (iter.hasNext())	{
+			result.append(iter.next() + (iter.hasNext() ? ";" : ""));
+		}
+		compound.setString("allowedUsers", result.toString());
 	}
 
 	public void readFromNBTTag(NBTTagCompound compound) {
@@ -764,6 +774,11 @@ public class PhysicsObject {
 		entityLocalPositions = NBTUtils.readEntityPositionMap("entityPosHashMap", compound);
 		physicsProcessor.readFromNBTTag(compound);
 		pilotingController.readFromNBTTag(compound);
+		
+		String[] toAllow = compound.getString("allowedUsers").split(";");
+		for (String s : toAllow)	{
+			allowedUsers.add(s);
+		}
 	}
 
 	public void readSpawnData(ByteBuf additionalData) {
@@ -856,7 +871,9 @@ public class PhysicsObject {
 			creator.getCapability(ValkyrienWarfareMod.airshipCounter, null).onLose();
 		
 		newOwner.getCapability(ValkyrienWarfareMod.airshipCounter, null).onCreate();
-
+		
+		allowedUsers.clear();
+		
 		creator = newOwner;
 		return EnumChangeOwnerResult.SUCCESS;
 	}

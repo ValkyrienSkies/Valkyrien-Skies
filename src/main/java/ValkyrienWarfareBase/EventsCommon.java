@@ -13,6 +13,7 @@ import ValkyrienWarfareBase.CoreMod.ValkyrienWarfarePlugin;
 import ValkyrienWarfareBase.Interaction.CustomNetHandlerPlayServer;
 import ValkyrienWarfareBase.Physics.BlockMass;
 import ValkyrienWarfareBase.Physics.PhysicsQueuedForce;
+import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsTickHandler;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareControl.Piloting.ClientPilotingManager;
@@ -42,6 +43,7 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.HarvestCheck;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract;
+import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
 import net.minecraftforge.event.world.ChunkDataEvent;
@@ -104,26 +106,26 @@ public class EventsCommon {
 		}
 	}
 
-	private static final Field[] getFields(Explosion toSet){
-		try{
-			Field xField,yField,zField,positionField;
-			
-			if(!ValkyrienWarfarePlugin.isObfuscatedEnvironment) {
+	private static final Field[] getFields(Explosion toSet) {
+		try {
+			Field xField, yField, zField, positionField;
+
+			if (!ValkyrienWarfarePlugin.isObfuscatedEnvironment) {
 				xField = toSet.getClass().getDeclaredField("explosionX");
 				xField.setAccessible(true);
-				
+
 				yField = toSet.getClass().getDeclaredField("explosionY");
 				yField.setAccessible(true);
-				
+
 				zField = toSet.getClass().getDeclaredField("explosionZ");
 				zField.setAccessible(true);
-				
+
 				positionField = toSet.getClass().getDeclaredField("position");
 				positionField.setAccessible(true);
-			}else{
+			} else {
 				xField = toSet.getClass().getDeclaredField("field_77284_b");
 				xField.setAccessible(true);
-				
+
 				yField = toSet.getClass().getDeclaredField("field_77285_c");
 				yField.setAccessible(true);
 
@@ -133,76 +135,75 @@ public class EventsCommon {
 				positionField = toSet.getClass().getDeclaredField("position");
 				positionField.setAccessible(true);
 			}
-			return new Field[]{xField, yField, zField, positionField};
-		}catch(Exception e){}
-		
+			return new Field[] { xField, yField, zField, positionField };
+		} catch (Exception e) {
+		}
+
 		return null;
 	}
-	
-	private static final boolean setExplosionPosition(Explosion toSet, double x, double y, double z, Field[] fields){ 
-		if(fields == null){
+
+	private static final boolean setExplosionPosition(Explosion toSet, double x, double y, double z, Field[] fields) {
+		if (fields == null) {
 			return false;
 		}
-		try{
+		try {
 			Field xField = fields[0], yField = fields[1], zField = fields[2], positionField = fields[3];
-			
+
 			double testX = toSet.explosionX;
-			
+
 			xField.setDouble(toSet, x);
-			
+
 			double testY = toSet.explosionY;
-			
+
 			yField.setDouble(toSet, y);
-			
+
 			double testZ = toSet.explosionZ;
-			
+
 			zField.setDouble(toSet, z);
-			
-			
-			positionField.set(toSet, new Vec3d(x,y,z));
-			
+
+			positionField.set(toSet, new Vec3d(x, y, z));
+
 			toSet.getAffectedBlockPositions().clear();
 			toSet.getPlayerKnockbackMap().clear();
 			return true;
-		}catch(Exception e){
+		} catch (Exception e) {
 			return false;
 		}
 	}
-	
+
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
-	public void onExplosionDetonateEvent(ExplosionEvent.Detonate event){
+	public void onExplosionDetonateEvent(ExplosionEvent.Detonate event) {
 		Explosion e = event.getExplosion();
-		
+
 		double xx = e.explosionX, yy = e.explosionY, zz = e.explosionZ;
 		List<BlockPos> affectedPositionsList = new ArrayList<BlockPos>(e.getAffectedBlockPositions());
 		Map<EntityPlayer, Vec3d> playerKnockbackMap = new HashMap<EntityPlayer, Vec3d>(e.getPlayerKnockbackMap());
-		
-		
+
 		Vector center = new Vector(e.explosionX, e.explosionY, e.explosionZ);
 		World worldIn = e.worldObj;
 		float radius = e.explosionSize;
 
 		AxisAlignedBB toCheck = new AxisAlignedBB(center.X - radius, center.Y - radius, center.Z - radius, center.X + radius, center.Y + radius, center.Z + radius);
 		List<PhysicsWrapperEntity> shipsNear = ValkyrienWarfareMod.physicsManager.getManagerForWorld(e.worldObj).getNearbyPhysObjects(toCheck);
-//		e.doExplosionA();
+		// e.doExplosionA();
 		// TODO: Make this compatible and shit!
 		Field[] fields = getFields(e);
-		
+
 		for (PhysicsWrapperEntity ship : shipsNear) {
 			Vector inLocal = new Vector(center);
 			RotationMatrices.applyTransform(ship.wrapping.coordTransform.wToLTransform, inLocal);
 			// inLocal.roundToWhole();
-			
-//			Explosion expl = new Explosion(ship.worldObj, null, inLocal.X, inLocal.Y, inLocal.Z, radius, false, false);
+
+			// Explosion expl = new Explosion(ship.worldObj, null, inLocal.X, inLocal.Y, inLocal.Z, radius, false, false);
 
 			Explosion expl = e;
 
-			if(setExplosionPosition(e, inLocal.X, inLocal.Y, inLocal.Z, fields)){
-				
+			if (setExplosionPosition(e, inLocal.X, inLocal.Y, inLocal.Z, fields)) {
+
 				double waterRange = .6D;
-		
+
 				boolean cancelDueToWater = false;
-	
+
 				for (int x = (int) Math.floor(expl.explosionX - waterRange); x <= Math.ceil(expl.explosionX + waterRange); x++) {
 					for (int y = (int) Math.floor(expl.explosionY - waterRange); y <= Math.ceil(expl.explosionY + waterRange); y++) {
 						for (int z = (int) Math.floor(expl.explosionZ - waterRange); z <= Math.ceil(expl.explosionZ + waterRange); z++) {
@@ -215,11 +216,11 @@ public class EventsCommon {
 						}
 					}
 				}
-		
+
 				expl.doExplosionA();
-		
+
 				double affectedPositions = 0D;
-		
+
 				for (Object o : expl.affectedBlockPositions) {
 					BlockPos pos = (BlockPos) o;
 					IBlockState state = ship.worldObj.getBlockState(pos);
@@ -228,11 +229,11 @@ public class EventsCommon {
 						affectedPositions++;
 					}
 				}
-	
+
 				if (!cancelDueToWater) {
 					for (Object o : expl.affectedBlockPositions) {
 						BlockPos pos = (BlockPos) o;
-		
+
 						IBlockState state = ship.worldObj.getBlockState(pos);
 						Block block = state.getBlock();
 						if (!block.isAir(state, worldIn, (BlockPos) o) || ship.wrapping.explodedPositionsThisTick.contains((BlockPos) o)) {
@@ -242,45 +243,44 @@ public class EventsCommon {
 							block.onBlockExploded(ship.worldObj, pos, expl);
 							if (!worldIn.isRemote) {
 								Vector posVector = new Vector(pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5);
-		
+
 								ship.wrapping.coordTransform.fromLocalToGlobal(posVector);
-		
+
 								double mass = BlockMass.basicMass.getMassFromState(state, pos, ship.worldObj);
-		
+
 								double explosionForce = Math.sqrt(e.explosionSize) * 1000D * mass;
-		
+
 								Vector forceVector = new Vector(pos.getX() + .5 - expl.explosionX, pos.getY() + .5 - expl.explosionY, pos.getZ() + .5 - expl.explosionZ);
-		
+
 								double vectorDist = forceVector.length();
-		
+
 								forceVector.normalize();
-		
+
 								forceVector.multiply(explosionForce / vectorDist);
-		
+
 								RotationMatrices.doRotationOnly(ship.wrapping.coordTransform.lToWRotation, forceVector);
-		
+
 								PhysicsQueuedForce queuedForce = new PhysicsQueuedForce(forceVector, posVector, false, 1);
-		
+
 								if (!ship.wrapping.explodedPositionsThisTick.contains(pos)) {
 									ship.wrapping.explodedPositionsThisTick.add(pos);
 								}
-		
+
 								ship.wrapping.queueForce(queuedForce);
 							}
 						}
 					}
 				}
-				
+
 			}
-		e.getAffectedBlockPositions().clear();
-		e.getAffectedBlockPositions().addAll(affectedPositionsList);
-		e.getPlayerKnockbackMap().clear();
-		e.getPlayerKnockbackMap().putAll(playerKnockbackMap);
+			e.getAffectedBlockPositions().clear();
+			e.getAffectedBlockPositions().addAll(affectedPositionsList);
+			e.getPlayerKnockbackMap().clear();
+			e.getPlayerKnockbackMap().putAll(playerKnockbackMap);
 
 		}
 	}
-	
-	
+
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onWorldLoad(WorldEvent.Load event) {
 		// ValkyrienWarfareMod.chunkManager.initWorld(event.getWorld());
@@ -382,6 +382,34 @@ public class EventsCommon {
 	public void onLeave(PlayerLoggedOutEvent event) {
 		if (!event.player.worldObj.isRemote) {
 			lastPositions.remove((EntityPlayerMP) event.player);
+		}
+	}
+
+	@SubscribeEvent
+	public void onRightClick(PlayerInteractEvent.RightClickBlock event) {
+		if (!event.getWorld().isRemote)	{
+			PhysicsWrapperEntity physObj = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(event.getWorld(), event.getPos());
+			if (physObj != null)	{
+				if (!(physObj.wrapping.creator == event.getEntityPlayer() || physObj.wrapping.allowedUsers.contains(event.getEntityPlayer().entityUniqueID.toString())))	{
+					event.getEntityPlayer().addChatMessage(new TextComponentString("You need to be added to the airship to do that!"));
+					event.setCanceled(true);
+					return;
+				}
+			}
+		}
+	}
+	
+	@SubscribeEvent
+	public void onBlockBreak(BlockEvent.BreakEvent event)	{
+		if (!event.getWorld().isRemote)	{
+			PhysicsWrapperEntity physObj = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(event.getWorld(), event.getPos());
+			if (physObj != null)	{
+				if (!(physObj.wrapping.creator == event.getPlayer() || physObj.wrapping.allowedUsers.contains(event.getPlayer().entityUniqueID.toString())))	{
+					event.getPlayer().addChatMessage(new TextComponentString("You need to be added to the airship to do that!"));
+					event.setCanceled(true);
+					return;
+				}
+			}
 		}
 	}
 

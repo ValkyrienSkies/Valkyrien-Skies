@@ -38,7 +38,7 @@ public class AirshipSettingsCommand extends CommandBase {
 			sender.addChatMessage(new TextComponentString("You need to be looking at an airship to do that!"));
 			return;
 		}
-		if (p == wrapper.wrapping.creator) {
+		if (p.entityUniqueID.toString().equals(wrapper.wrapping.creator)) {
 			if (args[0].equals("transfer")) {
 				if (args[1] != null && !args[1].isEmpty()) {
 					EntityPlayer target = server.getPlayerList().getPlayerByUsername(args[1]);

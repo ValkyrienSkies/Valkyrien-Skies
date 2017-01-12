@@ -42,9 +42,9 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 		posX = x;
 		posY = y;
 		posZ = z;
-		wrapping.creator = maker;
+		wrapping.creator = maker.entityUniqueID.toString();
 		wrapping.detectorID = detectorID;
-		wrapping.processChunkClaims();
+		wrapping.processChunkClaims(maker);
 	}
 
 	@Override

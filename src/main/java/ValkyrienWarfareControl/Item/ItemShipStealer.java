@@ -27,8 +27,8 @@ public class ItemShipStealer extends Item {
 	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		if (ValkyrienWarfareHooks.isBlockPartOfShip(worldIn, pos))	{
 			PhysicsWrapperEntity entity = ValkyrienWarfareHooks.getShipEntityManagingPos(worldIn, pos);
-			EntityPlayer oldOwner = entity.wrapping.creator;
-			if (oldOwner == playerIn)	{
+			String oldOwner = entity.wrapping.creator;
+			if (oldOwner == playerIn.entityUniqueID.toString())	{
 				playerIn.addChatMessage(new TextComponentString("You can't steal your own airship!"));
 				return EnumActionResult.SUCCESS;
 			}
@@ -40,8 +40,7 @@ public class ItemShipStealer extends Item {
 				playerIn.addChatMessage(new TextComponentString("Error! Please report to mod devs."));
 				break;
 			case SUCCESS:
-				playerIn.addChatMessage(new TextComponentString("You've stolen an airship from " + oldOwner.getName() + "!"));
-				oldOwner.addChatMessage(new TextComponentString(playerIn.getName() + " stole an airship from you!"));
+				playerIn.addChatMessage(new TextComponentString("You've stolen an airship!"));
 				break;
 			}
 			return EnumActionResult.SUCCESS;

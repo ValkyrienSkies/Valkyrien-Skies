@@ -390,7 +390,7 @@ public class EventsCommon {
 		if (!event.getWorld().isRemote)	{
 			PhysicsWrapperEntity physObj = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(event.getWorld(), event.getPos());
 			if (physObj != null)	{
-				if (!(physObj.wrapping.creator == event.getEntityPlayer() || physObj.wrapping.allowedUsers.contains(event.getEntityPlayer().entityUniqueID.toString())))	{
+				if (!(physObj.wrapping.creator.equals(event.getEntityPlayer().entityUniqueID.toString()) || physObj.wrapping.allowedUsers.contains(event.getEntityPlayer().entityUniqueID.toString())))	{
 					event.getEntityPlayer().addChatMessage(new TextComponentString("You need to be added to the airship to do that!"));
 					event.setCanceled(true);
 					return;
@@ -404,7 +404,7 @@ public class EventsCommon {
 		if (!event.getWorld().isRemote)	{
 			PhysicsWrapperEntity physObj = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(event.getWorld(), event.getPos());
 			if (physObj != null)	{
-				if (!(physObj.wrapping.creator == event.getPlayer() || physObj.wrapping.allowedUsers.contains(event.getPlayer().entityUniqueID.toString())))	{
+				if (!(physObj.wrapping.creator.equals(event.getPlayer().entityUniqueID.toString()) || physObj.wrapping.allowedUsers.contains(event.getPlayer().entityUniqueID.toString())))	{
 					event.getPlayer().addChatMessage(new TextComponentString("You need to be added to the airship to do that!"));
 					event.setCanceled(true);
 					return;

@@ -40,7 +40,8 @@ public class DimensionPhysObjectManager {
 			cachedManager = managerPerWorld.get(world);
 		}
 		if (cachedManager == null) {
-			System.err.println("getManagerForWorld just requested for a World without one!!! Wtf, how does this even Happen Man!?");
+			System.err.println("getManagerForWorld just requested for a World without one!!! Assuming that this is a new world, so making a new WorldPhysObjectManager for it.");
+			cachedManager = new WorldPhysObjectManager(world);
 		}
 		return cachedManager;
 	}

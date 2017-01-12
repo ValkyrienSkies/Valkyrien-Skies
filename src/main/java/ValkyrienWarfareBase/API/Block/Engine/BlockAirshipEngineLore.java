@@ -16,15 +16,15 @@ public abstract class BlockAirshipEngineLore extends BlockAirshipEngine {
 
 	public BlockAirshipEngineLore(Material materialIn, double enginePower) {
 		super(materialIn, enginePower);
-		lore = new String[] { TextFormatting.BOLD + "" + TextFormatting.GRAY + TextFormatting.ITALIC + "Power:", "  " + this.getEnginePowerTooltip(), "" };
+		lore = new String[] { "" + TextFormatting.GRAY + TextFormatting.ITALIC + TextFormatting.BOLD + "Power:", "  " + this.getEnginePowerTooltip() };
 	}
 
 	@Override
 	public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par4) {
-		for (String s : lore)	{
+		for (String s : lore) {
 			itemInformation.add(s);
 		}
 	}
-	
+
 	public abstract String getEnginePowerTooltip();
 }

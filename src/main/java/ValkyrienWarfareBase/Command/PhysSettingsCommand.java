@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import com.google.common.collect.Lists;
+
 import ValkyrienWarfareBase.PhysicsSettings;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.Vector;
@@ -77,61 +79,51 @@ public class PhysSettingsCommand extends CommandBase {
 			if (args.length == 1) {
 				sender.addChatMessage(new TextComponentString("gravityVector=" + ValkyrienWarfareMod.gravity.toRoundedString() + " (Default: <0,-9.8,0>)"));
 				return;
-			} else if (args.length == 2) {
+			} else if (args.length == 4) {
 				Vector newVector = new Vector(0, -9.8, 0);
 				try {
-					if (args[1] != null) {
-						String[] numbers = args[1].replace("<", "").replace(">", "").replace(" ", "").split(",");
-						newVector.X = Double.parseDouble(numbers[1]);
-						newVector.Y = Double.parseDouble(numbers[2]);
-						newVector.Z = Double.parseDouble(numbers[3]);
+					if (args[1] != null && args[2] != null && args[3] != null) {
+						newVector.X = Double.parseDouble(args[1]);
+						newVector.Y = Double.parseDouble(args[2]);
+						newVector.Z = Double.parseDouble(args[3]);
 					} else {
 						sender.addChatMessage(new TextComponentString("Usage: /physSettings gravityVector <x> <y> <z>"));
 						return;
 					}
 				} catch (Exception e) {}
 				ValkyrienWarfareMod.gravity = newVector;
-				sender.addChatMessage(new TextComponentString("Physics Gravity set to " + newVector.toRoundedString() + " (Default: <0,-9.8,0>)"));
+				sender.addChatMessage(new TextComponentString("Physics gravity set to " + newVector.toRoundedString() + " (Default: <0,-9.8,0>)"));
 				return;
+			} else {
+				sender.addChatMessage(new TextComponentString("Usage: /physSettings gravityVector <x> <y> <z>"));
 			}
 		} else if (key.equals("physicsIterations")) {
 			if (args.length == 1) {
 				sender.addChatMessage(new TextComponentString("physicsIterations=" + ValkyrienWarfareMod.physIter + " (Default: 10)"));
 				return;
 			} else if (args.length == 2) {
-				int sentNum = ValkyrienWarfareMod.physIter;
-				try {
-					sentNum = Integer.parseInt(args[1]);
-				} catch (Exception e) {
-					notifyCommandListener(sender, this, "Invalid Input", new Object[] {});
+				int value = Integer.parseInt(args[1]);
+				if (value < 0 || value > 1000)	{
+					sender.addChatMessage(new TextComponentString("Please enter a value between 0 and 1000"));
 					return;
 				}
-				if (sentNum >= 0 && sentNum <= 1000) {
-					ValkyrienWarfareMod.physIter = sentNum;
-					sender.addChatMessage(new TextComponentString("physicsIterations=" + ValkyrienWarfareMod.physIter + " (Default: 10)"));
-					return;
-				}
+				sender.addChatMessage(new TextComponentString("Set physicsIterations to " + value));
+				ValkyrienWarfareMod.physIter = value;
+				return;
 			}
 		} else if (key.equals("physicsSpeed")) {
 			if (args.length == 1) {
-				sender.addChatMessage(new TextComponentString("physicsSpeed=" + ValkyrienWarfareMod.maxShipSize + " (Default: 0.5)"));
+				sender.addChatMessage(new TextComponentString("physicsSpeed=" + ValkyrienWarfareMod.physSpeed + " (Default: 0.05)"));
 				return;
 			} else if (args.length == 2) {
-				double sentNum = ValkyrienWarfareMod.physSpeed;
-				try {
-					sentNum = Double.parseDouble(args[1]);
-				} catch (Exception e) {
-					notifyCommandListener(sender, this, "Invalid Input", new Object[] {});
+				double value = Double.parseDouble(args[1]);
+				if (value < 0 || value > 1000)	{
+					sender.addChatMessage(new TextComponentString("Please enter a value between 0 and 1000"));
 					return;
 				}
-				if (sentNum >= 0 && sentNum <= 1000) {
-					ValkyrienWarfareMod.physSpeed = sentNum;
-					sender.addChatMessage(new TextComponentString("physicsSpeed=" + ValkyrienWarfareMod.maxShipSize + " (Default: 0.5)"));
-					return;
-				} else {
-					sender.addChatMessage(new TextComponentString("Value too big! Use a value between 0 and 1000."));
-					return;
-				}
+				sender.addChatMessage(new TextComponentString("Set physicsSpeed to " + value));
+				ValkyrienWarfareMod.physSpeed = value;
+				return;
 			}
 		} else if (key.equals("doGravity")) {
 			if (args.length == 1) {
@@ -179,13 +171,13 @@ public class PhysSettingsCommand extends CommandBase {
 				return;
 			} else if (args.length == 2) {
 				boolean value = Boolean.parseBoolean(args[1]);
-				sender.addChatMessage(new TextComponentString("Set doAirshipMovement to " + (PhysicsSettings.doGravity ? "enabled" : "disabled")));
+				sender.addChatMessage(new TextComponentString("Set doAirshipMovement to " + (PhysicsSettings.doAirshipMovement ? "enabled" : "disabled")));
 				PhysicsSettings.doAirshipMovement = value;
 				return;
 			}
 		} else if (key.equals("save")) {
 			ValkyrienWarfareMod.instance.saveConfig();
-			sender.addChatMessage(new TextComponentString("Saved phisics settings"));
+			sender.addChatMessage(new TextComponentString("Saved phyisics settings"));
 			return;
 		}
 
@@ -197,13 +189,23 @@ public class PhysSettingsCommand extends CommandBase {
 		if (args.length == 1)	{
 			ArrayList<String> possibleArgs = (ArrayList<String>) completionOptions.clone();
 			
-			for (Iterator<String> iterator = possibleArgs.iterator(); iterator.hasNext();) { //Don't like this, but i have to because concurrentmodificationexception			    
+			for (Iterator<String> iterator = possibleArgs.iterator(); iterator.hasNext();) { //Don't like this, but I have to because concurrentmodificationexception			    
 			    if (!iterator.next().startsWith(args[0])) {
 			        iterator.remove();
 			    }
 			}
 			
 			return possibleArgs;
+		} else if (args.length == 2)	{
+			if (args[0].startsWith("do"))	{
+				if (args[1].startsWith("t"))	{
+					return Lists.newArrayList("true");
+				} else if (args[1].startsWith("f"))	{
+					return Lists.newArrayList("false");
+				} else {
+					return Lists.newArrayList("true", "false");
+				}
+			}
 		}
 		
 		return null;

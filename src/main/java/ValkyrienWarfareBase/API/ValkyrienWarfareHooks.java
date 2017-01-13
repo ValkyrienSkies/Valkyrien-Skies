@@ -1,5 +1,6 @@
 package ValkyrienWarfareBase.API;
 
+import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -16,7 +17,7 @@ public class ValkyrienWarfareHooks {
 	public static DummyMethods methods = null;
 	public static boolean isValkyrienWarfareInstalled = false;
 
-	public static Entity getShipEntityManagingPos(World worldObj, BlockPos pos) {
+	public static PhysicsWrapperEntity getShipEntityManagingPos(World worldObj, BlockPos pos) {
 		return methods.getShipEntityManagingPos(worldObj, pos);
 	}
 

@@ -1,5 +1,6 @@
 package ValkyrienWarfareBase.API;
 
+import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -17,7 +18,7 @@ public interface DummyMethods {
 
 	public boolean isBlockPartOfShip(World worldObj, BlockPos pos);
 
-	public Entity getShipEntityManagingPos(World worldObj, BlockPos pos);
+	public PhysicsWrapperEntity getShipEntityManagingPos(World worldObj, BlockPos pos);
 
 	public Vector getLinearVelocity(Entity shipEnt, double secondsToApply);
 

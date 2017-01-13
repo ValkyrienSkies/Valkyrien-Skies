@@ -10,6 +10,9 @@ import ValkyrienWarfareBase.API.ValkyrienWarfareHooks;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Block.BlockPhysicsInfuser;
 import ValkyrienWarfareBase.Block.BlockPhysicsInfuserCreative;
+import ValkyrienWarfareBase.Capability.IAirshipCounterCapability;
+import ValkyrienWarfareBase.Capability.ImplAirshipCounterCapability;
+import ValkyrienWarfareBase.Capability.StorageAirshipCounter;
 import ValkyrienWarfareBase.ChunkManagement.DimensionPhysicsChunkManager;
 import ValkyrienWarfareBase.PhysicsManagement.DimensionPhysObjectManager;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
@@ -20,12 +23,16 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -84,12 +91,16 @@ public class ValkyrienWarfareMod {
 	public static int maxShipSize = 15000;
 	public static double shipUpperLimit = 1000D;
 	public static double shipLowerLimit = -30D;
+	public static int maxAirships = -1;
 
 	// NOTE: These only calculate physics, so they are only relevant to the Server end
 	public static ExecutorService MultiThreadExecutor;
 
 	public DataTag tag = null;
 	public static Logger VWLogger;
+	
+	@CapabilityInject(IAirshipCounterCapability.class)
+	public static final Capability<IAirshipCounterCapability> airshipCounter = null;
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
@@ -99,6 +110,7 @@ public class ValkyrienWarfareMod {
 		registerRecipies(event);
 		registerNetworks(event);
 		runConfiguration(event);
+		registerCapibilities();
 		ValkyrienWarfareHooks.methods = new RealMethods();
 		ValkyrienWarfareHooks.isValkyrienWarfareInstalled = true;
 		VWLogger = Logger.getLogger("ValkyrienWarfare");
@@ -151,36 +163,19 @@ public class ValkyrienWarfareMod {
 	}
 
 	public static void applyConfig(Configuration conf) {
-		// Property dynamiclightProperty = config.get(Configuration.CATEGORY_GENERAL, "DynamicLighting", false);
-		Property shipTickDelayProperty = config.get(Configuration.CATEGORY_GENERAL, "Ticks Delay Between Client and Server", 1);
-		Property missedPacketsTolerance = config.get(Configuration.CATEGORY_GENERAL, "Missed packets threshold", 1);
-		// Property spawnParticlesParticle = config.get(Configuration.CATEGORY_GENERAL, "Ships spawn particles", false);
-		Property useMultiThreadedPhysics = config.get(Configuration.CATEGORY_GENERAL, "Multi-Threaded Physics", false);
-		Property physicsThreads = config.get(Configuration.CATEGORY_GENERAL, "Physics Thread Count", (int) Math.max(1, Runtime.getRuntime().availableProcessors() - 2));
+		// dynamicLighting = config.get(Configuration.CATEGORY_GENERAL, "DynamicLighting", false).getBoolean();
+		shipTickDelay = config.get(Configuration.CATEGORY_GENERAL, "Ticks Delay Between Client and Server", 1, "Tick delay between client and server physics; raise if physics look choppy").getInt() % 20;
+		maxMissedPackets = config.get(Configuration.CATEGORY_GENERAL, "Missed packets threshold", 1, "Higher values gaurantee virutally no choppyness, but also comes with a large delay. Only change if you have unstable internet").getInt();
+		// Property spawnParticlesParticle = config.get(Configuration.CATEGORY_GENERAL, "Ships spawn particles", false).getBoolean();
+		multiThreadedPhysics = config.get(Configuration.CATEGORY_GENERAL, "Multi-Threaded Physics", false, "Use Multi-Threaded Physics").getBoolean();
+		threadCount = config.get(Configuration.CATEGORY_GENERAL, "Physics Thread Count", (int) Math.max(1, Runtime.getRuntime().availableProcessors() - 2), "Number of threads to run physics on").getInt();
 
-		Property doShipCollisionProperty = config.get(Configuration.CATEGORY_GENERAL, "Enable Ship Collision", false);
+		doShipCollision = config.get(Configuration.CATEGORY_GENERAL, "Enable Ship Collision", false).getBoolean();
 
-		Property shipUpperHeightLimit = config.get(Configuration.CATEGORY_GENERAL, "Ship Y-Height Maximum", 1000D);
-		Property shipLowerHeightLimit = config.get(Configuration.CATEGORY_GENERAL, "Ship Y-Height Minimum", -30D);
+		shipUpperLimit = config.get(Configuration.CATEGORY_GENERAL, "Ship Y-Height Maximum", 1000D).getDouble();
+		shipLowerLimit = config.get(Configuration.CATEGORY_GENERAL, "Ship Y-Height Minimum", -30D).getDouble();
 
-		// dynamiclightProperty.setComment("Dynamic Lighting");
-		shipTickDelayProperty.setComment("Tick delay between client and server physics; raise if physics look choppy");
-		missedPacketsTolerance.setComment("Higher values gaurantee virutally no choppyness, but also comes with a large delay. Only change if you have unstable internet");
-		// spawnParticlesParticle.setComment("Ships spawn particles");
-		useMultiThreadedPhysics.setComment("Use Multi-Threaded Physics");
-		physicsThreads.setComment("Number of threads to run physics on;");
-
-		// dynamicLighting = dynamiclightProperty.getBoolean();
-		shipTickDelay = shipTickDelayProperty.getInt() % 20;
-		maxMissedPackets = missedPacketsTolerance.getInt();
-		// spawnParticles = spawnParticlesParticle.getBoolean();
-		multiThreadedPhysics = useMultiThreadedPhysics.getBoolean();
-		threadCount = physicsThreads.getInt();
-
-		doShipCollision = doShipCollisionProperty.getBoolean();
-
-		shipUpperLimit = shipUpperHeightLimit.getDouble();
-		shipLowerLimit = shipLowerHeightLimit.getDouble();
+		maxAirships = config.get(Configuration.CATEGORY_GENERAL, "Max airships per player", -1, "Players can't own more than this many airships at once. Set to -1 to disable.").getInt();
 
 		if (MultiThreadExecutor != null) {
 			MultiThreadExecutor.shutdown();
@@ -263,5 +258,35 @@ public class ValkyrienWarfareMod {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public void registerCapibilities()	{
+		CapabilityManager.INSTANCE.register(IAirshipCounterCapability.class, new StorageAirshipCounter(), ImplAirshipCounterCapability.class);
+	}
+	
+	/**
+	 * Checks to see if a player's airship counter can be changed.
+	 * @param isAdding Should be true if you are adding a player, false if removing the player.
+	 * @param player The player to check for
+	 * @return
+	 */
+	public static boolean canChangeAirshipCounter(boolean isAdding, EntityPlayer player)	{
+		if (isAdding)	{
+			if (ValkyrienWarfareMod.maxAirships == -1)	{
+				return true;
+			}
+			
+			if (player.getCapability(ValkyrienWarfareMod.airshipCounter, null).getAirshipCount() >= ValkyrienWarfareMod.maxAirships)	{
+				return false;
+			} else {
+				return true;
+			}
+		} else {
+			if (player.getCapability(ValkyrienWarfareMod.airshipCounter, null).getAirshipCount() > 0)	{
+				return true;
+			} else {
+				return false;
+			}
+		}
 	}
 }

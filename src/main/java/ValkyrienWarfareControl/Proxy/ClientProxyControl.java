@@ -39,6 +39,7 @@ public class ClientProxyControl extends CommonProxyControl {
 		registerBlockItem(ValkyrienWarfareControlMod.instance.pilotsChair);
 
 		registerItemModel(ValkyrienWarfareControlMod.instance.systemLinker);
+		registerItemModel(ValkyrienWarfareControlMod.instance.airshipStealer);
 	}
 
 	private void registerBlockItem(Block toRegister) {
@@ -49,6 +50,5 @@ public class ClientProxyControl extends CommonProxyControl {
 	private void registerItemModel(Item toRegister) {
 		RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
 		renderItem.getItemModelMesher().register(toRegister, 0, new ModelResourceLocation(ValkyrienWarfareControlMod.MODID + ":" + toRegister.getUnlocalizedName().substring(5), "inventory"));
-		;
 	}
 }

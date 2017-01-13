@@ -11,6 +11,7 @@ import ValkyrienWarfareControl.Block.BlockNormalEngine;
 import ValkyrienWarfareControl.Block.BlockRedstoneEngine;
 import ValkyrienWarfareControl.Block.BlockShipPilotsChair;
 import ValkyrienWarfareControl.GUI.ControlGUIHandler;
+import ValkyrienWarfareControl.Item.ItemShipStealer;
 import ValkyrienWarfareControl.Item.ItemSystemLinker;
 import ValkyrienWarfareControl.Network.EntityFixMessage;
 import ValkyrienWarfareControl.Network.EntityFixMessageHandler;
@@ -72,6 +73,7 @@ public class ValkyrienWarfareControlMod {
 	public Block pilotsChair;
 
 	public Item systemLinker;
+	public Item airshipStealer;
 
 	@SidedProxy(clientSide = "ValkyrienWarfareControl.Proxy.ClientProxyControl", serverSide = "ValkyrienWarfareControl.Proxy.CommonProxyControl")
 	public static CommonProxyControl proxy;
@@ -142,7 +144,10 @@ public class ValkyrienWarfareControlMod {
 
 	private void registerItems(FMLStateEvent event) {
 		systemLinker = new ItemSystemLinker().setUnlocalizedName("systemlinker").setRegistryName(MODID, "systemlinker").setCreativeTab(CreativeTabs.TRANSPORTATION).setMaxStackSize(1);
+		airshipStealer = new ItemShipStealer().setUnlocalizedName("airshipStealer").setRegistryName(MODID, "airshipStealer").setCreativeTab(CreativeTabs.TOOLS).setMaxStackSize(1);
+		
 		GameRegistry.registerItem(systemLinker);
+		GameRegistry.registerItem(airshipStealer);
 	}
 
 	private void registerRecipies(FMLStateEvent event) {

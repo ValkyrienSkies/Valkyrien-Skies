@@ -1,15 +1,19 @@
 package ValkyrienWarfareBase.PhysicsManagement;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import ValkyrienWarfareBase.NBTUtils;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
+import ValkyrienWarfareBase.API.EnumChangeOwnerResult;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.ChunkManagement.ChunkSet;
@@ -34,6 +38,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Blocks;
+import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.server.SPacketChunkData;
@@ -53,8 +58,10 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraft.world.gen.ChunkProviderServer;
+import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.ChunkEvent;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class PhysicsObject {
 
@@ -79,9 +86,9 @@ public class PhysicsObject {
 	public boolean doPhysics = true;
 	public boolean fromSplit = false;
 
-	//The closest Chunks to the Ship cached in here
+	// The closest Chunks to the Ship cached in here
 	public ChunkCache surroundingWorldChunksCache;
-	public EntityPlayer creator;
+	public String creator;
 
 	private static Field playersField = null;
 
@@ -97,7 +104,7 @@ public class PhysicsObject {
 	// Used for faster memory access to the Chunks this object 'owns'
 	public Chunk[][] claimedChunks;
 	public VWChunkCache VKChunkCache;
-	//Some badly written mods use these Maps to determine who to send packets to, so we need to manually fill them with nearby players
+	// Some badly written mods use these Maps to determine who to send packets to, so we need to manually fill them with nearby players
 	public PlayerChunkMapEntry[][] claimedChunksEntries;
 
 	public ShipBalloonManager balloonManager;
@@ -105,7 +112,9 @@ public class PhysicsObject {
 	public HashMap<Integer, Vector> entityLocalPositions = new HashMap<Integer, Vector>();
 
 	public ShipPilotingController pilotingController;
-	
+
+	public ArrayList<String> allowedUsers = new ArrayList<String>();
+
 	public PhysicsObject(PhysicsWrapperEntity host) {
 		wrapper = host;
 		worldObj = host.worldObj;
@@ -153,6 +162,27 @@ public class PhysicsObject {
 		}
 
 		if (blockPositions.size() == 0) {
+			if (!worldObj.isRemote) {
+				if (creator != null) {
+					EntityPlayer player = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(UUID.fromString(creator));
+					if (player != null) {
+						player.getCapability(ValkyrienWarfareMod.airshipCounter, null).onLose();
+					} else {
+						try {
+							File f = new File(DimensionManager.getCurrentSaveRootDirectory(), "playerdata/" + creator + ".dat");
+							NBTTagCompound tag = CompressedStreamTools.read(f);
+							NBTTagCompound capsTag = tag.getCompoundTag("ForgeCaps");
+							capsTag.setInteger("valkyrienwarfare:IAirshipCounter", capsTag.getInteger("valkyrienwarfare:IAirshipCounter") - 1);
+							CompressedStreamTools.safeWrite(tag, f);
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+
+					ValkyrienWarfareMod.chunkManager.getManagerForWorld(worldObj).data.avalibleChunkKeys.add(ownedChunks.centerX);
+				}
+			}
+
 			destroy();
 		}
 
@@ -190,12 +220,12 @@ public class PhysicsObject {
 	/*
 	 * Generates the new chunks
 	 */
-	public void processChunkClaims() {
+	public void processChunkClaims(EntityPlayer player) {
 		BlockPos centerInWorld = new BlockPos(wrapper.posX, wrapper.posY, wrapper.posZ);
 		SpatialDetector detector = DetectorManager.getDetectorFor(detectorID, centerInWorld, worldObj, ValkyrienWarfareMod.maxShipSize + 1, true);
 		if (detector.foundSet.size() > ValkyrienWarfareMod.maxShipSize || detector.cleanHouse) {
-			if (creator != null) {
-				creator.addChatComponentMessage(new TextComponentString("Ship construction canceled because its exceeding the ship size limit (Raise with /setPhysConstructionLimit (number)) ; Or because it's attatched to bedrock)"));
+			if (player != null) {
+				player.addChatComponentMessage(new TextComponentString("Ship construction canceled because its exceeding the ship size limit (Raise with /setPhysConstructionLimit (number)) ; Or because it's attatched to bedrock)"));
 			}
 			wrapper.setDead();
 			return;
@@ -737,6 +767,14 @@ public class PhysicsObject {
 		NBTUtils.writeEntityPositionHashMapToNBT("entityPosHashMap", entityLocalPositions, compound);
 		physicsProcessor.writeToNBTTag(compound);
 		pilotingController.writeToNBTTag(compound);
+
+		Iterator<String> iter = allowedUsers.iterator();
+		StringBuilder result = new StringBuilder("");
+		while (iter.hasNext()) {
+			result.append(iter.next() + (iter.hasNext() ? ";" : ""));
+		}
+		compound.setString("allowedUsers", result.toString());
+		compound.setString("owner", creator);
 	}
 
 	public void readFromNBTTag(NBTTagCompound compound) {
@@ -756,6 +794,13 @@ public class PhysicsObject {
 		entityLocalPositions = NBTUtils.readEntityPositionMap("entityPosHashMap", compound);
 		physicsProcessor.readFromNBTTag(compound);
 		pilotingController.readFromNBTTag(compound);
+
+		String[] toAllow = compound.getString("allowedUsers").split(";");
+		for (String s : toAllow) {
+			allowedUsers.add(s);
+		}
+
+		creator = compound.getString("owner");
 	}
 
 	public void readSpawnData(ByteBuf additionalData) {
@@ -828,6 +873,40 @@ public class PhysicsObject {
 		NBTTagCompound entityFixedPositionNBT = new NBTTagCompound();
 		NBTUtils.writeEntityPositionHashMapToNBT("entityFixedPosMap", entityLocalPositions, entityFixedPositionNBT);
 		modifiedBuffer.writeNBTTagCompoundToBuffer(entityFixedPositionNBT);
+	}
+
+	/**
+	 * Tries to change the owner of this PhysicsObject.
+	 * 
+	 * @param newOwner
+	 * @return
+	 */
+	public EnumChangeOwnerResult changeOwner(EntityPlayer newOwner) {
+		if (!ValkyrienWarfareMod.canChangeAirshipCounter(true, newOwner)) {
+			return EnumChangeOwnerResult.ERROR_NEWOWNER_NOT_ENOUGH;
+		}
+
+		EntityPlayer player = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(UUID.fromString(creator));
+		if (player != null) {
+			player.getCapability(ValkyrienWarfareMod.airshipCounter, null).onLose();
+		} else {
+			try {
+				File f = new File(DimensionManager.getCurrentSaveRootDirectory(), "playerdata/" + creator + ".dat");
+				NBTTagCompound tag = CompressedStreamTools.read(f);
+				NBTTagCompound capsTag = tag.getCompoundTag("ForgeCaps");
+				capsTag.setInteger("valkyrienwarfare:IAirshipCounter", capsTag.getInteger("valkyrienwarfare:IAirshipCounter") - 1);
+				CompressedStreamTools.safeWrite(tag, f);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+		newOwner.getCapability(ValkyrienWarfareMod.airshipCounter, null).onCreate();
+
+		allowedUsers.clear();
+
+		creator = newOwner.entityUniqueID.toString();
+		return EnumChangeOwnerResult.SUCCESS;
 	}
 
 }

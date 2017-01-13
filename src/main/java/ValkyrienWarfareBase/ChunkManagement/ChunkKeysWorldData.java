@@ -1,5 +1,7 @@
 package ValkyrienWarfareBase.ChunkManagement;
 
+import java.util.ArrayList;
+
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSavedData;
@@ -8,6 +10,7 @@ import net.minecraft.world.storage.MapStorage;
 public class ChunkKeysWorldData extends WorldSavedData {
 
 	private static final String key = "ChunkKeys";
+	public ArrayList<Integer> avalibleChunkKeys = new ArrayList<Integer>();
 	public int chunkKey;
 
 	public ChunkKeysWorldData() {
@@ -21,11 +24,20 @@ public class ChunkKeysWorldData extends WorldSavedData {
 	@Override
 	public void readFromNBT(NBTTagCompound nbt) {
 		chunkKey = nbt.getInteger("chunkKey");
+		int[] array = nbt.getIntArray("avalibleChunkKeys");
+		for (int i : array)	{
+			avalibleChunkKeys.add(i);
+		}
 	}
 
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
 		nbt.setInteger("chunkKey", chunkKey);
+		int[] array = new int[avalibleChunkKeys.size()];
+		for (int i = 0; i < avalibleChunkKeys.size(); i++)	{
+			array[i] = avalibleChunkKeys.get(i);
+		}
+		nbt.setIntArray("avalibleChunkKeys", array);
 		return nbt;
 	}
 

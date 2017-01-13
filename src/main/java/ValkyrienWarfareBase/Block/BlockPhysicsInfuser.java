@@ -1,6 +1,7 @@
 package ValkyrienWarfareBase.Block;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
+import ValkyrienWarfareBase.Capability.IAirshipCounterCapability;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
 import ValkyrienWarfareBase.Relocation.DetectorManager;
@@ -12,6 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
 public class BlockPhysicsInfuser extends Block {
@@ -33,6 +35,14 @@ public class BlockPhysicsInfuser extends Block {
 			}
 			PhysicsWrapperEntity wrapper = new PhysicsWrapperEntity(worldIn, pos.getX(), pos.getY(), pos.getZ(), playerIn, DetectorManager.DetectorIDs.ShipSpawnerGeneral.ordinal());
 			worldIn.spawnEntityInWorld(wrapper);
+			
+			if (ValkyrienWarfareMod.canChangeAirshipCounter(true, playerIn))	{
+				IAirshipCounterCapability counter = playerIn.getCapability(ValkyrienWarfareMod.airshipCounter, null);
+				counter.onCreate();
+				//playerIn.addChatMessage(new TextComponentString("You've made " + counter.getAirshipCount() + " airships!"));
+			} else {
+				playerIn.addChatMessage(new TextComponentString("You've made too many airships! The limit per player is " + ValkyrienWarfareMod.maxAirships));
+			}
 		}
 		return true;
 	}

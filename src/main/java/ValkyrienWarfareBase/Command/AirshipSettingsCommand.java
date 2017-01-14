@@ -27,6 +27,7 @@ public static final ArrayList<String> completionOptions = new ArrayList<String>(
 	static {
 		completionOptions.add("transfer");
 		completionOptions.add("allowPlayer");
+		completionOptions.add("claim");
 	}
 
 	@Override
@@ -109,8 +110,17 @@ public static final ArrayList<String> completionOptions = new ArrayList<String>(
 				}
 			}
 		} else {
+			if (wrapper.wrapping.creator == null || wrapper.wrapping.creator.trim().isEmpty())	{
+				if (args.length == 1 && args[0].equals("claim"))	{
+					wrapper.wrapping.creator = p.entityUniqueID.toString();
+					p.addChatMessage(new TextComponentString("You've successfully claimed an airship!"));
+					return;
+				}
+			}
 			p.addChatMessage(new TextComponentString("You need to be the owner of an airship to change airship settings!"));
 		}
+		
+		sender.addChatMessage(new TextComponentString(TextFormatting.RED + "Usage: " + getCommandUsage(sender)));
 	}
 	
 	@Override

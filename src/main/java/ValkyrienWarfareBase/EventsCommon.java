@@ -391,7 +391,7 @@ public class EventsCommon {
 			PhysicsWrapperEntity physObj = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(event.getWorld(), event.getPos());
 			if (physObj != null)	{
 				if (!(physObj.wrapping.creator.equals(event.getEntityPlayer().entityUniqueID.toString()) || physObj.wrapping.allowedUsers.contains(event.getEntityPlayer().entityUniqueID.toString())))	{
-					event.getEntityPlayer().addChatMessage(new TextComponentString("You need to be added to the airship to do that!"));
+					event.getEntityPlayer().addChatMessage(new TextComponentString("You need to be added to the airship to do that!" + (physObj.wrapping.creator == null || physObj.wrapping.creator.trim().isEmpty() ? " Try using \"/airshipSettings claim\"!" : "")));
 					event.setCanceled(true);
 					return;
 				}
@@ -405,7 +405,7 @@ public class EventsCommon {
 			PhysicsWrapperEntity physObj = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(event.getWorld(), event.getPos());
 			if (physObj != null)	{
 				if (!(physObj.wrapping.creator.equals(event.getPlayer().entityUniqueID.toString()) || physObj.wrapping.allowedUsers.contains(event.getPlayer().entityUniqueID.toString())))	{
-					event.getPlayer().addChatMessage(new TextComponentString("You need to be added to the airship to do that!"));
+					event.getPlayer().addChatMessage(new TextComponentString("You need to be added to the airship to do that!" + (physObj.wrapping.creator == null || physObj.wrapping.creator.trim().isEmpty() ? " Try using \"/airshipSettings claim\"!" : "")));
 					event.setCanceled(true);
 					return;
 				}

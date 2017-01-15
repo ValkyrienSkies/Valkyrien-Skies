@@ -885,8 +885,22 @@ public class PhysicsObject {
 		if (!ValkyrienWarfareMod.canChangeAirshipCounter(true, newOwner)) {
 			return EnumChangeOwnerResult.ERROR_NEWOWNER_NOT_ENOUGH;
 		}
+		
+		if (newOwner.entityUniqueID.toString().equals(creator))	{
+			return EnumChangeOwnerResult.ALREADY_CLAIMED;
+		}
 
-		EntityPlayer player = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(UUID.fromString(creator));
+		EntityPlayer player = null;
+		try {
+			player = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(UUID.fromString(creator));
+		} catch (NullPointerException e)	{
+			newOwner.addChatMessage(new TextComponentString("That airship doesn't have an owner, you get to have it :D"));
+			newOwner.getCapability(ValkyrienWarfareMod.airshipCounter, null).onCreate();
+			allowedUsers.clear();
+			creator = newOwner.entityUniqueID.toString();
+			return EnumChangeOwnerResult.SUCCESS;
+		}
+		
 		if (player != null) {
 			player.getCapability(ValkyrienWarfareMod.airshipCounter, null).onLose();
 		} else {

@@ -79,7 +79,7 @@ public class PhysicsObject {
 	public PhysObjectRenderManager renderer;
 	public PhysicsCalculations physicsProcessor;
 	public ArrayList<BlockPos> blockPositions = new ArrayList<BlockPos>();
-	public AxisAlignedBB collisionBB = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
+	public AxisAlignedBB collisionBB = PhysicsWrapperEntity.ZERO_AABB;
 
 	public ArrayList<PhysicsQueuedForce> queuedPhysForces = new ArrayList<PhysicsQueuedForce>();
 	public ArrayList<BlockPos> explodedPositionsThisTick = new ArrayList<BlockPos>();

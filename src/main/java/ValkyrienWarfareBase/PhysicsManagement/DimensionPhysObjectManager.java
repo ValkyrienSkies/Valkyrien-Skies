@@ -36,6 +36,9 @@ public class DimensionPhysObjectManager {
 	}
 
 	public WorldPhysObjectManager getManagerForWorld(World world) {
+		if(world == null){
+			//I'm not quite sure what to do here
+		}
 		if (cachedManager == null || cachedManager.worldObj != world) {
 			cachedManager = managerPerWorld.get(world);
 		}

@@ -1,11 +1,14 @@
 package ValkyrienWarfareControl.Block;
 
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Set;
+
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareControl.TileEntity.PilotsChairTileEntity;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockPistonBase;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -16,6 +19,8 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.play.server.SPacketPlayerPosLook;
+import net.minecraft.network.play.server.SPacketPlayerPosLook.EnumFlags;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
@@ -56,7 +61,7 @@ public class BlockShipPilotsChair extends Block implements ITileEntityProvider {
 					playerIn.posX = playerPos.X;
 					playerIn.posY = playerPos.Y;
 					playerIn.posZ = playerPos.Z;
-					
+
 					return true;
 				}
 			}
@@ -64,6 +69,14 @@ public class BlockShipPilotsChair extends Block implements ITileEntityProvider {
 
 		return false;
 	}
+	
+	public static double getChairYaw(IBlockState state, BlockPos pos){
+		EnumFacing enumFace = state.getValue(BlockShipPilotsChair.FACING);
+
+		double chairYaw = -enumFace.getHorizontalAngle() - 90;
+		
+		return chairYaw;
+	} 
 	
 	private Vector getPlayerMountOffset(IBlockState state, BlockPos pos){
 		EnumFacing facing = (EnumFacing)state.getValue(FACING);

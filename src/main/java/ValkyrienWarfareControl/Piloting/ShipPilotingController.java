@@ -38,8 +38,6 @@ public class ShipPilotingController {
 	private boolean hasChair = false;
 	private BlockPos chairPosition = BlockPos.ORIGIN;
 	
-	public static Vector north = new Vector(1, 0, 0), south = new Vector(-1, 0, 0), east = new Vector(0, 0, 1), west = new Vector(0, 0, -1);
-	
 	public ShipPilotingController(PhysicsObject toControl){
 		controlledShip = toControl;
 	}
@@ -59,12 +57,17 @@ public class ShipPilotingController {
 		//These vectors can be re-arranged depending on the direction the chair was placed
 		
 		IBlockState state = controlledShip.worldObj.getBlockState(chairPosition);
+		double[] pilotRotationMatrix = getRotationMatrixFromBlockState(state, chairPosition);
 		
-		Vector playerDirection = getVectorFromBlockState(state);
+		Vector playerDirection = new Vector(1,0,0);
 		
 		Vector rightDirection = new Vector(0,0,1);
 		
 		Vector leftDirection = new Vector(0,0,-1);
+		
+		RotationMatrices.applyTransform(pilotRotationMatrix, playerDirection);
+		RotationMatrices.applyTransform(pilotRotationMatrix, rightDirection);
+		RotationMatrices.applyTransform(pilotRotationMatrix, leftDirection);
 		
 		Vector upDirection = new Vector(0,1,0);
 		
@@ -241,22 +244,13 @@ public class ShipPilotingController {
 		return null;
 	}
 	
-	public static Vector getVectorFromBlockState(IBlockState state)	{
-		switch (((EnumFacing) state.getValue(BlockShipPilotsChair.FACING)))	{
-		case EAST:
-			return east;
-		case NORTH:
-			return north;
-		case SOUTH:
-			return south;
-		case WEST:
-			return west;
-		case DOWN:
-		case UP:
-		default:
-			ValkyrienWarfareMod.VWLogger.log(java.util.logging.Level.WARNING, "Something's wrong with chair roation!");
-			break;
+	public static double[] getRotationMatrixFromBlockState(IBlockState state, BlockPos chairPosition)	{
+		double playerChairYaw = 0;
+		if(state.getBlock() instanceof BlockShipPilotsChair){
+			playerChairYaw = BlockShipPilotsChair.getChairYaw(state, chairPosition);
 		}
-		return north;
+		double[] pilotRotationMatrix = RotationMatrices.getRotationMatrix(0.0D, 1.0D, 0.0D, Math.toRadians(playerChairYaw));
+		
+		return pilotRotationMatrix;
 	}
 }

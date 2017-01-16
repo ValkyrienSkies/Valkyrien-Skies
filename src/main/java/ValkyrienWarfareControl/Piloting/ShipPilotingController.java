@@ -2,6 +2,7 @@ package ValkyrienWarfareControl.Piloting;
 
 import java.util.UUID;
 
+
 import ValkyrienWarfareBase.NBTUtils;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
@@ -10,10 +11,13 @@ import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
 import ValkyrienWarfareControl.ValkyrienWarfareControlMod;
+import ValkyrienWarfareControl.Block.BlockShipPilotsChair;
+import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -34,6 +38,8 @@ public class ShipPilotingController {
 	private boolean hasChair = false;
 	private BlockPos chairPosition = BlockPos.ORIGIN;
 	
+	public static Vector north = new Vector(1, 0, 0), south = new Vector(-1, 0, 0), east = new Vector(0, 0, 1), west = new Vector(0, 0, -1);
+	
 	public ShipPilotingController(PhysicsObject toControl){
 		controlledShip = toControl;
 	}
@@ -51,9 +57,10 @@ public class ShipPilotingController {
 	private void handlePilotControlMessage(PilotControlsMessage message, EntityPlayerMP whoSentIt){
 		//Set to whatever the player was pointing at in Ship space
 		//These vectors can be re-arranged depending on the direction the chair was placed
-		Vector playerDirection = new Vector(1,0,0);
 		
+		IBlockState state = controlledShip.worldObj.getBlockState(chairPosition);
 		
+		Vector playerDirection = getVectorFromBlockState(state);
 		
 		Vector rightDirection = new Vector(0,0,1);
 		
@@ -232,5 +239,24 @@ public class ShipPilotingController {
 			}
 		}
 		return null;
+	}
+	
+	public static Vector getVectorFromBlockState(IBlockState state)	{
+		switch (((EnumFacing) state.getValue(BlockShipPilotsChair.FACING)))	{
+		case EAST:
+			return east;
+		case NORTH:
+			return north;
+		case SOUTH:
+			return south;
+		case WEST:
+			return west;
+		case DOWN:
+		case UP:
+		default:
+			ValkyrienWarfareMod.VWLogger.log(java.util.logging.Level.WARNING, "Something's wrong with chair roation!");
+			break;
+		}
+		return north;
 	}
 }

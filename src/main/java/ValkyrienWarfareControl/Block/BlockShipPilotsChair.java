@@ -25,7 +25,7 @@ import net.minecraft.world.World;
 
 public class BlockShipPilotsChair extends Block implements ITileEntityProvider {
 
-	public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
+	public static final PropertyDirection FACING = PropertyDirection.create("facing");
 	
 	public BlockShipPilotsChair(Material materialIn) {
 		super(materialIn);

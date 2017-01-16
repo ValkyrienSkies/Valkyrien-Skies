@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
@@ -93,11 +94,15 @@ public class EventsCommon {
 			}
 
 			Double[] pos = lastPositions.get(p);
+			try {
 			if (pos[0] != p.posX || pos[2] != p.posZ) { // Player has moved
 				if (Math.abs(p.posX) > 27000000 || Math.abs(p.posZ) > 27000000) { // Player is outside of world border, tp them back
 					p.attemptTeleport(pos[0], pos[1], pos[2]);
 					p.addChatMessage(new TextComponentString("You can't go beyond 27000000 blocks because airships are stored there!"));
 				}
+			}
+			} catch (NullPointerException e)	{
+				ValkyrienWarfareMod.VWLogger.log(Level.WARNING, "Nullpointer EventsCommon.java:onPlayerTickEvent");
 			}
 
 			pos[0] = p.posX;

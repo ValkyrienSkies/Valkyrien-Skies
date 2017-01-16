@@ -34,7 +34,7 @@ public class WorldPhysicsCollider {
 	// Ensures this always updates the first tick after creation
 	private double ticksSinceCacheUpdate = 420;
 
-	public double collisionCacheTickUpdateFrequency = 2D;
+	public double collisionCacheTickUpdateFrequency = 1D;
 	private static final double expansion = 2D;
 
 	public static double axisTolerance = .3D;

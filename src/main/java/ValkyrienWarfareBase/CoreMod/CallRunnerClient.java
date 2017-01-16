@@ -234,7 +234,9 @@ public class CallRunnerClient extends CallRunner {
 		d1 = entity.prevPosY + (entity.posY - entity.prevPosY) * (double) partialTicks + (double) f;
 		d2 = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * (double) partialTicks;
 		renderer.cloudFog = renderer.mc.renderGlobal.hasCloudFog(d0, d1, d2, partialTicks);
-		// renderer.orientCamera(partialTicks);
+		if(!Minecraft.getMinecraft().theWorld.isRemote){
+			renderer.orientCamera(partialTicks);
+		}
 	}
 
 	public static void onMarkBlocksForUpdate(ViewFrustum frustum, int p_187474_1_, int p_187474_2_, int p_187474_3_, int p_187474_4_, int p_187474_5_, int p_187474_6_, boolean requiresImmediateUpdate) {

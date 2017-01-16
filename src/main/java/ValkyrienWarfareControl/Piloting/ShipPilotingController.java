@@ -67,6 +67,9 @@ public class ShipPilotingController {
 		
 		Vector idealLinearVelocity = new Vector();
 		
+		Vector shipUp = new Vector(0,1,0);
+		Vector shipUpPos = new Vector(0,1,0);
+		
 		if(message.airshipForward){
 			idealLinearVelocity.add(playerDirection);
 		}
@@ -75,6 +78,8 @@ public class ShipPilotingController {
 		}
 		
 		RotationMatrices.applyTransform(controlledShip.coordTransform.lToWRotation, idealLinearVelocity);
+		
+		RotationMatrices.applyTransform(controlledShip.coordTransform.lToWRotation, shipUp);
 		
 		if(message.airshipUp){
 			idealLinearVelocity.add(upDirection);
@@ -92,18 +97,29 @@ public class ShipPilotingController {
 			idealAngularDirection.add(leftDirection);
 		}
 		
+		
+		Vector shipUpOffset = shipUp.getSubtraction(shipUpPos);
+		
+		
+		
 		double mass = controlledShip.physicsProcessor.mass;
 		
 		idealAngularDirection.multiply(mass/2.5D);
 		idealLinearVelocity.multiply(mass/5D);
+		shipUpOffset.multiply(mass/2.5D);
 		
 		if(message.airshipSprinting){
 			idealLinearVelocity.multiply(2D);
-			System.out.println("test");
 		}
 		
+		idealLinearVelocity.subtract(idealAngularDirection);
+		idealLinearVelocity.subtract(shipUpOffset);
+		
 		//TEMPORARY CODE!!!
+		
 		controlledShip.physicsProcessor.addForceAtPoint(playerDirection, idealAngularDirection);
+		
+		controlledShip.physicsProcessor.addForceAtPoint(shipUpPos, shipUpOffset);
 		
 		controlledShip.physicsProcessor.addForceAtPoint(new Vector(), idealLinearVelocity);
 		

@@ -53,6 +53,8 @@ public class ShipPilotingController {
 		//These vectors can be re-arranged depending on the direction the chair was placed
 		Vector playerDirection = new Vector(1,0,0);
 		
+		
+		
 		Vector rightDirection = new Vector(0,0,1);
 		
 		Vector leftDirection = new Vector(0,0,-1);
@@ -71,13 +73,17 @@ public class ShipPilotingController {
 		if(message.airshipBackward){
 			idealLinearVelocity.subtract(playerDirection);
 		}
+		
+		RotationMatrices.applyTransform(controlledShip.coordTransform.lToWRotation, idealLinearVelocity);
+		
 		if(message.airshipUp){
 			idealLinearVelocity.add(upDirection);
 		}
 		if(message.airshipDown){
 			idealLinearVelocity.add(downDirection);
 		}
-		RotationMatrices.applyTransform(controlledShip.coordTransform.lToWRotation, idealLinearVelocity);
+		
+		
 		
 		if(message.airshipRight){
 			idealAngularDirection.add(rightDirection);
@@ -85,6 +91,24 @@ public class ShipPilotingController {
 		if(message.airshipLeft){
 			idealAngularDirection.add(leftDirection);
 		}
+		
+		double mass = controlledShip.physicsProcessor.mass;
+		
+		idealAngularDirection.multiply(mass/2.5D);
+		idealLinearVelocity.multiply(mass/5D);
+		
+		if(message.airshipSprinting){
+			idealLinearVelocity.multiply(2D);
+			System.out.println("test");
+		}
+		
+		//TEMPORARY CODE!!!
+		controlledShip.physicsProcessor.addForceAtPoint(playerDirection, idealAngularDirection);
+		
+		controlledShip.physicsProcessor.addForceAtPoint(new Vector(), idealLinearVelocity);
+		
+		controlledShip.physicsProcessor.convertTorqueToVelocity();
+		
 //		RotationMatrices.applyTransform(controlledShip.coordTransform.lToWRotation, idealAngularDirection);
 //		System.out.println(idealAngularDirection);
 	}
@@ -129,6 +153,11 @@ public class ShipPilotingController {
 	public void setPilotEntity(EntityPlayerMP toSet, boolean ignorePilotConflicts){
 		if(shipPilot != null){
 			sendPlayerPilotingPacket(shipPilot, null);
+			//TEMPORARY CODE!!!
+			controlledShip.physicsProcessor.actAsArchimedes = false;
+		}else{
+			//TEMPORARY CODE!!!
+			controlledShip.physicsProcessor.actAsArchimedes = true;
 		}
 		
 		if(toSet != null){

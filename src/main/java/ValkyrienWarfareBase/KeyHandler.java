@@ -50,12 +50,17 @@ public class KeyHandler {
 				// }else{
 				Entity player = Minecraft.getMinecraft().thePlayer;
 
-				player.setPosition(player.posX, player.posY, player.posZ);
+//				player.setPosition(player.posX, player.posY, player.posZ);
 
 				ClientPilotingManager.sendPilotKeysToServer();
+				
 				// }
 			}
 		}
+	}
+	
+	public static boolean getIsPlayerSprinting(){
+		return Minecraft.getMinecraft().thePlayer.isSprinting();
 	}
 
 }

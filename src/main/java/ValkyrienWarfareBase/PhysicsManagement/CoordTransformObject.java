@@ -1,10 +1,13 @@
 package ValkyrienWarfareBase.PhysicsManagement;
 
+import java.util.Map.Entry;
+
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Collision.Polygon;
 import ValkyrienWarfareBase.PhysicsManagement.Network.PhysWrapperPositionMessage;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -86,8 +89,15 @@ public class CoordTransformObject {
 		updateMatricesOnly();
 		updateParentAABB();
 		updateParentNormals();
+		updatePassengerPositions();
 	}
 
+	public void updatePassengerPositions(){
+		for(Entity entity:parent.wrapper.riddenByEntities){
+			parent.wrapper.updatePassenger(entity);
+		}
+	}
+	
 	public void sendPositionToPlayers() {
 		PhysWrapperPositionMessage posMessage = new PhysWrapperPositionMessage(parent.wrapper);
 

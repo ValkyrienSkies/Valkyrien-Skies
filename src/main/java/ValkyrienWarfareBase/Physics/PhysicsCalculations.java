@@ -55,6 +55,8 @@ public class PhysicsCalculations {
 
 	public double[] MoITensor, invMoITensor;
 	public double[] framedMOI, invFramedMOI;
+	
+	public boolean actAsArchimedes = false;
 
 	public PhysicsCalculations(PhysicsObject toProcess) {
 		parent = toProcess;
@@ -182,7 +184,11 @@ public class PhysicsCalculations {
 			updatePhysSpeedAndIters(newPhysSpeed, iters);
 			updateCenterOfMass();
 			calculateFramedMOITensor();
-			calculateForces();
+			if(!actAsArchimedes){
+				calculateForces();
+			}else{
+				calculateForcesArchimedes();
+			}
 		}
 	}
 
@@ -296,6 +302,12 @@ public class PhysicsCalculations {
 		}
 
 		convertTorqueToVelocity();
+	}
+	
+	public void calculateForcesArchimedes() {
+		double modifiedDrag = Math.pow(drag, physTickSpeed*5 / .05D);
+		linearMomentum.multiply(modifiedDrag);
+		angularVelocity.multiply(modifiedDrag);
 	}
 
 	public void addQueuedForces() {

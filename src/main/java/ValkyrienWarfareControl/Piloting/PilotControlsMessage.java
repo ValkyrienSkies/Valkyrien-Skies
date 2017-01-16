@@ -16,6 +16,7 @@ public class PilotControlsMessage implements IMessage {
 	public boolean airshipBackward;
 	public boolean airshipLeft;
 	public boolean airshipRight;
+	public boolean airshipSprinting;
 	public UUID shipFor;
 
 	public PilotControlsMessage() {
@@ -30,6 +31,7 @@ public class PilotControlsMessage implements IMessage {
 		airshipBackward = packetBuf.readBoolean();
 		airshipLeft = packetBuf.readBoolean();
 		airshipRight = packetBuf.readBoolean();
+		airshipSprinting = packetBuf.readBoolean();
 		shipFor = packetBuf.readUuid();
 	}
 
@@ -42,6 +44,7 @@ public class PilotControlsMessage implements IMessage {
 		packetBuf.writeBoolean(airshipBackward);
 		packetBuf.writeBoolean(airshipLeft);
 		packetBuf.writeBoolean(airshipRight);
+		packetBuf.writeBoolean(airshipSprinting);
 		packetBuf.writeUuid(shipFor);
 	}
 
@@ -52,7 +55,9 @@ public class PilotControlsMessage implements IMessage {
 		airshipBackward = KeyHandler.airshipBackward.isKeyDown();
 		airshipLeft = KeyHandler.airshipLeft.isKeyDown();
 		airshipRight = KeyHandler.airshipRight.isKeyDown();
+		airshipSprinting = KeyHandler.getIsPlayerSprinting();
 		shipFor = shipPiloting.getUniqueID();
+		
 	}
 
 }

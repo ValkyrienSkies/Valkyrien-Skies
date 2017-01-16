@@ -80,6 +80,9 @@ public class DimensionPhysObjectManager {
 	}
 
 	public PhysicsWrapperEntity getObjectManagingPos(World world, BlockPos pos) {
+		if(world == null || pos == null){
+			return null;
+		}
 		Chunk chunk = world.getChunkFromBlockCoords(pos);
 		return getObjectManagingChunk(chunk);
 	}

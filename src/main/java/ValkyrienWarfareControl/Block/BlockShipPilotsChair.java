@@ -3,6 +3,7 @@ package ValkyrienWarfareControl.Block;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.Vector;
@@ -69,7 +70,7 @@ public class BlockShipPilotsChair extends Block implements ITileEntityProvider {
 
 		return false;
 	}
-	
+
 	public static double getChairYaw(IBlockState state, BlockPos pos){
 		EnumFacing enumFace = state.getValue(BlockShipPilotsChair.FACING);
 
@@ -77,11 +78,10 @@ public class BlockShipPilotsChair extends Block implements ITileEntityProvider {
 		
 		return chairYaw;
 	} 
-	
+
 	private Vector getPlayerMountOffset(IBlockState state, BlockPos pos){
 		EnumFacing facing = (EnumFacing)state.getValue(FACING);
-		switch (facing)
-	    {
+		switch (facing){
 	      case NORTH:
 	    	  return new Vector(pos.getX() + .5D, pos.getY(), pos.getZ() + .6D);
 	      case SOUTH:
@@ -106,7 +106,11 @@ public class BlockShipPilotsChair extends Block implements ITileEntityProvider {
 		if (placer.isSneaking()) {
 			facing = facing.getOpposite();
 		}
-		worldIn.setBlockState(pos, state.withProperty(FACING, facing), 2);
+		try{
+			worldIn.setBlockState(pos, state.withProperty(FACING, facing), 2);
+		}catch(Exception e){
+			ValkyrienWarfareMod.VWLogger.log(Level.SEVERE, "Chair didn't place right");
+		}
 	}
 
 	@Override

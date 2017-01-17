@@ -62,7 +62,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
 
 public class EventsCommon {
 
-	public HashMap<EntityPlayerMP, Double[]> lastPositions = new HashMap<EntityPlayerMP, Double[]>();
+	public static HashMap<EntityPlayerMP, Double[]> lastPositions = new HashMap<EntityPlayerMP, Double[]>();
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onEntityInteractEvent(EntityInteract event) {
@@ -87,10 +87,15 @@ public class EventsCommon {
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onPlayerTickEvent(PlayerTickEvent event) {
-		if (!event.player.worldObj.isRemote) {
+		if (!event.player.worldObj.isRemote && event.player != null) {
 			EntityPlayerMP p = (EntityPlayerMP) event.player;
-			if (!(p.connection instanceof CustomNetHandlerPlayServer)) {
-				p.connection = new CustomNetHandlerPlayServer(p.connection);
+			
+			try{
+				if (!(p.connection instanceof CustomNetHandlerPlayServer)) {
+					p.connection = new CustomNetHandlerPlayServer(p.connection);
+				}
+			}catch(Exception e){
+				e.printStackTrace();
 			}
 
 			Double[] pos = lastPositions.get(p);

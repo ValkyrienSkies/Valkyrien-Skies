@@ -240,6 +240,75 @@ public class WorldPhysicsCollider {
 		ExtendedBlockStorage extendedblockstorage;
 		IBlockState state, localState;
 
+		
+		int chunkMinX = min.getX() >> 4;
+		int chunkMaxX = (max.getX() >> 4) + 1;		
+		int storageMinY = min.getY() >> 4;
+		int storageMaxY = (max.getY() >> 4) + 1;
+		int chunkMinZ = min.getZ() >> 4;
+		int chunkMaxZ = (max.getZ() >> 4) + 1;
+		
+		int storageY;
+		
+	
+		for(chunkX = chunkMinX; chunkX <= chunkMaxX; chunkX++){
+			for(chunkZ = chunkMinZ; chunkZ <= chunkMaxZ; chunkZ++){
+				
+				int arrayChunkX = chunkX - cache.chunkX;
+				int arrayChunkZ = chunkZ - cache.chunkZ;
+				
+				if (!(arrayChunkX < 0 || arrayChunkZ < 0 || arrayChunkX > cache.chunkArray.length - 1 || arrayChunkZ > cache.chunkArray[0].length - 1)) {
+					chunk = cache.chunkArray[arrayChunkX][arrayChunkZ];
+					for(storageY = storageMinY; storageY <= storageMaxY; storageY++){
+						extendedblockstorage = chunk.storageArrays[storageY];
+						if(extendedblockstorage != null){
+							int minStorageX = chunkX << 4;
+							int minStorageY = storageY << 4;
+							int minStorageZ = chunkZ << 4;
+							
+							for(x = minStorageX; x < minStorageX + 16; x++){
+								for(y = minStorageY; y < minStorageY + 16; y++){
+									for(z = minStorageZ; z < minStorageZ + 16; z++){
+										
+										state = extendedblockstorage.get(x & 15, y & 15, z & 15);
+										
+										if (state.getMaterial().isSolid()) {
+											inLocal.X = x + .5D;
+											inLocal.Y = y + .5D;
+											inLocal.Z = z + .5D;
+											parent.coordTransform.fromGlobalToLocal(inLocal);
+
+											maxX = (int) Math.floor(inLocal.X + rangeCheck);
+											maxY = (int) Math.floor(inLocal.Y + rangeCheck);
+											maxZ = (int) Math.floor(inLocal.Z + rangeCheck);
+
+											for (localX = MathHelper.floor_double(inLocal.X - rangeCheck); localX < maxX; localX++) {
+												for (localZ = MathHelper.floor_double(inLocal.Z - rangeCheck); localZ < maxZ; localZ++) {
+													for (localY = MathHelper.floor_double(inLocal.Y - rangeCheck); localY < maxY; localY++) {
+														if (parent.ownsChunk(localX >> 4, localZ >> 4)) {
+															chunkIn = parent.VKChunkCache.getChunkAt(localX >> 4, localZ >> 4);
+															localState = chunkIn.getBlockState(localX, localY, localZ);
+															if (localState.getMaterial().isSolid()) {
+																cachedPotentialHits.add(SpatialDetector.getHashWithRespectTo(x, y, z, centerPotentialHit));
+																localX = localY = localZ = Integer.MAX_VALUE - 420;
+															}
+														}
+													}
+												}
+											}
+										}
+										
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+	
+		/**
 		for (x = min.getX(); x <= max.getX(); x++) {
 			for (z = min.getZ(); z < max.getZ(); z++) {
 				chunkX = (x >> 4) - cache.chunkX;
@@ -250,7 +319,7 @@ public class WorldPhysicsCollider {
 						extendedblockstorage = chunk.storageArrays[y >> 4];
 						if (extendedblockstorage != null) {
 							state = extendedblockstorage.get(x & 15, y & 15, z & 15);
-							;
+							
 							if (state.getMaterial().isSolid()) {
 								inLocal.X = x + .5D;
 								inLocal.Y = y + .5D;
@@ -281,6 +350,8 @@ public class WorldPhysicsCollider {
 				}
 			}
 		}
+		**/
+
 		cachedPotentialHits.shuffle(rand);
 	}
 

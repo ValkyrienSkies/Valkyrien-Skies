@@ -14,14 +14,12 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 public class CommonProxy {
 
-	EventsCommon eventsCommon = new EventsCommon();
-
 	public void preInit(FMLPreInitializationEvent e) {
 
 	}
 
 	public void init(FMLInitializationEvent e) {
-		MinecraftForge.EVENT_BUS.register(eventsCommon);
+		MinecraftForge.EVENT_BUS.register(new EventsCommon());
 		ValkyrienWarfareMod.chunkManager = new DimensionPhysicsChunkManager();
 		ValkyrienWarfareMod.physicsManager = new DimensionPhysObjectManager();
 	}

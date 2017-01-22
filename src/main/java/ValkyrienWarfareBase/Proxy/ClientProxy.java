@@ -21,7 +21,6 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 public class ClientProxy extends CommonProxy {
 
-	EventsClient eventsClient = new EventsClient();
 	KeyHandler keyEvents = new KeyHandler();
 	public static ICamera lastCamera;
 
@@ -35,7 +34,7 @@ public class ClientProxy extends CommonProxy {
 	@Override
 	public void init(FMLInitializationEvent e) {
 		super.init(e);
-		MinecraftForge.EVENT_BUS.register(eventsClient);
+		MinecraftForge.EVENT_BUS.register(new EventsClient());
 		MinecraftForge.EVENT_BUS.register(keyEvents);
 		registerBlockItem(ValkyrienWarfareMod.physicsInfuser);
 		registerBlockItem(ValkyrienWarfareMod.physicsInfuserCreative);

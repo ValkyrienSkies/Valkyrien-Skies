@@ -9,8 +9,6 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 public class ServerProxy extends CommonProxy {
-	
-	EventsServer eventsServer = new EventsServer();
 
 	@Override
 	public void preInit(FMLPreInitializationEvent e) {
@@ -20,7 +18,7 @@ public class ServerProxy extends CommonProxy {
 	@Override
 	public void init(FMLInitializationEvent e) {
 		super.init(e);
-		MinecraftForge.EVENT_BUS.register(eventsServer);
+		MinecraftForge.EVENT_BUS.register(new EventsServer());
 	}
 
 	@Override

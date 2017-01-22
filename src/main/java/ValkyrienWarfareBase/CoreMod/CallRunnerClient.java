@@ -429,15 +429,18 @@ public class CallRunnerClient extends CallRunner {
 		GL11.glPushMatrix();
 		for (PhysicsWrapperEntity wrapper : ValkyrienWarfareMod.physicsManager.getManagerForWorld(renderGlobal.theWorld).physicsEntities) {
 			// Vector centerOfRotation = wrapper.wrapping.centerCoord;
-			TileEntityRendererDispatcher.instance.staticPlayerX = wrapper.wrapping.renderer.offsetPos.getX();
-			TileEntityRendererDispatcher.instance.staticPlayerY = wrapper.wrapping.renderer.offsetPos.getY();
-			TileEntityRendererDispatcher.instance.staticPlayerZ = wrapper.wrapping.renderer.offsetPos.getZ();
-			GL11.glPushMatrix();
-			wrapper.wrapping.renderer.setupTranslation(partialTicks);
-			wrapper.wrapping.renderer.renderTileEntities(partialTicks);
-			wrapper.wrapping.renderer.renderEntities(partialTicks);
-			GL11.glPopMatrix();
+			if(wrapper.wrapping.renderer.offsetPos != null){
+				TileEntityRendererDispatcher.instance.staticPlayerX = wrapper.wrapping.renderer.offsetPos.getX();
+				TileEntityRendererDispatcher.instance.staticPlayerY = wrapper.wrapping.renderer.offsetPos.getY();
+				TileEntityRendererDispatcher.instance.staticPlayerZ = wrapper.wrapping.renderer.offsetPos.getZ();
+				GL11.glPushMatrix();
+				wrapper.wrapping.renderer.setupTranslation(partialTicks);
+				wrapper.wrapping.renderer.renderTileEntities(partialTicks);
+				wrapper.wrapping.renderer.renderEntities(partialTicks);
+				GL11.glPopMatrix();
+			}
 		}
+		
 		GL11.glPopMatrix();
 		TileEntityRendererDispatcher.instance.staticPlayerX = playerX;
 		TileEntityRendererDispatcher.instance.staticPlayerY = playerY;

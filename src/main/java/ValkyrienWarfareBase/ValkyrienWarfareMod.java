@@ -73,7 +73,7 @@ public class ValkyrienWarfareMod {
 	public static boolean doShipCollision = false;
 
 	public static Vector gravity = new Vector(0, -9.8D, 0);
-	public static int physIter = 10;
+	public static int physIter = 8;
 	public static double physSpeed = .05D;
 
 	public static Block physicsInfuser;
@@ -224,7 +224,7 @@ public class ValkyrienWarfareMod {
 		PhysicsSettings.doAirshipMovement = tag.getBoolean("doAirshipMovement", true);
 		ValkyrienWarfareMod.doSplitting = tag.getBoolean("doSplitting", false);
 		ValkyrienWarfareMod.maxShipSize = tag.getInteger("maxShipSize", 15000);
-		ValkyrienWarfareMod.physIter = tag.getInteger("physicsIterations", 10);
+		ValkyrienWarfareMod.physIter = tag.getInteger("physicsIterations", 8);
 		ValkyrienWarfareMod.physSpeed = tag.getDouble("physicsSpeed", 0.05);
 		ValkyrienWarfareMod.gravity = new Vector(tag.getDouble("gravityVecX", 0.0), tag.getDouble("gravityVecY", -9.8), tag.getDouble("gravityVecZ", 0.0));
 	}

@@ -61,8 +61,8 @@ public class PhysSettingsCommand extends CommandBase {
 				return;
 			} else if (args.length == 2) {
 				boolean value = Boolean.parseBoolean(args[1]);
-				sender.addChatMessage(new TextComponentString("Set physics splitting to " + value));
 				ValkyrienWarfareMod.doSplitting = value;
+				sender.addChatMessage(new TextComponentString("Set physics splitting to " + value));
 				return;
 			}
 		} else if (key.equals("maxShipSize")) {
@@ -71,8 +71,8 @@ public class PhysSettingsCommand extends CommandBase {
 				return;
 			} else if (args.length == 2) {
 				int value = Integer.parseInt(args[1]);
-				sender.addChatMessage(new TextComponentString("Set maximum ship size to " + value));
 				ValkyrienWarfareMod.maxShipSize = value;
+				sender.addChatMessage(new TextComponentString("Set maximum ship size to " + value));
 				return;
 			}
 		} else if (key.equals("gravityVector")) {
@@ -107,8 +107,8 @@ public class PhysSettingsCommand extends CommandBase {
 					sender.addChatMessage(new TextComponentString("Please enter a value between 0 and 1000"));
 					return;
 				}
-				sender.addChatMessage(new TextComponentString("Set physicsIterations to " + value));
 				ValkyrienWarfareMod.physIter = value;
+				sender.addChatMessage(new TextComponentString("Set physicsIterations to " + value));
 				return;
 			}
 		} else if (key.equals("physicsSpeed")) {
@@ -121,8 +121,8 @@ public class PhysSettingsCommand extends CommandBase {
 					sender.addChatMessage(new TextComponentString("Please enter a value between 0 and 1000"));
 					return;
 				}
-				sender.addChatMessage(new TextComponentString("Set physicsSpeed to " + value));
 				ValkyrienWarfareMod.physSpeed = value;
+				sender.addChatMessage(new TextComponentString("Set physicsSpeed to " + value));
 				return;
 			}
 		} else if (key.equals("doGravity")) {
@@ -131,8 +131,8 @@ public class PhysSettingsCommand extends CommandBase {
 				return;
 			} else if (args.length == 2) {
 				boolean value = Boolean.parseBoolean(args[1]);
-				sender.addChatMessage(new TextComponentString("Set doGravity to " + (PhysicsSettings.doGravity ? "enabled" : "disabled")));
 				PhysicsSettings.doGravity = value;
+				sender.addChatMessage(new TextComponentString("Set doGravity to " + (PhysicsSettings.doGravity ? "enabled" : "disabled")));
 				return;
 			}
 		} else if (key.equals("doPhysicsBlocks")) {
@@ -141,8 +141,8 @@ public class PhysSettingsCommand extends CommandBase {
 				return;
 			} else if (args.length == 2) {
 				boolean value = Boolean.parseBoolean(args[1]);
-				sender.addChatMessage(new TextComponentString("Set doPhysicsBlocks to " + (PhysicsSettings.doPhysicsBlocks ? "enabled" : "disabled")));
 				PhysicsSettings.doPhysicsBlocks = value;
+				sender.addChatMessage(new TextComponentString("Set doPhysicsBlocks to " + (PhysicsSettings.doPhysicsBlocks ? "enabled" : "disabled")));
 				return;
 			}
 		} else if (key.equals("doBalloons")) {
@@ -151,8 +151,8 @@ public class PhysSettingsCommand extends CommandBase {
 				return;
 			} else if (args.length == 2) {
 				boolean value = Boolean.parseBoolean(args[1]);
-				sender.addChatMessage(new TextComponentString("Set doBalloons to " + (PhysicsSettings.doBalloons ? "enabled" : "disabled")));
 				PhysicsSettings.doBalloons = value;
+				sender.addChatMessage(new TextComponentString("Set doBalloons to " + (PhysicsSettings.doBalloons ? "enabled" : "disabled")));
 				return;
 			}
 		} else if (key.equals("doAirshipRotation")) {
@@ -161,8 +161,8 @@ public class PhysSettingsCommand extends CommandBase {
 				return;
 			} else if (args.length == 2) {
 				boolean value = Boolean.parseBoolean(args[1]);
-				sender.addChatMessage(new TextComponentString("Set doAirshipRotation to " + (PhysicsSettings.doAirshipRotation ? "enabled" : "disabled")));
 				PhysicsSettings.doAirshipRotation = value;
+				sender.addChatMessage(new TextComponentString("Set doAirshipRotation to " + (PhysicsSettings.doAirshipRotation ? "enabled" : "disabled")));
 				return;
 			}
 		} else if (key.equals("doAirshipMovement")) {
@@ -171,8 +171,8 @@ public class PhysSettingsCommand extends CommandBase {
 				return;
 			} else if (args.length == 2) {
 				boolean value = Boolean.parseBoolean(args[1]);
-				sender.addChatMessage(new TextComponentString("Set doAirshipMovement to " + (PhysicsSettings.doAirshipMovement ? "enabled" : "disabled")));
 				PhysicsSettings.doAirshipMovement = value;
+				sender.addChatMessage(new TextComponentString("Set doAirshipMovement to " + (PhysicsSettings.doAirshipMovement ? "enabled" : "disabled")));
 				return;
 			}
 		} else if (key.equals("save")) {

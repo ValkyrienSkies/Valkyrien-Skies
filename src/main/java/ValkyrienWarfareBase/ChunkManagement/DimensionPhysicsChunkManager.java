@@ -30,6 +30,9 @@ public class DimensionPhysicsChunkManager {
 	}
 
 	public PhysicsChunkManager getManagerForWorld(World world) {
+		if(world == null){
+			return null;
+		}
 		if (cachedManager == null || cachedManager.worldObj != world) {
 			cachedManager = managerPerWorld.get(world);
 			if (cachedManager == null) {

@@ -53,7 +53,7 @@ public class WorldPhysicsCollider {
 		worldObj = parent.worldObj;
 	}
 
-	// TODO: DO THIS!!!
+	//Runs the collision code
 	public void runPhysCollision() {
 		// Multiply by 20 to convert seconds (physTickSpeed) into ticks (ticksSinceCacheUpdate)
 		ticksSinceCacheUpdate += 20D * calculator.physTickSpeed;
@@ -112,7 +112,7 @@ public class WorldPhysicsCollider {
 
 	}
 
-	// TODO: Code this
+	//Tests two block positions directly against each other, and figures out whether a collision is occuring or not
 	private void handleLikelyCollision(BlockPos inWorldPos, BlockPos inLocalPos, IBlockState inWorldState, IBlockState inLocalState) {
 		// System.out.println("Handling a likely collision");
 		AxisAlignedBB inLocalBB = new AxisAlignedBB(inLocalPos.getX(), inLocalPos.getY(), inLocalPos.getZ(), inLocalPos.getX() + 1, inLocalPos.getY() + 1, inLocalPos.getZ() + 1);
@@ -128,6 +128,7 @@ public class WorldPhysicsCollider {
 		}
 	}
 
+	//Takes the collision data along all axes generated prior, and creates the ideal value that is to be followed
 	private void handleActualCollision(PhysPolygonCollider collider) {
 		// Vector speedAtPoint = calculator.getMomentumAtPoint(collider.collisions[0].firstContactPoint.getSubtraction(new Vector(parent.wrapper.posX,parent.wrapper.posY,parent.wrapper.posZ)));
 		//
@@ -188,6 +189,7 @@ public class WorldPhysicsCollider {
 		processCollisionData(inBody, momentumAtPoint, axis, offsetVector);
 	}
 
+	//Finally, the end of all this spaghetti code! This step takes all of the math generated before, and it directly adds the result to Ship velocities
 	private void processCollisionData(Vector inBody, Vector momentumAtPoint, Vector axis, Vector offsetVector) {
 		Vector firstCross = inBody.cross(axis);
 		RotationMatrices.applyTransform3by3(calculator.invFramedMOI, firstCross);

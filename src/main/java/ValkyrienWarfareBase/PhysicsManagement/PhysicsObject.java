@@ -32,6 +32,12 @@ import ValkyrienWarfareControl.Network.EntityFixMessage;
 import ValkyrienWarfareControl.Piloting.ShipPilotingController;
 import gnu.trove.iterator.TIntIterator;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockFence;
+import net.minecraft.block.BlockFenceGate;
+import net.minecraft.block.BlockLiquid;
+import net.minecraft.block.BlockWall;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -558,11 +564,30 @@ public class PhysicsObject {
 		moveEntities();
 	}
 
+	//TODO: Remove this shitty check, moving entities should work using an approach similar to MetaWorlds; this is treating Cancer with a Band-Aid!
+	public boolean shouldMoveEntity(Entity ent){
+		int i = MathHelper.floor_double(ent.posX);
+        int j = MathHelper.floor_double(ent.posY - 0.20000000298023224D);
+        int k = MathHelper.floor_double(ent.posZ);
+        BlockPos blockpos = new BlockPos(i, j, k);
+        IBlockState block1State = ent.worldObj.getBlockState(blockpos);
+        Block block1 = block1State.getBlock();
+        if (block1.getMaterial(block1State) == Material.AIR||(block1 instanceof BlockLiquid)){
+            Block block = ent.worldObj.getBlockState(blockpos.down()).getBlock();
+            if (block instanceof BlockFence || block instanceof BlockWall || block instanceof BlockFenceGate){
+                block1 = block;
+                blockpos = blockpos.down();
+            }
+        }
+        return block1.equals(Blocks.AIR);
+	}
+	
 	// TODO: Fix the lag here
 	public void moveEntities() {
 		List<Entity> riders = worldObj.getEntitiesWithinAABB(Entity.class, collisionBB);
 		for (Entity ent : riders) {
-			if (!(ent instanceof PhysicsWrapperEntity) && !ValkyrienWarfareMod.physicsManager.isEntityFixed(ent)) {
+			if (!(ent instanceof PhysicsWrapperEntity) && !ValkyrienWarfareMod.physicsManager.isEntityFixed(ent) && shouldMoveEntity(ent)) {
+				
 				float rotYaw = ent.rotationYaw;
 				float rotPitch = ent.rotationPitch;
 				float prevYaw = ent.prevRotationYaw;

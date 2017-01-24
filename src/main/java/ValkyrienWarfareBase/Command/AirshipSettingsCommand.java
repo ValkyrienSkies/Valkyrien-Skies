@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
 import com.google.common.collect.Lists;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
+import ValkyrienWarfareBase.CoreMod.CallRunner;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
@@ -17,6 +18,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 
@@ -53,7 +55,11 @@ public static final ArrayList<String> completionOptions = new ArrayList<String>(
 		}
 
 		EntityPlayer p = (EntityPlayer) sender;
-		BlockPos pos = p.rayTrace(p.isCreative() ? 5.0 : 4.5, 1).getBlockPos();
+		//This method has an @SIDE.CLIENT, and it broke all the commands on servers!
+//		BlockPos pos = p.rayTrace(p.isCreative() ? 5.0 : 4.5, 1).getBlockPos();
+		
+		BlockPos pos = rayTraceBothSides(p,p.isCreative() ? 5.0 : 4.5, 1).getBlockPos();
+		
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(p.getEntityWorld(), pos);
 
 		if (wrapper == null) {
@@ -148,5 +154,12 @@ public static final ArrayList<String> completionOptions = new ArrayList<String>(
 		}
 		
 		return null;
+	}
+
+	public static RayTraceResult rayTraceBothSides(EntityPlayer player, double blockReachDistance, float partialTicks){
+		Vec3d vec3d = new Vec3d(player.posX, player.posY + (double)player.getEyeHeight(), player.posZ);
+		Vec3d vec3d1 = player.getLook(partialTicks);
+		Vec3d vec3d2 = vec3d.addVector(vec3d1.xCoord * blockReachDistance, vec3d1.yCoord * blockReachDistance, vec3d1.zCoord * blockReachDistance);
+		return CallRunner.onRayTraceBlocks(player.worldObj, vec3d, vec3d2, false, false, true);
 	}
 }

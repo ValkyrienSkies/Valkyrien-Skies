@@ -370,10 +370,10 @@ public class PhysicsCalculations {
 			wrapperEnt.roll = (float) Math.toDegrees(radians[2]);
 			coordTrans.updateAllTransforms();
 		} else {
-			// wrapperEnt.isDead=true;
+			 wrapperEnt.isDead=true;
 			wrapperEnt.wrapping.doPhysics = false;
-			linearMomentum = new Vector();
-			angularVelocity = new Vector();
+//			linearMomentum = new Vector();
+//			angularVelocity = new Vector();
 			System.out.println(angularVelocity);
 			System.out.println("Rotational Error?");
 		}

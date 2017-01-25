@@ -4,11 +4,8 @@ import java.lang.reflect.Field;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
-import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
-import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.ItemStack;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.PacketThreadUtil;
@@ -17,15 +14,7 @@ import net.minecraft.network.play.client.CPacketPlayerTryUseItem;
 import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
 import net.minecraft.network.play.client.CPacketUpdateSign;
 import net.minecraft.network.play.client.CPacketUseEntity;
-import net.minecraft.network.play.server.SPacketBlockChange;
-import net.minecraft.network.play.server.SPacketChat;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.WorldServer;
 
 public class CustomNetHandlerPlayServer extends NetHandlerPlayServer {
 

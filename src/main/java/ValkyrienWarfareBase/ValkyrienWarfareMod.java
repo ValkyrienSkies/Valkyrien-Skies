@@ -73,7 +73,7 @@ public class ValkyrienWarfareMod {
 	public static boolean doShipCollision = false;
 
 	public static Vector gravity = new Vector(0, -9.8D, 0);
-	public static int physIter = 8;
+	public static int physIter = 10;
 	public static double physSpeed = .05D;
 
 	public static Block physicsInfuser;

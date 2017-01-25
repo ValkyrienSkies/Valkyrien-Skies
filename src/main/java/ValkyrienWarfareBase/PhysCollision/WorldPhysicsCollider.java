@@ -221,7 +221,14 @@ public class WorldPhysicsCollider {
 
 	private void updatePotentialCollisionCache() {
 		final AxisAlignedBB collisionBB = parent.collisionBB.expand(expansion, expansion, expansion).addCoord(calculator.linearMomentum.X * calculator.invMass, calculator.linearMomentum.Y * calculator.invMass, calculator.linearMomentum.Z * calculator.invMass);
+
 		ticksSinceCacheUpdate = 0D;
+		//This is being used to occasionally offset the collision cache update, in the hopes this will prevent multiple ships from all updating
+		//in the same tick
+		if(Math.random()>.5){
+			ticksSinceCacheUpdate -= .05D;
+		}
+		
 		// cachedPotentialHits = new ArrayList<BlockPos>();
 		cachedPotentialHits = new TIntArrayList();
 		// Ship is outside of world blockSpace, just skip this all together
@@ -232,7 +239,7 @@ public class WorldPhysicsCollider {
 
 		final BlockPos min = new BlockPos(collisionBB.minX, Math.max(collisionBB.minY, 0), collisionBB.minZ);
 		final BlockPos max = new BlockPos(collisionBB.maxX, Math.min(collisionBB.maxY, 255), collisionBB.maxZ);
-		centerPotentialHit = new BlockPos((min.getX() + max.getX()) / 2D, (min.getY() + max.getY()) / 2D, (min.getZ() + max.getZ()) / 2D);
+//		centerPotentialHit = new BlockPos((min.getX() + max.getX()) / 2D, (min.getY() + max.getY()) / 2D, (min.getZ() + max.getZ()) / 2D);
 
 		final ChunkCache cache = parent.surroundingWorldChunksCache;
 		final Vector inLocal = new Vector();
@@ -252,6 +259,7 @@ public class WorldPhysicsCollider {
 		
 		int storageY;
 		
+		int mmX = min.getX(), mmY = min.getY(), mmZ = min.getZ(), mxX = max.getX(), mxY = max.getY(), mxZ = max.getZ();
 	
 		for(chunkX = chunkMinX; chunkX <= chunkMaxX; chunkX++){
 			for(chunkZ = chunkMinZ; chunkZ <= chunkMaxZ; chunkZ++){
@@ -268,25 +276,42 @@ public class WorldPhysicsCollider {
 							int minStorageY = storageY << 4;
 							int minStorageZ = chunkZ << 4;
 							
-							for(x = minStorageX; x < minStorageX + 16; x++){
-								for(y = minStorageY; y < minStorageY + 16; y++){
-									for(z = minStorageZ; z < minStorageZ + 16; z++){
-										
+							int maxStorageX = minStorageX + 16;
+							int maxStorageY = minStorageY + 16;
+							int maxStorageZ = minStorageZ + 16;
+							
+							minStorageX = Math.max(minStorageX, mmX);
+							minStorageY = Math.max(minStorageY, mmY);
+							minStorageZ = Math.max(minStorageZ, mmZ);
+							
+							maxStorageX = Math.min(maxStorageX, mxX);
+							maxStorageY = Math.min(maxStorageY, mxY);
+							maxStorageZ = Math.min(maxStorageZ, mxZ);
+							
+							for(x = minStorageX; x < maxStorageX; x++){
+								for(y = minStorageY; y < maxStorageY; y++){
+									for(z = minStorageZ; z < maxStorageZ; z++){
 										state = extendedblockstorage.get(x & 15, y & 15, z & 15);
 										
 										if (state.getMaterial().isSolid()) {
+											
 											inLocal.X = x + .5D;
 											inLocal.Y = y + .5D;
 											inLocal.Z = z + .5D;
 											parent.coordTransform.fromGlobalToLocal(inLocal);
 
-											maxX = (int) Math.floor(inLocal.X + rangeCheck);
-											maxY = (int) Math.floor(inLocal.Y + rangeCheck);
-											maxZ = (int) Math.floor(inLocal.Z + rangeCheck);
-
-											for (localX = MathHelper.floor_double(inLocal.X - rangeCheck); localX < maxX; localX++) {
-												for (localZ = MathHelper.floor_double(inLocal.Z - rangeCheck); localZ < maxZ; localZ++) {
-													for (localY = MathHelper.floor_double(inLocal.Y - rangeCheck); localY < maxY; localY++) {
+											int minX = MathHelper.floor_double(inLocal.X - rangeCheck);
+											int minZ = MathHelper.floor_double(inLocal.Z - rangeCheck);
+											int minY = MathHelper.floor_double(inLocal.Y - rangeCheck);
+											
+											maxX = MathHelper.floor_double(inLocal.X + rangeCheck);
+											maxY = MathHelper.floor_double(inLocal.Y + rangeCheck);
+											maxZ = MathHelper.floor_double(inLocal.Z + rangeCheck);
+											
+											/** The Old Way of doing things; approx. 33% slower overall when running this code instead of new
+											for (localX = minX; localX < maxX; localX++) {
+												for (localZ = minZ; localZ < maxZ; localZ++) {
+													for (localY = minY; localY < maxY; localY++) {
 														if (parent.ownsChunk(localX >> 4, localZ >> 4)) {
 															chunkIn = parent.VKChunkCache.getChunkAt(localX >> 4, localZ >> 4);
 															localState = chunkIn.getBlockState(localX, localY, localZ);
@@ -298,8 +323,62 @@ public class WorldPhysicsCollider {
 													}
 												}
 											}
+											**/
+											
+											
+											int shipChunkMinX = minX >> 4;
+											int shipChunkMinY = minY >> 4;
+											int shipChunkMinZ = minZ >> 4;
+					
+											int shipChunkMaxX = maxX >> 4;
+											int shipChunkMaxY = maxY >> 4;
+											int shipChunkMaxZ = maxZ >> 4;
+											
+											shipChunkMaxX++;shipChunkMaxY++;shipChunkMaxZ++;
+											
+											
+											testForNearbyBlocks:
+											for(int shipChunkX = shipChunkMinX;shipChunkX < shipChunkMaxX; shipChunkX++){
+												for(int shipChunkZ = shipChunkMinZ;shipChunkZ < shipChunkMaxZ; shipChunkZ++){
+													if (parent.ownsChunk(shipChunkX, shipChunkZ)) {
+														chunkIn = parent.VKChunkCache.getChunkAt(shipChunkX, shipChunkZ);
+														for(int shipChunkYStorage = shipChunkMinY; shipChunkYStorage < shipChunkMaxY; shipChunkYStorage++){
+															ExtendedBlockStorage storage = chunkIn.storageArrays[shipChunkYStorage];
+															
+															if(storage != null){
+																int shipStorageMinX = shipChunkX << 4;
+																int shipStorageMinY = shipChunkYStorage << 4;
+																int shipStorageMinZ = shipChunkZ << 4;
+																
+																int shipStorageMaxX = shipStorageMinX + 16;
+																int shipStorageMaxY = shipStorageMinY + 16;
+																int shipStorageMaxZ = shipStorageMinZ + 16;
+																
+																shipStorageMinX = Math.max(shipStorageMinX, minX);
+																shipStorageMinY = Math.max(shipStorageMinY, minY);
+																shipStorageMinZ = Math.max(shipStorageMinZ, minZ);
+																
+																shipStorageMaxX = Math.min(shipStorageMaxX, maxX);
+																shipStorageMaxY = Math.min(shipStorageMaxY, maxY);
+																shipStorageMaxZ = Math.min(shipStorageMaxZ, maxZ);
+																
+																for(localX = shipStorageMinX; localX < shipStorageMaxX; localX++){
+																	for(localY = shipStorageMinY; localY < shipStorageMaxY; localY++){
+																		for(localZ = shipStorageMinZ; localZ < shipStorageMaxZ; localZ++){
+																			localState = chunkIn.getBlockState(localX, localY, localZ);
+																			if (localState.getMaterial().isSolid()) {
+																				cachedPotentialHits.add(SpatialDetector.getHashWithRespectTo(x, y, z, centerPotentialHit));
+																				break testForNearbyBlocks;
+																			}
+																		}
+																	}
+																}
+															}
+														}
+													}
+												}
+											}
 										}
-										
 									}
 								}
 							}

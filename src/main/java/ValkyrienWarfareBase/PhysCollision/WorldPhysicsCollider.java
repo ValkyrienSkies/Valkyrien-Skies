@@ -239,7 +239,7 @@ public class WorldPhysicsCollider {
 
 		final BlockPos min = new BlockPos(collisionBB.minX, Math.max(collisionBB.minY, 0), collisionBB.minZ);
 		final BlockPos max = new BlockPos(collisionBB.maxX, Math.min(collisionBB.maxY, 255), collisionBB.maxZ);
-//		centerPotentialHit = new BlockPos((min.getX() + max.getX()) / 2D, (min.getY() + max.getY()) / 2D, (min.getZ() + max.getZ()) / 2D);
+		centerPotentialHit = new BlockPos((min.getX() + max.getX()) / 2D, (min.getY() + max.getY()) / 2D, (min.getZ() + max.getZ()) / 2D);
 
 		final ChunkCache cache = parent.surroundingWorldChunksCache;
 		final Vector inLocal = new Vector();
@@ -261,15 +261,15 @@ public class WorldPhysicsCollider {
 		
 		int mmX = min.getX(), mmY = min.getY(), mmZ = min.getZ(), mxX = max.getX(), mxY = max.getY(), mxZ = max.getZ();
 	
-		for(chunkX = chunkMinX; chunkX <= chunkMaxX; chunkX++){
-			for(chunkZ = chunkMinZ; chunkZ <= chunkMaxZ; chunkZ++){
+		for(chunkX = chunkMinX; chunkX < chunkMaxX; chunkX++){
+			for(chunkZ = chunkMinZ; chunkZ < chunkMaxZ; chunkZ++){
 				
 				int arrayChunkX = chunkX - cache.chunkX;
 				int arrayChunkZ = chunkZ - cache.chunkZ;
 				
 				if (!(arrayChunkX < 0 || arrayChunkZ < 0 || arrayChunkX > cache.chunkArray.length - 1 || arrayChunkZ > cache.chunkArray[0].length - 1)) {
 					chunk = cache.chunkArray[arrayChunkX][arrayChunkZ];
-					for(storageY = storageMinY; storageY <= storageMaxY; storageY++){
+					for(storageY = storageMinY; storageY < storageMaxY; storageY++){
 						extendedblockstorage = chunk.storageArrays[storageY];
 						if(extendedblockstorage != null){
 							int minStorageX = chunkX << 4;

@@ -185,7 +185,7 @@ public class EventsCommon {
 		}
 	}
 
-	@SubscribeEvent(priority = EventPriority.HIGHEST)
+	/**@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onExplosionDetonateEvent(ExplosionEvent.Detonate event) {
 		Explosion e = event.getExplosion();
 
@@ -293,7 +293,7 @@ public class EventsCommon {
 			e.getPlayerKnockbackMap().putAll(playerKnockbackMap);
 
 		}
-	}
+	}**/
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onWorldLoad(WorldEvent.Load event) {

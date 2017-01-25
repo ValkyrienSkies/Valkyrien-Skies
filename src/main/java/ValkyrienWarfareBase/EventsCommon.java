@@ -99,6 +99,10 @@ public class EventsCommon {
 			}
 
 			Double[] pos = lastPositions.get(p);
+			if(pos == null){
+				pos = new Double[3];
+				lastPositions.put(p, pos);
+			}
 			try {
 			if (pos[0] != p.posX || pos[2] != p.posZ) { // Player has moved
 				if (Math.abs(p.posX) > 27000000 || Math.abs(p.posZ) > 27000000) { // Player is outside of world border, tp them back

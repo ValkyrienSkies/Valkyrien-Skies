@@ -418,8 +418,8 @@ public class CallRunnerClient extends CallRunner {
 		((ClientProxy) ValkyrienWarfareMod.proxy).lastCamera = camera;
 
 		GL11.glPushMatrix();
-		GlStateManager.disableAlpha();
-		GlStateManager.disableBlend();
+//		GlStateManager.disableAlpha();
+//		GlStateManager.disableBlend();
 		GlStateManager.enableLighting();
 		renderGlobal.mc.entityRenderer.enableLightmap();
 
@@ -436,7 +436,8 @@ public class CallRunnerClient extends CallRunner {
 				GL11.glPushMatrix();
 				wrapper.wrapping.renderer.setupTranslation(partialTicks);
 				wrapper.wrapping.renderer.renderTileEntities(partialTicks);
-				wrapper.wrapping.renderer.renderEntities(partialTicks);
+				//TODO: Re-enable this, and fix it too
+//				wrapper.wrapping.renderer.renderEntities(partialTicks);
 				GL11.glPopMatrix();
 			}
 		}

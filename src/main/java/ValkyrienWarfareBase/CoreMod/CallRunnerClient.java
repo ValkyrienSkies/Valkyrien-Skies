@@ -1,6 +1,5 @@
 package ValkyrienWarfareBase.CoreMod;
 
-import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.List;
 
@@ -34,7 +33,6 @@ import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.ViewFrustum;
-import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -58,6 +56,12 @@ import net.minecraft.world.World;
 public class CallRunnerClient extends CallRunner {
 
 	public static void onOrientCamera(EntityRenderer renderer, float partialTicks) {
+		if(true){
+			renderer.orientCamera(partialTicks);
+			return;
+		}
+		
+		
 		Entity entity = renderer.mc.getRenderViewEntity();
 		float f = entity.getEyeHeight();
 		double d0 = entity.prevPosX + (entity.posX - entity.prevPosX) * (double) partialTicks;

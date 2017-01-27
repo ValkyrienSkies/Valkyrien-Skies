@@ -1,15 +1,11 @@
 package ValkyrienWarfareControl.Block;
 
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.logging.Level;
-
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareControl.TileEntity.PilotsChairTileEntity;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -20,8 +16,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.play.server.SPacketPlayerPosLook;
-import net.minecraft.network.play.server.SPacketPlayerPosLook.EnumFlags;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
@@ -31,7 +25,7 @@ import net.minecraft.world.World;
 
 public class BlockShipPilotsChair extends Block implements ITileEntityProvider {
 
-	public static final PropertyDirection FACING = PropertyDirection.create("facing");
+	public static final PropertyDirection FACING = BlockHorizontal.FACING;
 	
 	public BlockShipPilotsChair(Material materialIn) {
 		super(materialIn);
@@ -101,17 +95,15 @@ public class BlockShipPilotsChair extends Block implements ITileEntityProvider {
 	}
 
 	@Override
-	public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
-		EnumFacing facing = placer.getHorizontalFacing().getOpposite();
-		if (placer.isSneaking()) {
-			facing = facing.getOpposite();
-		}
-		try{
-			worldIn.setBlockState(pos, state.withProperty(FACING, facing), 2);
-		}catch(Exception e){
-			ValkyrienWarfareMod.VWLogger.log(Level.SEVERE, "Chair didn't place right");
-		}
-	}
+	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer){
+        EnumFacing facingHorizontal = placer.getHorizontalFacing();
+		
+        if(!placer.isSneaking()){
+        	facingHorizontal = facingHorizontal.getOpposite();
+        }
+        
+		return this.getDefaultState().withProperty(FACING, facingHorizontal);
+    }
 
 	@Override
 	protected BlockStateContainer createBlockState() {
@@ -119,9 +111,13 @@ public class BlockShipPilotsChair extends Block implements ITileEntityProvider {
 	}
 
 	@Override
-	public IBlockState getStateFromMeta(int meta) {
-		return getDefaultState().withProperty(FACING, EnumFacing.getFront(meta));
-	}
+	public IBlockState getStateFromMeta(int meta){
+        EnumFacing enumfacing = EnumFacing.getFront(meta);
+        if (enumfacing.getAxis() == EnumFacing.Axis.Y){
+            enumfacing = EnumFacing.NORTH;
+        }
+        return this.getDefaultState().withProperty(FACING, enumfacing);
+    }
 
 	@Override
 	public int getMetaFromState(IBlockState state) {

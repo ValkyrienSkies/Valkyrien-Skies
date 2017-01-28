@@ -34,6 +34,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.ViewFrustum;
 import net.minecraft.client.renderer.culling.ICamera;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
@@ -440,8 +441,7 @@ public class CallRunnerClient extends CallRunner {
 				GL11.glPushMatrix();
 				wrapper.wrapping.renderer.setupTranslation(partialTicks);
 				wrapper.wrapping.renderer.renderTileEntities(partialTicks);
-				//TODO: Re-enable this, and fix it too
-//				wrapper.wrapping.renderer.renderEntities(partialTicks);
+				wrapper.wrapping.renderer.renderEntities(partialTicks);
 				GL11.glPopMatrix();
 			}
 		}
@@ -454,6 +454,12 @@ public class CallRunnerClient extends CallRunner {
 
 		renderGlobal.renderEntities(renderViewEntity, camera, partialTicks);
 	}
+
+	public static void onDoRenderEntity(RenderManager manager, Entity entityIn, double x, double y, double z, float yaw, float partialTicks, boolean p_188391_10_){
+		if(!ValkyrienWarfareMod.physicsManager.isEntityFixed(entityIn)){
+			manager.doRenderEntity(entityIn, x, y, z, yaw, partialTicks, p_188391_10_);
+		}
+    }
 
 	public static boolean onInvalidateRegionAndSetBlock(WorldClient client, BlockPos pos, IBlockState state) {
 		int i = pos.getX();

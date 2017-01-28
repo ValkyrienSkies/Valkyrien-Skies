@@ -376,10 +376,12 @@ public class CallRunner {
 		BlockPos posAt = new BlockPos(entity);
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, posAt);
 		if (!(entity instanceof EntityFallingBlock) && wrapper != null && wrapper.wrapping.coordTransform != null) {
-			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, wrapper.wrapping.coordTransform.lToWRotation, entity);
 			if (entity instanceof EntityMountingWeaponBase) {
-				// wrapper.wrapping.fixEntity(entity);
+				entity.startRiding(wrapper);
+				 wrapper.wrapping.fixEntity(entity, new Vector(entity));
+//				 wrapper.wrapping.queueEntityForMounting(entity);
 			}
+			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, wrapper.wrapping.coordTransform.lToWRotation, entity);
 		}
 		return world.spawnEntityInWorld(entity);
 	}

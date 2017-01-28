@@ -120,6 +120,8 @@ public class PhysicsObject {
 	public ShipPilotingController pilotingController;
 
 	public ArrayList<String> allowedUsers = new ArrayList<String>();
+	//This is used to delay mountEntity() operations by 1 tick
+	public ArrayList<Entity> queuedEntitiesToMount = new ArrayList<Entity>();
 
 	public PhysicsObject(PhysicsWrapperEntity host) {
 		wrapper = host;
@@ -478,6 +480,12 @@ public class PhysicsObject {
 	public void onTick() {
 		if (!worldObj.isRemote) {
 			balloonManager.onPostTick();
+			for(Entity e:queuedEntitiesToMount){
+				if(e != null){
+					e.startRiding(this.wrapper);
+				}
+			}
+			queuedEntitiesToMount.clear();
 		}
 	}
 
@@ -735,6 +743,10 @@ public class PhysicsObject {
 		}
 	}
 
+	public void queueEntityForMounting(Entity toMount){
+		queuedEntitiesToMount.add(toMount);
+	}
+	
 	/**
 	 * ONLY USE THESE 2 METHODS TO EVER ADD/REMOVE ENTITIES, OTHERWISE YOU'LL RUIN EVERYTHING!
 	 * 

@@ -2,7 +2,7 @@ package ValkyrienWarfareBase.Render;
 
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
-import java.util.logging.Logger;
+import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 
@@ -14,6 +14,7 @@ import ValkyrienWarfareBase.Math.Quaternion;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.Proxy.ClientProxy;
+import ValkyrienWarfareCombat.Entity.EntityCannonBasic;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GLAllocation;
@@ -24,6 +25,7 @@ import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
@@ -207,40 +209,55 @@ public class PhysObjectRenderManager {
 
 	public void renderEntities(float partialTicks) {
 		ArrayList<FixedEntityData> fixedEntities = new ArrayList();// ArrayList<FixedEntityData>) parent.fixedEntities.clone();
-		for (FixedEntityData data : fixedEntities) {
-			Vector originalEntityPos = new Vector(data.fixed.posX, data.fixed.posY, data.fixed.posZ);
-			Vector originalLastEntityPos = new Vector(data.fixed.lastTickPosX, data.fixed.lastTickPosY, data.fixed.lastTickPosZ);
-
-			data.fixed.posX = data.fixed.lastTickPosX = data.positionInLocal.xCoord;
-			data.fixed.posY = data.fixed.lastTickPosY = data.positionInLocal.yCoord;
-			data.fixed.posZ = data.fixed.lastTickPosZ = data.positionInLocal.zCoord;
-
-			System.out.println("test");
-			if (!data.fixed.isDead && data.fixed != Minecraft.getMinecraft().getRenderViewEntity() || Minecraft.getMinecraft().gameSettings.thirdPersonView > 0) {
-
-				GL11.glPushMatrix();
-				int i = data.fixed.getBrightnessForRender(partialTicks);
-				if (data.fixed.isBurning()) {
-					i = 15728880;
+		List<Entity> mountedEntities = parent.wrapper.riddenByEntities;
+		for (Entity mounted : mountedEntities) {
+			Vector localPosition = parent.getLocalPositionForEntity(mounted);
+			
+			if(localPosition != null){
+				//Copy this vector, don't want to alter the original
+				localPosition = new Vector(localPosition);
+				
+				localPosition.X -= offsetPos.getX();
+				localPosition.Y -= offsetPos.getY();
+				localPosition.Z -= offsetPos.getZ();
+				
+				Vector originalEntityPos = new Vector(mounted.posX, mounted.posY, mounted.posZ);
+				Vector originalLastEntityPos = new Vector(mounted.lastTickPosX, mounted.lastTickPosY, mounted.lastTickPosZ);
+	
+				mounted.posX = mounted.lastTickPosX = localPosition.X;
+				mounted.posY = mounted.lastTickPosY = localPosition.Y;
+				mounted.posZ = mounted.lastTickPosZ = localPosition.Z;
+	
+//				System.out.println("test");
+				if (!mounted.isDead && mounted != Minecraft.getMinecraft().getRenderViewEntity() || Minecraft.getMinecraft().gameSettings.thirdPersonView > 0) {
+					if(mounted instanceof EntityCannonBasic){
+						System.out.println("test");
+					}
+					GL11.glPushMatrix();
+					int i = mounted.getBrightnessForRender(partialTicks);
+					if (mounted.isBurning()) {
+						i = 15728880;
+					}
+					int j = i % 65536;
+					int k = i / 65536;
+					OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float) j / 1.0F, (float) k / 1.0F);
+					GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+					float yaw = mounted.prevRotationYaw + (mounted.rotationYaw - mounted.prevRotationYaw) * partialTicks;
+					double x = localPosition.X;
+					double y = localPosition.Y;
+					double z = localPosition.Z;
+					Minecraft.getMinecraft().getRenderManager().doRenderEntity(mounted, x, y, z, yaw, partialTicks, false);
+					GL11.glPopMatrix();
 				}
-				int j = i % 65536;
-				int k = i / 65536;
-				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float) j / 1.0F, (float) k / 1.0F);
-				GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-				float yaw = data.fixed.prevRotationYaw + (data.fixed.rotationYaw - data.fixed.prevRotationYaw) * partialTicks;
-				double x = data.positionInLocal.xCoord;
-				double y = data.positionInLocal.yCoord;
-				double z = data.positionInLocal.zCoord;
-				Minecraft.getMinecraft().getRenderManager().doRenderEntity(data.fixed, x, y, z, yaw, partialTicks, false);
-				GL11.glPopMatrix();
+	
+				mounted.posX = originalEntityPos.X;
+				mounted.posY = originalEntityPos.Y;
+				mounted.posZ = originalEntityPos.Z;
+				mounted.lastTickPosX = originalLastEntityPos.X;
+				mounted.lastTickPosY = originalLastEntityPos.Y;
+				mounted.lastTickPosZ = originalLastEntityPos.Z;
+			
 			}
-
-			data.fixed.posX = originalEntityPos.X;
-			data.fixed.posY = originalEntityPos.Y;
-			data.fixed.posZ = originalEntityPos.Z;
-			data.fixed.lastTickPosX = originalLastEntityPos.X;
-			data.fixed.lastTickPosY = originalLastEntityPos.Y;
-			data.fixed.lastTickPosZ = originalLastEntityPos.Z;
 		}
 	}
 

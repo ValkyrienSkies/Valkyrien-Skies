@@ -303,9 +303,9 @@ public class PhysicsCalculations {
 
 		convertTorqueToVelocity();
 	}
-	
+
 	public void calculateForcesArchimedes() {
-		double modifiedDrag = Math.pow(drag, physTickSpeed*5 / .05D);
+		double modifiedDrag = Math.pow(drag, physTickSpeed / .05D);
 		linearMomentum.multiply(modifiedDrag);
 		angularVelocity.multiply(modifiedDrag);
 	}

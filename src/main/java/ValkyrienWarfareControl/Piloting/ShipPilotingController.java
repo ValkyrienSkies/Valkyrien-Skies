@@ -54,7 +54,14 @@ public class ShipPilotingController {
 		//These vectors can be re-arranged depending on the direction the chair was placed
 		
 		IBlockState state = controlledShip.worldObj.getBlockState(chairPosition);
-		double[] pilotRotationMatrix = getRotationMatrixFromBlockState(state, chairPosition);
+//		double[] pilotRotationMatrix = getRotationMatrixFromBlockState(state, chairPosition);
+		
+		
+		double pilotPitch = 0D;
+		double pilotYaw = ((BlockShipPilotsChair)state.getBlock()).getChairYaw(state, chairPosition);
+		double pilotRoll = 0D;
+		
+		double[] pilotRotationMatrix = RotationMatrices.getRotationMatrix(pilotPitch, pilotYaw, pilotRoll);
 		
 		Vector playerDirection = new Vector(1,0,0);
 		

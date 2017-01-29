@@ -11,6 +11,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
+import ValkyrienWarfareBase.CoreMod.CallRunner;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -74,7 +75,9 @@ public class NewExp extends Explosion {
     	
         NewExp explosion = new NewExp(worldIn, null, x, y, z, size, isFlaming, isSmoking);
         if (net.minecraftforge.event.ForgeEventFactory.onExplosionStart(worldIn, explosion)) return explosion;
-        explosion.doExplosionA();
+        //Not this
+//        explosion.doExplosionA();
+        CallRunner.onExplosionA(explosion);
         explosion.doExplosionB(true);
         return explosion;
     }

@@ -64,6 +64,12 @@ public class BlockShipPilotsChair extends Block implements ITileEntityProvider {
 
 		return false;
 	}
+	
+	@Override
+	public boolean canPlaceBlockAt(World worldIn, BlockPos pos){
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldIn, pos);
+		return wrapper != null;
+    }
 
 	public static double getChairYaw(IBlockState state, BlockPos pos){
 		EnumFacing enumFace = state.getValue(BlockShipPilotsChair.FACING);

@@ -93,6 +93,9 @@ public class WorldPhysicsCollider {
 			maxY = (int) Math.floor(inWorld.Y + rangeCheck);
 			maxZ = (int) Math.floor(inWorld.Z + rangeCheck);
 
+			/**
+			 * Something here is causing the game to freeze :/
+			 */
 			for (x = MathHelper.floor_double(inWorld.X - rangeCheck); x <= maxX; x++) {
 				for (z = MathHelper.floor_double(inWorld.Z - rangeCheck); z <= maxZ; z++) {
 					for (y = MathHelper.floor_double(inWorld.Y - rangeCheck); y <= maxY; y++) {
@@ -249,7 +252,6 @@ public class WorldPhysicsCollider {
 		ExtendedBlockStorage extendedblockstorage;
 		IBlockState state, localState;
 
-		
 		int chunkMinX = min.getX() >> 4;
 		int chunkMaxX = (max.getX() >> 4) + 1;		
 		int storageMinY = min.getY() >> 4;
@@ -260,7 +262,7 @@ public class WorldPhysicsCollider {
 		int storageY;
 		
 		int mmX = min.getX(), mmY = min.getY(), mmZ = min.getZ(), mxX = max.getX(), mxY = max.getY(), mxZ = max.getZ();
-	
+		
 		for(chunkX = chunkMinX; chunkX < chunkMaxX; chunkX++){
 			for(chunkZ = chunkMinZ; chunkZ < chunkMaxZ; chunkZ++){
 				

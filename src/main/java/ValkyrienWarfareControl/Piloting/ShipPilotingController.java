@@ -118,9 +118,29 @@ public class ShipPilotingController {
 		
 		double mass = controlledShip.physicsProcessor.mass;
 		
-		idealAngularDirection.multiply(mass/2.5D);
+//		idealAngularDirection.multiply(mass/2.5D);
 		idealLinearVelocity.multiply(mass/5D);
-		shipUpOffset.multiply(mass/2.5D);
+//		shipUpOffset.multiply(mass/2.5D);
+		
+		
+		idealAngularDirection.multiply(1D/6D);
+		shipUpOffset.multiply(1D/3D);
+		
+		Vector velocityCompenstationLinear = controlledShip.physicsProcessor.linearMomentum;
+		
+		Vector velocityCompensationAngular = controlledShip.physicsProcessor.angularVelocity.cross(playerDirection);
+		
+		Vector velocityCompensationAlignment = controlledShip.physicsProcessor.angularVelocity.cross(shipUpPos);
+		
+		velocityCompensationAlignment.multiply(controlledShip.physicsProcessor.physRawSpeed);
+		velocityCompensationAngular.multiply(2D*controlledShip.physicsProcessor.physRawSpeed);
+		
+		shipUpOffset.subtract(velocityCompensationAlignment);
+		velocityCompensationAngular.subtract(velocityCompensationAngular);
+		
+		RotationMatrices.applyTransform3by3(controlledShip.physicsProcessor.framedMOI, idealAngularDirection);
+		RotationMatrices.applyTransform3by3(controlledShip.physicsProcessor.framedMOI, shipUpOffset);
+		
 		
 		if(message.airshipSprinting){
 			idealLinearVelocity.multiply(2D);

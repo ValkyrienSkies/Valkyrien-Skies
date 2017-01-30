@@ -7,6 +7,6 @@ import net.minecraft.world.World;
 //Blocks implement this to add a variable mass based on certain conditions
 public interface IBlockMassProvider {
 
-	double getBlockMass(World world,BlockPos pos,IBlockState state);
-	
+	double getBlockMass(World world, BlockPos pos, IBlockState state);
+
 }

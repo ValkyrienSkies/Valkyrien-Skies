@@ -1,5 +1,6 @@
 {
+    "forge_marker": 1,
     "variants": {
-        "normal": { "model": "valkyrienwarfare:shipblock" }
+        "normal": { "model": "valkyrienwarfare:physics-infuser.obj" }
     }
 }

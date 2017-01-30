@@ -1,0 +1,11 @@
+{
+    "forge_marker": 1,
+    "variants": {
+        "default": { "model": "valkyrienwarfarecontrol:shippilotschair.obj" , "custom": { "flip-v": true } },
+        "normal": { "model": "valkyrienwarfarecontrol:shippilotschair.obj" , "custom": { "flip-v": true } },
+        "facing=north": { "model": "valkyrienwarfarecontrol:shippilotschair.obj" , "custom": { "flip-v": true }, "y": 90 },
+        "facing=south": { "model": "valkyrienwarfarecontrol:shippilotschair.obj" , "custom": { "flip-v": true }, "y": 270 },
+        "facing=west": { "model": "valkyrienwarfarecontrol:shippilotschair.obj" , "custom": { "flip-v": true } },
+        "facing=east": { "model": "valkyrienwarfarecontrol:shippilotschair.obj" , "custom": { "flip-v": true }, "y": 180 }
+    }
+}

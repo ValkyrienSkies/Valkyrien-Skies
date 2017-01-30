@@ -4,10 +4,10 @@ import java.util.concurrent.Callable;
 
 import ValkyrienWarfareBase.Physics.PhysicsCalculations;
 
-public class PhysCollisionCallable implements Callable<Void>{
+public class PhysCollisionCallable implements Callable<Void> {
 
 	private final PhysicsObject toRun;
-	
+
 	public PhysCollisionCallable(PhysicsObject physicsCalculations) {
 		toRun = physicsCalculations;
 	}

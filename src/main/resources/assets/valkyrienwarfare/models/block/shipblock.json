@@ -1,6 +1,6 @@
 {
     "parent": "block/cube_all",
     "textures": {
-        "all": "valkyrienwarfare:blocks/shipblock"
+        "all": "valkyrienwarfare:blocks/physics-infuser"
     }
 }

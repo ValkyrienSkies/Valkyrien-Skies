@@ -2,8 +2,6 @@ package ValkyrienWarfareControl.TileEntity;
 
 import java.util.ArrayList;
 
-import javax.annotation.Nullable;
-
 import ValkyrienWarfareBase.NBTUtils;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
@@ -14,6 +12,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
@@ -21,10 +20,10 @@ public class TileEntityHoverController extends TileEntity {
 
 	public ArrayList<BlockPos> enginePositions = new ArrayList<BlockPos>();
 	public double idealHeight = 16D;
-	public double stabilityBias = .3D;
+	public double stabilityBias = .45D;
 
 	public double linearVelocityBias = 1D;
-	public double angularVelocityBias = 20D;
+	public double angularVelocityBias = 50D;
 
 	public Vector normalVector = new Vector(0D, 1D, 0D);
 
@@ -44,7 +43,7 @@ public class TileEntityHoverController extends TileEntity {
 		// physObj.physicsProcessor.convertTorqueToVelocity();
 		// secondsToApply*=5D;
 		// idealHeight = 100D;
-		if (autoStabalizerControl) {
+		if (worldObj.isBlockPowered(getPos())||autoStabalizerControl) {
 			setAutoStabilizationValue(physObj);
 		}
 
@@ -93,7 +92,7 @@ public class TileEntityHoverController extends TileEntity {
 	public double getControllerDistFromIdealY(PhysicsObject physObj) {
 		Vector controllerPos = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
 		physObj.coordTransform.fromLocalToGlobal(controllerPos);
-		return idealHeight - (controllerPos.Y + (physObj.physicsProcessor.linearMomentum.Y * physObj.physicsProcessor.invMass * linearVelocityBias));
+		return idealHeight - (physObj.physicsProcessor.wrapperEnt.posY + (physObj.physicsProcessor.linearMomentum.Y * physObj.physicsProcessor.invMass * linearVelocityBias));
 	}
 
 	public void handleGUIInput(HovercraftControllerGUIInputMessage message, MessageContext ctx) {
@@ -115,6 +114,27 @@ public class TileEntityHoverController extends TileEntity {
 	}
 
 	private void setAutoStabilizationValue(PhysicsObject physObj) {
+		Vector controllerPos = new Vector(pos.getX()+.5D,pos.getY()+.5D,pos.getZ()+.5D);
+		physObj.coordTransform.fromLocalToGlobal(controllerPos);
+		
+		double controllerDistToIdeal = idealHeight-physObj.physicsProcessor.wrapperEnt.posY;
+		double yVelocity = physObj.physicsProcessor.linearMomentum.Y*physObj.physicsProcessor.invMass*linearVelocityBias;
+		
+		double biasChange = .00005D;
+		
+		if(Math.abs(controllerDistToIdeal)>.1D){
+		
+			if((yVelocity > 0 && controllerDistToIdeal > 0)||(yVelocity < 0 && controllerDistToIdeal < 0)){
+//				stabilityBias -= biasChange;
+			}else{
+//				stabilityBias += biasChange;
+			}
+			stabilityBias -= biasChange*MathHelper.sqrt_double(controllerDistToIdeal);
+		}else{
+			stabilityBias += biasChange;
+		}
+		
+		
 		// double epsilon = 5D;
 		// double biasChange = .00005D;
 		//
@@ -133,7 +153,10 @@ public class TileEntityHoverController extends TileEntity {
 		// }
 		// }
 		// //Limit bias to between 0 and 1
-		// stabilityBias = Math.max(Math.min(stabilityBias, 1D), 0D);
+		 stabilityBias = Math.max(Math.min(stabilityBias, 1D), 0D);
+		
+		
+		
 	}
 
 	@Override

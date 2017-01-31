@@ -117,19 +117,20 @@ public class TileEntityHoverController extends TileEntity {
 		Vector controllerPos = new Vector(pos.getX()+.5D,pos.getY()+.5D,pos.getZ()+.5D);
 		physObj.coordTransform.fromLocalToGlobal(controllerPos);
 		
-		double controllerDistToIdeal = idealHeight-physObj.physicsProcessor.wrapperEnt.posY;
+		double controllerDistToIdeal = -(idealHeight-physObj.physicsProcessor.wrapperEnt.posY);
 		double yVelocity = physObj.physicsProcessor.linearMomentum.Y*physObj.physicsProcessor.invMass*linearVelocityBias;
 		
 		double biasChange = .00005D;
 		
-		if(Math.abs(controllerDistToIdeal)>.1D){
+		if(Math.abs(controllerDistToIdeal)>.5D){
 		
 			if((yVelocity > 0 && controllerDistToIdeal > 0)||(yVelocity < 0 && controllerDistToIdeal < 0)){
-//				stabilityBias -= biasChange;
+				stabilityBias -= biasChange;
+				
 			}else{
 //				stabilityBias += biasChange;
 			}
-			stabilityBias -= biasChange*MathHelper.sqrt_double(controllerDistToIdeal);
+//			stabilityBias -= biasChange;
 		}else{
 			stabilityBias += biasChange;
 		}

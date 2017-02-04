@@ -87,6 +87,9 @@ public static final ArrayList<String> completionOptions = new ArrayList<String>(
 					case SUCCESS:
 						p.addChatMessage(new TextComponentString("Success! " + target.getName() + " is the new owner of this airship!"));
 						break;
+					case ALREADY_CLAIMED:
+						p.addChatMessage(new TextComponentString("Airship already claimed"));
+						break;
 					}
 					return;
 				}

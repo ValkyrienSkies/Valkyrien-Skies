@@ -25,10 +25,11 @@ public class BlockPhysicsRegistration {
 		// blockMass.registerBlockMass(Blocks.STONE, 180D);
 		// blockMass.registerBlockMass(Blocks.IRON_BLOCK, 250D);
 		// blockMass.registerBlockMass(Blocks.OBSIDIAN, 500D);
-		blockMass.registerBlockMass(Blocks.BEDROCK, Double.MAX_VALUE);
+		blockMass.registerBlockMass(Blocks.BEDROCK, 5000D);
 	}
 
 	public static void registerVanillaBlockForces() {
 		blockForces.registerBlockForce(ValkyrienWarfareControlMod.instance.dopedEtherium, new Vector(0, 10000D, 0), false);
 	}
+
 }

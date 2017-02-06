@@ -364,19 +364,19 @@ public class PhysicsCalculations {
 		double[] rotationChange = RotationMatrices.getRotationMatrix(angularVelocity.X, angularVelocity.Y, angularVelocity.Z, angularVelocity.length() * physTickSpeed);
 		Quaternion faggot = Quaternion.QuaternionFromMatrix(RotationMatrices.getMatrixProduct(rotationChange, coordTrans.lToWRotation));
 		double[] radians = faggot.toRadians();
-		if (!(Double.isNaN(radians[0]) || Double.isNaN(radians[1]) || Double.isNaN(radians[2]))) {
-			wrapperEnt.pitch = (float) Math.toDegrees(radians[0]);
-			wrapperEnt.yaw = (float) Math.toDegrees(radians[1]);
-			wrapperEnt.roll = (float) Math.toDegrees(radians[2]);
+		//if (!(Double.isNaN(radians[0]) || Double.isNaN(radians[1]) || Double.isNaN(radians[2]))) {
+			wrapperEnt.pitch = Double.isNaN(radians[0]) ? 0.0f : (float) Math.toDegrees(radians[0]);
+			wrapperEnt.yaw = Double.isNaN(radians[1]) ? 0.0f : (float) Math.toDegrees(radians[1]);
+			wrapperEnt.roll = Double.isNaN(radians[2]) ? 0.0f : (float) Math.toDegrees(radians[2]);
 			coordTrans.updateAllTransforms();
-		} else {
-			 wrapperEnt.isDead=true;
-			wrapperEnt.wrapping.doPhysics = false;
+		//} else {
+			//wrapperEnt.isDead=true;
+			//wrapperEnt.wrapping.doPhysics = false;
 //			linearMomentum = new Vector();
 //			angularVelocity = new Vector();
-			System.out.println(angularVelocity);
-			System.out.println("Rotational Error?");
-		}
+			//System.out.println(angularVelocity);
+			//System.out.println("Rotational Error?");
+		//}
 	}
 
 	public void applyLinearVelocity() {

@@ -65,6 +65,7 @@ minecraft {
     // Use non-default mappings at your own risk. they may not allways work.
     // simply re-run your setup task after changing the mappings to update your workspace.
     mappings = "snapshot_20160518"
+	coreMod = "ValkyrienWarfareBase.CoreMod.ValkyrienWarfarePlugin"
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 }
 
@@ -100,8 +101,7 @@ processResources
 jar {
     manifest {
 		attributes 'FMLAT': 'ValkyrienWarfare_At.cfg'
-		attributes 'FMLCorePlugin': 'ValkyrienWarfareBase.CoreMod.ValkyrienWarfarePlugin' 
-		attributes 'FMLCorePluginContainsFMLMod': 'false'
+		attributes 'FMLCorePluginContainsFMLMod': 'true'
     }
 }
 
@@ -111,7 +111,7 @@ task deobfJar(type: Jar) {
 	manifest {
 		attributes 'FMLAT': 'ValkyrienWarfare_At.cfg'
 		attributes 'FMLCorePlugin': 'ValkyrienWarfareBase.CoreMod.ValkyrienWarfarePlugin' 
-		attributes 'FMLCorePluginContainsFMLMod': 'false'
+		attributes 'FMLCorePluginContainsFMLMod': 'true'
     }
 }
 

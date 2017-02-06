@@ -9,6 +9,7 @@ import ValkyrienWarfareControl.Block.BlockHovercraftController;
 import ValkyrienWarfareControl.Block.BlockShipPilotsChair;
 import ValkyrienWarfareControl.Block.Engine.BlockNormalEngine;
 import ValkyrienWarfareControl.Block.Engine.BlockRedstoneEngine;
+import ValkyrienWarfareControl.Block.EtherCompressor.BlockCreativeEtherCompressor;
 import ValkyrienWarfareControl.Block.EtherCompressor.BlockNormalEtherCompressor;
 import ValkyrienWarfareControl.GUI.ControlGUIHandler;
 import ValkyrienWarfareControl.Item.ItemShipStealer;
@@ -130,7 +131,7 @@ public class ValkyrienWarfareControlMod {
 		advancedEtherCompressor = new BlockNormalEtherCompressor(Material.ROCK, advancedEtherCompressorPower).setHardness(8f).setUnlocalizedName("advancedEtherCompressor").setRegistryName(ValkyrienWarfareMod.MODID, "advancedEtherCompressor").setCreativeTab(CreativeTabs.TRANSPORTATION);
 		eliteEtherCompressor = new BlockNormalEtherCompressor(Material.IRON, eliteEtherCompressorPower).setHardness(8f).setUnlocalizedName("eliteEtherCompressor").setRegistryName(ValkyrienWarfareMod.MODID, "eliteEtherCompressor").setCreativeTab(CreativeTabs.TRANSPORTATION);
 		ultimateEtherCompressor = new BlockNormalEtherCompressor(Material.GROUND, ultimateEtherCompressorPower).setHardness(8f).setUnlocalizedName("ultimateEtherCompressor").setRegistryName(ValkyrienWarfareMod.MODID, "ultimateEtherCompressor").setCreativeTab(CreativeTabs.TRANSPORTATION);
-		creativeEtherCompressor = new BlockNormalEtherCompressor(Material.BARRIER, Double.MAX_VALUE / 4).setHardness(0.0f).setUnlocalizedName("creativeEtherCompressor").setRegistryName(ValkyrienWarfareMod.MODID, "creativeEtherCompressor").setCreativeTab(CreativeTabs.TRANSPORTATION);
+		creativeEtherCompressor = new BlockCreativeEtherCompressor(Material.BARRIER, Double.MAX_VALUE / 4).setHardness(0.0f).setUnlocalizedName("creativeEtherCompressor").setRegistryName(ValkyrienWarfareMod.MODID, "creativeEtherCompressor").setCreativeTab(CreativeTabs.TRANSPORTATION);
 		
 		basicHoverController = new BlockHovercraftController(Material.IRON).setHardness(10f).setUnlocalizedName("basichovercraftcontroller").setRegistryName(ValkyrienWarfareMod.MODID, "basichovercraftcontroller").setCreativeTab(CreativeTabs.TRANSPORTATION);
 		dopedEtherium = new BlockDopedEtherium(Material.GLASS).setHardness(4f).setUnlocalizedName("dopedetherium").setRegistryName(MODID, "dopedetherium").setCreativeTab(CreativeTabs.TRANSPORTATION);

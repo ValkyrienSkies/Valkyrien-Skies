@@ -168,7 +168,7 @@ public class EntityCollisionInjector {
 				Polygon playerInLocal = new Polygon(entityBB, wrapper.wrapping.coordTransform.wToLTransform);
 				AxisAlignedBB bb = playerInLocal.getEnclosedAABB();
 	
-				List<AxisAlignedBB> collidingBBs = /* new ArrayList<AxisAlignedBB>(); */entity.worldObj.getCollisionBoxes(bb);
+				List<AxisAlignedBB> collidingBBs = entity.worldObj.getCollisionBoxes(bb);
 	
 				// TODO: Fix the performance of this!
 				if (entity.worldObj.isRemote || entity instanceof EntityPlayer) {

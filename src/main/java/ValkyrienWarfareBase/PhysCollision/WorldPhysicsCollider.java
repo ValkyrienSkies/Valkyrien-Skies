@@ -1,5 +1,6 @@
 package ValkyrienWarfareBase.PhysCollision;
 
+import java.util.List;
 import java.util.Random;
 
 import ValkyrienWarfareBase.API.RotationMatrices;
@@ -121,6 +122,10 @@ public class WorldPhysicsCollider {
 		AxisAlignedBB inLocalBB = new AxisAlignedBB(inLocalPos.getX(), inLocalPos.getY(), inLocalPos.getZ(), inLocalPos.getX() + 1, inLocalPos.getY() + 1, inLocalPos.getZ() + 1);
 		AxisAlignedBB inGlobalBB = new AxisAlignedBB(inWorldPos.getX(), inWorldPos.getY(), inWorldPos.getZ(), inWorldPos.getX() + 1, inWorldPos.getY() + 1, inWorldPos.getZ() + 1);
 
+		//This changes the box bounding box to the real bounding box, not sure if this is better or worse for this mod
+//		List<AxisAlignedBB> colBB = worldObj.getCollisionBoxes(inLocalBB);
+//		inLocalBB = colBB.get(0);
+		
 		Polygon shipInWorld = new Polygon(inLocalBB, parent.coordTransform.lToWTransform);
 		Polygon worldPoly = new Polygon(inGlobalBB);
 
@@ -133,31 +138,8 @@ public class WorldPhysicsCollider {
 
 	//Takes the collision data along all axes generated prior, and creates the ideal value that is to be followed
 	private void handleActualCollision(PhysPolygonCollider collider) {
-		// Vector speedAtPoint = calculator.getMomentumAtPoint(collider.collisions[0].firstContactPoint.getSubtraction(new Vector(parent.wrapper.posX,parent.wrapper.posY,parent.wrapper.posZ)));
-		//
-		// double xDot = Math.abs(speedAtPoint.X);
-		// double yDot = Math.abs(speedAtPoint.Y)/5D;
-		// double zDot = Math.abs(speedAtPoint.Z);
 
 		PhysCollisionObject toCollideWith = null;
-
-		// NOTE: This is all EXPERIMENTAL! Could possibly revert
-		// if(yDot>xDot&&yDot>zDot){
-		// //Y speed is greatest
-		// if(xDot>zDot){
-		// toCollideWith = collider.collisions[2];
-		// }else{
-		// toCollideWith = collider.collisions[0];
-		// }
-		// }else{
-		// if(xDot>zDot){
-		// //X speed is greatest
-		// toCollideWith = collider.collisions[1];
-		// }else{
-		// //Z speed is greatest
-		// toCollideWith = collider.collisions[1];
-		// }
-		// }
 
 		toCollideWith = collider.collisions[1];
 
@@ -199,13 +181,9 @@ public class WorldPhysicsCollider {
 
 		Vector secondCross = firstCross.cross(inBody);
 
-		// momentumAtPoint.multiply(5D);
-
 		double j = -momentumAtPoint.dot(axis) * (collisionElasticity + 1D) / (calculator.invMass + secondCross.dot(axis));
 
 		Vector simpleImpulse = new Vector(axis, j);
-
-		// System.out.println(simpleImpulse);
 
 		if (simpleImpulse.dot(offsetVector) < 0) {
 			calculator.linearMomentum.add(simpleImpulse);

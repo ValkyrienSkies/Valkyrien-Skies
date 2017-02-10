@@ -73,7 +73,7 @@ public class WorldPhysicsCollider {
 
 		int minX, minY, minZ, maxX, maxY, maxZ, x, y, z;
 
-		final double rangeCheck = .65D;
+		final double rangeCheck = 1D;
 
 		TIntIterator intIterator = cachedPotentialHits.iterator();
 
@@ -86,10 +86,17 @@ public class WorldPhysicsCollider {
 			inWorld.Z = mutablePos.getZ() + .5;
 			parent.coordTransform.fromGlobalToLocal(inWorld);
 
-			// minX = (int) Math.floor(inWorld.X-1D);
-			// minY = (int) Math.floor(inWorld.Y-1D);
-			// minZ = (int) Math.floor(inWorld.Z-1D);
-
+//			Vector inBody = inWorld.getSubtraction(parent.centerCoord);
+			
+//			Vector speedInBody = parent.physicsProcessor.getMomentumAtPoint(inBody);
+//			speedInBody.multiply(-parent.physicsProcessor.physRawSpeed);
+			
+//			System.out.println(speedInBody);
+			
+			minX = (int)MathHelper.floor_double(inWorld.X - rangeCheck);
+			minY = (int)MathHelper.floor_double(inWorld.Y - rangeCheck);
+			minZ = (int)MathHelper.floor_double(inWorld.Z - rangeCheck);
+			
 			maxX = (int) Math.floor(inWorld.X + rangeCheck);
 			maxY = (int) Math.floor(inWorld.Y + rangeCheck);
 			maxZ = (int) Math.floor(inWorld.Z + rangeCheck);
@@ -97,9 +104,9 @@ public class WorldPhysicsCollider {
 			/**
 			 * Something here is causing the game to freeze :/
 			 */
-			for (x = MathHelper.floor_double(inWorld.X - rangeCheck); x <= maxX; x++) {
-				for (z = MathHelper.floor_double(inWorld.Z - rangeCheck); z <= maxZ; z++) {
-					for (y = MathHelper.floor_double(inWorld.Y - rangeCheck); y <= maxY; y++) {
+			for (x = minX; x <= maxX; x++) {
+				for (z = minZ; z <= maxZ; z++) {
+					for (y = minY; y <= maxY; y++) {
 						if (parent.ownsChunk(x >> 4, z >> 4)) {
 							final Chunk chunkIn = parent.VKChunkCache.getChunkAt(x >> 4, z >> 4);
 							final IBlockState state = chunkIn.getBlockState(x, y, z);
@@ -158,7 +165,7 @@ public class WorldPhysicsCollider {
 		Vector axis = toCollideWith.axis;
 		Vector offsetVector = toCollideWith.getResponse();
 
-		processCollisionData(inBody, momentumAtPoint, axis, offsetVector);
+		calculateCollisionImpulseForce(inBody, momentumAtPoint, axis, offsetVector);
 
 		collisionPos = toCollideWith.getSecondContactPoint();
 
@@ -171,20 +178,65 @@ public class WorldPhysicsCollider {
 		axis = toCollideWith.axis;
 		offsetVector = toCollideWith.getResponse();
 
-		processCollisionData(inBody, momentumAtPoint, axis, offsetVector);
+		calculateCollisionImpulseForce(inBody, momentumAtPoint, axis, offsetVector);
+		//Do this after
+		momentumAtPoint = calculator.getMomentumAtPoint(inBody);
+		calculateCoulumbFriction(inBody, momentumAtPoint, axis, offsetVector);
 	}
 
 	//Finally, the end of all this spaghetti code! This step takes all of the math generated before, and it directly adds the result to Ship velocities
-	private void processCollisionData(Vector inBody, Vector momentumAtPoint, Vector axis, Vector offsetVector) {
+	private void calculateCollisionImpulseForce(Vector inBody, Vector momentumAtPoint, Vector axis, Vector offsetVector) {
 		Vector firstCross = inBody.cross(axis);
 		RotationMatrices.applyTransform3by3(calculator.invFramedMOI, firstCross);
 
 		Vector secondCross = firstCross.cross(inBody);
 
-		double j = -momentumAtPoint.dot(axis) * (collisionElasticity + 1D) / (calculator.invMass + secondCross.dot(axis));
+		double impulseMagnitude = -momentumAtPoint.dot(axis) * (collisionElasticity + 1D) / (calculator.invMass + secondCross.dot(axis));
 
-		Vector simpleImpulse = new Vector(axis, j);
+		Vector collisionImpulseForce = new Vector(axis, impulseMagnitude);
 
+		//This is just an optimized way to add this force quickly to the PhysicsCalculations
+		if (collisionImpulseForce.dot(offsetVector) < 0) {
+			calculator.linearMomentum.add(collisionImpulseForce);
+			Vector thirdCross = inBody.cross(collisionImpulseForce);
+
+			RotationMatrices.applyTransform3by3(calculator.invFramedMOI, thirdCross);
+			calculator.angularVelocity.add(thirdCross);
+			// return true;
+		}
+
+	}
+	
+	//Applies Coulumb Friction to the collision
+	private void calculateCoulumbFriction(Vector inBody, Vector momentumAtPoint, Vector axis, Vector offsetVector){
+		//Some number between 0 and 1
+		double coefficientOfFriction = .5D;
+		
+		Vector tangentOfSliding = new Vector();
+		
+		double dotProduct = momentumAtPoint.dot(axis);
+		
+		tangentOfSliding = new Vector(momentumAtPoint);
+		tangentOfSliding.subtract(axis.getProduct(dotProduct));
+		
+		//This is probably wrong
+//		tangentOfSliding = momentumAtPoint.cross(axis).cross(axis);
+		tangentOfSliding.normalize();
+		
+//		System.out.println(tangentOfSliding);
+		
+		Vector firstCross = inBody.cross(tangentOfSliding);
+		RotationMatrices.applyTransform3by3(calculator.invFramedMOI, firstCross);
+
+		Vector secondCross = firstCross.cross(inBody);
+		
+		
+		double magnitudeOfFriction = -momentumAtPoint.dot(tangentOfSliding);
+		
+		magnitudeOfFriction /= (calculator.invMass + secondCross.dot(tangentOfSliding));
+		
+		Vector simpleImpulse = new Vector(tangentOfSliding, magnitudeOfFriction);
+//		System.out.println(simpleImpulse);
 		if (simpleImpulse.dot(offsetVector) < 0) {
 			calculator.linearMomentum.add(simpleImpulse);
 			Vector thirdCross = inBody.cross(simpleImpulse);
@@ -193,7 +245,6 @@ public class WorldPhysicsCollider {
 			calculator.angularVelocity.add(thirdCross);
 			// return true;
 		}
-
 	}
 
 	private boolean shouldUpdateCollisonCache() {
@@ -218,7 +269,8 @@ public class WorldPhysicsCollider {
 			return;
 		}
 
-		final BlockPos min = new BlockPos(collisionBB.minX, Math.max(collisionBB.minY, 0), collisionBB.minZ);
+		//Has a -1 on the minY value, I hope this helps with preventing things from falling through the floor
+		final BlockPos min = new BlockPos(collisionBB.minX, Math.max(collisionBB.minY - 1, 0), collisionBB.minZ);
 		final BlockPos max = new BlockPos(collisionBB.maxX, Math.min(collisionBB.maxY, 255), collisionBB.maxZ);
 		centerPotentialHit = new BlockPos((min.getX() + max.getX()) / 2D, (min.getY() + max.getY()) / 2D, (min.getZ() + max.getZ()) / 2D);
 
@@ -279,14 +331,20 @@ public class WorldPhysicsCollider {
 											inLocal.Y = y + .5D;
 											inLocal.Z = z + .5D;
 											parent.coordTransform.fromGlobalToLocal(inLocal);
-
-											int minX = MathHelper.floor_double(inLocal.X - rangeCheck);
-											int minZ = MathHelper.floor_double(inLocal.Z - rangeCheck);
-											int minY = MathHelper.floor_double(inLocal.Y - rangeCheck);
 											
-											maxX = MathHelper.floor_double(inLocal.X + rangeCheck);
-											maxY = MathHelper.floor_double(inLocal.Y + rangeCheck);
-											maxZ = MathHelper.floor_double(inLocal.Z + rangeCheck);
+											Vector inBody = inLocal.getSubtraction(parent.centerCoord);
+											
+											Vector speedInBody = parent.physicsProcessor.getMomentumAtPoint(inBody);
+											speedInBody.multiply(-parent.physicsProcessor.physRawSpeed);
+//											System.out.println(speedInBody);
+											
+											int minX = MathHelper.floor_double(inLocal.X - rangeCheck + speedInBody.X);
+											int minZ = MathHelper.floor_double(inLocal.Z - rangeCheck + speedInBody.Z);
+											int minY = MathHelper.floor_double(inLocal.Y - rangeCheck + speedInBody.Y);
+											
+											maxX = MathHelper.floor_double(inLocal.X + rangeCheck + speedInBody.X);
+											maxY = MathHelper.floor_double(inLocal.Y + rangeCheck + speedInBody.Y);
+											maxZ = MathHelper.floor_double(inLocal.Z + rangeCheck + speedInBody.Z);
 											
 											/** The Old Way of doing things; approx. 33% slower overall when running this code instead of new
 											for (localX = minX; localX < maxX; localX++) {

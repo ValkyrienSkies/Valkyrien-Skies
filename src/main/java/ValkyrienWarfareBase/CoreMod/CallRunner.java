@@ -52,6 +52,15 @@ import net.minecraftforge.common.DimensionManager;
 
 public class CallRunner {
 
+	public static BlockPos onGetPrecipitationHeight(World world, BlockPos posToCheck) {
+		BlockPos pos = world.getPrecipitationHeight(posToCheck);
+		if(!world.isRemote){
+			return pos;
+		}else{
+			return CallRunnerClient.onGetPrecipitationHeightClient(world, posToCheck);
+		}
+	}
+	
 	public static Vec3d onGetLookVec(Entity entity) {
 		// System.out.println("test");
 		return entity.getLookVec();

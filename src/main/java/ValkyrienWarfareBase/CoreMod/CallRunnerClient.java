@@ -484,13 +484,10 @@ public class CallRunnerClient extends CallRunner {
 		return toReturn;
 	}
 	
-	public static BlockPos onGetPrecipitationHeight(World world, BlockPos posToCheck) {
+	public static BlockPos onGetPrecipitationHeightClient(World world, BlockPos posToCheck) {
 		BlockPos pos = world.getPrecipitationHeight(posToCheck);
 		// Servers shouldn't bother running this code
-		if(!world.isRemote){
-			return pos;
-		}
-		
+
 		Vector traceStart = new Vector(pos.getX() + .5D, Minecraft.getMinecraft().thePlayer.posY + 50D, pos.getZ() + .5D);
 		Vector traceEnd = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
 		
@@ -506,7 +503,7 @@ public class CallRunnerClient extends CallRunner {
 //				System.out.println("test");
 				Vector blockPosVector = new Vector(result.getBlockPos().getX() + .5D, result.getBlockPos().getY() + .5D, result.getBlockPos().getZ() + .5D);
 				wrapper.wrapping.coordTransform.fromLocalToGlobal(blockPosVector);
-				BlockPos toReturn = new BlockPos(blockPosVector.X, blockPosVector.Y, blockPosVector.Z);
+				BlockPos toReturn = new BlockPos(pos.getX(), blockPosVector.Y + .5D, pos.getZ());
 				return toReturn;
 			}
 		}

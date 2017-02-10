@@ -83,7 +83,7 @@ public class TransformAdapter extends ClassVisitor {
 		}
 
 		if (isMethod(calledDesc, "(L" + BlockPosName + ";)L" + BlockPosName + ";", calledName, WorldClassName, "getPrecipitationHeight", "RENAMEME", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onGetPrecipitationHeight", String.format("(L%s;L" + BlockPosName + ";)L" + BlockPosName + ";", WorldClassName));
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onGetPrecipitationHeight", String.format("(L%s;L" + BlockPosName + ";)L" + BlockPosName + ";", WorldClassName));
 			return false;
 		}
 

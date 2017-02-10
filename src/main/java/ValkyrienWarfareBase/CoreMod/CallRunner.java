@@ -23,8 +23,8 @@ import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
 import ValkyrienWarfareCombat.Entity.EntityMountingWeaponBase;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
-import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityFallingBlock;
@@ -55,52 +55,6 @@ public class CallRunner {
 	public static Vec3d onGetLookVec(Entity entity) {
 		// System.out.println("test");
 		return entity.getLookVec();
-	}
-
-	public static BlockPos onGetPrecipitationHeight(World world, BlockPos pos) {
-		BlockPos percipitationHeightPos = world.getPrecipitationHeight(pos);
-		// TODO: Fix this
-		if (world.isRemote && false) {
-			int yRange = 999999;
-
-			boolean inWorldSpace = !ValkyrienWarfareMod.chunkManager.isChunkInShipRange(world, pos.getX() >> 4, pos.getZ() >> 4);
-			// Dont run this on any Ship Chunks
-			if (inWorldSpace) {
-				AxisAlignedBB rainCheckBB = new AxisAlignedBB(pos.getX(), pos.getY() - yRange, pos.getZ(), pos.getX() + 1, pos.getY() + yRange, pos.getZ() + 1);
-				List<PhysicsWrapperEntity> wrappers = ValkyrienWarfareMod.physicsManager.getManagerForWorld(world).getNearbyPhysObjects(rainCheckBB);
-				for (PhysicsWrapperEntity wrapper : wrappers) {
-					Vector traceStart = new Vector(percipitationHeightPos.getX() + .5D, percipitationHeightPos.getY() + .5D, percipitationHeightPos.getZ() + .5D);
-					RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, traceStart);
-
-					Vector currentTrace = new Vector(traceStart);
-
-					Vector rayTraceVector = new Vector(0, 1, 0);
-					RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWRotation, rayTraceVector);
-
-					int range = 120;
-
-					while (range > 0 && currentTrace.Y > 0 && currentTrace.Y < 255) {
-						currentTrace.add(rayTraceVector);
-
-						BlockPos toCheck = new BlockPos(Math.round(currentTrace.X), Math.round(currentTrace.Y), Math.round(currentTrace.Z));
-
-						IBlockState iblockstate = wrapper.wrapping.VKChunkCache.getBlockState(toCheck);
-						Material material = iblockstate.getMaterial();
-
-						if (material.blocksMovement()) {
-							Vector currentInWorld = new Vector(currentTrace);
-							RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, currentInWorld);
-							// System.out.println("test");
-							return new BlockPos(Math.round(currentInWorld.X), Math.round(currentInWorld.Y), Math.round(currentInWorld.Z));
-						}
-
-						range--;
-					}
-
-				}
-			}
-		}
-		return percipitationHeightPos;
 	}
 
 	public static boolean onIsOnLadder(EntityLivingBase base) {
@@ -473,13 +427,17 @@ public class CallRunner {
 		if (physManager == null) {
 			return vanillaTrace;
 		}
-		AxisAlignedBB playerRangeBB = new AxisAlignedBB(vec31.xCoord - 1D, vec31.yCoord - 1D, vec31.zCoord - 1D, vec31.xCoord + 1D, vec31.yCoord + 1D, vec31.zCoord + 1D);
-		List<PhysicsWrapperEntity> nearbyShips = physManager.getNearbyPhysObjects(playerRangeBB);
-		boolean changed = false;
+		
 		Vec3d playerEyesPos = vec31;
 		Vec3d playerReachVector = vec32.subtract(vec31);
+		
+		AxisAlignedBB playerRangeBB = new AxisAlignedBB(vec31.xCoord, vec31.yCoord, vec31.zCoord, vec32.xCoord, vec32.yCoord, vec32.zCoord);
+		
+		List<PhysicsWrapperEntity> nearbyShips = physManager.getNearbyPhysObjects(playerRangeBB);
+		boolean changed = false;
+		
 		double reachDistance = playerReachVector.lengthVector();
-		double worldResultDistFromPlayer = 420D;
+		double worldResultDistFromPlayer = 420000000D;
 		if (vanillaTrace != null && vanillaTrace.hitVec != null) {
 			worldResultDistFromPlayer = vanillaTrace.hitVec.distanceTo(vec31);
 		}

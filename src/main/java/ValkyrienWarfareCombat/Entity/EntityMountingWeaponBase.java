@@ -4,6 +4,8 @@ import javax.annotation.Nullable;
 
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareBase.Math.Quaternion;
+import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -32,14 +34,34 @@ public abstract class EntityMountingWeaponBase extends Entity implements IEntity
 
 	public EntityMountingWeaponBase(World worldIn) {
 		super(worldIn);
+		this.width = 1F;
+//        this.height = 1F;
 	}
 
 	@Override
 	public boolean processInitialInteract(EntityPlayer player, @Nullable ItemStack stack, EnumHand hand) {
 		if (player.getLowestRidingEntity() == super.getLowestRidingEntity()) {
 			onRiderInteract(player, stack, hand);
+		}else{
+			player.startRiding(this);
+			
+			PhysicsWrapperEntity wrapper = getShipWeaponIsOn();
+			if(wrapper != null){
+				Vector posInLocal = new Vector(this);
+				Vector passengerOffset = getRiderPositionOffset();
+				
+//				double[] rotationMatricesCompensation = RotationMatrices.getRotationMatrix(0, 45D, 0);
+				
+//				RotationMatrices.applyTransform(rotationMatricesCompensation, passengerOffset);
+				
+				
+				wrapper.wrapping.coordTransform.fromGlobalToLocal(posInLocal);
+				
+				posInLocal.add(passengerOffset);
+				
+				wrapper.wrapping.fixEntity(player, posInLocal);
+			}
 		}
-		player.startRiding(this);
 		return false;
 	}
 
@@ -162,7 +184,7 @@ public abstract class EntityMountingWeaponBase extends Entity implements IEntity
 	@Override
 	public void onUpdate() {
 		super.onUpdate();
-
+//		System.out.println("test");
 		Entity rider = getRider();
 		if (rider != null) {
 			rotationYaw = rider.getRotationYawHead();
@@ -173,9 +195,16 @@ public abstract class EntityMountingWeaponBase extends Entity implements IEntity
 	@Override
 	public void updatePassenger(Entity passenger) {
 		if (this.isPassenger(passenger)) {
-			Vector passengerOffset = getRiderPositionOffset();
-			passengerOffset.add(posX, posY, posZ);
-			passenger.setPosition(passengerOffset.X, passengerOffset.Y, passengerOffset.Z);
+			if(getShipWeaponIsOn() == null){
+				//We're in the real world
+				Vector passengerOffset = getRiderPositionOffset();
+				passengerOffset.add(posX, posY, posZ);
+				passenger.posX = passengerOffset.X;
+				passenger.posY = passengerOffset.Y;
+				passenger.posZ = passengerOffset.Z;
+			}
+			
+//			passenger.setPosition(passengerOffset.X, passengerOffset.Y, passengerOffset.Z);
 		}
 	}
 
@@ -277,6 +306,14 @@ public abstract class EntityMountingWeaponBase extends Entity implements IEntity
 
 	public abstract void doItemDrops();
 
+	public PhysicsWrapperEntity getShipWeaponIsOn(){
+		if(ridingEntity instanceof PhysicsWrapperEntity){
+			PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity)ridingEntity;
+			return wrapper;
+		}
+		return null;
+	}
+	
 	@Override
 	protected void readEntityFromNBT(NBTTagCompound tagCompund) {
 		facing = EnumFacing.getHorizontal(tagCompund.getInteger("facingOrdinal"));

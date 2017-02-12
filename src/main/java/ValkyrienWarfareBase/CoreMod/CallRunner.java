@@ -8,7 +8,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import com.google.common.base.Predicate;
-import com.mojang.authlib.GameProfile;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
@@ -24,9 +23,9 @@ import ValkyrienWarfareCombat.Entity.EntityMountingWeaponBase;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityArmorStand;
 import net.minecraft.entity.item.EntityFallingBlock;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -54,7 +53,7 @@ public class CallRunner {
 
 	public static BlockPos onGetPrecipitationHeight(World world, BlockPos posToCheck) {
 		BlockPos pos = world.getPrecipitationHeight(posToCheck);
-		if(!world.isRemote){
+		if(!world.isRemote || ValkyrienWarfareMod.accurateRain){
 			return pos;
 		}else{
 			return CallRunnerClient.onGetPrecipitationHeightClient(world, posToCheck);
@@ -291,27 +290,6 @@ public class CallRunner {
 		return vanilla;
 	}
 
-	public static void onPlaySound1(World world, @Nullable EntityPlayer player, BlockPos pos, SoundEvent soundIn, SoundCategory category, float volume, float pitch) {
-		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
-		if (wrapper != null) {
-			Vector posVec = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
-			wrapper.wrapping.coordTransform.fromLocalToGlobal(posVec);
-			world.playSound(player, posVec.X, posVec.Y, posVec.Z, soundIn, category, volume, pitch);
-		} else {
-			world.playSound(player, pos, soundIn, category, volume, pitch);
-		}
-	}
-
-	public static void onPlaySound2(World world, @Nullable EntityPlayer player, double x, double y, double z, SoundEvent soundIn, SoundCategory category, float volume, float pitch) {
-		Vector posVec = new Vector(x, y, z);
-		BlockPos pos = new BlockPos(x, y, z);
-		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
-		if (wrapper != null) {
-			wrapper.wrapping.coordTransform.fromLocalToGlobal(posVec);
-		}
-		world.playSound(player, posVec.X, posVec.Y, posVec.Z, soundIn, category, volume, pitch);
-	}
-
 	public static void onPlaySound(World world, double x, double y, double z, SoundEvent soundIn, SoundCategory category, float volume, float pitch, boolean distanceDelay) {
 		BlockPos pos = new BlockPos(x, y, z);
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
@@ -339,10 +317,10 @@ public class CallRunner {
 		BlockPos posAt = new BlockPos(entity);
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, posAt);
 		if (!(entity instanceof EntityFallingBlock) && wrapper != null && wrapper.wrapping.coordTransform != null) {
-			if (entity instanceof EntityMountingWeaponBase) {
+			if (entity instanceof EntityMountingWeaponBase || entity instanceof EntityArmorStand) {
 //				entity.startRiding(wrapper);
-//				 wrapper.wrapping.fixEntity(entity, new Vector(entity));
-//				 wrapper.wrapping.queueEntityForMounting(entity);
+				wrapper.wrapping.fixEntity(entity, new Vector(entity));
+				wrapper.wrapping.queueEntityForMounting(entity);
 			}
 			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, wrapper.wrapping.coordTransform.lToWRotation, entity);
 		}
@@ -419,17 +397,6 @@ public class CallRunner {
 		return toReturn;
 	}
 
-	public static void onMarkBlockRangeForRenderUpdate(World worldFor, int x1, int y1, int z1, int x2, int y2, int z2) {
-		worldFor.markBlockRangeForRenderUpdate(x1, y1, z1, x2, y2, z2);
-		/*
-		 * if(worldFor.isRemote){ int midX = (x1+x2)/2; int midY = (y1+y2)/2; int midZ = (z1+z2)/2; BlockPos pos = new BlockPos(midX,midY,midZ); PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldFor, pos); if(wrapper!=null&&wrapper.wrapping.renderer!=null){ wrapper.wrapping.renderer.updateRange(x1, y1, z1, x2, y2, z2); } }
-		 */
-	}
-
-	public static void onNotifyBlockUpdate(World worldFor, BlockPos pos, IBlockState oldState, IBlockState newState, int flags) {
-		worldFor.notifyBlockUpdate(pos, oldState, newState, flags);
-	}
-
 	public static RayTraceResult onRayTraceBlocks(World world, Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock) {
 		RayTraceResult vanillaTrace = world.rayTraceBlocks(vec31, vec32, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
 		WorldPhysObjectManager physManager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(world);
@@ -472,148 +439,6 @@ public class CallRunner {
 			}
 		}
 		return vanillaTrace;
-	}
-
-	public static EntityPlayerMP onCreatePlayerForUser(PlayerList playerList, GameProfile profile) {
-		// UUID uuid = EntityPlayer.getUUID(profile);
-		// List<EntityPlayerMP> list = Lists.<EntityPlayerMP>newArrayList();
-		//
-		// for (int i = 0; i < playerList.playerEntityList.size(); ++i)
-		// {
-		// EntityPlayerMP entityplayermp = (EntityPlayerMP)playerList.playerEntityList.get(i);
-		//
-		// if (entityplayermp.getUniqueID().equals(uuid))
-		// {
-		// list.add(entityplayermp);
-		// }
-		// }
-		//
-		// EntityPlayerMP entityplayermp2 = (EntityPlayerMP)playerList.uuidToPlayerMap.get(profile.getId());
-		//
-		// if (entityplayermp2 != null && !list.contains(entityplayermp2))
-		// {
-		// list.add(entityplayermp2);
-		// }
-		//
-		// for (EntityPlayerMP entityplayermp1 : list)
-		// {
-		// entityplayermp1.connection.kickPlayerFromServer("You logged in from another location");
-		// }
-		//
-		// PlayerInteractionManager playerinteractionmanager;
-		//
-		// if (playerList.mcServer.isDemo())
-		// {
-		// playerinteractionmanager = new DemoWorldManager(playerList.mcServer.worldServerForDimension(0));
-		// }
-		// else
-		// {
-		// playerinteractionmanager = new CustomPlayerInteractionManager(playerList.mcServer.worldServerForDimension(0));
-		// }
-		//
-		// return new EntityPlayerMP(playerList.mcServer, playerList.mcServer.worldServerForDimension(0), profile, playerinteractionmanager);
-		return playerList.createPlayerForUser(profile);
-	}
-
-	@SuppressWarnings("unused")
-	public static EntityPlayerMP onRecreatePlayerEntity(PlayerList playerList, EntityPlayerMP playerIn, int dimension, boolean conqueredEnd) {
-		// World world = playerList.mcServer.worldServerForDimension(dimension);
-		// if (world == null)
-		// {
-		// dimension = 0;
-		// }
-		// else if (!world.provider.canRespawnHere())
-		// {
-		// dimension = world.provider.getRespawnDimension(playerIn);
-		// }
-		//
-		// playerIn.getServerWorld().getEntityTracker().removePlayerFromTrackers(playerIn);
-		// playerIn.getServerWorld().getEntityTracker().untrackEntity(playerIn);
-		// playerIn.getServerWorld().getPlayerChunkMap().removePlayer(playerIn);
-		// playerList.playerEntityList.remove(playerIn);
-		// playerList.mcServer.worldServerForDimension(playerIn.dimension).removeEntityDangerously(playerIn);
-		// BlockPos blockpos = playerIn.getBedLocation(dimension);
-		// boolean flag = playerIn.isSpawnForced(dimension);
-		// playerIn.dimension = dimension;
-		// PlayerInteractionManager playerinteractionmanager;
-		//
-		// if (playerList.mcServer.isDemo())
-		// {
-		// playerinteractionmanager = new DemoWorldManager(playerList.mcServer.worldServerForDimension(playerIn.dimension));
-		// }
-		// else
-		// {
-		// playerinteractionmanager = new PlayerInteractionManager(playerList.mcServer.worldServerForDimension(playerIn.dimension));
-		// }
-		//
-		// EntityPlayerMP entityplayermp = new EntityPlayerMP(playerList.mcServer, playerList.mcServer.worldServerForDimension(playerIn.dimension), playerIn.getGameProfile(), playerinteractionmanager);
-		// entityplayermp.connection = playerIn.connection;
-		// entityplayermp.clonePlayer(playerIn, conqueredEnd);
-		// entityplayermp.dimension = dimension;
-		// entityplayermp.setEntityId(playerIn.getEntityId());
-		// entityplayermp.setCommandStats(playerIn);
-		// entityplayermp.setPrimaryHand(playerIn.getPrimaryHand());
-		//
-		// for (String s : playerIn.getTags())
-		// {
-		// entityplayermp.addTag(s);
-		// }
-		//
-		// WorldServer worldserver = playerList.mcServer.worldServerForDimension(playerIn.dimension);
-		//// playerList.setPlayerGameTypeBasedOnOther(entityplayermp, playerIn, worldserver);
-		//
-		//
-		//
-		// if (playerIn != null)
-		// {
-		// entityplayermp.interactionManager.setGameType(playerIn.interactionManager.getGameType());
-		// }
-		// else if (playerList.gameType != null)
-		// {
-		// entityplayermp.interactionManager.setGameType(playerList.gameType);
-		// }
-		//
-		// entityplayermp.interactionManager.initializeGameType(worldserver.getWorldInfo().getGameType());
-		//
-		//
-		// if (blockpos != null)
-		// {
-		// BlockPos blockpos1 = EntityPlayer.getBedSpawnLocation(playerList.mcServer.worldServerForDimension(playerIn.dimension), blockpos, flag);
-		//
-		// if (blockpos1 != null)
-		// {
-		// entityplayermp.setLocationAndAngles((double)((float)blockpos1.getX() + 0.5F), (double)((float)blockpos1.getY() + 0.1F), (double)((float)blockpos1.getZ() + 0.5F), 0.0F, 0.0F);
-		// entityplayermp.setSpawnPoint(blockpos, flag);
-		// }
-		// else
-		// {
-		// entityplayermp.connection.sendPacket(new SPacketChangeGameState(0, 0.0F));
-		// }
-		// }
-		//
-		// worldserver.getChunkProvider().provideChunk((int)entityplayermp.posX >> 4, (int)entityplayermp.posZ >> 4);
-		//
-		// while (!worldserver.getCollisionBoxes(entityplayermp, entityplayermp.getEntityBoundingBox()).isEmpty() && entityplayermp.posY < 256.0D)
-		// {
-		// entityplayermp.setPosition(entityplayermp.posX, entityplayermp.posY + 1.0D, entityplayermp.posZ);
-		// }
-		//
-		// entityplayermp.connection.sendPacket(new SPacketRespawn(entityplayermp.dimension, entityplayermp.worldObj.getDifficulty(), entityplayermp.worldObj.getWorldInfo().getTerrainType(), entityplayermp.interactionManager.getGameType()));
-		// BlockPos blockpos2 = worldserver.getSpawnPoint();
-		// entityplayermp.connection.setPlayerLocation(entityplayermp.posX, entityplayermp.posY, entityplayermp.posZ, entityplayermp.rotationYaw, entityplayermp.rotationPitch);
-		// entityplayermp.connection.sendPacket(new SPacketSpawnPosition(blockpos2));
-		// entityplayermp.connection.sendPacket(new SPacketSetExperience(entityplayermp.experience, entityplayermp.experienceTotal, entityplayermp.experienceLevel));
-		// playerList.updateTimeAndWeatherForPlayer(entityplayermp, worldserver);
-		// playerList.updatePermissionLevel(entityplayermp);
-		// worldserver.getPlayerChunkMap().addPlayer(entityplayermp);
-		// worldserver.spawnEntityInWorld(entityplayermp);
-		// playerList.playerEntityList.add(entityplayermp);
-		// playerList.uuidToPlayerMap.put(entityplayermp.getUniqueID(), entityplayermp);
-		// entityplayermp.addSelfToInternalCraftingInventory();
-		// entityplayermp.setHealth(entityplayermp.getHealth());
-		// net.minecraftforge.fml.common.FMLCommonHandler.instance().firePlayerRespawnEvent(entityplayermp);
-		// return entityplayermp;
-		return playerList.recreatePlayerEntity(playerIn, dimension, conqueredEnd);
 	}
 
 	public static void onEntityMove(Entity entity, double dx, double dy, double dz) {

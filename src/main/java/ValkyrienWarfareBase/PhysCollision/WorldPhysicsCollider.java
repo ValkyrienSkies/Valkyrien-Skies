@@ -67,13 +67,16 @@ public class WorldPhysicsCollider {
 
 	// Runs through the cache ArrayList, checking each possible BlockPos for SOLID blocks that can collide, if it finds any it will
 	// move to the next method
+	
+	
+	//TODO: Optimize from here, this is taking 10x the processing time of updating collision cache!
 	private void processPotentialCollisionsAccurately() {
 		final MutableBlockPos localCollisionPos = new MutableBlockPos();
 		final Vector inWorld = new Vector();
 
 		int minX, minY, minZ, maxX, maxY, maxZ, x, y, z;
 
-		final double rangeCheck = 1D;
+		final double rangeCheck = .65D;
 
 		TIntIterator intIterator = cachedPotentialHits.iterator();
 
@@ -86,28 +89,77 @@ public class WorldPhysicsCollider {
 			inWorld.Z = mutablePos.getZ() + .5;
 			parent.coordTransform.fromGlobalToLocal(inWorld);
 
-//			Vector inBody = inWorld.getSubtraction(parent.centerCoord);
+			minX = MathHelper.floor_double(inWorld.X - rangeCheck);
+			minY = MathHelper.floor_double(inWorld.Y - rangeCheck);
+			minZ = MathHelper.floor_double(inWorld.Z - rangeCheck);
 			
-//			Vector speedInBody = parent.physicsProcessor.getMomentumAtPoint(inBody);
-//			speedInBody.multiply(-parent.physicsProcessor.physRawSpeed);
-			
-//			System.out.println(speedInBody);
-			
-			minX = (int)MathHelper.floor_double(inWorld.X - rangeCheck);
-			minY = (int)MathHelper.floor_double(inWorld.Y - rangeCheck);
-			minZ = (int)MathHelper.floor_double(inWorld.Z - rangeCheck);
-			
-			maxX = (int) Math.floor(inWorld.X + rangeCheck);
-			maxY = (int) Math.floor(inWorld.Y + rangeCheck);
-			maxZ = (int) Math.floor(inWorld.Z + rangeCheck);
+			maxX = MathHelper.floor_double(inWorld.X + rangeCheck);
+			maxY = MathHelper.floor_double(inWorld.Y + rangeCheck);
+			maxZ = MathHelper.floor_double(inWorld.Z + rangeCheck);
 
 			/**
 			 * Something here is causing the game to freeze :/
 			 */
-			for (x = minX; x <= maxX; x++) {
+			
+			int minChunkX = minX >> 4;
+			int minChunkY = minY >> 4;
+			int minChunkZ = minZ >> 4;
+			
+			int maxChunkX = maxX >> 4;
+			int maxChunkY = maxY >> 4;
+			int maxChunkZ = maxZ >> 4;
+			
+			for(int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++){
+				for(int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++){
+					if (parent.ownsChunk(chunkX, chunkZ)) {
+						final Chunk chunkIn = parent.VKChunkCache.getChunkAt(chunkX, chunkZ);
+						
+						int minXToCheck = chunkX << 4;
+						int maxXToCheck = minXToCheck + 15;
+						
+						int minZToCheck = chunkZ << 4;
+						int maxZToCheck = minZToCheck + 15;
+						
+						minXToCheck = Math.max(minXToCheck, minX);
+						maxXToCheck = Math.min(maxXToCheck, maxX);
+						
+						minZToCheck = Math.max(minZToCheck, minZ);
+						maxZToCheck = Math.min(maxZToCheck, maxZ);
+						
+						for(int chunkY = minChunkY; chunkY <= maxChunkY; chunkY++){
+							ExtendedBlockStorage storage = chunkIn.storageArrays[chunkY];
+							if(storage != null){
+								int minYToCheck = chunkY << 4;
+								int maxYToCheck = minYToCheck + 15;
+								
+								minYToCheck = Math.max(minYToCheck, minY);
+								maxYToCheck = Math.min(maxYToCheck, maxY);
+								
+								for(x = minXToCheck; x <= maxXToCheck; x++){
+									for(z = minZToCheck; z <= maxZToCheck; z++){
+										for (y = minYToCheck; y <= maxYToCheck; y++) {
+											final IBlockState state = storage.get(x & 15, y & 15, z & 15);
+											if (state.getMaterial().isSolid()) {
+												localCollisionPos.setPos(x, y, z);
+		
+												handleLikelyCollision(mutablePos, localCollisionPos, parent.surroundingWorldChunksCache.getBlockState(mutablePos), state);
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			
+			
+			//The old way of doing things
+			
+			/*for (x = minX; x <= maxX; x++) {
 				for (z = minZ; z <= maxZ; z++) {
-					for (y = minY; y <= maxY; y++) {
-						if (parent.ownsChunk(x >> 4, z >> 4)) {
+					if (parent.ownsChunk(x >> 4, z >> 4)) {
+						for (y = minY; y <= maxY; y++) {
 							final Chunk chunkIn = parent.VKChunkCache.getChunkAt(x >> 4, z >> 4);
 							final IBlockState state = chunkIn.getBlockState(x, y, z);
 							if (state.getMaterial().isSolid()) {
@@ -118,7 +170,7 @@ public class WorldPhysicsCollider {
 						}
 					}
 				}
-			}
+			}*/
 		}
 
 	}
@@ -397,11 +449,11 @@ public class WorldPhysicsCollider {
 											
 											
 											int shipChunkMinX = minX >> 4;
-											int shipChunkMinY = minY >> 4;
+											int shipChunkMinY = Math.max(minY >> 4, 0);
 											int shipChunkMinZ = minZ >> 4;
 					
 											int shipChunkMaxX = maxX >> 4;
-											int shipChunkMaxY = maxY >> 4;
+											int shipChunkMaxY = Math.min(maxY >> 4, 15);
 											int shipChunkMaxZ = maxZ >> 4;
 											
 											shipChunkMaxX++;shipChunkMaxY++;shipChunkMaxZ++;

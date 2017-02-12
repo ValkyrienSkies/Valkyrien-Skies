@@ -27,6 +27,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityArmorStand;
 import net.minecraft.entity.item.EntityFallingBlock;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -339,10 +340,10 @@ public class CallRunner {
 		BlockPos posAt = new BlockPos(entity);
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, posAt);
 		if (!(entity instanceof EntityFallingBlock) && wrapper != null && wrapper.wrapping.coordTransform != null) {
-			if (entity instanceof EntityMountingWeaponBase) {
+			if (entity instanceof EntityMountingWeaponBase || entity instanceof EntityArmorStand) {
 //				entity.startRiding(wrapper);
-//				 wrapper.wrapping.fixEntity(entity, new Vector(entity));
-//				 wrapper.wrapping.queueEntityForMounting(entity);
+				wrapper.wrapping.fixEntity(entity, new Vector(entity));
+				wrapper.wrapping.queueEntityForMounting(entity);
 			}
 			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, wrapper.wrapping.coordTransform.lToWRotation, entity);
 		}

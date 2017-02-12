@@ -67,9 +67,10 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 		if (inLocal != null) {
 			Vector newEntityPosition = new Vector(inLocal);
 			wrapping.coordTransform.fromLocalToGlobal(newEntityPosition);
-			passenger.posX = newEntityPosition.X;
-			passenger.posY = newEntityPosition.Y;
-			passenger.posZ = newEntityPosition.Z;
+//			passenger.posX = newEntityPosition.X;
+//			passenger.posY = newEntityPosition.Y;
+//			passenger.posZ = newEntityPosition.Z;
+			passenger.setPosition(newEntityPosition.X, newEntityPosition.Y, newEntityPosition.Z);
 		}
 	}
 
@@ -117,6 +118,11 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 
 	@Override
 	public void setLocationAndAngles(double x, double y, double z, float yaw, float pitch) {
+	}
+
+	@Override
+	protected boolean canFitPassenger(Entity passenger){
+		return true;
 	}
 
 	@Override

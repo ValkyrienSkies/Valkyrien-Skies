@@ -232,7 +232,7 @@ public class PhysObjectRenderManager {
 //				System.out.println("test");
 				if (!mounted.isDead && mounted != Minecraft.getMinecraft().getRenderViewEntity() || Minecraft.getMinecraft().gameSettings.thirdPersonView > 0) {
 					if(mounted instanceof EntityCannonBasic){
-						System.out.println("test");
+//						System.out.println("test");
 					}
 					GL11.glPushMatrix();
 					int i = mounted.getBrightnessForRender(partialTicks);

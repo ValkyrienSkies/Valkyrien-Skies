@@ -4,6 +4,8 @@ import javax.annotation.Nullable;
 
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareBase.Math.Quaternion;
+import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -32,14 +34,24 @@ public abstract class EntityMountingWeaponBase extends Entity implements IEntity
 
 	public EntityMountingWeaponBase(World worldIn) {
 		super(worldIn);
+		this.width = 1F;
+//        this.height = 1F;
 	}
 
 	@Override
 	public boolean processInitialInteract(EntityPlayer player, @Nullable ItemStack stack, EnumHand hand) {
 		if (player.getLowestRidingEntity() == super.getLowestRidingEntity()) {
 			onRiderInteract(player, stack, hand);
+		}else{
+			player.startRiding(this);
+			
+			if(ridingEntity instanceof PhysicsWrapperEntity){
+				PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity)ridingEntity;
+				Vector posInLocal = new Vector(this);
+				wrapper.wrapping.coordTransform.fromGlobalToLocal(posInLocal);
+				wrapper.wrapping.fixEntity(player, posInLocal);
+			}
 		}
-		player.startRiding(this);
 		return false;
 	}
 
@@ -162,7 +174,7 @@ public abstract class EntityMountingWeaponBase extends Entity implements IEntity
 	@Override
 	public void onUpdate() {
 		super.onUpdate();
-
+//		System.out.println("test");
 		Entity rider = getRider();
 		if (rider != null) {
 			rotationYaw = rider.getRotationYawHead();
@@ -173,9 +185,9 @@ public abstract class EntityMountingWeaponBase extends Entity implements IEntity
 	@Override
 	public void updatePassenger(Entity passenger) {
 		if (this.isPassenger(passenger)) {
-			Vector passengerOffset = getRiderPositionOffset();
-			passengerOffset.add(posX, posY, posZ);
-			passenger.setPosition(passengerOffset.X, passengerOffset.Y, passengerOffset.Z);
+//			Vector passengerOffset = getRiderPositionOffset();
+//			passengerOffset.add(posX, posY, posZ);
+//			passenger.setPosition(passengerOffset.X, passengerOffset.Y, passengerOffset.Z);
 		}
 	}
 

@@ -3,6 +3,7 @@ package ValkyrienWarfareBase.PhysicsManagement;
 import javax.annotation.Nullable;
 
 import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareCombat.Entity.EntityMountingWeaponBase;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -71,6 +72,22 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 //			passenger.posY = newEntityPosition.Y;
 //			passenger.posZ = newEntityPosition.Z;
 			passenger.setPosition(newEntityPosition.X, newEntityPosition.Y, newEntityPosition.Z);
+			
+			if(passenger instanceof EntityMountingWeaponBase){
+				passenger.onUpdate();
+				
+				for(Entity e:passenger.riddenByEntities){
+					if(wrapping.isEntityFixed(e)){
+						Vector inLocalAgain = wrapping.getLocalPositionForEntity(e);
+						if (inLocalAgain != null) {
+							Vector newEntityPositionAgain = new Vector(inLocalAgain);
+							wrapping.coordTransform.fromLocalToGlobal(newEntityPositionAgain);
+							
+							e.setPosition(newEntityPositionAgain.X, newEntityPositionAgain.Y, newEntityPositionAgain.Z);
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -90,8 +107,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 				wrapping.pilotingController.setPilotEntity(null, false);
 			}
 		} else {
-			// It doesnt matter if I dont remove these terms from client, and things are problematic
-			// if I do; best to leave this commented
+			// It doesnt matter if I dont remove these terms from client, and things are problematic if I do. Best to leave this commented
 			// wrapping.removeEntityUUID(toRemove.getPersistentID().hashCode());
 		}
 	}

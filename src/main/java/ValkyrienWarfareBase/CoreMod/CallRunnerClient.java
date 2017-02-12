@@ -472,6 +472,8 @@ public class CallRunnerClient extends CallRunner {
 	}
 
 	public static int onRenderBlockLayer(RenderGlobal renderer, BlockRenderLayer blockLayerIn, double partialTicks, int pass, Entity entityIn) {
+		int toReturn = renderer.renderBlockLayer(blockLayerIn, partialTicks, pass, entityIn);
+		GlStateManager.resetColor();
 		for (PhysicsWrapperEntity wrapper : ValkyrienWarfareMod.physicsManager.getManagerForWorld(renderer.theWorld).physicsEntities) {
 			GL11.glPushMatrix();
 			if (wrapper.wrapping.renderer != null && wrapper.wrapping.renderer.shouldRender()) {
@@ -479,8 +481,6 @@ public class CallRunnerClient extends CallRunner {
 			}
 			GL11.glPopMatrix();
 		}
-		int toReturn = renderer.renderBlockLayer(blockLayerIn, partialTicks, pass, entityIn);
-		GlStateManager.resetColor();
 		return toReturn;
 	}
 	

@@ -76,7 +76,7 @@ public class WorldPhysObjectManager {
 
 	public PhysicsWrapperEntity getShipFixedOnto(Entity entity) {
 		for (PhysicsWrapperEntity wrapper : physicsEntities) {
-			if (wrapper.wrapping.entityLocalPositions.containsKey(entity.getPersistentID().hashCode())) {
+			if (wrapper.wrapping.isEntityFixed(entity)) {
 				if (wrapper.riddenByEntities.contains(entity)) {
 					return wrapper;
 				}

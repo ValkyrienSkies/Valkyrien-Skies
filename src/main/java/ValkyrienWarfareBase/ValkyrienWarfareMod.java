@@ -97,6 +97,7 @@ public class ValkyrienWarfareMod {
 	public static double shipLowerLimit = -30D;
 	public static int maxAirships = -1;
 	public static boolean highAccuracyCollisions = false;
+	public static boolean accurateRain = false;
 
 	// NOTE: These only calculate physics, so they are only relevant to the Server end
 	public static ExecutorService MultiThreadExecutor;
@@ -187,8 +188,9 @@ public class ValkyrienWarfareMod {
 
 		maxAirships = config.get(Configuration.CATEGORY_GENERAL, "Max airships per player", -1, "Players can't own more than this many airships at once. Set to -1 to disable.").getInt();
 
-		highAccuracyCollisions = config.get(Configuration.CATEGORY_GENERAL, "Enables higher collision accuracy", false, "Increased CPU demand though").getBoolean();
+		highAccuracyCollisions = config.get(Configuration.CATEGORY_GENERAL, "Enables higher collision accuracy", false, "Debug feature, takes an insane amount of processing power").getBoolean();
 		
+		accurateRain = config.get(Configuration.CATEGORY_GENERAL, "Enables percipitation not falling through ships", false, "Debug feature, takes a lot of processing power").getBoolean();
 		
 		if (MultiThreadExecutor != null) {
 			MultiThreadExecutor.shutdown();

@@ -782,6 +782,10 @@ public class PhysicsObject {
 	public void removeEntityUUID(int uuidHash) {
 		entityLocalPositions.remove(uuidHash);
 	}
+	
+	public boolean isEntityFixed(Entity toCheck){
+		return entityLocalPositions.containsKey(toCheck.getPersistentID().hashCode());
+	}
 
 	public Vector getLocalPositionForEntity(Entity getPositionFor) {
 		int uuidHash = getPositionFor.getPersistentID().hashCode();

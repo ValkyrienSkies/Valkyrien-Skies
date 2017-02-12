@@ -55,7 +55,7 @@ public class CallRunner {
 
 	public static BlockPos onGetPrecipitationHeight(World world, BlockPos posToCheck) {
 		BlockPos pos = world.getPrecipitationHeight(posToCheck);
-		if(!world.isRemote){
+		if(!world.isRemote || ValkyrienWarfareMod.accurateRain){
 			return pos;
 		}else{
 			return CallRunnerClient.onGetPrecipitationHeightClient(world, posToCheck);

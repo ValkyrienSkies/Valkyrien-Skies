@@ -211,7 +211,14 @@ public class PhysObjectRenderManager {
 	public void renderEntities(float partialTicks) {
 		ArrayList<FixedEntityData> fixedEntities = new ArrayList();// ArrayList<FixedEntityData>) parent.fixedEntities.clone();
 		List<Entity> mountedEntities = parent.wrapper.riddenByEntities;
-		for (Entity mounted : mountedEntities) {
+		
+		ArrayList<Entity> mountedEntitiesWithSecondary = new ArrayList<Entity>(mountedEntities);
+		
+		for(Entity e : mountedEntities){
+			mountedEntitiesWithSecondary.addAll(e.riddenByEntities);
+		}
+
+		for (Entity mounted : mountedEntitiesWithSecondary) {
 			Vector localPosition = parent.getLocalPositionForEntity(mounted);
 			
 			if(localPosition != null){

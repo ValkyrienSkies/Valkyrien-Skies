@@ -45,10 +45,20 @@ public abstract class EntityMountingWeaponBase extends Entity implements IEntity
 		}else{
 			player.startRiding(this);
 			
-			if(ridingEntity instanceof PhysicsWrapperEntity){
-				PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity)ridingEntity;
+			PhysicsWrapperEntity wrapper = getShipWeaponIsOn();
+			if(wrapper != null){
 				Vector posInLocal = new Vector(this);
+				Vector passengerOffset = getRiderPositionOffset();
+				
+//				double[] rotationMatricesCompensation = RotationMatrices.getRotationMatrix(0, 45D, 0);
+				
+//				RotationMatrices.applyTransform(rotationMatricesCompensation, passengerOffset);
+				
+				
 				wrapper.wrapping.coordTransform.fromGlobalToLocal(posInLocal);
+				
+				posInLocal.add(passengerOffset);
+				
 				wrapper.wrapping.fixEntity(player, posInLocal);
 			}
 		}
@@ -185,8 +195,15 @@ public abstract class EntityMountingWeaponBase extends Entity implements IEntity
 	@Override
 	public void updatePassenger(Entity passenger) {
 		if (this.isPassenger(passenger)) {
-//			Vector passengerOffset = getRiderPositionOffset();
-//			passengerOffset.add(posX, posY, posZ);
+			if(getShipWeaponIsOn() == null){
+				//We're in the real world
+				Vector passengerOffset = getRiderPositionOffset();
+				passengerOffset.add(posX, posY, posZ);
+				passenger.posX = passengerOffset.X;
+				passenger.posY = passengerOffset.Y;
+				passenger.posZ = passengerOffset.Z;
+			}
+			
 //			passenger.setPosition(passengerOffset.X, passengerOffset.Y, passengerOffset.Z);
 		}
 	}
@@ -289,6 +306,14 @@ public abstract class EntityMountingWeaponBase extends Entity implements IEntity
 
 	public abstract void doItemDrops();
 
+	public PhysicsWrapperEntity getShipWeaponIsOn(){
+		if(ridingEntity instanceof PhysicsWrapperEntity){
+			PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity)ridingEntity;
+			return wrapper;
+		}
+		return null;
+	}
+	
 	@Override
 	protected void readEntityFromNBT(NBTTagCompound tagCompund) {
 		facing = EnumFacing.getHorizontal(tagCompund.getInteger("facingOrdinal"));

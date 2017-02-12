@@ -187,6 +187,9 @@ public class ValkyrienWarfareMod {
 
 		maxAirships = config.get(Configuration.CATEGORY_GENERAL, "Max airships per player", -1, "Players can't own more than this many airships at once. Set to -1 to disable.").getInt();
 
+		highAccuracyCollisions = config.getBoolean(Configuration.CATEGORY_GENERAL, "Enables higher collision accuracy", false, "Increased CPU demand though");
+		
+		
 		if (MultiThreadExecutor != null) {
 			MultiThreadExecutor.shutdown();
 		}
@@ -222,7 +225,6 @@ public class ValkyrienWarfareMod {
 			tag.setDouble("gravityVecZ", 0);
 			tag.setInteger("physicsIterations", 10);
 			tag.setDouble("physicsSpeed", 0.05);
-			tag.setBoolean("highAccuracyCollisions", false);
 			tag.save();
 		} else {
 			tag = new DataTag(file);
@@ -238,7 +240,6 @@ public class ValkyrienWarfareMod {
 		ValkyrienWarfareMod.physIter = tag.getInteger("physicsIterations", 8);
 		ValkyrienWarfareMod.physSpeed = tag.getDouble("physicsSpeed", 0.05);
 		ValkyrienWarfareMod.gravity = new Vector(tag.getDouble("gravityVecX", 0.0), tag.getDouble("gravityVecY", -9.8), tag.getDouble("gravityVecZ", 0.0));
-		ValkyrienWarfareMod.highAccuracyCollisions = tag.getBoolean("highAccuracyCollisions");
 	}
 
 	public void saveConfig() {
@@ -254,7 +255,6 @@ public class ValkyrienWarfareMod {
 		tag.setDouble("gravityVecZ", ValkyrienWarfareMod.gravity.Z);
 		tag.setInteger("physicsIterations", ValkyrienWarfareMod.physIter);
 		tag.setDouble("physicsSpeed", ValkyrienWarfareMod.physSpeed);
-		tag.setBoolean("highAccuracyCollisions", highAccuracyCollisions);
 		tag.save();
 	}
 	

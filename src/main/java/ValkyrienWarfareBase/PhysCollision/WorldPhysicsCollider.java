@@ -1,8 +1,8 @@
 package ValkyrienWarfareBase.PhysCollision;
 
-import java.util.List;
 import java.util.Random;
 
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Collision.PhysCollisionObject;
@@ -277,7 +277,12 @@ public class WorldPhysicsCollider {
 		final ChunkCache cache = parent.surroundingWorldChunksCache;
 		final Vector inLocal = new Vector();
 		int maxX, maxY, maxZ, localX, localY, localZ, x, y, z, chunkX, chunkZ;
-		final double rangeCheck = 1.8D;
+		double rangeCheck = 1.8D;
+		
+		if(ValkyrienWarfareMod.highAccuracyCollisions){
+			rangeCheck = 3D;
+		}
+		
 		Chunk chunk, chunkIn;
 		ExtendedBlockStorage extendedblockstorage;
 		IBlockState state, localState;
@@ -335,16 +340,43 @@ public class WorldPhysicsCollider {
 											Vector inBody = inLocal.getSubtraction(parent.centerCoord);
 											
 											Vector speedInBody = parent.physicsProcessor.getMomentumAtPoint(inBody);
+											
 											speedInBody.multiply(-parent.physicsProcessor.physRawSpeed);
+											
+											if(ValkyrienWarfareMod.highAccuracyCollisions){
+												speedInBody.multiply(20D);
+											}
 //											System.out.println(speedInBody);
 											
-											int minX = MathHelper.floor_double(inLocal.X - rangeCheck + speedInBody.X);
-											int minZ = MathHelper.floor_double(inLocal.Z - rangeCheck + speedInBody.Z);
-											int minY = MathHelper.floor_double(inLocal.Y - rangeCheck + speedInBody.Y);
+											int minX,minY,minZ;
 											
-											maxX = MathHelper.floor_double(inLocal.X + rangeCheck + speedInBody.X);
-											maxY = MathHelper.floor_double(inLocal.Y + rangeCheck + speedInBody.Y);
-											maxZ = MathHelper.floor_double(inLocal.Z + rangeCheck + speedInBody.Z);
+											if(speedInBody.X > 0){
+												minX = MathHelper.floor_double(inLocal.X - rangeCheck);
+												maxX = MathHelper.floor_double(inLocal.X + rangeCheck + speedInBody.X);
+											}else{
+												minX = MathHelper.floor_double(inLocal.X - rangeCheck + speedInBody.X);
+												maxX = MathHelper.floor_double(inLocal.X + rangeCheck);
+											}
+											
+											if(speedInBody.Y > 0){
+												minY = MathHelper.floor_double(inLocal.Y - rangeCheck);
+												maxY = MathHelper.floor_double(inLocal.Y + rangeCheck + speedInBody.Y);
+											}else{
+												minY = MathHelper.floor_double(inLocal.Y - rangeCheck + speedInBody.Y);
+												maxY = MathHelper.floor_double(inLocal.Y + rangeCheck);
+											}
+											
+											if(speedInBody.Z > 0){
+												minZ = MathHelper.floor_double(inLocal.Z - rangeCheck);
+												maxZ = MathHelper.floor_double(inLocal.Z + rangeCheck + speedInBody.Z);
+											}else{
+												minZ = MathHelper.floor_double(inLocal.Z - rangeCheck + speedInBody.Z);
+												maxZ = MathHelper.floor_double(inLocal.Z + rangeCheck);
+											}
+											
+											
+											
+											
 											
 											/** The Old Way of doing things; approx. 33% slower overall when running this code instead of new
 											for (localX = minX; localX < maxX; localX++) {

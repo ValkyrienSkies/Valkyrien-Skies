@@ -96,6 +96,7 @@ public class ValkyrienWarfareMod {
 	public static double shipUpperLimit = 1000D;
 	public static double shipLowerLimit = -30D;
 	public static int maxAirships = -1;
+	public static boolean highAccuracyCollisions = false;
 
 	// NOTE: These only calculate physics, so they are only relevant to the Server end
 	public static ExecutorService MultiThreadExecutor;
@@ -221,6 +222,7 @@ public class ValkyrienWarfareMod {
 			tag.setDouble("gravityVecZ", 0);
 			tag.setInteger("physicsIterations", 10);
 			tag.setDouble("physicsSpeed", 0.05);
+			tag.setBoolean("highAccuracyCollisions", false);
 			tag.save();
 		} else {
 			tag = new DataTag(file);
@@ -236,6 +238,7 @@ public class ValkyrienWarfareMod {
 		ValkyrienWarfareMod.physIter = tag.getInteger("physicsIterations", 8);
 		ValkyrienWarfareMod.physSpeed = tag.getDouble("physicsSpeed", 0.05);
 		ValkyrienWarfareMod.gravity = new Vector(tag.getDouble("gravityVecX", 0.0), tag.getDouble("gravityVecY", -9.8), tag.getDouble("gravityVecZ", 0.0));
+		ValkyrienWarfareMod.highAccuracyCollisions = tag.getBoolean("highAccuracyCollisions");
 	}
 
 	public void saveConfig() {
@@ -251,6 +254,7 @@ public class ValkyrienWarfareMod {
 		tag.setDouble("gravityVecZ", ValkyrienWarfareMod.gravity.Z);
 		tag.setInteger("physicsIterations", ValkyrienWarfareMod.physIter);
 		tag.setDouble("physicsSpeed", ValkyrienWarfareMod.physSpeed);
+		tag.setBoolean("highAccuracyCollisions", highAccuracyCollisions);
 		tag.save();
 	}
 	

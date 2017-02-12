@@ -169,7 +169,7 @@ public class ValkyrienWarfareMod {
 
 	/**
 	 * Called by the game when loading the configuration file, also called whenever the player makes a change in the MOD OPTIONS menu,
-	 * effectively reloading all the configuaration values
+	 * effectively reloading all the configuration values
 	 * @param conf
 	 */
 	public static void applyConfig(Configuration conf) {
@@ -187,7 +187,7 @@ public class ValkyrienWarfareMod {
 
 		maxAirships = config.get(Configuration.CATEGORY_GENERAL, "Max airships per player", -1, "Players can't own more than this many airships at once. Set to -1 to disable.").getInt();
 
-		highAccuracyCollisions = config.getBoolean(Configuration.CATEGORY_GENERAL, "Enables higher collision accuracy", false, "Increased CPU demand though");
+		highAccuracyCollisions = config.get(Configuration.CATEGORY_GENERAL, "Enables higher collision accuracy", false, "Increased CPU demand though").getBoolean();
 		
 		
 		if (MultiThreadExecutor != null) {

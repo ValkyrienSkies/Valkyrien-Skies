@@ -57,7 +57,7 @@ import net.minecraft.world.World;
 public class CallRunnerClient extends CallRunner {
 
 	public static void onOrientCamera(EntityRenderer renderer, float partialTicks) {
-		if(true){
+		if(!true){
 			renderer.orientCamera(partialTicks);
 			return;
 		}

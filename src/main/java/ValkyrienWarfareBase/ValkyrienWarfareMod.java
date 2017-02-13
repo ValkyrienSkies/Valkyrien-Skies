@@ -190,7 +190,7 @@ public class ValkyrienWarfareMod {
 
 		highAccuracyCollisions = config.get(Configuration.CATEGORY_GENERAL, "Enables higher collision accuracy", false, "Debug feature, takes an insane amount of processing power").getBoolean();
 		
-		accurateRain = config.get(Configuration.CATEGORY_GENERAL, "Enables percipitation not falling through ships", false, "Debug feature, takes a lot of processing power").getBoolean();
+		accurateRain = config.get(Configuration.CATEGORY_GENERAL, "Enables accurate rain on ships", false, "Debug feature, takes a lot of processing power").getBoolean();
 		
 		if (MultiThreadExecutor != null) {
 			MultiThreadExecutor.shutdown();

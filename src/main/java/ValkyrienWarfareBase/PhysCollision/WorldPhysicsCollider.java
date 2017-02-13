@@ -458,6 +458,11 @@ public class WorldPhysicsCollider {
 											
 											shipChunkMaxX++;shipChunkMaxY++;shipChunkMaxZ++;
 											
+											if(shipChunkMaxZ - shipChunkMinZ > 200 || shipChunkMaxX - shipChunkMinX > 200){
+												System.err.println("Wtf. This fucking error");
+												return;
+											}
+											
 											
 											testForNearbyBlocks:
 											for(int shipChunkX = shipChunkMinX;shipChunkX < shipChunkMaxX; shipChunkX++){

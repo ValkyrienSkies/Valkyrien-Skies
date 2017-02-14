@@ -49,7 +49,6 @@ public class TransformAdapter extends ClassVisitor {
 	private static final String ViewFrustumName = "net/minecraft/client/renderer/ViewFrustum";
 	private static final String EntityRendererName = "net/minecraft/client/renderer/EntityRenderer";
 	private static final String FrustumName = "net/minecraft/client/renderer/culling/Frustum";
-	private static final String RenderManagerName = "net/minecraft/client/renderer/entity/RenderManager";
 
 	private static final String IteratorName = "java/util/Iterator";
 	private static final String PredicateName = "com/google/common/base/Predicate";
@@ -74,11 +73,6 @@ public class TransformAdapter extends ClassVisitor {
 		
 		if (isMethod(calledDesc, "(DF)L" + RayTraceResultName + ";", calledName, EntityClassName, "rayTrace", "func_174822_a", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onRayTrace", String.format("(L%s;DF)L"+RayTraceResultName+";", EntityClassName));
-			return false;
-		}
-		
-		if (isMethod(calledDesc, "(L"+EntityClassName+";DDDFFZ)V", calledName, RenderManagerName, "doRenderEntity", "func_188391_a", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onDoRenderEntity", String.format("(L%s;L"+EntityClassName+";DDDFFZ)V", RenderManagerName));
 			return false;
 		}
 		

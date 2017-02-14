@@ -4,13 +4,16 @@ import ValkyrienWarfareBase.EventsClient;
 import ValkyrienWarfareBase.KeyHandler;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareBase.Client.RenderManagerOverride;
 import ValkyrienWarfareBase.Math.Quaternion;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.Render.PhysObjectRenderFactory;
+import code.elix_x.excomms.reflection.ReflectionHelper.AClass;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.culling.ICamera;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.common.MinecraftForge;
@@ -43,6 +46,7 @@ public class ClientProxy extends CommonProxy {
 	@Override
 	public void postInit(FMLPostInitializationEvent e) {
 		super.postInit(e);
+		new AClass<>(Minecraft.class).<RenderManager>getDeclaredField("renderManager").setAccessible(true).set(Minecraft.getMinecraft(), new RenderManagerOverride(Minecraft.getMinecraft().getRenderManager()));
 	}
 
 	private void registerBlockItem(Block toRegister) {

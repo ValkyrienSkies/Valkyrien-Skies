@@ -11,6 +11,8 @@ import ValkyrienWarfareBase.Render.PhysObjectRenderFactory;
 import code.elix_x.excomms.reflection.ReflectionHelper.AClass;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -47,6 +49,8 @@ public class ClientProxy extends CommonProxy {
 	public void postInit(FMLPostInitializationEvent e) {
 		super.postInit(e);
 		new AClass<>(Minecraft.class).<RenderManager>getDeclaredField("renderManager").setAccessible(true).set(Minecraft.getMinecraft(), new RenderManagerOverride(Minecraft.getMinecraft().getRenderManager()));
+		new AClass<>(ItemRenderer.class).<RenderManager>getDeclaredField("renderManager").setAccessible(true).setFinal(false).set(Minecraft.getMinecraft().getItemRenderer(), Minecraft.getMinecraft().getRenderManager());
+		new AClass<>(RenderGlobal.class).<RenderManager>getDeclaredField("renderManager").setFinal(false).set(Minecraft.getMinecraft().renderGlobal, Minecraft.getMinecraft().getRenderManager());
 	}
 
 	private void registerBlockItem(Block toRegister) {

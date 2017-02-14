@@ -5,6 +5,8 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
+import ValkyrienWarfareBase.Render.PhysObjectRender;
+import ValkyrienWarfareBase.Render.PhysObjectRenderManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.culling.ICamera;
@@ -28,17 +30,21 @@ public class RenderManagerOverride extends RenderManager {
 	 * INTERCEPT
 	 */
 
+	private boolean shouldRender(Entity entity){
+		return PhysObjectRenderManager.renderingMountedEntities || !ValkyrienWarfareMod.physicsManager.isEntityFixed(entity);
+	}
+
 	public boolean shouldRender(Entity entityIn, ICamera camera, double camX, double camY, double camZ){
-		return !ValkyrienWarfareMod.physicsManager.isEntityFixed(entityIn) && def.shouldRender(entityIn, camera, camX, camY, camZ);
+		return shouldRender(entityIn) && def.shouldRender(entityIn, camera, camX, camY, camZ);
 	}
 
 	public void renderEntityStatic(Entity p_188388_1_, float p_188388_2_, boolean p_188388_3_){
-		if(!ValkyrienWarfareMod.physicsManager.isEntityFixed(p_188388_1_))
+		if(shouldRender(p_188388_1_))
 			def.renderEntityStatic(p_188388_1_, p_188388_2_, p_188388_3_);
 	}
 
 	public void doRenderEntity(Entity entityIn, double x, double y, double z, float yaw, float partialTicks, boolean p_188391_10_){
-		if(!ValkyrienWarfareMod.physicsManager.isEntityFixed(entityIn))
+		if(shouldRender(entityIn))
 			def.doRenderEntity(entityIn, x, y, z, yaw, partialTicks, p_188391_10_);
 	}
 

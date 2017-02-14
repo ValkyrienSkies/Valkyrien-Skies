@@ -28,6 +28,15 @@ public class RenderManagerOverride extends RenderManager {
 	 * INTERCEPT
 	 */
 
+	public boolean shouldRender(Entity entityIn, ICamera camera, double camX, double camY, double camZ){
+		return !ValkyrienWarfareMod.physicsManager.isEntityFixed(entityIn) && def.shouldRender(entityIn, camera, camX, camY, camZ);
+	}
+
+	public void renderEntityStatic(Entity p_188388_1_, float p_188388_2_, boolean p_188388_3_){
+		if(!ValkyrienWarfareMod.physicsManager.isEntityFixed(p_188388_1_))
+			def.renderEntityStatic(p_188388_1_, p_188388_2_, p_188388_3_);
+	}
+
 	public void doRenderEntity(Entity entityIn, double x, double y, double z, float yaw, float partialTicks, boolean p_188391_10_){
 		if(!ValkyrienWarfareMod.physicsManager.isEntityFixed(entityIn))
 			def.doRenderEntity(entityIn, x, y, z, yaw, partialTicks, p_188391_10_);
@@ -80,14 +89,6 @@ public class RenderManagerOverride extends RenderManager {
 
 	public boolean isRenderMultipass(Entity p_188390_1_){
 		return def.isRenderMultipass(p_188390_1_);
-	}
-
-	public boolean shouldRender(Entity entityIn, ICamera camera, double camX, double camY, double camZ){
-		return def.shouldRender(entityIn, camera, camX, camY, camZ);
-	}
-
-	public void renderEntityStatic(Entity p_188388_1_, float p_188388_2_, boolean p_188388_3_){
-		def.renderEntityStatic(p_188388_1_, p_188388_2_, p_188388_3_);
 	}
 
 	public void renderMultipass(Entity p_188389_1_, float p_188389_2_){

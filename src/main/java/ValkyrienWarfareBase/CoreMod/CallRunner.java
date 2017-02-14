@@ -26,7 +26,9 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityArmorStand;
+import net.minecraft.entity.item.EntityBoat;
 import net.minecraft.entity.item.EntityFallingBlock;
+import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
@@ -317,7 +319,7 @@ public class CallRunner {
 		BlockPos posAt = new BlockPos(entity);
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, posAt);
 		if (!(entity instanceof EntityFallingBlock) && wrapper != null && wrapper.wrapping.coordTransform != null) {
-			if (entity instanceof EntityMountingWeaponBase || entity instanceof EntityArmorStand) {
+			if (entity instanceof EntityMountingWeaponBase || entity instanceof EntityArmorStand || entity instanceof EntityPig || entity instanceof EntityBoat) {
 //				entity.startRiding(wrapper);
 				wrapper.wrapping.fixEntity(entity, new Vector(entity));
 				wrapper.wrapping.queueEntityForMounting(entity);
@@ -476,5 +478,18 @@ public class CallRunner {
 			provider.unload(chunk);
 		}
 	}
+	
+    public static Vec3d onGetLook(Entity entityFor, float partialTicks){
+    	Vec3d defualtOutput = entityFor.getLook(partialTicks);
+    	
+    	PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(entityFor);
+		if(wrapper != null){
+			Vector newOutput = new Vector(defualtOutput);
+			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.RlToWRotation, newOutput);
+			return newOutput.toVec3d();
+		}
+    	
+    	return defualtOutput;
+    }
 
 }

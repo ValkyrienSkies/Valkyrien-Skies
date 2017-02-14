@@ -82,7 +82,7 @@ public class WorldPhysObjectManager {
 				}
 				//If one of the entities riding has this entity too, then be sure to check for it
 				for(Entity e:wrapper.riddenByEntities){
-					if(e.riddenByEntities.contains(entity)){
+					if(!e.isDead && e.riddenByEntities.contains(entity)){
 						return wrapper;
 					}
 				}

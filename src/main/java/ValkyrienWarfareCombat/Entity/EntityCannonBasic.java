@@ -34,14 +34,24 @@ public class EntityCannonBasic extends EntityMountingWeaponBase {
 		Vec3d velocityNormal = getVectorForRotation(rotationPitch, rotationYaw);
 		Vector velocityVector = new Vector(velocityNormal);
 		
-		PhysicsWrapperEntity wrapper = getShipWeaponIsOn();
+		PhysicsWrapperEntity wrapper = getParentShip();
 		if(wrapper != null){
 			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWRotation, velocityVector);
 		}
 		
 		velocityVector.multiply(2D);
 		EntityCannonBall projectile = new EntityCannonBall(worldObj, velocityVector, this);
-		projectile.posY += .5;
+		
+		Vector projectileSpawnPos = new Vector(0,.5,0);
+		
+		if(wrapper != null){
+			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWRotation, projectileSpawnPos);
+		}
+		
+		projectile.posX += projectileSpawnPos.X;
+		projectile.posY += projectileSpawnPos.Y;
+		projectile.posZ += projectileSpawnPos.Z;
+		
 		worldObj.spawnEntityInWorld(projectile);
 
 		isCannonLoaded = false;

@@ -4,6 +4,7 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.culling.ICamera;
@@ -22,6 +23,19 @@ public class RenderManagerOverride extends RenderManager {
 		super(def.renderEngine, Minecraft.getMinecraft().getRenderItem());
 		this.def = def;
 	}
+
+	/*
+	 * INTERCEPT
+	 */
+
+	public void doRenderEntity(Entity entityIn, double x, double y, double z, float yaw, float partialTicks, boolean p_188391_10_){
+		if(!ValkyrienWarfareMod.physicsManager.isEntityFixed(entityIn))
+			def.doRenderEntity(entityIn, x, y, z, yaw, partialTicks, p_188391_10_);
+	}
+
+	/*
+	 * We don't care
+	 */
 
 	public Map<String, RenderPlayer> getSkinMap(){
 		return def.getSkinMap();
@@ -74,10 +88,6 @@ public class RenderManagerOverride extends RenderManager {
 
 	public void renderEntityStatic(Entity p_188388_1_, float p_188388_2_, boolean p_188388_3_){
 		def.renderEntityStatic(p_188388_1_, p_188388_2_, p_188388_3_);
-	}
-
-	public void doRenderEntity(Entity entityIn, double x, double y, double z, float yaw, float partialTicks, boolean p_188391_10_){
-		def.doRenderEntity(entityIn, x, y, z, yaw, partialTicks, p_188391_10_);
 	}
 
 	public void renderMultipass(Entity p_188389_1_, float p_188389_2_){

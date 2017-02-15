@@ -465,12 +465,6 @@ public class CallRunnerClient extends CallRunner {
 		renderGlobal.renderEntities(renderViewEntity, camera, partialTicks);
 	}
 
-	public static void onDoRenderEntity(RenderManager manager, Entity entityIn, double x, double y, double z, float yaw, float partialTicks, boolean p_188391_10_){
-		if(!ValkyrienWarfareMod.physicsManager.isEntityFixed(entityIn)){
-			manager.doRenderEntity(entityIn, x, y, z, yaw, partialTicks, p_188391_10_);
-		}
-    }
-
 	public static boolean onInvalidateRegionAndSetBlock(WorldClient client, BlockPos pos, IBlockState state) {
 		int i = pos.getX();
 		int j = pos.getY();

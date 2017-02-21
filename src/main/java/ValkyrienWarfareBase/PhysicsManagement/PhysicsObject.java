@@ -17,6 +17,7 @@ import ValkyrienWarfareBase.API.EnumChangeOwnerResult;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.ChunkManagement.ChunkSet;
+import ValkyrienWarfareBase.CoreMod.EntityDraggable;
 import ValkyrienWarfareBase.CoreMod.ValkyrienWarfarePlugin;
 import ValkyrienWarfareBase.Physics.BlockForce;
 import ValkyrienWarfareBase.Physics.PhysicsCalculations;
@@ -613,6 +614,14 @@ public class PhysicsObject {
 		List<Entity> riders = worldObj.getEntitiesWithinAABB(Entity.class, collisionBB);
 		for (Entity ent : riders) {
 			if (!(ent instanceof PhysicsWrapperEntity) && !ValkyrienWarfareMod.physicsManager.isEntityFixed(ent) && shouldMoveEntity(ent)) {
+				
+//				Object o = ent;
+				
+//				EntityDraggable draggable = (EntityDraggable) o;
+				
+//				System.out.println(draggable.testNumber);
+				
+//				draggable.testNumber = 69;
 				
 				float rotYaw = ent.rotationYaw;
 				float rotPitch = ent.rotationPitch;

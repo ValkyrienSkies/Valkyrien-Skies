@@ -39,6 +39,8 @@ import net.minecraftforge.client.ForgeHooksClient;
  */
 public class PhysObjectRenderManager {
 
+	public static boolean renderingMountedEntities = false;
+
 	public boolean needsSolidUpdate = true, needsCutoutUpdate = true, needsCutoutMippedUpdate = true, needsTranslucentUpdate = true;
 	public int glCallListSolid = -1;
 	public int glCallListTranslucent = -1;
@@ -209,6 +211,8 @@ public class PhysObjectRenderManager {
 	}
 
 	public void renderEntities(float partialTicks) {
+		renderingMountedEntities = true;
+
 		ArrayList<FixedEntityData> fixedEntities = new ArrayList();// ArrayList<FixedEntityData>) parent.fixedEntities.clone();
 		List<Entity> mountedEntities = parent.wrapper.riddenByEntities;
 		
@@ -267,6 +271,8 @@ public class PhysObjectRenderManager {
 			
 			}
 		}
+
+		renderingMountedEntities = false;
 	}
 
 	public boolean shouldRender() {

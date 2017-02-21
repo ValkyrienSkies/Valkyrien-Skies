@@ -401,6 +401,14 @@ public class PhysicsCalculations {
 		speed.Z += (linearMomentum.Z * invMass);
 		return speed;
 	}
+	
+	public void setMomentumAtPoint(Vector inBodyWO, Vector toSet) {
+		toSet.setCross(angularVelocity, inBodyWO);
+		
+		toSet.X += (linearMomentum.X * invMass);
+		toSet.Y += (linearMomentum.Y * invMass);
+		toSet.Z += (linearMomentum.Z * invMass);
+	}
 
 	public void writeToNBTTag(NBTTagCompound compound) {
 		compound.setDouble("mass", mass);

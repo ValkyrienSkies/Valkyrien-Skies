@@ -176,49 +176,44 @@ public class CoordTransformObject {
 	// TODO: FinishME
 	public void updateParentAABB() {
 		double mnX = 0, mnY = 0, mnZ = 0, mxX = 0, mxY = 0, mxZ = 0;
-		boolean first = true;
 
-		AxisAlignedBB oneBB = new AxisAlignedBB(0, 0, 0, 1, 1, 1);
-
-		Polygon polyFor = new Polygon(oneBB);
-
+		Vector currentLocation = new Vector();
+		
+		mnX = mxX = parent.wrapper.posX;
+		mnY = mxY = parent.wrapper.posY;
+		mnZ = mxZ = parent.wrapper.posZ;
+		
 		for (BlockPos pos : parent.blockPositions) {
 
-			polyFor.offsetCornersAndTransform(oneBB, pos.getX(), pos.getY(), pos.getZ(), lToWTransform);
+			currentLocation.X = pos.getX() + .5D;
+			currentLocation.Y = pos.getY() + .5D;
+			currentLocation.Z = pos.getZ() + .5D;
+			
+			fromLocalToGlobal(currentLocation);
 
-			for (Vector currentLocation : polyFor.vertices) {
-
-				if (first) {
-					mnX = mxX = currentLocation.X;
-					mnY = mxY = currentLocation.Y;
-					mnZ = mxZ = currentLocation.Z;
-					first = false;
-				}
-
-				if (currentLocation.X < mnX) {
-					mnX = currentLocation.X;
-				}
-				if (currentLocation.X > mxX) {
-					mxX = currentLocation.X;
-				}
-
-				if (currentLocation.Y < mnY) {
-					mnY = currentLocation.Y;
-				}
-				if (currentLocation.Y > mxY) {
-					mxY = currentLocation.Y;
-				}
-
-				if (currentLocation.Z < mnZ) {
-					mnZ = currentLocation.Z;
-				}
-				if (currentLocation.Z > mxZ) {
-					mxZ = currentLocation.Z;
-				}
-
+			if (currentLocation.X < mnX) {
+				mnX = currentLocation.X;
 			}
+			if (currentLocation.X > mxX) {
+				mxX = currentLocation.X;
+			}
+
+			if (currentLocation.Y < mnY) {
+				mnY = currentLocation.Y;
+			}
+			if (currentLocation.Y > mxY) {
+				mxY = currentLocation.Y;
+			}
+
+			if (currentLocation.Z < mnZ) {
+				mnZ = currentLocation.Z;
+			}
+			if (currentLocation.Z > mxZ) {
+				mxZ = currentLocation.Z;
+			}
+
 		}
-		AxisAlignedBB enclosingBB = new AxisAlignedBB(mnX, mnY, mnZ, mxX, mxY, mxZ);
+		AxisAlignedBB enclosingBB = new AxisAlignedBB(mnX, mnY, mnZ, mxX, mxY, mxZ).expand(.6D, .6D, .6D);
 		parent.collisionBB = enclosingBB;
 	}
 

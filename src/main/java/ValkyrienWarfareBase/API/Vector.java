@@ -191,4 +191,10 @@ public class Vector {
 		this(toRead.readDouble(), toRead.readDouble(), toRead.readDouble());
 	}
 
+	public void setSubtraction(Vector inLocal, Vector centerCoord) {
+		X = inLocal.X - centerCoord.X;
+		Y = inLocal.Y - centerCoord.Y;
+		Z = inLocal.Z - centerCoord.Z;
+	}
+
 }

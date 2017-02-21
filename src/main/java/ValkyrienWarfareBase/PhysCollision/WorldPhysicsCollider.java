@@ -350,6 +350,9 @@ public class WorldPhysicsCollider {
 		
 		int mmX = min.getX(), mmY = min.getY(), mmZ = min.getZ(), mxX = max.getX(), mxY = max.getY(), mxZ = max.getZ();
 		
+		Vector inBody = new Vector();
+		Vector speedInBody = new Vector();
+		
 		for(chunkX = chunkMinX; chunkX < chunkMaxX; chunkX++){
 			for(chunkZ = chunkMinZ; chunkZ < chunkMaxZ; chunkZ++){
 				
@@ -383,15 +386,15 @@ public class WorldPhysicsCollider {
 										state = extendedblockstorage.get(x & 15, y & 15, z & 15);
 										
 										if (state.getMaterial().isSolid()) {
-											
 											inLocal.X = x + .5D;
 											inLocal.Y = y + .5D;
 											inLocal.Z = z + .5D;
+											
 											parent.coordTransform.fromGlobalToLocal(inLocal);
 											
-											Vector inBody = inLocal.getSubtraction(parent.centerCoord);
+											inBody.setSubtraction(inLocal, parent.centerCoord);
 											
-											Vector speedInBody = parent.physicsProcessor.getMomentumAtPoint(inBody);
+											parent.physicsProcessor.setMomentumAtPoint(inBody, speedInBody);
 											
 											speedInBody.multiply(-parent.physicsProcessor.physRawSpeed);
 											

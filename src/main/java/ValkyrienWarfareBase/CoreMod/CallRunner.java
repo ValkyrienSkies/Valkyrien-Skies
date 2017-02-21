@@ -31,6 +31,7 @@ import net.minecraft.entity.item.EntityFallingBlock;
 import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.inventory.Container;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketEffect;
@@ -444,6 +445,80 @@ public class CallRunner {
 	}
 
 	public static void onEntityMove(Entity entity, double dx, double dy, double dz) {
+		EntityDraggable draggable = EntityDraggable.getDraggableFromEntity(entity);
+		
+		PhysicsWrapperEntity worldBelowFeet = draggable.worldBelowFeet;
+		
+		if(worldBelowFeet != null && false){
+			float rotYaw = entity.rotationYaw;
+			float rotPitch = entity.rotationPitch;
+			float prevYaw = entity.prevRotationYaw;
+			float prevPitch = entity.prevRotationPitch;
+	
+			Vector posWithShipVel = new Vector(entity);
+			
+			RotationMatrices.applyTransform(worldBelowFeet.wrapping.coordTransform.prevwToLTransform, posWithShipVel);
+			RotationMatrices.applyTransform(worldBelowFeet.wrapping.coordTransform.lToWTransform, posWithShipVel);
+			
+			Vector newVelocityFromShip = posWithShipVel.getSubtraction(new Vector(entity));
+			
+			draggable.velocityAddedToPlayer = newVelocityFromShip;
+			
+			RotationMatrices.applyTransform(worldBelowFeet.wrapping.coordTransform.prevwToLTransform, worldBelowFeet.wrapping.coordTransform.prevWToLRotation, entity);
+			RotationMatrices.applyTransform(worldBelowFeet.wrapping.coordTransform.lToWTransform, worldBelowFeet.wrapping.coordTransform.lToWRotation, entity);
+	
+			entity.rotationYaw = rotYaw;
+			entity.rotationPitch = rotPitch;
+			entity.prevRotationYaw = prevYaw;
+			entity.prevRotationPitch = prevPitch;
+	
+			Vector oldLookingPos = new Vector(entity.getLook(1.0F));
+			RotationMatrices.applyTransform(worldBelowFeet.wrapping.coordTransform.prevWToLRotation, oldLookingPos);
+			RotationMatrices.applyTransform(worldBelowFeet.wrapping.coordTransform.lToWRotation, oldLookingPos);
+	
+			double newPitch = Math.asin(oldLookingPos.Y) * -180D / Math.PI;
+			double f4 = -Math.cos(-newPitch * 0.017453292D);
+			double radianYaw = Math.atan2((oldLookingPos.X / f4), (oldLookingPos.Z / f4));
+			radianYaw += Math.PI;
+			radianYaw *= -180D / Math.PI;
+			if (!(Double.isNaN(radianYaw) || Math.abs(newPitch) > 85)) {
+				double wrappedYaw = MathHelper.wrapDegrees(radianYaw);
+				double wrappedRotYaw = MathHelper.wrapDegrees(entity.rotationYaw);
+				double yawDif = wrappedYaw - wrappedRotYaw;
+				if (Math.abs(yawDif) > 180D) {
+					if (yawDif < 0) {
+						yawDif += 360D;
+					} else {
+						yawDif -= 360D;
+					}
+				}
+				yawDif %= 360D;
+				final double threshold = .1D;
+				if (Math.abs(yawDif) < threshold) {
+					yawDif = 0D;
+				}
+				if (!(entity instanceof EntityPlayer)) {
+					if (entity instanceof EntityArrow) {
+						entity.prevRotationYaw = entity.rotationYaw;
+						entity.rotationYaw -= yawDif;
+					} else {
+						entity.prevRotationYaw = entity.rotationYaw;
+						entity.rotationYaw += yawDif;
+					}
+				} else {
+					if (entity.worldObj.isRemote) {
+						entity.prevRotationYaw = entity.rotationYaw;
+						entity.rotationYaw += yawDif;
+					}
+				}
+			}
+		
+		}
+		
+//		dx += draggable.velocityAddedToPlayer.X;
+//		dy += draggable.velocityAddedToPlayer.Y;
+//		dz += draggable.velocityAddedToPlayer.Z;
+		
 		if (!EntityCollisionInjector.alterEntityMovement(entity, dx, dy, dz)) {
 			entity.moveEntity(dx, dy, dz);
 		}

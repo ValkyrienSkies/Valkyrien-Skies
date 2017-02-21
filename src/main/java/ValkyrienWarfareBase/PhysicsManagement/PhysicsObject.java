@@ -588,7 +588,7 @@ public class PhysicsObject {
 		}
 		coordTransform.setPrevMatrices();
 		coordTransform.updateAllTransforms();
-		moveEntities();
+//		moveEntities();
 	}
 
 	//TODO: Remove this shitty check, moving entities should work using an approach similar to MetaWorlds; this is treating Cancer with a Band-Aid!
@@ -611,18 +611,14 @@ public class PhysicsObject {
 	
 	// TODO: Fix the lag here
 	public void moveEntities() {
+		
+		
+		
 		List<Entity> riders = worldObj.getEntitiesWithinAABB(Entity.class, collisionBB);
+		
 		for (Entity ent : riders) {
-			if (!(ent instanceof PhysicsWrapperEntity) && !ValkyrienWarfareMod.physicsManager.isEntityFixed(ent) && shouldMoveEntity(ent)) {
-				
-//				Object o = ent;
-				
-//				EntityDraggable draggable = (EntityDraggable) o;
-				
-//				System.out.println(draggable.testNumber);
-				
-//				draggable.testNumber = 69;
-				
+			EntityDraggable draggable = EntityDraggable.getDraggableFromEntity(ent);
+			if (draggable.worldBelowFeet == this.wrapper&&!(ent instanceof PhysicsWrapperEntity) && !ValkyrienWarfareMod.physicsManager.isEntityFixed(ent) && shouldMoveEntity(ent)) {
 				float rotYaw = ent.rotationYaw;
 				float rotPitch = ent.rotationPitch;
 				float prevYaw = ent.prevRotationYaw;

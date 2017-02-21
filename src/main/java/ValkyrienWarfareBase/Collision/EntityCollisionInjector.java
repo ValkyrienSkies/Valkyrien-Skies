@@ -5,6 +5,7 @@ import java.util.List;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareBase.CoreMod.EntityDraggable;
 import ValkyrienWarfareBase.Math.BigBastardMath;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
@@ -38,15 +39,23 @@ public class EntityCollisionInjector {
 		ArrayList<EntityPolygonCollider> fastCollisions = new ArrayList<EntityPolygonCollider>();
 		EntityPolygon playerBeforeMove = new EntityPolygon(entity.getEntityBoundingBox(), entity);
 		ArrayList<Polygon> colPolys = getCollidingPolygons(entity, velocity);
+		
+		PhysicsWrapperEntity worldBelow = null;
+		EntityDraggable draggable = EntityDraggable.getDraggableFromEntity(entity);
+		
 		for (Polygon poly : colPolys) {
 			if (poly instanceof ShipPolygon) {
 				ShipPolygon shipPoly = (ShipPolygon) poly;
 				EntityPolygonCollider fast = new EntityPolygonCollider(playerBeforeMove, shipPoly, shipPoly.normals, velVec);
 				if (!fast.seperated) {
 					fastCollisions.add(fast);
+					worldBelow = shipPoly.shipFrom.wrapper;
 				}
 			}
 		}
+		
+		//TODO: Make this more comprehensive
+		draggable.worldBelowFeet = worldBelow;
 
 		if (fastCollisions.isEmpty()) {
 			return false;

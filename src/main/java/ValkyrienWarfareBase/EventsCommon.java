@@ -24,6 +24,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.entity.EntityEvent.EnteringChunk;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.HarvestCheck;
@@ -48,6 +49,12 @@ public class EventsCommon {
 
 	public static HashMap<EntityPlayerMP, Double[]> lastPositions = new HashMap<EntityPlayerMP, Double[]>();
 
+	//TODO: Use this to fix the issue with mounted entities on Ships
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
+	public void onEnterChunkEvent(EnteringChunk event) {
+//		event.setResult(Result.ALLOW);
+	}
+	
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onEntityInteractEvent(EntityInteract event) {
 		event.setResult(Result.ALLOW);

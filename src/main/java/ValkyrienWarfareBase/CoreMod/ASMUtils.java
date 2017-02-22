@@ -51,7 +51,7 @@ public class ASMUtils {
 			}
 		}
 		
-		ClassWriter cw= new ClassWriter(ClassWriter.COMPUTE_MAXS);
+		ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
 		classNode.accept(cw);
 		
 		return cw.toByteArray();

@@ -1,16 +1,11 @@
 package ValkyrienWarfareBase.CoreMod;
 
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.AbstractInsnNode;
-import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.MethodInsnNode;
-import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.util.CheckClassAdapter;
 
 import net.minecraft.launchwrapper.IClassTransformer;

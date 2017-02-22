@@ -4,19 +4,28 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.logging.Level;
 
+import ValkyrienWarfareBase.API.RotationMatrices;
+import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Capability.IAirshipCounterCapability;
 import ValkyrienWarfareBase.CoreMod.ValkyrienWarfarePlugin;
 import ValkyrienWarfareBase.Interaction.CustomNetHandlerPlayServer;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsTickHandler;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
+import ValkyrienWarfareCombat.Entity.EntityMountingWeaponBase;
 import ValkyrienWarfareControl.Piloting.ClientPilotingManager;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityArmorStand;
+import net.minecraft.entity.item.EntityBoat;
+import net.minecraft.entity.item.EntityFallingBlock;
+import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTPrimitive;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.Explosion;
@@ -25,6 +34,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityEvent.EnteringChunk;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.HarvestCheck;
@@ -53,6 +63,47 @@ public class EventsCommon {
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onEnterChunkEvent(EnteringChunk event) {
 //		event.setResult(Result.ALLOW);
+	}
+	
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
+	public void onEnteringChunk(EnteringChunk event){
+		Entity entity = event.getEntity();
+		World world = entity.worldObj;
+		
+		int chunkX = event.getNewChunkX();
+		int chunkZ = event.getNewChunkZ();
+		
+		int oldChunkX = event.getOldChunkX();
+		int oldChunkZ = event.getOldChunkZ();
+		
+		//This means the entity just spawned
+		if(oldChunkX == 0 && oldChunkZ == 0){
+			if(entity.isDead && entity.firstUpdate){
+				int realChunkX = MathHelper.floor_double(entity.posX / 16.0D);
+		        int realChunkZ = MathHelper.floor_double(entity.posZ / 16.0D);
+		        if(realChunkX != chunkX && realChunkZ != chunkZ){
+		        	entity.isDead = false;
+		        	world.getChunkFromChunkCoords(chunkX, chunkZ).removeEntity(entity);
+		        	world.getChunkFromChunkCoords(realChunkX, realChunkZ).addEntity(entity);
+		        }
+			}
+		}
+	}
+	
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
+	public void onEntityJoinWorldEvent(EntityJoinWorldEvent event){
+		Entity entity = event.getEntity();
+		World world = entity.worldObj;
+		BlockPos posAt = new BlockPos(entity);
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, posAt);
+		if (!(entity instanceof EntityFallingBlock) && wrapper != null && wrapper.wrapping.coordTransform != null) {
+			if (entity instanceof EntityMountingWeaponBase || entity instanceof EntityArmorStand || entity instanceof EntityPig || entity instanceof EntityBoat) {
+//				entity.startRiding(wrapper);
+				wrapper.wrapping.fixEntity(entity, new Vector(entity));
+				wrapper.wrapping.queueEntityForMounting(entity);
+			}
+			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, wrapper.wrapping.coordTransform.lToWRotation, entity);
+		}
 	}
 	
 	@SubscribeEvent(priority = EventPriority.HIGHEST)

@@ -55,6 +55,22 @@ import net.minecraftforge.common.DimensionManager;
 
 public class CallRunner {
 
+    public static void onAddEntity(Chunk chunk, Entity entityIn){
+    	World world = chunk.worldObj;
+    	
+    	int i = MathHelper.floor_double(entityIn.posX / 16.0D);
+        int j = MathHelper.floor_double(entityIn.posZ / 16.0D);
+    	
+        if(i == chunk.xPosition && j == chunk.zPosition){
+        	chunk.addEntity(entityIn);
+        }else{
+        	Chunk realChunkFor = world.getChunkFromChunkCoords(i, j);
+        	if(!realChunkFor.isEmpty() && realChunkFor.isChunkLoaded){
+        		realChunkFor.addEntity(entityIn);
+        	}
+        }
+    }
+	
 	public static BlockPos onGetPrecipitationHeight(World world, BlockPos posToCheck) {
 		BlockPos pos = world.getPrecipitationHeight(posToCheck);
 		if(!world.isRemote || ValkyrienWarfareMod.accurateRain){
@@ -317,7 +333,7 @@ public class CallRunner {
 		return ent.getDistanceSq(x, y, z);
 	}
 
-	public static boolean onSpawnEntityInWorld(World world, Entity entity) {
+/*	public static boolean onSpawnEntityInWorld(World world, Entity entity) {
 		BlockPos posAt = new BlockPos(entity);
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, posAt);
 		if (!(entity instanceof EntityFallingBlock) && wrapper != null && wrapper.wrapping.coordTransform != null) {
@@ -329,7 +345,7 @@ public class CallRunner {
 			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, wrapper.wrapping.coordTransform.lToWRotation, entity);
 		}
 		return world.spawnEntityInWorld(entity);
-	}
+	}*/
 
 	public static void onSendToAllNearExcept(PlayerList list, @Nullable EntityPlayer except, double x, double y, double z, double radius, int dimension, Packet<?> packetIn) {
 		BlockPos pos = new BlockPos(x, y, z);

@@ -1,10 +1,11 @@
 package ValkyrienWarfareBase.PhysicsManagement;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareBase.CoreMod.EntityDraggable;
+import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 
 public class PhysicsTickHandler {
@@ -77,8 +78,10 @@ public class PhysicsTickHandler {
 
 		for (PhysicsWrapperEntity wrapper : physicsEntities) {
 			wrapper.wrapping.coordTransform.sendPositionToPlayers();
-			wrapper.wrapping.moveEntities();
+//			wrapper.wrapping.moveEntities();
 		}
+		
+		EntityDraggable.tickAddedVelocityForWorld(world);
 
 	}
 

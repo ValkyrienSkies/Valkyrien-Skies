@@ -1,13 +1,9 @@
 package ValkyrienWarfareBase;
 
-import ValkyrienWarfareBase.API.RotationMatrices;
-import ValkyrienWarfareBase.API.Vector;
-import ValkyrienWarfareBase.Math.BigBastardMath;
-import ValkyrienWarfareBase.Math.Quaternion;
+import ValkyrienWarfareBase.CoreMod.EntityDraggable;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
@@ -32,6 +28,7 @@ public class EventsClient {
 					for (PhysicsWrapperEntity wrapper : manager.physicsEntities) {
 						wrapper.wrapping.onPostTickClient();
 					}
+					EntityDraggable.tickAddedVelocityForWorld(mc.theWorld);
 				}
 			}
 		}

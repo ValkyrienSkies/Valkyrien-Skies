@@ -67,7 +67,7 @@ public class EventsCommon {
 	
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onEnteringChunk(EnteringChunk event){
-		Entity entity = event.getEntity();
+		/*Entity entity = event.getEntity();
 		World world = entity.worldObj;
 		
 		int chunkX = event.getNewChunkX();
@@ -87,7 +87,7 @@ public class EventsCommon {
 		        	world.getChunkFromChunkCoords(realChunkX, realChunkZ).addEntity(entity);
 		        }
 			}
-		}
+		}*/
 	}
 	
 	@SubscribeEvent(priority = EventPriority.HIGHEST)

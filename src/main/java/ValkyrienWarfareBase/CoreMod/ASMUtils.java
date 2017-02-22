@@ -27,7 +27,9 @@ public class ASMUtils {
 		
 		superClassChangerReader.accept(classNode, ClassReader.EXPAND_FRAMES);
 		
-		classNode.superName = "ValkyrienWarfareBase/CoreMod/EntityDraggable";
+		String newSuperClass = "ValkyrienWarfareBase/EntityMultiWorldFixes/EntityDraggable";
+		
+		classNode.superName = newSuperClass;
 		
 		for(MethodNode method : classNode.methods){
 			if(method.name.equals("<init>")){
@@ -43,7 +45,7 @@ public class ASMUtils {
 				}
 				//Removes the superclass <init> call that goes to Object.class that was in Entity because Object was the superclass, instead it is replaced with
 				//the EntityDraggable <init>
-				method.instructions.insertBefore(targetNode, new MethodInsnNode(Opcodes.INVOKESPECIAL, "ValkyrienWarfareBase/CoreMod/EntityDraggable", "<init>", "()V", false));
+				method.instructions.insertBefore(targetNode, new MethodInsnNode(Opcodes.INVOKESPECIAL, newSuperClass, "<init>", "()V", false));
 				//Removes the old <init> call going to Object
 				method.instructions.remove(targetNode);
 			}

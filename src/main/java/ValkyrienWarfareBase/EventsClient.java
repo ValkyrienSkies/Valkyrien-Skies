@@ -1,6 +1,6 @@
 package ValkyrienWarfareBase;
 
-import ValkyrienWarfareBase.CoreMod.EntityDraggable;
+import ValkyrienWarfareBase.EntityMultiWorldFixes.EntityDraggable;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
 import net.minecraft.client.Minecraft;

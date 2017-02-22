@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.Vector;
-import ValkyrienWarfareBase.CoreMod.EntityDraggable;
+import ValkyrienWarfareBase.EntityMultiWorldFixes.EntityDraggable;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 

@@ -63,6 +63,11 @@ public class TransformAdapter extends ClassVisitor {
 	}
 
 	public boolean runTransformer(String calledName, String calledDesc, String calledOwner, MethodVisitor mv) {
+		if (isMethod(calledDesc, "(L"+BlockPosName+";L"+IBlockStateName+";)L"+IBlockStateName+";", calledName, ChunkName, "setBlockState", "RENAMEME", calledOwner)) {
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onSetBlockState", String.format("(L%s;L"+BlockPosName+";L"+IBlockStateName+";)L"+IBlockStateName+";", ChunkName));
+			return false;
+		}
+		
 		if (isMethod(calledDesc, "(F)L" + Vec3dName + ";", calledName, EntityClassName, "getPositionEyes", "func_174824_e", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onGetPositionEyes", String.format("(L%s;F)L"+Vec3dName+";", EntityClassName));
 			return false;

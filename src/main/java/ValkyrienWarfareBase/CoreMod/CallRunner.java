@@ -15,6 +15,7 @@ import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Collision.EntityCollisionInjector;
 import ValkyrienWarfareBase.Collision.EntityPolygon;
 import ValkyrienWarfareBase.Collision.Polygon;
+import ValkyrienWarfareBase.EntityMultiWorldFixes.EntityDraggable;
 import ValkyrienWarfareBase.Physics.BlockMass;
 import ValkyrienWarfareBase.Physics.PhysicsQueuedForce;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
@@ -384,6 +385,26 @@ public class CallRunner {
 		}
 	}
 
+	public static IBlockState onSetBlockState(Chunk chunkFor, BlockPos pos, IBlockState newState)
+    {
+		if(true){
+			return chunkFor.setBlockState(pos, newState);
+		}
+		World world = chunkFor.worldObj;
+		IBlockState oldState = chunkFor.getBlockState(pos);
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
+		if (wrapper != null) {
+			if(!world.isRemote){
+				wrapper.wrapping.pilotingController.onSetBlockInShip(pos, newState);
+			}
+			wrapper.wrapping.onSetBlockState(oldState, newState, pos);
+			if (world.isRemote) {
+				wrapper.wrapping.renderer.markForUpdate();
+			}
+		}
+		return chunkFor.setBlockState(pos, newState);
+    }
+	
 	public static boolean onSetBlockState(World world, BlockPos pos, IBlockState newState, int flags) {
 		IBlockState oldState = world.getBlockState(pos);
 		boolean toReturn = world.setBlockState(pos, newState, flags);

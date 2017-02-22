@@ -1,4 +1,4 @@
-package ValkyrienWarfareBase.CoreMod;
+package ValkyrienWarfareBase.EntityMultiWorldFixes;
 
 import java.util.UUID;
 

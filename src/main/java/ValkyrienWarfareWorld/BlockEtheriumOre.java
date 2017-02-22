@@ -64,7 +64,7 @@ public class BlockEtheriumOre extends Block {
 				}
 
 				if (blockpos.getY() < 255) {
-					CallRunner.onSetBlockState(worldIn, blockpos.down(), state, 3);
+					worldIn.setBlockState(blockpos.down(), state, 3);
 				}
 			}
 		}

@@ -470,7 +470,7 @@ public class CallRunnerClient extends CallRunner {
 		int j = pos.getY();
 		int k = pos.getZ();
 		client.invalidateBlockReceiveRegion(i, j, k, i, j, k);
-		return CallRunner.onSetBlockState(client, pos, state, 3);
+		return client.setBlockState(pos, state, 3);
 	}
 
 	public static int onRenderBlockLayer(RenderGlobal renderer, BlockRenderLayer blockLayerIn, double partialTicks, int pass, Entity entityIn) {

@@ -16,8 +16,6 @@ import net.minecraft.world.World;
 
 public class EntityDraggable {
 
-	public int testNumber = -5;
-	
 	public PhysicsWrapperEntity worldBelowFeet;
 	public UUID lastWorldBelowFeetID;
 	public Vector inWorldBelowPos = new Vector();
@@ -25,6 +23,7 @@ public class EntityDraggable {
 	
 	public Vector velocityAddedToPlayer = new Vector();
 	public Entity draggableAsEntity;
+	public double yawDifVelocity;
 	
 	
 	public EntityDraggable(){
@@ -32,12 +31,16 @@ public class EntityDraggable {
 	}
 	
 	public static void tickAddedVelocityForWorld(World world){
-		for(Entity e:world.loadedEntityList){
-			//TODO: Maybe add a check to prevent moving entities that are fixed onto a Ship, but I like the visual effect
-			if(!(e instanceof PhysicsWrapperEntity)&&!(e instanceof EntityCannonBall)){
-				EntityDraggable draggable = getDraggableFromEntity(e);
-				draggable.tickAddedVelocity();
+		try{
+			for(Entity e:world.loadedEntityList){
+				//TODO: Maybe add a check to prevent moving entities that are fixed onto a Ship, but I like the visual effect
+				if(!(e instanceof PhysicsWrapperEntity)&&!(e instanceof EntityCannonBall)){
+					EntityDraggable draggable = getDraggableFromEntity(e);
+					draggable.tickAddedVelocity();
+				}
 			}
+		}catch(Exception e){
+			e.printStackTrace(System.out);
 		}
 	}
 	
@@ -78,6 +81,8 @@ public class EntityDraggable {
 			double radianYaw = Math.atan2((oldLookingPos.X / f4), (oldLookingPos.Z / f4));
 			radianYaw += Math.PI;
 			radianYaw *= -180D / Math.PI;
+			
+			
 			if (!(Double.isNaN(radianYaw) || Math.abs(newPitch) > 85)) {
 				double wrappedYaw = MathHelper.wrapDegrees(radianYaw);
 				double wrappedRotYaw = MathHelper.wrapDegrees(draggableAsEntity.rotationYaw);
@@ -94,34 +99,42 @@ public class EntityDraggable {
 				if (Math.abs(yawDif) < threshold) {
 					yawDif = 0D;
 				}
-				if (!(draggableAsEntity instanceof EntityPlayer)) {
-					if (draggableAsEntity instanceof EntityArrow) {
-						draggableAsEntity.prevRotationYaw = draggableAsEntity.rotationYaw;
-						draggableAsEntity.rotationYaw -= yawDif;
-					} else {
-						draggableAsEntity.prevRotationYaw = draggableAsEntity.rotationYaw;
-						draggableAsEntity.rotationYaw += yawDif;
-					}
-				} else {
-					if (draggableAsEntity.worldObj.isRemote) {
-						draggableAsEntity.prevRotationYaw = draggableAsEntity.rotationYaw;
-						draggableAsEntity.rotationYaw += yawDif;
-					}
-				}
+				yawDifVelocity = yawDif;
 			}
 		}else{
 			if(draggableAsEntity.onGround){
 				//TODO: Make this do friction
 				velocityAddedToPlayer.zero();
+				yawDifVelocity = 0;
 			}
 		}
+		
+		if (!(draggableAsEntity instanceof EntityPlayer)) {
+			if (draggableAsEntity instanceof EntityArrow) {
+				draggableAsEntity.prevRotationYaw = draggableAsEntity.rotationYaw;
+				draggableAsEntity.rotationYaw -= yawDifVelocity;
+			} else {
+				draggableAsEntity.prevRotationYaw = draggableAsEntity.rotationYaw;
+				draggableAsEntity.rotationYaw += yawDifVelocity;
+			}
+		} else {
+			if (draggableAsEntity.worldObj.isRemote) {
+				draggableAsEntity.prevRotationYaw = draggableAsEntity.rotationYaw;
+				draggableAsEntity.rotationYaw += yawDifVelocity;
+			}
+		}
+		
 		boolean onGroundOrig = draggableAsEntity.onGround;
 //		CallRunner.onEntityMove(draggableAsEntity, velocityAddedToPlayer.X, velocityAddedToPlayer.Y, velocityAddedToPlayer.Z);
-		draggableAsEntity.moveEntity(velocityAddedToPlayer.X, velocityAddedToPlayer.Y, velocityAddedToPlayer.Z);
+		if(!ValkyrienWarfareMod.physicsManager.isEntityFixed(draggableAsEntity)){
+			draggableAsEntity.moveEntity(velocityAddedToPlayer.X, velocityAddedToPlayer.Y, velocityAddedToPlayer.Z);
+		}
+		
 		if(onGroundOrig){
 			draggableAsEntity.onGround = onGroundOrig;
 		}
 		velocityAddedToPlayer.multiply(.99D);
+		yawDifVelocity *= .95D;
 	}
 	
 	public static EntityDraggable getDraggableFromEntity(Entity entity){

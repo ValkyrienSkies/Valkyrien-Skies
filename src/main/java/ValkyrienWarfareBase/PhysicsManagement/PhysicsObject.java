@@ -139,7 +139,6 @@ public class PhysicsObject {
 	}
 
 	public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos posAt) {
-
 		boolean isOldAir = oldState == null || oldState.getBlock().equals(Blocks.AIR);
 		boolean isNewAir = newState == null || newState.getBlock().equals(Blocks.AIR);
 
@@ -187,7 +186,6 @@ public class PhysicsObject {
 							e.printStackTrace();
 						}
 					}
-
 					ValkyrienWarfareMod.chunkManager.getManagerForWorld(worldObj).data.avalibleChunkKeys.add(ownedChunks.centerX);
 				}
 			}
@@ -205,7 +203,6 @@ public class PhysicsObject {
 	}
 
 	public void destroy() {
-
 		wrapper.setDead();
 		ArrayList<EntityPlayerMP> watchersCopy = (ArrayList<EntityPlayerMP>) watchingPlayers.clone();
 		for (EntityPlayerMP wachingPlayer : watchersCopy) {

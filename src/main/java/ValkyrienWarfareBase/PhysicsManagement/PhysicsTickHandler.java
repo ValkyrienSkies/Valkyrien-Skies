@@ -13,6 +13,10 @@ public class PhysicsTickHandler {
 	public static void onWorldTickStart(World world) {
 		WorldPhysObjectManager manager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(world);
 
+		if(!world.isRemote && world.provider.isSurfaceWorld()){
+//			System.out.println(manager.physicsEntities.size());
+		}
+		
 		ArrayList<PhysicsWrapperEntity> toUnload = (ArrayList<PhysicsWrapperEntity>) manager.physicsEntitiesToUnload.clone();
 		manager.physicsEntitiesToUnload.clear();
 

@@ -72,14 +72,11 @@ public class DimensionPhysObjectManager {
 		if (chunk == null) {
 			return null;
 		}
-		if (ValkyrienWarfareMod.chunkManager.isChunkInShipRange(chunk.worldObj, chunk.xPosition, chunk.zPosition)) {
-			WorldPhysObjectManager physManager = getManagerForWorld(chunk.worldObj);
-			if (physManager == null) {
-				return null;
-			}
-			return physManager.getManagingObjectForChunk(chunk);
+		WorldPhysObjectManager physManager = getManagerForWorld(chunk.worldObj);
+		if (physManager == null) {
+			return null;
 		}
-		return null;
+		return physManager.getManagingObjectForChunk(chunk);
 	}
 
 	public PhysicsWrapperEntity getObjectManagingPos(World world, BlockPos pos) {

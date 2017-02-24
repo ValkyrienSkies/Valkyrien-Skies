@@ -56,111 +56,113 @@ public class ShipPilotingController {
 		IBlockState state = controlledShip.worldObj.getBlockState(chairPosition);
 //		double[] pilotRotationMatrix = getRotationMatrixFromBlockState(state, chairPosition);
 		
+		if(state.getBlock() instanceof BlockShipPilotsChair){
 		
-		double pilotPitch = 0D;
-		double pilotYaw = ((BlockShipPilotsChair)state.getBlock()).getChairYaw(state, chairPosition);
-		double pilotRoll = 0D;
-		
-		double[] pilotRotationMatrix = RotationMatrices.getRotationMatrix(pilotPitch, pilotYaw, pilotRoll);
-		
-		Vector playerDirection = new Vector(1,0,0);
-		
-		Vector rightDirection = new Vector(0,0,1);
-		
-		Vector leftDirection = new Vector(0,0,-1);
-		
-		RotationMatrices.applyTransform(pilotRotationMatrix, playerDirection);
-		RotationMatrices.applyTransform(pilotRotationMatrix, rightDirection);
-		RotationMatrices.applyTransform(pilotRotationMatrix, leftDirection);
-		
-		Vector upDirection = new Vector(0,1,0);
-		
-		Vector downDirection = new Vector(0,-1,0);
-		
-		Vector idealAngularDirection = new Vector();
-		
-		Vector idealLinearVelocity = new Vector();
-		
-		Vector shipUp = new Vector(0,1,0);
-		Vector shipUpPos = new Vector(0,1,0);
-		
-		if(message.airshipForward){
-			idealLinearVelocity.add(playerDirection);
+			double pilotPitch = 0D;
+			double pilotYaw = ((BlockShipPilotsChair)state.getBlock()).getChairYaw(state, chairPosition);
+			double pilotRoll = 0D;
+			
+			double[] pilotRotationMatrix = RotationMatrices.getRotationMatrix(pilotPitch, pilotYaw, pilotRoll);
+			
+			Vector playerDirection = new Vector(1,0,0);
+			
+			Vector rightDirection = new Vector(0,0,1);
+			
+			Vector leftDirection = new Vector(0,0,-1);
+			
+			RotationMatrices.applyTransform(pilotRotationMatrix, playerDirection);
+			RotationMatrices.applyTransform(pilotRotationMatrix, rightDirection);
+			RotationMatrices.applyTransform(pilotRotationMatrix, leftDirection);
+			
+			Vector upDirection = new Vector(0,1,0);
+			
+			Vector downDirection = new Vector(0,-1,0);
+			
+			Vector idealAngularDirection = new Vector();
+			
+			Vector idealLinearVelocity = new Vector();
+			
+			Vector shipUp = new Vector(0,1,0);
+			Vector shipUpPos = new Vector(0,1,0);
+			
+			if(message.airshipForward){
+				idealLinearVelocity.add(playerDirection);
+			}
+			if(message.airshipBackward){
+				idealLinearVelocity.subtract(playerDirection);
+			}
+			
+			RotationMatrices.applyTransform(controlledShip.coordTransform.lToWRotation, idealLinearVelocity);
+			
+			RotationMatrices.applyTransform(controlledShip.coordTransform.lToWRotation, shipUp);
+			
+			if(message.airshipUp){
+				idealLinearVelocity.add(upDirection);
+			}
+			if(message.airshipDown){
+				idealLinearVelocity.add(downDirection);
+			}
+			
+			
+			
+			if(message.airshipRight){
+				idealAngularDirection.add(rightDirection);
+			}
+			if(message.airshipLeft){
+				idealAngularDirection.add(leftDirection);
+			}
+			
+			
+			Vector shipUpOffset = shipUp.getSubtraction(shipUpPos);
+			
+			
+			
+			double mass = controlledShip.physicsProcessor.mass;
+			
+//			idealAngularDirection.multiply(mass/2.5D);
+			idealLinearVelocity.multiply(mass/5D);
+//			shipUpOffset.multiply(mass/2.5D);
+			
+			
+			idealAngularDirection.multiply(1D/6D);
+			shipUpOffset.multiply(1D/3D);
+			
+			Vector velocityCompenstationLinear = controlledShip.physicsProcessor.linearMomentum;
+			
+			Vector velocityCompensationAngular = controlledShip.physicsProcessor.angularVelocity.cross(playerDirection);
+			
+			Vector velocityCompensationAlignment = controlledShip.physicsProcessor.angularVelocity.cross(shipUpPos);
+			
+			velocityCompensationAlignment.multiply(controlledShip.physicsProcessor.physRawSpeed);
+			velocityCompensationAngular.multiply(2D*controlledShip.physicsProcessor.physRawSpeed);
+			
+			shipUpOffset.subtract(velocityCompensationAlignment);
+			velocityCompensationAngular.subtract(velocityCompensationAngular);
+			
+			RotationMatrices.applyTransform3by3(controlledShip.physicsProcessor.framedMOI, idealAngularDirection);
+			RotationMatrices.applyTransform3by3(controlledShip.physicsProcessor.framedMOI, shipUpOffset);
+			
+			
+			if(message.airshipSprinting){
+				idealLinearVelocity.multiply(2D);
+			}
+			
+			idealLinearVelocity.subtract(idealAngularDirection);
+			idealLinearVelocity.subtract(shipUpOffset);
+			
+			//TEMPORARY CODE!!!
+			
+			controlledShip.physicsProcessor.addForceAtPoint(playerDirection, idealAngularDirection);
+			
+			controlledShip.physicsProcessor.addForceAtPoint(shipUpPos, shipUpOffset);
+			
+			controlledShip.physicsProcessor.addForceAtPoint(new Vector(), idealLinearVelocity);
+			
+			controlledShip.physicsProcessor.convertTorqueToVelocity();
+			
+//			RotationMatrices.applyTransform(controlledShip.coordTransform.lToWRotation, idealAngularDirection);
+//			System.out.println(idealAngularDirection);
 		}
-		if(message.airshipBackward){
-			idealLinearVelocity.subtract(playerDirection);
-		}
-		
-		RotationMatrices.applyTransform(controlledShip.coordTransform.lToWRotation, idealLinearVelocity);
-		
-		RotationMatrices.applyTransform(controlledShip.coordTransform.lToWRotation, shipUp);
-		
-		if(message.airshipUp){
-			idealLinearVelocity.add(upDirection);
-		}
-		if(message.airshipDown){
-			idealLinearVelocity.add(downDirection);
-		}
-		
-		
-		
-		if(message.airshipRight){
-			idealAngularDirection.add(rightDirection);
-		}
-		if(message.airshipLeft){
-			idealAngularDirection.add(leftDirection);
-		}
-		
-		
-		Vector shipUpOffset = shipUp.getSubtraction(shipUpPos);
-		
-		
-		
-		double mass = controlledShip.physicsProcessor.mass;
-		
-//		idealAngularDirection.multiply(mass/2.5D);
-		idealLinearVelocity.multiply(mass/5D);
-//		shipUpOffset.multiply(mass/2.5D);
-		
-		
-		idealAngularDirection.multiply(1D/6D);
-		shipUpOffset.multiply(1D/3D);
-		
-		Vector velocityCompenstationLinear = controlledShip.physicsProcessor.linearMomentum;
-		
-		Vector velocityCompensationAngular = controlledShip.physicsProcessor.angularVelocity.cross(playerDirection);
-		
-		Vector velocityCompensationAlignment = controlledShip.physicsProcessor.angularVelocity.cross(shipUpPos);
-		
-		velocityCompensationAlignment.multiply(controlledShip.physicsProcessor.physRawSpeed);
-		velocityCompensationAngular.multiply(2D*controlledShip.physicsProcessor.physRawSpeed);
-		
-		shipUpOffset.subtract(velocityCompensationAlignment);
-		velocityCompensationAngular.subtract(velocityCompensationAngular);
-		
-		RotationMatrices.applyTransform3by3(controlledShip.physicsProcessor.framedMOI, idealAngularDirection);
-		RotationMatrices.applyTransform3by3(controlledShip.physicsProcessor.framedMOI, shipUpOffset);
-		
-		
-		if(message.airshipSprinting){
-			idealLinearVelocity.multiply(2D);
-		}
-		
-		idealLinearVelocity.subtract(idealAngularDirection);
-		idealLinearVelocity.subtract(shipUpOffset);
-		
-		//TEMPORARY CODE!!!
-		
-		controlledShip.physicsProcessor.addForceAtPoint(playerDirection, idealAngularDirection);
-		
-		controlledShip.physicsProcessor.addForceAtPoint(shipUpPos, shipUpOffset);
-		
-		controlledShip.physicsProcessor.addForceAtPoint(new Vector(), idealLinearVelocity);
-		
-		controlledShip.physicsProcessor.convertTorqueToVelocity();
-		
-//		RotationMatrices.applyTransform(controlledShip.coordTransform.lToWRotation, idealAngularDirection);
-//		System.out.println(idealAngularDirection);
 	}
 
 	/**

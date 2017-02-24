@@ -39,7 +39,7 @@ public static final ArrayList<String> completionOptions = new ArrayList<String>(
 
 	@Override
 	public String getCommandUsage(ICommandSender sender) {
-		return "/airshipSettings <setting name> [value]";
+		return "/airshipSettings <setting name> [value]" + "\n" + "Avaliable Settings: [transfer, allowPlayer, claim]";
 	}
 
 	@Override

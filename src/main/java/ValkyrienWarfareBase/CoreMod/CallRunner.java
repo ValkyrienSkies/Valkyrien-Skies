@@ -499,7 +499,7 @@ public class CallRunner {
 	}
 
 	public static void onChunkUnload(ChunkProviderServer provider, Chunk chunk) {
-		if (!ValkyrienWarfareMod.chunkManager.isChunkInShipRange(provider.worldObj, chunk.xPosition, chunk.zPosition)) {
+//		if (!ValkyrienWarfareMod.chunkManager.isChunkInShipRange(provider.worldObj, chunk.xPosition, chunk.zPosition)) {
 			if (!chunk.worldObj.isSpawnChunk(chunk.xPosition, chunk.zPosition)) {
 				for (int i = 0; i < chunk.entityLists.length; ++i) {
 					Collection<Entity> c = chunk.entityLists[i];
@@ -511,7 +511,7 @@ public class CallRunner {
 				}
 			}
 			provider.unload(chunk);
-		}
+//		}
 	}
 	
     public static Vec3d onGetLook(Entity entityFor, float partialTicks){

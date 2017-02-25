@@ -1,7 +1,6 @@
 package ValkyrienWarfareBase.CoreMod;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -15,24 +14,17 @@ import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Collision.EntityCollisionInjector;
 import ValkyrienWarfareBase.Collision.EntityPolygon;
 import ValkyrienWarfareBase.Collision.Polygon;
-import ValkyrienWarfareBase.EntityMultiWorldFixes.EntityDraggable;
 import ValkyrienWarfareBase.Physics.BlockMass;
 import ValkyrienWarfareBase.Physics.PhysicsQueuedForce;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
-import ValkyrienWarfareCombat.Entity.EntityMountingWeaponBase;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.item.EntityArmorStand;
-import net.minecraft.entity.item.EntityBoat;
-import net.minecraft.entity.item.EntityFallingBlock;
-import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.inventory.Container;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketEffect;
@@ -50,7 +42,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraftforge.common.DimensionManager;
 
 public class CallRunner {
@@ -78,11 +69,6 @@ public class CallRunner {
 		}else{
 			return CallRunnerClient.onGetPrecipitationHeightClient(world, posToCheck);
 		}
-	}
-	
-	public static Vec3d onGetLookVec(Entity entity) {
-		// System.out.println("test");
-		return entity.getLookVec();
 	}
 
 	public static boolean onIsOnLadder(EntityLivingBase base) {
@@ -498,33 +484,17 @@ public class CallRunner {
 		world.onEntityAdded(added);
 	}
 
-	public static void onChunkUnload(ChunkProviderServer provider, Chunk chunk) {
-//		if (!ValkyrienWarfareMod.chunkManager.isChunkInShipRange(provider.worldObj, chunk.xPosition, chunk.zPosition)) {
-			if (!chunk.worldObj.isSpawnChunk(chunk.xPosition, chunk.zPosition)) {
-				for (int i = 0; i < chunk.entityLists.length; ++i) {
-					Collection<Entity> c = chunk.entityLists[i];
-					for (Entity entity : c) {
-						if (entity instanceof PhysicsWrapperEntity) {
-							ValkyrienWarfareMod.physicsManager.getManagerForWorld(entity.worldObj).physicsEntitiesToUnload.add((PhysicsWrapperEntity) entity);
-						}
-					}
-				}
-			}
-			provider.unload(chunk);
-//		}
-	}
-	
     public static Vec3d onGetLook(Entity entityFor, float partialTicks){
-    	Vec3d defualtOutput = entityFor.getLook(partialTicks);
+    	Vec3d defaultOutput = entityFor.getLook(partialTicks);
     	
     	PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(entityFor);
 		if(wrapper != null){
-			Vector newOutput = new Vector(defualtOutput);
+			Vector newOutput = new Vector(defaultOutput);
 			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.RlToWRotation, newOutput);
 			return newOutput.toVec3d();
 		}
     	
-    	return defualtOutput;
+    	return defaultOutput;
     }
 
 }

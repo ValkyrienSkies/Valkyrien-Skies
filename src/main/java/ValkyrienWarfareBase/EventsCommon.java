@@ -61,42 +61,6 @@ public class EventsCommon {
 	public static HashMap<EntityPlayerMP, Double[]> lastPositions = new HashMap<EntityPlayerMP, Double[]>();
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
-	public void onUnloadChunk(ChunkEvent.Unload event){
-
-	}
-	
-	//TODO: Use this to fix the issue with mounted entities on Ships
-	@SubscribeEvent(priority = EventPriority.HIGHEST)
-	public void onEnterChunkEvent(EnteringChunk event) {
-//		event.setResult(Result.ALLOW);
-	}
-	
-	@SubscribeEvent(priority = EventPriority.HIGHEST)
-	public void onEnteringChunk(EnteringChunk event){
-		/*Entity entity = event.getEntity();
-		World world = entity.worldObj;
-		
-		int chunkX = event.getNewChunkX();
-		int chunkZ = event.getNewChunkZ();
-		
-		int oldChunkX = event.getOldChunkX();
-		int oldChunkZ = event.getOldChunkZ();
-		
-		//This means the entity just spawned
-		if(oldChunkX == 0 && oldChunkZ == 0){
-			if(entity.isDead && entity.firstUpdate){
-				int realChunkX = MathHelper.floor_double(entity.posX / 16.0D);
-		        int realChunkZ = MathHelper.floor_double(entity.posZ / 16.0D);
-		        if(realChunkX != chunkX && realChunkZ != chunkZ){
-		        	entity.isDead = false;
-		        	world.getChunkFromChunkCoords(chunkX, chunkZ).removeEntity(entity);
-		        	world.getChunkFromChunkCoords(realChunkX, realChunkZ).addEntity(entity);
-		        }
-			}
-		}*/
-	}
-	
-	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onEntityJoinWorldEvent(EntityJoinWorldEvent event){
 		Entity entity = event.getEntity();
 		World world = entity.worldObj;

@@ -93,10 +93,10 @@ public class TransformAdapter extends ClassVisitor {
 			return false;
 		}
 
-		if (isMethod(calledDesc, "()L" + Vec3dName + ";", calledName, EntityClassName, "getLookVec", "RENAMEME", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onGetLookVec", String.format("(L%s;)L" + Vec3dName + ";", EntityClassName));
-			return false;
-		}
+//		if (isMethod(calledDesc, "()L" + Vec3dName + ";", calledName, EntityClassName, "getLookVec", "RENAMEME", calledOwner)) {
+//			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onGetLookVec", String.format("(L%s;)L" + Vec3dName + ";", EntityClassName));
+//			return false;
+//		}
 
 		if (isMethod(calledDesc, "(F)V", calledName, EntityRendererName, "orientCamera", "func_78467_g", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onOrientCamera", String.format("(L%s;F)V", EntityRendererName));
@@ -229,10 +229,10 @@ public class TransformAdapter extends ClassVisitor {
 			return false;
 		}
 
-		if (isMethod(calledDesc, "(L" + ChunkName + ";)V", calledName, ChunkProviderServerName, "unload", "func_189549_a", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onChunkUnload", String.format("(L%s;L" + ChunkName + ";)V", ChunkProviderServerName));
-			return false;
-		}
+//		if (isMethod(calledDesc, "(L" + ChunkName + ";)V", calledName, ChunkProviderServerName, "unload", "func_189549_a", calledOwner)) {
+//			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onChunkUnload", String.format("(L%s;L" + ChunkName + ";)V", ChunkProviderServerName));
+//			return false;
+//		}
 
 		return true;
 	}
@@ -314,7 +314,7 @@ public class TransformAdapter extends ClassVisitor {
 		MethodVisitor toReturn = new MethodVisitor(api, cv.visitMethod(access, methodName, methodDesc, signature, exceptions)) {
 			@Override
 			public void visitMethodInsn(int opcode, String calledOwner, String calledName, String calledDesc) {
-				if (opcode == Opcodes.INVOKEVIRTUAL) {
+				if (opcode == Opcodes.INVOKEVIRTUAL || opcode == Opcodes.INVOKEINTERFACE) {
 					if (runTransformer(calledName, calledDesc, calledOwner, mv)) {
 						super.visitMethodInsn(opcode, calledOwner, calledName, calledDesc);
 					}

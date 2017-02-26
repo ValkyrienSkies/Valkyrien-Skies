@@ -138,10 +138,10 @@ public class TransformAdapter extends ClassVisitor {
 			return false;
 		}
 
-		if (isMethod(calledDesc, "(L" + IteratorName + ";)L" + IteratorName + ";", calledName, WorldClassName, "getPersistentChunkIterable", "getPersistentChunkIterable", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onGetPersistentChunkIterable", String.format("(L%s;L" + IteratorName + ";)L" + IteratorName + ";", WorldClassName));
-			return false;
-		}
+//		if (isMethod(calledDesc, "(L" + IteratorName + ";)L" + IteratorName + ";", calledName, WorldClassName, "getPersistentChunkIterable", "getPersistentChunkIterable", calledOwner)) {
+//			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onGetPersistentChunkIterable", String.format("(L%s;L" + IteratorName + ";)L" + IteratorName + ";", WorldClassName));
+//			return false;
+//		}
 
 		if (isMethod(calledDesc, "(L" + EntityPlayerName + ";)Z", calledName, ContainerName, "canInteractWith", "func_75145_c", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onCanInteractWith", String.format("(L%s;L" + EntityPlayerName + ";)Z", ContainerName));

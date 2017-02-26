@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -66,8 +67,6 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class PhysicsObject {
@@ -387,6 +386,7 @@ public class PhysicsObject {
 
 		PlayerChunkMapEntry entry = new PlayerChunkMapEntry(((WorldServer) worldObj).getPlayerChunkMap(), x, z);
 		entry.sentToPlayers = true;
+		entry.chunk = chunk;
 
 		try {
 			playersField.set(entry, watchingPlayers);
@@ -400,7 +400,7 @@ public class PhysicsObject {
 		map.playerInstanceList.add(entry);
 
 		claimedChunksEntries[x - ownedChunks.minX][z - ownedChunks.minZ] = entry;
-		MinecraftForge.EVENT_BUS.post(new ChunkEvent.Load(chunk));
+//		MinecraftForge.EVENT_BUS.post(new ChunkEvent.Load(chunk));
 	}
 
 	//Experimental, could fix issues with random shit generating inside of Ships

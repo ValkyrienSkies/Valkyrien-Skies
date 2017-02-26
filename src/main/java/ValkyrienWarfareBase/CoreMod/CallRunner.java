@@ -232,23 +232,23 @@ public class CallRunner {
 		return world.getEntitiesInAABBexcluding(entityIn, boundingBox, predicate);
 	}
 
-	public static Iterator<Chunk> onGetPersistentChunkIterable(World world, Iterator<Chunk> chunkIterator) {
-		Iterator<Chunk> vanillaResult = world.getPersistentChunkIterable(chunkIterator);
-		ArrayList<Chunk> newResultArray = new ArrayList<Chunk>();
-		while (vanillaResult.hasNext()) {
-			newResultArray.add(vanillaResult.next());
-		}
-		WorldPhysObjectManager manager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(world);
-		ArrayList<PhysicsWrapperEntity> physEntities = (ArrayList<PhysicsWrapperEntity>) manager.physicsEntities.clone();
-		for (PhysicsWrapperEntity wrapper : physEntities) {
-			for (Chunk[] chunkArray : wrapper.wrapping.claimedChunks) {
-				for (Chunk chunk : chunkArray) {
-					newResultArray.add(chunk);
-				}
-			}
-		}
-		return newResultArray.iterator();
-	}
+//	public static Iterator<Chunk> onGetPersistentChunkIterable(World world, Iterator<Chunk> chunkIterator) {
+//		Iterator<Chunk> vanillaResult = world.getPersistentChunkIterable(chunkIterator);
+//		ArrayList<Chunk> newResultArray = new ArrayList<Chunk>();
+//		while (vanillaResult.hasNext()) {
+//			newResultArray.add(vanillaResult.next());
+//		}
+//		WorldPhysObjectManager manager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(world);
+//		ArrayList<PhysicsWrapperEntity> physEntities = (ArrayList<PhysicsWrapperEntity>) manager.physicsEntities.clone();
+//		for (PhysicsWrapperEntity wrapper : physEntities) {
+//			for (Chunk[] chunkArray : wrapper.wrapping.claimedChunks) {
+//				for (Chunk chunk : chunkArray) {
+//					newResultArray.add(chunk);
+//				}
+//			}
+//		}
+//		return newResultArray.iterator();
+//	}
 
 	public static boolean onCanInteractWith(Container con, EntityPlayer player) {
 		boolean vanilla = con.canInteractWith(player);

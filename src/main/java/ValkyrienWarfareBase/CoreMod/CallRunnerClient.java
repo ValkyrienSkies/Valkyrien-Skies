@@ -415,7 +415,7 @@ public class CallRunnerClient extends CallRunner {
 					double d1 = wrapper.wrapping.renderer.offsetPos.getY();
 					double d2 = wrapper.wrapping.renderer.offsetPos.getZ();
 					AxisAlignedBB toRender = iblockstate.getSelectedBoundingBox(renderGlobal.theWorld, blockpos).expandXyz(0.0020000000949949026D).offset(-d0, -d1, -d2);
-					renderGlobal.func_189697_a(toRender, 0, 0, 0, 0.4f);
+					renderGlobal.drawSelectionBoundingBox(toRender, 0, 0, 0, 0.4f);
 				}
 			}
 			GL11.glPopMatrix();

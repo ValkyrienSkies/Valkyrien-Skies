@@ -198,6 +198,7 @@ public class ValkyrienWarfareMod {
 		
 		if (MultiThreadExecutor != null) {
 			MultiThreadExecutor.shutdown();
+			MultiThreadExecutor = null;
 		}
 		if (multiThreadedPhysics) {
 			MultiThreadExecutor = Executors.newFixedThreadPool(threadCount);

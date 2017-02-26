@@ -19,7 +19,11 @@ public class PhysicsTickHandler {
 			manager.onUnload(wrapper);
 		}
 
+
+		
 		ArrayList<PhysicsWrapperEntity> physicsEntities = manager.getTickablePhysicsEntities();
+		
+//		System.out.println(physicsEntities.size());
 		
 		if (!ValkyrienWarfareMod.doSplitting) {
 			for (PhysicsWrapperEntity wrapper : physicsEntities) {

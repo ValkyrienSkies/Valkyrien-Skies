@@ -90,7 +90,7 @@ public class WorldPhysObjectManager {
 			}
 		}catch(Exception e){}*/
 		
-		list.removeAll(frozenShips);
+//		list.removeAll(frozenShips);
 		
 		return list;
 	}

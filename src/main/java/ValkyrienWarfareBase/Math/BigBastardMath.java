@@ -8,7 +8,6 @@ import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 
 /**
  * A lot of useful math functions belong here
@@ -18,8 +17,7 @@ import net.minecraft.util.math.Vec3d;
  */
 public class BigBastardMath {
 
-	public static final int maxPasses = 5;
-	public static final int[] primes = { 3, 31, 19, 2, 5, 7, 11, 13, 17, 23, 29 };
+	public static final int maxArrayListFusePasses = 5;
 
 	public static double getPitchFromVec3d(Vector vec) {
 		double pitchFromRotVec = -Math.asin(vec.Y) / 0.017453292F;
@@ -38,7 +36,6 @@ public class BigBastardMath {
 	public static AxisAlignedBB getBetweenAABB(AxisAlignedBB ship1, AxisAlignedBB ship2) {
 		if (!ship1.intersectsWith(ship2)) {
 			System.out.println("Tried getting relevent BB's for 2 ships not colliding!!!");
-			System.out.println("Fix it faggot");
 			return null;
 		}
 		final double[] xVals = new double[4];
@@ -126,61 +123,6 @@ public class BigBastardMath {
 	}
 
 	/**
-	 * Used to get a semi-random distribution of numbers. These numbers are then applied to stabilize the physics simulation.
-	 * 
-	 * @param relativeTo
-	 * @return A number relatively prime to the input
-	 */
-	public static final int getRelativePrime(int relativeTo) {
-		if (relativeTo < 2) {
-			return 1;
-		}
-		for (int i : primes) {
-			if (relativeTo > i) {
-				if (coptime(relativeTo, i)) {
-					return i;
-				}
-			}
-		}
-		return 1;
-	}
-
-	public static final boolean coptime(int u, int v) {
-		if (((u | v) & 1) == 0)
-			return false;
-		while ((u & 1) == 0)
-			u >>= 1;
-		if (u == 1)
-			return true;
-
-		do {
-			while ((v & 1) == 0)
-				v >>= 1;
-			if (v == 1)
-				return true;
-			if (u > v) {
-				int t = v;
-				v = u;
-				u = t;
-			}
-			v -= u;
-		} while (v != 0);
-
-		return false;
-	}
-
-	public static double bezierThatBastard(double x0, double x1, double x2, double x3, double t) {
-		double it = 1D - t;
-		double beziered = (it * it * it * x0) + (3D * t * it * it * x1) + (3D * t * t * it * x2) + (t * t * t * x3);
-		return beziered;
-	}
-
-	/*
-	 * public static Quaternion bezierThoseQuats(double t,Quaternion... quats){ double qX = bezierThatBastard(quats[0].x,quats[1].x,quats[2].x,quats[3].x,t); double qY = bezierThatBastard(quats[0].y,quats[1].y,quats[2].y,quats[3].y,t); double qZ = bezierThatBastard(quats[0].z,quats[1].z,quats[2].z,quats[3].z,t); double qW = bezierThatBastard(quats[0].w,quats[1].w,quats[2].w,quats[3].w,t); double length = Math.sqrt(qX*qX+qY*qY+qZ*qZ+qW*qW); qX/=length;qY/=length;qZ/=length;qW/=length; return new Quaternion(qX,qY,qZ,qW); }
-	 * 
-	 * public static double[] bezierThoseAngles(double t,Quaternion... quats){ double[] angles0 = quats[0].toRadians(); double[] angles1 = quats[1].toRadians(); double[] angles2 = quats[2].toRadians(); double[] angles3 = quats[3].toRadians(); double[] angles = new double[3]; angles[0] = bezierThatBastard(angles0[0],angles1[0],angles2[0],angles3[0],t); angles[1] = bezierThatBastard(angles0[1],angles1[1],angles2[1],angles3[1],t); angles[2] = bezierThatBastard(angles0[2],angles1[2],angles2[2],angles3[2],t); return angles; }
-	 */
-	/**
 	 * Prevents sliding when moving on small angles dictated by the tolerance set in the ValkyrianWarfareMod class
 	 * 
 	 * @param Normalized
@@ -204,7 +146,7 @@ public class BigBastardMath {
 	public static void mergeAABBList(List<AxisAlignedBB> toFuse) {
 		boolean changed = true;
 		int passes = 0;
-		while (changed && passes < maxPasses) {
+		while (changed && passes < maxArrayListFusePasses) {
 			changed = false;
 			passes++;
 			for (int i = 0; i < toFuse.size(); i++) {

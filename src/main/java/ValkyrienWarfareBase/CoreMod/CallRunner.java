@@ -217,7 +217,7 @@ public class CallRunner {
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
 		if (wrapper != null) {
 			Polygon poly = new Polygon(aabb, wrapper.wrapping.coordTransform.lToWTransform);
-			aabb = poly.getEnclosedAABB().contract(.3D);
+			aabb = poly.getEnclosedAABB();//.contract(.3D);
 		}
 		return world.getEntitiesWithinAABB(clazz, aabb, filter);
 	}
@@ -478,9 +478,9 @@ public class CallRunner {
 	}
 
 	public static void onEntityAdded(World world, Entity added) {
-		if (added instanceof PhysicsWrapperEntity) {
-			ValkyrienWarfareMod.physicsManager.onShipLoad((PhysicsWrapperEntity) added);
-		}
+//		if (added instanceof PhysicsWrapperEntity) {
+//			ValkyrienWarfareMod.physicsManager.onShipLoad((PhysicsWrapperEntity) added);
+//		}
 		world.onEntityAdded(added);
 	}
 

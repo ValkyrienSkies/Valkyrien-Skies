@@ -74,6 +74,9 @@ public class EventsCommon {
 			}
 			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, wrapper.wrapping.coordTransform.lToWRotation, entity);
 		}
+		if(entity instanceof PhysicsWrapperEntity){
+			ValkyrienWarfareMod.physicsManager.onShipLoad((PhysicsWrapperEntity) entity);
+		}
 	}
 	
 	@SubscribeEvent(priority = EventPriority.HIGHEST)

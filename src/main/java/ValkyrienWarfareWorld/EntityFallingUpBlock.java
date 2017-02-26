@@ -50,7 +50,7 @@ public class EntityFallingUpBlock extends EntityFallingBlock {
 				}
 			}
 
-			if (!this.func_189652_ae()) {
+			if (!this.hasNoGravity()) {
 				this.motionY += 0.03999999910593033D;
 			}
 

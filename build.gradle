@@ -33,6 +33,10 @@ repositories {
 			name 'DVS1 Maven FS'
 			url 'http://dvs1.progwml6.com/files/maven'
 		}
+		maven {
+			name 'SpongeForge Repo'
+			url 'https://mvnrepository.com/artifact/org.spongepowered/spongeforge'
+		}
 }
 
 sourceCompatibility = 1.8
@@ -67,7 +71,7 @@ minecraft {
     // stable_#            stables are built at the discretion of the MCP team.
     // Use non-default mappings at your own risk. they may not allways work.
     // simply re-run your setup task after changing the mappings to update your workspace.
-    mappings = "snapshot_20160518"
+    mappings = "snapshot_20160822"
 	coreMod = "ValkyrienWarfareBase.CoreMod.ValkyrienWarfarePlugin"
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 }
@@ -75,10 +79,11 @@ minecraft {
 dependencies {
     // Basically just mods that are being bugtested with ValkyrienWarfare go here, they will get autocompiled and mixed into the project
 	
-    deobfCompile "slimeknights.mantle:Mantle:${config.minecraft_version}-${config.mantle_version}:deobf"
+    //deobfCompile "slimeknights.mantle:Mantle:${config.minecraft_version}-${config.mantle_version}:deobf"
 	
-    compile "slimeknights:TConstruct:${config.minecraft_version_short}-${config.ticon_version}:deobf"
+    //compile "slimeknights:TConstruct:${config.minecraft_version_short}-${config.ticon_version}:deobf"
 
+	//compile "org.spongepowered:spongeforge:1.10.2-2123-5.1.0-BETA-1893"
 }
 
 processResources

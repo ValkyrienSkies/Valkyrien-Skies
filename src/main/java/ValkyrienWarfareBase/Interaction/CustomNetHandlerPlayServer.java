@@ -68,7 +68,7 @@ public class CustomNetHandlerPlayServer extends NetHandlerPlayServer {
 
 	}
 
-	@Override
+/*	@Override
 	public void processRightClickBlock(CPacketPlayerTryUseItemOnBlock packetIn) {
 		PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.playerEntity.getServerWorld());
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(playerEntity.worldObj, packetIn.getPos());
@@ -83,7 +83,7 @@ public class CustomNetHandlerPlayServer extends NetHandlerPlayServer {
 		} else {
 			super.processRightClickBlock(packetIn);
 		}
-	}
+	}*/
 
 	@Override
 	public void processPlayerDigging(CPacketPlayerDigging packetIn) {

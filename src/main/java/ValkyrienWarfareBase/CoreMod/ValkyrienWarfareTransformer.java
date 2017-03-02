@@ -16,15 +16,18 @@ public class ValkyrienWarfareTransformer implements IClassTransformer {
 
 	@Override
 	public byte[] transform(String name, String transformedName, byte[] classData) {
+		if(classData == null){
+			return classData;
+		}
+
 		try {
 			for (String privilegedPackage : privilegedPackages) {
 				if (name.startsWith(privilegedPackage)) {
 					return classData;
 				}
 			}
-			
 
-			TransformAdapter adapter = new TransformAdapter(Opcodes.ASM4, ValkyrienWarfarePlugin.isObfuscatedEnvironment, transformedName);
+			TransformAdapter adapter = new TransformAdapter(Opcodes.ASM5, ValkyrienWarfarePlugin.isObfuscatedEnvironment, transformedName);
 			ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
 			adapter.setCV(classWriter);
 			try {
@@ -39,8 +42,11 @@ public class ValkyrienWarfareTransformer implements IClassTransformer {
 				cr.accept(adapterChecker, ClassReader.EXPAND_FRAMES);
 				return checkedWriter.toByteArray();
 			} catch (Exception e) {
+//				System.out.println(transformedName);
+				e.printStackTrace();
 			}
 		} catch (Throwable t) {
+			t.printStackTrace();
 		}
 		return classData;
 	}

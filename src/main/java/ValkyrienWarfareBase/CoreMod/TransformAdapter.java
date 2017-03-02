@@ -12,7 +12,7 @@ import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRema
 
 /**
  * Basically handles all the byte transforms
- * 
+ *
  * @author thebest108
  *
  */
@@ -56,176 +56,176 @@ public class TransformAdapter extends ClassVisitor {
 	public static final String ClassName = "java/lang/Class";
 
 	public String className;
-	
+
 	public TransformAdapter(int api, boolean isObfuscatedEnvironment, String className) {
 		super(api, null);
 		this.className = className;
 	}
 
-	public boolean runTransformer(String calledName, String calledDesc, String calledOwner, MethodVisitor mv) {
+	public boolean runTransformer(String calledName, String calledDesc, String calledOwner, MethodVisitor mv, boolean itf) {
 		if (isMethod(calledDesc, "(L"+EntityClassName+";)V", calledName, ChunkName, "addEntity", "func_76612_a", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onAddEntity", String.format("(L%s;L"+EntityClassName+";)V", ChunkName));
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onAddEntity", String.format("(L%s;L"+EntityClassName+";)V", ChunkName), itf);
 			return false;
 		}
-		
-		if (isMethod(calledDesc, "(L"+BlockPosName+";L"+IBlockStateName+";)L"+IBlockStateName+";", calledName, ChunkName, "setBlockState", "func_177436_a", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onSetBlockState", String.format("(L%s;L"+BlockPosName+";L"+IBlockStateName+";)L"+IBlockStateName+";", ChunkName));
-			return false;
-		}
-		
+
+//		if (isMethod(calledDesc, "(L"+BlockPosName+";L"+IBlockStateName+";)L"+IBlockStateName+";", calledName, ChunkName, "setBlockState", "func_177436_a", calledOwner)) {
+//			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onSetBlockState", String.format("(L%s;L"+BlockPosName+";L"+IBlockStateName+";)L"+IBlockStateName+";", ChunkName), itf);
+//			return false;
+//		}
+
 		if (isMethod(calledDesc, "(F)L" + Vec3dName + ";", calledName, EntityClassName, "getPositionEyes", "func_174824_e", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onGetPositionEyes", String.format("(L%s;F)L"+Vec3dName+";", EntityClassName));
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onGetPositionEyes", String.format("(L%s;F)L"+Vec3dName+";", EntityClassName), itf);
 			return false;
 		}
-		
+
 		if (isMethod(calledDesc, "(F)L" + Vec3dName + ";", calledName, EntityClassName, "getLook", "func_70676_i", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onGetLook", String.format("(L%s;F)L"+Vec3dName+";", EntityClassName));
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onGetLook", String.format("(L%s;F)L"+Vec3dName+";", EntityClassName), itf);
 			return false;
 		}
-		
+
 		if (isMethod(calledDesc, "(DF)L" + RayTraceResultName + ";", calledName, EntityClassName, "rayTrace", "func_174822_a", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onRayTrace", String.format("(L%s;DF)L"+RayTraceResultName+";", EntityClassName));
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onRayTrace", String.format("(L%s;DF)L"+RayTraceResultName+";", EntityClassName), itf);
 			return false;
 		}
-		
+
 		if (isMethod(calledDesc, "(DDD)V", calledName, EntityClassName, "moveEntity", "func_70091_d", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onEntityMove", String.format("(L%s;DDD)V", EntityClassName));
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onEntityMove", String.format("(L%s;DDD)V", EntityClassName), itf);
 			return false;
 		}
 
 //		if (isMethod(calledDesc, "()L" + Vec3dName + ";", calledName, EntityClassName, "getLookVec", "RENAMEME", calledOwner)) {
-//			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onGetLookVec", String.format("(L%s;)L" + Vec3dName + ";", EntityClassName));
+//			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onGetLookVec", String.format("(L%s;)L" + Vec3dName + ";", EntityClassName), itf);
 //			return false;
 //		}
 
 		if (isMethod(calledDesc, "(F)V", calledName, EntityRendererName, "orientCamera", "func_78467_g", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onOrientCamera", String.format("(L%s;F)V", EntityRendererName));
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onOrientCamera", String.format("(L%s;F)V", EntityRendererName), itf);
 			return false;
 		}
 
 		if (isMethod(calledDesc, "(L" + BlockPosName + ";)L" + BlockPosName + ";", calledName, WorldClassName, "getPrecipitationHeight", "RENAMEME", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onGetPrecipitationHeight", String.format("(L%s;L" + BlockPosName + ";)L" + BlockPosName + ";", WorldClassName));
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onGetPrecipitationHeight", String.format("(L%s;L" + BlockPosName + ";)L" + BlockPosName + ";", WorldClassName), itf);
 			return false;
 		}
 
 		if (isMethod(calledDesc, "(IIIIIIZ)V", calledName, ViewFrustumName, "markBlocksForUpdate", "func_187474_a", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onMarkBlocksForUpdate", String.format("(L%s;IIIIIIZ)V", ViewFrustumName));
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onMarkBlocksForUpdate", String.format("(L%s;IIIIIIZ)V", ViewFrustumName), itf);
 			return false;
 		}
 
 		if (isMethod(calledDesc, "()Z", calledName, EntityLivingBaseName, "isOnLadder", "func_70617_f_", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onIsOnLadder", String.format("(L%s;)Z", EntityLivingBaseName));
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onIsOnLadder", String.format("(L%s;)Z", EntityLivingBaseName), itf);
 			return false;
 		}
 
 		if (isMethod(calledDesc, "()V", calledName, ExplosionName, "doExplosionA", "func_77278_a", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onExplosionA", String.format("(L%s;)V", ExplosionName));
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onExplosionA", String.format("(L%s;)V", ExplosionName), itf);
 			return false;
 		}
 
 		if (isMethod(calledDesc, "(L" + BlockPosName + ";I)I", calledName, WorldClassName, "getCombinedLight", "func_175626_b", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onGetCombinedLight", String.format("(L%s;L" + BlockPosName + ";I)I", WorldClassName));
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onGetCombinedLight", String.format("(L%s;L" + BlockPosName + ";I)I", WorldClassName), itf);
 			return false;
 		}
 
 		if (isMethod(calledDesc, "(L" + ClassName + ";L" + AxisAlignedBBName + ";L" + PredicateName + ";)L" + ListName + ";", calledName, WorldClassName, "getEntitiesWithinAABB", "func_175647_a", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onGetEntitiesWithinAABB", String.format("(L%s;L" + ClassName + ";L" + AxisAlignedBBName + ";L" + PredicateName + ";)L" + ListName + ";", WorldClassName));
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onGetEntitiesWithinAABB", String.format("(L%s;L" + ClassName + ";L" + AxisAlignedBBName + ";L" + PredicateName + ";)L" + ListName + ";", WorldClassName), itf);
 			return false;
 		}
 
 		if (isMethod(calledDesc, "(L" + EntityClassName + ";L" + AxisAlignedBBName + ";L" + PredicateName + ";)L" + ListName + ";", calledName, WorldClassName, "getEntitiesInAABBexcluding", "func_175674_a", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onGetEntitiesInAABBexcluding", String.format("(L%s;L" + EntityClassName + ";L" + AxisAlignedBBName + ";L" + PredicateName + ";)L" + ListName + ";", WorldClassName));
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onGetEntitiesInAABBexcluding", String.format("(L%s;L" + EntityClassName + ";L" + AxisAlignedBBName + ";L" + PredicateName + ";)L" + ListName + ";", WorldClassName), itf);
 			return false;
 		}
 
 //		if (isMethod(calledDesc, "(L" + IteratorName + ";)L" + IteratorName + ";", calledName, WorldClassName, "getPersistentChunkIterable", "getPersistentChunkIterable", calledOwner)) {
-//			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onGetPersistentChunkIterable", String.format("(L%s;L" + IteratorName + ";)L" + IteratorName + ";", WorldClassName));
+//			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onGetPersistentChunkIterable", String.format("(L%s;L" + IteratorName + ";)L" + IteratorName + ";", WorldClassName), itf);
 //			return false;
 //		}
 
 		if (isMethod(calledDesc, "(L" + EntityPlayerName + ";)Z", calledName, ContainerName, "canInteractWith", "func_75145_c", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onCanInteractWith", String.format("(L%s;L" + EntityPlayerName + ";)Z", ContainerName));
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onCanInteractWith", String.format("(L%s;L" + EntityPlayerName + ";)Z", ContainerName), itf);
 			return false;
 		}
 
 		if (isMethod(calledDesc, "(DDD)D", calledName, EntityClassName, "getDistanceSq", "func_70092_e", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onGetDistanceSq", String.format("(L%s;DDD)D", EntityClassName));
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onGetDistanceSq", String.format("(L%s;DDD)D", EntityClassName), itf);
 			return false;
 		}
 
 		if (isMethod(calledDesc, "(L" + BlockPosName + ";)D", calledName, EntityClassName, "getDistanceSq", "func_174818_b", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onGetDistanceSq", String.format("(L%s;L" + BlockPosName + ";)D", EntityClassName));
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onGetDistanceSq", String.format("(L%s;L" + BlockPosName + ";)D", EntityClassName), itf);
 			return false;
 		}
 
 		if (isMethod(calledDesc, "(L" + ParticleName + ";)V", calledName, ParticleManagerName, "addEffect", "func_78873_a", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onAddEffect", String.format("(L%s;L" + ParticleName + ";)V", ParticleManagerName));
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onAddEffect", String.format("(L%s;L" + ParticleName + ";)V", ParticleManagerName), itf);
 			return false;
 		}
 
 		if (isMethod(calledDesc, "(DDDL" + SoundEventName + ";L" + SoundCategoryName + ";FFZ)V", calledName, WorldClassName, "playSound", "func_184134_a", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onPlaySound", String.format("(L%s;DDDL" + SoundEventName + ";L" + SoundCategoryName + ";FFZ)V", WorldClassName));
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onPlaySound", String.format("(L%s;DDDL" + SoundEventName + ";L" + SoundCategoryName + ";FFZ)V", WorldClassName), itf);
 			return false;
 		}
 
 		if (isMethod(calledDesc, "(L" + TessellatorName + ";L" + VertexBufferName + ";L" + EntityClassName + ";F)V", calledName, RenderGlobalName, "drawBlockDamageTexture", "func_174981_a", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onDrawBlockDamageTexture", String.format("(L%s;L" + TessellatorName + ";L" + VertexBufferName + ";L" + EntityClassName + ";F)V", RenderGlobalName));
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onDrawBlockDamageTexture", String.format("(L%s;L" + TessellatorName + ";L" + VertexBufferName + ";L" + EntityClassName + ";F)V", RenderGlobalName), itf);
 			return false;
 		}
 
 		if (isMethod(calledDesc, "(L" + EntityPlayerName + ";L" + RayTraceResultName + ";IF)V", calledName, RenderGlobalName, "drawSelectionBox", "func_72731_b", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onDrawSelectionBox", String.format("(L%s;L" + EntityPlayerName + ";L" + RayTraceResultName + ";IF)V", RenderGlobalName));
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onDrawSelectionBox", String.format("(L%s;L" + EntityPlayerName + ";L" + RayTraceResultName + ";IF)V", RenderGlobalName), itf);
 			return false;
 		}
 
 		if (isMethod(calledDesc, "(DDD)D", calledName, TileEntityName, "getDistanceSq", "func_145835_a", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onGetDistanceSq", String.format("(L%s;DDD)D", TileEntityName));
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onGetDistanceSq", String.format("(L%s;DDD)D", TileEntityName), itf);
 			return false;
 		}
 
 		if (isMethod(calledDesc, "(L" + EntityClassName + ";L" + ICameraName + ";F)V", calledName, RenderGlobalName, "renderEntities", "func_180446_a", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onRenderEntities", String.format("(L%s;L" + EntityClassName + ";L" + ICameraName + ";F)V", RenderGlobalName));
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onRenderEntities", String.format("(L%s;L" + EntityClassName + ";L" + ICameraName + ";F)V", RenderGlobalName), itf);
 			return false;
 		}
 
 //		if (isMethod(calledDesc, "(L" + EntityClassName + ";)Z", calledName, WorldClassName, "spawnEntityInWorld", "func_72838_d", calledOwner)) {
-//			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onSpawnEntityInWorld", String.format("(L%s;L" + EntityClassName + ";)Z", WorldClassName));
+//			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onSpawnEntityInWorld", String.format("(L%s;L" + EntityClassName + ";)Z", WorldClassName), itf);
 //			return false;
 //		}
 
 		if (isMethod(calledDesc, "(L" + BlockPosName + ";L" + IBlockStateName + ";)Z", calledName, WorldClientName, "invalidateRegionAndSetBlock", "func_180503_b", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onInvalidateRegionAndSetBlock", String.format("(L%s;L" + BlockPosName + ";L" + IBlockStateName + ";)Z", WorldClientName));
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onInvalidateRegionAndSetBlock", String.format("(L%s;L" + BlockPosName + ";L" + IBlockStateName + ";)Z", WorldClientName), itf);
 			return false;
 		}
 
 		if (isMethod(calledDesc, "(L" + EntityPlayerName + ";DDDDIL" + PacketName + ";)V", calledName, PlayerListName, "sendToAllNearExcept", "func_148543_a", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onSendToAllNearExcept", String.format("(L%s;L" + EntityPlayerName + ";DDDDIL" + PacketName + ";)V", PlayerListName));
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onSendToAllNearExcept", String.format("(L%s;L" + EntityPlayerName + ";DDDDIL" + PacketName + ";)V", PlayerListName), itf);
 			return false;
 		}
 
 //		SpongeFix #1
 //		if (isMethod(calledDesc, "(L" + BlockPosName + ";L" + IBlockStateName + ";I)Z", calledName, WorldClassName, "setBlockState", "func_180501_a", calledOwner)) {
-//			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onSetBlockState", String.format("(L%s;L" + BlockPosName + ";L" + IBlockStateName + ";I)Z", WorldClassName));
+//			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onSetBlockState", String.format("(L%s;L" + BlockPosName + ";L" + IBlockStateName + ";I)Z", WorldClassName), itf);
 //			return false;
 //		}
 
 		if (isMethod(calledDesc, "(L" + Vec3dName + ";L" + Vec3dName + ";ZZZ)L" + RayTraceResultName + ";", calledName, WorldClassName, "rayTraceBlocks", "func_147447_a", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onRayTraceBlocks", String.format("(L%s;L" + Vec3dName + ";L" + Vec3dName + ";ZZZ)L" + RayTraceResultName + ";", WorldClassName));
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onRayTraceBlocks", String.format("(L%s;L" + Vec3dName + ";L" + Vec3dName + ";ZZZ)L" + RayTraceResultName + ";", WorldClassName), itf);
 			return false;
 		}
 
 		if (isMethod(calledDesc, "(L" + EntityClassName + ";)V", calledName, WorldClassName, "onEntityRemoved", "func_72847_b", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onEntityRemoved", String.format("(L%s;L" + EntityClassName + ";)V", WorldClassName));
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onEntityRemoved", String.format("(L%s;L" + EntityClassName + ";)V", WorldClassName), itf);
 			return false;
 		}
 
 		if (isMethod(calledDesc, "(L" + EntityClassName + ";)V", calledName, WorldClassName, "onEntityAdded", "func_72923_a", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onEntityAdded", String.format("(L%s;L" + EntityClassName + ";)V", WorldClassName));
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onEntityAdded", String.format("(L%s;L" + EntityClassName + ";)V", WorldClassName), itf);
 			return false;
 		}
 
 		if (isMethod(calledDesc, "(L" + BlockRenderLayerName + ";DIL" + EntityClassName + ";)I", calledName, RenderGlobalName, "renderBlockLayer", "func_174977_a", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onRenderBlockLayer", String.format("(L%s;L" + BlockRenderLayerName + ";DIL" + EntityClassName + ";)I", RenderGlobalName));
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onRenderBlockLayer", String.format("(L%s;L" + BlockRenderLayerName + ";DIL" + EntityClassName + ";)I", RenderGlobalName), itf);
 			return false;
 		}
 
@@ -243,8 +243,8 @@ public class TransformAdapter extends ClassVisitor {
 			boolean correctName = pertainsToMethod(calledName, classFrom, methodNameClear, methodNameObsf) || pertainsToMethod(calledName, calledOwner, methodNameClear, methodNameObsf) || pertainsToMethod(calledName, getRuntimeClassName(classFrom), methodNameClear, methodNameObsf) || pertainsToMethod(calledName, getRuntimeClassName(calledOwner), methodNameClear, methodNameObsf);
 			if (correctName) {
 				boolean correctSuperClass = InheritanceUtils.extendsClass(calledOwner, classFrom)
-					|| InheritanceUtils.extendsClass(calledOwner, getRuntimeClassName(classFrom)) 
-					|| InheritanceUtils.extendsClass(getRuntimeClassName(calledOwner), classFrom) 
+					|| InheritanceUtils.extendsClass(calledOwner, getRuntimeClassName(classFrom))
+					|| InheritanceUtils.extendsClass(getRuntimeClassName(calledOwner), classFrom)
 					|| InheritanceUtils.extendsClass(getRuntimeClassName(calledOwner), getRuntimeClassName(classFrom));
 				return correctSuperClass;
 			}
@@ -313,13 +313,13 @@ public class TransformAdapter extends ClassVisitor {
 	public MethodVisitor visitMethod(int access, final String methodName, String methodDesc, String signature, String[] exceptions) {
 		MethodVisitor toReturn = new MethodVisitor(api, cv.visitMethod(access, methodName, methodDesc, signature, exceptions)) {
 			@Override
-			public void visitMethodInsn(int opcode, String calledOwner, String calledName, String calledDesc) {
-				if (opcode == Opcodes.INVOKEVIRTUAL || opcode == Opcodes.INVOKEINTERFACE) {
-					if (runTransformer(calledName, calledDesc, calledOwner, mv)) {
-						super.visitMethodInsn(opcode, calledOwner, calledName, calledDesc);
+			public void visitMethodInsn(int opcode, String calledOwner, String calledName, String calledDesc, boolean itf) {
+				if (opcode == Opcodes.INVOKEVIRTUAL || opcode == Opcodes.INVOKEINTERFACE || opcode == Opcodes.INVOKESTATIC || opcode == Opcodes.H_INVOKEVIRTUAL) {
+					if (runTransformer(calledName, calledDesc, calledOwner, mv, itf)) {
+						super.visitMethodInsn(opcode, calledOwner, calledName, calledDesc, itf);
 					}
 				} else {
-					super.visitMethodInsn(opcode, calledOwner, calledName, calledDesc);
+					super.visitMethodInsn(opcode, calledOwner, calledName, calledDesc, itf);
 				}
 			}
 		};

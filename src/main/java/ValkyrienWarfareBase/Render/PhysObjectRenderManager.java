@@ -186,7 +186,7 @@ public class PhysObjectRenderManager {
 		for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
 			for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
 				//TODO: Fix this render bug
-				if(chunkX >= parent.ownedChunks.minX && chunkZ >= parent.ownedChunks.minZ){
+				if(chunkX >= parent.ownedChunks.minX && chunkZ >= parent.ownedChunks.minZ && chunkX - parent.ownedChunks.minX < 25 && chunkZ - parent.ownedChunks.minZ < 25){
 					PhysRenderChunk renderChunk = renderChunks[chunkX - parent.ownedChunks.minX][chunkZ - parent.ownedChunks.minZ];
 					renderChunk.updateLayers(minBlockArrayY, maxBlockArrayY);
 				}else{

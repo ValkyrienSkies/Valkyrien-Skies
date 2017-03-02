@@ -79,7 +79,7 @@ public class ASMUtils {
 					Iterator<AbstractInsnNode> insIterator = method.instructions.iterator();
 
 					for(int i=0;i<1000;i++){
-						System.out.println("found it");
+//						System.out.println("found it");
 	//					insIterator.next();
 					}
 

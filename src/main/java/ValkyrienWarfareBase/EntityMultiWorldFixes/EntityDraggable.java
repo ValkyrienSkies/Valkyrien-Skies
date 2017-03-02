@@ -128,7 +128,7 @@ public class EntityDraggable {
 		}
 
 		boolean onGroundOrig = draggableAsEntity.onGround;
-//		CallRunner.onEntityMove(draggableAsEntity, velocityAddedToPlayer.X, velocityAddedToPlayer.Y, velocityAddedToPlayer.Z);
+
 		if(!ValkyrienWarfareMod.physicsManager.isEntityFixed(draggableAsEntity)){
 			float originalWalked = draggableAsEntity.distanceWalkedModified;
 			float originalWalkedOnStep = draggableAsEntity.distanceWalkedOnStepModified;
@@ -136,7 +136,7 @@ public class EntityDraggable {
 
 			draggableAsEntity.setSneaking(false);
 
-			if(draggableAsEntity instanceof EntityPlayerSP){
+			if(draggableAsEntity.worldObj.isRemote && draggableAsEntity instanceof EntityPlayerSP){
 				EntityPlayerSP playerSP = (EntityPlayerSP)draggableAsEntity;
 				MovementInput moveInput = playerSP.movementInput;
 				originallySneaking = moveInput.sneak;
@@ -144,13 +144,14 @@ public class EntityDraggable {
 			}
 
 			draggableAsEntity.moveEntity(velocityAddedToPlayer.X, velocityAddedToPlayer.Y, velocityAddedToPlayer.Z);
+//			CallRunner.onEntityMove(draggableAsEntity, velocityAddedToPlayer.X, velocityAddedToPlayer.Y, velocityAddedToPlayer.Z);
 
 			//Do not add this movement as if the entity were walking it
 			draggableAsEntity.distanceWalkedModified = originalWalked;
 			draggableAsEntity.distanceWalkedOnStepModified = originalWalkedOnStep;
 			draggableAsEntity.setSneaking(originallySneaking);
 
-			if(draggableAsEntity instanceof EntityPlayerSP){
+			if(draggableAsEntity.worldObj.isRemote && draggableAsEntity instanceof EntityPlayerSP){
 				EntityPlayerSP playerSP = (EntityPlayerSP)draggableAsEntity;
 				MovementInput moveInput = playerSP.movementInput;
 				moveInput.sneak = originallySneaking;
@@ -160,6 +161,7 @@ public class EntityDraggable {
 		if(onGroundOrig){
 			draggableAsEntity.onGround = onGroundOrig;
 		}
+
 		velocityAddedToPlayer.multiply(.99D);
 		yawDifVelocity *= .95D;
 	}

@@ -6,7 +6,7 @@ public class InheritanceUtils {
 	private static final String[] leafPackages = { "java/", "javax/" };
 
 	public static boolean extendsClass(String className, String targetClassName) {
-		if (className.equalsIgnoreCase(targetClassName)) {
+		if (className.equalsIgnoreCase(targetClassName.replace('.', '/'))) {
 			return true;
 		} else if (isLeafPackage(className)) {
 			return false;

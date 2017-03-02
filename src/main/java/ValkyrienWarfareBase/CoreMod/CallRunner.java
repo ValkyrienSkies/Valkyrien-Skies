@@ -48,10 +48,10 @@ public class CallRunner {
 
     public static void onAddEntity(Chunk chunk, Entity entityIn){
     	World world = chunk.worldObj;
-    	
+
     	int i = MathHelper.floor_double(entityIn.posX / 16.0D);
         int j = MathHelper.floor_double(entityIn.posZ / 16.0D);
-    	
+
         if(i == chunk.xPosition && j == chunk.zPosition){
         	chunk.addEntity(entityIn);
         }else{
@@ -61,7 +61,7 @@ public class CallRunner {
         	}
         }
     }
-	
+
 	public static BlockPos onGetPrecipitationHeight(World world, BlockPos posToCheck) {
 		BlockPos pos = world.getPrecipitationHeight(posToCheck);
 		if(!world.isRemote || ValkyrienWarfareMod.accurateRain){
@@ -387,10 +387,10 @@ public class CallRunner {
 		}
 	}
 
-	public static IBlockState onSetBlockState(Chunk chunkFor, BlockPos pos, IBlockState newState)
+	public static void onSetBlockState(World world, BlockPos pos, IBlockState newState, int flags)
     {
-		World world = chunkFor.worldObj;
-		IBlockState oldState = chunkFor.getBlockState(pos);
+//		System.out.println("tset");
+		IBlockState oldState = world.getBlockState(pos);
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
 		if (wrapper != null) {
 			if(!world.isRemote){
@@ -401,9 +401,9 @@ public class CallRunner {
 				wrapper.wrapping.renderer.markForUpdate();
 			}
 		}
-		return chunkFor.setBlockState(pos, newState);
+//		return chunkFor.setBlockState(pos, newState);
     }
-	
+
 	/*public static boolean onSetBlockState(World world, BlockPos pos, IBlockState newState, int flags) {
 		IBlockState oldState = world.getBlockState(pos);
 		boolean toReturn = world.setBlockState(pos, newState, flags);
@@ -426,15 +426,15 @@ public class CallRunner {
 		if (physManager == null) {
 			return vanillaTrace;
 		}
-		
+
 		Vec3d playerEyesPos = vec31;
 		Vec3d playerReachVector = vec32.subtract(vec31);
-		
+
 		AxisAlignedBB playerRangeBB = new AxisAlignedBB(vec31.xCoord, vec31.yCoord, vec31.zCoord, vec32.xCoord, vec32.yCoord, vec32.zCoord);
-		
+
 		List<PhysicsWrapperEntity> nearbyShips = physManager.getNearbyPhysObjects(playerRangeBB);
 		boolean changed = false;
-		
+
 		double reachDistance = playerReachVector.lengthVector();
 		double worldResultDistFromPlayer = 420000000D;
 		if (vanillaTrace != null && vanillaTrace.hitVec != null) {
@@ -486,14 +486,14 @@ public class CallRunner {
 
     public static Vec3d onGetLook(Entity entityFor, float partialTicks){
     	Vec3d defaultOutput = entityFor.getLook(partialTicks);
-    	
+
     	PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(entityFor);
 		if(wrapper != null){
 			Vector newOutput = new Vector(defaultOutput);
 			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.RlToWRotation, newOutput);
 			return newOutput.toVec3d();
 		}
-    	
+
     	return defaultOutput;
     }
 

@@ -8,9 +8,11 @@ import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.CoordTransformObject;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareCombat.Entity.EntityCannonBall;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
+import net.minecraft.util.MovementInput;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
@@ -128,7 +130,31 @@ public class EntityDraggable {
 		boolean onGroundOrig = draggableAsEntity.onGround;
 //		CallRunner.onEntityMove(draggableAsEntity, velocityAddedToPlayer.X, velocityAddedToPlayer.Y, velocityAddedToPlayer.Z);
 		if(!ValkyrienWarfareMod.physicsManager.isEntityFixed(draggableAsEntity)){
+			float originalWalked = draggableAsEntity.distanceWalkedModified;
+			float originalWalkedOnStep = draggableAsEntity.distanceWalkedOnStepModified;
+			boolean originallySneaking = draggableAsEntity.isSneaking();
+
+			draggableAsEntity.setSneaking(false);
+
+			if(draggableAsEntity instanceof EntityPlayerSP){
+				EntityPlayerSP playerSP = (EntityPlayerSP)draggableAsEntity;
+				MovementInput moveInput = playerSP.movementInput;
+				originallySneaking = moveInput.sneak;
+				moveInput.sneak = false;
+			}
+
 			draggableAsEntity.moveEntity(velocityAddedToPlayer.X, velocityAddedToPlayer.Y, velocityAddedToPlayer.Z);
+
+			//Do not add this movement as if the entity were walking it
+			draggableAsEntity.distanceWalkedModified = originalWalked;
+			draggableAsEntity.distanceWalkedOnStepModified = originalWalkedOnStep;
+			draggableAsEntity.setSneaking(originallySneaking);
+
+			if(draggableAsEntity instanceof EntityPlayerSP){
+				EntityPlayerSP playerSP = (EntityPlayerSP)draggableAsEntity;
+				MovementInput moveInput = playerSP.movementInput;
+				moveInput.sneak = originallySneaking;
+			}
 		}
 
 		if(onGroundOrig){

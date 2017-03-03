@@ -62,7 +62,7 @@ public class TransformAdapter extends ClassVisitor {
 		this.className = className;
 	}
 
-	public boolean runTransformer(String calledName, String calledDesc, String calledOwner, MethodVisitor mv, boolean itf) {
+	public boolean runTransformer(int opcode, String calledName, String calledDesc, String calledOwner, MethodVisitor mv, boolean itf) {
 		if (isMethod(calledDesc, "(L"+EntityClassName+";)V", calledName, ChunkName, "addEntity", "func_76612_a", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onAddEntity", String.format("(L%s;L"+EntityClassName+";)V", ChunkName), itf);
 			return false;
@@ -204,10 +204,43 @@ public class TransformAdapter extends ClassVisitor {
 		}
 
 //		SpongeFix #1
-//		if (isMethod(calledDesc, "(L" + BlockPosName + ";L" + IBlockStateName + ";I)Z", calledName, WorldClassName, "setBlockState", "func_180501_a", calledOwner)) {
-//			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onSetBlockState", String.format("(L%s;L" + BlockPosName + ";L" + IBlockStateName + ";I)Z", WorldClassName), itf);
-//			return false;
-//		}
+		if (isMethod(calledDesc, "(L" + BlockPosName + ";L" + IBlockStateName + ";I)Z", calledName, WorldClassName, "setBlockState", "func_180501_a", calledOwner)) {
+			/*
+
+			//RRRI
+			mv.visitInsn(Opcodes.DUP2_X2);
+			//RIRRRI
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onSetBlockState", "(L" + IBlockStateName + ";I)V", itf);
+			//RIRR
+			mv.visitInsn(Opcodes.DUP2_X2);
+			//RRRIRR
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onSetBlockState", "(L" + WorldClassName + ";L" + BlockPosName + ";)V", itf);
+			//RRRI
+			mv.visitMethodInsn(opcode, calledOwner, calledName, calledDesc, itf);
+
+			*/
+
+			//RRRI
+			mv.visitInsn(Opcodes.DUP2_X2);
+			//RIRRRI
+			mv.visitInsn(Opcodes.DUP2_X2);
+			//RIRIRRRI
+			mv.visitInsn(Opcodes.POP2);
+//			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onSetBlockState", "(L" + IBlockStateName + ";I)V", itf);
+			//RIRIRR
+			mv.visitInsn(Opcodes.DUP2_X2);
+			//RIRRRIRR
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onSetBlockState", "(L" + IBlockStateName + ";IL" + WorldClassName + ";L" + BlockPosName + ";)V", itf);
+			//RIRR
+			mv.visitInsn(Opcodes.DUP2_X2);
+			//RRRIRR
+			mv.visitInsn(Opcodes.POP2);
+//			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onSetBlockState", "(L" + WorldClassName + ";L" + BlockPosName + ";)V", itf);
+			//RRRI
+			mv.visitMethodInsn(opcode, calledOwner, calledName, calledDesc, itf);
+
+			return false;
+		}
 
 		if (isMethod(calledDesc, "(L" + Vec3dName + ";L" + Vec3dName + ";ZZZ)L" + RayTraceResultName + ";", calledName, WorldClassName, "rayTraceBlocks", "func_147447_a", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onRayTraceBlocks", String.format("(L%s;L" + Vec3dName + ";L" + Vec3dName + ";ZZZ)L" + RayTraceResultName + ";", WorldClassName), itf);
@@ -315,7 +348,7 @@ public class TransformAdapter extends ClassVisitor {
 			@Override
 			public void visitMethodInsn(int opcode, String calledOwner, String calledName, String calledDesc, boolean itf) {
 				if (opcode == Opcodes.INVOKEVIRTUAL || opcode == Opcodes.INVOKEINTERFACE || opcode == Opcodes.INVOKESTATIC || opcode == Opcodes.H_INVOKEVIRTUAL) {
-					if (runTransformer(calledName, calledDesc, calledOwner, mv, itf)) {
+					if (runTransformer(opcode, calledName, calledDesc, calledOwner, mv, itf)) {
 						super.visitMethodInsn(opcode, calledOwner, calledName, calledDesc, itf);
 					}
 				} else {

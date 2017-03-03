@@ -1,7 +1,5 @@
 package ValkyrienWarfareBase.CoreMod;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -387,9 +385,22 @@ public class CallRunner {
 		}
 	}
 
-	public static void onSetBlockState(World world, BlockPos pos, IBlockState newState, int flags)
-    {
-//		System.out.println("tset");
+	public static void onSetBlockState(IBlockState state, int i){
+
+	}
+
+	public static void onSetBlockState(World world, BlockPos pos){
+//		if(!world.isRemote){
+//			System.out.println(world.getBlockState(pos).getBlock().getLocalizedName());
+//		}
+	}
+
+	public static void onSetBlockState(IBlockState newState, int flags, World world, BlockPos pos){
+		onSetBlockState(world, pos, newState, flags);
+    }
+
+
+	public static void onSetBlockState(World world, BlockPos pos, IBlockState newState, int flags){
 		IBlockState oldState = world.getBlockState(pos);
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
 		if (wrapper != null) {
@@ -401,7 +412,6 @@ public class CallRunner {
 				wrapper.wrapping.renderer.markForUpdate();
 			}
 		}
-//		return chunkFor.setBlockState(pos, newState);
     }
 
 	/*public static boolean onSetBlockState(World world, BlockPos pos, IBlockState newState, int flags) {
@@ -461,6 +471,7 @@ public class CallRunner {
 				}
 			}
 		}
+
 		return vanillaTrace;
 	}
 

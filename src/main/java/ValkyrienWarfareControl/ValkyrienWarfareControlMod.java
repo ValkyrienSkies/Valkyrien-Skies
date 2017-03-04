@@ -122,32 +122,32 @@ public class ValkyrienWarfareControlMod {
 		balloonBurner = new BlockBalloonBurner(Material.IRON).setHardness(4f).setUnlocalizedName("ballonburner").setRegistryName(MODID, "ballonburner").setCreativeTab(CreativeTabs.TRANSPORTATION);
 		pilotsChair = new BlockShipPilotsChair(Material.IRON).setHardness(4f).setUnlocalizedName("shippilotschair").setRegistryName(MODID, "shippilotschair").setCreativeTab(CreativeTabs.TRANSPORTATION);
 
-		GameRegistry.registerBlock(basicEngine);
-		GameRegistry.registerBlock(advancedEngine);
-		GameRegistry.registerBlock(eliteEngine);
-		GameRegistry.registerBlock(ultimateEngine);
-		GameRegistry.registerBlock(redstoneEngine);
+        ValkyrienWarfareMod.registerBlock(basicEngine);
+        ValkyrienWarfareMod.registerBlock(advancedEngine);
+        ValkyrienWarfareMod.registerBlock(eliteEngine);
+        ValkyrienWarfareMod.registerBlock(ultimateEngine);
+        ValkyrienWarfareMod.registerBlock(redstoneEngine);
 
-		GameRegistry.registerBlock(basicHoverController);
-		GameRegistry.registerBlock(antigravityEngine);
-		GameRegistry.registerBlock(dopedEtherium);
-		GameRegistry.registerBlock(balloonBurner);
-		GameRegistry.registerBlock(pilotsChair);
+        ValkyrienWarfareMod.registerBlock(basicHoverController);
+        ValkyrienWarfareMod.registerBlock(antigravityEngine);
+        ValkyrienWarfareMod.registerBlock(dopedEtherium);
+        ValkyrienWarfareMod.registerBlock(balloonBurner);
+        ValkyrienWarfareMod.registerBlock(pilotsChair);
 	}
 
 	private void registerTileEntities(FMLStateEvent event) {
-		TileEntity.addMapping(TileEntityHoverController.class, "tilehovercontroller");
-		TileEntity.addMapping(AntiGravEngineTileEntity.class, "tileantigravengine");
-		TileEntity.addMapping(BalloonBurnerTileEntity.class, "tileballoonburner");
-		TileEntity.addMapping(PilotsChairTileEntity.class, "tilemanualshipcontroller");
+		GameRegistry.registerTileEntity(TileEntityHoverController.class, "tilehovercontroller");
+        GameRegistry.registerTileEntity(AntiGravEngineTileEntity.class, "tileantigravengine");
+        GameRegistry.registerTileEntity(BalloonBurnerTileEntity.class, "tileballoonburner");
+        GameRegistry.registerTileEntity(PilotsChairTileEntity.class, "tilemanualshipcontroller");
 	}
 
 	private void registerItems(FMLStateEvent event) {
 		systemLinker = new ItemSystemLinker().setUnlocalizedName("systemlinker").setRegistryName(MODID, "systemlinker").setCreativeTab(CreativeTabs.TRANSPORTATION).setMaxStackSize(1);
 		airshipStealer = new ItemShipStealer().setUnlocalizedName("airshipStealer").setRegistryName(MODID, "airshipStealer").setCreativeTab(CreativeTabs.TOOLS).setMaxStackSize(1);
-		
-		GameRegistry.registerItem(systemLinker);
-		GameRegistry.registerItem(airshipStealer);
+
+        ValkyrienWarfareMod.registerItem(systemLinker);
+        ValkyrienWarfareMod.registerItem(airshipStealer);
 	}
 
 	private void registerRecipies(FMLStateEvent event) {

@@ -43,7 +43,7 @@ public class TileEntityHoverController extends TileEntity {
 		// physObj.physicsProcessor.convertTorqueToVelocity();
 		// secondsToApply*=5D;
 		// idealHeight = 100D;
-		if (worldObj.isBlockPowered(getPos())||autoStabalizerControl) {
+		if (world.isBlockPowered(getPos())||autoStabalizerControl) {
 			setAutoStabilizationValue(physObj);
 		}
 

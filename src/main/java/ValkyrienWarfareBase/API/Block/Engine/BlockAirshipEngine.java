@@ -33,12 +33,9 @@ public abstract class BlockAirshipEngine extends Block implements IBlockForcePro
 	}
 
 	@Override
-	public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
-		EnumFacing facing = BlockPistonBase.getFacingFromEntity(pos, placer);
-		if (placer.isSneaking()) {
-			facing = facing.getOpposite();
-		}
-		worldIn.setBlockState(pos, state.withProperty(FACING, facing), 2);
+	public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
+	{
+		return this.getDefaultState().withProperty(FACING, placer.isSneaking() ? placer.getHorizontalFacing().getOpposite() :  placer.getHorizontalFacing());
 	}
 
 	@Override

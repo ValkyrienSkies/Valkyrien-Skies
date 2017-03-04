@@ -86,7 +86,7 @@ public class HovercraftControllerGUI extends GuiContainer {
 	@Override
 	public void initGui() {
 		super.initGui();
-		this.mc.thePlayer.openContainer = this.inventorySlots;
+		this.mc.player.openContainer = this.inventorySlots;
 		this.guiLeft = (this.width - this.xSize) / 2;
 		this.guiTop = (this.height - this.ySize) / 2;
 		textFields.clear();
@@ -170,7 +170,7 @@ public class HovercraftControllerGUI extends GuiContainer {
 	private HovercraftControllerGUIInputMessage getMessage() {
 		HovercraftControllerGUIInputMessage toReturn = new HovercraftControllerGUIInputMessage();
 		toReturn.tilePos = tileEnt.getPos();
-		toReturn.physEntId = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(mc.theWorld, toReturn.tilePos).getEntityId();
+		toReturn.physEntId = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(mc.world, toReturn.tilePos).getEntityId();
 		try {
 			toReturn.newIdealHeight = Double.parseDouble(textFields.get(0).getText());
 			toReturn.newStablitiyBias = Double.parseDouble(textFields.get(1).getText()) / 100D;

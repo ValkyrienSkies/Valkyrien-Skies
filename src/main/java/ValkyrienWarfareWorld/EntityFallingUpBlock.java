@@ -42,9 +42,9 @@ public class EntityFallingUpBlock extends EntityFallingBlock {
 			if (this.fallTime++ == 0) {
 				BlockPos blockpos = new BlockPos(this);
 
-				if (this.worldObj.getBlockState(blockpos).getBlock() == block) {
-					this.worldObj.setBlockToAir(blockpos);
-				} else if (!this.worldObj.isRemote) {
+				if (this.world.getBlockState(blockpos).getBlock() == block) {
+					this.world.setBlockToAir(blockpos);
+				} else if (!this.world.isRemote) {
 					this.setDead();
 					return;
 				}
@@ -59,14 +59,14 @@ public class EntityFallingUpBlock extends EntityFallingBlock {
 			this.motionY *= 0.9800000190734863D;
 			this.motionZ *= 0.9800000190734863D;
 
-			if (!this.worldObj.isRemote) {
+			if (!this.world.isRemote) {
 				BlockPos blockpos1 = new BlockPos(this);
 
 				if (!onGround && isCollidedVertically) {
-					IBlockState iblockstate = this.worldObj.getBlockState(blockpos1);
+					IBlockState iblockstate = this.world.getBlockState(blockpos1);
 
-					if (this.worldObj.isAirBlock(new BlockPos(this.posX, this.posY + 1.009999999776482582D, this.posZ))) // Forge: Don't indent below.
-						if (BlockFalling.canFallThrough(this.worldObj.getBlockState(new BlockPos(this.posX, this.posY + 1.009999999776482582D, this.posZ)))) {
+					if (this.world.isAirBlock(new BlockPos(this.posX, this.posY + 1.009999999776482582D, this.posZ))) // Forge: Don't indent below.
+						if (BlockFalling.canFallThrough(this.world.getBlockState(new BlockPos(this.posX, this.posY + 1.009999999776482582D, this.posZ)))) {
 							this.isCollidedVertically = false;
 							return;
 						}
@@ -78,14 +78,14 @@ public class EntityFallingUpBlock extends EntityFallingBlock {
 					if (iblockstate.getBlock() != Blocks.PISTON_EXTENSION) {
 						this.setDead();
 
-						if (!this.canSetAsBlock) {
-							if (this.worldObj.canBlockBePlaced(block, blockpos1, true, EnumFacing.UP, (Entity) null, (ItemStack) null) && !BlockFalling.canFallThrough(this.worldObj.getBlockState(blockpos1.up())) && worldObj.setBlockState(blockpos1, this.fallTile, 3)) {
+						if (!this.dontSetBlock) {
+							if (this.world.mayPlace(block, blockpos1, true, EnumFacing.UP, (Entity) null) && !BlockFalling.canFallThrough(this.world.getBlockState(blockpos1.up())) && world.setBlockState(blockpos1, this.fallTile, 3)) {
 								if (block instanceof BlockFalling) {
-									((BlockFalling) block).onEndFalling(this.worldObj, blockpos1);
+									((BlockFalling) block).onEndFalling(this.world, blockpos1);
 								}
 
 								if (this.tileEntityData != null && block instanceof ITileEntityProvider) {
-									TileEntity tileentity = this.worldObj.getTileEntity(blockpos1);
+									TileEntity tileentity = this.world.getTileEntity(blockpos1);
 
 									if (tileentity != null) {
 										NBTTagCompound nbttagcompound = tileentity.writeToNBT(new NBTTagCompound());
@@ -102,13 +102,13 @@ public class EntityFallingUpBlock extends EntityFallingBlock {
 										tileentity.markDirty();
 									}
 								}
-							} else if (this.shouldDropItem && this.worldObj.getGameRules().getBoolean("doEntityDrops")) {
+							} else if (this.shouldDropItem && this.world.getGameRules().getBoolean("doEntityDrops")) {
 								this.entityDropItem(new ItemStack(block, 1, block.damageDropped(this.fallTile)), 0.0F);
 							}
 						}
 					}
-				} else if (this.fallTime > 100 && !this.worldObj.isRemote && (blockpos1.getY() < 1 || blockpos1.getY() > 256) || this.fallTime > 600) {
-					if (this.shouldDropItem && this.worldObj.getGameRules().getBoolean("doEntityDrops")) {
+				} else if (this.fallTime > 100 && !this.world.isRemote && (blockpos1.getY() < 1 || blockpos1.getY() > 256) || this.fallTime > 600) {
+					if (this.shouldDropItem && this.world.getGameRules().getBoolean("doEntityDrops")) {
 						this.entityDropItem(new ItemStack(block, 1, block.damageDropped(this.fallTile)), 0.0F);
 					}
 

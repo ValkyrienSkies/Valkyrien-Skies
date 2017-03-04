@@ -23,9 +23,10 @@ import net.minecraft.world.World;
 public class ItemSystemLinker extends Item {
 
 	@Override
-	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+	public EnumActionResult onItemUse(EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		IBlockState state = worldIn.getBlockState(pos);
 		Block block = state.getBlock();
+		ItemStack stack = playerIn.getHeldItem(hand);
 		NBTTagCompound stackCompound = stack.getTagCompound();
 		if (stackCompound == null) {
 			stackCompound = new NBTTagCompound();
@@ -34,7 +35,7 @@ public class ItemSystemLinker extends Item {
 		if (block instanceof BlockHovercraftController) {
 			if (!worldIn.isRemote) {
 				NBTUtils.writeBlockPosToNBT("controllerPos", pos, stackCompound);
-				playerIn.addChatMessage(new TextComponentString("ControllerPos set <" + pos.getX() + ":" + pos.getY() + ":" + pos.getZ() + ">"));
+				playerIn.sendMessage(new TextComponentString("ControllerPos set <" + pos.getX() + ":" + pos.getY() + ":" + pos.getZ() + ">"));
 			} else {
 				return EnumActionResult.SUCCESS;
 			}
@@ -43,13 +44,13 @@ public class ItemSystemLinker extends Item {
 			if (!worldIn.isRemote) {
 				BlockPos controllerPos = NBTUtils.readBlockPosFromNBT("controllerPos", stackCompound);
 				if (controllerPos.equals(BlockPos.ORIGIN)) {
-					playerIn.addChatMessage(new TextComponentString("No selected Controller"));
+					playerIn.sendMessage(new TextComponentString("No selected Controller"));
 				} else {
 					PhysicsWrapperEntity controllerWrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldIn, controllerPos);
 					PhysicsWrapperEntity engineWrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldIn, pos);
 
 					if (controllerWrapper != engineWrapper) {
-						playerIn.addChatMessage(new TextComponentString("Controller and Engine are on seperate ships"));
+						playerIn.sendMessage(new TextComponentString("Controller and Engine are on seperate ships"));
 						return EnumActionResult.SUCCESS;
 					}
 					TileEntity worldTile = worldIn.getTileEntity(pos);
@@ -58,9 +59,9 @@ public class ItemSystemLinker extends Item {
 						AntiGravEngineTileEntity tileEntity = (AntiGravEngineTileEntity) worldTile;
 						BlockPos gravControllerPos = tileEntity.controllerPos;
 						if (gravControllerPos.equals(BlockPos.ORIGIN)) {
-							playerIn.addChatMessage(new TextComponentString("Set Controller To " + controllerPos.toString()));
+							playerIn.sendMessage(new TextComponentString("Set Controller To " + controllerPos.toString()));
 						} else {
-							playerIn.addChatMessage(new TextComponentString("Replaced controller position from: " + gravControllerPos.toString() + " to: " + controllerPos.toString()));
+							playerIn.sendMessage(new TextComponentString("Replaced controller position from: " + gravControllerPos.toString() + " to: " + controllerPos.toString()));
 						}
 						tileEntity.setController(controllerPos);
 					}

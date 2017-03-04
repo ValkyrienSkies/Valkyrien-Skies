@@ -21,14 +21,14 @@ public class EventsClient {
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onClientTickEvent(ClientTickEvent event) {
-		if (mc.theWorld != null) {
+		if (mc.world != null) {
 			if (!mc.isGamePaused()) {
-				WorldPhysObjectManager manager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(mc.theWorld);
+				WorldPhysObjectManager manager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(mc.world);
 				if (event.phase == Phase.END) {
 					for (PhysicsWrapperEntity wrapper : manager.physicsEntities) {
 						wrapper.wrapping.onPostTickClient();
 					}
-					EntityDraggable.tickAddedVelocityForWorld(mc.theWorld);
+					EntityDraggable.tickAddedVelocityForWorld(mc.world);
 				}
 			}
 		}
@@ -52,7 +52,7 @@ public class EventsClient {
 
 	@SubscribeEvent
 	public void onRenderTickEvent(RenderTickEvent event) {
-		if (mc.thePlayer != null && mc.playerController != null) {
+		if (mc.player != null && mc.playerController != null) {
 			// if(!(mc.playerController instanceof CustomPlayerControllerMP)){
 			// PlayerControllerMP oldController = mc.playerController;
 			// mc.playerController = new CustomPlayerControllerMP(mc, mc.getConnection());

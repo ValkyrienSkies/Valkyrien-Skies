@@ -38,7 +38,7 @@ public class EntityCannonBallRenderer extends Render<EntityCannonBall> {
 		double renderZ = (entity.posZ - entity.lastTickPosZ) * partialTicks + entity.lastTickPosZ;
 
 		if (iblockstate.getRenderType() == EnumBlockRenderType.MODEL) {
-			World world = entity.worldObj;
+			World world = entity.world;
 
 			if (iblockstate != world.getBlockState(new BlockPos(entity)) && iblockstate.getRenderType() != EnumBlockRenderType.INVISIBLE) {
 				this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);

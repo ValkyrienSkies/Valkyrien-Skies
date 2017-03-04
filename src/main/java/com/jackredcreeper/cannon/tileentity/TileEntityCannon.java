@@ -64,7 +64,7 @@ public class TileEntityCannon extends TileEntity {
 			CannonCooldown = 0;
 		}
 		else
-    	{			playerIn.addChatComponentMessage(new TextComponentString("Cannon needs to be loaded!")); }
+    	{			playerIn.sendMessage(new TextComponentString("Cannon needs to be loaded!")); }
     }
 
 
@@ -81,7 +81,7 @@ public class TileEntityCannon extends TileEntity {
 			}
     	}
     	else
-    	{			playerIn.addChatComponentMessage(new TextComponentString("Cannon needs ammo!")); }
+    	{			playerIn.sendMessage(new TextComponentString("Cannon needs ammo!")); }
     }
     
     
@@ -100,11 +100,11 @@ public class TileEntityCannon extends TileEntity {
         
         if (Ammo == 2) {
         entitycannonball.setThrowableHeading((double)enumfacing.getFrontOffsetX(), (double)((float)enumfacing.getFrontOffsetY() + Angle), (double)enumfacing.getFrontOffsetZ(), 3, 0);
-        worldIn.spawnEntityInWorld(entitycannonball);
+        worldIn.spawnEntity(entitycannonball);
         }
         if (Ammo == 3) {
         entityexplosiveball.setThrowableHeading((double)enumfacing.getFrontOffsetX(), (double)((float)enumfacing.getFrontOffsetY() + Angle), (double)enumfacing.getFrontOffsetZ(), 3, 0);
-        worldIn.spawnEntityInWorld(entityexplosiveball);
+        worldIn.spawnEntity(entityexplosiveball);
         }
         worldIn.playSound((EntityPlayer)null, pos, SoundEvents.ENTITY_GENERIC_EXPLODE , SoundCategory.BLOCKS, 2, 1.5F);
         
@@ -116,7 +116,7 @@ public class TileEntityCannon extends TileEntity {
 	public  void setAngle(EntityPlayer playerIn) {
 		Angle += 0.05F;
 		if (Angle > 0.3F) {Angle = 0;}
-		playerIn.addChatComponentMessage(new TextComponentString("Extra angle = " + Float.toString(Angle)));
+		playerIn.sendMessage(new TextComponentString("Extra angle = " + Float.toString(Angle)));
 		
 	}
 	

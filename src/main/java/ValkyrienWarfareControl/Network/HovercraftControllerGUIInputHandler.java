@@ -17,7 +17,7 @@ public class HovercraftControllerGUIInputHandler implements IMessageHandler<Hove
 		mainThread.addScheduledTask(new Runnable() {
 			@Override
 			public void run() {
-				PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(ctx.getServerHandler().playerEntity.worldObj, message.tilePos);
+				PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(ctx.getServerHandler().playerEntity.world, message.tilePos);
 				TileEntity tileEnt = wrapper.wrapping.VKChunkCache.getTileEntity(message.tilePos);
 				if (tileEnt != null) {
 					if (tileEnt instanceof TileEntityHoverController) {

@@ -75,9 +75,9 @@ public class CustomNetHandlerPlayServer extends NetHandlerPlayServer {
 	}
 
 	@Override
-	public void processRightClickBlock(CPacketPlayerTryUseItemOnBlock packetIn) {
+	public void processTryUseItemOnBlock(CPacketPlayerTryUseItemOnBlock packetIn) {
 		BlockPos packetPos = packetIn.getPos();
-		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(playerEntity.worldObj, packetPos);
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(playerEntity.world, packetPos);
 		if(playerEntity.interactionManager.getBlockReachDistance() != dummyBlockReachDist){
 			lastGoodBlockReachDist = playerEntity.interactionManager.getBlockReachDistance();
 		}
@@ -90,19 +90,19 @@ public class CustomNetHandlerPlayServer extends NetHandlerPlayServer {
 			float playerYaw = playerEntity.rotationYaw;
 			float playerPitch = playerEntity.rotationPitch;
 			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, wrapper.wrapping.coordTransform.wToLRotation, playerEntity);
-			super.processRightClickBlock(packetIn);
+			super.processTryUseItemOnBlock(packetIn);
 			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, wrapper.wrapping.coordTransform.lToWRotation, playerEntity);
 			playerEntity.rotationYaw = playerYaw;
 			playerEntity.rotationPitch = playerPitch;
 		} else {
-			super.processRightClickBlock(packetIn);
+			super.processTryUseItemOnBlock(packetIn);
 		}
 	}
 
 	@Override
 	public void processPlayerDigging(CPacketPlayerDigging packetIn) {
 		BlockPos packetPos = packetIn.getPosition();
-		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(playerEntity.worldObj, packetPos);
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(playerEntity.world, packetPos);
 		if(playerEntity.interactionManager.getBlockReachDistance() != dummyBlockReachDist){
 			lastGoodBlockReachDist = playerEntity.interactionManager.getBlockReachDistance();
 		}
@@ -127,7 +127,7 @@ public class CustomNetHandlerPlayServer extends NetHandlerPlayServer {
 	@Override
 	public void processUpdateSign(CPacketUpdateSign packetIn) {
 		BlockPos packetPos = packetIn.getPosition();
-		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(playerEntity.worldObj, packetPos);
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(playerEntity.world, packetPos);
 		if(playerEntity.interactionManager.getBlockReachDistance() != dummyBlockReachDist){
 			lastGoodBlockReachDist = playerEntity.interactionManager.getBlockReachDistance();
 		}

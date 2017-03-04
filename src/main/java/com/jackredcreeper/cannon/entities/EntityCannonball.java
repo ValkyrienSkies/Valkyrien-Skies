@@ -33,7 +33,7 @@ public class EntityCannonball extends EntitySnowball {
     protected void onImpact(RayTraceResult result)
     {
 
-        if (!this.worldObj.isRemote)
+        if (!this.world.isRemote)
         {
         	double x = this.posX + this.motionX;
         	double y = this.posY + this.motionY;

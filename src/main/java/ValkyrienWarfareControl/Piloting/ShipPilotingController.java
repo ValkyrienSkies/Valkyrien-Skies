@@ -260,7 +260,7 @@ public class ShipPilotingController {
 	}
 	
 	public static PhysicsWrapperEntity getShipPlayerIsPiloting(EntityPlayer pilot){
-		World playerWorld = pilot.worldObj;
+		World playerWorld = pilot.world;
 		WorldPhysObjectManager worldManager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(playerWorld);
 		for(PhysicsWrapperEntity wrapperEntity:worldManager.physicsEntities){
 			if(wrapperEntity.wrapping.pilotingController.getPilotEntity() == pilot){

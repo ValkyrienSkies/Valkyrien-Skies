@@ -24,7 +24,7 @@ public class SetShipPilotMessageHandler implements IMessageHandler<SetShipPilotM
 //					System.out.println("got set to null");
 				}else{
 					Entity foundEntity = null;
-					for(Entity entity:Minecraft.getMinecraft().theWorld.getLoadedEntityList()){
+					for(Entity entity:Minecraft.getMinecraft().world.getLoadedEntityList()){
 						if(entity.entityUniqueID.equals(entityId)){
 							ClientPilotingManager.setPilotedWrapperEntity((PhysicsWrapperEntity) entity);
 //							System.out.println("Found the Pilot on client side");

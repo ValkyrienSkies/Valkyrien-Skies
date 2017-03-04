@@ -18,7 +18,7 @@ public class PilotControlsMessageHandler implements IMessageHandler<PilotControl
 		mainThread.addScheduledTask(new Runnable() {
 			@Override
 			public void run() {
-				World worldObj = ctx.getServerHandler().playerEntity.worldObj;
+				World worldObj = ctx.getServerHandler().playerEntity.world;
 				if(ValkyrienWarfareMod.physicsManager.getManagerForWorld(worldObj) != null){
 					UUID shipId = message.shipFor;
 					for(PhysicsWrapperEntity entity:ValkyrienWarfareMod.physicsManager.getManagerForWorld(worldObj).physicsEntities){

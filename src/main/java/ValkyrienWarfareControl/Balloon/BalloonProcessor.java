@@ -185,7 +185,7 @@ public class BalloonProcessor {
 		while (posititionsNeedingAtatchment.size() > 0) {
 			BlockPos start = getRandomPosFromSet(posititionsNeedingAtatchment);
 
-			BalloonAirDetector detector = new BalloonAirDetector(start, parent.worldObj, currentBalloonSize, this, posititionsNeedingAtatchment);
+			BalloonAirDetector detector = new BalloonAirDetector(start, parent.world, currentBalloonSize, this, posititionsNeedingAtatchment);
 
 			foundSets.add(detector);
 
@@ -339,7 +339,7 @@ public class BalloonProcessor {
 	}
 
 	private boolean doLastHoleCheck(BlockPos holeToCheck, BlockPos[] adjacentPositions) {
-		BalloonHoleDetector holeDetector = new BalloonHoleDetector(holeToCheck, parent.worldObj, 2500, this);
+		BalloonHoleDetector holeDetector = new BalloonHoleDetector(holeToCheck, parent.world, 2500, this);
 
 		// System.out.println("Original "+internalAirPositions.size());
 

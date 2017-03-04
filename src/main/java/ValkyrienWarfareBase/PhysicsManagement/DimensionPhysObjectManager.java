@@ -21,12 +21,12 @@ public class DimensionPhysObjectManager {
 
 	// Put the ship in the manager queues
 	public void onShipLoad(PhysicsWrapperEntity justLoaded) {
-		getManagerForWorld(justLoaded.worldObj).onLoad(justLoaded);
+		getManagerForWorld(justLoaded.world).onLoad(justLoaded);
 	}
 
 	// Remove the ship from the damn queues
 	public void onShipUnload(PhysicsWrapperEntity justUnloaded) {
-		getManagerForWorld(justUnloaded.worldObj).onUnload(justUnloaded);
+		getManagerForWorld(justUnloaded.world).onUnload(justUnloaded);
 	}
 
 	public void initWorld(World toInit) {
@@ -72,7 +72,7 @@ public class DimensionPhysObjectManager {
 		if (chunk == null) {
 			return null;
 		}
-		WorldPhysObjectManager physManager = getManagerForWorld(chunk.worldObj);
+		WorldPhysObjectManager physManager = getManagerForWorld(chunk.world);
 		if (physManager == null) {
 			return null;
 		}
@@ -88,11 +88,11 @@ public class DimensionPhysObjectManager {
 	}
 
 	public boolean isEntityFixed(Entity entity) {
-		return getManagerForWorld(entity.worldObj).isEntityFixed(entity);
+		return getManagerForWorld(entity.world).isEntityFixed(entity);
 	}
 
 	public PhysicsWrapperEntity getShipFixedOnto(Entity entity) {
-		return getManagerForWorld(entity.worldObj).getShipFixedOnto(entity);
+		return getManagerForWorld(entity.world).getShipFixedOnto(entity);
 	}
 
 }

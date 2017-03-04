@@ -48,8 +48,8 @@ public class WorldPhysObjectManager {
 	        for (PhysicsWrapperEntity wrapper:list)
 	        {
 	        	if(wrapper.wrapping.surroundingWorldChunksCache != null){
-	        		int chunkCacheX = MathHelper.floor_double(wrapper.posX/16D)-wrapper.wrapping.surroundingWorldChunksCache.chunkX;
-	        		int chunkCacheZ = MathHelper.floor_double(wrapper.posZ/16D)-wrapper.wrapping.surroundingWorldChunksCache.chunkZ;
+	        		int chunkCacheX = MathHelper.floor(wrapper.posX/16D)-wrapper.wrapping.surroundingWorldChunksCache.chunkX;
+	        		int chunkCacheZ = MathHelper.floor(wrapper.posZ/16D)-wrapper.wrapping.surroundingWorldChunksCache.chunkZ;
 	        		
 	        		chunkCacheX = Math.max(0, Math.min(chunkCacheX,wrapper.wrapping.surroundingWorldChunksCache.chunkArray.length-1));
 	        		chunkCacheZ = Math.max(0, Math.min(chunkCacheZ,wrapper.wrapping.surroundingWorldChunksCache.chunkArray[0].length-1));
@@ -57,7 +57,7 @@ public class WorldPhysObjectManager {
 	        		Chunk chunk = wrapper.wrapping.surroundingWorldChunksCache.chunkArray[chunkCacheX][chunkCacheZ];
 	        		
 //	        		Chunk chunk = wrapper.wrapping.surroundingWorldChunksCache.chunkArray[(wrapper.wrapping.surroundingWorldChunksCache.chunkArray.length)/2][(wrapper.wrapping.surroundingWorldChunksCache.chunkArray[0].length)/2];
-		            if (chunk != null && !worldServer.thePlayerManager.contains(chunk.xPosition, chunk.zPosition))
+		            if (chunk != null && !worldServer.getPlayerChunkMap().contains(chunk.xPosition, chunk.zPosition))
 		            {
 		            	frozenShips.add(wrapper);
 		            	//Then I should freeze any ships in this chunk

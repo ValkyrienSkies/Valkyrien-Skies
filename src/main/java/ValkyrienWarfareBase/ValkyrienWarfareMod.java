@@ -7,6 +7,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
+import com.google.common.base.Strings;
 import com.google.common.hash.Hashing;
 
 import ValkyrienWarfareBase.API.DataTag;
@@ -32,8 +33,10 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
@@ -127,7 +130,7 @@ public class ValkyrienWarfareMod {
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
 		proxy.init(event);
-		EntityRegistry.registerModEntity(PhysicsWrapperEntity.class, "PhysWrapper", 70, this, 120, 1, false);
+		EntityRegistry.registerModEntity(new ResourceLocation(MODID, "PhysWrapper"), PhysicsWrapperEntity.class, "PhysWrapper", 70, this, 120, 1, false);
 	}
 
 	@EventHandler
@@ -154,8 +157,8 @@ public class ValkyrienWarfareMod {
 		physicsInfuserCreative = new BlockPhysicsInfuserCreative(Material.ROCK).setHardness(12f).setUnlocalizedName("shipblockcreative").setRegistryName(MODID, "shipblockcreative").setCreativeTab(CreativeTabs.TRANSPORTATION);
 		;
 
-		GameRegistry.registerBlock(physicsInfuser);
-		GameRegistry.registerBlock(physicsInfuserCreative);
+		ValkyrienWarfareMod.registerBlock(physicsInfuser);
+        ValkyrienWarfareMod.registerBlock(physicsInfuserCreative);
 	}
 
 	private void registerRecipies(FMLStateEvent event) {
@@ -308,5 +311,54 @@ public class ValkyrienWarfareMod {
 				return false;
 			}
 		}
+	}
+
+	/**
+	 * I know this isn't needed, but it looks nicer :P
+	 * @param item
+	 */
+	public static void registerItem(Item item){
+		GameRegistry.register(item);
+	}
+
+	/**
+	 * I know this isn't needed, but it looks nicer :P
+	 * @param item
+	 * @param name
+	 */
+	public static void registerItem(Item item, String name)
+	{
+		if (item.getRegistryName() == null && Strings.isNullOrEmpty(name))
+			throw new IllegalArgumentException("Attempted to register a item with no name: " + item);
+		if (item.getRegistryName() != null && !item.getRegistryName().toString().equals(name))
+			throw new IllegalArgumentException("Attempted to register a item with conflicting names. Old: " + item.getRegistryName() + " New: " + name);
+		GameRegistry.register(item.getRegistryName() == null ? item.setRegistryName(name) : item);
+	}
+
+	/**
+	 * I know this isn't needed, but it looks nicer :P
+	 * @param block
+	 * @return
+	 */
+	public static Block registerBlock(Block block)
+	{
+		GameRegistry.register(block);
+		GameRegistry.register(new ItemBlock(block).setRegistryName(block.getRegistryName()));
+		return block;
+	}
+
+	/**
+	 * I know this isn't needed, but it looks nicer :P
+	 * @param block
+	 * @param name
+	 * @return
+	 */
+	public static Block registerBlock(Block block, String name)
+	{
+		if (block.getRegistryName() == null && Strings.isNullOrEmpty(name))
+			throw new IllegalArgumentException("Attempted to register a Block with no name: " + block);
+		if (block.getRegistryName() != null && !block.getRegistryName().toString().equals(name))
+			throw new IllegalArgumentException("Attempted to register a Block with conflicting names. Old: " + block.getRegistryName() + " New: " + name);
+		return registerBlock(block.getRegistryName() != null ? block : block.setRegistryName(name));
 	}
 }

@@ -32,7 +32,7 @@ public class PilotControlsMessage implements IMessage {
 		airshipLeft = packetBuf.readBoolean();
 		airshipRight = packetBuf.readBoolean();
 		airshipSprinting = packetBuf.readBoolean();
-		shipFor = packetBuf.readUuid();
+		shipFor = packetBuf.readUniqueId();
 	}
 
 	@Override
@@ -45,7 +45,7 @@ public class PilotControlsMessage implements IMessage {
 		packetBuf.writeBoolean(airshipLeft);
 		packetBuf.writeBoolean(airshipRight);
 		packetBuf.writeBoolean(airshipSprinting);
-		packetBuf.writeUuid(shipFor);
+		packetBuf.writeUniqueId(shipFor);
 	}
 
 	public void assignKeyBooleans(PhysicsWrapperEntity shipPiloting) {

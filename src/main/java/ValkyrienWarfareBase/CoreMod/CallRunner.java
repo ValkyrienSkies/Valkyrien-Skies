@@ -21,6 +21,7 @@ import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
@@ -45,10 +46,10 @@ import net.minecraftforge.common.DimensionManager;
 public class CallRunner {
 
     public static void onAddEntity(Chunk chunk, Entity entityIn){
-    	World world = chunk.worldObj;
+    	World world = chunk.world;
 
-    	int i = MathHelper.floor_double(entityIn.posX / 16.0D);
-        int j = MathHelper.floor_double(entityIn.posZ / 16.0D);
+    	int i = MathHelper.floor(entityIn.posX / 16.0D);
+        int j = MathHelper.floor(entityIn.posZ / 16.0D);
 
         if(i == chunk.xPosition && j == chunk.zPosition){
         	chunk.addEntity(entityIn);
@@ -77,16 +78,16 @@ public class CallRunner {
 		if (base instanceof EntityPlayer && ((EntityPlayer) base).isSpectator()) {
 			return false;
 		}
-		List<PhysicsWrapperEntity> nearbyPhys = ValkyrienWarfareMod.physicsManager.getManagerForWorld(base.worldObj).getNearbyPhysObjects(base.getEntityBoundingBox());
+		List<PhysicsWrapperEntity> nearbyPhys = ValkyrienWarfareMod.physicsManager.getManagerForWorld(base.world).getNearbyPhysObjects(base.getEntityBoundingBox());
 		for (PhysicsWrapperEntity physWrapper : nearbyPhys) {
 			Vector playerPos = new Vector(base);
 			physWrapper.wrapping.coordTransform.fromGlobalToLocal(playerPos);
-			int i = MathHelper.floor_double(playerPos.X);
-			int j = MathHelper.floor_double(playerPos.Y);
-			int k = MathHelper.floor_double(playerPos.Z);
+			int i = MathHelper.floor(playerPos.X);
+			int j = MathHelper.floor(playerPos.Y);
+			int k = MathHelper.floor(playerPos.Z);
 
 			BlockPos blockpos = new BlockPos(i, j, k);
-			IBlockState iblockstate = base.worldObj.getBlockState(blockpos);
+			IBlockState iblockstate = base.world.getBlockState(blockpos);
 			Block block = iblockstate.getBlock();
 
 			boolean isSpectator = (base instanceof EntityPlayer && ((EntityPlayer) base).isSpectator());
@@ -95,12 +96,12 @@ public class CallRunner {
 
 			EntityPolygon playerPoly = new EntityPolygon(base.getEntityBoundingBox(), physWrapper.wrapping.coordTransform.wToLTransform, base);
 			AxisAlignedBB bb = playerPoly.getEnclosedAABB();
-			for (int x = MathHelper.floor_double(bb.minX); x < bb.maxX; x++) {
-				for (int y = MathHelper.floor_double(bb.minY); y < bb.maxY; y++) {
-					for (int z = MathHelper.floor_double(bb.minZ); z < bb.maxZ; z++) {
+			for (int x = MathHelper.floor(bb.minX); x < bb.maxX; x++) {
+				for (int y = MathHelper.floor(bb.minY); y < bb.maxY; y++) {
+					for (int z = MathHelper.floor(bb.minZ); z < bb.maxZ; z++) {
 						BlockPos pos = new BlockPos(x, y, z);
-						IBlockState checkState = base.worldObj.getBlockState(pos);
-						if (checkState.getBlock().isLadder(checkState, base.worldObj, pos, base)) {
+						IBlockState checkState = base.world.getBlockState(pos);
+						if (checkState.getBlock().isLadder(checkState, base.world, pos, base)) {
 							return true;
 							// AxisAlignedBB ladderBB = checkState.getBlock().getBoundingBox(checkState, base.worldObj, pos).offset(pos).expandXyz(.1D);
 							// Polygon checkBlock = new Polygon(ladderBB);
@@ -122,18 +123,18 @@ public class CallRunner {
 
 	public static void onExplosionA(Explosion e) {
 		Vector center = new Vector(e.explosionX, e.explosionY, e.explosionZ);
-		World worldIn = e.worldObj;
+		World worldIn = e.world;
 		float radius = e.explosionSize;
 
 		AxisAlignedBB toCheck = new AxisAlignedBB(center.X - radius, center.Y - radius, center.Z - radius, center.X + radius, center.Y + radius, center.Z + radius);
-		List<PhysicsWrapperEntity> shipsNear = ValkyrienWarfareMod.physicsManager.getManagerForWorld(e.worldObj).getNearbyPhysObjects(toCheck);
+		List<PhysicsWrapperEntity> shipsNear = ValkyrienWarfareMod.physicsManager.getManagerForWorld(e.world).getNearbyPhysObjects(toCheck);
 		e.doExplosionA();
 		// TODO: Make this compatible and shit!
 		for (PhysicsWrapperEntity ship : shipsNear) {
 			Vector inLocal = new Vector(center);
 			RotationMatrices.applyTransform(ship.wrapping.coordTransform.wToLTransform, inLocal);
 			// inLocal.roundToWhole();
-			Explosion expl = new Explosion(ship.worldObj, null, inLocal.X, inLocal.Y, inLocal.Z, radius, false, false);
+			Explosion expl = new Explosion(ship.world, null, inLocal.X, inLocal.Y, inLocal.Z, radius, false, false);
 
 			double waterRange = .6D;
 
@@ -143,7 +144,7 @@ public class CallRunner {
 				for (int y = (int) Math.floor(expl.explosionY - waterRange); y <= Math.ceil(expl.explosionY + waterRange); y++) {
 					for (int z = (int) Math.floor(expl.explosionZ - waterRange); z <= Math.ceil(expl.explosionZ + waterRange); z++) {
 						if (!cancelDueToWater) {
-							IBlockState state = e.worldObj.getBlockState(new BlockPos(x, y, z));
+							IBlockState state = e.world.getBlockState(new BlockPos(x, y, z));
 							if (state.getBlock() instanceof BlockLiquid) {
 								cancelDueToWater = true;
 							}
@@ -158,7 +159,7 @@ public class CallRunner {
 
 			for (Object o : expl.affectedBlockPositions) {
 				BlockPos pos = (BlockPos) o;
-				IBlockState state = ship.worldObj.getBlockState(pos);
+				IBlockState state = ship.world.getBlockState(pos);
 				Block block = state.getBlock();
 				if (!block.isAir(state, worldIn, (BlockPos) o) || ship.wrapping.explodedPositionsThisTick.contains((BlockPos) o)) {
 					affectedPositions++;
@@ -169,19 +170,19 @@ public class CallRunner {
 				for (Object o : expl.affectedBlockPositions) {
 					BlockPos pos = (BlockPos) o;
 
-					IBlockState state = ship.worldObj.getBlockState(pos);
+					IBlockState state = ship.world.getBlockState(pos);
 					Block block = state.getBlock();
 					if (!block.isAir(state, worldIn, (BlockPos) o) || ship.wrapping.explodedPositionsThisTick.contains((BlockPos) o)) {
 						if (block.canDropFromExplosion(expl)) {
-							block.dropBlockAsItemWithChance(ship.worldObj, pos, state, 1.0F / expl.explosionSize, 0);
+							block.dropBlockAsItemWithChance(ship.world, pos, state, 1.0F / expl.explosionSize, 0);
 						}
-						block.onBlockExploded(ship.worldObj, pos, expl);
+						block.onBlockExploded(ship.world, pos, expl);
 						if (!worldIn.isRemote) {
 							Vector posVector = new Vector(pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5);
 
 							ship.wrapping.coordTransform.fromLocalToGlobal(posVector);
 
-							double mass = BlockMass.basicMass.getMassFromState(state, pos, ship.worldObj);
+							double mass = BlockMass.basicMass.getMassFromState(state, pos, ship.world);
 
 							double explosionForce = Math.sqrt(e.explosionSize) * 1000D * mass;
 
@@ -259,7 +260,7 @@ public class CallRunner {
 			return vanilla;
 		} else {
 			BlockPos pos = new BlockPos(x, y, z);
-			PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(entity.worldObj, pos);
+			PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(entity.world, pos);
 			if (wrapper != null) {
 				Vector posVec = new Vector(x, y, z);
 				wrapper.wrapping.coordTransform.fromLocalToGlobal(posVec);
@@ -279,7 +280,7 @@ public class CallRunner {
 		if (vanilla < 64.0D) {
 			return vanilla;
 		} else {
-			PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(entity.worldObj, pos);
+			PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(entity.world, pos);
 			if (wrapper != null) {
 				Vector posVec = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
 				wrapper.wrapping.coordTransform.fromLocalToGlobal(posVec);
@@ -337,7 +338,7 @@ public class CallRunner {
 		if (except == null) {
 			worldIn = DimensionManager.getWorld(dimension);
 		} else {
-			worldIn = except.worldObj;
+			worldIn = except.world;
 		}
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldIn, pos);
 		Vector packetPosition = new Vector(x, y, z);
@@ -453,7 +454,7 @@ public class CallRunner {
 			double newZ = entity.posZ + dz;
 			BlockPos newPosInBlock = new BlockPos(newX,newY,newZ);
 
-			PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(entity.worldObj, newPosInBlock);
+			PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(entity.world, newPosInBlock);
 
 			if(wrapper == null){
 				//Just forget this even happened
@@ -469,7 +470,8 @@ public class CallRunner {
 			dz = endPos.Z - entity.posZ;
 		}
 		if (!EntityCollisionInjector.alterEntityMovement(entity, dx, dy, dz)) {
-			entity.moveEntity(dx, dy, dz);
+			entity.move(MoverType.SELF, dx, dy, dz);
+			//Hope the MoverType doesn't affect anything serious
 		}
 	}
 

@@ -11,6 +11,7 @@ import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
@@ -124,8 +125,8 @@ public class EntityCollisionInjector {
 			if (base.isOnLadder()) {
 
 				float f9 = 0.15F;
-				base.motionX = MathHelper.clamp_double(base.motionX, -0.15000000596046448D, 0.15000000596046448D);
-				base.motionZ = MathHelper.clamp_double(base.motionZ, -0.15000000596046448D, 0.15000000596046448D);
+				base.motionX = MathHelper.clamp(base.motionX, -0.15000000596046448D, 0.15000000596046448D);
+				base.motionZ = MathHelper.clamp(base.motionZ, -0.15000000596046448D, 0.15000000596046448D);
 				base.fallDistance = 0.0F;
 
 				if (base.motionY < -0.15D) {
@@ -138,9 +139,9 @@ public class EntityCollisionInjector {
 					base.motionY = 0.0D;
 				}
 			}
-			entity.moveEntity(dx, base.motionY, dz);
+			entity.move(MoverType.SELF, dx, base.motionY, dz);
 		} else {
-			entity.moveEntity(dx, dy, dz);
+			entity.move(MoverType.SELF, dx, dy, dz);
 		}
 		entity.isCollidedHorizontally = (motionInterfering(dx, origDx)) || (motionInterfering(dz, origDz));
 		entity.isCollidedVertically = isDifSignificant(dy, origDy);
@@ -168,7 +169,7 @@ public class EntityCollisionInjector {
 		ArrayList<Polygon> collisions = new ArrayList<Polygon>();
 		AxisAlignedBB entityBB = entity.getEntityBoundingBox().addCoord(velocity.xCoord, velocity.yCoord, velocity.zCoord).expand(1, 1, 1);
 
-		WorldPhysObjectManager localPhysManager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(entity.worldObj);
+		WorldPhysObjectManager localPhysManager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(entity.world);
 
 		List<PhysicsWrapperEntity> ships = localPhysManager.getNearbyPhysObjects(entityBB);
 		//If a player is riding a Ship, don't process any collision between that Ship and the Player
@@ -177,10 +178,10 @@ public class EntityCollisionInjector {
 				Polygon playerInLocal = new Polygon(entityBB, wrapper.wrapping.coordTransform.wToLTransform);
 				AxisAlignedBB bb = playerInLocal.getEnclosedAABB();
 	
-				List<AxisAlignedBB> collidingBBs = entity.worldObj.getCollisionBoxes(bb);
+				List<AxisAlignedBB> collidingBBs = entity.world.getCollisionBoxes(wrapper, bb);
 	
 				// TODO: Fix the performance of this!
-				if (entity.worldObj.isRemote || entity instanceof EntityPlayer) {
+				if (entity.world.isRemote || entity instanceof EntityPlayer) {
 					BigBastardMath.mergeAABBList(collidingBBs);
 				}
 	

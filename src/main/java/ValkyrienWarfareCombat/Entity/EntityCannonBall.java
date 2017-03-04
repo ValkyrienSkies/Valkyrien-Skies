@@ -55,7 +55,7 @@ public class EntityCannonBall extends Entity {
 		Vec3d origin = new Vec3d(posX, posY, posZ);
 		Vec3d traceEnd = origin.addVector(motionX, motionY, motionZ);
 
-		RayTraceResult traceResult = CallRunner.onRayTraceBlocks(worldObj, origin, traceEnd, false, true, false);
+		RayTraceResult traceResult = CallRunner.onRayTraceBlocks(world, origin, traceEnd, false, true, false);
 
 		if (traceResult == null || traceResult.typeOfHit == Type.MISS) {
 			posX += motionX;
@@ -68,7 +68,7 @@ public class EntityCannonBall extends Entity {
 			// motionZ*=drag;
 			motionY -= .01;
 		} else {
-			if (traceResult.hitVec != null && !worldObj.isRemote) {
+			if (traceResult.hitVec != null && !world.isRemote) {
 				processCollision(traceResult);
 				kill();
 			}
@@ -76,7 +76,7 @@ public class EntityCannonBall extends Entity {
 	}
 
 	private void processCollision(RayTraceResult collisionTrace) {
-		worldObj.createExplosion(this, collisionTrace.hitVec.xCoord, collisionTrace.hitVec.yCoord, collisionTrace.hitVec.zCoord, explosionPower, true);
+		world.createExplosion(this, collisionTrace.hitVec.xCoord, collisionTrace.hitVec.yCoord, collisionTrace.hitVec.zCoord, explosionPower, true);
 	}
 
 	private void tickLerp() {

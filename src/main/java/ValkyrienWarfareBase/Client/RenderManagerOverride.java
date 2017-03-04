@@ -105,7 +105,7 @@ public class RenderManagerOverride extends RenderManager {
 	 * World sets this RenderManager's worldObj to the world provided
 	 */
 	public void set(@Nullable World worldIn){
-		def.set(worldIn);
+		def.setWorld(worldIn);
 	}
 
 	public double getDistanceToCamera(double x, double y, double z){

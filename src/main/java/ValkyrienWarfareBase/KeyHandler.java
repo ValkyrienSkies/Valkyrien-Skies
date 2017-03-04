@@ -48,7 +48,7 @@ public class KeyHandler {
 				// if(airshipDismount.isKeyDown()){
 				// PilotShipManager.dismountPlayer();
 				// }else{
-				Entity player = Minecraft.getMinecraft().thePlayer;
+				Entity player = Minecraft.getMinecraft().player;
 
 //				player.setPosition(player.posX, player.posY, player.posZ);
 
@@ -60,7 +60,7 @@ public class KeyHandler {
 	}
 	
 	public static boolean getIsPlayerSprinting(){
-		return Minecraft.getMinecraft().thePlayer.isSprinting();
+		return Minecraft.getMinecraft().player.isSprinting();
 	}
 
 }

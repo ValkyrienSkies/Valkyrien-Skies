@@ -5,9 +5,11 @@ import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareCombat.ValkyrienWarfareCombatMod;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -23,7 +25,7 @@ public class EntityCannonBasic extends EntityMountingWeaponBase {
 
 	@Override
 	public void onRiderInteract(EntityPlayer player, ItemStack stack, EnumHand hand) {
-		if (!player.worldObj.isRemote) {
+		if (!player.world.isRemote) {
 			if (canPlayerInteract(player, stack, hand)) {
 				fireCannon(player, stack, hand);
 			}
@@ -40,7 +42,7 @@ public class EntityCannonBasic extends EntityMountingWeaponBase {
 		}
 		
 		velocityVector.multiply(2D);
-		EntityCannonBall projectile = new EntityCannonBall(worldObj, velocityVector, this);
+		EntityCannonBall projectile = new EntityCannonBall(world, velocityVector, this);
 		
 		Vector projectileSpawnPos = new Vector(0,.5,0);
 		
@@ -51,8 +53,8 @@ public class EntityCannonBasic extends EntityMountingWeaponBase {
 		projectile.posX += projectileSpawnPos.X;
 		projectile.posY += projectileSpawnPos.Y;
 		projectile.posZ += projectileSpawnPos.Z;
-		
-		worldObj.spawnEntityInWorld(projectile);
+
+		world.spawnEntity(projectile);
 
 		isCannonLoaded = false;
 		// worldObj.playSound(null, posX, posY, posZ, new SoundEvent(), SoundCategory.AMBIENT, volume, pitch, true);
@@ -70,7 +72,7 @@ public class EntityCannonBasic extends EntityMountingWeaponBase {
 			boolean hasCannonBall = player.inventory.hasItemStack(cannonBallStack);
 			boolean hasPowder = player.inventory.hasItemStack(powderStack);
 			if (hasCannonBall && hasPowder || player.isCreative()) {
-				for (ItemStack[] aitemstack : player.inventory.allInventories) {
+				for (NonNullList<ItemStack> aitemstack : player.inventory.allInventories) {
 					for (ItemStack itemstack : aitemstack) {
 						if (itemstack != null && itemstack.isItemEqual(cannonBallStack)) {
 							itemstack.stackSize--;

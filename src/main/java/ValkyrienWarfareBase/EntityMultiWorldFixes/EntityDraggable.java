@@ -10,6 +10,7 @@ import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareCombat.Entity.EntityCannonBall;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.util.MovementInput;
@@ -121,14 +122,14 @@ public class EntityDraggable {
 
 			draggableAsEntity.setSneaking(false);
 
-			if(draggableAsEntity.worldObj.isRemote && draggableAsEntity instanceof EntityPlayerSP){
+			if(draggableAsEntity.world.isRemote && draggableAsEntity instanceof EntityPlayerSP){
 				EntityPlayerSP playerSP = (EntityPlayerSP)draggableAsEntity;
 				MovementInput moveInput = playerSP.movementInput;
 				originallySneaking = moveInput.sneak;
 				moveInput.sneak = false;
 			}
 
-			draggableAsEntity.moveEntity(velocityAddedToPlayer.X, velocityAddedToPlayer.Y, velocityAddedToPlayer.Z);
+			draggableAsEntity.move(MoverType.SELF, velocityAddedToPlayer.X, velocityAddedToPlayer.Y, velocityAddedToPlayer.Z);
 //			CallRunner.onEntityMove(draggableAsEntity, velocityAddedToPlayer.X, velocityAddedToPlayer.Y, velocityAddedToPlayer.Z);
 
 			if (!(draggableAsEntity instanceof EntityPlayer)) {
@@ -140,7 +141,7 @@ public class EntityDraggable {
 					draggableAsEntity.rotationYaw += yawDifVelocity;
 				}
 			} else {
-				if (draggableAsEntity.worldObj.isRemote) {
+				if (draggableAsEntity.world.isRemote) {
 					draggableAsEntity.prevRotationYaw = draggableAsEntity.rotationYaw;
 					draggableAsEntity.rotationYaw += yawDifVelocity;
 				}
@@ -151,7 +152,7 @@ public class EntityDraggable {
 			draggableAsEntity.distanceWalkedOnStepModified = originalWalkedOnStep;
 			draggableAsEntity.setSneaking(originallySneaking);
 
-			if(draggableAsEntity.worldObj.isRemote && draggableAsEntity instanceof EntityPlayerSP){
+			if(draggableAsEntity.world.isRemote && draggableAsEntity instanceof EntityPlayerSP){
 				EntityPlayerSP playerSP = (EntityPlayerSP)draggableAsEntity;
 				MovementInput moveInput = playerSP.movementInput;
 				moveInput.sneak = originallySneaking;

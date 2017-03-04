@@ -112,7 +112,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 	protected void removePassenger(Entity toRemove) {
 		// System.out.println("entity just dismounted");
 		super.removePassenger(toRemove);
-		if (!worldObj.isRemote) {
+		if (!world.isRemote) {
 			wrapping.unFixEntity(toRemove);
 			if(wrapping.pilotingController.getPilotEntity() == toRemove){
 				wrapping.pilotingController.setPilotEntity(null, false);

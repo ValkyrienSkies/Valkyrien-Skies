@@ -24,10 +24,10 @@ public class EntityExplosiveball extends EntitySnowball {
 	@Override
     protected void onImpact(RayTraceResult result)
     {
-        if (!this.worldObj.isRemote)
+        if (!this.world.isRemote)
         {
 
-            this.worldObj.newExplosion((Entity)null, this.posX + this.motionX/2F, this.posY + this.motionY/2F, this.posZ + this.motionZ/2F, 2, false, true);
+            this.world.newExplosion((Entity)null, this.posX + this.motionX/2F, this.posY + this.motionY/2F, this.posZ + this.motionZ/2F, 2, false, true);
             Exp++;
             if (Exp >= 3) {
             this.setDead();}

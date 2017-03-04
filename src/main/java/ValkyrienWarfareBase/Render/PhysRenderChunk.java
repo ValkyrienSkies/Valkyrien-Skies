@@ -164,7 +164,7 @@ public class PhysRenderChunk {
 						pos.setPos(x, y, z);
 						iblockstate = chunkToRender.getBlockState(pos);
 						if (iblockstate.getBlock().canRenderInLayer(iblockstate, layerToUpdate)) {
-							Minecraft.getMinecraft().getBlockRendererDispatcher().renderBlock(iblockstate, pos, chunkToRender.worldObj, worldrenderer);
+							Minecraft.getMinecraft().getBlockRendererDispatcher().renderBlock(iblockstate, pos, chunkToRender.world, worldrenderer);
 						}
 					}
 				}

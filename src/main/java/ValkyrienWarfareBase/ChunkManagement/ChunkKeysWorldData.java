@@ -46,7 +46,7 @@ public class ChunkKeysWorldData extends WorldSavedData {
 		ChunkKeysWorldData data = (ChunkKeysWorldData) storage.getOrLoadData(ChunkKeysWorldData.class, key);
 		if (data == null) {
 			data = new ChunkKeysWorldData();
-			world.setItemData(key, data);
+			world.setData(key, data);
 		}
 		return data;
 	}

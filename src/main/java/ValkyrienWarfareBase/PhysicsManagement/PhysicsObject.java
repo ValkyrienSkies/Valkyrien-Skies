@@ -125,8 +125,8 @@ public class PhysicsObject {
 
 	public PhysicsObject(PhysicsWrapperEntity host) {
 		wrapper = host;
-		worldObj = host.worldObj;
-		if (host.worldObj.isRemote) {
+		worldObj = host.world;
+		if (host.world.isRemote) {
 			renderer = new PhysObjectRenderManager(this);
 		} else {
 			balloonManager = new ShipBalloonManager(this);
@@ -219,7 +219,7 @@ public class PhysicsObject {
 	}
 
 	public void claimNewChunks(int radius) {
-		ownedChunks = ValkyrienWarfareMod.chunkManager.getManagerForWorld(wrapper.worldObj).getNextAvaliableChunkSet(radius);
+		ownedChunks = ValkyrienWarfareMod.chunkManager.getManagerForWorld(wrapper.world).getNextAvaliableChunkSet(radius);
 	}
 
 	/*
@@ -230,7 +230,7 @@ public class PhysicsObject {
 		SpatialDetector detector = DetectorManager.getDetectorFor(detectorID, centerInWorld, worldObj, ValkyrienWarfareMod.maxShipSize + 1, true);
 		if (detector.foundSet.size() > ValkyrienWarfareMod.maxShipSize || detector.cleanHouse) {
 			if (player != null) {
-				player.addChatComponentMessage(new TextComponentString("Ship construction canceled because its exceeding the ship size limit (Raise with /setPhysConstructionLimit (number)) ; Or because it's attatched to bedrock)"));
+				player.sendMessage(new TextComponentString("Ship construction canceled because its exceeding the ship size limit (Raise with /setPhysConstructionLimit (number)) ; Or because it's attatched to bedrock)"));
 			}
 			wrapper.setDead();
 			return;
@@ -252,7 +252,7 @@ public class PhysicsObject {
 
 		iter = detector.foundSet.iterator();
 
-		radiusNeeded = Math.min(radiusNeeded, ValkyrienWarfareMod.chunkManager.getManagerForWorld(wrapper.worldObj).maxChunkRadius);
+		radiusNeeded = Math.min(radiusNeeded, ValkyrienWarfareMod.chunkManager.getManagerForWorld(wrapper.world).maxChunkRadius);
 
 		// System.out.println(radiusNeeded);
 
@@ -382,7 +382,7 @@ public class PhysicsObject {
 		}
 		chunk.isModified = true;
 		claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ] = chunk;
-		provider.id2ChunkMap.put(ChunkPos.chunkXZ2Int(x, z), chunk);
+		provider.id2ChunkMap.put(ChunkPos.asLong(x, z), chunk);
 
 		PlayerChunkMapEntry entry = new PlayerChunkMapEntry(((WorldServer) worldObj).getPlayerChunkMap(), x, z);
 		entry.sentToPlayers = true;
@@ -394,10 +394,10 @@ public class PhysicsObject {
 			e.printStackTrace();
 		}
 		PlayerChunkMap map = ((WorldServer) worldObj).getPlayerChunkMap();
-		map.addEntry(entry);
+		map.entries.add(entry);
 		long i = map.getIndex(x, z);
-		map.playerInstances.put(i, entry);
-		map.playerInstanceList.add(entry);
+		//TODO: map.playerInstances.put(i, entry);
+		//TODO: map.playerInstanceList.add(entry);
 
 		claimedChunksEntries[x - ownedChunks.minX][z - ownedChunks.minZ] = entry;
 //		MinecraftForge.EVENT_BUS.post(new ChunkEvent.Load(chunk));
@@ -412,7 +412,7 @@ public class PhysicsObject {
 					Chunk chunk = new Chunk(worldObj, x, z);
 					ChunkProviderServer provider = (ChunkProviderServer) worldObj.getChunkProvider();
 					chunk.isModified = true;
-					provider.id2ChunkMap.put(ChunkPos.chunkXZ2Int(x, z), chunk);
+					provider.id2ChunkMap.put(ChunkPos.asLong(x, z), chunk);
 				}
 			}
 		}
@@ -449,9 +449,6 @@ public class PhysicsObject {
 
 	/**
 	 * TODO: Make this further get the player to stop all further tracking of thos physObject
-	 * 
-	 * @param EntityPlayer
-	 *            that stopped tracking
 	 */
 	public void onPlayerUntracking(EntityPlayer untracking) {
 		watchingPlayers.remove(untracking);
@@ -590,14 +587,14 @@ public class PhysicsObject {
 
 	//TODO: Remove this shitty check, moving entities should work using an approach similar to MetaWorlds; this is treating Cancer with a Band-Aid!
 	public boolean shouldMoveEntity(Entity ent){
-		int i = MathHelper.floor_double(ent.posX);
-        int j = MathHelper.floor_double(ent.posY - 0.20000000298023224D);
-        int k = MathHelper.floor_double(ent.posZ);
+		int i = MathHelper.floor(ent.posX);
+        int j = MathHelper.floor(ent.posY - 0.20000000298023224D);
+        int k = MathHelper.floor(ent.posZ);
         BlockPos blockpos = new BlockPos(i, j, k);
-        IBlockState block1State = ent.worldObj.getBlockState(blockpos);
+        IBlockState block1State = ent.world.getBlockState(blockpos);
         Block block1 = block1State.getBlock();
         if (block1.getMaterial(block1State) == Material.AIR||(block1 instanceof BlockLiquid)){
-            Block block = ent.worldObj.getBlockState(blockpos.down()).getBlock();
+            Block block = ent.world.getBlockState(blockpos.down()).getBlock();
             if (block instanceof BlockFence || block instanceof BlockWall || block instanceof BlockFenceGate){
                 block1 = block;
                 blockpos = blockpos.down();
@@ -784,8 +781,7 @@ public class PhysicsObject {
 	/**
 	 * ONLY USE THESE 2 METHODS TO EVER ADD/REMOVE ENTITIES, OTHERWISE YOU'LL RUIN EVERYTHING!
 	 * 
-	 * @param toFix
-	 * @param posInLocal
+	 * @param toUnfix
 	 */
 	public void unFixEntity(Entity toUnfix) {
 		EntityFixMessage entityUnfixingMessage = new EntityFixMessage(wrapper, toUnfix, false, null);
@@ -898,7 +894,7 @@ public class PhysicsObject {
 		coordTransform.stack.pushMessage(new PhysWrapperPositionMessage(this));
 
 		try {
-			NBTTagCompound entityFixedPositionNBT = modifiedBuffer.readNBTTagCompoundFromBuffer();
+			NBTTagCompound entityFixedPositionNBT = modifiedBuffer.readCompoundTag();
 			entityLocalPositions = NBTUtils.readEntityPositionMap("entityFixedPosMap", entityFixedPositionNBT);
 			// if(worldObj.isRemote){
 			// System.out.println(entityLocalPositions.containsKey(Minecraft.getMinecraft().thePlayer.getPersistentID().hashCode()));
@@ -933,7 +929,7 @@ public class PhysicsObject {
 
 		NBTTagCompound entityFixedPositionNBT = new NBTTagCompound();
 		NBTUtils.writeEntityPositionHashMapToNBT("entityFixedPosMap", entityLocalPositions, entityFixedPositionNBT);
-		modifiedBuffer.writeNBTTagCompoundToBuffer(entityFixedPositionNBT);
+		modifiedBuffer.writeCompoundTag(entityFixedPositionNBT);
 	}
 
 	/**
@@ -955,7 +951,7 @@ public class PhysicsObject {
 		try {
 			player = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(UUID.fromString(creator));
 		} catch (NullPointerException e)	{
-			newOwner.addChatMessage(new TextComponentString("That airship doesn't have an owner, you get to have it :D"));
+			newOwner.sendMessage(new TextComponentString("That airship doesn't have an owner, you get to have it :D"));
 			newOwner.getCapability(ValkyrienWarfareMod.airshipCounter, null).onCreate();
 			allowedUsers.clear();
 			creator = newOwner.entityUniqueID.toString();

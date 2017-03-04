@@ -104,8 +104,8 @@ public class CallRunnerClient extends CallRunner {
 
 			if (!renderer.mc.gameSettings.debugCamEnable) {
 				BlockPos blockpos = new BlockPos(entity);
-				IBlockState iblockstate = renderer.mc.theWorld.getBlockState(blockpos);
-				net.minecraftforge.client.ForgeHooksClient.orientBedCamera(renderer.mc.theWorld, blockpos, iblockstate, entity);
+				IBlockState iblockstate = renderer.mc.world.getBlockState(blockpos);
+				net.minecraftforge.client.ForgeHooksClient.orientBedCamera(renderer.mc.world, blockpos, iblockstate, entity);
 
 				GlStateManager.rotate(entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks + 180.0F, 0.0F, -1.0F, 0.0F);
 				GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, -1.0F, 0.0F, 0.0F);
@@ -147,13 +147,13 @@ public class CallRunnerClient extends CallRunner {
 					RayTraceResult raytraceresult;
 
 					if (ClientPilotingManager.getPilotedWrapperEntity() == null) {
-						raytraceresult = CallRunner.onRayTraceBlocks(Minecraft.getMinecraft().theWorld, new Vec3d(d0 + (double) f3, d1 + (double) f4, d2 + (double) f5), new Vec3d(d0 - d4 + (double) f3 + (double) f5, d1 - d6 + (double) f4, d2 - d5 + (double) f5), false, false, false);
+						raytraceresult = CallRunner.onRayTraceBlocks(Minecraft.getMinecraft().world, new Vec3d(d0 + (double) f3, d1 + (double) f4, d2 + (double) f5), new Vec3d(d0 - d4 + (double) f3 + (double) f5, d1 - d6 + (double) f4, d2 - d5 + (double) f5), false, false, false);
 					} else {
 						Vec3d vec31 = new Vec3d(d0 + (double) f3, d1 + (double) f4, d2 + (double) f5);
 						Vec3d vec32 = new Vec3d(d0 - d4 + (double) f3 + (double) f5, d1 - d6 + (double) f4, d2 - d5 + (double) f5);
 
-						raytraceresult = renderer.mc.theWorld.rayTraceBlocks(vec31, vec32, false, false, false);
-						WorldPhysObjectManager physManager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(renderer.mc.theWorld);
+						raytraceresult = renderer.mc.world.rayTraceBlocks(vec31, vec32, false, false, false);
+						WorldPhysObjectManager physManager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(renderer.mc.world);
 						AxisAlignedBB playerRangeBB = new AxisAlignedBB(vec31.xCoord - 1D, vec31.yCoord - 1D, vec31.zCoord - 1D, vec31.xCoord + 1D, vec31.yCoord + 1D, vec31.zCoord + 1D);
 						List<PhysicsWrapperEntity> nearbyShips = physManager.getNearbyPhysObjects(playerRangeBB);
 						boolean changed = false;
@@ -174,7 +174,7 @@ public class CallRunnerClient extends CallRunner {
 								playerEyesPos = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.RwToLTransform, playerEyesPos);
 								playerReachVector = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.RwToLRotation, playerReachVector);
 								Vec3d playerEyesReachAdded = playerEyesPos.addVector(playerReachVector.xCoord * reachDistance, playerReachVector.yCoord * reachDistance, playerReachVector.zCoord * reachDistance);
-								RayTraceResult resultInShip = renderer.mc.theWorld.rayTraceBlocks(playerEyesPos, playerEyesReachAdded, false, false, false);
+								RayTraceResult resultInShip = renderer.mc.world.rayTraceBlocks(playerEyesPos, playerEyesReachAdded, false, false, false);
 								if (resultInShip != null && resultInShip.hitVec != null && resultInShip.typeOfHit == Type.BLOCK) {
 									double shipResultDistFromPlayer = resultInShip.hitVec.distanceTo(playerEyesPos);
 									if (shipResultDistFromPlayer < worldResultDistFromPlayer) {
@@ -219,7 +219,7 @@ public class CallRunnerClient extends CallRunner {
 				EntityAnimal entityanimal = (EntityAnimal) entity;
 				yaw = entityanimal.prevRotationYawHead + (entityanimal.rotationYawHead - entityanimal.prevRotationYawHead) * partialTicks + 180.0F;
 			}
-			IBlockState state = ActiveRenderInfo.getBlockStateAtEntityViewpoint(renderer.mc.theWorld, entity, partialTicks);
+			IBlockState state = ActiveRenderInfo.getBlockStateAtEntityViewpoint(renderer.mc.world, entity, partialTicks);
 			net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup event = new net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup(renderer, entity, state, partialTicks, yaw, pitch, roll);
 			net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
 
@@ -257,7 +257,7 @@ public class CallRunnerClient extends CallRunner {
 		int midZ = (p_187474_3_ + p_187474_6_) / 2;
 		BlockPos newPos = new BlockPos(midX, midY, midZ);
 
-		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(Minecraft.getMinecraft().theWorld, newPos);
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(Minecraft.getMinecraft().world, newPos);
 		if (wrapper != null && wrapper.wrapping.renderer != null) {
 
 			wrapper.wrapping.renderer.updateRange(p_187474_1_, p_187474_2_, p_187474_3_, p_187474_4_, p_187474_5_, p_187474_6_);
@@ -320,7 +320,7 @@ public class CallRunnerClient extends CallRunner {
 
 	public static void onAddEffect(ParticleManager manager, Particle effect) {
 		BlockPos pos = new BlockPos(effect.posX, effect.posY, effect.posZ);
-		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(effect.worldObj, pos);
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(effect.world, pos);
 		if (wrapper != null) {
 			Vector posVec = new Vector(effect.posX, effect.posY, effect.posZ);
 			wrapper.wrapping.coordTransform.fromLocalToGlobal(posVec);
@@ -348,18 +348,18 @@ public class CallRunnerClient extends CallRunner {
 				double d3 = (double) blockpos.getX() - d0;
 				double d4 = (double) blockpos.getY() - d1;
 				double d5 = (double) blockpos.getZ() - d2;
-				Block block = renderGlobal.theWorld.getBlockState(blockpos).getBlock();
-				TileEntity te = renderGlobal.theWorld.getTileEntity(blockpos);
+				Block block = renderGlobal.world.getBlockState(blockpos).getBlock();
+				TileEntity te = renderGlobal.world.getTileEntity(blockpos);
 				boolean hasBreak = block instanceof BlockChest || block instanceof BlockEnderChest || block instanceof BlockSign || block instanceof BlockSkull;
 				if (!hasBreak)
 					hasBreak = te != null && te.canRenderBreaking();
 
 				if (!hasBreak) {
-					PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(renderGlobal.theWorld, blockpos);
+					PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(renderGlobal.world, blockpos);
 					if (wrapper == null && (d3 * d3 + d4 * d4 + d5 * d5 > 1024.0D)) {
 						iterator.remove();
 					} else {
-						IBlockState iblockstate = renderGlobal.theWorld.getBlockState(blockpos);
+						IBlockState iblockstate = renderGlobal.world.getBlockState(blockpos);
 						if (wrapper != null) {
 							wrapper.wrapping.renderer.setupTranslation(partialTicks);
 							worldRendererIn.setTranslation(-wrapper.wrapping.renderer.offsetPos.getX(), -wrapper.wrapping.renderer.offsetPos.getY(), -wrapper.wrapping.renderer.offsetPos.getZ());
@@ -369,7 +369,7 @@ public class CallRunnerClient extends CallRunner {
 							TextureAtlasSprite textureatlassprite = renderGlobal.destroyBlockIcons[i];
 							BlockRendererDispatcher blockrendererdispatcher = renderGlobal.mc.getBlockRendererDispatcher();
 							try {
-								blockrendererdispatcher.renderBlockDamage(iblockstate, blockpos, textureatlassprite, renderGlobal.theWorld);
+								blockrendererdispatcher.renderBlockDamage(iblockstate, blockpos, textureatlassprite, renderGlobal.world);
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
@@ -396,7 +396,7 @@ public class CallRunnerClient extends CallRunner {
 		if (movingObjectPositionIn.typeOfHit != RayTraceResult.Type.BLOCK) {
 			return;
 		}
-		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.worldObj, movingObjectPositionIn.getBlockPos());
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.world, movingObjectPositionIn.getBlockPos());
 		if (wrapper != null) {
 			GlStateManager.enableBlend();
 			GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
@@ -409,12 +409,12 @@ public class CallRunnerClient extends CallRunner {
 			if (execute == 0 && movingObjectPositionIn.typeOfHit == RayTraceResult.Type.BLOCK) {
 
 				BlockPos blockpos = movingObjectPositionIn.getBlockPos();
-				IBlockState iblockstate = renderGlobal.theWorld.getBlockState(blockpos);
-				if (iblockstate.getMaterial() != Material.AIR && renderGlobal.theWorld.getWorldBorder().contains(blockpos)) {
+				IBlockState iblockstate = renderGlobal.world.getBlockState(blockpos);
+				if (iblockstate.getMaterial() != Material.AIR && renderGlobal.world.getWorldBorder().contains(blockpos)) {
 					double d0 = wrapper.wrapping.renderer.offsetPos.getX();
 					double d1 = wrapper.wrapping.renderer.offsetPos.getY();
 					double d2 = wrapper.wrapping.renderer.offsetPos.getZ();
-					AxisAlignedBB toRender = iblockstate.getSelectedBoundingBox(renderGlobal.theWorld, blockpos).expandXyz(0.0020000000949949026D).offset(-d0, -d1, -d2);
+					AxisAlignedBB toRender = iblockstate.getSelectedBoundingBox(renderGlobal.world, blockpos).expandXyz(0.0020000000949949026D).offset(-d0, -d1, -d2);
 					renderGlobal.drawSelectionBoundingBox(toRender, 0, 0, 0, 0.4f);
 				}
 			}
@@ -440,7 +440,7 @@ public class CallRunnerClient extends CallRunner {
 		double playerY = TileEntityRendererDispatcher.instance.staticPlayerY;
 		double playerZ = TileEntityRendererDispatcher.instance.staticPlayerZ;
 		GL11.glPushMatrix();
-		for (PhysicsWrapperEntity wrapper : ValkyrienWarfareMod.physicsManager.getManagerForWorld(renderGlobal.theWorld).physicsEntities) {
+		for (PhysicsWrapperEntity wrapper : ValkyrienWarfareMod.physicsManager.getManagerForWorld(renderGlobal.world).physicsEntities) {
 			// Vector centerOfRotation = wrapper.wrapping.centerCoord;
 			if(wrapper != null && wrapper.wrapping != null && wrapper.wrapping.renderer != null){
 				if(wrapper.wrapping.renderer.offsetPos != null){
@@ -474,7 +474,7 @@ public class CallRunnerClient extends CallRunner {
 	}
 
 	public static int onRenderBlockLayer(RenderGlobal renderer, BlockRenderLayer blockLayerIn, double partialTicks, int pass, Entity entityIn) {
-		for (PhysicsWrapperEntity wrapper : ValkyrienWarfareMod.physicsManager.getManagerForWorld(renderer.theWorld).physicsEntities) {
+		for (PhysicsWrapperEntity wrapper : ValkyrienWarfareMod.physicsManager.getManagerForWorld(renderer.world).physicsEntities) {
 			GL11.glPushMatrix();
 			if (wrapper.wrapping.renderer != null && wrapper.wrapping.renderer.shouldRender()) {
 				wrapper.wrapping.renderer.renderBlockLayer(blockLayerIn, partialTicks, pass);
@@ -489,7 +489,7 @@ public class CallRunnerClient extends CallRunner {
 		BlockPos pos = world.getPrecipitationHeight(posToCheck);
 		// Servers shouldn't bother running this code
 
-		Vector traceStart = new Vector(pos.getX() + .5D, Minecraft.getMinecraft().thePlayer.posY + 50D, pos.getZ() + .5D);
+		Vector traceStart = new Vector(pos.getX() + .5D, Minecraft.getMinecraft().player.posY + 50D, pos.getZ() + .5D);
 		Vector traceEnd = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
 
 //		System.out.println(traceStart);

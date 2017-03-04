@@ -102,7 +102,7 @@ public class EntityCannonBasicRender extends Render<EntityCannonBasic> {
 		BlockPos blockpos = new BlockPos(entity.posX, entity.posY, entity.posZ);
 		// GlStateManager.translate((float)(x - (double)blockpos.getX() - 0.5D), (float)(y - (double)blockpos.getY()), (float)(z - (double)blockpos.getZ() - 0.5D));
 		BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
-		blockrendererdispatcher.getBlockModelRenderer().renderModel(entity.worldObj, blockrendererdispatcher.getModelForState(baseState), baseState, blockpos, vertexbuffer, false, 0);
+		blockrendererdispatcher.getBlockModelRenderer().renderModel(entity.world, blockrendererdispatcher.getModelForState(baseState), baseState, blockpos, vertexbuffer, false, 0);
 
 		tessellator.draw();
 	}
@@ -115,7 +115,7 @@ public class EntityCannonBasicRender extends Render<EntityCannonBasic> {
 		BlockPos blockpos = new BlockPos(entity.posX, entity.posY, entity.posZ);
 		// GlStateManager.translate((float)(x - (double)blockpos.getX() - 0.5D), (float)(y - (double)blockpos.getY()), (float)(z - (double)blockpos.getZ() - 0.5D));
 		BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
-		blockrendererdispatcher.getBlockModelRenderer().renderModel(entity.worldObj, blockrendererdispatcher.getModelForState(headState), headState, blockpos, vertexbuffer, false, 0);
+		blockrendererdispatcher.getBlockModelRenderer().renderModel(entity.world, blockrendererdispatcher.getModelForState(headState), headState, blockpos, vertexbuffer, false, 0);
 
 		tessellator.draw();
 	}

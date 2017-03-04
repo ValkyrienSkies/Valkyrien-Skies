@@ -20,7 +20,11 @@ public class ItemBasicCannon extends Item {
 			cannon.setFacing(playerFacing);
 			cannon.setPosition(pos.getX() + .5D, pos.getY() + 1D, pos.getZ() + .5D);
 			worldIn.spawnEntity(cannon);
-			player.getHeldItem(hand).stackSize--;
+			ItemStack playerHandItem = player.getHeldItem(hand);
+			playerHandItem.setCount(playerHandItem.getCount()-1);
+			if(playerHandItem.getCount() <= 0){
+				player.setHeldItem(hand, ItemStack.EMPTY);
+			}
 			return EnumActionResult.SUCCESS;
 		}
 		return EnumActionResult.PASS;

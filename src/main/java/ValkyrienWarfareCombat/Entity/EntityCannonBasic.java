@@ -35,21 +35,21 @@ public class EntityCannonBasic extends EntityMountingWeaponBase {
 	public void fireCannon(EntityPlayer player, ItemStack stack, EnumHand hand) {
 		Vec3d velocityNormal = getVectorForRotation(rotationPitch, rotationYaw);
 		Vector velocityVector = new Vector(velocityNormal);
-		
+
 		PhysicsWrapperEntity wrapper = getParentShip();
 		if(wrapper != null){
 			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWRotation, velocityVector);
 		}
-		
+
 		velocityVector.multiply(2D);
 		EntityCannonBall projectile = new EntityCannonBall(world, velocityVector, this);
-		
+
 		Vector projectileSpawnPos = new Vector(0,.5,0);
-		
+
 		if(wrapper != null){
 			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWRotation, projectileSpawnPos);
 		}
-		
+
 		projectile.posX += projectileSpawnPos.X;
 		projectile.posY += projectileSpawnPos.Y;
 		projectile.posZ += projectileSpawnPos.Z;
@@ -75,15 +75,17 @@ public class EntityCannonBasic extends EntityMountingWeaponBase {
 				for (NonNullList<ItemStack> aitemstack : player.inventory.allInventories) {
 					for (ItemStack itemstack : aitemstack) {
 						if (itemstack != null && itemstack.isItemEqual(cannonBallStack)) {
-							itemstack.stackSize--;
-							if (itemstack.stackSize <= 0) {
+							int itemStackSize = itemstack.getCount();
+							itemstack.setCount(itemStackSize-1);
+							if (itemstack.getCount() <= 0) {
 								int index = player.inventory.getSlotFor(itemstack);
-								player.inventory.setInventorySlotContents(index, null);
+								player.inventory.setInventorySlotContents(index, ItemStack.EMPTY);
 							}
 						}
 						if (itemstack != null && itemstack.isItemEqual(powderStack)) {
-							itemstack.stackSize--;
-							if (itemstack.stackSize <= 0) {
+							int itemStackSize = itemstack.getCount();
+							itemstack.setCount(itemStackSize-1);
+							if (itemstack.getCount() <= 0) {
 								int index = player.inventory.getSlotFor(itemstack);
 								player.inventory.setInventorySlotContents(index, null);
 							}

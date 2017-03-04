@@ -445,7 +445,8 @@ public class CallRunner {
 		return vanillaTrace;
 	}
 
-	public static void onEntityMove(Entity entity, double dx, double dy, double dz) {
+	public static void onEntityMove(Entity entity, MoverType type, double dx, double dy, double dz) {
+//		System.out.println("test");
 		double movDistSq = (dx*dx) + (dy*dy) + (dz*dz);
 		if(movDistSq > 1000000){
 			//Assume this will take us to Ship coordinates
@@ -470,7 +471,7 @@ public class CallRunner {
 			dz = endPos.Z - entity.posZ;
 		}
 		if (!EntityCollisionInjector.alterEntityMovement(entity, dx, dy, dz)) {
-			entity.move(MoverType.SELF, dx, dy, dz);
+			entity.move(type, dx, dy, dz);
 			//Hope the MoverType doesn't affect anything serious
 		}
 	}

@@ -45,6 +45,7 @@ public class TransformAdapter extends ClassVisitor {
 	public static final String EntityLivingBaseName = "net/minecraft/entity/EntityLivingBase";
 	public static final String ViewFrustumName = "net/minecraft/client/renderer/ViewFrustum";
 	public static final String EntityRendererName = "net/minecraft/client/renderer/EntityRenderer";
+	public static final String MoverTypeName = "net/minecraft/entity/MoverType";
 
 	public static final String PredicateName = "com/google/common/base/Predicate";
 	public static final String ListName = "java/util/List";
@@ -84,8 +85,8 @@ public class TransformAdapter extends ClassVisitor {
 			return false;
 		}
 
-		if (isMethod(calledDesc, "(DDD)V", calledName, EntityClassName, "moveEntity", "func_70091_d", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onEntityMove", String.format("(L%s;DDD)V", EntityClassName), itf);
+		if (isMethod(calledDesc, "(L" + MoverTypeName+ ";DDD)V", calledName, EntityClassName, "move", "func_70091_d", calledOwner)) {
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onEntityMove", String.format("(L%s;L" + MoverTypeName+ ";DDD)V", EntityClassName), itf);
 			return false;
 		}
 

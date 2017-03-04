@@ -22,7 +22,7 @@ public class WorldEventsCommon {
 						if(stack != null && stack.getItem() instanceof ItemBlock){
 							ItemBlock blockItem = (ItemBlock) stack.getItem();
 							if(blockItem.getBlock() instanceof BlockEtheriumOre){
-								player.addVelocity(0, .0025D * stack.stackSize, 0);
+								player.addVelocity(0, .0025D * stack.getCount(), 0);
 							}
 						}
 					}
@@ -30,5 +30,5 @@ public class WorldEventsCommon {
 			}
 		}
 	}
-	
+
 }

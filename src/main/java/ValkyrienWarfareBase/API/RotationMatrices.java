@@ -10,7 +10,7 @@ import net.minecraft.util.math.Vec3d;
 
 /**
  * This class creates and processes rotation matrix transforms used by Valkyrien Warfare
- * 
+ *
  * @author thebest108
  *
  */

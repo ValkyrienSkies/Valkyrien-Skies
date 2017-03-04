@@ -32,7 +32,7 @@ import net.minecraftforge.client.ForgeHooksClient;
 
 /**
  * Object owned by each physObject responsible for handling all rendering operations
- * 
+ *
  * @author thebest108
  *
  */
@@ -186,11 +186,15 @@ public class PhysObjectRenderManager {
 		for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
 			for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
 				//TODO: Fix this render bug
-				if(chunkX >= parent.ownedChunks.minX && chunkZ >= parent.ownedChunks.minZ && chunkX - parent.ownedChunks.minX < 25 && chunkZ - parent.ownedChunks.minZ < 25){
-					PhysRenderChunk renderChunk = renderChunks[chunkX - parent.ownedChunks.minX][chunkZ - parent.ownedChunks.minZ];
-					renderChunk.updateLayers(minBlockArrayY, maxBlockArrayY);
-				}else{
-					ValkyrienWarfareMod.VWLogger.info("updateRange Just attempted to update blocks outside of a Ship's Block Range. ANY ERRORS PAST THIS ARE LIKELY RELATED!");
+				try{
+					if(chunkX >= parent.ownedChunks.minX && chunkZ >= parent.ownedChunks.minZ && chunkX - parent.ownedChunks.minX < 25 && chunkZ - parent.ownedChunks.minZ < 25){
+						PhysRenderChunk renderChunk = renderChunks[chunkX - parent.ownedChunks.minX][chunkZ - parent.ownedChunks.minZ];
+						renderChunk.updateLayers(minBlockArrayY, maxBlockArrayY);
+					}else{
+						ValkyrienWarfareMod.VWLogger.info("updateRange Just attempted to update blocks outside of a Ship's Block Range. ANY ERRORS PAST THIS ARE LIKELY RELATED!");
+					}
+				}catch(Exception e){
+					e.printStackTrace();
 				}
 			}
 		}
@@ -213,31 +217,31 @@ public class PhysObjectRenderManager {
 		renderingMountedEntities = true;
 
 		List<Entity> mountedEntities = parent.wrapper.riddenByEntities;
-		
+
 		ArrayList<Entity> mountedEntitiesWithSecondary = new ArrayList<Entity>(mountedEntities);
-		
+
 		for(Entity e : mountedEntities){
 			mountedEntitiesWithSecondary.addAll(e.riddenByEntities);
 		}
 
 		for (Entity mounted : mountedEntitiesWithSecondary) {
 			Vector localPosition = parent.getLocalPositionForEntity(mounted);
-			
+
 			if(localPosition != null){
 				//Copy this vector, don't want to alter the original
 				localPosition = new Vector(localPosition);
-				
+
 				localPosition.X -= offsetPos.getX();
 				localPosition.Y -= offsetPos.getY();
 				localPosition.Z -= offsetPos.getZ();
-				
+
 				Vector originalEntityPos = new Vector(mounted.posX, mounted.posY, mounted.posZ);
 				Vector originalLastEntityPos = new Vector(mounted.lastTickPosX, mounted.lastTickPosY, mounted.lastTickPosZ);
-	
+
 				mounted.posX = mounted.lastTickPosX = localPosition.X;
 				mounted.posY = mounted.lastTickPosY = localPosition.Y;
 				mounted.posZ = mounted.lastTickPosZ = localPosition.Z;
-	
+
 //				System.out.println("test");
 				if (!mounted.isDead && mounted != Minecraft.getMinecraft().getRenderViewEntity() || Minecraft.getMinecraft().gameSettings.thirdPersonView > 0) {
 					if(mounted instanceof EntityCannonBasic){
@@ -259,14 +263,14 @@ public class PhysObjectRenderManager {
 					Minecraft.getMinecraft().getRenderManager().doRenderEntity(mounted, x, y, z, yaw, partialTicks, false);
 					GL11.glPopMatrix();
 				}
-	
+
 				mounted.posX = originalEntityPos.X;
 				mounted.posY = originalEntityPos.Y;
 				mounted.posZ = originalEntityPos.Z;
 				mounted.lastTickPosX = originalLastEntityPos.X;
 				mounted.lastTickPosY = originalLastEntityPos.Y;
 				mounted.lastTickPosZ = originalLastEntityPos.Z;
-			
+
 			}
 		}
 

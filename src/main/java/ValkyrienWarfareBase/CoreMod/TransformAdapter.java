@@ -26,10 +26,7 @@ public class TransformAdapter extends ClassVisitor {
 	public static final String RenderGlobalName = "net/minecraft/client/renderer/RenderGlobal";
 	public static final String ICameraName = "net/minecraft/client/renderer/culling/ICamera";
 	public static final String BlockRenderLayerName = "net/minecraft/util/BlockRenderLayer";
-	public static final String ChunkProviderServerName = "net/minecraft/world/gen/ChunkProviderServer";
 	public static final String PlayerListName = "net/minecraft/server/management/PlayerList";
-	public static final String GameProfileName = "com/mojang/authlib/GameProfile";
-	public static final String EntityPlayerMPName = "net/minecraft/entity/player/EntityPlayerMP";
 	public static final String ChunkName = "net/minecraft/world/chunk/Chunk";
 	public static final String RayTraceResultName = "net/minecraft/util/math/RayTraceResult";
 	public static final String Vec3dName = "net/minecraft/util/math/Vec3d";
@@ -48,9 +45,7 @@ public class TransformAdapter extends ClassVisitor {
 	public static final String EntityLivingBaseName = "net/minecraft/entity/EntityLivingBase";
 	public static final String ViewFrustumName = "net/minecraft/client/renderer/ViewFrustum";
 	public static final String EntityRendererName = "net/minecraft/client/renderer/EntityRenderer";
-	public static final String FrustumName = "net/minecraft/client/renderer/culling/Frustum";
 
-	public static final String IteratorName = "java/util/Iterator";
 	public static final String PredicateName = "com/google/common/base/Predicate";
 	public static final String ListName = "java/util/List";
 	public static final String ClassName = "java/lang/Class";
@@ -63,6 +58,7 @@ public class TransformAdapter extends ClassVisitor {
 	}
 
 	public boolean runTransformer(int opcode, String calledName, String calledDesc, String calledOwner, MethodVisitor mv, boolean itf) {
+
 		if (isMethod(calledDesc, "(L"+EntityClassName+";)V", calledName, ChunkName, "addEntity", "func_76612_a", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onAddEntity", String.format("(L%s;L"+EntityClassName+";)V", ChunkName), itf);
 			return false;
@@ -205,20 +201,7 @@ public class TransformAdapter extends ClassVisitor {
 
 //		SpongeFix #1
 		if (isMethod(calledDesc, "(L" + BlockPosName + ";L" + IBlockStateName + ";I)Z", calledName, WorldClassName, "setBlockState", "func_180501_a", calledOwner)) {
-			/*
-
-			//RRRI
-			mv.visitInsn(Opcodes.DUP2_X2);
-			//RIRRRI
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onSetBlockState", "(L" + IBlockStateName + ";I)V", itf);
-			//RIRR
-			mv.visitInsn(Opcodes.DUP2_X2);
-			//RRRIRR
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onSetBlockState", "(L" + WorldClassName + ";L" + BlockPosName + ";)V", itf);
-			//RRRI
-			mv.visitMethodInsn(opcode, calledOwner, calledName, calledDesc, itf);
-
-			*/
+			//These Opcode instructions act to copy the elements of the stack, allowing the setBlockState() method to effectively be called twice
 
 			//RRRI
 			mv.visitInsn(Opcodes.DUP2_X2);
@@ -252,20 +235,10 @@ public class TransformAdapter extends ClassVisitor {
 			return false;
 		}
 
-		if (isMethod(calledDesc, "(L" + EntityClassName + ";)V", calledName, WorldClassName, "onEntityAdded", "func_72923_a", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onEntityAdded", String.format("(L%s;L" + EntityClassName + ";)V", WorldClassName), itf);
-			return false;
-		}
-
 		if (isMethod(calledDesc, "(L" + BlockRenderLayerName + ";DIL" + EntityClassName + ";)I", calledName, RenderGlobalName, "renderBlockLayer", "func_174977_a", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onRenderBlockLayer", String.format("(L%s;L" + BlockRenderLayerName + ";DIL" + EntityClassName + ";)I", RenderGlobalName), itf);
 			return false;
 		}
-
-//		if (isMethod(calledDesc, "(L" + ChunkName + ";)V", calledName, ChunkProviderServerName, "unload", "func_189549_a", calledOwner)) {
-//			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onChunkUnload", String.format("(L%s;L" + ChunkName + ";)V", ChunkProviderServerName));
-//			return false;
-//		}
 
 		return true;
 	}
@@ -338,16 +311,11 @@ public class TransformAdapter extends ClassVisitor {
 	}
 
 	@Override
-	public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-		super.visit(version, access, name, signature, superName, interfaces);
-	}
-
-	@Override
 	public MethodVisitor visitMethod(int access, final String methodName, String methodDesc, String signature, String[] exceptions) {
 		MethodVisitor toReturn = new MethodVisitor(api, cv.visitMethod(access, methodName, methodDesc, signature, exceptions)) {
 			@Override
 			public void visitMethodInsn(int opcode, String calledOwner, String calledName, String calledDesc, boolean itf) {
-				if (opcode == Opcodes.INVOKEVIRTUAL || opcode == Opcodes.INVOKEINTERFACE || opcode == Opcodes.INVOKESTATIC || opcode == Opcodes.H_INVOKEVIRTUAL) {
+				if (opcode == Opcodes.INVOKEVIRTUAL || opcode == Opcodes.INVOKEINTERFACE || opcode == Opcodes.H_INVOKEVIRTUAL) {
 					if (runTransformer(opcode, calledName, calledDesc, calledOwner, mv, itf)) {
 						super.visitMethodInsn(opcode, calledOwner, calledName, calledDesc, itf);
 					}

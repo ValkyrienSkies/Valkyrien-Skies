@@ -112,21 +112,6 @@ public class EntityDraggable {
 			}
 		}
 
-		if (!(draggableAsEntity instanceof EntityPlayer)) {
-			if (draggableAsEntity instanceof EntityArrow) {
-				draggableAsEntity.prevRotationYaw = draggableAsEntity.rotationYaw;
-				draggableAsEntity.rotationYaw -= yawDifVelocity;
-			} else {
-				draggableAsEntity.prevRotationYaw = draggableAsEntity.rotationYaw;
-				draggableAsEntity.rotationYaw += yawDifVelocity;
-			}
-		} else {
-			if (draggableAsEntity.worldObj.isRemote) {
-				draggableAsEntity.prevRotationYaw = draggableAsEntity.rotationYaw;
-				draggableAsEntity.rotationYaw += yawDifVelocity;
-			}
-		}
-
 		boolean onGroundOrig = draggableAsEntity.onGround;
 
 		if(!ValkyrienWarfareMod.physicsManager.isEntityFixed(draggableAsEntity)){
@@ -145,6 +130,21 @@ public class EntityDraggable {
 
 			draggableAsEntity.moveEntity(velocityAddedToPlayer.X, velocityAddedToPlayer.Y, velocityAddedToPlayer.Z);
 //			CallRunner.onEntityMove(draggableAsEntity, velocityAddedToPlayer.X, velocityAddedToPlayer.Y, velocityAddedToPlayer.Z);
+
+			if (!(draggableAsEntity instanceof EntityPlayer)) {
+				if (draggableAsEntity instanceof EntityArrow) {
+					draggableAsEntity.prevRotationYaw = draggableAsEntity.rotationYaw;
+					draggableAsEntity.rotationYaw -= yawDifVelocity;
+				} else {
+					draggableAsEntity.prevRotationYaw = draggableAsEntity.rotationYaw;
+					draggableAsEntity.rotationYaw += yawDifVelocity;
+				}
+			} else {
+				if (draggableAsEntity.worldObj.isRemote) {
+					draggableAsEntity.prevRotationYaw = draggableAsEntity.rotationYaw;
+					draggableAsEntity.rotationYaw += yawDifVelocity;
+				}
+			}
 
 			//Do not add this movement as if the entity were walking it
 			draggableAsEntity.distanceWalkedModified = originalWalked;

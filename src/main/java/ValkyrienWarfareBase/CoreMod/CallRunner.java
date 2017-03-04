@@ -385,22 +385,7 @@ public class CallRunner {
 		}
 	}
 
-	public static void onSetBlockState(IBlockState state, int i){
-
-	}
-
-	public static void onSetBlockState(World world, BlockPos pos){
-//		if(!world.isRemote){
-//			System.out.println(world.getBlockState(pos).getBlock().getLocalizedName());
-//		}
-	}
-
 	public static void onSetBlockState(IBlockState newState, int flags, World world, BlockPos pos){
-		onSetBlockState(world, pos, newState, flags);
-    }
-
-
-	public static void onSetBlockState(World world, BlockPos pos, IBlockState newState, int flags){
 		IBlockState oldState = world.getBlockState(pos);
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
 		if (wrapper != null) {
@@ -413,22 +398,6 @@ public class CallRunner {
 			}
 		}
     }
-
-	/*public static boolean onSetBlockState(World world, BlockPos pos, IBlockState newState, int flags) {
-		IBlockState oldState = world.getBlockState(pos);
-		boolean toReturn = world.setBlockState(pos, newState, flags);
-		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
-		if (wrapper != null) {
-			if(!world.isRemote){
-				wrapper.wrapping.pilotingController.onSetBlockInShip(pos, newState);
-			}
-			wrapper.wrapping.onSetBlockState(oldState, newState, pos);
-			if (world.isRemote) {
-				wrapper.wrapping.renderer.markForUpdate();
-			}
-		}
-		return toReturn;
-	}*/
 
 	public static RayTraceResult onRayTraceBlocks(World world, Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock) {
 		RayTraceResult vanillaTrace = world.rayTraceBlocks(vec31, vec32, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
@@ -476,6 +445,29 @@ public class CallRunner {
 	}
 
 	public static void onEntityMove(Entity entity, double dx, double dy, double dz) {
+		double movDistSq = (dx*dx) + (dy*dy) + (dz*dz);
+		if(movDistSq > 1000000){
+			//Assume this will take us to Ship coordinates
+			double newX = entity.posX + dx;
+			double newY = entity.posY + dy;
+			double newZ = entity.posZ + dz;
+			BlockPos newPosInBlock = new BlockPos(newX,newY,newZ);
+
+			PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(entity.worldObj, newPosInBlock);
+
+			if(wrapper == null){
+				//Just forget this even happened
+//				System.err.println("An entity just tried moving like a millions miles an hour. Probably VW's fault, sorry about that.");
+				return;
+			}
+
+			Vector endPos = new Vector(newX,newY,newZ);
+			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, endPos);
+
+			dx = endPos.X - entity.posX;
+			dy = endPos.Y - entity.posY;
+			dz = endPos.Z - entity.posZ;
+		}
 		if (!EntityCollisionInjector.alterEntityMovement(entity, dx, dy, dz)) {
 			entity.moveEntity(dx, dy, dz);
 		}
@@ -486,13 +478,6 @@ public class CallRunner {
 			ValkyrienWarfareMod.physicsManager.onShipUnload((PhysicsWrapperEntity) removed);
 		}
 		world.onEntityRemoved(removed);
-	}
-
-	public static void onEntityAdded(World world, Entity added) {
-//		if (added instanceof PhysicsWrapperEntity) {
-//			ValkyrienWarfareMod.physicsManager.onShipLoad((PhysicsWrapperEntity) added);
-//		}
-		world.onEntityAdded(added);
 	}
 
     public static Vec3d onGetLook(Entity entityFor, float partialTicks){

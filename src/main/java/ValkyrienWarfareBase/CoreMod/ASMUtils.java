@@ -20,9 +20,9 @@ public class ASMUtils {
 			byteArray = ASMUtils.patchEntityClassSuperclass(byteArray);
 		}
 
-		if(transformedName.equals(TransformAdapter.WorldClassName.replace('/', '.'))){
-			byteArray = ASMUtils.patchWorldClassSetBlockState(byteArray);
-		}
+//		if(transformedName.equals(TransformAdapter.WorldClassName.replace('/', '.'))){
+//			byteArray = ASMUtils.patchWorldClassSetBlockState(byteArray);
+//		}
 
 		return byteArray;
 	}
@@ -64,6 +64,7 @@ public class ASMUtils {
 		return cw.toByteArray();
 	}
 
+	//Unused, just here for refrence
 	public static byte[] patchWorldClassSetBlockState(byte[] byteArray){
 		ClassNode classNode = new ClassNode();
 

@@ -38,7 +38,6 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.HarvestCheck;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
@@ -59,11 +58,6 @@ public class EventsCommon {
 	public static HashMap<EntityPlayerMP, Double[]> lastPositions = new HashMap<EntityPlayerMP, Double[]>();
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
-	public void onRightClickBlockEvent(RightClickBlock event){
-		event.setResult(Result.ALLOW);
-	}
-	
-	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onEntityJoinWorldEvent(EntityJoinWorldEvent event){
 		Entity entity = event.getEntity();
 		World world = entity.worldObj;
@@ -81,7 +75,7 @@ public class EventsCommon {
 			ValkyrienWarfareMod.physicsManager.onShipLoad((PhysicsWrapperEntity) entity);
 		}
 	}
-	
+
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onEntityInteractEvent(EntityInteract event) {
 		event.setResult(Result.ALLOW);
@@ -107,10 +101,14 @@ public class EventsCommon {
 	public void onPlayerTickEvent(PlayerTickEvent event) {
 		if (!event.player.worldObj.isRemote && event.player != null) {
 			EntityPlayerMP p = (EntityPlayerMP) event.player;
-			
+
 			try{
 				if (!(p.connection instanceof CustomNetHandlerPlayServer)) {
 					p.connection = new CustomNetHandlerPlayServer(p.connection);
+				}else{
+					if(p.interactionManager.getBlockReachDistance() == CustomNetHandlerPlayServer.dummyBlockReachDist){
+						p.interactionManager.setBlockReachDistance(((CustomNetHandlerPlayServer)p.connection).lastGoodBlockReachDist);
+					}
 				}
 			}catch(Exception e){
 				e.printStackTrace();
@@ -382,22 +380,22 @@ public class EventsCommon {
 		if(evt.getObject() instanceof EntityPlayer){
 			evt.addCapability(new ResourceLocation(ValkyrienWarfareMod.MODID, "IAirshipCounter"), new ICapabilitySerializable<NBTPrimitive>() {
 				IAirshipCounterCapability inst = ValkyrienWarfareMod.airshipCounter.getDefaultInstance();
-	
+
 				@Override
 				public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
 					return capability == ValkyrienWarfareMod.airshipCounter;
 				}
-	
+
 				@Override
 				public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
 					return capability == ValkyrienWarfareMod.airshipCounter ? ValkyrienWarfareMod.airshipCounter.<T>cast(inst) : null;
 				}
-	
+
 				@Override
 				public NBTPrimitive serializeNBT() {
 					return (NBTPrimitive) ValkyrienWarfareMod.airshipCounter.getStorage().writeNBT(ValkyrienWarfareMod.airshipCounter, inst, null);
 				}
-	
+
 				@Override
 				public void deserializeNBT(NBTPrimitive nbt) {
 					ValkyrienWarfareMod.airshipCounter.getStorage().readNBT(ValkyrienWarfareMod.airshipCounter, inst, null, nbt);
@@ -433,7 +431,7 @@ public class EventsCommon {
 			}
 		}
 	}
-	
+
 	@SubscribeEvent
 	public void onBlockBreak(BlockEvent.BreakEvent event)	{
 		if (!event.getWorld().isRemote)	{

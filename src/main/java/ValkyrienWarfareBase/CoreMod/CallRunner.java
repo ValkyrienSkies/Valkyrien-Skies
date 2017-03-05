@@ -9,6 +9,7 @@ import com.google.common.base.Predicate;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareBase.ChunkManagement.PhysicsChunkManager;
 import ValkyrienWarfareBase.Collision.EntityCollisionInjector;
 import ValkyrienWarfareBase.Collision.EntityPolygon;
 import ValkyrienWarfareBase.Collision.Polygon;
@@ -40,9 +41,19 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.IChunkGenerator;
 import net.minecraftforge.common.DimensionManager;
 
 public class CallRunner {
+
+	//Prevent random villages and shit from popping up on ships
+    public static void onPopulateChunk(Chunk chunk, IChunkGenerator generator){
+    	if(PhysicsChunkManager.isLikelyShipChunk(chunk.xPosition, chunk.zPosition)){
+//        	System.out.println("Tried populating a Ship Chunk, but failed!");
+    		return;
+    	}
+    	chunk.populateChunk(generator);
+    }
 
     public static void onAddEntity(Chunk chunk, Entity entityIn){
     	World world = chunk.worldObj;

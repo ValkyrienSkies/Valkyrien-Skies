@@ -142,7 +142,7 @@ public class PhysObjectRenderManager {
 			if (parent.claimedChunks == null) {
 				return;
 			}
-			renderChunks = new PhysRenderChunk[parent.claimedChunks.length][parent.claimedChunks.length];
+			renderChunks = new PhysRenderChunk[parent.claimedChunks.length][parent.claimedChunks[0].length];
 			for (int xChunk = 0; xChunk < parent.claimedChunks.length; xChunk++) {
 				for (int zChunk = 0; zChunk < parent.claimedChunks.length; zChunk++) {
 					renderChunks[xChunk][zChunk] = new PhysRenderChunk(parent, parent.claimedChunks[xChunk][zChunk]);

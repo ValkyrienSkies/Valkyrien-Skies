@@ -250,6 +250,8 @@ public class PhysicsObject {
 			radiusNeeded = Math.max(Math.max(zRad, xRad), radiusNeeded + 1);
 		}
 
+		radiusNeeded = Math.max(radiusNeeded, 5);
+
 		iter = detector.foundSet.iterator();
 
 		radiusNeeded = Math.min(radiusNeeded, ValkyrienWarfareMod.chunkManager.getManagerForWorld(wrapper.world).maxChunkRadius);
@@ -267,7 +269,7 @@ public class PhysicsObject {
 				claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ] = chunk;
 			}
 		}
-		
+
 		//Prevents weird shit from spawning at the edges of a ship
 		replaceOuterChunksWithAir();
 
@@ -364,12 +366,22 @@ public class PhysicsObject {
 		for (int x = ownedChunks.minX; x <= ownedChunks.maxX; x++) {
 			for (int z = ownedChunks.minZ; z <= ownedChunks.maxZ; z++) {
 				claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ].isTerrainPopulated = true;
-				claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ].generateSkylightMap();
+//				claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ].generateSkylightMap();
 				// claimedChunks[x-ownedChunks.minX][z-ownedChunks.minZ].checkLight();
 			}
 		}
 
 		detectBlockPositions();
+
+		//TODO: This fixes the lighting, but it adds lag; maybe remove this
+		for (int x = ownedChunks.minX; x <= ownedChunks.maxX; x++) {
+			for (int z = ownedChunks.minZ; z <= ownedChunks.maxZ; z++) {
+//				claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ].isTerrainPopulated = true;
+				claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ].generateSkylightMap();
+				claimedChunks[x-ownedChunks.minX][z-ownedChunks.minZ].checkLight();
+			}
+		}
+
 		coordTransform = new CoordTransformObject(this);
 		physicsProcessor.processInitialPhysicsData();
 		physicsProcessor.updateCenterOfMass();
@@ -417,7 +429,7 @@ public class PhysicsObject {
 			}
 		}
 	}
-	
+
 	/**
 	 * TODO: Add the methods that send the tileEntities in each given chunk
 	 */
@@ -449,6 +461,9 @@ public class PhysicsObject {
 
 	/**
 	 * TODO: Make this further get the player to stop all further tracking of thos physObject
+	 *
+	 * @param EntityPlayer
+	 *            that stopped tracking
 	 */
 	public void onPlayerUntracking(EntityPlayer untracking) {
 		watchingPlayers.remove(untracking);
@@ -515,33 +530,33 @@ public class PhysicsObject {
 	// Returns true if splitting happened
 	/*
 	 * public boolean processPotentialSplitting(){ if(blocksChanged){ blocksChanged = false; }else{ return false; }
-	 * 
+	 *
 	 * ArrayList<BlockPos> dirtyBlockPositions = new ArrayList(blockPositions); if(dirtyBlockPositions.size()==0){ return false; }
-	 * 
+	 *
 	 * boolean hasSplit = false;
-	 * 
+	 *
 	 * while(dirtyBlockPositions.size()!=0){ BlockPos pos = dirtyBlockPositions.get(0); SpatialDetector firstDet = new ShipBlockPosFinder(pos, worldObj, dirtyBlockPositions.size(), true);
-	 * 
+	 *
 	 * if(firstDet.foundSet.size()!=dirtyBlockPositions.size()){ //Set Y to 300 to prevent picking up extra blocks PhysicsWrapperEntity newSplit = new PhysicsWrapperEntity(worldObj,wrapper.posX,300,wrapper.posZ, null,DetectorManager.DetectorIDs.BlockPosFinder.ordinal()); newSplit.yaw = wrapper.yaw; newSplit.pitch = wrapper.pitch; newSplit.roll = wrapper.roll; newSplit.posX = wrapper.posX; newSplit.posY = wrapper.posY; newSplit.posZ = wrapper.posZ; TIntIterator iter = firstDet.foundSet.iterator();
-	 * 
+	 *
 	 * BlockPos oldBlockCenter = this.getRegionCenter(); BlockPos newBlockCenter = newSplit.wrapping.getRegionCenter(); BlockPos centerDif = newBlockCenter.subtract(oldBlockCenter);
-	 * 
+	 *
 	 * ValkyrienWarfareMod.physicsManager.onShipLoad(newSplit);
-	 * 
+	 *
 	 * newSplit.wrapping.fromSplit = true;
-	 * 
+	 *
 	 * while(iter.hasNext()){ int hash = iter.next(); BlockPos fromHash = SpatialDetector.getPosWithRespectTo(hash, pos); dirtyBlockPositions.remove(fromHash); CallRunner.onSetBlockState(worldObj, fromHash.add(centerDif), VKChunkCache.getBlockState(fromHash), 3); CallRunner.onSetBlockState(worldObj, fromHash, Blocks.AIR.getDefaultState(), 2); }
-	 * 
+	 *
 	 * newSplit.wrapping.centerCoord = new Vector(centerCoord); newSplit.wrapping.centerCoord.X+=centerDif.getX(); newSplit.wrapping.centerCoord.Y+=centerDif.getY(); newSplit.wrapping.centerCoord.Z+=centerDif.getZ(); newSplit.wrapping.coordTransform.lToWRotation = coordTransform.lToWRotation; newSplit.wrapping.physicsProcessor.updateCenterOfMass(); newSplit.wrapping.coordTransform.updateAllTransforms();
-	 * 
+	 *
 	 * //TODO: THIS MATH IS NOT EVEN REMOTELY CORRECT!!!!! //Also the moment of inertia is wrong too newSplit.wrapping.physicsProcessor.linearMomentum = new Vector(physicsProcessor.linearMomentum); newSplit.wrapping.physicsProcessor.angularVelocity = new Vector(physicsProcessor.angularVelocity);
-	 * 
+	 *
 	 * worldObj.spawnEntityInWorld(newSplit);
-	 * 
+	 *
 	 * hasSplit = true; }else{ dirtyBlockPositions.clear(); }
-	 * 
+	 *
 	 * }
-	 * 
+	 *
 	 * return hasSplit; }
 	 */
 
@@ -602,14 +617,14 @@ public class PhysicsObject {
         }
         return block1.equals(Blocks.AIR);
 	}
-	
+
 	// TODO: Fix the lag here
 	public void moveEntities() {
-		
-		
-		
+
+
+
 		List<Entity> riders = worldObj.getEntitiesWithinAABB(Entity.class, collisionBB);
-		
+
 		for (Entity ent : riders) {
 			EntityDraggable draggable = EntityDraggable.getDraggableFromEntity(ent);
 			if (draggable.worldBelowFeet == this.wrapper&&!(ent instanceof PhysicsWrapperEntity) && !ValkyrienWarfareMod.physicsManager.isEntityFixed(ent) && shouldMoveEntity(ent)) {
@@ -763,10 +778,10 @@ public class PhysicsObject {
 	public void queueEntityForMounting(Entity toMount){
 		queuedEntitiesToMount.add(toMount);
 	}
-	
+
 	/**
 	 * ONLY USE THESE 2 METHODS TO EVER ADD/REMOVE ENTITIES, OTHERWISE YOU'LL RUIN EVERYTHING!
-	 * 
+	 *
 	 * @param toFix
 	 * @param posInLocal
 	 */
@@ -780,8 +795,9 @@ public class PhysicsObject {
 
 	/**
 	 * ONLY USE THESE 2 METHODS TO EVER ADD/REMOVE ENTITIES, OTHERWISE YOU'LL RUIN EVERYTHING!
-	 * 
-	 * @param toUnfix
+	 *
+	 * @param toFix
+	 * @param posInLocal
 	 */
 	public void unFixEntity(Entity toUnfix) {
 		EntityFixMessage entityUnfixingMessage = new EntityFixMessage(wrapper, toUnfix, false, null);
@@ -798,7 +814,7 @@ public class PhysicsObject {
 	public void removeEntityUUID(int uuidHash) {
 		entityLocalPositions.remove(uuidHash);
 	}
-	
+
 	public boolean isEntityFixed(Entity toCheck){
 		return entityLocalPositions.containsKey(toCheck.getPersistentID().hashCode());
 	}
@@ -934,7 +950,7 @@ public class PhysicsObject {
 
 	/**
 	 * Tries to change the owner of this PhysicsObject.
-	 * 
+	 *
 	 * @param newOwner
 	 * @return
 	 */
@@ -942,7 +958,7 @@ public class PhysicsObject {
 		if (!ValkyrienWarfareMod.canChangeAirshipCounter(true, newOwner)) {
 			return EnumChangeOwnerResult.ERROR_NEWOWNER_NOT_ENOUGH;
 		}
-		
+
 		if (newOwner.entityUniqueID.toString().equals(creator))	{
 			return EnumChangeOwnerResult.ALREADY_CLAIMED;
 		}
@@ -957,7 +973,7 @@ public class PhysicsObject {
 			creator = newOwner.entityUniqueID.toString();
 			return EnumChangeOwnerResult.SUCCESS;
 		}
-		
+
 		if (player != null) {
 			player.getCapability(ValkyrienWarfareMod.airshipCounter, null).onLose();
 		} else {

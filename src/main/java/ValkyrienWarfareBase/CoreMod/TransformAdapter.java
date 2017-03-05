@@ -46,6 +46,7 @@ public class TransformAdapter extends ClassVisitor {
 	public static final String ViewFrustumName = "net/minecraft/client/renderer/ViewFrustum";
 	public static final String EntityRendererName = "net/minecraft/client/renderer/EntityRenderer";
 	public static final String MoverTypeName = "net/minecraft/entity/MoverType";
+	public static final String IChunkGeneratorName = "net/minecraft/world/chunk/IChunkGenerator";
 
 	public static final String PredicateName = "com/google/common/base/Predicate";
 	public static final String ListName = "java/util/List";
@@ -59,6 +60,10 @@ public class TransformAdapter extends ClassVisitor {
 	}
 
 	public boolean runTransformer(int opcode, String calledName, String calledDesc, String calledOwner, MethodVisitor mv, boolean itf) {
+		if (isMethod(calledDesc, "(L"+IChunkGeneratorName+";)V", calledName, ChunkName, "populateChunk", "func_186034_a", calledOwner)) {
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onPopulateChunk", String.format("(L%s;L"+IChunkGeneratorName+";)V", ChunkName), itf);
+			return false;
+		}
 
 		if (isMethod(calledDesc, "(L"+EntityClassName+";)V", calledName, ChunkName, "addEntity", "func_76612_a", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onAddEntity", String.format("(L%s;L"+EntityClassName+";)V", ChunkName), itf);

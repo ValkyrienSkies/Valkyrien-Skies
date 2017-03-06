@@ -106,9 +106,11 @@ public class EventsCommon {
 				if (!(p.connection instanceof CustomNetHandlerPlayServer)) {
 					p.connection = new CustomNetHandlerPlayServer(p.connection);
 				}else{
-					if(p.interactionManager.getBlockReachDistance() == CustomNetHandlerPlayServer.dummyBlockReachDist){
+					CustomNetHandlerPlayServer customNetHandler = (CustomNetHandlerPlayServer)p.connection;
+					if(p.interactionManager.getBlockReachDistance() == CustomNetHandlerPlayServer.dummyBlockReachDist && customNetHandler.ticksSinceLastTry == 2){
 						p.interactionManager.setBlockReachDistance(((CustomNetHandlerPlayServer)p.connection).lastGoodBlockReachDist);
 					}
+					customNetHandler.ticksSinceLastTry ++;
 				}
 			}catch(Exception e){
 				e.printStackTrace();

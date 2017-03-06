@@ -20,6 +20,7 @@ public class CustomNetHandlerPlayServer extends NetHandlerPlayServer {
 	//Blame Sponge for this
 	public static final double dummyBlockReachDist = 999999999999999999999999999999999999D;
 	public double lastGoodBlockReachDist;
+	public int ticksSinceLastTry = 0;
 
 	public CustomNetHandlerPlayServer(MinecraftServer server, NetworkManager networkManagerIn, EntityPlayerMP playerIn) {
 		super(server, networkManagerIn, playerIn);
@@ -83,6 +84,7 @@ public class CustomNetHandlerPlayServer extends NetHandlerPlayServer {
 		}
 		if(wrapper != null){
 			playerEntity.interactionManager.setBlockReachDistance(dummyBlockReachDist);
+			ticksSinceLastTry = 0;
 		}
 
 		PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.playerEntity.getServerWorld());
@@ -108,6 +110,7 @@ public class CustomNetHandlerPlayServer extends NetHandlerPlayServer {
 		}
 		if(wrapper != null){
 			playerEntity.interactionManager.setBlockReachDistance(dummyBlockReachDist);
+			ticksSinceLastTry = 0;
 		}
 
 		PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.playerEntity.getServerWorld());
@@ -133,6 +136,7 @@ public class CustomNetHandlerPlayServer extends NetHandlerPlayServer {
 		}
 		if(wrapper != null){
 			playerEntity.interactionManager.setBlockReachDistance(dummyBlockReachDist);
+			ticksSinceLastTry = 0;
 		}
 
 		PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.playerEntity.getServerWorld());

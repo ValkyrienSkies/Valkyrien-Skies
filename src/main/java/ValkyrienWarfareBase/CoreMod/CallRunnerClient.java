@@ -249,21 +249,6 @@ public class CallRunnerClient extends CallRunner {
 		renderer.cloudFog = renderer.mc.renderGlobal.hasCloudFog(d0, d1, d2, partialTicks);
 	}
 
-	public static void onMarkBlocksForUpdate(ViewFrustum frustum, int p_187474_1_, int p_187474_2_, int p_187474_3_, int p_187474_4_, int p_187474_5_, int p_187474_6_, boolean requiresImmediateUpdate) {
-		frustum.markBlocksForUpdate(p_187474_1_, p_187474_2_, p_187474_3_, p_187474_4_, p_187474_5_, p_187474_6_, requiresImmediateUpdate);
-
-		int midX = (p_187474_1_ + p_187474_4_) / 2;
-		int midY = (p_187474_2_ + p_187474_5_) / 2;
-		int midZ = (p_187474_3_ + p_187474_6_) / 2;
-		BlockPos newPos = new BlockPos(midX, midY, midZ);
-
-		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(Minecraft.getMinecraft().theWorld, newPos);
-		if (wrapper != null && wrapper.wrapping.renderer != null) {
-
-			wrapper.wrapping.renderer.updateRange(p_187474_1_, p_187474_2_, p_187474_3_, p_187474_4_, p_187474_5_, p_187474_6_);
-		}
-	}
-
 	// TODO: This may become a performance issue
 	public static int onGetCombinedLight(World world, BlockPos pos, int lightValue) {
 		try {

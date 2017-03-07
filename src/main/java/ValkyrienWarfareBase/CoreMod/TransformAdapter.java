@@ -109,11 +109,6 @@ public class TransformAdapter extends ClassVisitor {
 			return false;
 		}
 
-		if (isMethod(calledDesc, "(IIIIIIZ)V", calledName, ViewFrustumName, "markBlocksForUpdate", "func_187474_a", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onMarkBlocksForUpdate", String.format("(L%s;IIIIIIZ)V", ViewFrustumName), itf);
-			return false;
-		}
-
 		if (isMethod(calledDesc, "()Z", calledName, EntityLivingBaseName, "isOnLadder", "func_70617_f_", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onIsOnLadder", String.format("(L%s;)Z", EntityLivingBaseName), itf);
 			return false;
@@ -214,7 +209,6 @@ public class TransformAdapter extends ClassVisitor {
 			mv.visitInsn(Opcodes.DUP2_X2);
 			//RIRIRRRI
 			mv.visitInsn(Opcodes.POP2);
-//			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onSetBlockState", "(L" + IBlockStateName + ";I)V", itf);
 			//RIRIRR
 			mv.visitInsn(Opcodes.DUP2_X2);
 			//RIRRRIRR
@@ -223,7 +217,6 @@ public class TransformAdapter extends ClassVisitor {
 			mv.visitInsn(Opcodes.DUP2_X2);
 			//RRRIRR
 			mv.visitInsn(Opcodes.POP2);
-//			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onSetBlockState", "(L" + WorldClassName + ";L" + BlockPosName + ";)V", itf);
 			//RRRI
 			mv.visitMethodInsn(opcode, calledOwner, calledName, calledDesc, itf);
 
@@ -232,11 +225,6 @@ public class TransformAdapter extends ClassVisitor {
 
 		if (isMethod(calledDesc, "(L" + Vec3dName + ";L" + Vec3dName + ";ZZZ)L" + RayTraceResultName + ";", calledName, WorldClassName, "rayTraceBlocks", "func_147447_a", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onRayTraceBlocks", String.format("(L%s;L" + Vec3dName + ";L" + Vec3dName + ";ZZZ)L" + RayTraceResultName + ";", WorldClassName), itf);
-			return false;
-		}
-
-		if (isMethod(calledDesc, "(L" + EntityClassName + ";)V", calledName, WorldClassName, "onEntityRemoved", "func_72847_b", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onEntityRemoved", String.format("(L%s;L" + EntityClassName + ";)V", WorldClassName), itf);
 			return false;
 		}
 

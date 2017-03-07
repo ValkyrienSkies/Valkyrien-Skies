@@ -17,7 +17,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * This entity's only purpose is to use the functionality of sending itself to nearby players, all other operations are handled by the PhysicsObject class
- * 
+ *
  * @author thebest108
  *
  */
@@ -67,33 +67,33 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 		// }
 
 		if (inLocal != null) {
-			
+
 			Vector newEntityPosition = new Vector(inLocal);
-			
+
 			float f = passenger.width / 2.0F;
 	        float f1 = passenger.height;
 	        AxisAlignedBB inLocalAABB = new AxisAlignedBB(newEntityPosition.X - (double)f, newEntityPosition.Y, newEntityPosition.Z - (double)f, newEntityPosition.X + (double)f, newEntityPosition.Y + (double)f1, newEntityPosition.Z + (double)f);
-	        
+
 	        wrapping.coordTransform.fromLocalToGlobal(newEntityPosition);
-			
+
 			passenger.setPosition(newEntityPosition.X, newEntityPosition.Y, newEntityPosition.Z);
 
 			Polygon entityBBPoly = new Polygon(inLocalAABB, wrapping.coordTransform.lToWTransform);
 
 			AxisAlignedBB newEntityBB = entityBBPoly.getEnclosedAABB();
-			
+
 			passenger.setEntityBoundingBox(newEntityBB);
-			
+
 			if(passenger instanceof EntityMountingWeaponBase){
 				passenger.onUpdate();
-				
+
 				for(Entity e:passenger.riddenByEntities){
 					if(wrapping.isEntityFixed(e)){
 						Vector inLocalAgain = wrapping.getLocalPositionForEntity(e);
 						if (inLocalAgain != null) {
 							Vector newEntityPositionAgain = new Vector(inLocalAgain);
 							wrapping.coordTransform.fromLocalToGlobal(newEntityPositionAgain);
-							
+
 							e.setPosition(newEntityPositionAgain.X, newEntityPositionAgain.Y, newEntityPositionAgain.Z);
 						}
 					}

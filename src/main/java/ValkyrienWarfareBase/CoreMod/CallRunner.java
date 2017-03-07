@@ -400,9 +400,6 @@ public class CallRunner {
 		IBlockState oldState = world.getBlockState(pos);
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
 		if (wrapper != null) {
-			if(!world.isRemote){
-				wrapper.wrapping.pilotingController.onSetBlockInShip(pos, newState);
-			}
 			wrapper.wrapping.onSetBlockState(oldState, newState, pos);
 			if (world.isRemote) {
 				wrapper.wrapping.renderer.markForUpdate();
@@ -467,7 +464,7 @@ public class CallRunner {
 			PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(entity.worldObj, newPosInBlock);
 
 			if(wrapper == null){
-				//Just forget this even happened
+//				Just forget this even happened
 //				System.err.println("An entity just tried moving like a millions miles an hour. Probably VW's fault, sorry about that.");
 				return;
 			}
@@ -483,16 +480,6 @@ public class CallRunner {
 			entity.moveEntity(dx, dy, dz);
 		}
 	}
-
-	public static void onEntityRemoved(World world, Entity removed) {
-//		System.out.println("Not working with Sponge");
-		if (removed instanceof PhysicsWrapperEntity) {
-
-			ValkyrienWarfareMod.physicsManager.onShipUnload((PhysicsWrapperEntity) removed);
-		}
-		world.onEntityRemoved(removed);
-	}
-
     public static Vec3d onGetLook(Entity entityFor, float partialTicks){
     	Vec3d defaultOutput = entityFor.getLook(partialTicks);
 

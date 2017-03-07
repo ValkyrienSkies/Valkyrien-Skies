@@ -4,27 +4,20 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.logging.Level;
 
-import ValkyrienWarfareBase.API.RotationMatrices;
-import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Capability.IAirshipCounterCapability;
 import ValkyrienWarfareBase.CoreMod.ValkyrienWarfarePlugin;
 import ValkyrienWarfareBase.Interaction.CustomNetHandlerPlayServer;
+import ValkyrienWarfareBase.Interaction.ValkyrienWarfareWorldEventListener;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsTickHandler;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
-import ValkyrienWarfareCombat.Entity.EntityMountingWeaponBase;
 import ValkyrienWarfareControl.Piloting.ClientPilotingManager;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityArmorStand;
-import net.minecraft.entity.item.EntityBoat;
-import net.minecraft.entity.item.EntityFallingBlock;
-import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTPrimitive;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.Explosion;
@@ -58,25 +51,6 @@ public class EventsCommon {
 	public static HashMap<EntityPlayerMP, Double[]> lastPositions = new HashMap<EntityPlayerMP, Double[]>();
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
-	public void onEntityJoinWorldEvent(EntityJoinWorldEvent event){
-		Entity entity = event.getEntity();
-		World world = entity.worldObj;
-		BlockPos posAt = new BlockPos(entity);
-		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, posAt);
-		if (!(entity instanceof EntityFallingBlock) && wrapper != null && wrapper.wrapping.coordTransform != null) {
-			if (entity instanceof EntityMountingWeaponBase || entity instanceof EntityArmorStand || entity instanceof EntityPig || entity instanceof EntityBoat) {
-//				entity.startRiding(wrapper);
-				wrapper.wrapping.fixEntity(entity, new Vector(entity));
-				wrapper.wrapping.queueEntityForMounting(entity);
-			}
-			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, wrapper.wrapping.coordTransform.lToWRotation, entity);
-		}
-		if(entity instanceof PhysicsWrapperEntity){
-			ValkyrienWarfareMod.physicsManager.onShipLoad((PhysicsWrapperEntity) entity);
-		}
-	}
-
-	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onEntityInteractEvent(EntityInteract event) {
 		event.setResult(Result.ALLOW);
 	}
@@ -101,7 +75,6 @@ public class EventsCommon {
 	public void onPlayerTickEvent(PlayerTickEvent event) {
 		if (!event.player.worldObj.isRemote && event.player != null) {
 			EntityPlayerMP p = (EntityPlayerMP) event.player;
-
 			try{
 				if (!(p.connection instanceof CustomNetHandlerPlayServer)) {
 					p.connection = new CustomNetHandlerPlayServer(p.connection);
@@ -315,8 +288,9 @@ public class EventsCommon {
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onWorldLoad(WorldEvent.Load event) {
-		// ValkyrienWarfareMod.chunkManager.initWorld(event.getWorld());
-		ValkyrienWarfareMod.physicsManager.initWorld(event.getWorld());
+		World world = event.getWorld();
+		ValkyrienWarfareMod.physicsManager.initWorld(world);
+		world.addEventListener(new ValkyrienWarfareWorldEventListener(world));
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)

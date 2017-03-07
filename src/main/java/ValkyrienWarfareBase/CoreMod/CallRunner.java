@@ -73,7 +73,7 @@ public class CallRunner {
 
 	public static BlockPos onGetPrecipitationHeight(World world, BlockPos posToCheck) {
 		BlockPos pos = world.getPrecipitationHeight(posToCheck);
-		if(!world.isRemote || ValkyrienWarfareMod.accurateRain){
+		if(!world.isRemote || !ValkyrienWarfareMod.accurateRain){
 			return pos;
 		}else{
 			return CallRunnerClient.onGetPrecipitationHeightClient(world, posToCheck);
@@ -485,7 +485,9 @@ public class CallRunner {
 	}
 
 	public static void onEntityRemoved(World world, Entity removed) {
+//		System.out.println("Not working with Sponge");
 		if (removed instanceof PhysicsWrapperEntity) {
+
 			ValkyrienWarfareMod.physicsManager.onShipUnload((PhysicsWrapperEntity) removed);
 		}
 		world.onEntityRemoved(removed);

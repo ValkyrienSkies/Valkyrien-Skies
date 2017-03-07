@@ -175,6 +175,12 @@ public class PhysObjectRenderManager {
 			return;
 		}
 
+		int size = (maxX + 1 - minX) * (maxZ + 1 - minZ) * (maxY +1 - minY);
+
+		if(size > 65535){
+			return;
+		}
+
 		int minChunkX = minX >> 4;
 		int maxChunkX = maxX >> 4;
 		int minChunkZ = minZ >> 4;
@@ -187,11 +193,11 @@ public class PhysObjectRenderManager {
 			for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
 				//TODO: Fix this render bug
 				try{
-					if(chunkX >= parent.ownedChunks.minX && chunkZ >= parent.ownedChunks.minZ && chunkX - parent.ownedChunks.minX < 25 && chunkZ - parent.ownedChunks.minZ < 25){
+					if(chunkX >= parent.ownedChunks.minX && chunkZ >= parent.ownedChunks.minZ && chunkX - parent.ownedChunks.minX < renderChunks.length && chunkZ - parent.ownedChunks.minZ < renderChunks[0].length){
 						PhysRenderChunk renderChunk = renderChunks[chunkX - parent.ownedChunks.minX][chunkZ - parent.ownedChunks.minZ];
 						renderChunk.updateLayers(minBlockArrayY, maxBlockArrayY);
 					}else{
-						ValkyrienWarfareMod.VWLogger.info("updateRange Just attempted to update blocks outside of a Ship's Block Range. ANY ERRORS PAST THIS ARE LIKELY RELATED!");
+//						ValkyrienWarfareMod.VWLogger.info("updateRange Just attempted to update blocks outside of a Ship's Block Range. ANY ERRORS PAST THIS ARE LIKELY RELATED!");
 					}
 				}catch(Exception e){
 					e.printStackTrace();

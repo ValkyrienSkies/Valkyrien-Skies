@@ -13,18 +13,18 @@ public class PhysicsTickHandler {
 		WorldPhysObjectManager manager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(world);
 
 		ArrayList<PhysicsWrapperEntity> toUnload = (ArrayList<PhysicsWrapperEntity>) manager.physicsEntitiesToUnload.clone();
-		manager.physicsEntitiesToUnload.clear();
+//		manager.physicsEntitiesToUnload.clear();
 
 		for (PhysicsWrapperEntity wrapper : toUnload) {
 			manager.onUnload(wrapper);
 		}
 
 
-		
+
 		ArrayList<PhysicsWrapperEntity> physicsEntities = manager.getTickablePhysicsEntities();
-		
+
 //		System.out.println(physicsEntities.size());
-		
+
 		if (!ValkyrienWarfareMod.doSplitting) {
 			for (PhysicsWrapperEntity wrapper : physicsEntities) {
 				wrapper.wrapping.coordTransform.setPrevMatrices();
@@ -39,7 +39,7 @@ public class PhysicsTickHandler {
 		if(!world.isRemote && world.provider.isSurfaceWorld()){
 //			System.out.println(physicsEntities.size());
 		}
-			
+
 		int iters = ValkyrienWarfareMod.physIter;
 		double newPhysSpeed = ValkyrienWarfareMod.physSpeed;
 		Vector newGravity = ValkyrienWarfareMod.gravity;
@@ -84,7 +84,7 @@ public class PhysicsTickHandler {
 			wrapper.wrapping.coordTransform.sendPositionToPlayers();
 //			wrapper.wrapping.moveEntities();
 		}
-		
+
 		EntityDraggable.tickAddedVelocityForWorld(world);
 
 	}

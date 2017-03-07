@@ -250,7 +250,7 @@ public class PhysicsObject {
 			radiusNeeded = Math.max(Math.max(zRad, xRad), radiusNeeded + 1);
 		}
 
-		radiusNeeded = Math.max(radiusNeeded, 5);
+//		radiusNeeded = Math.max(radiusNeeded, 5);
 
 		iter = detector.foundSet.iterator();
 
@@ -265,7 +265,7 @@ public class PhysicsObject {
 		for (int x = ownedChunks.minX; x <= ownedChunks.maxX; x++) {
 			for (int z = ownedChunks.minZ; z <= ownedChunks.maxZ; z++) {
 				Chunk chunk = new Chunk(worldObj, x, z);
-				injectChunkIntoWorld(chunk, x, z);
+				injectChunkIntoWorld(chunk, x, z, true);
 				claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ] = chunk;
 			}
 		}
@@ -387,14 +387,17 @@ public class PhysicsObject {
 		physicsProcessor.updateCenterOfMass();
 	}
 
-	public void injectChunkIntoWorld(Chunk chunk, int x, int z) {
+	public void injectChunkIntoWorld(Chunk chunk, int x, int z, boolean putInId2ChunkMap) {
 		ChunkProviderServer provider = (ChunkProviderServer) worldObj.getChunkProvider();
 		if (worldObj.isRemote) {
 			chunk.setChunkLoaded(true);
 		}
 		chunk.isModified = true;
 		claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ] = chunk;
-		provider.id2ChunkMap.put(ChunkPos.chunkXZ2Int(x, z), chunk);
+
+		if(putInId2ChunkMap){
+			provider.id2ChunkMap.put(ChunkPos.chunkXZ2Int(x, z), chunk);
+		}
 
 		PlayerChunkMapEntry entry = new PlayerChunkMapEntry(((WorldServer) worldObj).getPlayerChunkMap(), x, z);
 		entry.sentToPlayers = true;
@@ -620,9 +623,6 @@ public class PhysicsObject {
 
 	// TODO: Fix the lag here
 	public void moveEntities() {
-
-
-
 		List<Entity> riders = worldObj.getEntitiesWithinAABB(Entity.class, collisionBB);
 
 		for (Entity ent : riders) {
@@ -704,7 +704,7 @@ public class PhysicsObject {
 				}
 				// Do this to get it re-integrated into the world
 				if (!worldObj.isRemote) {
-					injectChunkIntoWorld(chunk, x, z);
+					injectChunkIntoWorld(chunk, x, z, false);
 				}
 				claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ] = chunk;
 			}
@@ -874,6 +874,11 @@ public class PhysicsObject {
 		}
 
 		creator = compound.getString("owner");
+		for (int x = ownedChunks.minX; x <= ownedChunks.maxX; x++) {
+			for (int z = ownedChunks.minZ; z <= ownedChunks.maxZ; z++) {
+				worldObj.getChunkFromChunkCoords(x, z);
+			}
+		}
 	}
 
 	public void readSpawnData(ByteBuf additionalData) {

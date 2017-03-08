@@ -1,4 +1,4 @@
-package ValkyrienWarfareBase.Client;
+package ValkyrienWarfareCombat.Render;
 
 import java.util.Map;
 

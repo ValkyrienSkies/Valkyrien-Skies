@@ -5,7 +5,7 @@ import java.util.List;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.Vector;
-import ValkyrienWarfareBase.EntityMultiWorldFixes.EntityDraggable;
+import ValkyrienWarfareBase.Interaction.EntityDraggable;
 import ValkyrienWarfareBase.Math.BigBastardMath;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;

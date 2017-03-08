@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.Vector;
-import ValkyrienWarfareBase.EntityMultiWorldFixes.EntityDraggable;
+import ValkyrienWarfareBase.Interaction.EntityDraggable;
 import net.minecraft.world.World;
 
 public class PhysicsTickHandler {

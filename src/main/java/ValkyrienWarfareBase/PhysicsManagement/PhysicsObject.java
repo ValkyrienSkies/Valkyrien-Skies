@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -19,7 +17,6 @@ import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.ChunkManagement.ChunkSet;
 import ValkyrienWarfareBase.CoreMod.ValkyrienWarfarePlugin;
-import ValkyrienWarfareBase.EntityMultiWorldFixes.EntityDraggable;
 import ValkyrienWarfareBase.Physics.BlockForce;
 import ValkyrienWarfareBase.Physics.PhysicsCalculations;
 import ValkyrienWarfareBase.Physics.PhysicsQueuedForce;
@@ -34,17 +31,10 @@ import ValkyrienWarfareControl.Network.EntityFixMessage;
 import ValkyrienWarfareControl.Piloting.ShipPilotingController;
 import gnu.trove.iterator.TIntIterator;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockFence;
-import net.minecraft.block.BlockFenceGate;
-import net.minecraft.block.BlockLiquid;
-import net.minecraft.block.BlockWall;
-import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
@@ -58,7 +48,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.ChunkCache;
 import net.minecraft.world.World;
@@ -600,90 +589,6 @@ public class PhysicsObject {
 		}
 		coordTransform.setPrevMatrices();
 		coordTransform.updateAllTransforms();
-//		moveEntities();
-	}
-
-	//TODO: Remove this shitty check, moving entities should work using an approach similar to MetaWorlds; this is treating Cancer with a Band-Aid!
-	public boolean shouldMoveEntity(Entity ent){
-		int i = MathHelper.floor_double(ent.posX);
-        int j = MathHelper.floor_double(ent.posY - 0.20000000298023224D);
-        int k = MathHelper.floor_double(ent.posZ);
-        BlockPos blockpos = new BlockPos(i, j, k);
-        IBlockState block1State = ent.worldObj.getBlockState(blockpos);
-        Block block1 = block1State.getBlock();
-        if (block1.getMaterial(block1State) == Material.AIR||(block1 instanceof BlockLiquid)){
-            Block block = ent.worldObj.getBlockState(blockpos.down()).getBlock();
-            if (block instanceof BlockFence || block instanceof BlockWall || block instanceof BlockFenceGate){
-                block1 = block;
-                blockpos = blockpos.down();
-            }
-        }
-        return block1.equals(Blocks.AIR);
-	}
-
-	// TODO: Fix the lag here
-	public void moveEntities() {
-		List<Entity> riders = worldObj.getEntitiesWithinAABB(Entity.class, collisionBB);
-
-		for (Entity ent : riders) {
-			EntityDraggable draggable = EntityDraggable.getDraggableFromEntity(ent);
-			if (draggable.worldBelowFeet == this.wrapper&&!(ent instanceof PhysicsWrapperEntity) && !ValkyrienWarfareMod.physicsManager.isEntityFixed(ent) && shouldMoveEntity(ent)) {
-				float rotYaw = ent.rotationYaw;
-				float rotPitch = ent.rotationPitch;
-				float prevYaw = ent.prevRotationYaw;
-				float prevPitch = ent.prevRotationPitch;
-
-				RotationMatrices.applyTransform(coordTransform.prevwToLTransform, coordTransform.prevWToLRotation, ent);
-				RotationMatrices.applyTransform(coordTransform.lToWTransform, coordTransform.lToWRotation, ent);
-
-				ent.rotationYaw = rotYaw;
-				ent.rotationPitch = rotPitch;
-				ent.prevRotationYaw = prevYaw;
-				ent.prevRotationPitch = prevPitch;
-
-				Vector oldLookingPos = new Vector(ent.getLook(1.0F));
-				RotationMatrices.applyTransform(coordTransform.prevWToLRotation, oldLookingPos);
-				RotationMatrices.applyTransform(coordTransform.lToWRotation, oldLookingPos);
-
-				double newPitch = Math.asin(oldLookingPos.Y) * -180D / Math.PI;
-				double f4 = -Math.cos(-newPitch * 0.017453292D);
-				double radianYaw = Math.atan2((oldLookingPos.X / f4), (oldLookingPos.Z / f4));
-				radianYaw += Math.PI;
-				radianYaw *= -180D / Math.PI;
-				if (!(Double.isNaN(radianYaw) || Math.abs(newPitch) > 85)) {
-					double wrappedYaw = MathHelper.wrapDegrees(radianYaw);
-					double wrappedRotYaw = MathHelper.wrapDegrees(ent.rotationYaw);
-					double yawDif = wrappedYaw - wrappedRotYaw;
-					if (Math.abs(yawDif) > 180D) {
-						if (yawDif < 0) {
-							yawDif += 360D;
-						} else {
-							yawDif -= 360D;
-						}
-					}
-					yawDif %= 360D;
-					final double threshold = .1D;
-					if (Math.abs(yawDif) < threshold) {
-						yawDif = 0D;
-					}
-					if (!(ent instanceof EntityPlayer)) {
-						if (ent instanceof EntityArrow) {
-							ent.prevRotationYaw = ent.rotationYaw;
-							ent.rotationYaw -= yawDif;
-						} else {
-							ent.prevRotationYaw = ent.rotationYaw;
-							ent.rotationYaw += yawDif;
-						}
-					} else {
-						if (worldObj.isRemote) {
-							ent.prevRotationYaw = ent.rotationYaw;
-							ent.rotationYaw += yawDif;
-						}
-					}
-				}
-			}
-		}
-
 	}
 
 	public void updateChunkCache() {

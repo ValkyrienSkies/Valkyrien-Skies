@@ -1,4 +1,4 @@
-package ValkyrienWarfareBase.EntityMultiWorldFixes;
+package ValkyrienWarfareBase.Interaction;
 
 import java.util.UUID;
 

@@ -152,12 +152,12 @@ public class PhysObjectRenderManager {
 
 		GL11.glPushMatrix();
 		Minecraft.getMinecraft().entityRenderer.enableLightmap();
-		int i = parent.wrapper.getBrightnessForRender((float) partialTicks);
+//		int i = parent.wrapper.getBrightnessForRender((float) partialTicks);
 
-		int j = i % 65536;
-		int k = i / 65536;
-		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float) j, (float) k);
-		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+//		int j = i % 65536;
+//		int k = i / 65536;
+//		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float) j, (float) k);
+//		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
 		setupTranslation(partialTicks);
 		for (PhysRenderChunk[] chunkArray : renderChunks) {

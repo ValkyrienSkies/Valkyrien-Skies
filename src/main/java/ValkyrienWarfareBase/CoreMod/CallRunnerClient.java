@@ -57,12 +57,6 @@ import net.minecraft.world.World;
 public class CallRunnerClient extends CallRunner {
 
 	public static void onOrientCamera(EntityRenderer renderer, float partialTicks) {
-		if(!true){
-			renderer.orientCamera(partialTicks);
-			return;
-		}
-
-
 		Entity entity = renderer.mc.getRenderViewEntity();
 		float f = entity.getEyeHeight();
 		double d0 = entity.prevPosX + (entity.posX - entity.prevPosX) * (double) partialTicks;
@@ -308,8 +302,11 @@ public class CallRunnerClient extends CallRunner {
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(effect.worldObj, pos);
 		if (wrapper != null) {
 			Vector posVec = new Vector(effect.posX, effect.posY, effect.posZ);
+			Vector velocity = new Vector(effect.motionX,effect.motionY,effect.motionZ);
 			wrapper.wrapping.coordTransform.fromLocalToGlobal(posVec);
+			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWRotation, velocity);
 			effect.setPosition(posVec.X, posVec.Y, posVec.Z);
+			effect.motionX = velocity.X;effect.motionY = velocity.Y;effect.motionZ = velocity.Z;
 		}
 		manager.addEffect(effect);
 	}
@@ -412,6 +409,7 @@ public class CallRunnerClient extends CallRunner {
 		}
 	}
 
+	//TODO: Theres a lighting bug caused by Ships rendering TileEntities, perhaps use the RenderOverride to render them instead
 	public static void onRenderEntities(RenderGlobal renderGlobal, Entity renderViewEntity, ICamera camera, float partialTicks) {
 		((ClientProxy) ValkyrienWarfareMod.proxy).lastCamera = camera;
 
@@ -448,14 +446,6 @@ public class CallRunnerClient extends CallRunner {
 		GL11.glPopMatrix();
 
 		renderGlobal.renderEntities(renderViewEntity, camera, partialTicks);
-	}
-
-	public static boolean onInvalidateRegionAndSetBlock(WorldClient client, BlockPos pos, IBlockState state) {
-		int i = pos.getX();
-		int j = pos.getY();
-		int k = pos.getZ();
-		client.invalidateBlockReceiveRegion(i, j, k, i, j, k);
-		return client.setBlockState(pos, state, 3);
 	}
 
 	public static int onRenderBlockLayer(RenderGlobal renderer, BlockRenderLayer blockLayerIn, double partialTicks, int pass, Entity entityIn) {
@@ -517,10 +507,6 @@ public class CallRunnerClient extends CallRunner {
 		}
 
 		return defaultOutput;
-	}
-
-	public static RayTraceResult onRayTrace(Entity entityFor, double blockReachDistance, float partialTicks){
-		return entityFor.rayTrace(blockReachDistance, partialTicks);
 	}
 
 }

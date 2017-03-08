@@ -6,7 +6,6 @@ import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareCombat.Entity.EntityMountingWeaponBase;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityArmorStand;
 import net.minecraft.entity.item.EntityBoat;
@@ -56,7 +55,7 @@ public class ValkyrienWarfareWorldEventListener implements IWorldEventListener{
 			int midY = (y1 + y2) / 2;
 			int midZ = (z1 + z2) / 2;
 			BlockPos newPos = new BlockPos(midX, midY, midZ);
-			PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(Minecraft.getMinecraft().theWorld, newPos);
+			PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldObj, newPos);
 			if (wrapper != null && wrapper.wrapping.renderer != null) {
 				wrapper.wrapping.renderer.updateRange(x1-1, y1-1, z1-1, x2+1, y2+1, z2+1);
 			}

@@ -21,7 +21,6 @@ import net.minecraft.block.BlockSkull;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.renderer.ActiveRenderInfo;
@@ -32,9 +31,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
-import net.minecraft.client.renderer.ViewFrustum;
 import net.minecraft.client.renderer.culling.ICamera;
-import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
@@ -293,7 +290,12 @@ public class CallRunnerClient extends CallRunner {
 		} catch (Exception e) {
 			System.err.println("Something just went wrong here!!!!");
 			e.printStackTrace();
-			return world.getCombinedLight(pos, lightValue);
+			try{
+				return world.getCombinedLight(pos, lightValue);
+			}catch(Exception ee){
+				ee.printStackTrace();
+				return 0;
+			}
 		}
 	}
 

@@ -2,7 +2,6 @@ package ValkyrienWarfareBase.PhysicsManagement;
 
 import java.util.HashMap;
 
-import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareControl.Piloting.ClientPilotingManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
@@ -64,7 +63,7 @@ public class DimensionPhysObjectManager {
 
 	/**
 	 * Returns the PhysicsWrapperEntity that claims this chunk if there is one; returns null if there is no loaded entity managing it
-	 * 
+	 *
 	 * @param chunk
 	 * @return
 	 */
@@ -81,6 +80,10 @@ public class DimensionPhysObjectManager {
 
 	public PhysicsWrapperEntity getObjectManagingPos(World world, BlockPos pos) {
 		if(world == null || pos == null){
+			return null;
+		}
+		if(world.getChunkProvider() == null){
+//			System.out.println("Retard Devs coded a World with no Chunks in it!");
 			return null;
 		}
 		Chunk chunk = world.getChunkFromBlockCoords(pos);

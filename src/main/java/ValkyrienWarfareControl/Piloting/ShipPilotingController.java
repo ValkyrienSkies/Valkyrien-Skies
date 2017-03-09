@@ -27,139 +27,140 @@ public class ShipPilotingController {
 
 	public final PhysicsObject controlledShip;
 	private EntityPlayerMP shipPilot;
-	
+
 	//Used for world saving/loading purposes
 	private UUID mostRecentPilotID;
 	public static final UUID nullID = new UUID(0L,0L);
-	
+
 	private boolean hasChair = false;
 	private BlockPos chairPosition = BlockPos.ORIGIN;
-	
+
 	public ShipPilotingController(PhysicsObject toControl){
 		controlledShip = toControl;
 	}
-	
+
 	public EntityPlayerMP getPilotEntity(){
 		return shipPilot;
 	}
-	
+
 	public void receivePilotControlsMessage(PilotControlsMessage message, EntityPlayerMP whoSentIt){
 		if(shipPilot == whoSentIt){
 			handlePilotControlMessage(message, whoSentIt);
 		}
 	}
-	
+
 	private void handlePilotControlMessage(PilotControlsMessage message, EntityPlayerMP whoSentIt){
 		//Set to whatever the player was pointing at in Ship space
 		//These vectors can be re-arranged depending on the direction the chair was placed
-		
+
 		IBlockState state = controlledShip.worldObj.getBlockState(chairPosition);
 //		double[] pilotRotationMatrix = getRotationMatrixFromBlockState(state, chairPosition);
-		
+
 		if(state.getBlock() instanceof BlockShipPilotsChair){
-		
+
 			double pilotPitch = 0D;
 			double pilotYaw = ((BlockShipPilotsChair)state.getBlock()).getChairYaw(state, chairPosition);
 			double pilotRoll = 0D;
-			
+
 			double[] pilotRotationMatrix = RotationMatrices.getRotationMatrix(pilotPitch, pilotYaw, pilotRoll);
-			
+
 			Vector playerDirection = new Vector(1,0,0);
-			
+
 			Vector rightDirection = new Vector(0,0,1);
-			
+
 			Vector leftDirection = new Vector(0,0,-1);
-			
+
 			RotationMatrices.applyTransform(pilotRotationMatrix, playerDirection);
 			RotationMatrices.applyTransform(pilotRotationMatrix, rightDirection);
 			RotationMatrices.applyTransform(pilotRotationMatrix, leftDirection);
-			
+
 			Vector upDirection = new Vector(0,1,0);
-			
+
 			Vector downDirection = new Vector(0,-1,0);
-			
+
 			Vector idealAngularDirection = new Vector();
-			
+
 			Vector idealLinearVelocity = new Vector();
-			
+
 			Vector shipUp = new Vector(0,1,0);
 			Vector shipUpPos = new Vector(0,1,0);
-			
+
 			if(message.airshipForward){
 				idealLinearVelocity.add(playerDirection);
 			}
 			if(message.airshipBackward){
 				idealLinearVelocity.subtract(playerDirection);
 			}
-			
+
 			RotationMatrices.applyTransform(controlledShip.coordTransform.lToWRotation, idealLinearVelocity);
-			
+
 			RotationMatrices.applyTransform(controlledShip.coordTransform.lToWRotation, shipUp);
-			
+
 			if(message.airshipUp){
 				idealLinearVelocity.add(upDirection);
 			}
 			if(message.airshipDown){
 				idealLinearVelocity.add(downDirection);
 			}
-			
-			
-			
+
+
+
 			if(message.airshipRight){
 				idealAngularDirection.add(rightDirection);
 			}
 			if(message.airshipLeft){
 				idealAngularDirection.add(leftDirection);
 			}
-			
-			
+
+			//Upside down if you want it
+//			Vector shipUpOffset = shipUpPos.getSubtraction(shipUp);
 			Vector shipUpOffset = shipUp.getSubtraction(shipUpPos);
-			
-			
-			
+
+
+
 			double mass = controlledShip.physicsProcessor.mass;
-			
+
 //			idealAngularDirection.multiply(mass/2.5D);
 			idealLinearVelocity.multiply(mass/5D);
 //			shipUpOffset.multiply(mass/2.5D);
-			
-			
+
+
 			idealAngularDirection.multiply(1D/6D);
 			shipUpOffset.multiply(1D/3D);
-			
+
 			Vector velocityCompenstationLinear = controlledShip.physicsProcessor.linearMomentum;
-			
+
 			Vector velocityCompensationAngular = controlledShip.physicsProcessor.angularVelocity.cross(playerDirection);
-			
+
 			Vector velocityCompensationAlignment = controlledShip.physicsProcessor.angularVelocity.cross(shipUpPos);
-			
+
 			velocityCompensationAlignment.multiply(controlledShip.physicsProcessor.physRawSpeed);
 			velocityCompensationAngular.multiply(2D*controlledShip.physicsProcessor.physRawSpeed);
-			
+
 			shipUpOffset.subtract(velocityCompensationAlignment);
 			velocityCompensationAngular.subtract(velocityCompensationAngular);
-			
+
 			RotationMatrices.applyTransform3by3(controlledShip.physicsProcessor.framedMOI, idealAngularDirection);
 			RotationMatrices.applyTransform3by3(controlledShip.physicsProcessor.framedMOI, shipUpOffset);
-			
-			
+
+
 			if(message.airshipSprinting){
 				idealLinearVelocity.multiply(2D);
 			}
-			
+
 			idealLinearVelocity.subtract(idealAngularDirection);
 			idealLinearVelocity.subtract(shipUpOffset);
-			
+
 			//TEMPORARY CODE!!!
-			
+
 			controlledShip.physicsProcessor.addForceAtPoint(playerDirection, idealAngularDirection);
-			
+
 			controlledShip.physicsProcessor.addForceAtPoint(shipUpPos, shipUpOffset);
-			
+
 			controlledShip.physicsProcessor.addForceAtPoint(new Vector(), idealLinearVelocity);
-			
+
 			controlledShip.physicsProcessor.convertTorqueToVelocity();
-			
+
 //			RotationMatrices.applyTransform(controlledShip.coordTransform.lToWRotation, idealAngularDirection);
 //			System.out.println(idealAngularDirection);
 		}
@@ -188,15 +189,15 @@ public class ShipPilotingController {
 			}
 		}
 	}
-	
+
 	public BlockPos getPilotChairPosition(){
 		return chairPosition;
 	}
-	
+
 	public boolean getHasPilotChair(){
 		return hasChair;
 	}
-	
+
 	/**
 	 * Sets the inputed player as the pilot of this ship
 	 * @param toSet
@@ -211,7 +212,7 @@ public class ShipPilotingController {
 			//TEMPORARY CODE!!!
 			controlledShip.physicsProcessor.actAsArchimedes = true;
 		}
-		
+
 		if(toSet != null){
 			//Send packets here or something
 
@@ -227,11 +228,11 @@ public class ShipPilotingController {
 		}
 		shipPilot = toSet;
 	}
-	
+
 	public boolean isShipBeingPiloted(){
 		return getPilotEntity() != null;
 	}
-	
+
 	public void writeToNBTTag(NBTTagCompound compound) {
 		if(mostRecentPilotID != null){
 			compound.setUniqueId("mostRecentPilotID", mostRecentPilotID);
@@ -239,7 +240,7 @@ public class ShipPilotingController {
 		compound.setBoolean("hasChair", hasChair);
 		NBTUtils.writeBlockPosToNBT("chairPosition", chairPosition, compound);
 	}
-	
+
 	public void readFromNBTTag(NBTTagCompound compound) {
 		mostRecentPilotID = compound.getUniqueId("mostRecentPilotID");
 		if(mostRecentPilotID.getLeastSignificantBits() == 0L && mostRecentPilotID.getMostSignificantBits() == 0L){
@@ -249,7 +250,7 @@ public class ShipPilotingController {
 		hasChair = compound.getBoolean("hasChair");
 		chairPosition = NBTUtils.readBlockPosFromNBT("chairPosition", compound);
 	}
-	
+
 	private static void sendPlayerPilotingPacket(EntityPlayerMP toSend, PhysicsWrapperEntity entityPilotingPacket){
 		UUID entityUniqueID = nullID;
 		if(entityPilotingPacket != null){
@@ -258,7 +259,7 @@ public class ShipPilotingController {
 		SetShipPilotMessage message = new SetShipPilotMessage(entityUniqueID);
 		ValkyrienWarfareControlMod.controlNetwork.sendTo(message, toSend);
 	}
-	
+
 	public static PhysicsWrapperEntity getShipPlayerIsPiloting(EntityPlayer pilot){
 		World playerWorld = pilot.worldObj;
 		WorldPhysObjectManager worldManager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(playerWorld);
@@ -269,14 +270,14 @@ public class ShipPilotingController {
 		}
 		return null;
 	}
-	
+
 	public static double[] getRotationMatrixFromBlockState(IBlockState state, BlockPos chairPosition)	{
 		double playerChairYaw = 0;
 		if(state.getBlock() instanceof BlockShipPilotsChair){
 			playerChairYaw = BlockShipPilotsChair.getChairYaw(state, chairPosition);
 		}
 		double[] pilotRotationMatrix = RotationMatrices.getRotationMatrix(0.0D, 1.0D, 0.0D, Math.toRadians(playerChairYaw));
-		
+
 		return pilotRotationMatrix;
 	}
 }

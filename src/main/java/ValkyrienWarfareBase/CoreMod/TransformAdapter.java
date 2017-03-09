@@ -59,6 +59,11 @@ public class TransformAdapter extends ClassVisitor {
 	}
 
 	public boolean runTransformer(int opcode, String calledName, String calledDesc, String calledOwner, MethodVisitor mv, boolean itf) {
+		if (isMethod(calledDesc, "(IIIIII)V", calledName, WorldClassName, "markBlockRangeForRenderUpdate", "func_147458_c", calledOwner)) {
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "markBlockRangeForRenderUpdate", String.format("(L%s;IIIIII)V", WorldClassName), itf);
+			return false;
+		}
+
 		if (isMethod(calledDesc, "(L"+IChunkGeneratorName+";)V", calledName, ChunkName, "populateChunk", "func_186034_a", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onPopulateChunk", String.format("(L%s;L"+IChunkGeneratorName+";)V", ChunkName), itf);
 			return false;
@@ -89,7 +94,7 @@ public class TransformAdapter extends ClassVisitor {
 			return false;
 		}
 
-		if (isMethod(calledDesc, "(L" + BlockPosName + ";)L" + BlockPosName + ";", calledName, WorldClassName, "getPrecipitationHeight", "RENAMEME", calledOwner)) {
+		if (isMethod(calledDesc, "(L" + BlockPosName + ";)L" + BlockPosName + ";", calledName, WorldClassName, "getPrecipitationHeight", "func_175725_q", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onGetPrecipitationHeight", String.format("(L%s;L" + BlockPosName + ";)L" + BlockPosName + ";", WorldClassName), itf);
 			return false;
 		}

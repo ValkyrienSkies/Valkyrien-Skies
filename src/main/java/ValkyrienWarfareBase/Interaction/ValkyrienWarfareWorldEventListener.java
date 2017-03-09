@@ -3,6 +3,7 @@ package ValkyrienWarfareBase.Interaction;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareBase.CoreMod.CallRunner;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareCombat.Entity.EntityMountingWeaponBase;
 import net.minecraft.block.state.IBlockState;
@@ -33,7 +34,7 @@ public class ValkyrienWarfareWorldEventListener implements IWorldEventListener{
 	@Override
 	public void notifyBlockUpdate(World worldIn, BlockPos pos, IBlockState oldState, IBlockState newState, int flags) {
 		if(worldObj.isRemote){
-			markBlockRangeForRenderUpdate(pos.getX(),pos.getY(),pos.getZ(),pos.getX(),pos.getY(),pos.getZ());
+			CallRunner.markBlockRangeForRenderUpdate(worldIn,pos.getX(),pos.getY(),pos.getZ(),pos.getX(),pos.getY(),pos.getZ());
 		}else{
 			PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldObj, pos);
 			if(wrapper != null){
@@ -50,16 +51,16 @@ public class ValkyrienWarfareWorldEventListener implements IWorldEventListener{
 
 	@Override
 	public void markBlockRangeForRenderUpdate(int x1, int y1, int z1, int x2, int y2, int z2) {
-		if(worldObj.isRemote){
-			int midX = (x1 + x2) / 2;
-			int midY = (y1 + y2) / 2;
-			int midZ = (z1 + z2) / 2;
-			BlockPos newPos = new BlockPos(midX, midY, midZ);
-			PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldObj, newPos);
-			if (wrapper != null && wrapper.wrapping.renderer != null) {
-				wrapper.wrapping.renderer.updateRange(x1-1, y1-1, z1-1, x2+1, y2+1, z2+1);
-			}
-		}
+//		if(worldObj.isRemote){
+//			int midX = (x1 + x2) / 2;
+//			int midY = (y1 + y2) / 2;
+//			int midZ = (z1 + z2) / 2;
+//			BlockPos newPos = new BlockPos(midX, midY, midZ);
+//			PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldObj, newPos);
+//			if (wrapper != null && wrapper.wrapping.renderer != null) {
+//				wrapper.wrapping.renderer.updateRange(x1-1, y1-1, z1-1, x2+1, y2+1, z2+1);
+//			}
+//		}
 	}
 
 	@Override

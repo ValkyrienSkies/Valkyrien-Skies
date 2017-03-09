@@ -35,12 +35,14 @@ public class ValkyrienWarfareTransformer implements IClassTransformer {
 				byte[] byteArray = classWriter.toByteArray();
 				//Extra transforms that don't fall into typical scenarios go here; like changing the SuperClass of Entity
 				byteArray = ASMUtils.doAdditionalTransforms(transformedName, byteArray);
+
+				return byteArray;
 				//Performs sanity checks and frame stack recalculations before pushing the new bytecode
-				ClassReader cr = new ClassReader(byteArray);
-				ClassWriter checkedWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-				CheckClassAdapter adapterChecker = new CheckClassAdapter(checkedWriter, true);
-				cr.accept(adapterChecker, ClassReader.EXPAND_FRAMES);
-				return checkedWriter.toByteArray();
+//				ClassReader cr = new ClassReader(byteArray);
+//				ClassWriter checkedWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+//				CheckClassAdapter adapterChecker = new CheckClassAdapter(checkedWriter, true);
+//				cr.accept(adapterChecker, ClassReader.EXPAND_FRAMES);
+//				return checkedWriter.toByteArray();
 			} catch (Exception e) {
 //				System.out.println(transformedName);
 				e.printStackTrace();

@@ -346,7 +346,42 @@ public class PhysObjectRenderManager {
 
 	// TODO: Program me
 	public void inverseTransform(double partialTicks) {
+		PhysicsWrapperEntity entity = parent.wrapper;
+		Vector centerOfRotation = entity.wrapping.centerCoord;
+		curPartialTick = partialTicks;
 
+		double moddedX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks;
+		double moddedY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks;
+		double moddedZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks;
+		double p0 = Minecraft.getMinecraft().thePlayer.lastTickPosX + (Minecraft.getMinecraft().thePlayer.posX - Minecraft.getMinecraft().thePlayer.lastTickPosX) * (double) partialTicks;
+		double p1 = Minecraft.getMinecraft().thePlayer.lastTickPosY + (Minecraft.getMinecraft().thePlayer.posY - Minecraft.getMinecraft().thePlayer.lastTickPosY) * (double) partialTicks;
+		double p2 = Minecraft.getMinecraft().thePlayer.lastTickPosZ + (Minecraft.getMinecraft().thePlayer.posZ - Minecraft.getMinecraft().thePlayer.lastTickPosZ) * (double) partialTicks;
+
+		Quaternion smoothRotation = getSmoothRotationQuat(partialTicks);
+		double[] radians = smoothRotation.toRadians();
+
+		double moddedPitch = Math.toDegrees(radians[0]);
+		double moddedYaw = Math.toDegrees(radians[1]);
+		double moddedRoll = Math.toDegrees(radians[2]);
+
+//		parent.coordTransform.updateRenderMatrices(moddedX, moddedY, moddedZ, moddedPitch, moddedYaw, moddedRoll);
+
+		if (offsetPos != null) {
+			double offsetX = offsetPos.getX() - centerOfRotation.X;
+			double offsetY = offsetPos.getY() - centerOfRotation.Y;
+			double offsetZ = offsetPos.getZ() - centerOfRotation.Z;
+
+			GL11.glTranslated(-offsetX, -offsetY, -offsetZ);
+			GL11.glRotated(-moddedRoll, 0, 0, 1D);
+			GL11.glRotated(-moddedYaw, 0, 1D, 0);
+			GL11.glRotated(-moddedPitch, 1D, 0, 0);
+			GlStateManager.translate(p0 - moddedX, p1 - moddedY, p2 - moddedZ);
+
+
+
+
+			// transformBuffer = BufferUtils.createFloatBuffer(16);
+		}
 	}
 
 	public void markForUpdate() {

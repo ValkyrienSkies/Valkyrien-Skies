@@ -50,6 +50,8 @@ import net.minecraft.util.math.RayTraceResult.Type;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
+import net.minecraftforge.client.event.DrawBlockHighlightEvent;
+import net.minecraftforge.common.MinecraftForge;
 
 public class CallRunnerClient extends CallRunner {
 
@@ -377,35 +379,28 @@ public class CallRunnerClient extends CallRunner {
 	}
 
 	public static void onDrawSelectionBox(RenderGlobal renderGlobal, EntityPlayer player, RayTraceResult movingObjectPositionIn, int execute, float partialTicks) {
-		if (movingObjectPositionIn.typeOfHit != RayTraceResult.Type.BLOCK) {
-			return;
-		}
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.worldObj, movingObjectPositionIn.getBlockPos());
-		if (wrapper != null) {
-			GlStateManager.enableBlend();
-			GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-			GlStateManager.color(0.0F, 0.0F, 0.0F, 0.4F);
-			GlStateManager.glLineWidth(2.0F);
-			GlStateManager.disableTexture2D();
-			// GlStateManager.depthMask(false);
-			GL11.glPushMatrix();
+		if (wrapper != null) {;
 			wrapper.wrapping.renderer.setupTranslation(partialTicks);
-			if (execute == 0 && movingObjectPositionIn.typeOfHit == RayTraceResult.Type.BLOCK) {
 
-				BlockPos blockpos = movingObjectPositionIn.getBlockPos();
-				IBlockState iblockstate = renderGlobal.theWorld.getBlockState(blockpos);
-				if (iblockstate.getMaterial() != Material.AIR && renderGlobal.theWorld.getWorldBorder().contains(blockpos)) {
-					double d0 = wrapper.wrapping.renderer.offsetPos.getX();
-					double d1 = wrapper.wrapping.renderer.offsetPos.getY();
-					double d2 = wrapper.wrapping.renderer.offsetPos.getZ();
-					AxisAlignedBB toRender = iblockstate.getSelectedBoundingBox(renderGlobal.theWorld, blockpos).expandXyz(0.0020000000949949026D).offset(-d0, -d1, -d2);
-					renderGlobal.drawSelectionBoundingBox(toRender, 0, 0, 0, 0.4f);
-				}
-			}
-			GL11.glPopMatrix();
-			// GlStateManager.depthMask(true);
-			GlStateManager.enableTexture2D();
-			GlStateManager.disableBlend();
+			Tessellator tessellator = Tessellator.getInstance();
+			VertexBuffer vertexbuffer = tessellator.getBuffer();
+
+			double xOff = (player.lastTickPosX + (player.posX - player.lastTickPosX) * (double)partialTicks) - wrapper.wrapping.renderer.offsetPos.getX();
+			double yOff = (player.lastTickPosY + (player.posY - player.lastTickPosY) * (double)partialTicks) - wrapper.wrapping.renderer.offsetPos.getY();
+			double zOff = (player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * (double)partialTicks) - wrapper.wrapping.renderer.offsetPos.getZ();
+
+			vertexbuffer.xOffset += xOff;
+			vertexbuffer.yOffset += yOff;
+			vertexbuffer.zOffset += zOff;
+
+			renderGlobal.drawSelectionBox(player, movingObjectPositionIn, execute, partialTicks);
+
+			vertexbuffer.xOffset -= xOff;
+			vertexbuffer.yOffset -= yOff;
+			vertexbuffer.zOffset -= zOff;
+
+			wrapper.wrapping.renderer.inverseTransform(partialTicks);
 		} else {
 			renderGlobal.drawSelectionBox(player, movingObjectPositionIn, execute, partialTicks);
 		}

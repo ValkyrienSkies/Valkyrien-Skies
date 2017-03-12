@@ -50,7 +50,7 @@ public class CallRunner {
 //		System.out.println((x2-x1)*(y2-y1)*(z2-z1));
 //		System.out.println(x1+":"+x2+":"+y1+":"+y2+":"+z1+":"+z2);
 
-		//Stupid ass OpenComputers fix, blame those assholes
+		//Stupid OpenComputers fix, blame those assholes
 		if(x2 == 1 && y1 == 0 && z2 == 1){
 			x2 = x1 + 1;
 			x1--;

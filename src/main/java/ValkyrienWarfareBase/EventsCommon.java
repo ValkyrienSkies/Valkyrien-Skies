@@ -16,12 +16,17 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTPrimitive;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.server.management.PlayerChunkMap;
+import net.minecraft.server.management.PlayerChunkMapEntry;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -66,6 +71,39 @@ public class EventsCommon {
 				}
 				if (event.phase == Phase.END) {
 					PhysicsTickHandler.onWorldTickEnd(worldFor);
+					if(worldFor instanceof WorldServer){
+						addOrRemovedAllShipChunksFromMap((WorldServer) worldFor, false);
+					}
+				}
+			}
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void worldTick(TickEvent.WorldTickEvent event){
+		if ((event.phase == TickEvent.Phase.END) && (!event.world.isRemote)){
+			World worldFor = event.world;
+			if(worldFor instanceof WorldServer){
+				addOrRemovedAllShipChunksFromMap((WorldServer) worldFor, true);
+			}
+		}
+	}
+
+	/**
+	 * Either removes or adds all Ship Chunk entries to the World. Its a stupid fix for ChickenChunks; Blame Him For This Mess!!!
+	 * Necessary to prevent ChickenChunks from trying to unload the Ship Chunks, and remove the player index in WatchingPlayers while its at it!
+	 * @param worldFor
+	 * @param amAdding Use true to add all chunks, false to remove all chunks
+	 */
+	public void addOrRemovedAllShipChunksFromMap(WorldServer worldFor, boolean amAdding){
+		for(PhysicsWrapperEntity wrapper:ValkyrienWarfareMod.physicsManager.getManagerForWorld(worldFor).physicsEntities){
+			for(Chunk[] chunks:wrapper.wrapping.claimedChunks){
+				for(Chunk chunk:chunks){
+					if(amAdding){
+						((WorldServer)worldFor).getChunkProvider().id2ChunkMap.put(ChunkPos.chunkXZ2Int(chunk.xPosition, chunk.zPosition), chunk);
+					}else{
+						((WorldServer)worldFor).getChunkProvider().id2ChunkMap.remove(ChunkPos.chunkXZ2Int(chunk.xPosition, chunk.zPosition));
+					}
 				}
 			}
 		}

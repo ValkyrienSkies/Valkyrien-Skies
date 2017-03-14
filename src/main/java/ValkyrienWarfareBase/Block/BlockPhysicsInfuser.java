@@ -34,10 +34,11 @@ public class BlockPhysicsInfuser extends Block {
 					return true;
 				}
 			}
-			PhysicsWrapperEntity wrapper = new PhysicsWrapperEntity(worldIn, pos.getX(), pos.getY(), pos.getZ(), playerIn, DetectorManager.DetectorIDs.ShipSpawnerGeneral.ordinal());
-			worldIn.spawnEntityInWorld(wrapper);
 			
 			if (ValkyrienWarfareMod.canChangeAirshipCounter(true, playerIn))	{
+				PhysicsWrapperEntity wrapper = new PhysicsWrapperEntity(worldIn, pos.getX(), pos.getY(), pos.getZ(), playerIn, DetectorManager.DetectorIDs.ShipSpawnerGeneral.ordinal());
+				worldIn.spawnEntityInWorld(wrapper);
+
 				IAirshipCounterCapability counter = playerIn.getCapability(ValkyrienWarfareMod.airshipCounter, null);
 				counter.onCreate();
 				//playerIn.addChatMessage(new TextComponentString("You've made " + counter.getAirshipCount() + " airships!"));

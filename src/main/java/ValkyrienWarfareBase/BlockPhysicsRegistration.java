@@ -37,6 +37,7 @@ public class BlockPhysicsRegistration {
 	}
 
 	public static void registerBlocksToNotPhysicise()	{
+		blocksToNotPhysicise.add(Blocks.AIR);
 		blocksToNotPhysicise.add(Blocks.WATER);
 		blocksToNotPhysicise.add(Blocks.FLOWING_WATER);
 		blocksToNotPhysicise.add(Blocks.LAVA);

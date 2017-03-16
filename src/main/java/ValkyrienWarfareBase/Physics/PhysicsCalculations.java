@@ -55,7 +55,7 @@ public class PhysicsCalculations {
 
 	public double[] MoITensor, invMoITensor;
 	public double[] framedMOI, invFramedMOI;
-	
+
 	public boolean actAsArchimedes = false;
 
 	public PhysicsCalculations(PhysicsObject toProcess) {
@@ -200,12 +200,35 @@ public class PhysicsCalculations {
 
 	public void rawPhysTickPostCol() {
 		if (parent.doPhysics) {
+			if(arePhysicsGoingWayTooFast()){
+				parent.doPhysics = false;
+
+				linearMomentum.zero();
+				angularVelocity.zero();
+
+				return;
+			}
+
 			if (PhysicsSettings.doAirshipRotation)
 				applyAngularVelocity();
 
 			if (PhysicsSettings.doAirshipMovement)
 				applyLinearVelocity();
 		}
+	}
+
+	private boolean arePhysicsGoingWayTooFast(){
+		if(angularVelocity.lengthSq() > 5000){
+			System.out.println("Ship tried moving too fast; freezing it and reseting velocities");
+			return true;
+		}
+
+		//This says if ship is moving faster than 10 blocks per second
+		if(linearMomentum.lengthSq() * invMass * invMass > 5000){
+			System.out.println("Ship tried moving too fast; freezing it and reseting velocities");
+			return true;
+		}
+		return false;
 	}
 
 	// The x/y/z variables need to be updated when the centerOfMass location changes
@@ -401,10 +424,10 @@ public class PhysicsCalculations {
 		speed.Z += (linearMomentum.Z * invMass);
 		return speed;
 	}
-	
+
 	public void setMomentumAtPoint(Vector inBodyWO, Vector toSet) {
 		toSet.setCross(angularVelocity, inBodyWO);
-		
+
 		toSet.X += (linearMomentum.X * invMass);
 		toSet.Y += (linearMomentum.Y * invMass);
 		toSet.Z += (linearMomentum.Z * invMass);

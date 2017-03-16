@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;
 
+import ValkyrienWarfareBase.BlockPhysicsRegistration;
 import ValkyrienWarfareBase.NBTUtils;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.EnumChangeOwnerResult;
@@ -127,6 +128,19 @@ public class PhysicsObject {
 	}
 
 	public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos posAt) {
+		//If the block here is not to be physicsed, just treat it like you'd treat AIR blocks.
+
+		boolean oldStateOnBlackList = false, newStateOnBlackList = false;
+
+		if(oldState != null && BlockPhysicsRegistration.blocksToNotPhysicise.contains(oldState.getBlock())){
+			oldState = Blocks.AIR.getDefaultState();
+			oldStateOnBlackList = true;
+		}
+		if(newState != null && BlockPhysicsRegistration.blocksToNotPhysicise.contains(newState.getBlock())){
+			newState = Blocks.AIR.getDefaultState();
+			newStateOnBlackList = true;
+		}
+
 		boolean isOldAir = oldState == null || oldState.getBlock().equals(Blocks.AIR);
 		boolean isNewAir = newState == null || newState.getBlock().equals(Blocks.AIR);
 
@@ -147,7 +161,7 @@ public class PhysicsObject {
 			}
 		}
 
-		if (isOldAir && !isNewAir) {
+		if ((isOldAir && !isNewAir) || newStateOnBlackList) {
 			blockPositions.add(posAt);
 			if (!worldObj.isRemote) {
 				balloonManager.onBlockPositionAdded(posAt);

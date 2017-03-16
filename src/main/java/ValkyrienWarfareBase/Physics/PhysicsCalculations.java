@@ -5,6 +5,7 @@ import java.util.Collections;
 
 import javax.vecmath.Matrix3d;
 
+import ValkyrienWarfareBase.BlockPhysicsRegistration;
 import ValkyrienWarfareBase.NBTUtils;
 import ValkyrienWarfareBase.PhysicsSettings;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
@@ -55,7 +56,7 @@ public class PhysicsCalculations {
 
 	public double[] MoITensor, invMoITensor;
 	public double[] framedMOI, invFramedMOI;
-	
+
 	public boolean actAsArchimedes = false;
 
 	public PhysicsCalculations(PhysicsObject toProcess) {
@@ -77,6 +78,12 @@ public class PhysicsCalculations {
 	}
 
 	public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos pos) {
+		if(newState == oldState){
+			//Nothing changed, so don't do anything
+			//Or, liquids were involved, so still don't do anything
+			return;
+		}
+
 		if (oldState.getBlock() == Blocks.AIR) {
 			if (BlockForce.basicForces.isBlockProvidingForce(newState, pos, worldObj)) {
 				activeForcePositions.add(pos);
@@ -401,10 +408,10 @@ public class PhysicsCalculations {
 		speed.Z += (linearMomentum.Z * invMass);
 		return speed;
 	}
-	
+
 	public void setMomentumAtPoint(Vector inBodyWO, Vector toSet) {
 		toSet.setCross(angularVelocity, inBodyWO);
-		
+
 		toSet.X += (linearMomentum.X * invMass);
 		toSet.Y += (linearMomentum.Y * invMass);
 		toSet.Z += (linearMomentum.Z * invMass);

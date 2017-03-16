@@ -136,6 +136,7 @@ public class ValkyrienWarfareMod {
 		airStateIndex = Block.getStateId(Blocks.AIR.getDefaultState());
 		BlockPhysicsRegistration.registerCustomBlockMasses();
 		BlockPhysicsRegistration.registerVanillaBlockForces();
+		BlockPhysicsRegistration.registerBlocksToNotPhysicise();
 	}
 
 	@EventHandler

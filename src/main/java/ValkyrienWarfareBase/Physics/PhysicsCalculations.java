@@ -5,7 +5,6 @@ import java.util.Collections;
 
 import javax.vecmath.Matrix3d;
 
-import ValkyrienWarfareBase.BlockPhysicsRegistration;
 import ValkyrienWarfareBase.NBTUtils;
 import ValkyrienWarfareBase.PhysicsSettings;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
@@ -189,7 +188,7 @@ public class PhysicsCalculations {
 	public void rawPhysTickPreCol(double newPhysSpeed, int iters) {
 		if (parent.doPhysics) {
 			updatePhysSpeedAndIters(newPhysSpeed, iters);
-			updateCenterOfMass();
+			updateParentCenterOfMass();
 			calculateFramedMOITensor();
 			if(!actAsArchimedes){
 				calculateForces();
@@ -216,7 +215,7 @@ public class PhysicsCalculations {
 	}
 
 	// The x/y/z variables need to be updated when the centerOfMass location changes
-	public void updateCenterOfMass() {
+	public void updateParentCenterOfMass() {
 		Vector parentCM = parent.centerCoord;
 		if (!parent.centerCoord.equals(centerOfMass)) {
 			Vector CMDif = centerOfMass.getSubtraction(parentCM);

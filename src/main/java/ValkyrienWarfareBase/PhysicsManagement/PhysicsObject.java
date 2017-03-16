@@ -387,7 +387,7 @@ public class PhysicsObject {
 
 		coordTransform = new CoordTransformObject(this);
 		physicsProcessor.processInitialPhysicsData();
-		physicsProcessor.updateCenterOfMass();
+		physicsProcessor.updateParentCenterOfMass();
 	}
 
 	public void injectChunkIntoWorld(Chunk chunk, int x, int z, boolean putInId2ChunkMap) {

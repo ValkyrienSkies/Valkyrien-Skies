@@ -441,6 +441,7 @@ public class EventsCommon {
 		if (!event.getWorld().isRemote)	{
 			PhysicsWrapperEntity physObj = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(event.getWorld(), event.getPos());
 			if (physObj != null) {
+				//Bucket fix, probably not that important
 				if(event.getEntityPlayer().getHeldItem(event.getHand()) != null && event.getEntityPlayer().getHeldItem(event.getHand()).getItem() instanceof ItemBucket) {
 					event.setResult(Result.ALLOW);
 					event.setCanceled(false);

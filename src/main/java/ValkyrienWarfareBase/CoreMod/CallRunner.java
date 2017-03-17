@@ -294,6 +294,15 @@ public class CallRunner {
 		return true;
 	}
 
+    public static double getDistanceSq(TileEntity tile, double x, double y, double z){
+
+    	if(tile.getWorld().isRemote){
+//        	System.out.println("tset");
+//    		return 0;
+    	}
+    	return tile.getDistanceSq(x, y, z);
+    }
+
 	public static double onGetDistanceSq(Entity entity, double x, double y, double z) {
 		double vanilla = entity.getDistanceSq(x, y, z);
 		if (vanilla < 64.0D) {

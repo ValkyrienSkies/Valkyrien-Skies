@@ -32,6 +32,7 @@ import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.culling.ICamera;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
@@ -50,8 +51,6 @@ import net.minecraft.util.math.RayTraceResult.Type;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
-import net.minecraftforge.client.event.DrawBlockHighlightEvent;
-import net.minecraftforge.common.MinecraftForge;
 
 public class CallRunnerClient extends CallRunner {
 
@@ -406,10 +405,80 @@ public class CallRunnerClient extends CallRunner {
 		}
 	}
 
+	public static void doRenderEntity(RenderManager manager, Entity entityIn, double x, double y, double z, float yaw, float partialTicks, boolean p_188391_10_){
+		PhysicsWrapperEntity fixedOnto = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(entityIn);
+
+		if(fixedOnto != null){
+			double oldPosX = entityIn.posX;
+			double oldPosY = entityIn.posY;
+			double oldPosZ = entityIn.posZ;
+
+			double oldLastPosX = entityIn.lastTickPosX;
+			double oldLastPosY = entityIn.lastTickPosY;
+			double oldLastPosZ = entityIn.lastTickPosZ;
+
+			Vector localPosition = fixedOnto.wrapping.getLocalPositionForEntity(entityIn);
+
+			fixedOnto.wrapping.renderer.setupTranslation(partialTicks);
+
+			if(localPosition != null){
+				localPosition = new Vector(localPosition);
+
+				localPosition.X -= fixedOnto.wrapping.renderer.offsetPos.getX();
+				localPosition.Y -= fixedOnto.wrapping.renderer.offsetPos.getY();
+				localPosition.Z -= fixedOnto.wrapping.renderer.offsetPos.getZ();
+
+				x = entityIn.posX = entityIn.lastTickPosX = localPosition.X;
+				y = entityIn.posY = entityIn.lastTickPosY = localPosition.Y;
+				z = entityIn.posZ = entityIn.lastTickPosZ = localPosition.Z;
+
+			}
+
+			try{
+				manager.doRenderEntity(entityIn, x, y, z, yaw, partialTicks, p_188391_10_);
+			}catch(Exception e){
+
+			}
+
+			if(localPosition != null){
+				fixedOnto.wrapping.renderer.inverseTransform(partialTicks);
+			}
+
+			entityIn.posX = oldPosX;
+			entityIn.posY = oldPosY;
+			entityIn.posZ = oldPosZ;
+
+			entityIn.lastTickPosX = oldLastPosX;
+			entityIn.lastTickPosY = oldLastPosY;
+			entityIn.lastTickPosZ = oldLastPosZ;
+
+		}else{
+			manager.doRenderEntity(entityIn, x, y, z, yaw, partialTicks, p_188391_10_);
+		}
+	}
+
+    public static void renderTileEntityAt(TileEntityRendererDispatcher dispatch, TileEntity tileEntityIn, double x, double y, double z, float partialTicks, int destroyStage){
+//    	System.out.println("test");
+    	BlockPos tilePos = tileEntityIn.getPos();
+    	PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(tileEntityIn.getWorld(), tilePos);
+
+    	if(wrapper != null){
+    		wrapper.wrapping.renderer.setupTranslation(partialTicks);
+
+//    		System.out.println("fuck");
+    		dispatch.renderTileEntityAt(tileEntityIn, x, y, z, partialTicks, destroyStage);
+
+    		wrapper.wrapping.renderer.inverseTransform(partialTicks);
+    	}else{
+    		dispatch.renderTileEntityAt(tileEntityIn, x, y, z, partialTicks, destroyStage);
+    	}
+    }
+
 	//TODO: Theres a lighting bug caused by Ships rendering TileEntities, perhaps use the RenderOverride to render them instead
 	public static void onRenderEntities(RenderGlobal renderGlobal, Entity renderViewEntity, ICamera camera, float partialTicks) {
 		((ClientProxy) ValkyrienWarfareMod.proxy).lastCamera = camera;
 
+		/*
 		GL11.glPushMatrix();
 //		GlStateManager.disableAlpha();
 //		GlStateManager.disableBlend();
@@ -441,6 +510,7 @@ public class CallRunnerClient extends CallRunner {
 		TileEntityRendererDispatcher.instance.staticPlayerY = playerY;
 		TileEntityRendererDispatcher.instance.staticPlayerZ = playerZ;
 		GL11.glPopMatrix();
+		*/
 
 		renderGlobal.renderEntities(renderViewEntity, camera, partialTicks);
 	}

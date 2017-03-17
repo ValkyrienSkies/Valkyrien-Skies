@@ -75,6 +75,7 @@ public class PhysRenderChunk {
 		int glCallListCutout, glCallListCutoutMipped, glCallListSolid, glCallListTranslucent;
 		PhysRenderChunk parent;
 		boolean needsCutoutUpdate, needsCutoutMippedUpdate, needsSolidUpdate, needsTranslucentUpdate;
+		ArrayList<TileEntity> renderTiles = new ArrayList<TileEntity>();
 
 		public RenderLayer(Chunk chunk, int yMin, int yMax, PhysRenderChunk parent) {
 			chunkToRender = chunk;
@@ -93,10 +94,35 @@ public class PhysRenderChunk {
 			needsCutoutMippedUpdate = true;
 			needsSolidUpdate = true;
 			needsTranslucentUpdate = true;
+			updateRenderTileEntities();
+		}
+
+		public void updateRenderTileEntities(){
+			ArrayList<TileEntity> updatedRenderTiles = new ArrayList<TileEntity>();
+
+			MutableBlockPos pos = new MutableBlockPos();
+			for (int x = chunkToRender.xPosition * 16; x < chunkToRender.xPosition * 16 + 16; x++) {
+				for (int z = chunkToRender.zPosition * 16; z < chunkToRender.zPosition * 16 + 16; z++) {
+					for (int y = yMin; y <= yMax; y++) {
+						pos.setPos(x, y, z);
+
+						TileEntity tile = chunkToRender.getWorld().getTileEntity(pos);
+						if(tile != null){
+							updatedRenderTiles.add(tile);
+						}
+					}
+				}
+			}
+
+			Minecraft.getMinecraft().renderGlobal.updateTileEntities(renderTiles, updatedRenderTiles);
+
+			renderTiles = updatedRenderTiles;
 		}
 
 		public void deleteRenderLayer(){
 			clearRenderLists();
+			Minecraft.getMinecraft().renderGlobal.updateTileEntities(renderTiles, new ArrayList());
+			renderTiles.clear();
 		}
 
 		private void clearRenderLists(){

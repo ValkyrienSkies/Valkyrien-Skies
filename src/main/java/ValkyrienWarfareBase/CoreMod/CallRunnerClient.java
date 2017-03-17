@@ -497,22 +497,7 @@ public class CallRunnerClient extends CallRunner {
 	public static void onRenderEntities(RenderGlobal renderGlobal, Entity renderViewEntity, ICamera camera, float partialTicks) {
 		((ClientProxy) ValkyrienWarfareMod.proxy).lastCamera = camera;
 
-		ArrayList<TileEntity> temporaryTiles = new ArrayList<TileEntity>();
-
-		for (PhysicsWrapperEntity wrapper : ValkyrienWarfareMod.physicsManager.getManagerForWorld(renderGlobal.theWorld).physicsEntities) {
-			for(BlockPos pos:wrapper.wrapping.blockPositions){
-				TileEntity tile = wrapper.worldObj.getTileEntity(pos);
-				if(tile != null){
-					temporaryTiles.add(tile);
-				}
-			}
-		}
-
-		renderGlobal.updateTileEntities(new ArrayList(), temporaryTiles);
-
 		renderGlobal.renderEntities(renderViewEntity, camera, partialTicks);
-
-		renderGlobal.updateTileEntities(temporaryTiles, new ArrayList());
 	}
 
 	public static int onRenderBlockLayer(RenderGlobal renderer, BlockRenderLayer blockLayerIn, double partialTicks, int pass, Entity entityIn) {

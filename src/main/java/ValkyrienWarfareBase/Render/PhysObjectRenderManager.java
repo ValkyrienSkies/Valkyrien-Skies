@@ -172,9 +172,9 @@ public class PhysObjectRenderManager {
 	}
 
 	public void killRenderers(){
-		if (renderChunks == null) {
-			for(PhysRenderChunk[] chunks:renderChunks){
-				for(PhysRenderChunk chunk:chunks){
+		if (renderChunks != null) {
+			for(PhysRenderChunk[] chunks : renderChunks){
+				for(PhysRenderChunk chunk : chunks){
 					chunk.killRenderChunk();
 				}
 			}

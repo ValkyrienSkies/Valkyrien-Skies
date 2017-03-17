@@ -1,5 +1,6 @@
 package ValkyrienWarfareBase.CoreMod;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -8,6 +9,7 @@ import org.lwjgl.opengl.GL11;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareBase.Collision.Polygon;
 import ValkyrienWarfareBase.Math.Quaternion;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
@@ -53,6 +55,17 @@ import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 
 public class CallRunnerClient extends CallRunner {
+
+    public static AxisAlignedBB getRenderBoundingBox(TileEntity tile){
+    	AxisAlignedBB toReturn = tile.getRenderBoundingBox();
+    	BlockPos pos = tile.getPos();
+    	PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(Minecraft.getMinecraft().theWorld, pos);
+    	if(wrapper != null){
+    		Polygon inWorldPoly = new Polygon(toReturn, wrapper.wrapping.coordTransform.lToWTransform);
+    		return inWorldPoly.getEnclosedAABB();
+    	}
+    	return toReturn;
+    }
 
 	public static void onOrientCamera(EntityRenderer renderer, float partialTicks) {
 		Entity entity = renderer.mc.getRenderViewEntity();
@@ -434,11 +447,7 @@ public class CallRunnerClient extends CallRunner {
 
 			}
 
-			try{
-				manager.doRenderEntity(entityIn, x, y, z, yaw, partialTicks, p_188391_10_);
-			}catch(Exception e){
-
-			}
+			manager.doRenderEntity(entityIn, x, y, z, yaw, partialTicks, p_188391_10_);
 
 			if(localPosition != null){
 				fixedOnto.wrapping.renderer.inverseTransform(partialTicks);
@@ -457,62 +466,53 @@ public class CallRunnerClient extends CallRunner {
 		}
 	}
 
-    public static void renderTileEntityAt(TileEntityRendererDispatcher dispatch, TileEntity tileEntityIn, double x, double y, double z, float partialTicks, int destroyStage){
-//    	System.out.println("test");
-    	BlockPos tilePos = tileEntityIn.getPos();
-    	PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(tileEntityIn.getWorld(), tilePos);
+	public static void renderTileEntity(TileEntityRendererDispatcher dispatch, TileEntity tileentityIn, float partialTicks, int destroyStage){
+		BlockPos pos = tileentityIn.getPos();
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(tileentityIn.getWorld(), pos);
 
-    	if(wrapper != null){
-    		wrapper.wrapping.renderer.setupTranslation(partialTicks);
+		if(wrapper != null){
+			wrapper.wrapping.renderer.setupTranslation(partialTicks);
 
-//    		System.out.println("fuck");
-    		dispatch.renderTileEntityAt(tileEntityIn, x, y, z, partialTicks, destroyStage);
+			double playerX = TileEntityRendererDispatcher.instance.staticPlayerX;
+			double playerY = TileEntityRendererDispatcher.instance.staticPlayerY;
+			double playerZ = TileEntityRendererDispatcher.instance.staticPlayerZ;
 
-    		wrapper.wrapping.renderer.inverseTransform(partialTicks);
-    	}else{
-    		dispatch.renderTileEntityAt(tileEntityIn, x, y, z, partialTicks, destroyStage);
-    	}
+			TileEntityRendererDispatcher.instance.staticPlayerX = wrapper.wrapping.renderer.offsetPos.getX();
+			TileEntityRendererDispatcher.instance.staticPlayerY = wrapper.wrapping.renderer.offsetPos.getY();
+			TileEntityRendererDispatcher.instance.staticPlayerZ = wrapper.wrapping.renderer.offsetPos.getZ();
+
+			dispatch.renderTileEntity(tileentityIn, partialTicks, destroyStage);
+
+			TileEntityRendererDispatcher.instance.staticPlayerX = playerX;
+			TileEntityRendererDispatcher.instance.staticPlayerY = playerY;
+			TileEntityRendererDispatcher.instance.staticPlayerZ = playerZ;
+
+			wrapper.wrapping.renderer.inverseTransform(partialTicks);
+		}else{
+			dispatch.renderTileEntity(tileentityIn, partialTicks, destroyStage);
+		}
     }
 
 	//TODO: Theres a lighting bug caused by Ships rendering TileEntities, perhaps use the RenderOverride to render them instead
 	public static void onRenderEntities(RenderGlobal renderGlobal, Entity renderViewEntity, ICamera camera, float partialTicks) {
 		((ClientProxy) ValkyrienWarfareMod.proxy).lastCamera = camera;
 
-		/*
-		GL11.glPushMatrix();
-//		GlStateManager.disableAlpha();
-//		GlStateManager.disableBlend();
-		GlStateManager.enableLighting();
-		renderGlobal.mc.entityRenderer.enableLightmap();
+		ArrayList<TileEntity> temporaryTiles = new ArrayList<TileEntity>();
 
-		double playerX = TileEntityRendererDispatcher.instance.staticPlayerX;
-		double playerY = TileEntityRendererDispatcher.instance.staticPlayerY;
-		double playerZ = TileEntityRendererDispatcher.instance.staticPlayerZ;
-		GL11.glPushMatrix();
 		for (PhysicsWrapperEntity wrapper : ValkyrienWarfareMod.physicsManager.getManagerForWorld(renderGlobal.theWorld).physicsEntities) {
-			// Vector centerOfRotation = wrapper.wrapping.centerCoord;
-			if(wrapper != null && wrapper.wrapping != null && wrapper.wrapping.renderer != null){
-				if(wrapper.wrapping.renderer.offsetPos != null){
-					TileEntityRendererDispatcher.instance.staticPlayerX = wrapper.wrapping.renderer.offsetPos.getX();
-					TileEntityRendererDispatcher.instance.staticPlayerY = wrapper.wrapping.renderer.offsetPos.getY();
-					TileEntityRendererDispatcher.instance.staticPlayerZ = wrapper.wrapping.renderer.offsetPos.getZ();
-					GL11.glPushMatrix();
-					wrapper.wrapping.renderer.setupTranslation(partialTicks);
-					wrapper.wrapping.renderer.renderTileEntities(partialTicks);
-					wrapper.wrapping.renderer.renderEntities(partialTicks);
-					GL11.glPopMatrix();
+			for(BlockPos pos:wrapper.wrapping.blockPositions){
+				TileEntity tile = wrapper.worldObj.getTileEntity(pos);
+				if(tile != null){
+					temporaryTiles.add(tile);
 				}
 			}
 		}
 
-		GL11.glPopMatrix();
-		TileEntityRendererDispatcher.instance.staticPlayerX = playerX;
-		TileEntityRendererDispatcher.instance.staticPlayerY = playerY;
-		TileEntityRendererDispatcher.instance.staticPlayerZ = playerZ;
-		GL11.glPopMatrix();
-		*/
+		renderGlobal.updateTileEntities(new ArrayList(), temporaryTiles);
 
 		renderGlobal.renderEntities(renderViewEntity, camera, partialTicks);
+
+		renderGlobal.updateTileEntities(temporaryTiles, new ArrayList());
 	}
 
 	public static int onRenderBlockLayer(RenderGlobal renderer, BlockRenderLayer blockLayerIn, double partialTicks, int pass, Entity entityIn) {

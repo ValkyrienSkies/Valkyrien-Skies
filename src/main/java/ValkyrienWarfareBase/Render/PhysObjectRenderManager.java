@@ -21,6 +21,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.chunk.RenderChunk;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -168,6 +169,16 @@ public class PhysObjectRenderManager {
 
 		Minecraft.getMinecraft().entityRenderer.disableLightmap();
 		GL11.glPopMatrix();
+	}
+
+	public void killRenderers(){
+		if (renderChunks == null) {
+			for(PhysRenderChunk[] chunks:renderChunks){
+				for(PhysRenderChunk chunk:chunks){
+					chunk.killRenderChunk();
+				}
+			}
+		}
 	}
 
 	public void updateRange(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {

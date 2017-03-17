@@ -487,6 +487,8 @@ public class PhysicsObject {
 	public void onThisUnload() {
 		if (!worldObj.isRemote) {
 			unloadShipChunksFromWorld();
+		}else{
+			renderer.killRenderers();
 		}
 	}
 

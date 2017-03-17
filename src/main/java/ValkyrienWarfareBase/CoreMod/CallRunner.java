@@ -46,6 +46,31 @@ import net.minecraftforge.common.DimensionManager;
 
 public class CallRunner {
 
+	public static double getDistanceSq(TileEntity tile, double x, double y, double z){
+		if(tile.getWorld().isRemote){
+			double toReturn = tile.getDistanceSq(x, y, z);
+			//Assume on Ship
+			if(toReturn > 9999999D){
+				BlockPos pos = tile.getPos();
+				PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(tile.getWorld(), pos);
+
+				if(wrapper != null){
+					Vector tilePos = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
+					wrapper.wrapping.coordTransform.fromLocalToGlobal(tilePos);
+
+					tilePos.X -= x;
+					tilePos.Y -= y;
+					tilePos.Z -= z;
+
+					return tilePos.lengthSq();
+				}
+			}
+
+			return toReturn;
+		}
+		return tile.getDistanceSq(x, y, z);
+	}
+
 	public static void markBlockRangeForRenderUpdate(World world, int x1, int y1, int z1, int x2, int y2, int z2){
 //		System.out.println((x2-x1)*(y2-y1)*(z2-z1));
 //		System.out.println(x1+":"+x2+":"+y1+":"+y2+":"+z1+":"+z2);
@@ -293,15 +318,6 @@ public class CallRunner {
 		boolean vanilla = con.canInteractWith(player);
 		return true;
 	}
-
-    public static double getDistanceSq(TileEntity tile, double x, double y, double z){
-
-    	if(tile.getWorld().isRemote){
-//        	System.out.println("tset");
-//    		return 0;
-    	}
-    	return tile.getDistanceSq(x, y, z);
-    }
 
 	public static double onGetDistanceSq(Entity entity, double x, double y, double z) {
 		double vanilla = entity.getDistanceSq(x, y, z);

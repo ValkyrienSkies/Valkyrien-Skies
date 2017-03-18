@@ -392,9 +392,8 @@ public class PhysicsObject {
 
 	public void injectChunkIntoWorld(Chunk chunk, int x, int z, boolean putInId2ChunkMap) {
 		ChunkProviderServer provider = (ChunkProviderServer) worldObj.getChunkProvider();
-		if (worldObj.isRemote) {
-			chunk.setChunkLoaded(true);
-		}
+		//TileEntities will break if you don't do this
+		chunk.isChunkLoaded = true;
 		chunk.isModified = true;
 		claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ] = chunk;
 

@@ -460,10 +460,6 @@ public class CallRunner {
 				wrapper.wrapping.renderer.markForUpdate();
 			}
 		}
-		//Thermal expanion fix?
-		if(world.isRemote){
-			world.removeTileEntity(pos);
-		}
     }
 
 	public static RayTraceResult onRayTraceBlocks(World world, Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock) {

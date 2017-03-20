@@ -456,9 +456,6 @@ public class CallRunner {
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
 		if (wrapper != null) {
 			wrapper.wrapping.onSetBlockState(oldState, newState, pos);
-			if (world.isRemote) {
-				wrapper.wrapping.renderer.markForUpdate();
-			}
 		}
     }
 

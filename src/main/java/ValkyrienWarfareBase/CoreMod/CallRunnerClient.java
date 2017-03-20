@@ -470,7 +470,7 @@ public class CallRunnerClient extends CallRunner {
 		BlockPos pos = tileentityIn.getPos();
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(tileentityIn.getWorld(), pos);
 
-		if(wrapper != null){
+		if(wrapper != null && wrapper.wrapping != null && wrapper.wrapping.renderer != null){
 			wrapper.wrapping.renderer.setupTranslation(partialTicks);
 
 			double playerX = TileEntityRendererDispatcher.instance.staticPlayerX;

@@ -129,7 +129,6 @@ public class PhysicsObject {
 
 	public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos posAt) {
 		//If the block here is not to be physicsed, just treat it like you'd treat AIR blocks.
-
 		boolean oldStateOnBlackList = false, newStateOnBlackList = false;
 
 		if(oldState != null && BlockPhysicsRegistration.blocksToNotPhysicise.contains(oldState.getBlock())){
@@ -161,7 +160,7 @@ public class PhysicsObject {
 			}
 		}
 
-		if ((isOldAir && !isNewAir) || newStateOnBlackList) {
+		if ((isOldAir && !isNewAir)) {
 			blockPositions.add(posAt);
 			if (!worldObj.isRemote) {
 				balloonManager.onBlockPositionAdded(posAt);
@@ -171,25 +170,29 @@ public class PhysicsObject {
 			ownedChunks.chunkOccupiedInLocal[chunkX][chunkZ] = true;
 		}
 
-		if (blockPositions.size() == 0) {
-			if (!worldObj.isRemote) {
-				if (creator != null) {
-					EntityPlayer player = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(UUID.fromString(creator));
-					if (player != null) {
-						player.getCapability(ValkyrienWarfareMod.airshipCounter, null).onLose();
-					} else {
-						try {
-							File f = new File(DimensionManager.getCurrentSaveRootDirectory(), "playerdata/" + creator + ".dat");
-							NBTTagCompound tag = CompressedStreamTools.read(f);
-							NBTTagCompound capsTag = tag.getCompoundTag("ForgeCaps");
-							capsTag.setInteger("valkyrienwarfare:IAirshipCounter", capsTag.getInteger("valkyrienwarfare:IAirshipCounter") - 1);
-							CompressedStreamTools.safeWrite(tag, f);
-						} catch (IOException e) {
-							e.printStackTrace();
+		if (blockPositions.isEmpty()) {
+			try{
+				if (!worldObj.isRemote) {
+					if (creator != null) {
+						EntityPlayer player = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(UUID.fromString(creator));
+						if (player != null) {
+							player.getCapability(ValkyrienWarfareMod.airshipCounter, null).onLose();
+						} else {
+							try {
+								File f = new File(DimensionManager.getCurrentSaveRootDirectory(), "playerdata/" + creator + ".dat");
+								NBTTagCompound tag = CompressedStreamTools.read(f);
+								NBTTagCompound capsTag = tag.getCompoundTag("ForgeCaps");
+								capsTag.setInteger("valkyrienwarfare:IAirshipCounter", capsTag.getInteger("valkyrienwarfare:IAirshipCounter") - 1);
+								CompressedStreamTools.safeWrite(tag, f);
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
 						}
+						ValkyrienWarfareMod.chunkManager.getManagerForWorld(worldObj).data.avalibleChunkKeys.add(ownedChunks.centerX);
 					}
-					ValkyrienWarfareMod.chunkManager.getManagerForWorld(worldObj).data.avalibleChunkKeys.add(ownedChunks.centerX);
 				}
+			}catch(Exception e){
+				e.printStackTrace();
 			}
 
 			destroy();
@@ -199,9 +202,9 @@ public class PhysicsObject {
 			if (physicsProcessor != null) {
 				physicsProcessor.onSetBlockState(oldState, newState, posAt);
 			}
-		} else {
-			renderer.markForUpdate();
 		}
+
+		System.out.println(blockPositions.size() + ":" + wrapper.isDead);
 	}
 
 	public void destroy() {
@@ -309,22 +312,24 @@ public class PhysicsObject {
 			if (worldTile != null) {
 				NBTTagCompound tileEntNBT = new NBTTagCompound();
 				tileEntNBT = worldTile.writeToNBT(tileEntNBT);
-				// Change the xyz pos values
+				// Change the Block position to be inside of the Ship
 				tileEntNBT.setInteger("x", pos.getX());
 				tileEntNBT.setInteger("y", pos.getY());
 				tileEntNBT.setInteger("z", pos.getZ());
-				// Creates a new TileEntity for the block
-				TileEntity newInstace = VKChunkCache.getTileEntity(pos);
-				newInstace.readFromNBT(tileEntNBT);
 
-				Class tileClass = newInstace.getClass();
+				//Fuck this old code
+//				TileEntity newInstace = VKChunkCache.getTileEntity(pos);
+//				newInstace.readFromNBT(tileEntNBT);
 
+				TileEntity newInstance = TileEntity.create(worldObj, tileEntNBT);
+				newInstance.validate();
+
+				Class tileClass = newInstance.getClass();
 				Field[] fields = tileClass.getDeclaredFields();
-
 				for (Field field : fields) {
 					try {
 						field.setAccessible(true);
-						Object o = field.get(newInstace);
+						Object o = field.get(newInstance);
 						if (o != null) {
 							if (o instanceof BlockPos) {
 								BlockPos inTilePos = (BlockPos) o;
@@ -332,7 +337,7 @@ public class PhysicsObject {
 								if (detector.foundSet.contains(hash)) {
 									if (!(o instanceof MutableBlockPos)) {
 										inTilePos = inTilePos.add(centerDifference.getX(), centerDifference.getY(), centerDifference.getZ());
-										field.set(newInstace, inTilePos);
+										field.set(newInstance, inTilePos);
 									} else {
 										MutableBlockPos mutable = (MutableBlockPos) o;
 										mutable.setPos(inTilePos.getX() + centerDifference.getX(), inTilePos.getY() + centerDifference.getY(), inTilePos.getZ() + centerDifference.getZ());
@@ -347,8 +352,7 @@ public class PhysicsObject {
 					}
 				}
 
-				newInstace.markDirty();
-				worldTile.invalidate();
+				newInstance.markDirty();
 			}
 			// chunkCache.setBlockState(pos, state);
 			// worldObj.setBlockState(pos, state);
@@ -830,7 +834,6 @@ public class PhysicsObject {
 		}
 		loadClaimedChunks();
 		renderer.updateOffsetPos(refrenceBlockPos);
-		renderer.markForUpdate();
 
 		coordTransform.stack.pushMessage(new PhysWrapperPositionMessage(this));
 

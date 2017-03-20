@@ -41,7 +41,6 @@ public class PhysObjectRenderManager {
 
 	public static boolean renderingMountedEntities = false;
 
-	public boolean needsSolidUpdate = true, needsCutoutUpdate = true, needsCutoutMippedUpdate = true, needsTranslucentUpdate = true;
 	public int glCallListSolid = -1;
 	public int glCallListTranslucent = -1;
 	public int glCallListCutout = -1;
@@ -61,81 +60,6 @@ public class PhysObjectRenderManager {
 
 	public void updateOffsetPos(BlockPos newPos) {
 		offsetPos = newPos;
-	}
-
-	public void updateList(BlockRenderLayer layerToUpdate) {
-		if (offsetPos == null) {
-			return;
-		}
-		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer worldrenderer = tessellator.getBuffer();
-		worldrenderer.begin(7, DefaultVertexFormats.BLOCK);
-		worldrenderer.setTranslation(-offsetPos.getX(), -offsetPos.getY(), -offsetPos.getZ());
-		GL11.glPushMatrix();
-		switch (layerToUpdate) {
-		case CUTOUT:
-			GLAllocation.deleteDisplayLists(glCallListCutout);
-			glCallListCutout = GLAllocation.generateDisplayLists(1);
-			GL11.glNewList(glCallListCutout, GL11.GL_COMPILE);
-			break;
-		case CUTOUT_MIPPED:
-			GLAllocation.deleteDisplayLists(glCallListCutoutMipped);
-			glCallListCutoutMipped = GLAllocation.generateDisplayLists(1);
-			GL11.glNewList(glCallListCutoutMipped, GL11.GL_COMPILE);
-			break;
-		case SOLID:
-			GLAllocation.deleteDisplayLists(glCallListSolid);
-			glCallListSolid = GLAllocation.generateDisplayLists(1);
-			GL11.glNewList(glCallListSolid, GL11.GL_COMPILE);
-			break;
-		case TRANSLUCENT:
-			GLAllocation.deleteDisplayLists(glCallListTranslucent);
-			glCallListTranslucent = GLAllocation.generateDisplayLists(1);
-			GL11.glNewList(glCallListTranslucent, GL11.GL_COMPILE);
-			break;
-		default:
-			break;
-		}
-
-		GlStateManager.pushMatrix();
-		// worldrenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-		IBlockState iblockstate;
-		// if (Minecraft.isAmbientOcclusionEnabled()) {
-		// GlStateManager.shadeModel(GL11.GL_SMOOTH);
-		// } else {
-		// GlStateManager.shadeModel(GL11.GL_FLAT);
-		// }
-		ForgeHooksClient.setRenderLayer(layerToUpdate);
-		for (BlockPos pos : parent.blockPositions) {
-			iblockstate = parent.worldObj.getBlockState(pos);
-			if (iblockstate.getBlock().canRenderInLayer(iblockstate, layerToUpdate)) {
-				Minecraft.getMinecraft().getBlockRendererDispatcher().renderBlock(iblockstate, pos, parent.worldObj, worldrenderer);
-			}
-		}
-		tessellator.draw();
-		// worldrenderer.finishDrawing();
-		ForgeHooksClient.setRenderLayer(null);
-		GlStateManager.popMatrix();
-		GL11.glEndList();
-		GL11.glPopMatrix();
-		worldrenderer.setTranslation(0, 0, 0);
-
-		switch (layerToUpdate) {
-		case CUTOUT:
-			needsCutoutUpdate = false;
-			break;
-		case CUTOUT_MIPPED:
-			needsCutoutMippedUpdate = false;
-			break;
-		case SOLID:
-			needsSolidUpdate = false;
-			break;
-		case TRANSLUCENT:
-			needsTranslucentUpdate = false;
-			break;
-		default:
-			break;
-		}
 	}
 
 	public void renderBlockLayer(BlockRenderLayer layerToRender, double partialTicks, int pass) {
@@ -228,70 +152,6 @@ public class PhysObjectRenderManager {
 				}
 			}
 		}
-	}
-
-	public void renderEntities(float partialTicks) {
-		renderingMountedEntities = true;
-
-		List<Entity> mountedEntities = parent.wrapper.riddenByEntities;
-
-		ArrayList<Entity> mountedEntitiesWithSecondary = new ArrayList<Entity>(mountedEntities);
-
-		for(Entity e : mountedEntities){
-			mountedEntitiesWithSecondary.addAll(e.riddenByEntities);
-		}
-
-		for (Entity mounted : mountedEntitiesWithSecondary) {
-			Vector localPosition = parent.getLocalPositionForEntity(mounted);
-
-			if(localPosition != null){
-				//Copy this vector, don't want to alter the original
-				localPosition = new Vector(localPosition);
-
-				localPosition.X -= offsetPos.getX();
-				localPosition.Y -= offsetPos.getY();
-				localPosition.Z -= offsetPos.getZ();
-
-				Vector originalEntityPos = new Vector(mounted.posX, mounted.posY, mounted.posZ);
-				Vector originalLastEntityPos = new Vector(mounted.lastTickPosX, mounted.lastTickPosY, mounted.lastTickPosZ);
-
-				mounted.posX = mounted.lastTickPosX = localPosition.X;
-				mounted.posY = mounted.lastTickPosY = localPosition.Y;
-				mounted.posZ = mounted.lastTickPosZ = localPosition.Z;
-
-//				System.out.println("test");
-				if (!mounted.isDead && mounted != Minecraft.getMinecraft().getRenderViewEntity() || Minecraft.getMinecraft().gameSettings.thirdPersonView > 0) {
-					if(mounted instanceof EntityCannonBasic){
-//						System.out.println("test");
-					}
-					GL11.glPushMatrix();
-					int i = mounted.getBrightnessForRender(partialTicks);
-					if (mounted.isBurning()) {
-						i = 15728880;
-					}
-					int j = i % 65536;
-					int k = i / 65536;
-					OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float) j / 1.0F, (float) k / 1.0F);
-					GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-					float yaw = mounted.prevRotationYaw + (mounted.rotationYaw - mounted.prevRotationYaw) * partialTicks;
-					double x = localPosition.X;
-					double y = localPosition.Y;
-					double z = localPosition.Z;
-					Minecraft.getMinecraft().getRenderManager().doRenderEntity(mounted, x, y, z, yaw, partialTicks, false);
-					GL11.glPopMatrix();
-				}
-
-				mounted.posX = originalEntityPos.X;
-				mounted.posY = originalEntityPos.Y;
-				mounted.posZ = originalEntityPos.Z;
-				mounted.lastTickPosX = originalLastEntityPos.X;
-				mounted.lastTickPosY = originalLastEntityPos.Y;
-				mounted.lastTickPosZ = originalLastEntityPos.Z;
-
-			}
-		}
-
-		renderingMountedEntities = false;
 	}
 
 	public boolean shouldRender() {
@@ -387,19 +247,8 @@ public class PhysObjectRenderManager {
 			GL11.glRotated(-moddedYaw, 0, 1D, 0);
 			GL11.glRotated(-moddedPitch, 1D, 0, 0);
 			GlStateManager.translate(p0 - moddedX, p1 - moddedY, p2 - moddedZ);
-
-
-
-
 			// transformBuffer = BufferUtils.createFloatBuffer(16);
 		}
-	}
-
-	public void markForUpdate() {
-		needsCutoutUpdate = true;
-		needsCutoutMippedUpdate = true;
-		needsSolidUpdate = true;
-		needsTranslucentUpdate = true;
 	}
 
 }

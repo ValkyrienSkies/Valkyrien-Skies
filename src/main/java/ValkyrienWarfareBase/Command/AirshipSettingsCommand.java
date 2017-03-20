@@ -23,9 +23,9 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 
 public class AirshipSettingsCommand extends CommandBase {
-	
+
 public static final ArrayList<String> completionOptions = new ArrayList<String>();
-	
+
 	static {
 		completionOptions.add("transfer");
 		completionOptions.add("allowPlayer");
@@ -57,9 +57,9 @@ public static final ArrayList<String> completionOptions = new ArrayList<String>(
 		EntityPlayer p = (EntityPlayer) sender;
 		//This method has an @SIDE.CLIENT, and it broke all the commands on servers!
 //		BlockPos pos = p.rayTrace(p.isCreative() ? 5.0 : 4.5, 1).getBlockPos();
-		
+
 		BlockPos pos = rayTraceBothSides(p,p.isCreative() ? 5.0 : 4.5, 1).getBlockPos();
-		
+
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(p.getEntityWorld(), pos);
 
 		if (wrapper == null) {
@@ -125,21 +125,21 @@ public static final ArrayList<String> completionOptions = new ArrayList<String>(
 			}
 			p.addChatMessage(new TextComponentString("You need to be the owner of an airship to change airship settings!"));
 		}
-		
+
 		sender.addChatMessage(new TextComponentString(TextFormatting.RED + "Usage: " + getCommandUsage(sender)));
 	}
-	
+
 	@Override
 	public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos) {
 		if (args.length == 1)	{
 			ArrayList<String> possibleArgs = (ArrayList<String>) completionOptions.clone();
-			
-			for (Iterator<String> iterator = possibleArgs.iterator(); iterator.hasNext();) { //Don't like this, but I have to because concurrentmodificationexception			    
+
+			for (Iterator<String> iterator = possibleArgs.iterator(); iterator.hasNext();) { //Don't like this, but I have to because concurrentmodificationexception
 			    if (!iterator.next().startsWith(args[0])) {
 			        iterator.remove();
 			    }
 			}
-			
+
 			return possibleArgs;
 		} else if (args.length == 2)	{
 			if (args[0].startsWith("do"))	{
@@ -152,10 +152,11 @@ public static final ArrayList<String> completionOptions = new ArrayList<String>(
 				}
 			}
 		}
-		
+
 		return null;
 	}
 
+	//Ripoff of world.rayTraceBlocks(), blame LEX and his Side code
 	public static RayTraceResult rayTraceBothSides(EntityPlayer player, double blockReachDistance, float partialTicks){
 		Vec3d vec3d = new Vec3d(player.posX, player.posY + (double)player.getEyeHeight(), player.posZ);
 		Vec3d vec3d1 = player.getLook(partialTicks);

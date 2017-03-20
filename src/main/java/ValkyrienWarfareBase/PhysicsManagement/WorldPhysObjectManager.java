@@ -1,11 +1,8 @@
 package ValkyrienWarfareBase.PhysicsManagement;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
-
-import com.google.common.collect.Lists;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -45,8 +42,7 @@ public class WorldPhysObjectManager {
 
 		if(worldObj instanceof WorldServer){
 			WorldServer worldServer = (WorldServer)worldObj;
-	        for (PhysicsWrapperEntity wrapper:list)
-	        {
+	        for (PhysicsWrapperEntity wrapper:list){
 	        	if(!wrapper.isDead){
 		        	if(wrapper.wrapping.surroundingWorldChunksCache != null){
 		        		int chunkCacheX = MathHelper.floor_double(wrapper.posX/16D)-wrapper.wrapping.surroundingWorldChunksCache.chunkX;

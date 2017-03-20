@@ -68,6 +68,8 @@ public class DimensionPhysObjectManager {
 	 * @param chunk
 	 * @return
 	 */
+
+	//If you caused an Entity$1 crash, it probably started here >:(
 	public PhysicsWrapperEntity getObjectManagingChunk(Chunk chunk) {
 		if (chunk == null) {
 			return null;

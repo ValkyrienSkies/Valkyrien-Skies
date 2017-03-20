@@ -33,10 +33,14 @@ public class ValkyrienWarfareWorldEventListener implements IWorldEventListener{
 	//TODO: Maybe replace the ASM setBlockState with this instead
 	@Override
 	public void notifyBlockUpdate(World worldIn, BlockPos pos, IBlockState oldState, IBlockState newState, int flags) {
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldObj, pos);
 		if(worldObj.isRemote){
 			CallRunner.markBlockRangeForRenderUpdate(worldIn,pos.getX(),pos.getY(),pos.getZ(),pos.getX(),pos.getY(),pos.getZ());
+			//Strange bounding box error on CLIENT SIDE Fix, possibly broken and terrible, but probably ok
+			if(wrapper != null){
+				wrapper.wrapping.onSetBlockState(oldState, newState, pos);
+			}
 		}else{
-			PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldObj, pos);
 			if(wrapper != null){
 				wrapper.wrapping.pilotingController.onSetBlockInShip(pos, newState);
 			}

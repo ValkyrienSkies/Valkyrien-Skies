@@ -72,7 +72,7 @@ public class EventsClient {
 		BlockPos pos = Minecraft.getMinecraft().objectMouseOver.getBlockPos();
 		if(pos != null){
 			PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(Minecraft.getMinecraft().theWorld, pos);
-			if(wrapper != null){
+			if(wrapper != null && wrapper.wrapping != null && wrapper.wrapping.renderer != null && wrapper.wrapping.centerCoord != null){
 //				GL11.glPushMatrix();
 				float partialTicks = event.getPartialTicks();
 				Entity player = Minecraft.getMinecraft().thePlayer;
@@ -97,7 +97,7 @@ public class EventsClient {
 		BlockPos pos = Minecraft.getMinecraft().objectMouseOver.getBlockPos();
 		if(pos != null){
 			PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(Minecraft.getMinecraft().theWorld, pos);
-			if(wrapper != null){
+			if(wrapper != null && wrapper.wrapping != null && wrapper.wrapping.renderer != null && wrapper.wrapping.centerCoord != null){
 				float partialTicks = event.getPartialTicks();
 				Entity player = Minecraft.getMinecraft().thePlayer;
 				wrapper.wrapping.renderer.inverseTransform(partialTicks);

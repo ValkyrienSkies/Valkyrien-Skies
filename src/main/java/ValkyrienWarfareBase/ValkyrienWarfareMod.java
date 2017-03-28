@@ -233,6 +233,7 @@ public class ValkyrienWarfareMod {
 			tag.setDouble("gravityVecZ", 0);
 			tag.setInteger("physicsIterations", 10);
 			tag.setDouble("physicsSpeed", 0.05);
+			tag.setBoolean("doEtheriumLifting", true);
 			tag.save();
 		} else {
 			tag = new DataTag(file);
@@ -248,6 +249,10 @@ public class ValkyrienWarfareMod {
 		ValkyrienWarfareMod.physIter = tag.getInteger("physicsIterations", 8);
 		ValkyrienWarfareMod.physSpeed = tag.getDouble("physicsSpeed", 0.05);
 		ValkyrienWarfareMod.gravity = new Vector(tag.getDouble("gravityVecX", 0.0), tag.getDouble("gravityVecY", -9.8), tag.getDouble("gravityVecZ", 0.0));
+		PhysicsSettings.doEtheriumLifting = tag.getBoolean("doEtheriumLifting", true);
+
+		//save the tag in case new fields are added, this way they are saved right away
+		tag.save();
 	}
 
 	public void saveConfig() {

@@ -81,175 +81,194 @@ public class DataTag implements Serializable {
 			throw new IllegalArgumentException("Name Cannot be Null!", new NullPointerException());
 	}
 
-	public void setInteger(String name, int value) {
+	public int setInteger(String name, int value) {
 		check(name);
 		ints.put(name, value);
+		return value;
 	}
 
-	public void setString(String name, String value) {
+	public String setString(String name, String value) {
 		check(name);
 		strings.put(name, value);
+		return value;
 	}
 
-	public void setBoolean(String name, boolean value) {
+	public boolean setBoolean(String name, boolean value) {
 		check(name);
 		booleans.put(name, value);
+		return value;
 	}
 
-	public void setByte(String name, byte value) {
+	public byte setByte(String name, byte value) {
 		check(name);
 		bytes.put(name, value);
+		return value;
 	}
 
-	public void setFloat(String name, float value) {
+	public float setFloat(String name, float value) {
 		check(name);
 		floats.put(name, value);
+		return value;
 	}
 
-	public void setShort(String name, short value) {
+	public short setShort(String name, short value) {
 		check(name);
 		shorts.put(name, value);
+		return value;
 	}
 
-	public void setDouble(String name, double value) {
+	public double setDouble(String name, double value) {
 		check(name);
 		doubles.put(name, value);
+		return value;
 	}
 
-	public void setLong(String name, long value) {
+	public long setLong(String name, long value) {
 		check(name);
 		longs.put(name, value);
+		return value;
 	}
 
-	public void setTag(String name, DataTag value) {
+	public DataTag setTag(String name, DataTag value) {
 		check(name);
 		tags.put(name, value);
+		return value;
 	}
 
-	public void setSerializable(String name, Serializable obj) {
+	public Serializable setSerializable(String name, Serializable obj) {
 		check(name);
 		objs.put(name, obj);
+		return obj;
 	}
 
-	public void setIntegerArray(String name, int[] value) {
+	public int[] setIntegerArray(String name, int[] value) {
 		check(name);
 		intArrays.put(name, value);
+		return value;
 	}
 
-	public void setStringArray(String name, String[] value) {
+	public String[] setStringArray(String name, String[] value) {
 		check(name);
 		stringArrays.put(name, value);
+		return value;
 	}
 
-	public void setBooleanArray(String name, boolean[] value) {
+	public boolean[] setBooleanArray(String name, boolean[] value) {
 		check(name);
 		booleanArrays.put(name, value);
+		return value;
 	}
 
-	public void setByteArray(String name, byte[] value) {
+	public byte[] setByteArray(String name, byte[] value) {
 		check(name);
 		byteArrays.put(name, value);
+		return value;
 	}
 
-	public void setFloatArray(String name, float[] value) {
+	public float[] setFloatArray(String name, float[] value) {
 		check(name);
 		floatArrays.put(name, value);
+		return value;
 	}
 
-	public void setShortArray(String name, short[] value) {
+	public short[] setShortArray(String name, short[] value) {
 		check(name);
 		shortArrays.put(name, value);
+		return value;
 	}
 
-	public void setDoubleArray(String name, double[] value) {
+	public double[] setDoubleArray(String name, double[] value) {
 		check(name);
 		doubleArrays.put(name, value);
+		return value;
 	}
 
-	public void setLongArray(String name, long[] value) {
+	public long[] setLongArray(String name, long[] value) {
 		check(name);
 		longArrays.put(name, value);
+		return value;
 	}
 
-	public void setSerializableArray(String name, Serializable[] value) {
+	public Serializable[] setSerializableArray(String name, Serializable[] value) {
 		check(name);
 		objArrays.put(name, value);
+		return value;
 	}
 
 	public int getInteger(String name, int def) {
-		return ints.containsKey(name) ? ints.get(name) : def;
+		return ints.containsKey(name) ? ints.get(name) : this.setInteger(name, def);
 	}
 
 	public String getString(String name, String def) {
-		return strings.containsKey(name) ? strings.get(name) : def;
+		return strings.containsKey(name) ? strings.get(name) : this.setString(name, def);
 	}
 
 	public boolean getBoolean(String name, boolean def) {
-		return booleans.containsKey(name) ? booleans.get(name) : def;
+		return booleans.containsKey(name) ? booleans.get(name) : this.setBoolean(name, def);
 	}
 
 	public byte getByte(String name, byte def) {
-		return bytes.containsKey(name) ? bytes.get(name) : def;
+		return bytes.containsKey(name) ? bytes.get(name) : this.setByte(name, def);
 	}
 
 	public float getFloat(String name, float def) {
-		return floats.containsKey(name) ? floats.get(name) : def;
+		return floats.containsKey(name) ? floats.get(name) : this.setFloat(name, def);
 	}
 
 	public short getShort(String name, short def) {
-		return shorts.containsKey(name) ? shorts.get(name) : def;
+		return shorts.containsKey(name) ? shorts.get(name) : this.setShort(name, def);
 	}
 
 	public double getDouble(String name, double def) {
-		return doubles.containsKey(name) ? doubles.get(name) : def;
+		return doubles.containsKey(name) ? doubles.get(name) : this.setDouble(name, def);
 	}
 
 	public long getLong(String name, long def) {
-		return longs.containsKey(name) ? longs.get(name) : def;
+		return longs.containsKey(name) ? longs.get(name) : this.setLong(name, def);
 	}
 
 	public DataTag getTag(String name, DataTag def) {
-		return tags.containsKey(name) ? tags.get(name).load() : def;
+		return tags.containsKey(name) ? tags.get(name).load() : this.setTag(name, def);
 	}
 
 	public Serializable getSerializable(String name, Serializable def) {
-		return objs.containsKey(name) ? objs.get(name) : def;
+		return objs.containsKey(name) ? objs.get(name) : this.setSerializable(name, def);
 	}
 
 	public int[] getIntegerArray(String name, int[] def) {
-		return intArrays.containsKey(name) ? intArrays.get(name) : def;
+		return intArrays.containsKey(name) ? intArrays.get(name) : this.setIntegerArray(name, def);
 	}
 
 	public String[] getStringArray(String name, String[] def) {
-		return stringArrays.containsKey(name) ? stringArrays.get(name) : def;
+		return stringArrays.containsKey(name) ? stringArrays.get(name) : this.setStringArray(name, def);
 	}
 
 	public boolean[] getBooleanArray(String name, boolean[] def) {
-		return booleanArrays.containsKey(name) ? booleanArrays.get(name) : def;
+		return booleanArrays.containsKey(name) ? booleanArrays.get(name) : this.setBooleanArray(name, def);
 	}
 
 	public byte[] getByteArray(String name, byte[] def) {
-		return byteArrays.containsKey(name) ? byteArrays.get(name) : def;
+		return byteArrays.containsKey(name) ? byteArrays.get(name) : this.setByteArray(name, def);
 	}
 
 	public float[] getFloatArray(String name, float[] def) {
-		return floatArrays.containsKey(name) ? floatArrays.get(name) : def;
+		return floatArrays.containsKey(name) ? floatArrays.get(name) : this.setFloatArray(name, def);
 	}
 
 	public short[] getShortArray(String name, short[] def) {
-		return shortArrays.containsKey(name) ? shortArrays.get(name) : def;
+		return shortArrays.containsKey(name) ? shortArrays.get(name) : this.setShortArray(name, def);
 	}
 
 	public double[] getDoubleArray(String name, double[] def) {
-		return doubleArrays.containsKey(name) ? doubleArrays.get(name) : def;
+		return doubleArrays.containsKey(name) ? doubleArrays.get(name) : this.setDoubleArray(name, def);
 	}
 
 	public long[] getLongArray(String name, long[] def) {
-		return longArrays.containsKey(name) ? longArrays.get(name) : def;
+		return longArrays.containsKey(name) ? longArrays.get(name) : this.setLongArray(name, def);
 	}
 
 	public Serializable[] getSerializableArray(String name, Serializable[] def) {
-		return objArrays.containsKey(name) ? objArrays.get(name) : def;
+		return objArrays.containsKey(name) ? objArrays.get(name) : this.setSerializableArray(name, def);
 	}
 
 	public int getInteger(String name) {

@@ -112,6 +112,15 @@ public class ValkyrienWarfareWorldEventListener implements IWorldEventListener{
 		if(entityIn instanceof PhysicsWrapperEntity){
 			ValkyrienWarfareMod.physicsManager.onShipLoad((PhysicsWrapperEntity) entityIn);
 		}
+
+		if(entityIn.getEntityWorld().isRemote){
+			PhysicsWrapperEntity shipFixOnto = ValkyrienWarfareMod.physicsManager.getManagerForWorld(entityIn.worldObj).getShipFixedOnto(entityIn, true);
+
+			if(shipFixOnto != null){
+//				System.out.println("Ye");
+				entityIn.startRiding(shipFixOnto, true);
+			}
+		}
 	}
 
 	@Override

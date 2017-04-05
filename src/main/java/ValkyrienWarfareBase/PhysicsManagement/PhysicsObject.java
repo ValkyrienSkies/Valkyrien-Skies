@@ -161,9 +161,13 @@ public class PhysicsObject {
 		}
 
 		if ((isOldAir && !isNewAir)) {
-			blockPositions.add(posAt);
 			if (!worldObj.isRemote) {
 				balloonManager.onBlockPositionAdded(posAt);
+				blockPositions.add(posAt);
+			}else{
+				if(!blockPositions.contains(posAt)){
+					blockPositions.add(posAt);
+				}
 			}
 			int chunkX = (posAt.getX() >> 4) - claimedChunks[0][0].xPosition;
 			int chunkZ = (posAt.getZ() >> 4) - claimedChunks[0][0].zPosition;
@@ -204,7 +208,7 @@ public class PhysicsObject {
 			}
 		}
 
-		System.out.println(blockPositions.size() + ":" + wrapper.isDead);
+//		System.out.println(blockPositions.size() + ":" + wrapper.isDead);
 	}
 
 	public void destroy() {

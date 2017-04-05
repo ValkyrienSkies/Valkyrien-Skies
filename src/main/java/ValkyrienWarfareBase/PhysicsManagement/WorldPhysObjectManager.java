@@ -135,15 +135,21 @@ public class WorldPhysObjectManager {
 	}
 
 	public boolean isEntityFixed(Entity entity) {
-		if (getShipFixedOnto(entity) != null) {
+		if (getShipFixedOnto(entity, false) != null) {
 			return true;
 		}
 		return false;
 	}
 
-	public PhysicsWrapperEntity getShipFixedOnto(Entity entity) {
+	public PhysicsWrapperEntity getShipFixedOnto(Entity entity, boolean considerUUID) {
 		for (PhysicsWrapperEntity wrapper : physicsEntities) {
 			if (wrapper.wrapping.isEntityFixed(entity)) {
+				if(considerUUID){
+					if(wrapper.wrapping.entityLocalPositions.containsKey(entity.getPersistentID().hashCode())){
+						return wrapper;
+					}
+				}
+
 				if (wrapper.riddenByEntities.contains(entity)){
 					return wrapper;
 				}

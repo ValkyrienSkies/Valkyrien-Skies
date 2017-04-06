@@ -47,10 +47,12 @@ import net.minecraftforge.common.DimensionManager;
 public class CallRunner {
 
 	public static double getDistanceSq(TileEntity tile, double x, double y, double z){
-		if(tile.getWorld().isRemote){
-			double toReturn = tile.getDistanceSq(x, y, z);
+		World tileWorld = tile.getWorld();
+		double toReturn = tile.getDistanceSq(x, y, z);
+
+		if(tileWorld != null){
 			//Assume on Ship
-			if(toReturn > 9999999D){
+			if(tileWorld.isRemote && toReturn > 9999999D){
 				BlockPos pos = tile.getPos();
 				PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(tile.getWorld(), pos);
 
@@ -66,9 +68,8 @@ public class CallRunner {
 				}
 			}
 
-			return toReturn;
 		}
-		return tile.getDistanceSq(x, y, z);
+		return toReturn;
 	}
 
 	public static void markBlockRangeForRenderUpdate(World world, int x1, int y1, int z1, int x2, int y2, int z2){

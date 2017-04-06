@@ -392,7 +392,7 @@ public class CallRunnerClient extends CallRunner {
 
 	public static void onDrawSelectionBox(RenderGlobal renderGlobal, EntityPlayer player, RayTraceResult movingObjectPositionIn, int execute, float partialTicks) {
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.worldObj, movingObjectPositionIn.getBlockPos());
-		if (wrapper != null) {;
+		if (wrapper != null && wrapper.wrapping != null && wrapper.wrapping.renderer != null && wrapper.wrapping.renderer.offsetPos != null) {;
 			wrapper.wrapping.renderer.setupTranslation(partialTicks);
 
 			Tessellator tessellator = Tessellator.getInstance();

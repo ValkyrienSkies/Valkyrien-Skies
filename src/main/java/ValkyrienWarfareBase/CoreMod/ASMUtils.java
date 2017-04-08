@@ -34,7 +34,7 @@ public class ASMUtils {
 
 		superClassChangerReader.accept(classNode, ClassReader.EXPAND_FRAMES);
 
-		String newSuperClass = "ValkyrienWarfareBase/EntityMultiWorldFixes/EntityDraggable";
+		String newSuperClass = "ValkyrienWarfareBase/Interaction/EntityDraggable";
 
 		classNode.superName = newSuperClass;
 

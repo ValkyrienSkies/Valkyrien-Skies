@@ -7,6 +7,7 @@ import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.MoverType;
 import net.minecraft.entity.item.EntityFallingBlock;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
@@ -54,7 +55,7 @@ public class EntityFallingUpBlock extends EntityFallingBlock {
 				this.motionY += 0.03999999910593033D;
 			}
 
-			CallRunner.onEntityMove(this, this.motionX, this.motionY, this.motionZ);
+			CallRunner.onEntityMove(this, MoverType.SELF, this.motionX, this.motionY, this.motionZ);
 			this.motionX *= 0.9800000190734863D;
 			this.motionY *= 0.9800000190734863D;
 			this.motionZ *= 0.9800000190734863D;

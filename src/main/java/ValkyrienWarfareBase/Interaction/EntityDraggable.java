@@ -1,6 +1,4 @@
-package ValkyrienWarfareBase.EntityMultiWorldFixes;
-
-import java.util.UUID;
+package ValkyrienWarfareBase.Interaction;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
@@ -20,14 +18,10 @@ import net.minecraft.world.World;
 public class EntityDraggable {
 
 	public PhysicsWrapperEntity worldBelowFeet;
-	public UUID lastWorldBelowFeetID;
-	public Vector inWorldBelowPos = new Vector();
-	public Vector velocityInWorldBelow = new Vector();
 
 	public Vector velocityAddedToPlayer = new Vector();
 	public Entity draggableAsEntity;
 	public double yawDifVelocity;
-
 
 	public EntityDraggable(){
 		draggableAsEntity = getEntityFromDraggable(this);
@@ -41,6 +35,21 @@ public class EntityDraggable {
 				if(!(e instanceof PhysicsWrapperEntity)&&!(e instanceof EntityCannonBall)){
 					EntityDraggable draggable = getDraggableFromEntity(e);
 					draggable.tickAddedVelocity();
+
+					if(draggable.worldBelowFeet == null){
+						if(draggable.draggableAsEntity.onGround){
+							draggable.velocityAddedToPlayer.zero();
+							draggable.yawDifVelocity = 0;
+						}else{
+							if(draggable.draggableAsEntity instanceof EntityPlayer){
+								EntityPlayer player = (EntityPlayer) draggable.draggableAsEntity;
+								if(player.isCreative() && player.capabilities.isFlying){
+									draggable.velocityAddedToPlayer.multiply(.99D * .95D);
+									draggable.yawDifVelocity *= .95D * .95D;
+								}
+							}
+						}
+					}
 				}
 			}
 		}catch(Exception e){
@@ -104,12 +113,6 @@ public class EntityDraggable {
 					yawDif = 0D;
 				}
 				yawDifVelocity = yawDif;
-			}
-		}else{
-			if(draggableAsEntity.onGround){
-				//TODO: Make this do friction
-				velocityAddedToPlayer.zero();
-				yawDifVelocity = 0;
 			}
 		}
 

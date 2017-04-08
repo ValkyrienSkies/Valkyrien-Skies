@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.Vector;
-import ValkyrienWarfareBase.EntityMultiWorldFixes.EntityDraggable;
+import ValkyrienWarfareBase.Interaction.EntityDraggable;
 import net.minecraft.world.World;
 
 public class PhysicsTickHandler {
@@ -13,18 +13,11 @@ public class PhysicsTickHandler {
 		WorldPhysObjectManager manager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(world);
 
 		ArrayList<PhysicsWrapperEntity> toUnload = (ArrayList<PhysicsWrapperEntity>) manager.physicsEntitiesToUnload.clone();
-		manager.physicsEntitiesToUnload.clear();
-
 		for (PhysicsWrapperEntity wrapper : toUnload) {
 			manager.onUnload(wrapper);
 		}
 
-
-		
 		ArrayList<PhysicsWrapperEntity> physicsEntities = manager.getTickablePhysicsEntities();
-		
-//		System.out.println(physicsEntities.size());
-		
 		if (!ValkyrienWarfareMod.doSplitting) {
 			for (PhysicsWrapperEntity wrapper : physicsEntities) {
 				wrapper.wrapping.coordTransform.setPrevMatrices();
@@ -32,14 +25,9 @@ public class PhysicsTickHandler {
 				// Collections.shuffle(wrapper.wrapping.physicsProcessor.activeForcePositions);
 			}
 		} else {
-			/*
-			 * boolean didSplitOccur = false; for(PhysicsWrapperEntity wrapper:physicsEntities){ if(wrapper.wrapping.processPotentialSplitting()){ didSplitOccur = true; } } if(didSplitOccur){ while(didSplitOccur){ didSplitOccur = false; ArrayList oldPhysicsEntities = physicsEntities; ArrayList<PhysicsWrapperEntity> newPhysicsEntities = (ArrayList<PhysicsWrapperEntity>) manager.physicsEntities.clone(); newPhysicsEntities.removeAll(oldPhysicsEntities); if(newPhysicsEntities.size()!=0){ for(PhysicsWrapperEntity wrapper:newPhysicsEntities){ if(wrapper.wrapping.processPotentialSplitting()){ didSplitOccur = true; } } } } physicsEntities = (ArrayList<PhysicsWrapperEntity>) manager.physicsEntities.clone(); } for(PhysicsWrapperEntity wrapper:physicsEntities){ wrapper.wrapping.coordTransform.setPrevMatrices(); wrapper.wrapping.updateChunkCache(); // Collections.shuffle(wrapper.wrapping.physicsProcessor.activeForcePositions); }
-			 */
+//			boolean didSplitOccur = false; for(PhysicsWrapperEntity wrapper:physicsEntities){ if(wrapper.wrapping.processPotentialSplitting()){ didSplitOccur = true; } } if(didSplitOccur){ while(didSplitOccur){ didSplitOccur = false; ArrayList oldPhysicsEntities = physicsEntities; ArrayList<PhysicsWrapperEntity> newPhysicsEntities = (ArrayList<PhysicsWrapperEntity>) manager.physicsEntities.clone(); newPhysicsEntities.removeAll(oldPhysicsEntities); if(newPhysicsEntities.size()!=0){ for(PhysicsWrapperEntity wrapper:newPhysicsEntities){ if(wrapper.wrapping.processPotentialSplitting()){ didSplitOccur = true; } } } } physicsEntities = (ArrayList<PhysicsWrapperEntity>) manager.physicsEntities.clone(); } for(PhysicsWrapperEntity wrapper:physicsEntities){ wrapper.wrapping.coordTransform.setPrevMatrices(); wrapper.wrapping.updateChunkCache(); // Collections.shuffle(wrapper.wrapping.physicsProcessor.activeForcePositions); }
 		}
-		if(!world.isRemote && world.provider.isSurfaceWorld()){
-//			System.out.println(physicsEntities.size());
-		}
-			
+
 		int iters = ValkyrienWarfareMod.physIter;
 		double newPhysSpeed = ValkyrienWarfareMod.physSpeed;
 		Vector newGravity = ValkyrienWarfareMod.gravity;
@@ -51,7 +39,6 @@ public class PhysicsTickHandler {
 			}
 
 			if (ValkyrienWarfareMod.doShipCollision) {
-
 				for (int i = 0; i < physicsEntities.size(); i++) {
 					PhysicsWrapperEntity first = physicsEntities.get(i);
 					for (int j = i + 1; j < physicsEntities.size(); j++) {
@@ -82,11 +69,8 @@ public class PhysicsTickHandler {
 
 		for (PhysicsWrapperEntity wrapper : physicsEntities) {
 			wrapper.wrapping.coordTransform.sendPositionToPlayers();
-//			wrapper.wrapping.moveEntities();
 		}
-		
 		EntityDraggable.tickAddedVelocityForWorld(world);
-
 	}
 
 	public static void onWorldTickEnd(World world) {

@@ -54,7 +54,7 @@ public class ValkyrienWarfareControlMod {
 
 	public static final String MODID = "valkyrienwarfarecontrol";
 	public static final String MODNAME = "Valkyrien Warfare Control";
-	public static final String MODVER = "0.3b";
+	public static final String MODVER = "0.3c";
 
 	public static ValkyrienWarfareControlMod instance;
 

@@ -1,9 +1,14 @@
 package ValkyrienWarfareBase;
 
-import ValkyrienWarfareBase.EntityMultiWorldFixes.EntityDraggable;
+import ValkyrienWarfareBase.Interaction.EntityDraggable;
+import ValkyrienWarfareBase.Network.PlayerShipRefrenceMessage;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
@@ -29,6 +34,16 @@ public class EventsClient {
 						wrapper.wrapping.onPostTickClient();
 					}
 					EntityDraggable.tickAddedVelocityForWorld(mc.world);
+				}
+			}
+			if(event.phase == Phase.END){
+				Object o = Minecraft.getMinecraft().player;
+				EntityDraggable draggable = (EntityDraggable) o;
+
+				if(draggable.worldBelowFeet != null){
+					PlayerShipRefrenceMessage playerPosMessage = new PlayerShipRefrenceMessage(Minecraft.getMinecraft().player, draggable.worldBelowFeet);
+
+					ValkyrienWarfareMod.physWrapperNetwork.sendToServer(playerPosMessage);
 				}
 			}
 		}
@@ -61,40 +76,54 @@ public class EventsClient {
 		}
 	}
 
-	@SubscribeEvent(priority = EventPriority.HIGHEST)
-	public void onDrawBlockHighlightEvent(DrawBlockHighlightEvent event) {
-		/*
-		 * WorldPhysObjectManager physManager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(event.getPlayer().worldObj);
-		 * 
-		 * AxisAlignedBB playerRangeBB = event.getPlayer().getEntityBoundingBox();
-		 * 
-		 * List<PhysicsWrapperEntity> nearbyShips = physManager.getNearbyPhysObjects(event.getPlayer().worldObj, playerRangeBB); float partialTick = event.getPartialTicks(); boolean changed = false;
-		 * 
-		 * Entity entity = event.getPlayer();
-		 * 
-		 * double d0 = (double)Minecraft.getMinecraft().playerController.getBlockReachDistance();
-		 * 
-		 * Vec3d playerEyesPos = entity.getPositionEyes(event.getPartialTicks()); Vec3d playerReachVector = entity.getLook(event.getPartialTicks());
-		 * 
-		 * if(Minecraft.getMinecraft().pointedEntity!=null&&Minecraft.getMinecraft().pointedEntity instanceof PhysicsWrapperEntity){ Minecraft.getMinecraft().pointedEntity = null; Minecraft.getMinecraft().entityRenderer.pointedEntity = null; Minecraft.getMinecraft().objectMouseOver = entity.rayTrace(d0, event.getPartialTicks()); }
-		 * 
-		 * double worldResultDistFromPlayer = Minecraft.getMinecraft().objectMouseOver.hitVec.distanceTo(playerEyesPos);
-		 * 
-		 * for(PhysicsWrapperEntity wrapper:nearbyShips){
-		 * 
-		 * 
-		 * playerEyesPos = entity.getPositionEyes(event.getPartialTicks()); playerReachVector = entity.getLook(event.getPartialTicks());
-		 * 
-		 * //Transform the coordinate system for the player eye pos playerEyesPos = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, playerEyesPos); playerReachVector = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLRotation, playerReachVector);
-		 * 
-		 * Vec3d playerEyesReachAdded = playerEyesPos.addVector(playerReachVector.xCoord * d0, playerReachVector.yCoord * d0, playerReachVector.zCoord * d0);
-		 * 
-		 * RayTraceResult resultInShip = entity.worldObj.rayTraceBlocks(playerEyesPos, playerEyesReachAdded, false, false, true);
-		 * 
-		 * double shipResultDistFromPlayer = resultInShip.hitVec.distanceTo(playerEyesPos);
-		 * 
-		 * if(shipResultDistFromPlayer<worldResultDistFromPlayer){ worldResultDistFromPlayer = shipResultDistFromPlayer; Minecraft.getMinecraft().objectMouseOver = resultInShip; } }
-		 */
+	@SubscribeEvent(priority = EventPriority.HIGHEST,receiveCanceled = true)
+	public void onDrawBlockHighlightEventFirst(DrawBlockHighlightEvent event) {
+		BlockPos pos = Minecraft.getMinecraft().objectMouseOver.getBlockPos();
+		if(pos != null){
+			PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(Minecraft.getMinecraft().world, pos);
+			if(wrapper != null && wrapper.wrapping != null && wrapper.wrapping.renderer != null && wrapper.wrapping.centerCoord != null){
+//				GL11.glPushMatrix();
+				float partialTicks = event.getPartialTicks();
+				Entity player = Minecraft.getMinecraft().player;
+				wrapper.wrapping.renderer.setupTranslation(partialTicks);
+
+				Tessellator tessellator = Tessellator.getInstance();
+				VertexBuffer vertexbuffer = tessellator.getBuffer();
+
+				double xOff = (player.lastTickPosX + (player.posX - player.lastTickPosX) * (double)partialTicks) - wrapper.wrapping.renderer.offsetPos.getX();
+				double yOff = (player.lastTickPosY + (player.posY - player.lastTickPosY) * (double)partialTicks) - wrapper.wrapping.renderer.offsetPos.getY();
+				double zOff = (player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * (double)partialTicks) - wrapper.wrapping.renderer.offsetPos.getZ();
+
+				vertexbuffer.xOffset += xOff;
+				vertexbuffer.yOffset += yOff;
+				vertexbuffer.zOffset += zOff;
+			}
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST,receiveCanceled = true)
+	public void onDrawBlockHighlightEventLast(DrawBlockHighlightEvent event) {
+		BlockPos pos = Minecraft.getMinecraft().objectMouseOver.getBlockPos();
+		if(pos != null){
+			PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(Minecraft.getMinecraft().world, pos);
+			if(wrapper != null && wrapper.wrapping != null && wrapper.wrapping.renderer != null && wrapper.wrapping.centerCoord != null){
+				float partialTicks = event.getPartialTicks();
+				Entity player = Minecraft.getMinecraft().player;
+				wrapper.wrapping.renderer.inverseTransform(partialTicks);
+
+				Tessellator tessellator = Tessellator.getInstance();
+				VertexBuffer vertexbuffer = tessellator.getBuffer();
+
+				double xOff = (player.lastTickPosX + (player.posX - player.lastTickPosX) * (double)partialTicks) - wrapper.wrapping.renderer.offsetPos.getX();
+				double yOff = (player.lastTickPosY + (player.posY - player.lastTickPosY) * (double)partialTicks) - wrapper.wrapping.renderer.offsetPos.getY();
+				double zOff = (player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * (double)partialTicks) - wrapper.wrapping.renderer.offsetPos.getZ();
+
+				vertexbuffer.xOffset -= xOff;
+				vertexbuffer.yOffset -= yOff;
+				vertexbuffer.zOffset -= zOff;
+//				GL11.glPopMatrix();
+			}
+		}
 	}
 
 	protected static final Vec3d getVectorForRotation(float pitch, float yaw) {

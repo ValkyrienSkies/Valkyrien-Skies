@@ -7,11 +7,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import ValkyrienWarfareBase.BlockPhysicsRegistration;
 import ValkyrienWarfareBase.NBTUtils;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.EnumChangeOwnerResult;
@@ -19,11 +18,10 @@ import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.ChunkManagement.ChunkSet;
 import ValkyrienWarfareBase.CoreMod.ValkyrienWarfarePlugin;
-import ValkyrienWarfareBase.EntityMultiWorldFixes.EntityDraggable;
+import ValkyrienWarfareBase.Network.PhysWrapperPositionMessage;
 import ValkyrienWarfareBase.Physics.BlockForce;
 import ValkyrienWarfareBase.Physics.PhysicsCalculations;
 import ValkyrienWarfareBase.Physics.PhysicsQueuedForce;
-import ValkyrienWarfareBase.PhysicsManagement.Network.PhysWrapperPositionMessage;
 import ValkyrienWarfareBase.Relocation.DetectorManager;
 import ValkyrienWarfareBase.Relocation.SpatialDetector;
 import ValkyrienWarfareBase.Relocation.VWChunkCache;
@@ -34,17 +32,10 @@ import ValkyrienWarfareControl.Network.EntityFixMessage;
 import ValkyrienWarfareControl.Piloting.ShipPilotingController;
 import gnu.trove.iterator.TIntIterator;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockFence;
-import net.minecraft.block.BlockFenceGate;
-import net.minecraft.block.BlockLiquid;
-import net.minecraft.block.BlockWall;
-import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
@@ -58,7 +49,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.ChunkCache;
 import net.minecraft.world.World;
@@ -138,6 +128,18 @@ public class PhysicsObject {
 	}
 
 	public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos posAt) {
+		//If the block here is not to be physicsed, just treat it like you'd treat AIR blocks.
+		boolean oldStateOnBlackList = false, newStateOnBlackList = false;
+
+		if(oldState != null && BlockPhysicsRegistration.blocksToNotPhysicise.contains(oldState.getBlock())){
+			oldState = Blocks.AIR.getDefaultState();
+			oldStateOnBlackList = true;
+		}
+		if(newState != null && BlockPhysicsRegistration.blocksToNotPhysicise.contains(newState.getBlock())){
+			newState = Blocks.AIR.getDefaultState();
+			newStateOnBlackList = true;
+		}
+
 		boolean isOldAir = oldState == null || oldState.getBlock().equals(Blocks.AIR);
 		boolean isNewAir = newState == null || newState.getBlock().equals(Blocks.AIR);
 
@@ -158,35 +160,43 @@ public class PhysicsObject {
 			}
 		}
 
-		if (isOldAir && !isNewAir) {
-			blockPositions.add(posAt);
+		if ((isOldAir && !isNewAir)) {
 			if (!worldObj.isRemote) {
 				balloonManager.onBlockPositionAdded(posAt);
+				blockPositions.add(posAt);
+			}else{
+				if(!blockPositions.contains(posAt)){
+					blockPositions.add(posAt);
+				}
 			}
 			int chunkX = (posAt.getX() >> 4) - claimedChunks[0][0].xPosition;
 			int chunkZ = (posAt.getZ() >> 4) - claimedChunks[0][0].zPosition;
 			ownedChunks.chunkOccupiedInLocal[chunkX][chunkZ] = true;
 		}
 
-		if (blockPositions.size() == 0) {
-			if (!worldObj.isRemote) {
-				if (creator != null) {
-					EntityPlayer player = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(UUID.fromString(creator));
-					if (player != null) {
-						player.getCapability(ValkyrienWarfareMod.airshipCounter, null).onLose();
-					} else {
-						try {
-							File f = new File(DimensionManager.getCurrentSaveRootDirectory(), "playerdata/" + creator + ".dat");
-							NBTTagCompound tag = CompressedStreamTools.read(f);
-							NBTTagCompound capsTag = tag.getCompoundTag("ForgeCaps");
-							capsTag.setInteger("valkyrienwarfare:IAirshipCounter", capsTag.getInteger("valkyrienwarfare:IAirshipCounter") - 1);
-							CompressedStreamTools.safeWrite(tag, f);
-						} catch (IOException e) {
-							e.printStackTrace();
+		if (blockPositions.isEmpty()) {
+			try{
+				if (!worldObj.isRemote) {
+					if (creator != null) {
+						EntityPlayer player = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(UUID.fromString(creator));
+						if (player != null) {
+							player.getCapability(ValkyrienWarfareMod.airshipCounter, null).onLose();
+						} else {
+							try {
+								File f = new File(DimensionManager.getCurrentSaveRootDirectory(), "playerdata/" + creator + ".dat");
+								NBTTagCompound tag = CompressedStreamTools.read(f);
+								NBTTagCompound capsTag = tag.getCompoundTag("ForgeCaps");
+								capsTag.setInteger("valkyrienwarfare:IAirshipCounter", capsTag.getInteger("valkyrienwarfare:IAirshipCounter") - 1);
+								CompressedStreamTools.safeWrite(tag, f);
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
 						}
+						ValkyrienWarfareMod.chunkManager.getManagerForWorld(worldObj).data.avalibleChunkKeys.add(ownedChunks.centerX);
 					}
-					ValkyrienWarfareMod.chunkManager.getManagerForWorld(worldObj).data.avalibleChunkKeys.add(ownedChunks.centerX);
 				}
+			}catch(Exception e){
+				e.printStackTrace();
 			}
 
 			destroy();
@@ -196,9 +206,9 @@ public class PhysicsObject {
 			if (physicsProcessor != null) {
 				physicsProcessor.onSetBlockState(oldState, newState, posAt);
 			}
-		} else {
-			renderer.markForUpdate();
 		}
+
+//		System.out.println(blockPositions.size() + ":" + wrapper.isDead);
 	}
 
 	public void destroy() {
@@ -230,7 +240,7 @@ public class PhysicsObject {
 		SpatialDetector detector = DetectorManager.getDetectorFor(detectorID, centerInWorld, worldObj, ValkyrienWarfareMod.maxShipSize + 1, true);
 		if (detector.foundSet.size() > ValkyrienWarfareMod.maxShipSize || detector.cleanHouse) {
 			if (player != null) {
-				player.sendMessage(new TextComponentString("Ship construction canceled because its exceeding the ship size limit (Raise with /setPhysConstructionLimit (number)) ; Or because it's attatched to bedrock)"));
+				player.sendMessage(new TextComponentString("Ship construction canceled because its exceeding the ship size limit (Raise with /physSettings maxShipSize <number>) ; Or because it's attatched to bedrock)"));
 			}
 			wrapper.setDead();
 			return;
@@ -250,7 +260,7 @@ public class PhysicsObject {
 			radiusNeeded = Math.max(Math.max(zRad, xRad), radiusNeeded + 1);
 		}
 
-		radiusNeeded = Math.max(radiusNeeded, 5);
+//		radiusNeeded = Math.max(radiusNeeded, 5);
 
 		iter = detector.foundSet.iterator();
 
@@ -265,7 +275,7 @@ public class PhysicsObject {
 		for (int x = ownedChunks.minX; x <= ownedChunks.maxX; x++) {
 			for (int z = ownedChunks.minZ; z <= ownedChunks.maxZ; z++) {
 				Chunk chunk = new Chunk(worldObj, x, z);
-				injectChunkIntoWorld(chunk, x, z);
+				injectChunkIntoWorld(chunk, x, z, true);
 				claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ] = chunk;
 			}
 		}
@@ -306,22 +316,24 @@ public class PhysicsObject {
 			if (worldTile != null) {
 				NBTTagCompound tileEntNBT = new NBTTagCompound();
 				tileEntNBT = worldTile.writeToNBT(tileEntNBT);
-				// Change the xyz pos values
+				// Change the Block position to be inside of the Ship
 				tileEntNBT.setInteger("x", pos.getX());
 				tileEntNBT.setInteger("y", pos.getY());
 				tileEntNBT.setInteger("z", pos.getZ());
-				// Creates a new TileEntity for the block
-				TileEntity newInstace = VKChunkCache.getTileEntity(pos);
-				newInstace.readFromNBT(tileEntNBT);
 
-				Class tileClass = newInstace.getClass();
+				//Fuck this old code
+//				TileEntity newInstace = VKChunkCache.getTileEntity(pos);
+//				newInstace.readFromNBT(tileEntNBT);
 
+				TileEntity newInstance = TileEntity.create(worldObj, tileEntNBT);
+				newInstance.validate();
+
+				Class tileClass = newInstance.getClass();
 				Field[] fields = tileClass.getDeclaredFields();
-
 				for (Field field : fields) {
 					try {
 						field.setAccessible(true);
-						Object o = field.get(newInstace);
+						Object o = field.get(newInstance);
 						if (o != null) {
 							if (o instanceof BlockPos) {
 								BlockPos inTilePos = (BlockPos) o;
@@ -329,7 +341,7 @@ public class PhysicsObject {
 								if (detector.foundSet.contains(hash)) {
 									if (!(o instanceof MutableBlockPos)) {
 										inTilePos = inTilePos.add(centerDifference.getX(), centerDifference.getY(), centerDifference.getZ());
-										field.set(newInstace, inTilePos);
+										field.set(newInstance, inTilePos);
 									} else {
 										MutableBlockPos mutable = (MutableBlockPos) o;
 										mutable.setPos(inTilePos.getX() + centerDifference.getX(), inTilePos.getY() + centerDifference.getY(), inTilePos.getZ() + centerDifference.getZ());
@@ -344,8 +356,7 @@ public class PhysicsObject {
 					}
 				}
 
-				newInstace.markDirty();
-				worldTile.invalidate();
+				newInstance.markDirty();
 			}
 			// chunkCache.setBlockState(pos, state);
 			// worldObj.setBlockState(pos, state);
@@ -384,17 +395,19 @@ public class PhysicsObject {
 
 		coordTransform = new CoordTransformObject(this);
 		physicsProcessor.processInitialPhysicsData();
-		physicsProcessor.updateCenterOfMass();
+		physicsProcessor.updateParentCenterOfMass();
 	}
 
-	public void injectChunkIntoWorld(Chunk chunk, int x, int z) {
+	public void injectChunkIntoWorld(Chunk chunk, int x, int z, boolean putInId2ChunkMap) {
 		ChunkProviderServer provider = (ChunkProviderServer) worldObj.getChunkProvider();
-		if (worldObj.isRemote) {
-			chunk.setChunkLoaded(true);
-		}
+		//TileEntities will break if you don't do this
+		chunk.isChunkLoaded = true;
 		chunk.isModified = true;
 		claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ] = chunk;
-		provider.id2ChunkMap.put(ChunkPos.asLong(x, z), chunk);
+
+		if(putInId2ChunkMap){
+			provider.id2ChunkMap.put(ChunkPos.asLong(x, z), chunk);
+		}
 
 		PlayerChunkMapEntry entry = new PlayerChunkMapEntry(((WorldServer) worldObj).getPlayerChunkMap(), x, z);
 		entry.sentToPlayers = true;
@@ -481,6 +494,8 @@ public class PhysicsObject {
 	public void onThisUnload() {
 		if (!worldObj.isRemote) {
 			unloadShipChunksFromWorld();
+		}else{
+			renderer.killRenderers();
 		}
 	}
 
@@ -570,7 +585,6 @@ public class PhysicsObject {
 			queue.ticksToApply--;
 		}
 	}
-
 	public void onPostTickClient() {
 		wrapper.prevPitch = wrapper.pitch;
 		wrapper.prevYaw = wrapper.yaw;
@@ -595,95 +609,9 @@ public class PhysicsObject {
 			wrapper.lastTickPosZ -= CMDif.Z;
 			toUse.applyToPhysObject(this);
 		}
+
 		coordTransform.setPrevMatrices();
 		coordTransform.updateAllTransforms();
-//		moveEntities();
-	}
-
-	//TODO: Remove this shitty check, moving entities should work using an approach similar to MetaWorlds; this is treating Cancer with a Band-Aid!
-	public boolean shouldMoveEntity(Entity ent){
-		int i = MathHelper.floor(ent.posX);
-        int j = MathHelper.floor(ent.posY - 0.20000000298023224D);
-        int k = MathHelper.floor(ent.posZ);
-        BlockPos blockpos = new BlockPos(i, j, k);
-        IBlockState block1State = ent.world.getBlockState(blockpos);
-        Block block1 = block1State.getBlock();
-        if (block1.getMaterial(block1State) == Material.AIR||(block1 instanceof BlockLiquid)){
-            Block block = ent.world.getBlockState(blockpos.down()).getBlock();
-            if (block instanceof BlockFence || block instanceof BlockWall || block instanceof BlockFenceGate){
-                block1 = block;
-                blockpos = blockpos.down();
-            }
-        }
-        return block1.equals(Blocks.AIR);
-	}
-
-	// TODO: Fix the lag here
-	public void moveEntities() {
-
-
-
-		List<Entity> riders = worldObj.getEntitiesWithinAABB(Entity.class, collisionBB);
-
-		for (Entity ent : riders) {
-			EntityDraggable draggable = EntityDraggable.getDraggableFromEntity(ent);
-			if (draggable.worldBelowFeet == this.wrapper&&!(ent instanceof PhysicsWrapperEntity) && !ValkyrienWarfareMod.physicsManager.isEntityFixed(ent) && shouldMoveEntity(ent)) {
-				float rotYaw = ent.rotationYaw;
-				float rotPitch = ent.rotationPitch;
-				float prevYaw = ent.prevRotationYaw;
-				float prevPitch = ent.prevRotationPitch;
-
-				RotationMatrices.applyTransform(coordTransform.prevwToLTransform, coordTransform.prevWToLRotation, ent);
-				RotationMatrices.applyTransform(coordTransform.lToWTransform, coordTransform.lToWRotation, ent);
-
-				ent.rotationYaw = rotYaw;
-				ent.rotationPitch = rotPitch;
-				ent.prevRotationYaw = prevYaw;
-				ent.prevRotationPitch = prevPitch;
-
-				Vector oldLookingPos = new Vector(ent.getLook(1.0F));
-				RotationMatrices.applyTransform(coordTransform.prevWToLRotation, oldLookingPos);
-				RotationMatrices.applyTransform(coordTransform.lToWRotation, oldLookingPos);
-
-				double newPitch = Math.asin(oldLookingPos.Y) * -180D / Math.PI;
-				double f4 = -Math.cos(-newPitch * 0.017453292D);
-				double radianYaw = Math.atan2((oldLookingPos.X / f4), (oldLookingPos.Z / f4));
-				radianYaw += Math.PI;
-				radianYaw *= -180D / Math.PI;
-				if (!(Double.isNaN(radianYaw) || Math.abs(newPitch) > 85)) {
-					double wrappedYaw = MathHelper.wrapDegrees(radianYaw);
-					double wrappedRotYaw = MathHelper.wrapDegrees(ent.rotationYaw);
-					double yawDif = wrappedYaw - wrappedRotYaw;
-					if (Math.abs(yawDif) > 180D) {
-						if (yawDif < 0) {
-							yawDif += 360D;
-						} else {
-							yawDif -= 360D;
-						}
-					}
-					yawDif %= 360D;
-					final double threshold = .1D;
-					if (Math.abs(yawDif) < threshold) {
-						yawDif = 0D;
-					}
-					if (!(ent instanceof EntityPlayer)) {
-						if (ent instanceof EntityArrow) {
-							ent.prevRotationYaw = ent.rotationYaw;
-							ent.rotationYaw -= yawDif;
-						} else {
-							ent.prevRotationYaw = ent.rotationYaw;
-							ent.rotationYaw += yawDif;
-						}
-					} else {
-						if (worldObj.isRemote) {
-							ent.prevRotationYaw = ent.rotationYaw;
-							ent.rotationYaw += yawDif;
-						}
-					}
-				}
-			}
-		}
-
 	}
 
 	public void updateChunkCache() {
@@ -704,7 +632,7 @@ public class PhysicsObject {
 				}
 				// Do this to get it re-integrated into the world
 				if (!worldObj.isRemote) {
-					injectChunkIntoWorld(chunk, x, z);
+					injectChunkIntoWorld(chunk, x, z, false);
 				}
 				claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ] = chunk;
 			}
@@ -874,6 +802,11 @@ public class PhysicsObject {
 		}
 
 		creator = compound.getString("owner");
+		for (int x = ownedChunks.minX; x <= ownedChunks.maxX; x++) {
+			for (int z = ownedChunks.minZ; z <= ownedChunks.maxZ; z++) {
+				worldObj.getChunkFromChunkCoords(x, z);
+			}
+		}
 	}
 
 	public void readSpawnData(ByteBuf additionalData) {
@@ -905,7 +838,6 @@ public class PhysicsObject {
 		}
 		loadClaimedChunks();
 		renderer.updateOffsetPos(refrenceBlockPos);
-		renderer.markForUpdate();
 
 		coordTransform.stack.pushMessage(new PhysWrapperPositionMessage(this));
 

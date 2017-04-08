@@ -1,8 +1,6 @@
 package ValkyrienWarfareBase.Render;
 
 import java.nio.FloatBuffer;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 
@@ -13,22 +11,13 @@ import ValkyrienWarfareBase.Math.Quaternion;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.Proxy.ClientProxy;
-import ValkyrienWarfareCombat.Entity.EntityCannonBasic;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.client.ForgeHooksClient;
 
 /**
  * Object owned by each physObject responsible for handling all rendering operations
@@ -40,7 +29,6 @@ public class PhysObjectRenderManager {
 
 	public static boolean renderingMountedEntities = false;
 
-	public boolean needsSolidUpdate = true, needsCutoutUpdate = true, needsCutoutMippedUpdate = true, needsTranslucentUpdate = true;
 	public int glCallListSolid = -1;
 	public int glCallListTranslucent = -1;
 	public int glCallListCutout = -1;
@@ -62,81 +50,6 @@ public class PhysObjectRenderManager {
 		offsetPos = newPos;
 	}
 
-	public void updateList(BlockRenderLayer layerToUpdate) {
-		if (offsetPos == null) {
-			return;
-		}
-		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer worldrenderer = tessellator.getBuffer();
-		worldrenderer.begin(7, DefaultVertexFormats.BLOCK);
-		worldrenderer.setTranslation(-offsetPos.getX(), -offsetPos.getY(), -offsetPos.getZ());
-		GL11.glPushMatrix();
-		switch (layerToUpdate) {
-		case CUTOUT:
-			GLAllocation.deleteDisplayLists(glCallListCutout);
-			glCallListCutout = GLAllocation.generateDisplayLists(1);
-			GL11.glNewList(glCallListCutout, GL11.GL_COMPILE);
-			break;
-		case CUTOUT_MIPPED:
-			GLAllocation.deleteDisplayLists(glCallListCutoutMipped);
-			glCallListCutoutMipped = GLAllocation.generateDisplayLists(1);
-			GL11.glNewList(glCallListCutoutMipped, GL11.GL_COMPILE);
-			break;
-		case SOLID:
-			GLAllocation.deleteDisplayLists(glCallListSolid);
-			glCallListSolid = GLAllocation.generateDisplayLists(1);
-			GL11.glNewList(glCallListSolid, GL11.GL_COMPILE);
-			break;
-		case TRANSLUCENT:
-			GLAllocation.deleteDisplayLists(glCallListTranslucent);
-			glCallListTranslucent = GLAllocation.generateDisplayLists(1);
-			GL11.glNewList(glCallListTranslucent, GL11.GL_COMPILE);
-			break;
-		default:
-			break;
-		}
-
-		GlStateManager.pushMatrix();
-		// worldrenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-		IBlockState iblockstate;
-		// if (Minecraft.isAmbientOcclusionEnabled()) {
-		// GlStateManager.shadeModel(GL11.GL_SMOOTH);
-		// } else {
-		// GlStateManager.shadeModel(GL11.GL_FLAT);
-		// }
-		ForgeHooksClient.setRenderLayer(layerToUpdate);
-		for (BlockPos pos : parent.blockPositions) {
-			iblockstate = parent.worldObj.getBlockState(pos);
-			if (iblockstate.getBlock().canRenderInLayer(iblockstate, layerToUpdate)) {
-				Minecraft.getMinecraft().getBlockRendererDispatcher().renderBlock(iblockstate, pos, parent.worldObj, worldrenderer);
-			}
-		}
-		tessellator.draw();
-		// worldrenderer.finishDrawing();
-		ForgeHooksClient.setRenderLayer(null);
-		GlStateManager.popMatrix();
-		GL11.glEndList();
-		GL11.glPopMatrix();
-		worldrenderer.setTranslation(0, 0, 0);
-
-		switch (layerToUpdate) {
-		case CUTOUT:
-			needsCutoutUpdate = false;
-			break;
-		case CUTOUT_MIPPED:
-			needsCutoutMippedUpdate = false;
-			break;
-		case SOLID:
-			needsSolidUpdate = false;
-			break;
-		case TRANSLUCENT:
-			needsTranslucentUpdate = false;
-			break;
-		default:
-			break;
-		}
-	}
-
 	public void renderBlockLayer(BlockRenderLayer layerToRender, double partialTicks, int pass) {
 		if (renderChunks == null) {
 			if (parent.claimedChunks == null) {
@@ -152,12 +65,12 @@ public class PhysObjectRenderManager {
 
 		GL11.glPushMatrix();
 		Minecraft.getMinecraft().entityRenderer.enableLightmap();
-		int i = parent.wrapper.getBrightnessForRender((float) partialTicks);
+//		int i = parent.wrapper.getBrightnessForRender((float) partialTicks);
 
-		int j = i % 65536;
-		int k = i / 65536;
-		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float) j, (float) k);
-		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+//		int j = i % 65536;
+//		int k = i / 65536;
+//		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float) j, (float) k);
+//		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
 		setupTranslation(partialTicks);
 		for (PhysRenderChunk[] chunkArray : renderChunks) {
@@ -170,8 +83,24 @@ public class PhysObjectRenderManager {
 		GL11.glPopMatrix();
 	}
 
+	public void killRenderers(){
+		if (renderChunks != null) {
+			for(PhysRenderChunk[] chunks : renderChunks){
+				for(PhysRenderChunk chunk : chunks){
+					chunk.killRenderChunk();
+				}
+			}
+		}
+	}
+
 	public void updateRange(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
 		if (renderChunks == null || parent == null || parent.ownedChunks == null) {
+			return;
+		}
+
+		int size = (maxX + 1 - minX) * (maxZ + 1 - minZ) * (maxY +1 - minY);
+
+		if(size > 65535){
 			return;
 		}
 
@@ -187,11 +116,11 @@ public class PhysObjectRenderManager {
 			for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
 				//TODO: Fix this render bug
 				try{
-					if(chunkX >= parent.ownedChunks.minX && chunkZ >= parent.ownedChunks.minZ && chunkX - parent.ownedChunks.minX < 25 && chunkZ - parent.ownedChunks.minZ < 25){
+					if(chunkX >= parent.ownedChunks.minX && chunkZ >= parent.ownedChunks.minZ && chunkX - parent.ownedChunks.minX < renderChunks.length && chunkZ - parent.ownedChunks.minZ < renderChunks[0].length){
 						PhysRenderChunk renderChunk = renderChunks[chunkX - parent.ownedChunks.minX][chunkZ - parent.ownedChunks.minZ];
 						renderChunk.updateLayers(minBlockArrayY, maxBlockArrayY);
 					}else{
-						ValkyrienWarfareMod.VWLogger.info("updateRange Just attempted to update blocks outside of a Ship's Block Range. ANY ERRORS PAST THIS ARE LIKELY RELATED!");
+//						ValkyrienWarfareMod.VWLogger.info("updateRange Just attempted to update blocks outside of a Ship's Block Range. ANY ERRORS PAST THIS ARE LIKELY RELATED!");
 					}
 				}catch(Exception e){
 					e.printStackTrace();
@@ -211,70 +140,6 @@ public class PhysObjectRenderManager {
 				}
 			}
 		}
-	}
-
-	public void renderEntities(float partialTicks) {
-		renderingMountedEntities = true;
-
-		List<Entity> mountedEntities = parent.wrapper.riddenByEntities;
-
-		ArrayList<Entity> mountedEntitiesWithSecondary = new ArrayList<Entity>(mountedEntities);
-
-		for(Entity e : mountedEntities){
-			mountedEntitiesWithSecondary.addAll(e.riddenByEntities);
-		}
-
-		for (Entity mounted : mountedEntitiesWithSecondary) {
-			Vector localPosition = parent.getLocalPositionForEntity(mounted);
-
-			if(localPosition != null){
-				//Copy this vector, don't want to alter the original
-				localPosition = new Vector(localPosition);
-
-				localPosition.X -= offsetPos.getX();
-				localPosition.Y -= offsetPos.getY();
-				localPosition.Z -= offsetPos.getZ();
-
-				Vector originalEntityPos = new Vector(mounted.posX, mounted.posY, mounted.posZ);
-				Vector originalLastEntityPos = new Vector(mounted.lastTickPosX, mounted.lastTickPosY, mounted.lastTickPosZ);
-
-				mounted.posX = mounted.lastTickPosX = localPosition.X;
-				mounted.posY = mounted.lastTickPosY = localPosition.Y;
-				mounted.posZ = mounted.lastTickPosZ = localPosition.Z;
-
-//				System.out.println("test");
-				if (!mounted.isDead && mounted != Minecraft.getMinecraft().getRenderViewEntity() || Minecraft.getMinecraft().gameSettings.thirdPersonView > 0) {
-					if(mounted instanceof EntityCannonBasic){
-//						System.out.println("test");
-					}
-					GL11.glPushMatrix();
-					int i = mounted.getBrightnessForRender(partialTicks);
-					if (mounted.isBurning()) {
-						i = 15728880;
-					}
-					int j = i % 65536;
-					int k = i / 65536;
-					OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float) j / 1.0F, (float) k / 1.0F);
-					GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-					float yaw = mounted.prevRotationYaw + (mounted.rotationYaw - mounted.prevRotationYaw) * partialTicks;
-					double x = localPosition.X;
-					double y = localPosition.Y;
-					double z = localPosition.Z;
-					Minecraft.getMinecraft().getRenderManager().doRenderEntity(mounted, x, y, z, yaw, partialTicks, false);
-					GL11.glPopMatrix();
-				}
-
-				mounted.posX = originalEntityPos.X;
-				mounted.posY = originalEntityPos.Y;
-				mounted.posZ = originalEntityPos.Z;
-				mounted.lastTickPosX = originalLastEntityPos.X;
-				mounted.lastTickPosY = originalLastEntityPos.Y;
-				mounted.lastTickPosZ = originalLastEntityPos.Z;
-
-			}
-		}
-
-		renderingMountedEntities = false;
 	}
 
 	public boolean shouldRender() {
@@ -300,6 +165,9 @@ public class PhysObjectRenderManager {
 		double moddedX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks;
 		double moddedY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks;
 		double moddedZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks;
+
+//		System.out.println(entity.roll - entity.prevRoll);
+
 		double p0 = Minecraft.getMinecraft().player.lastTickPosX + (Minecraft.getMinecraft().player.posX - Minecraft.getMinecraft().player.lastTickPosX) * (double) partialTicks;
 		double p1 = Minecraft.getMinecraft().player.lastTickPosY + (Minecraft.getMinecraft().player.posY - Minecraft.getMinecraft().player.lastTickPosY) * (double) partialTicks;
 		double p2 = Minecraft.getMinecraft().player.lastTickPosZ + (Minecraft.getMinecraft().player.posZ - Minecraft.getMinecraft().player.lastTickPosZ) * (double) partialTicks;
@@ -340,14 +208,38 @@ public class PhysObjectRenderManager {
 
 	// TODO: Program me
 	public void inverseTransform(double partialTicks) {
+		PhysicsWrapperEntity entity = parent.wrapper;
+		Vector centerOfRotation = entity.wrapping.centerCoord;
+		curPartialTick = partialTicks;
 
-	}
+		double moddedX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks;
+		double moddedY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks;
+		double moddedZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks;
+		double p0 = Minecraft.getMinecraft().player.lastTickPosX + (Minecraft.getMinecraft().player.posX - Minecraft.getMinecraft().player.lastTickPosX) * (double) partialTicks;
+		double p1 = Minecraft.getMinecraft().player.lastTickPosY + (Minecraft.getMinecraft().player.posY - Minecraft.getMinecraft().player.lastTickPosY) * (double) partialTicks;
+		double p2 = Minecraft.getMinecraft().player.lastTickPosZ + (Minecraft.getMinecraft().player.posZ - Minecraft.getMinecraft().player.lastTickPosZ) * (double) partialTicks;
 
-	public void markForUpdate() {
-		needsCutoutUpdate = true;
-		needsCutoutMippedUpdate = true;
-		needsSolidUpdate = true;
-		needsTranslucentUpdate = true;
+		Quaternion smoothRotation = getSmoothRotationQuat(partialTicks);
+		double[] radians = smoothRotation.toRadians();
+
+		double moddedPitch = Math.toDegrees(radians[0]);
+		double moddedYaw = Math.toDegrees(radians[1]);
+		double moddedRoll = Math.toDegrees(radians[2]);
+
+//		parent.coordTransform.updateRenderMatrices(moddedX, moddedY, moddedZ, moddedPitch, moddedYaw, moddedRoll);
+
+		if (offsetPos != null) {
+			double offsetX = offsetPos.getX() - centerOfRotation.X;
+			double offsetY = offsetPos.getY() - centerOfRotation.Y;
+			double offsetZ = offsetPos.getZ() - centerOfRotation.Z;
+
+			GL11.glTranslated(-offsetX, -offsetY, -offsetZ);
+			GL11.glRotated(-moddedRoll, 0, 0, 1D);
+			GL11.glRotated(-moddedYaw, 0, 1D, 0);
+			GL11.glRotated(-moddedPitch, 1D, 0, 0);
+			GlStateManager.translate(p0 - moddedX, p1 - moddedY, p2 - moddedZ);
+			// transformBuffer = BufferUtils.createFloatBuffer(16);
+		}
 	}
 
 }

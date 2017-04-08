@@ -1,5 +1,7 @@
 package ValkyrienWarfareBase.Render;
 
+import java.util.ArrayList;
+
 import org.lwjgl.opengl.GL11;
 
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
@@ -10,6 +12,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
@@ -48,10 +51,19 @@ public class PhysRenderChunk {
 		for (int layerY = minLayer; layerY <= maxLayer; layerY++) {
 			RenderLayer layer = layers[layerY];
 			if (layer != null) {
-				layer.updateRenderLists();
+				layer.markDirtyRenderLists();
 			} else {
 				RenderLayer renderLayer = new RenderLayer(renderChunk, layerY * 16, layerY * 16 + 15, this);
 				layers[layerY] = renderLayer;
+			}
+		}
+	}
+
+	public void killRenderChunk(){
+		for (int i = 0; i < 16; i++) {
+			RenderLayer layer = layers[i];
+			if (layer != null) {
+				layer.deleteRenderLayer();
 			}
 		}
 	}
@@ -63,24 +75,61 @@ public class PhysRenderChunk {
 		int glCallListCutout, glCallListCutoutMipped, glCallListSolid, glCallListTranslucent;
 		PhysRenderChunk parent;
 		boolean needsCutoutUpdate, needsCutoutMippedUpdate, needsSolidUpdate, needsTranslucentUpdate;
+		ArrayList<TileEntity> renderTiles = new ArrayList<TileEntity>();
 
 		public RenderLayer(Chunk chunk, int yMin, int yMax, PhysRenderChunk parent) {
 			chunkToRender = chunk;
 			this.yMin = yMin;
 			this.yMax = yMax;
 			this.parent = parent;
-			updateRenderLists();
+			markDirtyRenderLists();
 			glCallListCutout = GLAllocation.generateDisplayLists(4);
 			glCallListCutoutMipped = glCallListCutout + 1;
 			glCallListSolid = glCallListCutout + 2;
 			glCallListTranslucent = glCallListCutout + 3;
 		}
 
-		public void updateRenderLists() {
+		public void markDirtyRenderLists() {
 			needsCutoutUpdate = true;
 			needsCutoutMippedUpdate = true;
 			needsSolidUpdate = true;
 			needsTranslucentUpdate = true;
+			updateRenderTileEntities();
+		}
+
+		public void updateRenderTileEntities(){
+			ArrayList<TileEntity> updatedRenderTiles = new ArrayList<TileEntity>();
+
+			MutableBlockPos pos = new MutableBlockPos();
+			for (int x = chunkToRender.xPosition * 16; x < chunkToRender.xPosition * 16 + 16; x++) {
+				for (int z = chunkToRender.zPosition * 16; z < chunkToRender.zPosition * 16 + 16; z++) {
+					for (int y = yMin; y <= yMax; y++) {
+						pos.setPos(x, y, z);
+
+						TileEntity tile = chunkToRender.getWorld().getTileEntity(pos);
+						if(tile != null){
+							updatedRenderTiles.add(tile);
+						}
+					}
+				}
+			}
+
+			Minecraft.getMinecraft().renderGlobal.updateTileEntities(renderTiles, updatedRenderTiles);
+
+			renderTiles = updatedRenderTiles;
+		}
+
+		public void deleteRenderLayer(){
+			clearRenderLists();
+			Minecraft.getMinecraft().renderGlobal.updateTileEntities(renderTiles, new ArrayList());
+			renderTiles.clear();
+		}
+
+		private void clearRenderLists(){
+			GLAllocation.deleteDisplayLists(glCallListCutout);
+			GLAllocation.deleteDisplayLists(glCallListCutoutMipped);
+			GLAllocation.deleteDisplayLists(glCallListSolid);
+			GLAllocation.deleteDisplayLists(glCallListTranslucent);
 		}
 
 		public void renderBlockLayer(BlockRenderLayer layerToRender, double partialTicks, int pass) {

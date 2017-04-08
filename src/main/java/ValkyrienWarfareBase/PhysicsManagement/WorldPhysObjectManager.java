@@ -1,11 +1,8 @@
 package ValkyrienWarfareBase.PhysicsManagement;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
-
-import com.google.common.collect.Lists;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -16,7 +13,7 @@ import net.minecraft.world.chunk.Chunk;
 
 /**
  * This class essentially handles all the issues with ticking and handling Physics Objects in the given world
- * 
+ *
  * @author thebest108
  *
  */
@@ -39,33 +36,36 @@ public class WorldPhysObjectManager {
 	 */
 	public ArrayList<PhysicsWrapperEntity> getTickablePhysicsEntities(){
 		ArrayList<PhysicsWrapperEntity> list = (ArrayList<PhysicsWrapperEntity>) physicsEntities.clone();
-		
+
 		ArrayList<PhysicsWrapperEntity> frozenShips = new ArrayList<PhysicsWrapperEntity>();
-		
-		
+
+
 		if(worldObj instanceof WorldServer){
 			WorldServer worldServer = (WorldServer)worldObj;
-	        for (PhysicsWrapperEntity wrapper:list)
-	        {
-	        	if(wrapper.wrapping.surroundingWorldChunksCache != null){
-	        		int chunkCacheX = MathHelper.floor(wrapper.posX/16D)-wrapper.wrapping.surroundingWorldChunksCache.chunkX;
-	        		int chunkCacheZ = MathHelper.floor(wrapper.posZ/16D)-wrapper.wrapping.surroundingWorldChunksCache.chunkZ;
-	        		
-	        		chunkCacheX = Math.max(0, Math.min(chunkCacheX,wrapper.wrapping.surroundingWorldChunksCache.chunkArray.length-1));
-	        		chunkCacheZ = Math.max(0, Math.min(chunkCacheZ,wrapper.wrapping.surroundingWorldChunksCache.chunkArray[0].length-1));
-	        		
-	        		Chunk chunk = wrapper.wrapping.surroundingWorldChunksCache.chunkArray[chunkCacheX][chunkCacheZ];
-	        		
-//	        		Chunk chunk = wrapper.wrapping.surroundingWorldChunksCache.chunkArray[(wrapper.wrapping.surroundingWorldChunksCache.chunkArray.length)/2][(wrapper.wrapping.surroundingWorldChunksCache.chunkArray[0].length)/2];
-		            if (chunk != null && !worldServer.getPlayerChunkMap().contains(chunk.xPosition, chunk.zPosition))
-		            {
-		            	frozenShips.add(wrapper);
-		            	//Then I should freeze any ships in this chunk
-		            }
+	        for (PhysicsWrapperEntity wrapper:list){
+	        	if(!wrapper.isDead){
+		        	if(wrapper.wrapping.surroundingWorldChunksCache != null){
+		        		int chunkCacheX = MathHelper.floor(wrapper.posX/16D)-wrapper.wrapping.surroundingWorldChunksCache.chunkX;
+		        		int chunkCacheZ = MathHelper.floor(wrapper.posZ/16D)-wrapper.wrapping.surroundingWorldChunksCache.chunkZ;
+
+		        		chunkCacheX = Math.max(0, Math.min(chunkCacheX,wrapper.wrapping.surroundingWorldChunksCache.chunkArray.length-1));
+		        		chunkCacheZ = Math.max(0, Math.min(chunkCacheZ,wrapper.wrapping.surroundingWorldChunksCache.chunkArray[0].length-1));
+
+		        		Chunk chunk = wrapper.wrapping.surroundingWorldChunksCache.chunkArray[chunkCacheX][chunkCacheZ];
+
+//		        		Chunk chunk = wrapper.wrapping.surroundingWorldChunksCache.chunkArray[(wrapper.wrapping.surroundingWorldChunksCache.chunkArray.length)/2][(wrapper.wrapping.surroundingWorldChunksCache.chunkArray[0].length)/2];
+			            if (chunk != null && !worldServer.playerChunkMap.contains(chunk.xPosition, chunk.zPosition))
+			            {
+			            	frozenShips.add(wrapper);
+			            	//Then I should freeze any ships in this chunk
+			            }
+		        	}
+	        	}else{
+	        		frozenShips.add(wrapper);
 	        	}
 	        }
 		}
-		
+
 		/*if(droppedChunksField == null){
 			try{
 				if(ValkyrienWarfarePlugin.isObfuscatedEnvironment){
@@ -77,10 +77,10 @@ public class WorldPhysObjectManager {
 			}catch(Exception e){}
 		}
 		ChunkProviderServer serverProvider = (ChunkProviderServer) worldObj.getChunkProvider();
-		
+
 		try{
 			Set<Long> droppedChunks = (Set<Long>) droppedChunksField.get(serverProvider);
-			
+
 			for(PhysicsWrapperEntity entity:list){
 				int chunkX = entity.chunkCoordX;
 				int chunkZ = entity.chunkCoordZ;
@@ -89,12 +89,12 @@ public class WorldPhysObjectManager {
 				}
 			}
 		}catch(Exception e){}*/
-		
+
 		list.removeAll(frozenShips);
-		
+
 		return list;
 	}
-	
+
 	public void onLoad(PhysicsWrapperEntity loaded) {
 		if (!loaded.wrapping.fromSplit) {
 			physicsEntities.add(loaded);
@@ -135,15 +135,21 @@ public class WorldPhysObjectManager {
 	}
 
 	public boolean isEntityFixed(Entity entity) {
-		if (getShipFixedOnto(entity) != null) {
+		if (getShipFixedOnto(entity, false) != null) {
 			return true;
 		}
 		return false;
 	}
 
-	public PhysicsWrapperEntity getShipFixedOnto(Entity entity) {
+	public PhysicsWrapperEntity getShipFixedOnto(Entity entity, boolean considerUUID) {
 		for (PhysicsWrapperEntity wrapper : physicsEntities) {
 			if (wrapper.wrapping.isEntityFixed(entity)) {
+				if(considerUUID){
+					if(wrapper.wrapping.entityLocalPositions.containsKey(entity.getPersistentID().hashCode())){
+						return wrapper;
+					}
+				}
+
 				if (wrapper.riddenByEntities.contains(entity)){
 					return wrapper;
 				}

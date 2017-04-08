@@ -47,6 +47,62 @@ import net.minecraftforge.common.DimensionManager;
 
 public class CallRunner {
 
+	public static double getDistanceSq(TileEntity tile, double x, double y, double z){
+		World tileWorld = tile.getWorld();
+		double toReturn = tile.getDistanceSq(x, y, z);
+
+		if(tileWorld != null){
+			//Assume on Ship
+			if(tileWorld.isRemote && toReturn > 9999999D){
+				BlockPos pos = tile.getPos();
+				PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(tile.getWorld(), pos);
+
+				if(wrapper != null){
+					Vector tilePos = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
+					wrapper.wrapping.coordTransform.fromLocalToGlobal(tilePos);
+
+					tilePos.X -= x;
+					tilePos.Y -= y;
+					tilePos.Z -= z;
+
+					return tilePos.lengthSq();
+				}
+			}
+
+		}
+		return toReturn;
+	}
+
+	public static void markBlockRangeForRenderUpdate(World world, int x1, int y1, int z1, int x2, int y2, int z2){
+//		System.out.println((x2-x1)*(y2-y1)*(z2-z1));
+//		System.out.println(x1+":"+x2+":"+y1+":"+y2+":"+z1+":"+z2);
+
+		//Stupid OpenComputers fix, blame those assholes
+		if(x2 == 1 && y1 == 0 && z2 == 1){
+			x2 = x1 + 1;
+			x1--;
+
+			y1 = y2 - 1;
+			y2++;
+
+			z2 = z1 + 1;
+			z2--;
+		}
+
+		int midX = (x1 + x2) / 2;
+		int midY = (y1 + y2) / 2;
+		int midZ = (z1 + z2) / 2;
+		BlockPos newPos = new BlockPos(midX, midY, midZ);
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, newPos);
+		if (wrapper != null && wrapper.wrapping.renderer != null) {
+			wrapper.wrapping.renderer.updateRange(x1-1, y1-1, z1-1, x2+1, y2+1, z2+1);
+		}
+
+		if(wrapper == null){
+			world.markBlockRangeForRenderUpdate(x1, y1, z1, x2, y2, z2);
+		}
+	}
+
 	//Prevent random villages and shit from popping up on ships
     public static void onPopulateChunk(Chunk chunk, IChunkGenerator generator){
     	if(PhysicsChunkManager.isLikelyShipChunk(chunk.xPosition, chunk.zPosition)){
@@ -74,7 +130,7 @@ public class CallRunner {
 
 	public static BlockPos onGetPrecipitationHeight(World world, BlockPos posToCheck) {
 		BlockPos pos = world.getPrecipitationHeight(posToCheck);
-		if(!world.isRemote || ValkyrienWarfareMod.accurateRain){
+		if(!world.isRemote || !ValkyrienWarfareMod.accurateRain){
 			return pos;
 		}else{
 			return CallRunnerClient.onGetPrecipitationHeightClient(world, posToCheck);
@@ -401,13 +457,7 @@ public class CallRunner {
 		IBlockState oldState = world.getBlockState(pos);
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
 		if (wrapper != null) {
-			if(!world.isRemote){
-				wrapper.wrapping.pilotingController.onSetBlockInShip(pos, newState);
-			}
 			wrapper.wrapping.onSetBlockState(oldState, newState, pos);
-			if (world.isRemote) {
-				wrapper.wrapping.renderer.markForUpdate();
-			}
 		}
     }
 
@@ -469,7 +519,7 @@ public class CallRunner {
 			PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(entity.world, newPosInBlock);
 
 			if(wrapper == null){
-				//Just forget this even happened
+//				Just forget this even happened
 //				System.err.println("An entity just tried moving like a millions miles an hour. Probably VW's fault, sorry about that.");
 				return;
 			}
@@ -485,13 +535,6 @@ public class CallRunner {
 			entity.move(type, dx, dy, dz);
 			//Hope the MoverType doesn't affect anything serious
 		}
-	}
-
-	public static void onEntityRemoved(World world, Entity removed) {
-		if (removed instanceof PhysicsWrapperEntity) {
-			ValkyrienWarfareMod.physicsManager.onShipUnload((PhysicsWrapperEntity) removed);
-		}
-		world.onEntityRemoved(removed);
 	}
 
     public static Vec3d onGetLook(Entity entityFor, float partialTicks){

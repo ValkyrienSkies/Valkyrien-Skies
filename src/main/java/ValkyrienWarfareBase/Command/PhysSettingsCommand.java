@@ -22,7 +22,7 @@ import net.minecraft.world.World;
 public class PhysSettingsCommand extends CommandBase {
 
 	public static final ArrayList<String> completionOptions = new ArrayList<String>();
-	
+
 	static {
 		completionOptions.add("gravityVector");
 		completionOptions.add("doSplitting");
@@ -35,6 +35,7 @@ public class PhysSettingsCommand extends CommandBase {
 		completionOptions.add("doAirshipRotation");
 		completionOptions.add("doAirshipMovement");
 		completionOptions.add("save");
+		completionOptions.add("doEtheriumLifting");
 	}
 
 	@Override
@@ -175,6 +176,16 @@ public class PhysSettingsCommand extends CommandBase {
 				sender.sendMessage(new TextComponentString("Set doAirshipMovement to " + (PhysicsSettings.doAirshipMovement ? "enabled" : "disabled")));
 				return;
 			}
+		} else if (key.equals("doEtheriumLifting")) {
+			if (args.length == 1) {
+				sender.sendMessage(new TextComponentString("doEtheriumLifting=" + PhysicsSettings.doEtheriumLifting + " (Default: true)"));
+				return;
+			} else if (args.length == 2) {
+				boolean value = Boolean.parseBoolean(args[1]);
+				PhysicsSettings.doEtheriumLifting = value;
+				sender.sendMessage(new TextComponentString("Set doEtheriumLifting to " + (PhysicsSettings.doEtheriumLifting ? "enabled" : "disabled")));
+				return;
+			}
 		} else if (key.equals("save")) {
 			ValkyrienWarfareMod.instance.saveConfig();
 			sender.sendMessage(new TextComponentString("Saved phyisics settings"));
@@ -188,13 +199,13 @@ public class PhysSettingsCommand extends CommandBase {
 	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos) {
 		if (args.length == 1)	{
 			ArrayList<String> possibleArgs = (ArrayList<String>) completionOptions.clone();
-			
-			for (Iterator<String> iterator = possibleArgs.iterator(); iterator.hasNext();) { //Don't like this, but I have to because concurrentmodificationexception			    
+
+			for (Iterator<String> iterator = possibleArgs.iterator(); iterator.hasNext();) { //Don't like this, but I have to because concurrentmodificationexception
 			    if (!iterator.next().startsWith(args[0])) {
 			        iterator.remove();
 			    }
 			}
-			
+
 			return possibleArgs;
 		} else if (args.length == 2)	{
 			if (args[0].startsWith("do"))	{
@@ -207,7 +218,7 @@ public class PhysSettingsCommand extends CommandBase {
 				}
 			}
 		}
-		
+
 		return null;
 	}
 }

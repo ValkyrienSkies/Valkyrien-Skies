@@ -42,6 +42,11 @@ public class ShipPhysicsCollider {
 
 		Polygon betweenBBPoly = new Polygon(betweenBB, toCollideWith.coordTransform.wToLTransform);
 
+		if(true){
+//			System.out.println(betweenBB);
+			return;
+		}
+
 		List<AxisAlignedBB> bbsInFirst = parent.worldObj.getCollisionBoxes(parent.wrapper, betweenBBPoly.getEnclosedAABB());
 		if (bbsInFirst.isEmpty()) {
 			return;

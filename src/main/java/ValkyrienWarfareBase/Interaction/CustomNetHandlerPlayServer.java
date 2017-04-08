@@ -6,6 +6,7 @@ import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.ItemBucket;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.PacketThreadUtil;
@@ -20,6 +21,7 @@ public class CustomNetHandlerPlayServer extends NetHandlerPlayServer {
 	//Blame Sponge for this
 	public static final double dummyBlockReachDist = 999999999999999999999999999999999999D;
 	public double lastGoodBlockReachDist;
+	public int ticksSinceLastTry = 0;
 
 	public CustomNetHandlerPlayServer(MinecraftServer server, NetworkManager networkManagerIn, EntityPlayerMP playerIn) {
 		super(server, networkManagerIn, playerIn);
@@ -83,6 +85,7 @@ public class CustomNetHandlerPlayServer extends NetHandlerPlayServer {
 		}
 		if(wrapper != null){
 			playerEntity.interactionManager.setBlockReachDistance(dummyBlockReachDist);
+			ticksSinceLastTry = 0;
 		}
 
 		PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.playerEntity.getServerWorld());
@@ -90,7 +93,12 @@ public class CustomNetHandlerPlayServer extends NetHandlerPlayServer {
 			float playerYaw = playerEntity.rotationYaw;
 			float playerPitch = playerEntity.rotationPitch;
 			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, wrapper.wrapping.coordTransform.wToLRotation, playerEntity);
-			super.processTryUseItemOnBlock(packetIn);
+			if(playerEntity.getHeldItem(packetIn.getHand()) != null && playerEntity.getHeldItem(packetIn.getHand()).getItem() instanceof ItemBucket){
+				playerEntity.interactionManager.setBlockReachDistance(lastGoodBlockReachDist);
+			}
+			try{
+				super.processTryUseItemOnBlock(packetIn);
+			}catch(Exception e){}
 			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, wrapper.wrapping.coordTransform.lToWRotation, playerEntity);
 			playerEntity.rotationYaw = playerYaw;
 			playerEntity.rotationPitch = playerPitch;
@@ -108,6 +116,7 @@ public class CustomNetHandlerPlayServer extends NetHandlerPlayServer {
 		}
 		if(wrapper != null){
 			playerEntity.interactionManager.setBlockReachDistance(dummyBlockReachDist);
+			ticksSinceLastTry = 0;
 		}
 
 		PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.playerEntity.getServerWorld());
@@ -133,6 +142,7 @@ public class CustomNetHandlerPlayServer extends NetHandlerPlayServer {
 		}
 		if(wrapper != null){
 			playerEntity.interactionManager.setBlockReachDistance(dummyBlockReachDist);
+			ticksSinceLastTry = 0;
 		}
 
 		PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.playerEntity.getServerWorld());

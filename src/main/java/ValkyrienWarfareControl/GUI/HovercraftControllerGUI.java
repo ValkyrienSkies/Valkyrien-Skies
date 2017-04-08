@@ -92,9 +92,9 @@ public class HovercraftControllerGUI extends GuiContainer {
 		textFields.clear();
 		int fieldWidth = 40;
 		int fieldHeight = 20;
-		GuiTextField top = new GuiTextField(0, fontRendererObj, (width - fieldWidth) / 2 - 61, (height - fieldHeight) / 2 - 77, fieldWidth, fieldHeight);
-		GuiTextField mid = new GuiTextField(0, fontRendererObj, (width - fieldWidth) / 2 - 57, (height - fieldHeight) / 2 - 49, fieldWidth, fieldHeight);
-		GuiTextField bot = new GuiTextField(0, fontRendererObj, (width - fieldWidth) / 2 - 57, (height - fieldHeight) / 2 - 20, fieldWidth, fieldHeight);
+		GuiTextField top = new GuiTextField(0, fontRenderer, (width - fieldWidth) / 2 - 61, (height - fieldHeight) / 2 - 77, fieldWidth, fieldHeight);
+		GuiTextField mid = new GuiTextField(0, fontRenderer, (width - fieldWidth) / 2 - 57, (height - fieldHeight) / 2 - 49, fieldWidth, fieldHeight);
+		GuiTextField bot = new GuiTextField(0, fontRenderer, (width - fieldWidth) / 2 - 57, (height - fieldHeight) / 2 - 20, fieldWidth, fieldHeight);
 		top.setEnableBackgroundDrawing(false);
 		mid.setEnableBackgroundDrawing(false);
 		bot.setEnableBackgroundDrawing(false);

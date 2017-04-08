@@ -1,6 +1,6 @@
 package ValkyrienWarfareBase.CoreMod;
 
-import java.util.ArrayList;
+import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.List;
 
@@ -55,6 +55,15 @@ import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 
 public class CallRunnerClient extends CallRunner {
+
+	private static Field drawingBatchName;
+
+	static{
+		try {
+			drawingBatchName = TileEntityRendererDispatcher.class.getDeclaredField("drawingBatch");
+			drawingBatchName.setAccessible(true);
+		} catch (Exception e) {}
+	}
 
     public static AxisAlignedBB getRenderBoundingBox(TileEntity tile){
     	AxisAlignedBB toReturn = tile.getRenderBoundingBox();
@@ -481,7 +490,19 @@ public class CallRunnerClient extends CallRunner {
 			TileEntityRendererDispatcher.instance.staticPlayerY = wrapper.wrapping.renderer.offsetPos.getY();
 			TileEntityRendererDispatcher.instance.staticPlayerZ = wrapper.wrapping.renderer.offsetPos.getZ();
 
-			dispatch.renderTileEntity(tileentityIn, partialTicks, destroyStage);
+			try{
+				boolean drawingBatchOrig = drawingBatchName.getBoolean(dispatch);
+
+				if(drawingBatchOrig){
+					drawingBatchName.setBoolean(dispatch, false);
+					dispatch.renderTileEntity(tileentityIn, partialTicks, destroyStage);
+					drawingBatchName.setBoolean(dispatch, true);
+				}else{
+					dispatch.renderTileEntity(tileentityIn, partialTicks, destroyStage);
+				}
+			}catch(Exception e){
+				e.printStackTrace();
+			}
 
 			TileEntityRendererDispatcher.instance.staticPlayerX = playerX;
 			TileEntityRendererDispatcher.instance.staticPlayerY = playerY;

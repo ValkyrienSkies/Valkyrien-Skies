@@ -28,7 +28,7 @@ public class CustomNetHandlerPlayServer extends NetHandlerPlayServer {
 	}
 
 	public CustomNetHandlerPlayServer(NetHandlerPlayServer toReplace) {
-		super(toReplace.serverController, toReplace.netManager, toReplace.playerEntity);
+		super(toReplace.serverController, toReplace.netManager, toReplace.player);
 
 		networkTickCount = toReplace.networkTickCount;
 		keepAliveId = toReplace.keepAliveId;
@@ -62,7 +62,7 @@ public class CustomNetHandlerPlayServer extends NetHandlerPlayServer {
 		movePacketCounter = toReplace.movePacketCounter;
 		lastMovePacketCounter = toReplace.lastMovePacketCounter;
 
-		lastGoodBlockReachDist = toReplace.playerEntity.interactionManager.getBlockReachDistance();
+		lastGoodBlockReachDist = toReplace.player.interactionManager.getBlockReachDistance();
 
 		try {
 			Field intHashMapField = this.getClass().getDeclaredField("pendingTransactions");
@@ -79,29 +79,29 @@ public class CustomNetHandlerPlayServer extends NetHandlerPlayServer {
 	@Override
 	public void processTryUseItemOnBlock(CPacketPlayerTryUseItemOnBlock packetIn) {
 		BlockPos packetPos = packetIn.getPos();
-		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(playerEntity.world, packetPos);
-		if(playerEntity.interactionManager.getBlockReachDistance() != dummyBlockReachDist){
-			lastGoodBlockReachDist = playerEntity.interactionManager.getBlockReachDistance();
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.world, packetPos);
+		if(player.interactionManager.getBlockReachDistance() != dummyBlockReachDist){
+			lastGoodBlockReachDist = player.interactionManager.getBlockReachDistance();
 		}
 		if(wrapper != null){
-			playerEntity.interactionManager.setBlockReachDistance(dummyBlockReachDist);
+			player.interactionManager.setBlockReachDistance(dummyBlockReachDist);
 			ticksSinceLastTry = 0;
 		}
 
-		PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.playerEntity.getServerWorld());
+		PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.player.getServerWorld());
 		if (wrapper != null && wrapper.wrapping.coordTransform != null) {
-			float playerYaw = playerEntity.rotationYaw;
-			float playerPitch = playerEntity.rotationPitch;
-			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, wrapper.wrapping.coordTransform.wToLRotation, playerEntity);
-			if(playerEntity.getHeldItem(packetIn.getHand()) != null && playerEntity.getHeldItem(packetIn.getHand()).getItem() instanceof ItemBucket){
-				playerEntity.interactionManager.setBlockReachDistance(lastGoodBlockReachDist);
+			float playerYaw = player.rotationYaw;
+			float playerPitch = player.rotationPitch;
+			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, wrapper.wrapping.coordTransform.wToLRotation, player);
+			if(player.getHeldItem(packetIn.getHand()) != null && player.getHeldItem(packetIn.getHand()).getItem() instanceof ItemBucket){
+				player.interactionManager.setBlockReachDistance(lastGoodBlockReachDist);
 			}
 			try{
 				super.processTryUseItemOnBlock(packetIn);
 			}catch(Exception e){}
-			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, wrapper.wrapping.coordTransform.lToWRotation, playerEntity);
-			playerEntity.rotationYaw = playerYaw;
-			playerEntity.rotationPitch = playerPitch;
+			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, wrapper.wrapping.coordTransform.lToWRotation, player);
+			player.rotationYaw = playerYaw;
+			player.rotationPitch = playerPitch;
 		} else {
 			super.processTryUseItemOnBlock(packetIn);
 		}
@@ -110,24 +110,24 @@ public class CustomNetHandlerPlayServer extends NetHandlerPlayServer {
 	@Override
 	public void processPlayerDigging(CPacketPlayerDigging packetIn) {
 		BlockPos packetPos = packetIn.getPosition();
-		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(playerEntity.world, packetPos);
-		if(playerEntity.interactionManager.getBlockReachDistance() != dummyBlockReachDist){
-			lastGoodBlockReachDist = playerEntity.interactionManager.getBlockReachDistance();
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.world, packetPos);
+		if(player.interactionManager.getBlockReachDistance() != dummyBlockReachDist){
+			lastGoodBlockReachDist = player.interactionManager.getBlockReachDistance();
 		}
 		if(wrapper != null){
-			playerEntity.interactionManager.setBlockReachDistance(dummyBlockReachDist);
+			player.interactionManager.setBlockReachDistance(dummyBlockReachDist);
 			ticksSinceLastTry = 0;
 		}
 
-		PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.playerEntity.getServerWorld());
+		PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.player.getServerWorld());
 		if (wrapper != null && wrapper.wrapping.coordTransform != null) {
-			float playerYaw = playerEntity.rotationYaw;
-			float playerPitch = playerEntity.rotationPitch;
-			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, wrapper.wrapping.coordTransform.wToLRotation, playerEntity);
+			float playerYaw = player.rotationYaw;
+			float playerPitch = player.rotationPitch;
+			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, wrapper.wrapping.coordTransform.wToLRotation, player);
 			super.processPlayerDigging(packetIn);
-			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, wrapper.wrapping.coordTransform.lToWRotation, playerEntity);
-			playerEntity.rotationYaw = playerYaw;
-			playerEntity.rotationPitch = playerPitch;
+			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, wrapper.wrapping.coordTransform.lToWRotation, player);
+			player.rotationYaw = playerYaw;
+			player.rotationPitch = playerPitch;
 		} else {
 			super.processPlayerDigging(packetIn);
 		}
@@ -136,24 +136,24 @@ public class CustomNetHandlerPlayServer extends NetHandlerPlayServer {
 	@Override
 	public void processUpdateSign(CPacketUpdateSign packetIn) {
 		BlockPos packetPos = packetIn.getPosition();
-		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(playerEntity.world, packetPos);
-		if(playerEntity.interactionManager.getBlockReachDistance() != dummyBlockReachDist){
-			lastGoodBlockReachDist = playerEntity.interactionManager.getBlockReachDistance();
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.world, packetPos);
+		if(player.interactionManager.getBlockReachDistance() != dummyBlockReachDist){
+			lastGoodBlockReachDist = player.interactionManager.getBlockReachDistance();
 		}
 		if(wrapper != null){
-			playerEntity.interactionManager.setBlockReachDistance(dummyBlockReachDist);
+			player.interactionManager.setBlockReachDistance(dummyBlockReachDist);
 			ticksSinceLastTry = 0;
 		}
 
-		PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.playerEntity.getServerWorld());
+		PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.player.getServerWorld());
 		if (wrapper != null && wrapper.wrapping.coordTransform != null) {
-			float playerYaw = playerEntity.rotationYaw;
-			float playerPitch = playerEntity.rotationPitch;
-			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, wrapper.wrapping.coordTransform.wToLRotation, playerEntity);
+			float playerYaw = player.rotationYaw;
+			float playerPitch = player.rotationPitch;
+			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, wrapper.wrapping.coordTransform.wToLRotation, player);
 			super.processUpdateSign(packetIn);
-			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, wrapper.wrapping.coordTransform.lToWRotation, playerEntity);
-			playerEntity.rotationYaw = playerYaw;
-			playerEntity.rotationPitch = playerPitch;
+			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, wrapper.wrapping.coordTransform.lToWRotation, player);
+			player.rotationYaw = playerYaw;
+			player.rotationPitch = playerPitch;
 		} else {
 			super.processUpdateSign(packetIn);
 		}

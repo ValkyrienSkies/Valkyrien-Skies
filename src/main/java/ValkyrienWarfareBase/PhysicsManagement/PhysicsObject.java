@@ -503,7 +503,7 @@ public class PhysicsObject {
 		ChunkProviderServer provider = (ChunkProviderServer) worldObj.getChunkProvider();
 		for (int x = ownedChunks.minX; x <= ownedChunks.maxX; x++) {
 			for (int z = ownedChunks.minZ; z <= ownedChunks.maxZ; z++) {
-				provider.unload(claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ]);
+				provider.queueUnload(claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ]);
 			}
 		}
 	}

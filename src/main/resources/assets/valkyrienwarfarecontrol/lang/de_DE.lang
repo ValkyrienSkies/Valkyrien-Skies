@@ -1,0 +1,13 @@
+#ITEMS
+item.systemlinker.name=Systemverknüpfer
+item.airshipStealer.name=Luftschiffstehler
+
+tile.shippilotschair.name=Pilotenstuhl
+tile.dopedetherium.name=Dotiertes Etherium
+
+#ENGINES
+tile.basicEngine.name=Einfacher Motor
+tile.advancedEngine.name=Fortgeschrittener Motor
+tile.eliteEngine.name=Eliter Motor
+tile.ultimateEngine.name=Ultimativer Motor
+tile.redstoneEngine.name=Redstone Motor

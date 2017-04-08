@@ -49,8 +49,6 @@ public class EntityDraggable {
 							}
 						}
 					}
-
-					draggable.worldBelowFeet = null;
 				}
 			}
 		}catch(Exception e){

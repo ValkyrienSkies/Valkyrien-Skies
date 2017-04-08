@@ -1,13 +1,9 @@
 package ValkyrienWarfareBase;
 
 import java.io.File;
-import java.io.InputStream;
-import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
-
-import com.google.common.hash.Hashing;
 
 import ValkyrienWarfareBase.API.DataTag;
 import ValkyrienWarfareBase.API.ValkyrienWarfareHooks;
@@ -18,11 +14,12 @@ import ValkyrienWarfareBase.Capability.IAirshipCounterCapability;
 import ValkyrienWarfareBase.Capability.ImplAirshipCounterCapability;
 import ValkyrienWarfareBase.Capability.StorageAirshipCounter;
 import ValkyrienWarfareBase.ChunkManagement.DimensionPhysicsChunkManager;
-import ValkyrienWarfareBase.CoreMod.ValkyrienWarfarePlugin;
+import ValkyrienWarfareBase.Network.PhysWrapperPositionHandler;
+import ValkyrienWarfareBase.Network.PhysWrapperPositionMessage;
+import ValkyrienWarfareBase.Network.PlayerShipRefrenceHandler;
+import ValkyrienWarfareBase.Network.PlayerShipRefrenceMessage;
 import ValkyrienWarfareBase.PhysicsManagement.DimensionPhysObjectManager;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
-import ValkyrienWarfareBase.PhysicsManagement.Network.PhysWrapperPositionHandler;
-import ValkyrienWarfareBase.PhysicsManagement.Network.PhysWrapperPositionMessage;
 import ValkyrienWarfareBase.Proxy.CommonProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -51,7 +48,6 @@ import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import net.minecraftforge.fml.common.patcher.ClassPatch;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
@@ -148,6 +144,7 @@ public class ValkyrienWarfareMod {
 	private void registerNetworks(FMLStateEvent event) {
 		physWrapperNetwork = NetworkRegistry.INSTANCE.newSimpleChannel("physChannel");
 		physWrapperNetwork.registerMessage(PhysWrapperPositionHandler.class, PhysWrapperPositionMessage.class, 0, Side.CLIENT);
+		physWrapperNetwork.registerMessage(PlayerShipRefrenceHandler.class, PlayerShipRefrenceMessage.class, 1, Side.SERVER);
 	}
 
 	private void registerBlocks(FMLStateEvent event) {

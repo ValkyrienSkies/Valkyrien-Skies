@@ -1,4 +1,4 @@
-package ValkyrienWarfareBase.PhysicsManagement.Network;
+package ValkyrienWarfareBase.Network;
 
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import net.minecraft.client.Minecraft;

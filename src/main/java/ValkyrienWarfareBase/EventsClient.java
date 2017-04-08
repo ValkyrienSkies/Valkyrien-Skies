@@ -1,8 +1,7 @@
 package ValkyrienWarfareBase;
 
-import org.lwjgl.opengl.GL11;
-
 import ValkyrienWarfareBase.Interaction.EntityDraggable;
+import ValkyrienWarfareBase.Network.PlayerShipRefrenceMessage;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
 import net.minecraft.client.Minecraft;
@@ -35,6 +34,16 @@ public class EventsClient {
 						wrapper.wrapping.onPostTickClient();
 					}
 					EntityDraggable.tickAddedVelocityForWorld(mc.theWorld);
+				}
+			}
+			if(event.phase == Phase.END){
+				Object o = Minecraft.getMinecraft().thePlayer;
+				EntityDraggable draggable = (EntityDraggable) o;
+
+				if(draggable.worldBelowFeet != null){
+					PlayerShipRefrenceMessage playerPosMessage = new PlayerShipRefrenceMessage(Minecraft.getMinecraft().thePlayer, draggable.worldBelowFeet);
+
+					ValkyrienWarfareMod.physWrapperNetwork.sendToServer(playerPosMessage);
 				}
 			}
 		}

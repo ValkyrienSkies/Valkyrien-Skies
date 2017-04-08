@@ -1,5 +1,6 @@
 package ValkyrienWarfareBase.Relocation;
 
+import ValkyrienWarfareBase.BlockPhysicsRegistration;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -13,7 +14,7 @@ public class ShipBlockPosFinder extends SpatialDetector {
 
 	@Override
 	public boolean isValidExpansion(int x, int y, int z) {
-		return !cache.getBlockState(x, y, z).getBlock().equals(Blocks.AIR);
+		return !BlockPhysicsRegistration.blocksToNotPhysicise.contains(cache.getBlockState(x, y, z).getBlock());
 	}
 
 }

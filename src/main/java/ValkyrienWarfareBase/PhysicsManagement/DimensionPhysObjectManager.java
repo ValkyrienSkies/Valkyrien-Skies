@@ -7,6 +7,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.gen.ChunkProviderServer;
 
 public class DimensionPhysObjectManager {
 
@@ -67,6 +68,8 @@ public class DimensionPhysObjectManager {
 	 * @param chunk
 	 * @return
 	 */
+
+	//If you caused an Entity$1 crash, it probably started here >:(
 	public PhysicsWrapperEntity getObjectManagingChunk(Chunk chunk) {
 		if (chunk == null) {
 			return null;
@@ -86,6 +89,16 @@ public class DimensionPhysObjectManager {
 //			System.out.println("Retard Devs coded a World with no Chunks in it!");
 			return null;
 		}
+		//NoClassFound Entity$1.class FIX
+		if(!world.isRemote){
+			if(world.getChunkProvider() instanceof ChunkProviderServer){
+				ChunkProviderServer providerServer =  (ChunkProviderServer) world.getChunkProvider();
+				//The chunk at the given pos isn't loaded? Don't bother with the next step, you'll create an infinite loop!
+				if(!providerServer.chunkExists(pos.getX() >> 4, pos.getZ() >> 4)){
+					return null;
+				}
+			}
+		}
 		Chunk chunk = world.getChunkFromBlockCoords(pos);
 		return getObjectManagingChunk(chunk);
 	}
@@ -95,7 +108,7 @@ public class DimensionPhysObjectManager {
 	}
 
 	public PhysicsWrapperEntity getShipFixedOnto(Entity entity) {
-		return getManagerForWorld(entity.worldObj).getShipFixedOnto(entity);
+		return getManagerForWorld(entity.worldObj).getShipFixedOnto(entity, false);
 	}
 
 }

@@ -6,4 +6,5 @@ public final class PhysicsSettings {
 	public static boolean doBalloons = true;
 	public static boolean doAirshipRotation = true;
 	public static boolean doAirshipMovement = true;
+	public static boolean doEtheriumLifting = true;
 }

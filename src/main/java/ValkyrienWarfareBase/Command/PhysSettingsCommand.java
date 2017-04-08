@@ -35,6 +35,7 @@ public class PhysSettingsCommand extends CommandBase {
 		completionOptions.add("doAirshipRotation");
 		completionOptions.add("doAirshipMovement");
 		completionOptions.add("save");
+		completionOptions.add("doEtheriumLifting");
 	}
 
 	@Override
@@ -173,6 +174,16 @@ public class PhysSettingsCommand extends CommandBase {
 				boolean value = Boolean.parseBoolean(args[1]);
 				PhysicsSettings.doAirshipMovement = value;
 				sender.addChatMessage(new TextComponentString("Set doAirshipMovement to " + (PhysicsSettings.doAirshipMovement ? "enabled" : "disabled")));
+				return;
+			}
+		} else if (key.equals("doEtheriumLifting")) {
+			if (args.length == 1) {
+				sender.addChatMessage(new TextComponentString("doEtheriumLifting=" + PhysicsSettings.doEtheriumLifting + " (Default: true)"));
+				return;
+			} else if (args.length == 2) {
+				boolean value = Boolean.parseBoolean(args[1]);
+				PhysicsSettings.doEtheriumLifting = value;
+				sender.addChatMessage(new TextComponentString("Set doEtheriumLifting to " + (PhysicsSettings.doEtheriumLifting ? "enabled" : "disabled")));
 				return;
 			}
 		} else if (key.equals("save")) {

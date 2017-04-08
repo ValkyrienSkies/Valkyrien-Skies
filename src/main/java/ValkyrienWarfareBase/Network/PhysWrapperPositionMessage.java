@@ -1,4 +1,4 @@
-package ValkyrienWarfareBase.PhysicsManagement.Network;
+package ValkyrienWarfareBase.Network;
 
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;

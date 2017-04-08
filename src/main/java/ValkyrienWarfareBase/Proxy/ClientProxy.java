@@ -48,9 +48,9 @@ public class ClientProxy extends CommonProxy {
 	@Override
 	public void postInit(FMLPostInitializationEvent e) {
 		super.postInit(e);
-		new AClass<>(Minecraft.class).<RenderManager>getDeclaredField("renderManager", "field_175616_W").setAccessible(true).set(Minecraft.getMinecraft(), new RenderManagerOverride(Minecraft.getMinecraft().getRenderManager()));
-		new AClass<>(ItemRenderer.class).<RenderManager>getDeclaredField("renderManager", "field_178111_g").setAccessible(true).setFinal(false).set(Minecraft.getMinecraft().getItemRenderer(), Minecraft.getMinecraft().getRenderManager());
-		new AClass<>(RenderGlobal.class).<RenderManager>getDeclaredField("renderManager", "field_175010_j").setFinal(false).set(Minecraft.getMinecraft().renderGlobal, Minecraft.getMinecraft().getRenderManager());
+//		new AClass<>(Minecraft.class).<RenderManager>getDeclaredField("renderManager", "field_175616_W").setAccessible(true).set(Minecraft.getMinecraft(), new RenderManagerOverride(Minecraft.getMinecraft().getRenderManager()));
+//		new AClass<>(ItemRenderer.class).<RenderManager>getDeclaredField("renderManager", "field_178111_g").setAccessible(true).setFinal(false).set(Minecraft.getMinecraft().getItemRenderer(), Minecraft.getMinecraft().getRenderManager());
+//		new AClass<>(RenderGlobal.class).<RenderManager>getDeclaredField("renderManager", "field_175010_j").setFinal(false).set(Minecraft.getMinecraft().renderGlobal, Minecraft.getMinecraft().getRenderManager());
 	}
 
 	private void registerBlockItem(Block toRegister) {

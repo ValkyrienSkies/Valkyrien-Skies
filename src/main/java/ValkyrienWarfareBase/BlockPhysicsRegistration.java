@@ -4,12 +4,16 @@ import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Physics.BlockForce;
 import ValkyrienWarfareBase.Physics.BlockMass;
 import ValkyrienWarfareControl.ValkyrienWarfareControlMod;
+import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
+
+import java.util.ArrayList;
 
 public class BlockPhysicsRegistration {
 
 	public static BlockMass blockMass = BlockMass.basicMass;
 	public static BlockForce blockForces = BlockForce.basicForces;
+	public static ArrayList<Block> blocksToNotPhysicise = new ArrayList<>();
 
 	public static void registerCustomBlockMasses() {
 		blockMass.registerBlockMass(Blocks.AIR, 0D);
@@ -32,4 +36,11 @@ public class BlockPhysicsRegistration {
 		blockForces.registerBlockForce(ValkyrienWarfareControlMod.instance.dopedEtherium, new Vector(0, 10000D, 0), false);
 	}
 
+	public static void registerBlocksToNotPhysicise()	{
+		blocksToNotPhysicise.add(Blocks.AIR);
+		blocksToNotPhysicise.add(Blocks.WATER);
+		blocksToNotPhysicise.add(Blocks.FLOWING_WATER);
+		blocksToNotPhysicise.add(Blocks.LAVA);
+		blocksToNotPhysicise.add(Blocks.FLOWING_LAVA);
+	}
 }

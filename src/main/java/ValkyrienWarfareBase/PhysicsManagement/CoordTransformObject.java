@@ -6,7 +6,7 @@ import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Collision.Polygon;
-import ValkyrienWarfareBase.PhysicsManagement.Network.PhysWrapperPositionMessage;
+import ValkyrienWarfareBase.Network.PhysWrapperPositionMessage;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.AxisAlignedBB;

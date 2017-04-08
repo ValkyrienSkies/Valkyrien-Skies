@@ -55,7 +55,7 @@ public class PhysicsCalculations {
 
 	public double[] MoITensor, invMoITensor;
 	public double[] framedMOI, invFramedMOI;
-	
+
 	public boolean actAsArchimedes = false;
 
 	public PhysicsCalculations(PhysicsObject toProcess) {
@@ -77,6 +77,12 @@ public class PhysicsCalculations {
 	}
 
 	public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos pos) {
+		if(newState == oldState){
+			//Nothing changed, so don't do anything
+			//Or, liquids were involved, so still don't do anything
+			return;
+		}
+
 		if (oldState.getBlock() == Blocks.AIR) {
 			if (BlockForce.basicForces.isBlockProvidingForce(newState, pos, worldObj)) {
 				activeForcePositions.add(pos);
@@ -182,7 +188,7 @@ public class PhysicsCalculations {
 	public void rawPhysTickPreCol(double newPhysSpeed, int iters) {
 		if (parent.doPhysics) {
 			updatePhysSpeedAndIters(newPhysSpeed, iters);
-			updateCenterOfMass();
+			updateParentCenterOfMass();
 			calculateFramedMOITensor();
 			if(!actAsArchimedes){
 				calculateForces();
@@ -200,6 +206,15 @@ public class PhysicsCalculations {
 
 	public void rawPhysTickPostCol() {
 		if (parent.doPhysics) {
+			if(arePhysicsGoingWayTooFast()){
+				parent.doPhysics = false;
+
+				linearMomentum.zero();
+				angularVelocity.zero();
+
+				return;
+			}
+
 			if (PhysicsSettings.doAirshipRotation)
 				applyAngularVelocity();
 
@@ -208,8 +223,22 @@ public class PhysicsCalculations {
 		}
 	}
 
+	private boolean arePhysicsGoingWayTooFast(){
+		if(angularVelocity.lengthSq() > 5000){
+			System.out.println("Ship tried moving too fast; freezing it and reseting velocities");
+			return true;
+		}
+
+		//This says if ship is moving faster than 10 blocks per second
+		if(linearMomentum.lengthSq() * invMass * invMass > 5000){
+			System.out.println("Ship tried moving too fast; freezing it and reseting velocities");
+			return true;
+		}
+		return false;
+	}
+
 	// The x/y/z variables need to be updated when the centerOfMass location changes
-	public void updateCenterOfMass() {
+	public void updateParentCenterOfMass() {
 		Vector parentCM = parent.centerCoord;
 		if (!parent.centerCoord.equals(centerOfMass)) {
 			Vector CMDif = centerOfMass.getSubtraction(parentCM);
@@ -401,10 +430,10 @@ public class PhysicsCalculations {
 		speed.Z += (linearMomentum.Z * invMass);
 		return speed;
 	}
-	
+
 	public void setMomentumAtPoint(Vector inBodyWO, Vector toSet) {
 		toSet.setCross(angularVelocity, inBodyWO);
-		
+
 		toSet.X += (linearMomentum.X * invMass);
 		toSet.Y += (linearMomentum.Y * invMass);
 		toSet.Z += (linearMomentum.Z * invMass);

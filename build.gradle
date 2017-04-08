@@ -79,9 +79,9 @@ minecraft {
 dependencies {
     // Basically just mods that are being bugtested with ValkyrienWarfare go here, they will get autocompiled and mixed into the project
 	
-    //deobfCompile "slimeknights.mantle:Mantle:${config.minecraft_version}-${config.mantle_version}:deobf"
+    deobfCompile "slimeknights.mantle:Mantle:${config.minecraft_version}-${config.mantle_version}:deobf"
 	
-    //compile "slimeknights:TConstruct:${config.minecraft_version_short}-${config.ticon_version}:deobf"
+    compile "slimeknights:TConstruct:${config.minecraft_version_short}-${config.ticon_version}:deobf"
 
 	//compile "org.spongepowered:spongeforge:1.10.2-2123-5.1.0-BETA-1893"
 }

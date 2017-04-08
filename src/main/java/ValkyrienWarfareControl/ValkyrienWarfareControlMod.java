@@ -55,7 +55,7 @@ public class ValkyrienWarfareControlMod {
 
 	public static final String MODID = "valkyrienwarfarecontrol";
 	public static final String MODNAME = "Valkyrien Warfare Control";
-	public static final String MODVER = "0.3b";
+	public static final String MODVER = "0.3c";
 
 	public static ValkyrienWarfareControlMod instance;
 
@@ -166,7 +166,7 @@ public class ValkyrienWarfareControlMod {
 	private void registerItems(FMLStateEvent event) {
 		systemLinker = new ItemSystemLinker().setUnlocalizedName("systemlinker").setRegistryName(MODID, "systemlinker").setCreativeTab(CreativeTabs.TRANSPORTATION).setMaxStackSize(1);
 		airshipStealer = new ItemShipStealer().setUnlocalizedName("airshipStealer").setRegistryName(MODID, "airshipStealer").setCreativeTab(CreativeTabs.TOOLS).setMaxStackSize(1);
-		
+
 		GameRegistry.registerItem(systemLinker);
 		GameRegistry.registerItem(airshipStealer);
 	}

@@ -6,6 +6,7 @@ import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.ItemBucket;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.PacketThreadUtil;
@@ -92,7 +93,12 @@ public class CustomNetHandlerPlayServer extends NetHandlerPlayServer {
 			float playerYaw = playerEntity.rotationYaw;
 			float playerPitch = playerEntity.rotationPitch;
 			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, wrapper.wrapping.coordTransform.wToLRotation, playerEntity);
-			super.processRightClickBlock(packetIn);
+			if(playerEntity.getHeldItem(packetIn.getHand()) != null && playerEntity.getHeldItem(packetIn.getHand()).getItem() instanceof ItemBucket){
+				playerEntity.interactionManager.setBlockReachDistance(lastGoodBlockReachDist);
+			}
+			try{
+				super.processRightClickBlock(packetIn);
+			}catch(Exception e){}
 			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, wrapper.wrapping.coordTransform.lToWRotation, playerEntity);
 			playerEntity.rotationYaw = playerYaw;
 			playerEntity.rotationPitch = playerPitch;

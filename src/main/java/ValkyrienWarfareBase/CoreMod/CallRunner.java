@@ -46,6 +46,32 @@ import net.minecraftforge.common.DimensionManager;
 
 public class CallRunner {
 
+	public static double getDistanceSq(TileEntity tile, double x, double y, double z){
+		World tileWorld = tile.getWorld();
+		double toReturn = tile.getDistanceSq(x, y, z);
+
+		if(tileWorld != null){
+			//Assume on Ship
+			if(tileWorld.isRemote && toReturn > 9999999D){
+				BlockPos pos = tile.getPos();
+				PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(tile.getWorld(), pos);
+
+				if(wrapper != null){
+					Vector tilePos = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
+					wrapper.wrapping.coordTransform.fromLocalToGlobal(tilePos);
+
+					tilePos.X -= x;
+					tilePos.Y -= y;
+					tilePos.Z -= z;
+
+					return tilePos.lengthSq();
+				}
+			}
+
+		}
+		return toReturn;
+	}
+
 	public static void markBlockRangeForRenderUpdate(World world, int x1, int y1, int z1, int x2, int y2, int z2){
 //		System.out.println((x2-x1)*(y2-y1)*(z2-z1));
 //		System.out.println(x1+":"+x2+":"+y1+":"+y2+":"+z1+":"+z2);
@@ -431,9 +457,6 @@ public class CallRunner {
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
 		if (wrapper != null) {
 			wrapper.wrapping.onSetBlockState(oldState, newState, pos);
-			if (world.isRemote) {
-				wrapper.wrapping.renderer.markForUpdate();
-			}
 		}
     }
 

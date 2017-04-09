@@ -6,7 +6,7 @@ import ValkyrienWarfareBase.Network.PhysWrapperPositionMessage;
 
 /**
  * Used by the client to manage all the transformations sent to it by the server, and queues them for smooth delivery and presentation on screen
- * 
+ *
  * @author thebest108
  *
  */

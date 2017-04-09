@@ -301,7 +301,6 @@ public class PhysicsObject {
 			TileEntity worldTile = detector.cache.getTileEntity(pos);
 
 			pos.setPos(pos.getX() + centerDifference.getX(), pos.getY() + centerDifference.getY(), pos.getZ() + centerDifference.getZ());
-			// System.out.println(pos);
 			ownedChunks.chunkOccupiedInLocal[(pos.getX() >> 4) - minChunkX][(pos.getZ() >> 4) - minChunkZ] = true;
 
 			Chunk chunkToSet = claimedChunks[(pos.getX() >> 4) - minChunkX][(pos.getZ() >> 4) - minChunkZ];

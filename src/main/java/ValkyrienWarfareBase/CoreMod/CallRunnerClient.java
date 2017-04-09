@@ -77,7 +77,8 @@ public class CallRunnerClient extends CallRunner {
 		Vector eyeVector = new Vector(0D, f, 0D);
 
 		PhysicsWrapperEntity fixedOnto = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(entity);
-		if (fixedOnto != null) {
+		//Probably overkill, but this should 100% fix the crash in issue #78
+		if (fixedOnto != null && fixedOnto.wrapping != null && fixedOnto.wrapping.renderer != null && fixedOnto.wrapping.renderer.offsetPos != null) {
 			Quaternion orientationQuat = fixedOnto.wrapping.renderer.getSmoothRotationQuat(partialTicks);
 
 			double[] radians = orientationQuat.toRadians();
@@ -232,7 +233,8 @@ public class CallRunnerClient extends CallRunner {
 			GlStateManager.rotate(event.getPitch(), 1.0F, 0.0F, 0.0F);
 			GlStateManager.rotate(event.getYaw(), 0.0F, 1.0F, 0.0F);
 
-			if (fixedOnto != null) {
+			//Probably overkill, but this should 100% fix the crash in issue #78
+			if (fixedOnto != null && fixedOnto.wrapping != null && fixedOnto.wrapping.renderer != null && fixedOnto.wrapping.renderer.offsetPos != null) {
 				Quaternion orientationQuat = fixedOnto.wrapping.renderer.getSmoothRotationQuat(partialTicks);
 
 				double[] radians = orientationQuat.toRadians();

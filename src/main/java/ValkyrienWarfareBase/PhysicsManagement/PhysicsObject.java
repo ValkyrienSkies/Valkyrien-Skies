@@ -30,6 +30,7 @@ import ValkyrienWarfareControl.ValkyrienWarfareControlMod;
 import ValkyrienWarfareControl.Balloon.ShipBalloonManager;
 import ValkyrienWarfareControl.Network.EntityFixMessage;
 import ValkyrienWarfareControl.Piloting.ShipPilotingController;
+import ValkyrienWarfareControl.TileEntity.AntiGravEngineTileEntity;
 import gnu.trove.iterator.TIntIterator;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.state.IBlockState;
@@ -322,8 +323,8 @@ public class PhysicsObject {
 				tileEntNBT.setInteger("z", pos.getZ());
 
 				//Fuck this old code
-//				TileEntity newInstace = VKChunkCache.getTileEntity(pos);
-//				newInstace.readFromNBT(tileEntNBT);
+//				TileEntity newInstance = VKChunkCache.getTileEntity(pos);
+//				newInstance.readFromNBT(tileEntNBT);
 
 				TileEntity newInstance = TileEntity.create(worldObj, tileEntNBT);
 				newInstance.validate();
@@ -355,6 +356,7 @@ public class PhysicsObject {
 						e.printStackTrace();
 					}
 				}
+				worldObj.setTileEntity(newInstance.getPos(), newInstance);
 
 				newInstance.markDirty();
 			}

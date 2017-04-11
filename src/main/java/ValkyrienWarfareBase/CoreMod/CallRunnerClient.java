@@ -1,6 +1,6 @@
 package ValkyrienWarfareBase.CoreMod;
 
-import java.util.ArrayList;
+import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.List;
 
@@ -53,8 +53,18 @@ import net.minecraft.util.math.RayTraceResult.Type;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
+import net.minecraftforge.client.MinecraftForgeClient;
 
 public class CallRunnerClient extends CallRunner {
+
+	private static Field drawingBatchName;
+
+	static{
+		try {
+			drawingBatchName = TileEntityRendererDispatcher.class.getDeclaredField("drawingBatch");
+			drawingBatchName.setAccessible(true);
+		} catch (Exception e) {}
+	}
 
     public static AxisAlignedBB getRenderBoundingBox(TileEntity tile){
     	AxisAlignedBB toReturn = tile.getRenderBoundingBox();
@@ -473,23 +483,39 @@ public class CallRunnerClient extends CallRunner {
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(tileentityIn.getWorld(), pos);
 
 		if(wrapper != null && wrapper.wrapping != null && wrapper.wrapping.renderer != null){
-			wrapper.wrapping.renderer.setupTranslation(partialTicks);
+			try{
+				boolean drawingBatchOrig = drawingBatchName.getBoolean(dispatch);
 
-			double playerX = TileEntityRendererDispatcher.instance.staticPlayerX;
-			double playerY = TileEntityRendererDispatcher.instance.staticPlayerY;
-			double playerZ = TileEntityRendererDispatcher.instance.staticPlayerZ;
+				if(drawingBatchOrig){
+					dispatch.drawBatch(MinecraftForgeClient.getRenderPass());
+					dispatch.preDrawBatch();
+				}
 
-			TileEntityRendererDispatcher.instance.staticPlayerX = wrapper.wrapping.renderer.offsetPos.getX();
-			TileEntityRendererDispatcher.instance.staticPlayerY = wrapper.wrapping.renderer.offsetPos.getY();
-			TileEntityRendererDispatcher.instance.staticPlayerZ = wrapper.wrapping.renderer.offsetPos.getZ();
+				wrapper.wrapping.renderer.setupTranslation(partialTicks);
 
-			dispatch.renderTileEntity(tileentityIn, partialTicks, destroyStage);
+				double playerX = TileEntityRendererDispatcher.instance.staticPlayerX;
+				double playerY = TileEntityRendererDispatcher.instance.staticPlayerY;
+				double playerZ = TileEntityRendererDispatcher.instance.staticPlayerZ;
 
-			TileEntityRendererDispatcher.instance.staticPlayerX = playerX;
-			TileEntityRendererDispatcher.instance.staticPlayerY = playerY;
-			TileEntityRendererDispatcher.instance.staticPlayerZ = playerZ;
+				TileEntityRendererDispatcher.instance.staticPlayerX = wrapper.wrapping.renderer.offsetPos.getX();
+				TileEntityRendererDispatcher.instance.staticPlayerY = wrapper.wrapping.renderer.offsetPos.getY();
+				TileEntityRendererDispatcher.instance.staticPlayerZ = wrapper.wrapping.renderer.offsetPos.getZ();
 
-			wrapper.wrapping.renderer.inverseTransform(partialTicks);
+				if(drawingBatchOrig){
+					dispatch.renderTileEntity(tileentityIn, partialTicks, destroyStage);
+					dispatch.drawBatch(MinecraftForgeClient.getRenderPass());
+					dispatch.preDrawBatch();
+				}else{
+					dispatch.renderTileEntity(tileentityIn, partialTicks, destroyStage);
+				}
+				TileEntityRendererDispatcher.instance.staticPlayerX = playerX;
+				TileEntityRendererDispatcher.instance.staticPlayerY = playerY;
+				TileEntityRendererDispatcher.instance.staticPlayerZ = playerZ;
+
+				wrapper.wrapping.renderer.inverseTransform(partialTicks);
+			}catch(Exception e){
+				e.printStackTrace();
+			}
 		}else{
 			dispatch.renderTileEntity(tileentityIn, partialTicks, destroyStage);
 		}

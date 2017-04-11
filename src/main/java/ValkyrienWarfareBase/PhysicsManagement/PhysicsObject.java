@@ -301,7 +301,6 @@ public class PhysicsObject {
 			TileEntity worldTile = detector.cache.getTileEntity(pos);
 
 			pos.setPos(pos.getX() + centerDifference.getX(), pos.getY() + centerDifference.getY(), pos.getZ() + centerDifference.getZ());
-			// System.out.println(pos);
 			ownedChunks.chunkOccupiedInLocal[(pos.getX() >> 4) - minChunkX][(pos.getZ() >> 4) - minChunkZ] = true;
 
 			Chunk chunkToSet = claimedChunks[(pos.getX() >> 4) - minChunkX][(pos.getZ() >> 4) - minChunkZ];
@@ -322,8 +321,8 @@ public class PhysicsObject {
 				tileEntNBT.setInteger("z", pos.getZ());
 
 				//Fuck this old code
-//				TileEntity newInstace = VKChunkCache.getTileEntity(pos);
-//				newInstace.readFromNBT(tileEntNBT);
+//				TileEntity newInstance = VKChunkCache.getTileEntity(pos);
+//				newInstance.readFromNBT(tileEntNBT);
 
 				TileEntity newInstance = TileEntity.create(worldObj, tileEntNBT);
 				newInstance.validate();
@@ -355,6 +354,7 @@ public class PhysicsObject {
 						e.printStackTrace();
 					}
 				}
+				worldObj.setTileEntity(newInstance.getPos(), newInstance);
 
 				newInstance.markDirty();
 			}

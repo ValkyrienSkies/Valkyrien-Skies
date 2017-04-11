@@ -1,60 +1,60 @@
 [
-{
-  "modid": "valkyrienwarfare",
-  "name": "Valkyrien Warfare",
-  "description": "Rule The Skies!",
-  "version": "0.899",
-  "mcversion": "1.10.2",
-  "url": "https://goo.gl/M2W0N5",
-  "updateUrl": "https://raw.githubusercontent.com/ValkyrienWarfare/VW-Updates/master/update.json",
-  "authorList": ["thebest108", "DaPorkchop_", "Marvin_Megavolt"],
-  "credits": "thebest108, DaPorkchop_, Lemadec, CreativeMD, Lorazaam, Akikaze, Elix_xXx, Marvin_Megavolt, too many people to name",
-  "logoFile": "VW_Logo2.png",
-  "screenshots": [],
-  "dependencies": []
-},
-{
-  "modid": "valkyrienwarfarecontrol",
-  "name": "Valkyrien Warfare Control",
-  "description": "Adds a set of Items and Blocks allowing for more advanced Airship construction",
-  "version": "0.3c",
-  "logoFile": "",
-  "parent": "valkyrienwarfare",
-  "screenshots": [],
-  "dependencies": ["valkyrienwarfare"]
-},
-{
-  "modid": "valkyrienwarfarecombat",
-  "name": "Valkyrien Warfare Combat",
-  "description": "Airship Weapons",
-  "version": "0.1",
-  "logoFile": "",
-  "parent": "valkyrienwarfare",
-  "screenshots": [],
-  "dependencies": ["valkyrienwarfare"]
-},
-{
-  "modid": "valkyrienwarfareworld",
-  "name": "Valkyrien Warfare World",
-  "description": "World Generation for Valkyrien Warfare",
-  "version": "0.0",
-  "logoFile": "",
-  "parent": "valkyrienwarfare",
-  "screenshots": [],
-  "dependencies": ["valkyrienwarfare"]
-},
-{
-  "modid": "examplemod",
-  "name": "Example Mod",
-  "description": "Example placeholder mod.",
-  "version": "${version}",
-  "mcversion": "${mcversion}",
-  "url": "",
-  "updateUrl": "",
-  "authorList": ["ExampleDude"],
-  "credits": "The Forge and FML guys, for making this example",
-  "logoFile": "",
-  "screenshots": [],
-  "dependencies": []
-}
+  {
+    "modid": "valkyrienwarfare",
+    "name": "Valkyrien Warfare",
+    "description": "Rule The Skies!",
+    "version": "0.899",
+    "mcversion": "1.10.2",
+    "url": "https://goo.gl/M2W0N5",
+    "updateUrl": "https://raw.githubusercontent.com/ValkyrienWarfare/VW-Updates/master/update.json",
+    "authorList": ["thebest108", "DaPorkchop_", "Marvin_Megavolt"],
+    "credits": "thebest108, DaPorkchop_, Lemadec, CreativeMD, Lorazaam, Akikaze, Elix_xXx, Marvin_Megavolt, too many people to name",
+    "logoFile": "VW_Logo2.png",
+    "screenshots": [],
+    "dependencies": []
+  },
+  {
+    "modid": "valkyrienwarfarecontrol",
+    "name": "Valkyrien Warfare Control",
+    "description": "Adds a set of Items and Blocks allowing for more advanced Airship construction",
+    "version": "0.3c",
+    "logoFile": "",
+    "parent": "valkyrienwarfare",
+    "screenshots": [],
+    "dependencies": ["valkyrienwarfare"]
+  },
+  {
+    "modid": "valkyrienwarfarecombat",
+    "name": "Valkyrien Warfare Combat",
+    "description": "Airship Weapons",
+    "version": "0.1",
+    "logoFile": "",
+    "parent": "valkyrienwarfare",
+    "screenshots": [],
+    "dependencies": ["valkyrienwarfare"]
+  },
+  {
+    "modid": "valkyrienwarfareworld",
+    "name": "Valkyrien Warfare World",
+    "description": "World Generation for Valkyrien Warfare",
+    "version": "0.0",
+    "logoFile": "",
+    "parent": "valkyrienwarfare",
+    "screenshots": [],
+    "dependencies": ["valkyrienwarfare"]
+  },
+  {
+    "modid": "can",
+    "name": "Cannons!",
+    "description": "What the name says, cannons!",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "https://github.com/ValkyrienWarfare/Valkyrien-Warfare-Revamped/tree/master/src/main/java/com/jackredcreeper/cannon",
+    "updateUrl": "",
+    "authorList": ["JackTheRedCreeper"],
+    "credits": "",
+    "logoFile": "",
+    "screenshots": [],
+    "dependencies": []
+  }
 ]

@@ -52,6 +52,7 @@ public class TransformAdapter extends ClassVisitor {
 	public static final String PredicateName = "com/google/common/base/Predicate";
 	public static final String ListName = "java/util/List";
 	public static final String ClassName = "java/lang/Class";
+	public static final String ImmutableSetMultimapName = "com/google/common/collect/ImmutableSetMultimap";
 
 	public String className;
 
@@ -61,6 +62,13 @@ public class TransformAdapter extends ClassVisitor {
 	}
 
 	public boolean runTransformer(int opcode, String calledName, String calledDesc, String calledOwner, MethodVisitor mv, boolean itf) {
+
+		//This shit only applies to ChickenChunks; fuck it!
+		if (className.contains("ChunkLoaderManager") && isMethod(calledDesc, "()L"+ImmutableSetMultimapName+";", calledName, WorldClassName, "getPersistentChunks", "getPersistentChunks", calledOwner)) {
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "fuckChickenChunks", String.format("(L%s;)L"+ImmutableSetMultimapName+";", WorldClassName), itf);
+			return false;
+		}
+
 		if (isMethod(calledDesc, "()L"+AxisAlignedBBName+";", calledName, TileEntityName, "getRenderBoundingBox", "func_184177_bl", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "getRenderBoundingBox", String.format("(L%s;)L"+AxisAlignedBBName+";", TileEntityName), itf);
 			return false;

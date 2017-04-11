@@ -101,7 +101,7 @@ public class EventsCommon {
 					if(amAdding){
 						((WorldServer)worldFor).getChunkProvider().id2ChunkMap.put(ChunkPos.chunkXZ2Int(chunk.xPosition, chunk.zPosition), chunk);
 					}else{
-						((WorldServer)worldFor).getChunkProvider().id2ChunkMap.remove(ChunkPos.chunkXZ2Int(chunk.xPosition, chunk.zPosition));
+//						((WorldServer)worldFor).getChunkProvider().id2ChunkMap.remove(ChunkPos.chunkXZ2Int(chunk.xPosition, chunk.zPosition));
 					}
 				}
 			}

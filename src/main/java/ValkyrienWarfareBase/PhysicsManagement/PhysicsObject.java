@@ -17,7 +17,6 @@ import ValkyrienWarfareBase.API.EnumChangeOwnerResult;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.ChunkManagement.ChunkSet;
-import ValkyrienWarfareBase.CoreMod.ValkyrienWarfarePlugin;
 import ValkyrienWarfareBase.Network.PhysWrapperPositionMessage;
 import ValkyrienWarfareBase.Physics.BlockForce;
 import ValkyrienWarfareBase.Physics.PhysicsCalculations;
@@ -86,8 +85,6 @@ public class PhysicsObject {
 	public ChunkCache surroundingWorldChunksCache;
 	public String creator;
 
-	private static Field playersField = null;
-
 	public PhysCollisionCallable collisionCallable = new PhysCollisionCallable(this);
 
 	public int lastMessageTick;
@@ -121,9 +118,6 @@ public class PhysicsObject {
 		} else {
 			balloonManager = new ShipBalloonManager(this);
 			pilotingController = new ShipPilotingController(this);
-			if (playersField == null) {
-				grabPlayerField();
-			}
 		}
 	}
 
@@ -409,20 +403,13 @@ public class PhysicsObject {
 			provider.id2ChunkMap.put(ChunkPos.chunkXZ2Int(x, z), chunk);
 		}
 
-		PlayerChunkMapEntry entry = new PlayerChunkMapEntry(((WorldServer) worldObj).getPlayerChunkMap(), x, z);
-		entry.sentToPlayers = true;
-		entry.chunk = chunk;
-
-		try {
-			playersField.set(entry, watchingPlayers);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 		PlayerChunkMap map = ((WorldServer) worldObj).getPlayerChunkMap();
-		map.addEntry(entry);
-		long i = map.getIndex(x, z);
-		map.playerInstances.put(i, entry);
-		map.playerInstanceList.add(entry);
+
+		PlayerChunkMapEntry entry = map.getOrCreateEntry(x, z);
+		entry.sentToPlayers = true;
+		entry.players = watchingPlayers;
+
+		map.pendingSendToPlayers.remove(entry);
 
 		claimedChunksEntries[x - ownedChunks.minX][z - ownedChunks.minZ] = entry;
 //		MinecraftForge.EVENT_BUS.post(new ChunkEvent.Load(chunk));
@@ -685,22 +672,6 @@ public class PhysicsObject {
 
 	public boolean ownsChunk(int chunkX, int chunkZ) {
 		return ownedChunks.isChunkEnclosedInSet(chunkX, chunkZ);
-	}
-
-	private static final void grabPlayerField() {
-		if (playersField == null) {
-			try {
-				if (!ValkyrienWarfarePlugin.isObfuscatedEnvironment) {
-					playersField = PlayerChunkMapEntry.class.getDeclaredField("players");
-				} else {
-					playersField = PlayerChunkMapEntry.class.getDeclaredField("field_187283_c");
-				}
-				playersField.setAccessible(true);
-			} catch (Exception e) {
-				e.printStackTrace();
-				System.exit(0);
-			}
-		}
 	}
 
 	public void queueEntityForMounting(Entity toMount){

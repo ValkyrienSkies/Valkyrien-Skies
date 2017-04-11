@@ -53,6 +53,7 @@ import net.minecraft.util.math.RayTraceResult.Type;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
+import net.minecraftforge.client.MinecraftForgeClient;
 
 public class CallRunnerClient extends CallRunner {
 
@@ -482,35 +483,39 @@ public class CallRunnerClient extends CallRunner {
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(tileentityIn.getWorld(), pos);
 
 		if(wrapper != null && wrapper.wrapping != null && wrapper.wrapping.renderer != null){
-			wrapper.wrapping.renderer.setupTranslation(partialTicks);
-
-			double playerX = TileEntityRendererDispatcher.instance.staticPlayerX;
-			double playerY = TileEntityRendererDispatcher.instance.staticPlayerY;
-			double playerZ = TileEntityRendererDispatcher.instance.staticPlayerZ;
-
-			TileEntityRendererDispatcher.instance.staticPlayerX = wrapper.wrapping.renderer.offsetPos.getX();
-			TileEntityRendererDispatcher.instance.staticPlayerY = wrapper.wrapping.renderer.offsetPos.getY();
-			TileEntityRendererDispatcher.instance.staticPlayerZ = wrapper.wrapping.renderer.offsetPos.getZ();
-
 			try{
 				boolean drawingBatchOrig = drawingBatchName.getBoolean(dispatch);
 
 				if(drawingBatchOrig){
-					drawingBatchName.setBoolean(dispatch, false);
+					dispatch.drawBatch(MinecraftForgeClient.getRenderPass());
+					dispatch.preDrawBatch();
+				}
+
+				wrapper.wrapping.renderer.setupTranslation(partialTicks);
+
+				double playerX = TileEntityRendererDispatcher.instance.staticPlayerX;
+				double playerY = TileEntityRendererDispatcher.instance.staticPlayerY;
+				double playerZ = TileEntityRendererDispatcher.instance.staticPlayerZ;
+
+				TileEntityRendererDispatcher.instance.staticPlayerX = wrapper.wrapping.renderer.offsetPos.getX();
+				TileEntityRendererDispatcher.instance.staticPlayerY = wrapper.wrapping.renderer.offsetPos.getY();
+				TileEntityRendererDispatcher.instance.staticPlayerZ = wrapper.wrapping.renderer.offsetPos.getZ();
+
+				if(drawingBatchOrig){
 					dispatch.renderTileEntity(tileentityIn, partialTicks, destroyStage);
-					drawingBatchName.setBoolean(dispatch, true);
+					dispatch.drawBatch(MinecraftForgeClient.getRenderPass());
+					dispatch.preDrawBatch();
 				}else{
 					dispatch.renderTileEntity(tileentityIn, partialTicks, destroyStage);
 				}
+				TileEntityRendererDispatcher.instance.staticPlayerX = playerX;
+				TileEntityRendererDispatcher.instance.staticPlayerY = playerY;
+				TileEntityRendererDispatcher.instance.staticPlayerZ = playerZ;
+
+				wrapper.wrapping.renderer.inverseTransform(partialTicks);
 			}catch(Exception e){
 				e.printStackTrace();
 			}
-
-			TileEntityRendererDispatcher.instance.staticPlayerX = playerX;
-			TileEntityRendererDispatcher.instance.staticPlayerY = playerY;
-			TileEntityRendererDispatcher.instance.staticPlayerZ = playerZ;
-
-			wrapper.wrapping.renderer.inverseTransform(partialTicks);
 		}else{
 			dispatch.renderTileEntity(tileentityIn, partialTicks, destroyStage);
 		}

@@ -69,7 +69,7 @@ public class WorldPhysObjectManager {
 		ArrayList<PhysicsWrapperEntity> dumbShips = new ArrayList<PhysicsWrapperEntity>();
 
 		for (PhysicsWrapperEntity wrapper:list){
-        	if(wrapper.isDead || wrapper.wrapping == null || (wrapper.wrapping.physicsProcessor == null && !wrapper.worldObj.isRemote)){
+        	if(wrapper.isDead || wrapper.wrapping == null || (wrapper.wrapping.physicsProcessor == null && !wrapper.world.isRemote)){
         		dumbShips.add(wrapper);
         	}
 		}

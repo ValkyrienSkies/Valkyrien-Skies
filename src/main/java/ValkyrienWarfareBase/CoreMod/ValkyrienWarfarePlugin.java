@@ -9,7 +9,7 @@ import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin.TransformerExclusions
 @Name("ValkyrienWarfareBase CoreMod")
 // Over 9000 meme
 @IFMLLoadingPlugin.SortingIndex(9001)
-@TransformerExclusions({ "ValkyrienWarfareBase", "ValkyrienWarfareControl", "ValkyrienWarfareCombat", "ValkyrienWarfareWorld" })
+@TransformerExclusions({ "ValkyrienWarfareBase" })
 public class ValkyrienWarfarePlugin implements IFMLLoadingPlugin {
 
 	public static Boolean isObfuscatedEnvironment = null;

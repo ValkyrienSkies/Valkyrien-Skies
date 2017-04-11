@@ -57,7 +57,7 @@ import net.minecraft.world.World;
 public class CallRunnerClient extends CallRunner {
 
 	public static void onOrientCamera(EntityRenderer renderer, float partialTicks) {
-		if(true){
+		if(!true){
 			renderer.orientCamera(partialTicks);
 			return;
 		}
@@ -84,6 +84,14 @@ public class CallRunnerClient extends CallRunner {
 			double[] orientationMatrix = RotationMatrices.getRotationMatrix(moddedPitch, moddedYaw, moddedRoll);
 
 			RotationMatrices.applyTransform(orientationMatrix, eyeVector);
+			
+			Vector playerPosition = new Vector(fixedOnto.wrapping.getLocalPositionForEntity(entity));
+			
+			RotationMatrices.applyTransform(fixedOnto.wrapping.coordTransform.RlToWTransform, playerPosition);
+			
+			d0 = playerPosition.X;
+			d1 = playerPosition.Y;
+			d2 = playerPosition.Z;
 		}
 
 		d0 += eyeVector.X;
@@ -457,12 +465,6 @@ public class CallRunnerClient extends CallRunner {
 		renderGlobal.renderEntities(renderViewEntity, camera, partialTicks);
 	}
 
-	public static void onDoRenderEntity(RenderManager manager, Entity entityIn, double x, double y, double z, float yaw, float partialTicks, boolean p_188391_10_){
-		if(!ValkyrienWarfareMod.physicsManager.isEntityFixed(entityIn)){
-			manager.doRenderEntity(entityIn, x, y, z, yaw, partialTicks, p_188391_10_);
-		}
-    }
-
 	public static boolean onInvalidateRegionAndSetBlock(WorldClient client, BlockPos pos, IBlockState state) {
 		int i = pos.getX();
 		int j = pos.getY();
@@ -472,6 +474,8 @@ public class CallRunnerClient extends CallRunner {
 	}
 
 	public static int onRenderBlockLayer(RenderGlobal renderer, BlockRenderLayer blockLayerIn, double partialTicks, int pass, Entity entityIn) {
+		int toReturn = renderer.renderBlockLayer(blockLayerIn, partialTicks, pass, entityIn);
+		GlStateManager.resetColor();
 		for (PhysicsWrapperEntity wrapper : ValkyrienWarfareMod.physicsManager.getManagerForWorld(renderer.theWorld).physicsEntities) {
 			GL11.glPushMatrix();
 			if (wrapper.wrapping.renderer != null && wrapper.wrapping.renderer.shouldRender()) {
@@ -479,9 +483,60 @@ public class CallRunnerClient extends CallRunner {
 			}
 			GL11.glPopMatrix();
 		}
-		int toReturn = renderer.renderBlockLayer(blockLayerIn, partialTicks, pass, entityIn);
-		GlStateManager.resetColor();
 		return toReturn;
+	}
+	
+	public static BlockPos onGetPrecipitationHeightClient(World world, BlockPos posToCheck) {
+		BlockPos pos = world.getPrecipitationHeight(posToCheck);
+		// Servers shouldn't bother running this code
+
+		Vector traceStart = new Vector(pos.getX() + .5D, Minecraft.getMinecraft().thePlayer.posY + 50D, pos.getZ() + .5D);
+		Vector traceEnd = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
+		
+//		System.out.println(traceStart);
+//		System.out.println(traceEnd);
+		
+		RayTraceResult result = CallRunner.onRayTraceBlocks(world, traceStart.toVec3d(), traceEnd.toVec3d(), true, true, false);
+		
+		if(result != null && result.typeOfHit != Type.MISS && result.getBlockPos() != null){
+
+			PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, result.getBlockPos());
+			if(wrapper != null){
+//				System.out.println("test");
+				Vector blockPosVector = new Vector(result.getBlockPos().getX() + .5D, result.getBlockPos().getY() + .5D, result.getBlockPos().getZ() + .5D);
+				wrapper.wrapping.coordTransform.fromLocalToGlobal(blockPosVector);
+				BlockPos toReturn = new BlockPos(pos.getX(), blockPosVector.Y + .5D, pos.getZ());
+				return toReturn;
+			}
+		}
+		
+		return pos;
+	}
+	
+	public static Vec3d onGetPositionEyes(Entity entityFor, float partialTicks){
+		Vec3d defaultOutput = entityFor.getPositionEyes(partialTicks);
+		
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(entityFor);
+		
+		if(wrapper != null){
+			Vector playerPosition = new Vector(wrapper.wrapping.getLocalPositionForEntity(entityFor));
+			
+			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.RlToWTransform, playerPosition);
+			
+			Vector playerEyes = new Vector(0, entityFor.getEyeHeight(), 0);
+			//Remove the original position added for the player's eyes
+			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWRotation, playerEyes);
+			//Add the new rotate player eyes to the position
+			playerPosition.add(playerEyes);
+//			System.out.println("test");
+			return playerPosition.toVec3d();
+		}
+		
+		return defaultOutput;
+	}
+	
+	public static RayTraceResult onRayTrace(Entity entityFor, double blockReachDistance, float partialTicks){
+		return entityFor.rayTrace(blockReachDistance, partialTicks);
 	}
 
 }

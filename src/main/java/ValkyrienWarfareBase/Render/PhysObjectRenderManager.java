@@ -39,6 +39,8 @@ import net.minecraftforge.client.ForgeHooksClient;
  */
 public class PhysObjectRenderManager {
 
+	public static boolean renderingMountedEntities = false;
+
 	public boolean needsSolidUpdate = true, needsCutoutUpdate = true, needsCutoutMippedUpdate = true, needsTranslucentUpdate = true;
 	public int glCallListSolid = -1;
 	public int glCallListTranslucent = -1;
@@ -209,9 +211,18 @@ public class PhysObjectRenderManager {
 	}
 
 	public void renderEntities(float partialTicks) {
+		renderingMountedEntities = true;
+
 		ArrayList<FixedEntityData> fixedEntities = new ArrayList();// ArrayList<FixedEntityData>) parent.fixedEntities.clone();
 		List<Entity> mountedEntities = parent.wrapper.riddenByEntities;
-		for (Entity mounted : mountedEntities) {
+		
+		ArrayList<Entity> mountedEntitiesWithSecondary = new ArrayList<Entity>(mountedEntities);
+		
+		for(Entity e : mountedEntities){
+			mountedEntitiesWithSecondary.addAll(e.riddenByEntities);
+		}
+
+		for (Entity mounted : mountedEntitiesWithSecondary) {
 			Vector localPosition = parent.getLocalPositionForEntity(mounted);
 			
 			if(localPosition != null){
@@ -232,7 +243,7 @@ public class PhysObjectRenderManager {
 //				System.out.println("test");
 				if (!mounted.isDead && mounted != Minecraft.getMinecraft().getRenderViewEntity() || Minecraft.getMinecraft().gameSettings.thirdPersonView > 0) {
 					if(mounted instanceof EntityCannonBasic){
-						System.out.println("test");
+//						System.out.println("test");
 					}
 					GL11.glPushMatrix();
 					int i = mounted.getBrightnessForRender(partialTicks);
@@ -260,6 +271,8 @@ public class PhysObjectRenderManager {
 			
 			}
 		}
+
+		renderingMountedEntities = false;
 	}
 
 	public boolean shouldRender() {

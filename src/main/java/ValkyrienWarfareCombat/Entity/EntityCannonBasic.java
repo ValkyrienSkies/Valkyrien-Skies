@@ -1,6 +1,8 @@
 package ValkyrienWarfareCombat.Entity;
 
+import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareCombat.ValkyrienWarfareCombatMod;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -31,9 +33,25 @@ public class EntityCannonBasic extends EntityMountingWeaponBase {
 	public void fireCannon(EntityPlayer player, ItemStack stack, EnumHand hand) {
 		Vec3d velocityNormal = getVectorForRotation(rotationPitch, rotationYaw);
 		Vector velocityVector = new Vector(velocityNormal);
+		
+		PhysicsWrapperEntity wrapper = getParentShip();
+		if(wrapper != null){
+			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWRotation, velocityVector);
+		}
+		
 		velocityVector.multiply(2D);
 		EntityCannonBall projectile = new EntityCannonBall(worldObj, velocityVector, this);
-		projectile.posY += .5;
+		
+		Vector projectileSpawnPos = new Vector(0,.5,0);
+		
+		if(wrapper != null){
+			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWRotation, projectileSpawnPos);
+		}
+		
+		projectile.posX += projectileSpawnPos.X;
+		projectile.posY += projectileSpawnPos.Y;
+		projectile.posZ += projectileSpawnPos.Z;
+		
 		worldObj.spawnEntityInWorld(projectile);
 
 		isCannonLoaded = false;

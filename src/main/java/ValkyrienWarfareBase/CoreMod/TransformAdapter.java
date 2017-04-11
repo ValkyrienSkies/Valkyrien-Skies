@@ -18,52 +18,63 @@ import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRema
  */
 public class TransformAdapter extends ClassVisitor {
 
-	private static final String EntityClassName = "net/minecraft/entity/Entity";
-	private static final String WorldClassName = "net/minecraft/world/World";
-	private static final String WorldClientName = "net/minecraft/client/multiplayer/WorldClient";
-	private static final String PacketName = "net/minecraft/network/Packet";
-	private static final String EntityPlayerName = "net/minecraft/entity/player/EntityPlayer";
-	private static final String RenderGlobalName = "net/minecraft/client/renderer/RenderGlobal";
-	private static final String ICameraName = "net/minecraft/client/renderer/culling/ICamera";
-	private static final String BlockRenderLayerName = "net/minecraft/util/BlockRenderLayer";
-	private static final String ChunkProviderServerName = "net/minecraft/world/gen/ChunkProviderServer";
-	private static final String PlayerListName = "net/minecraft/server/management/PlayerList";
-	private static final String GameProfileName = "com/mojang/authlib/GameProfile";
-	private static final String EntityPlayerMPName = "net/minecraft/entity/player/EntityPlayerMP";
-	private static final String ChunkName = "net/minecraft/world/chunk/Chunk";
-	private static final String RayTraceResult = "net/minecraft/util/math/RayTraceResult";
-	private static final String Vec3dName = "net/minecraft/util/math/Vec3d";
-	private static final String IBlockStateName = "net/minecraft/block/state/IBlockState";
-	private static final String BlockPosName = "net/minecraft/util/math/BlockPos";
-	private static final String TileEntityName = "net/minecraft/tileentity/TileEntity";
-	private static final String TessellatorName = "net/minecraft/client/renderer/Tessellator";
-	private static final String VertexBufferName = "net/minecraft/client/renderer/VertexBuffer";
-	private static final String SoundEventName = "net/minecraft/util/SoundEvent";
-	private static final String SoundCategoryName = "net/minecraft/util/SoundCategory";
-	private static final String ParticleName = "net/minecraft/client/particle/Particle";
-	private static final String ParticleManagerName = "net/minecraft/client/particle/ParticleManager";
-	private static final String ContainerName = "net/minecraft/inventory/Container";
-	private static final String AxisAlignedBBName = "net/minecraft/util/math/AxisAlignedBB";
-	private static final String ExplosionName = "net/minecraft/world/Explosion";
-	private static final String EntityLivingBaseName = "net/minecraft/entity/EntityLivingBase";
-	private static final String ViewFrustumName = "net/minecraft/client/renderer/ViewFrustum";
-	private static final String EntityRendererName = "net/minecraft/client/renderer/EntityRenderer";
-	private static final String FrustumName = "net/minecraft/client/renderer/culling/Frustum";
-	private static final String RenderManagerName = "net/minecraft/client/renderer/entity/RenderManager";
+	public static final String EntityClassName = "net/minecraft/entity/Entity";
+	public static final String WorldClassName = "net/minecraft/world/World";
+	public static final String WorldClientName = "net/minecraft/client/multiplayer/WorldClient";
+	public static final String PacketName = "net/minecraft/network/Packet";
+	public static final String EntityPlayerName = "net/minecraft/entity/player/EntityPlayer";
+	public static final String RenderGlobalName = "net/minecraft/client/renderer/RenderGlobal";
+	public static final String ICameraName = "net/minecraft/client/renderer/culling/ICamera";
+	public static final String BlockRenderLayerName = "net/minecraft/util/BlockRenderLayer";
+	public static final String ChunkProviderServerName = "net/minecraft/world/gen/ChunkProviderServer";
+	public static final String PlayerListName = "net/minecraft/server/management/PlayerList";
+	public static final String GameProfileName = "com/mojang/authlib/GameProfile";
+	public static final String EntityPlayerMPName = "net/minecraft/entity/player/EntityPlayerMP";
+	public static final String ChunkName = "net/minecraft/world/chunk/Chunk";
+	public static final String RayTraceResultName = "net/minecraft/util/math/RayTraceResult";
+	public static final String Vec3dName = "net/minecraft/util/math/Vec3d";
+	public static final String IBlockStateName = "net/minecraft/block/state/IBlockState";
+	public static final String BlockPosName = "net/minecraft/util/math/BlockPos";
+	public static final String TileEntityName = "net/minecraft/tileentity/TileEntity";
+	public static final String TessellatorName = "net/minecraft/client/renderer/Tessellator";
+	public static final String VertexBufferName = "net/minecraft/client/renderer/VertexBuffer";
+	public static final String SoundEventName = "net/minecraft/util/SoundEvent";
+	public static final String SoundCategoryName = "net/minecraft/util/SoundCategory";
+	public static final String ParticleName = "net/minecraft/client/particle/Particle";
+	public static final String ParticleManagerName = "net/minecraft/client/particle/ParticleManager";
+	public static final String ContainerName = "net/minecraft/inventory/Container";
+	public static final String AxisAlignedBBName = "net/minecraft/util/math/AxisAlignedBB";
+	public static final String ExplosionName = "net/minecraft/world/Explosion";
+	public static final String EntityLivingBaseName = "net/minecraft/entity/EntityLivingBase";
+	public static final String ViewFrustumName = "net/minecraft/client/renderer/ViewFrustum";
+	public static final String EntityRendererName = "net/minecraft/client/renderer/EntityRenderer";
+	public static final String FrustumName = "net/minecraft/client/renderer/culling/Frustum";
 
-	private static final String IteratorName = "java/util/Iterator";
-	private static final String PredicateName = "com/google/common/base/Predicate";
-	private static final String ListName = "java/util/List";
-	private static final String ClassName = "java/lang/Class";
+	public static final String IteratorName = "java/util/Iterator";
+	public static final String PredicateName = "com/google/common/base/Predicate";
+	public static final String ListName = "java/util/List";
+	public static final String ClassName = "java/lang/Class";
 
-
-	public TransformAdapter(int api, boolean isObfuscatedEnvironment) {
+	public String className;
+	
+	public TransformAdapter(int api, boolean isObfuscatedEnvironment, String className) {
 		super(api, null);
+		this.className = className;
 	}
 
 	public boolean runTransformer(String calledName, String calledDesc, String calledOwner, MethodVisitor mv) {
-		if (isMethod(calledDesc, "(L"+EntityClassName+";DDDFFZ)V", calledName, RenderManagerName, "doRenderEntity", "func_188391_a", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onDoRenderEntity", String.format("(L%s;L"+EntityClassName+";DDDFFZ)V", RenderManagerName));
+		if (isMethod(calledDesc, "(F)L" + Vec3dName + ";", calledName, EntityClassName, "getPositionEyes", "func_174824_e", calledOwner)) {
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onGetPositionEyes", String.format("(L%s;F)L"+Vec3dName+";", EntityClassName));
+			return false;
+		}
+		
+		if (isMethod(calledDesc, "(F)L" + Vec3dName + ";", calledName, EntityClassName, "getLook", "func_70676_i", calledOwner)) {
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onGetLook", String.format("(L%s;F)L"+Vec3dName+";", EntityClassName));
+			return false;
+		}
+		
+		if (isMethod(calledDesc, "(DF)L" + RayTraceResultName + ";", calledName, EntityClassName, "rayTrace", "func_174822_a", calledOwner)) {
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onRayTrace", String.format("(L%s;DF)L"+RayTraceResultName+";", EntityClassName));
 			return false;
 		}
 		
@@ -89,11 +100,6 @@ public class TransformAdapter extends ClassVisitor {
 
 		if (isMethod(calledDesc, "(IIIIIIZ)V", calledName, ViewFrustumName, "markBlocksForUpdate", "func_187474_a", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onMarkBlocksForUpdate", String.format("(L%s;IIIIIIZ)V", ViewFrustumName));
-			return false;
-		}
-
-		if (isMethod(calledDesc, "(L" + BlockPosName + ";L" + IBlockStateName + ";L" + IBlockStateName + ";I)V", calledName, WorldClassName, "notifyBlockUpdate", "func_184138_a", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onNotifyBlockUpdate", String.format("(L%s;L" + BlockPosName + ";L" + IBlockStateName + ";L" + IBlockStateName + ";I)V", WorldClassName));
 			return false;
 		}
 
@@ -142,15 +148,6 @@ public class TransformAdapter extends ClassVisitor {
 			return false;
 		}
 
-		/*
-		 * if(isMethod(calledDesc,"(L"+EntityPlayerName+";DDDL"+SoundEventName+";L"+SoundCategoryName+";FF)V",calledName,WorldClassName,"playSound","func_184148_a",calledOwner)){ mv.visitMethodInsn( Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onPlaySound2", String.format( "(L%s;L"+EntityPlayerName+";DDDL"+SoundEventName+";L"+SoundCategoryName+";FF)V", WorldClassName) ); return false; }
-		 */
-
-		if (isMethod(calledDesc, "(L" + EntityPlayerName + ";L" + BlockPosName + ";L" + SoundEventName + ";L" + SoundCategoryName + ";FF)V", calledName, WorldClassName, "playSound", "func_184133_a", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onPlaySound1", String.format("(L%s;L" + EntityPlayerName + ";L" + BlockPosName + ";L" + SoundEventName + ";L" + SoundCategoryName + ";FF)V", WorldClassName));
-			return false;
-		}
-
 		if (isMethod(calledDesc, "(L" + ParticleName + ";)V", calledName, ParticleManagerName, "addEffect", "func_78873_a", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onAddEffect", String.format("(L%s;L" + ParticleName + ";)V", ParticleManagerName));
 			return false;
@@ -166,8 +163,8 @@ public class TransformAdapter extends ClassVisitor {
 			return false;
 		}
 
-		if (isMethod(calledDesc, "(L" + EntityPlayerName + ";L" + RayTraceResult + ";IF)V", calledName, RenderGlobalName, "drawSelectionBox", "func_72731_b", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onDrawSelectionBox", String.format("(L%s;L" + EntityPlayerName + ";L" + RayTraceResult + ";IF)V", RenderGlobalName));
+		if (isMethod(calledDesc, "(L" + EntityPlayerName + ";L" + RayTraceResultName + ";IF)V", calledName, RenderGlobalName, "drawSelectionBox", "func_72731_b", calledOwner)) {
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onDrawSelectionBox", String.format("(L%s;L" + EntityPlayerName + ";L" + RayTraceResultName + ";IF)V", RenderGlobalName));
 			return false;
 		}
 
@@ -201,23 +198,8 @@ public class TransformAdapter extends ClassVisitor {
 			return false;
 		}
 
-		if (isMethod(calledDesc, "(IIIIII)V", calledName, WorldClassName, "markBlockRangeForRenderUpdate", "func_147458_c", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onMarkBlockRangeForRenderUpdate", String.format("(L%s;IIIIII)V", WorldClassName));
-			return false;
-		}
-
-		if (isMethod(calledDesc, "(L" + Vec3dName + ";L" + Vec3dName + ";ZZZ)L" + RayTraceResult + ";", calledName, WorldClassName, "rayTraceBlocks", "func_147447_a", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onRayTraceBlocks", String.format("(L%s;L" + Vec3dName + ";L" + Vec3dName + ";ZZZ)L" + RayTraceResult + ";", WorldClassName));
-			return false;
-		}
-
-		if (isMethod(calledDesc, "(L" + GameProfileName + ";)L", calledName, EntityPlayerMPName, "createPlayerForUser", "func_148545_a", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onCreatePlayerForUser", String.format("(L%s;L" + GameProfileName + ";)L" + EntityPlayerMPName + ";", PlayerListName));
-			return false;
-		}
-
-		if (isMethod(calledDesc, "(L" + EntityPlayerMPName + ";IZ)L" + EntityPlayerMPName + ";", calledName, PlayerListName, "recreatePlayerEntity", "func_72368_a", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onRecreatePlayerEntity", String.format("(L%s;L" + EntityPlayerMPName + ";IZ)L" + EntityPlayerMPName + ";", PlayerListName));
+		if (isMethod(calledDesc, "(L" + Vec3dName + ";L" + Vec3dName + ";ZZZ)L" + RayTraceResultName + ";", calledName, WorldClassName, "rayTraceBlocks", "func_147447_a", calledOwner)) {
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onRayTraceBlocks", String.format("(L%s;L" + Vec3dName + ";L" + Vec3dName + ";ZZZ)L" + RayTraceResultName + ";", WorldClassName));
 			return false;
 		}
 

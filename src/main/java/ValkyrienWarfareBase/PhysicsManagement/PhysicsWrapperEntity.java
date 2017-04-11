@@ -3,6 +3,8 @@ package ValkyrienWarfareBase.PhysicsManagement;
 import javax.annotation.Nullable;
 
 import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareBase.Collision.Polygon;
+import ValkyrienWarfareCombat.Entity.EntityMountingWeaponBase;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -65,11 +67,38 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 		// }
 
 		if (inLocal != null) {
+			
 			Vector newEntityPosition = new Vector(inLocal);
-			wrapping.coordTransform.fromLocalToGlobal(newEntityPosition);
-			passenger.posX = newEntityPosition.X;
-			passenger.posY = newEntityPosition.Y;
-			passenger.posZ = newEntityPosition.Z;
+			
+			float f = passenger.width / 2.0F;
+	        float f1 = passenger.height;
+	        AxisAlignedBB inLocalAABB = new AxisAlignedBB(newEntityPosition.X - (double)f, newEntityPosition.Y, newEntityPosition.Z - (double)f, newEntityPosition.X + (double)f, newEntityPosition.Y + (double)f1, newEntityPosition.Z + (double)f);
+	        
+	        wrapping.coordTransform.fromLocalToGlobal(newEntityPosition);
+			
+			passenger.setPosition(newEntityPosition.X, newEntityPosition.Y, newEntityPosition.Z);
+
+			Polygon entityBBPoly = new Polygon(inLocalAABB, wrapping.coordTransform.lToWTransform);
+
+			AxisAlignedBB newEntityBB = entityBBPoly.getEnclosedAABB();
+			
+			passenger.setEntityBoundingBox(newEntityBB);
+			
+			if(passenger instanceof EntityMountingWeaponBase){
+				passenger.onUpdate();
+				
+				for(Entity e:passenger.riddenByEntities){
+					if(wrapping.isEntityFixed(e)){
+						Vector inLocalAgain = wrapping.getLocalPositionForEntity(e);
+						if (inLocalAgain != null) {
+							Vector newEntityPositionAgain = new Vector(inLocalAgain);
+							wrapping.coordTransform.fromLocalToGlobal(newEntityPositionAgain);
+							
+							e.setPosition(newEntityPositionAgain.X, newEntityPositionAgain.Y, newEntityPositionAgain.Z);
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -89,8 +118,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 				wrapping.pilotingController.setPilotEntity(null, false);
 			}
 		} else {
-			// It doesnt matter if I dont remove these terms from client, and things are problematic
-			// if I do; best to leave this commented
+			// It doesnt matter if I dont remove these terms from client, and things are problematic if I do. Best to leave this commented
 			// wrapping.removeEntityUUID(toRemove.getPersistentID().hashCode());
 		}
 	}
@@ -117,6 +145,11 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 
 	@Override
 	public void setLocationAndAngles(double x, double y, double z, float yaw, float pitch) {
+	}
+
+	@Override
+	protected boolean canFitPassenger(Entity passenger){
+		return true;
 	}
 
 	@Override

@@ -1,9 +1,13 @@
 package ValkyrienWarfareBase;
 
 import java.io.File;
+import java.io.InputStream;
+import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
+
+import com.google.common.hash.Hashing;
 
 import ValkyrienWarfareBase.API.DataTag;
 import ValkyrienWarfareBase.API.ValkyrienWarfareHooks;
@@ -14,6 +18,7 @@ import ValkyrienWarfareBase.Capability.IAirshipCounterCapability;
 import ValkyrienWarfareBase.Capability.ImplAirshipCounterCapability;
 import ValkyrienWarfareBase.Capability.StorageAirshipCounter;
 import ValkyrienWarfareBase.ChunkManagement.DimensionPhysicsChunkManager;
+import ValkyrienWarfareBase.CoreMod.ValkyrienWarfarePlugin;
 import ValkyrienWarfareBase.PhysicsManagement.DimensionPhysObjectManager;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.Network.PhysWrapperPositionHandler;
@@ -46,6 +51,7 @@ import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import net.minecraftforge.fml.common.patcher.ClassPatch;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
@@ -90,6 +96,8 @@ public class ValkyrienWarfareMod {
 	public static double shipUpperLimit = 1000D;
 	public static double shipLowerLimit = -30D;
 	public static int maxAirships = -1;
+	public static boolean highAccuracyCollisions = false;
+	public static boolean accurateRain = false;
 
 	// NOTE: These only calculate physics, so they are only relevant to the Server end
 	public static ExecutorService MultiThreadExecutor;
@@ -160,6 +168,11 @@ public class ValkyrienWarfareMod {
 		config.save();
 	}
 
+	/**
+	 * Called by the game when loading the configuration file, also called whenever the player makes a change in the MOD OPTIONS menu,
+	 * effectively reloading all the configuration values
+	 * @param conf
+	 */
 	public static void applyConfig(Configuration conf) {
 		// dynamicLighting = config.get(Configuration.CATEGORY_GENERAL, "DynamicLighting", false).getBoolean();
 		shipTickDelay = config.get(Configuration.CATEGORY_GENERAL, "Ticks Delay Between Client and Server", 1, "Tick delay between client and server physics; raise if physics look choppy").getInt() % 20;
@@ -175,6 +188,10 @@ public class ValkyrienWarfareMod {
 
 		maxAirships = config.get(Configuration.CATEGORY_GENERAL, "Max airships per player", -1, "Players can't own more than this many airships at once. Set to -1 to disable.").getInt();
 
+		highAccuracyCollisions = config.get(Configuration.CATEGORY_GENERAL, "Enables higher collision accuracy", false, "Debug feature, takes an insane amount of processing power").getBoolean();
+		
+		accurateRain = config.get(Configuration.CATEGORY_GENERAL, "Enables accurate rain on ships", false, "Debug feature, takes a lot of processing power").getBoolean();
+		
 		if (MultiThreadExecutor != null) {
 			MultiThreadExecutor.shutdown();
 		}

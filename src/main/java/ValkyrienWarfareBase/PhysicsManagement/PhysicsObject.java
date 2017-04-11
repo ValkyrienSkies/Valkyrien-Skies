@@ -17,6 +17,7 @@ import ValkyrienWarfareBase.API.EnumChangeOwnerResult;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.ChunkManagement.ChunkSet;
+import ValkyrienWarfareBase.CoreMod.EntityDraggable;
 import ValkyrienWarfareBase.CoreMod.ValkyrienWarfarePlugin;
 import ValkyrienWarfareBase.Physics.BlockForce;
 import ValkyrienWarfareBase.Physics.PhysicsCalculations;
@@ -270,6 +271,9 @@ public class PhysicsObject {
 				claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ] = chunk;
 			}
 		}
+		
+		//Prevents weird shit from spawning at the edges of a ship
+		replaceOuterChunksWithAir();
 
 		VKChunkCache = new VWChunkCache(worldObj, claimedChunks);
 		int minChunkX = claimedChunks[0][0].xPosition;
@@ -402,6 +406,21 @@ public class PhysicsObject {
 		MinecraftForge.EVENT_BUS.post(new ChunkEvent.Load(chunk));
 	}
 
+	//Experimental, could fix issues with random shit generating inside of Ships
+	private void replaceOuterChunksWithAir(){
+		for (int x = ownedChunks.minX - 1; x <= ownedChunks.maxX + 1; x++) {
+			for (int z = ownedChunks.minZ -1; z <= ownedChunks.maxZ + 1; z++) {
+				if(x == ownedChunks.minX -1 || x == ownedChunks.maxX +1 || z == ownedChunks.minZ -1 || z == ownedChunks.maxZ + 1){
+					//This is satisfied for the chunks surrounding a Ship, do fill it with empty space
+					Chunk chunk = new Chunk(worldObj, x, z);
+					ChunkProviderServer provider = (ChunkProviderServer) worldObj.getChunkProvider();
+					chunk.isModified = true;
+					provider.id2ChunkMap.put(ChunkPos.chunkXZ2Int(x, z), chunk);
+				}
+			}
+		}
+	}
+	
 	/**
 	 * TODO: Add the methods that send the tileEntities in each given chunk
 	 */
@@ -596,6 +615,14 @@ public class PhysicsObject {
 		for (Entity ent : riders) {
 			if (!(ent instanceof PhysicsWrapperEntity) && !ValkyrienWarfareMod.physicsManager.isEntityFixed(ent) && shouldMoveEntity(ent)) {
 				
+//				Object o = ent;
+				
+//				EntityDraggable draggable = (EntityDraggable) o;
+				
+//				System.out.println(draggable.testNumber);
+				
+//				draggable.testNumber = 69;
+				
 				float rotYaw = ent.rotationYaw;
 				float rotPitch = ent.rotationPitch;
 				float prevYaw = ent.prevRotationYaw;
@@ -781,6 +808,10 @@ public class PhysicsObject {
 
 	public void removeEntityUUID(int uuidHash) {
 		entityLocalPositions.remove(uuidHash);
+	}
+	
+	public boolean isEntityFixed(Entity toCheck){
+		return entityLocalPositions.containsKey(toCheck.getPersistentID().hashCode());
 	}
 
 	public Vector getLocalPositionForEntity(Entity getPositionFor) {

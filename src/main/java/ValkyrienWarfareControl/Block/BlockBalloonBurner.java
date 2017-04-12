@@ -7,7 +7,6 @@ import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareControl.Balloon.BalloonDetector;
 import ValkyrienWarfareControl.Balloon.BalloonProcessor;
-import ValkyrienWarfareControl.TileEntity.AntiGravEngineTileEntity;
 import ValkyrienWarfareControl.TileEntity.BalloonBurnerTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;

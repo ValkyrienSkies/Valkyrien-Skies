@@ -2,10 +2,10 @@ package ValkyrienWarfareControl.Item;
 
 import ValkyrienWarfareBase.NBTUtils;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
+import ValkyrienWarfareBase.API.Block.EtherCompressor.BlockEtherCompressor;
+import ValkyrienWarfareBase.API.Block.EtherCompressor.TileEntityEtherCompressor;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
-import ValkyrienWarfareControl.Block.BlockAntiGravEngine;
 import ValkyrienWarfareControl.Block.BlockHovercraftController;
-import ValkyrienWarfareControl.TileEntity.AntiGravEngineTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -39,7 +39,7 @@ public class ItemSystemLinker extends Item {
 				return EnumActionResult.SUCCESS;
 			}
 		}
-		if (block instanceof BlockAntiGravEngine) {
+		if (block instanceof BlockEtherCompressor) {
 			if (!worldIn.isRemote) {
 				BlockPos controllerPos = NBTUtils.readBlockPosFromNBT("controllerPos", stackCompound);
 				if (controllerPos.equals(BlockPos.ORIGIN)) {
@@ -54,8 +54,8 @@ public class ItemSystemLinker extends Item {
 					}
 					TileEntity worldTile = worldIn.getTileEntity(pos);
 
-					if (worldTile instanceof AntiGravEngineTileEntity) {
-						AntiGravEngineTileEntity tileEntity = (AntiGravEngineTileEntity) worldTile;
+					if (worldTile instanceof TileEntityEtherCompressor) {
+						TileEntityEtherCompressor tileEntity = (TileEntityEtherCompressor) worldTile;
 						BlockPos gravControllerPos = tileEntity.controllerPos;
 						if (gravControllerPos.equals(BlockPos.ORIGIN)) {
 							playerIn.addChatMessage(new TextComponentString("Set Controller To " + controllerPos.toString()));

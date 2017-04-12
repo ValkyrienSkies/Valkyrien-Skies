@@ -48,6 +48,7 @@ public class TransformAdapter extends ClassVisitor {
 	public static final String IChunkGeneratorName = "net/minecraft/world/chunk/IChunkGenerator";
 	public static final String RenderManagerName = "net/minecraft/client/renderer/entity/RenderManager";
 	public static final String TileEntityRendererDispatcherName = "net/minecraft/client/renderer/tileentity/TileEntityRendererDispatcher";
+	public static final String SleepResultName = "net/minecraft/entity/player/EntityPlayer$SleepResult";
 
 	public static final String PredicateName = "com/google/common/base/Predicate";
 	public static final String ListName = "java/util/List";
@@ -62,6 +63,15 @@ public class TransformAdapter extends ClassVisitor {
 	}
 
 	public boolean runTransformer(int opcode, String calledName, String calledDesc, String calledOwner, MethodVisitor mv, boolean itf) {
+
+		if (isMethod(calledDesc, "(L"+BlockPosName+";)L"+SleepResultName+";", calledName, EntityPlayerName, "trySleep", "func_180469_a", calledOwner)) {
+			//Copy the BlockPos and the PlayerEntity in the stack
+			mv.visitInsn(Opcodes.DUP2);
+			mv.visitMethodInsn(opcode, calledOwner, calledName, calledDesc, itf);
+			//Add a method to run afterwards
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "trySleepAfterSleep", "(L" + EntityPlayerName + ";L" + BlockPosName + ";L" + SleepResultName + ";)L"+SleepResultName+";", itf);
+			return false;
+		}
 
 		//This shit only applies to ChickenChunks; fuck it!
 		if (className.contains("ChunkLoaderManager") && isMethod(calledDesc, "()L"+ImmutableSetMultimapName+";", calledName, WorldClassName, "getPersistentChunks", "getPersistentChunks", calledOwner)) {

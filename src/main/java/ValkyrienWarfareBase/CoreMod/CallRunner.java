@@ -25,6 +25,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayer.SleepResult;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
 import net.minecraft.network.Packet;
@@ -49,6 +50,21 @@ import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
 
 public class CallRunner {
+
+	/**
+	 * Runs after a player tries to sleep
+	 * @param player
+	 * @param bedLocation
+	 * @param result
+	 * @return
+	 */
+    public static SleepResult trySleepAfterSleep(EntityPlayer player, BlockPos bedLocation, SleepResult result){
+    	BlockPos playerPos = new BlockPos(player);
+    	World world = player.worldObj;
+    	PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, playerPos);
+
+    	return result;
+    }
 
 	/**
 	 * I've got 30 different reasons to hate ChickenChunks; but fuck him this is #1

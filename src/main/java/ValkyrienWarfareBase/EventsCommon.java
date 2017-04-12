@@ -68,6 +68,14 @@ public class EventsCommon {
 		EntityPlayer player = event.getEntityPlayer();
 		World world = player.worldObj;
 
+		if(world.isRemote){
+			PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
+
+			if(wrapper != null){
+				event.setResult(SleepResult.TOO_FAR_AWAY);
+			}
+		}
+		event.setResult(SleepResult.TOO_FAR_AWAY);
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)

@@ -63,6 +63,24 @@ public class CallRunner {
     	World world = player.worldObj;
     	PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, playerPos);
 
+    	if(wrapper != null){
+    		//Do something here, idk
+    		if(world.isRemote){
+    			Vector playerPosVector = new Vector(player.posX, player.posY, player.posZ);
+
+    			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, playerPosVector);
+
+    			player.posX = playerPosVector.X;
+    			player.posY = playerPosVector.Y;
+    			player.posZ = playerPosVector.Z;
+
+    			player.playerLocation = new BlockPos(player);
+    	    	player.wakeUpPlayer(true, false, false);
+    		}
+    	}
+
+//    	player.playerLocation = new BlockPos(player);
+//    	player.wakeUpPlayer(true, false, false);
     	return result;
     }
 

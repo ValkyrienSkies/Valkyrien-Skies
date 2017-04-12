@@ -12,7 +12,7 @@ public class ItemExplosiveball extends Item {
 		setUnlocalizedName(Reference.ModItems.EXPLOSIVEBALL.getUnlocalizedName());
 		setRegistryName(Reference.ModItems.EXPLOSIVEBALL.getRegistryName());
 		
-        this.setCreativeTab(CreativeTabs.REDSTONE);
+        this.setCreativeTab(CreativeTabs.COMBAT);
 	}
 	
 }

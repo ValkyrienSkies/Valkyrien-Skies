@@ -5,12 +5,12 @@ import com.jackredcreeper.cannon.Reference;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 
-public class ItemCannonball extends Item {
+public class ItemGrapeshot extends Item {
 	
-	public ItemCannonball() {
+	public ItemGrapeshot() {
 		
-		setUnlocalizedName(Reference.ModItems.CANNONBALL.getUnlocalizedName());
-		setRegistryName(Reference.ModItems.CANNONBALL.getRegistryName());
+		setUnlocalizedName(Reference.ModItems.GRAPESHOT.getUnlocalizedName());
+		setRegistryName(Reference.ModItems.GRAPESHOT.getRegistryName());
 		
         this.setCreativeTab(CreativeTabs.COMBAT);
 	}

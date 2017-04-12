@@ -5,6 +5,8 @@ import javax.annotation.Nullable;
 import com.jackredcreeper.cannon.blocks.BlockCannon;
 import com.jackredcreeper.cannon.entities.EntityCannonball;
 import com.jackredcreeper.cannon.entities.EntityExplosiveball;
+import com.jackredcreeper.cannon.entities.EntityGrapeshot;
+import com.jackredcreeper.cannon.entities.EntitySolidball;
 import com.jackredcreeper.cannon.init.ModItems;
 
 import net.minecraft.block.state.IBlockState;
@@ -30,7 +32,7 @@ public class TileEntityCannon extends TileEntity {
 	
     int CannonCooldown = 0;
     int CC = 0;
-    boolean CannonReady = true;
+    boolean CannonReady = false;
     float Angle = 0;
     int Ammo = 0;
 
@@ -83,48 +85,78 @@ public class TileEntityCannon extends TileEntity {
     	else
     	{			playerIn.addChatComponentMessage(new TextComponentString("Cannon needs ammo!")); }
     }
+
     
+////////////////////////////////////// Make shit go boom
     
     public void firecannon(World worldIn, BlockPos pos, EnumFacing side, IBlockState state) {
-//lets boom!
-
+    	
+    	//direction
         EnumFacing enumfacing = (EnumFacing)state.getValue(BlockCannon.LOOKING);
         double d0 = pos.getX() + 0.5D + (float)enumfacing.getFrontOffsetX();
-        //double posX = dispenser.getX() + ((float)direction.getFrontOffsetX());
         double d1 = pos.getY() + 0.4D + (float)enumfacing.getFrontOffsetY();
         double d2 = pos.getZ() + 0.5D + (float)enumfacing.getFrontOffsetZ();
         
         EntityCannonball entitycannonball = new EntityCannonball(worldIn, d0,d1,d2);
         EntityExplosiveball entityexplosiveball = new EntityExplosiveball(worldIn, d0,d1,d2);
+        EntityGrapeshot entitygrapeshot1 = new EntityGrapeshot(worldIn, d0,d1,d2);
+        EntityGrapeshot entitygrapeshot2 = new EntityGrapeshot(worldIn, d0,d1,d2);
+        EntityGrapeshot entitygrapeshot3 = new EntityGrapeshot(worldIn, d0,d1,d2);
+        EntityGrapeshot entitygrapeshot4 = new EntityGrapeshot(worldIn, d0,d1,d2);
+        EntityGrapeshot entitygrapeshot5 = new EntityGrapeshot(worldIn, d0,d1,d2);
+        EntitySolidball entitysolidball = new EntitySolidball(worldIn, d0,d1,d2);
         
         
-        if (Ammo == 2) {
-        entitycannonball.setThrowableHeading((double)enumfacing.getFrontOffsetX(), (double)((float)enumfacing.getFrontOffsetY() + Angle), (double)enumfacing.getFrontOffsetZ(), 3, 0);
+        if (Ammo == 1) {
+        entitycannonball.setThrowableHeading((double)enumfacing.getFrontOffsetX(), (double)((float)enumfacing.getFrontOffsetY() + (Angle/100)), (double)enumfacing.getFrontOffsetZ(), 3, 1);
         worldIn.spawnEntityInWorld(entitycannonball);
         }
-        if (Ammo == 3) {
-        entityexplosiveball.setThrowableHeading((double)enumfacing.getFrontOffsetX(), (double)((float)enumfacing.getFrontOffsetY() + Angle), (double)enumfacing.getFrontOffsetZ(), 3, 0);
+        if (Ammo == 2) {
+        entityexplosiveball.setThrowableHeading((double)enumfacing.getFrontOffsetX(), (double)((float)enumfacing.getFrontOffsetY() + (Angle/100)), (double)enumfacing.getFrontOffsetZ(), 3, 1);
         worldIn.spawnEntityInWorld(entityexplosiveball);
         }
+        if (Ammo == 3) {
+        	entitygrapeshot5.setThrowableHeading((double)enumfacing.getFrontOffsetX(), (double)((float)enumfacing.getFrontOffsetY() + (Angle/100)), (double)enumfacing.getFrontOffsetZ(), 3, 4.0F);
+        	entitygrapeshot4.setThrowableHeading((double)enumfacing.getFrontOffsetX(), (double)((float)enumfacing.getFrontOffsetY() + (Angle/100)), (double)enumfacing.getFrontOffsetZ(), 3, 4.0F);
+        	entitygrapeshot3.setThrowableHeading((double)enumfacing.getFrontOffsetX(), (double)((float)enumfacing.getFrontOffsetY() + (Angle/100)), (double)enumfacing.getFrontOffsetZ(), 3, 4.0F);
+        	entitygrapeshot2.setThrowableHeading((double)enumfacing.getFrontOffsetX(), (double)((float)enumfacing.getFrontOffsetY() + (Angle/100)), (double)enumfacing.getFrontOffsetZ(), 3, 4.0F);
+        	entitygrapeshot1.setThrowableHeading((double)enumfacing.getFrontOffsetX(), (double)((float)enumfacing.getFrontOffsetY() + (Angle/100)), (double)enumfacing.getFrontOffsetZ(), 3, 4.0F);
+            worldIn.spawnEntityInWorld(entitygrapeshot1);
+            worldIn.spawnEntityInWorld(entitygrapeshot2);
+            worldIn.spawnEntityInWorld(entitygrapeshot3);
+            worldIn.spawnEntityInWorld(entitygrapeshot4);
+            worldIn.spawnEntityInWorld(entitygrapeshot5);
+        }
+        if (Ammo == 4) {
+        entitysolidball.setThrowableHeading((double)enumfacing.getFrontOffsetX(), (double)((float)enumfacing.getFrontOffsetY() + (Angle/100)), (double)enumfacing.getFrontOffsetZ(), 2, 1);
+        worldIn.spawnEntityInWorld(entitysolidball);
+        }
+        
+        
         worldIn.playSound((EntityPlayer)null, pos, SoundEvents.ENTITY_GENERIC_EXPLODE , SoundCategory.BLOCKS, 2, 1.5F);
         
         Ammo = 0;
 	
-  //Boooooom!
     }
-
-	public  void setAngle(EntityPlayer playerIn) {
-		Angle += 0.05F;
-		if (Angle > 0.3F) {Angle = 0;}
-		playerIn.addChatComponentMessage(new TextComponentString("Extra angle = " + Float.toString(Angle)));
+/////////////////////////////////////// End of making shit go boom
+    
+/////////////////////////////////////// Angle 'n' ammo
+    
+	public  void setAngle(EntityPlayer playerIn,double angle) {
+		Angle += angle;
+		if (Angle > 15F) {Angle = -15F;}
+		if (Angle < -15F) {Angle = 15F;}
+		playerIn.addChatComponentMessage(new TextComponentString("Extra Y velocity = " + Float.toString(Angle/100)));
 		
 	}
 	
 	public  void setAmmo(ItemStack heldItem) {
 		Item item = heldItem.getItem();
-		if (item == ModItems.cannonball) {Ammo = 2; CC = 7;}
-		if (item == ModItems.explosiveball) {Ammo = 3; CC = 14;}
-		
+		if (item == ModItems.cannonball) {Ammo = 1; CC = 7;}
+		if (item == ModItems.explosiveball) {Ammo = 2; CC = 14;}
+		if (item == ModItems.grapeshot) {Ammo = 3; CC = 7;}
+		if (item == ModItems.solidball) {Ammo = 4; CC = 7;}
+		CannonReady = false;
 	}
     
     

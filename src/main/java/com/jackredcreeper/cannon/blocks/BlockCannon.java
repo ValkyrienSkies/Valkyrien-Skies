@@ -47,7 +47,7 @@ public class BlockCannon extends BlockDirectional implements ITileEntityProvider
 		setRegistryName(Reference.ModBlocks.CANNON.getRegistryName());
 		
         this.setDefaultState(this.blockState.getBaseState().withProperty(LOOKING, EnumFacing.NORTH));
-        this.setCreativeTab(CreativeTabs.REDSTONE);
+        this.setCreativeTab(CreativeTabs.COMBAT);
         
         int CannonCooldown = 0;
         boolean CannonReady = false;
@@ -79,10 +79,19 @@ public class BlockCannon extends BlockDirectional implements ITileEntityProvider
 						            if (item == ModItems.loader)
 						        	{ cannon.loadCannon(worldIn, playerIn);}
 						            if (item == ModItems.tuner)
-						        	{ cannon.setAngle(playerIn);}
+						        	{
+						            	if  (playerIn.isSneaking())
+						            	{float angle = -5F;}
+						        	float angle = +5F;
+						            cannon.setAngle(playerIn,angle);
+						        	}
 						            if (item == ModItems.cannonball)
 						        	{ cannon.setAmmo(heldItem);}
 						            if (item == ModItems.explosiveball)
+						        	{ cannon.setAmmo(heldItem);}
+						            if (item == ModItems.grapeshot)
+						        	{ cannon.setAmmo(heldItem);}
+						            if (item == ModItems.solidball)
 						        	{ cannon.setAmmo(heldItem);}
 				        
 				        else	            	
@@ -120,12 +129,10 @@ public class BlockCannon extends BlockDirectional implements ITileEntityProvider
             if (enumfacing == EnumFacing.NORTH && flag && !flag1)
             {
                 enumfacing = EnumFacing.SOUTH;
-                System.out.println("SOUTH");
             }
             else if (enumfacing == EnumFacing.SOUTH && flag1 && !flag)
             {
                 enumfacing = EnumFacing.NORTH;
-                System.out.println("NORTH");
             }
             else
             {
@@ -135,12 +142,10 @@ public class BlockCannon extends BlockDirectional implements ITileEntityProvider
                 if (enumfacing == EnumFacing.WEST && flag2 && !flag3)
                 {
                     enumfacing = EnumFacing.EAST;
-                    System.out.println("EAST");
                 }
                 else if (enumfacing == EnumFacing.EAST && flag3 && !flag2)
                 {
                     enumfacing = EnumFacing.WEST;
-                    System.out.println("WEST");
                 }
             }
 

@@ -34,7 +34,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class NewExp extends Explosion {
+public class NewExp2 extends Explosion {
 
     /** whether or not the explosion sets fire to blocks around it */
     private boolean isFlaming;
@@ -55,7 +55,7 @@ public class NewExp extends Explosion {
 	private float explosionBlast;
 
 
-    public NewExp(World worldIn, Entity entityIn, double x, double y, double z, float size, float power, float damage, float blast, boolean flaming, boolean smoking)
+    public NewExp2(World worldIn, Entity entityIn, double x, double y, double z, float size, float power, float damage, float blast, boolean flaming, boolean smoking)
     {
     	super(worldIn,entityIn,x,y,z,size,flaming,smoking);
         explosionRNG = new Random();
@@ -76,10 +76,10 @@ public class NewExp extends Explosion {
         
     }
 
-    public NewExp newBoom(World worldIn, Entity entityIn, double x, double y, double z, float size, float power, float damage, float blast, boolean isFlaming, boolean isSmoking)
+    public NewExp2 newBoom(World worldIn, Entity entityIn, double x, double y, double z, float size, float power, float damage, float blast, boolean isFlaming, boolean isSmoking)
     {
     	
-        NewExp explosion = new NewExp(worldIn, null, x, y, z, size, power, damage, blast, isFlaming, isSmoking);
+        NewExp2 explosion = new NewExp2(worldIn, null, x, y, z, size, power, damage, blast, isFlaming, isSmoking);
         if (net.minecraftforge.event.ForgeEventFactory.onExplosionStart(worldIn, explosion)) return explosion;
         //Not this
         explosion.doExplosionA();
@@ -143,7 +143,7 @@ public class NewExp extends Explosion {
         }
 
         this.affectedBlockPositions.addAll(set);
-        float f3 = this.explosionSize * 2.0F;
+        float f3 = this.explosionSize*2;
         int k1 = MathHelper.floor_double(this.explosionX - (double)f3 - 1.0D);
         int l1 = MathHelper.floor_double(this.explosionX + (double)f3 + 1.0D);
         int i2 = MathHelper.floor_double(this.explosionY - (double)f3 - 1.0D);

@@ -8,7 +8,6 @@ import javax.annotation.Nullable;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSetMultimap;
 
-import ValkyrienWarfareBase.EventsCommon;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
@@ -146,6 +145,11 @@ public class CallRunner {
 	    	        {
 	    	            player.worldObj.updateAllPlayersSleepingFlag();
 	    	        }
+
+	    	        wrapper.wrapping.fixEntity(player, new Vector(bedLocation.getX() + 0.5D, bedLocation.getY() + 0.6875D, bedLocation.getZ() + 0.5D));
+	    	        wrapper.wrapping.queueEntityForMounting(player);
+
+	    	        System.out.println(ValkyrienWarfareMod.physicsManager.isEntityFixed(player));
 	    		}
 
 

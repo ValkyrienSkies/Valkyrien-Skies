@@ -4,6 +4,8 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.logging.Level;
 
+import ValkyrienWarfareBase.API.RotationMatrices;
+import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Capability.IAirshipCounterCapability;
 import ValkyrienWarfareBase.CoreMod.ValkyrienWarfarePlugin;
 import ValkyrienWarfareBase.Interaction.CustomNetHandlerPlayServer;
@@ -38,6 +40,7 @@ import net.minecraftforge.event.entity.player.PlayerEvent.HarvestCheck;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
+import net.minecraftforge.event.entity.player.PlayerWakeUpEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
@@ -58,6 +61,32 @@ public class EventsCommon {
 	public static HashMap<EntityPlayerMP, Double[]> lastPositions = new HashMap<EntityPlayerMP, Double[]>();
 	public static boolean allowNextSleepEvent = false;
 
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
+	public void onPlayerWakeUpEvent(PlayerWakeUpEvent event){
+		EntityPlayer player = event.getEntityPlayer();
+
+		if(!player.worldObj.isRemote){
+			player.playerLocation = new BlockPos(player);
+		}
+
+		PhysicsWrapperEntity shipFixedOnto = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(player);
+		if(shipFixedOnto != null){
+			if(!player.worldObj.isRemote){
+				System.out.println("test");
+
+				Vector playerPosInLocal = new Vector(shipFixedOnto.wrapping.getLocalPositionForEntity(player));
+				playerPosInLocal.subtract(0.5D, 0.6875D, 0.5D);
+				playerPosInLocal.roundToWhole();
+
+				BlockPos playerLocation = new BlockPos(playerPosInLocal.X, playerPosInLocal.Y, playerPosInLocal.Z);
+
+				shipFixedOnto.wrapping.unFixEntity(player);
+
+				player.playerLocation = playerLocation;
+			}
+		}
+	}
+
 	/**
 	 * Runs before a player tries to sleep
 	 * @param event
@@ -77,6 +106,13 @@ public class EventsCommon {
 
 		if(wrapper != null){
 			event.setResult(SleepResult.TOO_FAR_AWAY);
+			if(world.isRemote){
+				//The client got a sleep in bed packet from the server; this means the player is already sleeping on the server side
+				//Do the code that does the other shit here!
+				//(The custom camera and sleeping solution goes here
+				player.sleeping = true;
+				player.setRenderOffsetForSleep(EnumFacing.SOUTH);
+			}
 		}
 
 //		event.setResult(SleepResult.TOO_FAR_AWAY);

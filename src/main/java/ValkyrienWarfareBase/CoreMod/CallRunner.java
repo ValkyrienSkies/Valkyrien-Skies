@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSetMultimap;
 
+import ValkyrienWarfareBase.EventsCommon;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
@@ -24,6 +25,7 @@ import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayer.SleepResult;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -33,6 +35,7 @@ import net.minecraft.network.play.server.SPacketEffect;
 import net.minecraft.network.play.server.SPacketSoundEffect;
 import net.minecraft.server.management.PlayerList;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -59,29 +62,149 @@ public class CallRunner {
 	 * @return
 	 */
     public static SleepResult trySleepAfterSleep(EntityPlayer player, BlockPos bedLocation, SleepResult result){
+    	if(true){
+//    		return SleepResult.NOT_SAFE;
+    	}
     	BlockPos playerPos = new BlockPos(player);
     	World world = player.worldObj;
     	PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, playerPos);
 
+
+
     	if(wrapper != null){
     		//Do something here, idk
-    		if(world.isRemote){
-    			Vector playerPosVector = new Vector(player.posX, player.posY, player.posZ);
+    		if(!world.isRemote){
+//	    		EventsCommon.allowNextSleepEvent = true;
+	    		//Now run the sleep
+//	    		player.trySleep(bedLocation);
+	    		//Not the BS result we used to skip the code earlier
+	    		SleepResult realResult = getPlayerSleep(player, bedLocation);
 
-    			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, playerPosVector);
+	    		if(realResult == SleepResult.OK){
 
-    			player.posX = playerPosVector.X;
-    			player.posY = playerPosVector.Y;
-    			player.posZ = playerPosVector.Z;
+	    			if (player.isRiding()){
+	    				player.dismountRidingEntity();
+	    	        }
 
-    			player.playerLocation = new BlockPos(player);
-    	    	player.wakeUpPlayer(true, false, false);
+
+//	    			player.setSize(0.2F, 0.2F);
+	    			//Copypasta this method, with a few changes
+	    			if (0.2F != player.width || 0.2F != player.height)
+	    	        {
+	    	            float f = player.width;
+	    	            player.width = 0.2F;
+	    	            player.height = 0.2F;
+	    	            AxisAlignedBB axisalignedbb = player.getEntityBoundingBox();
+	    	            player.setEntityBoundingBox(new AxisAlignedBB(axisalignedbb.minX, axisalignedbb.minY, axisalignedbb.minZ, axisalignedbb.minX + (double)player.width, axisalignedbb.minY + (double)player.height, axisalignedbb.minZ + (double)player.width));
+
+	    	            if (player.width > f && !player.firstUpdate && !player.worldObj.isRemote)
+	    	            {
+//	    	            	player.moveEntity((double)(f - player.width), 0.0D, (double)(f - player.width));
+	    	            	player.posX += f - player.width;
+	    	            	player.posZ += f - player.width;
+	    	            }
+	    	        }
+
+	    	        IBlockState state = null;
+	    	        if (player.worldObj.isBlockLoaded(bedLocation)) state = player.worldObj.getBlockState(bedLocation);
+	    	        if (state != null && state.getBlock().isBed(state, player.worldObj, bedLocation, player)) {
+	    	            EnumFacing enumfacing = state.getBlock().getBedDirection(state, player.worldObj, bedLocation);
+	    	            float f = 0.5F;
+	    	            float f1 = 0.5F;
+
+	    	            switch (enumfacing)
+	    	            {
+	    	                case SOUTH:
+	    	                    f1 = 0.9F;
+	    	                    break;
+	    	                case NORTH:
+	    	                    f1 = 0.1F;
+	    	                    break;
+	    	                case WEST:
+	    	                    f = 0.1F;
+	    	                    break;
+	    	                case EAST:
+	    	                    f = 0.9F;
+	    	            }
+
+	    	            player.setRenderOffsetForSleep(enumfacing);
+	    	            player.setPosition((double)((float)bedLocation.getX() + f), (double)((float)bedLocation.getY() + 0.6875F), (double)((float)bedLocation.getZ() + f1));
+	    	        }
+	    	        else
+	    	        {
+	    	            player.setPosition((double)((float)bedLocation.getX() + 0.5F), (double)((float)bedLocation.getY() + 0.6875F), (double)((float)bedLocation.getZ() + 0.5F));
+	    	        }
+
+	    	        player.sleeping = true;
+	    	        player.sleepTimer = 0;
+	    	        player.playerLocation = bedLocation;
+	    	        player.motionX = 0.0D;
+	    	        player.motionY = 0.0D;
+	    	        player.motionZ = 0.0D;
+
+	    	        if (!player.worldObj.isRemote)
+	    	        {
+	    	            player.worldObj.updateAllPlayersSleepingFlag();
+	    	        }
+	    		}
+
+
+
+//	    		player.sleeping = !true;
+//	    		player.wakeUpPlayer(true, false, false);
+
     		}
+    		if(world.isRemote){
+    			return SleepResult.NOT_POSSIBLE_HERE;
+    		}
+
+//    		if(world.isRemote){
+//    			Vector playerPosVector = new Vector(player.posX, player.posY, player.posZ);
+//
+//    			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, playerPosVector);
+//
+//    			player.posX = playerPosVector.X;
+//    			player.posY = playerPosVector.Y;
+//    			player.posZ = playerPosVector.Z;
+//
+//    			player.playerLocation = new BlockPos(player);
+//    	    	player.wakeUpPlayer(true, false, false);
+//
+//    	    	player.sleeping = !true;
+//    		}
     	}
 
 //    	player.playerLocation = new BlockPos(player);
 //    	player.wakeUpPlayer(true, false, false);
     	return result;
+    }
+
+    private static SleepResult getPlayerSleep(EntityPlayer player, BlockPos bedLocation){
+    	if (player.isPlayerSleeping() || !player.isEntityAlive()){
+            return SleepResult.OTHER_PROBLEM;
+        }
+
+        if (!player.worldObj.provider.isSurfaceWorld()){
+            return SleepResult.NOT_POSSIBLE_HERE;
+        }
+
+        if (player.worldObj.isDaytime()){
+            return SleepResult.NOT_POSSIBLE_NOW;
+        }
+
+        if (Math.abs(player.posX - (double)bedLocation.getX()) > 3.0D || Math.abs(player.posY - (double)bedLocation.getY()) > 2.0D || Math.abs(player.posZ - (double)bedLocation.getZ()) > 3.0D){
+            return SleepResult.TOO_FAR_AWAY;
+        }
+
+        double d0 = 8.0D;
+        double d1 = 5.0D;
+        List<EntityMob> list = player.worldObj.<EntityMob>getEntitiesWithinAABB(EntityMob.class, new AxisAlignedBB((double)bedLocation.getX() - 8.0D, (double)bedLocation.getY() - 5.0D, (double)bedLocation.getZ() - 8.0D, (double)bedLocation.getX() + 8.0D, (double)bedLocation.getY() + 5.0D, (double)bedLocation.getZ() + 8.0D));
+
+        if (!list.isEmpty()){
+            return SleepResult.NOT_SAFE;
+        }
+
+        return SleepResult.OK;
     }
 
 	/**

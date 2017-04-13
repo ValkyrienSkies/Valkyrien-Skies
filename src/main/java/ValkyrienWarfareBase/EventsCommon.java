@@ -4,8 +4,6 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.logging.Level;
 
-import ValkyrienWarfareBase.API.RotationMatrices;
-import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Capability.IAirshipCounterCapability;
 import ValkyrienWarfareBase.CoreMod.ValkyrienWarfarePlugin;
 import ValkyrienWarfareBase.Interaction.CustomNetHandlerPlayServer;
@@ -58,24 +56,30 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
 public class EventsCommon {
 
 	public static HashMap<EntityPlayerMP, Double[]> lastPositions = new HashMap<EntityPlayerMP, Double[]>();
+	public static boolean allowNextSleepEvent = false;
 
 	/**
 	 * Runs before a player tries to sleep
 	 * @param event
 	 */
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onPlayerSleepInBedEvent(PlayerSleepInBedEvent event){
+		if(allowNextSleepEvent){
+//			return;
+		}
+		allowNextSleepEvent = false;
 		BlockPos pos = event.getPos();
 		EntityPlayer player = event.getEntityPlayer();
 		World world = player.worldObj;
+//		System.out.println("should be");
 
-		if(world.isRemote){
-			PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
 
-			if(wrapper != null){
-				event.setResult(SleepResult.TOO_FAR_AWAY);
-			}
+		if(wrapper != null){
+			event.setResult(SleepResult.TOO_FAR_AWAY);
 		}
-		event.setResult(SleepResult.TOO_FAR_AWAY);
+
+//		event.setResult(SleepResult.TOO_FAR_AWAY);
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)

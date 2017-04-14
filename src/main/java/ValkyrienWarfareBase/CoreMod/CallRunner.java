@@ -1,5 +1,6 @@
 package ValkyrienWarfareBase.CoreMod;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,6 +53,37 @@ import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
 
 public class CallRunner {
+
+	public static void fixSponge(EntityPlayer player){
+		BlockPos bedLocation = player.getBedLocation();
+		try{
+			Field bedLocationField = player.getClass().getField("bedLocation");
+
+			bedLocationField.setAccessible(true);
+
+			bedLocationField.set(player, bedLocation);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+
+	public static void afterWakeUpPlayer(EntityPlayer player){
+		System.out.println("Hell yeah");
+		if(player.worldObj.isRemote){
+			BlockPos playerBlockPos = new BlockPos(player);
+			PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.worldObj, playerBlockPos);
+
+			if(wrapper != null){
+				//Player got dumped in ship space >:(
+				Vector newPlayerPos = new Vector(player.posX, player.posY, player.posZ);
+				RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, newPlayerPos);
+
+				player.posX = player.lastTickPosX = newPlayerPos.X;
+				player.posY = player.lastTickPosY = newPlayerPos.Y;
+				player.posZ = player.lastTickPosZ = newPlayerPos.Z;
+			}
+		}
+	}
 
 	/**
 	 * Runs after a player tries to sleep
@@ -480,6 +512,22 @@ public class CallRunner {
 	}
 
 	public static List<Entity> onGetEntitiesInAABBexcluding(World world, @Nullable Entity entityIn, AxisAlignedBB boundingBox, @Nullable Predicate<? super Entity> predicate) {
+		if((boundingBox.maxX-boundingBox.minX)*(boundingBox.maxZ-boundingBox.minZ) > 1000000D){
+			return new ArrayList();
+		}
+
+		//Prevents the players item pickup AABB from merging with a PhysicsWrapperEntity AABB
+		if(entityIn instanceof EntityPlayer){
+			EntityPlayer player = (EntityPlayer)entityIn;
+			if (player.isRiding() && !player.getRidingEntity().isDead && player.getRidingEntity() instanceof PhysicsWrapperEntity){
+                AxisAlignedBB axisalignedbb = player.getEntityBoundingBox().union(player.getRidingEntity().getEntityBoundingBox()).expand(1.0D, 0.0D, 1.0D);
+
+                if(boundingBox.equals(axisalignedbb)){
+                	boundingBox = player.getEntityBoundingBox().expand(1.0D, 0.5D, 1.0D);
+                }
+            }
+		}
+
 		List toReturn = world.getEntitiesInAABBexcluding(entityIn, boundingBox, predicate);
 
 		BlockPos pos = new BlockPos((boundingBox.minX + boundingBox.maxX) / 2D, (boundingBox.minY + boundingBox.maxY) / 2D, (boundingBox.minZ + boundingBox.maxZ) / 2D);

@@ -64,6 +64,34 @@ public class TransformAdapter extends ClassVisitor {
 
 	public boolean runTransformer(int opcode, String calledName, String calledDesc, String calledOwner, MethodVisitor mv, boolean itf) {
 
+		if (isMethod(calledDesc, "(ZZZ)V", calledName, EntityPlayerName, "wakeUpPlayer", "RENAMEME", calledOwner)) {
+			//Initial Stack of PZZZ
+			mv.visitInsn(Opcodes.DUP2_X2);
+			//ZZPZZZ
+			mv.visitInsn(Opcodes.POP);
+			//ZZPZZ
+			mv.visitInsn(Opcodes.POP);
+			//ZZPZ
+			mv.visitInsn(Opcodes.DUP2_X2);
+			//PZZZPZ
+			mv.visitInsn(Opcodes.DUP2_X2);
+			//PZPZZZPZ
+			mv.visitInsn(Opcodes.POP);
+			//PZPZZZP
+//			mv.visitInsn(Opcodes.POP);
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "fixSponge", "(L" + EntityPlayerName + ";)V", itf);
+			//PZPZZZ
+			mv.visitMethodInsn(opcode, calledOwner, calledName, calledDesc, itf);
+			//PZ
+			//Delete the extra boolean coming out of this
+			mv.visitInsn(Opcodes.POP);
+			//P
+			//That P is the player, fuck yeah!
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "afterWakeUpPlayer", "(L" + EntityPlayerName + ";)V", itf);
+
+			return false;
+		}
+
 		if (isMethod(calledDesc, "(L"+BlockPosName+";)L"+SleepResultName+";", calledName, EntityPlayerName, "trySleep", "func_180469_a", calledOwner)) {
 			//Copy the BlockPos and the PlayerEntity in the stack
 			mv.visitInsn(Opcodes.DUP2);

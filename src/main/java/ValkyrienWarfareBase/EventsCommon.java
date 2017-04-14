@@ -65,13 +65,15 @@ public class EventsCommon {
 	public void onPlayerWakeUpEvent(PlayerWakeUpEvent event){
 		EntityPlayer player = event.getEntityPlayer();
 
-		if(!player.worldObj.isRemote){
-			player.playerLocation = new BlockPos(player);
+		player.playerLocation = new BlockPos(player);
+
+		if(true){
+//			return;
 		}
 
 		PhysicsWrapperEntity shipFixedOnto = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(player);
 		if(shipFixedOnto != null){
-			if(!player.worldObj.isRemote){
+			if(player.worldObj.isRemote|| true){
 				System.out.println("test");
 
 				Vector playerPosInLocal = new Vector(shipFixedOnto.wrapping.getLocalPositionForEntity(player));
@@ -81,6 +83,7 @@ public class EventsCommon {
 				BlockPos playerLocation = new BlockPos(playerPosInLocal.X, playerPosInLocal.Y, playerPosInLocal.Z);
 
 				shipFixedOnto.wrapping.unFixEntity(player);
+				player.dismountRidingEntity();
 
 				player.playerLocation = playerLocation;
 			}
@@ -201,12 +204,12 @@ public class EventsCommon {
 				lastPositions.put(p, pos);
 			}
 			try {
-			if (pos[0] != p.posX || pos[2] != p.posZ) { // Player has moved
-				if (Math.abs(p.posX) > 27000000 || Math.abs(p.posZ) > 27000000) { // Player is outside of world border, tp them back
-					p.attemptTeleport(pos[0], pos[1], pos[2]);
-					p.addChatMessage(new TextComponentString("You can't go beyond 27000000 blocks because airships are stored there!"));
+				if (pos[0] != p.posX || pos[2] != p.posZ) { // Player has moved
+					if (Math.abs(p.posX) > 27000000 || Math.abs(p.posZ) > 27000000) { // Player is outside of world border, tp them back
+						p.attemptTeleport(pos[0], pos[1], pos[2]);
+						p.addChatMessage(new TextComponentString("You can't go beyond 27000000 blocks because airships are stored there!"));
+					}
 				}
-			}
 			} catch (NullPointerException e)	{
 				ValkyrienWarfareMod.VWLogger.log(Level.WARNING, "Nullpointer EventsCommon.java:onPlayerTickEvent");
 			}

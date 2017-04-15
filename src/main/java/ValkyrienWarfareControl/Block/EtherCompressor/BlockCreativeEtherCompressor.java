@@ -33,7 +33,7 @@ public class BlockCreativeEtherCompressor extends BlockEtherCompressorLore {
 			itemInformation.add(s);
 		}
 		
-		itemInformation.add(TextFormatting.BOLD + "" + TextFormatting.RED + TextFormatting.ITALIC + "Warning! Only use on very heavy airships,");
-		itemInformation.add(TextFormatting.BOLD + "" + TextFormatting.RED + TextFormatting.ITALIC + "   or your ship may go flying out of the world.");
+		itemInformation.add(TextFormatting.BOLD + "" + TextFormatting.RED + TextFormatting.ITALIC + "Warning! Glitchy!");
+		itemInformation.add(TextFormatting.BOLD + "" + TextFormatting.RED + TextFormatting.ITALIC + "Can cause crashes, lag and/or ships dissapearing.");
 	}
 }

@@ -63,10 +63,6 @@ public class CallRunner {
 
     	if(wrapper != null){
 
-
-
-
-
             wrapper.wrapping.fixEntity(player, new Vector(bedLocation.getX() + 0.5D, bedLocation.getY() + 0.6875D, bedLocation.getZ() + 0.5D));
 
 	        if(player.worldObj.isRemote){
@@ -76,6 +72,11 @@ public class CallRunner {
 	        	wrapper.wrapping.queueEntityForMounting(player);
 	        }
 
+	        if(player.worldObj.isRemote){
+	        	player.sleeping = true;
+
+	        	return SleepResult.NOT_POSSIBLE_NOW;
+	        }
     	}
 
     	return player.trySleep(bedLocation);
@@ -100,21 +101,16 @@ public class CallRunner {
 
 		BlockPos playerBlockPos = new BlockPos(player);
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.worldObj, playerBlockPos);
-		player.sleeping = false;
+
 		if(wrapper != null){
-			if(player.worldObj.isRemote){
-				//Player got dumped in ship space >:(
-				Vector newPlayerPos = new Vector(player.posX, player.posY, player.posZ);
-//				RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, newPlayerPos);
+			//Player got dumped in ship space >:(
+			Vector newPlayerPos = new Vector(player.posX, player.posY, player.posZ);
+			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, newPlayerPos);
+			player.posX = player.lastTickPosX = newPlayerPos.X;
+			player.posY = player.lastTickPosY = newPlayerPos.Y;
+			player.posZ = player.lastTickPosZ = newPlayerPos.Z;
 
-				player.posX = player.lastTickPosX = newPlayerPos.X;
-				player.posY = player.lastTickPosY = newPlayerPos.Y;
-				player.posZ = player.lastTickPosZ = newPlayerPos.Z;
-
-				player.sleeping = false;
-			}else{
-
-			}
+			player.sleeping = false;
 		}
 
 		isClientPlayerSleepingInShip = false;

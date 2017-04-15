@@ -180,6 +180,10 @@ public class EntityCollisionInjector {
 				Polygon playerInLocal = new Polygon(entityBB, wrapper.wrapping.coordTransform.wToLTransform);
 				AxisAlignedBB bb = playerInLocal.getEnclosedAABB();
 
+				if((bb.maxX - bb.minX)*(bb.maxZ - bb.minZ) > 9898989){
+					//This is too big, something went wrong here
+					break;
+				}
 				List<AxisAlignedBB> collidingBBs = entity.worldObj.getCollisionBoxes(bb);
 
 				// TODO: Fix the performance of this!

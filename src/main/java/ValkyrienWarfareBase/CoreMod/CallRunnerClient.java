@@ -1,5 +1,7 @@
 package ValkyrienWarfareBase.CoreMod;
 
+import static org.lwjgl.opengl.GL11.glRotatef;
+
 import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.List;
@@ -80,20 +82,33 @@ public class CallRunnerClient extends CallRunner {
 	public static void onOrientCamera(EntityRenderer renderer, float partialTicks) {
 		Entity entity = renderer.mc.getRenderViewEntity();
 
-		if(isClientPlayerSleepingInShip){
-			Minecraft.getMinecraft().thePlayer.sleeping = true;
+		BlockPos playerPos = new BlockPos(entity);
+
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(entity.worldObj, playerPos);
+
+//		Minecraft.getMinecraft().thePlayer.sleeping = false;
+
+		if(wrapper != null){
+//			System.out.println("FUCK");
+
+			Vector playerPosNew = new Vector(entity.posX, entity.posY, entity.posZ);
+			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, playerPosNew);
+
+			entity.posX = entity.prevPosX = entity.lastTickPosX = playerPosNew.X;
+			entity.posY = entity.prevPosY = entity.lastTickPosY = playerPosNew.Y;
+			entity.posZ = entity.prevPosZ = entity.lastTickPosZ = playerPosNew.Z;
 		}
 
-		float f = entity.getEyeHeight();
-		if(Minecraft.getMinecraft().thePlayer.isPlayerSleeping()){
-			System.out.println("sleep");
-		}
-//		f = (float) .3;
-		double d0 = entity.prevPosX + (entity.posX - entity.prevPosX) * (double) partialTicks;
-		double d1 = entity.prevPosY + (entity.posY - entity.prevPosY) * (double) partialTicks;
-		double d2 = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * (double) partialTicks;
 
-		Vector eyeVector = new Vector(0D, f, 0D);
+		Vector eyeVector = new Vector(0,entity.getEyeHeight(),0);
+
+		if (entity instanceof EntityLivingBase && ((EntityLivingBase)entity).isPlayerSleeping()){
+			eyeVector.Y += .7D;
+        }
+
+		double d0 = entity.prevPosX + (entity.posX - entity.prevPosX) * (double)partialTicks;
+        double d1 = entity.prevPosY + (entity.posY - entity.prevPosY) * (double)partialTicks;
+        double d2 = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * (double)partialTicks;
 
 		PhysicsWrapperEntity fixedOnto = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(entity);
 		//Probably overkill, but this should 100% fix the crash in issue #78
@@ -117,171 +132,158 @@ public class CallRunnerClient extends CallRunner {
 			d0 = playerPosition.X;
 			d1 = playerPosition.Y;
 			d2 = playerPosition.Z;
+
+//			entity.posX = entity.prevPosX = entity.lastTickPosX = d0;
+//			entity.posY = entity.prevPosY = entity.lastTickPosY = d1;
+//			entity.posZ = entity.prevPosZ = entity.lastTickPosZ = d2;
 		}
 
-		d0 += eyeVector.X;
-		d1 += eyeVector.Y;
-		d2 += eyeVector.Z;
+        d0 += eyeVector.X;
+        d1 += eyeVector.Y;
+        d2 += eyeVector.Z;
 
-//		Minecraft.getMinecraft().thePlayer.sleeping = false;
 
-		if (entity instanceof EntityLivingBase && ((EntityLivingBase) entity).isPlayerSleeping()) {
-			f = (float) ((double) f + 1.0D);
-			GlStateManager.translate(0.0F, 0.3F, 0.0F);
 
-			if (!renderer.mc.gameSettings.debugCamEnable) {
-				BlockPos blockpos = new BlockPos(entity);
-				IBlockState iblockstate = renderer.mc.theWorld.getBlockState(blockpos);
-				net.minecraftforge.client.ForgeHooksClient.orientBedCamera(renderer.mc.theWorld, blockpos, iblockstate, entity);
+        if (entity instanceof EntityLivingBase && ((EntityLivingBase)entity).isPlayerSleeping())
+        {
+//            f = (float)((double)f + 1.0D);
+//            GlStateManager.translate(0.0F, 0.3F, 0.0F);
 
-				entity.rotationYaw = entity.prevRotationYaw = 0;
-				entity.rotationPitch = entity.prevRotationPitch = 0;
+            if (!renderer.mc.gameSettings.debugCamEnable)
+            {
+            	//VW code starts here
+                if(fixedOnto != null){
+                    Vector playerPosInLocal = new Vector(fixedOnto.wrapping.getLocalPositionForEntity(entity));
 
-				GlStateManager.rotate(entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks + 180.0F, 0.0F, -1.0F, 0.0F);
-				GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, -1.0F, 0.0F, 0.0F);
-			}
-		} else if (renderer.mc.gameSettings.thirdPersonView > 0) {
-			PhysicsWrapperEntity cameraEntity = ClientPilotingManager.getPilotedWrapperEntity();
+                    playerPosInLocal.subtract(.5D, .6875, .5);
+                    playerPosInLocal.roundToWhole();
 
-			double d3 = (double) (renderer.thirdPersonDistancePrev + (4.0F - renderer.thirdPersonDistancePrev) * partialTicks);
+                    BlockPos bedPos = new BlockPos(playerPosInLocal.X, playerPosInLocal.Y, playerPosInLocal.Z);
+                    IBlockState state = renderer.mc.theWorld.getBlockState(bedPos);
 
-			if (cameraEntity != null) {
-				d3 = ClientPilotingManager.getThirdPersonViewDist(d3);
-			}
+                    Block block = state.getBlock();
 
-			if (renderer.mc.gameSettings.debugCamEnable) {
-				GlStateManager.translate(0.0F, 0.0F, (float) (-d3));
-			} else {
-				float f1 = entity.rotationYaw;
-				float f2 = entity.rotationPitch;
+                	float angleYaw = 0;
 
-				if (renderer.mc.gameSettings.thirdPersonView == 2) {
-					f2 += 180.0F;
-				}
+                    if (block != null && block.isBed(state, entity.worldObj, bedPos, entity)){
+                    	angleYaw = (float)(block.getBedDirection(state, entity.worldObj, bedPos).getHorizontalIndex() * 90);
+                    	angleYaw += 180;
+                    }
 
-				double d4 = (double) (-MathHelper.sin(f1 * 0.017453292F) * MathHelper.cos(f2 * 0.017453292F)) * d3;
-				double d5 = (double) (MathHelper.cos(f1 * 0.017453292F) * MathHelper.cos(f2 * 0.017453292F)) * d3;
-				double d6 = (double) (-MathHelper.sin(f2 * 0.017453292F)) * d3;
+                    entity.rotationYaw = entity.prevRotationYaw = angleYaw;
 
-				for (int i = 0; i < 8; ++i) {
-					float f3 = (float) ((i & 1) * 2 - 1);
-					float f4 = (float) ((i >> 1 & 1) * 2 - 1);
-					float f5 = (float) ((i >> 2 & 1) * 2 - 1);
-					f3 = f3 * 0.1F;
-					f4 = f4 * 0.1F;
-					f5 = f5 * 0.1F;
+                    entity.rotationPitch = entity.prevRotationPitch = 0;
 
-					// Theres some sort of strange java bug here; I'll just avoid calling the method and inline it myself!
-					// RayTraceResult raytraceresult = PilotShipManager.rayTraceExcludingWrapper(renderer.mc.theWorld,new Vec3d(d0 + (double)f3, d1 + (double)f4, d2 + (double)f5), new Vec3d(d0 - d4 + (double)f3 + (double)f5, d1 - d6 + (double)f4, d2 - d5 + (double)f5),false,false,false,cameraEntity);
+                }else{
+                	BlockPos blockpos = new BlockPos(entity);
+                    IBlockState iblockstate = renderer.mc.theWorld.getBlockState(blockpos);
 
-					RayTraceResult raytraceresult;
+                	net.minecraftforge.client.ForgeHooksClient.orientBedCamera(renderer.mc.theWorld, blockpos, iblockstate, entity);
+                	GlStateManager.rotate(entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks + 180.0F, 0.0F, -1.0F, 0.0F);
+                	GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, -1.0F, 0.0F, 0.0F);
+                }
 
-					if (ClientPilotingManager.getPilotedWrapperEntity() == null) {
-						raytraceresult = CallRunner.onRayTraceBlocks(Minecraft.getMinecraft().theWorld, new Vec3d(d0 + (double) f3, d1 + (double) f4, d2 + (double) f5), new Vec3d(d0 - d4 + (double) f3 + (double) f5, d1 - d6 + (double) f4, d2 - d5 + (double) f5), false, false, false);
-					} else {
-						Vec3d vec31 = new Vec3d(d0 + (double) f3, d1 + (double) f4, d2 + (double) f5);
-						Vec3d vec32 = new Vec3d(d0 - d4 + (double) f3 + (double) f5, d1 - d6 + (double) f4, d2 - d5 + (double) f5);
+            }
+        }
+        else if (renderer.mc.gameSettings.thirdPersonView > 0)
+        {
+            double d3 = (double)(renderer.thirdPersonDistancePrev + (4.0F - renderer.thirdPersonDistancePrev) * partialTicks);
 
-						raytraceresult = renderer.mc.theWorld.rayTraceBlocks(vec31, vec32, false, false, false);
-						WorldPhysObjectManager physManager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(renderer.mc.theWorld);
-						AxisAlignedBB playerRangeBB = new AxisAlignedBB(vec31.xCoord - 1D, vec31.yCoord - 1D, vec31.zCoord - 1D, vec31.xCoord + 1D, vec31.yCoord + 1D, vec31.zCoord + 1D);
-						List<PhysicsWrapperEntity> nearbyShips = physManager.getNearbyPhysObjects(playerRangeBB);
-						boolean changed = false;
-						Vec3d playerEyesPos = vec31;
-						Vec3d playerReachVector = vec32.subtract(vec31);
-						double reachDistance = playerReachVector.lengthVector();
-						double worldResultDistFromPlayer = 420D;
-						if (raytraceresult != null && raytraceresult.hitVec != null) {
-							worldResultDistFromPlayer = raytraceresult.hitVec.distanceTo(vec31);
-						}
+            if (renderer.mc.gameSettings.debugCamEnable)
+            {
+                GlStateManager.translate(0.0F, 0.0F, (float)(-d3));
+            }
+            else
+            {
+                float f1 = entity.rotationYaw;
+                float f2 = entity.rotationPitch;
 
-						for (PhysicsWrapperEntity wrapper : nearbyShips) {
-							if (ClientPilotingManager.getPilotedWrapperEntity() != null && wrapper.getEntityId() != ClientPilotingManager.getPilotedWrapperEntity().getEntityId()) {
-								playerEyesPos = vec31;
-								playerReachVector = vec32.subtract(vec31);
+                if (renderer.mc.gameSettings.thirdPersonView == 2)
+                {
+                    f2 += 180.0F;
+                }
 
-								// Transform the coordinate system for the player eye pos
-								playerEyesPos = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.RwToLTransform, playerEyesPos);
-								playerReachVector = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.RwToLRotation, playerReachVector);
-								Vec3d playerEyesReachAdded = playerEyesPos.addVector(playerReachVector.xCoord * reachDistance, playerReachVector.yCoord * reachDistance, playerReachVector.zCoord * reachDistance);
-								RayTraceResult resultInShip = renderer.mc.theWorld.rayTraceBlocks(playerEyesPos, playerEyesReachAdded, false, false, false);
-								if (resultInShip != null && resultInShip.hitVec != null && resultInShip.typeOfHit == Type.BLOCK) {
-									double shipResultDistFromPlayer = resultInShip.hitVec.distanceTo(playerEyesPos);
-									if (shipResultDistFromPlayer < worldResultDistFromPlayer) {
-										worldResultDistFromPlayer = shipResultDistFromPlayer;
-										resultInShip.hitVec = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.RlToWTransform, resultInShip.hitVec);
-										raytraceresult = resultInShip;
-									}
-								}
-							}
-						}
+                double d4 = (double)(-MathHelper.sin(f1 * 0.017453292F) * MathHelper.cos(f2 * 0.017453292F)) * d3;
+                double d5 = (double)(MathHelper.cos(f1 * 0.017453292F) * MathHelper.cos(f2 * 0.017453292F)) * d3;
+                double d6 = (double)(-MathHelper.sin(f2 * 0.017453292F)) * d3;
 
-					}
+                for (int i = 0; i < 8; ++i)
+                {
+                    float f3 = (float)((i & 1) * 2 - 1);
+                    float f4 = (float)((i >> 1 & 1) * 2 - 1);
+                    float f5 = (float)((i >> 2 & 1) * 2 - 1);
+                    f3 = f3 * 0.1F;
+                    f4 = f4 * 0.1F;
+                    f5 = f5 * 0.1F;
+                    RayTraceResult raytraceresult = renderer.mc.theWorld.rayTraceBlocks(new Vec3d(d0 + (double)f3, d1 + (double)f4, d2 + (double)f5), new Vec3d(d0 - d4 + (double)f3 + (double)f5, d1 - d6 + (double)f4, d2 - d5 + (double)f5));
 
-					if (raytraceresult != null) {
-						double d7 = raytraceresult.hitVec.distanceTo(new Vec3d(d0, d1, d2));
+                    if (raytraceresult != null)
+                    {
+                        double d7 = raytraceresult.hitVec.distanceTo(new Vec3d(d0, d1, d2));
 
-						if (d7 < d3) {
-							d3 = d7;
-						}
-					}
-				}
+                        if (d7 < d3)
+                        {
+                            d3 = d7;
+                        }
+                    }
+                }
 
-				if (renderer.mc.gameSettings.thirdPersonView == 2) {
-					GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
-				}
+                if (renderer.mc.gameSettings.thirdPersonView == 2)
+                {
+                    GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
+                }
 
-				GlStateManager.rotate(entity.rotationPitch - f2, 1.0F, 0.0F, 0.0F);
-				GlStateManager.rotate(entity.rotationYaw - f1, 0.0F, 1.0F, 0.0F);
-				GlStateManager.translate(0.0F, 0.0F, (float) (-d3));
-				GlStateManager.rotate(f1 - entity.rotationYaw, 0.0F, 1.0F, 0.0F);
-				GlStateManager.rotate(f2 - entity.rotationPitch, 1.0F, 0.0F, 0.0F);
-			}
-		} else {
-			GlStateManager.translate(0.0F, 0.0F, 0.05F);
+                GlStateManager.rotate(entity.rotationPitch - f2, 1.0F, 0.0F, 0.0F);
+                GlStateManager.rotate(entity.rotationYaw - f1, 0.0F, 1.0F, 0.0F);
+                GlStateManager.translate(0.0F, 0.0F, (float)(-d3));
+                GlStateManager.rotate(f1 - entity.rotationYaw, 0.0F, 1.0F, 0.0F);
+                GlStateManager.rotate(f2 - entity.rotationPitch, 1.0F, 0.0F, 0.0F);
+            }
+        }
+        else
+        {
+            GlStateManager.translate(0.0F, 0.0F, 0.05F);
+        }
+
+        if (!renderer.mc.gameSettings.debugCamEnable)
+        {
+            float yaw = entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks + 180.0F;
+            float pitch = entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks;
+            float roll = 0.0F;
+            if (entity instanceof EntityAnimal)
+            {
+                EntityAnimal entityanimal = (EntityAnimal)entity;
+                yaw = entityanimal.prevRotationYawHead + (entityanimal.rotationYawHead - entityanimal.prevRotationYawHead) * partialTicks + 180.0F;
+            }
+            IBlockState state = ActiveRenderInfo.getBlockStateAtEntityViewpoint(renderer.mc.theWorld, entity, partialTicks);
+            net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup event = new net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup(renderer, entity, state, partialTicks, yaw, pitch, roll);
+            net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
+            GlStateManager.rotate(event.getRoll(), 0.0F, 0.0F, 1.0F);
+            GlStateManager.rotate(event.getPitch(), 1.0F, 0.0F, 0.0F);
+            GlStateManager.rotate(event.getYaw(), 0.0F, 1.0F, 0.0F);
+        }
+
+        if (fixedOnto != null && fixedOnto.wrapping != null && fixedOnto.wrapping.renderer != null && fixedOnto.wrapping.renderer.offsetPos != null) {
+			Quaternion orientationQuat = fixedOnto.wrapping.renderer.getSmoothRotationQuat(partialTicks);
+
+			double[] radians = orientationQuat.toRadians();
+
+			float moddedPitch = (float) Math.toDegrees(radians[0]);
+			float moddedYaw = (float) Math.toDegrees(radians[1]);
+			float moddedRoll = (float) Math.toDegrees(radians[2]);
+
+			GlStateManager.rotate(-moddedRoll, 0.0F, 0.0F, 1.0F);
+			GlStateManager.rotate(-moddedYaw, 0.0F, 1.0F, 0.0F);
+			GlStateManager.rotate(-moddedPitch, 1.0F, 0.0F, 0.0F);
 		}
 
-		if (!renderer.mc.gameSettings.debugCamEnable) {
-			float yaw = entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks + 180.0F;
-			float pitch = entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks;
-			float roll = 0.0F;
-			if (entity instanceof EntityAnimal) {
-				EntityAnimal entityanimal = (EntityAnimal) entity;
-				yaw = entityanimal.prevRotationYawHead + (entityanimal.rotationYawHead - entityanimal.prevRotationYawHead) * partialTicks + 180.0F;
-			}
-			IBlockState state = ActiveRenderInfo.getBlockStateAtEntityViewpoint(renderer.mc.theWorld, entity, partialTicks);
-			net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup event = new net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup(renderer, entity, state, partialTicks, yaw, pitch, roll);
-			net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
 
-			GlStateManager.rotate(event.getRoll(), 0.0F, 0.0F, 1.0F);
-			GlStateManager.rotate(event.getPitch(), 1.0F, 0.0F, 0.0F);
-			GlStateManager.rotate(event.getYaw(), 0.0F, 1.0F, 0.0F);
+        GlStateManager.translate(-eyeVector.X, -eyeVector.Y, -eyeVector.Z);
+        d0 = entity.prevPosX + (entity.posX - entity.prevPosX) * (double)partialTicks + eyeVector.X;
+        d1 = entity.prevPosY + (entity.posY - entity.prevPosY) * (double)partialTicks + eyeVector.Y;
+        d2 = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * (double)partialTicks + eyeVector.Z;
+        renderer.cloudFog = renderer.mc.renderGlobal.hasCloudFog(d0, d1, d2, partialTicks);
 
-			//Probably overkill, but this should 100% fix the crash in issue #78
-			if (fixedOnto != null && fixedOnto.wrapping != null && fixedOnto.wrapping.renderer != null && fixedOnto.wrapping.renderer.offsetPos != null) {
-				Quaternion orientationQuat = fixedOnto.wrapping.renderer.getSmoothRotationQuat(partialTicks);
-
-				double[] radians = orientationQuat.toRadians();
-
-				float moddedPitch = (float) Math.toDegrees(radians[0]);
-				float moddedYaw = (float) Math.toDegrees(radians[1]);
-				float moddedRoll = (float) Math.toDegrees(radians[2]);
-
-				GlStateManager.rotate(-moddedRoll, 0.0F, 0.0F, 1.0F);
-				GlStateManager.rotate(-moddedYaw, 0.0F, 1.0F, 0.0F);
-				GlStateManager.rotate(-moddedPitch, 1.0F, 0.0F, 0.0F);
-			}
-		}
-
-		GL11.glTranslated(-eyeVector.X, -eyeVector.Y, -eyeVector.Z);
-		d0 = entity.prevPosX + (entity.posX - entity.prevPosX) * (double) partialTicks;
-		d1 = entity.prevPosY + (entity.posY - entity.prevPosY) * (double) partialTicks + (double) f;
-		d2 = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * (double) partialTicks;
-		renderer.cloudFog = renderer.mc.renderGlobal.hasCloudFog(d0, d1, d2, partialTicks);
-
-		if(isClientPlayerSleepingInShip){
-			Minecraft.getMinecraft().thePlayer.sleeping = false;
-		}
 	}
 
 	// TODO: This may become a performance issue
@@ -477,7 +479,31 @@ public class CallRunnerClient extends CallRunner {
 
 			}
 
+			boolean makePlayerMount = false;
+			PhysicsWrapperEntity shipRidden = null;
+
+			if(entityIn instanceof EntityPlayer){
+				EntityPlayer player = (EntityPlayer)entityIn;
+				if(player.isPlayerSleeping()){
+					if(player.ridingEntity instanceof PhysicsWrapperEntity){
+						shipRidden = (PhysicsWrapperEntity) player.ridingEntity;
+					}
+//					shipRidden = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(entityIn);
+
+					if(shipRidden != null){
+						player.ridingEntity = null;
+						makePlayerMount = true;
+					}
+				}
+			}
+
 			manager.doRenderEntity(entityIn, x, y, z, yaw, partialTicks, p_188391_10_);
+
+			if(makePlayerMount){
+				EntityPlayer player = (EntityPlayer)entityIn;
+
+				player.ridingEntity = shipRidden;
+			}
 
 			if(localPosition != null){
 				fixedOnto.wrapping.renderer.inverseTransform(partialTicks);

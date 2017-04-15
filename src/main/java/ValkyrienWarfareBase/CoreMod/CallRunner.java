@@ -1,6 +1,7 @@
 package ValkyrienWarfareBase.CoreMod;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
@@ -55,7 +56,15 @@ import net.minecraftforge.common.ForgeChunkManager.Ticket;
 
 public class CallRunner {
 
-	public static boolean isClientPlayerSleepingInShip;
+	public static Iterator<Chunk> rebuildChunkIterator(Iterator<Chunk> chunkIterator){
+		ArrayList<Chunk> newBackingArray = new ArrayList<Chunk>();
+
+		while(chunkIterator.hasNext()){
+			newBackingArray.add(chunkIterator.next());
+		}
+
+		return newBackingArray.iterator();
+	}
 
     public static BlockPos getBedSpawnLocation(World worldIn, BlockPos bedLocation, boolean forceSpawn){
     	BlockPos toReturn = EntityPlayer.getBedSpawnLocation(worldIn, bedLocation, forceSpawn);
@@ -163,7 +172,6 @@ public class CallRunner {
 			player.posZ = player.lastTickPosZ = newPlayerPos.Z;
 		}
 		player.sleeping = false;
-		isClientPlayerSleepingInShip = false;
 	}
 
 	/**
@@ -370,30 +378,6 @@ public class CallRunner {
         }
 
         return SleepResult.OK;
-    }
-
-	/**
-	 * I've got 30 different reasons to hate ChickenChunks; but fuck him this is #1
-	 * @param world
-	 * @return
-	 */
-	public static ImmutableSetMultimap<ChunkPos, Ticket> fuckChickenChunks(World world){
-		ImmutableSetMultimap original = world.getPersistentChunks();
-
-		ImmutableSetMultimap.Builder builder = ImmutableSetMultimap.builder();
-		builder.putAll(original);
-
-		ArrayList<PhysicsWrapperEntity> wrapperEntities = ValkyrienWarfareMod.physicsManager.getManagerForWorld(world).getTickablePhysicsEntities();
-		for(PhysicsWrapperEntity wrapper:wrapperEntities){
-			for(Chunk[] chunks:wrapper.wrapping.claimedChunks){
-				for(Chunk chunk:chunks){
-					//Don't bother generating a new ticket, this specific use case works with it
-					builder.put(new ChunkPos(chunk.xPosition, chunk.zPosition), chunk);
-				}
-			}
-		}
-
-		return builder.build();
     }
 
 	public static double getDistanceSq(TileEntity tile, double x, double y, double z){

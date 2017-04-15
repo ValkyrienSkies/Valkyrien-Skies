@@ -49,11 +49,13 @@ public class TransformAdapter extends ClassVisitor {
 	public static final String RenderManagerName = "net/minecraft/client/renderer/entity/RenderManager";
 	public static final String TileEntityRendererDispatcherName = "net/minecraft/client/renderer/tileentity/TileEntityRendererDispatcher";
 	public static final String SleepResultName = "net/minecraft/entity/player/EntityPlayer$SleepResult";
+	public static final String ForgeChunkManagerName = "net/minecraftforge/common/ForgeChunkManager";
 
 	public static final String PredicateName = "com/google/common/base/Predicate";
 	public static final String ListName = "java/util/List";
 	public static final String ClassName = "java/lang/Class";
 	public static final String ImmutableSetMultimapName = "com/google/common/collect/ImmutableSetMultimap";
+	public static final String IteratorName = "java/util/Iterator";
 
 	public String className;
 
@@ -63,6 +65,10 @@ public class TransformAdapter extends ClassVisitor {
 	}
 
 	public boolean runTransformer(int opcode, String calledName, String calledDesc, String calledOwner, MethodVisitor mv, boolean itf) {
+
+		if (isMethod(calledDesc, "(L"+WorldClassName+";L"+IteratorName+";)L"+IteratorName+";", calledName, ForgeChunkManagerName, "getPersistentChunksIterableFor", "getPersistentChunksIterableFor", calledOwner)) {
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "rebuildChunkIterator", "(L" + IteratorName + ";)L"+IteratorName+";", itf);
+		}
 
 		if (isMethod(calledDesc, "(L" + WorldClassName + ";L" + BlockPosName+ ";Z)L"+BlockPosName+";", calledName, EntityPlayerName, "getBedSpawnLocation", "func_180467_a", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "getBedSpawnLocation", "(L" + WorldClassName + ";L" + BlockPosName+ ";Z)L"+BlockPosName+";", itf);
@@ -106,12 +112,6 @@ public class TransformAdapter extends ClassVisitor {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "trySleepAfterSleep", "(L" + EntityPlayerName + ";L" + BlockPosName + ";L" + SleepResultName + ";)L"+SleepResultName+";", itf);
 			return false;
 		}
-
-		//This shit only applies to ChickenChunks; fuck it!
-//		if (className.contains("ChunkLoaderManager") && isMethod(calledDesc, "()L"+ImmutableSetMultimapName+";", calledName, WorldClassName, "getPersistentChunks", "getPersistentChunks", calledOwner)) {
-//			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "fuckChickenChunks", String.format("(L%s;)L"+ImmutableSetMultimapName+";", WorldClassName), itf);
-//			return false;
-//		}
 
 		if (isMethod(calledDesc, "()L"+AxisAlignedBBName+";", calledName, TileEntityName, "getRenderBoundingBox", "func_184177_bl", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "getRenderBoundingBox", String.format("(L%s;)L"+AxisAlignedBBName+";", TileEntityName), itf);

@@ -102,7 +102,6 @@ public class CustomNetHandlerPlayServer extends NetHandlerPlayServer {
 			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, wrapper.wrapping.coordTransform.lToWRotation, playerEntity);
 			playerEntity.rotationYaw = playerYaw;
 			playerEntity.rotationPitch = playerPitch;
-			System.out.println(playerEntity.getPositionVector());
 		} else {
 			super.processRightClickBlock(packetIn);
 		}

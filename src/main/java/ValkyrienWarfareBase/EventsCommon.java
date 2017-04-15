@@ -85,7 +85,7 @@ public class EventsCommon {
 		PhysicsWrapperEntity shipFixedOnto = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(player);
 		if(shipFixedOnto != null){
 			if(player.worldObj.isRemote|| true){
-				System.out.println("test");
+//				System.out.println("test");
 
 				Vector playerPosInLocal = new Vector(shipFixedOnto.wrapping.getLocalPositionForEntity(player));
 				playerPosInLocal.subtract(0.5D, 0.6875D, 0.5D);

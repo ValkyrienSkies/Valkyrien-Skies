@@ -1,7 +1,5 @@
 package ValkyrienWarfareBase.CoreMod;
 
-import static org.lwjgl.opengl.GL11.glRotatef;
-
 import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.List;
@@ -14,9 +12,7 @@ import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Collision.Polygon;
 import ValkyrienWarfareBase.Math.Quaternion;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
-import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
 import ValkyrienWarfareBase.Proxy.ClientProxy;
-import ValkyrienWarfareControl.Piloting.ClientPilotingManager;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockChest;
 import net.minecraft.block.BlockEnderChest;
@@ -100,7 +96,7 @@ public class CallRunnerClient extends CallRunner {
 		}
 
 
-		Vector eyeVector = new Vector(0,entity.getEyeHeight(),0);
+		Vector eyeVector = new Vector(0, entity.getEyeHeight(), 0);
 
 		if (entity instanceof EntityLivingBase && ((EntityLivingBase)entity).isPlayerSleeping()){
 			eyeVector.Y += .7D;
@@ -493,6 +489,27 @@ public class CallRunnerClient extends CallRunner {
 					if(shipRidden != null){
 						player.ridingEntity = null;
 						makePlayerMount = true;
+
+						//Now fix the rotation of sleeping players
+						Vector playerPosInLocal = new Vector(fixedOnto.wrapping.getLocalPositionForEntity(entityIn));
+
+	                    playerPosInLocal.subtract(.5D, .6875, .5);
+	                    playerPosInLocal.roundToWhole();
+
+	                    BlockPos bedPos = new BlockPos(playerPosInLocal.X, playerPosInLocal.Y, playerPosInLocal.Z);
+	                    IBlockState state = entityIn.worldObj.getBlockState(bedPos);
+
+	                    Block block = state.getBlock();
+
+	                	float angleYaw = 0;
+
+//	                	player.setRenderOffsetForSleep(EnumFacing.SOUTH);
+
+	                    if (block != null && block.isBed(state, entityIn.worldObj, bedPos, entityIn)){
+	                    	angleYaw = (float)(block.getBedDirection(state, entityIn.worldObj, bedPos).getHorizontalIndex() * 90);
+//	                    	angleYaw += 180;
+	                    }
+	                    GL11.glRotatef(angleYaw, 0, 1F, 0);
 					}
 				}
 			}

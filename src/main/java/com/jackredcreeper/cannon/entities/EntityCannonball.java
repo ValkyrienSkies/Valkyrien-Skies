@@ -29,6 +29,9 @@ public class EntityCannonball extends EntitySnowball {
 	}
 	
 	@Override
+	protected float getGravityVelocity() {
+	return 0.01F;
+	}
 
     protected void onImpact(RayTraceResult result)
     {
@@ -38,11 +41,13 @@ public class EntityCannonball extends EntitySnowball {
         	double x = this.posX + this.motionX;
         	double y = this.posY + this.motionY;
         	double z = this.posZ + this.motionZ;
-        	int size = 5;
+        	float size = 3F;
+        	float power = 0.05F;
+        	float blast = 0.01F;
+        	float damage = 30F;
         	
-        	NewExp explosion = new NewExp(this.getEntityWorld(),null,x,y,z,size,false,true);
-            explosion.newBoom(this.getEntityWorld(),null,x,y,z,size,false,true);
-            this.setDead();
+        	NewExp explosion = new NewExp(this.getEntityWorld(),null,x,y,z,size,power,damage,blast,false,true);
+            explosion.newBoom(this.getEntityWorld(),null,x,y,z,size,power,damage,blast,false,true);
             this.setDead();
         }
     }

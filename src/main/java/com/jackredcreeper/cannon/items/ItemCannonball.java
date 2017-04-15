@@ -12,7 +12,7 @@ public class ItemCannonball extends Item {
 		setUnlocalizedName(Reference.ModItems.CANNONBALL.getUnlocalizedName());
 		setRegistryName(Reference.ModItems.CANNONBALL.getRegistryName());
 		
-        this.setCreativeTab(CreativeTabs.REDSTONE);
+        this.setCreativeTab(CreativeTabs.COMBAT);
 	}
 	
 }

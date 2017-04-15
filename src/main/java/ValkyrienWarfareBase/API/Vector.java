@@ -7,7 +7,7 @@ import net.minecraft.util.math.Vec3d;
 
 /**
  * Custom Vector Class used by Valkyrien Warfare
- * 
+ *
  * @author thebest108
  */
 public class Vector {
@@ -62,6 +62,12 @@ public class Vector {
 		X -= v.X;
 		Y -= v.Y;
 		Z -= v.Z;
+	}
+
+	public void subtract(double x, double y, double z) {
+		X -= x;
+		Y -= y;
+		Z -= z;
 	}
 
 	public void subtract(Vec3d vec) {

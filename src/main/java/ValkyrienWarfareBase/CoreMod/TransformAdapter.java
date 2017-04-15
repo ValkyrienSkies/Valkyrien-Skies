@@ -48,10 +48,14 @@ public class TransformAdapter extends ClassVisitor {
 	public static final String IChunkGeneratorName = "net/minecraft/world/chunk/IChunkGenerator";
 	public static final String RenderManagerName = "net/minecraft/client/renderer/entity/RenderManager";
 	public static final String TileEntityRendererDispatcherName = "net/minecraft/client/renderer/tileentity/TileEntityRendererDispatcher";
+	public static final String SleepResultName = "net/minecraft/entity/player/EntityPlayer$SleepResult";
+	public static final String ForgeChunkManagerName = "net/minecraftforge/common/ForgeChunkManager";
 
 	public static final String PredicateName = "com/google/common/base/Predicate";
 	public static final String ListName = "java/util/List";
 	public static final String ClassName = "java/lang/Class";
+	public static final String ImmutableSetMultimapName = "com/google/common/collect/ImmutableSetMultimap";
+	public static final String IteratorName = "java/util/Iterator";
 
 	public String className;
 
@@ -61,6 +65,54 @@ public class TransformAdapter extends ClassVisitor {
 	}
 
 	public boolean runTransformer(int opcode, String calledName, String calledDesc, String calledOwner, MethodVisitor mv, boolean itf) {
+
+		if (isMethod(calledDesc, "(L"+WorldClassName+";L"+IteratorName+";)L"+IteratorName+";", calledName, ForgeChunkManagerName, "getPersistentChunksIterableFor", "getPersistentChunksIterableFor", calledOwner)) {
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "rebuildChunkIterator", "(L" + IteratorName + ";)L"+IteratorName+";", itf);
+		}
+
+		if (isMethod(calledDesc, "(L" + WorldClassName + ";L" + BlockPosName+ ";Z)L"+BlockPosName+";", calledName, EntityPlayerName, "getBedSpawnLocation", "func_180467_a", calledOwner)) {
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "getBedSpawnLocation", "(L" + WorldClassName + ";L" + BlockPosName+ ";Z)L"+BlockPosName+";", itf);
+			return false;
+		}
+
+		if (isMethod(calledDesc, "(ZZZ)V", calledName, EntityPlayerName, "wakeUpPlayer", "func_70999_a", calledOwner)) {
+			//Initial Stack of PZZZ
+			mv.visitInsn(Opcodes.DUP2_X2);
+			//ZZPZZZ
+			mv.visitInsn(Opcodes.POP);
+			//ZZPZZ
+			mv.visitInsn(Opcodes.POP);
+			//ZZPZ
+			mv.visitInsn(Opcodes.DUP2_X2);
+			//PZZZPZ
+			mv.visitInsn(Opcodes.DUP2_X2);
+			//PZPZZZPZ
+			mv.visitInsn(Opcodes.POP);
+			//PZPZZZP
+//			mv.visitInsn(Opcodes.POP);
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "fixSponge", "(L" + EntityPlayerName + ";)V", itf);
+			//PZPZZZ
+			mv.visitMethodInsn(opcode, calledOwner, calledName, calledDesc, itf);
+			//PZ
+			//Delete the extra boolean coming out of this
+			mv.visitInsn(Opcodes.POP);
+			//P
+			//That P is the player, fuck yeah!
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "afterWakeUpPlayer", "(L" + EntityPlayerName + ";)V", itf);
+
+			return false;
+		}
+
+		if (isMethod(calledDesc, "(L"+BlockPosName+";)L"+SleepResultName+";", calledName, EntityPlayerName, "trySleep", "func_180469_a", calledOwner)) {
+			//Copy the BlockPos and the PlayerEntity in the stack
+			mv.visitInsn(Opcodes.DUP2);
+//			mv.visitMethodInsn(opcode, calledOwner, calledName, calledDesc, itf);
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "replaceSleep", "(L" + EntityPlayerName + ";L" + BlockPosName + ";)L"+SleepResultName+";", itf);
+			//Add a method to run afterwards
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "trySleepAfterSleep", "(L" + EntityPlayerName + ";L" + BlockPosName + ";L" + SleepResultName + ";)L"+SleepResultName+";", itf);
+			return false;
+		}
+
 		if (isMethod(calledDesc, "()L"+AxisAlignedBBName+";", calledName, TileEntityName, "getRenderBoundingBox", "func_184177_bl", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "getRenderBoundingBox", String.format("(L%s;)L"+AxisAlignedBBName+";", TileEntityName), itf);
 			return false;
@@ -303,7 +355,7 @@ public class TransformAdapter extends ClassVisitor {
 		MethodVisitor toReturn = new MethodVisitor(api, cv.visitMethod(access, methodName, methodDesc, signature, exceptions)) {
 			@Override
 			public void visitMethodInsn(int opcode, String calledOwner, String calledName, String calledDesc, boolean itf) {
-				if (opcode == Opcodes.INVOKEVIRTUAL || opcode == Opcodes.INVOKEINTERFACE || opcode == Opcodes.H_INVOKEVIRTUAL) {
+				if (opcode == Opcodes.INVOKEVIRTUAL || opcode == Opcodes.INVOKEINTERFACE || opcode == Opcodes.H_INVOKEVIRTUAL || opcode == Opcodes.INVOKESTATIC) {
 					if (runTransformer(opcode, calledName, calledDesc, calledOwner, mv, itf)) {
 						super.visitMethodInsn(opcode, calledOwner, calledName, calledDesc, itf);
 					}

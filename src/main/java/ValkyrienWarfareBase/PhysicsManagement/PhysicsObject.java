@@ -10,6 +10,8 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;
 
+import com.google.common.base.Predicate;
+
 import ValkyrienWarfareBase.BlockPhysicsRegistration;
 import ValkyrienWarfareBase.NBTUtils;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
@@ -17,7 +19,6 @@ import ValkyrienWarfareBase.API.EnumChangeOwnerResult;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.ChunkManagement.ChunkSet;
-import ValkyrienWarfareBase.CoreMod.ValkyrienWarfarePlugin;
 import ValkyrienWarfareBase.Network.PhysWrapperPositionMessage;
 import ValkyrienWarfareBase.Physics.BlockForce;
 import ValkyrienWarfareBase.Physics.PhysicsCalculations;
@@ -86,8 +87,6 @@ public class PhysicsObject {
 	public ChunkCache surroundingWorldChunksCache;
 	public String creator;
 
-	private static Field playersField = null;
-
 	public PhysCollisionCallable collisionCallable = new PhysCollisionCallable(this);
 
 	public int lastMessageTick;
@@ -121,9 +120,6 @@ public class PhysicsObject {
 		} else {
 			balloonManager = new ShipBalloonManager(this);
 			pilotingController = new ShipPilotingController(this);
-			if (playersField == null) {
-				grabPlayerField();
-			}
 		}
 	}
 
@@ -225,11 +221,14 @@ public class PhysicsObject {
 			// onPlayerUntracking(wachingPlayer);
 		}
 		watchingPlayers.clear();
+		ValkyrienWarfareMod.chunkManager.removeRegistedChunksForShip(wrapper);
+		ValkyrienWarfareMod.chunkManager.removeShipPosition(wrapper);
 		ValkyrienWarfareMod.physicsManager.onShipUnload(wrapper);
 	}
 
 	public void claimNewChunks(int radius) {
 		ownedChunks = ValkyrienWarfareMod.chunkManager.getManagerForWorld(wrapper.worldObj).getNextAvaliableChunkSet(radius);
+		ValkyrienWarfareMod.chunkManager.registerChunksForShip(wrapper);
 	}
 
 	/*
@@ -301,7 +300,6 @@ public class PhysicsObject {
 			TileEntity worldTile = detector.cache.getTileEntity(pos);
 
 			pos.setPos(pos.getX() + centerDifference.getX(), pos.getY() + centerDifference.getY(), pos.getZ() + centerDifference.getZ());
-			// System.out.println(pos);
 			ownedChunks.chunkOccupiedInLocal[(pos.getX() >> 4) - minChunkX][(pos.getZ() >> 4) - minChunkZ] = true;
 
 			Chunk chunkToSet = claimedChunks[(pos.getX() >> 4) - minChunkX][(pos.getZ() >> 4) - minChunkZ];
@@ -322,8 +320,8 @@ public class PhysicsObject {
 				tileEntNBT.setInteger("z", pos.getZ());
 
 				//Fuck this old code
-//				TileEntity newInstace = VKChunkCache.getTileEntity(pos);
-//				newInstace.readFromNBT(tileEntNBT);
+//				TileEntity newInstance = VKChunkCache.getTileEntity(pos);
+//				newInstance.readFromNBT(tileEntNBT);
 
 				TileEntity newInstance = TileEntity.create(worldObj, tileEntNBT);
 				newInstance.validate();
@@ -355,6 +353,7 @@ public class PhysicsObject {
 						e.printStackTrace();
 					}
 				}
+				worldObj.setTileEntity(newInstance.getPos(), newInstance);
 
 				newInstance.markDirty();
 			}
@@ -409,20 +408,25 @@ public class PhysicsObject {
 			provider.id2ChunkMap.put(ChunkPos.chunkXZ2Int(x, z), chunk);
 		}
 
-		PlayerChunkMapEntry entry = new PlayerChunkMapEntry(((WorldServer) worldObj).getPlayerChunkMap(), x, z);
-		entry.sentToPlayers = true;
-		entry.chunk = chunk;
-
-		try {
-			playersField.set(entry, watchingPlayers);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 		PlayerChunkMap map = ((WorldServer) worldObj).getPlayerChunkMap();
-		map.addEntry(entry);
+
+		PlayerChunkMapEntry entry = new PlayerChunkMapEntry(map, x, z){
+			@Override
+			public boolean hasPlayerMatchingInRange(double range, Predicate<EntityPlayerMP> predicate)
+		    {
+				return true;
+		    }
+		};
+
+
 		long i = map.getIndex(x, z);
+
 		map.playerInstances.put(i, entry);
 		map.playerInstanceList.add(entry);
+
+
+		entry.sentToPlayers = true;
+		entry.players = watchingPlayers;
 
 		claimedChunksEntries[x - ownedChunks.minX][z - ownedChunks.minZ] = entry;
 //		MinecraftForge.EVENT_BUS.post(new ChunkEvent.Load(chunk));
@@ -540,6 +544,11 @@ public class PhysicsObject {
 		tickQueuedForces();
 
 		explodedPositionsThisTick.clear();
+
+
+		if(!wrapper.isDead && !wrapper.worldObj.isRemote){
+			ValkyrienWarfareMod.chunkManager.updateShipPosition(wrapper);
+		}
 	}
 
 	// Returns true if splitting happened
@@ -685,22 +694,6 @@ public class PhysicsObject {
 
 	public boolean ownsChunk(int chunkX, int chunkZ) {
 		return ownedChunks.isChunkEnclosedInSet(chunkX, chunkZ);
-	}
-
-	private static final void grabPlayerField() {
-		if (playersField == null) {
-			try {
-				if (!ValkyrienWarfarePlugin.isObfuscatedEnvironment) {
-					playersField = PlayerChunkMapEntry.class.getDeclaredField("players");
-				} else {
-					playersField = PlayerChunkMapEntry.class.getDeclaredField("field_187283_c");
-				}
-				playersField.setAccessible(true);
-			} catch (Exception e) {
-				e.printStackTrace();
-				System.exit(0);
-			}
-		}
 	}
 
 	public void queueEntityForMounting(Entity toMount){

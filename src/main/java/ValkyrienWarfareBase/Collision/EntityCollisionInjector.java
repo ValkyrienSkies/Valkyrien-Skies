@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
+import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Interaction.EntityDraggable;
 import ValkyrienWarfareBase.Math.BigBastardMath;
@@ -15,6 +16,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.chunk.Chunk;
 
 public class EntityCollisionInjector {
 
@@ -25,6 +27,7 @@ public class EntityCollisionInjector {
 		if (entity instanceof PhysicsWrapperEntity) {
 			return true;
 		}
+
 		Vector velVec = new Vector(dx, dy, dz);
 		double origDx = dx;
 		double origDy = dy;
@@ -38,11 +41,11 @@ public class EntityCollisionInjector {
 		Vec3d velocity = new Vec3d(dx, dy, dz);
 		ArrayList<EntityPolygonCollider> fastCollisions = new ArrayList<EntityPolygonCollider>();
 		EntityPolygon playerBeforeMove = new EntityPolygon(entity.getEntityBoundingBox(), entity);
-		ArrayList<Polygon> colPolys = getCollidingPolygons(entity, velocity);
-		
+		ArrayList<Polygon> colPolys = getCollidingPolygonsAndDoBlockCols(entity, velocity);
+
 		PhysicsWrapperEntity worldBelow = null;
 		EntityDraggable draggable = EntityDraggable.getDraggableFromEntity(entity);
-		
+
 		for (Polygon poly : colPolys) {
 			if (poly instanceof ShipPolygon) {
 				ShipPolygon shipPoly = (ShipPolygon) poly;
@@ -53,7 +56,7 @@ public class EntityCollisionInjector {
 				}
 			}
 		}
-		
+
 		//TODO: Make this more comprehensive
 		draggable.worldBelowFeet = worldBelow;
 
@@ -164,7 +167,7 @@ public class EntityCollisionInjector {
 	/*
 	 * This method generates an arrayList of Polygons that the player is colliding with
 	 */
-	public static ArrayList<Polygon> getCollidingPolygons(Entity entity, Vec3d velocity) {
+	public static ArrayList<Polygon> getCollidingPolygonsAndDoBlockCols(Entity entity, Vec3d velocity) {
 		ArrayList<Polygon> collisions = new ArrayList<Polygon>();
 		AxisAlignedBB entityBB = entity.getEntityBoundingBox().addCoord(velocity.xCoord, velocity.yCoord, velocity.zCoord).expand(1, 1, 1);
 
@@ -176,14 +179,18 @@ public class EntityCollisionInjector {
 			if(!entity.isRidingSameEntity(wrapper)){
 				Polygon playerInLocal = new Polygon(entityBB, wrapper.wrapping.coordTransform.wToLTransform);
 				AxisAlignedBB bb = playerInLocal.getEnclosedAABB();
-	
+
+				if((bb.maxX - bb.minX)*(bb.maxZ - bb.minZ) > 9898989){
+					//This is too big, something went wrong here
+					break;
+				}
 				List<AxisAlignedBB> collidingBBs = entity.worldObj.getCollisionBoxes(bb);
-	
+
 				// TODO: Fix the performance of this!
 				if (entity.worldObj.isRemote || entity instanceof EntityPlayer) {
 					BigBastardMath.mergeAABBList(collidingBBs);
 				}
-	
+
 				for (AxisAlignedBB inLocal : collidingBBs) {
 					ShipPolygon poly = new ShipPolygon(inLocal, wrapper.wrapping.coordTransform.lToWTransform, wrapper.wrapping.coordTransform.normals, wrapper.wrapping);
 					collisions.add(poly);
@@ -191,8 +198,55 @@ public class EntityCollisionInjector {
 			}
 		}
 
+		for(PhysicsWrapperEntity wrapper : ships){
+			if(!entity.isRidingSameEntity(wrapper)){
+				double posX = entity.posX;
+				double posY = entity.posY;
+				double posZ = entity.posZ;
+
+				Vector entityPos = new Vector(posX, posY, posZ);
+				RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, entityPos);
+
+				setEntityPositionAndUpdateBB(entity, entityPos.X, entityPos.Y, entityPos.Z);
+
+				int entityChunkX = MathHelper.floor_double(entity.posX / 16.0D);
+				int entityChunkZ = MathHelper.floor_double(entity.posZ / 16.0D);
+
+				if(wrapper.wrapping.ownsChunk(entityChunkX, entityChunkZ)){
+					Chunk chunkIn = wrapper.wrapping.claimedChunks[entityChunkX-wrapper.wrapping.claimedChunks[0][0].xPosition][entityChunkZ-wrapper.wrapping.claimedChunks[0][0].zPosition];
+
+					int chunkYIndex = MathHelper.floor_double(entity.posY / 16.0D);
+
+			        if (chunkYIndex < 0)
+			        {
+			        	chunkYIndex = 0;
+			        }
+
+			        if (chunkYIndex >= chunkIn.entityLists.length)
+			        {
+			        	chunkYIndex = chunkIn.entityLists.length - 1;
+			        }
+
+					chunkIn.entityLists[chunkYIndex].add(entity);
+					entity.doBlockCollisions();
+					chunkIn.entityLists[chunkYIndex].remove(entity);
+				}
+
+				setEntityPositionAndUpdateBB(entity, posX, posY, posZ);
+			}
+		}
+
 		return collisions;
 	}
+
+    public static void setEntityPositionAndUpdateBB(Entity entity, double x, double y, double z){
+    	entity.posX = x;
+    	entity.posY = y;
+    	entity.posZ = z;
+        float f = entity.width / 2.0F;
+        float f1 = entity.height;
+        entity.boundingBox = new AxisAlignedBB(x - (double)f, y, z - (double)f, x + (double)f, y + (double)f1, z + (double)f);
+    }
 
 	private static boolean isDifSignificant(double dif1, double d2) {
 		if (Math.abs(dif1 - d2) < errorSignificance) {

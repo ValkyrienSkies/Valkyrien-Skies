@@ -1,8 +1,0 @@
-{
-    "parent": "block/orientable",
-    "textures": {
-        "top": "can:blocks/cannon_side",
-        "front": "can:blocks/cannon",
-        "side": "can:blocks/cannon_side"
-    }
-}

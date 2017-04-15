@@ -12,7 +12,7 @@ public class ItemTuner extends Item {
 		setUnlocalizedName(Reference.ModItems.TUNER.getUnlocalizedName());
 		setRegistryName(Reference.ModItems.TUNER.getRegistryName());
 		
-        this.setCreativeTab(CreativeTabs.REDSTONE);
+        this.setCreativeTab(CreativeTabs.COMBAT);
 	}
 	
 }

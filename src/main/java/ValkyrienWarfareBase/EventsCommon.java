@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.logging.Level;
 
+import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Capability.IAirshipCounterCapability;
 import ValkyrienWarfareBase.CoreMod.ValkyrienWarfarePlugin;
 import ValkyrienWarfareBase.Interaction.CustomNetHandlerPlayServer;
@@ -19,6 +20,7 @@ import net.minecraft.nbt.NBTPrimitive;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
@@ -35,6 +37,9 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.HarvestCheck;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract;
+import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
+import net.minecraftforge.event.entity.player.PlayerWakeUpEvent;
+import net.minecraftforge.event.entity.player.SleepingLocationCheckEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
@@ -53,6 +58,84 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
 public class EventsCommon {
 
 	public static HashMap<EntityPlayerMP, Double[]> lastPositions = new HashMap<EntityPlayerMP, Double[]>();
+	public static boolean allowNextSleepEvent = false;
+
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
+	public void onSleepingLocationCheckEvent(SleepingLocationCheckEvent event){
+		EntityPlayer player = event.getEntityPlayer();
+//		System.out.println("tset");
+		PhysicsWrapperEntity shipFixedOnto = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(player);
+		if(shipFixedOnto != null){
+//			if(player.sleeping){
+				event.setResult(Result.ALLOW);
+//			}
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
+	public void onPlayerWakeUpEvent(PlayerWakeUpEvent event){
+		EntityPlayer player = event.getEntityPlayer();
+
+		player.playerLocation = new BlockPos(player);
+
+		if(true){
+//			return;
+		}
+
+		PhysicsWrapperEntity shipFixedOnto = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(player);
+		if(shipFixedOnto != null){
+			if(player.worldObj.isRemote|| true){
+//				System.out.println("test");
+
+				Vector playerPosInLocal = new Vector(shipFixedOnto.wrapping.getLocalPositionForEntity(player));
+				playerPosInLocal.subtract(0.5D, 0.6875D, 0.5D);
+				playerPosInLocal.roundToWhole();
+
+				BlockPos playerLocation = new BlockPos(playerPosInLocal.X, playerPosInLocal.Y, playerPosInLocal.Z);
+
+				shipFixedOnto.wrapping.unFixEntity(player);
+				player.dismountRidingEntity();
+
+				player.playerLocation = playerLocation;
+
+				player.sleeping = false;
+			}
+		}
+	}
+
+	/**
+	 * Runs before a player tries to sleep
+	 * @param event
+	 */
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
+	public void onPlayerSleepInBedEvent(PlayerSleepInBedEvent event){
+		if(allowNextSleepEvent){
+//			return;
+		}
+		allowNextSleepEvent = false;
+		BlockPos pos = event.getPos();
+		EntityPlayer player = event.getEntityPlayer();
+		World world = player.worldObj;
+//		System.out.println("should be");
+
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
+
+		if(wrapper != null){
+
+			if(world.isRemote){
+				//The client got a sleep in bed packet from the server; this means the player is already sleeping on the server side
+				//Do the code that does the other shit here!
+				//(The custom camera and sleeping solution goes here
+//				player.sleeping = true;
+//				player.setRenderOffsetForSleep(EnumFacing.SOUTH);
+//				CallRunner.isClientPlayerSleepingInShip = true;
+			}else{
+//				event.setResult(SleepResult.TOO_FAR_AWAY);
+			}
+		}
+
+//		event.setResult(SleepResult.TOO_FAR_AWAY);
+	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onEntityInteractEvent(EntityInteract event) {
@@ -101,7 +184,7 @@ public class EventsCommon {
 					if(amAdding){
 						((WorldServer)worldFor).getChunkProvider().id2ChunkMap.put(ChunkPos.chunkXZ2Int(chunk.xPosition, chunk.zPosition), chunk);
 					}else{
-						((WorldServer)worldFor).getChunkProvider().id2ChunkMap.remove(ChunkPos.chunkXZ2Int(chunk.xPosition, chunk.zPosition));
+//						((WorldServer)worldFor).getChunkProvider().id2ChunkMap.remove(ChunkPos.chunkXZ2Int(chunk.xPosition, chunk.zPosition));
 					}
 				}
 			}
@@ -137,12 +220,12 @@ public class EventsCommon {
 				lastPositions.put(p, pos);
 			}
 			try {
-			if (pos[0] != p.posX || pos[2] != p.posZ) { // Player has moved
-				if (Math.abs(p.posX) > 27000000 || Math.abs(p.posZ) > 27000000) { // Player is outside of world border, tp them back
-					p.attemptTeleport(pos[0], pos[1], pos[2]);
-					p.addChatMessage(new TextComponentString("You can't go beyond 27000000 blocks because airships are stored there!"));
+				if (pos[0] != p.posX || pos[2] != p.posZ) { // Player has moved
+					if (Math.abs(p.posX) > 27000000 || Math.abs(p.posZ) > 27000000) { // Player is outside of world border, tp them back
+						p.attemptTeleport(pos[0], pos[1], pos[2]);
+						p.addChatMessage(new TextComponentString("You can't go beyond 27000000 blocks because airships are stored there!"));
+					}
 				}
-			}
 			} catch (NullPointerException e)	{
 				ValkyrienWarfareMod.VWLogger.log(Level.WARNING, "Nullpointer EventsCommon.java:onPlayerTickEvent");
 			}

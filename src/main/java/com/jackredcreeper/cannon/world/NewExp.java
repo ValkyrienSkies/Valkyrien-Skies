@@ -50,9 +50,12 @@ public class NewExp extends Explosion {
     private List<BlockPos> affectedBlockPositions;
     private Map<EntityPlayer, Vec3d> playerKnockbackMap;
     private Vec3d position;
+	private float explosionPower;
+	private float explosionDamage;
+	private float explosionBlast;
 
 
-    public NewExp(World worldIn, Entity entityIn, double x, double y, double z, float size, boolean flaming, boolean smoking)
+    public NewExp(World worldIn, Entity entityIn, double x, double y, double z, float size, float power, float damage, float blast, boolean flaming, boolean smoking)
     {
     	super(worldIn,entityIn,x,y,z,size,flaming,smoking);
         explosionRNG = new Random();
@@ -61,6 +64,9 @@ public class NewExp extends Explosion {
         worldObj = worldIn;
         exploder = entityIn;
         explosionSize = size;
+        explosionPower = power;
+        explosionDamage = damage;
+        explosionBlast = blast;
         explosionX = x;
         explosionY = y;
         explosionZ = z;
@@ -70,14 +76,14 @@ public class NewExp extends Explosion {
         
     }
 
-    public NewExp newBoom(World worldIn, Entity entityIn, double x, double y, double z, float size, boolean isFlaming, boolean isSmoking)
+    public NewExp newBoom(World worldIn, Entity entityIn, double x, double y, double z, float size, float power, float damage, float blast, boolean isFlaming, boolean isSmoking)
     {
     	
-        NewExp explosion = new NewExp(worldIn, null, x, y, z, size, isFlaming, isSmoking);
+        NewExp explosion = new NewExp(worldIn, null, x, y, z, size, power, damage, blast, isFlaming, isSmoking);
         if (net.minecraftforge.event.ForgeEventFactory.onExplosionStart(worldIn, explosion)) return explosion;
         //Not this
-//        explosion.doExplosionA();
-        CallRunner.onExplosionA(explosion);
+        explosion.doExplosionA();
+        //CallRunner.onExplosionA(explosion);
         explosion.doExplosionB(true);
         return explosion;
     }
@@ -105,7 +111,7 @@ public class NewExp extends Explosion {
                         d0 = d0 / d3;
                         d1 = d1 / d3;
                         d2 = d2 / d3;
-                        float f = this.explosionSize * 0.4F + this.worldObj.rand.nextFloat();
+                        float f = this.explosionSize * (0.3F + this.worldObj.rand.nextFloat() * 0.3F);
                         double d4 = this.explosionX;
                         double d6 = this.explosionY;
                         double d8 = this.explosionZ;
@@ -118,7 +124,8 @@ public class NewExp extends Explosion {
                             if (iblockstate.getMaterial() != Material.AIR)
                             {
                                 float f2 = this.exploder != null ? this.exploder.getExplosionResistance(this, this.worldObj, blockpos, iblockstate) : iblockstate.getBlock().getExplosionResistance(worldObj, blockpos, (Entity)null, this);
-                                f -= 0.5F;
+                              //  f -= ((f2 + 0.3F) * 0.3F) / this.explosionPower ;
+                                f -= (f2*this.explosionBlast) + this.explosionPower;
                             }
 
                             if (f > 0.0F && (this.exploder == null || this.exploder.verifyExplosion(this, this.worldObj, blockpos, iblockstate, f)))
@@ -136,7 +143,7 @@ public class NewExp extends Explosion {
         }
 
         this.affectedBlockPositions.addAll(set);
-        float f3 = this.explosionSize * 0.4F;
+        float f3 = this.explosionSize * 2.0F;
         int k1 = MathHelper.floor_double(this.explosionX - (double)f3 - 1.0D);
         int l1 = MathHelper.floor_double(this.explosionX + (double)f3 + 1.0D);
         int i2 = MathHelper.floor_double(this.explosionY - (double)f3 - 1.0D);
@@ -153,7 +160,7 @@ public class NewExp extends Explosion {
 
             if (!entity.isImmuneToExplosions())
             {
-                double d12 = entity.getDistance(this.explosionX, this.explosionY, this.explosionZ) / (double)f3;
+                double d12 = entity.getDistance(this.explosionX, this.explosionY, this.explosionZ) / f3;
 
                 if (d12 <= 1.0D)
                 {
@@ -169,7 +176,7 @@ public class NewExp extends Explosion {
                         d9 = d9 / d13;
                         double d14 = (double)this.worldObj.getBlockDensity(vec3d, entity.getEntityBoundingBox());
                         double d10 = (1.0D - d12) * d14;
-                        entity.attackEntityFrom(DamageSource.causeExplosionDamage(this), (float)((int)((d10 * d10 + d10) / 2.0D * 7.0D * (double)f3 + 1.0D)));
+                        entity.attackEntityFrom(DamageSource.causeExplosionDamage(this), (float)((int)((d10 * d10 + d10)+this.explosionDamage / 2.0D)));
                         double d11 = 1.0D;
 
                         if (entity instanceof EntityLivingBase)

@@ -224,13 +224,13 @@ public class PhysicsCalculations {
 	}
 
 	private boolean arePhysicsGoingWayTooFast(){
-		if(angularVelocity.lengthSq() > 5000){
+		if(angularVelocity.lengthSq() > 50000){
 			System.out.println("Ship tried moving too fast; freezing it and reseting velocities");
 			return true;
 		}
 
 		//This says if ship is moving faster than 10 blocks per second
-		if(linearMomentum.lengthSq() * invMass * invMass > 5000){
+		if(linearMomentum.lengthSq() * invMass * invMass > 50000){
 			System.out.println("Ship tried moving too fast; freezing it and reseting velocities");
 			return true;
 		}

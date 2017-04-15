@@ -1,9 +1,13 @@
 package ValkyrienWarfareBase.ChunkManagement;
 
 import java.util.HashMap;
+import java.util.UUID;
 
+import ValkyrienWarfareBase.Interaction.BlockPosToShipUUIDData;
+import ValkyrienWarfareBase.Interaction.ShipUUIDToPosData;
+import ValkyrienWarfareBase.Interaction.ShipUUIDToPosData.ShipPositionData;
+import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
 
 public class DimensionPhysicsChunkManager {
 
@@ -36,5 +40,44 @@ public class DimensionPhysicsChunkManager {
 
 	public void removeWorld(World world) {
 		managerPerWorld.remove(world);
+	}
+
+	public void registerChunksForShip(PhysicsWrapperEntity wrapper){
+		World shipWorld = wrapper.worldObj;
+		BlockPosToShipUUIDData data = BlockPosToShipUUIDData.get(shipWorld);
+		data.addShipToPersistantMap(wrapper);
+	}
+
+	public void removeRegistedChunksForShip(PhysicsWrapperEntity wrapper){
+		World shipWorld = wrapper.worldObj;
+		BlockPosToShipUUIDData data = BlockPosToShipUUIDData.get(shipWorld);
+
+		data.removeShipFromPersistantMap(wrapper);
+	}
+
+	public UUID getShipIDManagingPos_Persistant(World worldFor, int chunkX, int chunkZ){
+		BlockPosToShipUUIDData data = BlockPosToShipUUIDData.get(worldFor);
+
+		return data.getShipUUIDFromPos(chunkX, chunkZ);
+	}
+
+	public ShipPositionData getShipPosition_Persistant(World worldFor, UUID shipID){
+		ShipUUIDToPosData data = ShipUUIDToPosData.get(worldFor);
+
+		return data.getShipPositionData(shipID);
+	}
+
+	public void updateShipPosition(PhysicsWrapperEntity wrapper){
+		World shipWorld = wrapper.worldObj;
+		ShipUUIDToPosData data = ShipUUIDToPosData.get(shipWorld);
+
+		data.updateShipPosition(wrapper);
+	}
+
+	public void removeShipPosition(PhysicsWrapperEntity wrapper){
+		World shipWorld = wrapper.worldObj;
+		ShipUUIDToPosData data = ShipUUIDToPosData.get(shipWorld);
+
+		data.removeShipFromMap(wrapper);
 	}
 }

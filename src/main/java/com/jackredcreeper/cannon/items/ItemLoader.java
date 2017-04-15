@@ -12,7 +12,7 @@ public class ItemLoader extends Item {
 		setUnlocalizedName(Reference.ModItems.LOADER.getUnlocalizedName());
 		setRegistryName(Reference.ModItems.LOADER.getRegistryName());
 		
-        this.setCreativeTab(CreativeTabs.REDSTONE);
+        this.setCreativeTab(CreativeTabs.COMBAT);
 	}
 	
 }

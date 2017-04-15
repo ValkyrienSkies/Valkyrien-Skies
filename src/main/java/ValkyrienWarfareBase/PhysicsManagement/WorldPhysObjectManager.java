@@ -66,6 +66,14 @@ public class WorldPhysObjectManager {
 	        }
 		}
 
+		ArrayList<PhysicsWrapperEntity> dumbShips = new ArrayList<PhysicsWrapperEntity>();
+
+		for (PhysicsWrapperEntity wrapper:list){
+        	if(wrapper.isDead || wrapper.wrapping == null || (wrapper.wrapping.physicsProcessor == null && !wrapper.worldObj.isRemote)){
+        		dumbShips.add(wrapper);
+        	}
+		}
+
 		/*if(droppedChunksField == null){
 			try{
 				if(ValkyrienWarfarePlugin.isObfuscatedEnvironment){
@@ -91,6 +99,7 @@ public class WorldPhysObjectManager {
 		}catch(Exception e){}*/
 
 		list.removeAll(frozenShips);
+		list.removeAll(dumbShips);
 
 		return list;
 	}

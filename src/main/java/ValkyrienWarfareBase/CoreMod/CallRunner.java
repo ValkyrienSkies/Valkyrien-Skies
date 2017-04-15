@@ -57,34 +57,36 @@ public class CallRunner {
 
 	public static boolean isClientPlayerSleepingInShip;
 
-	public static BlockPos getBedLocation(EntityPlayer player, int dimension) {
-		BlockPos toReturn = player.getBedLocation(dimension);
+    public static BlockPos getBedSpawnLocation(World worldIn, BlockPos bedLocation, boolean forceSpawn){
+    	BlockPos toReturn = EntityPlayer.getBedSpawnLocation(worldIn, bedLocation, forceSpawn);
 
-		System.out.println("hi");
+//    	System.out.println("Keep their heads ringing");
 
-		int chunkX = toReturn.getX() >> 4;
-		int chunkZ = toReturn.getZ() >> 4;
+		int chunkX = bedLocation.getX() >> 4;
+		int chunkZ = bedLocation.getZ() >> 4;
 		long chunkPos = ChunkPos.chunkXZ2Int(chunkX, chunkZ);
 
-		UUID shipManagingID = ValkyrienWarfareMod.chunkManager.getShipIDManagingPos_Persistant(player.worldObj, chunkX, chunkZ);
+		UUID shipManagingID = ValkyrienWarfareMod.chunkManager.getShipIDManagingPos_Persistant(worldIn, chunkX, chunkZ);
 		if(shipManagingID != null){
-			ShipPositionData positionData = ValkyrienWarfareMod.chunkManager.getShipPosition_Persistant(player.worldObj, shipManagingID);
+			ShipPositionData positionData = ValkyrienWarfareMod.chunkManager.getShipPosition_Persistant(worldIn, shipManagingID);
 
 			if(positionData != null){
 				double[] lToWTransform = RotationMatrices.convertToDouble(positionData.lToWTransform);
 
-				Vector bedPositionInWorld = new Vector(toReturn.getX() + .5D, toReturn.getY() + .5D, toReturn.getZ() + .5D);
+				Vector bedPositionInWorld = new Vector(bedLocation.getX() + .5D, bedLocation.getY() + .5D, bedLocation.getZ() + .5D);
 				RotationMatrices.applyTransform(lToWTransform, bedPositionInWorld);
 
 				bedPositionInWorld.Y += 1D;
 
-				toReturn = new BlockPos(bedPositionInWorld.X, bedPositionInWorld.Y, bedPositionInWorld.Z);
+				bedLocation = new BlockPos(bedPositionInWorld.X, bedPositionInWorld.Y, bedPositionInWorld.Z);
+
+				return bedLocation;
 			}else{
 				System.err.println("A ship just had Chunks claimed persistant, but not any position data persistant");
 			}
 		}
 
-		return toReturn;
+    	return toReturn;
     }
 
     public static SleepResult replaceSleep(EntityPlayer player, BlockPos bedLocation){

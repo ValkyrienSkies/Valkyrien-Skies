@@ -19,7 +19,7 @@ public class ShipUUIDToPosData extends WorldSavedData{
 
 	private static String key = "ShipUUIDToPosData";
 
-	private HashMap<UUID, ShipPositionData> dataMap = new HashMap<UUID, ShipPositionData>();
+	private HashMap<Long, ShipPositionData> dataMap = new HashMap<Long, ShipPositionData>();
 
 	public ShipUUIDToPosData(String name) {
 		super(name);
@@ -30,28 +30,18 @@ public class ShipUUIDToPosData extends WorldSavedData{
 	}
 
 	public ShipPositionData getShipPositionData(UUID shipID){
-		for(UUID id:dataMap.keySet()){
-			if(id.equals(shipID)){
-				System.out.println("shit");
-				System.out.println("shit");
-				System.out.println("shit");
-				System.out.println("shit");
-				System.out.println("shit");
-				System.out.println("shit");
-				System.out.println(dataMap.get(shipID) == null);
-			}
-		}
-		return dataMap.get(shipID);
+		return dataMap.get(shipID.getMostSignificantBits());
 	}
 
 	public void updateShipPosition(PhysicsWrapperEntity wrapper){
 		UUID entityID = wrapper.getPersistentID();
-		ShipPositionData data = dataMap.get(entityID);
+		long key = entityID.getMostSignificantBits();
+		ShipPositionData data = dataMap.get(key);
 		if(data != null){
 			data.updateData(wrapper);
 		}else{
 			data = new ShipPositionData(wrapper);
-			dataMap.put(entityID, data);
+			dataMap.put(key, data);
 		}
 		markDirty();
 	}
@@ -68,35 +58,27 @@ public class ShipUUIDToPosData extends WorldSavedData{
 
 		while(buffer.hasRemaining()){
 			long mostBits = buffer.getLong();
-			long leastBits = buffer.getLong();
-
-			UUID shipID = new UUID(mostBits, leastBits);
 
 			ShipPositionData data = new ShipPositionData(buffer);
-			dataMap.put(shipID, data);
-
-			System.out.println(data.shipPosition.toRoundedString());
+			dataMap.put(mostBits, data);
 		}
 	}
 
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-		Set<Entry<UUID, ShipPositionData>> entries = dataMap.entrySet();
+		Set<Entry<Long, ShipPositionData>> entries = dataMap.entrySet();
 
-		//Each ship has 19 floats, and 2 longs; that comes out (19 * 4 + 2 * 8) = 92 bytes per ship
-		int byteArraySize = entries.size() * 92;
+		//Each ship has 19 floats, and 1 long; that comes out (19 * 4 + 1 * 8) = 84 bytes per ship
+		int byteArraySize = entries.size() * 84;
 
 		ByteBuffer buffer = ByteBuffer.allocate(byteArraySize);
 
-		for(Entry<UUID, ShipPositionData> entry: entries){
-			UUID shipID = entry.getKey();
+		for(Entry<Long, ShipPositionData> entry: entries){
+			long mostBits = entry.getKey();
+
 			ShipPositionData posData = entry.getValue();
 
-			long mostBits = shipID.getMostSignificantBits();
-			long leastBits = shipID.getLeastSignificantBits();
-
 			buffer.putLong(mostBits);
-			buffer.putLong(leastBits);
 			posData.writeToByteBuffer(buffer);
 		}
 

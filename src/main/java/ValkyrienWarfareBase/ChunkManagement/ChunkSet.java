@@ -55,4 +55,13 @@ public class ChunkSet {
 		return centerX + ":" + centerZ + ":" + radius;
 	}
 
+	@Override
+	public boolean equals(Object o){
+		if(o instanceof ChunkSet){
+			ChunkSet other = (ChunkSet)o;
+			return other.centerX == centerX && other.centerZ == centerZ && other.radius == radius;
+		}
+		return false;
+	}
+
 }

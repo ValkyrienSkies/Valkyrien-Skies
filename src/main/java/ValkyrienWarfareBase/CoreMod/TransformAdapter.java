@@ -64,8 +64,8 @@ public class TransformAdapter extends ClassVisitor {
 
 	public boolean runTransformer(int opcode, String calledName, String calledDesc, String calledOwner, MethodVisitor mv, boolean itf) {
 
-		if (isMethod(calledDesc, "(I)L"+BlockPosName+";", calledName, EntityPlayerName, "getBedLocation", "func_180470_cg", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "getBedLocation", "(L" + EntityPlayerName + ";I)L"+BlockPosName+";", itf);
+		if (isMethod(calledDesc, "(L" + WorldClassName + ";L" + BlockPosName+ ";Z)L"+BlockPosName+";", calledName, EntityPlayerName, "getBedSpawnLocation", "func_180467_a", calledOwner)) {
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "getBedSpawnLocation", "(L" + WorldClassName + ";L" + BlockPosName+ ";Z)L"+BlockPosName+";", itf);
 			return false;
 		}
 
@@ -355,7 +355,7 @@ public class TransformAdapter extends ClassVisitor {
 		MethodVisitor toReturn = new MethodVisitor(api, cv.visitMethod(access, methodName, methodDesc, signature, exceptions)) {
 			@Override
 			public void visitMethodInsn(int opcode, String calledOwner, String calledName, String calledDesc, boolean itf) {
-				if (opcode == Opcodes.INVOKEVIRTUAL || opcode == Opcodes.INVOKEINTERFACE || opcode == Opcodes.H_INVOKEVIRTUAL) {
+				if (opcode == Opcodes.INVOKEVIRTUAL || opcode == Opcodes.INVOKEINTERFACE || opcode == Opcodes.H_INVOKEVIRTUAL || opcode == Opcodes.INVOKESTATIC) {
 					if (runTransformer(opcode, calledName, calledDesc, calledOwner, mv, itf)) {
 						super.visitMethodInsn(opcode, calledOwner, calledName, calledDesc, itf);
 					}

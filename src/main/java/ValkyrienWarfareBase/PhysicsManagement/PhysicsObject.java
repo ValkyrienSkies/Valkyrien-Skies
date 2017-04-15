@@ -530,6 +530,11 @@ public class PhysicsObject {
 		tickQueuedForces();
 
 		explodedPositionsThisTick.clear();
+
+
+		if(!wrapper.isDead && !wrapper.worldObj.isRemote){
+			ValkyrienWarfareMod.chunkManager.updateShipPosition(wrapper);
+		}
 	}
 
 	// Returns true if splitting happened
@@ -750,10 +755,6 @@ public class PhysicsObject {
 		}
 		compound.setString("allowedUsers", result.toString());
 		compound.setString("owner", creator);
-
-		if(!wrapper.isDead){
-			ValkyrienWarfareMod.chunkManager.updateShipPosition(wrapper);
-		}
 	}
 
 	public void readFromNBTTag(NBTTagCompound compound) {

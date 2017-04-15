@@ -59,6 +59,8 @@ import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class PhysicsObject {
 
@@ -83,8 +85,6 @@ public class PhysicsObject {
 	public boolean doPhysics = true;
 	public boolean fromSplit = false;
 
-	// The closest Chunks to the Ship cached in here
-	public ChunkCache surroundingWorldChunksCache;
 	public String creator;
 
 	public PhysCollisionCallable collisionCallable = new PhysCollisionCallable(this);
@@ -92,6 +92,8 @@ public class PhysicsObject {
 	public int lastMessageTick;
 	public int detectorID;
 
+	// The closest Chunks to the Ship cached in here
+	public ChunkCache surroundingWorldChunksCache;
 	public boolean blocksChanged = false;
 
 	// TODO: Make for re-organizing these to make Ship sizes Dynamic

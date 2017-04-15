@@ -58,6 +58,9 @@ public class PhysicsCalculations {
 
 	public boolean actAsArchimedes = false;
 
+	@Deprecated
+	private boolean isShipPastBuild90 = false;
+
 	public PhysicsCalculations(PhysicsObject toProcess) {
 		parent = toProcess;
 		wrapperEnt = parent.wrapper;
@@ -116,7 +119,7 @@ public class PhysicsCalculations {
 		double newMassAtPos = BlockMass.basicMass.getMassFromState(newState, pos, worldObj);
 		// Don't change anything if the mass is the same
 		if (oldMassAtPos != newMassAtPos) {
-			final double notAHalf = .5D;
+			final double notAHalf = .4D;
 			final double x = pos.getX() + .5D;
 			final double y = pos.getY() + .5D;
 			final double z = pos.getZ() + .5D;
@@ -186,6 +189,10 @@ public class PhysicsCalculations {
 	}
 
 	public void rawPhysTickPreCol(double newPhysSpeed, int iters) {
+		if(!isShipPastBuild90){
+			this.recalculateInertiaMatrices();
+			isShipPastBuild90 = true;
+		}
 		if (parent.doPhysics) {
 			updatePhysSpeedAndIters(newPhysSpeed, iters);
 			updateParentCenterOfMass();
@@ -447,6 +454,7 @@ public class PhysicsCalculations {
 		NBTUtils.writeVectorToNBT("CM", centerOfMass, compound);
 
 		NBTUtils.write3x3MatrixToNBT("MOI", MoITensor, compound);
+		compound.setBoolean("isShipPastBuild90", isShipPastBuild90);
 	}
 
 	public void readFromNBTTag(NBTTagCompound compound) {
@@ -458,6 +466,7 @@ public class PhysicsCalculations {
 
 		MoITensor = NBTUtils.read3x3MatrixFromNBT("MOI", compound);
 
+		isShipPastBuild90 = compound.getBoolean("isShipPastBuild90");
 		processNBTRead();
 	}
 
@@ -473,6 +482,20 @@ public class PhysicsCalculations {
 		for (BlockPos pos : parent.blockPositions) {
 			onSetBlockState(Air, parent.VKChunkCache.getBlockState(pos), pos);
 		}
+	}
+
+	@Deprecated
+	//Temp code that upgrades old ships to new BlockMass System; Will remove in future
+	private void recalculateInertiaMatrices(){
+		mass = 0;
+		centerOfMass = new Vector(parent.refrenceBlockPos.getX() + .5D, parent.refrenceBlockPos.getY() + .5D, parent.refrenceBlockPos.getZ() + .5D);
+		IBlockState airState = Blocks.AIR.getDefaultState();
+		activeForcePositions = new ArrayList<BlockPos>();
+		for(BlockPos pos:parent.blockPositions){
+			onSetBlockState(airState, parent.VKChunkCache.getBlockState(pos), pos);
+		}
+		System.out.println("Recalculated physics inertia matrix for an old Ship of size " + parent.blockPositions.size());
+		processNBTRead();
 	}
 
 }

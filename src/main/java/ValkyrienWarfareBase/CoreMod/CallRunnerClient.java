@@ -85,8 +85,6 @@ public class CallRunnerClient extends CallRunner {
 //		Minecraft.getMinecraft().thePlayer.sleeping = false;
 
 		if(wrapper != null){
-//			System.out.println("FUCK");
-
 			Vector playerPosNew = new Vector(entity.posX, entity.posY, entity.posZ);
 			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, playerPosNew);
 
@@ -94,7 +92,6 @@ public class CallRunnerClient extends CallRunner {
 			entity.posY = entity.prevPosY = entity.lastTickPosY = playerPosNew.Y;
 			entity.posZ = entity.prevPosZ = entity.lastTickPosZ = playerPosNew.Z;
 		}
-
 
 		Vector eyeVector = new Vector(0, entity.getEyeHeight(), 0);
 

@@ -3,6 +3,7 @@ package ValkyrienWarfareBase.CoreMod;
 import org.objectweb.asm.ClassReader;
 
 public class InheritanceUtils {
+
 	private static final String[] leafPackages = { "java/", "javax/" };
 
 	public static boolean extendsClass(String className, String targetClassName) {

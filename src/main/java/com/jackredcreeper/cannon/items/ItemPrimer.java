@@ -12,7 +12,7 @@ public class ItemPrimer extends Item {
 		setUnlocalizedName(Reference.ModItems.PRIMER.getUnlocalizedName());
 		setRegistryName(Reference.ModItems.PRIMER.getRegistryName());
 		
-        this.setCreativeTab(CreativeTabs.REDSTONE);
+        this.setCreativeTab(CreativeTabs.COMBAT);
 	}
 	
 }

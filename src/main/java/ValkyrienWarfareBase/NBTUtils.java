@@ -158,4 +158,15 @@ public class NBTUtils {
 		return doubles;
 	}
 
+	public static void setByteBuf(String name, ByteBuffer buffer, NBTTagCompound compound){
+		byte[] bytes = buffer.array();
+		compound.setByteArray(name, bytes);
+	}
+
+	public static ByteBuffer getByteBuf(String name, NBTTagCompound compound){
+		byte[] bytes = compound.getByteArray(name);
+		ByteBuffer toReturn = ByteBuffer.wrap(bytes);
+		return toReturn;
+	}
+
 }

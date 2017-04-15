@@ -1,10 +1,8 @@
 package com.jackredcreeper.cannon.entities;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.IProjectile;
+import com.jackredcreeper.cannon.world.NewExp;
+
 import net.minecraft.entity.projectile.EntitySnowball;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 
@@ -13,39 +11,28 @@ public class EntityExplosiveball extends EntitySnowball {
 	public EntityExplosiveball(World worldIn, double x, double y, double z) {
 		super(worldIn, x, y, z);
 	}
- 
-	int Exp = 0;
-	
+
 	@Override
 	protected float getGravityVelocity() {
-	return 0.03F;
+	return 0.01F;
 	}
-		
-	@Override
+
     protected void onImpact(RayTraceResult result)
     {
         if (!this.world.isRemote)
         {
+        	double x = this.posX + this.motionX;
+        	double y = this.posY + this.motionY;
+        	double z = this.posZ + this.motionZ;
+        	float size = 5F;
+        	float power = 0.2F;
+        	float blast = 0.1F;
+        	float damage = 16F;
 
-            this.world.newExplosion((Entity)null, this.posX + this.motionX/2F, this.posY + this.motionY/2F, this.posZ + this.motionZ/2F, 2, false, true);
-            Exp++;
-            if (Exp >= 3) {
-            this.setDead();}
+        	NewExp explosion = new NewExp(this.getEntityWorld(),null,x,y,z,size,power,damage,blast,false,true);
+            explosion.newBoom(this.getEntityWorld(),null,x,y,z,size,power,damage,blast,false,true);
+            this.setDead();
         }
     }
-	
-	@Override
-    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-    	
-    	super.writeToNBT(compound);
-    	compound.setInteger("Exp", Exp);
-		return compound;    	
-    }
-    
-    @Override
-    public void readFromNBT(NBTTagCompound compound) {
-    	
-    	super.readFromNBT(compound);
-    	Exp = compound.getInteger("Exp");
-    }
+
 }

@@ -4,7 +4,9 @@ import com.jackredcreeper.cannon.init.ModBlocks;
 import com.jackredcreeper.cannon.init.ModItems;
 import com.jackredcreeper.cannon.proxy.CommonProxy;
 import com.jackredcreeper.cannon.tileentity.TileEntityCannon;
+import com.jackredcreeper.cannon.world.ExplosionHandler;
 
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -36,15 +38,13 @@ public class Main {
 	public void init(FMLInitializationEvent event)
 	{
 		proxy.init();
-
+		MinecraftForge.EVENT_BUS.register(new ExplosionHandler());
 		//Craft
-
 		GameRegistry.registerTileEntity(TileEntityCannon.class, Reference.MOD_ID + "TileEntityCannon");
 	}
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event)
 	{
-		System.out.println("aaAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa");
 	}
 
 

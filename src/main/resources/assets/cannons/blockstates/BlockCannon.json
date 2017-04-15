@@ -1,0 +1,10 @@
+{
+    "variants": {
+        "facing=down":  { "model": "cannons:BlockCannon_vertical", "x": 180 },
+        "facing=up":    { "model": "cannons:BlockCannon_vertical" },
+        "facing=north": { "model": "cannons:BlockCannon"},
+        "facing=south": { "model": "cannons:BlockCannon", "y": 180 },
+        "facing=west":  { "model": "cannons:BlockCannon", "y": 270 },
+        "facing=east":  { "model": "cannons:BlockCannon", "y": 90 }
+    }
+}

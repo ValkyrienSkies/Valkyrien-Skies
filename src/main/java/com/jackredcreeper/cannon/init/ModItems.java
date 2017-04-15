@@ -2,8 +2,10 @@ package com.jackredcreeper.cannon.init;
 
 import com.jackredcreeper.cannon.Reference;
 import com.jackredcreeper.cannon.items.ItemPrimer;
+import com.jackredcreeper.cannon.items.ItemSolidball;
 import com.jackredcreeper.cannon.items.ItemCannonball;
 import com.jackredcreeper.cannon.items.ItemExplosiveball;
+import com.jackredcreeper.cannon.items.ItemGrapeshot;
 import com.jackredcreeper.cannon.items.ItemLoader;
 import com.jackredcreeper.cannon.items.ItemTuner;
 
@@ -19,6 +21,8 @@ public class ModItems {
 	public static Item tuner;
 	public static Item cannonball;
 	public static Item explosiveball;
+	public static Item grapeshot;
+	public static Item solidball;
 	
 	public static void init() {
 		key = new ItemPrimer();
@@ -26,6 +30,8 @@ public class ModItems {
 		tuner = new ItemTuner();
 		cannonball = new ItemCannonball();
 		explosiveball = new ItemExplosiveball();
+		grapeshot = new ItemGrapeshot();
+		solidball = new ItemSolidball();
 		
 	}
 	
@@ -35,6 +41,8 @@ public class ModItems {
 		GameRegistry.register(tuner);
 		GameRegistry.register(cannonball);
 		GameRegistry.register(explosiveball);
+		GameRegistry.register(grapeshot);
+		GameRegistry.register(solidball);
 	}
 	
 	public static void registerRenders() {
@@ -43,6 +51,8 @@ public class ModItems {
 		registerRender(tuner);
 		registerRender(cannonball);
 		registerRender(explosiveball);
+		registerRender(grapeshot);
+		registerRender(solidball);
 	}
 	
 	private static void registerRender(Item item) {

@@ -1,6 +1,6 @@
 {
     "parent": "item/generated",
     "textures": {
-        "layer0": "can:items/loader"
+        "layer0": "cannons:items/solidball"
     }
 }

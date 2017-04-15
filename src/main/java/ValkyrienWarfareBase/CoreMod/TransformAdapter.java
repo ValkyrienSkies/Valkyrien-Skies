@@ -64,7 +64,12 @@ public class TransformAdapter extends ClassVisitor {
 
 	public boolean runTransformer(int opcode, String calledName, String calledDesc, String calledOwner, MethodVisitor mv, boolean itf) {
 
-		if (isMethod(calledDesc, "(ZZZ)V", calledName, EntityPlayerName, "wakeUpPlayer", "RENAMEME", calledOwner)) {
+		if (isMethod(calledDesc, "(I)L"+BlockPosName+";", calledName, EntityPlayerName, "getBedLocation", "func_180470_cg", calledOwner)) {
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "getBedLocation", "(L" + EntityPlayerName + ";I)L"+BlockPosName+";", itf);
+			return false;
+		}
+
+		if (isMethod(calledDesc, "(ZZZ)V", calledName, EntityPlayerName, "wakeUpPlayer", "func_70999_a", calledOwner)) {
 			//Initial Stack of PZZZ
 			mv.visitInsn(Opcodes.DUP2_X2);
 			//ZZPZZZ

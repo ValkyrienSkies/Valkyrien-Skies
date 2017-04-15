@@ -219,11 +219,14 @@ public class PhysicsObject {
 			// onPlayerUntracking(wachingPlayer);
 		}
 		watchingPlayers.clear();
+		ValkyrienWarfareMod.chunkManager.removeRegistedChunksForShip(wrapper);
+		ValkyrienWarfareMod.chunkManager.removeShipPosition(wrapper);
 		ValkyrienWarfareMod.physicsManager.onShipUnload(wrapper);
 	}
 
 	public void claimNewChunks(int radius) {
 		ownedChunks = ValkyrienWarfareMod.chunkManager.getManagerForWorld(wrapper.worldObj).getNextAvaliableChunkSet(radius);
+		ValkyrienWarfareMod.chunkManager.registerChunksForShip(wrapper);
 	}
 
 	/*
@@ -747,6 +750,10 @@ public class PhysicsObject {
 		}
 		compound.setString("allowedUsers", result.toString());
 		compound.setString("owner", creator);
+
+		if(!wrapper.isDead){
+			ValkyrienWarfareMod.chunkManager.updateShipPosition(wrapper);
+		}
 	}
 
 	public void readFromNBTTag(NBTTagCompound compound) {

@@ -1,8 +1,8 @@
 package ValkyrienWarfareBase.CoreMod;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import javax.annotation.Nullable;
 
@@ -16,6 +16,7 @@ import ValkyrienWarfareBase.ChunkManagement.PhysicsChunkManager;
 import ValkyrienWarfareBase.Collision.EntityCollisionInjector;
 import ValkyrienWarfareBase.Collision.EntityPolygon;
 import ValkyrienWarfareBase.Collision.Polygon;
+import ValkyrienWarfareBase.Interaction.ShipUUIDToPosData.ShipPositionData;
 import ValkyrienWarfareBase.Physics.BlockMass;
 import ValkyrienWarfareBase.Physics.PhysicsQueuedForce;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
@@ -55,6 +56,36 @@ import net.minecraftforge.common.ForgeChunkManager.Ticket;
 public class CallRunner {
 
 	public static boolean isClientPlayerSleepingInShip;
+
+	public static BlockPos getBedLocation(EntityPlayer player, int dimension) {
+		BlockPos toReturn = player.getBedLocation(dimension);
+
+		System.out.println("hi");
+
+		int chunkX = toReturn.getX() >> 4;
+		int chunkZ = toReturn.getZ() >> 4;
+		long chunkPos = ChunkPos.chunkXZ2Int(chunkX, chunkZ);
+
+		UUID shipManagingID = ValkyrienWarfareMod.chunkManager.getShipIDManagingPos_Persistant(player.worldObj, chunkX, chunkZ);
+		if(shipManagingID != null){
+			ShipPositionData positionData = ValkyrienWarfareMod.chunkManager.getShipPosition_Persistant(player.worldObj, shipManagingID);
+
+			if(positionData != null){
+				double[] lToWTransform = RotationMatrices.convertToDouble(positionData.lToWTransform);
+
+				Vector bedPositionInWorld = new Vector(toReturn.getX() + .5D, toReturn.getY() + .5D, toReturn.getZ() + .5D);
+				RotationMatrices.applyTransform(lToWTransform, bedPositionInWorld);
+
+				bedPositionInWorld.Y += 1D;
+
+				toReturn = new BlockPos(bedPositionInWorld.X, bedPositionInWorld.Y, bedPositionInWorld.Z);
+			}else{
+				System.err.println("A ship just had Chunks claimed persistant, but not any position data persistant");
+			}
+		}
+
+		return toReturn;
+    }
 
     public static SleepResult replaceSleep(EntityPlayer player, BlockPos bedLocation){
     	PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.worldObj, bedLocation);

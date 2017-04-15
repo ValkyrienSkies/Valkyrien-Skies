@@ -229,6 +229,14 @@ public class RotationMatrices {
 		return floatArray;
 	}
 
+	public static final double[] convertToDouble(float[] array) {
+		double[] doubleArray = new double[array.length];
+		for (int i = 0; i < array.length; i++) {
+			doubleArray[i] = (float) array[i];
+		}
+		return doubleArray;
+	}
+
 	public static final Vector get3by3TransformedVec(double[] M, Vector v) {
 		Vector vec = new Vector(v);
 		applyTransform3by3(M, vec);

@@ -108,10 +108,10 @@ public class TransformAdapter extends ClassVisitor {
 		}
 
 		//This shit only applies to ChickenChunks; fuck it!
-		if (className.contains("ChunkLoaderManager") && isMethod(calledDesc, "()L"+ImmutableSetMultimapName+";", calledName, WorldClassName, "getPersistentChunks", "getPersistentChunks", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "fuckChickenChunks", String.format("(L%s;)L"+ImmutableSetMultimapName+";", WorldClassName), itf);
-			return false;
-		}
+//		if (className.contains("ChunkLoaderManager") && isMethod(calledDesc, "()L"+ImmutableSetMultimapName+";", calledName, WorldClassName, "getPersistentChunks", "getPersistentChunks", calledOwner)) {
+//			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "fuckChickenChunks", String.format("(L%s;)L"+ImmutableSetMultimapName+";", WorldClassName), itf);
+//			return false;
+//		}
 
 		if (isMethod(calledDesc, "()L"+AxisAlignedBBName+";", calledName, TileEntityName, "getRenderBoundingBox", "func_184177_bl", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "getRenderBoundingBox", String.format("(L%s;)L"+AxisAlignedBBName+";", TileEntityName), itf);

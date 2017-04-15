@@ -10,6 +10,8 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;
 
+import com.google.common.base.Predicate;
+
 import ValkyrienWarfareBase.BlockPhysicsRegistration;
 import ValkyrienWarfareBase.NBTUtils;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
@@ -408,11 +410,23 @@ public class PhysicsObject {
 
 		PlayerChunkMap map = ((WorldServer) worldObj).getPlayerChunkMap();
 
-		PlayerChunkMapEntry entry = map.getOrCreateEntry(x, z);
+		PlayerChunkMapEntry entry = new PlayerChunkMapEntry(map, x, z){
+			@Override
+			public boolean hasPlayerMatchingInRange(double range, Predicate<EntityPlayerMP> predicate)
+		    {
+				return true;
+		    }
+		};
+
+
+		long i = map.getIndex(x, z);
+
+		map.playerInstances.put(i, entry);
+		map.playerInstanceList.add(entry);
+
+
 		entry.sentToPlayers = true;
 		entry.players = watchingPlayers;
-
-		map.pendingSendToPlayers.remove(entry);
 
 		claimedChunksEntries[x - ownedChunks.minX][z - ownedChunks.minZ] = entry;
 //		MinecraftForge.EVENT_BUS.post(new ChunkEvent.Load(chunk));

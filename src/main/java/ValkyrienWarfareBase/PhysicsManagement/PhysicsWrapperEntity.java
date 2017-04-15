@@ -153,7 +153,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 	}
 
 	@Override
-	@SideOnly(net.minecraftforge.fml.relauncher.Side.CLIENT)
+	@SideOnly(Side.CLIENT)
 	public void setPositionAndRotationDirect(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean teleport) {
 	}
 

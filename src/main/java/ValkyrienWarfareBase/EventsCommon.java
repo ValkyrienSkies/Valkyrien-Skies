@@ -4,9 +4,9 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.logging.Level;
 
-import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Capability.IAirshipCounterCapability;
+import ValkyrienWarfareBase.CoreMod.CallRunner;
 import ValkyrienWarfareBase.CoreMod.ValkyrienWarfarePlugin;
 import ValkyrienWarfareBase.Interaction.CustomNetHandlerPlayServer;
 import ValkyrienWarfareBase.Interaction.ValkyrienWarfareWorldEventListener;
@@ -41,6 +41,7 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.event.entity.player.PlayerWakeUpEvent;
+import net.minecraftforge.event.entity.player.SleepingLocationCheckEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
@@ -60,6 +61,18 @@ public class EventsCommon {
 
 	public static HashMap<EntityPlayerMP, Double[]> lastPositions = new HashMap<EntityPlayerMP, Double[]>();
 	public static boolean allowNextSleepEvent = false;
+
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
+	public void onSleepingLocationCheckEvent(SleepingLocationCheckEvent event){
+		EntityPlayer player = event.getEntityPlayer();
+//		System.out.println("tset");
+		PhysicsWrapperEntity shipFixedOnto = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(player);
+		if(shipFixedOnto != null){
+//			if(player.sleeping){
+				event.setResult(Result.ALLOW);
+//			}
+		}
+	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onPlayerWakeUpEvent(PlayerWakeUpEvent event){
@@ -86,6 +99,8 @@ public class EventsCommon {
 				player.dismountRidingEntity();
 
 				player.playerLocation = playerLocation;
+
+				player.sleeping = false;
 			}
 		}
 	}
@@ -108,13 +123,16 @@ public class EventsCommon {
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
 
 		if(wrapper != null){
-			event.setResult(SleepResult.TOO_FAR_AWAY);
+
 			if(world.isRemote){
 				//The client got a sleep in bed packet from the server; this means the player is already sleeping on the server side
 				//Do the code that does the other shit here!
 				//(The custom camera and sleeping solution goes here
-				player.sleeping = true;
-				player.setRenderOffsetForSleep(EnumFacing.SOUTH);
+//				player.sleeping = true;
+//				player.setRenderOffsetForSleep(EnumFacing.SOUTH);
+//				CallRunner.isClientPlayerSleepingInShip = true;
+			}else{
+//				event.setResult(SleepResult.TOO_FAR_AWAY);
 			}
 		}
 

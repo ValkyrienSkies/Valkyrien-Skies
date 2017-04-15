@@ -54,35 +54,70 @@ import net.minecraftforge.common.ForgeChunkManager.Ticket;
 
 public class CallRunner {
 
+	public static boolean isClientPlayerSleepingInShip;
+
+    public static SleepResult replaceSleep(EntityPlayer player, BlockPos bedLocation){
+    	System.out.println("shit");
+
+    	PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.worldObj, bedLocation);
+
+    	if(wrapper != null){
+
+
+
+
+
+            wrapper.wrapping.fixEntity(player, new Vector(bedLocation.getX() + 0.5D, bedLocation.getY() + 0.6875D, bedLocation.getZ() + 0.5D));
+
+	        if(player.worldObj.isRemote){
+	        	player.startRiding(wrapper, true);
+	        	System.out.println("Riding the ship now");
+	        }else{
+	        	wrapper.wrapping.queueEntityForMounting(player);
+	        }
+
+    	}
+
+    	return player.trySleep(bedLocation);
+    }
+
 	public static void fixSponge(EntityPlayer player){
-		BlockPos bedLocation = player.getBedLocation();
-		try{
-			Field bedLocationField = player.getClass().getField("bedLocation");
-
-			bedLocationField.setAccessible(true);
-
-			bedLocationField.set(player, bedLocation);
-		}catch(Exception e){
-			e.printStackTrace();
-		}
+//		BlockPos bedLocation = player.getBedLocation();
+//		try{
+//			Field bedLocationField = player.getClass().getField("bedLocation");
+//
+//			bedLocationField.setAccessible(true);
+//
+//			bedLocationField.set(player, bedLocation);
+//		}catch(Exception e){
+//			e.printStackTrace();
+//		}
+//		player.spawnChunk = null;
 	}
 
 	public static void afterWakeUpPlayer(EntityPlayer player){
 		System.out.println("Hell yeah");
-		if(player.worldObj.isRemote){
-			BlockPos playerBlockPos = new BlockPos(player);
-			PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.worldObj, playerBlockPos);
 
-			if(wrapper != null){
+		BlockPos playerBlockPos = new BlockPos(player);
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.worldObj, playerBlockPos);
+		player.sleeping = false;
+		if(wrapper != null){
+			if(player.worldObj.isRemote){
 				//Player got dumped in ship space >:(
 				Vector newPlayerPos = new Vector(player.posX, player.posY, player.posZ);
-				RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, newPlayerPos);
+//				RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, newPlayerPos);
 
 				player.posX = player.lastTickPosX = newPlayerPos.X;
 				player.posY = player.lastTickPosY = newPlayerPos.Y;
 				player.posZ = player.lastTickPosZ = newPlayerPos.Z;
+
+				player.sleeping = false;
+			}else{
+
 			}
 		}
+
+		isClientPlayerSleepingInShip = false;
 	}
 
 	/**
@@ -94,17 +129,24 @@ public class CallRunner {
 	 */
     public static SleepResult trySleepAfterSleep(EntityPlayer player, BlockPos bedLocation, SleepResult result){
     	if(true){
-//    		return SleepResult.NOT_SAFE;
+    		return result;
     	}
     	BlockPos playerPos = new BlockPos(player);
     	World world = player.worldObj;
     	PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, playerPos);
 
 
+    	if(true){
+
+    	}
 
     	if(wrapper != null){
+
+    		System.out.println("Test post");
+
+
     		//Do something here, idk
-    		if(!world.isRemote){
+    		if(false && !world.isRemote){
 //	    		EventsCommon.allowNextSleepEvent = true;
 	    		//Now run the sleep
 //	    		player.trySleep(bedLocation);
@@ -179,9 +221,15 @@ public class CallRunner {
 	    	        }
 
 	    	        wrapper.wrapping.fixEntity(player, new Vector(bedLocation.getX() + 0.5D, bedLocation.getY() + 0.6875D, bedLocation.getZ() + 0.5D));
-	    	        wrapper.wrapping.queueEntityForMounting(player);
 
-	    	        System.out.println(ValkyrienWarfareMod.physicsManager.isEntityFixed(player));
+	    	        if(world.isRemote){
+	    	        	player.startRiding(wrapper, true);
+	    	        	System.out.println("Riding the ship now");
+	    	        }else{
+	    	        	wrapper.wrapping.queueEntityForMounting(player);
+	    	        }
+
+//	    	        System.out.println(ValkyrienWarfareMod.physicsManager.isEntityFixed(player));
 	    		}
 
 
@@ -190,8 +238,14 @@ public class CallRunner {
 //	    		player.wakeUpPlayer(true, false, false);
 
     		}
+
     		if(world.isRemote){
-    			return SleepResult.NOT_POSSIBLE_HERE;
+    			player.sleeping = true;
+    			wrapper.wrapping.fixEntity(player, new Vector(bedLocation.getX() + 0.5D, bedLocation.getY() + 0.6875D, bedLocation.getZ() + 0.5D));
+
+    	        player.startRiding(wrapper, true);
+    	        System.out.println("Riding the ship now");
+//    			return SleepResult.NOT_POSSIBLE_HERE;
     		}
 
 //    		if(world.isRemote){

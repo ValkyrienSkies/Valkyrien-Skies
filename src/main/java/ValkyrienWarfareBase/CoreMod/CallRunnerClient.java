@@ -79,7 +79,16 @@ public class CallRunnerClient extends CallRunner {
 
 	public static void onOrientCamera(EntityRenderer renderer, float partialTicks) {
 		Entity entity = renderer.mc.getRenderViewEntity();
+
+		if(isClientPlayerSleepingInShip){
+			Minecraft.getMinecraft().thePlayer.sleeping = true;
+		}
+
 		float f = entity.getEyeHeight();
+		if(Minecraft.getMinecraft().thePlayer.isPlayerSleeping()){
+			System.out.println("sleep");
+		}
+//		f = (float) .3;
 		double d0 = entity.prevPosX + (entity.posX - entity.prevPosX) * (double) partialTicks;
 		double d1 = entity.prevPosY + (entity.posY - entity.prevPosY) * (double) partialTicks;
 		double d2 = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * (double) partialTicks;
@@ -114,6 +123,8 @@ public class CallRunnerClient extends CallRunner {
 		d1 += eyeVector.Y;
 		d2 += eyeVector.Z;
 
+//		Minecraft.getMinecraft().thePlayer.sleeping = false;
+
 		if (entity instanceof EntityLivingBase && ((EntityLivingBase) entity).isPlayerSleeping()) {
 			f = (float) ((double) f + 1.0D);
 			GlStateManager.translate(0.0F, 0.3F, 0.0F);
@@ -122,6 +133,9 @@ public class CallRunnerClient extends CallRunner {
 				BlockPos blockpos = new BlockPos(entity);
 				IBlockState iblockstate = renderer.mc.theWorld.getBlockState(blockpos);
 				net.minecraftforge.client.ForgeHooksClient.orientBedCamera(renderer.mc.theWorld, blockpos, iblockstate, entity);
+
+				entity.rotationYaw = entity.prevRotationYaw = 0;
+				entity.rotationPitch = entity.prevRotationPitch = 0;
 
 				GlStateManager.rotate(entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks + 180.0F, 0.0F, -1.0F, 0.0F);
 				GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, -1.0F, 0.0F, 0.0F);
@@ -264,6 +278,10 @@ public class CallRunnerClient extends CallRunner {
 		d1 = entity.prevPosY + (entity.posY - entity.prevPosY) * (double) partialTicks + (double) f;
 		d2 = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * (double) partialTicks;
 		renderer.cloudFog = renderer.mc.renderGlobal.hasCloudFog(d0, d1, d2, partialTicks);
+
+		if(isClientPlayerSleepingInShip){
+			Minecraft.getMinecraft().thePlayer.sleeping = false;
+		}
 	}
 
 	// TODO: This may become a performance issue

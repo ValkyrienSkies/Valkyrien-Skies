@@ -95,7 +95,8 @@ public class TransformAdapter extends ClassVisitor {
 		if (isMethod(calledDesc, "(L"+BlockPosName+";)L"+SleepResultName+";", calledName, EntityPlayerName, "trySleep", "func_180469_a", calledOwner)) {
 			//Copy the BlockPos and the PlayerEntity in the stack
 			mv.visitInsn(Opcodes.DUP2);
-			mv.visitMethodInsn(opcode, calledOwner, calledName, calledDesc, itf);
+//			mv.visitMethodInsn(opcode, calledOwner, calledName, calledDesc, itf);
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "replaceSleep", "(L" + EntityPlayerName + ";L" + BlockPosName + ";)L"+SleepResultName+";", itf);
 			//Add a method to run afterwards
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "trySleepAfterSleep", "(L" + EntityPlayerName + ";L" + BlockPosName + ";L" + SleepResultName + ";)L"+SleepResultName+";", itf);
 			return false;

@@ -27,6 +27,7 @@ import ValkyrienWarfareControl.TileEntity.BalloonBurnerTileEntity;
 import ValkyrienWarfareControl.TileEntity.PilotsChairTileEntity;
 import ValkyrienWarfareControl.TileEntity.TileEntityHoverController;
 import ValkyrienWarfareControl.TileEntity.TileEntityNormalEtherCompressor;
+import ValkyrienWarfareWorld.ValkyrienWarfareWorldMod;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
@@ -47,6 +48,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.oredict.ShapedOreRecipe;
 
 @Mod(modid = ValkyrienWarfareControlMod.MODID, name = ValkyrienWarfareControlMod.MODNAME, version = ValkyrienWarfareControlMod.MODVER)
 public class ValkyrienWarfareControlMod {
@@ -172,11 +174,24 @@ public class ValkyrienWarfareControlMod {
 	}
 
 	private void registerRecipies(FMLStateEvent event) {
-		GameRegistry.addRecipe(new ItemStack(basicEngine), new Object[] { "IWW", "IPP", "IWW", 'W', Item.getItemFromBlock(Blocks.PLANKS), 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT });
-		GameRegistry.addRecipe(new ItemStack(basicHoverController), new Object[] { "III", "TCT", "III", 'I', Item.getItemFromBlock(Blocks.IRON_BLOCK), 'C', Items.COMPASS, 'T', Item.getItemFromBlock(Blocks.CRAFTING_TABLE) });
-		GameRegistry.addRecipe(new ItemStack(antigravityEngine, 3), new Object[] { "IWI", "GDG", "IWI", 'W', Item.getItemFromBlock(Blocks.PLANKS), 'G', Item.getItemFromBlock(Blocks.GOLD_BLOCK), 'I', Item.getItemFromBlock(Blocks.IRON_BLOCK), 'D', Item.getItemFromBlock(Blocks.DIAMOND_BLOCK) });
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(pilotsChair), new Object[] { "SLS", "EWE", " S ", 'S', "stickWood", 'L', Items.LEATHER, 'W', "treeWood", 'E', ValkyrienWarfareWorldMod.etheriumCrystal }));
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(systemLinker), new Object[] { "IR ", " DR", "I I", 'I', Items.IRON_INGOT, 'D', "gemDiamond", 'R', Items.REDSTONE }));
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(balloonBurner), new Object[]{ "IFI", "WIW", "PPP", 'I', Items.IRON_INGOT, 'F', Items.FLINT_AND_STEEL, 'W', "treeWood", 'P', "plankWood" }));
 
-		GameRegistry.addRecipe(new ItemStack(systemLinker), new Object[] { "IR ", " DR", "I I", 'I', Items.IRON_INGOT, 'D', Items.DIAMOND, 'R', Items.REDSTONE });
+		GameRegistry.addRecipe(new ItemStack(basicHoverController), new Object[] { "III", "TCT", "III", 'I', Item.getItemFromBlock(Blocks.IRON_BLOCK), 'C', Items.COMPASS, 'T', Item.getItemFromBlock(Blocks.CRAFTING_TABLE) });
+
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(antigravityEngine, 4), new Object[] { "#I#", "#E#", "WEW", '#', "plankWood", 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorldMod.etheriumCrystal, 'W', "treeWood" }));
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(advancedEtherCompressor, 4), new Object[] { "#I#", "#E#", "WEW", '#', "stone", 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorldMod.etheriumCrystal, 'W', "treeWood" }));
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(advancedEtherCompressor, 4), new Object[] { "#I#", "#E#", "WEW", '#', "cobblestone", 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorldMod.etheriumCrystal, 'W', "treeWood" }));
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(eliteEtherCompressor, 4), new Object[] { "III", "IEI", "WEW", 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorldMod.etheriumCrystal, 'W', "treeWood" }));
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ultimateEtherCompressor, 4), new Object[] { "#I#", "#E#", "WEW", '#', Item.getItemFromBlock(Blocks.OBSIDIAN), 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorldMod.etheriumCrystal, 'W', "treeWood" }));
+
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(basicEngine, 2), new Object[] { "###", "IPP", "I##", '#', "plankWood", 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT }));
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(advancedEngine, 2), new Object[] { "###", "IPP", "I##", '#', "stone", 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT }));
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(advancedEngine, 2), new Object[] { "###", "IPP", "I##", '#', "cobblestone", 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT }));
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(eliteEngine, 2), new Object[] { "III", "IPP", "III", 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT }));
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ultimateEtherCompressor, 2), new Object[] { "###", "IPP", "I##", '#', Item.getItemFromBlock(Blocks.OBSIDIAN), 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT }));
+
 	}
 
 	private void registerNetworks(FMLStateEvent event) {

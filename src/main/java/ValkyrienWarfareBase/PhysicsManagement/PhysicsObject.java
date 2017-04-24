@@ -246,6 +246,10 @@ public class PhysicsObject {
 			wrapper.setDead();
 			return;
 		}
+		assembleShip(player, detector, centerInWorld);
+	}
+
+	private void assembleShip(EntityPlayer player, SpatialDetector detector, BlockPos centerInWorld){
 		MutableBlockPos pos = new MutableBlockPos();
 		TIntIterator iter = detector.foundSet.iterator();
 

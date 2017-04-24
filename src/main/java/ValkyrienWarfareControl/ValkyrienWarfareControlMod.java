@@ -73,7 +73,7 @@ public class ValkyrienWarfareControlMod {
 	public Block dopedEtherium;
 	public Block balloonBurner;
 	public Block pilotsChair;
-	
+
 	public Block antigravityEngine; //leaving it with the old name to prevent blocks dissapearing
 	public Block advancedEtherCompressor;
 	public Block eliteEtherCompressor;
@@ -94,7 +94,7 @@ public class ValkyrienWarfareControlMod {
 		registerBlocks(event);
 		registerTileEntities(event);
 		registerItems(event);
-		registerRecipies(event);
+
 		registerNetworks(event);
 		proxy.preInit(event);
 		config.save();
@@ -108,6 +108,7 @@ public class ValkyrienWarfareControlMod {
 
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
+		registerRecipies(event);
 		proxy.postInit(event);
 	}
 
@@ -117,7 +118,7 @@ public class ValkyrienWarfareControlMod {
 		double eliteEnginePower = config.get(Configuration.CATEGORY_GENERAL, "eliteEnginePower", 8000D, "Engine power for the elite Engine").getDouble();
 		double ultimateEnginePower = config.get(Configuration.CATEGORY_GENERAL, "ultimateEnginePower", 16000D, "Engine power for the ultimate Engine").getDouble();
 		double redstoneEnginePower = config.get(Configuration.CATEGORY_GENERAL, "redstoneEnginePower", 500D, "Multiplied by the redstone power (0-15) to the Redstone Engine").getDouble();
-		
+
 		double basicEtherCompressorPower = config.get(Configuration.CATEGORY_GENERAL, "basicEtherCompressorPower", 25000D, "Engine power for the basic Ether Compressor").getDouble();
 		double advancedEtherCompressorPower = config.get(Configuration.CATEGORY_GENERAL, "advancedEtherCompressorPower", 45000D, "Engine power for the advanced Ether Compressor").getDouble();
 		double eliteEtherCompressorPower = config.get(Configuration.CATEGORY_GENERAL, "eliteEtherCompressorPower", 80000D, "Engine power for the elite Ether Compressor").getDouble();
@@ -128,13 +129,13 @@ public class ValkyrienWarfareControlMod {
 		eliteEngine = new BlockNormalEngine(Material.IRON, eliteEnginePower).setHardness(8f).setUnlocalizedName("eliteEngine").setRegistryName(ValkyrienWarfareMod.MODID, "eliteEngine").setCreativeTab(CreativeTabs.TRANSPORTATION);
 		ultimateEngine = new BlockNormalEngine(Material.GROUND, ultimateEnginePower).setHardness(10f).setUnlocalizedName("ultimateEngine").setRegistryName(ValkyrienWarfareMod.MODID, "ultimateEngine").setCreativeTab(CreativeTabs.TRANSPORTATION);
 		redstoneEngine = new BlockRedstoneEngine(Material.REDSTONE_LIGHT, redstoneEnginePower).setHardness(7.0f).setUnlocalizedName("redstoneEngine").setRegistryName(ValkyrienWarfareMod.MODID, "redstoneEngine").setCreativeTab(CreativeTabs.TRANSPORTATION);
-		
+
 		antigravityEngine = new BlockNormalEtherCompressor(Material.WOOD, basicEtherCompressorPower).setHardness(8f).setUnlocalizedName("antigravengine").setRegistryName(ValkyrienWarfareMod.MODID, "antigravengine").setCreativeTab(CreativeTabs.TRANSPORTATION);
 		advancedEtherCompressor = new BlockNormalEtherCompressor(Material.ROCK, advancedEtherCompressorPower).setHardness(8f).setUnlocalizedName("advancedEtherCompressor").setRegistryName(ValkyrienWarfareMod.MODID, "advancedEtherCompressor").setCreativeTab(CreativeTabs.TRANSPORTATION);
 		eliteEtherCompressor = new BlockNormalEtherCompressor(Material.IRON, eliteEtherCompressorPower).setHardness(8f).setUnlocalizedName("eliteEtherCompressor").setRegistryName(ValkyrienWarfareMod.MODID, "eliteEtherCompressor").setCreativeTab(CreativeTabs.TRANSPORTATION);
 		ultimateEtherCompressor = new BlockNormalEtherCompressor(Material.GROUND, ultimateEtherCompressorPower).setHardness(8f).setUnlocalizedName("ultimateEtherCompressor").setRegistryName(ValkyrienWarfareMod.MODID, "ultimateEtherCompressor").setCreativeTab(CreativeTabs.TRANSPORTATION);
 		creativeEtherCompressor = new BlockCreativeEtherCompressor(Material.BARRIER, Double.MAX_VALUE / 4).setHardness(0.0f).setUnlocalizedName("creativeEtherCompressor").setRegistryName(ValkyrienWarfareMod.MODID, "creativeEtherCompressor").setCreativeTab(CreativeTabs.TRANSPORTATION);
-		
+
 		basicHoverController = new BlockHovercraftController(Material.IRON).setHardness(10f).setUnlocalizedName("basichovercraftcontroller").setRegistryName(ValkyrienWarfareMod.MODID, "basichovercraftcontroller").setCreativeTab(CreativeTabs.TRANSPORTATION);
 		dopedEtherium = new BlockDopedEtherium(Material.GLASS).setHardness(4f).setUnlocalizedName("dopedetherium").setRegistryName(MODID, "dopedetherium").setCreativeTab(CreativeTabs.TRANSPORTATION);
 		balloonBurner = new BlockBalloonBurner(Material.IRON).setHardness(4f).setUnlocalizedName("ballonburner").setRegistryName(MODID, "ballonburner").setCreativeTab(CreativeTabs.TRANSPORTATION);
@@ -145,7 +146,7 @@ public class ValkyrienWarfareControlMod {
 		GameRegistry.registerBlock(eliteEngine);
 		GameRegistry.registerBlock(ultimateEngine);
 		GameRegistry.registerBlock(redstoneEngine);
-		
+
 		GameRegistry.registerBlock(antigravityEngine);
 		GameRegistry.registerBlock(advancedEtherCompressor);
 		GameRegistry.registerBlock(eliteEtherCompressor);

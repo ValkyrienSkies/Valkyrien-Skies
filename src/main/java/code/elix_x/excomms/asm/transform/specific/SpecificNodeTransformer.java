@@ -20,7 +20,7 @@ public abstract class SpecificNodeTransformer<T> implements NodeTransformer<T> {
 	public SpecificNodeTransformer(int priority, Class<T> target, Consumer<T> transform){
 		this(target, priority, old -> {
 			transform.accept(old);
-			return null;
+			return old;
 		});
 	}
 

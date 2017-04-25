@@ -11,6 +11,7 @@ import org.objectweb.asm.tree.VarInsnNode;
 import code.elix_x.excomms.asm.transform.ASMTransformer;
 import code.elix_x.excomms.asm.transform.InsnListBuilder;
 import code.elix_x.excomms.asm.transform.children.specific.SpecificClassNodeChildrenTransformer;
+import code.elix_x.excomms.asm.transform.specific.SpecificClassNodeTransformer;
 import code.elix_x.excomms.asm.transform.specific.SpecificMethodNodeTransformer;
 import net.minecraft.launchwrapper.IClassTransformer;
 
@@ -32,13 +33,15 @@ public class ValkyrienWarfareTransformer implements IClassTransformer {
 				.node(SpecificMethodNodeTransformer.instructionsInserterBeforeReturn(ValkyrienWarfarePlugin.isObfuscatedEnvironment ? "func_145835_a" : "getDistanceSq", 0, () -> new InsnListBuilder(new VarInsnNode(ALOAD, 0), new VarInsnNode(DLOAD, 1), new VarInsnNode(DLOAD, 3), new VarInsnNode(DLOAD, 5), new MethodInsnNode(INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "getDistanceSq", "(DLnet/minecraft/tileentity/TileEntity;DDD)D", false)).build()))
 				.build(),
 				new SpecificClassNodeChildrenTransformer.Builder("net/minecraft/entity/Entity", 0)
+				.node(SpecificClassNodeTransformer.setParent("net/minecraft/entity/Entity", 10, old -> "ValkyrienWarfareBase/Interaction/EntityDraggable"))
+				.node(SpecificMethodNodeTransformer.instructionsNodesTransformer("<init>", 5, node -> node.getOpcode() == INVOKESPECIAL && ((MethodInsnNode) node).owner.equals("java/lang/Object") && ((MethodInsnNode) node).name.equals("<init>") ? new MethodInsnNode(INVOKESPECIAL, "ValkyrienWarfareBase/Interaction/EntityDraggable", "<init>", "()V", false) : node))
 				.node(SpecificMethodNodeTransformer.instructionsInserterBeforeReturn(ValkyrienWarfarePlugin.isObfuscatedEnvironment ? "func_70092_e(DDD)D" : "getDistanceSq(DDD)D", 0, () -> new InsnListBuilder(new VarInsnNode(ALOAD, 0), new VarInsnNode(DLOAD, 1), new VarInsnNode(DLOAD, 3), new VarInsnNode(DLOAD, 5), new MethodInsnNode(INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "getDistanceSq", "(DLnet/minecraft/entity/Entity;DDD)D", false)).build()))
 				.build());
 	}
 	
 	@Override
 	public byte[] transform(String name, String transformedName, byte[] classData){
-		classData = ASMUtils.doAdditionalTransforms(transformedName, transformer.transform(classData));
+		classData = transformer.transform(classData);
 
 		TransformAdapter adapter = new TransformAdapter(ASM5, ValkyrienWarfarePlugin.isObfuscatedEnvironment, transformedName);
 		ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);

@@ -70,10 +70,10 @@ public class TransformAdapter extends ClassVisitor {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "rebuildChunkIterator", "(L" + IteratorName + ";)L"+IteratorName+";", itf);
 		}*/
 
-		if (isMethod(calledDesc, "(L" + WorldClassName + ";L" + BlockPosName+ ";Z)L"+BlockPosName+";", calledName, EntityPlayerName, "getBedSpawnLocation", "func_180467_a", calledOwner)) {
+		/*if (isMethod(calledDesc, "(L" + WorldClassName + ";L" + BlockPosName+ ";Z)L"+BlockPosName+";", calledName, EntityPlayerName, "getBedSpawnLocation", "func_180467_a", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "getBedSpawnLocation", "(L" + WorldClassName + ";L" + BlockPosName+ ";Z)L"+BlockPosName+";", itf);
 			return false;
-		}
+		}*/
 
 		if (isMethod(calledDesc, "(ZZZ)V", calledName, EntityPlayerName, "wakeUpPlayer", "func_70999_a", calledOwner)) {
 			//Initial Stack of PZZZ

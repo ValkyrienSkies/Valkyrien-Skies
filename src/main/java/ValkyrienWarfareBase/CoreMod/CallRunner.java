@@ -64,9 +64,7 @@ public class CallRunner {
 		return newBackingArray.iterator();
 	}
 
-    public static BlockPos getBedSpawnLocation(World worldIn, BlockPos bedLocation, boolean forceSpawn){
-    	BlockPos toReturn = EntityPlayer.getBedSpawnLocation(worldIn, bedLocation, forceSpawn);
-
+    public static BlockPos getBedSpawnLocation(BlockPos toReturn, World worldIn, BlockPos bedLocation, boolean forceSpawn){
 //    	System.out.println("Keep their heads ringing");
 
 		int chunkX = bedLocation.getX() >> 4;

@@ -22,8 +22,8 @@ public class SpecificMethodNodeTransformer extends SpecificNodeTransformer<Metho
 		return new SpecificMethodNodeTransformer(priority, target, node -> insnConsumer.accept(node.instructions));
 	}
 
-	public static SpecificMethodNodeTransformer instructionsBegginningInserter(String target, int priority, InsnList insn){
-		return instructionsTransformer(priority, target, instructions -> instructions.insertBefore(instructions.getFirst(), insn));
+	public static SpecificMethodNodeTransformer instructionsBeginningInserter(String target, int priority, InsnList insn){
+		return instructionsTransformer(priority, target, instructions -> instructions.insert(insn));
 	}
 
 	public static SpecificMethodNodeTransformer instructionsInserter(String target, int priority, Function<InsnList, AbstractInsnNode> where, InsnList insn, boolean before){

@@ -16,6 +16,7 @@ import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRema
  * @author thebest108
  *
  */
+@Deprecated
 public class TransformAdapter extends ClassVisitor {
 
 	public static final String EntityClassName = "net/minecraft/entity/Entity";

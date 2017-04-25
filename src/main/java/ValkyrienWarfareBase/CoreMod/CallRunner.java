@@ -575,8 +575,7 @@ public class CallRunner {
 		return true;
 	}
 
-	public static double onGetDistanceSq(Entity entity, double x, double y, double z) {
-		double vanilla = entity.getDistanceSq(x, y, z);
+	public static double getDistanceSq(double vanilla, Entity entity, double x, double y, double z) {
 		if (vanilla < 64.0D) {
 			return vanilla;
 		} else {
@@ -629,14 +628,17 @@ public class CallRunner {
 		world.playSound(x, y, z, soundIn, category, volume, pitch, distanceDelay);
 	}
 
-	public static double onGetDistanceSq(TileEntity ent, double x, double y, double z) {
+	public static double getDistanceSq(double ret, TileEntity ent, double x, double y, double z) {
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(ent.getWorld(), ent.getPos());
 		if (wrapper != null) {
 			Vector vec = new Vector(x, y, z);
 			wrapper.wrapping.coordTransform.fromGlobalToLocal(vec);
-			return ent.getDistanceSq(vec.X, vec.Y, vec.Z);
+			double d0 = ent.getPos().getX() - vec.X;
+	        double d1 = ent.getPos().getY() - vec.Y;
+	        double d2 = ent.getPos().getZ() - vec.Z;
+	        return d0 * d0 + d1 * d1 + d2 * d2;
 		}
-		return ent.getDistanceSq(x, y, z);
+		return ret;
 	}
 
 /*	public static boolean onSpawnEntityInWorld(World world, Entity entity) {

@@ -93,8 +93,76 @@ public class CallRunner {
 
     	return toReturn;
     }
+    
+    private boolean[] alreadyTryingToSleep = new boolean[2];
+    
+    public SleepResult trySleep(SleepResult result, EntityPlayer player, BlockPos bedLocation){
+    	if(alreadyTryingToSleep[player.worldObj.isRemote ? 1 : 0]) return result;
+    	
+    	alreadyTryingToSleep[player.worldObj.isRemote ? 1 : 0] = true;
+    	PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.worldObj, bedLocation);
 
-    public static SleepResult replaceSleep(EntityPlayer player, BlockPos bedLocation){
+    	if(wrapper != null){
+    		if(!player.worldObj.isRemote){
+    			if(result != SleepResult.OK){
+    				return result;
+    			}
+    		}
+            wrapper.wrapping.fixEntity(player, new Vector(bedLocation.getX() + 0.5D, bedLocation.getY() + 0.6875D, bedLocation.getZ() + 0.5D));
+
+	        if(player.worldObj.isRemote){
+	        	player.startRiding(wrapper, true);
+	        }else{
+	        	wrapper.wrapping.queueEntityForMounting(player);
+	        }
+
+	        if(player.worldObj.isRemote){
+	        	player.sleeping = true;
+
+	        	return SleepResult.NOT_POSSIBLE_NOW;
+	        }
+
+	        result = player.trySleep(bedLocation);
+	        
+	        if(result == null){
+	        	System.out.println("Wtf happened here");
+	        }
+    	}
+    	
+    	if(player.worldObj.isRemote){
+	    	IBlockState state = null;
+	        if (player.worldObj.isBlockLoaded(bedLocation)) state = player.worldObj.getBlockState(bedLocation);
+	        if (state != null && state.getBlock().isBed(state, player.worldObj, bedLocation, player)) {
+	            EnumFacing enumfacing = state.getBlock().getBedDirection(state, player.worldObj, bedLocation);
+	            float f = 0.5F;
+	            float f1 = 0.5F;
+
+	            switch (enumfacing)
+	            {
+	                case SOUTH:
+	                    f1 = 0.9F;
+	                    break;
+	                case NORTH:
+	                    f1 = 0.1F;
+	                    break;
+	                case WEST:
+	                    f = 0.1F;
+	                    break;
+	                case EAST:
+	                    f = 0.9F;
+	            }
+
+//	            System.out.println(enumfacing);
+
+	            player.setRenderOffsetForSleep(enumfacing);
+	        }
+    	}
+    	
+    	alreadyTryingToSleep[player.worldObj.isRemote ? 1 : 0] = false;
+    	return result;
+    }
+
+    /*public static SleepResult replaceSleep(EntityPlayer player, BlockPos bedLocation){
     	PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.worldObj, bedLocation);
 
     	if(wrapper != null){
@@ -127,7 +195,7 @@ public class CallRunner {
     	}
 
     	return player.trySleep(bedLocation);
-    }
+    }*/
 
 	public static void fixSponge(EntityPlayer player){
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(player);
@@ -170,13 +238,13 @@ public class CallRunner {
 		player.sleeping = false;
 	}
 
-	/**
+	/*
 	 * Runs after a player tries to sleep
 	 * @param player
 	 * @param bedLocation
 	 * @param result
 	 * @return
-	 */
+	 *
     public static SleepResult trySleepAfterSleep(EntityPlayer player, BlockPos bedLocation, SleepResult result){
 
     	if(player.worldObj.isRemote){
@@ -209,7 +277,7 @@ public class CallRunner {
     	}
 
     	return result;
-    }
+    }*/
 
 	public static double getDistanceSq(TileEntity tile, double x, double y, double z){
 		World tileWorld = tile.getWorld();

@@ -103,7 +103,7 @@ public class TransformAdapter extends ClassVisitor {
 			return false;
 		}*/
 
-		if (isMethod(calledDesc, "(L"+BlockPosName+";)L"+SleepResultName+";", calledName, EntityPlayerName, "trySleep", "func_180469_a", calledOwner)) {
+		/*if (isMethod(calledDesc, "(L"+BlockPosName+";)L"+SleepResultName+";", calledName, EntityPlayerName, "trySleep", "func_180469_a", calledOwner)) {
 			//Copy the BlockPos and the PlayerEntity in the stack
 			mv.visitInsn(Opcodes.DUP2);
 //			mv.visitMethodInsn(opcode, calledOwner, calledName, calledDesc, itf);
@@ -111,7 +111,7 @@ public class TransformAdapter extends ClassVisitor {
 			//Add a method to run afterwards
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "trySleepAfterSleep", "(L" + EntityPlayerName + ";L" + BlockPosName + ";L" + SleepResultName + ";)L"+SleepResultName+";", itf);
 			return false;
-		}
+		}*/
 
 		if (isMethod(calledDesc, "()L"+AxisAlignedBBName+";", calledName, TileEntityName, "getRenderBoundingBox", "func_184177_bl", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "getRenderBoundingBox", String.format("(L%s;)L"+AxisAlignedBBName+";", TileEntityName), itf);

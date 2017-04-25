@@ -16,22 +16,26 @@ import net.minecraft.launchwrapper.IClassTransformer;
 
 public class ValkyrienWarfareTransformer implements IClassTransformer {
 
-	private ASMTransformer transformer = new ASMTransformer(
-			new SpecificClassNodeChildrenTransformer.Builder("net/minecraftforge/common/ForgeChunkManager", 0)
-			.node(SpecificMethodNodeTransformer.instructionsBeginningInserter("getPersistentChunksIterableFor", 0, new InsnListBuilder(new VarInsnNode(ALOAD, 1), new MethodInsnNode(INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "rebuildChunkIterator", "(Ljava/util/Iterator;)Ljava/util/Iterator;", false), new VarInsnNode(ASTORE, 1), new LabelNode()).build()))
-			.build(),
-			new SpecificClassNodeChildrenTransformer.Builder("net/minecraft/entity/player/EntityPlayer", 0)
-			.node(SpecificMethodNodeTransformer.instructionsInserterBeforeReturn(ValkyrienWarfarePlugin.isObfuscatedEnvironment ? "func_180467_a" : "getBedSpawnLocation", 0, () -> new InsnListBuilder(new VarInsnNode(ALOAD, 0), new VarInsnNode(ALOAD, 1), new VarInsnNode(ILOAD, 2), new MethodInsnNode(INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "getBedSpawnLocation", "(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Z)Lnet/minecraft/util/math/BlockPos;", false)).build()))
-			.node(SpecificMethodNodeTransformer.instructionsInserterBeforeReturn(ValkyrienWarfarePlugin.isObfuscatedEnvironment ? "func_70999_a" : "wakeUpPlayer", 0, () -> new InsnListBuilder(new VarInsnNode(ALOAD, 0), new MethodInsnNode(INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "afterWakeUpPlayer", "(Lnet/minecraft/entity/player/EntityPlayer;)V", false)).build()))
-			.node(SpecificMethodNodeTransformer.instructionsInserterBeforeReturn(ValkyrienWarfarePlugin.isObfuscatedEnvironment ? "func_180469_a" : "trySleep", 0, () -> new InsnListBuilder(new VarInsnNode(ALOAD, 0), new VarInsnNode(ALOAD, 1), new MethodInsnNode(INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "trySleep", "(Lnet/minecraft/entity/player/EntityPlayer$SleepResult;Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/entity/player/EntityPlayer$SleepResult;", false)).build()))
-			.build(),
-			new SpecificClassNodeChildrenTransformer.Builder("net/minecraft/tileentity/TileEntity", 0)
-			.node(SpecificMethodNodeTransformer.instructionsInserterBeforeReturn(ValkyrienWarfarePlugin.isObfuscatedEnvironment ? "func_145835_a" : "getDistanceSq", 0, () -> new InsnListBuilder(new VarInsnNode(ALOAD, 0), new VarInsnNode(DLOAD, 1), new VarInsnNode(DLOAD, 2), new VarInsnNode(DLOAD, 3), new MethodInsnNode(INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "getDistanceSq", "getDistanceSq(DLnet/minecraft/tileentity/TileEntity;DDD)D", false)).build()))
-			.build(),
-			new SpecificClassNodeChildrenTransformer.Builder("net/minecraft/entity/Entity", 0)
-			.node(SpecificMethodNodeTransformer.instructionsInserterBeforeReturn(ValkyrienWarfarePlugin.isObfuscatedEnvironment ? "func_70092_e(DDD)D" : "getDistanceSq(DDD)D", 0, () -> new InsnListBuilder(new VarInsnNode(ALOAD, 0), new VarInsnNode(DLOAD, 1), new VarInsnNode(DLOAD, 2), new VarInsnNode(DLOAD, 3), new MethodInsnNode(INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "getDistanceSq", "getDistanceSq(DLnet/minecraft/entity/Entity;DDD)D", false)).build()))
-			.build());
+	private static ASMTransformer transformer;
 
+	public static void onDataInitialized(){
+		transformer = new ASMTransformer(
+				new SpecificClassNodeChildrenTransformer.Builder("net/minecraftforge/common/ForgeChunkManager", 0)
+				.node(SpecificMethodNodeTransformer.instructionsBeginningInserter("getPersistentChunksIterableFor", 0, new InsnListBuilder(new VarInsnNode(ALOAD, 1), new MethodInsnNode(INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "rebuildChunkIterator", "(Ljava/util/Iterator;)Ljava/util/Iterator;", false), new VarInsnNode(ASTORE, 1), new LabelNode()).build()))
+				.build(),
+				new SpecificClassNodeChildrenTransformer.Builder("net/minecraft/entity/player/EntityPlayer", 0)
+				.node(SpecificMethodNodeTransformer.instructionsInserterBeforeReturn(ValkyrienWarfarePlugin.isObfuscatedEnvironment ? "func_180467_a" : "getBedSpawnLocation", 0, () -> new InsnListBuilder(new VarInsnNode(ALOAD, 0), new VarInsnNode(ALOAD, 1), new VarInsnNode(ILOAD, 2), new MethodInsnNode(INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "getBedSpawnLocation", "(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Z)Lnet/minecraft/util/math/BlockPos;", false)).build()))
+				.node(SpecificMethodNodeTransformer.instructionsInserterBeforeReturn(ValkyrienWarfarePlugin.isObfuscatedEnvironment ? "func_70999_a" : "wakeUpPlayer", 0, () -> new InsnListBuilder(new VarInsnNode(ALOAD, 0), new MethodInsnNode(INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "afterWakeUpPlayer", "(Lnet/minecraft/entity/player/EntityPlayer;)V", false)).build()))
+				.node(SpecificMethodNodeTransformer.instructionsInserterBeforeReturn(ValkyrienWarfarePlugin.isObfuscatedEnvironment ? "func_180469_a" : "trySleep", 0, () -> new InsnListBuilder(new VarInsnNode(ALOAD, 0), new VarInsnNode(ALOAD, 1), new MethodInsnNode(INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "trySleep", "(Lnet/minecraft/entity/player/EntityPlayer$SleepResult;Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/entity/player/EntityPlayer$SleepResult;", false)).build()))
+				.build(),
+				new SpecificClassNodeChildrenTransformer.Builder("net/minecraft/tileentity/TileEntity", 0)
+				.node(SpecificMethodNodeTransformer.instructionsInserterBeforeReturn(ValkyrienWarfarePlugin.isObfuscatedEnvironment ? "func_145835_a" : "getDistanceSq", 0, () -> new InsnListBuilder(new VarInsnNode(ALOAD, 0), new VarInsnNode(DLOAD, 1), new VarInsnNode(DLOAD, 2), new VarInsnNode(DLOAD, 3), new MethodInsnNode(INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "getDistanceSq", "getDistanceSq(DLnet/minecraft/tileentity/TileEntity;DDD)D", false)).build()))
+				.build(),
+				new SpecificClassNodeChildrenTransformer.Builder("net/minecraft/entity/Entity", 0)
+				.node(SpecificMethodNodeTransformer.instructionsInserterBeforeReturn(ValkyrienWarfarePlugin.isObfuscatedEnvironment ? "func_70092_e(DDD)D" : "getDistanceSq(DDD)D", 0, () -> new InsnListBuilder(new VarInsnNode(ALOAD, 0), new VarInsnNode(DLOAD, 1), new VarInsnNode(DLOAD, 2), new VarInsnNode(DLOAD, 3), new MethodInsnNode(INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "getDistanceSq", "getDistanceSq(DLnet/minecraft/entity/Entity;DDD)D", false)).build()))
+				.build());
+	}
+	
 	@Override
 	public byte[] transform(String name, String transformedName, byte[] classData){
 		classData = ASMUtils.doAdditionalTransforms(transformedName, transformer.transform(classData));

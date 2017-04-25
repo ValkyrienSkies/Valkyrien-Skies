@@ -61,7 +61,7 @@ public class SpecificMethodNodeTransformer extends SpecificNodeTransformer<Metho
 
 	@Override
 	public boolean accepts(MethodNode target){
-		return this.target.equals(target.name);
+		return this.target.contains("(") ? this.target.equals(target.name + target.desc) : this.target.equals(target.name);
 	}
 
 }

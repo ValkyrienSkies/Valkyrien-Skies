@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Function;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
@@ -21,7 +23,7 @@ public class SpecificClassNodeChildrenTransformer extends NodeChildrenTransforme
 	private final String target;
 	private final int priority;
 
-	public SpecificClassNodeChildrenTransformer(String target, int priority, Multimap<Function<ClassNode, Collection<?>>, NodeTransformer> nodes, Function<Triple<ClassNode, ?, ?>, ClassNode> modified){
+	public SpecificClassNodeChildrenTransformer(String target, int priority, Multimap<Function<ClassNode, Pair<Class, Collection<?>>>, NodeTransformer> nodes, Function<Triple<ClassNode, ?, ?>, ClassNode> modified){
 		super(nodes, modified);
 		this.target = target;
 		this.priority = priority;
@@ -49,10 +51,10 @@ public class SpecificClassNodeChildrenTransformer extends NodeChildrenTransforme
 			else throw new IllegalArgumentException("Cannot remove class node!");
 		};
 
-		public static final Function<ClassNode, Collection<MethodNode>> METHODNODETRANSFORMERP2C = node -> {
+		public static final Function<ClassNode, Pair<Class, Collection<MethodNode>>> METHODNODETRANSFORMERP2C = node -> {
 			ArrayList<MethodNode> list = Lists.newArrayList(node.methods);
 			list.add(null);
-			return list;
+			return new ImmutablePair<Class, Collection<MethodNode>>(MethodNode.class, list);
 		};
 
 		public static final Function<Triple<ClassNode, MethodNode, MethodNode>, ClassNode> METHODNODETRANSFORMERMOD = triple -> {

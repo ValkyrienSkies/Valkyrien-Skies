@@ -22,7 +22,7 @@ import code.elix_x.excomms.asm.transform.NodeTransformer;
 
 public abstract class NodeChildrenTransformer<T> implements NodeTransformer<T> {
 
-	private final ImmutableList<Pair<Function<T, Collection<?>>, NodeTransformer>> nodes;
+	private final ImmutableList<Pair<Function<T, Pair<Class, Collection<?>>>, NodeTransformer>> nodes;
 	private final Function<Triple<T, ?, ?>, T> modified;
 
 	/**
@@ -43,8 +43,8 @@ public abstract class NodeChildrenTransformer<T> implements NodeTransformer<T> {
 	 *            function accepting triple of parent node, old child node and new child node, and returning new parent node (or old one if modifications do not require re-instantiation).<br>
 	 *            If function accepts <tt>null</tt> as new child node, deletion of child nodes is allowed.
 	 */
-	public NodeChildrenTransformer(Multimap<Function<T, Collection<?>>, NodeTransformer> nodes, Function<Triple<T, ?, ?>, T> modified){
-		Set<Pair<Function<T, Collection<?>>, NodeTransformer>> dispatched = new TreeSet<Pair<Function<T, Collection<?>>, NodeTransformer>>((pair1, pair2) -> pair1.getRight().getPriority() - pair2.getRight().getPriority() );
+	public NodeChildrenTransformer(Multimap<Function<T, Pair<Class, Collection<?>>>, NodeTransformer> nodes, Function<Triple<T, ?, ?>, T> modified){
+		Set<Pair<Function<T, Pair<Class, Collection<?>>>, NodeTransformer>> dispatched = new TreeSet<Pair<Function<T, Pair<Class, Collection<?>>>, NodeTransformer>>((pair1, pair2) -> pair1.getRight().getPriority() - pair2.getRight().getPriority());
 		dispatched.addAll(Collections2.transform(nodes.entries(), entry -> new ImmutablePair<>(entry.getKey(), entry.getValue())));
 		this.nodes = ImmutableList.copyOf(dispatched);
 		this.modified = modified;
@@ -52,11 +52,12 @@ public abstract class NodeChildrenTransformer<T> implements NodeTransformer<T> {
 
 	@Override
 	public T transform(T parent){
-		for(Pair<Function<T, Collection<?>>, NodeTransformer> pair : nodes){
+		for(Pair<Function<T, Pair<Class, Collection<?>>>, NodeTransformer> pair : nodes){
 			NodeTransformer node = pair.getRight();
 			if(pair.getLeft() != null){
-				for(Object target : pair.getLeft().apply(parent))
-					if(node.getTargetType().isAssignableFrom(target.getClass()) && node.accepts(target))
+				Pair<Class, Collection<?>> res = pair.getLeft().apply(parent);
+				for(Object target : res.getRight())
+					if(node.getTargetType().isAssignableFrom(res.getLeft()) && node.accepts(target))
 						parent = modified.apply(new ImmutableTriple<>(parent, target, node.transform(target)));
 			} else{
 				if(node.getTargetType().isAssignableFrom(parent.getClass()) && node.accepts(parent))
@@ -68,7 +69,7 @@ public abstract class NodeChildrenTransformer<T> implements NodeTransformer<T> {
 
 	public static class Builder<T> {
 
-		private Multimap<Function<T, Collection<?>>, NodeTransformer> nodes = HashMultimap.create();
+		private Multimap<Function<T, Pair<Class, Collection<?>>>, NodeTransformer> nodes = HashMultimap.create();
 		private Map<Class, Function<Triple<T, ?, ?>, T>> modified = new HashMap<>();
 
 		/**
@@ -82,7 +83,7 @@ public abstract class NodeChildrenTransformer<T> implements NodeTransformer<T> {
 		 *            function applying transformer modifications<br>
 		 * @return <tt>this</tt>
 		 */
-		public Builder node(Function<T, Collection<?>> parent2children, NodeTransformer transformer, Function<Triple<T, ?, ?>, T> modified){
+		public Builder node(Function<T, Pair<Class, Collection<?>>> parent2children, NodeTransformer transformer, Function<Triple<T, ?, ?>, T> modified){
 			nodes.put(parent2children, transformer);
 			this.modified.put(transformer.getTargetType(), modified);
 			return this;
@@ -92,7 +93,7 @@ public abstract class NodeChildrenTransformer<T> implements NodeTransformer<T> {
 			return node(parent2children, transformer, modified);
 		}
 
-		protected Multimap<Function<T, Collection<?>>, NodeTransformer> nodes(){
+		protected Multimap<Function<T, Pair<Class, Collection<?>>>, NodeTransformer> nodes(){
 			return nodes;
 		}
 

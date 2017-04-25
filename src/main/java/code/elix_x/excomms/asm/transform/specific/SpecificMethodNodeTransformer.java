@@ -47,6 +47,16 @@ public class SpecificMethodNodeTransformer extends SpecificNodeTransformer<Metho
 		return instructionsInserter(target, priority, node -> OpcodeGroups.RETURN.contains(node.getOpcode()) ? new ImmutablePair<>(insn.get(), true) : null);
 	}
 
+	public static SpecificMethodNodeTransformer instructionsNodesTransformer(String target, int priority, Function<AbstractInsnNode, AbstractInsnNode> insnOld2new){
+		return instructionsTransformer(priority, target, instructions -> {
+			for(AbstractInsnNode node : instructions.toArray()){
+				AbstractInsnNode res = insnOld2new.apply(node);
+				if(res != null) instructions.set(node, res);
+				else instructions.remove(node);
+			}
+		});
+	}
+
 	private final String target;
 
 	public SpecificMethodNodeTransformer(String target, int priority, Function<MethodNode, MethodNode> transform){

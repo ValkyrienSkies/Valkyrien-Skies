@@ -113,10 +113,11 @@ public class TransformAdapter extends ClassVisitor {
 			return false;
 		}*/
 
-		if (isMethod(calledDesc, "()L"+AxisAlignedBBName+";", calledName, TileEntityName, "getRenderBoundingBox", "func_184177_bl", calledOwner)) {
+		//TODO Write custom tiles renderer :P
+		/*if (isMethod(calledDesc, "()L"+AxisAlignedBBName+";", calledName, TileEntityName, "getRenderBoundingBox", "func_184177_bl", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "getRenderBoundingBox", String.format("(L%s;)L"+AxisAlignedBBName+";", TileEntityName), itf);
 			return false;
-		}
+		}*/
 
 		if (isMethod(calledDesc, "(DDD)D", calledName, TileEntityName, "getDistanceSq", "func_145835_a", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "getDistanceSq", String.format("(L%s;DDD)D", TileEntityName), itf);

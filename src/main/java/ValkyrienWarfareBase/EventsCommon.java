@@ -6,6 +6,7 @@ import java.util.logging.Level;
 
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Capability.IAirshipCounterCapability;
+import ValkyrienWarfareBase.CoreMod.CallRunner;
 import ValkyrienWarfareBase.CoreMod.ValkyrienWarfarePlugin;
 import ValkyrienWarfareBase.Interaction.CustomNetHandlerPlayServer;
 import ValkyrienWarfareBase.Interaction.ValkyrienWarfareWorldEventListener;
@@ -75,6 +76,7 @@ public class EventsCommon {
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onPlayerWakeUpEvent(PlayerWakeUpEvent event){
 		EntityPlayer player = event.getEntityPlayer();
+		CallRunner.fixSponge(player);
 
 		player.playerLocation = new BlockPos(player);
 

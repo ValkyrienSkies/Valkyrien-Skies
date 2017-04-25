@@ -19,6 +19,7 @@ public class ValkyrienWarfareTransformer implements IClassTransformer {
 			.build(),
 			new SpecificClassNodeChildrenTransformer.Builder("net/minecraft/entity/player/EntityPlayer", 0)
 			.node(SpecificMethodNodeTransformer.instructionsInserterBeforeReturn(ValkyrienWarfarePlugin.isObfuscatedEnvironment ? "func_180467_a" : "getBedSpawnLocation", 0, () -> new InsnListBuilder(new VarInsnNode(ALOAD, 0), new VarInsnNode(ALOAD, 1), new VarInsnNode(ILOAD, 2), new MethodInsnNode(INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "getBedSpawnLocation", "(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Z)Lnet/minecraft/util/math/BlockPos;", false)).build()))
+			.node(SpecificMethodNodeTransformer.instructionsInserterBeforeReturn(ValkyrienWarfarePlugin.isObfuscatedEnvironment ? "func_70999_a" : "wakeUpPlayer", 0, () -> new InsnListBuilder(new VarInsnNode(ALOAD, 0), new MethodInsnNode(INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "afterWakeUpPlayer", "(Lnet/minecraft/entity/player/EntityPlayer;)V", false)).build()))
 			.build());
 
 	@Override

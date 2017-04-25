@@ -75,7 +75,7 @@ public class TransformAdapter extends ClassVisitor {
 			return false;
 		}*/
 
-		if (isMethod(calledDesc, "(ZZZ)V", calledName, EntityPlayerName, "wakeUpPlayer", "func_70999_a", calledOwner)) {
+		/*if (isMethod(calledDesc, "(ZZZ)V", calledName, EntityPlayerName, "wakeUpPlayer", "func_70999_a", calledOwner)) {
 			//Initial Stack of PZZZ
 			mv.visitInsn(Opcodes.DUP2_X2);
 			//ZZPZZZ
@@ -101,7 +101,7 @@ public class TransformAdapter extends ClassVisitor {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "afterWakeUpPlayer", "(L" + EntityPlayerName + ";)V", itf);
 
 			return false;
-		}
+		}*/
 
 		if (isMethod(calledDesc, "(L"+BlockPosName+";)L"+SleepResultName+";", calledName, EntityPlayerName, "trySleep", "func_180469_a", calledOwner)) {
 			//Copy the BlockPos and the PlayerEntity in the stack

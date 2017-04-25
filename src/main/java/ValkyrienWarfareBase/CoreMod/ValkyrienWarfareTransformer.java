@@ -1,6 +1,9 @@
 package ValkyrienWarfareBase.CoreMod;
 
 import static org.objectweb.asm.Opcodes.*;
+
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.LabelNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
@@ -31,7 +34,26 @@ public class ValkyrienWarfareTransformer implements IClassTransformer {
 
 	@Override
 	public byte[] transform(String name, String transformedName, byte[] classData){
-		return transformer.transform(classData);
+		classData = ASMUtils.doAdditionalTransforms(transformedName, transformer.transform(classData));
+
+		TransformAdapter adapter = new TransformAdapter(ASM5, ValkyrienWarfarePlugin.isObfuscatedEnvironment, transformedName);
+		ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+		adapter.setCV(classWriter);
+		try {
+			new ClassReader(classData).accept(adapter, ClassReader.EXPAND_FRAMES);
+			 classData  = classWriter.toByteArray();
+
+			//Performs sanity checks and frame stack recalculations before pushing the new bytecode
+//			ClassReader cr = new ClassReader(byteArray);
+//			ClassWriter checkedWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+//			CheckClassAdapter adapterChecker = new CheckClassAdapter(checkedWriter, true);
+//			cr.accept(adapterChecker, ClassReader.EXPAND_FRAMES);
+//			return checkedWriter.toByteArray();
+		} catch (Exception e) {
+//			System.out.println(transformedName);
+			e.printStackTrace();
+		}
+		return classData;
 	}
 
 }

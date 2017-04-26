@@ -1,6 +1,7 @@
 package ValkyrienWarfareBase.Render;
 
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
+import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -20,7 +21,10 @@ public class PhysObjectRender extends Render<PhysicsWrapperEntity> {
 
 	@Override
 	public void doRender(PhysicsWrapperEntity entity, double x, double y, double z, float entityYaw, float partialTicks) {
-
+		if (this.canRenderName(entity))
+        {
+            this.renderLivingLabel(entity, entity.getDisplayName().getFormattedText(), x, y, z, 64);
+        }
 	}
 
 	@Override

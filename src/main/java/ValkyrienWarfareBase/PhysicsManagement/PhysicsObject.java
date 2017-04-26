@@ -59,8 +59,6 @@ import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class PhysicsObject {
 
@@ -113,7 +111,10 @@ public class PhysicsObject {
 	public ArrayList<String> allowedUsers = new ArrayList<String>();
 	//This is used to delay mountEntity() operations by 1 tick
 	public ArrayList<Entity> queuedEntitiesToMount = new ArrayList<Entity>();
-
+	//Compatibility for ships made before the update
+	public boolean claimedChunksInMap = false;
+	public boolean isNameCustom = false;
+	
 	public PhysicsObject(PhysicsWrapperEntity host) {
 		wrapper = host;
 		worldObj = host.worldObj;
@@ -225,12 +226,14 @@ public class PhysicsObject {
 		watchingPlayers.clear();
 		ValkyrienWarfareMod.chunkManager.removeRegistedChunksForShip(wrapper);
 		ValkyrienWarfareMod.chunkManager.removeShipPosition(wrapper);
+		ValkyrienWarfareMod.chunkManager.removeShipNameRegistry(wrapper);
 		ValkyrienWarfareMod.physicsManager.onShipUnload(wrapper);
 	}
 
 	public void claimNewChunks(int radius) {
 		ownedChunks = ValkyrienWarfareMod.chunkManager.getManagerForWorld(wrapper.worldObj).getNextAvaliableChunkSet(radius);
 		ValkyrienWarfareMod.chunkManager.registerChunksForShip(wrapper);
+		claimedChunksInMap = true;
 	}
 
 	/*
@@ -296,6 +299,9 @@ public class PhysicsObject {
 		centerCoord = new Vector(refrenceBlockPos.getX(), refrenceBlockPos.getY(), refrenceBlockPos.getZ());
 
 		physicsProcessor = new PhysicsCalculations(this);
+		//The ship just got build, how can it not be the latest?
+		physicsProcessor.isShipPastBuild90 = true;
+		
 		BlockPos centerDifference = refrenceBlockPos.subtract(centerInWorld);
 		while (iter.hasNext()) {
 			int i = iter.next();
@@ -548,12 +554,16 @@ public class PhysicsObject {
 
 	public void onPostTick() {
 		tickQueuedForces();
-
 		explodedPositionsThisTick.clear();
-
 
 		if(!wrapper.isDead && !wrapper.worldObj.isRemote){
 			ValkyrienWarfareMod.chunkManager.updateShipPosition(wrapper);
+			if(!claimedChunksInMap){
+				//Old ships not in the map will add themselves in once loaded
+				ValkyrienWarfareMod.chunkManager.registerChunksForShip(wrapper);
+				System.out.println("Old ship detected, adding to the registered Chunks map");
+				claimedChunksInMap = true;
+			}
 		}
 	}
 
@@ -775,6 +785,8 @@ public class PhysicsObject {
 		}
 		compound.setString("allowedUsers", result.toString());
 		compound.setString("owner", creator);
+		compound.setBoolean("claimedChunksInMap", claimedChunksInMap);
+		compound.setBoolean("isNameCustom", isNameCustom);
 	}
 
 	public void readFromNBTTag(NBTTagCompound compound) {
@@ -801,11 +813,16 @@ public class PhysicsObject {
 		}
 
 		creator = compound.getString("owner");
+		claimedChunksInMap = compound.getBoolean("claimedChunksInMap");
 		for (int x = ownedChunks.minX; x <= ownedChunks.maxX; x++) {
 			for (int z = ownedChunks.minZ; z <= ownedChunks.maxZ; z++) {
 				worldObj.getChunkFromChunkCoords(x, z);
 			}
 		}
+		
+		isNameCustom = compound.getBoolean("isNameCustom");
+		
+		wrapper.dataManager.set(PhysicsWrapperEntity.IS_NAME_CUSTOM, isNameCustom);
 	}
 
 	public void readSpawnData(ByteBuf additionalData) {
@@ -829,6 +846,8 @@ public class PhysicsObject {
 		wrapper.lastTickPosY = wrapper.posY;
 		wrapper.lastTickPosZ = wrapper.posZ;
 
+		isNameCustom = modifiedBuffer.readBoolean();
+		
 		centerCoord = new Vector(modifiedBuffer);
 		for (boolean[] array : ownedChunks.chunkOccupiedInLocal) {
 			for (int i = 0; i < array.length; i++) {
@@ -867,6 +886,9 @@ public class PhysicsObject {
 		modifiedBuffer.writeDouble(wrapper.pitch);
 		modifiedBuffer.writeDouble(wrapper.yaw);
 		modifiedBuffer.writeDouble(wrapper.roll);
+		
+		modifiedBuffer.writeBoolean(isNameCustom);
+		
 		centerCoord.writeToByteBuf(modifiedBuffer);
 		for (boolean[] array : ownedChunks.chunkOccupiedInLocal) {
 			for (boolean b : array) {

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 import ValkyrienWarfareBase.Interaction.BlockPosToShipUUIDData;
+import ValkyrienWarfareBase.Interaction.ShipNameUUIDData;
 import ValkyrienWarfareBase.Interaction.ShipUUIDToPosData;
 import ValkyrienWarfareBase.Interaction.ShipUUIDToPosData.ShipPositionData;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
@@ -11,7 +12,7 @@ import net.minecraft.world.World;
 
 public class DimensionPhysicsChunkManager {
 
-	public HashMap<World, PhysicsChunkManager> managerPerWorld;
+	private HashMap<World, PhysicsChunkManager> managerPerWorld;
 	private PhysicsChunkManager cachedManager;
 
 	public DimensionPhysicsChunkManager() {
@@ -79,5 +80,12 @@ public class DimensionPhysicsChunkManager {
 		ShipUUIDToPosData data = ShipUUIDToPosData.get(shipWorld);
 
 		data.removeShipFromMap(wrapper);
+	}
+
+	public void removeShipNameRegistry(PhysicsWrapperEntity wrapper) {
+		World shipWorld = wrapper.worldObj;
+		ShipNameUUIDData data = ShipNameUUIDData.get(shipWorld);
+		
+		data.removeShipFromRegistry(wrapper);
 	}
 }

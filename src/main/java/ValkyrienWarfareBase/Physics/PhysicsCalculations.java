@@ -59,7 +59,7 @@ public class PhysicsCalculations {
 	public boolean actAsArchimedes = false;
 
 	@Deprecated
-	private boolean isShipPastBuild90 = false;
+	public boolean isShipPastBuild90 = false;
 
 	public PhysicsCalculations(PhysicsObject toProcess) {
 		parent = toProcess;
@@ -190,7 +190,7 @@ public class PhysicsCalculations {
 
 	public void rawPhysTickPreCol(double newPhysSpeed, int iters) {
 		if(!isShipPastBuild90){
-			this.recalculateInertiaMatrices();
+			recalculateInertiaMatrices();
 			isShipPastBuild90 = true;
 		}
 		if (parent.doPhysics) {

@@ -1,5 +1,6 @@
 package ValkyrienWarfareBase;
 
+import ValkyrienWarfareBase.Command.AirshipMapCommand;
 import ValkyrienWarfareBase.Command.AirshipSettingsCommand;
 import ValkyrienWarfareBase.Command.PhysSettingsCommand;
 import net.minecraft.command.ServerCommandManager;
@@ -13,5 +14,6 @@ public class ExtraRegistry {
 		ServerCommandManager manager = (ServerCommandManager) server.getCommandManager();
 		manager.registerCommand(new PhysSettingsCommand());
 		manager.registerCommand(new AirshipSettingsCommand());
+		manager.registerCommand(new AirshipMapCommand());
 	}
 }

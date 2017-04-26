@@ -1,6 +1,7 @@
 package ValkyrienWarfareBase.Interaction;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -31,6 +32,10 @@ public class ShipUUIDToPosData extends WorldSavedData{
 
 	public ShipPositionData getShipPositionData(UUID shipID){
 		return dataMap.get(shipID.getMostSignificantBits());
+	}
+	
+	public ShipPositionData getShipPositionData(long mostSigBits){
+		return dataMap.get(mostSigBits);
 	}
 
 	public void updateShipPosition(PhysicsWrapperEntity wrapper){
@@ -95,6 +100,10 @@ public class ShipUUIDToPosData extends WorldSavedData{
 			world.setItemData(key, data);
 		}
 		return data;
+	}
+	
+	public Set<Long> getShipHalfUUIDsSet(){
+		return dataMap.keySet();
 	}
 
 	public class ShipPositionData{

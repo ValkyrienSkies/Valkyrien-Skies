@@ -2,6 +2,7 @@ package ValkyrienWarfareBase.Block;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.Capability.IAirshipCounterCapability;
+import ValkyrienWarfareBase.Interaction.ShipNameUUIDData;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
 import ValkyrienWarfareBase.Relocation.DetectorManager;

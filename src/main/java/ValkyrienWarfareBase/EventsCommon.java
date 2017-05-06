@@ -454,7 +454,7 @@ public class EventsCommon {
 	@SubscribeEvent
 	public void onEntityConstruct(AttachCapabilitiesEvent evt) {
 		if(evt.getObject() instanceof EntityPlayer){
-			evt.addCapability(new ResourceLocation(ValkyrienWarfareMod.MODID, "IAirshipCounter"), new ICapabilitySerializable<NBTTagIntArray>() {
+			evt.addCapability(new ResourceLocation(ValkyrienWarfareMod.MODID, "IAirshipCounter2"), new ICapabilitySerializable<NBTTagIntArray>() {
 				IAirshipCounterCapability inst = ValkyrienWarfareMod.airshipCounter.getDefaultInstance();
 
 				@Override
@@ -474,7 +474,10 @@ public class EventsCommon {
 
 				@Override
 				public void deserializeNBT(NBTTagIntArray nbt) {
-					ValkyrienWarfareMod.airshipCounter.getStorage().readNBT(ValkyrienWarfareMod.airshipCounter, inst, null, nbt);
+					//Otherwise its old, then ignore it
+					if(nbt instanceof NBTTagIntArray){
+						ValkyrienWarfareMod.airshipCounter.getStorage().readNBT(ValkyrienWarfareMod.airshipCounter, inst, null, nbt);
+					}
 				}
 			});
 		}

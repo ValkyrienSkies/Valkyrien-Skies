@@ -22,6 +22,7 @@ import ValkyrienWarfareBase.ChunkManagement.ChunkSet;
 import ValkyrienWarfareBase.Network.PhysWrapperPositionMessage;
 import ValkyrienWarfareBase.Physics.BlockForce;
 import ValkyrienWarfareBase.Physics.PhysicsCalculations;
+import ValkyrienWarfareBase.Physics.PhysicsCalculationsOrbital;
 import ValkyrienWarfareBase.Physics.PhysicsQueuedForce;
 import ValkyrienWarfareBase.Relocation.DetectorManager;
 import ValkyrienWarfareBase.Relocation.SpatialDetector;
@@ -254,6 +255,19 @@ public class PhysicsObject {
 		assembleShip(player, detector, centerInWorld);
 	}
 
+	/**
+	 * Creates the PhysicsProcessor object before any data gets loaded into it; can be overridden to change the class of the Object
+	 */
+	private void createPhysicsCalculations(){
+		if(physicsProcessor == null){
+			if(shipType == ShipType.Oribtal || shipType == ShipType.Semi_Unlocked_Orbital){
+				physicsProcessor = new PhysicsCalculationsOrbital(this);
+			}else{
+				physicsProcessor = new PhysicsCalculations(this);
+			}
+		}
+	}
+
 	private void assembleShip(EntityPlayer player, SpatialDetector detector, BlockPos centerInWorld){
 		MutableBlockPos pos = new MutableBlockPos();
 		TIntIterator iter = detector.foundSet.iterator();
@@ -300,7 +314,7 @@ public class PhysicsObject {
 		refrenceBlockPos = getRegionCenter();
 		centerCoord = new Vector(refrenceBlockPos.getX(), refrenceBlockPos.getY(), refrenceBlockPos.getZ());
 
-		physicsProcessor = new PhysicsCalculations(this);
+		createPhysicsCalculations();
 		//The ship just got build, how can it not be the latest?
 		physicsProcessor.isShipPastBuild90 = true;
 
@@ -668,7 +682,7 @@ public class PhysicsObject {
 		refrenceBlockPos = getRegionCenter();
 		coordTransform = new CoordTransformObject(this);
 		if (!worldObj.isRemote) {
-			physicsProcessor = new PhysicsCalculations(this);
+			createPhysicsCalculations();
 		}
 		detectBlockPositions();
 		coordTransform.updateAllTransforms();
@@ -805,6 +819,15 @@ public class PhysicsObject {
 				curArray[column] = compound.getBoolean("CC:" + row + ":" + column);
 			}
 		}
+
+		String shipTypeName = compound.getString("shipType");
+		if(!shipTypeName.equals("")){
+			shipType = ShipType.valueOf(ShipType.class, shipTypeName);
+		}else{
+			//Assume its an older Ship, and that its fully unlocked
+			shipType = ShipType.Full_Unlocked;
+		}
+
 		loadClaimedChunks();
 		entityLocalPositions = NBTUtils.readEntityPositionMap("entityPosHashMap", compound);
 		physicsProcessor.readFromNBTTag(compound);
@@ -824,15 +847,6 @@ public class PhysicsObject {
 		}
 
 		isNameCustom = compound.getBoolean("isNameCustom");
-
-		String shipTypeName = compound.getString("shipType");
-
-		if(!shipTypeName.equals("")){
-			shipType = ShipType.valueOf(ShipType.class, shipTypeName);
-		}else{
-			//Assume its an older Ship, and that its fully unlocked
-			shipType = ShipType.Full_Unlocked;
-		}
 
 		wrapper.dataManager.set(PhysicsWrapperEntity.IS_NAME_CUSTOM, isNameCustom);
 	}
@@ -858,10 +872,6 @@ public class PhysicsObject {
 		wrapper.lastTickPosY = wrapper.posY;
 		wrapper.lastTickPosZ = wrapper.posZ;
 
-		isNameCustom = modifiedBuffer.readBoolean();
-
-		shipType = modifiedBuffer.readEnumValue(ShipType.class);
-
 		centerCoord = new Vector(modifiedBuffer);
 		for (boolean[] array : ownedChunks.chunkOccupiedInLocal) {
 			for (int i = 0; i < array.length; i++) {
@@ -884,6 +894,9 @@ public class PhysicsObject {
 			System.err.println("Couldn't load the entityFixedPosNBT; this is really bad.");
 			e.printStackTrace();
 		}
+
+		isNameCustom = modifiedBuffer.readBoolean();
+		shipType = modifiedBuffer.readEnumValue(ShipType.class);
 	}
 
 	public void writeSpawnData(ByteBuf buffer) {
@@ -901,10 +914,6 @@ public class PhysicsObject {
 		modifiedBuffer.writeDouble(wrapper.yaw);
 		modifiedBuffer.writeDouble(wrapper.roll);
 
-		modifiedBuffer.writeBoolean(isNameCustom);
-
-		modifiedBuffer.writeEnumValue(shipType);
-
 		centerCoord.writeToByteBuf(modifiedBuffer);
 		for (boolean[] array : ownedChunks.chunkOccupiedInLocal) {
 			for (boolean b : array) {
@@ -915,6 +924,9 @@ public class PhysicsObject {
 		NBTTagCompound entityFixedPositionNBT = new NBTTagCompound();
 		NBTUtils.writeEntityPositionHashMapToNBT("entityFixedPosMap", entityLocalPositions, entityFixedPositionNBT);
 		modifiedBuffer.writeNBTTagCompoundToBuffer(entityFixedPositionNBT);
+
+		modifiedBuffer.writeBoolean(isNameCustom);
+		modifiedBuffer.writeEnumValue(shipType);
 	}
 
 	/**

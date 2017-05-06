@@ -55,9 +55,8 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 		posZ = z;
 		wrapping.creator = creator.entityUniqueID.toString();
 		wrapping.detectorID = detectorID;
-		wrapping.processChunkClaims(creator);
-
 		wrapping.shipType = shipType;
+		wrapping.processChunkClaims(creator);
 
 		IAirshipCounterCapability counter = creator.getCapability(ValkyrienWarfareMod.airshipCounter, null);
 		counter.onCreate();

@@ -67,14 +67,14 @@ public class TransformAdapter extends ClassVisitor {
 
 	public boolean runTransformer(int opcode, String calledName, String calledDesc, String calledOwner, MethodVisitor mv, boolean itf) {
 
-		/*if (isMethod(calledDesc, "(L"+WorldClassName+";L"+IteratorName+";)L"+IteratorName+";", calledName, ForgeChunkManagerName, "getPersistentChunksIterableFor", "getPersistentChunksIterableFor", calledOwner)) {
+		if (isMethod(calledDesc, "(L"+WorldClassName+";L"+IteratorName+";)L"+IteratorName+";", calledName, ForgeChunkManagerName, "getPersistentChunksIterableFor", "getPersistentChunksIterableFor", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "rebuildChunkIterator", "(L" + IteratorName + ";)L"+IteratorName+";", itf);
-		}*/
+		}
 
-		/*if (isMethod(calledDesc, "(L" + WorldClassName + ";L" + BlockPosName+ ";Z)L"+BlockPosName+";", calledName, EntityPlayerName, "getBedSpawnLocation", "func_180467_a", calledOwner)) {
+		if (isMethod(calledDesc, "(L" + WorldClassName + ";L" + BlockPosName+ ";Z)L"+BlockPosName+";", calledName, EntityPlayerName, "getBedSpawnLocation", "func_180467_a", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "getBedSpawnLocation", "(L" + WorldClassName + ";L" + BlockPosName+ ";Z)L"+BlockPosName+";", itf);
 			return false;
-		}*/
+		}
 
 		/*if (isMethod(calledDesc, "(ZZZ)V", calledName, EntityPlayerName, "wakeUpPlayer", "func_70999_a", calledOwner)) {
 			//Initial Stack of PZZZ
@@ -115,22 +115,22 @@ public class TransformAdapter extends ClassVisitor {
 		}*/
 
 		//TODO Write custom tiles renderer :P
-		/*if (isMethod(calledDesc, "()L"+AxisAlignedBBName+";", calledName, TileEntityName, "getRenderBoundingBox", "func_184177_bl", calledOwner)) {
+		if (isMethod(calledDesc, "()L"+AxisAlignedBBName+";", calledName, TileEntityName, "getRenderBoundingBox", "func_184177_bl", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "getRenderBoundingBox", String.format("(L%s;)L"+AxisAlignedBBName+";", TileEntityName), itf);
 			return false;
-		}*/
+		}
 
 		//TODO WTH?
-		/*if (isMethod(calledDesc, "(DDD)D", calledName, TileEntityName, "getDistanceSq", "func_145835_a", calledOwner)) {
+		if (isMethod(calledDesc, "(DDD)D", calledName, TileEntityName, "getDistanceSq", "func_145835_a", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "getDistanceSq", String.format("(L%s;DDD)D", TileEntityName), itf);
 			return false;
-		}*/
+		}
 
 		//TODO Write custom tiles renderer :P
-		/*if (isMethod(calledDesc, "(L"+TileEntityName+";FI)V", calledName, TileEntityRendererDispatcherName, "renderTileEntity", "func_180546_a", calledOwner)) {
+		if (isMethod(calledDesc, "(L"+TileEntityName+";FI)V", calledName, TileEntityRendererDispatcherName, "renderTileEntity", "func_180546_a", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "renderTileEntity", String.format("(L%s;L"+TileEntityName+";FI)V", TileEntityRendererDispatcherName), itf);
 			return false;
-		}*/
+		}
 
 		if (isMethod(calledDesc, "(L"+EntityClassName+";DDDFFZ)V", calledName, RenderManagerName, "doRenderEntity", "func_188391_a", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "doRenderEntity", String.format("(L%s;L"+EntityClassName+";DDDFFZ)V", RenderManagerName), itf);

@@ -93,12 +93,12 @@ public class CallRunner {
 
     	return toReturn;
     }
-    
+
     private boolean[] alreadyTryingToSleep = new boolean[2];
-    
+
     public SleepResult trySleep(SleepResult result, EntityPlayer player, BlockPos bedLocation){
     	if(alreadyTryingToSleep[player.worldObj.isRemote ? 1 : 0]) return result;
-    	
+
     	alreadyTryingToSleep[player.worldObj.isRemote ? 1 : 0] = true;
     	PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.worldObj, bedLocation);
 
@@ -123,12 +123,12 @@ public class CallRunner {
 	        }
 
 	        result = player.trySleep(bedLocation);
-	        
+
 	        if(result == null){
 	        	System.out.println("Wtf happened here");
 	        }
     	}
-    	
+
     	if(player.worldObj.isRemote){
 	    	IBlockState state = null;
 	        if (player.worldObj.isBlockLoaded(bedLocation)) state = player.worldObj.getBlockState(bedLocation);
@@ -157,7 +157,7 @@ public class CallRunner {
 	            player.setRenderOffsetForSleep(enumfacing);
 	        }
     	}
-    	
+
     	alreadyTryingToSleep[player.worldObj.isRemote ? 1 : 0] = false;
     	return result;
     }
@@ -718,6 +718,10 @@ public class CallRunner {
     }
 
 	public static RayTraceResult onRayTraceBlocks(World world, Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock) {
+		return rayTraceBlocksIgnoreShip(world, vec31, vec32, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock, null);
+	}
+
+	public static RayTraceResult rayTraceBlocksIgnoreShip(World world, Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock, PhysicsWrapperEntity toIgnore) {
 		RayTraceResult vanillaTrace = world.rayTraceBlocks(vec31, vec32, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
 		WorldPhysObjectManager physManager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(world);
 		if (physManager == null) {
@@ -730,6 +734,9 @@ public class CallRunner {
 		AxisAlignedBB playerRangeBB = new AxisAlignedBB(vec31.xCoord, vec31.yCoord, vec31.zCoord, vec32.xCoord, vec32.yCoord, vec32.zCoord);
 
 		List<PhysicsWrapperEntity> nearbyShips = physManager.getNearbyPhysObjects(playerRangeBB);
+		//Get rid of the Ship that we're not supposed to be RayTracing for
+		nearbyShips.remove(toIgnore);
+
 		boolean changed = false;
 
 		double reachDistance = playerReachVector.lengthVector();

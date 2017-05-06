@@ -2,7 +2,9 @@ package ValkyrienWarfareBase.PhysicsManagement;
 
 import javax.annotation.Nullable;
 
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareBase.Capability.IAirshipCounterCapability;
 import ValkyrienWarfareBase.Collision.Polygon;
 import ValkyrienWarfareBase.Interaction.ShipNameUUIDData;
 import ValkyrienWarfareCombat.Entity.EntityMountingWeaponBase;
@@ -35,7 +37,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 	public double prevPitch;
 	public double prevYaw;
 	public double prevRoll;
-	
+
 	public static final DataParameter<Boolean> IS_NAME_CUSTOM = EntityDataManager.<Boolean>createKey(Entity.class, DataSerializers.BOOLEAN);
 
 	private static final AxisAlignedBB zeroBB = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
@@ -46,14 +48,22 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 		dataManager.register(IS_NAME_CUSTOM, Boolean.valueOf(false));
 	}
 
-	public PhysicsWrapperEntity(World worldIn, double x, double y, double z, @Nullable EntityPlayer maker, int detectorID) {
+	public PhysicsWrapperEntity(World worldIn, double x, double y, double z, @Nullable EntityPlayer creator, int detectorID, ShipType shipType) {
 		this(worldIn);
 		posX = x;
 		posY = y;
 		posZ = z;
-		wrapping.creator = maker.entityUniqueID.toString();
+		wrapping.creator = creator.entityUniqueID.toString();
 		wrapping.detectorID = detectorID;
-		wrapping.processChunkClaims(maker);
+		wrapping.processChunkClaims(creator);
+
+		wrapping.shipType = shipType;
+
+		IAirshipCounterCapability counter = creator.getCapability(ValkyrienWarfareMod.airshipCounter, null);
+		counter.onCreate();
+
+		setCustomNameTagInitial(creator.getName() + ":" + counter.getAirshipCountEver());
+		ShipNameUUIDData.get(worldIn).placeShipInRegistry(this, getCustomNameTag());
 	}
 
 	@Override

@@ -283,7 +283,10 @@ public class CallRunner {
 		World tileWorld = tile.getWorld();
 		double toReturn = tile.getDistanceSq(x, y, z);
 
+//		System.out.println("test");
+
 		if(tileWorld != null){
+
 			//Assume on Ship
 			if(tileWorld.isRemote && toReturn > 9999999D){
 				BlockPos pos = tile.getPos();

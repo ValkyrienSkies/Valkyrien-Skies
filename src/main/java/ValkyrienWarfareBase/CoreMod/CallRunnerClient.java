@@ -67,6 +67,7 @@ public class CallRunnerClient extends CallRunner {
 
     public static AxisAlignedBB getRenderBoundingBox(TileEntity tile){
     	AxisAlignedBB toReturn = tile.getRenderBoundingBox();
+//    	System.out.println("running");
     	BlockPos pos = tile.getPos();
     	PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(Minecraft.getMinecraft().theWorld, pos);
     	if(wrapper != null){

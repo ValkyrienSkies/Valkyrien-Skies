@@ -114,7 +114,9 @@ public class PhysicsObject {
 	//Compatibility for ships made before the update
 	public boolean claimedChunksInMap = false;
 	public boolean isNameCustom = false;
-	
+
+	public ShipType shipType;
+
 	public PhysicsObject(PhysicsWrapperEntity host) {
 		wrapper = host;
 		worldObj = host.worldObj;
@@ -301,7 +303,7 @@ public class PhysicsObject {
 		physicsProcessor = new PhysicsCalculations(this);
 		//The ship just got build, how can it not be the latest?
 		physicsProcessor.isShipPastBuild90 = true;
-		
+
 		BlockPos centerDifference = refrenceBlockPos.subtract(centerInWorld);
 		while (iter.hasNext()) {
 			int i = iter.next();
@@ -787,6 +789,7 @@ public class PhysicsObject {
 		compound.setString("owner", creator);
 		compound.setBoolean("claimedChunksInMap", claimedChunksInMap);
 		compound.setBoolean("isNameCustom", isNameCustom);
+		compound.setString("shipType", shipType.name());
 	}
 
 	public void readFromNBTTag(NBTTagCompound compound) {
@@ -819,9 +822,18 @@ public class PhysicsObject {
 				worldObj.getChunkFromChunkCoords(x, z);
 			}
 		}
-		
+
 		isNameCustom = compound.getBoolean("isNameCustom");
-		
+
+		String shipTypeName = compound.getString("shipType");
+
+		if(!shipTypeName.equals("")){
+			shipType = ShipType.valueOf(ShipType.class, shipTypeName);
+		}else{
+			//Assume its an older Ship, and that its fully unlocked
+			shipType = ShipType.Full_Unlocked;
+		}
+
 		wrapper.dataManager.set(PhysicsWrapperEntity.IS_NAME_CUSTOM, isNameCustom);
 	}
 
@@ -847,7 +859,9 @@ public class PhysicsObject {
 		wrapper.lastTickPosZ = wrapper.posZ;
 
 		isNameCustom = modifiedBuffer.readBoolean();
-		
+
+		shipType = modifiedBuffer.readEnumValue(ShipType.class);
+
 		centerCoord = new Vector(modifiedBuffer);
 		for (boolean[] array : ownedChunks.chunkOccupiedInLocal) {
 			for (int i = 0; i < array.length; i++) {
@@ -886,9 +900,11 @@ public class PhysicsObject {
 		modifiedBuffer.writeDouble(wrapper.pitch);
 		modifiedBuffer.writeDouble(wrapper.yaw);
 		modifiedBuffer.writeDouble(wrapper.roll);
-		
+
 		modifiedBuffer.writeBoolean(isNameCustom);
-		
+
+		modifiedBuffer.writeEnumValue(shipType);
+
 		centerCoord.writeToByteBuf(modifiedBuffer);
 		for (boolean[] array : ownedChunks.chunkOccupiedInLocal) {
 			for (boolean b : array) {

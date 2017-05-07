@@ -44,7 +44,7 @@
     "dependencies": ["valkyrienwarfare"]
   },
   {
-    "modid": "can",
+    "modid": "cannons",
     "name": "Cannons!",
     "description": "What the name says, cannons!",
     "version": "${version}",

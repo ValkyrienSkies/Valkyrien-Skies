@@ -2,13 +2,19 @@ package ValkyrienWarfareBase.PhysicsManagement;
 
 import javax.annotation.Nullable;
 
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareBase.Capability.IAirshipCounterCapability;
 import ValkyrienWarfareBase.Collision.Polygon;
+import ValkyrienWarfareBase.Interaction.ShipNameUUIDData;
 import ValkyrienWarfareCombat.Entity.EntityMountingWeaponBase;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
@@ -32,21 +38,31 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 	public double prevYaw;
 	public double prevRoll;
 
+	public static final DataParameter<Boolean> IS_NAME_CUSTOM = EntityDataManager.<Boolean>createKey(Entity.class, DataSerializers.BOOLEAN);
+
 	private static final AxisAlignedBB zeroBB = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
 
 	public PhysicsWrapperEntity(World worldIn) {
 		super(worldIn);
 		wrapping = new PhysicsObject(this);
+		dataManager.register(IS_NAME_CUSTOM, Boolean.valueOf(false));
 	}
 
-	public PhysicsWrapperEntity(World worldIn, double x, double y, double z, @Nullable EntityPlayer maker, int detectorID) {
+	public PhysicsWrapperEntity(World worldIn, double x, double y, double z, @Nullable EntityPlayer creator, int detectorID, ShipType shipType) {
 		this(worldIn);
 		posX = x;
 		posY = y;
 		posZ = z;
-		wrapping.creator = maker.entityUniqueID.toString();
+		wrapping.creator = creator.entityUniqueID.toString();
 		wrapping.detectorID = detectorID;
-		wrapping.processChunkClaims(maker);
+		wrapping.shipType = shipType;
+		wrapping.processChunkClaims(creator);
+
+		IAirshipCounterCapability counter = creator.getCapability(ValkyrienWarfareMod.airshipCounter, null);
+		counter.onCreate();
+
+		setCustomNameTagInitial(creator.getName() + ":" + counter.getAirshipCountEver());
+		ShipNameUUIDData.get(worldIn).placeShipInRegistry(this, getCustomNameTag());
 	}
 
 	@Override
@@ -54,36 +70,28 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 		if (isDead) {
 			return;
 		}
+		if(world.isRemote){
+			wrapping.isNameCustom = dataManager.get(IS_NAME_CUSTOM);
+		}
 		// super.onUpdate();
 		wrapping.onTick();
 	}
 
 	@Override
 	public void updatePassenger(Entity passenger) {
-		// System.out.println("entity being updated");
 		Vector inLocal = wrapping.getLocalPositionForEntity(passenger);
-		// if(worldObj.isRemote){
-		// System.out.println(wrapping.entityLocalPositions.size());
-		// }
 
 		if (inLocal != null) {
-
 			Vector newEntityPosition = new Vector(inLocal);
-
 			float f = passenger.width / 2.0F;
 	        float f1 = passenger.height;
 	        AxisAlignedBB inLocalAABB = new AxisAlignedBB(newEntityPosition.X - (double)f, newEntityPosition.Y, newEntityPosition.Z - (double)f, newEntityPosition.X + (double)f, newEntityPosition.Y + (double)f1, newEntityPosition.Z + (double)f);
-
 	        wrapping.coordTransform.fromLocalToGlobal(newEntityPosition);
-
 			passenger.setPosition(newEntityPosition.X, newEntityPosition.Y, newEntityPosition.Z);
-
 			Polygon entityBBPoly = new Polygon(inLocalAABB, wrapping.coordTransform.lToWTransform);
 
 			AxisAlignedBB newEntityBB = entityBBPoly.getEnclosedAABB();
-
 			passenger.setEntityBoundingBox(newEntityBB);
-
 			if(passenger instanceof EntityMountingWeaponBase){
 				passenger.onUpdate();
 
@@ -157,13 +165,41 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 	public void setPositionAndRotationDirect(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean teleport) {
 	}
 
+	@SideOnly(Side.CLIENT)
+    public boolean getAlwaysRenderNameTagForRender(){
+        return wrapping.isNameCustom;
+    }
+
+	public void setCustomNameTagInitial(String name){
+		super.setCustomNameTag(name);
+	}
+
+	@Override
+	public void setCustomNameTag(String name){
+		if(!world.isRemote){
+			if(getCustomNameTag() != null && !getCustomNameTag().equals("")){
+				//Update the name registry
+				boolean didRenameSuccessful = ShipNameUUIDData.get(world).renameShipInRegsitry(this, name, getCustomNameTag());
+				if(didRenameSuccessful){
+					super.setCustomNameTag(name);
+					wrapping.isNameCustom = true;
+					dataManager.set(IS_NAME_CUSTOM, true);
+				}
+			}else{
+				super.setCustomNameTag(name);
+			}
+		}else{
+			super.setCustomNameTag(name);
+		}
+    }
+
 	@Override
 	public void setPositionAndUpdate(double x, double y, double z) {
 	}
 
 	@Override
-	protected void readEntityFromNBT(NBTTagCompound tagCompund) {
-		wrapping.readFromNBTTag(tagCompund);
+	protected void readEntityFromNBT(NBTTagCompound tagCompound) {
+		wrapping.readFromNBTTag(tagCompound);
 	}
 
 	@Override

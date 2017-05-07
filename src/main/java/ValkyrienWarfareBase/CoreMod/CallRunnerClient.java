@@ -13,6 +13,7 @@ import ValkyrienWarfareBase.Collision.Polygon;
 import ValkyrienWarfareBase.Math.Quaternion;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.Proxy.ClientProxy;
+import ValkyrienWarfareControl.Piloting.ClientPilotingManager;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockChest;
 import net.minecraft.block.BlockEnderChest;
@@ -66,6 +67,7 @@ public class CallRunnerClient extends CallRunner {
 
     public static AxisAlignedBB getRenderBoundingBox(TileEntity tile){
     	AxisAlignedBB toReturn = tile.getRenderBoundingBox();
+//    	System.out.println("running");
     	BlockPos pos = tile.getPos();
     	PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(Minecraft.getMinecraft().world, pos);
     	if(wrapper != null){
@@ -180,6 +182,11 @@ public class CallRunnerClient extends CallRunner {
         {
             double d3 = (double)(renderer.thirdPersonDistancePrev + (4.0F - renderer.thirdPersonDistancePrev) * partialTicks);
 
+            if(ClientPilotingManager.isPlayerPilotingShip()){
+            	//TODO: Make this number scale with the Ship
+            	d3 = 15D;
+            }
+
             if (renderer.mc.gameSettings.debugCamEnable)
             {
                 GlStateManager.translate(0.0F, 0.0F, (float)(-d3));
@@ -206,7 +213,9 @@ public class CallRunnerClient extends CallRunner {
                     f3 = f3 * 0.1F;
                     f4 = f4 * 0.1F;
                     f5 = f5 * 0.1F;
-                    RayTraceResult raytraceresult = renderer.mc.world.rayTraceBlocks(new Vec3d(d0 + (double)f3, d1 + (double)f4, d2 + (double)f5), new Vec3d(d0 - d4 + (double)f3 + (double)f5, d1 - d6 + (double)f4, d2 - d5 + (double)f5));
+
+                    RayTraceResult raytraceresult = CallRunnerClient.rayTraceBlocksIgnoreShip(Minecraft.getMinecraft().world, new Vec3d(d0 + (double)f3, d1 + (double)f4, d2 + (double)f5), new Vec3d(d0 - d4 + (double)f3 + (double)f5, d1 - d6 + (double)f4, d2 - d5 + (double)f5), false, false, false, ClientPilotingManager.getPilotedWrapperEntity());
+//                    renderer.mc.theWorld.rayTraceBlocks(new Vec3d(d0 + (double)f3, d1 + (double)f4, d2 + (double)f5), new Vec3d(d0 - d4 + (double)f3 + (double)f5, d1 - d6 + (double)f4, d2 - d5 + (double)f5));
 
                     if (raytraceresult != null)
                     {

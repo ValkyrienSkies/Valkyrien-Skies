@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import ValkyrienWarfareBase.NBTUtils;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareBase.API.Block.EtherCompressor.TileEntityEtherCompressor;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
 import ValkyrienWarfareControl.Network.HovercraftControllerGUIInputMessage;
 import net.minecraft.block.state.IBlockState;
@@ -39,7 +40,7 @@ public class TileEntityHoverController extends TileEntity {
 	/*
 	 * Returns the Force Vector the engine will send to the Physics Engine
 	 */
-	public Vector getForceForEngine(AntiGravEngineTileEntity engine, World world, BlockPos enginePos, IBlockState state, PhysicsObject physObj, double secondsToApply) {
+	public Vector getForceForEngine(TileEntityEtherCompressor engine, World world, BlockPos enginePos, IBlockState state, PhysicsObject physObj, double secondsToApply) {
 		// physObj.physicsProcessor.convertTorqueToVelocity();
 		// secondsToApply*=5D;
 		// idealHeight = 100D;

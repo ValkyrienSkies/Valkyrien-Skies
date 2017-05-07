@@ -30,11 +30,16 @@ public class ClientProxyControl extends CommonProxyControl {
 		registerBlockItem(ValkyrienWarfareControlMod.instance.basicEngine);
 		registerBlockItem(ValkyrienWarfareControlMod.instance.advancedEngine);
 		registerBlockItem(ValkyrienWarfareControlMod.instance.eliteEngine);
-		registerBlockItem(ValkyrienWarfareControlMod.instance.redstoneEngine);
 		registerBlockItem(ValkyrienWarfareControlMod.instance.ultimateEngine);
+		registerBlockItem(ValkyrienWarfareControlMod.instance.redstoneEngine);
 
 		registerBlockItem(ValkyrienWarfareControlMod.instance.basicHoverController);
+
 		registerBlockItem(ValkyrienWarfareControlMod.instance.antigravityEngine);
+		registerBlockItem(ValkyrienWarfareControlMod.instance.advancedEtherCompressor);
+		registerBlockItem(ValkyrienWarfareControlMod.instance.eliteEtherCompressor);
+		registerBlockItem(ValkyrienWarfareControlMod.instance.ultimateEtherCompressor);
+		registerBlockItem(ValkyrienWarfareControlMod.instance.creativeEtherCompressor);
 		
 		registerBlockItem(ValkyrienWarfareControlMod.instance.pilotsChair);
 

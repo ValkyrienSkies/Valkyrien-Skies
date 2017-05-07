@@ -2,6 +2,7 @@ package ValkyrienWarfareWorld;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareWorld.Proxy.CommonProxyWorld;
+import ValkyrienWarfareWorld.WorldGen.ValkyrienWarfareWorldGen;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
@@ -49,7 +50,8 @@ public class ValkyrienWarfareWorldMod {
 		EntityRegistry.registerModEntity(new ResourceLocation(MODID, "FallingUpBlockEntity"), EntityFallingUpBlock.class, "FallingUpBlockEntity", 75, this, 80, 1, true);
 		MinecraftForge.EVENT_BUS.register(worldEventsCommon);
 		proxy.init(event);
-		
+
+		GameRegistry.registerWorldGenerator(new ValkyrienWarfareWorldGen(), 1);
 	}
 
 	@EventHandler

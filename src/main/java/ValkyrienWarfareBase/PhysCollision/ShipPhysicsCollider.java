@@ -11,6 +11,7 @@ import ValkyrienWarfareBase.Collision.PhysPolygonCollider;
 import ValkyrienWarfareBase.Collision.Polygon;
 import ValkyrienWarfareBase.Math.BigBastardMath;
 import ValkyrienWarfareBase.Physics.PhysicsCalculations;
+import ValkyrienWarfareBase.Physics.PhysicsCalculationsOrbital;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -35,17 +36,25 @@ public class ShipPhysicsCollider {
 	}
 
 	public void doShipCollision(PhysicsObject toCollideWith) {
+		//Don't process collision if either of them are phased
+		if(toCollideWith.physicsProcessor instanceof PhysicsCalculationsOrbital){
+			if(((PhysicsCalculationsOrbital)toCollideWith.physicsProcessor).isOrbitalPhased){
+				return;
+			}
+		}
+		if(parent.physicsProcessor instanceof PhysicsCalculationsOrbital){
+			if(((PhysicsCalculationsOrbital)parent.physicsProcessor).isOrbitalPhased){
+				return;
+			}
+		}
+
+
 		AxisAlignedBB firstBB = parent.collisionBB;
 		AxisAlignedBB secondBB = toCollideWith.collisionBB;
 
 		AxisAlignedBB betweenBB = BigBastardMath.getBetweenAABB(firstBB, secondBB);
 
 		Polygon betweenBBPoly = new Polygon(betweenBB, toCollideWith.coordTransform.wToLTransform);
-
-		if(true){
-//			System.out.println(betweenBB);
-			return;
-		}
 
 		List<AxisAlignedBB> bbsInFirst = parent.worldObj.getCollisionBoxes(parent.wrapper, betweenBBPoly.getEnclosedAABB());
 		if (bbsInFirst.isEmpty()) {

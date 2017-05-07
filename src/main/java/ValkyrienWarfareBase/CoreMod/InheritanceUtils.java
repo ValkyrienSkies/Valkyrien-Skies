@@ -2,6 +2,7 @@ package ValkyrienWarfareBase.CoreMod;
 
 import org.objectweb.asm.ClassReader;
 
+@Deprecated
 public class InheritanceUtils {
 
 	private static final String[] leafPackages = { "java/", "javax/" };

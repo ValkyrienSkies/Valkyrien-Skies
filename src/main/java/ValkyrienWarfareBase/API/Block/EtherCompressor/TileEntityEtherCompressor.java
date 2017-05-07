@@ -1,17 +1,17 @@
-package ValkyrienWarfareControl.TileEntity;
+package ValkyrienWarfareBase.API.Block.EtherCompressor;
 
 import ValkyrienWarfareBase.NBTUtils;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareControl.Block.BlockHovercraftController;
+import ValkyrienWarfareControl.TileEntity.TileEntityHoverController;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class AntiGravEngineTileEntity extends TileEntity {
-
+public abstract class TileEntityEtherCompressor extends TileEntity {
 	public BlockPos controllerPos = BlockPos.ORIGIN;
 	public Vector angularThrust = new Vector();
 	public Vector linearThrust = new Vector();
@@ -19,7 +19,12 @@ public class AntiGravEngineTileEntity extends TileEntity {
 
 	private double idealY;
 
-	public AntiGravEngineTileEntity() {
+	public TileEntityEtherCompressor() {
+		validate();
+	}
+	
+	public TileEntityEtherCompressor(double power) {
+		this.maxThrust = power;
 		validate();
 	}
 
@@ -65,5 +70,4 @@ public class AntiGravEngineTileEntity extends TileEntity {
 		compound.setDouble("maxThrust", maxThrust);
 		return super.writeToNBT(compound);
 	}
-
 }

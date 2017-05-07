@@ -1,8 +1,8 @@
 package ValkyrienWarfareBase.Block;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
-import ValkyrienWarfareBase.Capability.IAirshipCounterCapability;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
+import ValkyrienWarfareBase.PhysicsManagement.ShipType;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
 import ValkyrienWarfareBase.Relocation.DetectorManager;
 import net.minecraft.block.Block;
@@ -18,8 +18,11 @@ import net.minecraft.world.World;
 
 public class BlockPhysicsInfuser extends Block {
 
+	int shipSpawnDetectorID;
+
 	public BlockPhysicsInfuser(Material materialIn) {
 		super(materialIn);
+		shipSpawnDetectorID = DetectorManager.DetectorIDs.ShipSpawnerGeneral.ordinal();
 	}
 
 	@Override
@@ -35,12 +38,8 @@ public class BlockPhysicsInfuser extends Block {
 			}
 
 			if (ValkyrienWarfareMod.canChangeAirshipCounter(true, playerIn))	{
-				PhysicsWrapperEntity wrapper = new PhysicsWrapperEntity(worldIn, pos.getX(), pos.getY(), pos.getZ(), playerIn, DetectorManager.DetectorIDs.ShipSpawnerGeneral.ordinal());
+				PhysicsWrapperEntity wrapper = new PhysicsWrapperEntity(worldIn, pos.getX(), pos.getY(), pos.getZ(), playerIn, shipSpawnDetectorID, ShipType.Full_Unlocked);
 				worldIn.spawnEntity(wrapper);
-
-				IAirshipCounterCapability counter = playerIn.getCapability(ValkyrienWarfareMod.airshipCounter, null);
-				counter.onCreate();
-				//playerIn.addChatMessage(new TextComponentString("You've made " + counter.getAirshipCount() + " airships!"));
 			} else {
 				playerIn.sendMessage(new TextComponentString("You've made too many airships! The limit per player is " + ValkyrienWarfareMod.maxAirships));
 			}

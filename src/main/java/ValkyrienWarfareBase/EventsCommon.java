@@ -12,6 +12,7 @@ import ValkyrienWarfareBase.Interaction.CustomNetHandlerPlayServer;
 import ValkyrienWarfareBase.Interaction.ValkyrienWarfareWorldEventListener;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsTickHandler;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
+import ValkyrienWarfareBase.PhysicsManagement.ShipType;
 import ValkyrienWarfareCombat.Entity.EntityMountingWeaponBase;
 import ValkyrienWarfareControl.Piloting.ClientPilotingManager;
 import net.minecraft.entity.Entity;
@@ -22,8 +23,10 @@ import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemBucket;
-import net.minecraft.nbt.NBTPrimitive;
+import net.minecraft.item.ItemNameTag;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -44,12 +47,14 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.HarvestCheck;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.event.entity.player.PlayerWakeUpEvent;
 import net.minecraftforge.event.entity.player.SleepingLocationCheckEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
+import net.minecraftforge.event.world.BlockEvent.PlaceEvent;
 import net.minecraftforge.event.world.ChunkDataEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.Event.Result;
@@ -67,83 +72,54 @@ public class EventsCommon {
 	public static HashMap<EntityPlayerMP, Double[]> lastPositions = new HashMap<EntityPlayerMP, Double[]>();
 	public static boolean allowNextSleepEvent = false;
 
+	@SubscribeEvent()
+	public void onRightClickBlock(RightClickBlock event){
+		if(!event.getWorld().isRemote){
+			ItemStack stack = event.getItemStack();
+			if(stack != null && stack.getItem() instanceof ItemNameTag){
+				BlockPos posAt = event.getPos();
+				EntityPlayer player = event.getEntityPlayer();
+				World world = event.getWorld();
+				PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, posAt);
+				if(wrapper != null){
+					wrapper.setCustomNameTag(stack.getDisplayName());
+		            --stack.stackSize;
+		            event.setCanceled(true);
+				}
+			}
+		}
+	}
+
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onSleepingLocationCheckEvent(SleepingLocationCheckEvent event){
 		EntityPlayer player = event.getEntityPlayer();
-//		System.out.println("tset");
 		PhysicsWrapperEntity shipFixedOnto = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(player);
 		if(shipFixedOnto != null){
-//			if(player.sleeping){
-				event.setResult(Result.ALLOW);
-//			}
+			event.setResult(Result.ALLOW);
 		}
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onPlayerWakeUpEvent(PlayerWakeUpEvent event){
 		EntityPlayer player = event.getEntityPlayer();
-
-//		player.playerLocation = new BlockPos(player);
-
-		if(true){
-//			return;
-		}
+		player.bedLocation = new BlockPos(player);
 
 		PhysicsWrapperEntity shipFixedOnto = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(player);
 		if(shipFixedOnto != null){
-			if(player.world.isRemote|| true){
-//				System.out.println("test");
+			Vector playerPosInLocal = new Vector(shipFixedOnto.wrapping.getLocalPositionForEntity(player));
+			playerPosInLocal.subtract(0.5D, 0.6875D, 0.5D);
+			playerPosInLocal.roundToWhole();
 
-				Vector playerPosInLocal = new Vector(shipFixedOnto.wrapping.getLocalPositionForEntity(player));
-				playerPosInLocal.subtract(0.5D, 0.6875D, 0.5D);
-				playerPosInLocal.roundToWhole();
+			BlockPos playerLocation = new BlockPos(playerPosInLocal.X, playerPosInLocal.Y, playerPosInLocal.Z);
 
-				BlockPos playerLocation = new BlockPos(playerPosInLocal.X, playerPosInLocal.Y, playerPosInLocal.Z);
+			shipFixedOnto.wrapping.unFixEntity(player);
+			player.dismountRidingEntity();
 
-				shipFixedOnto.wrapping.unFixEntity(player);
-				player.dismountRidingEntity();
+			player.bedLocation = playerLocation;
 
-//				player.playerLocation = playerLocation;
-
-				player.sleeping = false;
-			}
+			player.sleeping = false;
 		}
 	}
-
-	/**
-	 * Runs before a player tries to sleep
-	 * @param event
-	 */
-	@SubscribeEvent(priority = EventPriority.HIGHEST)
-	public void onPlayerSleepInBedEvent(PlayerSleepInBedEvent event){
-		if(allowNextSleepEvent){
-//			return;
-		}
-		allowNextSleepEvent = false;
-		BlockPos pos = event.getPos();
-		EntityPlayer player = event.getEntityPlayer();
-		World world = player.world;
-//		System.out.println("should be");
-
-		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
-
-		if(wrapper != null){
-
-			if(world.isRemote){
-				//The client got a sleep in bed packet from the server; this means the player is already sleeping on the server side
-				//Do the code that does the other shit here!
-				//(The custom camera and sleeping solution goes here
-//				player.sleeping = true;
-//				player.setRenderOffsetForSleep(EnumFacing.SOUTH);
-//				CallRunner.isClientPlayerSleepingInShip = true;
-			}else{
-//				event.setResult(SleepResult.TOO_FAR_AWAY);
-			}
-		}
-
-//		event.setResult(SleepResult.TOO_FAR_AWAY);
-	}
-
 
 	//TODO: Fix conflicts with EventListener.onEntityAdded()
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -504,7 +480,7 @@ public class EventsCommon {
 	@SubscribeEvent
 	public void onEntityConstruct(AttachCapabilitiesEvent evt) {
 		if(evt.getObject() instanceof EntityPlayer){
-			evt.addCapability(new ResourceLocation(ValkyrienWarfareMod.MODID, "IAirshipCounter"), new ICapabilitySerializable<NBTPrimitive>() {
+			evt.addCapability(new ResourceLocation(ValkyrienWarfareMod.MODID, "IAirshipCounter2"), new ICapabilitySerializable<NBTTagIntArray>() {
 				IAirshipCounterCapability inst = ValkyrienWarfareMod.airshipCounter.getDefaultInstance();
 
 				@Override
@@ -518,13 +494,16 @@ public class EventsCommon {
 				}
 
 				@Override
-				public NBTPrimitive serializeNBT() {
-					return (NBTPrimitive) ValkyrienWarfareMod.airshipCounter.getStorage().writeNBT(ValkyrienWarfareMod.airshipCounter, inst, null);
+				public NBTTagIntArray serializeNBT() {
+					return (NBTTagIntArray) ValkyrienWarfareMod.airshipCounter.getStorage().writeNBT(ValkyrienWarfareMod.airshipCounter, inst, null);
 				}
 
 				@Override
-				public void deserializeNBT(NBTPrimitive nbt) {
-					ValkyrienWarfareMod.airshipCounter.getStorage().readNBT(ValkyrienWarfareMod.airshipCounter, inst, null, nbt);
+				public void deserializeNBT(NBTTagIntArray nbt) {
+					//Otherwise its old, then ignore it
+					if(nbt instanceof NBTTagIntArray){
+						ValkyrienWarfareMod.airshipCounter.getStorage().readNBT(ValkyrienWarfareMod.airshipCounter, inst, null, nbt);
+					}
 				}
 			});
 		}
@@ -573,6 +552,28 @@ public class EventsCommon {
 					event.setCanceled(true);
 					return;
 				}
+
+				if(physObj.wrapping.shipType == ShipType.Oribtal){
+					//Do not let it break
+				}
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void onPlaceEvent(PlaceEvent event){
+		PhysicsWrapperEntity physObj = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(event.getWorld(), event.getPos());
+		if (physObj != null) {
+			if (ValkyrienWarfareMod.runAirshipPermissions && !(physObj.wrapping.creator.equals(event.getPlayer().entityUniqueID.toString()) || physObj.wrapping.allowedUsers.contains(event.getPlayer().entityUniqueID.toString())))	{
+				event.getPlayer().sendMessage(new TextComponentString("You need to be added to the airship to do that!" + (physObj.wrapping.creator == null || physObj.wrapping.creator.trim().isEmpty() ? " Try using \"/airshipSettings claim\"!" : "")));
+				event.setCanceled(true);
+				return;
+			}
+
+			if(physObj.wrapping.shipType == ShipType.Oribtal){
+				//Do not let it place any blocks
+//				System.out.println("test");
+				event.setCanceled(true);
 			}
 		}
 	}

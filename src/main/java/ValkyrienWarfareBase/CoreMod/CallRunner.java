@@ -8,7 +8,6 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 
 import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableSetMultimap;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
@@ -52,7 +51,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkGenerator;
 import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.common.ForgeChunkManager.Ticket;
 
 public class CallRunner {
 
@@ -64,9 +62,7 @@ public class CallRunner {
 		return newBackingArray.iterator();
 	}
 
-    public static BlockPos getBedSpawnLocation(World worldIn, BlockPos bedLocation, boolean forceSpawn){
-    	BlockPos toReturn = EntityPlayer.getBedSpawnLocation(worldIn, bedLocation, forceSpawn);
-
+    public static BlockPos getBedSpawnLocation(BlockPos toReturn, World worldIn, BlockPos bedLocation, boolean forceSpawn){
 //    	System.out.println("Keep their heads ringing");
 
 		int chunkX = bedLocation.getX() >> 4;
@@ -96,8 +92,77 @@ public class CallRunner {
     	return toReturn;
     }
 
-    public static SleepResult replaceSleep(EntityPlayer player, BlockPos bedLocation){
+    private boolean[] alreadyTryingToSleep = new boolean[2];
+
+    public SleepResult trySleep(SleepResult result, EntityPlayer player, BlockPos bedLocation){
+    	if(alreadyTryingToSleep[player.world.isRemote ? 1 : 0]) return result;
+
+    	alreadyTryingToSleep[player.world.isRemote ? 1 : 0] = true;
     	PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.world, bedLocation);
+
+    	if(wrapper != null){
+    		if(!player.world.isRemote){
+    			if(result != SleepResult.OK){
+    				return result;
+    			}
+    		}
+            wrapper.wrapping.fixEntity(player, new Vector(bedLocation.getX() + 0.5D, bedLocation.getY() + 0.6875D, bedLocation.getZ() + 0.5D));
+
+	        if(player.world.isRemote){
+	        	player.startRiding(wrapper, true);
+	        }else{
+	        	wrapper.wrapping.queueEntityForMounting(player);
+	        }
+
+	        if(player.world.isRemote){
+	        	player.sleeping = true;
+
+	        	return SleepResult.NOT_POSSIBLE_NOW;
+	        }
+
+	        result = player.trySleep(bedLocation);
+
+	        if(result == null){
+	        	System.out.println("Wtf happened here");
+	        }
+    	}
+
+    	if(player.world.isRemote){
+	    	IBlockState state = null;
+	        if (player.world.isBlockLoaded(bedLocation)) state = player.world.getBlockState(bedLocation);
+	        if (state != null && state.getBlock().isBed(state, player.world, bedLocation, player)) {
+	            EnumFacing enumfacing = state.getBlock().getBedDirection(state, player.world, bedLocation);
+	            float f = 0.5F;
+	            float f1 = 0.5F;
+
+	            switch (enumfacing)
+	            {
+	                case SOUTH:
+	                    f1 = 0.9F;
+	                    break;
+	                case NORTH:
+	                    f1 = 0.1F;
+	                    break;
+	                case WEST:
+	                    f = 0.1F;
+	                    break;
+	                case EAST:
+	                    f = 0.9F;
+	            }
+
+//	            System.out.println(enumfacing);
+
+	            player.setRenderOffsetForSleep(enumfacing);
+	        }
+    	}
+
+    	alreadyTryingToSleep[player.world.isRemote ? 1 : 0] = false;
+    	return result;
+    }
+
+    /*public static SleepResult replaceSleep(EntityPlayer player, BlockPos bedLocation){
+    	PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.worldObj, bedLocation);
+>>>>>>> refs/remotes/origin/master
 
     	if(wrapper != null){
     		SleepResult toReturn = null;
@@ -129,7 +194,7 @@ public class CallRunner {
     	}
 
     	return player.trySleep(bedLocation);
-    }
+    }*/
 
 	public static void fixSponge(EntityPlayer player){
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(player);
@@ -172,13 +237,13 @@ public class CallRunner {
 		player.sleeping = false;
 	}
 
-	/**
+	/*
 	 * Runs after a player tries to sleep
 	 * @param player
 	 * @param bedLocation
 	 * @param result
 	 * @return
-	 */
+	 *
     public static SleepResult trySleepAfterSleep(EntityPlayer player, BlockPos bedLocation, SleepResult result){
 
     	if(player.world.isRemote){
@@ -211,13 +276,16 @@ public class CallRunner {
     	}
 
     	return result;
-    }
+    }*/
 
 	public static double getDistanceSq(TileEntity tile, double x, double y, double z){
 		World tileWorld = tile.getWorld();
 		double toReturn = tile.getDistanceSq(x, y, z);
 
+//		System.out.println("test");
+
 		if(tileWorld != null){
+
 			//Assume on Ship
 			if(tileWorld.isRemote && toReturn > 9999999D){
 				BlockPos pos = tile.getPos();
@@ -509,8 +577,7 @@ public class CallRunner {
 		return true;
 	}
 
-	public static double onGetDistanceSq(Entity entity, double x, double y, double z) {
-		double vanilla = entity.getDistanceSq(x, y, z);
+	public static double getDistanceSq(double vanilla, Entity entity, double x, double y, double z) {
 		if (vanilla < 64.0D) {
 			return vanilla;
 		} else {
@@ -563,14 +630,17 @@ public class CallRunner {
 		world.playSound(x, y, z, soundIn, category, volume, pitch, distanceDelay);
 	}
 
-	public static double onGetDistanceSq(TileEntity ent, double x, double y, double z) {
+	public static double getDistanceSq(double ret, TileEntity ent, double x, double y, double z) {
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(ent.getWorld(), ent.getPos());
 		if (wrapper != null) {
 			Vector vec = new Vector(x, y, z);
 			wrapper.wrapping.coordTransform.fromGlobalToLocal(vec);
-			return ent.getDistanceSq(vec.X, vec.Y, vec.Z);
+			double d0 = ent.getPos().getX() - vec.X;
+	        double d1 = ent.getPos().getY() - vec.Y;
+	        double d2 = ent.getPos().getZ() - vec.Z;
+	        return d0 * d0 + d1 * d1 + d2 * d2;
 		}
-		return ent.getDistanceSq(x, y, z);
+		return ret;
 	}
 
 /*	public static boolean onSpawnEntityInWorld(World world, Entity entity) {
@@ -650,6 +720,10 @@ public class CallRunner {
     }
 
 	public static RayTraceResult onRayTraceBlocks(World world, Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock) {
+		return rayTraceBlocksIgnoreShip(world, vec31, vec32, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock, null);
+	}
+
+	public static RayTraceResult rayTraceBlocksIgnoreShip(World world, Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock, PhysicsWrapperEntity toIgnore) {
 		RayTraceResult vanillaTrace = world.rayTraceBlocks(vec31, vec32, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
 		WorldPhysObjectManager physManager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(world);
 		if (physManager == null) {
@@ -662,6 +736,9 @@ public class CallRunner {
 		AxisAlignedBB playerRangeBB = new AxisAlignedBB(vec31.xCoord, vec31.yCoord, vec31.zCoord, vec32.xCoord, vec32.yCoord, vec32.zCoord);
 
 		List<PhysicsWrapperEntity> nearbyShips = physManager.getNearbyPhysObjects(playerRangeBB);
+		//Get rid of the Ship that we're not supposed to be RayTracing for
+		nearbyShips.remove(toIgnore);
+
 		boolean changed = false;
 
 		double reachDistance = playerReachVector.lengthVector();

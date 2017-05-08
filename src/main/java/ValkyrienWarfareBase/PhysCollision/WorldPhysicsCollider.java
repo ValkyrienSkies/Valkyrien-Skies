@@ -8,6 +8,7 @@ import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Collision.PhysCollisionObject;
 import ValkyrienWarfareBase.Collision.PhysPolygonCollider;
 import ValkyrienWarfareBase.Collision.Polygon;
+import ValkyrienWarfareBase.PhysCollision.BlockRammingManager.NestedBoolean;
 import ValkyrienWarfareBase.Physics.PhysicsCalculations;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
 import ValkyrienWarfareBase.Relocation.SpatialDetector;
@@ -222,8 +223,8 @@ public class WorldPhysicsCollider {
 		}
 
 
-		boolean didBlockBreakInShip = false;
-		boolean didBlockBreakInWorld = false;
+		NestedBoolean didBlockBreakInShip = new NestedBoolean(false);
+		NestedBoolean didBlockBreakInWorld = new NestedBoolean(false);
 
 		Vector positionInBody = collider.entity.getCenter();
 		positionInBody.subtract(parent.wrapper.posX, parent.wrapper.posY, parent.wrapper.posZ);
@@ -232,28 +233,7 @@ public class WorldPhysicsCollider {
 
 		double collisionSpeed = velocityAtPoint.dot(toCollideWith.axis);
 
-		if(Math.abs(collisionSpeed) > 3.0D){
-			double shipBlockHardness = inLocalState.getBlock().blockResistance;//inLocalState.getBlockHardness(worldObj, inLocalPos);
-			double worldBlockHardness = inWorldState.getBlock().blockResistance;//inWorldState.getBlockHardness(worldObj, inWorldPos);
-
-			double hardnessRatio = Math.pow( worldBlockHardness / shipBlockHardness, Math.abs(collisionSpeed) / 2.5D);
-
-			if(worldBlockHardness == -1){
-				worldBlockHardness = 100D;
-			}
-
-			if(shipBlockHardness == -1){
-				shipBlockHardness = 100D;
-			}
-
-			if(hardnessRatio < .01D){
-				didBlockBreakInWorld = true;
-			}
-			if(hardnessRatio > 100D){
-				didBlockBreakInShip = true;
-			}
-
-		}
+		BlockRammingManager.processBlockRamming(collisionSpeed, inLocalState, inWorldState, didBlockBreakInShip, didBlockBreakInWorld);
 
 		for(Vector collisionPos : PolygonCollisionPointFinder.getPointsOfCollisionForPolygons(collider, toCollideWith, null)){
 			Vector inBody = collisionPos.getSubtraction(new Vector(parent.wrapper.posX, parent.wrapper.posY, parent.wrapper.posZ));
@@ -261,14 +241,14 @@ public class WorldPhysicsCollider {
 			Vector momentumAtPoint = calculator.getVelocityAtPoint(inBody);
 			Vector axis = toCollideWith.axis;
 			Vector offsetVector = toCollideWith.getResponse();
-			calculateCollisionImpulseForce(inBody, momentumAtPoint, axis, offsetVector, didBlockBreakInShip, didBlockBreakInWorld);
+			calculateCollisionImpulseForce(inBody, momentumAtPoint, axis, offsetVector, didBlockBreakInShip.getValue(), didBlockBreakInWorld.getValue());
 		}
 
-		if(didBlockBreakInShip){
+		if(didBlockBreakInShip.getValue()){
 			worldObj.destroyBlock(inLocalPos, true);
 		}
 
-		if(didBlockBreakInWorld){
+		if(didBlockBreakInWorld.getValue()){
 			worldObj.destroyBlock(inWorldPos, true);
 			return true;
 		}
@@ -288,8 +268,7 @@ public class WorldPhysicsCollider {
 		Vector collisionImpulseForce = new Vector(axis, impulseMagnitude);
 
 		if(didBlockBreakInShip || didBlockBreakInWorld){
-			//If either block broke, only apply 20% of the collision
-			collisionImpulseForce.multiply(.2D);
+			collisionImpulseForce.multiply(BlockRammingManager.collisionImpulseAfterRamming);
 		}
 
 		//This is just an optimized way to add this force quickly to the PhysicsCalculations

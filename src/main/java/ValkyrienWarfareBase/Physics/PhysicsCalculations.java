@@ -430,7 +430,7 @@ public class PhysicsCalculations {
 		}
 	}
 
-	public Vector getMomentumAtPoint(Vector inBodyWO) {
+	public Vector getVelocityAtPoint(Vector inBodyWO) {
 		Vector speed = angularVelocity.cross(inBodyWO);
 		speed.X += (linearMomentum.X * invMass);
 		speed.Y += (linearMomentum.Y * invMass);
@@ -438,7 +438,7 @@ public class PhysicsCalculations {
 		return speed;
 	}
 
-	public void setMomentumAtPoint(Vector inBodyWO, Vector toSet) {
+	public void setVectorToVelocityAtPoint(Vector inBodyWO, Vector toSet) {
 		toSet.setCross(angularVelocity, inBodyWO);
 
 		toSet.X += (linearMomentum.X * invMass);

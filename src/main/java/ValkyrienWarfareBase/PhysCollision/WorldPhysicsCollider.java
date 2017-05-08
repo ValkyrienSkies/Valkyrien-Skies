@@ -30,6 +30,7 @@ public class WorldPhysicsCollider {
 	public PhysicsObject parent;
 
 	private TIntArrayList cachedPotentialHits;
+	private TIntArrayList cachedHitsToRemove = new TIntArrayList();
 	private final MutableBlockPos mutablePos = new MutableBlockPos();
 
 	// Ensures this always updates the first tick after creation
@@ -58,6 +59,12 @@ public class WorldPhysicsCollider {
 	public void runPhysCollision() {
 		// Multiply by 20 to convert seconds (physTickSpeed) into ticks (ticksSinceCacheUpdate)
 		ticksSinceCacheUpdate += 20D * calculator.physTickSpeed;
+
+		TIntIterator iterator = cachedHitsToRemove.iterator();
+		while(iterator.hasNext()){
+			cachedPotentialHits.remove(iterator.next());
+		}
+		cachedHitsToRemove.clear();
 		if (shouldUpdateCollisonCache()) {
 			updatePotentialCollisionCache();
 			// Collections.shuffle(cachedPotentialHits);
@@ -109,6 +116,7 @@ public class WorldPhysicsCollider {
 			int maxChunkY = maxY >> 4;
 			int maxChunkZ = maxZ >> 4;
 
+			entireLoop:
 			if(!(minChunkY > 15 || maxChunkY < 0)){
 				for(int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++){
 					for(int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++){
@@ -143,7 +151,13 @@ public class WorldPhysicsCollider {
 												if (state.getMaterial().isSolid()) {
 													localCollisionPos.setPos(x, y, z);
 
-													handleLikelyCollision(mutablePos, localCollisionPos, parent.surroundingWorldChunksCache.getBlockState(mutablePos), state);
+													boolean brokeAWorldBlock = handleLikelyCollision(mutablePos, localCollisionPos, parent.surroundingWorldChunksCache.getBlockState(mutablePos), state);
+
+													if(brokeAWorldBlock){
+														int positionRemoved = SpatialDetector.getHashWithRespectTo(mutablePos.getX(), mutablePos.getY(), mutablePos.getZ(), centerPotentialHit);
+														cachedHitsToRemove.add(positionRemoved);
+														break entireLoop;
+													}
 												}
 											}
 										}
@@ -177,7 +191,7 @@ public class WorldPhysicsCollider {
 	}
 
 	//Tests two block positions directly against each other, and figures out whether a collision is occuring or not
-	private void handleLikelyCollision(BlockPos inWorldPos, BlockPos inLocalPos, IBlockState inWorldState, IBlockState inLocalState) {
+	private boolean handleLikelyCollision(BlockPos inWorldPos, BlockPos inLocalPos, IBlockState inWorldState, IBlockState inLocalState) {
 		// System.out.println("Handling a likely collision");
 		AxisAlignedBB inLocalBB = new AxisAlignedBB(inLocalPos.getX(), inLocalPos.getY(), inLocalPos.getZ(), inLocalPos.getX() + 1, inLocalPos.getY() + 1, inLocalPos.getZ() + 1);
 		AxisAlignedBB inGlobalBB = new AxisAlignedBB(inWorldPos.getX(), inWorldPos.getY(), inWorldPos.getZ(), inWorldPos.getX() + 1, inWorldPos.getY() + 1, inWorldPos.getZ() + 1);
@@ -192,49 +206,78 @@ public class WorldPhysicsCollider {
 		PhysPolygonCollider collider = new PhysPolygonCollider(shipInWorld, worldPoly, parent.coordTransform.normals);
 
 		if (!collider.seperated) {
-			handleActualCollision(collider);
+			return handleActualCollision(collider, inWorldPos, inLocalPos, inWorldState, inLocalState);
 		}
+
+		return false;
 	}
 
 	//Takes the collision data along all axes generated prior, and creates the ideal value that is to be followed
-	private void handleActualCollision(PhysPolygonCollider collider) {
+	private boolean handleActualCollision(PhysPolygonCollider collider, BlockPos inWorldPos, BlockPos inLocalPos, IBlockState inWorldState, IBlockState inLocalState) {
 		PhysCollisionObject toCollideWith = null;
 		toCollideWith = collider.collisions[1];
+
 		if (toCollideWith.penetrationDistance > axisTolerance || toCollideWith.penetrationDistance < -axisTolerance) {
 			toCollideWith = collider.collisions[collider.minDistanceIndex];
 		}
 
-//		Vector collisionPos = toCollideWith.firstContactPoint;
 
-		for(Vector collisionPos:PolygonCollisionPointFinder.getPointsOfCollisionForPolygons(collider, toCollideWith, null)){
-			Vector inBody = collisionPos.getSubtraction(new Vector(parent.wrapper.posX, parent.wrapper.posY, parent.wrapper.posZ));
-			inBody.multiply(-1D);
-			Vector momentumAtPoint = calculator.getMomentumAtPoint(inBody);
-			Vector axis = toCollideWith.axis;
-			Vector offsetVector = toCollideWith.getResponse();
-			calculateCollisionImpulseForce(inBody, momentumAtPoint, axis, offsetVector);
+		boolean didBlockBreakInShip = false;
+		boolean didBlockBreakInWorld = false;
+
+		Vector positionInBody = collider.entity.getCenter();
+		positionInBody.subtract(parent.wrapper.posX, parent.wrapper.posY, parent.wrapper.posZ);
+
+		Vector velocityAtPoint = calculator.getVelocityAtPoint(positionInBody);
+
+		double collisionSpeed = velocityAtPoint.dot(toCollideWith.axis);
+
+		if(Math.abs(collisionSpeed) > 3.0D){
+			double shipBlockHardness = inLocalState.getBlock().blockResistance;//inLocalState.getBlockHardness(worldObj, inLocalPos);
+			double worldBlockHardness = inWorldState.getBlock().blockResistance;//inWorldState.getBlockHardness(worldObj, inWorldPos);
+
+			double hardnessRatio = Math.pow( worldBlockHardness / shipBlockHardness, Math.abs(collisionSpeed) / 2.5D);
+
+			if(worldBlockHardness == -1){
+				worldBlockHardness = 100D;
+			}
+
+			if(shipBlockHardness == -1){
+				shipBlockHardness = 100D;
+			}
+
+			if(hardnessRatio < .01D){
+				didBlockBreakInWorld = true;
+			}
+			if(hardnessRatio > 100D){
+				didBlockBreakInShip = true;
+			}
+
 		}
 
-//		collisionPos = toCollideWith.getSecondContactPoint();
-//		inBody = collisionPos.getSubtraction(new Vector(parent.wrapper.posX, parent.wrapper.posY, parent.wrapper.posZ));
-//		inBody.multiply(-1D);
-//		momentumAtPoint = calculator.getMomentumAtPoint(inBody);
-//		axis = toCollideWith.axis;
-//		offsetVector = toCollideWith.getResponse();
-//		calculateCollisionImpulseForce(inBody, momentumAtPoint, axis, offsetVector);
+		for(Vector collisionPos : PolygonCollisionPointFinder.getPointsOfCollisionForPolygons(collider, toCollideWith, null)){
+			Vector inBody = collisionPos.getSubtraction(new Vector(parent.wrapper.posX, parent.wrapper.posY, parent.wrapper.posZ));
+			inBody.multiply(-1D);
+			Vector momentumAtPoint = calculator.getVelocityAtPoint(inBody);
+			Vector axis = toCollideWith.axis;
+			Vector offsetVector = toCollideWith.getResponse();
+			calculateCollisionImpulseForce(inBody, momentumAtPoint, axis, offsetVector, didBlockBreakInShip, didBlockBreakInWorld);
+		}
 
+		if(didBlockBreakInShip){
+			worldObj.destroyBlock(inLocalPos, true);
+		}
 
+		if(didBlockBreakInWorld){
+			worldObj.destroyBlock(inWorldPos, true);
+			return true;
+		}
 
-
-
-
-		//Do this after
-//		momentumAtPoint = calculator.getMomentumAtPoint(inBody);
-//		calculateCoulumbFriction(inBody, momentumAtPoint, axis, offsetVector);
+		return false;
 	}
 
 	//Finally, the end of all this spaghetti code! This step takes all of the math generated before, and it directly adds the result to Ship velocities
-	private void calculateCollisionImpulseForce(Vector inBody, Vector momentumAtPoint, Vector axis, Vector offsetVector) {
+	private void calculateCollisionImpulseForce(Vector inBody, Vector momentumAtPoint, Vector axis, Vector offsetVector, boolean didBlockBreakInShip, boolean didBlockBreakInWorld) {
 		Vector firstCross = inBody.cross(axis);
 		RotationMatrices.applyTransform3by3(calculator.invFramedMOI, firstCross);
 
@@ -243,6 +286,11 @@ public class WorldPhysicsCollider {
 		double impulseMagnitude = -momentumAtPoint.dot(axis) * (collisionElasticity + 1D) / (calculator.invMass + secondCross.dot(axis));
 
 		Vector collisionImpulseForce = new Vector(axis, impulseMagnitude);
+
+		if(didBlockBreakInShip || didBlockBreakInWorld){
+			//If either block broke, only apply 20% of the collision
+			collisionImpulseForce.multiply(.2D);
+		}
 
 		//This is just an optimized way to add this force quickly to the PhysicsCalculations
 		if (collisionImpulseForce.dot(offsetVector) < 0) {
@@ -392,7 +440,7 @@ public class WorldPhysicsCollider {
 
 											inBody.setSubtraction(inLocal, parent.centerCoord);
 
-											parent.physicsProcessor.setMomentumAtPoint(inBody, speedInBody);
+											parent.physicsProcessor.setVectorToVelocityAtPoint(inBody, speedInBody);
 
 											speedInBody.multiply(-parent.physicsProcessor.physRawSpeed);
 

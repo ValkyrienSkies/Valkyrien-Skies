@@ -108,7 +108,6 @@ public class ValkyrienWarfareControlMod {
 
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
-		registerRecipies(event);
 		proxy.postInit(event);
 	}
 

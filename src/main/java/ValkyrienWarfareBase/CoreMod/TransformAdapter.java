@@ -71,12 +71,12 @@ public class TransformAdapter extends ClassVisitor {
 		
 		if (isMethod(calledDesc, "()Z", calledName, MinecraftServerName, "isServerInOnlineMode", "RENAMEME", calledOwner)) {
 			mv.visitInsn(Opcodes.POP);
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "isServerInOnlineMode", "()Z", itf);
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "isServerInOnlineMode", "()Z", itf);
 			return false;
 		}
 		
 		if (isMethod(calledDesc, "()I", calledName, HttpUtilName, "getSuitableLanPort", "RENAMEME", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "getSuitableLanPort", "()I", itf);
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "getSuitableLanPort", "()I", itf);
 			return false;
 		}
 		

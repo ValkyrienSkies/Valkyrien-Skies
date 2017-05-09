@@ -1,6 +1,9 @@
 package ValkyrienWarfareBase.PhysCollision;
 
+import ValkyrienWarfareBase.Physics.BlockMass;
+import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.math.BlockPos;
 
 /**
  * Given the sets of inputs, this class decides which blocks should be rammed, and which blocks shouldn't
@@ -14,7 +17,16 @@ public class BlockRammingManager {
 	public static double minimumVelocityToApply = 3.0D;
 
 
-	public static void processBlockRamming(double collisionSpeed, IBlockState inLocalState, IBlockState inWorldState, NestedBoolean didBlockBreakInShip, NestedBoolean didBlockBreakInWorld){
+	/**
+	 * Returns percentage of power to apply collision
+	 * @param collisionSpeed
+	 * @param inLocalState
+	 * @param inWorldState
+	 * @param didBlockBreakInShip
+	 * @param didBlockBreakInWorld
+	 * @return
+	 */
+	public static double processBlockRamming(PhysicsWrapperEntity wrapper, double collisionSpeed, IBlockState inLocalState, IBlockState inWorldState, BlockPos inLocal, BlockPos inWorld, NestedBoolean didBlockBreakInShip, NestedBoolean didBlockBreakInWorld){
 		if(Math.abs(collisionSpeed) > 3.0D){
 			double shipBlockHardness = inLocalState.getBlock().blockResistance;//inLocalState.getBlockHardness(worldObj, inLocalPos);
 			double worldBlockHardness = inWorldState.getBlock().blockResistance;//inWorldState.getBlockHardness(worldObj, inWorldPos);
@@ -31,12 +43,22 @@ public class BlockRammingManager {
 
 			if(hardnessRatio < .01D){
 				didBlockBreakInWorld.setValue(true);
+				double shipBlockMass = BlockMass.basicMass.getMassFromState(inLocalState, inLocal, wrapper.worldObj);
+				double worldBlockMass = BlockMass.basicMass.getMassFromState(inWorldState, inWorld, wrapper.worldObj);
+//				return worldBlockMass / shipBlockMass;
+				return worldBlockMass / wrapper.wrapping.physicsProcessor.mass;
 			}
 			if(hardnessRatio > 100D){
 				didBlockBreakInShip.setValue(true);
+				double shipBlockMass = BlockMass.basicMass.getMassFromState(inLocalState, inLocal, wrapper.worldObj);
+				double worldBlockMass = BlockMass.basicMass.getMassFromState(inWorldState, inWorld, wrapper.worldObj);
+//				return shipBlockMass / worldBlockMass;
+				return shipBlockMass / wrapper.wrapping.physicsProcessor.mass;
 			}
 
 		}
+		
+		return 1;
 	}
 
 

@@ -55,40 +55,6 @@ import net.minecraftforge.common.DimensionManager;
 
 public class CallRunner {
 
-    public static boolean isServerInOnlineMode(){
-    	System.out.println("test");
-    	return false;
-    }
-	
-    public static int getSuitableLanPort() throws IOException{
-    	System.out.println("test");
-    	
-    	ServerSocket serversocket = null;
-        int i = -1;
-
-        try
-        {
-            serversocket = new ServerSocket(80);
-            i = serversocket.getLocalPort();
-        }
-        finally
-        {
-            try
-            {
-                if (serversocket != null)
-                {
-                    serversocket.close();
-                }
-            }
-            catch (IOException var8)
-            {
-                ;
-            }
-        }
-
-        return i;
-    }
-
 	public static Iterator<Chunk> rebuildChunkIterator(Iterator<Chunk> chunkIterator){
 		ArrayList<Chunk> newBackingArray = new ArrayList<Chunk>();
 		while(chunkIterator.hasNext()){

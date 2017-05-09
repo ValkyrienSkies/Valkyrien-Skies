@@ -233,15 +233,19 @@ public class WorldPhysicsCollider {
 
 		double collisionSpeed = velocityAtPoint.dot(toCollideWith.axis);
 
-		BlockRammingManager.processBlockRamming(collisionSpeed, inLocalState, inWorldState, didBlockBreakInShip, didBlockBreakInWorld);
+		double impulseApplied = BlockRammingManager.processBlockRamming(parent.wrapper, collisionSpeed, inLocalState, inWorldState, inLocalPos, inWorldPos, didBlockBreakInShip, didBlockBreakInWorld);
 
-		for(Vector collisionPos : PolygonCollisionPointFinder.getPointsOfCollisionForPolygons(collider, toCollideWith, null)){
+		Vector[] collisionPoints = PolygonCollisionPointFinder.getPointsOfCollisionForPolygons(collider, toCollideWith, null);
+		
+		impulseApplied /= collisionPoints.length;		
+				
+		for(Vector collisionPos : collisionPoints){
 			Vector inBody = collisionPos.getSubtraction(new Vector(parent.wrapper.posX, parent.wrapper.posY, parent.wrapper.posZ));
 			inBody.multiply(-1D);
 			Vector momentumAtPoint = calculator.getVelocityAtPoint(inBody);
 			Vector axis = toCollideWith.axis;
 			Vector offsetVector = toCollideWith.getResponse();
-			calculateCollisionImpulseForce(inBody, momentumAtPoint, axis, offsetVector, didBlockBreakInShip.getValue(), didBlockBreakInWorld.getValue());
+			calculateCollisionImpulseForce(inBody, momentumAtPoint, axis, offsetVector, didBlockBreakInShip.getValue(), didBlockBreakInWorld.getValue(), impulseApplied);
 		}
 
 		if(didBlockBreakInShip.getValue()){
@@ -257,7 +261,7 @@ public class WorldPhysicsCollider {
 	}
 
 	//Finally, the end of all this spaghetti code! This step takes all of the math generated before, and it directly adds the result to Ship velocities
-	private void calculateCollisionImpulseForce(Vector inBody, Vector momentumAtPoint, Vector axis, Vector offsetVector, boolean didBlockBreakInShip, boolean didBlockBreakInWorld) {
+	private void calculateCollisionImpulseForce(Vector inBody, Vector momentumAtPoint, Vector axis, Vector offsetVector, boolean didBlockBreakInShip, boolean didBlockBreakInWorld, double impulseApplied) {
 		Vector firstCross = inBody.cross(axis);
 		RotationMatrices.applyTransform3by3(calculator.invFramedMOI, firstCross);
 
@@ -268,7 +272,8 @@ public class WorldPhysicsCollider {
 		Vector collisionImpulseForce = new Vector(axis, impulseMagnitude);
 
 		if(didBlockBreakInShip || didBlockBreakInWorld){
-			collisionImpulseForce.multiply(BlockRammingManager.collisionImpulseAfterRamming);
+//			collisionImpulseForce.multiply(BlockRammingManager.collisionImpulseAfterRamming);
+			collisionImpulseForce.multiply(impulseApplied);
 		}
 
 		//This is just an optimized way to add this force quickly to the PhysicsCalculations

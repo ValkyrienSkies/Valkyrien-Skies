@@ -138,7 +138,7 @@ public class ValkyrienWarfareMod {
 	@EventHandler
 	public void serverStart(FMLServerStartingEvent event) {
 		MinecraftServer server = event.getServer();
-		ExtraRegistry.registerCommands(server);
+		ModCommands.registerCommands(server);
 	}
 
 	private void registerNetworks(FMLStateEvent event) {

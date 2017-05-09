@@ -22,7 +22,7 @@ import net.minecraft.world.World;
 public class PhysSettingsCommand extends CommandBase {
 
 	public static final ArrayList<String> completionOptions = new ArrayList<String>();
-	
+
 	static {
 		completionOptions.add("gravityVector");
 		completionOptions.add("doSplitting");
@@ -190,6 +190,10 @@ public class PhysSettingsCommand extends CommandBase {
 			ValkyrienWarfareMod.instance.saveConfig();
 			sender.addChatMessage(new TextComponentString("Saved phyisics settings"));
 			return;
+		} else if (key.equals("help")){
+			for(String command : completionOptions){
+				sender.addChatMessage(new TextComponentString(command));
+			}
 		}
 
 		sender.addChatMessage(new TextComponentString(this.getCommandUsage(sender)));
@@ -199,13 +203,13 @@ public class PhysSettingsCommand extends CommandBase {
 	public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos) {
 		if (args.length == 1)	{
 			ArrayList<String> possibleArgs = (ArrayList<String>) completionOptions.clone();
-			
-			for (Iterator<String> iterator = possibleArgs.iterator(); iterator.hasNext();) { //Don't like this, but I have to because concurrentmodificationexception			    
+
+			for (Iterator<String> iterator = possibleArgs.iterator(); iterator.hasNext();) { //Don't like this, but I have to because concurrentmodificationexception
 			    if (!iterator.next().startsWith(args[0])) {
 			        iterator.remove();
 			    }
 			}
-			
+
 			return possibleArgs;
 		} else if (args.length == 2)	{
 			if (args[0].startsWith("do"))	{
@@ -218,7 +222,7 @@ public class PhysSettingsCommand extends CommandBase {
 				}
 			}
 		}
-		
+
 		return null;
 	}
 }

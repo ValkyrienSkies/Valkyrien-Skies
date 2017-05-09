@@ -128,6 +128,11 @@ public static final ArrayList<String> completionOptions = new ArrayList<String>(
 			}
 			p.addChatMessage(new TextComponentString("You need to be the owner of an airship to change airship settings!"));
 		}
+		if (args[0].equals("help")){
+			for(String command : completionOptions){
+				sender.addChatMessage(new TextComponentString(command));
+			}
+		}
 
 		sender.addChatMessage(new TextComponentString(TextFormatting.RED + "Usage: " + getCommandUsage(sender)));
 	}

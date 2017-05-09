@@ -1,5 +1,5 @@
 # Valkyrien-Warfare-Revamped
-[![Build Status](http://home.daporkchop.tk:8283/job/Valkyrien-Warfare-Revamped/badge/icon)](http://home.daporkchop.tk:8283/job/Valkyrien-Warfare-Revamped/)
+[![Build Status](http://home.daporkchop.tk:8283/job/Valkyrien-Warfare-Revamped/badge/icon)](http://jenkins.daporkchop.net/job/Valkyrien-Warfare-Revamped/)
 
 ## The Airships Mod to end all other Airships Mods. Better compatibility, performance, collisions, interactions and physics than anything prior!
 

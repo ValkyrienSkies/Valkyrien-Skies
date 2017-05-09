@@ -80,15 +80,18 @@ public class TransformAdapter extends ClassVisitor {
 			return false;
 		}
 		
-		/*if (isMethod(calledDesc, "(L"+WorldClassName+";L"+IteratorName+";)L"+IteratorName+";", calledName, ForgeChunkManagerName, "getPersistentChunksIterableFor", "getPersistentChunksIterableFor", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "rebuildChunkIterator", "(L" + IteratorName + ";)L"+IteratorName+";", itf);
-		}*/
+		//Ported
+//		if (isMethod(calledDesc, "(L"+WorldClassName+";L"+IteratorName+";)L"+IteratorName+";", calledName, ForgeChunkManagerName, "getPersistentChunksIterableFor", "getPersistentChunksIterableFor", calledOwner)) {
+//			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "rebuildChunkIterator", "(L" + IteratorName + ";)L"+IteratorName+";", itf);
+//		}
 
-		/*if (isMethod(calledDesc, "(L" + WorldClassName + ";L" + BlockPosName+ ";Z)L"+BlockPosName+";", calledName, EntityPlayerName, "getBedSpawnLocation", "func_180467_a", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "getBedSpawnLocation", "(L" + WorldClassName + ";L" + BlockPosName+ ";Z)L"+BlockPosName+";", itf);
-			return false;
-		}*/
+		//Ported
+//		if (isMethod(calledDesc, "(L" + WorldClassName + ";L" + BlockPosName+ ";Z)L"+BlockPosName+";", calledName, EntityPlayerName, "getBedSpawnLocation", "func_180467_a", calledOwner)) {
+//			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "getBedSpawnLocation", "(L" + WorldClassName + ";L" + BlockPosName+ ";Z)L"+BlockPosName+";", itf);
+//			return false;
+//		}
 
+		//Ported
 		/*if (isMethod(calledDesc, "(ZZZ)V", calledName, EntityPlayerName, "wakeUpPlayer", "func_70999_a", calledOwner)) {
 			//Initial Stack of PZZZ
 			mv.visitInsn(Opcodes.DUP2_X2);
@@ -117,6 +120,7 @@ public class TransformAdapter extends ClassVisitor {
 			return false;
 		}*/
 
+		//Ported
 		/*if (isMethod(calledDesc, "(L"+BlockPosName+";)L"+SleepResultName+";", calledName, EntityPlayerName, "trySleep", "func_180469_a", calledOwner)) {
 			//Copy the BlockPos and the PlayerEntity in the stack
 			mv.visitInsn(Opcodes.DUP2);
@@ -133,11 +137,12 @@ public class TransformAdapter extends ClassVisitor {
 			return false;
 		}
 
+		//Ported
 		//TODO WTH?
-		/*if (isMethod(calledDesc, "(DDD)D", calledName, TileEntityName, "getDistanceSq", "func_145835_a", calledOwner)) {
+		if (isMethod(calledDesc, "(DDD)D", calledName, TileEntityName, "getDistanceSq", "func_145835_a", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "getDistanceSq", String.format("(L%s;DDD)D", TileEntityName), itf);
 			return false;
-		}*/
+		}
 
 		//TODO Write custom tiles renderer :P
 		if (isMethod(calledDesc, "(L"+TileEntityName+";FI)V", calledName, TileEntityRendererDispatcherName, "renderTileEntity", "func_180546_a", calledOwner)) {

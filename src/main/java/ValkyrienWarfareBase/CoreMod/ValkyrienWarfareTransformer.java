@@ -1,6 +1,12 @@
 package ValkyrienWarfareBase.CoreMod;
 
-import static org.objectweb.asm.Opcodes.*;
+import static org.objectweb.asm.Opcodes.ALOAD;
+import static org.objectweb.asm.Opcodes.ASM5;
+import static org.objectweb.asm.Opcodes.ASTORE;
+import static org.objectweb.asm.Opcodes.DLOAD;
+import static org.objectweb.asm.Opcodes.ILOAD;
+import static org.objectweb.asm.Opcodes.INVOKESPECIAL;
+import static org.objectweb.asm.Opcodes.INVOKESTATIC;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -30,7 +36,8 @@ public class ValkyrienWarfareTransformer implements IClassTransformer {
 				.node(SpecificMethodNodeTransformer.instructionsInserterBeforeReturn(ValkyrienWarfarePlugin.isObfuscatedEnvironment ? "func_180469_a" : "trySleep", 0, () -> new InsnListBuilder(new VarInsnNode(ALOAD, 0), new VarInsnNode(ALOAD, 1), new MethodInsnNode(INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "trySleep", "(Lnet/minecraft/entity/player/EntityPlayer$SleepResult;Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/entity/player/EntityPlayer$SleepResult;", false)).build()))
 				.build(),
 				new SpecificClassNodeChildrenTransformer.Builder("net/minecraft/tileentity/TileEntity", 0)
-				.node(SpecificMethodNodeTransformer.instructionsInserterBeforeReturn(ValkyrienWarfarePlugin.isObfuscatedEnvironment ? "func_145835_a" : "getDistanceSq", 0, () -> new InsnListBuilder(new VarInsnNode(ALOAD, 0), new VarInsnNode(DLOAD, 1), new VarInsnNode(DLOAD, 3), new VarInsnNode(DLOAD, 5), new MethodInsnNode(INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "getDistanceSq", "(DLnet/minecraft/tileentity/TileEntity;DDD)D", false)).build()))
+//				.node(SpecificMethodNodeTransformer.instructionsInserterBeforeReturn(ValkyrienWarfarePlugin.isObfuscatedEnvironment ? "func_145835_a" : "getDistanceSq", 0, () -> new InsnListBuilder(new VarInsnNode(ALOAD, 0), new VarInsnNode(DLOAD, 1), new VarInsnNode(DLOAD, 3), new VarInsnNode(DLOAD, 5), new MethodInsnNode(INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "getDistanceSq", "(DLnet/minecraft/tileentity/TileEntity;DDD)D", false)).build()))
+//				.node(SpecificMethodNodeTransformer.instructionsInserterBeforeReturn(ValkyrienWarfarePlugin.isObfuscatedEnvironment ? "func_184177_bl" : "getRenderBoundingBox", 0, () -> new InsnListBuilder(new VarInsnNode(ALOAD, 0), new MethodInsnNode(INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "getRenderBoundingBox", "(Lnet/minecraft/tileentity/TileEntity;)Lnet/minecraft/util/math/AxisAlignedBB;", false)).build()))
 				.build(),
 				new SpecificClassNodeChildrenTransformer.Builder("net/minecraft/entity/Entity", 0)
 				.node(SpecificClassNodeTransformer.setParent("net/minecraft/entity/Entity", 10, old -> "ValkyrienWarfareBase/Interaction/EntityDraggable"))
@@ -38,7 +45,7 @@ public class ValkyrienWarfareTransformer implements IClassTransformer {
 				.node(SpecificMethodNodeTransformer.instructionsInserterBeforeReturn(ValkyrienWarfarePlugin.isObfuscatedEnvironment ? "func_70092_e(DDD)D" : "getDistanceSq(DDD)D", 0, () -> new InsnListBuilder(new VarInsnNode(ALOAD, 0), new VarInsnNode(DLOAD, 1), new VarInsnNode(DLOAD, 3), new VarInsnNode(DLOAD, 5), new MethodInsnNode(INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "getDistanceSq", "(DLnet/minecraft/entity/Entity;DDD)D", false)).build()))
 				.build());
 	}
-	
+
 	@Override
 	public byte[] transform(String name, String transformedName, byte[] classData){
 		classData = transformer.transform(classData);

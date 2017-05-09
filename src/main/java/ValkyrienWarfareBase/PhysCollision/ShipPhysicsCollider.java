@@ -11,6 +11,7 @@ import ValkyrienWarfareBase.Collision.PhysPolygonCollider;
 import ValkyrienWarfareBase.Collision.Polygon;
 import ValkyrienWarfareBase.Math.BigBastardMath;
 import ValkyrienWarfareBase.Physics.PhysicsCalculations;
+import ValkyrienWarfareBase.Physics.PhysicsCalculationsOrbital;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -35,6 +36,19 @@ public class ShipPhysicsCollider {
 	}
 
 	public void doShipCollision(PhysicsObject toCollideWith) {
+		//Don't process collision if either of them are phased
+		if(toCollideWith.physicsProcessor instanceof PhysicsCalculationsOrbital){
+			if(((PhysicsCalculationsOrbital)toCollideWith.physicsProcessor).isOrbitalPhased){
+				return;
+			}
+		}
+		if(parent.physicsProcessor instanceof PhysicsCalculationsOrbital){
+			if(((PhysicsCalculationsOrbital)parent.physicsProcessor).isOrbitalPhased){
+				return;
+			}
+		}
+
+
 		AxisAlignedBB firstBB = parent.collisionBB;
 		AxisAlignedBB secondBB = toCollideWith.collisionBB;
 
@@ -74,8 +88,8 @@ public class ShipPhysicsCollider {
 				Vector inBodyFirst = new Vector(firstCenter.X - parent.wrapper.posX, firstCenter.Y - parent.wrapper.posY, firstCenter.Z - parent.wrapper.posZ);
 				Vector inBodySecond = new Vector(secondCenter.X - toCollideWith.wrapper.posX, secondCenter.Y - toCollideWith.wrapper.posY, secondCenter.Z - toCollideWith.wrapper.posZ);
 
-				Vector velAtFirst = parent.physicsProcessor.getMomentumAtPoint(inBodyFirst);
-				Vector velAtSecond = toCollideWith.physicsProcessor.getMomentumAtPoint(inBodySecond);
+				Vector velAtFirst = parent.physicsProcessor.getVelocityAtPoint(inBodyFirst);
+				Vector velAtSecond = toCollideWith.physicsProcessor.getVelocityAtPoint(inBodySecond);
 
 				velAtFirst.subtract(velAtSecond);
 
@@ -157,8 +171,8 @@ public class ShipPhysicsCollider {
 		inSecondShip.Y -= toCollideWith.wrapper.posY;
 		inSecondShip.Z -= toCollideWith.wrapper.posZ;
 
-		Vector momentumInFirst = parent.physicsProcessor.getMomentumAtPoint(inFirstShip);
-		Vector momentumInSecond = toCollideWith.physicsProcessor.getMomentumAtPoint(inSecondShip);
+		Vector momentumInFirst = parent.physicsProcessor.getVelocityAtPoint(inFirstShip);
+		Vector momentumInSecond = toCollideWith.physicsProcessor.getVelocityAtPoint(inSecondShip);
 
 		// COULD BE WRONG!!!
 		Vector netVelocity = momentumInFirst.getSubtraction(momentumInSecond);

@@ -168,7 +168,7 @@ public class ValkyrienWarfareControlMod {
 	private void registerItems(FMLStateEvent event) {
 		systemLinker = new ItemSystemLinker().setUnlocalizedName("systemlinker").setRegistryName(MODID, "systemlinker").setCreativeTab(CreativeTabs.TRANSPORTATION).setMaxStackSize(1);
 		airshipStealer = new ItemShipStealer().setUnlocalizedName("airshipStealer").setRegistryName(MODID, "airshipStealer").setCreativeTab(CreativeTabs.TOOLS).setMaxStackSize(1);
-		explosiveArrow = new ExplosiveArrows().setUnlocalizedName("explosive arrow").setRegistryName(MODID, "explosive arrows").setCreativeTab(CreativeTabs.COMBAT).setMaxStackSize(64);
+		explosiveArrow = new ExplosiveArrows().setUnlocalizedName("explosiveArrow").setRegistryName(MODID, "explosiveArrow").setCreativeTab(CreativeTabs.COMBAT).setMaxStackSize(64);
 		
 		GameRegistry.registerItem(systemLinker);
 		GameRegistry.registerItem(airshipStealer);

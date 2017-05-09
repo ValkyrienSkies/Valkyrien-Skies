@@ -1,5 +1,7 @@
 package ValkyrienWarfareBase.CoreMod;
 
+import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -8,7 +10,6 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 
 import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableSetMultimap;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
@@ -27,7 +28,6 @@ import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayer.SleepResult;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -52,9 +52,42 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkGenerator;
 import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.common.ForgeChunkManager.Ticket;
 
 public class CallRunner {
+
+    public static boolean isServerInOnlineMode(){
+    	System.out.println("test");
+    	return false;
+    }
+	
+    public static int getSuitableLanPort() throws IOException{
+    	System.out.println("test");
+    	
+    	ServerSocket serversocket = null;
+        int i = -1;
+
+        try
+        {
+            serversocket = new ServerSocket(80);
+            i = serversocket.getLocalPort();
+        }
+        finally
+        {
+            try
+            {
+                if (serversocket != null)
+                {
+                    serversocket.close();
+                }
+            }
+            catch (IOException var8)
+            {
+                ;
+            }
+        }
+
+        return i;
+    }
 
 	public static Iterator<Chunk> rebuildChunkIterator(Iterator<Chunk> chunkIterator){
 		ArrayList<Chunk> newBackingArray = new ArrayList<Chunk>();

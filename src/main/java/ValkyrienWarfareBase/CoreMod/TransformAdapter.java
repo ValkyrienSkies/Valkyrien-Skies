@@ -51,6 +51,8 @@ public class TransformAdapter extends ClassVisitor {
 	public static final String TileEntityRendererDispatcherName = "net/minecraft/client/renderer/tileentity/TileEntityRendererDispatcher";
 	public static final String SleepResultName = "net/minecraft/entity/player/EntityPlayer$SleepResult";
 	public static final String ForgeChunkManagerName = "net/minecraftforge/common/ForgeChunkManager";
+	public static final String MinecraftServerName = "net/minecraft/server/MinecraftServer";
+	public static final String HttpUtilName = "net/minecraft/util/HttpUtil";
 
 	public static final String PredicateName = "com/google/common/base/Predicate";
 	public static final String ListName = "java/util/List";
@@ -66,7 +68,18 @@ public class TransformAdapter extends ClassVisitor {
 	}
 
 	public boolean runTransformer(int opcode, String calledName, String calledDesc, String calledOwner, MethodVisitor mv, boolean itf) {
-
+		
+		if (isMethod(calledDesc, "()Z", calledName, MinecraftServerName, "isServerInOnlineMode", "RENAMEME", calledOwner)) {
+			mv.visitInsn(Opcodes.POP);
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "isServerInOnlineMode", "()Z", itf);
+			return false;
+		}
+		
+		if (isMethod(calledDesc, "()I", calledName, HttpUtilName, "getSuitableLanPort", "RENAMEME", calledOwner)) {
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "getSuitableLanPort", "()I", itf);
+			return false;
+		}
+		
 		/*if (isMethod(calledDesc, "(L"+WorldClassName+";L"+IteratorName+";)L"+IteratorName+";", calledName, ForgeChunkManagerName, "getPersistentChunksIterableFor", "getPersistentChunksIterableFor", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "rebuildChunkIterator", "(L" + IteratorName + ";)L"+IteratorName+";", itf);
 		}*/
@@ -115,10 +128,10 @@ public class TransformAdapter extends ClassVisitor {
 		}*/
 
 		//TODO Write custom tiles renderer :P
-		/*if (isMethod(calledDesc, "()L"+AxisAlignedBBName+";", calledName, TileEntityName, "getRenderBoundingBox", "func_184177_bl", calledOwner)) {
+		if (isMethod(calledDesc, "()L"+AxisAlignedBBName+";", calledName, TileEntityName, "getRenderBoundingBox", "func_184177_bl", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "getRenderBoundingBox", String.format("(L%s;)L"+AxisAlignedBBName+";", TileEntityName), itf);
 			return false;
-		}*/
+		}
 
 		//TODO WTH?
 		/*if (isMethod(calledDesc, "(DDD)D", calledName, TileEntityName, "getDistanceSq", "func_145835_a", calledOwner)) {
@@ -127,10 +140,10 @@ public class TransformAdapter extends ClassVisitor {
 		}*/
 
 		//TODO Write custom tiles renderer :P
-		/*if (isMethod(calledDesc, "(L"+TileEntityName+";FI)V", calledName, TileEntityRendererDispatcherName, "renderTileEntity", "func_180546_a", calledOwner)) {
+		if (isMethod(calledDesc, "(L"+TileEntityName+";FI)V", calledName, TileEntityRendererDispatcherName, "renderTileEntity", "func_180546_a", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "renderTileEntity", String.format("(L%s;L"+TileEntityName+";FI)V", TileEntityRendererDispatcherName), itf);
 			return false;
-		}*/
+		}
 
 		if (isMethod(calledDesc, "(L"+EntityClassName+";DDDFFZ)V", calledName, RenderManagerName, "doRenderEntity", "func_188391_a", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "doRenderEntity", String.format("(L%s;L"+EntityClassName+";DDDFFZ)V", RenderManagerName), itf);

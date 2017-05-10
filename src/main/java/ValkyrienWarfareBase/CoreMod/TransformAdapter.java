@@ -51,6 +51,8 @@ public class TransformAdapter extends ClassVisitor {
 	public static final String TileEntityRendererDispatcherName = "net/minecraft/client/renderer/tileentity/TileEntityRendererDispatcher";
 	public static final String SleepResultName = "net/minecraft/entity/player/EntityPlayer$SleepResult";
 	public static final String ForgeChunkManagerName = "net/minecraftforge/common/ForgeChunkManager";
+	public static final String MinecraftServerName = "net/minecraft/server/MinecraftServer";
+	public static final String HttpUtilName = "net/minecraft/util/HttpUtil";
 
 	public static final String PredicateName = "com/google/common/base/Predicate";
 	public static final String ListName = "java/util/List";
@@ -66,7 +68,18 @@ public class TransformAdapter extends ClassVisitor {
 	}
 
 	public boolean runTransformer(int opcode, String calledName, String calledDesc, String calledOwner, MethodVisitor mv, boolean itf) {
-
+		
+		if (isMethod(calledDesc, "()Z", calledName, MinecraftServerName, "isServerInOnlineMode", "RENAMEME", calledOwner)) {
+			mv.visitInsn(Opcodes.POP);
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "isServerInOnlineMode", "()Z", itf);
+			return false;
+		}
+		
+		if (isMethod(calledDesc, "()I", calledName, HttpUtilName, "getSuitableLanPort", "RENAMEME", calledOwner)) {
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "getSuitableLanPort", "()I", itf);
+			return false;
+		}
+		
 		//Ported
 //		if (isMethod(calledDesc, "(L"+WorldClassName+";L"+IteratorName+";)L"+IteratorName+";", calledName, ForgeChunkManagerName, "getPersistentChunksIterableFor", "getPersistentChunksIterableFor", calledOwner)) {
 //			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "rebuildChunkIterator", "(L" + IteratorName + ";)L"+IteratorName+";", itf);

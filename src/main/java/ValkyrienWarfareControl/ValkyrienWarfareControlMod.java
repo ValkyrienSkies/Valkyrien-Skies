@@ -48,7 +48,6 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.oredict.ShapedOreRecipe;
 
 @Mod(modid = ValkyrienWarfareControlMod.MODID, name = ValkyrienWarfareControlMod.MODNAME, version = ValkyrienWarfareControlMod.MODVER)
 public class ValkyrienWarfareControlMod {
@@ -82,6 +81,7 @@ public class ValkyrienWarfareControlMod {
 
 	public Item systemLinker;
 	public Item airshipStealer;
+	public Item explosiveArrow;
 
 	@SidedProxy(clientSide = "ValkyrienWarfareControl.Proxy.ClientProxyControl", serverSide = "ValkyrienWarfareControl.Proxy.CommonProxyControl")
 	public static CommonProxyControl proxy;
@@ -91,11 +91,6 @@ public class ValkyrienWarfareControlMod {
 		instance = this;
 		config = new Configuration(new File(ValkyrienWarfareMod.getWorkingFolder() + "/config/valkyrienwarfarecontrol.cfg"));
 		config.load();
-		registerBlocks(event);
-		registerTileEntities(event);
-		registerItems(event);
-		registerRecipies(event);
-		registerNetworks(event);
 		proxy.preInit(event);
 		config.save();
 	}
@@ -103,6 +98,11 @@ public class ValkyrienWarfareControlMod {
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
 		proxy.init(event);
+		registerBlocks(event);
+		registerTileEntities(event);
+		registerItems(event);
+		registerRecipies(event);
+		registerNetworks(event);
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new ControlGUIHandler());
 	}
 
@@ -168,9 +168,11 @@ public class ValkyrienWarfareControlMod {
 	private void registerItems(FMLStateEvent event) {
 		systemLinker = new ItemSystemLinker().setUnlocalizedName("systemlinker").setRegistryName(MODID, "systemlinker").setCreativeTab(CreativeTabs.TRANSPORTATION).setMaxStackSize(1);
 		airshipStealer = new ItemShipStealer().setUnlocalizedName("airshipStealer").setRegistryName(MODID, "airshipStealer").setCreativeTab(CreativeTabs.TOOLS).setMaxStackSize(1);
-
+		explosiveArrow = new ExplosiveArrows().setUnlocalizedName("explosiveArrow").setRegistryName(MODID, "explosiveArrow").setCreativeTab(CreativeTabs.COMBAT).setMaxStackSize(64);
+		
 		GameRegistry.registerItem(systemLinker);
 		GameRegistry.registerItem(airshipStealer);
+		GameRegistry.registerItem(explosiveArrow);
 	}
 
 	private void registerRecipies(FMLStateEvent event) {

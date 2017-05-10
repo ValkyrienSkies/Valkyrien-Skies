@@ -68,18 +68,20 @@ public class TransformAdapter extends ClassVisitor {
 	}
 
 	public boolean runTransformer(int opcode, String calledName, String calledDesc, String calledOwner, MethodVisitor mv, boolean itf) {
-		
-		if (isMethod(calledDesc, "()Z", calledName, MinecraftServerName, "isServerInOnlineMode", "RENAMEME", calledOwner)) {
-			mv.visitInsn(Opcodes.POP);
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "isServerInOnlineMode", "()Z", itf);
-			return false;
-		}
-		
+
+		//TODO: Move to separate mod
+//		if (isMethod(calledDesc, "()Z", calledName, MinecraftServerName, "isServerInOnlineMode", "RENAMEME", calledOwner)) {
+//			mv.visitInsn(Opcodes.POP);
+//			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "isServerInOnlineMode", "()Z", itf);
+//			return false;
+//		}
+
+		//TODO: Move to seperate mod
 		if (isMethod(calledDesc, "()I", calledName, HttpUtilName, "getSuitableLanPort", "RENAMEME", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "getSuitableLanPort", "()I", itf);
 			return false;
 		}
-		
+
 		//Ported
 //		if (isMethod(calledDesc, "(L"+WorldClassName+";L"+IteratorName+";)L"+IteratorName+";", calledName, ForgeChunkManagerName, "getPersistentChunksIterableFor", "getPersistentChunksIterableFor", calledOwner)) {
 //			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "rebuildChunkIterator", "(L" + IteratorName + ";)L"+IteratorName+";", itf);

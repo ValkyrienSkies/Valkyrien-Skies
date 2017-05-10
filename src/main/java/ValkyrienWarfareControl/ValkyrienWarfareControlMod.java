@@ -12,6 +12,7 @@ import ValkyrienWarfareControl.Block.Engine.BlockRedstoneEngine;
 import ValkyrienWarfareControl.Block.EtherCompressor.BlockCreativeEtherCompressor;
 import ValkyrienWarfareControl.Block.EtherCompressor.BlockNormalEtherCompressor;
 import ValkyrienWarfareControl.GUI.ControlGUIHandler;
+import ValkyrienWarfareControl.Item.ExplosiveArrows;
 import ValkyrienWarfareControl.Item.ItemShipStealer;
 import ValkyrienWarfareControl.Item.ItemSystemLinker;
 import ValkyrienWarfareControl.Network.EntityFixMessage;

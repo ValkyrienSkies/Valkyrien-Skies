@@ -55,6 +55,10 @@ import net.minecraftforge.common.DimensionManager;
 
 public class CallRunner {
 
+//    public static boolean isServerInOnlineMode(){
+//    	return false;
+//    }
+
 	public static Iterator<Chunk> rebuildChunkIterator(Iterator<Chunk> chunkIterator){
 		ArrayList<Chunk> newBackingArray = new ArrayList<Chunk>();
 		while(chunkIterator.hasNext()){

@@ -1,4 +1,4 @@
-package ValkyrienWarfareControl;
+package ValkyrienWarfareControl.Item;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.projectile.EntityArrow;

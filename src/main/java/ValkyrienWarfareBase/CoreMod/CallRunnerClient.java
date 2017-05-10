@@ -67,15 +67,7 @@ public class CallRunnerClient extends CallRunner {
 		} catch (Exception e) {}
 	}
 
-
-    public static boolean isServerInOnlineMode(){
-    	System.out.println("test");
-    	return false;
-    }
-	
     public static int getSuitableLanPort() throws IOException{
-    	System.out.println("test");
-    	
     	ServerSocket serversocket = null;
         int i = -1;
 
@@ -101,7 +93,7 @@ public class CallRunnerClient extends CallRunner {
 
         return i;
     }
-	
+
     public static AxisAlignedBB getRenderBoundingBox(TileEntity tile){
     	AxisAlignedBB toReturn = tile.getRenderBoundingBox();
 //    	System.out.println("running");

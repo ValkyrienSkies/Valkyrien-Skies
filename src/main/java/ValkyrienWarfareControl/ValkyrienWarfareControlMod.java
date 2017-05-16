@@ -189,11 +189,11 @@ public class ValkyrienWarfareControlMod {
 		GameRegistry.addRecipe(new ItemStack(eliteEtherCompressor, 4), new Object[] { "III", "IEI", "WEW", 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorldMod.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG) });
 		GameRegistry.addRecipe(new ItemStack(ultimateEtherCompressor, 4), new Object[] { "#I#", "#E#", "WEW", '#', Item.getItemFromBlock(Blocks.OBSIDIAN), 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorldMod.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG) });
 
-		GameRegistry.addRecipe(new ItemStack(basicEngine, 4), new Object[] { "###", "IPP", "I##", '#', Item.getItemFromBlock(Blocks.PLANKS), 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT });
-		GameRegistry.addRecipe(new ItemStack(advancedEngine, 4), new Object[] { "###", "IPP", "I##", '#', Item.getItemFromBlock(Blocks.STONE), 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT });
-		GameRegistry.addRecipe(new ItemStack(advancedEngine, 2), new Object[] { "###", "IPP", "I##", '#', Item.getItemFromBlock(Blocks.COBBLESTONE), 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT });
+		GameRegistry.addRecipe(new ItemStack(basicEngine, 4), new Object[] { "I##", "IPP", "I##", '#', Item.getItemFromBlock(Blocks.PLANKS), 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT });
+		GameRegistry.addRecipe(new ItemStack(advancedEngine, 4), new Object[] { "I##", "IPP", "I##", '#', Item.getItemFromBlock(Blocks.STONE), 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT });
+		GameRegistry.addRecipe(new ItemStack(advancedEngine, 2), new Object[] { "I##", "IPP", "I##", '#', Item.getItemFromBlock(Blocks.COBBLESTONE), 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT });
 		GameRegistry.addRecipe(new ItemStack(eliteEngine, 4), new Object[] { "III", "IPP", "III", 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT });
-		GameRegistry.addRecipe(new ItemStack(ultimateEngine, 4), new Object[] { "###", "IPP", "I##", '#', Item.getItemFromBlock(Blocks.OBSIDIAN), 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT });
+		GameRegistry.addRecipe(new ItemStack(ultimateEngine, 4), new Object[] { "I##", "IPP", "I##", '#', Item.getItemFromBlock(Blocks.OBSIDIAN), 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT });
 
 	}
 

@@ -6,6 +6,7 @@ import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareControl.Block.BlockBalloonBurner;
 import ValkyrienWarfareControl.Block.BlockDopedEtherium;
 import ValkyrienWarfareControl.Block.BlockHovercraftController;
+import ValkyrienWarfareControl.Block.BlockShipPassengerChair;
 import ValkyrienWarfareControl.Block.BlockShipPilotsChair;
 import ValkyrienWarfareControl.Block.Engine.BlockNormalEngine;
 import ValkyrienWarfareControl.Block.Engine.BlockRedstoneEngine;
@@ -40,6 +41,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -59,7 +61,8 @@ public class ValkyrienWarfareControlMod {
 	public static final String MODNAME = "Valkyrien Warfare Control";
 	public static final String MODVER = "0.3c";
 
-	public static ValkyrienWarfareControlMod instance;
+    @Instance(MODID)
+	public static ValkyrienWarfareControlMod instance = new ValkyrienWarfareControlMod();
 
 	public static SimpleNetworkWrapper controlNetwork;
 
@@ -73,6 +76,7 @@ public class ValkyrienWarfareControlMod {
 	public Block dopedEtherium;
 	public Block balloonBurner;
 	public Block pilotsChair;
+	public Block passengerChair;
 
 	public Block antigravityEngine; //leaving it with the old name to prevent blocks dissapearing
 	public Block advancedEtherCompressor;
@@ -89,22 +93,25 @@ public class ValkyrienWarfareControlMod {
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
-		instance = this;
 		config = new Configuration(new File(ValkyrienWarfareMod.getWorkingFolder() + "/config/valkyrienwarfarecontrol.cfg"));
 		config.load();
 		proxy.preInit(event);
 		config.save();
+
+		registerBlocks(event);
+		registerItems(event);
+
+		proxy.preInit(event);
 	}
 
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
-		proxy.init(event);
-		registerBlocks(event);
 		registerTileEntities(event);
-		registerItems(event);
 		registerRecipies(event);
 		registerNetworks(event);
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new ControlGUIHandler());
+
+		proxy.init(event);
 	}
 
 	@EventHandler
@@ -140,6 +147,7 @@ public class ValkyrienWarfareControlMod {
 		dopedEtherium = new BlockDopedEtherium(Material.GLASS).setHardness(4f).setUnlocalizedName("dopedetherium").setRegistryName(MODID, "dopedetherium").setCreativeTab(CreativeTabs.TRANSPORTATION);
 		balloonBurner = new BlockBalloonBurner(Material.IRON).setHardness(4f).setUnlocalizedName("ballonburner").setRegistryName(MODID, "ballonburner").setCreativeTab(CreativeTabs.TRANSPORTATION);
 		pilotsChair = new BlockShipPilotsChair(Material.IRON).setHardness(4f).setUnlocalizedName("shippilotschair").setRegistryName(MODID, "shippilotschair").setCreativeTab(CreativeTabs.TRANSPORTATION);
+		passengerChair = new BlockShipPassengerChair(Material.IRON).setHardness(4f).setUnlocalizedName("shippassengerchair").setRegistryName(MODID, "shippassengerchair").setCreativeTab(CreativeTabs.TRANSPORTATION);
 
 		GameRegistry.registerBlock(basicEngine);
 		GameRegistry.registerBlock(advancedEngine);
@@ -157,6 +165,7 @@ public class ValkyrienWarfareControlMod {
 		GameRegistry.registerBlock(dopedEtherium);
 		GameRegistry.registerBlock(balloonBurner);
 		GameRegistry.registerBlock(pilotsChair);
+		GameRegistry.registerBlock(passengerChair);
 	}
 
 	private void registerTileEntities(FMLStateEvent event) {
@@ -170,7 +179,7 @@ public class ValkyrienWarfareControlMod {
 		systemLinker = new ItemSystemLinker().setUnlocalizedName("systemlinker").setRegistryName(MODID, "systemlinker").setCreativeTab(CreativeTabs.TRANSPORTATION).setMaxStackSize(1);
 		airshipStealer = new ItemShipStealer().setUnlocalizedName("airshipStealer").setRegistryName(MODID, "airshipStealer").setCreativeTab(CreativeTabs.TOOLS).setMaxStackSize(1);
 		explosiveArrow = new ExplosiveArrows().setUnlocalizedName("explosiveArrow").setRegistryName(MODID, "explosiveArrow").setCreativeTab(CreativeTabs.COMBAT).setMaxStackSize(64);
-		
+
 		GameRegistry.registerItem(systemLinker);
 		GameRegistry.registerItem(airshipStealer);
 		GameRegistry.registerItem(explosiveArrow);

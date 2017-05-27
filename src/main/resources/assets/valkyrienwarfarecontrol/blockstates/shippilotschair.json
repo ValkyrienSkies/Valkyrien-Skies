@@ -1,11 +1,17 @@
 {
-    "forge_marker": 1,
-    "variants": {
-        "default": { "model": "valkyrienwarfarecontrol:shippilotschair.obj" , "custom": { "flip-v": true } },
-        "normal": { "model": "valkyrienwarfarecontrol:shippilotschair.obj" , "custom": { "flip-v": true } },
-        "facing=north": { "model": "valkyrienwarfarecontrol:shippilotschair.obj" , "custom": { "flip-v": true }, "y": 90 },
-        "facing=south": { "model": "valkyrienwarfarecontrol:shippilotschair.obj" , "custom": { "flip-v": true }, "y": 270 },
-        "facing=west": { "model": "valkyrienwarfarecontrol:shippilotschair.obj" , "custom": { "flip-v": true } },
-        "facing=east": { "model": "valkyrienwarfarecontrol:shippilotschair.obj" , "custom": { "flip-v": true }, "y": 180 }
-    }
+  "forge_marker": 1,
+  "defaults": {
+    "custom": { "flip-v": true },
+    "model": "valkyrienwarfarecontrol:shippilotschair.obj"
+  },
+  "variants": {
+    "default": { "model": "valkyrienwarfarecontrol:shippilotschair.obj" , "custom": { "flip-v": true } },
+    "normal": { "model": "valkyrienwarfarecontrol:shippilotschair.obj" , "custom": { "flip-v": true } },
+    "facing=north": { "model": "valkyrienwarfarecontrol:shippilotschair.obj" , "custom": { "flip-v": true }, "y": 90 },
+    "facing=south": { "model": "valkyrienwarfarecontrol:shippilotschair.obj" , "custom": { "flip-v": true }, "y": 270 },
+    "facing=west": { "model": "valkyrienwarfarecontrol:shippilotschair.obj" , "custom": { "flip-v": true } },
+    "facing=east": { "model": "valkyrienwarfarecontrol:shippilotschair.obj" , "custom": { "flip-v": true }, "y": 180 },
+    "normal": { "model": "valkyrienwarfarecontrol:shippilotschair.obj" , "custom": { "flip-v": true } },
+    "inventory": { "model": "valkyrienwarfarecontrol:shippilotschair.obj" , "custom": { "flip-v": true } }
+  }
 }

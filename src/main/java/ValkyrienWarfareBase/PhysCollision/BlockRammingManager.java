@@ -27,7 +27,7 @@ public class BlockRammingManager {
 	 * @return
 	 */
 	public static double processBlockRamming(PhysicsWrapperEntity wrapper, double collisionSpeed, IBlockState inLocalState, IBlockState inWorldState, BlockPos inLocal, BlockPos inWorld, NestedBoolean didBlockBreakInShip, NestedBoolean didBlockBreakInWorld){
-		if(Math.abs(collisionSpeed) > 3.0D){
+		if(Math.abs(collisionSpeed) > 4.0D){
 			double shipBlockHardness = inLocalState.getBlock().blockResistance;//inLocalState.getBlockHardness(worldObj, inLocalPos);
 			double worldBlockHardness = inWorldState.getBlock().blockResistance;//inWorldState.getBlockHardness(worldObj, inWorldPos);
 
@@ -41,23 +41,25 @@ public class BlockRammingManager {
 				shipBlockHardness = 100D;
 			}
 
+			double arbitraryScale = 2.4D;
+
 			if(hardnessRatio < .01D){
 				didBlockBreakInWorld.setValue(true);
 				double shipBlockMass = BlockMass.basicMass.getMassFromState(inLocalState, inLocal, wrapper.worldObj);
 				double worldBlockMass = BlockMass.basicMass.getMassFromState(inWorldState, inWorld, wrapper.worldObj);
 //				return worldBlockMass / shipBlockMass;
-				return worldBlockMass / wrapper.wrapping.physicsProcessor.mass;
+				return Math.pow(worldBlockMass / worldBlockMass, arbitraryScale);//wrapper.wrapping.physicsProcessor.mass;
 			}
 			if(hardnessRatio > 100D){
 				didBlockBreakInShip.setValue(true);
 				double shipBlockMass = BlockMass.basicMass.getMassFromState(inLocalState, inLocal, wrapper.worldObj);
 				double worldBlockMass = BlockMass.basicMass.getMassFromState(inWorldState, inWorld, wrapper.worldObj);
 //				return shipBlockMass / worldBlockMass;
-				return shipBlockMass / wrapper.wrapping.physicsProcessor.mass;
+				return Math.pow(shipBlockMass / worldBlockMass, arbitraryScale);//wrapper.wrapping.physicsProcessor.mass;
 			}
 
 		}
-		
+
 		return 1;
 	}
 

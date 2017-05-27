@@ -1,7 +1,5 @@
 package ValkyrienWarfareBase.CoreMod;
 
-import java.io.IOException;
-import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -29,7 +27,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayer.SleepResult;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
 import net.minecraft.network.Packet;
@@ -37,7 +34,6 @@ import net.minecraft.network.play.server.SPacketEffect;
 import net.minecraft.network.play.server.SPacketSoundEffect;
 import net.minecraft.server.management.PlayerList;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -99,188 +95,16 @@ public class CallRunner {
 
     private boolean[] alreadyTryingToSleep = new boolean[2];
 
-    public SleepResult trySleep(SleepResult result, EntityPlayer player, BlockPos bedLocation){
-    	if(alreadyTryingToSleep[player.worldObj.isRemote ? 1 : 0]) return result;
-
-    	alreadyTryingToSleep[player.worldObj.isRemote ? 1 : 0] = true;
-    	PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.worldObj, bedLocation);
-
-    	if(wrapper != null){
-    		if(!player.worldObj.isRemote){
-    			if(result != SleepResult.OK){
-    				return result;
-    			}
-    		}
-            wrapper.wrapping.fixEntity(player, new Vector(bedLocation.getX() + 0.5D, bedLocation.getY() + 0.6875D, bedLocation.getZ() + 0.5D));
-
-	        if(player.worldObj.isRemote){
-	        	player.startRiding(wrapper, true);
-	        }else{
-	        	wrapper.wrapping.queueEntityForMounting(player);
-	        }
-
-	        if(player.worldObj.isRemote){
-	        	player.sleeping = true;
-
-	        	return SleepResult.NOT_POSSIBLE_NOW;
-	        }
-
-	        result = player.trySleep(bedLocation);
-
-	        if(result == null){
-	        	System.out.println("Wtf happened here");
-	        }
-    	}
-
-    	if(player.worldObj.isRemote){
-	    	IBlockState state = null;
-	        if (player.worldObj.isBlockLoaded(bedLocation)) state = player.worldObj.getBlockState(bedLocation);
-	        if (state != null && state.getBlock().isBed(state, player.worldObj, bedLocation, player)) {
-	            EnumFacing enumfacing = state.getBlock().getBedDirection(state, player.worldObj, bedLocation);
-	            float f = 0.5F;
-	            float f1 = 0.5F;
-
-	            switch (enumfacing)
-	            {
-	                case SOUTH:
-	                    f1 = 0.9F;
-	                    break;
-	                case NORTH:
-	                    f1 = 0.1F;
-	                    break;
-	                case WEST:
-	                    f = 0.1F;
-	                    break;
-	                case EAST:
-	                    f = 0.9F;
-	            }
-
-//	            System.out.println(enumfacing);
-
-	            player.setRenderOffsetForSleep(enumfacing);
-	        }
-    	}
-
-    	alreadyTryingToSleep[player.worldObj.isRemote ? 1 : 0] = false;
-    	return result;
-    }
-
-    /*public static SleepResult replaceSleep(EntityPlayer player, BlockPos bedLocation){
-    	PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.worldObj, bedLocation);
-
-    	if(wrapper != null){
-    		SleepResult toReturn = null;
-    		if(!player.worldObj.isRemote){
-    			toReturn = player.trySleep(bedLocation);
-    			if(toReturn != SleepResult.OK){
-    				return toReturn;
-    			}
-    		}
-            wrapper.wrapping.fixEntity(player, new Vector(bedLocation.getX() + 0.5D, bedLocation.getY() + 0.6875D, bedLocation.getZ() + 0.5D));
-
-	        if(player.worldObj.isRemote){
-	        	player.startRiding(wrapper, true);
-	        }else{
-	        	wrapper.wrapping.queueEntityForMounting(player);
-	        }
-
-	        if(player.worldObj.isRemote){
-	        	player.sleeping = true;
-
-	        	return SleepResult.NOT_POSSIBLE_NOW;
-	        }
-
-	        if(toReturn != null){
-	        	return toReturn;
-	        }else{
-	        	System.out.println("Wtf happened here");
-	        }
-    	}
-
-    	return player.trySleep(bedLocation);
-    }*/
-
-	public static void fixSponge(EntityPlayer player){
-		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(player);
-
-		if(wrapper != null && player.worldObj.isRemote){
-			player.sleeping = false;
-			player.sleepTimer = 0;
-
-			Vector newPlayerPos = new Vector(player.posX, player.posY, player.posZ);
-			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, newPlayerPos);
-			player.posX = player.lastTickPosX = newPlayerPos.X;
-			player.posY = player.lastTickPosY = newPlayerPos.Y;
-			player.posZ = player.lastTickPosZ = newPlayerPos.Z;
-
-			player.sleeping = false;
-
-			player.dismountRidingEntity();
-		}
-	}
-
-	public static void afterWakeUpPlayer(EntityPlayer player){
-		BlockPos playerBlockPos = new BlockPos(player);
-		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.worldObj, playerBlockPos);
-
-		if(wrapper != null){
-			//Player got dumped in ship space >:(
-			Vector newPlayerPos = new Vector(player.posX, player.posY, player.posZ);
-			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, newPlayerPos);
-
-
-			player.sleeping = false;
-
-//			player.dismountRidingEntity();
-			player.ridingEntity = null;
-
-			player.posX = player.lastTickPosX = newPlayerPos.X;
-			player.posY = player.lastTickPosY = newPlayerPos.Y + 1D;
-			player.posZ = player.lastTickPosZ = newPlayerPos.Z;
-		}
-		player.sleeping = false;
-	}
-
-	/*
-	 * Runs after a player tries to sleep
-	 * @param player
-	 * @param bedLocation
-	 * @param result
-	 * @return
-	 *
-    public static SleepResult trySleepAfterSleep(EntityPlayer player, BlockPos bedLocation, SleepResult result){
-
-    	if(player.worldObj.isRemote){
-	    	IBlockState state = null;
-	        if (player.worldObj.isBlockLoaded(bedLocation)) state = player.worldObj.getBlockState(bedLocation);
-	        if (state != null && state.getBlock().isBed(state, player.worldObj, bedLocation, player)) {
-	            EnumFacing enumfacing = state.getBlock().getBedDirection(state, player.worldObj, bedLocation);
-	            float f = 0.5F;
-	            float f1 = 0.5F;
-
-	            switch (enumfacing)
-	            {
-	                case SOUTH:
-	                    f1 = 0.9F;
-	                    break;
-	                case NORTH:
-	                    f1 = 0.1F;
-	                    break;
-	                case WEST:
-	                    f = 0.1F;
-	                    break;
-	                case EAST:
-	                    f = 0.9F;
-	            }
-
-//	            System.out.println(enumfacing);
-
-	            player.setRenderOffsetForSleep(enumfacing);
-	        }
-    	}
-
-    	return result;
-    }*/
+    //Ported to event
+//    public SleepResult trySleep(SleepResult result, EntityPlayer player, BlockPos bedLocation){
+//    	PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.worldObj, bedLocation);
+//    	if(wrapper != null){
+//    		player.addChatMessage(new TextComponentString("Spawn Point Set!"));
+//    		player.playerLocation = bedLocation;
+//    		return SleepResult.NOT_POSSIBLE_HERE;
+//    	}
+//    	return result;
+//    }
 
 	public static double getDistanceSq(TileEntity tile, double x, double y, double z){
 		World tileWorld = tile.getWorld();

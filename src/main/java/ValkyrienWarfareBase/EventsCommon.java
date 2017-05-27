@@ -34,6 +34,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -61,6 +62,16 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
 public class EventsCommon {
 
 	public static HashMap<EntityPlayerMP, Double[]> lastPositions = new HashMap<EntityPlayerMP, Double[]>();
+
+	@SubscribeEvent()
+	public void onEntityJoinWorldEvent(EntityJoinWorldEvent event){
+		Entity entity = event.getEntity();
+		if(entity.worldObj.isRemote){
+			if(entity instanceof PhysicsWrapperEntity){
+				System.out.println("preloaded a Ship on client side");
+			}
+		}
+	}
 
 	@SubscribeEvent()
 	public void onPlayerSleepInBedEvent(PlayerSleepInBedEvent event){

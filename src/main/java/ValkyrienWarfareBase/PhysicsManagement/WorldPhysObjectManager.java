@@ -115,9 +115,20 @@ public class WorldPhysObjectManager {
 	}
 
 	public void onUnload(PhysicsWrapperEntity loaded) {
-		physicsEntities.remove(loaded);
-		physCollisonCallables.remove(loaded.wrapping.collisionCallable);
-		loaded.wrapping.onThisUnload();
+		//Seems to fix teleport disappear bug, but adds a lot of new ones. Look into!
+		boolean fixLater = false;
+
+		if(!fixLater){
+			physicsEntities.remove(loaded);
+			physCollisonCallables.remove(loaded.wrapping.collisionCallable);
+			loaded.wrapping.onThisUnload();
+		}else{
+			if(!loaded.worldObj.isRemote){
+				physicsEntities.remove(loaded);
+				physCollisonCallables.remove(loaded.wrapping.collisionCallable);
+				loaded.wrapping.onThisUnload();
+			}
+		}
 	}
 
 	public PhysicsWrapperEntity getManagingObjectForChunk(Chunk chunk) {

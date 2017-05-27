@@ -106,6 +106,22 @@ public class WorldPhysObjectManager {
 
 	public void onLoad(PhysicsWrapperEntity loaded) {
 		if (!loaded.wrapping.fromSplit) {
+			if(loaded.worldObj.isRemote){
+				ArrayList<PhysicsWrapperEntity> potentialMatches = new ArrayList<PhysicsWrapperEntity>();
+				for(PhysicsWrapperEntity wrapper : physicsEntities){
+					if(wrapper.getPersistentID().equals(loaded.getPersistentID())){
+						potentialMatches.add(wrapper);
+					}
+				}
+				for(PhysicsWrapperEntity caught : potentialMatches){
+					physicsEntities.remove(caught);
+					physCollisonCallables.remove(caught.wrapping.collisionCallable);
+					caught.wrapping.onThisUnload();
+//					System.out.println("Caught one");
+				}
+
+			}
+			loaded.isDead = false;
 			physicsEntities.add(loaded);
 			physCollisonCallables.add(loaded.wrapping.collisionCallable);
 		} else {
@@ -115,19 +131,12 @@ public class WorldPhysObjectManager {
 	}
 
 	public void onUnload(PhysicsWrapperEntity loaded) {
-		//Seems to fix teleport disappear bug, but adds a lot of new ones. Look into!
-		boolean fixLater = false;
-
-		if(!fixLater){
+		if(!loaded.worldObj.isRemote){
 			physicsEntities.remove(loaded);
 			physCollisonCallables.remove(loaded.wrapping.collisionCallable);
 			loaded.wrapping.onThisUnload();
 		}else{
-			if(!loaded.worldObj.isRemote){
-				physicsEntities.remove(loaded);
-				physCollisonCallables.remove(loaded.wrapping.collisionCallable);
-				loaded.wrapping.onThisUnload();
-			}
+			loaded.isDead = true;
 		}
 	}
 

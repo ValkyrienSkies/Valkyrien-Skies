@@ -1,5 +1,5 @@
 {
-    "parent": "valkyrienwarfarecontrol:block/ultimateEngine",
+    "parent": "valkyrienwarfarecontrol:block/ultimateengine",
     "display": {
         "thirdperson": {
             "rotation": [ 10, -45, 270 ],

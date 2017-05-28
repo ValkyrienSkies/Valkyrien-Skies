@@ -1,15 +1,15 @@
 {
     "__comment": "TODO: make new textures for the rotors",
     "textures": {
-        "main": "valkyrienwarfarecontrol:blocks/basicEngineRotor",
-        "particle": "valkyrienwarfarecontrol:blocks/Rusty shaft",
+        "main": "valkyrienwarfarecontrol:blocks/basicenginerotor",
+        "particle": "valkyrienwarfarecontrol:blocks/rusty shaft",
         "0": "minecraft:blocks/cobblestone",
         "1": "minecraft:blocks/redstone_block",
         "2": "minecraft:blocks/redstone_block",
         "3": "minecraft:blocks/redstone_block",
-        "4": "valkyrienwarfarecontrol:blocks/Rusty shaft",
-        "5": "valkyrienwarfarecontrol:blocks/Red lamp",
-        "6": "valkyrienwarfarecontrol:blocks/Green lamp"
+        "4": "valkyrienwarfarecontrol:blocks/rusty shaft",
+        "5": "valkyrienwarfarecontrol:blocks/red lamp",
+        "6": "valkyrienwarfarecontrol:blocks/green lamp"
     },
     "elements": [
         {

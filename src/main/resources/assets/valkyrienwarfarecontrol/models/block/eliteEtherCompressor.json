@@ -2,7 +2,7 @@
     "parent": "block/cube_bottom_top",
     "textures": {
         "bottom": "blocks/planks_oak",
-        "top": "valkyrienwarfarecontrol:blocks/eliteEtherCompressorTop",
-        "side": "valkyrienwarfarecontrol:blocks/eliteEtherCompressorSide"
+        "top": "valkyrienwarfarecontrol:blocks/eliteethercompressortop",
+        "side": "valkyrienwarfarecontrol:blocks/eliteethercompressorside"
     }
 }

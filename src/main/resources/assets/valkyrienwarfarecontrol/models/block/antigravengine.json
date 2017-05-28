@@ -2,7 +2,7 @@
     "parent": "block/cube_bottom_top",
     "textures": {
         "bottom": "blocks/planks_oak",
-        "top": "valkyrienwarfarecontrol:blocks/AntiGravEngineTop",
-        "side": "valkyrienwarfarecontrol:blocks/AntiGravEngineSides"
+        "top": "valkyrienwarfarecontrol:blocks/antigravenginetop",
+        "side": "valkyrienwarfarecontrol:blocks/antigravenginesides"
     }
 }

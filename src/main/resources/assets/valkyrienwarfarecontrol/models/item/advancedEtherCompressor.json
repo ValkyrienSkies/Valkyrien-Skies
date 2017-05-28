@@ -1,5 +1,5 @@
 {
-    "parent": "valkyrienwarfarecontrol:block/advancedEtherCompressor",
+    "parent": "valkyrienwarfarecontrol:block/advancedethercompressor",
     "display": {
         "thirdperson": {
             "rotation": [ 10, -45, 170 ],

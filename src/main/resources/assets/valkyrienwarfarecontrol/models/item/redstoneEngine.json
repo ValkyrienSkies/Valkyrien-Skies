@@ -1,5 +1,5 @@
 {
-    "parent": "valkyrienwarfarecontrol:block/redstoneEngine",
+    "parent": "valkyrienwarfarecontrol:block/redstoneengine",
     "display": {
         "thirdperson": {
             "rotation": [ 10, -45, 270 ],

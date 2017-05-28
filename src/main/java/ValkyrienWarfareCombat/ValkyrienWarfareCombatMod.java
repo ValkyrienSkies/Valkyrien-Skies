@@ -32,7 +32,7 @@ public class ValkyrienWarfareCombatMod {
 
 	public static final String MODID = "valkyrienwarfarecombat";
 	public static final String MODNAME = "Valkyrien Warfare Combat";
-	public static final String MODVER = "0.1";
+	public static final String MODVER = "0.9_alpha";
 
 	@Instance(MODID)
 	public static ValkyrienWarfareCombatMod instance = new ValkyrienWarfareCombatMod();
@@ -69,10 +69,10 @@ public class ValkyrienWarfareCombatMod {
 		powderPouch = new ItemPowderPouch().setUnlocalizedName("powderpouch").setRegistryName(MODID, "powderpouch").setCreativeTab(CreativeTabs.COMBAT).setMaxStackSize(32);
 		explosiveArrow = new ItemExplosiveArrow().setUnlocalizedName("explosivearrow").setRegistryName(MODID, "explosivearrow").setCreativeTab(CreativeTabs.COMBAT).setMaxStackSize(64);
 
-		GameRegistry.registerItem(basicCannonSpawner);
-		GameRegistry.registerItem(cannonBall);
-		GameRegistry.registerItem(powderPouch);
-		GameRegistry.registerItem(explosiveArrow);
+		GameRegistry.register(basicCannonSpawner);
+		GameRegistry.register(cannonBall);
+		GameRegistry.register(powderPouch);
+		GameRegistry.register(explosiveArrow);
 	}
 
 	private void registerEntities(FMLStateEvent event) {

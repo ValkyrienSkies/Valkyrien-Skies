@@ -1,6 +1,6 @@
 {
     "forge_marker": 1,
-    "parent": "block/bedrock",
+    "parent": "valkyrienwarfarecontrol:block/balloonburner",
     "display": {
         "thirdperson": {
             "rotation": [ 10, -45, 170 ],

@@ -6,6 +6,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -26,7 +27,7 @@ public class ValkyrienWarfareWorldMod {
 
 	public static final String MODID = "valkyrienwarfareworld";
 	public static final String MODNAME = "Valkyrien Warfare World";
-	public static final String MODVER = "0.0a";
+	public static final String MODVER = "0.9_alpha";
 
 	@Instance(MODID)
 	public static ValkyrienWarfareWorldMod instance = new ValkyrienWarfareWorldMod();
@@ -61,13 +62,19 @@ public class ValkyrienWarfareWorldMod {
 	private void registerBlocks(FMLStateEvent event) {
 		etheriumOre = new BlockEtheriumOre(Material.ROCK).setHardness(3f).setUnlocalizedName("etheriumore").setRegistryName(MODID, "etheriumore").setCreativeTab(CreativeTabs.TRANSPORTATION);
 
-		GameRegistry.registerBlock(etheriumOre);
+		GameRegistry.register(etheriumOre);
+
+		registerItemBlock(etheriumOre);
 	}
 
 	private void registerItems(FMLStateEvent event) {
 		etheriumCrystal = new ItemEtheriumCrystal().setUnlocalizedName("etheriumcrystal").setRegistryName(MODID, "etheriumcrystal").setCreativeTab(CreativeTabs.TRANSPORTATION).setMaxStackSize(16);
 
-		GameRegistry.registerItem(etheriumCrystal);
+		GameRegistry.register(etheriumCrystal);
+	}
+
+	private static void registerItemBlock(Block block){
+		GameRegistry.register(new ItemBlock(block).setRegistryName(block.getRegistryName()));
 	}
 
 }

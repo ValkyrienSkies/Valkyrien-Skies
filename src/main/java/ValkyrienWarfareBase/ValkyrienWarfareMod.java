@@ -29,6 +29,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.capabilities.Capability;
@@ -150,11 +151,10 @@ public class ValkyrienWarfareMod {
 
 	private void registerBlocks(FMLStateEvent event) {
 		physicsInfuser = new BlockPhysicsInfuser(Material.ROCK).setHardness(12f).setUnlocalizedName("shipblock").setRegistryName(MODID, "shipblock").setCreativeTab(CreativeTabs.TRANSPORTATION);
-		physicsInfuserCreative = new BlockPhysicsInfuserCreative(Material.ROCK).setHardness(12f).setUnlocalizedName("shipblockcreative").setRegistryName(MODID, "shipblockcreative").setCreativeTab(CreativeTabs.TRANSPORTATION);
-		;
+		physicsInfuserCreative = new BlockPhysicsInfuserCreative(Material.ROCK).setHardness(12f).setUnlocalizedName("shipblockcreative").setRegistryName(MODID, "shipblockcreative").setCreativeTab(CreativeTabs.TRANSPORTATION);;
 
-		GameRegistry.registerBlock(physicsInfuser);
-		GameRegistry.registerBlock(physicsInfuserCreative);
+		registerBlock(physicsInfuser);
+		registerBlock(physicsInfuserCreative);
 	}
 
 	private void registerRecipies(FMLStateEvent event) {
@@ -312,5 +312,14 @@ public class ValkyrienWarfareMod {
 				return false;
 			}
 		}
+	}
+
+	private static void registerBlock(Block block){
+		GameRegistry.register(block);
+		registerItemBlock(block);
+	}
+
+	private static void registerItemBlock(Block block){
+		GameRegistry.register(new ItemBlock(block).setRegistryName(block.getRegistryName()));
 	}
 }

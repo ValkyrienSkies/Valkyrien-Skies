@@ -35,6 +35,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.config.Configuration;
@@ -147,23 +148,23 @@ public class ValkyrienWarfareControlMod {
 		pilotsChair = new BlockShipPilotsChair(Material.IRON).setHardness(4f).setUnlocalizedName("shippilotschair").setRegistryName(MODID, "shippilotschair").setCreativeTab(CreativeTabs.TRANSPORTATION);
 		passengerChair = new BlockShipPassengerChair(Material.IRON).setHardness(4f).setUnlocalizedName("shippassengerchair").setRegistryName(MODID, "shippassengerchair").setCreativeTab(CreativeTabs.TRANSPORTATION);
 
-		GameRegistry.registerBlock(basicEngine);
-		GameRegistry.registerBlock(advancedEngine);
-		GameRegistry.registerBlock(eliteEngine);
-		GameRegistry.registerBlock(ultimateEngine);
-		GameRegistry.registerBlock(redstoneEngine);
+		registerBlock(basicEngine);
+		registerBlock(advancedEngine);
+		registerBlock(eliteEngine);
+		registerBlock(ultimateEngine);
+		registerBlock(redstoneEngine);
 
-		GameRegistry.registerBlock(antigravityEngine);
-		GameRegistry.registerBlock(advancedEtherCompressor);
-		GameRegistry.registerBlock(eliteEtherCompressor);
-		GameRegistry.registerBlock(ultimateEtherCompressor);
-		GameRegistry.registerBlock(creativeEtherCompressor);
+		registerBlock(antigravityEngine);
+		registerBlock(advancedEtherCompressor);
+		registerBlock(eliteEtherCompressor);
+		registerBlock(ultimateEtherCompressor);
+		registerBlock(creativeEtherCompressor);
 
-		GameRegistry.registerBlock(basicHoverController);
-		GameRegistry.registerBlock(dopedEtherium);
-		GameRegistry.registerBlock(balloonBurner);
-		GameRegistry.registerBlock(pilotsChair);
-		GameRegistry.registerBlock(passengerChair);
+		registerBlock(basicHoverController);
+		registerBlock(dopedEtherium);
+		registerBlock(balloonBurner);
+		registerBlock(pilotsChair);
+		registerBlock(passengerChair);
 	}
 
 	private void registerTileEntities(FMLStateEvent event) {
@@ -177,8 +178,8 @@ public class ValkyrienWarfareControlMod {
 		systemLinker = new ItemSystemLinker().setUnlocalizedName("systemlinker").setRegistryName(MODID, "systemlinker").setCreativeTab(CreativeTabs.TRANSPORTATION).setMaxStackSize(1);
 		airshipStealer = new ItemShipStealer().setUnlocalizedName("airshipStealer").setRegistryName(MODID, "airshipStealer").setCreativeTab(CreativeTabs.TOOLS).setMaxStackSize(1);
 
-		GameRegistry.registerItem(systemLinker);
-		GameRegistry.registerItem(airshipStealer);
+		GameRegistry.register(systemLinker);
+		GameRegistry.register(airshipStealer);
 	}
 
 	private void registerRecipies(FMLStateEvent event) {
@@ -208,5 +209,14 @@ public class ValkyrienWarfareControlMod {
 		controlNetwork.registerMessage(PilotControlsMessageHandler.class, PilotControlsMessage.class, 1, Side.SERVER);
 		controlNetwork.registerMessage(EntityFixMessageHandler.class, EntityFixMessage.class, 2, Side.CLIENT);
 		controlNetwork.registerMessage(SetShipPilotMessageHandler.class, SetShipPilotMessage.class, 3, Side.CLIENT);
+	}
+
+	private static void registerBlock(Block block){
+		GameRegistry.register(block);
+		registerItemBlock(block);
+	}
+
+	private static void registerItemBlock(Block block){
+		GameRegistry.register(new ItemBlock(block).setRegistryName(block.getRegistryName()));
 	}
 }

@@ -13,6 +13,7 @@ options.txt
 usernamecache.json
 usercache.json
 crash-reports
+resourcepacks
 
 #idea
 *.iml
@@ -111,3 +112,4 @@ mods/CodeChickenCore-1.10.2-2.4.0.101-deobf.jar
 mods/CodeChickenLib-1.10.2-2.5.6.239-deobf.jar
 realms_persistence.json
 mods/buildcraft-7.99.0-dev.jar
+mods/spongeforge-1.10.2-2281-5.2.0-BETA-2353-dev-shaded.jar.disabled

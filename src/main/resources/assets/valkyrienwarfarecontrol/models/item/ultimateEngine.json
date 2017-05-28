@@ -1,9 +1,8 @@
 {
-    "forge_marker": 1,
-    "parent": "block/bedrock",
+    "parent": "valkyrienwarfarecontrol:block/ultimateEngine",
     "display": {
         "thirdperson": {
-            "rotation": [ 10, -45, 170 ],
+            "rotation": [ 10, -45, 270 ],
             "translation": [ 0, 1.5, -2.75 ],
             "scale": [ 0.375, 0.375, 0.375 ]
         }

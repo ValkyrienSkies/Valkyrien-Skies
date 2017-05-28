@@ -1,13 +1,11 @@
 package ValkyrienWarfareControl.Proxy;
 
-import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareControl.ValkyrienWarfareControlMod;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
-import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -48,6 +46,7 @@ public class ClientProxyControl extends CommonProxyControl {
 		registerBlockItem(ValkyrienWarfareControlMod.instance.creativeEtherCompressor);
 
 		registerBlockItem(ValkyrienWarfareControlMod.instance.pilotsChair);
+		registerBlockItem(ValkyrienWarfareControlMod.instance.passengerChair);
 
 		registerItemModel(ValkyrienWarfareControlMod.instance.systemLinker);
 		registerItemModel(ValkyrienWarfareControlMod.instance.airshipStealer);
@@ -55,7 +54,7 @@ public class ClientProxyControl extends CommonProxyControl {
 
 	private void registerBlockItem(Block toRegister) {
 		Item item = Item.getItemFromBlock(toRegister);
-		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(item, 0, new ModelResourceLocation(ValkyrienWarfareMod.MODID + ":" + item.getUnlocalizedName().substring(5), "inventory"));
+		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(item, 0, new ModelResourceLocation(ValkyrienWarfareControlMod.MODID + ":" + item.getUnlocalizedName().substring(5), "inventory"));
 	}
 
 	private void registerItemModel(Item toRegister) {

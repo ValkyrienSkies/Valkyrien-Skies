@@ -1,8 +1,0 @@
-{
-    "parent": "block/cube_bottom_top",
-    "textures": {
-        "bottom": "valkyrienwarfare:blocks/BasicHovercraftControllerBottom",
-        "top": "valkyrienwarfare:blocks/BasicHovercraftControllerTop",
-        "side": "valkyrienwarfare:blocks/BasicHovercraftControllerSides"
-    }
-}

@@ -1,6 +1,5 @@
 {
-    "forge_marker": 1,
-    "parent": "block/bedrock",
+    "parent": "valkyrienwarfarecontrol:block/advancedEtherCompressor",
     "display": {
         "thirdperson": {
             "rotation": [ 10, -45, 170 ],

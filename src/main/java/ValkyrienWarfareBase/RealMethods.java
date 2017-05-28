@@ -32,7 +32,7 @@ public class RealMethods implements DummyMethods {
 	@Override
 	public Vector getVelocityAtPoint(Entity shipEnt, Vector inBody, double secondsToApply) {
 		PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity) shipEnt;
-		Vector toReturn = wrapper.wrapping.physicsProcessor.getMomentumAtPoint(inBody);
+		Vector toReturn = wrapper.wrapping.physicsProcessor.getVelocityAtPoint(inBody);
 		toReturn.multiply(secondsToApply);
 		return toReturn;
 	}

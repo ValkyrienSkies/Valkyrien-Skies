@@ -1,6 +1,6 @@
 package com.jackredcreeper.cannon.init;
 
-import com.jackredcreeper.cannon.Reference;
+import com.jackredcreeper.cannon.CannonModRefrence;
 import com.jackredcreeper.cannon.items.ItemPrimer;
 import com.jackredcreeper.cannon.items.ItemSolidball;
 import com.jackredcreeper.cannon.items.ItemCannonball;

@@ -21,6 +21,7 @@ import net.minecraft.entity.item.EntityBoat;
 import net.minecraft.entity.item.EntityFallingBlock;
 import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayer.SleepResult;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemBucket;
 import net.minecraft.item.ItemNameTag;
@@ -49,8 +50,6 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
-import net.minecraftforge.event.entity.player.PlayerWakeUpEvent;
-import net.minecraftforge.event.entity.player.SleepingLocationCheckEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
@@ -70,7 +69,21 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
 public class EventsCommon {
 
 	public static HashMap<EntityPlayerMP, Double[]> lastPositions = new HashMap<EntityPlayerMP, Double[]>();
-	public static boolean allowNextSleepEvent = false;
+
+	@SubscribeEvent()
+	public void onPlayerSleepInBedEvent(PlayerSleepInBedEvent event){
+		EntityPlayer player = event.getEntityPlayer();
+		BlockPos pos = event.getPos();
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.world, pos);
+		if(wrapper != null){
+			if(player instanceof EntityPlayerMP){
+				EntityPlayerMP playerMP = (EntityPlayerMP)player;
+				player.sendMessage(new TextComponentString("Spawn Point Set!"));
+				player.setSpawnPoint(pos, true);
+	    		event.setResult(SleepResult.NOT_POSSIBLE_HERE);
+			}
+		}
+	}
 
 	@SubscribeEvent()
 	public void onRightClickBlock(RightClickBlock event){
@@ -90,38 +103,8 @@ public class EventsCommon {
 		}
 	}
 
-	@SubscribeEvent(priority = EventPriority.HIGHEST)
-	public void onSleepingLocationCheckEvent(SleepingLocationCheckEvent event){
-		EntityPlayer player = event.getEntityPlayer();
-		PhysicsWrapperEntity shipFixedOnto = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(player);
-		if(shipFixedOnto != null){
-			event.setResult(Result.ALLOW);
-		}
-	}
-
-	@SubscribeEvent(priority = EventPriority.HIGHEST)
-	public void onPlayerWakeUpEvent(PlayerWakeUpEvent event){
-		EntityPlayer player = event.getEntityPlayer();
-		player.bedLocation = new BlockPos(player);
-
-		PhysicsWrapperEntity shipFixedOnto = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(player);
-		if(shipFixedOnto != null){
-			Vector playerPosInLocal = new Vector(shipFixedOnto.wrapping.getLocalPositionForEntity(player));
-			playerPosInLocal.subtract(0.5D, 0.6875D, 0.5D);
-			playerPosInLocal.roundToWhole();
-
-			BlockPos playerLocation = new BlockPos(playerPosInLocal.X, playerPosInLocal.Y, playerPosInLocal.Z);
-
-			shipFixedOnto.wrapping.unFixEntity(player);
-			player.dismountRidingEntity();
-
-			player.bedLocation = playerLocation;
-
-			player.sleeping = false;
-		}
-	}
-
 	//TODO: Fix conflicts with EventListener.onEntityAdded()
+	//MAYBE REMOVE DUE TO CONFLICTS
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onEntityJoinWorldEvent(EntityJoinWorldEvent event){
 		Entity entity = event.getEntity();
@@ -425,6 +408,8 @@ public class EventsCommon {
 			ValkyrienWarfareMod.chunkManager.removeWorld(event.getWorld());
 		} else {
 			ClientPilotingManager.dismountPlayer();
+			//Fixes memory leak; @DaPorkChop please don't leave static maps lying around D:
+			lastPositions.clear();
 		}
 		ValkyrienWarfareMod.physicsManager.removeWorld(event.getWorld());
 	}

@@ -52,6 +52,8 @@ public class TransformAdapter extends ClassVisitor {
 	public static final String MoverTypeName = "net/minecraft/entity/MoverType";
 	public static final String SleepResultName = "net/minecraft/entity/player/EntityPlayer$SleepResult";
 	public static final String ForgeChunkManagerName = "net/minecraftforge/common/ForgeChunkManager";
+	public static final String MinecraftServerName = "net/minecraft/server/MinecraftServer";
+	public static final String HttpUtilName = "net/minecraft/util/HttpUtil";
 
 	public static final String PredicateName = "com/google/common/base/Predicate";
 	public static final String ListName = "java/util/List";
@@ -68,60 +70,21 @@ public class TransformAdapter extends ClassVisitor {
 
 	public boolean runTransformer(int opcode, String calledName, String calledDesc, String calledOwner, MethodVisitor mv, boolean itf) {
 
-		//Ported
-//		if (isMethod(calledDesc, "(L"+WorldClassName+";L"+IteratorName+";)L"+IteratorName+";", calledName, ForgeChunkManagerName, "getPersistentChunksIterableFor", "getPersistentChunksIterableFor", calledOwner)) {
-//			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "rebuildChunkIterator", "(L" + IteratorName + ";)L"+IteratorName+";", itf);
-//		}
-
-		//Ported
-//		if (isMethod(calledDesc, "(L" + WorldClassName + ";L" + BlockPosName+ ";Z)L"+BlockPosName+";", calledName, EntityPlayerName, "getBedSpawnLocation", "func_180467_a", calledOwner)) {
-//			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "getBedSpawnLocation", "(L" + WorldClassName + ";L" + BlockPosName+ ";Z)L"+BlockPosName+";", itf);
+		//TODO: Move to separate mod
+//		if (isMethod(calledDesc, "()Z", calledName, MinecraftServerName, "isServerInOnlineMode", "RENAMEME", calledOwner)) {
+//			mv.visitInsn(Opcodes.POP);
+//			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "isServerInOnlineMode", "()Z", itf);
 //			return false;
 //		}
 
-		//Ported
-		/*if (isMethod(calledDesc, "(ZZZ)V", calledName, EntityPlayerName, "wakeUpPlayer", "func_70999_a", calledOwner)) {
-			//Initial Stack of PZZZ
-			mv.visitInsn(Opcodes.DUP2_X2);
-			//ZZPZZZ
-			mv.visitInsn(Opcodes.POP);
-			//ZZPZZ
-			mv.visitInsn(Opcodes.POP);
-			//ZZPZ
-			mv.visitInsn(Opcodes.DUP2_X2);
-			//PZZZPZ
-			mv.visitInsn(Opcodes.DUP2_X2);
-			//PZPZZZPZ
-			mv.visitInsn(Opcodes.POP);
-			//PZPZZZP
-//			mv.visitInsn(Opcodes.POP);
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "fixSponge", "(L" + EntityPlayerName + ";)V", itf);
-			//PZPZZZ
-			mv.visitMethodInsn(opcode, calledOwner, calledName, calledDesc, itf);
-			//PZ
-			//Delete the extra boolean coming out of this
-			mv.visitInsn(Opcodes.POP);
-			//P
-			//That P is the player, fuck yeah!
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "afterWakeUpPlayer", "(L" + EntityPlayerName + ";)V", itf);
-
+		if (isMethod(calledDesc, "(L"+EntityClassName+";)V", calledName, EntityLivingBaseName, "dismountEntity", "func_110145_l", calledOwner)) {
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onEntityDismountEntity", "(L"+EntityLivingBaseName+";L"+EntityClassName+";)V", itf);
 			return false;
-		}*/
+		}
 
-		//Ported
-		/*if (isMethod(calledDesc, "(L"+BlockPosName+";)L"+SleepResultName+";", calledName, EntityPlayerName, "trySleep", "func_180469_a", calledOwner)) {
-			//Copy the BlockPos and the PlayerEntity in the stack
-			mv.visitInsn(Opcodes.DUP2);
-//			mv.visitMethodInsn(opcode, calledOwner, calledName, calledDesc, itf);
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "replaceSleep", "(L" + EntityPlayerName + ";L" + BlockPosName + ";)L"+SleepResultName+";", itf);
-			//Add a method to run afterwards
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "trySleepAfterSleep", "(L" + EntityPlayerName + ";L" + BlockPosName + ";L" + SleepResultName + ";)L"+SleepResultName+";", itf);
-			return false;
-		}*/
-
-		//TODO Write custom tiles renderer :P
-		if (isMethod(calledDesc, "()L"+AxisAlignedBBName+";", calledName, TileEntityName, "getRenderBoundingBox", "func_184177_bl", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "getRenderBoundingBox", String.format("(L%s;)L"+AxisAlignedBBName+";", TileEntityName), itf);
+		//TODO: Move to seperate mod
+		if (isMethod(calledDesc, "()I", calledName, HttpUtilName, "getSuitableLanPort", "func_76181_a", calledOwner)) {
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "getSuitableLanPort", "()I", itf);
 			return false;
 		}
 

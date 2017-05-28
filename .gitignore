@@ -101,7 +101,7 @@ libs
 /run/
 /classes/
 out/
->>>>>>> refs/remotes/origin/master
+
 valkyrienwarfaresettings.dat
 mods/OpenComputers-MC1.10.2-1.6.2.81-dev.jar
 OpenComputersMod-1.6.2.81-dev-lua53-native.64.dll
@@ -112,4 +112,6 @@ mods/CodeChickenCore-1.10.2-2.4.0.101-deobf.jar
 mods/CodeChickenLib-1.10.2-2.5.6.239-deobf.jar
 realms_persistence.json
 mods/buildcraft-7.99.0-dev.jar
+mods/spongeforge-1.10.2-2254-5.2.0-BETA-2272-dev-shaded.jar
+mods/spongeforge-1.10.2-2281-5.2.0-BETA-2353-dev-shaded.jar
 mods/spongeforge-1.10.2-2281-5.2.0-BETA-2353-dev-shaded.jar.disabled

@@ -2,8 +2,11 @@
 item.systemlinker.name=System Linker
 item.airshipStealer.name=Airship Stealer
 
+#Blocks
 tile.shippilotschair.name=Piloting Chair
+tile.shippassengerchair.name=Passenger Chair
 tile.dopedetherium.name=Doped Etherium
+tile.balloonburner.name=Balloon Burner
 
 #ENGINES
 tile.basicEngine.name=Basic Engine

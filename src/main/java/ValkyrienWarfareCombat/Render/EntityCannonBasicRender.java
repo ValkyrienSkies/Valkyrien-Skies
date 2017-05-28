@@ -24,8 +24,8 @@ public class EntityCannonBasicRender extends Render<EntityCannonBasic> {
 
 	protected EntityCannonBasicRender(RenderManager renderManager) {
 		super(renderManager);
-		baseState = ValkyrienWarfareCombatMod.instance.fakeCannonBlock.getStateFromMeta(0);
-		headState = ValkyrienWarfareCombatMod.instance.fakeCannonBlock.getStateFromMeta(1);
+		baseState = ValkyrienWarfareCombatMod.instance.fakecannonblock.getStateFromMeta(0);
+		headState = ValkyrienWarfareCombatMod.instance.fakecannonblock.getStateFromMeta(1);
 	}
 
 	@Override

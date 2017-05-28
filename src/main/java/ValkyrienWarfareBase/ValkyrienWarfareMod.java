@@ -5,8 +5,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
-import com.google.common.base.Strings;
-
 import ValkyrienWarfareBase.API.DataTag;
 import ValkyrienWarfareBase.API.ValkyrienWarfareHooks;
 import ValkyrienWarfareBase.API.Vector;
@@ -42,6 +40,7 @@ import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -64,7 +63,7 @@ public class ValkyrienWarfareMod {
 
 	public static final String MODID = "valkyrienwarfare";
 	public static final String MODNAME = "Valkyrien Warfare";
-	public static final String MODVER = "0.899";
+	public static final String MODVER = "0.9_alpha";
 
 	public static File configFile;
 	public static Configuration config;
@@ -88,7 +87,8 @@ public class ValkyrienWarfareMod {
 	public static DimensionPhysicsChunkManager chunkManager;
 	public static DimensionPhysObjectManager physicsManager;
 
-	public static ValkyrienWarfareMod instance;
+	@Instance(MODID)
+	public static ValkyrienWarfareMod instance = new ValkyrienWarfareMod();
 
 	public static int airStateIndex;
 	public static double standingTolerance = .42D;
@@ -113,7 +113,6 @@ public class ValkyrienWarfareMod {
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		proxy.preInit(event);
-		instance = this;
 		registerBlocks(event);
 		registerRecipies(event);
 		registerNetworks(event);
@@ -142,7 +141,7 @@ public class ValkyrienWarfareMod {
 	@EventHandler
 	public void serverStart(FMLServerStartingEvent event) {
 		MinecraftServer server = event.getServer();
-		ExtraRegistry.registerCommands(server);
+		ModCommands.registerCommands(server);
 	}
 
 	private void registerNetworks(FMLStateEvent event) {
@@ -153,11 +152,10 @@ public class ValkyrienWarfareMod {
 
 	private void registerBlocks(FMLStateEvent event) {
 		physicsInfuser = new BlockPhysicsInfuser(Material.ROCK).setHardness(12f).setUnlocalizedName("shipblock").setRegistryName(MODID, "shipblock").setCreativeTab(CreativeTabs.TRANSPORTATION);
-		physicsInfuserCreative = new BlockPhysicsInfuserCreative(Material.ROCK).setHardness(12f).setUnlocalizedName("shipblockcreative").setRegistryName(MODID, "shipblockcreative").setCreativeTab(CreativeTabs.TRANSPORTATION);
-		;
+		physicsInfuserCreative = new BlockPhysicsInfuserCreative(Material.ROCK).setHardness(12f).setUnlocalizedName("shipblockcreative").setRegistryName(MODID, "shipblockcreative").setCreativeTab(CreativeTabs.TRANSPORTATION);;
 
-		ValkyrienWarfareMod.registerBlock(physicsInfuser);
-        ValkyrienWarfareMod.registerBlock(physicsInfuserCreative);
+		registerBlock(physicsInfuser);
+		registerBlock(physicsInfuserCreative);
 	}
 
 	private void registerRecipies(FMLStateEvent event) {
@@ -321,35 +319,35 @@ public class ValkyrienWarfareMod {
 	 * I know this isn't needed, but it looks nicer :P
 	 * @param item
 	 */
-	public static void registerItem(Item item){
+	/*public static void registerItem(Item item){
 		GameRegistry.register(item);
-	}
+	}*/
 
 	/**
 	 * I know this isn't needed, but it looks nicer :P
 	 * @param item
 	 * @param name
 	 */
-	public static void registerItem(Item item, String name)
+	/*public static void registerItem(Item item, String name)
 	{
 		if (item.getRegistryName() == null && Strings.isNullOrEmpty(name))
 			throw new IllegalArgumentException("Attempted to register a item with no name: " + item);
 		if (item.getRegistryName() != null && !item.getRegistryName().toString().equals(name))
 			throw new IllegalArgumentException("Attempted to register a item with conflicting names. Old: " + item.getRegistryName() + " New: " + name);
 		GameRegistry.register(item.getRegistryName() == null ? item.setRegistryName(name) : item);
-	}
+	}*/
 
 	/**
 	 * I know this isn't needed, but it looks nicer :P
 	 * @param block
 	 * @return
 	 */
-	public static Block registerBlock(Block block)
+	/*public static Block registerBlock(Block block)
 	{
 		GameRegistry.register(block);
 		GameRegistry.register(new ItemBlock(block).setRegistryName(block.getRegistryName()));
 		return block;
-	}
+	}*/
 
 	/**
 	 * I know this isn't needed, but it looks nicer :P
@@ -357,12 +355,21 @@ public class ValkyrienWarfareMod {
 	 * @param name
 	 * @return
 	 */
-	public static Block registerBlock(Block block, String name)
+	/*public static Block registerBlock(Block block, String name)
 	{
 		if (block.getRegistryName() == null && Strings.isNullOrEmpty(name))
 			throw new IllegalArgumentException("Attempted to register a Block with no name: " + block);
 		if (block.getRegistryName() != null && !block.getRegistryName().toString().equals(name))
 			throw new IllegalArgumentException("Attempted to register a Block with conflicting names. Old: " + block.getRegistryName() + " New: " + name);
 		return registerBlock(block.getRegistryName() != null ? block : block.setRegistryName(name));
+	}*/
+
+	private static void registerBlock(Block block){
+		GameRegistry.register(block);
+		registerItemBlock(block);
+	}
+
+	private static void registerItemBlock(Block block){
+		GameRegistry.register(new ItemBlock(block).setRegistryName(block.getRegistryName()));
 	}
 }

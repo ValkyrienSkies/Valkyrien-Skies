@@ -1,6 +1,8 @@
 package ValkyrienWarfareBase.CoreMod;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.ServerSocket;
 import java.util.Iterator;
 import java.util.List;
 
@@ -64,6 +66,33 @@ public class CallRunnerClient extends CallRunner {
 			drawingBatchName.setAccessible(true);
 		} catch (Exception e) {}
 	}
+
+    public static int getSuitableLanPort() throws IOException{
+    	ServerSocket serversocket = null;
+        int i = -1;
+
+        try
+        {
+            serversocket = new ServerSocket(80);
+            i = serversocket.getLocalPort();
+        }
+        finally
+        {
+            try
+            {
+                if (serversocket != null)
+                {
+                    serversocket.close();
+                }
+            }
+            catch (IOException var8)
+            {
+                ;
+            }
+        }
+
+        return i;
+    }
 
     public static AxisAlignedBB getRenderBoundingBox(TileEntity tile){
     	AxisAlignedBB toReturn = tile.getRenderBoundingBox();

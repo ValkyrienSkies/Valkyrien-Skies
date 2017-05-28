@@ -128,6 +128,11 @@ public static final ArrayList<String> completionOptions = new ArrayList<String>(
 			}
 			p.sendMessage(new TextComponentString("You need to be the owner of an airship to change airship settings!"));
 		}
+		if (args[0].equals("help")){
+			for(String command : completionOptions){
+				sender.sendMessage(new TextComponentString(command));
+			}
+		}
 
 		sender.sendMessage(new TextComponentString(TextFormatting.RED + "Usage: " + getUsage(sender)));
 	}

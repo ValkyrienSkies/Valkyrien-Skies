@@ -4,7 +4,6 @@ import ValkyrienWarfareCombat.ValkyrienWarfareCombatMod;
 import ValkyrienWarfareCombat.Entity.EntityCannonBall;
 import ValkyrienWarfareCombat.Entity.EntityCannonBasic;
 import ValkyrienWarfareCombat.Render.EntityCannonBasicRenderFactory;
-import ValkyrienWarfareControl.ValkyrienWarfareControlMod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -36,11 +35,11 @@ public class ClientProxyCombat extends CommonProxyCombat {
 		registerItemModel(ValkyrienWarfareCombatMod.instance.basicCannonSpawner);
 		registerItemModel(ValkyrienWarfareCombatMod.instance.cannonBall);
 		registerItemModel(ValkyrienWarfareCombatMod.instance.powderPouch);
+		registerItemModel(ValkyrienWarfareCombatMod.instance.explosiveArrow);
 	}
 
 	private void registerItemModel(Item toRegister) {
 		RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
-		renderItem.getItemModelMesher().register(toRegister, 0, new ModelResourceLocation(ValkyrienWarfareCombatMod.MODID + ":" + toRegister.getUnlocalizedName().substring(5), "inventory"));
-		;
+		renderItem.getItemModelMesher().register(toRegister, 0, new ModelResourceLocation(ValkyrienWarfareCombatMod.MODID + ":" + toRegister.getUnlocalizedName().substring(5), "inventory"));;
 	}
 }

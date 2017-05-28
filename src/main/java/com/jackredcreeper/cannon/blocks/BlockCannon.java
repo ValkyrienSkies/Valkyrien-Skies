@@ -2,7 +2,7 @@ package com.jackredcreeper.cannon.blocks;
 
 import javax.annotation.Nullable;
 
-import com.jackredcreeper.cannon.Reference;
+import com.jackredcreeper.cannon.CannonModRefrence;
 import com.jackredcreeper.cannon.entities.EntityCannonball;
 import com.jackredcreeper.cannon.init.ModItems;
 import com.jackredcreeper.cannon.tileentity.TileEntityCannon;
@@ -43,8 +43,8 @@ public class BlockCannon extends BlockDirectional implements ITileEntityProvider
 		setHardness(0.5f);
 		setResistance(1);
 		
-		setUnlocalizedName(Reference.ModBlocks.CANNON.getUnlocalizedName());
-		setRegistryName(Reference.ModBlocks.CANNON.getRegistryName());
+		setUnlocalizedName(CannonModRefrence.ModBlocks.CANNON.getUnlocalizedName());
+		setRegistryName(CannonModRefrence.ModBlocks.CANNON.getRegistryName());
 		
         this.setDefaultState(this.blockState.getBaseState().withProperty(LOOKING, EnumFacing.NORTH));
         this.setCreativeTab(CreativeTabs.COMBAT);

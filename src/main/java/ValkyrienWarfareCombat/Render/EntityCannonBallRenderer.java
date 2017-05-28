@@ -26,12 +26,12 @@ public class EntityCannonBallRenderer extends Render<EntityCannonBall> {
 
 	protected EntityCannonBallRenderer(RenderManager renderManager) {
 		super(renderManager);
-		cannonballState = ValkyrienWarfareCombatMod.instance.fakeCannonBlock.getStateFromMeta(2);
+		cannonballState = ValkyrienWarfareCombatMod.instance.fakecannonblock.getStateFromMeta(2);
 	}
 
 	@Override
 	public void doRender(EntityCannonBall entity, double x, double y, double z, float entityYaw, float partialTicks) {
-		IBlockState iblockstate = ValkyrienWarfareCombatMod.instance.fakeCannonBlock.getStateFromMeta(2);
+		IBlockState iblockstate = ValkyrienWarfareCombatMod.instance.fakecannonblock.getStateFromMeta(2);
 
 		double renderX = (entity.posX - entity.lastTickPosX) * partialTicks + entity.lastTickPosX;
 		double renderY = (entity.posY - entity.lastTickPosY) * partialTicks + entity.lastTickPosY;

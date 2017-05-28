@@ -106,6 +106,22 @@ public class WorldPhysObjectManager {
 
 	public void onLoad(PhysicsWrapperEntity loaded) {
 		if (!loaded.wrapping.fromSplit) {
+			if(loaded.world.isRemote){
+				ArrayList<PhysicsWrapperEntity> potentialMatches = new ArrayList<PhysicsWrapperEntity>();
+				for(PhysicsWrapperEntity wrapper : physicsEntities){
+					if(wrapper.getPersistentID().equals(loaded.getPersistentID())){
+						potentialMatches.add(wrapper);
+					}
+				}
+				for(PhysicsWrapperEntity caught : potentialMatches){
+					physicsEntities.remove(caught);
+					physCollisonCallables.remove(caught.wrapping.collisionCallable);
+					caught.wrapping.onThisUnload();
+//					System.out.println("Caught one");
+				}
+
+			}
+			loaded.isDead = false;
 			physicsEntities.add(loaded);
 			physCollisonCallables.add(loaded.wrapping.collisionCallable);
 		} else {
@@ -115,9 +131,13 @@ public class WorldPhysObjectManager {
 	}
 
 	public void onUnload(PhysicsWrapperEntity loaded) {
-		physicsEntities.remove(loaded);
-		physCollisonCallables.remove(loaded.wrapping.collisionCallable);
-		loaded.wrapping.onThisUnload();
+		if(!loaded.world.isRemote){
+			physicsEntities.remove(loaded);
+			physCollisonCallables.remove(loaded.wrapping.collisionCallable);
+			loaded.wrapping.onThisUnload();
+		}else{
+			loaded.isDead = true;
+		}
 	}
 
 	public PhysicsWrapperEntity getManagingObjectForChunk(Chunk chunk) {

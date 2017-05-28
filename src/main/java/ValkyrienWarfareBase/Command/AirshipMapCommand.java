@@ -1,8 +1,5 @@
 package ValkyrienWarfareBase.Command;
 
-import java.util.EnumSet;
-import java.util.Set;
-
 import ValkyrienWarfareBase.Interaction.ShipNameUUIDData;
 import ValkyrienWarfareBase.Interaction.ShipUUIDToPosData;
 import ValkyrienWarfareBase.Interaction.ShipUUIDToPosData.ShipPositionData;
@@ -10,13 +7,9 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.network.play.server.SPacketPlayerPosLook;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
 public class AirshipMapCommand extends CommandBase {

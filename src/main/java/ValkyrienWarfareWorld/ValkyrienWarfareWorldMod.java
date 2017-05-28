@@ -9,6 +9,7 @@ import net.minecraft.item.Item;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -27,17 +28,17 @@ public class ValkyrienWarfareWorldMod {
 	public static final String MODNAME = "Valkyrien Warfare World";
 	public static final String MODVER = "0.0a";
 
-	public static ValkyrienWarfareWorldMod instance;
+	@Instance(MODID)
+	public static ValkyrienWarfareWorldMod instance = new ValkyrienWarfareWorldMod();
 
 	public static Block etheriumOre;
-	
+
 	public static Item etheriumCrystal;
-	
+
 	private static final WorldEventsCommon worldEventsCommon = new WorldEventsCommon();
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
-		instance = this;
 		registerBlocks(event);
 		registerItems(event);
 		proxy.preInit(event);
@@ -62,10 +63,10 @@ public class ValkyrienWarfareWorldMod {
 
 		GameRegistry.registerBlock(etheriumOre);
 	}
-	
+
 	private void registerItems(FMLStateEvent event) {
 		etheriumCrystal = new ItemEtheriumCrystal().setUnlocalizedName("etheriumcrystal").setRegistryName(MODID, "etheriumcrystal").setCreativeTab(CreativeTabs.TRANSPORTATION).setMaxStackSize(16);
-	
+
 		GameRegistry.registerItem(etheriumCrystal);
 	}
 

@@ -1,6 +1,6 @@
 package com.jackredcreeper.cannon;
 
-public class Reference {
+public class CannonModRefrence {
 
 	public static final String MOD_ID = "cannons";
 	public static final String NAME = "Cannons!";

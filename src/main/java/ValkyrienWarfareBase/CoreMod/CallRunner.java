@@ -55,6 +55,20 @@ public class CallRunner {
 //    	return false;
 //    }
 
+	/**
+	 * Fixes the chair dismount position
+	 * @param entity
+	 * @param potentialShip
+	 */
+	public static void onEntityDismountEntity(EntityLivingBase entity, Entity potentialShip){
+		if(potentialShip instanceof PhysicsWrapperEntity){
+			entity.ridingEntity = null;
+			entity.posY += 1.45D;
+			return;
+		}
+		entity.dismountEntity(potentialShip);
+	}
+
 	public static Iterator<Chunk> rebuildChunkIterator(Iterator<Chunk> chunkIterator){
 		ArrayList<Chunk> newBackingArray = new ArrayList<Chunk>();
 		while(chunkIterator.hasNext()){

@@ -1,6 +1,6 @@
 package com.jackredcreeper.cannon.init;
 
-import com.jackredcreeper.cannon.Reference;
+import com.jackredcreeper.cannon.CannonModRefrence;
 import com.jackredcreeper.cannon.blocks.BlockCannon;
 
 import net.minecraft.block.Block;

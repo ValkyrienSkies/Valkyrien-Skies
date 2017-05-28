@@ -4,6 +4,7 @@ import ValkyrienWarfareCombat.Entity.EntityCannonBall;
 import ValkyrienWarfareCombat.Entity.EntityCannonBasic;
 import ValkyrienWarfareCombat.Item.ItemBasicCannon;
 import ValkyrienWarfareCombat.Item.ItemCannonBall;
+import ValkyrienWarfareCombat.Item.ItemExplosiveArrow;
 import ValkyrienWarfareCombat.Item.ItemPowderPouch;
 import ValkyrienWarfareCombat.Proxy.CommonProxyCombat;
 import net.minecraft.block.Block;
@@ -39,8 +40,9 @@ public class ValkyrienWarfareCombatMod {
 	public Item basicCannonSpawner;
 	public Item cannonBall;
 	public Item powderPouch;
+	public Item explosiveArrow;
 
-	public Block fakeCannonBlock;
+	public Block fakecannonblock;
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
@@ -65,10 +67,12 @@ public class ValkyrienWarfareCombatMod {
 		basicCannonSpawner = new ItemBasicCannon().setUnlocalizedName("basiccannonspawner").setRegistryName(MODID, "basiccannonspawner").setCreativeTab(CreativeTabs.COMBAT).setMaxStackSize(4);
 		cannonBall = new ItemCannonBall().setUnlocalizedName("cannonball").setRegistryName(MODID, "cannonball").setCreativeTab(CreativeTabs.COMBAT).setMaxStackSize(32);
 		powderPouch = new ItemPowderPouch().setUnlocalizedName("powderpouch").setRegistryName(MODID, "powderpouch").setCreativeTab(CreativeTabs.COMBAT).setMaxStackSize(32);
+		explosiveArrow = new ItemExplosiveArrow().setUnlocalizedName("explosivearrow").setRegistryName(MODID, "explosivearrow").setCreativeTab(CreativeTabs.COMBAT).setMaxStackSize(64);
 
 		GameRegistry.registerItem(basicCannonSpawner);
 		GameRegistry.registerItem(cannonBall);
 		GameRegistry.registerItem(powderPouch);
+		GameRegistry.registerItem(explosiveArrow);
 	}
 
 	private void registerEntities(FMLStateEvent event) {
@@ -77,9 +81,9 @@ public class ValkyrienWarfareCombatMod {
 	}
 
 	private void registerBlocks(FMLStateEvent event) {
-		fakeCannonBlock = new FakeCannonBlock(Material.IRON).setHardness(5f).setUnlocalizedName("fakeCannonBlock").setRegistryName(MODID, "fakeCannonBlock").setCreativeTab(CreativeTabs.REDSTONE);
+		fakecannonblock = new FakeCannonBlock(Material.IRON).setHardness(5f).setUnlocalizedName("fakecannonblock").setRegistryName(MODID, "fakecannonblock").setCreativeTab(CreativeTabs.REDSTONE);
 
-		GameRegistry.registerBlock(fakeCannonBlock);
+		GameRegistry.register(fakecannonblock);
 	}
 
 	private void registerRecipies(FMLStateEvent event) {

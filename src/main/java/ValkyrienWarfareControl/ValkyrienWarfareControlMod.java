@@ -13,7 +13,6 @@ import ValkyrienWarfareControl.Block.Engine.BlockRedstoneEngine;
 import ValkyrienWarfareControl.Block.EtherCompressor.BlockCreativeEtherCompressor;
 import ValkyrienWarfareControl.Block.EtherCompressor.BlockNormalEtherCompressor;
 import ValkyrienWarfareControl.GUI.ControlGUIHandler;
-import ValkyrienWarfareControl.Item.ExplosiveArrows;
 import ValkyrienWarfareControl.Item.ItemShipStealer;
 import ValkyrienWarfareControl.Item.ItemSystemLinker;
 import ValkyrienWarfareControl.Network.EntityFixMessage;
@@ -59,7 +58,7 @@ public class ValkyrienWarfareControlMod {
 
 	public static final String MODID = "valkyrienwarfarecontrol";
 	public static final String MODNAME = "Valkyrien Warfare Control";
-	public static final String MODVER = "0.3c";
+	public static final String MODVER = "0.9_alpha";
 
     @Instance(MODID)
 	public static ValkyrienWarfareControlMod instance = new ValkyrienWarfareControlMod();
@@ -86,7 +85,6 @@ public class ValkyrienWarfareControlMod {
 
 	public Item systemLinker;
 	public Item airshipStealer;
-	public Item explosiveArrow;
 
 	@SidedProxy(clientSide = "ValkyrienWarfareControl.Proxy.ClientProxyControl", serverSide = "ValkyrienWarfareControl.Proxy.CommonProxyControl")
 	public static CommonProxyControl proxy;
@@ -145,7 +143,7 @@ public class ValkyrienWarfareControlMod {
 
 		basicHoverController = new BlockHovercraftController(Material.IRON).setHardness(10f).setUnlocalizedName("basichovercraftcontroller").setRegistryName(MODID, "basichovercraftcontroller").setCreativeTab(CreativeTabs.TRANSPORTATION);
 		dopedEtherium = new BlockDopedEtherium(Material.GLASS).setHardness(4f).setUnlocalizedName("dopedetherium").setRegistryName(MODID, "dopedetherium").setCreativeTab(CreativeTabs.TRANSPORTATION);
-		balloonBurner = new BlockBalloonBurner(Material.IRON).setHardness(4f).setUnlocalizedName("ballonburner").setRegistryName(MODID, "ballonburner").setCreativeTab(CreativeTabs.TRANSPORTATION);
+		balloonBurner = new BlockBalloonBurner(Material.IRON).setHardness(4f).setUnlocalizedName("balloonburner").setRegistryName(MODID, "balloonburner").setCreativeTab(CreativeTabs.TRANSPORTATION);
 		pilotsChair = new BlockShipPilotsChair(Material.IRON).setHardness(4f).setUnlocalizedName("shippilotschair").setRegistryName(MODID, "shippilotschair").setCreativeTab(CreativeTabs.TRANSPORTATION);
 		passengerChair = new BlockShipPassengerChair(Material.IRON).setHardness(4f).setUnlocalizedName("shippassengerchair").setRegistryName(MODID, "shippassengerchair").setCreativeTab(CreativeTabs.TRANSPORTATION);
 
@@ -178,11 +176,9 @@ public class ValkyrienWarfareControlMod {
 	private void registerItems(FMLStateEvent event) {
 		systemLinker = new ItemSystemLinker().setUnlocalizedName("systemlinker").setRegistryName(MODID, "systemlinker").setCreativeTab(CreativeTabs.TRANSPORTATION).setMaxStackSize(1);
 		airshipStealer = new ItemShipStealer().setUnlocalizedName("airshipStealer").setRegistryName(MODID, "airshipStealer").setCreativeTab(CreativeTabs.TOOLS).setMaxStackSize(1);
-		explosiveArrow = new ExplosiveArrows().setUnlocalizedName("explosiveArrow").setRegistryName(MODID, "explosiveArrow").setCreativeTab(CreativeTabs.COMBAT).setMaxStackSize(64);
 
 		GameRegistry.registerItem(systemLinker);
 		GameRegistry.registerItem(airshipStealer);
-		GameRegistry.registerItem(explosiveArrow);
 	}
 
 	private void registerRecipies(FMLStateEvent event) {

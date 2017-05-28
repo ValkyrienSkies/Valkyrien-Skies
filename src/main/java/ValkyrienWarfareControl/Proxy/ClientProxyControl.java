@@ -16,8 +16,6 @@ public class ClientProxyControl extends CommonProxyControl {
 	public void preInit(FMLPreInitializationEvent event) {
 		super.preInit(event);
 		OBJLoader.INSTANCE.addDomain(ValkyrienWarfareControlMod.MODID.toLowerCase());
-
-
 	}
 
 	public void init(FMLInitializationEvent event) {
@@ -47,6 +45,9 @@ public class ClientProxyControl extends CommonProxyControl {
 
 		registerBlockItem(ValkyrienWarfareControlMod.instance.pilotsChair);
 		registerBlockItem(ValkyrienWarfareControlMod.instance.passengerChair);
+
+		registerBlockItem(ValkyrienWarfareControlMod.instance.dopedEtherium);
+		registerBlockItem(ValkyrienWarfareControlMod.instance.balloonBurner);
 
 		registerItemModel(ValkyrienWarfareControlMod.instance.systemLinker);
 		registerItemModel(ValkyrienWarfareControlMod.instance.airshipStealer);

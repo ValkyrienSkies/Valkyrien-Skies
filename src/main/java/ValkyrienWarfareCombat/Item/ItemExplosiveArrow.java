@@ -1,4 +1,4 @@
-package ValkyrienWarfareControl.Item;
+package ValkyrienWarfareCombat.Item;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.projectile.EntityArrow;
@@ -8,9 +8,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 
-public class ExplosiveArrows extends ItemArrow {
+public class ItemExplosiveArrow extends ItemArrow {
 	
-	public ExplosiveArrows(){
+	public ItemExplosiveArrow(){
 		super();
 	}
 	

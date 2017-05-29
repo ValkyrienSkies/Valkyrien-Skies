@@ -8,6 +8,7 @@ import ValkyrienWarfareControl.Block.BlockDopedEtherium;
 import ValkyrienWarfareControl.Block.BlockHovercraftController;
 import ValkyrienWarfareControl.Block.BlockShipPassengerChair;
 import ValkyrienWarfareControl.Block.BlockShipPilotsChair;
+import ValkyrienWarfareControl.Block.BlockThrustRelay;
 import ValkyrienWarfareControl.Block.Engine.BlockNormalEngine;
 import ValkyrienWarfareControl.Block.Engine.BlockRedstoneEngine;
 import ValkyrienWarfareControl.Block.EtherCompressor.BlockCreativeEtherCompressor;
@@ -84,6 +85,8 @@ public class ValkyrienWarfareControlMod {
 	public Block ultimateEtherCompressor;
 	public Block creativeEtherCompressor;
 
+	public Block thrustRelay;
+
 	public Item systemLinker;
 	public Item airshipStealer;
 
@@ -148,6 +151,8 @@ public class ValkyrienWarfareControlMod {
 		pilotsChair = new BlockShipPilotsChair(Material.IRON).setHardness(4f).setUnlocalizedName("shippilotschair").setRegistryName(MODID, "shippilotschair").setCreativeTab(CreativeTabs.TRANSPORTATION);
 		passengerChair = new BlockShipPassengerChair(Material.IRON).setHardness(4f).setUnlocalizedName("shippassengerchair").setRegistryName(MODID, "shippassengerchair").setCreativeTab(CreativeTabs.TRANSPORTATION);
 
+		thrustRelay = new BlockThrustRelay(Material.IRON).setHardness(5f).setUnlocalizedName("thrustrelay").setRegistryName(MODID, "thrustrelay").setCreativeTab(CreativeTabs.TRANSPORTATION);
+
 		registerBlock(basicEngine);
 		registerBlock(advancedEngine);
 		registerBlock(eliteEngine);
@@ -165,6 +170,7 @@ public class ValkyrienWarfareControlMod {
 		registerBlock(balloonBurner);
 		registerBlock(pilotsChair);
 		registerBlock(passengerChair);
+		registerBlock(thrustRelay);
 	}
 
 	private void registerTileEntities(FMLStateEvent event) {

@@ -7,6 +7,7 @@ tile.shippilotschair.name=Piloting Chair
 tile.shippassengerchair.name=Passenger Chair
 tile.dopedetherium.name=Doped Etherium
 tile.balloonburner.name=Balloon Burner
+tile.thrustrelay.name=Thrust Relay
 
 #ENGINES
 tile.basicEngine.name=Basic Engine

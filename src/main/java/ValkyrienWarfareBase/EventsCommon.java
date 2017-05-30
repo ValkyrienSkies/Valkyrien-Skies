@@ -439,7 +439,7 @@ public class EventsCommon {
 	@SubscribeEvent
 	public void onEntityConstruct(AttachCapabilitiesEvent evt) {
 		if(evt.getObject() instanceof EntityPlayer){
-			evt.addCapability(new ResourceLocation(ValkyrienWarfareMod.MODID, "IAirshipCounter2"), new ICapabilitySerializable<NBTTagIntArray>() {
+			evt.addCapability(new ResourceLocation(ValkyrienWarfareMod.MODID, "AirshipCounter"), new ICapabilitySerializable<NBTTagIntArray>() {
 				IAirshipCounterCapability inst = ValkyrienWarfareMod.airshipCounter.getDefaultInstance();
 
 				@Override

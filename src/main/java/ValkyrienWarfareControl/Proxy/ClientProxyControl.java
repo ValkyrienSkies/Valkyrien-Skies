@@ -54,6 +54,7 @@ public class ClientProxyControl extends CommonProxyControl {
 
 		registerItemModel(ValkyrienWarfareControlMod.instance.systemLinker);
 		registerItemModel(ValkyrienWarfareControlMod.instance.airshipStealer);
+		registerItemModel(ValkyrienWarfareControlMod.instance.relayWire);
 	}
 
 	private void registerBlockItem(Block toRegister) {

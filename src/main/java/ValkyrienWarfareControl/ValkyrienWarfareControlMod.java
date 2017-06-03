@@ -32,6 +32,7 @@ import ValkyrienWarfareControl.Piloting.SetShipPilotMessageHandler;
 import ValkyrienWarfareControl.Proxy.CommonProxyControl;
 import ValkyrienWarfareControl.TileEntity.BalloonBurnerTileEntity;
 import ValkyrienWarfareControl.TileEntity.PilotsChairTileEntity;
+import ValkyrienWarfareControl.TileEntity.ThrustModulatorTileEntity;
 import ValkyrienWarfareControl.TileEntity.ThrustRelayTileEntity;
 import ValkyrienWarfareControl.TileEntity.TileEntityHoverController;
 import ValkyrienWarfareControl.TileEntity.TileEntityNormalEtherCompressor;
@@ -197,6 +198,7 @@ public class ValkyrienWarfareControlMod {
 		TileEntity.addMapping(BalloonBurnerTileEntity.class, "tileballoonburner");
 		TileEntity.addMapping(PilotsChairTileEntity.class, "tilemanualshipcontroller");
 		TileEntity.addMapping(ThrustRelayTileEntity.class, "tilethrustrelay");
+		TileEntity.addMapping(ThrustModulatorTileEntity.class, "tilethrustmodulator");
 	}
 
 	private void registerItems(FMLStateEvent event) {

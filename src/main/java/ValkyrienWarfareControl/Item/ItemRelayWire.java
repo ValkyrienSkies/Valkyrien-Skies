@@ -46,12 +46,16 @@ public class ItemRelayWire extends Item {
 
 					TileEntity lastPosTile = worldIn.getTileEntity(lastPos);
 
+//					System.out.println(lastPos.toString());
+
 					if(!lastPos.equals(pos) && lastPosTile != null && currentTile != null){
+
 						if(distance < range * range){
 							Node lastPosNode = ((INodeProvider) lastPosTile).getNode();
 							Node currentPosNode = ((INodeProvider) currentTile).getNode();
 							//Connect the two bastards
-							inst.setLastRelay(pos);
+//							inst.setLastRelay(pos);
+							inst.setLastRelay(null);
 
 							if(lastPosNode != null && currentPosNode != null){
 								currentPosNode.linkNode(lastPosNode);
@@ -63,6 +67,8 @@ public class ItemRelayWire extends Item {
 							playerIn.addChatComponentMessage(new TextComponentString("Nodes are too far away, try better wire"));
 							inst.setLastRelay(null);
 						}
+					}else{
+						inst.setLastRelay(pos);
 					}
 				}
 			}

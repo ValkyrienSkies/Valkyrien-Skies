@@ -61,7 +61,7 @@ public class ItemRelayWire extends Item {
 								currentPosNode.linkNode(lastPosNode);
 							}
 
-							System.out.println("Success");
+//							System.out.println("Success");
 							stack.damageItem(1, playerIn);
 						}else{
 							playerIn.addChatComponentMessage(new TextComponentString("Nodes are too far away, try better wire"));

@@ -14,11 +14,13 @@ public class Node {
 	public HashSet<Node> connectedNodes;
 	public HashSet<BlockPos> connectedNodesBlockPos;
 	private boolean isFullyBuilt = false;
+	private NodeNetwork parentNetwork;
 
 	public Node(TileEntity parent){
 		parentTile = parent;
 		connectedNodes = new HashSet<Node>();
 		connectedNodesBlockPos = new HashSet<BlockPos>();
+		parentNetwork = new NodeNetwork(this);
 	}
 
 	public void linkNode(Node other){
@@ -27,14 +29,19 @@ public class Node {
 		other.connectedNodes.add(this);
 		connectedNodesBlockPos.add(other.parentTile.getPos());
 		other.connectedNodesBlockPos.add(this.parentTile.getPos());
+		parentNetwork.mergeWithNetworks(new NodeNetwork[]{other.parentNetwork});
 	}
 
-	public void unlinkNode(Node other){
+	public void unlinkNode(Node other, boolean updateNetwork){
 		updateBuildState();
 		connectedNodes.remove(other);
 		other.connectedNodes.remove(this);
 		connectedNodesBlockPos.remove(other.parentTile.getPos());
 		other.connectedNodesBlockPos.remove(this.parentTile.getPos());
+
+		if(updateNetwork){
+			parentNetwork.recalculateNetworks(this);
+		}
 	}
 
 	/**
@@ -43,8 +50,9 @@ public class Node {
 	public void destroyNode(){
 		Object[] backingArray = connectedNodes.toArray();
 		for(Object node : backingArray){
-			unlinkNode((Node)node);
+			unlinkNode((Node)node, false);
 		}
+		parentNetwork.recalculateNetworks(this);
 	}
 
 	public void updateBuildState(){
@@ -73,6 +81,8 @@ public class Node {
 						Node node = ((INodeProvider) tile).getNode();
 						if(node != null){
 							connectedNodes.add(node);
+							node.connectedNodes.add(this);
+							parentNetwork.mergeWithNetworks(new NodeNetwork[]{node.parentNetwork});
 						}
 					}
 				}else{
@@ -87,6 +97,19 @@ public class Node {
 		if(connectedNodes.size() == connectedNodesBlockPos.size()){
 			return true;
 		}
+		return false;
+	}
+
+	/**
+	 * Returns true if the network input was the same as the network the node belonged to
+	 * @param newNetwork
+	 * @return
+	 */
+	public boolean updateParentNetwork(NodeNetwork newNetwork){
+		if(parentNetwork == newNetwork){
+			return true;
+		}
+		parentNetwork = newNetwork;
 		return false;
 	}
 

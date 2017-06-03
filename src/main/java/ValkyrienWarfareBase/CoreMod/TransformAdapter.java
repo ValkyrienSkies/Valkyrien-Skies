@@ -76,6 +76,11 @@ public class TransformAdapter extends ClassVisitor {
 //			return false;
 //		}
 
+		if (isMethod(calledDesc, "()L"+AxisAlignedBBName+";", calledName, TileEntityName, "getRenderBoundingBox", "RENAMEME", calledOwner)) {
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "getRenderBoundingBox", "(L"+TileEntityName+";)L"+AxisAlignedBBName+";", itf);
+			return false;
+		}
+
 		if (isMethod(calledDesc, "(L"+EntityClassName+";)V", calledName, EntityLivingBaseName, "dismountEntity", "func_110145_l", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onEntityDismountEntity", "(L"+EntityLivingBaseName+";L"+EntityClassName+";)V", itf);
 			return false;

@@ -1,6 +1,7 @@
 #ITEMS
 item.systemlinker.name=System Linker
 item.airshipStealer.name=Airship Stealer
+item.relaywire.name=Relay Wire
 
 #Blocks
 tile.shippilotschair.name=Piloting Chair

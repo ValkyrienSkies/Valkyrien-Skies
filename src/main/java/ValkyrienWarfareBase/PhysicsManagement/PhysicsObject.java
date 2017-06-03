@@ -399,6 +399,10 @@ public class PhysicsObject {
 			detector.setPosWithRespectTo(i, centerInWorld, pos);
 			// detector.cache.setBlockState(pos, Blocks.air.getDefaultState());
 			// TODO: Get this to update on clientside as well, you bastard!
+			TileEntity tile = worldObj.getTileEntity(pos);
+			if(tile != null){
+				tile.invalidate();
+			}
 			worldObj.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
 		}
 		// centerDifference = new BlockPos(claimedChunks[ownedChunks.radius+1][ownedChunks.radius+1].xPosition*16,128,claimedChunks[ownedChunks.radius+1][ownedChunks.radius+1].zPosition*16);

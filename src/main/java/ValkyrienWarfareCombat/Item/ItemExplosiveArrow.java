@@ -9,11 +9,11 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 
 public class ItemExplosiveArrow extends ItemArrow {
-	
+
 	public ItemExplosiveArrow(){
 		super();
 	}
-	
+
 	@Override
 	public EntityArrow createArrow(World worldIn, ItemStack stack, EntityLivingBase shooter)
     {
@@ -31,6 +31,7 @@ public class ItemExplosiveArrow extends ItemArrow {
             protected void onHit(RayTraceResult raytraceResultIn){
         		super.onHit(raytraceResultIn);
         		worldObj.createExplosion(this, posX, posY, posZ, 20F, true);
+        		kill();
         	}
         };
         entitytippedarrow.setPotionEffect(stack);

@@ -1,5 +1,6 @@
 package ValkyrienWarfareControl.GraphTheory;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 
 import net.minecraft.nbt.NBTTagCompound;
@@ -62,8 +63,10 @@ public class Node {
 	 * @return
 	 */
 	public boolean attemptToBuildNodeSet(){
+		ArrayList<BlockPos> toRemove = new ArrayList<BlockPos>();
 		for(BlockPos pos : connectedNodesBlockPos){
 			if(parentTile.getWorld().isBlockLoaded(pos)){
+				boolean isLoaded = parentTile.getWorld().isBlockLoaded(pos);
 				TileEntity tile = parentTile.getWorld().getTileEntity(pos);
 				if(tile != null){
 					if(tile instanceof INodeProvider){
@@ -72,9 +75,15 @@ public class Node {
 							connectedNodes.add(node);
 						}
 					}
+				}else{
+					if(isLoaded){
+						//Assume the node somehow died on its own
+						toRemove.add(pos);
+					}
 				}
 			}
 		}
+		connectedNodesBlockPos.remove(toRemove);
 		if(connectedNodes.size() == connectedNodesBlockPos.size()){
 			return true;
 		}

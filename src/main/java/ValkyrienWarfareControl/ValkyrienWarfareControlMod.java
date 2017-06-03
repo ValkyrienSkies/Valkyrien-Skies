@@ -3,7 +3,6 @@ package ValkyrienWarfareControl;
 import java.io.File;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
-import ValkyrienWarfareBase.Capability.IAirshipCounterCapability;
 import ValkyrienWarfareControl.Block.BlockBalloonBurner;
 import ValkyrienWarfareControl.Block.BlockDopedEtherium;
 import ValkyrienWarfareControl.Block.BlockHovercraftController;
@@ -33,6 +32,7 @@ import ValkyrienWarfareControl.Piloting.SetShipPilotMessageHandler;
 import ValkyrienWarfareControl.Proxy.CommonProxyControl;
 import ValkyrienWarfareControl.TileEntity.BalloonBurnerTileEntity;
 import ValkyrienWarfareControl.TileEntity.PilotsChairTileEntity;
+import ValkyrienWarfareControl.TileEntity.ThrustRelayTileEntity;
 import ValkyrienWarfareControl.TileEntity.TileEntityHoverController;
 import ValkyrienWarfareControl.TileEntity.TileEntityNormalEtherCompressor;
 import ValkyrienWarfareWorld.ValkyrienWarfareWorldMod;
@@ -196,6 +196,7 @@ public class ValkyrienWarfareControlMod {
 		TileEntity.addMapping(TileEntityNormalEtherCompressor.class, "tileantigravengine");
 		TileEntity.addMapping(BalloonBurnerTileEntity.class, "tileballoonburner");
 		TileEntity.addMapping(PilotsChairTileEntity.class, "tilemanualshipcontroller");
+		TileEntity.addMapping(ThrustRelayTileEntity.class, "tilethrustrelay");
 	}
 
 	private void registerItems(FMLStateEvent event) {

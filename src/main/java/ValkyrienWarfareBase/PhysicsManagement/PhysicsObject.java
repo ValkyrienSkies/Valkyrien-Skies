@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
@@ -30,6 +31,8 @@ import ValkyrienWarfareBase.Relocation.VWChunkCache;
 import ValkyrienWarfareBase.Render.PhysObjectRenderManager;
 import ValkyrienWarfareControl.ValkyrienWarfareControlMod;
 import ValkyrienWarfareControl.Balloon.ShipBalloonManager;
+import ValkyrienWarfareControl.GraphTheory.INodeProvider;
+import ValkyrienWarfareControl.GraphTheory.Node;
 import ValkyrienWarfareControl.Network.EntityFixMessage;
 import ValkyrienWarfareControl.Piloting.ShipPilotingController;
 import gnu.trove.iterator.TIntIterator;
@@ -662,6 +665,7 @@ public class PhysicsObject {
 	}
 
 	public void loadClaimedChunks() {
+		ArrayList<TileEntity> nodeTileEntitiesToUpdate = new ArrayList<TileEntity>();
 		claimedChunks = new Chunk[(ownedChunks.radius * 2) + 1][(ownedChunks.radius * 2) + 1];
 		claimedChunksEntries = new PlayerChunkMapEntry[(ownedChunks.radius * 2) + 1][(ownedChunks.radius * 2) + 1];
 		for (int x = ownedChunks.minX; x <= ownedChunks.maxX; x++) {
@@ -675,6 +679,12 @@ public class PhysicsObject {
 				if (!worldObj.isRemote) {
 					injectChunkIntoWorld(chunk, x, z, false);
 				}
+				for(Entry<BlockPos, TileEntity> entry : chunk.chunkTileEntityMap.entrySet()){
+					TileEntity tile = entry.getValue();
+					if(tile instanceof INodeProvider){
+						nodeTileEntitiesToUpdate.add(tile);
+					}
+				}
 				claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ] = chunk;
 			}
 		}
@@ -685,6 +695,14 @@ public class PhysicsObject {
 			createPhysicsCalculations();
 		}
 		detectBlockPositions();
+		for(TileEntity tile : nodeTileEntitiesToUpdate){
+			Node node = ((INodeProvider) tile).getNode();
+			if(node != null){
+				node.updateBuildState();
+			}else{
+				System.err.println("How the fuck did we get a null node?");
+			}
+		}
 		coordTransform.updateAllTransforms();
 	}
 

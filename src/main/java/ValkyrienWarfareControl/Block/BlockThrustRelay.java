@@ -1,26 +1,29 @@
 package ValkyrienWarfareControl.Block;
 
+import ValkyrienWarfareControl.TileEntity.ThrustRelayTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirectional;
+import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-public class BlockThrustRelay extends BlockDirectional {
+public class BlockThrustRelay extends BlockDirectional implements ITileEntityProvider {
 
-	static AxisAlignedBB EAST = new AxisAlignedBB(0D/16D,5D/16D,5D/16D,6D/16D,11D/16D,11D/16D);
-	static AxisAlignedBB WEST = new AxisAlignedBB(16D/16D,5D/16D,5D/16D,10D/16D,11D/16D,11D/16D);
-    static AxisAlignedBB SOUTH = new AxisAlignedBB(5D/16D,5D/16D,0D/16D,11D/16D,11D/16D,6D/16D);
-	static AxisAlignedBB NORTH = new AxisAlignedBB(5D/16D,5D/16D,16D/16D,11D/16D,11D/16D,10D/16D);
-    static AxisAlignedBB UP = new AxisAlignedBB(5D/16D,0,5D/16D,11D/16D,6D/16D,11D/16D);
-    static AxisAlignedBB DOWN = new AxisAlignedBB(5D/16D,10D/16D,5D/16D,11D/16D,16D/16D,11D/16D);
+	static final AxisAlignedBB EAST = new AxisAlignedBB(0D/16D,5D/16D,5D/16D,6D/16D,11D/16D,11D/16D);
+	static final AxisAlignedBB WEST = new AxisAlignedBB(16D/16D,5D/16D,5D/16D,10D/16D,11D/16D,11D/16D);
+    static final AxisAlignedBB SOUTH = new AxisAlignedBB(5D/16D,5D/16D,0D/16D,11D/16D,11D/16D,6D/16D);
+	static final AxisAlignedBB NORTH = new AxisAlignedBB(5D/16D,5D/16D,16D/16D,11D/16D,11D/16D,10D/16D);
+    static final AxisAlignedBB UP = new AxisAlignedBB(5D/16D,0,5D/16D,11D/16D,6D/16D,11D/16D);
+    static final AxisAlignedBB DOWN = new AxisAlignedBB(5D/16D,10D/16D,5D/16D,11D/16D,16D/16D,11D/16D);
 
 	public BlockThrustRelay(Material materialIn) {
 		super(materialIn);
@@ -208,4 +211,9 @@ public class BlockThrustRelay extends BlockDirectional {
 
         return i;
     }
+
+	@Override
+	public TileEntity createNewTileEntity(World worldIn, int meta) {
+		return new ThrustRelayTileEntity();
+	}
 }

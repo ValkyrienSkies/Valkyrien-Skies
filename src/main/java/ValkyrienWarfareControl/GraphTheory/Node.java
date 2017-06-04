@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.Packet;
+import net.minecraft.server.management.PlayerList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.WorldServer;
 
 public class Node {
 
@@ -30,18 +33,41 @@ public class Node {
 		connectedNodesBlockPos.add(other.parentTile.getPos());
 		other.connectedNodesBlockPos.add(this.parentTile.getPos());
 		parentNetwork.mergeWithNetworks(new NodeNetwork[]{other.parentNetwork});
+
+		if(!parentTile.getWorld().isRemote){
+			sendUpdatesToNearby();
+			other.sendUpdatesToNearby();
+		}
 	}
 
-	public void unlinkNode(Node other, boolean updateNetwork){
+	public void unlinkNode(Node other, boolean updateNodeNetwork, boolean sendToClient){
 		updateBuildState();
 		connectedNodes.remove(other);
 		other.connectedNodes.remove(this);
 		connectedNodesBlockPos.remove(other.parentTile.getPos());
 		other.connectedNodesBlockPos.remove(this.parentTile.getPos());
 
-		if(updateNetwork){
+		if(updateNodeNetwork){
 			parentNetwork.recalculateNetworks(this);
 		}
+
+		if(sendToClient && !parentTile.getWorld().isRemote){
+			sendUpdatesToNearby();
+			other.sendUpdatesToNearby();
+		}
+	}
+
+	public void sendUpdatesToNearby(){
+		Packet toSend = parentTile.getUpdatePacket();
+
+		double xPos = parentTile.getPos().getX();
+		double yPos = parentTile.getPos().getY();
+		double zPos = parentTile.getPos().getZ();
+
+		WorldServer serverWorld = (WorldServer) parentTile.getWorld();
+		PlayerList list = serverWorld.mcServer.getPlayerList();
+//		System.out.println("help");
+		list.sendToAllNearExcept(null, xPos, yPos, zPos, 128D, serverWorld.provider.getDimension(), toSend);
 	}
 
 	/**
@@ -50,9 +76,16 @@ public class Node {
 	public void destroyNode(){
 		Object[] backingArray = connectedNodes.toArray();
 		for(Object node : backingArray){
-			unlinkNode((Node)node, false);
+			unlinkNode((Node)node, false, false);
 		}
 		parentNetwork.recalculateNetworks(this);
+
+		if(!parentTile.getWorld().isRemote){
+			sendUpdatesToNearby();
+			for(Object node : backingArray){
+				((Node)node).sendUpdatesToNearby();
+			}
+		}
 	}
 
 	public void updateBuildState(){

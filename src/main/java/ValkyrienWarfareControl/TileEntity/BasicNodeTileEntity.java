@@ -32,6 +32,19 @@ public class BasicNodeTileEntity extends TileEntity implements INodeProvider {
 	}
 
 	@Override
+    public void handleUpdateTag(NBTTagCompound tag) {
+        this.readFromNBT(tag);
+    }
+
+	@Override
+    public NBTTagCompound getUpdateTag() {
+		NBTTagCompound toReturn = super.getUpdateTag();
+
+		return writeToNBT(toReturn);
+    }
+
+
+	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 		tileNode.writeToNBT(compound);
 		return super.writeToNBT(compound);

@@ -16,6 +16,7 @@ import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRema
  * @author thebest108
  *
  */
+@Deprecated
 public class TransformAdapter extends ClassVisitor {
 
 	public static final String EntityClassName = "net/minecraft/entity/Entity";
@@ -48,11 +49,16 @@ public class TransformAdapter extends ClassVisitor {
 	public static final String IChunkGeneratorName = "net/minecraft/world/chunk/IChunkGenerator";
 	public static final String RenderManagerName = "net/minecraft/client/renderer/entity/RenderManager";
 	public static final String TileEntityRendererDispatcherName = "net/minecraft/client/renderer/tileentity/TileEntityRendererDispatcher";
+	public static final String SleepResultName = "net/minecraft/entity/player/EntityPlayer$SleepResult";
+	public static final String ForgeChunkManagerName = "net/minecraftforge/common/ForgeChunkManager";
+	public static final String MinecraftServerName = "net/minecraft/server/MinecraftServer";
+	public static final String HttpUtilName = "net/minecraft/util/HttpUtil";
 
 	public static final String PredicateName = "com/google/common/base/Predicate";
 	public static final String ListName = "java/util/List";
 	public static final String ClassName = "java/lang/Class";
 	public static final String ImmutableSetMultimapName = "com/google/common/collect/ImmutableSetMultimap";
+	public static final String IteratorName = "java/util/Iterator";
 
 	public String className;
 
@@ -63,22 +69,37 @@ public class TransformAdapter extends ClassVisitor {
 
 	public boolean runTransformer(int opcode, String calledName, String calledDesc, String calledOwner, MethodVisitor mv, boolean itf) {
 
-		//This shit only applies to ChickenChunks; fuck it!
-		if (className.contains("ChunkLoaderManager") && isMethod(calledDesc, "()L"+ImmutableSetMultimapName+";", calledName, WorldClassName, "getPersistentChunks", "getPersistentChunks", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "fuckChickenChunks", String.format("(L%s;)L"+ImmutableSetMultimapName+";", WorldClassName), itf);
+		//TODO: Move to separate mod
+//		if (isMethod(calledDesc, "()Z", calledName, MinecraftServerName, "isServerInOnlineMode", "RENAMEME", calledOwner)) {
+//			mv.visitInsn(Opcodes.POP);
+//			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "isServerInOnlineMode", "()Z", itf);
+//			return false;
+//		}
+
+		if (isMethod(calledDesc, "()L"+AxisAlignedBBName+";", calledName, TileEntityName, "getRenderBoundingBox", "RENAMEME", calledOwner)) {
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "getRenderBoundingBox", "(L"+TileEntityName+";)L"+AxisAlignedBBName+";", itf);
 			return false;
 		}
 
-		if (isMethod(calledDesc, "()L"+AxisAlignedBBName+";", calledName, TileEntityName, "getRenderBoundingBox", "func_184177_bl", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "getRenderBoundingBox", String.format("(L%s;)L"+AxisAlignedBBName+";", TileEntityName), itf);
+		if (isMethod(calledDesc, "(L"+EntityClassName+";)V", calledName, EntityLivingBaseName, "dismountEntity", "func_110145_l", calledOwner)) {
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onEntityDismountEntity", "(L"+EntityLivingBaseName+";L"+EntityClassName+";)V", itf);
 			return false;
 		}
 
+		//TODO: Move to seperate mod
+		if (isMethod(calledDesc, "()I", calledName, HttpUtilName, "getSuitableLanPort", "func_76181_a", calledOwner)) {
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "getSuitableLanPort", "()I", itf);
+			return false;
+		}
+
+		//Ported
+		//TODO WTH?
 		if (isMethod(calledDesc, "(DDD)D", calledName, TileEntityName, "getDistanceSq", "func_145835_a", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "getDistanceSq", String.format("(L%s;DDD)D", TileEntityName), itf);
 			return false;
 		}
 
+		//TODO Write custom tiles renderer :P
 		if (isMethod(calledDesc, "(L"+TileEntityName+";FI)V", calledName, TileEntityRendererDispatcherName, "renderTileEntity", "func_180546_a", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "renderTileEntity", String.format("(L%s;L"+TileEntityName+";FI)V", TileEntityRendererDispatcherName), itf);
 			return false;
@@ -159,10 +180,10 @@ public class TransformAdapter extends ClassVisitor {
 			return false;
 		}
 
-		if (isMethod(calledDesc, "(DDD)D", calledName, EntityClassName, "getDistanceSq", "func_70092_e", calledOwner)) {
+		/*if (isMethod(calledDesc, "(DDD)D", calledName, EntityClassName, "getDistanceSq", "func_70092_e", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onGetDistanceSq", String.format("(L%s;DDD)D", EntityClassName), itf);
 			return false;
-		}
+		}*/
 
 		if (isMethod(calledDesc, "(L" + BlockPosName + ";)D", calledName, EntityClassName, "getDistanceSq", "func_174818_b", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onGetDistanceSq", String.format("(L%s;L" + BlockPosName + ";)D", EntityClassName), itf);
@@ -189,10 +210,11 @@ public class TransformAdapter extends ClassVisitor {
 			return false;
 		}
 
-		if (isMethod(calledDesc, "(DDD)D", calledName, TileEntityName, "getDistanceSq", "func_145835_a", calledOwner)) {
+		//TODO WTH?
+		/*if (isMethod(calledDesc, "(DDD)D", calledName, TileEntityName, "getDistanceSq", "func_145835_a", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onGetDistanceSq", String.format("(L%s;DDD)D", TileEntityName), itf);
 			return false;
-		}
+		}*/
 
 		if (isMethod(calledDesc, "(L" + EntityClassName + ";L" + ICameraName + ";F)V", calledName, RenderGlobalName, "renderEntities", "func_180446_a", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onRenderEntities", String.format("(L%s;L" + EntityClassName + ";L" + ICameraName + ";F)V", RenderGlobalName), itf);
@@ -311,7 +333,7 @@ public class TransformAdapter extends ClassVisitor {
 		MethodVisitor toReturn = new MethodVisitor(api, cv.visitMethod(access, methodName, methodDesc, signature, exceptions)) {
 			@Override
 			public void visitMethodInsn(int opcode, String calledOwner, String calledName, String calledDesc, boolean itf) {
-				if (opcode == Opcodes.INVOKEVIRTUAL || opcode == Opcodes.INVOKEINTERFACE || opcode == Opcodes.H_INVOKEVIRTUAL) {
+				if (opcode == Opcodes.INVOKEVIRTUAL || opcode == Opcodes.INVOKEINTERFACE || opcode == Opcodes.H_INVOKEVIRTUAL || opcode == Opcodes.INVOKESTATIC) {
 					if (runTransformer(opcode, calledName, calledDesc, calledOwner, mv, itf)) {
 						super.visitMethodInsn(opcode, calledOwner, calledName, calledDesc, itf);
 					}

@@ -1,12 +1,13 @@
 package ValkyrienWarfareBase.CoreMod;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 import javax.annotation.Nullable;
 
 import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableSetMultimap;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
@@ -15,6 +16,7 @@ import ValkyrienWarfareBase.ChunkManagement.PhysicsChunkManager;
 import ValkyrienWarfareBase.Collision.EntityCollisionInjector;
 import ValkyrienWarfareBase.Collision.EntityPolygon;
 import ValkyrienWarfareBase.Collision.Polygon;
+import ValkyrienWarfareBase.Interaction.ShipUUIDToPosData.ShipPositionData;
 import ValkyrienWarfareBase.Physics.BlockMass;
 import ValkyrienWarfareBase.Physics.PhysicsQueuedForce;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
@@ -46,39 +48,86 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkGenerator;
 import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.common.ForgeChunkManager.Ticket;
 
 public class CallRunner {
 
+//    public static boolean isServerInOnlineMode(){
+//    	return false;
+//    }
+
 	/**
-	 * I've got 30 different reasons to hate ChickenChunks; but fuck him this is #1
-	 * @param world
-	 * @return
+	 * Fixes the chair dismount position
+	 * @param entity
+	 * @param potentialShip
 	 */
-	public static ImmutableSetMultimap<ChunkPos, Ticket> fuckChickenChunks(World world){
-		ImmutableSetMultimap original = world.getPersistentChunks();
+	public static void onEntityDismountEntity(EntityLivingBase entity, Entity potentialShip){
+		if(potentialShip instanceof PhysicsWrapperEntity){
+			entity.ridingEntity = null;
+			entity.posY += 1.45D;
+			return;
+		}
+		entity.dismountEntity(potentialShip);
+	}
 
-		ImmutableSetMultimap.Builder builder = ImmutableSetMultimap.builder();
-		builder.putAll(original);
+	public static Iterator<Chunk> rebuildChunkIterator(Iterator<Chunk> chunkIterator){
+		ArrayList<Chunk> newBackingArray = new ArrayList<Chunk>();
+		while(chunkIterator.hasNext()){
+			newBackingArray.add(chunkIterator.next());
+		}
+		return newBackingArray.iterator();
+	}
 
-		ArrayList<PhysicsWrapperEntity> wrapperEntities = ValkyrienWarfareMod.physicsManager.getManagerForWorld(world).getTickablePhysicsEntities();
-		for(PhysicsWrapperEntity wrapper:wrapperEntities){
-			for(Chunk[] chunks:wrapper.wrapping.claimedChunks){
-				for(Chunk chunk:chunks){
-					//Don't bother generating a new ticket, this specific use case works with it
-					builder.put(new ChunkPos(chunk.xPosition, chunk.zPosition), chunk);
-				}
+    public static BlockPos getBedSpawnLocation(BlockPos toReturn, World worldIn, BlockPos bedLocation, boolean forceSpawn){
+//    	System.out.println("Keep their heads ringing");
+
+		int chunkX = bedLocation.getX() >> 4;
+		int chunkZ = bedLocation.getZ() >> 4;
+		long chunkPos = ChunkPos.chunkXZ2Int(chunkX, chunkZ);
+
+		UUID shipManagingID = ValkyrienWarfareMod.chunkManager.getShipIDManagingPos_Persistant(worldIn, chunkX, chunkZ);
+		if(shipManagingID != null){
+			ShipPositionData positionData = ValkyrienWarfareMod.chunkManager.getShipPosition_Persistant(worldIn, shipManagingID);
+
+			if(positionData != null){
+				double[] lToWTransform = RotationMatrices.convertToDouble(positionData.lToWTransform);
+
+				Vector bedPositionInWorld = new Vector(bedLocation.getX() + .5D, bedLocation.getY() + .5D, bedLocation.getZ() + .5D);
+				RotationMatrices.applyTransform(lToWTransform, bedPositionInWorld);
+
+				bedPositionInWorld.Y += 1D;
+
+				bedLocation = new BlockPos(bedPositionInWorld.X, bedPositionInWorld.Y, bedPositionInWorld.Z);
+
+				return bedLocation;
+			}else{
+				System.err.println("A ship just had Chunks claimed persistant, but not any position data persistant");
 			}
 		}
 
-		return builder.build();
+    	return toReturn;
     }
+
+    private boolean[] alreadyTryingToSleep = new boolean[2];
+
+    //Ported to event
+//    public SleepResult trySleep(SleepResult result, EntityPlayer player, BlockPos bedLocation){
+//    	PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.worldObj, bedLocation);
+//    	if(wrapper != null){
+//    		player.addChatMessage(new TextComponentString("Spawn Point Set!"));
+//    		player.playerLocation = bedLocation;
+//    		return SleepResult.NOT_POSSIBLE_HERE;
+//    	}
+//    	return result;
+//    }
 
 	public static double getDistanceSq(TileEntity tile, double x, double y, double z){
 		World tileWorld = tile.getWorld();
 		double toReturn = tile.getDistanceSq(x, y, z);
 
+//		System.out.println("test");
+
 		if(tileWorld != null){
+
 			//Assume on Ship
 			if(tileWorld.isRemote && toReturn > 9999999D){
 				BlockPos pos = tile.getPos();
@@ -319,6 +368,22 @@ public class CallRunner {
 	}
 
 	public static List<Entity> onGetEntitiesInAABBexcluding(World world, @Nullable Entity entityIn, AxisAlignedBB boundingBox, @Nullable Predicate<? super Entity> predicate) {
+		if((boundingBox.maxX-boundingBox.minX)*(boundingBox.maxZ-boundingBox.minZ) > 1000000D){
+			return new ArrayList();
+		}
+
+		//Prevents the players item pickup AABB from merging with a PhysicsWrapperEntity AABB
+		if(entityIn instanceof EntityPlayer){
+			EntityPlayer player = (EntityPlayer)entityIn;
+			if (player.isRiding() && !player.getRidingEntity().isDead && player.getRidingEntity() instanceof PhysicsWrapperEntity){
+                AxisAlignedBB axisalignedbb = player.getEntityBoundingBox().union(player.getRidingEntity().getEntityBoundingBox()).expand(1.0D, 0.0D, 1.0D);
+
+                if(boundingBox.equals(axisalignedbb)){
+                	boundingBox = player.getEntityBoundingBox().expand(1.0D, 0.5D, 1.0D);
+                }
+            }
+		}
+
 		List toReturn = world.getEntitiesInAABBexcluding(entityIn, boundingBox, predicate);
 
 		BlockPos pos = new BlockPos((boundingBox.minX + boundingBox.maxX) / 2D, (boundingBox.minY + boundingBox.maxY) / 2D, (boundingBox.minZ + boundingBox.maxZ) / 2D);
@@ -354,8 +419,7 @@ public class CallRunner {
 		return true;
 	}
 
-	public static double onGetDistanceSq(Entity entity, double x, double y, double z) {
-		double vanilla = entity.getDistanceSq(x, y, z);
+	public static double getDistanceSq(double vanilla, Entity entity, double x, double y, double z) {
 		if (vanilla < 64.0D) {
 			return vanilla;
 		} else {
@@ -408,14 +472,17 @@ public class CallRunner {
 		world.playSound(x, y, z, soundIn, category, volume, pitch, distanceDelay);
 	}
 
-	public static double onGetDistanceSq(TileEntity ent, double x, double y, double z) {
+	public static double getDistanceSq(double ret, TileEntity ent, double x, double y, double z) {
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(ent.getWorld(), ent.getPos());
 		if (wrapper != null) {
 			Vector vec = new Vector(x, y, z);
 			wrapper.wrapping.coordTransform.fromGlobalToLocal(vec);
-			return ent.getDistanceSq(vec.X, vec.Y, vec.Z);
+			double d0 = ent.getPos().getX() - vec.X;
+	        double d1 = ent.getPos().getY() - vec.Y;
+	        double d2 = ent.getPos().getZ() - vec.Z;
+	        return d0 * d0 + d1 * d1 + d2 * d2;
 		}
-		return ent.getDistanceSq(x, y, z);
+		return ret;
 	}
 
 /*	public static boolean onSpawnEntityInWorld(World world, Entity entity) {
@@ -495,6 +562,10 @@ public class CallRunner {
     }
 
 	public static RayTraceResult onRayTraceBlocks(World world, Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock) {
+		return rayTraceBlocksIgnoreShip(world, vec31, vec32, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock, null);
+	}
+
+	public static RayTraceResult rayTraceBlocksIgnoreShip(World world, Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock, PhysicsWrapperEntity toIgnore) {
 		RayTraceResult vanillaTrace = world.rayTraceBlocks(vec31, vec32, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
 		WorldPhysObjectManager physManager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(world);
 		if (physManager == null) {
@@ -507,6 +578,9 @@ public class CallRunner {
 		AxisAlignedBB playerRangeBB = new AxisAlignedBB(vec31.xCoord, vec31.yCoord, vec31.zCoord, vec32.xCoord, vec32.yCoord, vec32.zCoord);
 
 		List<PhysicsWrapperEntity> nearbyShips = physManager.getNearbyPhysObjects(playerRangeBB);
+		//Get rid of the Ship that we're not supposed to be RayTracing for
+		nearbyShips.remove(toIgnore);
+
 		boolean changed = false;
 
 		double reachDistance = playerReachVector.lengthVector();

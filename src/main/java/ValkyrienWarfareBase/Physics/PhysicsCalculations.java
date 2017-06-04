@@ -58,6 +58,9 @@ public class PhysicsCalculations {
 
 	public boolean actAsArchimedes = false;
 
+	@Deprecated
+	public boolean isShipPastBuild90 = false;
+
 	public PhysicsCalculations(PhysicsObject toProcess) {
 		parent = toProcess;
 		wrapperEnt = parent.wrapper;
@@ -116,7 +119,7 @@ public class PhysicsCalculations {
 		double newMassAtPos = BlockMass.basicMass.getMassFromState(newState, pos, worldObj);
 		// Don't change anything if the mass is the same
 		if (oldMassAtPos != newMassAtPos) {
-			final double notAHalf = .5D;
+			final double notAHalf = .4D;
 			final double x = pos.getX() + .5D;
 			final double y = pos.getY() + .5D;
 			final double z = pos.getZ() + .5D;
@@ -186,6 +189,10 @@ public class PhysicsCalculations {
 	}
 
 	public void rawPhysTickPreCol(double newPhysSpeed, int iters) {
+		if(!isShipPastBuild90){
+			recalculateInertiaMatrices();
+			isShipPastBuild90 = true;
+		}
 		if (parent.doPhysics) {
 			updatePhysSpeedAndIters(newPhysSpeed, iters);
 			updateParentCenterOfMass();
@@ -393,19 +400,19 @@ public class PhysicsCalculations {
 		double[] rotationChange = RotationMatrices.getRotationMatrix(angularVelocity.X, angularVelocity.Y, angularVelocity.Z, angularVelocity.length() * physTickSpeed);
 		Quaternion faggot = Quaternion.QuaternionFromMatrix(RotationMatrices.getMatrixProduct(rotationChange, coordTrans.lToWRotation));
 		double[] radians = faggot.toRadians();
-		if (!(Double.isNaN(radians[0]) || Double.isNaN(radians[1]) || Double.isNaN(radians[2]))) {
-			wrapperEnt.pitch = (float) Math.toDegrees(radians[0]);
-			wrapperEnt.yaw = (float) Math.toDegrees(radians[1]);
-			wrapperEnt.roll = (float) Math.toDegrees(radians[2]);
+		//if (!(Double.isNaN(radians[0]) || Double.isNaN(radians[1]) || Double.isNaN(radians[2]))) {
+			wrapperEnt.pitch = Double.isNaN(radians[0]) ? 0.0f : (float) Math.toDegrees(radians[0]);
+			wrapperEnt.yaw = Double.isNaN(radians[1]) ? 0.0f : (float) Math.toDegrees(radians[1]);
+			wrapperEnt.roll = Double.isNaN(radians[2]) ? 0.0f : (float) Math.toDegrees(radians[2]);
 			coordTrans.updateAllTransforms();
-		} else {
-			 wrapperEnt.isDead=true;
-			wrapperEnt.wrapping.doPhysics = false;
+		//} else {
+			//wrapperEnt.isDead=true;
+			//wrapperEnt.wrapping.doPhysics = false;
 //			linearMomentum = new Vector();
 //			angularVelocity = new Vector();
-			System.out.println(angularVelocity);
-			System.out.println("Rotational Error?");
-		}
+			//System.out.println(angularVelocity);
+			//System.out.println("Rotational Error?");
+		//}
 	}
 
 	public void applyLinearVelocity() {
@@ -423,7 +430,7 @@ public class PhysicsCalculations {
 		}
 	}
 
-	public Vector getMomentumAtPoint(Vector inBodyWO) {
+	public Vector getVelocityAtPoint(Vector inBodyWO) {
 		Vector speed = angularVelocity.cross(inBodyWO);
 		speed.X += (linearMomentum.X * invMass);
 		speed.Y += (linearMomentum.Y * invMass);
@@ -431,7 +438,7 @@ public class PhysicsCalculations {
 		return speed;
 	}
 
-	public void setMomentumAtPoint(Vector inBodyWO, Vector toSet) {
+	public void setVectorToVelocityAtPoint(Vector inBodyWO, Vector toSet) {
 		toSet.setCross(angularVelocity, inBodyWO);
 
 		toSet.X += (linearMomentum.X * invMass);
@@ -447,6 +454,7 @@ public class PhysicsCalculations {
 		NBTUtils.writeVectorToNBT("CM", centerOfMass, compound);
 
 		NBTUtils.write3x3MatrixToNBT("MOI", MoITensor, compound);
+		compound.setBoolean("isShipPastBuild90", isShipPastBuild90);
 	}
 
 	public void readFromNBTTag(NBTTagCompound compound) {
@@ -458,6 +466,7 @@ public class PhysicsCalculations {
 
 		MoITensor = NBTUtils.read3x3MatrixFromNBT("MOI", compound);
 
+		isShipPastBuild90 = compound.getBoolean("isShipPastBuild90");
 		processNBTRead();
 	}
 
@@ -473,6 +482,20 @@ public class PhysicsCalculations {
 		for (BlockPos pos : parent.blockPositions) {
 			onSetBlockState(Air, parent.VKChunkCache.getBlockState(pos), pos);
 		}
+	}
+
+	@Deprecated
+	//Temp code that upgrades old ships to new BlockMass System; Will remove in future
+	private void recalculateInertiaMatrices(){
+		mass = 0;
+		centerOfMass = new Vector(parent.refrenceBlockPos.getX() + .5D, parent.refrenceBlockPos.getY() + .5D, parent.refrenceBlockPos.getZ() + .5D);
+		IBlockState airState = Blocks.AIR.getDefaultState();
+		activeForcePositions = new ArrayList<BlockPos>();
+		for(BlockPos pos:parent.blockPositions){
+			onSetBlockState(airState, parent.VKChunkCache.getBlockState(pos), pos);
+		}
+		System.out.println("Recalculated physics inertia matrix for an old Ship of size " + parent.blockPositions.size());
+		processNBTRead();
 	}
 
 }

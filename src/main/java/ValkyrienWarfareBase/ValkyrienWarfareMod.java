@@ -29,6 +29,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.capabilities.Capability;
@@ -38,6 +39,7 @@ import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -60,7 +62,7 @@ public class ValkyrienWarfareMod {
 
 	public static final String MODID = "valkyrienwarfare";
 	public static final String MODNAME = "Valkyrien Warfare";
-	public static final String MODVER = "0.899";
+	public static final String MODVER = "0.9_alpha";
 
 	public static File configFile;
 	public static Configuration config;
@@ -84,7 +86,8 @@ public class ValkyrienWarfareMod {
 	public static DimensionPhysicsChunkManager chunkManager;
 	public static DimensionPhysObjectManager physicsManager;
 
-	public static ValkyrienWarfareMod instance;
+	@Instance(MODID)
+	public static ValkyrienWarfareMod instance = new ValkyrienWarfareMod();
 
 	public static int airStateIndex;
 	public static double standingTolerance = .42D;
@@ -109,7 +112,6 @@ public class ValkyrienWarfareMod {
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		proxy.preInit(event);
-		instance = this;
 		registerBlocks(event);
 		registerRecipies(event);
 		registerNetworks(event);
@@ -138,7 +140,7 @@ public class ValkyrienWarfareMod {
 	@EventHandler
 	public void serverStart(FMLServerStartingEvent event) {
 		MinecraftServer server = event.getServer();
-		ExtraRegistry.registerCommands(server);
+		ModCommands.registerCommands(server);
 	}
 
 	private void registerNetworks(FMLStateEvent event) {
@@ -149,11 +151,10 @@ public class ValkyrienWarfareMod {
 
 	private void registerBlocks(FMLStateEvent event) {
 		physicsInfuser = new BlockPhysicsInfuser(Material.ROCK).setHardness(12f).setUnlocalizedName("shipblock").setRegistryName(MODID, "shipblock").setCreativeTab(CreativeTabs.TRANSPORTATION);
-		physicsInfuserCreative = new BlockPhysicsInfuserCreative(Material.ROCK).setHardness(12f).setUnlocalizedName("shipblockcreative").setRegistryName(MODID, "shipblockcreative").setCreativeTab(CreativeTabs.TRANSPORTATION);
-		;
+		physicsInfuserCreative = new BlockPhysicsInfuserCreative(Material.ROCK).setHardness(12f).setUnlocalizedName("shipblockcreative").setRegistryName(MODID, "shipblockcreative").setCreativeTab(CreativeTabs.TRANSPORTATION);;
 
-		GameRegistry.registerBlock(physicsInfuser);
-		GameRegistry.registerBlock(physicsInfuserCreative);
+		registerBlock(physicsInfuser);
+		registerBlock(physicsInfuserCreative);
 	}
 
 	private void registerRecipies(FMLStateEvent event) {
@@ -311,5 +312,14 @@ public class ValkyrienWarfareMod {
 				return false;
 			}
 		}
+	}
+
+	private static void registerBlock(Block block){
+		GameRegistry.register(block);
+		registerItemBlock(block);
+	}
+
+	private static void registerItemBlock(Block block){
+		GameRegistry.register(new ItemBlock(block).setRegistryName(block.getRegistryName()));
 	}
 }

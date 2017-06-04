@@ -27,6 +27,7 @@ public class EntityCollisionInjector {
 		if (entity instanceof PhysicsWrapperEntity) {
 			return true;
 		}
+
 		Vector velVec = new Vector(dx, dy, dz);
 		double origDx = dx;
 		double origDy = dy;
@@ -179,6 +180,10 @@ public class EntityCollisionInjector {
 				Polygon playerInLocal = new Polygon(entityBB, wrapper.wrapping.coordTransform.wToLTransform);
 				AxisAlignedBB bb = playerInLocal.getEnclosedAABB();
 
+				if((bb.maxX - bb.minX)*(bb.maxZ - bb.minZ) > 9898989){
+					//This is too big, something went wrong here
+					break;
+				}
 				List<AxisAlignedBB> collidingBBs = entity.worldObj.getCollisionBoxes(bb);
 
 				// TODO: Fix the performance of this!
@@ -202,7 +207,7 @@ public class EntityCollisionInjector {
 				Vector entityPos = new Vector(posX, posY, posZ);
 				RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, entityPos);
 
-				entity.setPosition(entityPos.X, entityPos.Y, entityPos.Z);
+				setEntityPositionAndUpdateBB(entity, entityPos.X, entityPos.Y, entityPos.Z);
 
 				int entityChunkX = MathHelper.floor_double(entity.posX / 16.0D);
 				int entityChunkZ = MathHelper.floor_double(entity.posZ / 16.0D);
@@ -227,12 +232,21 @@ public class EntityCollisionInjector {
 					chunkIn.entityLists[chunkYIndex].remove(entity);
 				}
 
-				entity.setPosition(posX, posY, posZ);
+				setEntityPositionAndUpdateBB(entity, posX, posY, posZ);
 			}
 		}
 
 		return collisions;
 	}
+
+    public static void setEntityPositionAndUpdateBB(Entity entity, double x, double y, double z){
+    	entity.posX = x;
+    	entity.posY = y;
+    	entity.posZ = z;
+        float f = entity.width / 2.0F;
+        float f1 = entity.height;
+        entity.boundingBox = new AxisAlignedBB(x - (double)f, y, z - (double)f, x + (double)f, y + (double)f1, z + (double)f);
+    }
 
 	private static boolean isDifSignificant(double dif1, double d2) {
 		if (Math.abs(dif1 - d2) < errorSignificance) {

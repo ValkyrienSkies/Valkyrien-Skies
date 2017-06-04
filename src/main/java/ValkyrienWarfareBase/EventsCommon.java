@@ -10,15 +10,20 @@ import ValkyrienWarfareBase.Interaction.CustomNetHandlerPlayServer;
 import ValkyrienWarfareBase.Interaction.ValkyrienWarfareWorldEventListener;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsTickHandler;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
+import ValkyrienWarfareBase.PhysicsManagement.ShipType;
 import ValkyrienWarfareControl.Piloting.ClientPilotingManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayer.SleepResult;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemBucket;
-import net.minecraft.nbt.NBTPrimitive;
+import net.minecraft.item.ItemNameTag;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
@@ -35,9 +40,12 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.HarvestCheck;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
+import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
+import net.minecraftforge.event.world.BlockEvent.PlaceEvent;
 import net.minecraftforge.event.world.ChunkDataEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.Event.Result;
@@ -53,6 +61,39 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
 public class EventsCommon {
 
 	public static HashMap<EntityPlayerMP, Double[]> lastPositions = new HashMap<EntityPlayerMP, Double[]>();
+
+	@SubscribeEvent()
+	public void onPlayerSleepInBedEvent(PlayerSleepInBedEvent event){
+		EntityPlayer player = event.getEntityPlayer();
+		BlockPos pos = event.getPos();
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.worldObj, pos);
+		if(wrapper != null){
+			if(player instanceof EntityPlayerMP){
+				EntityPlayerMP playerMP = (EntityPlayerMP)player;
+				player.addChatMessage(new TextComponentString("Spawn Point Set!"));
+				player.setSpawnPoint(pos, true);
+	    		event.setResult(SleepResult.NOT_POSSIBLE_HERE);
+			}
+		}
+	}
+
+	@SubscribeEvent()
+	public void onRightClickBlock(RightClickBlock event){
+		if(!event.getWorld().isRemote){
+			ItemStack stack = event.getItemStack();
+			if(stack != null && stack.getItem() instanceof ItemNameTag){
+				BlockPos posAt = event.getPos();
+				EntityPlayer player = event.getEntityPlayer();
+				World world = event.getWorld();
+				PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, posAt);
+				if(wrapper != null){
+					wrapper.setCustomNameTag(stack.getDisplayName());
+		            --stack.stackSize;
+		            event.setCanceled(true);
+				}
+			}
+		}
+	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onEntityInteractEvent(EntityInteract event) {
@@ -137,12 +178,12 @@ public class EventsCommon {
 				lastPositions.put(p, pos);
 			}
 			try {
-			if (pos[0] != p.posX || pos[2] != p.posZ) { // Player has moved
-				if (Math.abs(p.posX) > 27000000 || Math.abs(p.posZ) > 27000000) { // Player is outside of world border, tp them back
-					p.attemptTeleport(pos[0], pos[1], pos[2]);
-					p.addChatMessage(new TextComponentString("You can't go beyond 27000000 blocks because airships are stored there!"));
+				if (pos[0] != p.posX || pos[2] != p.posZ) { // Player has moved
+					if (Math.abs(p.posX) > 27000000 || Math.abs(p.posZ) > 27000000) { // Player is outside of world border, tp them back
+						p.attemptTeleport(pos[0], pos[1], pos[2]);
+						p.addChatMessage(new TextComponentString("You can't go beyond 27000000 blocks because airships are stored there!"));
+					}
 				}
-			}
 			} catch (NullPointerException e)	{
 				ValkyrienWarfareMod.VWLogger.log(Level.WARNING, "Nullpointer EventsCommon.java:onPlayerTickEvent");
 			}
@@ -341,6 +382,8 @@ public class EventsCommon {
 			ValkyrienWarfareMod.chunkManager.removeWorld(event.getWorld());
 		} else {
 			ClientPilotingManager.dismountPlayer();
+			//Fixes memory leak; @DaPorkChop please don't leave static maps lying around D:
+			lastPositions.clear();
 		}
 		ValkyrienWarfareMod.physicsManager.removeWorld(event.getWorld());
 	}
@@ -396,7 +439,7 @@ public class EventsCommon {
 	@SubscribeEvent
 	public void onEntityConstruct(AttachCapabilitiesEvent evt) {
 		if(evt.getObject() instanceof EntityPlayer){
-			evt.addCapability(new ResourceLocation(ValkyrienWarfareMod.MODID, "IAirshipCounter"), new ICapabilitySerializable<NBTPrimitive>() {
+			evt.addCapability(new ResourceLocation(ValkyrienWarfareMod.MODID, "AirshipCounter"), new ICapabilitySerializable<NBTTagIntArray>() {
 				IAirshipCounterCapability inst = ValkyrienWarfareMod.airshipCounter.getDefaultInstance();
 
 				@Override
@@ -410,13 +453,16 @@ public class EventsCommon {
 				}
 
 				@Override
-				public NBTPrimitive serializeNBT() {
-					return (NBTPrimitive) ValkyrienWarfareMod.airshipCounter.getStorage().writeNBT(ValkyrienWarfareMod.airshipCounter, inst, null);
+				public NBTTagIntArray serializeNBT() {
+					return (NBTTagIntArray) ValkyrienWarfareMod.airshipCounter.getStorage().writeNBT(ValkyrienWarfareMod.airshipCounter, inst, null);
 				}
 
 				@Override
-				public void deserializeNBT(NBTPrimitive nbt) {
-					ValkyrienWarfareMod.airshipCounter.getStorage().readNBT(ValkyrienWarfareMod.airshipCounter, inst, null, nbt);
+				public void deserializeNBT(NBTTagIntArray nbt) {
+					//Otherwise its old, then ignore it
+					if(nbt instanceof NBTTagIntArray){
+						ValkyrienWarfareMod.airshipCounter.getStorage().readNBT(ValkyrienWarfareMod.airshipCounter, inst, null, nbt);
+					}
 				}
 			});
 		}
@@ -465,6 +511,28 @@ public class EventsCommon {
 					event.setCanceled(true);
 					return;
 				}
+
+				if(physObj.wrapping.shipType == ShipType.Oribtal){
+					//Do not let it break
+				}
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void onPlaceEvent(PlaceEvent event){
+		PhysicsWrapperEntity physObj = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(event.getWorld(), event.getPos());
+		if (physObj != null) {
+			if (ValkyrienWarfareMod.runAirshipPermissions && !(physObj.wrapping.creator.equals(event.getPlayer().entityUniqueID.toString()) || physObj.wrapping.allowedUsers.contains(event.getPlayer().entityUniqueID.toString())))	{
+				event.getPlayer().addChatMessage(new TextComponentString("You need to be added to the airship to do that!" + (physObj.wrapping.creator == null || physObj.wrapping.creator.trim().isEmpty() ? " Try using \"/airshipSettings claim\"!" : "")));
+				event.setCanceled(true);
+				return;
+			}
+
+			if(physObj.wrapping.shipType == ShipType.Oribtal){
+				//Do not let it place any blocks
+//				System.out.println("test");
+				event.setCanceled(true);
 			}
 		}
 	}

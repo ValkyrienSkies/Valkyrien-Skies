@@ -87,6 +87,9 @@ public static final ArrayList<String> completionOptions = new ArrayList<String>(
 					case SUCCESS:
 						p.addChatMessage(new TextComponentString("Success! " + target.getName() + " is the new owner of this airship!"));
 						break;
+					case ALREADY_CLAIMED:
+						p.addChatMessage(new TextComponentString("Airship already claimed"));
+						break;
 					}
 					return;
 				}
@@ -124,6 +127,11 @@ public static final ArrayList<String> completionOptions = new ArrayList<String>(
 				}
 			}
 			p.addChatMessage(new TextComponentString("You need to be the owner of an airship to change airship settings!"));
+		}
+		if (args[0].equals("help")){
+			for(String command : completionOptions){
+				sender.addChatMessage(new TextComponentString(command));
+			}
 		}
 
 		sender.addChatMessage(new TextComponentString(TextFormatting.RED + "Usage: " + getCommandUsage(sender)));

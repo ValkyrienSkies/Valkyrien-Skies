@@ -1,4 +1,9 @@
 tile.shipblock.name=Physik Einflößer
 tile.shipblockcreative.name=Physik Einflößer (Kreativ)
-tile.antigravengine.name=Ether Kompressor S1
 tile.basichovercraftcontroller.name=Einfacher Luftschiffkontroller
+
+tile.antigravengine.name=Einfacher Ether Kompressor
+tile.advancedEtherCompressor.name=Fortgeschrittener Ether Kompressor
+tile.eliteEtherCompressor.name=Eliter Ether Kompressor
+tile.ultimateEtherCompressor.name=Ultimativer Ether Kompressor
+tile.creativeEtherCompressor.name=Ether Kompressor (Kreativ)

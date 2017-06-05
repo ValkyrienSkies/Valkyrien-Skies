@@ -4,6 +4,6 @@
   "package": "ValkyrienWarfareBase.Mixin",
   "refmap": "mixins.valkyrienwarfare.refmap.json",
   "mixins": [
-    "MixinTestGuiMainMenu"
+    "entity.MixinEntityLivingBase"
   ]
 }

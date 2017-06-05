@@ -77,11 +77,6 @@ public class TransformAdapter extends ClassVisitor {
 //			return false;
 //		}
 
-		if (isMethod(calledDesc, "(L"+EntityClassName+";)V", calledName, EntityLivingBaseName, "dismountEntity", "func_110145_l", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onEntityDismountEntity", "(L"+EntityLivingBaseName+";L"+EntityClassName+";)V", itf);
-			return false;
-		}
-
 		//TODO: Move to seperate mod
 		if (isMethod(calledDesc, "()I", calledName, HttpUtilName, "getSuitableLanPort", "func_76181_a", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "getSuitableLanPort", "()I", itf);

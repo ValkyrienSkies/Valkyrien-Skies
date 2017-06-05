@@ -166,9 +166,9 @@ public class EventsCommon {
 			for(Chunk[] chunks:wrapper.wrapping.claimedChunks){
 				for(Chunk chunk:chunks){
 					if(amAdding){
-						((WorldServer)worldFor).getChunkProvider().id2ChunkMap.put(ChunkPos.asLong(chunk.xPosition, chunk.zPosition), chunk);
+						((WorldServer)worldFor).getChunkProvider().id2ChunkMap.put(ChunkPos.asLong(chunk.x, chunk.z), chunk);
 					}else{
-//						((WorldServer)worldFor).getChunkProvider().id2ChunkMap.remove(ChunkPos.chunkXZ2Int(chunk.xPosition, chunk.zPosition))
+//						((WorldServer)worldFor).getChunkProvider().id2ChunkMap.remove(ChunkPos.chunkXZ2Int(chunk.x, chunk.z))
 					}
 				}
 			}

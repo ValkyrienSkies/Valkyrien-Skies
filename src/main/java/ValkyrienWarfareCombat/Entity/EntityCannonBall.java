@@ -70,7 +70,7 @@ public class EntityCannonBall extends Entity {
 		} else {
 			if (traceResult.hitVec != null && !world.isRemote) {
 				processCollision(traceResult);
-				kill();
+				this.setDead();
 			}
 		}
 	}

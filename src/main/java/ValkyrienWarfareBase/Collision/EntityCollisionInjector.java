@@ -214,7 +214,7 @@ public class EntityCollisionInjector {
 				int entityChunkZ = MathHelper.floor(entity.posZ / 16.0D);
 
 				if(wrapper.wrapping.ownsChunk(entityChunkX, entityChunkZ)){
-					Chunk chunkIn = wrapper.wrapping.claimedChunks[entityChunkX-wrapper.wrapping.claimedChunks[0][0].xPosition][entityChunkZ-wrapper.wrapping.claimedChunks[0][0].zPosition];
+					Chunk chunkIn = wrapper.wrapping.claimedChunks[entityChunkX-wrapper.wrapping.claimedChunks[0][0].x][entityChunkZ-wrapper.wrapping.claimedChunks[0][0].z];
 
 					int chunkYIndex = MathHelper.floor(entity.posY / 16.0D);
 

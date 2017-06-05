@@ -101,8 +101,8 @@ public class PhysRenderChunk {
 			ArrayList<TileEntity> updatedRenderTiles = new ArrayList<TileEntity>();
 
 			MutableBlockPos pos = new MutableBlockPos();
-			for (int x = chunkToRender.xPosition * 16; x < chunkToRender.xPosition * 16 + 16; x++) {
-				for (int z = chunkToRender.zPosition * 16; z < chunkToRender.zPosition * 16 + 16; z++) {
+			for (int x = chunkToRender.x * 16; x < chunkToRender.x * 16 + 16; x++) {
+				for (int z = chunkToRender.z * 16; z < chunkToRender.z * 16 + 16; z++) {
 					for (int y = yMin; y <= yMax; y++) {
 						pos.setPos(x, y, z);
 
@@ -207,8 +207,8 @@ public class PhysRenderChunk {
 			// }
 			ForgeHooksClient.setRenderLayer(layerToUpdate);
 			MutableBlockPos pos = new MutableBlockPos();
-			for (int x = chunkToRender.xPosition * 16; x < chunkToRender.xPosition * 16 + 16; x++) {
-				for (int z = chunkToRender.zPosition * 16; z < chunkToRender.zPosition * 16 + 16; z++) {
+			for (int x = chunkToRender.x * 16; x < chunkToRender.x * 16 + 16; x++) {
+				for (int z = chunkToRender.z * 16; z < chunkToRender.z * 16 + 16; z++) {
 					for (int y = yMin; y <= yMax; y++) {
 						pos.setPos(x, y, z);
 						iblockstate = chunkToRender.getBlockState(pos);

@@ -169,7 +169,7 @@ public class CallRunner {
 
 	//Prevent random villages and shit from popping up on ships
     public static void onPopulateChunk(Chunk chunk, IChunkGenerator generator){
-    	if(PhysicsChunkManager.isLikelyShipChunk(chunk.xPosition, chunk.zPosition)){
+    	if(PhysicsChunkManager.isLikelyShipChunk(chunk.x, chunk.z)){
 //        	System.out.println("Tried populating a Ship Chunk, but failed!");
     		return;
     	}
@@ -182,7 +182,7 @@ public class CallRunner {
     	int i = MathHelper.floor(entityIn.posX / 16.0D);
         int j = MathHelper.floor(entityIn.posZ / 16.0D);
 
-        if(i == chunk.xPosition && j == chunk.zPosition){
+        if(i == chunk.x && j == chunk.z){
         	chunk.addEntity(entityIn);
         }else{
         	Chunk realChunkFor = world.getChunkFromChunkCoords(i, j);

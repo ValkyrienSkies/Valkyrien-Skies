@@ -51,10 +51,10 @@ public class VWChunkCache {
 	}
 
 	public VWChunkCache(World world, Chunk[][] toCache) {
-		minChunkX = toCache[0][0].xPosition;
-		minChunkZ = toCache[0][0].zPosition;
-		maxChunkX = toCache[toCache.length - 1][toCache[0].length - 1].xPosition;
-		maxChunkZ = toCache[toCache.length - 1][toCache[0].length - 1].zPosition;
+		minChunkX = toCache[0][0].x;
+		minChunkZ = toCache[0][0].z;
+		maxChunkX = toCache[toCache.length - 1][toCache[0].length - 1].x;
+		maxChunkZ = toCache[toCache.length - 1][toCache[0].length - 1].z;
 		cachedChunks = new Chunk[maxChunkX - minChunkX + 1][maxChunkZ - minChunkZ + 1];
 		isChunkLoaded = new boolean[maxChunkX - minChunkX + 1][maxChunkZ - minChunkZ + 1];
 		cachedChunks = toCache.clone();

@@ -4,6 +4,7 @@ import ValkyrienWarfareBase.NBTUtils;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareControl.Block.BlockHovercraftController;
+import ValkyrienWarfareControl.TileEntity.BasicNodeTileEntity;
 import ValkyrienWarfareControl.TileEntity.TileEntityHoverController;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
@@ -11,7 +12,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public abstract class TileEntityEtherCompressor extends TileEntity {
+public abstract class TileEntityEtherCompressor extends BasicNodeTileEntity {
 	public BlockPos controllerPos = BlockPos.ORIGIN;
 	public Vector angularThrust = new Vector();
 	public Vector linearThrust = new Vector();
@@ -22,7 +23,7 @@ public abstract class TileEntityEtherCompressor extends TileEntity {
 	public TileEntityEtherCompressor() {
 		validate();
 	}
-	
+
 	public TileEntityEtherCompressor(double power) {
 		this.maxThrust = power;
 		validate();

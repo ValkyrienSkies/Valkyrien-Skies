@@ -2,8 +2,8 @@ package ValkyrienWarfareControl.Item;
 
 import ValkyrienWarfareControl.ValkyrienWarfareControlMod;
 import ValkyrienWarfareControl.Capability.ICapabilityLastRelay;
-import ValkyrienWarfareControl.GraphTheory.INodeProvider;
-import ValkyrienWarfareControl.GraphTheory.Node;
+import ValkyrienWarfareControl.ThrustNetwork.INodeProvider;
+import ValkyrienWarfareControl.ThrustNetwork.Node;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;

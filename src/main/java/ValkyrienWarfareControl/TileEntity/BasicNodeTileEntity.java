@@ -1,12 +1,13 @@
 package ValkyrienWarfareControl.TileEntity;
 
-import ValkyrienWarfareControl.GraphTheory.INodeProvider;
-import ValkyrienWarfareControl.GraphTheory.Node;
+import ValkyrienWarfareControl.ThrustNetwork.INodeProvider;
+import ValkyrienWarfareControl.ThrustNetwork.Node;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ITickable;
 
-public class BasicNodeTileEntity extends TileEntity implements INodeProvider {
+public class BasicNodeTileEntity extends TileEntity implements INodeProvider, ITickable {
 
 	public final Node tileNode;
 
@@ -72,4 +73,9 @@ public class BasicNodeTileEntity extends TileEntity implements INodeProvider {
     public void validate() {
         this.tileEntityInvalid = false;
     }
+
+	@Override
+	public void update() {
+
+	}
 }

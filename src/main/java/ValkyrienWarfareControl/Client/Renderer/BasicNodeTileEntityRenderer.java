@@ -2,7 +2,7 @@ package ValkyrienWarfareControl.Client.Renderer;
 
 import org.lwjgl.opengl.GL11;
 
-import ValkyrienWarfareControl.GraphTheory.Node;
+import ValkyrienWarfareControl.ThrustNetwork.Node;
 import ValkyrienWarfareControl.TileEntity.BasicNodeTileEntity;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;

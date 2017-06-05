@@ -1,4 +1,4 @@
-package ValkyrienWarfareControl.GraphTheory;
+package ValkyrienWarfareControl.ThrustNetwork;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -144,6 +144,10 @@ public class Node {
 		}
 		parentNetwork = newNetwork;
 		return false;
+	}
+
+	public NodeNetwork getNodeNetwork(){
+		return parentNetwork;
 	}
 
 	public void readFromNBT(NBTTagCompound compound) {

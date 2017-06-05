@@ -1,4 +1,4 @@
-package ValkyrienWarfareControl.GraphTheory;
+package ValkyrienWarfareControl.ThrustNetwork;
 
 import java.util.ArrayList;
 import java.util.HashSet;

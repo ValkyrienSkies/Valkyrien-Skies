@@ -228,31 +228,4 @@ public class CallRunnerClient extends CallRunner {
 		GlStateManager.resetColor();
 		return renderer.renderBlockLayer(blockLayerIn, partialTicks, pass, entityIn);
 	}
-
-	public static BlockPos onGetPrecipitationHeightClient(World world, BlockPos posToCheck) {
-		BlockPos pos = world.getPrecipitationHeight(posToCheck);
-		// Servers shouldn't bother running this code
-
-		Vector traceStart = new Vector(pos.getX() + .5D, Minecraft.getMinecraft().player.posY + 50D, pos.getZ() + .5D);
-		Vector traceEnd = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
-
-//		System.out.println(traceStart);
-//		System.out.println(traceEnd);
-
-		RayTraceResult result = CallRunner.onRayTraceBlocks(world, traceStart.toVec3d(), traceEnd.toVec3d(), true, true, false);
-
-		if(result != null && result.typeOfHit != Type.MISS && result.getBlockPos() != null){
-
-			PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, result.getBlockPos());
-			if(wrapper != null){
-//				System.out.println("test");
-				Vector blockPosVector = new Vector(result.getBlockPos().getX() + .5D, result.getBlockPos().getY() + .5D, result.getBlockPos().getZ() + .5D);
-				wrapper.wrapping.coordTransform.fromLocalToGlobal(blockPosVector);
-				BlockPos toReturn = new BlockPos(pos.getX(), blockPosVector.Y + .5D, pos.getZ());
-				return toReturn;
-			}
-		}
-
-		return pos;
-	}
 }

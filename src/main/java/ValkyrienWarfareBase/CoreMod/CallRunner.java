@@ -79,15 +79,6 @@ public class CallRunner {
     	return toReturn;
     }
 
-	public static BlockPos onGetPrecipitationHeight(World world, BlockPos posToCheck) {
-		BlockPos pos = world.getPrecipitationHeight(posToCheck);
-		if(!world.isRemote || !ValkyrienWarfareMod.accurateRain){
-			return pos;
-		}else{
-			return CallRunnerClient.onGetPrecipitationHeightClient(world, posToCheck);
-		}
-	}
-
 	public static boolean onIsOnLadder(EntityLivingBase base) {
 		boolean vanilla = base.isOnLadder();
 		if (vanilla) {
@@ -137,96 +128,6 @@ public class CallRunner {
 			// return net.minecraftforge.common.ForgeHooks.isLivingOnLadder(iblockstate, base.worldObj, new BlockPos(i, j, k), base);
 		}
 		return false;
-	}
-
-	public static void onExplosionA(Explosion e) {
-		Vector center = new Vector(e.explosionX, e.explosionY, e.explosionZ);
-		World worldIn = e.world;
-		float radius = e.explosionSize;
-
-		AxisAlignedBB toCheck = new AxisAlignedBB(center.X - radius, center.Y - radius, center.Z - radius, center.X + radius, center.Y + radius, center.Z + radius);
-		List<PhysicsWrapperEntity> shipsNear = ValkyrienWarfareMod.physicsManager.getManagerForWorld(e.world).getNearbyPhysObjects(toCheck);
-		e.doExplosionA();
-		// TODO: Make this compatible and shit!
-		for (PhysicsWrapperEntity ship : shipsNear) {
-			Vector inLocal = new Vector(center);
-			RotationMatrices.applyTransform(ship.wrapping.coordTransform.wToLTransform, inLocal);
-			// inLocal.roundToWhole();
-			Explosion expl = new Explosion(ship.world, null, inLocal.X, inLocal.Y, inLocal.Z, radius, false, false);
-
-			double waterRange = .6D;
-
-			boolean cancelDueToWater = false;
-
-			for (int x = (int) Math.floor(expl.explosionX - waterRange); x <= Math.ceil(expl.explosionX + waterRange); x++) {
-				for (int y = (int) Math.floor(expl.explosionY - waterRange); y <= Math.ceil(expl.explosionY + waterRange); y++) {
-					for (int z = (int) Math.floor(expl.explosionZ - waterRange); z <= Math.ceil(expl.explosionZ + waterRange); z++) {
-						if (!cancelDueToWater) {
-							IBlockState state = e.world.getBlockState(new BlockPos(x, y, z));
-							if (state.getBlock() instanceof BlockLiquid) {
-								cancelDueToWater = true;
-							}
-						}
-					}
-				}
-			}
-
-			expl.doExplosionA();
-
-			double affectedPositions = 0D;
-
-			for (Object o : expl.affectedBlockPositions) {
-				BlockPos pos = (BlockPos) o;
-				IBlockState state = ship.world.getBlockState(pos);
-				Block block = state.getBlock();
-				if (!block.isAir(state, worldIn, (BlockPos) o) || ship.wrapping.explodedPositionsThisTick.contains((BlockPos) o)) {
-					affectedPositions++;
-				}
-			}
-
-			if (!cancelDueToWater) {
-				for (Object o : expl.affectedBlockPositions) {
-					BlockPos pos = (BlockPos) o;
-
-					IBlockState state = ship.world.getBlockState(pos);
-					Block block = state.getBlock();
-					if (!block.isAir(state, worldIn, (BlockPos) o) || ship.wrapping.explodedPositionsThisTick.contains((BlockPos) o)) {
-						if (block.canDropFromExplosion(expl)) {
-							block.dropBlockAsItemWithChance(ship.world, pos, state, 1.0F / expl.explosionSize, 0);
-						}
-						block.onBlockExploded(ship.world, pos, expl);
-						if (!worldIn.isRemote) {
-							Vector posVector = new Vector(pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5);
-
-							ship.wrapping.coordTransform.fromLocalToGlobal(posVector);
-
-							double mass = BlockMass.basicMass.getMassFromState(state, pos, ship.world);
-
-							double explosionForce = Math.sqrt(e.explosionSize) * 1000D * mass;
-
-							Vector forceVector = new Vector(pos.getX() + .5 - expl.explosionX, pos.getY() + .5 - expl.explosionY, pos.getZ() + .5 - expl.explosionZ);
-
-							double vectorDist = forceVector.length();
-
-							forceVector.normalize();
-
-							forceVector.multiply(explosionForce / vectorDist);
-
-							RotationMatrices.doRotationOnly(ship.wrapping.coordTransform.lToWRotation, forceVector);
-
-							PhysicsQueuedForce queuedForce = new PhysicsQueuedForce(forceVector, posVector, false, 1);
-
-							if (!ship.wrapping.explodedPositionsThisTick.contains(pos)) {
-								ship.wrapping.explodedPositionsThisTick.add(pos);
-							}
-
-							ship.wrapping.queueForce(queuedForce);
-						}
-					}
-				}
-			}
-
-		}
 	}
 
 	public static <T extends Entity> List<T> onGetEntitiesWithinAABB(World world, Class<? extends T> clazz, AxisAlignedBB aabb, @Nullable Predicate<? super T> filter) {

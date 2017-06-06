@@ -38,9 +38,7 @@ public class TransformAdapter extends ClassVisitor {
 	public static final String ParticleManagerName = "net/minecraft/client/particle/ParticleManager";
 	public static final String ContainerName = "net/minecraft/inventory/Container";
 	public static final String AxisAlignedBBName = "net/minecraft/util/math/AxisAlignedBB";
-	public static final String ExplosionName = "net/minecraft/world/Explosion";
 	public static final String EntityLivingBaseName = "net/minecraft/entity/EntityLivingBase";
-	public static final String EntityRendererName = "net/minecraft/client/renderer/EntityRenderer";
 
 	public static final String PredicateName = "com/google/common/base/Predicate";
 	public static final String ListName = "java/util/List";
@@ -62,18 +60,8 @@ public class TransformAdapter extends ClassVisitor {
 			return false;
 		}*/
 
-		if (isMethod(calledDesc, "(L" + BlockPosName + ";)L" + BlockPosName + ";", calledName, WorldClassName, "getPrecipitationHeight", "func_175725_q", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onGetPrecipitationHeight", String.format("(L%s;L" + BlockPosName + ";)L" + BlockPosName + ";", WorldClassName), itf);
-			return false;
-		}
-
 		if (isMethod(calledDesc, "()Z", calledName, EntityLivingBaseName, "isOnLadder", "func_70617_f_", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onIsOnLadder", String.format("(L%s;)Z", EntityLivingBaseName), itf);
-			return false;
-		}
-
-		if (isMethod(calledDesc, "()V", calledName, ExplosionName, "doExplosionA", "func_77278_a", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onExplosionA", String.format("(L%s;)V", ExplosionName), itf);
 			return false;
 		}
 

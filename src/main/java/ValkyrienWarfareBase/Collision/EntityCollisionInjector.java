@@ -1,15 +1,13 @@
 package ValkyrienWarfareBase.Collision;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Interaction.EntityDraggable;
+import ValkyrienWarfareBase.Interaction.IDraggable;
 import ValkyrienWarfareBase.Math.BigBastardMath;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.MoverType;
@@ -18,6 +16,9 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.chunk.Chunk;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class EntityCollisionInjector {
 
@@ -45,7 +46,7 @@ public class EntityCollisionInjector {
 		ArrayList<Polygon> colPolys = getCollidingPolygonsAndDoBlockCols(entity, velocity);
 
 		PhysicsWrapperEntity worldBelow = null;
-		EntityDraggable draggable = EntityDraggable.getDraggableFromEntity(entity);
+		IDraggable draggable = EntityDraggable.getDraggableFromEntity(entity);
 
 		for (Polygon poly : colPolys) {
 			if (poly instanceof ShipPolygon) {
@@ -59,7 +60,7 @@ public class EntityCollisionInjector {
 		}
 
 		//TODO: Make this more comprehensive
-		draggable.worldBelowFeet = worldBelow;
+		draggable.setWorldBelowFeet(worldBelow);
 
 		if (fastCollisions.isEmpty()) {
 			return false;

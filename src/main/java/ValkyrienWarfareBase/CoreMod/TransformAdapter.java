@@ -1,14 +1,13 @@
 package ValkyrienWarfareBase.CoreMod;
 
-import java.lang.reflect.Field;
-import java.util.Map;
-
+import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
-import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
+import java.lang.reflect.Field;
+import java.util.Map;
 
 /**
  * Basically handles all the byte transforms
@@ -42,7 +41,6 @@ public class TransformAdapter extends ClassVisitor {
 	public static final String ExplosionName = "net/minecraft/world/Explosion";
 	public static final String EntityLivingBaseName = "net/minecraft/entity/EntityLivingBase";
 	public static final String EntityRendererName = "net/minecraft/client/renderer/EntityRenderer";
-	public static final String IChunkGeneratorName = "net/minecraft/world/chunk/IChunkGenerator";
 	public static final String MoverTypeName = "net/minecraft/entity/MoverType";
 
 	public static final String PredicateName = "com/google/common/base/Predicate";

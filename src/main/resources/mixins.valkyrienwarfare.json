@@ -9,5 +9,11 @@
     "world.MixinWorld",
     "world.chunk.MixinChunk",
     "entity.MixinEntity"
+  ],
+  "client": [
+    "util.MixinHttpUtil",
+    "client.renderer.tileentity.MixinTileEntityRendererDispatcher",
+    "client.renderer.entity.MixinRenderManager",
+    "entity.MixinEntityCLIENT"
   ]
 }

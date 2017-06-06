@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class MixinEntityLivingBase extends Entity {
 
     /**
-     * This constructor is needed to make javac happy
+     * This constructor is needed to make javac happy but doesn't actually affect anything
      */
     public MixinEntityLivingBase() {
         super(null);

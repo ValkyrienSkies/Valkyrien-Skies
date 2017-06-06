@@ -44,16 +44,22 @@ public abstract class MixinTileEntityRendererDispatcher {
     @Shadow
     public void renderTileEntityAt(TileEntity tileEntityIn, double x, double y, double z, float partialTicks, int destroyStage) {}
 
+    @Shadow
+    public void drawBatch(int pass) {}
+
+    @Shadow
+    public void preDrawBatch() {}
+
     @Overwrite
-    public void renderTileEntity(TileEntityRendererDispatcher dispatch, TileEntity tileentityIn, float partialTicks, int destroyStage){
+    public void renderTileEntity(TileEntity tileentityIn, float partialTicks, int destroyStage){
         BlockPos pos = tileentityIn.getPos();
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(tileentityIn.getWorld(), pos);
 
         if(wrapper != null && wrapper.wrapping != null && wrapper.wrapping.renderer != null){
             try{
                 if(drawingBatch){
-                    dispatch.drawBatch(MinecraftForgeClient.getRenderPass());
-                    dispatch.preDrawBatch();
+                    this.drawBatch(MinecraftForgeClient.getRenderPass());
+                    this.preDrawBatch();
                 }
 
                 wrapper.wrapping.renderer.setupTranslation(partialTicks);
@@ -67,11 +73,11 @@ public abstract class MixinTileEntityRendererDispatcher {
                 TileEntityRendererDispatcher.instance.staticPlayerZ = wrapper.wrapping.renderer.offsetPos.getZ();
 
                 if(drawingBatch){
-                    dispatch.renderTileEntity(tileentityIn, partialTicks, destroyStage);
-                    dispatch.drawBatch(MinecraftForgeClient.getRenderPass());
-                    dispatch.preDrawBatch();
+                    this.renderTileEntityOriginal(tileentityIn, partialTicks, destroyStage);
+                    this.drawBatch(MinecraftForgeClient.getRenderPass());
+                    this.preDrawBatch();
                 }else{
-                    dispatch.renderTileEntity(tileentityIn, partialTicks, destroyStage);
+                    this.renderTileEntity(tileentityIn, partialTicks, destroyStage);
                 }
                 TileEntityRendererDispatcher.instance.staticPlayerX = playerX;
                 TileEntityRendererDispatcher.instance.staticPlayerY = playerY;
@@ -82,7 +88,7 @@ public abstract class MixinTileEntityRendererDispatcher {
                 e.printStackTrace();
             }
         }else{
-            dispatch.renderTileEntity(tileentityIn, partialTicks, destroyStage);
+            this.renderTileEntityOriginal(tileentityIn, partialTicks, destroyStage);
         }
     }
 

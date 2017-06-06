@@ -5,6 +5,7 @@
   "refmap": "mixins.valkyrienwarfare.refmap.json",
   "mixins": [
     "entity.MixinEntityLivingBase",
-    "tileentity.MixinTileEntity"
+    "tileentity.MixinTileEntity",
+    "world.MixinWorld"
   ]
 }

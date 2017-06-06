@@ -32,7 +32,6 @@ public class TransformAdapter extends ClassVisitor {
 	public static final String Vec3dName = "net/minecraft/util/math/Vec3d";
 	public static final String IBlockStateName = "net/minecraft/block/state/IBlockState";
 	public static final String BlockPosName = "net/minecraft/util/math/BlockPos";
-	public static final String TileEntityName = "net/minecraft/tileentity/TileEntity";
 	public static final String TessellatorName = "net/minecraft/client/renderer/Tessellator";
 	public static final String VertexBufferName = "net/minecraft/client/renderer/VertexBuffer";
 	public static final String SoundEventName = "net/minecraft/util/SoundEvent";
@@ -45,8 +44,6 @@ public class TransformAdapter extends ClassVisitor {
 	public static final String EntityLivingBaseName = "net/minecraft/entity/EntityLivingBase";
 	public static final String EntityRendererName = "net/minecraft/client/renderer/EntityRenderer";
 	public static final String IChunkGeneratorName = "net/minecraft/world/chunk/IChunkGenerator";
-	public static final String RenderManagerName = "net/minecraft/client/renderer/entity/RenderManager";
-	public static final String TileEntityRendererDispatcherName = "net/minecraft/client/renderer/tileentity/TileEntityRendererDispatcher";
 	public static final String MoverTypeName = "net/minecraft/entity/MoverType";
 
 	public static final String PredicateName = "com/google/common/base/Predicate";
@@ -63,21 +60,11 @@ public class TransformAdapter extends ClassVisitor {
 	public boolean runTransformer(int opcode, String calledName, String calledDesc, String calledOwner, MethodVisitor mv, boolean itf) {
 
 		//TODO: Move to separate mod
-//		if (isMethod(calledDesc, "()Z", calledName, MinecraftServerName, "isServerInOnlineMode", "RENAMEME", calledOwner)) {
-//			mv.visitInsn(Opcodes.POP);
-//			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "isServerInOnlineMode", "()Z", itf);
-//			return false;
-//		}
-
-		if (isMethod(calledDesc, "(L"+EntityClassName+";DDDFFZ)V", calledName, RenderManagerName, "doRenderEntity", "func_188391_a", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "doRenderEntity", String.format("(L%s;L"+EntityClassName+";DDDFFZ)V", RenderManagerName), itf);
+		/*if (isMethod(calledDesc, "()Z", calledName, MinecraftServerName, "isServerInOnlineMode", "RENAMEME", calledOwner)) {
+			mv.visitInsn(Opcodes.POP);
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "isServerInOnlineMode", "()Z", itf);
 			return false;
-		}
-
-		if (isMethod(calledDesc, "(IIIIII)V", calledName, WorldClassName, "markBlockRangeForRenderUpdate", "func_147458_c", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "markBlockRangeForRenderUpdate", String.format("(L%s;IIIIII)V", WorldClassName), itf);
-			return false;
-		}
+		}*/
 
 		if (isMethod(calledDesc, "(L"+IChunkGeneratorName+";)V", calledName, ChunkName, "populateChunk", "func_186034_a", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onPopulateChunk", String.format("(L%s;L"+IChunkGeneratorName+";)V", ChunkName), itf);

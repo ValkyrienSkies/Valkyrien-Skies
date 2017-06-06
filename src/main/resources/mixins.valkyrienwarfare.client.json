@@ -5,6 +5,7 @@
   "refmap": "mixins.valkyrienwarfare.refmap.json",
   "mixins": [
     "util.MixinHttpUtil",
-    "client.renderer.tileentity.MixinTileEntityRendererDispatcher"
+    "client.renderer.tileentity.MixinTileEntityRendererDispatcher",
+    "client.renderer.entity.MixinRenderManager"
   ]
 }

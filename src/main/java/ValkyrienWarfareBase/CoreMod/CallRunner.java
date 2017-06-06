@@ -90,36 +90,6 @@ public class CallRunner {
     	return toReturn;
     }
 
-	public static void markBlockRangeForRenderUpdate(World world, int x1, int y1, int z1, int x2, int y2, int z2){
-//		System.out.println((x2-x1)*(y2-y1)*(z2-z1));
-//		System.out.println(x1+":"+x2+":"+y1+":"+y2+":"+z1+":"+z2);
-
-		//Stupid OpenComputers fix, blame those assholes
-		if(x2 == 1 && y1 == 0 && z2 == 1){
-			x2 = x1 + 1;
-			x1--;
-
-			y1 = y2 - 1;
-			y2++;
-
-			z2 = z1 + 1;
-			z2--;
-		}
-
-		int midX = (x1 + x2) / 2;
-		int midY = (y1 + y2) / 2;
-		int midZ = (z1 + z2) / 2;
-		BlockPos newPos = new BlockPos(midX, midY, midZ);
-		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, newPos);
-		if (wrapper != null && wrapper.wrapping.renderer != null) {
-			wrapper.wrapping.renderer.updateRange(x1-1, y1-1, z1-1, x2+1, y2+1, z2+1);
-		}
-
-		if(wrapper == null){
-			world.markBlockRangeForRenderUpdate(x1, y1, z1, x2, y2, z2);
-		}
-	}
-
 	//Prevent random villages and shit from popping up on ships
     public static void onPopulateChunk(Chunk chunk, IChunkGenerator generator){
     	if(PhysicsChunkManager.isLikelyShipChunk(chunk.x, chunk.z)){

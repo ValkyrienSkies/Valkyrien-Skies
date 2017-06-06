@@ -66,16 +66,6 @@ public class TransformAdapter extends ClassVisitor {
 			return false;
 		}*/
 
-		if (isMethod(calledDesc, "(L"+IChunkGeneratorName+";)V", calledName, ChunkName, "populateChunk", "func_186034_a", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onPopulateChunk", String.format("(L%s;L"+IChunkGeneratorName+";)V", ChunkName), itf);
-			return false;
-		}
-
-		if (isMethod(calledDesc, "(L"+EntityClassName+";)V", calledName, ChunkName, "addEntity", "func_76612_a", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onAddEntity", String.format("(L%s;L"+EntityClassName+";)V", ChunkName), itf);
-			return false;
-		}
-
 		if (isMethod(calledDesc, "(F)L" + Vec3dName + ";", calledName, EntityClassName, "getPositionEyes", "func_174824_e", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onGetPositionEyes", String.format("(L%s;F)L"+Vec3dName+";", EntityClassName), itf);
 			return false;

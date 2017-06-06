@@ -6,6 +6,8 @@
   "mixins": [
     "entity.MixinEntityLivingBase",
     "tileentity.MixinTileEntity",
-    "world.MixinWorld"
+    "world.MixinWorld",
+    "world.chunk.MixinChunk",
+    "entity.MixinEntity"
   ]
 }

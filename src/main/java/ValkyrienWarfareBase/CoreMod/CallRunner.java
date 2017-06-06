@@ -90,31 +90,6 @@ public class CallRunner {
     	return toReturn;
     }
 
-	//Prevent random villages and shit from popping up on ships
-    public static void onPopulateChunk(Chunk chunk, IChunkGenerator generator){
-    	if(PhysicsChunkManager.isLikelyShipChunk(chunk.x, chunk.z)){
-//        	System.out.println("Tried populating a Ship Chunk, but failed!");
-    		return;
-    	}
-    	chunk.populateChunk(generator);
-    }
-
-    public static void onAddEntity(Chunk chunk, Entity entityIn){
-    	World world = chunk.world;
-
-    	int i = MathHelper.floor(entityIn.posX / 16.0D);
-        int j = MathHelper.floor(entityIn.posZ / 16.0D);
-
-        if(i == chunk.x && j == chunk.z){
-        	chunk.addEntity(entityIn);
-        }else{
-        	Chunk realChunkFor = world.getChunkFromChunkCoords(i, j);
-        	if(!realChunkFor.isEmpty() && realChunkFor.isChunkLoaded){
-        		realChunkFor.addEntity(entityIn);
-        	}
-        }
-    }
-
 	public static BlockPos onGetPrecipitationHeight(World world, BlockPos posToCheck) {
 		BlockPos pos = world.getPrecipitationHeight(posToCheck);
 		if(!world.isRemote || !ValkyrienWarfareMod.accurateRain){

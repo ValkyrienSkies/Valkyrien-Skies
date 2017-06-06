@@ -21,7 +21,7 @@ import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(RenderManager.class)
-public class MixinRenderManager {
+public abstract class MixinRenderManager {
 
     @Shadow
     public <T extends Entity> Render<T> getEntityRenderObject(T entityIn) { return null; }

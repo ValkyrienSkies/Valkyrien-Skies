@@ -21,7 +21,6 @@ public class TransformAdapter extends ClassVisitor {
 
 	public static final String EntityClassName = "net/minecraft/entity/Entity";
 	public static final String WorldClassName = "net/minecraft/world/World";
-	public static final String WorldClientName = "net/minecraft/client/multiplayer/WorldClient";
 	public static final String PacketName = "net/minecraft/network/Packet";
 	public static final String EntityPlayerName = "net/minecraft/entity/player/EntityPlayer";
 	public static final String RenderGlobalName = "net/minecraft/client/renderer/RenderGlobal";
@@ -44,22 +43,15 @@ public class TransformAdapter extends ClassVisitor {
 	public static final String AxisAlignedBBName = "net/minecraft/util/math/AxisAlignedBB";
 	public static final String ExplosionName = "net/minecraft/world/Explosion";
 	public static final String EntityLivingBaseName = "net/minecraft/entity/EntityLivingBase";
-	public static final String ViewFrustumName = "net/minecraft/client/renderer/ViewFrustum";
 	public static final String EntityRendererName = "net/minecraft/client/renderer/EntityRenderer";
 	public static final String IChunkGeneratorName = "net/minecraft/world/chunk/IChunkGenerator";
 	public static final String RenderManagerName = "net/minecraft/client/renderer/entity/RenderManager";
 	public static final String TileEntityRendererDispatcherName = "net/minecraft/client/renderer/tileentity/TileEntityRendererDispatcher";
 	public static final String MoverTypeName = "net/minecraft/entity/MoverType";
-	public static final String SleepResultName = "net/minecraft/entity/player/EntityPlayer$SleepResult";
-	public static final String ForgeChunkManagerName = "net/minecraftforge/common/ForgeChunkManager";
-	public static final String MinecraftServerName = "net/minecraft/server/MinecraftServer";
-	public static final String HttpUtilName = "net/minecraft/util/HttpUtil";
 
 	public static final String PredicateName = "com/google/common/base/Predicate";
 	public static final String ListName = "java/util/List";
 	public static final String ClassName = "java/lang/Class";
-	public static final String ImmutableSetMultimapName = "com/google/common/collect/ImmutableSetMultimap";
-	public static final String IteratorName = "java/util/Iterator";
 
 	public String className;
 
@@ -76,25 +68,6 @@ public class TransformAdapter extends ClassVisitor {
 //			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "isServerInOnlineMode", "()Z", itf);
 //			return false;
 //		}
-
-		//TODO: Move to seperate mod
-		if (isMethod(calledDesc, "()I", calledName, HttpUtilName, "getSuitableLanPort", "func_76181_a", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "getSuitableLanPort", "()I", itf);
-			return false;
-		}
-
-		//Ported
-		//TODO WTH?
-		if (isMethod(calledDesc, "(DDD)D", calledName, TileEntityName, "getDistanceSq", "func_145835_a", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "getDistanceSq", String.format("(L%s;DDD)D", TileEntityName), itf);
-			return false;
-		}
-
-		//TODO Write custom tiles renderer :P
-		if (isMethod(calledDesc, "(L"+TileEntityName+";FI)V", calledName, TileEntityRendererDispatcherName, "renderTileEntity", "func_180546_a", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "renderTileEntity", String.format("(L%s;L"+TileEntityName+";FI)V", TileEntityRendererDispatcherName), itf);
-			return false;
-		}
 
 		if (isMethod(calledDesc, "(L"+EntityClassName+";DDDFFZ)V", calledName, RenderManagerName, "doRenderEntity", "func_188391_a", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "doRenderEntity", String.format("(L%s;L"+EntityClassName+";DDDFFZ)V", RenderManagerName), itf);

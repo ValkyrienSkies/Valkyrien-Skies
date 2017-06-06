@@ -58,42 +58,6 @@ import net.minecraftforge.client.MinecraftForgeClient;
 
 public class CallRunnerClient extends CallRunner {
 
-	private static Field drawingBatchName;
-
-	static{
-		try {
-			drawingBatchName = TileEntityRendererDispatcher.class.getDeclaredField("drawingBatch");
-			drawingBatchName.setAccessible(true);
-		} catch (Exception e) {}
-	}
-
-    public static int getSuitableLanPort() throws IOException{
-    	ServerSocket serversocket = null;
-        int i = -1;
-
-        try
-        {
-            serversocket = new ServerSocket(80);
-            i = serversocket.getLocalPort();
-        }
-        finally
-        {
-            try
-            {
-                if (serversocket != null)
-                {
-                    serversocket.close();
-                }
-            }
-            catch (IOException var8)
-            {
-                ;
-            }
-        }
-
-        return i;
-    }
-
     public static AxisAlignedBB getRenderBoundingBox(TileEntity tile){
     	AxisAlignedBB toReturn = tile.getRenderBoundingBox();
 //    	System.out.println("running");
@@ -571,49 +535,6 @@ public class CallRunnerClient extends CallRunner {
 			manager.doRenderEntity(entityIn, x, y, z, yaw, partialTicks, p_188391_10_);
 		}
 	}
-
-	public static void renderTileEntity(TileEntityRendererDispatcher dispatch, TileEntity tileentityIn, float partialTicks, int destroyStage){
-		BlockPos pos = tileentityIn.getPos();
-		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(tileentityIn.getWorld(), pos);
-
-		if(wrapper != null && wrapper.wrapping != null && wrapper.wrapping.renderer != null){
-			try{
-				boolean drawingBatchOrig = drawingBatchName.getBoolean(dispatch);
-
-				if(drawingBatchOrig){
-					dispatch.drawBatch(MinecraftForgeClient.getRenderPass());
-					dispatch.preDrawBatch();
-				}
-
-				wrapper.wrapping.renderer.setupTranslation(partialTicks);
-
-				double playerX = TileEntityRendererDispatcher.instance.staticPlayerX;
-				double playerY = TileEntityRendererDispatcher.instance.staticPlayerY;
-				double playerZ = TileEntityRendererDispatcher.instance.staticPlayerZ;
-
-				TileEntityRendererDispatcher.instance.staticPlayerX = wrapper.wrapping.renderer.offsetPos.getX();
-				TileEntityRendererDispatcher.instance.staticPlayerY = wrapper.wrapping.renderer.offsetPos.getY();
-				TileEntityRendererDispatcher.instance.staticPlayerZ = wrapper.wrapping.renderer.offsetPos.getZ();
-
-				if(drawingBatchOrig){
-					dispatch.renderTileEntity(tileentityIn, partialTicks, destroyStage);
-					dispatch.drawBatch(MinecraftForgeClient.getRenderPass());
-					dispatch.preDrawBatch();
-				}else{
-					dispatch.renderTileEntity(tileentityIn, partialTicks, destroyStage);
-				}
-				TileEntityRendererDispatcher.instance.staticPlayerX = playerX;
-				TileEntityRendererDispatcher.instance.staticPlayerY = playerY;
-				TileEntityRendererDispatcher.instance.staticPlayerZ = playerZ;
-
-				wrapper.wrapping.renderer.inverseTransform(partialTicks);
-			}catch(Exception e){
-				e.printStackTrace();
-			}
-		}else{
-			dispatch.renderTileEntity(tileentityIn, partialTicks, destroyStage);
-		}
-    }
 
 	//TODO: Theres a lighting bug caused by Ships rendering TileEntities, perhaps use the RenderOverride to render them instead
 	public static void onRenderEntities(RenderGlobal renderGlobal, Entity renderViewEntity, ICamera camera, float partialTicks) {

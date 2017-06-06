@@ -2,6 +2,7 @@ package ValkyrienWarfareBase.Mixin.entity;
 
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareBase.Collision.EntityCollisionInjector;
 import ValkyrienWarfareBase.Interaction.IDraggable;
 import ValkyrienWarfareBase.PhysicsManagement.CoordTransformObject;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
@@ -11,11 +12,16 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.util.MovementInput;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Entity.class)
 public class MixinEntity implements IDraggable {
@@ -53,12 +59,16 @@ public class MixinEntity implements IDraggable {
     public World world;
 
     @Shadow
-    public void setPosition(double x, double y, double z) {
-    }
+    public double posX;
 
     @Shadow
-    public Vec3d getLook(float partialTicks) {
-        return null;
+    public double posY;
+
+    @Shadow
+    public double posZ;
+
+    @Shadow
+    public void setPosition(double x, double y, double z) {
     }
 
     @Shadow
@@ -72,6 +82,11 @@ public class MixinEntity implements IDraggable {
 
     @Shadow
     public void move(MoverType type, double x, double y, double z) {
+    }
+
+    @Shadow
+    protected final Vec3d getVectorForRotation(float pitch, float yaw) {
+        return null;
     }
 
     @Override
@@ -210,5 +225,60 @@ public class MixinEntity implements IDraggable {
 
     public void setYawDifVelocity(double toSet) {
         yawDifVelocity = toSet;
+    }
+
+    @Overwrite
+    public Vec3d getLook(float partialTicks) {
+        Vec3d original = getLookOriginal(partialTicks);
+
+        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(Entity.class.cast(this));
+        if (wrapper != null) {
+            Vector newOutput = new Vector(original);
+            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.RlToWRotation, newOutput);
+            return newOutput.toVec3d();
+        } else {
+            return original;
+        }
+    }
+
+    public Vec3d getLookOriginal(float partialTicks) {
+        if (partialTicks == 1.0F) {
+            return this.getVectorForRotation(this.rotationPitch, this.rotationYaw);
+        } else {
+            float f = this.prevRotationPitch + (this.rotationPitch - this.prevRotationPitch) * partialTicks;
+            float f1 = this.prevRotationYaw + (this.rotationYaw - this.prevRotationYaw) * partialTicks;
+            return this.getVectorForRotation(f, f1);
+        }
+    }
+
+    @Inject(method = "move(Lnet/minecraft/entity/MoverType;JJJ)V", at = @At("HEAD"), cancellable = true)
+    public void preMove(MoverType type, double dx, double dy, double dz, CallbackInfo callbackInfo)    {
+        double movDistSq = (dx*dx) + (dy*dy) + (dz*dz);
+        if(movDistSq > 1000000){
+            //Assume this will take us to Ship coordinates
+            double newX = this.posX + dx;
+            double newY = this.posY + dy;
+            double newZ = this.posZ + dz;
+            BlockPos newPosInBlock = new BlockPos(newX,newY,newZ);
+
+            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(this.world, newPosInBlock);
+
+            if(wrapper == null){
+//				Just forget this even happened
+                callbackInfo.cancel();
+                return;
+            }
+
+            Vector endPos = new Vector(newX,newY,newZ);
+            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, endPos);
+
+            dx = endPos.X - this.posX;
+            dy = endPos.Y - this.posY;
+            dz = endPos.Z - this.posZ;
+        }
+        if (EntityCollisionInjector.alterEntityMovement(Entity.class.cast(this), dx, dy, dz)) {
+            callbackInfo.cancel();
+            //if we changed the motion then don't run vanilla code
+        }
     }
 }

@@ -14,6 +14,7 @@
     "util.MixinHttpUtil",
     "client.renderer.tileentity.MixinTileEntityRendererDispatcher",
     "client.renderer.entity.MixinRenderManager",
-    "entity.MixinEntityCLIENT"
+    "entity.MixinEntityCLIENT",
+    "client.renderer.MixinEntityRenderer"
   ]
 }

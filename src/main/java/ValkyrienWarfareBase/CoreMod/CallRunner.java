@@ -1,19 +1,7 @@
 package ValkyrienWarfareBase.CoreMod;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.UUID;
-
-import javax.annotation.Nullable;
-
-import com.google.common.base.Predicate;
-
-import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
-import ValkyrienWarfareBase.ChunkManagement.PhysicsChunkManager;
-import ValkyrienWarfareBase.Collision.EntityCollisionInjector;
 import ValkyrienWarfareBase.Collision.EntityPolygon;
 import ValkyrienWarfareBase.Collision.Polygon;
 import ValkyrienWarfareBase.Interaction.ShipUUIDToPosData.ShipPositionData;
@@ -21,12 +9,13 @@ import ValkyrienWarfareBase.Physics.BlockMass;
 import ValkyrienWarfareBase.Physics.PhysicsQueuedForce;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
+import com.google.common.base.Predicate;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
@@ -37,18 +26,18 @@ import net.minecraft.server.management.PlayerList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.*;
 import net.minecraft.util.math.RayTraceResult.Type;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.IChunkGenerator;
 import net.minecraftforge.common.DimensionManager;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.UUID;
 
 public class CallRunner {
 
@@ -498,49 +487,4 @@ public class CallRunner {
 
 		return vanillaTrace;
 	}
-
-	public static void onEntityMove(Entity entity, MoverType type, double dx, double dy, double dz) {
-//		System.out.println("test");
-		double movDistSq = (dx*dx) + (dy*dy) + (dz*dz);
-		if(movDistSq > 1000000){
-			//Assume this will take us to Ship coordinates
-			double newX = entity.posX + dx;
-			double newY = entity.posY + dy;
-			double newZ = entity.posZ + dz;
-			BlockPos newPosInBlock = new BlockPos(newX,newY,newZ);
-
-			PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(entity.world, newPosInBlock);
-
-			if(wrapper == null){
-//				Just forget this even happened
-//				System.err.println("An entity just tried moving like a millions miles an hour. Probably VW's fault, sorry about that.");
-				return;
-			}
-
-			Vector endPos = new Vector(newX,newY,newZ);
-			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, endPos);
-
-			dx = endPos.X - entity.posX;
-			dy = endPos.Y - entity.posY;
-			dz = endPos.Z - entity.posZ;
-		}
-		if (!EntityCollisionInjector.alterEntityMovement(entity, dx, dy, dz)) {
-			entity.move(type, dx, dy, dz);
-			//Hope the MoverType doesn't affect anything serious
-		}
-	}
-
-    public static Vec3d onGetLook(Entity entityFor, float partialTicks){
-    	Vec3d defaultOutput = entityFor.getLook(partialTicks);
-
-    	PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(entityFor);
-		if(wrapper != null){
-			Vector newOutput = new Vector(defaultOutput);
-			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.RlToWRotation, newOutput);
-			return newOutput.toVec3d();
-		}
-
-    	return defaultOutput;
-    }
-
 }

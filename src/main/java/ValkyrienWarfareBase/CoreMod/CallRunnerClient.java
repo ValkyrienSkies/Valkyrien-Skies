@@ -488,27 +488,4 @@ public class CallRunnerClient extends CallRunner {
 
 		return pos;
 	}
-
-	public static Vec3d onGetPositionEyes(Entity entityFor, float partialTicks){
-		Vec3d defaultOutput = entityFor.getPositionEyes(partialTicks);
-
-		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(entityFor);
-
-		if(wrapper != null){
-			Vector playerPosition = new Vector(wrapper.wrapping.getLocalPositionForEntity(entityFor));
-
-			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.RlToWTransform, playerPosition);
-
-			Vector playerEyes = new Vector(0, entityFor.getEyeHeight(), 0);
-			//Remove the original position added for the player's eyes
-			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWRotation, playerEyes);
-			//Add the new rotate player eyes to the position
-			playerPosition.add(playerEyes);
-//			System.out.println("test");
-			return playerPosition.toVec3d();
-		}
-
-		return defaultOutput;
-	}
-
 }

@@ -27,7 +27,6 @@ public class TransformAdapter extends ClassVisitor {
 	public static final String ICameraName = "net/minecraft/client/renderer/culling/ICamera";
 	public static final String BlockRenderLayerName = "net/minecraft/util/BlockRenderLayer";
 	public static final String PlayerListName = "net/minecraft/server/management/PlayerList";
-	public static final String ChunkName = "net/minecraft/world/chunk/Chunk";
 	public static final String RayTraceResultName = "net/minecraft/util/math/RayTraceResult";
 	public static final String Vec3dName = "net/minecraft/util/math/Vec3d";
 	public static final String IBlockStateName = "net/minecraft/block/state/IBlockState";
@@ -65,11 +64,6 @@ public class TransformAdapter extends ClassVisitor {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "isServerInOnlineMode", "()Z", itf);
 			return false;
 		}*/
-
-		if (isMethod(calledDesc, "(F)L" + Vec3dName + ";", calledName, EntityClassName, "getPositionEyes", "func_174824_e", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onGetPositionEyes", String.format("(L%s;F)L"+Vec3dName+";", EntityClassName), itf);
-			return false;
-		}
 
 		if (isMethod(calledDesc, "(F)L" + Vec3dName + ";", calledName, EntityClassName, "getLook", "func_70676_i", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onGetLook", String.format("(L%s;F)L"+Vec3dName+";", EntityClassName), itf);

@@ -6,6 +6,7 @@
   "mixins": [
     "util.MixinHttpUtil",
     "client.renderer.tileentity.MixinTileEntityRendererDispatcher",
-    "client.renderer.entity.MixinRenderManager"
+    "client.renderer.entity.MixinRenderManager",
+    "entity.MixinEntityCLIENT"
   ]
 }

@@ -72,7 +72,7 @@ public class EntityCollisionInjector {
 			// TODO: Add more potential yResponses
 			double stepSquared = entity.stepHeight * entity.stepHeight;
 			boolean isStep = isLiving && entity.onGround;
-			if (response.Y > 0 && BigBastardMath.canStandOnNormal(col.potentialSeperatingAxes[col.minDistanceIndex])) {
+			if (response.Y >= 0 && BigBastardMath.canStandOnNormal(col.potentialSeperatingAxes[col.minDistanceIndex])) {
 				response = new Vector(0, -col.collisions[col.minDistanceIndex].penetrationDistance / col.potentialSeperatingAxes[col.minDistanceIndex].Y, 0);
 			}
 			if (isStep) {
@@ -81,7 +81,11 @@ public class EntityCollisionInjector {
 					for (int i = 3; i < 6; i++) {
 						Vector tempResponse = col.collisions[i].getResponse();
 						if (tempResponse.Y > 0 && BigBastardMath.canStandOnNormal(col.collisions[i].axis) && tempResponse.lengthSq() < stepSquared) {
-							response = tempResponse;
+							if(tempResponse.lengthSq() < .1){
+								response = tempResponse;
+							}
+//							entity.moveEntity(x, y, z);
+//							response = tempResponse;
 						}
 					}
 				}

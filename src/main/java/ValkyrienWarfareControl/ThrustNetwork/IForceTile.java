@@ -5,7 +5,7 @@ import ValkyrienWarfareBase.API.Vector;
 public interface IForceTile {
 
 	/**
-	 * Used to tell what direction of force an engine will output, this is calculated with respect to the orientation of the engine
+	 * Used to tell what direction of force an engine will output, this is calculated with respect to the orientation of the engine, DO NOT ALTER
 	 * @return
 	 */
 	public Vector getForceOutputNormal();

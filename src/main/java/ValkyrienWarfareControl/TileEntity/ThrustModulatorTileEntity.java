@@ -20,9 +20,9 @@ public class ThrustModulatorTileEntity extends BasicNodeTileEntity{
 		for(Node node : nodeNetwork.networkedNodes){
 			TileEntity nodeTile = node.parentTile;
 			if(nodeTile instanceof TileEntityEtherCompressor){
-//				TileEntityEtherCompressor etherTile = (TileEntityEtherCompressor) nodeTile;
+				TileEntityEtherCompressor etherTile = (TileEntityEtherCompressor) nodeTile;
 
-//				etherTile.thrustVector.Y = 500D;
+				etherTile.linearThrust.Y = 500D;
 			}
 		}
 	}

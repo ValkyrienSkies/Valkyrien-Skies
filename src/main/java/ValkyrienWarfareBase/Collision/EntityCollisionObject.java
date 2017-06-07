@@ -5,7 +5,7 @@ import ValkyrienWarfareBase.Math.BigBastardMath;
 
 /**
  * An enhanced version of the collision Object, designed to prevent entities from moving through a polygon
- * 
+ *
  * @author thebest108
  *
  */

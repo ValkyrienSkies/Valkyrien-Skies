@@ -4,7 +4,7 @@ import ValkyrienWarfareBase.API.Vector;
 
 /**
  * Heavily modified version of the original Polygon Collider, with checks on polygons passing through eachother, normals not to be considered, and a consideration for Net Velocity between the polygons
- * 
+ *
  * @author thebest108
  *
  */

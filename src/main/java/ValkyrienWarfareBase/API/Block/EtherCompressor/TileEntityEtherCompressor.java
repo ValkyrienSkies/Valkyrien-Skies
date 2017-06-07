@@ -30,6 +30,9 @@ public abstract class TileEntityEtherCompressor extends BasicNodeTileEntity {
 	}
 
 	public Vector getForceOutput(World world, BlockPos pos, IBlockState state, PhysicsWrapperEntity shipEntity, double secondsToApply) {
+		if(true){
+			return linearThrust;
+		}
 		if (controllerPos.equals(BlockPos.ORIGIN)) {
 			return null;
 		}

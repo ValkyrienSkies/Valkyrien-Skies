@@ -10,14 +10,20 @@ public class BasicForceNodeTileEntity extends BasicNodeTileEntity implements IFo
 	private double maxThrust = 5000D;
 	private double currentThrust = 0D;
 
-	public BasicForceNodeTileEntity(){
+	private Vector normalVeclocityUnoriented;
+	//Tells if the tile is in Ship Space, if it isn't then it doesn't try to find a parent Ship object
+	private boolean isInShipSpace;
 
+	public BasicForceNodeTileEntity(){}
+
+	public BasicForceNodeTileEntity(Vector normalVeclocityUnoriented){
+		this.normalVeclocityUnoriented = normalVeclocityUnoriented;
 	}
 
 	@Override
 	public Vector getForceOutputNormal() {
 		// TODO Auto-generated method stub
-		return null;
+		return normalVeclocityUnoriented;
 	}
 
 	@Override

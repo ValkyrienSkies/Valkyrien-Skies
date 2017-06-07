@@ -233,12 +233,16 @@ public class WorldPhysicsCollider {
 
 		double collisionSpeed = velocityAtPoint.dot(toCollideWith.axis);
 
+		if(Math.abs(collisionSpeed) < 0.05D){
+			collisionSpeed = 0D;
+		}
+
 		double impulseApplied = BlockRammingManager.processBlockRamming(parent.wrapper, collisionSpeed, inLocalState, inWorldState, inLocalPos, inWorldPos, didBlockBreakInShip, didBlockBreakInWorld);
 
 		Vector[] collisionPoints = PolygonCollisionPointFinder.getPointsOfCollisionForPolygons(collider, toCollideWith, null);
-		
-		impulseApplied /= collisionPoints.length;		
-				
+
+		impulseApplied /= collisionPoints.length;
+
 		for(Vector collisionPos : collisionPoints){
 			Vector inBody = collisionPos.getSubtraction(new Vector(parent.wrapper.posX, parent.wrapper.posY, parent.wrapper.posZ));
 			inBody.multiply(-1D);

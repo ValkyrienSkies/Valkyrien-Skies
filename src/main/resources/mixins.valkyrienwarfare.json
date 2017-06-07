@@ -16,6 +16,7 @@
     "client.renderer.tileentity.MixinTileEntityRendererDispatcher",
     "client.renderer.entity.MixinRenderManager",
     "entity.MixinEntityCLIENT",
-    "client.renderer.MixinEntityRenderer"
+    "client.renderer.MixinEntityRenderer",
+    "entity.player.MixinEntityPlayer"
   ]
 }

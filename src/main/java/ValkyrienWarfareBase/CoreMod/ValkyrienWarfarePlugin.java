@@ -1,10 +1,10 @@
 package ValkyrienWarfareBase.CoreMod;
 
-import java.util.Map;
-
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin.Name;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin.TransformerExclusions;
+
+import java.util.Map;
 
 @Name("ValkyrienWarfareBase CoreMod")
 // Over 9000 meme
@@ -18,7 +18,7 @@ public class ValkyrienWarfarePlugin implements IFMLLoadingPlugin {
 
 	@Override
 	public String[] getASMTransformerClass() {
-		return new String[] { "ValkyrienWarfareBase.CoreMod.ValkyrienWarfareTransformer" };
+		return new String[0];
 	}
 
 	@Override
@@ -34,7 +34,6 @@ public class ValkyrienWarfarePlugin implements IFMLLoadingPlugin {
 	@Override
 	public void injectData(Map<String, Object> data) {
 		isObfuscatedEnvironment = (Boolean) data.get("runtimeDeobfuscationEnabled");
-		ValkyrienWarfareTransformer.onDataInitialized();
 	}
 
 	@Override

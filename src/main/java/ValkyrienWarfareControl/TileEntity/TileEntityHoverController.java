@@ -44,6 +44,8 @@ public class TileEntityHoverController extends TileEntity {
 		// physObj.physicsProcessor.convertTorqueToVelocity();
 		// secondsToApply*=5D;
 		// idealHeight = 100D;
+		/*
+
 		if (worldObj.isBlockPowered(getPos())||autoStabalizerControl) {
 			setAutoStabilizationValue(physObj);
 		}
@@ -65,7 +67,8 @@ public class TileEntityHoverController extends TileEntity {
 
 		// System.out.println(aggregateForce);
 
-		return aggregateForce;
+		return aggregateForce;*/
+		return new Vector();
 	}
 
 	public double getEngineDistFromIdealAngular(BlockPos enginePos, PhysicsObject physObj, double secondsToApply) {
@@ -117,17 +120,17 @@ public class TileEntityHoverController extends TileEntity {
 	private void setAutoStabilizationValue(PhysicsObject physObj) {
 		Vector controllerPos = new Vector(pos.getX()+.5D,pos.getY()+.5D,pos.getZ()+.5D);
 		physObj.coordTransform.fromLocalToGlobal(controllerPos);
-		
+
 		double controllerDistToIdeal = -(idealHeight-physObj.physicsProcessor.wrapperEnt.posY);
 		double yVelocity = physObj.physicsProcessor.linearMomentum.Y*physObj.physicsProcessor.invMass*linearVelocityBias;
-		
+
 		double biasChange = .00005D;
-		
+
 		if(Math.abs(controllerDistToIdeal)>.5D){
-		
+
 			if((yVelocity > 0 && controllerDistToIdeal > 0)||(yVelocity < 0 && controllerDistToIdeal < 0)){
 				stabilityBias -= biasChange;
-				
+
 			}else{
 //				stabilityBias += biasChange;
 			}
@@ -135,8 +138,8 @@ public class TileEntityHoverController extends TileEntity {
 		}else{
 			stabilityBias += biasChange;
 		}
-		
-		
+
+
 		// double epsilon = 5D;
 		// double biasChange = .00005D;
 		//
@@ -156,9 +159,9 @@ public class TileEntityHoverController extends TileEntity {
 		// }
 		// //Limit bias to between 0 and 1
 		 stabilityBias = Math.max(Math.min(stabilityBias, 1D), 0D);
-		
-		
-		
+
+
+
 	}
 
 	@Override

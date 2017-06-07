@@ -14,9 +14,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public abstract class BlockEtherCompressor extends Block implements ITileEntityProvider, IBlockForceProvider {
-	
+
 	public double enginePower = 25000D;
-	
+
 	public BlockEtherCompressor(Material materialIn, double enginePower) {
 		super(materialIn);
 		this.enginePower = enginePower;
@@ -33,7 +33,7 @@ public abstract class BlockEtherCompressor extends Block implements ITileEntityP
 		}
 		if (worldTile instanceof TileEntityEtherCompressor) {
 			TileEntityEtherCompressor engineTile = (TileEntityEtherCompressor) worldTile;
-			return engineTile.getForceOutput(world, pos, state, wrapper, secondsToApply);
+			return engineTile.getForceOutput();
 		}
 		return null;
 	}

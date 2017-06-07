@@ -2,8 +2,8 @@ package ValkyrienWarfareControl.Client.Renderer;
 
 import org.lwjgl.opengl.GL11;
 
+import ValkyrienWarfareControl.ThrustNetwork.BasicNodeTileEntity;
 import ValkyrienWarfareControl.ThrustNetwork.Node;
-import ValkyrienWarfareControl.TileEntity.BasicNodeTileEntity;
 import net.minecraft.client.model.ModelLeashKnot;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;

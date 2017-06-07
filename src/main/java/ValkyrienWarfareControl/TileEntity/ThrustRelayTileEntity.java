@@ -1,5 +1,6 @@
 package ValkyrienWarfareControl.TileEntity;
 
+import ValkyrienWarfareControl.ThrustNetwork.BasicNodeTileEntity;
 import ValkyrienWarfareControl.ThrustNetwork.INodeProvider;
 import ValkyrienWarfareControl.ThrustNetwork.Node;
 import net.minecraft.nbt.NBTTagCompound;

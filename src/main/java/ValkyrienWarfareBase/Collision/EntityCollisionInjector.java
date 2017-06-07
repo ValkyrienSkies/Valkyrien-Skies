@@ -63,6 +63,7 @@ public class EntityCollisionInjector {
 		if (fastCollisions.isEmpty()) {
 			return false;
 		}
+
 		int contX = 0;
 		int contY = 0;
 		int contZ = 0;
@@ -77,16 +78,19 @@ public class EntityCollisionInjector {
 			}
 			if (isStep) {
 				EntityLivingBase living = (EntityLivingBase) entity;
-				if (Math.abs(living.moveForward) > .01 || Math.abs(living.moveStrafing) > .01) {
+				if (Math.abs(living.moveForward) > .01D || Math.abs(living.moveStrafing) > .01D) {
 					for (int i = 3; i < 6; i++) {
 						Vector tempResponse = col.collisions[i].getResponse();
 						if (tempResponse.Y > 0 && BigBastardMath.canStandOnNormal(col.collisions[i].axis) && tempResponse.lengthSq() < stepSquared) {
-							if(tempResponse.lengthSq() < .1){
+							if(tempResponse.lengthSq() < .1D){
+								//Too small to be a real step, let it through
 								response = tempResponse;
 							}else{
 //								System.out.println("Try Stepping!");
 								AxisAlignedBB axisalignedbb = entity.getEntityBoundingBox().offset(tempResponse.X, tempResponse.Y, tempResponse.Z);
 								entity.setEntityBoundingBox(axisalignedbb);
+								//I think this correct, but it may create more problems than it solves
+								response.zero();
 							}
 //							entity.moveEntity(x, y, z);
 //							response = tempResponse;
@@ -95,15 +99,15 @@ public class EntityCollisionInjector {
 				}
 			}
 			// total.add(response);
-			if (Math.abs(response.X) > .01) {
+			if (Math.abs(response.X) > .01D) {
 				total.X += response.X;
 				contX++;
 			}
-			if (Math.abs(response.Y) > .01) {
+			if (Math.abs(response.Y) > .01D) {
 				total.Y += response.Y;
 				contY++;
 			}
-			if (Math.abs(response.Z) > .01) {
+			if (Math.abs(response.Z) > .01D) {
 				total.Z += response.Z;
 				contZ++;
 			}
@@ -160,6 +164,7 @@ public class EntityCollisionInjector {
 		entity.isCollidedVertically = isDifSignificant(dy, origDy);
 		entity.onGround = entity.isCollidedVertically && origDy < 0 || alreadyOnGround || entity.onGround;
 		entity.isCollided = entity.isCollidedHorizontally || entity.isCollidedVertically;
+
 		if (dx != origDx) {
 			entity.motionX = dx;
 		}

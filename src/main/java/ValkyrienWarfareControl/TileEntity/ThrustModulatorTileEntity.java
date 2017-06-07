@@ -1,6 +1,7 @@
 package ValkyrienWarfareControl.TileEntity;
 
 import ValkyrienWarfareBase.API.Block.EtherCompressor.TileEntityEtherCompressor;
+import ValkyrienWarfareControl.ThrustNetwork.BasicNodeTileEntity;
 import ValkyrienWarfareControl.ThrustNetwork.Node;
 import ValkyrienWarfareControl.ThrustNetwork.NodeNetwork;
 import net.minecraft.tileentity.TileEntity;
@@ -22,7 +23,7 @@ public class ThrustModulatorTileEntity extends BasicNodeTileEntity{
 			if(nodeTile instanceof TileEntityEtherCompressor){
 				TileEntityEtherCompressor etherTile = (TileEntityEtherCompressor) nodeTile;
 
-				etherTile.linearThrust.Y = 500D;
+//				etherTile.linearThrust.Y = 500D;
 			}
 		}
 	}

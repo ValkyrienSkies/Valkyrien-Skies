@@ -14,13 +14,13 @@ public interface IForceTile {
 	 * Returns the current unoriented force output vector of this engine
 	 * @return
 	 */
-	public Vector getForceOutputUnoriented();
+	public Vector getForceOutputUnoriented(double secondsToApply);
 
 	/**
 	 * Returns the current oriented force output vector of this engine
 	 * @return
 	 */
-	public Vector getForceOutputOriented();
+	public Vector getForceOutputOriented(double secondsToApply);
 	/**
 	 * Returns the maximum magnitude of force this engine can provide
 	 * @return
@@ -31,7 +31,7 @@ public interface IForceTile {
 	 * Sets the force output vector to be this outputNormal() * newMagnitude
 	 * @param toUse
 	 */
-	public void setForceMagnitude(double newMagnitude);
+	public void setThrust(double newMagnitude);
 
 	/**
 	 * Matrix transformation stuff

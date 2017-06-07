@@ -23,6 +23,8 @@ public class ThrustModulatorTileEntity extends BasicNodeTileEntity{
 			if(nodeTile instanceof TileEntityEtherCompressor){
 				TileEntityEtherCompressor etherTile = (TileEntityEtherCompressor) nodeTile;
 
+				etherTile.setThrust(10000D);
+//				System.out.println("shit");
 //				etherTile.linearThrust.Y = 500D;
 			}
 		}

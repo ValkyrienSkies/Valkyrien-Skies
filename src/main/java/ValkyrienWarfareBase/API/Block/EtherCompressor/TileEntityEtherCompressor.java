@@ -1,5 +1,6 @@
 package ValkyrienWarfareBase.API.Block.EtherCompressor;
 
+import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareControl.ThrustNetwork.BasicForceNodeTileEntity;
 
 public abstract class TileEntityEtherCompressor extends BasicForceNodeTileEntity {
@@ -8,8 +9,8 @@ public abstract class TileEntityEtherCompressor extends BasicForceNodeTileEntity
 		validate();
 	}
 
-	public TileEntityEtherCompressor(double power) {
-		this.maxThrust = power;
+	public TileEntityEtherCompressor(Vector normalForceVector, double power) {
+		super(normalForceVector, false, power);
 		validate();
 	}
 

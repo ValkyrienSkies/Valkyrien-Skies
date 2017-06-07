@@ -58,7 +58,7 @@ public abstract class BlockAirshipEngine extends Block implements IBlockForcePro
 	}
 
 	@Override
-	public Vector getBlockForce(World world, BlockPos pos, IBlockState state, Entity shipEntity, double secondsToApply) {
+	public Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state, Entity shipEntity, double secondsToApply){
 		EnumFacing enumfacing = (EnumFacing) state.getValue(FACING);
 		Vector acting = new Vector(0, 0, 0);
 		if (!world.isBlockPowered(pos)) {
@@ -89,16 +89,6 @@ public abstract class BlockAirshipEngine extends Block implements IBlockForcePro
 	}
 
 	@Override
-	public boolean isForceLocalCoords(World world, BlockPos pos, IBlockState state, double secondsToApply) {
-		return true;
-	}
-
-	@Override
-	public Vector getBlockForcePosition(World world, BlockPos pos, IBlockState state, Entity shipEntity, double secondsToApply) {
-		return null;
-	}
-
-	@Override
 	public BlockRenderLayer getBlockLayer() {
 		return BlockRenderLayer.CUTOUT;
 	}
@@ -120,7 +110,7 @@ public abstract class BlockAirshipEngine extends Block implements IBlockForcePro
 
 	/**
 	 * Used for calculating force applied to the airship by an engine. Override this in your subclasses to make engines that are more dynamic than simply being faster engines.
-	 * 
+	 *
 	 * @return
 	 */
 	public double getEnginePower(World world, BlockPos pos, IBlockState state, Entity shipEntity) {

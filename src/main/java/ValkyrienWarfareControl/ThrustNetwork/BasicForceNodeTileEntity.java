@@ -28,8 +28,10 @@ public class BasicForceNodeTileEntity extends BasicNodeTileEntity implements IFo
 	 */
 	public BasicForceNodeTileEntity(){}
 
-	public BasicForceNodeTileEntity(Vector normalVeclocityUnoriented){
+	public BasicForceNodeTileEntity(Vector normalVeclocityUnoriented, boolean isForceOutputOriented, double maxThrust){
 		this.normalVelocityUnoriented = normalVeclocityUnoriented;
+		this.isForceOutputOriented = isForceOutputOriented;
+		this.maxThrust = maxThrust;
 	}
 
 	@Override
@@ -39,13 +41,13 @@ public class BasicForceNodeTileEntity extends BasicNodeTileEntity implements IFo
 	}
 
 	@Override
-	public Vector getForceOutputUnoriented() {
-		return normalVelocityUnoriented.getProduct(currentThrust);
+	public Vector getForceOutputUnoriented(double secondsToApply) {
+		return normalVelocityUnoriented.getProduct(currentThrust * secondsToApply);
 	}
 
 	@Override
-	public Vector getForceOutputOriented() {
-		Vector outputForce = getForceOutputUnoriented();
+	public Vector getForceOutputOriented(double secondsToApply) {
+		Vector outputForce = getForceOutputUnoriented(secondsToApply);
 		if(isForceOutputOriented) {
 			if(updateParentShip()){
 				RotationMatrices.applyTransform(parentShip.wrapping.coordTransform.lToWRotation, outputForce);
@@ -60,7 +62,7 @@ public class BasicForceNodeTileEntity extends BasicNodeTileEntity implements IFo
 	}
 
 	@Override
-	public void setForceMagnitude(double newMagnitude) {
+	public void setThrust(double newMagnitude) {
 		currentThrust = newMagnitude;
 	}
 

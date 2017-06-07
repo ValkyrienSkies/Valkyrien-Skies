@@ -23,7 +23,7 @@ public abstract class BlockEtherCompressor extends Block implements ITileEntityP
 	}
 
 	@Override
-	public Vector getBlockForce(World world, BlockPos pos, IBlockState state, Entity shipEntity, double secondsToApply) {
+	public Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state, Entity shipEntity, double secondsToApply){
 		PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity) shipEntity;
 		PhysicsObject obj = wrapper.wrapping;
 		IBlockState controllerState = obj.VKChunkCache.getBlockState(pos);
@@ -33,19 +33,14 @@ public abstract class BlockEtherCompressor extends Block implements ITileEntityP
 		}
 		if (worldTile instanceof TileEntityEtherCompressor) {
 			TileEntityEtherCompressor engineTile = (TileEntityEtherCompressor) worldTile;
-			return engineTile.getForceOutputUnoriented();
+			return engineTile.getForceOutputUnoriented(secondsToApply);
 		}
 		return null;
 	}
 
 	@Override
-	public boolean isForceLocalCoords(World world, BlockPos pos, IBlockState state, double secondsToApply) {
+	public boolean shouldLocalForceBeRotated(World world, BlockPos pos, IBlockState state, double secondsToApply) {
 		return false;
-	}
-
-	@Override
-	public Vector getBlockForcePosition(World world, BlockPos pos, IBlockState state, Entity shipEntity, double secondsToApply) {
-		return null;
 	}
 
 }

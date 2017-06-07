@@ -313,7 +313,7 @@ public class PhysicsCalculations {
 
 				if (blockForce != null) {
 					if (blockAt instanceof IBlockForceProvider) {
-						Vector otherPosition = ((IBlockForceProvider) blockAt).getBlockForcePosition(worldObj, pos, state, parent.wrapper, physTickSpeed);
+						Vector otherPosition = ((IBlockForceProvider) blockAt).getCustomBlockForcePosition(worldObj, pos, state, parent.wrapper, physTickSpeed);
 						if (otherPosition != null) {
 							BigBastardMath.getBodyPosWithOrientation(otherPosition, centerOfMass, parent.coordTransform.lToWRotation, inBodyWO);
 						}

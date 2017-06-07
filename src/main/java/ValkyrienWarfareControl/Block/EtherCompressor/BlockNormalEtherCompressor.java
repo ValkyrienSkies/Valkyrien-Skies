@@ -1,5 +1,6 @@
 package ValkyrienWarfareControl.Block.EtherCompressor;
 
+import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.API.Block.EtherCompressor.BlockEtherCompressorLore;
 import ValkyrienWarfareControl.TileEntity.TileEntityNormalEtherCompressor;
 import net.minecraft.block.material.Material;
@@ -19,6 +20,6 @@ public class BlockNormalEtherCompressor extends BlockEtherCompressorLore {
 
 	@Override
 	public TileEntity createNewTileEntity(World worldIn, int meta) {
-		return new TileEntityNormalEtherCompressor(this.enginePower);
+		return new TileEntityNormalEtherCompressor(new Vector(0D, 1.0D, 0.0D), this.enginePower);
 	}
 }

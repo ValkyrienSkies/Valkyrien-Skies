@@ -2,23 +2,14 @@ package ValkyrienWarfareBase.CoreMod;
 
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
-import ValkyrienWarfareBase.Collision.EntityPolygon;
-import ValkyrienWarfareBase.Collision.Polygon;
 import ValkyrienWarfareBase.Interaction.ShipUUIDToPosData.ShipPositionData;
-import ValkyrienWarfareBase.Physics.BlockMass;
-import ValkyrienWarfareBase.Physics.PhysicsQueuedForce;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
-import com.google.common.base.Predicate;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.inventory.Container;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketEffect;
 import net.minecraft.network.play.server.SPacketSoundEffect;
@@ -28,7 +19,6 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.RayTraceResult.Type;
-import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.DimensionManager;
@@ -79,99 +69,6 @@ public class CallRunner {
     	return toReturn;
     }
 
-	public static boolean onIsOnLadder(EntityLivingBase base) {
-		boolean vanilla = base.isOnLadder();
-		if (vanilla) {
-			return true;
-		}
-		if (base instanceof EntityPlayer && ((EntityPlayer) base).isSpectator()) {
-			return false;
-		}
-		List<PhysicsWrapperEntity> nearbyPhys = ValkyrienWarfareMod.physicsManager.getManagerForWorld(base.world).getNearbyPhysObjects(base.getEntityBoundingBox());
-		for (PhysicsWrapperEntity physWrapper : nearbyPhys) {
-			Vector playerPos = new Vector(base);
-			physWrapper.wrapping.coordTransform.fromGlobalToLocal(playerPos);
-			int i = MathHelper.floor(playerPos.X);
-			int j = MathHelper.floor(playerPos.Y);
-			int k = MathHelper.floor(playerPos.Z);
-
-			BlockPos blockpos = new BlockPos(i, j, k);
-			IBlockState iblockstate = base.world.getBlockState(blockpos);
-			Block block = iblockstate.getBlock();
-
-			boolean isSpectator = (base instanceof EntityPlayer && ((EntityPlayer) base).isSpectator());
-			if (isSpectator)
-				return false;
-
-			EntityPolygon playerPoly = new EntityPolygon(base.getEntityBoundingBox(), physWrapper.wrapping.coordTransform.wToLTransform, base);
-			AxisAlignedBB bb = playerPoly.getEnclosedAABB();
-			for (int x = MathHelper.floor(bb.minX); x < bb.maxX; x++) {
-				for (int y = MathHelper.floor(bb.minY); y < bb.maxY; y++) {
-					for (int z = MathHelper.floor(bb.minZ); z < bb.maxZ; z++) {
-						BlockPos pos = new BlockPos(x, y, z);
-						IBlockState checkState = base.world.getBlockState(pos);
-						if (checkState.getBlock().isLadder(checkState, base.world, pos, base)) {
-							return true;
-							// AxisAlignedBB ladderBB = checkState.getBlock().getBoundingBox(checkState, base.worldObj, pos).offset(pos).expandXyz(.1D);
-							// Polygon checkBlock = new Polygon(ladderBB);
-							// EntityPolygonCollider collider = new EntityPolygonCollider(playerPoly, checkBlock, physWrapper.wrapping.coordTransform.normals, new Vector(base.motionX,base.motionY,base.motionZ));
-							//// System.out.println(!collider.seperated);
-							// if(!collider.seperated){
-							// return true;
-							// }
-
-						}
-					}
-				}
-			}
-
-			// return net.minecraftforge.common.ForgeHooks.isLivingOnLadder(iblockstate, base.worldObj, new BlockPos(i, j, k), base);
-		}
-		return false;
-	}
-
-	public static <T extends Entity> List<T> onGetEntitiesWithinAABB(World world, Class<? extends T> clazz, AxisAlignedBB aabb, @Nullable Predicate<? super T> filter) {
-		List toReturn = world.getEntitiesWithinAABB(clazz, aabb, filter);
-
-		BlockPos pos = new BlockPos((aabb.minX + aabb.maxX) / 2D, (aabb.minY + aabb.maxY) / 2D, (aabb.minZ + aabb.maxZ) / 2D);
-		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
-		if (wrapper != null) {
-			Polygon poly = new Polygon(aabb, wrapper.wrapping.coordTransform.lToWTransform);
-			aabb = poly.getEnclosedAABB();//.contract(.3D);
-			toReturn.addAll(world.getEntitiesWithinAABB(clazz, aabb, filter));
-		}
-		return toReturn;
-	}
-
-	public static List<Entity> onGetEntitiesInAABBexcluding(World world, @Nullable Entity entityIn, AxisAlignedBB boundingBox, @Nullable Predicate<? super Entity> predicate) {
-		if((boundingBox.maxX-boundingBox.minX)*(boundingBox.maxZ-boundingBox.minZ) > 1000000D){
-			return new ArrayList();
-		}
-
-		//Prevents the players item pickup AABB from merging with a PhysicsWrapperEntity AABB
-		if(entityIn instanceof EntityPlayer){
-			EntityPlayer player = (EntityPlayer)entityIn;
-			if (player.isRiding() && !player.getRidingEntity().isDead && player.getRidingEntity() instanceof PhysicsWrapperEntity){
-                AxisAlignedBB axisalignedbb = player.getEntityBoundingBox().union(player.getRidingEntity().getEntityBoundingBox()).expand(1.0D, 0.0D, 1.0D);
-
-                if(boundingBox.equals(axisalignedbb)){
-                	boundingBox = player.getEntityBoundingBox().expand(1.0D, 0.5D, 1.0D);
-                }
-            }
-		}
-
-		List toReturn = world.getEntitiesInAABBexcluding(entityIn, boundingBox, predicate);
-
-		BlockPos pos = new BlockPos((boundingBox.minX + boundingBox.maxX) / 2D, (boundingBox.minY + boundingBox.maxY) / 2D, (boundingBox.minZ + boundingBox.maxZ) / 2D);
-		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
-		if (wrapper != null) {
-			Polygon poly = new Polygon(boundingBox, wrapper.wrapping.coordTransform.lToWTransform);
-			boundingBox = poly.getEnclosedAABB().contract(.3D);
-			toReturn.addAll(world.getEntitiesInAABBexcluding(entityIn, boundingBox, predicate));
-		}
-		return toReturn;
-	}
-
 //	public static Iterator<Chunk> onGetPersistentChunkIterable(World world, Iterator<Chunk> chunkIterator) {
 //		Iterator<Chunk> vanillaResult = world.getPersistentChunkIterable(chunkIterator);
 //		ArrayList<Chunk> newResultArray = new ArrayList<Chunk>();
@@ -190,11 +87,6 @@ public class CallRunner {
 //		return newResultArray.iterator();
 //	}
 
-	public static boolean onCanInteractWith(Container con, EntityPlayer player) {
-		boolean vanilla = con.canInteractWith(player);
-		return true;
-	}
-
 	public static double getDistanceSq(double vanilla, Entity entity, double x, double y, double z) {
 		if (vanilla < 64.0D) {
 			return vanilla;
@@ -203,26 +95,6 @@ public class CallRunner {
 			PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(entity.world, pos);
 			if (wrapper != null) {
 				Vector posVec = new Vector(x, y, z);
-				wrapper.wrapping.coordTransform.fromLocalToGlobal(posVec);
-				posVec.X -= entity.posX;
-				posVec.Y -= entity.posY;
-				posVec.Z -= entity.posZ;
-				if (vanilla > posVec.lengthSq()) {
-					return posVec.lengthSq();
-				}
-			}
-		}
-		return vanilla;
-	}
-
-	public static double onGetDistanceSq(Entity entity, BlockPos pos) {
-		double vanilla = entity.getDistanceSq(pos);
-		if (vanilla < 64.0D) {
-			return vanilla;
-		} else {
-			PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(entity.world, pos);
-			if (wrapper != null) {
-				Vector posVec = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
 				wrapper.wrapping.coordTransform.fromLocalToGlobal(posVec);
 				posVec.X -= entity.posX;
 				posVec.Y -= entity.posY;

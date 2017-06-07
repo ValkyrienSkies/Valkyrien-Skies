@@ -36,12 +36,6 @@ public class TransformAdapter extends ClassVisitor {
 	public static final String ParticleName = "net/minecraft/client/particle/Particle";
 	public static final String ParticleManagerName = "net/minecraft/client/particle/ParticleManager";
 	public static final String ContainerName = "net/minecraft/inventory/Container";
-	public static final String AxisAlignedBBName = "net/minecraft/util/math/AxisAlignedBB";
-	public static final String EntityLivingBaseName = "net/minecraft/entity/EntityLivingBase";
-
-	public static final String PredicateName = "com/google/common/base/Predicate";
-	public static final String ListName = "java/util/List";
-	public static final String ClassName = "java/lang/Class";
 
 	public String className;
 
@@ -51,54 +45,6 @@ public class TransformAdapter extends ClassVisitor {
 	}
 
 	public boolean runTransformer(int opcode, String calledName, String calledDesc, String calledOwner, MethodVisitor mv, boolean itf) {
-
-		//TODO: Move to separate mod
-		/*if (isMethod(calledDesc, "()Z", calledName, MinecraftServerName, "isServerInOnlineMode", "RENAMEME", calledOwner)) {
-			mv.visitInsn(Opcodes.POP);
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "isServerInOnlineMode", "()Z", itf);
-			return false;
-		}*/
-
-		if (isMethod(calledDesc, "()Z", calledName, EntityLivingBaseName, "isOnLadder", "func_70617_f_", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onIsOnLadder", String.format("(L%s;)Z", EntityLivingBaseName), itf);
-			return false;
-		}
-
-		if (isMethod(calledDesc, "(L" + BlockPosName + ";I)I", calledName, WorldClassName, "getCombinedLight", "func_175626_b", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onGetCombinedLight", String.format("(L%s;L" + BlockPosName + ";I)I", WorldClassName), itf);
-			return false;
-		}
-
-		if (isMethod(calledDesc, "(L" + ClassName + ";L" + AxisAlignedBBName + ";L" + PredicateName + ";)L" + ListName + ";", calledName, WorldClassName, "getEntitiesWithinAABB", "func_175647_a", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onGetEntitiesWithinAABB", String.format("(L%s;L" + ClassName + ";L" + AxisAlignedBBName + ";L" + PredicateName + ";)L" + ListName + ";", WorldClassName), itf);
-			return false;
-		}
-
-		if (isMethod(calledDesc, "(L" + EntityClassName + ";L" + AxisAlignedBBName + ";L" + PredicateName + ";)L" + ListName + ";", calledName, WorldClassName, "getEntitiesInAABBexcluding", "func_175674_a", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onGetEntitiesInAABBexcluding", String.format("(L%s;L" + EntityClassName + ";L" + AxisAlignedBBName + ";L" + PredicateName + ";)L" + ListName + ";", WorldClassName), itf);
-			return false;
-		}
-
-		if (isMethod(calledDesc, "(L" + EntityPlayerName + ";)Z", calledName, ContainerName, "canInteractWith", "func_75145_c", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onCanInteractWith", String.format("(L%s;L" + EntityPlayerName + ";)Z", ContainerName), itf);
-			return false;
-		}
-
-		/*if (isMethod(calledDesc, "(DDD)D", calledName, EntityClassName, "getDistanceSq", "func_70092_e", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onGetDistanceSq", String.format("(L%s;DDD)D", EntityClassName), itf);
-			return false;
-		}*/
-
-		if (isMethod(calledDesc, "(L" + BlockPosName + ";)D", calledName, EntityClassName, "getDistanceSq", "func_174818_b", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onGetDistanceSq", String.format("(L%s;L" + BlockPosName + ";)D", EntityClassName), itf);
-			return false;
-		}
-
-		if (isMethod(calledDesc, "(L" + ParticleName + ";)V", calledName, ParticleManagerName, "addEffect", "func_78873_a", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "onAddEffect", String.format("(L%s;L" + ParticleName + ";)V", ParticleManagerName), itf);
-			return false;
-		}
-
 		if (isMethod(calledDesc, "(DDDL" + SoundEventName + ";L" + SoundCategoryName + ";FFZ)V", calledName, WorldClassName, "playSound", "func_184134_a", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "onPlaySound", String.format("(L%s;DDDL" + SoundEventName + ";L" + SoundCategoryName + ";FFZ)V", WorldClassName), itf);
 			return false;

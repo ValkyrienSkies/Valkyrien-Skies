@@ -17,6 +17,8 @@
     "client.renderer.entity.MixinRenderManager",
     "entity.MixinEntityCLIENT",
     "client.renderer.MixinEntityRenderer",
-    "entity.player.MixinEntityPlayer"
+    "entity.player.MixinEntityPlayer",
+    "world.MixinWorldCLIENT",
+    "client.particle.MixinParticleManager"
   ]
 }

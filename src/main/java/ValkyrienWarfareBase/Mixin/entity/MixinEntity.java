@@ -281,4 +281,25 @@ public abstract class MixinEntity implements IDraggable {
             //if we changed the motion then don't run vanilla code
         }
     }
+
+    @Overwrite
+    public double getDistanceSq(BlockPos pos)   {
+        double vanilla = pos.getDistance((int) posX, (int) posY, (int) posZ);
+        if (vanilla < 64.0D) {
+            return vanilla;
+        } else {
+            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(this.world, pos);
+            if (wrapper != null) {
+                Vector posVec = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
+                wrapper.wrapping.coordTransform.fromLocalToGlobal(posVec);
+                posVec.X -= this.posX;
+                posVec.Y -= this.posY;
+                posVec.Z -= this.posZ;
+                if (vanilla > posVec.lengthSq()) {
+                    return posVec.lengthSq();
+                }
+            }
+        }
+        return vanilla;
+    }
 }

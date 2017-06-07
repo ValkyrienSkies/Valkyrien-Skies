@@ -33,12 +33,11 @@ public class ValkyrienWarfarePlugin implements IFMLLoadingPlugin {
 
 	@Override
 	public void injectData(Map<String, Object> data) {
-		isObfuscatedEnvironment = (Boolean) data.get("runtimeDeobfuscationEnabled");
 	}
 
 	@Override
 	public String getAccessTransformerClass() {
-		return "ValkyrienWarfareBase.CoreMod.ValkyrienWarfareAccessTransformer";
+		return null;
 	}
 
 }

@@ -15,7 +15,6 @@ import java.util.Map;
  * @author thebest108
  *
  */
-@Deprecated
 public class TransformAdapter extends ClassVisitor {
 
 	public static final String EntityClassName = "net/minecraft/entity/Entity";

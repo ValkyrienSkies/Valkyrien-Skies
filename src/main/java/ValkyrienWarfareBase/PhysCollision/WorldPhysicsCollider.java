@@ -233,13 +233,9 @@ public class WorldPhysicsCollider {
 
 		double collisionSpeed = velocityAtPoint.dot(toCollideWith.axis);
 
-		if(Math.abs(collisionSpeed) < 0.05D){
-			collisionSpeed = 0D;
-		}
-
 		double impulseApplied = BlockRammingManager.processBlockRamming(parent.wrapper, collisionSpeed, inLocalState, inWorldState, inLocalPos, inWorldPos, didBlockBreakInShip, didBlockBreakInWorld);
 
-		Vector[] collisionPoints = PolygonCollisionPointFinder.getPointsOfCollisionForPolygons(collider, toCollideWith, null);
+		Vector[] collisionPoints = PolygonCollisionPointFinder.getPointsOfCollisionForPolygons(collider, toCollideWith, velocityAtPoint);
 
 		impulseApplied /= collisionPoints.length;
 
@@ -283,6 +279,12 @@ public class WorldPhysicsCollider {
 		//This is just an optimized way to add this force quickly to the PhysicsCalculations
 		if (collisionImpulseForce.dot(offsetVector) < 0) {
 //			collisionImpulseForce.multiply(1.8D);
+			double collisionVelocity = momentumAtPoint.dot(axis);
+
+			if(Math.abs(collisionVelocity) < 0.1D){
+				collisionImpulseForce.zero();
+			}
+
 			calculator.linearMomentum.add(collisionImpulseForce);
 			Vector thirdCross = inBody.cross(collisionImpulseForce);
 

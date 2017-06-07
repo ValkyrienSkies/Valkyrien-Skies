@@ -83,6 +83,10 @@ public class EntityCollisionInjector {
 						if (tempResponse.Y > 0 && BigBastardMath.canStandOnNormal(col.collisions[i].axis) && tempResponse.lengthSq() < stepSquared) {
 							if(tempResponse.lengthSq() < .1){
 								response = tempResponse;
+							}else{
+//								System.out.println("Try Stepping!");
+								AxisAlignedBB axisalignedbb = entity.getEntityBoundingBox().offset(tempResponse.X, tempResponse.Y, tempResponse.Z);
+								entity.setEntityBoundingBox(axisalignedbb);
 							}
 //							entity.moveEntity(x, y, z);
 //							response = tempResponse;
@@ -125,6 +129,9 @@ public class EntityCollisionInjector {
 		entity.isCollidedVertically = isDifSignificant(dy, origDy);
 		entity.onGround = entity.isCollidedVertically && origDy < 0 || alreadyOnGround;
 		entity.isCollided = entity.isCollidedHorizontally || entity.isCollidedVertically;
+
+		entity.resetPositionToBB();
+
 		if (entity instanceof EntityLivingBase) {
 			EntityLivingBase base = (EntityLivingBase) entity;
 			base.motionY = dy;

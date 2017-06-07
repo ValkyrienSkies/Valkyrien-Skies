@@ -1,10 +1,12 @@
 package ValkyrienWarfareControl.ThrustNetwork;
 
+import ValkyrienWarfareBase.NBTUtils;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Physics.PhysicsCalculations;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -15,6 +17,7 @@ public class BasicForceNodeTileEntity extends BasicNodeTileEntity implements IFo
 	protected double maxThrust = 5000D;
 	protected double currentThrust = 0D;
 
+	private boolean isForceOutputOriented = true;
 	private Vector normalVelocityUnoriented;
 	//Tells if the tile is in Ship Space, if it isn't then it doesn't try to find a parent Ship object
 	private boolean hasAlreadyCheckedForParent = false;
@@ -36,8 +39,19 @@ public class BasicForceNodeTileEntity extends BasicNodeTileEntity implements IFo
 	}
 
 	@Override
-	public Vector getForceOutput() {
-		return forceOutputVector;
+	public Vector getForceOutputUnoriented() {
+		return normalVelocityUnoriented.getProduct(currentThrust);
+	}
+
+	@Override
+	public Vector getForceOutputOriented() {
+		Vector outputForce = getForceOutputUnoriented();
+		if(isForceOutputOriented) {
+			if(updateParentShip()){
+				RotationMatrices.applyTransform(parentShip.wrapping.coordTransform.lToWRotation, outputForce);
+			}
+		}
+		return outputForce;
 	}
 
 	@Override
@@ -86,6 +100,25 @@ public class BasicForceNodeTileEntity extends BasicNodeTileEntity implements IFo
 		}
 		PhysicsCalculations calculations = parentShip.wrapping.physicsProcessor;
 		return calculations.angularVelocity.cross(getPositionInLocalSpaceWithOrientation());
+	}
+
+
+	@Override
+	public void readFromNBT(NBTTagCompound compound) {
+		isForceOutputOriented = compound.getBoolean("isForceOutputOriented");
+		maxThrust = compound.getDouble("maxThrust");
+		currentThrust = compound.getDouble("currentThrust");
+		normalVelocityUnoriented = NBTUtils.readVectorFromNBT("normalVelocityUnoriented", compound);
+		super.readFromNBT(compound);
+	}
+
+	@Override
+	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+		compound.setBoolean("isForceOutputOriented", isForceOutputOriented);
+		compound.setDouble("maxThrust", maxThrust);
+		compound.setDouble("currentThrust", currentThrust);
+		NBTUtils.writeVectorToNBT("normalVelocityUnoriented", normalVelocityUnoriented, compound);
+		return super.writeToNBT(compound);
 	}
 
 	/**

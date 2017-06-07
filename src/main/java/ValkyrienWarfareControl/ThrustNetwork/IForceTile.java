@@ -11,11 +11,16 @@ public interface IForceTile {
 	public Vector getForceOutputNormal();
 
 	/**
-	 * Returns the current force output vector of this engine
+	 * Returns the current unoriented force output vector of this engine
 	 * @return
 	 */
-	public Vector getForceOutput();
+	public Vector getForceOutputUnoriented();
 
+	/**
+	 * Returns the current oriented force output vector of this engine
+	 * @return
+	 */
+	public Vector getForceOutputOriented();
 	/**
 	 * Returns the maximum magnitude of force this engine can provide
 	 * @return

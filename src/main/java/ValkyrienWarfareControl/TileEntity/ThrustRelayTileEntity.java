@@ -1,8 +1,8 @@
 package ValkyrienWarfareControl.TileEntity;
 
-import ValkyrienWarfareControl.ThrustNetwork.BasicNodeTileEntity;
-import ValkyrienWarfareControl.ThrustNetwork.INodeProvider;
-import ValkyrienWarfareControl.ThrustNetwork.Node;
+import ValkyrienWarfareControl.NodeNetwork.BasicNodeTileEntity;
+import ValkyrienWarfareControl.NodeNetwork.INodeProvider;
+import ValkyrienWarfareControl.NodeNetwork.Node;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;

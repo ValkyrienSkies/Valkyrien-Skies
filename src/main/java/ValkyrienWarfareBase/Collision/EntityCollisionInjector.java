@@ -10,10 +10,16 @@ import ValkyrienWarfareBase.Interaction.EntityDraggable;
 import ValkyrienWarfareBase.Math.BigBastardMath;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
+import net.minecraft.block.Block;
+import net.minecraft.block.SoundType;
+import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.chunk.Chunk;
@@ -32,6 +38,9 @@ public class EntityCollisionInjector {
 		double origDx = dx;
 		double origDy = dy;
 		double origDz = dz;
+		double origPosX = entity.posX;
+		double origPosY = entity.posY;
+		double origPosZ = entity.posZ;
 		boolean isLiving = entity instanceof EntityLivingBase;
 		boolean isMoving = false;
 		if (isLiving) {
@@ -160,6 +169,73 @@ public class EntityCollisionInjector {
 		} else {
 			entity.moveEntity(dx, dy, dz);
 		}
+
+		Vector entityPosInShip = new Vector(entity.posX, entity.posY - 0.20000000298023224D, entity.posZ, worldBelow.wrapping.coordTransform.wToLTransform);
+
+		int j4 = MathHelper.floor_double(entityPosInShip.X);
+        int l4 = MathHelper.floor_double(entityPosInShip.Y);
+        int i5 = MathHelper.floor_double(entityPosInShip.Z);
+        BlockPos blockpos = new BlockPos(j4, l4, i5);
+        IBlockState iblockstate = entity.worldObj.getBlockState(blockpos);
+
+        Block block = iblockstate.getBlock();
+        //TODO: Fix this
+        if (/**entity.canTriggerWalking()**/ entity instanceof EntityPlayer && !entity.isRiding())
+        {
+            double d12 = entity.posX - origPosX;
+            double d13 = entity.posY - origPosY;
+            double d14 = entity.posZ - origPosZ;
+
+            if (block != Blocks.LADDER)
+            {
+                d13 = 0.0D;
+            }
+
+            if (block != null && entity.onGround)
+            {
+                block.onEntityWalk(entity.worldObj, blockpos, entity);
+            }
+
+//            entity.distanceWalkedModified = (float)((double)entity.distanceWalkedModified + (double)MathHelper.sqrt_double(d12 * d12 + d14 * d14) * 0.6D);
+//            entity.distanceWalkedOnStepModified = (float)((double)entity.distanceWalkedOnStepModified + (double)MathHelper.sqrt_double(d12 * d12 + d13 * d13 + d14 * d14) * 0.6D);
+
+            if (entity.distanceWalkedOnStepModified > (float)entity.nextStepDistance && iblockstate.getMaterial() != Material.AIR)
+            {
+            	entity.nextStepDistance = (int)entity.distanceWalkedOnStepModified + 1;
+
+                /*if (this.isInWater())
+                {
+                    float f = MathHelper.sqrt_double(this.motionX * this.motionX * 0.20000000298023224D + this.motionY * this.motionY + this.motionZ * this.motionZ * 0.20000000298023224D) * 0.35F;
+
+                    if (f > 1.0F)
+                    {
+                        f = 1.0F;
+                    }
+
+                    this.playSound(this.getSwimSound(), f, 1.0F + (this.rand.nextFloat() - this.rand.nextFloat()) * 0.4F);
+                }*/
+
+//            	System.out.println("Play a sound!");
+//                entity.playStepSound(blockpos, block);
+
+
+            	SoundType soundtype = block.getSoundType(entity.worldObj.getBlockState(blockpos), entity.worldObj, blockpos, entity);
+
+                if (entity.worldObj.getBlockState(blockpos.up()).getBlock() == Blocks.SNOW_LAYER)
+                {
+                    soundtype = Blocks.SNOW_LAYER.getSoundType();
+                    entity.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.15F, soundtype.getPitch());
+                }
+                else if (!block.getDefaultState().getMaterial().isLiquid())
+                {
+                	entity.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.15F, soundtype.getPitch());
+                }
+            }
+        }
+
+
+
+
 		entity.isCollidedHorizontally = (motionInterfering(dx, origDx)) || (motionInterfering(dz, origDz));
 		entity.isCollidedVertically = isDifSignificant(dy, origDy);
 		entity.onGround = entity.isCollidedVertically && origDy < 0 || alreadyOnGround || entity.onGround;

@@ -8,6 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 
 public abstract class BlockEtherCompressorLore extends BlockEtherCompressor {
+
 	protected String[] lore;
 
 	public BlockEtherCompressorLore(Material materialIn, double enginePower) {

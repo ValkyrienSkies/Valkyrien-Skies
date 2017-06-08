@@ -1,4 +1,4 @@
-package ValkyrienWarfareControl.ThrustNetwork;
+package ValkyrienWarfareControl.NodeNetwork;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;

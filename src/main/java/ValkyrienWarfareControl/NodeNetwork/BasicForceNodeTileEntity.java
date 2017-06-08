@@ -1,4 +1,4 @@
-package ValkyrienWarfareControl.ThrustNetwork;
+package ValkyrienWarfareControl.NodeNetwork;
 
 import ValkyrienWarfareBase.NBTUtils;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;

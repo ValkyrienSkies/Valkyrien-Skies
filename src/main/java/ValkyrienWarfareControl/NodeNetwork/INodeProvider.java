@@ -1,4 +1,4 @@
-package ValkyrienWarfareControl.ThrustNetwork;
+package ValkyrienWarfareControl.NodeNetwork;
 
 public interface INodeProvider {
 

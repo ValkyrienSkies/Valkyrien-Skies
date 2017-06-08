@@ -1,7 +1,7 @@
 package ValkyrienWarfareBase.API.Block.EtherCompressor;
 
 import ValkyrienWarfareBase.API.Vector;
-import ValkyrienWarfareControl.ThrustNetwork.BasicForceNodeTileEntity;
+import ValkyrienWarfareControl.NodeNetwork.BasicForceNodeTileEntity;
 
 public abstract class TileEntityEtherCompressor extends BasicForceNodeTileEntity {
 

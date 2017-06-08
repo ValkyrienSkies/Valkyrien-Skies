@@ -1,4 +1,4 @@
-package ValkyrienWarfareControl.ThrustNetwork;
+package ValkyrienWarfareControl.NodeNetwork;
 
 import java.util.ArrayList;
 import java.util.HashSet;

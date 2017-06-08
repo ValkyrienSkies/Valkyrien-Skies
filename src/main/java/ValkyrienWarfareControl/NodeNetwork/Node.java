@@ -1,4 +1,4 @@
-package ValkyrienWarfareControl.ThrustNetwork;
+package ValkyrienWarfareControl.NodeNetwork;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -18,6 +18,8 @@ public class Node {
 	public HashSet<BlockPos> connectedNodesBlockPos;
 	private boolean isFullyBuilt = false;
 	private NodeNetwork parentNetwork;
+
+	private byte channel = 0;
 
 	public Node(TileEntity parent){
 		parentTile = parent;
@@ -150,6 +152,14 @@ public class Node {
 		return parentNetwork;
 	}
 
+	public byte getChannel(){
+		return channel;
+	}
+
+	public void setChannel(byte newChannel){
+		channel = newChannel;
+	}
+
 	public void readFromNBT(NBTTagCompound compound) {
 		int[] connectednodesarray = compound.getIntArray("connectednodesarray");
 
@@ -157,6 +167,7 @@ public class Node {
 			BlockPos toAdd = new BlockPos(connectednodesarray[i], connectednodesarray[i + 1], connectednodesarray[i + 2]);
 			connectedNodesBlockPos.add(toAdd);
 		}
+		channel = compound.getByte("channel");
 	}
 
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
@@ -171,6 +182,8 @@ public class Node {
 			index += 3;
 		}
 		compound.setIntArray("connectednodesarray", arrayToWrite);
+		compound.setByte("channel", channel);
+
 		return compound;
 	}
 

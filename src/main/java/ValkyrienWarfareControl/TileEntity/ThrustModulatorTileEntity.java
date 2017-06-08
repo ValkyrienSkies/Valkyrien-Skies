@@ -1,15 +1,15 @@
 package ValkyrienWarfareControl.TileEntity;
 
 import ValkyrienWarfareBase.API.Block.EtherCompressor.TileEntityEtherCompressor;
-import ValkyrienWarfareControl.ThrustNetwork.BasicNodeTileEntity;
-import ValkyrienWarfareControl.ThrustNetwork.Node;
-import ValkyrienWarfareControl.ThrustNetwork.NodeNetwork;
+import ValkyrienWarfareControl.NodeNetwork.BasicNodeTileEntity;
+import ValkyrienWarfareControl.NodeNetwork.Node;
+import ValkyrienWarfareControl.NodeNetwork.NodeNetwork;
 import net.minecraft.tileentity.TileEntity;
 
 public class ThrustModulatorTileEntity extends BasicNodeTileEntity{
 
 	public ThrustModulatorTileEntity(){
-
+		super();
 	}
 
 	@Override

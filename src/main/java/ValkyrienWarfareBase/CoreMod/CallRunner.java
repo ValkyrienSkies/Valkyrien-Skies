@@ -641,6 +641,7 @@ public class CallRunner {
 			entity.moveEntity(dx, dy, dz);
 		}
 	}
+
     public static Vec3d onGetLook(Entity entityFor, float partialTicks){
     	Vec3d defaultOutput = entityFor.getLook(partialTicks);
 

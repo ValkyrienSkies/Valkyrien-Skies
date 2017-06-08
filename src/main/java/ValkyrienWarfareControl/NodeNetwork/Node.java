@@ -69,25 +69,33 @@ public class Node {
 		WorldServer serverWorld = (WorldServer) parentTile.getWorld();
 		PlayerList list = serverWorld.mcServer.getPlayerList();
 //		System.out.println("help");
-		list.sendToAllNearExcept(null, xPos, yPos, zPos, 128D, serverWorld.provider.getDimension(), toSend);
+		if(!parentTile.isInvalid()){
+			list.sendToAllNearExcept(null, xPos, yPos, zPos, 128D, serverWorld.provider.getDimension(), toSend);
+		}
 	}
 
 	/**
 	 * Destroys all other connections to this node from other nodes, and also calls for the node network to rebuild itself
 	 */
 	public void destroyNode(){
+		if(parentTile.getWorld().isRemote){
+			//This is needed because it never gets called anywhere else in the client code
+			this.updateBuildState();
+		}
+
 		Object[] backingArray = connectedNodes.toArray();
 		for(Object node : backingArray){
 			unlinkNode((Node)node, false, false);
 		}
 		parentNetwork.recalculateNetworks(this);
 
-		if(!parentTile.getWorld().isRemote){
-			sendUpdatesToNearby();
-			for(Object node : backingArray){
-				((Node)node).sendUpdatesToNearby();
-			}
-		}
+		//Assume this gets handled by the TileEntity.invalidate() method, otherwise this won't work!
+//		if(!parentTile.getWorld().isRemote){
+//			sendUpdatesToNearby();
+//			for(Object node : backingArray){
+//				((Node)node).sendUpdatesToNearby();
+//			}
+//		}
 	}
 
 	public void updateBuildState(){
@@ -161,6 +169,9 @@ public class Node {
 	}
 
 	public void readFromNBT(NBTTagCompound compound) {
+		//TODO: This might not be correct
+		connectedNodesBlockPos.clear();
+
 		int[] connectednodesarray = compound.getIntArray("connectednodesarray");
 
 		for(int i = 0; i < connectednodesarray.length; i+=3){

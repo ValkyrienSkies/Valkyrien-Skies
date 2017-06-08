@@ -216,9 +216,9 @@ public class EntityCollisionInjector {
                 }*/
 
 //            	System.out.println("Play a sound!");
-//                entity.playStepSound(blockpos, block);
+//              entity.playStepSound(blockpos, block);
 
-
+            	//TODO: In future, replace this with entity.playStepSound()
             	SoundType soundtype = block.getSoundType(entity.worldObj.getBlockState(blockpos), entity.worldObj, blockpos, entity);
 
                 if (entity.worldObj.getBlockState(blockpos.up()).getBlock() == Blocks.SNOW_LAYER)

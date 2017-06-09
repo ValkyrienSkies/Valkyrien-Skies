@@ -143,7 +143,7 @@ public class NewExp2 extends Explosion {
         }
 
         this.affectedBlockPositions.addAll(set);
-        float f3 = this.explosionSize*2;
+        float f3 = this.explosionSize;
         int k1 = MathHelper.floor_double(this.explosionX - (double)f3 - 1.0D);
         int l1 = MathHelper.floor_double(this.explosionX + (double)f3 + 1.0D);
         int i2 = MathHelper.floor_double(this.explosionY - (double)f3 - 1.0D);

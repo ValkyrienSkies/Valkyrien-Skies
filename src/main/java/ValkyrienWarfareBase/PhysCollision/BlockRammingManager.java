@@ -27,11 +27,11 @@ public class BlockRammingManager {
 	 * @return
 	 */
 	public static double processBlockRamming(PhysicsWrapperEntity wrapper, double collisionSpeed, IBlockState inLocalState, IBlockState inWorldState, BlockPos inLocal, BlockPos inWorld, NestedBoolean didBlockBreakInShip, NestedBoolean didBlockBreakInWorld){
-		if(Math.abs(collisionSpeed) > 4.0D){
+		if(Math.abs(collisionSpeed) > 2D){
 			double shipBlockHardness = inLocalState.getBlock().blockResistance;//inLocalState.getBlockHardness(worldObj, inLocalPos);
 			double worldBlockHardness = inWorldState.getBlock().blockResistance;//inWorldState.getBlockHardness(worldObj, inWorldPos);
 
-			double hardnessRatio = Math.pow( worldBlockHardness / shipBlockHardness, Math.abs(collisionSpeed) / 2.5D);
+			double hardnessRatio = Math.pow( worldBlockHardness / shipBlockHardness, Math.abs(collisionSpeed) / 5D);
 
 			if(worldBlockHardness == -1){
 				worldBlockHardness = 100D;

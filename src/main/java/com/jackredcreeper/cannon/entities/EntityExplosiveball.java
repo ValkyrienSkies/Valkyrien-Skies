@@ -30,8 +30,8 @@ public class EntityExplosiveball extends EntitySnowball {
         	double y = this.posY + this.motionY;
         	double z = this.posZ + this.motionZ;
         	float size = 5F;
-        	float power = 0.2F;
-        	float blast = 0.1F;
+        	float power = 0.4F;
+        	float blast = 0.2F;
         	float damage = 16F;
         	
         	NewExp explosion = new NewExp(this.getEntityWorld(),null,x,y,z,size,power,damage,blast,false,true);

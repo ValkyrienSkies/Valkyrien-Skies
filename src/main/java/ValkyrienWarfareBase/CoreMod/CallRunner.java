@@ -16,6 +16,7 @@ import ValkyrienWarfareBase.ChunkManagement.PhysicsChunkManager;
 import ValkyrienWarfareBase.Collision.EntityCollisionInjector;
 import ValkyrienWarfareBase.Collision.EntityPolygon;
 import ValkyrienWarfareBase.Collision.Polygon;
+import ValkyrienWarfareBase.Fixes.WorldBorderFixWrapper;
 import ValkyrienWarfareBase.Interaction.ShipUUIDToPosData.ShipPositionData;
 import ValkyrienWarfareBase.Physics.BlockMass;
 import ValkyrienWarfareBase.Physics.PhysicsQueuedForce;
@@ -45,6 +46,8 @@ import net.minecraft.util.math.RayTraceResult.Type;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldProvider;
+import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkGenerator;
 import net.minecraftforge.common.DimensionManager;
@@ -54,6 +57,12 @@ public class CallRunner {
 //    public static boolean isServerInOnlineMode(){
 //    	return false;
 //    }
+
+	//TODO: Remove this in 1.11, and use the mixins!
+	public static WorldBorder createWorldBorder(WorldProvider provider){
+		WorldBorderFixWrapper wrapper = new WorldBorderFixWrapper(provider.createWorldBorder());
+		return wrapper;
+    }
 
 	/**
 	 * Fixes the chair dismount position
@@ -615,7 +624,8 @@ public class CallRunner {
 
 	public static void onEntityMove(Entity entity, double dx, double dy, double dz) {
 		double movDistSq = (dx*dx) + (dy*dy) + (dz*dz);
-		if(movDistSq > 1000000){
+
+		if(movDistSq > 10000){
 			//Assume this will take us to Ship coordinates
 			double newX = entity.posX + dx;
 			double newY = entity.posY + dy;
@@ -629,6 +639,8 @@ public class CallRunner {
 //				System.err.println("An entity just tried moving like a millions miles an hour. Probably VW's fault, sorry about that.");
 				return;
 			}
+
+//			System.out.println("yes?");
 
 			Vector endPos = new Vector(newX,newY,newZ);
 			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, endPos);

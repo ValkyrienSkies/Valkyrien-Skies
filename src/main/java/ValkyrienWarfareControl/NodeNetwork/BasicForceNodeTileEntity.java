@@ -10,7 +10,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class BasicForceNodeTileEntity extends BasicNodeTileEntity implements IForceTile{
+public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity implements IForceTile{
 
 	private Vector forceOutputVector = new Vector();
 

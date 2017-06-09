@@ -5,7 +5,7 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
 
-public class BasicNodeTileEntity extends TileEntity implements INodeProvider, ITickable {
+public abstract class BasicNodeTileEntity extends TileEntity implements INodeProvider, ITickable {
 
 	public final Node tileNode;
 
@@ -26,8 +26,8 @@ public class BasicNodeTileEntity extends TileEntity implements INodeProvider, IT
 
 	@Override
 	public void readFromNBT(NBTTagCompound compound) {
-		tileNode.readFromNBT(compound);
 		super.readFromNBT(compound);
+		tileNode.readFromNBT(compound);
 	}
 
 	@Override

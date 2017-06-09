@@ -16,13 +16,13 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
-@Mod(modid = CannonModRefrence.MOD_ID, version = CannonModRefrence.MOD_ID, acceptedMinecraftVersions = "[1.10.2]")
+@Mod(modid = CannonModReference.MOD_ID, version = CannonModReference.MOD_ID, acceptedMinecraftVersions = "[1.10.2]")
 public class CannonMod {
 
-	@Instance(CannonModRefrence.MOD_ID)
+	@Instance(CannonModReference.MOD_ID)
 	public static CannonMod instance = new CannonMod();
 
-	@SidedProxy(clientSide = CannonModRefrence.CLIENT, serverSide = CannonModRefrence.SERVER)
+	@SidedProxy(clientSide = CannonModReference.CLIENT, serverSide = CannonModReference.SERVER)
 	public static CommonProxy proxy;
 
 	@EventHandler
@@ -44,7 +44,7 @@ public class CannonMod {
 
 		//Craft
 
-		GameRegistry.registerTileEntity(TileEntityCannon.class, CannonModRefrence.MOD_ID + "TileEntityCannon");
+		GameRegistry.registerTileEntity(TileEntityCannon.class, CannonModReference.MOD_ID + "TileEntityCannon");
 	}
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event)

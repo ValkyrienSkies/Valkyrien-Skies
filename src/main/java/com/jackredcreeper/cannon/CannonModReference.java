@@ -1,6 +1,6 @@
 package com.jackredcreeper.cannon;
 
-public class CannonModRefrence {
+public class CannonModReference {
 
 	public static final String MOD_ID = "cannons";
 	public static final String NAME = "Cannons!";
@@ -37,7 +37,8 @@ public class CannonModRefrence {
 	}	
 	
 	public static enum ModBlocks {
-		CANNON("CANNON","BlockCannon");
+		CANNON("CANNON","BlockCannon"),
+		AIRMINE("AIRMINE","BlockAirMine");
 		
 		private String unlocalizedName;
 		private String registryName;

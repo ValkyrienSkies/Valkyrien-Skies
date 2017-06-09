@@ -9,7 +9,8 @@
     "world.MixinWorld",
     "world.chunk.MixinChunk",
     "entity.MixinEntity",
-    "world.MixinExplosion"
+    "world.MixinExplosion",
+    "server.management.MixinPlayerList"
   ],
   "client": [
     "util.MixinHttpUtil",
@@ -19,6 +20,7 @@
     "client.renderer.MixinEntityRenderer",
     "entity.player.MixinEntityPlayer",
     "world.MixinWorldCLIENT",
-    "client.particle.MixinParticleManager"
+    "client.particle.MixinParticleManager",
+    "client.renderer.MixinRenderGlobal"
   ]
 }

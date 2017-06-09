@@ -1,6 +1,6 @@
 package ValkyrienWarfareWorld;
 
-import ValkyrienWarfareBase.CoreMod.CallRunner;
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFalling;
 import net.minecraft.block.ITileEntityProvider;
@@ -55,7 +55,7 @@ public class EntityFallingUpBlock extends EntityFallingBlock {
 				this.motionY += 0.03999999910593033D;
 			}
 
-			CallRunner.onEntityMove(this, MoverType.SELF, this.motionX, this.motionY, this.motionZ);
+			ValkyrienWarfareMod.onEntityMove(this, MoverType.SELF, this.motionX, this.motionY, this.motionZ);
 			this.motionX *= 0.9800000190734863D;
 			this.motionY *= 0.9800000190734863D;
 			this.motionZ *= 0.9800000190734863D;

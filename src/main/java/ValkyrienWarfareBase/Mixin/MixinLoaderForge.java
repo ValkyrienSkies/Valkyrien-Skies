@@ -10,6 +10,8 @@ import java.util.Map;
 
 public class MixinLoaderForge implements IFMLLoadingPlugin {
 
+    public static boolean isObfuscatedEnvironment = false;
+
     public MixinLoaderForge() {
         System.out.println("\n\n\nValkyrien Warfare Mixin init\n\n\n");
         MixinBootstrap.init();
@@ -35,6 +37,7 @@ public class MixinLoaderForge implements IFMLLoadingPlugin {
 
     @Override
     public void injectData(Map<String, Object> data) {
+        isObfuscatedEnvironment = (boolean) (Boolean) data.get("runtimeDeobfuscationEnabled");
 
     }
 

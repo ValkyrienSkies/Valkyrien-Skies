@@ -1,20 +1,18 @@
 package ValkyrienWarfareBase.PhysicsManagement;
 
-import java.util.Map.Entry;
-
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
-import ValkyrienWarfareBase.Collision.Polygon;
 import ValkyrienWarfareBase.Network.PhysWrapperPositionMessage;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.border.WorldBorder;
 
 /**
  * Handles ALL functions for moving between Ship coordinates and world coordinates
- * 
+ *
  * @author thebest108
  *
  */
@@ -86,18 +84,40 @@ public class CoordTransformObject {
 	}
 
 	public void updateAllTransforms() {
+		updatePosRelativeToWorldBorder();
 		updateMatricesOnly();
 		updateParentAABB();
 		updateParentNormals();
 		updatePassengerPositions();
 	}
 
-	public void updatePassengerPositions(){
+	/**
+	 * Keeps the Ship from exiting the world border
+	 */
+	public void updatePosRelativeToWorldBorder() {
+		WorldBorder border = parent.worldObj.getWorldBorder();
+		AxisAlignedBB shipBB = parent.collisionBB;
+
+		if(shipBB.maxX > border.maxX()) {
+			parent.wrapper.posX += border.maxX() - shipBB.maxX;
+		}
+		if(shipBB.minX < border.minX()) {
+			parent.wrapper.posX += border.minX() - shipBB.minX;
+		}
+		if(shipBB.maxZ > border.maxZ()) {
+			parent.wrapper.posZ += border.maxZ() - shipBB.maxZ;
+		}
+		if(shipBB.minZ < border.minZ()) {
+			parent.wrapper.posZ += border.minZ() - shipBB.minZ;
+		}
+	}
+
+	public void updatePassengerPositions() {
 		for(Entity entity:parent.wrapper.riddenByEntities){
 			parent.wrapper.updatePassenger(entity);
 		}
 	}
-	
+
 	public void sendPositionToPlayers() {
 		PhysWrapperPositionMessage posMessage = new PhysWrapperPositionMessage(parent.wrapper);
 
@@ -178,17 +198,17 @@ public class CoordTransformObject {
 		double mnX = 0, mnY = 0, mnZ = 0, mxX = 0, mxY = 0, mxZ = 0;
 
 		Vector currentLocation = new Vector();
-		
+
 		mnX = mxX = parent.wrapper.posX;
 		mnY = mxY = parent.wrapper.posY;
 		mnZ = mxZ = parent.wrapper.posZ;
-		
+
 		for (BlockPos pos : parent.blockPositions) {
 
 			currentLocation.X = pos.getX() + .5D;
 			currentLocation.Y = pos.getY() + .5D;
 			currentLocation.Z = pos.getZ() + .5D;
-			
+
 			fromLocalToGlobal(currentLocation);
 
 			if (currentLocation.X < mnX) {

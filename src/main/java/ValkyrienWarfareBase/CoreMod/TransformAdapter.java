@@ -52,8 +52,10 @@ public class TransformAdapter extends ClassVisitor {
 	public static final String SleepResultName = "net/minecraft/entity/player/EntityPlayer$SleepResult";
 	public static final String ForgeChunkManagerName = "net/minecraftforge/common/ForgeChunkManager";
 	public static final String MinecraftServerName = "net/minecraft/server/MinecraftServer";
-	public static final String HttpUtilName = "net/minecraft/util/HttpUtil";
+	public static final String WorldProviderName = "net/minecraft/world/WorldProvider";
+	public static final String WorldBorderName = "net/minecraft/world/border/WorldBorder";
 
+	public static final String HttpUtilName = "net/minecraft/util/HttpUtil";
 	public static final String PredicateName = "com/google/common/base/Predicate";
 	public static final String ListName = "java/util/List";
 	public static final String ClassName = "java/lang/Class";
@@ -76,7 +78,12 @@ public class TransformAdapter extends ClassVisitor {
 //			return false;
 //		}
 
-		if (isMethod(calledDesc, "()L"+AxisAlignedBBName+";", calledName, TileEntityName, "getRenderBoundingBox", "RENAMEME", calledOwner)) {
+		if (isMethod(calledDesc, "()L"+WorldBorderName+";", calledName, WorldProviderName, "createWorldBorder", "func_177501_r", calledOwner)) {
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "createWorldBorder", "(L"+WorldProviderName+";)L"+WorldBorderName+";", itf);
+			return false;
+		}
+
+		if (isMethod(calledDesc, "()L"+AxisAlignedBBName+";", calledName, TileEntityName, "getRenderBoundingBox", "func_184177_bl", calledOwner)) {
 			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "getRenderBoundingBox", "(L"+TileEntityName+";)L"+AxisAlignedBBName+";", itf);
 			return false;
 		}

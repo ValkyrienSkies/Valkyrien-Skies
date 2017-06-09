@@ -1,4 +1,4 @@
-package ValkyrienWarfareBase;
+package ValkyrienWarfareBase.Fixes;
 
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
@@ -10,7 +10,7 @@ import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 
-class SoundFixWrapper implements ISound {
+public class SoundFixWrapper implements ISound {
 
 	private final ISound wrappedSound;
 	private final PhysicsWrapperEntity wrapper;

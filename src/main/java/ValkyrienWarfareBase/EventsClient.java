@@ -1,10 +1,13 @@
 package ValkyrienWarfareBase;
 
+import ValkyrienWarfareBase.API.RotationMatrices;
+import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Interaction.EntityDraggable;
 import ValkyrienWarfareBase.Network.PlayerShipRefrenceMessage;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.ISound;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.entity.Entity;
@@ -13,6 +16,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup;
+import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -23,6 +27,22 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.RenderTickEvent;
 public class EventsClient {
 
 	private final static Minecraft mc = Minecraft.getMinecraft();
+
+	@SubscribeEvent
+	public void onPlaySoundEvent(PlaySoundEvent event) {
+		ISound sound = event.getSound();
+		BlockPos pos = new BlockPos(sound.getXPosF(), sound.getYPosF(), sound.getZPosF());
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(Minecraft.getMinecraft().theWorld, pos);
+
+		if(wrapper != null){
+			Vector newSoundLocation = new Vector(sound.getXPosF(), sound.getYPosF(), sound.getZPosF());
+			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, newSoundLocation);
+
+			SoundFixWrapper soundFix = new SoundFixWrapper(sound, wrapper, newSoundLocation);
+
+			event.setResultSound(soundFix);
+		}
+	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onClientTickEvent(ClientTickEvent event) {

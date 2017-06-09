@@ -3,6 +3,7 @@ package ValkyrienWarfareControl.NodeNetwork;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.server.management.PlayerList;
@@ -13,6 +14,7 @@ import net.minecraft.world.WorldServer;
 public class Node {
 
 	public final TileEntity parentTile;
+	public PhysicsObject parentPhysicsObject;
 	//No duplicate connections
 	public HashSet<Node> connectedNodes;
 	public HashSet<BlockPos> connectedNodesBlockPos;

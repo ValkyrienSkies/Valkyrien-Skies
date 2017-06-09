@@ -11,6 +11,7 @@ import ValkyrienWarfareBase.Math.BigBastardMath;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockSlime;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -18,10 +19,12 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 
 public class EntityCollisionInjector {
@@ -145,6 +148,9 @@ public class EntityCollisionInjector {
 
 		entity.resetPositionToBB();
 
+		double motionYBefore = entity.motionY;
+		float oldFallDistance = entity.fallDistance;
+
 		if (entity instanceof EntityLivingBase) {
 			EntityLivingBase base = (EntityLivingBase) entity;
 			base.motionY = dy;
@@ -170,6 +176,14 @@ public class EntityCollisionInjector {
 			entity.moveEntity(dx, dy, dz);
 		}
 
+
+		entity.isCollidedHorizontally = (motionInterfering(dx, origDx)) || (motionInterfering(dz, origDz));
+		entity.isCollidedVertically = isDifSignificant(dy, origDy);
+		entity.onGround = entity.isCollidedVertically && origDy < 0 || alreadyOnGround || entity.onGround;
+		entity.isCollided = entity.isCollidedHorizontally || entity.isCollidedVertically;
+
+
+
 		Vector entityPosInShip = new Vector(entity.posX, entity.posY - 0.20000000298023224D, entity.posZ, worldBelow.wrapping.coordTransform.wToLTransform);
 
 		int j4 = MathHelper.floor_double(entityPosInShip.X);
@@ -179,7 +193,47 @@ public class EntityCollisionInjector {
         IBlockState iblockstate = entity.worldObj.getBlockState(blockpos);
 
         Block block = iblockstate.getBlock();
-        //TODO: Fix this
+
+        //TODO: Use Mixins to call Entity.updateFallState() instead!
+
+        //Fixes slime blocks
+      	if(block instanceof BlockSlime && !entity.isInWeb){
+      		entity.motionY = motionYBefore;
+      	}
+
+    	entity.fallDistance = oldFallDistance;
+        if(entity instanceof EntityLivingBase){
+
+	        if (!entity.worldObj.isRemote && entity.fallDistance > 3.0F && entity.onGround)
+	        {
+//	        	System.out.println("LAND DAMNIT!");
+	            float f = (float)MathHelper.ceiling_float_int(entity.fallDistance - 3.0F);
+	            if (!iblockstate.getBlock().isAir(iblockstate, entity.worldObj, blockpos))
+	            {
+	                double d0 = Math.min((double)(0.2F + f / 15.0F), 2.5D);
+
+	                int i = (int)(150.0D * d0);
+	                if (!iblockstate.getBlock().addLandingEffects(iblockstate, (WorldServer)entity.worldObj, blockpos, iblockstate, (EntityLivingBase)entity, i))
+	                ((WorldServer)entity.worldObj).spawnParticle(EnumParticleTypes.BLOCK_DUST, entity.posX, entity.posY, entity.posZ, i, 0.0D, 0.0D, 0.0D, 0.15000000596046448D, new int[] {Block.getStateId(iblockstate)});
+	            }
+	        }
+        }
+
+        if (entity.onGround)
+        {
+            if (entity.fallDistance > 0.0F)
+            {
+            	//Responsible for breaking crops when you jump on them
+            	iblockstate.getBlock().onFallenUpon(entity.worldObj, blockpos, entity, entity.fallDistance);
+            }
+
+            entity.fallDistance = 0.0F;
+        }
+        else if (entity.motionY < 0.0D)
+        {
+        	entity.fallDistance = (float)((double)entity.fallDistance - entity.motionY);
+        }
+
         if (/**entity.canTriggerWalking()**/ entity instanceof EntityPlayer && !entity.isRiding())
         {
             double d12 = entity.posX - origPosX;
@@ -190,6 +244,12 @@ public class EntityCollisionInjector {
             {
                 d13 = 0.0D;
             }
+
+            if (dy != origDy) {
+//    			if (!(entity.motionY > 0 && dy > 0)) {
+    				block.onLanded(entity.worldObj, entity);
+//    			}
+    		}
 
             if (block != null && entity.onGround)
             {
@@ -234,19 +294,12 @@ public class EntityCollisionInjector {
         }
 
 
-
-
-		entity.isCollidedHorizontally = (motionInterfering(dx, origDx)) || (motionInterfering(dz, origDz));
-		entity.isCollidedVertically = isDifSignificant(dy, origDy);
-		entity.onGround = entity.isCollidedVertically && origDy < 0 || alreadyOnGround || entity.onGround;
-		entity.isCollided = entity.isCollidedHorizontally || entity.isCollidedVertically;
-
 		if (dx != origDx) {
 			entity.motionX = dx;
 		}
 		if (dy != origDy) {
 			if (!(entity.motionY > 0 && dy > 0)) {
-				entity.motionY = 0;
+//				entity.motionY = 0;
 			}
 		}
 		if (dz != origDz) {

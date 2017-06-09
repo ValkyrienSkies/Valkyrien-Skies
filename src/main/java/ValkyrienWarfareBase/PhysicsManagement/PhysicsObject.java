@@ -350,9 +350,16 @@ public class PhysicsObject {
 				tileEntNBT.setInteger("y", pos.getY());
 				tileEntNBT.setInteger("z", pos.getZ());
 
-				//Fuck this old code
-//				TileEntity newInstance = VKChunkCache.getTileEntity(pos);
-//				newInstance.readFromNBT(tileEntNBT);
+				//Translates the Node connections from World space into Ship space
+				if(worldTile instanceof INodeProvider){
+					int[] backingPositionArray = tileEntNBT.getIntArray("connectednodesarray");
+					for(int cont = 0; cont < backingPositionArray.length; cont += 3){
+						backingPositionArray[cont] = backingPositionArray[cont] + centerDifference.getX();
+						backingPositionArray[cont + 1] = backingPositionArray[cont + 1] + centerDifference.getY();
+						backingPositionArray[cont + 2] = backingPositionArray[cont + 2] + centerDifference.getZ();
+					}
+					tileEntNBT.setIntArray("connectednodesarray", backingPositionArray);
+				}
 
 				TileEntity newInstance = TileEntity.create(worldObj, tileEntNBT);
 				newInstance.validate();
@@ -384,6 +391,7 @@ public class PhysicsObject {
 						e.printStackTrace();
 					}
 				}
+
 				worldObj.setTileEntity(newInstance.getPos(), newInstance);
 
 				newInstance.markDirty();
@@ -702,6 +710,7 @@ public class PhysicsObject {
 		for(TileEntity tile : nodeTileEntitiesToUpdate){
 			Node node = ((INodeProvider) tile).getNode();
 			if(node != null){
+				node.parentPhysicsObject = this;
 				node.updateBuildState();
 			}else{
 				System.err.println("How the fuck did we get a null node?");

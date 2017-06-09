@@ -63,20 +63,19 @@ public class BlockRammingManager {
 		return 1;
 	}
 
-
-	public static final class NestedBoolean{
+	public static final class NestedBoolean {
 
 		private boolean value;
 
-		public NestedBoolean(boolean value){
+		public NestedBoolean(boolean value) {
 			this.value = value;
 		}
 
-		public boolean getValue(){
+		public boolean getValue() {
 			return value;
 		}
 
-		public void setValue(boolean value){
+		public void setValue(boolean value) {
 			this.value = value;
 		}
 	}

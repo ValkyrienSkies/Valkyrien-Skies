@@ -1,4 +1,4 @@
-package ValkyrienWarfareBase.Mixin;
+package ValkyrienWarfareBase.API;
 
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import net.minecraft.util.math.RayTraceResult;
@@ -16,7 +16,7 @@ import java.lang.reflect.Method;
 public class MixinMethods {
     public static RayTraceResult rayTraceBlocksIgnoreShip(World world, Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock, PhysicsWrapperEntity toIgnore) {
         try {
-            Method rayTraceBlocksIgnoreShip = World.class.getMethod("rayTraceBlocksIgnoreShip", Vec3d.class, Vec3d.class, Boolean.class, Boolean.class, Boolean.class, PhysicsWrapperEntity.class);
+            Method rayTraceBlocksIgnoreShip = World.class.getMethod("rayTraceBlocksIgnoreShip", Vec3d.class, Vec3d.class, Boolean.TYPE, Boolean.TYPE, Boolean.TYPE, PhysicsWrapperEntity.class);
             return (RayTraceResult) rayTraceBlocksIgnoreShip.invoke(world, vec31, vec32, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock, toIgnore);
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e)   {
             e.printStackTrace();

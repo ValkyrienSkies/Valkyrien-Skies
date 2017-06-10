@@ -7,12 +7,12 @@ import ValkyrienWarfareBase.Interaction.IDraggable;
 import ValkyrienWarfareBase.Math.BigBastardMath;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSlime;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.MoverType;
@@ -26,10 +26,21 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
 public class EntityCollisionInjector {
+
+	public static Field hasChangedPos = null;
+
+	static {
+		try {
+			hasChangedPos = Entity.class.getField("hasChangedPos");
+		} catch (NoSuchFieldException e)	{
+			e.printStackTrace();
+		}
+	}
 
 	private static final double errorSignificance = .001D;
 
@@ -178,13 +189,10 @@ public class EntityCollisionInjector {
 			entity.move(MoverType.SELF, dx, dy, dz);
 		}
 
-
 		entity.isCollidedHorizontally = (motionInterfering(dx, origDx)) || (motionInterfering(dz, origDz));
 		entity.isCollidedVertically = isDifSignificant(dy, origDy);
 		entity.onGround = entity.isCollidedVertically && origDy < 0 || alreadyOnGround || entity.onGround;
 		entity.isCollided = entity.isCollidedHorizontally || entity.isCollidedVertically;
-
-
 
 		Vector entityPosInShip = new Vector(entity.posX, entity.posY - 0.20000000298023224D, entity.posZ, worldBelow.wrapping.coordTransform.wToLTransform);
 

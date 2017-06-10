@@ -26,6 +26,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Entity.class)
 public abstract class MixinEntity implements IDraggable {
 
+    public Boolean hasChangedPos = false;
+
     public PhysicsWrapperEntity worldBelowFeet;
 
     public Vector velocityAddedToPlayer = new Vector();
@@ -252,38 +254,48 @@ public abstract class MixinEntity implements IDraggable {
     }
 
     @Inject(method = "move(Lnet/minecraft/entity/MoverType;DDD)V", at = @At("HEAD"), cancellable = true)
-    public void preMove(MoverType type, double dx, double dy, double dz, CallbackInfo callbackInfo)    {
-        double movDistSq = (dx*dx) + (dy*dy) + (dz*dz);
-        if(movDistSq > 10000){
+    public void preMove(MoverType type, double dx, double dy, double dz, CallbackInfo callbackInfo) {
+        if (hasChangedPos) {
+            //callbackInfo.cancel();
+            return;
+        }
+
+        double movDistSq = (dx * dx) + (dy * dy) + (dz * dz);
+        if (movDistSq > 10000) {
             //Assume this will take us to Ship coordinates
             double newX = this.posX + dx;
             double newY = this.posY + dy;
             double newZ = this.posZ + dz;
-            BlockPos newPosInBlock = new BlockPos(newX,newY,newZ);
+            BlockPos newPosInBlock = new BlockPos(newX, newY, newZ);
 
             PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(this.world, newPosInBlock);
 
-            if(wrapper == null){
+            if (wrapper == null) {
 //				Just forget this even happened
                 callbackInfo.cancel();
                 return;
             }
 
-            Vector endPos = new Vector(newX,newY,newZ);
+            Vector endPos = new Vector(newX, newY, newZ);
             RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, endPos);
 
             dx = endPos.X - this.posX;
             dy = endPos.Y - this.posY;
             dz = endPos.Z - this.posZ;
         }
+        hasChangedPos = true;
         if (EntityCollisionInjector.alterEntityMovement(Entity.class.cast(this), dx, dy, dz)) {
             callbackInfo.cancel();
-            //if we changed the motion then don't run vanilla code
         }
     }
 
+    @Inject(method = "move(Lnet/minecraft/entity/MoverType;DDD)V", at = @At("RETURN"), cancellable = true)
+    public void postMove(MoverType type, double dx, double dy, double dz, CallbackInfo callbackInfo) {
+        hasChangedPos = false;
+    }
+
     @Overwrite
-    public double getDistanceSq(BlockPos pos)   {
+    public double getDistanceSq(BlockPos pos) {
         double vanilla = pos.getDistance((int) posX, (int) posY, (int) posZ);
         if (vanilla < 64.0D) {
             return vanilla;
@@ -301,5 +313,9 @@ public abstract class MixinEntity implements IDraggable {
             }
         }
         return vanilla;
+    }
+
+    public void move(double x, double y, double z) {
+
     }
 }

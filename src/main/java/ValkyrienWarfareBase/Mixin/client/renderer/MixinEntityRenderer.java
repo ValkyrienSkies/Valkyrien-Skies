@@ -1,10 +1,9 @@
 package ValkyrienWarfareBase.Mixin.client.renderer;
 
+import ValkyrienWarfareBase.API.MixinMethods;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Math.Quaternion;
-import ValkyrienWarfareBase.Mixin.MixinMethods;
-import ValkyrienWarfareBase.Mixin.world.MixinWorld;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareControl.Piloting.ClientPilotingManager;

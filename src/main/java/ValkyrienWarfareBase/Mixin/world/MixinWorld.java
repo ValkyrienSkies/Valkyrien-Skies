@@ -335,8 +335,6 @@ public abstract class MixinWorld {
         int midY = (y1 + y2) / 2;
         int midZ = (z1 + z2) / 2;
         BlockPos newPos = new BlockPos(midX, midY, midZ);
-        //.....................................................................................Don't mind this ugly fix, the mixin technically isn't a World so i need this
-        //TODO: test ugly fix
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(World.class.cast(this), newPos);
         if (wrapper != null && wrapper.wrapping.renderer != null) {
             wrapper.wrapping.renderer.updateRange(x1 - 1, y1 - 1, z1 - 1, x2 + 1, y2 + 1, z2 + 1);

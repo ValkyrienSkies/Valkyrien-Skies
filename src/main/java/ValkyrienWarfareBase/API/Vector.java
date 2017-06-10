@@ -21,6 +21,12 @@ public class Vector {
 		Y = y;
 		Z = z;
 	}
+	public Vector(double x, double y, double z, double[] rotationMatrix) {
+		X = x;
+		Y = y;
+		Z = z;
+		RotationMatrices.applyTransform(rotationMatrix, this);
+	}
 
 	public Vector(Vector v) {
 		X = v.X;

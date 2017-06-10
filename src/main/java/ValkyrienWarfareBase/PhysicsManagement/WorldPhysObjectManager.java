@@ -140,9 +140,19 @@ public class WorldPhysObjectManager {
 		}
 	}
 
+	/**
+	 * In the future this will be moved to a Mixins system, for now though this is worse
+	 * @param chunk
+	 * @return
+	 */
+	@Deprecated
 	public PhysicsWrapperEntity getManagingObjectForChunk(Chunk chunk) {
+		return getManagingObjectForChunkPosition(chunk.xPosition, chunk.zPosition);
+	}
+
+	public PhysicsWrapperEntity getManagingObjectForChunkPosition(int chunkX, int chunkZ) {
 		for (PhysicsWrapperEntity wrapper : physicsEntities) {
-			if (wrapper.wrapping.ownsChunk(chunk.x, chunk.z)) {
+			if (wrapper.wrapping.ownsChunk(chunkX, chunkZ)) {
 				return wrapper;
 			}
 		}

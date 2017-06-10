@@ -34,13 +34,18 @@ public class EntitySolidball extends EntitySnowball {
         	double x = this.posX + this.motionX/2;
         	double y = this.posY + this.motionY/2;
         	double z = this.posZ + this.motionZ/2;
-        	float size = 0.5F;
+        	double x2 = this.posX + this.motionX;
+        	double y2 = this.posY + this.motionY;
+        	double z2 = this.posZ + this.motionZ;
+        	float size = 0.6F;
         	float power = 0;
         	float blast = 0;
         	float damage = 100F;
 
         	NewExp2 explosion = new NewExp2(this.getEntityWorld(),null,x,y,z,size,power,damage,blast,false,true);
             explosion.newBoom(this.getEntityWorld(),null,x,y,z,size,power,damage,blast,false,true);
+            explosion.newBoom(this.getEntityWorld(),null,x2,y2,z2,size,power,damage,blast,false,true);
+            
             Pen++;
             if (Pen > 4) { this.setDead(); }
         }

@@ -30,8 +30,8 @@ public class EntityGrapeshot extends EntitySnowball {
         	double y = this.posY + this.motionY/2;
         	double z = this.posZ + this.motionZ/2;
         	float size = 1F;
-        	float power = 0.4F;
-        	float blast = 0.1F;
+        	float power = 0.5F;
+        	float blast = 0.2F;
         	float damage = 30F;
 
         	NewExp explosion = new NewExp(this.getEntityWorld(),null,x,y,z,size,power,damage,blast,false,true);

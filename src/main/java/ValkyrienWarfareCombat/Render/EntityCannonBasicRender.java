@@ -38,6 +38,8 @@ public class EntityCannonBasicRender extends Render<EntityCannonBasic> {
 
 		bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 
+//		entity.posX += 15;
+
 		Tessellator tessellator = Tessellator.getInstance();
 		VertexBuffer vertexbuffer = tessellator.getBuffer();
 
@@ -56,7 +58,7 @@ public class EntityCannonBasicRender extends Render<EntityCannonBasic> {
 		// BlockPos blockpos = new BlockPos(entity.posX, entity.getEntityBoundingBox().maxY, entity.posZ);
 		// GlStateManager.translate((float)(x - (double)blockpos.getX() - 0.5D), (float)(y - (double)blockpos.getY()), (float)(z - (double)blockpos.getZ() - 0.5D));
 
-		vertexbuffer.setTranslation((float) (0 - entity.posX), (float) (0 - entity.posY), (float) (0 - entity.posZ));
+		vertexbuffer.setTranslation((float) (0 - .5D), (float) (0), (float) (0 - .5D));
 
 		GL11.glTranslated(x, y, z);
 
@@ -92,6 +94,8 @@ public class EntityCannonBasicRender extends Render<EntityCannonBasic> {
 		GlStateManager.enableLighting();
 
 		GL11.glPopMatrix();
+
+//		entity.posX -= 15;
 	}
 
 	private void renderBase(EntityCannonBasic entity, double x, double y, double z, float entityYaw, float partialTicks) {
@@ -99,7 +103,7 @@ public class EntityCannonBasicRender extends Render<EntityCannonBasic> {
 		VertexBuffer vertexbuffer = tessellator.getBuffer();
 		vertexbuffer.begin(7, DefaultVertexFormats.BLOCK);
 
-		BlockPos blockpos = new BlockPos(entity.posX, entity.posY, entity.posZ);
+		BlockPos blockpos = new BlockPos(0.5D,0,.5D);
 		// GlStateManager.translate((float)(x - (double)blockpos.getX() - 0.5D), (float)(y - (double)blockpos.getY()), (float)(z - (double)blockpos.getZ() - 0.5D));
 		BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
 		blockrendererdispatcher.getBlockModelRenderer().renderModel(entity.world, blockrendererdispatcher.getModelForState(baseState), baseState, blockpos, vertexbuffer, false, 0);
@@ -112,7 +116,7 @@ public class EntityCannonBasicRender extends Render<EntityCannonBasic> {
 		VertexBuffer vertexbuffer = tessellator.getBuffer();
 		vertexbuffer.begin(7, DefaultVertexFormats.BLOCK);
 
-		BlockPos blockpos = new BlockPos(entity.posX, entity.posY, entity.posZ);
+		BlockPos blockpos = new BlockPos(0.5D,0,.5D);
 		// GlStateManager.translate((float)(x - (double)blockpos.getX() - 0.5D), (float)(y - (double)blockpos.getY()), (float)(z - (double)blockpos.getZ() - 0.5D));
 		BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
 		blockrendererdispatcher.getBlockModelRenderer().renderModel(entity.world, blockrendererdispatcher.getModelForState(headState), headState, blockpos, vertexbuffer, false, 0);

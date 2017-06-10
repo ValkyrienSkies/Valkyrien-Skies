@@ -14,16 +14,16 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public abstract class BlockEtherCompressor extends Block implements ITileEntityProvider, IBlockForceProvider {
-	
+
 	public double enginePower = 25000D;
-	
+
 	public BlockEtherCompressor(Material materialIn, double enginePower) {
 		super(materialIn);
 		this.enginePower = enginePower;
 	}
 
 	@Override
-	public Vector getBlockForce(World world, BlockPos pos, IBlockState state, Entity shipEntity, double secondsToApply) {
+	public Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state, Entity shipEntity, double secondsToApply){
 		PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity) shipEntity;
 		PhysicsObject obj = wrapper.wrapping;
 		IBlockState controllerState = obj.VKChunkCache.getBlockState(pos);
@@ -33,19 +33,14 @@ public abstract class BlockEtherCompressor extends Block implements ITileEntityP
 		}
 		if (worldTile instanceof TileEntityEtherCompressor) {
 			TileEntityEtherCompressor engineTile = (TileEntityEtherCompressor) worldTile;
-			return engineTile.getForceOutput(world, pos, state, wrapper, secondsToApply);
+			return engineTile.getForceOutputUnoriented(secondsToApply);
 		}
 		return null;
 	}
 
 	@Override
-	public boolean isForceLocalCoords(World world, BlockPos pos, IBlockState state, double secondsToApply) {
+	public boolean shouldLocalForceBeRotated(World world, BlockPos pos, IBlockState state, double secondsToApply) {
 		return false;
-	}
-
-	@Override
-	public Vector getBlockForcePosition(World world, BlockPos pos, IBlockState state, Entity shipEntity, double secondsToApply) {
-		return null;
 	}
 
 }

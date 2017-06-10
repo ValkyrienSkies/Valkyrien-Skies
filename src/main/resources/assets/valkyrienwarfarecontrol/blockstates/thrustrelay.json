@@ -1,0 +1,12 @@
+{
+    "variants": {
+        "default": { "model": "valkyrienwarfarecontrol:thrustrelay" },
+        "normal": { "model": "valkyrienwarfarecontrol:thrustrelay" },
+        "facing=down": { "model": "valkyrienwarfarecontrol:thrustrelay", "x": 180 },
+        "facing=up": { "model": "valkyrienwarfarecontrol:thrustrelay" },
+        "facing=north": { "model": "valkyrienwarfarecontrol:thrustrelay", "x": 90 },
+        "facing=south": { "model": "valkyrienwarfarecontrol:thrustrelay", "x": 270 },
+        "facing=west": { "model": "valkyrienwarfarecontrol:thrustrelay", "y": 270 ,"x": 90 },
+        "facing=east": { "model": "valkyrienwarfarecontrol:thrustrelay", "y": 90 ,"x": 90 }
+    }
+}

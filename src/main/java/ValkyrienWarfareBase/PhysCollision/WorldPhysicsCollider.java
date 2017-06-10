@@ -2,6 +2,8 @@ package ValkyrienWarfareBase.PhysCollision;
 
 import java.util.Random;
 
+import com.jackredcreeper.cannon.world.NewExp2;
+
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
@@ -235,10 +237,10 @@ public class WorldPhysicsCollider {
 
 		double impulseApplied = BlockRammingManager.processBlockRamming(parent.wrapper, collisionSpeed, inLocalState, inWorldState, inLocalPos, inWorldPos, didBlockBreakInShip, didBlockBreakInWorld);
 
-		Vector[] collisionPoints = PolygonCollisionPointFinder.getPointsOfCollisionForPolygons(collider, toCollideWith, null);
-		
-		impulseApplied /= collisionPoints.length;		
-				
+		Vector[] collisionPoints = PolygonCollisionPointFinder.getPointsOfCollisionForPolygons(collider, toCollideWith, velocityAtPoint);
+
+		impulseApplied /= collisionPoints.length;
+
 		for(Vector collisionPos : collisionPoints){
 			Vector inBody = collisionPos.getSubtraction(new Vector(parent.wrapper.posX, parent.wrapper.posY, parent.wrapper.posZ));
 			inBody.multiply(-1D);
@@ -253,6 +255,26 @@ public class WorldPhysicsCollider {
 		}
 
 		if(didBlockBreakInWorld.getValue()){
+			
+			if(worldObj.getBlockState(inWorldPos).getBlock() instanceof com.jackredcreeper.cannon.blocks.BlockAirMine)
+			{    	
+			double x = inWorldPos.getX();
+	    	double y = inWorldPos.getY();
+	    	double z = inWorldPos.getZ();
+	    	
+	    	float size = 8F;
+	    	float power = 0F;
+	    	float blast = 0F;
+	    	float damage = 100F;
+	    	
+	    	NewExp2 explosion1 = new NewExp2(worldObj,null,x,y,z,size,power,damage,blast,false,true);
+	        explosion1.newBoom(worldObj,null,x,y,z,size,power,damage,blast,false,true);
+	        
+			worldObj.setBlockToAir(inWorldPos);
+			}
+			
+			else
+			
 			worldObj.destroyBlock(inWorldPos, true);
 			return true;
 		}
@@ -279,6 +301,12 @@ public class WorldPhysicsCollider {
 		//This is just an optimized way to add this force quickly to the PhysicsCalculations
 		if (collisionImpulseForce.dot(offsetVector) < 0) {
 //			collisionImpulseForce.multiply(1.8D);
+			double collisionVelocity = momentumAtPoint.dot(axis);
+
+			if(Math.abs(collisionVelocity) < 0.1D){
+				collisionImpulseForce.zero();
+			}
+
 			calculator.linearMomentum.add(collisionImpulseForce);
 			Vector thirdCross = inBody.cross(collisionImpulseForce);
 

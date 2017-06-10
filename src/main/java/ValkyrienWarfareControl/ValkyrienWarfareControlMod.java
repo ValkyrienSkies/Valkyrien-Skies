@@ -8,11 +8,17 @@ import ValkyrienWarfareControl.Block.BlockDopedEtherium;
 import ValkyrienWarfareControl.Block.BlockHovercraftController;
 import ValkyrienWarfareControl.Block.BlockShipPassengerChair;
 import ValkyrienWarfareControl.Block.BlockShipPilotsChair;
+import ValkyrienWarfareControl.Block.BlockThrustModulator;
+import ValkyrienWarfareControl.Block.BlockThrustRelay;
 import ValkyrienWarfareControl.Block.Engine.BlockNormalEngine;
 import ValkyrienWarfareControl.Block.Engine.BlockRedstoneEngine;
 import ValkyrienWarfareControl.Block.EtherCompressor.BlockCreativeEtherCompressor;
 import ValkyrienWarfareControl.Block.EtherCompressor.BlockNormalEtherCompressor;
+import ValkyrienWarfareControl.Capability.ICapabilityLastRelay;
+import ValkyrienWarfareControl.Capability.ImplCapabilityLastRelay;
+import ValkyrienWarfareControl.Capability.StorageLastRelay;
 import ValkyrienWarfareControl.GUI.ControlGUIHandler;
+import ValkyrienWarfareControl.Item.ItemRelayWire;
 import ValkyrienWarfareControl.Item.ItemShipStealer;
 import ValkyrienWarfareControl.Item.ItemSystemLinker;
 import ValkyrienWarfareControl.Network.EntityFixMessage;
@@ -26,6 +32,8 @@ import ValkyrienWarfareControl.Piloting.SetShipPilotMessageHandler;
 import ValkyrienWarfareControl.Proxy.CommonProxyControl;
 import ValkyrienWarfareControl.TileEntity.BalloonBurnerTileEntity;
 import ValkyrienWarfareControl.TileEntity.PilotsChairTileEntity;
+import ValkyrienWarfareControl.TileEntity.ThrustModulatorTileEntity;
+import ValkyrienWarfareControl.TileEntity.ThrustRelayTileEntity;
 import ValkyrienWarfareControl.TileEntity.TileEntityHoverController;
 import ValkyrienWarfareControl.TileEntity.TileEntityNormalEtherCompressor;
 import ValkyrienWarfareWorld.ValkyrienWarfareWorldMod;
@@ -37,6 +45,9 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -83,11 +94,18 @@ public class ValkyrienWarfareControlMod {
 	public Block ultimateEtherCompressor;
 	public Block creativeEtherCompressor;
 
+	public Block thrustRelay;
+	public Block thrustModulator;
+
 	public Item systemLinker;
 	public Item airshipStealer;
+	public Item relayWire;
 
 	@SidedProxy(clientSide = "ValkyrienWarfareControl.Proxy.ClientProxyControl", serverSide = "ValkyrienWarfareControl.Proxy.CommonProxyControl")
 	public static CommonProxyControl proxy;
+
+	@CapabilityInject(ICapabilityLastRelay.class)
+	public static final Capability<ICapabilityLastRelay> lastRelayCapability = null;
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
@@ -98,6 +116,7 @@ public class ValkyrienWarfareControlMod {
 
 		registerBlocks(event);
 		registerItems(event);
+		registerCapibilities(event);
 
 		proxy.preInit(event);
 	}
@@ -148,6 +167,9 @@ public class ValkyrienWarfareControlMod {
 
 		passengerChair = new BlockShipPassengerChair(Material.IRON).setHardness(4f).setUnlocalizedName("shippassengerchair").setRegistryName(MODID, "shippassengerchair").setCreativeTab(CreativeTabs.TRANSPORTATION);
 
+		thrustRelay = new BlockThrustRelay(Material.IRON).setHardness(5f).setUnlocalizedName("thrustrelay").setRegistryName(MODID, "thrustrelay").setCreativeTab(CreativeTabs.TRANSPORTATION);
+		thrustModulator = new BlockThrustModulator(Material.IRON).setHardness(8f).setUnlocalizedName("thrustmodulator").setRegistryName(MODID, "thrustmodulator").setCreativeTab(CreativeTabs.TRANSPORTATION);
+
 		registerBlock(basicEngine);
 		registerBlock(advancedEngine);
 		registerBlock(eliteEngine);
@@ -165,6 +187,9 @@ public class ValkyrienWarfareControlMod {
 		registerBlock(balloonBurner);
 		registerBlock(pilotsChair);
 		registerBlock(passengerChair);
+
+		registerBlock(thrustRelay);
+		registerBlock(thrustModulator);
 	}
 
 	private void registerTileEntities(FMLStateEvent event) {
@@ -172,13 +197,18 @@ public class ValkyrienWarfareControlMod {
 		GameRegistry.registerTileEntity(TileEntityNormalEtherCompressor.class, "tileantigravengine");
 		GameRegistry.registerTileEntity(BalloonBurnerTileEntity.class, "tileballoonburner");
 		GameRegistry.registerTileEntity(PilotsChairTileEntity.class, "tilemanualshipcontroller");
+		GameRegistry.registerTileEntity(ThrustRelayTileEntity.class, "tilethrustrelay");
+		GameRegistry.registerTileEntity(ThrustModulatorTileEntity.class, "tilethrustmodulator");
 	}
 	private void registerItems(FMLStateEvent event) {
 		systemLinker = new ItemSystemLinker().setUnlocalizedName("systemlinker").setRegistryName(MODID, "systemlinker").setCreativeTab(CreativeTabs.TRANSPORTATION).setMaxStackSize(1);
-		airshipStealer = new ItemShipStealer().setUnlocalizedName("airshipStealer").setRegistryName(MODID, "airshipstealer").setCreativeTab(CreativeTabs.TOOLS).setMaxStackSize(1);
+
+		airshipStealer = new ItemShipStealer().setUnlocalizedName("airshipStealer").setRegistryName(MODID, "airshipStealer").setCreativeTab(CreativeTabs.TOOLS).setMaxStackSize(1);
+		relayWire = new ItemRelayWire().setUnlocalizedName("relaywire").setRegistryName(MODID, "relaywire").setCreativeTab(CreativeTabs.TRANSPORTATION).setMaxStackSize(1);
 
 		GameRegistry.register(systemLinker);
 		GameRegistry.register(airshipStealer);
+		GameRegistry.register(relayWire);
 	}
 
 	private void registerRecipies(FMLStateEvent event) {
@@ -208,6 +238,10 @@ public class ValkyrienWarfareControlMod {
 		controlNetwork.registerMessage(PilotControlsMessageHandler.class, PilotControlsMessage.class, 1, Side.SERVER);
 		controlNetwork.registerMessage(EntityFixMessageHandler.class, EntityFixMessage.class, 2, Side.CLIENT);
 		controlNetwork.registerMessage(SetShipPilotMessageHandler.class, SetShipPilotMessage.class, 3, Side.CLIENT);
+	}
+
+	public void registerCapibilities(FMLStateEvent event)	{
+		CapabilityManager.INSTANCE.register(ICapabilityLastRelay.class, new StorageLastRelay(), ImplCapabilityLastRelay.class);
 	}
 
 	private static void registerBlock(Block block){

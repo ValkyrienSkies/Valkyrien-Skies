@@ -1,4 +1,4 @@
-package ValkyrienWarfareBase.Mixin.client.partcile;
+package ValkyrienWarfareBase.Mixin.client.particle;
 
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;

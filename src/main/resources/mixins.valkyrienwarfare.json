@@ -10,7 +10,8 @@
     "world.chunk.MixinChunk",
     "entity.MixinEntity",
     "world.MixinExplosion",
-    "server.management.MixinPlayerList"
+    "server.management.MixinPlayerList",
+    "world.MixinWorldProvider"
   ],
   "client": [
     "util.MixinHttpUtil",

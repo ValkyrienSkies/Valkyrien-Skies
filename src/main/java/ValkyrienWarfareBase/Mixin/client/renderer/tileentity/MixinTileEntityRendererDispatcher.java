@@ -57,6 +57,8 @@ public abstract class MixinTileEntityRendererDispatcher {
 
         if(wrapper != null && wrapper.wrapping != null && wrapper.wrapping.renderer != null){
             try{
+                GlStateManager.resetColor();
+
                 if(drawingBatch){
                     this.drawBatch(MinecraftForgeClient.getRenderPass());
                     this.preDrawBatch();

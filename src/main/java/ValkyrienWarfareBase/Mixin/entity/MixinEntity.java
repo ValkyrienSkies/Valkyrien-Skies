@@ -254,7 +254,7 @@ public abstract class MixinEntity implements IDraggable {
     @Inject(method = "move(Lnet/minecraft/entity/MoverType;JJJ)V", at = @At("HEAD"), cancellable = true)
     public void preMove(MoverType type, double dx, double dy, double dz, CallbackInfo callbackInfo)    {
         double movDistSq = (dx*dx) + (dy*dy) + (dz*dz);
-        if(movDistSq > 1000000){
+        if(movDistSq > 10000){
             //Assume this will take us to Ship coordinates
             double newX = this.posX + dx;
             double newY = this.posY + dy;

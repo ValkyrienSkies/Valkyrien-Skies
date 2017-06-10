@@ -2,8 +2,8 @@ package ValkyrienWarfareBase.Mixin.client.renderer;
 
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
-import ValkyrienWarfareBase.CoreMod.CallRunnerClient;
 import ValkyrienWarfareBase.Math.Quaternion;
+import ValkyrienWarfareBase.Mixin.world.MixinWorld;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareControl.Piloting.ClientPilotingManager;
@@ -170,7 +170,7 @@ public abstract class MixinEntityRenderer {
                     f4 = f4 * 0.1F;
                     f5 = f5 * 0.1F;
 
-                    RayTraceResult raytraceresult = CallRunnerClient.rayTraceBlocksIgnoreShip(Minecraft.getMinecraft().world, new Vec3d(d0 + (double) f3, d1 + (double) f4, d2 + (double) f5), new Vec3d(d0 - d4 + (double) f3 + (double) f5, d1 - d6 + (double) f4, d2 - d5 + (double) f5), false, false, false, ClientPilotingManager.getPilotedWrapperEntity());
+                    RayTraceResult raytraceresult = MixinWorld.rayTraceBlocksIgnoreShip(Minecraft.getMinecraft().world, new Vec3d(d0 + (double) f3, d1 + (double) f4, d2 + (double) f5), new Vec3d(d0 - d4 + (double) f3 + (double) f5, d1 - d6 + (double) f4, d2 - d5 + (double) f5), false, false, false, ClientPilotingManager.getPilotedWrapperEntity());
 //                    renderer.mc.theWorld.rayTraceBlocks(new Vec3d(d0 + (double)f3, d1 + (double)f4, d2 + (double)f5), new Vec3d(d0 - d4 + (double)f3 + (double)f5, d1 - d6 + (double)f4, d2 - d5 + (double)f5));
 
                     if (raytraceresult != null) {

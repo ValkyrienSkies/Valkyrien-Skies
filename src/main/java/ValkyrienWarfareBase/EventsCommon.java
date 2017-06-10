@@ -7,9 +7,9 @@ import java.util.logging.Level;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Capability.IAirshipCounterCapability;
-import ValkyrienWarfareBase.CoreMod.ValkyrienWarfarePlugin;
 import ValkyrienWarfareBase.Interaction.CustomNetHandlerPlayServer;
 import ValkyrienWarfareBase.Interaction.ValkyrienWarfareWorldEventListener;
+import ValkyrienWarfareBase.Mixin.MixinLoaderForge;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsTickHandler;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.ShipType;
@@ -224,7 +224,7 @@ public class EventsCommon {
 		try {
 			Field xField, yField, zField, positionField;
 
-			if (!ValkyrienWarfarePlugin.isObfuscatedEnvironment) {
+			if (!MixinLoaderForge.isObfuscatedEnvironment) {
 				xField = toSet.getClass().getDeclaredField("explosionX");
 				xField.setAccessible(true);
 

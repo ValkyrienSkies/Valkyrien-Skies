@@ -1,5 +1,6 @@
 package ValkyrienWarfareBase.Mixin.world;
 
+import ValkyrienWarfareBase.Fixes.WorldBorderFixWrapper;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.border.WorldBorder;
 import org.spongepowered.asm.mixin.Mixin;

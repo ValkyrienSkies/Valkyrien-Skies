@@ -74,7 +74,7 @@ public class DimensionPhysObjectManager {
 		if (chunk == null) {
 			return null;
 		}
-		if(!PhysicsChunkManager.isLikelyShipChunk(chunk.xPosition, chunk.zPosition)){
+		if(!PhysicsChunkManager.isLikelyShipChunk(chunk.x, chunk.z)){
 			return null;
 		}
 		WorldPhysObjectManager physManager = getManagerForWorld(chunk.world);

@@ -147,7 +147,7 @@ public class WorldPhysObjectManager {
 	 */
 	@Deprecated
 	public PhysicsWrapperEntity getManagingObjectForChunk(Chunk chunk) {
-		return getManagingObjectForChunkPosition(chunk.xPosition, chunk.zPosition);
+		return getManagingObjectForChunkPosition(chunk.x, chunk.z);
 	}
 
 	public PhysicsWrapperEntity getManagingObjectForChunkPosition(int chunkX, int chunkZ) {

@@ -2,6 +2,7 @@ package ValkyrienWarfareBase.Physics;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 
 import javax.vecmath.Matrix3d;
 
@@ -19,6 +20,7 @@ import ValkyrienWarfareBase.PhysicsManagement.CoordTransformObject;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareControl.Balloon.BalloonProcessor;
+import ValkyrienWarfareControl.NodeNetwork.NodeNetwork;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -198,6 +200,7 @@ public class PhysicsCalculations {
 			updateParentCenterOfMass();
 			calculateFramedMOITensor();
 			if(!actAsArchimedes){
+				sendPhysicsProcessorsTicks();
 				calculateForces();
 			}else{
 				calculateForcesArchimedes();
@@ -313,7 +316,7 @@ public class PhysicsCalculations {
 
 				if (blockForce != null) {
 					if (blockAt instanceof IBlockForceProvider) {
-						Vector otherPosition = ((IBlockForceProvider) blockAt).getBlockForcePosition(worldObj, pos, state, parent.wrapper, physTickSpeed);
+						Vector otherPosition = ((IBlockForceProvider) blockAt).getCustomBlockForcePosition(worldObj, pos, state, parent.wrapper, physTickSpeed);
 						if (otherPosition != null) {
 							BigBastardMath.getBodyPosWithOrientation(otherPosition, centerOfMass, parent.coordTransform.lToWRotation, inBodyWO);
 						}
@@ -344,6 +347,13 @@ public class PhysicsCalculations {
 		double modifiedDrag = Math.pow(drag, physTickSpeed / .05D);
 		linearMomentum.multiply(modifiedDrag);
 		angularVelocity.multiply(modifiedDrag);
+	}
+
+	public void sendPhysicsProcessorsTicks(){
+//		HashSet<NodeNetwork> shipNodeNetworks = parent.nodeNetworksWithinShip;
+//		for(NodeNetwork network : shipNodeNetworks){
+//			System.out.println("Dayum");
+//		}
 	}
 
 	public void addQueuedForces() {

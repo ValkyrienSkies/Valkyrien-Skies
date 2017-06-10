@@ -20,11 +20,11 @@ public class BlockForce {
 	public Vector getForceFromState(IBlockState state, BlockPos pos, World world, double secondsToApply, PhysicsObject obj) {
 		Block block = state.getBlock();
 		if (block instanceof IBlockForceProvider) {
-			Vector forceVector = ((IBlockForceProvider) block).getBlockForce(world, pos, state, obj.wrapper, secondsToApply);
+			Vector forceVector = ((IBlockForceProvider) block).getBlockForceInWorldSpace(world, pos, state, obj.wrapper, secondsToApply);
 			if (forceVector == null) {
 				return null;
 			}
-			boolean isInLocal = ((IBlockForceProvider) block).isForceLocalCoords(world, pos, state, secondsToApply);
+			boolean isInLocal = ((IBlockForceProvider) block).shouldLocalForceBeRotated(world, pos, state, secondsToApply);
 			if (isInLocal) {
 				RotationMatrices.applyTransform(obj.coordTransform.lToWRotation, forceVector);
 			}
@@ -41,14 +41,10 @@ public class BlockForce {
 	public void getForceFromState(IBlockState state, BlockPos pos, World world, double secondsToApply, PhysicsObject obj, Vector toSet) {
 		Block block = state.getBlock();
 		if (block instanceof IBlockForceProvider) {
-			Vector forceVector = ((IBlockForceProvider) block).getBlockForce(world, pos, state, obj.wrapper, secondsToApply);
+			Vector forceVector = ((IBlockForceProvider) block).getBlockForceInWorldSpace(world, pos, state, obj.wrapper, secondsToApply);
 			if (forceVector == null) {
 				toSet.zero();
 				return;
-			}
-			boolean isInLocal = ((IBlockForceProvider) block).isForceLocalCoords(world, pos, state, secondsToApply);
-			if (isInLocal) {
-				RotationMatrices.applyTransform(obj.coordTransform.lToWRotation, forceVector);
 			}
 			toSet.X = forceVector.X;
 			toSet.Y = forceVector.Y;

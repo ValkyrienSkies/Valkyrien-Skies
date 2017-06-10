@@ -17,7 +17,6 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraft.world.World;
 
 public class PhysSettingsCommand extends CommandBase {
 
@@ -55,6 +54,12 @@ public class PhysSettingsCommand extends CommandBase {
 
 	@Override
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+		if(args.length == 0){
+			sender.sendMessage(new TextComponentString("Avaliable Physics Commands:"));
+			for(String command : completionOptions){
+				sender.sendMessage(new TextComponentString(command));
+			}
+		}
 		String key = args[0];
 		if (key.equals("doSplitting")) {
 			if (args.length == 1) {
@@ -114,16 +119,16 @@ public class PhysSettingsCommand extends CommandBase {
 			}
 		} else if (key.equals("physicsSpeed")) {
 			if (args.length == 1) {
-				sender.sendMessage(new TextComponentString("physicsSpeed=" + ValkyrienWarfareMod.physSpeed + " (Default: 0.05)"));
+				sender.sendMessage(new TextComponentString("physicsSpeed=" + ValkyrienWarfareMod.physSpeed + " (Default: 100%)"));
 				return;
 			} else if (args.length == 2) {
-				double value = Double.parseDouble(args[1]);
+				double value = Double.parseDouble(args[1].replace('%', ' '));
 				if (value < 0 || value > 1000)	{
 					sender.sendMessage(new TextComponentString("Please enter a value between 0 and 1000"));
 					return;
 				}
-				ValkyrienWarfareMod.physSpeed = value;
-				sender.sendMessage(new TextComponentString("Set physicsSpeed to " + value));
+				ValkyrienWarfareMod.physSpeed = value * 0.05D/100D;
+				sender.sendMessage(new TextComponentString("Set physicsSpeed to " + value + " percent"));
 				return;
 			}
 		} else if (key.equals("doGravity")) {
@@ -190,7 +195,8 @@ public class PhysSettingsCommand extends CommandBase {
 			ValkyrienWarfareMod.instance.saveConfig();
 			sender.sendMessage(new TextComponentString("Saved phyisics settings"));
 			return;
-		} else if (key.equals("help")){
+		} else if (true || key.equals("help")){
+			sender.sendMessage(new TextComponentString("Avaliable Physics Commands:"));
 			for(String command : completionOptions){
 				sender.sendMessage(new TextComponentString(command));
 			}

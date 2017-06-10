@@ -1,6 +1,6 @@
 package com.jackredcreeper.cannon;
 
-public class CannonModRefrence {
+public class CannonModReference {
 
 	public static final String MOD_ID = "cannons";
 	public static final String NAME = "Cannons!";
@@ -10,13 +10,13 @@ public class CannonModRefrence {
 	public static final String SERVER = "com.jackredcreeper.cannon.proxy.ServerProxy";
 
 	public static enum ModItems {
-		PRIMER("PRIMER","itemprimer"),
-		LOADER("LOADER","itemloader"),
-		TUNER("TUNER","itemtuner"),
-		CANNONBALL("CANNONBALL","itemcannonball"),
-		EXPLOSIVEBALL("EXPLOSIVEBALL","itemexplosiveball"),
-		GRAPESHOT("GRAPESHOT","itemgrapeshot"),
-		SOLIDBALL("SOLIDBALL","itemsolidball");
+		PRIMER("PRIMER","ItemPrimer"),
+		LOADER("LOADER","ItemLoader"),
+		TUNER("TUNER","ItemTuner"),
+		CANNONBALL("CANNONBALL","ItemCannonball"),
+		EXPLOSIVEBALL("EXPLOSIVEBALL","ItemExplosiveball"),
+		GRAPESHOT("GRAPESHOT","ItemGrapeshot"),
+		SOLIDBALL("SOLIDBALL","ItemSolidball");
 
 		private String unlocalizedName;
 		private String registryName;
@@ -37,7 +37,8 @@ public class CannonModRefrence {
 	}
 
 	public static enum ModBlocks {
-		CANNON("CANNON","blockcannon");
+		CANNON("CANNON","BlockCannon"),
+		AIRMINE("AIRMINE","BlockAirMine");
 
 		private String unlocalizedName;
 		private String registryName;

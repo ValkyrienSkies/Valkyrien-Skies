@@ -1,6 +1,7 @@
 package com.jackredcreeper.cannon.init;
 
-import com.jackredcreeper.cannon.CannonModRefrence;
+import com.jackredcreeper.cannon.CannonModReference;
+import com.jackredcreeper.cannon.blocks.BlockAirMine;
 import com.jackredcreeper.cannon.blocks.BlockCannon;
 
 import net.minecraft.block.Block;
@@ -11,16 +12,20 @@ import net.minecraft.item.ItemBlock;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class ModBlocks {
-	
+
 	public static Block cannon;
+	public static Block airmine;
+	
 	
 	public static void init() {
 		cannon = new BlockCannon();
+		airmine = new BlockAirMine();
 		
 	}
 	
 	public static void register() {
 		registerBlock(cannon);
+		registerBlock(airmine);
 	}
 	
 	public static void registerBlock(Block block) {
@@ -33,6 +38,7 @@ public class ModBlocks {
 	
 	public static void registerRenders() {
 		registerRender(cannon);
+		registerRender(airmine);
 		
 	}
 	

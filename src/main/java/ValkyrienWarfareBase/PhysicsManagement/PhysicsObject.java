@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
@@ -31,6 +32,8 @@ import ValkyrienWarfareBase.Render.PhysObjectRenderManager;
 import ValkyrienWarfareControl.ValkyrienWarfareControlMod;
 import ValkyrienWarfareControl.Balloon.ShipBalloonManager;
 import ValkyrienWarfareControl.Network.EntityFixMessage;
+import ValkyrienWarfareControl.NodeNetwork.INodeProvider;
+import ValkyrienWarfareControl.NodeNetwork.Node;
 import ValkyrienWarfareControl.Piloting.ShipPilotingController;
 import gnu.trove.iterator.TIntIterator;
 import io.netty.buffer.ByteBuf;
@@ -347,9 +350,16 @@ public class PhysicsObject {
 				tileEntNBT.setInteger("y", pos.getY());
 				tileEntNBT.setInteger("z", pos.getZ());
 
-				//Fuck this old code
-//				TileEntity newInstance = VKChunkCache.getTileEntity(pos);
-//				newInstance.readFromNBT(tileEntNBT);
+				//Translates the Node connections from World space into Ship space
+				if(worldTile instanceof INodeProvider){
+					int[] backingPositionArray = tileEntNBT.getIntArray("connectednodesarray");
+					for(int cont = 0; cont < backingPositionArray.length; cont += 3){
+						backingPositionArray[cont] = backingPositionArray[cont] + centerDifference.getX();
+						backingPositionArray[cont + 1] = backingPositionArray[cont + 1] + centerDifference.getY();
+						backingPositionArray[cont + 2] = backingPositionArray[cont + 2] + centerDifference.getZ();
+					}
+					tileEntNBT.setIntArray("connectednodesarray", backingPositionArray);
+				}
 
 				TileEntity newInstance = TileEntity.create(worldObj, tileEntNBT);
 				newInstance.validate();
@@ -381,6 +391,7 @@ public class PhysicsObject {
 						e.printStackTrace();
 					}
 				}
+
 				worldObj.setTileEntity(newInstance.getPos(), newInstance);
 
 				newInstance.markDirty();
@@ -396,6 +407,10 @@ public class PhysicsObject {
 			detector.setPosWithRespectTo(i, centerInWorld, pos);
 			// detector.cache.setBlockState(pos, Blocks.air.getDefaultState());
 			// TODO: Get this to update on clientside as well, you bastard!
+			TileEntity tile = worldObj.getTileEntity(pos);
+			if(tile != null){
+				tile.invalidate();
+			}
 			worldObj.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
 		}
 		// centerDifference = new BlockPos(claimedChunks[ownedChunks.radius+1][ownedChunks.radius+1].xPosition*16,128,claimedChunks[ownedChunks.radius+1][ownedChunks.radius+1].zPosition*16);
@@ -662,6 +677,7 @@ public class PhysicsObject {
 	}
 
 	public void loadClaimedChunks() {
+		ArrayList<TileEntity> nodeTileEntitiesToUpdate = new ArrayList<TileEntity>();
 		claimedChunks = new Chunk[(ownedChunks.radius * 2) + 1][(ownedChunks.radius * 2) + 1];
 		claimedChunksEntries = new PlayerChunkMapEntry[(ownedChunks.radius * 2) + 1][(ownedChunks.radius * 2) + 1];
 		for (int x = ownedChunks.minX; x <= ownedChunks.maxX; x++) {
@@ -675,6 +691,12 @@ public class PhysicsObject {
 				if (!worldObj.isRemote) {
 					injectChunkIntoWorld(chunk, x, z, false);
 				}
+				for(Entry<BlockPos, TileEntity> entry : chunk.chunkTileEntityMap.entrySet()){
+					TileEntity tile = entry.getValue();
+					if(tile instanceof INodeProvider){
+						nodeTileEntitiesToUpdate.add(tile);
+					}
+				}
 				claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ] = chunk;
 			}
 		}
@@ -685,6 +707,15 @@ public class PhysicsObject {
 			createPhysicsCalculations();
 		}
 		detectBlockPositions();
+		for(TileEntity tile : nodeTileEntitiesToUpdate){
+			Node node = ((INodeProvider) tile).getNode();
+			if(node != null){
+				node.parentPhysicsObject = this;
+				node.updateBuildState();
+			}else{
+				System.err.println("How the fuck did we get a null node?");
+			}
+		}
 		coordTransform.updateAllTransforms();
 	}
 

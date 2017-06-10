@@ -16,6 +16,7 @@ import ValkyrienWarfareBase.Math.Quaternion;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.Proxy.ClientProxy;
 import ValkyrienWarfareControl.Piloting.ClientPilotingManager;
+import ValkyrienWarfareControl.TileEntity.ThrustRelayTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockChest;
 import net.minecraft.block.BlockEnderChest;
@@ -579,6 +580,8 @@ public class CallRunnerClient extends CallRunner {
 		if(wrapper != null && wrapper.wrapping != null && wrapper.wrapping.renderer != null){
 			try{
 				boolean drawingBatchOrig = drawingBatchName.getBoolean(dispatch);
+
+				GlStateManager.resetColor();
 
 				if(drawingBatchOrig){
 					dispatch.drawBatch(MinecraftForgeClient.getRenderPass());

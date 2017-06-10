@@ -16,7 +16,7 @@ import java.util.UUID;
 @Mixin(EntityPlayer.class)
 public class MixinEntityPlayer {
     @Overwrite
-    public static BlockPos getBedSpawnLocation(World worldIn, BlockPos bedLocation, boolean forceSpawn) {
+    public BlockPos getBedSpawnLocation(World worldIn, BlockPos bedLocation, boolean forceSpawn) {
         int chunkX = bedLocation.getX() >> 4;
         int chunkZ = bedLocation.getZ() >> 4;
         long chunkPos = ChunkPos.asLong(chunkX, chunkZ);

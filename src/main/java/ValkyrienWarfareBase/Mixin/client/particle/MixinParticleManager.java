@@ -10,12 +10,18 @@ import net.minecraft.util.math.BlockPos;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ParticleManager.class)
 public class MixinParticleManager {
     @Inject(method = "addEffect(Lnet/minecraft/client/particle/Particle;)V", at = @At("HEAD"), cancellable = true)
-    public void preAddEffect(Particle effect, CallbackInfoReturnable callbackInfoReturnable)  {
+    public void preAddEffect(Particle effect, CallbackInfo callbackInfoReturnable)  {
+        if (effect == null) {
+            callbackInfoReturnable.cancel();
+            return;
+        }
+
         BlockPos pos = new BlockPos(effect.posX, effect.posY, effect.posZ);
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(effect.world, pos);
         if (wrapper != null) {

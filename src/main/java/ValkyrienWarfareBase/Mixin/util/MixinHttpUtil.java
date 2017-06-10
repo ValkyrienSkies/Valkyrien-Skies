@@ -10,7 +10,7 @@ import java.net.ServerSocket;
 @Mixin(HttpUtil.class)
 public abstract class MixinHttpUtil {
     @Overwrite
-    public static int getSuitableLanPort() throws IOException {
+    public int getSuitableLanPort() throws IOException {
         ServerSocket serversocket = null;
         int i = -1;
 

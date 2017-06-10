@@ -26,6 +26,7 @@ import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -36,7 +37,7 @@ import java.util.List;
 @Mixin(World.class)
 public abstract class MixinWorld {
 
-    public static double MAX_ENTITY_RADIUS_ALT = 2.0D;
+    private static double MAX_ENTITY_RADIUS_ALT = 2.0D;
     @Shadow
     public final boolean isRemote;
     @Shadow
@@ -47,17 +48,14 @@ public abstract class MixinWorld {
         //dirty hack lol
     }
 
-    public static BlockPos onGetPrecipitationHeightClient(World world, BlockPos posToCheck) {
+    public BlockPos getPrecipitationHeightClient(World world, BlockPos posToCheck) {
         BlockPos pos = world.getPrecipitationHeight(posToCheck);
         // Servers shouldn't bother running this code
 
         Vector traceStart = new Vector(pos.getX() + .5D, Minecraft.getMinecraft().player.posY + 50D, pos.getZ() + .5D);
         Vector traceEnd = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
 
-//		System.out.println(traceStart);
-//		System.out.println(traceEnd);
-
-        RayTraceResult result = MixinWorld.onRayTraceBlocks(world, traceStart.toVec3d(), traceEnd.toVec3d(), true, true, false);
+        RayTraceResult result = onRayTraceBlocks(traceStart.toVec3d(), traceEnd.toVec3d(), true, true, false);
 
         if (result != null && result.typeOfHit != RayTraceResult.Type.MISS && result.getBlockPos() != null) {
 
@@ -77,13 +75,13 @@ public abstract class MixinWorld {
     @Shadow
     public IBlockState getBlockState(BlockPos pos) { return null; }
 
-    public static RayTraceResult onRayTraceBlocks(World world, Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock) {
-        return rayTraceBlocksIgnoreShip(world, vec31, vec32, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock, null);
+    public RayTraceResult onRayTraceBlocks(Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock) {
+        return rayTraceBlocksIgnoreShip(vec31, vec32, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock, null);
     }
 
-    public static RayTraceResult rayTraceBlocksIgnoreShip(World world, Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock, PhysicsWrapperEntity toIgnore) {
-        RayTraceResult vanillaTrace = MixinWorld.rayTraceBlocksOriginal(world, vec31, vec32, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
-        WorldPhysObjectManager physManager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(world);
+    public RayTraceResult rayTraceBlocksIgnoreShip(Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock, PhysicsWrapperEntity toIgnore) {
+        RayTraceResult vanillaTrace = rayTraceBlocksOriginal(World.class.cast(this), vec31, vec32, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
+        WorldPhysObjectManager physManager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(World.class.cast(this));
         if (physManager == null) {
             return vanillaTrace;
         }
@@ -108,14 +106,14 @@ public abstract class MixinWorld {
             playerEyesPos = vec31;
             playerReachVector = vec32.subtract(vec31);
             // TODO: Re-enable
-            if (world.isRemote) {
+            if (World.class.cast(this).isRemote) {
                 // ValkyrienWarfareMod.proxy.updateShipPartialTicks(wrapper);
             }
             // Transform the coordinate system for the player eye pos
             playerEyesPos = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.RwToLTransform, playerEyesPos);
             playerReachVector = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.RwToLRotation, playerReachVector);
             Vec3d playerEyesReachAdded = playerEyesPos.addVector(playerReachVector.xCoord * reachDistance, playerReachVector.yCoord * reachDistance, playerReachVector.zCoord * reachDistance);
-            RayTraceResult resultInShip = MixinWorld.rayTraceBlocksOriginal(world, playerEyesPos, playerEyesReachAdded, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
+            RayTraceResult resultInShip = rayTraceBlocksOriginal(World.class.cast(this), playerEyesPos, playerEyesReachAdded, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
             if (resultInShip != null && resultInShip.hitVec != null && resultInShip.typeOfHit == RayTraceResult.Type.BLOCK) {
                 double shipResultDistFromPlayer = resultInShip.hitVec.distanceTo(playerEyesPos);
                 if (shipResultDistFromPlayer < worldResultDistFromPlayer) {
@@ -130,7 +128,7 @@ public abstract class MixinWorld {
     }
 
     @Nullable
-    public static RayTraceResult rayTraceBlocksOriginal(World world, Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock) {
+    public RayTraceResult rayTraceBlocksOriginal(World world, Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock) {
         if (!Double.isNaN(vec31.xCoord) && !Double.isNaN(vec31.yCoord) && !Double.isNaN(vec31.zCoord)) {
             if (!Double.isNaN(vec32.xCoord) && !Double.isNaN(vec32.yCoord) && !Double.isNaN(vec32.zCoord)) {
                 int i = MathHelper.floor(vec32.xCoord);
@@ -269,7 +267,7 @@ public abstract class MixinWorld {
 
     @Overwrite
     public RayTraceResult rayTraceBlocks(Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock)    {
-        return onRayTraceBlocks(World.class.cast(this), vec31, vec32, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
+        return onRayTraceBlocks(vec31, vec32, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
     }
 
     @Shadow
@@ -358,7 +356,7 @@ public abstract class MixinWorld {
     @Inject(method = "getPrecipitationHeight(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/util/math/BlockPos;", at = @At("HEAD"), cancellable = true)
     public void preGetPrecipitationHeight(BlockPos pos, CallbackInfoReturnable callbackInfo) {
         if (this.isRemote && ValkyrienWarfareMod.accurateRain) {
-            BlockPos accuratePos = MixinWorld.onGetPrecipitationHeightClient(World.class.cast(this), pos);
+            BlockPos accuratePos = getPrecipitationHeightClient(World.class.cast(this), pos);
             callbackInfo.setReturnValue(accuratePos);
             callbackInfo.cancel(); //return the injected value, preventing vanilla code from running
         }
@@ -423,9 +421,9 @@ public abstract class MixinWorld {
         }
     }
 
-    @Inject(method = "", at = @At("HEAD"))
-    public void preSetBlockState(BlockPos pos, IBlockState newState, int flags, CallbackInfo callbackInfo)  {
-        IBlockState oldState = this.getBlockState(pos);
+    @Redirect(method = "setBlockState(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/state/IBlockState;I)Z", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;markAndNotifyBlock(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/world/Chunk;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/block/state/IBlockState;I)V"))
+    public void duringMarkAndNotifyBlock(World world, BlockPos pos, Chunk chunk, IBlockState oldState, IBlockState newState, int flags, CallbackInfo callbackInfo)  {
+        world.markAndNotifyBlock(pos, chunk, oldState, newState, flags);
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(World.class.cast(this), pos);
         if (wrapper != null) {
             wrapper.wrapping.onSetBlockState(oldState, newState, pos);

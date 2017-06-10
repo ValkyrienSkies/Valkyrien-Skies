@@ -182,7 +182,7 @@ public class MixinRenderGlobal {
         }
     }
 
-    @Inject(method = "renderEntities(Lnet/minecraft/entity/Entity;Lnet/minecraft/client/render/culling/ICamera;F)V", at = @At("HEAD"))
+    @Inject(method = "renderEntities(Lnet/minecraft/entity/Entity;Lnet/minecraft/client/renderer/culling/ICamera;F)V", at = @At("HEAD"))
     public void preRenderEntities(Entity renderViewEntity, ICamera camera, float partialTicks, CallbackInfo callbackInfo)   {
         ((ClientProxy) ValkyrienWarfareMod.proxy).lastCamera = camera;
     }

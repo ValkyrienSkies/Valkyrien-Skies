@@ -167,6 +167,6 @@ public static final ArrayList<String> completionOptions = new ArrayList<String>(
 		Vec3d vec3d = new Vec3d(player.posX, player.posY + (double)player.getEyeHeight(), player.posZ);
 		Vec3d vec3d1 = player.getLook(partialTicks);
 		Vec3d vec3d2 = vec3d.addVector(vec3d1.xCoord * blockReachDistance, vec3d1.yCoord * blockReachDistance, vec3d1.zCoord * blockReachDistance);
-		return MixinWorld.onRayTraceBlocks(player.world, vec3d, vec3d2, false, false, true);
+		return player.world.rayTraceBlocks(vec3d, vec3d2, false, false, true);
 	}
 }

@@ -9,9 +9,9 @@ import org.spongepowered.asm.mixin.Overwrite;
 @Mixin(WorldProvider.class)
 public class MixinWorldProvider {
     @Overwrite
-    public static WorldBorder createWorldBorder(WorldProvider provider){
+    public WorldBorder createWorldBorder(){
         //TODO: add that class
-        WorldBorderFixWrapper wrapper = new WorldBorderFixWrapper(provider.createWorldBorder());
+        WorldBorderFixWrapper wrapper = new WorldBorderFixWrapper(new WorldBorder());
         return wrapper;
     }
 }

@@ -448,7 +448,7 @@ public class PhysicsObject {
 		claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ] = chunk;
 
 		if(putInId2ChunkMap){
-			provider.id2ChunkMap.put(ChunkPos.chunkXZ2Int(x, z), chunk);
+			provider.id2ChunkMap.put(ChunkPos.asLong(x, z), chunk);
 		}
 
 		PlayerChunkMap map = ((WorldServer) worldObj).getPlayerChunkMap();
@@ -484,7 +484,7 @@ public class PhysicsObject {
 					Chunk chunk = new Chunk(worldObj, x, z);
 					ChunkProviderServer provider = (ChunkProviderServer) worldObj.getChunkProvider();
 					chunk.isModified = true;
-					provider.id2ChunkMap.put(ChunkPos.chunkXZ2Int(x, z), chunk);
+					provider.id2ChunkMap.put(ChunkPos.asLong(x, z), chunk);
 				}
 			}
 		}

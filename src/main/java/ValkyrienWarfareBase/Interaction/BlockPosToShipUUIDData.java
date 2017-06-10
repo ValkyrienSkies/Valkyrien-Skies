@@ -31,7 +31,7 @@ public class BlockPosToShipUUIDData extends WorldSavedData{
 	}
 
 	public UUID getShipUUIDFromPos(int chunkX, int ChunkZ){
-		long chunkPos = ChunkPos.chunkXZ2Int(chunkX, ChunkZ);
+		long chunkPos = ChunkPos.asLong(chunkX, ChunkZ);
 
 		return chunkposToShipUUID.get(chunkPos);
 	}
@@ -45,7 +45,7 @@ public class BlockPosToShipUUIDData extends WorldSavedData{
 
 		for(int x = centerX - radius; x <= centerX + radius; x++){
 			for(int z = centerZ - radius; z <= centerZ + radius; z++){
-				long chunkPos = ChunkPos.chunkXZ2Int(x, z);
+				long chunkPos = ChunkPos.asLong(x, z);
 				chunkposToShipUUID.put(chunkPos, shipID);
 			}
 		}
@@ -60,7 +60,7 @@ public class BlockPosToShipUUIDData extends WorldSavedData{
 
 		for(int x = centerX - radius; x <= centerX + radius; x++){
 			for(int z = centerZ - radius; z <= centerZ + radius; z++){
-				long chunkPos = ChunkPos.chunkXZ2Int(x, z);
+				long chunkPos = ChunkPos.asLong(x, z);
 				chunkposToShipUUID.remove(chunkPos);
 			}
 		}
@@ -90,7 +90,7 @@ public class BlockPosToShipUUIDData extends WorldSavedData{
 
 			for(int x = centerX - radius; x <= centerX + radius; x++){
 				for(int z = centerZ - radius; z <= centerZ + radius; z++){
-					chunkposToShipUUID.put(ChunkPos.chunkXZ2Int(x, z), persistantID);
+					chunkposToShipUUID.put(ChunkPos.asLong(x, z), persistantID);
 				}
 			}
 		}

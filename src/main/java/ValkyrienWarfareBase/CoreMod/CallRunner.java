@@ -91,7 +91,7 @@ public class CallRunner {
 
 		int chunkX = bedLocation.getX() >> 4;
 		int chunkZ = bedLocation.getZ() >> 4;
-		long chunkPos = ChunkPos.chunkXZ2Int(chunkX, chunkZ);
+		long chunkPos = ChunkPos.asLong(chunkX, chunkZ);
 
 		UUID shipManagingID = ValkyrienWarfareMod.chunkManager.getShipIDManagingPos_Persistant(worldIn, chunkX, chunkZ);
 		if(shipManagingID != null){

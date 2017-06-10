@@ -145,6 +145,13 @@ public class EntityCollisionInjector {
 //			contX = contY = contZ = 1;
 		}
 
+
+		draggable.worldBelowFeet = worldBelow;
+
+		if(worldBelow == null){
+			return false;
+		}
+
 		/*if(!(entity instanceof EntityPlayer)){
 			for (EntityPolygonCollider col : fastCollisions) {
 				Vector response = col.collisions[col.minDistanceIndex].getResponse();

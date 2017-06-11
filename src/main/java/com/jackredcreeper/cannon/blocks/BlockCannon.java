@@ -37,44 +37,44 @@ import net.minecraft.world.World;
 
 
 public class BlockCannon extends BlockDirectional implements ITileEntityProvider {
-	
+
 	public BlockCannon() {
 		super(Material.IRON);
 		setHardness(0.5f);
-		setResistance(1);
-		
+		setResistance(1);//
+
 		setUnlocalizedName(CannonModReference.ModBlocks.CANNON.getUnlocalizedName());
 		setRegistryName(CannonModReference.ModBlocks.CANNON.getRegistryName());
-		
+
         this.setDefaultState(this.blockState.getBaseState().withProperty(LOOKING, EnumFacing.NORTH));
         this.setCreativeTab(CreativeTabs.COMBAT);
-        
+
         int CannonCooldown = 0;
         boolean CannonReady = false;
         int Ammo = 0;
 	}
-	
+
     public static final PropertyDirection LOOKING = BlockDirectional.FACING;
 
-	
+
 	@Override
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
 		ItemStack heldItem = playerIn.getHeldItem(hand);
 		TileEntity tileentity = worldIn.getTileEntity(pos);
-		if(tileentity instanceof TileEntityCannon) { 
+		if(tileentity instanceof TileEntityCannon) {
 				if (!worldIn.isRemote){
 					TileEntity tileEntity = worldIn.getTileEntity(pos);
 					if(tileEntity instanceof TileEntityCannon) {
 						TileEntityCannon cannon = (TileEntityCannon) tileEntity;
-					
+
 						if (heldItem == null)
 							{      return false;      }
 						else
 					        {
-				
+
 					        	Item item = heldItem.getItem();
 						            if (item == ModItems.key)
-						        	{ cannon.fireCannon(worldIn, playerIn, pos, state, side);} 
+						        	{ cannon.fireCannon(worldIn, playerIn, pos, state, side);}
 						            if (item == ModItems.loader)
 						        	{ cannon.loadCannon(worldIn, playerIn);}
 						            if (item == ModItems.tuner)
@@ -92,8 +92,8 @@ public class BlockCannon extends BlockDirectional implements ITileEntityProvider
 						        	{ cannon.setAmmo(heldItem);}
 						            if (item == ModItems.solidball)
 						        	{ cannon.setAmmo(heldItem);}
-				        
-				        else	            	
+
+				        else
 					        {      return false;     	}
 					        }
 					}
@@ -102,12 +102,12 @@ public class BlockCannon extends BlockDirectional implements ITileEntityProvider
 		return true;
 	}
 
-	        
+
 	@Override
 	public TileEntity createNewTileEntity(World worldIn, int meta) {
 			return new TileEntityCannon();
 	}
-	
+
     /**
      * The type of render function called. 3 for standard block models, 2 for TESR's, 1 for liquids, -1 is no render
      */
@@ -115,7 +115,7 @@ public class BlockCannon extends BlockDirectional implements ITileEntityProvider
     {
         return EnumBlockRenderType.MODEL;
     }
-       
+
 
     private void setDefaultDirection(World worldIn, BlockPos pos, IBlockState state)
     {
@@ -200,16 +200,16 @@ public class BlockCannon extends BlockDirectional implements ITileEntityProvider
     {
         return this.getDefaultState().withProperty(FACING, placer.isSneaking() ? placer.getHorizontalFacing().getOpposite() :  placer.getHorizontalFacing());
     }
-    
-    
+
+
     public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state)
     {
         super.onBlockAdded(worldIn, pos, state);
         this.setDefaultDirection(worldIn, pos, state);
     }
-  
-    
-    
-    
-    
+
+
+
+
+
 }

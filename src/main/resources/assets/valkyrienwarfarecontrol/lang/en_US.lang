@@ -19,7 +19,7 @@ tile.eliteengine.name=Elite Engine
 tile.ultimateengine.name=Ultimate Engine
 tile.redstoneengine.name=Redstone Engine
 
-#Ether Engines
+#ETHER Compressors
 tile.antigravengine.name=Basic Ether Compressor
 tile.advancedethercompressor.name=Advanced Ether Compressor
 tile.eliteethercompressor.name=Elite Ether Compressor

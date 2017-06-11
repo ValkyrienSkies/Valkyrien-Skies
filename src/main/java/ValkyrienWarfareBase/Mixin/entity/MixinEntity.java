@@ -1,5 +1,8 @@
 package ValkyrienWarfareBase.Mixin.entity;
 
+import org.spongepowered.asm.mixin.Implements;
+import org.spongepowered.asm.mixin.Interface;
+import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -262,7 +265,7 @@ public abstract class MixinEntity implements IDraggable {
         }
     }
 
-    @Inject(method = "move(Lnet/minecraft/entity/MoverType;DDD)V", at = @At("HEAD"), cancellable = true)
+    /*@Inject(method = "move(Lnet/minecraft/entity/MoverType;DDD)V", at = @At("HEAD"), cancellable = true)
     public void preMove(MoverType type, double dx, double dy, double dz, CallbackInfo callbackInfo) {
     	if(cancelNextMove){
     		cancelNextMove = false;
@@ -304,15 +307,17 @@ public abstract class MixinEntity implements IDraggable {
         if(EntityCollisionInjector.alterEntityMovement(thisClassAsAnEntity, dx, dy, dz, callbackInfo)){
 //        	callbackInfo.cancel();
         }
-    }
+    }*/
+
+
 
     @Shadow
-    public void move(MoverType type, double x, double y, double z) {	}
+    public abstract void move(MoverType type, double x, double y, double z);
 
-    @Inject(method = "move(Lnet/minecraft/entity/MoverType;DDD)V", at = @At("RETURN"), cancellable = true)
+    /*@Inject(method = "move(Lnet/minecraft/entity/MoverType;DDD)V", at = @At("RETURN"), cancellable = true)
     public void postMove(MoverType type, double dx, double dy, double dz, CallbackInfo callbackInfo) {
 
-    }
+    }*/
 
     @Shadow
     protected void updateFallState(double y, boolean onGroundIn, IBlockState state, BlockPos pos) {}

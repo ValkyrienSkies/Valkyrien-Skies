@@ -27,6 +27,9 @@ build
 .gradle
 modules
 
+#Mixins
+.mixin.out
+
 #runtime
 run
 run_server

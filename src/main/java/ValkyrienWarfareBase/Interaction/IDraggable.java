@@ -2,8 +2,10 @@ package ValkyrienWarfareBase.Interaction;
 
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
+import net.minecraft.entity.MoverType;
 
 public interface IDraggable {
+
     public void tickAddedVelocity();
 
     public PhysicsWrapperEntity getWorldBelowFeet();
@@ -19,4 +21,6 @@ public interface IDraggable {
     public void setYawDifVelocity(double toSet);
 
     public void setCancelNextMove(boolean toSet);
+
+    public void move(MoverType type, double dx, double dy, double dz);
 }

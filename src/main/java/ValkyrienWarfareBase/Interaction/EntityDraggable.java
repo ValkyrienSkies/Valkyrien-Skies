@@ -9,6 +9,10 @@ import net.minecraft.world.World;
 public abstract class EntityDraggable {
 	public static void tickAddedVelocityForWorld(World world){
 		try{
+			//TODO: Fix this
+			if(true){
+				return;
+			}
 			for(int i = 0;i < world.loadedEntityList.size(); i++){
 				Entity e = world.loadedEntityList.get(i);
 				//TODO: Maybe add a check to prevent moving entities that are fixed onto a Ship, but I like the visual effect

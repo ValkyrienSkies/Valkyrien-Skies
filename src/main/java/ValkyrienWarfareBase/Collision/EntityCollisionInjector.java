@@ -1,8 +1,9 @@
 package ValkyrienWarfareBase.Collision;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
@@ -32,20 +33,10 @@ import net.minecraft.world.chunk.Chunk;
 
 public class EntityCollisionInjector {
 
-	public static Field hasChangedPos = null;
-
-	static {
-		try {
-			hasChangedPos = Entity.class.getField("hasChangedPos");
-		} catch (NoSuchFieldException e)	{
-			e.printStackTrace();
-		}
-	}
-
 	private static final double errorSignificance = .001D;
 
 	// Returns false if game should use default collision
-	public static boolean alterEntityMovement(Entity entity, double dx, double dy, double dz) {
+	public static boolean alterEntityMovement(Entity entity, double dx, double dy, double dz, CallbackInfo info) {
 		if (entity instanceof PhysicsWrapperEntity) {
 			return true;
 		}
@@ -155,72 +146,15 @@ public class EntityCollisionInjector {
 //			contX = contY = contZ = 1;
 		}
 
-		//TODO: Make this more comprehensive
 		draggable.setWorldBelowFeet(worldBelow);
 
 		if(worldBelow == null){
 			return false;
 		}
 
-		/*if(!(entity instanceof EntityPlayer)){
-			for (EntityPolygonCollider col : fastCollisions) {
-				Vector response = col.collisions[col.minDistanceIndex].getResponse();
-				// TODO: Add more potential yResponses
-				double stepSquared = entity.stepHeight * entity.stepHeight;
-				boolean isStep = isLiving && entity.onGround;
-				if (response.Y >= 0 && BigBastardMath.canStandOnNormal(col.potentialSeperatingAxes[col.minDistanceIndex])) {
-					response = new Vector(0, -col.collisions[col.minDistanceIndex].penetrationDistance / col.potentialSeperatingAxes[col.minDistanceIndex].Y, 0);
-				}
-				if (isStep) {
-					EntityLivingBase living = (EntityLivingBase) entity;
-					if (Math.abs(living.moveForward) > .01D || Math.abs(living.moveStrafing) > .01D) {
-						for (int i = 3; i < 6; i++) {
-							Vector tempResponse = col.collisions[i].getResponse();
-							if (tempResponse.Y > 0 && BigBastardMath.canStandOnNormal(col.collisions[i].axis) && tempResponse.lengthSq() < stepSquared) {
-								if(tempResponse.lengthSq() < .1D){
-									//Too small to be a real step, let it through
-									response = tempResponse;
-								}else{
-	//								System.out.println("Try Stepping!");
-									AxisAlignedBB axisalignedbb = entity.getEntityBoundingBox().offset(tempResponse.X, tempResponse.Y, tempResponse.Z);
-									entity.setEntityBoundingBox(axisalignedbb);
-									//I think this correct, but it may create more problems than it solves
-									response.zero();
-								}
-	//							entity.moveEntity(x, y, z);
-	//							response = tempResponse;
-							}
-						}
-					}
-				}
-				// total.add(response);
-				if (Math.abs(response.X) > .01D) {
-					total.X += response.X;
-					contX++;
-				}
-				if (Math.abs(response.Y) > .01D) {
-					total.Y += response.Y;
-					contY++;
-				}
-				if (Math.abs(response.Z) > .01D) {
-					total.Z += response.Z;
-					contZ++;
-				}
-			}
+		info.cancel();
 
-		}
-
-		if (contX != 0) {
-			total.X /= contX;
-		}
-		if (contY != 0) {
-			total.Y /= contY;
-		}
-		if (contZ != 0) {
-			total.Z /= contZ;
-		}
-
-		*/
+		draggable.setCancelNextMove(true);
 
 		dx += total.X;
 		dy += total.Y;
@@ -264,10 +198,13 @@ public class EntityCollisionInjector {
 			entity.move(MoverType.SELF, dx, dy, dz);
 		}
 
+
 		entity.isCollidedHorizontally = (motionInterfering(dx, origDx)) || (motionInterfering(dz, origDz));
 		entity.isCollidedVertically = isDifSignificant(dy, origDy);
 		entity.onGround = entity.isCollidedVertically && origDy < 0 || alreadyOnGround || entity.onGround;
 		entity.isCollided = entity.isCollidedHorizontally || entity.isCollidedVertically;
+
+
 
 		Vector entityPosInShip = new Vector(entity.posX, entity.posY - 0.20000000298023224D, entity.posZ, worldBelow.wrapping.coordTransform.wToLTransform);
 

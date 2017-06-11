@@ -1,21 +1,5 @@
 package ValkyrienWarfareBase.Mixin.entity;
 
-import ValkyrienWarfareBase.API.RotationMatrices;
-import ValkyrienWarfareBase.API.Vector;
-import ValkyrienWarfareBase.Collision.EntityCollisionInjector;
-import ValkyrienWarfareBase.Interaction.IDraggable;
-import ValkyrienWarfareBase.PhysicsManagement.CoordTransformObject;
-import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
-import ValkyrienWarfareBase.ValkyrienWarfareMod;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.MoverType;
-import net.minecraft.entity.projectile.EntityArrow;
-import net.minecraft.util.MovementInput;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -23,16 +7,41 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
+import ValkyrienWarfareBase.API.RotationMatrices;
+import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareBase.Collision.EntityCollisionInjector;
+import ValkyrienWarfareBase.Interaction.IDraggable;
+import ValkyrienWarfareBase.PhysicsManagement.CoordTransformObject;
+import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.MoverType;
+import net.minecraft.entity.projectile.EntityArrow;
+import net.minecraft.util.MovementInput;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
+
 @Mixin(Entity.class)
 public abstract class MixinEntity implements IDraggable {
-
-    public Boolean hasChangedPos = false;
 
     public PhysicsWrapperEntity worldBelowFeet;
 
     public Vector velocityAddedToPlayer = new Vector();
 
     public double yawDifVelocity;
+
+    public boolean cancelNextMove = false;
+    public boolean cancelNextMove2 = false;
+
+    private Vector tempOverrideForMove = null;
+
+    private boolean dontLoopForever = true;
 
     public Entity thisClassAsAnEntity = Entity.class.cast(this);
 
@@ -80,10 +89,6 @@ public abstract class MixinEntity implements IDraggable {
 
     @Shadow
     public void setSneaking(boolean sneaking) {
-    }
-
-    @Shadow
-    public void move(MoverType type, double x, double y, double z) {
     }
 
     @Shadow
@@ -229,6 +234,10 @@ public abstract class MixinEntity implements IDraggable {
         yawDifVelocity = toSet;
     }
 
+    public void setCancelNextMove(boolean toSet){
+    	cancelNextMove = toSet;
+    }
+
     @Overwrite
     public Vec3d getLook(float partialTicks) {
         Vec3d original = getLookOriginal(partialTicks);
@@ -255,10 +264,17 @@ public abstract class MixinEntity implements IDraggable {
 
     @Inject(method = "move(Lnet/minecraft/entity/MoverType;DDD)V", at = @At("HEAD"), cancellable = true)
     public void preMove(MoverType type, double dx, double dy, double dz, CallbackInfo callbackInfo) {
-        if (hasChangedPos) {
-            //callbackInfo.cancel();
-            return;
-        }
+    	if(cancelNextMove){
+    		cancelNextMove = false;
+    		cancelNextMove2 = true;
+    		return;
+    	}
+
+    	if(cancelNextMove2){
+    		cancelNextMove2 = false;
+    		callbackInfo.cancel();
+    		return;
+    	}
 
         double movDistSq = (dx * dx) + (dy * dy) + (dz * dz);
         if (movDistSq > 10000) {
@@ -283,16 +299,42 @@ public abstract class MixinEntity implements IDraggable {
             dy = endPos.Y - this.posY;
             dz = endPos.Z - this.posZ;
         }
-        hasChangedPos = true;
-        if (EntityCollisionInjector.alterEntityMovement(Entity.class.cast(this), dx, dy, dz)) {
-            callbackInfo.cancel();
+
+        //callbackInfo.cancel() gets called by the method directly now
+        if(EntityCollisionInjector.alterEntityMovement(thisClassAsAnEntity, dx, dy, dz, callbackInfo)){
+//        	callbackInfo.cancel();
         }
     }
 
+    @Shadow
+    public void move(MoverType type, double x, double y, double z) {	}
+
     @Inject(method = "move(Lnet/minecraft/entity/MoverType;DDD)V", at = @At("RETURN"), cancellable = true)
     public void postMove(MoverType type, double dx, double dy, double dz, CallbackInfo callbackInfo) {
-        hasChangedPos = false;
+
     }
+
+    @Shadow
+    protected void updateFallState(double y, boolean onGroundIn, IBlockState state, BlockPos pos) {}
+
+    @Shadow
+    protected boolean canTriggerWalking() {
+        return true;
+    }
+
+    @Shadow
+    protected SoundEvent getSwimSound() { return null; }
+
+    @Shadow
+    protected void playStepSound(BlockPos pos, Block blockIn){}
+
+    @Shadow
+    protected int getFireImmuneTicks(){
+    	return 0;
+    }
+
+    @Shadow
+    protected void dealFireDamage(int amount){}
 
     @Overwrite
     public double getDistanceSq(BlockPos pos) {
@@ -315,7 +357,4 @@ public abstract class MixinEntity implements IDraggable {
         return vanilla;
     }
 
-    public void move(double x, double y, double z) {
-
-    }
 }

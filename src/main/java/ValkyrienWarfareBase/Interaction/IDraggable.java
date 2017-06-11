@@ -17,4 +17,6 @@ public interface IDraggable {
     public double getYawDifVelocity();
 
     public void setYawDifVelocity(double toSet);
+
+    public void setCancelNextMove(boolean toSet);
 }

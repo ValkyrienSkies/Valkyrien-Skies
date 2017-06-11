@@ -1,6 +1,6 @@
 {
     "parent":"item/handheld",
     "textures": {
-        "layer0":"valkyrienwarfarecontrolcontrol:items/airshipstealer"
+        "layer0":"valkyrienwarfarecontrol:items/airshipstealer"
     }
 }

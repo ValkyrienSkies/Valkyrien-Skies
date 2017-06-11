@@ -1,6 +1,6 @@
 #ITEMS
 item.systemlinker.name=Systemverknüpfer
-item.airshipstealer.name=Luftschiffstehler
+item.airshipStealer.name=Luftschiffstehler
 
 tile.shippilotschair.name=Pilotenstuhl
 tile.dopedetherium.name=Dotiertes Etherium

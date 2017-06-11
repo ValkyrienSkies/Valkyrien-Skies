@@ -1,9 +1,2 @@
 tile.shipblock.name=Physics Infuser
 tile.shipblockcreative.name=Physics Infuser Creative
-tile.basichovercraftcontroller.name=Basic Hovercraft Controller
-
-tile.antigravengine.name=Basic Ether Compressor
-tile.advancedEtherCompressor.name=Advanced Ether Compressor
-tile.eliteEtherCompressor.name=Elite Ether Compressor
-tile.ultimateEtherCompressor.name=Ultimate Ether Compressor
-tile.creativeEtherCompressor.name=Creative Ether Compressor

@@ -1,6 +1,6 @@
 #ITEMS
 item.systemlinker.name=System Linker
-item.airshipStealer.name=Airship Stealer
+item.airshipstealer.name=Airship Stealer
 item.relaywire.name=Relay Wire
 
 #Blocks
@@ -12,8 +12,8 @@ tile.thrustrelay.name=Thrust Relay
 tile.thrustmodulator.name=Thrust Modulator
 
 #ENGINES
-tile.basicEngine.name=Basic Engine
-tile.advancedEngine.name=Advanced Engine
-tile.eliteEngine.name=Elite Engine
-tile.ultimateEngine.name=Ultimate Engine
-tile.redstoneEngine.name=Redstone Engine
+tile.basicengine.name=Basic Engine
+tile.advancedengine.name=Advanced Engine
+tile.eliteengine.name=Elite Engine
+tile.ultimateengine.name=Ultimate Engine
+tile.redstoneengine.name=Redstone Engine

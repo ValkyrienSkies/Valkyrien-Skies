@@ -149,17 +149,17 @@ public class ValkyrienWarfareControlMod {
 		double eliteEtherCompressorPower = config.get(Configuration.CATEGORY_GENERAL, "eliteEtherCompressorPower", 80000D, "Engine power for the elite Ether Compressor").getDouble();
 		double ultimateEtherCompressorPower = config.get(Configuration.CATEGORY_GENERAL, "ultimateEtherCompressorPower", 100000D, "Engine power for the ultimate Ether Compressor").getDouble();
 
-		basicEngine = new BlockNormalEngine(Material.WOOD, basicEnginePower).setHardness(5f).setUnlocalizedName("basicEngine").setRegistryName(MODID, "basicEngine").setCreativeTab(CreativeTabs.TRANSPORTATION);
-		advancedEngine = new BlockNormalEngine(Material.ROCK, advancedEnginePower).setHardness(6f).setUnlocalizedName("advancedEngine").setRegistryName(MODID, "advancedEngine").setCreativeTab(CreativeTabs.TRANSPORTATION);
-		eliteEngine = new BlockNormalEngine(Material.IRON, eliteEnginePower).setHardness(8f).setUnlocalizedName("eliteEngine").setRegistryName(MODID, "eliteEngine").setCreativeTab(CreativeTabs.TRANSPORTATION);
-		ultimateEngine = new BlockNormalEngine(Material.GROUND, ultimateEnginePower).setHardness(10f).setUnlocalizedName("ultimateEngine").setRegistryName(MODID, "ultimateEngine").setCreativeTab(CreativeTabs.TRANSPORTATION);
-		redstoneEngine = new BlockRedstoneEngine(Material.REDSTONE_LIGHT, redstoneEnginePower).setHardness(7.0f).setUnlocalizedName("redstoneEngine").setRegistryName(MODID, "redstoneEngine").setCreativeTab(CreativeTabs.TRANSPORTATION);
+		basicEngine = new BlockNormalEngine(Material.WOOD, basicEnginePower).setHardness(5f).setUnlocalizedName("basicengine").setRegistryName(MODID, "basicengine").setCreativeTab(CreativeTabs.TRANSPORTATION);
+		advancedEngine = new BlockNormalEngine(Material.ROCK, advancedEnginePower).setHardness(6f).setUnlocalizedName("advancedengine").setRegistryName(MODID, "advancedengine").setCreativeTab(CreativeTabs.TRANSPORTATION);
+		eliteEngine = new BlockNormalEngine(Material.IRON, eliteEnginePower).setHardness(8f).setUnlocalizedName("eliteengine").setRegistryName(MODID, "eliteengine").setCreativeTab(CreativeTabs.TRANSPORTATION);
+		ultimateEngine = new BlockNormalEngine(Material.GROUND, ultimateEnginePower).setHardness(10f).setUnlocalizedName("ultimateengine").setRegistryName(MODID, "ultimateengine").setCreativeTab(CreativeTabs.TRANSPORTATION);
+		redstoneEngine = new BlockRedstoneEngine(Material.REDSTONE_LIGHT, redstoneEnginePower).setHardness(7.0f).setUnlocalizedName("redstoneengine").setRegistryName(MODID, "redstoneengine").setCreativeTab(CreativeTabs.TRANSPORTATION);
 
 		antigravityEngine = new BlockNormalEtherCompressor(Material.WOOD, basicEtherCompressorPower).setHardness(8f).setUnlocalizedName("antigravengine").setRegistryName(MODID, "antigravengine").setCreativeTab(CreativeTabs.TRANSPORTATION);
-		advancedEtherCompressor = new BlockNormalEtherCompressor(Material.ROCK, advancedEtherCompressorPower).setHardness(8f).setUnlocalizedName("advancedEtherCompressor").setRegistryName(MODID, "advancedEtherCompressor").setCreativeTab(CreativeTabs.TRANSPORTATION);
-		eliteEtherCompressor = new BlockNormalEtherCompressor(Material.IRON, eliteEtherCompressorPower).setHardness(8f).setUnlocalizedName("eliteEtherCompressor").setRegistryName(MODID, "eliteEtherCompressor").setCreativeTab(CreativeTabs.TRANSPORTATION);
-		ultimateEtherCompressor = new BlockNormalEtherCompressor(Material.GROUND, ultimateEtherCompressorPower).setHardness(8f).setUnlocalizedName("ultimateEtherCompressor").setRegistryName(MODID, "ultimateEtherCompressor").setCreativeTab(CreativeTabs.TRANSPORTATION);
-		creativeEtherCompressor = new BlockCreativeEtherCompressor(Material.BARRIER, Double.MAX_VALUE / 4).setHardness(0.0f).setUnlocalizedName("creativeEtherCompressor").setRegistryName(MODID, "creativeEtherCompressor").setCreativeTab(CreativeTabs.TRANSPORTATION);
+		advancedEtherCompressor = new BlockNormalEtherCompressor(Material.ROCK, advancedEtherCompressorPower).setHardness(8f).setUnlocalizedName("advancedethercompressor").setRegistryName(MODID, "advancedethercompressor").setCreativeTab(CreativeTabs.TRANSPORTATION);
+		eliteEtherCompressor = new BlockNormalEtherCompressor(Material.IRON, eliteEtherCompressorPower).setHardness(8f).setUnlocalizedName("eliteethercompressor").setRegistryName(MODID, "eliteethercompressor").setCreativeTab(CreativeTabs.TRANSPORTATION);
+		ultimateEtherCompressor = new BlockNormalEtherCompressor(Material.GROUND, ultimateEtherCompressorPower).setHardness(8f).setUnlocalizedName("ultimateethercompressor").setRegistryName(MODID, "ultimateethercompressor").setCreativeTab(CreativeTabs.TRANSPORTATION);
+		creativeEtherCompressor = new BlockCreativeEtherCompressor(Material.BARRIER, Double.MAX_VALUE / 4).setHardness(0.0f).setUnlocalizedName("creativeethercompressor").setRegistryName(MODID, "creativeethercompressor").setCreativeTab(CreativeTabs.TRANSPORTATION);
 
 		basicHoverController = new BlockHovercraftController(Material.IRON).setHardness(10f).setUnlocalizedName("basichovercraftcontroller").setRegistryName(MODID, "basichovercraftcontroller").setCreativeTab(CreativeTabs.TRANSPORTATION);
 		dopedEtherium = new BlockDopedEtherium(Material.GLASS).setHardness(4f).setUnlocalizedName("dopedetherium").setRegistryName(MODID, "dopedetherium").setCreativeTab(CreativeTabs.TRANSPORTATION);

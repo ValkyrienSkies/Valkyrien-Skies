@@ -1,5 +1,5 @@
 {
-    "parent": "valkyrienwarfarecontrol:block/basicEngine",
+    "parent": "valkyrienwarfarecontrol:block/basicengine",
     "display": {
         "thirdperson": {
             "rotation": [ 10, -45, 270 ],

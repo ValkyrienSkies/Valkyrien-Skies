@@ -23,10 +23,10 @@ import java.util.List;
 public class MixinPlayerList {
 
     @Shadow
-    public final List<EntityPlayerMP> playerEntityList;
+    public List<EntityPlayerMP> playerEntityList;
 
     {
-        playerEntityList = null;
+//        playerEntityList = null;
     }
 
     @Overwrite

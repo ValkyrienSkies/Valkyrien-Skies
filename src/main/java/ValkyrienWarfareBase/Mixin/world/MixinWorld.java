@@ -39,12 +39,12 @@ public abstract class MixinWorld {
 
     private static double MAX_ENTITY_RADIUS_ALT = 2.0D;
     @Shadow
-    public final boolean isRemote;
+    public boolean isRemote;
     @Shadow
     protected List<IWorldEventListener> eventListeners;
 
     {
-        isRemote = false;
+//        isRemote = false;
         //dirty hack lol
     }
 
@@ -419,9 +419,9 @@ public abstract class MixinWorld {
         }
     }
 
-    @Redirect(method = "setBlockState(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/state/IBlockState;I)Z", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;markAndNotifyBlock(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/world/Chunk;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/block/state/IBlockState;I)V"))
-    public void duringMarkAndNotifyBlock(World world, BlockPos pos, Chunk chunk, IBlockState oldState, IBlockState newState, int flags, CallbackInfo callbackInfo)  {
-        world.markAndNotifyBlock(pos, chunk, oldState, newState, flags);
+    @Inject(method = "setBlockState(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/state/IBlockState;I)Z", at = @At("HEAD"))
+    public void duringMarkAndNotifyBlock(BlockPos pos, IBlockState newState, int flags, CallbackInfoReturnable callbackInfo)  {
+        IBlockState oldState = this.getBlockState(pos);
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(World.class.cast(this), pos);
         if (wrapper != null) {
             wrapper.wrapping.onSetBlockState(oldState, newState, pos);

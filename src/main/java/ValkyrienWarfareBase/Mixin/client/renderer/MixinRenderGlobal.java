@@ -1,14 +1,36 @@
 package ValkyrienWarfareBase.Mixin.client.renderer;
 
+import java.util.Iterator;
+import java.util.Map;
+
+import org.lwjgl.opengl.GL11;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.Proxy.ClientProxy;
-import ValkyrienWarfareBase.ValkyrienWarfareMod;
-import net.minecraft.block.*;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockChest;
+import net.minecraft.block.BlockEnderChest;
+import net.minecraft.block.BlockSign;
+import net.minecraft.block.BlockSkull;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.BlockRendererDispatcher;
+import net.minecraft.client.renderer.DestroyBlockProgress;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderGlobal;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -21,37 +43,27 @@ import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
-import org.lwjgl.opengl.GL11;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.Iterator;
-import java.util.Map;
 
 @Mixin(RenderGlobal.class)
 public class MixinRenderGlobal {
 
     @Shadow
-    public final Map<Integer, DestroyBlockProgress> damagedBlocks;
+    public Map<Integer, DestroyBlockProgress> damagedBlocks;
 
     @Shadow
-    public final TextureManager renderEngine;
+    public TextureManager renderEngine;
     @Shadow
-    public final TextureAtlasSprite[] destroyBlockIcons;
+    public TextureAtlasSprite[] destroyBlockIcons;
     @Shadow
-    public final Minecraft mc;
+    public Minecraft mc;
     @Shadow
     public WorldClient world;
 
     {
-        damagedBlocks = null;
-        renderEngine = null;
-        destroyBlockIcons = null;
-        mc = null;
+//        damagedBlocks = null;
+//        renderEngine = null;
+//        destroyBlockIcons = null;
+//        mc = null;
     }
 
     @Shadow
@@ -187,8 +199,10 @@ public class MixinRenderGlobal {
         ((ClientProxy) ValkyrienWarfareMod.proxy).lastCamera = camera;
     }
 
-    public void preRenderBlockLayer(BlockRenderLayer blockLayerIn, double partialTicks, int pass, Entity entityIn, CallbackInfo callbackInfo)  {
-        for (PhysicsWrapperEntity wrapper : ValkyrienWarfareMod.physicsManager.getManagerForWorld(this.world).physicsEntities) {
+    @Inject(method = "renderBlockLayer(Lnet/minecraft/util/BlockRenderLayer;DILnet/minecraft/entity/Entity;)I", at = @At("HEAD"))
+    public void preRenderBlockLayer(BlockRenderLayer blockLayerIn, double partialTicks, int pass, Entity entityIn, CallbackInfoReturnable callbackInfo)  {
+    	RenderHelper.disableStandardItemLighting();
+    	for (PhysicsWrapperEntity wrapper : ValkyrienWarfareMod.physicsManager.getManagerForWorld(this.world).physicsEntities) {
             GL11.glPushMatrix();
             if (wrapper.wrapping.renderer != null && wrapper.wrapping.renderer.shouldRender()) {
                 wrapper.wrapping.renderer.renderBlockLayer(blockLayerIn, partialTicks, pass);

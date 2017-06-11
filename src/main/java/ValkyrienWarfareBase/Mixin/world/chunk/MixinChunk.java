@@ -16,18 +16,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class MixinChunk {
 
     @Shadow
-    public final int x;
+    public int x;
 
     @Shadow
-    public final int z;
+    public int z;
 
     @Shadow
-    public final World world;
+    public World world;
 
     {
-        x = 0;
-        z = 0;
-        world = null;
+//        x = 0;
+//        z = 0;
+//        world = null;
         // why do these have to be final lol
     }
 

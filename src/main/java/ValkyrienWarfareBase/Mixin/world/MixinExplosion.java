@@ -25,26 +25,26 @@ import java.util.List;
 public abstract class MixinExplosion {
 
     @Shadow
-    public final World world;
+    public World world;
 
     @Shadow
-    public final float explosionSize;
+    public float explosionSize;
 
     @Shadow
-    public final double explosionX;
+    public double explosionX;
 
     @Shadow
-    public final double explosionY;
+    public double explosionY;
 
     @Shadow
-    public final double explosionZ;
+    public double explosionZ;
 
     {
-        world = null;
-        explosionSize = 0;
-        explosionX = 0;
-        explosionY = 0;
-        explosionZ = 0;
+//        world = null;
+//        explosionSize = 0;
+//        explosionX = 0;
+//        explosionY = 0;
+//        explosionZ = 0;
         //dirty hack lol
     }
 

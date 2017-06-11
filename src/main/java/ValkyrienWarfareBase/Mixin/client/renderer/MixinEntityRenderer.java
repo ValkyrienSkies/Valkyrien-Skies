@@ -28,7 +28,7 @@ import org.spongepowered.asm.mixin.Shadow;
 public abstract class MixinEntityRenderer {
 
     @Shadow
-    public final Minecraft mc;
+    public Minecraft mc;
 
     @Shadow
     public float thirdPersonDistancePrev;
@@ -37,7 +37,7 @@ public abstract class MixinEntityRenderer {
     public boolean cloudFog;
 
     {
-        mc = null;
+//        mc = null;
         //dirty hack lol
     }
 

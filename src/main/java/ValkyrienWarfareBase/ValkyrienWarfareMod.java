@@ -1,6 +1,8 @@
 package ValkyrienWarfareBase;
 
 import java.io.File;
+import java.lang.reflect.Field;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
@@ -32,6 +34,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
@@ -135,6 +138,29 @@ public class ValkyrienWarfareMod {
 		BlockPhysicsRegistration.registerCustomBlockMasses();
 		BlockPhysicsRegistration.registerVanillaBlockForces();
 		BlockPhysicsRegistration.registerBlocksToNotPhysicise();
+
+
+		ForgeChunkManager.setForcedChunkLoadingCallback(instance, new VWChunkLoadingCallback());
+		////We're stealing these tickets bois!////
+		try{
+			Field ticketConstraintsField = ForgeChunkManager.class.getDeclaredField("ticketConstraints");
+			Field chunkConstraintsField = ForgeChunkManager.class.getDeclaredField("chunkConstraints");
+
+			ticketConstraintsField.setAccessible(true);
+			chunkConstraintsField.setAccessible(true);
+
+			Object ticketConstraints = ticketConstraintsField.get(null);
+			Object chunkConstraints = chunkConstraintsField.get(null);
+
+			Map<String, Integer> ticketsMap = (Map<String, Integer>) ticketConstraints;
+			Map<String, Integer> chunksMap = (Map<String, Integer>) chunkConstraints;
+
+			ticketsMap.put(MODID, new Integer(69696969));
+			chunksMap.put(MODID, new Integer(69696969));
+		}catch(Exception e){
+			e.printStackTrace();
+			System.err.println("DAMNIT LEX!");
+		}
 	}
 
 	@EventHandler

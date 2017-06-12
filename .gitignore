@@ -25,6 +25,7 @@ out
 #gradle
 build
 .gradle
+.mixin.out
 modules
 
 #runtime

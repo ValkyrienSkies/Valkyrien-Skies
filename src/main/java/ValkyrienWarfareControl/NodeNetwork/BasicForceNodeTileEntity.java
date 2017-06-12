@@ -18,7 +18,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
 	protected double currentThrust = 0D;
 
 	private boolean isForceOutputOriented = true;
-	private Vector normalVelocityUnoriented;
+	private Vector normalVelocityUnoriented = new Vector(0,1,0);
 	//Tells if the tile is in Ship Space, if it isn't then it doesn't try to find a parent Ship object
 	private boolean hasAlreadyCheckedForParent = false;
 	private PhysicsWrapperEntity parentShip;

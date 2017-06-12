@@ -44,7 +44,7 @@ public class TileEntityHoverController extends TileEntity {
 		// physObj.physicsProcessor.convertTorqueToVelocity();
 		// secondsToApply*=5D;
 		// idealHeight = 100D;
-		/*
+
 
 		if (worldObj.isBlockPowered(getPos())||autoStabalizerControl) {
 			setAutoStabilizationValue(physObj);
@@ -59,16 +59,16 @@ public class TileEntityHoverController extends TileEntity {
 		engine.angularThrust.Y = Math.max(engine.angularThrust.Y, 0D);
 		engine.linearThrust.Y = Math.max(engine.linearThrust.Y, 0D);
 
-		engine.angularThrust.Y = Math.min(engine.angularThrust.Y, engine.maxThrust * stabilityBias);
-		engine.linearThrust.Y = Math.min(engine.linearThrust.Y, engine.maxThrust * (1D - stabilityBias));
+		engine.angularThrust.Y = Math.min(engine.angularThrust.Y, engine.getMaxThrust() * stabilityBias);
+		engine.linearThrust.Y = Math.min(engine.linearThrust.Y, engine.getMaxThrust() * (1D - stabilityBias));
 
 		Vector aggregateForce = engine.linearThrust.getAddition(engine.angularThrust);
 		aggregateForce.multiply(secondsToApply);
 
 		// System.out.println(aggregateForce);
 
-		return aggregateForce;*/
-		return new Vector();
+		return aggregateForce;
+//		return new Vector();
 	}
 
 	public double getEngineDistFromIdealAngular(BlockPos enginePos, PhysicsObject physObj, double secondsToApply) {

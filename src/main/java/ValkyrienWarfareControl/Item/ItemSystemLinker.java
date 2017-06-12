@@ -39,6 +39,7 @@ public class ItemSystemLinker extends Item {
 				return EnumActionResult.SUCCESS;
 			}
 		}
+
 		if (block instanceof BlockEtherCompressor) {
 			if (!worldIn.isRemote) {
 				BlockPos controllerPos = NBTUtils.readBlockPosFromNBT("controllerPos", stackCompound);
@@ -56,13 +57,13 @@ public class ItemSystemLinker extends Item {
 
 					if (worldTile instanceof TileEntityEtherCompressor) {
 						TileEntityEtherCompressor tileEntity = (TileEntityEtherCompressor) worldTile;
-//						BlockPos gravControllerPos = tileEntity.controllerPos;
-//						if (gravControllerPos.equals(BlockPos.ORIGIN)) {
-//							playerIn.addChatMessage(new TextComponentString("Set Controller To " + controllerPos.toString()));
-//						} else {
-//							playerIn.addChatMessage(new TextComponentString("Replaced controller position from: " + gravControllerPos.toString() + " to: " + controllerPos.toString()));
-//						}
-//						tileEntity.setController(controllerPos);
+						BlockPos gravControllerPos = tileEntity.getControllerPos();
+						if (gravControllerPos.equals(BlockPos.ORIGIN)) {
+							playerIn.addChatMessage(new TextComponentString("Set Controller To " + controllerPos.toString()));
+						} else {
+							playerIn.addChatMessage(new TextComponentString("Replaced controller position from: " + gravControllerPos.toString() + " to: " + controllerPos.toString()));
+						}
+						tileEntity.setControllerPos(controllerPos);
 					}
 				}
 			} else {

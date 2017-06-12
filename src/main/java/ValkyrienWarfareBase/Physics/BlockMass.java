@@ -14,7 +14,7 @@ public class BlockMass {
 
 	public static BlockMass basicMass = new BlockMass();
 	// 80N, Something like ~ 20lbs
-	private final static double defaultMass = 350D;
+	private final static double defaultMass = 50D;
 	public HashMap<Block, Double> blockToMass = new HashMap<Block, Double>();
 	public HashMap<Material, Double> materialMass = new HashMap<Material, Double>();
 
@@ -24,41 +24,41 @@ public class BlockMass {
 
 	private void generateMaterialMasses(){
 		materialMass.put(Material.AIR, 0D);
-		materialMass.put(Material.ANVIL, 500D);
+		materialMass.put(Material.ANVIL, 200D);
 		materialMass.put(Material.BARRIER, 0D);
-		materialMass.put(Material.CACTUS, 35D);
-		materialMass.put(Material.CAKE, 20D);
-		materialMass.put(Material.CARPET, 10D);
-		materialMass.put(Material.CIRCUITS, 35D);
-		materialMass.put(Material.CLAY, 100D);
-		materialMass.put(Material.CLOTH, 50D);
-		materialMass.put(Material.CORAL, 150D);
-		materialMass.put(Material.CRAFTED_SNOW, 45D);
-		materialMass.put(Material.DRAGON_EGG, 50D);
+		materialMass.put(Material.CACTUS, 15D);
+		materialMass.put(Material.CAKE, 10D);
+		materialMass.put(Material.CARPET, 5D);
+		materialMass.put(Material.CIRCUITS, 15D);
+		materialMass.put(Material.CLAY, 40D);
+		materialMass.put(Material.CLOTH, 20D);
+		materialMass.put(Material.CORAL, 70D);
+		materialMass.put(Material.CRAFTED_SNOW, 20D);
+		materialMass.put(Material.DRAGON_EGG, 20D);
 		materialMass.put(Material.FIRE, 0D);
-		materialMass.put(Material.GLASS, 60D);
-		materialMass.put(Material.GOURD, 100D);
-		materialMass.put(Material.GRASS, 65D);
-		materialMass.put(Material.GROUND, 150D);
-		materialMass.put(Material.ICE, 150D);
-		materialMass.put(Material.IRON, 650D);
+		materialMass.put(Material.GLASS, 20D);
+		materialMass.put(Material.GOURD, 50D);
+		materialMass.put(Material.GRASS, 30D);
+		materialMass.put(Material.GROUND, 70D);
+		materialMass.put(Material.ICE, 50D);
+		materialMass.put(Material.IRON, 250D);
 		materialMass.put(Material.LAVA, 0D);
-		materialMass.put(Material.LEAVES, 20D);
-		materialMass.put(Material.PACKED_ICE, 80D);
-		materialMass.put(Material.PISTON, 30D);
-		materialMass.put(Material.PLANTS, 35D);
+		materialMass.put(Material.LEAVES, 10D);
+		materialMass.put(Material.PACKED_ICE, 40D);
+		materialMass.put(Material.PISTON, 15D);
+		materialMass.put(Material.PLANTS, 10D);
 		materialMass.put(Material.PORTAL, 0D);
-		materialMass.put(Material.REDSTONE_LIGHT, 20D);
-		materialMass.put(Material.ROCK, 500D);
-		materialMass.put(Material.SAND, 150D);
+		materialMass.put(Material.REDSTONE_LIGHT, 10D);
+		materialMass.put(Material.ROCK, 220D);
+		materialMass.put(Material.SAND, 45D);
 		materialMass.put(Material.SNOW, 20D);
-		materialMass.put(Material.SPONGE, 50D);
+		materialMass.put(Material.SPONGE, 20D);
 		materialMass.put(Material.STRUCTURE_VOID, 0D);
-		materialMass.put(Material.TNT, 80D);
-		materialMass.put(Material.VINE, 10D);
+		materialMass.put(Material.TNT, 30D);
+		materialMass.put(Material.VINE, 5D);
 		materialMass.put(Material.WATER, 0D);
-		materialMass.put(Material.WEB, 20D);
-		materialMass.put(Material.WOOD, 150D);
+		materialMass.put(Material.WEB, 10D);
+		materialMass.put(Material.WOOD, 25D);
 	}
 
 	public double getMassFromState(IBlockState state, BlockPos pos, World world) {

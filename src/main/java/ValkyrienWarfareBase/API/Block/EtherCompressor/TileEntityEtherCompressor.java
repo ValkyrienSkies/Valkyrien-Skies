@@ -14,7 +14,7 @@ import net.minecraft.util.math.BlockPos;
 public abstract class TileEntityEtherCompressor extends BasicForceNodeTileEntity {
 
 	//TODO: This is all temporary
-	private BlockPos controllerPos = new BlockPos(0,0,0);
+	private BlockPos controllerPos;
 	public Vector linearThrust = new Vector();
 	public Vector angularThrust = new Vector();
 
@@ -33,30 +33,37 @@ public abstract class TileEntityEtherCompressor extends BasicForceNodeTileEntity
 
 	public void setControllerPos(BlockPos toSet) {
 		controllerPos = toSet;
-//		this.markDirty();
+		this.markDirty();
 	}
 
 	@Override
 	public void readFromNBT(NBTTagCompound compound) {
+		super.readFromNBT(compound);
 		int controllerPosX = compound.getInteger("controllerPosX");
 		int controllerPosY = compound.getInteger("controllerPosY");
 		int controllerPosZ = compound.getInteger("controllerPosZ");
 		controllerPos = new BlockPos(controllerPosX, controllerPosY, controllerPosZ);
-		super.writeToNBT(compound);
 	}
 
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-		compound.setInteger("controllerPosX", controllerPos.getX());
-		compound.setInteger("controllerPosY", controllerPos.getY());
-		compound.setInteger("controllerPosZ", controllerPos.getZ());
-		return super.writeToNBT(compound);
+		NBTTagCompound toReturn = super.writeToNBT(compound);
+		if(controllerPos != null){
+			toReturn.setInteger("controllerPosX", controllerPos.getX());
+			toReturn.setInteger("controllerPosY", controllerPos.getY());
+			toReturn.setInteger("controllerPosZ", controllerPos.getZ());
+		}
+		return toReturn;
 	}
 
 	//TODO: Remove this as soon as you can!
 	@Override
 	public Vector getForceOutputUnoriented(double secondsToApply) {
-		TileEntity controllerTile = worldObj.getTileEntity(getControllerPos());
+		if(controllerPos == null){
+			return new Vector();
+		}
+
+		TileEntity controllerTile = worldObj.getTileEntity(controllerPos);
 
 		if(controllerTile != null){
 

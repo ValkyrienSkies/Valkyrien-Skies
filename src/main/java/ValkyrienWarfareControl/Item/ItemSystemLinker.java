@@ -58,7 +58,7 @@ public class ItemSystemLinker extends Item {
 					if (worldTile instanceof TileEntityEtherCompressor) {
 						TileEntityEtherCompressor tileEntity = (TileEntityEtherCompressor) worldTile;
 						BlockPos gravControllerPos = tileEntity.getControllerPos();
-						if (gravControllerPos.equals(BlockPos.ORIGIN)) {
+						if (gravControllerPos == null || gravControllerPos.equals(BlockPos.ORIGIN)) {
 							playerIn.addChatMessage(new TextComponentString("Set Controller To " + controllerPos.toString()));
 						} else {
 							playerIn.addChatMessage(new TextComponentString("Replaced controller position from: " + gravControllerPos.toString() + " to: " + controllerPos.toString()));

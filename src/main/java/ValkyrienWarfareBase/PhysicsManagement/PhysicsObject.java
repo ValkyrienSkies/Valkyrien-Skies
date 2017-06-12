@@ -62,8 +62,10 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.common.ForgeChunkManager;
+import net.minecraftforge.common.ForgeChunkManager.ForceChunkEvent;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
+import net.minecraftforge.common.ForgeChunkManager.UnforceChunkEvent;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class PhysicsObject {
@@ -475,7 +477,11 @@ public class PhysicsObject {
 		claimedChunksEntries[x - ownedChunks.minX][z - ownedChunks.minZ] = entry;
 
 		Ticket ticket = ValkyrienWarfareMod.physicsManager.getManagerForWorld(this.worldObj).chunkLoadingTicket;
-		ForgeChunkManager.forceChunk(ticket, new ChunkPos(x, z));
+
+		MinecraftForge.EVENT_BUS.post(new ForceChunkEvent(ticket, new ChunkPos(x, z)));
+
+		//Laggy as fuck, hell no!
+//		ForgeChunkManager.forceChunk(ticket, new ChunkPos(x, z));
 //		MinecraftForge.EVENT_BUS.post(new ChunkEvent.Load(chunk));
 	}
 
@@ -556,7 +562,11 @@ public class PhysicsObject {
 		for (int x = ownedChunks.minX; x <= ownedChunks.maxX; x++) {
 			for (int z = ownedChunks.minZ; z <= ownedChunks.maxZ; z++) {
 				provider.unload(claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ]);
-				ForgeChunkManager.unforceChunk(manager.chunkLoadingTicket, new ChunkPos(x, z));
+
+				Ticket ticket = ValkyrienWarfareMod.physicsManager.getManagerForWorld(this.worldObj).chunkLoadingTicket;
+				//So fucking laggy!
+//				ForgeChunkManager.unforceChunk(manager.chunkLoadingTicket, new ChunkPos(x, z));
+				MinecraftForge.EVENT_BUS.post(new UnforceChunkEvent(ticket, new ChunkPos(x, z)));
 			}
 		}
 	}

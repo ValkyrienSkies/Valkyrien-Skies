@@ -60,8 +60,9 @@ public class PhysicsCalculations {
 
 	public boolean actAsArchimedes = false;
 
+	//Used when I update the mass table, to require all old ships to recalculate their inertia matrix and mass
 	@Deprecated
-	public boolean isShipPastBuild90 = false;
+	public boolean isShipPastBuild91 = false;
 
 	public PhysicsCalculations(PhysicsObject toProcess) {
 		parent = toProcess;
@@ -191,9 +192,9 @@ public class PhysicsCalculations {
 	}
 
 	public void rawPhysTickPreCol(double newPhysSpeed, int iters) {
-		if(!isShipPastBuild90){
+		if(!isShipPastBuild91){
 			recalculateInertiaMatrices();
-			isShipPastBuild90 = true;
+			isShipPastBuild91 = true;
 		}
 		if (parent.doPhysics) {
 			updatePhysSpeedAndIters(newPhysSpeed, iters);
@@ -464,7 +465,7 @@ public class PhysicsCalculations {
 		NBTUtils.writeVectorToNBT("CM", centerOfMass, compound);
 
 		NBTUtils.write3x3MatrixToNBT("MOI", MoITensor, compound);
-		compound.setBoolean("isShipPastBuild90", isShipPastBuild90);
+		compound.setBoolean("isShipPastBuild91", isShipPastBuild91);
 	}
 
 	public void readFromNBTTag(NBTTagCompound compound) {
@@ -476,7 +477,7 @@ public class PhysicsCalculations {
 
 		MoITensor = NBTUtils.read3x3MatrixFromNBT("MOI", compound);
 
-		isShipPastBuild90 = compound.getBoolean("isShipPastBuild90");
+		isShipPastBuild91 = compound.getBoolean("isShipPastBuild91");
 		processNBTRead();
 	}
 

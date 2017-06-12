@@ -372,6 +372,8 @@ public class CallRunner {
 			Polygon poly = new Polygon(aabb, wrapper.wrapping.coordTransform.lToWTransform);
 			aabb = poly.getEnclosedAABB();//.contract(.3D);
 			toReturn.addAll(world.getEntitiesWithinAABB(clazz, aabb, filter));
+
+			toReturn.remove(wrapper);
 		}
 		return toReturn;
 	}
@@ -401,7 +403,9 @@ public class CallRunner {
 			Polygon poly = new Polygon(boundingBox, wrapper.wrapping.coordTransform.lToWTransform);
 			boundingBox = poly.getEnclosedAABB().contract(.3D);
 			toReturn.addAll(world.getEntitiesInAABBexcluding(entityIn, boundingBox, predicate));
+			toReturn.remove(wrapper);
 		}
+
 		return toReturn;
 	}
 

@@ -58,12 +58,6 @@ public abstract class TileEntityEtherCompressor extends BasicForceNodeTileEntity
 	public Vector getForceOutputUnoriented(double secondsToApply) {
 		TileEntity controllerTile = worldObj.getTileEntity(getControllerPos());
 
-		Block block = worldObj.getBlockState(controllerPos).getBlock();
-//		System.out.println(block);
-		if(block instanceof BlockHovercraftController){
-
-		}
-
 		if(controllerTile != null){
 
 			if(controllerTile instanceof TileEntityHoverController){

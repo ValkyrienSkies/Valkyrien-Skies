@@ -70,8 +70,8 @@ public class CallRunner {
     }
 
 	//TODO: Remove this in 1.11, and use the mixins!
-	public static WorldBorder createWorldBorder(WorldProvider provider){
-		WorldBorderFixWrapper wrapper = new WorldBorderFixWrapper(provider.createWorldBorder());
+	public static WorldBorder modifyWorldBorder(WorldBorder toWrap){
+		WorldBorderFixWrapper wrapper = new WorldBorderFixWrapper(toWrap);
 		return wrapper;
     }
 

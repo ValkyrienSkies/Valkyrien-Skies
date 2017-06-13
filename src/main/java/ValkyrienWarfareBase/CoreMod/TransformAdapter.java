@@ -95,7 +95,11 @@ public class TransformAdapter extends ClassVisitor {
 		}
 
 		if (isMethod(calledDesc, "()L"+WorldBorderName+";", calledName, WorldProviderName, "createWorldBorder", "func_177501_r", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "createWorldBorder", "(L"+WorldProviderName+";)L"+WorldBorderName+";", itf);
+
+			mv.visitMethodInsn(opcode, calledOwner, calledName, calledDesc, itf);
+
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "modifyWorldBorder", "(L"+WorldBorderName+";)L"+WorldBorderName+";", itf);
+
 			return false;
 		}
 

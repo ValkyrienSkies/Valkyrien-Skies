@@ -20,6 +20,7 @@ resourcepacks
 *.ipr
 *.iws
 .idea
+.mixin.out
 out
 
 #gradle

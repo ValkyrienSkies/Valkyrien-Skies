@@ -22,7 +22,7 @@ import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
 /**
  * Provides a base to easily add more weapons
- * 
+ *
  * @author thebest108
  */
 public abstract class EntityMountingWeaponBase extends Entity implements IEntityAdditionalSpawnData {
@@ -44,21 +44,21 @@ public abstract class EntityMountingWeaponBase extends Entity implements IEntity
 			onRiderInteract(player, stack, hand);
 		}else{
 			player.startRiding(this);
-			
+
 			PhysicsWrapperEntity wrapper = getParentShip();
 			if(wrapper != null){
 				Vector posInLocal = new Vector(this);
 				Vector passengerOffset = getRiderPositionOffset();
-				
+
 //				double[] rotationMatricesCompensation = RotationMatrices.getRotationMatrix(0, 45D, 0);
-				
+
 //				RotationMatrices.applyTransform(rotationMatricesCompensation, passengerOffset);
-				
-				
+
+
 				wrapper.wrapping.coordTransform.fromGlobalToLocal(posInLocal);
-				
+
 				posInLocal.add(passengerOffset);
-				
+
 				wrapper.wrapping.fixEntity(player, posInLocal);
 			}
 		}
@@ -199,11 +199,13 @@ public abstract class EntityMountingWeaponBase extends Entity implements IEntity
 				//We're in the real world
 				Vector passengerOffset = getRiderPositionOffset();
 				passengerOffset.add(posX, posY, posZ);
-				passenger.posX = passengerOffset.X;
-				passenger.posY = passengerOffset.Y;
-				passenger.posZ = passengerOffset.Z;
+//				passenger.posX = passengerOffset.X;
+//				passenger.posY = passengerOffset.Y;
+//				passenger.posZ = passengerOffset.Z;
+//				System.out.println("oi");
+				passenger.setPosition(passengerOffset.X, passengerOffset.Y, passengerOffset.Z);
 			}
-			
+
 //			passenger.setPosition(passengerOffset.X, passengerOffset.Y, passengerOffset.Z);
 		}
 	}
@@ -284,17 +286,17 @@ public abstract class EntityMountingWeaponBase extends Entity implements IEntity
 			return true;
 		}
 	}
-	
+
 	@Override
 	public void setPosition(double x, double y, double z){
         PhysicsWrapperEntity wrapper = getParentShip();
         float f = this.width / 2.0F;
         float f1 = this.height;
-        
+
         this.posX = x;
         this.posY = y;
         this.posZ = z;
-        
+
         this.setEntityBoundingBox(new AxisAlignedBB(x - (double)f, y, z - (double)f, x + (double)f, y + (double)f1, z + (double)f));
     }
 
@@ -326,7 +328,7 @@ public abstract class EntityMountingWeaponBase extends Entity implements IEntity
 		}
 		return null;
 	}
-	
+
 	@Override
 	protected void readEntityFromNBT(NBTTagCompound tagCompund) {
 		facing = EnumFacing.getHorizontal(tagCompund.getInteger("facingOrdinal"));

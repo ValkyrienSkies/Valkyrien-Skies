@@ -65,7 +65,7 @@ public class ValkyrienWarfareCombatMod {
 
 	private void registerItems(FMLStateEvent event) {
 		basicCannonSpawner = new ItemBasicCannon().setUnlocalizedName("basiccannonspawner").setRegistryName(MODID, "basiccannonspawner").setCreativeTab(CreativeTabs.COMBAT).setMaxStackSize(4);
-		cannonBall = new ItemCannonBall().setUnlocalizedName("cannonball").setRegistryName(MODID, "cannonball").setCreativeTab(CreativeTabs.COMBAT).setMaxStackSize(32);
+		cannonBall = new ItemCannonBall().setUnlocalizedName("turretcannonball").setRegistryName(MODID, "turretcannonball").setCreativeTab(CreativeTabs.COMBAT).setMaxStackSize(32);
 		powderPouch = new ItemPowderPouch().setUnlocalizedName("powderpouch").setRegistryName(MODID, "powderpouch").setCreativeTab(CreativeTabs.COMBAT).setMaxStackSize(32);
 		explosiveArrow = new ItemExplosiveArrow().setUnlocalizedName("explosivearrow").setRegistryName(MODID, "explosivearrow").setCreativeTab(CreativeTabs.COMBAT).setMaxStackSize(64);
 
@@ -81,7 +81,7 @@ public class ValkyrienWarfareCombatMod {
 	}
 
 	private void registerBlocks(FMLStateEvent event) {
-		fakecannonblock = new FakeCannonBlock(Material.IRON).setHardness(5f).setUnlocalizedName("fakecannonblock").setRegistryName(MODID, "fakecannonblock").setCreativeTab(CreativeTabs.REDSTONE);
+		fakecannonblock = new FakeCannonBlock(Material.IRON).setHardness(5f).setUnlocalizedName("fakecannonblock").setRegistryName(MODID, "fakecannonblock");
 
 		GameRegistry.register(fakecannonblock);
 	}

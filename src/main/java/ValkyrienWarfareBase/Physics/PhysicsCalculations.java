@@ -2,7 +2,6 @@ package ValkyrienWarfareBase.Physics;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 
 import javax.vecmath.Matrix3d;
 
@@ -20,7 +19,6 @@ import ValkyrienWarfareBase.PhysicsManagement.CoordTransformObject;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareControl.Balloon.BalloonProcessor;
-import ValkyrienWarfareControl.NodeNetwork.NodeNetwork;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -301,7 +299,7 @@ public class PhysicsCalculations {
 			addForceAtPoint(new Vector(0, 0, 0), ValkyrienWarfareMod.gravity.getProduct(mass * physTickSpeed));
 		}
 		addQueuedForces();
-		Collections.shuffle(activeForcePositions);
+//		Collections.shuffle(activeForcePositions);
 
 		Vector blockForce = new Vector();
 		Vector inBodyWO = new Vector();

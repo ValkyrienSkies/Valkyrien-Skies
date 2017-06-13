@@ -47,6 +47,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProvider;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkGenerator;
@@ -57,6 +58,16 @@ public class CallRunner {
 //    public static boolean isServerInOnlineMode(){
 //    	return false;
 //    }
+
+	public static Biome getBiome(World world, BlockPos pos){
+//		System.out.println("that was easy");
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
+		if(wrapper != null){
+			BlockPos realPos = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, pos);
+			return world.getBiome(realPos);
+		}
+		return world.getBiome(pos);
+    }
 
 	//TODO: Remove this in 1.11, and use the mixins!
 	public static WorldBorder createWorldBorder(WorldProvider provider){

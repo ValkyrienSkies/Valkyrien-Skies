@@ -19,6 +19,7 @@ import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.EnumChangeOwnerResult;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareBase.API.Block.EtherCompressor.TileEntityEtherCompressor;
 import ValkyrienWarfareBase.ChunkManagement.ChunkSet;
 import ValkyrienWarfareBase.Network.PhysWrapperPositionMessage;
 import ValkyrienWarfareBase.Physics.BlockForce;
@@ -62,7 +63,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.common.ForgeChunkManager.ForceChunkEvent;
+import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.minecraftforge.common.ForgeChunkManager.UnforceChunkEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -323,7 +324,7 @@ public class PhysicsObject {
 
 		createPhysicsCalculations();
 		//The ship just got build, how can it not be the latest?
-		physicsProcessor.isShipPastBuild90 = true;
+		physicsProcessor.isShipPastBuild91 = true;
 
 		BlockPos centerDifference = refrenceBlockPos.subtract(centerInWorld);
 		while (iter.hasNext()) {
@@ -363,6 +364,17 @@ public class PhysicsObject {
 						backingPositionArray[cont + 2] = backingPositionArray[cont + 2] + centerDifference.getZ();
 					}
 					tileEntNBT.setIntArray("connectednodesarray", backingPositionArray);
+				}
+
+				//TODO: Remove this later
+				if(worldTile instanceof TileEntityEtherCompressor){
+					int controllerPosX = tileEntNBT.getInteger("controllerPosX");
+					int controllerPosY = tileEntNBT.getInteger("controllerPosY");
+					int controllerPosZ = tileEntNBT.getInteger("controllerPosZ");
+
+					tileEntNBT.setInteger("controllerPosX", controllerPosX + centerDifference.getX());
+					tileEntNBT.setInteger("controllerPosY", controllerPosY + centerDifference.getY());
+					tileEntNBT.setInteger("controllerPosZ", controllerPosZ + centerDifference.getZ());
 				}
 
 				TileEntity newInstance = TileEntity.create(worldObj, tileEntNBT);
@@ -478,10 +490,10 @@ public class PhysicsObject {
 
 		Ticket ticket = ValkyrienWarfareMod.physicsManager.getManagerForWorld(this.worldObj).chunkLoadingTicket;
 
-		MinecraftForge.EVENT_BUS.post(new ForceChunkEvent(ticket, new ChunkPos(x, z)));
+//		MinecraftForge.EVENT_BUS.post(new ForceChunkEvent(ticket, new ChunkPos(x, z)));
 
 		//Laggy as fuck, hell no!
-//		ForgeChunkManager.forceChunk(ticket, new ChunkPos(x, z));
+		ForgeChunkManager.forceChunk(ticket, new ChunkPos(x, z));
 //		MinecraftForge.EVENT_BUS.post(new ChunkEvent.Load(chunk));
 	}
 
@@ -565,7 +577,7 @@ public class PhysicsObject {
 
 				Ticket ticket = ValkyrienWarfareMod.physicsManager.getManagerForWorld(this.worldObj).chunkLoadingTicket;
 				//So fucking laggy!
-//				ForgeChunkManager.unforceChunk(manager.chunkLoadingTicket, new ChunkPos(x, z));
+				ForgeChunkManager.unforceChunk(manager.chunkLoadingTicket, new ChunkPos(x, z));
 				MinecraftForge.EVENT_BUS.post(new UnforceChunkEvent(ticket, new ChunkPos(x, z)));
 			}
 		}

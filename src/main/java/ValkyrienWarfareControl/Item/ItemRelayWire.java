@@ -1,5 +1,7 @@
 package ValkyrienWarfareControl.Item;
 
+import java.util.List;
+
 import ValkyrienWarfareControl.ValkyrienWarfareControlMod;
 import ValkyrienWarfareControl.Capability.ICapabilityLastRelay;
 import ValkyrienWarfareControl.NodeNetwork.INodeProvider;
@@ -15,6 +17,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
 public class ItemRelayWire extends Item {
@@ -24,6 +27,11 @@ public class ItemRelayWire extends Item {
 	public ItemRelayWire(){
 		this.setMaxStackSize(1);
 		this.setMaxDamage(80);
+	}
+
+	@Override
+	public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par4) {
+		itemInformation.add(TextFormatting.ITALIC + "" + TextFormatting.RED + TextFormatting.ITALIC + "Unfinished until v_0.91_alpha");
 	}
 
 	@Override

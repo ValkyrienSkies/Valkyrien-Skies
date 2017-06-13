@@ -69,13 +69,14 @@ public class ValkyrienWarfareMod {
 
 	public static File configFile;
 	public static Configuration config;
-	public static boolean dynamicLighting, spawnParticles;
+	public static boolean dynamicLighting;
 	public static int shipTickDelay, maxMissedPackets;
 
 	public static int threadCount;
 	public static boolean multiThreadedPhysics;
 	public static boolean doSplitting = false;
 	public static boolean doShipCollision = false;
+	public static boolean shipsSpawnParticles = false;
 
 	public static Vector gravity = new Vector(0, -9.8D, 0);
 	public static int physIter = 10;
@@ -184,7 +185,7 @@ public class ValkyrienWarfareMod {
 	}
 
 	private void registerRecipies(FMLStateEvent event) {
-		GameRegistry.addRecipe(new ItemStack(physicsInfuser), new Object[] { "RRR", "RDR", "RRR", 'R', Items.REDSTONE, 'D', Item.getItemFromBlock(Blocks.DIAMOND_BLOCK) });
+		GameRegistry.addRecipe(new ItemStack(physicsInfuser), new Object[] { "IEI", "ODO", "IEI", 'E', Items.ENDER_PEARL, 'D', Items.DIAMOND, 'O', Item.getItemFromBlock(Blocks.OBSIDIAN), 'I', Items.IRON_INGOT });
 	}
 
 	private void runConfiguration(FMLPreInitializationEvent event) {
@@ -218,6 +219,8 @@ public class ValkyrienWarfareMod {
 		highAccuracyCollisions = config.get(Configuration.CATEGORY_GENERAL, "Enables higher collision accuracy", false, "Debug feature, takes an insane amount of processing power").getBoolean();
 
 		accurateRain = config.get(Configuration.CATEGORY_GENERAL, "Enables accurate rain on ships", false, "Debug feature, takes a lot of processing power").getBoolean();
+
+		shipsSpawnParticles = config.get(Configuration.CATEGORY_GENERAL, "Enables particle spawns on Ships", true, "Ex. Torch Particles").getBoolean();
 
 		runAirshipPermissions = config.get(Configuration.CATEGORY_GENERAL, "Enables the airship permissions system", false, "Enables the airship permissions system").getBoolean();
 

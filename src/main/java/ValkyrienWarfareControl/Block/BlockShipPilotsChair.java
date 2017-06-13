@@ -1,5 +1,7 @@
 package ValkyrienWarfareControl.Block;
 
+import java.util.List;
+
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
@@ -21,12 +23,13 @@ import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
 public class BlockShipPilotsChair extends Block implements ITileEntityProvider {
 
 	public static final PropertyDirection FACING = BlockHorizontal.FACING;
-	
+
 	public BlockShipPilotsChair(Material materialIn) {
 		super(materialIn);
 	}
@@ -48,9 +51,9 @@ public class BlockShipPilotsChair extends Block implements ITileEntityProvider {
 					playerIn.startRiding(wrapper);
 					Vector localMountPos = getPlayerMountOffset(state, pos);
 					wrapper.wrapping.fixEntity(playerIn, localMountPos);
-					
+
 					wrapper.wrapping.pilotingController.setPilotEntity((EntityPlayerMP) playerIn, false);
-					
+
 					wrapper.wrapping.coordTransform.fromGlobalToLocal(playerPos);
 
 					playerIn.posX = playerPos.X;
@@ -64,7 +67,13 @@ public class BlockShipPilotsChair extends Block implements ITileEntityProvider {
 
 		return false;
 	}
-	
+
+	@Override
+	public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par4) {
+		itemInformation.add(TextFormatting.ITALIC + "" + TextFormatting.BLUE + "Use to mount and control Ships!");
+		itemInformation.add(TextFormatting.BOLD + "" + TextFormatting.BOLD + TextFormatting.RED + "Can only be placed on a Ship");
+	}
+
 	@Override
 	public boolean canPlaceBlockAt(World worldIn, BlockPos pos){
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldIn, pos);
@@ -75,9 +84,9 @@ public class BlockShipPilotsChair extends Block implements ITileEntityProvider {
 		EnumFacing enumFace = state.getValue(BlockShipPilotsChair.FACING);
 
 		double chairYaw = -enumFace.getHorizontalAngle() - 90;
-		
+
 		return chairYaw;
-	} 
+	}
 
 	private Vector getPlayerMountOffset(IBlockState state, BlockPos pos){
 		EnumFacing facing = (EnumFacing)state.getValue(FACING);
@@ -90,7 +99,7 @@ public class BlockShipPilotsChair extends Block implements ITileEntityProvider {
 	    	  return new Vector(pos.getX() + .6D, pos.getY(), pos.getZ() + .5D);
 	      case EAST:
 	    	  return new Vector(pos.getX() + .4D, pos.getY(), pos.getZ() + .5D);
-	      default: 
+	      default:
 	    	  return new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
 	    }
 	}
@@ -105,6 +114,16 @@ public class BlockShipPilotsChair extends Block implements ITileEntityProvider {
 	{
 		return this.getDefaultState().withProperty(FACING, placer.isSneaking() ? placer.getHorizontalFacing().getOpposite() :  placer.getHorizontalFacing());
 	}
+
+	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer){
+        EnumFacing facingHorizontal = placer.getHorizontalFacing();
+
+        if(!placer.isSneaking()){
+        	facingHorizontal = facingHorizontal.getOpposite();
+        }
+
+		return this.getDefaultState().withProperty(FACING, facingHorizontal);
+    }
 
 	@Override
 	protected BlockStateContainer createBlockState() {
@@ -125,7 +144,7 @@ public class BlockShipPilotsChair extends Block implements ITileEntityProvider {
 		int i = ((EnumFacing) state.getValue(FACING)).getIndex();
 		return i;
 	}
-	
+
 	@Override
 	public BlockRenderLayer getBlockLayer() {
 		return BlockRenderLayer.CUTOUT;

@@ -55,6 +55,7 @@ public class TransformAdapter extends ClassVisitor {
 	public static final String MinecraftServerName = "net/minecraft/server/MinecraftServer";
 	public static final String WorldProviderName = "net/minecraft/world/WorldProvider";
 	public static final String WorldBorderName = "net/minecraft/world/border/WorldBorder";
+	public static final String BiomeName = "net/minecraft/world/biome/Biome";
 
 	public static final String HttpUtilName = "net/minecraft/util/HttpUtil";
 	public static final String PredicateName = "com/google/common/base/Predicate";
@@ -79,8 +80,27 @@ public class TransformAdapter extends ClassVisitor {
 //			return false;
 //		}
 
+		if (isMethod(calledDesc, "(L" + BlockPosName +  ";)L" + BiomeName + ";", calledName, WorldClassName, "getBiome", "func_180494_b", calledOwner)) {
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "getBiome", "(L" + WorldClassName + ";L" + BlockPosName + ";)L" + BiomeName + ";", itf);
+			return false;
+		}
+
+		if (isMethod(calledDesc, "(IZDDDDDD[I)Lnet/minecraft/client/particle/Particle;", calledName, RenderGlobalName, "spawnEntityFX", "func_174974_b", calledOwner)) {
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "spawnEntityFX", "(L"+RenderGlobalName+";IZDDDDDD[I)Lnet/minecraft/client/particle/Particle;", itf);
+			return false;
+		}
+
+		if (isMethod(calledDesc, "(III)V", calledName, WorldClientName, "doVoidFogParticles", "func_73029_E", calledOwner)) {
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathClient, "doVoidFogParticles", "(L"+WorldClientName+";III)V", itf);
+			return false;
+		}
+
 		if (isMethod(calledDesc, "()L"+WorldBorderName+";", calledName, WorldProviderName, "createWorldBorder", "func_177501_r", calledOwner)) {
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "createWorldBorder", "(L"+WorldProviderName+";)L"+WorldBorderName+";", itf);
+
+			mv.visitMethodInsn(opcode, calledOwner, calledName, calledDesc, itf);
+
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, ValkyrienWarfarePlugin.PathCommon, "modifyWorldBorder", "(L"+WorldBorderName+";)L"+WorldBorderName+";", itf);
+
 			return false;
 		}
 

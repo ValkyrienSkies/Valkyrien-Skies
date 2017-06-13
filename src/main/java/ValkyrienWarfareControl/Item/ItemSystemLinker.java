@@ -1,5 +1,7 @@
 package ValkyrienWarfareControl.Item;
 
+import java.util.List;
+
 import ValkyrienWarfareBase.NBTUtils;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.Block.EtherCompressor.BlockEtherCompressor;
@@ -18,9 +20,14 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
 public class ItemSystemLinker extends Item {
+
+	public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par4) {
+		itemInformation.add(TextFormatting.BLUE + "Right click on the Hover Controller, then right click on any Ether Compressors you wish to automate control.");
+	}
 
 	@Override
 	public EnumActionResult onItemUse(EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
@@ -40,6 +47,7 @@ public class ItemSystemLinker extends Item {
 				return EnumActionResult.SUCCESS;
 			}
 		}
+
 		if (block instanceof BlockEtherCompressor) {
 			if (!worldIn.isRemote) {
 				BlockPos controllerPos = NBTUtils.readBlockPosFromNBT("controllerPos", stackCompound);
@@ -58,13 +66,13 @@ public class ItemSystemLinker extends Item {
 					if (worldTile instanceof TileEntityEtherCompressor) {
 						TileEntityEtherCompressor tileEntity = (TileEntityEtherCompressor) worldTile;
 
-//						BlockPos gravControllerPos = tileEntity.controllerPos;
-//						if (gravControllerPos.equals(BlockPos.ORIGIN)) {
-//							playerIn.sendMessage(new TextComponentString("Set Controller To " + controllerPos.toString()));
-//						} else {
-//							playerIn.sendMessage(new TextComponentString("Replaced controller position from: " + gravControllerPos.toString() + " to: " + controllerPos.toString()));
-//						}
-//						tileEntity.setController(controllerPos);
+						BlockPos gravControllerPos = tileEntity.getControllerPos();
+						if (gravControllerPos == null || gravControllerPos.equals(BlockPos.ORIGIN)) {
+							playerIn.sendMessage(new TextComponentString("Set Controller To " + controllerPos.toString()));
+						} else {
+							playerIn.sendMessage(new TextComponentString("Replaced controller position from: " + gravControllerPos.toString() + " to: " + controllerPos.toString()));
+						}
+						tileEntity.setControllerPos(controllerPos);
 					}
 				}
 			} else {

@@ -48,6 +48,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProvider;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkGenerator;
@@ -59,9 +60,19 @@ public class CallRunner {
 //    	return false;
 //    }
 
+	public static Biome getBiome(World world, BlockPos pos){
+//		System.out.println("that was easy");
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
+		if(wrapper != null){
+			BlockPos realPos = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, pos);
+			return world.getBiome(realPos);
+		}
+		return world.getBiome(pos);
+    }
+
 	//TODO: Remove this in 1.11, and use the mixins!
-	public static WorldBorder createWorldBorder(WorldProvider provider){
-		WorldBorderFixWrapper wrapper = new WorldBorderFixWrapper(provider.createWorldBorder());
+	public static WorldBorder modifyWorldBorder(WorldBorder toWrap){
+		WorldBorderFixWrapper wrapper = new WorldBorderFixWrapper(toWrap);
 		return wrapper;
     }
 
@@ -360,6 +371,8 @@ public class CallRunner {
 			Polygon poly = new Polygon(aabb, wrapper.wrapping.coordTransform.lToWTransform);
 			aabb = poly.getEnclosedAABB();//.contract(.3D);
 			toReturn.addAll(world.getEntitiesWithinAABB(clazz, aabb, filter));
+
+			toReturn.remove(wrapper);
 		}
 		return toReturn;
 	}
@@ -389,7 +402,9 @@ public class CallRunner {
 			Polygon poly = new Polygon(boundingBox, wrapper.wrapping.coordTransform.lToWTransform);
 			boundingBox = poly.getEnclosedAABB().contract(.3D);
 			toReturn.addAll(world.getEntitiesInAABBexcluding(entityIn, boundingBox, predicate));
+			toReturn.remove(wrapper);
 		}
+
 		return toReturn;
 	}
 

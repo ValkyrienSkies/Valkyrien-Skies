@@ -4,12 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraftforge.common.ForgeChunkManager;
+import net.minecraftforge.common.ForgeChunkManager.Ticket;
+import net.minecraftforge.common.ForgeChunkManager.Type;
 
 /**
  * This class essentially handles all the issues with ticking and handling Physics Objects in the given world
@@ -24,10 +28,12 @@ public class WorldPhysObjectManager {
 	public ArrayList<PhysicsWrapperEntity> physicsEntities = new ArrayList<PhysicsWrapperEntity>();
 	public ArrayList<PhysicsWrapperEntity> physicsEntitiesToUnload = new ArrayList<PhysicsWrapperEntity>();
 	public ArrayList<Callable<Void>> physCollisonCallables = new ArrayList<Callable<Void>>();
+	public final Ticket chunkLoadingTicket;
 //	private static Field droppedChunksField;
 
 	public WorldPhysObjectManager(World toManage) {
 		worldObj = toManage;
+		chunkLoadingTicket = ForgeChunkManager.requestTicket(ValkyrienWarfareMod.instance, toManage, Type.NORMAL);
 	}
 
 	/**
@@ -39,10 +45,9 @@ public class WorldPhysObjectManager {
 
 		ArrayList<PhysicsWrapperEntity> frozenShips = new ArrayList<PhysicsWrapperEntity>();
 
-
 		if(worldObj instanceof WorldServer){
 			WorldServer worldServer = (WorldServer)worldObj;
-	        for (PhysicsWrapperEntity wrapper:list){
+	        for (PhysicsWrapperEntity wrapper : list){
 	        	if(!wrapper.isDead){
 		        	if(wrapper.wrapping.surroundingWorldChunksCache != null){
 		        		int chunkCacheX = MathHelper.floor(wrapper.posX/16D)-wrapper.wrapping.surroundingWorldChunksCache.chunkX;
@@ -54,6 +59,7 @@ public class WorldPhysObjectManager {
 		        		Chunk chunk = wrapper.wrapping.surroundingWorldChunksCache.chunkArray[chunkCacheX][chunkCacheZ];
 
 //		        		Chunk chunk = wrapper.wrapping.surroundingWorldChunksCache.chunkArray[(wrapper.wrapping.surroundingWorldChunksCache.chunkArray.length)/2][(wrapper.wrapping.surroundingWorldChunksCache.chunkArray[0].length)/2];
+
 			            if (chunk != null && !worldServer.playerChunkMap.contains(chunk.xPosition, chunk.zPosition))
 			            {
 			            	frozenShips.add(wrapper);

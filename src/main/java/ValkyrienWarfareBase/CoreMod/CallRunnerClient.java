@@ -16,7 +16,6 @@ import ValkyrienWarfareBase.Math.Quaternion;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.Proxy.ClientProxy;
 import ValkyrienWarfareControl.Piloting.ClientPilotingManager;
-import ValkyrienWarfareControl.TileEntity.ThrustRelayTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockChest;
 import net.minecraft.block.BlockEnderChest;
@@ -25,6 +24,7 @@ import net.minecraft.block.BlockSkull;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.renderer.ActiveRenderInfo;
@@ -67,6 +67,40 @@ public class CallRunnerClient extends CallRunner {
 			drawingBatchName.setAccessible(true);
 		} catch (Exception e) {}
 	}
+
+    public static Particle spawnEntityFX(RenderGlobal render, int particleID, boolean ignoreRange, double xCoord, double yCoord, double zCoord, double xSpeed, double ySpeed, double zSpeed, int... parameters) {
+    	if(ValkyrienWarfareMod.shipsSpawnParticles){
+	    	BlockPos particlePos = new BlockPos(xCoord, yCoord, zCoord);
+	    	PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(render.world, particlePos);
+	    	if(wrapper != null){
+	    		Vector newCoords = new Vector(xCoord, yCoord, zCoord);
+	    		RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, newCoords);
+
+	    		xCoord = newCoords.X;
+	    		yCoord = newCoords.Y;
+	    		zCoord = newCoords.Z;
+	    	}
+    	}
+    	return render.spawnEntityFX(particleID, ignoreRange, xCoord, yCoord, zCoord, xSpeed, ySpeed, zSpeed, parameters);
+    }
+
+    public static void doVoidFogParticles(WorldClient client, int posX, int posY, int posZ) {
+//    	System.out.println("Gotem");
+
+    	if(ValkyrienWarfareMod.shipsSpawnParticles){
+	    	int range = 15;
+	    	AxisAlignedBB aabb = new AxisAlignedBB(posX - range, posY - range, posZ - range, posX + range, posY + range, posZ + range);
+	    	List<PhysicsWrapperEntity> physEntities = ValkyrienWarfareMod.physicsManager.getManagerForWorld(client).getNearbyPhysObjects(aabb);
+	    	for(PhysicsWrapperEntity wrapper : physEntities){
+	    		Vector playPosInShip = new Vector(posX + .5D, posY + .5D, posZ + .5D);
+	    		RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, playPosInShip);
+	//    		System.out.println("hi");
+	    		client.doVoidFogParticles(MathHelper.floor(playPosInShip.X), MathHelper.floor(playPosInShip.Y), MathHelper.floor(playPosInShip.Z));
+	    	}
+    	}
+
+    	client.doVoidFogParticles(posX, posY, posZ);
+    }
 
     public static int getSuitableLanPort() throws IOException{
     	ServerSocket serversocket = null;

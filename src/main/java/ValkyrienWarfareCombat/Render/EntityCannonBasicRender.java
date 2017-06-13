@@ -7,7 +7,10 @@ import ValkyrienWarfareCombat.Entity.EntityCannonBasic;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
+import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.entity.Render;
@@ -49,7 +52,36 @@ public class EntityCannonBasicRender extends Render<EntityCannonBasic> {
 
 		GL11.glPushMatrix();
 
+		if(headList == -1){
+			headList = GLAllocation.generateDisplayLists(1);
+			GL11.glPushMatrix();
+			GL11.glNewList(headList, GL11.GL_COMPILE);
+			vertexbuffer.setTranslation(0, 0, 0);
+			vertexbuffer.begin(7, DefaultVertexFormats.BLOCK);
+			BlockPos blockpos = new BlockPos(0,0,0);
+			BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
+			blockrendererdispatcher.getBlockModelRenderer().renderModel(entity.world, blockrendererdispatcher.getModelForState(headState), headState, blockpos, vertexbuffer, false, 0);
+			tessellator.draw();
+			GL11.glEndList();
+			GL11.glPopMatrix();
+		}
+
+		if(baseList == -1){
+			baseList = GLAllocation.generateDisplayLists(1);
+			GL11.glPushMatrix();
+			GL11.glNewList(baseList, GL11.GL_COMPILE);
+			vertexbuffer.setTranslation(0, 0, 0);
+			vertexbuffer.begin(7, DefaultVertexFormats.BLOCK);
+			BlockPos blockpos = new BlockPos(0,0,0);
+			BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
+			blockrendererdispatcher.getBlockModelRenderer().renderModel(entity.world, blockrendererdispatcher.getModelForState(baseState), baseState, blockpos, vertexbuffer, false, 0);
+			tessellator.draw();
+			GL11.glEndList();
+			GL11.glPopMatrix();
+		}
+
 		GlStateManager.disableLighting();
+
 		if (this.renderOutlines) {
 			GlStateManager.enableColorMaterial();
 			GlStateManager.enableOutlineMode(this.getTeamColor(entity));
@@ -90,38 +122,26 @@ public class EntityCannonBasicRender extends Render<EntityCannonBasic> {
 		}
 
 		vertexbuffer.setTranslation(oldX, oldY, oldZ);
-
+		GlStateManager.disableLighting();
+		GlStateManager.resetColor();
 		GlStateManager.enableLighting();
 
 		GL11.glPopMatrix();
 
-//		entity.posX -= 15;
 	}
 
 	private void renderBase(EntityCannonBasic entity, double x, double y, double z, float entityYaw, float partialTicks) {
-		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexbuffer = tessellator.getBuffer();
-		vertexbuffer.begin(7, DefaultVertexFormats.BLOCK);
-
-		BlockPos blockpos = new BlockPos(0.5D,0,.5D);
-		// GlStateManager.translate((float)(x - (double)blockpos.getX() - 0.5D), (float)(y - (double)blockpos.getY()), (float)(z - (double)blockpos.getZ() - 0.5D));
-		BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
-		blockrendererdispatcher.getBlockModelRenderer().renderModel(entity.world, blockrendererdispatcher.getModelForState(baseState), baseState, blockpos, vertexbuffer, false, 0);
-
-		tessellator.draw();
+		GL11.glPushMatrix();
+		GL11.glTranslated(-0.5D, 0, -0.5D);
+		GL11.glCallList(baseList);
+		GL11.glPopMatrix();
 	}
 
 	private void renderHead(EntityCannonBasic entity, double x, double y, double z, float entityYaw, float partialTicks) {
-		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexbuffer = tessellator.getBuffer();
-		vertexbuffer.begin(7, DefaultVertexFormats.BLOCK);
-
-		BlockPos blockpos = new BlockPos(0.5D,0,.5D);
-		// GlStateManager.translate((float)(x - (double)blockpos.getX() - 0.5D), (float)(y - (double)blockpos.getY()), (float)(z - (double)blockpos.getZ() - 0.5D));
-		BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
-		blockrendererdispatcher.getBlockModelRenderer().renderModel(entity.world, blockrendererdispatcher.getModelForState(headState), headState, blockpos, vertexbuffer, false, 0);
-
-		tessellator.draw();
+		GL11.glPushMatrix();
+		GL11.glTranslated(-0.5D, 0, -0.5D);
+		GL11.glCallList(headList);
+		GL11.glPopMatrix();
 	}
 
 	// public boolean shouldUpdateLists(){

@@ -41,7 +41,7 @@ public class BlockRammingManager {
 				shipBlockHardness = 100D;
 			}
 
-			double arbitraryScale = 2.4D;
+			double arbitraryScale = 5.4D;
 
 			if(hardnessRatio < .01D){
 				didBlockBreakInWorld.setValue(true);

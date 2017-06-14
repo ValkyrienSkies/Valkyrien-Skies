@@ -1,5 +1,7 @@
 package ValkyrienWarfareControl.Block;
 
+import java.util.List;
+
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareControl.ValkyrienWarfareControlMod;
@@ -19,6 +21,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -78,6 +81,12 @@ public class BlockHovercraftController extends Block implements ITileEntityProvi
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par4) {
+		itemInformation.add(TextFormatting.BLUE + "Used to automatically control the thrust output of Ether Compressors, allowing for stable flight.");
+		itemInformation.add(TextFormatting.ITALIC + "" + TextFormatting.GRAY + TextFormatting.ITALIC + "Auto stabalization control can be disabled with a redstone signal.");
 	}
 
 	@Override

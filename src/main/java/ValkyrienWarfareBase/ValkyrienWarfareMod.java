@@ -1,6 +1,8 @@
 package ValkyrienWarfareBase;
 
 import java.io.File;
+import java.lang.reflect.Field;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
@@ -33,6 +35,7 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
@@ -67,13 +70,14 @@ public class ValkyrienWarfareMod {
 
 	public static File configFile;
 	public static Configuration config;
-	public static boolean dynamicLighting, spawnParticles;
+	public static boolean dynamicLighting;
 	public static int shipTickDelay, maxMissedPackets;
 
 	public static int threadCount;
 	public static boolean multiThreadedPhysics;
 	public static boolean doSplitting = false;
 	public static boolean doShipCollision = false;
+	public static boolean shipsSpawnParticles = false;
 
 	public static Vector gravity = new Vector(0, -9.8D, 0);
 	public static int physIter = 10;
@@ -136,6 +140,29 @@ public class ValkyrienWarfareMod {
 		BlockPhysicsRegistration.registerCustomBlockMasses();
 		BlockPhysicsRegistration.registerVanillaBlockForces();
 		BlockPhysicsRegistration.registerBlocksToNotPhysicise();
+
+
+		ForgeChunkManager.setForcedChunkLoadingCallback(instance, new VWChunkLoadingCallback());
+		////We're stealing these tickets bois!////
+		try{
+			Field ticketConstraintsField = ForgeChunkManager.class.getDeclaredField("ticketConstraints");
+			Field chunkConstraintsField = ForgeChunkManager.class.getDeclaredField("chunkConstraints");
+
+			ticketConstraintsField.setAccessible(true);
+			chunkConstraintsField.setAccessible(true);
+
+			Object ticketConstraints = ticketConstraintsField.get(null);
+			Object chunkConstraints = chunkConstraintsField.get(null);
+
+			Map<String, Integer> ticketsMap = (Map<String, Integer>) ticketConstraints;
+			Map<String, Integer> chunksMap = (Map<String, Integer>) chunkConstraints;
+
+			ticketsMap.put(MODID, new Integer(69696969));
+			chunksMap.put(MODID, new Integer(69696969));
+		}catch(Exception e){
+			e.printStackTrace();
+			System.err.println("DAMNIT LEX!");
+		}
 	}
 
 	@EventHandler
@@ -159,7 +186,7 @@ public class ValkyrienWarfareMod {
 	}
 
 	private void registerRecipies(FMLStateEvent event) {
-		GameRegistry.addRecipe(new ItemStack(physicsInfuser), new Object[] { "RRR", "RDR", "RRR", 'R', Items.REDSTONE, 'D', Item.getItemFromBlock(Blocks.DIAMOND_BLOCK) });
+		GameRegistry.addRecipe(new ItemStack(physicsInfuser), new Object[] { "IEI", "ODO", "IEI", 'E', Items.ENDER_PEARL, 'D', Items.DIAMOND, 'O', Item.getItemFromBlock(Blocks.OBSIDIAN), 'I', Items.IRON_INGOT });
 	}
 
 	private void runConfiguration(FMLPreInitializationEvent event) {
@@ -190,9 +217,12 @@ public class ValkyrienWarfareMod {
 
 		maxAirships = config.get(Configuration.CATEGORY_GENERAL, "Max airships per player", -1, "Players can't own more than this many airships at once. Set to -1 to disable.").getInt();
 
-		highAccuracyCollisions = config.get(Configuration.CATEGORY_GENERAL, "Enables higher collision accuracy", false, "Debug feature, takes an insane amount of processing power").getBoolean();
+		//Forget it!
+//		highAccuracyCollisions = config.get(Configuration.CATEGORY_GENERAL, "Enables higher collision accuracy", false, "Debug feature, takes an insane amount of processing power").getBoolean();
 
 		accurateRain = config.get(Configuration.CATEGORY_GENERAL, "Enables accurate rain on ships", false, "Debug feature, takes a lot of processing power").getBoolean();
+
+		shipsSpawnParticles = config.get(Configuration.CATEGORY_GENERAL, "Enables particle spawns on Ships", true, "Ex. Torch Particles").getBoolean();
 
 		runAirshipPermissions = config.get(Configuration.CATEGORY_GENERAL, "Enables the airship permissions system", false, "Enables the airship permissions system").getBoolean();
 

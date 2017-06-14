@@ -20,11 +20,13 @@ resourcepacks
 *.ipr
 *.iws
 .idea
+.mixin.out
 out
 
 #gradle
 build
 .gradle
+.mixin.out
 modules
 
 #Mixins

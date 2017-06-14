@@ -1,5 +1,7 @@
 package ValkyrienWarfareBase.Block;
 
+import java.util.List;
+
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.ShipType;
@@ -9,11 +11,13 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
 public class BlockPhysicsInfuser extends Block {
@@ -23,6 +27,11 @@ public class BlockPhysicsInfuser extends Block {
 	public BlockPhysicsInfuser(Material materialIn) {
 		super(materialIn);
 		shipSpawnDetectorID = DetectorManager.DetectorIDs.ShipSpawnerGeneral.ordinal();
+	}
+
+
+	public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par4) {
+		itemInformation.add(TextFormatting.BLUE + "Turns any blocks attatched to this one into a brand new Ship, just be careful not to infuse your entire world");
 	}
 
 	@Override

@@ -2,7 +2,6 @@ package ValkyrienWarfareBase.Physics;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 
 import javax.vecmath.Matrix3d;
 
@@ -20,7 +19,6 @@ import ValkyrienWarfareBase.PhysicsManagement.CoordTransformObject;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareControl.Balloon.BalloonProcessor;
-import ValkyrienWarfareControl.NodeNetwork.NodeNetwork;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -60,8 +58,9 @@ public class PhysicsCalculations {
 
 	public boolean actAsArchimedes = false;
 
+	//Used when I update the mass table, to require all old ships to recalculate their inertia matrix and mass
 	@Deprecated
-	public boolean isShipPastBuild90 = false;
+	public boolean isShipPastBuild91 = false;
 
 	public PhysicsCalculations(PhysicsObject toProcess) {
 		parent = toProcess;
@@ -191,9 +190,9 @@ public class PhysicsCalculations {
 	}
 
 	public void rawPhysTickPreCol(double newPhysSpeed, int iters) {
-		if(!isShipPastBuild90){
+		if(!isShipPastBuild91){
 			recalculateInertiaMatrices();
-			isShipPastBuild90 = true;
+			isShipPastBuild91 = true;
 		}
 		if (parent.doPhysics) {
 			updatePhysSpeedAndIters(newPhysSpeed, iters);
@@ -300,7 +299,7 @@ public class PhysicsCalculations {
 			addForceAtPoint(new Vector(0, 0, 0), ValkyrienWarfareMod.gravity.getProduct(mass * physTickSpeed));
 		}
 		addQueuedForces();
-		Collections.shuffle(activeForcePositions);
+//		Collections.shuffle(activeForcePositions);
 
 		Vector blockForce = new Vector();
 		Vector inBodyWO = new Vector();
@@ -464,7 +463,7 @@ public class PhysicsCalculations {
 		NBTUtils.writeVectorToNBT("CM", centerOfMass, compound);
 
 		NBTUtils.write3x3MatrixToNBT("MOI", MoITensor, compound);
-		compound.setBoolean("isShipPastBuild90", isShipPastBuild90);
+		compound.setBoolean("isShipPastBuild91", isShipPastBuild91);
 	}
 
 	public void readFromNBTTag(NBTTagCompound compound) {
@@ -476,7 +475,7 @@ public class PhysicsCalculations {
 
 		MoITensor = NBTUtils.read3x3MatrixFromNBT("MOI", compound);
 
-		isShipPastBuild90 = compound.getBoolean("isShipPastBuild90");
+		isShipPastBuild91 = compound.getBoolean("isShipPastBuild91");
 		processNBTRead();
 	}
 

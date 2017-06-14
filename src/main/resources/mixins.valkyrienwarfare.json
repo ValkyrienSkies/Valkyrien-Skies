@@ -23,6 +23,7 @@
     "entity.player.MixinEntityPlayer",
     "world.MixinWorldCLIENT",
     "client.particle.MixinParticleManager",
-    "client.renderer.MixinRenderGlobal"
+    "client.renderer.MixinRenderGlobal",
+    "client.multiplayer.MixinWorldClient"
   ]
 }

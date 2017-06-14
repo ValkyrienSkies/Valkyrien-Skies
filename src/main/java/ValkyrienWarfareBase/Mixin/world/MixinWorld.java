@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.world.biome.Biome;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -378,6 +379,8 @@ public abstract class MixinWorld {
             Polygon poly = new Polygon(aabb, wrapper.wrapping.coordTransform.lToWTransform);
             aabb = poly.getEnclosedAABB();//.contract(.3D);
             toReturn.addAll(this.getEntitiesWithinAABBOriginal(clazz, aabb, filter));
+
+            toReturn.remove(wrapper);
         }
         return toReturn;
     }
@@ -408,6 +411,8 @@ public abstract class MixinWorld {
             Polygon poly = new Polygon(boundingBox, wrapper.wrapping.coordTransform.lToWTransform);
             boundingBox = poly.getEnclosedAABB().contract(.3D);
             toReturn.addAll(this.getEntitiesInAABBexcludingOriginal(entityIn, boundingBox, predicate));
+
+            toReturn.remove(wrapper);
         }
         return toReturn;
     }
@@ -433,5 +438,19 @@ public abstract class MixinWorld {
         if (wrapper != null) {
             wrapper.wrapping.onSetBlockState(oldState, newState, pos);
         }
+    }
+
+    @Inject(method = "getBiome(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/world/biome/Biome;", at = @At("HEAD"), cancellable = true)
+    public void preGetBiome(final BlockPos pos, CallbackInfoReturnable<Biome> callbackInfoReturnable)   {
+        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(World.class.cast(this), pos);
+        if(wrapper != null){
+            BlockPos realPos = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, pos);
+            pos.x = realPos.x;
+            pos.y = realPos.y;
+            pos.z = realPos.z;
+            return;
+            //change the blockpos pos and then run vanilla
+        }
+        //do nothing and run vanilla
     }
 }

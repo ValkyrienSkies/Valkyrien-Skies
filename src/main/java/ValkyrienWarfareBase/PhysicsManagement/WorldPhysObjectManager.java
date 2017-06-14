@@ -60,7 +60,7 @@ public class WorldPhysObjectManager {
 
 //		        		Chunk chunk = wrapper.wrapping.surroundingWorldChunksCache.chunkArray[(wrapper.wrapping.surroundingWorldChunksCache.chunkArray.length)/2][(wrapper.wrapping.surroundingWorldChunksCache.chunkArray[0].length)/2];
 
-			            if (chunk != null && !worldServer.playerChunkMap.contains(chunk.xPosition, chunk.zPosition))
+			            if (chunk != null && !worldServer.playerChunkMap.contains(chunk.x, chunk.z))
 			            {
 			            	frozenShips.add(wrapper);
 			            	//Then I should freeze any ships in this chunk

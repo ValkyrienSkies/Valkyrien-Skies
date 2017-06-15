@@ -29,7 +29,7 @@ public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer {
 
 				GL11.glPushMatrix();
 
-				GlStateManager.resetColor();;
+				GlStateManager.resetColor();
 
 			    GlStateManager.enableAlpha();
 			    bindTexture(new ResourceLocation("textures/entity/lead_knot.png"));

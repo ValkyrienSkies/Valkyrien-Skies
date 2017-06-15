@@ -30,7 +30,7 @@ public class FastBlockModelRenderer {
 		}
 	}
 
-	public static void renderBlockModelHighQuality(VertexBuffer vertexbuffer, Tessellator tessellator, World world, IBlockState blockstateToRender, int brightness){
+	private static void renderBlockModelHighQuality(VertexBuffer vertexbuffer, Tessellator tessellator, World world, IBlockState blockstateToRender, int brightness){
 		VertexBuffer.State vertexData = blockstateToVertexData.get(blockstateToRender);
 
 		double oldX = vertexbuffer.xOffset;
@@ -49,7 +49,7 @@ public class FastBlockModelRenderer {
 //		vertexbuffer.setTranslation(oldX, oldY, oldZ);
 	}
 
-	public static void renderBlockModelLowQuality(VertexBuffer vertexbuffer, Tessellator tessellator, World world, IBlockState blockstateToRender, int brightness){
+	private static void renderBlockModelLowQuality(VertexBuffer vertexbuffer, Tessellator tessellator, World world, IBlockState blockstateToRender, int brightness){
 		Integer glList = blockstateToGLList.get(blockstateToRender);
 
 		if(glList == null){
@@ -62,7 +62,7 @@ public class FastBlockModelRenderer {
 		GL11.glPopMatrix();
 	}
 
-	public static void renderVertexState(VertexBuffer.State data, VertexBuffer vertexbuffer, Tessellator tessellator, int brightness){
+	private static void renderVertexState(VertexBuffer.State data, VertexBuffer vertexbuffer, Tessellator tessellator, int brightness){
 		GL11.glPushMatrix();
 		vertexbuffer.begin(7, DefaultVertexFormats.BLOCK);
 
@@ -99,7 +99,7 @@ public class FastBlockModelRenderer {
 		GL11.glPopMatrix();
 	}
 
-	public static void generateRenderDataFor(VertexBuffer vertexbuffer, Tessellator tessellator, World world, IBlockState state){
+	private static void generateRenderDataFor(VertexBuffer vertexbuffer, Tessellator tessellator, World world, IBlockState state){
 		GL11.glPushMatrix();
 		int glList = GLAllocation.generateDisplayLists(1);
 		GL11.glNewList(glList, GL11.GL_COMPILE);

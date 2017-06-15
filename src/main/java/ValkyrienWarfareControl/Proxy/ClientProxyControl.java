@@ -2,7 +2,9 @@ package ValkyrienWarfareControl.Proxy;
 
 import ValkyrienWarfareControl.ValkyrienWarfareControlMod;
 import ValkyrienWarfareControl.Client.Renderer.BasicNodeTileEntityRenderer;
+import ValkyrienWarfareControl.Client.Renderer.ShipHelmTileEntityRenderer;
 import ValkyrienWarfareControl.TileEntity.ThrustRelayTileEntity;
+import ValkyrienWarfareControl.TileEntity.TileEntityShipHelm;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderItem;
@@ -65,6 +67,7 @@ public class ClientProxyControl extends CommonProxyControl {
 		registerBlockItem(ValkyrienWarfareControlMod.instance.pilotsChair);
 		registerBlockItem(ValkyrienWarfareControlMod.instance.passengerChair);
 		registerBlockItem(ValkyrienWarfareControlMod.instance.shipHelm);
+		registerBlockItem(ValkyrienWarfareControlMod.instance.shipWheel);
 
 		registerBlockItem(ValkyrienWarfareControlMod.instance.dopedEtherium);
 		registerBlockItem(ValkyrienWarfareControlMod.instance.balloonBurner);
@@ -81,5 +84,6 @@ public class ClientProxyControl extends CommonProxyControl {
 
 	private static void registerTileEntityRenderers(){
 		ClientRegistry.bindTileEntitySpecialRenderer(ThrustRelayTileEntity.class, new BasicNodeTileEntityRenderer(ThrustRelayTileEntity.class));
+		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityShipHelm.class, new ShipHelmTileEntityRenderer(TileEntityShipHelm.class));
 	}
 }

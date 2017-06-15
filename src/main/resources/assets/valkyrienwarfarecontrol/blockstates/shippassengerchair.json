@@ -6,6 +6,7 @@
         "facing=north": { "model": "valkyrienwarfarecontrol:shippassengerchair.obj" , "custom": { "flip-v": true }, "y": 90 },
         "facing=south": { "model": "valkyrienwarfarecontrol:shippassengerchair.obj" , "custom": { "flip-v": true }, "y": 270 },
         "facing=west": { "model": "valkyrienwarfarecontrol:shippassengerchair.obj" , "custom": { "flip-v": true } },
-        "facing=east": { "model": "valkyrienwarfarecontrol:shippassengerchair.obj" , "custom": { "flip-v": true }, "y": 180 }
+        "facing=east": { "model": "valkyrienwarfarecontrol:shippassengerchair.obj" , "custom": { "flip-v": true }, "y": 180 },
+        "inventory": { "model": "valkyrienwarfarecontrol:shippassengerchair.obj" , "custom": { "flip-v": true } }
     }
 }

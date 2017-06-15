@@ -50,7 +50,7 @@ public class EntityCannonBasicRender extends Render<EntityCannonBasic> {
 			GlStateManager.enableOutlineMode(this.getTeamColor(entity));
 		}
 
-		vertexbuffer.setTranslation((float) (0 - entity.posX), (float) (0 - entity.posY), (float) (0 - entity.posZ));
+		vertexbuffer.setTranslation(0, 0, 0);
 
 		GL11.glTranslated(x, y, z);
 

@@ -6,6 +6,7 @@ import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareControl.Block.BlockBalloonBurner;
 import ValkyrienWarfareControl.Block.BlockDopedEtherium;
 import ValkyrienWarfareControl.Block.BlockHovercraftController;
+import ValkyrienWarfareControl.Block.BlockShipHelm;
 import ValkyrienWarfareControl.Block.BlockShipPassengerChair;
 import ValkyrienWarfareControl.Block.BlockShipPilotsChair;
 import ValkyrienWarfareControl.Block.BlockThrustModulator;
@@ -88,6 +89,7 @@ public class ValkyrienWarfareControlMod {
 	public Block balloonBurner;
 	public Block pilotsChair;
 	public Block passengerChair;
+	public Block shipHelm;
 
 	public Block antigravityEngine; //leaving it with the old name to prevent blocks dissapearing
 	public Block advancedEtherCompressor;
@@ -166,6 +168,7 @@ public class ValkyrienWarfareControlMod {
 		balloonBurner = new BlockBalloonBurner(Material.IRON).setHardness(4f).setUnlocalizedName("balloonburner").setRegistryName(MODID, "balloonburner").setCreativeTab(CreativeTabs.TRANSPORTATION);
 		pilotsChair = new BlockShipPilotsChair(Material.IRON).setHardness(4f).setUnlocalizedName("shippilotschair").setRegistryName(MODID, "shippilotschair").setCreativeTab(CreativeTabs.TRANSPORTATION);
 		passengerChair = new BlockShipPassengerChair(Material.IRON).setHardness(4f).setUnlocalizedName("shippassengerchair").setRegistryName(MODID, "shippassengerchair").setCreativeTab(CreativeTabs.TRANSPORTATION);
+		shipHelm = new BlockShipHelm(Material.WOOD).setHardness(4f).setUnlocalizedName("shiphelm").setRegistryName(MODID, "shiphelm").setCreativeTab(CreativeTabs.TRANSPORTATION);
 
 		thrustRelay = new BlockThrustRelay(Material.IRON).setHardness(5f).setUnlocalizedName("thrustrelay").setRegistryName(MODID, "thrustrelay").setCreativeTab(CreativeTabs.TRANSPORTATION);
 		thrustModulator = new BlockThrustModulator(Material.IRON).setHardness(8f).setUnlocalizedName("thrustmodulator").setRegistryName(MODID, "thrustmodulator").setCreativeTab(CreativeTabs.TRANSPORTATION);
@@ -187,6 +190,7 @@ public class ValkyrienWarfareControlMod {
 		registerBlock(balloonBurner);
 		registerBlock(pilotsChair);
 		registerBlock(passengerChair);
+		registerBlock(shipHelm);
 
 		registerBlock(thrustRelay);
 		registerBlock(thrustModulator);

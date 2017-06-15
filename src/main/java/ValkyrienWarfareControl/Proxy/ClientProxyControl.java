@@ -64,6 +64,7 @@ public class ClientProxyControl extends CommonProxyControl {
 
 		registerBlockItem(ValkyrienWarfareControlMod.instance.pilotsChair);
 		registerBlockItem(ValkyrienWarfareControlMod.instance.passengerChair);
+		registerBlockItem(ValkyrienWarfareControlMod.instance.shipHelm);
 
 		registerBlockItem(ValkyrienWarfareControlMod.instance.dopedEtherium);
 		registerBlockItem(ValkyrienWarfareControlMod.instance.balloonBurner);

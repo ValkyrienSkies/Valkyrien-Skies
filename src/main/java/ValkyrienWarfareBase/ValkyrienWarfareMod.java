@@ -101,7 +101,6 @@ public class ValkyrienWarfareMod {
 	public static int maxAirships = -1;
 	public static boolean highAccuracyCollisions = false;
 	public static boolean accurateRain = false;
-	public static boolean doModelLighting = true;
 
 	public static boolean runAirshipPermissions = false;
 
@@ -222,8 +221,6 @@ public class ValkyrienWarfareMod {
 		accurateRain = config.get(Configuration.CATEGORY_GENERAL, "Enable accurate rain on ships", false, "Debug feature, takes a lot of processing power").getBoolean();
 
 		shipsSpawnParticles = config.get(Configuration.CATEGORY_GENERAL, "Enable particle spawns on Ships", true, "Ex. Torch Particles").getBoolean();
-
-		doModelLighting = config.get(Configuration.CATEGORY_GENERAL, "Process lighting on VW models", true, "Disabling this will make for much faster rendering, but will also disable lighting on VW models :P").getBoolean();
 
 		runAirshipPermissions = config.get(Configuration.CATEGORY_GENERAL, "Enable airship permissions", false, "Enables the airship permissions system").getBoolean();
 

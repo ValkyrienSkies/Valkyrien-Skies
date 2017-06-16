@@ -53,6 +53,7 @@ public class ShipHelmTileEntityRenderer extends TileEntitySpecialRenderer<TileEn
 		    if(smoothCompassDif > 180){
 		    	smoothCompassDif -= 360;
 		    }
+
 		    double smoothWheelDif = (tileentity.wheelRotation - tileentity.lastWheelRotation);
 		    if(smoothWheelDif < -180){
 		    	smoothWheelDif += 360;
@@ -70,6 +71,7 @@ public class ShipHelmTileEntityRenderer extends TileEntitySpecialRenderer<TileEn
 			IBlockState wheelState = ValkyrienWarfareControlMod.instance.shipWheel.getStateFromMeta(0);
 			IBlockState compassState = ValkyrienWarfareControlMod.instance.shipWheel.getStateFromMeta(1);
 			IBlockState glassState = ValkyrienWarfareControlMod.instance.shipWheel.getStateFromMeta(2);
+			IBlockState helmStateToRender = ValkyrienWarfareControlMod.instance.shipWheel.getStateFromMeta(3);
 			//TODO: Better rendering cache
 			int brightness = CallRunnerClient.onGetCombinedLight(tileentity.getWorld(), tileentity.getPos(), 0);
 
@@ -79,11 +81,13 @@ public class ShipHelmTileEntityRenderer extends TileEntitySpecialRenderer<TileEn
 			EnumFacing enumfacing = (EnumFacing)helmState.getValue(BlockShipHelm.FACING);
 			double wheelAndCompassStateRotation = enumfacing.getHorizontalAngle();
 
-			FastBlockModelRenderer.renderBlockModel(vertexbuffer, tessellator, tileentity.getWorld(), helmState, brightness);
 
 			GL11.glTranslated(0.5D, 0, 0.5D);
 			GL11.glRotated(wheelAndCompassStateRotation, 0, 1, 0);
 			GL11.glTranslated(-0.5D, 0, -0.5D);
+
+			FastBlockModelRenderer.renderBlockModel(vertexbuffer, tessellator, tileentity.getWorld(), helmStateToRender, brightness);
+
 
 			GL11.glPushMatrix();
 			GL11.glTranslated(.5, .522, 0);
@@ -101,6 +105,7 @@ public class ShipHelmTileEntityRenderer extends TileEntitySpecialRenderer<TileEn
 
 			GlStateManager.enableAlpha();
 		    GlStateManager.enableBlend();
+		    GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 			FastBlockModelRenderer.renderBlockModel(vertexbuffer, tessellator, tileentity.getWorld(), glassState, brightness);
 			GlStateManager.disableAlpha();
 		    GlStateManager.disableBlend();

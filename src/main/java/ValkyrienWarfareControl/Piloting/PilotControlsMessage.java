@@ -17,6 +17,7 @@ public class PilotControlsMessage implements IMessage {
 	public boolean airshipLeft;
 	public boolean airshipRight;
 	public boolean airshipSprinting;
+	public Enum inputType;
 	public UUID shipFor;
 
 	public PilotControlsMessage() {
@@ -32,6 +33,7 @@ public class PilotControlsMessage implements IMessage {
 		airshipLeft = packetBuf.readBoolean();
 		airshipRight = packetBuf.readBoolean();
 		airshipSprinting = packetBuf.readBoolean();
+		inputType = packetBuf.readEnumValue(ControllerInputType.class);
 		shipFor = packetBuf.readUuid();
 	}
 
@@ -45,10 +47,11 @@ public class PilotControlsMessage implements IMessage {
 		packetBuf.writeBoolean(airshipLeft);
 		packetBuf.writeBoolean(airshipRight);
 		packetBuf.writeBoolean(airshipSprinting);
+		packetBuf.writeEnumValue(inputType);
 		packetBuf.writeUuid(shipFor);
 	}
 
-	public void assignKeyBooleans(PhysicsWrapperEntity shipPiloting) {
+	public void assignKeyBooleans(PhysicsWrapperEntity shipPiloting, Enum inputType) {
 		airshipUp = KeyHandler.airshipUp.isKeyDown();
 		airshipDown = KeyHandler.airshipDown.isKeyDown();
 		airshipForward = KeyHandler.airshipForward.isKeyDown();
@@ -57,7 +60,7 @@ public class PilotControlsMessage implements IMessage {
 		airshipRight = KeyHandler.airshipRight.isKeyDown();
 		airshipSprinting = KeyHandler.getIsPlayerSprinting();
 		shipFor = shipPiloting.getUniqueID();
-		
+		this.inputType = inputType;
 	}
 
 }

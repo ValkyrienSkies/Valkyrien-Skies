@@ -1,10 +1,10 @@
 package ValkyrienWarfareBase.Render;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.lwjgl.opengl.GL11;
 
-import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
@@ -18,19 +18,38 @@ import net.minecraft.world.World;
 public class FastBlockModelRenderer {
 
 	public static HashMap<IBlockState, VertexBuffer.State> blockstateToVertexData = new HashMap<IBlockState, VertexBuffer.State>();
-	public static HashMap<IBlockState, Integer> blockstateToGLList = new HashMap<IBlockState, Integer>();
+	public static HashMap<IBlockState, Map<Integer, Integer>> highRamGLList = new HashMap<IBlockState, Map<Integer, Integer>>();
 
-	public static void renderBlockModel(VertexBuffer vertexbuffer, Tessellator tessellator, World world, IBlockState blockstateToRender, int brightness){
-		boolean renderHighQuality = ValkyrienWarfareMod.doModelLighting;
-
-		if(renderHighQuality){
-			renderBlockModelHighQuality(vertexbuffer, tessellator, world, blockstateToRender, brightness);
-		}else{
-			renderBlockModelLowQuality(vertexbuffer, tessellator, world, blockstateToRender, brightness);
-		}
+	public static void renderBlockModel(VertexBuffer vertexbuffer, Tessellator tessellator, World world, IBlockState blockstateToRender, int brightness) {
+		renderBlockModelHighQualityHighRam(vertexbuffer, tessellator, world, blockstateToRender, brightness);
 	}
 
-	private static void renderBlockModelHighQuality(VertexBuffer vertexbuffer, Tessellator tessellator, World world, IBlockState blockstateToRender, int brightness){
+	private static void renderBlockModelHighQualityHighRam(VertexBuffer vertexbuffer, Tessellator tessellator, World world, IBlockState blockstateToRender, int brightness) {
+		Map<Integer, Integer> brightnessToGLListMap = highRamGLList.get(blockstateToRender);
+
+		if(brightnessToGLListMap == null){
+			highRamGLList.put(blockstateToRender, new HashMap<Integer, Integer>());
+			brightnessToGLListMap = highRamGLList.get(blockstateToRender);
+		}
+
+		Integer glListForBrightness = brightnessToGLListMap.get(brightness);
+		if(glListForBrightness == null){
+			GL11.glPushMatrix();
+			int glList = GLAllocation.generateDisplayLists(1);
+			GL11.glNewList(glList, GL11.GL_COMPILE);
+			renderBlockModelHighQuality(vertexbuffer, tessellator, world, blockstateToRender, brightness);
+			GL11.glEndList();
+			GL11.glPopMatrix();
+			glListForBrightness = glList;
+			brightnessToGLListMap.put(brightness, glList);
+		}
+
+		GL11.glPushMatrix();
+		GL11.glCallList(glListForBrightness);
+		GL11.glPopMatrix();
+	}
+
+	private static void renderBlockModelHighQuality(VertexBuffer vertexbuffer, Tessellator tessellator, World world, IBlockState blockstateToRender, int brightness) {
 		VertexBuffer.State vertexData = blockstateToVertexData.get(blockstateToRender);
 
 		double oldX = vertexbuffer.xOffset;
@@ -43,26 +62,12 @@ public class FastBlockModelRenderer {
 			generateRenderDataFor(vertexbuffer, tessellator, world, blockstateToRender);
 			vertexData = blockstateToVertexData.get(blockstateToRender);
 		}
-
 		renderVertexState(vertexData, vertexbuffer, tessellator, brightness);
 
 //		vertexbuffer.setTranslation(oldX, oldY, oldZ);
 	}
 
-	private static void renderBlockModelLowQuality(VertexBuffer vertexbuffer, Tessellator tessellator, World world, IBlockState blockstateToRender, int brightness){
-		Integer glList = blockstateToGLList.get(blockstateToRender);
-
-		if(glList == null){
-			generateRenderDataFor(vertexbuffer, tessellator, world, blockstateToRender);
-			glList = blockstateToGLList.get(blockstateToRender);
-		}
-
-		GL11.glPushMatrix();
-		GL11.glCallList(glList);
-		GL11.glPopMatrix();
-	}
-
-	private static void renderVertexState(VertexBuffer.State data, VertexBuffer vertexbuffer, Tessellator tessellator, int brightness){
+	private static void renderVertexState(VertexBuffer.State data, VertexBuffer vertexbuffer, Tessellator tessellator, int brightness) {
 		GL11.glPushMatrix();
 		vertexbuffer.begin(7, DefaultVertexFormats.BLOCK);
 
@@ -99,21 +104,15 @@ public class FastBlockModelRenderer {
 		GL11.glPopMatrix();
 	}
 
-	private static void generateRenderDataFor(VertexBuffer vertexbuffer, Tessellator tessellator, World world, IBlockState state){
+	private static void generateRenderDataFor(VertexBuffer vertexbuffer, Tessellator tessellator, World world, IBlockState state) {
 		GL11.glPushMatrix();
-		int glList = GLAllocation.generateDisplayLists(1);
-		GL11.glNewList(glList, GL11.GL_COMPILE);
-
 		vertexbuffer.begin(7, DefaultVertexFormats.BLOCK);
-
 		BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
 		blockrendererdispatcher.getBlockModelRenderer().renderModel(world, blockrendererdispatcher.getModelForState(state), state, BlockPos.ORIGIN, vertexbuffer, false, 0);
 		VertexBuffer.State toReturn = vertexbuffer.getVertexState();
 		tessellator.draw();
-		GL11.glEndList();
 		GL11.glPopMatrix();
-
 		blockstateToVertexData.put(state, toReturn);
-		blockstateToGLList.put(state, glList);
 	}
+
 }

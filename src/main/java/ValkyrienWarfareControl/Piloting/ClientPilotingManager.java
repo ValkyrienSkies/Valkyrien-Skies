@@ -8,6 +8,7 @@ import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
 import ValkyrienWarfareControl.ValkyrienWarfareControlMod;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.RayTraceResult.Type;
 import net.minecraft.util.math.Vec3d;
@@ -19,6 +20,9 @@ public class ClientPilotingManager {
 	private static PhysicsWrapperEntity mountedEntity;
 	//Not the same as MountedEntity, allows for controlling Ships other than the one the player is mounted on, or without having to be mounted at all!
 	private static PhysicsWrapperEntity shipPiloting;
+
+	public static ControllerInputType currentControllerInput;
+	public static BlockPos blockBeingControlled;
 
 	public static double getThirdPersonViewDist(double original) {
 		if (getPilotedWrapperEntity() == null) {
@@ -34,15 +38,15 @@ public class ClientPilotingManager {
 	public static PhysicsWrapperEntity getMountedWrapperEntity() {
 		return mountedEntity;
 	}
-	
+
 	public static PhysicsWrapperEntity getPilotedWrapperEntity(){
 		return shipPiloting;
 	}
-	
+
 	public static void setMountedWrapperEntity(PhysicsWrapperEntity toSet){
 		mountedEntity = toSet;
 	}
-	
+
 	public static void setPilotedWrapperEntity(PhysicsWrapperEntity toSet){
 		shipPiloting = toSet;
 	}
@@ -97,9 +101,9 @@ public class ClientPilotingManager {
 		mountedEntity = null;
 	}
 
-	public static void sendPilotKeysToServer() {
+	public static void sendPilotKeysToServer(ControllerInputType type) {
 		PilotControlsMessage keyMessage = new PilotControlsMessage();
-		keyMessage.assignKeyBooleans(shipPiloting);
+		keyMessage.assignKeyBooleans(shipPiloting, type);
 
 		ValkyrienWarfareControlMod.controlNetwork.sendToServer(keyMessage);
 	}

@@ -38,6 +38,7 @@ import ValkyrienWarfareControl.TileEntity.ThrustModulatorTileEntity;
 import ValkyrienWarfareControl.TileEntity.ThrustRelayTileEntity;
 import ValkyrienWarfareControl.TileEntity.TileEntityHoverController;
 import ValkyrienWarfareControl.TileEntity.TileEntityNormalEtherCompressor;
+import ValkyrienWarfareControl.TileEntity.TileEntityShipHelm;
 import ValkyrienWarfareWorld.ValkyrienWarfareWorldMod;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -207,6 +208,7 @@ public class ValkyrienWarfareControlMod {
 		TileEntity.addMapping(PilotsChairTileEntity.class, "tilemanualshipcontroller");
 		TileEntity.addMapping(ThrustRelayTileEntity.class, "tilethrustrelay");
 		TileEntity.addMapping(ThrustModulatorTileEntity.class, "tilethrustmodulator");
+		TileEntity.addMapping(TileEntityShipHelm.class, "tileshiphelm");
 	}
 
 	private void registerItems(FMLStateEvent event) {

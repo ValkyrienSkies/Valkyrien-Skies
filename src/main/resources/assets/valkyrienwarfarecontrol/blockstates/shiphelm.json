@@ -1,12 +1,12 @@
 {
     "forge_marker": 1,
     "variants": {
-        "default": { "model": "valkyrienwarfarecontrol:shiphelm.obj" , "custom": { "flip-v": true } },
-        "normal": { "model": "valkyrienwarfarecontrol:shiphelm.obj" , "custom": { "flip-v": true } },
-        "facing=north": { "model": "valkyrienwarfarecontrol:shiphelm.obj" , "custom": { "flip-v": true }, "y": 0 },
-        "facing=south": { "model": "valkyrienwarfarecontrol:shiphelm.obj" , "custom": { "flip-v": true }, "y": 180 },
-        "facing=west": { "model": "valkyrienwarfarecontrol:shiphelm.obj" , "custom": { "flip-v": true }, "y": 270 },
-        "facing=east": { "model": "valkyrienwarfarecontrol:shiphelm.obj" , "custom": { "flip-v": true }, "y": 90 },
+        "default": { "model": "minecraft:flower_pot_rose" },
+        "normal": { "model": "minecraft:flower_pot_rose" },
+        "facing=north": { "model": "minecraft:flower_pot_rose" },
+        "facing=south": { "model": "minecraft:flower_pot_rose" },
+        "facing=west": { "model": "minecraft:flower_pot_rose" },
+        "facing=east": { "model": "minecraft:flower_pot_rose" },
         "inventory": { "model": "valkyrienwarfarecontrol:shiphelm.obj" , "custom": { "flip-v": true } }
     }
 }

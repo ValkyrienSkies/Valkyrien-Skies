@@ -53,7 +53,6 @@ public class TileEntityShipHelm extends TileEntity implements ITickable {
 
 		compassDirection.normalize();
 		compassAngle = Math.toDegrees(Math.atan2(compassDirection.X, compassDirection.Z)) - wheelAndCompassStateRotation;
-
 		compassAngle = (compassAngle + 360D)%360D;
 	}
 }

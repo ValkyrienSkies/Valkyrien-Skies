@@ -29,7 +29,7 @@ minecraft {
     runDir = "run"
     mappings = project.mcpVersion
     coreMod = "ValkyrienWarfareBase.Mixin.MixinLoaderForge"
-    makeObfSourceJar = false
+	// makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 }
 
 repositories {

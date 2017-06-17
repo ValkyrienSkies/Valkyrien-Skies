@@ -6,8 +6,10 @@ import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareControl.Block.BlockBalloonBurner;
 import ValkyrienWarfareControl.Block.BlockDopedEtherium;
 import ValkyrienWarfareControl.Block.BlockHovercraftController;
+import ValkyrienWarfareControl.Block.BlockShipHelm;
 import ValkyrienWarfareControl.Block.BlockShipPassengerChair;
 import ValkyrienWarfareControl.Block.BlockShipPilotsChair;
+import ValkyrienWarfareControl.Block.BlockShipWheel;
 import ValkyrienWarfareControl.Block.BlockThrustModulator;
 import ValkyrienWarfareControl.Block.BlockThrustRelay;
 import ValkyrienWarfareControl.Block.Engine.BlockNormalEngine;
@@ -36,6 +38,7 @@ import ValkyrienWarfareControl.TileEntity.ThrustModulatorTileEntity;
 import ValkyrienWarfareControl.TileEntity.ThrustRelayTileEntity;
 import ValkyrienWarfareControl.TileEntity.TileEntityHoverController;
 import ValkyrienWarfareControl.TileEntity.TileEntityNormalEtherCompressor;
+import ValkyrienWarfareControl.TileEntity.TileEntityShipHelm;
 import ValkyrienWarfareWorld.ValkyrienWarfareWorldMod;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -87,6 +90,8 @@ public class ValkyrienWarfareControlMod {
 	public Block balloonBurner;
 	public Block pilotsChair;
 	public Block passengerChair;
+	public Block shipHelm;
+	public Block shipWheel;
 
 	public Block antigravityEngine; //leaving it with the old name to prevent blocks dissapearing
 	public Block advancedEtherCompressor;
@@ -166,6 +171,8 @@ public class ValkyrienWarfareControlMod {
 		pilotsChair = new BlockShipPilotsChair(Material.IRON).setHardness(4f).setUnlocalizedName("shippilotschair").setRegistryName(MODID, "shippilotschair").setCreativeTab(CreativeTabs.TRANSPORTATION);
 
 		passengerChair = new BlockShipPassengerChair(Material.IRON).setHardness(4f).setUnlocalizedName("shippassengerchair").setRegistryName(MODID, "shippassengerchair").setCreativeTab(CreativeTabs.TRANSPORTATION);
+		shipHelm = new BlockShipHelm(Material.WOOD).setHardness(4f).setUnlocalizedName("shiphelm").setRegistryName(MODID, "shiphelm").setCreativeTab(CreativeTabs.TRANSPORTATION);
+		shipWheel = new BlockShipWheel(Material.WOOD).setHardness(5f).setUnlocalizedName("shiphelmwheel").setRegistryName(MODID, "shiphelmwheel").setCreativeTab(CreativeTabs.TRANSPORTATION);
 
 		thrustRelay = new BlockThrustRelay(Material.IRON).setHardness(5f).setUnlocalizedName("thrustrelay").setRegistryName(MODID, "thrustrelay").setCreativeTab(CreativeTabs.TRANSPORTATION);
 		thrustModulator = new BlockThrustModulator(Material.IRON).setHardness(8f).setUnlocalizedName("thrustmodulator").setRegistryName(MODID, "thrustmodulator").setCreativeTab(CreativeTabs.TRANSPORTATION);
@@ -187,6 +194,8 @@ public class ValkyrienWarfareControlMod {
 		registerBlock(balloonBurner);
 		registerBlock(pilotsChair);
 		registerBlock(passengerChair);
+		registerBlock(shipHelm);
+		registerBlock(shipWheel);
 
 		registerBlock(thrustRelay);
 		registerBlock(thrustModulator);
@@ -199,6 +208,7 @@ public class ValkyrienWarfareControlMod {
 		GameRegistry.registerTileEntity(PilotsChairTileEntity.class, "tilemanualshipcontroller");
 		GameRegistry.registerTileEntity(ThrustRelayTileEntity.class, "tilethrustrelay");
 		GameRegistry.registerTileEntity(ThrustModulatorTileEntity.class, "tilethrustmodulator");
+		GameRegistry.registerTileEntity(TileEntityShipHelm.class, "tileshiphelm");
 	}
 	private void registerItems(FMLStateEvent event) {
 		systemLinker = new ItemSystemLinker().setUnlocalizedName("systemlinker").setRegistryName(MODID, "systemlinker").setCreativeTab(CreativeTabs.TRANSPORTATION).setMaxStackSize(1);

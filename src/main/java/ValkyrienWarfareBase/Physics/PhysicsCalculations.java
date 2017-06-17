@@ -299,7 +299,7 @@ public class PhysicsCalculations {
 			addForceAtPoint(new Vector(0, 0, 0), ValkyrienWarfareMod.gravity.getProduct(mass * physTickSpeed));
 		}
 		addQueuedForces();
-//		Collections.shuffle(activeForcePositions);
+		Collections.shuffle(activeForcePositions);
 
 		Vector blockForce = new Vector();
 		Vector inBodyWO = new Vector();

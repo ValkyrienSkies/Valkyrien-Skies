@@ -5,7 +5,6 @@ import org.lwjgl.opengl.GL11;
 import ValkyrienWarfareControl.NodeNetwork.BasicNodeTileEntity;
 import ValkyrienWarfareControl.NodeNetwork.Node;
 import net.minecraft.client.model.ModelLeashKnot;
-import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
@@ -29,7 +28,7 @@ public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer {
 
 				GL11.glPushMatrix();
 
-				GlStateManager.resetColor();;
+				GlStateManager.resetColor();
 
 			    GlStateManager.enableAlpha();
 			    bindTexture(new ResourceLocation("textures/entity/lead_knot.png"));

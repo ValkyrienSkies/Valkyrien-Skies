@@ -118,4 +118,17 @@ jar {
         )
     }
 }
+
 sourceCompatibility = targetCompatibility = "1.8"
+
+task signJar(type: SignJar, dependsOn: Exec) {
+    keyStore = project.keyStore // This needs to be a path to the keystore file
+    alias = project.keyStoreAlias
+    storePass = project.keyStorePass
+    keyPass = project.keyStoreKeyPass
+    inputFile = jar.archivePath
+    outputFile = jar.archivePath
+
+}
+
+build.dependsOn(signJar)

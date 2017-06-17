@@ -4,6 +4,7 @@ import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Fixes.SoundFixWrapper;
 import ValkyrienWarfareBase.Interaction.EntityDraggable;
+import ValkyrienWarfareBase.Interaction.IDraggable;
 import ValkyrienWarfareBase.Network.PlayerShipRefrenceMessage;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
@@ -33,7 +34,7 @@ public class EventsClient {
 	public void onPlaySoundEvent(PlaySoundEvent event) {
 		ISound sound = event.getSound();
 		BlockPos pos = new BlockPos(sound.getXPosF(), sound.getYPosF(), sound.getZPosF());
-		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(Minecraft.getMinecraft().theWorld, pos);
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(Minecraft.getMinecraft().world, pos);
 
 		if(wrapper != null){
 			Vector newSoundLocation = new Vector(sound.getXPosF(), sound.getYPosF(), sound.getZPosF());
@@ -47,22 +48,22 @@ public class EventsClient {
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onClientTickEvent(ClientTickEvent event) {
-		if (mc.theWorld != null) {
+		if (mc.world != null) {
 			if (!mc.isGamePaused()) {
-				WorldPhysObjectManager manager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(mc.theWorld);
+				WorldPhysObjectManager manager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(mc.world);
 				if (event.phase == Phase.END) {
 					for (PhysicsWrapperEntity wrapper : manager.physicsEntities) {
 						wrapper.wrapping.onPostTickClient();
 					}
-					EntityDraggable.tickAddedVelocityForWorld(mc.theWorld);
+					EntityDraggable.tickAddedVelocityForWorld(mc.world);
 				}
 			}
 			if(event.phase == Phase.END){
-				Object o = Minecraft.getMinecraft().thePlayer;
-				EntityDraggable draggable = (EntityDraggable) o;
+				Object o = Minecraft.getMinecraft().player;
+				IDraggable draggable = (IDraggable) o;
 
-				if(draggable.worldBelowFeet != null){
-					PlayerShipRefrenceMessage playerPosMessage = new PlayerShipRefrenceMessage(Minecraft.getMinecraft().thePlayer, draggable.worldBelowFeet);
+				if(draggable.getWorldBelowFeet() != null){
+					PlayerShipRefrenceMessage playerPosMessage = new PlayerShipRefrenceMessage(Minecraft.getMinecraft().player, draggable.getWorldBelowFeet());
 
 					ValkyrienWarfareMod.physWrapperNetwork.sendToServer(playerPosMessage);
 				}
@@ -88,7 +89,7 @@ public class EventsClient {
 
 	@SubscribeEvent
 	public void onRenderTickEvent(RenderTickEvent event) {
-		if (mc.thePlayer != null && mc.playerController != null) {
+		if (mc.player != null && mc.playerController != null) {
 			// if(!(mc.playerController instanceof CustomPlayerControllerMP)){
 			// PlayerControllerMP oldController = mc.playerController;
 			// mc.playerController = new CustomPlayerControllerMP(mc, mc.getConnection());
@@ -101,11 +102,11 @@ public class EventsClient {
 	public void onDrawBlockHighlightEventFirst(DrawBlockHighlightEvent event) {
 		BlockPos pos = Minecraft.getMinecraft().objectMouseOver.getBlockPos();
 		if(pos != null){
-			PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(Minecraft.getMinecraft().theWorld, pos);
+			PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(Minecraft.getMinecraft().world, pos);
 			if(wrapper != null && wrapper.wrapping != null && wrapper.wrapping.renderer != null && wrapper.wrapping.centerCoord != null){
 //				GL11.glPushMatrix();
 				float partialTicks = event.getPartialTicks();
-				Entity player = Minecraft.getMinecraft().thePlayer;
+				Entity player = Minecraft.getMinecraft().player;
 				wrapper.wrapping.renderer.setupTranslation(partialTicks);
 
 				Tessellator tessellator = Tessellator.getInstance();
@@ -126,10 +127,10 @@ public class EventsClient {
 	public void onDrawBlockHighlightEventLast(DrawBlockHighlightEvent event) {
 		BlockPos pos = Minecraft.getMinecraft().objectMouseOver.getBlockPos();
 		if(pos != null){
-			PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(Minecraft.getMinecraft().theWorld, pos);
+			PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(Minecraft.getMinecraft().world, pos);
 			if(wrapper != null && wrapper.wrapping != null && wrapper.wrapping.renderer != null && wrapper.wrapping.centerCoord != null){
 				float partialTicks = event.getPartialTicks();
-				Entity player = Minecraft.getMinecraft().thePlayer;
+				Entity player = Minecraft.getMinecraft().player;
 				wrapper.wrapping.renderer.inverseTransform(partialTicks);
 
 				Tessellator tessellator = Tessellator.getInstance();

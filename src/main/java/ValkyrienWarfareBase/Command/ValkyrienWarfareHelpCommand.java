@@ -19,26 +19,26 @@ public class ValkyrienWarfareHelpCommand extends CommandBase {
 	}
 
 	@Override
-	public String getCommandName() {
+	public String getName() {
 		// TODO Auto-generated method stub
 		return "/VW";
 	}
 
 	@Override
-	public String getCommandUsage(ICommandSender sender) {
+	public String getUsage(ICommandSender sender) {
 		// TODO Auto-generated method stub
 		return "/VW       See entire list of commands for Valkyrien Warfare";
 	}
 
 	@Override
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-		sender.addChatMessage(new TextComponentString("All ValkyrienWarfare Commands"));
+		sender.sendMessage(new TextComponentString("All ValkyrienWarfare Commands"));
 
 		for(String command : commands){
-			sender.addChatMessage(new TextComponentString(command));
+			sender.sendMessage(new TextComponentString(command));
 		}
 
-		sender.addChatMessage(new TextComponentString("To see avaliable subcommands, type /Command help"));
+		sender.sendMessage(new TextComponentString("To see avaliable subcommands, type /Command help"));
 	}
 
 }

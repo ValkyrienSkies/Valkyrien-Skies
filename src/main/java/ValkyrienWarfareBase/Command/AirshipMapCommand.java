@@ -15,12 +15,12 @@ import net.minecraft.world.World;
 public class AirshipMapCommand extends CommandBase {
 
 	@Override
-	public String getCommandName() {
+	public String getName() {
 		return "airshipMappings";
 	}
 
 	@Override
-	public String getCommandUsage(ICommandSender sender) {
+	public String getUsage(ICommandSender sender) {
 		return "/airshipMappings tpto <Ship Name>";
 	}
 
@@ -36,7 +36,7 @@ public class AirshipMapCommand extends CommandBase {
 				}
 			}
 			Entity player = sender.getCommandSenderEntity();
-			World world = player.worldObj;
+			World world = player.world;
 
 			ShipNameUUIDData data = ShipNameUUIDData.get(world);
 
@@ -62,7 +62,7 @@ public class AirshipMapCommand extends CommandBase {
 		}
 
 		if (term.equals("help")){
-			sender.addChatMessage(new TextComponentString("tpto"));
+			sender.sendMessage(new TextComponentString("tpto"));
 		}
 	}
 

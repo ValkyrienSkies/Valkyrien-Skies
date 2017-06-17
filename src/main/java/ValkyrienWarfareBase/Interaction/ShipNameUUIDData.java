@@ -16,13 +16,13 @@ import net.minecraft.world.storage.MapStorage;
 public class ShipNameUUIDData extends WorldSavedData{
 
 	private static final String key = "ShipNameUUIDData";
-	
+
 	public HashMap<String, Long> ShipNameToLongMap = new HashMap<String, Long>();
-	
+
 	public ShipNameUUIDData(String name) {
 		super(name);
 	}
-	
+
 	public ShipNameUUIDData(){
 		this(key);
 	}
@@ -36,7 +36,7 @@ public class ShipNameUUIDData extends WorldSavedData{
 		ShipNameToLongMap.put(defaultName, wrapper.getPersistentID().getMostSignificantBits());
 		markDirty();
 	}
-	
+
 	/**
 	 * Returns true if successfully renamed the ship, false if there was a duplicate
 	 * @param wrapper
@@ -51,11 +51,11 @@ public class ShipNameUUIDData extends WorldSavedData{
 
 		ShipNameToLongMap.put(newName, wrapper.getPersistentID().getMostSignificantBits());
 		ShipNameToLongMap.remove(oldName);
-		
+
 		markDirty();
 		return true;
 	}
-	
+
 	public void removeShipFromRegistry(PhysicsWrapperEntity wrapper){
 		String customName = wrapper.getCustomNameTag();
 		ShipNameToLongMap.remove(customName);
@@ -67,7 +67,7 @@ public class ShipNameUUIDData extends WorldSavedData{
 		ShipNameUUIDData data = (ShipNameUUIDData) storage.getOrLoadData(ShipNameUUIDData.class, key);
 		if (data == null) {
 			data = new ShipNameUUIDData();
-			world.setItemData(key, data);
+			world.setData(key, data);
 		}
 		return data;
 	}
@@ -110,5 +110,5 @@ public class ShipNameUUIDData extends WorldSavedData{
 		NBTUtils.setByteBuf("NameToUUIDMap", buffer, compound);
 		return compound;
 	}
-	
+
 }

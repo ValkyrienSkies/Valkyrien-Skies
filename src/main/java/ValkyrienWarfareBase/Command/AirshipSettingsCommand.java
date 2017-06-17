@@ -1,16 +1,9 @@
 package ValkyrienWarfareBase.Command;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.annotation.Nullable;
-
-import com.google.common.collect.Lists;
-
-import ValkyrienWarfareBase.ValkyrienWarfareMod;
-import ValkyrienWarfareBase.CoreMod.CallRunner;
+import ValkyrienWarfareBase.Mixin.world.MixinWorld;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
+import com.google.common.collect.Lists;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -21,6 +14,11 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class AirshipSettingsCommand extends CommandBase {
 
@@ -33,24 +31,24 @@ public static final ArrayList<String> completionOptions = new ArrayList<String>(
 	}
 
 	@Override
-	public String getCommandName() {
+	public String getName() {
 		return "airshipSettings";
 	}
 
 	@Override
-	public String getCommandUsage(ICommandSender sender) {
+	public String getUsage(ICommandSender sender) {
 		return "/airshipSettings <setting name> [value]" + "\n" + "Avaliable Settings: [transfer, allowPlayer, claim]";
 	}
 
 	@Override
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		if (!(sender instanceof EntityPlayer)) {
-			sender.addChatMessage(new TextComponentString("You need to be a player to do that!"));
+			sender.sendMessage(new TextComponentString("You need to be a player to do that!"));
 			return;
 		}
 
 		if (args.length == 0) {
-			sender.addChatMessage(new TextComponentString(TextFormatting.RED + "Usage: " + getCommandUsage(sender)));
+			sender.sendMessage(new TextComponentString(TextFormatting.RED + "Usage: " + getUsage(sender)));
 			return;
 		}
 
@@ -63,7 +61,7 @@ public static final ArrayList<String> completionOptions = new ArrayList<String>(
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(p.getEntityWorld(), pos);
 
 		if (wrapper == null) {
-			sender.addChatMessage(new TextComponentString("You need to be looking at an airship to do that!"));
+			sender.sendMessage(new TextComponentString("You need to be looking at an airship to do that!"));
 			return;
 		}
 		if (p.entityUniqueID.toString().equals(wrapper.wrapping.creator)) {
@@ -74,21 +72,21 @@ public static final ArrayList<String> completionOptions = new ArrayList<String>(
 				if (!args[1].isEmpty()) {
 					EntityPlayer target = server.getPlayerList().getPlayerByUsername(args[1]);
 					if (target == null) {
-						p.addChatMessage(new TextComponentString("That player is not online!"));
+						p.sendMessage(new TextComponentString("That player is not online!"));
 						return;
 					}
 					switch (wrapper.wrapping.changeOwner(target)) {
 					case ERROR_IMPOSSIBLE_STATUS:
-						p.addChatMessage(new TextComponentString("An error occured, please report to mod devs"));
+						p.sendMessage(new TextComponentString("An error occured, please report to mod devs"));
 						break;
 					case ERROR_NEWOWNER_NOT_ENOUGH:
-						p.addChatMessage(new TextComponentString("That player doesn't have enough free airship slots!"));
+						p.sendMessage(new TextComponentString("That player doesn't have enough free airship slots!"));
 						break;
 					case SUCCESS:
-						p.addChatMessage(new TextComponentString("Success! " + target.getName() + " is the new owner of this airship!"));
+						p.sendMessage(new TextComponentString("Success! " + target.getName() + " is the new owner of this airship!"));
 						break;
 					case ALREADY_CLAIMED:
-						p.addChatMessage(new TextComponentString("Airship already claimed"));
+						p.sendMessage(new TextComponentString("Airship already claimed"));
 						break;
 					}
 					return;
@@ -100,21 +98,21 @@ public static final ArrayList<String> completionOptions = new ArrayList<String>(
 					while (iter.hasNext()) {
 						result.append(iter.next() + (iter.hasNext() ? ", " : ">"));
 					}
-					p.addChatMessage(new TextComponentString(result.toString()));
+					p.sendMessage(new TextComponentString(result.toString()));
 					return;
 				}
 				if (!args[1].isEmpty()) {
 					EntityPlayer target = server.getPlayerList().getPlayerByUsername(args[1]);
 					if (target == null) {
-						p.addChatMessage(new TextComponentString("That player is not online!"));
+						p.sendMessage(new TextComponentString("That player is not online!"));
 						return;
 					}
 					if (target.entityUniqueID.toString().equals(wrapper.wrapping.creator)) {
-						p.addChatMessage(new TextComponentString("You can't add yourself to your own airship!"));
+						p.sendMessage(new TextComponentString("You can't add yourself to your own airship!"));
 						return;
 					}
 					wrapper.wrapping.allowedUsers.add(target.entityUniqueID.toString());
-					p.addChatMessage(new TextComponentString("Success! " + target.getName() + " can now interact with this airship!"));
+					p.sendMessage(new TextComponentString("Success! " + target.getName() + " can now interact with this airship!"));
 					return;
 				}
 			}
@@ -122,23 +120,23 @@ public static final ArrayList<String> completionOptions = new ArrayList<String>(
 			if (wrapper.wrapping.creator == null || wrapper.wrapping.creator.trim().isEmpty())	{
 				if (args.length == 1 && args[0].equals("claim"))	{
 					wrapper.wrapping.creator = p.entityUniqueID.toString();
-					p.addChatMessage(new TextComponentString("You've successfully claimed an airship!"));
+					p.sendMessage(new TextComponentString("You've successfully claimed an airship!"));
 					return;
 				}
 			}
-			p.addChatMessage(new TextComponentString("You need to be the owner of an airship to change airship settings!"));
+			p.sendMessage(new TextComponentString("You need to be the owner of an airship to change airship settings!"));
 		}
 		if (args[0].equals("help")){
 			for(String command : completionOptions){
-				sender.addChatMessage(new TextComponentString(command));
+				sender.sendMessage(new TextComponentString(command));
 			}
 		}
 
-		sender.addChatMessage(new TextComponentString(TextFormatting.RED + "Usage: " + getCommandUsage(sender)));
+		sender.sendMessage(new TextComponentString(TextFormatting.RED + "Usage: " + getUsage(sender)));
 	}
 
 	@Override
-	public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos) {
+	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos) {
 		if (args.length == 1)	{
 			ArrayList<String> possibleArgs = (ArrayList<String>) completionOptions.clone();
 
@@ -169,6 +167,6 @@ public static final ArrayList<String> completionOptions = new ArrayList<String>(
 		Vec3d vec3d = new Vec3d(player.posX, player.posY + (double)player.getEyeHeight(), player.posZ);
 		Vec3d vec3d1 = player.getLook(partialTicks);
 		Vec3d vec3d2 = vec3d.addVector(vec3d1.xCoord * blockReachDistance, vec3d1.yCoord * blockReachDistance, vec3d1.zCoord * blockReachDistance);
-		return CallRunner.onRayTraceBlocks(player.worldObj, vec3d, vec3d2, false, false, true);
+		return player.world.rayTraceBlocks(vec3d, vec3d2, false, false, true);
 	}
 }

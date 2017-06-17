@@ -5,7 +5,6 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
-import ValkyrienWarfareBase.CoreMod.CallRunner;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFalling;
 import net.minecraft.block.material.Material;
@@ -37,7 +36,7 @@ public class BlockEtheriumOre extends Block {
 	}
 
 	@Override
-	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn) {
+	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)	{
 		worldIn.scheduleUpdate(pos, this, this.tickRate(worldIn));
 	}
 
@@ -61,7 +60,7 @@ public class BlockEtheriumOre extends Block {
 				if (!worldIn.isRemote) {
 					// Start falling up
 					EntityFallingUpBlock entityfallingblock = new EntityFallingUpBlock(worldIn, (double) pos.getX() + 0.5D, (double) pos.getY(), (double) pos.getZ() + 0.5D, worldIn.getBlockState(pos));
-					worldIn.spawnEntityInWorld(entityfallingblock);
+					worldIn.spawnEntity(entityfallingblock);
 				}
 			} else {
 				IBlockState state = worldIn.getBlockState(pos);

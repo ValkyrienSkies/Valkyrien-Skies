@@ -29,17 +29,18 @@ public class ItemRelayWire extends Item {
 		this.setMaxDamage(80);
 	}
 
-	@Override
 	public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par4) {
 		itemInformation.add(TextFormatting.ITALIC + "" + TextFormatting.RED + TextFormatting.ITALIC + "Unfinished until v_0.91_alpha");
 	}
 
 	@Override
-	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+	public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		IBlockState clickedState = worldIn.getBlockState(pos);
 		Block block = clickedState.getBlock();
 
 		TileEntity currentTile = worldIn.getTileEntity(pos);
+
+		ItemStack stack = player.getHeldItem(hand);
 
 		if(currentTile instanceof INodeProvider && !worldIn.isRemote){
 			ICapabilityLastRelay inst = stack.getCapability(ValkyrienWarfareControlMod.lastRelayCapability, null);
@@ -70,9 +71,9 @@ public class ItemRelayWire extends Item {
 							}
 
 //							System.out.println("Success");
-							stack.damageItem(1, playerIn);
+							stack.damageItem(1, player);
 						}else{
-							playerIn.addChatComponentMessage(new TextComponentString("Nodes are too far away, try better wire"));
+							player.sendMessage(new TextComponentString("Nodes are too far away, try better wire"));
 							inst.setLastRelay(null);
 						}
 					}else{

@@ -20,13 +20,16 @@ resourcepacks
 *.ipr
 *.iws
 .idea
+.mixin.out
 out
 
 #gradle
 build
 .gradle
-.mixin.out
 modules
+
+#Mixins
+.mixin.out
 
 #runtime
 run
@@ -86,11 +89,8 @@ world/DIM-1/data/capabilities.dat
 world/DIM1/data/capabilities.dat
 world/playerdata/d96b4aa9-1f82-361b-aa8c-47e20e8b716a.dat
 world/stats/d96b4aa9-1f82-361b-aa8c-47e20e8b716a.json
-hs_err_pid12268.log
 mods/industrialcraft-2-2.6.69-ex110-dev.jar
-<<<<<<< HEAD
 valkyrienwarfarecontrol.cfg
-=======
 
 # Other Stuff
 Thumbs.db
@@ -102,7 +102,8 @@ libs
 /run/
 /classes/
 out/
->>>>>>> refs/remotes/origin/master
+compile/
+
 valkyrienwarfaresettings.dat
 mods/OpenComputers-MC1.10.2-1.6.2.81-dev.jar
 OpenComputersMod-1.6.2.81-dev-lua53-native.64.dll
@@ -111,6 +112,8 @@ mods/chiselsandbits-deobf-12.0.jar
 mods/ChickenChunks-1.10.2-2.2.0.53-deobf.jar
 mods/CodeChickenCore-1.10.2-2.4.0.101-deobf.jar
 mods/CodeChickenLib-1.10.2-2.5.6.239-deobf.jar
+realms_persistence.json
+mods/buildcraft-7.99.0-dev.jar
 mods/spongeforge-1.10.2-2254-5.2.0-BETA-2272-dev-shaded.jar
 mods/spongeforge-1.10.2-2281-5.2.0-BETA-2353-dev-shaded.jar
 mods/spongeforge-1.10.2-2281-5.2.0-BETA-2353-dev-shaded.jar.disabled

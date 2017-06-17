@@ -70,7 +70,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 		if (isDead) {
 			return;
 		}
-		if(worldObj.isRemote){
+		if(world.isRemote){
 			wrapping.isNameCustom = dataManager.get(IS_NAME_CUSTOM);
 		}
 		// super.onUpdate();
@@ -120,7 +120,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 	protected void removePassenger(Entity toRemove) {
 		// System.out.println("entity just dismounted");
 		super.removePassenger(toRemove);
-		if (!worldObj.isRemote) {
+		if (!world.isRemote) {
 			wrapping.unFixEntity(toRemove);
 			if(wrapping.pilotingController.getPilotEntity() == toRemove){
 				wrapping.pilotingController.setPilotEntity(null, false);
@@ -176,10 +176,10 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 
 	@Override
 	public void setCustomNameTag(String name){
-		if(!worldObj.isRemote){
+		if(!world.isRemote){
 			if(getCustomNameTag() != null && !getCustomNameTag().equals("")){
 				//Update the name registry
-				boolean didRenameSuccessful = ShipNameUUIDData.get(worldObj).renameShipInRegsitry(this, name, getCustomNameTag());
+				boolean didRenameSuccessful = ShipNameUUIDData.get(world).renameShipInRegsitry(this, name, getCustomNameTag());
 				if(didRenameSuccessful){
 					super.setCustomNameTag(name);
 					wrapping.isNameCustom = true;

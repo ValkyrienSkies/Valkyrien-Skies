@@ -3,7 +3,6 @@ package ValkyrienWarfareBase.Interaction;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
-import ValkyrienWarfareBase.CoreMod.CallRunner;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareCombat.Entity.EntityMountingWeaponBase;
 import net.minecraft.block.state.IBlockState;
@@ -35,7 +34,7 @@ public class ValkyrienWarfareWorldEventListener implements IWorldEventListener{
 	public void notifyBlockUpdate(World worldIn, BlockPos pos, IBlockState oldState, IBlockState newState, int flags) {
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldObj, pos);
 		if(worldObj.isRemote){
-			CallRunner.markBlockRangeForRenderUpdate(worldIn,pos.getX(),pos.getY(),pos.getZ(),pos.getX(),pos.getY(),pos.getZ());
+			worldIn.markBlockRangeForRenderUpdate(pos.getX(),pos.getY(),pos.getZ(),pos.getX(),pos.getY(),pos.getZ());
 			//Strange bounding box error on CLIENT SIDE Fix, possibly broken and terrible, but probably ok
 			if(wrapper != null){
 				wrapper.wrapping.onSetBlockState(oldState, newState, pos);
@@ -87,10 +86,11 @@ public class ValkyrienWarfareWorldEventListener implements IWorldEventListener{
 
 	}
 
+	//TODO: Fix conflicts with EventsCommon.onEntityJoinWorldEvent()
 	@Override
 	public void onEntityAdded(Entity entityIn) {
-		int oldChunkX = MathHelper.floor_double(entityIn.posX / 16.0D);
-        int oldChunkZ = MathHelper.floor_double(entityIn.posZ / 16.0D);
+		int oldChunkX = MathHelper.floor(entityIn.posX / 16.0D);
+        int oldChunkZ = MathHelper.floor(entityIn.posZ / 16.0D);
 
 		BlockPos posAt = new BlockPos(entityIn);
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldObj, posAt);
@@ -102,8 +102,8 @@ public class ValkyrienWarfareWorldEventListener implements IWorldEventListener{
 			}
 			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, wrapper.wrapping.coordTransform.lToWRotation, entityIn);
 
-			int newChunkX = MathHelper.floor_double(entityIn.posX / 16.0D);
-	        int newChunkZ = MathHelper.floor_double(entityIn.posZ / 16.0D);
+			int newChunkX = MathHelper.floor(entityIn.posX / 16.0D);
+	        int newChunkZ = MathHelper.floor(entityIn.posZ / 16.0D);
 
 			worldObj.getChunkFromChunkCoords(oldChunkX, oldChunkZ).removeEntity(entityIn);
 			worldObj.getChunkFromChunkCoords(newChunkX, newChunkZ).addEntity(entityIn);
@@ -113,13 +113,14 @@ public class ValkyrienWarfareWorldEventListener implements IWorldEventListener{
 			ValkyrienWarfareMod.physicsManager.onShipLoad((PhysicsWrapperEntity) entityIn);
 		}
 
-		if(entityIn.getEntityWorld().isRemote){
-			PhysicsWrapperEntity shipFixOnto = ValkyrienWarfareMod.physicsManager.getManagerForWorld(entityIn.worldObj).getShipFixedOnto(entityIn, true);
 
-			if(shipFixOnto != null){
-//				System.out.println("Ye");
-				entityIn.startRiding(shipFixOnto, true);
+		if (!(entityIn instanceof EntityFallingBlock) && wrapper != null && wrapper.wrapping.coordTransform != null) {
+			if (entityIn instanceof EntityMountingWeaponBase || entityIn instanceof EntityArmorStand || entityIn instanceof EntityPig || entityIn instanceof EntityBoat) {
+//				entity.startRiding(wrapper);
+				wrapper.wrapping.fixEntity(entityIn, new Vector(entityIn));
+				wrapper.wrapping.queueEntityForMounting(entityIn);
 			}
+			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, wrapper.wrapping.coordTransform.lToWRotation, entityIn);
 		}
 	}
 
@@ -165,6 +166,14 @@ public class ValkyrienWarfareWorldEventListener implements IWorldEventListener{
 	            }
 	        }
 		}
+	}
+
+	@Override
+	public void spawnParticle(int p_190570_1_, boolean p_190570_2_, boolean p_190570_3_, double p_190570_4_,
+			double p_190570_6_, double p_190570_8_, double p_190570_10_, double p_190570_12_, double p_190570_14_,
+			int... p_190570_16_) {
+		// TODO Auto-generated method stub
+
 	}
 
 

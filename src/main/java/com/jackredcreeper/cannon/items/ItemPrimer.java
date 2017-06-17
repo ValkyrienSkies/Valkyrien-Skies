@@ -25,4 +25,5 @@ public class ItemPrimer extends Item {
 	public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par4) {
 		itemInformation.add(TextFormatting.BLUE + "Fires your cannon");
 	}
+
 }

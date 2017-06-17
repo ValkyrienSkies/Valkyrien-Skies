@@ -48,12 +48,6 @@ public class BlockThrustRelay extends BlockDirectional implements ITileEntityPro
     }
 
 	@Override
-    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, World worldIn, BlockPos pos)
-    {
-        return getBoundingBox(blockState, worldIn, pos);
-    }
-
-	@Override
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
     {
         EnumFacing enumfacing = (EnumFacing)state.getValue(FACING);
@@ -112,9 +106,9 @@ public class BlockThrustRelay extends BlockDirectional implements ITileEntityPro
      * IBlockstate
      */
     @Override
-    public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
+    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
     {
-        return canPlaceBlock(worldIn, pos, facing.getOpposite()) ? this.getDefaultState().withProperty(FACING, facing): this.getDefaultState().withProperty(FACING, EnumFacing.DOWN);
+        return canPlaceBlock(worldIn, pos, facing.getOpposite()) ? this.getDefaultState().withProperty(FACING, facing) : this.getDefaultState().withProperty(FACING, EnumFacing.DOWN);
     }
 
     /**
@@ -123,7 +117,7 @@ public class BlockThrustRelay extends BlockDirectional implements ITileEntityPro
      * block, etc.
      */
     @Override
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
     {
         if (this.checkForDrop(worldIn, pos, state) && !canPlaceBlock(worldIn, pos, ((EnumFacing)state.getValue(FACING)).getOpposite()))
         {

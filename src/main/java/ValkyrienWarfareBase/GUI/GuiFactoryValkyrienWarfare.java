@@ -19,6 +19,16 @@ public class GuiFactoryValkyrienWarfare implements IModGuiFactory {
 	}
 
 	@Override
+	public GuiScreen createConfigGui(GuiScreen parentScreen)	{
+		return new GuiConfigValkyrienWarfare(parentScreen);
+	}
+
+	@Override
+	public boolean hasConfigGui()	{
+		return true;
+	}
+
+	@Override
 	public Set<RuntimeOptionCategoryElement> runtimeGuiCategories() {
 		return null;
 	}

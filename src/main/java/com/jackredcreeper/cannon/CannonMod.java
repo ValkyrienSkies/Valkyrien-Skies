@@ -16,7 +16,7 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
-@Mod(modid = CannonModReference.MOD_ID, version = CannonModReference.MOD_ID, acceptedMinecraftVersions = "[1.10.2]")
+@Mod(modid = CannonModReference.MOD_ID, version = CannonModReference.MOD_ID, acceptedMinecraftVersions = "[1.11.2]")
 public class CannonMod {
 
 	@Instance(CannonModReference.MOD_ID)

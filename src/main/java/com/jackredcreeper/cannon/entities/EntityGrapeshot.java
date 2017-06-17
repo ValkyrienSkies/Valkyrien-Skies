@@ -24,7 +24,7 @@ public class EntityGrapeshot extends EntitySnowball {
     protected void onImpact(RayTraceResult result)
     {
 
-        if (!this.worldObj.isRemote)
+        if (!this.world.isRemote)
         {
         	double x = this.posX + this.motionX/2;
         	double y = this.posY + this.motionY/2;
@@ -33,7 +33,7 @@ public class EntityGrapeshot extends EntitySnowball {
         	float power = 0.5F;
         	float blast = 0.2F;
         	float damage = 30F;
-        	
+
         	NewExp explosion = new NewExp(this.getEntityWorld(),null,x,y,z,size,power,damage,blast,false,true);
             explosion.newBoom(this.getEntityWorld(),null,x,y,z,size,power,damage,blast,false,true);
             this.setDead();

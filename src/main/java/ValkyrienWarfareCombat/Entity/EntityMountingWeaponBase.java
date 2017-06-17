@@ -8,6 +8,7 @@ import ValkyrienWarfareBase.Collision.Polygon;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -39,9 +40,9 @@ public abstract class EntityMountingWeaponBase extends Entity implements IEntity
 	}
 
 	@Override
-	public boolean processInitialInteract(EntityPlayer player, @Nullable ItemStack stack, EnumHand hand) {
+	public boolean processInitialInteract(EntityPlayer player, EnumHand hand) {
 		if (player.getLowestRidingEntity() == super.getLowestRidingEntity()) {
-			onRiderInteract(player, stack, hand);
+			onRiderInteract(player, player.getHeldItem(hand), hand);
 		}else{
 			player.startRiding(this);
 
@@ -66,7 +67,7 @@ public abstract class EntityMountingWeaponBase extends Entity implements IEntity
 	}
 
 	@Override
-	public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, @Nullable ItemStack stack, EnumHand hand) {
+	public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, EnumHand stack) {
 		return EnumActionResult.PASS;
 	}
 
@@ -222,10 +223,13 @@ public abstract class EntityMountingWeaponBase extends Entity implements IEntity
 		return riderOffset;
 	}
 
-	@Override
-	public void moveEntity(double x, double y, double z) {
-		super.moveEntity(x, y, z);
-	}
+	// @thebest108 why??
+	//     -- DaPorkchop_
+
+	/*@Override
+	public void move(MoverType type, double x, double y, double z) {
+		super.move(type, x, y, z);
+	}*/
 
 	@Override
 	public AxisAlignedBB getEntityBoundingBox() {
@@ -262,7 +266,7 @@ public abstract class EntityMountingWeaponBase extends Entity implements IEntity
 
 	@Override
 	public boolean attackEntityFrom(DamageSource source, float amount) {
-		if (!this.worldObj.isRemote && !this.isDead) {
+		if (!this.world.isRemote && !this.isDead) {
 			if (this.isEntityInvulnerable(source)) {
 				return false;
 			} else {
@@ -314,7 +318,7 @@ public abstract class EntityMountingWeaponBase extends Entity implements IEntity
 
 	public void killWeapon(DamageSource source) {
 		this.setDead();
-		if (this.worldObj.getGameRules().getBoolean("doEntityDrops")) {
+		if (this.world.getGameRules().getBoolean("doEntityDrops")) {
 			doItemDrops();
 		}
 	}

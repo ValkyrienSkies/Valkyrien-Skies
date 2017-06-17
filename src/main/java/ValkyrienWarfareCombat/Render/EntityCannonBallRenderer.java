@@ -25,18 +25,13 @@ public class EntityCannonBallRenderer extends Render<EntityCannonBall> {
 
 	@Override
 	public void doRender(EntityCannonBall entity, double x, double y, double z, float entityYaw, float partialTicks) {
-		World world = entity.worldObj;
+		World world = entity.world;
 
 		this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 		GlStateManager.pushMatrix();
 		GlStateManager.disableLighting();
 		Tessellator tessellator = Tessellator.getInstance();
 		VertexBuffer vertexbuffer = tessellator.getBuffer();
-
-		if (this.renderOutlines) {
-			GlStateManager.enableColorMaterial();
-			GlStateManager.enableOutlineMode(this.getTeamColor(entity));
-		}
 
 		GlStateManager.translate((float) (x - .25D), (float) (y - .07D), (float) (z + .278D));
 		FastBlockModelRenderer.renderBlockModel(vertexbuffer, tessellator, world, cannonballState, entity.getBrightnessForRender(partialTicks));

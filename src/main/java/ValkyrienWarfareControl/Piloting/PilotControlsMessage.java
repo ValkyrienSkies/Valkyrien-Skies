@@ -34,7 +34,7 @@ public class PilotControlsMessage implements IMessage {
 		airshipRight = packetBuf.readBoolean();
 		airshipSprinting = packetBuf.readBoolean();
 		inputType = packetBuf.readEnumValue(ControllerInputType.class);
-		shipFor = packetBuf.readUuid();
+		shipFor = packetBuf.readUniqueId();
 	}
 
 	@Override
@@ -48,7 +48,7 @@ public class PilotControlsMessage implements IMessage {
 		packetBuf.writeBoolean(airshipRight);
 		packetBuf.writeBoolean(airshipSprinting);
 		packetBuf.writeEnumValue(inputType);
-		packetBuf.writeUuid(shipFor);
+		packetBuf.writeUniqueId(shipFor);
 	}
 
 	public void assignKeyBooleans(PhysicsWrapperEntity shipPiloting, Enum inputType) {

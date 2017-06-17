@@ -20,13 +20,13 @@ public class SetShipPilotMessage implements IMessage{
 	@Override
 	public void fromBytes(ByteBuf buf) {
 		PacketBuffer packetBuffer = new PacketBuffer(buf);
-		entityUniqueID = packetBuffer.readUuid();
+		entityUniqueID = packetBuffer.readUniqueId();
 	}
 
 	@Override
 	public void toBytes(ByteBuf buf) {
 		PacketBuffer packetBuffer = new PacketBuffer(buf);
-		packetBuffer.writeUuid(entityUniqueID);
+		packetBuffer.writeUniqueId(entityUniqueID);
 	}
 
 }

@@ -29,13 +29,13 @@ public class BlockPhysicsInfuser extends Block {
 		shipSpawnDetectorID = DetectorManager.DetectorIDs.ShipSpawnerGeneral.ordinal();
 	}
 
-	@Override
+
 	public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par4) {
 		itemInformation.add(TextFormatting.BLUE + "Turns any blocks attatched to this one into a brand new Ship, just be careful not to infuse your entire world");
 	}
 
 	@Override
-	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
 		if (!worldIn.isRemote) {
 			WorldPhysObjectManager manager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(worldIn);
 			if (manager != null) {
@@ -48,9 +48,9 @@ public class BlockPhysicsInfuser extends Block {
 
 			if (ValkyrienWarfareMod.canChangeAirshipCounter(true, playerIn))	{
 				PhysicsWrapperEntity wrapper = new PhysicsWrapperEntity(worldIn, pos.getX(), pos.getY(), pos.getZ(), playerIn, shipSpawnDetectorID, ShipType.Full_Unlocked);
-				worldIn.spawnEntityInWorld(wrapper);
+				worldIn.spawnEntity(wrapper);
 			} else {
-				playerIn.addChatMessage(new TextComponentString("You've made too many airships! The limit per player is " + ValkyrienWarfareMod.maxAirships));
+				playerIn.sendMessage(new TextComponentString("You've made too many airships! The limit per player is " + ValkyrienWarfareMod.maxAirships));
 			}
 		}
 		return true;

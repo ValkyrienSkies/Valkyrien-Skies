@@ -13,6 +13,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -76,8 +77,8 @@ public class ValkyrienWarfareCombatMod {
 	}
 
 	private void registerEntities(FMLStateEvent event) {
-		EntityRegistry.registerModEntity(EntityCannonBasic.class, "EntityCannonBasic", 71, this, 120, 1, false);
-		EntityRegistry.registerModEntity(EntityCannonBall.class, "EntityCannonBall", 72, this, 120, 5, true);
+		EntityRegistry.registerModEntity(new ResourceLocation(MODID, "EntityCannonBasic"), EntityCannonBasic.class, "EntityCannonBasic", 71, this, 120, 1, false);
+		EntityRegistry.registerModEntity(new ResourceLocation(MODID, "EntityCannonBall"), EntityCannonBall.class, "EntityCannonBall", 72, this, 120, 5, true);
 	}
 
 	private void registerBlocks(FMLStateEvent event) {

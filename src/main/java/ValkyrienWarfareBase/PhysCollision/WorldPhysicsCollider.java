@@ -99,13 +99,13 @@ public class WorldPhysicsCollider {
 			inWorld.Z = mutablePos.getZ() + .5;
 			parent.coordTransform.fromGlobalToLocal(inWorld);
 
-			minX = MathHelper.floor_double(inWorld.X - rangeCheck);
-			minY = MathHelper.floor_double(inWorld.Y - rangeCheck);
-			minZ = MathHelper.floor_double(inWorld.Z - rangeCheck);
+			minX = MathHelper.floor(inWorld.X - rangeCheck);
+			minY = MathHelper.floor(inWorld.Y - rangeCheck);
+			minZ = MathHelper.floor(inWorld.Z - rangeCheck);
 
-			maxX = MathHelper.floor_double(inWorld.X + rangeCheck);
-			maxY = MathHelper.floor_double(inWorld.Y + rangeCheck);
-			maxZ = MathHelper.floor_double(inWorld.Z + rangeCheck);
+			maxX = MathHelper.floor(inWorld.X + rangeCheck);
+			maxY = MathHelper.floor(inWorld.Y + rangeCheck);
+			maxZ = MathHelper.floor(inWorld.Z + rangeCheck);
 
 			/**
 			 * Something here is causing the game to freeze :/
@@ -464,27 +464,27 @@ public class WorldPhysicsCollider {
 											int minX,minY,minZ;
 
 											if(speedInBody.X > 0){
-												minX = MathHelper.floor_double(inLocal.X - rangeCheck);
-												maxX = MathHelper.floor_double(inLocal.X + rangeCheck + speedInBody.X);
+												minX = MathHelper.floor(inLocal.X - rangeCheck);
+												maxX = MathHelper.floor(inLocal.X + rangeCheck + speedInBody.X);
 											}else{
-												minX = MathHelper.floor_double(inLocal.X - rangeCheck + speedInBody.X);
-												maxX = MathHelper.floor_double(inLocal.X + rangeCheck);
+												minX = MathHelper.floor(inLocal.X - rangeCheck + speedInBody.X);
+												maxX = MathHelper.floor(inLocal.X + rangeCheck);
 											}
 
 											if(speedInBody.Y > 0){
-												minY = MathHelper.floor_double(inLocal.Y - rangeCheck);
-												maxY = MathHelper.floor_double(inLocal.Y + rangeCheck + speedInBody.Y);
+												minY = MathHelper.floor(inLocal.Y - rangeCheck);
+												maxY = MathHelper.floor(inLocal.Y + rangeCheck + speedInBody.Y);
 											}else{
-												minY = MathHelper.floor_double(inLocal.Y - rangeCheck + speedInBody.Y);
-												maxY = MathHelper.floor_double(inLocal.Y + rangeCheck);
+												minY = MathHelper.floor(inLocal.Y - rangeCheck + speedInBody.Y);
+												maxY = MathHelper.floor(inLocal.Y + rangeCheck);
 											}
 
 											if(speedInBody.Z > 0){
-												minZ = MathHelper.floor_double(inLocal.Z - rangeCheck);
-												maxZ = MathHelper.floor_double(inLocal.Z + rangeCheck + speedInBody.Z);
+												minZ = MathHelper.floor(inLocal.Z - rangeCheck);
+												maxZ = MathHelper.floor(inLocal.Z + rangeCheck + speedInBody.Z);
 											}else{
-												minZ = MathHelper.floor_double(inLocal.Z - rangeCheck + speedInBody.Z);
-												maxZ = MathHelper.floor_double(inLocal.Z + rangeCheck);
+												minZ = MathHelper.floor(inLocal.Z - rangeCheck + speedInBody.Z);
+												maxZ = MathHelper.floor(inLocal.Z + rangeCheck);
 											}
 
 

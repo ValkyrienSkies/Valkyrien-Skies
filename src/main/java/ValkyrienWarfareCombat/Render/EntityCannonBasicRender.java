@@ -34,6 +34,8 @@ public class EntityCannonBasicRender extends Render<EntityCannonBasic> {
 
 		bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 
+//		entity.posX += 15;
+
 		Tessellator tessellator = Tessellator.getInstance();
 		VertexBuffer vertexbuffer = tessellator.getBuffer();
 
@@ -86,25 +88,25 @@ public class EntityCannonBasicRender extends Render<EntityCannonBasic> {
 		GlStateManager.enableLighting();
 
 		GL11.glPopMatrix();
+
+
 	}
 
 	private void renderBase(EntityCannonBasic entity, double x, double y, double z, float entityYaw, float partialTicks) {
 		Tessellator tessellator = Tessellator.getInstance();
 		VertexBuffer vertexbuffer = tessellator.getBuffer();
-
 		GL11.glPushMatrix();
 		GL11.glTranslated(-0.5D, 0, -0.5D);
-		FastBlockModelRenderer.renderBlockModel(vertexbuffer, tessellator, entity.worldObj, baseState, entity.getBrightnessForRender(partialTicks));
+		FastBlockModelRenderer.renderBlockModel(vertexbuffer, tessellator, entity.world, baseState, entity.getBrightnessForRender(partialTicks));
 		GL11.glPopMatrix();
 	}
 
 	private void renderHead(EntityCannonBasic entity, double x, double y, double z, float entityYaw, float partialTicks) {
 		Tessellator tessellator = Tessellator.getInstance();
 		VertexBuffer vertexbuffer = tessellator.getBuffer();
-
 		GL11.glPushMatrix();
 		GL11.glTranslated(-0.5D, 0, -0.5D);
-		FastBlockModelRenderer.renderBlockModel(vertexbuffer, tessellator, entity.worldObj, headState, entity.getBrightnessForRender(partialTicks));
+		FastBlockModelRenderer.renderBlockModel(vertexbuffer, tessellator, entity.world, headState, entity.getBrightnessForRender(partialTicks));
 		GL11.glPopMatrix();
 	}
 

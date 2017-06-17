@@ -128,8 +128,8 @@ public class PhysicsObject {
 
 	public PhysicsObject(PhysicsWrapperEntity host) {
 		wrapper = host;
-		worldObj = host.worldObj;
-		if (host.worldObj.isRemote) {
+		worldObj = host.world;
+		if (host.world.isRemote) {
 			renderer = new PhysObjectRenderManager(this);
 		} else {
 			balloonManager = new ShipBalloonManager(this);
@@ -179,8 +179,8 @@ public class PhysicsObject {
 					blockPositions.add(posAt);
 				}
 			}
-			int chunkX = (posAt.getX() >> 4) - claimedChunks[0][0].xPosition;
-			int chunkZ = (posAt.getZ() >> 4) - claimedChunks[0][0].zPosition;
+			int chunkX = (posAt.getX() >> 4) - claimedChunks[0][0].x;
+			int chunkZ = (posAt.getZ() >> 4) - claimedChunks[0][0].z;
 			ownedChunks.chunkOccupiedInLocal[chunkX][chunkZ] = true;
 		}
 
@@ -242,7 +242,7 @@ public class PhysicsObject {
 	}
 
 	public void claimNewChunks(int radius) {
-		ownedChunks = ValkyrienWarfareMod.chunkManager.getManagerForWorld(wrapper.worldObj).getNextAvaliableChunkSet(radius);
+		ownedChunks = ValkyrienWarfareMod.chunkManager.getManagerForWorld(wrapper.world).getNextAvaliableChunkSet(radius);
 		ValkyrienWarfareMod.chunkManager.registerChunksForShip(wrapper);
 		claimedChunksInMap = true;
 	}
@@ -255,7 +255,7 @@ public class PhysicsObject {
 		SpatialDetector detector = DetectorManager.getDetectorFor(detectorID, centerInWorld, worldObj, ValkyrienWarfareMod.maxShipSize + 1, true);
 		if (detector.foundSet.size() > ValkyrienWarfareMod.maxShipSize || detector.cleanHouse) {
 			if (player != null) {
-				player.addChatComponentMessage(new TextComponentString("Ship construction canceled because its exceeding the ship size limit (Raise with /physSettings maxShipSize <number>) ; Or because it's attatched to bedrock)"));
+				player.sendMessage(new TextComponentString("Ship construction canceled because its exceeding the ship size limit (Raise with /physSettings maxShipSize <number>) ; Or because it's attatched to bedrock)"));
 			}
 			wrapper.setDead();
 			return;
@@ -296,7 +296,7 @@ public class PhysicsObject {
 
 		iter = detector.foundSet.iterator();
 
-		radiusNeeded = Math.min(radiusNeeded, ValkyrienWarfareMod.chunkManager.getManagerForWorld(wrapper.worldObj).maxChunkRadius);
+		radiusNeeded = Math.min(radiusNeeded, ValkyrienWarfareMod.chunkManager.getManagerForWorld(wrapper.world).maxChunkRadius);
 
 		// System.out.println(radiusNeeded);
 
@@ -316,8 +316,8 @@ public class PhysicsObject {
 		replaceOuterChunksWithAir();
 
 		VKChunkCache = new VWChunkCache(worldObj, claimedChunks);
-		int minChunkX = claimedChunks[0][0].xPosition;
-		int minChunkZ = claimedChunks[0][0].zPosition;
+		int minChunkX = claimedChunks[0][0].x;
+		int minChunkZ = claimedChunks[0][0].z;
 
 		refrenceBlockPos = getRegionCenter();
 		centerCoord = new Vector(refrenceBlockPos.getX(), refrenceBlockPos.getY(), refrenceBlockPos.getZ());
@@ -429,7 +429,7 @@ public class PhysicsObject {
 			}
 			worldObj.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
 		}
-		// centerDifference = new BlockPos(claimedChunks[ownedChunks.radius+1][ownedChunks.radius+1].xPosition*16,128,claimedChunks[ownedChunks.radius+1][ownedChunks.radius+1].zPosition*16);
+		// centerDifference = new BlockPos(claimedChunks[ownedChunks.radius+1][ownedChunks.radius+1].x*16,128,claimedChunks[ownedChunks.radius+1][ownedChunks.radius+1].z*16);
 		// System.out.println(chunkCache.getBlockState(centerDifference).getBlock());
 
 		for (int x = ownedChunks.minX; x <= ownedChunks.maxX; x++) {
@@ -479,8 +479,8 @@ public class PhysicsObject {
 
 		long i = map.getIndex(x, z);
 
-		map.playerInstances.put(i, entry);
-		map.playerInstanceList.add(entry);
+		map.entryMap.put(i, entry);
+		map.entries.add(entry);
 
 
 		entry.sentToPlayers = true;
@@ -538,7 +538,7 @@ public class PhysicsObject {
 	}
 
 	public BlockPos getRegionCenter() {
-		return new BlockPos((claimedChunks[ownedChunks.radius + 1][ownedChunks.radius + 1].xPosition * 16) - 8, 127, (claimedChunks[ownedChunks.radius + 1][ownedChunks.radius + 1].zPosition * 16) - 8);
+		return new BlockPos((claimedChunks[ownedChunks.radius + 1][ownedChunks.radius + 1].x * 16) - 8, 127, (claimedChunks[ownedChunks.radius + 1][ownedChunks.radius + 1].z * 16) - 8);
 	}
 
 	/**
@@ -573,7 +573,7 @@ public class PhysicsObject {
 		WorldPhysObjectManager manager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(worldObj);
 		for (int x = ownedChunks.minX; x <= ownedChunks.maxX; x++) {
 			for (int z = ownedChunks.minZ; z <= ownedChunks.maxZ; z++) {
-				provider.unload(claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ]);
+				provider.queueUnload(claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ]);
 
 				Ticket ticket = ValkyrienWarfareMod.physicsManager.getManagerForWorld(this.worldObj).chunkLoadingTicket;
 				//So fucking laggy!
@@ -600,7 +600,7 @@ public class PhysicsObject {
 			balloonManager.onPostTick();
 			for(Entity e:queuedEntitiesToMount){
 				if(e != null){
-					e.startRiding(this.wrapper);
+					e.startRiding(this.wrapper, true);
 				}
 			}
 			queuedEntitiesToMount.clear();
@@ -615,7 +615,7 @@ public class PhysicsObject {
 		tickQueuedForces();
 		explodedPositionsThisTick.clear();
 
-		if(!wrapper.isDead && !wrapper.worldObj.isRemote){
+		if(!wrapper.isDead && !wrapper.world.isRemote){
 			ValkyrienWarfareMod.chunkManager.updateShipPosition(wrapper);
 			if(!claimedChunksInMap){
 				//Old ships not in the map will add themselves in once loaded
@@ -669,7 +669,6 @@ public class PhysicsObject {
 			queue.ticksToApply--;
 		}
 	}
-
 	public void onPostTickClient() {
 		wrapper.prevPitch = wrapper.pitch;
 		wrapper.prevYaw = wrapper.yaw;
@@ -694,6 +693,7 @@ public class PhysicsObject {
 			wrapper.lastTickPosZ -= CMDif.Z;
 			toUse.applyToPhysObject(this);
 		}
+
 		coordTransform.setPrevMatrices();
 		coordTransform.updateAllTransforms();
 	}
@@ -749,8 +749,8 @@ public class PhysicsObject {
 
 	// Generates the blockPos array; must be loaded DIRECTLY after the chunks are setup
 	public void detectBlockPositions() {
-		// int minChunkX = claimedChunks[0][0].xPosition;
-		// int minChunkZ = claimedChunks[0][0].zPosition;
+		// int minChunkX = claimedChunks[0][0].x;
+		// int minChunkZ = claimedChunks[0][0].z;
 		int chunkX, chunkZ, index, x, y, z;
 		Chunk chunk;
 		ExtendedBlockStorage storage;
@@ -765,7 +765,7 @@ public class PhysicsObject {
 								for (x = 0; x < 16; x++) {
 									for (z = 0; z < 16; z++) {
 										if (storage.data.storage.getAt(y << 8 | z << 4 | x) != ValkyrienWarfareMod.airStateIndex) {
-											BlockPos pos = new BlockPos(chunk.xPosition * 16 + x, index * 16 + y, chunk.zPosition * 16 + z);
+											BlockPos pos = new BlockPos(chunk.x * 16 + x, index * 16 + y, chunk.z * 16 + z);
 											blockPositions.add(pos);
 											if (!worldObj.isRemote) {
 												if (BlockForce.basicForces.isBlockProvidingForce(worldObj.getBlockState(pos), pos, worldObj)) {
@@ -943,7 +943,7 @@ public class PhysicsObject {
 		coordTransform.stack.pushMessage(new PhysWrapperPositionMessage(this));
 
 		try {
-			NBTTagCompound entityFixedPositionNBT = modifiedBuffer.readNBTTagCompoundFromBuffer();
+			NBTTagCompound entityFixedPositionNBT = modifiedBuffer.readCompoundTag();
 			entityLocalPositions = NBTUtils.readEntityPositionMap("entityFixedPosMap", entityFixedPositionNBT);
 			// if(worldObj.isRemote){
 			// System.out.println(entityLocalPositions.containsKey(Minecraft.getMinecraft().thePlayer.getPersistentID().hashCode()));
@@ -982,7 +982,7 @@ public class PhysicsObject {
 
 		NBTTagCompound entityFixedPositionNBT = new NBTTagCompound();
 		NBTUtils.writeEntityPositionHashMapToNBT("entityFixedPosMap", entityLocalPositions, entityFixedPositionNBT);
-		modifiedBuffer.writeNBTTagCompoundToBuffer(entityFixedPositionNBT);
+		modifiedBuffer.writeCompoundTag(entityFixedPositionNBT);
 
 		modifiedBuffer.writeBoolean(isNameCustom);
 		modifiedBuffer.writeEnumValue(shipType);
@@ -1007,7 +1007,7 @@ public class PhysicsObject {
 		try {
 			player = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(UUID.fromString(creator));
 		} catch (NullPointerException e)	{
-			newOwner.addChatMessage(new TextComponentString("That airship doesn't have an owner, you get to have it :D"));
+			newOwner.sendMessage(new TextComponentString("That airship doesn't have an owner, you get to have it :D"));
 			newOwner.getCapability(ValkyrienWarfareMod.airshipCounter, null).onCreate();
 			allowedUsers.clear();
 			creator = newOwner.entityUniqueID.toString();

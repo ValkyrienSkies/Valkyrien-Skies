@@ -17,7 +17,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
@@ -30,7 +29,7 @@ public class BlockBalloonBurner extends Block implements ITileEntityProvider {
 	}
 
 	@Override
-	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
+	public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
 		PhysicsWrapperEntity wrapperEntity = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldIn, pos);
 		// Balloons can only be made on an active Ship
 		if (wrapperEntity != null) {
@@ -42,9 +41,9 @@ public class BlockBalloonBurner extends Block implements ITileEntityProvider {
 					BalloonDetector detector = new BalloonDetector(balloonStart, worldIn, 25000);
 					int balloonSize = detector.foundSet.size();
 					if (balloonSize == 0) {
-						placer.addChatMessage(new TextComponentString("No balloon above"));
+						placer.sendMessage(new TextComponentString("No balloon above"));
 					} else {
-						placer.addChatMessage(new TextComponentString("Created a new Balloon"));
+						placer.sendMessage(new TextComponentString("Created a new Balloon"));
 
 						BalloonProcessor processor = BalloonProcessor.makeProcessorForDetector(wrapperEntity, detector);
 
@@ -52,11 +51,11 @@ public class BlockBalloonBurner extends Block implements ITileEntityProvider {
 						// System.out.println("Balloon Walls Are " + detector.balloonWalls.size());
 					}
 				} else {
-					placer.addChatMessage(new TextComponentString("Hooked onto Exisiting Balloon"));
+					placer.sendMessage(new TextComponentString("Hooked onto Exisiting Balloon"));
 				}
 			}
 		}
-		return super.onBlockPlaced(worldIn, pos, facing, hitX, hitY, hitZ, meta, placer);
+		super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
 	}
 
 	@Override

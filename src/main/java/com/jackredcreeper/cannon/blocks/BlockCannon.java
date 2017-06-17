@@ -2,10 +2,7 @@ package com.jackredcreeper.cannon.blocks;
 
 import java.util.List;
 
-import javax.annotation.Nullable;
-
 import com.jackredcreeper.cannon.CannonModReference;
-import com.jackredcreeper.cannon.entities.EntityCannonball;
 import com.jackredcreeper.cannon.init.ModItems;
 import com.jackredcreeper.cannon.tileentity.TileEntityCannon;
 
@@ -20,18 +17,14 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
-import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
@@ -44,6 +37,7 @@ public class BlockCannon extends BlockDirectional implements ITileEntityProvider
 	public BlockCannon() {
 		super(Material.IRON);
 		setHardness(0.5f);
+		setResistance(1);
 		setResistance(1);
 
 		setUnlocalizedName(CannonModReference.ModBlocks.CANNON.getUnlocalizedName());
@@ -59,6 +53,7 @@ public class BlockCannon extends BlockDirectional implements ITileEntityProvider
 
     public static final PropertyDirection LOOKING = BlockDirectional.FACING;
 
+
 	@Override
 	public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par4) {
 		itemInformation.add(TextFormatting.BLUE + "Cannon block used to fire explosive projectiles.");
@@ -67,9 +62,8 @@ public class BlockCannon extends BlockDirectional implements ITileEntityProvider
 	}
 
 	@Override
-	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
-			EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
-
+	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
+	ItemStack heldItem = playerIn.getHeldItem(hand);
 		TileEntity tileentity = worldIn.getTileEntity(pos);
 		if(tileentity instanceof TileEntityCannon) {
 				if (!worldIn.isRemote){
@@ -209,25 +203,16 @@ public class BlockCannon extends BlockDirectional implements ITileEntityProvider
      * Called by ItemBlocks just before a block is actually set in the world, to allow for adjustments to the
      * IBlockstate
      */
-    public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
+//    public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
+//    {
+//        return this.getDefaultState().withProperty(LOOKING, EnumFacing.getDirectionFromEntityLiving(pos, placer));
+//    }
+
+    @Override
+    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
     {
-        return this.getDefaultState().withProperty(LOOKING, BlockPistonBase.getFacingFromEntity(pos, placer));
+        return this.getDefaultState().withProperty(FACING, placer.isSneaking() ? placer.getHorizontalFacing().getOpposite() :  placer.getHorizontalFacing());
     }
-
-    /**
-     * Called by ItemBlocks after a block is set in the world, to allow post-place logic
-     */
-    public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack)
-    {
-        worldIn.setBlockState(pos, state.withProperty(LOOKING, BlockPistonBase.getFacingFromEntity(pos, placer)), 2);
-
-        if (stack.hasDisplayName())
-        {
-            TileEntity tileentity = worldIn.getTileEntity(pos);
-
-        }
-    }
-
 
     public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state)
     {

@@ -4,15 +4,22 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.logging.Level;
 
+import ValkyrienWarfareBase.API.RotationMatrices;
+import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Capability.IAirshipCounterCapability;
-import ValkyrienWarfareBase.CoreMod.ValkyrienWarfarePlugin;
 import ValkyrienWarfareBase.Interaction.CustomNetHandlerPlayServer;
 import ValkyrienWarfareBase.Interaction.ValkyrienWarfareWorldEventListener;
+import ValkyrienWarfareBase.Mixin.MixinLoaderForge;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsTickHandler;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.ShipType;
+import ValkyrienWarfareCombat.Entity.EntityMountingWeaponBase;
 import ValkyrienWarfareControl.Piloting.ClientPilotingManager;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityArmorStand;
+import net.minecraft.entity.item.EntityBoat;
+import net.minecraft.entity.item.EntityFallingBlock;
+import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayer.SleepResult;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -34,6 +41,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -66,11 +74,11 @@ public class EventsCommon {
 	public void onPlayerSleepInBedEvent(PlayerSleepInBedEvent event){
 		EntityPlayer player = event.getEntityPlayer();
 		BlockPos pos = event.getPos();
-		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.worldObj, pos);
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.world, pos);
 		if(wrapper != null){
 			if(player instanceof EntityPlayerMP){
 				EntityPlayerMP playerMP = (EntityPlayerMP)player;
-				player.addChatMessage(new TextComponentString("Spawn Point Set!"));
+				player.sendMessage(new TextComponentString("Spawn Point Set!"));
 				player.setSpawnPoint(pos, true);
 	    		event.setResult(SleepResult.NOT_POSSIBLE_HERE);
 			}
@@ -92,6 +100,24 @@ public class EventsCommon {
 		            event.setCanceled(true);
 				}
 			}
+		}
+	}
+
+	//TODO: Fix conflicts with EventListener.onEntityAdded()
+	//MAYBE REMOVE DUE TO CONFLICTS
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
+	public void onEntityJoinWorldEvent(EntityJoinWorldEvent event){
+		Entity entity = event.getEntity();
+		World world = entity.world;
+		BlockPos posAt = new BlockPos(entity);
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, posAt);
+		if (!(entity instanceof EntityFallingBlock) && wrapper != null && wrapper.wrapping.coordTransform != null) {
+			if (entity instanceof EntityMountingWeaponBase || entity instanceof EntityArmorStand || entity instanceof EntityPig || entity instanceof EntityBoat) {
+//				entity.startRiding(wrapper);
+				wrapper.wrapping.fixEntity(entity, new Vector(entity));
+				wrapper.wrapping.queueEntityForMounting(entity);
+			}
+			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, wrapper.wrapping.coordTransform.lToWRotation, entity);
 		}
 	}
 
@@ -140,9 +166,9 @@ public class EventsCommon {
 			for(Chunk[] chunks:wrapper.wrapping.claimedChunks){
 				for(Chunk chunk:chunks){
 					if(amAdding){
-						((WorldServer)worldFor).getChunkProvider().id2ChunkMap.put(ChunkPos.asLong(chunk.xPosition, chunk.zPosition), chunk);
+						((WorldServer)worldFor).getChunkProvider().id2ChunkMap.put(ChunkPos.asLong(chunk.x, chunk.z), chunk);
 					}else{
-//						((WorldServer)worldFor).getChunkProvider().id2ChunkMap.remove(ChunkPos.chunkXZ2Int(chunk.xPosition, chunk.zPosition));
+//						((WorldServer)worldFor).getChunkProvider().id2ChunkMap.remove(ChunkPos.chunkXZ2Int(chunk.x, chunk.z))
 					}
 				}
 			}
@@ -156,7 +182,7 @@ public class EventsCommon {
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onPlayerTickEvent(PlayerTickEvent event) {
-		if (!event.player.worldObj.isRemote && event.player != null) {
+		if (!event.player.world.isRemote && event.player != null) {
 			EntityPlayerMP p = (EntityPlayerMP) event.player;
 			try{
 				if (!(p.connection instanceof CustomNetHandlerPlayServer)) {
@@ -181,7 +207,7 @@ public class EventsCommon {
 				if (pos[0] != p.posX || pos[2] != p.posZ) { // Player has moved
 					if (Math.abs(p.posX) > 27000000 || Math.abs(p.posZ) > 27000000) { // Player is outside of world border, tp them back
 						p.attemptTeleport(pos[0], pos[1], pos[2]);
-						p.addChatMessage(new TextComponentString("You can't go beyond 27000000 blocks because airships are stored there!"));
+						p.sendMessage(new TextComponentString("You can't go beyond 27000000 blocks because airships are stored there!"));
 					}
 				}
 			} catch (NullPointerException e)	{
@@ -198,7 +224,7 @@ public class EventsCommon {
 		try {
 			Field xField, yField, zField, positionField;
 
-			if (!ValkyrienWarfarePlugin.isObfuscatedEnvironment) {
+			if (!MixinLoaderForge.isObfuscatedEnvironment) {
 				xField = toSet.getClass().getDeclaredField("explosionX");
 				xField.setAccessible(true);
 
@@ -402,7 +428,7 @@ public class EventsCommon {
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onEntityUntrack(PlayerEvent.StopTracking event) {
-		if (!event.getEntityPlayer().worldObj.isRemote) {
+		if (!event.getEntityPlayer().world.isRemote) {
 			Entity ent = event.getTarget();
 			if (ent instanceof PhysicsWrapperEntity) {
 				((PhysicsWrapperEntity) ent).wrapping.onPlayerUntracking(event.getEntityPlayer());
@@ -470,14 +496,14 @@ public class EventsCommon {
 
 	@SubscribeEvent
 	public void onJoin(PlayerLoggedInEvent event) {
-		if (!event.player.worldObj.isRemote) {
+		if (!event.player.world.isRemote) {
 			lastPositions.put((EntityPlayerMP) event.player, new Double[] { 0d, 256d, 0d });
 		}
 	}
 
 	@SubscribeEvent
 	public void onLeave(PlayerLoggedOutEvent event) {
-		if (!event.player.worldObj.isRemote) {
+		if (!event.player.world.isRemote) {
 			lastPositions.remove((EntityPlayerMP) event.player);
 		}
 	}
@@ -493,7 +519,7 @@ public class EventsCommon {
 					event.setCanceled(false);
 				}
 				if (ValkyrienWarfareMod.runAirshipPermissions && !(physObj.wrapping.creator.equals(event.getEntityPlayer().entityUniqueID.toString()) || physObj.wrapping.allowedUsers.contains(event.getEntityPlayer().entityUniqueID.toString())))	{
-					event.getEntityPlayer().addChatMessage(new TextComponentString("You need to be added to the airship to do that!" + (physObj.wrapping.creator == null || physObj.wrapping.creator.trim().isEmpty() ? " Try using \"/airshipSettings claim\"!" : "")));
+					event.getEntityPlayer().sendMessage(new TextComponentString("You need to be added to the airship to do that!" + (physObj.wrapping.creator == null || physObj.wrapping.creator.trim().isEmpty() ? " Try using \"/airshipSettings claim\"!" : "")));
 					event.setCanceled(true);
 					return;
 				}
@@ -507,7 +533,7 @@ public class EventsCommon {
 			PhysicsWrapperEntity physObj = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(event.getWorld(), event.getPos());
 			if (physObj != null) {
 				if (ValkyrienWarfareMod.runAirshipPermissions && !(physObj.wrapping.creator.equals(event.getPlayer().entityUniqueID.toString()) || physObj.wrapping.allowedUsers.contains(event.getPlayer().entityUniqueID.toString())))	{
-					event.getPlayer().addChatMessage(new TextComponentString("You need to be added to the airship to do that!" + (physObj.wrapping.creator == null || physObj.wrapping.creator.trim().isEmpty() ? " Try using \"/airshipSettings claim\"!" : "")));
+					event.getPlayer().sendMessage(new TextComponentString("You need to be added to the airship to do that!" + (physObj.wrapping.creator == null || physObj.wrapping.creator.trim().isEmpty() ? " Try using \"/airshipSettings claim\"!" : "")));
 					event.setCanceled(true);
 					return;
 				}
@@ -524,7 +550,7 @@ public class EventsCommon {
 		PhysicsWrapperEntity physObj = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(event.getWorld(), event.getPos());
 		if (physObj != null) {
 			if (ValkyrienWarfareMod.runAirshipPermissions && !(physObj.wrapping.creator.equals(event.getPlayer().entityUniqueID.toString()) || physObj.wrapping.allowedUsers.contains(event.getPlayer().entityUniqueID.toString())))	{
-				event.getPlayer().addChatMessage(new TextComponentString("You need to be added to the airship to do that!" + (physObj.wrapping.creator == null || physObj.wrapping.creator.trim().isEmpty() ? " Try using \"/airshipSettings claim\"!" : "")));
+				event.getPlayer().sendMessage(new TextComponentString("You need to be added to the airship to do that!" + (physObj.wrapping.creator == null || physObj.wrapping.creator.trim().isEmpty() ? " Try using \"/airshipSettings claim\"!" : "")));
 				event.setCanceled(true);
 				return;
 			}

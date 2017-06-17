@@ -12,7 +12,7 @@ public class PhysWrapperPositionHandler implements IMessageHandler<PhysWrapperPo
 
 	@Override
 	public IMessage onMessage(final PhysWrapperPositionMessage message, MessageContext ctx) {
-		if (Minecraft.getMinecraft().thePlayer == null) {
+		if (Minecraft.getMinecraft().player == null) {
 			return null;
 		}
 
@@ -20,7 +20,7 @@ public class PhysWrapperPositionHandler implements IMessageHandler<PhysWrapperPo
 		mainThread.addScheduledTask(new Runnable() {
 			@Override
 			public void run() {
-				Entity ent = Minecraft.getMinecraft().theWorld.getEntityByID(message.entityID);
+				Entity ent = Minecraft.getMinecraft().world.getEntityByID(message.entityID);
 				if (ent != null && ent instanceof PhysicsWrapperEntity) {
 					PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity) ent;
 

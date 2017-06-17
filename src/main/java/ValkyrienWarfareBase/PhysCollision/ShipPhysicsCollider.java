@@ -56,7 +56,7 @@ public class ShipPhysicsCollider {
 
 		Polygon betweenBBPoly = new Polygon(betweenBB, toCollideWith.coordTransform.wToLTransform);
 
-		List<AxisAlignedBB> bbsInFirst = parent.worldObj.getCollisionBoxes(betweenBBPoly.getEnclosedAABB());
+		List<AxisAlignedBB> bbsInFirst = parent.worldObj.getCollisionBoxes(parent.wrapper, betweenBBPoly.getEnclosedAABB());
 		if (bbsInFirst.isEmpty()) {
 			return;
 		}
@@ -73,7 +73,7 @@ public class ShipPhysicsCollider {
 			Polygon inShip2Poly = new Polygon(inWorldAABB, parent.coordTransform.wToLTransform);
 
 			// This is correct
-			List<AxisAlignedBB> bbsInSecond = parent.worldObj.getCollisionBoxes(inShip2Poly.getEnclosedAABB());
+			List<AxisAlignedBB> bbsInSecond = parent.worldObj.getCollisionBoxes(parent.wrapper, inShip2Poly.getEnclosedAABB());
 
 			Iterator<AxisAlignedBB> secondRandIter = bbsInSecond.iterator();// RandomIterator.getRandomIteratorForList(bbsInSecond);
 

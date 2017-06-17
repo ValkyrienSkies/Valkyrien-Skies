@@ -36,7 +36,7 @@ public class WorldBorderFixWrapper extends WorldBorder{
 
 	@Override
     public boolean contains(ChunkPos range) {
-		if(PhysicsChunkManager.isLikelyShipChunk(range.chunkXPos, range.chunkZPos)){
+		if(PhysicsChunkManager.isLikelyShipChunk(range.x, range.z)){
 			return true;
 		}
         return wrapping.contains(range);

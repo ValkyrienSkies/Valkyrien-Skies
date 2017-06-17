@@ -48,7 +48,6 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
@@ -170,6 +169,7 @@ public class ValkyrienWarfareControlMod {
 		dopedEtherium = new BlockDopedEtherium(Material.GLASS).setHardness(4f).setUnlocalizedName("dopedetherium").setRegistryName(MODID, "dopedetherium").setCreativeTab(CreativeTabs.TRANSPORTATION);
 		balloonBurner = new BlockBalloonBurner(Material.IRON).setHardness(4f).setUnlocalizedName("balloonburner").setRegistryName(MODID, "balloonburner").setCreativeTab(CreativeTabs.TRANSPORTATION);
 		pilotsChair = new BlockShipPilotsChair(Material.IRON).setHardness(4f).setUnlocalizedName("shippilotschair").setRegistryName(MODID, "shippilotschair").setCreativeTab(CreativeTabs.TRANSPORTATION);
+
 		passengerChair = new BlockShipPassengerChair(Material.IRON).setHardness(4f).setUnlocalizedName("shippassengerchair").setRegistryName(MODID, "shippassengerchair").setCreativeTab(CreativeTabs.TRANSPORTATION);
 		shipHelm = new BlockShipHelm(Material.WOOD).setHardness(4f).setUnlocalizedName("shiphelm").setRegistryName(MODID, "shiphelm").setCreativeTab(CreativeTabs.TRANSPORTATION);
 		shipWheel = new BlockShipWheel(Material.WOOD).setHardness(5f).setUnlocalizedName("shiphelmwheel").setRegistryName(MODID, "shiphelmwheel").setCreativeTab(CreativeTabs.TRANSPORTATION);
@@ -202,17 +202,17 @@ public class ValkyrienWarfareControlMod {
 	}
 
 	private void registerTileEntities(FMLStateEvent event) {
-		TileEntity.addMapping(TileEntityHoverController.class, "tilehovercontroller");
-		TileEntity.addMapping(TileEntityNormalEtherCompressor.class, "tileantigravengine");
-		TileEntity.addMapping(BalloonBurnerTileEntity.class, "tileballoonburner");
-		TileEntity.addMapping(PilotsChairTileEntity.class, "tilemanualshipcontroller");
-		TileEntity.addMapping(ThrustRelayTileEntity.class, "tilethrustrelay");
-		TileEntity.addMapping(ThrustModulatorTileEntity.class, "tilethrustmodulator");
-		TileEntity.addMapping(TileEntityShipHelm.class, "tileshiphelm");
+		GameRegistry.registerTileEntity(TileEntityHoverController.class, "tilehovercontroller");
+		GameRegistry.registerTileEntity(TileEntityNormalEtherCompressor.class, "tileantigravengine");
+		GameRegistry.registerTileEntity(BalloonBurnerTileEntity.class, "tileballoonburner");
+		GameRegistry.registerTileEntity(PilotsChairTileEntity.class, "tilemanualshipcontroller");
+		GameRegistry.registerTileEntity(ThrustRelayTileEntity.class, "tilethrustrelay");
+		GameRegistry.registerTileEntity(ThrustModulatorTileEntity.class, "tilethrustmodulator");
+		GameRegistry.registerTileEntity(TileEntityShipHelm.class, "tileshiphelm");
 	}
-
 	private void registerItems(FMLStateEvent event) {
 		systemLinker = new ItemSystemLinker().setUnlocalizedName("systemlinker").setRegistryName(MODID, "systemlinker").setCreativeTab(CreativeTabs.TRANSPORTATION).setMaxStackSize(1);
+
 		airshipStealer = new ItemShipStealer().setUnlocalizedName("airshipStealer").setRegistryName(MODID, "airshipStealer").setCreativeTab(CreativeTabs.TOOLS).setMaxStackSize(1);
 		relayWire = new ItemRelayWire().setUnlocalizedName("relaywire").setRegistryName(MODID, "relaywire").setCreativeTab(CreativeTabs.TRANSPORTATION).setMaxStackSize(1);
 
@@ -243,7 +243,7 @@ public class ValkyrienWarfareControlMod {
 	}
 
 	private void registerNetworks(FMLStateEvent event) {
-		controlNetwork = NetworkRegistry.INSTANCE.newSimpleChannel("controlNetwork");
+		controlNetwork = NetworkRegistry.INSTANCE.newSimpleChannel("controlnetwork");
 		controlNetwork.registerMessage(HovercraftControllerGUIInputHandler.class, HovercraftControllerGUIInputMessage.class, 0, Side.SERVER);
 		controlNetwork.registerMessage(PilotControlsMessageHandler.class, PilotControlsMessage.class, 1, Side.SERVER);
 		controlNetwork.registerMessage(EntityFixMessageHandler.class, EntityFixMessage.class, 2, Side.CLIENT);

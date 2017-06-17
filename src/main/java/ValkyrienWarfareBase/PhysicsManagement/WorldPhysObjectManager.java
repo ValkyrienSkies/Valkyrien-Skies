@@ -50,8 +50,8 @@ public class WorldPhysObjectManager {
 	        for (PhysicsWrapperEntity wrapper : list){
 	        	if(!wrapper.isDead){
 		        	if(wrapper.wrapping.surroundingWorldChunksCache != null){
-		        		int chunkCacheX = MathHelper.floor_double(wrapper.posX/16D)-wrapper.wrapping.surroundingWorldChunksCache.chunkX;
-		        		int chunkCacheZ = MathHelper.floor_double(wrapper.posZ/16D)-wrapper.wrapping.surroundingWorldChunksCache.chunkZ;
+		        		int chunkCacheX = MathHelper.floor(wrapper.posX/16D)-wrapper.wrapping.surroundingWorldChunksCache.chunkX;
+		        		int chunkCacheZ = MathHelper.floor(wrapper.posZ/16D)-wrapper.wrapping.surroundingWorldChunksCache.chunkZ;
 
 		        		chunkCacheX = Math.max(0, Math.min(chunkCacheX,wrapper.wrapping.surroundingWorldChunksCache.chunkArray.length-1));
 		        		chunkCacheZ = Math.max(0, Math.min(chunkCacheZ,wrapper.wrapping.surroundingWorldChunksCache.chunkArray[0].length-1));
@@ -59,7 +59,9 @@ public class WorldPhysObjectManager {
 		        		Chunk chunk = wrapper.wrapping.surroundingWorldChunksCache.chunkArray[chunkCacheX][chunkCacheZ];
 
 //		        		Chunk chunk = wrapper.wrapping.surroundingWorldChunksCache.chunkArray[(wrapper.wrapping.surroundingWorldChunksCache.chunkArray.length)/2][(wrapper.wrapping.surroundingWorldChunksCache.chunkArray[0].length)/2];
-			            if (chunk != null && !worldServer.thePlayerManager.contains(chunk.xPosition, chunk.zPosition)) {
+
+			            if (chunk != null && !worldServer.playerChunkMap.contains(chunk.x, chunk.z))
+			            {
 			            	frozenShips.add(wrapper);
 			            	//Then I should freeze any ships in this chunk
 			            }
@@ -73,7 +75,7 @@ public class WorldPhysObjectManager {
 		ArrayList<PhysicsWrapperEntity> dumbShips = new ArrayList<PhysicsWrapperEntity>();
 
 		for (PhysicsWrapperEntity wrapper:list){
-        	if(wrapper.isDead || wrapper.wrapping == null || (wrapper.wrapping.physicsProcessor == null && !wrapper.worldObj.isRemote)){
+        	if(wrapper.isDead || wrapper.wrapping == null || (wrapper.wrapping.physicsProcessor == null && !wrapper.world.isRemote)){
         		dumbShips.add(wrapper);
         	}
 		}
@@ -110,7 +112,7 @@ public class WorldPhysObjectManager {
 
 	public void onLoad(PhysicsWrapperEntity loaded) {
 		if (!loaded.wrapping.fromSplit) {
-			if(loaded.worldObj.isRemote){
+			if(loaded.world.isRemote){
 				ArrayList<PhysicsWrapperEntity> potentialMatches = new ArrayList<PhysicsWrapperEntity>();
 				for(PhysicsWrapperEntity wrapper : physicsEntities){
 					if(wrapper.getPersistentID().equals(loaded.getPersistentID())){
@@ -135,7 +137,7 @@ public class WorldPhysObjectManager {
 	}
 
 	public void onUnload(PhysicsWrapperEntity loaded) {
-		if(!loaded.worldObj.isRemote){
+		if(!loaded.world.isRemote){
 			physicsEntities.remove(loaded);
 			physCollisonCallables.remove(loaded.wrapping.collisionCallable);
 			loaded.wrapping.onThisUnload();
@@ -151,7 +153,7 @@ public class WorldPhysObjectManager {
 	 */
 	@Deprecated
 	public PhysicsWrapperEntity getManagingObjectForChunk(Chunk chunk) {
-		return getManagingObjectForChunkPosition(chunk.xPosition, chunk.zPosition);
+		return getManagingObjectForChunkPosition(chunk.x, chunk.z);
 	}
 
 	public PhysicsWrapperEntity getManagingObjectForChunkPosition(int chunkX, int chunkZ) {

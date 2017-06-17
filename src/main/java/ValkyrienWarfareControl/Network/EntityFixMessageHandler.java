@@ -15,7 +15,7 @@ public class EntityFixMessageHandler implements IMessageHandler<EntityFixMessage
 		mainThread.addScheduledTask(new Runnable() {
 			@Override
 			public void run() {
-				PhysicsWrapperEntity toFixOn = (PhysicsWrapperEntity) Minecraft.getMinecraft().theWorld.getEntityByID(message.shipId);
+				PhysicsWrapperEntity toFixOn = (PhysicsWrapperEntity) Minecraft.getMinecraft().world.getEntityByID(message.shipId);
 				if (toFixOn != null) {
 					if (message.isFixing) {
 						toFixOn.wrapping.fixEntityUUID(message.entityUUID, message.localPosition);

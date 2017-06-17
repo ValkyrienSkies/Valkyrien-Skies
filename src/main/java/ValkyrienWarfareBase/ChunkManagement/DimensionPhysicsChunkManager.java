@@ -44,13 +44,13 @@ public class DimensionPhysicsChunkManager {
 	}
 
 	public void registerChunksForShip(PhysicsWrapperEntity wrapper){
-		World shipWorld = wrapper.worldObj;
+		World shipWorld = wrapper.world;
 		BlockPosToShipUUIDData data = BlockPosToShipUUIDData.get(shipWorld);
 		data.addShipToPersistantMap(wrapper);
 	}
 
 	public void removeRegistedChunksForShip(PhysicsWrapperEntity wrapper){
-		World shipWorld = wrapper.worldObj;
+		World shipWorld = wrapper.world;
 		BlockPosToShipUUIDData data = BlockPosToShipUUIDData.get(shipWorld);
 
 		data.removeShipFromPersistantMap(wrapper);
@@ -69,23 +69,23 @@ public class DimensionPhysicsChunkManager {
 	}
 
 	public void updateShipPosition(PhysicsWrapperEntity wrapper){
-		World shipWorld = wrapper.worldObj;
+		World shipWorld = wrapper.world;
 		ShipUUIDToPosData data = ShipUUIDToPosData.get(shipWorld);
 
 		data.updateShipPosition(wrapper);
 	}
 
 	public void removeShipPosition(PhysicsWrapperEntity wrapper){
-		World shipWorld = wrapper.worldObj;
+		World shipWorld = wrapper.world;
 		ShipUUIDToPosData data = ShipUUIDToPosData.get(shipWorld);
 
 		data.removeShipFromMap(wrapper);
 	}
 
 	public void removeShipNameRegistry(PhysicsWrapperEntity wrapper) {
-		World shipWorld = wrapper.worldObj;
+		World shipWorld = wrapper.world;
 		ShipNameUUIDData data = ShipNameUUIDData.get(shipWorld);
-		
+
 		data.removeShipFromRegistry(wrapper);
 	}
 }

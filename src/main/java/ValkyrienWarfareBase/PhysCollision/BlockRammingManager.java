@@ -45,15 +45,15 @@ public class BlockRammingManager {
 
 			if(hardnessRatio < .01D){
 				didBlockBreakInWorld.setValue(true);
-				double shipBlockMass = BlockMass.basicMass.getMassFromState(inLocalState, inLocal, wrapper.worldObj);
-				double worldBlockMass = BlockMass.basicMass.getMassFromState(inWorldState, inWorld, wrapper.worldObj);
+				double shipBlockMass = BlockMass.basicMass.getMassFromState(inLocalState, inLocal, wrapper.world);
+				double worldBlockMass = BlockMass.basicMass.getMassFromState(inWorldState, inWorld, wrapper.world);
 //				return worldBlockMass / shipBlockMass;
 				return Math.pow(worldBlockMass / worldBlockMass, arbitraryScale);//wrapper.wrapping.physicsProcessor.mass;
 			}
 			if(hardnessRatio > 100D){
 				didBlockBreakInShip.setValue(true);
-				double shipBlockMass = BlockMass.basicMass.getMassFromState(inLocalState, inLocal, wrapper.worldObj);
-				double worldBlockMass = BlockMass.basicMass.getMassFromState(inWorldState, inWorld, wrapper.worldObj);
+				double shipBlockMass = BlockMass.basicMass.getMassFromState(inLocalState, inLocal, wrapper.world);
+				double worldBlockMass = BlockMass.basicMass.getMassFromState(inWorldState, inWorld, wrapper.world);
 //				return shipBlockMass / worldBlockMass;
 				return Math.pow(shipBlockMass / worldBlockMass, arbitraryScale);//wrapper.wrapping.physicsProcessor.mass;
 			}

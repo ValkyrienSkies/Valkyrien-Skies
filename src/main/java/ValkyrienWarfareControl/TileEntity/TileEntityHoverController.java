@@ -48,7 +48,7 @@ public class TileEntityHoverController extends TileEntity {
 
 		shipVel.multiply(physObj.physicsProcessor.invMass);
 
-		if (!worldObj.isBlockPowered(getPos()) || autoStabalizerControl) {
+		if (!world.isBlockPowered(getPos()) || autoStabalizerControl) {
 			setAutoStabilizationValue(physObj);
 		}
 

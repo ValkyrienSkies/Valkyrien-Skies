@@ -86,15 +86,15 @@ public class HovercraftControllerGUI extends GuiContainer {
 	@Override
 	public void initGui() {
 		super.initGui();
-		this.mc.thePlayer.openContainer = this.inventorySlots;
+		this.mc.player.openContainer = this.inventorySlots;
 		this.guiLeft = (this.width - this.xSize) / 2;
 		this.guiTop = (this.height - this.ySize) / 2;
 		textFields.clear();
 		int fieldWidth = 40;
 		int fieldHeight = 20;
-		GuiTextField top = new GuiTextField(0, fontRendererObj, (width - fieldWidth) / 2 - 61, (height - fieldHeight) / 2 - 77, fieldWidth, fieldHeight);
-		GuiTextField mid = new GuiTextField(0, fontRendererObj, (width - fieldWidth) / 2 - 57, (height - fieldHeight) / 2 - 49, fieldWidth, fieldHeight);
-		GuiTextField bot = new GuiTextField(0, fontRendererObj, (width - fieldWidth) / 2 - 57, (height - fieldHeight) / 2 - 20, fieldWidth, fieldHeight);
+		GuiTextField top = new GuiTextField(0, fontRenderer, (width - fieldWidth) / 2 - 61, (height - fieldHeight) / 2 - 77, fieldWidth, fieldHeight);
+		GuiTextField mid = new GuiTextField(0, fontRenderer, (width - fieldWidth) / 2 - 57, (height - fieldHeight) / 2 - 49, fieldWidth, fieldHeight);
+		GuiTextField bot = new GuiTextField(0, fontRenderer, (width - fieldWidth) / 2 - 57, (height - fieldHeight) / 2 - 20, fieldWidth, fieldHeight);
 		top.setEnableBackgroundDrawing(false);
 		mid.setEnableBackgroundDrawing(false);
 		bot.setEnableBackgroundDrawing(false);
@@ -170,7 +170,7 @@ public class HovercraftControllerGUI extends GuiContainer {
 	private HovercraftControllerGUIInputMessage getMessage() {
 		HovercraftControllerGUIInputMessage toReturn = new HovercraftControllerGUIInputMessage();
 		toReturn.tilePos = tileEnt.getPos();
-		toReturn.physEntId = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(mc.theWorld, toReturn.tilePos).getEntityId();
+		toReturn.physEntId = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(mc.world, toReturn.tilePos).getEntityId();
 		try {
 			toReturn.newIdealHeight = Double.parseDouble(textFields.get(0).getText());
 			toReturn.newStablitiyBias = Double.parseDouble(textFields.get(1).getText()) / 100D;

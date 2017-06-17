@@ -13,10 +13,10 @@ import net.minecraft.world.World;
 
 public class EntitySolidball extends EntitySnowball {
 
-	
-	int Pen; 
-	
-	
+
+	int Pen;
+
+
 	public EntitySolidball(World worldIn, double x, double y, double z) {
 		super(worldIn, x, y, z);
 	}
@@ -29,7 +29,7 @@ public class EntitySolidball extends EntitySnowball {
     protected void onImpact(RayTraceResult result)
     {
 
-        if (!this.worldObj.isRemote)
+        if (!this.world.isRemote)
         {
         	double x = this.posX + this.motionX/2;
         	double y = this.posY + this.motionY/2;
@@ -51,25 +51,25 @@ public class EntitySolidball extends EntitySnowball {
         }
     }
 
-    
-    
-    
-    
+
+
+
+
 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-    	
+
     	super.writeToNBT(compound);
     	compound.setInteger("Penetration",Pen);
-		return compound;    	
+		return compound;
     }
-    
+
     @Override
     public void readFromNBT(NBTTagCompound compound) {
-    	
+
     	super.readFromNBT(compound);
     	Pen = compound.getInteger("Penetration");
     }
-    
-    
+
+
 }

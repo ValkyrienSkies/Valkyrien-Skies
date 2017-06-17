@@ -34,6 +34,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -129,7 +130,7 @@ public class ValkyrienWarfareMod {
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
 		proxy.init(event);
-		EntityRegistry.registerModEntity(PhysicsWrapperEntity.class, "PhysWrapper", 70, this, 120, 1, false);
+		EntityRegistry.registerModEntity(new ResourceLocation(MODID, "PhysWrapper"), PhysicsWrapperEntity.class, "PhysWrapper", 70, this, 120, 1, false);
 	}
 
 	@EventHandler
@@ -215,8 +216,6 @@ public class ValkyrienWarfareMod {
 		shipLowerLimit = config.get(Configuration.CATEGORY_GENERAL, "Ship Y-Height Minimum", -30D).getDouble();
 
 		maxAirships = config.get(Configuration.CATEGORY_GENERAL, "Max airships per player", -1, "Players can't own more than this many airships at once. Set to -1 to disable.").getInt();
-
-//		highAccuracyCollisions = config.get(Configuration.CATEGORY_GENERAL, "Enable higher collision accuracy", false, "Debug feature, takes an insane amount of processing power").getBoolean();
 
 		accurateRain = config.get(Configuration.CATEGORY_GENERAL, "Enable accurate rain on ships", false, "Debug feature, takes a lot of processing power").getBoolean();
 

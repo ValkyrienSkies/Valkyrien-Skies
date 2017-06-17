@@ -63,16 +63,16 @@ public abstract class TileEntityEtherCompressor extends BasicForceNodeTileEntity
 			return new Vector();
 		}
 
-		TileEntity controllerTile = worldObj.getTileEntity(controllerPos);
+		TileEntity controllerTile = world.getTileEntity(controllerPos);
 
 		if(controllerTile != null){
 
 			if(controllerTile instanceof TileEntityHoverController){
 				TileEntityHoverController controller = (TileEntityHoverController) controllerTile;
 
-				PhysicsObject physObj = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldObj, pos).wrapping;
+				PhysicsObject physObj = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos).wrapping;
 
-				Vector notToReturn = controller.getForceForEngine(this, worldObj, getPos(), worldObj.getBlockState(pos), physObj, secondsToApply);
+				Vector notToReturn = controller.getForceForEngine(this, world, getPos(), world.getBlockState(pos), physObj, secondsToApply);
 
 				this.currentThrust = notToReturn.length() / secondsToApply;
 

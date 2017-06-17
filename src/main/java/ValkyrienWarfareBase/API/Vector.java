@@ -134,7 +134,7 @@ public class Vector {
 	}
 
 	public void normalize() {
-		double d = MathHelper.sqrt_double(X * X + Y * Y + Z * Z);
+		double d = MathHelper.sqrt(X * X + Y * Y + Z * Z);
 		if (d < 1.0E-6D) {
 			X = 0.0D;
 			Y = 0.0D;

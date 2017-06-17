@@ -4,6 +4,7 @@ import ValkyrienWarfareBase.PhysicsSettings;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
@@ -20,7 +21,7 @@ public class WorldEventsCommon {
 			//                    --DaPorkchop_, 28/03/2017
 			if (PhysicsSettings.doEtheriumLifting) {
 				if (!player.isCreative()) {
-					for (ItemStack[] stackArray : player.inventory.allInventories) {
+					for (NonNullList<ItemStack> stackArray : player.inventory.allInventories) {
 						for (ItemStack stack : stackArray) {
 							if (stack != null) {
 								if (stack.getItem() instanceof ItemBlock) {
@@ -38,5 +39,5 @@ public class WorldEventsCommon {
 			}
 		}
 	}
-	
+
 }

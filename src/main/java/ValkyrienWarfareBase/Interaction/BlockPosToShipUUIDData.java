@@ -126,7 +126,7 @@ public class BlockPosToShipUUIDData extends WorldSavedData{
 		BlockPosToShipUUIDData data = (BlockPosToShipUUIDData) storage.getOrLoadData(BlockPosToShipUUIDData.class, key);
 		if (data == null) {
 			data = new BlockPosToShipUUIDData();
-			world.setItemData(key, data);
+			world.setData(key, data);
 		}
 		return data;
 	}

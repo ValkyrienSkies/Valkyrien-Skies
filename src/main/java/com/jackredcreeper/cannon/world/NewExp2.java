@@ -5,20 +5,16 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import javax.annotation.Nullable;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
-import ValkyrienWarfareBase.CoreMod.CallRunner;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.enchantment.EnchantmentProtection;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.item.EntityTNTPrimed;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.SoundEvents;
@@ -31,8 +27,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class NewExp2 extends Explosion {
 
@@ -73,12 +67,12 @@ public class NewExp2 extends Explosion {
         isFlaming = flaming;
         isSmoking = smoking;
         position = new Vec3d(explosionX, explosionY, explosionZ);
-        
+
     }
 
     public NewExp2 newBoom(World worldIn, Entity entityIn, double x, double y, double z, float size, float power, float damage, float blast, boolean isFlaming, boolean isSmoking)
     {
-    	
+
         NewExp2 explosion = new NewExp2(worldIn, null, x, y, z, size, power, damage, blast, isFlaming, isSmoking);
         if (net.minecraftforge.event.ForgeEventFactory.onExplosionStart(worldIn, explosion)) return explosion;
         //Not this
@@ -87,10 +81,10 @@ public class NewExp2 extends Explosion {
         explosion.doExplosionB(true);
         return explosion;
     }
-    
+
 	/**
      * Does the first part of the explosion (destroy blocks)
-     */   
+     */
     public void doExplosionA()
     {
         Set<BlockPos> set = Sets.<BlockPos>newHashSet();
@@ -143,13 +137,15 @@ public class NewExp2 extends Explosion {
         }
 
         this.affectedBlockPositions.addAll(set);
-        float f3 = this.explosionSize;
-        int k1 = MathHelper.floor_double(this.explosionX - (double)f3 - 1.0D);
-        int l1 = MathHelper.floor_double(this.explosionX + (double)f3 + 1.0D);
-        int i2 = MathHelper.floor_double(this.explosionY - (double)f3 - 1.0D);
-        int i1 = MathHelper.floor_double(this.explosionY + (double)f3 + 1.0D);
-        int j2 = MathHelper.floor_double(this.explosionZ - (double)f3 - 1.0D);
-        int j1 = MathHelper.floor_double(this.explosionZ + (double)f3 + 1.0D);
+
+        float f3 = this.explosionSize;//*2;
+        int k1 = MathHelper.floor(this.explosionX - (double)f3 - 1.0D);
+        int l1 = MathHelper.floor(this.explosionX + (double)f3 + 1.0D);
+        int i2 = MathHelper.floor(this.explosionY - (double)f3 - 1.0D);
+        int i1 = MathHelper.floor(this.explosionY + (double)f3 + 1.0D);
+        int j2 = MathHelper.floor(this.explosionZ - (double)f3 - 1.0D);
+        int j1 = MathHelper.floor(this.explosionZ + (double)f3 + 1.0D);
+
         List<Entity> list = this.worldObj.getEntitiesWithinAABBExcludingEntity(this.exploder, new AxisAlignedBB((double)k1, (double)i2, (double)j2, (double)l1, (double)i1, (double)j1));
         net.minecraftforge.event.ForgeEventFactory.onExplosionDetonate(this.worldObj, this, list, f3);
         Vec3d vec3d = new Vec3d(this.explosionX, this.explosionY, this.explosionZ);
@@ -167,7 +163,7 @@ public class NewExp2 extends Explosion {
                     double d5 = entity.posX - this.explosionX;
                     double d7 = entity.posY + (double)entity.getEyeHeight() - this.explosionY;
                     double d9 = entity.posZ - this.explosionZ;
-                    double d13 = (double)MathHelper.sqrt_double(d5 * d5 + d7 * d7 + d9 * d9);
+                    double d13 = (double)MathHelper.sqrt(d5 * d5 + d7 * d7 + d9 * d9);
 
                     if (d13 != 0.0D)
                     {
@@ -234,7 +230,7 @@ public class NewExp2 extends Explosion {
                     double d3 = d0 - this.explosionX;
                     double d4 = d1 - this.explosionY;
                     double d5 = d2 - this.explosionZ;
-                    double d6 = (double)MathHelper.sqrt_double(d3 * d3 + d4 * d4 + d5 * d5);
+                    double d6 = (double)MathHelper.sqrt(d3 * d3 + d4 * d4 + d5 * d5);
                     d3 = d3 / d6;
                     d4 = d4 / d6;
                     d5 = d5 / d6;
@@ -257,7 +253,7 @@ public class NewExp2 extends Explosion {
                     block.onBlockExploded(this.worldObj, blockpos, this);
                 }
             }
-        
+
 
         if (this.isFlaming)
         {

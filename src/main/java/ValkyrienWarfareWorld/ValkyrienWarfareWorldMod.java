@@ -7,6 +7,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -47,7 +48,7 @@ public class ValkyrienWarfareWorldMod {
 
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
-		EntityRegistry.registerModEntity(EntityFallingUpBlock.class, "FallingUpBlockEntity", 75, this, 80, 1, true);
+		EntityRegistry.registerModEntity(new ResourceLocation(MODID, "FallingUpBlockEntity"), EntityFallingUpBlock.class, "FallingUpBlockEntity", 75, this, 80, 1, true);
 		MinecraftForge.EVENT_BUS.register(worldEventsCommon);
 		proxy.init(event);
 

@@ -97,7 +97,7 @@ public class ShipUUIDToPosData extends WorldSavedData{
 		ShipUUIDToPosData data = (ShipUUIDToPosData) storage.getOrLoadData(ShipUUIDToPosData.class, key);
 		if (data == null) {
 			data = new ShipUUIDToPosData();
-			world.setItemData(key, data);
+			world.setData(key, data);
 		}
 		return data;
 	}

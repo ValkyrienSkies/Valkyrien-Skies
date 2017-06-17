@@ -1,129 +1,108 @@
-// For those who want the bleeding edge
 buildscript {
     repositories {
         jcenter()
-        maven { url = "http://files.minecraftforge.net/maven" }
+        maven {
+            name = "forge"
+            url = "http://files.minecraftforge.net/maven"
+        }
+        maven {
+            name = 'SpongePowered'
+            url = 'http://repo.spongepowered.org/maven'
+        }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
+        classpath "net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT"
+        classpath 'org.spongepowered:mixingradle:0.4-SNAPSHOT'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
     }
 }
-apply plugin: 'net.minecraftforge.gradle.forge'
-apply plugin: 'maven-publish'
 
-repositories {
-		maven {
-			name "Mobius Repo"
-			url "http://mobiusstrip.eu/maven"
-		}
-		maven {
-			name 'DVS1 Maven FS'
-			url 'http://dvs1.progwml6.com/files/maven'
-		}
-		maven {
-			name 'SpongeForge Repo'
-			url 'https://mvnrepository.com/artifact/org.spongepowered/spongeforge'
-		}
-}
+apply plugin: "net.minecraftforge.gradle.forge"
+apply plugin: 'org.spongepowered.mixin'
+apply plugin: 'com.github.johnrengelman.shadow'
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
-// define the properties file
-ext.configFile = file "project.properties"
-
-configFile.withReader {
-    // read config.  it shall from now on be referenced as simply config or as project.config
-    def prop = new Properties()
-    prop.load(it)
-    project.ext.config = new ConfigSlurper().parse prop
-}
-
-version = "${config.minecraft_version}-${config.mod_version}"
-if (hasProperty('appendBuildNumber')) {
-    version = version + "-" + appendBuildNumber.toString()
-} else {
-    version = version + "-0"
-}
-
-group = "${config.group_id}" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "${config.mod_id_cap}"
+version = modVersion
+group = modGroup
 
 minecraft {
-    version = "${config.forge_version}"
+    version = project.forgeVersion
     runDir = "run"
-    
-    // the mappings can be changed at any time, and must be in the following format.
-    // snapshot_YYYYMMDD   snapshot are built nightly.
-    // stable_#            stables are built at the discretion of the MCP team.
-    // Use non-default mappings at your own risk. they may not allways work.
-    // simply re-run your setup task after changing the mappings to update your workspace.
-    mappings = "snapshot_20170304"
-	coreMod = "ValkyrienWarfareBase.CoreMod.ValkyrienWarfarePlugin"
+    mappings = project.mcpVersion
+    coreMod = "ValkyrienWarfareBase.Mixin.MixinLoaderForge"
 	// makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 }
 
-dependencies {
-    // Basically just mods that are being bugtested with ValkyrienWarfare go here, they will get autocompiled and mixed into the project
-	
-    //deobfCompile "slimeknights.mantle:Mantle:${config.minecraft_version}-${config.mantle_version}:deobf"
-	
-    //compile "slimeknights:TConstruct:${config.minecraft_version_short}-${config.ticon_version}:deobf"
-
-	//compile "org.spongepowered:spongeforge:1.10.2-2123-5.1.0-BETA-1893"
+repositories {
+    maven {
+        name = 'spongepowered-repo'
+        url = 'http://repo.spongepowered.org/maven/'
+    }
+    mavenCentral()
 }
 
-processResources
-{
+dependencies {
+    //Mixin needs to be distributed with the mod, very important
+    compile("org.spongepowered:mixin:0.6.4-SNAPSHOT") {
+        exclude module: "launchwrapper"
+    }
+    // Basically just mods that are being bugtested with ValkyrienWarfare go here, they will get autocompiled and mixed into the project
+}
+
+processResources {
     // this will ensure that this task is redone when the versions change.
     inputs.property "version", project.version
     inputs.property "mcversion", project.minecraft.version
 
     // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
-        include 'mcmod.info'
-                
+        include "mcmod.info"
+
         // replace version and mcversion
-        expand 'version':project.version, 'mcversion':project.minecraft.version
+        expand "version": project.version, "mcversion": project.minecraft.version
     }
-        
+
     // copy everything else, thats not the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
-        exclude 'mcmod.info'
+        exclude "mcmod.info"
+    }
+
+    // move _at.cfg into META-INF
+    rename '(.+_at.cfg)', 'META-INF/$1'
+}
+
+mixin {
+    defaultObfuscationEnv searge
+    add sourceSets.main, "mixins.valkyrienwarfare.refmap.json"
+}
+
+reobf {
+    shadowJar {
+        mappingType = 'SEARGE'
+        classpath = sourceSets.main.compileClasspath
     }
 }
+
+shadowJar {
+    dependencies {
+        include(dependency('org.spongepowered:mixin'))
+    }
+    exclude 'dummyThing'
+    exclude 'LICENSE.txt'
+    classifier = 'full'
+}
+
+build.dependsOn(shadowJar)
 
 jar {
     manifest {
-		attributes 'FMLAT': 'ValkyrienWarfare_At.cfg'
-		attributes 'FMLCorePluginContainsFMLMod': 'true'
+        attributes(
+                "MixinConfigs": 'mixins.valkyrienwarfare.json',
+                "tweakClass": 'org.spongepowered.asm.launch.MixinTweaker',
+                "TweakOrder": 0,
+                'FMLCorePluginContainsFMLMod': 'true',
+                'FMLCorePlugin': 'ValkyrienWarfareBase.Mixin.MixinLoaderForge',
+                'FMLAT': 'ValkyrienWarfare_At.cfg'
+        )
     }
 }
-
-task deobfJar(type: Jar) {
-    from sourceSets.main.output
-    classifier = 'dev'
-	manifest {
-		attributes 'FMLAT': 'ValkyrienWarfare_At.cfg'
-		attributes 'FMLCorePlugin': 'ValkyrienWarfareBase.CoreMod.ValkyrienWarfarePlugin' 
-		attributes 'FMLCorePluginContainsFMLMod': 'true'
-    }
-}
-
-tasks.build.dependsOn deobfJar, sourceJar
-
-publishing {
-    tasks.publish.dependsOn 'build'
-    publications {
-        mavenJava(MavenPublication) {
-            groupId config.mod_id_cap
-            artifactId config.mod_id
-            artifact jar
-            artifact sourceJar
-            artifact deobfJar
-        }
-    }
-    repositories {
-        mavenLocal()
-    }
-}
+sourceCompatibility = targetCompatibility = "1.8"

@@ -4,6 +4,7 @@ import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Fixes.SoundFixWrapper;
 import ValkyrienWarfareBase.Interaction.EntityDraggable;
+import ValkyrienWarfareBase.Interaction.IDraggable;
 import ValkyrienWarfareBase.Network.PlayerShipRefrenceMessage;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
@@ -59,10 +60,10 @@ public class EventsClient {
 			}
 			if(event.phase == Phase.END){
 				Object o = Minecraft.getMinecraft().player;
-				EntityDraggable draggable = (EntityDraggable) o;
+				IDraggable draggable = (IDraggable) o;
 
-				if(draggable.worldBelowFeet != null){
-					PlayerShipRefrenceMessage playerPosMessage = new PlayerShipRefrenceMessage(Minecraft.getMinecraft().player, draggable.worldBelowFeet);
+				if(draggable.getWorldBelowFeet() != null){
+					PlayerShipRefrenceMessage playerPosMessage = new PlayerShipRefrenceMessage(Minecraft.getMinecraft().player, draggable.getWorldBelowFeet());
 
 					ValkyrienWarfareMod.physWrapperNetwork.sendToServer(playerPosMessage);
 				}

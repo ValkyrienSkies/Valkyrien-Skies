@@ -1,7 +1,7 @@
 package ValkyrienWarfareCombat.Entity;
 
 import ValkyrienWarfareBase.API.Vector;
-import ValkyrienWarfareBase.CoreMod.CallRunner;
+import ValkyrienWarfareBase.Mixin.world.MixinWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.MathHelper;
@@ -55,7 +55,7 @@ public class EntityCannonBall extends Entity {
 		Vec3d origin = new Vec3d(posX, posY, posZ);
 		Vec3d traceEnd = origin.addVector(motionX, motionY, motionZ);
 
-		RayTraceResult traceResult = CallRunner.onRayTraceBlocks(world, origin, traceEnd, false, true, false);
+		RayTraceResult traceResult = world.rayTraceBlocks(origin, traceEnd, false, true, false);
 
 		if (traceResult == null || traceResult.typeOfHit == Type.MISS) {
 			posX += motionX;
@@ -70,7 +70,7 @@ public class EntityCannonBall extends Entity {
 		} else {
 			if (traceResult.hitVec != null && !world.isRemote) {
 				processCollision(traceResult);
-				kill();
+				this.setDead();
 			}
 		}
 	}

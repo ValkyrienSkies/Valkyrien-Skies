@@ -179,8 +179,8 @@ public class PhysicsObject {
 					blockPositions.add(posAt);
 				}
 			}
-			int chunkX = (posAt.getX() >> 4) - claimedChunks[0][0].xPosition;
-			int chunkZ = (posAt.getZ() >> 4) - claimedChunks[0][0].zPosition;
+			int chunkX = (posAt.getX() >> 4) - claimedChunks[0][0].x;
+			int chunkZ = (posAt.getZ() >> 4) - claimedChunks[0][0].z;
 			ownedChunks.chunkOccupiedInLocal[chunkX][chunkZ] = true;
 		}
 
@@ -316,8 +316,8 @@ public class PhysicsObject {
 		replaceOuterChunksWithAir();
 
 		VKChunkCache = new VWChunkCache(worldObj, claimedChunks);
-		int minChunkX = claimedChunks[0][0].xPosition;
-		int minChunkZ = claimedChunks[0][0].zPosition;
+		int minChunkX = claimedChunks[0][0].x;
+		int minChunkZ = claimedChunks[0][0].z;
 
 		refrenceBlockPos = getRegionCenter();
 		centerCoord = new Vector(refrenceBlockPos.getX(), refrenceBlockPos.getY(), refrenceBlockPos.getZ());
@@ -429,7 +429,7 @@ public class PhysicsObject {
 			}
 			worldObj.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
 		}
-		// centerDifference = new BlockPos(claimedChunks[ownedChunks.radius+1][ownedChunks.radius+1].xPosition*16,128,claimedChunks[ownedChunks.radius+1][ownedChunks.radius+1].zPosition*16);
+		// centerDifference = new BlockPos(claimedChunks[ownedChunks.radius+1][ownedChunks.radius+1].x*16,128,claimedChunks[ownedChunks.radius+1][ownedChunks.radius+1].z*16);
 		// System.out.println(chunkCache.getBlockState(centerDifference).getBlock());
 
 		for (int x = ownedChunks.minX; x <= ownedChunks.maxX; x++) {
@@ -538,7 +538,7 @@ public class PhysicsObject {
 	}
 
 	public BlockPos getRegionCenter() {
-		return new BlockPos((claimedChunks[ownedChunks.radius + 1][ownedChunks.radius + 1].xPosition * 16) - 8, 127, (claimedChunks[ownedChunks.radius + 1][ownedChunks.radius + 1].zPosition * 16) - 8);
+		return new BlockPos((claimedChunks[ownedChunks.radius + 1][ownedChunks.radius + 1].x * 16) - 8, 127, (claimedChunks[ownedChunks.radius + 1][ownedChunks.radius + 1].z * 16) - 8);
 	}
 
 	/**
@@ -749,8 +749,8 @@ public class PhysicsObject {
 
 	// Generates the blockPos array; must be loaded DIRECTLY after the chunks are setup
 	public void detectBlockPositions() {
-		// int minChunkX = claimedChunks[0][0].xPosition;
-		// int minChunkZ = claimedChunks[0][0].zPosition;
+		// int minChunkX = claimedChunks[0][0].x;
+		// int minChunkZ = claimedChunks[0][0].z;
 		int chunkX, chunkZ, index, x, y, z;
 		Chunk chunk;
 		ExtendedBlockStorage storage;
@@ -765,7 +765,7 @@ public class PhysicsObject {
 								for (x = 0; x < 16; x++) {
 									for (z = 0; z < 16; z++) {
 										if (storage.data.storage.getAt(y << 8 | z << 4 | x) != ValkyrienWarfareMod.airStateIndex) {
-											BlockPos pos = new BlockPos(chunk.xPosition * 16 + x, index * 16 + y, chunk.zPosition * 16 + z);
+											BlockPos pos = new BlockPos(chunk.x * 16 + x, index * 16 + y, chunk.z * 16 + z);
 											blockPositions.add(pos);
 											if (!worldObj.isRemote) {
 												if (BlockForce.basicForces.isBlockProvidingForce(worldObj.getBlockState(pos), pos, worldObj)) {

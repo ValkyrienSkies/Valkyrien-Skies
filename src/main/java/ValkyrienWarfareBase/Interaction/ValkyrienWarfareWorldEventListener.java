@@ -3,7 +3,6 @@ package ValkyrienWarfareBase.Interaction;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
-import ValkyrienWarfareBase.CoreMod.CallRunner;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareCombat.Entity.EntityMountingWeaponBase;
 import net.minecraft.block.state.IBlockState;
@@ -35,7 +34,7 @@ public class ValkyrienWarfareWorldEventListener implements IWorldEventListener{
 	public void notifyBlockUpdate(World worldIn, BlockPos pos, IBlockState oldState, IBlockState newState, int flags) {
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldObj, pos);
 		if(worldObj.isRemote){
-			CallRunner.markBlockRangeForRenderUpdate(worldIn,pos.getX(),pos.getY(),pos.getZ(),pos.getX(),pos.getY(),pos.getZ());
+			worldIn.markBlockRangeForRenderUpdate(pos.getX(),pos.getY(),pos.getZ(),pos.getX(),pos.getY(),pos.getZ());
 			//Strange bounding box error on CLIENT SIDE Fix, possibly broken and terrible, but probably ok
 			if(wrapper != null){
 				wrapper.wrapping.onSetBlockState(oldState, newState, pos);

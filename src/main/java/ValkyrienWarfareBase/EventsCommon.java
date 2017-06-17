@@ -7,9 +7,9 @@ import java.util.logging.Level;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Capability.IAirshipCounterCapability;
-import ValkyrienWarfareBase.CoreMod.ValkyrienWarfarePlugin;
 import ValkyrienWarfareBase.Interaction.CustomNetHandlerPlayServer;
 import ValkyrienWarfareBase.Interaction.ValkyrienWarfareWorldEventListener;
+import ValkyrienWarfareBase.Mixin.MixinLoaderForge;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsTickHandler;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.ShipType;
@@ -166,9 +166,9 @@ public class EventsCommon {
 			for(Chunk[] chunks:wrapper.wrapping.claimedChunks){
 				for(Chunk chunk:chunks){
 					if(amAdding){
-						((WorldServer)worldFor).getChunkProvider().id2ChunkMap.put(ChunkPos.asLong(chunk.xPosition, chunk.zPosition), chunk);
+						((WorldServer)worldFor).getChunkProvider().id2ChunkMap.put(ChunkPos.asLong(chunk.x, chunk.z), chunk);
 					}else{
-//						((WorldServer)worldFor).getChunkProvider().id2ChunkMap.remove(ChunkPos.chunkXZ2Int(chunk.xPosition, chunk.zPosition))
+//						((WorldServer)worldFor).getChunkProvider().id2ChunkMap.remove(ChunkPos.chunkXZ2Int(chunk.x, chunk.z))
 					}
 				}
 			}
@@ -224,7 +224,7 @@ public class EventsCommon {
 		try {
 			Field xField, yField, zField, positionField;
 
-			if (!ValkyrienWarfarePlugin.isObfuscatedEnvironment) {
+			if (!MixinLoaderForge.isObfuscatedEnvironment) {
 				xField = toSet.getClass().getDeclaredField("explosionX");
 				xField.setAccessible(true);
 

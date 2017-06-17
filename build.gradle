@@ -73,7 +73,7 @@ minecraft {
     // simply re-run your setup task after changing the mappings to update your workspace.
     mappings = "snapshot_20161111"
     coreMod = "ValkyrienWarfareBase.CoreMod.ValkyrienWarfarePlugin"
-    //makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
+	// makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 }
 
 dependencies {

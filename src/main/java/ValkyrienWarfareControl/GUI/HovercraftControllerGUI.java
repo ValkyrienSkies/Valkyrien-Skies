@@ -23,7 +23,7 @@ import net.minecraft.util.ResourceLocation;
 
 public class HovercraftControllerGUI extends GuiContainer {
 
-	private static ResourceLocation background = new ResourceLocation(ValkyrienWarfareControlMod.MODID.toLowerCase(), "textures/gui/ControlSystemGUI.png");
+	private static ResourceLocation background = new ResourceLocation("valkyrienwarfarecontrol", "textures/gui/controlsystemgui.png");
 	public TileEntityHoverController tileEnt;
 	public ArrayList<GuiTextField> textFields = new ArrayList<GuiTextField>();
 
@@ -141,13 +141,13 @@ public class HovercraftControllerGUI extends GuiContainer {
 	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
 		// GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.getTextureManager().bindTexture(background);
-		int textureX = 7;
-		int textureY = 7;
 
+		//int textureWidth = 332;
+		//int textureHeight = 352;
 		int textureWidth = 239;
 		int textureHeight = 232;
 
-		drawTexturedModalRect((width - textureWidth) / 2, (height - textureHeight) / 2, textureX, textureY, textureWidth, textureHeight);
+		drawTexturedModalRect((width - textureWidth) / 2, (height - textureHeight) / 2, 7, 7, textureWidth, textureHeight);
 	}
 
 	@Override

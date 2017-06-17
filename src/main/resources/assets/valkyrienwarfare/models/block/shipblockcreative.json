@@ -1,6 +1,1 @@
-{
-    "parent": "block/cube_all",
-    "textures": {
-        "all": "valkyrienwarfare:blocks/shipblockcreative"
-    }
-}
+{"parent":"block/cube_all","textures":{"all":"valkyrienwarfare:blocks/shipblockcreative"}}

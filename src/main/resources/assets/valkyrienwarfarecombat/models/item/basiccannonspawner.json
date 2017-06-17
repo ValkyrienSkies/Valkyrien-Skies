@@ -1,6 +1,1 @@
-{
-    "parent":"item/handheld",
-    "textures": {
-        "layer0":"valkyrienwarfarecombat:items/cannon_spawner"
-    }
-}
+{"parent":"item/handheld","textures":{"layer0":"valkyrienwarfarecombat:items/cannon_spawner"}}

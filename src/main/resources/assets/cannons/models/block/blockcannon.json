@@ -1,8 +1,1 @@
-{
-    "parent": "block/orientable",
-    "textures": {
-        "top": "cannons:blocks/cannon_side",
-        "front": "cannons:blocks/cannon",
-        "side": "cannons:blocks/cannon_side"
-    }
-}
+{"parent":"block/orientable","textures":{"top":"cannons:blocks/cannon_side","front":"cannons:blocks/cannon","side":"cannons:blocks/cannon_side"}}

@@ -1,6 +1,1 @@
-{
-    "parent":"item/handheld",
-    "textures": {
-        "layer0":"valkyrienwarfarecombat:items/powderpouch"
-    }
-}
+{"parent":"item/handheld","textures":{"layer0":"valkyrienwarfarecombat:items/powderpouch"}}

@@ -5,7 +5,6 @@ import org.lwjgl.opengl.GL11;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
-import ValkyrienWarfareBase.CoreMod.CallRunnerClient;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.Render.FastBlockModelRenderer;
 import ValkyrienWarfareControl.ValkyrienWarfareControlMod;
@@ -73,7 +72,7 @@ public class ShipHelmTileEntityRenderer extends TileEntitySpecialRenderer<TileEn
 			IBlockState glassState = ValkyrienWarfareControlMod.instance.shipWheel.getStateFromMeta(2);
 			IBlockState helmStateToRender = ValkyrienWarfareControlMod.instance.shipWheel.getStateFromMeta(3);
 			//TODO: Better rendering cache
-			int brightness = CallRunnerClient.onGetCombinedLight(tileentity.getWorld(), tileentity.getPos(), 0);
+			int brightness = tileentity.getWorld().getCombinedLight(tileentity.getPos(), 0);
 
 			double multiplier = 2.0D;
 			GL11.glTranslated((1D - multiplier) / 2.0D, 0, (1D - multiplier) / 2.0D);

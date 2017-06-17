@@ -1,0 +1,24 @@
+{
+    "forge_marker": 1,
+    "variants": {
+        "default": { "model": "valkyrienwarfarecontrol:shiphelmwheel.obj" , "custom": { "flip-v": true } },
+        "normal": { "model": "valkyrienwarfarecontrol:shiphelmwheel.obj" , "custom": { "flip-v": true } },
+        "modelid=0": { "model": "valkyrienwarfarecontrol:shiphelmwheel.obj" , "custom": { "flip-v": true } },
+        "modelid=1": { "model": "valkyrienwarfarecontrol:shiphelmdial.obj" , "custom": { "flip-v": true } },
+        "modelid=2": { "model": "valkyrienwarfarecontrol:shiphelmdialglass.obj" , "custom": { "flip-v": true } },
+        "modelid=3": { "model": "valkyrienwarfarecontrol:shiphelm.obj" , "custom": { "flip-v": true } },
+        "modelid=4": { "model": "valkyrienwarfarecontrol:shiphelmwheel.obj" , "custom": { "flip-v": true } },
+        "modelid=5": { "model": "valkyrienwarfarecontrol:shiphelmwheel.obj" , "custom": { "flip-v": true } },
+        "modelid=6": { "model": "valkyrienwarfarecontrol:shiphelmwheel.obj" , "custom": { "flip-v": true } },
+        "modelid=7": { "model": "valkyrienwarfarecontrol:shiphelmwheel.obj" , "custom": { "flip-v": true } },
+        "modelid=8": { "model": "valkyrienwarfarecontrol:shiphelmwheel.obj" , "custom": { "flip-v": true } },
+        "modelid=9": { "model": "valkyrienwarfarecontrol:shiphelmwheel.obj" , "custom": { "flip-v": true } },
+        "modelid=10": { "model": "valkyrienwarfarecontrol:shiphelmwheel.obj" , "custom": { "flip-v": true } },
+        "modelid=11": { "model": "valkyrienwarfarecontrol:shiphelmwheel.obj" , "custom": { "flip-v": true } },
+        "modelid=12": { "model": "valkyrienwarfarecontrol:shiphelmwheel.obj" , "custom": { "flip-v": true } },
+        "modelid=13": { "model": "valkyrienwarfarecontrol:shiphelmwheel.obj" , "custom": { "flip-v": true } },
+        "modelid=14": { "model": "valkyrienwarfarecontrol:shiphelmwheel.obj" , "custom": { "flip-v": true } },
+        "modelid=15": { "model": "valkyrienwarfarecontrol:shiphelmwheel.obj" , "custom": { "flip-v": true } },
+        "inventory": { "model": "valkyrienwarfarecontrol:shiphelmwheel.obj" , "custom": { "flip-v": true } }
+    }
+}

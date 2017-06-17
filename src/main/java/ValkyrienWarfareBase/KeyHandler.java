@@ -3,6 +3,7 @@ package ValkyrienWarfareBase;
 import org.lwjgl.input.Keyboard;
 
 import ValkyrienWarfareControl.Piloting.ClientPilotingManager;
+import ValkyrienWarfareControl.Piloting.ControllerInputType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.Entity;
@@ -52,13 +53,13 @@ public class KeyHandler {
 
 //				player.setPosition(player.posX, player.posY, player.posZ);
 
-				ClientPilotingManager.sendPilotKeysToServer();
-				
+				ClientPilotingManager.sendPilotKeysToServer(ControllerInputType.PilotsChair);
+
 				// }
 			}
 		}
 	}
-	
+
 	public static boolean getIsPlayerSprinting(){
 		return Minecraft.getMinecraft().player.isSprinting();
 	}

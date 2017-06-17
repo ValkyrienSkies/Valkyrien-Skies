@@ -204,7 +204,7 @@ public class ValkyrienWarfareMod {
 	 */
 	public static void applyConfig(Configuration conf) {
 		// dynamicLighting = config.get(Configuration.CATEGORY_GENERAL, "DynamicLighting", false).getBoolean();
-		shipTickDelay = config.get(Configuration.CATEGORY_GENERAL, "Ticks Delay Between Client and Server", 1, "Tick delay between client and server physics; raise if physics look choppy").getInt() % 20;
+//		shipTickDelay = config.get(Configuration.CATEGORY_GENERAL, "Client-Server Tick Delay", 1, "Tick delay between client and server physics; raise if physics look choppy").getInt() % 20;
 		maxMissedPackets = config.get(Configuration.CATEGORY_GENERAL, "Missed packets threshold", 1, "Higher values gaurantee virutally no choppyness, but also comes with a large delay. Only change if you have unstable internet").getInt();
 		// Property spawnParticlesParticle = config.get(Configuration.CATEGORY_GENERAL, "Ships spawn particles", false).getBoolean();
 		multiThreadedPhysics = config.get(Configuration.CATEGORY_GENERAL, "Multi-Threaded Physics", true, "Use Multi-Threaded Physics").getBoolean();
@@ -217,14 +217,11 @@ public class ValkyrienWarfareMod {
 
 		maxAirships = config.get(Configuration.CATEGORY_GENERAL, "Max airships per player", -1, "Players can't own more than this many airships at once. Set to -1 to disable.").getInt();
 
-		//Forget it!
-//		highAccuracyCollisions = config.get(Configuration.CATEGORY_GENERAL, "Enables higher collision accuracy", false, "Debug feature, takes an insane amount of processing power").getBoolean();
+		accurateRain = config.get(Configuration.CATEGORY_GENERAL, "Enable accurate rain on ships", false, "Debug feature, takes a lot of processing power").getBoolean();
 
-		accurateRain = config.get(Configuration.CATEGORY_GENERAL, "Enables accurate rain on ships", false, "Debug feature, takes a lot of processing power").getBoolean();
+		shipsSpawnParticles = config.get(Configuration.CATEGORY_GENERAL, "Enable particle spawns on Ships", true, "Ex. Torch Particles").getBoolean();
 
-		shipsSpawnParticles = config.get(Configuration.CATEGORY_GENERAL, "Enables particle spawns on Ships", true, "Ex. Torch Particles").getBoolean();
-
-		runAirshipPermissions = config.get(Configuration.CATEGORY_GENERAL, "Enables the airship permissions system", false, "Enables the airship permissions system").getBoolean();
+		runAirshipPermissions = config.get(Configuration.CATEGORY_GENERAL, "Enable airship permissions", false, "Enables the airship permissions system").getBoolean();
 
 		if (MultiThreadExecutor != null) {
 			MultiThreadExecutor.shutdown();

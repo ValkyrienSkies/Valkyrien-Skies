@@ -17,12 +17,25 @@ buildscript {
     }
 }
 
+ext.configFile = file "project.properties"
 apply plugin: "net.minecraftforge.gradle.forge"
 apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'com.github.johnrengelman.shadow'
 
-version = modVersion
-group = modGroup
+configFile.withReader { 
+    // read config.  it shall from now on be referenced as simply config or as project.config 
+    def prop = new Properties() 
+    prop.load(it) 
+    project.ext.config = new ConfigSlurper().parse prop 
+} 
+ 
+version = "${config.minecraft_version}-${config.mod_version}" 
+if (hasProperty('appendBuildNumber')) { 
+    version = version + "-" + appendBuildNumber.toString() 
+}
+ 
+group = "${config.group_id}" // http://maven.apache.org/guides/mini/guide-naming-conventions.html 
+archivesBaseName = "${config.mod_id_cap}"
 
 minecraft {
     version = project.forgeVersion

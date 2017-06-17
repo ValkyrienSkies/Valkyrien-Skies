@@ -1,6 +1,1 @@
-{
-    "parent":"item/handheld",
-    "textures": {
-        "layer0":"valkyrienwarfarecombat:items/turretcannonball"
-    }
-}
+{"parent":"item/handheld","textures":{"layer0":"valkyrienwarfarecombat:items/turretcannonball"}}

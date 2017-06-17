@@ -1,6 +1,1 @@
-{
-    "parent":"item/handheld",
-    "textures": {
-        "layer0":"valkyrienwarfarecontrol:items/systemlinker"
-    }
-}
+{"parent":"item/handheld","textures":{"layer0":"valkyrienwarfarecontrol:items/systemlinker"}}

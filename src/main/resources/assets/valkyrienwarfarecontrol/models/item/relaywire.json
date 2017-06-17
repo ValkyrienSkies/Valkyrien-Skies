@@ -1,6 +1,1 @@
-{
-    "parent":"item/handheld",
-    "textures": {
-        "layer0":"valkyrienwarfarecontrol:items/relay_wire"
-    }
-}
+{"parent":"item/handheld","textures":{"layer0":"valkyrienwarfarecontrol:items/relay_wire"}}

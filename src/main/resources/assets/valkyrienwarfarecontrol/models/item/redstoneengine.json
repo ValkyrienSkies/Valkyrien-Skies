@@ -1,10 +1,1 @@
-{
-    "parent": "valkyrienwarfarecontrol:block/redstoneengine",
-    "display": {
-        "thirdperson": {
-            "rotation": [ 10, -45, 270 ],
-            "translation": [ 0, 1.5, -2.75 ],
-            "scale": [ 0.375, 0.375, 0.375 ]
-        }
-    }
-}
+{"parent":"valkyrienwarfarecontrol:block/redstoneengine","display":{"thirdperson":{"rotation":[10,-45,270],"translation":[0,1.5,-2.75],"scale":[0.375,0.375,0.375]}}}

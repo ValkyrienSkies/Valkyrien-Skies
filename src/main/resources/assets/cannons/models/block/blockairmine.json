@@ -1,6 +1,1 @@
-{
-    "parent": "block/cube_all",
-    "textures": {
-        "all": "cannons:blocks/airmine"
-    }
-}
+{"parent":"block/cube_all","textures":{"all":"cannons:blocks/airmine"}}

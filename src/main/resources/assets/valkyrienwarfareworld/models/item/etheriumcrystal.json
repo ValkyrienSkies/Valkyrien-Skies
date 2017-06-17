@@ -1,6 +1,1 @@
-{
-    "parent":"item/handheld",
-    "textures": {
-        "layer0":"valkyrienwarfareworld:items/etheriumcrystal"
-    }
-}
+{"parent":"item/handheld","textures":{"layer0":"valkyrienwarfareworld:items/etheriumcrystal"}}

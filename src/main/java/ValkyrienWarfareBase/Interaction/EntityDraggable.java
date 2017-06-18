@@ -29,12 +29,12 @@ public abstract class EntityDraggable {
 					IDraggable draggable = getDraggableFromEntity(e);
 //					e.onGround = true;
 //
-//					doTheEntityThing(e);
+					doTheEntityThing(e);
 
-					draggable.tickAddedVelocity();
-
+//					draggable.tickAddedVelocity();
+//
 //					e.onGround = true;
-					e.setPosition(draggable.getVelocityAddedToPlayer().X + e.posX, draggable.getVelocityAddedToPlayer().Y + e.posY, draggable.getVelocityAddedToPlayer().Z + e.posZ);
+//					e.setPosition(draggable.getVelocityAddedToPlayer().X + e.posX, draggable.getVelocityAddedToPlayer().Y + e.posY, draggable.getVelocityAddedToPlayer().Z + e.posZ);
 
 					if(draggable.getWorldBelowFeet() == null){
 						if(e.onGround){
@@ -44,8 +44,8 @@ public abstract class EntityDraggable {
 							if(e instanceof EntityPlayer){
 								EntityPlayer player = (EntityPlayer) e;
 								if(player.isCreative() && player.capabilities.isFlying){
-//									draggable.getVelocityAddedToPlayer().multiply(.99D * .95D);
-//									draggable.setYawDifVelocity(draggable.getYawDifVelocity() * .95D * .95D);
+									draggable.getVelocityAddedToPlayer().multiply(.99D * .95D);
+									draggable.setYawDifVelocity(draggable.getYawDifVelocity() * .95D * .95D);
 								}
 							}
 						}
@@ -58,13 +58,9 @@ public abstract class EntityDraggable {
 	}
 
 	public static void doTheEntityThing(Entity entity){
-		IDraggable draggable = getDraggableFromEntity(entity);
-		draggable.tickAddedVelocity();
-
-		PhysicsWrapperEntity worldBelowFeet = draggable.getWorldBelowFeet();
-
-		if (worldBelowFeet != null && !ValkyrienWarfareMod.physicsManager.isEntityFixed(entity)) {
-            CoordTransformObject coordTransform = worldBelowFeet.wrapping.coordTransform;
+		IDraggable draggable = EntityDraggable.getDraggableFromEntity(entity);
+		if (draggable.getWorldBelowFeet() != null && !ValkyrienWarfareMod.physicsManager.isEntityFixed(entity)) {
+            CoordTransformObject coordTransform = draggable.getWorldBelowFeet().wrapping.coordTransform;
 
             float rotYaw = entity.rotationYaw;
             float rotPitch = entity.rotationPitch;
@@ -136,8 +132,15 @@ public abstract class EntityDraggable {
                 moveInput.sneak = false;
             }
 
-            entity.move(MoverType.SELF, draggable.getVelocityAddedToPlayer().X, draggable.getVelocityAddedToPlayer().Y, draggable.getVelocityAddedToPlayer().Z);
-//			CallRunner.onEntityMove(this, velocityAddedToPlayer.X, velocityAddedToPlayer.Y, velocityAddedToPlayer.Z);
+
+            if(draggable.getWorldBelowFeet() == null && entity.onGround){
+            	draggable.getVelocityAddedToPlayer().zero();
+            }
+
+//            entity.move(MoverType.SELF, draggable.getVelocityAddedToPlayer().X, draggable.getVelocityAddedToPlayer().Y, draggable.getVelocityAddedToPlayer().Z);
+
+            entity.setEntityBoundingBox(entity.getEntityBoundingBox().offset(draggable.getVelocityAddedToPlayer().X, draggable.getVelocityAddedToPlayer().Y, draggable.getVelocityAddedToPlayer().Z));
+            entity.resetPositionToBB();
 
             if (!(EntityPlayerSP.class.isInstance(entity))) {
                 if (EntityArrow.class.isInstance(entity)) {
@@ -171,7 +174,7 @@ public abstract class EntityDraggable {
         }
 
         draggable.getVelocityAddedToPlayer().multiply(.99D);
-        draggable.setYawDifVelocity(draggable.getYawDifVelocity() * .95);
+        draggable.setYawDifVelocity(draggable.getYawDifVelocity() * .95D);
 	}
 
 	public static IDraggable getDraggableFromEntity(Entity entity){

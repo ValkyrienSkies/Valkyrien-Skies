@@ -352,15 +352,15 @@ public class EntityCollisionInjector {
 
 
 		if (dx != origDx) {
-//			entity.motionX = dx;
+			entity.motionX = dx;
 		}
 		if (dy != origDy) {
 			if (!(entity.motionY > 0 && dy > 0)) {
-//				entity.motionY = 0;
+				entity.motionY = 0;
 			}
 		}
 		if (dz != origDz) {
-//			entity.motionZ = dz;
+			entity.motionZ = dz;
 		}
 
 	}

@@ -56,6 +56,24 @@ public abstract class MixinWorld {
         //dirty hack lol
     }
 
+    @Overwrite
+    private void spawnParticle(int particleID, boolean ignoreRange, double xCoord, double yCoord, double zCoord, double xSpeed, double ySpeed, double zSpeed, int... parameters)
+    {
+    	BlockPos pos = new BlockPos(xCoord, yCoord, zCoord);
+    	PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(World.class.cast(this), pos);
+    	if(wrapper != null) {
+    		Vector newPosVec = new Vector(xCoord, yCoord, zCoord);
+    		RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, newPosVec);
+    		xCoord = newPosVec.X;
+    		yCoord = newPosVec.Y;
+    		zCoord = newPosVec.Z;
+    	}
+    	for (int i = 0; i < this.eventListeners.size(); ++i)
+        {
+            ((IWorldEventListener)this.eventListeners.get(i)).spawnParticle(particleID, ignoreRange, xCoord, yCoord, zCoord, xSpeed, ySpeed, zSpeed, parameters);
+        }
+    }
+
     public BlockPos getPrecipitationHeightClient(World world, BlockPos posToCheck) {
         BlockPos pos = world.getPrecipitationHeight(posToCheck);
         // Servers shouldn't bother running this code

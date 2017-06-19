@@ -3,8 +3,10 @@ package ValkyrienWarfareControl.Proxy;
 import ValkyrienWarfareControl.ValkyrienWarfareControlMod;
 import ValkyrienWarfareControl.Client.Renderer.BasicNodeTileEntityRenderer;
 import ValkyrienWarfareControl.Client.Renderer.ShipHelmTileEntityRenderer;
+import ValkyrienWarfareControl.Client.Renderer.ShipTelegraphTileEntityRenderer;
 import ValkyrienWarfareControl.TileEntity.ThrustRelayTileEntity;
 import ValkyrienWarfareControl.TileEntity.TileEntityShipHelm;
+import ValkyrienWarfareControl.TileEntity.TileEntityShipTelegraph;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderItem;
@@ -49,7 +51,7 @@ public class ClientProxyControl extends CommonProxyControl {
 		renderItem.getItemModelMesher().register(toRegister, 0, new ModelResourceLocation(ValkyrienWarfareControlMod.MODID + ":" + toRegister.getUnlocalizedName().substring(5), "inventory"));
 	}
 
-	private static void registerBlockItemModels(){
+	private static void registerBlockItemModels() {
 		registerBlockItem(ValkyrienWarfareControlMod.instance.basicEngine);
 		registerBlockItem(ValkyrienWarfareControlMod.instance.advancedEngine);
 		registerBlockItem(ValkyrienWarfareControlMod.instance.eliteEngine);
@@ -66,8 +68,10 @@ public class ClientProxyControl extends CommonProxyControl {
 
 		registerBlockItem(ValkyrienWarfareControlMod.instance.pilotsChair);
 		registerBlockItem(ValkyrienWarfareControlMod.instance.passengerChair);
+
 		registerBlockItem(ValkyrienWarfareControlMod.instance.shipHelm);
 		registerBlockItem(ValkyrienWarfareControlMod.instance.shipWheel);
+		registerBlockItem(ValkyrienWarfareControlMod.instance.shipTelegraph);
 
 		registerBlockItem(ValkyrienWarfareControlMod.instance.dopedEtherium);
 		registerBlockItem(ValkyrienWarfareControlMod.instance.balloonBurner);
@@ -76,14 +80,16 @@ public class ClientProxyControl extends CommonProxyControl {
 		registerBlockItem(ValkyrienWarfareControlMod.instance.thrustModulator);
 	}
 
-	private static void registerItemModels(){
+	private static void registerItemModels() {
 		registerItemModel(ValkyrienWarfareControlMod.instance.systemLinker);
 		registerItemModel(ValkyrienWarfareControlMod.instance.airshipStealer);
 		registerItemModel(ValkyrienWarfareControlMod.instance.relayWire);
 	}
 
-	private static void registerTileEntityRenderers(){
+	private static void registerTileEntityRenderers() {
 		ClientRegistry.bindTileEntitySpecialRenderer(ThrustRelayTileEntity.class, new BasicNodeTileEntityRenderer(ThrustRelayTileEntity.class));
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityShipHelm.class, new ShipHelmTileEntityRenderer(TileEntityShipHelm.class));
+		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityShipTelegraph.class, new ShipTelegraphTileEntityRenderer(TileEntityShipTelegraph.class));
 	}
+
 }

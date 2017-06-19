@@ -22,7 +22,7 @@ public class ClientPilotingManager {
 	private static PhysicsWrapperEntity shipPiloting;
 
 	public static ControllerInputType currentControllerInput;
-	public static BlockPos blockBeingControlled;
+	public static BlockPos blockBeingControlled = BlockPos.ORIGIN;
 
 	public static double getThirdPersonViewDist(double original) {
 		if (getPilotedWrapperEntity() == null) {
@@ -103,7 +103,12 @@ public class ClientPilotingManager {
 
 	public static void sendPilotKeysToServer(ControllerInputType type) {
 		PilotControlsMessage keyMessage = new PilotControlsMessage();
+		if(type == null) {
+			type = ControllerInputType.PilotsChair;
+		}
+//		System.out.println(blockBeingControlled);
 		keyMessage.assignKeyBooleans(shipPiloting, type);
+		keyMessage.controlBlockPos = blockBeingControlled;
 
 		ValkyrienWarfareControlMod.controlNetwork.sendToServer(keyMessage);
 	}

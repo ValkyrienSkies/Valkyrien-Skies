@@ -53,7 +53,7 @@ public class KeyHandler {
 
 //				player.setPosition(player.posX, player.posY, player.posZ);
 
-				ClientPilotingManager.sendPilotKeysToServer(ControllerInputType.PilotsChair);
+				ClientPilotingManager.sendPilotKeysToServer(ClientPilotingManager.currentControllerInput);
 
 				// }
 			}

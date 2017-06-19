@@ -29,6 +29,9 @@ public class SetShipPilotMessageHandler implements IMessageHandler<SetShipPilotM
 							ClientPilotingManager.setPilotedWrapperEntity((PhysicsWrapperEntity) entity);
 //							System.out.println("Found the Pilot on client side");
 							foundEntity = entity;
+							if(entity == Minecraft.getMinecraft().player) {
+								ClientPilotingManager.currentControllerInput = ControllerInputType.PilotsChair;
+							}
 						}
 					}
 					if(foundEntity == null){
@@ -37,7 +40,7 @@ public class SetShipPilotMessageHandler implements IMessageHandler<SetShipPilotM
 				}
 			}
 		});
-		
+
 		return null;
 	}
 

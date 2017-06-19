@@ -6,6 +6,7 @@ import ValkyrienWarfareBase.KeyHandler;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
 public class PilotControlsMessage implements IMessage {
@@ -19,6 +20,7 @@ public class PilotControlsMessage implements IMessage {
 	public boolean airshipSprinting;
 	public Enum inputType;
 	public UUID shipFor;
+	public BlockPos controlBlockPos;
 
 	public PilotControlsMessage() {
 	}
@@ -35,6 +37,7 @@ public class PilotControlsMessage implements IMessage {
 		airshipSprinting = packetBuf.readBoolean();
 		inputType = packetBuf.readEnumValue(ControllerInputType.class);
 		shipFor = packetBuf.readUniqueId();
+		controlBlockPos = packetBuf.readBlockPos();
 	}
 
 	@Override
@@ -49,6 +52,7 @@ public class PilotControlsMessage implements IMessage {
 		packetBuf.writeBoolean(airshipSprinting);
 		packetBuf.writeEnumValue(inputType);
 		packetBuf.writeUniqueId(shipFor);
+		packetBuf.writeBlockPos(controlBlockPos);
 	}
 
 	public void assignKeyBooleans(PhysicsWrapperEntity shipPiloting, Enum inputType) {

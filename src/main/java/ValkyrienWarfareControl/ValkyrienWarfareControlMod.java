@@ -28,19 +28,21 @@ import ValkyrienWarfareControl.Network.EntityFixMessage;
 import ValkyrienWarfareControl.Network.EntityFixMessageHandler;
 import ValkyrienWarfareControl.Network.HovercraftControllerGUIInputHandler;
 import ValkyrienWarfareControl.Network.HovercraftControllerGUIInputMessage;
+import ValkyrienWarfareControl.Network.PlayerUsingControlsMessage;
+import ValkyrienWarfareControl.Network.PlayerUsingControlsMessageHandler;
 import ValkyrienWarfareControl.Piloting.PilotControlsMessage;
 import ValkyrienWarfareControl.Piloting.PilotControlsMessageHandler;
 import ValkyrienWarfareControl.Piloting.SetShipPilotMessage;
 import ValkyrienWarfareControl.Piloting.SetShipPilotMessageHandler;
 import ValkyrienWarfareControl.Proxy.CommonProxyControl;
 import ValkyrienWarfareControl.TileEntity.BalloonBurnerTileEntity;
-import ValkyrienWarfareControl.TileEntity.TileEntityShipTelegraph;
 import ValkyrienWarfareControl.TileEntity.PilotsChairTileEntity;
 import ValkyrienWarfareControl.TileEntity.ThrustModulatorTileEntity;
 import ValkyrienWarfareControl.TileEntity.ThrustRelayTileEntity;
 import ValkyrienWarfareControl.TileEntity.TileEntityHoverController;
 import ValkyrienWarfareControl.TileEntity.TileEntityNormalEtherCompressor;
 import ValkyrienWarfareControl.TileEntity.TileEntityShipHelm;
+import ValkyrienWarfareControl.TileEntity.TileEntityShipTelegraph;
 import ValkyrienWarfareWorld.ValkyrienWarfareWorldMod;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -255,6 +257,7 @@ public class ValkyrienWarfareControlMod {
 		controlNetwork.registerMessage(PilotControlsMessageHandler.class, PilotControlsMessage.class, 1, Side.SERVER);
 		controlNetwork.registerMessage(EntityFixMessageHandler.class, EntityFixMessage.class, 2, Side.CLIENT);
 		controlNetwork.registerMessage(SetShipPilotMessageHandler.class, SetShipPilotMessage.class, 3, Side.CLIENT);
+		controlNetwork.registerMessage(PlayerUsingControlsMessageHandler.class, PlayerUsingControlsMessage.class, 4, Side.CLIENT);
 	}
 
 	public void registerCapibilities(FMLStateEvent event)	{

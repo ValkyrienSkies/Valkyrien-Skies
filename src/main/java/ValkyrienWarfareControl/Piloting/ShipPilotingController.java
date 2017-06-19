@@ -11,10 +11,12 @@ import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
 import ValkyrienWarfareControl.ValkyrienWarfareControlMod;
 import ValkyrienWarfareControl.Block.BlockShipPilotsChair;
+import ValkyrienWarfareControl.TileEntity.TileEntityShipHelm;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -46,6 +48,23 @@ public class ShipPilotingController {
 	public void receivePilotControlsMessage(PilotControlsMessage message, EntityPlayerMP whoSentIt){
 		if(shipPilot == whoSentIt){
 			handlePilotControlMessage(message, whoSentIt);
+		}
+		if(message.inputType == ControllerInputType.ShipHelm) {
+			BlockPos pos = message.controlBlockPos;
+			TileEntity tile = whoSentIt.world.getTileEntity(pos);
+			if(tile instanceof TileEntityShipHelm) {
+				TileEntityShipHelm shipHelm = (TileEntityShipHelm) tile;
+				if(message.airshipLeft){
+					shipHelm.wheelRotation -= 10;
+
+//					System.out.println(shipHelm.wheelRotation);
+				}
+				if(message.airshipRight){
+					shipHelm.wheelRotation += 10;
+//					System.out.println("YES");
+				}
+//				System.out.println("YES");
+			}
 		}
 	}
 

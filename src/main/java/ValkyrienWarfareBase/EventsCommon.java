@@ -424,12 +424,16 @@ public class EventsCommon {
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onPlayerInteractEvent(PlayerInteractEvent event) {
-
+		BlockPos pos = event.getPos();
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(event.getWorld(), pos);
+		if(wrapper != null) {
+			event.setResult(Result.ALLOW);
+		}
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onPlayerOpenContainerEvent(PlayerContainerEvent event) {
-		// event.setResult(Result.ALLOW);
+		 event.setResult(Result.ALLOW);
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -483,7 +487,7 @@ public class EventsCommon {
 	@SubscribeEvent
 	public void onJoin(PlayerLoggedInEvent event) {
 		if (!event.player.world.isRemote) {
-			lastPositions.put((EntityPlayerMP) event.player, new Double[] { 0d, 256d, 0d });
+			lastPositions.put((EntityPlayerMP) event.player, new Double[] { 0D, 256D, 0D });
 		}
 	}
 

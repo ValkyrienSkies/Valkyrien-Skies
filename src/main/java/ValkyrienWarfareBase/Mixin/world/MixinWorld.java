@@ -51,11 +51,6 @@ public abstract class MixinWorld {
     @Shadow
     protected List<IWorldEventListener> eventListeners;
 
-    {
-//        isRemote = false;
-        //dirty hack lol
-    }
-
     @Overwrite
     private void spawnParticle(int particleID, boolean ignoreRange, double xCoord, double yCoord, double zCoord, double xSpeed, double ySpeed, double zSpeed, int... parameters)
     {
@@ -391,6 +386,10 @@ public abstract class MixinWorld {
     public <T extends Entity> List<T> getEntitiesWithinAABB(Class<? extends T> clazz, AxisAlignedBB aabb, @Nullable Predicate<? super T> filter) {
         List toReturn = this.getEntitiesWithinAABBOriginal(clazz, aabb, filter);
 
+        if(ValkyrienWarfareMod.physicsManager == null) {
+        	return toReturn;
+        }
+
         BlockPos pos = new BlockPos((aabb.minX + aabb.maxX) / 2D, (aabb.minY + aabb.maxY) / 2D, (aabb.minZ + aabb.maxZ) / 2D);
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(World.class.cast(this), pos);
         if (wrapper != null) {
@@ -460,6 +459,9 @@ public abstract class MixinWorld {
 
     @Inject(method = "getBiome(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/world/biome/Biome;", at = @At("HEAD"), cancellable = true)
     public void preGetBiome(final BlockPos pos, CallbackInfoReturnable<Biome> callbackInfoReturnable)   {
+    	if(ValkyrienWarfareMod.physicsManager == null){
+    		return;
+    	}
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(World.class.cast(this), pos);
         if(wrapper != null){
             BlockPos realPos = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, pos);

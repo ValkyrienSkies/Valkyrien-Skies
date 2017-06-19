@@ -69,21 +69,6 @@ public class DimensionPhysObjectManager {
 	 * @return
 	 */
 
-	//If you caused an Entity$1 crash, it probably started here >:(
-	public PhysicsWrapperEntity getObjectManagingChunk(Chunk chunk) {
-		if (chunk == null) {
-			return null;
-		}
-		if(!PhysicsChunkManager.isLikelyShipChunk(chunk.x, chunk.z)){
-			return null;
-		}
-		WorldPhysObjectManager physManager = getManagerForWorld(chunk.world);
-		if (physManager == null) {
-			return null;
-		}
-		return physManager.getManagingObjectForChunk(chunk);
-	}
-
 	//TODO: Fix this
 	@Deprecated
 	public PhysicsWrapperEntity getObjectManagingPos(World world, BlockPos pos) {

@@ -1,12 +1,14 @@
 package ValkyrienWarfareBase.PhysicsManagement;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Callable;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -29,6 +31,7 @@ public class WorldPhysObjectManager {
 	public ArrayList<PhysicsWrapperEntity> physicsEntitiesToUnload = new ArrayList<PhysicsWrapperEntity>();
 	public ArrayList<Callable<Void>> physCollisonCallables = new ArrayList<Callable<Void>>();
 	public final Ticket chunkLoadingTicket;
+	public final HashMap<ChunkPos, PhysicsWrapperEntity> chunkPosToPhysicsEntityMap = new HashMap<ChunkPos, PhysicsWrapperEntity>();
 //	private static Field droppedChunksField;
 
 	public WorldPhysObjectManager(World toManage) {
@@ -130,6 +133,11 @@ public class WorldPhysObjectManager {
 			loaded.isDead = false;
 			physicsEntities.add(loaded);
 			physCollisonCallables.add(loaded.wrapping.collisionCallable);
+			for(Chunk[] chunks : loaded.wrapping.claimedChunks) {
+				for(Chunk chunk : chunks) {
+					chunkPosToPhysicsEntityMap.put(chunk.getPos(), loaded);
+				}
+			}
 		} else {
 			// reset check to prevent strange errors
 			loaded.wrapping.fromSplit = false;
@@ -141,6 +149,11 @@ public class WorldPhysObjectManager {
 			physicsEntities.remove(loaded);
 			physCollisonCallables.remove(loaded.wrapping.collisionCallable);
 			loaded.wrapping.onThisUnload();
+			for(Chunk[] chunks : loaded.wrapping.claimedChunks) {
+				for(Chunk chunk : chunks) {
+					chunkPosToPhysicsEntityMap.remove(chunk.getPos());
+				}
+			}
 		}else{
 			loaded.isDead = true;
 		}
@@ -157,12 +170,8 @@ public class WorldPhysObjectManager {
 	}
 
 	public PhysicsWrapperEntity getManagingObjectForChunkPosition(int chunkX, int chunkZ) {
-		for (PhysicsWrapperEntity wrapper : physicsEntities) {
-			if (wrapper.wrapping.ownsChunk(chunkX, chunkZ)) {
-				return wrapper;
-			}
-		}
-		return null;
+		ChunkPos chunkPos = new ChunkPos(chunkX, chunkZ);
+		return chunkPosToPhysicsEntityMap.get(chunkPos);
 	}
 
 	public List<PhysicsWrapperEntity> getNearbyPhysObjects(AxisAlignedBB toCheck) {
@@ -190,17 +199,17 @@ public class WorldPhysObjectManager {
 		for (PhysicsWrapperEntity wrapper : physicsEntities) {
 			if (wrapper.wrapping.isEntityFixed(entity)) {
 				if(considerUUID){
-					if(wrapper.wrapping.entityLocalPositions.containsKey(entity.getPersistentID().hashCode())){
+					if(wrapper.wrapping.entityLocalPositions.containsKey(entity.getPersistentID().hashCode())) {
 						return wrapper;
 					}
 				}
 
-				if (wrapper.riddenByEntities.contains(entity)){
+				if (wrapper.riddenByEntities.contains(entity)) {
 					return wrapper;
 				}
 				//If one of the entities riding has this entity too, then be sure to check for it
 				for(Entity e:wrapper.riddenByEntities){
-					if(!e.isDead && e.riddenByEntities.contains(entity)){
+					if(!e.isDead && e.riddenByEntities.contains(entity)) {
 						return wrapper;
 					}
 				}

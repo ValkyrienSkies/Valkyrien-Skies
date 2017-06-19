@@ -247,7 +247,7 @@ public class PhysicsObject {
 		claimedChunksInMap = true;
 	}
 
-	/*
+	/**
 	 * Generates the new chunks
 	 */
 	public void processChunkClaims(EntityPlayer player) {
@@ -500,8 +500,8 @@ public class PhysicsObject {
 	//Experimental, could fix issues with random shit generating inside of Ships
 	private void replaceOuterChunksWithAir(){
 		for (int x = ownedChunks.minX - 1; x <= ownedChunks.maxX + 1; x++) {
-			for (int z = ownedChunks.minZ -1; z <= ownedChunks.maxZ + 1; z++) {
-				if(x == ownedChunks.minX -1 || x == ownedChunks.maxX +1 || z == ownedChunks.minZ -1 || z == ownedChunks.maxZ + 1){
+			for (int z = ownedChunks.minZ - 1; z <= ownedChunks.maxZ + 1; z++) {
+				if(x == ownedChunks.minX - 1 || x == ownedChunks.maxX + 1 || z == ownedChunks.minZ - 1 || z == ownedChunks.maxZ + 1){
 					//This is satisfied for the chunks surrounding a Ship, do fill it with empty space
 					Chunk chunk = new Chunk(worldObj, x, z);
 					ChunkProviderServer provider = (ChunkProviderServer) worldObj.getChunkProvider();
@@ -517,15 +517,6 @@ public class PhysicsObject {
 	 */
 	public void preloadNewPlayers() {
 		Set<EntityPlayerMP> newWatchers = getPlayersThatJustWatched();
-		// for(EntityPlayerMP player:newWatchers){
-		// if(!worldObj.isRemote){
-		// for(PlayerChunkMapEntry[] entries:claimedChunksEntries){
-		// for(PlayerChunkMapEntry entry:entries){
-		// entry.addPlayer(player);
-		// }
-		// }
-		// }
-		// }
 		for (Chunk[] chunkArray : claimedChunks) {
 			for (Chunk chunk : chunkArray) {
 				SPacketChunkData data = new SPacketChunkData(chunk, 65535);
@@ -542,7 +533,7 @@ public class PhysicsObject {
 	}
 
 	/**
-	 * TODO: Make this further get the player to stop all further tracking of thos physObject
+	 * TODO: Make this further get the player to stop all further tracking of those physObject
 	 *
 	 * @param EntityPlayer
 	 *            that stopped tracking
@@ -626,39 +617,6 @@ public class PhysicsObject {
 		}
 	}
 
-	// Returns true if splitting happened
-	/*
-	 * public boolean processPotentialSplitting(){ if(blocksChanged){ blocksChanged = false; }else{ return false; }
-	 *
-	 * ArrayList<BlockPos> dirtyBlockPositions = new ArrayList(blockPositions); if(dirtyBlockPositions.size()==0){ return false; }
-	 *
-	 * boolean hasSplit = false;
-	 *
-	 * while(dirtyBlockPositions.size()!=0){ BlockPos pos = dirtyBlockPositions.get(0); SpatialDetector firstDet = new ShipBlockPosFinder(pos, worldObj, dirtyBlockPositions.size(), true);
-	 *
-	 * if(firstDet.foundSet.size()!=dirtyBlockPositions.size()){ //Set Y to 300 to prevent picking up extra blocks PhysicsWrapperEntity newSplit = new PhysicsWrapperEntity(worldObj,wrapper.posX,300,wrapper.posZ, null,DetectorManager.DetectorIDs.BlockPosFinder.ordinal()); newSplit.yaw = wrapper.yaw; newSplit.pitch = wrapper.pitch; newSplit.roll = wrapper.roll; newSplit.posX = wrapper.posX; newSplit.posY = wrapper.posY; newSplit.posZ = wrapper.posZ; TIntIterator iter = firstDet.foundSet.iterator();
-	 *
-	 * BlockPos oldBlockCenter = this.getRegionCenter(); BlockPos newBlockCenter = newSplit.wrapping.getRegionCenter(); BlockPos centerDif = newBlockCenter.subtract(oldBlockCenter);
-	 *
-	 * ValkyrienWarfareMod.physicsManager.onShipLoad(newSplit);
-	 *
-	 * newSplit.wrapping.fromSplit = true;
-	 *
-	 * while(iter.hasNext()){ int hash = iter.next(); BlockPos fromHash = SpatialDetector.getPosWithRespectTo(hash, pos); dirtyBlockPositions.remove(fromHash); CallRunner.onSetBlockState(worldObj, fromHash.add(centerDif), VKChunkCache.getBlockState(fromHash), 3); CallRunner.onSetBlockState(worldObj, fromHash, Blocks.AIR.getDefaultState(), 2); }
-	 *
-	 * newSplit.wrapping.centerCoord = new Vector(centerCoord); newSplit.wrapping.centerCoord.X+=centerDif.getX(); newSplit.wrapping.centerCoord.Y+=centerDif.getY(); newSplit.wrapping.centerCoord.Z+=centerDif.getZ(); newSplit.wrapping.coordTransform.lToWRotation = coordTransform.lToWRotation; newSplit.wrapping.physicsProcessor.updateCenterOfMass(); newSplit.wrapping.coordTransform.updateAllTransforms();
-	 *
-	 * //TODO: THIS MATH IS NOT EVEN REMOTELY CORRECT!!!!! //Also the moment of inertia is wrong too newSplit.wrapping.physicsProcessor.linearMomentum = new Vector(physicsProcessor.linearMomentum); newSplit.wrapping.physicsProcessor.angularVelocity = new Vector(physicsProcessor.angularVelocity);
-	 *
-	 * worldObj.spawnEntityInWorld(newSplit);
-	 *
-	 * hasSplit = true; }else{ dirtyBlockPositions.clear(); }
-	 *
-	 * }
-	 *
-	 * return hasSplit; }
-	 */
-
 	public void tickQueuedForces() {
 		for (int i = 0; i < queuedPhysForces.size(); i++) {
 			PhysicsQueuedForce queue = queuedPhysForces.get(i);
@@ -669,6 +627,7 @@ public class PhysicsObject {
 			queue.ticksToApply--;
 		}
 	}
+
 	public void onPostTickClient() {
 		wrapper.prevPitch = wrapper.pitch;
 		wrapper.prevYaw = wrapper.yaw;

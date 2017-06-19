@@ -1,5 +1,6 @@
 package ValkyrienWarfareBase.Mixin.tileentity;
 
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Implements;
 import org.spongepowered.asm.mixin.Interface;
 import org.spongepowered.asm.mixin.Intrinsic;
@@ -21,6 +22,7 @@ import net.minecraft.world.World;
 public abstract class MixinTileEntityCLIENT {
 
 	@Shadow
+	@Final
 	public AxisAlignedBB INFINITE_EXTENT_AABB;
 
 	@Shadow

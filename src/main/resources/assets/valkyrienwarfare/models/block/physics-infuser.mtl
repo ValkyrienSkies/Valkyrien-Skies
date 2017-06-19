@@ -1,57 +1,49 @@
-# Blender MTL File: 'untitled3blend.blend'
-# Material Count: 5
-
-newmtl Material__74
-Ns 9.803922
-Ka 0.588000 0.588000 0.588000
-Kd 0.588000 0.588000 0.588000
-Ks 0.000000 0.000000 0.000000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-map_Kd valkyrienwarfare:blocks/gold_block
-
 newmtl Material__76
-Ns 9.803922
-Ka 0.588000 0.588000 0.588000
-Kd 0.588000 0.588000 0.588000
-Ks 0.000000 0.000000 0.000000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
+illum 4
+Kd 0.50 0.50 0.50
+Ka 0.59 0.59 0.59
+Tf 0.90 0.90 0.90
+Ni 1.50
+Ks 0.00 0.00 0.00
+Ns 9.80
 map_Kd valkyrienwarfare:blocks/etherium
 
 newmtl gold
-Ns 9.803922
-Ka 0.588000 0.588000 0.588000
-Kd 0.588000 0.588000 0.588000
-Ks 0.000000 0.000000 0.000000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
+illum 4
+Kd 0.50 0.50 0.50
+Ka 0.59 0.59 0.59
+Tf 1.00 1.00 1.00
+Ni 1.50
+Ks 0.00 0.00 0.00
+Ns 9.80
 map_Kd valkyrienwarfare:blocks/gold_block
 
 newmtl obsidian
-Ns 9.803922
-Ka 0.588000 0.588000 0.588000
-Kd 0.588000 0.588000 0.588000
-Ks 0.000000 0.000000 0.000000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
+illum 4
+Kd 0.50 0.50 0.50
+Ka 0.59 0.59 0.59
+Tf 1.00 1.00 1.00
+Ni 1.50
+Ks 0.00 0.00 0.00
+Ns 9.80
 map_Kd blocks/obsidian
 
+newmtl phong1SG
+illum 4
+Kd 0.50 0.50 0.50
+Ka 0.59 0.59 0.59
+Tf 1.00 1.00 1.00
+Ni 1.50
+Ks 0.00 0.00 0.00
+Ns 9.80
+map_Kd valkyrienwarfare:blocks/gold_block
+
 newmtl steel_corner
-Ns 9.803922
-Ka 0.588000 0.588000 0.588000
-Kd 0.588000 0.588000 0.588000
-Ks 0.000000 0.000000 0.000000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
+illum 4
+Kd 0.50 0.50 0.50
+Ka 0.59 0.59 0.59
+Tf 1.00 1.00 1.00
+Ni 1.50
+Ks 0.00 0.00 0.00
+Ns 9.80
 map_Kd valkyrienwarfare:blocks/steelcorner

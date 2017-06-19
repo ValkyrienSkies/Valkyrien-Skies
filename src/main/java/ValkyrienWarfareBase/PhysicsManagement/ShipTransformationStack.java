@@ -1,6 +1,5 @@
 package ValkyrienWarfareBase.PhysicsManagement;
 
-import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Network.PhysWrapperPositionMessage;
 
@@ -15,40 +14,43 @@ public class ShipTransformationStack {
 	public ShipTransformData[] recentTransforms = new ShipTransformData[20];
 	// Number of ticks the parent ship has been active for
 	// Increases by 1 for every message pushed onto the stack
-	public int messageRelativeTick;
 
 	public void pushMessage(PhysWrapperPositionMessage toPush) {
 		// Shift whole array to the right
 		for (int index = recentTransforms.length - 2; index >= 0; index--) {
 			recentTransforms[index + 1] = recentTransforms[index];
 		}
-		recentTransforms[0] = new ShipTransformData(toPush, messageRelativeTick);
-		messageRelativeTick++;
+		recentTransforms[0] = new ShipTransformData(toPush);
 
 	}
 
 	// TODO: Make this auto-adjust to best settings for the server
 	public ShipTransformData getDataForTick(int lastTick) {
-		// TODO: This may cause some horrific error; watch out for recentTransforms[0]==null !
-		if (ValkyrienWarfareMod.shipTickDelay == 0) {
-			return recentTransforms[0];
-		}
 		if (recentTransforms[0] == null) {
 			System.err.println("A SHIP JUST RETURNED NULL FOR 'recentTransforms[0]==null'; ANY WEIRD ERRORS PAST HERE ARE DIRECTLY LINKED TO THAT!");
 			return null;
 		}
 		int tickToGet = lastTick + 1;
-		int idealTick = recentTransforms[0].relativeTick - ValkyrienWarfareMod.shipTickDelay;
-		if (recentTransforms[0].relativeTick - tickToGet + ValkyrienWarfareMod.shipTickDelay > ValkyrienWarfareMod.maxMissedPackets) {
-			// System.out.println("bad"+ValkyrienWarfareMod.maxMissedPackets);
-			tickToGet = idealTick;
+
+		int realtimeTick = recentTransforms[0].relativeTick;
+
+		if(realtimeTick - lastTick > 3) {
+			tickToGet = realtimeTick - 2;
+//			System.out.println("Too Slow");
 		}
+
 		for (ShipTransformData transform : recentTransforms) {
 			if (transform != null) {
 				if (transform.relativeTick == tickToGet) {
 					return transform;
 				}
 			}
+		}
+
+//		System.out.println("Couldnt find the needed transform");
+
+		if(recentTransforms[1] != null){
+			return recentTransforms[1];
 		}
 
 		return recentTransforms[0];
@@ -64,7 +66,7 @@ class ShipTransformData {
 	public double pitch, yaw, roll;
 	public Vector centerOfRotation;
 
-	public ShipTransformData(PhysWrapperPositionMessage wrapperMessage, int relTick) {
+	public ShipTransformData(PhysWrapperPositionMessage wrapperMessage) {
 		posX = wrapperMessage.posX;
 		posY = wrapperMessage.posY;
 		posZ = wrapperMessage.posZ;
@@ -75,7 +77,7 @@ class ShipTransformData {
 
 		centerOfRotation = wrapperMessage.centerOfMass;
 
-		relativeTick = relTick;
+		relativeTick = wrapperMessage.relativeTick;
 	}
 
 	// Apply all the position/rotation variables accordingly onto the passed physObject

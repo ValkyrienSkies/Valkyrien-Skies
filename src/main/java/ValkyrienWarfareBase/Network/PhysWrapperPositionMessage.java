@@ -14,12 +14,14 @@ public class PhysWrapperPositionMessage implements IMessage {
 	public double posX, posY, posZ;
 	public double pitch, yaw, roll;
 	public Vector centerOfMass;
+	public int relativeTick;
 
 	public PhysWrapperPositionMessage() {
 	}
 
 	public PhysWrapperPositionMessage(PhysicsWrapperEntity toSend) {
 		toSpawn = toSend;
+		relativeTick = toSend.ticksExisted;
 	}
 
 	public PhysWrapperPositionMessage(PhysicsObject toRunLocally) {
@@ -37,6 +39,7 @@ public class PhysWrapperPositionMessage implements IMessage {
 	@Override
 	public void fromBytes(ByteBuf buf) {
 		entityID = buf.readInt();
+		relativeTick = buf.readInt();
 
 		posX = buf.readDouble();
 		posY = buf.readDouble();
@@ -52,6 +55,7 @@ public class PhysWrapperPositionMessage implements IMessage {
 	@Override
 	public void toBytes(ByteBuf buf) {
 		buf.writeInt(toSpawn.getEntityId());
+		buf.writeInt(relativeTick);
 
 		buf.writeDouble(toSpawn.posX);
 		buf.writeDouble(toSpawn.posY);

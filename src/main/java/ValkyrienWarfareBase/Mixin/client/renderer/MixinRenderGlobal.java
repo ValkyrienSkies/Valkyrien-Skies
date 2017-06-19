@@ -137,8 +137,11 @@ public abstract class MixinRenderGlobal {
     public void drawSelectionBox(EntityPlayer player, RayTraceResult movingObjectPositionIn, int execute, float partialTicks) {
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.world, movingObjectPositionIn.getBlockPos());
         if (wrapper != null && wrapper.wrapping != null && wrapper.wrapping.renderer != null && wrapper.wrapping.renderer.offsetPos != null) {
-            ;
             wrapper.wrapping.renderer.setupTranslation(partialTicks);
+
+            Minecraft.getMinecraft().entityRenderer.getMouseOver(partialTicks);
+
+            movingObjectPositionIn = Minecraft.getMinecraft().objectMouseOver;
 
             Tessellator tessellator = Tessellator.getInstance();
             VertexBuffer vertexbuffer = tessellator.getBuffer();

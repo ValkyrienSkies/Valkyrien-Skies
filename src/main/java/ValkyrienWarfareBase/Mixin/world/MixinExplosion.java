@@ -1,11 +1,20 @@
 package ValkyrienWarfareBase.Mixin.world;
 
+import java.util.List;
+
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Physics.BlockMass;
 import ValkyrienWarfareBase.Physics.PhysicsQueuedForce;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
-import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.state.IBlockState;
@@ -13,30 +22,28 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.List;
 
 @Mixin(Explosion.class)
 public abstract class MixinExplosion {
 
     @Shadow
+    @Final
     public World world;
 
     @Shadow
+    @Final
     public float explosionSize;
 
     @Shadow
+    @Final
     public double explosionX;
 
     @Shadow
+    @Final
     public double explosionY;
 
     @Shadow
+    @Final
     public double explosionZ;
 
     {

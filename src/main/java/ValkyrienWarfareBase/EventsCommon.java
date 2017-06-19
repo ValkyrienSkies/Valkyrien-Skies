@@ -7,7 +7,6 @@ import java.util.logging.Level;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Capability.IAirshipCounterCapability;
-import ValkyrienWarfareBase.Interaction.CustomNetHandlerPlayServer;
 import ValkyrienWarfareBase.Interaction.ValkyrienWarfareWorldEventListener;
 import ValkyrienWarfareBase.Mixin.MixinLoaderForge;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsTickHandler;
@@ -184,19 +183,6 @@ public class EventsCommon {
 	public void onPlayerTickEvent(PlayerTickEvent event) {
 		if (!event.player.world.isRemote && event.player != null) {
 			EntityPlayerMP p = (EntityPlayerMP) event.player;
-			try{
-				if (!(p.connection instanceof CustomNetHandlerPlayServer)) {
-					p.connection = new CustomNetHandlerPlayServer(p.connection);
-				}else{
-					CustomNetHandlerPlayServer customNetHandler = (CustomNetHandlerPlayServer)p.connection;
-					if(p.interactionManager.getBlockReachDistance() == CustomNetHandlerPlayServer.dummyBlockReachDist && customNetHandler.ticksSinceLastTry == 2){
-						p.interactionManager.setBlockReachDistance(((CustomNetHandlerPlayServer)p.connection).lastGoodBlockReachDist);
-					}
-					customNetHandler.ticksSinceLastTry ++;
-				}
-			}catch(Exception e){
-				e.printStackTrace();
-			}
 
 			Double[] pos = lastPositions.get(p);
 			if(pos == null){

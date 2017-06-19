@@ -1,5 +1,6 @@
 package ValkyrienWarfareBase.Interaction;
 
+import ValkyrienWarfareBase.EventsClient;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
@@ -8,7 +9,6 @@ import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareCombat.Entity.EntityCannonBall;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.util.MovementInput;
@@ -61,6 +61,10 @@ public abstract class EntityDraggable {
 		IDraggable draggable = EntityDraggable.getDraggableFromEntity(entity);
 		if (draggable.getWorldBelowFeet() != null && !ValkyrienWarfareMod.physicsManager.isEntityFixed(entity)) {
             CoordTransformObject coordTransform = draggable.getWorldBelowFeet().wrapping.coordTransform;
+
+            if(entity.world.isRemote && entity instanceof EntityPlayerSP){
+            	EventsClient.updatePlayerMouseOver();
+            }
 
             float rotYaw = entity.rotationYaw;
             float rotPitch = entity.rotationPitch;

@@ -685,12 +685,19 @@ public class PhysicsObject {
 		if (toUse != null) {
 			lastMessageTick = toUse.relativeTick;
 
+			if(this.wrapper.yaw == toUse.yaw && this.wrapper.pitch == toUse.pitch) {
+//				System.out.println("Duplicate damnit!");
+//				System.out.println(toUse == coordTransform.stack.recentTransforms[0]);
+//				toUse = coordTransform.stack.getDataForTick(lastMessageTick);
+			}
+
 			Vector CMDif = toUse.centerOfRotation.getSubtraction(centerCoord);
 			RotationMatrices.applyTransform(coordTransform.lToWRotation, CMDif);
 
 			wrapper.lastTickPosX -= CMDif.X;
 			wrapper.lastTickPosY -= CMDif.Y;
 			wrapper.lastTickPosZ -= CMDif.Z;
+
 			toUse.applyToPhysObject(this);
 		}
 

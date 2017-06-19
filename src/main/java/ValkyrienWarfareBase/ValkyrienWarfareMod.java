@@ -71,7 +71,6 @@ public class ValkyrienWarfareMod {
 	public static File configFile;
 	public static Configuration config;
 	public static boolean dynamicLighting;
-	public static int shipTickDelay, maxMissedPackets;
 
 	public static int threadCount;
 	public static boolean multiThreadedPhysics;
@@ -204,8 +203,7 @@ public class ValkyrienWarfareMod {
 	 */
 	public static void applyConfig(Configuration conf) {
 		// dynamicLighting = config.get(Configuration.CATEGORY_GENERAL, "DynamicLighting", false).getBoolean();
-//		shipTickDelay = config.get(Configuration.CATEGORY_GENERAL, "Client-Server Tick Delay", 1, "Tick delay between client and server physics; raise if physics look choppy").getInt() % 20;
-		maxMissedPackets = config.get(Configuration.CATEGORY_GENERAL, "Missed packets threshold", 1, "Higher values gaurantee virutally no choppyness, but also comes with a large delay. Only change if you have unstable internet").getInt();
+
 		// Property spawnParticlesParticle = config.get(Configuration.CATEGORY_GENERAL, "Ships spawn particles", false).getBoolean();
 		multiThreadedPhysics = config.get(Configuration.CATEGORY_GENERAL, "Multi-Threaded Physics", true, "Use Multi-Threaded Physics").getBoolean();
 		threadCount = config.get(Configuration.CATEGORY_GENERAL, "Physics Thread Count", (int) Math.max(1, Runtime.getRuntime().availableProcessors() - 2), "Number of threads to run physics on").getInt();

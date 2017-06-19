@@ -1,26 +1,31 @@
-{"required":true,"compatibilityLevel":"JAVA_8","package":"ValkyrienWarfareBase.Mixin",
-"refmap":"mixins.valkyrienwarfare.refmap.json",
-"mixins":[
-    "entity.MixinEntityLivingBase",
-    "tileentity.MixinTileEntity",
-    "world.MixinWorld",
-    "world.chunk.MixinChunk",
-    "entity.MixinEntityIntrinsic",
-    "entity.MixinEntity",
-    "world.MixinExplosion",
-    "server.management.MixinPlayerList",
-    "world.MixinWorldProvider"
-],
-"client":[
-    "util.MixinHttpUtil",
-    "client.renderer.tileentity.MixinTileEntityRendererDispatcher",
-    "client.renderer.entity.MixinRenderManager",
-    "entity.MixinEntityCLIENT",
-    "client.renderer.MixinEntityRenderer",
-    "entity.player.MixinEntityPlayer",
-    "world.MixinWorldCLIENT",
-    "client.particle.MixinParticleManager",
-    "client.renderer.MixinRenderGlobal",
-    "client.multiplayer.MixinWorldClient",
-    "tileentity.MixinTileEntityCLIENT"
-]}
+{
+    "required":true,
+    "compatibilityLevel":"JAVA_8",
+    "package":"ValkyrienWarfareBase.Mixin",
+    "refmap":"mixins.valkyrienwarfare.refmap.json",
+    "mixins":[
+        "entity.MixinEntityLivingBase",
+        "tileentity.MixinTileEntity",
+        "world.MixinWorld",
+        "world.chunk.MixinChunk",
+        "entity.MixinEntityIntrinsic",
+        "entity.MixinEntity",
+        "world.MixinExplosion",
+        "server.management.MixinPlayerList",
+        "world.MixinWorldProvider",
+        "network.MixinNetHandlerPlayServer"
+    ],
+    "client":[
+        "util.MixinHttpUtil",
+        "client.renderer.tileentity.MixinTileEntityRendererDispatcher",
+        "client.renderer.entity.MixinRenderManager",
+        "entity.MixinEntityCLIENT",
+        "client.renderer.MixinEntityRenderer",
+        "entity.player.MixinEntityPlayer",
+        "world.MixinWorldCLIENT",
+        "client.particle.MixinParticleManager",
+        "client.renderer.MixinRenderGlobal",
+        "client.multiplayer.MixinWorldClient",
+        "tileentity.MixinTileEntityCLIENT"
+    ]
+}

@@ -1,10 +1,19 @@
 package ValkyrienWarfareBase.Mixin.client.multiplayer;
 
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
+
+import com.google.common.collect.Sets;
+
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
-import ValkyrienWarfareBase.ValkyrienWarfareMod;
-import com.google.common.collect.Sets;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.network.NetHandlerPlayClient;
@@ -23,13 +32,6 @@ import net.minecraft.world.WorldSettings;
 import net.minecraft.world.storage.SaveDataMemoryStorage;
 import net.minecraft.world.storage.SaveHandlerMP;
 import net.minecraft.world.storage.WorldInfo;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
-
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
 
 @Mixin(WorldClient.class)
 public abstract class MixinWorldClient extends World {

@@ -1,19 +1,12 @@
 package ValkyrienWarfareBase.Mixin.entity;
 
-import org.spongepowered.asm.mixin.Implements;
-import org.spongepowered.asm.mixin.Interface;
-import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
-import ValkyrienWarfareBase.Collision.EntityCollisionInjector;
 import ValkyrienWarfareBase.Interaction.IDraggable;
 import ValkyrienWarfareBase.PhysicsManagement.CoordTransformObject;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
@@ -342,8 +335,32 @@ public abstract class MixinEntity implements IDraggable {
     protected void dealFireDamage(int amount){}
 
     @Overwrite
+    public double getDistanceSq(double x, double y, double z) {
+        double d0 = this.posX - x;
+        double d1 = this.posY - y;
+        double d2 = this.posZ - z;
+        double vanilla = d0 * d0 + d1 * d1 + d2 * d2;
+        if (vanilla < 64.0D) {
+            return vanilla;
+        } else {
+            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(this.world, new BlockPos(x, y, z));
+            if (wrapper != null) {
+                Vector posVec = new Vector(x, y, z);
+                wrapper.wrapping.coordTransform.fromLocalToGlobal(posVec);
+                posVec.X -= this.posX;
+                posVec.Y -= this.posY;
+                posVec.Z -= this.posZ;
+                if (vanilla > posVec.lengthSq()) {
+                    return posVec.lengthSq();
+                }
+            }
+        }
+        return vanilla;
+    }
+
+    @Overwrite
     public double getDistanceSq(BlockPos pos) {
-        double vanilla = pos.getDistance((int) posX, (int) posY, (int) posZ);
+    	double vanilla = pos.getDistance((int) posX, (int) posY, (int) posZ);
         if (vanilla < 64.0D) {
             return vanilla;
         } else {

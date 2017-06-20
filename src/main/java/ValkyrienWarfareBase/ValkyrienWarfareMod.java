@@ -58,7 +58,12 @@ import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 
-@Mod(modid = ValkyrienWarfareMod.MODID, name = ValkyrienWarfareMod.MODNAME, version = ValkyrienWarfareMod.MODVER, guiFactory = "ValkyrienWarfareBase.GUI.GuiFactoryValkyrienWarfare", updateJSON = "https://raw.githubusercontent.com/BigBastard/Valkyrien-Warfare-Revamped/update.json")
+@Mod(modid = ValkyrienWarfareMod.MODID,
+		name = ValkyrienWarfareMod.MODNAME,
+		version = ValkyrienWarfareMod.MODVER,
+		guiFactory = "ValkyrienWarfareBase.GUI.GuiFactoryValkyrienWarfare",
+		updateJSON = "https://raw.githubusercontent.com/BigBastard/Valkyrien-Warfare-Revamped/update.json",
+		certificateFingerprint = "e62e1d5b68238ff6062611057822c55b462d6423")
 public class ValkyrienWarfareMod {
 
 	@SidedProxy(clientSide = "ValkyrienWarfareBase.Proxy.ClientProxy", serverSide = "ValkyrienWarfareBase.Proxy.ServerProxy")

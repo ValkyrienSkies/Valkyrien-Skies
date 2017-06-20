@@ -2,10 +2,6 @@ package ValkyrienWarfareControl.Client.Renderer;
 
 import org.lwjgl.opengl.GL11;
 
-import ValkyrienWarfareBase.ValkyrienWarfareMod;
-import ValkyrienWarfareBase.API.RotationMatrices;
-import ValkyrienWarfareBase.API.Vector;
-import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.Render.FastBlockModelRenderer;
 import ValkyrienWarfareControl.ValkyrienWarfareControlMod;
 import ValkyrienWarfareControl.Block.BlockShipHelm;
@@ -30,6 +26,12 @@ public class ShipHelmTileEntityRenderer extends TileEntitySpecialRenderer<TileEn
 	@Override
 	public void renderTileEntityAt(TileEntityShipHelm tileentity, double x, double y, double z, float partialTick, int destroyStage) {
 		if(tileentity instanceof TileEntityShipHelm){
+			IBlockState helmState = tileentity.getWorld().getBlockState(tileentity.getPos());
+
+			if(helmState.getBlock() != ValkyrienWarfareControlMod.instance.shipHelm) {
+				return;
+			}
+
 			this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 			GlStateManager.pushMatrix();
 			GlStateManager.disableLighting();
@@ -66,7 +68,7 @@ public class ShipHelmTileEntityRenderer extends TileEntitySpecialRenderer<TileEn
 
 			BlockPos originPos = tileentity.getPos();
 
-			IBlockState helmState = tileentity.getWorld().getBlockState(tileentity.getPos());
+
 			IBlockState wheelState = ValkyrienWarfareControlMod.instance.shipWheel.getStateFromMeta(0);
 			IBlockState compassState = ValkyrienWarfareControlMod.instance.shipWheel.getStateFromMeta(1);
 			IBlockState glassState = ValkyrienWarfareControlMod.instance.shipWheel.getStateFromMeta(2);

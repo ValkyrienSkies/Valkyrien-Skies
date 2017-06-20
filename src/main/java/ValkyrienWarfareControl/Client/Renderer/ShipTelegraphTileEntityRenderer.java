@@ -26,6 +26,12 @@ public class ShipTelegraphTileEntityRenderer extends TileEntitySpecialRenderer<T
 	@Override
 	public void renderTileEntityAt(TileEntityShipTelegraph tileentity, double x, double y, double z, float partialTick, int destroyStage) {
 
+		IBlockState telegraphState = tileentity.getWorld().getBlockState(tileentity.getPos());
+
+		if(telegraphState.getBlock() != ValkyrienWarfareControlMod.instance.shipTelegraph) {
+			return;
+		}
+
 		this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 		GlStateManager.pushMatrix();
 		GlStateManager.disableLighting();
@@ -44,7 +50,6 @@ public class ShipTelegraphTileEntityRenderer extends TileEntitySpecialRenderer<T
 
 		BlockPos originPos = tileentity.getPos();
 
-		IBlockState telegraphState = tileentity.getWorld().getBlockState(tileentity.getPos());
 
 		IBlockState glassState = ValkyrienWarfareControlMod.instance.shipWheel.getStateFromMeta(8);
 		IBlockState dialState = ValkyrienWarfareControlMod.instance.shipWheel.getStateFromMeta(7);

@@ -255,26 +255,26 @@ public class WorldPhysicsCollider {
 		}
 
 		if(didBlockBreakInWorld.getValue()){
-			
+
 			if(worldObj.getBlockState(inWorldPos).getBlock() instanceof com.jackredcreeper.cannon.blocks.BlockAirMine)
-			{    	
+			{
 			double x = inWorldPos.getX();
 	    	double y = inWorldPos.getY();
 	    	double z = inWorldPos.getZ();
-	    	
+
 	    	float size = 8F;
 	    	float power = 0F;
 	    	float blast = 0F;
 	    	float damage = 100F;
-	    	
+
 	    	NewExp2 explosion1 = new NewExp2(worldObj,null,x,y,z,size,power,damage,blast,false,true);
 	        explosion1.newBoom(worldObj,null,x,y,z,size,power,damage,blast,false,true);
-	        
+
 			worldObj.setBlockToAir(inWorldPos);
 			}
-			
+
 			else
-			
+
 			worldObj.destroyBlock(inWorldPos, true);
 			return true;
 		}

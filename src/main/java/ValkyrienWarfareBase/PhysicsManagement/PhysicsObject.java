@@ -469,12 +469,12 @@ public class PhysicsObject {
 
 		PlayerChunkMap map = ((WorldServer) worldObj).getPlayerChunkMap();
 
-		PlayerChunkMapEntry entry = new PlayerChunkMapEntry(map, x, z){
-			@Override
-			public boolean hasPlayerMatchingInRange(double range, Predicate<EntityPlayerMP> predicate)
-		    {
-				return true;
-		    }
+		PlayerChunkMapEntry entry = new PlayerChunkMapEntry(map, x, z) {
+//			@Override
+//			public boolean hasPlayerMatchingInRange(double range, Predicate<EntityPlayerMP> predicate)
+//		    {
+//				return true;
+//		    }
 		};
 
 		long i = map.getIndex(x, z);

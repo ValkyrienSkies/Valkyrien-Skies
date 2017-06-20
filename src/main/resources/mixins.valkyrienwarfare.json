@@ -13,7 +13,8 @@
         "world.MixinExplosion",
         "server.management.MixinPlayerList",
         "world.MixinWorldProvider",
-        "network.MixinNetHandlerPlayServer"
+        "network.MixinNetHandlerPlayServer",
+        "util.math.MixinChunkPos"
     ],
     "client":[
         "client.renderer.tileentity.MixinTileEntityRendererDispatcher",

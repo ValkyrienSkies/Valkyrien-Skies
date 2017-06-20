@@ -18,6 +18,7 @@ public class PhysicsTickHandler {
 		}
 
 		ArrayList<PhysicsWrapperEntity> physicsEntities = manager.getTickablePhysicsEntities();
+
 		if (!ValkyrienWarfareMod.doSplitting) {
 			for (PhysicsWrapperEntity wrapper : physicsEntities) {
 				wrapper.wrapping.coordTransform.setPrevMatrices();

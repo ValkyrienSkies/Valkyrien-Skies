@@ -1,28 +1,13 @@
 package ValkyrienWarfareBase.Mixin.world;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Nullable;
-
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import com.google.common.base.Predicate;
-import com.google.common.collect.Lists;
-
-import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Collision.Polygon;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -32,40 +17,47 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 import net.minecraft.world.IWorldEventListener;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Mixin(World.class)
 public abstract class MixinWorld {
 
     private static double MAX_ENTITY_RADIUS_ALT = 2.0D;
-    @Shadow @Final
+    @Shadow
+    @Final
     public boolean isRemote;
     @Shadow
     protected List<IWorldEventListener> eventListeners;
 
     @Overwrite
-    private void spawnParticle(int particleID, boolean ignoreRange, double xCoord, double yCoord, double zCoord, double xSpeed, double ySpeed, double zSpeed, int... parameters)
-    {
-    	BlockPos pos = new BlockPos(xCoord, yCoord, zCoord);
-    	PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(World.class.cast(this), pos);
-    	if(wrapper != null) {
-    		Vector newPosVec = new Vector(xCoord, yCoord, zCoord);
-    		RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, newPosVec);
-    		xCoord = newPosVec.X;
-    		yCoord = newPosVec.Y;
-    		zCoord = newPosVec.Z;
-    	}
-    	for (int i = 0; i < this.eventListeners.size(); ++i)
-        {
-            ((IWorldEventListener)this.eventListeners.get(i)).spawnParticle(particleID, ignoreRange, xCoord, yCoord, zCoord, xSpeed, ySpeed, zSpeed, parameters);
+    private void spawnParticle(int particleID, boolean ignoreRange, double xCoord, double yCoord, double zCoord, double xSpeed, double ySpeed, double zSpeed, int... parameters) {
+        BlockPos pos = new BlockPos(xCoord, yCoord, zCoord);
+        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(World.class.cast(this), pos);
+        if (wrapper != null) {
+            Vector newPosVec = new Vector(xCoord, yCoord, zCoord);
+            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, newPosVec);
+            xCoord = newPosVec.X;
+            yCoord = newPosVec.Y;
+            zCoord = newPosVec.Z;
+        }
+        for (int i = 0; i < this.eventListeners.size(); ++i) {
+            ((IWorldEventListener) this.eventListeners.get(i)).spawnParticle(particleID, ignoreRange, xCoord, yCoord, zCoord, xSpeed, ySpeed, zSpeed, parameters);
         }
     }
 
@@ -94,7 +86,9 @@ public abstract class MixinWorld {
     }
 
     @Shadow
-    public IBlockState getBlockState(BlockPos pos) { return null; }
+    public IBlockState getBlockState(BlockPos pos) {
+        return null;
+    }
 
     public RayTraceResult onRayTraceBlocks(Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock) {
         return rayTraceBlocksIgnoreShip(vec31, vec32, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock, null);
@@ -287,7 +281,7 @@ public abstract class MixinWorld {
     }
 
     @Overwrite
-    public RayTraceResult rayTraceBlocks(Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock)    {
+    public RayTraceResult rayTraceBlocks(Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock) {
         return onRayTraceBlocks(vec31, vec32, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
     }
 
@@ -386,8 +380,8 @@ public abstract class MixinWorld {
     public <T extends Entity> List<T> getEntitiesWithinAABB(Class<? extends T> clazz, AxisAlignedBB aabb, @Nullable Predicate<? super T> filter) {
         List toReturn = this.getEntitiesWithinAABBOriginal(clazz, aabb, filter);
 
-        if(ValkyrienWarfareMod.physicsManager == null) {
-        	return toReturn;
+        if (ValkyrienWarfareMod.physicsManager == null) {
+            return toReturn;
         }
 
         BlockPos pos = new BlockPos((aabb.minX + aabb.maxX) / 2D, (aabb.minY + aabb.maxY) / 2D, (aabb.minZ + aabb.maxZ) / 2D);
@@ -449,7 +443,7 @@ public abstract class MixinWorld {
     }
 
     @Inject(method = "setBlockState(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/state/IBlockState;I)Z", at = @At("HEAD"))
-    public void duringMarkAndNotifyBlock(BlockPos pos, IBlockState newState, int flags, CallbackInfoReturnable callbackInfo)  {
+    public void duringMarkAndNotifyBlock(BlockPos pos, IBlockState newState, int flags, CallbackInfoReturnable callbackInfo) {
         IBlockState oldState = this.getBlockState(pos);
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(World.class.cast(this), pos);
         if (wrapper != null) {
@@ -458,12 +452,12 @@ public abstract class MixinWorld {
     }
 
     @Inject(method = "getBiome(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/world/biome/Biome;", at = @At("HEAD"), cancellable = true)
-    public void preGetBiome(final BlockPos pos, CallbackInfoReturnable<Biome> callbackInfoReturnable)   {
-    	if(ValkyrienWarfareMod.physicsManager == null){
-    		return;
-    	}
+    public void preGetBiome(final BlockPos pos, CallbackInfoReturnable<Biome> callbackInfoReturnable) {
+        if (ValkyrienWarfareMod.physicsManager == null) {
+            return;
+        }
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(World.class.cast(this), pos);
-        if(wrapper != null){
+        if (wrapper != null) {
             BlockPos realPos = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, pos);
             pos.x = realPos.x;
             pos.y = realPos.y;

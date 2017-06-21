@@ -6,10 +6,10 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 public class PlayerShipRefrenceHandler implements IMessageHandler<PlayerShipRefrenceMessage, IMessage> {
 
-	@Override
-	public IMessage onMessage(PlayerShipRefrenceMessage message, MessageContext ctx) {
-		//This seems to be being called on the server!!!
-		/*IThreadListener mainThread = Minecraft.getMinecraft();
+    @Override
+    public IMessage onMessage(PlayerShipRefrenceMessage message, MessageContext ctx) {
+        //This seems to be being called on the server!!!
+        /*IThreadListener mainThread = Minecraft.getMinecraft();
 		mainThread.addScheduledTask(new Runnable() {
 			@Override
 			public void run() {
@@ -17,7 +17,7 @@ public class PlayerShipRefrenceHandler implements IMessageHandler<PlayerShipRefr
 //				System.out.println("Got the message");
 			}
 		});*/
-		return null;
-	}
+        return null;
+    }
 
 }

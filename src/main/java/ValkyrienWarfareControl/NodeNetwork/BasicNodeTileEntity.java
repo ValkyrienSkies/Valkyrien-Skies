@@ -7,57 +7,57 @@ import net.minecraft.util.ITickable;
 
 public abstract class BasicNodeTileEntity extends TileEntity implements INodeProvider, ITickable {
 
-	public final Node tileNode;
+    public final Node tileNode;
 
-	public BasicNodeTileEntity(){
-		tileNode = new Node(this);
-	}
+    public BasicNodeTileEntity() {
+        tileNode = new Node(this);
+    }
 
-	@Override
-	public SPacketUpdateTileEntity getUpdatePacket() {
-		SPacketUpdateTileEntity packet = new SPacketUpdateTileEntity(pos, 0, writeToNBT(new NBTTagCompound()));
-		return packet;
-	}
+    @Override
+    public SPacketUpdateTileEntity getUpdatePacket() {
+        SPacketUpdateTileEntity packet = new SPacketUpdateTileEntity(pos, 0, writeToNBT(new NBTTagCompound()));
+        return packet;
+    }
 
-	@Override
-	public void onDataPacket(net.minecraft.network.NetworkManager net, net.minecraft.network.play.server.SPacketUpdateTileEntity pkt) {
-		readFromNBT(pkt.getNbtCompound());
-	}
+    @Override
+    public void onDataPacket(net.minecraft.network.NetworkManager net, net.minecraft.network.play.server.SPacketUpdateTileEntity pkt) {
+        readFromNBT(pkt.getNbtCompound());
+    }
 
-	@Override
-	public void readFromNBT(NBTTagCompound compound) {
-		super.readFromNBT(compound);
-		tileNode.readFromNBT(compound);
-	}
+    @Override
+    public void readFromNBT(NBTTagCompound compound) {
+        super.readFromNBT(compound);
+        tileNode.readFromNBT(compound);
+    }
 
-	@Override
+    @Override
     public void handleUpdateTag(NBTTagCompound tag) {
         this.readFromNBT(tag);
     }
 
-	@Override
+    @Override
     public NBTTagCompound getUpdateTag() {
-		NBTTagCompound toReturn = super.getUpdateTag();
+        NBTTagCompound toReturn = super.getUpdateTag();
 
-		return writeToNBT(toReturn);
+        return writeToNBT(toReturn);
     }
 
 
-	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-		tileNode.writeToNBT(compound);
-		return super.writeToNBT(compound);
-	}
+    @Override
+    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+        tileNode.writeToNBT(compound);
+        return super.writeToNBT(compound);
+    }
 
-	@Override
-	public Node getNode() {
-		return tileNode;
-	}
+    @Override
+    public Node getNode() {
+        return tileNode;
+    }
 
-	@Override
+    @Override
     public void invalidate() {
 //		System.out.println("Please RNGesus!");
-		//The Node just got destroyed
+        //The Node just got destroyed
         this.tileEntityInvalid = true;
         Node toInvalidate = getNode();
 
@@ -67,13 +67,13 @@ public abstract class BasicNodeTileEntity extends TileEntity implements INodePro
     /**
      * validates a tile entity
      */
-	@Override
+    @Override
     public void validate() {
         this.tileEntityInvalid = false;
     }
 
-	@Override
-	public void update() {
+    @Override
+    public void update() {
 
-	}
+    }
 }

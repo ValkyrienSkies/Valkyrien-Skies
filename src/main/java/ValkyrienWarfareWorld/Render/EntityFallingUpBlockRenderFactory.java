@@ -8,9 +8,9 @@ import net.minecraftforge.fml.client.registry.IRenderFactory;
 
 public class EntityFallingUpBlockRenderFactory implements IRenderFactory<EntityFallingUpBlock> {
 
-	@Override
-	public Render<? super EntityFallingUpBlock> createRenderFor(RenderManager manager) {
-		return new RenderFallingBlock(manager);
-	}
+    @Override
+    public Render<? super EntityFallingUpBlock> createRenderFor(RenderManager manager) {
+        return new RenderFallingBlock(manager);
+    }
 
 }

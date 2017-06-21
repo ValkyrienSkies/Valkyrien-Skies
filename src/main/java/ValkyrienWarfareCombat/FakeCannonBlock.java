@@ -9,25 +9,25 @@ import net.minecraft.block.state.IBlockState;
 
 public class FakeCannonBlock extends Block {
 
-	public static final PropertyInteger modelId = PropertyInteger.create("modelid", 0, 15);
+    public static final PropertyInteger modelId = PropertyInteger.create("modelid", 0, 15);
 
-	public FakeCannonBlock(Material materialIn) {
-		super(materialIn);
-		setDefaultState(getStateFromMeta(0));
-	}
+    public FakeCannonBlock(Material materialIn) {
+        super(materialIn);
+        setDefaultState(getStateFromMeta(0));
+    }
 
-	@Override
-	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, new IProperty[] { modelId });
-	}
+    @Override
+    protected BlockStateContainer createBlockState() {
+        return new BlockStateContainer(this, new IProperty[]{modelId});
+    }
 
-	@Override
-	public IBlockState getStateFromMeta(int meta) {
-		return getDefaultState().withProperty(modelId, meta);
-	}
+    @Override
+    public IBlockState getStateFromMeta(int meta) {
+        return getDefaultState().withProperty(modelId, meta);
+    }
 
-	@Override
-	public int getMetaFromState(IBlockState state) {
-		return state.getValue(modelId);
-	}
+    @Override
+    public int getMetaFromState(IBlockState state) {
+        return state.getValue(modelId);
+    }
 }

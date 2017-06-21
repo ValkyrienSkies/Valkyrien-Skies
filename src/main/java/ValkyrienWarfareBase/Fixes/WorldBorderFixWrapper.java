@@ -1,7 +1,5 @@
 package ValkyrienWarfareBase.Fixes;
 
-import java.util.List;
-
 import ValkyrienWarfareBase.ChunkManagement.PhysicsChunkManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -13,191 +11,193 @@ import net.minecraft.world.border.WorldBorder;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.List;
+
 /**
  * Wraps the WorldBorder object returned by WorldProvider to prevent conflicts between the border and PhysicsObjects
- * @author thebest108
  *
+ * @author thebest108
  */
-public class WorldBorderFixWrapper extends WorldBorder{
+public class WorldBorderFixWrapper extends WorldBorder {
 
-	public final WorldBorder wrapping;
+    public final WorldBorder wrapping;
 
-	public WorldBorderFixWrapper(WorldBorder toWrap){
-		wrapping = toWrap;
-	}
+    public WorldBorderFixWrapper(WorldBorder toWrap) {
+        wrapping = toWrap;
+    }
 
-	@Override
-	public boolean contains(BlockPos pos) {
-		if(PhysicsChunkManager.isLikelyShipChunk(pos.getX() >> 4, pos.getZ() >> 4)){
-			return true;
-		}
+    @Override
+    public boolean contains(BlockPos pos) {
+        if (PhysicsChunkManager.isLikelyShipChunk(pos.getX() >> 4, pos.getZ() >> 4)) {
+            return true;
+        }
         return wrapping.contains(pos);
     }
 
-	@Override
+    @Override
     public boolean contains(ChunkPos range) {
-		if(PhysicsChunkManager.isLikelyShipChunk(range.x, range.z)){
-			return true;
-		}
+        if (PhysicsChunkManager.isLikelyShipChunk(range.x, range.z)) {
+            return true;
+        }
         return wrapping.contains(range);
     }
 
-	@Override
+    @Override
     public boolean contains(AxisAlignedBB bb) {
-		int xPos = (int) bb.minX;
-		int zPos = (int) bb.minZ;
-		if(PhysicsChunkManager.isLikelyShipChunk(xPos >> 4, zPos >> 4)){
-			return true;
-		}
+        int xPos = (int) bb.minX;
+        int zPos = (int) bb.minZ;
+        if (PhysicsChunkManager.isLikelyShipChunk(xPos >> 4, zPos >> 4)) {
+            return true;
+        }
         return wrapping.contains(bb);
     }
 
 
-	//Standard overrides past here
-	@Override
+    //Standard overrides past here
+    @Override
     public double getClosestDistance(Entity entityIn) {
         return wrapping.getClosestDistance(entityIn);
     }
 
-	@Override
+    @Override
     public double getClosestDistance(double x, double z) {
         return wrapping.getClosestDistance(x, z);
     }
 
-	@Override
+    @Override
     public EnumBorderStatus getStatus() {
         return wrapping.getStatus();
     }
 
-	@Override
+    @Override
     public double minX() {
         return wrapping.minX();
     }
 
-	@Override
+    @Override
     public double minZ() {
         return wrapping.minZ();
     }
 
-	@Override
+    @Override
     public double maxX() {
         return wrapping.maxX();
     }
 
-	@Override
+    @Override
     public double maxZ() {
         return wrapping.maxZ();
     }
 
-	@Override
+    @Override
     public double getCenterX() {
         return wrapping.getCenterX();
     }
 
-	@Override
+    @Override
     public double getCenterZ() {
-      	return wrapping.getCenterZ();
+        return wrapping.getCenterZ();
     }
 
-	@Override
+    @Override
     public void setCenter(double x, double z) {
-    	wrapping.setCenter(x, z);
+        wrapping.setCenter(x, z);
     }
 
-	@Override
+    @Override
     public double getDiameter() {
         return wrapping.getDiameter();
     }
 
-	@Override
+    @Override
     public long getTimeUntilTarget() {
         return wrapping.getTimeUntilTarget();
     }
 
-	@Override
+    @Override
     public double getTargetSize() {
         return wrapping.getTargetSize();
     }
 
-	@Override
+    @Override
     public void setTransition(double newSize) {
-    	wrapping.setTransition(newSize);
+        wrapping.setTransition(newSize);
     }
 
-	@Override
+    @Override
     public void setTransition(double oldSize, double newSize, long time) {
-    	wrapping.setTransition(oldSize, newSize, time);
+        wrapping.setTransition(oldSize, newSize, time);
     }
 
-	@Override
+    @Override
     public List<IBorderListener> getListeners() {
         return wrapping.getListeners();
     }
 
-	@Override
+    @Override
     public void addListener(IBorderListener listener) {
-    	wrapping.addListener(listener);
+        wrapping.addListener(listener);
     }
 
-	@Override
-    public void setSize(int size) {
-    	wrapping.setSize(size);
-    }
-
-	@Override
+    @Override
     public int getSize() {
         return wrapping.getSize();
     }
 
-	@Override
+    @Override
+    public void setSize(int size) {
+        wrapping.setSize(size);
+    }
+
+    @Override
     public double getDamageBuffer() {
         return wrapping.getDamageBuffer();
     }
 
-	@Override
+    @Override
     public void setDamageBuffer(double bufferSize) {
-    	wrapping.setDamageBuffer(bufferSize);
+        wrapping.setDamageBuffer(bufferSize);
     }
 
-	@Override
+    @Override
     public double getDamageAmount() {
         return wrapping.getDamageAmount();
     }
 
-	@Override
+    @Override
     public void setDamageAmount(double newAmount) {
-    	wrapping.setDamageAmount(newAmount);
+        wrapping.setDamageAmount(newAmount);
     }
 
-	@Override
+    @Override
     @SideOnly(Side.CLIENT)
     public double getResizeSpeed() {
         return wrapping.getResizeSpeed();
     }
 
-	@Override
+    @Override
     public int getWarningTime() {
         return wrapping.getWarningTime();
     }
 
-	@Override
+    @Override
     public void setWarningTime(int warningTime) {
-    	wrapping.setWarningTime(warningTime);
+        wrapping.setWarningTime(warningTime);
     }
 
-	@Override
+    @Override
     public int getWarningDistance() {
         return wrapping.getWarningDistance();
     }
 
-	@Override
+    @Override
     public void setWarningDistance(int warningDistance) {
-    	wrapping.setWarningDistance(warningDistance);
+        wrapping.setWarningDistance(warningDistance);
     }
 
-	@Override
+    @Override
     public void removeListener(IBorderListener listener) {
-    	wrapping.removeListener(listener);
+        wrapping.removeListener(listener);
     }
 
 }

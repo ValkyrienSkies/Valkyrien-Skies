@@ -5,82 +5,84 @@ import java.util.HashSet;
 
 /**
  * A class that keeps track of all the nodes attached to a network; gets recalcuated upon a node being broken
- * @author thebest108
  *
+ * @author thebest108
  */
 public class NodeNetwork {
 
-	public final HashSet<Node> networkedNodes;
+    public final HashSet<Node> networkedNodes;
 
-	public NodeNetwork(){
-		networkedNodes = new HashSet<Node>();
-	}
+    public NodeNetwork() {
+        networkedNodes = new HashSet<Node>();
+    }
 
-	public NodeNetwork(HashSet<Node> backingSet){
-		networkedNodes = backingSet;
-	}
+    public NodeNetwork(HashSet<Node> backingSet) {
+        networkedNodes = backingSet;
+    }
 
-	public NodeNetwork(Node parent){
-		this();
-		networkedNodes.add(parent);
-	}
+    public NodeNetwork(Node parent) {
+        this();
+        networkedNodes.add(parent);
+    }
 
-	/**
-	 * Removes the input node from the networks, and also replaces some of the node network refrences with a new network if they're now longer connected
-	 * @param node
-	 */
-	public void recalculateNetworks(Node node){
-		networkedNodes.remove(node);
+    private static void fillWithConnections(Node start, HashSet<Node> toFill) {
+        toFill.add(start);
+        for (Node otherNodes : start.connectedNodes) {
+            if (!toFill.contains(otherNodes)) {
+                fillWithConnections(otherNodes, toFill);
+            }
+        }
+    }
 
-		ArrayList<Node> networkedNodesCopy = new ArrayList<Node>(networkedNodes);
+    /**
+     * Removes the input node from the networks, and also replaces some of the node network refrences with a new network if they're now longer connected
+     *
+     * @param node
+     */
+    public void recalculateNetworks(Node node) {
+        networkedNodes.remove(node);
 
-		networkedNodes.clear();
+        ArrayList<Node> networkedNodesCopy = new ArrayList<Node>(networkedNodes);
 
-		ArrayList<HashSet<Node>> listOfHashSetsOfNodes = new ArrayList<HashSet<Node>>();
+        networkedNodes.clear();
 
-		while(!networkedNodesCopy.isEmpty()){
-			Node startPoint = networkedNodesCopy.get(0);
-			HashSet<Node> fullConnection = new HashSet<Node>();
-			fillWithConnections(startPoint, fullConnection);
-			listOfHashSetsOfNodes.add(fullConnection);
-			networkedNodesCopy.removeAll(fullConnection);
-		}
+        ArrayList<HashSet<Node>> listOfHashSetsOfNodes = new ArrayList<HashSet<Node>>();
 
-		for(HashSet<Node> nodeSet : listOfHashSetsOfNodes){
-			NodeNetwork network = new NodeNetwork(nodeSet);
+        while (!networkedNodesCopy.isEmpty()) {
+            Node startPoint = networkedNodesCopy.get(0);
+            HashSet<Node> fullConnection = new HashSet<Node>();
+            fillWithConnections(startPoint, fullConnection);
+            listOfHashSetsOfNodes.add(fullConnection);
+            networkedNodesCopy.removeAll(fullConnection);
+        }
 
-			for(Node nodeToUpdate : nodeSet){
-				nodeToUpdate.updateParentNetwork(network);
-			}
+        for (HashSet<Node> nodeSet : listOfHashSetsOfNodes) {
+            NodeNetwork network = new NodeNetwork(nodeSet);
+
+            for (Node nodeToUpdate : nodeSet) {
+                nodeToUpdate.updateParentNetwork(network);
+            }
 
 //			System.out.println("New Network of Size " + nodeSet.size());
-		}
-	}
+        }
+    }
 
-	private static void fillWithConnections(Node start, HashSet<Node> toFill){
-		toFill.add(start);
-		for(Node otherNodes : start.connectedNodes){
-			if(!toFill.contains(otherNodes)){
-				fillWithConnections(otherNodes, toFill);
-			}
-		}
-	}
+    /**
+     * Merges the entire input merge into the first network
+     *
+     * @param networks
+     * @return
+     */
+    public void mergeWithNetworks(NodeNetwork[] networks) {
+        int totalSize = networks.length;
 
-	/**
-	 * Merges the entire input merge into the first network
-	 * @param networks
-	 * @return
-	 */
-	public void mergeWithNetworks(NodeNetwork[] networks){
-		int totalSize = networks.length;
-
-		for(int i = 0; i < totalSize; i ++){
-			networkedNodes.addAll(networks[i].networkedNodes);
-		}
-		for(Node node : networkedNodes){
-			node.updateParentNetwork(this);
-		}
+        for (int i = 0; i < totalSize; i++) {
+            networkedNodes.addAll(networks[i].networkedNodes);
+        }
+        for (Node node : networkedNodes) {
+            node.updateParentNetwork(this);
+        }
 
 //		System.out.println("New Network of Size " + networkedNodes.size());
-	}
+    }
 }

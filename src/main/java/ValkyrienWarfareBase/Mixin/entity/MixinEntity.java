@@ -1,15 +1,11 @@
 package ValkyrienWarfareBase.Mixin.entity;
 
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
-
-import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Interaction.IDraggable;
 import ValkyrienWarfareBase.PhysicsManagement.CoordTransformObject;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -22,6 +18,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(Entity.class)
 public abstract class MixinEntity implements IDraggable {
@@ -34,45 +33,31 @@ public abstract class MixinEntity implements IDraggable {
 
     public boolean cancelNextMove = false;
     public boolean cancelNextMove2 = false;
-
-    private Vector tempOverrideForMove = null;
-
-    private boolean dontLoopForever = true;
-
     public Entity thisClassAsAnEntity = Entity.class.cast(this);
-
     @Shadow
     public float rotationYaw;
-
     @Shadow
     public float rotationPitch;
-
     @Shadow
     public float prevRotationYaw;
-
     @Shadow
     public float prevRotationPitch;
-
     @Shadow
     public boolean onGround;
-
     @Shadow
     public float distanceWalkedModified;
-
     @Shadow
     public float distanceWalkedOnStepModified;
-
     @Shadow
     public World world;
-
     @Shadow
     public double posX;
-
     @Shadow
     public double posY;
-
     @Shadow
     public double posZ;
+    private Vector tempOverrideForMove = null;
+    private boolean dontLoopForever = true;
 
     @Shadow
     public void setPosition(double x, double y, double z) {
@@ -225,8 +210,8 @@ public abstract class MixinEntity implements IDraggable {
         yawDifVelocity = toSet;
     }
 
-    public void setCancelNextMove(boolean toSet){
-    	cancelNextMove = toSet;
+    public void setCancelNextMove(boolean toSet) {
+        cancelNextMove = toSet;
     }
 
     /*
@@ -256,11 +241,11 @@ public abstract class MixinEntity implements IDraggable {
 
     @Overwrite
     protected final Vec3d getVectorForRotation(float pitch, float yaw) {
-        float f = MathHelper.cos(-yaw * 0.017453292F - (float)Math.PI);
-        float f1 = MathHelper.sin(-yaw * 0.017453292F - (float)Math.PI);
+        float f = MathHelper.cos(-yaw * 0.017453292F - (float) Math.PI);
+        float f1 = MathHelper.sin(-yaw * 0.017453292F - (float) Math.PI);
         float f2 = -MathHelper.cos(-pitch * 0.017453292F);
         float f3 = MathHelper.sin(-pitch * 0.017453292F);
-        Vec3d vanilla = new Vec3d((double)(f1 * f2), (double)f3, (double)(f * f2));
+        Vec3d vanilla = new Vec3d((double) (f1 * f2), (double) f3, (double) (f * f2));
 
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(Entity.class.cast(this));
         if (wrapper != null) {
@@ -318,7 +303,6 @@ public abstract class MixinEntity implements IDraggable {
     }*/
 
 
-
     @Shadow
     public abstract void move(MoverType type, double x, double y, double z);
 
@@ -328,7 +312,8 @@ public abstract class MixinEntity implements IDraggable {
     }*/
 
     @Shadow
-    protected void updateFallState(double y, boolean onGroundIn, IBlockState state, BlockPos pos) {}
+    protected void updateFallState(double y, boolean onGroundIn, IBlockState state, BlockPos pos) {
+    }
 
     @Shadow
     protected boolean canTriggerWalking() {
@@ -336,18 +321,22 @@ public abstract class MixinEntity implements IDraggable {
     }
 
     @Shadow
-    protected SoundEvent getSwimSound() { return null; }
-
-    @Shadow
-    protected void playStepSound(BlockPos pos, Block blockIn){}
-
-    @Shadow
-    protected int getFireImmuneTicks(){
-    	return 0;
+    protected SoundEvent getSwimSound() {
+        return null;
     }
 
     @Shadow
-    protected void dealFireDamage(int amount){}
+    protected void playStepSound(BlockPos pos, Block blockIn) {
+    }
+
+    @Shadow
+    protected int getFireImmuneTicks() {
+        return 0;
+    }
+
+    @Shadow
+    protected void dealFireDamage(int amount) {
+    }
 
     @Overwrite
     public double getDistanceSq(double x, double y, double z) {
@@ -375,7 +364,7 @@ public abstract class MixinEntity implements IDraggable {
 
     @Overwrite
     public double getDistanceSq(BlockPos pos) {
-    	double vanilla = pos.getDistance((int) posX, (int) posY, (int) posZ);
+        double vanilla = pos.getDistance((int) posX, (int) posY, (int) posZ);
         if (vanilla < 64.0D) {
             return vanilla;
         } else {

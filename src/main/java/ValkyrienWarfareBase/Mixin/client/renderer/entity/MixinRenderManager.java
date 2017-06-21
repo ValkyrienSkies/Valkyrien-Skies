@@ -24,25 +24,26 @@ import org.spongepowered.asm.mixin.Shadow;
 public abstract class MixinRenderManager {
 
     @Shadow
-    public <T extends Entity> Render<T> getEntityRenderObject(T entityIn) { return null; }
-
-    @Shadow
     public TextureManager renderEngine;
-
     @Shadow
     private boolean renderOutlines;
-
     @Shadow
     private boolean debugBoundingBox;
 
     @Shadow
-    private void renderDebugBoundingBox(Entity entityIn, double x, double y, double z, float entityYaw, float partialTicks) {}
+    public <T extends Entity> Render<T> getEntityRenderObject(T entityIn) {
+        return null;
+    }
+
+    @Shadow
+    private void renderDebugBoundingBox(Entity entityIn, double x, double y, double z, float entityYaw, float partialTicks) {
+    }
 
     @Overwrite
-    public void doRenderEntity(Entity entityIn, double x, double y, double z, float yaw, float partialTicks, boolean p_188391_10_){
+    public void doRenderEntity(Entity entityIn, double x, double y, double z, float yaw, float partialTicks, boolean p_188391_10_) {
         PhysicsWrapperEntity fixedOnto = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(entityIn);
 
-        if(fixedOnto != null){
+        if (fixedOnto != null) {
             double oldPosX = entityIn.posX;
             double oldPosY = entityIn.posY;
             double oldPosZ = entityIn.posZ;
@@ -55,7 +56,7 @@ public abstract class MixinRenderManager {
 
             fixedOnto.wrapping.renderer.setupTranslation(partialTicks);
 
-            if(localPosition != null){
+            if (localPosition != null) {
                 localPosition = new Vector(localPosition);
 
                 localPosition.X -= fixedOnto.wrapping.renderer.offsetPos.getX();
@@ -71,15 +72,15 @@ public abstract class MixinRenderManager {
             boolean makePlayerMount = false;
             PhysicsWrapperEntity shipRidden = null;
 
-            if(entityIn instanceof EntityPlayer){
-                EntityPlayer player = (EntityPlayer)entityIn;
-                if(player.isPlayerSleeping()){
-                    if(player.ridingEntity instanceof PhysicsWrapperEntity){
+            if (entityIn instanceof EntityPlayer) {
+                EntityPlayer player = (EntityPlayer) entityIn;
+                if (player.isPlayerSleeping()) {
+                    if (player.ridingEntity instanceof PhysicsWrapperEntity) {
                         shipRidden = (PhysicsWrapperEntity) player.ridingEntity;
                     }
 //					shipRidden = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(entityIn);
 
-                    if(shipRidden != null){
+                    if (shipRidden != null) {
                         player.ridingEntity = null;
                         makePlayerMount = true;
 
@@ -98,8 +99,8 @@ public abstract class MixinRenderManager {
 
 //	                	player.setRenderOffsetForSleep(EnumFacing.SOUTH);
 
-                        if (block != null && block.isBed(state, entityIn.world, bedPos, entityIn)){
-                            angleYaw = (float)(block.getBedDirection(state, entityIn.world, bedPos).getHorizontalIndex() * 90);
+                        if (block != null && block.isBed(state, entityIn.world, bedPos, entityIn)) {
+                            angleYaw = (float) (block.getBedDirection(state, entityIn.world, bedPos).getHorizontalIndex() * 90);
 //	                    	angleYaw += 180;
                         }
                         GL11.glRotatef(angleYaw, 0, 1F, 0);
@@ -109,13 +110,13 @@ public abstract class MixinRenderManager {
 
             this.doRenderEntityOriginal(entityIn, x, y, z, yaw, partialTicks, p_188391_10_);
 
-            if(makePlayerMount){
-                EntityPlayer player = (EntityPlayer)entityIn;
+            if (makePlayerMount) {
+                EntityPlayer player = (EntityPlayer) entityIn;
 
                 player.ridingEntity = shipRidden;
             }
 
-            if(localPosition != null){
+            if (localPosition != null) {
                 fixedOnto.wrapping.renderer.inverseTransform(partialTicks);
             }
 
@@ -127,58 +128,42 @@ public abstract class MixinRenderManager {
             entityIn.lastTickPosY = oldLastPosY;
             entityIn.lastTickPosZ = oldLastPosZ;
 
-        }else{
+        } else {
             this.doRenderEntityOriginal(entityIn, x, y, z, yaw, partialTicks, p_188391_10_);
         }
     }
 
-    public void doRenderEntityOriginal(Entity entityIn, double x, double y, double z, float yaw, float partialTicks, boolean p_188391_10_)
-    {
+    public void doRenderEntityOriginal(Entity entityIn, double x, double y, double z, float yaw, float partialTicks, boolean p_188391_10_) {
         Render<Entity> render = null;
 
-        try
-        {
+        try {
             render = this.<Entity>getEntityRenderObject(entityIn);
 
-            if (render != null && this.renderEngine != null)
-            {
-                try
-                {
+            if (render != null && this.renderEngine != null) {
+                try {
                     render.setRenderOutlines(this.renderOutlines);
                     render.doRender(entityIn, x, y, z, yaw, partialTicks);
-                }
-                catch (Throwable throwable1)
-                {
+                } catch (Throwable throwable1) {
                     throw new ReportedException(CrashReport.makeCrashReport(throwable1, "Rendering entity in world"));
                 }
 
-                try
-                {
-                    if (!this.renderOutlines)
-                    {
+                try {
+                    if (!this.renderOutlines) {
                         render.doRenderShadowAndFire(entityIn, x, y, z, yaw, partialTicks);
                     }
-                }
-                catch (Throwable throwable2)
-                {
+                } catch (Throwable throwable2) {
                     throw new ReportedException(CrashReport.makeCrashReport(throwable2, "Post-rendering entity in world"));
                 }
 
-                if (this.debugBoundingBox && !entityIn.isInvisible() && !p_188391_10_ && !Minecraft.getMinecraft().isReducedDebug())
-                {
-                    try
-                    {
+                if (this.debugBoundingBox && !entityIn.isInvisible() && !p_188391_10_ && !Minecraft.getMinecraft().isReducedDebug()) {
+                    try {
                         this.renderDebugBoundingBox(entityIn, x, y, z, yaw, partialTicks);
-                    }
-                    catch (Throwable throwable)
-                    {
+                    } catch (Throwable throwable) {
                         throw new ReportedException(CrashReport.makeCrashReport(throwable, "Rendering entity hitbox in world"));
                     }
                 }
             }
-        }
-        catch (Throwable throwable3)
-        {
+        } catch (Throwable throwable3) {
             CrashReport crashreport = CrashReport.makeCrashReport(throwable3, "Rendering entity in world");
             CrashReportCategory crashreportcategory = crashreport.makeCategory("Entity being rendered");
             entityIn.addEntityCrashInfo(crashreportcategory);

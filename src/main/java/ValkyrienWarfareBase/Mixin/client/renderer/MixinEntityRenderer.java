@@ -1,16 +1,11 @@
 package ValkyrienWarfareBase.Mixin.client.renderer;
 
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
-
-import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.MixinMethods;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Math.Quaternion;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareControl.Piloting.ClientPilotingManager;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -25,11 +20,16 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(EntityRenderer.class)
 public abstract class MixinEntityRenderer {
 
-    @Shadow @Final
+    @Shadow
+    @Final
     public Minecraft mc;
 
     @Shadow

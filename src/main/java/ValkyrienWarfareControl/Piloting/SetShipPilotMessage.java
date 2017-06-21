@@ -1,32 +1,33 @@
 package ValkyrienWarfareControl.Piloting;
 
-import java.util.UUID;
-
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
-public class SetShipPilotMessage implements IMessage{
+import java.util.UUID;
 
-	//If its just 0L and 0L then the player is no longer piloting a Ship
-	public UUID entityUniqueID;
+public class SetShipPilotMessage implements IMessage {
 
-	public SetShipPilotMessage(){}
+    //If its just 0L and 0L then the player is no longer piloting a Ship
+    public UUID entityUniqueID;
 
-	public SetShipPilotMessage(UUID toSend){
-		entityUniqueID = toSend;
-	}
+    public SetShipPilotMessage() {
+    }
 
-	@Override
-	public void fromBytes(ByteBuf buf) {
-		PacketBuffer packetBuffer = new PacketBuffer(buf);
-		entityUniqueID = packetBuffer.readUniqueId();
-	}
+    public SetShipPilotMessage(UUID toSend) {
+        entityUniqueID = toSend;
+    }
 
-	@Override
-	public void toBytes(ByteBuf buf) {
-		PacketBuffer packetBuffer = new PacketBuffer(buf);
-		packetBuffer.writeUniqueId(entityUniqueID);
-	}
+    @Override
+    public void fromBytes(ByteBuf buf) {
+        PacketBuffer packetBuffer = new PacketBuffer(buf);
+        entityUniqueID = packetBuffer.readUniqueId();
+    }
+
+    @Override
+    public void toBytes(ByteBuf buf) {
+        PacketBuffer packetBuffer = new PacketBuffer(buf);
+        packetBuffer.writeUniqueId(entityUniqueID);
+    }
 
 }

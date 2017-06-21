@@ -5,7 +5,6 @@ import ValkyrienWarfareWorld.Proxy.CommonProxyWorld;
 import ValkyrienWarfareWorld.WorldGen.ValkyrienWarfareWorldGen;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.ResourceLocation;
@@ -24,59 +23,54 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 @Mod(modid = ValkyrienWarfareWorldMod.MODID, name = ValkyrienWarfareWorldMod.MODNAME, version = ValkyrienWarfareWorldMod.MODVER)
 public class ValkyrienWarfareWorldMod {
 
-	@SidedProxy(clientSide = "ValkyrienWarfareWorld.Proxy.ClientProxyWorld", serverSide = "ValkyrienWarfareWorld.Proxy.CommonProxyWorld")
-	public static CommonProxyWorld proxy;
+    public static final String MODID = "valkyrienwarfareworld";
+    public static final String MODNAME = "Valkyrien Warfare World";
+    public static final String MODVER = "0.9_alpha";
+    private static final WorldEventsCommon worldEventsCommon = new WorldEventsCommon();
+    @SidedProxy(clientSide = "ValkyrienWarfareWorld.Proxy.ClientProxyWorld", serverSide = "ValkyrienWarfareWorld.Proxy.CommonProxyWorld")
+    public static CommonProxyWorld proxy;
+    @Instance(MODID)
+    public static ValkyrienWarfareWorldMod instance = new ValkyrienWarfareWorldMod();
+    public static Block etheriumOre;
+    public static Item etheriumCrystal;
 
-	public static final String MODID = "valkyrienwarfareworld";
-	public static final String MODNAME = "Valkyrien Warfare World";
-	public static final String MODVER = "0.9_alpha";
+    private static void registerItemBlock(Block block) {
+        GameRegistry.register(new ItemBlock(block).setRegistryName(block.getRegistryName()));
+    }
 
-	@Instance(MODID)
-	public static ValkyrienWarfareWorldMod instance = new ValkyrienWarfareWorldMod();
+    @EventHandler
+    public void preInit(FMLPreInitializationEvent event) {
+        registerBlocks(event);
+        registerItems(event);
+        proxy.preInit(event);
+    }
 
-	public static Block etheriumOre;
+    @EventHandler
+    public void init(FMLInitializationEvent event) {
+        EntityRegistry.registerModEntity(new ResourceLocation(MODID, "FallingUpBlockEntity"), EntityFallingUpBlock.class, "FallingUpBlockEntity", 75, this, 80, 1, true);
+        MinecraftForge.EVENT_BUS.register(worldEventsCommon);
+        proxy.init(event);
 
-	public static Item etheriumCrystal;
+        GameRegistry.registerWorldGenerator(new ValkyrienWarfareWorldGen(), 1);
+    }
 
-	private static final WorldEventsCommon worldEventsCommon = new WorldEventsCommon();
+    @EventHandler
+    public void postInit(FMLPostInitializationEvent event) {
+        proxy.postInit(event);
+    }
 
-	@EventHandler
-	public void preInit(FMLPreInitializationEvent event) {
-		registerBlocks(event);
-		registerItems(event);
-		proxy.preInit(event);
-	}
+    private void registerBlocks(FMLStateEvent event) {
+        etheriumOre = new BlockEtheriumOre(Material.ROCK).setHardness(3f).setUnlocalizedName("etheriumore").setRegistryName(MODID, "etheriumore").setCreativeTab(ValkyrienWarfareMod.vwTab);
 
-	@EventHandler
-	public void init(FMLInitializationEvent event) {
-		EntityRegistry.registerModEntity(new ResourceLocation(MODID, "FallingUpBlockEntity"), EntityFallingUpBlock.class, "FallingUpBlockEntity", 75, this, 80, 1, true);
-		MinecraftForge.EVENT_BUS.register(worldEventsCommon);
-		proxy.init(event);
+        GameRegistry.register(etheriumOre);
 
-		GameRegistry.registerWorldGenerator(new ValkyrienWarfareWorldGen(), 1);
-	}
+        registerItemBlock(etheriumOre);
+    }
 
-	@EventHandler
-	public void postInit(FMLPostInitializationEvent event) {
-		proxy.postInit(event);
-	}
+    private void registerItems(FMLStateEvent event) {
+        etheriumCrystal = new ItemEtheriumCrystal().setUnlocalizedName("etheriumcrystal").setRegistryName(MODID, "etheriumcrystal").setCreativeTab(ValkyrienWarfareMod.vwTab).setMaxStackSize(16);
 
-	private void registerBlocks(FMLStateEvent event) {
-		etheriumOre = new BlockEtheriumOre(Material.ROCK).setHardness(3f).setUnlocalizedName("etheriumore").setRegistryName(MODID, "etheriumore").setCreativeTab(ValkyrienWarfareMod.vwTab);
-
-		GameRegistry.register(etheriumOre);
-
-		registerItemBlock(etheriumOre);
-	}
-
-	private void registerItems(FMLStateEvent event) {
-		etheriumCrystal = new ItemEtheriumCrystal().setUnlocalizedName("etheriumcrystal").setRegistryName(MODID, "etheriumcrystal").setCreativeTab(ValkyrienWarfareMod.vwTab).setMaxStackSize(16);
-
-		GameRegistry.register(etheriumCrystal);
-	}
-
-	private static void registerItemBlock(Block block){
-		GameRegistry.register(new ItemBlock(block).setRegistryName(block.getRegistryName()));
-	}
+        GameRegistry.register(etheriumCrystal);
+    }
 
 }

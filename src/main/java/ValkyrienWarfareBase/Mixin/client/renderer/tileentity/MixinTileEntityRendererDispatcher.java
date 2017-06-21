@@ -18,48 +18,44 @@ import org.spongepowered.asm.mixin.Shadow;
 public abstract class MixinTileEntityRendererDispatcher {
 
     @Shadow
+    public static double staticPlayerX;
+    @Shadow
+    public static double staticPlayerY;
+    @Shadow
+    public static double staticPlayerZ;
+    @Shadow
     public double entityX;
-
     @Shadow
     public double entityY;
-
     @Shadow
     public double entityZ;
-
+    @Shadow
+    public World world;
     @Shadow
     private boolean drawingBatch;
 
     @Shadow
-    public World world;
+    public void renderTileEntityAt(TileEntity tileEntityIn, double x, double y, double z, float partialTicks, int destroyStage) {
+    }
 
     @Shadow
-    public static double staticPlayerX;
+    public void drawBatch(int pass) {
+    }
 
     @Shadow
-    public static double staticPlayerY;
-
-    @Shadow
-    public static double staticPlayerZ;
-
-    @Shadow
-    public void renderTileEntityAt(TileEntity tileEntityIn, double x, double y, double z, float partialTicks, int destroyStage) {}
-
-    @Shadow
-    public void drawBatch(int pass) {}
-
-    @Shadow
-    public void preDrawBatch() {}
+    public void preDrawBatch() {
+    }
 
     @Overwrite
-    public void renderTileEntity(TileEntity tileentityIn, float partialTicks, int destroyStage){
+    public void renderTileEntity(TileEntity tileentityIn, float partialTicks, int destroyStage) {
         BlockPos pos = tileentityIn.getPos();
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(tileentityIn.getWorld(), pos);
 
-        if(wrapper != null && wrapper.wrapping != null && wrapper.wrapping.renderer != null){
-            try{
+        if (wrapper != null && wrapper.wrapping != null && wrapper.wrapping.renderer != null) {
+            try {
                 GlStateManager.resetColor();
 
-                if(drawingBatch){
+                if (drawingBatch) {
                     this.drawBatch(MinecraftForgeClient.getRenderPass());
                     this.preDrawBatch();
                 }
@@ -74,11 +70,11 @@ public abstract class MixinTileEntityRendererDispatcher {
                 TileEntityRendererDispatcher.instance.staticPlayerY = wrapper.wrapping.renderer.offsetPos.getY();
                 TileEntityRendererDispatcher.instance.staticPlayerZ = wrapper.wrapping.renderer.offsetPos.getZ();
 
-                if(drawingBatch){
+                if (drawingBatch) {
                     this.renderTileEntityOriginal(tileentityIn, partialTicks, destroyStage);
                     this.drawBatch(MinecraftForgeClient.getRenderPass());
                     this.preDrawBatch();
-                }else{
+                } else {
                     this.renderTileEntity(tileentityIn, partialTicks, destroyStage);
                 }
                 TileEntityRendererDispatcher.instance.staticPlayerX = playerX;
@@ -86,29 +82,26 @@ public abstract class MixinTileEntityRendererDispatcher {
                 TileEntityRendererDispatcher.instance.staticPlayerZ = playerZ;
 
                 wrapper.wrapping.renderer.inverseTransform(partialTicks);
-            }catch(Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-        }else{
+        } else {
             this.renderTileEntityOriginal(tileentityIn, partialTicks, destroyStage);
         }
     }
 
-    public void renderTileEntityOriginal(TileEntity tileentityIn, float partialTicks, int destroyStage)
-    {
-        if (tileentityIn.getDistanceSq(this.entityX, this.entityY, this.entityZ) < tileentityIn.getMaxRenderDistanceSquared())
-        {
+    public void renderTileEntityOriginal(TileEntity tileentityIn, float partialTicks, int destroyStage) {
+        if (tileentityIn.getDistanceSq(this.entityX, this.entityY, this.entityZ) < tileentityIn.getMaxRenderDistanceSquared()) {
             RenderHelper.enableStandardItemLighting();
-            if(!drawingBatch || !tileentityIn.hasFastRenderer())
-            {
+            if (!drawingBatch || !tileentityIn.hasFastRenderer()) {
                 int i = this.world.getCombinedLight(tileentityIn.getPos(), 0);
                 int j = i % 65536;
                 int k = i / 65536;
-                OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)j, (float)k);
+                OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float) j, (float) k);
                 GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             }
             BlockPos blockpos = tileentityIn.getPos();
-            this.renderTileEntityAt(tileentityIn, (double)blockpos.getX() - staticPlayerX, (double)blockpos.getY() - staticPlayerY, (double)blockpos.getZ() - staticPlayerZ, partialTicks, destroyStage);
+            this.renderTileEntityAt(tileentityIn, (double) blockpos.getX() - staticPlayerX, (double) blockpos.getY() - staticPlayerY, (double) blockpos.getZ() - staticPlayerZ, partialTicks, destroyStage);
         }
     }
 }

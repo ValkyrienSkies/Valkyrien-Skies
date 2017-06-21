@@ -1,1 +1,10 @@
-{"variants":{"normal":{"model":"valkyrienwarfarecontrol:dopedetherium"}}}
+{
+    "forge_marker":1,
+    "variants":{
+        "normal":{"model":"valkyrienwarfarecontrol:dopedetherium"},
+        "inventory":[{
+             "model": "valkyrienwarfarecontrol:dopedetherium",
+             "transform": "forge:default-block"
+         }]
+    }
+}

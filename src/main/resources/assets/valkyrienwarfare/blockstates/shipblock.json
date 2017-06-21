@@ -1,1 +1,13 @@
-{"forge_marker":1,"defaults":{"custom":{"flip-v":true},"model":"valkyrienwarfare:physics-infuser.obj"},"variants":{"normal":[{}],"inventory":[{}]}}
+{
+    "forge_marker":1,
+    "defaults":{
+    "custom":{"flip-v":true}, "model":"valkyrienwarfare:physics-infuser.obj"},
+    "variants":{
+         "normal":[{}],
+         "inventory":[{
+             "model": "valkyrienwarfare:physics-infuser.obj",
+             "custom":{"flip-v":true},
+             "transform": "forge:default-block"
+         }]
+    }
+}

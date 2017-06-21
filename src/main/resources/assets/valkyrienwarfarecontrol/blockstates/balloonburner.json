@@ -1,1 +1,10 @@
-{"variants":{"normal":{"model":"valkyrienwarfarecontrol:balloonburner"}}}
+{
+    "forge_marker":1,
+    "variants":{
+        "normal":{"model":"valkyrienwarfarecontrol:balloonburner"},
+        "inventory":[{
+             "model": "valkyrienwarfarecontrol:balloonburner",
+             "transform": "forge:default-block"
+         }]
+    }
+}

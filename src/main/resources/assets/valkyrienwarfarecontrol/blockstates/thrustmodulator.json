@@ -1,1 +1,10 @@
-{"variants":{"normal":{"model":"valkyrienwarfarecontrol:thrustmodulator"}}}
+{
+    "forge_marker":1,
+    "variants":{
+        "normal":{"model":"valkyrienwarfarecontrol:thrustmodulator"},
+        "inventory":[{
+             "model": "valkyrienwarfarecontrol:thrustmodulator",
+             "transform": "forge:default-block"
+         }]
+    }
+}

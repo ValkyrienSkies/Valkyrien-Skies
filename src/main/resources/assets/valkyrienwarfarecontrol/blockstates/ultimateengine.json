@@ -1,1 +1,16 @@
-{"variants":{"default":{"model":"valkyrienwarfarecontrol:basicengine_propeller"},"facing=down":{"model":"valkyrienwarfarecontrol:ultimateengine","x":90},"facing=up":{"model":"valkyrienwarfarecontrol:ultimateengine","x":270},"facing=north":{"model":"valkyrienwarfarecontrol:ultimateengine"},"facing=south":{"model":"valkyrienwarfarecontrol:ultimateengine","y":180},"facing=west":{"model":"valkyrienwarfarecontrol:ultimateengine","y":270},"facing=east":{"model":"valkyrienwarfarecontrol:ultimateengine","y":90}}}
+{
+    "forge_marker":1,
+    "variants":{
+        "default":{"model":"valkyrienwarfarecontrolcontrol:ultimateengine_propeller"},
+        "facing=down":{"model":"valkyrienwarfarecontrol:ultimateengine","x":90},
+        "facing=up":{"model":"valkyrienwarfarecontrol:ultimateengine","x":270},
+        "facing=north":{"model":"valkyrienwarfarecontrol:ultimateengine"},
+        "facing=south":{"model":"valkyrienwarfarecontrol:ultimateengine","y":180},
+        "facing=west":{"model":"valkyrienwarfarecontrol:ultimateengine","y":270},
+        "facing=east":{"model":"valkyrienwarfarecontrol:ultimateengine","y":90},
+        "inventory":[{
+             "model": "valkyrienwarfarecontrol:ultimateengine",
+             "transform": "forge:default-block"
+         }]
+    }
+}

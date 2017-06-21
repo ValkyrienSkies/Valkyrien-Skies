@@ -1,1 +1,10 @@
-{"variants":{"normal":{"model":"valkyrienwarfarecontrol:creativeethercompressor"}}}
+{
+    "forge_marker":1,
+    "variants":{
+        "normal":{"model":"valkyrienwarfarecontrol:creativeethercompressor"},
+        "inventory":[{
+             "model": "valkyrienwarfarecontrol:creativeethercompressor",
+             "transform": "forge:default-block"
+         }]
+    }
+}

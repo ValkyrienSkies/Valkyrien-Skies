@@ -3,6 +3,7 @@ package ValkyrienWarfareControl;
 import java.io.File;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
+import ValkyrienWarfareControl.Block.BlockAirshipController_Zepplin;
 import ValkyrienWarfareControl.Block.BlockBalloonBurner;
 import ValkyrienWarfareControl.Block.BlockDopedEtherium;
 import ValkyrienWarfareControl.Block.BlockHovercraftController;
@@ -107,6 +108,8 @@ public class ValkyrienWarfareControlMod {
 	public Block thrustRelay;
 	public Block thrustModulator;
 
+	public Block airshipController_zepplin;
+
 	public Item systemLinker;
 	public Item airshipStealer;
 	public Item relayWire;
@@ -183,6 +186,8 @@ public class ValkyrienWarfareControlMod {
 		thrustRelay = new BlockThrustRelay(Material.IRON).setHardness(5f).setUnlocalizedName("thrustrelay").setRegistryName(MODID, "thrustrelay").setCreativeTab(CreativeTabs.TRANSPORTATION);
 		thrustModulator = new BlockThrustModulator(Material.IRON).setHardness(8f).setUnlocalizedName("thrustmodulator").setRegistryName(MODID, "thrustmodulator").setCreativeTab(CreativeTabs.TRANSPORTATION);
 
+		airshipController_zepplin = new BlockAirshipController_Zepplin(Material.WOOD).setHardness(5f).setUnlocalizedName("airshipcontroller_zepplin").setRegistryName(MODID, "airshipcontroller_zepplin").setCreativeTab(CreativeTabs.TRANSPORTATION);
+
 		registerBlock(basicEngine);
 		registerBlock(advancedEngine);
 		registerBlock(eliteEngine);
@@ -207,6 +212,8 @@ public class ValkyrienWarfareControlMod {
 
 		registerBlock(thrustRelay);
 		registerBlock(thrustModulator);
+
+		registerBlock(airshipController_zepplin);
 	}
 
 	private void registerTileEntities(FMLStateEvent event) {

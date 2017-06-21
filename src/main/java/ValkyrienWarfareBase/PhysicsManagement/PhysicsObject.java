@@ -11,8 +11,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
-import com.google.common.base.Predicate;
-
 import ValkyrienWarfareBase.BlockPhysicsRegistration;
 import ValkyrienWarfareBase.NBTUtils;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
@@ -25,6 +23,7 @@ import ValkyrienWarfareBase.Network.PhysWrapperPositionMessage;
 import ValkyrienWarfareBase.Physics.BlockForce;
 import ValkyrienWarfareBase.Physics.PhysicsCalculations;
 import ValkyrienWarfareBase.Physics.PhysicsCalculationsOrbital;
+import ValkyrienWarfareBase.Physics.PhysicsCalculations_Zepplin;
 import ValkyrienWarfareBase.Physics.PhysicsQueuedForce;
 import ValkyrienWarfareBase.Relocation.DetectorManager;
 import ValkyrienWarfareBase.Relocation.SpatialDetector;
@@ -266,12 +265,16 @@ public class PhysicsObject {
 	/**
 	 * Creates the PhysicsProcessor object before any data gets loaded into it; can be overridden to change the class of the Object
 	 */
-	private void createPhysicsCalculations(){
+	private void createPhysicsCalculations() {
 		if(physicsProcessor == null){
-			if(shipType == ShipType.Oribtal || shipType == ShipType.Semi_Unlocked_Orbital){
+			if(shipType == ShipType.Oribtal || shipType == ShipType.Semi_Unlocked_Orbital) {
 				physicsProcessor = new PhysicsCalculationsOrbital(this);
 			}else{
-				physicsProcessor = new PhysicsCalculations(this);
+				if(shipType == ShipType.Zepplin) {
+					physicsProcessor = new PhysicsCalculations_Zepplin(this);
+				}else{
+					physicsProcessor = new PhysicsCalculations(this);
+				}
 			}
 		}
 	}

@@ -1,0 +1,24 @@
+{
+    "__comment": "Model generated using MrCrayfish's Model Creator (http://mrcrayfish.com/modelcreator/)",
+    "textures": {
+        "0": "valkyrienwarfarecontrol:blocks/zepplin_front",
+        "1": "valkyrienwarfarecontrol:blocks/zepplin_planks_oak",
+        "2": "valkyrienwarfarecontrol:blocks/zepplin_back",
+        "3": "valkyrienwarfarecontrol:blocks/zepplin_top"
+    },
+    "elements": [
+        {
+            "name": "Cube",
+            "from": [ 0.0, 0.0, 0.0 ],
+            "to": [ 16.0, 16.0, 16.0 ],
+            "faces": {
+                "north": { "texture": "#0", "uv": [ 0.0, 0.0, 16.0, 16.0 ], "cullface": "north" },
+                "east": { "texture": "#1", "uv": [ 0.0, 0.0, 16.0, 16.0 ], "cullface": "east" },
+                "south": { "texture": "#2", "uv": [ 0.0, 0.0, 16.0, 16.0 ], "cullface": "south" },
+                "west": { "texture": "#1", "uv": [ 0.0, 0.0, 16.0, 16.0 ], "cullface": "west" },
+                "up": { "texture": "#3", "uv": [ 0.0, 0.0, 16.0, 16.0 ], "cullface": "up" },
+                "down": { "texture": "#1", "uv": [ 0.0, 0.0, 16.0, 16.0 ], "cullface": "down" }
+            }
+        }
+    ]
+}

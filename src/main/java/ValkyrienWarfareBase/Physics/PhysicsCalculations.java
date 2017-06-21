@@ -295,9 +295,7 @@ public class PhysicsCalculations {
 		double modifiedDrag = Math.pow(drag, physTickSpeed / .05D);
 		linearMomentum.multiply(modifiedDrag);
 		angularVelocity.multiply(modifiedDrag);
-		if (PhysicsSettings.doGravity) {
-			addForceAtPoint(new Vector(0, 0, 0), ValkyrienWarfareMod.gravity.getProduct(mass * physTickSpeed));
-		}
+		applyGravity();
 		addQueuedForces();
 		Collections.shuffle(activeForcePositions);
 
@@ -340,6 +338,12 @@ public class PhysicsCalculations {
 		}
 
 		convertTorqueToVelocity();
+	}
+
+	public void applyGravity() {
+		if (PhysicsSettings.doGravity) {
+			addForceAtPoint(new Vector(0, 0, 0), ValkyrienWarfareMod.gravity.getProduct(mass * physTickSpeed));
+		}
 	}
 
 	public void calculateForcesArchimedes() {
@@ -407,7 +411,13 @@ public class PhysicsCalculations {
 		CoordTransformObject coordTrans = parent.coordTransform;
 
 		double[] rotationChange = RotationMatrices.getRotationMatrix(angularVelocity.X, angularVelocity.Y, angularVelocity.Z, angularVelocity.length() * physTickSpeed);
+
+		Quaternion original = Quaternion.QuaternionFromMatrix(coordTrans.lToWRotation);
+
 		Quaternion faggot = Quaternion.QuaternionFromMatrix(RotationMatrices.getMatrixProduct(rotationChange, coordTrans.lToWRotation));
+
+		faggot = Quaternion.getBetweenQuat(original, faggot, 1.0D);
+
 		double[] radians = faggot.toRadians();
 		//if (!(Double.isNaN(radians[0]) || Double.isNaN(radians[1]) || Double.isNaN(radians[2]))) {
 			wrapperEnt.pitch = Double.isNaN(radians[0]) ? 0.0f : (float) Math.toDegrees(radians[0]);

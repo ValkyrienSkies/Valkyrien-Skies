@@ -1,10 +1,16 @@
 #ITEMS
 item.systemlinker.name=Systemverknüpfer
 item.airshipStealer.name=Luftschiffstehler
+item.relaywire.name=Vernetzungskabel
 
+#Blocks
 tile.shippilotschair.name=Pilotenstuhl
+tile.shippassengerchair.name=Passagierstuhl
 tile.dopedetherium.name=Dotiertes Etherium
 tile.basichovercraftcontroller.name=Einfacher Luftschiffkontroller
+tile.balloonburner.name=Balloon Brenner
+tile.thrustrelay.name=Beschleunigungsvernetzer
+tile.thrustmodulator.name=Beschleunigungsmodulator
 
 #ENGINES
 tile.basicengine.name=Einfacher Motor

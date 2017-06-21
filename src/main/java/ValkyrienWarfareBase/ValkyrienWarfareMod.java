@@ -184,7 +184,6 @@ public class ValkyrienWarfareMod {
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        vwTab = new TabValkyrienWarfare();
         proxy.preInit(event);
         registerBlocks(event);
         registerRecipies(event);
@@ -194,6 +193,7 @@ public class ValkyrienWarfareMod {
         ValkyrienWarfareHooks.methods = new RealMethods();
         ValkyrienWarfareHooks.isValkyrienWarfareInstalled = true;
         VWLogger = Logger.getLogger("ValkyrienWarfare");
+        vwTab = new TabValkyrienWarfare();
     }
 
     @EventHandler

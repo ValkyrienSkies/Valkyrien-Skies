@@ -16,6 +16,7 @@ import ValkyrienWarfareBase.Capability.IAirshipCounterCapability;
 import ValkyrienWarfareBase.Capability.ImplAirshipCounterCapability;
 import ValkyrienWarfareBase.Capability.StorageAirshipCounter;
 import ValkyrienWarfareBase.ChunkManagement.DimensionPhysicsChunkManager;
+import ValkyrienWarfareBase.GUI.TabValkyrienWarfare;
 import ValkyrienWarfareBase.Network.PhysWrapperPositionHandler;
 import ValkyrienWarfareBase.Network.PhysWrapperPositionMessage;
 import ValkyrienWarfareBase.Network.PlayerShipRefrenceHandler;
@@ -91,6 +92,8 @@ public class ValkyrienWarfareMod {
 	public static DimensionPhysicsChunkManager chunkManager;
 	public static DimensionPhysObjectManager physicsManager;
 
+	public static CreativeTabs vwTab;
+
 	@Instance(MODID)
 	public static ValkyrienWarfareMod instance = new ValkyrienWarfareMod();
 
@@ -116,6 +119,7 @@ public class ValkyrienWarfareMod {
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
+		vwTab = new TabValkyrienWarfare();
 		proxy.preInit(event);
 		registerBlocks(event);
 		registerRecipies(event);
@@ -178,8 +182,8 @@ public class ValkyrienWarfareMod {
 	}
 
 	private void registerBlocks(FMLStateEvent event) {
-		physicsInfuser = new BlockPhysicsInfuser(Material.ROCK).setHardness(12f).setUnlocalizedName("shipblock").setRegistryName(MODID, "shipblock").setCreativeTab(CreativeTabs.TRANSPORTATION);
-		physicsInfuserCreative = new BlockPhysicsInfuserCreative(Material.ROCK).setHardness(12f).setUnlocalizedName("shipblockcreative").setRegistryName(MODID, "shipblockcreative").setCreativeTab(CreativeTabs.TRANSPORTATION);;
+		physicsInfuser = new BlockPhysicsInfuser(Material.ROCK).setHardness(12f).setUnlocalizedName("shipblock").setRegistryName(MODID, "shipblock").setCreativeTab(vwTab);
+		physicsInfuserCreative = new BlockPhysicsInfuserCreative(Material.ROCK).setHardness(12f).setUnlocalizedName("shipblockcreative").setRegistryName(MODID, "shipblockcreative").setCreativeTab(vwTab);
 
 		registerBlock(physicsInfuser);
 		registerBlock(physicsInfuserCreative);

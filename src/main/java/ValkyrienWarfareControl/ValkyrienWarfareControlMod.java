@@ -158,30 +158,30 @@ public class ValkyrienWarfareControlMod {
 		double eliteEtherCompressorPower = config.get(Configuration.CATEGORY_GENERAL, "eliteEtherCompressorPower", 80000D, "Engine power for the elite Ether Compressor").getDouble();
 		double ultimateEtherCompressorPower = config.get(Configuration.CATEGORY_GENERAL, "ultimateEtherCompressorPower", 100000D, "Engine power for the ultimate Ether Compressor").getDouble();
 
-		basicEngine = new BlockNormalEngine(Material.WOOD, basicEnginePower).setHardness(5f).setUnlocalizedName("basicengine").setRegistryName(MODID, "basicengine").setCreativeTab(CreativeTabs.TRANSPORTATION);
-		advancedEngine = new BlockNormalEngine(Material.ROCK, advancedEnginePower).setHardness(6f).setUnlocalizedName("advancedengine").setRegistryName(MODID, "advancedengine").setCreativeTab(CreativeTabs.TRANSPORTATION);
-		eliteEngine = new BlockNormalEngine(Material.IRON, eliteEnginePower).setHardness(8f).setUnlocalizedName("eliteengine").setRegistryName(MODID, "eliteengine").setCreativeTab(CreativeTabs.TRANSPORTATION);
-		ultimateEngine = new BlockNormalEngine(Material.GROUND, ultimateEnginePower).setHardness(10f).setUnlocalizedName("ultimateengine").setRegistryName(MODID, "ultimateengine").setCreativeTab(CreativeTabs.TRANSPORTATION);
-		redstoneEngine = new BlockRedstoneEngine(Material.REDSTONE_LIGHT, redstoneEnginePower).setHardness(7.0f).setUnlocalizedName("redstoneengine").setRegistryName(MODID, "redstoneengine").setCreativeTab(CreativeTabs.TRANSPORTATION);
+		basicEngine = new BlockNormalEngine(Material.WOOD, basicEnginePower).setHardness(5f).setUnlocalizedName("basicengine").setRegistryName(MODID, "basicengine").setCreativeTab(ValkyrienWarfareMod.vwTab);
+		advancedEngine = new BlockNormalEngine(Material.ROCK, advancedEnginePower).setHardness(6f).setUnlocalizedName("advancedengine").setRegistryName(MODID, "advancedengine").setCreativeTab(ValkyrienWarfareMod.vwTab);
+		eliteEngine = new BlockNormalEngine(Material.IRON, eliteEnginePower).setHardness(8f).setUnlocalizedName("eliteengine").setRegistryName(MODID, "eliteengine").setCreativeTab(ValkyrienWarfareMod.vwTab);
+		ultimateEngine = new BlockNormalEngine(Material.GROUND, ultimateEnginePower).setHardness(10f).setUnlocalizedName("ultimateengine").setRegistryName(MODID, "ultimateengine").setCreativeTab(ValkyrienWarfareMod.vwTab);
+		redstoneEngine = new BlockRedstoneEngine(Material.REDSTONE_LIGHT, redstoneEnginePower).setHardness(7.0f).setUnlocalizedName("redstoneengine").setRegistryName(MODID, "redstoneengine").setCreativeTab(ValkyrienWarfareMod.vwTab);
 
-		antigravityEngine = new BlockNormalEtherCompressor(Material.WOOD, basicEtherCompressorPower).setHardness(8f).setUnlocalizedName("antigravengine").setRegistryName(MODID, "antigravengine").setCreativeTab(CreativeTabs.TRANSPORTATION);
-		advancedEtherCompressor = new BlockNormalEtherCompressor(Material.ROCK, advancedEtherCompressorPower).setHardness(8f).setUnlocalizedName("advancedethercompressor").setRegistryName(MODID, "advancedethercompressor").setCreativeTab(CreativeTabs.TRANSPORTATION);
-		eliteEtherCompressor = new BlockNormalEtherCompressor(Material.IRON, eliteEtherCompressorPower).setHardness(8f).setUnlocalizedName("eliteethercompressor").setRegistryName(MODID, "eliteethercompressor").setCreativeTab(CreativeTabs.TRANSPORTATION);
-		ultimateEtherCompressor = new BlockNormalEtherCompressor(Material.GROUND, ultimateEtherCompressorPower).setHardness(8f).setUnlocalizedName("ultimateethercompressor").setRegistryName(MODID, "ultimateethercompressor").setCreativeTab(CreativeTabs.TRANSPORTATION);
-		creativeEtherCompressor = new BlockCreativeEtherCompressor(Material.BARRIER, Double.MAX_VALUE / 4).setHardness(0.0f).setUnlocalizedName("creativeethercompressor").setRegistryName(MODID, "creativeethercompressor").setCreativeTab(CreativeTabs.TRANSPORTATION);
+		antigravityEngine = new BlockNormalEtherCompressor(Material.WOOD, basicEtherCompressorPower).setHardness(8f).setUnlocalizedName("antigravengine").setRegistryName(MODID, "antigravengine").setCreativeTab(ValkyrienWarfareMod.vwTab);
+		advancedEtherCompressor = new BlockNormalEtherCompressor(Material.ROCK, advancedEtherCompressorPower).setHardness(8f).setUnlocalizedName("advancedethercompressor").setRegistryName(MODID, "advancedethercompressor").setCreativeTab(ValkyrienWarfareMod.vwTab);
+		eliteEtherCompressor = new BlockNormalEtherCompressor(Material.IRON, eliteEtherCompressorPower).setHardness(8f).setUnlocalizedName("eliteethercompressor").setRegistryName(MODID, "eliteethercompressor").setCreativeTab(ValkyrienWarfareMod.vwTab);
+		ultimateEtherCompressor = new BlockNormalEtherCompressor(Material.GROUND, ultimateEtherCompressorPower).setHardness(8f).setUnlocalizedName("ultimateethercompressor").setRegistryName(MODID, "ultimateethercompressor").setCreativeTab(ValkyrienWarfareMod.vwTab);
+		creativeEtherCompressor = new BlockCreativeEtherCompressor(Material.BARRIER, Double.MAX_VALUE / 4).setHardness(0.0f).setUnlocalizedName("creativeethercompressor").setRegistryName(MODID, "creativeethercompressor").setCreativeTab(ValkyrienWarfareMod.vwTab);
 
-		basicHoverController = new BlockHovercraftController(Material.IRON).setHardness(10f).setUnlocalizedName("basichovercraftcontroller").setRegistryName(MODID, "basichovercraftcontroller").setCreativeTab(CreativeTabs.TRANSPORTATION);
-		dopedEtherium = new BlockDopedEtherium(Material.GLASS).setHardness(4f).setUnlocalizedName("dopedetherium").setRegistryName(MODID, "dopedetherium").setCreativeTab(CreativeTabs.TRANSPORTATION);
-		balloonBurner = new BlockBalloonBurner(Material.IRON).setHardness(4f).setUnlocalizedName("balloonburner").setRegistryName(MODID, "balloonburner").setCreativeTab(CreativeTabs.TRANSPORTATION);
-		pilotsChair = new BlockShipPilotsChair(Material.IRON).setHardness(4f).setUnlocalizedName("shippilotschair").setRegistryName(MODID, "shippilotschair").setCreativeTab(CreativeTabs.TRANSPORTATION);
+		basicHoverController = new BlockHovercraftController(Material.IRON).setHardness(10f).setUnlocalizedName("basichovercraftcontroller").setRegistryName(MODID, "basichovercraftcontroller").setCreativeTab(ValkyrienWarfareMod.vwTab);
+		dopedEtherium = new BlockDopedEtherium(Material.GLASS).setHardness(4f).setUnlocalizedName("dopedetherium").setRegistryName(MODID, "dopedetherium").setCreativeTab(ValkyrienWarfareMod.vwTab);
+		balloonBurner = new BlockBalloonBurner(Material.IRON).setHardness(4f).setUnlocalizedName("balloonburner").setRegistryName(MODID, "balloonburner").setCreativeTab(ValkyrienWarfareMod.vwTab);
+		pilotsChair = new BlockShipPilotsChair(Material.IRON).setHardness(4f).setUnlocalizedName("shippilotschair").setRegistryName(MODID, "shippilotschair").setCreativeTab(ValkyrienWarfareMod.vwTab);
 
-		passengerChair = new BlockShipPassengerChair(Material.IRON).setHardness(4f).setUnlocalizedName("shippassengerchair").setRegistryName(MODID, "shippassengerchair").setCreativeTab(CreativeTabs.TRANSPORTATION);
-		shipHelm = new BlockShipHelm(Material.WOOD).setHardness(4f).setUnlocalizedName("shiphelm").setRegistryName(MODID, "shiphelm").setCreativeTab(CreativeTabs.TRANSPORTATION);
-		shipWheel = new BlockShipWheel(Material.WOOD).setHardness(5f).setUnlocalizedName("shiphelmwheel").setRegistryName(MODID, "shiphelmwheel").setCreativeTab(CreativeTabs.TRANSPORTATION);
-		shipTelegraph = new BlockShipTelegraph(Material.WOOD).setHardness(5f).setUnlocalizedName("shiptelegraph").setRegistryName(MODID, "shiptelegraph").setCreativeTab(CreativeTabs.TRANSPORTATION);
+		passengerChair = new BlockShipPassengerChair(Material.IRON).setHardness(4f).setUnlocalizedName("shippassengerchair").setRegistryName(MODID, "shippassengerchair").setCreativeTab(ValkyrienWarfareMod.vwTab);
+		shipHelm = new BlockShipHelm(Material.WOOD).setHardness(4f).setUnlocalizedName("shiphelm").setRegistryName(MODID, "shiphelm").setCreativeTab(ValkyrienWarfareMod.vwTab);
+		shipWheel = new BlockShipWheel(Material.WOOD).setHardness(5f).setUnlocalizedName("shiphelmwheel").setRegistryName(MODID, "shiphelmwheel").setCreativeTab(ValkyrienWarfareMod.vwTab);
+		shipTelegraph = new BlockShipTelegraph(Material.WOOD).setHardness(5f).setUnlocalizedName("shiptelegraph").setRegistryName(MODID, "shiptelegraph").setCreativeTab(ValkyrienWarfareMod.vwTab);
 
-		thrustRelay = new BlockThrustRelay(Material.IRON).setHardness(5f).setUnlocalizedName("thrustrelay").setRegistryName(MODID, "thrustrelay").setCreativeTab(CreativeTabs.TRANSPORTATION);
-		thrustModulator = new BlockThrustModulator(Material.IRON).setHardness(8f).setUnlocalizedName("thrustmodulator").setRegistryName(MODID, "thrustmodulator").setCreativeTab(CreativeTabs.TRANSPORTATION);
+		thrustRelay = new BlockThrustRelay(Material.IRON).setHardness(5f).setUnlocalizedName("thrustrelay").setRegistryName(MODID, "thrustrelay").setCreativeTab(ValkyrienWarfareMod.vwTab);
+		thrustModulator = new BlockThrustModulator(Material.IRON).setHardness(8f).setUnlocalizedName("thrustmodulator").setRegistryName(MODID, "thrustmodulator").setCreativeTab(ValkyrienWarfareMod.vwTab);
 
 		registerBlock(basicEngine);
 		registerBlock(advancedEngine);
@@ -220,10 +220,10 @@ public class ValkyrienWarfareControlMod {
 		GameRegistry.registerTileEntity(TileEntityShipTelegraph.class, "tileshiptelegraph");
 	}
 	private void registerItems(FMLStateEvent event) {
-		systemLinker = new ItemSystemLinker().setUnlocalizedName("systemlinker").setRegistryName(MODID, "systemlinker").setCreativeTab(CreativeTabs.TRANSPORTATION).setMaxStackSize(1);
+		systemLinker = new ItemSystemLinker().setUnlocalizedName("systemlinker").setRegistryName(MODID, "systemlinker").setCreativeTab(ValkyrienWarfareMod.vwTab).setMaxStackSize(1);
 
-		airshipStealer = new ItemShipStealer().setUnlocalizedName("airshipStealer").setRegistryName(MODID, "airshipStealer").setCreativeTab(CreativeTabs.TOOLS).setMaxStackSize(1);
-		relayWire = new ItemRelayWire().setUnlocalizedName("relaywire").setRegistryName(MODID, "relaywire").setCreativeTab(CreativeTabs.TRANSPORTATION).setMaxStackSize(1);
+		airshipStealer = new ItemShipStealer().setUnlocalizedName("airshipStealer").setRegistryName(MODID, "airshipStealer").setCreativeTab(ValkyrienWarfareMod.vwTab).setMaxStackSize(1);
+		relayWire = new ItemRelayWire().setUnlocalizedName("relaywire").setRegistryName(MODID, "relaywire").setCreativeTab(ValkyrienWarfareMod.vwTab).setMaxStackSize(1);
 
 		GameRegistry.register(systemLinker);
 		GameRegistry.register(airshipStealer);

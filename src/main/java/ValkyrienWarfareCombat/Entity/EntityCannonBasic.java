@@ -5,7 +5,6 @@ import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareCombat.ValkyrienWarfareCombatMod;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHand;
@@ -37,9 +36,6 @@ public class EntityCannonBasic extends EntityMountingWeaponBase {
 		Vector velocityVector = new Vector(velocityNormal);
 
 		PhysicsWrapperEntity wrapper = getParentShip();
-		if(wrapper != null){
-			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWRotation, velocityVector);
-		}
 
 		velocityVector.multiply(2D);
 		EntityCannonBall projectile = new EntityCannonBall(world, velocityVector, this);

@@ -87,11 +87,6 @@ public abstract class MixinEntity implements IDraggable {
     public void setSneaking(boolean sneaking) {
     }
 
-    @Shadow
-    protected final Vec3d getVectorForRotation(float pitch, float yaw) {
-        return null;
-    }
-
     @Override
     //TODO: Finishme
     public void tickAddedVelocity() {
@@ -234,6 +229,7 @@ public abstract class MixinEntity implements IDraggable {
     	cancelNextMove = toSet;
     }
 
+    /*
     @Overwrite
     public Vec3d getLook(float partialTicks) {
         Vec3d original = getLookOriginal(partialTicks);
@@ -256,7 +252,26 @@ public abstract class MixinEntity implements IDraggable {
             float f1 = this.prevRotationYaw + (this.rotationYaw - this.prevRotationYaw) * partialTicks;
             return this.getVectorForRotation(f, f1);
         }
+    }*/
+
+    @Overwrite
+    protected final Vec3d getVectorForRotation(float pitch, float yaw) {
+        float f = MathHelper.cos(-yaw * 0.017453292F - (float)Math.PI);
+        float f1 = MathHelper.sin(-yaw * 0.017453292F - (float)Math.PI);
+        float f2 = -MathHelper.cos(-pitch * 0.017453292F);
+        float f3 = MathHelper.sin(-pitch * 0.017453292F);
+        Vec3d vanilla = new Vec3d((double)(f1 * f2), (double)f3, (double)(f * f2));
+
+        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(Entity.class.cast(this));
+        if (wrapper != null) {
+            return RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.RlToWRotation, vanilla);
+        }
+
+        return vanilla;
     }
+
+    @Shadow
+    public abstract Vec3d getLook(float partialTicks);
 
     /*@Inject(method = "move(Lnet/minecraft/entity/MoverType;DDD)V", at = @At("HEAD"), cancellable = true)
     public void preMove(MoverType type, double dx, double dy, double dz, CallbackInfo callbackInfo) {

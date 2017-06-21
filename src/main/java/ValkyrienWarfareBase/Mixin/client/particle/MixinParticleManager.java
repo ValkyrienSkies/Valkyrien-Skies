@@ -11,12 +11,11 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ParticleManager.class)
 public class MixinParticleManager {
     @Inject(method = "addEffect(Lnet/minecraft/client/particle/Particle;)V", at = @At("HEAD"), cancellable = true)
-    public void preAddEffect(Particle effect, CallbackInfo callbackInfoReturnable)  {
+    public void preAddEffect(Particle effect, CallbackInfo callbackInfoReturnable) {
         if (effect == null) {
             callbackInfoReturnable.cancel();
             return;
@@ -26,11 +25,13 @@ public class MixinParticleManager {
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(effect.world, pos);
         if (wrapper != null) {
             Vector posVec = new Vector(effect.posX, effect.posY, effect.posZ);
-            Vector velocity = new Vector(effect.motionX,effect.motionY,effect.motionZ);
+            Vector velocity = new Vector(effect.motionX, effect.motionY, effect.motionZ);
             wrapper.wrapping.coordTransform.fromLocalToGlobal(posVec);
             RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWRotation, velocity);
             effect.setPosition(posVec.X, posVec.Y, posVec.Z);
-            effect.motionX = velocity.X;effect.motionY = velocity.Y;effect.motionZ = velocity.Z;
+            effect.motionX = velocity.X;
+            effect.motionY = velocity.Y;
+            effect.motionZ = velocity.Z;
         }
         //vanilla code follows
     }

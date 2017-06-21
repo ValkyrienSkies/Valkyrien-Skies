@@ -18,7 +18,7 @@ public class MixinMethods {
         try {
             Method rayTraceBlocksIgnoreShip = World.class.getMethod("rayTraceBlocksIgnoreShip", Vec3d.class, Vec3d.class, Boolean.TYPE, Boolean.TYPE, Boolean.TYPE, PhysicsWrapperEntity.class);
             return (RayTraceResult) rayTraceBlocksIgnoreShip.invoke(world, vec31, vec32, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock, toIgnore);
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e)   {
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
         return null;

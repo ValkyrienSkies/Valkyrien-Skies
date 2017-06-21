@@ -1,14 +1,7 @@
 package ValkyrienWarfareBase;
 
-import java.util.logging.Level;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-
 public class EventsServer {
-	
+
 	/*@SubscribeEvent
 	public void livingUpdate(LivingUpdateEvent e)	{
 		if (e.getEntity() instanceof EntityPlayer)	{

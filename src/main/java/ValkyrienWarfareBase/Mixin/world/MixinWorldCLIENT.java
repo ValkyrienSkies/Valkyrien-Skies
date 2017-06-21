@@ -19,10 +19,12 @@ import java.util.List;
 public abstract class MixinWorldCLIENT {
 
     @Shadow
-    public int getLightFromNeighborsFor(EnumSkyBlock type, BlockPos pos) { return 0; }
+    public int getLightFromNeighborsFor(EnumSkyBlock type, BlockPos pos) {
+        return 0;
+    }
 
     @Inject(method = "getCombinedLight(Lnet/minecraft/util/math/BlockPos;I)I", at = @At("HEAD"), cancellable = true)
-    public void preGetCombinedLight(BlockPos pos, int lightValue, CallbackInfoReturnable callbackInfoReturnable)    {
+    public void preGetCombinedLight(BlockPos pos, int lightValue, CallbackInfoReturnable callbackInfoReturnable) {
         try {
             int i = this.getLightFromNeighborsFor(EnumSkyBlock.SKY, pos);
             int j = this.getLightFromNeighborsFor(EnumSkyBlock.BLOCK, pos);

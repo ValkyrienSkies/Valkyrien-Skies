@@ -1,8 +1,8 @@
 package ValkyrienWarfareWorld.Proxy;
 
 import ValkyrienWarfareWorld.EntityFallingUpBlock;
-import ValkyrienWarfareWorld.ValkyrienWarfareWorldMod;
 import ValkyrienWarfareWorld.Render.EntityFallingUpBlockRenderFactory;
+import ValkyrienWarfareWorld.ValkyrienWarfareWorldMod;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderItem;
@@ -15,29 +15,29 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 public class ClientProxyWorld extends CommonProxyWorld {
 
-	@Override
-	public void preInit(FMLPreInitializationEvent e) {
-		RenderingRegistry.registerEntityRenderingHandler(EntityFallingUpBlock.class, new EntityFallingUpBlockRenderFactory());
-	}
+    @Override
+    public void preInit(FMLPreInitializationEvent e) {
+        RenderingRegistry.registerEntityRenderingHandler(EntityFallingUpBlock.class, new EntityFallingUpBlockRenderFactory());
+    }
 
-	@Override
-	public void init(FMLInitializationEvent e) {
-		registerBlockItem(ValkyrienWarfareWorldMod.etheriumOre);
-	}
-	
-	@Override
-	public void postInit(FMLPostInitializationEvent e) {
-		registerItemModel(ValkyrienWarfareWorldMod.etheriumCrystal);
-	}
+    @Override
+    public void init(FMLInitializationEvent e) {
+        registerBlockItem(ValkyrienWarfareWorldMod.etheriumOre);
+    }
 
-	private void registerBlockItem(Block toRegister) {
-		Item item = Item.getItemFromBlock(toRegister);
-		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(item, 0, new ModelResourceLocation(ValkyrienWarfareWorldMod.MODID + ":" + item.getUnlocalizedName().substring(5), "inventory"));
-	}
+    @Override
+    public void postInit(FMLPostInitializationEvent e) {
+        registerItemModel(ValkyrienWarfareWorldMod.etheriumCrystal);
+    }
 
-	private void registerItemModel(Item toRegister) {
-		RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
-		renderItem.getItemModelMesher().register(toRegister, 0, new ModelResourceLocation(ValkyrienWarfareWorldMod.MODID + ":" + toRegister.getUnlocalizedName().substring(5), "inventory"));
-	}
+    private void registerBlockItem(Block toRegister) {
+        Item item = Item.getItemFromBlock(toRegister);
+        Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(item, 0, new ModelResourceLocation(ValkyrienWarfareWorldMod.MODID + ":" + item.getUnlocalizedName().substring(5), "inventory"));
+    }
+
+    private void registerItemModel(Item toRegister) {
+        RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
+        renderItem.getItemModelMesher().register(toRegister, 0, new ModelResourceLocation(ValkyrienWarfareWorldMod.MODID + ":" + toRegister.getUnlocalizedName().substring(5), "inventory"));
+    }
 
 }

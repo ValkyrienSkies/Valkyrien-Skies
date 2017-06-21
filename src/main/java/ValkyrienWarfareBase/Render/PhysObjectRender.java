@@ -17,21 +17,20 @@ import net.minecraft.util.math.RayTraceResult;
  * This class does nothing; on purpose
  *
  * @author thebest108
- *
  */
 public class PhysObjectRender extends Render<PhysicsWrapperEntity> {
 
-	public static double renderX;
-	public static double renderY;
-	public static double renderZ;
-	public static double renderYaw;
+    public static double renderX;
+    public static double renderY;
+    public static double renderZ;
+    public static double renderYaw;
 
-	public PhysObjectRender(RenderManager renderManager) {
-		super(renderManager);
-	}
+    public PhysObjectRender(RenderManager renderManager) {
+        super(renderManager);
+    }
 
-	@Override
-	public void doRender(PhysicsWrapperEntity wrapper, double x, double y, double z, float entityYaw, float partialTicks) {
+    @Override
+    public void doRender(PhysicsWrapperEntity wrapper, double x, double y, double z, float entityYaw, float partialTicks) {
 
 		/*
 
@@ -100,13 +99,12 @@ public class PhysObjectRender extends Render<PhysicsWrapperEntity> {
 		GL11.glPopMatrix();
 		*/
 
-		if (this.canRenderName(wrapper))
-        {
+        if (this.canRenderName(wrapper)) {
             this.renderLivingLabel(wrapper, wrapper.getDisplayName().getFormattedText(), x, y, z, 64);
         }
-	}
+    }
 
-	public void drawSelectionBoxOriginal(EntityPlayer player, RayTraceResult movingObjectPositionIn, int execute, float partialTicks) {
+    public void drawSelectionBoxOriginal(EntityPlayer player, RayTraceResult movingObjectPositionIn, int execute, float partialTicks) {
         if (execute == 0 && movingObjectPositionIn.typeOfHit == RayTraceResult.Type.BLOCK) {
             GlStateManager.enableBlend();
             GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
@@ -129,9 +127,9 @@ public class PhysObjectRender extends Render<PhysicsWrapperEntity> {
         }
     }
 
-	@Override
-	protected ResourceLocation getEntityTexture(PhysicsWrapperEntity entity) {
-		return TextureMap.LOCATION_BLOCKS_TEXTURE;
-	}
+    @Override
+    protected ResourceLocation getEntityTexture(PhysicsWrapperEntity entity) {
+        return TextureMap.LOCATION_BLOCKS_TEXTURE;
+    }
 
 }

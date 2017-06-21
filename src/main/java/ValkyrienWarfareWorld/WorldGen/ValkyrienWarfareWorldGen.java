@@ -18,7 +18,7 @@ public class ValkyrienWarfareWorldGen implements IWorldGenerator {
 
     public WorldGenMinable genEtheriumOre;
 
-    public ValkyrienWarfareWorldGen()   {
+    public ValkyrienWarfareWorldGen() {
         this.genEtheriumOre = new WorldGenMinable(ValkyrienWarfareWorldMod.etheriumOre.getDefaultState(), 8);
     }
 
@@ -41,7 +41,7 @@ public class ValkyrienWarfareWorldGen implements IWorldGenerator {
         }
 
         int heightDiff = maxHeight - minHeight + 1;
-        for (int i = 0; i < chancesToSpawn; i ++) {
+        for (int i = 0; i < chancesToSpawn; i++) {
             int x = chunk_X * 16 + rand.nextInt(16);
             int y = minHeight + rand.nextInt(heightDiff);
             int z = chunk_Z * 16 + rand.nextInt(16);

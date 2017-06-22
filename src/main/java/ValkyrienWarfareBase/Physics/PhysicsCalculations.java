@@ -19,10 +19,14 @@ import ValkyrienWarfareBase.PhysicsManagement.CoordTransformObject;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareControl.Balloon.BalloonProcessor;
+import ValkyrienWarfareControl.NodeNetwork.IPhysicsProcessorNode;
+import ValkyrienWarfareControl.NodeNetwork.Node;
+import ValkyrienWarfareControl.NodeNetwork.NodeNetwork;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -304,6 +308,16 @@ public class PhysicsCalculations {
 		Vector crossVector = new Vector();
 
 		if (PhysicsSettings.doPhysicsBlocks) {
+			for(NodeNetwork network : parent.nodeNetworks) {
+				for(Node node : network.networkedNodes) {
+					TileEntity nodeTile = node.parentTile;
+					if(nodeTile instanceof IPhysicsProcessorNode) {
+//						System.out.println("test");
+						((IPhysicsProcessorNode) nodeTile).onPhysicsTick(parent, this, physRawSpeed);
+					}
+				}
+			}
+
 			for (BlockPos pos : activeForcePositions) {
 				IBlockState state = parent.VKChunkCache.getBlockState(pos);
 				Block blockAt = state.getBlock();
@@ -319,7 +333,6 @@ public class PhysicsCalculations {
 						}
 					}
 					addForceAtPoint(inBodyWO, blockForce, crossVector);
-				} else {
 				}
 			}
 		}

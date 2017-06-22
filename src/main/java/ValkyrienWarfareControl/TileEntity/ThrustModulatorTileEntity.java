@@ -3,19 +3,24 @@ package ValkyrienWarfareControl.TileEntity;
 import ValkyrienWarfareBase.API.Block.EtherCompressor.TileEntityEtherCompressor;
 import ValkyrienWarfareBase.Physics.PhysicsCalculations;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
+import ValkyrienWarfareControl.ControlSystems.StabilityHeightPIDControl;
 import ValkyrienWarfareControl.NodeNetwork.Node;
 import ValkyrienWarfareControl.NodeNetwork.NodeNetwork;
 import net.minecraft.tileentity.TileEntity;
 
 public class ThrustModulatorTileEntity extends ImplPhysicsProcessorNodeTileEntity {
 
+	public StabilityHeightPIDControl controlSystem;
+
     public ThrustModulatorTileEntity() {
         super();
+        controlSystem = new StabilityHeightPIDControl(this);
     }
 
     @Override
     public void onPhysicsTick(PhysicsObject object, PhysicsCalculations calculations, double secondsToSimulate) {
-
+    	controlSystem.solveThrustValues(calculations);
+//    	System.out.println("test");
     }
 
     @Override

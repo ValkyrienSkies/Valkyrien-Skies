@@ -34,6 +34,7 @@ import ValkyrienWarfareControl.Balloon.ShipBalloonManager;
 import ValkyrienWarfareControl.Network.EntityFixMessage;
 import ValkyrienWarfareControl.NodeNetwork.INodeProvider;
 import ValkyrienWarfareControl.NodeNetwork.Node;
+import ValkyrienWarfareControl.NodeNetwork.NodeNetwork;
 import ValkyrienWarfareControl.Piloting.ShipPilotingController;
 import gnu.trove.iterator.TIntIterator;
 import io.netty.buffer.ByteBuf;
@@ -124,6 +125,8 @@ public class PhysicsObject {
     public boolean isNameCustom = false;
 
     public ShipType shipType;
+
+    public HashSet<NodeNetwork> nodeNetworks = new HashSet<NodeNetwork>();
 
     public PhysicsObject(PhysicsWrapperEntity host) {
         wrapper = host;

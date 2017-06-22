@@ -2,7 +2,8 @@ package ValkyrienWarfareBase.API.Block.EtherCompressor;
 
 import ValkyrienWarfareBase.API.IBlockForceProvider;
 import ValkyrienWarfareBase.API.Vector;
-import ValkyrienWarfareControl.NodeNetwork.IForceTile;
+import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
+import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
@@ -23,25 +24,17 @@ public abstract class BlockEtherCompressor extends Block implements ITileEntityP
 
     @Override
     public Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state, Entity shipEntity, double secondsToApply) {
-//        PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity) shipEntity;
-//        PhysicsObject obj = wrapper.wrapping;
-//        IBlockState controllerState = obj.VKChunkCache.getBlockState(pos);
-//        TileEntity worldTile = obj.VKChunkCache.getTileEntity(pos);
-//        if (worldTile == null) {
-//            return null;
-//        }
-//        if (worldTile instanceof TileEntityEtherCompressor) {
-//            TileEntityEtherCompressor engineTile = (TileEntityEtherCompressor) worldTile;
-//            return engineTile.getForceOutputUnoriented(secondsToApply);
-//        }
-
-
-    	TileEntity tileEntity = world.getTileEntity(pos);
-    	if(tileEntity != null) {
-    		if(tileEntity instanceof IForceTile) {
-    			return ((IForceTile)tileEntity).getForceOutputUnoriented(1D);
-    		}
-    	}
+        PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity) shipEntity;
+        PhysicsObject obj = wrapper.wrapping;
+        IBlockState controllerState = obj.VKChunkCache.getBlockState(pos);
+        TileEntity worldTile = obj.VKChunkCache.getTileEntity(pos);
+        if (worldTile == null) {
+            return null;
+        }
+        if (worldTile instanceof TileEntityEtherCompressor) {
+            TileEntityEtherCompressor engineTile = (TileEntityEtherCompressor) worldTile;
+            return engineTile.getForceOutputUnoriented(secondsToApply);
+        }
         return null;
     }
 

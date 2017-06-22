@@ -58,7 +58,7 @@ public abstract class TileEntityEtherCompressor extends BasicForceNodeTileEntity
     @Override
     public Vector getForceOutputUnoriented(double secondsToApply) {
     	if(true) {
-    		return new Vector(0, currentThrust, 0);
+//    		return new Vector(0, currentThrust, 0);
     	}
 
         if (controllerPos == null) {

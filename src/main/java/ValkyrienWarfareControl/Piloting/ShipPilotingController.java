@@ -2,9 +2,11 @@ package ValkyrienWarfareControl.Piloting;
 
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareBase.Physics.PhysicsCalculations_Zepplin;
 import ValkyrienWarfareBase.NBTUtils;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
+import ValkyrienWarfareBase.PhysicsManagement.ShipType;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareControl.Block.BlockShipPilotsChair;
@@ -97,7 +99,47 @@ public class ShipPilotingController {
     }
 
     private void handlePilotControlMessage(PilotControlsMessage message, EntityPlayerMP whoSentIt) {
-        //Set to whatever the player was pointing at in Ship space
+    	if(controlledShip.shipType == ShipType.Zepplin) {
+    		PhysicsCalculations_Zepplin zepplinPhysics = (PhysicsCalculations_Zepplin) controlledShip.physicsProcessor;
+    		double forwardRate = zepplinPhysics.forwardRate;
+    		double yawRate = zepplinPhysics.yawRate;
+    		double upRate = zepplinPhysics.upRate;
+
+    		 if (message.airshipForward) {
+    			 forwardRate++;
+             }
+             if (message.airshipBackward) {
+            	 forwardRate--;
+             }
+             if (message.airshipUp) {
+            	 upRate++;
+             }
+             if (message.airshipDown) {
+            	 upRate--;
+             }
+             if (message.airshipRight) {
+            	 yawRate++;
+             }
+             if (message.airshipLeft) {
+            	 yawRate--;
+             }
+
+             forwardRate = Math.max(Math.min(forwardRate, 20D), -20D);
+             upRate = Math.max(Math.min(upRate, 20D), -20D);
+             yawRate = Math.max(Math.min(yawRate, 50D), -50D);
+
+//             if(message.airshipStop) {
+//            	 forwardRate = upRate = yawRate = 0;
+//             }
+
+             zepplinPhysics.forwardRate = forwardRate;
+             zepplinPhysics.upRate = upRate;
+             zepplinPhysics.yawRate = yawRate;
+
+             return;
+    	}
+
+    	//Set to whatever the player was pointing at in Ship space
         //These vectors can be re-arranged depending on the direction the chair was placed
 
         IBlockState state = controlledShip.worldObj.getBlockState(chairPosition);

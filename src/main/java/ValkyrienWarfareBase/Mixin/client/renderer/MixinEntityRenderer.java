@@ -1,12 +1,17 @@
 package ValkyrienWarfareBase.Mixin.client.renderer;
 
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
+
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.MixinMethods;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Math.Quaternion;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
-import ValkyrienWarfareBase.ValkyrienWarfareMod;
-import ValkyrienWarfareControl.Piloting.ClientPilotingManager;
+import ValkyrienWarfareControl.Piloting.IShipPilot;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -20,10 +25,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(EntityRenderer.class)
 public abstract class MixinEntityRenderer {
@@ -140,7 +141,9 @@ public abstract class MixinEntityRenderer {
         } else if (this.mc.gameSettings.thirdPersonView > 0) {
             double d3 = (double) (this.thirdPersonDistancePrev + (4.0F - this.thirdPersonDistancePrev) * partialTicks);
 
-            if (ClientPilotingManager.isPlayerPilotingShip()) {
+            IShipPilot shipPilot = IShipPilot.class.cast(Minecraft.getMinecraft().player);
+
+            if (shipPilot.isPilotingShip()) {
                 //TODO: Make this number scale with the Ship
                 d3 = 15D;
             }
@@ -167,7 +170,9 @@ public abstract class MixinEntityRenderer {
                     f4 = f4 * 0.1F;
                     f5 = f5 * 0.1F;
 
-                    RayTraceResult raytraceresult = MixinMethods.rayTraceBlocksIgnoreShip(Minecraft.getMinecraft().world, new Vec3d(d0 + (double) f3, d1 + (double) f4, d2 + (double) f5), new Vec3d(d0 - d4 + (double) f3 + (double) f5, d1 - d6 + (double) f4, d2 - d5 + (double) f5), false, false, false, ClientPilotingManager.getPilotedWrapperEntity());
+                    IShipPilot pilot = IShipPilot.class.cast(Minecraft.getMinecraft().player);
+
+                    RayTraceResult raytraceresult = MixinMethods.rayTraceBlocksIgnoreShip(Minecraft.getMinecraft().world, new Vec3d(d0 + (double) f3, d1 + (double) f4, d2 + (double) f5), new Vec3d(d0 - d4 + (double) f3 + (double) f5, d1 - d6 + (double) f4, d2 - d5 + (double) f5), false, false, false, pilot.getPilotedShip());
 //                    renderer.mc.theWorld.rayTraceBlocks(new Vec3d(d0 + (double)f3, d1 + (double)f4, d2 + (double)f5), new Vec3d(d0 - d4 + (double)f3 + (double)f5, d1 - d6 + (double)f4, d2 - d5 + (double)f5));
 
                     if (raytraceresult != null) {

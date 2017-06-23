@@ -31,6 +31,8 @@ import ValkyrienWarfareControl.Network.HovercraftControllerGUIInputHandler;
 import ValkyrienWarfareControl.Network.HovercraftControllerGUIInputMessage;
 import ValkyrienWarfareControl.Network.PlayerUsingControlsMessage;
 import ValkyrienWarfareControl.Network.PlayerUsingControlsMessageHandler;
+import ValkyrienWarfareControl.Network.SetZepplinPilotMessage;
+import ValkyrienWarfareControl.Network.SetZepplinPilotMessageHandler;
 import ValkyrienWarfareControl.Piloting.PilotControlsMessage;
 import ValkyrienWarfareControl.Piloting.PilotControlsMessageHandler;
 import ValkyrienWarfareControl.Piloting.SetShipPilotMessage;
@@ -264,6 +266,7 @@ public class ValkyrienWarfareControlMod {
         controlNetwork.registerMessage(EntityFixMessageHandler.class, EntityFixMessage.class, 2, Side.CLIENT);
         controlNetwork.registerMessage(SetShipPilotMessageHandler.class, SetShipPilotMessage.class, 3, Side.CLIENT);
         controlNetwork.registerMessage(PlayerUsingControlsMessageHandler.class, PlayerUsingControlsMessage.class, 4, Side.CLIENT);
+        controlNetwork.registerMessage(SetZepplinPilotMessageHandler.class, SetZepplinPilotMessage.class, 5, Side.CLIENT);
     }
 
     public void registerCapibilities(FMLStateEvent event) {

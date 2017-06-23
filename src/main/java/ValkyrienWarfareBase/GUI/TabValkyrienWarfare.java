@@ -6,6 +6,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 public class TabValkyrienWarfare extends CreativeTabs {
+
     public TabValkyrienWarfare() {
         super(12, "valkyrienwarfare");
     }
@@ -14,4 +15,5 @@ public class TabValkyrienWarfare extends CreativeTabs {
     public ItemStack getTabIconItem() {
         return new ItemStack(Item.getItemFromBlock(ValkyrienWarfareMod.physicsInfuser));
     }
+
 }

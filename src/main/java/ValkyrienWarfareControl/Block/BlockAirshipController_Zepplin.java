@@ -4,6 +4,8 @@ import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.ShipType;
 import ValkyrienWarfareBase.Relocation.DetectorManager;
+import ValkyrienWarfareControl.ValkyrienWarfareControlMod;
+import ValkyrienWarfareControl.Network.SetZepplinPilotMessage;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
@@ -39,11 +41,15 @@ public class BlockAirshipController_Zepplin extends Block {
 
 
 
-//				newEntity.wrapping.pilotingController.setPilotEntity((EntityPlayerMP) playerIn, true);
+				newEntity.wrapping.pilotingController.setPilotEntity((EntityPlayerMP) playerIn, true);
 
 				newEntity.wrapping.doPhysics = true;
 
 				worldIn.spawnEntity(newEntity);
+
+				SetZepplinPilotMessage message = new SetZepplinPilotMessage(newEntity, playerIn);
+				//TODO: Change this
+				ValkyrienWarfareControlMod.instance.controlNetwork.sendToAll(message);
 				//Create Ship
 			}
 			return true;

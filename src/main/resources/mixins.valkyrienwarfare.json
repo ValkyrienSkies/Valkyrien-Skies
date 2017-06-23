@@ -26,6 +26,7 @@
         "client.particle.MixinParticleManager",
         "client.renderer.MixinRenderGlobal",
         "client.multiplayer.MixinWorldClient",
-        "tileentity.MixinTileEntityCLIENT"
+        "tileentity.MixinTileEntityCLIENT",
+        "client.entity.MixinsAbstractClientPlayer"
     ]
 }

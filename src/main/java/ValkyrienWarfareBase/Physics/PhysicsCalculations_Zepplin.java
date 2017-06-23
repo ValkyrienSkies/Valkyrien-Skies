@@ -29,7 +29,7 @@ public class PhysicsCalculations_Zepplin extends PhysicsCalculations {
 
 		double[] existingRotationMatrix = RotationMatrices.getRotationMatrix(0, parent.wrapper.yaw, 0);
 
-		double reduction = .001D;
+		double reduction = 1D;
 
 		Vector linearForce = new Vector(forwardRate, upRate, 0);
 		RotationMatrices.applyTransform(existingRotationMatrix, linearForce);
@@ -67,9 +67,9 @@ public class PhysicsCalculations_Zepplin extends PhysicsCalculations {
 		parent.wrapper.pitch = 0;
 		parent.wrapper.roll = 0;
 
-		yawRate = 0;// 10D/20D;
+//		yawRate = 0;// 10D/20D;
 
-		parent.wrapper.yaw -= yawRate;
+		parent.wrapper.yaw -= (yawRate * physTickSpeed * 5);
 
 		if(parent.wrapper.yaw > 180) {
 

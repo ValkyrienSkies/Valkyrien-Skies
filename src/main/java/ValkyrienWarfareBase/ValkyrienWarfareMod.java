@@ -79,7 +79,7 @@ public class ValkyrienWarfareMod {
     public static SimpleNetworkWrapper physWrapperNetwork;
     public static DimensionPhysicsChunkManager chunkManager;
     public static DimensionPhysObjectManager physicsManager;
-    public static CreativeTabs vwTab;
+    public static CreativeTabs vwTab = new TabValkyrienWarfare();
     @Instance(MODID)
     public static ValkyrienWarfareMod instance = new ValkyrienWarfareMod();
     public static int airStateIndex;
@@ -193,7 +193,6 @@ public class ValkyrienWarfareMod {
         ValkyrienWarfareHooks.methods = new RealMethods();
         ValkyrienWarfareHooks.isValkyrienWarfareInstalled = true;
         VWLogger = Logger.getLogger("ValkyrienWarfare");
-        vwTab = new TabValkyrienWarfare();
     }
 
     @EventHandler

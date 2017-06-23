@@ -1,16 +1,16 @@
 package ValkyrienWarfareBase;
 
-import ValkyrienWarfareControl.Piloting.ClientPilotingManager;
+import org.lwjgl.input.Keyboard;
+
+import ValkyrienWarfareControl.Piloting.IShipPilotClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.entity.Entity;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.input.Keyboard;
 
 public class KeyHandler {
 
@@ -24,6 +24,14 @@ public class KeyHandler {
     public static KeyBinding airshipRight = new KeyBinding("Airship Turn Right", Keyboard.KEY_D, keybindIdentifyer);
     public static KeyBinding airshipDown = new KeyBinding("Airship Down", Keyboard.KEY_X, keybindIdentifyer);
 
+    public static KeyBinding airshipUp_Zepplin = new KeyBinding("Airship Up", Keyboard.KEY_ADD, keybindIdentifyer);
+    public static KeyBinding airshipForward_Zepplin = new KeyBinding("Airship Forward", Keyboard.KEY_NUMPAD8, keybindIdentifyer);
+    public static KeyBinding airshipBackward_Zepplin = new KeyBinding("Airship Backward", Keyboard.KEY_NUMPAD2, keybindIdentifyer);
+    public static KeyBinding airshipLeft_Zepplin = new KeyBinding("Airship Turn Left", Keyboard.KEY_NUMPAD4, keybindIdentifyer);
+    public static KeyBinding airshipRight_Zepplin = new KeyBinding("Airship Turn Right", Keyboard.KEY_NUMPAD6, keybindIdentifyer);
+    public static KeyBinding airshipDown_Zepplin = new KeyBinding("Airship Down", Keyboard.KEY_MINUS, keybindIdentifyer);
+    public static KeyBinding airshipStop_Zepplin = new KeyBinding("Airship Down", Keyboard.KEY_NUMPAD5, keybindIdentifyer);
+
     // Dismount Key
     public static KeyBinding airshipDismount = new KeyBinding("Airship Dismount", Keyboard.KEY_LSHIFT, keybindIdentifyer);
 
@@ -35,6 +43,14 @@ public class KeyHandler {
         ClientRegistry.registerKeyBinding(airshipRight);
         ClientRegistry.registerKeyBinding(airshipDown);
         ClientRegistry.registerKeyBinding(airshipDismount);
+
+        ClientRegistry.registerKeyBinding(airshipUp_Zepplin);
+        ClientRegistry.registerKeyBinding(airshipForward_Zepplin);
+        ClientRegistry.registerKeyBinding(airshipBackward_Zepplin);
+        ClientRegistry.registerKeyBinding(airshipLeft_Zepplin);
+        ClientRegistry.registerKeyBinding(airshipRight_Zepplin);
+        ClientRegistry.registerKeyBinding(airshipDown_Zepplin);
+        ClientRegistry.registerKeyBinding(airshipStop_Zepplin);
     }
 
     public static boolean getIsPlayerSprinting() {
@@ -47,7 +63,12 @@ public class KeyHandler {
         if (event.side == Side.SERVER)
             return;
         if (event.phase == Phase.START) {
-            if (ClientPilotingManager.isPlayerPilotingShip()) {
+
+        	IShipPilotClient clientPilot = (IShipPilotClient) event.player;
+
+        	clientPilot.onClientTick();
+
+            /*if (ClientPilotingManager.isPlayerPilotingShip()) {
                 // if(airshipDismount.isKeyDown()){
                 // PilotShipManager.dismountPlayer();
                 // }else{
@@ -58,7 +79,7 @@ public class KeyHandler {
                 ClientPilotingManager.sendPilotKeysToServer(ClientPilotingManager.currentControllerInput);
 
                 // }
-            }
+            }*/
         }
     }
 

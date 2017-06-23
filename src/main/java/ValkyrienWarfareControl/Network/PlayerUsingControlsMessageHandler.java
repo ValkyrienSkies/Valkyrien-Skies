@@ -1,9 +1,9 @@
 package ValkyrienWarfareControl.Network;
 
-import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
-import ValkyrienWarfareControl.Piloting.ClientPilotingManager;
+import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareControl.Piloting.ControllerInputType;
+import ValkyrienWarfareControl.Piloting.IShipPilot;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IThreadListener;
@@ -25,9 +25,10 @@ public class PlayerUsingControlsMessageHandler implements IMessageHandler<Player
                     PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(Minecraft.getMinecraft().world, message.controlBlockPos);
 
                     if (wrapper != null) {
-                        ClientPilotingManager.setPilotedWrapperEntity(wrapper);
-                        ClientPilotingManager.blockBeingControlled = message.controlBlockPos;
-                        ClientPilotingManager.currentControllerInput = ControllerInputType.ShipHelm;
+                    	IShipPilot shipPilot = IShipPilot.class.cast(player);
+                    	shipPilot.setPilotedShip(wrapper);
+                    	shipPilot.setPosBeingControlled(message.controlBlockPos);
+                    	shipPilot.setControllerInputEnum(ControllerInputType.ShipHelm);
                     }
                 }
             }

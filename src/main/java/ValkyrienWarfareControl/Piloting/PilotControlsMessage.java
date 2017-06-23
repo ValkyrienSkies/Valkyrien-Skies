@@ -52,6 +52,10 @@ public class PilotControlsMessage implements IMessage {
         packetBuf.writeBoolean(airshipSprinting);
         packetBuf.writeEnumValue(inputType);
         packetBuf.writeUniqueId(shipFor);
+        if(controlBlockPos == null) {
+//        	System.out.println(":(");
+        	controlBlockPos = BlockPos.ORIGIN;
+        }
         packetBuf.writeBlockPos(controlBlockPos);
     }
 

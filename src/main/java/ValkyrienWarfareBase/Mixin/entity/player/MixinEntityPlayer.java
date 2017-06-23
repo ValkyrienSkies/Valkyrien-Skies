@@ -1,20 +1,29 @@
 package ValkyrienWarfareBase.Mixin.entity.player;
 
+import java.util.UUID;
+
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Interaction.ShipUUIDToPosData;
-import ValkyrienWarfareBase.ValkyrienWarfareMod;
+import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
+import ValkyrienWarfareControl.Piloting.ControllerInputType;
+import ValkyrienWarfareControl.Piloting.IShipPilot;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-
-import java.util.UUID;
 
 @Mixin(EntityPlayer.class)
-public class MixinEntityPlayer {
+public class MixinEntityPlayer implements IShipPilot {
+
+	public PhysicsWrapperEntity pilotedShip;
+	public BlockPos blockBeingControlled;
+	public ControllerInputType controlInputType;
+
     @Overwrite
     public BlockPos getBedSpawnLocation(World worldIn, BlockPos bedLocation, boolean forceSpawn) {
         int chunkX = bedLocation.getX() >> 4;
@@ -43,4 +52,39 @@ public class MixinEntityPlayer {
 
         return bedLocation;
     }
+
+	@Override
+	public PhysicsWrapperEntity getPilotedShip() {
+		return pilotedShip;
+	}
+
+	@Override
+	public boolean isPilotingShip() {
+		return pilotedShip != null;
+	}
+
+	@Override
+	public void setPilotedShip(PhysicsWrapperEntity wrapper) {
+		pilotedShip = wrapper;
+	}
+
+	@Override
+	public BlockPos getPosBeingControlled() {
+		return blockBeingControlled;
+	}
+
+	@Override
+	public void setPosBeingControlled(BlockPos pos) {
+		blockBeingControlled = pos;
+	}
+
+	@Override
+	public ControllerInputType getControllerInputEnum() {
+		return controlInputType;
+	}
+
+	@Override
+	public void setControllerInputEnum(ControllerInputType type) {
+		controlInputType = type;
+	}
 }

@@ -55,7 +55,8 @@ public class ShipTelegraphTileEntityRenderer extends TileEntitySpecialRenderer<T
         IBlockState helmStateToRender = ValkyrienWarfareControlMod.instance.shipWheel.getStateFromMeta(4);
         int brightness = tileentity.getWorld().getCombinedLight(tileentity.getPos(), 0);
 
-        double multiplier = 2.0D;
+        double multiplier = 1.5D;
+
         GL11.glTranslated((1D - multiplier) / 2.0D, 0, (1D - multiplier) / 2.0D);
         GL11.glScaled(multiplier, multiplier, multiplier);
         EnumFacing enumfacing = (EnumFacing) telegraphState.getValue(BlockShipTelegraph.FACING);

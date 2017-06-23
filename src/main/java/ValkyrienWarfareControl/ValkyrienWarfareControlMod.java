@@ -44,6 +44,7 @@ import ValkyrienWarfareControl.TileEntity.ThrustRelayTileEntity;
 import ValkyrienWarfareControl.TileEntity.TileEntityHoverController;
 import ValkyrienWarfareControl.TileEntity.TileEntityNormalEtherCompressor;
 import ValkyrienWarfareControl.TileEntity.TileEntityPilotsChair;
+import ValkyrienWarfareControl.TileEntity.TileEntityPropellerEngine;
 import ValkyrienWarfareControl.TileEntity.TileEntityShipHelm;
 import ValkyrienWarfareControl.TileEntity.TileEntityShipTelegraph;
 import ValkyrienWarfareWorld.ValkyrienWarfareWorldMod;
@@ -225,6 +226,7 @@ public class ValkyrienWarfareControlMod {
         GameRegistry.registerTileEntity(ThrustModulatorTileEntity.class, "tilethrustmodulator");
         GameRegistry.registerTileEntity(TileEntityShipHelm.class, "tileshiphelm");
         GameRegistry.registerTileEntity(TileEntityShipTelegraph.class, "tileshiptelegraph");
+        GameRegistry.registerTileEntity(TileEntityPropellerEngine.class, "tilepropellerengine");
     }
 
     private void registerItems(FMLStateEvent event) {

@@ -16,7 +16,7 @@ public abstract class BlockAirshipEngineLore extends BlockAirshipEngine {
 
     public BlockAirshipEngineLore(Material materialIn, double enginePower) {
         super(materialIn, enginePower);
-        lore = new String[]{"" + TextFormatting.GRAY + TextFormatting.ITALIC + TextFormatting.BOLD + "Power:", "  " + this.getEnginePowerTooltip()};
+        lore = new String[]{"" + TextFormatting.GRAY + TextFormatting.ITALIC + TextFormatting.BOLD + "Force:", "  " + this.getEnginePowerTooltip() + " Newtons"};
     }
 
     @Override

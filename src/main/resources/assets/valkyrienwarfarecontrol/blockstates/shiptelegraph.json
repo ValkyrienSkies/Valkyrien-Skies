@@ -1,1 +1,12 @@
-{"forge_marker":1,"variants":{"default":{"model":"minecraft:red_tulip"},"normal":{"model":"minecraft:red_tulip"},"facing=north":{"model":"minecraft:red_tulip"},"facing=south":{"model":"minecraft:red_tulip"},"facing=west":{"model":"minecraft:red_tulip"},"facing=east":{"model":"minecraft:red_tulip"},"inventory":{"model":"valkyrienwarfarecontrol:shiptelegraph.obj","custom":{"flip-v":true}}}}
+{
+    "forge_marker":1,
+    "variants":{
+        "default":{"model":"valkyrienwarfarecontrol:empty"},
+        "normal":{"model":"valkyrienwarfarecontrol:empty"},
+        "facing=north":{"model":"valkyrienwarfarecontrol:empty"},
+        "facing=south":{"model":"valkyrienwarfarecontrol:empty"},
+        "facing=west":{"model":"valkyrienwarfarecontrol:empty"},
+        "facing=east":{"model":"valkyrienwarfarecontrol:empty"},
+        "inventory":{"model":"valkyrienwarfarecontrol:shiptelegraph.obj","custom":{"flip-v":true}}
+    }
+}

@@ -2,7 +2,9 @@ package ValkyrienWarfareBase.API.Block.Engine;
 
 import ValkyrienWarfareBase.API.IBlockForceProvider;
 import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareControl.TileEntity.TileEntityPropellerEngine;
 import net.minecraft.block.Block;
+import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyDirection;
@@ -10,6 +12,7 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -19,7 +22,7 @@ import net.minecraft.world.World;
 /**
  * All engines should extend this class, that way other kinds of engines can be made without making tons of new classes for them. Only engines that add new functionality should have their own class.
  */
-public abstract class BlockAirshipEngine extends Block implements IBlockForceProvider {
+public abstract class BlockAirshipEngine extends Block implements IBlockForceProvider, ITileEntityProvider {
 
     public static final PropertyDirection FACING = PropertyDirection.create("facing");
     public double enginePower = 4000D;
@@ -57,7 +60,17 @@ public abstract class BlockAirshipEngine extends Block implements IBlockForcePro
         if (!world.isBlockPowered(pos)) {
             return acting;
         }
-        double power = this.getEnginePower(world, pos, state, shipEntity) * secondsToApply;
+
+        TileEntity tileEntity = world.getTileEntity(pos);
+        if(tileEntity instanceof TileEntityPropellerEngine) {
+        	//Just set the Thrust to be the maximum
+        	((TileEntityPropellerEngine) tileEntity).setThrust(this.getEnginePower(world, pos, state, shipEntity));
+        	return ((TileEntityPropellerEngine) tileEntity).getForceOutputUnoriented(secondsToApply);
+        }
+
+        return acting;
+        //Being moved into the new Nodes control system
+        /*double power = this.getEnginePower(world, pos, state, shipEntity) * secondsToApply;
         switch (enumfacing) {
             case DOWN:
                 acting = new Vector(0, power, 0);
@@ -78,7 +91,7 @@ public abstract class BlockAirshipEngine extends Block implements IBlockForcePro
                 acting = new Vector(0, 0, -power);
                 break;
         }
-        return acting;
+        return acting;*/
     }
 
     @Override
@@ -108,6 +121,33 @@ public abstract class BlockAirshipEngine extends Block implements IBlockForcePro
      */
     public double getEnginePower(World world, BlockPos pos, IBlockState state, Entity shipEntity) {
         return this.enginePower;
+    }
+
+    public TileEntity createNewTileEntity(World worldIn, int meta) {
+    	Vector normalVector = new Vector(1,0,0);
+    	IBlockState state = getStateFromMeta(meta);
+    	EnumFacing facing = (EnumFacing) state.getValue(FACING);
+    	 switch (facing) {
+	         case DOWN:
+	        	 normalVector = new Vector(0, 1, 0);
+	             break;
+	         case UP:
+	        	 normalVector = new Vector(0, -1, 0);
+	             break;
+	         case EAST:
+	        	 normalVector = new Vector(-1, 0, 0);
+	             break;
+	         case NORTH:
+	        	 normalVector = new Vector(0, 0, 1);
+	             break;
+	         case WEST:
+	        	 normalVector = new Vector(1, 0, 0);
+	             break;
+	         case SOUTH:
+	        	 normalVector = new Vector(0, 0, -1);
+    	 }
+
+    	return new TileEntityPropellerEngine(normalVector, true, enginePower);
     }
 
 }

@@ -35,14 +35,7 @@ public class TileEntityShipHelm extends ImplTileEntityPilotable implements ITick
 
             wheelRotation += distanceToZero / 10D;
 
-            SPacketUpdateTileEntity spacketupdatetileentity = getUpdatePacket();
-            WorldServer serverWorld = (WorldServer) world;
-            Vector pos = new Vector(getPos().getX(), getPos().getY(), getPos().getZ());
-            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(getWorld(), getPos());
-            if (wrapper != null) {
-                RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, pos);
-            }
-            serverWorld.mcServer.getPlayerList().sendToAllNearExcept(null, pos.X, pos.Y, pos.Z, 128D, getWorld().provider.getDimension(), spacketupdatetileentity);
+            sendUpdatePacketToAllNearby();
         }
     }
 
@@ -58,6 +51,13 @@ public class TileEntityShipHelm extends ImplTileEntityPilotable implements ITick
         NBTTagCompound tagToSend = new NBTTagCompound();
         tagToSend.setDouble("wheelRotation", wheelRotation);
         return new SPacketUpdateTileEntity(this.getPos(), 0, tagToSend);
+    }
+
+	@Override
+    public NBTTagCompound getUpdateTag() {
+		NBTTagCompound toReturn = super.getUpdateTag();
+		toReturn.setDouble("wheelRotation", wheelRotation);
+		return toReturn;
     }
 
     public void calculateCompassAngle() {

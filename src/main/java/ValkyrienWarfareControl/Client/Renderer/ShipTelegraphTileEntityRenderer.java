@@ -72,7 +72,7 @@ public class ShipTelegraphTileEntityRenderer extends TileEntitySpecialRenderer<T
         GL11.glPushMatrix();
 
         GL11.glTranslated(0.497D, 0.857D, 0.5D);
-//        GL11.glRotated(Math.random() * 360D, 0D, 0D, 1D);
+        GL11.glRotated(tileentity.getHandleRenderRotation(), 0D, 0D, 1D);
         GL11.glTranslated(-0.497D, -0.857D, -0.5D);
 
         FastBlockModelRenderer.renderBlockModel(vertexbuffer, tessellator, tileentity.getWorld(), rightHandleState, brightness);

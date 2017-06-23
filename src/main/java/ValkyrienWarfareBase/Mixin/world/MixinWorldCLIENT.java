@@ -1,24 +1,36 @@
 package ValkyrienWarfareBase.Mixin.world;
 
-import ValkyrienWarfareBase.API.RotationMatrices;
-import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
-import ValkyrienWarfareBase.ValkyrienWarfareMod;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.EnumSkyBlock;
-import net.minecraft.world.World;
+import java.util.List;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.List;
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
+import ValkyrienWarfareBase.API.RotationMatrices;
+import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
+import net.minecraft.client.Minecraft;
+import net.minecraft.profiler.Profiler;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.world.EnumSkyBlock;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldProvider;
+import net.minecraft.world.storage.ISaveHandler;
+import net.minecraft.world.storage.WorldInfo;
 
 @Mixin(World.class)
-public abstract class MixinWorldCLIENT {
+public abstract class MixinWorldCLIENT extends World {
 
-    @Shadow
+    protected MixinWorldCLIENT(ISaveHandler saveHandlerIn, WorldInfo info, WorldProvider providerIn, Profiler profilerIn, boolean client) {
+		super(saveHandlerIn, info, providerIn, profilerIn, client);
+	}
+
+	@Shadow
     public int getLightFromNeighborsFor(EnumSkyBlock type, BlockPos pos) {
         return 0;
     }
@@ -76,4 +88,39 @@ public abstract class MixinWorldCLIENT {
             e.printStackTrace();
         }
     }
+
+    public BlockPos getPrecipitationHeightClient(World world, BlockPos posToCheck) {
+        BlockPos pos = world.getPrecipitationHeight(posToCheck);
+        // Servers shouldn't bother running this code
+
+        Vector traceStart = new Vector(pos.getX() + .5D, Minecraft.getMinecraft().player.posY + 50D, pos.getZ() + .5D);
+        Vector traceEnd = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
+
+        RayTraceResult result = rayTraceBlocks(traceStart.toVec3d(), traceEnd.toVec3d(), true, true, false);
+
+        if (result != null && result.typeOfHit != RayTraceResult.Type.MISS && result.getBlockPos() != null) {
+
+            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, result.getBlockPos());
+            if (wrapper != null) {
+//				System.out.println("test");
+                Vector blockPosVector = new Vector(result.getBlockPos().getX() + .5D, result.getBlockPos().getY() + .5D, result.getBlockPos().getZ() + .5D);
+                wrapper.wrapping.coordTransform.fromLocalToGlobal(blockPosVector);
+                BlockPos toReturn = new BlockPos(pos.getX(), blockPosVector.Y + .5D, pos.getZ());
+                return toReturn;
+            }
+        }
+
+        return pos;
+    }
+
+    @Inject(method = "getPrecipitationHeight(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/util/math/BlockPos;", at = @At("HEAD"), cancellable = true)
+    public void preGetPrecipitationHeight(BlockPos pos, CallbackInfoReturnable callbackInfo) {
+        if (ValkyrienWarfareMod.accurateRain) {
+            BlockPos accuratePos = getPrecipitationHeightClient(World.class.cast(this), pos);
+            callbackInfo.setReturnValue(accuratePos);
+            callbackInfo.cancel(); //return the injected value, preventing vanilla code from running
+        }
+        //if vw didn't change the pos, run the vanilla code
+    }
+
 }

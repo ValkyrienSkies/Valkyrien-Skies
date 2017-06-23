@@ -1,17 +1,15 @@
 package ValkyrienWarfareBase.Interaction;
 
+import ValkyrienWarfareBase.EventsClient;
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
-import ValkyrienWarfareBase.EventsClient;
 import ValkyrienWarfareBase.PhysicsManagement.CoordTransformObject;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
-import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareCombat.Entity.EntityCannonBall;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
-import net.minecraft.util.MovementInput;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
@@ -62,8 +60,8 @@ public abstract class EntityDraggable {
         if (draggable.getWorldBelowFeet() != null && !ValkyrienWarfareMod.physicsManager.isEntityFixed(entity)) {
             CoordTransformObject coordTransform = draggable.getWorldBelowFeet().wrapping.coordTransform;
 
-            if (entity.world.isRemote && entity instanceof EntityPlayerSP) {
-                EventsClient.updatePlayerMouseOver();
+            if (entity.world.isRemote && entity instanceof EntityPlayer) {
+                EventsClient.updatePlayerMouseOver(entity);
             }
 
             float rotYaw = entity.rotationYaw;
@@ -129,14 +127,6 @@ public abstract class EntityDraggable {
 
             entity.setSneaking(false);
 
-            if (entity.world.isRemote && EntityPlayerSP.class.isInstance(entity)) {
-                EntityPlayerSP playerSP = EntityPlayerSP.class.cast(entity);
-                MovementInput moveInput = playerSP.movementInput;
-                originallySneaking = moveInput.sneak;
-                moveInput.sneak = false;
-            }
-
-
             if (draggable.getWorldBelowFeet() == null && entity.onGround) {
                 draggable.getVelocityAddedToPlayer().zero();
             }
@@ -146,19 +136,12 @@ public abstract class EntityDraggable {
             entity.setEntityBoundingBox(entity.getEntityBoundingBox().offset(draggable.getVelocityAddedToPlayer().X, draggable.getVelocityAddedToPlayer().Y, draggable.getVelocityAddedToPlayer().Z));
             entity.resetPositionToBB();
 
-            if (!(EntityPlayerSP.class.isInstance(entity))) {
-                if (EntityArrow.class.isInstance(entity)) {
-                    entity.prevRotationYaw = entity.rotationYaw;
-                    entity.rotationYaw -= draggable.getYawDifVelocity();
-                } else {
-                    entity.prevRotationYaw = entity.rotationYaw;
-                    entity.rotationYaw += draggable.getYawDifVelocity();
-                }
+            if (EntityArrow.class.isInstance(entity)) {
+            	entity.prevRotationYaw = entity.rotationYaw;
+            	entity.rotationYaw -= draggable.getYawDifVelocity();
             } else {
-                if (entity.world.isRemote) {
-                    entity.prevRotationYaw = entity.rotationYaw;
-                    entity.rotationYaw += draggable.getYawDifVelocity();
-                }
+            	entity.prevRotationYaw = entity.rotationYaw;
+            	entity.rotationYaw += draggable.getYawDifVelocity();
             }
 
             //Do not add this movement as if the entity were walking it
@@ -166,11 +149,6 @@ public abstract class EntityDraggable {
             entity.distanceWalkedOnStepModified = originalWalkedOnStep;
             entity.setSneaking(originallySneaking);
 
-            if (entity.world.isRemote && EntityPlayerSP.class.isInstance(entity)) {
-                EntityPlayerSP playerSP = EntityPlayerSP.class.cast(entity);
-                MovementInput moveInput = playerSP.movementInput;
-                moveInput.sneak = originallySneaking;
-            }
         }
 
         if (onGroundOrig) {

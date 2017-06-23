@@ -38,7 +38,10 @@ public class EventsClient {
         return new Vec3d((double) (f1 * f2), (double) f3, (double) (f * f2));
     }
 
-    public static void updatePlayerMouseOver() {
+    public static void updatePlayerMouseOver(Entity entity) {
+    	if(entity != Minecraft.getMinecraft().player) {
+    		return;
+    	}
         Minecraft.getMinecraft().entityRenderer.getMouseOver(Minecraft.getMinecraft().getRenderPartialTicks());
     }
 

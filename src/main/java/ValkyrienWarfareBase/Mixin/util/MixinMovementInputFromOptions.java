@@ -23,7 +23,6 @@ public class MixinMovementInputFromOptions extends MovementInput {
         this.moveStrafe = 0.0F;
         this.moveForward = 0.0F;
 
-
 		IShipPilot pilot = IShipPilot.class.cast(Minecraft.getMinecraft().player);
 
 		if(pilot != null) {

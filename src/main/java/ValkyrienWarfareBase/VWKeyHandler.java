@@ -73,6 +73,7 @@ public class VWKeyHandler {
         		BlockPos pilotedPos = clientPilot.getPosBeingControlled();
         		MessagePlayerStoppedPiloting stopPilotingMessage = new MessagePlayerStoppedPiloting(pilotedPos);
         		ValkyrienWarfareControlMod.controlNetwork.sendToServer(stopPilotingMessage);
+        		clientPilot.stopPilotingEverything();
         	}
         }
     }

@@ -4,7 +4,8 @@ public enum ControllerInputType {
 
     PilotsChair(true),
     ShipHelm(true),
-    Zepplin(false);
+    Zepplin(false),
+    Telegraph(true);
 
 	private boolean lockPlayerMovement;
 

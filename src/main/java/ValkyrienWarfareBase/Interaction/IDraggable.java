@@ -6,8 +6,6 @@ import net.minecraft.entity.MoverType;
 
 public interface IDraggable {
 
-    public void tickAddedVelocity();
-
     public PhysicsWrapperEntity getWorldBelowFeet();
 
     public void setWorldBelowFeet(PhysicsWrapperEntity toSet);

@@ -1,27 +1,10 @@
 package ValkyrienWarfareBase.Mixin.world;
 
-import ValkyrienWarfareBase.API.RotationMatrices;
-import ValkyrienWarfareBase.API.Vector;
-import ValkyrienWarfareBase.Collision.Polygon;
-import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
-import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
-import ValkyrienWarfareBase.ValkyrienWarfareMod;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Lists;
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.*;
-import net.minecraft.world.IWorldEventListener;
-import net.minecraft.world.World;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.chunk.Chunk;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Nullable;
+
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -31,9 +14,32 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Lists;
+
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
+import ValkyrienWarfareBase.API.RotationMatrices;
+import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareBase.Collision.Polygon;
+import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
+import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.IWorldEventListener;
+import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.chunk.Chunk;
 
 @Mixin(World.class)
 public abstract class MixinWorld {
@@ -59,30 +65,6 @@ public abstract class MixinWorld {
         for (int i = 0; i < this.eventListeners.size(); ++i) {
             ((IWorldEventListener) this.eventListeners.get(i)).spawnParticle(particleID, ignoreRange, xCoord, yCoord, zCoord, xSpeed, ySpeed, zSpeed, parameters);
         }
-    }
-
-    public BlockPos getPrecipitationHeightClient(World world, BlockPos posToCheck) {
-        BlockPos pos = world.getPrecipitationHeight(posToCheck);
-        // Servers shouldn't bother running this code
-
-        Vector traceStart = new Vector(pos.getX() + .5D, Minecraft.getMinecraft().player.posY + 50D, pos.getZ() + .5D);
-        Vector traceEnd = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
-
-        RayTraceResult result = onRayTraceBlocks(traceStart.toVec3d(), traceEnd.toVec3d(), true, true, false);
-
-        if (result != null && result.typeOfHit != RayTraceResult.Type.MISS && result.getBlockPos() != null) {
-
-            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, result.getBlockPos());
-            if (wrapper != null) {
-//				System.out.println("test");
-                Vector blockPosVector = new Vector(result.getBlockPos().getX() + .5D, result.getBlockPos().getY() + .5D, result.getBlockPos().getZ() + .5D);
-                wrapper.wrapping.coordTransform.fromLocalToGlobal(blockPosVector);
-                BlockPos toReturn = new BlockPos(pos.getX(), blockPosVector.Y + .5D, pos.getZ());
-                return toReturn;
-            }
-        }
-
-        return pos;
     }
 
     @Shadow
@@ -364,16 +346,6 @@ public abstract class MixinWorld {
         for (int i = 0; i < this.eventListeners.size(); ++i) {
             ((IWorldEventListener) this.eventListeners.get(i)).markBlockRangeForRenderUpdate(x1, y1, z1, x2, y2, z2);
         }
-    }
-
-    @Inject(method = "getPrecipitationHeight(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/util/math/BlockPos;", at = @At("HEAD"), cancellable = true)
-    public void preGetPrecipitationHeight(BlockPos pos, CallbackInfoReturnable callbackInfo) {
-        if (this.isRemote && ValkyrienWarfareMod.accurateRain) {
-            BlockPos accuratePos = getPrecipitationHeightClient(World.class.cast(this), pos);
-            callbackInfo.setReturnValue(accuratePos);
-            callbackInfo.cancel(); //return the injected value, preventing vanilla code from running
-        }
-        //if vw didn't change the pos, run the vanilla code
     }
 
     @Overwrite

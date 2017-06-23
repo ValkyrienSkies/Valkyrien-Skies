@@ -27,6 +27,7 @@
         "client.renderer.MixinRenderGlobal",
         "client.multiplayer.MixinWorldClient",
         "tileentity.MixinTileEntityCLIENT",
-        "client.entity.MixinsAbstractClientPlayer"
+        "client.entity.MixinsAbstractClientPlayer",
+        "util.MixinMovementInputFromOptions"
     ]
 }

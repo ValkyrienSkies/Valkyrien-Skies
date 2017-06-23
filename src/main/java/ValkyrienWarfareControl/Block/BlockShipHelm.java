@@ -31,7 +31,7 @@ public class BlockShipHelm extends Block implements ITileEntityProvider {
         if (!worldIn.isRemote) {
             TileEntity tileIn = worldIn.getTileEntity(pos);
             if (tileIn instanceof TileEntityShipHelm) {
-                ((TileEntityShipHelm) tileIn).onRightClicked(playerIn);
+                ((TileEntityShipHelm) tileIn).setPilotEntity(playerIn);
             }
         }
         return false;

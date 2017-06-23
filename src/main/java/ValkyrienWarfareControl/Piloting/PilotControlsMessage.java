@@ -1,13 +1,13 @@
 package ValkyrienWarfareControl.Piloting;
 
+import java.util.UUID;
+
 import ValkyrienWarfareBase.VWKeyHandler;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-
-import java.util.UUID;
 
 public class PilotControlsMessage implements IMessage {
 
@@ -19,8 +19,10 @@ public class PilotControlsMessage implements IMessage {
     public boolean airshipRight;
     public boolean airshipSprinting;
     public Enum inputType;
-    public UUID shipFor;
+    public UUID shipFor = defaultUUID;
     public BlockPos controlBlockPos;
+
+    private static UUID defaultUUID = new UUID(0,0);
 
     public PilotControlsMessage() {
     }
@@ -67,7 +69,9 @@ public class PilotControlsMessage implements IMessage {
         airshipLeft = VWKeyHandler.airshipLeft.isKeyDown();
         airshipRight = VWKeyHandler.airshipRight.isKeyDown();
         airshipSprinting = VWKeyHandler.getIsPlayerSprinting();
-        shipFor = shipPiloting.getUniqueID();
+        if(shipPiloting != null) {
+        	shipFor = shipPiloting.getUniqueID();
+        }
         this.inputType = inputType;
     }
 

@@ -5,38 +5,25 @@ import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareControl.Block.BlockShipHelm;
+import ValkyrienWarfareControl.Piloting.ControllerInputType;
+import ValkyrienWarfareControl.Piloting.PilotControlsMessage;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldServer;
 
-public class TileEntityShipHelm extends TileEntity implements ITickable {
+public class TileEntityShipHelm extends ImplTileEntityPilotable implements ITickable {
 
     public double compassAngle = 0;
     public double lastCompassAngle = 0;
 
     public double wheelRotation = 0;
     public double lastWheelRotation = 0;
-
-    public EntityPlayer operator;
-
-    public void onRightClicked(EntityPlayer player) {
-        if (operator == null) {
-            mountPlayerOntoWheel(player);
-        }
-    }
-
-    private void mountPlayerOntoWheel(EntityPlayer player) {
-        operator = player;
-
-//        PlayerUsingControlsMessage message = new PlayerUsingControlsMessage(player, this.getPos(), true);
-//        ValkyrienWarfareControlMod.controlNetwork.sendToAllAround(message, new TargetPoint(this.getWorld().provider.getDimension(), player.posX, player.posY, player.posZ, 128D));
-    }
 
     @Override
     public void update() {
@@ -64,7 +51,6 @@ public class TileEntityShipHelm extends TileEntity implements ITickable {
 //		lastWheelRotation = wheelRotation;
 
         wheelRotation = pkt.getNbtCompound().getDouble("wheelRotation");
-
     }
 
     @Override
@@ -115,5 +101,26 @@ public class TileEntityShipHelm extends TileEntity implements ITickable {
 
         return toReturn;
     }
+
+	@Override
+	ControllerInputType getControlInputType() {
+		return ControllerInputType.ShipHelm;
+	}
+
+	@Override
+	boolean setClientPilotingEntireShip() {
+		return false;
+	}
+
+	@Override
+	void processControlMessage(PilotControlsMessage message, EntityPlayerMP sender) {
+//		System.out.println("We Gotem!");
+		if(message.airshipLeft) {
+			wheelRotation -= 10D;
+		}
+		if(message.airshipRight) {
+			wheelRotation += 10D;
+		}
+	}
 
 }

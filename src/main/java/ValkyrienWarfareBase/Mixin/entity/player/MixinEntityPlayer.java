@@ -87,4 +87,21 @@ public class MixinEntityPlayer implements IShipPilot {
 	public void setControllerInputEnum(ControllerInputType type) {
 		controlInputType = type;
 	}
+
+	@Override
+	public boolean isPilotingATile() {
+		return blockBeingControlled != null;
+	}
+
+	@Override
+	public boolean isPiloting() {
+		return isPilotingShip() || isPilotingATile();
+	}
+
+	@Override
+	public void stopPilotingEverything() {
+		setPilotedShip(null);
+		setPosBeingControlled(null);
+		setControllerInputEnum(null);
+	}
 }

@@ -35,7 +35,6 @@ import ValkyrienWarfareControl.Network.EntityFixMessage;
 import ValkyrienWarfareControl.NodeNetwork.INodeProvider;
 import ValkyrienWarfareControl.NodeNetwork.Node;
 import ValkyrienWarfareControl.NodeNetwork.NodeNetwork;
-import ValkyrienWarfareControl.Piloting.ShipPilotingController;
 import gnu.trove.iterator.TIntIterator;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.state.IBlockState;
@@ -115,8 +114,6 @@ public class PhysicsObject {
 
     public HashMap<Integer, Vector> entityLocalPositions = new HashMap<Integer, Vector>();
 
-    public ShipPilotingController pilotingController;
-
     public ArrayList<String> allowedUsers = new ArrayList<String>();
     //This is used to delay mountEntity() operations by 1 tick
     public ArrayList<Entity> queuedEntitiesToMount = new ArrayList<Entity>();
@@ -135,7 +132,6 @@ public class PhysicsObject {
             renderer = new PhysObjectRenderManager(this);
         } else {
             balloonManager = new ShipBalloonManager(this);
-            pilotingController = new ShipPilotingController(this);
         }
     }
 
@@ -822,7 +818,6 @@ public class PhysicsObject {
         }
         NBTUtils.writeEntityPositionHashMapToNBT("entityPosHashMap", entityLocalPositions, compound);
         physicsProcessor.writeToNBTTag(compound);
-        pilotingController.writeToNBTTag(compound);
 
         Iterator<String> iter = allowedUsers.iterator();
         StringBuilder result = new StringBuilder("");
@@ -861,7 +856,6 @@ public class PhysicsObject {
         loadClaimedChunks();
         entityLocalPositions = NBTUtils.readEntityPositionMap("entityPosHashMap", compound);
         physicsProcessor.readFromNBTTag(compound);
-        pilotingController.readFromNBTTag(compound);
 
         String[] toAllow = compound.getString("allowedUsers").split(";");
         for (String s : toAllow) {

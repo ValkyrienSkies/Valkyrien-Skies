@@ -1,26 +1,18 @@
 package ValkyrienWarfareControl.Piloting;
 
+import java.util.UUID;
+
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Physics.PhysicsCalculations_Zepplin;
-import ValkyrienWarfareBase.NBTUtils;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
-import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.ShipType;
-import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
-import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareControl.Block.BlockShipPilotsChair;
 import ValkyrienWarfareControl.TileEntity.TileEntityShipHelm;
-import ValkyrienWarfareControl.ValkyrienWarfareControlMod;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-
-import java.util.UUID;
 
 /**
  * Used only on the Server ship entity
@@ -39,26 +31,6 @@ public class ShipPilotingController {
 
     public ShipPilotingController(PhysicsObject toControl) {
         controlledShip = toControl;
-    }
-
-    private static void sendPlayerPilotingPacket(EntityPlayerMP toSend, PhysicsWrapperEntity entityPilotingPacket) {
-        UUID entityUniqueID = nullID;
-        if (entityPilotingPacket != null) {
-            entityUniqueID = entityPilotingPacket.getUniqueID();
-        }
-        SetShipPilotMessage message = new SetShipPilotMessage(entityUniqueID);
-        ValkyrienWarfareControlMod.controlNetwork.sendTo(message, toSend);
-    }
-
-    public static PhysicsWrapperEntity getShipPlayerIsPiloting(EntityPlayer pilot) {
-        World playerWorld = pilot.world;
-        WorldPhysObjectManager worldManager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(playerWorld);
-        for (PhysicsWrapperEntity wrapperEntity : worldManager.physicsEntities) {
-            if (wrapperEntity.wrapping.pilotingController.getPilotEntity() == pilot) {
-                return wrapperEntity;
-            }
-        }
-        return null;
     }
 
     public static double[] getRotationMatrixFromBlockState(IBlockState state, BlockPos chairPosition) {
@@ -253,90 +225,4 @@ public class ShipPilotingController {
         }
     }
 
-    /**
-     * Gets called whenever world.setBlockState is called inside of Ship Space
-     *
-     * @param posChanged
-     */
-    public void onSetBlockInShip(BlockPos posChanged, IBlockState newState) {
-        if (getHasPilotChair()) {
-            if (posChanged.equals(chairPosition)) {
-                if (!newState.getBlock().equals(ValkyrienWarfareControlMod.instance.pilotsChair)) {
-                    hasChair = false;
-                    chairPosition = BlockPos.ORIGIN;
-                }
-            } else {
-                if (newState.getBlock().equals(ValkyrienWarfareControlMod.instance.pilotsChair)) {
-                    controlledShip.worldObj.destroyBlock(posChanged, true);
-                }
-            }
-        } else {
-            if (newState.getBlock().equals(ValkyrienWarfareControlMod.instance.pilotsChair)) {
-                hasChair = true;
-                chairPosition = posChanged;
-            }
-        }
-    }
-
-    public BlockPos getPilotChairPosition() {
-        return chairPosition;
-    }
-
-    public boolean getHasPilotChair() {
-        return hasChair;
-    }
-
-    /**
-     * Sets the inputed player as the pilot of this ship
-     *
-     * @param toSet
-     * @param ignorePilotConflicts Should be set to false for almost every single case
-     */
-    public void setPilotEntity(EntityPlayerMP toSet, boolean ignorePilotConflicts) {
-        if (shipPilot != null) {
-            sendPlayerPilotingPacket(shipPilot, null);
-            //TEMPORARY CODE!!!
-            controlledShip.physicsProcessor.actAsArchimedes = false;
-        } else {
-            //TEMPORARY CODE!!!
-            controlledShip.physicsProcessor.actAsArchimedes = true;
-        }
-
-        if (toSet != null) {
-            //Send packets here or something
-
-            mostRecentPilotID = toSet.getPersistentID();
-            PhysicsWrapperEntity otherShipPiloted = getShipPlayerIsPiloting(toSet);
-            if (otherShipPiloted != null) {
-                //Removes this player from piloting the other ship
-                otherShipPiloted.wrapping.pilotingController.setPilotEntity(null, true);
-            }
-            sendPlayerPilotingPacket(toSet, controlledShip.wrapper);
-        } else {
-            mostRecentPilotID = null;
-        }
-        shipPilot = toSet;
-    }
-
-    public boolean isShipBeingPiloted() {
-        return getPilotEntity() != null;
-    }
-
-    public void writeToNBTTag(NBTTagCompound compound) {
-        if (mostRecentPilotID != null) {
-            compound.setUniqueId("mostRecentPilotID", mostRecentPilotID);
-        }
-        compound.setBoolean("hasChair", hasChair);
-        NBTUtils.writeBlockPosToNBT("chairPosition", chairPosition, compound);
-    }
-
-    public void readFromNBTTag(NBTTagCompound compound) {
-        mostRecentPilotID = compound.getUniqueId("mostRecentPilotID");
-        if (mostRecentPilotID.getLeastSignificantBits() == 0L && mostRecentPilotID.getMostSignificantBits() == 0L) {
-            //UUID parameter was empty, go back to null
-            mostRecentPilotID = null;
-        }
-        hasChair = compound.getBoolean("hasChair");
-        chairPosition = NBTUtils.readBlockPosFromNBT("chairPosition", compound);
-    }
 }

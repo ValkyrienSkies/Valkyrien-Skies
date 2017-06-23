@@ -1,9 +1,9 @@
 package ValkyrienWarfareBase.Interaction;
 
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
-import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareCombat.Entity.EntityMountingWeaponBase;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -41,7 +41,8 @@ public class ValkyrienWarfareWorldEventListener implements IWorldEventListener {
             }
         } else {
             if (wrapper != null) {
-                wrapper.wrapping.pilotingController.onSetBlockInShip(pos, newState);
+            	//TODO: Find a new way to make this happen
+//                wrapper.wrapping.pilotingController.onSetBlockInShip(pos, newState);
             }
         }
     }

@@ -2,9 +2,12 @@ package ValkyrienWarfareBase;
 
 import org.lwjgl.input.Keyboard;
 
+import ValkyrienWarfareControl.ValkyrienWarfareControlMod;
+import ValkyrienWarfareControl.Network.MessagePlayerStoppedPiloting;
 import ValkyrienWarfareControl.Piloting.IShipPilotClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
@@ -12,7 +15,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class KeyHandler {
+public class VWKeyHandler {
 
     private static final String keybindIdentifyer = "Valkyrien Warfare";
 
@@ -33,7 +36,7 @@ public class KeyHandler {
     public static KeyBinding airshipStop_Zepplin = new KeyBinding("Airship Down", Keyboard.KEY_NUMPAD5, keybindIdentifyer);
 
     // Dismount Key
-    public static KeyBinding airshipDismount = new KeyBinding("Airship Dismount", Keyboard.KEY_LSHIFT, keybindIdentifyer);
+    public static KeyBinding dismountKey = new KeyBinding("VW Controller Dismount Key", Keyboard.KEY_LSHIFT, keybindIdentifyer);
 
     static {
         ClientRegistry.registerKeyBinding(airshipUp);
@@ -42,7 +45,7 @@ public class KeyHandler {
         ClientRegistry.registerKeyBinding(airshipLeft);
         ClientRegistry.registerKeyBinding(airshipRight);
         ClientRegistry.registerKeyBinding(airshipDown);
-        ClientRegistry.registerKeyBinding(airshipDismount);
+        ClientRegistry.registerKeyBinding(dismountKey);
 
         ClientRegistry.registerKeyBinding(airshipUp_Zepplin);
         ClientRegistry.registerKeyBinding(airshipForward_Zepplin);
@@ -63,23 +66,14 @@ public class KeyHandler {
         if (event.side == Side.SERVER)
             return;
         if (event.phase == Phase.START) {
-
         	IShipPilotClient clientPilot = (IShipPilotClient) event.player;
-
         	clientPilot.onClientTick();
 
-            /*if (ClientPilotingManager.isPlayerPilotingShip()) {
-                // if(airshipDismount.isKeyDown()){
-                // PilotShipManager.dismountPlayer();
-                // }else{
-                Entity player = Minecraft.getMinecraft().player;
-
-//				player.setPosition(player.posX, player.posY, player.posZ);
-
-                ClientPilotingManager.sendPilotKeysToServer(ClientPilotingManager.currentControllerInput);
-
-                // }
-            }*/
+        	if(dismountKey.isKeyDown() && clientPilot.isPilotingATile()) {
+        		BlockPos pilotedPos = clientPilot.getPosBeingControlled();
+        		MessagePlayerStoppedPiloting stopPilotingMessage = new MessagePlayerStoppedPiloting(pilotedPos);
+        		ValkyrienWarfareControlMod.controlNetwork.sendToServer(stopPilotingMessage);
+        	}
         }
     }
 

@@ -1,12 +1,10 @@
 package ValkyrienWarfareControl.TileEntity;
 
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
-import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareControl.Block.BlockShipHelm;
-import ValkyrienWarfareControl.Network.PlayerUsingControlsMessage;
-import ValkyrienWarfareControl.ValkyrienWarfareControlMod;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -16,7 +14,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldServer;
-import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
 public class TileEntityShipHelm extends TileEntity implements ITickable {
 
@@ -37,8 +34,8 @@ public class TileEntityShipHelm extends TileEntity implements ITickable {
     private void mountPlayerOntoWheel(EntityPlayer player) {
         operator = player;
 
-        PlayerUsingControlsMessage message = new PlayerUsingControlsMessage(player, this.getPos(), true);
-        ValkyrienWarfareControlMod.controlNetwork.sendToAllAround(message, new TargetPoint(this.getWorld().provider.getDimension(), player.posX, player.posY, player.posZ, 128D));
+//        PlayerUsingControlsMessage message = new PlayerUsingControlsMessage(player, this.getPos(), true);
+//        ValkyrienWarfareControlMod.controlNetwork.sendToAllAround(message, new TargetPoint(this.getWorld().provider.getDimension(), player.posX, player.posY, player.posZ, 128D));
     }
 
     @Override

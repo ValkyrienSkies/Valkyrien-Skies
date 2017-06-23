@@ -29,21 +29,21 @@ import ValkyrienWarfareControl.Network.EntityFixMessage;
 import ValkyrienWarfareControl.Network.EntityFixMessageHandler;
 import ValkyrienWarfareControl.Network.HovercraftControllerGUIInputHandler;
 import ValkyrienWarfareControl.Network.HovercraftControllerGUIInputMessage;
-import ValkyrienWarfareControl.Network.PlayerUsingControlsMessage;
-import ValkyrienWarfareControl.Network.PlayerUsingControlsMessageHandler;
-import ValkyrienWarfareControl.Network.SetZepplinPilotMessage;
-import ValkyrienWarfareControl.Network.SetZepplinPilotMessageHandler;
+import ValkyrienWarfareControl.Network.MessagePlayerStoppedPiloting;
+import ValkyrienWarfareControl.Network.MessagePlayerStoppedPilotingHandler;
+import ValkyrienWarfareControl.Network.MessageStartPiloting;
+import ValkyrienWarfareControl.Network.MessageStartPilotingHandler;
+import ValkyrienWarfareControl.Network.MessageStopPiloting;
+import ValkyrienWarfareControl.Network.MessageStopPilotingHandler;
 import ValkyrienWarfareControl.Piloting.PilotControlsMessage;
 import ValkyrienWarfareControl.Piloting.PilotControlsMessageHandler;
-import ValkyrienWarfareControl.Piloting.SetShipPilotMessage;
-import ValkyrienWarfareControl.Piloting.SetShipPilotMessageHandler;
 import ValkyrienWarfareControl.Proxy.CommonProxyControl;
 import ValkyrienWarfareControl.TileEntity.BalloonBurnerTileEntity;
-import ValkyrienWarfareControl.TileEntity.PilotsChairTileEntity;
 import ValkyrienWarfareControl.TileEntity.ThrustModulatorTileEntity;
 import ValkyrienWarfareControl.TileEntity.ThrustRelayTileEntity;
 import ValkyrienWarfareControl.TileEntity.TileEntityHoverController;
 import ValkyrienWarfareControl.TileEntity.TileEntityNormalEtherCompressor;
+import ValkyrienWarfareControl.TileEntity.TileEntityPilotsChair;
 import ValkyrienWarfareControl.TileEntity.TileEntityShipHelm;
 import ValkyrienWarfareControl.TileEntity.TileEntityShipTelegraph;
 import ValkyrienWarfareWorld.ValkyrienWarfareWorldMod;
@@ -220,7 +220,7 @@ public class ValkyrienWarfareControlMod {
         GameRegistry.registerTileEntity(TileEntityHoverController.class, "tilehovercontroller");
         GameRegistry.registerTileEntity(TileEntityNormalEtherCompressor.class, "tileantigravengine");
         GameRegistry.registerTileEntity(BalloonBurnerTileEntity.class, "tileballoonburner");
-        GameRegistry.registerTileEntity(PilotsChairTileEntity.class, "tilemanualshipcontroller");
+        GameRegistry.registerTileEntity(TileEntityPilotsChair.class, "tilemanualshipcontroller");
         GameRegistry.registerTileEntity(ThrustRelayTileEntity.class, "tilethrustrelay");
         GameRegistry.registerTileEntity(ThrustModulatorTileEntity.class, "tilethrustmodulator");
         GameRegistry.registerTileEntity(TileEntityShipHelm.class, "tileshiphelm");
@@ -261,12 +261,12 @@ public class ValkyrienWarfareControlMod {
 
     private void registerNetworks(FMLStateEvent event) {
         controlNetwork = NetworkRegistry.INSTANCE.newSimpleChannel("controlnetwork");
-        controlNetwork.registerMessage(HovercraftControllerGUIInputHandler.class, HovercraftControllerGUIInputMessage.class, 0, Side.SERVER);
-        controlNetwork.registerMessage(PilotControlsMessageHandler.class, PilotControlsMessage.class, 1, Side.SERVER);
-        controlNetwork.registerMessage(EntityFixMessageHandler.class, EntityFixMessage.class, 2, Side.CLIENT);
-        controlNetwork.registerMessage(SetShipPilotMessageHandler.class, SetShipPilotMessage.class, 3, Side.CLIENT);
-        controlNetwork.registerMessage(PlayerUsingControlsMessageHandler.class, PlayerUsingControlsMessage.class, 4, Side.CLIENT);
-        controlNetwork.registerMessage(SetZepplinPilotMessageHandler.class, SetZepplinPilotMessage.class, 5, Side.CLIENT);
+        controlNetwork.registerMessage(EntityFixMessageHandler.class, EntityFixMessage.class, 0, Side.CLIENT);
+        controlNetwork.registerMessage(HovercraftControllerGUIInputHandler.class, HovercraftControllerGUIInputMessage.class, 1, Side.SERVER);
+        controlNetwork.registerMessage(PilotControlsMessageHandler.class, PilotControlsMessage.class, 2, Side.SERVER);
+        controlNetwork.registerMessage(MessageStartPilotingHandler.class, MessageStartPiloting.class, 3, Side.CLIENT);
+        controlNetwork.registerMessage(MessageStopPilotingHandler.class, MessageStopPiloting.class, 4, Side.CLIENT);
+        controlNetwork.registerMessage(MessagePlayerStoppedPilotingHandler.class, MessagePlayerStoppedPiloting.class, 5, Side.SERVER);
     }
 
     public void registerCapibilities(FMLStateEvent event) {

@@ -1,14 +1,16 @@
 package ValkyrienWarfareControl.Piloting;
 
-import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
+import java.util.UUID;
+
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
+import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IThreadListener;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-
-import java.util.UUID;
 
 public class PilotControlsMessageHandler implements IMessageHandler<PilotControlsMessage, IMessage> {
 
@@ -20,11 +22,12 @@ public class PilotControlsMessageHandler implements IMessageHandler<PilotControl
             public void run() {
                 World worldObj = ctx.getServerHandler().player.world;
                 if (ValkyrienWarfareMod.physicsManager.getManagerForWorld(worldObj) != null) {
-                    UUID shipId = message.shipFor;
-                    for (PhysicsWrapperEntity entity : ValkyrienWarfareMod.physicsManager.getManagerForWorld(worldObj).physicsEntities) {
-                        if (entity.getUniqueID().equals(shipId)) {
-                            entity.wrapping.pilotingController.receivePilotControlsMessage(message, ctx.getServerHandler().player);
-                        }
+//                	UUID shipId = message.shipFor;
+                    BlockPos posFor = message.controlBlockPos;
+                    TileEntity tile = worldObj.getTileEntity(posFor);
+
+                    if(tile instanceof ITileEntityPilotable) {
+                    	((ITileEntityPilotable) tile).onPilotControlsMessage(message, ctx.getServerHandler().player);
                     }
                 }
             }

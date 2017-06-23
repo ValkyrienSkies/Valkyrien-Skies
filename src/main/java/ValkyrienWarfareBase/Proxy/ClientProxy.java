@@ -2,7 +2,7 @@ package ValkyrienWarfareBase.Proxy;
 
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.EventsClient;
-import ValkyrienWarfareBase.KeyHandler;
+import ValkyrienWarfareBase.VWKeyHandler;
 import ValkyrienWarfareBase.Math.Quaternion;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.Render.PhysObjectRenderFactory;
@@ -22,7 +22,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 public class ClientProxy extends CommonProxy {
 
     public static ICamera lastCamera;
-    KeyHandler keyEvents = new KeyHandler();
+    VWKeyHandler keyEvents = new VWKeyHandler();
 
     @Override
     public void preInit(FMLPreInitializationEvent e) {

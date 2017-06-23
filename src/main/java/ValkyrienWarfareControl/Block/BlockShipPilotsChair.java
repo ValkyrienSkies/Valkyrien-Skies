@@ -1,9 +1,11 @@
 package ValkyrienWarfareControl.Block;
 
+import java.util.List;
+
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
-import ValkyrienWarfareBase.ValkyrienWarfareMod;
-import ValkyrienWarfareControl.TileEntity.PilotsChairTileEntity;
+import ValkyrienWarfareControl.TileEntity.TileEntityPilotsChair;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.ITileEntityProvider;
@@ -14,7 +16,6 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
@@ -23,8 +24,6 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-
-import java.util.List;
 
 public class BlockShipPilotsChair extends Block implements ITileEntityProvider {
 
@@ -48,27 +47,34 @@ public class BlockShipPilotsChair extends Block implements ITileEntityProvider {
             PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldIn, pos);
             if (wrapper != null) {
                 if (playerIn.getLowestRidingEntity() != wrapper.getLowestRidingEntity()) {
-                    Vector playerPos = new Vector(playerIn);
+                    TileEntity tileEntity = worldIn.getTileEntity(pos);
+                    if(tileEntity instanceof TileEntityPilotsChair) {
+                    	Vector playerPos = new Vector(playerIn);
 
-                    wrapper.wrapping.coordTransform.fromLocalToGlobal(playerPos);
+                        wrapper.wrapping.coordTransform.fromLocalToGlobal(playerPos);
 
-                    playerIn.posX = playerPos.X;
-                    playerIn.posY = playerPos.Y;
-                    playerIn.posZ = playerPos.Z;
+                        playerIn.posX = playerPos.X;
+                        playerIn.posY = playerPos.Y;
+                        playerIn.posZ = playerPos.Z;
 
-                    playerIn.startRiding(wrapper);
-                    Vector localMountPos = getPlayerMountOffset(state, pos);
-                    wrapper.wrapping.fixEntity(playerIn, localMountPos);
+                        playerIn.startRiding(wrapper);
+                        Vector localMountPos = getPlayerMountOffset(state, pos);
+                        wrapper.wrapping.fixEntity(playerIn, localMountPos);
 
-                    wrapper.wrapping.pilotingController.setPilotEntity((EntityPlayerMP) playerIn, false);
 
-                    wrapper.wrapping.coordTransform.fromGlobalToLocal(playerPos);
+                        //Nope
+//                        wrapper.wrapping.pilotingController.setPilotEntity((EntityPlayerMP) playerIn, false);
 
-                    playerIn.posX = playerPos.X;
-                    playerIn.posY = playerPos.Y;
-                    playerIn.posZ = playerPos.Z;
+                        ((TileEntityPilotsChair) tileEntity).setPilotEntity(playerIn);
 
-                    return true;
+                        wrapper.wrapping.coordTransform.fromGlobalToLocal(playerPos);
+
+                        playerIn.posX = playerPos.X;
+                        playerIn.posY = playerPos.Y;
+                        playerIn.posZ = playerPos.Z;
+
+                        return true;
+                    }
                 }
             }
         }
@@ -106,7 +112,7 @@ public class BlockShipPilotsChair extends Block implements ITileEntityProvider {
 
     @Override
     public TileEntity createNewTileEntity(World worldIn, int meta) {
-        return new PilotsChairTileEntity();
+        return new TileEntityPilotsChair();
     }
 
     @Override

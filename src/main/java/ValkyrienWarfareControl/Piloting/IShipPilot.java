@@ -9,6 +9,10 @@ public interface IShipPilot {
 
 	boolean isPilotingShip();
 
+	boolean isPilotingATile();
+
+	boolean isPiloting();
+
 	void setPilotedShip(PhysicsWrapperEntity wrapper);
 
 	BlockPos getPosBeingControlled();
@@ -18,4 +22,6 @@ public interface IShipPilot {
 	ControllerInputType getControllerInputEnum();
 
 	void setControllerInputEnum(ControllerInputType type);
+
+	void stopPilotingEverything();
 }

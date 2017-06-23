@@ -1,6 +1,6 @@
 package ValkyrienWarfareControl.Piloting;
 
-import ValkyrienWarfareBase.KeyHandler;
+import ValkyrienWarfareBase.VWKeyHandler;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.PacketBuffer;
@@ -60,13 +60,13 @@ public class PilotControlsMessage implements IMessage {
     }
 
     public void assignKeyBooleans(PhysicsWrapperEntity shipPiloting, Enum inputType) {
-        airshipUp = KeyHandler.airshipUp.isKeyDown();
-        airshipDown = KeyHandler.airshipDown.isKeyDown();
-        airshipForward = KeyHandler.airshipForward.isKeyDown();
-        airshipBackward = KeyHandler.airshipBackward.isKeyDown();
-        airshipLeft = KeyHandler.airshipLeft.isKeyDown();
-        airshipRight = KeyHandler.airshipRight.isKeyDown();
-        airshipSprinting = KeyHandler.getIsPlayerSprinting();
+        airshipUp = VWKeyHandler.airshipUp.isKeyDown();
+        airshipDown = VWKeyHandler.airshipDown.isKeyDown();
+        airshipForward = VWKeyHandler.airshipForward.isKeyDown();
+        airshipBackward = VWKeyHandler.airshipBackward.isKeyDown();
+        airshipLeft = VWKeyHandler.airshipLeft.isKeyDown();
+        airshipRight = VWKeyHandler.airshipRight.isKeyDown();
+        airshipSprinting = VWKeyHandler.getIsPlayerSprinting();
         shipFor = shipPiloting.getUniqueID();
         this.inputType = inputType;
     }

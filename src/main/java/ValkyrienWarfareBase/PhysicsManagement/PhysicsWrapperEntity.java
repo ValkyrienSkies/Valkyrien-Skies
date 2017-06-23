@@ -116,15 +116,6 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
     protected void removePassenger(Entity toRemove) {
         // System.out.println("entity just dismounted");
         super.removePassenger(toRemove);
-        if (!world.isRemote) {
-            wrapping.unFixEntity(toRemove);
-            if (wrapping.pilotingController.getPilotEntity() == toRemove) {
-                wrapping.pilotingController.setPilotEntity(null, false);
-            }
-        } else {
-            // It doesnt matter if I dont remove these terms from client, and things are problematic if I do. Best to leave this commented
-            // wrapping.removeEntityUUID(toRemove.getPersistentID().hashCode());
-        }
     }
 
     @Override

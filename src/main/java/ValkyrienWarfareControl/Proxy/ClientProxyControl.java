@@ -2,9 +2,11 @@ package ValkyrienWarfareControl.Proxy;
 
 import ValkyrienWarfareControl.ValkyrienWarfareControlMod;
 import ValkyrienWarfareControl.Client.Renderer.BasicNodeTileEntityRenderer;
+import ValkyrienWarfareControl.Client.Renderer.PropellerEngineTileEntityRenderer;
 import ValkyrienWarfareControl.Client.Renderer.ShipHelmTileEntityRenderer;
 import ValkyrienWarfareControl.Client.Renderer.ShipTelegraphTileEntityRenderer;
 import ValkyrienWarfareControl.TileEntity.ThrustRelayTileEntity;
+import ValkyrienWarfareControl.TileEntity.TileEntityPropellerEngine;
 import ValkyrienWarfareControl.TileEntity.TileEntityShipHelm;
 import ValkyrienWarfareControl.TileEntity.TileEntityShipTelegraph;
 import net.minecraft.block.Block;
@@ -92,6 +94,7 @@ public class ClientProxyControl extends CommonProxyControl {
 		ClientRegistry.bindTileEntitySpecialRenderer(ThrustRelayTileEntity.class, new BasicNodeTileEntityRenderer(ThrustRelayTileEntity.class));
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityShipHelm.class, new ShipHelmTileEntityRenderer(TileEntityShipHelm.class));
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityShipTelegraph.class, new ShipTelegraphTileEntityRenderer(TileEntityShipTelegraph.class));
+		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPropellerEngine.class, new PropellerEngineTileEntityRenderer());
 	}
 
 }

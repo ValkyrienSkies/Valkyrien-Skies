@@ -1,6 +1,7 @@
 package ValkyrienWarfareBase.Mixin.world;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -23,11 +24,13 @@ import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Collision.Polygon;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
+import ValkyrienWarfareControl.NodeNetwork.INodeProvider;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
@@ -50,6 +53,8 @@ public abstract class MixinWorld {
     public boolean isRemote;
     @Shadow
     protected List<IWorldEventListener> eventListeners;
+
+    private World thisClassAsWorld = World.class.cast(this);
 
     @Overwrite
     private void spawnParticle(int particleID, boolean ignoreRange, double xCoord, double yCoord, double zCoord, double xSpeed, double ySpeed, double zSpeed, int... parameters) {
@@ -439,4 +444,59 @@ public abstract class MixinWorld {
         }
         //do nothing and run vanilla
     }
+
+    @Overwrite
+    public void setTileEntity(BlockPos pos, @Nullable TileEntity tileEntityIn) {
+        pos = pos.toImmutable(); // Forge - prevent mutable BlockPos leaks
+
+        if(tileEntityIn instanceof INodeProvider) {
+    		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(thisClassAsWorld, pos);
+    		if(wrapper != null) {
+    			((INodeProvider) tileEntityIn).getNode().updateParentEntity(wrapper.wrapping);
+    		}
+    	}
+
+        if (!this.isOutsideBuildHeight(pos))
+        {
+            if (tileEntityIn != null && !tileEntityIn.isInvalid())
+            {
+                if (processingLoadedTiles)
+                {
+                    tileEntityIn.setPos(pos);
+                    if (tileEntityIn.getWorld() != thisClassAsWorld)
+                        tileEntityIn.setWorld(thisClassAsWorld); // Forge - set the world early as vanilla doesn't set it until next tick
+                    Iterator<TileEntity> iterator = this.addedTileEntityList.iterator();
+
+                    while (iterator.hasNext())
+                    {
+                        TileEntity tileentity = (TileEntity)iterator.next();
+
+                        if (tileentity.getPos().equals(pos))
+                        {
+                            tileentity.invalidate();
+                            iterator.remove();
+                        }
+                    }
+
+                    this.addedTileEntityList.add(tileEntityIn);
+                }
+                else
+                {
+                    Chunk chunk = thisClassAsWorld.getChunkFromBlockCoords(pos);
+                    if (chunk != null) chunk.addTileEntity(pos, tileEntityIn);
+                    thisClassAsWorld.addTileEntity(tileEntityIn);
+                }
+            }
+        }
+    }
+
+    @Shadow
+    private boolean processingLoadedTiles;
+
+    @Shadow
+    private List<TileEntity> addedTileEntityList;
+
+    @Shadow
+    abstract boolean isOutsideBuildHeight(BlockPos pos);
+
 }

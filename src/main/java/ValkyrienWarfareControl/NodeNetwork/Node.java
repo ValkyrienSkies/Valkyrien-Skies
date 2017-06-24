@@ -1,5 +1,8 @@
 package ValkyrienWarfareControl.NodeNetwork;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.Packet;
@@ -8,13 +11,10 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldServer;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-
 public class Node {
 
     public final TileEntity parentTile;
-    public PhysicsObject parentPhysicsObject;
+    private PhysicsObject parentPhysicsObject;
     //No duplicate connections
     public HashSet<Node> connectedNodes;
     public HashSet<BlockPos> connectedNodesBlockPos;
@@ -27,7 +27,15 @@ public class Node {
         parentTile = parent;
         connectedNodes = new HashSet<Node>();
         connectedNodesBlockPos = new HashSet<BlockPos>();
-        parentNetwork = new NodeNetwork(this);
+        parentNetwork = new NodeNetwork(parentPhysicsObject);
+    }
+
+    public void updateParentEntity(PhysicsObject physObj) {
+    	parentPhysicsObject = physObj;
+    	parentNetwork.setParentPhysicsObject(physObj);
+    	if(physObj != null) {
+    		physObj.nodesWithinShip.add(this);
+    	}
     }
 
     public void linkNode(Node other) {
@@ -91,6 +99,9 @@ public class Node {
         }
         parentNetwork.recalculateNetworks(this);
 
+        if(parentPhysicsObject != null) {
+        	parentPhysicsObject.nodesWithinShip.remove(this);
+        }
         //Assume this gets handled by the TileEntity.invalidate() method, otherwise this won't work!
 //		if(!parentTile.getWorld().isRemote){
 //			sendUpdatesToNearby();

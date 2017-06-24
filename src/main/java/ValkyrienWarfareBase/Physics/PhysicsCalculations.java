@@ -308,13 +308,11 @@ public class PhysicsCalculations {
 		Vector crossVector = new Vector();
 
 		if (PhysicsSettings.doPhysicsBlocks) {
-			for(NodeNetwork network : parent.nodeNetworks) {
-				for(Node node : network.networkedNodes) {
-					TileEntity nodeTile = node.parentTile;
-					if(nodeTile instanceof IPhysicsProcessorNode) {
-//						System.out.println("test");
-						((IPhysicsProcessorNode) nodeTile).onPhysicsTick(parent, this, physRawSpeed);
-					}
+			for(Node node : parent.nodesWithinShip) {
+				TileEntity nodeTile = node.parentTile;
+				if(nodeTile instanceof IPhysicsProcessorNode) {
+					System.out.println("test");
+					((IPhysicsProcessorNode) nodeTile).onPhysicsTick(parent, this, physRawSpeed);
 				}
 			}
 

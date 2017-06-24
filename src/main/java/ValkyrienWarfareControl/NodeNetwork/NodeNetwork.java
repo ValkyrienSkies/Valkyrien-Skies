@@ -3,6 +3,8 @@ package ValkyrienWarfareControl.NodeNetwork;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
+
 /**
  * A class that keeps track of all the nodes attached to a network; gets recalcuated upon a node being broken
  *
@@ -11,17 +13,20 @@ import java.util.HashSet;
 public class NodeNetwork {
 
     public final HashSet<Node> networkedNodes;
+    private PhysicsObject parentEntity;
 
-    public NodeNetwork() {
+    public NodeNetwork(PhysicsObject parentEntity) {
         networkedNodes = new HashSet<Node>();
+        this.parentEntity = parentEntity;
     }
 
-    public NodeNetwork(HashSet<Node> backingSet) {
+    public NodeNetwork(HashSet<Node> backingSet, PhysicsObject parentEntity) {
         networkedNodes = backingSet;
+        this.parentEntity = parentEntity;
     }
 
-    public NodeNetwork(Node parent) {
-        this();
+    public NodeNetwork(Node parent, PhysicsObject parentEntity) {
+        this(parentEntity);
         networkedNodes.add(parent);
     }
 
@@ -57,7 +62,7 @@ public class NodeNetwork {
         }
 
         for (HashSet<Node> nodeSet : listOfHashSetsOfNodes) {
-            NodeNetwork network = new NodeNetwork(nodeSet);
+            NodeNetwork network = new NodeNetwork(nodeSet, parentEntity);
 
             for (Node nodeToUpdate : nodeSet) {
                 nodeToUpdate.updateParentNetwork(network);
@@ -84,5 +89,13 @@ public class NodeNetwork {
         }
 
 //		System.out.println("New Network of Size " + networkedNodes.size());
+    }
+
+    public void setParentPhysicsObject(PhysicsObject physObj) {
+    	parentEntity = physObj;
+    }
+
+    public PhysicsObject getParentPhysicsObject() {
+    	return parentEntity;
     }
 }

@@ -17,6 +17,10 @@ public class DimensionPhysObjectManager {
         managerPerWorld = new HashMap<World, WorldPhysObjectManager>();
     }
 
+    public void onShipPreload(PhysicsWrapperEntity toPreload) {
+    	getManagerForWorld(toPreload.world).preloadPhysicsWrapperEntityMappings(toPreload);
+    }
+
     // Put the ship in the manager queues
     public void onShipLoad(PhysicsWrapperEntity justLoaded) {
         getManagerForWorld(justLoaded.world).onLoad(justLoaded);

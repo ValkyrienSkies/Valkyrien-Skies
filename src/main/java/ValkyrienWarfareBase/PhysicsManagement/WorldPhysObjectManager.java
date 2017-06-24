@@ -1,5 +1,10 @@
 package ValkyrienWarfareBase.PhysicsManagement;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.Callable;
+
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -11,11 +16,6 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.minecraftforge.common.ForgeChunkManager.Type;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.Callable;
 
 /**
  * This class essentially handles all the issues with ticking and handling Physics Objects in the given world
@@ -121,25 +121,33 @@ public class WorldPhysObjectManager {
                         potentialMatches.add(wrapper);
                     }
                 }
+
                 for (PhysicsWrapperEntity caught : potentialMatches) {
                     physicsEntities.remove(caught);
                     physCollisonCallables.remove(caught.wrapping.collisionCallable);
                     caught.wrapping.onThisUnload();
 //					System.out.println("Caught one");
                 }
-
             }
             loaded.isDead = false;
             physicsEntities.add(loaded);
             physCollisonCallables.add(loaded.wrapping.collisionCallable);
-            for (Chunk[] chunks : loaded.wrapping.claimedChunks) {
-                for (Chunk chunk : chunks) {
-                    chunkPosToPhysicsEntityMap.put(chunk.getPos(), loaded);
-                }
-            }
+//            preloadPhysicsWrapperEntityMappings(loaded);
         } else {
             // reset check to prevent strange errors
             loaded.wrapping.fromSplit = false;
+        }
+    }
+
+    /**
+     * By preloading this, TileEntities loaded within ship chunks can have a direct link to the ship object while it still loading
+     * @param loaded
+     */
+    public void preloadPhysicsWrapperEntityMappings(PhysicsWrapperEntity loaded) {
+        for (int x = loaded.wrapping.ownedChunks.minX; x <= loaded.wrapping.ownedChunks.maxX; x++) {
+            for (int z = loaded.wrapping.ownedChunks.minZ; z <= loaded.wrapping.ownedChunks.maxZ; z++) {
+                chunkPosToPhysicsEntityMap.put(new ChunkPos(x, z), loaded);
+            }
         }
     }
 
@@ -176,7 +184,6 @@ public class WorldPhysObjectManager {
 
     public List<PhysicsWrapperEntity> getNearbyPhysObjects(AxisAlignedBB toCheck) {
         ArrayList<PhysicsWrapperEntity> ships = new ArrayList<PhysicsWrapperEntity>();
-
         AxisAlignedBB expandedCheck = toCheck.expand(6, 6, 6);
 
         for (PhysicsWrapperEntity wrapper : physicsEntities) {

@@ -123,7 +123,8 @@ public class PhysicsObject {
 
     public ShipType shipType;
 
-    public HashSet<NodeNetwork> nodeNetworks = new HashSet<NodeNetwork>();
+//    public HashSet<NodeNetwork> nodeNetworks = new HashSet<NodeNetwork>();
+    public HashSet<Node> nodesWithinShip = new HashSet<Node>();
 
     public PhysicsObject(PhysicsWrapperEntity host) {
         wrapper = host;
@@ -304,6 +305,8 @@ public class PhysicsObject {
 
         claimNewChunks(radiusNeeded);
 
+        ValkyrienWarfareMod.physicsManager.onShipPreload(wrapper);
+
         claimedChunks = new Chunk[(ownedChunks.radius * 2) + 1][(ownedChunks.radius * 2) + 1];
         claimedChunksEntries = new PlayerChunkMapEntry[(ownedChunks.radius * 2) + 1][(ownedChunks.radius * 2) + 1];
         for (int x = ownedChunks.minX; x <= ownedChunks.maxX; x++) {
@@ -408,6 +411,11 @@ public class PhysicsObject {
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
                     }
+                }
+
+                //TODO: Maybe move this after the setTileEntity() method
+                if (newInstance instanceof INodeProvider) {
+                	((INodeProvider) newInstance).getNode().updateParentEntity(this);
                 }
 
                 worldObj.setTileEntity(newInstance.getPos(), newInstance);
@@ -673,6 +681,9 @@ public class PhysicsObject {
 
     public void loadClaimedChunks() {
         ArrayList<TileEntity> nodeTileEntitiesToUpdate = new ArrayList<TileEntity>();
+
+        ValkyrienWarfareMod.physicsManager.onShipPreload(wrapper);
+
         claimedChunks = new Chunk[(ownedChunks.radius * 2) + 1][(ownedChunks.radius * 2) + 1];
         claimedChunksEntries = new PlayerChunkMapEntry[(ownedChunks.radius * 2) + 1][(ownedChunks.radius * 2) + 1];
         for (int x = ownedChunks.minX; x <= ownedChunks.maxX; x++) {
@@ -705,12 +716,20 @@ public class PhysicsObject {
         for (TileEntity tile : nodeTileEntitiesToUpdate) {
             Node node = ((INodeProvider) tile).getNode();
             if (node != null) {
-                node.parentPhysicsObject = this;
+            	node.updateParentEntity(this);
+            } else {
+                System.err.println("How the fuck did we get a null node?");
+            }
+        }
+        for (TileEntity tile : nodeTileEntitiesToUpdate) {
+            Node node = ((INodeProvider) tile).getNode();
+            if (node != null) {
                 node.updateBuildState();
             } else {
                 System.err.println("How the fuck did we get a null node?");
             }
         }
+
         coordTransform.updateAllTransforms();
     }
 

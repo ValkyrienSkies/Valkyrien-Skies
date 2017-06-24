@@ -16,8 +16,7 @@ public abstract class ImplPhysicsProcessorNodeTileEntity extends BasicNodeTileEn
         setPriority(processorPriority);
     }
 
-    public ImplPhysicsProcessorNodeTileEntity() {
-    }
+    public ImplPhysicsProcessorNodeTileEntity() {}
 
     @Override
     public int getPriority() {

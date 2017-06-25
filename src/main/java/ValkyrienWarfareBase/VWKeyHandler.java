@@ -27,13 +27,13 @@ public class VWKeyHandler {
     public static KeyBinding airshipRight = new KeyBinding("Airship Turn Right", Keyboard.KEY_D, keybindIdentifyer);
     public static KeyBinding airshipDown = new KeyBinding("Airship Down", Keyboard.KEY_X, keybindIdentifyer);
 
-    public static KeyBinding airshipUp_Zepplin = new KeyBinding("Airship Up", Keyboard.KEY_ADD, keybindIdentifyer);
-    public static KeyBinding airshipForward_Zepplin = new KeyBinding("Airship Forward", Keyboard.KEY_NUMPAD8, keybindIdentifyer);
-    public static KeyBinding airshipBackward_Zepplin = new KeyBinding("Airship Backward", Keyboard.KEY_NUMPAD2, keybindIdentifyer);
-    public static KeyBinding airshipLeft_Zepplin = new KeyBinding("Airship Turn Left", Keyboard.KEY_NUMPAD4, keybindIdentifyer);
-    public static KeyBinding airshipRight_Zepplin = new KeyBinding("Airship Turn Right", Keyboard.KEY_NUMPAD6, keybindIdentifyer);
-    public static KeyBinding airshipDown_Zepplin = new KeyBinding("Airship Down", Keyboard.KEY_MINUS, keybindIdentifyer);
-    public static KeyBinding airshipStop_Zepplin = new KeyBinding("Airship Down", Keyboard.KEY_NUMPAD5, keybindIdentifyer);
+    public static KeyBinding airshipUp_Zepplin = new KeyBinding("Zepplin Airship Up", Keyboard.KEY_ADD, keybindIdentifyer);
+    public static KeyBinding airshipForward_Zepplin = new KeyBinding("Zepplin Airship Forward", Keyboard.KEY_NUMPAD8, keybindIdentifyer);
+    public static KeyBinding airshipBackward_Zepplin = new KeyBinding("Zepplin Airship Backward", Keyboard.KEY_NUMPAD2, keybindIdentifyer);
+    public static KeyBinding airshipLeft_Zepplin = new KeyBinding("Zepplin Airship Turn Left", Keyboard.KEY_NUMPAD4, keybindIdentifyer);
+    public static KeyBinding airshipRight_Zepplin = new KeyBinding("Zepplin Airship Turn Right", Keyboard.KEY_NUMPAD6, keybindIdentifyer);
+    public static KeyBinding airshipDown_Zepplin = new KeyBinding("Zepplin Airship Down", Keyboard.KEY_SUBTRACT, keybindIdentifyer);
+    public static KeyBinding airshipStop_Zepplin = new KeyBinding("Zepplin Airship Stop", Keyboard.KEY_NUMPAD5, keybindIdentifyer);
 
     // Dismount Key
     public static KeyBinding dismountKey = new KeyBinding("VW Controller Dismount Key", Keyboard.KEY_LSHIFT, keybindIdentifyer);

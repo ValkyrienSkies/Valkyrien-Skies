@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import ValkyrienWarfareBase.VWKeyHandler;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
+import ValkyrienWarfareBase.PhysicsManagement.ShipType;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
@@ -18,6 +19,7 @@ public class PilotControlsMessage implements IMessage {
     public boolean airshipLeft;
     public boolean airshipRight;
     public boolean airshipSprinting;
+    public boolean airshipStop;
     public Enum inputType;
     public UUID shipFor = defaultUUID;
     public BlockPos controlBlockPos;
@@ -37,6 +39,7 @@ public class PilotControlsMessage implements IMessage {
         airshipLeft = packetBuf.readBoolean();
         airshipRight = packetBuf.readBoolean();
         airshipSprinting = packetBuf.readBoolean();
+        airshipStop = packetBuf.readBoolean();
         inputType = packetBuf.readEnumValue(ControllerInputType.class);
         shipFor = packetBuf.readUniqueId();
         controlBlockPos = packetBuf.readBlockPos();
@@ -52,10 +55,11 @@ public class PilotControlsMessage implements IMessage {
         packetBuf.writeBoolean(airshipLeft);
         packetBuf.writeBoolean(airshipRight);
         packetBuf.writeBoolean(airshipSprinting);
+        packetBuf.writeBoolean(airshipStop);
         packetBuf.writeEnumValue(inputType);
         packetBuf.writeUniqueId(shipFor);
         if(controlBlockPos == null) {
-//        	System.out.println(":(");
+        	System.out.println(":(");
         	controlBlockPos = BlockPos.ORIGIN;
         }
         packetBuf.writeBlockPos(controlBlockPos);
@@ -73,6 +77,15 @@ public class PilotControlsMessage implements IMessage {
         	shipFor = shipPiloting.getUniqueID();
         }
         this.inputType = inputType;
+        if(inputType == ControllerInputType.Zepplin) {
+        	airshipUp = VWKeyHandler.airshipUp_Zepplin.isKeyDown();
+            airshipDown = VWKeyHandler.airshipDown_Zepplin.isKeyDown();
+            airshipForward = VWKeyHandler.airshipForward_Zepplin.isKeyDown();
+            airshipBackward = VWKeyHandler.airshipBackward_Zepplin.isKeyDown();
+            airshipLeft = VWKeyHandler.airshipLeft_Zepplin.isKeyDown();
+            airshipRight = VWKeyHandler.airshipRight_Zepplin.isKeyDown();
+            airshipStop = VWKeyHandler.airshipStop_Zepplin.isKeyDown();
+        }
     }
 
 }

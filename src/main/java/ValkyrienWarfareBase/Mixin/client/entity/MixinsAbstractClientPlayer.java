@@ -16,7 +16,7 @@ public abstract class MixinsAbstractClientPlayer implements IShipPilotClient {
 	@Override
 	public void onClientTick() {
 		if (isPiloting()) {
-            sendPilotKeysToServer(ControllerInputType.PilotsChair, getPilotedShip(), getPosBeingControlled());
+            sendPilotKeysToServer(this.getControllerInputEnum(), getPilotedShip(), getPosBeingControlled());
 		}
 
 	}

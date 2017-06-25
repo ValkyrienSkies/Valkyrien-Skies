@@ -8,7 +8,7 @@ import net.minecraft.nbt.NBTTagCompound;
 public class PhysicsCalculations_Zepplin extends PhysicsCalculations {
 
 	public double yawRate;
-	public double forwardRate = 1D;
+	public double forwardRate;
 	public double upRate;
 
 	public PhysicsCalculations_Zepplin(PhysicsObject toProcess) {
@@ -21,36 +21,6 @@ public class PhysicsCalculations_Zepplin extends PhysicsCalculations {
 		linearMomentum.multiply(modifiedDrag);
 		angularVelocity.multiply(modifiedDrag);
 
-//		System.out.println("hi?");
-
-//		parent.wrapper.isDead = true;
-
-//		forwardRate = 1D;
-
-		double[] existingRotationMatrix = RotationMatrices.getRotationMatrix(0, parent.wrapper.yaw, 0);
-
-		double reduction = 1D;
-
-		Vector linearForce = new Vector(forwardRate, upRate, 0);
-		RotationMatrices.applyTransform(existingRotationMatrix, linearForce);
-		linearForce.multiply(mass);
-		linearForce.multiply(reduction);
-		this.linearMomentum.add(linearForce);;
-
-
-
-
-		double[] rotationVelocityMatrix = RotationMatrices.getRotationMatrix(0, yawRate, 0);
-
-//		angularVelocity = new Vector(0, yawRate, 0);
-
-//		angularVelocity.add(0, yawRate * reduction, 0);
-
-//		if(parent.wrapper.yaw)
-
-		if(parent.wrapper.yaw > 0) {
-//			angularVelocity.multiply(-1D);
-		}
 	}
 
 	@Override
@@ -60,28 +30,28 @@ public class PhysicsCalculations_Zepplin extends PhysicsCalculations {
 
 	@Override
 	public void rawPhysTickPostCol() {
-//		super.rawPhysTickPostCol();
-
 		applyLinearVelocity();
 
-		parent.wrapper.pitch = 0;
-		parent.wrapper.roll = 0;
+		double previousYaw = parent.wrapper.yaw;
 
-//		yawRate = 0;// 10D/20D;
+		applyAngularVelocity();
 
-		parent.wrapper.yaw -= (yawRate * physTickSpeed * 5);
+		//We don't want the up normal to exactly align with the world normal, it causes problems with collision
+		parent.wrapper.pitch = 0.0001D;
+		parent.wrapper.roll = 0.0001D;
+		parent.wrapper.yaw = previousYaw;
 
-		if(parent.wrapper.yaw > 180) {
+		parent.wrapper.yaw -= (yawRate * physTickSpeed);
 
-//			parent.wrapper.yaw -= 360;
-		}
+		double[] existingRotationMatrix = RotationMatrices.getRotationMatrix(0, parent.wrapper.yaw, 0);
 
-		if(parent.wrapper.yaw < -180) {
-//			System.out.println("shit");
-//			parent.wrapper.yaw += 360;
-		}
+		Vector linearForce = new Vector(forwardRate, upRate, 0, existingRotationMatrix);
 
-//		parent.wrapper.yaw*= -1;
+		linearForce.multiply(physTickSpeed);
+
+		parent.wrapper.posX += linearForce.X;
+		parent.wrapper.posY += linearForce.Y;
+		parent.wrapper.posZ += linearForce.Z;
 
 		parent.coordTransform.updateAllTransforms();
 	}

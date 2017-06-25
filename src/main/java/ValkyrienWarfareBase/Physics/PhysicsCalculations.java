@@ -311,7 +311,7 @@ public class PhysicsCalculations {
 			for(Node node : parent.nodesWithinShip) {
 				TileEntity nodeTile = node.parentTile;
 				if(nodeTile instanceof IPhysicsProcessorNode) {
-					System.out.println("test");
+//					System.out.println("test");
 					((IPhysicsProcessorNode) nodeTile).onPhysicsTick(parent, this, physRawSpeed);
 				}
 			}

@@ -47,6 +47,7 @@ import ValkyrienWarfareControl.TileEntity.TileEntityPilotsChair;
 import ValkyrienWarfareControl.TileEntity.TileEntityPropellerEngine;
 import ValkyrienWarfareControl.TileEntity.TileEntityShipHelm;
 import ValkyrienWarfareControl.TileEntity.TileEntityShipTelegraph;
+import ValkyrienWarfareControl.TileEntity.TileEntityZepplinController;
 import ValkyrienWarfareWorld.ValkyrienWarfareWorldMod;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -227,6 +228,7 @@ public class ValkyrienWarfareControlMod {
         GameRegistry.registerTileEntity(TileEntityShipHelm.class, "tileshiphelm");
         GameRegistry.registerTileEntity(TileEntityShipTelegraph.class, "tileshiptelegraph");
         GameRegistry.registerTileEntity(TileEntityPropellerEngine.class, "tilepropellerengine");
+        GameRegistry.registerTileEntity(TileEntityZepplinController.class, "tilezepplin_controller");
     }
 
     private void registerItems(FMLStateEvent event) {

@@ -10,6 +10,16 @@ import net.minecraft.entity.player.EntityPlayerMP;
 public class TileEntityZepplinController extends ImplTileEntityPilotable {
 
 	@Override
+	public void onStopTileUsage() {
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(getWorld(), getPos());
+		if(wrapper != null) {
+			PhysicsCalculations_Zepplin zepplinPhysics = (PhysicsCalculations_Zepplin) wrapper.wrapping.physicsProcessor;
+			zepplinPhysics.upRate = 0;
+			zepplinPhysics.forwardRate = 0;
+		}
+	}
+
+	@Override
 	ControllerInputType getControlInputType() {
 		return ControllerInputType.Zepplin;
 	}

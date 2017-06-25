@@ -68,8 +68,8 @@ public class PhysicsCalculations_Zepplin extends PhysicsCalculations {
 	public void readFromNBTTag(NBTTagCompound compound) {
 		super.readFromNBTTag(compound);
 		yawRate = compound.getDouble("yawRate");
-		forwardRate = compound.getDouble("forwardRate");
-		upRate = compound.getDouble("upRate");
+//		forwardRate = compound.getDouble("forwardRate");
+//		upRate = compound.getDouble("upRate");
 	}
 
 }

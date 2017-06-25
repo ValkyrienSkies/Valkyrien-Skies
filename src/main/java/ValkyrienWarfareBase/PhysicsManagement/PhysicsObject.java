@@ -34,7 +34,6 @@ import ValkyrienWarfareControl.Balloon.ShipBalloonManager;
 import ValkyrienWarfareControl.Network.EntityFixMessage;
 import ValkyrienWarfareControl.NodeNetwork.INodeProvider;
 import ValkyrienWarfareControl.NodeNetwork.Node;
-import ValkyrienWarfareControl.NodeNetwork.NodeNetwork;
 import gnu.trove.iterator.TIntIterator;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.state.IBlockState;
@@ -83,7 +82,7 @@ public class PhysicsObject {
     public CoordTransformObject coordTransform;
     public PhysObjectRenderManager renderer;
     public PhysicsCalculations physicsProcessor;
-    public ArrayList<BlockPos> blockPositions = new ArrayList<BlockPos>();
+    public HashSet<BlockPos> blockPositions = new HashSet<BlockPos>();
     public AxisAlignedBB collisionBB = PhysicsWrapperEntity.ZERO_AABB;
 
     public ArrayList<PhysicsQueuedForce> queuedPhysForces = new ArrayList<PhysicsQueuedForce>();

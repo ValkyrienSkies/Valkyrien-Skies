@@ -2,16 +2,11 @@ package ValkyrienWarfareControl.ControlSystems;
 
 import java.util.HashSet;
 
-import ValkyrienWarfareBase.API.RotationMatrices;
-import ValkyrienWarfareBase.API.Vector;
-import ValkyrienWarfareBase.API.Block.EtherCompressor.TileEntityEtherCompressor;
 import ValkyrienWarfareBase.Physics.PhysicsCalculations;
-import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
 import ValkyrienWarfareControl.NodeNetwork.Node;
 import ValkyrienWarfareControl.TileEntity.ThrustModulatorTileEntity;
 import ValkyrienWarfareControl.TileEntity.TileEntityNormalEtherCompressor;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
 
 public class StabilityHeightPIDControl {
 

@@ -1,8 +1,13 @@
 package ValkyrienWarfareBase.Mixin.network;
 
-import ValkyrienWarfareBase.API.RotationMatrices;
-import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
+
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
+import ValkyrienWarfareBase.API.RotationMatrices;
+import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -24,9 +29,6 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.WorldServer;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(NetHandlerPlayServer.class)
 public abstract class MixinNetHandlerPlayServer {
@@ -138,7 +140,20 @@ public abstract class MixinNetHandlerPlayServer {
             double dist = player.interactionManager.getBlockReachDistance() + 3;
             dist *= dist;
             if (thisClassAsAHandler.targetPos == null && this.player.getDistanceSq((double) blockpos.getX() + 0.5D, (double) blockpos.getY() + 0.5D, (double) blockpos.getZ() + 0.5D) < dist && !thisClassAsAHandler.serverController.isBlockProtected(worldserver, blockpos, this.player) && worldserver.getWorldBorder().contains(blockpos)) {
-                this.player.interactionManager.processRightClickBlock(this.player, worldserver, itemstack, enumhand, blockpos, enumfacing, packetIn.getFacingX(), packetIn.getFacingY(), packetIn.getFacingZ());
+                Vector playerHitVec = new Vector(packetIn.getFacingX(), packetIn.getFacingY(), packetIn.getFacingZ());
+
+                Vector distanceVector = new Vector(playerHitVec);
+                distanceVector.subtract(blockpos.getX(), blockpos.getY(), blockpos.getZ());
+                if(distanceVector.lengthSq() > 64) {
+                	//Move it back to local space!
+                	PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldserver, blockpos);
+                	if(wrapper != null) {
+                		//Fix for Chisels and Bits
+                    	RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, playerHitVec);
+                	}
+                }
+
+            	this.player.interactionManager.processRightClickBlock(this.player, worldserver, itemstack, enumhand, blockpos, enumfacing, (float) playerHitVec.X, (float) playerHitVec.Y, (float) playerHitVec.Z);
             }
         } else {
             TextComponentTranslation textcomponenttranslation = new TextComponentTranslation("build.tooHigh", new Object[]{Integer.valueOf(thisClassAsAHandler.serverController.getBuildLimit())});

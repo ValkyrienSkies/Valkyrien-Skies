@@ -10,11 +10,10 @@ import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup;
@@ -119,21 +118,10 @@ public class EventsClient {
         if (pos != null) {
             PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(Minecraft.getMinecraft().world, pos);
             if (wrapper != null && wrapper.wrapping != null && wrapper.wrapping.renderer != null && wrapper.wrapping.centerCoord != null) {
-//				GL11.glPushMatrix();
-                float partialTicks = event.getPartialTicks();
-                Entity player = Minecraft.getMinecraft().player;
-                wrapper.wrapping.renderer.setupTranslation(partialTicks);
-
-                Tessellator tessellator = Tessellator.getInstance();
-                VertexBuffer vertexbuffer = tessellator.getBuffer();
-
-                double xOff = (player.lastTickPosX + (player.posX - player.lastTickPosX) * (double) partialTicks) - wrapper.wrapping.renderer.offsetPos.getX();
-                double yOff = (player.lastTickPosY + (player.posY - player.lastTickPosY) * (double) partialTicks) - wrapper.wrapping.renderer.offsetPos.getY();
-                double zOff = (player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * (double) partialTicks) - wrapper.wrapping.renderer.offsetPos.getZ();
-
-                vertexbuffer.xOffset += xOff;
-                vertexbuffer.yOffset += yOff;
-                vertexbuffer.zOffset += zOff;
+            	RayTraceResult objectOver = Minecraft.getMinecraft().objectMouseOver;
+            	if(objectOver != null && objectOver.hitVec != null) {
+            		objectOver.hitVec = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, objectOver.hitVec);
+            	}
             }
         }
     }
@@ -144,21 +132,10 @@ public class EventsClient {
         if (pos != null) {
             PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(Minecraft.getMinecraft().world, pos);
             if (wrapper != null && wrapper.wrapping != null && wrapper.wrapping.renderer != null && wrapper.wrapping.centerCoord != null) {
-                float partialTicks = event.getPartialTicks();
-                Entity player = Minecraft.getMinecraft().player;
-                wrapper.wrapping.renderer.inverseTransform(partialTicks);
-
-                Tessellator tessellator = Tessellator.getInstance();
-                VertexBuffer vertexbuffer = tessellator.getBuffer();
-
-                double xOff = (player.lastTickPosX + (player.posX - player.lastTickPosX) * (double) partialTicks) - wrapper.wrapping.renderer.offsetPos.getX();
-                double yOff = (player.lastTickPosY + (player.posY - player.lastTickPosY) * (double) partialTicks) - wrapper.wrapping.renderer.offsetPos.getY();
-                double zOff = (player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * (double) partialTicks) - wrapper.wrapping.renderer.offsetPos.getZ();
-
-                vertexbuffer.xOffset -= xOff;
-                vertexbuffer.yOffset -= yOff;
-                vertexbuffer.zOffset -= zOff;
-//				GL11.glPopMatrix();
+            	RayTraceResult objectOver = Minecraft.getMinecraft().objectMouseOver;
+            	if(objectOver != null && objectOver.hitVec != null) {
+            		objectOver.hitVec = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, objectOver.hitVec);
+            	}
             }
         }
     }

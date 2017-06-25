@@ -26,6 +26,7 @@
         "client.particle.MixinParticleManager",
         "client.renderer.MixinRenderGlobal",
         "client.multiplayer.MixinWorldClient",
+        "client.multiplayer.MixinPlayerControllerMP",
         "tileentity.MixinTileEntityCLIENT",
         "client.entity.MixinsAbstractClientPlayer",
         "util.MixinMovementInputFromOptions"

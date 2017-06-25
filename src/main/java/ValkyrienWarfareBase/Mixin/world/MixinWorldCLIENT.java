@@ -17,6 +17,7 @@ import net.minecraft.profiler.Profiler;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProvider;
@@ -24,11 +25,7 @@ import net.minecraft.world.storage.ISaveHandler;
 import net.minecraft.world.storage.WorldInfo;
 
 @Mixin(World.class)
-public abstract class MixinWorldCLIENT extends World {
-
-    protected MixinWorldCLIENT(ISaveHandler saveHandlerIn, WorldInfo info, WorldProvider providerIn, Profiler profilerIn, boolean client) {
-		super(saveHandlerIn, info, providerIn, profilerIn, client);
-	}
+public abstract class MixinWorldCLIENT {
 
 	@Shadow
     public int getLightFromNeighborsFor(EnumSkyBlock type, BlockPos pos) {
@@ -112,6 +109,9 @@ public abstract class MixinWorldCLIENT extends World {
 
         return pos;
     }
+
+    @Shadow
+    public abstract RayTraceResult rayTraceBlocks(Vec3d start, Vec3d end, boolean bool1, boolean bool2, boolean bool3);
 
     @Inject(method = "getPrecipitationHeight(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/util/math/BlockPos;", at = @At("HEAD"), cancellable = true)
     public void preGetPrecipitationHeight(BlockPos pos, CallbackInfoReturnable callbackInfo) {

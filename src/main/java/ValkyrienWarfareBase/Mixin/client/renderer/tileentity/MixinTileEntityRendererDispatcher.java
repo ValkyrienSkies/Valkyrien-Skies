@@ -1,7 +1,11 @@
 package ValkyrienWarfareBase.Mixin.client.renderer.tileentity;
 
-import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
+
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
+import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
@@ -10,9 +14,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(TileEntityRendererDispatcher.class)
 public abstract class MixinTileEntityRendererDispatcher {
@@ -75,7 +76,7 @@ public abstract class MixinTileEntityRendererDispatcher {
                     this.drawBatch(MinecraftForgeClient.getRenderPass());
                     this.preDrawBatch();
                 } else {
-                    this.renderTileEntity(tileentityIn, partialTicks, destroyStage);
+                    this.renderTileEntityOriginal(tileentityIn, partialTicks, destroyStage);
                 }
                 TileEntityRendererDispatcher.instance.staticPlayerX = playerX;
                 TileEntityRendererDispatcher.instance.staticPlayerY = playerY;

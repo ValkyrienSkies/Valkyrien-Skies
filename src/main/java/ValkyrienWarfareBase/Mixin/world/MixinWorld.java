@@ -104,6 +104,9 @@ public abstract class MixinWorld {
         if (vanillaTrace != null && vanillaTrace.hitVec != null) {
             worldResultDistFromPlayer = vanillaTrace.hitVec.distanceTo(vec31);
         }
+
+        PhysicsWrapperEntity transformedEntity = null;
+
         for (PhysicsWrapperEntity wrapper : nearbyShips) {
             playerEyesPos = vec31;
             playerReachVector = vec32.subtract(vec31);
@@ -122,8 +125,15 @@ public abstract class MixinWorld {
                     worldResultDistFromPlayer = shipResultDistFromPlayer;
                     resultInShip.hitVec = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.RlToWTransform, resultInShip.hitVec);
                     vanillaTrace = resultInShip;
+                    transformedEntity = wrapper;
                 }
             }
+        }
+
+        if(transformedEntity != null) {
+        	Vec3d hitVec2 = vanillaTrace.hitVec;
+        	hitVec2 = RotationMatrices.applyTransform(transformedEntity.wrapping.coordTransform.RwToLTransform, hitVec2);
+        	vanillaTrace.hitVec = hitVec2;
         }
 
         return vanillaTrace;

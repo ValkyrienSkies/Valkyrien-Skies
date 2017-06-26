@@ -141,17 +141,19 @@ public abstract class MixinNetHandlerPlayServer {
             dist *= dist;
             if (thisClassAsAHandler.targetPos == null && this.player.getDistanceSq((double) blockpos.getX() + 0.5D, (double) blockpos.getY() + 0.5D, (double) blockpos.getZ() + 0.5D) < dist && !thisClassAsAHandler.serverController.isBlockProtected(worldserver, blockpos, this.player) && worldserver.getWorldBorder().contains(blockpos)) {
                 Vector playerHitVec = new Vector(packetIn.getFacingX(), packetIn.getFacingY(), packetIn.getFacingZ());
-
-                Vector distanceVector = new Vector(playerHitVec);
-                distanceVector.subtract(blockpos.getX(), blockpos.getY(), blockpos.getZ());
-                if(distanceVector.lengthSq() > 64) {
-                	//Move it back to local space!
-                	PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldserver, blockpos);
-                	if(wrapper != null) {
-                		//Fix for Chisels and Bits
-                    	RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, playerHitVec);
-                	}
-                }
+//
+//                Vector distanceVector = new Vector(playerHitVec);
+//                distanceVector.subtract(blockpos.getX(), blockpos.getY(), blockpos.getZ());
+//                if(distanceVector.lengthSq() > 64) {
+//                	//Move it back to local space!
+//                	PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldserver, blockpos);
+//                	if(wrapper != null) {
+//                		//Fix for Chisels and Bits
+//                    	RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, playerHitVec);
+//                	}
+//                }
+//
+//                System.out.println(playerHitVec);
 
             	this.player.interactionManager.processRightClickBlock(this.player, worldserver, itemstack, enumhand, blockpos, enumfacing, (float) playerHitVec.X, (float) playerHitVec.Y, (float) playerHitVec.Z);
             }

@@ -10,6 +10,8 @@ import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -28,6 +30,10 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.RenderTickEvent;
 public class EventsClient {
 
     private final static Minecraft mc = Minecraft.getMinecraft();
+
+    private static double oldXOff;
+    private static double oldYOff;
+    private static double oldZOff;
 
     protected static final Vec3d getVectorForRotation(float pitch, float yaw) {
         float f = MathHelper.cos(-yaw * 0.017453292F - (float) Math.PI);
@@ -120,7 +126,12 @@ public class EventsClient {
             if (wrapper != null && wrapper.wrapping != null && wrapper.wrapping.renderer != null && wrapper.wrapping.centerCoord != null) {
             	RayTraceResult objectOver = Minecraft.getMinecraft().objectMouseOver;
             	if(objectOver != null && objectOver.hitVec != null) {
-            		objectOver.hitVec = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, objectOver.hitVec);
+            		VertexBuffer buffer = Tessellator.getInstance().getBuffer();
+            		oldXOff = buffer.xOffset;
+            		oldYOff = buffer.yOffset;
+            		oldZOff = buffer.zOffset;
+            		wrapper.wrapping.renderer.setupTranslation(event.getPartialTicks());
+//            		objectOver.hitVec = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, objectOver.hitVec);
             	}
             }
         }
@@ -134,7 +145,12 @@ public class EventsClient {
             if (wrapper != null && wrapper.wrapping != null && wrapper.wrapping.renderer != null && wrapper.wrapping.centerCoord != null) {
             	RayTraceResult objectOver = Minecraft.getMinecraft().objectMouseOver;
             	if(objectOver != null && objectOver.hitVec != null) {
-            		objectOver.hitVec = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, objectOver.hitVec);
+            		VertexBuffer buffer = Tessellator.getInstance().getBuffer();
+            		buffer.xOffset = oldXOff;
+            		buffer.yOffset = oldYOff;
+            		buffer.zOffset = oldZOff;
+            		wrapper.wrapping.renderer.inverseTransform(event.getPartialTicks());
+//            		objectOver.hitVec = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, objectOver.hitVec);
             	}
             }
         }

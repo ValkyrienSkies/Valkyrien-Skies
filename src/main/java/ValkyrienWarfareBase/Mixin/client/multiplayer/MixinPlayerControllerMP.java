@@ -48,11 +48,15 @@ public abstract class MixinPlayerControllerMP {
         else
         {
 
-        	PhysicsWrapperEntity originalHitVecWrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldIn, pos);
-        	if(originalHitVecWrapper != null) {
-        		//Fix for Chisels and Bits
-        		vec = RotationMatrices.applyTransform(originalHitVecWrapper.wrapping.coordTransform.wToLTransform, vec);
-        	}
+//        	PhysicsWrapperEntity originalHitVecWrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldIn, pos);
+//        	if(originalHitVecWrapper != null) {
+//        		//Fix for Chisels and Bits
+//        		vec = RotationMatrices.applyTransform(originalHitVecWrapper.wrapping.coordTransform.wToLTransform, vec);
+//
+//        		f = (float)(vec.xCoord - (double)pos.getX());
+//                f1 = (float)(vec.yCoord - (double)pos.getY());
+//                f2 = (float)(vec.zCoord - (double)pos.getZ());
+//        	}
 
 
         	Vec3d preTransform = null;
@@ -67,7 +71,7 @@ public abstract class MixinPlayerControllerMP {
         			PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldIn, posRayHit);
         			if(wrapper != null) {
         				//Fix for Chisels and Bits
-        				preTransform = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, preTransform);
+//        				preTransform = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, preTransform);
         			}
         		}
         	}

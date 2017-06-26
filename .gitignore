@@ -117,3 +117,6 @@ mods/buildcraft-7.99.0-dev.jar
 mods/spongeforge-1.10.2-2254-5.2.0-BETA-2272-dev-shaded.jar
 mods/spongeforge-1.10.2-2281-5.2.0-BETA-2353-dev-shaded.jar
 mods/spongeforge-1.10.2-2281-5.2.0-BETA-2353-dev-shaded.jar.disabled
+*.disabled
+mods/CodeChickenLib-1.11.2-2.7.0.268-deobf.jar
+mods/EnderStorage-1.11.2-2.3.1.114-deobf.jar

@@ -210,4 +210,8 @@ public class Vector {
         Z = inLocal.Z - centerCoord.Z;
     }
 
+    public void transform(double[] rotationMatrix) {
+    	RotationMatrices.applyTransform(rotationMatrix, this);
+    }
+
 }

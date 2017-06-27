@@ -504,15 +504,13 @@ public class EventsCommon {
         if (!event.getWorld().isRemote) {
             PhysicsWrapperEntity physObj = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(event.getWorld(), event.getPos());
             if (physObj != null) {
-                //Bucket fix, probably not that important
-                if (event.getEntityPlayer().getHeldItem(event.getHand()) != null && event.getEntityPlayer().getHeldItem(event.getHand()).getItem() instanceof ItemBucket) {
-                    event.setResult(Result.ALLOW);
-                    event.setCanceled(false);
-                }
                 if (ValkyrienWarfareMod.runAirshipPermissions && !(physObj.wrapping.creator.equals(event.getEntityPlayer().entityUniqueID.toString()) || physObj.wrapping.allowedUsers.contains(event.getEntityPlayer().entityUniqueID.toString()))) {
                     event.getEntityPlayer().sendMessage(new TextComponentString("You need to be added to the airship to do that!" + (physObj.wrapping.creator == null || physObj.wrapping.creator.trim().isEmpty() ? " Try using \"/airshipSettings claim\"!" : "")));
                     event.setCanceled(true);
                     return;
+                }else{
+                	event.setResult(Result.ALLOW);
+                    event.setCanceled(false);
                 }
             }
         }

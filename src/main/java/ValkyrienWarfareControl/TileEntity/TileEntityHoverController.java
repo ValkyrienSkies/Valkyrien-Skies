@@ -49,7 +49,7 @@ public class TileEntityHoverController extends TileEntity {
         shipVel.multiply(physObj.physicsProcessor.invMass);
 
         if (!world.isBlockPowered(getPos()) || autoStabalizerControl) {
-            setAutoStabilizationValue(physObj);
+//            setAutoStabilizationValue(physObj);
         }
 
         double linearDist = -getControllerDistFromIdealY(physObj);

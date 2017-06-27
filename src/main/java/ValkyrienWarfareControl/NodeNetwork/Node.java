@@ -28,6 +28,7 @@ public class Node {
         connectedNodes = new HashSet<Node>();
         connectedNodesBlockPos = new HashSet<BlockPos>();
         parentNetwork = new NodeNetwork(parentPhysicsObject);
+        parentNetwork.networkedNodes.add(this);
     }
 
     public void updateParentEntity(PhysicsObject physObj) {
@@ -165,7 +166,8 @@ public class Node {
      */
     public boolean updateParentNetwork(NodeNetwork newNetwork) {
         if (parentNetwork == newNetwork) {
-            return true;
+            parentNetwork = newNetwork;
+        	return true;
         }
         parentNetwork = newNetwork;
         return false;

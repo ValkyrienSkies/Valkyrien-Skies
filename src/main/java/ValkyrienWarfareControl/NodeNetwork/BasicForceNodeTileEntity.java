@@ -1,11 +1,11 @@
 package ValkyrienWarfareControl.NodeNetwork;
 
+import ValkyrienWarfareBase.NBTUtils;
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
-import ValkyrienWarfareBase.NBTUtils;
 import ValkyrienWarfareBase.Physics.PhysicsCalculations;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
-import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -15,7 +15,6 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
     protected double maxThrust = 5000D;
     protected double currentThrust = 0D;
     private Vector forceOutputVector = new Vector();
-    private boolean isForceOutputOriented = true;
     private Vector normalVelocityUnoriented;
     //Tells if the tile is in Ship Space, if it isn't then it doesn't try to find a parent Ship object
     private boolean hasAlreadyCheckedForParent = false;
@@ -29,8 +28,15 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
 
     public BasicForceNodeTileEntity(Vector normalVeclocityUnoriented, boolean isForceOutputOriented, double maxThrust) {
         this.normalVelocityUnoriented = normalVeclocityUnoriented;
-        this.isForceOutputOriented = isForceOutputOriented;
         this.maxThrust = maxThrust;
+    }
+
+    /**
+     * True for all engines except for Ether Compressors
+     * @return
+     */
+    public boolean isForceOutputOriented() {
+    	return true;
     }
 
     @Override
@@ -47,7 +53,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
     @Override
     public Vector getForceOutputOriented(double secondsToApply) {
         Vector outputForce = getForceOutputUnoriented(secondsToApply);
-        if (isForceOutputOriented) {
+        if (isForceOutputOriented()) {
             if (updateParentShip()) {
                 RotationMatrices.applyTransform(parentShip.wrapping.coordTransform.lToWRotation, outputForce);
             }
@@ -66,9 +72,14 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
     }
 
     @Override
+    public double getThrust() {
+    	return currentThrust;
+    }
+
+    @Override
     public Vector getPositionInLocalSpaceWithOrientation() {
         if (updateParentShip()) {
-            return null;
+//            return null;
         }
         Vector engineCenter = new Vector(getPos().getX() + .5D, getPos().getY() + .5D, getPos().getZ() + .5D);
         RotationMatrices.applyTransform(parentShip.wrapping.coordTransform.lToWTransform, engineCenter);
@@ -79,7 +90,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
     @Override
     public Vector getVelocityAtEngineCenter() {
         if (updateParentShip()) {
-            return null;
+//            return null;
         }
         PhysicsCalculations calculations = parentShip.wrapping.physicsProcessor;
         return calculations.getVelocityAtPoint(getPositionInLocalSpaceWithOrientation());
@@ -88,7 +99,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
     @Override
     public Vector getLinearVelocityAtEngineCenter() {
         if (updateParentShip()) {
-            return null;
+//            return null;
         }
         PhysicsCalculations calculations = parentShip.wrapping.physicsProcessor;
         return calculations.linearMomentum;
@@ -106,7 +117,6 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
 
     @Override
     public void readFromNBT(NBTTagCompound compound) {
-        isForceOutputOriented = compound.getBoolean("isForceOutputOriented");
         maxThrust = compound.getDouble("maxThrust");
         currentThrust = compound.getDouble("currentThrust");
         normalVelocityUnoriented = NBTUtils.readVectorFromNBT("normalVelocityUnoriented", compound);
@@ -115,7 +125,6 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-        compound.setBoolean("isForceOutputOriented", isForceOutputOriented);
         compound.setDouble("maxThrust", maxThrust);
         compound.setDouble("currentThrust", currentThrust);
         NBTUtils.writeVectorToNBT("normalVelocityUnoriented", normalVelocityUnoriented, compound);

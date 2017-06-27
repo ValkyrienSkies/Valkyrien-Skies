@@ -12,4 +12,5 @@ public class TileEntityNormalEtherCompressor extends TileEntityEtherCompressor {
     public TileEntityNormalEtherCompressor(Vector normalForceVector, double power) {
         super(normalForceVector, power);
     }
+
 }

@@ -30,14 +30,15 @@ public abstract class ImplPhysicsProcessorNodeTileEntity extends BasicNodeTileEn
 
     @Override
     public void readFromNBT(NBTTagCompound compound) {
+    	super.readFromNBT(compound);
         priority = compound.getInteger("priority");
-        super.readFromNBT(compound);
     }
 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+    	compound = super.writeToNBT(compound);
         compound.setInteger("priority", priority);
-        return super.writeToNBT(compound);
+        return compound;
     }
 
 }

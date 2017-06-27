@@ -1,5 +1,7 @@
 package ValkyrienWarfareBase;
 
+import org.lwjgl.opengl.GL11;
+
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Fixes.SoundFixWrapper;
@@ -20,7 +22,9 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
 import net.minecraftforge.event.world.ChunkEvent;
+import net.minecraftforge.fml.common.eventhandler.Event.Result;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
@@ -120,7 +124,8 @@ public class EventsClient {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
     public void onDrawBlockHighlightEventFirst(DrawBlockHighlightEvent event) {
-        BlockPos pos = Minecraft.getMinecraft().objectMouseOver.getBlockPos();
+        GL11.glPushMatrix();
+    	BlockPos pos = Minecraft.getMinecraft().objectMouseOver.getBlockPos();
         if (pos != null) {
             PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(Minecraft.getMinecraft().world, pos);
             if (wrapper != null && wrapper.wrapping != null && wrapper.wrapping.renderer != null && wrapper.wrapping.centerCoord != null) {
@@ -130,6 +135,9 @@ public class EventsClient {
             		oldXOff = buffer.xOffset;
             		oldYOff = buffer.yOffset;
             		oldZOff = buffer.zOffset;
+
+            		buffer.setTranslation(-wrapper.wrapping.renderer.offsetPos.getX(), -wrapper.wrapping.renderer.offsetPos.getY(), -wrapper.wrapping.renderer.offsetPos.getZ());
+
             		wrapper.wrapping.renderer.setupTranslation(event.getPartialTicks());
 //            		objectOver.hitVec = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, objectOver.hitVec);
             	}
@@ -149,10 +157,19 @@ public class EventsClient {
             		buffer.xOffset = oldXOff;
             		buffer.yOffset = oldYOff;
             		buffer.zOffset = oldZOff;
-            		wrapper.wrapping.renderer.inverseTransform(event.getPartialTicks());
+//            		wrapper.wrapping.renderer.inverseTransform(event.getPartialTicks());
 //            		objectOver.hitVec = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, objectOver.hitVec);
             	}
             }
         }
+        GL11.glPopMatrix();
     }
+
+	@SubscribeEvent
+	public void interaction(final LeftClickBlock event ){
+		System.out.println(event.getHitVec());
+		if(event.getUseItem() == Result.DENY) {
+			System.out.println("wtf");
+		}
+	}
 }

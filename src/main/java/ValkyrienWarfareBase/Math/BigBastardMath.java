@@ -76,6 +76,10 @@ public class BigBastardMath {
         return minMax;
     }
 
+    public static double limitToRange(double input, double minimum, double maximum) {
+    	return Math.max(Math.min(maximum, input), minimum);
+    }
+
     public static Vector getBodyPosWithOrientation(BlockPos pos, Vector centerOfMass, double[] rotationTransform) {
         final Vector inBody = new Vector(pos.getX() + .5D - centerOfMass.X, pos.getY() + .5D - centerOfMass.Y, pos.getZ() + .5D - centerOfMass.Z);
         RotationMatrices.doRotationOnly(rotationTransform, inBody);
@@ -94,31 +98,6 @@ public class BigBastardMath {
         inBody.Y = pos.Y - centerOfMass.Y;
         inBody.Z = pos.Z - centerOfMass.Z;
         RotationMatrices.doRotationOnly(rotationTransform, inBody);
-    }
-
-    public static Vector getBodyPosWithOrientation(Vector pos, Vector centerOfMass, double[] rotationTransform) {
-        Vector inBody = new Vector(pos.X - centerOfMass.X, pos.Y - centerOfMass.Y, pos.Z - centerOfMass.Z);
-        RotationMatrices.applyTransform(rotationTransform, inBody);
-        return inBody;
-    }
-
-    public static Vector getInBodyWOFromInWorld(Vector inWorld, Vector centerOfMass, double[] rotationTransform, double[] wToLTrasform) {
-        Vector inBody = new Vector(inWorld);
-        RotationMatrices.applyTransform(wToLTrasform, inBody);
-        inBody.subtract(centerOfMass);
-        RotationMatrices.applyTransform(rotationTransform, inBody);
-        return inBody;
-    }
-
-    public static final void setInBodyWOFromInWorld(final Vector inWorld, final Vector centerOfMass, final double[] rotationTransform, final double[] wToLTrasform, final Vector toSet) {
-        toSet.X = inWorld.X;
-        toSet.Y = inWorld.Y;
-        toSet.Z = inWorld.Z;
-        RotationMatrices.applyTransform(wToLTrasform, toSet);
-        toSet.X -= centerOfMass.X;
-        toSet.Y -= centerOfMass.Y;
-        toSet.Z -= centerOfMass.Z;
-        RotationMatrices.doRotationOnly(rotationTransform, toSet);
     }
 
     /**

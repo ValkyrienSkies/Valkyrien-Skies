@@ -1,8 +1,8 @@
 package ValkyrienWarfareBase.API.Block.EtherCompressor;
 
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
-import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareControl.NodeNetwork.BasicForceNodeTileEntity;
 import ValkyrienWarfareControl.TileEntity.TileEntityHoverController;
 import net.minecraft.nbt.NBTTagCompound;
@@ -54,15 +54,18 @@ public abstract class TileEntityEtherCompressor extends BasicForceNodeTileEntity
         return toReturn;
     }
 
+	@Override
+	public boolean isForceOutputOriented() {
+		return false;
+	}
+
     //TODO: Remove this as soon as you can!
     @Override
     public Vector getForceOutputUnoriented(double secondsToApply) {
-    	if(true) {
-//    		return new Vector(0, currentThrust, 0);
-    	}
-
         if (controllerPos == null) {
-            return new Vector();
+        	Vector output = super.getForceOutputUnoriented(secondsToApply);
+//        	System.out.println(this.getMaxThrust());
+            return output;
         }
 
         TileEntity controllerTile = world.getTileEntity(controllerPos);

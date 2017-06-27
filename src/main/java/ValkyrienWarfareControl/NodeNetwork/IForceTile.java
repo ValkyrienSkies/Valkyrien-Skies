@@ -40,6 +40,12 @@ public interface IForceTile {
     public void setThrust(double newMagnitude);
 
     /**
+     * Returns the thrust value of this ForceTile
+     * @return
+     */
+    public double getThrust();
+
+    /**
      * Matrix transformation stuff
      *
      * @return

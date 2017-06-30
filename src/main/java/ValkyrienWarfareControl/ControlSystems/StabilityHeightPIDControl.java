@@ -25,7 +25,7 @@ public class StabilityHeightPIDControl {
     public double angularConstant = 500000000D;
     public double linearConstant = 1000000D;
 
-    public double stabilityBias = .45D;
+//    public double stabilityBias = .45D;
 	private Vector normalVector = new Vector(0, 1, 0);
 
 	public StabilityHeightPIDControl(ThrustModulatorTileEntity parentTile) {
@@ -54,18 +54,12 @@ public class StabilityHeightPIDControl {
 
 		BlockPos shipRefrencePos = calculations.parent.refrenceBlockPos;
 
-//		ArrayList<Node> nodeList = new ArrayList(getNetworkedNodesList());
-//		Collections.shuffle(nodeList);
-
-//		stabilityBias = idealTotalThrust / totalPotentialThrust;
-
-
 		idealHeight = 35;
 
 		Vector totalAngularForce = new Vector();
 
 		for(Node node : getNetworkedNodesList()) {
-			if(node.parentTile instanceof TileEntityEtherCompressor) {
+			if(node.parentTile instanceof TileEntityEtherCompressor && !((TileEntityEtherCompressor) node.parentTile).updateParentShip()) {
 				TileEntityEtherCompressor forceTile = (TileEntityEtherCompressor) node.parentTile;
 
 				Vector tileForce = getForceForEngine(forceTile, forceTile.getPos(), calculations.invMass, linearMomentum, angularVelocity, rotationAndTranslationMatrix, posInWorld, calculations.centerOfMass, calculations.physTickSpeed);
@@ -74,17 +68,11 @@ public class StabilityHeightPIDControl {
 
 				Vector forcePos = forceTile.getPositionInLocalSpaceWithOrientation();
 
-
-				stabilityBias = 0.5D;//.6D;
-
-
 				double tileForceMagnitude = tileForce.length();
 
 				forceTile.setThrust(BigBastardMath.limitToRange(tileForceMagnitude, 0D, forceTile.getMaxThrust()));
 
 				totalAngularForce.add(forceTile.angularThrust);
-
-//				System.out.println(forceTile.getThrust());
 
 				Vector forceOutputWithRespectToTime = forceTile.getForceOutputOriented(calculations.physTickSpeed);
 
@@ -96,52 +84,7 @@ public class StabilityHeightPIDControl {
 			}
 		}
 
-		double totalAngularForceRatioToIdealThrust = totalAngularForce.length() / idealTotalThrust;
-
-		if(totalAngularForceRatioToIdealThrust > .9D) {
-			for(Node node : getNetworkedNodesList()) {
-				if(node.parentTile instanceof TileEntityEtherCompressor) {
-					TileEntityEtherCompressor forceTile = (TileEntityEtherCompressor) node.parentTile;
-
-					Vector angularToRemove = forceTile.linearThrust.getAddition(forceTile.angularThrust).getProduct(1D - (1D / totalAngularForceRatioToIdealThrust));
-
-//					forceTile.linearThrust
-
-					forceTile.angularThrust.subtract(angularToRemove);
-					forceTile.linearThrust.subtract(angularToRemove);
-
-					Vector forceOut = forceTile.linearThrust.getAddition(forceTile.angularThrust);
-
-					double tileForceMagnitude = forceOut.length();
-
-					forceTile.setThrust(BigBastardMath.limitToRange(tileForceMagnitude, 0D, forceTile.getMaxThrust()));
-				}
-			}
-		}
-
-		Vector linearVelocityFinal = new Vector(linearMomentum, calculations.invMass);
-
-		if(linearVelocityFinal.Y > maxYDelta)	{
-			double ratio = maxYDelta / Math.abs(linearVelocityFinal.Y);
-			for(Node node : getNetworkedNodesList()) {
-				if(node.parentTile instanceof TileEntityEtherCompressor) {
-					TileEntityEtherCompressor forceTile = (TileEntityEtherCompressor) node.parentTile;
-
-					forceTile.linearThrust.subtract(forceTile.angularThrust);
-
-					if(forceTile.linearThrust.Y < 0) {
-						forceTile.linearThrust.zero();
-					}
-
-//					forceTile.angularThrust.multiply(ratio);
-
-					double tileForceMagnitude = forceTile.getThrust() * ratio;
-					forceTile.setThrust(BigBastardMath.limitToRange(tileForceMagnitude, 0D, forceTile.getMaxThrust()));
-				}
-			}
-		}
 	}
-
 
 	public Vector getForceForEngine(TileEntityEtherCompressor engine, BlockPos enginePos, double invMass, Vector linearMomentum, Vector angularVelocity, double[] rotationAndTranslationMatrix, Vector shipPos, Vector centerOfMass, double secondsToApply) {
         Vector shipVel = new Vector(linearMomentum);
@@ -157,31 +100,14 @@ public class StabilityHeightPIDControl {
         engine.angularThrust.Y = Math.max(engine.angularThrust.Y, 0D);
         engine.linearThrust.Y = Math.max(engine.linearThrust.Y, 0D);
 
-        engine.angularThrust.Y = Math.min(engine.angularThrust.Y, engine.getMaxThrust() * stabilityBias);
-        engine.linearThrust.Y = Math.min(engine.linearThrust.Y, engine.getMaxThrust() * (1D - stabilityBias));
-
-        engine.linearThrust.Y -= engine.angularThrust.Y;
-        engine.linearThrust.Y = Math.max(engine.linearThrust.Y, 0D);
-
-        if (shipVel.Y > 25D) {
-            engine.linearThrust.Y = 0; //*= 10D/shipVel.Y;
-        }
-
-        if (shipVel.Y < -10D) {
-            engine.linearThrust.Y *= -20D / shipVel.Y;
-        }
+        engine.angularThrust.Y = Math.min(engine.angularThrust.Y, engine.getMaxThrust() * 0.0D);
+        engine.linearThrust.Y = Math.min(engine.linearThrust.Y, engine.getMaxThrust() * (1D - 0.0D));
 
         Vector aggregateForce = engine.linearThrust.getAddition(engine.angularThrust);
         aggregateForce.multiply(secondsToApply);
 
-        // System.out.println(aggregateForce);
-
         return aggregateForce;
-//		return new Vector();
     }
-
-
-
 
 	public double getEngineDistFromIdealAngular(BlockPos enginePos, double[] lToWRotation, Vector angularVelocity, Vector centerOfMass, double secondsToApply) {
 		BlockPos pos = parentTile.getPos();

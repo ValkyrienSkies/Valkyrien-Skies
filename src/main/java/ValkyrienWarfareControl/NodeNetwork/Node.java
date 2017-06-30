@@ -112,6 +112,10 @@ public class Node {
 //		}
     }
 
+    public PhysicsObject getPhysicsObject() {
+    	return parentPhysicsObject;
+    }
+
     public void updateBuildState() {
         if (!isFullyBuilt) {
             isFullyBuilt = attemptToBuildNodeSet();

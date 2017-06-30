@@ -18,7 +18,6 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
     private Vector normalVelocityUnoriented;
     //Tells if the tile is in Ship Space, if it isn't then it doesn't try to find a parent Ship object
     private boolean hasAlreadyCheckedForParent = false;
-    private PhysicsWrapperEntity parentShip;
 
     /**
      * Only used for the NBT creation, other <init> calls should go through the other methods
@@ -55,7 +54,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
         Vector outputForce = getForceOutputUnoriented(secondsToApply);
         if (isForceOutputOriented()) {
             if (updateParentShip()) {
-                RotationMatrices.applyTransform(parentShip.wrapping.coordTransform.lToWRotation, outputForce);
+                RotationMatrices.applyTransform(tileNode.getPhysicsObject().coordTransform.lToWRotation, outputForce);
             }
         }
         return outputForce;
@@ -79,8 +78,9 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
     @Override
     public Vector getPositionInLocalSpaceWithOrientation() {
         if (updateParentShip()) {
-//            return null;
+            return null;
         }
+        PhysicsWrapperEntity parentShip = tileNode.getPhysicsObject().wrapper;
         Vector engineCenter = new Vector(getPos().getX() + .5D, getPos().getY() + .5D, getPos().getZ() + .5D);
         RotationMatrices.applyTransform(parentShip.wrapping.coordTransform.lToWTransform, engineCenter);
         engineCenter.subtract(parentShip.posX, parentShip.posY, parentShip.posZ);
@@ -90,18 +90,18 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
     @Override
     public Vector getVelocityAtEngineCenter() {
         if (updateParentShip()) {
-//            return null;
+            return null;
         }
-        PhysicsCalculations calculations = parentShip.wrapping.physicsProcessor;
+        PhysicsCalculations calculations = tileNode.getPhysicsObject().physicsProcessor;
         return calculations.getVelocityAtPoint(getPositionInLocalSpaceWithOrientation());
     }
 
     @Override
     public Vector getLinearVelocityAtEngineCenter() {
         if (updateParentShip()) {
-//            return null;
+            return null;
         }
-        PhysicsCalculations calculations = parentShip.wrapping.physicsProcessor;
+        PhysicsCalculations calculations = tileNode.getPhysicsObject().physicsProcessor;
         return calculations.linearMomentum;
     }
 
@@ -110,7 +110,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
         if (updateParentShip()) {
             return null;
         }
-        PhysicsCalculations calculations = parentShip.wrapping.physicsProcessor;
+        PhysicsCalculations calculations = tileNode.getPhysicsObject().physicsProcessor;
         return calculations.angularVelocity.cross(getPositionInLocalSpaceWithOrientation());
     }
 
@@ -132,13 +132,13 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
     }
 
     /**
-     * Returns true if a parent Ship exists, and false if otherwise
+     * Returns false if a parent Ship exists, and true if otherwise
      *
      * @return
      */
-    private boolean updateParentShip() {
+    public boolean updateParentShip() {
         if (hasAlreadyCheckedForParent) {
-            return parentShip != null;
+            return tileNode.getPhysicsObject() == null;
         }
         BlockPos pos = this.getPos();
         World world = this.getWorld();
@@ -146,10 +146,10 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
         //Already checked
         hasAlreadyCheckedForParent = true;
         if (wrapper != null) {
-            parentShip = wrapper;
-            return true;
-        } else {
+        	tileNode.updateParentEntity(wrapper.wrapping);
             return false;
+        } else {
+            return true;
         }
     }
 

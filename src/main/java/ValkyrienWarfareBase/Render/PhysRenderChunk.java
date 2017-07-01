@@ -211,7 +211,7 @@ public class PhysRenderChunk {
                     for (int y = yMin; y <= yMax; y++) {
                         pos.setPos(x, y, z);
                         iblockstate = chunkToRender.getBlockState(pos);
-                        if (iblockstate.getBlock().canRenderInLayer(iblockstate, layerToUpdate)) {
+                        if (iblockstate != null && layerToUpdate != null && chunkToRender.world != null && worldrenderer != null && iblockstate.getBlock().canRenderInLayer(iblockstate, layerToUpdate)) {
                             Minecraft.getMinecraft().getBlockRendererDispatcher().renderBlock(iblockstate, pos, chunkToRender.world, worldrenderer);
                         }
                     }

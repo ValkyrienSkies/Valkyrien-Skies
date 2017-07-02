@@ -85,8 +85,9 @@ public class StabilityHeightPIDControl {
 
 		Vector currentNormalError = currentNormal.getSubtraction(idealNormal);
 
-		idealHeight = 20D;
+		idealHeight = 15D;
 
+		maxYDelta = 20D;
 
 		for(Node node : getNetworkedNodesList()) {
 			if(node.parentTile instanceof TileEntityEtherCompressor && !((TileEntityEtherCompressor) node.parentTile).updateParentShip()) {
@@ -118,6 +119,16 @@ public class StabilityHeightPIDControl {
 
 				if(Math.abs(futureCurrentErrorY) < Math.abs(currentErrorY) && Math.abs(futureEngineErrorAngularY) < Math.abs(currentEngineErrorAngularY)) {
 					doesForceMinimizeError = true;
+					if(Math.abs(linearMomentum.Y * calculations.invMass) > maxYDelta) {
+						if(Math.abs((potentialMaxForce.Y + linearMomentum.Y) * calculations.invMass) > Math.abs(linearMomentum.Y * calculations.invMass)) {
+							doesForceMinimizeError = false;
+						}
+					}else{
+						if(Math.abs((potentialMaxForce.Y + linearMomentum.Y) * calculations.invMass) > maxYDelta) {
+							doesForceMinimizeError = false;
+						}
+					}
+
 				}
 
 				if(doesForceMinimizeError) {

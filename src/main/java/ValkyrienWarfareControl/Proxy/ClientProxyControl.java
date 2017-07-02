@@ -5,6 +5,8 @@ import ValkyrienWarfareControl.Client.Renderer.BasicNodeTileEntityRenderer;
 import ValkyrienWarfareControl.Client.Renderer.PropellerEngineTileEntityRenderer;
 import ValkyrienWarfareControl.Client.Renderer.ShipHelmTileEntityRenderer;
 import ValkyrienWarfareControl.Client.Renderer.ShipTelegraphTileEntityRenderer;
+import ValkyrienWarfareControl.ControlSystems.ControlGUI.ThrustModulatorGui;
+import ValkyrienWarfareControl.TileEntity.ThrustModulatorTileEntity;
 import ValkyrienWarfareControl.TileEntity.ThrustRelayTileEntity;
 import ValkyrienWarfareControl.TileEntity.TileEntityPropellerEngine;
 import ValkyrienWarfareControl.TileEntity.TileEntityShipHelm;
@@ -95,6 +97,13 @@ public class ClientProxyControl extends CommonProxyControl {
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityShipHelm.class, new ShipHelmTileEntityRenderer(TileEntityShipHelm.class));
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityShipTelegraph.class, new ShipTelegraphTileEntityRenderer(TileEntityShipTelegraph.class));
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPropellerEngine.class, new PropellerEngineTileEntityRenderer());
+	}
+
+	public static void checkForTextFieldUpdate(ThrustModulatorTileEntity entity) {
+    	if(Minecraft.getMinecraft().currentScreen instanceof ThrustModulatorGui) {
+    		ThrustModulatorGui gui = (ThrustModulatorGui) Minecraft.getMinecraft().currentScreen;
+    		gui.updateTextFields();
+    	}
 	}
 
 }

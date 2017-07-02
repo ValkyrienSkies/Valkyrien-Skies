@@ -2,8 +2,6 @@ package ValkyrienWarfareControl.ControlSystems;
 
 import java.util.HashSet;
 
-import javax.vecmath.Vector2d;
-
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.API.Block.EtherCompressor.TileEntityEtherCompressor;
@@ -18,8 +16,6 @@ import net.minecraft.util.math.BlockPos;
 public class StabilityHeightPIDControl {
 
 	public final ThrustModulatorTileEntity parentTile;
-	private double idealHeight = 25D;
-
 
 	public double linearVelocityBias = 1D;
 	public double angularVelocityBias = 50D;
@@ -35,15 +31,11 @@ public class StabilityHeightPIDControl {
 	}
 
 	public void solveThrustValues(PhysicsCalculations calculations) {
-		//TODO: Implement magic algorithm here :(
-		double idealHeight = 25D;
 		double physTickSpeed = calculations.physTickSpeed;
 		double totalThrust = 0;
 
 		double totalPotentialThrust = getMaxThrustForAllThrusters();
 		double currentThrust = getTotalThrustForAllThrusters();
-
-		double maxYDelta = 5D;
 
 		double[] rotationMatrix = calculations.parent.coordTransform.lToWRotation;
 		double[] rotationAndTranslationMatrix = calculations.parent.coordTransform.lToWTransform;
@@ -59,8 +51,13 @@ public class StabilityHeightPIDControl {
 
 
 
+		double maxYDelta = parentTile.maximumYVelocity;
+		double idealHeight = parentTile.idealYHeight;
 
-		Vector linearMomentumError = getIdealMomentumErrorForSystem(calculations, posInWorld, maxYDelta);
+
+
+
+		Vector linearMomentumError = getIdealMomentumErrorForSystem(calculations, posInWorld, maxYDelta, idealHeight);
 
 		double engineThrustToChange = linearMomentumError.Y;
 
@@ -85,9 +82,6 @@ public class StabilityHeightPIDControl {
 
 		Vector currentNormalError = currentNormal.getSubtraction(idealNormal);
 
-		idealHeight = 15D;
-
-		maxYDelta = 20D;
 
 		for(Node node : getNetworkedNodesList()) {
 			if(node.parentTile instanceof TileEntityEtherCompressor && !((TileEntityEtherCompressor) node.parentTile).updateParentShip()) {
@@ -178,8 +172,7 @@ public class StabilityHeightPIDControl {
 
 	}
 
-
-	public Vector getIdealMomentumErrorForSystem(PhysicsCalculations calculations, Vector posInWorld, double maxYDelta) {
+	public Vector getIdealMomentumErrorForSystem(PhysicsCalculations calculations, Vector posInWorld, double maxYDelta, double idealHeight) {
 		double yErrorDistance = idealHeight - posInWorld.Y;
 		double idealYLinearMomentumMagnitude = BigBastardMath.limitToRange(yErrorDistance, -maxYDelta, maxYDelta);
 		Vector idealLinearMomentum = new Vector(0, 1, 0);
@@ -190,15 +183,14 @@ public class StabilityHeightPIDControl {
 		return linearMomentumError;
 	}
 
-
-	public Vector getForceForEngine(TileEntityEtherCompressor engine, BlockPos enginePos, double invMass, Vector linearMomentum, Vector angularVelocity, double[] rotationAndTranslationMatrix, Vector shipPos, Vector centerOfMass, double secondsToApply) {
+	public Vector getForceForEngine(TileEntityEtherCompressor engine, BlockPos enginePos, double invMass, Vector linearMomentum, Vector angularVelocity, double[] rotationAndTranslationMatrix, Vector shipPos, Vector centerOfMass, double secondsToApply, double idealHeight) {
 		double stabilityVal = .145D;
 
 		Vector shipVel = new Vector(linearMomentum);
 
         shipVel.multiply(invMass);
 
-        double linearDist = -getControllerDistFromIdealY(rotationAndTranslationMatrix, invMass, shipPos.Y, linearMomentum);
+        double linearDist = -getControllerDistFromIdealY(rotationAndTranslationMatrix, invMass, shipPos.Y, linearMomentum, idealHeight);
         double angularDist = -getEngineDistFromIdealAngular(enginePos, rotationAndTranslationMatrix, angularVelocity, centerOfMass, secondsToApply);
 
         engine.angularThrust.Y -= (angularConstant * secondsToApply) * angularDist;
@@ -240,7 +232,7 @@ public class StabilityHeightPIDControl {
 		return idealYDif - (inWorldYDif + angularVelocityAtPoint.Y * 50D);
 	}
 
-	public double getControllerDistFromIdealY(double[] lToWTransform, double invMass, double posY, Vector linearMomentum) {
+	public double getControllerDistFromIdealY(double[] lToWTransform, double invMass, double posY, Vector linearMomentum, double idealHeight) {
 		BlockPos pos = parentTile.getPos();
 		Vector controllerPos = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
 		controllerPos.transform(lToWTransform);

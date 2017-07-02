@@ -35,6 +35,8 @@ import ValkyrienWarfareControl.Network.MessageStartPiloting;
 import ValkyrienWarfareControl.Network.MessageStartPilotingHandler;
 import ValkyrienWarfareControl.Network.MessageStopPiloting;
 import ValkyrienWarfareControl.Network.MessageStopPilotingHandler;
+import ValkyrienWarfareControl.Network.ThrustModulatorGuiInputMessage;
+import ValkyrienWarfareControl.Network.ThrustModulatorGuiInputMessageHandler;
 import ValkyrienWarfareControl.Piloting.PilotControlsMessage;
 import ValkyrienWarfareControl.Piloting.PilotControlsMessageHandler;
 import ValkyrienWarfareControl.Proxy.CommonProxyControl;
@@ -271,6 +273,7 @@ public class ValkyrienWarfareControlMod {
         controlNetwork.registerMessage(MessageStartPilotingHandler.class, MessageStartPiloting.class, 3, Side.CLIENT);
         controlNetwork.registerMessage(MessageStopPilotingHandler.class, MessageStopPiloting.class, 4, Side.CLIENT);
         controlNetwork.registerMessage(MessagePlayerStoppedPilotingHandler.class, MessagePlayerStoppedPiloting.class, 5, Side.SERVER);
+        controlNetwork.registerMessage(ThrustModulatorGuiInputMessageHandler.class, ThrustModulatorGuiInputMessage.class, 6, Side.SERVER);
     }
 
     public void registerCapibilities(FMLStateEvent event) {

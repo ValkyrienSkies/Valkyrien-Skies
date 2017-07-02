@@ -1,5 +1,7 @@
 package ValkyrienWarfareControl.GUI;
 
+import ValkyrienWarfareControl.ControlSystems.ControlGUI.ThrustModulatorGui;
+import ValkyrienWarfareControl.TileEntity.ThrustModulatorTileEntity;
 import ValkyrienWarfareControl.TileEntity.TileEntityHoverController;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -28,6 +30,9 @@ public class ControlGUIHandler implements IGuiHandler {
     public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
         if (ID == ControlGUIEnum.HoverCraftController.ordinal()) {
             return new HovercraftControllerGUI(player, (TileEntityHoverController) world.getTileEntity(new BlockPos(x, y, z)));
+        }
+        if(ID == ControlGUIEnum.ThrustModulatorGUI.ordinal()) {
+        	return new ThrustModulatorGui(player, (ThrustModulatorTileEntity) world.getTileEntity(new BlockPos(x, y, z)));
         }
         return null;
     }

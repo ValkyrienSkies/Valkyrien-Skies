@@ -1,5 +1,6 @@
 package ValkyrienWarfareControl.GUI;
 
 public enum ControlGUIEnum {
-    HoverCraftController
+    HoverCraftController,
+    ThrustModulatorGUI
 }

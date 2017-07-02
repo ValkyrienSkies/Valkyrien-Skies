@@ -61,7 +61,11 @@ public class Vector {
         this(toRead.readDouble(), toRead.readDouble(), toRead.readDouble());
     }
 
-    public static Vector[] generateAxisAlignedNorms() {
+    public Vector(Vector theNormal, double[] matrixTransform) {
+		this(theNormal.X, theNormal.Y, theNormal.Z, matrixTransform);
+	}
+
+	public static Vector[] generateAxisAlignedNorms() {
         Vector[] norms = new Vector[]{new Vector(1.0D, 0.0D, 0.0D), new Vector(0.0D, 1.0D, 0.0D), new Vector(0.0D, 0.0D, 1.0D)};
         return norms;
     }

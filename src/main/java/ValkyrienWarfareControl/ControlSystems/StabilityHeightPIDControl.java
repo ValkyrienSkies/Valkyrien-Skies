@@ -2,6 +2,8 @@ package ValkyrienWarfareControl.ControlSystems;
 
 import java.util.HashSet;
 
+import javax.vecmath.Vector2d;
+
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.API.Block.EtherCompressor.TileEntityEtherCompressor;
@@ -34,11 +36,12 @@ public class StabilityHeightPIDControl {
 
 	public void solveThrustValues(PhysicsCalculations calculations) {
 		//TODO: Implement magic algorithm here :(
-//		double idealYPos = 25D;
+		double idealHeight = 25D;
 		double physTickSpeed = calculations.physTickSpeed;
 		double totalThrust = 0;
-		double idealTotalThrust = calculations.mass * 9.8D;
+
 		double totalPotentialThrust = getMaxThrustForAllThrusters();
+		double currentThrust = getTotalThrustForAllThrusters();
 
 		double maxYDelta = 5D;
 
@@ -54,11 +57,90 @@ public class StabilityHeightPIDControl {
 
 		BlockPos shipRefrencePos = calculations.parent.refrenceBlockPos;
 
-		idealHeight = 35;
 
-		Vector totalAngularForce = new Vector();
+
+
+		Vector linearMomentumError = getIdealMomentumErrorForSystem(calculations, posInWorld, maxYDelta);
+
+		double engineThrustToChange = linearMomentumError.Y;
+
+		double newTotalThrust = currentThrust + engineThrustToChange;
+
+		if(!(newTotalThrust > 0 && newTotalThrust < totalPotentialThrust)) {
+//			System.out.println("Current result impossible");
+		}
+
+
+		double linearThama = 4.5D;
+		double angularThama = 1343.5D;
+
+
+
+		Vector theNormal = new Vector(0, 1, 0);
+
+
+
+		Vector idealNormal = new Vector(theNormal);
+		Vector currentNormal = new Vector(theNormal, calculations.parent.coordTransform.lToWRotation);
+
+		Vector currentNormalError = currentNormal.getSubtraction(idealNormal);
+
+		idealHeight = 20D;
+
 
 		for(Node node : getNetworkedNodesList()) {
+			if(node.parentTile instanceof TileEntityEtherCompressor && !((TileEntityEtherCompressor) node.parentTile).updateParentShip()) {
+				TileEntityEtherCompressor forceTile = (TileEntityEtherCompressor) node.parentTile;
+
+				Vector angularVelocityAtNormalPosition = angularVelocity.cross(currentNormalError);
+
+
+
+				//Assume zero change
+				double currentErrorY = (posInWorld.Y - idealHeight) + linearThama * (linearMomentum.Y * calculations.invMass);
+
+				double currentEngineErrorAngularY = getEngineDistFromIdealAngular(forceTile.getPos(), rotationAndTranslationMatrix, angularVelocity, calculations.centerOfMass, calculations.physTickSpeed);
+
+
+
+				Vector potentialMaxForce = new Vector(0, forceTile.getMaxThrust(), 0);
+				potentialMaxForce.multiply(calculations.invMass);
+				potentialMaxForce.multiply(calculations.physTickSpeed);
+				Vector potentialMaxThrust = forceTile.getPositionInLocalSpaceWithOrientation().cross(potentialMaxForce);
+				RotationMatrices.applyTransform3by3(invMOIMatrix, potentialMaxThrust);
+				potentialMaxThrust.multiply(calculations.physTickSpeed);
+
+				double futureCurrentErrorY = currentErrorY + linearThama * potentialMaxForce.Y;
+				double futureEngineErrorAngularY = getEngineDistFromIdealAngular(forceTile.getPos(), rotationAndTranslationMatrix, angularVelocity.getAddition(potentialMaxThrust), calculations.centerOfMass, calculations.physTickSpeed);
+
+
+				boolean doesForceMinimizeError = false;
+
+				if(Math.abs(futureCurrentErrorY) < Math.abs(currentErrorY) && Math.abs(futureEngineErrorAngularY) < Math.abs(currentEngineErrorAngularY)) {
+					doesForceMinimizeError = true;
+				}
+
+				if(doesForceMinimizeError) {
+					forceTile.setThrust(forceTile.getMaxThrust());
+					if(Math.abs(currentErrorY) < 1D) {
+						forceTile.setThrust(forceTile.getMaxThrust() * Math.pow(Math.abs(currentErrorY), 3D));
+					}
+				}else{
+					forceTile.setThrust(0);
+				}
+
+				Vector forceOutputWithRespectToTime = forceTile.getForceOutputOriented(calculations.physTickSpeed);
+				linearMomentum.add(forceOutputWithRespectToTime);
+				Vector torque = forceTile.getPositionInLocalSpaceWithOrientation().cross(forceOutputWithRespectToTime);
+				RotationMatrices.applyTransform3by3(invMOIMatrix, torque);
+				angularVelocity.add(torque);
+			}
+		}
+
+
+
+
+		/*for(Node node : getNetworkedNodesList()) {
 			if(node.parentTile instanceof TileEntityEtherCompressor && !((TileEntityEtherCompressor) node.parentTile).updateParentShip()) {
 				TileEntityEtherCompressor forceTile = (TileEntityEtherCompressor) node.parentTile;
 
@@ -72,8 +154,6 @@ public class StabilityHeightPIDControl {
 
 				forceTile.setThrust(BigBastardMath.limitToRange(tileForceMagnitude, 0D, forceTile.getMaxThrust()));
 
-				totalAngularForce.add(forceTile.angularThrust);
-
 				Vector forceOutputWithRespectToTime = forceTile.getForceOutputOriented(calculations.physTickSpeed);
 
 				linearMomentum.add(forceOutputWithRespectToTime);
@@ -82,12 +162,28 @@ public class StabilityHeightPIDControl {
 				RotationMatrices.applyTransform3by3(invMOIMatrix, torque);
 				angularVelocity.add(torque);
 			}
-		}
+		}*/
+
 
 	}
 
+
+	public Vector getIdealMomentumErrorForSystem(PhysicsCalculations calculations, Vector posInWorld, double maxYDelta) {
+		double yErrorDistance = idealHeight - posInWorld.Y;
+		double idealYLinearMomentumMagnitude = BigBastardMath.limitToRange(yErrorDistance, -maxYDelta, maxYDelta);
+		Vector idealLinearMomentum = new Vector(0, 1, 0);
+		idealLinearMomentum.multiply(idealYLinearMomentumMagnitude * calculations.mass);
+
+		Vector linearMomentumError = calculations.linearMomentum.getSubtraction(idealLinearMomentum);
+
+		return linearMomentumError;
+	}
+
+
 	public Vector getForceForEngine(TileEntityEtherCompressor engine, BlockPos enginePos, double invMass, Vector linearMomentum, Vector angularVelocity, double[] rotationAndTranslationMatrix, Vector shipPos, Vector centerOfMass, double secondsToApply) {
-        Vector shipVel = new Vector(linearMomentum);
+		double stabilityVal = .145D;
+
+		Vector shipVel = new Vector(linearMomentum);
 
         shipVel.multiply(invMass);
 
@@ -100,8 +196,8 @@ public class StabilityHeightPIDControl {
         engine.angularThrust.Y = Math.max(engine.angularThrust.Y, 0D);
         engine.linearThrust.Y = Math.max(engine.linearThrust.Y, 0D);
 
-        engine.angularThrust.Y = Math.min(engine.angularThrust.Y, engine.getMaxThrust() * 0.0D);
-        engine.linearThrust.Y = Math.min(engine.linearThrust.Y, engine.getMaxThrust() * (1D - 0.0D));
+        engine.angularThrust.Y = Math.min(engine.angularThrust.Y, engine.getMaxThrust() * stabilityVal);
+        engine.linearThrust.Y = Math.min(engine.linearThrust.Y, engine.getMaxThrust() * (1D - stabilityVal));
 
         Vector aggregateForce = engine.linearThrust.getAddition(engine.angularThrust);
         aggregateForce.multiply(secondsToApply);
@@ -138,6 +234,18 @@ public class StabilityHeightPIDControl {
 		Vector controllerPos = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
 		controllerPos.transform(lToWTransform);
 		return idealHeight - (posY + (linearMomentum.Y * invMass * linearVelocityBias));
+	}
+
+	public double getTotalThrustForAllThrusters() {
+		double totalThrust = 0D;
+		for(Node otherNode : getNetworkedNodesList()) {
+			TileEntity nodeTile = otherNode.parentTile;
+			if(nodeTile instanceof TileEntityNormalEtherCompressor) {
+				TileEntityNormalEtherCompressor ether = (TileEntityNormalEtherCompressor) nodeTile;
+				totalThrust += ether.getThrust();
+			}
+		}
+		return totalThrust;
 	}
 
 	public double getMaxThrustForAllThrusters() {

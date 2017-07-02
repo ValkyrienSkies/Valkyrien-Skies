@@ -458,6 +458,8 @@ public class PhysicsCalculations {
 		if (wrapperEnt.posY < ValkyrienWarfareMod.shipLowerLimit) {
 			wrapperEnt.posY = ValkyrienWarfareMod.shipLowerLimit;
 		}
+
+//		wrapperEnt.posY = 50D;
 	}
 
 	public Vector getVelocityAtPoint(Vector inBodyWO) {

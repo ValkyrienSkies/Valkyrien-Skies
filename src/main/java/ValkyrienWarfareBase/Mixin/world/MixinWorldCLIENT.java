@@ -1,35 +1,37 @@
 package ValkyrienWarfareBase.Mixin.world;
 
-import java.util.List;
-
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import net.minecraft.client.Minecraft;
-import net.minecraft.profiler.Profiler;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldProvider;
-import net.minecraft.world.storage.ISaveHandler;
-import net.minecraft.world.storage.WorldInfo;
+import net.minecraft.world.chunk.Chunk;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.List;
 
 @Mixin(World.class)
 public abstract class MixinWorldCLIENT {
 
-	@Shadow
+    @Shadow
     public int getLightFromNeighborsFor(EnumSkyBlock type, BlockPos pos) {
         return 0;
+    }
+
+    @Shadow
+    public Chunk getChunkFromBlockCoords(BlockPos pos) {
+        return null;
     }
 
     @Inject(method = "getCombinedLight(Lnet/minecraft/util/math/BlockPos;I)I", at = @At("HEAD"), cancellable = true)
@@ -86,41 +88,30 @@ public abstract class MixinWorldCLIENT {
         }
     }
 
-    public BlockPos getPrecipitationHeightClient(World world, BlockPos posToCheck) {
-        BlockPos pos = world.getPrecipitationHeight(posToCheck);
-        // Servers shouldn't bother running this code
-
-        Vector traceStart = new Vector(pos.getX() + .5D, Minecraft.getMinecraft().player.posY + 50D, pos.getZ() + .5D);
-        Vector traceEnd = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
-
-        RayTraceResult result = rayTraceBlocks(traceStart.toVec3d(), traceEnd.toVec3d(), true, true, false);
-
-        if (result != null && result.typeOfHit != RayTraceResult.Type.MISS && result.getBlockPos() != null) {
-
-            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, result.getBlockPos());
-            if (wrapper != null) {
-//				System.out.println("test");
-                Vector blockPosVector = new Vector(result.getBlockPos().getX() + .5D, result.getBlockPos().getY() + .5D, result.getBlockPos().getZ() + .5D);
-                wrapper.wrapping.coordTransform.fromLocalToGlobal(blockPosVector);
-                BlockPos toReturn = new BlockPos(pos.getX(), blockPosVector.Y + .5D, pos.getZ());
-                return toReturn;
-            }
-        }
-
-        return pos;
-    }
-
     @Shadow
     public abstract RayTraceResult rayTraceBlocks(Vec3d start, Vec3d end, boolean bool1, boolean bool2, boolean bool3);
 
-    @Inject(method = "getPrecipitationHeight(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/util/math/BlockPos;", at = @At("HEAD"), cancellable = true)
-    public void preGetPrecipitationHeight(BlockPos pos, CallbackInfoReturnable callbackInfo) {
+    @Overwrite
+    public BlockPos getPrecipitationHeight(BlockPos input) {
+        BlockPos pos = this.getChunkFromBlockCoords(input).getPrecipitationHeight(input);
         if (ValkyrienWarfareMod.accurateRain) {
-            BlockPos accuratePos = getPrecipitationHeightClient(World.class.cast(this), pos);
-            callbackInfo.setReturnValue(accuratePos);
-            callbackInfo.cancel(); //return the injected value, preventing vanilla code from running
-        }
-        //if vw didn't change the pos, run the vanilla code
-    }
+            Vector traceStart = new Vector(pos.getX() + .5D, Minecraft.getMinecraft().player.posY + 50D, pos.getZ() + .5D);
+            Vector traceEnd = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
 
+            RayTraceResult result = rayTraceBlocks(traceStart.toVec3d(), traceEnd.toVec3d(), true, true, false);
+
+            if (result != null && result.typeOfHit != RayTraceResult.Type.MISS && result.getBlockPos() != null) {
+
+                PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(World.class.cast(this), result.getBlockPos());
+                if (wrapper != null) {
+//				System.out.println("test");
+                    Vector blockPosVector = new Vector(result.getBlockPos().getX() + .5D, result.getBlockPos().getY() + .5D, result.getBlockPos().getZ() + .5D);
+                    wrapper.wrapping.coordTransform.fromLocalToGlobal(blockPosVector);
+                    BlockPos toReturn = new BlockPos(pos.getX(), blockPosVector.Y + .5D, pos.getZ());
+                    return toReturn;
+                }
+            }
+        }
+        return pos;
+    }
 }

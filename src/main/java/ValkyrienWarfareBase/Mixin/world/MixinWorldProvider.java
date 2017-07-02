@@ -7,10 +7,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
 @Mixin(WorldProvider.class)
-public class MixinWorldProvider {
+public abstract class MixinWorldProvider {
     @Overwrite
     public WorldBorder createWorldBorder() {
-        //TODO: add that class
         WorldBorderFixWrapper wrapper = new WorldBorderFixWrapper(new WorldBorder());
         return wrapper;
     }

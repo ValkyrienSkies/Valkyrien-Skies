@@ -34,6 +34,7 @@ public class BlockThrustModulator extends Block implements ITileEntityProvider {
 	    	}else {
 	    		((EntityPlayerMP) playerIn).connection.sendPacket(modulatorTile.getUpdatePacket());
 	    	}
+	    	return true;
     	}
     	return false;
     }

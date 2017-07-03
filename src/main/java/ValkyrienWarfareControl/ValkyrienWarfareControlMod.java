@@ -184,7 +184,7 @@ public class ValkyrienWarfareControlMod {
 
         passengerChair = new BlockShipPassengerChair(Material.IRON).setHardness(4f).setUnlocalizedName("shippassengerchair").setRegistryName(MODID, "shippassengerchair").setCreativeTab(ValkyrienWarfareMod.vwTab);
         shipHelm = new BlockShipHelm(Material.WOOD).setHardness(4f).setUnlocalizedName("shiphelm").setRegistryName(MODID, "shiphelm").setCreativeTab(ValkyrienWarfareMod.vwTab);
-        shipWheel = new BlockShipWheel(Material.WOOD).setHardness(5f).setUnlocalizedName("shiphelmwheel").setRegistryName(MODID, "shiphelmwheel").setCreativeTab(ValkyrienWarfareMod.vwTab);
+        shipWheel = new BlockShipWheel(Material.WOOD).setHardness(5f).setUnlocalizedName("shiphelmwheel").setRegistryName(MODID, "shiphelmwheel");
         shipTelegraph = new BlockShipTelegraph(Material.WOOD).setHardness(5f).setUnlocalizedName("shiptelegraph").setRegistryName(MODID, "shiptelegraph").setCreativeTab(ValkyrienWarfareMod.vwTab);
 
         thrustRelay = new BlockThrustRelay(Material.IRON).setHardness(5f).setUnlocalizedName("thrustrelay").setRegistryName(MODID, "thrustrelay").setCreativeTab(ValkyrienWarfareMod.vwTab);

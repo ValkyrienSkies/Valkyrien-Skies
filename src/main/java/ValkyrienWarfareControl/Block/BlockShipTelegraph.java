@@ -32,10 +32,9 @@ public class BlockShipTelegraph extends Block implements ITileEntityProvider {
             TileEntity tileIn = worldIn.getTileEntity(pos);
             if (tileIn instanceof TileEntityShipTelegraph) {
                 ((TileEntityShipTelegraph) tileIn).setPilotEntity(playerIn);
-                return true;
             }
         }
-        return false;
+        return true;
     }
 
     @Override

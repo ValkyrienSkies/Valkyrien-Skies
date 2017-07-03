@@ -446,11 +446,8 @@ public abstract class MixinWorld {
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(World.class.cast(this), pos);
         if (wrapper != null) {
             BlockPos realPos = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, pos);
-            pos.x = realPos.x;
-            pos.y = realPos.y;
-            pos.z = realPos.z;
+            callbackInfoReturnable.setReturnValue(thisClassAsWorld.getBiome(realPos));
             return;
-            //change the blockpos pos and then run vanilla
         }
         //do nothing and run vanilla
     }

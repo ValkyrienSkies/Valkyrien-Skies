@@ -2,7 +2,7 @@ package ValkyrienWarfareControl.TileEntity;
 
 import ValkyrienWarfareBase.Physics.PhysicsCalculations;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
-import ValkyrienWarfareControl.ControlSystems.StabilityHeightPIDControl;
+import ValkyrienWarfareControl.ControlSystems.ShipPulseImpulseControlSystem;
 import ValkyrienWarfareControl.Network.ThrustModulatorGuiInputMessage;
 import ValkyrienWarfareControl.NodeNetwork.Node;
 import ValkyrienWarfareControl.Proxy.ClientProxyControl;
@@ -11,29 +11,19 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 public class ThrustModulatorTileEntity extends ImplPhysicsProcessorNodeTileEntity {
 
-	public StabilityHeightPIDControl controlSystem;
+	public ShipPulseImpulseControlSystem controlSystem;
 	public double idealYHeight = 25D;
 	public double maximumYVelocity = 10D;
 
     public ThrustModulatorTileEntity() {
         super();
-        controlSystem = new StabilityHeightPIDControl(this);
+        controlSystem = new ShipPulseImpulseControlSystem(this);
     }
 
     @Override
     public void onPhysicsTick(PhysicsObject object, PhysicsCalculations calculations, double secondsToSimulate) {
     	controlSystem.solveThrustValues(calculations);
 //    	System.out.println("test");
-    }
-
-    @Override
-    public void update() {
-        super.update();
-//        Node myNode = this.getNode();
-//        NodeNetwork nodeNetwork = myNode.getNodeNetwork();
-//        idealYHeight = 25D;
-//        maximumYVelocity = 10D;
-
     }
 
     @Override
@@ -58,8 +48,8 @@ public class ThrustModulatorTileEntity extends ImplPhysicsProcessorNodeTileEntit
     }
 
 	public void handleGUIInput(ThrustModulatorGuiInputMessage message, MessageContext ctx) {
-		idealYHeight = message.idealYHeight;
-		maximumYVelocity = message.maximumYVelocity;
+		idealYHeight = Math.min(message.idealYHeight, 5000D);
+		maximumYVelocity = Math.max(Math.min(message.maximumYVelocity, 100D), 0D);
     	Node thisTileEntitiesNode = this.getNode();
     	thisTileEntitiesNode.sendUpdatesToNearby();
 		this.markDirty();

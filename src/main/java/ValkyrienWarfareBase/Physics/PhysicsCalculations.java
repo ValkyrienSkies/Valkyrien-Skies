@@ -21,7 +21,6 @@ import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareControl.Balloon.BalloonProcessor;
 import ValkyrienWarfareControl.NodeNetwork.IPhysicsProcessorNode;
 import ValkyrienWarfareControl.NodeNetwork.Node;
-import ValkyrienWarfareControl.NodeNetwork.NodeNetwork;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;

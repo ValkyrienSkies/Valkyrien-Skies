@@ -13,7 +13,7 @@ import ValkyrienWarfareControl.TileEntity.TileEntityNormalEtherCompressor;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 
-public class StabilityHeightPIDControl {
+public class ShipPulseImpulseControlSystem {
 
 	public final ThrustModulatorTileEntity parentTile;
 
@@ -26,7 +26,7 @@ public class StabilityHeightPIDControl {
 //    public double stabilityBias = .45D;
 	private Vector normalVector = new Vector(0, 1, 0);
 
-	public StabilityHeightPIDControl(ThrustModulatorTileEntity parentTile) {
+	public ShipPulseImpulseControlSystem(ThrustModulatorTileEntity parentTile) {
 		this.parentTile = parentTile;
 	}
 
@@ -89,7 +89,7 @@ public class StabilityHeightPIDControl {
 
 				Vector angularVelocityAtNormalPosition = angularVelocity.cross(currentNormalError);
 
-
+				forceTile.updateTicksSinceLastRecievedSignal();
 
 				//Assume zero change
 				double currentErrorY = (posInWorld.Y - idealHeight) + linearThama * (linearMomentum.Y * calculations.invMass);

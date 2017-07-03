@@ -12,10 +12,13 @@ public class PhysCollisionCallable implements Callable<Void> {
 
     @Override
     public Void call() throws Exception {
-        toRun.physicsProcessor.processWorldCollision();
-        ;
-        toRun.physicsProcessor.rawPhysTickPostCol();
-        return null;
+    	if(!toRun.wrapper.firstUpdate) {
+    		toRun.physicsProcessor.processWorldCollision();
+        	toRun.physicsProcessor.rawPhysTickPostCol();
+    	}else{
+    		toRun.coordTransform.updateAllTransforms();
+    	}
+    	return null;
     }
 
 }

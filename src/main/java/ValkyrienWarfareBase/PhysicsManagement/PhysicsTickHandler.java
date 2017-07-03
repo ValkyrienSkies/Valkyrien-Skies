@@ -35,8 +35,10 @@ public class PhysicsTickHandler {
         for (int pass = 0; pass < iters; pass++) {
             // Run PRE-Col
             for (PhysicsWrapperEntity wrapper : physicsEntities) {
-                wrapper.wrapping.physicsProcessor.gravity = newGravity;
-                wrapper.wrapping.physicsProcessor.rawPhysTickPreCol(newPhysSpeed, iters);
+            	if(!wrapper.firstUpdate){
+            		wrapper.wrapping.physicsProcessor.gravity = newGravity;
+                	wrapper.wrapping.physicsProcessor.rawPhysTickPreCol(newPhysSpeed, iters);
+            	}
             }
 
             if (ValkyrienWarfareMod.doShipCollision) {
@@ -44,9 +46,11 @@ public class PhysicsTickHandler {
                     PhysicsWrapperEntity first = physicsEntities.get(i);
                     for (int j = i + 1; j < physicsEntities.size(); j++) {
                         PhysicsWrapperEntity second = physicsEntities.get(j);
-                        if (first.wrapping.collisionBB.intersectsWith(second.wrapping.collisionBB)) {
-                            first.wrapping.physicsProcessor.shipCollision.doShipCollision(second.wrapping);
-                        }
+                    	if(!first.firstUpdate && !second.firstUpdate) {
+	                        if (first.wrapping.collisionBB.intersectsWith(second.wrapping.collisionBB)) {
+	                            first.wrapping.physicsProcessor.shipCollision.doShipCollision(second.wrapping);
+	                        }
+                    	}
                     }
                 }
 
@@ -60,10 +64,16 @@ public class PhysicsTickHandler {
                 }
             } else {
                 for (PhysicsWrapperEntity wrapper : physicsEntities) {
-                    wrapper.wrapping.physicsProcessor.processWorldCollision();
+                	if(!wrapper.firstUpdate){
+                		wrapper.wrapping.physicsProcessor.processWorldCollision();
+                	}
                 }
                 for (PhysicsWrapperEntity wrapper : physicsEntities) {
-                    wrapper.wrapping.physicsProcessor.rawPhysTickPostCol();
+                	if(!wrapper.firstUpdate){
+                		wrapper.wrapping.physicsProcessor.rawPhysTickPostCol();
+                	}else{
+                		wrapper.wrapping.coordTransform.updateAllTransforms();
+                	}
                 }
             }
         }

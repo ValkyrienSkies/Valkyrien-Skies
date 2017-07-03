@@ -167,9 +167,9 @@ public class EventsClient {
 
 	@SubscribeEvent
 	public void interaction(final LeftClickBlock event ){
-		System.out.println(event.getHitVec());
-		if(event.getUseItem() == Result.DENY) {
-			System.out.println("wtf");
-		}
+//		System.out.println(event.getHitVec());
+//		if(event.getUseItem() == Result.DENY) {
+//			System.out.println("wtf");
+//		}
 	}
 }

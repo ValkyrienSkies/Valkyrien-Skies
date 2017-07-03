@@ -143,6 +143,7 @@ public class RotationMatrices {
         vec.Z = x * M[8] + y * M[9] + z * M[10] + M[11];
     }
 
+    @Deprecated
     public static final void applyTransform(double[] wholeTransform, double[] rotationTransform, Entity ent) {
         Vector entityPos = new Vector(ent.posX, ent.posY, ent.posZ);
         Vector entityLook = new Vector(ent.getLook(1.0F));

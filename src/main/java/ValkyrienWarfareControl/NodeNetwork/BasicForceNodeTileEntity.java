@@ -16,6 +16,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
     protected double currentThrust = 0D;
     private Vector forceOutputVector = new Vector();
     private Vector normalVelocityUnoriented;
+    private int ticksSinceLastControlSignal = 0;
     //Tells if the tile is in Ship Space, if it isn't then it doesn't try to find a parent Ship object
     private boolean hasAlreadyCheckedForParent = false;
 
@@ -120,6 +121,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
         maxThrust = compound.getDouble("maxThrust");
         currentThrust = compound.getDouble("currentThrust");
         normalVelocityUnoriented = NBTUtils.readVectorFromNBT("normalVelocityUnoriented", compound);
+        ticksSinceLastControlSignal = compound.getInteger("ticksSinceLastControlSignal");
         super.readFromNBT(compound);
     }
 
@@ -128,6 +130,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
         compound.setDouble("maxThrust", maxThrust);
         compound.setDouble("currentThrust", currentThrust);
         NBTUtils.writeVectorToNBT("normalVelocityUnoriented", normalVelocityUnoriented, compound);
+        compound.setInteger("ticksSinceLastControlSignal", ticksSinceLastControlSignal);
         return super.writeToNBT(compound);
     }
 
@@ -151,6 +154,20 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
         } else {
             return true;
         }
+    }
+
+    public void updateTicksSinceLastRecievedSignal() {
+    	ticksSinceLastControlSignal = 0;
+    }
+
+    @Override
+    public void update() {
+    	super.update();
+
+    	ticksSinceLastControlSignal++;
+    	if(ticksSinceLastControlSignal > 5) {
+    		setThrust(getThrust() * .9D);
+    	}
     }
 
 }

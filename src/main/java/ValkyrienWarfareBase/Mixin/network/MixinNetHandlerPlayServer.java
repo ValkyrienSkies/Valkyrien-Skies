@@ -7,6 +7,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareBase.Interaction.PlayerDataBackup;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -42,7 +43,9 @@ public abstract class MixinNetHandlerPlayServer {
 
     @Overwrite
     public void processTryUseItemOnBlock(CPacketPlayerTryUseItemOnBlock packetIn) {
+        PacketThreadUtil.checkThreadAndEnqueue(packetIn, NetHandlerPlayServer.class.cast(this), this.player.getServerWorld());
         BlockPos packetPos = packetIn.getPos();
+    	PlayerDataBackup playerBackup = new PlayerDataBackup(this.player);
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.world, packetPos);
         if (player.interactionManager.getBlockReachDistance() != dummyBlockReachDist) {
             lastGoodBlockReachDist = player.interactionManager.getBlockReachDistance();
@@ -51,11 +54,7 @@ public abstract class MixinNetHandlerPlayServer {
             player.interactionManager.setBlockReachDistance(dummyBlockReachDist);
             ticksSinceLastTry = 0;
         }
-
-        PacketThreadUtil.checkThreadAndEnqueue(packetIn, NetHandlerPlayServer.class.cast(this), this.player.getServerWorld());
         if (wrapper != null && wrapper.wrapping.coordTransform != null) {
-            float playerYaw = player.rotationYaw;
-            float playerPitch = player.rotationPitch;
             RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, wrapper.wrapping.coordTransform.wToLRotation, player);
             if (player.getHeldItem(packetIn.getHand()) != null && player.getHeldItem(packetIn.getHand()).getItem() instanceof ItemBucket) {
                 player.interactionManager.setBlockReachDistance(lastGoodBlockReachDist);
@@ -63,10 +62,9 @@ public abstract class MixinNetHandlerPlayServer {
             try {
                 processTryUseItemOnBlockOriginal(packetIn);
             } catch (Exception e) {
+            	e.printStackTrace();
             }
-            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, wrapper.wrapping.coordTransform.lToWRotation, player);
-            player.rotationYaw = playerYaw;
-            player.rotationPitch = playerPitch;
+            playerBackup.restorePlayerToBackup();
         } else {
             processTryUseItemOnBlockOriginal(packetIn);
         }
@@ -75,7 +73,9 @@ public abstract class MixinNetHandlerPlayServer {
 
     @Overwrite
     public void processPlayerDigging(CPacketPlayerDigging packetIn) {
+        PacketThreadUtil.checkThreadAndEnqueue(packetIn, NetHandlerPlayServer.class.cast(this), this.player.getServerWorld());
         BlockPos packetPos = packetIn.getPosition();
+    	PlayerDataBackup playerBackup = new PlayerDataBackup(this.player);
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.world, packetPos);
         if (player.interactionManager.getBlockReachDistance() != dummyBlockReachDist) {
             lastGoodBlockReachDist = player.interactionManager.getBlockReachDistance();
@@ -84,16 +84,11 @@ public abstract class MixinNetHandlerPlayServer {
             player.interactionManager.setBlockReachDistance(dummyBlockReachDist);
             ticksSinceLastTry = 0;
         }
-
-        PacketThreadUtil.checkThreadAndEnqueue(packetIn, NetHandlerPlayServer.class.cast(this), this.player.getServerWorld());
         if (wrapper != null && wrapper.wrapping.coordTransform != null) {
-            float playerYaw = player.rotationYaw;
-            float playerPitch = player.rotationPitch;
             RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, wrapper.wrapping.coordTransform.wToLRotation, player);
             processPlayerDiggingOriginal(packetIn);
             RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, wrapper.wrapping.coordTransform.lToWRotation, player);
-            player.rotationYaw = playerYaw;
-            player.rotationPitch = playerPitch;
+            playerBackup.restorePlayerToBackup();
         } else {
             processPlayerDiggingOriginal(packetIn);
         }
@@ -102,7 +97,9 @@ public abstract class MixinNetHandlerPlayServer {
 
     @Overwrite
     public void processUpdateSign(CPacketUpdateSign packetIn) {
+        PacketThreadUtil.checkThreadAndEnqueue(packetIn, NetHandlerPlayServer.class.cast(this), this.player.getServerWorld());
         BlockPos packetPos = packetIn.getPosition();
+    	PlayerDataBackup playerBackup = new PlayerDataBackup(this.player);
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.world, packetPos);
         if (player.interactionManager.getBlockReachDistance() != dummyBlockReachDist) {
             lastGoodBlockReachDist = player.interactionManager.getBlockReachDistance();
@@ -112,15 +109,11 @@ public abstract class MixinNetHandlerPlayServer {
             ticksSinceLastTry = 0;
         }
 
-        PacketThreadUtil.checkThreadAndEnqueue(packetIn, NetHandlerPlayServer.class.cast(this), this.player.getServerWorld());
         if (wrapper != null && wrapper.wrapping.coordTransform != null) {
-            float playerYaw = player.rotationYaw;
-            float playerPitch = player.rotationPitch;
             RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, wrapper.wrapping.coordTransform.wToLRotation, player);
             processUpdateSignOriginal(packetIn);
             RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, wrapper.wrapping.coordTransform.lToWRotation, player);
-            player.rotationYaw = playerYaw;
-            player.rotationPitch = playerPitch;
+            playerBackup.restorePlayerToBackup();
         } else {
             processUpdateSignOriginal(packetIn);
         }
@@ -128,7 +121,6 @@ public abstract class MixinNetHandlerPlayServer {
     }
 
     public void processTryUseItemOnBlockOriginal(CPacketPlayerTryUseItemOnBlock packetIn) {
-        PacketThreadUtil.checkThreadAndEnqueue(packetIn, thisClassAsAHandler, this.player.getServerWorld());
         WorldServer worldserver = thisClassAsAHandler.serverController.worldServerForDimension(this.player.dimension);
         EnumHand enumhand = packetIn.getHand();
         ItemStack itemstack = this.player.getHeldItem(enumhand);
@@ -168,7 +160,6 @@ public abstract class MixinNetHandlerPlayServer {
     }
 
     public void processPlayerDiggingOriginal(CPacketPlayerDigging packetIn) {
-        PacketThreadUtil.checkThreadAndEnqueue(packetIn, thisClassAsAHandler, thisClassAsAHandler.player.getServerWorld());
         WorldServer worldserver = thisClassAsAHandler.serverController.worldServerForDimension(this.player.dimension);
         BlockPos blockpos = packetIn.getPosition();
         this.player.markPlayerActive();
@@ -243,7 +234,6 @@ public abstract class MixinNetHandlerPlayServer {
     }
 
     public void processUpdateSignOriginal(CPacketUpdateSign packetIn) {
-        PacketThreadUtil.checkThreadAndEnqueue(packetIn, thisClassAsAHandler, thisClassAsAHandler.player.getServerWorld());
         this.player.markPlayerActive();
         WorldServer worldserver = thisClassAsAHandler.serverController.worldServerForDimension(this.player.dimension);
         BlockPos blockpos = packetIn.getPosition();

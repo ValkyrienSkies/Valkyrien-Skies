@@ -71,6 +71,8 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
         }
         // super.onUpdate();
         wrapping.onTick();
+
+        firstUpdate = false;
     }
 
     @Override

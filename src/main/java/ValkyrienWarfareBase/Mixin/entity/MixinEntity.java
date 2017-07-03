@@ -13,6 +13,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
+import net.minecraft.util.EnumBlockRenderType;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -31,6 +33,8 @@ public abstract class MixinEntity implements IDraggable {
     public boolean cancelNextMove = false;
     public boolean cancelNextMove2 = false;
     public Entity thisClassAsAnEntity = Entity.class.cast(this);
+	IDraggable thisAsDraggable = IDraggable.class.cast(this);
+
     @Shadow
     public float rotationYaw;
     @Shadow
@@ -251,6 +255,38 @@ public abstract class MixinEntity implements IDraggable {
             }
         }
         return vanilla;
+    }
+
+    @Overwrite
+    protected void createRunningParticles() {
+    	PhysicsWrapperEntity worldBelow = thisAsDraggable.getWorldBelowFeet();
+
+    	if(worldBelow == null) {
+	    	int i = MathHelper.floor(this.posX);
+	        int j = MathHelper.floor(this.posY - 0.20000000298023224D);
+	        int k = MathHelper.floor(this.posZ);
+	        BlockPos blockpos = new BlockPos(i, j, k);
+	        IBlockState iblockstate = this.world.getBlockState(blockpos);
+
+	        if (iblockstate.getRenderType() != EnumBlockRenderType.INVISIBLE)
+	        {
+	            this.world.spawnParticle(EnumParticleTypes.BLOCK_CRACK, this.posX + ((double)thisClassAsAnEntity.rand.nextFloat() - 0.5D) * (double)thisClassAsAnEntity.width, thisClassAsAnEntity.getEntityBoundingBox().minY + 0.1D, this.posZ + ((double)thisClassAsAnEntity.rand.nextFloat() - 0.5D) * (double)thisClassAsAnEntity.width, -thisClassAsAnEntity.motionX * 4.0D, 1.5D, -thisClassAsAnEntity.motionZ * 4.0D, new int[] {Block.getStateId(iblockstate)});
+	        }
+    	}else{
+    		Vector searchVector = new Vector(this.posX, this.posY - 0.20000000298023224D, this.posZ);
+    		searchVector.transform(worldBelow.wrapping.coordTransform.wToLTransform);
+
+    		int i = MathHelper.floor(searchVector.X);
+	        int j = MathHelper.floor(searchVector.Y);
+	        int k = MathHelper.floor(searchVector.Z);
+	        BlockPos blockpos = new BlockPos(i, j, k);
+	        IBlockState iblockstate = this.world.getBlockState(blockpos);
+
+	        if (iblockstate.getRenderType() != EnumBlockRenderType.INVISIBLE)
+	        {
+	            this.world.spawnParticle(EnumParticleTypes.BLOCK_CRACK, this.posX + ((double)thisClassAsAnEntity.rand.nextFloat() - 0.5D) * (double)thisClassAsAnEntity.width, thisClassAsAnEntity.getEntityBoundingBox().minY + 0.1D, this.posZ + ((double)thisClassAsAnEntity.rand.nextFloat() - 0.5D) * (double)thisClassAsAnEntity.width, -thisClassAsAnEntity.motionX * 4.0D, 1.5D, -thisClassAsAnEntity.motionZ * 4.0D, new int[] {Block.getStateId(iblockstate)});
+	        }
+    	}
     }
 
 }

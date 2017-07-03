@@ -440,15 +440,22 @@ public abstract class MixinWorld {
 
     @Inject(method = "getBiome(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/world/biome/Biome;", at = @At("HEAD"), cancellable = true)
     public void preGetBiome(final BlockPos pos, CallbackInfoReturnable<Biome> callbackInfoReturnable) {
-        if (ValkyrienWarfareMod.physicsManager == null) {
-            return;
-        }
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(World.class.cast(this), pos);
-        if (wrapper != null) {
-            BlockPos realPos = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, pos);
-            callbackInfoReturnable.setReturnValue(thisClassAsWorld.getBiome(realPos));
-            return;
-        }
+    	try{
+    		if (ValkyrienWarfareMod.physicsManager == null || pos == null || thisClassAsWorld == null) {
+	            return;
+	        }
+	        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(thisClassAsWorld, pos);
+	        if (wrapper != null && wrapper.wrapping != null && wrapper.wrapping.coordTransform != null && wrapper.wrapping.coordTransform.lToWTransform != null && pos != null) {
+	            BlockPos realPos = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, pos);
+	            Biome toReturn = thisClassAsWorld.getBiome(realPos);
+	            if(toReturn != null) {
+	            	callbackInfoReturnable.setReturnValue(toReturn);
+	            	return;
+	            }
+	        }
+    	}catch(Exception e) {
+    		e.printStackTrace();
+    	}
         //do nothing and run vanilla
     }
 

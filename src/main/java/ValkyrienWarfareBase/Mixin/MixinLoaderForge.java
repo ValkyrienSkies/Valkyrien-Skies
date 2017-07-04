@@ -1,5 +1,6 @@
 package ValkyrienWarfareBase.Mixin;
 
+import net.minecraft.client.ClientBrandRetriever;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import org.spongepowered.asm.launch.MixinBootstrap;
 import org.spongepowered.asm.mixin.MixinEnvironment;
@@ -16,7 +17,14 @@ public class MixinLoaderForge implements IFMLLoadingPlugin {
         System.out.println("\n\n\nValkyrien Warfare Mixin init\n\n\n");
         MixinBootstrap.init();
         Mixins.addConfiguration("mixins.valkyrienwarfare.json");
-        MixinEnvironment.getDefaultEnvironment().setObfuscationContext("searge");
+        try {
+            ClientBrandRetriever.class.getDeclaredMethod("getClientModName", null);
+            MixinEnvironment.getDefaultEnvironment().setObfuscationContext("mcp");
+        } catch (NoSuchMethodException e)   {
+            //this is not mcp!
+            MixinEnvironment.getDefaultEnvironment().setObfuscationContext("searge");
+        }
+        System.out.println(MixinEnvironment.getDefaultEnvironment().getObfuscationContext());
     }
 
     @Override

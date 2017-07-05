@@ -95,6 +95,32 @@ reobf {
     }
 }
 
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
+task shadowDevJar(type: ShadowJar) {
+    classifier = 'dev-shaded'
+
+    from sourceSets.main.output
+    //from sourceSets.java8.output
+
+    // Default settings for shadow tasks
+    configurations = [project.configurations.runtime]
+    manifest.inheritFrom tasks.jar.manifest
+    exclude 'META-INF/INDEX.LIST', 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA'
+}
+
+//shadowDevJar shadowConfiguration
+
+// Upload shadowDevJar to Maven repository
+artifacts {
+    archives shadowDevJar
+}
+
+allprojects {
+    // Re-obfuscate only after creating the shadowDevJar
+    tasks.findByName('reobfJar')?.mustRunAfter rootProject.tasks.shadowDevJar
+}
+
 shadowJar {
     dependencies {
         include(dependency('org.spongepowered:mixin'))

@@ -10,6 +10,7 @@ import ValkyrienWarfareBase.Capability.ImplAirshipCounterCapability;
 import ValkyrienWarfareBase.Capability.StorageAirshipCounter;
 import ValkyrienWarfareBase.ChunkManagement.DimensionPhysicsChunkManager;
 import ValkyrienWarfareBase.GUI.TabValkyrienWarfare;
+import ValkyrienWarfareBase.Mixin.MixinLoaderForge;
 import ValkyrienWarfareBase.Network.PhysWrapperPositionHandler;
 import ValkyrienWarfareBase.Network.PhysWrapperPositionMessage;
 import ValkyrienWarfareBase.Network.PlayerShipRefrenceHandler;
@@ -21,6 +22,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -28,7 +30,11 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.IChunkGenerator;
+import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -48,6 +54,7 @@ import net.minecraftforge.fml.relauncher.Side;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -230,6 +237,22 @@ public class ValkyrienWarfareMod {
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println("DAMNIT LEX!");
+        }
+
+        if (!MixinLoaderForge.isObfuscatedEnvironment)  {
+            System.out.println("Not obf, trying to make things public for use in dev!");
+            try {
+                Method doBlockCollisions = Entity.class.getDeclaredMethod("doBlockCollisions");
+                doBlockCollisions.setAccessible(true);
+
+                Method populateChunk = Chunk.class.getDeclaredMethod("populateChunk", IChunkProvider.class, IChunkGenerator.class);
+                populateChunk.setAccessible(true);
+
+                Method setRenderOffsetForSleep = EntityPlayer.class.getDeclaredMethod("setRenderOffsetForSleep", EnumFacing.class);
+                setRenderOffsetForSleep.setAccessible(true);
+            } catch (NoSuchMethodException e)   {
+                System.out.println("meh, not really trying to make things public after all :P");
+            }
         }
     }
 

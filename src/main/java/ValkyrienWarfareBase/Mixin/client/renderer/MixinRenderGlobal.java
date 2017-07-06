@@ -1,17 +1,40 @@
 package ValkyrienWarfareBase.Mixin.client.renderer;
 
+import java.util.Iterator;
+import java.util.Map;
+
+import org.lwjgl.opengl.GL11;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.Proxy.ClientProxy;
-import ValkyrienWarfareBase.ValkyrienWarfareMod;
-import net.minecraft.block.*;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockChest;
+import net.minecraft.block.BlockEnderChest;
+import net.minecraft.block.BlockSign;
+import net.minecraft.block.BlockSkull;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.particle.Particle;
-import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.BlockRendererDispatcher;
+import net.minecraft.client.renderer.DestroyBlockProgress;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderGlobal;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -24,18 +47,6 @@ import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
-import org.lwjgl.opengl.GL11;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import java.util.Iterator;
-import java.util.Map;
 
 @Mixin(RenderGlobal.class)
 public abstract class MixinRenderGlobal {
@@ -196,6 +207,7 @@ public abstract class MixinRenderGlobal {
     @Inject(method = "renderBlockLayer(Lnet/minecraft/util/BlockRenderLayer;DILnet/minecraft/entity/Entity;)I", at = @At("HEAD"))
     public void preRenderBlockLayer(BlockRenderLayer blockLayerIn, double partialTicks, int pass, Entity entityIn, CallbackInfoReturnable callbackInfo) {
         RenderHelper.disableStandardItemLighting();
+
         for (PhysicsWrapperEntity wrapper : ValkyrienWarfareMod.physicsManager.getManagerForWorld(this.world).physicsEntities) {
             GL11.glPushMatrix();
             if (wrapper.wrapping.renderer != null && wrapper.wrapping.renderer.shouldRender()) {
@@ -203,8 +215,44 @@ public abstract class MixinRenderGlobal {
             }
             GL11.glPopMatrix();
         }
+
+        if(blockLayerIn == BlockRenderLayer.TRANSLUCENT) {
+	        GlStateManager.pushMatrix();
+	        GL11.glEnable(GL11.GL_STENCIL_TEST);
+	        GlStateManager.colorMask(false, false, false, false);
+//	        GlStateManager.depthMask(false);
+	        GL11.glStencilFunc(GL11.GL_ALWAYS, 1, 255);
+	        GL11.glStencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_REPLACE);
+	        GL11.glStencilMask(255);
+	        GL11.glDepthMask(false);
+	        GlStateManager.clear(GL11.GL_STENCIL_BUFFER_BIT);
+
+	        for (PhysicsWrapperEntity wrapper : ValkyrienWarfareMod.physicsManager.getManagerForWorld(this.world).physicsEntities) {
+	            GL11.glPushMatrix();
+	            if (wrapper.wrapping.renderer != null && wrapper.wrapping.renderer.shouldRender()) {
+//	                wrapper.wrapping.renderer.renderBlockLayer(BlockRenderLayer.SOLID, partialTicks, pass);
+	            }
+	            GL11.glPopMatrix();
+	        }
+
+	        GlStateManager.colorMask(true, true, true, true);
+	        GL11.glStencilMask(0);
+	        GL11.glStencilFunc(GL11.GL_NOTEQUAL, 1, 255);
+	        GL11.glDepthMask(true);
+        }
+
         GlStateManager.resetColor();
         //vanilla code follows
+    }
+
+
+    @Inject(method = "renderBlockLayer(Lnet/minecraft/util/BlockRenderLayer;DILnet/minecraft/entity/Entity;)I", at = @At("RETURN"))
+    public void postRenderBlockLayer(BlockRenderLayer blockLayerIn, double partialTicks, int pass, Entity entityIn, CallbackInfoReturnable callbackInfo) {
+        if(blockLayerIn == BlockRenderLayer.TRANSLUCENT) {
+
+        	GL11.glDisable(GL11.GL_STENCIL_TEST);
+            GlStateManager.popMatrix();
+        }
     }
 
     @Overwrite

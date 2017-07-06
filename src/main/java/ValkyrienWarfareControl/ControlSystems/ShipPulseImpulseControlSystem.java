@@ -12,6 +12,7 @@ import ValkyrienWarfareControl.TileEntity.ThrustModulatorTileEntity;
 import ValkyrienWarfareControl.TileEntity.TileEntityNormalEtherCompressor;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 
 public class ShipPulseImpulseControlSystem {
 
@@ -19,6 +20,11 @@ public class ShipPulseImpulseControlSystem {
 
 	public double linearVelocityBias = 1D;
 	public double angularVelocityBias = 50D;
+
+	private double bobspeed = 10D;
+	private double bobmagnitude = 3D;
+
+	private double totalSecondsRunning = 0D;
 
     public double angularConstant = 500000000D;
     public double linearConstant = 1000000D;
@@ -28,6 +34,8 @@ public class ShipPulseImpulseControlSystem {
 
 	public ShipPulseImpulseControlSystem(ThrustModulatorTileEntity parentTile) {
 		this.parentTile = parentTile;
+
+		totalSecondsRunning = Math.random() * bobspeed;
 	}
 
 	public void solveThrustValues(PhysicsCalculations calculations) {
@@ -51,8 +59,10 @@ public class ShipPulseImpulseControlSystem {
 
 
 
+
+
 		double maxYDelta = parentTile.maximumYVelocity;
-		double idealHeight = parentTile.idealYHeight;
+		double idealHeight = parentTile.idealYHeight + getBobForTime();
 
 
 
@@ -82,6 +92,7 @@ public class ShipPulseImpulseControlSystem {
 
 		Vector currentNormalError = currentNormal.getSubtraction(idealNormal);
 
+		linearVelocityBias = calculations.physTickSpeed;
 
 		for(Node node : getNetworkedNodesList()) {
 			if(node.parentTile instanceof TileEntityEtherCompressor && !((TileEntityEtherCompressor) node.parentTile).updateParentShip()) {
@@ -169,7 +180,19 @@ public class ShipPulseImpulseControlSystem {
 			}
 		}*/
 
+		totalSecondsRunning += calculations.physTickSpeed;
+	}
 
+	private double getBobForTime() {
+		double fraction = totalSecondsRunning / bobspeed;
+
+		double degrees = (fraction * 360D) % 360D;
+
+		double sinVal = Math.sin(Math.toRadians(degrees));
+
+//		sinVal = Math.signum(sinVal) * Math.pow(Math.abs(sinVal), 1.5D);
+
+		return sinVal * bobmagnitude;
 	}
 
 	public Vector getIdealMomentumErrorForSystem(PhysicsCalculations calculations, Vector posInWorld, double maxYDelta, double idealHeight) {
@@ -229,7 +252,7 @@ public class ShipPulseImpulseControlSystem {
 		Vector angularVelocityAtPoint = angularVelocity.cross(enginePosVec);
 		angularVelocityAtPoint.multiply(secondsToApply);
 
-		return idealYDif - (inWorldYDif + angularVelocityAtPoint.Y * 50D);
+		return idealYDif - (inWorldYDif + angularVelocityAtPoint.Y * angularVelocityBias);
 	}
 
 	public double getControllerDistFromIdealY(double[] lToWTransform, double invMass, double posY, Vector linearMomentum, double idealHeight) {

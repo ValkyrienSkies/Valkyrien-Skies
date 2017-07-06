@@ -83,6 +83,8 @@ public class ClientProxyControl extends CommonProxyControl {
 		registerBlockItem(ValkyrienWarfareControlMod.instance.thrustRelay);
 		registerBlockItem(ValkyrienWarfareControlMod.instance.thrustModulator);
 
+		registerBlockItem(ValkyrienWarfareControlMod.instance.shipHullSealer);
+
 		registerBlockItem(ValkyrienWarfareControlMod.instance.airshipController_zepplin);
 	}
 

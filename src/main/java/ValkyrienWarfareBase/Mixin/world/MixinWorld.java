@@ -504,6 +504,17 @@ public abstract class MixinWorld {
         }
     }
 
+    @Overwrite
+    public Iterator<Chunk> getPersistentChunkIterable(Iterator<Chunk> chunkIterator) {
+    	ArrayList<Chunk> persistantChunks = new ArrayList<Chunk>();
+    	while(chunkIterator.hasNext()) {
+    		Chunk chunk = chunkIterator.next();
+    		persistantChunks.add(chunk);
+    	}
+    	Iterator<Chunk> replacementIterator = persistantChunks.iterator();
+        return net.minecraftforge.common.ForgeChunkManager.getPersistentChunksIterableFor(thisClassAsWorld, replacementIterator);
+    }
+
     @Shadow
     private boolean processingLoadedTiles;
 

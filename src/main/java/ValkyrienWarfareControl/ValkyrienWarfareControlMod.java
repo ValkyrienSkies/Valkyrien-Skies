@@ -8,6 +8,7 @@ import ValkyrienWarfareControl.Block.BlockBalloonBurner;
 import ValkyrienWarfareControl.Block.BlockDopedEtherium;
 import ValkyrienWarfareControl.Block.BlockHovercraftController;
 import ValkyrienWarfareControl.Block.BlockShipHelm;
+import ValkyrienWarfareControl.Block.BlockShipHullSealer;
 import ValkyrienWarfareControl.Block.BlockShipPassengerChair;
 import ValkyrienWarfareControl.Block.BlockShipPilotsChair;
 import ValkyrienWarfareControl.Block.BlockShipTelegraph;
@@ -44,6 +45,7 @@ import ValkyrienWarfareControl.TileEntity.BalloonBurnerTileEntity;
 import ValkyrienWarfareControl.TileEntity.ThrustModulatorTileEntity;
 import ValkyrienWarfareControl.TileEntity.ThrustRelayTileEntity;
 import ValkyrienWarfareControl.TileEntity.TileEntityHoverController;
+import ValkyrienWarfareControl.TileEntity.TileEntityHullSealer;
 import ValkyrienWarfareControl.TileEntity.TileEntityNormalEtherCompressor;
 import ValkyrienWarfareControl.TileEntity.TileEntityPilotsChair;
 import ValkyrienWarfareControl.TileEntity.TileEntityPropellerEngine;
@@ -110,6 +112,7 @@ public class ValkyrienWarfareControlMod {
     public Block thrustRelay;
     public Block thrustModulator;
     public Block airshipController_zepplin;
+    public Block shipHullSealer;
 
     public Item systemLinker;
     public Item airshipStealer;
@@ -190,6 +193,8 @@ public class ValkyrienWarfareControlMod {
         thrustRelay = new BlockThrustRelay(Material.IRON).setHardness(5f).setUnlocalizedName("thrustrelay").setRegistryName(MODID, "thrustrelay").setCreativeTab(ValkyrienWarfareMod.vwTab);
         thrustModulator = new BlockThrustModulator(Material.IRON).setHardness(8f).setUnlocalizedName("thrustmodulator").setRegistryName(MODID, "thrustmodulator").setCreativeTab(ValkyrienWarfareMod.vwTab);
 
+        shipHullSealer = new BlockShipHullSealer(Material.IRON).setHardness(5f).setUnlocalizedName("shiphullsealer").setRegistryName(MODID, "shiphullsealer").setCreativeTab(ValkyrienWarfareMod.vwTab);
+
         airshipController_zepplin = new BlockAirshipController_Zepplin(Material.WOOD).setHardness(5f).setUnlocalizedName("airshipcontroller_zepplin").setRegistryName(MODID, "airshipcontroller_zepplin").setCreativeTab(ValkyrienWarfareMod.vwTab);
 
         registerBlock(basicEngine);
@@ -217,6 +222,8 @@ public class ValkyrienWarfareControlMod {
         registerBlock(thrustRelay);
         registerBlock(thrustModulator);
 
+        registerBlock(shipHullSealer);
+
         registerBlock(airshipController_zepplin);
     }
 
@@ -231,6 +238,7 @@ public class ValkyrienWarfareControlMod {
         GameRegistry.registerTileEntity(TileEntityShipTelegraph.class, "tileshiptelegraph");
         GameRegistry.registerTileEntity(TileEntityPropellerEngine.class, "tilepropellerengine");
         GameRegistry.registerTileEntity(TileEntityZepplinController.class, "tilezepplin_controller");
+        GameRegistry.registerTileEntity(TileEntityHullSealer.class, "tileentityshiphullsealer");
     }
 
     private void registerItems(FMLStateEvent event) {

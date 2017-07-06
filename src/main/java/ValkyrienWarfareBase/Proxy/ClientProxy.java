@@ -1,12 +1,12 @@
 package ValkyrienWarfareBase.Proxy;
 
-import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.EventsClient;
 import ValkyrienWarfareBase.VWKeyHandler;
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
+import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Math.Quaternion;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.Render.PhysObjectRenderFactory;
-import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -40,13 +41,11 @@ public class ClientProxy extends CommonProxy {
         registerBlockItem(ValkyrienWarfareMod.physicsInfuserCreative);
     }
 
-    @Override
-    public void postInit(FMLPostInitializationEvent e) {
-        super.postInit(e);
-//		new AClass<>(Minecraft.class).<RenderManager>getDeclaredField("renderManager", "field_175616_W").setAccessible(true).set(Minecraft.getMinecraft(), new RenderManagerOverride(Minecraft.getMinecraft().getRenderManager()));
-//		new AClass<>(ItemRenderer.class).<RenderManager>getDeclaredField("renderManager", "field_178111_g").setAccessible(true).setFinal(false).set(Minecraft.getMinecraft().getItemRenderer(), Minecraft.getMinecraft().getRenderManager());
-//		new AClass<>(RenderGlobal.class).<RenderManager>getDeclaredField("renderManager", "field_175010_j").setFinal(false).set(Minecraft.getMinecraft().renderGlobal, Minecraft.getMinecraft().getRenderManager());
-    }
+	@Override
+	public void postInit(FMLPostInitializationEvent event){
+		super.postInit(event);
+		Minecraft.getMinecraft().getFramebuffer().enableStencil();
+	}
 
     private void registerBlockItem(Block toRegister) {
         Item item = Item.getItemFromBlock(toRegister);

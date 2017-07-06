@@ -7,6 +7,10 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Implements;
+import org.spongepowered.asm.mixin.Interface;
+import org.spongepowered.asm.mixin.Interface.Remap;
+import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -22,6 +26,7 @@ import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Collision.Polygon;
+import ValkyrienWarfareBase.Fixes.WorldChunkloadingCrashFix;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.WorldPhysObjectManager;
 import ValkyrienWarfareControl.NodeNetwork.INodeProvider;
@@ -45,6 +50,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 
 @Mixin(World.class)
+@Implements(@Interface(iface = WorldChunkloadingCrashFix.class, prefix = "vw$", remap = Remap.NONE))
 public abstract class MixinWorld {
 
     private static double MAX_ENTITY_RADIUS_ALT = 2.0D;
@@ -504,16 +510,20 @@ public abstract class MixinWorld {
         }
     }
 
-    @Overwrite
-    public Iterator<Chunk> getPersistentChunkIterable(Iterator<Chunk> chunkIterator) {
+    @Intrinsic(displace = true)
+    public Iterator<Chunk> vw$getPersistentChunkIterable(Iterator<Chunk> chunkIterator) {
     	ArrayList<Chunk> persistantChunks = new ArrayList<Chunk>();
     	while(chunkIterator.hasNext()) {
     		Chunk chunk = chunkIterator.next();
     		persistantChunks.add(chunk);
     	}
     	Iterator<Chunk> replacementIterator = persistantChunks.iterator();
-        return net.minecraftforge.common.ForgeChunkManager.getPersistentChunksIterableFor(thisClassAsWorld, replacementIterator);
+
+        return getPersistentChunkIterable(replacementIterator);
     }
+
+    @Shadow
+    public abstract Iterator<Chunk> getPersistentChunkIterable(Iterator<Chunk> chunkIterator);
 
     @Shadow
     private boolean processingLoadedTiles;

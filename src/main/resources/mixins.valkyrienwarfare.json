@@ -12,7 +12,7 @@
         "entity.MixinEntity",
         "world.MixinExplosion",
         "server.management.MixinPlayerList",
-        "world.MixinWorldProvider",
+        "world.border.MixinWorldBorder",
         "network.MixinNetHandlerPlayServer",
         "util.math.MixinChunkPos"
     ],

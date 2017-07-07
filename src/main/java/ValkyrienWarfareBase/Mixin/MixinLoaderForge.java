@@ -14,7 +14,7 @@ public class MixinLoaderForge implements IFMLLoadingPlugin {
     public static boolean isObfuscatedEnvironment = false;
 
     public MixinLoaderForge() {
-        System.out.println("\n\n\nValkyrien Warfare Mixin init\n\n\n");
+        System.out.println("\n\n\nValkyrien Warfare Mixin init\n\n");
         MixinBootstrap.init();
         Mixins.addConfiguration("mixins.valkyrienwarfare.json");
         try {

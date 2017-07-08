@@ -11,6 +11,8 @@ import ValkyrienWarfareBase.Capability.StorageAirshipCounter;
 import ValkyrienWarfareBase.ChunkManagement.DimensionPhysicsChunkManager;
 import ValkyrienWarfareBase.GUI.TabValkyrienWarfare;
 import ValkyrienWarfareBase.Mixin.MixinLoaderForge;
+import ValkyrienWarfareBase.Network.EntityRelativePositionMessage;
+import ValkyrienWarfareBase.Network.EntityRelativePositionMessageHandler;
 import ValkyrienWarfareBase.Network.PhysWrapperPositionHandler;
 import ValkyrienWarfareBase.Network.PhysWrapperPositionMessage;
 import ValkyrienWarfareBase.Network.PlayerShipRefrenceHandler;
@@ -266,6 +268,7 @@ public class ValkyrienWarfareMod {
         physWrapperNetwork = NetworkRegistry.INSTANCE.newSimpleChannel("physChannel");
         physWrapperNetwork.registerMessage(PhysWrapperPositionHandler.class, PhysWrapperPositionMessage.class, 0, Side.CLIENT);
         physWrapperNetwork.registerMessage(PlayerShipRefrenceHandler.class, PlayerShipRefrenceMessage.class, 1, Side.SERVER);
+        physWrapperNetwork.registerMessage(EntityRelativePositionMessageHandler.class, EntityRelativePositionMessage.class, 2, Side.CLIENT);
     }
 
     private void registerBlocks(FMLStateEvent event) {

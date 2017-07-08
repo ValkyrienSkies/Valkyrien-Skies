@@ -7,6 +7,8 @@ import org.spongepowered.asm.mixin.Shadow;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareBase.Interaction.EntityDraggable;
+import ValkyrienWarfareBase.Interaction.IDraggable;
 import ValkyrienWarfareBase.Interaction.PlayerDataBackup;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import net.minecraft.block.material.Material;
@@ -21,6 +23,8 @@ import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
 import net.minecraft.network.play.client.CPacketUpdateSign;
 import net.minecraft.network.play.server.SPacketBlockChange;
 import net.minecraft.network.play.server.SPacketChat;
+import net.minecraft.network.play.server.SPacketKeepAlive;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntitySign;
 import net.minecraft.util.EnumFacing;
@@ -263,5 +267,117 @@ public abstract class MixinNetHandlerPlayServer {
             worldserver.notifyBlockUpdate(blockpos, iblockstate, iblockstate, 3);
         }
     }
+
+
+    @Overwrite
+    public void update()
+    {
+    	IDraggable draggable = EntityDraggable.getDraggableFromEntity(player);
+    	captureCurrentPosition();
+
+    	this.firstGoodX += draggable.getVelocityAddedToPlayer().X;
+        this.firstGoodY += draggable.getVelocityAddedToPlayer().Y;
+        this.firstGoodZ += draggable.getVelocityAddedToPlayer().Z;
+        this.lastGoodX += draggable.getVelocityAddedToPlayer().X;
+        this.lastGoodY += draggable.getVelocityAddedToPlayer().Y;
+        this.lastGoodZ += draggable.getVelocityAddedToPlayer().Z;
+
+        this.player.onUpdateEntity();
+        this.player.setPositionAndRotation(thisClassAsAHandler.firstGoodX, thisClassAsAHandler.firstGoodY, thisClassAsAHandler.firstGoodZ, this.player.rotationYaw, this.player.rotationPitch);
+        ++thisClassAsAHandler.networkTickCount;
+        thisClassAsAHandler.lastMovePacketCounter = thisClassAsAHandler.movePacketCounter;
+
+        if (thisClassAsAHandler.floating)
+        {
+            if (++thisClassAsAHandler.floatingTickCount > 80)
+            {
+            	thisClassAsAHandler.LOGGER.warn("{} was kicked for floating too long!", new Object[] {this.player.getName()});
+            	thisClassAsAHandler.disconnect("Flying is not enabled on this server");
+                return;
+            }
+        }
+        else
+        {
+        	thisClassAsAHandler.floating = false;
+        	thisClassAsAHandler.floatingTickCount = 0;
+        }
+
+        thisClassAsAHandler.lowestRiddenEnt = this.player.getLowestRidingEntity();
+
+        if (thisClassAsAHandler.lowestRiddenEnt != thisClassAsAHandler.player && thisClassAsAHandler.lowestRiddenEnt.getControllingPassenger() == thisClassAsAHandler.player)
+        {
+            thisClassAsAHandler.lowestRiddenX = thisClassAsAHandler.lowestRiddenEnt.posX;
+            thisClassAsAHandler.lowestRiddenY = thisClassAsAHandler.lowestRiddenEnt.posY;
+            thisClassAsAHandler.lowestRiddenZ = thisClassAsAHandler.lowestRiddenEnt.posZ;
+            thisClassAsAHandler.lowestRiddenX1 = thisClassAsAHandler.lowestRiddenEnt.posX;
+            thisClassAsAHandler.lowestRiddenY1 = thisClassAsAHandler.lowestRiddenEnt.posY;
+            thisClassAsAHandler.lowestRiddenZ1 = thisClassAsAHandler.lowestRiddenEnt.posZ;
+
+            if (thisClassAsAHandler.vehicleFloating && thisClassAsAHandler.player.getLowestRidingEntity().getControllingPassenger() == thisClassAsAHandler.player)
+            {
+                if (++thisClassAsAHandler.vehicleFloatingTickCount > 80)
+                {
+                	thisClassAsAHandler.LOGGER.warn("{} was kicked for floating a vehicle too long!", new Object[] {thisClassAsAHandler.player.getName()});
+                    thisClassAsAHandler.disconnect("Flying is not enabled on this server");
+                    return;
+                }
+            }
+            else
+            {
+                thisClassAsAHandler.vehicleFloating = false;
+                thisClassAsAHandler.vehicleFloatingTickCount = 0;
+            }
+        }
+        else
+        {
+            thisClassAsAHandler.lowestRiddenEnt = null;
+            thisClassAsAHandler.vehicleFloating = false;
+            thisClassAsAHandler.vehicleFloatingTickCount = 0;
+        }
+
+        thisClassAsAHandler.serverController.profiler.startSection("keepAlive");
+
+        if ((long)thisClassAsAHandler.networkTickCount - thisClassAsAHandler.lastSentPingPacket > 40L)
+        {
+            thisClassAsAHandler.lastSentPingPacket = (long)thisClassAsAHandler.networkTickCount;
+            thisClassAsAHandler.lastPingTime = currentTimeMillis();
+            thisClassAsAHandler.keepAliveId = (int)thisClassAsAHandler.lastPingTime;
+            thisClassAsAHandler.sendPacket(new SPacketKeepAlive(thisClassAsAHandler.keepAliveId));
+        }
+
+        thisClassAsAHandler.serverController.profiler.endSection();
+
+        if (thisClassAsAHandler.chatSpamThresholdCount > 0)
+        {
+            --thisClassAsAHandler.chatSpamThresholdCount;
+        }
+
+        if (thisClassAsAHandler.itemDropThreshold > 0)
+        {
+            --thisClassAsAHandler.itemDropThreshold;
+        }
+
+        if (thisClassAsAHandler.player.getLastActiveTime() > 0L && thisClassAsAHandler.serverController.getMaxPlayerIdleMinutes() > 0 && MinecraftServer.getCurrentTimeMillis() - thisClassAsAHandler.player.getLastActiveTime() > (long)(thisClassAsAHandler.serverController.getMaxPlayerIdleMinutes() * 1000 * 60))
+        {
+            thisClassAsAHandler.disconnect("You have been idle for too long!");
+        }
+    }
+
+    @Shadow
+    abstract long currentTimeMillis();
+    @Shadow
+    abstract void captureCurrentPosition();
+    @Shadow
+    public double firstGoodX;
+    @Shadow
+    public double firstGoodY;
+    @Shadow
+    public double firstGoodZ;
+    @Shadow
+    public double lastGoodX;
+    @Shadow
+    public double lastGoodY;
+    @Shadow
+    public double lastGoodZ;
 
 }

@@ -1,6 +1,7 @@
 package ValkyrienWarfareWorld;
 
 import ValkyrienWarfareBase.PhysicsSettings;
+import ValkyrienWarfareBase.Fixes.IInventoryPlayerFix;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -20,7 +21,7 @@ public class WorldEventsCommon {
             //                    --DaPorkchop_, 28/03/2017
             if (PhysicsSettings.doEtheriumLifting) {
                 if (!player.isCreative()) {
-                    for (NonNullList<ItemStack> stackArray : player.inventory.allInventories) {
+                    for (NonNullList<ItemStack> stackArray : IInventoryPlayerFix.getFixFromInventory(player.inventory).getAllInventories()) {
                         for (ItemStack stack : stackArray) {
                             if (stack != null) {
                                 if (stack.getItem() instanceof ItemBlock) {

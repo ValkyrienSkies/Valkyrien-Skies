@@ -2,6 +2,7 @@ package ValkyrienWarfareCombat.Entity;
 
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareBase.Fixes.IInventoryPlayerFix;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareCombat.ValkyrienWarfareCombatMod;
 import net.minecraft.entity.player.EntityPlayer;
@@ -68,7 +69,7 @@ public class EntityCannonBasic extends EntityMountingWeaponBase {
             boolean hasCannonBall = player.inventory.hasItemStack(cannonBallStack);
             boolean hasPowder = player.inventory.hasItemStack(powderStack);
             if (hasCannonBall && hasPowder || player.isCreative()) {
-                for (NonNullList<ItemStack> aitemstack : player.inventory.allInventories) {
+                for (NonNullList<ItemStack> aitemstack : IInventoryPlayerFix.getFixFromInventory(player.inventory).getAllInventories()) {
                     for (ItemStack itemstack : aitemstack) {
                         if (itemstack != null && itemstack.isItemEqual(cannonBallStack)) {
                             int itemStackSize = itemstack.getCount();

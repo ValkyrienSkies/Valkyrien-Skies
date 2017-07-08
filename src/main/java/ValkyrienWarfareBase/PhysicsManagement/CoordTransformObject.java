@@ -1,9 +1,13 @@
 package ValkyrienWarfareBase.PhysicsManagement;
 
+import java.util.ArrayList;
+
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareBase.Interaction.IDraggable;
+import ValkyrienWarfareBase.Network.EntityRelativePositionMessage;
 import ValkyrienWarfareBase.Network.PhysWrapperPositionMessage;
-import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -120,8 +124,22 @@ public class CoordTransformObject {
     public void sendPositionToPlayers() {
         PhysWrapperPositionMessage posMessage = new PhysWrapperPositionMessage(parent.wrapper);
 
+        ArrayList<Entity> entityList = new ArrayList<Entity>();
+
+        for(Entity entity : parent.worldObj.loadedEntityList) {
+        	if(entity instanceof IDraggable) {
+        		IDraggable draggable = (IDraggable) entity;
+        		if(draggable.getWorldBelowFeet() == parent.wrapper) {
+        			entityList.add(entity);
+        		}
+        	}
+        }
+
+        EntityRelativePositionMessage otherPositionMessage = new EntityRelativePositionMessage(parent.wrapper, entityList);
+
         for (EntityPlayerMP player : parent.watchingPlayers) {
             ValkyrienWarfareMod.physWrapperNetwork.sendTo(posMessage, player);
+            ValkyrienWarfareMod.physWrapperNetwork.sendTo(otherPositionMessage, player);
         }
     }
 

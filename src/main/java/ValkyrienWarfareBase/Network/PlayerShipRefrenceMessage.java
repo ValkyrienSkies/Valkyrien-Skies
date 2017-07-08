@@ -10,10 +10,11 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 public class PlayerShipRefrenceMessage implements IMessage {
 
     public Vector playerPosInLocal;
+//    public Vector playeLastPosInLocal;
     public Vector velocityInLocal;
     public Vector playerLookVectorInLocal;
 
-    public int shipInUUIDHash;
+    public int shipInID;
 
     public PlayerShipRefrenceMessage() {
     }
@@ -21,13 +22,13 @@ public class PlayerShipRefrenceMessage implements IMessage {
     public PlayerShipRefrenceMessage(EntityPlayer playerToSend, PhysicsWrapperEntity shipOn) {
         playerPosInLocal = new Vector(playerToSend.posX, playerToSend.posY, playerToSend.posZ);
         velocityInLocal = new Vector(playerToSend.motionX, playerToSend.motionY, playerToSend.motionZ);
-        playerLookVectorInLocal = new Vector(playerToSend.getLook(1.0f));
+        playerLookVectorInLocal = new Vector(playerToSend.getLook(1.0F));
 
         RotationMatrices.applyTransform(shipOn.wrapping.coordTransform.wToLTransform, playerPosInLocal);
-        RotationMatrices.doRotationOnly(shipOn.wrapping.coordTransform.wToLTransform, velocityInLocal);
-        RotationMatrices.doRotationOnly(shipOn.wrapping.coordTransform.wToLTransform, playerLookVectorInLocal);
+        RotationMatrices.doRotationOnly(shipOn.wrapping.coordTransform.wToLRotation, velocityInLocal);
+        RotationMatrices.doRotationOnly(shipOn.wrapping.coordTransform.wToLRotation, playerLookVectorInLocal);
 
-        shipInUUIDHash = shipOn.getPersistentID().hashCode();
+        shipInID = shipOn.getEntityId();
     }
 
     @Override
@@ -35,7 +36,7 @@ public class PlayerShipRefrenceMessage implements IMessage {
         playerPosInLocal = new Vector(buf);
         velocityInLocal = new Vector(buf);
         playerLookVectorInLocal = new Vector(buf);
-        shipInUUIDHash = buf.readInt();
+        shipInID = buf.readInt();
     }
 
     @Override
@@ -43,7 +44,7 @@ public class PlayerShipRefrenceMessage implements IMessage {
         playerPosInLocal.writeToByteBuf(buf);
         velocityInLocal.writeToByteBuf(buf);
         playerLookVectorInLocal.writeToByteBuf(buf);
-        buf.writeInt(shipInUUIDHash);
+        buf.writeInt(shipInID);
     }
 
 }

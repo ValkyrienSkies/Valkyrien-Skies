@@ -14,14 +14,15 @@
         "server.management.MixinPlayerList",
         "world.border.MixinWorldBorder",
         "network.MixinNetHandlerPlayServer",
-        "util.math.MixinChunkPos"
+        "util.math.MixinChunkPos",
+        "entity.player.MixinInventoryPlayer",
+        "entity.player.MixinEntityPlayer"
     ],
     "client":[
         "client.renderer.tileentity.MixinTileEntityRendererDispatcher",
         "client.renderer.entity.MixinRenderManager",
         "entity.MixinEntityCLIENT",
         "client.renderer.MixinEntityRenderer",
-        "entity.player.MixinEntityPlayer",
         "world.MixinWorldCLIENT",
         "client.particle.MixinParticleManager",
         "client.renderer.MixinRenderGlobal",

@@ -1,5 +1,12 @@
 package ValkyrienWarfareBase;
 
+import java.io.File;
+import java.lang.reflect.Field;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.logging.Logger;
+
 import ValkyrienWarfareBase.API.DataTag;
 import ValkyrienWarfareBase.API.ValkyrienWarfareHooks;
 import ValkyrienWarfareBase.API.Vector;
@@ -10,7 +17,6 @@ import ValkyrienWarfareBase.Capability.ImplAirshipCounterCapability;
 import ValkyrienWarfareBase.Capability.StorageAirshipCounter;
 import ValkyrienWarfareBase.ChunkManagement.DimensionPhysicsChunkManager;
 import ValkyrienWarfareBase.GUI.TabValkyrienWarfare;
-import ValkyrienWarfareBase.Mixin.MixinLoaderForge;
 import ValkyrienWarfareBase.Network.EntityRelativePositionMessage;
 import ValkyrienWarfareBase.Network.EntityRelativePositionMessageHandler;
 import ValkyrienWarfareBase.Network.PhysWrapperPositionHandler;
@@ -24,7 +30,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -32,11 +37,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.IChunkGenerator;
-import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -47,20 +48,18 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.*;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
+import net.minecraftforge.fml.common.event.FMLStateEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
-
-import java.io.File;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.logging.Logger;
 
 @Mod(modid = ValkyrienWarfareMod.MODID, name = ValkyrienWarfareMod.MODNAME, version = ValkyrienWarfareMod.MODVER, guiFactory = "ValkyrienWarfareBase.GUI.GuiFactoryValkyrienWarfare", updateJSON = "https://raw.githubusercontent.com/BigBastard/Valkyrien-Warfare-Revamped/update.json")
 public class ValkyrienWarfareMod {
@@ -116,7 +115,7 @@ public class ValkyrienWarfareMod {
 
         // Property spawnParticlesParticle = config.get(Configuration.CATEGORY_GENERAL, "Ships spawn particles", false).getBoolean();
         multiThreadedPhysics = config.get(Configuration.CATEGORY_GENERAL, "Multi-Threaded Physics", true, "Use Multi-Threaded Physics").getBoolean();
-        threadCount = config.get(Configuration.CATEGORY_GENERAL, "Physics Thread Count", (int) Math.max(1, Runtime.getRuntime().availableProcessors() - 2), "Number of threads to run physics on").getInt();
+        threadCount = config.get(Configuration.CATEGORY_GENERAL, "Physics Thread Count", Math.max(1, Runtime.getRuntime().availableProcessors() - 2), "Number of threads to run physics on").getInt();
 
         doShipCollision = config.get(Configuration.CATEGORY_GENERAL, "Enable Ship Collision", true).getBoolean();
 
@@ -168,17 +167,9 @@ public class ValkyrienWarfareMod {
                 return true;
             }
 
-            if (player.getCapability(ValkyrienWarfareMod.airshipCounter, null).getAirshipCount() >= ValkyrienWarfareMod.maxAirships) {
-                return false;
-            } else {
-                return true;
-            }
+            return player.getCapability(ValkyrienWarfareMod.airshipCounter, null).getAirshipCount() < ValkyrienWarfareMod.maxAirships;
         } else {
-            if (player.getCapability(ValkyrienWarfareMod.airshipCounter, null).getAirshipCount() > 0) {
-                return true;
-            } else {
-                return false;
-            }
+            return player.getCapability(ValkyrienWarfareMod.airshipCounter, null).getAirshipCount() > 0;
         }
     }
 
@@ -240,22 +231,6 @@ public class ValkyrienWarfareMod {
             e.printStackTrace();
             System.err.println("DAMNIT LEX!");
         }
-
-        if (!MixinLoaderForge.isObfuscatedEnvironment)  {
-            System.out.println("Not obf, trying to make things public for use in dev!");
-            try {
-                Method doBlockCollisions = Entity.class.getDeclaredMethod("doBlockCollisions");
-                doBlockCollisions.setAccessible(true);
-
-                Method populateChunk = Chunk.class.getDeclaredMethod("populateChunk", IChunkProvider.class, IChunkGenerator.class);
-                populateChunk.setAccessible(true);
-
-                Method setRenderOffsetForSleep = EntityPlayer.class.getDeclaredMethod("setRenderOffsetForSleep", EnumFacing.class);
-                setRenderOffsetForSleep.setAccessible(true);
-            } catch (NoSuchMethodException e)   {
-                System.out.println("meh, not really trying to make things public after all :P");
-            }
-        }
     }
 
     @EventHandler
@@ -280,7 +255,7 @@ public class ValkyrienWarfareMod {
     }
 
     private void registerRecipies(FMLStateEvent event) {
-        GameRegistry.addRecipe(new ItemStack(physicsInfuser), new Object[]{"IEI", "ODO", "IEI", 'E', Items.ENDER_PEARL, 'D', Items.DIAMOND, 'O', Item.getItemFromBlock(Blocks.OBSIDIAN), 'I', Items.IRON_INGOT});
+        GameRegistry.addRecipe(new ItemStack(physicsInfuser), "IEI", "ODO", "IEI", 'E', Items.ENDER_PEARL, 'D', Items.DIAMOND, 'O', Item.getItemFromBlock(Blocks.OBSIDIAN), 'I', Items.IRON_INGOT);
     }
 
     private void runConfiguration(FMLPreInitializationEvent event) {

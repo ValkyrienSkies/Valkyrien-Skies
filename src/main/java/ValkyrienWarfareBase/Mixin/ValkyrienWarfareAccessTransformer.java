@@ -11,6 +11,6 @@ import java.io.IOException;
  */
 public class ValkyrienWarfareAccessTransformer extends AccessTransformer {
     public ValkyrienWarfareAccessTransformer() throws IOException {
-        super("ValkyrienWarfare_At.cfg");
+        super("valkyrienwarfare_at.cfg");
     }
 }

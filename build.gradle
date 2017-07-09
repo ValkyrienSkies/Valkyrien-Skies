@@ -141,7 +141,7 @@ jar {
                 'FMLCorePluginContainsFMLMod': 'true',
                 'FMLCorePlugin': 'ValkyrienWarfareBase.Mixin.MixinLoaderForge',
 				'ForceLoadAsMod': 'true',
-                'FMLAT': 'ValkyrienWarfare_At.cfg'
+                'FMLAT': 'valkyrienwarfare_at.cfg'
         )
     }
 }

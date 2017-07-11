@@ -1,4 +1,4 @@
-package ValkyrienWarfareBase.Mixin;
+package ValkyrienWarfareBase;
 
 import net.minecraftforge.fml.common.asm.transformers.AccessTransformer;
 

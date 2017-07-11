@@ -51,6 +51,6 @@ public class MixinLoaderForge implements IFMLLoadingPlugin {
 
     @Override
     public String getAccessTransformerClass() {
-        return "ValkyrienWarfareBase.Mixin.ValkyrienWarfareAccessTransformer";
+        return "ValkyrienWarfareBase.ValkyrienWarfareAccessTransformer";
     }
 }

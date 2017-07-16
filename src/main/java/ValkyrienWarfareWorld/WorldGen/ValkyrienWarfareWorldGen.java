@@ -59,9 +59,9 @@ public class ValkyrienWarfareWorldGen implements IWorldGenerator {
     	boolean isLikelyShipChunk = PhysicsChunkManager.isLikelyShipChunk(chunk_X, chunk_Z);
 
     	//TODO: Enable this
-    	if(!isLikelyShipChunk && false) {
+    	if(!isLikelyShipChunk && Minecraft.getMinecraft().player != null) {
 	    	double random = Math.random();
-	    	if(random < 0.1) {
+	    	if(random < 0.01) {
 	    		//do it
 	    		System.out.println("Generating a VW temple");
 
@@ -76,6 +76,8 @@ public class ValkyrienWarfareWorldGen implements IWorldGenerator {
 
 	    		//do it
 	    		wrapperEntity.forceSpawn = true;
+
+	    		wrapperEntity.posY = 150D;
 
 	    		System.out.println(world.restoringBlockSnapshots);
 

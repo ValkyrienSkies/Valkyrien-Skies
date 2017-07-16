@@ -300,24 +300,44 @@ public class PhysicsObject {
         BlockPos centerDifference = refrenceBlockPos.subtract(centerInWorld);
 
 
-        //Place blocks in here
-        int cont = 0;
+        for(int x = 0; x < toFollow.width; x++) {
+        	for(int y = 0; y < toFollow.height; y++) {
+        		for(int z = 0; z < toFollow.length; z++) {
 
-        for(int y = 0; y < toFollow.height; y++) {
-        	for(int z = 0; z < toFollow.length; z++) {
-        		for(int x = 0; x < toFollow.width; x++)	{
-        			Block b = Block.getBlockById(toFollow.blocks[cont]);
-        			IBlockState state = b.getStateById(toFollow.blocks[cont]);
+        			int index = y * toFollow.width * toFollow.length + z * toFollow.width + x;
+
+        			int id = toFollow.blocksCombined[index];
+        			int data = toFollow.data[index];
+
+        			Block b = Block.getBlockById(id);
+        			IBlockState state = b.getStateFromMeta(data);
                     if(state.getBlock() != Blocks.AIR)
                     {
 //                    	System.out.println("placed block");
                         worldObj.setBlockState(new BlockPos(x + centerDifference.getX(),y + centerDifference.getY(),z + centerDifference.getZ()), state, 2);
                     }
-                    cont++;
         		}
         	}
         }
 
+      	for(int i = 0; i < toFollow.tileentities.tagCount(); i++) {
+      		NBTTagCompound tileData = toFollow.tileentities.getCompoundTagAt(i);
+
+      		int x = tileData.getInteger("x") + centerDifference.getX();
+      		int y = tileData.getInteger("y") + centerDifference.getY();
+      		int z = tileData.getInteger("z") + centerDifference.getZ();
+
+      		tileData.setInteger("x", x);
+      		tileData.setInteger("y", y);
+      		tileData.setInteger("z", z);
+
+      		TileEntity newInstance = TileEntity.create(worldObj, tileData);
+            newInstance.validate();
+
+            worldObj.setTileEntity(newInstance.getPos(), newInstance);
+
+            newInstance.markDirty();
+      	}
 
         detectBlockPositions();
 
@@ -520,8 +540,8 @@ public class PhysicsObject {
         for (int x = ownedChunks.minX; x <= ownedChunks.maxX; x++) {
             for (int z = ownedChunks.minZ; z <= ownedChunks.maxZ; z++) {
                 claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ].isTerrainPopulated = true;
-//				claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ].generateSkylightMap();
-                // claimedChunks[x-ownedChunks.minX][z-ownedChunks.minZ].checkLight();
+				claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ].generateSkylightMap();
+                 claimedChunks[x-ownedChunks.minX][z-ownedChunks.minZ].checkLight();
             }
         }
 

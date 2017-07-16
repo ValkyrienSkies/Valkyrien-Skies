@@ -6,6 +6,7 @@ import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareControl.Block.BlockAirshipController_Zepplin;
 import ValkyrienWarfareControl.Block.BlockBalloonBurner;
 import ValkyrienWarfareControl.Block.BlockDopedEtherium;
+import ValkyrienWarfareControl.Block.BlockGyroscope;
 import ValkyrienWarfareControl.Block.BlockHovercraftController;
 import ValkyrienWarfareControl.Block.BlockShipHelm;
 import ValkyrienWarfareControl.Block.BlockShipHullSealer;
@@ -44,6 +45,7 @@ import ValkyrienWarfareControl.Proxy.CommonProxyControl;
 import ValkyrienWarfareControl.TileEntity.BalloonBurnerTileEntity;
 import ValkyrienWarfareControl.TileEntity.ThrustModulatorTileEntity;
 import ValkyrienWarfareControl.TileEntity.ThrustRelayTileEntity;
+import ValkyrienWarfareControl.TileEntity.TileEntityGyroscope;
 import ValkyrienWarfareControl.TileEntity.TileEntityHoverController;
 import ValkyrienWarfareControl.TileEntity.TileEntityHullSealer;
 import ValkyrienWarfareControl.TileEntity.TileEntityNormalEtherCompressor;
@@ -113,6 +115,7 @@ public class ValkyrienWarfareControlMod {
     public Block thrustModulator;
     public Block airshipController_zepplin;
     public Block shipHullSealer;
+    public Block gyroscope;
 
     public Item systemLinker;
     public Item airshipStealer;
@@ -197,6 +200,8 @@ public class ValkyrienWarfareControlMod {
 
         airshipController_zepplin = new BlockAirshipController_Zepplin(Material.WOOD).setHardness(5f).setUnlocalizedName("airshipcontroller_zepplin").setRegistryName(MODID, "airshipcontroller_zepplin").setCreativeTab(ValkyrienWarfareMod.vwTab);
 
+        gyroscope = new BlockGyroscope(Material.IRON).setHardness(5f).setUnlocalizedName("vw_gyroscope").setRegistryName(MODID, "vw_gyroscope").setCreativeTab(ValkyrienWarfareMod.vwTab);
+
         registerBlock(basicEngine);
         registerBlock(advancedEngine);
         registerBlock(eliteEngine);
@@ -225,6 +230,8 @@ public class ValkyrienWarfareControlMod {
         registerBlock(shipHullSealer);
 
         registerBlock(airshipController_zepplin);
+
+        registerBlock(gyroscope);
     }
 
     private void registerTileEntities(FMLStateEvent event) {
@@ -239,6 +246,7 @@ public class ValkyrienWarfareControlMod {
         GameRegistry.registerTileEntity(TileEntityPropellerEngine.class, "tilepropellerengine");
         GameRegistry.registerTileEntity(TileEntityZepplinController.class, "tilezepplin_controller");
         GameRegistry.registerTileEntity(TileEntityHullSealer.class, "tileentityshiphullsealer");
+        GameRegistry.registerTileEntity(TileEntityGyroscope.class, "tileentitygyroscope");
     }
 
     private void registerItems(FMLStateEvent event) {

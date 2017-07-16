@@ -7,13 +7,13 @@ import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareControl.ValkyrienWarfareControlMod;
 import ValkyrienWarfareControl.Network.MessageStartPiloting;
 import ValkyrienWarfareControl.Network.MessageStopPiloting;
+import ValkyrienWarfareControl.NodeNetwork.BasicNodeTileEntity;
 import ValkyrienWarfareControl.Piloting.ControllerInputType;
 import ValkyrienWarfareControl.Piloting.ITileEntityPilotable;
 import ValkyrienWarfareControl.Piloting.PilotControlsMessage;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.WorldServer;
 
 /**
@@ -21,7 +21,7 @@ import net.minecraft.world.WorldServer;
  * @author thebest108
  *
  */
-public abstract class ImplTileEntityPilotable extends TileEntity implements ITileEntityPilotable {
+public abstract class ImplTileEntityPilotable extends BasicNodeTileEntity implements ITileEntityPilotable {
 
 	private EntityPlayer pilotPlayerEntity;
 

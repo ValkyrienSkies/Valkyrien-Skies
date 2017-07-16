@@ -29,6 +29,7 @@ import ValkyrienWarfareBase.Relocation.DetectorManager;
 import ValkyrienWarfareBase.Relocation.SpatialDetector;
 import ValkyrienWarfareBase.Relocation.VWChunkCache;
 import ValkyrienWarfareBase.Render.PhysObjectRenderManager;
+import ValkyrienWarfareBase.Schematics.SchematicReader.Schematic;
 import ValkyrienWarfareControl.ValkyrienWarfareControlMod;
 import ValkyrienWarfareControl.Balloon.ShipBalloonManager;
 import ValkyrienWarfareControl.Network.EntityFixMessage;
@@ -36,6 +37,7 @@ import ValkyrienWarfareControl.NodeNetwork.INodeProvider;
 import ValkyrienWarfareControl.NodeNetwork.Node;
 import gnu.trove.iterator.TIntIterator;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -261,6 +263,80 @@ public class PhysicsObject {
 		assembleShip(player, detector, centerInWorld);
 	}
 
+	public void processChunkClaims(Schematic toFollow) {
+		BlockPos centerInWorld = new BlockPos(- (toFollow.width / 2), 128 - (toFollow.height / 2), - (toFollow.length / 2));
+
+		int radiusNeeded = (Math.max(toFollow.length, toFollow.width) / 16) + 2;
+
+        // System.out.println(radiusNeeded);
+
+        claimNewChunks(radiusNeeded);
+
+        ValkyrienWarfareMod.physicsManager.onShipPreload(wrapper);
+
+        claimedChunks = new Chunk[(ownedChunks.radius * 2) + 1][(ownedChunks.radius * 2) + 1];
+        claimedChunksEntries = new PlayerChunkMapEntry[(ownedChunks.radius * 2) + 1][(ownedChunks.radius * 2) + 1];
+        for (int x = ownedChunks.minX; x <= ownedChunks.maxX; x++) {
+            for (int z = ownedChunks.minZ; z <= ownedChunks.maxZ; z++) {
+                Chunk chunk = new Chunk(worldObj, x, z);
+                injectChunkIntoWorld(chunk, x, z, true);
+                claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ] = chunk;
+            }
+        }
+
+        replaceOuterChunksWithAir();
+
+        VKChunkCache = new VWChunkCache(worldObj, claimedChunks);
+        int minChunkX = claimedChunks[0][0].x;
+        int minChunkZ = claimedChunks[0][0].z;
+
+        refrenceBlockPos = getRegionCenter();
+        centerCoord = new Vector(refrenceBlockPos.getX(), refrenceBlockPos.getY(), refrenceBlockPos.getZ());
+
+        createPhysicsCalculations();
+        //The ship just got build, how can it not be the latest?
+        physicsProcessor.isShipPastBuild91 = true;
+
+        BlockPos centerDifference = refrenceBlockPos.subtract(centerInWorld);
+
+
+        //Place blocks in here
+        int cont = 0;
+
+        for(int y = 0; y < toFollow.height; y++) {
+        	for(int z = 0; z < toFollow.length; z++) {
+        		for(int x = 0; x < toFollow.width; x++)	{
+        			Block b = Block.getBlockById(toFollow.blocks[cont]);
+        			IBlockState state = b.getStateById(toFollow.blocks[cont]);
+                    if(state.getBlock() != Blocks.AIR)
+                    {
+//                    	System.out.println("placed block");
+                        worldObj.setBlockState(new BlockPos(x + centerDifference.getX(),y + centerDifference.getY(),z + centerDifference.getZ()), state, 2);
+                    }
+                    cont++;
+        		}
+        	}
+        }
+
+
+        detectBlockPositions();
+
+        //TODO: This fixes the lighting, but it adds lag; maybe remove this
+        for (int x = ownedChunks.minX; x <= ownedChunks.maxX; x++) {
+            for (int z = ownedChunks.minZ; z <= ownedChunks.maxZ; z++) {
+//				claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ].isTerrainPopulated = true;
+//                claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ].generateSkylightMap();
+//                claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ].checkLight();
+            }
+        }
+
+        coordTransform = new CoordTransformObject(this);
+        physicsProcessor.processInitialPhysicsData();
+        physicsProcessor.updateParentCenterOfMass();
+
+        coordTransform.updateAllTransforms();
+	}
+
 	/**
 	 * Creates the PhysicsProcessor object before any data gets loaded into it; can be overridden to change the class of the Object
 	 */
@@ -455,8 +531,8 @@ public class PhysicsObject {
         for (int x = ownedChunks.minX; x <= ownedChunks.maxX; x++) {
             for (int z = ownedChunks.minZ; z <= ownedChunks.maxZ; z++) {
 //				claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ].isTerrainPopulated = true;
-                claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ].generateSkylightMap();
-                claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ].checkLight();
+//                claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ].generateSkylightMap();
+//                claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ].checkLight();
             }
         }
 
@@ -604,6 +680,7 @@ public class PhysicsObject {
             }
             queuedEntitiesToMount.clear();
         }
+//        wrapper.isDead = true;
     }
 
     public void queueForce(PhysicsQueuedForce toQueue) {

@@ -12,7 +12,6 @@ import ValkyrienWarfareControl.TileEntity.ThrustModulatorTileEntity;
 import ValkyrienWarfareControl.TileEntity.TileEntityNormalEtherCompressor;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 
 public class ShipPulseImpulseControlSystem {
 
@@ -57,15 +56,8 @@ public class ShipPulseImpulseControlSystem {
 
 		BlockPos shipRefrencePos = calculations.parent.refrenceBlockPos;
 
-
-
-
-
 		double maxYDelta = parentTile.maximumYVelocity;
 		double idealHeight = parentTile.idealYHeight + getBobForTime();
-
-
-
 
 		Vector linearMomentumError = getIdealMomentumErrorForSystem(calculations, posInWorld, maxYDelta, idealHeight);
 
@@ -77,15 +69,10 @@ public class ShipPulseImpulseControlSystem {
 //			System.out.println("Current result impossible");
 		}
 
-
 		double linearThama = 4.5D;
 		double angularThama = 1343.5D;
 
-
-
 		Vector theNormal = new Vector(0, 1, 0);
-
-
 
 		Vector idealNormal = new Vector(theNormal);
 		Vector currentNormal = new Vector(theNormal, calculations.parent.coordTransform.lToWRotation);

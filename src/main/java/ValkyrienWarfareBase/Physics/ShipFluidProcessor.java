@@ -6,6 +6,7 @@ import java.util.List;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
@@ -77,13 +78,26 @@ public class ShipFluidProcessor {
 		final int yLevelToSimulate;
 		final Vector shipUpNormalVector;
 		public List<BlockPos> blockPositionsOfCrossSection;
+		private final AxisAlignedBB shipBB;
 		private final ArrayList<BlockPos>[] solidPositionsAtYLevel;
+		private final double[] lToWTransform;
 
-		public NestedCrossSection(int yLevelToSimulate, Vector shipUpNormalVector, ArrayList<BlockPos>[] solidPositionsAtYLevel) {
+		public final ArrayList<BlockPos> normalizedSolidPositions = new ArrayList<BlockPos>();
+		public final ArrayList<BlockPos> airPositions = new ArrayList<BlockPos>();
+
+		public NestedCrossSection(int yLevelToSimulate, Vector shipUpNormalVector, ArrayList<BlockPos>[] solidPositionsAtYLevel, AxisAlignedBB shipBB, double[] lToWTransform) {
 			this.yLevelToSimulate = yLevelToSimulate;
 			this.shipUpNormalVector = shipUpNormalVector;
 			this.solidPositionsAtYLevel = solidPositionsAtYLevel;
+			this.shipBB = shipBB;
+			this.lToWTransform = lToWTransform;
 		}
+
+		public void runSimulation() {
+
+		}
+
+
 	}
 
 }

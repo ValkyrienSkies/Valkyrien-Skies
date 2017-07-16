@@ -15,6 +15,7 @@ public class Node {
 
     public final TileEntity parentTile;
     private PhysicsObject parentPhysicsObject;
+    private boolean isRelay;
     //No duplicate connections
     public HashSet<Node> connectedNodes;
     public HashSet<BlockPos> connectedNodesBlockPos;
@@ -189,6 +190,21 @@ public class Node {
         channel = newChannel;
     }
 
+    public boolean canLinkToNode(Node other) {
+    	if(this.isNodeRelay() || other.isNodeRelay()) {
+    		return true;
+    	}
+    	return false;
+    }
+
+    public boolean isNodeRelay() {
+    	return isRelay;
+    }
+
+    public void setIsNodeRelay(boolean newVal) {
+    	isRelay = newVal;
+    }
+
     public void readFromNBT(NBTTagCompound compound) {
         //TODO: This might not be correct
         connectedNodesBlockPos.clear();
@@ -200,6 +216,7 @@ public class Node {
             connectedNodesBlockPos.add(toAdd);
         }
         channel = compound.getByte("channel");
+        setIsNodeRelay(compound.getBoolean("isRelay"));
     }
 
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
@@ -215,6 +232,7 @@ public class Node {
         }
         compound.setIntArray("connectednodesarray", arrayToWrite);
         compound.setByte("channel", channel);
+        compound.setBoolean("isRelay", isNodeRelay());
 
         return compound;
     }

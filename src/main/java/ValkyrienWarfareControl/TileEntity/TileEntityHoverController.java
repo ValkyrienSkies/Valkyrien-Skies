@@ -1,9 +1,12 @@
 package ValkyrienWarfareControl.TileEntity;
 
-import ValkyrienWarfareBase.API.Block.EtherCompressor.TileEntityEtherCompressor;
+import java.util.ArrayList;
+
+import ValkyrienWarfareBase.NBTUtils;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
-import ValkyrienWarfareBase.NBTUtils;
+import ValkyrienWarfareBase.API.Block.EtherCompressor.TileEntityEtherCompressor;
+import ValkyrienWarfareBase.Physics.PhysicsCalculations;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
 import ValkyrienWarfareControl.Network.HovercraftControllerGUIInputMessage;
 import net.minecraft.block.state.IBlockState;
@@ -14,8 +17,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
-import java.util.ArrayList;
-
+@Deprecated
 public class TileEntityHoverController extends TileEntity {
 
     public ArrayList<BlockPos> enginePositions = new ArrayList<BlockPos>();
@@ -52,35 +54,61 @@ public class TileEntityHoverController extends TileEntity {
 //            setAutoStabilizationValue(physObj);
         }
 
-        double linearDist = -getControllerDistFromIdealY(physObj);
-        double angularDist = -getEngineDistFromIdealAngular(enginePos, physObj, secondsToApply);
 
-        engine.angularThrust.Y -= (angularConstant * secondsToApply) * angularDist;
-        engine.linearThrust.Y -= (linearConstant * secondsToApply) * linearDist;
+        PhysicsCalculations calculations = physObj.physicsProcessor;
 
-        engine.angularThrust.Y = Math.max(engine.angularThrust.Y, 0D);
-        engine.linearThrust.Y = Math.max(engine.linearThrust.Y, 0D);
+        double[] rotationAndTranslationMatrix = physObj.coordTransform.lToWTransform;
+        Vector angularVelocity = new Vector(calculations.angularVelocity);
+        Vector linearMomentum = new Vector(calculations.linearMomentum);
 
-        engine.angularThrust.Y = Math.min(engine.angularThrust.Y, engine.getMaxThrust() * stabilityBias);
-        engine.linearThrust.Y = Math.min(engine.linearThrust.Y, engine.getMaxThrust() * (1D - stabilityBias));
+        double currentErrorY = -getControllerDistFromIdealY(physObj);
+        double currentEngineErrorAngularY = -getEngineDistFromIdealAngular(enginePos, physObj, secondsToApply);
 
-        engine.linearThrust.Y -= engine.angularThrust.Y;
-        engine.linearThrust.Y = Math.max(engine.linearThrust.Y, 0D);
 
-        if (shipVel.Y > 25D) {
-            engine.linearThrust.Y = 0; //*= 10D/shipVel.Y;
-        }
+        Vector potentialMaxForce = new Vector(0, engine.getMaxThrust(), 0);
+		potentialMaxForce.multiply(calculations.invMass);
+		potentialMaxForce.multiply(calculations.physTickSpeed);
+		Vector potentialMaxThrust = engine.getPositionInLocalSpaceWithOrientation().cross(potentialMaxForce);
+		RotationMatrices.applyTransform3by3(calculations.invFramedMOI, potentialMaxThrust);
+		potentialMaxThrust.multiply(calculations.physTickSpeed);
 
-        if (shipVel.Y < -10D) {
-            engine.linearThrust.Y *= -20D / shipVel.Y;
-        }
+		double linearThama = 4.5D;
+		double maxYDelta = 10D;
 
-        Vector aggregateForce = engine.linearThrust.getAddition(engine.angularThrust);
-        aggregateForce.multiply(secondsToApply);
+		double futureCurrentErrorY = currentErrorY + linearThama * potentialMaxForce.Y;
+		double futureEngineErrorAngularY = getEngineDistFromIdealAngular(engine.getPos(), rotationAndTranslationMatrix, angularVelocity.getAddition(potentialMaxThrust), calculations.centerOfMass, calculations.physTickSpeed);
+
+
+		boolean doesForceMinimizeError = false;
+
+		if(Math.abs(futureCurrentErrorY) < Math.abs(currentErrorY) && Math.abs(futureEngineErrorAngularY) < Math.abs(currentEngineErrorAngularY)) {
+			doesForceMinimizeError = true;
+			if(Math.abs(linearMomentum.Y * calculations.invMass) > maxYDelta) {
+				if(Math.abs((potentialMaxForce.Y + linearMomentum.Y) * calculations.invMass) > Math.abs(linearMomentum.Y * calculations.invMass)) {
+					doesForceMinimizeError = false;
+				}
+			}else{
+				if(Math.abs((potentialMaxForce.Y + linearMomentum.Y) * calculations.invMass) > maxYDelta) {
+					doesForceMinimizeError = false;
+				}
+			}
+
+		}
+
+		if(doesForceMinimizeError) {
+			engine.setThrust(engine.getMaxThrust());
+			if(Math.abs(currentErrorY) < 1D) {
+				engine.setThrust(engine.getMaxThrust() * Math.pow(Math.abs(currentErrorY), 3D));
+			}
+		}else{
+			engine.setThrust(0);
+		}
+
+//		calculations.convertTorqueToVelocity();
 
         // System.out.println(aggregateForce);
 
-        return aggregateForce;
+        return engine.getForceOutputNormal().getProduct(engine.getThrust() * secondsToApply);
 //		return new Vector();
     }
 
@@ -105,6 +133,29 @@ public class TileEntityHoverController extends TileEntity {
 
         return idealYDif - (inWorldYDif + angularVelocityAtPoint.Y * angularVelocityBias);
     }
+
+    public double getEngineDistFromIdealAngular(BlockPos enginePos, double[] lToWRotation, Vector angularVelocity, Vector centerOfMass, double secondsToApply) {
+
+		Vector controllerPos = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
+		Vector enginePosVec = new Vector(enginePos.getX() + .5D, enginePos.getY() + .5D, enginePos.getZ() + .5D);
+
+		controllerPos.subtract(centerOfMass);
+		enginePosVec.subtract(centerOfMass);
+
+		Vector unOrientedPosDif = new Vector(enginePosVec.X - controllerPos.X, enginePosVec.Y - controllerPos.Y, enginePosVec.Z - controllerPos.Z);
+
+		double idealYDif = unOrientedPosDif.dot(normalVector);
+
+		RotationMatrices.doRotationOnly(lToWRotation, controllerPos);
+		RotationMatrices.doRotationOnly(lToWRotation, enginePosVec);
+
+		double inWorldYDif = enginePosVec.Y - controllerPos.Y;
+
+		Vector angularVelocityAtPoint = angularVelocity.cross(enginePosVec);
+		angularVelocityAtPoint.multiply(secondsToApply);
+
+		return idealYDif - (inWorldYDif + angularVelocityAtPoint.Y * angularVelocityBias);
+	}
 
     public double getControllerDistFromIdealY(PhysicsObject physObj) {
         Vector controllerPos = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);

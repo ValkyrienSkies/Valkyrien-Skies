@@ -67,7 +67,12 @@ public class ItemRelayWire extends Item {
                             inst.setLastRelay(null);
 
                             if (lastPosNode != null && currentPosNode != null) {
-                                currentPosNode.linkNode(lastPosNode);
+                            	if(currentPosNode.canLinkToNode(lastPosNode)) {
+                            		currentPosNode.linkNode(lastPosNode);
+                            	}else{
+                            		player.sendMessage(new TextComponentString("One of the connections must be to a thrust relay node"));
+                            		inst.setLastRelay(null);
+                            	}
                             }
 
 //							System.out.println("Success");

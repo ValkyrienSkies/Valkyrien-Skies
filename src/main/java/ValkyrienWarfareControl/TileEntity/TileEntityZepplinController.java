@@ -1,7 +1,7 @@
 package ValkyrienWarfareControl.TileEntity;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
-import ValkyrienWarfareBase.Physics.PhysicsCalculations_Zepplin;
+import ValkyrienWarfareBase.Physics.PhysicsCalculationsManualControl;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareControl.Piloting.ControllerInputType;
 import ValkyrienWarfareControl.Piloting.PilotControlsMessage;
@@ -13,7 +13,7 @@ public class TileEntityZepplinController extends ImplTileEntityPilotable {
 	public void onStopTileUsage() {
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(getWorld(), getPos());
 		if(wrapper != null) {
-			PhysicsCalculations_Zepplin zepplinPhysics = (PhysicsCalculations_Zepplin) wrapper.wrapping.physicsProcessor;
+			PhysicsCalculationsManualControl zepplinPhysics = (PhysicsCalculationsManualControl) wrapper.wrapping.physicsProcessor;
 			zepplinPhysics.upRate = 0;
 			zepplinPhysics.forwardRate = 0;
 		}
@@ -33,7 +33,7 @@ public class TileEntityZepplinController extends ImplTileEntityPilotable {
 	void processControlMessage(PilotControlsMessage message, EntityPlayerMP sender) {
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(getWorld(), getPos());
 		if(wrapper != null) {
-			PhysicsCalculations_Zepplin zepplinPhysics = (PhysicsCalculations_Zepplin) wrapper.wrapping.physicsProcessor;
+			PhysicsCalculationsManualControl zepplinPhysics = (PhysicsCalculationsManualControl) wrapper.wrapping.physicsProcessor;
 			if(message.airshipLeft) {
 				zepplinPhysics.yawRate -= 2.5;
 			}

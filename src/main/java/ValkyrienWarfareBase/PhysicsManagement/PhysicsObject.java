@@ -22,8 +22,8 @@ import ValkyrienWarfareBase.ChunkManagement.ChunkSet;
 import ValkyrienWarfareBase.Network.PhysWrapperPositionMessage;
 import ValkyrienWarfareBase.Physics.BlockForce;
 import ValkyrienWarfareBase.Physics.PhysicsCalculations;
+import ValkyrienWarfareBase.Physics.PhysicsCalculationsManualControl;
 import ValkyrienWarfareBase.Physics.PhysicsCalculationsOrbital;
-import ValkyrienWarfareBase.Physics.PhysicsCalculations_Zepplin;
 import ValkyrienWarfareBase.Physics.PhysicsQueuedForce;
 import ValkyrienWarfareBase.Relocation.DetectorManager;
 import ValkyrienWarfareBase.Relocation.SpatialDetector;
@@ -37,7 +37,6 @@ import ValkyrienWarfareControl.NodeNetwork.INodeProvider;
 import ValkyrienWarfareControl.NodeNetwork.Node;
 import gnu.trove.iterator.TIntIterator;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -300,44 +299,7 @@ public class PhysicsObject {
         BlockPos centerDifference = refrenceBlockPos.subtract(centerInWorld);
 
 
-        for(int x = 0; x < toFollow.width; x++) {
-        	for(int y = 0; y < toFollow.height; y++) {
-        		for(int z = 0; z < toFollow.length; z++) {
-
-        			int index = y * toFollow.width * toFollow.length + z * toFollow.width + x;
-
-        			int id = toFollow.blocksCombined[index];
-        			int data = toFollow.data[index];
-
-        			Block b = Block.getBlockById(id);
-        			IBlockState state = b.getStateFromMeta(data);
-                    if(state.getBlock() != Blocks.AIR)
-                    {
-//                    	System.out.println("placed block");
-                        worldObj.setBlockState(new BlockPos(x + centerDifference.getX(),y + centerDifference.getY(),z + centerDifference.getZ()), state, 2);
-                    }
-        		}
-        	}
-        }
-
-      	for(int i = 0; i < toFollow.tileentities.tagCount(); i++) {
-      		NBTTagCompound tileData = toFollow.tileentities.getCompoundTagAt(i);
-
-      		int x = tileData.getInteger("x") + centerDifference.getX();
-      		int y = tileData.getInteger("y") + centerDifference.getY();
-      		int z = tileData.getInteger("z") + centerDifference.getZ();
-
-      		tileData.setInteger("x", x);
-      		tileData.setInteger("y", y);
-      		tileData.setInteger("z", z);
-
-      		TileEntity newInstance = TileEntity.create(worldObj, tileData);
-            newInstance.validate();
-
-            worldObj.setTileEntity(newInstance.getPos(), newInstance);
-
-            newInstance.markDirty();
-      	}
+        toFollow.placeBlockAndTilesInWorld(worldObj, centerDifference);
 
         detectBlockPositions();
 
@@ -365,8 +327,8 @@ public class PhysicsObject {
 			if(shipType == ShipType.Oribtal || shipType == ShipType.Semi_Unlocked_Orbital) {
 				physicsProcessor = new PhysicsCalculationsOrbital(this);
 			}else{
-				if(shipType == ShipType.Zepplin) {
-					physicsProcessor = new PhysicsCalculations_Zepplin(this);
+				if(shipType == ShipType.Zepplin || shipType == ShipType.Dungeon_Sky) {
+					physicsProcessor = new PhysicsCalculationsManualControl(this);
 				}else{
 					physicsProcessor = new PhysicsCalculations(this);
 				}

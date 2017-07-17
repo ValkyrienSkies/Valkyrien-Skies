@@ -1,5 +1,12 @@
-package ValkyrienWarfareWorld;
+package ValkyrienWarfareWorld.Block;
 
+import java.util.List;
+import java.util.Random;
+
+import javax.annotation.Nullable;
+
+import ValkyrienWarfareWorld.EntityFallingUpBlock;
+import ValkyrienWarfareWorld.ValkyrienWarfareWorldMod;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFalling;
 import net.minecraft.block.material.Material;
@@ -11,10 +18,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-
-import javax.annotation.Nullable;
-import java.util.List;
-import java.util.Random;
 
 public class BlockEtheriumOre extends Block {
 
@@ -85,7 +88,7 @@ public class BlockEtheriumOre extends Block {
     //Ore Properties Start Here
     @Nullable
     public Item getItemDropped(IBlockState state, Random rand, int fortune) {
-        return ValkyrienWarfareWorldMod.etheriumCrystal;
+        return ValkyrienWarfareWorldMod.instance.etheriumCrystal;
     }
 
     public int quantityDroppedWithBonus(int fortune, Random random) {

@@ -4,6 +4,7 @@ import java.util.Random;
 
 import ValkyrienWarfareBase.ChunkManagement.PhysicsChunkManager;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
+import ValkyrienWarfareBase.PhysicsManagement.ShipType;
 import ValkyrienWarfareBase.Schematics.SchematicReader;
 import ValkyrienWarfareBase.Schematics.SchematicReader.Schematic;
 import ValkyrienWarfareWorld.ValkyrienWarfareWorldMod;
@@ -24,7 +25,7 @@ public class ValkyrienWarfareWorldGen implements IWorldGenerator {
     public WorldGenMinable genEtheriumOre;
 
     public ValkyrienWarfareWorldGen() {
-        this.genEtheriumOre = new WorldGenMinable(ValkyrienWarfareWorldMod.etheriumOre.getDefaultState(), 8);
+        this.genEtheriumOre = new WorldGenMinable(ValkyrienWarfareWorldMod.instance.etheriumOre.getDefaultState(), 8);
     }
 
     @Override
@@ -63,23 +64,21 @@ public class ValkyrienWarfareWorldGen implements IWorldGenerator {
 	    	double random = Math.random();
 	    	if(random < 0.01) {
 	    		//do it
-	    		System.out.println("Generating a VW temple");
+//	    		System.out.println("Generating a VW temple");
 
 	    		Schematic lootGet = SchematicReader.get("flying_temple.schemat");
 
 	    		if(lootGet == null) {
-	    			System.out.println("fuck");
+//	    			System.out.println("fuck");
 	    			return;
 	    		}
 
-	    		PhysicsWrapperEntity wrapperEntity = new PhysicsWrapperEntity(world, Minecraft.getMinecraft().player.posX, Minecraft.getMinecraft().player.posY, Minecraft.getMinecraft().player.posZ, lootGet);
+	    		PhysicsWrapperEntity wrapperEntity = new PhysicsWrapperEntity(world, chunk_X << 4, 150, chunk_Z << 4, ShipType.Full_Unlocked, lootGet);
 
 	    		//do it
 	    		wrapperEntity.forceSpawn = true;
 
 	    		wrapperEntity.posY = 150D;
-
-	    		System.out.println(world.restoringBlockSnapshots);
 
 	    		world.spawnEntity(wrapperEntity);
 

@@ -2,6 +2,7 @@ package ValkyrienWarfareWorld;
 
 import ValkyrienWarfareBase.PhysicsSettings;
 import ValkyrienWarfareBase.Fixes.IInventoryPlayerFix;
+import ValkyrienWarfareWorld.Block.BlockEtheriumOre;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;

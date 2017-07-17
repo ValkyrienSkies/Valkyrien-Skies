@@ -1,8 +1,8 @@
 package ValkyrienWarfareWorld.Proxy;
 
 import ValkyrienWarfareWorld.EntityFallingUpBlock;
-import ValkyrienWarfareWorld.Render.EntityFallingUpBlockRenderFactory;
 import ValkyrienWarfareWorld.ValkyrienWarfareWorldMod;
+import ValkyrienWarfareWorld.Render.EntityFallingUpBlockRenderFactory;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderItem;
@@ -22,12 +22,13 @@ public class ClientProxyWorld extends CommonProxyWorld {
 
     @Override
     public void init(FMLInitializationEvent e) {
-        registerBlockItem(ValkyrienWarfareWorldMod.etheriumOre);
+        registerBlockItem(ValkyrienWarfareWorldMod.instance.etheriumOre);
+        registerBlockItem(ValkyrienWarfareWorldMod.instance.skydungeon_controller);
     }
 
     @Override
     public void postInit(FMLPostInitializationEvent e) {
-        registerItemModel(ValkyrienWarfareWorldMod.etheriumCrystal);
+        registerItemModel(ValkyrienWarfareWorldMod.instance.etheriumCrystal);
     }
 
     private void registerBlockItem(Block toRegister) {

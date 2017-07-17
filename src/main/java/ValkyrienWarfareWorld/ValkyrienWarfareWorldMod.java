@@ -1,6 +1,8 @@
 package ValkyrienWarfareWorld;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
+import ValkyrienWarfareWorld.Block.BlockEtheriumOre;
+import ValkyrienWarfareWorld.Block.BlockSkyTempleController;
 import ValkyrienWarfareWorld.Proxy.CommonProxyWorld;
 import ValkyrienWarfareWorld.WorldGen.ValkyrienWarfareWorldGen;
 import net.minecraft.block.Block;
@@ -31,8 +33,9 @@ public class ValkyrienWarfareWorldMod {
     public static CommonProxyWorld proxy;
     @Instance(MODID)
     public static ValkyrienWarfareWorldMod instance = new ValkyrienWarfareWorldMod();
-    public static Block etheriumOre;
-    public static Item etheriumCrystal;
+    public Block etheriumOre;
+    public Block skydungeon_controller;
+    public Item etheriumCrystal;
 
     private static void registerItemBlock(Block block) {
         GameRegistry.register(new ItemBlock(block).setRegistryName(block.getRegistryName()));
@@ -61,10 +64,13 @@ public class ValkyrienWarfareWorldMod {
 
     private void registerBlocks(FMLStateEvent event) {
         etheriumOre = new BlockEtheriumOre(Material.ROCK).setHardness(3f).setUnlocalizedName("etheriumore").setRegistryName(MODID, "etheriumore").setCreativeTab(ValkyrienWarfareMod.vwTab);
+        skydungeon_controller = new BlockSkyTempleController(Material.GLASS).setHardness(15f).setUnlocalizedName("skydungeon_controller").setRegistryName(MODID, "skydungeon_controller").setCreativeTab(ValkyrienWarfareMod.vwTab);
 
         GameRegistry.register(etheriumOre);
+        GameRegistry.register(skydungeon_controller);
 
         registerItemBlock(etheriumOre);
+        registerItemBlock(skydungeon_controller);
     }
 
     private void registerItems(FMLStateEvent event) {

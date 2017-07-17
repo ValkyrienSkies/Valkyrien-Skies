@@ -17,6 +17,10 @@ public class DimensionPhysObjectManager {
         managerPerWorld = new HashMap<World, WorldPhysObjectManager>();
     }
 
+    /**
+     * Kinda like a preorder, order one now!
+     * @param toPreload
+     */
     public void onShipPreload(PhysicsWrapperEntity toPreload) {
     	getManagerForWorld(toPreload.world).preloadPhysicsWrapperEntityMappings(toPreload);
     }

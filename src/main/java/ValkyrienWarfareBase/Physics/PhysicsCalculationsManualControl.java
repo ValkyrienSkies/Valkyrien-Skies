@@ -5,13 +5,16 @@ import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
 import net.minecraft.nbt.NBTTagCompound;
 
-public class PhysicsCalculations_Zepplin extends PhysicsCalculations {
+public class PhysicsCalculationsManualControl extends PhysicsCalculations {
 
 	public double yawRate;
 	public double forwardRate;
 	public double upRate;
 
-	public PhysicsCalculations_Zepplin(PhysicsObject toProcess) {
+	public double setRoll = 0.00001D;
+	public double setPitch = 0.00001D;
+
+	public PhysicsCalculationsManualControl(PhysicsObject toProcess) {
 		super(toProcess);
 	}
 
@@ -37,8 +40,8 @@ public class PhysicsCalculations_Zepplin extends PhysicsCalculations {
 		applyAngularVelocity();
 
 		//We don't want the up normal to exactly align with the world normal, it causes problems with collision
-		parent.wrapper.pitch = 0.0001D;
-		parent.wrapper.roll = 0.0001D;
+		parent.wrapper.pitch = setPitch;
+		parent.wrapper.roll = setRoll;
 		parent.wrapper.yaw = previousYaw;
 
 		parent.wrapper.yaw -= (yawRate * physTickSpeed);

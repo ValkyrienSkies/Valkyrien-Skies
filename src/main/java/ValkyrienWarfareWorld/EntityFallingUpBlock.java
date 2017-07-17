@@ -21,7 +21,7 @@ public class EntityFallingUpBlock extends EntityFallingBlock {
 
     public EntityFallingUpBlock(World worldIn) {
         super(worldIn);
-        fallTile = ValkyrienWarfareWorldMod.etheriumOre.getDefaultState();
+        fallTile = ValkyrienWarfareWorldMod.instance.etheriumOre.getDefaultState();
     }
 
     public EntityFallingUpBlock(World worldIn, double x, double y, double z, IBlockState fallingBlockState) {

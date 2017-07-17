@@ -1,15 +1,28 @@
 package ValkyrienWarfareBase.Schematics;
 
 import java.io.InputStream;
+import java.util.HashMap;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Blocks;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 public class SchematicReader {
 
-	public static Schematic get(String schemname){
+	public static HashMap<String, Schematic> schematicCache = new HashMap<String, Schematic>();
+
+	public static Schematic get(String schemname) {
+		if(schematicCache.containsKey(schemname)) {
+			Schematic tryCached = schematicCache.get(schemname);
+			return tryCached;
+		}
         try {
             InputStream is = ValkyrienWarfareMod.instance.getClass().getClassLoader().getResourceAsStream("assets/valkyrienwarfare/schematics/"+schemname);
             NBTTagCompound nbtdata = CompressedStreamTools.readCompressed(is);
@@ -48,14 +61,20 @@ public class SchematicReader {
             NBTTagList tileentities = nbtdata.getTagList("TileEntities", 10);
             is.close();
 
-            return new Schematic(tileentities, width, height, length, blocks, data, blocksCombined);
+            Schematic toReturn = new Schematic(tileentities, width, height, length, blocks, data, blocksCombined);
+
+            schematicCache.put(schemname, toReturn);
+
+            return toReturn;
         } catch (Exception e) {
             System.out.println("I can't load schematic, because " + e.toString());
+            schematicCache.put(schemname, null);
             return null;
         }
     }
 
     public final static class Schematic{
+
         public final NBTTagList tileentities;
         public final short width;
         public final short height;
@@ -72,6 +91,47 @@ public class SchematicReader {
             this.blocks = blocks;
             this.data = data;
             this.blocksCombined = blocksCombined;
+        }
+
+        public void placeBlockAndTilesInWorld(World worldObj, BlockPos centerDifference) {
+        	for(int x = 0; x < width; x++) {
+            	for(int y = 0; y < height; y++) {
+            		for(int z = 0; z < length; z++) {
+
+            			int index = y * width * length + z * width + x;
+
+            			int id = blocksCombined[index];
+            			int dataVal = data[index];
+
+            			Block b = Block.getBlockById(id);
+            			IBlockState state = b.getStateFromMeta(dataVal);
+                        if(state.getBlock() != Blocks.AIR)
+                        {
+//                        	System.out.println("placed block");
+                            worldObj.setBlockState(new BlockPos(x + centerDifference.getX(),y + centerDifference.getY(),z + centerDifference.getZ()), state, 2);
+                        }
+            		}
+            	}
+            }
+
+          	for(int i = 0; i < tileentities.tagCount(); i++) {
+          		NBTTagCompound tileData = tileentities.getCompoundTagAt(i).copy();
+
+          		int x = tileData.getInteger("x") + centerDifference.getX();
+          		int y = tileData.getInteger("y") + centerDifference.getY();
+          		int z = tileData.getInteger("z") + centerDifference.getZ();
+
+          		tileData.setInteger("x", x);
+          		tileData.setInteger("y", y);
+          		tileData.setInteger("z", z);
+
+          		TileEntity newInstance = TileEntity.create(worldObj, tileData);
+                newInstance.validate();
+
+                worldObj.setTileEntity(newInstance.getPos(), newInstance);
+
+                newInstance.markDirty();
+          	}
         }
 
     }

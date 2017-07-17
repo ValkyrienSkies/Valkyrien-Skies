@@ -62,7 +62,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
         ShipNameUUIDData.get(worldIn).placeShipInRegistry(this, getCustomNameTag());
     }
 
-    public PhysicsWrapperEntity(World worldIn, double x, double y, double z, Schematic schematic) {
+    public PhysicsWrapperEntity(World worldIn, double x, double y, double z, ShipType type, Schematic schematic) {
         super(worldIn);
         posX = x;
         posY = y;
@@ -72,7 +72,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 
         wrapping.creator = "god";
         wrapping.detectorID = 0;
-        wrapping.shipType = ShipType.Full_Unlocked;
+        wrapping.shipType = type;
 
         wrapping.processChunkClaims(schematic);
 

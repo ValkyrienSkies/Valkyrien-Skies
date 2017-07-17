@@ -1,7 +1,7 @@
 package ValkyrienWarfareControl.Block.EtherCompressor;
 
-import ValkyrienWarfareBase.API.Block.EtherCompressor.BlockEtherCompressorLore;
 import ValkyrienWarfareBase.API.Vector;
+import ValkyrienWarfareBase.API.Block.EtherCompressor.BlockEtherCompressorLore;
 import ValkyrienWarfareControl.TileEntity.TileEntityNormalEtherCompressor;
 import net.minecraft.block.material.Material;
 import net.minecraft.tileentity.TileEntity;

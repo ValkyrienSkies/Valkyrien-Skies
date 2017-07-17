@@ -4,6 +4,7 @@ import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareWorld.Block.BlockEtheriumOre;
 import ValkyrienWarfareWorld.Block.BlockSkyTempleController;
 import ValkyrienWarfareWorld.Proxy.CommonProxyWorld;
+import ValkyrienWarfareWorld.TileEntity.TileEntitySkyTempleController;
 import ValkyrienWarfareWorld.WorldGen.ValkyrienWarfareWorldGen;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -52,6 +53,7 @@ public class ValkyrienWarfareWorldMod {
     public void init(FMLInitializationEvent event) {
         EntityRegistry.registerModEntity(new ResourceLocation(MODID, "FallingUpBlockEntity"), EntityFallingUpBlock.class, "FallingUpBlockEntity", 75, this, 80, 1, true);
         MinecraftForge.EVENT_BUS.register(worldEventsCommon);
+        registerTileEntities(event);
         proxy.init(event);
 
         GameRegistry.registerWorldGenerator(new ValkyrienWarfareWorldGen(), 1);
@@ -77,6 +79,10 @@ public class ValkyrienWarfareWorldMod {
         etheriumCrystal = new ItemEtheriumCrystal().setUnlocalizedName("etheriumcrystal").setRegistryName(MODID, "etheriumcrystal").setCreativeTab(ValkyrienWarfareMod.vwTab).setMaxStackSize(16);
 
         GameRegistry.register(etheriumCrystal);
+    }
+
+    private void registerTileEntities(FMLStateEvent event) {
+        GameRegistry.registerTileEntity(TileEntitySkyTempleController.class, "skydungeon_controller");
     }
 
 }

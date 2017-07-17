@@ -38,7 +38,7 @@ public class EntityCannonBasic extends EntityMountingWeaponBase {
 
         PhysicsWrapperEntity wrapper = getParentShip();
 
-        velocityVector.multiply(2D);
+        velocityVector.multiply(3D);
         EntityCannonBall projectile = new EntityCannonBall(world, velocityVector, this);
 
         Vector projectileSpawnPos = new Vector(0, .5, 0);

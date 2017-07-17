@@ -2,6 +2,7 @@ package ValkyrienWarfareWorld.WorldGen;
 
 import java.util.Random;
 
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.ChunkManagement.PhysicsChunkManager;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.ShipType;
@@ -62,7 +63,7 @@ public class ValkyrienWarfareWorldGen implements IWorldGenerator {
     	//TODO: Enable this
     	if(!isLikelyShipChunk && Minecraft.getMinecraft().player != null) {
 	    	double random = Math.random();
-	    	if(random < 0.01) {
+	    	if(random < ValkyrienWarfareMod.shipmobs_spawnrate) {
 	    		//do it
 //	    		System.out.println("Generating a VW temple");
 

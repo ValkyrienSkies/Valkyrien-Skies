@@ -99,6 +99,7 @@ public class ValkyrienWarfareMod {
     public static boolean highAccuracyCollisions = false;
     public static boolean accurateRain = false;
     public static boolean runAirshipPermissions = false;
+    public static double shipmobs_spawnrate = .01D;
     // NOTE: These only calculate physics, so they are only relevant to the Server end
     public static ExecutorService MultiThreadExecutor;
     public static Logger VWLogger;
@@ -129,6 +130,8 @@ public class ValkyrienWarfareMod {
         shipsSpawnParticles = config.get(Configuration.CATEGORY_GENERAL, "Enable particle spawns on Ships", true, "Ex. Torch Particles").getBoolean();
 
         runAirshipPermissions = config.get(Configuration.CATEGORY_GENERAL, "Enable airship permissions", false, "Enables the airship permissions system").getBoolean();
+
+        shipmobs_spawnrate = config.get(Configuration.CATEGORY_GENERAL, "The spawn rate for ship mobs", .01D, "The spawn rate for ship mobs").getDouble();
 
         if (MultiThreadExecutor != null) {
             MultiThreadExecutor.shutdown();

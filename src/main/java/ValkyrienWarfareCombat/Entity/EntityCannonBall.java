@@ -13,14 +13,14 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class EntityCannonBall extends Entity {
 
-    public float explosionPower = 4f;
+    public float explosionPower;
     private int lerpSteps;
     private double boatPitch, lerpY, lerpZ, lerpXRot, boatYaw;
 
     public EntityCannonBall(World worldIn) {
         super(worldIn);
         setSize(.4F, .4F);
-        explosionPower = 3f;
+        explosionPower = 2f;
     }
 
     public EntityCannonBall(World worldIn, Vector velocityVector, Entity parent) {
@@ -61,11 +61,11 @@ public class EntityCannonBall extends Entity {
             posY += motionY;
             posZ += motionZ;
 
-            // double drag = .98D;
-            // motionX*=drag;
-            // motionY*=drag;
-            // motionZ*=drag;
-            motionY -= .01;
+             double drag = Math.pow(.995D, 1D/20D);
+             motionX*=drag;
+             motionY*=drag;
+             motionZ*=drag;
+            motionY -= .05;
         } else {
             if (traceResult.hitVec != null && !world.isRemote) {
                 processCollision(traceResult);

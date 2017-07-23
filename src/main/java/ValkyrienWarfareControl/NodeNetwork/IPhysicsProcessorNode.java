@@ -3,7 +3,7 @@ package ValkyrienWarfareControl.NodeNetwork;
 import ValkyrienWarfareBase.Physics.PhysicsCalculations;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
 
-public interface IPhysicsProcessorNode {
+public interface IPhysicsProcessorNode extends INodeProvider {
 
     public int getPriority();
 

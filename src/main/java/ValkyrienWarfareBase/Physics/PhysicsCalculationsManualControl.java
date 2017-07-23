@@ -1,9 +1,13 @@
 package ValkyrienWarfareBase.Physics;
 
+import ValkyrienWarfareBase.PhysicsSettings;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
+import ValkyrienWarfareControl.NodeNetwork.IPhysicsProcessorNode;
+import ValkyrienWarfareControl.NodeNetwork.Node;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 
 public class PhysicsCalculationsManualControl extends PhysicsCalculations {
 
@@ -11,8 +15,10 @@ public class PhysicsCalculationsManualControl extends PhysicsCalculations {
 	public double forwardRate;
 	public double upRate;
 
-	public double setRoll = 0.00001D;
-	public double setPitch = 0.00001D;
+	public double setRoll = 0.01D;
+	public double setPitch = 0.01D;
+
+	public boolean useLinearMomentumForce;
 
 	public PhysicsCalculationsManualControl(PhysicsObject toProcess) {
 		super(toProcess);
@@ -24,6 +30,15 @@ public class PhysicsCalculationsManualControl extends PhysicsCalculations {
 		linearMomentum.multiply(modifiedDrag);
 		angularVelocity.multiply(modifiedDrag);
 
+		if (PhysicsSettings.doPhysicsBlocks) {
+			for(Node node : parent.nodesWithinShip) {
+				TileEntity nodeTile = node.parentTile;
+				if(nodeTile instanceof IPhysicsProcessorNode) {
+//					System.out.println("test");
+					((IPhysicsProcessorNode) nodeTile).onPhysicsTick(parent, this, physRawSpeed);
+				}
+			}
+		}
 	}
 
 	@Override
@@ -49,6 +64,10 @@ public class PhysicsCalculationsManualControl extends PhysicsCalculations {
 		double[] existingRotationMatrix = RotationMatrices.getRotationMatrix(0, parent.wrapper.yaw, 0);
 
 		Vector linearForce = new Vector(forwardRate, upRate, 0, existingRotationMatrix);
+
+		if(useLinearMomentumForce) {
+			linearForce = new Vector(linearMomentum);
+		}
 
 		linearForce.multiply(physTickSpeed);
 

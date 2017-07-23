@@ -34,6 +34,7 @@ import ValkyrienWarfareControl.ValkyrienWarfareControlMod;
 import ValkyrienWarfareControl.Balloon.ShipBalloonManager;
 import ValkyrienWarfareControl.Network.EntityFixMessage;
 import ValkyrienWarfareControl.NodeNetwork.INodeProvider;
+import ValkyrienWarfareControl.NodeNetwork.IPhysicsProcessorNode;
 import ValkyrienWarfareControl.NodeNetwork.Node;
 import gnu.trove.iterator.TIntIterator;
 import io.netty.buffer.ByteBuf;
@@ -476,6 +477,10 @@ public class PhysicsObject {
                 }
 
                 worldObj.setTileEntity(newInstance.getPos(), newInstance);
+
+                if(newInstance instanceof INodeProvider) {
+                	this.nodesWithinShip.add(((INodeProvider) newInstance).getNode());
+                }
 
                 newInstance.markDirty();
             }

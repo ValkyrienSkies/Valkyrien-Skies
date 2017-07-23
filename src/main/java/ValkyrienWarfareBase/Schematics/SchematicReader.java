@@ -4,6 +4,8 @@ import java.io.InputStream;
 import java.util.HashMap;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
+import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
+import ValkyrienWarfareControl.NodeNetwork.INodeProvider;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -24,7 +26,7 @@ public class SchematicReader {
 			return tryCached;
 		}
         try {
-            InputStream is = ValkyrienWarfareMod.instance.getClass().getClassLoader().getResourceAsStream("assets/valkyrienwarfare/schematics/"+schemname);
+            InputStream is = ValkyrienWarfareMod.instance.getClass().getClassLoader().getResourceAsStream("assets/valkyrienwarfareworld/schematics/"+schemname);
             NBTTagCompound nbtdata = CompressedStreamTools.readCompressed(is);
             short width = nbtdata.getShort("Width");
             short height = nbtdata.getShort("Height");
@@ -73,7 +75,7 @@ public class SchematicReader {
         }
     }
 
-    public final static class Schematic{
+    public final static class Schematic {
 
         public final NBTTagList tileentities;
         public final short width;
@@ -83,7 +85,7 @@ public class SchematicReader {
         public final byte[] data;
         public final short[] blocksCombined;
 
-        public Schematic(NBTTagList tileentities, short width, short height, short length, byte[] blocks, byte[] data, short[] blocksCombined){
+        private Schematic(NBTTagList tileentities, short width, short height, short length, byte[] blocks, byte[] data, short[] blocksCombined){
             this.tileentities = tileentities;
             this.width = width;
             this.height = height;
@@ -97,22 +99,20 @@ public class SchematicReader {
         	for(int x = 0; x < width; x++) {
             	for(int y = 0; y < height; y++) {
             		for(int z = 0; z < length; z++) {
-
             			int index = y * width * length + z * width + x;
-
             			int id = blocksCombined[index];
             			int dataVal = data[index];
 
             			Block b = Block.getBlockById(id);
             			IBlockState state = b.getStateFromMeta(dataVal);
-                        if(state.getBlock() != Blocks.AIR)
-                        {
-//                        	System.out.println("placed block");
+                        if(state.getBlock() != Blocks.AIR) {
                             worldObj.setBlockState(new BlockPos(x + centerDifference.getX(),y + centerDifference.getY(),z + centerDifference.getZ()), state, 2);
                         }
             		}
             	}
             }
+
+            PhysicsWrapperEntity wrapperEntity = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldObj, centerDifference);
 
           	for(int i = 0; i < tileentities.tagCount(); i++) {
           		NBTTagCompound tileData = tileentities.getCompoundTagAt(i).copy();
@@ -129,6 +129,16 @@ public class SchematicReader {
                 newInstance.validate();
 
                 worldObj.setTileEntity(newInstance.getPos(), newInstance);
+
+                System.out.println(newInstance.getClass().getName());
+                System.out.println(newInstance.getPos().subtract(centerDifference));
+
+
+                if(wrapperEntity != null) {
+                	if(newInstance instanceof INodeProvider) {
+                		wrapperEntity.wrapping.nodesWithinShip.add(((INodeProvider) newInstance).getNode());
+                	}
+                }
 
                 newInstance.markDirty();
           	}

@@ -9,6 +9,7 @@ import ValkyrienWarfareBase.PhysicsManagement.ShipType;
 import ValkyrienWarfareBase.Schematics.SchematicReader;
 import ValkyrienWarfareBase.Schematics.SchematicReader.Schematic;
 import ValkyrienWarfareWorld.ValkyrienWarfareWorldMod;
+import ValkyrienWarfareWorld.WorldGen.MobileDungeons.SkyTempleGenerator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -63,28 +64,8 @@ public class ValkyrienWarfareWorldGen implements IWorldGenerator {
     	//TODO: Enable this
     	if(!isLikelyShipChunk && Minecraft.getMinecraft().player != null) {
 	    	double random = Math.random();
-	    	if(random < ValkyrienWarfareMod.shipmobs_spawnrate) {
-	    		//do it
-//	    		System.out.println("Generating a VW temple");
 
-	    		Schematic lootGet = SchematicReader.get("flying_temple.schemat");
-
-	    		if(lootGet == null) {
-//	    			System.out.println("fuck");
-	    			return;
-	    		}
-
-	    		PhysicsWrapperEntity wrapperEntity = new PhysicsWrapperEntity(world, chunk_X << 4, 150, chunk_Z << 4, ShipType.Full_Unlocked, lootGet);
-
-	    		//do it
-	    		wrapperEntity.forceSpawn = true;
-
-	    		wrapperEntity.posY = 150D;
-
-	    		world.spawnEntity(wrapperEntity);
-
-	    		wrapperEntity.posY = 150D;
-	    	}
+	    	SkyTempleGenerator.runGenerator(world, chunk_X, chunk_Z, random);
     	}
     }
 }

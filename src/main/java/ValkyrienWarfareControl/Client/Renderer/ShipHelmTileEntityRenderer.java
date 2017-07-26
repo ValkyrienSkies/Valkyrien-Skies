@@ -1,9 +1,11 @@
 package ValkyrienWarfareControl.Client.Renderer;
 
+import org.lwjgl.opengl.GL11;
+
 import ValkyrienWarfareBase.Render.FastBlockModelRenderer;
+import ValkyrienWarfareControl.ValkyrienWarfareControlMod;
 import ValkyrienWarfareControl.Block.BlockShipHelm;
 import ValkyrienWarfareControl.TileEntity.TileEntityShipHelm;
-import ValkyrienWarfareControl.ValkyrienWarfareControlMod;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -12,7 +14,6 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import org.lwjgl.opengl.GL11;
 
 public class ShipHelmTileEntityRenderer extends TileEntitySpecialRenderer<TileEntityShipHelm> {
 

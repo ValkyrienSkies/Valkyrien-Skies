@@ -7,6 +7,9 @@
         "facing=south":{"model":"valkyrienwarfarecontrol:empty"},
         "facing=west":{"model":"valkyrienwarfarecontrol:empty"},
         "facing=east":{"model":"valkyrienwarfarecontrol:empty"},
-        "inventory":{"model":"valkyrienwarfarecontrol:shiptelegraph.obj","custom":{"flip-v":true}}
+        "inventory":[{
+             "model": "valkyrienwarfarecontrol:chadburnhand.obj",
+             "custom":{"flip-v":true}
+         }]
     }
 }

@@ -62,7 +62,7 @@ public class ShipHelmTileEntityRenderer extends TileEntitySpecialRenderer<TileEn
                 smoothWheelDif -= 360;
             }
 
-            double smoothCompass = tileentity.lastCompassAngle + (smoothCompassDif) * partialTick;
+            double smoothCompass = tileentity.lastCompassAngle + (smoothCompassDif) * partialTick + 180D;
             double smoothWheel = tileentity.lastWheelRotation + (smoothWheelDif) * partialTick;
 
             BlockPos originPos = tileentity.getPos();
@@ -113,6 +113,9 @@ public class ShipHelmTileEntityRenderer extends TileEntitySpecialRenderer<TileEn
             GL11.glPopMatrix();
 
             vertexbuffer.setTranslation(oldX, oldY, oldZ);
+
+            GlStateManager.enableLighting();
+            GlStateManager.resetColor();
         }
     }
 

@@ -90,6 +90,9 @@ public class ShipTelegraphTileEntityRenderer extends TileEntitySpecialRenderer<T
 
         GL11.glPopMatrix();
         vertexbuffer.setTranslation(oldX, oldY, oldZ);
+
+        GlStateManager.enableLighting();
+        GlStateManager.resetColor();
     }
 
 }

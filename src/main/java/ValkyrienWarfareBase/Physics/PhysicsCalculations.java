@@ -83,6 +83,29 @@ public class PhysicsCalculations {
 		torque = new Vector();
 	}
 
+	public PhysicsCalculations(PhysicsCalculations toCopy) {
+		parent = toCopy.parent;
+		wrapperEnt = toCopy.wrapperEnt;
+		worldObj = toCopy.worldObj;
+		worldCollision = toCopy.worldCollision;
+		shipCollision = toCopy.shipCollision;
+		centerOfMass = toCopy.centerOfMass;
+		linearMomentum = toCopy.linearMomentum;
+		angularVelocity = toCopy.angularVelocity;
+		torque = toCopy.torque;
+		mass = toCopy.mass; invMass = toCopy.invMass;
+		gravity = toCopy.gravity;
+		physRawSpeed = toCopy.physRawSpeed;
+		iterations = toCopy.iterations;
+		physTickSpeed = toCopy.physTickSpeed;
+		drag = toCopy.drag;
+		activeForcePositions = toCopy.activeForcePositions;
+		MoITensor = toCopy.MoITensor; invMoITensor = toCopy.invMoITensor;
+		framedMOI = toCopy.framedMOI; invFramedMOI = toCopy.invFramedMOI;
+		actAsArchimedes = toCopy.actAsArchimedes;
+		isShipPastBuild91 = toCopy.isShipPastBuild91;
+	}
+
 	public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos pos) {
 		if(newState == oldState){
 			//Nothing changed, so don't do anything

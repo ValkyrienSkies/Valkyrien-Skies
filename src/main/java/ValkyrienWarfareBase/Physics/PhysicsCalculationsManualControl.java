@@ -24,6 +24,11 @@ public class PhysicsCalculationsManualControl extends PhysicsCalculations {
 		super(toProcess);
 	}
 
+	public PhysicsCalculations downgradeToNormalCalculations() {
+		PhysicsCalculations normalCalculations = new PhysicsCalculations(this);
+		return normalCalculations;
+	}
+
 	@Override
 	public void calculateForces() {
 		double modifiedDrag = Math.pow(drag, physTickSpeed / .05D);
@@ -55,18 +60,20 @@ public class PhysicsCalculationsManualControl extends PhysicsCalculations {
 		applyAngularVelocity();
 
 		//We don't want the up normal to exactly align with the world normal, it causes problems with collision
-		parent.wrapper.pitch = setPitch;
-		parent.wrapper.roll = setRoll;
-		parent.wrapper.yaw = previousYaw;
 
-		parent.wrapper.yaw -= (yawRate * physTickSpeed);
+		if(!this.actAsArchimedes){
+			parent.wrapper.pitch = setPitch;
+			parent.wrapper.roll = setRoll;
+			parent.wrapper.yaw = previousYaw;
+			parent.wrapper.yaw -= (yawRate * physTickSpeed);
+		}
 
 		double[] existingRotationMatrix = RotationMatrices.getRotationMatrix(0, parent.wrapper.yaw, 0);
 
 		Vector linearForce = new Vector(forwardRate, upRate, 0, existingRotationMatrix);
 
 		if(useLinearMomentumForce) {
-			linearForce = new Vector(linearMomentum);
+			linearForce = new Vector(linearMomentum, invMass);
 		}
 
 		linearForce.multiply(physTickSpeed);

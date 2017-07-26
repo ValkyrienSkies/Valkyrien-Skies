@@ -3,10 +3,13 @@ package ValkyrienWarfareWorld.TileEntity;
 import javax.vecmath.Vector2d;
 
 import ValkyrienWarfareBase.NBTUtils;
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Physics.PhysicsCalculations;
 import ValkyrienWarfareBase.Physics.PhysicsCalculationsManualControl;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
+import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
+import ValkyrienWarfareBase.PhysicsManagement.ShipType;
 import ValkyrienWarfareControl.TileEntity.ImplPhysicsProcessorNodeTileEntity;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -54,14 +57,29 @@ public class TileEntitySkyTempleController extends ImplPhysicsProcessorNodeTileE
 //				System.out.println(reductionFactor);
 			}
 
-			calculations.linearMomentum.X = x;
-			calculations.linearMomentum.Z = z;
+			calculations.linearMomentum.X = x * calculations.mass;
+			calculations.linearMomentum.Z = z * calculations.mass;
 
 			totalSecondsExisted += secondsToSimulate;
 
 			calculations.linearMomentum.Y = Math.sin(Math.toRadians(totalSecondsExisted * 7.5D)) * yPathRate;
 		}
 	}
+
+	@Override
+	public void invalidate() {
+		super.invalidate();
+		if(!getWorld().isRemote) {
+			PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(getWorld(), getPos());
+			if(wrapper != null) {
+				if(wrapper.wrapping.physicsProcessor instanceof PhysicsCalculationsManualControl) {
+					wrapper.wrapping.physicsProcessor = ((PhysicsCalculationsManualControl) wrapper.wrapping.physicsProcessor).downgradeToNormalCalculations();
+					wrapper.wrapping.shipType = ShipType.Full_Unlocked;
+				}
+			}
+		}
+//		System.out.println("invalidated");
+    }
 
 	public void setOriginPos(Vector newPos)	{
 		originPos = newPos;

@@ -241,7 +241,7 @@ public class Node {
     public boolean equals(Object o) {
         if (o instanceof Node) {
             Node otherNode = (Node) o;
-            if (otherNode == this || otherNode.parentTile == parentTile) {
+            if (otherNode == this || otherNode.parentTile == parentTile || otherNode.parentTile.getPos().equals(this.parentTile.getPos())) {
                 return true;
             }
         }

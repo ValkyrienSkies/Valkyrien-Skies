@@ -12,40 +12,54 @@ import net.minecraft.nbt.NBTTagCompound;
 
 public class TileEntitySkyTempleController extends ImplPhysicsProcessorNodeTileEntity {
 
-	private Vector originPos;
+	private Vector originPos = new Vector();
 	private double orbitDistance;
 
-	double yawChangeRate = .3D;
+	double yawChangeRate = .85D;
+	double yawPathRate = 2D;
+	double yPathRate = 2D;
+
+	double totalSecondsExisted = Math.random() * 15D;
 
 	@Override
 	public void onPhysicsTick(PhysicsObject object, PhysicsCalculations calculations, double secondsToSimulate) {
 		if(calculations instanceof PhysicsCalculationsManualControl) {
 			PhysicsCalculationsManualControl manualControl = (PhysicsCalculationsManualControl) calculations;
 
-//			yawChangeRate = 1D;
 			((PhysicsCalculationsManualControl) calculations).useLinearMomentumForce = true;
 
 			if(originPos == null || originPos.isZero()) {
 				setOriginPos(new Vector(object.wrapper.posX, object.wrapper.posY, object.wrapper.posZ));
 			}
 
-			manualControl.yawRate = 0D;
+			manualControl.yawRate = yawChangeRate;
 
 			Vector2d distanceFromCenter = new Vector2d(object.wrapper.posX - originPos.X, object.wrapper.posZ - originPos.Z);
 
-//			distanceFromCenter.normalize();
+			double realDist = distanceFromCenter.length();
 
-			double yaw = Math.toDegrees(Math.atan2(distanceFromCenter.y, distanceFromCenter.x));
+			double invTan = Math.toDegrees(Math.atan2(distanceFromCenter.getY(), distanceFromCenter.getX()));
 
-			double nextYaw = 50D;//yaw + 1000D;
+			double velocityAngle = invTan + 90D;
 
-			double nextOffsetX = Math.cos(nextYaw) * orbitDistance;
-			double nextOffsetZ = Math.sin(nextYaw) * orbitDistance;
+			double x = Math.cos(Math.toRadians(velocityAngle)) * yawPathRate;
+			double z = Math.sin(Math.toRadians(velocityAngle)) * yawPathRate;
 
-//			System.out.println(nextOffsetX - (distanceFromCenter.x));
+			if(realDist / orbitDistance > 1D) {
+				double reductionFactor = (realDist / realDist) - 1D;
 
-//			manualControl.linearMomentum.X = nextOffsetX - object.wrapper.posX;
-//			manualControl.linearMomentum.Z = nextOffsetZ - object.wrapper.posZ;
+				x -= reductionFactor * distanceFromCenter.x * yawPathRate;
+				z -= reductionFactor * distanceFromCenter.y * yawPathRate;
+
+//				System.out.println(reductionFactor);
+			}
+
+			calculations.linearMomentum.X = x;
+			calculations.linearMomentum.Z = z;
+
+			totalSecondsExisted += secondsToSimulate;
+
+			calculations.linearMomentum.Y = Math.sin(Math.toRadians(totalSecondsExisted * 7.5D)) * yPathRate;
 		}
 	}
 
@@ -64,6 +78,9 @@ public class TileEntitySkyTempleController extends ImplPhysicsProcessorNodeTileE
     	super.readFromNBT(compound);
     	originPos = NBTUtils.readVectorFromNBT("originPos", compound);
     	orbitDistance = compound.getDouble("orbitDistance");
+    	yawChangeRate = compound.getDouble("yawChangeRate");
+    	yawPathRate = compound.getDouble("yawPathRate");
+    	yPathRate = compound.getDouble("yPathRate");
     }
 
     @Override
@@ -71,6 +88,9 @@ public class TileEntitySkyTempleController extends ImplPhysicsProcessorNodeTileE
     	compound = super.writeToNBT(compound);
     	NBTUtils.writeVectorToNBT("originPos", originPos, compound);
     	compound.setDouble("orbitDistance", orbitDistance);
+    	compound.setDouble("yawChangeRate", yawChangeRate);
+    	compound.setDouble("yawPathRate", yawPathRate);
+    	compound.setDouble("yPathRate", yPathRate);
         return compound;
     }
 

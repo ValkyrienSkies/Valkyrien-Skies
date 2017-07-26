@@ -34,25 +34,25 @@ public class TileEntityZepplinController extends ImplTileEntityPilotable {
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(getWorld(), getPos());
 		if(wrapper != null) {
 			PhysicsCalculationsManualControl zepplinPhysics = (PhysicsCalculationsManualControl) wrapper.wrapping.physicsProcessor;
-			if(message.airshipLeft) {
+			if(message.airshipLeft_KeyDown) {
 				zepplinPhysics.yawRate -= 2.5;
 			}
-			if(message.airshipRight) {
+			if(message.airshipRight_KeyDown) {
 				zepplinPhysics.yawRate += 2.5;
 			}
-			if(message.airshipUp) {
+			if(message.airshipUp_KeyDown) {
 				zepplinPhysics.upRate += .25D;
 			}
-			if(message.airshipDown) {
+			if(message.airshipDown_KeyDown) {
 				zepplinPhysics.upRate -= .25D;
 			}
-			if(message.airshipForward) {
+			if(message.airshipForward_KeyDown) {
 				zepplinPhysics.forwardRate += .25D;
 			}
-			if(message.airshipBackward) {
+			if(message.airshipBackward_KeyDown) {
 				zepplinPhysics.forwardRate -= .25D;
 			}
-			if(message.airshipStop) {
+			if(message.airshipStop_KeyDown) {
 				zepplinPhysics.yawRate = zepplinPhysics.upRate = zepplinPhysics.forwardRate = 0;
 			}
 			zepplinPhysics.yawRate = Math.min(Math.max(-50, zepplinPhysics.yawRate), 50);

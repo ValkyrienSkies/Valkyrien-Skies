@@ -15,21 +15,24 @@ import net.minecraft.world.WorldServer;
 
 public class TileEntityShipTelegraph extends ImplTileEntityPilotable implements ITickable {
 
-	public ShipTelegraphState telegraphState = ShipTelegraphState.HALT;
+	public ShipTelegraphState telegraphState = ShipTelegraphState.LANGSAM_1;
+	public double oldHandleRotation;
 	public double handleRotation;
+
+	double nextHandleRotation;
 
 	@Override
 	void processControlMessage(PilotControlsMessage message, EntityPlayerMP sender) {
 		int ordinal = telegraphState.ordinal();
-		if(message.airshipLeft) {
-			handleRotation -= 3D;
+		if(message.airshipLeft_KeyPressed && ordinal > 0) {
+			handleRotation -= 22.5D;
 			ordinal--;
 		}
-		if(message.airshipRight) {
-			handleRotation += 3D;
+		if(message.airshipRight_KeyPressed && ordinal < 12) {
+			handleRotation += 22.5D;
 			ordinal++;
 		}
-		ordinal = Math.max(0, Math.min(12, ordinal));
+//		ordinal = Math.max(0, Math.min(12, ordinal));
 		telegraphState = ShipTelegraphState.values()[ordinal];
 	}
 
@@ -38,7 +41,7 @@ public class TileEntityShipTelegraph extends ImplTileEntityPilotable implements 
     public void onDataPacket(net.minecraft.network.NetworkManager net, net.minecraft.network.play.server.SPacketUpdateTileEntity pkt) {
 //		lastWheelRotation = wheelRotation;
 
-    	handleRotation = pkt.getNbtCompound().getDouble("handleRotation");
+    	nextHandleRotation = pkt.getNbtCompound().getDouble("handleRotation");
     }
 
     @Override
@@ -54,10 +57,13 @@ public class TileEntityShipTelegraph extends ImplTileEntityPilotable implements 
 
 	@Override
 	public void update() {
-		if(!getWorld().isRemote){
+		if(getWorld().isRemote){
+			oldHandleRotation = handleRotation;
+			handleRotation = nextHandleRotation;
+		}else{
 			sendUpdatePacketToAllNearby();
 		}
-		this.markDirty();
+//		this.markDirty();
 	}
 
 	@Override

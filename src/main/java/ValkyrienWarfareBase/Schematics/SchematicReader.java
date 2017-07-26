@@ -130,8 +130,8 @@ public class SchematicReader {
 
                 worldObj.setTileEntity(newInstance.getPos(), newInstance);
 
-                System.out.println(newInstance.getClass().getName());
-                System.out.println(newInstance.getPos().subtract(centerDifference));
+//                System.out.println(newInstance.getClass().getName());
+//                System.out.println(newInstance.getPos().subtract(centerDifference));
 
 
                 if(wrapperEntity != null) {

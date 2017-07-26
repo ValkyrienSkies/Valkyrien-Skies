@@ -8,14 +8,12 @@ import ValkyrienWarfareControl.Block.BlockShipHelm;
 import ValkyrienWarfareControl.Piloting.ControllerInputType;
 import ValkyrienWarfareControl.Piloting.PilotControlsMessage;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.WorldServer;
 
 public class TileEntityShipHelm extends ImplTileEntityPilotable implements ITickable {
 
@@ -25,15 +23,24 @@ public class TileEntityShipHelm extends ImplTileEntityPilotable implements ITick
     public double wheelRotation = 0;
     public double lastWheelRotation = 0;
 
+    double nextWheelRotation;
+
     @Override
     public void update() {
         if (this.getWorld().isRemote) {
             calculateCompassAngle();
-            lastWheelRotation = wheelRotation;
-        } else {
-            double distanceToZero = -wheelRotation;
 
-            wheelRotation += distanceToZero / 10D;
+            lastWheelRotation = wheelRotation;
+            wheelRotation = nextWheelRotation;
+        } else {
+            double toOriginRate = 5D;
+            if(Math.abs(wheelRotation) < toOriginRate) {
+            	wheelRotation = 0;
+            }else{
+//            	wheelRotation -= Math.signum(wheelRotation) * wheelRotation;
+
+            	wheelRotation += -Math.signum(wheelRotation) * toOriginRate;
+            }
 
             sendUpdatePacketToAllNearby();
         }
@@ -43,7 +50,7 @@ public class TileEntityShipHelm extends ImplTileEntityPilotable implements ITick
     public void onDataPacket(net.minecraft.network.NetworkManager net, net.minecraft.network.play.server.SPacketUpdateTileEntity pkt) {
 //		lastWheelRotation = wheelRotation;
 
-        wheelRotation = pkt.getNbtCompound().getDouble("wheelRotation");
+    	nextWheelRotation = pkt.getNbtCompound().getDouble("wheelRotation");
     }
 
     @Override
@@ -69,7 +76,7 @@ public class TileEntityShipHelm extends ImplTileEntityPilotable implements ITick
 
         BlockPos spawnPos = getWorld().getSpawnPoint();
         Vector compassPoint = new Vector(getPos().getX(), getPos().getY(), getPos().getZ());
-        compassPoint.add(1D, 2, 1D);
+        compassPoint.add(1D, 2D, 1D);
 
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(getWorld(), getPos());
         if (wrapper != null) {
@@ -115,10 +122,10 @@ public class TileEntityShipHelm extends ImplTileEntityPilotable implements ITick
 	@Override
 	void processControlMessage(PilotControlsMessage message, EntityPlayerMP sender) {
 //		System.out.println("We Gotem!");
-		if(message.airshipLeft) {
+		if(message.airshipLeft_KeyDown) {
 			wheelRotation -= 10D;
 		}
-		if(message.airshipRight) {
+		if(message.airshipRight_KeyDown) {
 			wheelRotation += 10D;
 		}
 	}

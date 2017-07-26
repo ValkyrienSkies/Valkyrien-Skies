@@ -81,10 +81,10 @@ public class TileEntityPilotsChair extends ImplTileEntityPilotable {
         Vector shipUp = new Vector(0, 1, 0);
         Vector shipUpPos = new Vector(0, 1, 0);
 
-        if (message.airshipForward) {
+        if (message.airshipForward_KeyDown) {
             idealLinearVelocity.add(playerDirection);
         }
-        if (message.airshipBackward) {
+        if (message.airshipBackward_KeyDown) {
             idealLinearVelocity.subtract(playerDirection);
         }
 
@@ -92,18 +92,18 @@ public class TileEntityPilotsChair extends ImplTileEntityPilotable {
 
         RotationMatrices.applyTransform(controlledShip.coordTransform.lToWRotation, shipUp);
 
-        if (message.airshipUp) {
+        if (message.airshipUp_KeyDown) {
             idealLinearVelocity.add(upDirection);
         }
-        if (message.airshipDown) {
+        if (message.airshipDown_KeyDown) {
             idealLinearVelocity.add(downDirection);
         }
 
 
-        if (message.airshipRight) {
+        if (message.airshipRight_KeyDown) {
             idealAngularDirection.add(rightDirection);
         }
-        if (message.airshipLeft) {
+        if (message.airshipLeft_KeyDown) {
             idealAngularDirection.add(leftDirection);
         }
 

@@ -31,6 +31,8 @@ public abstract class MixinsAbstractClientPlayer implements IShipPilotClient {
         keyMessage.assignKeyBooleans(shipPiloting, type);
         keyMessage.controlBlockPos = blockBeingControlled;
 
+
+
         ValkyrienWarfareControlMod.controlNetwork.sendToServer(keyMessage);
     }
 

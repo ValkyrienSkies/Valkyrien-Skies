@@ -15,7 +15,7 @@ public class TileEntitySkyTempleController extends ImplPhysicsProcessorNodeTileE
 	private Vector originPos = new Vector();
 	private double orbitDistance;
 
-	double yawChangeRate = .85D;
+	double yawChangeRate = 8D;
 	double yawPathRate = 2D;
 	double yPathRate = 2D;
 

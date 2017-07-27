@@ -1,16 +1,22 @@
 package ValkyrienWarfareBase.PhysCollision;
 
+import java.util.ArrayList;
+import java.util.Random;
+
+import com.jackredcreeper.cannon.world.NewExp2;
+
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Collision.PhysCollisionObject;
 import ValkyrienWarfareBase.Collision.PhysPolygonCollider;
 import ValkyrienWarfareBase.Collision.Polygon;
+import ValkyrienWarfareBase.Optimization.CollisionInformationHolder;
+import ValkyrienWarfareBase.Optimization.ShipCollisionTask;
 import ValkyrienWarfareBase.PhysCollision.BlockRammingManager.NestedBoolean;
 import ValkyrienWarfareBase.Physics.PhysicsCalculations;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
 import ValkyrienWarfareBase.Relocation.SpatialDetector;
-import ValkyrienWarfareBase.ValkyrienWarfareMod;
-import com.jackredcreeper.cannon.world.NewExp2;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.array.TIntArrayList;
 import net.minecraft.block.state.IBlockState;
@@ -23,8 +29,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 
-import java.util.Random;
-
 public class WorldPhysicsCollider {
 
     private static final double expansion = 2D;
@@ -36,13 +40,12 @@ public class WorldPhysicsCollider {
     public PhysicsObject parent;
     public double collisionCacheTickUpdateFrequency = 1D;
     public double collisionElasticity = .52D;
-    private TIntArrayList cachedPotentialHits;
+
+    public TIntArrayList cachedPotentialHits;
     private TIntArrayList cachedHitsToRemove = new TIntArrayList();
     // Ensures this always updates the first tick after creation
     private double ticksSinceCacheUpdate = 420;
-    // New stuff
-    // private int[] cachedPotentialHitsInt;
-    private BlockPos centerPotentialHit;
+    public BlockPos centerPotentialHit;
 
     public WorldPhysicsCollider(PhysicsCalculations calculations) {
         calculator = calculations;
@@ -52,8 +55,14 @@ public class WorldPhysicsCollider {
 
     //Runs the collision code
     public void runPhysCollision() {
-        // Multiply by 20 to convert seconds (physTickSpeed) into ticks (ticksSinceCacheUpdate)
-        ticksSinceCacheUpdate += 20D * calculator.physTickSpeed;
+    	tickUpdatingTheCollisionCache();
+
+        processPotentialCollisionsAccurately();
+    }
+
+    public void tickUpdatingTheCollisionCache() {
+    	// Multiply by 20 to convert seconds (physTickSpeed) into ticks (ticksSinceCacheUpdate)
+    	ticksSinceCacheUpdate += 20D * calculator.physTickSpeed;
 
         TIntIterator iterator = cachedHitsToRemove.iterator();
         while (iterator.hasNext()) {
@@ -64,7 +73,28 @@ public class WorldPhysicsCollider {
             updatePotentialCollisionCache();
             // Collections.shuffle(cachedPotentialHits);
         }
-        processPotentialCollisionsAccurately();
+    }
+
+    public void splitIntoCollisionTasks(ArrayList<ShipCollisionTask> toAdd) {
+    	int index = 0;
+    	int size = cachedPotentialHits.size();
+
+    	while(index < size) {
+    		ShipCollisionTask task = new ShipCollisionTask(this, index);
+    		index += ShipCollisionTask.maxTasksToCheck;
+    		toAdd.add(task);
+    	}
+    }
+
+    public void processCollisionTask(ShipCollisionTask task) {
+    	MutableBlockPos inWorldPos = new MutableBlockPos();
+    	MutableBlockPos inLocalPos = new MutableBlockPos();
+
+    	for(CollisionInformationHolder info : task.collisionInformationGenerated) {
+    		inWorldPos.setPos(info.inWorldX, info.inWorldY, info.inWorldZ);
+    		inLocalPos.setPos(info.inLocalX, info.inLocalY, info.inLocalZ);
+    		handleActualCollision(info.collider, inWorldPos, inLocalPos, info.inWorldState, info.inLocalState);
+    	}
     }
 
     // Runs through the cache ArrayList, checking each possible BlockPos for SOLID blocks that can collide, if it finds any it will
@@ -144,6 +174,12 @@ public class WorldPhysicsCollider {
                                             for (y = minYToCheck; y <= maxYToCheck; y++) {
                                                 final IBlockState state = storage.get(x & 15, y & 15, z & 15);
                                                 if (state.getMaterial().isSolid()) {
+
+
+                                                	//Inject the multithreaded code here
+
+
+
                                                     localCollisionPos.setPos(x, y, z);
 
                                                     boolean brokeAWorldBlock = handleLikelyCollision(mutablePos, localCollisionPos, parent.surroundingWorldChunksCache.getBlockState(mutablePos), state);

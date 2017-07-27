@@ -1,11 +1,12 @@
 package ValkyrienWarfareBase.PhysicsManagement;
 
+import java.util.ArrayList;
+
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.Interaction.EntityDraggable;
-import ValkyrienWarfareBase.ValkyrienWarfareMod;
+import ValkyrienWarfareBase.Optimization.ShipCollisionTask;
 import net.minecraft.world.World;
-
-import java.util.ArrayList;
 
 public class PhysicsTickHandler {
 
@@ -34,62 +35,64 @@ public class PhysicsTickHandler {
         Vector newGravity = ValkyrienWarfareMod.gravity;
         for (int pass = 0; pass < iters; pass++) {
             // Run PRE-Col
-            for (PhysicsWrapperEntity wrapper : physicsEntities) {
-            	if(!wrapper.firstUpdate){
-            		wrapper.wrapping.physicsProcessor.gravity = newGravity;
-                	wrapper.wrapping.physicsProcessor.rawPhysTickPreCol(newPhysSpeed, iters);
-            	}
-            }
-
-            if (ValkyrienWarfareMod.doShipCollision) {
-                for (int i = 0; i < physicsEntities.size(); i++) {
-                    PhysicsWrapperEntity first = physicsEntities.get(i);
-                    for (int j = i + 1; j < physicsEntities.size(); j++) {
-                        PhysicsWrapperEntity second = physicsEntities.get(j);
-                    	if(!first.firstUpdate && !second.firstUpdate) {
-	                        if (first.wrapping.collisionBB.intersectsWith(second.wrapping.collisionBB)) {
-	                            first.wrapping.physicsProcessor.shipCollision.doShipCollision(second.wrapping);
-	                        }
-                    	}
-                    }
-                }
-
-            }
-
-            if (ValkyrienWarfareMod.multiThreadedPhysics) {
-                try {
-                    ValkyrienWarfareMod.MultiThreadExecutor.invokeAll(manager.physCollisonCallables);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                for (PhysicsWrapperEntity wrapper : physicsEntities) {
-                	if(!wrapper.firstUpdate){
-                		wrapper.wrapping.physicsProcessor.processWorldCollision();
-                	}
-                }
-                for (PhysicsWrapperEntity wrapper : physicsEntities) {
-                	if(!wrapper.firstUpdate){
-                		wrapper.wrapping.physicsProcessor.rawPhysTickPostCol();
-                	}else{
-                		wrapper.wrapping.coordTransform.updateAllTransforms();
-                	}
-                }
-            }
+        	runPhysicsIteration(physicsEntities, manager);
         }
 
-        for (PhysicsWrapperEntity wrapper : physicsEntities) {
-            wrapper.wrapping.coordTransform.sendPositionToPlayers();
-        }
-        EntityDraggable.tickAddedVelocityForWorld(world);
     }
 
     public static void onWorldTickEnd(World world) {
         WorldPhysObjectManager manager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(world);
         ArrayList<PhysicsWrapperEntity> physicsEntities = manager.getTickablePhysicsEntities();
+
+        for (PhysicsWrapperEntity wrapper : physicsEntities) {
+            wrapper.wrapping.coordTransform.sendPositionToPlayers();
+        }
+        EntityDraggable.tickAddedVelocityForWorld(world);
+
         for (PhysicsWrapperEntity wrapperEnt : physicsEntities) {
             wrapperEnt.wrapping.onPostTick();
         }
+    }
+
+    public static void runPhysicsIteration(ArrayList<PhysicsWrapperEntity> physicsEntities, WorldPhysObjectManager manager) {
+    	double newPhysSpeed = ValkyrienWarfareMod.physSpeed;
+        Vector newGravity = ValkyrienWarfareMod.gravity;
+        int iters = ValkyrienWarfareMod.physIter;
+
+        ArrayList<ShipCollisionTask> collisionTasks = new ArrayList<ShipCollisionTask>(physicsEntities.size() * 2);
+
+    	for (PhysicsWrapperEntity wrapper : physicsEntities) {
+        	if(!wrapper.firstUpdate){
+        		wrapper.wrapping.physicsProcessor.gravity = newGravity;
+            	wrapper.wrapping.physicsProcessor.rawPhysTickPreCol(newPhysSpeed, iters);
+
+            	wrapper.wrapping.physicsProcessor.worldCollision.tickUpdatingTheCollisionCache();
+
+            	wrapper.wrapping.physicsProcessor.worldCollision.splitIntoCollisionTasks(collisionTasks);
+        	}
+        }
+
+    	try {
+            ValkyrienWarfareMod.MultiThreadExecutor.invokeAll(collisionTasks);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+    	for(ShipCollisionTask task : collisionTasks) {
+    		PhysicsWrapperEntity wrapper = task.toTask.parent.wrapper;
+    		if(!wrapper.firstUpdate) {
+    			task.toTask.processCollisionTask(task);
+    		}
+    	}
+
+        for (PhysicsWrapperEntity wrapper : physicsEntities) {
+        	if(!wrapper.firstUpdate){
+        		wrapper.wrapping.physicsProcessor.rawPhysTickPostCol();
+        	}else{
+        		wrapper.wrapping.coordTransform.updateAllTransforms();
+        	}
+        }
+
     }
 
 }

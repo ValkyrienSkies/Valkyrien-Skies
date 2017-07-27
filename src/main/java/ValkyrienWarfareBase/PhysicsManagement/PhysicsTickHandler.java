@@ -1,6 +1,9 @@
 package ValkyrienWarfareBase.PhysicsManagement;
 
 import java.util.ArrayList;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.API.Vector;
@@ -33,16 +36,53 @@ public class PhysicsTickHandler {
         int iters = ValkyrienWarfareMod.physIter;
         double newPhysSpeed = ValkyrienWarfareMod.physSpeed;
         Vector newGravity = ValkyrienWarfareMod.gravity;
-        for (int pass = 0; pass < iters; pass++) {
-            // Run PRE-Col
-        	runPhysicsIteration(physicsEntities, manager);
-        }
 
+        PhysicsTickThreadTask physicsThreadTask = new PhysicsTickThreadTask(iters, physicsEntities, manager);
+
+
+
+
+//		ValkyrienWarfareMod.PhysicsMasterThread.invokeAll(new ArrayList<PhysicsW>)
+
+		try {
+//			ValkyrienWarfareMod.PhysicsMasterThread.shutdown();
+
+//			ValkyrienWarfareMod.PhysicsMasterThread.execute(new Runnable() {
+//				@Override
+//				public void run() {
+//					try {
+//						physicsThreadTask.call();
+//					}catch(Exception e) {
+//
+//					}
+//				}
+//			});
+//			System.out.println(manager.hasPhysicsThreadFinished);
+//			physicsThreadTask.call();
+			manager.physicsThreadStatus = ValkyrienWarfareMod.PhysicsMasterThread.submit(physicsThreadTask);
+//
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
     public static void onWorldTickEnd(World world) {
         WorldPhysObjectManager manager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(world);
         ArrayList<PhysicsWrapperEntity> physicsEntities = manager.getTickablePhysicsEntities();
+
+        if(!manager.physicsThreadStatus.isDone()) {
+        	try {
+//        		System.out.println(world.getWorldTime());
+				manager.physicsThreadStatus.get();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        }
 
         for (PhysicsWrapperEntity wrapper : physicsEntities) {
             wrapper.wrapping.coordTransform.sendPositionToPlayers();
@@ -92,6 +132,29 @@ public class PhysicsTickHandler {
         		wrapper.wrapping.coordTransform.updateAllTransforms();
         	}
         }
+
+    }
+
+    private static class PhysicsTickThreadTask implements Callable<Void> {
+
+    	int iters;
+    	ArrayList physicsEntities;
+    	WorldPhysObjectManager manager;
+
+    	public PhysicsTickThreadTask(int iters, ArrayList physicsEntities, WorldPhysObjectManager manager) {
+    		this.iters = iters;
+    		this.physicsEntities = physicsEntities;
+    		this.manager = manager;
+    	}
+
+		@Override
+		public Void call() throws Exception {
+			for (int pass = 0; pass < iters; pass++) {
+				// Run PRE-Col
+				runPhysicsIteration(physicsEntities, manager);
+			}
+			return null;
+		}
 
     }
 

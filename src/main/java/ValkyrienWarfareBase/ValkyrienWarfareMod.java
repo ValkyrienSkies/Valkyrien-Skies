@@ -74,7 +74,6 @@ public class ValkyrienWarfareMod {
     public static File configFile;
     public static Configuration config;
     public static boolean dynamicLighting;
-    public static int threadCount;
     public static boolean multiThreadedPhysics;
     public static boolean doSplitting = false;
     public static boolean doShipCollision = false;
@@ -101,7 +100,8 @@ public class ValkyrienWarfareMod {
     public static boolean runAirshipPermissions = false;
     public static double shipmobs_spawnrate = .01D;
     // NOTE: These only calculate physics, so they are only relevant to the Server end
-    public static ExecutorService MultiThreadExecutor;
+    public static final ExecutorService MultiThreadExecutor = Executors.newWorkStealingPool();
+    public static final ExecutorService PhysicsMasterThread = Executors.newCachedThreadPool();
     public static Logger VWLogger;
     public DataTag tag = null;
 
@@ -116,7 +116,6 @@ public class ValkyrienWarfareMod {
 
         // Property spawnParticlesParticle = config.get(Configuration.CATEGORY_GENERAL, "Ships spawn particles", false).getBoolean();
         multiThreadedPhysics = config.get(Configuration.CATEGORY_GENERAL, "Multi-Threaded Physics", true, "Use Multi-Threaded Physics").getBoolean();
-        threadCount = config.get(Configuration.CATEGORY_GENERAL, "Physics Thread Count", Math.max(1, Runtime.getRuntime().availableProcessors() - 2), "Number of threads to run physics on").getInt();
 
         doShipCollision = config.get(Configuration.CATEGORY_GENERAL, "Enable Ship Collision", true).getBoolean();
 
@@ -132,14 +131,6 @@ public class ValkyrienWarfareMod {
         runAirshipPermissions = config.get(Configuration.CATEGORY_GENERAL, "Enable airship permissions", false, "Enables the airship permissions system").getBoolean();
 
         shipmobs_spawnrate = config.get(Configuration.CATEGORY_GENERAL, "The spawn rate for ship mobs", .01D, "The spawn rate for ship mobs").getDouble();
-
-        if (MultiThreadExecutor != null) {
-            MultiThreadExecutor.shutdown();
-            MultiThreadExecutor = null;
-        }
-        if (multiThreadedPhysics) {
-            MultiThreadExecutor = Executors.newFixedThreadPool(threadCount);
-        }
     }
 
     public static File getWorkingFolder() {

@@ -47,6 +47,9 @@ public class WorldPhysicsCollider {
     private double ticksSinceCacheUpdate = 420;
     public BlockPos centerPotentialHit;
 
+    private boolean updateCollisionTasksCache = true;
+    private final ArrayList<ShipCollisionTask> tasks = new ArrayList<ShipCollisionTask>();
+
     public WorldPhysicsCollider(PhysicsCalculations calculations) {
         calculator = calculations;
         parent = calculations.parent;
@@ -71,19 +74,27 @@ public class WorldPhysicsCollider {
         cachedHitsToRemove.clear();
         if (shouldUpdateCollisonCache()) {
             updatePotentialCollisionCache();
+
+            updateCollisionTasksCache = true;
             // Collections.shuffle(cachedPotentialHits);
         }
     }
 
     public void splitIntoCollisionTasks(ArrayList<ShipCollisionTask> toAdd) {
-    	int index = 0;
-    	int size = cachedPotentialHits.size();
+    	if(updateCollisionTasksCache) {
+    		tasks.clear();
+	    	int index = 0;
+	    	int size = cachedPotentialHits.size();
 
-    	while(index < size) {
-    		ShipCollisionTask task = new ShipCollisionTask(this, index);
-    		index += ShipCollisionTask.maxTasksToCheck;
-    		toAdd.add(task);
+	    	while(index < size) {
+	    		ShipCollisionTask task = new ShipCollisionTask(this, index);
+	    		index += ShipCollisionTask.maxTasksToCheck;
+	    		tasks.add(task);
+	    	}
+	    	updateCollisionTasksCache = false;
     	}
+
+    	toAdd.addAll(tasks);
     }
 
     public void processCollisionTask(ShipCollisionTask task) {
@@ -95,6 +106,8 @@ public class WorldPhysicsCollider {
     		inLocalPos.setPos(info.inLocalX, info.inLocalY, info.inLocalZ);
     		handleActualCollision(info.collider, inWorldPos, inLocalPos, info.inWorldState, info.inLocalState);
     	}
+
+    	task.collisionInformationGenerated.clear();
     }
 
     // Runs through the cache ArrayList, checking each possible BlockPos for SOLID blocks that can collide, if it finds any it will

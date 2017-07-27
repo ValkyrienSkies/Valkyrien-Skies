@@ -16,7 +16,7 @@ import net.minecraft.world.chunk.Chunk;
 
 public class ShipCollisionTask implements Callable<Void>  {
 
-	public final static int maxTasksToCheck = 40;
+	public final static int maxTasksToCheck = 45;
 
 	final int taskStartIndex;
 	final int tasksToCheck;

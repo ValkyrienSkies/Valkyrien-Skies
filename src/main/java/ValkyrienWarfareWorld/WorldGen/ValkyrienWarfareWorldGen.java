@@ -35,7 +35,7 @@ public class ValkyrienWarfareWorldGen implements IWorldGenerator {
         switch (world.provider.getDimension()) {
             case 0: //Overworld
                 this.runEtheriumGenerator(this.genEtheriumOre, world, random, chunkX, chunkZ, 2, 0, 25);
-                runDungeonGenerator(world, random, chunkX, chunkZ, 1);
+//                runDungeonGenerator(world, random, chunkX, chunkZ, 1);
                 break;
             case -1: //Nether
                 break;

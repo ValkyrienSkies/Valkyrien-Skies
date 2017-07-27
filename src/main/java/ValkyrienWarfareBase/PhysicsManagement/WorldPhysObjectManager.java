@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import net.minecraft.entity.Entity;
@@ -32,6 +33,8 @@ public class WorldPhysObjectManager {
     public ArrayList<PhysicsWrapperEntity> physicsEntitiesToUnload = new ArrayList<PhysicsWrapperEntity>();
     public ArrayList<Callable<Void>> physCollisonCallables = new ArrayList<Callable<Void>>();
 //	private static Field droppedChunksField;
+
+    public Future physicsThreadStatus = null;
 
     public WorldPhysObjectManager(World toManage) {
         worldObj = toManage;

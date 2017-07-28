@@ -560,12 +560,12 @@ public class PhysicsObject {
 
         claimedChunksEntries[x - ownedChunks.minX][z - ownedChunks.minZ] = entry;
 
-        Ticket ticket = ValkyrienWarfareMod.physicsManager.getManagerForWorld(this.worldObj).chunkLoadingTicket;
+//        Ticket ticket = ValkyrienWarfareMod.physicsManager.getManagerForWorld(this.worldObj).chunkLoadingTicket;
 
 //		MinecraftForge.EVENT_BUS.post(new ForceChunkEvent(ticket, new ChunkPos(x, z)));
 
         //Laggy as fuck, hell no!
-        ForgeChunkManager.forceChunk(ticket, new ChunkPos(x, z));
+//        ForgeChunkManager.forceChunk(ticket, new ChunkPos(x, z));
 //		MinecraftForge.EVENT_BUS.post(new ChunkEvent.Load(chunk));
     }
 
@@ -637,10 +637,10 @@ public class PhysicsObject {
             for (int z = ownedChunks.minZ; z <= ownedChunks.maxZ; z++) {
                 provider.queueUnload(claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ]);
 
-                Ticket ticket = ValkyrienWarfareMod.physicsManager.getManagerForWorld(this.worldObj).chunkLoadingTicket;
+//                Ticket ticket = ValkyrienWarfareMod.physicsManager.getManagerForWorld(this.worldObj).chunkLoadingTicket;
                 //So fucking laggy!
-                ForgeChunkManager.unforceChunk(manager.chunkLoadingTicket, new ChunkPos(x, z));
-                MinecraftForge.EVENT_BUS.post(new UnforceChunkEvent(ticket, new ChunkPos(x, z)));
+//                ForgeChunkManager.unforceChunk(manager.chunkLoadingTicket, new ChunkPos(x, z));
+//                MinecraftForge.EVENT_BUS.post(new UnforceChunkEvent(ticket, new ChunkPos(x, z)));
             }
         }
     }

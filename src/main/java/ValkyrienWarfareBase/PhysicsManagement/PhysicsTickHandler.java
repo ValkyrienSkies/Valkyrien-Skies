@@ -71,7 +71,7 @@ public class PhysicsTickHandler {
         WorldPhysObjectManager manager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(world);
         ArrayList<PhysicsWrapperEntity> physicsEntities = manager.getTickablePhysicsEntities();
 
-        if(!manager.physicsThreadStatus.isDone()) {
+        if(manager.physicsThreadStatus != null && !manager.physicsThreadStatus.isDone()) {
         	try {
 //        		System.out.println(world.getWorldTime());
 				manager.physicsThreadStatus.get();

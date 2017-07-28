@@ -201,7 +201,7 @@ public class EventsCommon {
                 if (event.phase == Phase.END) {
                     PhysicsTickHandler.onWorldTickEnd(worldFor);
                     if (worldFor instanceof WorldServer) {
-                        addOrRemovedAllShipChunksFromMap((WorldServer) worldFor, false);
+//                        addOrRemovedAllShipChunksFromMap((WorldServer) worldFor, false);
                     }
                 }
             }
@@ -213,7 +213,7 @@ public class EventsCommon {
         if ((event.phase == TickEvent.Phase.END) && (!event.world.isRemote)) {
             World worldFor = event.world;
             if (worldFor instanceof WorldServer) {
-                addOrRemovedAllShipChunksFromMap((WorldServer) worldFor, true);
+//                addOrRemovedAllShipChunksFromMap((WorldServer) worldFor, true);
             }
         }
     }

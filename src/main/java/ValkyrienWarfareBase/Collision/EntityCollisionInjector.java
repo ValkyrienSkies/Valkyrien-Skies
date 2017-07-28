@@ -66,63 +66,68 @@ public class EntityCollisionInjector {
         for (Polygon poly : colPolys) {
             if (poly instanceof ShipPolygon) {
                 ShipPolygon shipPoly = (ShipPolygon) poly;
-                EntityPolygonCollider fast = new EntityPolygonCollider(playerBeforeMove, shipPoly, shipPoly.normals, velVec.getAddition(total));
-                if (!fast.seperated) {
-//					fastCollisions.add(fast);
-                    worldBelow = shipPoly.shipFrom.wrapper;
+                try{
 
-                    Vector response = fast.collisions[fast.minDistanceIndex].getResponse();
-                    // TODO: Add more potential yResponses
-                    double stepSquared = entity.stepHeight * entity.stepHeight;
-                    boolean isStep = isLiving && entity.onGround;
-                    if (response.Y >= 0 && BigBastardMath.canStandOnNormal(fast.potentialSeperatingAxes[fast.minDistanceIndex])) {
-                        response = new Vector(0, -fast.collisions[fast.minDistanceIndex].penetrationDistance / fast.potentialSeperatingAxes[fast.minDistanceIndex].Y, 0);
-                    }
-                    if (isStep) {
-                        EntityLivingBase living = (EntityLivingBase) entity;
-                        if (Math.abs(living.moveForward) > .01D || Math.abs(living.moveStrafing) > .01D) {
-                            for (int i = 3; i < 6; i++) {
-                                Vector tempResponse = fast.collisions[i].getResponse();
-                                if (tempResponse.Y > 0 && BigBastardMath.canStandOnNormal(fast.collisions[i].axis) && tempResponse.lengthSq() < stepSquared) {
-                                    if (tempResponse.lengthSq() < .1D) {
-                                        //Too small to be a real step, let it through
-                                        response = tempResponse;
-                                    } else {
-//										System.out.println("Try Stepping!");
-                                        AxisAlignedBB axisalignedbb = entity.getEntityBoundingBox().offset(tempResponse.X, tempResponse.Y, tempResponse.Z);
-                                        entity.setEntityBoundingBox(axisalignedbb);
-                                        //I think this correct, but it may create more problems than it solves
-                                        response.zero();
-                                        entity.resetPositionToBB();
-                                    }
-//									entity.moveEntity(x, y, z);
-//									response = tempResponse;
-                                }
-                            }
-                        }
-                    }
-                    // total.add(response);
-                    if (Math.abs(response.X) > .01D) {
-                        total.X += response.X;
-                    }
-                    if (Math.abs(response.Y) > .01D) {
-                        total.Y += response.Y;
-                    }
-                    if (Math.abs(response.Z) > .01D) {
-                        total.Z += response.Z;
-                    }
+	                EntityPolygonCollider fast = new EntityPolygonCollider(playerBeforeMove, shipPoly, shipPoly.normals, velVec.getAddition(total));
+	                if (!fast.seperated) {
+	//					fastCollisions.add(fast);
+	                    worldBelow = shipPoly.shipFrom.wrapper;
 
-                    entity.posX += response.X;
-                    entity.posY += response.Y;
-                    entity.posZ += response.Z;
+	                    Vector response = fast.collisions[fast.minDistanceIndex].getResponse();
+	                    // TODO: Add more potential yResponses
+	                    double stepSquared = entity.stepHeight * entity.stepHeight;
+	                    boolean isStep = isLiving && entity.onGround;
+	                    if (response.Y >= 0 && BigBastardMath.canStandOnNormal(fast.potentialSeperatingAxes[fast.minDistanceIndex])) {
+	                        response = new Vector(0, -fast.collisions[fast.minDistanceIndex].penetrationDistance / fast.potentialSeperatingAxes[fast.minDistanceIndex].Y, 0);
+	                    }
+	                    if (isStep) {
+	                        EntityLivingBase living = (EntityLivingBase) entity;
+	                        if (Math.abs(living.moveForward) > .01D || Math.abs(living.moveStrafing) > .01D) {
+	                            for (int i = 3; i < 6; i++) {
+	                                Vector tempResponse = fast.collisions[i].getResponse();
+	                                if (tempResponse.Y > 0 && BigBastardMath.canStandOnNormal(fast.collisions[i].axis) && tempResponse.lengthSq() < stepSquared) {
+	                                    if (tempResponse.lengthSq() < .1D) {
+	                                        //Too small to be a real step, let it through
+	                                        response = tempResponse;
+	                                    } else {
+	//										System.out.println("Try Stepping!");
+	                                        AxisAlignedBB axisalignedbb = entity.getEntityBoundingBox().offset(tempResponse.X, tempResponse.Y, tempResponse.Z);
+	                                        entity.setEntityBoundingBox(axisalignedbb);
+	                                        //I think this correct, but it may create more problems than it solves
+	                                        response.zero();
+	                                        entity.resetPositionToBB();
+	                                    }
+	//									entity.moveEntity(x, y, z);
+	//									response = tempResponse;
+	                                }
+	                            }
+	                        }
+	                    }
+	                    // total.add(response);
+	                    if (Math.abs(response.X) > .01D) {
+	                        total.X += response.X;
+	                    }
+	                    if (Math.abs(response.Y) > .01D) {
+	                        total.Y += response.Y;
+	                    }
+	                    if (Math.abs(response.Z) > .01D) {
+	                        total.Z += response.Z;
+	                    }
 
-                    posOffestX += response.X;
-                    posOffestY += response.Y;
-                    posOffestZ += response.Z;
+	                    entity.posX += response.X;
+	                    entity.posY += response.Y;
+	                    entity.posZ += response.Z;
 
-                    AxisAlignedBB axisalignedbb = entity.getEntityBoundingBox().offset(response.X, response.Y, response.Z);
-                    entity.setEntityBoundingBox(axisalignedbb);
-                    entity.resetPositionToBB();
+	                    posOffestX += response.X;
+	                    posOffestY += response.Y;
+	                    posOffestZ += response.Z;
+
+	                    AxisAlignedBB axisalignedbb = entity.getEntityBoundingBox().offset(response.X, response.Y, response.Z);
+	                    entity.setEntityBoundingBox(axisalignedbb);
+	                    entity.resetPositionToBB();
+	                }
+                }catch(Exception e){
+
                 }
             }
 

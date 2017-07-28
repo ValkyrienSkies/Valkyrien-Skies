@@ -2,6 +2,7 @@ package ValkyrienWarfareWorld;
 
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareWorld.Block.BlockEtheriumOre;
+import ValkyrienWarfareWorld.Block.BlockQuartzFence;
 import ValkyrienWarfareWorld.Block.BlockSkyTempleController;
 import ValkyrienWarfareWorld.Proxy.CommonProxyWorld;
 import ValkyrienWarfareWorld.TileEntity.TileEntitySkyTempleController;
@@ -36,6 +37,7 @@ public class ValkyrienWarfareWorldMod {
     public static ValkyrienWarfareWorldMod instance = new ValkyrienWarfareWorldMod();
     public Block etheriumOre;
     public Block skydungeon_controller;
+    public Block quartz_fence;
     public Item etheriumCrystal;
 
     private static void registerItemBlock(Block block) {
@@ -67,12 +69,15 @@ public class ValkyrienWarfareWorldMod {
     private void registerBlocks(FMLStateEvent event) {
         etheriumOre = new BlockEtheriumOre(Material.ROCK).setHardness(3f).setUnlocalizedName("etheriumore").setRegistryName(MODID, "etheriumore").setCreativeTab(ValkyrienWarfareMod.vwTab);
         skydungeon_controller = new BlockSkyTempleController(Material.GLASS).setHardness(15f).setUnlocalizedName("skydungeon_controller").setRegistryName(MODID, "skydungeon_controller").setCreativeTab(ValkyrienWarfareMod.vwTab);
+        quartz_fence = new BlockQuartzFence(Material.GLASS).setHardness(8f).setUnlocalizedName("quartz_fence").setRegistryName(MODID, "quartz_fence").setCreativeTab(ValkyrienWarfareMod.vwTab);
 
         GameRegistry.register(etheriumOre);
         GameRegistry.register(skydungeon_controller);
+        GameRegistry.register(quartz_fence);
 
         registerItemBlock(etheriumOre);
         registerItemBlock(skydungeon_controller);
+        registerItemBlock(quartz_fence);
     }
 
     private void registerItems(FMLStateEvent event) {

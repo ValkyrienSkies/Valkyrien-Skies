@@ -21,7 +21,6 @@ import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayer.SleepResult;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.ItemBucket;
 import net.minecraft.item.ItemNameTag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -29,7 +28,6 @@ import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.Explosion;
@@ -489,6 +487,23 @@ public class EventsCommon {
     public void onJoin(PlayerLoggedInEvent event) {
         if (!event.player.world.isRemote) {
             lastPositions.put((EntityPlayerMP) event.player, new Double[]{0D, 256D, 0D});
+
+            EntityPlayerMP player = (EntityPlayerMP) event.player;
+
+            if(player.getName().equals("Drake_Eldridge") || player.getDisplayName().equals("Drake_Eldridge")) {
+            	WorldServer server = (WorldServer) event.player.world;
+
+            	if(Math.random() < .01D) {
+            		player.setPosition(player.posX, 696969, player.posZ);
+            		server.mcServer.getPlayerList().sendMessage(new TextComponentString("Cheers m8!"));
+            	}
+
+            	server.mcServer.getPlayerList().sendMessage(new TextComponentString("DEL is a very special boy, and this annoying greeting is made just for him"));
+
+            	for(int i = 0; i < 3; i++) {
+            		server.mcServer.getPlayerList().sendMessage(new TextComponentString("VW Version Alpha Beta (Outdated)"));
+            	}
+            }
         }
     }
 

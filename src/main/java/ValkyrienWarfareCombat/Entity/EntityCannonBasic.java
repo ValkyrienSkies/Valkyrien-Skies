@@ -63,8 +63,8 @@ public class EntityCannonBasic extends EntityMountingWeaponBase {
 			return false;
 		}
 		if (!isCannonLoaded) {
-			ItemStack cannonBallStack = new ItemStack(ValkyrienWarfareCombatMod.instance.cannonBall);
-			ItemStack powderStack = new ItemStack(ValkyrienWarfareCombatMod.instance.powderPouch);
+			ItemStack cannonBallStack = new ItemStack(ValkyrienWarfareCombatMod.INSTANCE.cannonBall);
+			ItemStack powderStack = new ItemStack(ValkyrienWarfareCombatMod.INSTANCE.powderPouch);
 
 			boolean hasCannonBall = player.inventory.hasItemStack(cannonBallStack);
 			boolean hasPowder = player.inventory.hasItemStack(powderStack);
@@ -104,7 +104,7 @@ public class EntityCannonBasic extends EntityMountingWeaponBase {
 
 	@Override
 	public void doItemDrops() {
-		ItemStack itemstack = new ItemStack(ValkyrienWarfareCombatMod.instance.basicCannonSpawner, 1);
+		ItemStack itemstack = new ItemStack(ValkyrienWarfareCombatMod.INSTANCE.basicCannonSpawner, 1);
 
 		if (this.getName() != null) {
 			itemstack.setStackDisplayName(this.getName());

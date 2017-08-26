@@ -1,21 +1,18 @@
 package ValkyrienWarfareCombat.Proxy;
 
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import ValkyrienWarfareBase.API.Addons.ModuleProxy;
+import net.minecraftforge.fml.common.event.FMLStateEvent;
 
-public class CommonProxyCombat {
-
-	public void preInit(FMLPreInitializationEvent e) {
+public class CommonProxyCombat extends ModuleProxy {
+	public void preInit(FMLStateEvent e) {
 
 	}
 
-	public void init(FMLInitializationEvent e) {
+	public void init(FMLStateEvent e) {
 
 	}
 
-	public void postInit(FMLPostInitializationEvent e) {
+	public void postInit(FMLStateEvent e) {
 
 	}
-
 }

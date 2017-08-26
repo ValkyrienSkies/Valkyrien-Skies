@@ -13,34 +13,35 @@ import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLStateEvent;
 
 public class ClientProxyCombat extends CommonProxyCombat {
 
 	@Override
-	public void preInit(FMLPreInitializationEvent e) {
+	public void preInit(FMLStateEvent e) {
 		super.preInit(e);
-		OBJLoader.INSTANCE.addDomain(ValkyrienWarfareCombatMod.MODID.toLowerCase());
+		OBJLoader.INSTANCE.addDomain(ValkyrienWarfareCombatMod.INSTANCE.getModID().toLowerCase());
 		RenderingRegistry.registerEntityRenderingHandler(EntityCannonBasic.class, new EntityCannonBasicRenderFactory());
 		RenderingRegistry.registerEntityRenderingHandler(EntityCannonBall.class, new EntityCannonBasicRenderFactory.EntityCannonBallRenderFactory());
 	}
 
 	@Override
-	public void init(FMLInitializationEvent e) {
+	public void init(FMLStateEvent e) {
 		super.init(e);
 	}
 
 	@Override
-	public void postInit(FMLPostInitializationEvent e) {
+	public void postInit(FMLStateEvent e) {
 		super.postInit(e);
-		registerItemModel(ValkyrienWarfareCombatMod.instance.basicCannonSpawner);
-		registerItemModel(ValkyrienWarfareCombatMod.instance.cannonBall);
-		registerItemModel(ValkyrienWarfareCombatMod.instance.powderPouch);
-		registerItemModel(ValkyrienWarfareCombatMod.instance.explosiveArrow);
+		registerItemModel(ValkyrienWarfareCombatMod.INSTANCE.basicCannonSpawner);
+		registerItemModel(ValkyrienWarfareCombatMod.INSTANCE.cannonBall);
+		registerItemModel(ValkyrienWarfareCombatMod.INSTANCE.powderPouch);
+		registerItemModel(ValkyrienWarfareCombatMod.INSTANCE.explosiveArrow);
 	}
 
 	private void registerItemModel(Item toRegister) {
 		RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
-		renderItem.getItemModelMesher().register(toRegister, 0, new ModelResourceLocation(ValkyrienWarfareCombatMod.MODID + ":" + toRegister.getUnlocalizedName().substring(5), "inventory"));
+		renderItem.getItemModelMesher().register(toRegister, 0, new ModelResourceLocation(ValkyrienWarfareCombatMod.INSTANCE.getModID() + ":" + toRegister.getUnlocalizedName().substring(5), "inventory"));
 		;
 	}
 }

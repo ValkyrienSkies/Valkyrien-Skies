@@ -20,7 +20,7 @@ public class EntityCannonBallRenderer extends Render<EntityCannonBall> {
 
 	protected EntityCannonBallRenderer(RenderManager renderManager) {
 		super(renderManager);
-		cannonballState = ValkyrienWarfareCombatMod.instance.fakecannonblock.getStateFromMeta(2);
+		cannonballState = ValkyrienWarfareCombatMod.INSTANCE.fakecannonblock.getStateFromMeta(2);
 	}
 
 	@Override

@@ -1,5 +1,7 @@
 package ValkyrienWarfareBase;
 
+import ValkyrienWarfareBase.API.Addons.Module;
+import ValkyrienWarfareBase.API.Addons.VWAddon;
 import ValkyrienWarfareBase.API.DataTag;
 import ValkyrienWarfareBase.API.ValkyrienWarfareHooks;
 import ValkyrienWarfareBase.API.Vector;
@@ -10,6 +12,7 @@ import ValkyrienWarfareBase.Capability.ImplAirshipCounterCapability;
 import ValkyrienWarfareBase.Capability.StorageAirshipCounter;
 import ValkyrienWarfareBase.ChunkManagement.DimensionPhysicsChunkManager;
 import ValkyrienWarfareBase.GUI.TabValkyrienWarfare;
+import ValkyrienWarfareBase.Mixin.MixinLoaderForge;
 import ValkyrienWarfareBase.Network.*;
 import ValkyrienWarfareBase.PhysicsManagement.DimensionPhysObjectManager;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
@@ -43,16 +46,23 @@ import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 
-import java.io.File;
+import java.io.*;
 import java.lang.reflect.Field;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 
 @Mod(modid = ValkyrienWarfareMod.MODID, name = ValkyrienWarfareMod.MODNAME, version = ValkyrienWarfareMod.MODVER, guiFactory = "ValkyrienWarfareBase.GUI.GuiFactoryValkyrienWarfare", updateJSON = "https://raw.githubusercontent.com/BigBastard/Valkyrien-Warfare-Revamped/update.json")
 public class ValkyrienWarfareMod {
-	
+	public static final ArrayList<Module> addons = new ArrayList<>();
 	public static final String MODID = "valkyrienwarfare";
 	public static final String MODNAME = "Valkyrien Warfare";
 	public static final String MODVER = "0.9_alpha";
@@ -92,6 +102,7 @@ public class ValkyrienWarfareMod {
 	public static boolean runAirshipPermissions = false;
 	public static double shipmobs_spawnrate = .01D;
 	public static Logger VWLogger;
+	private static boolean hasAddonRegistrationEnded = false;
 	public DataTag tag = null;
 	
 	/**
@@ -156,17 +167,108 @@ public class ValkyrienWarfareMod {
 		}
 	}
 	
-	private static void registerBlock(Block block) {
+	public static void registerBlock(Block block) {
 		GameRegistry.register(block);
 		registerItemBlock(block);
 	}
 	
-	private static void registerItemBlock(Block block) {
+	public static void registerItemBlock(Block block) {
 		GameRegistry.register(new ItemBlock(block).setRegistryName(block.getRegistryName()));
+	}
+	
+	public static void registerAddon(Module module) {
+		if (hasAddonRegistrationEnded) {
+			throw new IllegalStateException("Attempting to register addon after FMLConstructionEvent");
+		} else {
+			addons.add(module);
+		}
+	}
+	
+	@EventHandler
+	public void fmlConstruct(FMLConstructionEvent event) {
+		URLClassLoader classLoader = (URLClassLoader) getClass().getClassLoader();
+		ArrayList<String> allAddons = new ArrayList<>();
+		if (!MixinLoaderForge.isObfuscatedEnvironment) { //if in dev, read default addons from gradle output folder
+			File f = ValkyrienWarfareMod.getWorkingFolder();
+			File defaultAddons;
+			String[] list = f.list();
+			boolean rootDir = false;
+			for (String s : list) {
+				if (s.endsWith("build.gradle")) {
+					rootDir = true;
+				}
+			}
+			if (rootDir) { //assume root directory
+				defaultAddons = new File(f.getPath() + f.separatorChar + "build" + f.separatorChar + "resources" + f.separatorChar + "main" + f.separatorChar + "vwAddon_default");
+			} else { //assume run/ directory or similar
+				defaultAddons = new File(f.getAbsoluteFile().getParentFile().getParent() + f.separatorChar + "build" + f.separatorChar + "resources" + f.separatorChar + "main" + f.separatorChar + "vwAddon_default");
+			}
+			System.out.println(defaultAddons.getAbsolutePath());
+			try {
+				InputStream inputStream = new FileInputStream(defaultAddons);
+				Scanner scanner = new Scanner(inputStream);
+				while (scanner.hasNextLine()) {
+					String className = scanner.nextLine().trim();
+					allAddons.add(className);
+					System.out.println("Found addon " + className);
+				}
+				scanner.close();
+				inputStream.close();
+			} catch (IOException e)   {
+				e.printStackTrace();
+			}
+		}
+		for (URL url : classLoader.getURLs()) {
+			try {
+				//ZipFile file = new ZipFile(new File(url.toURI()));
+				ZipInputStream zis = new ZipInputStream(new BufferedInputStream(new FileInputStream(new File(url.getPath()))));
+				ZipEntry entry;
+				while ((entry = zis.getNextEntry()) != null) {
+					if (entry.getName().startsWith("vwAddon_")) {
+						try {
+							ZipFile file = new ZipFile(new File(url.getPath()));
+							InputStream inputStream = file.getInputStream(file.getEntry(entry.getName()));
+							Scanner scanner = new Scanner(inputStream);
+							while (scanner.hasNextLine()) {
+								String className = scanner.nextLine().trim();
+								allAddons.add(className);
+								System.out.println("Found addon " + className);
+							}
+							scanner.close();
+							inputStream.close();
+						} catch (IOException e) {
+							//wtf java
+						}
+						break;
+					}
+				}
+				zis.close();
+			} catch (IOException e) {
+				// wtf java
+			}
+		}
+		
+		allAddons.forEach(className -> {
+			try {
+				Class<?> abstractclass = Class.forName(className);
+				if (abstractclass.isAnnotationPresent(VWAddon.class)) {
+					Module module = (Module) abstractclass.newInstance();
+					registerAddon(module);
+					module.initModule();
+				} else {
+					System.out.println("Class " + className + " does not have @VWAddon annonation, not loading");
+				}
+			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+				e.printStackTrace();
+				System.out.println("Not loading addon: " + className);
+			}
+		});
 	}
 	
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
+		hasAddonRegistrationEnded = true;
+		
 		proxy.preInit(event);
 		registerBlocks(event);
 		registerRecipies(event);
@@ -176,12 +278,21 @@ public class ValkyrienWarfareMod {
 		ValkyrienWarfareHooks.methods = new RealMethods();
 		ValkyrienWarfareHooks.isValkyrienWarfareInstalled = true;
 		VWLogger = Logger.getLogger("ValkyrienWarfare");
+		
+		for (Module addon : addons) {
+			addon.preInit(event);
+			addon.doRegisteringStuff();
+		}
 	}
 	
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
 		proxy.init(event);
 		EntityRegistry.registerModEntity(new ResourceLocation(MODID, "PhysWrapper"), PhysicsWrapperEntity.class, "PhysWrapper", 70, this, 120, 1, false);
+		
+		for (Module addon : addons) {
+			addon.init(event);
+		}
 	}
 	
 	@EventHandler
@@ -213,6 +324,10 @@ public class ValkyrienWarfareMod {
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.err.println("DAMNIT LEX!");
+		}
+		
+		for (Module addon : addons) {
+			addon.postInit(event);
 		}
 	}
 	

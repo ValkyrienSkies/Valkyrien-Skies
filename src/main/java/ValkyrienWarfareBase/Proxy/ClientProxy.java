@@ -1,5 +1,7 @@
 package ValkyrienWarfareBase.Proxy;
 
+import ValkyrienWarfareBase.API.Addons.Module;
+import ValkyrienWarfareBase.API.Addons.ModuleProxy;
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.EventsClient;
 import ValkyrienWarfareBase.Math.Quaternion;
@@ -29,6 +31,13 @@ public class ClientProxy extends CommonProxy {
 		super.preInit(e);
 		OBJLoader.INSTANCE.addDomain(ValkyrienWarfareMod.MODID.toLowerCase());
 		RenderingRegistry.registerEntityRenderingHandler(PhysicsWrapperEntity.class, new PhysObjectRenderFactory());
+		
+		for (Module addon : ValkyrienWarfareMod.addons) {
+			ModuleProxy proxy = addon.getClientProxy();
+			if (proxy != null)  {
+				proxy.preInit(e);
+			}
+		}
 	}
 
 	@Override
@@ -38,12 +47,26 @@ public class ClientProxy extends CommonProxy {
 		MinecraftForge.EVENT_BUS.register(keyEvents);
 		registerBlockItem(ValkyrienWarfareMod.physicsInfuser);
 		registerBlockItem(ValkyrienWarfareMod.physicsInfuserCreative);
+		
+		for (Module addon : ValkyrienWarfareMod.addons) {
+			ModuleProxy proxy = addon.getClientProxy();
+			if (proxy != null)  {
+				proxy.init(e);
+			}
+		}
 	}
 
 	@Override
-	public void postInit(FMLPostInitializationEvent event) {
-		super.postInit(event);
+	public void postInit(FMLPostInitializationEvent e) {
+		super.postInit(e);
 		Minecraft.getMinecraft().getFramebuffer().enableStencil();
+		
+		for (Module addon : ValkyrienWarfareMod.addons) {
+			ModuleProxy proxy = addon.getClientProxy();
+			if (proxy != null)  {
+				proxy.postInit(e);
+			}
+		}
 	}
 
 	private void registerBlockItem(Block toRegister) {

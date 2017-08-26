@@ -11,17 +11,17 @@ import java.util.List;
 
 public class ItemExplosiveball extends Item {
 
-    public ItemExplosiveball() {
+	public ItemExplosiveball() {
 
-        setUnlocalizedName(CannonModReference.ModItems.EXPLOSIVEBALL.getUnlocalizedName());
-        setRegistryName(CannonModReference.ModItems.EXPLOSIVEBALL.getRegistryName());
+		setUnlocalizedName(CannonModReference.ModItems.EXPLOSIVEBALL.getUnlocalizedName());
+		setRegistryName(CannonModReference.ModItems.EXPLOSIVEBALL.getRegistryName());
 
-        this.setCreativeTab(CreativeTabs.COMBAT);
-    }
+		this.setCreativeTab(CreativeTabs.COMBAT);
+	}
 
-    @Override
-    public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par4) {
-        itemInformation.add(TextFormatting.BLUE + "Explosive Shot");
-    }
+	@Override
+	public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par4) {
+		itemInformation.add(TextFormatting.BLUE + "Explosive Shot");
+	}
 
 }

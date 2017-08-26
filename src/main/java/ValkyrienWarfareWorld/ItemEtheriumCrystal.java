@@ -9,9 +9,9 @@ import java.util.List;
 
 public class ItemEtheriumCrystal extends Item {
 
-    @Override
-    public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par4) {
-        itemInformation.add(TextFormatting.ITALIC + "" + TextFormatting.RED + TextFormatting.ITALIC + "Unfinished until v_0.91_alpha");
-    }
+	@Override
+	public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par4) {
+		itemInformation.add(TextFormatting.ITALIC + "" + TextFormatting.RED + TextFormatting.ITALIC + "Unfinished until v_0.91_alpha");
+	}
 
 }

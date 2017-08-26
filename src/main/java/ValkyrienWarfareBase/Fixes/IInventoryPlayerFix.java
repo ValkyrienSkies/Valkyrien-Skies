@@ -1,16 +1,16 @@
 package ValkyrienWarfareBase.Fixes;
 
-import java.util.List;
-
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
-public interface IInventoryPlayerFix {
+import java.util.List;
 
-	List<NonNullList<ItemStack>> getAllInventories();
+public interface IInventoryPlayerFix {
 
 	static IInventoryPlayerFix getFixFromInventory(InventoryPlayer toWrap) {
 		return IInventoryPlayerFix.class.cast(toWrap);
 	}
+
+	List<NonNullList<ItemStack>> getAllInventories();
 }

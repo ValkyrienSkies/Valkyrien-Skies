@@ -14,56 +14,56 @@ import net.minecraft.world.World;
 
 public class AirshipMapCommand extends CommandBase {
 
-    @Override
-    public String getName() {
-        return "airshipMappings";
-    }
+	@Override
+	public String getName() {
+		return "airshipMappings";
+	}
 
-    @Override
-    public String getUsage(ICommandSender sender) {
-        return "/airshipMappings tpto <Ship Name>";
-    }
+	@Override
+	public String getUsage(ICommandSender sender) {
+		return "/airshipMappings tpto <Ship Name>";
+	}
 
-    @Override
-    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-        String term = args[0];
+	@Override
+	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+		String term = args[0];
 
-        if (term.equals("tpto")) {
-            String shipName = args[1];
-            if (args.length > 2) {
-                for (int i = 2; i < args.length; i++) {
-                    shipName += " " + args[i];
-                }
-            }
-            Entity player = sender.getCommandSenderEntity();
-            World world = player.world;
+		if (term.equals("tpto")) {
+			String shipName = args[1];
+			if (args.length > 2) {
+				for (int i = 2; i < args.length; i++) {
+					shipName += " " + args[i];
+				}
+			}
+			Entity player = sender.getCommandSenderEntity();
+			World world = player.world;
 
-            ShipNameUUIDData data = ShipNameUUIDData.get(world);
+			ShipNameUUIDData data = ShipNameUUIDData.get(world);
 
-            if (data.ShipNameToLongMap.containsKey(shipName)) {
-                long shipUUIDMostSig = data.ShipNameToLongMap.get(shipName);
+			if (data.ShipNameToLongMap.containsKey(shipName)) {
+				long shipUUIDMostSig = data.ShipNameToLongMap.get(shipName);
 
-                ShipUUIDToPosData posData = ShipUUIDToPosData.get(world);
+				ShipUUIDToPosData posData = ShipUUIDToPosData.get(world);
 
-                ShipPositionData positionData = posData.getShipPositionData(shipUUIDMostSig);
+				ShipPositionData positionData = posData.getShipPositionData(shipUUIDMostSig);
 
-                double posX = positionData.shipPosition.X;
-                double posY = positionData.shipPosition.Y;
-                double posZ = positionData.shipPosition.Z;
+				double posX = positionData.shipPosition.X;
+				double posY = positionData.shipPosition.Y;
+				double posZ = positionData.shipPosition.Z;
 
-                //Time to teleport!
+				//Time to teleport!
 
-                if (player instanceof EntityPlayerMP) {
-                    EntityPlayerMP playerMP = (EntityPlayerMP) player;
+				if (player instanceof EntityPlayerMP) {
+					EntityPlayerMP playerMP = (EntityPlayerMP) player;
 
-                    ((EntityPlayerMP) player).connection.setPlayerLocation(posX, posY, posZ, 0, 0);
-                }
-            }
-        }
+					((EntityPlayerMP) player).connection.setPlayerLocation(posX, posY, posZ, 0, 0);
+				}
+			}
+		}
 
-        if (term.equals("help")) {
-            sender.sendMessage(new TextComponentString("tpto"));
-        }
-    }
+		if (term.equals("help")) {
+			sender.sendMessage(new TextComponentString("tpto"));
+		}
+	}
 
 }

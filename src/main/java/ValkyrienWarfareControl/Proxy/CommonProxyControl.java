@@ -8,16 +8,16 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 public class CommonProxyControl {
 
-    public void preInit(FMLPreInitializationEvent event) {
+	public void preInit(FMLPreInitializationEvent event) {
 
-    }
+	}
 
-    public void init(FMLInitializationEvent event) {
-        MinecraftForge.EVENT_BUS.register(new ControlEventsCommon());
-    }
+	public void init(FMLInitializationEvent event) {
+		MinecraftForge.EVENT_BUS.register(new ControlEventsCommon());
+	}
 
-    public void postInit(FMLPostInitializationEvent event) {
+	public void postInit(FMLPostInitializationEvent event) {
 
-    }
+	}
 
 }

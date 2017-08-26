@@ -11,30 +11,30 @@ import java.util.stream.Collectors;
 
 public class ASMTransformer {
 
-    private final ImmutableList<NodeChildrenTransformer<ClassNode>> transformers;
+	private final ImmutableList<NodeChildrenTransformer<ClassNode>> transformers;
 
-    public ASMTransformer(NodeChildrenTransformer<ClassNode>... transformers) {
-        this.transformers = ImmutableList.copyOf(Lists.newArrayList(transformers).stream().filter(transformer -> transformer.getTargetType() == ClassNode.class).sorted((node1, node2) -> node1.getPriority() - node2.getPriority()).collect(Collectors.toList()));
-    }
+	public ASMTransformer(NodeChildrenTransformer<ClassNode>... transformers) {
+		this.transformers = ImmutableList.copyOf(Lists.newArrayList(transformers).stream().filter(transformer -> transformer.getTargetType() == ClassNode.class).sorted((node1, node2) -> node1.getPriority() - node2.getPriority()).collect(Collectors.toList()));
+	}
 
-    public ClassNode transform(ClassNode node) {
-        for (NodeChildrenTransformer<ClassNode> transformer : transformers)
-            if (transformer.accepts(node)) node = transformer.transform(node);
-        return node;
-    }
+	public ClassNode transform(ClassNode node) {
+		for (NodeChildrenTransformer<ClassNode> transformer : transformers)
+			if (transformer.accepts(node)) node = transformer.transform(node);
+		return node;
+	}
 
-    public byte[] transform(byte[] bytes, int readFlags, int writeFlags) {
-        ClassNode classNode = new ClassNode();
-        ClassReader classReader = new ClassReader(bytes);
-        classReader.accept(classNode, 0);
-        classNode = transform(classNode);
-        ClassWriter writer = new ClassWriter(writeFlags);
-        classNode.accept(writer);
-        return writer.toByteArray();
-    }
+	public byte[] transform(byte[] bytes, int readFlags, int writeFlags) {
+		ClassNode classNode = new ClassNode();
+		ClassReader classReader = new ClassReader(bytes);
+		classReader.accept(classNode, 0);
+		classNode = transform(classNode);
+		ClassWriter writer = new ClassWriter(writeFlags);
+		classNode.accept(writer);
+		return writer.toByteArray();
+	}
 
-    public byte[] transform(byte[] bytes) {
-        return transform(bytes, 0, ClassWriter.COMPUTE_MAXS);
-    }
+	public byte[] transform(byte[] bytes) {
+		return transform(bytes, 0, ClassWriter.COMPUTE_MAXS);
+	}
 
 }

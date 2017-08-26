@@ -1,11 +1,11 @@
 package ValkyrienWarfareBase.Fixes;
 
-import java.util.Iterator;
-
 import net.minecraft.world.chunk.Chunk;
+
+import java.util.Iterator;
 
 public interface WorldChunkloadingCrashFix {
 
-    public Iterator<Chunk> getPersistentChunkIterable(Iterator<Chunk> chunkIterator);
+	public Iterator<Chunk> getPersistentChunkIterable(Iterator<Chunk> chunkIterator);
 
 }

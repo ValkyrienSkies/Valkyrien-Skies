@@ -7,13 +7,13 @@ public interface IShipPilot {
 
 	PhysicsWrapperEntity getPilotedShip();
 
+	void setPilotedShip(PhysicsWrapperEntity wrapper);
+
 	boolean isPilotingShip();
 
 	boolean isPilotingATile();
 
 	boolean isPiloting();
-
-	void setPilotedShip(PhysicsWrapperEntity wrapper);
 
 	BlockPos getPosBeingControlled();
 

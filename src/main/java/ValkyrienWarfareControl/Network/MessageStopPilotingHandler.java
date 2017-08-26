@@ -13,20 +13,20 @@ public class MessageStopPilotingHandler implements IMessageHandler<MessageStopPi
 	@Override
 	public IMessage onMessage(MessageStopPiloting message, MessageContext ctx) {
 		IThreadListener mainThread = Minecraft.getMinecraft();
-        mainThread.addScheduledTask(new Runnable() {
-            @Override
-            public void run() {
-            	IShipPilotClient pilot = IShipPilotClient.class.cast(Minecraft.getMinecraft().player);
+		mainThread.addScheduledTask(new Runnable() {
+			@Override
+			public void run() {
+				IShipPilotClient pilot = IShipPilotClient.class.cast(Minecraft.getMinecraft().player);
 
-            	BlockPos posToStopPiloting = message.posToStopPiloting;
+				BlockPos posToStopPiloting = message.posToStopPiloting;
 
-            	if(pilot.getPosBeingControlled() != null && pilot.getPosBeingControlled().equals(posToStopPiloting)) {
-                	pilot.stopPilotingEverything();
-            	}else{
-            		//Wtf is this?
-            	}
-            }
-        });
+				if (pilot.getPosBeingControlled() != null && pilot.getPosBeingControlled().equals(posToStopPiloting)) {
+					pilot.stopPilotingEverything();
+				} else {
+					//Wtf is this?
+				}
+			}
+		});
 		return null;
 	}
 

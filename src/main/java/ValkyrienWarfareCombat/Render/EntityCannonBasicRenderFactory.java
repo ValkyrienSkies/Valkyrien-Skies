@@ -8,16 +8,16 @@ import net.minecraftforge.fml.client.registry.IRenderFactory;
 
 public class EntityCannonBasicRenderFactory implements IRenderFactory<EntityCannonBasic> {
 
-    @Override
-    public Render<? super EntityCannonBasic> createRenderFor(RenderManager manager) {
-        return new EntityCannonBasicRender(manager);
-    }
+	@Override
+	public Render<? super EntityCannonBasic> createRenderFor(RenderManager manager) {
+		return new EntityCannonBasicRender(manager);
+	}
 
-    public static class EntityCannonBallRenderFactory implements IRenderFactory<EntityCannonBall> {
-        @Override
-        public Render<? super EntityCannonBall> createRenderFor(RenderManager manager) {
-            return new EntityCannonBallRenderer(manager);
-        }
+	public static class EntityCannonBallRenderFactory implements IRenderFactory<EntityCannonBall> {
+		@Override
+		public Render<? super EntityCannonBall> createRenderFor(RenderManager manager) {
+			return new EntityCannonBallRenderer(manager);
+		}
 
-    }
+	}
 }

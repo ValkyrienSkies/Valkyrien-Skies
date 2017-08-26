@@ -1,1 +1,7 @@
-{"variants":{"normal":{"model":"valkyrienwarfareworld:etheriumore"}}}
+{
+  "variants": {
+    "normal": {
+      "model": "valkyrienwarfareworld:etheriumore"
+    }
+  }
+}

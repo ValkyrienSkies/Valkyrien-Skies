@@ -7,9 +7,9 @@ import net.minecraftforge.fml.client.registry.IRenderFactory;
 
 public class PhysObjectRenderFactory implements IRenderFactory<PhysicsWrapperEntity> {
 
-    @Override
-    public Render createRenderFor(RenderManager manager) {
-        return new PhysObjectRender(manager);
-    }
+	@Override
+	public Render createRenderFor(RenderManager manager) {
+		return new PhysObjectRender(manager);
+	}
 
 }

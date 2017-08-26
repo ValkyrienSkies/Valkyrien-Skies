@@ -1,24 +1,119 @@
 {
-    "forge_marker":1,
-    "variants":{
-        "default":{"model":"valkyrienwarfarecontrol:shiphelmwheel.obj","custom":{"flip-v":true}},
-        "normal":{"model":"valkyrienwarfarecontrol:shiphelmwheel.obj","custom":{"flip-v":true}},
-        "modelid=0":{"model":"valkyrienwarfarecontrol:shiphelmwheel.obj","custom":{"flip-v":true}},
-        "modelid=1":{"model":"valkyrienwarfarecontrol:shiphelmdial.obj","custom":{"flip-v":true}},
-        "modelid=2":{"model":"valkyrienwarfarecontrol:shiphelmdialglass.obj","custom":{"flip-v":true}},
-        "modelid=3":{"model":"valkyrienwarfarecontrol:shiphelmbase.obj","custom":{"flip-v":true}},
-        "modelid=4":{"model":"valkyrienwarfarecontrol:chadburnbase.obj","custom":{"flip-v":true}},
-        "modelid=5":{"model":"valkyrienwarfarecontrol:chadburnrighthandle.obj","custom":{"flip-v":true}},
-        "modelid=6":{"model":"valkyrienwarfarecontrol:chadburnlefthandle.obj","custom":{"flip-v":true}},
-        "modelid=7":{"model":"valkyrienwarfarecontrol:chadburndial.obj","custom":{"flip-v":true}},
-        "modelid=8":{"model":"valkyrienwarfarecontrol:chadburnglass.obj","custom":{"flip-v":true}},
-        "modelid=9":{"model":"valkyrienwarfarecontrol:ultimateengine.obj","custom":{"flip-v":true}},
-        "modelid=10":{"model":"valkyrienwarfarecontrol:redstoneengine.obj","custom":{"flip-v":true}},
-        "modelid=11":{"model":"valkyrienwarfarecontrol:eliteengine.obj","custom":{"flip-v":true}},
-        "modelid=12":{"model":"valkyrienwarfarecontrol:basicengine.obj","custom":{"flip-v":true}},
-        "modelid=13":{"model":"valkyrienwarfarecontrol:advancedengine.obj","custom":{"flip-v":true}},
-        "modelid=14":{"model":"valkyrienwarfarecontrol:enginepropeller.obj","custom":{"flip-v":true}},
-        "modelid=15":{"model":"valkyrienwarfarecontrol:shiphelmwheel.obj","custom":{"flip-v":true}},
-        "inventory":{"model":"valkyrienwarfarecontrol:shiphelmwheel.obj","custom":{"flip-v":true}}
+  "forge_marker": 1,
+  "variants": {
+    "default": {
+      "model": "valkyrienwarfarecontrol:shiphelmwheel.obj",
+      "custom": {
+        "flip-v": true
+      }
+    },
+    "normal": {
+      "model": "valkyrienwarfarecontrol:shiphelmwheel.obj",
+      "custom": {
+        "flip-v": true
+      }
+    },
+    "modelid=0": {
+      "model": "valkyrienwarfarecontrol:shiphelmwheel.obj",
+      "custom": {
+        "flip-v": true
+      }
+    },
+    "modelid=1": {
+      "model": "valkyrienwarfarecontrol:shiphelmdial.obj",
+      "custom": {
+        "flip-v": true
+      }
+    },
+    "modelid=2": {
+      "model": "valkyrienwarfarecontrol:shiphelmdialglass.obj",
+      "custom": {
+        "flip-v": true
+      }
+    },
+    "modelid=3": {
+      "model": "valkyrienwarfarecontrol:shiphelmbase.obj",
+      "custom": {
+        "flip-v": true
+      }
+    },
+    "modelid=4": {
+      "model": "valkyrienwarfarecontrol:chadburnbase.obj",
+      "custom": {
+        "flip-v": true
+      }
+    },
+    "modelid=5": {
+      "model": "valkyrienwarfarecontrol:chadburnrighthandle.obj",
+      "custom": {
+        "flip-v": true
+      }
+    },
+    "modelid=6": {
+      "model": "valkyrienwarfarecontrol:chadburnlefthandle.obj",
+      "custom": {
+        "flip-v": true
+      }
+    },
+    "modelid=7": {
+      "model": "valkyrienwarfarecontrol:chadburndial.obj",
+      "custom": {
+        "flip-v": true
+      }
+    },
+    "modelid=8": {
+      "model": "valkyrienwarfarecontrol:chadburnglass.obj",
+      "custom": {
+        "flip-v": true
+      }
+    },
+    "modelid=9": {
+      "model": "valkyrienwarfarecontrol:ultimateengine.obj",
+      "custom": {
+        "flip-v": true
+      }
+    },
+    "modelid=10": {
+      "model": "valkyrienwarfarecontrol:redstoneengine.obj",
+      "custom": {
+        "flip-v": true
+      }
+    },
+    "modelid=11": {
+      "model": "valkyrienwarfarecontrol:eliteengine.obj",
+      "custom": {
+        "flip-v": true
+      }
+    },
+    "modelid=12": {
+      "model": "valkyrienwarfarecontrol:basicengine.obj",
+      "custom": {
+        "flip-v": true
+      }
+    },
+    "modelid=13": {
+      "model": "valkyrienwarfarecontrol:advancedengine.obj",
+      "custom": {
+        "flip-v": true
+      }
+    },
+    "modelid=14": {
+      "model": "valkyrienwarfarecontrol:enginepropeller.obj",
+      "custom": {
+        "flip-v": true
+      }
+    },
+    "modelid=15": {
+      "model": "valkyrienwarfarecontrol:shiphelmwheel.obj",
+      "custom": {
+        "flip-v": true
+      }
+    },
+    "inventory": {
+      "model": "valkyrienwarfarecontrol:shiphelmwheel.obj",
+      "custom": {
+        "flip-v": true
+      }
     }
+  }
 }

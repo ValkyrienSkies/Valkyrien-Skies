@@ -18,7 +18,8 @@ public class MessageStartPiloting implements IMessage {
 		this.controlType = controlType;
 	}
 
-	public MessageStartPiloting() {}
+	public MessageStartPiloting() {
+	}
 
 	@Override
 	public void fromBytes(ByteBuf buf) {

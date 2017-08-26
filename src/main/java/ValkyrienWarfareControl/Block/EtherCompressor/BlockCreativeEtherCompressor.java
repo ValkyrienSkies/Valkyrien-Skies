@@ -14,27 +14,27 @@ import java.util.List;
 
 public class BlockCreativeEtherCompressor extends BlockEtherCompressorLore {
 
-    public BlockCreativeEtherCompressor(Material materialIn, double enginePower) {
-        super(materialIn, enginePower);
-    }
+	public BlockCreativeEtherCompressor(Material materialIn, double enginePower) {
+		super(materialIn, enginePower);
+	}
 
-    @Override
-    public TileEntity createNewTileEntity(World worldIn, int meta) {
-        return new TileEntityNormalEtherCompressor(new Vector(0D, 1.0D, 0.0D), this.enginePower);
-    }
+	@Override
+	public TileEntity createNewTileEntity(World worldIn, int meta) {
+		return new TileEntityNormalEtherCompressor(new Vector(0D, 1.0D, 0.0D), this.enginePower);
+	}
 
-    @Override
-    public String getEnginePowerTooltip() {
-        return "(Nearly) Infinite";
-    }
+	@Override
+	public String getEnginePowerTooltip() {
+		return "(Nearly) Infinite";
+	}
 
-    @Override
-    public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par4) {
-        for (String s : lore) {
-            itemInformation.add(s);
-        }
+	@Override
+	public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par4) {
+		for (String s : lore) {
+			itemInformation.add(s);
+		}
 
-        itemInformation.add(TextFormatting.BOLD + "" + TextFormatting.RED + TextFormatting.ITALIC + "Warning! Glitchy!");
-        itemInformation.add(TextFormatting.BOLD + "" + TextFormatting.RED + TextFormatting.ITALIC + "Can cause crashes, lag and/or ships dissapearing.");
-    }
+		itemInformation.add(TextFormatting.BOLD + "" + TextFormatting.RED + TextFormatting.ITALIC + "Warning! Glitchy!");
+		itemInformation.add(TextFormatting.BOLD + "" + TextFormatting.RED + TextFormatting.ITALIC + "Can cause crashes, lag and/or ships dissapearing.");
+	}
 }

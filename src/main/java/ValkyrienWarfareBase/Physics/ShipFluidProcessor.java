@@ -1,14 +1,14 @@
 package ValkyrienWarfareBase.Physics;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import ValkyrienWarfareBase.API.Vector;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsObject;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ShipFluidProcessor {
 
@@ -27,7 +27,7 @@ public class ShipFluidProcessor {
 		int maxYToCheck = yOceanLevel;
 		int minYToCheck = Math.max(MathHelper.floor(parent.wrapper.getEntityBoundingBox().minY), 0);
 
-		for(int currentY = maxYToCheck; currentY > minYToCheck; currentY++) {
+		for (int currentY = maxYToCheck; currentY > minYToCheck; currentY++) {
 
 		}
 	}
@@ -41,12 +41,12 @@ public class ShipFluidProcessor {
 	}
 
 	public void generateYLevelData() {
-		for(BlockPos pos : parent.blockPositions) {
+		for (BlockPos pos : parent.blockPositions) {
 			IBlockState state = parent.VKChunkCache.getBlockState(pos);
-			if(doesStateBlockWater(state)) {
+			if (doesStateBlockWater(state)) {
 				int yPos = pos.getY();
 				ArrayList<BlockPos> dataAtY = solidPositionsAtYLevel[yPos];
-				if(dataAtY == null) {
+				if (dataAtY == null) {
 					dataAtY = new ArrayList<BlockPos>();
 					solidPositionsAtYLevel[yPos] = dataAtY;
 				}
@@ -58,32 +58,31 @@ public class ShipFluidProcessor {
 	public void onSetBlockState(BlockPos pos, IBlockState oldState, IBlockState newState) {
 		int yPos = pos.getY();
 		ArrayList<BlockPos> dataAtY = solidPositionsAtYLevel[yPos];
-		if(dataAtY == null) {
+		if (dataAtY == null) {
 			dataAtY = new ArrayList<BlockPos>();
 			solidPositionsAtYLevel[yPos] = dataAtY;
 		}
 		boolean doesOldStateBlockWater = doesStateBlockWater(oldState);
 		boolean doesNewStateBlockWater = doesStateBlockWater(newState);
-		if(doesOldStateBlockWater != doesNewStateBlockWater) {
-			if(doesNewStateBlockWater) {
+		if (doesOldStateBlockWater != doesNewStateBlockWater) {
+			if (doesNewStateBlockWater) {
 				dataAtY.add(pos);
-			}else{
+			} else {
 				dataAtY.remove(pos);
 			}
 		}
 	}
 
 	class NestedCrossSection {
+		public final ArrayList<BlockPos> normalizedSolidPositions = new ArrayList<BlockPos>();
+		public final ArrayList<BlockPos> airPositions = new ArrayList<BlockPos>();
 		//A 2-dimensional shape made of the solid block positions
 		final int yLevelToSimulate;
 		final Vector shipUpNormalVector;
-		public List<BlockPos> blockPositionsOfCrossSection;
 		private final AxisAlignedBB shipBB;
 		private final ArrayList<BlockPos>[] solidPositionsAtYLevel;
 		private final double[] lToWTransform;
-
-		public final ArrayList<BlockPos> normalizedSolidPositions = new ArrayList<BlockPos>();
-		public final ArrayList<BlockPos> airPositions = new ArrayList<BlockPos>();
+		public List<BlockPos> blockPositionsOfCrossSection;
 
 		public NestedCrossSection(int yLevelToSimulate, Vector shipUpNormalVector, ArrayList<BlockPos>[] solidPositionsAtYLevel, AxisAlignedBB shipBB, double[] lToWTransform) {
 			this.yLevelToSimulate = yLevelToSimulate;

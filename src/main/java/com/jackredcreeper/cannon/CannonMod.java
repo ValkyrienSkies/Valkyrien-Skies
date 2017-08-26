@@ -18,36 +18,36 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 @Mod(modid = CannonModReference.MOD_ID, version = CannonModReference.MOD_ID, acceptedMinecraftVersions = "[1.11.2]")
 public class CannonMod {
 
-    @Instance(CannonModReference.MOD_ID)
-    public static CannonMod instance = new CannonMod();
+	@Instance(CannonModReference.MOD_ID)
+	public static CannonMod instance = new CannonMod();
 
-    @SidedProxy(clientSide = CannonModReference.CLIENT, serverSide = CannonModReference.SERVER)
-    public static CommonProxy proxy;
+	@SidedProxy(clientSide = CannonModReference.CLIENT, serverSide = CannonModReference.SERVER)
+	public static CommonProxy proxy;
 
-    @EventHandler
-    public void preInit(FMLPreInitializationEvent event) {
-        ModItems.init();
-        ModItems.register();
+	@EventHandler
+	public void preInit(FMLPreInitializationEvent event) {
+		ModItems.init();
+		ModItems.register();
 
-        ModBlocks.init();
-        ModBlocks.register();
+		ModBlocks.init();
+		ModBlocks.register();
 
-    }
+	}
 
-    @EventHandler
-    public void init(FMLInitializationEvent event) {
-        proxy.init();
+	@EventHandler
+	public void init(FMLInitializationEvent event) {
+		proxy.init();
 
-        MinecraftForge.EVENT_BUS.register(new ExplosionHandler());
+		MinecraftForge.EVENT_BUS.register(new ExplosionHandler());
 
-        //Craft
+		//Craft
 
-        GameRegistry.registerTileEntity(TileEntityCannon.class, CannonModReference.MOD_ID + "TileEntityCannon");
-    }
+		GameRegistry.registerTileEntity(TileEntityCannon.class, CannonModReference.MOD_ID + "TileEntityCannon");
+	}
 
-    @EventHandler
-    public void postInit(FMLPostInitializationEvent event) {
-    }
+	@EventHandler
+	public void postInit(FMLPostInitializationEvent event) {
+	}
 
 
 }

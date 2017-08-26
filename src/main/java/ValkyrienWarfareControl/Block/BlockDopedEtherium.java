@@ -10,13 +10,13 @@ import java.util.List;
 
 public class BlockDopedEtherium extends Block {
 
-    public BlockDopedEtherium(Material materialIn) {
-        super(materialIn);
-    }
+	public BlockDopedEtherium(Material materialIn) {
+		super(materialIn);
+	}
 
-    @Override
-    public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par4) {
-        itemInformation.add(TextFormatting.ITALIC + "" + TextFormatting.BLUE + "Creates an upward force in any ship its placed in.");
-    }
+	@Override
+	public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par4) {
+		itemInformation.add(TextFormatting.ITALIC + "" + TextFormatting.BLUE + "Creates an upward force in any ship its placed in.");
+	}
 
 }

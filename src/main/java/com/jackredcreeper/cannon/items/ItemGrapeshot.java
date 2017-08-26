@@ -11,17 +11,17 @@ import java.util.List;
 
 public class ItemGrapeshot extends Item {
 
-    public ItemGrapeshot() {
+	public ItemGrapeshot() {
 
-        setUnlocalizedName(CannonModReference.ModItems.GRAPESHOT.getUnlocalizedName());
-        setRegistryName(CannonModReference.ModItems.GRAPESHOT.getRegistryName());
+		setUnlocalizedName(CannonModReference.ModItems.GRAPESHOT.getUnlocalizedName());
+		setRegistryName(CannonModReference.ModItems.GRAPESHOT.getRegistryName());
 
-        this.setCreativeTab(CreativeTabs.COMBAT);
-    }
+		this.setCreativeTab(CreativeTabs.COMBAT);
+	}
 
-    @Override
-    public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par4) {
-        itemInformation.add(TextFormatting.BLUE + "Multi Shot");
-    }
+	@Override
+	public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par4) {
+		itemInformation.add(TextFormatting.BLUE + "Multi Shot");
+	}
 
 }

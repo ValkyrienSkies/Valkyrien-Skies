@@ -1,10 +1,8 @@
 package ValkyrienWarfareControl.ControlSystems;
 
-import java.util.HashSet;
-
+import ValkyrienWarfareBase.API.Block.EtherCompressor.TileEntityEtherCompressor;
 import ValkyrienWarfareBase.API.RotationMatrices;
 import ValkyrienWarfareBase.API.Vector;
-import ValkyrienWarfareBase.API.Block.EtherCompressor.TileEntityEtherCompressor;
 import ValkyrienWarfareBase.Math.BigBastardMath;
 import ValkyrienWarfareBase.Physics.PhysicsCalculations;
 import ValkyrienWarfareControl.NodeNetwork.Node;
@@ -13,22 +11,20 @@ import ValkyrienWarfareControl.TileEntity.TileEntityNormalEtherCompressor;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 
+import java.util.HashSet;
+
 public class ShipPulseImpulseControlSystem {
 
 	public final ThrustModulatorTileEntity parentTile;
 
 	public double linearVelocityBias = 1D;
 	public double angularVelocityBias = 50D;
-
+	public double angularConstant = 500000000D;
+	public double linearConstant = 1000000D;
 	private double bobspeed = 10D;
 	private double bobmagnitude = 3D;
-
 	private double totalSecondsRunning = 0D;
-
-    public double angularConstant = 500000000D;
-    public double linearConstant = 1000000D;
-
-//    public double stabilityBias = .45D;
+	//    public double stabilityBias = .45D;
 	private Vector normalVector = new Vector(0, 1, 0);
 
 	public ShipPulseImpulseControlSystem(ThrustModulatorTileEntity parentTile) {
@@ -65,7 +61,7 @@ public class ShipPulseImpulseControlSystem {
 
 		double newTotalThrust = currentThrust + engineThrustToChange;
 
-		if(!(newTotalThrust > 0 && newTotalThrust < totalPotentialThrust)) {
+		if (!(newTotalThrust > 0 && newTotalThrust < totalPotentialThrust)) {
 //			System.out.println("Current result impossible");
 		}
 
@@ -81,8 +77,8 @@ public class ShipPulseImpulseControlSystem {
 
 		linearVelocityBias = calculations.physTickSpeed;
 
-		for(Node node : getNetworkedNodesList()) {
-			if(node.parentTile instanceof TileEntityEtherCompressor && !((TileEntityEtherCompressor) node.parentTile).updateParentShip()) {
+		for (Node node : getNetworkedNodesList()) {
+			if (node.parentTile instanceof TileEntityEtherCompressor && !((TileEntityEtherCompressor) node.parentTile).updateParentShip()) {
 				TileEntityEtherCompressor forceTile = (TileEntityEtherCompressor) node.parentTile;
 
 				Vector angularVelocityAtNormalPosition = angularVelocity.cross(currentNormalError);
@@ -93,7 +89,6 @@ public class ShipPulseImpulseControlSystem {
 				double currentErrorY = (posInWorld.Y - idealHeight) + linearThama * (linearMomentum.Y * calculations.invMass);
 
 				double currentEngineErrorAngularY = getEngineDistFromIdealAngular(forceTile.getPos(), rotationAndTranslationMatrix, angularVelocity, calculations.centerOfMass, calculations.physTickSpeed);
-
 
 
 				Vector potentialMaxForce = new Vector(0, forceTile.getMaxThrust(), 0);
@@ -109,26 +104,26 @@ public class ShipPulseImpulseControlSystem {
 
 				boolean doesForceMinimizeError = false;
 
-				if(Math.abs(futureCurrentErrorY) < Math.abs(currentErrorY) && Math.abs(futureEngineErrorAngularY) < Math.abs(currentEngineErrorAngularY)) {
+				if (Math.abs(futureCurrentErrorY) < Math.abs(currentErrorY) && Math.abs(futureEngineErrorAngularY) < Math.abs(currentEngineErrorAngularY)) {
 					doesForceMinimizeError = true;
-					if(Math.abs(linearMomentum.Y * calculations.invMass) > maxYDelta) {
-						if(Math.abs((potentialMaxForce.Y + linearMomentum.Y) * calculations.invMass) > Math.abs(linearMomentum.Y * calculations.invMass)) {
+					if (Math.abs(linearMomentum.Y * calculations.invMass) > maxYDelta) {
+						if (Math.abs((potentialMaxForce.Y + linearMomentum.Y) * calculations.invMass) > Math.abs(linearMomentum.Y * calculations.invMass)) {
 							doesForceMinimizeError = false;
 						}
-					}else{
-						if(Math.abs((potentialMaxForce.Y + linearMomentum.Y) * calculations.invMass) > maxYDelta) {
+					} else {
+						if (Math.abs((potentialMaxForce.Y + linearMomentum.Y) * calculations.invMass) > maxYDelta) {
 							doesForceMinimizeError = false;
 						}
 					}
 
 				}
 
-				if(doesForceMinimizeError) {
+				if (doesForceMinimizeError) {
 					forceTile.setThrust(forceTile.getMaxThrust());
-					if(Math.abs(currentErrorY) < 1D) {
+					if (Math.abs(currentErrorY) < 1D) {
 						forceTile.setThrust(forceTile.getMaxThrust() * Math.pow(Math.abs(currentErrorY), 3D));
 					}
-				}else{
+				} else {
 					forceTile.setThrust(0);
 				}
 
@@ -198,25 +193,25 @@ public class ShipPulseImpulseControlSystem {
 
 		Vector shipVel = new Vector(linearMomentum);
 
-        shipVel.multiply(invMass);
+		shipVel.multiply(invMass);
 
-        double linearDist = -getControllerDistFromIdealY(rotationAndTranslationMatrix, invMass, shipPos.Y, linearMomentum, idealHeight);
-        double angularDist = -getEngineDistFromIdealAngular(enginePos, rotationAndTranslationMatrix, angularVelocity, centerOfMass, secondsToApply);
+		double linearDist = -getControllerDistFromIdealY(rotationAndTranslationMatrix, invMass, shipPos.Y, linearMomentum, idealHeight);
+		double angularDist = -getEngineDistFromIdealAngular(enginePos, rotationAndTranslationMatrix, angularVelocity, centerOfMass, secondsToApply);
 
-        engine.angularThrust.Y -= (angularConstant * secondsToApply) * angularDist;
-        engine.linearThrust.Y -= (linearConstant * secondsToApply) * linearDist;
+		engine.angularThrust.Y -= (angularConstant * secondsToApply) * angularDist;
+		engine.linearThrust.Y -= (linearConstant * secondsToApply) * linearDist;
 
-        engine.angularThrust.Y = Math.max(engine.angularThrust.Y, 0D);
-        engine.linearThrust.Y = Math.max(engine.linearThrust.Y, 0D);
+		engine.angularThrust.Y = Math.max(engine.angularThrust.Y, 0D);
+		engine.linearThrust.Y = Math.max(engine.linearThrust.Y, 0D);
 
-        engine.angularThrust.Y = Math.min(engine.angularThrust.Y, engine.getMaxThrust() * stabilityVal);
-        engine.linearThrust.Y = Math.min(engine.linearThrust.Y, engine.getMaxThrust() * (1D - stabilityVal));
+		engine.angularThrust.Y = Math.min(engine.angularThrust.Y, engine.getMaxThrust() * stabilityVal);
+		engine.linearThrust.Y = Math.min(engine.linearThrust.Y, engine.getMaxThrust() * (1D - stabilityVal));
 
-        Vector aggregateForce = engine.linearThrust.getAddition(engine.angularThrust);
-        aggregateForce.multiply(secondsToApply);
+		Vector aggregateForce = engine.linearThrust.getAddition(engine.angularThrust);
+		aggregateForce.multiply(secondsToApply);
 
-        return aggregateForce;
-    }
+		return aggregateForce;
+	}
 
 	public double getEngineDistFromIdealAngular(BlockPos enginePos, double[] lToWRotation, Vector angularVelocity, Vector centerOfMass, double secondsToApply) {
 		BlockPos pos = parentTile.getPos();
@@ -251,9 +246,9 @@ public class ShipPulseImpulseControlSystem {
 
 	public double getTotalThrustForAllThrusters() {
 		double totalThrust = 0D;
-		for(Node otherNode : getNetworkedNodesList()) {
+		for (Node otherNode : getNetworkedNodesList()) {
 			TileEntity nodeTile = otherNode.parentTile;
-			if(nodeTile instanceof TileEntityNormalEtherCompressor) {
+			if (nodeTile instanceof TileEntityNormalEtherCompressor) {
 				TileEntityNormalEtherCompressor ether = (TileEntityNormalEtherCompressor) nodeTile;
 				totalThrust += ether.getThrust();
 			}
@@ -263,9 +258,9 @@ public class ShipPulseImpulseControlSystem {
 
 	public double getMaxThrustForAllThrusters() {
 		double totalThrustAvaliable = 0D;
-		for(Node otherNode : getNetworkedNodesList()) {
+		for (Node otherNode : getNetworkedNodesList()) {
 			TileEntity nodeTile = otherNode.parentTile;
-			if(nodeTile instanceof TileEntityNormalEtherCompressor) {
+			if (nodeTile instanceof TileEntityNormalEtherCompressor) {
 				TileEntityNormalEtherCompressor ether = (TileEntityNormalEtherCompressor) nodeTile;
 				totalThrustAvaliable += ether.getMaxThrust();
 			}

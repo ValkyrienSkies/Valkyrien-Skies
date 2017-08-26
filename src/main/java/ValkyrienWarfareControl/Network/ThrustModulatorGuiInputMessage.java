@@ -17,7 +17,8 @@ public class ThrustModulatorGuiInputMessage implements IMessage {
 		this.maximumYVelocity = maximumYVelocity;
 	}
 
-	public ThrustModulatorGuiInputMessage() {}
+	public ThrustModulatorGuiInputMessage() {
+	}
 
 	@Override
 	public void fromBytes(ByteBuf buf) {

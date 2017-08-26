@@ -1,1 +1,6 @@
-{"parent":"block/cube_all","textures":{"all":"valkyrienwarfarecontrol:blocks/etherium"}}
+{
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "valkyrienwarfarecontrol:blocks/etherium"
+  }
+}

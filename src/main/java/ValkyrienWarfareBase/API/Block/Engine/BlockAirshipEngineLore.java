@@ -12,19 +12,19 @@ import java.util.List;
  */
 public abstract class BlockAirshipEngineLore extends BlockAirshipEngine {
 
-    String[] lore;
+	String[] lore;
 
-    public BlockAirshipEngineLore(Material materialIn, double enginePower) {
-        super(materialIn, enginePower);
-        lore = new String[]{"" + TextFormatting.GRAY + TextFormatting.ITALIC + TextFormatting.BOLD + "Force:", "  " + this.getEnginePowerTooltip() + " Newtons"};
-    }
+	public BlockAirshipEngineLore(Material materialIn, double enginePower) {
+		super(materialIn, enginePower);
+		lore = new String[]{"" + TextFormatting.GRAY + TextFormatting.ITALIC + TextFormatting.BOLD + "Force:", "  " + this.getEnginePowerTooltip() + " Newtons"};
+	}
 
-    @Override
-    public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par4) {
-        for (String s : lore) {
-            itemInformation.add(s);
-        }
-    }
+	@Override
+	public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par4) {
+		for (String s : lore) {
+			itemInformation.add(s);
+		}
+	}
 
-    public abstract String getEnginePowerTooltip();
+	public abstract String getEnginePowerTooltip();
 }

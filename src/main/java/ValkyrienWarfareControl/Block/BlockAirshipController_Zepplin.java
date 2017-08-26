@@ -1,9 +1,9 @@
 package ValkyrienWarfareControl.Block;
 
-import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
 import ValkyrienWarfareBase.PhysicsManagement.ShipType;
 import ValkyrienWarfareBase.Relocation.DetectorManager;
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareControl.TileEntity.TileEntityZepplinController;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
@@ -32,16 +32,16 @@ public class BlockAirshipController_Zepplin extends Block implements ITileEntity
 
 	@Override
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
-		if(!worldIn.isRemote) {
+		if (!worldIn.isRemote) {
 			PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldIn, pos);
 //			if(wrapper.wrapping.shipType != )
-			TileEntityZepplinController tileEnt = (TileEntityZepplinController)worldIn.getTileEntity(pos);
-			if(wrapper != null) {
+			TileEntityZepplinController tileEnt = (TileEntityZepplinController) worldIn.getTileEntity(pos);
+			if (wrapper != null) {
 				//Disassemble Ship
-				if(tileEnt != null) {
+				if (tileEnt != null) {
 					tileEnt.setPilotEntity(playerIn);
 				}
-			}else{
+			} else {
 				PhysicsWrapperEntity newEntity = new PhysicsWrapperEntity(worldIn, pos.getX(), pos.getY(), pos.getZ(), playerIn, DetectorManager.DetectorIDs.ShipSpawnerGeneral.ordinal(), ShipType.Zepplin);
 
 
@@ -64,28 +64,28 @@ public class BlockAirshipController_Zepplin extends Block implements ITileEntity
 
 	@Override
 	public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
-        EnumFacing facingHorizontal = placer.getHorizontalFacing();
+		EnumFacing facingHorizontal = placer.getHorizontalFacing();
 
-        if(!placer.isSneaking()){
-        	facingHorizontal = facingHorizontal.getOpposite();
-        }
+		if (!placer.isSneaking()) {
+			facingHorizontal = facingHorizontal.getOpposite();
+		}
 
 		return this.getDefaultState().withProperty(FACING, facingHorizontal);
-    }
-
-	@Override
-	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, new IProperty[] { FACING });
 	}
 
 	@Override
-	public IBlockState getStateFromMeta(int meta){
-        EnumFacing enumfacing = EnumFacing.getFront(meta);
-        if (enumfacing.getAxis() == EnumFacing.Axis.Y){
-            enumfacing = EnumFacing.NORTH;
-        }
-        return this.getDefaultState().withProperty(FACING, enumfacing);
-    }
+	protected BlockStateContainer createBlockState() {
+		return new BlockStateContainer(this, new IProperty[]{FACING});
+	}
+
+	@Override
+	public IBlockState getStateFromMeta(int meta) {
+		EnumFacing enumfacing = EnumFacing.getFront(meta);
+		if (enumfacing.getAxis() == EnumFacing.Axis.Y) {
+			enumfacing = EnumFacing.NORTH;
+		}
+		return this.getDefaultState().withProperty(FACING, enumfacing);
+	}
 
 	@Override
 	public int getMetaFromState(IBlockState state) {

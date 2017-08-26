@@ -1,7 +1,7 @@
 package ValkyrienWarfareControl.Network;
 
-import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareBase.PhysicsManagement.PhysicsWrapperEntity;
+import ValkyrienWarfareBase.ValkyrienWarfareMod;
 import ValkyrienWarfareControl.Piloting.IShipPilotClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.IThreadListener;
@@ -14,22 +14,22 @@ public class MessageStartPilotingHandler implements IMessageHandler<MessageStart
 	@Override
 	public IMessage onMessage(MessageStartPiloting message, MessageContext ctx) {
 		IThreadListener mainThread = Minecraft.getMinecraft();
-        mainThread.addScheduledTask(new Runnable() {
-            @Override
-            public void run() {
-            	IShipPilotClient pilot = IShipPilotClient.class.cast(Minecraft.getMinecraft().player);
+		mainThread.addScheduledTask(new Runnable() {
+			@Override
+			public void run() {
+				IShipPilotClient pilot = IShipPilotClient.class.cast(Minecraft.getMinecraft().player);
 
-            	pilot.setPosBeingControlled(message.posToStartPiloting);
-            	pilot.setControllerInputEnum(message.controlType);
+				pilot.setPosBeingControlled(message.posToStartPiloting);
+				pilot.setControllerInputEnum(message.controlType);
 
-            	if(message.setPhysicsWrapperEntityToPilot) {
-            		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(Minecraft.getMinecraft().world, message.posToStartPiloting);
-            		pilot.setPilotedShip(wrapper);
-            	}else{
-            		pilot.setPilotedShip(null);
-            	}
-            }
-        });
+				if (message.setPhysicsWrapperEntityToPilot) {
+					PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(Minecraft.getMinecraft().world, message.posToStartPiloting);
+					pilot.setPilotedShip(wrapper);
+				} else {
+					pilot.setPilotedShip(null);
+				}
+			}
+		});
 		return null;
 	}
 

@@ -13,7 +13,8 @@ public class MessageStopPiloting implements IMessage {
 		posToStopPiloting = pos;
 	}
 
-	public MessageStopPiloting() {}
+	public MessageStopPiloting() {
+	}
 
 	@Override
 	public void fromBytes(ByteBuf buf) {

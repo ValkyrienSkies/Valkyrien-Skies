@@ -11,74 +11,74 @@ import net.minecraft.util.math.BlockPos;
  * @author thebest108
  */
 public class BlockRammingManager {
-
-    //If either block broke, only apply 20% of the collision
-    public static double collisionImpulseAfterRamming = .20D;
-    public static double minimumVelocityToApply = 3.0D;
-
-
-    /**
-     * Returns percentage of power to apply collision
-     *
-     * @param collisionSpeed
-     * @param inLocalState
-     * @param inWorldState
-     * @param didBlockBreakInShip
-     * @param didBlockBreakInWorld
-     * @return
-     */
-    public static double processBlockRamming(PhysicsWrapperEntity wrapper, double collisionSpeed, IBlockState inLocalState, IBlockState inWorldState, BlockPos inLocal, BlockPos inWorld, NestedBoolean didBlockBreakInShip, NestedBoolean didBlockBreakInWorld) {
-        if (Math.abs(collisionSpeed) > 2D) {
-            double shipBlockHardness = inLocalState.getBlock().blockResistance;//inLocalState.getBlockHardness(worldObj, inLocalPos);
-            double worldBlockHardness = inWorldState.getBlock().blockResistance;//inWorldState.getBlockHardness(worldObj, inWorldPos);
-
-            double hardnessRatio = Math.pow(worldBlockHardness / shipBlockHardness, Math.abs(collisionSpeed) / 5D);
-
-            if (worldBlockHardness == -1) {
-                worldBlockHardness = 100D;
-            }
-
-            if (shipBlockHardness == -1) {
-                shipBlockHardness = 100D;
-            }
-
-            double arbitraryScale = 5.4D;
-
-            if (hardnessRatio < .01D) {
-                didBlockBreakInWorld.setValue(true);
-                double shipBlockMass = BlockMass.basicMass.getMassFromState(inLocalState, inLocal, wrapper.world);
-                double worldBlockMass = BlockMass.basicMass.getMassFromState(inWorldState, inWorld, wrapper.world);
+	
+	//If either block broke, only apply 20% of the collision
+	public static double collisionImpulseAfterRamming = .20D;
+	public static double minimumVelocityToApply = 3.0D;
+	
+	
+	/**
+	 * Returns percentage of power to apply collision
+	 *
+	 * @param collisionSpeed
+	 * @param inLocalState
+	 * @param inWorldState
+	 * @param didBlockBreakInShip
+	 * @param didBlockBreakInWorld
+	 * @return
+	 */
+	public static double processBlockRamming(PhysicsWrapperEntity wrapper, double collisionSpeed, IBlockState inLocalState, IBlockState inWorldState, BlockPos inLocal, BlockPos inWorld, NestedBoolean didBlockBreakInShip, NestedBoolean didBlockBreakInWorld) {
+		if (Math.abs(collisionSpeed) > 2D) {
+			double shipBlockHardness = inLocalState.getBlock().blockResistance;//inLocalState.getBlockHardness(worldObj, inLocalPos);
+			double worldBlockHardness = inWorldState.getBlock().blockResistance;//inWorldState.getBlockHardness(worldObj, inWorldPos);
+			
+			double hardnessRatio = Math.pow(worldBlockHardness / shipBlockHardness, Math.abs(collisionSpeed) / 5D);
+			
+			if (worldBlockHardness == -1) {
+				worldBlockHardness = 100D;
+			}
+			
+			if (shipBlockHardness == -1) {
+				shipBlockHardness = 100D;
+			}
+			
+			double arbitraryScale = 5.4D;
+			
+			if (hardnessRatio < .01D) {
+				didBlockBreakInWorld.setValue(true);
+				double shipBlockMass = BlockMass.basicMass.getMassFromState(inLocalState, inLocal, wrapper.world);
+				double worldBlockMass = BlockMass.basicMass.getMassFromState(inWorldState, inWorld, wrapper.world);
 //				return worldBlockMass / shipBlockMass;
-                return Math.pow(worldBlockMass / worldBlockMass, arbitraryScale);//wrapper.wrapping.physicsProcessor.mass;
-            }
-            if (hardnessRatio > 100D) {
-                didBlockBreakInShip.setValue(true);
-                double shipBlockMass = BlockMass.basicMass.getMassFromState(inLocalState, inLocal, wrapper.world);
-                double worldBlockMass = BlockMass.basicMass.getMassFromState(inWorldState, inWorld, wrapper.world);
+				return Math.pow(worldBlockMass / worldBlockMass, arbitraryScale);//wrapper.wrapping.physicsProcessor.mass;
+			}
+			if (hardnessRatio > 100D) {
+				didBlockBreakInShip.setValue(true);
+				double shipBlockMass = BlockMass.basicMass.getMassFromState(inLocalState, inLocal, wrapper.world);
+				double worldBlockMass = BlockMass.basicMass.getMassFromState(inWorldState, inWorld, wrapper.world);
 //				return shipBlockMass / worldBlockMass;
-                return Math.pow(shipBlockMass / worldBlockMass, arbitraryScale);//wrapper.wrapping.physicsProcessor.mass;
-            }
-
-        }
-
-        return 1;
-    }
-
-    public static final class NestedBoolean {
-
-        private boolean value;
-
-        public NestedBoolean(boolean value) {
-            this.value = value;
-        }
-
-        public boolean getValue() {
-            return value;
-        }
-
-        public void setValue(boolean value) {
-            this.value = value;
-        }
-    }
-
+				return Math.pow(shipBlockMass / worldBlockMass, arbitraryScale);//wrapper.wrapping.physicsProcessor.mass;
+			}
+			
+		}
+		
+		return 1;
+	}
+	
+	public static final class NestedBoolean {
+		
+		private boolean value;
+		
+		public NestedBoolean(boolean value) {
+			this.value = value;
+		}
+		
+		public boolean getValue() {
+			return value;
+		}
+		
+		public void setValue(boolean value) {
+			this.value = value;
+		}
+	}
+	
 }

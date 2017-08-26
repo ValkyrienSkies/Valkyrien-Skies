@@ -1,1 +1,8 @@
-{"parent":"block/cube_bottom_top","textures":{"bottom":"blocks/planks_oak","top":"valkyrienwarfarecontrol:blocks/ultimateethercompressortop","side":"valkyrienwarfarecontrol:blocks/ultimateethercompressorside"}}
+{
+  "parent": "block/cube_bottom_top",
+  "textures": {
+    "bottom": "blocks/planks_oak",
+    "top": "valkyrienwarfarecontrol:blocks/ultimateethercompressortop",
+    "side": "valkyrienwarfarecontrol:blocks/ultimateethercompressorside"
+  }
+}

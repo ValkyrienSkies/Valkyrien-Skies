@@ -5,6 +5,6 @@ import org.objectweb.asm.Opcodes;
 
 public class OpcodeGroups {
 
-    public static final ImmutableList<Integer> RETURN = ImmutableList.of(Opcodes.IRETURN, Opcodes.LRETURN, Opcodes.FRETURN, Opcodes.DRETURN, Opcodes.ARETURN, Opcodes.RETURN);
+	public static final ImmutableList<Integer> RETURN = ImmutableList.of(Opcodes.IRETURN, Opcodes.LRETURN, Opcodes.FRETURN, Opcodes.DRETURN, Opcodes.ARETURN, Opcodes.RETURN);
 
 }

@@ -15,32 +15,32 @@ import net.minecraft.world.World;
 
 public abstract class BlockEtherCompressor extends Block implements ITileEntityProvider, IBlockForceProvider {
 
-    public double enginePower = 25000D;
+	public double enginePower = 25000D;
 
-    public BlockEtherCompressor(Material materialIn, double enginePower) {
-        super(materialIn);
-        this.enginePower = enginePower;
-    }
+	public BlockEtherCompressor(Material materialIn, double enginePower) {
+		super(materialIn);
+		this.enginePower = enginePower;
+	}
 
-    @Override
-    public Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state, Entity shipEntity, double secondsToApply) {
-        PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity) shipEntity;
-        PhysicsObject obj = wrapper.wrapping;
-        IBlockState controllerState = obj.VKChunkCache.getBlockState(pos);
-        TileEntity worldTile = obj.VKChunkCache.getTileEntity(pos);
-        if (worldTile == null) {
-            return null;
-        }
-        if (worldTile instanceof TileEntityEtherCompressor) {
-            TileEntityEtherCompressor engineTile = (TileEntityEtherCompressor) worldTile;
-            return engineTile.getForceOutputUnoriented(secondsToApply);
-        }
-        return null;
-    }
+	@Override
+	public Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state, Entity shipEntity, double secondsToApply) {
+		PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity) shipEntity;
+		PhysicsObject obj = wrapper.wrapping;
+		IBlockState controllerState = obj.VKChunkCache.getBlockState(pos);
+		TileEntity worldTile = obj.VKChunkCache.getTileEntity(pos);
+		if (worldTile == null) {
+			return null;
+		}
+		if (worldTile instanceof TileEntityEtherCompressor) {
+			TileEntityEtherCompressor engineTile = (TileEntityEtherCompressor) worldTile;
+			return engineTile.getForceOutputUnoriented(secondsToApply);
+		}
+		return null;
+	}
 
-    @Override
-    public boolean shouldLocalForceBeRotated(World world, BlockPos pos, IBlockState state, double secondsToApply) {
-        return false;
-    }
+	@Override
+	public boolean shouldLocalForceBeRotated(World world, BlockPos pos, IBlockState state, double secondsToApply) {
+		return false;
+	}
 
 }

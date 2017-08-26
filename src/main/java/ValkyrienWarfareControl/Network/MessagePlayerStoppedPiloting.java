@@ -13,7 +13,8 @@ public class MessagePlayerStoppedPiloting implements IMessage {
 		this.posToStopPiloting = posToStopPiloting;
 	}
 
-	public MessagePlayerStoppedPiloting() {}
+	public MessagePlayerStoppedPiloting() {
+	}
 
 	@Override
 	public void fromBytes(ByteBuf buf) {

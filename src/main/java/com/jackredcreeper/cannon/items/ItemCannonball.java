@@ -11,17 +11,17 @@ import java.util.List;
 
 public class ItemCannonball extends Item {
 
-    public ItemCannonball() {
+	public ItemCannonball() {
 
-        setUnlocalizedName(CannonModReference.ModItems.CANNONBALL.getUnlocalizedName());
-        setRegistryName(CannonModReference.ModItems.CANNONBALL.getRegistryName());
+		setUnlocalizedName(CannonModReference.ModItems.CANNONBALL.getUnlocalizedName());
+		setRegistryName(CannonModReference.ModItems.CANNONBALL.getRegistryName());
 
-        this.setCreativeTab(CreativeTabs.COMBAT);
-    }
+		this.setCreativeTab(CreativeTabs.COMBAT);
+	}
 
-    @Override
-    public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par4) {
-        itemInformation.add(TextFormatting.BLUE + "Standard Shot");
-    }
+	@Override
+	public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par4) {
+		itemInformation.add(TextFormatting.BLUE + "Standard Shot");
+	}
 
 }

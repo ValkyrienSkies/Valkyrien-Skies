@@ -9,23 +9,23 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 public class EntityFixMessageHandler implements IMessageHandler<EntityFixMessage, IMessage> {
 
-    @Override
-    public IMessage onMessage(final EntityFixMessage message, MessageContext ctx) {
-        IThreadListener mainThread = Minecraft.getMinecraft();
-        mainThread.addScheduledTask(new Runnable() {
-            @Override
-            public void run() {
-                PhysicsWrapperEntity toFixOn = (PhysicsWrapperEntity) Minecraft.getMinecraft().world.getEntityByID(message.shipId);
-                if (toFixOn != null) {
-                    if (message.isFixing) {
-                        toFixOn.wrapping.fixEntityUUID(message.entityUUID, message.localPosition);
-                    } else {
-                        toFixOn.wrapping.removeEntityUUID(message.entityUUID);
-                    }
-                }
-            }
-        });
-        return null;
-    }
+	@Override
+	public IMessage onMessage(final EntityFixMessage message, MessageContext ctx) {
+		IThreadListener mainThread = Minecraft.getMinecraft();
+		mainThread.addScheduledTask(new Runnable() {
+			@Override
+			public void run() {
+				PhysicsWrapperEntity toFixOn = (PhysicsWrapperEntity) Minecraft.getMinecraft().world.getEntityByID(message.shipId);
+				if (toFixOn != null) {
+					if (message.isFixing) {
+						toFixOn.wrapping.fixEntityUUID(message.entityUUID, message.localPosition);
+					} else {
+						toFixOn.wrapping.removeEntityUUID(message.entityUUID);
+					}
+				}
+			}
+		});
+		return null;
+	}
 
 }

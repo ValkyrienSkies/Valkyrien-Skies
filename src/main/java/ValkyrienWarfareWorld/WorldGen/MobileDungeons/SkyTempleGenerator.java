@@ -51,13 +51,13 @@ public class SkyTempleGenerator {
 		BlockPos realSkyControllerPos = skyControllerPos.add(centerDifference);
 		BlockPos realSkulkerBoxPos = skulkerBoxPos.add(centerDifference);
 
-		wrapperEntity.world.setBlockState(realSkyControllerPos, ValkyrienWarfareWorldMod.instance.skydungeon_controller.getDefaultState());
+		wrapperEntity.world.setBlockState(realSkyControllerPos, ValkyrienWarfareWorldMod.INSTANCE.skydungeon_controller.getDefaultState());
 
 		wrapperEntity.yaw = Math.random() * 360D;
 
 		TileEntityShulkerBox skulkerTile = (TileEntityShulkerBox) wrapperEntity.world.getTileEntity(realSkulkerBoxPos);
 
-		ItemStack stack = ValkyrienWarfareWorldMod.instance.etheriumCrystal.getDefaultInstance().copy();
+		ItemStack stack = ValkyrienWarfareWorldMod.INSTANCE.etheriumCrystal.getDefaultInstance().copy();
 		stack.stackSize = 5;
 
 		skulkerTile.setInventorySlotContents(new Random().nextInt(26), stack);

@@ -1,9 +1,12 @@
 package ValkyrienWarfareWorld;
 
+import ValkyrienWarfareBase.API.Addons.Module;
 import ValkyrienWarfareBase.ValkyrienWarfareMod;
+import ValkyrienWarfareControl.Proxy.CommonProxyControl;
 import ValkyrienWarfareWorld.Block.BlockEtheriumOre;
 import ValkyrienWarfareWorld.Block.BlockQuartzFence;
 import ValkyrienWarfareWorld.Block.BlockSkyTempleController;
+import ValkyrienWarfareWorld.Proxy.ClientProxyWorld;
 import ValkyrienWarfareWorld.Proxy.CommonProxyWorld;
 import ValkyrienWarfareWorld.TileEntity.TileEntitySkyTempleController;
 import ValkyrienWarfareWorld.WorldGen.ValkyrienWarfareWorldGen;
@@ -24,52 +27,48 @@ import net.minecraftforge.fml.common.event.FMLStateEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
-@Mod(modid = ValkyrienWarfareWorldMod.MODID, name = ValkyrienWarfareWorldMod.MODNAME, version = ValkyrienWarfareWorldMod.MODVER)
-public class ValkyrienWarfareWorldMod {
-
-	public static final String MODID = "valkyrienwarfareworld";
-	public static final String MODNAME = "Valkyrien Warfare World";
-	public static final String MODVER = "0.9_alpha";
+public class ValkyrienWarfareWorldMod extends Module<ValkyrienWarfareWorldGen> {
+	
+	public ValkyrienWarfareWorldMod()   {
+		super("VW_World", new CommonProxyWorld(), new ClientProxyWorld(), null, "valkyrienwarfareworld");
+	}
 	private static final WorldEventsCommon worldEventsCommon = new WorldEventsCommon();
-	@SidedProxy(clientSide = "ValkyrienWarfareWorld.Proxy.ClientProxyWorld", serverSide = "ValkyrienWarfareWorld.Proxy.CommonProxyWorld")
-	public static CommonProxyWorld proxy;
-	@Instance(MODID)
-	public static ValkyrienWarfareWorldMod instance = new ValkyrienWarfareWorldMod();
+	public static ValkyrienWarfareWorldMod INSTANCE;
 	public Block etheriumOre;
 	public Block skydungeon_controller;
 	public Block quartz_fence;
 	public Item etheriumCrystal;
+	
+	@Override
+	public void initModule()    {
+		INSTANCE = this;
+	}
 
 	private static void registerItemBlock(Block block) {
 		GameRegistry.register(new ItemBlock(block).setRegistryName(block.getRegistryName()));
 	}
 
-	@EventHandler
-	public void preInit(FMLPreInitializationEvent event) {
-		registerBlocks(event);
-		registerItems(event);
-		proxy.preInit(event);
+	@Override
+	public void preInit(FMLStateEvent event) {
 	}
 
-	@EventHandler
-	public void init(FMLInitializationEvent event) {
-		EntityRegistry.registerModEntity(new ResourceLocation(MODID, "FallingUpBlockEntity"), EntityFallingUpBlock.class, "FallingUpBlockEntity", 75, this, 80, 1, true);
+	@Override
+	public void init(FMLStateEvent event) {
+		EntityRegistry.registerModEntity(new ResourceLocation(getModID(), "FallingUpBlockEntity"), EntityFallingUpBlock.class, "FallingUpBlockEntity", 75, this, 80, 1, true);
 		MinecraftForge.EVENT_BUS.register(worldEventsCommon);
-		registerTileEntities(event);
-		proxy.init(event);
 
 		GameRegistry.registerWorldGenerator(new ValkyrienWarfareWorldGen(), 1);
 	}
 
-	@EventHandler
-	public void postInit(FMLPostInitializationEvent event) {
-		proxy.postInit(event);
+	@Override
+	public void postInit(FMLStateEvent event) {
 	}
-
-	private void registerBlocks(FMLStateEvent event) {
-		etheriumOre = new BlockEtheriumOre(Material.ROCK).setHardness(3f).setUnlocalizedName("etheriumore").setRegistryName(MODID, "etheriumore").setCreativeTab(ValkyrienWarfareMod.vwTab);
-		skydungeon_controller = new BlockSkyTempleController(Material.GLASS).setHardness(15f).setUnlocalizedName("skydungeon_controller").setRegistryName(MODID, "skydungeon_controller").setCreativeTab(ValkyrienWarfareMod.vwTab);
-		quartz_fence = new BlockQuartzFence(Material.GLASS).setHardness(8f).setUnlocalizedName("quartz_fence").setRegistryName(MODID, "quartz_fence").setCreativeTab(ValkyrienWarfareMod.vwTab);
+	
+	@Override
+	protected void registerBlocks() {
+		etheriumOre = new BlockEtheriumOre(Material.ROCK).setHardness(3f).setUnlocalizedName("etheriumore").setRegistryName(getModID(), "etheriumore").setCreativeTab(ValkyrienWarfareMod.vwTab);
+		skydungeon_controller = new BlockSkyTempleController(Material.GLASS).setHardness(15f).setUnlocalizedName("skydungeon_controller").setRegistryName(getModID(), "skydungeon_controller").setCreativeTab(ValkyrienWarfareMod.vwTab);
+		quartz_fence = new BlockQuartzFence(Material.GLASS).setHardness(8f).setUnlocalizedName("quartz_fence").setRegistryName(getModID(), "quartz_fence").setCreativeTab(ValkyrienWarfareMod.vwTab);
 
 		GameRegistry.register(etheriumOre);
 		GameRegistry.register(skydungeon_controller);
@@ -79,14 +78,16 @@ public class ValkyrienWarfareWorldMod {
 		registerItemBlock(skydungeon_controller);
 		registerItemBlock(quartz_fence);
 	}
-
-	private void registerItems(FMLStateEvent event) {
-		etheriumCrystal = new ItemEtheriumCrystal().setUnlocalizedName("etheriumcrystal").setRegistryName(MODID, "etheriumcrystal").setCreativeTab(ValkyrienWarfareMod.vwTab).setMaxStackSize(16);
+	
+	@Override
+	protected void registerItems() {
+		etheriumCrystal = new ItemEtheriumCrystal().setUnlocalizedName("etheriumcrystal").setRegistryName(getModID(), "etheriumcrystal").setCreativeTab(ValkyrienWarfareMod.vwTab).setMaxStackSize(16);
 
 		GameRegistry.register(etheriumCrystal);
 	}
-
-	private void registerTileEntities(FMLStateEvent event) {
+	
+	@Override
+	protected void registerTileEntities() {
 		GameRegistry.registerTileEntity(TileEntitySkyTempleController.class, "skydungeon_controller");
 	}
 

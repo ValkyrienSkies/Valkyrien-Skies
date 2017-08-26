@@ -87,7 +87,7 @@ public class BlockEtheriumOre extends Block {
 	//Ore Properties Start Here
 	@Nullable
 	public Item getItemDropped(IBlockState state, Random rand, int fortune) {
-		return ValkyrienWarfareWorldMod.instance.etheriumCrystal;
+		return ValkyrienWarfareWorldMod.INSTANCE.etheriumCrystal;
 	}
 
 	public int quantityDroppedWithBonus(int fortune, Random random) {

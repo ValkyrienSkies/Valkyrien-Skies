@@ -207,17 +207,17 @@ public class ValkyrienWarfareControlMod extends Module<ValkyrienWarfareControlMo
 	
 	@Override
 	protected void registerRecipes() {
-		GameRegistry.addRecipe(new ItemStack(pilotsChair), "SLS", "EWE", " S ", 'S', Items.STICK, 'L', Items.LEATHER, 'W', Item.getItemFromBlock(Blocks.LOG), 'E', ValkyrienWarfareWorldMod.instance.etheriumCrystal);
+		GameRegistry.addRecipe(new ItemStack(pilotsChair), "SLS", "EWE", " S ", 'S', Items.STICK, 'L', Items.LEATHER, 'W', Item.getItemFromBlock(Blocks.LOG), 'E', ValkyrienWarfareWorldMod.INSTANCE.etheriumCrystal);
 		GameRegistry.addRecipe(new ItemStack(systemLinker), "IR ", " DR", "I I", 'I', Items.IRON_INGOT, 'D', Items.DIAMOND, 'R', Items.REDSTONE);
 		GameRegistry.addRecipe(new ItemStack(balloonBurner), "IFI", "WIW", "PPP", 'I', Items.IRON_INGOT, 'F', Items.FLINT_AND_STEEL, 'W', Item.getItemFromBlock(Blocks.LOG), 'P', Item.getItemFromBlock(Blocks.PLANKS));
 
 		GameRegistry.addRecipe(new ItemStack(basicHoverController), "III", "TCT", "III", 'I', Item.getItemFromBlock(Blocks.IRON_BLOCK), 'C', Items.COMPASS, 'T', Item.getItemFromBlock(Blocks.CRAFTING_TABLE));
 
-		GameRegistry.addRecipe(new ItemStack(antigravityEngine, 4), "#I#", "#E#", "WEW", '#', Item.getItemFromBlock(Blocks.PLANKS), 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorldMod.instance.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));
-		GameRegistry.addRecipe(new ItemStack(advancedEtherCompressor, 4), "#I#", "#E#", "WEW", '#', Item.getItemFromBlock(Blocks.STONE), 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorldMod.instance.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));
-		GameRegistry.addRecipe(new ItemStack(advancedEtherCompressor, 2), "#I#", "#E#", "WEW", '#', Item.getItemFromBlock(Blocks.COBBLESTONE), 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorldMod.instance.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));
-		GameRegistry.addRecipe(new ItemStack(eliteEtherCompressor, 4), "III", "IEI", "WEW", 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorldMod.instance.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));
-		GameRegistry.addRecipe(new ItemStack(ultimateEtherCompressor, 4), "#I#", "#E#", "WEW", '#', Item.getItemFromBlock(Blocks.OBSIDIAN), 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorldMod.instance.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));
+		GameRegistry.addRecipe(new ItemStack(antigravityEngine, 4), "#I#", "#E#", "WEW", '#', Item.getItemFromBlock(Blocks.PLANKS), 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorldMod.INSTANCE.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));
+		GameRegistry.addRecipe(new ItemStack(advancedEtherCompressor, 4), "#I#", "#E#", "WEW", '#', Item.getItemFromBlock(Blocks.STONE), 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorldMod.INSTANCE.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));
+		GameRegistry.addRecipe(new ItemStack(advancedEtherCompressor, 2), "#I#", "#E#", "WEW", '#', Item.getItemFromBlock(Blocks.COBBLESTONE), 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorldMod.INSTANCE.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));
+		GameRegistry.addRecipe(new ItemStack(eliteEtherCompressor, 4), "III", "IEI", "WEW", 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorldMod.INSTANCE.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));
+		GameRegistry.addRecipe(new ItemStack(ultimateEtherCompressor, 4), "#I#", "#E#", "WEW", '#', Item.getItemFromBlock(Blocks.OBSIDIAN), 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorldMod.INSTANCE.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));
 
 		GameRegistry.addRecipe(new ItemStack(basicEngine, 4), "I##", "IPP", "I##", '#', Item.getItemFromBlock(Blocks.PLANKS), 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT);
 		GameRegistry.addRecipe(new ItemStack(advancedEngine, 4), "I##", "IPP", "I##", '#', Item.getItemFromBlock(Blocks.STONE), 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT);

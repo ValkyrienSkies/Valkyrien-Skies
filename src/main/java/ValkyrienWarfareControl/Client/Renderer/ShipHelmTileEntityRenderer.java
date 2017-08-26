@@ -27,7 +27,7 @@ public class ShipHelmTileEntityRenderer extends TileEntitySpecialRenderer<TileEn
 		if (tileentity instanceof TileEntityShipHelm) {
 			IBlockState helmState = tileentity.getWorld().getBlockState(tileentity.getPos());
 
-			if (helmState.getBlock() != ValkyrienWarfareControlMod.instance.shipHelm) {
+			if (helmState.getBlock() != ValkyrienWarfareControlMod.INSTANCE.shipHelm) {
 				return;
 			}
 
@@ -68,17 +68,17 @@ public class ShipHelmTileEntityRenderer extends TileEntitySpecialRenderer<TileEn
 			BlockPos originPos = tileentity.getPos();
 
 
-			IBlockState wheelState = ValkyrienWarfareControlMod.instance.shipWheel.getStateFromMeta(0);
-			IBlockState compassState = ValkyrienWarfareControlMod.instance.shipWheel.getStateFromMeta(1);
-			IBlockState glassState = ValkyrienWarfareControlMod.instance.shipWheel.getStateFromMeta(2);
-			IBlockState helmStateToRender = ValkyrienWarfareControlMod.instance.shipWheel.getStateFromMeta(3);
+			IBlockState wheelState = ValkyrienWarfareControlMod.INSTANCE.shipWheel.getStateFromMeta(0);
+			IBlockState compassState = ValkyrienWarfareControlMod.INSTANCE.shipWheel.getStateFromMeta(1);
+			IBlockState glassState = ValkyrienWarfareControlMod.INSTANCE.shipWheel.getStateFromMeta(2);
+			IBlockState helmStateToRender = ValkyrienWarfareControlMod.INSTANCE.shipWheel.getStateFromMeta(3);
 			//TODO: Better rendering cache
 			int brightness = tileentity.getWorld().getCombinedLight(tileentity.getPos(), 0);
 
 			double multiplier = 2.0D;
 			GL11.glTranslated((1D - multiplier) / 2.0D, 0, (1D - multiplier) / 2.0D);
 			GL11.glScaled(multiplier, multiplier, multiplier);
-			EnumFacing enumfacing = (EnumFacing) helmState.getValue(BlockShipHelm.FACING);
+			EnumFacing enumfacing = helmState.getValue(BlockShipHelm.FACING);
 			double wheelAndCompassStateRotation = enumfacing.getHorizontalAngle();
 
 

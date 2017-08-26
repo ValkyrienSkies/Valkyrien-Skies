@@ -199,9 +199,9 @@ public class ValkyrienWarfareMod {
 				}
 			}
 			if (rootDir) { //assume root directory
-				defaultAddons = new File(f.getPath() + f.separatorChar + "build" + f.separatorChar + "resources" + f.separatorChar + "main" + f.separatorChar + "vwAddon_default");
+				defaultAddons = new File(f.getPath() + File.separatorChar + "build" + File.separatorChar + "resources" + File.separatorChar + "main" + File.separatorChar + "vwAddon_default");
 			} else { //assume run/ directory or similar
-				defaultAddons = new File(f.getAbsoluteFile().getParentFile().getParent() + f.separatorChar + "build" + f.separatorChar + "resources" + f.separatorChar + "main" + f.separatorChar + "vwAddon_default");
+				defaultAddons = new File(f.getAbsoluteFile().getParentFile().getParent() + File.separatorChar + "build" + File.separatorChar + "resources" + File.separatorChar + "main" + File.separatorChar + "vwAddon_default");
 			}
 			System.out.println(defaultAddons.getAbsolutePath());
 			try {
@@ -281,7 +281,7 @@ public class ValkyrienWarfareMod {
 		
 		for (Module addon : addons) {
 			addon.preInit(event);
-			addon.doRegisteringStuff();
+			addon.doRegisteringStuffPreInit();
 		}
 	}
 	
@@ -292,6 +292,7 @@ public class ValkyrienWarfareMod {
 		
 		for (Module addon : addons) {
 			addon.init(event);
+			addon.doRegisteringStuffInit();
 		}
 	}
 	

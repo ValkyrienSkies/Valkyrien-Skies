@@ -26,7 +26,7 @@ public class ShipTelegraphTileEntityRenderer extends TileEntitySpecialRenderer<T
 	public void renderTileEntityAt(TileEntityShipTelegraph tileentity, double x, double y, double z, float partialTick, int destroyStage) {
 		IBlockState telegraphState = tileentity.getWorld().getBlockState(tileentity.getPos());
 
-		if (telegraphState.getBlock() != ValkyrienWarfareControlMod.instance.shipTelegraph) {
+		if (telegraphState.getBlock() != ValkyrienWarfareControlMod.INSTANCE.shipTelegraph) {
 			return;
 		}
 
@@ -47,18 +47,18 @@ public class ShipTelegraphTileEntityRenderer extends TileEntitySpecialRenderer<T
 
 		BlockPos originPos = tileentity.getPos();
 
-		IBlockState glassState = ValkyrienWarfareControlMod.instance.shipWheel.getStateFromMeta(8);
-		IBlockState dialState = ValkyrienWarfareControlMod.instance.shipWheel.getStateFromMeta(7);
-		IBlockState leftHandleState = ValkyrienWarfareControlMod.instance.shipWheel.getStateFromMeta(6);
-		IBlockState rightHandleState = ValkyrienWarfareControlMod.instance.shipWheel.getStateFromMeta(5);
-		IBlockState helmStateToRender = ValkyrienWarfareControlMod.instance.shipWheel.getStateFromMeta(4);
+		IBlockState glassState = ValkyrienWarfareControlMod.INSTANCE.shipWheel.getStateFromMeta(8);
+		IBlockState dialState = ValkyrienWarfareControlMod.INSTANCE.shipWheel.getStateFromMeta(7);
+		IBlockState leftHandleState = ValkyrienWarfareControlMod.INSTANCE.shipWheel.getStateFromMeta(6);
+		IBlockState rightHandleState = ValkyrienWarfareControlMod.INSTANCE.shipWheel.getStateFromMeta(5);
+		IBlockState helmStateToRender = ValkyrienWarfareControlMod.INSTANCE.shipWheel.getStateFromMeta(4);
 		int brightness = tileentity.getWorld().getCombinedLight(tileentity.getPos(), 0);
 
 		double multiplier = 1.5D;
 
 		GL11.glTranslated((1D - multiplier) / 2.0D, 0, (1D - multiplier) / 2.0D);
 		GL11.glScaled(multiplier, multiplier, multiplier);
-		EnumFacing enumfacing = (EnumFacing) telegraphState.getValue(BlockShipTelegraph.FACING);
+		EnumFacing enumfacing = telegraphState.getValue(BlockShipTelegraph.FACING);
 		double wheelAndCompassStateRotation = enumfacing.getHorizontalAngle();
 
 		GL11.glTranslated(0.5D, 0, 0.5D);

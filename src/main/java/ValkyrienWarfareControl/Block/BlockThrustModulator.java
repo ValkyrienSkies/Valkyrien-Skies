@@ -29,11 +29,11 @@ public class BlockThrustModulator extends Block implements ITileEntityProvider {
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
 		TileEntity modulatorTile = worldIn.getTileEntity(pos);
 		if (modulatorTile != null) {
-			if (playerIn.getHeldItem(hand).item == ValkyrienWarfareControlMod.instance.relayWire) {
+			if (playerIn.getHeldItem(hand).item == ValkyrienWarfareControlMod.INSTANCE.relayWire) {
 				return false;
 			}
 			if (worldIn.isRemote) {
-				playerIn.openGui(ValkyrienWarfareControlMod.instance, ControlGUIEnum.ThrustModulatorGUI.ordinal(), worldIn, pos.getX(), pos.getY(), pos.getZ());
+				playerIn.openGui(ValkyrienWarfareControlMod.INSTANCE, ControlGUIEnum.ThrustModulatorGUI.ordinal(), worldIn, pos.getX(), pos.getY(), pos.getZ());
 			} else {
 				((EntityPlayerMP) playerIn).connection.sendPacket(modulatorTile.getUpdatePacket());
 			}

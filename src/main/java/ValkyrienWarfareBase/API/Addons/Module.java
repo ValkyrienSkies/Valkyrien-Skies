@@ -9,7 +9,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 public abstract class Module<ImplName> {
 	private String name;
 	private boolean enabled;
-	private boolean registeredStuff = false;
+	private boolean registeredStuffPreInit = false, registeredStuffInit = false;
 	private ModuleProxy common, client, server; //tODO: call these
 	private String modid;
 	
@@ -25,25 +25,54 @@ public abstract class Module<ImplName> {
 		this.modid = modid;
 	}
 	
-	public final void doRegisteringStuff()  {
-		if (!registeredStuff)   {
+	public final void doRegisteringStuffPreInit()  {
+		if (!registeredStuffPreInit)   {
 			registerBlocks();
 			registerItems();
-			registerRecipes();
 			registerEntities();
-			registeredStuff = true;
+			registerCapabilities();
+			registeredStuffPreInit = true;
+		}
+	}
+	
+	public final void doRegisteringStuffInit()  {
+		if (!registeredStuffInit)   {
+			registerTileEntities();
+			registerRecipes();
+			registerNetworks();
+			registeredStuffInit = true;
 		}
 	}
 	
 	public abstract void initModule();
 	
-	protected abstract void registerItems();
+	protected void registerItems()  {
+		
+	}
 	
-	protected abstract void registerBlocks();
+	protected void registerBlocks() {
+		
+	}
 	
-	protected abstract void registerRecipes();
+	protected void registerRecipes()    {
+		
+	}
 	
-	protected abstract void registerEntities();
+	protected void registerEntities()   {
+		
+	}
+	
+	protected void registerTileEntities()   {
+		
+	}
+	
+	protected void registerNetworks()   {
+		
+	}
+	
+	protected void registerCapabilities()   {
+		
+	}
 	
 	public final ModuleProxy getClientProxy()   {
 		return client;

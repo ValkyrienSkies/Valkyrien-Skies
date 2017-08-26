@@ -44,7 +44,7 @@ public class BlockHovercraftController extends Block implements ITileEntityProvi
 					// TODO: Fix this, I have to reset the window Id's because there is no container on client side, resulting in the client never changing its window id
 
 					player.currentWindowId = player.inventoryContainer.windowId - 1;
-					player.openGui(ValkyrienWarfareControlMod.instance, ControlGUIEnum.HoverCraftController.ordinal(), worldIn, pos.getX(), pos.getY(), pos.getZ());
+					player.openGui(ValkyrienWarfareControlMod.INSTANCE, ControlGUIEnum.HoverCraftController.ordinal(), worldIn, pos.getX(), pos.getY(), pos.getZ());
 
 					player.currentWindowId = realWindowId;
 					// player.openContainer = playerIn.inventoryContainer;

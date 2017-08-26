@@ -17,56 +17,57 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLStateEvent;
 
 public class ClientProxyControl extends CommonProxyControl {
 
 	private static void registerBlockItem(Block toRegister) {
 		Item item = Item.getItemFromBlock(toRegister);
-		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(item, 0, new ModelResourceLocation(ValkyrienWarfareControlMod.MODID + ":" + item.getUnlocalizedName().substring(5), "inventory"));
+		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(item, 0, new ModelResourceLocation(ValkyrienWarfareControlMod.INSTANCE.getModID() + ":" + item.getUnlocalizedName().substring(5), "inventory"));
 	}
 
 	private static void registerItemModel(Item toRegister) {
 		RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
-		renderItem.getItemModelMesher().register(toRegister, 0, new ModelResourceLocation(ValkyrienWarfareControlMod.MODID + ":" + toRegister.getUnlocalizedName().substring(5), "inventory"));
+		renderItem.getItemModelMesher().register(toRegister, 0, new ModelResourceLocation(ValkyrienWarfareControlMod.INSTANCE.getModID() + ":" + toRegister.getUnlocalizedName().substring(5), "inventory"));
 	}
 
 	private static void registerBlockItemModels() {
-		registerBlockItem(ValkyrienWarfareControlMod.instance.basicEngine);
-		registerBlockItem(ValkyrienWarfareControlMod.instance.advancedEngine);
-		registerBlockItem(ValkyrienWarfareControlMod.instance.eliteEngine);
-		registerBlockItem(ValkyrienWarfareControlMod.instance.ultimateEngine);
-		registerBlockItem(ValkyrienWarfareControlMod.instance.redstoneEngine);
+		registerBlockItem(ValkyrienWarfareControlMod.INSTANCE.basicEngine);
+		registerBlockItem(ValkyrienWarfareControlMod.INSTANCE.advancedEngine);
+		registerBlockItem(ValkyrienWarfareControlMod.INSTANCE.eliteEngine);
+		registerBlockItem(ValkyrienWarfareControlMod.INSTANCE.ultimateEngine);
+		registerBlockItem(ValkyrienWarfareControlMod.INSTANCE.redstoneEngine);
 
-		registerBlockItem(ValkyrienWarfareControlMod.instance.basicHoverController);
+		registerBlockItem(ValkyrienWarfareControlMod.INSTANCE.basicHoverController);
 
-		registerBlockItem(ValkyrienWarfareControlMod.instance.antigravityEngine);
-		registerBlockItem(ValkyrienWarfareControlMod.instance.advancedEtherCompressor);
-		registerBlockItem(ValkyrienWarfareControlMod.instance.eliteEtherCompressor);
-		registerBlockItem(ValkyrienWarfareControlMod.instance.ultimateEtherCompressor);
-		registerBlockItem(ValkyrienWarfareControlMod.instance.creativeEtherCompressor);
+		registerBlockItem(ValkyrienWarfareControlMod.INSTANCE.antigravityEngine);
+		registerBlockItem(ValkyrienWarfareControlMod.INSTANCE.advancedEtherCompressor);
+		registerBlockItem(ValkyrienWarfareControlMod.INSTANCE.eliteEtherCompressor);
+		registerBlockItem(ValkyrienWarfareControlMod.INSTANCE.ultimateEtherCompressor);
+		registerBlockItem(ValkyrienWarfareControlMod.INSTANCE.creativeEtherCompressor);
 
-		registerBlockItem(ValkyrienWarfareControlMod.instance.pilotsChair);
-		registerBlockItem(ValkyrienWarfareControlMod.instance.passengerChair);
+		registerBlockItem(ValkyrienWarfareControlMod.INSTANCE.pilotsChair);
+		registerBlockItem(ValkyrienWarfareControlMod.INSTANCE.passengerChair);
 
-		registerBlockItem(ValkyrienWarfareControlMod.instance.shipHelm);
-//		registerBlockItem(ValkyrienWarfareControlMod.instance.shipWheel);
-		registerBlockItem(ValkyrienWarfareControlMod.instance.shipTelegraph);
+		registerBlockItem(ValkyrienWarfareControlMod.INSTANCE.shipHelm);
+//		registerBlockItem(ValkyrienWarfareControlMod.INSTANCE.shipWheel);
+		registerBlockItem(ValkyrienWarfareControlMod.INSTANCE.shipTelegraph);
 
-		registerBlockItem(ValkyrienWarfareControlMod.instance.dopedEtherium);
-		registerBlockItem(ValkyrienWarfareControlMod.instance.balloonBurner);
+		registerBlockItem(ValkyrienWarfareControlMod.INSTANCE.dopedEtherium);
+		registerBlockItem(ValkyrienWarfareControlMod.INSTANCE.balloonBurner);
 
-		registerBlockItem(ValkyrienWarfareControlMod.instance.thrustRelay);
-		registerBlockItem(ValkyrienWarfareControlMod.instance.thrustModulator);
+		registerBlockItem(ValkyrienWarfareControlMod.INSTANCE.thrustRelay);
+		registerBlockItem(ValkyrienWarfareControlMod.INSTANCE.thrustModulator);
 
-		registerBlockItem(ValkyrienWarfareControlMod.instance.shipHullSealer);
+		registerBlockItem(ValkyrienWarfareControlMod.INSTANCE.shipHullSealer);
 
-		registerBlockItem(ValkyrienWarfareControlMod.instance.airshipController_zepplin);
+		registerBlockItem(ValkyrienWarfareControlMod.INSTANCE.airshipController_zepplin);
 	}
 
 	private static void registerItemModels() {
-		registerItemModel(ValkyrienWarfareControlMod.instance.systemLinker);
-		registerItemModel(ValkyrienWarfareControlMod.instance.airshipStealer);
-		registerItemModel(ValkyrienWarfareControlMod.instance.relayWire);
+		registerItemModel(ValkyrienWarfareControlMod.INSTANCE.systemLinker);
+		registerItemModel(ValkyrienWarfareControlMod.INSTANCE.airshipStealer);
+		registerItemModel(ValkyrienWarfareControlMod.INSTANCE.relayWire);
 	}
 
 	private static void registerTileEntityRenderers() {
@@ -83,22 +84,22 @@ public class ClientProxyControl extends CommonProxyControl {
 		}
 	}
 
-	public void preInit(FMLPreInitializationEvent event) {
-		super.preInit(event);
-		OBJLoader.INSTANCE.addDomain(ValkyrienWarfareControlMod.MODID.toLowerCase());
+	@Override
+	public void preInit(FMLStateEvent event) {
+		OBJLoader.INSTANCE.addDomain(ValkyrienWarfareControlMod.INSTANCE.getModID().toLowerCase());
 	}
 
-	public void init(FMLInitializationEvent event) {
-		super.init(event);
+	@Override
+	public void init(FMLStateEvent event) {
 
-//		Item item = Item.getItemFromBlock(ValkyrienWarfareControlMod.instance.pilotsChair);
-//        ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(ValkyrienWarfareControlMod.MODID.toLowerCase() + ":" + ValkyrienWarfareControlMod.instance.pilotsChair.unlocalizedName, "inventory"));
+//		Item item = Item.getItemFromBlock(ValkyrienWarfareControlMod.INSTANCE.pilotsChair);
+//        ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(ValkyrienWarfareControlMod.MODID.toLowerCase() + ":" + ValkyrienWarfareControlMod.INSTANCE.pilotsChair.unlocalizedName, "inventory"));
 		// Minecraft.getMinecraft().getRenderItem().getItemModelMesher()
-		// .register(ValkyrienWarfareControlMod.instance.systemLinker, 0, new ModelResourceLocation(ValkyrienWarfareMod.MODID+":systemLinker", "inventory"));
+		// .register(ValkyrienWarfareControlMod.INSTANCE.systemLinker, 0, new ModelResourceLocation(ValkyrienWarfareMod.MODID+":systemLinker", "inventory"));
 	}
 
-	public void postInit(FMLPostInitializationEvent event) {
-		super.postInit(event);
+	@Override
+	public void postInit(FMLStateEvent event) {
 		registerBlockItemModels();
 		registerItemModels();
 		registerTileEntityRenderers();

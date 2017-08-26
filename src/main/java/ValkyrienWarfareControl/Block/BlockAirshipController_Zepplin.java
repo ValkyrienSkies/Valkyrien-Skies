@@ -54,7 +54,7 @@ public class BlockAirshipController_Zepplin extends Block implements ITileEntity
 
 //				SetZepplinPilotMessage message = new SetZepplinPilotMessage(newEntity, playerIn);
 				//TODO: Change this
-//				ValkyrienWarfareControlMod.instance.controlNetwork.sendToAll(message);
+//				ValkyrienWarfareControlMod.INSTANCE.controlNetwork.sendToAll(message);
 				//Create Ship
 			}
 			return true;
@@ -75,7 +75,7 @@ public class BlockAirshipController_Zepplin extends Block implements ITileEntity
 
 	@Override
 	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, new IProperty[]{FACING});
+		return new BlockStateContainer(this, FACING);
 	}
 
 	@Override
@@ -89,7 +89,7 @@ public class BlockAirshipController_Zepplin extends Block implements ITileEntity
 
 	@Override
 	public int getMetaFromState(IBlockState state) {
-		int i = ((EnumFacing) state.getValue(FACING)).getIndex();
+		int i = state.getValue(FACING).getIndex();
 		return i;
 	}
 

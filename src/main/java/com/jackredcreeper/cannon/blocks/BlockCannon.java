@@ -142,7 +142,7 @@ public class BlockCannon extends BlockDirectional implements ITileEntityProvider
 
 
 	/**
-	 * Convert the given metadata into a BlockState for this Block
+	 * Convert the given metadata into a BlockState for this block
 	 */
 	public IBlockState getStateFromMeta(int meta) {
 		return this.getDefaultState().withProperty(LOOKING, EnumFacing.getFront(meta & 7));

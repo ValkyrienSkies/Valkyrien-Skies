@@ -41,7 +41,7 @@ minecraft {
     version = project.forgeVersion
     runDir = "run"
     mappings = project.mcpVersion
-    coreMod = "ValkyrienWarfareBase.Mixin.MixinLoaderForge"
+    coreMod = "valkyrienwarfare.mixin.MixinLoaderForge"
 	// makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 }
 
@@ -54,7 +54,7 @@ repositories {
 }
 
 dependencies {
-    //Mixin needs to be distributed with the mod, very important
+    //mixin needs to be distributed with the mod, very important
     compile("org.spongepowered:mixin:0.6.4-SNAPSHOT") {
         exclude module: "launchwrapper"
     }
@@ -139,7 +139,7 @@ jar {
                 "tweakClass": 'org.spongepowered.asm.launch.MixinTweaker',
                 "TweakOrder": 0,
                 'FMLCorePluginContainsFMLMod': 'true',
-                'FMLCorePlugin': 'ValkyrienWarfareBase.Mixin.MixinLoaderForge',
+                'FMLCorePlugin': 'valkyrienwarfare.mixin.MixinLoaderForge',
 				'ForceLoadAsMod': 'true',
                 'FMLAT': 'valkyrienwarfare_at.cfg'
         )

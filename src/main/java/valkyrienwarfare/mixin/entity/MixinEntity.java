@@ -267,7 +267,7 @@ public abstract class MixinEntity implements IDraggable {
 			IBlockState iblockstate = this.world.getBlockState(blockpos);
 
 			if (iblockstate.getRenderType() != EnumBlockRenderType.INVISIBLE) {
-				this.world.spawnParticle(EnumParticleTypes.BLOCK_CRACK, this.posX + ((double) thisClassAsAnEntity.rand.nextFloat() - 0.5D) * (double) thisClassAsAnEntity.width, thisClassAsAnEntity.getEntityBoundingBox().minY + 0.1D, this.posZ + ((double) thisClassAsAnEntity.rand.nextFloat() - 0.5D) * (double) thisClassAsAnEntity.width, -thisClassAsAnEntity.motionX * 4.0D, 1.5D, -thisClassAsAnEntity.motionZ * 4.0D, new int[]{Block.getStateId(iblockstate)});
+				this.world.spawnParticle(EnumParticleTypes.BLOCK_CRACK, this.posX + ((double) thisClassAsAnEntity.rand.nextFloat() - 0.5D) * (double) thisClassAsAnEntity.width, thisClassAsAnEntity.getEntityBoundingBox().minY + 0.1D, this.posZ + ((double) thisClassAsAnEntity.rand.nextFloat() - 0.5D) * (double) thisClassAsAnEntity.width, -thisClassAsAnEntity.motionX * 4.0D, 1.5D, -thisClassAsAnEntity.motionZ * 4.0D, Block.getStateId(iblockstate));
 			}
 		} else {
 			Vector searchVector = new Vector(this.posX, this.posY - 0.20000000298023224D, this.posZ);
@@ -280,7 +280,7 @@ public abstract class MixinEntity implements IDraggable {
 			IBlockState iblockstate = this.world.getBlockState(blockpos);
 
 			if (iblockstate.getRenderType() != EnumBlockRenderType.INVISIBLE) {
-				this.world.spawnParticle(EnumParticleTypes.BLOCK_CRACK, this.posX + ((double) thisClassAsAnEntity.rand.nextFloat() - 0.5D) * (double) thisClassAsAnEntity.width, thisClassAsAnEntity.getEntityBoundingBox().minY + 0.1D, this.posZ + ((double) thisClassAsAnEntity.rand.nextFloat() - 0.5D) * (double) thisClassAsAnEntity.width, -thisClassAsAnEntity.motionX * 4.0D, 1.5D, -thisClassAsAnEntity.motionZ * 4.0D, new int[]{Block.getStateId(iblockstate)});
+				this.world.spawnParticle(EnumParticleTypes.BLOCK_CRACK, this.posX + ((double) thisClassAsAnEntity.rand.nextFloat() - 0.5D) * (double) thisClassAsAnEntity.width, thisClassAsAnEntity.getEntityBoundingBox().minY + 0.1D, this.posZ + ((double) thisClassAsAnEntity.rand.nextFloat() - 0.5D) * (double) thisClassAsAnEntity.width, -thisClassAsAnEntity.motionX * 4.0D, 1.5D, -thisClassAsAnEntity.motionZ * 4.0D, Block.getStateId(iblockstate));
 			}
 		}
 	}

@@ -6,6 +6,6 @@ import java.util.Iterator;
 
 public interface WorldChunkloadingCrashFix {
 
-	public Iterator<Chunk> getPersistentChunkIterable(Iterator<Chunk> chunkIterator);
+	Iterator<Chunk> getPersistentChunkIterable(Iterator<Chunk> chunkIterator);
 
 }

@@ -1,5 +1,6 @@
 package valkyrienwarfare.render;
 
+import net.minecraft.client.renderer.RenderGlobal;
 import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -118,7 +119,7 @@ public class PhysObjectRender extends Render<PhysicsWrapperEntity> {
 				double d0 = 0;// player.lastTickPosX + (player.posX - player.lastTickPosX) * (double) partialTicks;
 				double d1 = 0;//player.lastTickPosY + (player.posY - player.lastTickPosY) * (double) partialTicks;
 				double d2 = 0;//player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * (double) partialTicks;
-				Minecraft.getMinecraft().renderGlobal.drawSelectionBoundingBox(iblockstate.getSelectedBoundingBox(player.world, blockpos).expandXyz(0.0020000000949949026D).offset(-d0, -d1, -d2), 0.0F, 0.0F, 0.0F, 0.4F);
+				RenderGlobal.drawSelectionBoundingBox(iblockstate.getSelectedBoundingBox(player.world, blockpos).expandXyz(0.0020000000949949026D).offset(-d0, -d1, -d2), 0.0F, 0.0F, 0.0F, 0.4F);
 			}
 
 			GlStateManager.depthMask(true);

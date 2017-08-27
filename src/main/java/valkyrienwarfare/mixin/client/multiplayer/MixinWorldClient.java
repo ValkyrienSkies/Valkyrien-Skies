@@ -40,7 +40,6 @@ public abstract class MixinWorldClient extends World {
 	private final NetHandlerPlayClient connection;
 	@Shadow
 	protected Set<ChunkPos> viewableChunks;
-	;
 	@Shadow
 	@Final
 	private Minecraft mc;
@@ -50,7 +49,7 @@ public abstract class MixinWorldClient extends World {
 	public MixinWorldClient(NetHandlerPlayClient netHandler, WorldSettings settings, int dimension, EnumDifficulty difficulty, Profiler profilerIn) {
 		super(new SaveHandlerMP(), new WorldInfo(settings, "MpServer"), net.minecraftforge.common.DimensionManager.createProviderFor(dimension), profilerIn, true);
 		this.ambienceTicks = this.rand.nextInt(12000);
-		this.viewableChunks = Sets.<ChunkPos>newHashSet();
+		this.viewableChunks = Sets.newHashSet();
 		this.connection = netHandler;
 		this.getWorldInfo().setDifficulty(difficulty);
 		this.provider.setWorld(this);

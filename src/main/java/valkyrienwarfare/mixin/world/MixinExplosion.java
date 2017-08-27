@@ -94,7 +94,7 @@ public abstract class MixinExplosion {
 				BlockPos pos = (BlockPos) o;
 				IBlockState state = ship.world.getBlockState(pos);
 				Block block = state.getBlock();
-				if (!block.isAir(state, worldIn, (BlockPos) o) || ship.wrapping.explodedPositionsThisTick.contains((BlockPos) o)) {
+				if (!block.isAir(state, worldIn, (BlockPos) o) || ship.wrapping.explodedPositionsThisTick.contains(o)) {
 					affectedPositions++;
 				}
 			}
@@ -105,7 +105,7 @@ public abstract class MixinExplosion {
 
 					IBlockState state = ship.world.getBlockState(pos);
 					Block block = state.getBlock();
-					if (!block.isAir(state, worldIn, (BlockPos) o) || ship.wrapping.explodedPositionsThisTick.contains((BlockPos) o)) {
+					if (!block.isAir(state, worldIn, (BlockPos) o) || ship.wrapping.explodedPositionsThisTick.contains(o)) {
 						if (block.canDropFromExplosion(expl)) {
 							block.dropBlockAsItemWithChance(ship.world, pos, state, 1.0F / expl.explosionSize, 0);
 						}

@@ -84,7 +84,7 @@ public abstract class MixinRenderGlobal {
 			Iterator<DestroyBlockProgress> iterator = this.damagedBlocks.values().iterator();
 			
 			while (iterator.hasNext()) {
-				DestroyBlockProgress destroyblockprogress = (DestroyBlockProgress) iterator.next();
+				DestroyBlockProgress destroyblockprogress = iterator.next();
 				BlockPos blockpos = destroyblockprogress.getPosition();
 				double d3 = (double) blockpos.getX() - d0;
 				double d4 = (double) blockpos.getY() - d1;
@@ -190,7 +190,7 @@ public abstract class MixinRenderGlobal {
 	
 	@Inject(method = "renderEntities(Lnet/minecraft/entity/entity;Lnet/minecraft/client/renderer/culling/ICamera;F)V", at = @At("HEAD"))
 	public void preRenderEntities(Entity renderViewEntity, ICamera camera, float partialTicks, CallbackInfo callbackInfo) {
-		((ClientProxy) ValkyrienWarfareMod.proxy).lastCamera = camera;
+		ClientProxy.lastCamera = camera;
 	}
 	
 	@Inject(method = "renderBlockLayer(Lnet/minecraft/util/BlockRenderLayer;DILnet/minecraft/entity/entity;)I", at = @At("HEAD"))

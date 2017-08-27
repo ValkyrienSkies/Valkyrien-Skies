@@ -137,7 +137,7 @@ public abstract class MixinRenderManager {
 		Render<Entity> render = null;
 
 		try {
-			render = this.<Entity>getEntityRenderObject(entityIn);
+			render = this.getEntityRenderObject(entityIn);
 
 			if (render != null && this.renderEngine != null) {
 				try {

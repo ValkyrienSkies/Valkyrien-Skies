@@ -21,7 +21,7 @@ public class DetectorManager {
 		return null;
 	}
 
-	public static enum DetectorIDs {
+	public enum DetectorIDs {
 		ShipSpawnerGeneral, BlockPosFinder, SingleBlockPosFinder
 	}
 

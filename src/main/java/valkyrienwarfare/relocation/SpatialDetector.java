@@ -133,7 +133,7 @@ public abstract class SpatialDetector {
 		ArrayList<BlockPos> detectedBlockPos = new ArrayList<BlockPos>();
 		TIntIterator intIter = foundSet.iterator();
 		while (intIter.hasNext()) {
-			int hash = (Integer) intIter.next();
+			int hash = intIter.next();
 			BlockPos fromHash = getPosWithRespectTo(hash, firstBlock);
 			if (fromHash.getY() + 128 - firstBlock.getY() < 0) {
 				System.err.println("I really hope this doesnt happen");

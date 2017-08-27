@@ -39,7 +39,7 @@ public abstract class BlockAirshipEngine extends Block implements IBlockForcePro
 
 	@Override
 	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, new IProperty[]{FACING});
+		return new BlockStateContainer(this, FACING);
 	}
 
 	@Override
@@ -49,13 +49,13 @@ public abstract class BlockAirshipEngine extends Block implements IBlockForcePro
 
 	@Override
 	public int getMetaFromState(IBlockState state) {
-		int i = ((EnumFacing) state.getValue(FACING)).getIndex();
+		int i = state.getValue(FACING).getIndex();
 		return i;
 	}
 
 	@Override
 	public Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state, Entity shipEntity, double secondsToApply) {
-		EnumFacing enumfacing = (EnumFacing) state.getValue(FACING);
+		EnumFacing enumfacing = state.getValue(FACING);
 		Vector acting = new Vector(0, 0, 0);
 		if (!world.isBlockPowered(pos)) {
 			return acting;
@@ -127,7 +127,7 @@ public abstract class BlockAirshipEngine extends Block implements IBlockForcePro
 	public TileEntity createNewTileEntity(World worldIn, int meta) {
 		Vector normalVector = new Vector(1, 0, 0);
 		IBlockState state = getStateFromMeta(meta);
-		EnumFacing facing = (EnumFacing) state.getValue(FACING);
+		EnumFacing facing = state.getValue(FACING);
 		switch (facing) {
 			case DOWN:
 				normalVector = new Vector(0, 1, 0);

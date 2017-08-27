@@ -17,10 +17,7 @@ public class SingeBlockPosDetector extends SpatialDetector {
 	
 	@Override
 	public boolean isValidExpansion(int x, int y, int z) {
-		if (x == firstBlock.getX() && y == firstBlock.getY() && z == firstBlock.getZ()) {
-			return true;
-		}
-		return false;
+		return x == firstBlock.getX() && y == firstBlock.getY() && z == firstBlock.getZ();
 	}
 	
 }

@@ -292,7 +292,7 @@ public abstract class MixinEntityRenderer {
 				double d2 = d1;
 				
 				for (int j = 0; j < list.size(); ++j) {
-					Entity entity1 = (Entity) list.get(j);
+					Entity entity1 = list.get(j);
 					AxisAlignedBB axisalignedbb = entity1.getEntityBoundingBox().expandXyz((double) entity1.getCollisionBorderSize());
 					RayTraceResult raytraceresult = axisalignedbb.calculateIntercept(vec3d, vec3d2);
 					
@@ -322,7 +322,7 @@ public abstract class MixinEntityRenderer {
 				
 				if (this.pointedEntity != null && flag && vec3d.distanceTo(vec3d3) > 3.0D) {
 					this.pointedEntity = null;
-					this.mc.objectMouseOver = new RayTraceResult(RayTraceResult.Type.MISS, vec3d3, (EnumFacing) null, new BlockPos(vec3d3));
+					this.mc.objectMouseOver = new RayTraceResult(RayTraceResult.Type.MISS, vec3d3, null, new BlockPos(vec3d3));
 				}
 				
 				if (this.pointedEntity != null && (d2 < d1 || this.mc.objectMouseOver == null)) {

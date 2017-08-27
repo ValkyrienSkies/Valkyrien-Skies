@@ -204,7 +204,7 @@ public abstract class MixinEntityIntrinsic {
 				int k = 0;
 
 				for (int l = list1.size(); k < l; ++k) {
-					y = ((AxisAlignedBB) list1.get(k)).calculateYOffset(thisClassAsAnEntity.getEntityBoundingBox(), y);
+					y = list1.get(k).calculateYOffset(thisClassAsAnEntity.getEntityBoundingBox(), y);
 				}
 
 				thisClassAsAnEntity.setEntityBoundingBox(thisClassAsAnEntity.getEntityBoundingBox().offset(0.0D, y, 0.0D));
@@ -214,7 +214,7 @@ public abstract class MixinEntityIntrinsic {
 				int j5 = 0;
 
 				for (int l5 = list1.size(); j5 < l5; ++j5) {
-					x = ((AxisAlignedBB) list1.get(j5)).calculateXOffset(thisClassAsAnEntity.getEntityBoundingBox(), x);
+					x = list1.get(j5).calculateXOffset(thisClassAsAnEntity.getEntityBoundingBox(), x);
 				}
 
 				if (x != 0.0D) {
@@ -226,7 +226,7 @@ public abstract class MixinEntityIntrinsic {
 				int k5 = 0;
 
 				for (int i6 = list1.size(); k5 < i6; ++k5) {
-					z = ((AxisAlignedBB) list1.get(k5)).calculateZOffset(thisClassAsAnEntity.getEntityBoundingBox(), z);
+					z = list1.get(k5).calculateZOffset(thisClassAsAnEntity.getEntityBoundingBox(), z);
 				}
 
 				if (z != 0.0D) {
@@ -250,7 +250,7 @@ public abstract class MixinEntityIntrinsic {
 				int j1 = 0;
 
 				for (int k1 = list.size(); j1 < k1; ++j1) {
-					d8 = ((AxisAlignedBB) list.get(j1)).calculateYOffset(axisalignedbb3, d8);
+					d8 = list.get(j1).calculateYOffset(axisalignedbb3, d8);
 				}
 
 				axisalignedbb2 = axisalignedbb2.offset(0.0D, d8, 0.0D);
@@ -258,7 +258,7 @@ public abstract class MixinEntityIntrinsic {
 				int l1 = 0;
 
 				for (int i2 = list.size(); l1 < i2; ++l1) {
-					d18 = ((AxisAlignedBB) list.get(l1)).calculateXOffset(axisalignedbb2, d18);
+					d18 = list.get(l1).calculateXOffset(axisalignedbb2, d18);
 				}
 
 				axisalignedbb2 = axisalignedbb2.offset(d18, 0.0D, 0.0D);
@@ -266,7 +266,7 @@ public abstract class MixinEntityIntrinsic {
 				int j2 = 0;
 
 				for (int k2 = list.size(); j2 < k2; ++j2) {
-					d19 = ((AxisAlignedBB) list.get(j2)).calculateZOffset(axisalignedbb2, d19);
+					d19 = list.get(j2).calculateZOffset(axisalignedbb2, d19);
 				}
 
 				axisalignedbb2 = axisalignedbb2.offset(0.0D, 0.0D, d19);
@@ -275,7 +275,7 @@ public abstract class MixinEntityIntrinsic {
 				int l2 = 0;
 
 				for (int i3 = list.size(); l2 < i3; ++l2) {
-					d20 = ((AxisAlignedBB) list.get(l2)).calculateYOffset(axisalignedbb4, d20);
+					d20 = list.get(l2).calculateYOffset(axisalignedbb4, d20);
 				}
 
 				axisalignedbb4 = axisalignedbb4.offset(0.0D, d20, 0.0D);
@@ -283,7 +283,7 @@ public abstract class MixinEntityIntrinsic {
 				int j3 = 0;
 
 				for (int k3 = list.size(); j3 < k3; ++j3) {
-					d21 = ((AxisAlignedBB) list.get(j3)).calculateXOffset(axisalignedbb4, d21);
+					d21 = list.get(j3).calculateXOffset(axisalignedbb4, d21);
 				}
 
 				axisalignedbb4 = axisalignedbb4.offset(d21, 0.0D, 0.0D);
@@ -291,7 +291,7 @@ public abstract class MixinEntityIntrinsic {
 				int l3 = 0;
 
 				for (int i4 = list.size(); l3 < i4; ++l3) {
-					d22 = ((AxisAlignedBB) list.get(l3)).calculateZOffset(axisalignedbb4, d22);
+					d22 = list.get(l3).calculateZOffset(axisalignedbb4, d22);
 				}
 
 				axisalignedbb4 = axisalignedbb4.offset(0.0D, 0.0D, d22);
@@ -313,7 +313,7 @@ public abstract class MixinEntityIntrinsic {
 				int j4 = 0;
 
 				for (int k4 = list.size(); j4 < k4; ++j4) {
-					y = ((AxisAlignedBB) list.get(j4)).calculateYOffset(thisClassAsAnEntity.getEntityBoundingBox(), y);
+					y = list.get(j4).calculateYOffset(thisClassAsAnEntity.getEntityBoundingBox(), y);
 				}
 
 				thisClassAsAnEntity.setEntityBoundingBox(thisClassAsAnEntity.getEntityBoundingBox().offset(0.0D, y, 0.0D));

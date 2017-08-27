@@ -117,7 +117,7 @@ public class BlockCannon extends BlockDirectional implements ITileEntityProvider
 
 	private void setDefaultDirection(World worldIn, BlockPos pos, IBlockState state) {
 		if (!worldIn.isRemote) {
-			EnumFacing enumfacing = (EnumFacing) state.getValue(LOOKING);
+			EnumFacing enumfacing = state.getValue(LOOKING);
 			boolean flag = worldIn.getBlockState(pos.north()).isFullBlock();
 			boolean flag1 = worldIn.getBlockState(pos.south()).isFullBlock();
 
@@ -153,7 +153,7 @@ public class BlockCannon extends BlockDirectional implements ITileEntityProvider
 	 */
 	public int getMetaFromState(IBlockState state) {
 		int i = 0;
-		i = i | ((EnumFacing) state.getValue(LOOKING)).getIndex();
+		i = i | state.getValue(LOOKING).getIndex();
 
 		return i;
 	}
@@ -163,7 +163,7 @@ public class BlockCannon extends BlockDirectional implements ITileEntityProvider
 	 * blockstate.
 	 */
 	public IBlockState withRotation(IBlockState state, Rotation rot) {
-		return state.withProperty(LOOKING, rot.rotate((EnumFacing) state.getValue(LOOKING)));
+		return state.withProperty(LOOKING, rot.rotate(state.getValue(LOOKING)));
 	}
 
 	/**
@@ -171,11 +171,11 @@ public class BlockCannon extends BlockDirectional implements ITileEntityProvider
 	 * blockstate.
 	 */
 	public IBlockState withMirror(IBlockState state, Mirror mirrorIn) {
-		return state.withRotation(mirrorIn.toRotation((EnumFacing) state.getValue(LOOKING)));
+		return state.withRotation(mirrorIn.toRotation(state.getValue(LOOKING)));
 	}
 
 	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, new IProperty[]{LOOKING,});
+		return new BlockStateContainer(this, LOOKING);
 	}
 
 	/**

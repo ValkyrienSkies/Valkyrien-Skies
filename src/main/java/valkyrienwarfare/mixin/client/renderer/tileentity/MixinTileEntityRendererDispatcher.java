@@ -62,13 +62,13 @@ public abstract class MixinTileEntityRendererDispatcher {
 
 				wrapper.wrapping.renderer.setupTranslation(partialTicks);
 
-				double playerX = TileEntityRendererDispatcher.instance.staticPlayerX;
-				double playerY = TileEntityRendererDispatcher.instance.staticPlayerY;
-				double playerZ = TileEntityRendererDispatcher.instance.staticPlayerZ;
+				double playerX = TileEntityRendererDispatcher.staticPlayerX;
+				double playerY = TileEntityRendererDispatcher.staticPlayerY;
+				double playerZ = TileEntityRendererDispatcher.staticPlayerZ;
 
-				TileEntityRendererDispatcher.instance.staticPlayerX = wrapper.wrapping.renderer.offsetPos.getX();
-				TileEntityRendererDispatcher.instance.staticPlayerY = wrapper.wrapping.renderer.offsetPos.getY();
-				TileEntityRendererDispatcher.instance.staticPlayerZ = wrapper.wrapping.renderer.offsetPos.getZ();
+				TileEntityRendererDispatcher.staticPlayerX = wrapper.wrapping.renderer.offsetPos.getX();
+				TileEntityRendererDispatcher.staticPlayerY = wrapper.wrapping.renderer.offsetPos.getY();
+				TileEntityRendererDispatcher.staticPlayerZ = wrapper.wrapping.renderer.offsetPos.getZ();
 
 				if (drawingBatch) {
 					this.renderTileEntityOriginal(tileentityIn, partialTicks, destroyStage);
@@ -77,9 +77,9 @@ public abstract class MixinTileEntityRendererDispatcher {
 				} else {
 					this.renderTileEntityOriginal(tileentityIn, partialTicks, destroyStage);
 				}
-				TileEntityRendererDispatcher.instance.staticPlayerX = playerX;
-				TileEntityRendererDispatcher.instance.staticPlayerY = playerY;
-				TileEntityRendererDispatcher.instance.staticPlayerZ = playerZ;
+				TileEntityRendererDispatcher.staticPlayerX = playerX;
+				TileEntityRendererDispatcher.staticPlayerY = playerY;
+				TileEntityRendererDispatcher.staticPlayerZ = playerZ;
 
 				wrapper.wrapping.renderer.inverseTransform(partialTicks);
 			} catch (Exception e) {

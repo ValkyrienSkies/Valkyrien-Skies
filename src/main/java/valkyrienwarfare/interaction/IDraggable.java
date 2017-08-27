@@ -6,19 +6,19 @@ import net.minecraft.entity.MoverType;
 
 public interface IDraggable {
 	
-	public PhysicsWrapperEntity getWorldBelowFeet();
+	PhysicsWrapperEntity getWorldBelowFeet();
 	
-	public void setWorldBelowFeet(PhysicsWrapperEntity toSet);
+	void setWorldBelowFeet(PhysicsWrapperEntity toSet);
 	
-	public Vector getVelocityAddedToPlayer();
+	Vector getVelocityAddedToPlayer();
 	
-	public void setVelocityAddedToPlayer(Vector toSet);
+	void setVelocityAddedToPlayer(Vector toSet);
 	
-	public double getYawDifVelocity();
+	double getYawDifVelocity();
 	
-	public void setYawDifVelocity(double toSet);
+	void setYawDifVelocity(double toSet);
 	
-	public void setCancelNextMove(boolean toSet);
+	void setCancelNextMove(boolean toSet);
 	
-	public void move(MoverType type, double dx, double dy, double dz);
+	void move(MoverType type, double dx, double dy, double dz);
 }

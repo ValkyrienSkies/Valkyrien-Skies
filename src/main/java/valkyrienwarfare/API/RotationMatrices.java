@@ -232,7 +232,7 @@ public class RotationMatrices {
 	public static final double[] convertToDouble(float[] array) {
 		double[] doubleArray = new double[array.length];
 		for (int i = 0; i < array.length; i++) {
-			doubleArray[i] = (float) array[i];
+			doubleArray[i] = array[i];
 		}
 		return doubleArray;
 	}

@@ -254,7 +254,7 @@ public class EntityCollisionInjector {
 
 					int i = (int) (150.0D * d0);
 					if (!iblockstate.getBlock().addLandingEffects(iblockstate, (WorldServer) entity.world, blockpos, iblockstate, (EntityLivingBase) entity, i))
-						((WorldServer) entity.world).spawnParticle(EnumParticleTypes.BLOCK_DUST, entity.posX, entity.posY, entity.posZ, i, 0.0D, 0.0D, 0.0D, 0.15000000596046448D, new int[]{Block.getStateId(iblockstate)});
+						((WorldServer) entity.world).spawnParticle(EnumParticleTypes.BLOCK_DUST, entity.posX, entity.posY, entity.posZ, i, 0.0D, 0.0D, 0.0D, 0.15000000596046448D, Block.getStateId(iblockstate));
 				}
 			}
 		}
@@ -420,11 +420,7 @@ public class EntityCollisionInjector {
 	}
 
 	private static boolean isDifSignificant(double dif1, double d2) {
-		if (Math.abs(dif1 - d2) < errorSignificance) {
-			return false;
-		} else {
-			return true;
-		}
+		return !(Math.abs(dif1 - d2) < errorSignificance);
 	}
 
 	private static boolean motionInterfering(double orig, double modded) {

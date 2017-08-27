@@ -23,7 +23,7 @@ public class ControlEventsCommon {
 
 //				System.out.println("Obama?");
 
-				event.addCapability(new ResourceLocation(ValkyrienWarfareControl.MODID, "LastRelay"), new ICapabilitySerializable<NBTTagIntArray>() {
+				event.addCapability(new ResourceLocation(ValkyrienWarfareControl.INSTANCE.getModID(), "LastRelay"), new ICapabilitySerializable<NBTTagIntArray>() {
 					ICapabilityLastRelay inst = ValkyrienWarfareControl.lastRelayCapability.getDefaultInstance();
 
 					@Override

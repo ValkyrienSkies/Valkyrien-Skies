@@ -65,9 +65,7 @@ public class VWChunkCache {
 	public boolean containsPos(BlockPos pos) {
 		int i = (pos.getX() >> 4) - this.minChunkX;
 		int j = (pos.getZ() >> 4) - this.minChunkZ;
-		if (i < 0 || i >= cachedChunks.length || j < 0 || j >= cachedChunks[i].length)
-			return false;
-		return true;
+		return !(i < 0 || i >= cachedChunks.length || j < 0 || j >= cachedChunks[i].length);
 	}
 
 	public Chunk getChunkAt(int x, int z) {

@@ -165,7 +165,7 @@ public abstract class MixinNetHandlerPlayServer {
 				this.player.interactionManager.processRightClickBlock(this.player, worldserver, itemstack, enumhand, blockpos, enumfacing, (float) playerHitVec.X, (float) playerHitVec.Y, (float) playerHitVec.Z);
 			}
 		} else {
-			TextComponentTranslation textcomponenttranslation = new TextComponentTranslation("build.tooHigh", new Object[]{Integer.valueOf(thisClassAsAHandler.serverController.getBuildLimit())});
+			TextComponentTranslation textcomponenttranslation = new TextComponentTranslation("build.tooHigh", Integer.valueOf(thisClassAsAHandler.serverController.getBuildLimit()));
 			textcomponenttranslation.getStyle().setColor(TextFormatting.RED);
 			this.player.connection.sendPacket(new SPacketChat(textcomponenttranslation, (byte) 2));
 		}
@@ -298,7 +298,7 @@ public abstract class MixinNetHandlerPlayServer {
 
 		if (thisClassAsAHandler.floating) {
 			if (++thisClassAsAHandler.floatingTickCount > 80) {
-				thisClassAsAHandler.LOGGER.warn("{} was kicked for floating too long!", new Object[]{this.player.getName()});
+				NetHandlerPlayServer.LOGGER.warn("{} was kicked for floating too long!", this.player.getName());
 				thisClassAsAHandler.disconnect("Flying is not enabled on this server");
 				return;
 			}
@@ -319,7 +319,7 @@ public abstract class MixinNetHandlerPlayServer {
 
 			if (thisClassAsAHandler.vehicleFloating && thisClassAsAHandler.player.getLowestRidingEntity().getControllingPassenger() == thisClassAsAHandler.player) {
 				if (++thisClassAsAHandler.vehicleFloatingTickCount > 80) {
-					thisClassAsAHandler.LOGGER.warn("{} was kicked for floating a vehicle too long!", new Object[]{thisClassAsAHandler.player.getName()});
+					NetHandlerPlayServer.LOGGER.warn("{} was kicked for floating a vehicle too long!", thisClassAsAHandler.player.getName());
 					thisClassAsAHandler.disconnect("Flying is not enabled on this server");
 					return;
 				}

@@ -65,7 +65,7 @@ public abstract class MixinWorld {
 			zCoord = newPosVec.Z;
 		}
 		for (int i = 0; i < this.eventListeners.size(); ++i) {
-			((IWorldEventListener) this.eventListeners.get(i)).spawnParticle(particleID, ignoreRange, xCoord, yCoord, zCoord, xSpeed, ySpeed, zSpeed, parameters);
+			this.eventListeners.get(i).spawnParticle(particleID, ignoreRange, xCoord, yCoord, zCoord, xSpeed, ySpeed, zSpeed, parameters);
 		}
 	}
 
@@ -292,7 +292,7 @@ public abstract class MixinWorld {
 		int j = MathHelper.ceil((aabb.maxX + MAX_ENTITY_RADIUS_ALT) / 16.0D);
 		int k = MathHelper.floor((aabb.minZ - MAX_ENTITY_RADIUS_ALT) / 16.0D);
 		int l = MathHelper.ceil((aabb.maxZ + MAX_ENTITY_RADIUS_ALT) / 16.0D);
-		List<T> list = Lists.<T>newArrayList();
+		List<T> list = Lists.newArrayList();
 
 		for (int i1 = i; i1 < j; ++i1) {
 			for (int j1 = k; j1 < l; ++j1) {
@@ -306,7 +306,7 @@ public abstract class MixinWorld {
 	}
 
 	public List<Entity> getEntitiesInAABBexcludingOriginal(@Nullable Entity entityIn, AxisAlignedBB boundingBox, @Nullable Predicate<? super Entity> predicate) {
-		List<Entity> list = Lists.<Entity>newArrayList();
+		List<Entity> list = Lists.newArrayList();
 		int i = MathHelper.floor((boundingBox.minX - MAX_ENTITY_RADIUS_ALT) / 16.0D);
 		int j = MathHelper.floor((boundingBox.maxX + MAX_ENTITY_RADIUS_ALT) / 16.0D);
 		int k = MathHelper.floor((boundingBox.minZ - MAX_ENTITY_RADIUS_ALT) / 16.0D);
@@ -356,7 +356,7 @@ public abstract class MixinWorld {
 
 	public void markBlockRangeForRenderUpdateOriginal(int x1, int y1, int z1, int x2, int y2, int z2) {
 		for (int i = 0; i < this.eventListeners.size(); ++i) {
-			((IWorldEventListener) this.eventListeners.get(i)).markBlockRangeForRenderUpdate(x1, y1, z1, x2, y2, z2);
+			this.eventListeners.get(i).markBlockRangeForRenderUpdate(x1, y1, z1, x2, y2, z2);
 		}
 	}
 
@@ -476,7 +476,7 @@ public abstract class MixinWorld {
 					Iterator<TileEntity> iterator = this.addedTileEntityList.iterator();
 
 					while (iterator.hasNext()) {
-						TileEntity tileentity = (TileEntity) iterator.next();
+						TileEntity tileentity = iterator.next();
 
 						if (tileentity.getPos().equals(pos)) {
 							tileentity.invalidate();

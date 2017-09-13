@@ -228,7 +228,7 @@ public abstract class EntityBaseBall extends Entity {
 	}
 	
 	/**
-	 * Returns true if other Entities should be prevented from moving through this Entity.
+	 * Returns true if other Entities should be prevented from moving through this entity.
 	 */
 	public boolean canBeCollidedWith() {
 		return true;

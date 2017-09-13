@@ -42,7 +42,7 @@ public abstract class MixinChunk {
 		}
 	}
 
-	@Inject(method = "addEntity(Lnet/minecraft/entity/entity;)V", at = @At("HEAD"), cancellable = true)
+	@Inject(method = "addEntity(Lnet/minecraft/entity/Entity;)V", at = @At("HEAD"), cancellable = true)
 	public void preAddEntity(Entity entityIn, CallbackInfo callbackInfo) {
 		World world = this.world;
 

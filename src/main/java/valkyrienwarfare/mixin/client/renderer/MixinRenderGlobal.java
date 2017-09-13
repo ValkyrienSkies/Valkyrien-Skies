@@ -188,12 +188,12 @@ public abstract class MixinRenderGlobal {
 		}
 	}
 	
-	@Inject(method = "renderEntities(Lnet/minecraft/entity/entity;Lnet/minecraft/client/renderer/culling/ICamera;F)V", at = @At("HEAD"))
+	@Inject(method = "renderEntities(Lnet/minecraft/entity/Entity;Lnet/minecraft/client/renderer/culling/ICamera;F)V", at = @At("HEAD"))
 	public void preRenderEntities(Entity renderViewEntity, ICamera camera, float partialTicks, CallbackInfo callbackInfo) {
 		ClientProxy.lastCamera = camera;
 	}
 	
-	@Inject(method = "renderBlockLayer(Lnet/minecraft/util/BlockRenderLayer;DILnet/minecraft/entity/entity;)I", at = @At("HEAD"))
+	@Inject(method = "renderBlockLayer(Lnet/minecraft/util/BlockRenderLayer;DILnet/minecraft/entity/Entity;)I", at = @At("HEAD"))
 	public void preRenderBlockLayer(BlockRenderLayer blockLayerIn, double partialTicks, int pass, Entity entityIn, CallbackInfoReturnable callbackInfo) {
 		RenderHelper.disableStandardItemLighting();
 		
@@ -235,7 +235,7 @@ public abstract class MixinRenderGlobal {
 	}
 	
 	
-	@Inject(method = "renderBlockLayer(Lnet/minecraft/util/BlockRenderLayer;DILnet/minecraft/entity/entity;)I", at = @At("RETURN"))
+	@Inject(method = "renderBlockLayer(Lnet/minecraft/util/BlockRenderLayer;DILnet/minecraft/entity/Entity;)I", at = @At("RETURN"))
 	public void postRenderBlockLayer(BlockRenderLayer blockLayerIn, double partialTicks, int pass, Entity entityIn, CallbackInfoReturnable callbackInfo) {
 		if (blockLayerIn == BlockRenderLayer.TRANSLUCENT) {
 			

@@ -38,7 +38,7 @@ public class WorldPhysObjectManager {
 	
 	public WorldPhysObjectManager(World toManage) {
 		worldObj = toManage;
-		chunkLoadingTicket = ForgeChunkManager.requestTicket(ValkyrienWarfareMod.instance, toManage, Type.NORMAL);
+		chunkLoadingTicket = ForgeChunkManager.requestTicket(ValkyrienWarfareMod.INSTANCE, toManage, Type.NORMAL);
 	}
 	
 	/**

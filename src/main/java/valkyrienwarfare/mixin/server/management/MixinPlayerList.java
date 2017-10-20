@@ -1,5 +1,6 @@
 package valkyrienwarfare.mixin.server.management;
 
+import org.spongepowered.asm.mixin.Final;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
 import valkyrienwarfare.ValkyrienWarfareMod;
@@ -20,14 +21,11 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 @Mixin(PlayerList.class)
-public class MixinPlayerList {
+public abstract class MixinPlayerList {
 
 	@Shadow
+	@Final
 	public List<EntityPlayerMP> playerEntityList;
-
-	{
-//        playerEntityList = null;
-	}
 
 	@Overwrite
 	public void sendToAllNearExcept(@Nullable EntityPlayer except, double x, double y, double z, double radius, int dimension, Packet<?> packetIn) {

@@ -17,7 +17,7 @@ public abstract class MixinTileEntityCLIENT {
 
 	@Shadow
 	@Final
-	public AxisAlignedBB INFINITE_EXTENT_AABB;
+	public static AxisAlignedBB INFINITE_EXTENT_AABB;
 
 	@Shadow
 	public World world;

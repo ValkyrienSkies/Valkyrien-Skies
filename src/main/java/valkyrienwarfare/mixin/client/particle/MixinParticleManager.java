@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ParticleManager.class)
-public class MixinParticleManager {
+public abstract class MixinParticleManager {
 	@Inject(method = "addEffect(Lnet/minecraft/client/particle/Particle;)V", at = @At("HEAD"), cancellable = true)
 	public void preAddEffect(Particle effect, CallbackInfo callbackInfoReturnable) {
 		if (effect == null) {

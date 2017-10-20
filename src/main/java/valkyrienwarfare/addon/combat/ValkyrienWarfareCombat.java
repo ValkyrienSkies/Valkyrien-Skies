@@ -27,10 +27,6 @@ public class ValkyrienWarfareCombat extends Module<ValkyrienWarfareCombat> {
 	
 	public ValkyrienWarfareCombat()  {
 		super("VW_Combat", new CommonProxyCombat(), new ClientProxyCombat(), null, "valkyrienwarfarecombat");
-	}
-	
-	@Override
-	public void initModule()    {
 		INSTANCE = this;
 	}
 
@@ -68,8 +64,8 @@ public class ValkyrienWarfareCombat extends Module<ValkyrienWarfareCombat> {
 	
 	@Override
 	protected void registerEntities() {
-		EntityRegistry.registerModEntity(new ResourceLocation(getModID(), "EntityCannonBasic"), EntityCannonBasic.class, "EntityCannonBasic", 71, ValkyrienWarfareMod.instance, 120, 1, false);
-		EntityRegistry.registerModEntity(new ResourceLocation(getModID(), "EntityCannonBall"), EntityCannonBall.class, "EntityCannonBall", 72, ValkyrienWarfareMod.instance, 120, 5, true);
+		EntityRegistry.registerModEntity(new ResourceLocation(getModID(), "EntityCannonBasic"), EntityCannonBasic.class, "EntityCannonBasic", 71, ValkyrienWarfareMod.INSTANCE, 120, 1, false);
+		EntityRegistry.registerModEntity(new ResourceLocation(getModID(), "EntityCannonBall"), EntityCannonBall.class, "EntityCannonBall", 72, ValkyrienWarfareMod.INSTANCE, 120, 5, true);
 	}
 	
 	@Override

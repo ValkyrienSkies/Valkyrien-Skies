@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(MovementInputFromOptions.class)
-public class MixinMovementInputFromOptions extends MovementInput {
+public abstract class MixinMovementInputFromOptions extends MovementInput {
 
 	@Shadow
 	@Final

@@ -191,7 +191,7 @@ public class PhysSettingsCommand extends CommandBase {
 				return;
 			}
 		} else if (key.equals("save")) {
-			ValkyrienWarfareMod.instance.saveConfig();
+			ValkyrienWarfareMod.INSTANCE.saveConfig();
 			sender.sendMessage(new TextComponentString("Saved phyisics settings"));
 			return;
 		} else if (true || key.equals("help")) {

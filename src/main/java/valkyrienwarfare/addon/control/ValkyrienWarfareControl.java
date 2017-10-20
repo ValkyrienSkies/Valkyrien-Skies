@@ -45,10 +45,6 @@ public class ValkyrienWarfareControl extends Module<ValkyrienWarfareControl> {
 	
 	public ValkyrienWarfareControl() {
 		super("VW_Control", new ClientProxyControl(), new CommonProxyControl(), null, "valkyrienwarfarecontrol");
-	}
-	
-	@Override
-	public void initModule()    {
 		INSTANCE = this;
 	}
 	
@@ -94,7 +90,7 @@ public class ValkyrienWarfareControl extends Module<ValkyrienWarfareControl> {
 
 	@Override
 	public void init(FMLStateEvent event) {
-		NetworkRegistry.INSTANCE.registerGuiHandler(this, new ControlGUIHandler());
+		NetworkRegistry.INSTANCE.registerGuiHandler(ValkyrienWarfareMod.INSTANCE, new ControlGUIHandler());
 	}
 
 	@Override

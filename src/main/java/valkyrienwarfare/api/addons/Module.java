@@ -8,7 +8,6 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public abstract class Module<ImplName> {
 	private String name;
-	private boolean enabled;
 	private boolean registeredStuffPreInit = false, registeredStuffInit = false;
 	private ModuleProxy common, client, server; //tODO: call these
 	private String modid;
@@ -43,8 +42,6 @@ public abstract class Module<ImplName> {
 			registeredStuffInit = true;
 		}
 	}
-	
-	public abstract void initModule();
 	
 	protected void registerItems()  {
 		

@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import java.util.List;
 
 @Mixin(InventoryPlayer.class)
-public class MixinInventoryPlayer implements IInventoryPlayerFix {
+public abstract class MixinInventoryPlayer implements IInventoryPlayerFix {
 
 	@Shadow
 	@Final

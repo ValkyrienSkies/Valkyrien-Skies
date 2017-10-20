@@ -26,7 +26,7 @@ public class SchematicReader {
 			return tryCached;
 		}
 		try {
-			InputStream is = ValkyrienWarfareMod.instance.getClass().getClassLoader().getResourceAsStream("assets/valkyrienwarfareworld/schematics/" + schemname);
+			InputStream is = ValkyrienWarfareMod.INSTANCE.getClass().getClassLoader().getResourceAsStream("assets/valkyrienwarfareworld/schematics/" + schemname);
 			NBTTagCompound nbtdata = CompressedStreamTools.readCompressed(is);
 			short width = nbtdata.getShort("Width");
 			short height = nbtdata.getShort("Height");

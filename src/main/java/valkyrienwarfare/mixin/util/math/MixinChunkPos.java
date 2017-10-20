@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(ChunkPos.class)
-public class MixinChunkPos {
+public abstract class MixinChunkPos {
 
 	@Shadow
 	@Final

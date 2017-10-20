@@ -18,11 +18,14 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import valkyrienwarfare.api.addons.VWAddon;
 
+@VWAddon
 public class ValkyrienWarfareWorld extends Module<ValkyrienWarfareWorldGen> {
 	
 	public ValkyrienWarfareWorld()   {
 		super("VW_World", new CommonProxyWorld(), new ClientProxyWorld(), null, "valkyrienwarfareworld");
+		INSTANCE = this;
 	}
 	private static final WorldEventsCommon worldEventsCommon = new WorldEventsCommon();
 	public static ValkyrienWarfareWorld INSTANCE;
@@ -30,11 +33,6 @@ public class ValkyrienWarfareWorld extends Module<ValkyrienWarfareWorldGen> {
 	public Block skydungeon_controller;
 	public Block quartz_fence;
 	public Item etheriumCrystal;
-	
-	@Override
-	public void initModule()    {
-		INSTANCE = this;
-	}
 
 	private static void registerItemBlock(Block block) {
 		GameRegistry.register(new ItemBlock(block).setRegistryName(block.getRegistryName()));
@@ -46,7 +44,7 @@ public class ValkyrienWarfareWorld extends Module<ValkyrienWarfareWorldGen> {
 
 	@Override
 	public void init(FMLStateEvent event) {
-		EntityRegistry.registerModEntity(new ResourceLocation(getModID(), "FallingUpBlockEntity"), EntityFallingUpBlock.class, "FallingUpBlockEntity", 75, this, 80, 1, true);
+		EntityRegistry.registerModEntity(new ResourceLocation(ValkyrienWarfareMod.MODID, "FallingUpBlockEntity"), EntityFallingUpBlock.class, "FallingUpBlockEntity", 75, ValkyrienWarfareMod.INSTANCE, 80, 1, true);
 		MinecraftForge.EVENT_BUS.register(worldEventsCommon);
 
 		GameRegistry.registerWorldGenerator(new ValkyrienWarfareWorldGen(), 1);

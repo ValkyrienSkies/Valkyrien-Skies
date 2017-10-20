@@ -90,7 +90,7 @@ public class ValkyrienWarfareMod {
 	public static DimensionPhysObjectManager physicsManager;
 	public static CreativeTabs vwTab = new TabValkyrienWarfare();
 	@Instance(MODID)
-	public static ValkyrienWarfareMod instance = new ValkyrienWarfareMod();
+	public static ValkyrienWarfareMod INSTANCE = new ValkyrienWarfareMod();
 	public static int airStateIndex;
 	public static double standingTolerance = .42D;
 	public static int maxShipSize = 15000;
@@ -180,6 +180,7 @@ public class ValkyrienWarfareMod {
 		if (hasAddonRegistrationEnded) {
 			throw new IllegalStateException("Attempting to register addon after FMLConstructionEvent");
 		} else {
+			System.out.println("[VW Addon System] Registering addon: " + module);
 			addons.add(module);
 		}
 	}
@@ -254,7 +255,6 @@ public class ValkyrienWarfareMod {
 				if (abstractclass.isAnnotationPresent(VWAddon.class)) {
 					Module module = (Module) abstractclass.newInstance();
 					registerAddon(module);
-					module.initModule();
 				} else {
 					System.out.println("Class " + className + " does not have @VWAddon annonation, not loading");
 				}
@@ -305,7 +305,7 @@ public class ValkyrienWarfareMod {
 		BlockPhysicsRegistration.registerBlocksToNotPhysicise();
 		
 		
-		ForgeChunkManager.setForcedChunkLoadingCallback(instance, new VWChunkLoadingCallback());
+		ForgeChunkManager.setForcedChunkLoadingCallback(INSTANCE, new VWChunkLoadingCallback());
 		////We're stealing these tickets bois!////
 		try {
 			Field ticketConstraintsField = ForgeChunkManager.class.getDeclaredField("ticketConstraints");

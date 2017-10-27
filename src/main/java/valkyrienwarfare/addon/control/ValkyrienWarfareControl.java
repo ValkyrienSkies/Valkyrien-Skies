@@ -32,6 +32,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
@@ -45,13 +46,13 @@ public class ValkyrienWarfareControl extends Module<ValkyrienWarfareControl> {
 	
 	public ValkyrienWarfareControl() {
 		super("VW_Control", new ClientProxyControl(), new CommonProxyControl(), null, "valkyrienwarfarecontrol");
-		INSTANCE = this;
 	}
 	
 	@CapabilityInject(ICapabilityLastRelay.class)
 	public static final Capability<ICapabilityLastRelay> lastRelayCapability = null;
 	public static Configuration config;
-	public static ValkyrienWarfareControl INSTANCE;
+	@Instance("VW_Control")
+	public static ValkyrienWarfareControl INSTANCE = new ValkyrienWarfareControl();
 	public static SimpleNetworkWrapper controlNetwork;
 	public Block basicEngine;
 	public Block advancedEngine;
@@ -66,7 +67,7 @@ public class ValkyrienWarfareControl extends Module<ValkyrienWarfareControl> {
 	public Block shipHelm;
 	public Block shipWheel;
 	public Block shipTelegraph;
-	public Block antigravityEngine; //leaving it with the old name to prevent blocks dissapearing
+	public Block antigravityEngine; //leaving it with the old name to prevent blocks disappearing
 	public Block advancedEtherCompressor;
 	public Block eliteEtherCompressor;
 	public Block ultimateEtherCompressor;

@@ -200,9 +200,9 @@ public class ValkyrienWarfareMod {
 				}
 			}
 			if (rootDir) { //assume root directory
-				defaultAddons = new File(f.getPath() + File.separatorChar + "build" + File.separatorChar + "resources" + File.separatorChar + "main" + File.separatorChar + "vwAddon_default");
+			        defaultAddons = new File(f.getPath() + File.separatorChar + "src" + File.separatorChar + "main" + File.separatorChar + "resources" + File.separatorChar + "vwAddon_default"); 
 			} else { //assume run/ directory or similar
-				defaultAddons = new File(f.getAbsoluteFile().getParentFile().getParent() + File.separatorChar + "build" + File.separatorChar + "resources" + File.separatorChar + "main" + File.separatorChar + "vwAddon_default");
+			        defaultAddons = new File(f.getAbsoluteFile().getParentFile().getParent() + File.separatorChar + "src" + File.separatorChar + "main" + File.separatorChar + "resources" + File.separatorChar + "vwAddon_default"); 
 			}
 			System.out.println(defaultAddons.getAbsolutePath());
 			try {

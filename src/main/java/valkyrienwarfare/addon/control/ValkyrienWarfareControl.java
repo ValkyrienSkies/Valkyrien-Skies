@@ -32,6 +32,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
@@ -66,7 +67,7 @@ public class ValkyrienWarfareControl extends Module<ValkyrienWarfareControl> {
 	public Block shipHelm;
 	public Block shipWheel;
 	public Block shipTelegraph;
-	public Block antigravityEngine; //leaving it with the old name to prevent blocks dissapearing
+	public Block antigravityEngine; //leaving it with the old name to prevent blocks disappearing
 	public Block advancedEtherCompressor;
 	public Block eliteEtherCompressor;
 	public Block ultimateEtherCompressor;

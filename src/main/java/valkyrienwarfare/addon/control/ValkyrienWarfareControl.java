@@ -46,13 +46,13 @@ public class ValkyrienWarfareControl extends Module<ValkyrienWarfareControl> {
 	
 	public ValkyrienWarfareControl() {
 		super("VW_Control", new ClientProxyControl(), new CommonProxyControl(), null, "valkyrienwarfarecontrol");
+		INSTANCE = this;
 	}
 	
 	@CapabilityInject(ICapabilityLastRelay.class)
 	public static final Capability<ICapabilityLastRelay> lastRelayCapability = null;
 	public static Configuration config;
-	@Instance("VW_Control")
-	public static ValkyrienWarfareControl INSTANCE = new ValkyrienWarfareControl();
+	public static ValkyrienWarfareControl INSTANCE;
 	public static SimpleNetworkWrapper controlNetwork;
 	public Block basicEngine;
 	public Block advancedEngine;

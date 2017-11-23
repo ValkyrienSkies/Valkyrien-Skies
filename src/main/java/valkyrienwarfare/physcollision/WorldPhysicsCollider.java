@@ -339,6 +339,9 @@ public class WorldPhysicsCollider {
 
 			if (Math.abs(collisionVelocity) < 0.1D) {
 				collisionImpulseForce.zero();
+			} else {
+				addFrictionToNormalForce(momentumAtPoint, collisionImpulseForce);
+				
 			}
 
 			calculator.linearMomentum.add(collisionImpulseForce);
@@ -351,6 +354,31 @@ public class WorldPhysicsCollider {
 
 	}
 
+	private void addFrictionToNormalForce(Vector momentumAtPoint, Vector impulseVector) {
+		double kineticFrictionMew = .1D;
+
+		Vector contactNormal = new Vector(impulseVector);
+		contactNormal.normalize();
+		
+		Vector frictionVector = new Vector(momentumAtPoint);
+		frictionVector.normalize();
+		
+		frictionVector.multiply(impulseVector.length() * kineticFrictionMew);
+		
+		if(frictionVector.dot(momentumAtPoint) > 0) {
+			frictionVector.multiply(-1D);
+		}
+		
+		//Remove all friction components along the impulse vector
+		double frictionImpulseDot = frictionVector.dot(impulseVector);
+		
+		Vector toRemove = frictionVector.getProduct(frictionImpulseDot);
+		
+//		frictionVector.subtract(toRemove);
+		
+		impulseVector.add(frictionVector);
+	}
+	
 	//Applies Coulumb Friction to the collision
 	private void calculateCoulumbFriction(Vector inBody, Vector momentumAtPoint, Vector axis, Vector offsetVector) {
 		//Some number between 0 and 1

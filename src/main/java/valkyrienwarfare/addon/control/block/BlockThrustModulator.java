@@ -1,8 +1,7 @@
 package valkyrienwarfare.addon.control.block;
 
-import valkyrienwarfare.addon.control.gui.ControlGUIEnum;
-import valkyrienwarfare.addon.control.tileentity.ThrustModulatorTileEntity;
-import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
+import java.util.List;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
@@ -16,8 +15,10 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-
-import java.util.List;
+import valkyrienwarfare.ValkyrienWarfareMod;
+import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
+import valkyrienwarfare.addon.control.gui.ControlGUIEnum;
+import valkyrienwarfare.addon.control.tileentity.ThrustModulatorTileEntity;
 
 public class BlockThrustModulator extends Block implements ITileEntityProvider {
 
@@ -33,7 +34,7 @@ public class BlockThrustModulator extends Block implements ITileEntityProvider {
 				return false;
 			}
 			if (worldIn.isRemote) {
-				playerIn.openGui(ValkyrienWarfareControl.INSTANCE, ControlGUIEnum.ThrustModulatorGUI.ordinal(), worldIn, pos.getX(), pos.getY(), pos.getZ());
+				playerIn.openGui(ValkyrienWarfareMod.INSTANCE, ControlGUIEnum.ThrustModulatorGUI.ordinal(), worldIn, pos.getX(), pos.getY(), pos.getZ());
 			} else {
 				((EntityPlayerMP) playerIn).connection.sendPacket(modulatorTile.getUpdatePacket());
 			}

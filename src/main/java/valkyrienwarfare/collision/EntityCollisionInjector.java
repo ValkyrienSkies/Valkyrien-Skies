@@ -1,13 +1,8 @@
 package valkyrienwarfare.collision;
 
-import valkyrienwarfare.api.RotationMatrices;
-import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.interaction.EntityDraggable;
-import valkyrienwarfare.interaction.IDraggable;
-import valkyrienwarfare.math.BigBastardMath;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
-import valkyrienwarfare.physicsmanagement.WorldPhysObjectManager;
-import valkyrienwarfare.ValkyrienWarfareMod;
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSlime;
 import net.minecraft.block.SoundType;
@@ -25,9 +20,15 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
-
-import java.util.ArrayList;
-import java.util.List;
+import valkyrienwarfare.ValkyrienWarfareMod;
+import valkyrienwarfare.api.RotationMatrices;
+import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.interaction.EntityDraggable;
+import valkyrienwarfare.interaction.IDraggable;
+import valkyrienwarfare.math.BigBastardMath;
+import valkyrienwarfare.physics.PhysicsQueuedForce;
+import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.physicsmanagement.WorldPhysObjectManager;
 
 public class EntityCollisionInjector {
 
@@ -125,6 +126,8 @@ public class EntityCollisionInjector {
 						AxisAlignedBB axisalignedbb = entity.getEntityBoundingBox().offset(response.X, response.Y, response.Z);
 						entity.setEntityBoundingBox(axisalignedbb);
 						entity.resetPositionToBB();
+						
+
 					}
 				} catch (Exception e) {
 
@@ -190,7 +193,23 @@ public class EntityCollisionInjector {
 
 		Vector origDxyz = new Vector(origDx, origDy, origDz);
 		Vector origPosXyz = new Vector(origPosX, origPosY, origPosZ);
-
+		
+		if(worldBelow != null) {
+			double playerMass = 100D;
+			Vector impulse = new Vector(total);
+			Vector inBodyPos = new Vector(entity.posX, entity.posY, entity.posZ);
+			
+//			inBodyPos.transform(worldBelow.wrapping.coordTransform.wToLRotation);
+//			impulse.transform(worldBelow.wrapping.coordTransform.wToLRotation);
+			
+			impulse.multiply(playerMass * -100D);
+//			impulse.multiply();
+			
+			PhysicsQueuedForce queuedForce = new PhysicsQueuedForce(impulse, inBodyPos, false, 1);
+			
+			worldBelow.wrapping.queueForce(queuedForce);
+		}
+		
 		return new IntermediateMovementVariableStorage(dxyz, origDxyz, origPosXyz, alreadyOnGround, motionYBefore, oldFallDistance);
 	}
 
@@ -349,25 +368,29 @@ public class EntityCollisionInjector {
 		List<PhysicsWrapperEntity> ships = localPhysManager.getNearbyPhysObjects(entityBB);
 		//If a player is riding a Ship, don't process any collision between that Ship and the Player
 		for (PhysicsWrapperEntity wrapper : ships) {
-			if (!entity.isRidingSameEntity(wrapper)) {
-				Polygon playerInLocal = new Polygon(entityBB, wrapper.wrapping.coordTransform.wToLTransform);
-				AxisAlignedBB bb = playerInLocal.getEnclosedAABB();
-
-				if ((bb.maxX - bb.minX) * (bb.maxZ - bb.minZ) > 9898989) {
-					//This is too big, something went wrong here
-					break;
+			try {
+				if (!entity.isRidingSameEntity(wrapper)) {
+					Polygon playerInLocal = new Polygon(entityBB, wrapper.wrapping.coordTransform.wToLTransform);
+					AxisAlignedBB bb = playerInLocal.getEnclosedAABB();
+	
+					if ((bb.maxX - bb.minX) * (bb.maxZ - bb.minZ) > 9898989) {
+						//This is too big, something went wrong here
+						break;
+					}
+					List<AxisAlignedBB> collidingBBs = entity.world.getCollisionBoxes(entity, bb);
+	
+					// TODO: Fix the performance of this!
+					if (entity.world.isRemote || entity instanceof EntityPlayer) {
+						BigBastardMath.mergeAABBList(collidingBBs);
+					}
+	
+					for (AxisAlignedBB inLocal : collidingBBs) {
+						ShipPolygon poly = new ShipPolygon(inLocal, wrapper.wrapping.coordTransform.lToWTransform, wrapper.wrapping.coordTransform.normals, wrapper.wrapping);
+						collisions.add(poly);
+					}
 				}
-				List<AxisAlignedBB> collidingBBs = entity.world.getCollisionBoxes(entity, bb);
-
-				// TODO: Fix the performance of this!
-				if (entity.world.isRemote || entity instanceof EntityPlayer) {
-					BigBastardMath.mergeAABBList(collidingBBs);
-				}
-
-				for (AxisAlignedBB inLocal : collidingBBs) {
-					ShipPolygon poly = new ShipPolygon(inLocal, wrapper.wrapping.coordTransform.lToWTransform, wrapper.wrapping.coordTransform.normals, wrapper.wrapping);
-					collisions.add(poly);
-				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 

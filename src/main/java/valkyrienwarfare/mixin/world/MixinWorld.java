@@ -45,16 +45,16 @@ public abstract class MixinWorld {
 	@Final
 	public boolean isRemote;
 	@Shadow
-	protected List<IWorldEventListener> eventListeners;
+	List<IWorldEventListener> eventListeners;
 
 	private World thisClassAsWorld = World.class.cast(this);
 	@Shadow
-	private boolean processingLoadedTiles;
+	boolean processingLoadedTiles;
 	@Shadow
-	private List<TileEntity> addedTileEntityList;
+	List<TileEntity> addedTileEntityList;
 
 	@Overwrite
-	private void spawnParticle(int particleID, boolean ignoreRange, double xCoord, double yCoord, double zCoord, double xSpeed, double ySpeed, double zSpeed, int... parameters) {
+	public void spawnParticle(int particleID, boolean ignoreRange, double xCoord, double yCoord, double zCoord, double xSpeed, double ySpeed, double zSpeed, int... parameters) {
 		BlockPos pos = new BlockPos(xCoord, yCoord, zCoord);
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(World.class.cast(this), pos);
 		if (wrapper != null) {

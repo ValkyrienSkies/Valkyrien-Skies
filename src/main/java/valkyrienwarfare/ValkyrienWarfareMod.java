@@ -1,22 +1,23 @@
 package valkyrienwarfare;
 
-import valkyrienwarfare.api.addons.Module;
-import valkyrienwarfare.api.addons.VWAddon;
-import valkyrienwarfare.api.DataTag;
-import valkyrienwarfare.api.ValkyrienWarfareHooks;
-import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.block.BlockPhysicsInfuser;
-import valkyrienwarfare.block.BlockPhysicsInfuserCreative;
-import valkyrienwarfare.capability.IAirshipCounterCapability;
-import valkyrienwarfare.capability.ImplAirshipCounterCapability;
-import valkyrienwarfare.capability.StorageAirshipCounter;
-import valkyrienwarfare.chunkmanagement.DimensionPhysicsChunkManager;
-import valkyrienwarfare.gui.TabValkyrienWarfare;
-import valkyrienwarfare.mixin.MixinLoaderForge;
-import valkyrienwarfare.network.*;
-import valkyrienwarfare.physicsmanagement.DimensionPhysObjectManager;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
-import valkyrienwarfare.proxy.CommonProxy;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
@@ -39,26 +40,44 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.*;
+import net.minecraftforge.fml.common.event.FMLConstructionEvent;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
+import net.minecraftforge.fml.common.event.FMLStateEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
-
-import java.io.*;
-import java.lang.reflect.Field;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.logging.Logger;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
+import valkyrienwarfare.addon.combat.ValkyrienWarfareCombat;
+import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
+import valkyrienwarfare.addon.world.ValkyrienWarfareWorld;
+import valkyrienwarfare.api.DataTag;
+import valkyrienwarfare.api.ValkyrienWarfareHooks;
+import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.api.addons.Module;
+import valkyrienwarfare.api.addons.VWAddon;
+import valkyrienwarfare.block.BlockPhysicsInfuser;
+import valkyrienwarfare.block.BlockPhysicsInfuserCreative;
+import valkyrienwarfare.capability.IAirshipCounterCapability;
+import valkyrienwarfare.capability.ImplAirshipCounterCapability;
+import valkyrienwarfare.capability.StorageAirshipCounter;
+import valkyrienwarfare.chunkmanagement.DimensionPhysicsChunkManager;
+import valkyrienwarfare.gui.TabValkyrienWarfare;
+import valkyrienwarfare.mixin.MixinLoaderForge;
+import valkyrienwarfare.network.EntityRelativePositionMessage;
+import valkyrienwarfare.network.EntityRelativePositionMessageHandler;
+import valkyrienwarfare.network.PhysWrapperPositionHandler;
+import valkyrienwarfare.network.PhysWrapperPositionMessage;
+import valkyrienwarfare.network.PlayerShipRefrenceHandler;
+import valkyrienwarfare.network.PlayerShipRefrenceMessage;
+import valkyrienwarfare.physicsmanagement.DimensionPhysObjectManager;
+import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.proxy.CommonProxy;
 
 @Mod(modid = ValkyrienWarfareMod.MODID, name = ValkyrienWarfareMod.MODNAME, version = ValkyrienWarfareMod.MODVER, guiFactory = "valkyrienwarfare.gui.GuiFactoryValkyrienWarfare", updateJSON = "https://raw.githubusercontent.com/BigBastard/Valkyrien-Warfare-Revamped/update.json")
 public class ValkyrienWarfareMod {
@@ -189,7 +208,18 @@ public class ValkyrienWarfareMod {
 	public void fmlConstruct(FMLConstructionEvent event) {
 		URLClassLoader classLoader = (URLClassLoader) getClass().getClassLoader();
 		ArrayList<String> allAddons = new ArrayList<>();
-		if (!MixinLoaderForge.isObfuscatedEnvironment) { //if in dev, read default addons from gradle output folder
+		final boolean isAddonBugFixed = false;
+		
+		if(!isAddonBugFixed) {
+			ValkyrienWarfareCombat combatModule = new ValkyrienWarfareCombat();
+			ValkyrienWarfareControl controlModule = new ValkyrienWarfareControl();
+			ValkyrienWarfareWorld worldModule = new ValkyrienWarfareWorld();
+			registerAddon(combatModule);
+			registerAddon(controlModule);
+			registerAddon(worldModule);
+		}
+		
+		if (!MixinLoaderForge.isObfuscatedEnvironment && isAddonBugFixed) { //if in dev, read default addons from gradle output folder
 			File f = ValkyrienWarfareMod.getWorkingFolder();
 			File defaultAddons;
 			String[] list = f.list();

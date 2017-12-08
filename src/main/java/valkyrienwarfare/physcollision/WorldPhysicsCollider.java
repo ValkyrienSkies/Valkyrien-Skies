@@ -337,7 +337,7 @@ public class WorldPhysicsCollider {
 //			collisionImpulseForce.multiply(1.8D);
 			double collisionVelocity = momentumAtPoint.dot(axis);
 
-			if (Math.abs(collisionVelocity) < 0.1D) {
+			if (false && Math.abs(collisionVelocity) < 0.01D) {
 				collisionImpulseForce.zero();
 			} else {
 				addFrictionToNormalForce(momentumAtPoint, collisionImpulseForce);
@@ -370,11 +370,11 @@ public class WorldPhysicsCollider {
 		}
 		
 		//Remove all friction components along the impulse vector
-		double frictionImpulseDot = frictionVector.dot(impulseVector);
+		double frictionImpulseDot = frictionVector.dot(contactNormal);
 		
-		Vector toRemove = frictionVector.getProduct(frictionImpulseDot);
+		Vector toRemove = contactNormal.getProduct(frictionImpulseDot);
 		
-//		frictionVector.subtract(toRemove);
+		frictionVector.subtract(toRemove);
 		
 		impulseVector.add(frictionVector);
 	}

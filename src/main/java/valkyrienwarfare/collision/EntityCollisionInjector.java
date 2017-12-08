@@ -194,7 +194,7 @@ public class EntityCollisionInjector {
 		Vector origDxyz = new Vector(origDx, origDy, origDz);
 		Vector origPosXyz = new Vector(origPosX, origPosY, origPosZ);
 		
-		if(worldBelow != null) {
+		if(worldBelow != null && false) {
 			double playerMass = 100D;
 			Vector impulse = new Vector(total);
 			Vector inBodyPos = new Vector(entity.posX, entity.posY, entity.posZ);

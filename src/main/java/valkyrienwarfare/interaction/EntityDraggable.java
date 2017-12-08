@@ -7,9 +7,14 @@ import valkyrienwarfare.physicsmanagement.CoordTransformObject;
 import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.combat.entity.EntityCannonBall;
+
+import java.util.List;
+
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
@@ -131,7 +136,17 @@ public abstract class EntityDraggable {
 				draggable.getVelocityAddedToPlayer().zero();
 			}
 
+			Vector velocityProper = new Vector(draggable.getVelocityAddedToPlayer());
+			
+			Vector playerPosOriginal = new Vector(entity);
+			
+			AxisAlignedBB originalBoundingBox = entity.getEntityBoundingBox();
+			
+			draggable.setVelocityAddedToPlayer(getVelocityProper(velocityProper, entity));
+			
 //            entity.move(MoverType.SELF, draggable.getVelocityAddedToPlayer().X, draggable.getVelocityAddedToPlayer().Y, draggable.getVelocityAddedToPlayer().Z);
+			
+			entity.setEntityBoundingBox(originalBoundingBox);
 			
 			entity.setEntityBoundingBox(entity.getEntityBoundingBox().offset(draggable.getVelocityAddedToPlayer().X, draggable.getVelocityAddedToPlayer().Y, draggable.getVelocityAddedToPlayer().Z));
 			entity.resetPositionToBB();
@@ -145,14 +160,14 @@ public abstract class EntityDraggable {
 			}
 			
 			//Do not add this movement as if the entity were walking it
-			entity.distanceWalkedModified = originalWalked;
-			entity.distanceWalkedOnStepModified = originalWalkedOnStep;
-			entity.setSneaking(originallySneaking);
+//			entity.distanceWalkedModified = originalWalked;
+//			entity.distanceWalkedOnStepModified = originalWalkedOnStep;
+//			entity.setSneaking(originallySneaking);
 			
 		}
 		
 		if (onGroundOrig) {
-			entity.onGround = onGroundOrig;
+//			entity.onGround = onGroundOrig;
 		}
 		
 		draggable.getVelocityAddedToPlayer().multiply(.99D);
@@ -173,5 +188,160 @@ public abstract class EntityDraggable {
 		}
 		Object o = draggable;
 		return (Entity) o;
+	}
+	
+	public static Vector getVelocityProper(Vector improperVelocity, Entity thisClassAsAnEntity) {
+		double x = improperVelocity.X;
+		double y = improperVelocity.Y;
+		double z = improperVelocity.Z;
+		
+		double d10 = thisClassAsAnEntity.posX;
+		double d11 = thisClassAsAnEntity.posY;
+		double d1 = thisClassAsAnEntity.posZ;
+
+		if (thisClassAsAnEntity.isInWeb) {
+			thisClassAsAnEntity.isInWeb = false;
+			x *= 0.25D;
+			y *= 0.05000000074505806D;
+			z *= 0.25D;
+			thisClassAsAnEntity.motionX = 0.0D;
+			thisClassAsAnEntity.motionY = 0.0D;
+			thisClassAsAnEntity.motionZ = 0.0D;
+		}
+
+		double d2 = x;
+		double d3 = y;
+		double d4 = z;
+
+		List<AxisAlignedBB> list1 = thisClassAsAnEntity.world.getCollisionBoxes(thisClassAsAnEntity, thisClassAsAnEntity.getEntityBoundingBox().addCoord(x, y, z));
+		AxisAlignedBB axisalignedbb = thisClassAsAnEntity.getEntityBoundingBox();
+
+		if (y != 0.0D) {
+			int k = 0;
+
+			for (int l = list1.size(); k < l; ++k) {
+				y = list1.get(k).calculateYOffset(thisClassAsAnEntity.getEntityBoundingBox(), y);
+			}
+
+			thisClassAsAnEntity.setEntityBoundingBox(thisClassAsAnEntity.getEntityBoundingBox().offset(0.0D, y, 0.0D));
+		}
+
+		if (x != 0.0D) {
+			int j5 = 0;
+
+			for (int l5 = list1.size(); j5 < l5; ++j5) {
+				x = list1.get(j5).calculateXOffset(thisClassAsAnEntity.getEntityBoundingBox(), x);
+			}
+
+			if (x != 0.0D) {
+				thisClassAsAnEntity.setEntityBoundingBox(thisClassAsAnEntity.getEntityBoundingBox().offset(x, 0.0D, 0.0D));
+			}
+		}
+
+		if (z != 0.0D) {
+			int k5 = 0;
+
+			for (int i6 = list1.size(); k5 < i6; ++k5) {
+				z = list1.get(k5).calculateZOffset(thisClassAsAnEntity.getEntityBoundingBox(), z);
+			}
+
+			if (z != 0.0D) {
+				thisClassAsAnEntity.setEntityBoundingBox(thisClassAsAnEntity.getEntityBoundingBox().offset(0.0D, 0.0D, z));
+			}
+		}
+
+		boolean flag = thisClassAsAnEntity.onGround || d3 != y && d3 < 0.0D;
+
+		if (thisClassAsAnEntity.stepHeight > 0.0F && flag && (d2 != x || d4 != z)) {
+			double d14 = x;
+			double d6 = y;
+			double d7 = z;
+			AxisAlignedBB axisalignedbb1 = thisClassAsAnEntity.getEntityBoundingBox();
+			thisClassAsAnEntity.setEntityBoundingBox(axisalignedbb);
+			y = (double) thisClassAsAnEntity.stepHeight;
+			List<AxisAlignedBB> list = thisClassAsAnEntity.world.getCollisionBoxes(thisClassAsAnEntity, thisClassAsAnEntity.getEntityBoundingBox().addCoord(d2, y, d4));
+			AxisAlignedBB axisalignedbb2 = thisClassAsAnEntity.getEntityBoundingBox();
+			AxisAlignedBB axisalignedbb3 = axisalignedbb2.addCoord(d2, 0.0D, d4);
+			double d8 = y;
+			int j1 = 0;
+
+			for (int k1 = list.size(); j1 < k1; ++j1) {
+				d8 = list.get(j1).calculateYOffset(axisalignedbb3, d8);
+			}
+
+			axisalignedbb2 = axisalignedbb2.offset(0.0D, d8, 0.0D);
+			double d18 = d2;
+			int l1 = 0;
+
+			for (int i2 = list.size(); l1 < i2; ++l1) {
+				d18 = list.get(l1).calculateXOffset(axisalignedbb2, d18);
+			}
+
+			axisalignedbb2 = axisalignedbb2.offset(d18, 0.0D, 0.0D);
+			double d19 = d4;
+			int j2 = 0;
+
+			for (int k2 = list.size(); j2 < k2; ++j2) {
+				d19 = list.get(j2).calculateZOffset(axisalignedbb2, d19);
+			}
+
+			axisalignedbb2 = axisalignedbb2.offset(0.0D, 0.0D, d19);
+			AxisAlignedBB axisalignedbb4 = thisClassAsAnEntity.getEntityBoundingBox();
+			double d20 = y;
+			int l2 = 0;
+
+			for (int i3 = list.size(); l2 < i3; ++l2) {
+				d20 = list.get(l2).calculateYOffset(axisalignedbb4, d20);
+			}
+
+			axisalignedbb4 = axisalignedbb4.offset(0.0D, d20, 0.0D);
+			double d21 = d2;
+			int j3 = 0;
+
+			for (int k3 = list.size(); j3 < k3; ++j3) {
+				d21 = list.get(j3).calculateXOffset(axisalignedbb4, d21);
+			}
+
+			axisalignedbb4 = axisalignedbb4.offset(d21, 0.0D, 0.0D);
+			double d22 = d4;
+			int l3 = 0;
+
+			for (int i4 = list.size(); l3 < i4; ++l3) {
+				d22 = list.get(l3).calculateZOffset(axisalignedbb4, d22);
+			}
+
+			axisalignedbb4 = axisalignedbb4.offset(0.0D, 0.0D, d22);
+			double d23 = d18 * d18 + d19 * d19;
+			double d9 = d21 * d21 + d22 * d22;
+
+			if (d23 > d9) {
+				x = d18;
+				z = d19;
+				y = -d8;
+				thisClassAsAnEntity.setEntityBoundingBox(axisalignedbb2);
+			} else {
+				x = d21;
+				z = d22;
+				y = -d20;
+				thisClassAsAnEntity.setEntityBoundingBox(axisalignedbb4);
+			}
+
+			int j4 = 0;
+
+			for (int k4 = list.size(); j4 < k4; ++j4) {
+				y = list.get(j4).calculateYOffset(thisClassAsAnEntity.getEntityBoundingBox(), y);
+			}
+
+			thisClassAsAnEntity.setEntityBoundingBox(thisClassAsAnEntity.getEntityBoundingBox().offset(0.0D, y, 0.0D));
+
+			if (d14 * d14 + d7 * d7 >= x * x + z * z) {
+				x = d14;
+				y = d6;
+				z = d7;
+				thisClassAsAnEntity.setEntityBoundingBox(axisalignedbb1);
+			}
+		}
+		
+		return new Vector(x, y, z);
 	}
 }

@@ -1,10 +1,10 @@
 package valkyrienwarfare.api.addons;
 
-import valkyrienwarfare.ValkyrienWarfareMod;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import valkyrienwarfare.ValkyrienWarfareMod;
 
 public abstract class Module<ImplName> {
 	private String name;
@@ -13,15 +13,21 @@ public abstract class Module<ImplName> {
 	private String modid;
 	
 	public Module(String name, ModuleProxy common, ModuleProxy client, ModuleProxy server)  {
-		this(name, common, client, server, ValkyrienWarfareMod.MODID);
+		this(name, common, ValkyrienWarfareMod.MODID);
 	}
 	
-	public Module(String name, ModuleProxy common, ModuleProxy client, ModuleProxy server, String modid)  {
+	public Module(String name, ModuleProxy common, String modid)  {
 		this.name = name;
 		this.common = common;
-		this.client = client;
-		this.server = server;
 		this.modid = modid;
+	}
+	
+	public final void setServerProxy(ModuleProxy server) {
+		this.server = server;
+	}
+	
+	public final void setClientProxy(ModuleProxy client) {
+		this.client = client;
 	}
 	
 	public final void doRegisteringStuffPreInit()  {

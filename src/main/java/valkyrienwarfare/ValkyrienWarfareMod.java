@@ -78,6 +78,7 @@ import valkyrienwarfare.network.PlayerShipRefrenceMessage;
 import valkyrienwarfare.physicsmanagement.DimensionPhysObjectManager;
 import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
 import valkyrienwarfare.proxy.CommonProxy;
+import valkyrienwarfare.proxy.ServerProxy;
 
 @Mod(modid = ValkyrienWarfareMod.MODID, name = ValkyrienWarfareMod.MODNAME, version = ValkyrienWarfareMod.MODVER, guiFactory = "valkyrienwarfare.gui.GuiFactoryValkyrienWarfare", updateJSON = "https://raw.githubusercontent.com/BigBastard/Valkyrien-Warfare-Revamped/update.json")
 public class ValkyrienWarfareMod {
@@ -462,5 +463,13 @@ public class ValkyrienWarfareMod {
 	
 	public void registerCapibilities() {
 		CapabilityManager.INSTANCE.register(IAirshipCounterCapability.class, new StorageAirshipCounter(), ImplAirshipCounterCapability.class);
+	}
+	
+	/**
+	 * Checks instance of ServerProxy to avoid calling client code on server side
+	 * @return
+	 */
+	public boolean isRunningOnClient() 	{
+		return !(proxy instanceof ServerProxy);
 	}
 }

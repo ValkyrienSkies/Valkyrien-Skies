@@ -205,6 +205,7 @@ public abstract class MixinRenderGlobal {
 			GL11.glPopMatrix();
 		}
 		
+		/*
 		if (blockLayerIn == BlockRenderLayer.TRANSLUCENT) {
 			GlStateManager.pushMatrix();
 			GL11.glEnable(GL11.GL_STENCIL_TEST);
@@ -229,6 +230,7 @@ public abstract class MixinRenderGlobal {
 			GL11.glStencilFunc(GL11.GL_NOTEQUAL, 1, 255);
 			GL11.glDepthMask(true);
 		}
+		*/
 		
 		GlStateManager.resetColor();
 		//vanilla code follows
@@ -237,11 +239,12 @@ public abstract class MixinRenderGlobal {
 	
 	@Inject(method = "renderBlockLayer(Lnet/minecraft/util/BlockRenderLayer;DILnet/minecraft/entity/Entity;)I", at = @At("RETURN"))
 	public void postRenderBlockLayer(BlockRenderLayer blockLayerIn, double partialTicks, int pass, Entity entityIn, CallbackInfoReturnable callbackInfo) {
+		/*
 		if (blockLayerIn == BlockRenderLayer.TRANSLUCENT) {
-			
 			GL11.glDisable(GL11.GL_STENCIL_TEST);
 			GlStateManager.popMatrix();
 		}
+		*/
 	}
 	
 	@Overwrite

@@ -1,16 +1,5 @@
 package valkyrienwarfare.addon.combat;
 
-import valkyrienwarfare.api.addons.Module;
-import valkyrienwarfare.api.addons.VWAddon;
-import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.addon.combat.entity.EntityCannonBall;
-import valkyrienwarfare.addon.combat.entity.EntityCannonBasic;
-import valkyrienwarfare.addon.combat.item.ItemBasicCannon;
-import valkyrienwarfare.addon.combat.item.ItemCannonBall;
-import valkyrienwarfare.addon.combat.item.ItemExplosiveArrow;
-import valkyrienwarfare.addon.combat.item.ItemPowderPouch;
-import valkyrienwarfare.addon.combat.proxy.ClientProxyCombat;
-import valkyrienwarfare.addon.combat.proxy.CommonProxyCombat;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.init.Items;
@@ -20,13 +9,27 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import valkyrienwarfare.ValkyrienWarfareMod;
+import valkyrienwarfare.addon.combat.entity.EntityCannonBall;
+import valkyrienwarfare.addon.combat.entity.EntityCannonBasic;
+import valkyrienwarfare.addon.combat.item.ItemBasicCannon;
+import valkyrienwarfare.addon.combat.item.ItemCannonBall;
+import valkyrienwarfare.addon.combat.item.ItemExplosiveArrow;
+import valkyrienwarfare.addon.combat.item.ItemPowderPouch;
+import valkyrienwarfare.addon.combat.proxy.ClientProxyCombat;
+import valkyrienwarfare.addon.combat.proxy.CommonProxyCombat;
+import valkyrienwarfare.api.addons.Module;
+import valkyrienwarfare.api.addons.VWAddon;
 
 @VWAddon
 public class ValkyrienWarfareCombat extends Module<ValkyrienWarfareCombat> {
 	public static ValkyrienWarfareCombat INSTANCE;
 	
 	public ValkyrienWarfareCombat()  {
-		super("VW_Combat", new CommonProxyCombat(), new ClientProxyCombat(), null, "valkyrienwarfarecombat");
+		super("VW_Combat", new CommonProxyCombat(), "valkyrienwarfarecombat");
+		if(ValkyrienWarfareMod.INSTANCE.isRunningOnClient()) {
+			this.setClientProxy(new ClientProxyCombat());
+		}
 		INSTANCE = this;
 	}
 

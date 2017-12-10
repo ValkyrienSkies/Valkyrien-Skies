@@ -1,14 +1,5 @@
 package valkyrienwarfare.addon.world;
 
-import valkyrienwarfare.addon.world.block.BlockEtheriumOre;
-import valkyrienwarfare.addon.world.block.BlockQuartzFence;
-import valkyrienwarfare.addon.world.proxy.ClientProxyWorld;
-import valkyrienwarfare.addon.world.tileentity.TileEntitySkyTempleController;
-import valkyrienwarfare.api.addons.Module;
-import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.addon.world.block.BlockSkyTempleController;
-import valkyrienwarfare.addon.world.proxy.CommonProxyWorld;
-import valkyrienwarfare.addon.world.worldgen.ValkyrienWarfareWorldGen;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.item.Item;
@@ -18,13 +9,25 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import valkyrienwarfare.ValkyrienWarfareMod;
+import valkyrienwarfare.addon.world.block.BlockEtheriumOre;
+import valkyrienwarfare.addon.world.block.BlockQuartzFence;
+import valkyrienwarfare.addon.world.block.BlockSkyTempleController;
+import valkyrienwarfare.addon.world.proxy.ClientProxyWorld;
+import valkyrienwarfare.addon.world.proxy.CommonProxyWorld;
+import valkyrienwarfare.addon.world.tileentity.TileEntitySkyTempleController;
+import valkyrienwarfare.addon.world.worldgen.ValkyrienWarfareWorldGen;
+import valkyrienwarfare.api.addons.Module;
 import valkyrienwarfare.api.addons.VWAddon;
 
 @VWAddon
 public class ValkyrienWarfareWorld extends Module<ValkyrienWarfareWorldGen> {
 	
 	public ValkyrienWarfareWorld()   {
-		super("VW_World", new CommonProxyWorld(), new ClientProxyWorld(), null, "valkyrienwarfareworld");
+		super("VW_World", new CommonProxyWorld(), "valkyrienwarfareworld");
+		if(ValkyrienWarfareMod.INSTANCE.isRunningOnClient()) {
+			this.setClientProxy(new ClientProxyWorld());
+		}
 		INSTANCE = this;
 	}
 	private static final WorldEventsCommon worldEventsCommon = new WorldEventsCommon();

@@ -1,27 +1,7 @@
 package valkyrienwarfare.addon.control;
 
-import valkyrienwarfare.addon.control.block.*;
-import valkyrienwarfare.addon.control.item.ItemRelayWire;
-import valkyrienwarfare.addon.control.network.*;
-import valkyrienwarfare.addon.control.tileentity.*;
-import valkyrienwarfare.api.addons.Module;
-import valkyrienwarfare.api.addons.VWAddon;
-import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.addon.control.block.engine.BlockNormalEngine;
-import valkyrienwarfare.addon.control.block.engine.BlockRedstoneEngine;
-import valkyrienwarfare.addon.control.block.ethercompressor.BlockCreativeEtherCompressor;
-import valkyrienwarfare.addon.control.block.ethercompressor.BlockNormalEtherCompressor;
-import valkyrienwarfare.addon.control.capability.ICapabilityLastRelay;
-import valkyrienwarfare.addon.control.capability.ImplCapabilityLastRelay;
-import valkyrienwarfare.addon.control.capability.StorageLastRelay;
-import valkyrienwarfare.addon.control.gui.ControlGUIHandler;
-import valkyrienwarfare.addon.control.item.ItemShipStealer;
-import valkyrienwarfare.addon.control.item.ItemSystemLinker;
-import valkyrienwarfare.addon.control.piloting.PilotControlsMessage;
-import valkyrienwarfare.addon.control.piloting.PilotControlsMessageHandler;
-import valkyrienwarfare.addon.control.proxy.ClientProxyControl;
-import valkyrienwarfare.addon.control.proxy.CommonProxyControl;
-import valkyrienwarfare.addon.world.ValkyrienWarfareWorld;
+import java.io.File;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
@@ -32,20 +12,76 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
-
-import java.io.File;
+import valkyrienwarfare.ValkyrienWarfareMod;
+import valkyrienwarfare.addon.control.block.BlockAirshipController_Zepplin;
+import valkyrienwarfare.addon.control.block.BlockBalloonBurner;
+import valkyrienwarfare.addon.control.block.BlockDopedEtherium;
+import valkyrienwarfare.addon.control.block.BlockGyroscope;
+import valkyrienwarfare.addon.control.block.BlockHovercraftController;
+import valkyrienwarfare.addon.control.block.BlockShipHelm;
+import valkyrienwarfare.addon.control.block.BlockShipHullSealer;
+import valkyrienwarfare.addon.control.block.BlockShipPassengerChair;
+import valkyrienwarfare.addon.control.block.BlockShipPilotsChair;
+import valkyrienwarfare.addon.control.block.BlockShipTelegraph;
+import valkyrienwarfare.addon.control.block.BlockShipWheel;
+import valkyrienwarfare.addon.control.block.BlockThrustModulator;
+import valkyrienwarfare.addon.control.block.BlockThrustRelay;
+import valkyrienwarfare.addon.control.block.engine.BlockNormalEngine;
+import valkyrienwarfare.addon.control.block.engine.BlockRedstoneEngine;
+import valkyrienwarfare.addon.control.block.ethercompressor.BlockCreativeEtherCompressor;
+import valkyrienwarfare.addon.control.block.ethercompressor.BlockNormalEtherCompressor;
+import valkyrienwarfare.addon.control.capability.ICapabilityLastRelay;
+import valkyrienwarfare.addon.control.capability.ImplCapabilityLastRelay;
+import valkyrienwarfare.addon.control.capability.StorageLastRelay;
+import valkyrienwarfare.addon.control.gui.ControlGUIHandler;
+import valkyrienwarfare.addon.control.item.ItemRelayWire;
+import valkyrienwarfare.addon.control.item.ItemShipStealer;
+import valkyrienwarfare.addon.control.item.ItemSystemLinker;
+import valkyrienwarfare.addon.control.network.EntityFixMessage;
+import valkyrienwarfare.addon.control.network.EntityFixMessageHandler;
+import valkyrienwarfare.addon.control.network.HovercraftControllerGUIInputHandler;
+import valkyrienwarfare.addon.control.network.HovercraftControllerGUIInputMessage;
+import valkyrienwarfare.addon.control.network.MessagePlayerStoppedPiloting;
+import valkyrienwarfare.addon.control.network.MessagePlayerStoppedPilotingHandler;
+import valkyrienwarfare.addon.control.network.MessageStartPiloting;
+import valkyrienwarfare.addon.control.network.MessageStartPilotingHandler;
+import valkyrienwarfare.addon.control.network.MessageStopPiloting;
+import valkyrienwarfare.addon.control.network.MessageStopPilotingHandler;
+import valkyrienwarfare.addon.control.network.ThrustModulatorGuiInputMessage;
+import valkyrienwarfare.addon.control.network.ThrustModulatorGuiInputMessageHandler;
+import valkyrienwarfare.addon.control.piloting.PilotControlsMessage;
+import valkyrienwarfare.addon.control.piloting.PilotControlsMessageHandler;
+import valkyrienwarfare.addon.control.proxy.ClientProxyControl;
+import valkyrienwarfare.addon.control.proxy.CommonProxyControl;
+import valkyrienwarfare.addon.control.tileentity.BalloonBurnerTileEntity;
+import valkyrienwarfare.addon.control.tileentity.ThrustModulatorTileEntity;
+import valkyrienwarfare.addon.control.tileentity.ThrustRelayTileEntity;
+import valkyrienwarfare.addon.control.tileentity.TileEntityGyroscope;
+import valkyrienwarfare.addon.control.tileentity.TileEntityHoverController;
+import valkyrienwarfare.addon.control.tileentity.TileEntityHullSealer;
+import valkyrienwarfare.addon.control.tileentity.TileEntityNormalEtherCompressor;
+import valkyrienwarfare.addon.control.tileentity.TileEntityPilotsChair;
+import valkyrienwarfare.addon.control.tileentity.TileEntityPropellerEngine;
+import valkyrienwarfare.addon.control.tileentity.TileEntityShipHelm;
+import valkyrienwarfare.addon.control.tileentity.TileEntityShipTelegraph;
+import valkyrienwarfare.addon.control.tileentity.TileEntityZepplinController;
+import valkyrienwarfare.addon.world.ValkyrienWarfareWorld;
+import valkyrienwarfare.api.addons.Module;
+import valkyrienwarfare.api.addons.VWAddon;
 
 @VWAddon
 public class ValkyrienWarfareControl extends Module<ValkyrienWarfareControl> {
 	
 	public ValkyrienWarfareControl() {
-		super("VW_Control", new ClientProxyControl(), new CommonProxyControl(), null, "valkyrienwarfarecontrol");
+		super("VW_Control", new CommonProxyControl(), "valkyrienwarfarecontrol");
+		if(ValkyrienWarfareMod.INSTANCE.isRunningOnClient()) {
+			this.setClientProxy(new ClientProxyControl());
+		}
 		INSTANCE = this;
 	}
 	

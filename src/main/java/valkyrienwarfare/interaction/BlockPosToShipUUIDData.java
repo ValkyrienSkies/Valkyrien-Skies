@@ -15,14 +15,14 @@
 
 package valkyrienwarfare.interaction;
 
-import valkyrienwarfare.chunkmanagement.ChunkSet;
-import valkyrienwarfare.NBTUtils;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldSavedData;
 import net.minecraft.world.storage.MapStorage;
+import net.minecraft.world.storage.WorldSavedData;
+import valkyrienwarfare.NBTUtils;
+import valkyrienwarfare.chunkmanagement.ChunkSet;
+import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;

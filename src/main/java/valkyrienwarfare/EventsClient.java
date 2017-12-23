@@ -15,18 +15,10 @@
 
 package valkyrienwarfare;
 
-import valkyrienwarfare.api.RotationMatrices;
-import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.fixes.SoundFixWrapper;
-import valkyrienwarfare.interaction.EntityDraggable;
-import valkyrienwarfare.interaction.IDraggable;
-import valkyrienwarfare.network.PlayerShipRefrenceMessage;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
-import valkyrienwarfare.physicsmanagement.WorldPhysObjectManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -43,6 +35,14 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.RenderTickEvent;
 import org.lwjgl.opengl.GL11;
+import valkyrienwarfare.api.RotationMatrices;
+import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.fixes.SoundFixWrapper;
+import valkyrienwarfare.interaction.EntityDraggable;
+import valkyrienwarfare.interaction.IDraggable;
+import valkyrienwarfare.network.PlayerShipRefrenceMessage;
+import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.physicsmanagement.WorldPhysObjectManager;
 
 public class EventsClient {
 	
@@ -144,8 +144,8 @@ public class EventsClient {
 			if (wrapper != null && wrapper.wrapping != null && wrapper.wrapping.renderer != null && wrapper.wrapping.centerCoord != null) {
 				RayTraceResult objectOver = Minecraft.getMinecraft().objectMouseOver;
 				if (objectOver != null && objectOver.hitVec != null) {
-					VertexBuffer buffer = Tessellator.getInstance().getBuffer();
-					oldXOff = buffer.xOffset;
+                    BufferBuilder buffer = Tessellator.getInstance().getBuffer();
+                    oldXOff = buffer.xOffset;
 					oldYOff = buffer.yOffset;
 					oldZOff = buffer.zOffset;
 					
@@ -166,8 +166,8 @@ public class EventsClient {
 			if (wrapper != null && wrapper.wrapping != null && wrapper.wrapping.renderer != null && wrapper.wrapping.centerCoord != null) {
 				RayTraceResult objectOver = Minecraft.getMinecraft().objectMouseOver;
 				if (objectOver != null && objectOver.hitVec != null) {
-					VertexBuffer buffer = Tessellator.getInstance().getBuffer();
-					buffer.xOffset = oldXOff;
+                    BufferBuilder buffer = Tessellator.getInstance().getBuffer();
+                    buffer.xOffset = oldXOff;
 					buffer.yOffset = oldYOff;
 					buffer.zOffset = oldZOff;
 //            		wrapper.wrapping.renderer.inverseTransform(event.getPartialTicks());

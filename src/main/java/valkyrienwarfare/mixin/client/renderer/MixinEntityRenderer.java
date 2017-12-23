@@ -15,14 +15,6 @@
 
 package valkyrienwarfare.mixin.client.renderer;
 
-import valkyrienwarfare.api.MixinMethods;
-import valkyrienwarfare.api.RotationMatrices;
-import valkyrienwarfare.api.StupidPredicate;
-import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.math.Quaternion;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
-import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.addon.control.piloting.IShipPilot;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import net.minecraft.block.Block;
@@ -36,12 +28,19 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItemFrame;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.util.EntitySelectors;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.*;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+import valkyrienwarfare.ValkyrienWarfareMod;
+import valkyrienwarfare.addon.control.piloting.IShipPilot;
+import valkyrienwarfare.api.MixinMethods;
+import valkyrienwarfare.api.RotationMatrices;
+import valkyrienwarfare.api.StupidPredicate;
+import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.math.Quaternion;
+import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
 
 import java.util.List;
 
@@ -296,14 +295,14 @@ public abstract class MixinEntityRenderer {
 				}
 				
 				Vec3d vec3d1 = entity.getLook(1.0F);
-				Vec3d vec3d2 = vec3d.addVector(vec3d1.xCoord * d0, vec3d1.yCoord * d0, vec3d1.zCoord * d0);
+				Vec3d vec3d2 = vec3d.addVector(vec3d1.x * d0, vec3d1.y * d0, vec3d1.z * d0);
 				this.pointedEntity = null;
 				Vec3d vec3d3 = null;
 				float f = 1.0F;
 				
 				Predicate pred = new StupidPredicate();
-				
-				List<Entity> list = this.mc.world.getEntitiesInAABBexcluding(entity, entity.getEntityBoundingBox().addCoord(vec3d1.xCoord * d0, vec3d1.yCoord * d0, vec3d1.zCoord * d0).expand(1.0D, 1.0D, 1.0D), Predicates.and(EntitySelectors.NOT_SPECTATING, pred));
+
+				List<Entity> list = this.mc.world.getEntitiesInAABBexcluding(entity, entity.getEntityBoundingBox().offset(vec3d1.x * d0, vec3d1.y * d0, vec3d1.z * d0).expand(1.0D, 1.0D, 1.0D), Predicates.and(EntitySelectors.NOT_SPECTATING, pred));
 				double d2 = d1;
 				
 				for (int j = 0; j < list.size(); ++j) {

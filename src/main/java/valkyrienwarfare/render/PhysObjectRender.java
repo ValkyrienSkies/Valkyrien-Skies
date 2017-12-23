@@ -15,12 +15,10 @@
 
 package valkyrienwarfare.render;
 
-import net.minecraft.client.renderer.RenderGlobal;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -28,6 +26,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
 
 /**
  * This class does nothing; on purpose
@@ -87,7 +86,7 @@ public class PhysObjectRender extends Render<PhysicsWrapperEntity> {
         RayTraceResult movingObjectPositionIn = Minecraft.getMinecraft().objectMouseOver;
 
         Tessellator tessellator = Tessellator.getInstance();
-        VertexBuffer vertexbuffer = tessellator.getBuffer();
+        BufferBuilder BufferBuilder = tessellator.getBuffer();
 
         EntityPlayer player = Minecraft.getMinecraft().player;
 
@@ -95,21 +94,21 @@ public class PhysObjectRender extends Render<PhysicsWrapperEntity> {
         double yOff = wrapper.wrapping.renderer.offsetPos.getY();
         double zOff = wrapper.wrapping.renderer.offsetPos.getZ();
 
-        double oldX = vertexbuffer.xOffset;
-        double oldY = vertexbuffer.yOffset;
-        double oldZ = vertexbuffer.zOffset;
+        double oldX = BufferBuilder.xOffset;
+        double oldY = BufferBuilder.yOffset;
+        double oldZ = BufferBuilder.zOffset;
 
 
-        vertexbuffer.xOffset = -xOff;
-        vertexbuffer.yOffset = -yOff;
-        vertexbuffer.zOffset = -zOff;
+        BufferBuilder.xOffset = -xOff;
+        BufferBuilder.yOffset = -yOff;
+        BufferBuilder.zOffset = -zOff;
 
 //        GL11.glTranslated(-movingObjectPositionIn.getBlockPos().x, -movingObjectPositionIn.getBlockPos().y, -movingObjectPositionIn.getBlockPos().z);
         this.drawSelectionBoxOriginal(player, movingObjectPositionIn, 0, partialTicks);
 
-        vertexbuffer.xOffset = oldX;
-        vertexbuffer.yOffset = oldY;
-        vertexbuffer.zOffset = oldZ;
+        BufferBuilder.xOffset = oldX;
+        BufferBuilder.yOffset = oldY;
+        BufferBuilder.zOffset = oldZ;
 
 //        wrapper.wrapping.renderer.inverseTransform(partialTicks);
 		GL11.glPopMatrix();

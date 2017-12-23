@@ -15,22 +15,21 @@
 
 package valkyrienwarfare.addon.control.gui;
 
-import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.addon.control.network.HovercraftControllerGUIInputMessage;
-import valkyrienwarfare.addon.control.tileentity.TileEntityHoverController;
-import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiLabel;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
+import valkyrienwarfare.ValkyrienWarfareMod;
+import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
+import valkyrienwarfare.addon.control.network.HovercraftControllerGUIInputMessage;
+import valkyrienwarfare.addon.control.tileentity.TileEntityHoverController;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -139,8 +138,8 @@ public class HovercraftControllerGUI extends GuiContainer {
 		}
 
 		for (int j = 0; j < this.labelList.size(); ++j) {
-			((GuiLabel) this.labelList.get(j)).drawLabel(this.mc, par1, par2);
-		}
+            this.labelList.get(j).drawLabel(this.mc, par1, par2);
+        }
 		for (GuiTextField text : textFields) {
 			text.drawTextBox();
 		}
@@ -169,8 +168,8 @@ public class HovercraftControllerGUI extends GuiContainer {
 		GlStateManager.disableLighting();
 		GlStateManager.disableFog();
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer worldrenderer = tessellator.getBuffer();
-		this.mc.getTextureManager().bindTexture(background);
+        BufferBuilder worldrenderer = tessellator.getBuffer();
+        this.mc.getTextureManager().bindTexture(background);
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		float f = 32.0F;
 		worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);

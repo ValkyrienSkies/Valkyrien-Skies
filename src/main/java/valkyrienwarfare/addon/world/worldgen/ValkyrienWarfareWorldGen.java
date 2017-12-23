@@ -15,17 +15,17 @@
 
 package valkyrienwarfare.addon.world.worldgen;
 
-import valkyrienwarfare.addon.world.ValkyrienWarfareWorld;
-import valkyrienwarfare.chunkmanagement.PhysicsChunkManager;
-import valkyrienwarfare.addon.world.worldgen.mobiledungeons.SkyTempleGenerator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.IChunkGenerator;
 import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraft.world.gen.feature.WorldGenMinable;
 import net.minecraft.world.gen.feature.WorldGenerator;
 import net.minecraftforge.fml.common.IWorldGenerator;
+import valkyrienwarfare.addon.world.ValkyrienWarfareWorld;
+import valkyrienwarfare.addon.world.worldgen.mobiledungeons.SkyTempleGenerator;
+import valkyrienwarfare.chunkmanagement.PhysicsChunkManager;
 
 import java.util.Random;
 

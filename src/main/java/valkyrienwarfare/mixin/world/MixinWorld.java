@@ -15,14 +15,6 @@
 
 package valkyrienwarfare.mixin.world;
 
-import valkyrienwarfare.api.RotationMatrices;
-import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.collision.Polygon;
-import valkyrienwarfare.fixes.WorldChunkloadingCrashFix;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
-import valkyrienwarfare.physicsmanagement.WorldPhysObjectManager;
-import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.addon.control.nodenetwork.INodeProvider;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
@@ -45,6 +37,14 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import valkyrienwarfare.ValkyrienWarfareMod;
+import valkyrienwarfare.addon.control.nodenetwork.INodeProvider;
+import valkyrienwarfare.api.RotationMatrices;
+import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.collision.Polygon;
+import valkyrienwarfare.fixes.WorldChunkloadingCrashFix;
+import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.physicsmanagement.WorldPhysObjectManager;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -69,19 +69,19 @@ public abstract class MixinWorld {
 	List<TileEntity> addedTileEntityList;
 
 	@Overwrite
-	public void spawnParticle(int particleID, boolean ignoreRange, double xCoord, double yCoord, double zCoord, double xSpeed, double ySpeed, double zSpeed, int... parameters) {
-		BlockPos pos = new BlockPos(xCoord, yCoord, zCoord);
-		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(World.class.cast(this), pos);
+    public void spawnParticle(int particleID, boolean ignoreRange, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, int... parameters) {
+        BlockPos pos = new BlockPos(x, y, z);
+        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(World.class.cast(this), pos);
 		if (wrapper != null) {
-			Vector newPosVec = new Vector(xCoord, yCoord, zCoord);
-			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, newPosVec);
-			xCoord = newPosVec.X;
-			yCoord = newPosVec.Y;
-			zCoord = newPosVec.Z;
-		}
+            Vector newPosVec = new Vector(x, y, z);
+            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, newPosVec);
+            x = newPosVec.X;
+            y = newPosVec.Y;
+            z = newPosVec.Z;
+        }
 		for (int i = 0; i < this.eventListeners.size(); ++i) {
-			this.eventListeners.get(i).spawnParticle(particleID, ignoreRange, xCoord, yCoord, zCoord, xSpeed, ySpeed, zSpeed, parameters);
-		}
+            this.eventListeners.get(i).spawnParticle(particleID, ignoreRange, x, y, z, xSpeed, ySpeed, zSpeed, parameters);
+        }
 	}
 
 	@Shadow
@@ -103,7 +103,7 @@ public abstract class MixinWorld {
 		Vec3d playerEyesPos = vec31;
 		Vec3d playerReachVector = vec32.subtract(vec31);
 
-		AxisAlignedBB playerRangeBB = new AxisAlignedBB(vec31.xCoord, vec31.yCoord, vec31.zCoord, vec32.xCoord, vec32.yCoord, vec32.zCoord);
+        AxisAlignedBB playerRangeBB = new AxisAlignedBB(vec31.x, vec31.y, vec31.z, vec32.x, vec32.y, vec32.z);
 
 		List<PhysicsWrapperEntity> nearbyShips = physManager.getNearbyPhysObjects(playerRangeBB);
 		//Get rid of the Ship that we're not supposed to be RayTracing for
@@ -129,8 +129,8 @@ public abstract class MixinWorld {
 			// Transform the coordinate system for the player eye pos
 			playerEyesPos = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.RwToLTransform, playerEyesPos);
 			playerReachVector = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.RwToLRotation, playerReachVector);
-			Vec3d playerEyesReachAdded = playerEyesPos.addVector(playerReachVector.xCoord * reachDistance, playerReachVector.yCoord * reachDistance, playerReachVector.zCoord * reachDistance);
-			RayTraceResult resultInShip = rayTraceBlocksOriginal(World.class.cast(this), playerEyesPos, playerEyesReachAdded, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
+            Vec3d playerEyesReachAdded = playerEyesPos.addVector(playerReachVector.x * reachDistance, playerReachVector.y * reachDistance, playerReachVector.z * reachDistance);
+            RayTraceResult resultInShip = rayTraceBlocksOriginal(World.class.cast(this), playerEyesPos, playerEyesReachAdded, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
 			if (resultInShip != null && resultInShip.hitVec != null && resultInShip.typeOfHit == RayTraceResult.Type.BLOCK) {
 				double shipResultDistFromPlayer = resultInShip.hitVec.distanceTo(playerEyesPos);
 				if (shipResultDistFromPlayer < worldResultDistFromPlayer) {
@@ -153,15 +153,15 @@ public abstract class MixinWorld {
 
 	@Nullable
 	public RayTraceResult rayTraceBlocksOriginal(World world, Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock) {
-		if (!Double.isNaN(vec31.xCoord) && !Double.isNaN(vec31.yCoord) && !Double.isNaN(vec31.zCoord)) {
-			if (!Double.isNaN(vec32.xCoord) && !Double.isNaN(vec32.yCoord) && !Double.isNaN(vec32.zCoord)) {
-				int i = MathHelper.floor(vec32.xCoord);
-				int j = MathHelper.floor(vec32.yCoord);
-				int k = MathHelper.floor(vec32.zCoord);
-				int l = MathHelper.floor(vec31.xCoord);
-				int i1 = MathHelper.floor(vec31.yCoord);
-				int j1 = MathHelper.floor(vec31.zCoord);
-				BlockPos blockpos = new BlockPos(l, i1, j1);
+        if (!Double.isNaN(vec31.x) && !Double.isNaN(vec31.y) && !Double.isNaN(vec31.z)) {
+            if (!Double.isNaN(vec32.x) && !Double.isNaN(vec32.y) && !Double.isNaN(vec32.z)) {
+                int i = MathHelper.floor(vec32.x);
+                int j = MathHelper.floor(vec32.y);
+                int k = MathHelper.floor(vec32.z);
+                int l = MathHelper.floor(vec31.x);
+                int i1 = MathHelper.floor(vec31.y);
+                int j1 = MathHelper.floor(vec31.z);
+                BlockPos blockpos = new BlockPos(l, i1, j1);
 				IBlockState iblockstate = world.getBlockState(blockpos);
 				Block block = iblockstate.getBlock();
 
@@ -177,8 +177,8 @@ public abstract class MixinWorld {
 				int k1 = 200;
 
 				while (k1-- >= 0) {
-					if (Double.isNaN(vec31.xCoord) || Double.isNaN(vec31.yCoord) || Double.isNaN(vec31.zCoord)) {
-						return null;
+                    if (Double.isNaN(vec31.x) || Double.isNaN(vec31.y) || Double.isNaN(vec31.z)) {
+                        return null;
 					}
 
 					if (l == i && i1 == j && j1 == k) {
@@ -219,21 +219,21 @@ public abstract class MixinWorld {
 					double d3 = 999.0D;
 					double d4 = 999.0D;
 					double d5 = 999.0D;
-					double d6 = vec32.xCoord - vec31.xCoord;
-					double d7 = vec32.yCoord - vec31.yCoord;
-					double d8 = vec32.zCoord - vec31.zCoord;
+                    double d6 = vec32.x - vec31.x;
+                    double d7 = vec32.y - vec31.y;
+                    double d8 = vec32.z - vec31.z;
 
 					if (flag2) {
-						d3 = (d0 - vec31.xCoord) / d6;
-					}
+                        d3 = (d0 - vec31.x) / d6;
+                    }
 
 					if (flag) {
-						d4 = (d1 - vec31.yCoord) / d7;
-					}
+                        d4 = (d1 - vec31.y) / d7;
+                    }
 
 					if (flag1) {
-						d5 = (d2 - vec31.zCoord) / d8;
-					}
+                        d5 = (d2 - vec31.z) / d8;
+                    }
 
 					if (d3 == -0.0D) {
 						d3 = -1.0E-4D;
@@ -251,19 +251,19 @@ public abstract class MixinWorld {
 
 					if (d3 < d4 && d3 < d5) {
 						enumfacing = i > l ? EnumFacing.WEST : EnumFacing.EAST;
-						vec31 = new Vec3d(d0, vec31.yCoord + d7 * d3, vec31.zCoord + d8 * d3);
-					} else if (d4 < d5) {
+                        vec31 = new Vec3d(d0, vec31.y + d7 * d3, vec31.z + d8 * d3);
+                    } else if (d4 < d5) {
 						enumfacing = j > i1 ? EnumFacing.DOWN : EnumFacing.UP;
-						vec31 = new Vec3d(vec31.xCoord + d6 * d4, d1, vec31.zCoord + d8 * d4);
-					} else {
+                        vec31 = new Vec3d(vec31.x + d6 * d4, d1, vec31.z + d8 * d4);
+                    } else {
 						enumfacing = k > j1 ? EnumFacing.NORTH : EnumFacing.SOUTH;
-						vec31 = new Vec3d(vec31.xCoord + d6 * d5, vec31.yCoord + d7 * d5, d2);
-					}
+                        vec31 = new Vec3d(vec31.x + d6 * d5, vec31.y + d7 * d5, d2);
+                    }
 
-					l = MathHelper.floor(vec31.xCoord) - (enumfacing == EnumFacing.EAST ? 1 : 0);
-					i1 = MathHelper.floor(vec31.yCoord) - (enumfacing == EnumFacing.UP ? 1 : 0);
-					j1 = MathHelper.floor(vec31.zCoord) - (enumfacing == EnumFacing.SOUTH ? 1 : 0);
-					blockpos = new BlockPos(l, i1, j1);
+                    l = MathHelper.floor(vec31.x) - (enumfacing == EnumFacing.EAST ? 1 : 0);
+                    i1 = MathHelper.floor(vec31.y) - (enumfacing == EnumFacing.UP ? 1 : 0);
+                    j1 = MathHelper.floor(vec31.z) - (enumfacing == EnumFacing.SOUTH ? 1 : 0);
+                    blockpos = new BlockPos(l, i1, j1);
 					IBlockState iblockstate1 = world.getBlockState(blockpos);
 					Block block1 = iblockstate1.getBlock();
 

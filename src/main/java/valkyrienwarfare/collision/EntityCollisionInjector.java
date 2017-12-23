@@ -15,9 +15,6 @@
 
 package valkyrienwarfare.collision;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSlime;
 import net.minecraft.block.SoundType;
@@ -44,6 +41,9 @@ import valkyrienwarfare.math.BigBastardMath;
 import valkyrienwarfare.physics.PhysicsQueuedForce;
 import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
 import valkyrienwarfare.physicsmanagement.WorldPhysObjectManager;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class EntityCollisionInjector {
 
@@ -169,10 +169,10 @@ public class EntityCollisionInjector {
 		boolean alreadyOnGround = entity.onGround && (dy == origDy) && origDy < 0;
 		Vector original = new Vector(origDx, origDy, origDz);
 		Vector newMov = new Vector(dx - origDx, dy - origDy, dz - origDz);
-		entity.isCollidedHorizontally = original.dot(newMov) < 0;
-		entity.isCollidedVertically = isDifSignificant(dy, origDy);
-		entity.onGround = entity.isCollidedVertically && origDy < 0 || alreadyOnGround;
-		entity.isCollided = entity.isCollidedHorizontally || entity.isCollidedVertically;
+		entity.collidedHorizontally = original.dot(newMov) < 0;
+		entity.collidedVertically = isDifSignificant(dy, origDy);
+		entity.onGround = entity.collidedVertically && origDy < 0 || alreadyOnGround;
+		entity.collided = entity.collidedHorizontally || entity.collidedVertically;
 
 //		entity.resetPositionToBB();
 
@@ -254,10 +254,10 @@ public class EntityCollisionInjector {
 
 		PhysicsWrapperEntity worldBelow = draggable.getWorldBelowFeet();
 
-		entity.isCollidedHorizontally = (motionInterfering(dx, origDx)) || (motionInterfering(dz, origDz));
-		entity.isCollidedVertically = isDifSignificant(dy, origDy);
-		entity.onGround = entity.isCollidedVertically && origDy < 0 || alreadyOnGround || entity.onGround;
-		entity.isCollided = entity.isCollidedHorizontally || entity.isCollidedVertically;
+		entity.collidedHorizontally = (motionInterfering(dx, origDx)) || (motionInterfering(dz, origDz));
+		entity.collidedVertically = isDifSignificant(dy, origDy);
+		entity.onGround = entity.collidedVertically && origDy < 0 || alreadyOnGround || entity.onGround;
+		entity.collided = entity.collidedHorizontally || entity.collidedVertically;
 
 
 		Vector entityPosInShip = new Vector(entity.posX, entity.posY - 0.20000000298023224D, entity.posZ, worldBelow.wrapping.coordTransform.wToLTransform);
@@ -376,7 +376,7 @@ public class EntityCollisionInjector {
 	 */
 	public static ArrayList<Polygon> getCollidingPolygonsAndDoBlockCols(Entity entity, Vec3d velocity) {
 		ArrayList<Polygon> collisions = new ArrayList<Polygon>();
-		AxisAlignedBB entityBB = entity.getEntityBoundingBox().addCoord(velocity.xCoord, velocity.yCoord, velocity.zCoord).expand(1, 1, 1);
+		AxisAlignedBB entityBB = entity.getEntityBoundingBox().offset(velocity.x, velocity.y, velocity.z).expand(1, 1, 1);
 
 		WorldPhysObjectManager localPhysManager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(entity.world);
 

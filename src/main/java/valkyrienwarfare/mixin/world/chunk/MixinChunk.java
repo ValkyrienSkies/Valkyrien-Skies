@@ -15,18 +15,19 @@
 
 package valkyrienwarfare.mixin.world.chunk;
 
-import valkyrienwarfare.chunkmanagement.PhysicsChunkManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.IChunkGenerator;
+import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraft.world.gen.IChunkGenerator;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import valkyrienwarfare.chunkmanagement.PhysicsChunkManager;
 
 @Mixin(Chunk.class)
 public abstract class MixinChunk {
@@ -50,8 +51,8 @@ public abstract class MixinChunk {
 		// why do these have to be final lol
 	}
 
-	@Inject(method = "populateChunk(Lnet/minecraft/world/chunk/IChunkGenerator;)V", at = @At("HEAD"), cancellable = true)
-	public void prePopulateChunk(IChunkGenerator generator, CallbackInfo callbackInfo) {
+	@Inject(method = "Lnet/minecraft/world/chunk/Chunk;populate(Lnet/minecraft/world/chunk/IChunkProvider;Lnet/minecraft/world/gen/IChunkGenerator;)V", at = @At("HEAD"), cancellable = true)
+	public void prePopulateChunk(IChunkProvider provider, IChunkGenerator generator, CallbackInfo callbackInfo) {
 		if (PhysicsChunkManager.isLikelyShipChunk(this.x, this.z)) {
 			callbackInfo.cancel();
 		}
@@ -68,7 +69,7 @@ public abstract class MixinChunk {
 			//do nothing, and let vanilla code take over after our injected code is done (now)
 		} else {
 			Chunk realChunkFor = world.getChunkFromChunkCoords(i, j);
-			if (!realChunkFor.isEmpty() && realChunkFor.isChunkLoaded) {
+			if (!realChunkFor.isEmpty() && realChunkFor.loaded) {
 				realChunkFor.addEntity(entityIn);
 				callbackInfo.cancel(); //don't run the code on this chunk!!!
 			}

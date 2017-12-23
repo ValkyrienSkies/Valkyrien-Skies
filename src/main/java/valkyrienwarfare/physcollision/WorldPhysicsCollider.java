@@ -15,18 +15,6 @@
 
 package valkyrienwarfare.physcollision;
 
-import valkyrienwarfare.api.RotationMatrices;
-import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.collision.PhysCollisionObject;
-import valkyrienwarfare.collision.PhysPolygonCollider;
-import valkyrienwarfare.collision.Polygon;
-import valkyrienwarfare.optimization.CollisionInformationHolder;
-import valkyrienwarfare.optimization.ShipCollisionTask;
-import valkyrienwarfare.physcollision.BlockRammingManager.NestedBoolean;
-import valkyrienwarfare.physics.PhysicsCalculations;
-import valkyrienwarfare.physicsmanagement.PhysicsObject;
-import valkyrienwarfare.relocation.SpatialDetector;
-import valkyrienwarfare.ValkyrienWarfareMod;
 import com.jackredcreeper.cannon.world.NewExp2;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.array.TIntArrayList;
@@ -39,6 +27,18 @@ import net.minecraft.world.ChunkCache;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
+import valkyrienwarfare.ValkyrienWarfareMod;
+import valkyrienwarfare.api.RotationMatrices;
+import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.collision.PhysCollisionObject;
+import valkyrienwarfare.collision.PhysPolygonCollider;
+import valkyrienwarfare.collision.Polygon;
+import valkyrienwarfare.optimization.CollisionInformationHolder;
+import valkyrienwarfare.optimization.ShipCollisionTask;
+import valkyrienwarfare.physcollision.BlockRammingManager.NestedBoolean;
+import valkyrienwarfare.physics.PhysicsCalculations;
+import valkyrienwarfare.physicsmanagement.PhysicsObject;
+import valkyrienwarfare.relocation.SpatialDetector;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -439,7 +439,7 @@ public class WorldPhysicsCollider {
 	}
 
 	private void updatePotentialCollisionCache() {
-		final AxisAlignedBB collisionBB = parent.collisionBB.expand(expansion, expansion, expansion).addCoord(calculator.linearMomentum.X * calculator.invMass, calculator.linearMomentum.Y * calculator.invMass, calculator.linearMomentum.Z * calculator.invMass);
+        final AxisAlignedBB collisionBB = parent.collisionBB.expand(expansion, expansion, expansion).offset(calculator.linearMomentum.X * calculator.invMass, calculator.linearMomentum.Y * calculator.invMass, calculator.linearMomentum.Z * calculator.invMass);
 
 		ticksSinceCacheUpdate = 0D;
 		//This is being used to occasionally offset the collision cache update, in the hopes this will prevent multiple ships from all updating

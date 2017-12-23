@@ -15,13 +15,13 @@
 
 package valkyrienwarfare.api;
 
-import valkyrienwarfare.math.BigBastardMath;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.projectile.EntityFireball;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import valkyrienwarfare.math.BigBastardMath;
 
 /**
  * This class creates and processes rotation matrix transforms used by Valkyrien Warfare
@@ -212,10 +212,10 @@ public class RotationMatrices {
 	}
 	
 	public static final Vec3d applyTransform(double[] M, Vec3d vec) {
-		double x = vec.xCoord;
-		double y = vec.yCoord;
-		double z = vec.zCoord;
-		return new Vec3d((x * M[0] + y * M[1] + z * M[2] + M[3]), (x * M[4] + y * M[5] + z * M[6] + M[7]), (x * M[8] + y * M[9] + z * M[10] + M[11]));
+        double x = vec.x;
+        double y = vec.y;
+        double z = vec.z;
+        return new Vec3d((x * M[0] + y * M[1] + z * M[2] + M[3]), (x * M[4] + y * M[5] + z * M[6] + M[7]), (x * M[8] + y * M[9] + z * M[10] + M[11]));
 	}
 	
 	public static final void applyTransform3by3(double[] M, Vector vec) {

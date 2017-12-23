@@ -15,11 +15,6 @@
 
 package valkyrienwarfare.mixin.client.renderer;
 
-import valkyrienwarfare.api.RotationMatrices;
-import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
-import valkyrienwarfare.proxy.ClientProxy;
-import valkyrienwarfare.ValkyrienWarfareMod;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -48,6 +43,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import valkyrienwarfare.ValkyrienWarfareMod;
+import valkyrienwarfare.api.RotationMatrices;
+import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.proxy.ClientProxy;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -85,8 +85,8 @@ public abstract class MixinRenderGlobal {
 	public abstract void postRenderDamagedBlocks();
 	
 	@Overwrite
-	public void drawBlockDamageTexture(Tessellator tessellatorIn, VertexBuffer worldRendererIn, Entity entityIn, float partialTicks) {
-		double d0 = entityIn.lastTickPosX + (entityIn.posX - entityIn.lastTickPosX) * (double) partialTicks;
+    public void drawBlockDamageTexture(Tessellator tessellatorIn, BufferBuilder worldRendererIn, Entity entityIn, float partialTicks) {
+        double d0 = entityIn.lastTickPosX + (entityIn.posX - entityIn.lastTickPosX) * (double) partialTicks;
 		double d1 = entityIn.lastTickPosY + (entityIn.posY - entityIn.lastTickPosY) * (double) partialTicks;
 		double d2 = entityIn.lastTickPosZ + (entityIn.posZ - entityIn.lastTickPosZ) * (double) partialTicks;
 		
@@ -158,23 +158,23 @@ public abstract class MixinRenderGlobal {
 			movingObjectPositionIn = Minecraft.getMinecraft().objectMouseOver;
 			
 			Tessellator tessellator = Tessellator.getInstance();
-			VertexBuffer vertexbuffer = tessellator.getBuffer();
-			
-			double xOff = (player.lastTickPosX + (player.posX - player.lastTickPosX) * (double) partialTicks) - wrapper.wrapping.renderer.offsetPos.getX();
+            BufferBuilder BufferBuilder = tessellator.getBuffer();
+
+            double xOff = (player.lastTickPosX + (player.posX - player.lastTickPosX) * (double) partialTicks) - wrapper.wrapping.renderer.offsetPos.getX();
 			double yOff = (player.lastTickPosY + (player.posY - player.lastTickPosY) * (double) partialTicks) - wrapper.wrapping.renderer.offsetPos.getY();
 			double zOff = (player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * (double) partialTicks) - wrapper.wrapping.renderer.offsetPos.getZ();
-			
-			vertexbuffer.xOffset += xOff;
-			vertexbuffer.yOffset += yOff;
-			vertexbuffer.zOffset += zOff;
-			
-			this.drawSelectionBoxOriginal(player, movingObjectPositionIn, execute, partialTicks);
-			
-			vertexbuffer.xOffset -= xOff;
-			vertexbuffer.yOffset -= yOff;
-			vertexbuffer.zOffset -= zOff;
-			
-			wrapper.wrapping.renderer.inverseTransform(partialTicks);
+
+            BufferBuilder.xOffset += xOff;
+            BufferBuilder.yOffset += yOff;
+            BufferBuilder.zOffset += zOff;
+
+            this.drawSelectionBoxOriginal(player, movingObjectPositionIn, execute, partialTicks);
+
+            BufferBuilder.xOffset -= xOff;
+            BufferBuilder.yOffset -= yOff;
+            BufferBuilder.zOffset -= zOff;
+
+            wrapper.wrapping.renderer.inverseTransform(partialTicks);
 		} else {
 			this.drawSelectionBoxOriginal(player, movingObjectPositionIn, execute, partialTicks);
 		}
@@ -263,25 +263,25 @@ public abstract class MixinRenderGlobal {
 	}
 	
 	@Overwrite
-	public Particle spawnEntityFX(int particleID, boolean ignoreRange, double xCoord, double yCoord, double zCoord, double xSpeed, double ySpeed, double zSpeed, int... parameters) {
-		if (ValkyrienWarfareMod.shipsSpawnParticles) {
-			BlockPos particlePos = new BlockPos(xCoord, yCoord, zCoord);
-			PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(this.world, particlePos);
+    public Particle spawnEntityFX(int particleID, boolean ignoreRange, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, int... parameters) {
+        if (ValkyrienWarfareMod.shipsSpawnParticles) {
+            BlockPos particlePos = new BlockPos(x, y, z);
+            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(this.world, particlePos);
 			if (wrapper != null) {
-				Vector newCoords = new Vector(xCoord, yCoord, zCoord);
-				RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, newCoords);
-				
-				xCoord = newCoords.X;
-				yCoord = newCoords.Y;
-				zCoord = newCoords.Z;
-			}
+                Vector newCoords = new Vector(x, y, z);
+                RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, newCoords);
+
+                x = newCoords.X;
+                y = newCoords.Y;
+                z = newCoords.Z;
+            }
 		}
 		//vanilla code follows
-		return this.spawnParticle0(particleID, ignoreRange, false, xCoord, yCoord, zCoord, xSpeed, ySpeed, zSpeed, parameters);
-	}
+        return this.spawnParticle0(particleID, ignoreRange, false, x, y, z, xSpeed, ySpeed, zSpeed, parameters);
+    }
 	
 	@Shadow
-	public Particle spawnParticle0(int particleID, boolean ignoreRange, boolean minParticles, double xCoord, double yCoord, double zCoord, double xSpeed, double ySpeed, double zSpeed, int... parameters) {
-		return null;
+    public Particle spawnParticle0(int particleID, boolean ignoreRange, boolean minParticles, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, int... parameters) {
+        return null;
 	}
 }

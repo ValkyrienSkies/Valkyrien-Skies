@@ -20,7 +20,6 @@ import net.minecraft.block.BlockFalling;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.item.EntityFallingBlock;
 import net.minecraft.init.Blocks;
@@ -77,12 +76,12 @@ public class EntityFallingUpBlock extends EntityFallingBlock {
 			if (!this.world.isRemote) {
 				BlockPos blockpos1 = new BlockPos(this);
 
-				if (!onGround && isCollidedVertically) {
+				if (!onGround && collidedVertically) {
 					IBlockState iblockstate = this.world.getBlockState(blockpos1);
 
 					if (this.world.isAirBlock(new BlockPos(this.posX, this.posY + 1.009999999776482582D, this.posZ))) // Forge: Don't indent below.
 						if (BlockFalling.canFallThrough(this.world.getBlockState(new BlockPos(this.posX, this.posY + 1.009999999776482582D, this.posZ)))) {
-							this.isCollidedVertically = false;
+							this.collidedVertically = false;
 							return;
 						}
 
@@ -94,7 +93,7 @@ public class EntityFallingUpBlock extends EntityFallingBlock {
 						this.setDead();
 
 						if (!this.dontSetBlock) {
-							if (this.world.mayPlace(block, blockpos1, true, EnumFacing.UP, (Entity) null) && !BlockFalling.canFallThrough(this.world.getBlockState(blockpos1.up())) && world.setBlockState(blockpos1, this.fallTile, 3)) {
+							if (this.world.mayPlace(block, blockpos1, true, EnumFacing.UP, null) && !BlockFalling.canFallThrough(this.world.getBlockState(blockpos1.up())) && world.setBlockState(blockpos1, this.fallTile, 3)) {
 								if (block instanceof BlockFalling) {
 									((BlockFalling) block).onEndFalling(this.world, blockpos1);
 								}

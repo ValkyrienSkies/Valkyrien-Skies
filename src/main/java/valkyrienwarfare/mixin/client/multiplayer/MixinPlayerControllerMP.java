@@ -15,8 +15,6 @@
 
 package valkyrienwarfare.mixin.client.multiplayer;
 
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
-import valkyrienwarfare.ValkyrienWarfareMod;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockCommandBlock;
 import net.minecraft.block.BlockStructure;
@@ -41,6 +39,8 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+import valkyrienwarfare.ValkyrienWarfareMod;
+import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
 
 @Mixin(PlayerControllerMP.class)
 public abstract class MixinPlayerControllerMP {
@@ -58,9 +58,9 @@ public abstract class MixinPlayerControllerMP {
 	public EnumActionResult processRightClickBlock(EntityPlayerSP player, WorldClient worldIn, BlockPos pos, EnumFacing direction, Vec3d vec, EnumHand hand) {
 		this.syncCurrentPlayItem();
 		ItemStack itemstack = player.getHeldItem(hand);
-		float f = (float) (vec.xCoord - (double) pos.getX());
-		float f1 = (float) (vec.yCoord - (double) pos.getY());
-		float f2 = (float) (vec.zCoord - (double) pos.getZ());
+		float f = (float) (vec.x - (double) pos.getX());
+		float f1 = (float) (vec.y - (double) pos.getY());
+		float f2 = (float) (vec.z - (double) pos.getZ());
 		boolean flag = false;
 
 		if (!this.mc.world.getWorldBorder().contains(pos)) {
@@ -72,9 +72,9 @@ public abstract class MixinPlayerControllerMP {
 //        		//Fix for Chisels and Bits
 //        		vec = RotationMatrices.applyTransform(originalHitVecWrapper.wrapping.coordTransform.wToLTransform, vec);
 //
-//        		f = (float)(vec.xCoord - (double)pos.getX());
-//                f1 = (float)(vec.yCoord - (double)pos.getY());
-//                f2 = (float)(vec.zCoord - (double)pos.getZ());
+//        		f = (float)(vec.x - (double)pos.getX());
+//                f1 = (float)(vec.y - (double)pos.getY());
+//                f2 = (float)(vec.z - (double)pos.getZ());
 //        	}
 
 

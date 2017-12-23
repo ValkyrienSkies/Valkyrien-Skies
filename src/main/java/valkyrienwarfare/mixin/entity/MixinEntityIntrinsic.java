@@ -15,12 +15,6 @@
 
 package valkyrienwarfare.mixin.entity;
 
-import valkyrienwarfare.api.RotationMatrices;
-import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.collision.EntityCollisionInjector;
-import valkyrienwarfare.collision.EntityCollisionInjector.IntermediateMovementVariableStorage;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
-import valkyrienwarfare.ValkyrienWarfareMod;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFence;
 import net.minecraft.block.BlockFenceGate;
@@ -44,6 +38,12 @@ import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+import valkyrienwarfare.ValkyrienWarfareMod;
+import valkyrienwarfare.api.RotationMatrices;
+import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.collision.EntityCollisionInjector;
+import valkyrienwarfare.collision.EntityCollisionInjector.IntermediateMovementVariableStorage;
+import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
 
 import java.util.Arrays;
 import java.util.List;
@@ -212,7 +212,7 @@ public abstract class MixinEntityIntrinsic {
 				}
 			}
 
-			List<AxisAlignedBB> list1 = this.world.getCollisionBoxes(thisClassAsAnEntity, thisClassAsAnEntity.getEntityBoundingBox().addCoord(x, y, z));
+			List<AxisAlignedBB> list1 = this.world.getCollisionBoxes(thisClassAsAnEntity, thisClassAsAnEntity.getEntityBoundingBox().offset(x, y, z));
 			AxisAlignedBB axisalignedbb = thisClassAsAnEntity.getEntityBoundingBox();
 
 			if (y != 0.0D) {
@@ -258,9 +258,9 @@ public abstract class MixinEntityIntrinsic {
 				AxisAlignedBB axisalignedbb1 = thisClassAsAnEntity.getEntityBoundingBox();
 				thisClassAsAnEntity.setEntityBoundingBox(axisalignedbb);
 				y = (double) thisClassAsAnEntity.stepHeight;
-				List<AxisAlignedBB> list = this.world.getCollisionBoxes(thisClassAsAnEntity, thisClassAsAnEntity.getEntityBoundingBox().addCoord(d2, y, d4));
+				List<AxisAlignedBB> list = this.world.getCollisionBoxes(thisClassAsAnEntity, thisClassAsAnEntity.getEntityBoundingBox().offset(d2, y, d4));
 				AxisAlignedBB axisalignedbb2 = thisClassAsAnEntity.getEntityBoundingBox();
-				AxisAlignedBB axisalignedbb3 = axisalignedbb2.addCoord(d2, 0.0D, d4);
+				AxisAlignedBB axisalignedbb3 = axisalignedbb2.offset(d2, 0.0D, d4);
 				double d8 = y;
 				int j1 = 0;
 
@@ -344,10 +344,10 @@ public abstract class MixinEntityIntrinsic {
 			this.world.profiler.endSection();
 			this.world.profiler.startSection("rest");
 			thisClassAsAnEntity.resetPositionToBB();
-			thisClassAsAnEntity.isCollidedHorizontally = d2 != x || d4 != z;
-			thisClassAsAnEntity.isCollidedVertically = d3 != y;
-			thisClassAsAnEntity.onGround = thisClassAsAnEntity.isCollidedVertically && d3 < 0.0D;
-			thisClassAsAnEntity.isCollided = thisClassAsAnEntity.isCollidedHorizontally || thisClassAsAnEntity.isCollidedVertically;
+			thisClassAsAnEntity.collidedHorizontally = d2 != x || d4 != z;
+			thisClassAsAnEntity.collidedVertically = d3 != y;
+			thisClassAsAnEntity.onGround = thisClassAsAnEntity.collidedVertically && d3 < 0.0D;
+			thisClassAsAnEntity.collided = thisClassAsAnEntity.collidedHorizontally || thisClassAsAnEntity.collidedVertically;
 			int j6 = MathHelper.floor(this.posX);
 			int i1 = MathHelper.floor(this.posY - 0.20000000298023224D);
 			int k6 = MathHelper.floor(this.posZ);

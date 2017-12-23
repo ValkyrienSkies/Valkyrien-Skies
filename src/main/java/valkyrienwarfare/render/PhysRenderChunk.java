@@ -15,13 +15,12 @@
 
 package valkyrienwarfare.render;
 
-import valkyrienwarfare.physicsmanagement.PhysicsObject;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
@@ -31,6 +30,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraftforge.client.ForgeHooksClient;
 import org.lwjgl.opengl.GL11;
+import valkyrienwarfare.physicsmanagement.PhysicsObject;
 
 import java.util.ArrayList;
 
@@ -186,8 +186,8 @@ public class PhysRenderChunk {
 				return;
 			}
 			Tessellator tessellator = Tessellator.getInstance();
-			VertexBuffer worldrenderer = tessellator.getBuffer();
-			worldrenderer.begin(7, DefaultVertexFormats.BLOCK);
+            BufferBuilder worldrenderer = tessellator.getBuffer();
+            worldrenderer.begin(7, DefaultVertexFormats.BLOCK);
 			worldrenderer.setTranslation(-offsetPos.getX(), -offsetPos.getY(), -offsetPos.getZ());
 			GL11.glPushMatrix();
 			switch (layerToUpdate) {

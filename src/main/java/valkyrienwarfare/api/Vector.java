@@ -57,10 +57,10 @@ public class Vector {
 	}
 	
 	public Vector(Vec3d positionVector) {
-		X = positionVector.xCoord;
-		Y = positionVector.yCoord;
-		Z = positionVector.zCoord;
-	}
+        X = positionVector.x;
+        Y = positionVector.y;
+        Z = positionVector.z;
+    }
 	
 	public Vector(Entity entity) {
 		X = entity.posX;
@@ -106,10 +106,10 @@ public class Vector {
 	}
 	
 	public void subtract(Vec3d vec) {
-		X -= vec.xCoord;
-		Y -= vec.yCoord;
-		Z -= vec.zCoord;
-	}
+        X -= vec.x;
+        Y -= vec.y;
+        Z -= vec.z;
+    }
 	
 	public final void add(Vector v) {
 		X += v.X;
@@ -124,10 +124,10 @@ public class Vector {
 	}
 	
 	public void add(Vec3d vec) {
-		X += vec.xCoord;
-		Y += vec.yCoord;
-		Z += vec.zCoord;
-	}
+        X += vec.x;
+        Y += vec.y;
+        Z += vec.z;
+    }
 	
 	public double dot(Vector v) {
 		return X * v.X + Y * v.Y + Z * v.Z;

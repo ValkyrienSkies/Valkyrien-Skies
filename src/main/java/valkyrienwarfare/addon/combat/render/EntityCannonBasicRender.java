@@ -15,18 +15,18 @@
 
 package valkyrienwarfare.addon.combat.render;
 
-import valkyrienwarfare.addon.combat.entity.EntityCannonBasic;
-import valkyrienwarfare.addon.combat.ValkyrienWarfareCombat;
-import valkyrienwarfare.render.FastBlockModelRenderer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
+import valkyrienwarfare.addon.combat.ValkyrienWarfareCombat;
+import valkyrienwarfare.addon.combat.entity.EntityCannonBasic;
+import valkyrienwarfare.render.FastBlockModelRenderer;
 
 public class EntityCannonBasicRender extends Render<EntityCannonBasic> {
 
@@ -51,11 +51,11 @@ public class EntityCannonBasicRender extends Render<EntityCannonBasic> {
 //		entity.posX += 15;
 
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexbuffer = tessellator.getBuffer();
+		BufferBuilder BufferBuilder = tessellator.getBuffer();
 
-		double oldX = vertexbuffer.xOffset;
-		double oldY = vertexbuffer.yOffset;
-		double oldZ = vertexbuffer.zOffset;
+		double oldX = BufferBuilder.xOffset;
+		double oldY = BufferBuilder.yOffset;
+		double oldZ = BufferBuilder.zOffset;
 
 		GL11.glPushMatrix();
 
@@ -66,7 +66,7 @@ public class EntityCannonBasicRender extends Render<EntityCannonBasic> {
 			GlStateManager.enableOutlineMode(this.getTeamColor(entity));
 		}
 
-		vertexbuffer.setTranslation(0, 0, 0);
+		BufferBuilder.setTranslation(0, 0, 0);
 
 		GL11.glTranslated(x, y, z);
 
@@ -96,7 +96,7 @@ public class EntityCannonBasicRender extends Render<EntityCannonBasic> {
 			GlStateManager.disableColorMaterial();
 		}
 
-		vertexbuffer.setTranslation(oldX, oldY, oldZ);
+		BufferBuilder.setTranslation(oldX, oldY, oldZ);
 		GlStateManager.disableLighting();
 		GlStateManager.resetColor();
 		GlStateManager.enableLighting();
@@ -108,19 +108,19 @@ public class EntityCannonBasicRender extends Render<EntityCannonBasic> {
 
 	private void renderBase(EntityCannonBasic entity, double x, double y, double z, float entityYaw, float partialTicks) {
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexbuffer = tessellator.getBuffer();
+		BufferBuilder BufferBuilder = tessellator.getBuffer();
 		GL11.glPushMatrix();
 		GL11.glTranslated(-0.5D, 0, -0.5D);
-		FastBlockModelRenderer.renderBlockModel(vertexbuffer, tessellator, entity.world, baseState, entity.getBrightnessForRender(partialTicks));
+		FastBlockModelRenderer.renderBlockModel(BufferBuilder, tessellator, entity.world, baseState, entity.getBrightnessForRender());
 		GL11.glPopMatrix();
 	}
 
 	private void renderHead(EntityCannonBasic entity, double x, double y, double z, float entityYaw, float partialTicks) {
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexbuffer = tessellator.getBuffer();
+		BufferBuilder BufferBuilder = tessellator.getBuffer();
 		GL11.glPushMatrix();
 		GL11.glTranslated(-0.5D, 0, -0.5D);
-		FastBlockModelRenderer.renderBlockModel(vertexbuffer, tessellator, entity.world, headState, entity.getBrightnessForRender(partialTicks));
+		FastBlockModelRenderer.renderBlockModel(BufferBuilder, tessellator, entity.world, headState, entity.getBrightnessForRender());
 		GL11.glPopMatrix();
 	}
 

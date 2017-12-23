@@ -15,9 +15,6 @@
 
 package valkyrienwarfare.addon.combat.entity;
 
-import valkyrienwarfare.api.RotationMatrices;
-import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -31,6 +28,9 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
+import valkyrienwarfare.api.RotationMatrices;
+import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
 
 import javax.annotation.Nullable;
 
@@ -120,11 +120,11 @@ public abstract class EntityMountingWeaponBase extends Entity implements IEntity
 	//
 	// double speed = 2.5D;
 	//
-	// tnt.setPosition(posX+look.xCoord, posY+.6+look.yCoord, posZ+look.zCoord);
-	// tnt.motionX = look.xCoord*speed;
-	// tnt.motionY = look.yCoord*speed;
-	// tnt.motionZ = look.zCoord*speed;
-	// worldObj.spawnEntityInWorld(tnt);
+    // tnt.setPosition(posX+look.x, posY+.6+look.y, posZ+look.z);
+    // tnt.motionX = look.x*speed;
+    // tnt.motionY = look.y*speed;
+    // tnt.motionZ = look.z*speed;
+    // worldObj.spawnEntityInWorld(tnt);
 	// worldObj.playSoundAtEntity(tnt, "game.tnt.primed", 1.0F, 1.0F);
 	// delay=0;
 	// }else{
@@ -151,10 +151,10 @@ public abstract class EntityMountingWeaponBase extends Entity implements IEntity
 	// if(fixedOn!=null){
 	// Vec3 pointingDirection = riddenByEntity.getLook(1.0F);
 	// pointingDirection = RotationMatrices.applyTransform(RotationMatrices.inverse(fixedOn.rotationTransform), pointingDirection);
-	// double newPitch = math.asin(pointingDirection.yCoord)* -180f/math.PI;
-	// float f4 = (float) -math.cos(-newPitch * 0.017453292F);
-	// double radianYaw = math.atan2((pointingDirection.xCoord/f4), (pointingDirection.zCoord/f4));
-	// radianYaw+=math.PI;
+    // double newPitch = math.asin(pointingDirection.y)* -180f/math.PI;
+    // float f4 = (float) -math.cos(-newPitch * 0.017453292F);
+    // double radianYaw = math.atan2((pointingDirection.x/f4), (pointingDirection.z/f4));
+    // radianYaw+=math.PI;
 	// radianYaw*= -180f/math.PI;
 	// rotationYaw = (float) radianYaw;
 	// rotationPitch = (float) newPitch;
@@ -178,8 +178,7 @@ public abstract class EntityMountingWeaponBase extends Entity implements IEntity
 		Entity entity;
 
 		for (entity = this; entity.isRiding(); entity = entity.getRidingEntity()) {
-			;
-		}
+        }
 
 		return null;
 	}
@@ -256,8 +255,8 @@ public abstract class EntityMountingWeaponBase extends Entity implements IEntity
 
 	@Nullable
 	public Entity getRider() {
-		Entity entity = this.getPassengers().isEmpty() ? null : (Entity) this.getPassengers().get(0);
-		return entity;
+        Entity entity = this.getPassengers().isEmpty() ? null : this.getPassengers().get(0);
+        return entity;
 	}
 
 	@Override

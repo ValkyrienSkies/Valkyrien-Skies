@@ -150,7 +150,7 @@ public abstract class EntityBaseBall extends Entity {
 			if (this.isInWater()) {
 				for (int i = 0; i < 4; ++i) {
 					float f1 = 0.25F;
-					this.world.spawnParticle(EnumParticleTypes.WATER_BUBBLE, this.posX - this.motionX * 0.25D, this.posY - this.motionY * 0.25D, this.posZ - this.motionZ * 0.25D, this.motionX, this.motionY, this.motionZ, new int[0]);
+					this.world.spawnParticle(EnumParticleTypes.WATER_BUBBLE, this.posX - this.motionX * 0.25D, this.posY - this.motionY * 0.25D, this.posZ - this.motionZ * 0.25D, this.motionX, this.motionY, this.motionZ);
 				}
 				
 				f = 0.8F;
@@ -162,7 +162,7 @@ public abstract class EntityBaseBall extends Entity {
 			this.motionX *= (double) f;
 			this.motionY *= (double) f;
 			this.motionZ *= (double) f;
-			this.world.spawnParticle(this.getParticleType(), this.posX, this.posY + 0.5D, this.posZ, 0.0D, 0.0D, 0.0D, new int[0]);
+			this.world.spawnParticle(this.getParticleType(), this.posX, this.posY + 0.5D, this.posZ, 0.0D, 0.0D, 0.0D);
 			this.setPosition(this.posX, this.posY, this.posZ);
 		} else {
 			this.setDead();
@@ -196,11 +196,11 @@ public abstract class EntityBaseBall extends Entity {
 		compound.setInteger("xTile", this.xTile);
 		compound.setInteger("yTile", this.yTile);
 		compound.setInteger("zTile", this.zTile);
-		ResourceLocation resourcelocation = (ResourceLocation) Block.REGISTRY.getNameForObject(this.inTile);
+		ResourceLocation resourcelocation = Block.REGISTRY.getNameForObject(this.inTile);
 		compound.setString("inTile", resourcelocation == null ? "" : resourcelocation.toString());
 		compound.setByte("inGround", (byte) (this.inGround ? 1 : 0));
-		compound.setTag("direction", this.newDoubleNBTList(new double[]{this.motionX, this.motionY, this.motionZ}));
-		compound.setTag("power", this.newDoubleNBTList(new double[]{this.accelerationX, this.accelerationY, this.accelerationZ}));
+		compound.setTag("direction", this.newDoubleNBTList(this.motionX, this.motionY, this.motionZ));
+		compound.setTag("power", this.newDoubleNBTList(this.accelerationX, this.accelerationY, this.accelerationZ));
 		compound.setInteger("life", this.ticksAlive);
 	}
 	
@@ -266,9 +266,9 @@ public abstract class EntityBaseBall extends Entity {
 				Vec3d vec3d = source.getEntity().getLookVec();
 				
 				if (vec3d != null) {
-					this.motionX = vec3d.xCoord;
-					this.motionY = vec3d.yCoord;
-					this.motionZ = vec3d.zCoord;
+					this.motionX = vec3d.x;
+					this.motionY = vec3d.y;
+					this.motionZ = vec3d.z;
 					this.accelerationX = this.motionX * 0.1D;
 					this.accelerationY = this.motionY * 0.1D;
 					this.accelerationZ = this.motionZ * 0.1D;

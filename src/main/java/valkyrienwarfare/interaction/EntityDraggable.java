@@ -15,23 +15,21 @@
 
 package valkyrienwarfare.interaction;
 
-import valkyrienwarfare.api.RotationMatrices;
-import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.EventsClient;
-import valkyrienwarfare.physicsmanagement.CoordTransformObject;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
-import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.addon.combat.entity.EntityCannonBall;
-
-import java.util.List;
-
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import valkyrienwarfare.EventsClient;
+import valkyrienwarfare.ValkyrienWarfareMod;
+import valkyrienwarfare.addon.combat.entity.EntityCannonBall;
+import valkyrienwarfare.api.RotationMatrices;
+import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.physicsmanagement.CoordTransformObject;
+import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+
+import java.util.List;
 
 public abstract class EntityDraggable {
 	public static void tickAddedVelocityForWorld(World world) {
@@ -228,7 +226,7 @@ public abstract class EntityDraggable {
 		double d3 = y;
 		double d4 = z;
 
-		List<AxisAlignedBB> list1 = thisClassAsAnEntity.world.getCollisionBoxes(thisClassAsAnEntity, thisClassAsAnEntity.getEntityBoundingBox().addCoord(x, y, z));
+		List<AxisAlignedBB> list1 = thisClassAsAnEntity.world.getCollisionBoxes(thisClassAsAnEntity, thisClassAsAnEntity.getEntityBoundingBox().offset(x, y, z));
 		AxisAlignedBB axisalignedbb = thisClassAsAnEntity.getEntityBoundingBox();
 
 		if (y != 0.0D) {
@@ -274,9 +272,9 @@ public abstract class EntityDraggable {
 			AxisAlignedBB axisalignedbb1 = thisClassAsAnEntity.getEntityBoundingBox();
 			thisClassAsAnEntity.setEntityBoundingBox(axisalignedbb);
 			y = (double) thisClassAsAnEntity.stepHeight;
-			List<AxisAlignedBB> list = thisClassAsAnEntity.world.getCollisionBoxes(thisClassAsAnEntity, thisClassAsAnEntity.getEntityBoundingBox().addCoord(d2, y, d4));
+			List<AxisAlignedBB> list = thisClassAsAnEntity.world.getCollisionBoxes(thisClassAsAnEntity, thisClassAsAnEntity.getEntityBoundingBox().offset(d2, y, d4));
 			AxisAlignedBB axisalignedbb2 = thisClassAsAnEntity.getEntityBoundingBox();
-			AxisAlignedBB axisalignedbb3 = axisalignedbb2.addCoord(d2, 0.0D, d4);
+			AxisAlignedBB axisalignedbb3 = axisalignedbb2.offset(d2, 0.0D, d4);
 			double d8 = y;
 			int j1 = 0;
 

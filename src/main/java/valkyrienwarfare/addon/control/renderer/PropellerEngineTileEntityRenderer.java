@@ -15,18 +15,18 @@
 
 package valkyrienwarfare.addon.control.renderer;
 
-import valkyrienwarfare.api.block.engine.BlockAirshipEngine;
-import valkyrienwarfare.render.FastBlockModelRenderer;
-import valkyrienwarfare.addon.control.tileentity.TileEntityPropellerEngine;
-import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.EnumFacing;
 import org.lwjgl.opengl.GL11;
+import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
+import valkyrienwarfare.addon.control.tileentity.TileEntityPropellerEngine;
+import valkyrienwarfare.api.block.engine.BlockAirshipEngine;
+import valkyrienwarfare.render.FastBlockModelRenderer;
 
 public class PropellerEngineTileEntityRenderer extends TileEntitySpecialRenderer<TileEntityPropellerEngine> {
 
@@ -44,14 +44,14 @@ public class PropellerEngineTileEntityRenderer extends TileEntitySpecialRenderer
 			GlStateManager.pushMatrix();
 			GlStateManager.disableLighting();
 			Tessellator tessellator = Tessellator.getInstance();
-			VertexBuffer vertexbuffer = tessellator.getBuffer();
+            BufferBuilder BufferBuilder = tessellator.getBuffer();
 
-			double oldX = vertexbuffer.xOffset;
-			double oldY = vertexbuffer.yOffset;
-			double oldZ = vertexbuffer.zOffset;
+            double oldX = BufferBuilder.xOffset;
+            double oldY = BufferBuilder.yOffset;
+            double oldZ = BufferBuilder.zOffset;
 
-			vertexbuffer.setTranslation(0, 0, 0);
-			GL11.glTranslated(x, y, z);
+            BufferBuilder.setTranslation(0, 0, 0);
+            GL11.glTranslated(x, y, z);
 			GlStateManager.disableAlpha();
 			GlStateManager.disableBlend();
 
@@ -85,7 +85,7 @@ public class PropellerEngineTileEntityRenderer extends TileEntitySpecialRenderer
 
 			GL11.glTranslated(-0.5D, -0.5D, -0.5D);
 
-			FastBlockModelRenderer.renderBlockModel(vertexbuffer, tessellator, tileentity.getWorld(), engineRenderState, brightness);
+            FastBlockModelRenderer.renderBlockModel(BufferBuilder, tessellator, tileentity.getWorld(), engineRenderState, brightness);
 
 			GL11.glPushMatrix();
 
@@ -95,14 +95,14 @@ public class PropellerEngineTileEntityRenderer extends TileEntitySpecialRenderer
 			GL11.glTranslated(-0.5D, -0.21D, -0.5D);
 
 
-			FastBlockModelRenderer.renderBlockModel(vertexbuffer, tessellator, tileentity.getWorld(), propellerRenderState, brightness);
+            FastBlockModelRenderer.renderBlockModel(BufferBuilder, tessellator, tileentity.getWorld(), propellerRenderState, brightness);
 
 			GL11.glPopMatrix();
 
 			GL11.glPopMatrix();
 
-			vertexbuffer.setTranslation(oldX, oldY, oldZ);
-		}
+            BufferBuilder.setTranslation(oldX, oldY, oldZ);
+        }
 	}
 
 	private IBlockState getRenderState(IBlockState inWorldState) {

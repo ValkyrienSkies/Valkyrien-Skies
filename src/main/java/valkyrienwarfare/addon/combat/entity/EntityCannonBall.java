@@ -15,7 +15,6 @@
 
 package valkyrienwarfare.addon.combat.entity;
 
-import valkyrienwarfare.api.Vector;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.MathHelper;
@@ -25,6 +24,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import valkyrienwarfare.api.Vector;
 
 public class EntityCannonBall extends Entity {
 
@@ -90,8 +90,8 @@ public class EntityCannonBall extends Entity {
 	}
 
 	private void processCollision(RayTraceResult collisionTrace) {
-		world.createExplosion(this, collisionTrace.hitVec.xCoord, collisionTrace.hitVec.yCoord, collisionTrace.hitVec.zCoord, explosionPower, true);
-	}
+        world.createExplosion(this, collisionTrace.hitVec.x, collisionTrace.hitVec.y, collisionTrace.hitVec.z, explosionPower, true);
+    }
 
 	private void tickLerp() {
 		if (this.lerpSteps > 0 && !this.canPassengerSteer()) {

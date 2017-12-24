@@ -23,7 +23,7 @@ import valkyrienwarfare.ValkyrienWarfareMod;
 
 public abstract class Module<ImplName> {
 	private String name;
-	private boolean registeredStuffPreInit = false, registeredStuffInit = false;
+	private boolean donePreInit = false, doneInit = false, donePostInit = false;
 	private ModuleProxy common, client, server; //tODO: call these
 	private String modid;
 	
@@ -45,23 +45,37 @@ public abstract class Module<ImplName> {
 		this.client = client;
 	}
 	
-	public final void doRegisteringStuffPreInit()  {
-		if (!registeredStuffPreInit)   {
+	public final void doPreInit(FMLStateEvent event)  {
+		if (!donePreInit)   {
+			setupConfig();
 			registerBlocks();
 			registerItems();
 			registerEntities();
 			registerCapabilities();
-			registeredStuffPreInit = true;
+			preInit(event);
+			donePreInit = true;
 		}
 	}
 	
-	public final void doRegisteringStuffInit()  {
-		if (!registeredStuffInit)   {
+	public final void doInit(FMLStateEvent event)  {
+		if (!doneInit)   {
 			registerTileEntities();
 			registerRecipes();
 			registerNetworks();
-			registeredStuffInit = true;
+			init(event);
+			doneInit = true;
 		}
+	}
+
+	public final void doPostInit(FMLStateEvent event)	{
+		if (!donePostInit)	{
+			postInit(event);
+			donePostInit = true;
+		}
+	}
+
+	protected void setupConfig()	{
+
 	}
 	
 	protected void registerItems()  {
@@ -103,12 +117,12 @@ public abstract class Module<ImplName> {
 	public final ModuleProxy getCommonProxy()   {
 		return common;
 	}
-	
-	public abstract void preInit(FMLStateEvent event);
-	
-	public abstract void init(FMLStateEvent event);
-	
-	public abstract void postInit(FMLStateEvent event);
+
+	protected abstract void preInit(FMLStateEvent event);
+
+	protected abstract void init(FMLStateEvent event);
+
+	protected abstract void postInit(FMLStateEvent event);
 	
 	protected final void registerBlock(Block b)   {
 		ValkyrienWarfareMod.registerBlock(b);

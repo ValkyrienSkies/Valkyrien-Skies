@@ -44,42 +44,42 @@ public class ClientProxyControl extends CommonProxyControl {
 	}
 
 	private static void registerBlockItemModels() {
-		registerBlockItem(ValkyrienWarfareControl.INSTANCE.basicEngine);
-		registerBlockItem(ValkyrienWarfareControl.INSTANCE.advancedEngine);
-		registerBlockItem(ValkyrienWarfareControl.INSTANCE.eliteEngine);
-		registerBlockItem(ValkyrienWarfareControl.INSTANCE.ultimateEngine);
-		registerBlockItem(ValkyrienWarfareControl.INSTANCE.redstoneEngine);
+		registerBlockItem(ValkyrienWarfareControl.basicEngine);
+		registerBlockItem(ValkyrienWarfareControl.advancedEngine);
+		registerBlockItem(ValkyrienWarfareControl.eliteEngine);
+		registerBlockItem(ValkyrienWarfareControl.ultimateEngine);
+		registerBlockItem(ValkyrienWarfareControl.redstoneEngine);
 
-		registerBlockItem(ValkyrienWarfareControl.INSTANCE.basicHoverController);
+		registerBlockItem(ValkyrienWarfareControl.basicHoverController);
 
-		registerBlockItem(ValkyrienWarfareControl.INSTANCE.antigravityEngine);
-		registerBlockItem(ValkyrienWarfareControl.INSTANCE.advancedEtherCompressor);
-		registerBlockItem(ValkyrienWarfareControl.INSTANCE.eliteEtherCompressor);
-		registerBlockItem(ValkyrienWarfareControl.INSTANCE.ultimateEtherCompressor);
-		registerBlockItem(ValkyrienWarfareControl.INSTANCE.creativeEtherCompressor);
+		registerBlockItem(ValkyrienWarfareControl.antigravityEngine);
+		registerBlockItem(ValkyrienWarfareControl.advancedEtherCompressor);
+		registerBlockItem(ValkyrienWarfareControl.eliteEtherCompressor);
+		registerBlockItem(ValkyrienWarfareControl.ultimateEtherCompressor);
+		registerBlockItem(ValkyrienWarfareControl.creativeEtherCompressor);
 
-		registerBlockItem(ValkyrienWarfareControl.INSTANCE.pilotsChair);
-		registerBlockItem(ValkyrienWarfareControl.INSTANCE.passengerChair);
+		registerBlockItem(ValkyrienWarfareControl.pilotsChair);
+		registerBlockItem(ValkyrienWarfareControl.passengerChair);
 
-		registerBlockItem(ValkyrienWarfareControl.INSTANCE.shipHelm);
-//		registerBlockItem(ValkyrienWarfareControlMod.INSTANCE.shipWheel);
-		registerBlockItem(ValkyrienWarfareControl.INSTANCE.shipTelegraph);
+		registerBlockItem(ValkyrienWarfareControl.shipHelm);
+//		registerBlockItem(ValkyrienWarfareControlMod.shipWheel);
+		registerBlockItem(ValkyrienWarfareControl.shipTelegraph);
 
-		registerBlockItem(ValkyrienWarfareControl.INSTANCE.dopedEtherium);
-		registerBlockItem(ValkyrienWarfareControl.INSTANCE.balloonBurner);
+		registerBlockItem(ValkyrienWarfareControl.dopedEtherium);
+		registerBlockItem(ValkyrienWarfareControl.balloonBurner);
 
-		registerBlockItem(ValkyrienWarfareControl.INSTANCE.thrustRelay);
-		registerBlockItem(ValkyrienWarfareControl.INSTANCE.thrustModulator);
+		registerBlockItem(ValkyrienWarfareControl.thrustRelay);
+		registerBlockItem(ValkyrienWarfareControl.thrustModulator);
 
-		registerBlockItem(ValkyrienWarfareControl.INSTANCE.shipHullSealer);
+		registerBlockItem(ValkyrienWarfareControl.shipHullSealer);
 
-		registerBlockItem(ValkyrienWarfareControl.INSTANCE.airshipController_zepplin);
+		registerBlockItem(ValkyrienWarfareControl.airshipController_zepplin);
 	}
 
 	private static void registerItemModels() {
-		registerItemModel(ValkyrienWarfareControl.INSTANCE.systemLinker);
-		registerItemModel(ValkyrienWarfareControl.INSTANCE.airshipStealer);
-		registerItemModel(ValkyrienWarfareControl.INSTANCE.relayWire);
+		registerItemModel(ValkyrienWarfareControl.systemLinker);
+		registerItemModel(ValkyrienWarfareControl.airshipStealer);
+		registerItemModel(ValkyrienWarfareControl.relayWire);
 	}
 
 	private static void registerTileEntityRenderers() {

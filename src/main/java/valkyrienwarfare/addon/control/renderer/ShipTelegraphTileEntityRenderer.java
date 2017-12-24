@@ -41,7 +41,7 @@ public class ShipTelegraphTileEntityRenderer extends TileEntitySpecialRenderer<T
 	public void renderTileEntityAt(TileEntityShipTelegraph tileentity, double x, double y, double z, float partialTick, int destroyStage) {
 		IBlockState telegraphState = tileentity.getWorld().getBlockState(tileentity.getPos());
 
-		if (telegraphState.getBlock() != ValkyrienWarfareControl.INSTANCE.shipTelegraph) {
+		if (telegraphState.getBlock() != ValkyrienWarfareControl.shipTelegraph) {
 			return;
 		}
 
@@ -62,11 +62,11 @@ public class ShipTelegraphTileEntityRenderer extends TileEntitySpecialRenderer<T
 
 		BlockPos originPos = tileentity.getPos();
 
-		IBlockState glassState = ValkyrienWarfareControl.INSTANCE.shipWheel.getStateFromMeta(8);
-		IBlockState dialState = ValkyrienWarfareControl.INSTANCE.shipWheel.getStateFromMeta(7);
-		IBlockState leftHandleState = ValkyrienWarfareControl.INSTANCE.shipWheel.getStateFromMeta(6);
-		IBlockState rightHandleState = ValkyrienWarfareControl.INSTANCE.shipWheel.getStateFromMeta(5);
-		IBlockState helmStateToRender = ValkyrienWarfareControl.INSTANCE.shipWheel.getStateFromMeta(4);
+		IBlockState glassState = ValkyrienWarfareControl.shipWheel.getStateFromMeta(8);
+		IBlockState dialState = ValkyrienWarfareControl.shipWheel.getStateFromMeta(7);
+		IBlockState leftHandleState = ValkyrienWarfareControl.shipWheel.getStateFromMeta(6);
+		IBlockState rightHandleState = ValkyrienWarfareControl.shipWheel.getStateFromMeta(5);
+		IBlockState helmStateToRender = ValkyrienWarfareControl.shipWheel.getStateFromMeta(4);
 		int brightness = tileentity.getWorld().getCombinedLight(tileentity.getPos(), 0);
 
 		double multiplier = 1.5D;

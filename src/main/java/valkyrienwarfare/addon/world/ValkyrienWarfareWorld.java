@@ -47,10 +47,10 @@ public class ValkyrienWarfareWorld extends Module<ValkyrienWarfareWorldGen> {
 	}
 	private static final WorldEventsCommon worldEventsCommon = new WorldEventsCommon();
 	public static ValkyrienWarfareWorld INSTANCE;
-	public Block etheriumOre;
-	public Block skydungeon_controller;
-	public Block quartz_fence;
-	public Item etheriumCrystal;
+	public static Block etheriumOre;
+	public static Block skydungeon_controller;
+	public static Block quartz_fence;
+	public static Item etheriumCrystal;
 
 	private static void registerItemBlock(Block block) {
 		GameRegistry.register(new ItemBlock(block).setRegistryName(block.getRegistryName()));

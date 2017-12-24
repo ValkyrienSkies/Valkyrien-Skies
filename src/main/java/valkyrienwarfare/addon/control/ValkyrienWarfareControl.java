@@ -105,33 +105,33 @@ public class ValkyrienWarfareControl extends Module<ValkyrienWarfareControl> {
 	public static Configuration config;
 	public static ValkyrienWarfareControl INSTANCE;
 	public static SimpleNetworkWrapper controlNetwork;
-	public Block basicEngine;
-	public Block advancedEngine;
-	public Block eliteEngine;
-	public Block ultimateEngine; // Couldn't think of what to name these, so I went with the Mekanism naming style
-	public Block redstoneEngine;
-	public Block basicHoverController;
-	public Block dopedEtherium;
-	public Block balloonBurner;
-	public Block pilotsChair;
-	public Block passengerChair;
-	public Block shipHelm;
-	public Block shipWheel;
-	public Block shipTelegraph;
-	public Block antigravityEngine; //leaving it with the old name to prevent blocks disappearing
-	public Block advancedEtherCompressor;
-	public Block eliteEtherCompressor;
-	public Block ultimateEtherCompressor;
-	public Block creativeEtherCompressor;
-	public Block thrustRelay;
-	public Block thrustModulator;
-	public Block airshipController_zepplin;
-	public Block shipHullSealer;
-	public Block gyroscope;
+	public static Block basicEngine;
+	public static Block advancedEngine;
+	public static Block eliteEngine;
+	public static Block ultimateEngine; // Couldn't think of what to name these, so I went with the Mekanism naming style
+	public static Block redstoneEngine;
+	public static Block basicHoverController;
+	public static Block dopedEtherium;
+	public static Block balloonBurner;
+	public static Block pilotsChair;
+	public static Block passengerChair;
+	public static Block shipHelm;
+	public static Block shipWheel;
+	public static Block shipTelegraph;
+	public static Block antigravityEngine; //leaving it with the old name to prevent blocks disappearing
+	public static Block advancedEtherCompressor;
+	public static Block eliteEtherCompressor;
+	public static Block ultimateEtherCompressor;
+	public static Block creativeEtherCompressor;
+	public static Block thrustRelay;
+	public static Block thrustModulator;
+	public static Block airshipController_zepplin;
+	public static Block shipHullSealer;
+	public static Block gyroscope;
 
-	public Item systemLinker;
-	public Item airshipStealer;
-	public Item relayWire;
+	public static Item systemLinker;
+	public static Item airshipStealer;
+	public static Item relayWire;
 
 	@Override
 	protected void setupConfig() {
@@ -260,17 +260,17 @@ public class ValkyrienWarfareControl extends Module<ValkyrienWarfareControl> {
 	
 	@Override
 	protected void registerRecipes() {
-		GameRegistry.addRecipe(new ItemStack(pilotsChair), "SLS", "EWE", " S ", 'S', Items.STICK, 'L', Items.LEATHER, 'W', Item.getItemFromBlock(Blocks.LOG), 'E', ValkyrienWarfareWorld.INSTANCE.etheriumCrystal);
+		GameRegistry.addRecipe(new ItemStack(pilotsChair), "SLS", "EWE", " S ", 'S', Items.STICK, 'L', Items.LEATHER, 'W', Item.getItemFromBlock(Blocks.LOG), 'E', ValkyrienWarfareWorld.etheriumCrystal);
 		GameRegistry.addRecipe(new ItemStack(systemLinker), "IR ", " DR", "I I", 'I', Items.IRON_INGOT, 'D', Items.DIAMOND, 'R', Items.REDSTONE);
 		GameRegistry.addRecipe(new ItemStack(balloonBurner), "IFI", "WIW", "PPP", 'I', Items.IRON_INGOT, 'F', Items.FLINT_AND_STEEL, 'W', Item.getItemFromBlock(Blocks.LOG), 'P', Item.getItemFromBlock(Blocks.PLANKS));
 
 		GameRegistry.addRecipe(new ItemStack(basicHoverController), "III", "TCT", "III", 'I', Item.getItemFromBlock(Blocks.IRON_BLOCK), 'C', Items.COMPASS, 'T', Item.getItemFromBlock(Blocks.CRAFTING_TABLE));
 
-		GameRegistry.addRecipe(new ItemStack(antigravityEngine, 4), "#I#", "#E#", "WEW", '#', Item.getItemFromBlock(Blocks.PLANKS), 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorld.INSTANCE.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));
-		GameRegistry.addRecipe(new ItemStack(advancedEtherCompressor, 4), "#I#", "#E#", "WEW", '#', Item.getItemFromBlock(Blocks.STONE), 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorld.INSTANCE.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));
-		GameRegistry.addRecipe(new ItemStack(advancedEtherCompressor, 2), "#I#", "#E#", "WEW", '#', Item.getItemFromBlock(Blocks.COBBLESTONE), 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorld.INSTANCE.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));
-		GameRegistry.addRecipe(new ItemStack(eliteEtherCompressor, 4), "III", "IEI", "WEW", 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorld.INSTANCE.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));
-		GameRegistry.addRecipe(new ItemStack(ultimateEtherCompressor, 4), "#I#", "#E#", "WEW", '#', Item.getItemFromBlock(Blocks.OBSIDIAN), 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorld.INSTANCE.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));
+		GameRegistry.addRecipe(new ItemStack(antigravityEngine, 4), "#I#", "#E#", "WEW", '#', Item.getItemFromBlock(Blocks.PLANKS), 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorld.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));
+		GameRegistry.addRecipe(new ItemStack(advancedEtherCompressor, 4), "#I#", "#E#", "WEW", '#', Item.getItemFromBlock(Blocks.STONE), 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorld.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));
+		GameRegistry.addRecipe(new ItemStack(advancedEtherCompressor, 2), "#I#", "#E#", "WEW", '#', Item.getItemFromBlock(Blocks.COBBLESTONE), 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorld.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));
+		GameRegistry.addRecipe(new ItemStack(eliteEtherCompressor, 4), "III", "IEI", "WEW", 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorld.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));
+		GameRegistry.addRecipe(new ItemStack(ultimateEtherCompressor, 4), "#I#", "#E#", "WEW", '#', Item.getItemFromBlock(Blocks.OBSIDIAN), 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorld.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));
 
 		GameRegistry.addRecipe(new ItemStack(basicEngine, 4), "I##", "IPP", "I##", '#', Item.getItemFromBlock(Blocks.PLANKS), 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT);
 		GameRegistry.addRecipe(new ItemStack(advancedEngine, 4), "I##", "IPP", "I##", '#', Item.getItemFromBlock(Blocks.STONE), 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT);

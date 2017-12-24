@@ -48,12 +48,12 @@ public class ValkyrienWarfareCombat extends Module<ValkyrienWarfareCombat> {
 		}
 	}
 
-	public Item basicCannonSpawner;
-	public Item cannonBall;
-	public Item powderPouch;
-	public Item explosiveArrow;
+	public static Item basicCannonSpawner;
+	public static Item cannonBall;
+	public static Item powderPouch;
+	public static Item explosiveArrow;
 
-	public Block fakecannonblock;
+	public static Block fakecannonblock;
 
 	@Override
 	protected void preInit(FMLStateEvent event) {

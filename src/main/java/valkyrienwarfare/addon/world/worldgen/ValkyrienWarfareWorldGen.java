@@ -37,7 +37,7 @@ public class ValkyrienWarfareWorldGen implements IWorldGenerator {
 	public WorldGenMinable genEtheriumOre;
 
 	public ValkyrienWarfareWorldGen() {
-		this.genEtheriumOre = new WorldGenMinable(ValkyrienWarfareWorld.INSTANCE.etheriumOre.getDefaultState(), 8);
+		this.genEtheriumOre = new WorldGenMinable(ValkyrienWarfareWorld.etheriumOre.getDefaultState(), 8);
 	}
 
 	@Override

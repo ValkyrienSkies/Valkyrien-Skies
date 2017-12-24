@@ -65,6 +65,10 @@ public abstract class MixinEntityIntrinsic {
 
 	public Entity thisClassAsAnEntity = Entity.class.cast(this);
 
+	/**
+	 * fix a warning
+	 * @author asdf
+	 */
 	@Overwrite
 	public void move(MoverType type, double dx, double dy, double dz) {
 //    	System.out.println("test");

@@ -215,7 +215,13 @@ public class ValkyrienWarfareMod {
 		if (hasAddonRegistrationEnded) {
 			throw new IllegalStateException("Attempting to register addon after FMLConstructionEvent");
 		} else {
-			System.out.println("[VW Addon System] Registering addon: " + module);
+			System.out.println("[VW Addon System] Registering addon: " + module.getClass().getCanonicalName());
+			for (Module registered : addons)	{
+				if (registered.getClass().getCanonicalName().equals(module.getClass().getCanonicalName()))	{
+					System.out.println("Addon " + module.getClass().getCanonicalName() + " already registered, skipping...");
+					return;
+				}
+			}
 			addons.add(module);
 		}
 	}

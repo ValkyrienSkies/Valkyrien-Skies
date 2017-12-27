@@ -301,10 +301,16 @@ public class ValkyrienWarfareMod {
 			}
 		}
 		
-		allAddons.forEach(className -> {
+		ALLADDONS: for (String className : allAddons)	{
 			try {
 				Class<?> abstractclass = Class.forName(className);
 				if (abstractclass.isAnnotationPresent(VWAddon.class)) {
+					for (Module registered : addons)	{
+						if (registered.getClass().getCanonicalName().equals(abstractclass.getCanonicalName()))	{
+							System.out.println("Addon " + abstractclass.getCanonicalName() + " already registered, skipping...");
+							continue ALLADDONS;
+						}
+					}
 					Module module = (Module) abstractclass.newInstance();
 					registerAddon(module);
 				} else {
@@ -314,7 +320,7 @@ public class ValkyrienWarfareMod {
 				e.printStackTrace();
 				System.out.println("Not loading addon: " + className);
 			}
-		});
+		};
 	}
 	
 	@EventHandler

@@ -134,19 +134,24 @@ public class ValkyrienWarfareControl extends Module<ValkyrienWarfareControl> {
 	public Item relayWire;
 
 	@Override
-	public void preInit(FMLStateEvent event) {
+	protected void setupConfig() {
 		config = new Configuration(new File(ValkyrienWarfareMod.getWorkingFolder() + "/config/valkyrienwarfarecontrol.cfg"));
 		config.load();
 		config.save();
 	}
 
 	@Override
-	public void init(FMLStateEvent event) {
+	protected void preInit(FMLStateEvent event) {
+
+	}
+
+	@Override
+	protected void init(FMLStateEvent event) {
 		NetworkRegistry.INSTANCE.registerGuiHandler(ValkyrienWarfareMod.INSTANCE, new ControlGUIHandler());
 	}
 
 	@Override
-	public void postInit(FMLStateEvent event) {
+	protected void postInit(FMLStateEvent event) {
 	}
 	
 	@Override

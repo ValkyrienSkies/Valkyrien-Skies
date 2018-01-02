@@ -215,7 +215,13 @@ public class ValkyrienWarfareMod {
 		if (hasAddonRegistrationEnded) {
 			throw new IllegalStateException("Attempting to register addon after FMLConstructionEvent");
 		} else {
-			System.out.println("[VW Addon System] Registering addon: " + module);
+			System.out.println("[VW Addon System] Registering addon: " + module.getClass().getCanonicalName());
+			for (Module registered : addons)	{
+				if (registered.getClass().getCanonicalName().equals(module.getClass().getCanonicalName()))	{
+					System.out.println("Addon " + module.getClass().getCanonicalName() + " already registered, skipping...");
+					return;
+				}
+			}
 			addons.add(module);
 		}
 	}
@@ -295,10 +301,16 @@ public class ValkyrienWarfareMod {
 			}
 		}
 		
-		allAddons.forEach(className -> {
+		ALLADDONS: for (String className : allAddons)	{
 			try {
 				Class<?> abstractclass = Class.forName(className);
 				if (abstractclass.isAnnotationPresent(VWAddon.class)) {
+					for (Module registered : addons)	{
+						if (registered.getClass().getCanonicalName().equals(abstractclass.getCanonicalName()))	{
+							System.out.println("Addon " + abstractclass.getCanonicalName() + " already registered, skipping...");
+							continue ALLADDONS;
+						}
+					}
 					Module module = (Module) abstractclass.newInstance();
 					registerAddon(module);
 				} else {
@@ -308,7 +320,7 @@ public class ValkyrienWarfareMod {
 				e.printStackTrace();
 				System.out.println("Not loading addon: " + className);
 			}
-		});
+		};
 	}
 	
 	@EventHandler
@@ -326,8 +338,7 @@ public class ValkyrienWarfareMod {
 		VWLogger = Logger.getLogger("ValkyrienWarfare");
 		
 		for (Module addon : addons) {
-			addon.preInit(event);
-			addon.doRegisteringStuffPreInit();
+			addon.doPreInit(event);
 		}
 	}
 	
@@ -337,8 +348,7 @@ public class ValkyrienWarfareMod {
 		EntityRegistry.registerModEntity(new ResourceLocation(MODID, "PhysWrapper"), PhysicsWrapperEntity.class, "PhysWrapper", 70, this, 120, 1, false);
 		
 		for (Module addon : addons) {
-			addon.init(event);
-			addon.doRegisteringStuffInit();
+			addon.doInit(event);
 		}
 	}
 	
@@ -366,15 +376,15 @@ public class ValkyrienWarfareMod {
 			Map<String, Integer> ticketsMap = (Map<String, Integer>) ticketConstraints;
 			Map<String, Integer> chunksMap = (Map<String, Integer>) chunkConstraints;
 			
-			ticketsMap.put(MODID, new Integer(69696969));
-			chunksMap.put(MODID, new Integer(69696969));
-		} catch (Exception e) {
+			ticketsMap.put(MODID, Integer.MAX_VALUE);
+			chunksMap.put(MODID, Integer.MAX_VALUE);
+		} catch (Throwable e) {
 			e.printStackTrace();
-			System.err.println("DAMNIT LEX!");
+			System.err.println("DAMMIT LEX!");
 		}
 		
 		for (Module addon : addons) {
-			addon.postInit(event);
+			addon.doPostInit(event);
 		}
 	}
 	

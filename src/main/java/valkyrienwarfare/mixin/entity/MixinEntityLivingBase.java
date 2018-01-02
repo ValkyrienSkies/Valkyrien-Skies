@@ -55,6 +55,10 @@ public abstract class MixinEntityLivingBase extends Entity {
 		}
 	}
 
+	/**
+	 * fix a warning
+	 * @author asdf
+	 */
 	@Overwrite
 	public boolean isOnLadder() {
 		boolean vanilla = this.isOnLadderOriginalButSlightlyOptimized();

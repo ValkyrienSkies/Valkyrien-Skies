@@ -126,6 +126,10 @@ public abstract class MixinEntity implements IDraggable {
         }
     }*/
 
+	/**
+	 * fix a warning
+	 * @author asdf
+	 */
 	@Overwrite
 	protected final Vec3d getVectorForRotation(float pitch, float yaw) {
 		float f = MathHelper.cos(-yaw * 0.017453292F - (float) Math.PI);
@@ -225,6 +229,10 @@ public abstract class MixinEntity implements IDraggable {
 	protected void dealFireDamage(int amount) {
 	}
 
+	/**
+	 * fix a warning
+	 * @author asdf
+	 */
 	@Overwrite
 	public double getDistanceSq(double x, double y, double z) {
 		double d0 = this.posX - x;

@@ -42,10 +42,10 @@ public class ValkyrienWarfareCombat extends Module<ValkyrienWarfareCombat> {
 	
 	public ValkyrienWarfareCombat()  {
 		super("VW_Combat", new CommonProxyCombat(), "valkyrienwarfarecombat");
+		INSTANCE = this;
 		if(ValkyrienWarfareMod.INSTANCE.isRunningOnClient()) {
 			this.setClientProxy(new ClientProxyCombat());
 		}
-		INSTANCE = this;
 	}
 
 	public Item basicCannonSpawner;
@@ -56,15 +56,15 @@ public class ValkyrienWarfareCombat extends Module<ValkyrienWarfareCombat> {
 	public Block fakecannonblock;
 
 	@Override
-	public void preInit(FMLStateEvent event) {
+	protected void preInit(FMLStateEvent event) {
 	}
 
 	@Override
-	public void init(FMLStateEvent event) {
+	protected void init(FMLStateEvent event) {
 	}
 
 	@Override
-	public void postInit(FMLStateEvent event) {
+	protected void postInit(FMLStateEvent event) {
 	}
 
 	@Override

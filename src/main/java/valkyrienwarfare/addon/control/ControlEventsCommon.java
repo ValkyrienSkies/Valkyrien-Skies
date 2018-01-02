@@ -15,6 +15,7 @@
 
 package valkyrienwarfare.addon.control;
 
+import net.minecraft.item.Item;
 import valkyrienwarfare.addon.control.capability.ICapabilityLastRelay;
 import valkyrienwarfare.addon.control.item.ItemRelayWire;
 import net.minecraft.item.ItemStack;
@@ -30,11 +31,10 @@ public class ControlEventsCommon {
 
 	@SubscribeEvent
 	public void onAttachCapabilityEventItem(AttachCapabilitiesEvent event) {
-		if (event instanceof AttachCapabilitiesEvent.Item) {
-			AttachCapabilitiesEvent.Item itemEvent = (AttachCapabilitiesEvent.Item) event;
-			ItemStack stack = itemEvent.getItemStack();
+		if (event.getObject() instanceof Item) {
+			ItemStack stack = (ItemStack) event.getObject();
 
-			if (itemEvent.getItem() instanceof ItemRelayWire) {
+			if (stack.getItem() instanceof ItemRelayWire) {
 
 //				System.out.println("Obama?");
 

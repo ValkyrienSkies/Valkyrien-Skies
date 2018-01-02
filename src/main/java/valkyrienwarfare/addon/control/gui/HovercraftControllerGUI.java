@@ -134,7 +134,7 @@ public class HovercraftControllerGUI extends GuiContainer {
 		// drawBackground(par1);
 		drawGuiContainerBackgroundLayer(par3, par1, par2);
 		for (int i = 0; i < this.buttonList.size(); ++i) {
-			((GuiButton) this.buttonList.get(i)).drawButton(this.mc, par1, par2);
+			((GuiButton) this.buttonList.get(i)).drawButton(this.mc, par1, par2, par3);
 		}
 
 		for (int j = 0; j < this.labelList.size(); ++j) {

@@ -282,9 +282,9 @@ public abstract class EntityMountingWeaponBase extends Entity implements IEntity
 			if (this.isEntityInvulnerable(source)) {
 				return false;
 			} else {
-				this.setBeenAttacked();
+				this.markVelocityChanged();
 				this.setDamage(this.getDamage() + amount * 10.0F);
-				boolean flag = source.getEntity() instanceof EntityPlayer && ((EntityPlayer) source.getEntity()).capabilities.isCreativeMode;
+				boolean flag = source.getImmediateSource() instanceof EntityPlayer && ((EntityPlayer) source.getImmediateSource()).capabilities.isCreativeMode;
 
 				if (flag || this.getDamage() > getMaxDamage()) {
 					this.removePassengers();

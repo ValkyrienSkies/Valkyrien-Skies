@@ -83,7 +83,11 @@ public abstract class MixinRenderGlobal {
 	
 	@Shadow
 	public abstract void postRenderDamagedBlocks();
-	
+
+	/**
+	 * aa
+	 * @author xd
+	 */
 	@Overwrite
     public void drawBlockDamageTexture(Tessellator tessellatorIn, BufferBuilder worldRendererIn, Entity entityIn, float partialTicks) {
         double d0 = entityIn.lastTickPosX + (entityIn.posX - entityIn.lastTickPosX) * (double) partialTicks;
@@ -146,7 +150,11 @@ public abstract class MixinRenderGlobal {
 			this.postRenderDamagedBlocks();
 		}
 	}
-	
+
+	/**
+	 * aa
+	 * @author xd
+	 */
 	@Overwrite
 	public void drawSelectionBox(EntityPlayer player, RayTraceResult movingObjectPositionIn, int execute, float partialTicks) {
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.world, movingObjectPositionIn.getBlockPos());
@@ -194,7 +202,7 @@ public abstract class MixinRenderGlobal {
 				double d0 = player.lastTickPosX + (player.posX - player.lastTickPosX) * (double) partialTicks;
 				double d1 = player.lastTickPosY + (player.posY - player.lastTickPosY) * (double) partialTicks;
 				double d2 = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * (double) partialTicks;
-				drawSelectionBoundingBox(iblockstate.getSelectedBoundingBox(this.world, blockpos).expandXyz(0.0020000000949949026D).offset(-d0, -d1, -d2), 0.0F, 0.0F, 0.0F, 0.4F);
+				drawSelectionBoundingBox(iblockstate.getSelectedBoundingBox(this.world, blockpos).grow(0.0020000000949949026D).offset(-d0, -d1, -d2), 0.0F, 0.0F, 0.0F, 0.4F);
 			}
 			
 			GlStateManager.depthMask(true);
@@ -261,7 +269,11 @@ public abstract class MixinRenderGlobal {
 		}
 		*/
 	}
-	
+
+	/**
+	 * aa
+	 * @author xd
+	 */
 	@Overwrite
     public Particle spawnEntityFX(int particleID, boolean ignoreRange, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, int... parameters) {
         if (ValkyrienWarfareMod.shipsSpawnParticles) {

@@ -71,6 +71,10 @@ public abstract class MixinNetHandlerPlayServer {
 	private double lastGoodBlockReachDist;
 	private int ticksSinceLastTry = 0;
 
+	/**
+	 * aa
+	 * @author xd
+	 */
 	@Overwrite
 	public void processTryUseItemOnBlock(CPacketPlayerTryUseItemOnBlock packetIn) {
 		PacketThreadUtil.checkThreadAndEnqueue(packetIn, NetHandlerPlayServer.class.cast(this), this.player.getServerWorld());
@@ -101,6 +105,10 @@ public abstract class MixinNetHandlerPlayServer {
 		player.interactionManager.setBlockReachDistance(lastGoodBlockReachDist);
 	}
 
+	/**
+	 * aa
+	 * @author xd
+	 */
 	@Overwrite
 	public void processPlayerDigging(CPacketPlayerDigging packetIn) {
 		PacketThreadUtil.checkThreadAndEnqueue(packetIn, NetHandlerPlayServer.class.cast(this), this.player.getServerWorld());
@@ -125,6 +133,10 @@ public abstract class MixinNetHandlerPlayServer {
 		player.interactionManager.setBlockReachDistance(lastGoodBlockReachDist);
 	}
 
+	/**
+	 * aa
+	 * @author xd
+	 */
 	@Overwrite
 	public void processUpdateSign(CPacketUpdateSign packetIn) {
 		PacketThreadUtil.checkThreadAndEnqueue(packetIn, NetHandlerPlayServer.class.cast(this), this.player.getServerWorld());
@@ -151,7 +163,7 @@ public abstract class MixinNetHandlerPlayServer {
 	}
 
 	public void processTryUseItemOnBlockOriginal(CPacketPlayerTryUseItemOnBlock packetIn) {
-		WorldServer worldserver = thisClassAsAHandler.serverController.worldServerForDimension(this.player.dimension);
+		WorldServer worldserver = thisClassAsAHandler.serverController.getWorld(this.player.dimension);
 		EnumHand enumhand = packetIn.getHand();
 		ItemStack itemstack = this.player.getHeldItem(enumhand);
 		BlockPos blockpos = packetIn.getPos();
@@ -182,7 +194,7 @@ public abstract class MixinNetHandlerPlayServer {
 		} else {
 			TextComponentTranslation textcomponenttranslation = new TextComponentTranslation("build.tooHigh", Integer.valueOf(thisClassAsAHandler.serverController.getBuildLimit()));
 			textcomponenttranslation.getStyle().setColor(TextFormatting.RED);
-			this.player.connection.sendPacket(new SPacketChat(textcomponenttranslation, (byte) 2));
+			//this.player.connection.sendPacket(new SPacketChat(textcomponenttranslation, (byte) 2));
 		}
 
 		this.player.connection.sendPacket(new SPacketBlockChange(worldserver, blockpos));
@@ -190,7 +202,7 @@ public abstract class MixinNetHandlerPlayServer {
 	}
 
 	public void processPlayerDiggingOriginal(CPacketPlayerDigging packetIn) {
-		WorldServer worldserver = thisClassAsAHandler.serverController.worldServerForDimension(this.player.dimension);
+		WorldServer worldserver = thisClassAsAHandler.serverController.getWorld(this.player.dimension);
 		BlockPos blockpos = packetIn.getPosition();
 		this.player.markPlayerActive();
 
@@ -265,7 +277,7 @@ public abstract class MixinNetHandlerPlayServer {
 
 	public void processUpdateSignOriginal(CPacketUpdateSign packetIn) {
 		this.player.markPlayerActive();
-		WorldServer worldserver = thisClassAsAHandler.serverController.worldServerForDimension(this.player.dimension);
+		WorldServer worldserver = thisClassAsAHandler.serverController.getWorld(this.player.dimension);
 		BlockPos blockpos = packetIn.getPosition();
 
 		if (worldserver.isBlockLoaded(blockpos)) {
@@ -294,6 +306,10 @@ public abstract class MixinNetHandlerPlayServer {
 		}
 	}
 
+	/**
+	 * aa
+	 * @author xd
+	 */
 	@Overwrite
 	public void update() {
 		IDraggable draggable = EntityDraggable.getDraggableFromEntity(player);
@@ -314,7 +330,7 @@ public abstract class MixinNetHandlerPlayServer {
 		if (thisClassAsAHandler.floating) {
 			if (++thisClassAsAHandler.floatingTickCount > 80) {
 				NetHandlerPlayServer.LOGGER.warn("{} was kicked for floating too long!", this.player.getName());
-				thisClassAsAHandler.disconnect("Flying is not enabled on this server");
+				thisClassAsAHandler.disconnect(new TextComponentString("Flying is not enabled on this server"));
 				return;
 			}
 		} else {
@@ -335,7 +351,7 @@ public abstract class MixinNetHandlerPlayServer {
 			if (thisClassAsAHandler.vehicleFloating && thisClassAsAHandler.player.getLowestRidingEntity().getControllingPassenger() == thisClassAsAHandler.player) {
 				if (++thisClassAsAHandler.vehicleFloatingTickCount > 80) {
 					NetHandlerPlayServer.LOGGER.warn("{} was kicked for floating a vehicle too long!", thisClassAsAHandler.player.getName());
-					thisClassAsAHandler.disconnect("Flying is not enabled on this server");
+					thisClassAsAHandler.disconnect(new TextComponentString("Flying is not enabled on this server"));
 					return;
 				}
 			} else {
@@ -350,12 +366,12 @@ public abstract class MixinNetHandlerPlayServer {
 
 		thisClassAsAHandler.serverController.profiler.startSection("keepAlive");
 
-		if ((long) thisClassAsAHandler.networkTickCount - thisClassAsAHandler.lastSentPingPacket > 40L) {
-			thisClassAsAHandler.lastSentPingPacket = (long) thisClassAsAHandler.networkTickCount;
-			thisClassAsAHandler.lastPingTime = currentTimeMillis();
-			thisClassAsAHandler.keepAliveId = (int) thisClassAsAHandler.lastPingTime;
-			thisClassAsAHandler.sendPacket(new SPacketKeepAlive(thisClassAsAHandler.keepAliveId));
-		}
+		/*if ((long) thisClassAsAHandler.networkTickCount - thisClassAsAHandler.lastSentPingPacket > 40L) {
+			thisClassAsAHandler.field_147377_k = (long) thisClassAsAHandler.networkTickCount;
+			thisClassAsAHandler.field_147379_i = currentTimeMillis();
+			thisClassAsAHandler.field_147378_h = (int) thisClassAsAHandler.field_147379_i;
+			thisClassAsAHandler.sendPacket(new SPacketKeepAlive(thisClassAsAHandler.field_147378_h));
+		}*/
 
 		thisClassAsAHandler.serverController.profiler.endSection();
 
@@ -368,7 +384,7 @@ public abstract class MixinNetHandlerPlayServer {
 		}
 
 		if (thisClassAsAHandler.player.getLastActiveTime() > 0L && thisClassAsAHandler.serverController.getMaxPlayerIdleMinutes() > 0 && MinecraftServer.getCurrentTimeMillis() - thisClassAsAHandler.player.getLastActiveTime() > (long) (thisClassAsAHandler.serverController.getMaxPlayerIdleMinutes() * 1000 * 60)) {
-			thisClassAsAHandler.disconnect("You have been idle for too long!");
+			//thisClassAsAHandler.disconnect("You have been idle for too long!");
 		}
 	}
 

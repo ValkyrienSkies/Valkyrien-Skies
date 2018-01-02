@@ -48,7 +48,7 @@ public class BigBastardMath {
 
 	// Assuming they're colliding, OR ELSE!
 	public static AxisAlignedBB getBetweenAABB(AxisAlignedBB ship1, AxisAlignedBB ship2) {
-		if (!ship1.intersectsWith(ship2)) {
+		if (!ship1.intersects(ship2)) {
 			System.out.println("Tried getting relevent BB's for 2 ships not colliding!!!");
 			return null;
 		}

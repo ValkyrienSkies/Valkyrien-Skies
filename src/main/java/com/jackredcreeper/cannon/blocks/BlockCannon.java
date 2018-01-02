@@ -25,6 +25,7 @@ import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -36,6 +37,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 
@@ -61,7 +63,7 @@ public class BlockCannon extends BlockDirectional implements ITileEntityProvider
 	}
 
 	@Override
-	public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par4) {
+	public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation, ITooltipFlag advanced)	{
 		itemInformation.add(TextFormatting.BLUE + "Cannon block used to fire explosive projectiles.");
 
 		itemInformation.add(TextFormatting.ITALIC + "" + TextFormatting.GRAY + TextFormatting.ITALIC + "Can fire cannon balls, explosive balls, grapeshot, and solid ball ammo types.");

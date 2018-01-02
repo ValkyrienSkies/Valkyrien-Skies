@@ -31,7 +31,7 @@ import valkyrienwarfare.render.FastBlockModelRenderer;
 public class PropellerEngineTileEntityRenderer extends TileEntitySpecialRenderer<TileEntityPropellerEngine> {
 
 	@Override
-	public void renderTileEntityAt(TileEntityPropellerEngine tileentity, double x, double y, double z, float partialTick, int destroyStage) {
+	public void render(TileEntityPropellerEngine tileentity, double x, double y, double z, float partialTick, int destroyStage, float alpha) {
 
 		IBlockState state = tileentity.getWorld().getBlockState(tileentity.getPos());
 		if (state.getBlock() instanceof BlockAirshipEngine) {

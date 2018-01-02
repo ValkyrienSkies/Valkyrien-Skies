@@ -260,10 +260,10 @@ public abstract class EntityBaseBall extends Entity {
 		if (this.isEntityInvulnerable(source)) {
 			return false;
 		} else {
-			this.setBeenAttacked();
+			this.markVelocityChanged();
 			
-			if (source.getEntity() != null) {
-				Vec3d vec3d = source.getEntity().getLookVec();
+			if (source.getImmediateSource() != null) {
+				Vec3d vec3d = source.getImmediateSource().getLookVec();
 				
 				if (vec3d != null) {
 					this.motionX = vec3d.x;
@@ -274,8 +274,8 @@ public abstract class EntityBaseBall extends Entity {
 					this.accelerationZ = this.motionZ * 0.1D;
 				}
 				
-				if (source.getEntity() instanceof EntityLivingBase) {
-					this.shootingEntity = (EntityLivingBase) source.getEntity();
+				if (source.getImmediateSource() instanceof EntityLivingBase) {
+					this.shootingEntity = (EntityLivingBase) source.getImmediateSource();
 				}
 				
 				return true;

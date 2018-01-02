@@ -86,7 +86,7 @@ public class FastBlockModelRenderer {
         BufferBuilder.begin(7, DefaultVertexFormats.BLOCK);
 
         BufferBuilder.setVertexState(data);
-        int j = BufferBuilder.vertexFormat.getNextOffset() >> 2;
+        int j = BufferBuilder.vertexFormat.getSize() >> 2;
         int cont = BufferBuilder.getVertexCount();
         int offsetUV = BufferBuilder.vertexFormat.getUvOffsetById(1) / 4;
         int bufferNextSize = BufferBuilder.vertexFormat.getIntegerSize();

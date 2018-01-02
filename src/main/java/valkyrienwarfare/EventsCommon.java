@@ -82,13 +82,13 @@ public class EventsCommon {
 			Field xField, yField, zField, positionField;
 			
 			if (!MixinLoaderForge.isObfuscatedEnvironment) {
-				xField = toSet.getClass().getDeclaredField("explosionX");
+				xField = toSet.getClass().getDeclaredField("x");
 				xField.setAccessible(true);
 				
-				yField = toSet.getClass().getDeclaredField("explosionY");
+				yField = toSet.getClass().getDeclaredField("y");
 				yField.setAccessible(true);
 				
-				zField = toSet.getClass().getDeclaredField("explosionZ");
+				zField = toSet.getClass().getDeclaredField("z");
 				zField.setAccessible(true);
 				
 				positionField = toSet.getClass().getDeclaredField("position");
@@ -120,15 +120,15 @@ public class EventsCommon {
 		try {
 			Field xField = fields[0], yField = fields[1], zField = fields[2], positionField = fields[3];
 			
-			double testX = toSet.explosionX;
+			double testX = toSet.x;
 			
 			xField.setDouble(toSet, x);
 			
-			double testY = toSet.explosionY;
+			double testY = toSet.y;
 			
 			yField.setDouble(toSet, y);
 			
-			double testZ = toSet.explosionZ;
+			double testZ = toSet.z;
 			
 			zField.setDouble(toSet, z);
 			
@@ -285,11 +285,11 @@ public class EventsCommon {
 	 * public void onExplosionDetonateEvent(ExplosionEvent.Detonate event) {
 	 * Explosion e = event.getExplosion();
 	 * <p>
-	 * double xx = e.explosionX, yy = e.explosionY, zz = e.explosionZ;
+	 * double xx = e.x, yy = e.y, zz = e.z;
 	 * List<BlockPos> affectedPositionsList = new ArrayList<BlockPos>(e.getAffectedBlockPositions());
 	 * Map<EntityPlayer, Vec3d> playerKnockbackMap = new HashMap<EntityPlayer, Vec3d>(e.getPlayerKnockbackMap());
 	 * <p>
-	 * Vector center = new Vector(e.explosionX, e.explosionY, e.explosionZ);
+	 * Vector center = new Vector(e.x, e.y, e.z);
 	 * World worldIn = e.worldObj;
 	 * float radius = e.explosionSize;
 	 * <p>
@@ -314,9 +314,9 @@ public class EventsCommon {
 	 * <p>
 	 * boolean cancelDueToWater = false;
 	 * <p>
-	 * for (int x = (int) math.floor(expl.explosionX - waterRange); x <= math.ceil(expl.explosionX + waterRange); x++) {
-	 * for (int y = (int) math.floor(expl.explosionY - waterRange); y <= math.ceil(expl.explosionY + waterRange); y++) {
-	 * for (int z = (int) math.floor(expl.explosionZ - waterRange); z <= math.ceil(expl.explosionZ + waterRange); z++) {
+	 * for (int x = (int) math.floor(expl.x - waterRange); x <= math.ceil(expl.x + waterRange); x++) {
+	 * for (int y = (int) math.floor(expl.y - waterRange); y <= math.ceil(expl.y + waterRange); y++) {
+	 * for (int z = (int) math.floor(expl.z - waterRange); z <= math.ceil(expl.z + waterRange); z++) {
 	 * if (!cancelDueToWater) {
 	 * IBlockState state = e.worldObj.getBlockState(new BlockPos(x, y, z));
 	 * if (state.getBlock() instanceof BlockLiquid) {
@@ -360,7 +360,7 @@ public class EventsCommon {
 	 * <p>
 	 * double explosionForce = math.sqrt(e.explosionSize) * 1000D * mass;
 	 * <p>
-	 * Vector forceVector = new Vector(pos.getX() + .5 - expl.explosionX, pos.getY() + .5 - expl.explosionY, pos.getZ() + .5 - expl.explosionZ);
+	 * Vector forceVector = new Vector(pos.getX() + .5 - expl.x, pos.getY() + .5 - expl.y, pos.getZ() + .5 - expl.z);
 	 * <p>
 	 * double vectorDist = forceVector.length();
 	 * <p>

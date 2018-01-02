@@ -532,8 +532,8 @@ public class PhysicsObject {
 	public void injectChunkIntoWorld(Chunk chunk, int x, int z, boolean putInId2ChunkMap) {
 		ChunkProviderServer provider = (ChunkProviderServer) worldObj.getChunkProvider();
 		//TileEntities will break if you don't do this
-		chunk.isChunkLoaded = true;
-		chunk.isModified = true;
+		chunk.loaded = true;
+		chunk.dirty = true;
 		claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ] = chunk;
 		
 		if (putInId2ChunkMap) {
@@ -578,7 +578,7 @@ public class PhysicsObject {
 					//This is satisfied for the chunks surrounding a Ship, do fill it with empty space
 					Chunk chunk = new Chunk(worldObj, x, z);
 					ChunkProviderServer provider = (ChunkProviderServer) worldObj.getChunkProvider();
-					chunk.isModified = true;
+					chunk.dirty = true;
 					provider.id2ChunkMap.put(ChunkPos.asLong(x, z), chunk);
 				}
 			}
@@ -761,7 +761,7 @@ public class PhysicsObject {
 				if (!worldObj.isRemote) {
 					injectChunkIntoWorld(chunk, x, z, false);
 				}
-				for (Entry<BlockPos, TileEntity> entry : chunk.chunkTileEntityMap.entrySet()) {
+				for (Entry<BlockPos, TileEntity> entry : chunk.tileEntities.entrySet()) {
 					TileEntity tile = entry.getValue();
 					if (tile instanceof INodeProvider) {
 						nodeTileEntitiesToUpdate.add(tile);

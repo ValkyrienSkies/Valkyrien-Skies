@@ -112,19 +112,19 @@ public class TileEntityCannon extends TileEntity {
 
 
 		if (Ammo == 1) {
-			entitycannonball.setThrowableHeading((double) enumfacing.getFrontOffsetX(), (double) ((float) enumfacing.getFrontOffsetY() + (Angle / 100)), (double) enumfacing.getFrontOffsetZ(), 3, 1);
+			entitycannonball.shoot((double) enumfacing.getFrontOffsetX(), (double) ((float) enumfacing.getFrontOffsetY() + (Angle / 100)), (double) enumfacing.getFrontOffsetZ(), 3, 1);
 			worldIn.spawnEntity(entitycannonball);
 		}
 		if (Ammo == 2) {
-			entityexplosiveball.setThrowableHeading((double) enumfacing.getFrontOffsetX(), (double) ((float) enumfacing.getFrontOffsetY() + (Angle / 100)), (double) enumfacing.getFrontOffsetZ(), 3, 1);
+			entityexplosiveball.shoot((double) enumfacing.getFrontOffsetX(), (double) ((float) enumfacing.getFrontOffsetY() + (Angle / 100)), (double) enumfacing.getFrontOffsetZ(), 3, 1);
 			worldIn.spawnEntity(entityexplosiveball);
 		}
 		if (Ammo == 3) {
-			entitygrapeshot5.setThrowableHeading((double) enumfacing.getFrontOffsetX(), (double) ((float) enumfacing.getFrontOffsetY() + (Angle / 100)), (double) enumfacing.getFrontOffsetZ(), 3, 4.0F);
-			entitygrapeshot4.setThrowableHeading((double) enumfacing.getFrontOffsetX(), (double) ((float) enumfacing.getFrontOffsetY() + (Angle / 100)), (double) enumfacing.getFrontOffsetZ(), 3, 4.0F);
-			entitygrapeshot3.setThrowableHeading((double) enumfacing.getFrontOffsetX(), (double) ((float) enumfacing.getFrontOffsetY() + (Angle / 100)), (double) enumfacing.getFrontOffsetZ(), 3, 4.0F);
-			entitygrapeshot2.setThrowableHeading((double) enumfacing.getFrontOffsetX(), (double) ((float) enumfacing.getFrontOffsetY() + (Angle / 100)), (double) enumfacing.getFrontOffsetZ(), 3, 4.0F);
-			entitygrapeshot1.setThrowableHeading((double) enumfacing.getFrontOffsetX(), (double) ((float) enumfacing.getFrontOffsetY() + (Angle / 100)), (double) enumfacing.getFrontOffsetZ(), 3, 4.0F);
+			entitygrapeshot5.shoot((double) enumfacing.getFrontOffsetX(), (double) ((float) enumfacing.getFrontOffsetY() + (Angle / 100)), (double) enumfacing.getFrontOffsetZ(), 3, 4.0F);
+			entitygrapeshot4.shoot((double) enumfacing.getFrontOffsetX(), (double) ((float) enumfacing.getFrontOffsetY() + (Angle / 100)), (double) enumfacing.getFrontOffsetZ(), 3, 4.0F);
+			entitygrapeshot3.shoot((double) enumfacing.getFrontOffsetX(), (double) ((float) enumfacing.getFrontOffsetY() + (Angle / 100)), (double) enumfacing.getFrontOffsetZ(), 3, 4.0F);
+			entitygrapeshot2.shoot((double) enumfacing.getFrontOffsetX(), (double) ((float) enumfacing.getFrontOffsetY() + (Angle / 100)), (double) enumfacing.getFrontOffsetZ(), 3, 4.0F);
+			entitygrapeshot1.shoot((double) enumfacing.getFrontOffsetX(), (double) ((float) enumfacing.getFrontOffsetY() + (Angle / 100)), (double) enumfacing.getFrontOffsetZ(), 3, 4.0F);
 			worldIn.spawnEntity(entitygrapeshot1);
 			worldIn.spawnEntity(entitygrapeshot2);
 			worldIn.spawnEntity(entitygrapeshot3);
@@ -132,7 +132,7 @@ public class TileEntityCannon extends TileEntity {
 			worldIn.spawnEntity(entitygrapeshot5);
 		}
 		if (Ammo == 4) {
-			entitysolidball.setThrowableHeading((double) enumfacing.getFrontOffsetX(), (double) ((float) enumfacing.getFrontOffsetY() + (Angle / 100)), (double) enumfacing.getFrontOffsetZ(), 2, 1);
+			entitysolidball.shoot((double) enumfacing.getFrontOffsetX(), (double) ((float) enumfacing.getFrontOffsetY() + (Angle / 100)), (double) enumfacing.getFrontOffsetZ(), 2, 1);
 			worldIn.spawnEntity(entitysolidball);
 		}
 

@@ -16,12 +16,15 @@
 package com.jackredcreeper.cannon.items;
 
 import com.jackredcreeper.cannon.CannonModReference;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class ItemGrapeshot extends Item {
@@ -35,7 +38,7 @@ public class ItemGrapeshot extends Item {
 	}
 
 	@Override
-	public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par4) {
+	public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation, ITooltipFlag advanced)	{
 		itemInformation.add(TextFormatting.BLUE + "Multi Shot");
 	}
 

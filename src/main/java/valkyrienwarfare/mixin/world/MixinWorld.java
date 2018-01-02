@@ -68,6 +68,10 @@ public abstract class MixinWorld {
 	@Shadow
 	List<TileEntity> addedTileEntityList;
 
+	/**
+	 * aa
+	 * @author xd
+	 */
 	@Overwrite
     public void spawnParticle(int particleID, boolean ignoreRange, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, int... parameters) {
         BlockPos pos = new BlockPos(x, y, z);
@@ -289,7 +293,12 @@ public abstract class MixinWorld {
 		}
 	}
 
+	/**
+	 * aa
+	 * @author xd
+	 */
 	@Overwrite
+	@Nullable
 	public RayTraceResult rayTraceBlocks(Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock) {
 		return onRayTraceBlocks(vec31, vec32, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
 	}
@@ -338,6 +347,10 @@ public abstract class MixinWorld {
 		return list;
 	}
 
+	/**
+	 * aa
+	 * @author xd
+	 */
 	@Overwrite
 	public void markBlockRangeForRenderUpdate(int x1, int y1, int z1, int x2, int y2, int z2) {
 //		System.out.println((x2-x1)*(y2-y1)*(z2-z1));
@@ -375,6 +388,10 @@ public abstract class MixinWorld {
 		}
 	}
 
+	/**
+	 * aa
+	 * @author xd
+	 */
 	@Overwrite
 	public <T extends Entity> List<T> getEntitiesWithinAABB(Class<? extends T> clazz, AxisAlignedBB aabb, @Nullable Predicate<? super T> filter) {
 		List toReturn = this.getEntitiesWithinAABBOriginal(clazz, aabb, filter);
@@ -395,6 +412,10 @@ public abstract class MixinWorld {
 		return toReturn;
 	}
 
+	/**
+	 * aa
+	 * @author xd
+	 */
 	@Overwrite
 	public List<Entity> getEntitiesInAABBexcluding(@Nullable Entity entityIn, AxisAlignedBB boundingBox, @Nullable Predicate<? super Entity> predicate) {
 		if ((boundingBox.maxX - boundingBox.minX) * (boundingBox.maxZ - boundingBox.minZ) > 1000000D) {
@@ -419,7 +440,7 @@ public abstract class MixinWorld {
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(World.class.cast(this), pos);
 		if (wrapper != null) {
 			Polygon poly = new Polygon(boundingBox, wrapper.wrapping.coordTransform.lToWTransform);
-			boundingBox = poly.getEnclosedAABB().contract(.3D);
+			boundingBox = poly.getEnclosedAABB().shrink(.3D);
 			toReturn.addAll(this.getEntitiesInAABBexcludingOriginal(entityIn, boundingBox, predicate));
 
 			toReturn.remove(wrapper);
@@ -471,6 +492,10 @@ public abstract class MixinWorld {
 		//do nothing and run vanilla
 	}
 
+	/**
+	 * aa
+	 * @author xd
+	 */
 	@Overwrite
 	public void setTileEntity(BlockPos pos, @Nullable TileEntity tileEntityIn) {
 		pos = pos.toImmutable(); // Forge - prevent mutable BlockPos leaks

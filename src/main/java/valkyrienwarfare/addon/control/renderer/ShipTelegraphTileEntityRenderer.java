@@ -38,7 +38,7 @@ public class ShipTelegraphTileEntityRenderer extends TileEntitySpecialRenderer<T
 	}
 
 	@Override
-	public void renderTileEntityAt(TileEntityShipTelegraph tileentity, double x, double y, double z, float partialTick, int destroyStage) {
+	public void render(TileEntityShipTelegraph tileentity, double x, double y, double z, float partialTick, int destroyStage, float alpha) {
 		IBlockState telegraphState = tileentity.getWorld().getBlockState(tileentity.getPos());
 
 		if (telegraphState.getBlock() != ValkyrienWarfareControl.INSTANCE.shipTelegraph) {

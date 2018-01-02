@@ -147,7 +147,7 @@ public class PhysObjectRenderManager {
 			TileEntity tileEnt = parent.worldObj.getTileEntity(pos);
 			if (tileEnt != null) {
 				try {
-					TileEntityRendererDispatcher.instance.renderTileEntity(tileEnt, partialTicks, -1);
+					TileEntityRendererDispatcher.instance.render(tileEnt, partialTicks, -1);
 				} catch (Exception e) {
 					// e.printStackTrace();
 				}

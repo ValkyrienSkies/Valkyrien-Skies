@@ -38,7 +38,7 @@ public class ShipHelmTileEntityRenderer extends TileEntitySpecialRenderer<TileEn
 	}
 
 	@Override
-	public void renderTileEntityAt(TileEntityShipHelm tileentity, double x, double y, double z, float partialTick, int destroyStage) {
+	public void render(TileEntityShipHelm tileentity, double x, double y, double z, float partialTick, int destroyStage, float alpha) {
 		if (tileentity instanceof TileEntityShipHelm) {
 			IBlockState helmState = tileentity.getWorld().getBlockState(tileentity.getPos());
 

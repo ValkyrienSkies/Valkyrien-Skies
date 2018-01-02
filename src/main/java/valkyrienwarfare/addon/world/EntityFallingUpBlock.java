@@ -95,7 +95,9 @@ public class EntityFallingUpBlock extends EntityFallingBlock {
 						if (!this.dontSetBlock) {
 							if (this.world.mayPlace(block, blockpos1, true, EnumFacing.UP, null) && !BlockFalling.canFallThrough(this.world.getBlockState(blockpos1.up())) && world.setBlockState(blockpos1, this.fallTile, 3)) {
 								if (block instanceof BlockFalling) {
-									((BlockFalling) block).onEndFalling(this.world, blockpos1);
+									((BlockFalling) block).onEndFalling(this.world, blockpos1,
+											//not used by this xd
+											null, null);
 								}
 
 								if (this.tileEntityData != null && block instanceof ITileEntityProvider) {

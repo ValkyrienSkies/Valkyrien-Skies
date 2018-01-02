@@ -54,9 +54,9 @@ public class NewExp2 extends Explosion {
 	private boolean isSmoking;
 	private Random explosionRNG;
 	private World worldObj;
-	private double explosionX;
-	private double explosionY;
-	private double explosionZ;
+	private double x;
+	private double y;
+	private double z;
 	private Entity exploder;
 	private float explosionSize;
 	private List<BlockPos> affectedBlockPositions;
@@ -78,12 +78,12 @@ public class NewExp2 extends Explosion {
 		explosionPower = power;
 		explosionDamage = damage;
 		explosionBlast = blast;
-		explosionX = x;
-		explosionY = y;
-		explosionZ = z;
+		x = x;
+		y = y;
+		z = z;
 		isFlaming = flaming;
 		isSmoking = smoking;
-		position = new Vec3d(explosionX, explosionY, explosionZ);
+		position = new Vec3d(x, y, z);
 
 	}
 
@@ -117,9 +117,9 @@ public class NewExp2 extends Explosion {
 						d1 = d1 / d3;
 						d2 = d2 / d3;
 						float f = this.explosionSize * (0.3F + this.worldObj.rand.nextFloat() * 0.3F);
-						double d4 = this.explosionX;
-						double d6 = this.explosionY;
-						double d8 = this.explosionZ;
+						double d4 = this.x;
+						double d6 = this.y;
+						double d8 = this.z;
 
 						for (float f1 = 0.3F; f > 0.0F; f -= 0.22500001F) {
 							BlockPos blockpos = new BlockPos(d4, d6, d8);
@@ -131,7 +131,7 @@ public class NewExp2 extends Explosion {
 								f -= (f2 * this.explosionBlast) + this.explosionPower;
 							}
 
-							if (f > 0.0F && (this.exploder == null || this.exploder.verifyExplosion(this, this.worldObj, blockpos, iblockstate, f))) {
+							if (f > 0.0F && (this.exploder == null || this.exploder.canExplosionDestroyBlock(this, this.worldObj, blockpos, iblockstate, f))) {
 								set.add(blockpos);
 							}
 
@@ -147,27 +147,27 @@ public class NewExp2 extends Explosion {
 		this.affectedBlockPositions.addAll(set);
 
 		float f3 = this.explosionSize;//*2;
-		int k1 = MathHelper.floor(this.explosionX - (double) f3 - 1.0D);
-		int l1 = MathHelper.floor(this.explosionX + (double) f3 + 1.0D);
-		int i2 = MathHelper.floor(this.explosionY - (double) f3 - 1.0D);
-		int i1 = MathHelper.floor(this.explosionY + (double) f3 + 1.0D);
-		int j2 = MathHelper.floor(this.explosionZ - (double) f3 - 1.0D);
-		int j1 = MathHelper.floor(this.explosionZ + (double) f3 + 1.0D);
+		int k1 = MathHelper.floor(this.x - (double) f3 - 1.0D);
+		int l1 = MathHelper.floor(this.x + (double) f3 + 1.0D);
+		int i2 = MathHelper.floor(this.y - (double) f3 - 1.0D);
+		int i1 = MathHelper.floor(this.y + (double) f3 + 1.0D);
+		int j2 = MathHelper.floor(this.z - (double) f3 - 1.0D);
+		int j1 = MathHelper.floor(this.z + (double) f3 + 1.0D);
 
 		List<Entity> list = this.worldObj.getEntitiesWithinAABBExcludingEntity(this.exploder, new AxisAlignedBB((double) k1, (double) i2, (double) j2, (double) l1, (double) i1, (double) j1));
 		net.minecraftforge.event.ForgeEventFactory.onExplosionDetonate(this.worldObj, this, list, f3);
-		Vec3d vec3d = new Vec3d(this.explosionX, this.explosionY, this.explosionZ);
+		Vec3d vec3d = new Vec3d(this.x, this.y, this.z);
 
 		for (int k2 = 0; k2 < list.size(); ++k2) {
 			Entity entity = (Entity) list.get(k2);
 
 			if (!entity.isImmuneToExplosions()) {
-				double d12 = entity.getDistance(this.explosionX, this.explosionY, this.explosionZ) / f3;
+				double d12 = entity.getDistance(this.x, this.y, this.z) / f3;
 
 				if (d12 <= 1.0D) {
-					double d5 = entity.posX - this.explosionX;
-					double d7 = entity.posY + (double) entity.getEyeHeight() - this.explosionY;
-					double d9 = entity.posZ - this.explosionZ;
+					double d5 = entity.posX - this.x;
+					double d7 = entity.posY + (double) entity.getEyeHeight() - this.y;
+					double d9 = entity.posZ - this.z;
 					double d13 = (double) MathHelper.sqrt(d5 * d5 + d7 * d7 + d9 * d9);
 
 					if (d13 != 0.0D) {
@@ -205,12 +205,12 @@ public class NewExp2 extends Explosion {
 	 */
 	@Override
 	public void doExplosionB(boolean spawnParticles) {
-		this.worldObj.playSound((EntityPlayer) null, this.explosionX, this.explosionY, this.explosionZ, SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 4.0F, (1.0F + (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.2F) * 0.7F);
+		this.worldObj.playSound((EntityPlayer) null, this.x, this.y, this.z, SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 4.0F, (1.0F + (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.2F) * 0.7F);
 
 		if (this.explosionSize >= 2.0F) {
-			this.worldObj.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, this.explosionX, this.explosionY, this.explosionZ, 1.0D, 0.0D, 0.0D, new int[0]);
+			this.worldObj.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, this.x, this.y, this.z, 1.0D, 0.0D, 0.0D, new int[0]);
 		} else {
-			this.worldObj.spawnParticle(EnumParticleTypes.EXPLOSION_LARGE, this.explosionX, this.explosionY, this.explosionZ, 1.0D, 0.0D, 0.0D, new int[0]);
+			this.worldObj.spawnParticle(EnumParticleTypes.EXPLOSION_LARGE, this.x, this.y, this.z, 1.0D, 0.0D, 0.0D, new int[0]);
 		}
 
 
@@ -222,9 +222,9 @@ public class NewExp2 extends Explosion {
 				double d0 = (double) ((float) blockpos.getX() + this.worldObj.rand.nextFloat());
 				double d1 = (double) ((float) blockpos.getY() + this.worldObj.rand.nextFloat());
 				double d2 = (double) ((float) blockpos.getZ() + this.worldObj.rand.nextFloat());
-				double d3 = d0 - this.explosionX;
-				double d4 = d1 - this.explosionY;
-				double d5 = d2 - this.explosionZ;
+				double d3 = d0 - this.x;
+				double d4 = d1 - this.y;
+				double d5 = d2 - this.z;
 				double d6 = (double) MathHelper.sqrt(d3 * d3 + d4 * d4 + d5 * d5);
 				d3 = d3 / d6;
 				d4 = d4 / d6;
@@ -234,7 +234,7 @@ public class NewExp2 extends Explosion {
 				d3 = d3 * d7;
 				d4 = d4 * d7;
 				d5 = d5 * d7;
-				this.worldObj.spawnParticle(EnumParticleTypes.EXPLOSION_NORMAL, (d0 + this.explosionX) / 2.0D, (d1 + this.explosionY) / 2.0D, (d2 + this.explosionZ) / 2.0D, d3, d4, d5, new int[0]);
+				this.worldObj.spawnParticle(EnumParticleTypes.EXPLOSION_NORMAL, (d0 + this.x) / 2.0D, (d1 + this.y) / 2.0D, (d2 + this.z) / 2.0D, d3, d4, d5, new int[0]);
 				this.worldObj.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0, d1, d2, d3, d4, d5, new int[0]);
 			}
 

@@ -59,9 +59,9 @@ public class RenderManagerOverride extends RenderManager {
 	}
 
 	@Override
-	public void doRenderEntity(Entity entityIn, double x, double y, double z, float yaw, float partialTicks, boolean p_188391_10_) {
+	public void renderEntity(Entity entityIn, double x, double y, double z, float yaw, float partialTicks, boolean p_188391_10_)	{
 		if (shouldRender(entityIn))
-			def.doRenderEntity(entityIn, x, y, z, yaw, partialTicks, p_188391_10_);
+			def.renderEntity(entityIn, x, y, z, yaw, partialTicks, p_188391_10_);
 	}
 
 	/*
@@ -85,7 +85,7 @@ public class RenderManagerOverride extends RenderManager {
 
 	@Override
 	@Nullable
-	public <T extends Entity> Render<T> getEntityRenderObject(T entityIn) {
+	public <T extends Entity> Render<T> getEntityRenderObject(Entity entityIn)	{
 		return def.getEntityRenderObject(entityIn);
 	}
 

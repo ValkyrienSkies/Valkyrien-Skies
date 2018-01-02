@@ -35,7 +35,7 @@ public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer {
 	}
 
 	@Override
-	public void renderTileEntityAt(TileEntity te, double x, double y, double z, float partialTick, int destroyStage) {
+	public void render(TileEntity te, double x, double y, double z, float partialTick, int destroyStage, float alpha) {
 		if (te instanceof BasicNodeTileEntity) {
 			Node tileNode = ((BasicNodeTileEntity) (te)).getNode();
 			if (tileNode != null) {

@@ -15,6 +15,7 @@
 
 package valkyrienwarfare.addon.control.item;
 
+import net.minecraft.client.util.ITooltipFlag;
 import valkyrienwarfare.addon.control.capability.ICapabilityLastRelay;
 import valkyrienwarfare.addon.control.nodenetwork.INodeProvider;
 import valkyrienwarfare.addon.control.nodenetwork.Node;
@@ -33,6 +34,7 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class ItemRelayWire extends Item {
@@ -44,7 +46,8 @@ public class ItemRelayWire extends Item {
 		this.setMaxDamage(80);
 	}
 
-	public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par4) {
+	@Override
+	public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation, ITooltipFlag advanced)	{
 		itemInformation.add(TextFormatting.ITALIC + "" + TextFormatting.RED + TextFormatting.ITALIC + "Unfinished until v_0.91_alpha");
 	}
 

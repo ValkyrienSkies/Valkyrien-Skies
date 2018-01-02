@@ -21,6 +21,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
@@ -34,6 +35,8 @@ import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.gui.ControlGUIEnum;
 import valkyrienwarfare.addon.control.tileentity.ThrustModulatorTileEntity;
+
+import javax.annotation.Nullable;
 
 public class BlockThrustModulator extends Block implements ITileEntityProvider {
 
@@ -59,7 +62,7 @@ public class BlockThrustModulator extends Block implements ITileEntityProvider {
 	}
 
 	@Override
-	public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par4) {
+	public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation, ITooltipFlag advanced)	{
 		itemInformation.add(TextFormatting.ITALIC + "" + TextFormatting.RED + TextFormatting.ITALIC + "Unfinished until v_0.91_alpha");
 	}
 

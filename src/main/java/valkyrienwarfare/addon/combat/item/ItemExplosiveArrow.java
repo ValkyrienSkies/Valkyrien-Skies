@@ -15,6 +15,7 @@
 
 package valkyrienwarfare.addon.combat.item;
 
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
@@ -25,6 +26,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class ItemExplosiveArrow extends ItemArrow {
@@ -34,7 +36,7 @@ public class ItemExplosiveArrow extends ItemArrow {
 	}
 
 	@Override
-	public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par4) {
+	public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation, ITooltipFlag advanced)	{
 		itemInformation.add(TextFormatting.BLUE + "Creates a WAY bigger explosion than it should.");
 		itemInformation.add(TextFormatting.ITALIC + "" + TextFormatting.RED + TextFormatting.ITALIC + "Unfinished until v_0.91_alpha");
 	}

@@ -15,6 +15,7 @@
 
 package valkyrienwarfare.addon.control.item;
 
+import net.minecraft.client.util.ITooltipFlag;
 import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import net.minecraft.entity.player.EntityPlayer;
@@ -28,12 +29,13 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class ItemShipStealer extends Item {
 
 	@Override
-	public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par4) {
+	public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation, ITooltipFlag advanced)	{
 		itemInformation.add(TextFormatting.ITALIC + "" + TextFormatting.RED + TextFormatting.ITALIC + "Unfinished until v_0.91_alpha");
 	}
 

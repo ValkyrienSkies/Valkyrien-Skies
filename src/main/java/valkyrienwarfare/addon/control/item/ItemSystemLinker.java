@@ -15,6 +15,7 @@
 
 package valkyrienwarfare.addon.control.item;
 
+import net.minecraft.client.util.ITooltipFlag;
 import valkyrienwarfare.api.block.ethercompressor.BlockEtherCompressor;
 import valkyrienwarfare.api.block.ethercompressor.TileEntityEtherCompressor;
 import valkyrienwarfare.NBTUtils;
@@ -36,11 +37,13 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class ItemSystemLinker extends Item {
 
-	public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par4) {
+	@Override
+	public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation, ITooltipFlag advanced)	{
 		itemInformation.add(TextFormatting.BLUE + "Right click on the Hover Controller, then right click on any Ether Compressors you wish to automate control.");
 	}
 

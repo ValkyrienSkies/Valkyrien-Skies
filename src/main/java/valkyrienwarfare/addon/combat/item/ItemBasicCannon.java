@@ -15,6 +15,7 @@
 
 package valkyrienwarfare.addon.combat.item;
 
+import net.minecraft.client.util.ITooltipFlag;
 import valkyrienwarfare.addon.combat.entity.EntityCannonBasic;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -26,11 +27,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class ItemBasicCannon extends Item {
 
-	public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par4) {
+	@Override
+	public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation, ITooltipFlag advanced)	{
 		itemInformation.add(TextFormatting.BLUE + "A basic mountable cannon that can be placed in world, or on Ships. Requires cannon balls and power pouches to fire.");
 	}
 

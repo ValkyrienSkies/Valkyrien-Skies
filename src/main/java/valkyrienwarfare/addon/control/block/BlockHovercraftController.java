@@ -15,6 +15,7 @@
 
 package valkyrienwarfare.addon.control.block;
 
+import net.minecraft.client.util.ITooltipFlag;
 import valkyrienwarfare.addon.control.item.ItemSystemLinker;
 import valkyrienwarfare.addon.control.tileentity.TileEntityHoverController;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
@@ -35,6 +36,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class BlockHovercraftController extends Block implements ITileEntityProvider {
@@ -72,7 +74,7 @@ public class BlockHovercraftController extends Block implements ITileEntityProvi
 	}
 
 	@Override
-	public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par4) {
+	public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation, ITooltipFlag advanced)	{
 		itemInformation.add(TextFormatting.BLUE + "Used to automatically control the thrust output of Ether Compressors, allowing for stable flight.");
 		itemInformation.add(TextFormatting.ITALIC + "" + TextFormatting.GRAY + TextFormatting.ITALIC + "Auto stabalization control can be disabled with a redstone signal.");
 	}

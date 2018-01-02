@@ -15,6 +15,7 @@
 
 package valkyrienwarfare.addon.control.block.ethercompressor;
 
+import net.minecraft.client.util.ITooltipFlag;
 import valkyrienwarfare.addon.control.tileentity.TileEntityNormalEtherCompressor;
 import valkyrienwarfare.api.block.ethercompressor.BlockEtherCompressorLore;
 import valkyrienwarfare.api.Vector;
@@ -25,6 +26,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class BlockCreativeEtherCompressor extends BlockEtherCompressorLore {
@@ -44,7 +46,7 @@ public class BlockCreativeEtherCompressor extends BlockEtherCompressorLore {
 	}
 
 	@Override
-	public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par4) {
+	public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation, ITooltipFlag advanced)	{
 		for (String s : lore) {
 			itemInformation.add(s);
 		}

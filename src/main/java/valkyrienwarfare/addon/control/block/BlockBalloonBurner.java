@@ -15,6 +15,7 @@
 
 package valkyrienwarfare.addon.control.block;
 
+import net.minecraft.client.util.ITooltipFlag;
 import valkyrienwarfare.addon.control.balloon.BalloonDetector;
 import valkyrienwarfare.addon.control.balloon.BalloonProcessor;
 import valkyrienwarfare.addon.control.tileentity.BalloonBurnerTileEntity;
@@ -35,6 +36,7 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class BlockBalloonBurner extends Block implements ITileEntityProvider {
@@ -74,7 +76,7 @@ public class BlockBalloonBurner extends Block implements ITileEntityProvider {
 	}
 
 	@Override
-	public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par4) {
+	public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation, ITooltipFlag advanced)	{
 		itemInformation.add(TextFormatting.ITALIC + "" + TextFormatting.RED + TextFormatting.ITALIC + "Unfinished until v_0.91_alpha");
 	}
 

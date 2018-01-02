@@ -124,17 +124,6 @@ public class EventsClient {
 		
 	}
 	
-	@SubscribeEvent
-	public void onRenderTickEvent(RenderTickEvent event) {
-		if (mc.player != null && mc.playerController != null) {
-			// if(!(mc.playerController instanceof CustomPlayerControllerMP)){
-			// PlayerControllerMP oldController = mc.playerController;
-			// mc.playerController = new CustomPlayerControllerMP(mc, mc.getConnection());
-			// mc.playerController.setGameType(oldController.getCurrentGameType());
-			// }
-		}
-	}
-	
 	@SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
 	public void onDrawBlockHighlightEventFirst(DrawBlockHighlightEvent event) {
 		GL11.glPushMatrix();
@@ -176,13 +165,5 @@ public class EventsClient {
 			}
 		}
 		GL11.glPopMatrix();
-	}
-	
-	@SubscribeEvent
-	public void interaction(final LeftClickBlock event) {
-//		System.out.println(event.getHitVec());
-//		if(event.getUseItem() == Result.DENY) {
-//			System.out.println("wtf");
-//		}
 	}
 }

@@ -43,6 +43,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeChunkManager;
@@ -50,6 +51,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -202,15 +204,6 @@ public class ValkyrienWarfareMod {
 		}
 	}
 	
-	public static void registerBlock(Block block) {
-		GameRegistry.register(block);
-		registerItemBlock(block);
-	}
-	
-	public static void registerItemBlock(Block block) {
-		GameRegistry.register(new ItemBlock(block).setRegistryName(block.getRegistryName()));
-	}
-	
 	public static void registerAddon(Module module) {
 		if (hasAddonRegistrationEnded) {
 			throw new IllegalStateException("Attempting to register addon after FMLConstructionEvent");
@@ -328,8 +321,6 @@ public class ValkyrienWarfareMod {
 		hasAddonRegistrationEnded = true;
 		
 		proxy.preInit(event);
-		registerBlocks(event);
-		registerRecipies(event);
 		registerNetworks(event);
 		runConfiguration(event);
 		registerCapibilities();
@@ -393,24 +384,29 @@ public class ValkyrienWarfareMod {
 		MinecraftServer server = event.getServer();
 		ModCommands.registerCommands(server);
 	}
-	
+
 	private void registerNetworks(FMLStateEvent event) {
 		physWrapperNetwork = NetworkRegistry.INSTANCE.newSimpleChannel("physChannel");
 		physWrapperNetwork.registerMessage(PhysWrapperPositionHandler.class, PhysWrapperPositionMessage.class, 0, Side.CLIENT);
 		physWrapperNetwork.registerMessage(PlayerShipRefrenceHandler.class, PlayerShipRefrenceMessage.class, 1, Side.SERVER);
 		physWrapperNetwork.registerMessage(EntityRelativePositionMessageHandler.class, EntityRelativePositionMessage.class, 2, Side.CLIENT);
 	}
-	
-	private void registerBlocks(FMLStateEvent event) {
+
+	public void registerBlocks(RegistryEvent.Register<Block> event) {
 		physicsInfuser = new BlockPhysicsInfuser(Material.ROCK).setHardness(12f).setUnlocalizedName("shipblock").setRegistryName(MODID, "shipblock").setCreativeTab(vwTab);
 		physicsInfuserCreative = new BlockPhysicsInfuserCreative(Material.ROCK).setHardness(12f).setUnlocalizedName("shipblockcreative").setRegistryName(MODID, "shipblockcreative").setCreativeTab(vwTab);
-		
-		registerBlock(physicsInfuser);
-		registerBlock(physicsInfuserCreative);
+
+		event.getRegistry().register(physicsInfuser);
+		event.getRegistry().register(physicsInfuserCreative);
 	}
-	
-	private void registerRecipies(FMLStateEvent event) {
-		GameRegistry.addRecipe(new ItemStack(physicsInfuser), "IEI", "ODO", "IEI", 'E', Items.ENDER_PEARL, 'D', Items.DIAMOND, 'O', Item.getItemFromBlock(Blocks.OBSIDIAN), 'I', Items.IRON_INGOT);
+
+	public void registerItems(RegistryEvent.Register<Item> event)	{
+		Module.registerItemBlock(event, physicsInfuser);
+		Module.registerItemBlock(event, physicsInfuserCreative);
+	}
+
+	public void registerRecipies(RegistryEvent.Register<IRecipe> event) {
+		Module.registerRecipe(event, new ItemStack(physicsInfuser), "IEI", "ODO", "IEI", 'E', Items.ENDER_PEARL, 'D', Items.DIAMOND, 'O', Item.getItemFromBlock(Blocks.OBSIDIAN), 'I', Items.IRON_INGOT);
 	}
 	
 	private void runConfiguration(FMLPreInitializationEvent event) {

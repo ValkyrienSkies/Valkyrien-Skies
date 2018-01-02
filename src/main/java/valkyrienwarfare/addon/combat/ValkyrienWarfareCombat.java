@@ -20,9 +20,12 @@ import net.minecraft.block.material.Material;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.combat.entity.EntityCannonBall;
@@ -68,16 +71,18 @@ public class ValkyrienWarfareCombat extends Module<ValkyrienWarfareCombat> {
 	}
 
 	@Override
-	protected void registerItems() {
+	public void registerItems(RegistryEvent.Register<Item> event) {
 		basicCannonSpawner = new ItemBasicCannon().setUnlocalizedName("basiccannonspawner").setRegistryName(getModID(), "basiccannonspawner").setCreativeTab(ValkyrienWarfareMod.vwTab).setMaxStackSize(4);
 		cannonBall = new ItemCannonBall().setUnlocalizedName("turretcannonball").setRegistryName(getModID(), "turretcannonball").setCreativeTab(ValkyrienWarfareMod.vwTab).setMaxStackSize(32);
 		powderPouch = new ItemPowderPouch().setUnlocalizedName("powderpouch").setRegistryName(getModID(), "powderpouch").setCreativeTab(ValkyrienWarfareMod.vwTab).setMaxStackSize(32);
 		explosiveArrow = new ItemExplosiveArrow().setUnlocalizedName("explosivearrow").setRegistryName(getModID(), "explosivearrow").setCreativeTab(ValkyrienWarfareMod.vwTab).setMaxStackSize(64);
 
-		GameRegistry.register(basicCannonSpawner);
-		GameRegistry.register(cannonBall);
-		GameRegistry.register(powderPouch);
-		GameRegistry.register(explosiveArrow);
+		event.getRegistry().register(basicCannonSpawner);
+		event.getRegistry().register(cannonBall);
+		event.getRegistry().register(powderPouch);
+		event.getRegistry().register(explosiveArrow);
+
+		registerItemBlock(event, fakecannonblock);
 	}
 	
 	@Override
@@ -87,16 +92,15 @@ public class ValkyrienWarfareCombat extends Module<ValkyrienWarfareCombat> {
 	}
 	
 	@Override
-	protected void registerBlocks() {
+	public void registerBlocks(RegistryEvent.Register<Block> event) {
 		fakecannonblock = new FakeCannonBlock(Material.IRON).setHardness(5f).setUnlocalizedName("fakecannonblock").setRegistryName(getModID(), "fakecannonblock");
 
-		GameRegistry.register(fakecannonblock);
+		event.getRegistry().register(fakecannonblock);
 	}
 	
 	@Override
-	protected void registerRecipes() {
-		GameRegistry.addRecipe(new ItemStack(cannonBall, 4), new Object[]{"II ", "II ", "   ", 'I', Items.IRON_INGOT});
-		GameRegistry.addRecipe(new ItemStack(powderPouch, 4), new Object[]{" S ", "SGS", " S ", 'S', Items.STRING, 'G', Items.GUNPOWDER});
+	public void registerRecipes(RegistryEvent.Register<IRecipe> event) {
+		registerRecipe(event, new ItemStack(cannonBall, 4), new Object[]{"II ", "II ", "   ", 'I', Items.IRON_INGOT});
+		registerRecipe(event, new ItemStack(powderPouch, 4), new Object[]{" S ", "SGS", " S ", 'S', Items.STRING, 'G', Items.GUNPOWDER});
 	}
-
 }

@@ -16,10 +16,21 @@
 package valkyrienwarfare.api.addons;
 
 import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.ShapedRecipes;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.crafting.CraftingHelper;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import valkyrienwarfare.ValkyrienWarfareMod;
+
+import java.util.UUID;
 
 public abstract class Module<ImplName> {
 	private String name;
@@ -48,8 +59,6 @@ public abstract class Module<ImplName> {
 	public final void doPreInit(FMLStateEvent event)  {
 		if (!donePreInit)   {
 			setupConfig();
-			registerBlocks();
-			registerItems();
 			registerEntities();
 			registerCapabilities();
 			preInit(event);
@@ -60,7 +69,6 @@ public abstract class Module<ImplName> {
 	public final void doInit(FMLStateEvent event)  {
 		if (!doneInit)   {
 			registerTileEntities();
-			registerRecipes();
 			registerNetworks();
 			init(event);
 			doneInit = true;
@@ -78,15 +86,19 @@ public abstract class Module<ImplName> {
 
 	}
 	
-	protected void registerItems()  {
+	public void registerItems(RegistryEvent.Register<Item> event)  {
+		
+	}
+
+	public void registerItemBlocks(RegistryEvent.Register<Item> event)	{
+
+	}
+
+	public void registerBlocks(RegistryEvent.Register<Block> event) {
 		
 	}
 	
-	protected void registerBlocks() {
-		
-	}
-	
-	protected void registerRecipes()    {
+	public void registerRecipes(RegistryEvent.Register<IRecipe> event)    {
 		
 	}
 	
@@ -124,15 +136,16 @@ public abstract class Module<ImplName> {
 
 	protected abstract void postInit(FMLStateEvent event);
 	
-	protected final void registerBlock(Block b)   {
-		ValkyrienWarfareMod.registerBlock(b);
-	}
-	
-	protected final void registerItem(Item i)   {
-		GameRegistry.register(i);
-	}
-	
 	public final String getModID()  {
 		return modid;
+	}
+
+	public static final void registerRecipe(RegistryEvent.Register<IRecipe> event, ItemStack out, Object... in)	{
+		CraftingHelper.ShapedPrimer primer = CraftingHelper.parseShaped(in);
+		event.getRegistry().register(new ShapedRecipes(ValkyrienWarfareMod.MODID, primer.width, primer.height, primer.input, out));
+	}
+
+	public static final void registerItemBlock(RegistryEvent.Register<Item> event, Block block)	{
+		event.getRegistry().register(new ItemBlock(block).setRegistryName(block.getRegistryName()));
 	}
 }

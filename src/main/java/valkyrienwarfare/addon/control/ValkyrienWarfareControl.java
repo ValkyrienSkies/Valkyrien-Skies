@@ -23,10 +23,12 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
@@ -155,7 +157,7 @@ public class ValkyrienWarfareControl extends Module<ValkyrienWarfareControl> {
 	}
 	
 	@Override
-	protected void registerBlocks() {
+	public void registerBlocks(RegistryEvent.Register<Block> event) {
 		double basicEnginePower = config.get(Configuration.CATEGORY_GENERAL, "basicEnginePower", 4000D, "engine power for the basic engine").getDouble();
 		double advancedEnginePower = config.get(Configuration.CATEGORY_GENERAL, "advancedEnginePower", 6000D, "engine power for the advanced engine").getDouble();
 		double eliteEnginePower = config.get(Configuration.CATEGORY_GENERAL, "eliteEnginePower", 8000D, "engine power for the elite engine").getDouble();
@@ -198,36 +200,36 @@ public class ValkyrienWarfareControl extends Module<ValkyrienWarfareControl> {
 
 		gyroscope = new BlockGyroscope(Material.IRON).setHardness(5f).setUnlocalizedName("vw_gyroscope").setRegistryName(getModID(), "vw_gyroscope").setCreativeTab(ValkyrienWarfareMod.vwTab);
 
-		registerBlock(basicEngine);
-		registerBlock(advancedEngine);
-		registerBlock(eliteEngine);
-		registerBlock(ultimateEngine);
-		registerBlock(redstoneEngine);
+		event.getRegistry().register(basicEngine);
+		event.getRegistry().register(advancedEngine);
+		event.getRegistry().register(eliteEngine);
+		event.getRegistry().register(ultimateEngine);
+		event.getRegistry().register(redstoneEngine);
 
-		registerBlock(antigravityEngine);
-		registerBlock(advancedEtherCompressor);
-		registerBlock(eliteEtherCompressor);
-		registerBlock(ultimateEtherCompressor);
-		registerBlock(creativeEtherCompressor);
+		event.getRegistry().register(antigravityEngine);
+		event.getRegistry().register(advancedEtherCompressor);
+		event.getRegistry().register(eliteEtherCompressor);
+		event.getRegistry().register(ultimateEtherCompressor);
+		event.getRegistry().register(creativeEtherCompressor);
 
-		registerBlock(basicHoverController);
-		registerBlock(dopedEtherium);
-		registerBlock(balloonBurner);
-		registerBlock(pilotsChair);
+		event.getRegistry().register(basicHoverController);
+		event.getRegistry().register(dopedEtherium);
+		event.getRegistry().register(balloonBurner);
+		event.getRegistry().register(pilotsChair);
 
-		registerBlock(passengerChair);
-		registerBlock(shipHelm);
-		registerBlock(shipWheel);
-		registerBlock(shipTelegraph);
+		event.getRegistry().register(passengerChair);
+		event.getRegistry().register(shipHelm);
+		event.getRegistry().register(shipWheel);
+		event.getRegistry().register(shipTelegraph);
 
-		registerBlock(thrustRelay);
-		registerBlock(thrustModulator);
+		event.getRegistry().register(thrustRelay);
+		event.getRegistry().register(thrustModulator);
 
-		registerBlock(shipHullSealer);
+		event.getRegistry().register(shipHullSealer);
 
-		registerBlock(airshipController_zepplin);
+		event.getRegistry().register(airshipController_zepplin);
 
-		registerBlock(gyroscope);
+		event.getRegistry().register(gyroscope);
 	}
 	
 	@Override
@@ -247,36 +249,67 @@ public class ValkyrienWarfareControl extends Module<ValkyrienWarfareControl> {
 	}
 	
 	@Override
-	protected void registerItems() {
+	public void registerItems(RegistryEvent.Register<Item> event) {
 		systemLinker = new ItemSystemLinker().setUnlocalizedName("systemlinker").setRegistryName(getModID(), "systemlinker").setCreativeTab(ValkyrienWarfareMod.vwTab).setMaxStackSize(1);
 
 		airshipStealer = new ItemShipStealer().setUnlocalizedName("airshipStealer").setRegistryName(getModID(), "airshipStealer").setCreativeTab(ValkyrienWarfareMod.vwTab).setMaxStackSize(1);
 		relayWire = new ItemRelayWire().setUnlocalizedName("relaywire").setRegistryName(getModID(), "relaywire").setCreativeTab(ValkyrienWarfareMod.vwTab).setMaxStackSize(1);
 
-		GameRegistry.register(systemLinker);
-		GameRegistry.register(airshipStealer);
-		GameRegistry.register(relayWire);
+		event.getRegistry().register(systemLinker);
+		event.getRegistry().register(airshipStealer);
+		event.getRegistry().register(relayWire);
+
+		registerItemBlock(event, basicEngine);
+		registerItemBlock(event, advancedEngine);
+		registerItemBlock(event, eliteEngine);
+		registerItemBlock(event, ultimateEngine);
+		registerItemBlock(event, redstoneEngine);
+
+		registerItemBlock(event, antigravityEngine);
+		registerItemBlock(event, advancedEtherCompressor);
+		registerItemBlock(event, eliteEtherCompressor);
+		registerItemBlock(event, ultimateEtherCompressor);
+		registerItemBlock(event, creativeEtherCompressor);
+
+		registerItemBlock(event, basicHoverController);
+		registerItemBlock(event, dopedEtherium);
+		registerItemBlock(event, balloonBurner);
+		registerItemBlock(event, pilotsChair);
+
+		registerItemBlock(event, passengerChair);
+		registerItemBlock(event, shipHelm);
+		registerItemBlock(event, shipWheel);
+		registerItemBlock(event, shipTelegraph);
+
+		registerItemBlock(event, thrustRelay);
+		registerItemBlock(event, thrustModulator);
+
+		registerItemBlock(event, shipHullSealer);
+
+		registerItemBlock(event, airshipController_zepplin);
+
+		registerItemBlock(event, gyroscope);
 	}
 	
 	@Override
-	protected void registerRecipes() {
-		GameRegistry.addRecipe(new ItemStack(pilotsChair), "SLS", "EWE", " S ", 'S', Items.STICK, 'L', Items.LEATHER, 'W', Item.getItemFromBlock(Blocks.LOG), 'E', ValkyrienWarfareWorld.INSTANCE.etheriumCrystal);
-		GameRegistry.addRecipe(new ItemStack(systemLinker), "IR ", " DR", "I I", 'I', Items.IRON_INGOT, 'D', Items.DIAMOND, 'R', Items.REDSTONE);
-		GameRegistry.addRecipe(new ItemStack(balloonBurner), "IFI", "WIW", "PPP", 'I', Items.IRON_INGOT, 'F', Items.FLINT_AND_STEEL, 'W', Item.getItemFromBlock(Blocks.LOG), 'P', Item.getItemFromBlock(Blocks.PLANKS));
+	public void registerRecipes(RegistryEvent.Register<IRecipe> event) {
+		registerRecipe(event, new ItemStack(pilotsChair), "SLS", "EWE", " S ", 'S', Items.STICK, 'L', Items.LEATHER, 'W', Item.getItemFromBlock(Blocks.LOG), 'E', ValkyrienWarfareWorld.INSTANCE.etheriumCrystal);
+		registerRecipe(event, new ItemStack(systemLinker), "IR ", " DR", "I I", 'I', Items.IRON_INGOT, 'D', Items.DIAMOND, 'R', Items.REDSTONE);
+		registerRecipe(event, new ItemStack(balloonBurner), "IFI", "WIW", "PPP", 'I', Items.IRON_INGOT, 'F', Items.FLINT_AND_STEEL, 'W', Item.getItemFromBlock(Blocks.LOG), 'P', Item.getItemFromBlock(Blocks.PLANKS));
 
-		GameRegistry.addRecipe(new ItemStack(basicHoverController), "III", "TCT", "III", 'I', Item.getItemFromBlock(Blocks.IRON_BLOCK), 'C', Items.COMPASS, 'T', Item.getItemFromBlock(Blocks.CRAFTING_TABLE));
+		registerRecipe(event, new ItemStack(basicHoverController), "III", "TCT", "III", 'I', Item.getItemFromBlock(Blocks.IRON_BLOCK), 'C', Items.COMPASS, 'T', Item.getItemFromBlock(Blocks.CRAFTING_TABLE));
 
-		GameRegistry.addRecipe(new ItemStack(antigravityEngine, 4), "#I#", "#E#", "WEW", '#', Item.getItemFromBlock(Blocks.PLANKS), 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorld.INSTANCE.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));
-		GameRegistry.addRecipe(new ItemStack(advancedEtherCompressor, 4), "#I#", "#E#", "WEW", '#', Item.getItemFromBlock(Blocks.STONE), 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorld.INSTANCE.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));
-		GameRegistry.addRecipe(new ItemStack(advancedEtherCompressor, 2), "#I#", "#E#", "WEW", '#', Item.getItemFromBlock(Blocks.COBBLESTONE), 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorld.INSTANCE.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));
-		GameRegistry.addRecipe(new ItemStack(eliteEtherCompressor, 4), "III", "IEI", "WEW", 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorld.INSTANCE.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));
-		GameRegistry.addRecipe(new ItemStack(ultimateEtherCompressor, 4), "#I#", "#E#", "WEW", '#', Item.getItemFromBlock(Blocks.OBSIDIAN), 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorld.INSTANCE.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));
+		registerRecipe(event, new ItemStack(antigravityEngine, 4), "#I#", "#E#", "WEW", '#', Item.getItemFromBlock(Blocks.PLANKS), 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorld.INSTANCE.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));
+		registerRecipe(event, new ItemStack(advancedEtherCompressor, 4), "#I#", "#E#", "WEW", '#', Item.getItemFromBlock(Blocks.STONE), 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorld.INSTANCE.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));
+		registerRecipe(event, new ItemStack(advancedEtherCompressor, 2), "#I#", "#E#", "WEW", '#', Item.getItemFromBlock(Blocks.COBBLESTONE), 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorld.INSTANCE.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));
+		registerRecipe(event, new ItemStack(eliteEtherCompressor, 4), "III", "IEI", "WEW", 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorld.INSTANCE.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));
+		registerRecipe(event, new ItemStack(ultimateEtherCompressor, 4), "#I#", "#E#", "WEW", '#', Item.getItemFromBlock(Blocks.OBSIDIAN), 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorld.INSTANCE.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));
 
-		GameRegistry.addRecipe(new ItemStack(basicEngine, 4), "I##", "IPP", "I##", '#', Item.getItemFromBlock(Blocks.PLANKS), 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT);
-		GameRegistry.addRecipe(new ItemStack(advancedEngine, 4), "I##", "IPP", "I##", '#', Item.getItemFromBlock(Blocks.STONE), 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT);
-		GameRegistry.addRecipe(new ItemStack(advancedEngine, 2), "I##", "IPP", "I##", '#', Item.getItemFromBlock(Blocks.COBBLESTONE), 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT);
-		GameRegistry.addRecipe(new ItemStack(eliteEngine, 4), "III", "IPP", "III", 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT);
-		GameRegistry.addRecipe(new ItemStack(ultimateEngine, 4), "I##", "IPP", "I##", '#', Item.getItemFromBlock(Blocks.OBSIDIAN), 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT);
+		registerRecipe(event, new ItemStack(basicEngine, 4), "I##", "IPP", "I##", '#', Item.getItemFromBlock(Blocks.PLANKS), 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT);
+		registerRecipe(event, new ItemStack(advancedEngine, 4), "I##", "IPP", "I##", '#', Item.getItemFromBlock(Blocks.STONE), 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT);
+		registerRecipe(event, new ItemStack(advancedEngine, 2), "I##", "IPP", "I##", '#', Item.getItemFromBlock(Blocks.COBBLESTONE), 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT);
+		registerRecipe(event, new ItemStack(eliteEngine, 4), "III", "IPP", "III", 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT);
+		registerRecipe(event, new ItemStack(ultimateEngine, 4), "I##", "IPP", "I##", '#', Item.getItemFromBlock(Blocks.OBSIDIAN), 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT);
 
 	}
 	

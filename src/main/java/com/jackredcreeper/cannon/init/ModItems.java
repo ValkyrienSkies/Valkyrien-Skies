@@ -19,6 +19,7 @@ import com.jackredcreeper.cannon.items.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class ModItems {
@@ -39,17 +40,16 @@ public class ModItems {
 		explosiveball = new ItemExplosiveball();
 		grapeshot = new ItemGrapeshot();
 		solidball = new ItemSolidball();
-
 	}
 
-	public static void register() {
-		GameRegistry.register(key);
-		GameRegistry.register(loader);
-		GameRegistry.register(tuner);
-		GameRegistry.register(cannonball);
-		GameRegistry.register(explosiveball);
-		GameRegistry.register(grapeshot);
-		GameRegistry.register(solidball);
+	public static void register(RegistryEvent.Register<Item> event) {
+		event.getRegistry().register(key);
+		event.getRegistry().register(loader);
+		event.getRegistry().register(tuner);
+		event.getRegistry().register(cannonball);
+		event.getRegistry().register(explosiveball);
+		event.getRegistry().register(grapeshot);
+		event.getRegistry().register(solidball);
 	}
 
 	public static void registerRenders() {

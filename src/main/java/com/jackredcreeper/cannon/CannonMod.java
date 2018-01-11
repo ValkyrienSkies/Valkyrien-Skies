@@ -17,52 +17,79 @@ package com.jackredcreeper.cannon;
 
 import com.jackredcreeper.cannon.init.ModBlocks;
 import com.jackredcreeper.cannon.init.ModItems;
-import com.jackredcreeper.cannon.proxy.CommonProxy;
+import com.jackredcreeper.cannon.proxy.ClientProxy;
 import com.jackredcreeper.cannon.tileentity.TileEntityCannon;
 import com.jackredcreeper.cannon.world.ExplosionHandler;
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.Mod.Instance;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.common.event.FMLStateEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import valkyrienwarfare.api.addons.Module;
+import valkyrienwarfare.api.addons.VWAddon;
 
-@Mod(modid = CannonModReference.MOD_ID, version = CannonModReference.MOD_ID, acceptedMinecraftVersions = "[1.11.2]")
-public class CannonMod {
+@VWAddon
+public class CannonMod extends Module<CannonMod> {
+    public static CannonMod instance;
 
-	@Instance(CannonModReference.MOD_ID)
-	public static CannonMod instance = new CannonMod();
+    public CannonMod() {
+        super(CannonModReference.MOD_ID, null, new ClientProxy(), null);
+    }
 
-	@SidedProxy(clientSide = CannonModReference.CLIENT, serverSide = CannonModReference.SERVER)
-	public static CommonProxy proxy;
+    @Override
+    protected void setupConfig() {
+    }
 
-	@EventHandler
-	public void preInit(FMLPreInitializationEvent event) {
-		ModItems.init();
-		ModItems.register();
+    @Override
+    public void registerItems(RegistryEvent.Register<Item> event) {
+        ModItems.init();
+        ModItems.register(event);
+    }
 
-		ModBlocks.init();
-		ModBlocks.register();
+    @Override
+    public void registerItemBlocks(RegistryEvent.Register<Item> event) {
+    }
 
-	}
+    @Override
+    public void registerBlocks(RegistryEvent.Register<Block> event) {
+        ModBlocks.init();
+        ModBlocks.register(event);
+    }
 
-	@EventHandler
-	public void init(FMLInitializationEvent event) {
-		proxy.init();
+    @Override
+    public void registerRecipes(RegistryEvent.Register<IRecipe> event) {
+    }
 
-		MinecraftForge.EVENT_BUS.register(new ExplosionHandler());
+    @Override
+    protected void registerEntities() {
+    }
 
-		//Craft
+    @Override
+    protected void registerTileEntities() {
+        GameRegistry.registerTileEntity(TileEntityCannon.class, CannonModReference.MOD_ID + "TileEntityCannon");
+    }
 
-		GameRegistry.registerTileEntity(TileEntityCannon.class, CannonModReference.MOD_ID + "TileEntityCannon");
-	}
+    @Override
+    protected void registerNetworks() {
+    }
 
-	@EventHandler
-	public void postInit(FMLPostInitializationEvent event) {
-	}
+    @Override
+    protected void registerCapabilities() {
+    }
 
+    @Override
+    protected void preInit(FMLStateEvent event) {
+    }
 
+    @Override
+    protected void init(FMLStateEvent event) {
+        MinecraftForge.EVENT_BUS.register(new ExplosionHandler());
+    }
+
+    @Override
+    protected void postInit(FMLStateEvent event) {
+
+    }
 }

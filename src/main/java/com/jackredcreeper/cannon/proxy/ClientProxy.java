@@ -17,13 +17,24 @@ package com.jackredcreeper.cannon.proxy;
 
 import com.jackredcreeper.cannon.init.ModBlocks;
 import com.jackredcreeper.cannon.init.ModItems;
+import net.minecraftforge.fml.common.event.FMLStateEvent;
+import valkyrienwarfare.api.addons.ModuleProxy;
 
-public class ClientProxy implements CommonProxy {
+public class ClientProxy extends ModuleProxy {
 
 	@Override
-	public void init() {
+	public void preInit(FMLStateEvent event) {
+
+	}
+
+	@Override
+	public void init(FMLStateEvent event) {
 		ModItems.registerRenders();
 		ModBlocks.registerRenders();
+	}
+
+	@Override
+	public void postInit(FMLStateEvent event) {
 
 	}
 }

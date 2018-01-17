@@ -15,8 +15,6 @@
 
 package valkyrienwarfare.mixin.client.renderer;
 
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -25,27 +23,23 @@ import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.item.EntityItemFrame;
 import net.minecraft.entity.passive.EntityAnimal;
-import net.minecraft.util.EntitySelectors;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.piloting.IShipPilot;
-import valkyrienwarfare.api.MixinMethods;
 import valkyrienwarfare.api.RotationMatrices;
-import valkyrienwarfare.api.StupidPredicate;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.math.Quaternion;
 import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
-
-import java.util.List;
 
 //import valkyrienwarfare.api.MixinMethods;
 
@@ -201,8 +195,8 @@ public abstract class MixinEntityRenderer {
 					f5 = f5 * 0.1F;
 					
 					IShipPilot pilot = IShipPilot.class.cast(Minecraft.getMinecraft().player);
-					
-					RayTraceResult raytraceresult = MixinMethods.rayTraceBlocksIgnoreShip(Minecraft.getMinecraft().world, new Vec3d(d0 + (double) f3, d1 + (double) f4, d2 + (double) f5), new Vec3d(d0 - d4 + (double) f3 + (double) f5, d1 - d6 + (double) f4, d2 - d5 + (double) f5), false, false, false, pilot.getPilotedShip());
+
+                    RayTraceResult raytraceresult = valkyrienwarfare.mixin.MixinMethods.rayTraceBlocksIgnoreShip(Minecraft.getMinecraft().world, new Vec3d(d0 + (double) f3, d1 + (double) f4, d2 + (double) f5), new Vec3d(d0 - d4 + (double) f3 + (double) f5, d1 - d6 + (double) f4, d2 - d5 + (double) f5), false, false, false, pilot.getPilotedShip());
 //                    renderer.mc.theWorld.rayTraceBlocks(new Vec3d(d0 + (double)f3, d1 + (double)f4, d2 + (double)f5), new Vec3d(d0 - d4 + (double)f3 + (double)f5, d1 - d6 + (double)f4, d2 - d5 + (double)f5));
 					
 					if (raytraceresult != null) {

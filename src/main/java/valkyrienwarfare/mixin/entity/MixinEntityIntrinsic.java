@@ -15,26 +15,18 @@
 
 package valkyrienwarfare.mixin.entity;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArgs;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
-import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.api.RotationMatrices;
-import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.collision.EntityCollisionInjector;
 import valkyrienwarfare.collision.EntityCollisionInjector.IntermediateMovementVariableStorage;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.mixin.MixinMethods;
 
 @Mixin(value = Entity.class, priority = 1)
 public abstract class MixinEntityIntrinsic {
@@ -54,56 +46,78 @@ public abstract class MixinEntityIntrinsic {
     public Entity thisClassAsAnEntity = Entity.class.cast(this);
 
     private IntermediateMovementVariableStorage alteredMovement = null;
+    //private boolean hasChanged = false;
 
-    /**
-     * fix a warning
-     *
-     * @author asdf
-     */
-    @ModifyArgs(method = "move",
-            at = @At("HEAD"))
-    public void changeMoveArgs(Args args, MoverType type, double dx, double dy, double dz) {
-//    	System.out.println("test");
-        if (PhysicsWrapperEntity.class.isInstance(this)) {
-            //Don't move at all
-            return;
-        }
-
-        double movDistSq = (dx * dx) + (dy * dy) + (dz * dz);
-
-        if (movDistSq > 10000) {
-            //Assume this will take us to Ship coordinates
-            double newX = this.posX + dx;
-            double newY = this.posY + dy;
-            double newZ = this.posZ + dz;
-            BlockPos newPosInBlock = new BlockPos(newX, newY, newZ);
-            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(this.world, newPosInBlock);
-
-            if (wrapper == null) {
-                return;
-            }
-
-            Vector endPos = new Vector(newX, newY, newZ);
-            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, endPos);
-            dx = endPos.X - this.posX;
-            dy = endPos.Y - this.posY;
-            dz = endPos.Z - this.posZ;
-        }
-
-        alteredMovement = EntityCollisionInjector.alterEntityMovement(thisClassAsAnEntity, type, dx, dy, dz);
-
-        if (alteredMovement == null) {
-            args.setAll(type, dx, dy, dz);
+    @ModifyVariable(method = "move",
+            //argsOnly = true,
+            at = @At("HEAD"),
+            index = 1)
+    public double changeXArgAndInitLocals(MoverType type, double dx, double dy, double dz) {
+        alteredMovement = MixinMethods.handleMove(type, dx, dy, dz, thisClassAsAnEntity);
+        if (alteredMovement != null) {
+            return alteredMovement.origDxyz.X;
         } else {
-            args.setAll(type, alteredMovement.dxyz.X, alteredMovement.dxyz.Y, alteredMovement.dxyz.Z);
+            return dx;
         }
     }
 
+    @ModifyVariable(method = "move",
+            //argsOnly = true,
+            at = @At("HEAD"),
+            index = 2)
+    public double changeYArg(MoverType type, double dx, double dy, double dz) {
+        if (alteredMovement != null) {
+            return alteredMovement.origDxyz.Y;
+        } else {
+            return dy;
+        }
+    }
+
+    @ModifyVariable(method = "move",
+            //argsOnly = true,
+            at = @At("HEAD"),
+            index = 3)
+    public double changeZArg(MoverType type, double dx, double dy, double dz) {
+        if (alteredMovement != null) {
+            return alteredMovement.origDxyz.Z;
+        } else {
+            return dz;
+        }
+    }
+
+    /*@ModifyArgs(method = "move",
+            at = @At(value = "INVOKE",
+                    target = "Lnet/minecraft/entity/Entity;setEntityBoundingBox(Lnet/minecraft/util/math/AxisAlignedBB;)V",
+                    ordinal = 0))
+    public void changeMoveArgs1(Args args, MoverType type, double dx, double dy, double dz) {
+        alteredMovement = MixinMethods.handleMove(args, type, dx, dy, dz, thisClassAsAnEntity);
+    }
+
+    @ModifyArgs(method = "move",
+            at = @At(value = "INVOKE",
+                    target = "Lnet/minecraft/world/World;getTotalWorldTime()J",
+                    ordinal = 0))
+    public void changeMoveArgs2(Args args, MoverType type, double dx, double dy, double dz) {
+        alteredMovement = MixinMethods.handleMove(args, type, dx, dy, dz, thisClassAsAnEntity);
+        hasChanged = true;
+    }
+
+    @ModifyArgs(method = "move",
+            at = @At(value = "INVOKE",
+                    target = "Lnet/minecraft/profiler/Profiler;startSection(Ljava/lang/String;)V",
+                    ordinal = 0))
+    public void changeMoveArgs3(Args args, MoverType type, double dx, double dy, double dz) {
+        if (!hasChanged) {
+            alteredMovement = MixinMethods.handleMove(args, type, dx, dy, dz, thisClassAsAnEntity);
+        }
+    }*/
+
     @Inject(method = "move",
-        at = @At("RETURN"))
+            at = @At("RETURN"))
     public void postMove(CallbackInfo callbackInfo) {
         if (alteredMovement != null) {
             EntityCollisionInjector.alterEntityMovementPost(thisClassAsAnEntity, alteredMovement);
         }
+        //hasChanged = false;
     }
 }

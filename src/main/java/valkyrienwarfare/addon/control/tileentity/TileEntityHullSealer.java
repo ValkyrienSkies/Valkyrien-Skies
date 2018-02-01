@@ -20,9 +20,9 @@ import net.minecraft.util.ITickable;
 
 public class TileEntityHullSealer extends TileEntity implements ITickable {
 
-	@Override
-	public void update() {
+    @Override
+    public void update() {
 
-	}
+    }
 
 }

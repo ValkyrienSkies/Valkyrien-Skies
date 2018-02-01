@@ -17,9 +17,7 @@ package valkyrienwarfare.mixin.client.renderer.entity;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
@@ -37,7 +35,8 @@ import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
 public abstract class MixinRenderManager {
     private boolean hasChanged = false;
 
-    @Shadow public abstract void renderEntity(Entity entityIn, double x, double y, double z, float yaw, float partialTicks, boolean p_188391_10_);
+    @Shadow
+    public abstract void renderEntity(Entity entityIn, double x, double y, double z, float yaw, float partialTicks, boolean p_188391_10_);
 
     @Inject(method = "renderEntity",
             at = @At("HEAD"),

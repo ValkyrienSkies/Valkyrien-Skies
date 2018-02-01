@@ -15,28 +15,28 @@
 
 package valkyrienwarfare.addon.control.piloting;
 
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
 import net.minecraft.util.math.BlockPos;
+import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
 
 public interface IShipPilot {
 
-	PhysicsWrapperEntity getPilotedShip();
+    PhysicsWrapperEntity getPilotedShip();
 
-	void setPilotedShip(PhysicsWrapperEntity wrapper);
+    void setPilotedShip(PhysicsWrapperEntity wrapper);
 
-	boolean isPilotingShip();
+    boolean isPilotingShip();
 
-	boolean isPilotingATile();
+    boolean isPilotingATile();
 
-	boolean isPiloting();
+    boolean isPiloting();
 
-	BlockPos getPosBeingControlled();
+    BlockPos getPosBeingControlled();
 
-	void setPosBeingControlled(BlockPos pos);
+    void setPosBeingControlled(BlockPos pos);
 
-	ControllerInputType getControllerInputEnum();
+    ControllerInputType getControllerInputEnum();
 
-	void setControllerInputEnum(ControllerInputType type);
+    void setControllerInputEnum(ControllerInputType type);
 
-	void stopPilotingEverything();
+    void stopPilotingEverything();
 }

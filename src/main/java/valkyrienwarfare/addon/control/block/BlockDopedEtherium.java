@@ -18,7 +18,6 @@ package valkyrienwarfare.addon.control.block;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
@@ -28,12 +27,12 @@ import java.util.List;
 
 public class BlockDopedEtherium extends Block {
 
-	public BlockDopedEtherium(Material materialIn) {
-		super(materialIn);
-	}
+    public BlockDopedEtherium(Material materialIn) {
+        super(materialIn);
+    }
 
-	@Override
-	public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation, ITooltipFlag advanced)	{
-		itemInformation.add(TextFormatting.ITALIC + "" + TextFormatting.BLUE + "Creates an upward force in any ship its placed in.");
-	}
+    @Override
+    public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation, ITooltipFlag advanced) {
+        itemInformation.add(TextFormatting.ITALIC + "" + TextFormatting.BLUE + "Creates an upward force in any ship its placed in.");
+    }
 }

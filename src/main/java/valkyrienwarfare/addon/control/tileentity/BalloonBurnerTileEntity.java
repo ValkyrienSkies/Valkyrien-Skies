@@ -15,9 +15,6 @@
 
 package valkyrienwarfare.addon.control.tileentity;
 
-import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
-import valkyrienwarfare.addon.control.balloon.BalloonProcessor;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
@@ -25,49 +22,52 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import valkyrienwarfare.addon.control.balloon.BalloonProcessor;
+import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
 
 public class BalloonBurnerTileEntity extends TileEntity implements ITickable {
 
-	public BalloonProcessor balloon;
+    public BalloonProcessor balloon;
 
-	public BalloonBurnerTileEntity() {
-		validate();
-	}
+    public BalloonBurnerTileEntity() {
+        validate();
+    }
 
-	public Vector getBlockForcePosition(World world, BlockPos pos, IBlockState state, Entity shipEntity, double secondsToApply) {
-		if (balloon == null) {
-			PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity) shipEntity;
-			balloon = wrapper.wrapping.balloonManager.getProcessorAbovePos(pos);
-		}
-		if (balloon != null) {
-			return balloon.currentBalloonCenter;
-		}
-		return null;
-	}
+    public Vector getBlockForcePosition(World world, BlockPos pos, IBlockState state, Entity shipEntity, double secondsToApply) {
+        if (balloon == null) {
+            PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity) shipEntity;
+            balloon = wrapper.wrapping.balloonManager.getProcessorAbovePos(pos);
+        }
+        if (balloon != null) {
+            return balloon.currentBalloonCenter;
+        }
+        return null;
+    }
 
-	public Vector getBlockForce(World world, BlockPos pos, IBlockState state, Entity shipEntity, double secondsToApply) {
-		if (balloon != null) {
-			Vector upForce = new Vector(0D, 10D, 0D);
-			upForce.multiply(balloon.currentBalloonSize);
-			return upForce;
-		}
-		return null;
-	}
+    public Vector getBlockForce(World world, BlockPos pos, IBlockState state, Entity shipEntity, double secondsToApply) {
+        if (balloon != null) {
+            Vector upForce = new Vector(0D, 10D, 0D);
+            upForce.multiply(balloon.currentBalloonSize);
+            return upForce;
+        }
+        return null;
+    }
 
-	@Override
-	public void readFromNBT(NBTTagCompound compound) {
-		super.readFromNBT(compound);
-	}
+    @Override
+    public void readFromNBT(NBTTagCompound compound) {
+        super.readFromNBT(compound);
+    }
 
-	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-		return super.writeToNBT(compound);
-	}
+    @Override
+    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+        return super.writeToNBT(compound);
+    }
 
-	@Override
-	public void update() {
-		// System.out.println("works");
+    @Override
+    public void update() {
+        // System.out.println("works");
 
-	}
+    }
 
 }

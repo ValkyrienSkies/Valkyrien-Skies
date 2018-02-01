@@ -31,24 +31,24 @@ import valkyrienwarfare.render.FastBlockModelRenderer;
 
 public class ShipTelegraphTileEntityRenderer extends TileEntitySpecialRenderer<TileEntityShipTelegraph> {
 
-	private final Class renderedTileEntityClass;
+    private final Class renderedTileEntityClass;
 
-	public ShipTelegraphTileEntityRenderer(Class toRender) {
-		renderedTileEntityClass = toRender;
-	}
+    public ShipTelegraphTileEntityRenderer(Class toRender) {
+        renderedTileEntityClass = toRender;
+    }
 
-	@Override
-	public void render(TileEntityShipTelegraph tileentity, double x, double y, double z, float partialTick, int destroyStage, float alpha) {
-		IBlockState telegraphState = tileentity.getWorld().getBlockState(tileentity.getPos());
+    @Override
+    public void render(TileEntityShipTelegraph tileentity, double x, double y, double z, float partialTick, int destroyStage, float alpha) {
+        IBlockState telegraphState = tileentity.getWorld().getBlockState(tileentity.getPos());
 
-		if (telegraphState.getBlock() != ValkyrienWarfareControl.INSTANCE.shipTelegraph) {
-			return;
-		}
+        if (telegraphState.getBlock() != ValkyrienWarfareControl.INSTANCE.shipTelegraph) {
+            return;
+        }
 
-		this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-		GlStateManager.pushMatrix();
-		GlStateManager.disableLighting();
-		Tessellator tessellator = Tessellator.getInstance();
+        this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+        GlStateManager.pushMatrix();
+        GlStateManager.disableLighting();
+        Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder BufferBuilder = tessellator.getBuffer();
 
         double oldX = BufferBuilder.xOffset;
@@ -57,56 +57,56 @@ public class ShipTelegraphTileEntityRenderer extends TileEntitySpecialRenderer<T
 
         BufferBuilder.setTranslation(0, 0, 0);
         GL11.glTranslated(x, y, z);
-		GlStateManager.disableAlpha();
-		GlStateManager.disableBlend();
+        GlStateManager.disableAlpha();
+        GlStateManager.disableBlend();
 
-		BlockPos originPos = tileentity.getPos();
+        BlockPos originPos = tileentity.getPos();
 
-		IBlockState glassState = ValkyrienWarfareControl.INSTANCE.shipWheel.getStateFromMeta(8);
-		IBlockState dialState = ValkyrienWarfareControl.INSTANCE.shipWheel.getStateFromMeta(7);
-		IBlockState leftHandleState = ValkyrienWarfareControl.INSTANCE.shipWheel.getStateFromMeta(6);
-		IBlockState rightHandleState = ValkyrienWarfareControl.INSTANCE.shipWheel.getStateFromMeta(5);
-		IBlockState helmStateToRender = ValkyrienWarfareControl.INSTANCE.shipWheel.getStateFromMeta(4);
-		int brightness = tileentity.getWorld().getCombinedLight(tileentity.getPos(), 0);
+        IBlockState glassState = ValkyrienWarfareControl.INSTANCE.shipWheel.getStateFromMeta(8);
+        IBlockState dialState = ValkyrienWarfareControl.INSTANCE.shipWheel.getStateFromMeta(7);
+        IBlockState leftHandleState = ValkyrienWarfareControl.INSTANCE.shipWheel.getStateFromMeta(6);
+        IBlockState rightHandleState = ValkyrienWarfareControl.INSTANCE.shipWheel.getStateFromMeta(5);
+        IBlockState helmStateToRender = ValkyrienWarfareControl.INSTANCE.shipWheel.getStateFromMeta(4);
+        int brightness = tileentity.getWorld().getCombinedLight(tileentity.getPos(), 0);
 
-		double multiplier = 1.5D;
+        double multiplier = 1.5D;
 
-		GL11.glTranslated((1D - multiplier) / 2.0D, 0, (1D - multiplier) / 2.0D);
-		GL11.glScaled(multiplier, multiplier, multiplier);
-		EnumFacing enumfacing = telegraphState.getValue(BlockShipTelegraph.FACING);
-		double wheelAndCompassStateRotation = enumfacing.getHorizontalAngle();
+        GL11.glTranslated((1D - multiplier) / 2.0D, 0, (1D - multiplier) / 2.0D);
+        GL11.glScaled(multiplier, multiplier, multiplier);
+        EnumFacing enumfacing = telegraphState.getValue(BlockShipTelegraph.FACING);
+        double wheelAndCompassStateRotation = enumfacing.getHorizontalAngle();
 
-		GL11.glTranslated(0.5D, 0, 0.5D);
-		GL11.glRotated(wheelAndCompassStateRotation, 0, 1, 0);
-		GL11.glTranslated(-0.5D, 0, -0.5D);
+        GL11.glTranslated(0.5D, 0, 0.5D);
+        GL11.glRotated(wheelAndCompassStateRotation, 0, 1, 0);
+        GL11.glTranslated(-0.5D, 0, -0.5D);
 
         FastBlockModelRenderer.renderBlockModel(BufferBuilder, tessellator, tileentity.getWorld(), helmStateToRender, brightness);
 
         FastBlockModelRenderer.renderBlockModel(BufferBuilder, tessellator, tileentity.getWorld(), dialState, brightness);
 
-		GL11.glPushMatrix();
+        GL11.glPushMatrix();
 
-		GL11.glTranslated(0.497D, 0.857D, 0.5D);
-		GL11.glRotated(tileentity.getHandleRenderRotation(), 0D, 0D, 1D);
-		GL11.glTranslated(-0.497D, -0.857D, -0.5D);
+        GL11.glTranslated(0.497D, 0.857D, 0.5D);
+        GL11.glRotated(tileentity.getHandleRenderRotation(), 0D, 0D, 1D);
+        GL11.glTranslated(-0.497D, -0.857D, -0.5D);
 
         FastBlockModelRenderer.renderBlockModel(BufferBuilder, tessellator, tileentity.getWorld(), rightHandleState, brightness);
         FastBlockModelRenderer.renderBlockModel(BufferBuilder, tessellator, tileentity.getWorld(), leftHandleState, brightness);
 
-		GL11.glPopMatrix();
+        GL11.glPopMatrix();
 
-		GlStateManager.enableAlpha();
-		GlStateManager.enableBlend();
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GlStateManager.enableAlpha();
+        GlStateManager.enableBlend();
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         FastBlockModelRenderer.renderBlockModel(BufferBuilder, tessellator, tileentity.getWorld(), glassState, brightness);
         GlStateManager.disableAlpha();
-		GlStateManager.disableBlend();
+        GlStateManager.disableBlend();
 
-		GL11.glPopMatrix();
+        GL11.glPopMatrix();
         BufferBuilder.setTranslation(oldX, oldY, oldZ);
 
-		GlStateManager.enableLighting();
-		GlStateManager.resetColor();
-	}
+        GlStateManager.enableLighting();
+        GlStateManager.resetColor();
+    }
 
 }

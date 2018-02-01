@@ -32,329 +32,329 @@ import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
 import java.util.List;
 
 public abstract class EntityDraggable {
-	public static void tickAddedVelocityForWorld(World world) {
-		try {
-			//TODO: Fix this
-			if (true) {
+    public static void tickAddedVelocityForWorld(World world) {
+        try {
+            //TODO: Fix this
+            if (true) {
 //				return;
-			}
-			for (int i = 0; i < world.loadedEntityList.size(); i++) {
-				Entity e = world.loadedEntityList.get(i);
-				//TODO: Maybe add a check to prevent moving entities that are fixed onto a Ship, but I like the visual effect
-				if (!(e instanceof PhysicsWrapperEntity) && !(e instanceof EntityCannonBall)) {
-					IDraggable draggable = getDraggableFromEntity(e);
+            }
+            for (int i = 0; i < world.loadedEntityList.size(); i++) {
+                Entity e = world.loadedEntityList.get(i);
+                //TODO: Maybe add a check to prevent moving entities that are fixed onto a Ship, but I like the visual effect
+                if (!(e instanceof PhysicsWrapperEntity) && !(e instanceof EntityCannonBall)) {
+                    IDraggable draggable = getDraggableFromEntity(e);
 //					e.onGround = true;
 //
-					doTheEntityThing(e);
+                    doTheEntityThing(e);
 
 //					draggable.tickAddedVelocity();
 //
 //					e.onGround = true;
 //					e.setPosition(draggable.getVelocityAddedToPlayer().X + e.posX, draggable.getVelocityAddedToPlayer().Y + e.posY, draggable.getVelocityAddedToPlayer().Z + e.posZ);
-					
-					if (draggable.getWorldBelowFeet() == null) {
-						if (e.onGround) {
-							draggable.getVelocityAddedToPlayer().zero();
-							draggable.setYawDifVelocity(0);
-						} else {
-							if (e instanceof EntityPlayer) {
-								EntityPlayer player = (EntityPlayer) e;
-								if (player.isCreative() && player.capabilities.isFlying) {
-									draggable.getVelocityAddedToPlayer().multiply(.99D * .95D);
-									draggable.setYawDifVelocity(draggable.getYawDifVelocity() * .95D * .95D);
-								}
-							}
-						}
-					}
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public static void doTheEntityThing(Entity entity) {
-		IDraggable draggable = EntityDraggable.getDraggableFromEntity(entity);
-		if (draggable.getWorldBelowFeet() != null && !ValkyrienWarfareMod.physicsManager.isEntityFixed(entity)) {
-			CoordTransformObject coordTransform = draggable.getWorldBelowFeet().wrapping.coordTransform;
-			
-			if (entity.world.isRemote && entity instanceof EntityPlayer) {
-				EventsClient.updatePlayerMouseOver(entity);
-			}
-			
-			float rotYaw = entity.rotationYaw;
-			float rotPitch = entity.rotationPitch;
-			float prevYaw = entity.prevRotationYaw;
-			float prevPitch = entity.prevRotationPitch;
-			
-			Vector oldPos = new Vector(entity);
-			
-			RotationMatrices.applyTransform(coordTransform.prevwToLTransform, coordTransform.prevWToLRotation, entity);
-			RotationMatrices.applyTransform(coordTransform.lToWTransform, coordTransform.lToWRotation, entity);
-			
-			Vector newPos = new Vector(entity);
-			
-			//Move the entity back to its old position, the added velocity will be used afterwards
-			entity.setPosition(oldPos.X, oldPos.Y, oldPos.Z);
-			Vector addedVel = oldPos.getSubtraction(newPos);
-			
-			draggable.setVelocityAddedToPlayer(addedVel);
-			
-			entity.rotationYaw = rotYaw;
-			entity.rotationPitch = rotPitch;
-			entity.prevRotationYaw = prevYaw;
-			entity.prevRotationPitch = prevPitch;
-			
-			Vector oldLookingPos = new Vector(entity.getLook(1.0F));
-			RotationMatrices.applyTransform(coordTransform.prevWToLRotation, oldLookingPos);
-			RotationMatrices.applyTransform(coordTransform.lToWRotation, oldLookingPos);
-			
-			double newPitch = Math.asin(oldLookingPos.Y) * -180D / Math.PI;
-			double f4 = -Math.cos(-newPitch * 0.017453292D);
-			double radianYaw = Math.atan2((oldLookingPos.X / f4), (oldLookingPos.Z / f4));
-			radianYaw += Math.PI;
-			radianYaw *= -180D / Math.PI;
-			
-			
-			if (!(Double.isNaN(radianYaw) || Math.abs(newPitch) > 85)) {
-				double wrappedYaw = MathHelper.wrapDegrees(radianYaw);
-				double wrappedRotYaw = MathHelper.wrapDegrees(entity.rotationYaw);
-				double yawDif = wrappedYaw - wrappedRotYaw;
-				if (Math.abs(yawDif) > 180D) {
-					if (yawDif < 0) {
-						yawDif += 360D;
-					} else {
-						yawDif -= 360D;
-					}
-				}
-				yawDif %= 360D;
-				final double threshold = .1D;
-				if (Math.abs(yawDif) < threshold) {
-					yawDif = 0D;
-				}
-				draggable.setYawDifVelocity(yawDif);
-			}
-		}
-		
-		boolean onGroundOrig = entity.onGround;
-		
-		if (!ValkyrienWarfareMod.physicsManager.isEntityFixed(entity)) {
-			float originalWalked = entity.distanceWalkedModified;
-			float originalWalkedOnStep = entity.distanceWalkedOnStepModified;
-			boolean originallySneaking = entity.isSneaking();
-			
-			entity.setSneaking(false);
-			
-			if (draggable.getWorldBelowFeet() == null && entity.onGround) {
-				draggable.getVelocityAddedToPlayer().zero();
-			}
 
-			Vector velocityProper = new Vector(draggable.getVelocityAddedToPlayer());
-			
-			Vector playerPosOriginal = new Vector(entity);
-			
-			AxisAlignedBB originalBoundingBox = entity.getEntityBoundingBox();
-			
-			draggable.setVelocityAddedToPlayer(getVelocityProper(velocityProper, entity));
-			
+                    if (draggable.getWorldBelowFeet() == null) {
+                        if (e.onGround) {
+                            draggable.getVelocityAddedToPlayer().zero();
+                            draggable.setYawDifVelocity(0);
+                        } else {
+                            if (e instanceof EntityPlayer) {
+                                EntityPlayer player = (EntityPlayer) e;
+                                if (player.isCreative() && player.capabilities.isFlying) {
+                                    draggable.getVelocityAddedToPlayer().multiply(.99D * .95D);
+                                    draggable.setYawDifVelocity(draggable.getYawDifVelocity() * .95D * .95D);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void doTheEntityThing(Entity entity) {
+        IDraggable draggable = EntityDraggable.getDraggableFromEntity(entity);
+        if (draggable.getWorldBelowFeet() != null && !ValkyrienWarfareMod.physicsManager.isEntityFixed(entity)) {
+            CoordTransformObject coordTransform = draggable.getWorldBelowFeet().wrapping.coordTransform;
+
+            if (entity.world.isRemote && entity instanceof EntityPlayer) {
+                EventsClient.updatePlayerMouseOver(entity);
+            }
+
+            float rotYaw = entity.rotationYaw;
+            float rotPitch = entity.rotationPitch;
+            float prevYaw = entity.prevRotationYaw;
+            float prevPitch = entity.prevRotationPitch;
+
+            Vector oldPos = new Vector(entity);
+
+            RotationMatrices.applyTransform(coordTransform.prevwToLTransform, coordTransform.prevWToLRotation, entity);
+            RotationMatrices.applyTransform(coordTransform.lToWTransform, coordTransform.lToWRotation, entity);
+
+            Vector newPos = new Vector(entity);
+
+            //Move the entity back to its old position, the added velocity will be used afterwards
+            entity.setPosition(oldPos.X, oldPos.Y, oldPos.Z);
+            Vector addedVel = oldPos.getSubtraction(newPos);
+
+            draggable.setVelocityAddedToPlayer(addedVel);
+
+            entity.rotationYaw = rotYaw;
+            entity.rotationPitch = rotPitch;
+            entity.prevRotationYaw = prevYaw;
+            entity.prevRotationPitch = prevPitch;
+
+            Vector oldLookingPos = new Vector(entity.getLook(1.0F));
+            RotationMatrices.applyTransform(coordTransform.prevWToLRotation, oldLookingPos);
+            RotationMatrices.applyTransform(coordTransform.lToWRotation, oldLookingPos);
+
+            double newPitch = Math.asin(oldLookingPos.Y) * -180D / Math.PI;
+            double f4 = -Math.cos(-newPitch * 0.017453292D);
+            double radianYaw = Math.atan2((oldLookingPos.X / f4), (oldLookingPos.Z / f4));
+            radianYaw += Math.PI;
+            radianYaw *= -180D / Math.PI;
+
+
+            if (!(Double.isNaN(radianYaw) || Math.abs(newPitch) > 85)) {
+                double wrappedYaw = MathHelper.wrapDegrees(radianYaw);
+                double wrappedRotYaw = MathHelper.wrapDegrees(entity.rotationYaw);
+                double yawDif = wrappedYaw - wrappedRotYaw;
+                if (Math.abs(yawDif) > 180D) {
+                    if (yawDif < 0) {
+                        yawDif += 360D;
+                    } else {
+                        yawDif -= 360D;
+                    }
+                }
+                yawDif %= 360D;
+                final double threshold = .1D;
+                if (Math.abs(yawDif) < threshold) {
+                    yawDif = 0D;
+                }
+                draggable.setYawDifVelocity(yawDif);
+            }
+        }
+
+        boolean onGroundOrig = entity.onGround;
+
+        if (!ValkyrienWarfareMod.physicsManager.isEntityFixed(entity)) {
+            float originalWalked = entity.distanceWalkedModified;
+            float originalWalkedOnStep = entity.distanceWalkedOnStepModified;
+            boolean originallySneaking = entity.isSneaking();
+
+            entity.setSneaking(false);
+
+            if (draggable.getWorldBelowFeet() == null && entity.onGround) {
+                draggable.getVelocityAddedToPlayer().zero();
+            }
+
+            Vector velocityProper = new Vector(draggable.getVelocityAddedToPlayer());
+
+            Vector playerPosOriginal = new Vector(entity);
+
+            AxisAlignedBB originalBoundingBox = entity.getEntityBoundingBox();
+
+            draggable.setVelocityAddedToPlayer(getVelocityProper(velocityProper, entity));
+
 //            entity.move(MoverType.SELF, draggable.getVelocityAddedToPlayer().X, draggable.getVelocityAddedToPlayer().Y, draggable.getVelocityAddedToPlayer().Z);
-			
-			entity.setEntityBoundingBox(originalBoundingBox);
-			
-			entity.setEntityBoundingBox(entity.getEntityBoundingBox().offset(draggable.getVelocityAddedToPlayer().X, draggable.getVelocityAddedToPlayer().Y, draggable.getVelocityAddedToPlayer().Z));
-			entity.resetPositionToBB();
-			
-			if (EntityArrow.class.isInstance(entity)) {
-				entity.prevRotationYaw = entity.rotationYaw;
-				entity.rotationYaw -= draggable.getYawDifVelocity();
-			} else {
-				entity.prevRotationYaw = entity.rotationYaw;
-				entity.rotationYaw += draggable.getYawDifVelocity();
-			}
-			
-			//Do not add this movement as if the entity were walking it
+
+            entity.setEntityBoundingBox(originalBoundingBox);
+
+            entity.setEntityBoundingBox(entity.getEntityBoundingBox().offset(draggable.getVelocityAddedToPlayer().X, draggable.getVelocityAddedToPlayer().Y, draggable.getVelocityAddedToPlayer().Z));
+            entity.resetPositionToBB();
+
+            if (EntityArrow.class.isInstance(entity)) {
+                entity.prevRotationYaw = entity.rotationYaw;
+                entity.rotationYaw -= draggable.getYawDifVelocity();
+            } else {
+                entity.prevRotationYaw = entity.rotationYaw;
+                entity.rotationYaw += draggable.getYawDifVelocity();
+            }
+
+            //Do not add this movement as if the entity were walking it
 //			entity.distanceWalkedModified = originalWalked;
 //			entity.distanceWalkedOnStepModified = originalWalkedOnStep;
 //			entity.setSneaking(originallySneaking);
-			
-		}
-		
-		if (onGroundOrig) {
+
+        }
+
+        if (onGroundOrig) {
 //			entity.onGround = onGroundOrig;
-		}
-		
-		draggable.getVelocityAddedToPlayer().multiply(.99D);
-		draggable.setYawDifVelocity(draggable.getYawDifVelocity() * .95D);
-	}
-	
-	public static IDraggable getDraggableFromEntity(Entity entity) {
-		if (entity == null) {
-			return null;
-		}
-		Object o = entity;
-		return (IDraggable) o;
-	}
-	
-	public static Entity getEntityFromDraggable(IDraggable draggable) {
-		if (draggable == null) {
-			return null;
-		}
-		Object o = draggable;
-		return (Entity) o;
-	}
-	
-	public static Vector getVelocityProper(Vector improperVelocity, Entity thisClassAsAnEntity) {
-		double x = improperVelocity.X;
-		double y = improperVelocity.Y;
-		double z = improperVelocity.Z;
-		
-		double d10 = thisClassAsAnEntity.posX;
-		double d11 = thisClassAsAnEntity.posY;
-		double d1 = thisClassAsAnEntity.posZ;
+        }
 
-		if (thisClassAsAnEntity.isInWeb) {
-			thisClassAsAnEntity.isInWeb = false;
-			x *= 0.25D;
-			y *= 0.05000000074505806D;
-			z *= 0.25D;
-			thisClassAsAnEntity.motionX = 0.0D;
-			thisClassAsAnEntity.motionY = 0.0D;
-			thisClassAsAnEntity.motionZ = 0.0D;
-		}
+        draggable.getVelocityAddedToPlayer().multiply(.99D);
+        draggable.setYawDifVelocity(draggable.getYawDifVelocity() * .95D);
+    }
 
-		double d2 = x;
-		double d3 = y;
-		double d4 = z;
+    public static IDraggable getDraggableFromEntity(Entity entity) {
+        if (entity == null) {
+            return null;
+        }
+        Object o = entity;
+        return (IDraggable) o;
+    }
 
-		List<AxisAlignedBB> list1 = thisClassAsAnEntity.world.getCollisionBoxes(thisClassAsAnEntity, thisClassAsAnEntity.getEntityBoundingBox().offset(x, y, z));
-		AxisAlignedBB axisalignedbb = thisClassAsAnEntity.getEntityBoundingBox();
+    public static Entity getEntityFromDraggable(IDraggable draggable) {
+        if (draggable == null) {
+            return null;
+        }
+        Object o = draggable;
+        return (Entity) o;
+    }
 
-		if (y != 0.0D) {
-			int k = 0;
+    public static Vector getVelocityProper(Vector improperVelocity, Entity thisClassAsAnEntity) {
+        double x = improperVelocity.X;
+        double y = improperVelocity.Y;
+        double z = improperVelocity.Z;
 
-			for (int l = list1.size(); k < l; ++k) {
-				y = list1.get(k).calculateYOffset(thisClassAsAnEntity.getEntityBoundingBox(), y);
-			}
+        double d10 = thisClassAsAnEntity.posX;
+        double d11 = thisClassAsAnEntity.posY;
+        double d1 = thisClassAsAnEntity.posZ;
 
-			thisClassAsAnEntity.setEntityBoundingBox(thisClassAsAnEntity.getEntityBoundingBox().offset(0.0D, y, 0.0D));
-		}
+        if (thisClassAsAnEntity.isInWeb) {
+            thisClassAsAnEntity.isInWeb = false;
+            x *= 0.25D;
+            y *= 0.05000000074505806D;
+            z *= 0.25D;
+            thisClassAsAnEntity.motionX = 0.0D;
+            thisClassAsAnEntity.motionY = 0.0D;
+            thisClassAsAnEntity.motionZ = 0.0D;
+        }
 
-		if (x != 0.0D) {
-			int j5 = 0;
+        double d2 = x;
+        double d3 = y;
+        double d4 = z;
 
-			for (int l5 = list1.size(); j5 < l5; ++j5) {
-				x = list1.get(j5).calculateXOffset(thisClassAsAnEntity.getEntityBoundingBox(), x);
-			}
+        List<AxisAlignedBB> list1 = thisClassAsAnEntity.world.getCollisionBoxes(thisClassAsAnEntity, thisClassAsAnEntity.getEntityBoundingBox().offset(x, y, z));
+        AxisAlignedBB axisalignedbb = thisClassAsAnEntity.getEntityBoundingBox();
 
-			if (x != 0.0D) {
-				thisClassAsAnEntity.setEntityBoundingBox(thisClassAsAnEntity.getEntityBoundingBox().offset(x, 0.0D, 0.0D));
-			}
-		}
+        if (y != 0.0D) {
+            int k = 0;
 
-		if (z != 0.0D) {
-			int k5 = 0;
+            for (int l = list1.size(); k < l; ++k) {
+                y = list1.get(k).calculateYOffset(thisClassAsAnEntity.getEntityBoundingBox(), y);
+            }
 
-			for (int i6 = list1.size(); k5 < i6; ++k5) {
-				z = list1.get(k5).calculateZOffset(thisClassAsAnEntity.getEntityBoundingBox(), z);
-			}
+            thisClassAsAnEntity.setEntityBoundingBox(thisClassAsAnEntity.getEntityBoundingBox().offset(0.0D, y, 0.0D));
+        }
 
-			if (z != 0.0D) {
-				thisClassAsAnEntity.setEntityBoundingBox(thisClassAsAnEntity.getEntityBoundingBox().offset(0.0D, 0.0D, z));
-			}
-		}
+        if (x != 0.0D) {
+            int j5 = 0;
 
-		boolean flag = thisClassAsAnEntity.onGround || d3 != y && d3 < 0.0D;
+            for (int l5 = list1.size(); j5 < l5; ++j5) {
+                x = list1.get(j5).calculateXOffset(thisClassAsAnEntity.getEntityBoundingBox(), x);
+            }
 
-		if (thisClassAsAnEntity.stepHeight > 0.0F && flag && (d2 != x || d4 != z)) {
-			double d14 = x;
-			double d6 = y;
-			double d7 = z;
-			AxisAlignedBB axisalignedbb1 = thisClassAsAnEntity.getEntityBoundingBox();
-			thisClassAsAnEntity.setEntityBoundingBox(axisalignedbb);
-			y = (double) thisClassAsAnEntity.stepHeight;
-			List<AxisAlignedBB> list = thisClassAsAnEntity.world.getCollisionBoxes(thisClassAsAnEntity, thisClassAsAnEntity.getEntityBoundingBox().offset(d2, y, d4));
-			AxisAlignedBB axisalignedbb2 = thisClassAsAnEntity.getEntityBoundingBox();
-			AxisAlignedBB axisalignedbb3 = axisalignedbb2.offset(d2, 0.0D, d4);
-			double d8 = y;
-			int j1 = 0;
+            if (x != 0.0D) {
+                thisClassAsAnEntity.setEntityBoundingBox(thisClassAsAnEntity.getEntityBoundingBox().offset(x, 0.0D, 0.0D));
+            }
+        }
 
-			for (int k1 = list.size(); j1 < k1; ++j1) {
-				d8 = list.get(j1).calculateYOffset(axisalignedbb3, d8);
-			}
+        if (z != 0.0D) {
+            int k5 = 0;
 
-			axisalignedbb2 = axisalignedbb2.offset(0.0D, d8, 0.0D);
-			double d18 = d2;
-			int l1 = 0;
+            for (int i6 = list1.size(); k5 < i6; ++k5) {
+                z = list1.get(k5).calculateZOffset(thisClassAsAnEntity.getEntityBoundingBox(), z);
+            }
 
-			for (int i2 = list.size(); l1 < i2; ++l1) {
-				d18 = list.get(l1).calculateXOffset(axisalignedbb2, d18);
-			}
+            if (z != 0.0D) {
+                thisClassAsAnEntity.setEntityBoundingBox(thisClassAsAnEntity.getEntityBoundingBox().offset(0.0D, 0.0D, z));
+            }
+        }
 
-			axisalignedbb2 = axisalignedbb2.offset(d18, 0.0D, 0.0D);
-			double d19 = d4;
-			int j2 = 0;
+        boolean flag = thisClassAsAnEntity.onGround || d3 != y && d3 < 0.0D;
 
-			for (int k2 = list.size(); j2 < k2; ++j2) {
-				d19 = list.get(j2).calculateZOffset(axisalignedbb2, d19);
-			}
+        if (thisClassAsAnEntity.stepHeight > 0.0F && flag && (d2 != x || d4 != z)) {
+            double d14 = x;
+            double d6 = y;
+            double d7 = z;
+            AxisAlignedBB axisalignedbb1 = thisClassAsAnEntity.getEntityBoundingBox();
+            thisClassAsAnEntity.setEntityBoundingBox(axisalignedbb);
+            y = (double) thisClassAsAnEntity.stepHeight;
+            List<AxisAlignedBB> list = thisClassAsAnEntity.world.getCollisionBoxes(thisClassAsAnEntity, thisClassAsAnEntity.getEntityBoundingBox().offset(d2, y, d4));
+            AxisAlignedBB axisalignedbb2 = thisClassAsAnEntity.getEntityBoundingBox();
+            AxisAlignedBB axisalignedbb3 = axisalignedbb2.offset(d2, 0.0D, d4);
+            double d8 = y;
+            int j1 = 0;
 
-			axisalignedbb2 = axisalignedbb2.offset(0.0D, 0.0D, d19);
-			AxisAlignedBB axisalignedbb4 = thisClassAsAnEntity.getEntityBoundingBox();
-			double d20 = y;
-			int l2 = 0;
+            for (int k1 = list.size(); j1 < k1; ++j1) {
+                d8 = list.get(j1).calculateYOffset(axisalignedbb3, d8);
+            }
 
-			for (int i3 = list.size(); l2 < i3; ++l2) {
-				d20 = list.get(l2).calculateYOffset(axisalignedbb4, d20);
-			}
+            axisalignedbb2 = axisalignedbb2.offset(0.0D, d8, 0.0D);
+            double d18 = d2;
+            int l1 = 0;
 
-			axisalignedbb4 = axisalignedbb4.offset(0.0D, d20, 0.0D);
-			double d21 = d2;
-			int j3 = 0;
+            for (int i2 = list.size(); l1 < i2; ++l1) {
+                d18 = list.get(l1).calculateXOffset(axisalignedbb2, d18);
+            }
 
-			for (int k3 = list.size(); j3 < k3; ++j3) {
-				d21 = list.get(j3).calculateXOffset(axisalignedbb4, d21);
-			}
+            axisalignedbb2 = axisalignedbb2.offset(d18, 0.0D, 0.0D);
+            double d19 = d4;
+            int j2 = 0;
 
-			axisalignedbb4 = axisalignedbb4.offset(d21, 0.0D, 0.0D);
-			double d22 = d4;
-			int l3 = 0;
+            for (int k2 = list.size(); j2 < k2; ++j2) {
+                d19 = list.get(j2).calculateZOffset(axisalignedbb2, d19);
+            }
 
-			for (int i4 = list.size(); l3 < i4; ++l3) {
-				d22 = list.get(l3).calculateZOffset(axisalignedbb4, d22);
-			}
+            axisalignedbb2 = axisalignedbb2.offset(0.0D, 0.0D, d19);
+            AxisAlignedBB axisalignedbb4 = thisClassAsAnEntity.getEntityBoundingBox();
+            double d20 = y;
+            int l2 = 0;
 
-			axisalignedbb4 = axisalignedbb4.offset(0.0D, 0.0D, d22);
-			double d23 = d18 * d18 + d19 * d19;
-			double d9 = d21 * d21 + d22 * d22;
+            for (int i3 = list.size(); l2 < i3; ++l2) {
+                d20 = list.get(l2).calculateYOffset(axisalignedbb4, d20);
+            }
 
-			if (d23 > d9) {
-				x = d18;
-				z = d19;
-				y = -d8;
-				thisClassAsAnEntity.setEntityBoundingBox(axisalignedbb2);
-			} else {
-				x = d21;
-				z = d22;
-				y = -d20;
-				thisClassAsAnEntity.setEntityBoundingBox(axisalignedbb4);
-			}
+            axisalignedbb4 = axisalignedbb4.offset(0.0D, d20, 0.0D);
+            double d21 = d2;
+            int j3 = 0;
 
-			int j4 = 0;
+            for (int k3 = list.size(); j3 < k3; ++j3) {
+                d21 = list.get(j3).calculateXOffset(axisalignedbb4, d21);
+            }
 
-			for (int k4 = list.size(); j4 < k4; ++j4) {
-				y = list.get(j4).calculateYOffset(thisClassAsAnEntity.getEntityBoundingBox(), y);
-			}
+            axisalignedbb4 = axisalignedbb4.offset(d21, 0.0D, 0.0D);
+            double d22 = d4;
+            int l3 = 0;
 
-			thisClassAsAnEntity.setEntityBoundingBox(thisClassAsAnEntity.getEntityBoundingBox().offset(0.0D, y, 0.0D));
+            for (int i4 = list.size(); l3 < i4; ++l3) {
+                d22 = list.get(l3).calculateZOffset(axisalignedbb4, d22);
+            }
 
-			if (d14 * d14 + d7 * d7 >= x * x + z * z) {
-				x = d14;
-				y = d6;
-				z = d7;
-				thisClassAsAnEntity.setEntityBoundingBox(axisalignedbb1);
-			}
-		}
-		
-		return new Vector(x, y, z);
-	}
+            axisalignedbb4 = axisalignedbb4.offset(0.0D, 0.0D, d22);
+            double d23 = d18 * d18 + d19 * d19;
+            double d9 = d21 * d21 + d22 * d22;
+
+            if (d23 > d9) {
+                x = d18;
+                z = d19;
+                y = -d8;
+                thisClassAsAnEntity.setEntityBoundingBox(axisalignedbb2);
+            } else {
+                x = d21;
+                z = d22;
+                y = -d20;
+                thisClassAsAnEntity.setEntityBoundingBox(axisalignedbb4);
+            }
+
+            int j4 = 0;
+
+            for (int k4 = list.size(); j4 < k4; ++j4) {
+                y = list.get(j4).calculateYOffset(thisClassAsAnEntity.getEntityBoundingBox(), y);
+            }
+
+            thisClassAsAnEntity.setEntityBoundingBox(thisClassAsAnEntity.getEntityBoundingBox().offset(0.0D, y, 0.0D));
+
+            if (d14 * d14 + d7 * d7 >= x * x + z * z) {
+                x = d14;
+                y = d6;
+                z = d7;
+                thisClassAsAnEntity.setEntityBoundingBox(axisalignedbb1);
+            }
+        }
+
+        return new Vector(x, y, z);
+    }
 }

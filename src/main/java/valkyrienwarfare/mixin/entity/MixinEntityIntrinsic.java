@@ -22,7 +22,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import valkyrienwarfare.collision.EntityCollisionInjector;
 import valkyrienwarfare.collision.EntityCollisionInjector.IntermediateMovementVariableStorage;
@@ -41,13 +40,12 @@ public abstract class MixinEntityIntrinsic {
 
     @Shadow
     public World world;
-
-    @Shadow public abstract void move(MoverType type, double x, double y, double z);
-
     public Entity thisClassAsAnEntity = Entity.class.cast(this);
-
     private IntermediateMovementVariableStorage alteredMovement = null;
     private boolean hasChanged = false;
+
+    @Shadow
+    public abstract void move(MoverType type, double x, double y, double z);
 
     @Inject(method = "move",
             at = @At("HEAD"),

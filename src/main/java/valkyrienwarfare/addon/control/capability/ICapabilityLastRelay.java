@@ -21,10 +21,10 @@ import javax.annotation.Nullable;
 
 public interface ICapabilityLastRelay {
 
-	@Nullable
-	public BlockPos getLastRelay();
+    @Nullable
+    public BlockPos getLastRelay();
 
-	public void setLastRelay(BlockPos pos);
+    public void setLastRelay(BlockPos pos);
 
-	public boolean hasLastRelay();
+    public boolean hasLastRelay();
 }

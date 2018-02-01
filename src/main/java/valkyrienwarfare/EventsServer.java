@@ -18,7 +18,7 @@ package valkyrienwarfare;
 public class EventsServer {
 
 	/*@SubscribeEvent
-	public void livingUpdate(LivingUpdateEvent e)	{
+    public void livingUpdate(LivingUpdateEvent e)	{
 		if (e.getEntity() instanceof EntityPlayer)	{
 			EntityPlayer p = (EntityPlayer) e.getEntity();
 			

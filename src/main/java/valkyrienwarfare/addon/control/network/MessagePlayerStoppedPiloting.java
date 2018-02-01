@@ -22,25 +22,25 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
 public class MessagePlayerStoppedPiloting implements IMessage {
 
-	public BlockPos posToStopPiloting;
+    public BlockPos posToStopPiloting;
 
-	public MessagePlayerStoppedPiloting(BlockPos posToStopPiloting) {
-		this.posToStopPiloting = posToStopPiloting;
-	}
+    public MessagePlayerStoppedPiloting(BlockPos posToStopPiloting) {
+        this.posToStopPiloting = posToStopPiloting;
+    }
 
-	public MessagePlayerStoppedPiloting() {
-	}
+    public MessagePlayerStoppedPiloting() {
+    }
 
-	@Override
-	public void fromBytes(ByteBuf buf) {
-		PacketBuffer packetBuf = new PacketBuffer(buf);
-		posToStopPiloting = packetBuf.readBlockPos();
-	}
+    @Override
+    public void fromBytes(ByteBuf buf) {
+        PacketBuffer packetBuf = new PacketBuffer(buf);
+        posToStopPiloting = packetBuf.readBlockPos();
+    }
 
-	@Override
-	public void toBytes(ByteBuf buf) {
-		PacketBuffer packetBuf = new PacketBuffer(buf);
-		packetBuf.writeBlockPos(posToStopPiloting);
-	}
+    @Override
+    public void toBytes(ByteBuf buf) {
+        PacketBuffer packetBuf = new PacketBuffer(buf);
+        packetBuf.writeBlockPos(posToStopPiloting);
+    }
 
 }

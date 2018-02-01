@@ -15,47 +15,28 @@
 
 package valkyrienwarfare.mixin.client.multiplayer;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockCommandBlock;
-import net.minecraft.block.BlockStructure;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
-import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.network.NetHandlerPlayClient;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameType;
-import net.minecraftforge.common.ForgeHooks;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
-import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
 
 @Mixin(PlayerControllerMP.class)
 public abstract class MixinPlayerControllerMP {
 
-	@Shadow
-	@Final
-	public Minecraft mc;
-	@Shadow
-	@Final
-	public NetHandlerPlayClient connection;
-	@Shadow
-	public GameType currentGameType;
+    @Shadow
+    @Final
+    public Minecraft mc;
+    @Shadow
+    @Final
+    public NetHandlerPlayClient connection;
+    @Shadow
+    public GameType currentGameType;
 
-	//TODO: figure out why everything is commented out
-	/*
+    //TODO: figure out why everything is commented out
+    /*
 	@Overwrite
 	public EnumActionResult processRightClickBlock(EntityPlayerSP player, WorldClient worldIn, BlockPos pos, EnumFacing direction, Vec3d vec, EnumHand hand) {
 		this.syncCurrentPlayItem();
@@ -168,10 +149,10 @@ public abstract class MixinPlayerControllerMP {
 		}
 	}*/
 
-	@Shadow
-	public abstract void syncCurrentPlayItem();
+    @Shadow
+    public abstract void syncCurrentPlayItem();
 
-	@Shadow
-	public abstract float getBlockReachDistance();
+    @Shadow
+    public abstract float getBlockReachDistance();
 
 }

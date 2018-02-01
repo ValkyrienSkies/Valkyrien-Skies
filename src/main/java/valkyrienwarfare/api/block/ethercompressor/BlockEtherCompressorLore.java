@@ -17,7 +17,6 @@ package valkyrienwarfare.api.block.ethercompressor;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
@@ -27,19 +26,19 @@ import java.util.List;
 
 public abstract class BlockEtherCompressorLore extends BlockEtherCompressor {
 
-	protected String[] lore;
+    protected String[] lore;
 
-	public BlockEtherCompressorLore(Material materialIn, double enginePower) {
-		super(materialIn, enginePower);
-		lore = new String[]{"" + TextFormatting.GRAY + TextFormatting.ITALIC + TextFormatting.BOLD + "Power:", "  " + this.getEnginePowerTooltip()};
-	}
+    public BlockEtherCompressorLore(Material materialIn, double enginePower) {
+        super(materialIn, enginePower);
+        lore = new String[]{"" + TextFormatting.GRAY + TextFormatting.ITALIC + TextFormatting.BOLD + "Power:", "  " + this.getEnginePowerTooltip()};
+    }
 
-	@Override
-	public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation, ITooltipFlag advanced)	{
-		for (String s : lore) {
-			itemInformation.add(s);
-		}
-	}
+    @Override
+    public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation, ITooltipFlag advanced) {
+        for (String s : lore) {
+            itemInformation.add(s);
+        }
+    }
 
-	public abstract String getEnginePowerTooltip();
+    public abstract String getEnginePowerTooltip();
 }

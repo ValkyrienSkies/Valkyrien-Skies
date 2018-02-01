@@ -26,16 +26,16 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public class ExplosionHandler {
 
 
-	@SubscribeEvent
-	public void expDet(ExplosionEvent.Detonate event) {
+    @SubscribeEvent
+    public void expDet(ExplosionEvent.Detonate event) {
 
-		for (int k2 = 0; k2 < event.getAffectedEntities().size(); ++k2) {
-			Entity entity = (Entity) event.getAffectedEntities().get(k2);
-			if (entity instanceof EntityGrapeshot | entity instanceof EntitySolidball |
-					entity instanceof EntityCannonball | entity instanceof EntityExplosiveball) {
+        for (int k2 = 0; k2 < event.getAffectedEntities().size(); ++k2) {
+            Entity entity = (Entity) event.getAffectedEntities().get(k2);
+            if (entity instanceof EntityGrapeshot | entity instanceof EntitySolidball |
+                    entity instanceof EntityCannonball | entity instanceof EntityExplosiveball) {
 
-				event.getAffectedEntities().remove(k2);
-			}
-		}
-	}
+                event.getAffectedEntities().remove(k2);
+            }
+        }
+    }
 }

@@ -21,8 +21,8 @@ import net.minecraft.block.material.Material;
 
 public class BlockQuartzFence extends BlockFence {
 
-	public BlockQuartzFence(Material materialIn) {
-		super(materialIn, MapColor.QUARTZ);
-	}
+    public BlockQuartzFence(Material materialIn) {
+        super(materialIn, MapColor.QUARTZ);
+    }
 
 }

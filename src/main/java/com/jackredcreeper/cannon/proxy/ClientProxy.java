@@ -22,19 +22,19 @@ import valkyrienwarfare.api.addons.ModuleProxy;
 
 public class ClientProxy extends ModuleProxy {
 
-	@Override
-	public void preInit(FMLStateEvent event) {
+    @Override
+    public void preInit(FMLStateEvent event) {
 
-	}
+    }
 
-	@Override
-	public void init(FMLStateEvent event) {
-		ModItems.registerRenders();
-		ModBlocks.registerRenders();
-	}
+    @Override
+    public void init(FMLStateEvent event) {
+        ModItems.registerRenders();
+        ModBlocks.registerRenders();
+    }
 
-	@Override
-	public void postInit(FMLStateEvent event) {
+    @Override
+    public void postInit(FMLStateEvent event) {
 
-	}
+    }
 }

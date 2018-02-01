@@ -24,15 +24,15 @@ import net.minecraft.world.World;
  * @author thebest108
  */
 public class SingeBlockPosDetector extends SpatialDetector {
-	
-	public SingeBlockPosDetector(BlockPos start, World worldIn, int maximum, boolean checkCorners) {
-		super(start, worldIn, maximum, false);
-		startDetection();
-	}
-	
-	@Override
-	public boolean isValidExpansion(int x, int y, int z) {
-		return x == firstBlock.getX() && y == firstBlock.getY() && z == firstBlock.getZ();
-	}
-	
+
+    public SingeBlockPosDetector(BlockPos start, World worldIn, int maximum, boolean checkCorners) {
+        super(start, worldIn, maximum, false);
+        startDetection();
+    }
+
+    @Override
+    public boolean isValidExpansion(int x, int y, int z) {
+        return x == firstBlock.getX() && y == firstBlock.getY() && z == firstBlock.getZ();
+    }
+
 }

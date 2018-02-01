@@ -16,136 +16,130 @@
 package valkyrienwarfare.api.addons;
 
 import net.minecraft.block.Block;
-import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import valkyrienwarfare.ValkyrienWarfareMod;
 
-import java.util.UUID;
-
 public abstract class Module<ImplName> {
-	private String name;
-	private boolean donePreInit = false, doneInit = false, donePostInit = false;
-	private ModuleProxy common, client, server; //tODO: call these
-	private String modid;
-	
-	public Module(String name, ModuleProxy common, ModuleProxy client, ModuleProxy server)  {
-		this(name, common, ValkyrienWarfareMod.MODID);
-	}
-	
-	public Module(String name, ModuleProxy common, String modid)  {
-		this.name = name;
-		this.common = common;
-		this.modid = modid;
-	}
-	
-	public final void setServerProxy(ModuleProxy server) {
-		this.server = server;
-	}
-	
-	public final void setClientProxy(ModuleProxy client) {
-		this.client = client;
-	}
-	
-	public final void doPreInit(FMLStateEvent event)  {
-		if (!donePreInit)   {
-			setupConfig();
-			registerEntities();
-			registerCapabilities();
-			preInit(event);
-			donePreInit = true;
-		}
-	}
-	
-	public final void doInit(FMLStateEvent event)  {
-		if (!doneInit)   {
-			registerTileEntities();
-			registerNetworks();
-			init(event);
-			doneInit = true;
-		}
-	}
+    private String name;
+    private boolean donePreInit = false, doneInit = false, donePostInit = false;
+    private ModuleProxy common, client, server; //tODO: call these
+    private String modid;
 
-	public final void doPostInit(FMLStateEvent event)	{
-		if (!donePostInit)	{
-			postInit(event);
-			donePostInit = true;
-		}
-	}
+    public Module(String name, ModuleProxy common, ModuleProxy client, ModuleProxy server) {
+        this(name, common, ValkyrienWarfareMod.MODID);
+    }
 
-	protected void setupConfig()	{
+    public Module(String name, ModuleProxy common, String modid) {
+        this.name = name;
+        this.common = common;
+        this.modid = modid;
+    }
 
-	}
-	
-	public void registerItems(RegistryEvent.Register<Item> event)  {
-		
-	}
+    public static final void registerRecipe(RegistryEvent.Register<IRecipe> event, ItemStack out, Object... in) {
+        CraftingHelper.ShapedPrimer primer = CraftingHelper.parseShaped(in);
+        event.getRegistry().register(new ShapedRecipes(ValkyrienWarfareMod.MODID, primer.width, primer.height, primer.input, out));
+    }
 
-	public void registerItemBlocks(RegistryEvent.Register<Item> event)	{
+    public static final void registerItemBlock(RegistryEvent.Register<Item> event, Block block) {
+        event.getRegistry().register(new ItemBlock(block).setRegistryName(block.getRegistryName()));
+    }
 
-	}
+    public final void doPreInit(FMLStateEvent event) {
+        if (!donePreInit) {
+            setupConfig();
+            registerEntities();
+            registerCapabilities();
+            preInit(event);
+            donePreInit = true;
+        }
+    }
 
-	public void registerBlocks(RegistryEvent.Register<Block> event) {
-		
-	}
-	
-	public void registerRecipes(RegistryEvent.Register<IRecipe> event)    {
-		
-	}
-	
-	protected void registerEntities()   {
-		
-	}
-	
-	protected void registerTileEntities()   {
-		
-	}
-	
-	protected void registerNetworks()   {
-		
-	}
-	
-	protected void registerCapabilities()   {
-		
-	}
-	
-	public final ModuleProxy getClientProxy()   {
-		return client;
-	}
-	
-	public final ModuleProxy getServerProxy()   {
-		return server;
-	}
-	
-	public final ModuleProxy getCommonProxy()   {
-		return common;
-	}
+    public final void doInit(FMLStateEvent event) {
+        if (!doneInit) {
+            registerTileEntities();
+            registerNetworks();
+            init(event);
+            doneInit = true;
+        }
+    }
 
-	protected abstract void preInit(FMLStateEvent event);
+    public final void doPostInit(FMLStateEvent event) {
+        if (!donePostInit) {
+            postInit(event);
+            donePostInit = true;
+        }
+    }
 
-	protected abstract void init(FMLStateEvent event);
+    protected void setupConfig() {
 
-	protected abstract void postInit(FMLStateEvent event);
-	
-	public final String getModID()  {
-		return modid;
-	}
+    }
 
-	public static final void registerRecipe(RegistryEvent.Register<IRecipe> event, ItemStack out, Object... in)	{
-		CraftingHelper.ShapedPrimer primer = CraftingHelper.parseShaped(in);
-		event.getRegistry().register(new ShapedRecipes(ValkyrienWarfareMod.MODID, primer.width, primer.height, primer.input, out));
-	}
+    public void registerItems(RegistryEvent.Register<Item> event) {
 
-	public static final void registerItemBlock(RegistryEvent.Register<Item> event, Block block)	{
-		event.getRegistry().register(new ItemBlock(block).setRegistryName(block.getRegistryName()));
-	}
+    }
+
+    public void registerItemBlocks(RegistryEvent.Register<Item> event) {
+
+    }
+
+    public void registerBlocks(RegistryEvent.Register<Block> event) {
+
+    }
+
+    public void registerRecipes(RegistryEvent.Register<IRecipe> event) {
+
+    }
+
+    protected void registerEntities() {
+
+    }
+
+    protected void registerTileEntities() {
+
+    }
+
+    protected void registerNetworks() {
+
+    }
+
+    protected void registerCapabilities() {
+
+    }
+
+    public final ModuleProxy getClientProxy() {
+        return client;
+    }
+
+    public final void setClientProxy(ModuleProxy client) {
+        this.client = client;
+    }
+
+    public final ModuleProxy getServerProxy() {
+        return server;
+    }
+
+    public final void setServerProxy(ModuleProxy server) {
+        this.server = server;
+    }
+
+    public final ModuleProxy getCommonProxy() {
+        return common;
+    }
+
+    protected abstract void preInit(FMLStateEvent event);
+
+    protected abstract void init(FMLStateEvent event);
+
+    protected abstract void postInit(FMLStateEvent event);
+
+    public final String getModID() {
+        return modid;
+    }
 }

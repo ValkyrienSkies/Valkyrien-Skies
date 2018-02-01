@@ -31,45 +31,45 @@ import valkyrienwarfare.render.FastBlockModelRenderer;
 
 public class EntityCannonBallRenderer extends Render<EntityCannonBall> {
 
-	private final IBlockState cannonballState;
+    private final IBlockState cannonballState;
 
-	protected EntityCannonBallRenderer(RenderManager renderManager) {
-		super(renderManager);
-		cannonballState = ValkyrienWarfareCombat.INSTANCE.fakecannonblock.getStateFromMeta(2);
-	}
+    protected EntityCannonBallRenderer(RenderManager renderManager) {
+        super(renderManager);
+        cannonballState = ValkyrienWarfareCombat.INSTANCE.fakecannonblock.getStateFromMeta(2);
+    }
 
-	@Override
-	public void doRender(EntityCannonBall entity, double x, double y, double z, float entityYaw, float partialTicks) {
-		World world = entity.world;
+    @Override
+    public void doRender(EntityCannonBall entity, double x, double y, double z, float entityYaw, float partialTicks) {
+        World world = entity.world;
 
-		this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-		GlStateManager.pushMatrix();
-		GlStateManager.disableLighting();
-		Tessellator tessellator = Tessellator.getInstance();
+        this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+        GlStateManager.pushMatrix();
+        GlStateManager.disableLighting();
+        Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder BufferBuilder = tessellator.getBuffer();
 
-		GlStateManager.translate((float) (x - .25D), (float) (y - .07D), (float) (z + .278D));
+        GlStateManager.translate((float) (x - .25D), (float) (y - .07D), (float) (z + .278D));
         FastBlockModelRenderer.renderBlockModel(BufferBuilder, tessellator, world, cannonballState, entity.getBrightnessForRender());
 
-		if (this.renderOutlines) {
-			GlStateManager.disableOutlineMode();
-			GlStateManager.disableColorMaterial();
-		}
+        if (this.renderOutlines) {
+            GlStateManager.disableOutlineMode();
+            GlStateManager.disableColorMaterial();
+        }
 
-		GlStateManager.enableLighting();
-		GlStateManager.popMatrix();
+        GlStateManager.enableLighting();
+        GlStateManager.popMatrix();
 
-		super.doRender(entity, x, y, z, entityYaw, partialTicks);
-	}
+        super.doRender(entity, x, y, z, entityYaw, partialTicks);
+    }
 
-	@Override
-	public boolean shouldRender(EntityCannonBall livingEntity, ICamera camera, double camX, double camY, double camZ) {
-		return true;
-	}
+    @Override
+    public boolean shouldRender(EntityCannonBall livingEntity, ICamera camera, double camX, double camY, double camZ) {
+        return true;
+    }
 
-	@Override
-	protected ResourceLocation getEntityTexture(EntityCannonBall entity) {
-		return null;
-	}
+    @Override
+    protected ResourceLocation getEntityTexture(EntityCannonBall entity) {
+        return null;
+    }
 
 }

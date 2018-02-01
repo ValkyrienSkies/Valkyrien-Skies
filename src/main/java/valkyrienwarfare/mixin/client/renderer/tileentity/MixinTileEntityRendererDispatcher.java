@@ -16,12 +16,9 @@
 package valkyrienwarfare.mixin.client.renderer.tileentity;
 
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -35,6 +32,10 @@ import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
 public abstract class MixinTileEntityRendererDispatcher {
 
     @Shadow
+    private boolean drawingBatch;
+    private boolean hasChanged = false;
+
+    @Shadow
     public void drawBatch(int pass) {
     }
 
@@ -42,11 +43,8 @@ public abstract class MixinTileEntityRendererDispatcher {
     public void preDrawBatch() {
     }
 
-    @Shadow private boolean drawingBatch;
-
-    @Shadow public abstract void render(TileEntity tileentityIn, float partialTicks, int destroyStage);
-
-    private boolean hasChanged = false;
+    @Shadow
+    public abstract void render(TileEntity tileentityIn, float partialTicks, int destroyStage);
 
     @Inject(method = "render(Lnet/minecraft/tileentity/TileEntity;FI)V",
             at = @At("HEAD"),

@@ -32,40 +32,40 @@ import valkyrienwarfare.chunkmanagement.PhysicsChunkManager;
 @Mixin(Chunk.class)
 public abstract class MixinChunk {
 
-	@Shadow
-	@Final
-	public int x;
+    @Shadow
+    @Final
+    public int x;
 
-	@Shadow
-	@Final
-	public int z;
+    @Shadow
+    @Final
+    public int z;
 
-	@Shadow
-	@Final
-	public World world;
+    @Shadow
+    @Final
+    public World world;
 
-	@Inject(method = "Lnet/minecraft/world/chunk/Chunk;populate(Lnet/minecraft/world/chunk/IChunkProvider;Lnet/minecraft/world/gen/IChunkGenerator;)V", at = @At("HEAD"), cancellable = true)
-	public void prePopulateChunk(IChunkProvider provider, IChunkGenerator generator, CallbackInfo callbackInfo) {
-		if (PhysicsChunkManager.isLikelyShipChunk(this.x, this.z)) {
-			callbackInfo.cancel();
-		}
-	}
+    @Inject(method = "Lnet/minecraft/world/chunk/Chunk;populate(Lnet/minecraft/world/chunk/IChunkProvider;Lnet/minecraft/world/gen/IChunkGenerator;)V", at = @At("HEAD"), cancellable = true)
+    public void prePopulateChunk(IChunkProvider provider, IChunkGenerator generator, CallbackInfo callbackInfo) {
+        if (PhysicsChunkManager.isLikelyShipChunk(this.x, this.z)) {
+            callbackInfo.cancel();
+        }
+    }
 
-	@Inject(method = "addEntity(Lnet/minecraft/entity/Entity;)V", at = @At("HEAD"), cancellable = true)
-	public void preAddEntity(Entity entityIn, CallbackInfo callbackInfo) {
-		World world = this.world;
+    @Inject(method = "addEntity(Lnet/minecraft/entity/Entity;)V", at = @At("HEAD"), cancellable = true)
+    public void preAddEntity(Entity entityIn, CallbackInfo callbackInfo) {
+        World world = this.world;
 
-		int i = MathHelper.floor(entityIn.posX / 16.0D);
-		int j = MathHelper.floor(entityIn.posZ / 16.0D);
+        int i = MathHelper.floor(entityIn.posX / 16.0D);
+        int j = MathHelper.floor(entityIn.posZ / 16.0D);
 
-		if (i == this.x && j == this.z) {
-			//do nothing, and let vanilla code take over after our injected code is done (now)
-		} else {
-			Chunk realChunkFor = world.getChunkFromChunkCoords(i, j);
-			if (!realChunkFor.isEmpty() && realChunkFor.loaded) {
-				realChunkFor.addEntity(entityIn);
-				callbackInfo.cancel(); //don't run the code on this chunk!!!
-			}
-		}
-	}
+        if (i == this.x && j == this.z) {
+            //do nothing, and let vanilla code take over after our injected code is done (now)
+        } else {
+            Chunk realChunkFor = world.getChunkFromChunkCoords(i, j);
+            if (!realChunkFor.isEmpty() && realChunkFor.loaded) {
+                realChunkFor.addEntity(entityIn);
+                callbackInfo.cancel(); //don't run the code on this chunk!!!
+            }
+        }
+    }
 }

@@ -40,28 +40,28 @@ public class FastBlockModelRenderer {
 
     private static void renderBlockModelHighQualityHighRam(BufferBuilder BufferBuilder, Tessellator tessellator, World world, IBlockState blockstateToRender, int brightness) {
         Map<Integer, Integer> brightnessToGLListMap = highRamGLList.get(blockstateToRender);
-		
-		if (brightnessToGLListMap == null) {
-			highRamGLList.put(blockstateToRender, new HashMap<Integer, Integer>());
-			brightnessToGLListMap = highRamGLList.get(blockstateToRender);
-		}
-		
-		Integer glListForBrightness = brightnessToGLListMap.get(brightness);
-		if (glListForBrightness == null) {
-			GL11.glPushMatrix();
-			int glList = GLAllocation.generateDisplayLists(1);
-			GL11.glNewList(glList, GL11.GL_COMPILE);
+
+        if (brightnessToGLListMap == null) {
+            highRamGLList.put(blockstateToRender, new HashMap<Integer, Integer>());
+            brightnessToGLListMap = highRamGLList.get(blockstateToRender);
+        }
+
+        Integer glListForBrightness = brightnessToGLListMap.get(brightness);
+        if (glListForBrightness == null) {
+            GL11.glPushMatrix();
+            int glList = GLAllocation.generateDisplayLists(1);
+            GL11.glNewList(glList, GL11.GL_COMPILE);
             renderBlockModelHighQuality(BufferBuilder, tessellator, world, blockstateToRender, brightness);
             GL11.glEndList();
-			GL11.glPopMatrix();
-			glListForBrightness = glList;
-			brightnessToGLListMap.put(brightness, glList);
-		}
-		
-		GL11.glPushMatrix();
-		GL11.glCallList(glListForBrightness);
-		GL11.glPopMatrix();
-	}
+            GL11.glPopMatrix();
+            glListForBrightness = glList;
+            brightnessToGLListMap.put(brightness, glList);
+        }
+
+        GL11.glPushMatrix();
+        GL11.glCallList(glListForBrightness);
+        GL11.glPopMatrix();
+    }
 
     private static void renderBlockModelHighQuality(BufferBuilder BufferBuilder, Tessellator tessellator, World world, IBlockState blockstateToRender, int brightness) {
         BufferBuilder.State vertexData = blockstateToVertexData.get(blockstateToRender);
@@ -75,7 +75,7 @@ public class FastBlockModelRenderer {
         if (vertexData == null) {
             generateRenderDataFor(BufferBuilder, tessellator, world, blockstateToRender);
             vertexData = blockstateToVertexData.get(blockstateToRender);
-		}
+        }
         renderVertexState(vertexData, BufferBuilder, tessellator, brightness);
 
 //		BufferBuilder.setTranslation(oldX, oldY, oldZ);
@@ -91,8 +91,8 @@ public class FastBlockModelRenderer {
         int offsetUV = BufferBuilder.vertexFormat.getUvOffsetById(1) / 4;
         int bufferNextSize = BufferBuilder.vertexFormat.getIntegerSize();
         for (int contont = 0; contont < cont; contont += 4) {
-			try {
-				int i = (contont) * bufferNextSize + offsetUV;
+            try {
+                int i = (contont) * bufferNextSize + offsetUV;
 
                 BufferBuilder.rawIntBuffer.put(i, brightness);
                 BufferBuilder.rawIntBuffer.put(i + j, brightness);
@@ -100,23 +100,23 @@ public class FastBlockModelRenderer {
                 BufferBuilder.rawIntBuffer.put(i + j * 3, brightness);
 
                 if (contont + 4 < cont) {
-					contont += 4;
-					
-					i = (contont) * bufferNextSize + offsetUV;
+                    contont += 4;
+
+                    i = (contont) * bufferNextSize + offsetUV;
 
                     BufferBuilder.rawIntBuffer.put(i, brightness);
                     BufferBuilder.rawIntBuffer.put(i + j, brightness);
                     BufferBuilder.rawIntBuffer.put(i + j * 2, brightness);
                     BufferBuilder.rawIntBuffer.put(i + j * 3, brightness);
                 }
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		tessellator.draw();
-		
-		GL11.glPopMatrix();
-	}
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        tessellator.draw();
+
+        GL11.glPopMatrix();
+    }
 
     private static void generateRenderDataFor(BufferBuilder BufferBuilder, Tessellator tessellator, World world, IBlockState state) {
         GL11.glPushMatrix();
@@ -125,8 +125,8 @@ public class FastBlockModelRenderer {
         blockrendererdispatcher.getBlockModelRenderer().renderModel(world, blockrendererdispatcher.getModelForState(state), state, BlockPos.ORIGIN, BufferBuilder, false, 0);
         BufferBuilder.State toReturn = BufferBuilder.getVertexState();
         tessellator.draw();
-		GL11.glPopMatrix();
-		blockstateToVertexData.put(state, toReturn);
-	}
-	
+        GL11.glPopMatrix();
+        blockstateToVertexData.put(state, toReturn);
+    }
+
 }

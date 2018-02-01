@@ -21,7 +21,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
@@ -32,52 +31,52 @@ import java.util.List;
 
 public class BlockAirMine extends Block {
 
-	public BlockAirMine() {
-		super(Material.IRON);
-		setHardness(0.5f);
-		setResistance(0.5f);
+    public BlockAirMine() {
+        super(Material.IRON);
+        setHardness(0.5f);
+        setResistance(0.5f);
 
-		setUnlocalizedName(CannonModReference.ModBlocks.AIRMINE.getUnlocalizedName());
-		setRegistryName(CannonModReference.ModBlocks.AIRMINE.getRegistryName());
+        setUnlocalizedName(CannonModReference.ModBlocks.AIRMINE.getUnlocalizedName());
+        setRegistryName(CannonModReference.ModBlocks.AIRMINE.getRegistryName());
 
-		this.setCreativeTab(CreativeTabs.COMBAT);
+        this.setCreativeTab(CreativeTabs.COMBAT);
 
-	}
+    }
 
-	@Override
-	public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation, ITooltipFlag advanced)	{
-		itemInformation.add(TextFormatting.BLUE + "Any Ship hitting this will have a bad time.");
-	}
+    @Override
+    public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation, ITooltipFlag advanced) {
+        itemInformation.add(TextFormatting.BLUE + "Any Ship hitting this will have a bad time.");
+    }
 
-	public void BlockDestroyedByPlayer(BlockPos inWorldPos, World worldObj) {
+    public void BlockDestroyedByPlayer(BlockPos inWorldPos, World worldObj) {
 
-		double x = inWorldPos.getX();
-		double y = inWorldPos.getY();
-		double z = inWorldPos.getZ();
+        double x = inWorldPos.getX();
+        double y = inWorldPos.getY();
+        double z = inWorldPos.getZ();
 
-		float size = 8F;
-		float power = 0.01F;
-		float blast = 0.01F;
-		float damage = 100F;
+        float size = 8F;
+        float power = 0.01F;
+        float blast = 0.01F;
+        float damage = 100F;
 
-		NewExp2 explosion1 = new NewExp2(worldObj, null, x, y, z, size, power, damage, blast, false, true);
-		explosion1.newBoom(worldObj, null, x, y, z, size, power, damage, blast, false, true);
+        NewExp2 explosion1 = new NewExp2(worldObj, null, x, y, z, size, power, damage, blast, false, true);
+        explosion1.newBoom(worldObj, null, x, y, z, size, power, damage, blast, false, true);
 
-	}
+    }
 
-	public void BlockDestroyedByExplosion(BlockPos inWorldPos, World worldObj) {
+    public void BlockDestroyedByExplosion(BlockPos inWorldPos, World worldObj) {
 
-		double x = inWorldPos.getX();
-		double y = inWorldPos.getY();
-		double z = inWorldPos.getZ();
+        double x = inWorldPos.getX();
+        double y = inWorldPos.getY();
+        double z = inWorldPos.getZ();
 
-		float size = 8F;
-		float power = 0.01F;
-		float blast = 0.01F;
-		float damage = 100F;
+        float size = 8F;
+        float power = 0.01F;
+        float blast = 0.01F;
+        float damage = 100F;
 
-		NewExp2 explosion1 = new NewExp2(worldObj, null, x, y, z, size, power, damage, blast, false, true);
-		explosion1.newBoom(worldObj, null, x, y, z, size, power, damage, blast, false, true);
+        NewExp2 explosion1 = new NewExp2(worldObj, null, x, y, z, size, power, damage, blast, false, true);
+        explosion1.newBoom(worldObj, null, x, y, z, size, power, damage, blast, false, true);
 
-	}
+    }
 }

@@ -23,23 +23,23 @@ import java.util.Set;
 
 public class GuiFactoryValkyrienWarfare implements IModGuiFactory {
 
-	@Override
-	public void initialize(Minecraft minecraftInstance) {
+    @Override
+    public void initialize(Minecraft minecraftInstance) {
 
-	}
+    }
 
-	@Override
-	public GuiScreen createConfigGui(GuiScreen parentScreen) {
-		return new GuiConfigValkyrienWarfare(parentScreen);
-	}
+    @Override
+    public GuiScreen createConfigGui(GuiScreen parentScreen) {
+        return new GuiConfigValkyrienWarfare(parentScreen);
+    }
 
-	@Override
-	public boolean hasConfigGui() {
-		return true;
-	}
+    @Override
+    public boolean hasConfigGui() {
+        return true;
+    }
 
-	@Override
-	public Set<RuntimeOptionCategoryElement> runtimeGuiCategories() {
-		return null;
-	}
+    @Override
+    public Set<RuntimeOptionCategoryElement> runtimeGuiCategories() {
+        return null;
+    }
 }

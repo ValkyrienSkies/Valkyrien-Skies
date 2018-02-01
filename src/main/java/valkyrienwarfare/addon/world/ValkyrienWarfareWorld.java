@@ -44,6 +44,7 @@ public class ValkyrienWarfareWorld extends Module<ValkyrienWarfareWorldGen> {
     public Block skydungeon_controller;
     public Block quartz_fence;
     public Item etheriumCrystal;
+
     public ValkyrienWarfareWorld() {
         super("VW_World", new CommonProxyWorld(), "valkyrienwarfareworld");
         if (ValkyrienWarfareMod.INSTANCE.isRunningOnClient()) {

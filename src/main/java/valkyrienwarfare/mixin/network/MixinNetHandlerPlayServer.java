@@ -17,7 +17,6 @@ package valkyrienwarfare.mixin.network;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemBucket;
 import net.minecraft.item.ItemStack;
@@ -27,14 +26,12 @@ import net.minecraft.network.play.client.CPacketPlayerDigging;
 import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
 import net.minecraft.network.play.client.CPacketUpdateSign;
 import net.minecraft.network.play.server.SPacketBlockChange;
-import net.minecraft.network.play.server.SPacketChat;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntitySign;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ChatType;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
@@ -75,6 +72,7 @@ public abstract class MixinNetHandlerPlayServer {
 
     /**
      * This is easier to have as an overwrite because there's less laggy hackery to be done then :P
+     *
      * @author DaPorkchop_
      */
     //TODO: i think this can actually be done without an overwrite
@@ -110,6 +108,7 @@ public abstract class MixinNetHandlerPlayServer {
 
     /**
      * This is easier to have as an overwrite because there's less laggy hackery to be done then :P
+     *
      * @author DaPorkchop_
      */
     @Overwrite
@@ -138,6 +137,7 @@ public abstract class MixinNetHandlerPlayServer {
 
     /**
      * This is easier to have as an overwrite because there's less laggy hackery to be done then :P
+     *
      * @author DaPorkchop_
      */
     @Overwrite
@@ -311,6 +311,7 @@ public abstract class MixinNetHandlerPlayServer {
 
     /**
      * This is easier to have as an overwrite because there's less laggy hackery to be done then :P
+     *
      * @author DaPorkchop_
      */
     @Overwrite

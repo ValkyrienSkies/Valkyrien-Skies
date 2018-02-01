@@ -20,24 +20,24 @@ import net.minecraft.world.World;
 
 public class DetectorManager {
 
-	public static SpatialDetector getDetectorFor(int id, BlockPos start, World worldIn, int maximum, boolean checkCorners) {
-		if (id == DetectorIDs.ShipSpawnerGeneral.ordinal()) {
-			return new ShipSpawnDetector(start, worldIn, maximum, checkCorners);
-		}
+    public static SpatialDetector getDetectorFor(int id, BlockPos start, World worldIn, int maximum, boolean checkCorners) {
+        if (id == DetectorIDs.ShipSpawnerGeneral.ordinal()) {
+            return new ShipSpawnDetector(start, worldIn, maximum, checkCorners);
+        }
 
-		if (id == DetectorIDs.BlockPosFinder.ordinal()) {
-			return new ShipBlockPosFinder(start, worldIn, maximum, checkCorners);
-		}
+        if (id == DetectorIDs.BlockPosFinder.ordinal()) {
+            return new ShipBlockPosFinder(start, worldIn, maximum, checkCorners);
+        }
 
-		if (id == DetectorIDs.SingleBlockPosFinder.ordinal()) {
-			return new SingeBlockPosDetector(start, worldIn, maximum, checkCorners);
-		}
+        if (id == DetectorIDs.SingleBlockPosFinder.ordinal()) {
+            return new SingeBlockPosDetector(start, worldIn, maximum, checkCorners);
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	public enum DetectorIDs {
-		ShipSpawnerGeneral, BlockPosFinder, SingleBlockPosFinder
-	}
+    public enum DetectorIDs {
+        ShipSpawnerGeneral, BlockPosFinder, SingleBlockPosFinder
+    }
 
 }

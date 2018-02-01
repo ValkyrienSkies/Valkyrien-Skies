@@ -22,8 +22,8 @@ import javax.annotation.Nullable;
 
 public class StupidPredicate implements Predicate<Entity> {
 
-	public boolean apply(@Nullable Entity p_apply_1_) {
-		return p_apply_1_ != null && p_apply_1_.canBeCollidedWith();
-	}
+    public boolean apply(@Nullable Entity p_apply_1_) {
+        return p_apply_1_ != null && p_apply_1_.canBeCollidedWith();
+    }
 
 }

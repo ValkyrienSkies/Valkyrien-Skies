@@ -23,9 +23,9 @@ import java.util.List;
 
 public interface IInventoryPlayerFix {
 
-	static IInventoryPlayerFix getFixFromInventory(InventoryPlayer toWrap) {
-		return IInventoryPlayerFix.class.cast(toWrap);
-	}
+    static IInventoryPlayerFix getFixFromInventory(InventoryPlayer toWrap) {
+        return IInventoryPlayerFix.class.cast(toWrap);
+    }
 
-	List<NonNullList<ItemStack>> getAllInventories();
+    List<NonNullList<ItemStack>> getAllInventories();
 }

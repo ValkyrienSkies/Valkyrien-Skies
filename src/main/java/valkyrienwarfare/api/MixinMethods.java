@@ -14,7 +14,7 @@
  *
  */
 
-package valkyrienwarfare.mixin;
+package valkyrienwarfare.api;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;

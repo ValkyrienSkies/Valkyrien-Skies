@@ -26,7 +26,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import valkyrienwarfare.collision.EntityCollisionInjector;
 import valkyrienwarfare.collision.EntityCollisionInjector.IntermediateMovementVariableStorage;
-import valkyrienwarfare.mixin.MixinMethods;
+import valkyrienwarfare.api.MixinMethods;
 
 @Mixin(value = Entity.class, priority = 1)
 public abstract class MixinEntityIntrinsic {

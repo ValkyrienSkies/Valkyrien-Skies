@@ -46,7 +46,7 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements IShi
     @Inject(method = "getBedSpawnLocation",
             at = @At("HEAD"),
             cancellable = true)
-    static void preGetBedSpawnLocation(World worldIn, BlockPos bedLocation, boolean forceSpawn, CallbackInfoReturnable<BlockPos> callbackInfo) {
+    private static void preGetBedSpawnLocation(World worldIn, BlockPos bedLocation, boolean forceSpawn, CallbackInfoReturnable<BlockPos> callbackInfo) {
         int chunkX = bedLocation.getX() >> 4;
         int chunkZ = bedLocation.getZ() >> 4;
 

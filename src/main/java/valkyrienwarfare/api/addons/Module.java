@@ -26,6 +26,8 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
 import valkyrienwarfare.ValkyrienWarfareMod;
 
+import java.util.UUID;
+
 public abstract class Module<ImplName> {
     private String name;
     private boolean donePreInit = false, doneInit = false, donePostInit = false;
@@ -44,7 +46,7 @@ public abstract class Module<ImplName> {
 
     public static final void registerRecipe(RegistryEvent.Register<IRecipe> event, ItemStack out, Object... in) {
         CraftingHelper.ShapedPrimer primer = CraftingHelper.parseShaped(in);
-        event.getRegistry().register(new ShapedRecipes(ValkyrienWarfareMod.MODID, primer.width, primer.height, primer.input, out));
+        event.getRegistry().register(new ShapedRecipes(ValkyrienWarfareMod.MODID, primer.width, primer.height, primer.input, out).setRegistryName(ValkyrienWarfareMod.MODID, UUID.randomUUID().toString()));
     }
 
     public static final void registerItemBlock(RegistryEvent.Register<Item> event, Block block) {

@@ -33,6 +33,5 @@ public class EntityCannonBasicRenderFactory implements IRenderFactory<EntityCann
         public Render<? super EntityCannonBall> createRenderFor(RenderManager manager) {
             return new EntityCannonBallRenderer(manager);
         }
-
     }
 }

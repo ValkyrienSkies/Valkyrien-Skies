@@ -27,15 +27,21 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import valkyrienwarfare.addon.combat.ValkyrienWarfareCombat;
 import valkyrienwarfare.addon.combat.entity.EntityCannonBall;
+import valkyrienwarfare.api.IRenderVW;
 import valkyrienwarfare.render.FastBlockModelRenderer;
 
-public class EntityCannonBallRenderer extends Render<EntityCannonBall> {
+public class EntityCannonBallRenderer extends Render<EntityCannonBall> implements IRenderVW {
 
-    private final IBlockState cannonballState;
+    public static IRenderVW instance;
+
+    {
+        instance = this;
+    }
+
+    private IBlockState cannonballState;
 
     protected EntityCannonBallRenderer(RenderManager renderManager) {
         super(renderManager);
-        cannonballState = ValkyrienWarfareCombat.INSTANCE.fakecannonblock.getStateFromMeta(2);
     }
 
     @Override
@@ -72,4 +78,8 @@ public class EntityCannonBallRenderer extends Render<EntityCannonBall> {
         return null;
     }
 
+    @Override
+    public void cacheStates() {
+        cannonballState = ValkyrienWarfareCombat.INSTANCE.fakecannonblock.getStateFromMeta(2);
+    }
 }

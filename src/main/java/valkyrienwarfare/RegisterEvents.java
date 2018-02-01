@@ -28,7 +28,8 @@ import static valkyrienwarfare.ValkyrienWarfareMod.addons;
 @Mod.EventBusSubscriber(modid = ValkyrienWarfareMod.MODID)
 public class RegisterEvents {
     @SubscribeEvent
-    public void registerBlocks(RegistryEvent.Register<Block> event) {
+    public static void registerBlocks(RegistryEvent.Register<Block> event) {
+        System.out.println("Registering blocks");
         ValkyrienWarfareMod.INSTANCE.registerBlocks(event);
         for (Module module : addons) {
             module.registerBlocks(event);
@@ -36,7 +37,8 @@ public class RegisterEvents {
     }
 
     @SubscribeEvent
-    public void registerItems(RegistryEvent.Register<Item> event) {
+    public static void registerItems(RegistryEvent.Register<Item> event) {
+        System.out.println("Registering items");
         ValkyrienWarfareMod.INSTANCE.registerItems(event);
         for (Module module : addons) {
             module.registerItems(event);
@@ -45,7 +47,7 @@ public class RegisterEvents {
     }
 
     @SubscribeEvent
-    public void registerRecipies(RegistryEvent.Register<IRecipe> event) {
+    public static void registerRecipies(RegistryEvent.Register<IRecipe> event) {
         ValkyrienWarfareMod.INSTANCE.registerRecipies(event);
         for (Module module : addons) {
             module.registerRecipes(event);

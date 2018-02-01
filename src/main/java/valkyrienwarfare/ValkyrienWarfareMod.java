@@ -132,23 +132,15 @@ public class ValkyrienWarfareMod {
      */
     public static void applyConfig(Configuration conf) {
         // dynamicLighting = config.get(Configuration.CATEGORY_GENERAL, "DynamicLighting", false).getBoolean();
-
         // Property spawnParticlesParticle = config.get(Configuration.CATEGORY_GENERAL, "Ships spawn particles", false).getBoolean();
         multiThreadedPhysics = config.get(Configuration.CATEGORY_GENERAL, "Multi-Threaded physics", true, "Use Multi-Threaded physics").getBoolean();
-
         doShipCollision = config.get(Configuration.CATEGORY_GENERAL, "Enable Ship collision", true).getBoolean();
-
         shipUpperLimit = config.get(Configuration.CATEGORY_GENERAL, "Ship Y-Height Maximum", 1000D).getDouble();
         shipLowerLimit = config.get(Configuration.CATEGORY_GENERAL, "Ship Y-Height Minimum", -30D).getDouble();
-
         maxAirships = config.get(Configuration.CATEGORY_GENERAL, "Max airships per player", -1, "Players can't own more than this many airships at once. Set to -1 to disable.").getInt();
-
         accurateRain = config.get(Configuration.CATEGORY_GENERAL, "Enable accurate rain on ships", false, "Debug feature, takes a lot of processing power").getBoolean();
-
         shipsSpawnParticles = config.get(Configuration.CATEGORY_GENERAL, "Enable particle spawns on Ships", true, "Ex. Torch Particles").getBoolean();
-
         runAirshipPermissions = config.get(Configuration.CATEGORY_GENERAL, "Enable airship permissions", false, "Enables the airship permissions system").getBoolean();
-
         shipmobs_spawnrate = config.get(Configuration.CATEGORY_GENERAL, "The spawn rate for ship mobs", .01D, "The spawn rate for ship mobs").getDouble();
     }
 
@@ -216,7 +208,7 @@ public class ValkyrienWarfareMod {
             registerAddon(worldModule);
         }
 
-        if (!MixinLoaderForge.isObfuscatedEnvironment && isAddonBugFixed) { //if in dev, read default addons from gradle output folder
+        if (!MixinLoaderForge.isObfuscatedEnvironment) { //if in dev, read default addons from gradle output folder
             File f = ValkyrienWarfareMod.getWorkingFolder();
             File defaultAddons;
             String[] list = f.list();
@@ -297,7 +289,6 @@ public class ValkyrienWarfareMod {
                 System.out.println("Not loading addon: " + className);
             }
         }
-        ;
     }
 
     @EventHandler

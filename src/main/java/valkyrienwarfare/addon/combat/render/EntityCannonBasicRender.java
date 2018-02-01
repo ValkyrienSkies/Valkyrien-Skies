@@ -26,16 +26,21 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 import valkyrienwarfare.addon.combat.ValkyrienWarfareCombat;
 import valkyrienwarfare.addon.combat.entity.EntityCannonBasic;
+import valkyrienwarfare.api.IRenderVW;
 import valkyrienwarfare.render.FastBlockModelRenderer;
 
-public class EntityCannonBasicRender extends Render<EntityCannonBasic> {
+public class EntityCannonBasicRender extends Render<EntityCannonBasic> implements IRenderVW {
 
-    private final IBlockState baseState, headState;
+    public static IRenderVW instance;
+
+    {
+        instance = this;
+    }
+
+    private IBlockState baseState, headState;
 
     protected EntityCannonBasicRender(RenderManager renderManager) {
         super(renderManager);
-        baseState = ValkyrienWarfareCombat.INSTANCE.fakecannonblock.getStateFromMeta(0);
-        headState = ValkyrienWarfareCombat.INSTANCE.fakecannonblock.getStateFromMeta(1);
     }
 
     @Override
@@ -129,4 +134,9 @@ public class EntityCannonBasicRender extends Render<EntityCannonBasic> {
         return null;
     }
 
+    @Override
+    public void cacheStates() {
+        baseState = ValkyrienWarfareCombat.INSTANCE.fakecannonblock.getStateFromMeta(0);
+        headState = ValkyrienWarfareCombat.INSTANCE.fakecannonblock.getStateFromMeta(1);
+    }
 }

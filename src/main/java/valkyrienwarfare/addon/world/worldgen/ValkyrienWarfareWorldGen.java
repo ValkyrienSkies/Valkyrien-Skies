@@ -34,14 +34,16 @@ import java.util.Random;
  */
 public class ValkyrienWarfareWorldGen implements IWorldGenerator {
 
-    public WorldGenMinable genEtheriumOre;
+    public WorldGenMinable genEtheriumOre = null;
 
     public ValkyrienWarfareWorldGen() {
-        this.genEtheriumOre = new WorldGenMinable(ValkyrienWarfareWorld.INSTANCE.etheriumOre.getDefaultState(), 8);
     }
 
     @Override
     public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) {
+        if (this.genEtheriumOre == null)    {
+            this.genEtheriumOre = new WorldGenMinable(ValkyrienWarfareWorld.INSTANCE.etheriumOre.getDefaultState(), 8);
+        }
         switch (world.provider.getDimension()) {
             case 0: //Overworld
                 this.runEtheriumGenerator(this.genEtheriumOre, world, random, chunkX, chunkZ, 2, 0, 25);

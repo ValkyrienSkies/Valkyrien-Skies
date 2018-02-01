@@ -25,6 +25,8 @@ import net.minecraftforge.fml.common.event.FMLStateEvent;
 import valkyrienwarfare.addon.combat.ValkyrienWarfareCombat;
 import valkyrienwarfare.addon.combat.entity.EntityCannonBall;
 import valkyrienwarfare.addon.combat.entity.EntityCannonBasic;
+import valkyrienwarfare.addon.combat.render.EntityCannonBallRenderer;
+import valkyrienwarfare.addon.combat.render.EntityCannonBasicRender;
 import valkyrienwarfare.addon.combat.render.EntityCannonBasicRenderFactory;
 
 public class ClientProxyCombat extends CommonProxyCombat {
@@ -49,11 +51,13 @@ public class ClientProxyCombat extends CommonProxyCombat {
         registerItemModel(ValkyrienWarfareCombat.INSTANCE.cannonBall);
         registerItemModel(ValkyrienWarfareCombat.INSTANCE.powderPouch);
         registerItemModel(ValkyrienWarfareCombat.INSTANCE.explosiveArrow);
+
+        EntityCannonBallRenderer.instance.cacheStates();
+        EntityCannonBasicRender.instance.cacheStates();
     }
 
     private void registerItemModel(Item toRegister) {
         RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
         renderItem.getItemModelMesher().register(toRegister, 0, new ModelResourceLocation(ValkyrienWarfareCombat.INSTANCE.getModID() + ":" + toRegister.getUnlocalizedName().substring(5), "inventory"));
-        ;
     }
 }

@@ -27,7 +27,6 @@ import java.util.List;
 
 @Mixin(InventoryPlayer.class)
 public abstract class MixinInventoryPlayer implements IInventoryPlayerFix {
-
 	@Shadow
 	@Final
 	public List<NonNullList<ItemStack>> allInventories;
@@ -36,5 +35,4 @@ public abstract class MixinInventoryPlayer implements IInventoryPlayerFix {
 	public List<NonNullList<ItemStack>> getAllInventories() {
 		return allInventories;
 	}
-
 }

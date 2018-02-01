@@ -30,7 +30,6 @@ import valkyrienwarfare.mixin.MixinMethods;
 
 @Mixin(value = Entity.class, priority = 1)
 public abstract class MixinEntityIntrinsic {
-
     @Shadow
     public double posX;
 
@@ -43,45 +42,28 @@ public abstract class MixinEntityIntrinsic {
     @Shadow
     public World world;
 
+    @Shadow public abstract void move(MoverType type, double x, double y, double z);
+
     public Entity thisClassAsAnEntity = Entity.class.cast(this);
 
     private IntermediateMovementVariableStorage alteredMovement = null;
-    //private boolean hasChanged = false;
+    private boolean hasChanged = false;
 
-    @ModifyVariable(method = "move",
-            //argsOnly = true,
+    @Inject(method = "move",
             at = @At("HEAD"),
-            index = 1)
-    public double changeXArgAndInitLocals(MoverType type, double dx, double dy, double dz) {
-        alteredMovement = MixinMethods.handleMove(type, dx, dy, dz, thisClassAsAnEntity);
-        if (alteredMovement != null) {
-            return alteredMovement.origDxyz.X;
-        } else {
-            return dx;
-        }
-    }
-
-    @ModifyVariable(method = "move",
-            //argsOnly = true,
-            at = @At("HEAD"),
-            index = 2)
-    public double changeYArg(MoverType type, double dx, double dy, double dz) {
-        if (alteredMovement != null) {
-            return alteredMovement.origDxyz.Y;
-        } else {
-            return dy;
-        }
-    }
-
-    @ModifyVariable(method = "move",
-            //argsOnly = true,
-            at = @At("HEAD"),
-            index = 3)
-    public double changeZArg(MoverType type, double dx, double dy, double dz) {
-        if (alteredMovement != null) {
-            return alteredMovement.origDxyz.Z;
-        } else {
-            return dz;
+            cancellable = true)
+    public void changeMoveArgs(MoverType type, double dx, double dy, double dz, CallbackInfo callbackInfo) {
+        if (!hasChanged) {
+            alteredMovement = MixinMethods.handleMove(type, dx, dy, dz, thisClassAsAnEntity);
+            if (alteredMovement != null) {
+                hasChanged = true;
+                this.move(type,
+                        alteredMovement.origDxyz.X,
+                        alteredMovement.origDxyz.Y,
+                        alteredMovement.origDxyz.Z);
+                hasChanged = false;
+                callbackInfo.cancel();
+            }
         }
     }
 
@@ -115,9 +97,8 @@ public abstract class MixinEntityIntrinsic {
     @Inject(method = "move",
             at = @At("RETURN"))
     public void postMove(CallbackInfo callbackInfo) {
-        if (alteredMovement != null) {
+        if (hasChanged) {
             EntityCollisionInjector.alterEntityMovementPost(thisClassAsAnEntity, alteredMovement);
         }
-        //hasChanged = false;
     }
 }

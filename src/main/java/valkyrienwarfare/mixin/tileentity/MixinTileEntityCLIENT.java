@@ -29,11 +29,6 @@ import org.spongepowered.asm.mixin.*;
 @Mixin(TileEntity.class)
 @Implements(@Interface(iface = IntrinsicTileEntityInterface.class, prefix = "vw$"))
 public abstract class MixinTileEntityCLIENT {
-
-	@Shadow
-	@Final
-	public static AxisAlignedBB INFINITE_EXTENT_AABB;
-
 	@Shadow
 	public World world;
 
@@ -54,7 +49,4 @@ public abstract class MixinTileEntityCLIENT {
 
 	@Shadow
 	public abstract BlockPos getPos();
-
-	@Shadow
-	public abstract Block getBlockType();
 }

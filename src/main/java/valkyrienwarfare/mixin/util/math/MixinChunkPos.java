@@ -38,6 +38,10 @@ public abstract class MixinChunkPos {
 	@Final
 	public int z;
 
+	/**
+	 * This is easier to have as an overwrite because there's less laggy hackery to be done then :P
+	 * @author DaPorkchop_
+	 */
 	@Overwrite
 	public double getDistanceSq(Entity entityIn) {
 		double d0 = (double) (this.x * 16 + 8);

@@ -51,6 +51,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+//TODO this class is horrible
 @Mixin(World.class)
 @Implements(@Interface(iface = WorldChunkloadingCrashFix.class, prefix = "vw$", remap = Remap.NONE))
 public abstract class MixinWorld {
@@ -69,8 +70,8 @@ public abstract class MixinWorld {
 	List<TileEntity> addedTileEntityList;
 
 	/**
-	 * aa
-	 * @author xd
+	 * This is easier to have as an overwrite because there's less laggy hackery to be done then :P
+	 * @author DaPorkchop_
 	 */
 	@Overwrite
     public void spawnParticle(int particleID, boolean ignoreRange, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, int... parameters) {
@@ -112,8 +113,6 @@ public abstract class MixinWorld {
 		List<PhysicsWrapperEntity> nearbyShips = physManager.getNearbyPhysObjects(playerRangeBB);
 		//Get rid of the Ship that we're not supposed to be RayTracing for
 		nearbyShips.remove(toIgnore);
-
-		boolean changed = false;
 
 		double reachDistance = playerReachVector.lengthVector();
 		double worldResultDistFromPlayer = 420000000D;

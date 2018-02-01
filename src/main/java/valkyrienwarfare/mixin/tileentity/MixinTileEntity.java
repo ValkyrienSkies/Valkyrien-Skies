@@ -34,6 +34,10 @@ public abstract class MixinTileEntity implements net.minecraftforge.common.capab
 	@Shadow
 	protected World world;
 
+	/**
+	 * This is easier to have as an overwrite because there's less laggy hackery to be done then :P
+	 * @author DaPorkchop_
+	 */
 	@Overwrite
 	public double getDistanceSq(double x, double y, double z) {
 		World tileWorld = this.world;
@@ -59,7 +63,6 @@ public abstract class MixinTileEntity implements net.minecraftforge.common.capab
 					return tilePos.lengthSq();
 				}
 			}
-
 		}
 		return toReturn;
 	}

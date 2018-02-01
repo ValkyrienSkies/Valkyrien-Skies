@@ -43,6 +43,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
@@ -54,123 +55,136 @@ import java.util.Map;
 
 @Mixin(RenderGlobal.class)
 public abstract class MixinRenderGlobal {
-	
-	@Shadow
-	@Final
-	public Map<Integer, DestroyBlockProgress> damagedBlocks;
-	
-	@Shadow
-	@Final
-	public TextureManager renderEngine;
-	
-	@Shadow
-	@Final
-	public TextureAtlasSprite[] destroyBlockIcons;
-	
-	@Shadow
-	@Final
-	public Minecraft mc;
-	
-	@Shadow
-	public WorldClient world;
-	
-	@Shadow
-	public static void drawSelectionBoundingBox(AxisAlignedBB box, float red, float green, float blue, float alpha) {
-	}
-	
-	@Shadow
-	public abstract void preRenderDamagedBlocks();
-	
-	@Shadow
-	public abstract void postRenderDamagedBlocks();
 
-	/**
-	 * aa
-	 * @author xd
-	 */
-	@Overwrite
+    @Shadow
+    @Final
+    public Map<Integer, DestroyBlockProgress> damagedBlocks;
+
+    @Shadow
+    @Final
+    public TextureManager renderEngine;
+
+    @Shadow
+    @Final
+    public TextureAtlasSprite[] destroyBlockIcons;
+
+    @Shadow
+    @Final
+    public Minecraft mc;
+
+    @Shadow
+    public WorldClient world;
+    private PhysicsWrapperEntity wrapperEntity;
+
+    @Shadow
+    public static void drawSelectionBoundingBox(AxisAlignedBB box, float red, float green, float blue, float alpha) {
+    }
+
+    @Shadow
+    public abstract void preRenderDamagedBlocks();
+
+    @Shadow
+    public abstract void postRenderDamagedBlocks();
+
+    //TODO: fix the rest of the mod to test this
+    /*@Inject(method = "drawBlockDamageTexture",
+            at = @At(value = "INVOKE",
+                    target = "Lnet/minecraft/world/World;getBlockState(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/block/state/IBlockState;",
+                    ordinal = 1),
+            locals = LocalCapture.PRINT)
+    public void preGetBlockStateDamage(Tessellator tessellatorIn, BufferBuilder bufferBuilderIn, Entity entityIn, float partialTicks, CallbackInfo callbackInfo) {
+        //this.wrapperEntity = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(this.world, blockpos);
+    }*/
+
+    /**
+     * aa
+     *
+     * @author xd
+     */
+    @Overwrite
     public void drawBlockDamageTexture(Tessellator tessellatorIn, BufferBuilder worldRendererIn, Entity entityIn, float partialTicks) {
         double d0 = entityIn.lastTickPosX + (entityIn.posX - entityIn.lastTickPosX) * (double) partialTicks;
-		double d1 = entityIn.lastTickPosY + (entityIn.posY - entityIn.lastTickPosY) * (double) partialTicks;
-		double d2 = entityIn.lastTickPosZ + (entityIn.posZ - entityIn.lastTickPosZ) * (double) partialTicks;
-		
-		if (!this.damagedBlocks.isEmpty()) {
-			this.renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-			this.preRenderDamagedBlocks();
-			worldRendererIn.begin(7, DefaultVertexFormats.BLOCK);
-			worldRendererIn.setTranslation(-d0, -d1, -d2);
-			worldRendererIn.noColor();
-			Iterator<DestroyBlockProgress> iterator = this.damagedBlocks.values().iterator();
-			
-			while (iterator.hasNext()) {
-				DestroyBlockProgress destroyblockprogress = iterator.next();
-				BlockPos blockpos = destroyblockprogress.getPosition();
-				double d3 = (double) blockpos.getX() - d0;
-				double d4 = (double) blockpos.getY() - d1;
-				double d5 = (double) blockpos.getZ() - d2;
-				Block block = this.world.getBlockState(blockpos).getBlock();
-				TileEntity te = this.world.getTileEntity(blockpos);
-				boolean hasBreak = block instanceof BlockChest || block instanceof BlockEnderChest || block instanceof BlockSign || block instanceof BlockSkull;
-				if (!hasBreak)
-					hasBreak = te != null && te.canRenderBreaking();
-				
-				if (!hasBreak) {
-					PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(this.world, blockpos);
-					if (wrapper == null && (d3 * d3 + d4 * d4 + d5 * d5 > 1024.0D)) {
-						iterator.remove();
-					} else {
-						IBlockState iblockstate = this.world.getBlockState(blockpos);
-						if (wrapper != null) {
-							wrapper.wrapping.renderer.setupTranslation(partialTicks);
-							worldRendererIn.setTranslation(-wrapper.wrapping.renderer.offsetPos.getX(), -wrapper.wrapping.renderer.offsetPos.getY(), -wrapper.wrapping.renderer.offsetPos.getZ());
-						}
-						if (iblockstate.getMaterial() != Material.AIR) {
-							int i = destroyblockprogress.getPartialBlockDamage();
-							TextureAtlasSprite textureatlassprite = this.destroyBlockIcons[i];
-							BlockRendererDispatcher blockrendererdispatcher = this.mc.getBlockRendererDispatcher();
-							try {
-								blockrendererdispatcher.renderBlockDamage(iblockstate, blockpos, textureatlassprite, this.world);
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-						}
-						worldRendererIn.setTranslation(-d0, -d1, -d2);
-						// TODO: Reverse the Matrix Transforms here
-						if (wrapper != null) {
-							tessellatorIn.draw();
-							worldRendererIn.begin(7, DefaultVertexFormats.BLOCK);
-							wrapper.wrapping.renderer.inverseTransform(partialTicks);
-						}
-					}
-				}
-			}
-			
-			tessellatorIn.draw();
-			worldRendererIn.setTranslation(0.0D, 0.0D, 0.0D);
-			this.postRenderDamagedBlocks();
-		}
-	}
+        double d1 = entityIn.lastTickPosY + (entityIn.posY - entityIn.lastTickPosY) * (double) partialTicks;
+        double d2 = entityIn.lastTickPosZ + (entityIn.posZ - entityIn.lastTickPosZ) * (double) partialTicks;
 
-	/**
-	 * aa
-	 * @author xd
-	 */
-	@Overwrite
-	public void drawSelectionBox(EntityPlayer player, RayTraceResult movingObjectPositionIn, int execute, float partialTicks) {
-		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.world, movingObjectPositionIn.getBlockPos());
-		if (wrapper != null && wrapper.wrapping != null && wrapper.wrapping.renderer != null && wrapper.wrapping.renderer.offsetPos != null) {
-			wrapper.wrapping.renderer.setupTranslation(partialTicks);
-			
-			Minecraft.getMinecraft().entityRenderer.getMouseOver(partialTicks);
-			
-			movingObjectPositionIn = Minecraft.getMinecraft().objectMouseOver;
-			
-			Tessellator tessellator = Tessellator.getInstance();
+        if (!this.damagedBlocks.isEmpty()) {
+            this.renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+            this.preRenderDamagedBlocks();
+            worldRendererIn.begin(7, DefaultVertexFormats.BLOCK);
+            worldRendererIn.setTranslation(-d0, -d1, -d2);
+            worldRendererIn.noColor();
+            Iterator<DestroyBlockProgress> iterator = this.damagedBlocks.values().iterator();
+
+            while (iterator.hasNext()) {
+                DestroyBlockProgress destroyblockprogress = iterator.next();
+                BlockPos blockpos = destroyblockprogress.getPosition();
+                double d3 = (double) blockpos.getX() - d0;
+                double d4 = (double) blockpos.getY() - d1;
+                double d5 = (double) blockpos.getZ() - d2;
+                Block block = this.world.getBlockState(blockpos).getBlock();
+                TileEntity te = this.world.getTileEntity(blockpos);
+                boolean hasBreak = block instanceof BlockChest || block instanceof BlockEnderChest || block instanceof BlockSign || block instanceof BlockSkull;
+                if (!hasBreak)
+                    hasBreak = te != null && te.canRenderBreaking();
+
+                if (!hasBreak) {
+                    PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(this.world, blockpos);
+                    if (wrapper == null && (d3 * d3 + d4 * d4 + d5 * d5 > 1024.0D)) {
+                        iterator.remove();
+                    } else {
+                        IBlockState iblockstate = this.world.getBlockState(blockpos);
+                        if (wrapper != null) {
+                            wrapper.wrapping.renderer.setupTranslation(partialTicks);
+                            worldRendererIn.setTranslation(-wrapper.wrapping.renderer.offsetPos.getX(), -wrapper.wrapping.renderer.offsetPos.getY(), -wrapper.wrapping.renderer.offsetPos.getZ());
+                        }
+                        if (iblockstate.getMaterial() != Material.AIR) {
+                            int i = destroyblockprogress.getPartialBlockDamage();
+                            TextureAtlasSprite textureatlassprite = this.destroyBlockIcons[i];
+                            BlockRendererDispatcher blockrendererdispatcher = this.mc.getBlockRendererDispatcher();
+                            try {
+                                blockrendererdispatcher.renderBlockDamage(iblockstate, blockpos, textureatlassprite, this.world);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        worldRendererIn.setTranslation(-d0, -d1, -d2);
+                        // TODO: Reverse the Matrix Transforms here
+                        if (wrapper != null) {
+                            tessellatorIn.draw();
+                            worldRendererIn.begin(7, DefaultVertexFormats.BLOCK);
+                            wrapper.wrapping.renderer.inverseTransform(partialTicks);
+                        }
+                    }
+                }
+            }
+
+            tessellatorIn.draw();
+            worldRendererIn.setTranslation(0.0D, 0.0D, 0.0D);
+            this.postRenderDamagedBlocks();
+        }
+    }
+
+    /**
+     * aa
+     *
+     * @author xd
+     */
+    @Overwrite
+    public void drawSelectionBox(EntityPlayer player, RayTraceResult movingObjectPositionIn, int execute, float partialTicks) {
+        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.world, movingObjectPositionIn.getBlockPos());
+        if (wrapper != null && wrapper.wrapping != null && wrapper.wrapping.renderer != null && wrapper.wrapping.renderer.offsetPos != null) {
+            wrapper.wrapping.renderer.setupTranslation(partialTicks);
+
+            Minecraft.getMinecraft().entityRenderer.getMouseOver(partialTicks);
+
+            movingObjectPositionIn = Minecraft.getMinecraft().objectMouseOver;
+
+            Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder BufferBuilder = tessellator.getBuffer();
 
             double xOff = (player.lastTickPosX + (player.posX - player.lastTickPosX) * (double) partialTicks) - wrapper.wrapping.renderer.offsetPos.getX();
-			double yOff = (player.lastTickPosY + (player.posY - player.lastTickPosY) * (double) partialTicks) - wrapper.wrapping.renderer.offsetPos.getY();
-			double zOff = (player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * (double) partialTicks) - wrapper.wrapping.renderer.offsetPos.getZ();
+            double yOff = (player.lastTickPosY + (player.posY - player.lastTickPosY) * (double) partialTicks) - wrapper.wrapping.renderer.offsetPos.getY();
+            double zOff = (player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * (double) partialTicks) - wrapper.wrapping.renderer.offsetPos.getZ();
 
             BufferBuilder.xOffset += xOff;
             BufferBuilder.yOffset += yOff;
@@ -183,53 +197,53 @@ public abstract class MixinRenderGlobal {
             BufferBuilder.zOffset -= zOff;
 
             wrapper.wrapping.renderer.inverseTransform(partialTicks);
-		} else {
-			this.drawSelectionBoxOriginal(player, movingObjectPositionIn, execute, partialTicks);
-		}
-	}
-	
-	public void drawSelectionBoxOriginal(EntityPlayer player, RayTraceResult movingObjectPositionIn, int execute, float partialTicks) {
-		if (execute == 0 && movingObjectPositionIn.typeOfHit == RayTraceResult.Type.BLOCK) {
-			GlStateManager.enableBlend();
-			GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-			GlStateManager.glLineWidth(2.0F);
-			GlStateManager.disableTexture2D();
-			GlStateManager.depthMask(false);
-			BlockPos blockpos = movingObjectPositionIn.getBlockPos();
-			IBlockState iblockstate = this.world.getBlockState(blockpos);
-			
-			if (iblockstate.getMaterial() != Material.AIR && this.world.getWorldBorder().contains(blockpos)) {
-				double d0 = player.lastTickPosX + (player.posX - player.lastTickPosX) * (double) partialTicks;
-				double d1 = player.lastTickPosY + (player.posY - player.lastTickPosY) * (double) partialTicks;
-				double d2 = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * (double) partialTicks;
-				drawSelectionBoundingBox(iblockstate.getSelectedBoundingBox(this.world, blockpos).grow(0.0020000000949949026D).offset(-d0, -d1, -d2), 0.0F, 0.0F, 0.0F, 0.4F);
-			}
-			
-			GlStateManager.depthMask(true);
-			GlStateManager.enableTexture2D();
-			GlStateManager.disableBlend();
-		}
-	}
-	
-	@Inject(method = "renderEntities(Lnet/minecraft/entity/Entity;Lnet/minecraft/client/renderer/culling/ICamera;F)V", at = @At("HEAD"))
-	public void preRenderEntities(Entity renderViewEntity, ICamera camera, float partialTicks, CallbackInfo callbackInfo) {
-		ClientProxy.lastCamera = camera;
-	}
-	
-	@Inject(method = "renderBlockLayer(Lnet/minecraft/util/BlockRenderLayer;DILnet/minecraft/entity/Entity;)I", at = @At("HEAD"))
-	public void preRenderBlockLayer(BlockRenderLayer blockLayerIn, double partialTicks, int pass, Entity entityIn, CallbackInfoReturnable callbackInfo) {
-		RenderHelper.disableStandardItemLighting();
-		
-		for (PhysicsWrapperEntity wrapper : ValkyrienWarfareMod.physicsManager.getManagerForWorld(this.world).physicsEntities) {
-			GL11.glPushMatrix();
-			if (wrapper.wrapping.renderer != null && wrapper.wrapping.renderer.shouldRender()) {
-				wrapper.wrapping.renderer.renderBlockLayer(blockLayerIn, partialTicks, pass);
-			}
-			GL11.glPopMatrix();
-		}
-		
+        } else {
+            this.drawSelectionBoxOriginal(player, movingObjectPositionIn, execute, partialTicks);
+        }
+    }
+
+    public void drawSelectionBoxOriginal(EntityPlayer player, RayTraceResult movingObjectPositionIn, int execute, float partialTicks) {
+        if (execute == 0 && movingObjectPositionIn.typeOfHit == RayTraceResult.Type.BLOCK) {
+            GlStateManager.enableBlend();
+            GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+            GlStateManager.glLineWidth(2.0F);
+            GlStateManager.disableTexture2D();
+            GlStateManager.depthMask(false);
+            BlockPos blockpos = movingObjectPositionIn.getBlockPos();
+            IBlockState iblockstate = this.world.getBlockState(blockpos);
+
+            if (iblockstate.getMaterial() != Material.AIR && this.world.getWorldBorder().contains(blockpos)) {
+                double d0 = player.lastTickPosX + (player.posX - player.lastTickPosX) * (double) partialTicks;
+                double d1 = player.lastTickPosY + (player.posY - player.lastTickPosY) * (double) partialTicks;
+                double d2 = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * (double) partialTicks;
+                drawSelectionBoundingBox(iblockstate.getSelectedBoundingBox(this.world, blockpos).grow(0.0020000000949949026D).offset(-d0, -d1, -d2), 0.0F, 0.0F, 0.0F, 0.4F);
+            }
+
+            GlStateManager.depthMask(true);
+            GlStateManager.enableTexture2D();
+            GlStateManager.disableBlend();
+        }
+    }
+
+    @Inject(method = "renderEntities(Lnet/minecraft/entity/Entity;Lnet/minecraft/client/renderer/culling/ICamera;F)V", at = @At("HEAD"))
+    public void preRenderEntities(Entity renderViewEntity, ICamera camera, float partialTicks, CallbackInfo callbackInfo) {
+        ClientProxy.lastCamera = camera;
+    }
+
+    @Inject(method = "renderBlockLayer(Lnet/minecraft/util/BlockRenderLayer;DILnet/minecraft/entity/Entity;)I", at = @At("HEAD"))
+    public void preRenderBlockLayer(BlockRenderLayer blockLayerIn, double partialTicks, int pass, Entity entityIn, CallbackInfoReturnable callbackInfo) {
+        RenderHelper.disableStandardItemLighting();
+
+        for (PhysicsWrapperEntity wrapper : ValkyrienWarfareMod.physicsManager.getManagerForWorld(this.world).physicsEntities) {
+            GL11.glPushMatrix();
+            if (wrapper.wrapping.renderer != null && wrapper.wrapping.renderer.shouldRender()) {
+                wrapper.wrapping.renderer.renderBlockLayer(blockLayerIn, partialTicks, pass);
+            }
+            GL11.glPopMatrix();
+        }
+
 		/*
-		if (blockLayerIn == BlockRenderLayer.TRANSLUCENT) {
+        if (blockLayerIn == BlockRenderLayer.TRANSLUCENT) {
 			GlStateManager.pushMatrix();
 			GL11.glEnable(GL11.GL_STENCIL_TEST);
 			GlStateManager.colorMask(false, false, false, false);
@@ -254,32 +268,33 @@ public abstract class MixinRenderGlobal {
 			GL11.glDepthMask(true);
 		}
 		*/
-		
-		GlStateManager.resetColor();
-		//vanilla code follows
-	}
-	
-	
-	@Inject(method = "renderBlockLayer(Lnet/minecraft/util/BlockRenderLayer;DILnet/minecraft/entity/Entity;)I", at = @At("RETURN"))
-	public void postRenderBlockLayer(BlockRenderLayer blockLayerIn, double partialTicks, int pass, Entity entityIn, CallbackInfoReturnable callbackInfo) {
+
+        GlStateManager.resetColor();
+        //vanilla code follows
+    }
+
+
+    @Inject(method = "renderBlockLayer(Lnet/minecraft/util/BlockRenderLayer;DILnet/minecraft/entity/Entity;)I", at = @At("RETURN"))
+    public void postRenderBlockLayer(BlockRenderLayer blockLayerIn, double partialTicks, int pass, Entity entityIn, CallbackInfoReturnable callbackInfo) {
 		/*
 		if (blockLayerIn == BlockRenderLayer.TRANSLUCENT) {
 			GL11.glDisable(GL11.GL_STENCIL_TEST);
 			GlStateManager.popMatrix();
 		}
 		*/
-	}
+    }
 
-	/**
-	 * aa
-	 * @author xd
-	 */
-	@Overwrite
+    /**
+     * aa
+     *
+     * @author xd
+     */
+    //@Overwrite
     public Particle spawnEntityFX(int particleID, boolean ignoreRange, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, int... parameters) {
         if (ValkyrienWarfareMod.shipsSpawnParticles) {
             BlockPos particlePos = new BlockPos(x, y, z);
             PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(this.world, particlePos);
-			if (wrapper != null) {
+            if (wrapper != null) {
                 Vector newCoords = new Vector(x, y, z);
                 RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, newCoords);
 
@@ -287,13 +302,13 @@ public abstract class MixinRenderGlobal {
                 y = newCoords.Y;
                 z = newCoords.Z;
             }
-		}
-		//vanilla code follows
+        }
+        //vanilla code follows
         return this.spawnParticle0(particleID, ignoreRange, false, x, y, z, xSpeed, ySpeed, zSpeed, parameters);
     }
-	
-	@Shadow
+
+    @Shadow
     public Particle spawnParticle0(int particleID, boolean ignoreRange, boolean minParticles, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, int... parameters) {
         return null;
-	}
+    }
 }

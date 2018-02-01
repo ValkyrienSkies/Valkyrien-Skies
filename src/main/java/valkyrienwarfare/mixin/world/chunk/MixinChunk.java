@@ -44,13 +44,6 @@ public abstract class MixinChunk {
 	@Final
 	public World world;
 
-	{
-//        x = 0;
-//        z = 0;
-//        world = null;
-		// why do these have to be final lol
-	}
-
 	@Inject(method = "Lnet/minecraft/world/chunk/Chunk;populate(Lnet/minecraft/world/chunk/IChunkProvider;Lnet/minecraft/world/gen/IChunkGenerator;)V", at = @At("HEAD"), cancellable = true)
 	public void prePopulateChunk(IChunkProvider provider, IChunkGenerator generator, CallbackInfo callbackInfo) {
 		if (PhysicsChunkManager.isLikelyShipChunk(this.x, this.z)) {

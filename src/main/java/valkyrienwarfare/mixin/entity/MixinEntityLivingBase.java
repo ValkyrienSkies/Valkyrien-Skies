@@ -56,8 +56,8 @@ public abstract class MixinEntityLivingBase extends Entity {
 	}
 
 	/**
-	 * fix a warning
-	 * @author asdf
+	 * This is easier to have as an overwrite because there's less laggy hackery to be done then :P
+	 * @author DaPorkchop_
 	 */
 	@Overwrite
 	public boolean isOnLadder() {
@@ -117,7 +117,6 @@ public abstract class MixinEntityLivingBase extends Entity {
 		int k = MathHelper.floor(this.posZ);
 		BlockPos blockpos = new BlockPos(i, j, k);
 		IBlockState iblockstate = this.world.getBlockState(blockpos);
-		Block block = iblockstate.getBlock();
 		return net.minecraftforge.common.ForgeHooks.isLivingOnLadder(iblockstate, world, new BlockPos(i, j, k), EntityLivingBase.class.cast(this));
 	}
 }

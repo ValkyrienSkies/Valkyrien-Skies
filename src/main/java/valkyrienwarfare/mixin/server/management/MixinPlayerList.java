@@ -42,6 +42,10 @@ public abstract class MixinPlayerList {
 	@Final
 	public List<EntityPlayerMP> playerEntityList;
 
+	/**
+	 * SHUT UP IDEA
+	 * @author DaPorkchop_
+	 */
 	@Overwrite
 	public void sendToAllNearExcept(@Nullable EntityPlayer except, double x, double y, double z, double radius, int dimension, Packet<?> packetIn) {
 		BlockPos pos = new BlockPos(x, y, z);
@@ -83,6 +87,8 @@ public abstract class MixinPlayerList {
 				double d1 = y - entityplayermp.posY;
 				double d2 = z - entityplayermp.posZ;
 
+				//@BigBastard: what's this for? it's rather different than vanilla
+				// -- DaPorkchop_, 1 Feb. 2018
 				if (d0 * d0 + d1 * d1 + d2 * d2 < radius * radius) {
 					entityplayermp.connection.sendPacket(packetIn);
 				} else {

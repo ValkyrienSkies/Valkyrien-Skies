@@ -59,6 +59,7 @@ public abstract class MixinEntityRenderer {
 	@Shadow
 	public Entity pointedEntity;
 
+	//TODO: refactor to real mixins
 	/**
 	 * aa
 	 * @author partialTicks

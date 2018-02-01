@@ -15,7 +15,6 @@
 
 package valkyrienwarfare.mixin.world.border;
 
-import valkyrienwarfare.chunkmanagement.PhysicsChunkManager;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -23,46 +22,39 @@ import net.minecraft.world.border.WorldBorder;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import valkyrienwarfare.chunkmanagement.PhysicsChunkManager;
 
 @Mixin(WorldBorder.class)
 public abstract class MixinWorldBorder {
+    @Inject(method = "contains(Lnet/minecraft/util/math/BlockPos;)Z",
+            at = @At("HEAD"),
+            cancellable = true)
+    public void preContains(BlockPos pos, CallbackInfoReturnable<Boolean> callbackInfo) {
+        if (PhysicsChunkManager.isLikelyShipChunk(pos.getX() >> 4, pos.getZ() >> 4)) {
+            callbackInfo.setReturnValue(true);
+        }
+    }
 
-	@Overwrite
-	public boolean contains(BlockPos pos) {
-		if (PhysicsChunkManager.isLikelyShipChunk(pos.getX() >> 4, pos.getZ() >> 4)) {
-			return true;
-		}
-		return (double) (pos.getX() + 1) > this.minX() && (double) pos.getX() < this.maxX() && (double) (pos.getZ() + 1) > this.minZ() && (double) pos.getZ() < this.maxZ();
-	}
+    @Inject(method = "contains(Lnet/minecraft/util/math/ChunkPos;)Z",
+            at = @At("HEAD"),
+            cancellable = true)
+    public void preContains(ChunkPos pos, CallbackInfoReturnable<Boolean> callbackInfo) {
+        if (PhysicsChunkManager.isLikelyShipChunk(pos.x >> 4, pos.z >> 4)) {
+            callbackInfo.setReturnValue(true);
+        }
+    }
 
-	@Overwrite
-	public boolean contains(ChunkPos range) {
-		if (PhysicsChunkManager.isLikelyShipChunk(range.x, range.z)) {
-			return true;
-		}
-		return (double) range.getXEnd() > this.minX() && (double) range.getXStart() < this.maxX() && (double) range.getZEnd() > this.minZ() && (double) range.getZStart() < this.maxZ();
-	}
-
-	@Overwrite
-	public boolean contains(AxisAlignedBB bb) {
-		int xPos = (int) bb.minX;
-		int zPos = (int) bb.minZ;
-		if (PhysicsChunkManager.isLikelyShipChunk(xPos >> 4, zPos >> 4)) {
-			return true;
-		}
-		return bb.maxX > this.minX() && bb.minX < this.maxX() && bb.maxZ > this.minZ() && bb.minZ < this.maxZ();
-	}
-
-	@Shadow
-	public abstract double minX();
-
-	@Shadow
-	public abstract double minZ();
-
-	@Shadow
-	public abstract double maxX();
-
-	@Shadow
-	public abstract double maxZ();
-
+    @Inject(method = "contains(Lnet/minecraft/util/math/AxisAlignedBB;)Z",
+            at = @At("HEAD"),
+            cancellable = true)
+    public void preContains(AxisAlignedBB bb, CallbackInfoReturnable<Boolean> callbackInfo) {
+        int xPos = (int) bb.minX;
+        int zPos = (int) bb.minZ;
+        if (PhysicsChunkManager.isLikelyShipChunk(xPos >> 4, zPos >> 4)) {
+            callbackInfo.setReturnValue(true);
+        }
+    }
 }

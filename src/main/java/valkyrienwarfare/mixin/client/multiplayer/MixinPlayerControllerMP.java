@@ -54,6 +54,8 @@ public abstract class MixinPlayerControllerMP {
 	@Shadow
 	public GameType currentGameType;
 
+	//TODO: figure out why everything is commented out
+	/*
 	@Overwrite
 	public EnumActionResult processRightClickBlock(EntityPlayerSP player, WorldClient worldIn, BlockPos pos, EnumFacing direction, Vec3d vec, EnumHand hand) {
 		this.syncCurrentPlayItem();
@@ -164,7 +166,7 @@ public abstract class MixinPlayerControllerMP {
 				return EnumActionResult.SUCCESS;
 			}
 		}
-	}
+	}*/
 
 	@Shadow
 	public abstract void syncCurrentPlayItem();

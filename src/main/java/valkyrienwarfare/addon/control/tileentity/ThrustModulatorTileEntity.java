@@ -22,8 +22,8 @@ import valkyrienwarfare.addon.control.controlsystems.ShipPulseImpulseControlSyst
 import valkyrienwarfare.addon.control.network.ThrustModulatorGuiInputMessage;
 import valkyrienwarfare.addon.control.nodenetwork.Node;
 import valkyrienwarfare.addon.control.proxy.ClientProxyControl;
-import valkyrienwarfare.physics.PhysicsCalculations;
-import valkyrienwarfare.physicsmanagement.PhysicsObject;
+import valkyrienwarfare.physics.calculations.PhysicsCalculations;
+import valkyrienwarfare.physics.management.PhysicsObject;
 
 public class ThrustModulatorTileEntity extends ImplPhysicsProcessorNodeTileEntity {
 

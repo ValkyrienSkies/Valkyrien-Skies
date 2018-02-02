@@ -14,13 +14,13 @@
  *
  */
 
-package valkyrienwarfare.physics;
+package valkyrienwarfare.physics.calculations;
 
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.math.Quaternion;
-import valkyrienwarfare.physicsmanagement.CoordTransformObject;
-import valkyrienwarfare.physicsmanagement.PhysicsObject;
+import valkyrienwarfare.physics.management.CoordTransformObject;
+import valkyrienwarfare.physics.management.PhysicsObject;
 
 public class PhysicsCalculationsOrbital extends PhysicsCalculations {
 

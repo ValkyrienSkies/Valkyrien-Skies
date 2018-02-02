@@ -67,9 +67,9 @@ import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.capability.IAirshipCounterCapability;
 import valkyrienwarfare.interaction.ValkyrienWarfareWorldEventListener;
 import valkyrienwarfare.mixin.MixinLoaderForge;
-import valkyrienwarfare.physicsmanagement.PhysicsTickHandler;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
-import valkyrienwarfare.physicsmanagement.ShipType;
+import valkyrienwarfare.physics.management.PhysicsTickHandler;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.management.ShipType;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;

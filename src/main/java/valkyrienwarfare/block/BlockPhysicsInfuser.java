@@ -29,9 +29,9 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
-import valkyrienwarfare.physicsmanagement.ShipType;
-import valkyrienwarfare.physicsmanagement.WorldPhysObjectManager;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.management.ShipType;
+import valkyrienwarfare.physics.management.WorldPhysObjectManager;
 import valkyrienwarfare.relocation.DetectorManager;
 
 import java.util.List;

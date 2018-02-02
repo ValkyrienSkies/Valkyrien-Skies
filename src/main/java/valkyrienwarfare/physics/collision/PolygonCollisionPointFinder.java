@@ -14,7 +14,7 @@
  *
  */
 
-package valkyrienwarfare.physcollision;
+package valkyrienwarfare.physics.collision;
 
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.collision.PhysCollisionObject;

@@ -14,7 +14,7 @@
  *
  */
 
-package valkyrienwarfare.physics;
+package valkyrienwarfare.physics.data;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;

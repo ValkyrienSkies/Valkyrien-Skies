@@ -23,7 +23,7 @@ import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.*;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.collision.Polygon;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.render.IntrinsicTileEntityInterface;
 
 @Mixin(TileEntity.class)

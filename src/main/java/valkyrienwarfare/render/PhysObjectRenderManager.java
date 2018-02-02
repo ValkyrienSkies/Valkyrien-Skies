@@ -28,8 +28,8 @@ import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.math.Quaternion;
-import valkyrienwarfare.physicsmanagement.PhysicsObject;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.management.PhysicsObject;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.proxy.ClientProxy;
 
 import java.nio.FloatBuffer;

@@ -33,8 +33,8 @@ import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.balloon.BalloonDetector;
 import valkyrienwarfare.addon.control.balloon.BalloonProcessor;
 import valkyrienwarfare.addon.control.tileentity.BalloonBurnerTileEntity;
-import valkyrienwarfare.physicsmanagement.PhysicsObject;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.management.PhysicsObject;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 import javax.annotation.Nullable;
 import java.util.List;

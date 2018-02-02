@@ -14,7 +14,7 @@
  *
  */
 
-package valkyrienwarfare.physics;
+package valkyrienwarfare.physics.data;
 
 import valkyrienwarfare.api.Vector;
 

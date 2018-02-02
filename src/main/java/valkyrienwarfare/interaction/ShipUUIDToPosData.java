@@ -23,7 +23,7 @@ import net.minecraft.world.storage.WorldSavedData;
 import valkyrienwarfare.NBTUtils;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;

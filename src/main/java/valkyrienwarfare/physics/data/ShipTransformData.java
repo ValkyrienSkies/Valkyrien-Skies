@@ -14,17 +14,44 @@
  *
  */
 
-package valkyrienwarfare.physics;
+package valkyrienwarfare.physics.data;
 
 import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.network.PhysWrapperPositionMessage;
+import valkyrienwarfare.physics.management.PhysicsObject;
 
-public class Force extends Vector {
+public class ShipTransformData {
 
-    public final boolean inLocal;
+    public int relativeTick;
 
-    public Force(double x, double y, double z, boolean isInLocalCoords) {
-        super(x, y, z);
-        inLocal = isInLocalCoords;
+    public double posX, posY, posZ;
+    public double pitch, yaw, roll;
+    public Vector centerOfRotation;
+
+    public ShipTransformData(PhysWrapperPositionMessage wrapperMessage) {
+        posX = wrapperMessage.posX;
+        posY = wrapperMessage.posY;
+        posZ = wrapperMessage.posZ;
+
+        pitch = wrapperMessage.pitch;
+        yaw = wrapperMessage.yaw;
+        roll = wrapperMessage.roll;
+
+        centerOfRotation = wrapperMessage.centerOfMass;
+
+        relativeTick = wrapperMessage.relativeTick;
     }
 
+    // Apply all the position/rotation variables accordingly onto the passed physObject
+    public void applyToPhysObject(PhysicsObject physObj) {
+        physObj.wrapper.posX = posX;
+        physObj.wrapper.posY = posY;
+        physObj.wrapper.posZ = posZ;
+
+        physObj.wrapper.pitch = pitch;
+        physObj.wrapper.yaw = yaw;
+        physObj.wrapper.roll = roll;
+
+        physObj.centerCoord = centerOfRotation;
+    }
 }

@@ -14,10 +14,17 @@
  *
  */
 
-package valkyrienwarfare.physicsmanagement;
+package valkyrienwarfare.physics.data;
 
-public enum ShipType {
+import valkyrienwarfare.api.Vector;
 
-    Full_Unlocked, Oribtal, Semi_Unlocked_Orbital, Zepplin, Dungeon_Sky
+public class Force extends Vector {
+
+    public final boolean inLocal;
+
+    public Force(double x, double y, double z, boolean isInLocalCoords) {
+        super(x, y, z);
+        inLocal = isInLocalCoords;
+    }
 
 }

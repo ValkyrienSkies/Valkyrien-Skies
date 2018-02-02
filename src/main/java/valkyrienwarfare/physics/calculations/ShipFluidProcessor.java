@@ -14,14 +14,14 @@
  *
  */
 
-package valkyrienwarfare.physics;
+package valkyrienwarfare.physics.calculations;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.physicsmanagement.PhysicsObject;
+import valkyrienwarfare.physics.management.PhysicsObject;
 
 import java.util.ArrayList;
 import java.util.List;

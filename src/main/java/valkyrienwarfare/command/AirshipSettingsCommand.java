@@ -28,7 +28,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;

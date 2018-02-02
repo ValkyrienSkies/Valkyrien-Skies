@@ -24,8 +24,8 @@ import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.world.ValkyrienWarfareWorld;
 import valkyrienwarfare.addon.world.tileentity.TileEntitySkyTempleController;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
-import valkyrienwarfare.physicsmanagement.ShipType;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.management.ShipType;
 import valkyrienwarfare.schematics.SchematicReader;
 import valkyrienwarfare.schematics.SchematicReader.Schematic;
 

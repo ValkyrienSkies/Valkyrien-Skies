@@ -31,7 +31,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraftforge.client.ForgeHooksClient;
 import org.lwjgl.opengl.GL11;
-import valkyrienwarfare.physicsmanagement.PhysicsObject;
+import valkyrienwarfare.physics.management.PhysicsObject;
 
 import java.util.ArrayList;
 

@@ -39,9 +39,9 @@ import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.interaction.EntityDraggable;
 import valkyrienwarfare.interaction.IDraggable;
 import valkyrienwarfare.math.BigBastardMath;
-import valkyrienwarfare.physics.PhysicsQueuedForce;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
-import valkyrienwarfare.physicsmanagement.WorldPhysObjectManager;
+import valkyrienwarfare.physics.data.PhysicsQueuedForce;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.management.WorldPhysObjectManager;
 
 import java.util.ArrayList;
 import java.util.List;

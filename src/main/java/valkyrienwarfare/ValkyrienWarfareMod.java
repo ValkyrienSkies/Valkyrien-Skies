@@ -61,8 +61,8 @@ import valkyrienwarfare.chunkmanagement.DimensionPhysicsChunkManager;
 import valkyrienwarfare.gui.TabValkyrienWarfare;
 import valkyrienwarfare.mixin.MixinLoaderForge;
 import valkyrienwarfare.network.*;
-import valkyrienwarfare.physicsmanagement.DimensionPhysObjectManager;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.management.DimensionPhysObjectManager;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.proxy.CommonProxy;
 import valkyrienwarfare.proxy.ServerProxy;
 

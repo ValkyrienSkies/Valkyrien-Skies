@@ -27,7 +27,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.nodenetwork.INodeProvider;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 import java.io.InputStream;
 import java.util.HashMap;

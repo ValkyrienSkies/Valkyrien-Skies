@@ -23,7 +23,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.tileentity.TileEntityHoverController;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public class HovercraftControllerGUIInputHandler implements IMessageHandler<HovercraftControllerGUIInputMessage, IMessage> {
 

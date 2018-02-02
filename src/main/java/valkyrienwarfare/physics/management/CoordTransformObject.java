@@ -14,7 +14,7 @@
  *
  */
 
-package valkyrienwarfare.physicsmanagement;
+package valkyrienwarfare.physics.management;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;

@@ -14,7 +14,7 @@
  *
  */
 
-package valkyrienwarfare.physics;
+package valkyrienwarfare.physics.calculations;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -34,11 +34,14 @@ import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.math.BigBastardMath;
 import valkyrienwarfare.math.Quaternion;
-import valkyrienwarfare.physcollision.ShipPhysicsCollider;
-import valkyrienwarfare.physcollision.WorldPhysicsCollider;
-import valkyrienwarfare.physicsmanagement.CoordTransformObject;
-import valkyrienwarfare.physicsmanagement.PhysicsObject;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.collision.ShipPhysicsCollider;
+import valkyrienwarfare.physics.collision.WorldPhysicsCollider;
+import valkyrienwarfare.physics.data.PhysicsQueuedForce;
+import valkyrienwarfare.physics.data.BlockForce;
+import valkyrienwarfare.physics.data.BlockMass;
+import valkyrienwarfare.physics.management.CoordTransformObject;
+import valkyrienwarfare.physics.management.PhysicsObject;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 import javax.vecmath.Matrix3d;
 import java.util.ArrayList;

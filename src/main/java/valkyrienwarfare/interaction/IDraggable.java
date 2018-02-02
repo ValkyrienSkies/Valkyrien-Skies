@@ -18,7 +18,7 @@ package valkyrienwarfare.interaction;
 
 import net.minecraft.entity.MoverType;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public interface IDraggable {
 

@@ -14,7 +14,7 @@
  *
  */
 
-package valkyrienwarfare.physics;
+package valkyrienwarfare.physics.calculations;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -23,7 +23,7 @@ import valkyrienwarfare.addon.control.nodenetwork.IPhysicsProcessorNode;
 import valkyrienwarfare.addon.control.nodenetwork.Node;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.physicsmanagement.PhysicsObject;
+import valkyrienwarfare.physics.management.PhysicsObject;
 
 public class PhysicsCalculationsManualControl extends PhysicsCalculations {
 

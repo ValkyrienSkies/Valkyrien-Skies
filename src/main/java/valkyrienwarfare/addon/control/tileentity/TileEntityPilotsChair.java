@@ -26,8 +26,8 @@ import valkyrienwarfare.addon.control.piloting.ControllerInputType;
 import valkyrienwarfare.addon.control.piloting.PilotControlsMessage;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.physicsmanagement.PhysicsObject;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.management.PhysicsObject;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public class TileEntityPilotsChair extends ImplTileEntityPilotable {
 

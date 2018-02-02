@@ -14,7 +14,7 @@
  *
  */
 
-package valkyrienwarfare.physcollision;
+package valkyrienwarfare.physics.collision;
 
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -25,9 +25,9 @@ import valkyrienwarfare.collision.PhysCollisionObject;
 import valkyrienwarfare.collision.PhysPolygonCollider;
 import valkyrienwarfare.collision.Polygon;
 import valkyrienwarfare.math.BigBastardMath;
-import valkyrienwarfare.physics.PhysicsCalculations;
-import valkyrienwarfare.physics.PhysicsCalculationsOrbital;
-import valkyrienwarfare.physicsmanagement.PhysicsObject;
+import valkyrienwarfare.physics.calculations.PhysicsCalculations;
+import valkyrienwarfare.physics.calculations.PhysicsCalculationsOrbital;
+import valkyrienwarfare.physics.management.PhysicsObject;
 
 import java.util.ArrayList;
 import java.util.Iterator;

@@ -34,7 +34,7 @@ import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.gui.ControlGUIEnum;
 import valkyrienwarfare.addon.control.item.ItemSystemLinker;
 import valkyrienwarfare.addon.control.tileentity.TileEntityHoverController;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 import javax.annotation.Nullable;
 import java.util.List;

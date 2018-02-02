@@ -30,7 +30,7 @@ import valkyrienwarfare.addon.control.piloting.IShipPilot;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.interaction.ShipUUIDToPosData;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 import java.util.UUID;
 

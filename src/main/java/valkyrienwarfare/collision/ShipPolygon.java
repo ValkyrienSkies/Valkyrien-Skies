@@ -18,7 +18,7 @@ package valkyrienwarfare.collision;
 
 import net.minecraft.util.math.AxisAlignedBB;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.physicsmanagement.PhysicsObject;
+import valkyrienwarfare.physics.management.PhysicsObject;
 
 public class ShipPolygon extends Polygon {
 

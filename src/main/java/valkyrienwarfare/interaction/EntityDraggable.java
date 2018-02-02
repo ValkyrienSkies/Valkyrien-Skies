@@ -27,8 +27,8 @@ import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.combat.entity.EntityCannonBall;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.physicsmanagement.CoordTransformObject;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.management.CoordTransformObject;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 import java.util.List;
 

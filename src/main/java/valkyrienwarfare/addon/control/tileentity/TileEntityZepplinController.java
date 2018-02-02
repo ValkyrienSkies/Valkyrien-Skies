@@ -20,8 +20,8 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.piloting.ControllerInputType;
 import valkyrienwarfare.addon.control.piloting.PilotControlsMessage;
-import valkyrienwarfare.physics.PhysicsCalculationsManualControl;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.calculations.PhysicsCalculationsManualControl;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public class TileEntityZepplinController extends ImplTileEntityPilotable {
 

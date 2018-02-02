@@ -35,7 +35,7 @@ import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.combat.entity.EntityMountingWeaponBase;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public class ValkyrienWarfareWorldEventListener implements IWorldEventListener {
 

@@ -23,7 +23,7 @@ import net.minecraft.world.storage.MapStorage;
 import net.minecraft.world.storage.WorldSavedData;
 import valkyrienwarfare.NBTUtils;
 import valkyrienwarfare.chunkmanagement.ChunkSet;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;

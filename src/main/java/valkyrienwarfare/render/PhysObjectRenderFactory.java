@@ -19,7 +19,7 @@ package valkyrienwarfare.render;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public class PhysObjectRenderFactory implements IRenderFactory<PhysicsWrapperEntity> {
 

@@ -34,7 +34,7 @@ import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.api.addons.Module;
 import valkyrienwarfare.api.addons.ModuleProxy;
 import valkyrienwarfare.math.Quaternion;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.render.PhysObjectRenderFactory;
 
 public class ClientProxy extends CommonProxy {

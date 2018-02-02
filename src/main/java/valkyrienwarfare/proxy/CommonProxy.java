@@ -26,8 +26,8 @@ import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.addons.Module;
 import valkyrienwarfare.api.addons.ModuleProxy;
 import valkyrienwarfare.chunkmanagement.DimensionPhysicsChunkManager;
-import valkyrienwarfare.physicsmanagement.DimensionPhysObjectManager;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.management.DimensionPhysObjectManager;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public class CommonProxy {
 

@@ -21,7 +21,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.storage.MapStorage;
 import net.minecraft.world.storage.WorldSavedData;
 import valkyrienwarfare.NBTUtils;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;

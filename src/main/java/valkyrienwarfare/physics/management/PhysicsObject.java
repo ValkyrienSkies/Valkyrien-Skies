@@ -14,7 +14,7 @@
  *
  */
 
-package valkyrienwarfare.physicsmanagement;
+package valkyrienwarfare.physics.management;
 
 import gnu.trove.iterator.TIntIterator;
 import io.netty.buffer.ByteBuf;
@@ -58,7 +58,12 @@ import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.api.block.ethercompressor.TileEntityEtherCompressor;
 import valkyrienwarfare.chunkmanagement.ChunkSet;
 import valkyrienwarfare.network.PhysWrapperPositionMessage;
-import valkyrienwarfare.physics.*;
+import valkyrienwarfare.physics.calculations.PhysicsCalculations;
+import valkyrienwarfare.physics.calculations.PhysicsCalculationsManualControl;
+import valkyrienwarfare.physics.calculations.PhysicsCalculationsOrbital;
+import valkyrienwarfare.physics.data.BlockForce;
+import valkyrienwarfare.physics.data.PhysicsQueuedForce;
+import valkyrienwarfare.physics.data.ShipTransformData;
 import valkyrienwarfare.relocation.DetectorManager;
 import valkyrienwarfare.relocation.SpatialDetector;
 import valkyrienwarfare.relocation.VWChunkCache;

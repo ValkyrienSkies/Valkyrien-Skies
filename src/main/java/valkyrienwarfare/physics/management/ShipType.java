@@ -14,27 +14,10 @@
  *
  */
 
-package valkyrienwarfare.physicsmanagement;
+package valkyrienwarfare.physics.management;
 
-import java.util.concurrent.Callable;
+public enum ShipType {
 
-public class PhysCollisionCallable implements Callable<Void> {
-
-    private final PhysicsObject toRun;
-
-    public PhysCollisionCallable(PhysicsObject physicsCalculations) {
-        toRun = physicsCalculations;
-    }
-
-    @Override
-    public Void call() throws Exception {
-        if (!toRun.wrapper.firstUpdate) {
-            toRun.physicsProcessor.processWorldCollision();
-            toRun.physicsProcessor.rawPhysTickPostCol();
-        } else {
-            toRun.coordTransform.updateAllTransforms();
-        }
-        return null;
-    }
+    Full_Unlocked, Oribtal, Semi_Unlocked_Orbital, Zepplin, Dungeon_Sky
 
 }

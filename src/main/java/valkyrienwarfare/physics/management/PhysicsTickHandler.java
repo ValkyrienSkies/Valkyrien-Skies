@@ -14,7 +14,7 @@
  *
  */
 
-package valkyrienwarfare.physicsmanagement;
+package valkyrienwarfare.physics.management;
 
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;

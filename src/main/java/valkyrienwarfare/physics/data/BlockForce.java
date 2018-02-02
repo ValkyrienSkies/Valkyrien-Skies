@@ -14,7 +14,7 @@
  *
  */
 
-package valkyrienwarfare.physics;
+package valkyrienwarfare.physics.data;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -22,7 +22,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import valkyrienwarfare.api.IBlockForceProvider;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.physicsmanagement.PhysicsObject;
+import valkyrienwarfare.physics.management.PhysicsObject;
 
 import java.util.HashMap;
 

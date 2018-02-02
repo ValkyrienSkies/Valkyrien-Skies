@@ -23,8 +23,8 @@ import valkyrienwarfare.NBTUtils;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.physics.PhysicsCalculations;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.calculations.PhysicsCalculations;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity implements IForceTile {
 

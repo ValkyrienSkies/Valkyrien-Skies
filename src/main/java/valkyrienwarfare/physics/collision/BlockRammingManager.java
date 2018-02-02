@@ -14,12 +14,12 @@
  *
  */
 
-package valkyrienwarfare.physcollision;
+package valkyrienwarfare.physics.collision;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
-import valkyrienwarfare.physics.BlockMass;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.data.BlockMass;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 /**
  * Given the sets of inputs, this class decides which blocks should be rammed, and which blocks shouldn't

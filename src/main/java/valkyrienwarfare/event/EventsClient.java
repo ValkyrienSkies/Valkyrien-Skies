@@ -41,8 +41,8 @@ import valkyrienwarfare.fixes.SoundFixWrapper;
 import valkyrienwarfare.interaction.EntityDraggable;
 import valkyrienwarfare.interaction.IDraggable;
 import valkyrienwarfare.network.PlayerShipRefrenceMessage;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
-import valkyrienwarfare.physicsmanagement.WorldPhysObjectManager;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.management.WorldPhysObjectManager;
 
 public class EventsClient {
 

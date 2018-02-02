@@ -36,7 +36,7 @@ import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.block.BlockHovercraftController;
 import valkyrienwarfare.api.block.ethercompressor.BlockEtherCompressor;
 import valkyrienwarfare.api.block.ethercompressor.TileEntityEtherCompressor;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 import javax.annotation.Nullable;
 import java.util.List;

@@ -14,7 +14,7 @@
  *
  */
 
-package valkyrienwarfare.physcollision;
+package valkyrienwarfare.physics.collision;
 
 import com.jackredcreeper.cannon.world.NewExp2;
 import gnu.trove.iterator.TIntIterator;
@@ -36,9 +36,9 @@ import valkyrienwarfare.collision.PhysPolygonCollider;
 import valkyrienwarfare.collision.Polygon;
 import valkyrienwarfare.optimization.CollisionInformationHolder;
 import valkyrienwarfare.optimization.ShipCollisionTask;
-import valkyrienwarfare.physcollision.BlockRammingManager.NestedBoolean;
-import valkyrienwarfare.physics.PhysicsCalculations;
-import valkyrienwarfare.physicsmanagement.PhysicsObject;
+import valkyrienwarfare.physics.collision.BlockRammingManager.NestedBoolean;
+import valkyrienwarfare.physics.calculations.PhysicsCalculations;
+import valkyrienwarfare.physics.management.PhysicsObject;
 import valkyrienwarfare.relocation.SpatialDetector;
 
 import java.util.ArrayList;

@@ -21,7 +21,7 @@ import valkyrienwarfare.interaction.BlockPosToShipUUIDData;
 import valkyrienwarfare.interaction.ShipNameUUIDData;
 import valkyrienwarfare.interaction.ShipUUIDToPosData;
 import valkyrienwarfare.interaction.ShipUUIDToPosData.ShipPositionData;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 import java.util.HashMap;
 import java.util.UUID;

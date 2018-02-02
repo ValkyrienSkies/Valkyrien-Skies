@@ -16,7 +16,7 @@
 
 package valkyrienwarfare.addon.control.nodenetwork;
 
-import valkyrienwarfare.physicsmanagement.PhysicsObject;
+import valkyrienwarfare.physics.management.PhysicsObject;
 
 import java.util.ArrayList;
 import java.util.HashSet;

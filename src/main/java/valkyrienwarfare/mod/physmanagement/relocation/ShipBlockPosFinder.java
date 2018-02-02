@@ -18,7 +18,7 @@ package valkyrienwarfare.mod.physmanagement.relocation;
 
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import valkyrienwarfare.BlockPhysicsRegistration;
+import valkyrienwarfare.mod.BlockPhysicsRegistration;
 
 public class ShipBlockPosFinder extends SpatialDetector {
 

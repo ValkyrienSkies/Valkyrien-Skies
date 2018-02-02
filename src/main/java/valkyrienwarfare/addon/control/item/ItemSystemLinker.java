@@ -31,7 +31,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import valkyrienwarfare.NBTUtils;
+import valkyrienwarfare.util.NBTUtils;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.block.BlockHovercraftController;
 import valkyrienwarfare.api.block.ethercompressor.BlockEtherCompressor;

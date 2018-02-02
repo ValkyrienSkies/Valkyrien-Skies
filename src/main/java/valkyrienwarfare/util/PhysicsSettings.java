@@ -14,7 +14,7 @@
  *
  */
 
-package valkyrienwarfare;
+package valkyrienwarfare.util;
 
 public final class PhysicsSettings {
     public static boolean doGravity = true;

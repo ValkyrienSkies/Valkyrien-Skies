@@ -23,7 +23,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
-import valkyrienwarfare.PhysicsSettings;
+import valkyrienwarfare.util.PhysicsSettings;
 import valkyrienwarfare.addon.world.block.BlockEtheriumOre;
 import valkyrienwarfare.fixes.IInventoryPlayerFix;
 

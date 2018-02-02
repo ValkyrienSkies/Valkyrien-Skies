@@ -14,7 +14,7 @@
  *
  */
 
-package valkyrienwarfare;
+package valkyrienwarfare.mod;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;

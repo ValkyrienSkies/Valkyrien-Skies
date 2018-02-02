@@ -18,7 +18,7 @@ package valkyrienwarfare.physics.calculations;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import valkyrienwarfare.PhysicsSettings;
+import valkyrienwarfare.util.PhysicsSettings;
 import valkyrienwarfare.addon.control.nodenetwork.IPhysicsProcessorNode;
 import valkyrienwarfare.addon.control.nodenetwork.Node;
 import valkyrienwarfare.api.RotationMatrices;

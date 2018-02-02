@@ -21,7 +21,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.MapStorage;
 import net.minecraft.world.storage.WorldSavedData;
-import valkyrienwarfare.NBTUtils;
+import valkyrienwarfare.util.NBTUtils;
 import valkyrienwarfare.mod.physmanagement.chunk.ChunkSet;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 

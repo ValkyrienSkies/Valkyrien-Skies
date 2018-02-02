@@ -14,7 +14,7 @@
  *
  */
 
-package valkyrienwarfare;
+package valkyrienwarfare.util;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;

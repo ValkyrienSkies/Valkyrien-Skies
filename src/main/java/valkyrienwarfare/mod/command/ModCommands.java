@@ -14,7 +14,7 @@
  *
  */
 
-package valkyrienwarfare;
+package valkyrienwarfare.mod.command;
 
 import net.minecraft.command.ServerCommandManager;
 import net.minecraft.server.MinecraftServer;

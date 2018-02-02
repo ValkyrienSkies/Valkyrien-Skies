@@ -14,11 +14,12 @@
  *
  */
 
-package valkyrienwarfare;
+package valkyrienwarfare.util;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.DummyMethods;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;

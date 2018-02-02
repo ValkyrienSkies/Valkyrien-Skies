@@ -80,9 +80,10 @@ public class WorldPhysicsCollider {
         // Multiply by 20 to convert seconds (physTickSpeed) into ticks (ticksSinceCacheUpdate)
         ticksSinceCacheUpdate += 20D * calculator.physTickSpeed;
 
+        
         TIntIterator iterator = cachedHitsToRemove.iterator();
         while (iterator.hasNext()) {
-            cachedPotentialHits.remove(iterator.next());
+//            cachedPotentialHits.remove(iterator.next());
         }
         cachedHitsToRemove.clear();
         if (shouldUpdateCollisonCache()) {
@@ -353,7 +354,7 @@ public class WorldPhysicsCollider {
 //			collisionImpulseForce.multiply(1.8D);
             double collisionVelocity = momentumAtPoint.dot(axis);
 
-            if (false && Math.abs(collisionVelocity) < 0.01D) {
+            if (Math.abs(collisionVelocity) < 0.01D) {
                 collisionImpulseForce.zero();
             } else {
                 addFrictionToNormalForce(momentumAtPoint, collisionImpulseForce);
@@ -440,7 +441,7 @@ public class WorldPhysicsCollider {
     }
 
     private void updatePotentialCollisionCache() {
-        final AxisAlignedBB collisionBB = parent.collisionBB.expand(expansion, expansion, expansion).offset(calculator.linearMomentum.X * calculator.invMass, calculator.linearMomentum.Y * calculator.invMass, calculator.linearMomentum.Z * calculator.invMass);
+        final AxisAlignedBB collisionBB = parent.collisionBB.expand(expansion, expansion, expansion).expand(calculator.linearMomentum.X * calculator.invMass, calculator.linearMomentum.Y * calculator.invMass, calculator.linearMomentum.Z * calculator.invMass);
 
         ticksSinceCacheUpdate = 0D;
         //This is being used to occasionally offset the collision cache update, in the hopes this will prevent multiple ships from all updating

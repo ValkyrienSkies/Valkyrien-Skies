@@ -20,7 +20,7 @@ import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.interaction.EntityDraggable;
-import valkyrienwarfare.optimization.ShipCollisionTask;
+import valkyrienwarfare.physics.collision.optimization.ShipCollisionTask;
 
 import java.util.ArrayList;
 import java.util.concurrent.Callable;

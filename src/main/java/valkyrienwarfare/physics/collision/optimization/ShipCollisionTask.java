@@ -14,7 +14,7 @@
  *
  */
 
-package valkyrienwarfare.optimization;
+package valkyrienwarfare.physics.collision.optimization;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.AxisAlignedBB;

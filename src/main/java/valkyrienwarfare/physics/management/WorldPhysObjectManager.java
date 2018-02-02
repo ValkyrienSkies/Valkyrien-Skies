@@ -37,7 +37,7 @@ import java.util.concurrent.Future;
 /**
  * This class essentially handles all the issues with ticking and handling physics Objects in the given world
  *
- * @author thebest108
+ * @author BigBastard
  */
 public class WorldPhysObjectManager {
 

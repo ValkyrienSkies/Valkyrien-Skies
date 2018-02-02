@@ -24,7 +24,7 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 /**
  * Given the sets of inputs, this class decides which blocks should be rammed, and which blocks shouldn't
  *
- * @author thebest108
+ * @author BigBastard
  */
 public class BlockRammingManager {
 

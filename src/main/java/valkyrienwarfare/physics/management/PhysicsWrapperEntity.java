@@ -41,7 +41,7 @@ import javax.annotation.Nullable;
 /**
  * This entity's only purpose is to use the functionality of sending itself to nearby players, all other operations are handled by the PhysicsObject class
  *
- * @author thebest108
+ * @author BigBastard
  */
 public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpawnData {
 

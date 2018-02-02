@@ -33,7 +33,7 @@ import java.util.ArrayList;
 /**
  * Handles ALL functions for moving between Ship coordinates and world coordinates
  *
- * @author thebest108
+ * @author BigBastard
  */
 public class CoordTransformObject {
 

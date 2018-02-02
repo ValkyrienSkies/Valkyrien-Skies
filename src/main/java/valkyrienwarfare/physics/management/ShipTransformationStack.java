@@ -16,7 +16,7 @@
 
 package valkyrienwarfare.physics.management;
 
-import valkyrienwarfare.network.PhysWrapperPositionMessage;
+import valkyrienwarfare.mod.network.PhysWrapperPositionMessage;
 import valkyrienwarfare.physics.data.ShipTransformData;
 
 /**

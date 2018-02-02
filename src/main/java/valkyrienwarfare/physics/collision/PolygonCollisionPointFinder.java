@@ -17,8 +17,6 @@
 package valkyrienwarfare.physics.collision;
 
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.collision.PhysCollisionObject;
-import valkyrienwarfare.collision.PhysPolygonCollider;
 
 public class PolygonCollisionPointFinder {
 

@@ -22,9 +22,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.*;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.collision.Polygon;
+import valkyrienwarfare.physics.collision.Polygon;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
-import valkyrienwarfare.render.IntrinsicTileEntityInterface;
+import valkyrienwarfare.mod.client.render.IntrinsicTileEntityInterface;
 
 @Mixin(TileEntity.class)
 @Implements(@Interface(iface = IntrinsicTileEntityInterface.class, prefix = "vw$"))

@@ -48,7 +48,7 @@ import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
-import valkyrienwarfare.proxy.ClientProxy;
+import valkyrienwarfare.mod.proxy.ClientProxy;
 
 import java.util.Iterator;
 import java.util.Map;

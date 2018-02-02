@@ -17,7 +17,7 @@
 package valkyrienwarfare.physics.data;
 
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.network.PhysWrapperPositionMessage;
+import valkyrienwarfare.mod.network.PhysWrapperPositionMessage;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
 public class ShipTransformData {

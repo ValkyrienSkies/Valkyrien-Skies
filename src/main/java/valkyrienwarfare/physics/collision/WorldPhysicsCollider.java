@@ -31,15 +31,12 @@ import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.collision.PhysCollisionObject;
-import valkyrienwarfare.collision.PhysPolygonCollider;
-import valkyrienwarfare.collision.Polygon;
 import valkyrienwarfare.physics.collision.optimization.CollisionInformationHolder;
 import valkyrienwarfare.physics.collision.optimization.ShipCollisionTask;
 import valkyrienwarfare.physics.collision.BlockRammingManager.NestedBoolean;
 import valkyrienwarfare.physics.calculations.PhysicsCalculations;
 import valkyrienwarfare.physics.management.PhysicsObject;
-import valkyrienwarfare.relocation.SpatialDetector;
+import valkyrienwarfare.mod.physmanagement.relocation.SpatialDetector;
 
 import java.util.ArrayList;
 import java.util.Random;

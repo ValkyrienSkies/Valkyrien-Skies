@@ -22,10 +22,10 @@ import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.chunk.Chunk;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.collision.PhysPolygonCollider;
-import valkyrienwarfare.collision.Polygon;
+import valkyrienwarfare.physics.collision.PhysPolygonCollider;
+import valkyrienwarfare.physics.collision.Polygon;
 import valkyrienwarfare.physics.collision.WorldPhysicsCollider;
-import valkyrienwarfare.relocation.SpatialDetector;
+import valkyrienwarfare.mod.physmanagement.relocation.SpatialDetector;
 
 import java.util.ArrayList;
 import java.util.concurrent.Callable;

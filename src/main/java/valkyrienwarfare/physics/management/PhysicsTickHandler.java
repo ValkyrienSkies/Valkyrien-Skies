@@ -19,7 +19,7 @@ package valkyrienwarfare.physics.management;
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.interaction.EntityDraggable;
+import valkyrienwarfare.mod.physmanagement.interaction.EntityDraggable;
 import valkyrienwarfare.physics.collision.optimization.ShipCollisionTask;
 
 import java.util.ArrayList;

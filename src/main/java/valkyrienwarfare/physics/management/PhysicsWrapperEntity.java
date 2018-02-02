@@ -31,10 +31,10 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.combat.entity.EntityMountingWeaponBase;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.capability.IAirshipCounterCapability;
-import valkyrienwarfare.collision.Polygon;
-import valkyrienwarfare.interaction.ShipNameUUIDData;
-import valkyrienwarfare.schematics.SchematicReader.Schematic;
+import valkyrienwarfare.mod.capability.IAirshipCounterCapability;
+import valkyrienwarfare.physics.collision.Polygon;
+import valkyrienwarfare.mod.physmanagement.interaction.ShipNameUUIDData;
+import valkyrienwarfare.mod.schematics.SchematicReader.Schematic;
 
 import javax.annotation.Nullable;
 

@@ -23,7 +23,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.collision.EntityCollisionInjector;
+import valkyrienwarfare.physics.collision.EntityCollisionInjector;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 import java.lang.reflect.InvocationTargetException;

@@ -24,9 +24,9 @@ import net.minecraft.world.border.WorldBorder;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.interaction.IDraggable;
-import valkyrienwarfare.network.EntityRelativePositionMessage;
-import valkyrienwarfare.network.PhysWrapperPositionMessage;
+import valkyrienwarfare.mod.physmanagement.interaction.IDraggable;
+import valkyrienwarfare.mod.network.EntityRelativePositionMessage;
+import valkyrienwarfare.mod.network.PhysWrapperPositionMessage;
 
 import java.util.ArrayList;
 

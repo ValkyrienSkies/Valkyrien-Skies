@@ -26,8 +26,8 @@ import valkyrienwarfare.addon.world.tileentity.TileEntitySkyTempleController;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.physics.management.ShipType;
-import valkyrienwarfare.schematics.SchematicReader;
-import valkyrienwarfare.schematics.SchematicReader.Schematic;
+import valkyrienwarfare.mod.schematics.SchematicReader;
+import valkyrienwarfare.mod.schematics.SchematicReader.Schematic;
 
 import java.util.Random;
 

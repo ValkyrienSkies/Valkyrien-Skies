@@ -35,7 +35,7 @@ import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.tileentity.TileEntityZepplinController;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.physics.management.ShipType;
-import valkyrienwarfare.relocation.DetectorManager;
+import valkyrienwarfare.mod.physmanagement.relocation.DetectorManager;
 
 public class BlockAirshipController_Zepplin extends Block implements ITileEntityProvider {
 

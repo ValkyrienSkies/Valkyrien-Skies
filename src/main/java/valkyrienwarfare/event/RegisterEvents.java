@@ -14,24 +14,45 @@
  *
  */
 
-package valkyrienwarfare;
+package valkyrienwarfare.event;
 
-public class EventsServer {
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import valkyrienwarfare.ValkyrienWarfareMod;
+import valkyrienwarfare.api.addons.Module;
 
-	/*@SubscribeEvent
-    public void livingUpdate(LivingUpdateEvent e)	{
-		if (e.getEntity() instanceof EntityPlayer)	{
-			EntityPlayer p = (EntityPlayer) e.getEntity();
-			
-			ValkyrienWarfareMod.VWLogger.log(Level.INFO, "EntityPlayer LivingUpdateEvent");
-			
-			if (p.lastTickPosX != p.posX || p.lastTickPosZ != p.posZ)	{ //Player has moved
-				ValkyrienWarfareMod.VWLogger.log(Level.INFO, "EntityPlayer LivingUpdateEvent Move");
-				if (math.abs(p.posX) > 27000000 || math.abs(p.posZ) > 27000000)	{ //Player is outside of world border, tp them back
-					p.attemptTeleport(p.lastTickPosX, p.lastTickPosY, p.lastTickPosZ);
-					p.addChatMessage(new TextComponentString("You can't go beyond 27000000 blocks because airships are stored there!"));
-				}
-			}
-		}
-	}*/
+import static valkyrienwarfare.ValkyrienWarfareMod.addons;
+
+@Mod.EventBusSubscriber(modid = ValkyrienWarfareMod.MODID)
+public class RegisterEvents {
+    @SubscribeEvent
+    public static void registerBlocks(RegistryEvent.Register<Block> event) {
+        System.out.println("Registering blocks");
+        ValkyrienWarfareMod.INSTANCE.registerBlocks(event);
+        for (Module module : addons) {
+            module.registerBlocks(event);
+        }
+    }
+
+    @SubscribeEvent
+    public static void registerItems(RegistryEvent.Register<Item> event) {
+        System.out.println("Registering items");
+        ValkyrienWarfareMod.INSTANCE.registerItems(event);
+        for (Module module : addons) {
+            module.registerItems(event);
+            module.registerItemBlocks(event);
+        }
+    }
+
+    @SubscribeEvent
+    public static void registerRecipies(RegistryEvent.Register<IRecipe> event) {
+        ValkyrienWarfareMod.INSTANCE.registerRecipies(event);
+        for (Module module : addons) {
+            module.registerRecipes(event);
+        }
+    }
 }

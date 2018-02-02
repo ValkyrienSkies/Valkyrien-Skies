@@ -14,44 +14,8 @@
  *
  */
 
-package valkyrienwarfare;
+package valkyrienwarfare.event;
 
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import valkyrienwarfare.api.addons.Module;
-
-import static valkyrienwarfare.ValkyrienWarfareMod.addons;
-
-@Mod.EventBusSubscriber(modid = ValkyrienWarfareMod.MODID)
-public class RegisterEvents {
-    @SubscribeEvent
-    public static void registerBlocks(RegistryEvent.Register<Block> event) {
-        System.out.println("Registering blocks");
-        ValkyrienWarfareMod.INSTANCE.registerBlocks(event);
-        for (Module module : addons) {
-            module.registerBlocks(event);
-        }
-    }
-
-    @SubscribeEvent
-    public static void registerItems(RegistryEvent.Register<Item> event) {
-        System.out.println("Registering items");
-        ValkyrienWarfareMod.INSTANCE.registerItems(event);
-        for (Module module : addons) {
-            module.registerItems(event);
-            module.registerItemBlocks(event);
-        }
-    }
-
-    @SubscribeEvent
-    public static void registerRecipies(RegistryEvent.Register<IRecipe> event) {
-        ValkyrienWarfareMod.INSTANCE.registerRecipies(event);
-        for (Module module : addons) {
-            module.registerRecipes(event);
-        }
-    }
+public class EventsServer {
+    //tfw empty event handler class
 }

@@ -29,7 +29,7 @@ public class SimpleBitOctree implements IBitOctree {
 	@Override
 	public void set(int x, int y, int z, boolean bit) {
 		bitbuffer.set(getBlockIndex(x, y, z), bit);
-		// updateOctrees(x, y, z, bit);
+		updateOctrees(x, y, z, bit);
 	}
 
 	@Override

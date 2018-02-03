@@ -313,31 +313,34 @@ public class WorldPhysicsCollider {
 					didBlockBreakInWorld.getValue(), impulseApplied);
 		}
 
-		if (didBlockBreakInShip.getValue()) {
-			worldObj.destroyBlock(inLocalPos, true);
-		}
+		// This is causing crashes
+		if (false) {
+			if (didBlockBreakInShip.getValue()) {
+				worldObj.destroyBlock(inLocalPos, true);
+			}
 
-		if (didBlockBreakInWorld.getValue()) {
+			if (didBlockBreakInWorld.getValue()) {
 
-			if (worldObj.getBlockState(inWorldPos)
-					.getBlock() instanceof com.jackredcreeper.cannon.blocks.BlockAirMine) {
-				double x = inWorldPos.getX();
-				double y = inWorldPos.getY();
-				double z = inWorldPos.getZ();
+				if (worldObj.getBlockState(inWorldPos)
+						.getBlock() instanceof com.jackredcreeper.cannon.blocks.BlockAirMine) {
+					double x = inWorldPos.getX();
+					double y = inWorldPos.getY();
+					double z = inWorldPos.getZ();
 
-				float size = 8F;
-				float power = 0F;
-				float blast = 0F;
-				float damage = 100F;
+					float size = 8F;
+					float power = 0F;
+					float blast = 0F;
+					float damage = 100F;
 
-				NewExp2 explosion1 = new NewExp2(worldObj, null, x, y, z, size, power, damage, blast, false, true);
-				explosion1.newBoom(worldObj, null, x, y, z, size, power, damage, blast, false, true);
+					NewExp2 explosion1 = new NewExp2(worldObj, null, x, y, z, size, power, damage, blast, false, true);
+					explosion1.newBoom(worldObj, null, x, y, z, size, power, damage, blast, false, true);
 
-				worldObj.setBlockToAir(inWorldPos);
-			} else
+					worldObj.setBlockToAir(inWorldPos);
+				} else
 
-				worldObj.destroyBlock(inWorldPos, true);
-			return true;
+					worldObj.destroyBlock(inWorldPos, true);
+				return true;
+			}
 		}
 
 		return false;
@@ -543,15 +546,9 @@ public class WorldPhysicsCollider {
 							for (x = minStorageX; x < maxStorageX; x++) {
 								for (y = minStorageY; y < maxStorageY; y++) {
 									for (z = minStorageZ; z < maxStorageZ; z++) {
-										state = extendedblockstorage.get(x & 15, y & 15, z & 15);
 
-										boolean real = state.getMaterial().isSolid();
-										// if (real != octree.get(x & 15, y & 15, z & 15)) {
-										// System.out.println("REEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
-										// }
-										// if (state.getMaterial().isSolid()) {
 										if (octree.get(x & 15, y & 15, z & 15)) {
-
+											state = extendedblockstorage.get(x & 15, y & 15, z & 15);
 											inLocal.X = x + .5D;
 											inLocal.Y = y + .5D;
 											inLocal.Z = z + .5D;

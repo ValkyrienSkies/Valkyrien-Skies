@@ -17,15 +17,15 @@
 package valkyrienwarfare.addon.world.tileentity;
 
 import net.minecraft.nbt.NBTTagCompound;
-import valkyrienwarfare.NBTUtils;
+import valkyrienwarfare.util.NBTUtils;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.tileentity.ImplPhysicsProcessorNodeTileEntity;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.physics.PhysicsCalculations;
-import valkyrienwarfare.physics.PhysicsCalculationsManualControl;
-import valkyrienwarfare.physicsmanagement.PhysicsObject;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
-import valkyrienwarfare.physicsmanagement.ShipType;
+import valkyrienwarfare.physics.calculations.PhysicsCalculations;
+import valkyrienwarfare.physics.calculations.PhysicsCalculationsManualControl;
+import valkyrienwarfare.physics.management.PhysicsObject;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.management.ShipType;
 
 import javax.vecmath.Vector2d;
 

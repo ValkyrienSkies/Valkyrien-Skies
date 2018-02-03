@@ -32,9 +32,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.physics.BlockMass;
-import valkyrienwarfare.physics.PhysicsQueuedForce;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.data.BlockMass;
+import valkyrienwarfare.physics.data.PhysicsQueuedForce;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 import java.util.List;
 

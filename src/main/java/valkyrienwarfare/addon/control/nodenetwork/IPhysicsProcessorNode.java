@@ -16,8 +16,8 @@
 
 package valkyrienwarfare.addon.control.nodenetwork;
 
-import valkyrienwarfare.physics.PhysicsCalculations;
-import valkyrienwarfare.physicsmanagement.PhysicsObject;
+import valkyrienwarfare.physics.calculations.PhysicsCalculations;
+import valkyrienwarfare.physics.management.PhysicsObject;
 
 public interface IPhysicsProcessorNode extends INodeProvider {
 

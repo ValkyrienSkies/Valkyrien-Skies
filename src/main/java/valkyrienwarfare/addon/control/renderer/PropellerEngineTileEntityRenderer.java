@@ -27,7 +27,7 @@ import org.lwjgl.opengl.GL11;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.tileentity.TileEntityPropellerEngine;
 import valkyrienwarfare.api.block.engine.BlockAirshipEngine;
-import valkyrienwarfare.render.FastBlockModelRenderer;
+import valkyrienwarfare.mod.client.render.FastBlockModelRenderer;
 
 public class PropellerEngineTileEntityRenderer extends TileEntitySpecialRenderer<TileEntityPropellerEngine> {
 

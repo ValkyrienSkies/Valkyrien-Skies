@@ -43,10 +43,10 @@ import org.spongepowered.asm.mixin.Shadow;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.interaction.EntityDraggable;
-import valkyrienwarfare.interaction.IDraggable;
-import valkyrienwarfare.interaction.PlayerDataBackup;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.physmanagement.interaction.EntityDraggable;
+import valkyrienwarfare.mod.physmanagement.interaction.IDraggable;
+import valkyrienwarfare.mod.physmanagement.interaction.PlayerDataBackup;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 //TODO: a lot of these mixins can probably be done using overrides instead of overwrites, i should have a look at some point
 @Mixin(NetHandlerPlayServer.class)

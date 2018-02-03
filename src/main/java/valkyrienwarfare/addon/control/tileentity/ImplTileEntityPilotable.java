@@ -30,7 +30,7 @@ import valkyrienwarfare.addon.control.piloting.ITileEntityPilotable;
 import valkyrienwarfare.addon.control.piloting.PilotControlsMessage;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 /**
  * A basic implementation of the ITileEntityPilotable interface, other tile entities can extend this for easy controls

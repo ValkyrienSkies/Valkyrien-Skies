@@ -29,8 +29,8 @@ import valkyrienwarfare.addon.control.piloting.ControllerInputType;
 import valkyrienwarfare.addon.control.piloting.IShipPilot;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.interaction.ShipUUIDToPosData;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.physmanagement.interaction.ShipUUIDToPosData;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 import java.util.UUID;
 

@@ -29,7 +29,7 @@ import net.minecraft.world.World;
 import valkyrienwarfare.addon.combat.ValkyrienWarfareCombat;
 import valkyrienwarfare.addon.combat.entity.EntityCannonBall;
 import valkyrienwarfare.api.IRenderVW;
-import valkyrienwarfare.render.FastBlockModelRenderer;
+import valkyrienwarfare.mod.client.render.FastBlockModelRenderer;
 
 public class EntityCannonBallRenderer extends Render<EntityCannonBall> implements IRenderVW {
 

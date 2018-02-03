@@ -27,7 +27,7 @@ import valkyrienwarfare.addon.combat.ValkyrienWarfareCombat;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.fixes.IInventoryPlayerFix;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public class EntityCannonBasic extends EntityMountingWeaponBase {
 

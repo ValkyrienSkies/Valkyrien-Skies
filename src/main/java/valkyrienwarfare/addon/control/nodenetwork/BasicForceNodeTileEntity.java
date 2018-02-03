@@ -19,12 +19,12 @@ package valkyrienwarfare.addon.control.nodenetwork;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import valkyrienwarfare.NBTUtils;
+import valkyrienwarfare.util.NBTUtils;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.physics.PhysicsCalculations;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.calculations.PhysicsCalculations;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity implements IForceTile {
 

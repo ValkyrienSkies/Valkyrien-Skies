@@ -23,7 +23,7 @@ import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.nodenetwork.BasicForceNodeTileEntity;
 import valkyrienwarfare.addon.control.tileentity.TileEntityHoverController;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.physicsmanagement.PhysicsObject;
+import valkyrienwarfare.physics.management.PhysicsObject;
 
 public abstract class TileEntityEtherCompressor extends BasicForceNodeTileEntity {
 

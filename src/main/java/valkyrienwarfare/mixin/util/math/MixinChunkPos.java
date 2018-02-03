@@ -26,7 +26,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 @Mixin(ChunkPos.class)
 public abstract class MixinChunkPos {

@@ -23,7 +23,7 @@ import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.piloting.ControllerInputType;
 import valkyrienwarfare.addon.control.piloting.IShipPilotClient;
 import valkyrienwarfare.addon.control.piloting.PilotControlsMessage;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 @Mixin(AbstractClientPlayer.class)
 public abstract class MixinsAbstractClientPlayer implements IShipPilotClient {

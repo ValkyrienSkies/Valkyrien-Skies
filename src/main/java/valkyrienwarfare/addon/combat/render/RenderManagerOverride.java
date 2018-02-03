@@ -26,7 +26,7 @@ import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.render.PhysObjectRenderManager;
+import valkyrienwarfare.mod.client.render.PhysObjectRenderManager;
 
 import javax.annotation.Nullable;
 import java.util.Map;

@@ -20,7 +20,7 @@ import gnu.trove.set.hash.TIntHashSet;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.world.World;
-import valkyrienwarfare.relocation.SpatialDetector;
+import valkyrienwarfare.mod.physmanagement.relocation.SpatialDetector;
 
 import java.util.HashSet;
 

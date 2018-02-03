@@ -28,7 +28,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import valkyrienwarfare.chunkmanagement.PhysicsChunkManager;
+import valkyrienwarfare.mod.physmanagement.chunk.PhysicsChunkManager;
 
 @Mixin(Chunk.class)
 public abstract class MixinChunk {

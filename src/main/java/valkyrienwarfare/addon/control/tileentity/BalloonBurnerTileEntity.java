@@ -25,7 +25,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import valkyrienwarfare.addon.control.balloon.BalloonProcessor;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public class BalloonBurnerTileEntity extends TileEntity implements ITickable {
 

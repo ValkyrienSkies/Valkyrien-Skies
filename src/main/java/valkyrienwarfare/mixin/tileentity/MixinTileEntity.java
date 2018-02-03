@@ -25,7 +25,7 @@ import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 @Mixin(TileEntity.class)
 public abstract class MixinTileEntity implements net.minecraftforge.common.capabilities.ICapabilitySerializable<NBTTagCompound> {

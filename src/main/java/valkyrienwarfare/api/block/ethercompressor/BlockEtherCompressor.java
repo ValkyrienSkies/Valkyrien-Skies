@@ -26,8 +26,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import valkyrienwarfare.api.IBlockForceProvider;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.physicsmanagement.PhysicsObject;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.management.PhysicsObject;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public abstract class BlockEtherCompressor extends Block implements ITileEntityProvider, IBlockForceProvider {
 

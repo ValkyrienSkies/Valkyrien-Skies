@@ -52,19 +52,23 @@ import valkyrienwarfare.api.ValkyrienWarfareHooks;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.api.addons.Module;
 import valkyrienwarfare.api.addons.VWAddon;
-import valkyrienwarfare.block.BlockPhysicsInfuser;
-import valkyrienwarfare.block.BlockPhysicsInfuserCreative;
-import valkyrienwarfare.capability.IAirshipCounterCapability;
-import valkyrienwarfare.capability.ImplAirshipCounterCapability;
-import valkyrienwarfare.capability.StorageAirshipCounter;
-import valkyrienwarfare.chunkmanagement.DimensionPhysicsChunkManager;
-import valkyrienwarfare.gui.TabValkyrienWarfare;
+import valkyrienwarfare.mod.BlockPhysicsRegistration;
+import valkyrienwarfare.mod.block.BlockPhysicsInfuser;
+import valkyrienwarfare.mod.block.BlockPhysicsInfuserCreative;
+import valkyrienwarfare.mod.capability.IAirshipCounterCapability;
+import valkyrienwarfare.mod.capability.ImplAirshipCounterCapability;
+import valkyrienwarfare.mod.capability.StorageAirshipCounter;
+import valkyrienwarfare.mod.command.ModCommands;
+import valkyrienwarfare.mod.physmanagement.chunk.DimensionPhysicsChunkManager;
+import valkyrienwarfare.mod.gui.TabValkyrienWarfare;
 import valkyrienwarfare.mixin.MixinLoaderForge;
-import valkyrienwarfare.network.*;
-import valkyrienwarfare.physicsmanagement.DimensionPhysObjectManager;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
-import valkyrienwarfare.proxy.CommonProxy;
-import valkyrienwarfare.proxy.ServerProxy;
+import valkyrienwarfare.mod.network.*;
+import valkyrienwarfare.physics.management.DimensionPhysObjectManager;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.proxy.CommonProxy;
+import valkyrienwarfare.mod.proxy.ServerProxy;
+import valkyrienwarfare.util.PhysicsSettings;
+import valkyrienwarfare.util.RealMethods;
 
 import java.io.*;
 import java.lang.reflect.Field;
@@ -80,7 +84,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
-@Mod(modid = ValkyrienWarfareMod.MODID, name = ValkyrienWarfareMod.MODNAME, version = ValkyrienWarfareMod.MODVER, guiFactory = "valkyrienwarfare.gui.GuiFactoryValkyrienWarfare", updateJSON = "https://raw.githubusercontent.com/BigBastard/Valkyrien-Warfare-Revamped/update.json")
+@Mod(modid = ValkyrienWarfareMod.MODID, name = ValkyrienWarfareMod.MODNAME, version = ValkyrienWarfareMod.MODVER, guiFactory = "valkyrienwarfare.mod.gui.GuiFactoryValkyrienWarfare", updateJSON = "https://raw.githubusercontent.com/BigBastard/Valkyrien-Warfare-Revamped/update.json")
 public class ValkyrienWarfareMod {
     public static final ArrayList<Module> addons = new ArrayList<>();
     public static final String MODID = "valkyrienwarfare";
@@ -91,7 +95,7 @@ public class ValkyrienWarfareMod {
     // NOTE: These only calculate physics, so they are only relevant to the Server end
     public static final ExecutorService MultiThreadExecutor = Executors.newWorkStealingPool();
     public static final ExecutorService PhysicsMasterThread = Executors.newCachedThreadPool();
-    @SidedProxy(clientSide = "valkyrienwarfare.proxy.ClientProxy", serverSide = "valkyrienwarfare.proxy.ServerProxy")
+    @SidedProxy(clientSide = "valkyrienwarfare.mod.proxy.ClientProxy", serverSide = "valkyrienwarfare.mod.proxy.ServerProxy")
     public static CommonProxy proxy;
     public static File configFile;
     public static Configuration config;

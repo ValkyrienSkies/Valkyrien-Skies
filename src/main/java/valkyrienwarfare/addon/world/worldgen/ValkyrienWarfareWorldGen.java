@@ -26,7 +26,7 @@ import net.minecraft.world.gen.feature.WorldGenerator;
 import net.minecraftforge.fml.common.IWorldGenerator;
 import valkyrienwarfare.addon.world.ValkyrienWarfareWorld;
 import valkyrienwarfare.addon.world.worldgen.mobiledungeons.SkyTempleGenerator;
-import valkyrienwarfare.chunkmanagement.PhysicsChunkManager;
+import valkyrienwarfare.mod.physmanagement.chunk.PhysicsChunkManager;
 
 import java.util.Random;
 

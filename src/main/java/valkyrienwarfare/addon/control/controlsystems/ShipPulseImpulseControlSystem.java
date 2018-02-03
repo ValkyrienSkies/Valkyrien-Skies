@@ -25,7 +25,7 @@ import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.api.block.ethercompressor.TileEntityEtherCompressor;
 import valkyrienwarfare.math.BigBastardMath;
-import valkyrienwarfare.physics.PhysicsCalculations;
+import valkyrienwarfare.physics.calculations.PhysicsCalculations;
 
 import java.util.HashSet;
 

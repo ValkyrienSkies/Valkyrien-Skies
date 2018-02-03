@@ -21,7 +21,7 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import valkyrienwarfare.VWKeyHandler;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 import java.util.UUID;
 

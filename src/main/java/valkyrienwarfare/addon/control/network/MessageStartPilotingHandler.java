@@ -23,7 +23,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.piloting.IShipPilotClient;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public class MessageStartPilotingHandler implements IMessageHandler<MessageStartPiloting, IMessage> {
 

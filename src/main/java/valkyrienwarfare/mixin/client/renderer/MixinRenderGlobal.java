@@ -47,8 +47,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
-import valkyrienwarfare.proxy.ClientProxy;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.proxy.ClientProxy;
 
 import java.util.Iterator;
 import java.util.Map;

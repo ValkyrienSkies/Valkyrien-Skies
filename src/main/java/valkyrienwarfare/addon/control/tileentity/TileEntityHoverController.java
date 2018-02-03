@@ -23,13 +23,13 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import valkyrienwarfare.NBTUtils;
+import valkyrienwarfare.util.NBTUtils;
 import valkyrienwarfare.addon.control.network.HovercraftControllerGUIInputMessage;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.api.block.ethercompressor.TileEntityEtherCompressor;
-import valkyrienwarfare.physics.PhysicsCalculations;
-import valkyrienwarfare.physicsmanagement.PhysicsObject;
+import valkyrienwarfare.physics.calculations.PhysicsCalculations;
+import valkyrienwarfare.physics.management.PhysicsObject;
 
 import java.util.ArrayList;
 

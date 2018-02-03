@@ -19,7 +19,7 @@ package valkyrienwarfare.api;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public interface DummyMethods {
     // DO NOT RUN METHODS FROM HERE! USE PhysicsEntityHooks

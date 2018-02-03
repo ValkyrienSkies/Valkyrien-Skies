@@ -27,7 +27,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 @Mixin(TileEntityRendererDispatcher.class)
 public abstract class MixinTileEntityRendererDispatcher {

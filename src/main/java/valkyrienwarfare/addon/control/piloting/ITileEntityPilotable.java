@@ -18,7 +18,7 @@ package valkyrienwarfare.addon.control.piloting;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public interface ITileEntityPilotable {
 

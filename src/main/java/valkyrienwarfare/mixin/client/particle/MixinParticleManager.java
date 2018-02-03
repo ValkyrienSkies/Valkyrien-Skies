@@ -26,7 +26,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.physicsmanagement.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 @Mixin(ParticleManager.class)
 public abstract class MixinParticleManager {

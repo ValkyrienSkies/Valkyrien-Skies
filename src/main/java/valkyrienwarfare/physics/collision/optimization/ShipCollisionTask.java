@@ -17,6 +17,7 @@
 package valkyrienwarfare.physics.collision.optimization;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 import net.minecraft.block.state.IBlockState;
@@ -33,39 +34,38 @@ import valkyrienwarfare.physics.collision.WorldPhysicsCollider;
 
 public class ShipCollisionTask implements Callable<Void> {
 
-	public final static int maxTasksToCheck = 45;
+	public final static int MAX_TASKS_TO_CHECK = 45;
 	public final WorldPhysicsCollider toTask;
-	final int taskStartIndex;
-	final int tasksToCheck;
-	final MutableBlockPos mutablePos = new MutableBlockPos();
-	final MutableBlockPos inLocalPos = new MutableBlockPos();
-
-	private final Vector inWorld = new Vector();
-
-	// public TIntArrayList foundPairs = new TIntArrayList();
-
-	public ArrayList<CollisionInformationHolder> collisionInformationGenerated = new ArrayList<CollisionInformationHolder>();
-
+	private final int taskStartIndex;
+	private final int tasksToCheck;
+	private final MutableBlockPos mutablePos;
+	private final MutableBlockPos inLocalPos;
+	private final Vector inWorld;
+	public final List<CollisionInformationHolder> collisionInformationGenerated;
 	private IBlockState inWorldState;
+	// public TIntArrayList foundPairs = new TIntArrayList();
 
 	public ShipCollisionTask(WorldPhysicsCollider toTask, int taskStartIndex) {
 		this.taskStartIndex = taskStartIndex;
 		this.toTask = toTask;
+		this.mutablePos = new MutableBlockPos();
+		this.inLocalPos = new MutableBlockPos();
+		this.inWorld = new Vector();
+		this.collisionInformationGenerated = new ArrayList<CollisionInformationHolder>();
+		this.inWorldState = null;
 
-		int size = toTask.cachedPotentialHits.size();
-
-		if (taskStartIndex + maxTasksToCheck > size + 1) {
+		int size = toTask.getCachedPotentialHitSize();
+		if (taskStartIndex + MAX_TASKS_TO_CHECK > size + 1) {
 			tasksToCheck = size + 1 - taskStartIndex;
 		} else {
-			tasksToCheck = maxTasksToCheck;
+			tasksToCheck = MAX_TASKS_TO_CHECK;
 		}
 	}
 
 	@Override
 	public Void call() {
 		for (int index = taskStartIndex; index < tasksToCheck + 1; index++) {
-			int integer = toTask.cachedPotentialHits.get(index);
-
+			int integer = toTask.getCachedPotentialHit(index);
 			processNumber(integer);
 		}
 
@@ -73,14 +73,14 @@ public class ShipCollisionTask implements Callable<Void> {
 	}
 
 	private void processNumber(int integer) {
-		SpatialDetector.setPosWithRespectTo(integer, toTask.centerPotentialHit, mutablePos);
-		inWorldState = toTask.parent.surroundingWorldChunksCache.getBlockState(mutablePos);
+		SpatialDetector.setPosWithRespectTo(integer, toTask.getCenterPotentialHit(), mutablePos);
+		inWorldState = toTask.getParent().surroundingWorldChunksCache.getBlockState(mutablePos);
 
 		inWorld.X = mutablePos.getX() + .5;
 		inWorld.Y = mutablePos.getY() + .5;
 		inWorld.Z = mutablePos.getZ() + .5;
 
-		toTask.parent.coordTransform.fromGlobalToLocal(inWorld);
+		toTask.getParent().coordTransform.fromGlobalToLocal(inWorld);
 
 		int midX = MathHelper.floor(inWorld.X + .5D);
 		int midY = MathHelper.floor(inWorld.Y + .5D);
@@ -120,7 +120,7 @@ public class ShipCollisionTask implements Callable<Void> {
 	}
 
 	public void checkPosition(int x, int y, int z, int positionHash) {
-		final Chunk chunkIn = toTask.parent.VKChunkCache.getChunkAt(x >> 4, z >> 4);
+		final Chunk chunkIn = toTask.getParent().VKChunkCache.getChunkAt(x >> 4, z >> 4);
 		y = Math.max(0, Math.min(y, 255));
 
 		ExtendedBlockStorage storage = chunkIn.storageArrays[y >> 4];
@@ -148,11 +148,11 @@ public class ShipCollisionTask implements Callable<Void> {
 				// List<AxisAlignedBB> colBB = worldObj.getCollisionBoxes(inLocalBB);
 				// inLocalBB = colBB.get(0);
 
-				Polygon shipInWorld = new Polygon(inLocalBB, toTask.parent.coordTransform.lToWTransform);
+				Polygon shipInWorld = new Polygon(inLocalBB, toTask.getParent().coordTransform.lToWTransform);
 				Polygon worldPoly = new Polygon(inGlobalBB);
 
 				PhysPolygonCollider collider = new PhysPolygonCollider(shipInWorld, worldPoly,
-						toTask.parent.coordTransform.normals);
+						toTask.getParent().coordTransform.normals);
 
 				if (!collider.seperated) {
 					// return handleActualCollision(collider, mutablePos, inLocalPos, inWorldState,

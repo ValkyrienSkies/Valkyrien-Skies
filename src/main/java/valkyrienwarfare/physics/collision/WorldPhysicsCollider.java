@@ -17,6 +17,7 @@
 package valkyrienwarfare.physics.collision;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import com.jackredcreeper.cannon.world.NewExp2;
@@ -37,7 +38,6 @@ import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.mod.physmanagement.relocation.SpatialDetector;
 import valkyrienwarfare.physics.calculations.PhysicsCalculations;
-import valkyrienwarfare.physics.collision.BlockRammingManager.NestedBoolean;
 import valkyrienwarfare.physics.collision.optimization.CollisionInformationHolder;
 import valkyrienwarfare.physics.collision.optimization.IBitOctree;
 import valkyrienwarfare.physics.collision.optimization.IBitOctreeProvider;
@@ -46,33 +46,69 @@ import valkyrienwarfare.physics.management.PhysicsObject;
 
 public class WorldPhysicsCollider {
 
-	private static final double expansion = 2D;
-	public static double axisTolerance = .3D;
-	private final MutableBlockPos mutablePos = new MutableBlockPos();
-	private final Random rand = new Random();
-	private final ArrayList<ShipCollisionTask> tasks = new ArrayList<ShipCollisionTask>();
-	public PhysicsCalculations calculator;
-	public World worldObj;
-	public PhysicsObject parent;
-	public double collisionCacheTickUpdateFrequency = 1D;
-	public double collisionElasticity = .52D;
-	public TIntArrayList cachedPotentialHits;
-	public BlockPos centerPotentialHit;
-	private TIntArrayList cachedHitsToRemove = new TIntArrayList();
+	// Used to expand the AABB used to check for potential collisions; helps prevent
+	// ships ghosting through blocks
+	public static final double AABB_EXPANSION = 2D;
+	// The minimum depth a collision projection must have, to not use the default
+	// collision normal of <0, 1, 0>
+	public static final double AXIS_TOLERANCE = .3D;
+	// Time in seconds between collision cache updates
+	public static final double CACHE_UPDATE_FREQUENCY = 1D;
+	// Determines how 'bouncy' collisions are
+	public static final double COLLISION_ELASTICITY = 1.52D;
+	// The radius which the algorithm will search for a nearby block to collide with
+	public static final double COLLISION_RANGE_CHECK = .65D;
+	// If true, will use the octree assisted algorithm for finding collisions,
+	// (Approx. O(log(n)^3)).
+	// If false then this class uses the much slower iterative approach O(n^3).
+	public static final boolean USE_OCTREE_COLLISION = false;
+	// How likely it is for the collision tasks to shuffle every physics tick
+	public static final double COLLISION_TASK_SHUFFLE_FREQUENCY = .10D;
+	private final MutableBlockPos mutablePos;
+	private final Random rand;
+	private final List<ShipCollisionTask> tasks;
+	private PhysicsCalculations calculator;
+	private World worldObj;
+	private PhysicsObject parent;
+	private final TIntArrayList cachedPotentialHits;
+	private final TIntArrayList cachedHitsToRemove;
+	private BlockPos centerPotentialHit;
 	// Ensures this always updates the first tick after creation
-	private double ticksSinceCacheUpdate = 420;
-	private boolean updateCollisionTasksCache = true;
+	private double ticksSinceCacheUpdate;
+	private boolean updateCollisionTasksCache;
 
 	public WorldPhysicsCollider(PhysicsCalculations calculations) {
-		calculator = calculations;
-		parent = calculations.parent;
-		worldObj = parent.worldObj;
+		this.calculator = calculations;
+		this.parent = calculations.parent;
+		this.worldObj = parent.worldObj;
+		this.cachedPotentialHits = new TIntArrayList();
+		this.cachedHitsToRemove = new TIntArrayList();
+		this.rand = new Random();
+		this.mutablePos = new MutableBlockPos();
+		this.tasks = new ArrayList<ShipCollisionTask>();
+		this.ticksSinceCacheUpdate = 25D;
+		this.updateCollisionTasksCache = true;
+	}
+
+	public BlockPos getCenterPotentialHit() {
+		return centerPotentialHit;
+	}
+
+	public int getCachedPotentialHit(int offset) {
+		return cachedPotentialHits.get(offset);
+	}
+
+	public int getCachedPotentialHitSize() {
+		return cachedPotentialHits.size();
+	}
+
+	public PhysicsObject getParent() {
+		return parent;
 	}
 
 	// Runs the collision code
 	public void runPhysCollision() {
 		tickUpdatingTheCollisionCache();
-
 		processPotentialCollisionsAccurately();
 	}
 
@@ -83,18 +119,19 @@ public class WorldPhysicsCollider {
 
 		TIntIterator iterator = cachedHitsToRemove.iterator();
 		while (iterator.hasNext()) {
-			// cachedPotentialHits.remove(iterator.next());
+			cachedPotentialHits.remove(iterator.next());
 		}
 		cachedHitsToRemove.clear();
-		if (shouldUpdateCollisonCache()) {
+		if (ticksSinceCacheUpdate > CACHE_UPDATE_FREQUENCY) {
 			updatePotentialCollisionCache();
-
 			updateCollisionTasksCache = true;
-			// Collections.shuffle(cachedPotentialHits);
+		}
+		if (Math.random() > 1D - COLLISION_TASK_SHUFFLE_FREQUENCY) {
+			cachedPotentialHits.shuffle(rand);
 		}
 	}
 
-	public void splitIntoCollisionTasks(ArrayList<ShipCollisionTask> toAdd) {
+	public void splitIntoCollisionTasks(List<ShipCollisionTask> toAdd) {
 		if (updateCollisionTasksCache) {
 			tasks.clear();
 			int index = 0;
@@ -102,7 +139,7 @@ public class WorldPhysicsCollider {
 
 			while (index < size) {
 				ShipCollisionTask task = new ShipCollisionTask(this, index);
-				index += ShipCollisionTask.maxTasksToCheck;
+				index += ShipCollisionTask.MAX_TASKS_TO_CHECK;
 				tasks.add(task);
 			}
 			updateCollisionTasksCache = false;
@@ -134,10 +171,6 @@ public class WorldPhysicsCollider {
 		final MutableBlockPos localCollisionPos = new MutableBlockPos();
 		final Vector inWorld = new Vector();
 
-		int minX, minY, minZ, maxX, maxY, maxZ, x, y, z;
-
-		final double rangeCheck = .65D;
-
 		TIntIterator intIterator = cachedPotentialHits.iterator();
 
 		while (intIterator.hasNext()) {
@@ -149,13 +182,13 @@ public class WorldPhysicsCollider {
 			inWorld.Z = mutablePos.getZ() + .5;
 			parent.coordTransform.fromGlobalToLocal(inWorld);
 
-			minX = MathHelper.floor(inWorld.X - rangeCheck);
-			minY = MathHelper.floor(inWorld.Y - rangeCheck);
-			minZ = MathHelper.floor(inWorld.Z - rangeCheck);
+			int minX = MathHelper.floor(inWorld.X - COLLISION_RANGE_CHECK);
+			int minY = MathHelper.floor(inWorld.Y - COLLISION_RANGE_CHECK);
+			int minZ = MathHelper.floor(inWorld.Z - COLLISION_RANGE_CHECK);
 
-			maxX = MathHelper.floor(inWorld.X + rangeCheck);
-			maxY = MathHelper.floor(inWorld.Y + rangeCheck);
-			maxZ = MathHelper.floor(inWorld.Z + rangeCheck);
+			int maxX = MathHelper.floor(inWorld.X + COLLISION_RANGE_CHECK);
+			int maxY = MathHelper.floor(inWorld.Y + COLLISION_RANGE_CHECK);
+			int maxZ = MathHelper.floor(inWorld.Z + COLLISION_RANGE_CHECK);
 
 			/**
 			 * Something here is causing the game to freeze :/
@@ -196,9 +229,9 @@ public class WorldPhysicsCollider {
 									minYToCheck = Math.max(minYToCheck, minY);
 									maxYToCheck = Math.min(maxYToCheck, maxY);
 
-									for (x = minXToCheck; x <= maxXToCheck; x++) {
-										for (z = minZToCheck; z <= maxZToCheck; z++) {
-											for (y = minYToCheck; y <= maxYToCheck; y++) {
+									for (int x = minXToCheck; x <= maxXToCheck; x++) {
+										for (int z = minZToCheck; z <= maxZToCheck; z++) {
+											for (int y = minYToCheck; y <= maxYToCheck; y++) {
 												final IBlockState state = storage.get(x & 15, y & 15, z & 15);
 												if (state.getMaterial().isSolid()) {
 
@@ -280,12 +313,12 @@ public class WorldPhysicsCollider {
 		PhysCollisionObject toCollideWith = null;
 		toCollideWith = collider.collisions[1];
 
-		if (toCollideWith.penetrationDistance > axisTolerance || toCollideWith.penetrationDistance < -axisTolerance) {
+		if (toCollideWith.penetrationDistance > AXIS_TOLERANCE || toCollideWith.penetrationDistance < -AXIS_TOLERANCE) {
 			toCollideWith = collider.collisions[collider.minDistanceIndex];
 		}
 
-		NestedBoolean didBlockBreakInShip = new NestedBoolean(false);
-		NestedBoolean didBlockBreakInWorld = new NestedBoolean(false);
+		// NestedBoolean didBlockBreakInShip = new NestedBoolean(false);
+		// NestedBoolean didBlockBreakInWorld = new NestedBoolean(false);
 
 		Vector positionInBody = collider.entity.getCenter();
 		positionInBody.subtract(parent.wrapper.posX, parent.wrapper.posY, parent.wrapper.posZ);
@@ -294,8 +327,10 @@ public class WorldPhysicsCollider {
 
 		double collisionSpeed = velocityAtPoint.dot(toCollideWith.axis);
 
-		double impulseApplied = BlockRammingManager.processBlockRamming(parent.wrapper, collisionSpeed, inLocalState,
-				inWorldState, inLocalPos, inWorldPos, didBlockBreakInShip, didBlockBreakInWorld);
+		double impulseApplied = 1D;
+		// BlockRammingManager.processBlockRamming(parent.wrapper, collisionSpeed,
+		// inLocalState, inWorldState, inLocalPos, inWorldPos, didBlockBreakInShip,
+		// didBlockBreakInWorld);
 
 		Vector[] collisionPoints = PolygonCollisionPointFinder.getPointsOfCollisionForPolygons(collider, toCollideWith,
 				velocityAtPoint);
@@ -309,17 +344,20 @@ public class WorldPhysicsCollider {
 			Vector momentumAtPoint = calculator.getVelocityAtPoint(inBody);
 			Vector axis = toCollideWith.axis;
 			Vector offsetVector = toCollideWith.getResponse();
-			calculateCollisionImpulseForce(inBody, momentumAtPoint, axis, offsetVector, didBlockBreakInShip.getValue(),
-					didBlockBreakInWorld.getValue(), impulseApplied);
+			calculateCollisionImpulseForce(inBody, momentumAtPoint, axis, offsetVector, false, false, impulseApplied);
+			// calculateCollisionImpulseForce(inBody, momentumAtPoint, axis, offsetVector,
+			// didBlockBreakInShip.getValue(),
+			// didBlockBreakInWorld.getValue(), impulseApplied);
 		}
 
 		// This is causing crashes
+		// TODO: Fix the crashes
 		if (false) {
-			if (didBlockBreakInShip.getValue()) {
+			if (false) { // didBlockBreakInShip.getValue()) {
 				worldObj.destroyBlock(inLocalPos, true);
 			}
 
-			if (didBlockBreakInWorld.getValue()) {
+			if (false) { // didBlockBreakInWorld.getValue()) {
 
 				if (worldObj.getBlockState(inWorldPos)
 						.getBlock() instanceof com.jackredcreeper.cannon.blocks.BlockAirMine) {
@@ -355,7 +393,7 @@ public class WorldPhysicsCollider {
 
 		Vector secondCross = firstCross.cross(inBody);
 
-		double impulseMagnitude = -momentumAtPoint.dot(axis) * (collisionElasticity + 1D)
+		double impulseMagnitude = -momentumAtPoint.dot(axis) * COLLISION_ELASTICITY
 				/ (calculator.invMass + secondCross.dot(axis));
 
 		Vector collisionImpulseForce = new Vector(axis, impulseMagnitude);
@@ -383,7 +421,6 @@ public class WorldPhysicsCollider {
 
 			RotationMatrices.applyTransform3by3(calculator.invFramedMOI, thirdCross);
 			calculator.angularVelocity.add(thirdCross);
-			// return true;
 		}
 
 	}
@@ -452,14 +489,10 @@ public class WorldPhysicsCollider {
 		}
 	}
 
-	private boolean shouldUpdateCollisonCache() {
-		return (ticksSinceCacheUpdate) > collisionCacheTickUpdateFrequency;
-	}
-
 	private void updatePotentialCollisionCache() {
-		final AxisAlignedBB collisionBB = parent.collisionBB.expand(expansion, expansion, expansion).expand(
-				calculator.linearMomentum.X * calculator.invMass, calculator.linearMomentum.Y * calculator.invMass,
-				calculator.linearMomentum.Z * calculator.invMass);
+		final AxisAlignedBB collisionBB = parent.collisionBB.expand(calculator.linearMomentum.X * calculator.invMass,
+				calculator.linearMomentum.Y * calculator.invMass, calculator.linearMomentum.Z * calculator.invMass)
+				.grow(AABB_EXPANSION);
 
 		ticksSinceCacheUpdate = 0D;
 		// This is being used to occasionally offset the collision cache update, in the
@@ -468,12 +501,11 @@ public class WorldPhysicsCollider {
 		if (Math.random() > .5) {
 			ticksSinceCacheUpdate -= .05D;
 		}
-
-		// cachedPotentialHits = new ArrayList<BlockPos>();
-		cachedPotentialHits = new TIntArrayList();
+		// Empties out the array but also preserves the object to avoid creating large
+		// arrays unnecessarily
+		cachedPotentialHits.reset();
 		// Ship is outside of world blockSpace, just skip this all together
 		if (collisionBB.maxY < 0 || collisionBB.minY > 255) {
-			// internalCachedPotentialHits = new BlockPos[0];
 			return;
 		}
 
@@ -543,7 +575,7 @@ public class WorldPhysicsCollider {
 							IBitOctreeProvider provider = IBitOctreeProvider.class.cast(extendedblockstorage.data);
 							IBitOctree octree = provider.getBitOctree();
 
-							if (true) {
+							if (USE_OCTREE_COLLISION) {
 								for (int levelThree = 0; levelThree < 8; levelThree++) {
 									int levelThreeIndex = octree.getOctreeLevelThreeIndex(levelThree);
 									if (octree.getAtIndex(levelThreeIndex)) {
@@ -894,8 +926,6 @@ public class WorldPhysicsCollider {
 		 * centerPotentialHit)); localX = localY = localZ = Integer.MAX_VALUE - 420; } }
 		 * } } } } } } } } }
 		 **/
-
-		cachedPotentialHits.shuffle(rand);
 	}
 
 }

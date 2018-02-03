@@ -24,6 +24,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.mod.physmanagement.relocation.SpatialDetector;
 import valkyrienwarfare.physics.collision.PhysPolygonCollider;
@@ -120,45 +121,48 @@ public class ShipCollisionTask implements Callable<Void> {
 
 	public void checkPosition(int x, int y, int z, int positionHash) {
 		final Chunk chunkIn = toTask.parent.VKChunkCache.getChunkAt(x >> 4, z >> 4);
-
 		y = Math.max(0, Math.min(y, 255));
 
-		IBlockState inLocalState = chunkIn.getBlockState(x, y, z);
+		ExtendedBlockStorage storage = chunkIn.storageArrays[y >> 4];
+		if (storage != null) {
+			IBitOctreeProvider provider = IBitOctreeProvider.class.cast(storage.data);
+			IBitOctree octree = provider.getBitOctree();
 
-		if (inLocalState.getMaterial().isSolid()) {
+			if (octree.get(x & 15, y & 15, z & 15)) {
+				IBlockState inLocalState = chunkIn.getBlockState(x, y, z);
+				// Only if you want to stop short
+				// foundPairs.add(positionHash);
+				// foundPairs.add(x);
+				// foundPairs.add(y);
+				// foundPairs.add(z);
 
-			// Only if you want to stop short
-			// foundPairs.add(positionHash);
-			// foundPairs.add(x);
-			// foundPairs.add(y);
-			// foundPairs.add(z);
+				inLocalPos.setPos(x, y, z);
 
-			inLocalPos.setPos(x, y, z);
+				AxisAlignedBB inLocalBB = new AxisAlignedBB(inLocalPos.getX(), inLocalPos.getY(), inLocalPos.getZ(),
+						inLocalPos.getX() + 1, inLocalPos.getY() + 1, inLocalPos.getZ() + 1);
+				AxisAlignedBB inGlobalBB = new AxisAlignedBB(mutablePos.getX(), mutablePos.getY(), mutablePos.getZ(),
+						mutablePos.getX() + 1, mutablePos.getY() + 1, mutablePos.getZ() + 1);
 
-			AxisAlignedBB inLocalBB = new AxisAlignedBB(inLocalPos.getX(), inLocalPos.getY(), inLocalPos.getZ(),
-					inLocalPos.getX() + 1, inLocalPos.getY() + 1, inLocalPos.getZ() + 1);
-			AxisAlignedBB inGlobalBB = new AxisAlignedBB(mutablePos.getX(), mutablePos.getY(), mutablePos.getZ(),
-					mutablePos.getX() + 1, mutablePos.getY() + 1, mutablePos.getZ() + 1);
+				// This changes the box bounding box to the real bounding box, not sure if this
+				// is better or worse for this mod
+				// List<AxisAlignedBB> colBB = worldObj.getCollisionBoxes(inLocalBB);
+				// inLocalBB = colBB.get(0);
 
-			// This changes the box bounding box to the real bounding box, not sure if this
-			// is better or worse for this mod
-			// List<AxisAlignedBB> colBB = worldObj.getCollisionBoxes(inLocalBB);
-			// inLocalBB = colBB.get(0);
+				Polygon shipInWorld = new Polygon(inLocalBB, toTask.parent.coordTransform.lToWTransform);
+				Polygon worldPoly = new Polygon(inGlobalBB);
 
-			Polygon shipInWorld = new Polygon(inLocalBB, toTask.parent.coordTransform.lToWTransform);
-			Polygon worldPoly = new Polygon(inGlobalBB);
+				PhysPolygonCollider collider = new PhysPolygonCollider(shipInWorld, worldPoly,
+						toTask.parent.coordTransform.normals);
 
-			PhysPolygonCollider collider = new PhysPolygonCollider(shipInWorld, worldPoly,
-					toTask.parent.coordTransform.normals);
+				if (!collider.seperated) {
+					// return handleActualCollision(collider, mutablePos, inLocalPos, inWorldState,
+					// inLocalState);
+					CollisionInformationHolder holder = new CollisionInformationHolder(collider, mutablePos.getX(),
+							mutablePos.getY(), mutablePos.getZ(), inLocalPos.getX(), inLocalPos.getY(),
+							inLocalPos.getZ(), inWorldState, inLocalState);
 
-			if (!collider.seperated) {
-				// return handleActualCollision(collider, mutablePos, inLocalPos, inWorldState,
-				// inLocalState);
-				CollisionInformationHolder holder = new CollisionInformationHolder(collider, mutablePos.getX(),
-						mutablePos.getY(), mutablePos.getZ(), inLocalPos.getX(), inLocalPos.getY(), inLocalPos.getZ(),
-						inWorldState, inLocalState);
-
-				collisionInformationGenerated.add(holder);
+					collisionInformationGenerated.add(holder);
+				}
 			}
 		}
 	}

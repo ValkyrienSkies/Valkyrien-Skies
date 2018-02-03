@@ -24,7 +24,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.mod.physmanagement.relocation.SpatialDetector;
 import valkyrienwarfare.physics.collision.PhysPolygonCollider;
@@ -124,18 +123,10 @@ public class ShipCollisionTask implements Callable<Void> {
 
 		y = Math.max(0, Math.min(y, 255));
 
-		ExtendedBlockStorage storage = chunkIn.storageArrays[y >> 4];
+		IBlockState inLocalState = chunkIn.getBlockState(x, y, z);
 
-		if (storage == null) {
-			return;
-		}
+		if (inLocalState.getMaterial().isSolid()) {
 
-		IBitOctreeProvider provider = IBitOctreeProvider.class.cast(storage.data);
-		IBitOctree octree = provider.getBitOctree();
-
-		if (octree.get(x & 15, y & 15, z & 15)) {
-			// if (inLocalState.getMaterial().isSolid()) {
-			IBlockState inLocalState = chunkIn.getBlockState(x, y, z);
 			// Only if you want to stop short
 			// foundPairs.add(positionHash);
 			// foundPairs.add(x);

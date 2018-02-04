@@ -23,6 +23,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
+import valkyrienwarfare.mod.physmanagement.interaction.IWorldVW;
 import valkyrienwarfare.physics.collision.EntityCollisionInjector;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
@@ -72,15 +73,6 @@ public class MixinMethods {
     }
 
     public static RayTraceResult rayTraceBlocksIgnoreShip(World world, Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock, PhysicsWrapperEntity toIgnore) {
-        try {
-            if (rayTraceBlocksIgnoreShip == null) {
-                rayTraceBlocksIgnoreShip = World.class.getField("toIgnoreShipTracing");
-            }
-            rayTraceBlocksIgnoreShip.set(world, toIgnore);
-            return world.rayTraceBlocks(vec31, vec32, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return ((IWorldVW) world).rayTraceBlocksIgnoreShip(vec31, vec32, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock, toIgnore);
     }
 }

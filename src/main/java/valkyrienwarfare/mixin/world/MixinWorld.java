@@ -40,6 +40,7 @@ import valkyrienwarfare.addon.control.nodenetwork.INodeProvider;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.fixes.WorldChunkloadingCrashFix;
+import valkyrienwarfare.mod.physmanagement.interaction.IWorldVW;
 import valkyrienwarfare.physics.collision.Polygon;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.physics.management.WorldPhysObjectManager;
@@ -52,7 +53,7 @@ import java.util.List;
 //TODO this class is horrible
 @Mixin(World.class)
 @Implements(@Interface(iface = WorldChunkloadingCrashFix.class, prefix = "vw$", remap = Remap.NONE))
-public abstract class MixinWorld {
+public abstract class MixinWorld implements IWorldVW {
 
     private static double MAX_ENTITY_RADIUS_ALT = 2.0D;
     @Shadow
@@ -95,78 +96,7 @@ public abstract class MixinWorld {
         return null;
     }
 
-    @Inject(method = "rayTraceBlocks(Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Vec3d;ZZZ)Lnet/minecraft/util/math/RayTraceResult;",
-            at = @At("HEAD"))
-    public void preRaytraceBlocks(Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock, CallbackInfoReturnable<RayTraceResult> callbackInfo) {
-        if (isRaytracingRecursive)  {
-            //this is being called by itself, don't run this code again!
-            return;
-        }
 
-        if (toIgnoreShipTracing == null)    {
-            //we don't need to ignore a ship!
-            return;
-        }
-
-        physManager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(World.class.cast(this));
-        if (physManager == null)    {
-            //ignore and just return vanilla value
-            return;
-        }
-        isRaytracingRecursive = true;
-
-        RayTraceResult vanillaTrace = thisClassAsWorld.rayTraceBlocks(vec31, vec32, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
-
-        Vec3d playerEyesPos;
-        Vec3d playerReachVector = vec32.subtract(vec31);
-
-        AxisAlignedBB playerRangeBB = new AxisAlignedBB(vec31.x, vec31.y, vec31.z, vec32.x, vec32.y, vec32.z);
-
-        List<PhysicsWrapperEntity> nearbyShips = physManager.getNearbyPhysObjects(playerRangeBB);
-        //Get rid of the Ship that we're not supposed to be RayTracing for
-        nearbyShips.remove(toIgnoreShipTracing);
-        toIgnoreShipTracing = null;
-
-        double reachDistance = playerReachVector.lengthVector();
-        double worldResultDistFromPlayer = 420000000D;
-        if (vanillaTrace != null && vanillaTrace.hitVec != null) {
-            worldResultDistFromPlayer = vanillaTrace.hitVec.distanceTo(vec31);
-        }
-
-        PhysicsWrapperEntity transformedEntity = null;
-
-        for (PhysicsWrapperEntity wrapper : nearbyShips) {
-            playerEyesPos = vec31;
-            playerReachVector = vec32.subtract(vec31);
-            // TODO: Re-enable
-            if (World.class.cast(this).isRemote) {
-                // ValkyrienWarfareMod.proxy.updateShipPartialTicks(wrapper);
-            }
-            // Transform the coordinate system for the player eye pos
-            playerEyesPos = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.RwToLTransform, playerEyesPos);
-            playerReachVector = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.RwToLRotation, playerReachVector);
-            Vec3d playerEyesReachAdded = playerEyesPos.addVector(playerReachVector.x * reachDistance, playerReachVector.y * reachDistance, playerReachVector.z * reachDistance);
-            RayTraceResult resultInShip = thisClassAsWorld.rayTraceBlocks(playerEyesPos, playerEyesReachAdded, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
-            if (resultInShip != null && resultInShip.hitVec != null && resultInShip.typeOfHit == RayTraceResult.Type.BLOCK) {
-                double shipResultDistFromPlayer = resultInShip.hitVec.distanceTo(playerEyesPos);
-                if (shipResultDistFromPlayer < worldResultDistFromPlayer) {
-                    worldResultDistFromPlayer = shipResultDistFromPlayer;
-                    resultInShip.hitVec = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.RlToWTransform, resultInShip.hitVec);
-                    vanillaTrace = resultInShip;
-                    transformedEntity = wrapper;
-                }
-            }
-        }
-
-        if (transformedEntity != null) {
-            Vec3d hitVec2 = vanillaTrace.hitVec;
-            hitVec2 = RotationMatrices.applyTransform(transformedEntity.wrapping.coordTransform.RwToLTransform, hitVec2);
-            vanillaTrace.hitVec = hitVec2;
-        }
-
-        isRaytracingRecursive = false;
-        callbackInfo.setReturnValue(vanillaTrace);
-    }
 
     @Shadow
     protected abstract boolean isChunkLoaded(int x, int z, boolean allowEmpty);
@@ -421,4 +351,60 @@ public abstract class MixinWorld {
     @Shadow
     abstract boolean isOutsideBuildHeight(BlockPos pos);
 
+    @Override
+    public RayTraceResult rayTraceBlocksIgnoreShip(Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock, PhysicsWrapperEntity toIgnore) {
+        RayTraceResult vanillaTrace = thisClassAsWorld.rayTraceBlocks(vec31, vec32, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
+        WorldPhysObjectManager physManager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(World.class.cast(this));
+        if (physManager == null) {
+            return vanillaTrace;
+        }
+
+        Vec3d playerEyesPos = vec31;
+        Vec3d playerReachVector = vec32.subtract(vec31);
+
+        AxisAlignedBB playerRangeBB = new AxisAlignedBB(vec31.x, vec31.y, vec31.z, vec32.x, vec32.y, vec32.z);
+
+        List<PhysicsWrapperEntity> nearbyShips = physManager.getNearbyPhysObjects(playerRangeBB);
+        //Get rid of the Ship that we're not supposed to be RayTracing for
+        nearbyShips.remove(toIgnore);
+
+        double reachDistance = playerReachVector.lengthVector();
+        double worldResultDistFromPlayer = 420000000D;
+        if (vanillaTrace != null && vanillaTrace.hitVec != null) {
+            worldResultDistFromPlayer = vanillaTrace.hitVec.distanceTo(vec31);
+        }
+
+        PhysicsWrapperEntity transformedEntity = null;
+
+        for (PhysicsWrapperEntity wrapper : nearbyShips) {
+            playerEyesPos = vec31;
+            playerReachVector = vec32.subtract(vec31);
+            // TODO: Re-enable
+            if (World.class.cast(this).isRemote) {
+                // ValkyrienWarfareMod.proxy.updateShipPartialTicks(wrapper);
+            }
+            // Transform the coordinate system for the player eye pos
+            playerEyesPos = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.RwToLTransform, playerEyesPos);
+            playerReachVector = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.RwToLRotation, playerReachVector);
+            Vec3d playerEyesReachAdded = playerEyesPos.addVector(playerReachVector.x * reachDistance, playerReachVector.y * reachDistance, playerReachVector.z * reachDistance);
+            RayTraceResult resultInShip = thisClassAsWorld.rayTraceBlocks(playerEyesPos, playerEyesReachAdded, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
+            if (resultInShip != null && resultInShip.hitVec != null && resultInShip.typeOfHit == RayTraceResult.Type.BLOCK) {
+                double shipResultDistFromPlayer = resultInShip.hitVec.distanceTo(playerEyesPos);
+                if (shipResultDistFromPlayer < worldResultDistFromPlayer) {
+                    worldResultDistFromPlayer = shipResultDistFromPlayer;
+                    resultInShip.hitVec = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.RlToWTransform, resultInShip.hitVec);
+                    vanillaTrace = resultInShip;
+                    transformedEntity = wrapper;
+                }
+            }
+        }
+
+        if (transformedEntity != null) {
+            Vec3d hitVec2 = vanillaTrace.hitVec;
+            hitVec2 = RotationMatrices.applyTransform(transformedEntity.wrapping.coordTransform.RwToLTransform, hitVec2);
+            vanillaTrace.hitVec = hitVec2;
+        }
+
+        return vanillaTrace;
+    }
 }

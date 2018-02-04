@@ -14,39 +14,26 @@
  *
  */
 
-package valkyrienwarfare.mixin.client.entity;
+package valkyrienwarfare.physics.collision.optimization;
 
-import org.spongepowered.asm.mixin.Mixin;
+public interface IBitOctree {
 
-import net.minecraft.client.entity.AbstractClientPlayer;
-import net.minecraft.util.math.BlockPos;
-import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
-import valkyrienwarfare.addon.control.piloting.ControllerInputType;
-import valkyrienwarfare.addon.control.piloting.IShipPilotClient;
-import valkyrienwarfare.addon.control.piloting.PilotControlsMessage;
-import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+	static final int BLOCKS_TOTAL = 4096;
+	static final int TREE_LEVEL_ONE = 512;
+	static final int TREE_LEVEL_TWO = 64;
+	static final int TREE_LEVEL_THREE = 8;
+	static final int BITS_TOTAL = BLOCKS_TOTAL + TREE_LEVEL_ONE + TREE_LEVEL_TWO + TREE_LEVEL_THREE;
 
-@Mixin(AbstractClientPlayer.class)
-public abstract class MixinsAbstractClientPlayer implements IShipPilotClient {
+	void set(int x, int y, int z, boolean bit);
 
-	@Override
-	public void onClientTick() {
-		if (isPiloting()) {
-			sendPilotKeysToServer(this.getControllerInputEnum(), getPilotedShip(), getPosBeingControlled());
-		}
-	}
+	boolean get(int x, int y, int z);
 
-	private void sendPilotKeysToServer(ControllerInputType type, PhysicsWrapperEntity shipPiloting, BlockPos blockBeingControlled) {
-		PilotControlsMessage keyMessage = new PilotControlsMessage();
-		if (type == null) {
-			System.out.println("This is totally wrong");
-			type = ControllerInputType.PilotsChair;
-		}
-		// System.out.println(blockBeingControlled);
-		keyMessage.assignKeyBooleans(shipPiloting, type);
-		keyMessage.controlBlockPos = blockBeingControlled;
+	boolean getAtIndex(int index);
 
-		ValkyrienWarfareControl.controlNetwork.sendToServer(keyMessage);
-	}
+	int getOctreeLevelOneIndex(int levelTwoIndex, int offset);
+
+	int getOctreeLevelTwoIndex(int levelThreeIndex, int offset);
+
+	int getOctreeLevelThreeIndex(int offset);
 
 }

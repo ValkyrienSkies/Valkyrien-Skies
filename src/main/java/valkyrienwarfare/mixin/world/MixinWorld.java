@@ -57,9 +57,6 @@ public abstract class MixinWorld implements IWorldVW {
 
     private static double MAX_ENTITY_RADIUS_ALT = 2.0D;
     @Shadow
-    @Final
-    public boolean isRemote;
-    @Shadow
     List<IWorldEventListener> eventListeners;
     @Shadow
     boolean processingLoadedTiles;

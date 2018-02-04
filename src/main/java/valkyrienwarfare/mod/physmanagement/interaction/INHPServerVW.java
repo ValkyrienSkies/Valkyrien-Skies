@@ -16,15 +16,23 @@
 
 package valkyrienwarfare.mod.physmanagement.interaction;
 
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.network.Packet;
+
 /**
  * lolo i'm not sorry for this
  */
 public interface INHPServerVW {
-    double dummyBlockReachDist();
 
-    void dummyBlockReachDist(double in);
+	double dummyBlockReachDist();
 
-    double lastGoodBlockReachDist();
+	void dummyBlockReachDist(double in);
 
-    void lastGoodBlockReachDist(double in);
+	double lastGoodBlockReachDist();
+
+	void lastGoodBlockReachDist(double in);
+
+	void checkForPacketEnqueueTrap(Packet packet);
+
+	EntityPlayerMP getEntityPlayerFromHandler();
 }

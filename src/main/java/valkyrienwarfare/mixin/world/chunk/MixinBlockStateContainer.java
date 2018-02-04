@@ -3,9 +3,6 @@ package valkyrienwarfare.mixin.world.chunk;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.BitArray;
@@ -21,16 +18,11 @@ public class MixinBlockStateContainer implements IBitOctreeProvider {
 	private static final int BOTTOM_FOUR_BITMASK = 0xF;
 	private static final int MIDDLE_FOUR_BITMASK = 0xF0;
 	private static final int TOP_FOUR_BITMASK = 0xF00;
-	private IBitOctree bitOctree;
+	private final IBitOctree bitOctree = new SimpleBitOctree();
 	@Shadow
 	IBlockStatePalette palette;
 	@Shadow
 	BitArray storage;
-
-	@Inject(method = "<init>()V", at = @At("RETURN"))
-	private void onInit(CallbackInfo ci) {
-		bitOctree = new SimpleBitOctree();
-	}
 
 	@Overwrite
 	protected void set(int index, IBlockState state) {

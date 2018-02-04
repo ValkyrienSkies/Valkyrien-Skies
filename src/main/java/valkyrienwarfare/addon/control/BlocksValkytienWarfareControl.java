@@ -11,6 +11,7 @@ import valkyrienwarfare.addon.control.block.BlockBalloonBurner;
 import valkyrienwarfare.addon.control.block.BlockDopedEtherium;
 import valkyrienwarfare.addon.control.block.BlockGyroscope;
 import valkyrienwarfare.addon.control.block.BlockHovercraftController;
+import valkyrienwarfare.addon.control.block.BlockLiftValve;
 import valkyrienwarfare.addon.control.block.BlockShipHelm;
 import valkyrienwarfare.addon.control.block.BlockShipHullSealer;
 import valkyrienwarfare.addon.control.block.BlockShipPassengerChair;
@@ -52,6 +53,7 @@ public class BlocksValkytienWarfareControl {
     public Block airshipController_zepplin;
     public Block shipHullSealer;
     public Block gyroscope;
+    public Block liftValve;
 
     public BlocksValkytienWarfareControl(ValkyrienWarfareControl mod_vwcontrol) {
         this.mod_vwcontrol = mod_vwcontrol;
@@ -147,6 +149,9 @@ public class BlocksValkytienWarfareControl {
         gyroscope = new BlockGyroscope(Material.IRON).setHardness(5f).setUnlocalizedName("vw_gyroscope")
                 .setRegistryName(getModID(), "vw_gyroscope").setCreativeTab(ValkyrienWarfareMod.vwTab);
 
+        liftValve = new BlockLiftValve(Material.IRON).setHardness(7f).setUnlocalizedName("vw_liftvalve")
+                .setRegistryName(getModID(), "vw_liftvalve").setCreativeTab(ValkyrienWarfareMod.vwTab);
+        
         event.getRegistry().register(basicEngine);
         event.getRegistry().register(advancedEngine);
         event.getRegistry().register(eliteEngine);
@@ -174,6 +179,7 @@ public class BlocksValkytienWarfareControl {
         event.getRegistry().register(shipHullSealer);
         event.getRegistry().register(airshipController_zepplin);
         event.getRegistry().register(gyroscope);
+        event.getRegistry().register(liftValve);
     }
 
     protected void registerBlockItems(RegistryEvent.Register<Item> event) {
@@ -204,6 +210,7 @@ public class BlocksValkytienWarfareControl {
         registerItemBlock(event, shipHullSealer);
         registerItemBlock(event, airshipController_zepplin);
         registerItemBlock(event, gyroscope);
+        registerItemBlock(event, liftValve);
     }
 
     private void registerItemBlock(RegistryEvent.Register<Item> event, Block block) {

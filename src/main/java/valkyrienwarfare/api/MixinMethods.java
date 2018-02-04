@@ -32,8 +32,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class MixinMethods {
-    public static Field rayTraceBlocksIgnoreShip = null;
-
     public static EntityCollisionInjector.IntermediateMovementVariableStorage handleMove(/*Args args, */MoverType type, double dx, double dy, double dz, Entity this_) {
         if (PhysicsWrapperEntity.class.isInstance(this_)) {
             //Don't move at all

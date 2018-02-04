@@ -16,20 +16,23 @@
 
 package valkyrienwarfare.physics.collision.optimization;
 
-import java.util.BitSet;
-
 public class SimpleBitOctree implements IBitOctree {
 
-	private final BitSet bitbuffer;
+	private final FastBitSet bitbuffer;
+	// private final BitSet bifbuffer;
 
 	public SimpleBitOctree() {
-		bitbuffer = new BitSet(BITS_TOTAL);
+		bitbuffer = new FastBitSet(BITS_TOTAL);
+		// bitbuffer = new BitSet(BITS_TOTAL);
 	}
 
 	@Override
 	public void set(int x, int y, int z, boolean bit) {
-		bitbuffer.set(getBlockIndex(x, y, z), bit);
-		updateOctrees(x, y, z, bit);
+		int index = getBlockIndex(x, y, z);
+		if (bitbuffer.get(index) != bit) {
+			bitbuffer.set(index, bit);
+			updateOctrees(x, y, z, bit);
+		}
 	}
 
 	@Override
@@ -50,9 +53,11 @@ public class SimpleBitOctree implements IBitOctree {
 		int levelTwoIndex = getOctreeLevelTwoIndex(x, y, z, levelThreeIndex);
 		int levelOneIndex = getOctreeLevelOneIndex(x, y, z, levelTwoIndex);
 
-		updateOctreeLevelOne(levelOneIndex, x, y, z);
-		updateOctreeLevelTwo(levelTwoIndex);
-		updateOctreeLevelThree(levelThreeIndex);
+		if (updateOctreeLevelOne(levelOneIndex, x, y, z)) {
+			if (updateOctreeLevelTwo(levelTwoIndex)) {
+				updateOctreeLevelThree(levelThreeIndex);
+			}
+		}
 	}
 
 	private void updateOctreeLevelThree(int levelThreeIndex) {
@@ -65,27 +70,44 @@ public class SimpleBitOctree implements IBitOctree {
 		}
 	}
 
-	private void updateOctreeLevelTwo(int levelTwoIndex) {
+	// Returns true if the next level of octree should be updated
+	private boolean updateOctreeLevelTwo(int levelTwoIndex) {
 		if (bitbuffer.get(levelTwoIndex + 1) || bitbuffer.get(levelTwoIndex + 2) || bitbuffer.get(levelTwoIndex + 3)
 				|| bitbuffer.get(levelTwoIndex + 4) || bitbuffer.get(levelTwoIndex + 5) || bitbuffer.get(levelTwoIndex + 6)
 				|| bitbuffer.get(levelTwoIndex + 7) || bitbuffer.get(levelTwoIndex + 8)) {
-			bitbuffer.set(levelTwoIndex);
+			if (!bitbuffer.get(levelTwoIndex)) {
+				bitbuffer.set(levelTwoIndex);
+				return true;
+			}
 		} else {
-			bitbuffer.clear(levelTwoIndex);
+			if (bitbuffer.get(levelTwoIndex)) {
+				bitbuffer.clear(levelTwoIndex);
+				return true;
+			}
 		}
+		return false;
 	}
 
-	private void updateOctreeLevelOne(int levelOneIndex, int x, int y, int z) {
+	// Returns true if the next level of octree should be updated
+	private boolean updateOctreeLevelOne(int levelOneIndex, int x, int y, int z) {
+		// Only keep the last 4 bits; 14 = 1110
 		int baseX = x & 14;
 		int baseY = y & 14;
 		int baseZ = z & 14;
 		if (get(baseX, baseY, baseZ) || get(baseX, baseY, baseZ + 1) || get(baseX, baseY + 1, baseZ) || get(baseX, baseY + 1, baseZ + 1)
 				|| get(baseX + 1, baseY, baseZ) || get(baseX + 1, baseY, baseZ + 1) || get(baseX + 1, baseY + 1, baseZ)
 				|| get(baseX + 1, baseY + 1, baseZ + 1)) {
-			bitbuffer.set(levelOneIndex);
+			if (!bitbuffer.get(levelOneIndex)) {
+				bitbuffer.set(levelOneIndex);
+				return true;
+			}
 		} else {
-			bitbuffer.clear(levelOneIndex);
+			if (bitbuffer.get(levelOneIndex)) {
+				bitbuffer.clear(levelOneIndex);
+				return true;
+			}
 		}
+		return false;
 	}
 
 	private int getOctreeLevelOneIndex(int x, int y, int z, int levelTwoIndex) {
@@ -93,7 +115,6 @@ public class SimpleBitOctree implements IBitOctree {
 		y = (y & 0x02);
 		z = (z & 0x02) << 1;
 		int offset = x | y | z;
-		;
 		return getOctreeLevelOneIndex(levelTwoIndex, offset);
 	}
 

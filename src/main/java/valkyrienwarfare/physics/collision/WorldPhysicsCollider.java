@@ -64,7 +64,8 @@ public class WorldPhysicsCollider {
 	// If false then this class uses the much slower iterative approach O(n^3).
 	public static final boolean USE_OCTREE_COLLISION = true;
 	// How likely it is for the collision tasks to shuffle every physics tick
-	public static final double COLLISION_TASK_SHUFFLE_FREQUENCY = .10D;
+	// ie. (.50D => 50% chance to shuffle, .30D => 30% chance, etc.)
+	public static final double COLLISION_TASK_SHUFFLE_FREQUENCY = .50D;
 	private final MutableBlockPos mutablePos;
 	private final Random rand;
 	private final List<ShipCollisionTask> tasks;
@@ -91,22 +92,6 @@ public class WorldPhysicsCollider {
 		this.updateCollisionTasksCache = true;
 	}
 
-	public BlockPos getCenterPotentialHit() {
-		return centerPotentialHit;
-	}
-
-	public int getCachedPotentialHit(int offset) {
-		return cachedPotentialHits.get(offset);
-	}
-
-	public int getCachedPotentialHitSize() {
-		return cachedPotentialHits.size();
-	}
-
-	public PhysicsObject getParent() {
-		return parent;
-	}
-
 	// Runs the collision code
 	public void runPhysCollision() {
 		tickUpdatingTheCollisionCache();
@@ -127,7 +112,7 @@ public class WorldPhysicsCollider {
 			updatePotentialCollisionCache();
 			updateCollisionTasksCache = true;
 		}
-		if (Math.random() > .5D) {
+		if (Math.random() > 1D - COLLISION_TASK_SHUFFLE_FREQUENCY) {
 			cachedPotentialHits.shuffle(rand);
 		}
 	}
@@ -535,6 +520,7 @@ public class WorldPhysicsCollider {
 			for (chunkZ = chunkMinZ; chunkZ < chunkMaxZ; chunkZ++) {
 				int arrayChunkX = chunkX - cache.chunkX;
 				int arrayChunkZ = chunkZ - cache.chunkZ;
+
 				if (!(arrayChunkX < 0 || arrayChunkZ < 0 || arrayChunkX > cache.chunkArray.length - 1
 						|| arrayChunkZ > cache.chunkArray[0].length - 1)) {
 					chunk = cache.chunkArray[arrayChunkX][arrayChunkZ];
@@ -567,7 +553,10 @@ public class WorldPhysicsCollider {
 																+ (((levelOne >> 1) % 2) * 2);
 														int baseZ = (((levelThree >> 2) % 2) * 8) + (((levelTwo >> 2) % 2) * 4)
 																+ (((levelOne >> 2) % 2) * 2);
-
+														// Don't run the checks for anything out of range
+														// if (true || baseX >= mmX && baseX <= mxX && baseY >= mmY && baseY <= mxY &&
+														// baseZ >= mmZ
+														// && baseZ <= mxZ) {
 														checkForCollision(baseX + minStorageX, baseY + minStorageY, baseZ + minStorageZ,
 																extendedblockstorage, octree, temp1, temp2, temp3);
 														checkForCollision(baseX + minStorageX, baseY + minStorageY, baseZ + minStorageZ + 1,
@@ -585,6 +574,7 @@ public class WorldPhysicsCollider {
 																extendedblockstorage, octree, temp1, temp2, temp3);
 														checkForCollision(baseX + minStorageX + 1, baseY + minStorageY + 1, baseZ + minStorageZ + 1,
 																extendedblockstorage, octree, temp1, temp2, temp3);
+														// }
 													}
 												}
 											}
@@ -627,7 +617,6 @@ public class WorldPhysicsCollider {
 			}
 
 			int minX, minY, minZ, maxX, maxY, maxZ;
-
 			if (speedInBody.X > 0) {
 				minX = MathHelper.floor(inLocal.X - RANGE_CHECK);
 				maxX = MathHelper.floor(inLocal.X + RANGE_CHECK + speedInBody.X);
@@ -671,6 +660,22 @@ public class WorldPhysicsCollider {
 				}
 			}
 		}
+	}
+
+	public BlockPos getCenterPotentialHit() {
+		return centerPotentialHit;
+	}
+
+	public int getCachedPotentialHit(int offset) {
+		return cachedPotentialHits.get(offset);
+	}
+
+	public int getCachedPotentialHitSize() {
+		return cachedPotentialHits.size();
+	}
+
+	public PhysicsObject getParent() {
+		return parent;
 	}
 
 }

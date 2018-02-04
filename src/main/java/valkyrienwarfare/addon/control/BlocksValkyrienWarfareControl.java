@@ -25,7 +25,7 @@ import valkyrienwarfare.addon.control.block.engine.BlockRedstoneEngine;
 import valkyrienwarfare.addon.control.block.ethercompressor.BlockCreativeEtherCompressor;
 import valkyrienwarfare.addon.control.block.ethercompressor.BlockNormalEtherCompressor;
 
-public class BlocksValkytienWarfareControl {
+public class BlocksValkyrienWarfareControl {
 
     private final ValkyrienWarfareControl mod_vwcontrol;
 
@@ -55,7 +55,7 @@ public class BlocksValkytienWarfareControl {
     public Block gyroscope;
     public Block liftValve;
 
-    public BlocksValkytienWarfareControl(ValkyrienWarfareControl mod_vwcontrol) {
+    public BlocksValkyrienWarfareControl(ValkyrienWarfareControl mod_vwcontrol) {
         this.mod_vwcontrol = mod_vwcontrol;
     }
 

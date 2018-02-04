@@ -82,7 +82,7 @@ public class ValkyrienWarfareControl extends Module<ValkyrienWarfareControl> {
     public static Configuration config;
     public static ValkyrienWarfareControl INSTANCE;
     public static SimpleNetworkWrapper controlNetwork;
-    public final BlocksValkytienWarfareControl blocks;
+    public final BlocksValkyrienWarfareControl blocks;
     public Item systemLinker;
     public Item airshipStealer;
     public Item relayWire;
@@ -92,7 +92,7 @@ public class ValkyrienWarfareControl extends Module<ValkyrienWarfareControl> {
         if (ValkyrienWarfareMod.INSTANCE.isRunningOnClient()) {
             this.setClientProxy(new ClientProxyControl());
         }
-        blocks = new BlocksValkytienWarfareControl(this);
+        blocks = new BlocksValkyrienWarfareControl(this);
         INSTANCE = this;
     }
 

@@ -22,7 +22,6 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetHandlerPlayServer;
-import net.minecraft.network.PacketThreadUtil;
 import net.minecraft.network.play.INetHandlerPlayServer;
 import net.minecraft.network.play.client.CPacketPlayerDigging;
 import net.minecraft.util.math.BlockPos;
@@ -34,11 +33,12 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 @Mixin(CPacketPlayerDigging.class)
 public abstract class MixinCPacketPlayerDigging {
+
 	@Redirect(method = "processPacket", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/play/INetHandlerPlayServer;processPlayerDigging(Lnet/minecraft/network/play/client/CPacketPlayerDigging;)V"))
 	public void handleDiggingPacket(INetHandlerPlayServer server, CPacketPlayerDigging packetIn) {
-		EntityPlayerMP player = ((NetHandlerPlayServer) server).player;
-		PacketThreadUtil.checkThreadAndEnqueue(packetIn, server, player.getServerWorld());
 		INHPServerVW vw = (INHPServerVW) (NetHandlerPlayServer) server;
+		vw.checkForPacketEnqueueTrap(packetIn);
+		EntityPlayerMP player = vw.getEntityPlayerFromHandler();
 
 		BlockPos packetPos = packetIn.getPosition();
 		PlayerDataBackup playerBackup = new PlayerDataBackup(player);
@@ -59,4 +59,5 @@ public abstract class MixinCPacketPlayerDigging {
 		}
 		player.interactionManager.setBlockReachDistance(vw.lastGoodBlockReachDist());
 	}
+
 }

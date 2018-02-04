@@ -17,7 +17,10 @@
     "network.MixinNetHandlerPlayServer",
     "util.math.MixinChunkPos",
     "entity.player.MixinInventoryPlayer",
-    "entity.player.MixinEntityPlayer"
+    "entity.player.MixinEntityPlayer",
+    "network.play.client.MixinCPacketPlayerDigging",
+    "network.play.client.MixinCPacketPlayerTryUseItemOnBlock",
+    "network.play.client.MixinCPacketUpdateSign"
   ],
   "client": [
     "client.renderer.tileentity.MixinTileEntityRendererDispatcher",

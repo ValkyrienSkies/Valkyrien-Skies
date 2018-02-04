@@ -16,21 +16,21 @@
 
 package valkyrienwarfare.mod.physmanagement.interaction;
 
+import java.util.List;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import valkyrienwarfare.mod.event.EventsClient;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.combat.entity.EntityCannonBall;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.mod.event.EventsClient;
 import valkyrienwarfare.physics.management.CoordTransformObject;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
-
-import java.util.List;
 
 public abstract class EntityDraggable {
     public static void tickAddedVelocityForWorld(World world) {
@@ -271,7 +271,7 @@ public abstract class EntityDraggable {
             double d7 = z;
             AxisAlignedBB axisalignedbb1 = thisClassAsAnEntity.getEntityBoundingBox();
             thisClassAsAnEntity.setEntityBoundingBox(axisalignedbb);
-            y = (double) thisClassAsAnEntity.stepHeight;
+            y = thisClassAsAnEntity.stepHeight;
             List<AxisAlignedBB> list = thisClassAsAnEntity.world.getCollisionBoxes(thisClassAsAnEntity, thisClassAsAnEntity.getEntityBoundingBox().offset(d2, y, d4));
             AxisAlignedBB axisalignedbb2 = thisClassAsAnEntity.getEntityBoundingBox();
             AxisAlignedBB axisalignedbb3 = axisalignedbb2.offset(d2, 0.0D, d4);

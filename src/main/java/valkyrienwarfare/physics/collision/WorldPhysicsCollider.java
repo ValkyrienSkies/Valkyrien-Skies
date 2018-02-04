@@ -498,7 +498,6 @@ public class WorldPhysicsCollider {
 		Vector temp3 = new Vector();
 
 		ChunkCache cache = parent.surroundingWorldChunksCache;
-		int maxX, maxY, maxZ, localX, localY, localZ, x, y, z, chunkX, chunkZ;
 
 		Chunk chunk, chunkIn;
 		ExtendedBlockStorage extendedblockstorage;
@@ -512,12 +511,10 @@ public class WorldPhysicsCollider {
 		int chunkMaxZ = (max.getZ() >> 4) + 1;
 
 		int storageY;
-
-		int mmX = min.getX(), mmY = min.getY(), mmZ = min.getZ(), mxX = max.getX(), mxY = max.getY(), mxZ = max.getZ();
 		// long startTime = System.nanoTime();
 
-		for (chunkX = chunkMinX; chunkX < chunkMaxX; chunkX++) {
-			for (chunkZ = chunkMinZ; chunkZ < chunkMaxZ; chunkZ++) {
+		for (int chunkX = chunkMinX; chunkX < chunkMaxX; chunkX++) {
+			for (int chunkZ = chunkMinZ; chunkZ < chunkMaxZ; chunkZ++) {
 				int arrayChunkX = chunkX - cache.chunkX;
 				int arrayChunkZ = chunkZ - cache.chunkZ;
 
@@ -582,9 +579,9 @@ public class WorldPhysicsCollider {
 									}
 								}
 							} else {
-								for (x = minStorageX; x < maxStorageX; x++) {
-									for (y = minStorageY; y < maxStorageY; y++) {
-										for (z = minStorageZ; z < maxStorageZ; z++) {
+								for (int x = minStorageX; x < maxStorageX; x++) {
+									for (int y = minStorageY; y < maxStorageY; y++) {
+										for (int z = minStorageZ; z < maxStorageZ; z++) {
 											checkForCollision(x, y, z, extendedblockstorage, octree, temp1, temp2, temp3);
 										}
 									}

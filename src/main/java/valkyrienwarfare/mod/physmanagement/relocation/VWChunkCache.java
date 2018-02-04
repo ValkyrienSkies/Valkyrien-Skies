@@ -19,6 +19,7 @@ package valkyrienwarfare.mod.physmanagement.relocation;
 import javax.annotation.Nullable;
 
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -77,6 +78,12 @@ public class VWChunkCache {
 		return this.cachedChunks[i][j].getTileEntity(pos, Chunk.EnumCreateEntityType.IMMEDIATE);
 	}
 
+	private boolean hasChunkAt(int chunkX, int chunkZ) {
+	    int relX = chunkX - minChunkX;
+	    int relZ = chunkZ - minChunkZ;
+	    return relX >= 0 && relX < cachedChunks.length && relZ >= 0 && relZ < cachedChunks[0].length;
+	}
+	
 	public Chunk getChunkAt(int x, int z) {
 		return cachedChunks[x - minChunkX][z - minChunkZ];
 	}
@@ -87,6 +94,9 @@ public class VWChunkCache {
 	}
 
 	public IBlockState getBlockState(int x, int y, int z) {
+	    if (!hasChunkAt(x >> 4, z >> 4)) {
+	        return Blocks.AIR.getDefaultState();
+	    }
 		Chunk chunkForPos = cachedChunks[(x >> 4) - minChunkX][(z >> 4) - minChunkZ];
 		return chunkForPos.getBlockState(x, y, z);
 	}

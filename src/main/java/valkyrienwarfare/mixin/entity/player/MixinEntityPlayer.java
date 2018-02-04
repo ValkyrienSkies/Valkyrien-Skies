@@ -16,14 +16,17 @@
 
 package valkyrienwarfare.mixin.entity.player;
 
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import java.util.UUID;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.piloting.ControllerInputType;
 import valkyrienwarfare.addon.control.piloting.IShipPilot;
@@ -32,95 +35,91 @@ import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.mod.physmanagement.interaction.ShipUUIDToPosData;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
-import java.util.UUID;
-
 @Mixin(EntityPlayer.class)
 public abstract class MixinEntityPlayer extends EntityLivingBase implements IShipPilot {
-    public PhysicsWrapperEntity pilotedShip;
-    public BlockPos blockBeingControlled;
-    public ControllerInputType controlInputType;
-    public MixinEntityPlayer() {
-        super(null);
-        //wtf java
-    }
+	public PhysicsWrapperEntity pilotedShip;
+	public BlockPos blockBeingControlled;
+	public ControllerInputType controlInputType;
 
-    @Inject(method = "getBedSpawnLocation",
-            at = @At("HEAD"),
-            cancellable = true)
-    private static void preGetBedSpawnLocation(World worldIn, BlockPos bedLocation, boolean forceSpawn, CallbackInfoReturnable<BlockPos> callbackInfo) {
-        int chunkX = bedLocation.getX() >> 4;
-        int chunkZ = bedLocation.getZ() >> 4;
+	public MixinEntityPlayer() {
+		super(null);
+		// wtf java
+	}
 
-        UUID shipManagingID = ValkyrienWarfareMod.chunkManager.getShipIDManagingPos_Persistant(worldIn, chunkX, chunkZ);
-        if (shipManagingID != null) {
-            ShipUUIDToPosData.ShipPositionData positionData = ValkyrienWarfareMod.chunkManager.getShipPosition_Persistant(worldIn, shipManagingID);
+	@Inject(method = "getBedSpawnLocation", at = @At("HEAD"), cancellable = true)
+	private static void preGetBedSpawnLocation(World worldIn, BlockPos bedLocation, boolean forceSpawn,
+			CallbackInfoReturnable<BlockPos> callbackInfo) {
+		int chunkX = bedLocation.getX() >> 4;
+		int chunkZ = bedLocation.getZ() >> 4;
 
-            if (positionData != null) {
-                double[] lToWTransform = RotationMatrices.convertToDouble(positionData.lToWTransform);
+		UUID shipManagingID = ValkyrienWarfareMod.chunkManager.getShipIDManagingPos_Persistant(worldIn, chunkX, chunkZ);
+		if (shipManagingID != null) {
+			ShipUUIDToPosData.ShipPositionData positionData = ValkyrienWarfareMod.chunkManager.getShipPosition_Persistant(worldIn, shipManagingID);
 
-                Vector bedPositionInWorld = new Vector(bedLocation.getX() + .5D, bedLocation.getY() + .5D, bedLocation.getZ() + .5D);
-                RotationMatrices.applyTransform(lToWTransform, bedPositionInWorld);
+			if (positionData != null) {
+				double[] lToWTransform = positionData.getLToWTransform();
 
-                bedPositionInWorld.Y += 1D;
+				Vector bedPositionInWorld = new Vector(bedLocation.getX() + .5D, bedLocation.getY() + .5D, bedLocation.getZ() + .5D);
+				RotationMatrices.applyTransform(lToWTransform, bedPositionInWorld);
+				bedPositionInWorld.Y += 1D;
+				bedLocation = new BlockPos(bedPositionInWorld.X, bedPositionInWorld.Y, bedPositionInWorld.Z);
 
-                bedLocation = new BlockPos(bedPositionInWorld.X, bedPositionInWorld.Y, bedPositionInWorld.Z);
+				callbackInfo.setReturnValue(bedLocation);
+			} else {
+				System.err.println("A ship just had Chunks claimed persistant, but not any position data persistant");
+			}
+		}
+	}
 
-                callbackInfo.setReturnValue(bedLocation);
-            } else {
-                System.err.println("A ship just had Chunks claimed persistant, but not any position data persistant");
-            }
-        }
-    }
+	@Override
+	public PhysicsWrapperEntity getPilotedShip() {
+		return pilotedShip;
+	}
 
-    @Override
-    public PhysicsWrapperEntity getPilotedShip() {
-        return pilotedShip;
-    }
+	@Override
+	public void setPilotedShip(PhysicsWrapperEntity wrapper) {
+		pilotedShip = wrapper;
+	}
 
-    @Override
-    public void setPilotedShip(PhysicsWrapperEntity wrapper) {
-        pilotedShip = wrapper;
-    }
+	@Override
+	public boolean isPilotingShip() {
+		return pilotedShip != null;
+	}
 
-    @Override
-    public boolean isPilotingShip() {
-        return pilotedShip != null;
-    }
+	@Override
+	public BlockPos getPosBeingControlled() {
+		return blockBeingControlled;
+	}
 
-    @Override
-    public BlockPos getPosBeingControlled() {
-        return blockBeingControlled;
-    }
+	@Override
+	public void setPosBeingControlled(BlockPos pos) {
+		blockBeingControlled = pos;
+	}
 
-    @Override
-    public void setPosBeingControlled(BlockPos pos) {
-        blockBeingControlled = pos;
-    }
+	@Override
+	public ControllerInputType getControllerInputEnum() {
+		return controlInputType;
+	}
 
-    @Override
-    public ControllerInputType getControllerInputEnum() {
-        return controlInputType;
-    }
+	@Override
+	public void setControllerInputEnum(ControllerInputType type) {
+		controlInputType = type;
+	}
 
-    @Override
-    public void setControllerInputEnum(ControllerInputType type) {
-        controlInputType = type;
-    }
+	@Override
+	public boolean isPilotingATile() {
+		return blockBeingControlled != null;
+	}
 
-    @Override
-    public boolean isPilotingATile() {
-        return blockBeingControlled != null;
-    }
+	@Override
+	public boolean isPiloting() {
+		return isPilotingShip() || isPilotingATile();
+	}
 
-    @Override
-    public boolean isPiloting() {
-        return isPilotingShip() || isPilotingATile();
-    }
-
-    @Override
-    public void stopPilotingEverything() {
-        setPilotedShip(null);
-        setPosBeingControlled(null);
-        setControllerInputEnum(null);
-    }
+	@Override
+	public void stopPilotingEverything() {
+		setPilotedShip(null);
+		setPosBeingControlled(null);
+		setControllerInputEnum(null);
+	}
 }

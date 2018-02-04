@@ -65,8 +65,6 @@ public class PhysicsTickHandler {
 		}
 
 		int iters = ValkyrienWarfareMod.physIter;
-		double newPhysSpeed = ValkyrienWarfareMod.physSpeed;
-		Vector newGravity = ValkyrienWarfareMod.gravity;
 
 		PhysicsTickThreadTask physicsThreadTask = new PhysicsTickThreadTask(iters, physicsEntities, manager);
 
@@ -90,7 +88,6 @@ public class PhysicsTickHandler {
 			manager.physicsThreadStatus = ValkyrienWarfareMod.PhysicsMasterThread.submit(physicsThreadTask);
 			//
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

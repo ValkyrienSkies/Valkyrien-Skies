@@ -176,8 +176,7 @@ public abstract class EntityDraggable {
             //Do not add this movement as if the entity were walking it
 //			entity.distanceWalkedModified = originalWalked;
 //			entity.distanceWalkedOnStepModified = originalWalkedOnStep;
-//			entity.setSneaking(originallySneaking);
-
+			entity.setSneaking(originallySneaking);
         }
 
         if (onGroundOrig) {

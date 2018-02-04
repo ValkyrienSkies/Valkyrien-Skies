@@ -110,16 +110,13 @@ public class ValkyrienWarfareMod {
 	public static final Capability<IAirshipCounterCapability> airshipCounter = null;
 	// NOTE: These only calculate physics, so they are only relevant to the Server
 	// end
-	public static final ExecutorService MultiThreadExecutor = Executors.newWorkStealingPool();
-	public static final ExecutorService PhysicsMasterThread = Executors.newCachedThreadPool();
+	public static ExecutorService MultiThreadExecutor = null;
+	public static ExecutorService PhysicsMasterThread = null;
 	@SidedProxy(clientSide = "valkyrienwarfare.mod.proxy.ClientProxy", serverSide = "valkyrienwarfare.mod.proxy.ServerProxy")
 	public static CommonProxy proxy;
 	public static File configFile;
 	public static Configuration config;
-	public static boolean dynamicLighting;
-	public static boolean multiThreadedPhysics;
 	public static boolean doSplitting = false;
-	public static boolean doShipCollision = false;
 	public static boolean shipsSpawnParticles = false;
 	public static Vector gravity = new Vector(0, -9.8D, 0);
 	public static int physIter = 10;
@@ -141,6 +138,7 @@ public class ValkyrienWarfareMod {
 	public static boolean highAccuracyCollisions = false;
 	public static boolean accurateRain = false;
 	public static boolean runAirshipPermissions = false;
+	public static int threadCount = -1;
 	public static double shipmobs_spawnrate = .01D;
 	public static Logger VWLogger;
 	private static boolean hasAddonRegistrationEnded = false;
@@ -158,9 +156,6 @@ public class ValkyrienWarfareMod {
 		// "DynamicLighting", false).getBoolean();
 		// Property spawnParticlesParticle = config.get(Configuration.CATEGORY_GENERAL,
 		// "Ships spawn particles", false).getBoolean();
-		multiThreadedPhysics = config
-				.get(Configuration.CATEGORY_GENERAL, "Multi-Threaded physics", true, "Use Multi-Threaded physics")
-				.getBoolean();
 		shipUpperLimit = config.get(Configuration.CATEGORY_GENERAL, "Ship Y-Height Maximum", 1000D).getDouble();
 		shipLowerLimit = config.get(Configuration.CATEGORY_GENERAL, "Ship Y-Height Minimum", -30D).getDouble();
 		maxAirships = config.get(Configuration.CATEGORY_GENERAL, "Max airships per player", -1,
@@ -174,6 +169,16 @@ public class ValkyrienWarfareMod {
 				"Enables the airship permissions system").getBoolean();
 		shipmobs_spawnrate = config.get(Configuration.CATEGORY_GENERAL, "The spawn rate for ship mobs", .01D,
 				"The spawn rate for ship mobs").getDouble();
+
+		{
+			threadCount = config.get(Configuration.CATEGORY_GENERAL, "Physics thread count", -1,
+					"The number of threads to use for physics. If <= 0 it will use the system core count.").getInt();
+
+			if (MultiThreadExecutor == null) {
+				MultiThreadExecutor = Executors.newFixedThreadPool(threadCount <= 0 ? Runtime.getRuntime().availableProcessors() : threadCount);
+				PhysicsMasterThread = Executors.newFixedThreadPool(threadCount <= 0 ? Runtime.getRuntime().availableProcessors() : threadCount);
+			}
+		}
 	}
 
 	public static File getWorkingFolder() {

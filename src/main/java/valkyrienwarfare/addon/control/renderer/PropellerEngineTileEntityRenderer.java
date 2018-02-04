@@ -16,6 +16,8 @@
 
 package valkyrienwarfare.addon.control.renderer;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -23,7 +25,6 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.EnumFacing;
-import org.lwjgl.opengl.GL11;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.tileentity.TileEntityPropellerEngine;
 import valkyrienwarfare.api.block.engine.BlockAirshipEngine;
@@ -39,7 +40,7 @@ public class PropellerEngineTileEntityRenderer extends TileEntitySpecialRenderer
             EnumFacing facing = state.getValue(BlockAirshipEngine.FACING);
 
             IBlockState engineRenderState = getRenderState(state);
-            IBlockState propellerRenderState = ValkyrienWarfareControl.INSTANCE.shipWheel.getStateFromMeta(14);
+            IBlockState propellerRenderState = ValkyrienWarfareControl.INSTANCE.blocks.shipWheel.getStateFromMeta(14);
 
             this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
             GlStateManager.pushMatrix();
@@ -107,22 +108,22 @@ public class PropellerEngineTileEntityRenderer extends TileEntitySpecialRenderer
     }
 
     private IBlockState getRenderState(IBlockState inWorldState) {
-        if (inWorldState.getBlock() == ValkyrienWarfareControl.INSTANCE.ultimateEngine) {
-            return ValkyrienWarfareControl.INSTANCE.shipWheel.getStateFromMeta(9);
+        if (inWorldState.getBlock() == ValkyrienWarfareControl.INSTANCE.blocks.ultimateEngine) {
+            return ValkyrienWarfareControl.INSTANCE.blocks.shipWheel.getStateFromMeta(9);
         }
-        if (inWorldState.getBlock() == ValkyrienWarfareControl.INSTANCE.redstoneEngine) {
-            return ValkyrienWarfareControl.INSTANCE.shipWheel.getStateFromMeta(10);
+        if (inWorldState.getBlock() == ValkyrienWarfareControl.INSTANCE.blocks.redstoneEngine) {
+            return ValkyrienWarfareControl.INSTANCE.blocks.shipWheel.getStateFromMeta(10);
         }
-        if (inWorldState.getBlock() == ValkyrienWarfareControl.INSTANCE.eliteEngine) {
-            return ValkyrienWarfareControl.INSTANCE.shipWheel.getStateFromMeta(11);
+        if (inWorldState.getBlock() == ValkyrienWarfareControl.INSTANCE.blocks.eliteEngine) {
+            return ValkyrienWarfareControl.INSTANCE.blocks.shipWheel.getStateFromMeta(11);
         }
-        if (inWorldState.getBlock() == ValkyrienWarfareControl.INSTANCE.basicEngine) {
-            return ValkyrienWarfareControl.INSTANCE.shipWheel.getStateFromMeta(12);
+        if (inWorldState.getBlock() == ValkyrienWarfareControl.INSTANCE.blocks.basicEngine) {
+            return ValkyrienWarfareControl.INSTANCE.blocks.shipWheel.getStateFromMeta(12);
         }
-        if (inWorldState.getBlock() == ValkyrienWarfareControl.INSTANCE.advancedEngine) {
-            return ValkyrienWarfareControl.INSTANCE.shipWheel.getStateFromMeta(13);
+        if (inWorldState.getBlock() == ValkyrienWarfareControl.INSTANCE.blocks.advancedEngine) {
+            return ValkyrienWarfareControl.INSTANCE.blocks.shipWheel.getStateFromMeta(13);
         }
 
-        return ValkyrienWarfareControl.INSTANCE.shipWheel.getStateFromMeta(9);
+        return ValkyrienWarfareControl.INSTANCE.blocks.shipWheel.getStateFromMeta(9);
     }
 }

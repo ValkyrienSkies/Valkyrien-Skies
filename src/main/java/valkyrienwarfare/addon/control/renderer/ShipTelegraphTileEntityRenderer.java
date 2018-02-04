@@ -16,6 +16,8 @@
 
 package valkyrienwarfare.addon.control.renderer;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -24,7 +26,6 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import org.lwjgl.opengl.GL11;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.block.BlockShipTelegraph;
 import valkyrienwarfare.addon.control.tileentity.TileEntityShipTelegraph;
@@ -42,7 +43,7 @@ public class ShipTelegraphTileEntityRenderer extends TileEntitySpecialRenderer<T
     public void render(TileEntityShipTelegraph tileentity, double x, double y, double z, float partialTick, int destroyStage, float alpha) {
         IBlockState telegraphState = tileentity.getWorld().getBlockState(tileentity.getPos());
 
-        if (telegraphState.getBlock() != ValkyrienWarfareControl.INSTANCE.shipTelegraph) {
+        if (telegraphState.getBlock() != ValkyrienWarfareControl.INSTANCE.blocks.shipTelegraph) {
             return;
         }
 
@@ -63,11 +64,11 @@ public class ShipTelegraphTileEntityRenderer extends TileEntitySpecialRenderer<T
 
         BlockPos originPos = tileentity.getPos();
 
-        IBlockState glassState = ValkyrienWarfareControl.INSTANCE.shipWheel.getStateFromMeta(8);
-        IBlockState dialState = ValkyrienWarfareControl.INSTANCE.shipWheel.getStateFromMeta(7);
-        IBlockState leftHandleState = ValkyrienWarfareControl.INSTANCE.shipWheel.getStateFromMeta(6);
-        IBlockState rightHandleState = ValkyrienWarfareControl.INSTANCE.shipWheel.getStateFromMeta(5);
-        IBlockState helmStateToRender = ValkyrienWarfareControl.INSTANCE.shipWheel.getStateFromMeta(4);
+        IBlockState glassState = ValkyrienWarfareControl.INSTANCE.blocks.shipWheel.getStateFromMeta(8);
+        IBlockState dialState = ValkyrienWarfareControl.INSTANCE.blocks.shipWheel.getStateFromMeta(7);
+        IBlockState leftHandleState = ValkyrienWarfareControl.INSTANCE.blocks.shipWheel.getStateFromMeta(6);
+        IBlockState rightHandleState = ValkyrienWarfareControl.INSTANCE.blocks.shipWheel.getStateFromMeta(5);
+        IBlockState helmStateToRender = ValkyrienWarfareControl.INSTANCE.blocks.shipWheel.getStateFromMeta(4);
         int brightness = tileentity.getWorld().getCombinedLight(tileentity.getPos(), 0);
 
         double multiplier = 1.5D;

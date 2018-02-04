@@ -28,14 +28,13 @@ public class StorageLastRelay implements IStorage<ICapabilityLastRelay> {
     @Override
     public NBTBase writeNBT(Capability<ICapabilityLastRelay> capability, ICapabilityLastRelay instance, EnumFacing side) {
         int x = 0, y = 0, z = 0;
-        boolean hasLast = instance.hasLastRelay();
-
-        if (hasLast) {
+        
+        if (instance.hasLastRelay()) {
             x = instance.getLastRelay().getX();
             y = instance.getLastRelay().getY();
             z = instance.getLastRelay().getZ();
         }
-
+        
         return new NBTTagIntArray(new int[]{x, y, z});
     }
 

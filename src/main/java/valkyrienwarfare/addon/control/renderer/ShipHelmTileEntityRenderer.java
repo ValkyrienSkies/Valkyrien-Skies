@@ -16,6 +16,8 @@
 
 package valkyrienwarfare.addon.control.renderer;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -24,7 +26,6 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import org.lwjgl.opengl.GL11;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.block.BlockShipHelm;
 import valkyrienwarfare.addon.control.tileentity.TileEntityShipHelm;
@@ -43,7 +44,7 @@ public class ShipHelmTileEntityRenderer extends TileEntitySpecialRenderer<TileEn
         if (tileentity instanceof TileEntityShipHelm) {
             IBlockState helmState = tileentity.getWorld().getBlockState(tileentity.getPos());
 
-            if (helmState.getBlock() != ValkyrienWarfareControl.INSTANCE.shipHelm) {
+            if (helmState.getBlock() != ValkyrienWarfareControl.INSTANCE.blocks.shipHelm) {
                 return;
             }
 
@@ -84,10 +85,10 @@ public class ShipHelmTileEntityRenderer extends TileEntitySpecialRenderer<TileEn
             BlockPos originPos = tileentity.getPos();
 
 
-            IBlockState wheelState = ValkyrienWarfareControl.INSTANCE.shipWheel.getStateFromMeta(0);
-            IBlockState compassState = ValkyrienWarfareControl.INSTANCE.shipWheel.getStateFromMeta(1);
-            IBlockState glassState = ValkyrienWarfareControl.INSTANCE.shipWheel.getStateFromMeta(2);
-            IBlockState helmStateToRender = ValkyrienWarfareControl.INSTANCE.shipWheel.getStateFromMeta(3);
+            IBlockState wheelState = ValkyrienWarfareControl.INSTANCE.blocks.shipWheel.getStateFromMeta(0);
+            IBlockState compassState = ValkyrienWarfareControl.INSTANCE.blocks.shipWheel.getStateFromMeta(1);
+            IBlockState glassState = ValkyrienWarfareControl.INSTANCE.blocks.shipWheel.getStateFromMeta(2);
+            IBlockState helmStateToRender = ValkyrienWarfareControl.INSTANCE.blocks.shipWheel.getStateFromMeta(3);
             //TODO: Better rendering cache
             int brightness = tileentity.getWorld().getCombinedLight(tileentity.getPos(), 0);
 

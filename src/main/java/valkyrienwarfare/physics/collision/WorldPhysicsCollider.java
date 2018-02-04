@@ -296,7 +296,7 @@ public class WorldPhysicsCollider {
     // ideal value that is to be followed
     private boolean handleActualCollision(PhysPolygonCollider collider, BlockPos inWorldPos, BlockPos inLocalPos,
             IBlockState inWorldState, IBlockState inLocalState) {
-        PhysCollisionObject toCollideWith = null;
+        PhysCollisionObject toCollideWith;
         toCollideWith = collider.collisions[1];
 
         if (toCollideWith.penetrationDistance > AXIS_TOLERANCE || toCollideWith.penetrationDistance < -AXIS_TOLERANCE) {
@@ -310,8 +310,6 @@ public class WorldPhysicsCollider {
         positionInBody.subtract(parent.wrapper.posX, parent.wrapper.posY, parent.wrapper.posZ);
 
         Vector velocityAtPoint = calculator.getVelocityAtPoint(positionInBody);
-
-        double collisionSpeed = velocityAtPoint.dot(toCollideWith.axis);
 
         double impulseApplied = 1D;
         // BlockRammingManager.processBlockRamming(parent.wrapper, collisionSpeed,
@@ -438,10 +436,7 @@ public class WorldPhysicsCollider {
 
     // Applies Coulumb Friction to the collision
     private void calculateCoulumbFriction(Vector inBody, Vector momentumAtPoint, Vector axis, Vector offsetVector) {
-        // Some number between 0 and 1
-        double coefficientOfFriction = .5D;
-
-        Vector tangentOfSliding = new Vector();
+        Vector tangentOfSliding;
 
         double dotProduct = momentumAtPoint.dot(axis);
 
@@ -509,9 +504,8 @@ public class WorldPhysicsCollider {
 
         ChunkCache cache = parent.surroundingWorldChunksCache;
 
-        Chunk chunk, chunkIn;
+        Chunk chunk;
         ExtendedBlockStorage extendedblockstorage;
-        IBlockState state, localState;
 
         int chunkMinX = min.getX() >> 4;
         int chunkMaxX = (max.getX() >> 4) + 1;

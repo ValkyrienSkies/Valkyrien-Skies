@@ -51,7 +51,7 @@ public class ShipCollisionTask implements Callable<Void> {
 		this.mutablePos = new MutableBlockPos();
 		this.inLocalPos = new MutableBlockPos();
 		this.inWorld = new Vector();
-		this.collisionInformationGenerated = new ArrayList<CollisionInformationHolder>();
+		this.collisionInformationGenerated = new ArrayList<>();
 		this.inWorldState = null;
 
 		int size = toTask.getCachedPotentialHitSize();

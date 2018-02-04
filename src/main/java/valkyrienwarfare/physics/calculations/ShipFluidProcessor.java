@@ -63,7 +63,7 @@ public class ShipFluidProcessor {
                 int yPos = pos.getY();
                 ArrayList<BlockPos> dataAtY = solidPositionsAtYLevel[yPos];
                 if (dataAtY == null) {
-                    dataAtY = new ArrayList<BlockPos>();
+                    dataAtY = new ArrayList<>();
                     solidPositionsAtYLevel[yPos] = dataAtY;
                 }
                 dataAtY.add(pos);
@@ -75,7 +75,7 @@ public class ShipFluidProcessor {
         int yPos = pos.getY();
         ArrayList<BlockPos> dataAtY = solidPositionsAtYLevel[yPos];
         if (dataAtY == null) {
-            dataAtY = new ArrayList<BlockPos>();
+            dataAtY = new ArrayList<>();
             solidPositionsAtYLevel[yPos] = dataAtY;
         }
         boolean doesOldStateBlockWater = doesStateBlockWater(oldState);
@@ -111,8 +111,5 @@ public class ShipFluidProcessor {
         public void runSimulation() {
 
         }
-
-
     }
-
 }

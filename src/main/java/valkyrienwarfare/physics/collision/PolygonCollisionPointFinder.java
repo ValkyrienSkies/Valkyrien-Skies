@@ -9,7 +9,6 @@ public class PolygonCollisionPointFinder {
             PhysCollisionObject somethingElse, Vector velocity) {
         double minSecondsAgo = 69D;
         int minCollisionIndex = 0;
-        int minCollisionIndexIndex = 0;
 
         for (int cont = 0; cont < collider.collisions.length; cont++) {
             PhysCollisionObject toCollideWith = collider.collisions[cont];
@@ -38,7 +37,6 @@ public class PolygonCollisionPointFinder {
             if (secondsAgo < minSecondsAgo) {
                 minSecondsAgo = secondsAgo;
                 minCollisionIndex = cont;
-                minCollisionIndexIndex = minIndex;
             }
         }
 

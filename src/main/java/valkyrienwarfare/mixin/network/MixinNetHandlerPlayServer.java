@@ -16,15 +16,14 @@
 
 package valkyrienwarfare.mixin.network;
 
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
-
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketThreadUtil;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import valkyrienwarfare.mod.physmanagement.interaction.EntityDraggable;
 import valkyrienwarfare.mod.physmanagement.interaction.IDraggable;
 import valkyrienwarfare.mod.physmanagement.interaction.INHPServerVW;
@@ -32,53 +31,55 @@ import valkyrienwarfare.mod.physmanagement.interaction.INHPServerVW;
 //TODO: a lot of these mixins can probably be done using overrides instead of overwrites, i should have a look at some point
 @Mixin(NetHandlerPlayServer.class)
 public abstract class MixinNetHandlerPlayServer implements INHPServerVW {
-	@Shadow
-	public EntityPlayerMP player;
+    @Shadow
+    public EntityPlayerMP player;
 
-	private double dummyBlockReachDist = 9999999999999999999999999999D;
-	private double lastGoodBlockReachDist;
+    private double dummyBlockReachDist = 9999999999999999999999999999D;
+    private double lastGoodBlockReachDist;
 
-	@Redirect(method = "update", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/NetHandlerPlayServer;captureCurrentPosition()V"))
-	public void makeIDraggableNotUseless(NetHandlerPlayServer server) {
-		IDraggable draggable = EntityDraggable.getDraggableFromEntity(player);
-		server.captureCurrentPosition();
+    @Redirect(method = "update",
+            at = @At(value = "INVOKE",
+                    target = "Lnet/minecraft/network/NetHandlerPlayServer;captureCurrentPosition()V"))
+    public void makeIDraggableNotUseless(NetHandlerPlayServer server) {
+        IDraggable draggable = EntityDraggable.getDraggableFromEntity(player);
+        server.captureCurrentPosition();
 
-		server.firstGoodX += draggable.getVelocityAddedToPlayer().X;
-		server.firstGoodY += draggable.getVelocityAddedToPlayer().Y;
-		server.firstGoodZ += draggable.getVelocityAddedToPlayer().Z;
-		server.lastGoodX += draggable.getVelocityAddedToPlayer().X;
-		server.lastGoodY += draggable.getVelocityAddedToPlayer().Y;
-		server.lastGoodZ += draggable.getVelocityAddedToPlayer().Z;
-	}
+        server.firstGoodX += draggable.getVelocityAddedToPlayer().X;
+        server.firstGoodY += draggable.getVelocityAddedToPlayer().Y;
+        server.firstGoodZ += draggable.getVelocityAddedToPlayer().Z;
+        server.lastGoodX += draggable.getVelocityAddedToPlayer().X;
+        server.lastGoodY += draggable.getVelocityAddedToPlayer().Y;
+        server.lastGoodZ += draggable.getVelocityAddedToPlayer().Z;
+    }
 
-	@Override
-	public double dummyBlockReachDist() {
-		return dummyBlockReachDist;
-	}
+    @Override
+    public double dummyBlockReachDist() {
+        return dummyBlockReachDist;
+    }
 
-	@Override
-	public void dummyBlockReachDist(double in) {
-		dummyBlockReachDist = in;
-	}
+    @Override
+    public void dummyBlockReachDist(double in) {
+        dummyBlockReachDist = in;
+    }
 
-	@Override
-	public double lastGoodBlockReachDist() {
-		return lastGoodBlockReachDist;
-	}
+    @Override
+    public double lastGoodBlockReachDist() {
+        return lastGoodBlockReachDist;
+    }
 
-	@Override
-	public void lastGoodBlockReachDist(double in) {
-		lastGoodBlockReachDist = in;
-	}
+    @Override
+    public void lastGoodBlockReachDist(double in) {
+        lastGoodBlockReachDist = in;
+    }
 
-	@Override
-	public void checkForPacketEnqueueTrap(Packet packetIn) {
-		PacketThreadUtil.checkThreadAndEnqueue(packetIn, NetHandlerPlayServer.class.cast(this), player.getServerWorld());
-	}
+    @Override
+    public void checkForPacketEnqueueTrap(Packet packetIn) {
+        PacketThreadUtil.checkThreadAndEnqueue(packetIn, NetHandlerPlayServer.class.cast(this), player.getServerWorld());
+    }
 
-	@Override
-	public EntityPlayerMP getEntityPlayerFromHandler() {
-		return player;
-	}
+    @Override
+    public EntityPlayerMP getEntityPlayerFromHandler() {
+        return player;
+    }
 
 }

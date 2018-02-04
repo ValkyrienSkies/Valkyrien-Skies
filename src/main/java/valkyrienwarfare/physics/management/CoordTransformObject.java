@@ -165,7 +165,7 @@ public class CoordTransformObject {
         Vector[] alignedNorms = Vector.generateAxisAlignedNorms();
         Vector[] rotatedNorms = generateRotationNormals();
         for (int i = 0; i < 6; i++) {
-            Vector currentNorm = null;
+            Vector currentNorm;
             if (i < 3) {
                 currentNorm = alignedNorms[i];
             } else {

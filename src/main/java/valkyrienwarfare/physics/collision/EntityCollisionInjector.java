@@ -62,11 +62,6 @@ public class EntityCollisionInjector {
 		double origPosY = entity.posY;
 		double origPosZ = entity.posZ;
 		boolean isLiving = entity instanceof EntityLivingBase;
-		boolean isMoving = false;
-		if (isLiving) {
-			EntityLivingBase living = (EntityLivingBase) entity;
-			isMoving = Math.abs(living.moveForward) > .01 || Math.abs(living.moveStrafing) > .01;
-		}
 		Vec3d velocity = new Vec3d(dx, dy, dz);
 		EntityPolygon playerBeforeMove = new EntityPolygon(entity.getEntityBoundingBox(), entity);
 		ArrayList<Polygon> colPolys = getCollidingPolygonsAndDoBlockCols(entity, velocity);
@@ -193,7 +188,6 @@ public class EntityCollisionInjector {
 			base.motionY = dy;
 			if (base.isOnLadder()) {
 
-				float f9 = 0.15F;
 				base.motionX = MathHelper.clamp(base.motionX, -0.15000000596046448D, 0.15000000596046448D);
 				base.motionZ = MathHelper.clamp(base.motionZ, -0.15000000596046448D, 0.15000000596046448D);
 				base.fallDistance = 0.0F;
@@ -237,11 +231,6 @@ public class EntityCollisionInjector {
 	}
 
 	public static void alterEntityMovementPost(Entity entity, IntermediateMovementVariableStorage storage) {
-
-		if (true) {
-			// return;
-		}
-
 		double dx = storage.dxyz.X;
 		double dy = storage.dxyz.Y;
 		double dz = storage.dxyz.Z;
@@ -317,14 +306,6 @@ public class EntityCollisionInjector {
 
 		if (/** entity.canTriggerWalking() **/
 		entity instanceof EntityPlayer && !entity.isRiding()) {
-			double d12 = entity.posX - origPosX;
-			double d13 = entity.posY - origPosY;
-			double d14 = entity.posZ - origPosZ;
-
-			if (block != Blocks.LADDER) {
-				d13 = 0.0D;
-			}
-
 			if (dy != origDy) {
 				// if (!(entity.motionY > 0 && dy > 0)) {
 				block.onLanded(entity.world, entity);
@@ -383,7 +364,6 @@ public class EntityCollisionInjector {
 		if (dz != origDz) {
 			entity.motionZ = dz;
 		}
-
 	}
 
 	/*

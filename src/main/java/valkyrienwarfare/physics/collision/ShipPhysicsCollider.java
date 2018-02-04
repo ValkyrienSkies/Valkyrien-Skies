@@ -170,7 +170,7 @@ public class ShipPhysicsCollider {
 	}
 
 	private void processCollisionAtPoint(PhysicsObject toCollideWith, PhysCollisionObject object) {
-		double e = .3D;
+		double e;
 		Vector inFirstShip = new Vector(object.firstContactPoint);
 		Vector inSecondShip = new Vector(object.firstContactPoint);
 		// inFirstShip.subtract(firstController.centerOfMass);

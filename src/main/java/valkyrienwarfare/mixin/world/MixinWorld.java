@@ -68,7 +68,6 @@ public abstract class MixinWorld implements IWorldVW {
     private World thisClassAsWorld = World.class.cast(this);
     private WorldPhysObjectManager physManager;
     private boolean isRaytracingRecursive = false;
-    public PhysicsWrapperEntity toIgnoreShipTracing = null;
 
     /**
      * This is easier to have as an overwrite because there's less laggy hackery to be done then :P
@@ -95,8 +94,6 @@ public abstract class MixinWorld implements IWorldVW {
     public IBlockState getBlockState(BlockPos pos) {
         return null;
     }
-
-
 
     @Shadow
     protected abstract boolean isChunkLoaded(int x, int z, boolean allowEmpty);
@@ -351,8 +348,18 @@ public abstract class MixinWorld implements IWorldVW {
     @Shadow
     abstract boolean isOutsideBuildHeight(BlockPos pos);
 
+    @Inject(method = "rayTraceBlocks(Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Vec3d;ZZZ)Lnet/minecraft/util/math/RayTraceResult;",
+            at = @At("HEAD"),
+            cancellable = true)
+    public void preRayTraceBlocks(Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock, CallbackInfoReturnable<RayTraceResult> callbackInfo) {
+        if (!isRaytracingRecursive) {
+            callbackInfo.setReturnValue(rayTraceBlocksIgnoreShip(vec31, vec32, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock, null));
+        }
+    }
+
     @Override
     public RayTraceResult rayTraceBlocksIgnoreShip(Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock, PhysicsWrapperEntity toIgnore) {
+        isRaytracingRecursive = true;
         RayTraceResult vanillaTrace = thisClassAsWorld.rayTraceBlocks(vec31, vec32, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
         WorldPhysObjectManager physManager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(World.class.cast(this));
         if (physManager == null) {
@@ -405,6 +412,7 @@ public abstract class MixinWorld implements IWorldVW {
             vanillaTrace.hitVec = hitVec2;
         }
 
+        isRaytracingRecursive = false;
         return vanillaTrace;
     }
 }

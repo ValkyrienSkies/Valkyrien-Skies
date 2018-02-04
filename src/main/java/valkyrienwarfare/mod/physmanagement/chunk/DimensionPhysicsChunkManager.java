@@ -79,21 +79,21 @@ public class DimensionPhysicsChunkManager {
     }
 
     public ShipPositionData getShipPosition_Persistant(World worldFor, UUID shipID) {
-        ShipUUIDToPosData data = ShipUUIDToPosData.get(worldFor);
+        ShipUUIDToPosData data = ShipUUIDToPosData.getShipUUIDDataForWorld(worldFor);
 
         return data.getShipPositionData(shipID);
     }
 
     public void updateShipPosition(PhysicsWrapperEntity wrapper) {
         World shipWorld = wrapper.world;
-        ShipUUIDToPosData data = ShipUUIDToPosData.get(shipWorld);
+        ShipUUIDToPosData data = ShipUUIDToPosData.getShipUUIDDataForWorld(shipWorld);
 
         data.updateShipPosition(wrapper);
     }
 
     public void removeShipPosition(PhysicsWrapperEntity wrapper) {
         World shipWorld = wrapper.world;
-        ShipUUIDToPosData data = ShipUUIDToPosData.get(shipWorld);
+        ShipUUIDToPosData data = ShipUUIDToPosData.getShipUUIDDataForWorld(shipWorld);
 
         data.removeShipFromMap(wrapper);
     }

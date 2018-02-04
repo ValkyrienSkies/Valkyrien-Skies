@@ -50,15 +50,14 @@ public class SimpleBitOctree implements IBitOctree {
 		int levelTwoIndex = getOctreeLevelTwoIndex(x, y, z, levelThreeIndex);
 		int levelOneIndex = getOctreeLevelOneIndex(x, y, z, levelTwoIndex);
 
-		updateOctreeLevelOne(levelOneIndex, bit);
+		updateOctreeLevelOne(levelOneIndex, x, y, z);
 		updateOctreeLevelTwo(levelTwoIndex);
 		updateOctreeLevelThree(levelThreeIndex);
 	}
 
 	private void updateOctreeLevelThree(int levelThreeIndex) {
-		if (bitbuffer.get(levelThreeIndex + 1) || bitbuffer.get(levelThreeIndex + 10)
-				|| bitbuffer.get(levelThreeIndex + 19) || bitbuffer.get(levelThreeIndex + 28)
-				|| bitbuffer.get(levelThreeIndex + 37) || bitbuffer.get(levelThreeIndex + 46)
+		if (bitbuffer.get(levelThreeIndex + 1) || bitbuffer.get(levelThreeIndex + 10) || bitbuffer.get(levelThreeIndex + 19)
+				|| bitbuffer.get(levelThreeIndex + 28) || bitbuffer.get(levelThreeIndex + 37) || bitbuffer.get(levelThreeIndex + 46)
 				|| bitbuffer.get(levelThreeIndex + 55) || bitbuffer.get(levelThreeIndex + 64)) {
 			bitbuffer.set(levelThreeIndex);
 		} else {
@@ -68,17 +67,25 @@ public class SimpleBitOctree implements IBitOctree {
 
 	private void updateOctreeLevelTwo(int levelTwoIndex) {
 		if (bitbuffer.get(levelTwoIndex + 1) || bitbuffer.get(levelTwoIndex + 2) || bitbuffer.get(levelTwoIndex + 3)
-				|| bitbuffer.get(levelTwoIndex + 4) || bitbuffer.get(levelTwoIndex + 5)
-				|| bitbuffer.get(levelTwoIndex + 6) || bitbuffer.get(levelTwoIndex + 7)
-				|| bitbuffer.get(levelTwoIndex + 8)) {
+				|| bitbuffer.get(levelTwoIndex + 4) || bitbuffer.get(levelTwoIndex + 5) || bitbuffer.get(levelTwoIndex + 6)
+				|| bitbuffer.get(levelTwoIndex + 7) || bitbuffer.get(levelTwoIndex + 8)) {
 			bitbuffer.set(levelTwoIndex);
 		} else {
 			bitbuffer.clear(levelTwoIndex);
 		}
 	}
 
-	private void updateOctreeLevelOne(int levelOneIndex, boolean bit) {
-		bitbuffer.set(levelOneIndex, bit);
+	private void updateOctreeLevelOne(int levelOneIndex, int x, int y, int z) {
+		int baseX = x & 14;
+		int baseY = y & 14;
+		int baseZ = z & 14;
+		if (get(baseX, baseY, baseZ) || get(baseX, baseY, baseZ + 1) || get(baseX, baseY + 1, baseZ) || get(baseX, baseY + 1, baseZ + 1)
+				|| get(baseX + 1, baseY, baseZ) || get(baseX + 1, baseY, baseZ + 1) || get(baseX + 1, baseY + 1, baseZ)
+				|| get(baseX + 1, baseY + 1, baseZ + 1)) {
+			bitbuffer.set(levelOneIndex);
+		} else {
+			bitbuffer.clear(levelOneIndex);
+		}
 	}
 
 	private int getOctreeLevelOneIndex(int x, int y, int z, int levelTwoIndex) {

@@ -49,6 +49,7 @@ public class WorldPhysicsCollider {
 	// Used to expand the AABB used to check for potential collisions; helps prevent
 	// ships ghosting through blocks
 	public static final double AABB_EXPANSION = 2D;
+	public static final double RANGE_CHECK = 1.8D;
 	// The minimum depth a collision projection must have, to not use the default
 	// collision normal of <0, 1, 0>
 	public static final double AXIS_TOLERANCE = .3D;
@@ -239,15 +240,12 @@ public class WorldPhysicsCollider {
 
 													localCollisionPos.setPos(x, y, z);
 
-													boolean brokeAWorldBlock = handleLikelyCollision(mutablePos,
-															localCollisionPos, parent.surroundingWorldChunksCache
-																	.getBlockState(mutablePos),
-															state);
+													boolean brokeAWorldBlock = handleLikelyCollision(mutablePos, localCollisionPos,
+															parent.surroundingWorldChunksCache.getBlockState(mutablePos), state);
 
 													if (brokeAWorldBlock) {
-														int positionRemoved = SpatialDetector.getHashWithRespectTo(
-																mutablePos.getX(), mutablePos.getY(), mutablePos.getZ(),
-																centerPotentialHit);
+														int positionRemoved = SpatialDetector.getHashWithRespectTo(mutablePos.getX(),
+																mutablePos.getY(), mutablePos.getZ(), centerPotentialHit);
 														cachedHitsToRemove.add(positionRemoved);
 														break entireLoop;
 													}
@@ -281,13 +279,12 @@ public class WorldPhysicsCollider {
 
 	// Tests two block positions directly against each other, and figures out
 	// whether a collision is occuring or not
-	private boolean handleLikelyCollision(BlockPos inWorldPos, BlockPos inLocalPos, IBlockState inWorldState,
-			IBlockState inLocalState) {
+	private boolean handleLikelyCollision(BlockPos inWorldPos, BlockPos inLocalPos, IBlockState inWorldState, IBlockState inLocalState) {
 		// System.out.println("Handling a likely collision");
-		AxisAlignedBB inLocalBB = new AxisAlignedBB(inLocalPos.getX(), inLocalPos.getY(), inLocalPos.getZ(),
-				inLocalPos.getX() + 1, inLocalPos.getY() + 1, inLocalPos.getZ() + 1);
-		AxisAlignedBB inGlobalBB = new AxisAlignedBB(inWorldPos.getX(), inWorldPos.getY(), inWorldPos.getZ(),
-				inWorldPos.getX() + 1, inWorldPos.getY() + 1, inWorldPos.getZ() + 1);
+		AxisAlignedBB inLocalBB = new AxisAlignedBB(inLocalPos.getX(), inLocalPos.getY(), inLocalPos.getZ(), inLocalPos.getX() + 1,
+				inLocalPos.getY() + 1, inLocalPos.getZ() + 1);
+		AxisAlignedBB inGlobalBB = new AxisAlignedBB(inWorldPos.getX(), inWorldPos.getY(), inWorldPos.getZ(), inWorldPos.getX() + 1,
+				inWorldPos.getY() + 1, inWorldPos.getZ() + 1);
 
 		// This changes the box bounding box to the real bounding box, not sure if this
 		// is better or worse for this mod
@@ -308,8 +305,8 @@ public class WorldPhysicsCollider {
 
 	// Takes the collision data along all axes generated prior, and creates the
 	// ideal value that is to be followed
-	private boolean handleActualCollision(PhysPolygonCollider collider, BlockPos inWorldPos, BlockPos inLocalPos,
-			IBlockState inWorldState, IBlockState inLocalState) {
+	private boolean handleActualCollision(PhysPolygonCollider collider, BlockPos inWorldPos, BlockPos inLocalPos, IBlockState inWorldState,
+			IBlockState inLocalState) {
 		PhysCollisionObject toCollideWith = null;
 		toCollideWith = collider.collisions[1];
 
@@ -332,14 +329,12 @@ public class WorldPhysicsCollider {
 		// inLocalState, inWorldState, inLocalPos, inWorldPos, didBlockBreakInShip,
 		// didBlockBreakInWorld);
 
-		Vector[] collisionPoints = PolygonCollisionPointFinder.getPointsOfCollisionForPolygons(collider, toCollideWith,
-				velocityAtPoint);
+		Vector[] collisionPoints = PolygonCollisionPointFinder.getPointsOfCollisionForPolygons(collider, toCollideWith, velocityAtPoint);
 
 		impulseApplied /= collisionPoints.length;
 
 		for (Vector collisionPos : collisionPoints) {
-			Vector inBody = collisionPos
-					.getSubtraction(new Vector(parent.wrapper.posX, parent.wrapper.posY, parent.wrapper.posZ));
+			Vector inBody = collisionPos.getSubtraction(new Vector(parent.wrapper.posX, parent.wrapper.posY, parent.wrapper.posZ));
 			inBody.multiply(-1D);
 			Vector momentumAtPoint = calculator.getVelocityAtPoint(inBody);
 			Vector axis = toCollideWith.axis;
@@ -359,8 +354,7 @@ public class WorldPhysicsCollider {
 
 			if (false) { // didBlockBreakInWorld.getValue()) {
 
-				if (worldObj.getBlockState(inWorldPos)
-						.getBlock() instanceof com.jackredcreeper.cannon.blocks.BlockAirMine) {
+				if (worldObj.getBlockState(inWorldPos).getBlock() instanceof com.jackredcreeper.cannon.blocks.BlockAirMine) {
 					double x = inWorldPos.getX();
 					double y = inWorldPos.getY();
 					double z = inWorldPos.getZ();
@@ -386,15 +380,14 @@ public class WorldPhysicsCollider {
 
 	// Finally, the end of all this spaghetti code! This step takes all of the math
 	// generated before, and it directly adds the result to Ship velocities
-	private void calculateCollisionImpulseForce(Vector inBody, Vector momentumAtPoint, Vector axis, Vector offsetVector,
-			boolean didBlockBreakInShip, boolean didBlockBreakInWorld, double impulseApplied) {
+	private void calculateCollisionImpulseForce(Vector inBody, Vector momentumAtPoint, Vector axis, Vector offsetVector, boolean didBlockBreakInShip,
+			boolean didBlockBreakInWorld, double impulseApplied) {
 		Vector firstCross = inBody.cross(axis);
 		RotationMatrices.applyTransform3by3(calculator.invFramedMOI, firstCross);
 
 		Vector secondCross = firstCross.cross(inBody);
 
-		double impulseMagnitude = -momentumAtPoint.dot(axis) * COLLISION_ELASTICITY
-				/ (calculator.invMass + secondCross.dot(axis));
+		double impulseMagnitude = -momentumAtPoint.dot(axis) * COLLISION_ELASTICITY / (calculator.invMass + secondCross.dot(axis));
 
 		Vector collisionImpulseForce = new Vector(axis, impulseMagnitude);
 
@@ -491,8 +484,7 @@ public class WorldPhysicsCollider {
 
 	private void updatePotentialCollisionCache() {
 		final AxisAlignedBB collisionBB = parent.collisionBB.expand(calculator.linearMomentum.X * calculator.invMass,
-				calculator.linearMomentum.Y * calculator.invMass, calculator.linearMomentum.Z * calculator.invMass)
-				.grow(AABB_EXPANSION);
+				calculator.linearMomentum.Y * calculator.invMass, calculator.linearMomentum.Z * calculator.invMass).grow(AABB_EXPANSION);
 
 		ticksSinceCacheUpdate = 0D;
 		// This is being used to occasionally offset the collision cache update, in the
@@ -513,17 +505,11 @@ public class WorldPhysicsCollider {
 		// falling through the floor
 		final BlockPos min = new BlockPos(collisionBB.minX, Math.max(collisionBB.minY - 1, 0), collisionBB.minZ);
 		final BlockPos max = new BlockPos(collisionBB.maxX, Math.min(collisionBB.maxY, 255), collisionBB.maxZ);
-		centerPotentialHit = new BlockPos((min.getX() + max.getX()) / 2D, (min.getY() + max.getY()) / 2D,
-				(min.getZ() + max.getZ()) / 2D);
+		centerPotentialHit = new BlockPos((min.getX() + max.getX()) / 2D, (min.getY() + max.getY()) / 2D, (min.getZ() + max.getZ()) / 2D);
 
 		final ChunkCache cache = parent.surroundingWorldChunksCache;
 		final Vector inLocal = new Vector();
 		int maxX, maxY, maxZ, localX, localY, localZ, x, y, z, chunkX, chunkZ;
-		double rangeCheck = 1.8D;
-
-		if (ValkyrienWarfareMod.highAccuracyCollisions) {
-			rangeCheck = 3D;
-		}
 
 		Chunk chunk, chunkIn;
 		ExtendedBlockStorage extendedblockstorage;
@@ -566,35 +552,23 @@ public class WorldPhysicsCollider {
 							int maxStorageY = minStorageY + 16;
 							int maxStorageZ = minStorageZ + 16;
 
-							minStorageX = Math.max(minStorageX, mmX);
-							minStorageY = Math.max(minStorageY, mmY);
-							minStorageZ = Math.max(minStorageZ, mmZ);
-
-							maxStorageX = Math.min(maxStorageX, mxX);
-							maxStorageY = Math.min(maxStorageY, mxY);
-							maxStorageZ = Math.min(maxStorageZ, mxZ);
-
 							IBitOctreeProvider provider = IBitOctreeProvider.class.cast(extendedblockstorage.data);
 							IBitOctree octree = provider.getBitOctree();
-
 							if (false) {
 								// System.out.println(parent.blockPositions.size());
 								for (int levelThree = 0; levelThree < 8; levelThree++) {
 									int levelThreeIndex = octree.getOctreeLevelThreeIndex(levelThree);
 									if (octree.getAtIndex(levelThreeIndex)) {
 										for (int levelTwo = 0; levelTwo < 8; levelTwo++) {
-											int levelTwoIndex = octree.getOctreeLevelTwoIndex(levelThreeIndex,
-													levelTwo);
+											int levelTwoIndex = octree.getOctreeLevelTwoIndex(levelThreeIndex, levelTwo);
 											if (octree.getAtIndex(levelTwoIndex)) {
 												for (int levelOne = 0; levelOne < 8; levelOne++) {
-													int levelOneIndex = octree.getOctreeLevelOneIndex(levelTwoIndex,
-															levelOne);
-													int internalX = ((levelThree % 2) * 8) + ((levelTwo % 2) * 4)
-															+ ((levelOne % 2) * 2);
-													int internalY = (((levelThree >> 1) % 2) * 8)
-															+ (((levelTwo >> 1) % 2) * 4) + (((levelOne >> 1) % 2) * 2);
-													int internalZ = (((levelThree >> 2) % 2) * 8)
-															+ (((levelTwo >> 2) % 2) * 4) + (((levelOne >> 2) % 2) * 2);
+													int levelOneIndex = octree.getOctreeLevelOneIndex(levelTwoIndex, levelOne);
+													int internalX = ((levelThree % 2) * 8) + ((levelTwo % 2) * 4) + ((levelOne % 2) * 2);
+													int internalY = (((levelThree >> 1) % 2) * 8) + (((levelTwo >> 1) % 2) * 4)
+															+ (((levelOne >> 1) % 2) * 2);
+													int internalZ = (((levelThree >> 2) % 2) * 8) + (((levelTwo >> 2) % 2) * 4)
+															+ (((levelOne >> 2) % 2) * 2);
 													for (int index = 0; index < 8; index++) {
 														x = chunkX << 4;
 														y = storageY << 4;
@@ -605,10 +579,11 @@ public class WorldPhysicsCollider {
 														z += internalZ;
 
 														x += index % 2;
-														y += (index / 2) % 2;
+														y += ((index + 1) / 2) % 2;
 														z += index / 4;
 
 														if (octree.get(x & 15, y & 15, z & 15)) {
+															// posSet.add(new BlockPos(x, y, z));
 															state = extendedblockstorage.get(x & 15, y & 15, z & 15);
 															inLocal.X = x + .5D;
 															inLocal.Y = y + .5D;
@@ -618,8 +593,7 @@ public class WorldPhysicsCollider {
 
 															inBody.setSubtraction(inLocal, parent.centerCoord);
 
-															parent.physicsProcessor.setVectorToVelocityAtPoint(inBody,
-																	speedInBody);
+															parent.physicsProcessor.setVectorToVelocityAtPoint(inBody, speedInBody);
 
 															speedInBody.multiply(-parent.physicsProcessor.physRawSpeed);
 
@@ -631,129 +605,47 @@ public class WorldPhysicsCollider {
 															int minX, minY, minZ;
 
 															if (speedInBody.X > 0) {
-																minX = MathHelper.floor(inLocal.X - rangeCheck);
-																maxX = MathHelper
-																		.floor(inLocal.X + rangeCheck + speedInBody.X);
+																minX = MathHelper.floor(inLocal.X - RANGE_CHECK);
+																maxX = MathHelper.floor(inLocal.X + RANGE_CHECK + speedInBody.X);
 															} else {
-																minX = MathHelper
-																		.floor(inLocal.X - rangeCheck + speedInBody.X);
-																maxX = MathHelper.floor(inLocal.X + rangeCheck);
+																minX = MathHelper.floor(inLocal.X - RANGE_CHECK + speedInBody.X);
+																maxX = MathHelper.floor(inLocal.X + RANGE_CHECK);
 															}
 
 															if (speedInBody.Y > 0) {
-																minY = MathHelper.floor(inLocal.Y - rangeCheck);
-																maxY = MathHelper
-																		.floor(inLocal.Y + rangeCheck + speedInBody.Y);
+																minY = MathHelper.floor(inLocal.Y - RANGE_CHECK);
+																maxY = MathHelper.floor(inLocal.Y + RANGE_CHECK + speedInBody.Y);
 															} else {
-																minY = MathHelper
-																		.floor(inLocal.Y - rangeCheck + speedInBody.Y);
-																maxY = MathHelper.floor(inLocal.Y + rangeCheck);
+																minY = MathHelper.floor(inLocal.Y - RANGE_CHECK + speedInBody.Y);
+																maxY = MathHelper.floor(inLocal.Y + RANGE_CHECK);
 															}
 
 															if (speedInBody.Z > 0) {
-																minZ = MathHelper.floor(inLocal.Z - rangeCheck);
-																maxZ = MathHelper
-																		.floor(inLocal.Z + rangeCheck + speedInBody.Z);
+																minZ = MathHelper.floor(inLocal.Z - RANGE_CHECK);
+																maxZ = MathHelper.floor(inLocal.Z + RANGE_CHECK + speedInBody.Z);
 															} else {
-																minZ = MathHelper
-																		.floor(inLocal.Z - rangeCheck + speedInBody.Z);
-																maxZ = MathHelper.floor(inLocal.Z + rangeCheck);
+																minZ = MathHelper.floor(inLocal.Z - RANGE_CHECK + speedInBody.Z);
+																maxZ = MathHelper.floor(inLocal.Z + RANGE_CHECK);
 															}
 
-															/**
-															 * The Old Way of doing things; approx. 33% slower overall
-															 * when running this code instead of new for (localX = minX;
-															 * localX < maxX; localX++) { for (localZ = minZ; localZ <
-															 * maxZ; localZ++) { for (localY = minY; localY < maxY;
-															 * localY++) { if (parent.ownsChunk(localX >> 4, localZ >>
-															 * 4)) { chunkIn = parent.VKChunkCache.getChunkAt(localX >>
-															 * 4, localZ >> 4); localState =
-															 * chunkIn.getBlockState(localX, localY, localZ); if
-															 * (localState.getMaterial().isSolid()) {
-															 * cachedPotentialHits.add(SpatialDetector.getHashWithRespectTo(x,
-															 * y, z, centerPotentialHit)); localX = localY = localZ =
-															 * Integer.MAX_VALUE - 420; } } } } }
-															 **/
-
-															int shipChunkMinX = minX >> 4;
-															int shipChunkMinY = Math.max(minY >> 4, 0);
-															int shipChunkMinZ = minZ >> 4;
-
-															int shipChunkMaxX = maxX >> 4;
-															int shipChunkMaxY = Math.min(maxY >> 4, 15);
-															int shipChunkMaxZ = maxZ >> 4;
-
-															shipChunkMaxX++;
-															shipChunkMaxY++;
-															shipChunkMaxZ++;
-
-															if (shipChunkMaxZ - shipChunkMinZ > 200
-																	|| shipChunkMaxX - shipChunkMinX > 200) {
-																System.err.println("Wtf. This fucking error");
-																return;
-															}
-
-															testForNearbyBlocks: for (int shipChunkX = shipChunkMinX; shipChunkX < shipChunkMaxX; shipChunkX++) {
-																for (int shipChunkZ = shipChunkMinZ; shipChunkZ < shipChunkMaxZ; shipChunkZ++) {
-																	if (parent.ownsChunk(shipChunkX, shipChunkZ)) {
-																		chunkIn = parent.VKChunkCache
-																				.getChunkAt(shipChunkX, shipChunkZ);
-																		for (int shipChunkYStorage = shipChunkMinY; shipChunkYStorage < shipChunkMaxY; shipChunkYStorage++) {
-																			ExtendedBlockStorage storage = chunkIn.storageArrays[shipChunkYStorage];
-
-																			if (storage != null) {
-																				int shipStorageMinX = shipChunkX << 4;
-																				int shipStorageMinY = shipChunkYStorage << 4;
-																				int shipStorageMinZ = shipChunkZ << 4;
-
-																				int shipStorageMaxX = shipStorageMinX
-																						+ 16;
-																				int shipStorageMaxY = shipStorageMinY
-																						+ 16;
-																				int shipStorageMaxZ = shipStorageMinZ
-																						+ 16;
-
-																				shipStorageMinX = Math
-																						.max(shipStorageMinX, minX);
-																				shipStorageMinY = Math
-																						.max(shipStorageMinY, minY);
-																				shipStorageMinZ = Math
-																						.max(shipStorageMinZ, minZ);
-
-																				shipStorageMaxX = Math
-																						.min(shipStorageMaxX, maxX);
-																				shipStorageMaxY = Math
-																						.min(shipStorageMaxY, maxY);
-																				shipStorageMaxZ = Math
-																						.min(shipStorageMaxZ, maxZ);
-
-																				for (localX = shipStorageMinX; localX < shipStorageMaxX; localX++) {
-																					for (localY = shipStorageMinY; localY < shipStorageMaxY; localY++) {
-																						for (localZ = shipStorageMinZ; localZ < shipStorageMaxZ; localZ++) {
-																							localState = chunkIn
-																									.getBlockState(
-																											localX,
-																											localY,
-																											localZ);
-																							if (localState.getMaterial()
-																									.isSolid()) {
-																								cachedPotentialHits.add(
-																										SpatialDetector
-																												.getHashWithRespectTo(
-																														x,
-																														y,
-																														z,
-																														centerPotentialHit));
-																								break testForNearbyBlocks;
-																							}
-																						}
-																					}
-																				}
+															// The Old Way of doing things; approx. 33% slower overall when running this
+															// code instead of new
+															for (localX = minX; localX < maxX; localX++) {
+																for (localZ = minZ; localZ < maxZ; localZ++) {
+																	for (localY = minY; localY < maxY; localY++) {
+																		if (parent.ownsChunk(localX >> 4, localZ >> 4)) {
+																			chunkIn = parent.VKChunkCache.getChunkAt(localX >> 4, localZ >> 4);
+																			localState = chunkIn.getBlockState(localX, localY, localZ);
+																			if (localState.getMaterial().isSolid()) {
+																				cachedPotentialHits.add(SpatialDetector.getHashWithRespectTo(x, y, z,
+																						centerPotentialHit));
+																				localX = localY = localZ = Integer.MAX_VALUE - 420;
 																			}
 																		}
 																	}
 																}
 															}
+
 														}
 													}
 												}
@@ -761,135 +653,125 @@ public class WorldPhysicsCollider {
 										}
 									}
 								}
-							} else {
+							}
 
+							if (false) {
+								for (int levelThree = 0; levelThree < 8; levelThree++) {
+									int levelThreeIndex = octree.getOctreeLevelThreeIndex(levelThree);
+									if (octree.getAtIndex(levelThreeIndex)) {
+										for (int levelTwo = 0; levelTwo < 8; levelTwo++) {
+											int levelTwoIndex = octree.getOctreeLevelTwoIndex(levelThreeIndex, levelTwo);
+											if (octree.getAtIndex(levelTwoIndex)) {
+												for (int levelOne = 0; levelOne < 8; levelOne++) {
+													int levelOneIndex = octree.getOctreeLevelOneIndex(levelTwoIndex, levelOne);
+													if (octree.getAtIndex(levelOneIndex)) {
+														int baseX = ((levelThree % 2) * 8) + ((levelTwo % 2) * 4) + ((levelOne % 2) * 2);
+														int baseY = (((levelThree >> 1) % 2) * 8) + (((levelTwo >> 1) % 2) * 4)
+																+ (((levelOne >> 1) % 2) * 2);
+														int baseZ = (((levelThree >> 2) % 2) * 8) + (((levelTwo >> 2) % 2) * 4)
+																+ (((levelOne >> 2) % 2) * 2);
+
+														baseX += minStorageX;
+														baseY += minStorageY;
+														baseZ += minStorageZ;
+
+														checkForCollision(baseX, baseY, baseZ, extendedblockstorage, inLocal, inBody, speedInBody);
+														checkForCollision(baseX, baseY, baseZ + 1, extendedblockstorage, inLocal, inBody,
+																speedInBody);
+														checkForCollision(baseX, baseY + 1, baseZ, extendedblockstorage, inLocal, inBody,
+																speedInBody);
+														checkForCollision(baseX, baseY + 1, baseZ + 1, extendedblockstorage, inLocal, inBody,
+																speedInBody);
+														checkForCollision(baseX + 1, baseY, baseZ, extendedblockstorage, inLocal, inBody,
+																speedInBody);
+														checkForCollision(baseX + 1, baseY, baseZ + 1, extendedblockstorage, inLocal, inBody,
+																speedInBody);
+														checkForCollision(baseX + 1, baseY + 1, baseZ, extendedblockstorage, inLocal, inBody,
+																speedInBody);
+														checkForCollision(baseX + 1, baseY + 1, baseZ + 1, extendedblockstorage, inLocal, inBody,
+																speedInBody);
+
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+
+							if (true) {
+								for (int levelThree = 0; levelThree < 8; levelThree++) {
+									int levelThreeIndex = octree.getOctreeLevelThreeIndex(levelThree);
+									if (octree.getAtIndex(levelThreeIndex)) {
+										for (int levelTwo = 0; levelTwo < 8; levelTwo++) {
+											int levelTwoIndex = octree.getOctreeLevelTwoIndex(levelThreeIndex, levelTwo);
+											if (octree.getAtIndex(levelTwoIndex)) {
+												for (int levelOne = 0; levelOne < 8; levelOne++) {
+													int levelOneIndex = octree.getOctreeLevelOneIndex(levelTwoIndex, levelOne);
+													if (octree.getAtIndex(levelOneIndex)) {
+														int baseX = ((levelThree % 2) * 8) + ((levelTwo % 2) * 4) + ((levelOne % 2) * 2);
+														int baseY = (((levelThree >> 1) % 2) * 8) + (((levelTwo >> 1) % 2) * 4)
+																+ (((levelOne >> 1) % 2) * 2);
+														int baseZ = (((levelThree >> 2) % 2) * 8) + (((levelTwo >> 2) % 2) * 4)
+																+ (((levelOne >> 2) % 2) * 2);
+
+														checkForCollision(baseX + minStorageX, baseY + minStorageY, baseZ + minStorageZ,
+																extendedblockstorage, inLocal, inBody, speedInBody);
+														checkForCollision(baseX + minStorageX, baseY + minStorageY, baseZ + minStorageZ + 1,
+																extendedblockstorage, inLocal, inBody, speedInBody);
+														checkForCollision(baseX + minStorageX, baseY + minStorageY + 1, baseZ + minStorageZ,
+																extendedblockstorage, inLocal, inBody, speedInBody);
+														checkForCollision(baseX + minStorageX, baseY + minStorageY + 1, baseZ + minStorageZ + 1,
+																extendedblockstorage, inLocal, inBody, speedInBody);
+
+														checkForCollision(baseX + minStorageX + 1, baseY + minStorageY, baseZ + minStorageZ,
+																extendedblockstorage, inLocal, inBody, speedInBody);
+														checkForCollision(baseX + minStorageX + 1, baseY + minStorageY, baseZ + minStorageZ + 1,
+																extendedblockstorage, inLocal, inBody, speedInBody);
+														checkForCollision(baseX + minStorageX + 1, baseY + minStorageY + 1, baseZ + minStorageZ,
+																extendedblockstorage, inLocal, inBody, speedInBody);
+														checkForCollision(baseX + minStorageX + 1, baseY + minStorageY + 1, baseZ + minStorageZ + 1,
+																extendedblockstorage, inLocal, inBody, speedInBody);
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+
+							if (false) {
+								for (int baseX = 0; baseX < 16; baseX++) {
+									for (int baseY = 0; baseY < 16; baseY++) {
+										for (int baseZ = 0; baseZ < 16; baseZ++) {
+											if (octree.get(baseX, baseY, baseZ)) {
+												checkForCollision(baseX + minStorageX, baseY + minStorageY, baseZ + minStorageZ, extendedblockstorage,
+														inLocal, inBody, speedInBody);
+											}
+										}
+									}
+								}
+							}
+
+							if (false) {
+								for (int baseX = 0; baseX < 16; baseX++) {
+									for (int baseY = 0; baseY < 16; baseY++) {
+										for (int baseZ = 0; baseZ < 16; baseZ++) {
+											if (octree.get(baseX, baseY, baseZ)) {
+												checkForCollision(baseX + minStorageX, baseY + minStorageY, baseZ + minStorageZ, extendedblockstorage,
+														inLocal, inBody, speedInBody);
+											}
+										}
+									}
+								}
+							}
+
+							if (false) {
 								for (x = minStorageX; x < maxStorageX; x++) {
 									for (y = minStorageY; y < maxStorageY; y++) {
 										for (z = minStorageZ; z < maxStorageZ; z++) {
-
 											if (octree.get(x & 15, y & 15, z & 15)) {
-												state = extendedblockstorage.get(x & 15, y & 15, z & 15);
-												inLocal.X = x + .5D;
-												inLocal.Y = y + .5D;
-												inLocal.Z = z + .5D;
-
-												parent.coordTransform.fromGlobalToLocal(inLocal);
-
-												inBody.setSubtraction(inLocal, parent.centerCoord);
-
-												parent.physicsProcessor.setVectorToVelocityAtPoint(inBody, speedInBody);
-
-												speedInBody.multiply(-parent.physicsProcessor.physRawSpeed);
-
-												if (ValkyrienWarfareMod.highAccuracyCollisions) {
-													speedInBody.multiply(20D);
-												}
-												// System.out.println(speedInBody);
-
-												int minX, minY, minZ;
-
-												if (speedInBody.X > 0) {
-													minX = MathHelper.floor(inLocal.X - rangeCheck);
-													maxX = MathHelper.floor(inLocal.X + rangeCheck + speedInBody.X);
-												} else {
-													minX = MathHelper.floor(inLocal.X - rangeCheck + speedInBody.X);
-													maxX = MathHelper.floor(inLocal.X + rangeCheck);
-												}
-
-												if (speedInBody.Y > 0) {
-													minY = MathHelper.floor(inLocal.Y - rangeCheck);
-													maxY = MathHelper.floor(inLocal.Y + rangeCheck + speedInBody.Y);
-												} else {
-													minY = MathHelper.floor(inLocal.Y - rangeCheck + speedInBody.Y);
-													maxY = MathHelper.floor(inLocal.Y + rangeCheck);
-												}
-
-												if (speedInBody.Z > 0) {
-													minZ = MathHelper.floor(inLocal.Z - rangeCheck);
-													maxZ = MathHelper.floor(inLocal.Z + rangeCheck + speedInBody.Z);
-												} else {
-													minZ = MathHelper.floor(inLocal.Z - rangeCheck + speedInBody.Z);
-													maxZ = MathHelper.floor(inLocal.Z + rangeCheck);
-												}
-
-												/**
-												 * The Old Way of doing things; approx. 33% slower overall when running
-												 * this code instead of new for (localX = minX; localX < maxX; localX++)
-												 * { for (localZ = minZ; localZ < maxZ; localZ++) { for (localY = minY;
-												 * localY < maxY; localY++) { if (parent.ownsChunk(localX >> 4, localZ
-												 * >> 4)) { chunkIn = parent.VKChunkCache.getChunkAt(localX >> 4, localZ
-												 * >> 4); localState = chunkIn.getBlockState(localX, localY, localZ); if
-												 * (localState.getMaterial().isSolid()) {
-												 * cachedPotentialHits.add(SpatialDetector.getHashWithRespectTo(x, y, z,
-												 * centerPotentialHit)); localX = localY = localZ = Integer.MAX_VALUE -
-												 * 420; } } } } }
-												 **/
-
-												int shipChunkMinX = minX >> 4;
-												int shipChunkMinY = Math.max(minY >> 4, 0);
-												int shipChunkMinZ = minZ >> 4;
-
-												int shipChunkMaxX = maxX >> 4;
-												int shipChunkMaxY = Math.min(maxY >> 4, 15);
-												int shipChunkMaxZ = maxZ >> 4;
-
-												shipChunkMaxX++;
-												shipChunkMaxY++;
-												shipChunkMaxZ++;
-
-												if (shipChunkMaxZ - shipChunkMinZ > 200
-														|| shipChunkMaxX - shipChunkMinX > 200) {
-													System.err.println("Wtf. This fucking error");
-													return;
-												}
-
-												testForNearbyBlocks: for (int shipChunkX = shipChunkMinX; shipChunkX < shipChunkMaxX; shipChunkX++) {
-													for (int shipChunkZ = shipChunkMinZ; shipChunkZ < shipChunkMaxZ; shipChunkZ++) {
-														if (parent.ownsChunk(shipChunkX, shipChunkZ)) {
-															chunkIn = parent.VKChunkCache.getChunkAt(shipChunkX,
-																	shipChunkZ);
-															for (int shipChunkYStorage = shipChunkMinY; shipChunkYStorage < shipChunkMaxY; shipChunkYStorage++) {
-																ExtendedBlockStorage storage = chunkIn.storageArrays[shipChunkYStorage];
-
-																if (storage != null) {
-																	int shipStorageMinX = shipChunkX << 4;
-																	int shipStorageMinY = shipChunkYStorage << 4;
-																	int shipStorageMinZ = shipChunkZ << 4;
-
-																	int shipStorageMaxX = shipStorageMinX + 16;
-																	int shipStorageMaxY = shipStorageMinY + 16;
-																	int shipStorageMaxZ = shipStorageMinZ + 16;
-
-																	shipStorageMinX = Math.max(shipStorageMinX, minX);
-																	shipStorageMinY = Math.max(shipStorageMinY, minY);
-																	shipStorageMinZ = Math.max(shipStorageMinZ, minZ);
-
-																	shipStorageMaxX = Math.min(shipStorageMaxX, maxX);
-																	shipStorageMaxY = Math.min(shipStorageMaxY, maxY);
-																	shipStorageMaxZ = Math.min(shipStorageMaxZ, maxZ);
-
-																	for (localX = shipStorageMinX; localX < shipStorageMaxX; localX++) {
-																		for (localY = shipStorageMinY; localY < shipStorageMaxY; localY++) {
-																			for (localZ = shipStorageMinZ; localZ < shipStorageMaxZ; localZ++) {
-																				localState = chunkIn.getBlockState(
-																						localX, localY, localZ);
-																				if (localState.getMaterial()
-																						.isSolid()) {
-																					cachedPotentialHits
-																							.add(SpatialDetector
-																									.getHashWithRespectTo(
-																											x, y, z,
-																											centerPotentialHit));
-																					break testForNearbyBlocks;
-																				}
-																			}
-																		}
-																	}
-																}
-															}
-														}
-													}
-												}
+												checkForCollision(x, y, z, extendedblockstorage, inLocal, inBody, speedInBody);
 											}
 										}
 									}
@@ -900,38 +782,78 @@ public class WorldPhysicsCollider {
 				}
 			}
 			// long endTime = System.nanoTime();
-
 			// System.out.println("Took " + (endTime - startTime));
 		}
+	}
 
-		/**
-		 * for (x = min.getX(); x <= max.getX(); x++) { for (z = min.getZ(); z <
-		 * max.getZ(); z++) { chunkX = (x >> 4) - cache.chunkX; chunkZ = (z >> 4) -
-		 * cache.chunkZ; if (!(chunkX < 0 || chunkZ < 0 || chunkX >
-		 * cache.chunkArray.length - 1 || chunkZ > cache.chunkArray[0].length - 1)) {
-		 * chunk = cache.chunkArray[chunkX][chunkZ]; for (y = min.getY(); y <
-		 * max.getY(); y++) { extendedblockstorage = chunk.storageArrays[y >> 4]; if
-		 * (extendedblockstorage != null) { state = extendedblockstorage.get(x & 15, y &
-		 * 15, z & 15);
-		 * 
-		 * if (state.getMaterial().isSolid()) { inLocal.X = x + .5D; inLocal.Y = y +
-		 * .5D; inLocal.Z = z + .5D; parent.coordTransform.fromGlobalToLocal(inLocal);
-		 * 
-		 * maxX = (int) math.floor(inLocal.X + rangeCheck); maxY = (int)
-		 * math.floor(inLocal.Y + rangeCheck); maxZ = (int) math.floor(inLocal.Z +
-		 * rangeCheck);
-		 * 
-		 * for (localX = MathHelper.floor_double(inLocal.X - rangeCheck); localX < maxX;
-		 * localX++) { for (localZ = MathHelper.floor_double(inLocal.Z - rangeCheck);
-		 * localZ < maxZ; localZ++) { for (localY = MathHelper.floor_double(inLocal.Y -
-		 * rangeCheck); localY < maxY; localY++) { if (parent.ownsChunk(localX >> 4,
-		 * localZ >> 4)) { chunkIn = parent.VKChunkCache.getChunkAt(localX >> 4, localZ
-		 * >> 4); localState = chunkIn.getBlockState(localX, localY, localZ); if
-		 * (localState.getMaterial().isSolid()) {
-		 * cachedPotentialHits.add(SpatialDetector.getHashWithRespectTo(x, y, z,
-		 * centerPotentialHit)); localX = localY = localZ = Integer.MAX_VALUE - 420; } }
-		 * } } } } } } } } }
-		 **/
+	private void checkForCollision(int x, int y, int z, ExtendedBlockStorage storage, Vector inLocal, Vector inBody, Vector speedInBody) {
+		IBlockState state = storage.get(x & 15, y & 15, z & 15);
+		if (!state.getMaterial().isSolid()) {
+			return;
+		}
+		inLocal = new Vector();
+		inBody = new Vector();
+		speedInBody = new Vector();
+		inLocal.X = x + .5D;
+		inLocal.Y = y + .5D;
+		inLocal.Z = z + .5D;
+		// TODO: Something
+		parent.coordTransform.fromGlobalToLocal(inLocal);
+
+		inBody.setSubtraction(inLocal, parent.centerCoord);
+		parent.physicsProcessor.setVectorToVelocityAtPoint(inBody, speedInBody);
+		speedInBody.multiply(-parent.physicsProcessor.physRawSpeed);
+
+		if (ValkyrienWarfareMod.highAccuracyCollisions) {
+			speedInBody.multiply(20D);
+		}
+
+		int minX, minY, minZ, maxX, maxY, maxZ;
+
+		if (speedInBody.X > 0) {
+			minX = MathHelper.floor(inLocal.X - RANGE_CHECK);
+			maxX = MathHelper.floor(inLocal.X + RANGE_CHECK + speedInBody.X);
+		} else {
+			minX = MathHelper.floor(inLocal.X - RANGE_CHECK + speedInBody.X);
+			maxX = MathHelper.floor(inLocal.X + RANGE_CHECK);
+		}
+
+		if (speedInBody.Y > 0) {
+			minY = MathHelper.floor(inLocal.Y - RANGE_CHECK);
+			maxY = MathHelper.floor(inLocal.Y + RANGE_CHECK + speedInBody.Y);
+		} else {
+			minY = MathHelper.floor(inLocal.Y - RANGE_CHECK + speedInBody.Y);
+			maxY = MathHelper.floor(inLocal.Y + RANGE_CHECK);
+		}
+
+		if (speedInBody.Z > 0) {
+			minZ = MathHelper.floor(inLocal.Z - RANGE_CHECK);
+			maxZ = MathHelper.floor(inLocal.Z + RANGE_CHECK + speedInBody.Z);
+		} else {
+			minZ = MathHelper.floor(inLocal.Z - RANGE_CHECK + speedInBody.Z);
+			maxZ = MathHelper.floor(inLocal.Z + RANGE_CHECK);
+		}
+
+		// The Old Way of doing things; approx. 33% slower overall when running this
+		// code instead of new
+		for (int localX = minX; localX < maxX; localX++) {
+			for (int localZ = minZ; localZ < maxZ; localZ++) {
+				for (int localY = minY; localY < maxY; localY++) {
+					if (parent.ownsChunk(localX >> 4, localZ >> 4)) {
+						Chunk chunkIn = parent.VKChunkCache.getChunkAt(localX >> 4, localZ >> 4);
+						IBlockState localState = chunkIn.getBlockState(localX, localY, localZ);
+						if (localState.getMaterial().isSolid()) {
+							int has = SpatialDetector.getHashWithRespectTo(x, y, z, centerPotentialHit);
+							// if (!cachedPotentialHits.contains(has)) {
+							// System.out.println(localX + ":" + localY + ":" + localZ);
+							// }
+							cachedPotentialHits.add(has);
+							localX = localY = localZ = Integer.MAX_VALUE - 420;
+						}
+					}
+				}
+			}
+		}
 	}
 
 }

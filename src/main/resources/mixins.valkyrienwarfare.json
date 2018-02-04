@@ -3,6 +3,7 @@
   "compatibilityLevel": "JAVA_8",
   "package": "valkyrienwarfare.mixin",
   "refmap": "mixins.valkyrienwarfare.refmap.json",
+  "plugin": "valkyrienwarfare.MixinLoadManager",
   "mixins": [
     "entity.MixinEntityLivingBase",
     "tileentity.MixinTileEntity",

@@ -16,22 +16,22 @@
 
 package valkyrienwarfare.mod.command;
 
+import java.util.ArrayList;
+
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
 
-import java.util.ArrayList;
-
 public class ValkyrienWarfareHelpCommand extends CommandBase {
 
     public static final ArrayList<String> commands = new ArrayList<String>();
 
     static {
-        commands.add("/physSettings");
-        commands.add("/airshipSettings");
-        commands.add("/airshipMappings");
+        commands.add("/physsettings");
+        commands.add("/airshipsettings");
+        commands.add("/airshipmappings");
     }
 
     @Override

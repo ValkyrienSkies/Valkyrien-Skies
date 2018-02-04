@@ -15,29 +15,26 @@ import valkyrienwarfare.physics.collision.optimization.SimpleBitOctree;
 @Mixin(BlockStateContainer.class)
 public class MixinBlockStateContainer implements IBitOctreeProvider {
 
-	private static final int BOTTOM_FOUR_BITMASK = 0xF;
-	private static final int MIDDLE_FOUR_BITMASK = 0xF0;
-	private static final int TOP_FOUR_BITMASK = 0xF00;
-	private final IBitOctree bitOctree = new SimpleBitOctree();
-	@Shadow
-	IBlockStatePalette palette;
-	@Shadow
-	BitArray storage;
+    private final IBitOctree bitOctree = new SimpleBitOctree();
+    @Shadow
+    IBlockStatePalette palette;
+    @Shadow
+    BitArray storage;
 
-	@Overwrite
-	protected void set(int index, IBlockState state) {
-		int i = this.palette.idFor(state);
-		this.storage.setAt(index, i);
-		// VW code starts here:
-		int x = index & BOTTOM_FOUR_BITMASK;
-		int z = (index & MIDDLE_FOUR_BITMASK) >> 4;
-		int y = (index & TOP_FOUR_BITMASK) >> 8;
-		boolean isStateSolid = state.getMaterial().isSolid();
-		bitOctree.set(x & 15, y & 15, z & 15, isStateSolid);
-	}
+    @Overwrite
+    protected void set(int index, IBlockState state) {
+        int i = this.palette.idFor(state);
+        this.storage.setAt(index, i);
+        // VW code starts here:
+        int x = index & 0xF;
+        int z = (index & 0xF0) >> 4;
+        int y = (index & 0xF00) >> 8;
+        boolean isStateSolid = state.getMaterial().isSolid();
+        bitOctree.set(x & 15, y & 15, z & 15, isStateSolid);
+    }
 
-	@Override
-	public IBitOctree getBitOctree() {
-		return bitOctree;
-	}
+    @Override
+    public IBitOctree getBitOctree() {
+        return bitOctree;
+    }
 }

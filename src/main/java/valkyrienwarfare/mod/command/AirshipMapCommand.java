@@ -32,12 +32,12 @@ public class AirshipMapCommand extends CommandBase {
 
 	@Override
 	public String getName() {
-		return "airshipMappings";
+		return "airshipmapping";
 	}
 
 	@Override
 	public String getUsage(ICommandSender sender) {
-		return "/airshipMappings tpto <Ship Name>";
+		return "/airshipmapping tpto <Ship Name>";
 	}
 
 	@Override

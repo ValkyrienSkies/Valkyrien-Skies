@@ -139,7 +139,6 @@ public class ValkyrienWarfareMod {
         // dynamicLighting = config.get(Configuration.CATEGORY_GENERAL, "DynamicLighting", false).getBoolean();
         // Property spawnParticlesParticle = config.get(Configuration.CATEGORY_GENERAL, "Ships spawn particles", false).getBoolean();
         multiThreadedPhysics = config.get(Configuration.CATEGORY_GENERAL, "Multi-Threaded physics", true, "Use Multi-Threaded physics").getBoolean();
-        doShipCollision = config.get(Configuration.CATEGORY_GENERAL, "Enable Ship collision", true).getBoolean();
         shipUpperLimit = config.get(Configuration.CATEGORY_GENERAL, "Ship Y-Height Maximum", 1000D).getDouble();
         shipLowerLimit = config.get(Configuration.CATEGORY_GENERAL, "Ship Y-Height Minimum", -30D).getDouble();
         maxAirships = config.get(Configuration.CATEGORY_GENERAL, "Max airships per player", -1, "Players can't own more than this many airships at once. Set to -1 to disable.").getInt();

@@ -8,6 +8,7 @@
     "tileentity.MixinTileEntity",
     "world.MixinWorld",
     "world.chunk.MixinChunk",
+    "world.chunk.MixinBlockStateContainer",
     "entity.MixinEntityIntrinsic",
     "entity.MixinEntity",
     "world.MixinExplosion",

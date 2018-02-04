@@ -16,14 +16,15 @@
 
 package valkyrienwarfare.mixin.network.play.client;
 
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Redirect;
+
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.play.INetHandlerPlayServer;
 import net.minecraft.network.play.client.CPacketPlayerDigging;
 import net.minecraft.util.math.BlockPos;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.mod.physmanagement.interaction.INHPServerVW;
@@ -32,30 +33,31 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 @Mixin(CPacketPlayerDigging.class)
 public abstract class MixinCPacketPlayerDigging {
-    @Redirect(method = "processPacket",
-            at = @At(value = "INVOKE",
-                    target = "Lnet/minecraft/network/play/INetHandlerPlayServer;processPlayerDigging(Lnet/minecraft/network/play/client/CPacketPlayerDigging;)V"))
-    public void handleDiggingPacket(INetHandlerPlayServer server, CPacketPlayerDigging packetIn) {
-        EntityPlayerMP player = ((NetHandlerPlayServer) server).player;
-        INHPServerVW vw = (INHPServerVW) (NetHandlerPlayServer) server;
 
-        BlockPos packetPos = packetIn.getPosition();
-        PlayerDataBackup playerBackup = new PlayerDataBackup(player);
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.world, packetPos);
-        if (player.interactionManager.getBlockReachDistance() != vw.dummyBlockReachDist()) {
-            vw.lastGoodBlockReachDist(player.interactionManager.getBlockReachDistance());
-        }
-        if (wrapper != null) {
-            player.interactionManager.setBlockReachDistance(vw.dummyBlockReachDist());
-        }
-        if (wrapper != null && wrapper.wrapping.coordTransform != null) {
-            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, wrapper.wrapping.coordTransform.wToLRotation, player);
-            server.processPlayerDigging(packetIn);
-            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, wrapper.wrapping.coordTransform.lToWRotation, player);
-            playerBackup.restorePlayerToBackup();
-        } else {
-            server.processPlayerDigging(packetIn);
-        }
-        player.interactionManager.setBlockReachDistance(vw.lastGoodBlockReachDist());
-    }
+	@Redirect(method = "processPacket", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/play/INetHandlerPlayServer;processPlayerDigging(Lnet/minecraft/network/play/client/CPacketPlayerDigging;)V"))
+	public void handleDiggingPacket(INetHandlerPlayServer server, CPacketPlayerDigging packetIn) {
+		INHPServerVW vw = (INHPServerVW) (NetHandlerPlayServer) server;
+		vw.checkForPacketEnqueueTrap(packetIn);
+		EntityPlayerMP player = vw.getEntityPlayerFromHandler();
+
+		BlockPos packetPos = packetIn.getPosition();
+		PlayerDataBackup playerBackup = new PlayerDataBackup(player);
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.world, packetPos);
+		if (player.interactionManager.getBlockReachDistance() != vw.dummyBlockReachDist()) {
+			vw.lastGoodBlockReachDist(player.interactionManager.getBlockReachDistance());
+		}
+		if (wrapper != null) {
+			player.interactionManager.setBlockReachDistance(vw.dummyBlockReachDist());
+		}
+		if (wrapper != null && wrapper.wrapping.coordTransform != null) {
+			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, wrapper.wrapping.coordTransform.wToLRotation, player);
+			server.processPlayerDigging(packetIn);
+			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, wrapper.wrapping.coordTransform.lToWRotation, player);
+			playerBackup.restorePlayerToBackup();
+		} else {
+			server.processPlayerDigging(packetIn);
+		}
+		player.interactionManager.setBlockReachDistance(vw.lastGoodBlockReachDist());
+	}
+
 }

@@ -35,13 +35,13 @@ import valkyrienwarfare.physics.collision.WorldPhysicsCollider;
 public class ShipCollisionTask implements Callable<Void> {
 
 	public final static int MAX_TASKS_TO_CHECK = 45;
-	public final WorldPhysicsCollider toTask;
+	private final WorldPhysicsCollider toTask;
 	private final int taskStartIndex;
 	private final int tasksToCheck;
 	private final MutableBlockPos mutablePos;
 	private final MutableBlockPos inLocalPos;
 	private final Vector inWorld;
-	public final List<CollisionInformationHolder> collisionInformationGenerated;
+	private final List<CollisionInformationHolder> collisionInformationGenerated;
 	private IBlockState inWorldState;
 	// public TIntArrayList foundPairs = new TIntArrayList();
 
@@ -70,6 +70,10 @@ public class ShipCollisionTask implements Callable<Void> {
 		}
 
 		return null;
+	}
+
+	public List<CollisionInformationHolder> getCollisionInformationGenerated() {
+		return collisionInformationGenerated;
 	}
 
 	private void processNumber(int integer) {
@@ -165,6 +169,10 @@ public class ShipCollisionTask implements Callable<Void> {
 				}
 			}
 		}
+	}
+
+	public WorldPhysicsCollider getToTask() {
+		return toTask;
 	}
 
 }

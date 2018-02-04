@@ -126,7 +126,7 @@ public class WorldPhysicsCollider {
 			updatePotentialCollisionCache();
 			updateCollisionTasksCache = true;
 		}
-		if (Math.random() > 1D - COLLISION_TASK_SHUFFLE_FREQUENCY) {
+		if (Math.random() > .5D) {
 			cachedPotentialHits.shuffle(rand);
 		}
 	}
@@ -152,13 +152,13 @@ public class WorldPhysicsCollider {
 		MutableBlockPos inWorldPos = new MutableBlockPos();
 		MutableBlockPos inLocalPos = new MutableBlockPos();
 
-		for (CollisionInformationHolder info : task.collisionInformationGenerated) {
+		for (CollisionInformationHolder info : task.getCollisionInformationGenerated()) {
 			inWorldPos.setPos(info.inWorldX, info.inWorldY, info.inWorldZ);
 			inLocalPos.setPos(info.inLocalX, info.inLocalY, info.inLocalZ);
 			handleActualCollision(info.collider, inWorldPos, inLocalPos, info.inWorldState, info.inLocalState);
 		}
 
-		task.collisionInformationGenerated.clear();
+		task.getCollisionInformationGenerated().clear();
 	}
 
 	// Runs through the cache ArrayList, checking each possible BlockPos for SOLID
@@ -543,6 +543,8 @@ public class WorldPhysicsCollider {
 		Vector inBody = new Vector();
 		Vector speedInBody = new Vector();
 
+		// long startTime = System.nanoTime();
+
 		for (chunkX = chunkMinX; chunkX < chunkMaxX; chunkX++) {
 			for (chunkZ = chunkMinZ; chunkZ < chunkMaxZ; chunkZ++) {
 
@@ -575,7 +577,8 @@ public class WorldPhysicsCollider {
 							IBitOctreeProvider provider = IBitOctreeProvider.class.cast(extendedblockstorage.data);
 							IBitOctree octree = provider.getBitOctree();
 
-							if (USE_OCTREE_COLLISION) {
+							if (false) {
+								// System.out.println(parent.blockPositions.size());
 								for (int levelThree = 0; levelThree < 8; levelThree++) {
 									int levelThreeIndex = octree.getOctreeLevelThreeIndex(levelThree);
 									if (octree.getAtIndex(levelThreeIndex)) {
@@ -896,6 +899,9 @@ public class WorldPhysicsCollider {
 					}
 				}
 			}
+			// long endTime = System.nanoTime();
+
+			// System.out.println("Took " + (endTime - startTime));
 		}
 
 		/**

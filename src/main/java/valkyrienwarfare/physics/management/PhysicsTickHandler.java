@@ -19,7 +19,6 @@ package valkyrienwarfare.physics.management;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
@@ -104,11 +103,7 @@ public class PhysicsTickHandler {
 			try {
 				// System.out.println(world.getWorldTime());
 				manager.physicsThreadStatus.get();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ExecutionException e) {
-				// TODO Auto-generated catch block
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
@@ -149,9 +144,9 @@ public class PhysicsTickHandler {
 		}
 
 		for (ShipCollisionTask task : collisionTasks) {
-			PhysicsWrapperEntity wrapper = task.toTask.getParent().wrapper;
+			PhysicsWrapperEntity wrapper = task.getToTask().getParent().wrapper;
 			if (!wrapper.firstUpdate) {
-				task.toTask.processCollisionTask(task);
+				task.getToTask().processCollisionTask(task);
 			}
 		}
 
@@ -167,9 +162,9 @@ public class PhysicsTickHandler {
 
 	private static class PhysicsTickThreadTask implements Callable<Void> {
 
-		int iters;
-		ArrayList physicsEntities;
-		WorldPhysObjectManager manager;
+		final int iters;
+		final ArrayList physicsEntities;
+		final WorldPhysObjectManager manager;
 
 		public PhysicsTickThreadTask(int iters, ArrayList physicsEntities, WorldPhysObjectManager manager) {
 			this.iters = iters;

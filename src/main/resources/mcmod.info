@@ -10,9 +10,10 @@
     "authorList": [
       "thebest108",
       "DaPorkchop_",
+      "DEL",
       "Marvin_Megavolt"
     ],
-    "credits": "thebest108, DaPorkchop_, Lemadec, CreativeMD, Lorazaam, Akikaze, Elix_xXx, Marvin_Megavolt, as well as many others",
+    "credits": "thebest108, DaPorkchop_, Elix_xXx, CreativeMD for development\nDEL, Marvin_Megavolt for modelling\nAdditional thanks go to Lemadec, Lorazaam, Akikaze as well as many others",
     "logoFile": "VW_Logo2.png",
     "screenshots": [],
     "dependencies": []

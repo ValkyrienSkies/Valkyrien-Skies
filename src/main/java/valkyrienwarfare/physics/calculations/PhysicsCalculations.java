@@ -561,7 +561,7 @@ public class PhysicsCalculations {
         mass = 0;
         centerOfMass = new Vector(parent.refrenceBlockPos.getX() + .5D, parent.refrenceBlockPos.getY() + .5D, parent.refrenceBlockPos.getZ() + .5D);
         IBlockState airState = Blocks.AIR.getDefaultState();
-        activeForcePositions = new ArrayList<BlockPos>();
+        activeForcePositions = new ArrayList<>();
         for (BlockPos pos : parent.blockPositions) {
             onSetBlockState(airState, parent.VKChunkCache.getBlockState(pos), pos);
         }

@@ -83,9 +83,6 @@ public class DimensionPhysObjectManager {
 
     /**
      * Returns the PhysicsWrapperEntity that claims this chunk if there is one; returns null if there is no loaded entity managing it
-     *
-     * @param chunk
-     * @return
      */
 
     //TODO: Fix this

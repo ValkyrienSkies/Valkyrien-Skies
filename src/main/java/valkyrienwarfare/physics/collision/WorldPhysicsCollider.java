@@ -274,7 +274,7 @@ public class WorldPhysicsCollider {
     // ideal value that is to be followed
     private boolean handleActualCollision(PhysPolygonCollider collider, BlockPos inWorldPos, BlockPos inLocalPos,
             IBlockState inWorldState, IBlockState inLocalState) {
-        PhysCollisionObject toCollideWith = null;
+        PhysCollisionObject toCollideWith;
         toCollideWith = collider.collisions[1];
 
         if (toCollideWith.penetrationDistance > AXIS_TOLERANCE || toCollideWith.penetrationDistance < -AXIS_TOLERANCE) {
@@ -288,8 +288,6 @@ public class WorldPhysicsCollider {
         positionInBody.subtract(parent.wrapper.posX, parent.wrapper.posY, parent.wrapper.posZ);
 
         Vector velocityAtPoint = calculator.getVelocityAtPoint(positionInBody);
-
-        double collisionSpeed = velocityAtPoint.dot(toCollideWith.axis);
 
         double impulseApplied = 1D;
         // BlockRammingManager.processBlockRamming(parent.wrapper, collisionSpeed,

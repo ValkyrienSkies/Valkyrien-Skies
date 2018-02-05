@@ -36,9 +36,6 @@ public abstract class EntityDraggable {
     public static void tickAddedVelocityForWorld(World world) {
         try {
             //TODO: Fix this
-            if (true) {
-//				return;
-            }
             for (int i = 0; i < world.loadedEntityList.size(); i++) {
                 Entity e = world.loadedEntityList.get(i);
                 //TODO: Maybe add a check to prevent moving entities that are fixed onto a Ship, but I like the visual effect
@@ -137,11 +134,7 @@ public abstract class EntityDraggable {
             }
         }
 
-        boolean onGroundOrig = entity.onGround;
-
         if (!ValkyrienWarfareMod.physicsManager.isEntityFixed(entity)) {
-            float originalWalked = entity.distanceWalkedModified;
-            float originalWalkedOnStep = entity.distanceWalkedOnStepModified;
             boolean originallySneaking = entity.isSneaking();
 
             entity.setSneaking(false);
@@ -150,9 +143,11 @@ public abstract class EntityDraggable {
                 draggable.getVelocityAddedToPlayer().zero();
             }
 
-            Vector velocityProper = new Vector(draggable.getVelocityAddedToPlayer());
+            if (draggable.getWorldBelowFeet() != null)  {
+                entity.onGround = true;
+            }
 
-            Vector playerPosOriginal = new Vector(entity);
+            Vector velocityProper = new Vector(draggable.getVelocityAddedToPlayer());
 
             AxisAlignedBB originalBoundingBox = entity.getEntityBoundingBox();
 
@@ -179,10 +174,6 @@ public abstract class EntityDraggable {
 			entity.setSneaking(originallySneaking);
         }
 
-        if (onGroundOrig) {
-//			entity.onGround = onGroundOrig;
-        }
-
         draggable.getVelocityAddedToPlayer().multiply(.99D);
         draggable.setYawDifVelocity(draggable.getYawDifVelocity() * .95D);
     }
@@ -191,26 +182,20 @@ public abstract class EntityDraggable {
         if (entity == null) {
             return null;
         }
-        Object o = entity;
-        return (IDraggable) o;
+        return (IDraggable) entity;
     }
 
     public static Entity getEntityFromDraggable(IDraggable draggable) {
         if (draggable == null) {
             return null;
         }
-        Object o = draggable;
-        return (Entity) o;
+        return (Entity) draggable;
     }
 
     public static Vector getVelocityProper(Vector improperVelocity, Entity thisClassAsAnEntity) {
         double x = improperVelocity.X;
         double y = improperVelocity.Y;
         double z = improperVelocity.Z;
-
-        double d10 = thisClassAsAnEntity.posX;
-        double d11 = thisClassAsAnEntity.posY;
-        double d1 = thisClassAsAnEntity.posZ;
 
         if (thisClassAsAnEntity.isInWeb) {
             thisClassAsAnEntity.isInWeb = false;

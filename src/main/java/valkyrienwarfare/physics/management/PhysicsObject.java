@@ -155,15 +155,11 @@ public class PhysicsObject {
 	public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos posAt) {
 		// If the block here is not to be physicsed, just treat it like you'd treat AIR
 		// blocks.
-		boolean oldStateOnBlackList = false, newStateOnBlackList = false;
-
 		if (oldState != null && BlockPhysicsRegistration.blocksToNotPhysicise.contains(oldState.getBlock())) {
 			oldState = Blocks.AIR.getDefaultState();
-			oldStateOnBlackList = true;
 		}
 		if (newState != null && BlockPhysicsRegistration.blocksToNotPhysicise.contains(newState.getBlock())) {
 			newState = Blocks.AIR.getDefaultState();
-			newStateOnBlackList = true;
 		}
 
 		boolean isOldAir = oldState == null || oldState.getBlock().equals(Blocks.AIR);
@@ -312,8 +308,6 @@ public class PhysicsObject {
 		replaceOuterChunksWithAir();
 
 		VKChunkCache = new VWChunkCache(worldObj, claimedChunks);
-		int minChunkX = claimedChunks[0][0].x;
-		int minChunkZ = claimedChunks[0][0].z;
 
 		refrenceBlockPos = getRegionCenter();
 		centerCoord = new Vector(refrenceBlockPos.getX(), refrenceBlockPos.getY(), refrenceBlockPos.getZ());
@@ -521,7 +515,6 @@ public class PhysicsObject {
 			// worldObj.setBlockState(pos, state);
 		}
 		iter = detector.foundSet.iterator();
-		short[][] changes = new short[claimedChunks.length][claimedChunks[0].length];
 		while (iter.hasNext()) {
 			int i = iter.next();
 			// BlockPos respectTo = detector.getPosWithRespectTo(i, centerInWorld);
@@ -649,8 +642,7 @@ public class PhysicsObject {
 	 * TODO: Make this further get the player to stop all further tracking of those
 	 * physObject
 	 *
-	 * @param EntityPlayer
-	 *            that stopped tracking
+	 * @param untracking EntityPlayer that stopped tracking
 	 */
 	public void onPlayerUntracking(EntityPlayer untracking) {
 		watchingPlayers.remove(untracking);
@@ -675,7 +667,6 @@ public class PhysicsObject {
 
 	public void unloadShipChunksFromWorld() {
 		ChunkProviderServer provider = (ChunkProviderServer) worldObj.getChunkProvider();
-		WorldPhysObjectManager manager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(worldObj);
 		for (int x = ownedChunks.minX; x <= ownedChunks.maxX; x++) {
 			for (int z = ownedChunks.minZ; z <= ownedChunks.maxZ; z++) {
 				provider.queueUnload(claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ]);
@@ -908,9 +899,6 @@ public class PhysicsObject {
 	/**
 	 * ONLY USE THESE 2 METHODS TO EVER ADD/REMOVE ENTITIES, OTHERWISE YOU'LL RUIN
 	 * EVERYTHING!
-	 *
-	 * @param toFix
-	 * @param posInLocal
 	 */
 	public void unFixEntity(Entity toUnfix) {
 		EntityFixMessage entityUnfixingMessage = new EntityFixMessage(wrapper, toUnfix, false, null);

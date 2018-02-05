@@ -37,4 +37,12 @@ public interface IDraggable {
     void setCancelNextMove(boolean toSet);
 
     void move(MoverType type, double dx, double dy, double dz);
+
+    void setPositionInShipSpace(Vector inShipSpace);
+    
+    void setVelocityInShipSpace(Vector inShipPSpace);
+    
+    Vector getPositionInShipSpace();
+
+    Vector getVelocityInShipSpace();
 }

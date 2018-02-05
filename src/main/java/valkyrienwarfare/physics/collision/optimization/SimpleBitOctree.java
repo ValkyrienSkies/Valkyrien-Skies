@@ -53,10 +53,12 @@ public class SimpleBitOctree implements IBitOctree {
 		int levelTwoIndex = getOctreeLevelTwoIndex(x, y, z, levelThreeIndex);
 		int levelOneIndex = getOctreeLevelOneIndex(x, y, z, levelTwoIndex);
 
-		if (updateOctreeLevelOne(levelOneIndex, x, y, z)) {
-			if (updateOctreeLevelTwo(levelTwoIndex)) {
-				updateOctreeLevelThree(levelThreeIndex);
-			}
+		if (getAtIndex(levelOneIndex) != bit) {
+    		if (updateOctreeLevelOne(levelOneIndex, x, y, z)) {
+    			if (updateOctreeLevelTwo(levelTwoIndex)) {
+    				updateOctreeLevelThree(levelThreeIndex);
+    			}
+    		}
 		}
 	}
 

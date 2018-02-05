@@ -22,7 +22,6 @@ import java.util.Random;
 
 import com.jackredcreeper.cannon.world.NewExp2;
 
-import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.array.TIntArrayList;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -44,6 +43,7 @@ import valkyrienwarfare.physics.collision.optimization.IBitOctreeProvider;
 import valkyrienwarfare.physics.collision.optimization.ShipCollisionTask;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
+// A manager used to process collisions between ships and the game world
 public class WorldPhysicsCollider {
 
     // Used to expand the AABB used to check for potential collisions; helps prevent
@@ -66,18 +66,20 @@ public class WorldPhysicsCollider {
     // How likely it is for the collision tasks to shuffle every physics tick
     // ie. (.50D => 50% chance to shuffle, .30D => 30% chance, etc.)
     public static final double COLLISION_TASK_SHUFFLE_FREQUENCY = .50D;
+    // Greater coefficients result in more friction
+    public static final double KINETIC_FRICTION_COEFFICIENT = .1D;
     private final MutableBlockPos mutablePos;
     private final Random rand;
     private final List<ShipCollisionTask> tasks;
-    private PhysicsCalculations calculator;
-    private World worldObj;
-    private PhysicsObject parent;
+    private final PhysicsCalculations calculator;
+    private final World worldObj;
+    private final PhysicsObject parent;
     private final TIntArrayList cachedPotentialHits;
     private final TIntArrayList cachedHitsToRemove;
-    private BlockPos centerPotentialHit;
     // Ensures this always updates the first tick after creation
     private double ticksSinceCacheUpdate;
     private boolean updateCollisionTasksCache;
+    private BlockPos centerPotentialHit;
 
     public WorldPhysicsCollider(PhysicsCalculations calculations) {
         this.calculator = calculations;
@@ -100,19 +102,16 @@ public class WorldPhysicsCollider {
 
     public void tickUpdatingTheCollisionCache() {
         // Multiply by 20 to convert seconds (physTickSpeed) into ticks
-        // (ticksSinceCacheUpdate)
         ticksSinceCacheUpdate += 20D * calculator.physTickSpeed;
-
-        TIntIterator iterator = cachedHitsToRemove.iterator();
-        while (iterator.hasNext()) {
-            cachedPotentialHits.remove(iterator.next());
+        for (int i = 0; i < cachedHitsToRemove.size(); i++) {
+            cachedPotentialHits.remove(cachedHitsToRemove.get(i));
         }
-        cachedHitsToRemove.clear();
+        cachedHitsToRemove.resetQuick();
         if (ticksSinceCacheUpdate > CACHE_UPDATE_FREQUENCY) {
             updatePotentialCollisionCache();
             updateCollisionTasksCache = true;
         }
-        if (Math.random() > 1D - COLLISION_TASK_SHUFFLE_FREQUENCY) {
+        if (Math.random() < COLLISION_TASK_SHUFFLE_FREQUENCY) {
             cachedPotentialHits.shuffle(rand);
         }
     }
@@ -122,7 +121,6 @@ public class WorldPhysicsCollider {
             tasks.clear();
             int index = 0;
             int size = cachedPotentialHits.size();
-
             while (index < size) {
                 ShipCollisionTask task = new ShipCollisionTask(this, index);
                 index += ShipCollisionTask.MAX_TASKS_TO_CHECK;
@@ -130,7 +128,6 @@ public class WorldPhysicsCollider {
             }
             updateCollisionTasksCache = false;
         }
-
         toAdd.addAll(tasks);
     }
 
@@ -157,11 +154,9 @@ public class WorldPhysicsCollider {
         final MutableBlockPos localCollisionPos = new MutableBlockPos();
         final Vector inWorld = new Vector();
 
-        TIntIterator intIterator = cachedPotentialHits.iterator();
-
-        while (intIterator.hasNext()) {
+        for (int i = 0; i < cachedPotentialHits.size(); i++) {
             // Converts the int to a mutablePos
-            SpatialDetector.setPosWithRespectTo(intIterator.next(), centerPotentialHit, mutablePos);
+            SpatialDetector.setPosWithRespectTo(cachedPotentialHits.get(i), centerPotentialHit, mutablePos);
 
             inWorld.X = mutablePos.getX() + .5;
             inWorld.Y = mutablePos.getY() + .5;
@@ -247,22 +242,7 @@ public class WorldPhysicsCollider {
                     }
                 }
             }
-
-            // The old way of doing things
-
-            /*
-             * for (x = minX; x <= maxX; x++) { for (z = minZ; z <= maxZ; z++) { if
-             * (parent.ownsChunk(x >> 4, z >> 4)) { for (y = minY; y <= maxY; y++) { final
-             * Chunk chunkIn = parent.VKChunkCache.getChunkAt(x >> 4, z >> 4); final
-             * IBlockState state = chunkIn.getBlockState(x, y, z); if
-             * (state.getMaterial().isSolid()) { localCollisionPos.setPos(x, y, z);
-             * 
-             * handleLikelyCollision(mutablePos, localCollisionPos,
-             * parent.surroundingWorldChunksCache.getBlockState(mutablePos), state); } } } }
-             * }
-             */
         }
-
     }
 
     // Tests two block positions directly against each other, and figures out
@@ -282,9 +262,7 @@ public class WorldPhysicsCollider {
 
         Polygon shipInWorld = new Polygon(inLocalBB, parent.coordTransform.lToWTransform);
         Polygon worldPoly = new Polygon(inGlobalBB);
-
         PhysPolygonCollider collider = new PhysPolygonCollider(shipInWorld, worldPoly, parent.coordTransform.normals);
-
         if (!collider.seperated) {
             return handleActualCollision(collider, inWorldPos, inLocalPos, inWorldState, inLocalState);
         }
@@ -399,7 +377,7 @@ public class WorldPhysicsCollider {
                 collisionImpulseForce.zero();
             } else {
                 addFrictionToNormalForce(momentumAtPoint, collisionImpulseForce);
-
+                // calculateCoulumbFriction(inBody, momentumAtPoint, axis, offsetVector);
             }
 
             calculator.linearMomentum.add(collisionImpulseForce);
@@ -408,19 +386,16 @@ public class WorldPhysicsCollider {
             RotationMatrices.applyTransform3by3(calculator.invFramedMOI, thirdCross);
             calculator.angularVelocity.add(thirdCross);
         }
-
     }
 
+    // Applies the friction force generated by the collision
     private void addFrictionToNormalForce(Vector momentumAtPoint, Vector impulseVector) {
-        double kineticFrictionMew = .1D;
-
         Vector contactNormal = new Vector(impulseVector);
         contactNormal.normalize();
 
         Vector frictionVector = new Vector(momentumAtPoint);
         frictionVector.normalize();
-
-        frictionVector.multiply(impulseVector.length() * kineticFrictionMew);
+        frictionVector.multiply(impulseVector.length() * KINETIC_FRICTION_COEFFICIENT);
 
         if (frictionVector.dot(momentumAtPoint) > 0) {
             frictionVector.multiply(-1D);
@@ -428,58 +403,15 @@ public class WorldPhysicsCollider {
 
         // Remove all friction components along the impulse vector
         double frictionImpulseDot = frictionVector.dot(contactNormal);
-
         Vector toRemove = contactNormal.getProduct(frictionImpulseDot);
-
         frictionVector.subtract(toRemove);
-
         impulseVector.add(frictionVector);
-    }
-
-    // Applies Coulumb Friction to the collision
-    private void calculateCoulumbFriction(Vector inBody, Vector momentumAtPoint, Vector axis, Vector offsetVector) {
-        // Some number between 0 and 1
-        double coefficientOfFriction = .5D;
-
-        Vector tangentOfSliding = new Vector();
-
-        double dotProduct = momentumAtPoint.dot(axis);
-
-        tangentOfSliding = new Vector(momentumAtPoint);
-        tangentOfSliding.subtract(axis.getProduct(dotProduct));
-
-        // This is probably wrong
-        // tangentOfSliding = momentumAtPoint.cross(axis).cross(axis);
-        tangentOfSliding.normalize();
-
-        // System.out.println(tangentOfSliding);
-
-        Vector firstCross = inBody.cross(tangentOfSliding);
-        RotationMatrices.applyTransform3by3(calculator.invFramedMOI, firstCross);
-
-        Vector secondCross = firstCross.cross(inBody);
-
-        double magnitudeOfFriction = -momentumAtPoint.dot(tangentOfSliding);
-
-        magnitudeOfFriction /= (calculator.invMass + secondCross.dot(tangentOfSliding));
-
-        Vector simpleImpulse = new Vector(tangentOfSliding, magnitudeOfFriction);
-        // System.out.println(simpleImpulse);
-        if (simpleImpulse.dot(offsetVector) < 0) {
-            calculator.linearMomentum.add(simpleImpulse);
-            Vector thirdCross = inBody.cross(simpleImpulse);
-
-            RotationMatrices.applyTransform3by3(calculator.invFramedMOI, thirdCross);
-            calculator.angularVelocity.add(thirdCross);
-            // return true;
-        }
     }
 
     private void updatePotentialCollisionCache() {
         final AxisAlignedBB collisionBB = parent.collisionBB.expand(calculator.linearMomentum.X * calculator.invMass,
                 calculator.linearMomentum.Y * calculator.invMass, calculator.linearMomentum.Z * calculator.invMass)
                 .grow(AABB_EXPANSION);
-
         ticksSinceCacheUpdate = 0D;
         // This is being used to occasionally offset the collision cache update, in the
         // hopes this will prevent multiple ships from all updating
@@ -487,9 +419,8 @@ public class WorldPhysicsCollider {
         if (Math.random() > .5) {
             ticksSinceCacheUpdate -= .05D;
         }
-        // Empties out the array but also preserves the object to avoid creating large
-        // arrays unnecessarily
-        cachedPotentialHits.reset();
+        // Resets the potential hits array in O(1) time! Isn't that something.
+        cachedPotentialHits.resetQuick();
         // Ship is outside of world blockSpace, just skip this all together
         if (collisionBB.maxY < 0 || collisionBB.minY > 255) {
             return;
@@ -509,18 +440,12 @@ public class WorldPhysicsCollider {
 
         ChunkCache cache = parent.surroundingWorldChunksCache;
 
-        Chunk chunk, chunkIn;
-        ExtendedBlockStorage extendedblockstorage;
-        IBlockState state, localState;
-
         int chunkMinX = min.getX() >> 4;
         int chunkMaxX = (max.getX() >> 4) + 1;
         int storageMinY = min.getY() >> 4;
         int storageMaxY = (max.getY() >> 4) + 1;
         int chunkMinZ = min.getZ() >> 4;
         int chunkMaxZ = (max.getZ() >> 4) + 1;
-
-        int storageY;
         // long startTime = System.nanoTime();
 
         for (int chunkX = chunkMinX; chunkX < chunkMaxX; chunkX++) {
@@ -530,9 +455,9 @@ public class WorldPhysicsCollider {
 
                 if (!(arrayChunkX < 0 || arrayChunkZ < 0 || arrayChunkX > cache.chunkArray.length - 1
                         || arrayChunkZ > cache.chunkArray[0].length - 1)) {
-                    chunk = cache.chunkArray[arrayChunkX][arrayChunkZ];
-                    for (storageY = storageMinY; storageY < storageMaxY; storageY++) {
-                        extendedblockstorage = chunk.storageArrays[storageY];
+                    Chunk chunk = cache.chunkArray[arrayChunkX][arrayChunkZ];
+                    for (int storageY = storageMinY; storageY < storageMaxY; storageY++) {
+                        ExtendedBlockStorage extendedblockstorage = chunk.storageArrays[storageY];
                         if (extendedblockstorage != null) {
                             int minStorageX = chunkX << 4;
                             int minStorageY = storageY << 4;

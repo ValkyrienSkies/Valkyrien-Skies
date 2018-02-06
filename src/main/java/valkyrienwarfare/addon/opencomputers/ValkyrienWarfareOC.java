@@ -5,6 +5,7 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
 import valkyrienwarfare.ValkyrienWarfareMod;
+import valkyrienwarfare.addon.opencomputers.block.GPSBlock;
 import valkyrienwarfare.addon.opencomputers.proxy.ClientProxyOC;
 import valkyrienwarfare.addon.opencomputers.proxy.CommonProxyOC;
 import valkyrienwarfare.api.addons.Module;
@@ -23,16 +24,22 @@ public class ValkyrienWarfareOC extends Module<ValkyrienWarfareOC> {
     }
 
     @Override
-    protected void preInit(FMLStateEvent event) { }
+    protected void preInit(FMLStateEvent event) {
+
+    }
 
     @Override
-    protected void init(FMLStateEvent event) { }
+    protected void init(FMLStateEvent event) {
+
+    }
 
     @Override
-    protected void postInit(FMLStateEvent event) { }
+    protected void postInit(FMLStateEvent event) {
+
+    }
 
     @Override
     public void registerBlocks(RegistryEvent.Register<Block> event) {
-
+        gpsBlock = new GPSBlock();
     }
 }

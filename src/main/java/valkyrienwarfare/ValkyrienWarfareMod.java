@@ -71,6 +71,7 @@ import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import valkyrienwarfare.addon.combat.ValkyrienWarfareCombat;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
+import valkyrienwarfare.addon.opencomputers.ValkyrienWarfareOC;
 import valkyrienwarfare.addon.world.ValkyrienWarfareWorld;
 import valkyrienwarfare.api.DataTag;
 import valkyrienwarfare.api.ValkyrienWarfareHooks;
@@ -240,9 +241,11 @@ public class ValkyrienWarfareMod {
 			ValkyrienWarfareCombat combatModule = new ValkyrienWarfareCombat();
 			ValkyrienWarfareControl controlModule = new ValkyrienWarfareControl();
 			ValkyrienWarfareWorld worldModule = new ValkyrienWarfareWorld();
+			ValkyrienWarfareOC opencomputersModule = new ValkyrienWarfareOC();
 			registerAddon(combatModule);
 			registerAddon(controlModule);
 			registerAddon(worldModule);
+			registerAddon(opencomputersModule);
 		}
 
 		if (!MixinLoaderForge.isObfuscatedEnvironment) { // if in dev, read default addons from gradle output folder

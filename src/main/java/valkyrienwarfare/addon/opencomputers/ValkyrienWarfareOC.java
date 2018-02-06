@@ -41,5 +41,7 @@ public class ValkyrienWarfareOC extends Module<ValkyrienWarfareOC> {
     @Override
     public void registerBlocks(RegistryEvent.Register<Block> event) {
         gpsBlock = new GPSBlock();
+
+        event.getRegistry().register(gpsBlock);
     }
 }

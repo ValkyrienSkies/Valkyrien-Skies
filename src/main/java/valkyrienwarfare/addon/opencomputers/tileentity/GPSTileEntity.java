@@ -13,9 +13,10 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 @Optional.Interface(iface = "li.cil.oc.api.network.SimpleComponent", modid = "opencomputers")
 public class GPSTileEntity extends TileEntity implements SimpleComponent {
     public GPSTileEntity() {
-
+		super();
     }
 
+	// Used by OpenComputers
     @Override
     public String getComponentName() {
         return "ship_gps";

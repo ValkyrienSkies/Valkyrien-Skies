@@ -1,6 +1,7 @@
 package valkyrienwarfare.addon.opencomputers;
 
 import net.minecraft.block.Block;
+import net.minecraft.item.Item;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -22,6 +23,8 @@ public class ValkyrienWarfareOC extends Module<ValkyrienWarfareOC> {
         if (ValkyrienWarfareMod.INSTANCE.isRunningOnClient()) {
             setClientProxy(new ClientProxyOC());
         }
+
+        INSTANCE = this;
     }
 
     @Override
@@ -45,6 +48,11 @@ public class ValkyrienWarfareOC extends Module<ValkyrienWarfareOC> {
 
         event.getRegistry().register(gpsBlock);
     }
+
+    @Override
+	public void registerItems(RegistryEvent.Register<Item> event) {
+		registerItemBlock(event, gpsBlock);
+	}
 
     @Override
     public void registerTileEntities() {

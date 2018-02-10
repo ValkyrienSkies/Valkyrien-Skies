@@ -87,26 +87,30 @@ public class ThrustModulatorTileEntity extends ImplPhysicsProcessorNodeTileEntit
     @Callback
     @Optional.Method(modid = "opencomputers")
     public Object[] setYHeight(Context context, Arguments args) {
-        try {
+		boolean success = false;
+    	try {
             ThrustModulatorGuiInputMessage msg = new ThrustModulatorGuiInputMessage();
-            msg.idealYHeight = (float)args.checkDouble(1);
+            msg.idealYHeight = (float)args.checkDouble(0);
             msg.maximumYVelocity = (float)maximumYVelocity;
 
             handleGUIInput(msg, null);
+			success = true;
         } catch (IllegalArgumentException e) { }
-        return new Object[]{ };
+        return new Object[]{ success };
     }
 
     @Callback
     @Optional.Method(modid = "opencomputers")
     public Object[] setYVelocity(Context context, Arguments args) {
+        boolean success = false;
         try {
             ThrustModulatorGuiInputMessage msg = new ThrustModulatorGuiInputMessage();
             msg.idealYHeight = (float)idealYHeight;
-            msg.maximumYVelocity = (float)args.checkDouble(1);
+            msg.maximumYVelocity = (float)args.checkDouble(0);
 
             handleGUIInput(msg, null);
-        } catch (IllegalArgumentException e) { }
-        return new Object[]{ };
+            success = true;
+        } catch (IllegalArgumentException e) {  }
+        return new Object[]{ success };
     }
 }

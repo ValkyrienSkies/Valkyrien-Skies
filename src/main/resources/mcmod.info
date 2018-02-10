@@ -54,6 +54,18 @@
     ]
   },
   {
+    "modid": "valkyrienwarfareoc",
+    "name": "Valkyrien Warfare OpenComputers",
+    "description": "OpenComputers support for Valkyrien Warfare",
+    "version": "0.9_alpha",
+    "logoFile": "",
+    "parent": "valkyrienwarfare",
+    "screenshots": [],
+    "dependencies": [
+      "valkyrienwarfare"
+    ]
+  },
+  {
     "modid": "cannons",
     "name": "Cannons!",
     "description": "What the name says, cannons!",

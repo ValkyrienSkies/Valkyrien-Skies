@@ -78,7 +78,7 @@ dependencies {
     compile("org.spongepowered:mixin:0.7.5-SNAPSHOT") {
         exclude module: "launchwrapper"
     }
-    compileOnly "li.cil.oc:OpenComputers:MC1.7.10-1.5.+:api"
+    compileOnly "li.cil.oc:OpenComputers:MC1.12.1-1.7.1.+:api"
     // Basically just mods that are being bugtested with ValkyrienWarfare go here, they will get autocompiled and mixed into the project
 }
 

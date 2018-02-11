@@ -31,41 +31,20 @@ public class PhysicsTickHandler {
 	public static void onWorldTickStart(World world) {
 		WorldPhysObjectManager manager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(world);
 
-		ArrayList<PhysicsWrapperEntity> toUnload = (ArrayList<PhysicsWrapperEntity>) manager.physicsEntitiesToUnload
-				.clone();
+		List<PhysicsWrapperEntity> toUnload = new ArrayList<PhysicsWrapperEntity>(manager.physicsEntitiesToUnload);
 		for (PhysicsWrapperEntity wrapper : toUnload) {
 			manager.onUnload(wrapper);
 		}
 
-		ArrayList<PhysicsWrapperEntity> physicsEntities = manager.getTickablePhysicsEntities();
+        List<PhysicsWrapperEntity> physicsEntities = manager.getTickablePhysicsEntities();
 
-		if (!ValkyrienWarfareMod.doSplitting) {
-			for (PhysicsWrapperEntity wrapper : physicsEntities) {
-				wrapper.wrapping.coordTransform.setPrevMatrices();
-				wrapper.wrapping.updateChunkCache();
-				// Collections.shuffle(wrapper.wrapping.physicsProcessor.activeForcePositions);
-			}
-		} else {
-			// boolean didSplitOccur = false; for(PhysicsWrapperEntity
-			// wrapper:physicsEntities){ if(wrapper.wrapping.processPotentialSplitting()){
-			// didSplitOccur = true; } } if(didSplitOccur){ while(didSplitOccur){
-			// didSplitOccur = false; ArrayList oldPhysicsEntities = physicsEntities;
-			// ArrayList<PhysicsWrapperEntity> newPhysicsEntities =
-			// (ArrayList<PhysicsWrapperEntity>) manager.physicsEntities.clone();
-			// newPhysicsEntities.removeAll(oldPhysicsEntities);
-			// if(newPhysicsEntities.size()!=0){ for(PhysicsWrapperEntity
-			// wrapper:newPhysicsEntities){
-			// if(wrapper.wrapping.processPotentialSplitting()){ didSplitOccur = true; } } }
-			// } physicsEntities = (ArrayList<PhysicsWrapperEntity>)
-			// manager.physicsEntities.clone(); } for(PhysicsWrapperEntity
-			// wrapper:physicsEntities){ wrapper.wrapping.coordTransform.setPrevMatrices();
-			// wrapper.wrapping.updateChunkCache(); //
-			// Collections.shuffle(wrapper.wrapping.physicsProcessor.activeForcePositions);
-			// }
-		}
+        for (PhysicsWrapperEntity wrapper : physicsEntities) {
+            wrapper.wrapping.coordTransform.setPrevMatrices();
+            wrapper.wrapping.updateChunkCache();
+            // Collections.shuffle(wrapper.wrapping.physicsProcessor.activeForcePositions);
+        }
 
-		int iters = ValkyrienWarfareMod.physIter;
-
+        int iters = ValkyrienWarfareMod.physIter;
 		PhysicsTickThreadTask physicsThreadTask = new PhysicsTickThreadTask(iters, physicsEntities, manager);
 
 		// ValkyrienWarfareMod.PhysicsMasterThread.invokeAll(new ArrayList<PhysicsW>)
@@ -94,11 +73,11 @@ public class PhysicsTickHandler {
 
 	public static void onWorldTickEnd(World world) {
 		WorldPhysObjectManager manager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(world);
-		ArrayList<PhysicsWrapperEntity> physicsEntities = manager.getTickablePhysicsEntities();
+		List<PhysicsWrapperEntity> physicsEntities = manager.getTickablePhysicsEntities();
 
 		if (manager.physicsThreadStatus != null && !manager.physicsThreadStatus.isDone()) {
 			try {
-				// System.out.println(world.getWorldTime());
+				// Wait for the physicsThread to return before moving on.
 				manager.physicsThreadStatus.get();
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -109,13 +88,12 @@ public class PhysicsTickHandler {
 			wrapper.wrapping.coordTransform.sendPositionToPlayers();
 		}
 		EntityDraggable.tickAddedVelocityForWorld(world);
-
 		for (PhysicsWrapperEntity wrapperEnt : physicsEntities) {
 			wrapperEnt.wrapping.onPostTick();
 		}
 	}
 
-	public static void runPhysicsIteration(ArrayList<PhysicsWrapperEntity> physicsEntities,
+	public static void runPhysicsIteration(List<PhysicsWrapperEntity> physicsEntities,
 			WorldPhysObjectManager manager) {
 		double newPhysSpeed = ValkyrienWarfareMod.physSpeed;
 		Vector newGravity = ValkyrienWarfareMod.gravity;
@@ -135,6 +113,7 @@ public class PhysicsTickHandler {
 		}
 
 		try {
+		    // TODO: Right here!
 			ValkyrienWarfareMod.MultiThreadExecutor.invokeAll(collisionTasks);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -159,11 +138,11 @@ public class PhysicsTickHandler {
 
 	private static class PhysicsTickThreadTask implements Callable<Void> {
 
-		final int iters;
-		final ArrayList physicsEntities;
-		final WorldPhysObjectManager manager;
+		private final int iters;
+		private final List physicsEntities;
+		private final WorldPhysObjectManager manager;
 
-		public PhysicsTickThreadTask(int iters, ArrayList physicsEntities, WorldPhysObjectManager manager) {
+		public PhysicsTickThreadTask(int iters, List physicsEntities, WorldPhysObjectManager manager) {
 			this.iters = iters;
 			this.physicsEntities = physicsEntities;
 			this.manager = manager;

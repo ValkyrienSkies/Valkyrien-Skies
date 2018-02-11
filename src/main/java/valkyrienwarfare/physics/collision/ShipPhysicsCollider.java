@@ -203,7 +203,7 @@ public class ShipPhysicsCollider {
 
 		double topJ = -(e + 1D) * netVelocity.dot(object.axis);
 
-		double bottomJ = parent.physicsProcessor.invMass + toCollideWith.physicsProcessor.invMass;
+		double bottomJ = parent.physicsProcessor.invMass() + toCollideWith.physicsProcessor.invMass();
 
 		bottomJ += RotationMatrices
 				.get3by3TransformedVec(toCollideWith.physicsProcessor.invFramedMOI, inFirstShip.cross(object.axis))

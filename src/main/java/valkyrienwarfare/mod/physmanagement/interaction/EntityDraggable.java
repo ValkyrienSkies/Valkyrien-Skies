@@ -35,20 +35,23 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 public abstract class EntityDraggable {
     public static void tickAddedVelocityForWorld(World world) {
         try {
-            //TODO: Fix this
+            // TODO: Fix this
             for (int i = 0; i < world.loadedEntityList.size(); i++) {
                 Entity e = world.loadedEntityList.get(i);
-                //TODO: Maybe add a check to prevent moving entities that are fixed onto a Ship, but I like the visual effect
+                // TODO: Maybe add a check to prevent moving entities that are fixed onto a
+                // Ship, but I like the visual effect
                 if (!(e instanceof PhysicsWrapperEntity) && !(e instanceof EntityCannonBall)) {
                     IDraggable draggable = getDraggableFromEntity(e);
-//					e.onGround = true;
-//
+                    // e.onGround = true;
+                    //
                     doTheEntityThing(e);
 
-//					draggable.tickAddedVelocity();
-//
-//					e.onGround = true;
-//					e.setPosition(draggable.getVelocityAddedToPlayer().X + e.posX, draggable.getVelocityAddedToPlayer().Y + e.posY, draggable.getVelocityAddedToPlayer().Z + e.posZ);
+                    // draggable.tickAddedVelocity();
+                    //
+                    // e.onGround = true;
+                    // e.setPosition(draggable.getVelocityAddedToPlayer().X + e.posX,
+                    // draggable.getVelocityAddedToPlayer().Y + e.posY,
+                    // draggable.getVelocityAddedToPlayer().Z + e.posZ);
 
                     if (draggable.getWorldBelowFeet() == null) {
                         if (e.onGround) {
@@ -92,7 +95,8 @@ public abstract class EntityDraggable {
 
             Vector newPos = new Vector(entity);
 
-            //Move the entity back to its old position, the added velocity will be used afterwards
+            // Move the entity back to its old position, the added velocity will be used
+            // afterwards
             entity.setPosition(oldPos.X, oldPos.Y, oldPos.Z);
             Vector addedVel = oldPos.getSubtraction(newPos);
 
@@ -112,7 +116,6 @@ public abstract class EntityDraggable {
             double radianYaw = Math.atan2((oldLookingPos.X / f4), (oldLookingPos.Z / f4));
             radianYaw += Math.PI;
             radianYaw *= -180D / Math.PI;
-
 
             if (!(Double.isNaN(radianYaw) || Math.abs(newPitch) > 85)) {
                 double wrappedYaw = MathHelper.wrapDegrees(radianYaw);
@@ -136,28 +139,28 @@ public abstract class EntityDraggable {
 
         if (!ValkyrienWarfareMod.physicsManager.isEntityFixed(entity)) {
             boolean originallySneaking = entity.isSneaking();
-
             entity.setSneaking(false);
-
             if (draggable.getWorldBelowFeet() == null && entity.onGround) {
                 draggable.getVelocityAddedToPlayer().zero();
             }
 
-            if (draggable.getWorldBelowFeet() != null)  {
-                entity.onGround = true;
-            }
+            // Bad @DaPorkChop >:/
+            // if (draggable.getWorldBelowFeet() != null) {
+            // entity.onGround = true;
+            // }
 
             Vector velocityProper = new Vector(draggable.getVelocityAddedToPlayer());
-
             AxisAlignedBB originalBoundingBox = entity.getEntityBoundingBox();
-
             draggable.setVelocityAddedToPlayer(getVelocityProper(velocityProper, entity));
 
-//            entity.move(MoverType.SELF, draggable.getVelocityAddedToPlayer().X, draggable.getVelocityAddedToPlayer().Y, draggable.getVelocityAddedToPlayer().Z);
+            // entity.move(MoverType.SELF, draggable.getVelocityAddedToPlayer().X,
+            // draggable.getVelocityAddedToPlayer().Y,
+            // draggable.getVelocityAddedToPlayer().Z);
 
             entity.setEntityBoundingBox(originalBoundingBox);
 
-            entity.setEntityBoundingBox(entity.getEntityBoundingBox().offset(draggable.getVelocityAddedToPlayer().X, draggable.getVelocityAddedToPlayer().Y, draggable.getVelocityAddedToPlayer().Z));
+            entity.setEntityBoundingBox(entity.getEntityBoundingBox().offset(draggable.getVelocityAddedToPlayer().X,
+                    draggable.getVelocityAddedToPlayer().Y, draggable.getVelocityAddedToPlayer().Z));
             entity.resetPositionToBB();
 
             if (EntityArrow.class.isInstance(entity)) {
@@ -168,10 +171,10 @@ public abstract class EntityDraggable {
                 entity.rotationYaw += draggable.getYawDifVelocity();
             }
 
-            //Do not add this movement as if the entity were walking it
-//			entity.distanceWalkedModified = originalWalked;
-//			entity.distanceWalkedOnStepModified = originalWalkedOnStep;
-			entity.setSneaking(originallySneaking);
+            // Do not add this movement as if the entity were walking it
+            // entity.distanceWalkedModified = originalWalked;
+            // entity.distanceWalkedOnStepModified = originalWalkedOnStep;
+            entity.setSneaking(originallySneaking);
         }
 
         draggable.getVelocityAddedToPlayer().multiply(.99D);
@@ -211,7 +214,8 @@ public abstract class EntityDraggable {
         double d3 = y;
         double d4 = z;
 
-        List<AxisAlignedBB> list1 = thisClassAsAnEntity.world.getCollisionBoxes(thisClassAsAnEntity, thisClassAsAnEntity.getEntityBoundingBox().offset(x, y, z));
+        List<AxisAlignedBB> list1 = thisClassAsAnEntity.world.getCollisionBoxes(thisClassAsAnEntity,
+                thisClassAsAnEntity.getEntityBoundingBox().offset(x, y, z));
         AxisAlignedBB axisalignedbb = thisClassAsAnEntity.getEntityBoundingBox();
 
         if (y != 0.0D) {
@@ -232,7 +236,8 @@ public abstract class EntityDraggable {
             }
 
             if (x != 0.0D) {
-                thisClassAsAnEntity.setEntityBoundingBox(thisClassAsAnEntity.getEntityBoundingBox().offset(x, 0.0D, 0.0D));
+                thisClassAsAnEntity
+                        .setEntityBoundingBox(thisClassAsAnEntity.getEntityBoundingBox().offset(x, 0.0D, 0.0D));
             }
         }
 
@@ -244,7 +249,8 @@ public abstract class EntityDraggable {
             }
 
             if (z != 0.0D) {
-                thisClassAsAnEntity.setEntityBoundingBox(thisClassAsAnEntity.getEntityBoundingBox().offset(0.0D, 0.0D, z));
+                thisClassAsAnEntity
+                        .setEntityBoundingBox(thisClassAsAnEntity.getEntityBoundingBox().offset(0.0D, 0.0D, z));
             }
         }
 
@@ -257,7 +263,8 @@ public abstract class EntityDraggable {
             AxisAlignedBB axisalignedbb1 = thisClassAsAnEntity.getEntityBoundingBox();
             thisClassAsAnEntity.setEntityBoundingBox(axisalignedbb);
             y = thisClassAsAnEntity.stepHeight;
-            List<AxisAlignedBB> list = thisClassAsAnEntity.world.getCollisionBoxes(thisClassAsAnEntity, thisClassAsAnEntity.getEntityBoundingBox().offset(d2, y, d4));
+            List<AxisAlignedBB> list = thisClassAsAnEntity.world.getCollisionBoxes(thisClassAsAnEntity,
+                    thisClassAsAnEntity.getEntityBoundingBox().offset(d2, y, d4));
             AxisAlignedBB axisalignedbb2 = thisClassAsAnEntity.getEntityBoundingBox();
             AxisAlignedBB axisalignedbb3 = axisalignedbb2.offset(d2, 0.0D, d4);
             double d8 = y;

@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
@@ -87,8 +88,8 @@ public class PhysicsObject {
 	public PhysicsWrapperEntity wrapper;
 	// This handles sending packets to players involving block changes in the Ship
 	// space
-	public ArrayList<EntityPlayerMP> watchingPlayers = new ArrayList<EntityPlayerMP>();
-	public ArrayList<EntityPlayerMP> newWatchers = new ArrayList<EntityPlayerMP>();
+	public List<EntityPlayerMP> watchingPlayers = new ArrayList<EntityPlayerMP>();
+	public List<EntityPlayerMP> newWatchers = new ArrayList<EntityPlayerMP>();
 
 	// It is from this position that the x,y,z coords in local are 0; and that the
 	// posX,
@@ -237,20 +238,20 @@ public class PhysicsObject {
 		// System.out.println(blockPositions.size() + ":" + wrapper.isDead);
 	}
 
-	public void destroy() {
-		wrapper.setDead();
-		ArrayList<EntityPlayerMP> watchersCopy = (ArrayList<EntityPlayerMP>) watchingPlayers.clone();
-		for (EntityPlayerMP wachingPlayer : watchersCopy) {
-			for (int x = ownedChunks.minX; x <= ownedChunks.maxX; x++) {
-				for (int z = ownedChunks.minZ; z <= ownedChunks.maxZ; z++) {
-					SPacketUnloadChunk unloadPacket = new SPacketUnloadChunk(x, z);
-					wachingPlayer.connection.sendPacket(unloadPacket);
-				}
-			}
-			// NOTICE: This method isnt being called to avoid the
-			// watchingPlayers.remove(player) call, which is a waste of CPU time
-			// onPlayerUntracking(wachingPlayer);
-		}
+    public void destroy() {
+        wrapper.setDead();
+        List<EntityPlayerMP> watchersCopy = new ArrayList<EntityPlayerMP>(watchingPlayers);
+        for (int x = ownedChunks.minX; x <= ownedChunks.maxX; x++) {
+            for (int z = ownedChunks.minZ; z <= ownedChunks.maxZ; z++) {
+                SPacketUnloadChunk unloadPacket = new SPacketUnloadChunk(x, z);
+                for (EntityPlayerMP wachingPlayer : watchersCopy) {
+                    wachingPlayer.connection.sendPacket(unloadPacket);
+                }
+            }
+            // NOTICE: This method isnt being called to avoid the
+            // watchingPlayers.remove(player) call, which is a waste of CPU time
+            // onPlayerUntracking(wachingPlayer);
+        }
 		watchingPlayers.clear();
 		ValkyrienWarfareMod.chunkManager.removeRegistedChunksForShip(wrapper);
 		ValkyrienWarfareMod.chunkManager.removeShipPosition(wrapper);
@@ -780,7 +781,7 @@ public class PhysicsObject {
 	}
 
 	public void loadClaimedChunks() {
-		ArrayList<TileEntity> nodeTileEntitiesToUpdate = new ArrayList<TileEntity>();
+		List<TileEntity> nodeTileEntitiesToUpdate = new ArrayList<TileEntity>();
 
 		ValkyrienWarfareMod.physicsManager.onShipPreload(wrapper);
 

@@ -97,26 +97,6 @@ public abstract class MixinEntity implements IDraggable {
         cancelNextMove = toSet;
     }
 
-    @Override
-    public void setPositionInShipSpace(Vector inShipSpace) {
-        positionInShipSpace = inShipSpace;
-    }
-
-    @Override
-    public void setVelocityInShipSpace(Vector inShipSpace) {
-        velocityInShipSpace = inShipSpace;
-    }
-
-    @Override
-    public Vector getPositionInShipSpace() {
-        return positionInShipSpace;
-    }
-
-    @Override
-    public Vector getVelocityInShipSpace() {
-        return velocityInShipSpace;
-    }
-
     /*
      * @Inject(method = "move(Lnet/minecraft/entity/MoverType;DDD)V", at
      * = @At("HEAD"), cancellable = true) public void preMove(MoverType type, double

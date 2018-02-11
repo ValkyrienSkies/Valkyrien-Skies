@@ -16,6 +16,13 @@
 
 package valkyrienwarfare.physics.management;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.ChunkPos;
@@ -28,12 +35,6 @@ import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.minecraftforge.common.ForgeChunkManager.Type;
 import valkyrienwarfare.ValkyrienWarfareMod;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
-
 /**
  * This class essentially handles all the issues with ticking and handling physics Objects in the given world
  *
@@ -41,20 +42,21 @@ import java.util.concurrent.Future;
  */
 public class WorldPhysObjectManager {
 
-    public final Ticket chunkLoadingTicket;
-    public final HashMap<ChunkPos, PhysicsWrapperEntity> chunkPosToPhysicsEntityMap = new HashMap<ChunkPos, PhysicsWrapperEntity>();
-    // private static double ShipRangeCheck = 120D;
-    public World worldObj;
-    public ArrayList<PhysicsWrapperEntity> physicsEntities = new ArrayList<PhysicsWrapperEntity>();
-    public ArrayList<PhysicsWrapperEntity> physicsEntitiesToUnload = new ArrayList<PhysicsWrapperEntity>();
-    public ArrayList<Callable<Void>> physCollisonCallables = new ArrayList<Callable<Void>>();
-//	private static Field droppedChunksField;
-
+    private final Ticket chunkLoadingTicket;
+    private final Map<ChunkPos, PhysicsWrapperEntity> chunkPosToPhysicsEntityMap;
+    public final World worldObj;
+    public final List<PhysicsWrapperEntity> physicsEntities;
+    public final List<PhysicsWrapperEntity> physicsEntitiesToUnload;
+    private final List<Callable<Void>> physCollisonCallables;
     public Future physicsThreadStatus = null;
 
     public WorldPhysObjectManager(World toManage) {
         worldObj = toManage;
         chunkLoadingTicket = ForgeChunkManager.requestTicket(ValkyrienWarfareMod.INSTANCE, toManage, Type.NORMAL);
+        physicsEntities = new ArrayList<PhysicsWrapperEntity>();
+        physicsEntitiesToUnload = new ArrayList<PhysicsWrapperEntity>();
+        physCollisonCallables = new ArrayList<Callable<Void>>();
+        chunkPosToPhysicsEntityMap = new HashMap<ChunkPos, PhysicsWrapperEntity>();
     }
 
     /**
@@ -62,10 +64,9 @@ public class WorldPhysObjectManager {
      *
      * @return
      */
-    public ArrayList<PhysicsWrapperEntity> getTickablePhysicsEntities() {
-        ArrayList<PhysicsWrapperEntity> list = (ArrayList<PhysicsWrapperEntity>) physicsEntities.clone();
-
-        ArrayList<PhysicsWrapperEntity> frozenShips = new ArrayList<PhysicsWrapperEntity>();
+    public List<PhysicsWrapperEntity> getTickablePhysicsEntities() {
+        List<PhysicsWrapperEntity> list = new ArrayList<PhysicsWrapperEntity>(physicsEntities);
+        List<PhysicsWrapperEntity> frozenShips = new ArrayList<PhysicsWrapperEntity>();
 
         if (worldObj instanceof WorldServer) {
             WorldServer worldServer = (WorldServer) worldObj;
@@ -93,7 +94,7 @@ public class WorldPhysObjectManager {
             }
         }
 
-        ArrayList<PhysicsWrapperEntity> dumbShips = new ArrayList<PhysicsWrapperEntity>();
+        List<PhysicsWrapperEntity> dumbShips = new ArrayList<PhysicsWrapperEntity>();
 
         for (PhysicsWrapperEntity wrapper : list) {
             if (wrapper.isDead || wrapper.wrapping == null || (wrapper.wrapping.physicsProcessor == null && !wrapper.world.isRemote)) {
@@ -134,13 +135,12 @@ public class WorldPhysObjectManager {
     public void onLoad(PhysicsWrapperEntity loaded) {
         if (!loaded.wrapping.fromSplit) {
             if (loaded.world.isRemote) {
-                ArrayList<PhysicsWrapperEntity> potentialMatches = new ArrayList<PhysicsWrapperEntity>();
+                List<PhysicsWrapperEntity> potentialMatches = new ArrayList<PhysicsWrapperEntity>();
                 for (PhysicsWrapperEntity wrapper : physicsEntities) {
                     if (wrapper.getPersistentID().equals(loaded.getPersistentID())) {
                         potentialMatches.add(wrapper);
                     }
                 }
-
                 for (PhysicsWrapperEntity caught : potentialMatches) {
                     physicsEntities.remove(caught);
                     physCollisonCallables.remove(caught.wrapping.collisionCallable);

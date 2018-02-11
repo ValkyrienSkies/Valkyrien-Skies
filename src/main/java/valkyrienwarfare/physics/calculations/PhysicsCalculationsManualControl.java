@@ -18,12 +18,12 @@ package valkyrienwarfare.physics.calculations;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import valkyrienwarfare.util.PhysicsSettings;
 import valkyrienwarfare.addon.control.nodenetwork.IPhysicsProcessorNode;
 import valkyrienwarfare.addon.control.nodenetwork.Node;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.physics.management.PhysicsObject;
+import valkyrienwarfare.util.PhysicsSettings;
 
 public class PhysicsCalculationsManualControl extends PhysicsCalculations {
 
@@ -89,7 +89,7 @@ public class PhysicsCalculationsManualControl extends PhysicsCalculations {
         Vector linearForce = new Vector(forwardRate, upRate, 0, existingRotationMatrix);
 
         if (useLinearMomentumForce) {
-            linearForce = new Vector(linearMomentum, invMass);
+            linearForce = new Vector(linearMomentum, invMass());
         }
 
         linearForce.multiply(physTickSpeed);

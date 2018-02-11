@@ -36,21 +36,20 @@ import valkyrienwarfare.util.PhysicsSettings;
 
 public class PhysSettingsCommand extends CommandBase {
 
-    public static final ArrayList<String> completionOptions = new ArrayList<String>();
+    public static final List<String> COMPLETED_OPTIONS = new ArrayList<String>();
 
     static {
-        completionOptions.add("gravityvector");
-        completionOptions.add("dosplitting");
-        completionOptions.add("maxshipsize");
-        completionOptions.add("physicsiterations");
-        completionOptions.add("physicsspeed");
-        completionOptions.add("dogravity");
-        completionOptions.add("dophysicsblocks");
-        completionOptions.add("doballoons");
-        completionOptions.add("doairshiprotation");
-        completionOptions.add("doairshipmovement");
-        completionOptions.add("save");
-        completionOptions.add("doetheriumlifting");
+        COMPLETED_OPTIONS.add("gravityvector");
+        COMPLETED_OPTIONS.add("maxshipsize");
+        COMPLETED_OPTIONS.add("physicsiterations");
+        COMPLETED_OPTIONS.add("physicsspeed");
+        COMPLETED_OPTIONS.add("dogravity");
+        COMPLETED_OPTIONS.add("dophysicsblocks");
+        COMPLETED_OPTIONS.add("doballoons");
+        COMPLETED_OPTIONS.add("doairshiprotation");
+        COMPLETED_OPTIONS.add("doairshipmovement");
+        COMPLETED_OPTIONS.add("save");
+        COMPLETED_OPTIONS.add("doetheriumlifting");
     }
 
     @Override
@@ -72,22 +71,12 @@ public class PhysSettingsCommand extends CommandBase {
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
         if (args.length == 0) {
             sender.sendMessage(new TextComponentString("Avaliable physics Commands:"));
-            for (String command : completionOptions) {
+            for (String command : COMPLETED_OPTIONS) {
                 sender.sendMessage(new TextComponentString(command));
             }
         }
         String key = args[0];
-        if (key.equals("dosplitting")) {
-            if (args.length == 1) {
-                sender.sendMessage(new TextComponentString("dosplitting=" + ValkyrienWarfareMod.doSplitting + " (Default: false)"));
-                return;
-            } else if (args.length == 2) {
-                boolean value = Boolean.parseBoolean(args[1]);
-                ValkyrienWarfareMod.doSplitting = value;
-                sender.sendMessage(new TextComponentString("Set physics splitting to " + value));
-                return;
-            }
-        } else if (key.equals("maxshipsize")) {
+        if (key.equals("maxshipsize")) {
             if (args.length == 1) {
                 sender.sendMessage(new TextComponentString("maxshipsize=" + ValkyrienWarfareMod.maxShipSize + " (Default: 15000)"));
                 return;
@@ -214,7 +203,7 @@ public class PhysSettingsCommand extends CommandBase {
             return;
         } else if (true || key.equals("help")) {
             sender.sendMessage(new TextComponentString("Avaliable physics Commands:"));
-            for (String command : completionOptions) {
+            for (String command : COMPLETED_OPTIONS) {
                 sender.sendMessage(new TextComponentString(command));
             }
         }
@@ -225,14 +214,12 @@ public class PhysSettingsCommand extends CommandBase {
     @Override
     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos) {
         if (args.length == 1) {
-            ArrayList<String> possibleArgs = (ArrayList<String>) completionOptions.clone();
-
+            List<String> possibleArgs = new ArrayList<String>(COMPLETED_OPTIONS);
             for (Iterator<String> iterator = possibleArgs.iterator(); iterator.hasNext(); ) { //Don't like this, but I have to because concurrentmodificationexception
                 if (!iterator.next().startsWith(args[0])) {
                     iterator.remove();
                 }
             }
-
             return possibleArgs;
         } else if (args.length == 2) {
             if (args[0].startsWith("do")) {

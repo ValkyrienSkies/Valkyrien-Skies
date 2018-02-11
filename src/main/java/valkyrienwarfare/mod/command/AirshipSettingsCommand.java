@@ -39,12 +39,12 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public class AirshipSettingsCommand extends CommandBase {
 
-    public static final ArrayList<String> completionOptions = new ArrayList<String>();
+    public static final List<String> COMPLETION_OPTIONS = new ArrayList<String>();
 
     static {
-        completionOptions.add("transfer");
-        completionOptions.add("allowplayer");
-        completionOptions.add("claim");
+        COMPLETION_OPTIONS.add("transfer");
+        COMPLETION_OPTIONS.add("allowplayer");
+        COMPLETION_OPTIONS.add("claim");
     }
 
     //Ripoff of world.rayTraceBlocks(), blame LEX and his Side code
@@ -152,7 +152,7 @@ public class AirshipSettingsCommand extends CommandBase {
             p.sendMessage(new TextComponentString("You need to be the owner of an airship to change airship settings!"));
         }
         if (args[0].equals("help")) {
-            for (String command : completionOptions) {
+            for (String command : COMPLETION_OPTIONS) {
                 sender.sendMessage(new TextComponentString(command));
             }
         }
@@ -163,7 +163,7 @@ public class AirshipSettingsCommand extends CommandBase {
     @Override
     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos) {
         if (args.length == 1) {
-            ArrayList<String> possibleArgs = (ArrayList<String>) completionOptions.clone();
+            List<String> possibleArgs = new ArrayList<String>(COMPLETION_OPTIONS);
 
             for (Iterator<String> iterator = possibleArgs.iterator(); iterator.hasNext(); ) { //Don't like this, but I have to because concurrentmodificationexception
                 if (!iterator.next().startsWith(args[0])) {

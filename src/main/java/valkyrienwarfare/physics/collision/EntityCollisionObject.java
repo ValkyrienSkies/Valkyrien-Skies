@@ -26,15 +26,15 @@ import valkyrienwarfare.api.Vector;
  */
 public class EntityCollisionObject {
 
-	public final Vector axis;
-	public final Polygon movable, fixed;
-	public double penetrationDistance;
-	public boolean seperated;
-	public double[] playerMinMax;
-	public double[] blockMinMax;
-	public Vector entityVelocity;
-	public boolean originallyCollided = false;
-	public double velDot;
+	private final Vector axis;
+	private final Polygon movable, fixed;
+	private double penetrationDistance;
+	private boolean seperated;
+	private double[] playerMinMax;
+	private double[] blockMinMax;
+	private Vector entityVelocity;
+	private boolean originallyCollided = false;
+	private double velDot;
 
 	public EntityCollisionObject(Polygon movable_, Polygon stationary, Vector axes, Vector entityVel) {
 		axis = axes;
@@ -117,5 +117,25 @@ public class EntityCollisionObject {
 
 	public Vector getResponse() {
 		return axis.getProduct(-penetrationDistance);
+	}
+	
+	public Vector getCollisionNormal() {
+	    return axis;
+	}
+	
+	public double getCollisionPenetrationDistance() {
+	    return penetrationDistance;
+	}
+	
+	public boolean arePolygonsSeperated() {
+	    return seperated;
+	}
+	
+	public boolean werePolygonsInitiallyColliding() {
+	    return originallyCollided;
+	}
+
+	public double getVelDot() {
+	    return velDot;
 	}
 }

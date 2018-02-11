@@ -14,16 +14,15 @@
  *
  */
 
-package valkyrienwarfare.physics.collision.optimization;
+package valkyrienwarfare.physics.collision;
 
 import net.minecraft.block.state.IBlockState;
-import valkyrienwarfare.physics.collision.PhysPolygonCollider;
 
 public class CollisionInformationHolder {
 
-    public final PhysPolygonCollider collider;
-    public final int inWorldX, inWorldY, inWorldZ, inLocalX, inLocalY, inLocalZ;
-    public final IBlockState inWorldState, inLocalState;
+    protected final PhysPolygonCollider collider;
+    protected final int inWorldX, inWorldY, inWorldZ, inLocalX, inLocalY, inLocalZ;
+    protected final IBlockState inWorldState, inLocalState;
 
     public CollisionInformationHolder(PhysPolygonCollider collider, int inWorldX, int inWorldY, int inWorldZ, int inLocalX, int inLocalY, int inLocalZ, IBlockState inWorldState, IBlockState inLocalState) {
         this.collider = collider;

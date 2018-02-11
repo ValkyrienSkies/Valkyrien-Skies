@@ -116,7 +116,6 @@ public class ValkyrienWarfareMod {
 	public static CommonProxy proxy;
 	public static File configFile;
 	public static Configuration config;
-	public static boolean doSplitting = false;
 	public static boolean shipsSpawnParticles = false;
 	public static Vector gravity = new Vector(0, -9.8D, 0);
 	public static int physIter = 10;
@@ -172,7 +171,7 @@ public class ValkyrienWarfareMod {
 
 		{
 			threadCount = config.get(Configuration.CATEGORY_GENERAL, "Physics thread count", -1,
-					"The number of threads to use for physics. If <= 0 it will use the system core count.").getInt();
+					"The number of threads to use for physics. If thread count <= 0 it will use the system core count.").getInt();
 
 			if (MultiThreadExecutor == null) {
 				MultiThreadExecutor = Executors.newFixedThreadPool(threadCount <= 0 ? Runtime.getRuntime().availableProcessors() : threadCount);
@@ -483,7 +482,6 @@ public class ValkyrienWarfareMod {
 		PhysicsSettings.doBalloons = tag.getBoolean("doBalloons", true);
 		PhysicsSettings.doAirshipRotation = tag.getBoolean("doAirshipRotation", true);
 		PhysicsSettings.doAirshipMovement = tag.getBoolean("doAirshipMovement", true);
-		ValkyrienWarfareMod.doSplitting = tag.getBoolean("doSplitting", false);
 		ValkyrienWarfareMod.maxShipSize = tag.getInteger("maxShipSize", 15000);
 		ValkyrienWarfareMod.physIter = tag.getInteger("physicsIterations", 8);
 		ValkyrienWarfareMod.physSpeed = tag.getDouble("physicsSpeed", 0.05);
@@ -501,7 +499,6 @@ public class ValkyrienWarfareMod {
 		tag.setBoolean("doBalloons", PhysicsSettings.doBalloons);
 		tag.setBoolean("doAirshipRotation", PhysicsSettings.doAirshipRotation);
 		tag.setBoolean("doAirshipMovement", PhysicsSettings.doAirshipMovement);
-		tag.setBoolean("doSplitting", ValkyrienWarfareMod.doSplitting);
 		tag.setInteger("maxShipSize", ValkyrienWarfareMod.maxShipSize);
 		tag.setDouble("gravityVecX", ValkyrienWarfareMod.gravity.X);
 		tag.setDouble("gravityVecY", ValkyrienWarfareMod.gravity.Y);

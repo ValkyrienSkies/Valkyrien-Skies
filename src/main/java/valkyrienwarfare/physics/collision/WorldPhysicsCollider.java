@@ -37,7 +37,6 @@ import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.mod.physmanagement.relocation.SpatialDetector;
 import valkyrienwarfare.physics.calculations.PhysicsCalculations;
-import valkyrienwarfare.physics.collision.optimization.CollisionInformationHolder;
 import valkyrienwarfare.physics.collision.optimization.IBitOctree;
 import valkyrienwarfare.physics.collision.optimization.IBitOctreeProvider;
 import valkyrienwarfare.physics.collision.optimization.ShipCollisionTask;
@@ -356,7 +355,7 @@ public class WorldPhysicsCollider {
         Vector secondCross = firstCross.cross(inBody);
 
         double impulseMagnitude = -momentumAtPoint.dot(axis) * COLLISION_ELASTICITY
-                / (calculator.invMass + secondCross.dot(axis));
+                / (calculator.invMass() + secondCross.dot(axis));
 
         Vector collisionImpulseForce = new Vector(axis, impulseMagnitude);
 
@@ -407,8 +406,8 @@ public class WorldPhysicsCollider {
     }
 
     private void updatePotentialCollisionCache() {
-        final AxisAlignedBB collisionBB = parent.collisionBB.expand(calculator.linearMomentum.X * calculator.invMass,
-                calculator.linearMomentum.Y * calculator.invMass, calculator.linearMomentum.Z * calculator.invMass)
+        final AxisAlignedBB collisionBB = parent.collisionBB.expand(calculator.linearMomentum.X * calculator.invMass(),
+                calculator.linearMomentum.Y * calculator.invMass(), calculator.linearMomentum.Z * calculator.invMass())
                 .grow(AABB_EXPANSION);
         ticksSinceCacheUpdate = 0D;
         // This is being used to occasionally offset the collision cache update, in the
@@ -480,6 +479,7 @@ public class WorldPhysicsCollider {
                                                     int levelOneIndex = octree.getOctreeLevelOneIndex(levelTwoIndex,
                                                             levelOne);
                                                     if (octree.getAtIndex(levelOneIndex)) {
+                                                        
                                                         int baseX = ((levelThree % 2) * 8) + ((levelTwo % 2) * 4)
                                                                 + ((levelOne % 2) * 2);
                                                         int baseY = (((levelThree >> 1) % 2) * 8)

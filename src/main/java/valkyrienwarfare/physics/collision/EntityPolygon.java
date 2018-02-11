@@ -21,7 +21,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 
 public class EntityPolygon extends Polygon {
 
-    public Entity entityFor;
+    private final Entity entityFor;
 
     public EntityPolygon(AxisAlignedBB bb, Entity ent) {
         super(bb);

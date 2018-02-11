@@ -84,25 +84,25 @@ public class EntityCollisionInjector {
 
 					EntityPolygonCollider fast = new EntityPolygonCollider(playerBeforeMove, shipPoly, shipPoly.normals,
 							velVec.getAddition(total));
-					if (!fast.seperated) {
+					if (!fast.arePolygonsSeperated()) {
 						// fastCollisions.add(fast);
 						worldBelow = shipPoly.shipFrom.wrapper;
 
-						Vector response = fast.collisions[fast.minDistanceIndex].getResponse();
+						Vector response = fast.getCollisions()[fast.getMinDistanceIndex()].getResponse();
 						// TODO: Add more potential yResponses
 						double stepSquared = entity.stepHeight * entity.stepHeight;
 						boolean isStep = isLiving && entity.onGround;
 						if (response.Y >= 0 && BigBastardMath
-								.canStandOnNormal(fast.potentialSeperatingAxes[fast.minDistanceIndex])) {
-							response = new Vector(0, -fast.collisions[fast.minDistanceIndex].penetrationDistance
-									/ fast.potentialSeperatingAxes[fast.minDistanceIndex].Y, 0);
+								.canStandOnNormal(fast.getCollisionAxes()[fast.getMinDistanceIndex()])) {
+							response = new Vector(0, -fast.getCollisions()[fast.getMinDistanceIndex()].getCollisionPenetrationDistance()
+									/ fast.getCollisionAxes()[fast.getMinDistanceIndex()].Y, 0);
 						}
 						if (isStep) {
 							EntityLivingBase living = (EntityLivingBase) entity;
 							if (Math.abs(living.moveForward) > .01D || Math.abs(living.moveStrafing) > .01D) {
 								for (int i = 3; i < 6; i++) {
-									Vector tempResponse = fast.collisions[i].getResponse();
-									if (tempResponse.Y > 0 && BigBastardMath.canStandOnNormal(fast.collisions[i].axis)
+									Vector tempResponse = fast.getCollisions()[i].getResponse();
+									if (tempResponse.Y > 0 && BigBastardMath.canStandOnNormal(fast.getCollisions()[i].getCollisionNormal())
 											&& tempResponse.lengthSq() < stepSquared) {
 										if (tempResponse.lengthSq() < .1D) {
 											// Too small to be a real step, let it through
@@ -467,12 +467,12 @@ public class EntityCollisionInjector {
 	}
 
 	public static class IntermediateMovementVariableStorage {
-		public Vector dxyz;
-		public Vector origDxyz;
-		public Vector origPosXyz;
-		public boolean alreadyOnGround;
-		public double motionYBefore;
-		public float oldFallDistance;
+		public final Vector dxyz;
+		public final Vector origDxyz;
+		public final Vector origPosXyz;
+		public final boolean alreadyOnGround;
+		public final double motionYBefore;
+		public final float oldFallDistance;
 
 		public IntermediateMovementVariableStorage(Vector dxyz, Vector origDxyz, Vector origPosXyz,
 				boolean alreadyOnGround, double motionYBefore, float oldFallDistance) {

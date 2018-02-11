@@ -16,6 +16,8 @@
 
 package valkyrienwarfare.addon.control.controlsystems;
 
+import java.util.HashSet;
+
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import valkyrienwarfare.addon.control.nodenetwork.Node;
@@ -26,8 +28,6 @@ import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.api.block.ethercompressor.TileEntityEtherCompressor;
 import valkyrienwarfare.math.BigBastardMath;
 import valkyrienwarfare.physics.calculations.PhysicsCalculations;
-
-import java.util.HashSet;
 
 public class ShipPulseImpulseControlSystem {
 
@@ -64,7 +64,7 @@ public class ShipPulseImpulseControlSystem {
         Vector posInWorld = new Vector(calculations.parent.wrapper.posX, calculations.parent.wrapper.posY, calculations.parent.wrapper.posZ);
         Vector angularVelocity = new Vector(calculations.angularVelocity);
         Vector linearMomentum = new Vector(calculations.linearMomentum);
-        Vector linearVelocity = new Vector(linearMomentum, calculations.invMass);
+        Vector linearVelocity = new Vector(linearMomentum, calculations.invMass());
 
         BlockPos shipRefrencePos = calculations.parent.refrenceBlockPos;
 
@@ -102,13 +102,13 @@ public class ShipPulseImpulseControlSystem {
                 forceTile.updateTicksSinceLastRecievedSignal();
 
                 //Assume zero change
-                double currentErrorY = (posInWorld.Y - idealHeight) + linearThama * (linearMomentum.Y * calculations.invMass);
+                double currentErrorY = (posInWorld.Y - idealHeight) + linearThama * (linearMomentum.Y * calculations.invMass());
 
                 double currentEngineErrorAngularY = getEngineDistFromIdealAngular(forceTile.getPos(), rotationAndTranslationMatrix, angularVelocity, calculations.centerOfMass, calculations.physTickSpeed);
 
 
                 Vector potentialMaxForce = new Vector(0, forceTile.getMaxThrust(), 0);
-                potentialMaxForce.multiply(calculations.invMass);
+                potentialMaxForce.multiply(calculations.invMass());
                 potentialMaxForce.multiply(calculations.physTickSpeed);
                 Vector potentialMaxThrust = forceTile.getPositionInLocalSpaceWithOrientation().cross(potentialMaxForce);
                 RotationMatrices.applyTransform3by3(invMOIMatrix, potentialMaxThrust);
@@ -122,12 +122,12 @@ public class ShipPulseImpulseControlSystem {
 
                 if (Math.abs(futureCurrentErrorY) < Math.abs(currentErrorY) && Math.abs(futureEngineErrorAngularY) < Math.abs(currentEngineErrorAngularY)) {
                     doesForceMinimizeError = true;
-                    if (Math.abs(linearMomentum.Y * calculations.invMass) > maxYDelta) {
-                        if (Math.abs((potentialMaxForce.Y + linearMomentum.Y) * calculations.invMass) > Math.abs(linearMomentum.Y * calculations.invMass)) {
+                    if (Math.abs(linearMomentum.Y * calculations.invMass()) > maxYDelta) {
+                        if (Math.abs((potentialMaxForce.Y + linearMomentum.Y) * calculations.invMass()) > Math.abs(linearMomentum.Y * calculations.invMass())) {
                             doesForceMinimizeError = false;
                         }
                     } else {
-                        if (Math.abs((potentialMaxForce.Y + linearMomentum.Y) * calculations.invMass) > maxYDelta) {
+                        if (Math.abs((potentialMaxForce.Y + linearMomentum.Y) * calculations.invMass()) > maxYDelta) {
                             doesForceMinimizeError = false;
                         }
                     }

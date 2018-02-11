@@ -28,6 +28,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.mod.physmanagement.relocation.SpatialDetector;
+import valkyrienwarfare.physics.collision.CollisionInformationHolder;
 import valkyrienwarfare.physics.collision.PhysPolygonCollider;
 import valkyrienwarfare.physics.collision.Polygon;
 import valkyrienwarfare.physics.collision.WorldPhysicsCollider;

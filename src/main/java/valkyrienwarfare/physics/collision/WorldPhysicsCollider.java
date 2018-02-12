@@ -101,7 +101,7 @@ public class WorldPhysicsCollider {
 
     public void tickUpdatingTheCollisionCache() {
         // Multiply by 20 to convert seconds (physTickSpeed) into ticks
-        ticksSinceCacheUpdate += 20D * calculator.physTickSpeed;
+        ticksSinceCacheUpdate += 20D * calculator.getPhysTickSpeed();
         for (int i = 0; i < cachedHitsToRemove.size(); i++) {
             cachedPotentialHits.remove(cachedHitsToRemove.get(i));
         }
@@ -355,7 +355,7 @@ public class WorldPhysicsCollider {
         Vector secondCross = firstCross.cross(inBody);
 
         double impulseMagnitude = -momentumAtPoint.dot(axis) * COLLISION_ELASTICITY
-                / (calculator.invMass() + secondCross.dot(axis));
+                / (calculator.getInvMass() + secondCross.dot(axis));
 
         Vector collisionImpulseForce = new Vector(axis, impulseMagnitude);
 
@@ -406,8 +406,8 @@ public class WorldPhysicsCollider {
     }
 
     private void updatePotentialCollisionCache() {
-        final AxisAlignedBB collisionBB = parent.collisionBB.expand(calculator.linearMomentum.X * calculator.invMass(),
-                calculator.linearMomentum.Y * calculator.invMass(), calculator.linearMomentum.Z * calculator.invMass())
+        final AxisAlignedBB collisionBB = parent.getCollisionBoundingBox().expand(calculator.linearMomentum.X * calculator.getInvMass(),
+                calculator.linearMomentum.Y * calculator.getInvMass(), calculator.linearMomentum.Z * calculator.getInvMass())
                 .grow(AABB_EXPANSION);
         ticksSinceCacheUpdate = 0D;
         // This is being used to occasionally offset the collision cache update, in the

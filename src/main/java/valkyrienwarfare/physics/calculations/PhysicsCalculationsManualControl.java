@@ -47,13 +47,13 @@ public class PhysicsCalculationsManualControl extends PhysicsCalculations {
 
     @Override
     public void calculateForces() {
-        double modifiedDrag = Math.pow(drag, physTickSpeed / .05D);
+        double modifiedDrag = Math.pow(DRAG_CONSTANT, getPhysTickSpeed() / .05D);
         linearMomentum.multiply(modifiedDrag);
         angularVelocity.multiply(modifiedDrag);
 
         if (PhysicsSettings.doPhysicsBlocks) {
             for (Node node : parent.nodesWithinShip) {
-                TileEntity nodeTile = node.parentTile;
+                TileEntity nodeTile = node.getParentTile();
                 if (nodeTile instanceof IPhysicsProcessorNode) {
 //					System.out.println("test");
                     ((IPhysicsProcessorNode) nodeTile).onPhysicsTick(parent, this, physRawSpeed);
@@ -81,7 +81,7 @@ public class PhysicsCalculationsManualControl extends PhysicsCalculations {
             parent.wrapper.pitch = setPitch;
             parent.wrapper.roll = setRoll;
             parent.wrapper.yaw = previousYaw;
-            parent.wrapper.yaw -= (yawRate * physTickSpeed);
+            parent.wrapper.yaw -= (yawRate * getPhysTickSpeed());
         }
 
         double[] existingRotationMatrix = RotationMatrices.getRotationMatrix(0, parent.wrapper.yaw, 0);
@@ -89,10 +89,10 @@ public class PhysicsCalculationsManualControl extends PhysicsCalculations {
         Vector linearForce = new Vector(forwardRate, upRate, 0, existingRotationMatrix);
 
         if (useLinearMomentumForce) {
-            linearForce = new Vector(linearMomentum, invMass());
+            linearForce = new Vector(linearMomentum, getInvMass());
         }
 
-        linearForce.multiply(physTickSpeed);
+        linearForce.multiply(getPhysTickSpeed());
 
         parent.wrapper.posX += linearForce.X;
         parent.wrapper.posY += linearForce.Y;

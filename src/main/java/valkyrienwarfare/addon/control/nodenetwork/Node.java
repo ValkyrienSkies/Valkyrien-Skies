@@ -16,6 +16,11 @@
 
 package valkyrienwarfare.addon.control.nodenetwork;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.server.management.PlayerList;
@@ -24,28 +29,26 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldServer;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-
 public class Node {
 
-    public final TileEntity parentTile;
-    //No duplicate connections
-    public HashSet<Node> connectedNodes;
-    public HashSet<BlockPos> connectedNodesBlockPos;
-    private PhysicsObject parentPhysicsObject;
     private boolean isRelay;
-    private boolean isFullyBuilt = false;
-    private NodeNetwork parentNetwork;
-
+    private boolean isFullyBuilt;
     private byte channel = 0;
+    private NodeNetwork parentNetwork;
+    private PhysicsObject parentPhysicsObject;
+    // No duplicate connections, use Set<Node> to guarantee this
+    private Set<Node> connectedNodes;
+    private Set<BlockPos> connectedNodesBlockPos;
+    private final TileEntity parentTile;
 
     public Node(TileEntity parent) {
-        parentTile = parent;
-        connectedNodes = new HashSet<Node>();
-        connectedNodesBlockPos = new HashSet<BlockPos>();
-        parentNetwork = new NodeNetwork(parentPhysicsObject);
-        parentNetwork.networkedNodes.add(this);
+        this.parentTile = parent;
+        this.connectedNodes = new HashSet<Node>();
+        this.connectedNodesBlockPos = new HashSet<BlockPos>();
+        this.parentNetwork = new NodeNetwork(parentPhysicsObject);
+        this.parentNetwork.getNetworkedNodes().add(this);
+        this.isRelay = false;
+        this.isFullyBuilt = false;
     }
 
     public void updateParentEntity(PhysicsObject physObj) {
@@ -62,7 +65,7 @@ public class Node {
         other.connectedNodes.add(this);
         connectedNodesBlockPos.add(other.parentTile.getPos());
         other.connectedNodesBlockPos.add(this.parentTile.getPos());
-        parentNetwork.mergeWithNetworks(new NodeNetwork[]{other.parentNetwork});
+        parentNetwork.mergeWithNetworks(new NodeNetwork[] { other.parentNetwork });
 
         if (!parentTile.getWorld().isRemote) {
             sendUpdatesToNearby();
@@ -96,37 +99,39 @@ public class Node {
 
         WorldServer serverWorld = (WorldServer) parentTile.getWorld();
         PlayerList list = serverWorld.mcServer.getPlayerList();
-//		System.out.println("help");
+        // System.out.println("help");
         if (!parentTile.isInvalid()) {
             list.sendToAllNearExcept(null, xPos, yPos, zPos, 128D, serverWorld.provider.getDimension(), toSend);
         }
     }
 
     /**
-     * Destroys all other connections to this node from other nodes, and also calls for the node network to rebuild itself
+     * Destroys all other connections to this node from other nodes, and also calls
+     * for the node network to rebuild itself
      */
     public void destroyNode() {
         if (parentTile.getWorld().isRemote) {
-            //This is needed because it never gets called anywhere else in the client code
+            // This is needed because it never gets called anywhere else in the client code
             this.updateBuildState();
         }
 
-        Object[] backingArray = connectedNodes.toArray();
-        for (Object node : backingArray) {
-            unlinkNode((Node) node, false, false);
+        List<Node> connectedNodesCopy = new ArrayList<Node>(connectedNodes);
+        for (Node node : connectedNodesCopy) {
+            unlinkNode(node, false, false);
         }
         parentNetwork.recalculateNetworks(this);
 
         if (parentPhysicsObject != null) {
             parentPhysicsObject.nodesWithinShip.remove(this);
         }
-        //Assume this gets handled by the tileentity.invalidate() method, otherwise this won't work!
-//		if(!parentTile.getWorld().isRemote){
-//			sendUpdatesToNearby();
-//			for(Object node : backingArray){
-//				((Node)node).sendUpdatesToNearby();
-//			}
-//		}
+        // Assume this gets handled by the tileentity.invalidate() method, otherwise
+        // this won't work!
+        // if(!parentTile.getWorld().isRemote){
+        // sendUpdatesToNearby();
+        // for(Object node : backingArray){
+        // ((Node)node).sendUpdatesToNearby();
+        // }
+        // }
     }
 
     public PhysicsObject getPhysicsObject() {
@@ -139,7 +144,7 @@ public class Node {
             if (!isFullyBuilt) {
                 System.err.println("Node network building failed");
             } else {
-//				System.out.println("Node network built successfully!");
+                // System.out.println("Node network built successfully!");
             }
         }
     }
@@ -150,7 +155,7 @@ public class Node {
      * @return
      */
     public boolean attemptToBuildNodeSet() {
-        ArrayList<BlockPos> toRemove = new ArrayList<BlockPos>();
+        List<BlockPos> toRemove = new ArrayList<BlockPos>();
         for (BlockPos pos : connectedNodesBlockPos) {
             if (parentTile.getWorld().isBlockLoaded(pos)) {
                 boolean isLoaded = parentTile.getWorld().isBlockLoaded(pos);
@@ -161,18 +166,20 @@ public class Node {
                         if (node != null) {
                             connectedNodes.add(node);
                             node.connectedNodes.add(this);
-                            parentNetwork.mergeWithNetworks(new NodeNetwork[]{node.parentNetwork});
+                            parentNetwork.mergeWithNetworks(new NodeNetwork[] { node.parentNetwork });
                         }
                     }
                 } else {
                     if (isLoaded) {
-                        //Assume the node somehow died on its own
+                        // Assume the node somehow died on its own
                         toRemove.add(pos);
                     }
                 }
             }
         }
-        connectedNodesBlockPos.remove(toRemove);
+        // TODO: This used to call remove(), which is wrong, watch out for any errors
+        // here.
+        connectedNodesBlockPos.removeAll(toRemove);
         if (connectedNodes.size() == connectedNodesBlockPos.size()) {
             return true;
         }
@@ -180,7 +187,8 @@ public class Node {
     }
 
     /**
-     * Returns true if the network input was the same as the network the node belonged to
+     * Returns true if the network input was the same as the network the node
+     * belonged to
      *
      * @param newNetwork
      * @return
@@ -222,13 +230,14 @@ public class Node {
     }
 
     public void readFromNBT(NBTTagCompound compound) {
-        //TODO: This might not be correct
+        // TODO: This might not be correct
         connectedNodesBlockPos.clear();
 
         int[] connectednodesarray = compound.getIntArray("connectednodesarray");
 
         for (int i = 0; i < connectednodesarray.length; i += 3) {
-            BlockPos toAdd = new BlockPos(connectednodesarray[i], connectednodesarray[i + 1], connectednodesarray[i + 2]);
+            BlockPos toAdd = new BlockPos(connectednodesarray[i], connectednodesarray[i + 1],
+                    connectednodesarray[i + 2]);
             connectedNodesBlockPos.add(toAdd);
         }
         channel = compound.getByte("channel");
@@ -237,7 +246,7 @@ public class Node {
 
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         int size = connectedNodesBlockPos.size();
-        //3 ints for each BlockPos
+        // 3 ints for each BlockPos
         int[] arrayToWrite = new int[size * 3];
         int index = 0;
         for (BlockPos pos : connectedNodesBlockPos) {
@@ -255,13 +264,29 @@ public class Node {
 
     @Override
     public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
         if (o instanceof Node) {
             Node otherNode = (Node) o;
-            if (otherNode == this || otherNode.parentTile == parentTile || otherNode.parentTile.getPos().equals(this.parentTile.getPos())) {
+            if (otherNode == this || otherNode.parentTile == parentTile
+                    || otherNode.parentTile.getPos().equals(this.parentTile.getPos())) {
                 return true;
             }
         }
         return false;
+    }
+
+    public TileEntity getParentTile() {
+        return parentTile;
+    }
+
+    public Set<Node> getConnectedNodes() {
+        return connectedNodes;
+    }
+
+    public Set<BlockPos> getConnectedNodesBlockPos() {
+        return connectedNodesBlockPos;
     }
 
 }

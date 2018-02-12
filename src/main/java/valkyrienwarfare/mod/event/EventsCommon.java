@@ -16,6 +16,10 @@
 
 package valkyrienwarfare.mod.event;
 
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.logging.Level;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityArmorStand;
 import net.minecraft.entity.item.EntityBoat;
@@ -41,10 +45,14 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.event.entity.player.*;
+import net.minecraftforge.event.entity.player.FillBucketEvent;
+import net.minecraftforge.event.entity.player.PlayerContainerEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.HarvestCheck;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
+import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
@@ -64,16 +72,12 @@ import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.combat.entity.EntityMountingWeaponBase;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.mixin.MixinLoaderForge;
 import valkyrienwarfare.mod.capability.IAirshipCounterCapability;
 import valkyrienwarfare.mod.physmanagement.interaction.ValkyrienWarfareWorldEventListener;
-import valkyrienwarfare.mixin.MixinLoaderForge;
 import valkyrienwarfare.physics.management.PhysicsTickHandler;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.physics.management.ShipType;
-
-import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.logging.Level;
 
 public class EventsCommon {
 
@@ -523,7 +527,7 @@ public class EventsCommon {
     @SubscribeEvent
     public void onLeave(PlayerLoggedOutEvent event) {
         if (!event.player.world.isRemote) {
-            lastPositions.remove((EntityPlayerMP) event.player);
+            lastPositions.remove(event.player);
         }
     }
 
@@ -555,7 +559,7 @@ public class EventsCommon {
                     return;
                 }
 
-                if (physObj.wrapping.shipType == ShipType.Oribtal) {
+                if (physObj.wrapping.getShipType() == ShipType.Oribtal) {
                     //Do not let it break
                 }
             }
@@ -572,7 +576,7 @@ public class EventsCommon {
                 return;
             }
 
-            if (physObj.wrapping.shipType == ShipType.Oribtal) {
+            if (physObj.wrapping.getShipType() == ShipType.Oribtal) {
                 //Do not let it place any blocks
 //				System.out.println("test");
                 event.setCanceled(true);

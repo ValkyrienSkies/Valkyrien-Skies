@@ -126,8 +126,7 @@ public class TileEntityPilotsChair extends ImplTileEntityPilotable {
 //		Vector shipUpOffset = shipUpPos.getSubtraction(shipUp);
         Vector shipUpOffset = shipUp.getSubtraction(shipUpPos);
 
-
-        double mass = controlledShip.physicsProcessor.mass;
+        double mass = controlledShip.physicsProcessor.getMass();
 
 //		idealAngularDirection.multiply(mass/2.5D);
         idealLinearVelocity.multiply(mass / 5D);

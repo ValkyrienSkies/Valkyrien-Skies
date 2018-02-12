@@ -16,6 +16,8 @@
 
 package valkyrienwarfare.physics.management;
 
+import java.util.ArrayList;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -24,11 +26,9 @@ import net.minecraft.world.border.WorldBorder;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.mod.physmanagement.interaction.IDraggable;
 import valkyrienwarfare.mod.network.EntityRelativePositionMessage;
 import valkyrienwarfare.mod.network.PhysWrapperPositionMessage;
-
-import java.util.ArrayList;
+import valkyrienwarfare.mod.physmanagement.interaction.IDraggable;
 
 /**
  * Handles ALL functions for moving between Ship coordinates and world coordinates
@@ -115,7 +115,7 @@ public class CoordTransformObject {
      */
     public void updatePosRelativeToWorldBorder() {
         WorldBorder border = parent.worldObj.getWorldBorder();
-        AxisAlignedBB shipBB = parent.collisionBB;
+        AxisAlignedBB shipBB = parent.getCollisionBoundingBox();
 
         if (shipBB.maxX > border.maxX()) {
             parent.wrapper.posX += border.maxX() - shipBB.maxX;
@@ -267,7 +267,7 @@ public class CoordTransformObject {
 
         }
         AxisAlignedBB enclosingBB = new AxisAlignedBB(mnX, mnY, mnZ, mxX, mxY, mxZ).expand(.6D, .6D, .6D);
-        parent.collisionBB = enclosingBB;
+        parent.setCollisionBoundingBox(enclosingBB);
     }
 
     public void fromGlobalToLocal(Vector inGlobal) {

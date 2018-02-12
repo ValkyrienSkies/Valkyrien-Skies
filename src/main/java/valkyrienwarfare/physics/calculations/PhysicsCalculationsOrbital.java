@@ -45,7 +45,7 @@ public class PhysicsCalculationsOrbital extends PhysicsCalculations {
         if (!isOrbitalPhased) {
             super.calculateForces();
         } else {
-            double modifiedDrag = Math.pow(drag, physTickSpeed / .05D);
+            double modifiedDrag = Math.pow(DRAG_CONSTANT, getPhysTickSpeed() / .05D);
             setLinearVel.multiply(modifiedDrag);
             setAngularVel.multiply(modifiedDrag);
         }
@@ -63,9 +63,9 @@ public class PhysicsCalculationsOrbital extends PhysicsCalculations {
         if (!isOrbitalPhased) {
             super.applyLinearVelocity();
         } else {
-            parent.wrapper.posX += physTickSpeed * setLinearVel.X;
-            parent.wrapper.posY += physTickSpeed * setLinearVel.Y;
-            parent.wrapper.posZ += physTickSpeed * setLinearVel.Z;
+            parent.wrapper.posX += getPhysTickSpeed() * setLinearVel.X;
+            parent.wrapper.posY += getPhysTickSpeed() * setLinearVel.Y;
+            parent.wrapper.posZ += getPhysTickSpeed() * setLinearVel.Z;
         }
     }
 
@@ -75,10 +75,9 @@ public class PhysicsCalculationsOrbital extends PhysicsCalculations {
             super.applyAngularVelocity();
         } else {
             CoordTransformObject coordTrans = parent.coordTransform;
-
-            double[] rotationChange = RotationMatrices.getRotationMatrix(setAngularVel.X, setAngularVel.Y, setAngularVel.Z, angularVelocity.length() * physTickSpeed);
-            Quaternion faggot = Quaternion.QuaternionFromMatrix(RotationMatrices.getMatrixProduct(rotationChange, coordTrans.lToWRotation));
-            double[] radians = faggot.toRadians();
+            double[] rotationChange = RotationMatrices.getRotationMatrix(setAngularVel.X, setAngularVel.Y, setAngularVel.Z, angularVelocity.length() * getPhysTickSpeed());
+            Quaternion transform = Quaternion.QuaternionFromMatrix(RotationMatrices.getMatrixProduct(rotationChange, coordTrans.lToWRotation));
+            double[] radians = transform.toRadians();
 
             wrapperEnt.pitch = Double.isNaN(radians[0]) ? 0.0f : (float) Math.toDegrees(radians[0]);
             wrapperEnt.yaw = Double.isNaN(radians[1]) ? 0.0f : (float) Math.toDegrees(radians[1]);

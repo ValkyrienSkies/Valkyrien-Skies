@@ -16,15 +16,16 @@
 
 package valkyrienwarfare.util;
 
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.BlockPos;
-import valkyrienwarfare.api.Vector;
-
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Map.Entry;
+
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
+import valkyrienwarfare.api.Vector;
 
 public class NBTUtils {
 
@@ -41,7 +42,8 @@ public class NBTUtils {
         return new BlockPos(x, y, z);
     }
 
-    public static final void writeBlockPosArrayListToNBT(String name, ArrayList<BlockPos> posArray, NBTTagCompound compound) {
+    public static final void writeBlockPosArrayListToNBT(String name, ArrayList<BlockPos> posArray,
+            NBTTagCompound compound) {
         int[] xArray = new int[posArray.size()];
         int[] yArray = new int[posArray.size()];
         int[] zArray = new int[posArray.size()];
@@ -96,7 +98,8 @@ public class NBTUtils {
         return vector;
     }
 
-    public static final void writeEntityPositionHashMapToNBT(String name, HashMap<Integer, Vector> entityLocalPositions, NBTTagCompound compound) {
+    public static final void writeEntityPositionMapToNBT(String name, Map<Integer, Vector> entityLocalPositions,
+            NBTTagCompound compound) {
         int[] entityIds = new int[entityLocalPositions.size()];
         double[] entityX = new double[entityLocalPositions.size()];
         double[] entityY = new double[entityLocalPositions.size()];
@@ -122,14 +125,14 @@ public class NBTUtils {
         compound.setByteArray(name + "valZ", toByteArray(entityZ));
     }
 
-    public static final HashMap<Integer, Vector> readEntityPositionMap(String name, NBTTagCompound compound) {
+    public static final Map<Integer, Vector> readEntityPositionMap(String name, NBTTagCompound compound) {
         int[] entityIds = compound.getIntArray(name + "keys");
 
         double[] entityX = toDoubleArray(compound.getByteArray(name + "valX"));
         double[] entityY = toDoubleArray(compound.getByteArray(name + "valY"));
         double[] entityZ = toDoubleArray(compound.getByteArray(name + "valZ"));
 
-        HashMap<Integer, Vector> toReturn = new HashMap<Integer, Vector>(entityIds.length + 1);
+        Map<Integer, Vector> toReturn = new HashMap<Integer, Vector>(entityIds.length + 1);
 
         for (int i = 0; i < entityIds.length; i++) {
             toReturn.put(entityIds[i], new Vector(entityX[i], entityY[i], entityZ[i]));

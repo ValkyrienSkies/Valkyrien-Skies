@@ -16,8 +16,9 @@
 
 package valkyrienwarfare.addon.world.tileentity;
 
+import javax.vecmath.Vector2d;
+
 import net.minecraft.nbt.NBTTagCompound;
-import valkyrienwarfare.util.NBTUtils;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.tileentity.ImplPhysicsProcessorNodeTileEntity;
 import valkyrienwarfare.api.Vector;
@@ -26,8 +27,7 @@ import valkyrienwarfare.physics.calculations.PhysicsCalculationsManualControl;
 import valkyrienwarfare.physics.management.PhysicsObject;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.physics.management.ShipType;
-
-import javax.vecmath.Vector2d;
+import valkyrienwarfare.util.NBTUtils;
 
 public class TileEntitySkyTempleController extends ImplPhysicsProcessorNodeTileEntity {
 
@@ -71,8 +71,8 @@ public class TileEntitySkyTempleController extends ImplPhysicsProcessorNodeTileE
 //				System.out.println(reductionFactor);
             }
 
-            calculations.linearMomentum.X = x * calculations.mass;
-            calculations.linearMomentum.Z = z * calculations.mass;
+            calculations.linearMomentum.X = x * calculations.getMass();
+            calculations.linearMomentum.Z = z * calculations.getMass();
 
             totalSecondsExisted += secondsToSimulate;
 
@@ -88,7 +88,7 @@ public class TileEntitySkyTempleController extends ImplPhysicsProcessorNodeTileE
             if (wrapper != null) {
                 if (wrapper.wrapping.physicsProcessor instanceof PhysicsCalculationsManualControl) {
                     wrapper.wrapping.physicsProcessor = ((PhysicsCalculationsManualControl) wrapper.wrapping.physicsProcessor).downgradeToNormalCalculations();
-                    wrapper.wrapping.shipType = ShipType.Full_Unlocked;
+                    wrapper.wrapping.setShipType(ShipType.Full_Unlocked);
                 }
             }
         }

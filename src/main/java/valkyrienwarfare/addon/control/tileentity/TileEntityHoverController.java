@@ -64,7 +64,7 @@ public class TileEntityHoverController extends TileEntity {
 
         Vector shipVel = new Vector(physObj.physicsProcessor.linearMomentum);
 
-        shipVel.multiply(physObj.physicsProcessor.invMass());
+        shipVel.multiply(physObj.physicsProcessor.getInvMass());
 
         if (!world.isBlockPowered(getPos()) || autoStabalizerControl) {
 //            setAutoStabilizationValue(physObj);
@@ -82,29 +82,28 @@ public class TileEntityHoverController extends TileEntity {
 
 
         Vector potentialMaxForce = new Vector(0, engine.getMaxThrust(), 0);
-        potentialMaxForce.multiply(calculations.invMass());
-        potentialMaxForce.multiply(calculations.physTickSpeed);
+        potentialMaxForce.multiply(calculations.getInvMass());
+        potentialMaxForce.multiply(calculations.getPhysTickSpeed());
         Vector potentialMaxThrust = engine.getPositionInLocalSpaceWithOrientation().cross(potentialMaxForce);
         RotationMatrices.applyTransform3by3(calculations.invFramedMOI, potentialMaxThrust);
-        potentialMaxThrust.multiply(calculations.physTickSpeed);
+        potentialMaxThrust.multiply(calculations.getPhysTickSpeed());
 
         double linearThama = 4.5D;
         double maxYDelta = 10D;
 
         double futureCurrentErrorY = currentErrorY + linearThama * potentialMaxForce.Y;
-        double futureEngineErrorAngularY = getEngineDistFromIdealAngular(engine.getPos(), rotationAndTranslationMatrix, angularVelocity.getAddition(potentialMaxThrust), calculations.centerOfMass, calculations.physTickSpeed);
-
+        double futureEngineErrorAngularY = getEngineDistFromIdealAngular(engine.getPos(), rotationAndTranslationMatrix, angularVelocity.getAddition(potentialMaxThrust), calculations.centerOfMass, calculations.getPhysTickSpeed());
 
         boolean doesForceMinimizeError = false;
 
         if (Math.abs(futureCurrentErrorY) < Math.abs(currentErrorY) && Math.abs(futureEngineErrorAngularY) < Math.abs(currentEngineErrorAngularY)) {
             doesForceMinimizeError = true;
-            if (Math.abs(linearMomentum.Y * calculations.invMass()) > maxYDelta) {
-                if (Math.abs((potentialMaxForce.Y + linearMomentum.Y) * calculations.invMass()) > Math.abs(linearMomentum.Y * calculations.invMass())) {
+            if (Math.abs(linearMomentum.Y * calculations.getInvMass()) > maxYDelta) {
+                if (Math.abs((potentialMaxForce.Y + linearMomentum.Y) * calculations.getInvMass()) > Math.abs(linearMomentum.Y * calculations.getInvMass())) {
                     doesForceMinimizeError = false;
                 }
             } else {
-                if (Math.abs((potentialMaxForce.Y + linearMomentum.Y) * calculations.invMass()) > maxYDelta) {
+                if (Math.abs((potentialMaxForce.Y + linearMomentum.Y) * calculations.getInvMass()) > maxYDelta) {
                     doesForceMinimizeError = false;
                 }
             }
@@ -176,7 +175,7 @@ public class TileEntityHoverController extends TileEntity {
     public double getControllerDistFromIdealY(PhysicsObject physObj) {
         Vector controllerPos = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
         physObj.coordTransform.fromLocalToGlobal(controllerPos);
-        return idealHeight - (physObj.physicsProcessor.wrapperEnt.posY + (physObj.physicsProcessor.linearMomentum.Y * physObj.physicsProcessor.invMass() * linearVelocityBias * 3D));
+        return idealHeight - (physObj.physicsProcessor.wrapperEnt.posY + (physObj.physicsProcessor.linearMomentum.Y * physObj.physicsProcessor.getInvMass() * linearVelocityBias * 3D));
     }
 
     public void handleGUIInput(HovercraftControllerGUIInputMessage message, MessageContext ctx) {
@@ -202,7 +201,7 @@ public class TileEntityHoverController extends TileEntity {
         physObj.coordTransform.fromLocalToGlobal(controllerPos);
 
         double controllerDistToIdeal = -(idealHeight - physObj.physicsProcessor.wrapperEnt.posY);
-        double yVelocity = physObj.physicsProcessor.linearMomentum.Y * physObj.physicsProcessor.invMass() * linearVelocityBias;
+        double yVelocity = physObj.physicsProcessor.linearMomentum.Y * physObj.physicsProcessor.getInvMass() * linearVelocityBias;
 
 //		System.out.println("ay");
 

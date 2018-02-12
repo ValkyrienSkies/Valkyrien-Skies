@@ -30,7 +30,7 @@ public class RealMethods implements DummyMethods {
     public Vector getLinearVelocity(Entity shipEnt, double secondsToApply) {
         PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity) shipEnt;
         return wrapper.wrapping.physicsProcessor.linearMomentum
-                .getProduct(secondsToApply * wrapper.wrapping.physicsProcessor.invMass());
+                .getProduct(secondsToApply * wrapper.wrapping.physicsProcessor.getInvMass());
     }
 
     @Override
@@ -61,7 +61,7 @@ public class RealMethods implements DummyMethods {
     @Override
     public double getShipMass(Entity shipEnt) {
         PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity) shipEnt;
-        return wrapper.wrapping.physicsProcessor.mass;
+        return wrapper.wrapping.physicsProcessor.getMass();
     }
 
     @Override

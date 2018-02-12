@@ -16,6 +16,10 @@
 
 package valkyrienwarfare.mod.client.render;
 
+import java.nio.FloatBuffer;
+
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.culling.ICamera;
@@ -23,16 +27,13 @@ import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
-import org.lwjgl.opengl.GL11;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.math.Quaternion;
+import valkyrienwarfare.mod.proxy.ClientProxy;
 import valkyrienwarfare.physics.management.PhysicsObject;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
-import valkyrienwarfare.mod.proxy.ClientProxy;
-
-import java.nio.FloatBuffer;
 
 /**
  * Object owned by each physObject responsible for handling all rendering operations
@@ -158,7 +159,7 @@ public class PhysObjectRenderManager {
 
     public boolean shouldRender() {
         ICamera camera = ((ClientProxy) ValkyrienWarfareMod.proxy).lastCamera;
-        return camera == null || camera.isBoundingBoxInFrustum(parent.collisionBB);
+        return camera == null || camera.isBoundingBoxInFrustum(parent.getCollisionBoundingBox());
     }
 
     public void setupTranslation(double partialTicks) {
@@ -182,9 +183,9 @@ public class PhysObjectRenderManager {
 
 //		System.out.println(entity.roll - entity.prevRoll);
 
-        double p0 = Minecraft.getMinecraft().player.lastTickPosX + (Minecraft.getMinecraft().player.posX - Minecraft.getMinecraft().player.lastTickPosX) * (double) partialTicks;
-        double p1 = Minecraft.getMinecraft().player.lastTickPosY + (Minecraft.getMinecraft().player.posY - Minecraft.getMinecraft().player.lastTickPosY) * (double) partialTicks;
-        double p2 = Minecraft.getMinecraft().player.lastTickPosZ + (Minecraft.getMinecraft().player.posZ - Minecraft.getMinecraft().player.lastTickPosZ) * (double) partialTicks;
+        double p0 = Minecraft.getMinecraft().player.lastTickPosX + (Minecraft.getMinecraft().player.posX - Minecraft.getMinecraft().player.lastTickPosX) * partialTicks;
+        double p1 = Minecraft.getMinecraft().player.lastTickPosY + (Minecraft.getMinecraft().player.posY - Minecraft.getMinecraft().player.lastTickPosY) * partialTicks;
+        double p2 = Minecraft.getMinecraft().player.lastTickPosZ + (Minecraft.getMinecraft().player.posZ - Minecraft.getMinecraft().player.lastTickPosZ) * partialTicks;
 
         Quaternion smoothRotation = getSmoothRotationQuat(partialTicks);
         double[] radians = smoothRotation.toRadians();
@@ -229,9 +230,9 @@ public class PhysObjectRenderManager {
         double moddedX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks;
         double moddedY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks;
         double moddedZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks;
-        double p0 = Minecraft.getMinecraft().player.lastTickPosX + (Minecraft.getMinecraft().player.posX - Minecraft.getMinecraft().player.lastTickPosX) * (double) partialTicks;
-        double p1 = Minecraft.getMinecraft().player.lastTickPosY + (Minecraft.getMinecraft().player.posY - Minecraft.getMinecraft().player.lastTickPosY) * (double) partialTicks;
-        double p2 = Minecraft.getMinecraft().player.lastTickPosZ + (Minecraft.getMinecraft().player.posZ - Minecraft.getMinecraft().player.lastTickPosZ) * (double) partialTicks;
+        double p0 = Minecraft.getMinecraft().player.lastTickPosX + (Minecraft.getMinecraft().player.posX - Minecraft.getMinecraft().player.lastTickPosX) * partialTicks;
+        double p1 = Minecraft.getMinecraft().player.lastTickPosY + (Minecraft.getMinecraft().player.posY - Minecraft.getMinecraft().player.lastTickPosY) * partialTicks;
+        double p2 = Minecraft.getMinecraft().player.lastTickPosZ + (Minecraft.getMinecraft().player.posZ - Minecraft.getMinecraft().player.lastTickPosZ) * partialTicks;
 
         Quaternion smoothRotation = getSmoothRotationQuat(partialTicks);
         double[] radians = smoothRotation.toRadians();

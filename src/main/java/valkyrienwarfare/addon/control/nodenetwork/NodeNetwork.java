@@ -16,75 +16,59 @@
 
 package valkyrienwarfare.addon.control.nodenetwork;
 
-import valkyrienwarfare.physics.management.PhysicsObject;
-
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import valkyrienwarfare.physics.management.PhysicsObject;
 
 /**
- * A class that keeps track of all the nodes attached to a network; gets recalcuated upon a node being broken
+ * A class that keeps track of all the nodes attached to a network; gets
+ * recalcuated upon a node being broken
  *
  * @author thebest108
  */
 public class NodeNetwork {
 
-    public final HashSet<Node> networkedNodes;
+    private final Set<Node> networkedNodes;
     private PhysicsObject parentEntity;
 
+    public NodeNetwork(Set<Node> backingSet, PhysicsObject parentEntity) {
+        this.networkedNodes = backingSet;
+        this.parentEntity = parentEntity;
+    }
+
     public NodeNetwork(PhysicsObject parentEntity) {
-        networkedNodes = new HashSet<Node>();
-        this.parentEntity = parentEntity;
-    }
-
-    public NodeNetwork(HashSet<Node> backingSet, PhysicsObject parentEntity) {
-        networkedNodes = backingSet;
-        this.parentEntity = parentEntity;
-    }
-
-    public NodeNetwork(Node parent, PhysicsObject parentEntity) {
-        this(parentEntity);
-        networkedNodes.add(parent);
-    }
-
-    private static void fillWithConnections(Node start, HashSet<Node> toFill) {
-        toFill.add(start);
-        for (Node otherNodes : start.connectedNodes) {
-            if (!toFill.contains(otherNodes)) {
-                fillWithConnections(otherNodes, toFill);
-            }
-        }
+        this(new HashSet<Node>(), parentEntity);
     }
 
     /**
-     * Removes the input node from the networks, and also replaces some of the node network refrences with a new network if they're now longer connected
+     * Removes the input node from the networks, and also replaces some of the node
+     * network references with a new network if they're now longer connected
      *
      * @param node
      */
     public void recalculateNetworks(Node node) {
         networkedNodes.remove(node);
-
-        ArrayList<Node> networkedNodesCopy = new ArrayList<Node>(networkedNodes);
-
+        List<Node> networkedNodesCopy = new ArrayList<Node>(networkedNodes);
         networkedNodes.clear();
 
-        ArrayList<HashSet<Node>> listOfHashSetsOfNodes = new ArrayList<HashSet<Node>>();
-
+        List<Set<Node>> listOfHashSetsOfNodes = new ArrayList<Set<Node>>();
         while (!networkedNodesCopy.isEmpty()) {
             Node startPoint = networkedNodesCopy.get(0);
-            HashSet<Node> fullConnection = new HashSet<Node>();
+            Set<Node> fullConnection = new HashSet<Node>();
             fillWithConnections(startPoint, fullConnection);
             listOfHashSetsOfNodes.add(fullConnection);
             networkedNodesCopy.removeAll(fullConnection);
         }
 
-        for (HashSet<Node> nodeSet : listOfHashSetsOfNodes) {
+        for (Set<Node> nodeSet : listOfHashSetsOfNodes) {
             NodeNetwork network = new NodeNetwork(nodeSet, parentEntity);
-
             for (Node nodeToUpdate : nodeSet) {
                 nodeToUpdate.updateParentNetwork(network);
             }
-
-//			System.out.println("New network of Size " + nodeSet.size());
+            // System.out.println("New network of Size " + nodeSet.size());
         }
     }
 
@@ -95,23 +79,40 @@ public class NodeNetwork {
      * @return
      */
     public void mergeWithNetworks(NodeNetwork[] networks) {
-        int totalSize = networks.length;
-
-        for (int i = 0; i < totalSize; i++) {
-            networkedNodes.addAll(networks[i].networkedNodes);
+        for (NodeNetwork network : networks) {
+            networkedNodes.addAll(network.networkedNodes);
         }
         for (Node node : networkedNodes) {
             node.updateParentNetwork(this);
         }
+        // System.out.println("New network of Size " + networkedNodes.size());
+    }
 
-//		System.out.println("New network of Size " + networkedNodes.size());
+    /**
+     * Ideally this wouldn't exist because parentEntity would be final, however when
+     * loading in from NBT it takes a while for the ship entity to be fully loaded,
+     * which occurs after the network. So unfortunately this method has to exist.
+     * 
+     * @param physObj
+     */
+    public void setParentPhysicsObject(PhysicsObject physObj) {
+        parentEntity = physObj;
     }
 
     public PhysicsObject getParentPhysicsObject() {
         return parentEntity;
     }
 
-    public void setParentPhysicsObject(PhysicsObject physObj) {
-        parentEntity = physObj;
+    public Set<Node> getNetworkedNodes() {
+        return networkedNodes;
+    }
+    
+    private static void fillWithConnections(Node start, Set<Node> toFill) {
+        toFill.add(start);
+        for (Node otherNodes : start.getConnectedNodes()) {
+            if (!toFill.contains(otherNodes)) {
+                fillWithConnections(otherNodes, toFill);
+            }
+        }
     }
 }

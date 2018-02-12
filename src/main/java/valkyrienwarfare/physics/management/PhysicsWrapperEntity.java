@@ -16,6 +16,8 @@
 
 package valkyrienwarfare.physics.management;
 
+import javax.annotation.Nullable;
+
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -32,22 +34,24 @@ import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.combat.entity.EntityMountingWeaponBase;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.mod.capability.IAirshipCounterCapability;
-import valkyrienwarfare.physics.collision.Polygon;
 import valkyrienwarfare.mod.physmanagement.interaction.ShipNameUUIDData;
 import valkyrienwarfare.mod.schematics.SchematicReader.Schematic;
-
-import javax.annotation.Nullable;
+import valkyrienwarfare.physics.collision.Polygon;
 
 /**
- * This entity's only purpose is to use the functionality of sending itself to nearby players, all other operations are handled by the PhysicsObject class
+ * This entity's only purpose is to use the functionality of sending itself to
+ * nearby players, as well as the functionality of automatically loading with
+ * the world; all other operations are handled by the PhysicsObject class.
  *
- * @author BigBastard
+ * @author Alex Mastrangelo
  */
 public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpawnData {
 
-    public static final DataParameter<Boolean> IS_NAME_CUSTOM = EntityDataManager.<Boolean>createKey(Entity.class, DataSerializers.BOOLEAN);
-    private static final AxisAlignedBB zeroBB = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
-    public PhysicsObject wrapping;
+    public static final DataParameter<Boolean> IS_NAME_CUSTOM = EntityDataManager.<Boolean>createKey(Entity.class,
+            DataSerializers.BOOLEAN);
+    public static final AxisAlignedBB ZERO_BB = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
+    public final PhysicsObject wrapping;
+    // TODO: Replace these raw types with something safer
     public double pitch;
     public double yaw;
     public double roll;
@@ -61,14 +65,16 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
         dataManager.register(IS_NAME_CUSTOM, Boolean.valueOf(false));
     }
 
-    public PhysicsWrapperEntity(World worldIn, double x, double y, double z, @Nullable EntityPlayer creator, int detectorID, ShipType shipType) {
+    public PhysicsWrapperEntity(World worldIn, double x, double y, double z, @Nullable EntityPlayer creator,
+            int detectorID, ShipType shipType) {
         this(worldIn);
         posX = x;
         posY = y;
         posZ = z;
+
         wrapping.creator = creator.entityUniqueID.toString();
         wrapping.detectorID = detectorID;
-        wrapping.shipType = shipType;
+        wrapping.setShipType(shipType);
         wrapping.processChunkClaims(creator);
 
         IAirshipCounterCapability counter = creator.getCapability(ValkyrienWarfareMod.airshipCounter, null);
@@ -78,21 +84,20 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
         ShipNameUUIDData.get(worldIn).placeShipInRegistry(this, getCustomNameTag());
     }
 
-    public PhysicsWrapperEntity(World worldIn, double x, double y, double z, ShipType type, Schematic schematic) {
-        super(worldIn);
+    // TODO: Redesign this constructor
+    public PhysicsWrapperEntity(World worldIn, double x, double y, double z, ShipType shipType, Schematic schematic) {
+        this(worldIn);
         posX = x;
         posY = y;
         posZ = z;
 
-        wrapping = new PhysicsObject(this);
-
         wrapping.creator = "god";
         wrapping.detectorID = 0;
-        wrapping.shipType = type;
+        wrapping.setShipType(shipType);
 
         wrapping.processChunkClaims(schematic);
 
-        setCustomNameTagInitial("Obummer" + ":" + Math.random() * 10000000);
+        setCustomNameTagInitial("ShipRandom" + ":" + Math.random() * 10000000);
         ShipNameUUIDData.get(worldIn).placeShipInRegistry(this, getCustomNameTag());
     }
 
@@ -118,7 +123,9 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
             Vector newEntityPosition = new Vector(inLocal);
             float f = passenger.width / 2.0F;
             float f1 = passenger.height;
-            AxisAlignedBB inLocalAABB = new AxisAlignedBB(newEntityPosition.X - (double) f, newEntityPosition.Y, newEntityPosition.Z - (double) f, newEntityPosition.X + (double) f, newEntityPosition.Y + (double) f1, newEntityPosition.Z + (double) f);
+            AxisAlignedBB inLocalAABB = new AxisAlignedBB(newEntityPosition.X - f, newEntityPosition.Y,
+                    newEntityPosition.Z - f, newEntityPosition.X + f, newEntityPosition.Y + f1,
+                    newEntityPosition.Z + f);
             wrapping.coordTransform.fromLocalToGlobal(newEntityPosition);
             passenger.setPosition(newEntityPosition.X, newEntityPosition.Y, newEntityPosition.Z);
             Polygon entityBBPoly = new Polygon(inLocalAABB, wrapping.coordTransform.lToWTransform);
@@ -144,66 +151,12 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
     }
 
     @Override
-    protected void addPassenger(Entity passenger) {
-        // System.out.println("entity just mounted");
-        super.addPassenger(passenger);
-    }
-
-    @Override
-    protected void removePassenger(Entity toRemove) {
-        // System.out.println("entity just dismounted");
-        super.removePassenger(toRemove);
-    }
-
-    @Override
-    protected void entityInit() {
-
-    }
-
-    @Override
-    public AxisAlignedBB getEntityBoundingBox() {
-        return wrapping.collisionBB;
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public AxisAlignedBB getRenderBoundingBox() {
-        return wrapping.collisionBB;
-    }
-
-    @Override
-    public void setPosition(double x, double y, double z) {
-    }
-
-    @Override
-    public void setLocationAndAngles(double x, double y, double z, float yaw, float pitch) {
-    }
-
-    @Override
-    protected boolean canFitPassenger(Entity passenger) {
-        return true;
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public void setPositionAndRotationDirect(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean teleport) {
-    }
-
-    @SideOnly(Side.CLIENT)
-    public boolean getAlwaysRenderNameTagForRender() {
-        return wrapping.isNameCustom;
-    }
-
-    public void setCustomNameTagInitial(String name) {
-        super.setCustomNameTag(name);
-    }
-
-    @Override
     public void setCustomNameTag(String name) {
         if (!world.isRemote) {
             if (getCustomNameTag() != null && !getCustomNameTag().equals("")) {
-                //Update the name registry
-                boolean didRenameSuccessful = ShipNameUUIDData.get(world).renameShipInRegsitry(this, name, getCustomNameTag());
+                // Update the name registry
+                boolean didRenameSuccessful = ShipNameUUIDData.get(world).renameShipInRegsitry(this, name,
+                        getCustomNameTag());
                 if (didRenameSuccessful) {
                     super.setCustomNameTag(name);
                     wrapping.isNameCustom = true;
@@ -219,6 +172,54 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 
     @Override
     public void setPositionAndUpdate(double x, double y, double z) {
+
+    }
+
+    @Override
+    protected void entityInit() {
+
+    }
+
+    @Override
+    public AxisAlignedBB getEntityBoundingBox() {
+        return wrapping.getCollisionBoundingBox();
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public AxisAlignedBB getRenderBoundingBox() {
+        return wrapping.getCollisionBoundingBox();
+    }
+
+    @Override
+    public void setPosition(double x, double y, double z) {
+
+    }
+
+    @Override
+    public void setLocationAndAngles(double x, double y, double z, float yaw, float pitch) {
+
+    }
+
+    @Override
+    protected boolean canFitPassenger(Entity passenger) {
+        return true;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void setPositionAndRotationDirect(double x, double y, double z, float yaw, float pitch,
+            int posRotationIncrements, boolean teleport) {
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public boolean getAlwaysRenderNameTagForRender() {
+        return wrapping.isNameCustom;
+    }
+
+    public void setCustomNameTagInitial(String name) {
+        super.setCustomNameTag(name);
     }
 
     @Override

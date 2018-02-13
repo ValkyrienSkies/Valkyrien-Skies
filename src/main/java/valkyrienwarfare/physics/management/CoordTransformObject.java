@@ -226,9 +226,9 @@ public class CoordTransformObject {
         return normals;
     }
 
-    // TODO: FinishME
+    // TODO: Use Octrees to optimize this, or more preferably QuickHull3D.
     public void updateParentAABB() {
-        double mnX = 0, mnY = 0, mnZ = 0, mxX = 0, mxY = 0, mxZ = 0;
+        double mnX, mnY, mnZ, mxX, mxY, mxZ;
 
         Vector currentLocation = new Vector();
 
@@ -244,28 +244,14 @@ public class CoordTransformObject {
 
             fromLocalToGlobal(currentLocation);
 
-            if (currentLocation.X < mnX) {
-                mnX = currentLocation.X;
-            }
-            if (currentLocation.X > mxX) {
-                mxX = currentLocation.X;
-            }
-
-            if (currentLocation.Y < mnY) {
-                mnY = currentLocation.Y;
-            }
-            if (currentLocation.Y > mxY) {
-                mxY = currentLocation.Y;
-            }
-
-            if (currentLocation.Z < mnZ) {
-                mnZ = currentLocation.Z;
-            }
-            if (currentLocation.Z > mxZ) {
-                mxZ = currentLocation.Z;
-            }
-
+            mnX = Math.min(currentLocation.X, mnX);
+            mxX = Math.max(currentLocation.X, mxX);
+            mnY = Math.min(currentLocation.Y, mnY);
+            mxY = Math.max(currentLocation.Y, mxY);
+            mnZ = Math.min(currentLocation.Z, mnZ);
+            mxZ = Math.max(currentLocation.Z, mxZ);
         }
+        
         AxisAlignedBB enclosingBB = new AxisAlignedBB(mnX, mnY, mnZ, mxX, mxY, mxZ).expand(.6D, .6D, .6D);
         parent.setCollisionBoundingBox(enclosingBB);
     }

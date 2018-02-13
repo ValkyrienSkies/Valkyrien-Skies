@@ -105,7 +105,7 @@ public class PhysicsObject {
 
 	public final List<PhysicsQueuedForce> queuedPhysForces;
 	public final List<BlockPos> explodedPositionsThisTick;
-	public boolean doPhysics = true;
+	public boolean doPhysics;
 
 	public String creator;
 	public final PhysCollisionCallable collisionCallable;
@@ -152,6 +152,7 @@ public class PhysicsObject {
 		allowedUsers = new ArrayList<String>();
 		entityLocalPositions = new HashMap<Integer, Vector>();
 		blocksChanged = false;
+		doPhysics = true;
 		blockPositions = new HashSet<BlockPos>();
 		collisionBB = PhysicsWrapperEntity.ZERO_AABB;
 		collisionCallable = new PhysCollisionCallable(this);
@@ -906,8 +907,7 @@ public class PhysicsObject {
 	}
 
 	/**
-	 * ONLY USE THESE 2 METHODS TO EVER ADD/REMOVE ENTITIES, OTHERWISE YOU'LL RUIN
-	 * EVERYTHING!
+	 * ONLY USE THESE 2 METHODS TO EVER ADD/REMOVE ENTITIES
 	 */
 	public void unFixEntity(Entity toUnfix) {
 		EntityFixMessage entityUnfixingMessage = new EntityFixMessage(wrapper, toUnfix, false, null);

@@ -17,7 +17,7 @@
 package valkyrienwarfare.physics.collision;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.Random;
 
 import com.jackredcreeper.cannon.world.NewExp2;
@@ -69,7 +69,7 @@ public class WorldPhysicsCollider {
     public static final double KINETIC_FRICTION_COEFFICIENT = .1D;
     private final MutableBlockPos mutablePos;
     private final Random rand;
-    private final List<ShipCollisionTask> tasks;
+    private final Collection<ShipCollisionTask> tasks;
     private final PhysicsCalculations calculator;
     private final World worldObj;
     private final PhysicsObject parent;
@@ -91,6 +91,7 @@ public class WorldPhysicsCollider {
         this.tasks = new ArrayList<ShipCollisionTask>();
         this.ticksSinceCacheUpdate = 25D;
         this.updateCollisionTasksCache = true;
+        this.centerPotentialHit = null;
     }
 
     // Runs the collision code
@@ -115,7 +116,7 @@ public class WorldPhysicsCollider {
         }
     }
 
-    public void splitIntoCollisionTasks(List<ShipCollisionTask> toAdd) {
+    public void splitIntoCollisionTasks(Collection<ShipCollisionTask> toAdd) {
         if (updateCollisionTasksCache) {
             tasks.clear();
             int index = 0;

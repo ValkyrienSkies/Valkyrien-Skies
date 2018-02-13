@@ -129,7 +129,7 @@ public class ValkyrienWarfareMod {
 	public static DimensionPhysObjectManager physicsManager;
 	public static CreativeTabs vwTab = new TabValkyrienWarfare();
 	@Instance(MODID)
-	public static final ValkyrienWarfareMod INSTANCE = new ValkyrienWarfareMod();
+	public static ValkyrienWarfareMod INSTANCE = new ValkyrienWarfareMod();
 	public static int airStateIndex;
 	public static double standingTolerance = .42D;
 	public static int maxShipSize = 1500000;

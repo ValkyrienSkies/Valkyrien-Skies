@@ -45,9 +45,9 @@ public class PhysicsCalculationsOrbital extends PhysicsCalculations {
         if (!isOrbitalPhased) {
             super.calculateForces();
         } else {
-            double modifiedDrag = Math.pow(DRAG_CONSTANT, getPhysTickSpeed() / .05D);
-            setLinearVel.multiply(modifiedDrag);
-            setAngularVel.multiply(modifiedDrag);
+            double drag = getDragForPhysTick();
+            setLinearVel.multiply(drag);
+            setAngularVel.multiply(drag);
         }
     }
 

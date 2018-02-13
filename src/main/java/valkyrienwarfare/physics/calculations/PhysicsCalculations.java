@@ -72,7 +72,7 @@ public class PhysicsCalculations {
     public int iterations = 5;
     // The amount of time to be simulated on each rawPhysTick *(Its physSpeed/iterations)
     // Used to limit the accumulation of motion by an object (Basically Air-Resistance preventing infinite energy)
-    public final List<BlockPos> activeForcePositions;
+    private final List<BlockPos> activeForcePositions;
     public double[] MoITensor, invMoITensor;
     public double[] framedMOI, invFramedMOI;
     public boolean actAsArchimedes = false;
@@ -332,13 +332,12 @@ public class PhysicsCalculations {
     }
 
     protected void calculateForces() {
-        double modifiedDrag = Math.pow(DRAG_CONSTANT, getPhysTickSpeed() / .05D);
-        linearMomentum.multiply(modifiedDrag);
-        angularVelocity.multiply(modifiedDrag);
+        applyAirDrag();
         applyGravity();
         addQueuedForces();
+        
         Collections.shuffle(activeForcePositions);
-
+        
         Vector blockForce = new Vector();
         Vector inBodyWO = new Vector();
         Vector crossVector = new Vector();
@@ -394,9 +393,13 @@ public class PhysicsCalculations {
     }
 
     public void calculateForcesArchimedes() {
-        double modifiedDrag = Math.pow(DRAG_CONSTANT, getPhysTickSpeed() / .05D);
-        linearMomentum.multiply(modifiedDrag);
-        angularVelocity.multiply(modifiedDrag);
+        applyAirDrag();
+    }
+    
+    protected void applyAirDrag() {
+        double drag = getDragForPhysTick();
+        linearMomentum.multiply(drag);
+        angularVelocity.multiply(drag);
     }
 
     public void sendPhysicsProcessorsTicks() {
@@ -561,6 +564,14 @@ public class PhysicsCalculations {
     
     public double getPhysTickSpeed() {
         return physRawSpeed / iterations;
+    }
+    
+    protected double getDragForPhysTick() {
+        return Math.pow(DRAG_CONSTANT, getPhysTickSpeed() / .05D);
+    }
+    
+    public void addPotentialActiveForcePos(BlockPos pos) {
+        this.activeForcePositions.add(pos);
     }
 
 }

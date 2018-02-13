@@ -586,6 +586,8 @@ public class WorldPhysicsCollider {
                 minZ = MathHelper.floor(inLocal.Z - RANGE_CHECK + speedInBody.Z);
                 maxZ = MathHelper.floor(inLocal.Z + RANGE_CHECK);
             }
+            
+            minY = Math.min(255, Math.max(minY, 0));
 
             outermostloop: for (int localX = minX; localX < maxX; localX++) {
                 for (int localZ = minZ; localZ < maxZ; localZ++) {

@@ -28,135 +28,106 @@ import valkyrienwarfare.physics.collision.optimization.ShipCollisionTask;
 
 public class PhysicsTickHandler {
 
-	public static void onWorldTickStart(World world) {
-		WorldPhysObjectManager manager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(world);
+    public static void onWorldTickStart(World world) {
+        WorldPhysObjectManager manager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(world);
 
-		List<PhysicsWrapperEntity> toUnload = new ArrayList<PhysicsWrapperEntity>(manager.physicsEntitiesToUnload);
-		for (PhysicsWrapperEntity wrapper : toUnload) {
-			manager.onUnload(wrapper);
-		}
+        List<PhysicsWrapperEntity> toUnload = new ArrayList<PhysicsWrapperEntity>(manager.physicsEntitiesToUnload);
+        for (PhysicsWrapperEntity wrapper : toUnload) {
+            manager.onUnload(wrapper);
+        }
 
         List<PhysicsWrapperEntity> physicsEntities = manager.getTickablePhysicsEntities();
 
         for (PhysicsWrapperEntity wrapper : physicsEntities) {
             wrapper.wrapping.coordTransform.setPrevMatrices();
             wrapper.wrapping.updateChunkCache();
-            // Collections.shuffle(wrapper.wrapping.physicsProcessor.activeForcePositions);
         }
 
+        PhysicsTickThreadTask physicsThreadTask = new PhysicsTickThreadTask(ValkyrienWarfareMod.physIter,
+                physicsEntities, manager);
+
+        try {
+            manager.setPhysicsThread(ValkyrienWarfareMod.PHYSICS_THREADS.submit(physicsThreadTask));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void onWorldTickEnd(World world) {
+        WorldPhysObjectManager manager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(world);
+        List<PhysicsWrapperEntity> physicsEntities = manager.getTickablePhysicsEntities();
+        manager.awaitPhysics();
+
+        for (PhysicsWrapperEntity wrapper : physicsEntities) {
+            wrapper.wrapping.coordTransform.sendPositionToPlayers();
+        }
+        EntityDraggable.tickAddedVelocityForWorld(world);
+        for (PhysicsWrapperEntity wrapperEnt : physicsEntities) {
+            wrapperEnt.wrapping.onPostTick();
+        }
+    }
+
+    public static void runPhysicsIteration(List<PhysicsWrapperEntity> physicsEntities, WorldPhysObjectManager manager) {
+        double newPhysSpeed = ValkyrienWarfareMod.physSpeed;
+        Vector newGravity = ValkyrienWarfareMod.gravity;
         int iters = ValkyrienWarfareMod.physIter;
-		PhysicsTickThreadTask physicsThreadTask = new PhysicsTickThreadTask(iters, physicsEntities, manager);
 
-		// ValkyrienWarfareMod.PhysicsMasterThread.invokeAll(new ArrayList<PhysicsW>)
+        List<ShipCollisionTask> collisionTasks = new ArrayList<ShipCollisionTask>(physicsEntities.size() * 2);
 
-		try {
-			// ValkyrienWarfareMod.PhysicsMasterThread.shutdown();
+        for (PhysicsWrapperEntity wrapper : physicsEntities) {
+            if (!wrapper.firstUpdate) {
+                wrapper.wrapping.physicsProcessor.gravity = newGravity;
+                wrapper.wrapping.physicsProcessor.rawPhysTickPreCol(newPhysSpeed, iters);
+                wrapper.wrapping.physicsProcessor.worldCollision.tickUpdatingTheCollisionCache();
+                wrapper.wrapping.physicsProcessor.worldCollision.splitIntoCollisionTasks(collisionTasks);
+            }
+        }
 
-			// ValkyrienWarfareMod.PhysicsMasterThread.execute(new Runnable() {
-			// @Override
-			// public void run() {
-			// try {
-			// physicsThreadTask.call();
-			// }catch(Exception e) {
-			//
-			// }
-			// }
-			// });
-			// System.out.println(manager.hasPhysicsThreadFinished);
-			// physicsThreadTask.call();
-			manager.physicsThreadStatus = ValkyrienWarfareMod.PhysicsMasterThread.submit(physicsThreadTask);
-			//
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+        try {
+            // TODO: Right here!
+            ValkyrienWarfareMod.PHYSICS_THREADS_EXECUTOR.invokeAll(collisionTasks);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
-	public static void onWorldTickEnd(World world) {
-		WorldPhysObjectManager manager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(world);
-		List<PhysicsWrapperEntity> physicsEntities = manager.getTickablePhysicsEntities();
+        for (ShipCollisionTask task : collisionTasks) {
+            PhysicsWrapperEntity wrapper = task.getToTask().getParent().wrapper;
+            if (!wrapper.firstUpdate) {
+                task.getToTask().processCollisionTask(task);
+            }
+        }
 
-		if (manager.physicsThreadStatus != null && !manager.physicsThreadStatus.isDone()) {
-			try {
-				// Wait for the physicsThread to return before moving on.
-				manager.physicsThreadStatus.get();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
+        for (PhysicsWrapperEntity wrapper : physicsEntities) {
+            if (!wrapper.firstUpdate) {
+                wrapper.wrapping.physicsProcessor.rawPhysTickPostCol();
+            } else {
+                wrapper.wrapping.coordTransform.updateAllTransforms();
+            }
+        }
 
-		for (PhysicsWrapperEntity wrapper : physicsEntities) {
-			wrapper.wrapping.coordTransform.sendPositionToPlayers();
-		}
-		EntityDraggable.tickAddedVelocityForWorld(world);
-		for (PhysicsWrapperEntity wrapperEnt : physicsEntities) {
-			wrapperEnt.wrapping.onPostTick();
-		}
-	}
+    }
 
-	public static void runPhysicsIteration(List<PhysicsWrapperEntity> physicsEntities,
-			WorldPhysObjectManager manager) {
-		double newPhysSpeed = ValkyrienWarfareMod.physSpeed;
-		Vector newGravity = ValkyrienWarfareMod.gravity;
-		int iters = ValkyrienWarfareMod.physIter;
+    private static class PhysicsTickThreadTask implements Callable<Void> {
 
-		List<ShipCollisionTask> collisionTasks = new ArrayList<ShipCollisionTask>(physicsEntities.size() * 2);
+        private final int iters;
+        private final List physicsEntities;
+        private final WorldPhysObjectManager manager;
 
-		for (PhysicsWrapperEntity wrapper : physicsEntities) {
-			if (!wrapper.firstUpdate) {
-				wrapper.wrapping.physicsProcessor.gravity = newGravity;
-				wrapper.wrapping.physicsProcessor.rawPhysTickPreCol(newPhysSpeed, iters);
+        public PhysicsTickThreadTask(int iters, List physicsEntities, WorldPhysObjectManager manager) {
+            this.iters = iters;
+            this.physicsEntities = physicsEntities;
+            this.manager = manager;
+        }
 
-				wrapper.wrapping.physicsProcessor.worldCollision.tickUpdatingTheCollisionCache();
+        @Override
+        public Void call() throws Exception {
+            for (int pass = 0; pass < iters; pass++) {
+                // Run PRE-Col
+                runPhysicsIteration(physicsEntities, manager);
+            }
+            return null;
+        }
 
-				wrapper.wrapping.physicsProcessor.worldCollision.splitIntoCollisionTasks(collisionTasks);
-			}
-		}
-
-		try {
-		    // TODO: Right here!
-			ValkyrienWarfareMod.MultiThreadExecutor.invokeAll(collisionTasks);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-
-		for (ShipCollisionTask task : collisionTasks) {
-			PhysicsWrapperEntity wrapper = task.getToTask().getParent().wrapper;
-			if (!wrapper.firstUpdate) {
-				task.getToTask().processCollisionTask(task);
-			}
-		}
-
-		for (PhysicsWrapperEntity wrapper : physicsEntities) {
-			if (!wrapper.firstUpdate) {
-				wrapper.wrapping.physicsProcessor.rawPhysTickPostCol();
-			} else {
-				wrapper.wrapping.coordTransform.updateAllTransforms();
-			}
-		}
-
-	}
-
-	private static class PhysicsTickThreadTask implements Callable<Void> {
-
-		private final int iters;
-		private final List physicsEntities;
-		private final WorldPhysObjectManager manager;
-
-		public PhysicsTickThreadTask(int iters, List physicsEntities, WorldPhysObjectManager manager) {
-			this.iters = iters;
-			this.physicsEntities = physicsEntities;
-			this.manager = manager;
-		}
-
-		@Override
-		public Void call() throws Exception {
-			for (int pass = 0; pass < iters; pass++) {
-				// Run PRE-Col
-				runPhysicsIteration(physicsEntities, manager);
-			}
-			return null;
-		}
-
-	}
+    }
 
 }

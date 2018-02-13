@@ -123,7 +123,7 @@ public class PhysicsObject {
     // so we need to manually fill them with nearby players
     public PlayerChunkMapEntry[][] claimedChunksEntries;
     public final ShipBalloonManager balloonManager;
-    public Map<Integer, Vector> entityLocalPositions;
+    private Map<Integer, Vector> entityLocalPositions;
     public final List<String> allowedUsers;
     // This is used to delay mountEntity() operations by 1 tick
     public final List<Entity> queuedEntitiesToMount;
@@ -758,7 +758,7 @@ public class PhysicsObject {
 
 		lastTickCenterCoord = centerCoord;
 
-		ShipTransformData toUse = coordTransform.stack.getDataForTick(lastMessageTick);
+		ShipTransformData toUse = coordTransform.stack.removeHeadFromQueue();
 
 		if (toUse != null) {
 			lastMessageTick = toUse.relativeTick;
@@ -869,7 +869,7 @@ public class PhysicsObject {
 											if (!worldObj.isRemote) {
 												if (BlockForce.basicForces.isBlockProvidingForce(
 														worldObj.getBlockState(pos), pos, worldObj)) {
-													physicsProcessor.activeForcePositions.add(pos);
+													physicsProcessor.addPotentialActiveForcePos(pos);
 												}
 											}
 										}

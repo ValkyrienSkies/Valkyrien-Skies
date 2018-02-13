@@ -27,14 +27,10 @@ import valkyrienwarfare.util.PhysicsSettings;
 
 public class PhysicsCalculationsManualControl extends PhysicsCalculations {
 
-    public double yawRate;
-    public double forwardRate;
-    public double upRate;
-
-    public double setRoll = 0.01D;
-    public double setPitch = 0.01D;
-
-    public boolean useLinearMomentumForce;
+    private boolean useLinearMomentumForce;
+    private double yawRate;
+    private double forwardRate;
+    private double upRate;
 
     public PhysicsCalculationsManualControl(PhysicsObject toProcess) {
         super(toProcess);
@@ -47,9 +43,7 @@ public class PhysicsCalculationsManualControl extends PhysicsCalculations {
 
     @Override
     public void calculateForces() {
-        double modifiedDrag = Math.pow(DRAG_CONSTANT, getPhysTickSpeed() / .05D);
-        linearMomentum.multiply(modifiedDrag);
-        angularVelocity.multiply(modifiedDrag);
+        applyAirDrag();
 
         if (PhysicsSettings.doPhysicsBlocks) {
             for (Node node : parent.nodesWithinShip) {
@@ -63,32 +57,22 @@ public class PhysicsCalculationsManualControl extends PhysicsCalculations {
     }
 
     @Override
-    public void applyGravity() {
-
-    }
-
-    @Override
     public void rawPhysTickPostCol() {
         applyLinearVelocity();
-
         double previousYaw = parent.wrapper.yaw;
-
         applyAngularVelocity();
 
         //We don't want the up normal to exactly align with the world normal, it causes problems with collision
-
         if (!this.actAsArchimedes) {
-            parent.wrapper.pitch = setPitch;
-            parent.wrapper.roll = setRoll;
+            parent.wrapper.pitch = 0.01F;
+            parent.wrapper.roll = 0.01F;
             parent.wrapper.yaw = previousYaw;
-            parent.wrapper.yaw -= (yawRate * getPhysTickSpeed());
+            parent.wrapper.yaw -= (getYawRate() * getPhysTickSpeed());
         }
 
         double[] existingRotationMatrix = RotationMatrices.getRotationMatrix(0, parent.wrapper.yaw, 0);
-
-        Vector linearForce = new Vector(forwardRate, upRate, 0, existingRotationMatrix);
-
-        if (useLinearMomentumForce) {
+        Vector linearForce = new Vector(getForwardRate(), getUpRate(), 0, existingRotationMatrix);
+        if (isUseLinearMomentumForce()) {
             linearForce = new Vector(linearMomentum, getInvMass());
         }
 
@@ -104,17 +88,49 @@ public class PhysicsCalculationsManualControl extends PhysicsCalculations {
     @Override
     public void writeToNBTTag(NBTTagCompound compound) {
         super.writeToNBTTag(compound);
-        compound.setDouble("yawRate", yawRate);
-        compound.setDouble("forwardRate", forwardRate);
-        compound.setDouble("upRate", upRate);
+        compound.setDouble("yawRate", getYawRate());
+        compound.setDouble("forwardRate", getForwardRate());
+        compound.setDouble("upRate", getUpRate());
     }
 
     @Override
     public void readFromNBTTag(NBTTagCompound compound) {
         super.readFromNBTTag(compound);
-        yawRate = compound.getDouble("yawRate");
-//		forwardRate = compound.getDouble("forwardRate");
-//		upRate = compound.getDouble("upRate");
+        setYawRate(compound.getDouble("yawRate"));
+		setForwardRate(compound.getDouble("forwardRate"));
+		setUpRate(compound.getDouble("upRate"));
+    }
+
+    public boolean isUseLinearMomentumForce() {
+        return useLinearMomentumForce;
+    }
+
+    public void setUseLinearMomentumForce(boolean useLinearMomentumForce) {
+        this.useLinearMomentumForce = useLinearMomentumForce;
+    }
+
+    public double getUpRate() {
+        return upRate;
+    }
+
+    public void setUpRate(double upRate) {
+        this.upRate = upRate;
+    }
+
+    public double getYawRate() {
+        return yawRate;
+    }
+
+    public void setYawRate(double yawRate) {
+        this.yawRate = yawRate;
+    }
+
+    public double getForwardRate() {
+        return forwardRate;
+    }
+
+    public void setForwardRate(double forwardRate) {
+        this.forwardRate = forwardRate;
     }
 
 }

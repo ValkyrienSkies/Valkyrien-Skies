@@ -30,8 +30,8 @@ public class TileEntityZepplinController extends ImplTileEntityPilotable {
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(getWorld(), getPos());
         if (wrapper != null) {
             PhysicsCalculationsManualControl zepplinPhysics = (PhysicsCalculationsManualControl) wrapper.wrapping.physicsProcessor;
-            zepplinPhysics.upRate = 0;
-            zepplinPhysics.forwardRate = 0;
+            zepplinPhysics.setUpRate(0);
+            zepplinPhysics.setForwardRate(0);
         }
     }
 
@@ -51,29 +51,31 @@ public class TileEntityZepplinController extends ImplTileEntityPilotable {
         if (wrapper != null) {
             PhysicsCalculationsManualControl zepplinPhysics = (PhysicsCalculationsManualControl) wrapper.wrapping.physicsProcessor;
             if (message.airshipLeft_KeyDown) {
-                zepplinPhysics.yawRate -= 2.5;
+                zepplinPhysics.setYawRate(zepplinPhysics.getYawRate() - 2.5);
             }
             if (message.airshipRight_KeyDown) {
-                zepplinPhysics.yawRate += 2.5;
+                zepplinPhysics.setYawRate(zepplinPhysics.getYawRate() + 2.5);
             }
             if (message.airshipUp_KeyDown) {
-                zepplinPhysics.upRate += .25D;
+                zepplinPhysics.setUpRate(zepplinPhysics.getUpRate() + .25D);
             }
             if (message.airshipDown_KeyDown) {
-                zepplinPhysics.upRate -= .25D;
+                zepplinPhysics.setUpRate(zepplinPhysics.getUpRate() - .25D);
             }
             if (message.airshipForward_KeyDown) {
-                zepplinPhysics.forwardRate += .25D;
+                zepplinPhysics.setForwardRate(zepplinPhysics.getForwardRate() + .25D);
             }
             if (message.airshipBackward_KeyDown) {
-                zepplinPhysics.forwardRate -= .25D;
+                zepplinPhysics.setForwardRate(zepplinPhysics.getForwardRate() - .25D);
             }
             if (message.airshipStop_KeyDown) {
-                zepplinPhysics.yawRate = zepplinPhysics.upRate = zepplinPhysics.forwardRate = 0;
+                zepplinPhysics.setYawRate(0);
+                zepplinPhysics.setUpRate(0);
+                zepplinPhysics.setForwardRate(0);
             }
-            zepplinPhysics.yawRate = Math.min(Math.max(-50, zepplinPhysics.yawRate), 50);
-            zepplinPhysics.upRate = Math.min(Math.max(-20, zepplinPhysics.upRate), 20);
-            zepplinPhysics.forwardRate = Math.min(Math.max(-20, zepplinPhysics.forwardRate), 20);
+            zepplinPhysics.setYawRate(Math.min(Math.max(-50, zepplinPhysics.getYawRate()), 50));
+            zepplinPhysics.setUpRate(Math.min(Math.max(-20, zepplinPhysics.getUpRate()), 20));
+            zepplinPhysics.setForwardRate(Math.min(Math.max(-20, zepplinPhysics.getForwardRate()), 20));
         }
     }
 

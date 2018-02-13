@@ -16,6 +16,9 @@
 
 package valkyrienwarfare.physics.management;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 import valkyrienwarfare.mod.network.PhysWrapperPositionMessage;
 import valkyrienwarfare.physics.data.ShipTransformData;
 
@@ -25,52 +28,28 @@ import valkyrienwarfare.physics.data.ShipTransformData;
  *
  * @author Alex Mastrangelo
  */
-public class ShipTransformationStack {
+public class ShipTransformationQueue {
 
-    public ShipTransformData[] recentTransforms = new ShipTransformData[20];
-    // Number of ticks the parent ship has been active for
-    // Increases by 1 for every message pushed onto the stack
+    private final Queue<ShipTransformData> recentTransforms;
 
-    public void pushMessage(PhysWrapperPositionMessage toPush) {
-        // Shift whole array to the right
-        for (int index = recentTransforms.length - 2; index >= 0; index--) {
-            recentTransforms[index + 1] = recentTransforms[index];
-        }
-        recentTransforms[0] = new ShipTransformData(toPush);
-
+    public ShipTransformationQueue() {
+        recentTransforms = new LinkedList<ShipTransformData>();
     }
 
-    // TODO: Make this auto-adjust to best settings for the server
-    public ShipTransformData getDataForTick(int lastTick) {
-        if (recentTransforms[0] == null) {
-            System.err.println(
-                    "A SHIP JUST RETURNED NULL FOR 'recentTransforms[0]==null'; ANY WEIRD ERRORS PAST HERE ARE DIRECTLY LINKED TO THAT!");
-            return null;
+    // Push the given message data onto the Queue, and remove any transforms older
+    // than three ticks.
+    public void pushMessage(PhysWrapperPositionMessage toPush) {
+        recentTransforms.add(new ShipTransformData(toPush));
+        while (recentTransforms.size() > 3) {
+            recentTransforms.remove();
         }
-        int tickToGet = lastTick + 1;
+    }
 
-        int realtimeTick = recentTransforms[0].relativeTick;
-
-        if (realtimeTick - lastTick > 3) {
-            tickToGet = realtimeTick - 2;
-            // System.out.println("Too Slow");
+    public ShipTransformData removeHeadFromQueue() {
+        if (recentTransforms.size() > 2) {
+            return recentTransforms.remove();
         }
-
-        for (ShipTransformData transform : recentTransforms) {
-            if (transform != null) {
-                if (transform.relativeTick == tickToGet) {
-                    return transform;
-                }
-            }
-        }
-
-        // System.out.println("Couldnt find the needed transform");
-
-        if (recentTransforms[1] != null) {
-            return recentTransforms[1];
-        }
-
-        return recentTransforms[0];
+        return recentTransforms.poll();
     }
 
 }

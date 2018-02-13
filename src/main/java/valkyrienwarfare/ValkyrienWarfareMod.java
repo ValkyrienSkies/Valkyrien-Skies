@@ -25,6 +25,7 @@ import java.lang.reflect.Field;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
@@ -102,16 +103,17 @@ import valkyrienwarfare.util.RealMethods;
 
 @Mod(modid = ValkyrienWarfareMod.MODID, name = ValkyrienWarfareMod.MODNAME, version = ValkyrienWarfareMod.MODVER, guiFactory = "valkyrienwarfare.mod.gui.GuiFactoryValkyrienWarfare", updateJSON = "https://raw.githubusercontent.com/BigBastard/Valkyrien-Warfare-Revamped/update.json")
 public class ValkyrienWarfareMod {
-	public static final ArrayList<Module> addons = new ArrayList<>();
+	public static final List<Module> addons = new ArrayList<>();
 	public static final String MODID = "valkyrienwarfare";
 	public static final String MODNAME = "Valkyrien Warfare";
 	public static final String MODVER = "0.9_alpha";
 	@CapabilityInject(IAirshipCounterCapability.class)
 	public static final Capability<IAirshipCounterCapability> airshipCounter = null;
-	// NOTE: These only calculate physics, so they are only relevant to the Server
-	// end
-	public static ExecutorService MultiThreadExecutor = null;
-	public static ExecutorService PhysicsMasterThread = null;
+    // Used as a way to process the physics tasks in parallel during the game tick.
+    // Sends physics tasks to the Executor Service.
+    public static ExecutorService PHYSICS_THREADS = null;
+    // This service is directly responsible for running collision tasks.
+    public static ExecutorService PHYSICS_THREADS_EXECUTOR = null;
 	@SidedProxy(clientSide = "valkyrienwarfare.mod.proxy.ClientProxy", serverSide = "valkyrienwarfare.mod.proxy.ServerProxy")
 	public static CommonProxy proxy;
 	public static File configFile;
@@ -127,7 +129,7 @@ public class ValkyrienWarfareMod {
 	public static DimensionPhysObjectManager physicsManager;
 	public static CreativeTabs vwTab = new TabValkyrienWarfare();
 	@Instance(MODID)
-	public static ValkyrienWarfareMod INSTANCE = new ValkyrienWarfareMod();
+	public static final ValkyrienWarfareMod INSTANCE = new ValkyrienWarfareMod();
 	public static int airStateIndex;
 	public static double standingTolerance = .42D;
 	public static int maxShipSize = 1500000;
@@ -173,9 +175,9 @@ public class ValkyrienWarfareMod {
 			threadCount = config.get(Configuration.CATEGORY_GENERAL, "Physics thread count", -1,
 					"The number of threads to use for physics. If thread count <= 0 it will use the system core count.").getInt();
 
-			if (MultiThreadExecutor == null) {
-				MultiThreadExecutor = Executors.newFixedThreadPool(threadCount <= 0 ? Runtime.getRuntime().availableProcessors() : threadCount);
-				PhysicsMasterThread = Executors.newFixedThreadPool(threadCount <= 0 ? Runtime.getRuntime().availableProcessors() : threadCount);
+			if (PHYSICS_THREADS_EXECUTOR == null) {
+				PHYSICS_THREADS_EXECUTOR = Executors.newFixedThreadPool(threadCount <= 0 ? Runtime.getRuntime().availableProcessors() : threadCount);
+				PHYSICS_THREADS = Executors.newFixedThreadPool(threadCount <= 0 ? Runtime.getRuntime().availableProcessors() : threadCount);
 			}
 		}
 	}

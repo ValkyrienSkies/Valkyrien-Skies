@@ -16,8 +16,6 @@
 
 package valkyrienwarfare.addon.world.tileentity;
 
-import javax.vecmath.Vector2d;
-
 import net.minecraft.nbt.NBTTagCompound;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.tileentity.ImplPhysicsProcessorNodeTileEntity;
@@ -31,31 +29,40 @@ import valkyrienwarfare.util.NBTUtils;
 
 public class TileEntitySkyTempleController extends ImplPhysicsProcessorNodeTileEntity {
 
-    double yawChangeRate = 8D;
-    double yawPathRate = 2D;
-    double yPathRate = 2D;
-    double totalSecondsExisted = Math.random() * 15D;
-    private Vector originPos = new Vector();
+    private Vector originPos;
     private double orbitDistance;
+    private double totalSecondsExisted;
+    private double yawChangeRate;
+    private double yawPathRate;
+    private double yPathRate;
 
+    public TileEntitySkyTempleController() {
+        yawChangeRate = 8D;
+        yawPathRate = 2D;
+        yPathRate = 2D;
+        totalSecondsExisted = Math.random() * 15D;
+        originPos = new Vector();
+        orbitDistance = 0.0D;
+    }
+    
     @Override
     public void onPhysicsTick(PhysicsObject object, PhysicsCalculations calculations, double secondsToSimulate) {
         if (calculations instanceof PhysicsCalculationsManualControl) {
             PhysicsCalculationsManualControl manualControl = (PhysicsCalculationsManualControl) calculations;
 
-            ((PhysicsCalculationsManualControl) calculations).useLinearMomentumForce = true;
+            ((PhysicsCalculationsManualControl) calculations).setUseLinearMomentumForce(true);
 
             if (originPos == null || originPos.isZero()) {
                 setOriginPos(new Vector(object.wrapper.posX, object.wrapper.posY, object.wrapper.posZ));
             }
 
-            manualControl.yawRate = yawChangeRate;
+            manualControl.setYawRate(yawChangeRate);
 
-            Vector2d distanceFromCenter = new Vector2d(object.wrapper.posX - originPos.X, object.wrapper.posZ - originPos.Z);
+            Vector distanceFromCenter = new Vector(object.wrapper.posX - originPos.X, 0, object.wrapper.posZ - originPos.Z);
 
             double realDist = distanceFromCenter.length();
 
-            double invTan = Math.toDegrees(Math.atan2(distanceFromCenter.getY(), distanceFromCenter.getX()));
+            double invTan = Math.toDegrees(Math.atan2(distanceFromCenter.X, distanceFromCenter.Z));
 
             double velocityAngle = invTan + 90D;
 
@@ -65,10 +72,8 @@ public class TileEntitySkyTempleController extends ImplPhysicsProcessorNodeTileE
             if (realDist / orbitDistance > 1D) {
                 double reductionFactor = (realDist / realDist) - 1D;
 
-                x -= reductionFactor * distanceFromCenter.x * yawPathRate;
-                z -= reductionFactor * distanceFromCenter.y * yawPathRate;
-
-//				System.out.println(reductionFactor);
+                x -= reductionFactor * distanceFromCenter.X * yawPathRate;
+                z -= reductionFactor * distanceFromCenter.Z * yawPathRate;
             }
 
             calculations.linearMomentum.X = x * calculations.getMass();

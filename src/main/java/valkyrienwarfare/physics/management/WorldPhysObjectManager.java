@@ -49,15 +49,16 @@ public class WorldPhysObjectManager {
     public final List<PhysicsWrapperEntity> physicsEntities;
     public final List<PhysicsWrapperEntity> physicsEntitiesToUnload;
     private final List<Callable<Void>> physCollisonCallables;
-    public Future physicsThreadStatus = null;
+    private Future<Void> physicsThreadStatus;
 
     public WorldPhysObjectManager(World toManage) {
-        worldObj = toManage;
-        chunkLoadingTicket = ForgeChunkManager.requestTicket(ValkyrienWarfareMod.INSTANCE, toManage, Type.NORMAL);
-        physicsEntities = new ArrayList<PhysicsWrapperEntity>();
-        physicsEntitiesToUnload = new ArrayList<PhysicsWrapperEntity>();
-        physCollisonCallables = new ArrayList<Callable<Void>>();
-        chunkPosToPhysicsEntityMap = new HashMap<ChunkPos, PhysicsWrapperEntity>();
+        this.worldObj = toManage;
+        this.chunkLoadingTicket = ForgeChunkManager.requestTicket(ValkyrienWarfareMod.INSTANCE, toManage, Type.NORMAL);
+        this.physicsEntities = new ArrayList<PhysicsWrapperEntity>();
+        this.physicsEntitiesToUnload = new ArrayList<PhysicsWrapperEntity>();
+        this.physCollisonCallables = new ArrayList<Callable<Void>>();
+        this.chunkPosToPhysicsEntityMap = new HashMap<ChunkPos, PhysicsWrapperEntity>();
+        this.physicsThreadStatus = null;
     }
 
     /**
@@ -110,25 +111,6 @@ public class WorldPhysObjectManager {
             }
         }
 
-        /*
-         * if(droppedChunksField == null){ try{
-         * if(ValkyrienWarfarePlugin.isObfuscatedEnvironment){ droppedChunksField =
-         * ChunkProviderServer.class.getDeclaredField("field_73248_b"); }else{
-         * droppedChunksField =
-         * ChunkProviderServer.class.getDeclaredField("droppedChunksSet"); }
-         * droppedChunksField.setAccessible(true); }catch(Exception e){} }
-         * ChunkProviderServer serverProvider = (ChunkProviderServer)
-         * worldObj.getChunkProvider();
-         * 
-         * try{ Set<Long> droppedChunks = (Set<Long>)
-         * droppedChunksField.get(serverProvider);
-         * 
-         * for(PhysicsWrapperEntity entity:list){ int chunkX = entity.chunkCoordX; int
-         * chunkZ = entity.chunkCoordZ;
-         * if(droppedChunks.contains(ChunkPos.chunkXZ2Int(chunkX, chunkZ))){
-         * frozenShips.add(entity); } } }catch(Exception e){}
-         */
-
         list.removeAll(frozenShips);
         list.removeAll(dumbShips);
 
@@ -153,8 +135,6 @@ public class WorldPhysObjectManager {
         loaded.isDead = false;
         physicsEntities.add(loaded);
         physCollisonCallables.add(loaded.wrapping.collisionCallable);
-        // preloadPhysicsWrapperEntityMappings(loaded);
-
     }
 
     /**
@@ -217,21 +197,12 @@ public class WorldPhysObjectManager {
     }
 
     public boolean isEntityFixed(Entity entity) {
-        if (getShipFixedOnto(entity, false) != null) {
-            return true;
-        }
-        return false;
+        return getShipFixedOnto(entity) != null;
     }
 
-    public PhysicsWrapperEntity getShipFixedOnto(Entity entity, boolean considerUUID) {
+    public PhysicsWrapperEntity getShipFixedOnto(Entity entity) {
         for (PhysicsWrapperEntity wrapper : physicsEntities) {
             if (wrapper.wrapping.isEntityFixed(entity)) {
-                if (considerUUID) {
-                    if (wrapper.wrapping.entityLocalPositions.containsKey(entity.getPersistentID().hashCode())) {
-                        return wrapper;
-                    }
-                }
-
                 if (wrapper.riddenByEntities.contains(entity)) {
                     return wrapper;
                 }
@@ -247,4 +218,19 @@ public class WorldPhysObjectManager {
         return null;
     }
 
+    public void setPhysicsThread(Future<Void> physicsThread) {
+        this.physicsThreadStatus = physicsThread;
+    }
+
+    // Wait for the physics thread to finish before returning
+    public void awaitPhysics() {
+        if (physicsThreadStatus != null && !physicsThreadStatus.isDone()) {
+            try {
+                // Wait for the physicsThread to return before moving on.
+                physicsThreadStatus.get();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }

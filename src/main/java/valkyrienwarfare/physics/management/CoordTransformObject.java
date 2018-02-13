@@ -54,15 +54,17 @@ public class CoordTransformObject {
     public double[] prevLToWRotation;
     public double[] prevWToLRotation;
 
-    public Vector[] normals = Vector.generateAxisAlignedNorms();
+    public Vector[] normals;
 
-    public ShipTransformationStack stack = new ShipTransformationStack();
+    public final ShipTransformationQueue stack;
 
     public CoordTransformObject(PhysicsObject object) {
-        parent = object;
+        this.parent = object;
         updateAllTransforms();
-        prevlToWTransform = lToWTransform;
-        prevwToLTransform = wToLTransform;
+        this.prevlToWTransform = lToWTransform;
+        this.prevwToLTransform = wToLTransform;
+        this.stack = new ShipTransformationQueue();
+        this.normals = Vector.generateAxisAlignedNorms();
     }
 
     public void updateMatricesOnly() {

@@ -400,9 +400,7 @@ public class EventsCommon {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onWorldLoad(WorldEvent.Load event) {
-        World world = event.getWorld();
-        ValkyrienWarfareMod.physicsManager.initWorld(world);
-        world.addEventListener(new ValkyrienWarfareWorldEventListener(world));
+        event.getWorld().addEventListener(new ValkyrienWarfareWorldEventListener(event.getWorld()));
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)

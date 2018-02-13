@@ -27,7 +27,6 @@ import valkyrienwarfare.mod.physmanagement.chunk.PhysicsChunkManager;
 public class DimensionPhysObjectManager {
 
     private final Map<World, WorldPhysObjectManager> managerPerWorld;
-    private WorldPhysObjectManager cachedManager;
 
     public DimensionPhysObjectManager() {
         managerPerWorld = new HashMap<World, WorldPhysObjectManager>();
@@ -52,70 +51,36 @@ public class DimensionPhysObjectManager {
         getManagerForWorld(justUnloaded.world).onUnload(justUnloaded);
     }
 
-    public void initWorld(World toInit) {
-        if (!managerPerWorld.containsKey(toInit)) {
-            managerPerWorld.put(toInit, new WorldPhysObjectManager(toInit));
-        }
-    }
-
     public WorldPhysObjectManager getManagerForWorld(World world) {
-        if (world == null) {
-            //I'm not quite sure what to do here
+        if (!managerPerWorld.containsKey(world)) {
+            managerPerWorld.put(world, new WorldPhysObjectManager(world));
         }
-        if (cachedManager == null || cachedManager.worldObj != world) {
-            cachedManager = managerPerWorld.get(world);
-        }
-        if (cachedManager == null) {
-            System.err.println("getManagerForWorld just requested for a World without one!!! Assuming that this is a new world, so making a new WorldPhysObjectManager for it.");
-            cachedManager = new WorldPhysObjectManager(world);
-            //Make sure to add the cachedManager to the world managers
-            managerPerWorld.put(world, cachedManager);
-        }
-        return cachedManager;
+        return managerPerWorld.get(world);
     }
 
     public void removeWorld(World world) {
-        if (managerPerWorld.containsKey(world)) {
-            getManagerForWorld(world).physicsEntities.clear();
-        }
         managerPerWorld.remove(world);
     }
 
     /**
-     * Returns the PhysicsWrapperEntity that claims this chunk if there is one; returns null if there is no loaded entity managing it
+     * Returns the PhysicsWrapperEntity that claims this chunk if there is one;
+     * returns null if there is no loaded entity managing it
      */
 
-    //TODO: Fix this
+    // TODO: Fix this
     @Deprecated
     public PhysicsWrapperEntity getObjectManagingPos(World world, BlockPos pos) {
         if (world == null || pos == null) {
             return null;
         }
         if (world.getChunkProvider() == null) {
-//			System.out.println("Retard Devs coded a World with no Chunks in it!");
+            // System.out.println("A seperate mod has coded a World with no Chunks in it!");
             return null;
         }
-
         if (!PhysicsChunkManager.isLikelyShipChunk(pos.getX() >> 4, pos.getZ() >> 4)) {
             return null;
         }
-        //NoClassFound entity$1.class FIX
-//		if(!world.isRemote){
-//			if(world.getChunkProvider() instanceof ChunkProviderServer){
-//				ChunkProviderServer providerServer =  (ChunkProviderServer) world.getChunkProvider();
-//				//The chunk at the given pos isn't loaded? Don't bother with the next step, you'll create an infinite loop!
-//				if(!providerServer.chunkExists(pos.getX() >> 4, pos.getZ() >> 4)){
-//					return null;
-//				}
-//			}
-//		}
-//		Chunk chunk = world.getChunkFromBlockCoords(pos);
-//		return getObjectManagingChunk(chunk);
-        WorldPhysObjectManager physManager = getManagerForWorld(world);
-        if (physManager == null) {
-            return null;
-        }
-        return physManager.getManagingObjectForChunkPosition(pos.getX() >> 4, pos.getZ() >> 4);
+        return getManagerForWorld(world).getManagingObjectForChunkPosition(pos.getX() >> 4, pos.getZ() >> 4);
     }
 
     public boolean isEntityFixed(Entity entity) {
@@ -123,7 +88,7 @@ public class DimensionPhysObjectManager {
     }
 
     public PhysicsWrapperEntity getShipFixedOnto(Entity entity) {
-        return getManagerForWorld(entity.world).getShipFixedOnto(entity, false);
+        return getManagerForWorld(entity.world).getShipFixedOnto(entity);
     }
 
 }

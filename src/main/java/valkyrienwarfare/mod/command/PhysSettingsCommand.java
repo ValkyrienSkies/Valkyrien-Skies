@@ -45,7 +45,6 @@ public class PhysSettingsCommand extends CommandBase {
         COMPLETED_OPTIONS.add("physicsspeed");
         COMPLETED_OPTIONS.add("dogravity");
         COMPLETED_OPTIONS.add("dophysicsblocks");
-        COMPLETED_OPTIONS.add("doballoons");
         COMPLETED_OPTIONS.add("doairshiprotation");
         COMPLETED_OPTIONS.add("doairshipmovement");
         COMPLETED_OPTIONS.add("save");
@@ -155,16 +154,6 @@ public class PhysSettingsCommand extends CommandBase {
                 boolean value = Boolean.parseBoolean(args[1]);
                 PhysicsSettings.doPhysicsBlocks = value;
                 sender.sendMessage(new TextComponentString("Set dophysicsblocks to " + (PhysicsSettings.doPhysicsBlocks ? "enabled" : "disabled")));
-                return;
-            }
-        } else if (key.equals("doballoons")) {
-            if (args.length == 1) {
-                sender.sendMessage(new TextComponentString("doballoons=" + PhysicsSettings.doBalloons + " (Default: true)"));
-                return;
-            } else if (args.length == 2) {
-                boolean value = Boolean.parseBoolean(args[1]);
-                PhysicsSettings.doBalloons = value;
-                sender.sendMessage(new TextComponentString("Set doballoons to " + (PhysicsSettings.doBalloons ? "enabled" : "disabled")));
                 return;
             }
         } else if (key.equals("doairshiprotation")) {

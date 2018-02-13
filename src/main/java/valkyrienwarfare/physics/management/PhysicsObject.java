@@ -59,7 +59,6 @@ import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
-import valkyrienwarfare.addon.control.balloon.ShipBalloonManager;
 import valkyrienwarfare.addon.control.network.EntityFixMessage;
 import valkyrienwarfare.addon.control.nodenetwork.INodeProvider;
 import valkyrienwarfare.addon.control.nodenetwork.Node;
@@ -122,7 +121,6 @@ public class PhysicsObject {
     // Some badly written mods use these Maps to determine who to send packets to,
     // so we need to manually fill them with nearby players
     public PlayerChunkMapEntry[][] claimedChunksEntries;
-    public final ShipBalloonManager balloonManager;
     private Map<Integer, Vector> entityLocalPositions;
     public final List<String> allowedUsers;
     // This is used to delay mountEntity() operations by 1 tick
@@ -130,20 +128,17 @@ public class PhysicsObject {
     // Compatibility for ships made before the update
     public boolean claimedChunksInMap;
     public boolean isNameCustom;
-    private boolean blocksChanged;
 	private ShipType shipType;
 
 	// public HashSet<nodenetwork> nodeNetworks = new HashSet<nodenetwork>();
-	public Set<Node> nodesWithinShip = new HashSet<Node>();
+	public final Set<Node> nodesWithinShip;
 
 	public PhysicsObject(PhysicsWrapperEntity host) {
 		wrapper = host;
 		worldObj = host.world;
 		if (host.world.isRemote) {
-		    balloonManager = null;
 			renderer = new PhysObjectRenderManager(this);
 		} else {
-			balloonManager = new ShipBalloonManager(this);
 			renderer = null;
 		}
 		isNameCustom = false;
@@ -151,7 +146,6 @@ public class PhysicsObject {
 		queuedEntitiesToMount = new ArrayList<Entity>();
 		allowedUsers = new ArrayList<String>();
 		entityLocalPositions = new HashMap<Integer, Vector>();
-		blocksChanged = false;
 		doPhysics = true;
 		blockPositions = new HashSet<BlockPos>();
 		collisionBB = PhysicsWrapperEntity.ZERO_AABB;
@@ -160,6 +154,7 @@ public class PhysicsObject {
 		queuedPhysForces = new ArrayList<PhysicsQueuedForce>();
 		newWatchers = new ArrayList<EntityPlayerMP>();
 		watchingPlayers = new ArrayList<EntityPlayerMP>();
+		nodesWithinShip = new HashSet<Node>();
 	}
 
 	public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos posAt) {
@@ -183,18 +178,12 @@ public class PhysicsObject {
 			return;
 		}
 
-		blocksChanged = true;
-
 		if (isNewAir) {
 			blockPositions.remove(posAt);
-			if (!worldObj.isRemote) {
-				balloonManager.onBlockPositionRemoved(posAt);
-			}
 		}
 
 		if ((isOldAir && !isNewAir)) {
 			if (!worldObj.isRemote) {
-				balloonManager.onBlockPositionAdded(posAt);
 				blockPositions.add(posAt);
 			} else {
 				if (!blockPositions.contains(posAt)) {
@@ -706,7 +695,6 @@ public class PhysicsObject {
 
 	public void onTick() {
 		if (!worldObj.isRemote) {
-			balloonManager.onPostTick();
 			for (Entity e : queuedEntitiesToMount) {
 				if (e != null) {
 					e.startRiding(this.wrapper, true);

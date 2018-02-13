@@ -30,7 +30,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.addon.control.balloon.BalloonProcessor;
 import valkyrienwarfare.addon.control.nodenetwork.IPhysicsProcessorNode;
 import valkyrienwarfare.addon.control.nodenetwork.Node;
 import valkyrienwarfare.api.IBlockForceProvider;
@@ -241,7 +240,6 @@ public class PhysicsCalculations {
             updateParentCenterOfMass();
             calculateFramedMOITensor();
             if (!actAsArchimedes) {
-                sendPhysicsProcessorsTicks();
                 calculateForces();
             } else {
                 calculateForcesArchimedes();
@@ -257,7 +255,7 @@ public class PhysicsCalculations {
 
     public void rawPhysTickPostCol() {
         if (parent.doPhysics) {
-            if (!arePhysicsGoingWayTooFast()) {
+            if (!isPhysicsBroken()) {
                 if (PhysicsSettings.doAirshipRotation) {
                     applyAngularVelocity();
                 }
@@ -272,7 +270,7 @@ public class PhysicsCalculations {
         }
     }
 
-    private boolean arePhysicsGoingWayTooFast() {
+    private boolean isPhysicsBroken() {
         if (angularVelocity.lengthSq() > 50000) {
             System.out.println("Ship tried moving too fast; freezing it and reseting velocities");
             return true;
@@ -304,7 +302,7 @@ public class PhysicsCalculations {
 
     // Applies the rotation transform onto the Moment of Inertia to generate the REAL MOI at that given instant
     private void calculateFramedMOITensor() {
-        framedMOI = new double[9];
+        framedMOI = RotationMatrices.getZeroMatrix(3);
         Matrix3d pitch = new Matrix3d();
         Matrix3d yaw = new Matrix3d();
         Matrix3d roll = new Matrix3d();
@@ -370,19 +368,6 @@ public class PhysicsCalculations {
             }
         }
 
-        if (PhysicsSettings.doBalloons) {
-            for (BalloonProcessor balloon : parent.balloonManager.balloonProcessors) {
-                balloon.tickBalloonTemperatures(getPhysTickSpeed(), this);
-
-                Vector balloonForce = balloon.getBalloonForce(getPhysTickSpeed(), this);
-                Vector balloonCenterInBody = balloon.getForceCenter();
-
-                BigBastardMath.getBodyPosWithOrientation(balloonCenterInBody, centerOfMass, parent.coordTransform.lToWRotation, inBodyWO);
-
-                addForceAtPoint(inBodyWO, balloonForce, crossVector);
-            }
-        }
-
         convertTorqueToVelocity();
     }
 
@@ -402,13 +387,6 @@ public class PhysicsCalculations {
         angularVelocity.multiply(drag);
     }
 
-    public void sendPhysicsProcessorsTicks() {
-//		HashSet<nodenetwork> shipNodeNetworks = parent.nodeNetworksWithinShip;
-//		for(nodenetwork network : shipNodeNetworks){
-//			System.out.println("Dayum");
-//		}
-    }
-
     public void addQueuedForces() {
         Collections.shuffle(parent.queuedPhysForces);
         for (PhysicsQueuedForce queuedForce : parent.queuedPhysForces) {
@@ -417,17 +395,11 @@ public class PhysicsCalculations {
                 RotationMatrices.doRotationOnly(parent.coordTransform.lToWRotation, forceVec);
             }
             forceVec.multiply(getPhysTickSpeed());
-
             Vector posVec = new Vector(queuedForce.inBodyPos);
-            // RotationMatrices.applyTransform(parent.coordTransform.lToWTransform, posVec);
             posVec.X -= wrapperEnt.posX;
             posVec.Y -= wrapperEnt.posY;
             posVec.Z -= wrapperEnt.posZ;
-
             addForceAtPoint(posVec, forceVec);
-            // System.out.println(posVec);
-            // torque.add(posVec.cross(forceVec));
-            // linearMomentum.add(forceVec);
         }
     }
 
@@ -470,18 +442,11 @@ public class PhysicsCalculations {
     }
 
     public void applyLinearVelocity() {
-        if (mass > 0) {
-            double momentMod = getPhysTickSpeed() * getInvMass();
-            wrapperEnt.posX += (linearMomentum.X * momentMod);
-            wrapperEnt.posY += (linearMomentum.Y * momentMod);
-            wrapperEnt.posZ += (linearMomentum.Z * momentMod);
-        }
-        if (wrapperEnt.posY > ValkyrienWarfareMod.shipUpperLimit) {
-            wrapperEnt.posY = ValkyrienWarfareMod.shipUpperLimit;
-        }
-        if (wrapperEnt.posY < ValkyrienWarfareMod.shipLowerLimit) {
-            wrapperEnt.posY = ValkyrienWarfareMod.shipLowerLimit;
-        }
+        double momentMod = getPhysTickSpeed() * getInvMass();
+        wrapperEnt.posX += (linearMomentum.X * momentMod);
+        wrapperEnt.posY += (linearMomentum.Y * momentMod);
+        wrapperEnt.posZ += (linearMomentum.Z * momentMod);
+        wrapperEnt.posY = Math.min(Math.max(wrapperEnt.posY, ValkyrienWarfareMod.shipLowerLimit), ValkyrienWarfareMod.shipUpperLimit);
     }
 
     public Vector getVelocityAtPoint(Vector inBodyWO) {

@@ -481,7 +481,6 @@ public class ValkyrienWarfareMod {
 
 		PhysicsSettings.doGravity = tag.getBoolean("doGravity", true);
 		PhysicsSettings.doPhysicsBlocks = tag.getBoolean("doPhysicsBlocks", true);
-		PhysicsSettings.doBalloons = tag.getBoolean("doBalloons", true);
 		PhysicsSettings.doAirshipRotation = tag.getBoolean("doAirshipRotation", true);
 		PhysicsSettings.doAirshipMovement = tag.getBoolean("doAirshipMovement", true);
 		ValkyrienWarfareMod.maxShipSize = tag.getInteger("maxShipSize", 15000);
@@ -498,7 +497,6 @@ public class ValkyrienWarfareMod {
 	public void saveConfig() {
 		tag.setBoolean("doGravity", PhysicsSettings.doGravity);
 		tag.setBoolean("doPhysicsBlocks", PhysicsSettings.doPhysicsBlocks);
-		tag.setBoolean("doBalloons", PhysicsSettings.doBalloons);
 		tag.setBoolean("doAirshipRotation", PhysicsSettings.doAirshipRotation);
 		tag.setBoolean("doAirshipMovement", PhysicsSettings.doAirshipMovement);
 		tag.setInteger("maxShipSize", ValkyrienWarfareMod.maxShipSize);

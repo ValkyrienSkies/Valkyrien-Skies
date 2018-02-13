@@ -58,7 +58,6 @@ import valkyrienwarfare.addon.control.piloting.PilotControlsMessage;
 import valkyrienwarfare.addon.control.piloting.PilotControlsMessageHandler;
 import valkyrienwarfare.addon.control.proxy.ClientProxyControl;
 import valkyrienwarfare.addon.control.proxy.CommonProxyControl;
-import valkyrienwarfare.addon.control.tileentity.BalloonBurnerTileEntity;
 import valkyrienwarfare.addon.control.tileentity.ThrustModulatorTileEntity;
 import valkyrienwarfare.addon.control.tileentity.ThrustRelayTileEntity;
 import valkyrienwarfare.addon.control.tileentity.TileEntityGyroscope;
@@ -127,7 +126,6 @@ public class ValkyrienWarfareControl extends Module<ValkyrienWarfareControl> {
     protected void registerTileEntities() {
         GameRegistry.registerTileEntity(TileEntityHoverController.class, "tilehovercontroller");
         GameRegistry.registerTileEntity(TileEntityNormalEtherCompressor.class, "tileantigravengine");
-        GameRegistry.registerTileEntity(BalloonBurnerTileEntity.class, "tileballoonburner");
         GameRegistry.registerTileEntity(TileEntityPilotsChair.class, "tilemanualshipcontroller");
         GameRegistry.registerTileEntity(ThrustRelayTileEntity.class, "tilethrustrelay");
         GameRegistry.registerTileEntity(ThrustModulatorTileEntity.class, "tilethrustmodulator");
@@ -156,7 +154,6 @@ public class ValkyrienWarfareControl extends Module<ValkyrienWarfareControl> {
     public void registerRecipes(RegistryEvent.Register<IRecipe> event) {
         registerRecipe(event, new ItemStack(blocks.pilotsChair), "SLS", "EWE", " S ", 'S', Items.STICK, 'L', Items.LEATHER, 'W', Item.getItemFromBlock(Blocks.LOG), 'E', ValkyrienWarfareWorld.INSTANCE.etheriumCrystal);
         registerRecipe(event, new ItemStack(systemLinker), "IR ", " DR", "I I", 'I', Items.IRON_INGOT, 'D', Items.DIAMOND, 'R', Items.REDSTONE);
-        registerRecipe(event, new ItemStack(blocks.balloonBurner), "IFI", "WIW", "PPP", 'I', Items.IRON_INGOT, 'F', Items.FLINT_AND_STEEL, 'W', Item.getItemFromBlock(Blocks.LOG), 'P', Item.getItemFromBlock(Blocks.PLANKS));
         registerRecipe(event, new ItemStack(blocks.basicHoverController), "III", "TCT", "III", 'I', Item.getItemFromBlock(Blocks.IRON_BLOCK), 'C', Items.COMPASS, 'T', Item.getItemFromBlock(Blocks.CRAFTING_TABLE));
 
         registerRecipe(event, new ItemStack(blocks.antigravityEngine, 4), "#I#", "#E#", "WEW", '#', Item.getItemFromBlock(Blocks.PLANKS), 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorld.INSTANCE.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));

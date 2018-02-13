@@ -7,7 +7,6 @@ import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.RegistryEvent;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.block.BlockAirshipController_Zepplin;
-import valkyrienwarfare.addon.control.block.BlockBalloonBurner;
 import valkyrienwarfare.addon.control.block.BlockDopedEtherium;
 import valkyrienwarfare.addon.control.block.BlockGyroscope;
 import valkyrienwarfare.addon.control.block.BlockHovercraftController;
@@ -37,7 +36,6 @@ public class BlocksValkyrienWarfareControl {
     public Block redstoneEngine;
     public Block basicHoverController;
     public Block dopedEtherium;
-    public Block balloonBurner;
     public Block pilotsChair;
     public Block passengerChair;
     public Block shipHelm;
@@ -119,8 +117,6 @@ public class BlocksValkyrienWarfareControl {
                 .setRegistryName(getModID(), "basichovercraftcontroller").setCreativeTab(ValkyrienWarfareMod.vwTab);
         dopedEtherium = new BlockDopedEtherium(Material.GLASS).setHardness(4f).setUnlocalizedName("dopedetherium")
                 .setRegistryName(getModID(), "dopedetherium").setCreativeTab(ValkyrienWarfareMod.vwTab);
-        balloonBurner = new BlockBalloonBurner(Material.IRON).setHardness(4f).setUnlocalizedName("balloonburner")
-                .setRegistryName(getModID(), "balloonburner").setCreativeTab(ValkyrienWarfareMod.vwTab);
         pilotsChair = new BlockShipPilotsChair(Material.IRON).setHardness(4f).setUnlocalizedName("shippilotschair")
                 .setRegistryName(getModID(), "shippilotschair").setCreativeTab(ValkyrienWarfareMod.vwTab);
 
@@ -166,7 +162,6 @@ public class BlocksValkyrienWarfareControl {
 
         event.getRegistry().register(basicHoverController);
         event.getRegistry().register(dopedEtherium);
-        event.getRegistry().register(balloonBurner);
         event.getRegistry().register(pilotsChair);
         event.getRegistry().register(passengerChair);
 
@@ -197,7 +192,6 @@ public class BlocksValkyrienWarfareControl {
 
         registerItemBlock(event, basicHoverController);
         registerItemBlock(event, dopedEtherium);
-        registerItemBlock(event, balloonBurner);
         registerItemBlock(event, pilotsChair);
         registerItemBlock(event, passengerChair);
 

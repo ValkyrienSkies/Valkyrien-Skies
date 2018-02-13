@@ -32,28 +32,7 @@ import valkyrienwarfare.math.BigBastardMath;
  */
 public class RotationMatrices {
 
-	public static final float[] transpose(float[] matrix) {
-		float[] transpose = new float[16];
-		transpose[0] = matrix[0];
-		transpose[1] = matrix[4];
-		transpose[2] = matrix[8];
-		transpose[3] = matrix[12];
-		transpose[4] = matrix[1];
-		transpose[5] = matrix[5];
-		transpose[6] = matrix[9];
-		transpose[7] = matrix[13];
-		transpose[8] = matrix[2];
-		transpose[9] = matrix[6];
-		transpose[10] = matrix[10];
-		transpose[11] = matrix[14];
-		transpose[12] = matrix[3];
-		transpose[13] = matrix[7];
-		transpose[14] = matrix[11];
-		transpose[15] = matrix[15];
-		return transpose;
-	}
-
-	public static final double[] getTranslationMatrix(double x, double y, double z) {
+	public static double[] getTranslationMatrix(double x, double y, double z) {
 		double[] matrix = getDoubleIdentity();
 		matrix[3] = x;
 		matrix[7] = y;
@@ -61,7 +40,7 @@ public class RotationMatrices {
 		return matrix;
 	}
 
-	public static final double[] rotateAndTranslate(double[] input, double pitch, double yaw, double roll, Vector localOrigin) {
+	public static double[] rotateAndTranslate(double[] input, double pitch, double yaw, double roll, Vector localOrigin) {
 		input = RotationMatrices.getMatrixProduct(input, RotationMatrices.getRotationMatrix(1.0D, 0.0D, 0.0D, Math.toRadians(pitch)));
 		input = RotationMatrices.getMatrixProduct(input, RotationMatrices.getRotationMatrix(0.0D, 1.0D, 0.0D, Math.toRadians(yaw)));
 		input = RotationMatrices.getMatrixProduct(input, RotationMatrices.getRotationMatrix(0.0D, 0.0D, 1.0D, Math.toRadians(roll)));
@@ -69,21 +48,21 @@ public class RotationMatrices {
 		return input;
 	}
 
-	public static final double[] rotateOnly(double[] input, double pitch, double yaw, double roll) {
+	public static double[] rotateOnly(double[] input, double pitch, double yaw, double roll) {
 		input = RotationMatrices.getMatrixProduct(input, RotationMatrices.getRotationMatrix(1.0D, 0.0D, 0.0D, Math.toRadians(pitch)));
 		input = RotationMatrices.getMatrixProduct(input, RotationMatrices.getRotationMatrix(0.0D, 1.0D, 0.0D, Math.toRadians(yaw)));
 		input = RotationMatrices.getMatrixProduct(input, RotationMatrices.getRotationMatrix(0.0D, 0.0D, 1.0D, Math.toRadians(roll)));
 		return input;
 	}
 
-	public static final double[] getRotationMatrix(double pitch, double yaw, double roll) {
+	public static double[] getRotationMatrix(double pitch, double yaw, double roll) {
 		double[] input = RotationMatrices.getRotationMatrix(1.0D, 0.0D, 0.0D, Math.toRadians(pitch));
 		input = RotationMatrices.getMatrixProduct(input, RotationMatrices.getRotationMatrix(0.0D, 1.0D, 0.0D, Math.toRadians(yaw)));
 		input = RotationMatrices.getMatrixProduct(input, RotationMatrices.getRotationMatrix(0.0D, 0.0D, 1.0D, Math.toRadians(roll)));
 		return input;
 	}
 
-	public static final double[] getRotationMatrix(double ux, double uy, double uz, double angle) {
+	public static double[] getRotationMatrix(double ux, double uy, double uz, double angle) {
 		if ((ux == 0.0D) && (uy == 0.0D) && (uz == 0.0D)) {
 			return getDoubleIdentity();
 		}
@@ -107,30 +86,15 @@ public class RotationMatrices {
 		return matrix;
 	}
 
-	public static final double[] getDoubleIdentity() {
+	public static double[] getDoubleIdentity() {
 		return new double[] { 1.0D, 0, 0, 0, 0, 1.0D, 0, 0, 0, 0, 1.0D, 0, 0, 0, 0, 1.0D };
 	}
 
-	public static final double[] getDoubleIdentity(int size) {
-		double[] identity = new double[size * size];
-		for (int i = 0; i < identity.length; i += size + 1) {
-			identity[i] = 1.0D;
-			for (int j = i + 1; (j < i + size + 1) && (j < identity.length); j++) {
-				identity[j] = 0.0D;
-			}
-		}
-		return identity;
+	public static double[] getZeroMatrix(int size) {
+		return new double[size * size];
 	}
 
-	public static final double[] getZeroMatrix(int size) {
-		double[] zero = new double[size * size];
-		for (int i = 0; i < zero.length; i++) {
-			zero[i] = 0.0D;
-		}
-		return zero;
-	}
-
-	public static final double[] getMatrixProduct(double[] M1, double[] M2) {
+	public static double[] getMatrixProduct(double[] M1, double[] M2) {
 		double[] product = new double[16];
 		product[0] = (M1[0] * M2[0] + M1[1] * M2[4] + M1[2] * M2[8] + M1[3] * M2[12]);
 		product[1] = (M1[0] * M2[1] + M1[1] * M2[5] + M1[2] * M2[9] + M1[3] * M2[13]);
@@ -151,7 +115,7 @@ public class RotationMatrices {
 		return product;
 	}
 
-	public static final void applyTransform(double[] M, Vector vec) {
+	public static void applyTransform(double[] M, Vector vec) {
 		double x = vec.X;
 		double y = vec.Y;
 		double z = vec.Z;
@@ -161,7 +125,7 @@ public class RotationMatrices {
 	}
 
 	@Deprecated
-	public static final void applyTransform(double[] wholeTransform, double[] rotationTransform, Entity ent) {
+	public static void applyTransform(double[] wholeTransform, double[] rotationTransform, Entity ent) {
 		Vector entityPos = new Vector(ent.posX, ent.posY, ent.posZ);
 		Vector entityLook = new Vector(ent.getLook(1.0F));
 		Vector entityMotion = new Vector(ent.motionX, ent.motionY, ent.motionZ);
@@ -206,21 +170,21 @@ public class RotationMatrices {
 		ent.setPosition(entityPos.X, entityPos.Y, entityPos.Z);
 	}
 
-	public static final BlockPos applyTransform(double[] M, BlockPos pos) {
+	public static BlockPos applyTransform(double[] M, BlockPos pos) {
 		Vector blockPosVec = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
 		applyTransform(M, blockPosVec);
 		BlockPos newPos = new BlockPos(Math.round(blockPosVec.X - .5D), Math.round(blockPosVec.Y - .5D), Math.round(blockPosVec.Z - .5D));
 		return newPos;
 	}
 
-	public static final Vec3d applyTransform(double[] M, Vec3d vec) {
+	public static Vec3d applyTransform(double[] M, Vec3d vec) {
 		double x = vec.x;
 		double y = vec.y;
 		double z = vec.z;
 		return new Vec3d((x * M[0] + y * M[1] + z * M[2] + M[3]), (x * M[4] + y * M[5] + z * M[6] + M[7]), (x * M[8] + y * M[9] + z * M[10] + M[11]));
 	}
 
-	public static final void applyTransform3by3(double[] M, Vector vec) {
+	public static void applyTransform3by3(double[] M, Vector vec) {
 		double xx = vec.X;
 		double yy = vec.Y;
 		double zz = vec.Z;
@@ -229,7 +193,7 @@ public class RotationMatrices {
 		vec.Z = (xx * M[6] + yy * M[7] + zz * M[8]);
 	}
 
-	public static final void doRotationOnly(double[] M, Vector vec) {
+	public static void doRotationOnly(double[] M, Vector vec) {
 		double x = vec.X;
 		double y = vec.Y;
 		double z = vec.Z;
@@ -238,7 +202,7 @@ public class RotationMatrices {
 		vec.Z = x * M[8] + y * M[9] + z * M[10];
 	}
 
-	public static final float[] convertToFloat(double[] array) {
+	public static float[] convertToFloat(double[] array) {
 		float[] floatArray = new float[array.length];
 		for (int i = 0; i < array.length; i++) {
 			floatArray[i] = (float) array[i];
@@ -246,13 +210,13 @@ public class RotationMatrices {
 		return floatArray;
 	}
 
-	public static final void convertToFloat(double[] toConvert, float[] toFill) {
+	public static void convertToFloat(double[] toConvert, float[] toFill) {
 		for (int i = 0; i < toConvert.length; i++) {
 			toFill[i] = (float) toConvert[i];
 		}
 	}
 
-	public static final double[] convertToDouble(float[] array) {
+	public static double[] convertToDouble(float[] array) {
 		double[] doubleArray = new double[array.length];
 		for (int i = 0; i < array.length; i++) {
 			doubleArray[i] = array[i];
@@ -260,19 +224,19 @@ public class RotationMatrices {
 		return doubleArray;
 	}
 
-	public static final Vector get3by3TransformedVec(double[] M, Vector v) {
+	public static Vector get3by3TransformedVec(double[] M, Vector v) {
 		Vector vec = new Vector(v);
 		applyTransform3by3(M, vec);
 		return vec;
 	}
 
-	public static final Vector getTransformedVec(double[] M, Vector v) {
+	public static Vector getTransformedVec(double[] M, Vector v) {
 		Vector vec = new Vector(v);
 		applyTransform(M, vec);
 		return vec;
 	}
 
-	public static final double[] inverse3by3(double[] matrix) {
+	public static double[] inverse3by3(double[] matrix) {
 		double[] inverse = new double[9];
 		inverse[0] = (matrix[4] * matrix[8] - matrix[5] * matrix[7]);
 		inverse[3] = (matrix[5] * matrix[6] - matrix[3] * matrix[8]);
@@ -290,7 +254,7 @@ public class RotationMatrices {
 		return inverse;
 	}
 
-	public static final double[] inverse(double[] matrix) {
+	public static double[] inverse(double[] matrix) {
 		double[] inverse = new double[16];
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {

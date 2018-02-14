@@ -22,7 +22,7 @@ public class MixinBlockStateContainer implements IBitOctreeProvider {
     BitArray storage;
 
     @Overwrite
-    protected void set(int index, IBlockState state) {
+    public void set(int index, IBlockState state) {
         int i = this.palette.idFor(state);
         this.storage.setAt(index, i);
         // VW code starts here:

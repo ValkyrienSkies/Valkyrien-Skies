@@ -106,13 +106,6 @@ public class Vector {
 		Y -= y;
 		Z -= z;
 	}
-
-	public void subtract(Vec3d vec) {
-		X -= vec.x;
-		Y -= vec.y;
-		Z -= vec.z;
-	}
-
 	public final void add(Vector v) {
 		X += v.X;
 		Y += v.Y;
@@ -125,23 +118,12 @@ public class Vector {
 		Z += z;
 	}
 
-	public void add(Vec3d vec) {
-		X += vec.x;
-		Y += vec.y;
-		Z += vec.z;
-	}
-
 	public double dot(Vector v) {
 		return X * v.X + Y * v.Y + Z * v.Z;
 	}
 
 	public Vector cross(Vector v) {
 		return new Vector(Y * v.Z - v.Y * Z, Z * v.X - X * v.Z, X * v.Y - v.X * Y);
-	}
-
-	// v.X and v.Z = 0
-	public Vector upCross(Vector v) {
-		return new Vector(-v.Y * Z, 0, X * v.Y);
 	}
 
 	public final void setCross(Vector v1, Vector v) {

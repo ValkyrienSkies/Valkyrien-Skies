@@ -62,9 +62,9 @@ public class PhysicsCalculations {
     public Vector centerOfMass;
     public Vector linearMomentum;
     public Vector angularVelocity;
-    public Vector torque;
+    
+    private Vector torque;
     private double mass;
-    public Vector gravity = new Vector(0, -9.8D, 0);
     // The time occurring on each PhysTick
     public double physRawSpeed;
     // Number of iterations the solver runs on each game tick
@@ -75,9 +75,6 @@ public class PhysicsCalculations {
     public double[] MoITensor, invMoITensor;
     public double[] framedMOI, invFramedMOI;
     public boolean actAsArchimedes = false;
-    //Used when I update the mass table, to require all old ships to recalculate their inertia matrix and mass
-    @Deprecated
-    public boolean isShipPastBuild91 = false;
 
     public PhysicsCalculations(PhysicsObject toProcess) {
         parent = toProcess;
@@ -110,7 +107,6 @@ public class PhysicsCalculations {
         angularVelocity = toCopy.angularVelocity;
         torque = toCopy.torque;
         mass = toCopy.mass;
-        gravity = toCopy.gravity;
         physRawSpeed = toCopy.physRawSpeed;
         iterations = toCopy.iterations;
         activeForcePositions = toCopy.activeForcePositions;
@@ -119,7 +115,6 @@ public class PhysicsCalculations {
         framedMOI = toCopy.framedMOI;
         invFramedMOI = toCopy.invFramedMOI;
         actAsArchimedes = toCopy.actAsArchimedes;
-        isShipPastBuild91 = toCopy.isShipPastBuild91;
     }
 
     public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos pos) {
@@ -134,16 +129,6 @@ public class PhysicsCalculations {
                 activeForcePositions.add(pos);
             }
         } else {
-            // int index = activeForcePositions.indexOf(pos);
-            // if(BlockForce.basicForces.isBlockProvidingForce(newState, pos, worldObj)){
-            // if(index==-1){
-            // activeForcePositions.add(pos);
-            // }
-            // }else{
-            // if(index!=-1){
-            // activeForcePositions.remove(index);
-            // }
-            // }
             if (activeForcePositions.contains(pos)) {
                 if (!BlockForce.basicForces.isBlockProvidingForce(newState, pos, worldObj)) {
                     activeForcePositions.remove(pos);
@@ -223,18 +208,9 @@ public class PhysicsCalculations {
 
         mass += addedMass;
         invMoITensor = RotationMatrices.inverse3by3(MoITensor);
-        // angularVelocity = RotationMatrices.get3by3TransformedVec(oldMOI, torque);
-        // angularVelocity = RotationMatrices.get3by3TransformedVec(invMoITensor, torque);
-        // System.out.println(MoITensor[0]+":"+MoITensor[1]+":"+MoITensor[2]);
-        // System.out.println(MoITensor[3]+":"+MoITensor[4]+":"+MoITensor[5]);
-        // System.out.println(MoITensor[6]+":"+MoITensor[7]+":"+MoITensor[8]);
     }
 
     public void rawPhysTickPreCol(double newPhysSpeed, int iters) {
-        if (!isShipPastBuild91) {
-            recalculateInertiaMatrices();
-            isShipPastBuild91 = true;
-        }
         if (parent.doPhysics) {
             updatePhysSpeedAndIters(newPhysSpeed, iters);
             updateParentCenterOfMass();
@@ -474,7 +450,6 @@ public class PhysicsCalculations {
         NBTUtils.writeVectorToNBT("CM", centerOfMass, compound);
 
         NBTUtils.write3x3MatrixToNBT("MOI", MoITensor, compound);
-        compound.setBoolean("isShipPastBuild91", isShipPastBuild91);
     }
 
     public void readFromNBTTag(NBTTagCompound compound) {
@@ -486,12 +461,6 @@ public class PhysicsCalculations {
 
         MoITensor = NBTUtils.read3x3MatrixFromNBT("MOI", compound);
 
-        isShipPastBuild91 = compound.getBoolean("isShipPastBuild91");
-        processNBTRead();
-    }
-
-    // Calculates the inverses and the framed MOIs
-    public void processNBTRead() {
         invMoITensor = RotationMatrices.inverse3by3(MoITensor);
     }
 
@@ -514,7 +483,7 @@ public class PhysicsCalculations {
             onSetBlockState(airState, parent.VKChunkCache.getBlockState(pos), pos);
         }
         System.out.println("Recalculated physics inertia matrix for an old Ship of size " + parent.blockPositions.size());
-        processNBTRead();
+        invMoITensor = RotationMatrices.inverse3by3(MoITensor);
     }
     
     // These getter methods guarantee that only code within this class can modify the mass,

@@ -158,6 +158,13 @@ public class PhysicsObject {
 	}
 
 	public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos posAt) {
+       if (!ownedChunks.isChunkEnclosedInMaxSet(posAt.getX() >> 4, posAt.getZ() >> 4)) {
+            return;
+        }
+
+        if (!ownedChunks.isChunkEnclosedInSet(posAt.getX() >> 4, posAt.getZ() >> 4)) {
+            return;
+        }
 		// If the block here is not to be physicsed, just treat it like you'd treat AIR
 		// blocks.
 		if (oldState != null && BlockPhysicsRegistration.blocksToNotPhysicise.contains(oldState.getBlock())) {
@@ -169,14 +176,6 @@ public class PhysicsObject {
 
 		boolean isOldAir = oldState == null || oldState.getBlock().equals(Blocks.AIR);
 		boolean isNewAir = newState == null || newState.getBlock().equals(Blocks.AIR);
-
-		if (!ownedChunks.isChunkEnclosedInMaxSet(posAt.getX() >> 4, posAt.getZ() >> 4)) {
-			return;
-		}
-
-		if (!ownedChunks.isChunkEnclosedInSet(posAt.getX() >> 4, posAt.getZ() >> 4)) {
-			return;
-		}
 
 		if (isNewAir) {
 			blockPositions.remove(posAt);
@@ -199,22 +198,24 @@ public class PhysicsObject {
 			try {
 				if (!worldObj.isRemote) {
 					if (creator != null) {
-						EntityPlayer player = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList()
-								.getPlayerByUUID(UUID.fromString(creator));
+						EntityPlayer player = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUsername(creator);
 						if (player != null) {
 							player.getCapability(ValkyrienWarfareMod.airshipCounter, null).onLose();
 						} else {
-							try {
-								File f = new File(DimensionManager.getCurrentSaveRootDirectory(),
-										"playerdata/" + creator + ".dat");
-								NBTTagCompound tag = CompressedStreamTools.read(f);
-								NBTTagCompound capsTag = tag.getCompoundTag("ForgeCaps");
-								capsTag.setInteger("valkyrienwarfare:IAirshipCounter",
-										capsTag.getInteger("valkyrienwarfare:IAirshipCounter") - 1);
-								CompressedStreamTools.safeWrite(tag, f);
-							} catch (IOException e) {
-								e.printStackTrace();
-							}
+						    // TODO: Fix this later
+						    if (false) {
+    							try {
+    								File f = new File(DimensionManager.getCurrentSaveRootDirectory(),
+    										"playerdata/" + creator + ".dat");
+    								NBTTagCompound tag = CompressedStreamTools.read(f);
+    								NBTTagCompound capsTag = tag.getCompoundTag("ForgeCaps");
+    								capsTag.setInteger("valkyrienwarfare:IAirshipCounter",
+    										capsTag.getInteger("valkyrienwarfare:IAirshipCounter") - 1);
+    								CompressedStreamTools.safeWrite(tag, f);
+    							} catch (IOException e) {
+    								e.printStackTrace();
+    							}
+						    }
 						}
 						ValkyrienWarfareMod.chunkManager.getManagerForWorld(worldObj).data.avalibleChunkKeys
 								.add(ownedChunks.centerX);
@@ -312,9 +313,6 @@ public class PhysicsObject {
 		centerCoord = new Vector(refrenceBlockPos.getX(), refrenceBlockPos.getY(), refrenceBlockPos.getZ());
 
 		createPhysicsCalculations();
-		// The ship just got build, how can it not be the latest?
-		physicsProcessor.isShipPastBuild91 = true;
-
 		BlockPos centerDifference = refrenceBlockPos.subtract(centerInWorld);
 
 		toFollow.placeBlockAndTilesInWorld(worldObj, centerDifference);
@@ -407,8 +405,6 @@ public class PhysicsObject {
 		centerCoord = new Vector(refrenceBlockPos.getX(), refrenceBlockPos.getY(), refrenceBlockPos.getZ());
 
 		createPhysicsCalculations();
-		// The ship just got build, how can it not be the latest?
-		physicsProcessor.isShipPastBuild91 = true;
 
 		BlockPos centerDifference = refrenceBlockPos.subtract(centerInWorld);
 		while (iter.hasNext()) {

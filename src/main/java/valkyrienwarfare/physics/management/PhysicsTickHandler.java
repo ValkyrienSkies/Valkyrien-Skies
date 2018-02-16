@@ -76,7 +76,6 @@ public class PhysicsTickHandler {
 
         for (PhysicsWrapperEntity wrapper : physicsEntities) {
             if (!wrapper.firstUpdate) {
-                wrapper.wrapping.physicsProcessor.gravity = newGravity;
                 wrapper.wrapping.physicsProcessor.rawPhysTickPreCol(newPhysSpeed, iters);
                 wrapper.wrapping.physicsProcessor.worldCollision.tickUpdatingTheCollisionCache();
                 wrapper.wrapping.physicsProcessor.worldCollision.splitIntoCollisionTasks(collisionTasks);

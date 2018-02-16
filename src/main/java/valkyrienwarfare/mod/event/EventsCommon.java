@@ -16,8 +16,8 @@
 
 package valkyrienwarfare.mod.event;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 
 import net.minecraft.entity.Entity;
@@ -30,34 +30,25 @@ import net.minecraft.entity.player.EntityPlayer.SleepResult;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemNameTag;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.event.entity.player.FillBucketEvent;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent.HarvestCheck;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.event.world.BlockEvent;
-import net.minecraftforge.event.world.BlockEvent.BreakEvent;
-import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
 import net.minecraftforge.event.world.BlockEvent.PlaceEvent;
-import net.minecraftforge.event.world.ChunkDataEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.Event.Result;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -72,7 +63,6 @@ import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.combat.entity.EntityMountingWeaponBase;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.mixin.MixinLoaderForge;
 import valkyrienwarfare.mod.capability.IAirshipCounterCapability;
 import valkyrienwarfare.mod.physmanagement.interaction.ValkyrienWarfareWorldEventListener;
 import valkyrienwarfare.physics.management.PhysicsTickHandler;
@@ -81,72 +71,7 @@ import valkyrienwarfare.physics.management.ShipType;
 
 public class EventsCommon {
 
-    public static HashMap<EntityPlayerMP, Double[]> lastPositions = new HashMap<EntityPlayerMP, Double[]>();
-
-    private static final Field[] getFields(Explosion toSet) {
-        try {
-            Field xField, yField, zField, positionField;
-
-            if (!MixinLoaderForge.isObfuscatedEnvironment) {
-                xField = toSet.getClass().getDeclaredField("x");
-                xField.setAccessible(true);
-
-                yField = toSet.getClass().getDeclaredField("y");
-                yField.setAccessible(true);
-
-                zField = toSet.getClass().getDeclaredField("z");
-                zField.setAccessible(true);
-
-                positionField = toSet.getClass().getDeclaredField("position");
-                positionField.setAccessible(true);
-            } else {
-                xField = toSet.getClass().getDeclaredField("field_77284_b");
-                xField.setAccessible(true);
-
-                yField = toSet.getClass().getDeclaredField("field_77285_c");
-                yField.setAccessible(true);
-
-                zField = toSet.getClass().getDeclaredField("field_77282_d");
-                zField.setAccessible(true);
-
-                positionField = toSet.getClass().getDeclaredField("position");
-                positionField.setAccessible(true);
-            }
-            return new Field[]{xField, yField, zField, positionField};
-        } catch (Exception e) {
-        }
-
-        return null;
-    }
-
-    private static final boolean setExplosionPosition(Explosion toSet, double x, double y, double z, Field[] fields) {
-        if (fields == null) {
-            return false;
-        }
-        try {
-            Field xField = fields[0], yField = fields[1], zField = fields[2], positionField = fields[3];
-
-            double testX = toSet.x;
-
-            xField.setDouble(toSet, x);
-
-            double testY = toSet.y;
-
-            yField.setDouble(toSet, y);
-
-            double testZ = toSet.z;
-
-            zField.setDouble(toSet, z);
-
-            positionField.set(toSet, new Vec3d(x, y, z));
-
-            toSet.getAffectedBlockPositions().clear();
-            toSet.getPlayerKnockbackMap().clear();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
+    public static final Map<EntityPlayer, Double[]> lastPositions = new HashMap<EntityPlayer, Double[]>();
 
     @SubscribeEvent()
     public void onPlayerSleepInBedEvent(PlayerSleepInBedEvent event) {
@@ -212,51 +137,11 @@ public class EventsCommon {
             if (!worldFor.isRemote) {
                 if (event.phase == Phase.START) {
                     PhysicsTickHandler.onWorldTickStart(worldFor);
-                }
-                if (event.phase == Phase.END) {
+                } else if (event.phase == Phase.END) {
                     PhysicsTickHandler.onWorldTickEnd(worldFor);
-                    if (worldFor instanceof WorldServer) {
-//                        addOrRemovedAllShipChunksFromMap((WorldServer) worldFor, false);
-                    }
                 }
             }
         }
-    }
-
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public void worldTick(TickEvent.WorldTickEvent event) {
-        if ((event.phase == TickEvent.Phase.END) && (!event.world.isRemote)) {
-            World worldFor = event.world;
-            if (worldFor instanceof WorldServer) {
-//                addOrRemovedAllShipChunksFromMap((WorldServer) worldFor, true);
-            }
-        }
-    }
-
-    /**
-     * Either removes or adds all Ship Chunk entries to the World. Its a stupid fix for ChickenChunks; Blame Him For This Mess!!!
-     * Necessary to prevent ChickenChunks from trying to unload the Ship Chunks, and remove the player index in WatchingPlayers while its at it!
-     *
-     * @param worldFor
-     * @param amAdding Use true to add all chunks, false to remove all chunks
-     */
-    public void addOrRemovedAllShipChunksFromMap(WorldServer worldFor, boolean amAdding) {
-        for (PhysicsWrapperEntity wrapper : ValkyrienWarfareMod.physicsManager.getManagerForWorld(worldFor).physicsEntities) {
-            for (Chunk[] chunks : wrapper.wrapping.claimedChunks) {
-                for (Chunk chunk : chunks) {
-                    if (amAdding) {
-//                        ((WorldServer) worldFor).getChunkProvider().id2ChunkMap.put(ChunkPos.asLong(chunk.x, chunk.z), chunk);
-                    } else {
-//						((WorldServer)worldFor).getChunkProvider().id2ChunkMap.remove(ChunkPos.chunkXZ2Int(chunk.x, chunk.z))
-                    }
-                }
-            }
-        }
-    }
-
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onFillBucketEvent(FillBucketEvent event) {
-//		event.setResult(Result.ALLOW);
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -286,118 +171,6 @@ public class EventsCommon {
         }
     }
 
-    /**
-     * @SubscribeEvent(priority = EventPriority.HIGHEST)
-     * public void onExplosionDetonateEvent(ExplosionEvent.Detonate event) {
-     * Explosion e = event.getExplosion();
-     * <p>
-     * double xx = e.x, yy = e.y, zz = e.z;
-     * List<BlockPos> affectedPositionsList = new ArrayList<BlockPos>(e.getAffectedBlockPositions());
-     * Map<EntityPlayer, Vec3d> playerKnockbackMap = new HashMap<EntityPlayer, Vec3d>(e.getPlayerKnockbackMap());
-     * <p>
-     * Vector center = new Vector(e.x, e.y, e.z);
-     * World worldIn = e.worldObj;
-     * float radius = e.explosionSize;
-     * <p>
-     * AxisAlignedBB toCheck = new AxisAlignedBB(center.X - radius, center.Y - radius, center.Z - radius, center.X + radius, center.Y + radius, center.Z + radius);
-     * List<PhysicsWrapperEntity> shipsNear = ValkyrienWarfareMod.physicsManager.getManagerForWorld(e.worldObj).getNearbyPhysObjects(toCheck);
-     * // e.doExplosionA();
-     * // TODO: Make this compatible and shit!
-     * Field[] fields = getFields(e);
-     * <p>
-     * for (PhysicsWrapperEntity ship : shipsNear) {
-     * Vector inLocal = new Vector(center);
-     * RotationMatrices.applyTransform(ship.wrapping.coordTransform.wToLTransform, inLocal);
-     * // inLocal.roundToWhole();
-     * <p>
-     * // Explosion expl = new Explosion(ship.worldObj, null, inLocal.X, inLocal.Y, inLocal.Z, radius, false, false);
-     * <p>
-     * Explosion expl = e;
-     * <p>
-     * if (setExplosionPosition(e, inLocal.X, inLocal.Y, inLocal.Z, fields)) {
-     * <p>
-     * double waterRange = .6D;
-     * <p>
-     * boolean cancelDueToWater = false;
-     * <p>
-     * for (int x = (int) math.floor(expl.x - waterRange); x <= math.ceil(expl.x + waterRange); x++) {
-     * for (int y = (int) math.floor(expl.y - waterRange); y <= math.ceil(expl.y + waterRange); y++) {
-     * for (int z = (int) math.floor(expl.z - waterRange); z <= math.ceil(expl.z + waterRange); z++) {
-     * if (!cancelDueToWater) {
-     * IBlockState state = e.worldObj.getBlockState(new BlockPos(x, y, z));
-     * if (state.getBlock() instanceof BlockLiquid) {
-     * cancelDueToWater = true;
-     * }
-     * }
-     * }
-     * }
-     * }
-     * <p>
-     * expl.doExplosionA();
-     * <p>
-     * double affectedPositions = 0D;
-     * <p>
-     * for (Object o : expl.affectedBlockPositions) {
-     * BlockPos pos = (BlockPos) o;
-     * IBlockState state = ship.worldObj.getBlockState(pos);
-     * block block = state.getBlock();
-     * if (!block.isAir(state, worldIn, (BlockPos) o) || ship.wrapping.explodedPositionsThisTick.contains((BlockPos) o)) {
-     * affectedPositions++;
-     * }
-     * }
-     * <p>
-     * if (!cancelDueToWater) {
-     * for (Object o : expl.affectedBlockPositions) {
-     * BlockPos pos = (BlockPos) o;
-     * <p>
-     * IBlockState state = ship.worldObj.getBlockState(pos);
-     * block block = state.getBlock();
-     * if (!block.isAir(state, worldIn, (BlockPos) o) || ship.wrapping.explodedPositionsThisTick.contains((BlockPos) o)) {
-     * if (block.canDropFromExplosion(expl)) {
-     * block.dropBlockAsItemWithChance(ship.worldObj, pos, state, 1.0F / expl.explosionSize, 0);
-     * }
-     * block.onBlockExploded(ship.worldObj, pos, expl);
-     * if (!worldIn.isRemote) {
-     * Vector posVector = new Vector(pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5);
-     * <p>
-     * ship.wrapping.coordTransform.fromLocalToGlobal(posVector);
-     * <p>
-     * double mass = BlockMass.basicMass.getMassFromState(state, pos, ship.worldObj);
-     * <p>
-     * double explosionForce = math.sqrt(e.explosionSize) * 1000D * mass;
-     * <p>
-     * Vector forceVector = new Vector(pos.getX() + .5 - expl.x, pos.getY() + .5 - expl.y, pos.getZ() + .5 - expl.z);
-     * <p>
-     * double vectorDist = forceVector.length();
-     * <p>
-     * forceVector.normalize();
-     * <p>
-     * forceVector.multiply(explosionForce / vectorDist);
-     * <p>
-     * RotationMatrices.doRotationOnly(ship.wrapping.coordTransform.lToWRotation, forceVector);
-     * <p>
-     * PhysicsQueuedForce queuedForce = new PhysicsQueuedForce(forceVector, posVector, false, 1);
-     * <p>
-     * if (!ship.wrapping.explodedPositionsThisTick.contains(pos)) {
-     * ship.wrapping.explodedPositionsThisTick.add(pos);
-     * }
-     * <p>
-     * ship.wrapping.queueForce(queuedForce);
-     * }
-     * }
-     * }
-     * }
-     * <p>
-     * }
-     * e.getAffectedBlockPositions().clear();
-     * e.getAffectedBlockPositions().addAll(affectedPositionsList);
-     * e.getPlayerKnockbackMap().clear();
-     * e.getPlayerKnockbackMap().putAll(playerKnockbackMap);
-     * <p>
-     * }
-     * }
-     **/
-
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onWorldLoad(WorldEvent.Load event) {
         event.getWorld().addEventListener(new ValkyrienWarfareWorldEventListener(event.getWorld()));
@@ -408,22 +181,10 @@ public class EventsCommon {
         if (!event.getWorld().isRemote) {
             ValkyrienWarfareMod.chunkManager.removeWorld(event.getWorld());
         } else {
-            //fixes memory leak; @DaPorkChop please don't leave static maps lying around D:
+            // Fixes memory leak; @DaPorkChop please don't leave static maps lying around D:
             lastPositions.clear();
         }
         ValkyrienWarfareMod.physicsManager.removeWorld(event.getWorld());
-    }
-
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onChunkNBTLoad(ChunkDataEvent.Load event) {
-        NBTTagCompound data = event.getData();
-
-    }
-
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onChunkNBTUnload(ChunkDataEvent.Save event) {
-        NBTTagCompound data = event.getData();
-
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -448,21 +209,6 @@ public class EventsCommon {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onPlayerOpenContainerEvent(PlayerContainerEvent event) {
         event.setResult(Result.ALLOW);
-    }
-
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onBreakEvent(BreakEvent event) {
-
-    }
-
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onHarvestDropsEvent(HarvestDropsEvent event) {
-
-    }
-
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onHarvestCheck(HarvestCheck event) {
-
     }
 
     //Notice that this event fires for both Entities and TileEntities, so an instanceof is needed to stop weird bugs
@@ -501,9 +247,8 @@ public class EventsCommon {
     @SubscribeEvent
     public void onJoin(PlayerLoggedInEvent event) {
         if (!event.player.world.isRemote) {
-            lastPositions.put((EntityPlayerMP) event.player, new Double[]{0D, 256D, 0D});
-
             EntityPlayerMP player = (EntityPlayerMP) event.player;
+            lastPositions.put(player, new Double[]{0D, 256D, 0D});
 
             if (player.getName().equals("Drake_Eldridge") || player.getDisplayName().equals("Drake_Eldridge")) {
                 WorldServer server = (WorldServer) event.player.world;
@@ -512,7 +257,6 @@ public class EventsCommon {
                     player.setPosition(player.posX, 696969, player.posZ);
                     server.mcServer.getPlayerList().sendMessage(new TextComponentString("Cheers m8!"));
                 }
-
                 server.mcServer.getPlayerList().sendMessage(new TextComponentString("DEL is a very special boy, and this annoying greeting is made just for him"));
 
                 for (int i = 0; i < 3; i++) {
@@ -556,10 +300,6 @@ public class EventsCommon {
                     event.setCanceled(true);
                     return;
                 }
-
-                if (physObj.wrapping.getShipType() == ShipType.Oribtal) {
-                    //Do not let it break
-                }
             }
         }
     }
@@ -571,12 +311,8 @@ public class EventsCommon {
             if (ValkyrienWarfareMod.runAirshipPermissions && !(physObj.wrapping.creator.equals(event.getPlayer().entityUniqueID.toString()) || physObj.wrapping.allowedUsers.contains(event.getPlayer().entityUniqueID.toString()))) {
                 event.getPlayer().sendMessage(new TextComponentString("You need to be added to the airship to do that!" + (physObj.wrapping.creator == null || physObj.wrapping.creator.trim().isEmpty() ? " Try using \"/airshipSettings claim\"!" : "")));
                 event.setCanceled(true);
-                return;
-            }
-
-            if (physObj.wrapping.getShipType() == ShipType.Oribtal) {
-                //Do not let it place any blocks
-//				System.out.println("test");
+            } else if (physObj.wrapping.getShipType() == ShipType.Oribtal) {
+                // Do not let it place any blocks
                 event.setCanceled(true);
             }
         }

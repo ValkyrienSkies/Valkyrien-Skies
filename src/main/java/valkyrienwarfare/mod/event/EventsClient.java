@@ -16,55 +16,41 @@
 
 package valkyrienwarfare.mod.event;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
-import net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
-import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
-import org.lwjgl.opengl.GL11;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.fixes.SoundFixWrapper;
+import valkyrienwarfare.mod.network.PlayerShipRefrenceMessage;
 import valkyrienwarfare.mod.physmanagement.interaction.EntityDraggable;
 import valkyrienwarfare.mod.physmanagement.interaction.IDraggable;
-import valkyrienwarfare.mod.network.PlayerShipRefrenceMessage;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.physics.management.WorldPhysObjectManager;
 
 public class EventsClient {
 
-    private final static Minecraft mc = Minecraft.getMinecraft();
-
     private static double oldXOff;
     private static double oldYOff;
     private static double oldZOff;
 
-    protected static final Vec3d getVectorForRotation(float pitch, float yaw) {
-        float f = MathHelper.cos(-yaw * 0.017453292F - (float) Math.PI);
-        float f1 = MathHelper.sin(-yaw * 0.017453292F - (float) Math.PI);
-        float f2 = -MathHelper.cos(-pitch * 0.017453292F);
-        float f3 = MathHelper.sin(-pitch * 0.017453292F);
-        return new Vec3d((double) (f1 * f2), (double) f3, (double) (f * f2));
-    }
-
     public static void updatePlayerMouseOver(Entity entity) {
-        if (entity != Minecraft.getMinecraft().player) {
-            return;
+        if (entity == Minecraft.getMinecraft().player) {
+            Minecraft.getMinecraft().entityRenderer.getMouseOver(Minecraft.getMinecraft().getRenderPartialTicks());
         }
-        Minecraft.getMinecraft().entityRenderer.getMouseOver(Minecraft.getMinecraft().getRenderPartialTicks());
     }
 
     @SubscribeEvent
@@ -85,6 +71,7 @@ public class EventsClient {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onClientTickEvent(ClientTickEvent event) {
+        Minecraft mc = Minecraft.getMinecraft();
         if (mc.world != null) {
             if (!mc.isGamePaused()) {
                 WorldPhysObjectManager manager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(mc.world);
@@ -106,21 +93,6 @@ public class EventsClient {
                 }
             }
         }
-
-    }
-
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onCameraSetup(CameraSetup event) {
-
-    }
-
-    @SubscribeEvent
-    public void onChunkLoadClient(ChunkEvent.Load event) {
-
-    }
-
-    @SubscribeEvent
-    public void onChunkUnloadClient(ChunkEvent.Unload event) {
 
     }
 

@@ -142,8 +142,8 @@ public class TileEntityPilotsChair extends ImplTileEntityPilotable {
 
         Vector velocityCompensationAlignment = controlledShip.physicsProcessor.angularVelocity.cross(shipUpPos);
 
-        velocityCompensationAlignment.multiply(controlledShip.physicsProcessor.getPhysTickSpeedRaw());
-        velocityCompensationAngular.multiply(2D * controlledShip.physicsProcessor.getPhysTickSpeedRaw());
+        velocityCompensationAlignment.multiply(controlledShip.physicsProcessor.getPhysicsTimeDeltaPerGameTick());
+        velocityCompensationAngular.multiply(2D * controlledShip.physicsProcessor.getPhysicsTimeDeltaPerGameTick());
 
         shipUpOffset.subtract(velocityCompensationAlignment);
         velocityCompensationAngular.subtract(velocityCompensationAngular);

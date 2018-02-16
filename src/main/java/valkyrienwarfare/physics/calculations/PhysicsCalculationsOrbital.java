@@ -63,9 +63,9 @@ public class PhysicsCalculationsOrbital extends PhysicsCalculations {
         if (!isOrbitalPhased) {
             super.applyLinearVelocity();
         } else {
-            parent.wrapper.posX += getPhysTickSpeed() * setLinearVel.X;
-            parent.wrapper.posY += getPhysTickSpeed() * setLinearVel.Y;
-            parent.wrapper.posZ += getPhysTickSpeed() * setLinearVel.Z;
+            parent.wrapper.posX += getPhysicsTimeDeltaPerPhysTick() * setLinearVel.X;
+            parent.wrapper.posY += getPhysicsTimeDeltaPerPhysTick() * setLinearVel.Y;
+            parent.wrapper.posZ += getPhysicsTimeDeltaPerPhysTick() * setLinearVel.Z;
         }
     }
 
@@ -75,7 +75,7 @@ public class PhysicsCalculationsOrbital extends PhysicsCalculations {
             super.applyAngularVelocity();
         } else {
             CoordTransformObject coordTrans = parent.coordTransform;
-            double[] rotationChange = RotationMatrices.getRotationMatrix(setAngularVel.X, setAngularVel.Y, setAngularVel.Z, angularVelocity.length() * getPhysTickSpeed());
+            double[] rotationChange = RotationMatrices.getRotationMatrix(setAngularVel.X, setAngularVel.Y, setAngularVel.Z, angularVelocity.length() * getPhysicsTimeDeltaPerPhysTick());
             Quaternion transform = Quaternion.QuaternionFromMatrix(RotationMatrices.getMatrixProduct(rotationChange, coordTrans.lToWRotation));
             double[] radians = transform.toRadians();
 

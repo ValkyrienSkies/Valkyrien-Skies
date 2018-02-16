@@ -87,7 +87,7 @@ public class ShipPulseImpulseControlSystem {
 
         Vector currentNormalError = currentNormal.getSubtraction(idealNormal);
 
-        linearVelocityBias = calculations.getPhysTickSpeed();
+        linearVelocityBias = calculations.getPhysicsTimeDeltaPerPhysTick();
 
         for (Node node : getNetworkedNodesList()) {
             if (node.getParentTile() instanceof TileEntityEtherCompressor && !((TileEntityEtherCompressor) node.getParentTile()).updateParentShip()) {
@@ -100,18 +100,18 @@ public class ShipPulseImpulseControlSystem {
                 //Assume zero change
                 double currentErrorY = (posInWorld.Y - idealHeight) + linearThama * (linearMomentum.Y * calculations.getInvMass());
 
-                double currentEngineErrorAngularY = getEngineDistFromIdealAngular(forceTile.getPos(), rotationAndTranslationMatrix, angularVelocity, calculations.centerOfMass, calculations.getPhysTickSpeed());
+                double currentEngineErrorAngularY = getEngineDistFromIdealAngular(forceTile.getPos(), rotationAndTranslationMatrix, angularVelocity, calculations.centerOfMass, calculations.getPhysicsTimeDeltaPerPhysTick());
 
 
                 Vector potentialMaxForce = new Vector(0, forceTile.getMaxThrust(), 0);
                 potentialMaxForce.multiply(calculations.getInvMass());
-                potentialMaxForce.multiply(calculations.getPhysTickSpeed());
+                potentialMaxForce.multiply(calculations.getPhysicsTimeDeltaPerPhysTick());
                 Vector potentialMaxThrust = forceTile.getPositionInLocalSpaceWithOrientation().cross(potentialMaxForce);
                 RotationMatrices.applyTransform3by3(invMOIMatrix, potentialMaxThrust);
-                potentialMaxThrust.multiply(calculations.getPhysTickSpeed());
+                potentialMaxThrust.multiply(calculations.getPhysicsTimeDeltaPerPhysTick());
 
                 double futureCurrentErrorY = currentErrorY + linearThama * potentialMaxForce.Y;
-                double futureEngineErrorAngularY = getEngineDistFromIdealAngular(forceTile.getPos(), rotationAndTranslationMatrix, angularVelocity.getAddition(potentialMaxThrust), calculations.centerOfMass, calculations.getPhysTickSpeed());
+                double futureEngineErrorAngularY = getEngineDistFromIdealAngular(forceTile.getPos(), rotationAndTranslationMatrix, angularVelocity.getAddition(potentialMaxThrust), calculations.centerOfMass, calculations.getPhysicsTimeDeltaPerPhysTick());
 
 
                 boolean doesForceMinimizeError = false;
@@ -139,7 +139,7 @@ public class ShipPulseImpulseControlSystem {
                     forceTile.setThrust(0);
                 }
 
-                Vector forceOutputWithRespectToTime = forceTile.getForceOutputOriented(calculations.getPhysTickSpeed());
+                Vector forceOutputWithRespectToTime = forceTile.getForceOutputOriented(calculations.getPhysicsTimeDeltaPerPhysTick());
                 linearMomentum.add(forceOutputWithRespectToTime);
                 Vector torque = forceTile.getPositionInLocalSpaceWithOrientation().cross(forceOutputWithRespectToTime);
                 RotationMatrices.applyTransform3by3(invMOIMatrix, torque);
@@ -174,7 +174,7 @@ public class ShipPulseImpulseControlSystem {
 			}
 		}*/
 
-        totalSecondsRunning += calculations.getPhysTickSpeed();
+        totalSecondsRunning += calculations.getPhysicsTimeDeltaPerPhysTick();
     }
 
     private double getBobForTime() {

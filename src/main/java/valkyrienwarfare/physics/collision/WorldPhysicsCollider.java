@@ -101,7 +101,7 @@ public class WorldPhysicsCollider {
 
     public void tickUpdatingTheCollisionCache() {
         // Multiply by 20 to convert seconds (physTickSpeed) into ticks
-        ticksSinceCacheUpdate += 20D * calculator.getPhysTickSpeed();
+        ticksSinceCacheUpdate += 20D * calculator.getPhysicsTimeDeltaPerPhysTick();
         for (int i = 0; i < cachedHitsToRemove.size(); i++) {
             cachedPotentialHits.remove(cachedHitsToRemove.get(i));
         }
@@ -555,7 +555,7 @@ public class WorldPhysicsCollider {
 
             inBody.setSubtraction(inLocal, parent.centerCoord);
             parent.physicsProcessor.setVectorToVelocityAtPoint(inBody, speedInBody);
-            speedInBody.multiply(-parent.physicsProcessor.getPhysTickSpeedRaw());
+            speedInBody.multiply(-parent.physicsProcessor.getPhysicsTimeDeltaPerGameTick());
 
             int minX, minY, minZ, maxX, maxY, maxZ;
             if (speedInBody.X > 0) {

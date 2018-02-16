@@ -61,16 +61,15 @@ public class PhysicsCalculations {
 
     public Vector centerOfMass;
     public Vector linearMomentum;
-    public Vector angularVelocity;
-    
+    public Vector angularVelocity;    
     private Vector torque;
     private double mass;
+
     // The time occurring on each PhysTick
     private double physRawSpeed;
     // Number of iterations the solver runs on each game tick
-    private int iterations = 5;
-    // The amount of time to be simulated on each rawPhysTick *(Its physSpeed/iterations)
-    // Used to limit the accumulation of motion by an object (Basically Air-Resistance preventing infinite energy)
+    private int iterations;
+    
     private final List<BlockPos> activeForcePositions;
     public double[] MoITensor, invMoITensor;
     public double[] framedMOI, invFramedMOI;
@@ -91,6 +90,7 @@ public class PhysicsCalculations {
         linearMomentum = new Vector();
         angularVelocity = new Vector();
         torque = new Vector();
+        iterations = 5;
         
         activeForcePositions = new ArrayList<BlockPos>();
     }
@@ -310,11 +310,11 @@ public class PhysicsCalculations {
                 Block blockAt = state.getBlock();
                 BigBastardMath.getBodyPosWithOrientation(pos, centerOfMass, parent.coordTransform.lToWRotation, inBodyWO);
 
-                BlockForce.basicForces.getForceFromState(state, pos, worldObj, getPhysTickSpeed(), parent, blockForce);
+                BlockForce.basicForces.getForceFromState(state, pos, worldObj, getPhysicsTimeDeltaPerPhysTick(), parent, blockForce);
 
                 if (blockForce != null) {
                     if (blockAt instanceof IBlockForceProvider) {
-                        Vector otherPosition = ((IBlockForceProvider) blockAt).getCustomBlockForcePosition(worldObj, pos, state, parent.wrapper, getPhysTickSpeed());
+                        Vector otherPosition = ((IBlockForceProvider) blockAt).getCustomBlockForcePosition(worldObj, pos, state, parent.wrapper, getPhysicsTimeDeltaPerPhysTick());
                         if (otherPosition != null) {
                             BigBastardMath.getBodyPosWithOrientation(otherPosition, centerOfMass, parent.coordTransform.lToWRotation, inBodyWO);
                         }
@@ -329,7 +329,7 @@ public class PhysicsCalculations {
 
     public void applyGravity() {
         if (PhysicsSettings.doGravity) {
-            addForceAtPoint(new Vector(0, 0, 0), ValkyrienWarfareMod.gravity.getProduct(mass * getPhysTickSpeed()));
+            addForceAtPoint(new Vector(0, 0, 0), ValkyrienWarfareMod.gravity.getProduct(mass * getPhysicsTimeDeltaPerPhysTick()));
         }
     }
 
@@ -350,7 +350,7 @@ public class PhysicsCalculations {
             if (queuedForce.isLocal) {
                 RotationMatrices.doRotationOnly(parent.coordTransform.lToWRotation, forceVec);
             }
-            forceVec.multiply(getPhysTickSpeed());
+            forceVec.multiply(getPhysicsTimeDeltaPerPhysTick());
             Vector posVec = new Vector(queuedForce.inBodyPos);
             posVec.X -= wrapperEnt.posX;
             posVec.Y -= wrapperEnt.posY;
@@ -387,7 +387,7 @@ public class PhysicsCalculations {
     public void applyAngularVelocity() {
         CoordTransformObject coordTrans = parent.coordTransform;
 
-        double[] rotationChange = RotationMatrices.getRotationMatrix(angularVelocity.X, angularVelocity.Y, angularVelocity.Z, angularVelocity.length() * getPhysTickSpeed());
+        double[] rotationChange = RotationMatrices.getRotationMatrix(angularVelocity.X, angularVelocity.Y, angularVelocity.Z, angularVelocity.length() * getPhysicsTimeDeltaPerPhysTick());
         Quaternion finalTransform = Quaternion.QuaternionFromMatrix(RotationMatrices.getMatrixProduct(rotationChange, coordTrans.lToWRotation));
 
         double[] radians = finalTransform.toRadians();
@@ -398,7 +398,7 @@ public class PhysicsCalculations {
     }
 
     public void applyLinearVelocity() {
-        double momentMod = getPhysTickSpeed() * getInvMass();
+        double momentMod = getPhysicsTimeDeltaPerPhysTick() * getInvMass();
         wrapperEnt.posX += (linearMomentum.X * momentMod);
         wrapperEnt.posY += (linearMomentum.Y * momentMod);
         wrapperEnt.posZ += (linearMomentum.Z * momentMod);
@@ -446,26 +446,12 @@ public class PhysicsCalculations {
 
     // Called upon a Ship being created from the World, and generates the physics data for it
     public void processInitialPhysicsData() {
-        IBlockState Air = Blocks.AIR.getDefaultState();
+        IBlockState air = Blocks.AIR.getDefaultState();
         for (BlockPos pos : parent.blockPositions) {
-            onSetBlockState(Air, parent.VKChunkCache.getBlockState(pos), pos);
+            onSetBlockState(air, parent.VKChunkCache.getBlockState(pos), pos);
         }
     }
 
-    @Deprecated
-    //Temp code that upgrades old ships to new BlockMass System; Will remove in future
-    private void recalculateInertiaMatrices() {
-        mass = 0;
-        centerOfMass = new Vector(parent.refrenceBlockPos.getX() + .5D, parent.refrenceBlockPos.getY() + .5D, parent.refrenceBlockPos.getZ() + .5D);
-        IBlockState airState = Blocks.AIR.getDefaultState();
-        activeForcePositions.clear();
-        for (BlockPos pos : parent.blockPositions) {
-            onSetBlockState(airState, parent.VKChunkCache.getBlockState(pos), pos);
-        }
-        System.out.println("Recalculated physics inertia matrix for an old Ship of size " + parent.blockPositions.size());
-        invMoITensor = RotationMatrices.inverse3by3(MoITensor);
-    }
-    
     // These getter methods guarantee that only code within this class can modify the mass,
     // preventing outside code from breaking things
     public double getMass() {
@@ -476,20 +462,24 @@ public class PhysicsCalculations {
         return 1D / mass;
     }
     
-    public double getPhysTickSpeed() {
-        return physRawSpeed / iterations;
+    public double getPhysicsTimeDeltaPerPhysTick() {
+        return getPhysicsTimeDeltaPerGameTick() / getPhysicsTicksPerGameTick();
+    }
+
+    public double getPhysicsTimeDeltaPerGameTick() {
+        return physRawSpeed;
     }
     
-    protected double getDragForPhysTick() {
-        return Math.pow(DRAG_CONSTANT, getPhysTickSpeed() * 20D);
+    public int getPhysicsTicksPerGameTick() {
+        return iterations;
+    }
+    
+    public double getDragForPhysTick() {
+        return Math.pow(DRAG_CONSTANT, getPhysicsTimeDeltaPerPhysTick() * 20D);
     }
     
     public void addPotentialActiveForcePos(BlockPos pos) {
         this.activeForcePositions.add(pos);
-    }
-
-    public double getPhysTickSpeedRaw() {
-        return physRawSpeed;
     }
 
 }

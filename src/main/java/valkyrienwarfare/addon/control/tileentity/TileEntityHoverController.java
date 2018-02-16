@@ -83,16 +83,16 @@ public class TileEntityHoverController extends TileEntity {
 
         Vector potentialMaxForce = new Vector(0, engine.getMaxThrust(), 0);
         potentialMaxForce.multiply(calculations.getInvMass());
-        potentialMaxForce.multiply(calculations.getPhysTickSpeed());
+        potentialMaxForce.multiply(calculations.getPhysicsTimeDeltaPerPhysTick());
         Vector potentialMaxThrust = engine.getPositionInLocalSpaceWithOrientation().cross(potentialMaxForce);
         RotationMatrices.applyTransform3by3(calculations.invFramedMOI, potentialMaxThrust);
-        potentialMaxThrust.multiply(calculations.getPhysTickSpeed());
+        potentialMaxThrust.multiply(calculations.getPhysicsTimeDeltaPerPhysTick());
 
         double linearThama = 4.5D;
         double maxYDelta = 10D;
 
         double futureCurrentErrorY = currentErrorY + linearThama * potentialMaxForce.Y;
-        double futureEngineErrorAngularY = getEngineDistFromIdealAngular(engine.getPos(), rotationAndTranslationMatrix, angularVelocity.getAddition(potentialMaxThrust), calculations.centerOfMass, calculations.getPhysTickSpeed());
+        double futureEngineErrorAngularY = getEngineDistFromIdealAngular(engine.getPos(), rotationAndTranslationMatrix, angularVelocity.getAddition(potentialMaxThrust), calculations.centerOfMass, calculations.getPhysicsTimeDeltaPerPhysTick());
 
         boolean doesForceMinimizeError = false;
 

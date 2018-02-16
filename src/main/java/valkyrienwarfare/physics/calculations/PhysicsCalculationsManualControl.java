@@ -50,7 +50,7 @@ public class PhysicsCalculationsManualControl extends PhysicsCalculations {
                 TileEntity nodeTile = node.getParentTile();
                 if (nodeTile instanceof IPhysicsProcessorNode) {
 //					System.out.println("test");
-                    ((IPhysicsProcessorNode) nodeTile).onPhysicsTick(parent, this, this.getPhysTickSpeed());
+                    ((IPhysicsProcessorNode) nodeTile).onPhysicsTick(parent, this, this.getPhysicsTimeDeltaPerPhysTick());
                 }
             }
         }
@@ -67,7 +67,7 @@ public class PhysicsCalculationsManualControl extends PhysicsCalculations {
             parent.wrapper.pitch = 0.01F;
             parent.wrapper.roll = 0.01F;
             parent.wrapper.yaw = previousYaw;
-            parent.wrapper.yaw -= (getYawRate() * getPhysTickSpeed());
+            parent.wrapper.yaw -= (getYawRate() * getPhysicsTimeDeltaPerPhysTick());
         }
 
         double[] existingRotationMatrix = RotationMatrices.getRotationMatrix(0, parent.wrapper.yaw, 0);
@@ -76,7 +76,7 @@ public class PhysicsCalculationsManualControl extends PhysicsCalculations {
             linearForce = new Vector(linearMomentum, getInvMass());
         }
 
-        linearForce.multiply(getPhysTickSpeed());
+        linearForce.multiply(getPhysicsTimeDeltaPerPhysTick());
 
         parent.wrapper.posX += linearForce.X;
         parent.wrapper.posY += linearForce.Y;

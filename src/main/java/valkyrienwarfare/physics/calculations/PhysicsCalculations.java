@@ -37,7 +37,6 @@ import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.math.BigBastardMath;
 import valkyrienwarfare.math.Quaternion;
-import valkyrienwarfare.physics.collision.ShipPhysicsCollider;
 import valkyrienwarfare.physics.collision.WorldPhysicsCollider;
 import valkyrienwarfare.physics.data.BlockForce;
 import valkyrienwarfare.physics.data.BlockMass;
@@ -52,12 +51,13 @@ public class PhysicsCalculations {
 
     public static final double BLOCKS_TO_METERS = 1.8D;
     public static final double DRAG_CONSTANT = .99D;
+    public static final double INERTIA_OFFSET = .4D;
+    public static final double EPSILON = 0xE-8;
     
     public final PhysicsObject parent;
     public final PhysicsWrapperEntity wrapperEnt;
     public final World worldObj;
     public final WorldPhysicsCollider worldCollision;
-    public final ShipPhysicsCollider shipCollision;
 
     public Vector centerOfMass;
     public Vector linearMomentum;
@@ -66,9 +66,9 @@ public class PhysicsCalculations {
     private Vector torque;
     private double mass;
     // The time occurring on each PhysTick
-    public double physRawSpeed;
+    private double physRawSpeed;
     // Number of iterations the solver runs on each game tick
-    public int iterations = 5;
+    private int iterations = 5;
     // The amount of time to be simulated on each rawPhysTick *(Its physSpeed/iterations)
     // Used to limit the accumulation of motion by an object (Basically Air-Resistance preventing infinite energy)
     private final List<BlockPos> activeForcePositions;
@@ -81,7 +81,6 @@ public class PhysicsCalculations {
         wrapperEnt = parent.wrapper;
         worldObj = toProcess.worldObj;
         worldCollision = new WorldPhysicsCollider(this);
-        shipCollision = new ShipPhysicsCollider(this);
 
         MoITensor = RotationMatrices.getZeroMatrix(3);
         invMoITensor = RotationMatrices.getZeroMatrix(3);
@@ -101,7 +100,6 @@ public class PhysicsCalculations {
         wrapperEnt = toCopy.wrapperEnt;
         worldObj = toCopy.worldObj;
         worldCollision = toCopy.worldCollision;
-        shipCollision = toCopy.shipCollision;
         centerOfMass = toCopy.centerOfMass;
         linearMomentum = toCopy.linearMomentum;
         angularVelocity = toCopy.angularVelocity;
@@ -118,63 +116,45 @@ public class PhysicsCalculations {
     }
 
     public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos pos) {
-        if (newState == oldState) {
-            //Nothing changed, so don't do anything
-            //Or, liquids were involved, so still don't do anything
-            return;
-        }
-
-        if (oldState.getBlock() == Blocks.AIR) {
-            if (BlockForce.basicForces.isBlockProvidingForce(newState, pos, worldObj)) {
-                activeForcePositions.add(pos);
-            }
-        } else {
-            if (activeForcePositions.contains(pos)) {
-                if (!BlockForce.basicForces.isBlockProvidingForce(newState, pos, worldObj)) {
-                    activeForcePositions.remove(pos);
-                }
-            } else {
+        if (!newState.equals(oldState)) {
+            if (oldState.getBlock() == Blocks.AIR) {
                 if (BlockForce.basicForces.isBlockProvidingForce(newState, pos, worldObj)) {
                     activeForcePositions.add(pos);
                 }
+            } else {
+                if (activeForcePositions.contains(pos)) {
+                    if (!BlockForce.basicForces.isBlockProvidingForce(newState, pos, worldObj)) {
+                        activeForcePositions.remove(pos);
+                    }
+                } else {
+                    if (BlockForce.basicForces.isBlockProvidingForce(newState, pos, worldObj)) {
+                        activeForcePositions.add(pos);
+                    }
+                }
             }
-        }
-        if (newState.getBlock() == Blocks.AIR) {
-            activeForcePositions.remove(pos);
-        }
-
-        double oldMassAtPos = BlockMass.basicMass.getMassFromState(oldState, pos, worldObj);
-        double newMassAtPos = BlockMass.basicMass.getMassFromState(newState, pos, worldObj);
-        // Don't change anything if the mass is the same
-        if (oldMassAtPos != newMassAtPos) {
-            double notAHalf = .4D;
-            double x = pos.getX() + .5D;
-            double y = pos.getY() + .5D;
-            double z = pos.getZ() + .5D;
-
-            if (oldMassAtPos > 0D) {
-                oldMassAtPos /= -9.0D;
-                addMassAt(x, y, z, oldMassAtPos);
-                addMassAt(x + notAHalf, y + notAHalf, z + notAHalf, oldMassAtPos);
-                addMassAt(x + notAHalf, y + notAHalf, z - notAHalf, oldMassAtPos);
-                addMassAt(x + notAHalf, y - notAHalf, z + notAHalf, oldMassAtPos);
-                addMassAt(x + notAHalf, y - notAHalf, z - notAHalf, oldMassAtPos);
-                addMassAt(x - notAHalf, y + notAHalf, z + notAHalf, oldMassAtPos);
-                addMassAt(x - notAHalf, y + notAHalf, z - notAHalf, oldMassAtPos);
-                addMassAt(x - notAHalf, y - notAHalf, z + notAHalf, oldMassAtPos);
-                addMassAt(x - notAHalf, y - notAHalf, z - notAHalf, oldMassAtPos);
+            if (newState.getBlock() == Blocks.AIR) {
+                activeForcePositions.remove(pos);
             }
-            if (newMassAtPos > 0D) {
-                newMassAtPos /= 9.0D;
-                addMassAt(x, y, z, newMassAtPos);
-                addMassAt(x + notAHalf, y + notAHalf, z + notAHalf, newMassAtPos);
-                addMassAt(x + notAHalf, y + notAHalf, z - notAHalf, newMassAtPos);
-                addMassAt(x + notAHalf, y - notAHalf, z + notAHalf, newMassAtPos);
-                addMassAt(x + notAHalf, y - notAHalf, z - notAHalf, newMassAtPos);
-                addMassAt(x - notAHalf, y + notAHalf, z + notAHalf, newMassAtPos);
-                addMassAt(x - notAHalf, y + notAHalf, z - notAHalf, newMassAtPos);
-                addMassAt(x - notAHalf, y - notAHalf, z + notAHalf, newMassAtPos);
-                addMassAt(x - notAHalf, y - notAHalf, z - notAHalf, newMassAtPos);
+
+            double oldMass = BlockMass.basicMass.getMassFromState(oldState, pos, worldObj);
+            double newMass = BlockMass.basicMass.getMassFromState(newState, pos, worldObj);
+            double deltaMass = newMass - oldMass;
+            // Don't change anything if the mass is the same
+            if (Math.abs(deltaMass) > EPSILON) {
+                double x = pos.getX() + .5D;
+                double y = pos.getY() + .5D;
+                double z = pos.getZ() + .5D;
+
+                deltaMass /= 9D;
+                addMassAt(x, y, z, deltaMass);
+                addMassAt(x + INERTIA_OFFSET, y + INERTIA_OFFSET, z + INERTIA_OFFSET, deltaMass);
+                addMassAt(x + INERTIA_OFFSET, y + INERTIA_OFFSET, z - INERTIA_OFFSET, deltaMass);
+                addMassAt(x + INERTIA_OFFSET, y - INERTIA_OFFSET, z + INERTIA_OFFSET, deltaMass);
+                addMassAt(x + INERTIA_OFFSET, y - INERTIA_OFFSET, z - INERTIA_OFFSET, deltaMass);
+                addMassAt(x - INERTIA_OFFSET, y + INERTIA_OFFSET, z + INERTIA_OFFSET, deltaMass);
+                addMassAt(x - INERTIA_OFFSET, y + INERTIA_OFFSET, z - INERTIA_OFFSET, deltaMass);
+                addMassAt(x - INERTIA_OFFSET, y - INERTIA_OFFSET, z + INERTIA_OFFSET, deltaMass);
+                addMassAt(x - INERTIA_OFFSET, y - INERTIA_OFFSET, z - INERTIA_OFFSET, deltaMass);
             }
         }
     }
@@ -501,11 +481,15 @@ public class PhysicsCalculations {
     }
     
     protected double getDragForPhysTick() {
-        return Math.pow(DRAG_CONSTANT, getPhysTickSpeed() / .05D);
+        return Math.pow(DRAG_CONSTANT, getPhysTickSpeed() * 20D);
     }
     
     public void addPotentialActiveForcePos(BlockPos pos) {
         this.activeForcePositions.add(pos);
+    }
+
+    public double getPhysTickSpeedRaw() {
+        return physRawSpeed;
     }
 
 }

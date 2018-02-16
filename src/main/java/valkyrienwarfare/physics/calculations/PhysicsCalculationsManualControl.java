@@ -50,7 +50,7 @@ public class PhysicsCalculationsManualControl extends PhysicsCalculations {
                 TileEntity nodeTile = node.getParentTile();
                 if (nodeTile instanceof IPhysicsProcessorNode) {
 //					System.out.println("test");
-                    ((IPhysicsProcessorNode) nodeTile).onPhysicsTick(parent, this, physRawSpeed);
+                    ((IPhysicsProcessorNode) nodeTile).onPhysicsTick(parent, this, this.getPhysTickSpeed());
                 }
             }
         }

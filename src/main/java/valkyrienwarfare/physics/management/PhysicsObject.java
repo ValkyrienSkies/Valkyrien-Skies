@@ -89,7 +89,6 @@ public class PhysicsObject {
 	// This handles sending packets to players involving block changes in the Ship
 	// space
 	public final List<EntityPlayerMP> watchingPlayers;
-	public final List<EntityPlayerMP> newWatchers;
 
 	// It is from this position that the x,y,z coords in local are 0; and that the
 	// posX,
@@ -108,7 +107,6 @@ public class PhysicsObject {
 
 	public String creator;
 	public final PhysCollisionCallable collisionCallable;
-    public int lastMessageTick;
     public int detectorID;
 
     // The closest Chunks to the Ship cached in here
@@ -121,13 +119,13 @@ public class PhysicsObject {
     // Some badly written mods use these Maps to determine who to send packets to,
     // so we need to manually fill them with nearby players
     public PlayerChunkMapEntry[][] claimedChunksEntries;
-    private Map<Integer, Vector> entityLocalPositions;
     public final List<String> allowedUsers;
-    // This is used to delay mountEntity() operations by 1 tick
-    public final List<Entity> queuedEntitiesToMount;
     // Compatibility for ships made before the update
     public boolean claimedChunksInMap;
     public boolean isNameCustom;
+    // This is used to delay mountEntity() operations by 1 tick
+    private final List<Entity> queuedEntitiesToMount;
+    private Map<Integer, Vector> entityLocalPositions;
 	private ShipType shipType;
 
 	// public HashSet<nodenetwork> nodeNetworks = new HashSet<nodenetwork>();
@@ -152,7 +150,6 @@ public class PhysicsObject {
 		collisionCallable = new PhysCollisionCallable(this);
 		explodedPositionsThisTick = new ArrayList<BlockPos>();
 		queuedPhysForces = new ArrayList<PhysicsQueuedForce>();
-		newWatchers = new ArrayList<EntityPlayerMP>();
 		watchingPlayers = new ArrayList<EntityPlayerMP>();
 		nodesWithinShip = new HashSet<Node>();
 	}
@@ -741,25 +738,14 @@ public class PhysicsObject {
 		wrapper.lastTickPosZ = wrapper.posZ;
 
 		lastTickCenterCoord = centerCoord;
-
 		ShipTransformData toUse = coordTransform.stack.removeHeadFromQueue();
 
 		if (toUse != null) {
-			lastMessageTick = toUse.relativeTick;
-
-			if (this.wrapper.yaw == toUse.yaw && this.wrapper.pitch == toUse.pitch) {
-				// System.out.println("Duplicate damnit!");
-				// System.out.println(toUse == coordTransform.stack.recentTransforms[0]);
-				// toUse = coordTransform.stack.getDataForTick(lastMessageTick);
-			}
-
 			Vector CMDif = toUse.centerOfRotation.getSubtraction(centerCoord);
 			RotationMatrices.applyTransform(coordTransform.lToWRotation, CMDif);
-
 			wrapper.lastTickPosX -= CMDif.X;
 			wrapper.lastTickPosY -= CMDif.Y;
 			wrapper.lastTickPosZ -= CMDif.Z;
-
 			toUse.applyToPhysObject(this);
 		}
 

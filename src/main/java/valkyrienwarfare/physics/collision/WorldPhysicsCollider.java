@@ -32,7 +32,6 @@ import net.minecraft.world.ChunkCache;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
-import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.mod.physmanagement.relocation.SpatialDetector;
@@ -556,11 +555,7 @@ public class WorldPhysicsCollider {
 
             inBody.setSubtraction(inLocal, parent.centerCoord);
             parent.physicsProcessor.setVectorToVelocityAtPoint(inBody, speedInBody);
-            speedInBody.multiply(-parent.physicsProcessor.physRawSpeed);
-
-            if (ValkyrienWarfareMod.highAccuracyCollisions) {
-                speedInBody.multiply(20D);
-            }
+            speedInBody.multiply(-parent.physicsProcessor.getPhysTickSpeedRaw());
 
             int minX, minY, minZ, maxX, maxY, maxZ;
             if (speedInBody.X > 0) {

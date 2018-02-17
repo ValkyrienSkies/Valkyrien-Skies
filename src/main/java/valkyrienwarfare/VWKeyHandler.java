@@ -16,7 +16,8 @@
 
 package valkyrienwarfare;
 
-import net.minecraft.client.Minecraft;
+import org.lwjgl.input.Keyboard;
+
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -25,7 +26,6 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.input.Keyboard;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.network.MessagePlayerStoppedPiloting;
 import valkyrienwarfare.addon.control.piloting.IShipPilotClient;
@@ -35,23 +35,23 @@ public class VWKeyHandler {
     private static final String keybindIdentifyer = "Valkyrien Warfare";
 
     // Movement Keys
-    public static KeyBinding airshipUp = new KeyBinding("Airship Up", Keyboard.KEY_SPACE, keybindIdentifyer);
-    public static KeyBinding airshipForward = new KeyBinding("Airship Forward", Keyboard.KEY_W, keybindIdentifyer);
-    public static KeyBinding airshipBackward = new KeyBinding("Airship Backward", Keyboard.KEY_S, keybindIdentifyer);
-    public static KeyBinding airshipLeft = new KeyBinding("Airship Turn Left", Keyboard.KEY_A, keybindIdentifyer);
-    public static KeyBinding airshipRight = new KeyBinding("Airship Turn Right", Keyboard.KEY_D, keybindIdentifyer);
-    public static KeyBinding airshipDown = new KeyBinding("Airship Down", Keyboard.KEY_X, keybindIdentifyer);
+    public static final KeyBinding airshipUp = new KeyBinding("Airship Up", Keyboard.KEY_SPACE, keybindIdentifyer);
+    public static final KeyBinding airshipForward = new KeyBinding("Airship Forward", Keyboard.KEY_W, keybindIdentifyer);
+    public static final KeyBinding airshipBackward = new KeyBinding("Airship Backward", Keyboard.KEY_S, keybindIdentifyer);
+    public static final KeyBinding airshipLeft = new KeyBinding("Airship Turn Left", Keyboard.KEY_A, keybindIdentifyer);
+    public static final KeyBinding airshipRight = new KeyBinding("Airship Turn Right", Keyboard.KEY_D, keybindIdentifyer);
+    public static final KeyBinding airshipDown = new KeyBinding("Airship Down", Keyboard.KEY_X, keybindIdentifyer);
 
-    public static KeyBinding airshipUp_Zepplin = new KeyBinding("Zepplin Airship Up", Keyboard.KEY_ADD, keybindIdentifyer);
-    public static KeyBinding airshipForward_Zepplin = new KeyBinding("Zepplin Airship Forward", Keyboard.KEY_NUMPAD8, keybindIdentifyer);
-    public static KeyBinding airshipBackward_Zepplin = new KeyBinding("Zepplin Airship Backward", Keyboard.KEY_NUMPAD2, keybindIdentifyer);
-    public static KeyBinding airshipLeft_Zepplin = new KeyBinding("Zepplin Airship Turn Left", Keyboard.KEY_NUMPAD4, keybindIdentifyer);
-    public static KeyBinding airshipRight_Zepplin = new KeyBinding("Zepplin Airship Turn Right", Keyboard.KEY_NUMPAD6, keybindIdentifyer);
-    public static KeyBinding airshipDown_Zepplin = new KeyBinding("Zepplin Airship Down", Keyboard.KEY_SUBTRACT, keybindIdentifyer);
-    public static KeyBinding airshipStop_Zepplin = new KeyBinding("Zepplin Airship Stop", Keyboard.KEY_NUMPAD5, keybindIdentifyer);
+    public static final KeyBinding airshipUp_Zepplin = new KeyBinding("Zepplin Airship Up", Keyboard.KEY_ADD, keybindIdentifyer);
+    public static final KeyBinding airshipForward_Zepplin = new KeyBinding("Zepplin Airship Forward", Keyboard.KEY_NUMPAD8, keybindIdentifyer);
+    public static final KeyBinding airshipBackward_Zepplin = new KeyBinding("Zepplin Airship Backward", Keyboard.KEY_NUMPAD2, keybindIdentifyer);
+    public static final KeyBinding airshipLeft_Zepplin = new KeyBinding("Zepplin Airship Turn Left", Keyboard.KEY_NUMPAD4, keybindIdentifyer);
+    public static final KeyBinding airshipRight_Zepplin = new KeyBinding("Zepplin Airship Turn Right", Keyboard.KEY_NUMPAD6, keybindIdentifyer);
+    public static final KeyBinding airshipDown_Zepplin = new KeyBinding("Zepplin Airship Down", Keyboard.KEY_SUBTRACT, keybindIdentifyer);
+    public static final KeyBinding airshipStop_Zepplin = new KeyBinding("Zepplin Airship Stop", Keyboard.KEY_NUMPAD5, keybindIdentifyer);
 
     // Dismount Key
-    public static KeyBinding dismountKey = new KeyBinding("VW Controller Dismount Key", Keyboard.KEY_LSHIFT, keybindIdentifyer);
+    public static final KeyBinding dismountKey = new KeyBinding("VW Controller Dismount Key", Keyboard.KEY_LSHIFT, keybindIdentifyer);
 
     static {
         ClientRegistry.registerKeyBinding(airshipUp);
@@ -69,10 +69,6 @@ public class VWKeyHandler {
         ClientRegistry.registerKeyBinding(airshipRight_Zepplin);
         ClientRegistry.registerKeyBinding(airshipDown_Zepplin);
         ClientRegistry.registerKeyBinding(airshipStop_Zepplin);
-    }
-
-    public static boolean getIsPlayerSprinting() {
-        return Minecraft.getMinecraft().player.isSprinting();
     }
 
     @SideOnly(Side.CLIENT)

@@ -88,7 +88,6 @@ public class EventsClient {
 
                 if (draggable.getWorldBelowFeet() != null) {
                     PlayerShipRefrenceMessage playerPosMessage = new PlayerShipRefrenceMessage(Minecraft.getMinecraft().player, draggable.getWorldBelowFeet());
-
                     ValkyrienWarfareMod.physWrapperNetwork.sendToServer(playerPosMessage);
                 }
             }

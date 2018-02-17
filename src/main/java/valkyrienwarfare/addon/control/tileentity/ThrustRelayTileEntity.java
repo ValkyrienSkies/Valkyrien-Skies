@@ -16,6 +16,9 @@
 
 package valkyrienwarfare.addon.control.tileentity;
 
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import valkyrienwarfare.addon.control.nodenetwork.BasicNodeTileEntity;
 import valkyrienwarfare.addon.control.nodenetwork.Node;
 
@@ -26,5 +29,11 @@ public class ThrustRelayTileEntity extends BasicNodeTileEntity {
         Node node = this.getNode();
         node.setIsNodeRelay(true);
     }
-
+    
+    @Override
+    @SideOnly(Side.CLIENT)
+    public AxisAlignedBB getRenderBoundingBox() {
+        return INFINITE_EXTENT_AABB;
+    }
+    
 }

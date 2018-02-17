@@ -42,22 +42,13 @@ public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer {
             Node tileNode = ((BasicNodeTileEntity) (te)).getNode();
             if (tileNode != null) {
                 GL11.glPushMatrix();
-                GlStateManager.resetColor();
-                GlStateManager.enableAlpha();
-                bindTexture(new ResourceLocation("textures/entity/lead_knot.png"));
+                
                 GL11.glTranslated(x + .5D, y + .5D, z + .5D);
-                // GlStateManager.scale(-1.0F, -1.0F, 1.0F);
-
-                ModelLeashKnot knotRenderer = new ModelLeashKnot();
-                knotRenderer.knotRenderer.render(0.0625F);
-                BlockPos originPos = te.getPos();
-
-                // double x = originPos.getX() + .5D;
-
+                
                 for (BlockPos otherPos : tileNode.getConnectedNodesBlockPos()) {
                     // render wire between these two blockPos
                     GL11.glPushMatrix();
-
+                    GlStateManager.resetColor();
                     double otherX = otherPos.getX() - TileEntityRendererDispatcher.staticPlayerX - x;
                     double otherY = otherPos.getY() - TileEntityRendererDispatcher.staticPlayerY - y;
                     double otherZ = otherPos.getZ() - TileEntityRendererDispatcher.staticPlayerZ - z;
@@ -66,14 +57,22 @@ public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer {
                     // GL11.glTranslated(-te.getPos().getX(), -te.getPos().getY(),
                     // -te.getPos().getZ());
 
-                    GL11.glLineWidth(2.5f);
-                    GL11.glColor3d(1.0, 0.0, 0.0);
+                    GL11.glLineWidth(5f);
+                    GL11.glColor3d(242, 172, 19);
                     GL11.glBegin(GL11.GL_LINES);
-                    GL11.glVertex3d(0, 0, 0D);
+                    GL11.glVertex3d(0, 0, 0);
                     GL11.glVertex3d(otherX, otherY, otherZ);
                     GL11.glEnd();
                     GL11.glPopMatrix();
                 }
+                GlStateManager.resetColor();
+                bindTexture(new ResourceLocation("textures/entity/lead_knot.png"));
+                // GlStateManager.scale(-1.0F, -1.0F, 1.0F);
+
+                ModelLeashKnot knotRenderer = new ModelLeashKnot();
+                knotRenderer.knotRenderer.render(0.0625F);
+//                BlockPos originPos = te.getPos();
+
                 GL11.glPopMatrix();
             }
         }

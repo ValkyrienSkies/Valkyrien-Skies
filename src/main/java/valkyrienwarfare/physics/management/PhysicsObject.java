@@ -728,6 +728,8 @@ public class PhysicsObject {
 		}
 	}
 
+	private int lastMessageTick = -1;
+	
 	public void onPostTickClient() {
 		wrapper.prevPitch = wrapper.pitch;
 		wrapper.prevYaw = wrapper.yaw;
@@ -738,10 +740,11 @@ public class PhysicsObject {
 		wrapper.lastTickPosZ = wrapper.posZ;
 
 		lastTickCenterCoord = centerCoord;
-		ShipTransformData toUse = coordTransform.stack.removeHeadFromQueue();
+		ShipTransformData toUse = coordTransform.serverBuffer.getDataForTick(lastMessageTick);
 
 		if (toUse != null) {
 			Vector CMDif = toUse.centerOfRotation.getSubtraction(centerCoord);
+			lastMessageTick = toUse.relativeTick;
 			RotationMatrices.applyTransform(coordTransform.lToWRotation, CMDif);
 			wrapper.lastTickPosX -= CMDif.X;
 			wrapper.lastTickPosY -= CMDif.Y;
@@ -1006,7 +1009,7 @@ public class PhysicsObject {
 		loadClaimedChunks();
 		renderer.updateOffsetPos(refrenceBlockPos);
 
-		coordTransform.stack.pushMessage(new PhysWrapperPositionMessage(this));
+		coordTransform.serverBuffer.pushMessage(new PhysWrapperPositionMessage(this));
 
 		try {
 			NBTTagCompound entityFixedPositionNBT = modifiedBuffer.readCompoundTag();

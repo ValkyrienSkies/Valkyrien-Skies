@@ -42,8 +42,6 @@ import valkyrienwarfare.physics.collision.Polygon;
  * This entity's only purpose is to use the functionality of sending itself to
  * nearby players, as well as the functionality of automatically loading with
  * the world; all other operations are handled by the PhysicsObject class.
- *
- * @author Alex Mastrangelo
  */
 public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpawnData {
 

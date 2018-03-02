@@ -33,7 +33,8 @@ public class ThrustRelayTileEntity extends BasicNodeTileEntity {
     @Override
     @SideOnly(Side.CLIENT)
     public AxisAlignedBB getRenderBoundingBox() {
-        return INFINITE_EXTENT_AABB;
+        return super.getRenderBoundingBox();
+//        return INFINITE_EXTENT_AABB;
     }
     
 }

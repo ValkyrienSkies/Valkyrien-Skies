@@ -22,11 +22,11 @@ import valkyrienwarfare.physics.management.PhysicsObject;
 
 public class ShipTransformData {
 
-    public int relativeTick;
+    public final int relativeTick;
 
-    public double posX, posY, posZ;
-    public double pitch, yaw, roll;
-    public Vector centerOfRotation;
+    public final double posX, posY, posZ;
+    public final double pitch, yaw, roll;
+    public final Vector centerOfRotation;
 
     public ShipTransformData(PhysWrapperPositionMessage wrapperMessage) {
         posX = wrapperMessage.posX;
@@ -40,6 +40,20 @@ public class ShipTransformData {
         centerOfRotation = wrapperMessage.centerOfMass;
 
         relativeTick = wrapperMessage.relativeTick;
+    }
+    
+    public ShipTransformData(ShipTransformData before, ShipTransformData after) {
+        posX = (before.posX + after.posX) / 2D;
+        posY = (before.posY + after.posY) / 2D;
+        posZ = (before.posZ + after.posZ) / 2D;
+        
+        pitch = (before.pitch + after.pitch) / 2D;
+        yaw = (before.yaw + after.yaw) / 2D;
+        roll = (before.roll + after.roll) / 2D;
+        
+        centerOfRotation = before.centerOfRotation.getAddition(after.centerOfRotation).getProduct(.5D);
+        
+        relativeTick = before.relativeTick;
     }
 
     // Apply all the position/rotation variables accordingly onto the passed physObject

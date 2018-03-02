@@ -56,14 +56,14 @@ public class CoordTransformObject {
 
     public Vector[] normals;
 
-    public final ShipTransformationQueue stack;
+    public final ShipTransformationBuffer serverBuffer;
 
     public CoordTransformObject(PhysicsObject object) {
         this.parent = object;
         updateAllTransforms();
         this.prevlToWTransform = lToWTransform;
         this.prevwToLTransform = wToLTransform;
-        this.stack = new ShipTransformationQueue();
+        this.serverBuffer = new ShipTransformationBuffer();
         this.normals = Vector.generateAxisAlignedNorms();
     }
 

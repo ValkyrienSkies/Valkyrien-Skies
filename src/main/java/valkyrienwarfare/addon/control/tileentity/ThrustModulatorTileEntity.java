@@ -17,6 +17,8 @@
 package valkyrienwarfare.addon.control.tileentity;
 
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import valkyrienwarfare.addon.control.controlsystems.ShipPulseImpulseControlSystem;
 import valkyrienwarfare.addon.control.network.ThrustModulatorGuiInputMessage;
@@ -27,9 +29,9 @@ import valkyrienwarfare.physics.management.PhysicsObject;
 
 public class ThrustModulatorTileEntity extends ImplPhysicsProcessorNodeTileEntity {
 
-    public ShipPulseImpulseControlSystem controlSystem;
     public double idealYHeight = 25D;
     public double maximumYVelocity = 10D;
+    private final ShipPulseImpulseControlSystem controlSystem;
 
     public ThrustModulatorTileEntity() {
         super();
@@ -39,11 +41,10 @@ public class ThrustModulatorTileEntity extends ImplPhysicsProcessorNodeTileEntit
     @Override
     public void onPhysicsTick(PhysicsObject object, PhysicsCalculations calculations, double secondsToSimulate) {
         controlSystem.solveThrustValues(calculations);
-//    	System.out.println("test");
     }
 
     @Override
-    public void onDataPacket(net.minecraft.network.NetworkManager net, net.minecraft.network.play.server.SPacketUpdateTileEntity pkt) {
+    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
         super.onDataPacket(net, pkt);
         ClientProxyControl.checkForTextFieldUpdate(this);
     }

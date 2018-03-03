@@ -18,11 +18,12 @@ package valkyrienwarfare.addon.control.renderer;
 
 import org.lwjgl.opengl.GL11;
 
-import net.minecraft.client.model.ModelLeashKnot;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import valkyrienwarfare.addon.control.nodenetwork.BasicNodeTileEntity;
 import valkyrienwarfare.addon.control.nodenetwork.Node;
@@ -42,46 +43,43 @@ public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer {
             Node tileNode = ((BasicNodeTileEntity) (te)).getNode();
             if (tileNode != null) {
                 GL11.glPushMatrix();
-                GL11.glTranslated(x + .5D, y + .5D, z + .5D);
-                
+//                GL11.glTranslated(x + .5D, y + .5D, z + .5D);
+                GL11.glTranslated(0, y, 0);
                 
                 for (BlockPos otherPos : tileNode.getConnectedNodesBlockPos()) {
                     // render wire between these two blockPos
                     GL11.glPushMatrix();
                     GlStateManager.resetColor();
-                    double otherX = otherPos.getX() - tileNode.getParentTile().getPos().getX();
-                    double otherY = otherPos.getY() - tileNode.getParentTile().getPos().getY();
-                    double otherZ = otherPos.getZ() - tileNode.getParentTile().getPos().getZ();
 
-//                    System.out.println(x + ":" + y + ":" + z);
+                    double startX = te.getPos().getX();
+                    double startY = te.getPos().getY();
+                    double startZ = te.getPos().getZ();
                     
-                    // System.out.println(otherZ);
-//                     GL11.glTranslated(x, y, z);
-                    // -te.getPos().getZ());
+                    double endX = otherPos.getX();
+                    double endY = otherPos.getY();
+                    double endZ = otherPos.getZ();
                     
-                    GL11.glLineWidth(5f);
-                    GL11.glColor3d(242, 172, 19);
-                    GL11.glBegin(GL11.GL_LINES);
-                    GL11.glVertex3d(0, 0, 0);
-                    GL11.glVertex3d(otherX, otherY, otherZ);
-                    GL11.glEnd();
+                    renderWire(x, y, z, startX, startY, startZ, endX, endY, endZ);
+                    
+//                    GL11.glEnd();
                     GL11.glPopMatrix();
                 }
 
                 GlStateManager.resetColor();
-                bindTexture(new ResourceLocation("textures/entity/lead_knot.png"));
+//                bindTexture(new ResourceLocation("textures/entity/lead_knot.png"));
                 // GlStateManager.scale(-1.0F, -1.0F, 1.0F);
 
-                ModelLeashKnot knotRenderer = new ModelLeashKnot();
-                knotRenderer.knotRenderer.render(0.0625F);
+//                ModelLeashKnot knotRenderer = new ModelLeashKnot();
+//                knotRenderer.knotRenderer.render(0.0625F);
 //                BlockPos originPos = te.getPos();
 
                 GL11.glPopMatrix();
             }
         }
     }
-    /*
-    protected void renderWire(double x, double y, double z, float entityYaw, float partialTicks) {
+    
+    
+    protected void renderWire(double x, double y, double z, double entity1x, double entity1y, double entity1z, double entity2x, double entity2y, double entity2z) {
         y = .5D;
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
@@ -93,21 +91,28 @@ public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer {
 
 //        if (entity instanceof EntityHanging)
 //        {
-            d2 = 0.0D;
-            d3 = 0.0D;
             d4 = -1.0D;
 //        }
+            
+            
 
-        double d5 = Math.cos(d1);
-        double d6 = this.interpolateValue(entity.prevPosX, entity.posX, partialTicks) - d2 * 0.7D - d3 * 0.5D * d5;
-        double d7 = this.interpolateValue(entity.prevPosY + entity.getEyeHeight() * 0.7D, entity.posY + entity.getEyeHeight() * 0.7D, partialTicks) - d4 * 0.5D - 0.25D;
-        double d8 = this.interpolateValue(entity.prevPosZ, entity.posZ, partialTicks) - d3 * 0.7D + d2 * 0.5D * d5;
-        double d9 = this.interpolateValue((double)entityLivingIn.prevRenderYawOffset, (double)entityLivingIn.renderYawOffset, partialTicks) * 0.01745329238474369D + (Math.PI / 2D);
-        d2 = Math.cos(d9) * (double)entityLivingIn.width * 0.4D;
-        d3 = Math.sin(d9) * (double)entityLivingIn.width * 0.4D;
-        double d10 = this.interpolateValue(entityLivingIn.prevPosX, entityLivingIn.posX, (double)partialTicks) + d2;
-        double d11 = this.interpolateValue(entityLivingIn.prevPosY, entityLivingIn.posY, (double)partialTicks);
-        double d12 = this.interpolateValue(entityLivingIn.prevPosZ, entityLivingIn.posZ, (double)partialTicks) + d3;
+        
+        double fakeYaw = 0;//Math.PI / 6D;
+        
+        double fakeWidth = .5D;
+        
+
+        double d6 = entity1x;
+        double d7 = entity1y;
+        double d8 = entity1z;
+        double d9 = fakeYaw;
+        
+        
+        d2 = 0;//fakeWidth;;
+        d3 = 0;//fakeWidth;
+        double d10 = entity2x + d2;
+        double d11 = entity2y;
+        double d12 = entity2z + d3;
         x = x + d2;
         z = z + d3;
         double d13 = ((float)(d6 - d10));
@@ -164,8 +169,6 @@ public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer {
         GlStateManager.enableTexture2D();
         GlStateManager.enableCull();
     }
-    
-    */
     
     private double interpolateValue(double start, double end, double pct)
     {

@@ -214,4 +214,14 @@ public class Vector {
         RotationMatrices.applyTransform(rotationMatrix, this);
     }
 
+    public static void writeToBuffer(Vector vector, ByteBuf buffer) {
+        buffer.writeFloat((float) vector.X);
+        buffer.writeFloat((float) vector.Y);
+        buffer.writeFloat((float) vector.Z);
+    }
+
+    public static Vector readFromBuffer(ByteBuf buffer) {
+        return new Vector(buffer.readFloat(), buffer.readFloat(), buffer.readFloat());
+    }
+
 }

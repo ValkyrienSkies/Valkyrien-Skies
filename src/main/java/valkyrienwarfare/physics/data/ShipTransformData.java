@@ -23,7 +23,6 @@ import valkyrienwarfare.physics.management.PhysicsObject;
 public class ShipTransformData {
 
     public final int relativeTick;
-
     public final double posX, posY, posZ;
     public final double pitch, yaw, roll;
     public final Vector centerOfRotation;

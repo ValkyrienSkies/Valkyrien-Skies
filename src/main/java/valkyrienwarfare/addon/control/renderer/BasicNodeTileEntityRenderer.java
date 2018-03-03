@@ -43,21 +43,21 @@ public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer {
             Node tileNode = ((BasicNodeTileEntity) (te)).getNode();
             if (tileNode != null) {
                 GL11.glPushMatrix();
-//                GL11.glTranslated(x + .5D, y + .5D, z + .5D);
-                GL11.glTranslated(0, y, 0);
+                GL11.glTranslated(.5D, -.75D, .5D);
+//                GL11.glTranslated(0, y, 0);
                 
                 for (BlockPos otherPos : tileNode.getConnectedNodesBlockPos()) {
                     // render wire between these two blockPos
                     GL11.glPushMatrix();
-                    GlStateManager.resetColor();
+//                    GlStateManager.resetColor();
 
                     double startX = te.getPos().getX();
                     double startY = te.getPos().getY();
                     double startZ = te.getPos().getZ();
                     
-                    double endX = otherPos.getX();
-                    double endY = otherPos.getY();
-                    double endZ = otherPos.getZ();
+                    double endX = (startX * 2) - otherPos.getX();
+                    double endY = (startY * 2) - otherPos.getY() - 1;
+                    double endZ = (startZ * 2) - otherPos.getZ();
                     
                     renderWire(x, y, z, startX, startY, startZ, endX, endY, endZ);
                     
@@ -80,7 +80,7 @@ public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer {
     
     
     protected void renderWire(double x, double y, double z, double entity1x, double entity1y, double entity1z, double entity2x, double entity2y, double entity2z) {
-        y = .5D;
+//        y = .5D;
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
         double d0 = 0;//this.interpolateValue(entity.prevRotationYaw, entity.rotationYaw, partialTicks * 0.5F) * 0.01745329238474369D;

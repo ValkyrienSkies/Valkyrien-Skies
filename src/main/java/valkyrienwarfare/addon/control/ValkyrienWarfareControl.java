@@ -58,17 +58,17 @@ import valkyrienwarfare.addon.control.piloting.PilotControlsMessage;
 import valkyrienwarfare.addon.control.piloting.PilotControlsMessageHandler;
 import valkyrienwarfare.addon.control.proxy.ClientProxyControl;
 import valkyrienwarfare.addon.control.proxy.CommonProxyControl;
-import valkyrienwarfare.addon.control.tileentity.ThrustModulatorTileEntity;
-import valkyrienwarfare.addon.control.tileentity.ThrustRelayTileEntity;
 import valkyrienwarfare.addon.control.tileentity.TileEntityGyroscope;
 import valkyrienwarfare.addon.control.tileentity.TileEntityHoverController;
 import valkyrienwarfare.addon.control.tileentity.TileEntityHullSealer;
 import valkyrienwarfare.addon.control.tileentity.TileEntityLiftValve;
+import valkyrienwarfare.addon.control.tileentity.TileEntityNodeRelay;
 import valkyrienwarfare.addon.control.tileentity.TileEntityNormalEtherCompressor;
 import valkyrienwarfare.addon.control.tileentity.TileEntityPilotsChair;
 import valkyrienwarfare.addon.control.tileentity.TileEntityPropellerEngine;
 import valkyrienwarfare.addon.control.tileentity.TileEntityShipHelm;
 import valkyrienwarfare.addon.control.tileentity.TileEntityShipTelegraph;
+import valkyrienwarfare.addon.control.tileentity.TileEntityThrustModulator;
 import valkyrienwarfare.addon.control.tileentity.TileEntityZepplinController;
 import valkyrienwarfare.addon.world.ValkyrienWarfareWorld;
 import valkyrienwarfare.api.addons.Module;
@@ -128,15 +128,15 @@ public class ValkyrienWarfareControl extends Module<ValkyrienWarfareControl> {
         GameRegistry.registerTileEntity(TileEntityHoverController.class, "tilehovercontroller");
         GameRegistry.registerTileEntity(TileEntityNormalEtherCompressor.class, "tileantigravengine");
         GameRegistry.registerTileEntity(TileEntityPilotsChair.class, "tilemanualshipcontroller");
-        GameRegistry.registerTileEntity(ThrustRelayTileEntity.class, "tilethrustrelay");
-        GameRegistry.registerTileEntity(ThrustModulatorTileEntity.class, "tilethrustmodulator");
+        GameRegistry.registerTileEntity(TileEntityNodeRelay.class, "tilethrustrelay");
+        GameRegistry.registerTileEntity(TileEntityThrustModulator.class, "tilethrustmodulator");
         GameRegistry.registerTileEntity(TileEntityShipHelm.class, "tileshiphelm");
         GameRegistry.registerTileEntity(TileEntityShipTelegraph.class, "tileshiptelegraph");
         GameRegistry.registerTileEntity(TileEntityPropellerEngine.class, "tilepropellerengine");
         GameRegistry.registerTileEntity(TileEntityZepplinController.class, "tilezepplin_controller");
-        GameRegistry.registerTileEntity(TileEntityHullSealer.class, "tileentityshiphullsealer");
-        GameRegistry.registerTileEntity(TileEntityGyroscope.class, "tileentitygyroscope");
-        GameRegistry.registerTileEntity(TileEntityLiftValve.class, "tileentiyliftvalve");
+        GameRegistry.registerTileEntity(TileEntityHullSealer.class, "tileshiphullsealer");
+        GameRegistry.registerTileEntity(TileEntityGyroscope.class, "tilegyroscope");
+        GameRegistry.registerTileEntity(TileEntityLiftValve.class, "tileliftvalve");
     }
 
     @Override

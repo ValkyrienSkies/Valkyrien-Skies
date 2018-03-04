@@ -30,8 +30,8 @@ import valkyrienwarfare.addon.control.renderer.BasicNodeTileEntityRenderer;
 import valkyrienwarfare.addon.control.renderer.PropellerEngineTileEntityRenderer;
 import valkyrienwarfare.addon.control.renderer.ShipHelmTileEntityRenderer;
 import valkyrienwarfare.addon.control.renderer.ShipTelegraphTileEntityRenderer;
-import valkyrienwarfare.addon.control.tileentity.ThrustModulatorTileEntity;
-import valkyrienwarfare.addon.control.tileentity.ThrustRelayTileEntity;
+import valkyrienwarfare.addon.control.tileentity.TileEntityThrustModulator;
+import valkyrienwarfare.addon.control.tileentity.TileEntityNodeRelay;
 import valkyrienwarfare.addon.control.tileentity.TileEntityPropellerEngine;
 import valkyrienwarfare.addon.control.tileentity.TileEntityShipHelm;
 import valkyrienwarfare.addon.control.tileentity.TileEntityShipTelegraph;
@@ -83,13 +83,13 @@ public class ClientProxyControl extends CommonProxyControl {
     }
 
     private static void registerTileEntityRenderers() {
-        ClientRegistry.bindTileEntitySpecialRenderer(ThrustRelayTileEntity.class, new BasicNodeTileEntityRenderer(ThrustRelayTileEntity.class));
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityNodeRelay.class, new BasicNodeTileEntityRenderer(TileEntityNodeRelay.class));
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityShipHelm.class, new ShipHelmTileEntityRenderer(TileEntityShipHelm.class));
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityShipTelegraph.class, new ShipTelegraphTileEntityRenderer(TileEntityShipTelegraph.class));
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPropellerEngine.class, new PropellerEngineTileEntityRenderer());
     }
 
-    public static void checkForTextFieldUpdate(ThrustModulatorTileEntity entity) {
+    public static void checkForTextFieldUpdate(TileEntityThrustModulator entity) {
         if (Minecraft.getMinecraft().currentScreen instanceof ThrustModulatorGui) {
             ThrustModulatorGui gui = (ThrustModulatorGui) Minecraft.getMinecraft().currentScreen;
             gui.updateTextFields();

@@ -25,7 +25,7 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.network.ThrustModulatorGuiInputMessage;
-import valkyrienwarfare.addon.control.tileentity.ThrustModulatorTileEntity;
+import valkyrienwarfare.addon.control.tileentity.TileEntityThrustModulator;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,10 +33,10 @@ import java.util.ArrayList;
 public class ThrustModulatorGui extends GuiScreen {
 
     private static ResourceLocation background = new ResourceLocation("valkyrienwarfarecontrol", "textures/gui/thrustmodulator.png");
-    public ThrustModulatorTileEntity tileEnt;
+    public TileEntityThrustModulator tileEnt;
     public ArrayList<GuiTextField> textFields = new ArrayList<GuiTextField>();
 
-    public ThrustModulatorGui(EntityPlayer player, ThrustModulatorTileEntity entity) {
+    public ThrustModulatorGui(EntityPlayer player, TileEntityThrustModulator entity) {
         super();
         mc = Minecraft.getMinecraft();
         tileEnt = entity;

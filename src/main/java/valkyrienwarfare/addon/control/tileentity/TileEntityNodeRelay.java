@@ -22,9 +22,9 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import valkyrienwarfare.addon.control.nodenetwork.BasicNodeTileEntity;
 import valkyrienwarfare.addon.control.nodenetwork.Node;
 
-public class ThrustRelayTileEntity extends BasicNodeTileEntity {
+public class TileEntityNodeRelay extends BasicNodeTileEntity {
 
-    public ThrustRelayTileEntity() {
+    public TileEntityNodeRelay() {
         super();
         Node node = this.getNode();
         node.setIsNodeRelay(true);

@@ -27,7 +27,7 @@ import valkyrienwarfare.addon.control.proxy.ClientProxyControl;
 import valkyrienwarfare.physics.calculations.PhysicsCalculations;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
-public class ThrustModulatorTileEntity extends ImplPhysicsProcessorNodeTileEntity {
+public class TileEntityThrustModulator extends ImplPhysicsProcessorNodeTileEntity {
 
     public static final int PHYSICS_PROCESSOR_PRIORITY = 100;
     public double idealYHeight = 25D;
@@ -35,7 +35,7 @@ public class ThrustModulatorTileEntity extends ImplPhysicsProcessorNodeTileEntit
     private final ShipPulseImpulseControlSystem controlSystem;
 
     // Initialize this ThrustModulatorTileEntity with a default priority of 100.
-    public ThrustModulatorTileEntity() {
+    public TileEntityThrustModulator() {
         super(PHYSICS_PROCESSOR_PRIORITY);
         controlSystem = new ShipPulseImpulseControlSystem(this);
     }

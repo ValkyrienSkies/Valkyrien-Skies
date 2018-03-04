@@ -111,19 +111,19 @@ public class TileEntityHoverController extends TileEntity {
         }
 
         if (doesForceMinimizeError) {
-            engine.setThrust(engine.getMaxThrust());
+            engine.setThrustGoal(engine.getMaxThrust());
             if (Math.abs(currentErrorY) < 1D) {
-                engine.setThrust(engine.getMaxThrust() * Math.pow(Math.abs(currentErrorY), 3D));
+                engine.setThrustGoal(engine.getMaxThrust() * Math.pow(Math.abs(currentErrorY), 3D));
             }
         } else {
-            engine.setThrust(0);
+            engine.setThrustGoal(0);
         }
 
 //		calculations.convertTorqueToVelocity();
 
         // System.out.println(aggregateForce);
 
-        return engine.getForceOutputNormal().getProduct(engine.getThrust() * secondsToApply);
+        return engine.getForceOutputNormal().getProduct(engine.getThrustActual() * secondsToApply);
 //		return new Vector();
     }
 

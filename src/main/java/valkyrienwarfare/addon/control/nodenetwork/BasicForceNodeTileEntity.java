@@ -84,12 +84,17 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
     }
 
     @Override
-    public double getThrust() {
+    public double getThrustActual() {
         return currentThrust;
     }
 
     @Override
-    public void setThrust(double newMagnitude) {
+    public double getThrustGoal() {
+        return currentThrust;
+    }
+    
+    @Override
+    public void setThrustGoal(double newMagnitude) {
         currentThrust = newMagnitude;
     }
 
@@ -183,7 +188,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
 
         ticksSinceLastControlSignal++;
         if (ticksSinceLastControlSignal > 5) {
-            setThrust(getThrust() * .9D);
+            setThrustGoal(getThrustActual() * .9D);
         }
     }
 

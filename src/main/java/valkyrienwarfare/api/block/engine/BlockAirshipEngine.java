@@ -79,7 +79,7 @@ public abstract class BlockAirshipEngine extends Block implements IBlockForcePro
         TileEntity tileEntity = world.getTileEntity(pos);
         if (tileEntity instanceof TileEntityPropellerEngine) {
             //Just set the Thrust to be the maximum
-            ((TileEntityPropellerEngine) tileEntity).setThrust(this.getEnginePower(world, pos, state, shipEntity));
+            ((TileEntityPropellerEngine) tileEntity).setThrustGoal(this.getEnginePower(world, pos, state, shipEntity));
             ((TileEntityPropellerEngine) tileEntity).updateTicksSinceLastRecievedSignal();
             return ((TileEntityPropellerEngine) tileEntity).getForceOutputUnoriented(secondsToApply);
         }

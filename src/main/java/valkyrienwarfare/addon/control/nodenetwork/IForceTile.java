@@ -54,15 +54,21 @@ public interface IForceTile {
      *
      * @return
      */
-    public double getThrust();
+    public double getThrustActual();
 
     /**
-     * Sets the force output vector to be this outputNormal() * newMagnitude
+     * Sets the goal for the force output vector to be
      *
      * @param toUse
      */
-    public void setThrust(double newMagnitude);
+    public void setThrustGoal(double newMagnitude);
 
+    /**
+     * Returns the current goal for the thrust
+     * @return
+     */
+    public double getThrustGoal();
+    
     /**
      * Matrix transformation stuff
      *

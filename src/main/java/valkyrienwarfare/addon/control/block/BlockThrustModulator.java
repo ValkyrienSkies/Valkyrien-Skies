@@ -33,7 +33,7 @@ import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.gui.ControlGUIEnum;
-import valkyrienwarfare.addon.control.tileentity.ThrustModulatorTileEntity;
+import valkyrienwarfare.addon.control.tileentity.TileEntityThrustModulator;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -68,7 +68,7 @@ public class BlockThrustModulator extends Block implements ITileEntityProvider {
 
     @Override
     public TileEntity createNewTileEntity(World worldIn, int meta) {
-        return new ThrustModulatorTileEntity();
+        return new TileEntityThrustModulator();
     }
 
 }

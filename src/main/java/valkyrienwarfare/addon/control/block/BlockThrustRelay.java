@@ -33,7 +33,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import valkyrienwarfare.addon.control.tileentity.ThrustRelayTileEntity;
+import valkyrienwarfare.addon.control.tileentity.TileEntityNodeRelay;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -216,6 +216,6 @@ public class BlockThrustRelay extends BlockDirectional implements ITileEntityPro
 
     @Override
     public TileEntity createNewTileEntity(World worldIn, int meta) {
-        return new ThrustRelayTileEntity();
+        return new TileEntityNodeRelay();
     }
 }

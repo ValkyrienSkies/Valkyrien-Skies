@@ -37,14 +37,14 @@ public class Node {
     private NodeNetwork parentNetwork;
     private PhysicsObject parentPhysicsObject;
     // No duplicate connections, use Set<Node> to guarantee this
-    private Set<Node> connectedNodes;
-    private Set<BlockPos> connectedNodesBlockPos;
+    private Set<Node> linkedNodes;
+    private Set<BlockPos> linkedNodesPos;
     private final TileEntity parentTile;
-
+    
     public Node(TileEntity parent) {
         this.parentTile = parent;
-        this.connectedNodes = new HashSet<Node>();
-        this.connectedNodesBlockPos = new HashSet<BlockPos>();
+        this.linkedNodes = new HashSet<Node>();
+        this.linkedNodesPos = new HashSet<BlockPos>();
         this.parentNetwork = new NodeNetwork(parentPhysicsObject);
         this.parentNetwork.getNetworkedNodes().add(this);
         this.isRelay = false;
@@ -61,10 +61,10 @@ public class Node {
 
     public void linkNode(Node other) {
         updateBuildState();
-        connectedNodes.add(other);
-        other.connectedNodes.add(this);
-        connectedNodesBlockPos.add(other.parentTile.getPos());
-        other.connectedNodesBlockPos.add(this.parentTile.getPos());
+        linkedNodes.add(other);
+        other.linkedNodes.add(this);
+        linkedNodesPos.add(other.parentTile.getPos());
+        other.linkedNodesPos.add(this.parentTile.getPos());
         parentNetwork.mergeWithNetworks(new NodeNetwork[] { other.parentNetwork });
 
         if (!parentTile.getWorld().isRemote) {
@@ -75,10 +75,10 @@ public class Node {
 
     public void unlinkNode(Node other, boolean updateNodeNetwork, boolean sendToClient) {
         updateBuildState();
-        connectedNodes.remove(other);
-        other.connectedNodes.remove(this);
-        connectedNodesBlockPos.remove(other.parentTile.getPos());
-        other.connectedNodesBlockPos.remove(this.parentTile.getPos());
+        linkedNodes.remove(other);
+        other.linkedNodes.remove(this);
+        linkedNodesPos.remove(other.parentTile.getPos());
+        other.linkedNodesPos.remove(this.parentTile.getPos());
 
         if (updateNodeNetwork) {
             parentNetwork.recalculateNetworks(this);
@@ -115,7 +115,7 @@ public class Node {
             this.updateBuildState();
         }
 
-        List<Node> connectedNodesCopy = new ArrayList<Node>(connectedNodes);
+        List<Node> connectedNodesCopy = new ArrayList<Node>(linkedNodes);
         for (Node node : connectedNodesCopy) {
             unlinkNode(node, false, false);
         }
@@ -156,7 +156,7 @@ public class Node {
      */
     public boolean attemptToBuildNodeSet() {
         List<BlockPos> toRemove = new ArrayList<BlockPos>();
-        for (BlockPos pos : connectedNodesBlockPos) {
+        for (BlockPos pos : linkedNodesPos) {
             if (parentTile.getWorld().isBlockLoaded(pos)) {
                 boolean isLoaded = parentTile.getWorld().isBlockLoaded(pos);
                 TileEntity tile = parentTile.getWorld().getTileEntity(pos);
@@ -164,8 +164,8 @@ public class Node {
                     if (tile instanceof INodeProvider) {
                         Node node = ((INodeProvider) tile).getNode();
                         if (node != null) {
-                            connectedNodes.add(node);
-                            node.connectedNodes.add(this);
+                            linkedNodes.add(node);
+                            node.linkedNodes.add(this);
                             parentNetwork.mergeWithNetworks(new NodeNetwork[] { node.parentNetwork });
                         }
                     }
@@ -179,8 +179,8 @@ public class Node {
         }
         // TODO: This used to call remove(), which is wrong, watch out for any errors
         // here.
-        connectedNodesBlockPos.removeAll(toRemove);
-        if (connectedNodes.size() == connectedNodesBlockPos.size()) {
+        linkedNodesPos.removeAll(toRemove);
+        if (linkedNodes.size() == linkedNodesPos.size()) {
             return true;
         }
         return false;
@@ -231,25 +231,25 @@ public class Node {
 
     public void readFromNBT(NBTTagCompound compound) {
         // TODO: This might not be correct
-        connectedNodesBlockPos.clear();
+        linkedNodesPos.clear();
 
         int[] connectednodesarray = compound.getIntArray("connectednodesarray");
 
         for (int i = 0; i < connectednodesarray.length; i += 3) {
             BlockPos toAdd = new BlockPos(connectednodesarray[i], connectednodesarray[i + 1],
                     connectednodesarray[i + 2]);
-            connectedNodesBlockPos.add(toAdd);
+            linkedNodesPos.add(toAdd);
         }
         channel = compound.getByte("channel");
         setIsNodeRelay(compound.getBoolean("isRelay"));
     }
 
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-        int size = connectedNodesBlockPos.size();
+        int size = linkedNodesPos.size();
         // 3 ints for each BlockPos
         int[] arrayToWrite = new int[size * 3];
         int index = 0;
-        for (BlockPos pos : connectedNodesBlockPos) {
+        for (BlockPos pos : linkedNodesPos) {
             arrayToWrite[index] = pos.getX();
             arrayToWrite[index + 1] = pos.getY();
             arrayToWrite[index + 2] = pos.getZ();
@@ -282,11 +282,11 @@ public class Node {
     }
 
     public Set<Node> getConnectedNodes() {
-        return connectedNodes;
+        return linkedNodes;
     }
 
     public Set<BlockPos> getConnectedNodesBlockPos() {
-        return connectedNodesBlockPos;
+        return linkedNodesPos;
     }
 
 }

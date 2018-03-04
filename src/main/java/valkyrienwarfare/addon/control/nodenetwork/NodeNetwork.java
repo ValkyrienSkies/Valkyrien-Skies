@@ -25,7 +25,7 @@ import valkyrienwarfare.physics.management.PhysicsObject;
 
 /**
  * A class that keeps track of all the nodes attached to a network; gets
- * recalcuated upon a node being broken
+ * recalculated upon a node being broken
  *
  * @author thebest108
  */

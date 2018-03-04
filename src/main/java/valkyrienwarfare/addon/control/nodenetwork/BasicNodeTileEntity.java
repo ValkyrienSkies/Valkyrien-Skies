@@ -24,7 +24,7 @@ import net.minecraft.util.ITickable;
 
 public abstract class BasicNodeTileEntity extends TileEntity implements INodeProvider, ITickable {
 
-    public final Node tileNode;
+    private final Node tileNode;
 
     public BasicNodeTileEntity() {
         tileNode = new Node(this);

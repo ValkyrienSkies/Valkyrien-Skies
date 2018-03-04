@@ -40,6 +40,8 @@ public class ThrustModulatorTileEntity extends ImplPhysicsProcessorNodeTileEntit
 
     @Override
     public void onPhysicsTick(PhysicsObject object, PhysicsCalculations calculations, double secondsToSimulate) {
+        // System.out.println("debug");
+        // System.out.println(this.getNode().getNodeNetwork().getNetworkedNodes().size());
         controlSystem.solveThrustValues(calculations);
     }
 

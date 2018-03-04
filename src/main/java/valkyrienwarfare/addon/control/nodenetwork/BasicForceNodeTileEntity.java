@@ -19,12 +19,12 @@ package valkyrienwarfare.addon.control.nodenetwork;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import valkyrienwarfare.util.NBTUtils;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.physics.calculations.PhysicsCalculations;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.util.NBTUtils;
 
 public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity implements IForceTile {
 
@@ -72,7 +72,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
         Vector outputForce = getForceOutputUnoriented(secondsToApply);
         if (isForceOutputOriented()) {
             if (updateParentShip()) {
-                RotationMatrices.applyTransform(tileNode.getPhysicsObject().coordTransform.lToWRotation, outputForce);
+                RotationMatrices.applyTransform(getNode().getPhysicsObject().coordTransform.lToWRotation, outputForce);
             }
         }
         return outputForce;
@@ -98,7 +98,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
         if (updateParentShip()) {
             return null;
         }
-        PhysicsWrapperEntity parentShip = tileNode.getPhysicsObject().wrapper;
+        PhysicsWrapperEntity parentShip = getNode().getPhysicsObject().wrapper;
         Vector engineCenter = new Vector(getPos().getX() + .5D, getPos().getY() + .5D, getPos().getZ() + .5D);
         RotationMatrices.applyTransform(parentShip.wrapping.coordTransform.lToWTransform, engineCenter);
         engineCenter.subtract(parentShip.posX, parentShip.posY, parentShip.posZ);
@@ -110,7 +110,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
         if (updateParentShip()) {
             return null;
         }
-        PhysicsCalculations calculations = tileNode.getPhysicsObject().physicsProcessor;
+        PhysicsCalculations calculations = getNode().getPhysicsObject().physicsProcessor;
         return calculations.getVelocityAtPoint(getPositionInLocalSpaceWithOrientation());
     }
 
@@ -119,7 +119,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
         if (updateParentShip()) {
             return null;
         }
-        PhysicsCalculations calculations = tileNode.getPhysicsObject().physicsProcessor;
+        PhysicsCalculations calculations = getNode().getPhysicsObject().physicsProcessor;
         return calculations.linearMomentum;
     }
 
@@ -128,7 +128,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
         if (updateParentShip()) {
             return null;
         }
-        PhysicsCalculations calculations = tileNode.getPhysicsObject().physicsProcessor;
+        PhysicsCalculations calculations = getNode().getPhysicsObject().physicsProcessor;
         return calculations.angularVelocity.cross(getPositionInLocalSpaceWithOrientation());
     }
 
@@ -158,7 +158,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
      */
     public boolean updateParentShip() {
         if (hasAlreadyCheckedForParent) {
-            return tileNode.getPhysicsObject() == null;
+            return getNode().getPhysicsObject() == null;
         }
         BlockPos pos = this.getPos();
         World world = this.getWorld();
@@ -166,7 +166,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
         //Already checked
         hasAlreadyCheckedForParent = true;
         if (wrapper != null) {
-            tileNode.updateParentEntity(wrapper.wrapping);
+            getNode().updateParentEntity(wrapper.wrapping);
             return false;
         } else {
             return true;

@@ -30,7 +30,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.addon.control.nodenetwork.IPhysicsProcessorNode;
+import valkyrienwarfare.addon.control.nodenetwork.INodePhysicsProcessor;
 import valkyrienwarfare.addon.control.nodenetwork.Node;
 import valkyrienwarfare.api.IBlockForceProvider;
 import valkyrienwarfare.api.RotationMatrices;
@@ -299,9 +299,9 @@ public class PhysicsCalculations {
         if (PhysicsSettings.doPhysicsBlocks) {
             for (Node node : parent.nodesWithinShip) {
                 TileEntity nodeTile = node.getParentTile();
-                if (nodeTile instanceof IPhysicsProcessorNode) {
+                if (nodeTile instanceof INodePhysicsProcessor) {
 //					System.out.println("test");
-                    ((IPhysicsProcessorNode) nodeTile).onPhysicsTick(parent, this, physRawSpeed);
+                    ((INodePhysicsProcessor) nodeTile).onPhysicsTick(parent, this, physRawSpeed);
                 }
             }
 

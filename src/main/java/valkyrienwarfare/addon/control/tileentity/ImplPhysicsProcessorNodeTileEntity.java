@@ -18,21 +18,21 @@ package valkyrienwarfare.addon.control.tileentity;
 
 import net.minecraft.nbt.NBTTagCompound;
 import valkyrienwarfare.addon.control.nodenetwork.BasicNodeTileEntity;
-import valkyrienwarfare.addon.control.nodenetwork.IPhysicsProcessorNode;
+import valkyrienwarfare.addon.control.nodenetwork.INodePhysicsProcessor;
 
-public abstract class ImplPhysicsProcessorNodeTileEntity extends BasicNodeTileEntity implements IPhysicsProcessorNode {
+public abstract class ImplPhysicsProcessorNodeTileEntity extends BasicNodeTileEntity implements INodePhysicsProcessor {
 
     /**
      * If -1, the algorithm will ignore this processor
      */
-    private int priority = -1;
+    private int priority;
 
-    public ImplPhysicsProcessorNodeTileEntity(int processorPriority) {
-        this();
-        setPriority(processorPriority);
+    public ImplPhysicsProcessorNodeTileEntity(int priority) {
+        this.priority = priority;
     }
 
     public ImplPhysicsProcessorNodeTileEntity() {
+        this(-1);
     }
 
     @Override
@@ -56,6 +56,12 @@ public abstract class ImplPhysicsProcessorNodeTileEntity extends BasicNodeTileEn
         compound = super.writeToNBT(compound);
         compound.setInteger("priority", priority);
         return compound;
+    }
+
+    // Used maintain order of which processors get called first
+    @Override
+    public int compareTo(INodePhysicsProcessor other) {
+        return getPriority() - other.getPriority();
     }
 
 }

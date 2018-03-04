@@ -18,7 +18,7 @@ package valkyrienwarfare.physics.calculations;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import valkyrienwarfare.addon.control.nodenetwork.IPhysicsProcessorNode;
+import valkyrienwarfare.addon.control.nodenetwork.INodePhysicsProcessor;
 import valkyrienwarfare.addon.control.nodenetwork.Node;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
@@ -48,9 +48,9 @@ public class PhysicsCalculationsManualControl extends PhysicsCalculations {
         if (PhysicsSettings.doPhysicsBlocks) {
             for (Node node : parent.nodesWithinShip) {
                 TileEntity nodeTile = node.getParentTile();
-                if (nodeTile instanceof IPhysicsProcessorNode) {
+                if (nodeTile instanceof INodePhysicsProcessor) {
 //					System.out.println("test");
-                    ((IPhysicsProcessorNode) nodeTile).onPhysicsTick(parent, this, this.getPhysicsTimeDeltaPerPhysTick());
+                    ((INodePhysicsProcessor) nodeTile).onPhysicsTick(parent, this, this.getPhysicsTimeDeltaPerPhysTick());
                 }
             }
         }

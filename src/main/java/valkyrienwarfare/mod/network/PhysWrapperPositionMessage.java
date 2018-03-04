@@ -24,15 +24,15 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public class PhysWrapperPositionMessage implements IMessage {
 
-    private final PhysicsWrapperEntity toSpawn;
+    public PhysicsWrapperEntity toSpawn;
+
     public int entityID;
-    public float posX, posY, posZ;
-    public float pitch, yaw, roll;
+    public double posX, posY, posZ;
+    public double pitch, yaw, roll;
     public Vector centerOfMass;
     public int relativeTick;
 
     public PhysWrapperPositionMessage() {
-        toSpawn = null;
     }
 
     public PhysWrapperPositionMessage(PhysicsWrapperEntity toSend) {
@@ -41,14 +41,13 @@ public class PhysWrapperPositionMessage implements IMessage {
     }
 
     public PhysWrapperPositionMessage(PhysicsObject toRunLocally) {
-        this();
-        posX = (float) toRunLocally.wrapper.posX;
-        posY = (float) toRunLocally.wrapper.posY;
-        posZ = (float) toRunLocally.wrapper.posZ;
+        posX = toRunLocally.wrapper.posX;
+        posY = toRunLocally.wrapper.posY;
+        posZ = toRunLocally.wrapper.posZ;
 
-        pitch = (float) toRunLocally.wrapper.pitch;
-        yaw = (float) toRunLocally.wrapper.yaw;
-        roll = (float) toRunLocally.wrapper.roll;
+        pitch = toRunLocally.wrapper.pitch;
+        yaw = toRunLocally.wrapper.yaw;
+        roll = toRunLocally.wrapper.roll;
 
         centerOfMass = toRunLocally.centerCoord;
     }
@@ -58,15 +57,15 @@ public class PhysWrapperPositionMessage implements IMessage {
         entityID = buf.readInt();
         relativeTick = buf.readInt();
 
-        posX = buf.readFloat();
-        posY = buf.readFloat();
-        posZ = buf.readFloat();
+        posX = buf.readDouble();
+        posY = buf.readDouble();
+        posZ = buf.readDouble();
 
-        pitch = buf.readFloat();
-        yaw = buf.readFloat();
-        roll = buf.readFloat();
+        pitch = buf.readDouble();
+        yaw = buf.readDouble();
+        roll = buf.readDouble();
 
-        centerOfMass = new Vector(buf.readFloat(), buf.readFloat(), buf.readFloat());
+        centerOfMass = new Vector(buf.readDouble(), buf.readDouble(), buf.readDouble());
     }
 
     @Override
@@ -74,17 +73,17 @@ public class PhysWrapperPositionMessage implements IMessage {
         buf.writeInt(toSpawn.getEntityId());
         buf.writeInt(relativeTick);
 
-        buf.writeFloat((float) toSpawn.posX);
-        buf.writeFloat((float) toSpawn.posY);
-        buf.writeFloat((float) toSpawn.posZ);
+        buf.writeDouble(toSpawn.posX);
+        buf.writeDouble(toSpawn.posY);
+        buf.writeDouble(toSpawn.posZ);
 
-        buf.writeFloat((float) toSpawn.pitch);
-        buf.writeFloat((float) toSpawn.yaw);
-        buf.writeFloat((float) toSpawn.roll);
+        buf.writeDouble(toSpawn.pitch);
+        buf.writeDouble(toSpawn.yaw);
+        buf.writeDouble(toSpawn.roll);
 
-        buf.writeFloat((float) toSpawn.wrapping.centerCoord.X);
-        buf.writeFloat((float) toSpawn.wrapping.centerCoord.Y);
-        buf.writeFloat((float) toSpawn.wrapping.centerCoord.Z);
+        buf.writeDouble(toSpawn.wrapping.centerCoord.X);
+        buf.writeDouble(toSpawn.wrapping.centerCoord.Y);
+        buf.writeDouble(toSpawn.wrapping.centerCoord.Z);
     }
 
 }

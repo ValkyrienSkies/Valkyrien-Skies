@@ -19,7 +19,7 @@ package valkyrienwarfare.addon.control.nodenetwork;
 import valkyrienwarfare.physics.calculations.PhysicsCalculations;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
-public interface IPhysicsProcessorNode extends INodeProvider {
+public interface INodePhysicsProcessor extends Comparable<INodePhysicsProcessor> {
 
     public int getPriority();
 

@@ -279,7 +279,7 @@ public class ShipPulseImpulseControlSystem {
     }
 
     private Set<Node> getNetworkedNodesList() {
-        return parentTile.tileNode.getNodeNetwork().getNetworkedNodes();
+        return parentTile.getNode().getNodeNetwork().getNetworkedNodes();
     }
 
 }

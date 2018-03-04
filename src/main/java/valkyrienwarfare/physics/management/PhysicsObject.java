@@ -498,6 +498,7 @@ public class PhysicsObject {
 				worldObj.setTileEntity(newInstance.getPos(), newInstance);
 
 				if (newInstance instanceof INodeProvider) {
+//				    System.out.println(newInstance.getClass().getName());
 					this.nodesWithinShip.add(((INodeProvider) newInstance).getNode());
 				}
 
@@ -547,6 +548,10 @@ public class PhysicsObject {
 		coordTransform = new CoordTransformObject(this);
 		physicsProcessor.processInitialPhysicsData();
 		physicsProcessor.updateParentCenterOfMass();
+		
+		for (Node node : this.nodesWithinShip) {
+		    node.updateBuildState();;
+		}
 	}
 
 	public void injectChunkIntoWorld(Chunk chunk, int x, int z, boolean putInId2ChunkMap) {

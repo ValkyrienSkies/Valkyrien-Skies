@@ -25,6 +25,8 @@ public interface INodePhysicsProcessor extends Comparable<INodePhysicsProcessor>
 
     public void setPriority(int newPriority);
 
+    public int getTieBreaker();
+    
     /**
      * Does nothing by default, insert processor logic here
      *

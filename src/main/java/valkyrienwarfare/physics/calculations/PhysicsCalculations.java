@@ -19,6 +19,8 @@ package valkyrienwarfare.physics.calculations;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.vecmath.Matrix3d;
 
@@ -35,8 +37,8 @@ import valkyrienwarfare.addon.control.nodenetwork.Node;
 import valkyrienwarfare.api.IBlockForceProvider;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.math.BigBastardMath;
 import valkyrienwarfare.math.Quaternion;
+import valkyrienwarfare.math.VWMath;
 import valkyrienwarfare.physics.collision.WorldPhysicsCollider;
 import valkyrienwarfare.physics.data.BlockForce;
 import valkyrienwarfare.physics.data.BlockMass;
@@ -52,8 +54,8 @@ public class PhysicsCalculations {
     public static final double BLOCKS_TO_METERS = 1.8D;
     public static final double DRAG_CONSTANT = .99D;
     public static final double INERTIA_OFFSET = .4D;
-    public static final double EPSILON = 0xE-8;
-    
+    public static final double EPSILON = 0xE - 8;
+
     public final PhysicsObject parent;
     public final PhysicsWrapperEntity wrapperEnt;
     public final World worldObj;
@@ -61,7 +63,7 @@ public class PhysicsCalculations {
 
     public Vector centerOfMass;
     public Vector linearMomentum;
-    public Vector angularVelocity;    
+    public Vector angularVelocity;
     private Vector torque;
     private double mass;
 
@@ -69,8 +71,9 @@ public class PhysicsCalculations {
     private double physRawSpeed;
     // Number of iterations the solver runs on each game tick
     private int iterations;
-    
+
     private final List<BlockPos> activeForcePositions;
+    private final SortedSet<INodePhysicsProcessor> physicsTasks;
     public double[] MoITensor, invMoITensor;
     public double[] framedMOI, invFramedMOI;
     public boolean actAsArchimedes = false;
@@ -91,8 +94,9 @@ public class PhysicsCalculations {
         angularVelocity = new Vector();
         torque = new Vector();
         iterations = 5;
-        
+
         activeForcePositions = new ArrayList<BlockPos>();
+        physicsTasks = new TreeSet<INodePhysicsProcessor>();
     }
 
     public PhysicsCalculations(PhysicsCalculations toCopy) {
@@ -113,6 +117,7 @@ public class PhysicsCalculations {
         framedMOI = toCopy.framedMOI;
         invFramedMOI = toCopy.invFramedMOI;
         actAsArchimedes = toCopy.actAsArchimedes;
+        physicsTasks = toCopy.physicsTasks;
     }
 
     public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos pos) {
@@ -176,15 +181,18 @@ public class PhysicsCalculations {
         double ry = y - centerOfMass.Y;
         double rz = z - centerOfMass.Z;
 
-        MoITensor[0] = MoITensor[0] + (cmShiftY * cmShiftY + cmShiftZ * cmShiftZ) * mass + (ry * ry + rz * rz) * addedMass;
+        MoITensor[0] = MoITensor[0] + (cmShiftY * cmShiftY + cmShiftZ * cmShiftZ) * mass
+                + (ry * ry + rz * rz) * addedMass;
         MoITensor[1] = MoITensor[1] - cmShiftX * cmShiftY * mass - rx * ry * addedMass;
         MoITensor[2] = MoITensor[2] - cmShiftX * cmShiftZ * mass - rx * rz * addedMass;
         MoITensor[3] = MoITensor[1];
-        MoITensor[4] = MoITensor[4] + (cmShiftX * cmShiftX + cmShiftZ * cmShiftZ) * mass + (rx * rx + rz * rz) * addedMass;
+        MoITensor[4] = MoITensor[4] + (cmShiftX * cmShiftX + cmShiftZ * cmShiftZ) * mass
+                + (rx * rx + rz * rz) * addedMass;
         MoITensor[5] = MoITensor[5] - cmShiftY * cmShiftZ * mass - ry * rz * addedMass;
         MoITensor[6] = MoITensor[2];
         MoITensor[7] = MoITensor[5];
-        MoITensor[8] = MoITensor[8] + (cmShiftX * cmShiftX + cmShiftY * cmShiftY) * mass + (rx * rx + ry * ry) * addedMass;
+        MoITensor[8] = MoITensor[8] + (cmShiftX * cmShiftX + cmShiftY * cmShiftY) * mass
+                + (rx * rx + ry * ry) * addedMass;
 
         mass += addedMass;
         invMoITensor = RotationMatrices.inverse3by3(MoITensor);
@@ -226,21 +234,18 @@ public class PhysicsCalculations {
         }
     }
 
+    // If the ship is moving at these speeds, its likely something in the physics
+    // broke. This method helps detect that.
     private boolean isPhysicsBroken() {
-        if (angularVelocity.lengthSq() > 50000) {
-            System.out.println("Ship tried moving too fast; freezing it and reseting velocities");
-            return true;
-        }
-
-        //This says if ship is moving faster than 10 blocks per second
-        if (linearMomentum.lengthSq() * getInvMass() * getInvMass() > 50000) {
+        if (angularVelocity.lengthSq() > 50000 || linearMomentum.lengthSq() * getInvMass() * getInvMass() > 50000) {
             System.out.println("Ship tried moving too fast; freezing it and reseting velocities");
             return true;
         }
         return false;
     }
 
-    // The x/y/z variables need to be updated when the centerOfMass location changes
+    // The x/y/z variables need to be updated when the centerOfMass location
+    // changes.
     public void updateParentCenterOfMass() {
         Vector parentCM = parent.centerCoord;
         if (!parent.centerCoord.equals(centerOfMass)) {
@@ -256,7 +261,8 @@ public class PhysicsCalculations {
         }
     }
 
-    // Applies the rotation transform onto the Moment of Inertia to generate the REAL MOI at that given instant
+    // Applies the rotation transform onto the Moment of Inertia to generate the
+    // REAL MOI at that given instant
     private void calculateFramedMOITensor() {
         framedMOI = RotationMatrices.getZeroMatrix(3);
         Matrix3d pitch = new Matrix3d();
@@ -289,34 +295,45 @@ public class PhysicsCalculations {
         applyAirDrag();
         applyGravity();
         addQueuedForces();
-        
+
         Collections.shuffle(activeForcePositions);
-        
+
         Vector blockForce = new Vector();
         Vector inBodyWO = new Vector();
         Vector crossVector = new Vector();
 
         if (PhysicsSettings.doPhysicsBlocks) {
+
+            physicsTasks.clear();
             for (Node node : parent.nodesWithinShip) {
                 TileEntity nodeTile = node.getParentTile();
                 if (nodeTile instanceof INodePhysicsProcessor) {
-//					System.out.println("test");
-                    ((INodePhysicsProcessor) nodeTile).onPhysicsTick(parent, this, physRawSpeed);
+                    // Iterate through them in sorted order
+                    physicsTasks.add((INodePhysicsProcessor) nodeTile);
                 }
+            }
+
+            // This iterates over a SortedSet to retain sorted order, allowing some tasks to
+            // be given greater priority than others.
+            for (INodePhysicsProcessor physicsProcessorNode : physicsTasks) {
+                physicsProcessorNode.onPhysicsTick(parent, this, physRawSpeed);
             }
 
             for (BlockPos pos : activeForcePositions) {
                 IBlockState state = parent.VKChunkCache.getBlockState(pos);
                 Block blockAt = state.getBlock();
-                BigBastardMath.getBodyPosWithOrientation(pos, centerOfMass, parent.coordTransform.lToWRotation, inBodyWO);
+                VWMath.getBodyPosWithOrientation(pos, centerOfMass, parent.coordTransform.lToWRotation, inBodyWO);
 
-                BlockForce.basicForces.getForceFromState(state, pos, worldObj, getPhysicsTimeDeltaPerPhysTick(), parent, blockForce);
+                BlockForce.basicForces.getForceFromState(state, pos, worldObj, getPhysicsTimeDeltaPerPhysTick(), parent,
+                        blockForce);
 
                 if (blockForce != null) {
                     if (blockAt instanceof IBlockForceProvider) {
-                        Vector otherPosition = ((IBlockForceProvider) blockAt).getCustomBlockForcePosition(worldObj, pos, state, parent.wrapper, getPhysicsTimeDeltaPerPhysTick());
+                        Vector otherPosition = ((IBlockForceProvider) blockAt).getCustomBlockForcePosition(worldObj,
+                                pos, state, parent.wrapper, getPhysicsTimeDeltaPerPhysTick());
                         if (otherPosition != null) {
-                            BigBastardMath.getBodyPosWithOrientation(otherPosition, centerOfMass, parent.coordTransform.lToWRotation, inBodyWO);
+                            VWMath.getBodyPosWithOrientation(otherPosition, centerOfMass,
+                                    parent.coordTransform.lToWRotation, inBodyWO);
                         }
                     }
                     addForceAtPoint(inBodyWO, blockForce, crossVector);
@@ -329,14 +346,15 @@ public class PhysicsCalculations {
 
     public void applyGravity() {
         if (PhysicsSettings.doGravity) {
-            addForceAtPoint(new Vector(0, 0, 0), ValkyrienWarfareMod.gravity.getProduct(mass * getPhysicsTimeDeltaPerPhysTick()));
+            addForceAtPoint(new Vector(0, 0, 0),
+                    ValkyrienWarfareMod.gravity.getProduct(mass * getPhysicsTimeDeltaPerPhysTick()));
         }
     }
 
     public void calculateForcesArchimedes() {
         applyAirDrag();
     }
-    
+
     protected void applyAirDrag() {
         double drag = getDragForPhysTick();
         linearMomentum.multiply(drag);
@@ -387,8 +405,10 @@ public class PhysicsCalculations {
     public void applyAngularVelocity() {
         CoordTransformObject coordTrans = parent.coordTransform;
 
-        double[] rotationChange = RotationMatrices.getRotationMatrix(angularVelocity.X, angularVelocity.Y, angularVelocity.Z, angularVelocity.length() * getPhysicsTimeDeltaPerPhysTick());
-        Quaternion finalTransform = Quaternion.QuaternionFromMatrix(RotationMatrices.getMatrixProduct(rotationChange, coordTrans.lToWRotation));
+        double[] rotationChange = RotationMatrices.getRotationMatrix(angularVelocity.X, angularVelocity.Y,
+                angularVelocity.Z, angularVelocity.length() * getPhysicsTimeDeltaPerPhysTick());
+        Quaternion finalTransform = Quaternion
+                .QuaternionFromMatrix(RotationMatrices.getMatrixProduct(rotationChange, coordTrans.lToWRotation));
 
         double[] radians = finalTransform.toRadians();
         wrapperEnt.pitch = Double.isNaN(radians[0]) ? 0.0f : (float) Math.toDegrees(radians[0]);
@@ -402,7 +422,8 @@ public class PhysicsCalculations {
         wrapperEnt.posX += (linearMomentum.X * momentMod);
         wrapperEnt.posY += (linearMomentum.Y * momentMod);
         wrapperEnt.posZ += (linearMomentum.Z * momentMod);
-        wrapperEnt.posY = Math.min(Math.max(wrapperEnt.posY, ValkyrienWarfareMod.shipLowerLimit), ValkyrienWarfareMod.shipUpperLimit);
+        wrapperEnt.posY = Math.min(Math.max(wrapperEnt.posY, ValkyrienWarfareMod.shipLowerLimit),
+                ValkyrienWarfareMod.shipUpperLimit);
     }
 
     public Vector getVelocityAtPoint(Vector inBodyWO) {
@@ -444,7 +465,8 @@ public class PhysicsCalculations {
         invMoITensor = RotationMatrices.inverse3by3(MoITensor);
     }
 
-    // Called upon a Ship being created from the World, and generates the physics data for it
+    // Called upon a Ship being created from the World, and generates the physics
+    // data for it
     public void processInitialPhysicsData() {
         IBlockState air = Blocks.AIR.getDefaultState();
         for (BlockPos pos : parent.blockPositions) {
@@ -452,16 +474,17 @@ public class PhysicsCalculations {
         }
     }
 
-    // These getter methods guarantee that only code within this class can modify the mass,
+    // These getter methods guarantee that only code within this class can modify
+    // the mass,
     // preventing outside code from breaking things
     public double getMass() {
         return mass;
     }
-    
+
     public double getInvMass() {
         return 1D / mass;
     }
-    
+
     public double getPhysicsTimeDeltaPerPhysTick() {
         return getPhysicsTimeDeltaPerGameTick() / getPhysicsTicksPerGameTick();
     }
@@ -469,15 +492,15 @@ public class PhysicsCalculations {
     public double getPhysicsTimeDeltaPerGameTick() {
         return physRawSpeed;
     }
-    
+
     public int getPhysicsTicksPerGameTick() {
         return iterations;
     }
-    
+
     public double getDragForPhysTick() {
         return Math.pow(DRAG_CONSTANT, getPhysicsTimeDeltaPerPhysTick() * 20D);
     }
-    
+
     public void addPotentialActiveForcePos(BlockPos pos) {
         this.activeForcePositions.add(pos);
     }

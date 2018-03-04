@@ -63,6 +63,7 @@ import valkyrienwarfare.addon.control.tileentity.ThrustRelayTileEntity;
 import valkyrienwarfare.addon.control.tileentity.TileEntityGyroscope;
 import valkyrienwarfare.addon.control.tileentity.TileEntityHoverController;
 import valkyrienwarfare.addon.control.tileentity.TileEntityHullSealer;
+import valkyrienwarfare.addon.control.tileentity.TileEntityLiftValve;
 import valkyrienwarfare.addon.control.tileentity.TileEntityNormalEtherCompressor;
 import valkyrienwarfare.addon.control.tileentity.TileEntityPilotsChair;
 import valkyrienwarfare.addon.control.tileentity.TileEntityPropellerEngine;
@@ -135,6 +136,7 @@ public class ValkyrienWarfareControl extends Module<ValkyrienWarfareControl> {
         GameRegistry.registerTileEntity(TileEntityZepplinController.class, "tilezepplin_controller");
         GameRegistry.registerTileEntity(TileEntityHullSealer.class, "tileentityshiphullsealer");
         GameRegistry.registerTileEntity(TileEntityGyroscope.class, "tileentitygyroscope");
+        GameRegistry.registerTileEntity(TileEntityLiftValve.class, "tileentiyliftvalve");
     }
 
     @Override

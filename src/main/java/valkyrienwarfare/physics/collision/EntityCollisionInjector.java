@@ -39,7 +39,7 @@ import net.minecraft.world.chunk.Chunk;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.math.BigBastardMath;
+import valkyrienwarfare.math.VWMath;
 import valkyrienwarfare.mod.physmanagement.interaction.EntityDraggable;
 import valkyrienwarfare.mod.physmanagement.interaction.IDraggable;
 import valkyrienwarfare.physics.data.PhysicsQueuedForce;
@@ -92,7 +92,7 @@ public class EntityCollisionInjector {
 						// TODO: Add more potential yResponses
 						double stepSquared = entity.stepHeight * entity.stepHeight;
 						boolean isStep = isLiving && entity.onGround;
-						if (response.Y >= 0 && BigBastardMath
+						if (response.Y >= 0 && VWMath
 								.canStandOnNormal(fast.getCollisionAxes()[fast.getMinDistanceIndex()])) {
 							response = new Vector(0, -fast.getCollisions()[fast.getMinDistanceIndex()].getCollisionPenetrationDistance()
 									/ fast.getCollisionAxes()[fast.getMinDistanceIndex()].Y, 0);
@@ -102,7 +102,7 @@ public class EntityCollisionInjector {
 							if (Math.abs(living.moveForward) > .01D || Math.abs(living.moveStrafing) > .01D) {
 								for (int i = 3; i < 6; i++) {
 									Vector tempResponse = fast.getCollisions()[i].getResponse();
-									if (tempResponse.Y > 0 && BigBastardMath.canStandOnNormal(fast.getCollisions()[i].getCollisionNormal())
+									if (tempResponse.Y > 0 && VWMath.canStandOnNormal(fast.getCollisions()[i].getCollisionNormal())
 											&& tempResponse.lengthSq() < stepSquared) {
 										if (tempResponse.lengthSq() < .1D) {
 											// Too small to be a real step, let it through
@@ -394,7 +394,7 @@ public class EntityCollisionInjector {
 
 					// TODO: Fix the performance of this!
 					if (entity.world.isRemote || entity instanceof EntityPlayer) {
-						BigBastardMath.mergeAABBList(collidingBBs);
+						VWMath.mergeAABBList(collidingBBs);
 					}
 
 					for (AxisAlignedBB inLocal : collidingBBs) {

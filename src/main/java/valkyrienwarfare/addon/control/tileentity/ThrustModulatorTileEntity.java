@@ -29,12 +29,14 @@ import valkyrienwarfare.physics.management.PhysicsObject;
 
 public class ThrustModulatorTileEntity extends ImplPhysicsProcessorNodeTileEntity {
 
+    public static final int PHYSICS_PROCESSOR_PRIORITY = 100;
     public double idealYHeight = 25D;
     public double maximumYVelocity = 10D;
     private final ShipPulseImpulseControlSystem controlSystem;
 
+    // Initialize this ThrustModulatorTileEntity with a default priority of 100.
     public ThrustModulatorTileEntity() {
-        super();
+        super(PHYSICS_PROCESSOR_PRIORITY);
         controlSystem = new ShipPulseImpulseControlSystem(this);
     }
 

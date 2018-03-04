@@ -29,6 +29,7 @@ import valkyrienwarfare.util.NBTUtils;
 
 public class TileEntitySkyTempleController extends ImplPhysicsProcessorNodeTileEntity {
 
+    public static final int PHYSICS_PROCESSOR_PRIORITY = 105;
     private Vector originPos;
     private double orbitDistance;
     private double totalSecondsExisted;
@@ -37,6 +38,7 @@ public class TileEntitySkyTempleController extends ImplPhysicsProcessorNodeTileE
     private double yPathRate;
 
     public TileEntitySkyTempleController() {
+        super(PHYSICS_PROCESSOR_PRIORITY);
         yawChangeRate = 8D;
         yawPathRate = 2D;
         yPathRate = 2D;

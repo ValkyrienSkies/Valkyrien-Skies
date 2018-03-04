@@ -22,7 +22,7 @@ import net.minecraft.entity.projectile.EntityFireball;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import valkyrienwarfare.math.BigBastardMath;
+import valkyrienwarfare.math.VWMath;
 
 /**
  * This class creates and processes rotation matrix transforms used by Valkyrien
@@ -144,10 +144,10 @@ public class RotationMatrices {
 		entityLook.normalize();
 
 		// This is correct
-		ent.rotationPitch = (float) MathHelper.wrapDegrees(BigBastardMath.getPitchFromVec3d(entityLook));
+		ent.rotationPitch = (float) MathHelper.wrapDegrees(VWMath.getPitchFromVec3d(entityLook));
 		ent.prevRotationPitch = ent.rotationPitch;
 
-		ent.rotationYaw = (float) MathHelper.wrapDegrees(BigBastardMath.getYawFromVec3d(entityLook, ent.rotationPitch));
+		ent.rotationYaw = (float) MathHelper.wrapDegrees(VWMath.getYawFromVec3d(entityLook, ent.rotationPitch));
 		ent.prevRotationYaw = ent.rotationYaw;
 
 		if (ent instanceof EntityLiving) {

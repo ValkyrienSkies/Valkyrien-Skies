@@ -31,10 +31,6 @@ public abstract class ImplPhysicsProcessorNodeTileEntity extends BasicNodeTileEn
         this.priority = priority;
     }
 
-    public ImplPhysicsProcessorNodeTileEntity() {
-        this(-1);
-    }
-
     @Override
     public int getPriority() {
         return priority;
@@ -58,10 +54,16 @@ public abstract class ImplPhysicsProcessorNodeTileEntity extends BasicNodeTileEn
         return compound;
     }
 
-    // Used maintain order of which processors get called first
+    // Used maintain order of which processors get called first. If both processors have equal
+    // priorities, then we use the hashCode() method to break ties. This is because returning 0
+    // would imply two processors are equal, even if they really aren't.
     @Override
     public int compareTo(INodePhysicsProcessor other) {
-        return getPriority() - other.getPriority();
+        if (getPriority() != other.getPriority()) {
+            return getPriority() - other.getPriority();
+        } else {
+            return hashCode() - other.hashCode();
+        }
     }
 
 }

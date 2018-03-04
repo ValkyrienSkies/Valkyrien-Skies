@@ -26,7 +26,7 @@ import valkyrienwarfare.addon.control.tileentity.TileEntityNormalEtherCompressor
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.api.block.ethercompressor.TileEntityEtherCompressor;
-import valkyrienwarfare.math.BigBastardMath;
+import valkyrienwarfare.math.VWMath;
 import valkyrienwarfare.physics.calculations.PhysicsCalculations;
 
 public class ShipPulseImpulseControlSystem {
@@ -191,7 +191,7 @@ public class ShipPulseImpulseControlSystem {
 
     public Vector getIdealMomentumErrorForSystem(PhysicsCalculations calculations, Vector posInWorld, double maxYDelta, double idealHeight) {
         double yErrorDistance = idealHeight - posInWorld.Y;
-        double idealYLinearMomentumMagnitude = BigBastardMath.limitToRange(yErrorDistance, -maxYDelta, maxYDelta);
+        double idealYLinearMomentumMagnitude = VWMath.limitToRange(yErrorDistance, -maxYDelta, maxYDelta);
         Vector idealLinearMomentum = new Vector(0, 1, 0);
         idealLinearMomentum.multiply(idealYLinearMomentumMagnitude * calculations.getMass());
         Vector linearMomentumError = calculations.linearMomentum.getSubtraction(idealLinearMomentum);

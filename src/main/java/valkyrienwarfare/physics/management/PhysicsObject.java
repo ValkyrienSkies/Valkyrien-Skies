@@ -96,7 +96,7 @@ public class PhysicsObject {
 	public BlockPos refrenceBlockPos;
 	public Vector centerCoord, lastTickCenterCoord;
 	public CoordTransformObject coordTransform;
-	public PhysObjectRenderManager renderer;
+	public final PhysObjectRenderManager renderer;
 	public PhysicsCalculations physicsProcessor;
 	public Set<BlockPos> blockPositions;
 	private AxisAlignedBB collisionBB;

@@ -28,21 +28,29 @@ import valkyrienwarfare.util.NBTUtils;
 
 public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity implements IForceTile {
 
-    protected double maxThrust = 5000D;
-    protected double currentThrust = 0D;
-    private Vector forceOutputVector = new Vector();
+    protected double maxThrust;
+    protected double currentThrust;
+    private Vector forceOutputVector;
     private Vector normalVelocityUnoriented;
-    private int ticksSinceLastControlSignal = 0;
-    //Tells if the tile is in Ship Space, if it isn't then it doesn't try to find a parent Ship object
-    private boolean hasAlreadyCheckedForParent = false;
+    private int ticksSinceLastControlSignal;
+    // Tells if the tile is in Ship Space, if it isn't then it doesn't try to find a
+    // parent Ship object
+    private boolean hasAlreadyCheckedForParent;
 
     /**
-     * Only used for the NBT creation, other <init> calls should go through the other methods
+     * Only used for the NBT creation, other <init> calls should go through the
+     * other constructors first
      */
     public BasicForceNodeTileEntity() {
+        this.maxThrust = 5000D;
+        this.currentThrust = 0D;
+        this.forceOutputVector = new Vector();
+        this.ticksSinceLastControlSignal = 0;
+        this.hasAlreadyCheckedForParent = false;
     }
 
     public BasicForceNodeTileEntity(Vector normalVeclocityUnoriented, boolean isForceOutputOriented, double maxThrust) {
+        this();
         this.normalVelocityUnoriented = normalVeclocityUnoriented;
         this.maxThrust = maxThrust;
     }
@@ -92,7 +100,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
     public double getThrustGoal() {
         return currentThrust;
     }
-    
+
     @Override
     public void setThrustGoal(double newMagnitude) {
         currentThrust = newMagnitude;
@@ -137,7 +145,6 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
         return calculations.angularVelocity.cross(getPositionInLocalSpaceWithOrientation());
     }
 
-
     @Override
     public void readFromNBT(NBTTagCompound compound) {
         maxThrust = compound.getDouble("maxThrust");
@@ -168,7 +175,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
         BlockPos pos = this.getPos();
         World world = this.getWorld();
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
-        //Already checked
+        // Already checked
         hasAlreadyCheckedForParent = true;
         if (wrapper != null) {
             getNode().updateParentEntity(wrapper.wrapping);
@@ -185,7 +192,6 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
     @Override
     public void update() {
         super.update();
-
         ticksSinceLastControlSignal++;
         if (ticksSinceLastControlSignal > 5) {
             setThrustGoal(getThrustActual() * .9D);

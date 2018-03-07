@@ -24,7 +24,8 @@ import net.minecraft.world.World;
 public interface IBlockForceProvider {
 
     /**
-     * The World space version of the force vector, calculated by default from the Ship space vector, do not override unless you have a good reason to
+     * The World space version of the force vector, calculated by default from the
+     * Ship space vector, do not override unless you have a good reason to
      *
      * @param world
      * @param pos
@@ -33,7 +34,8 @@ public interface IBlockForceProvider {
      * @param secondsToApply
      * @return
      */
-    default Vector getBlockForceInWorldSpace(World world, BlockPos pos, IBlockState state, Entity shipEntity, double secondsToApply) {
+    default Vector getBlockForceInWorldSpace(World world, BlockPos pos, IBlockState state, Entity shipEntity,
+            double secondsToApply) {
         Vector toReturn = getBlockForceInShipSpace(world, pos, state, shipEntity, secondsToApply);
         if (toReturn == null || shipEntity == null) {
             return null;
@@ -45,10 +47,13 @@ public interface IBlockForceProvider {
         return toReturn;
     }
 
-    // Multiply your power usage values or whatever by the secondsToApply, otherwise you'll have issues (Example: <0,400,0> -(.01)-> <0,40,0>
+    // Multiply your power usage values or whatever by the secondsToApply, otherwise
+    // you'll have issues (Example: <0,400,0> -(.01)-> <0,40,0>
 
     /**
-     * The force Vector this block gives within its local space (Not within World space)
+     * The force Vector this block gives within its local space (Not within World
+     * space), should only be used for static blocks with forces that do not need
+     * updating.
      *
      * @param world
      * @param pos
@@ -57,10 +62,12 @@ public interface IBlockForceProvider {
      * @param secondsToApply
      * @return
      */
-    Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state, Entity shipEntity, double secondsToApply);
+    Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state, Entity shipEntity,
+            double secondsToApply);
 
     /**
-     * Returns true by default, blocks that shouldn't have their force rotated (Like Ether Compressors) must return false
+     * Returns true by default, blocks that shouldn't have their force rotated (Like
+     * Ether Compressors) must return false
      *
      * @param world
      * @param pos
@@ -73,7 +80,8 @@ public interface IBlockForceProvider {
     }
 
     /**
-     * This method returns null if no changes are needed, however some blocks like the balloon Burner need to apply their force in a different position
+     * This method returns null if no changes are needed, however some blocks like
+     * the balloon Burner need to apply their force in a different position
      *
      * @param world
      * @param pos
@@ -82,7 +90,8 @@ public interface IBlockForceProvider {
      * @param secondsToApply
      * @return
      */
-    default Vector getCustomBlockForcePosition(World world, BlockPos pos, IBlockState state, Entity shipEntity, double secondsToApply) {
+    default Vector getCustomBlockForcePosition(World world, BlockPos pos, IBlockState state, Entity shipEntity,
+            double secondsToApply) {
         return null;
     }
 

@@ -33,8 +33,8 @@ import valkyrienwarfare.mod.client.render.FastBlockModelRenderer;
 public class PropellerEngineTileEntityRenderer extends TileEntitySpecialRenderer<TileEntityPropellerEngine> {
 
     @Override
-    public void render(TileEntityPropellerEngine tileentity, double x, double y, double z, float partialTick, int destroyStage, float alpha) {
-
+    public void render(TileEntityPropellerEngine tileentity, double x, double y, double z, float partialTick,
+            int destroyStage, float alpha) {
         IBlockState state = tileentity.getWorld().getBlockState(tileentity.getPos());
         if (state.getBlock() instanceof BlockAirshipEngine) {
             EnumFacing facing = state.getValue(BlockAirshipEngine.FACING);
@@ -59,45 +59,46 @@ public class PropellerEngineTileEntityRenderer extends TileEntitySpecialRenderer
 
             int brightness = tileentity.getWorld().getCombinedLight(tileentity.getPos(), 0);
 
-//	        GL11.glScaled(1.2D, 1.2D, 1.2D);
+            // GL11.glScaled(1.2D, 1.2D, 1.2D);
 
             GL11.glTranslated(0.5D, 0.5D, 0.5D);
 
             switch (facing) {
-                case UP:
-                    GL11.glRotated(-90, 1, 0, 0);
-                    break;
-                case DOWN:
-                    GL11.glRotated(90, 1, 0, 0);
-                    break;
-                case NORTH:
-                    GL11.glRotated(180, 0, 1, 0);
-                    break;
-                case EAST:
-                    GL11.glRotated(90, 0, 1, 0);
-                    break;
-                case SOUTH:
-                    GL11.glRotated(0, 0, 1, 0);
-                    break;
-                case WEST:
-                    GL11.glRotated(270, 0, 1, 0);
-                    break;
+            case UP:
+                GL11.glRotated(-90, 1, 0, 0);
+                break;
+            case DOWN:
+                GL11.glRotated(90, 1, 0, 0);
+                break;
+            case NORTH:
+                GL11.glRotated(180, 0, 1, 0);
+                break;
+            case EAST:
+                GL11.glRotated(90, 0, 1, 0);
+                break;
+            case SOUTH:
+                GL11.glRotated(0, 0, 1, 0);
+                break;
+            case WEST:
+                GL11.glRotated(270, 0, 1, 0);
+                break;
 
             }
 
             GL11.glTranslated(-0.5D, -0.5D, -0.5D);
 
-            FastBlockModelRenderer.renderBlockModel(BufferBuilder, tessellator, tileentity.getWorld(), engineRenderState, brightness);
+            FastBlockModelRenderer.renderBlockModel(BufferBuilder, tessellator, tileentity.getWorld(),
+                    engineRenderState, brightness);
 
             GL11.glPushMatrix();
 
             GL11.glTranslated(0.5D, 0.21D, 0.5D);
-            GL11.glRotated(Math.random() * 360D, 0, 0, 1);
+            GL11.glRotated(tileentity.getPropellerAngle(partialTick), 0, 0, 1);
             GL11.glScaled(1.5D, 1.5D, 1);
             GL11.glTranslated(-0.5D, -0.21D, -0.5D);
 
-
-            FastBlockModelRenderer.renderBlockModel(BufferBuilder, tessellator, tileentity.getWorld(), propellerRenderState, brightness);
+            FastBlockModelRenderer.renderBlockModel(BufferBuilder, tessellator, tileentity.getWorld(),
+                    propellerRenderState, brightness);
 
             GL11.glPopMatrix();
 

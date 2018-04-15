@@ -29,7 +29,8 @@ public class RealMethods implements DummyMethods {
     @Override
     public Vector getLinearVelocity(Entity shipEnt, double secondsToApply) {
         PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity) shipEnt;
-        return wrapper.wrapping.physicsProcessor.linearMomentum.getProduct(secondsToApply * wrapper.wrapping.physicsProcessor.invMass);
+        return wrapper.wrapping.physicsProcessor.linearMomentum
+                .getProduct(secondsToApply * wrapper.wrapping.physicsProcessor.getInvMass());
     }
 
     @Override
@@ -38,14 +39,17 @@ public class RealMethods implements DummyMethods {
         return wrapper.wrapping.physicsProcessor.angularVelocity;
     }
 
-    // Returns the matrix which converts local coordinates (The positions of the blocks in the world) to the entity coordinates (The position in front of the player)
+    // Returns the matrix which converts local coordinates (The positions of the
+    // blocks in the world) to the entity coordinates (The position in front of the
+    // player)
     @Override
     public double[] getShipTransformMatrix(Entity shipEnt) {
         PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity) shipEnt;
         return wrapper.wrapping.coordTransform.lToWTransform;
     }
 
-    // Note, do not call this from World coordinates; first subtract the world coords from the shipEntity xyz and then call!
+    // Note, do not call this from World coordinates; first subtract the world
+    // coords from the shipEntity xyz and then call!
     @Override
     public Vector getVelocityAtPoint(Entity shipEnt, Vector inBody, double secondsToApply) {
         PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity) shipEnt;
@@ -57,7 +61,7 @@ public class RealMethods implements DummyMethods {
     @Override
     public double getShipMass(Entity shipEnt) {
         PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity) shipEnt;
-        return wrapper.wrapping.physicsProcessor.mass;
+        return wrapper.wrapping.physicsProcessor.getMass();
     }
 
     @Override

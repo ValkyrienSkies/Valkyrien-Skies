@@ -23,7 +23,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 import valkyrienwarfare.addon.control.controlsystems.controlgui.ThrustModulatorGui;
-import valkyrienwarfare.addon.control.tileentity.ThrustModulatorTileEntity;
+import valkyrienwarfare.addon.control.tileentity.TileEntityThrustModulator;
 import valkyrienwarfare.addon.control.tileentity.TileEntityHoverController;
 
 public class ControlGUIHandler implements IGuiHandler {
@@ -48,7 +48,7 @@ public class ControlGUIHandler implements IGuiHandler {
             return new HovercraftControllerGUI(player, (TileEntityHoverController) world.getTileEntity(new BlockPos(x, y, z)));
         }
         if (ID == ControlGUIEnum.ThrustModulatorGUI.ordinal()) {
-            return new ThrustModulatorGui(player, (ThrustModulatorTileEntity) world.getTileEntity(new BlockPos(x, y, z)));
+            return new ThrustModulatorGui(player, (TileEntityThrustModulator) world.getTileEntity(new BlockPos(x, y, z)));
         }
         return null;
     }

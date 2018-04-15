@@ -39,7 +39,7 @@ import net.minecraft.world.chunk.Chunk;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.math.BigBastardMath;
+import valkyrienwarfare.math.VWMath;
 import valkyrienwarfare.mod.physmanagement.interaction.EntityDraggable;
 import valkyrienwarfare.mod.physmanagement.interaction.IDraggable;
 import valkyrienwarfare.physics.data.PhysicsQueuedForce;
@@ -62,11 +62,6 @@ public class EntityCollisionInjector {
 		double origPosY = entity.posY;
 		double origPosZ = entity.posZ;
 		boolean isLiving = entity instanceof EntityLivingBase;
-		boolean isMoving = false;
-		if (isLiving) {
-			EntityLivingBase living = (EntityLivingBase) entity;
-			isMoving = Math.abs(living.moveForward) > .01 || Math.abs(living.moveStrafing) > .01;
-		}
 		Vec3d velocity = new Vec3d(dx, dy, dz);
 		EntityPolygon playerBeforeMove = new EntityPolygon(entity.getEntityBoundingBox(), entity);
 		ArrayList<Polygon> colPolys = getCollidingPolygonsAndDoBlockCols(entity, velocity);
@@ -89,25 +84,25 @@ public class EntityCollisionInjector {
 
 					EntityPolygonCollider fast = new EntityPolygonCollider(playerBeforeMove, shipPoly, shipPoly.normals,
 							velVec.getAddition(total));
-					if (!fast.seperated) {
+					if (!fast.arePolygonsSeperated()) {
 						// fastCollisions.add(fast);
 						worldBelow = shipPoly.shipFrom.wrapper;
 
-						Vector response = fast.collisions[fast.minDistanceIndex].getResponse();
+						Vector response = fast.getCollisions()[fast.getMinDistanceIndex()].getResponse();
 						// TODO: Add more potential yResponses
 						double stepSquared = entity.stepHeight * entity.stepHeight;
 						boolean isStep = isLiving && entity.onGround;
-						if (response.Y >= 0 && BigBastardMath
-								.canStandOnNormal(fast.potentialSeperatingAxes[fast.minDistanceIndex])) {
-							response = new Vector(0, -fast.collisions[fast.minDistanceIndex].penetrationDistance
-									/ fast.potentialSeperatingAxes[fast.minDistanceIndex].Y, 0);
+						if (response.Y >= 0 && VWMath
+								.canStandOnNormal(fast.getCollisionAxes()[fast.getMinDistanceIndex()])) {
+							response = new Vector(0, -fast.getCollisions()[fast.getMinDistanceIndex()].getCollisionPenetrationDistance()
+									/ fast.getCollisionAxes()[fast.getMinDistanceIndex()].Y, 0);
 						}
 						if (isStep) {
 							EntityLivingBase living = (EntityLivingBase) entity;
 							if (Math.abs(living.moveForward) > .01D || Math.abs(living.moveStrafing) > .01D) {
 								for (int i = 3; i < 6; i++) {
-									Vector tempResponse = fast.collisions[i].getResponse();
-									if (tempResponse.Y > 0 && BigBastardMath.canStandOnNormal(fast.collisions[i].axis)
+									Vector tempResponse = fast.getCollisions()[i].getResponse();
+									if (tempResponse.Y > 0 && VWMath.canStandOnNormal(fast.getCollisions()[i].getCollisionNormal())
 											&& tempResponse.lengthSq() < stepSquared) {
 										if (tempResponse.lengthSq() < .1D) {
 											// Too small to be a real step, let it through
@@ -193,7 +188,6 @@ public class EntityCollisionInjector {
 			base.motionY = dy;
 			if (base.isOnLadder()) {
 
-				float f9 = 0.15F;
 				base.motionX = MathHelper.clamp(base.motionX, -0.15000000596046448D, 0.15000000596046448D);
 				base.motionZ = MathHelper.clamp(base.motionZ, -0.15000000596046448D, 0.15000000596046448D);
 				base.fallDistance = 0.0F;
@@ -237,11 +231,6 @@ public class EntityCollisionInjector {
 	}
 
 	public static void alterEntityMovementPost(Entity entity, IntermediateMovementVariableStorage storage) {
-
-		if (true) {
-			// return;
-		}
-
 		double dx = storage.dxyz.X;
 		double dy = storage.dxyz.Y;
 		double dz = storage.dxyz.Z;
@@ -317,14 +306,6 @@ public class EntityCollisionInjector {
 
 		if (/** entity.canTriggerWalking() **/
 		entity instanceof EntityPlayer && !entity.isRiding()) {
-			double d12 = entity.posX - origPosX;
-			double d13 = entity.posY - origPosY;
-			double d14 = entity.posZ - origPosZ;
-
-			if (block != Blocks.LADDER) {
-				d13 = 0.0D;
-			}
-
 			if (dy != origDy) {
 				// if (!(entity.motionY > 0 && dy > 0)) {
 				block.onLanded(entity.world, entity);
@@ -383,7 +364,6 @@ public class EntityCollisionInjector {
 		if (dz != origDz) {
 			entity.motionZ = dz;
 		}
-
 	}
 
 	/*
@@ -414,7 +394,7 @@ public class EntityCollisionInjector {
 
 					// TODO: Fix the performance of this!
 					if (entity.world.isRemote || entity instanceof EntityPlayer) {
-						BigBastardMath.mergeAABBList(collidingBBs);
+						VWMath.mergeAABBList(collidingBBs);
 					}
 
 					for (AxisAlignedBB inLocal : collidingBBs) {
@@ -487,12 +467,12 @@ public class EntityCollisionInjector {
 	}
 
 	public static class IntermediateMovementVariableStorage {
-		public Vector dxyz;
-		public Vector origDxyz;
-		public Vector origPosXyz;
-		public boolean alreadyOnGround;
-		public double motionYBefore;
-		public float oldFallDistance;
+		public final Vector dxyz;
+		public final Vector origDxyz;
+		public final Vector origPosXyz;
+		public final boolean alreadyOnGround;
+		public final double motionYBefore;
+		public final float oldFallDistance;
 
 		public IntermediateMovementVariableStorage(Vector dxyz, Vector origDxyz, Vector origPosXyz,
 				boolean alreadyOnGround, double motionYBefore, float oldFallDistance) {

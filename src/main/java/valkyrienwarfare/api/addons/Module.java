@@ -16,6 +16,8 @@
 
 package valkyrienwarfare.api.addons;
 
+import java.util.UUID;
+
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -26,8 +28,6 @@ import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
 import valkyrienwarfare.ValkyrienWarfareMod;
-
-import java.util.UUID;
 
 public abstract class Module<ImplName> {
     private String name;
@@ -113,7 +113,7 @@ public abstract class Module<ImplName> {
     }
 
     protected void registerCapabilities() {
-
+        
     }
 
     public final ModuleProxy getClientProxy() {

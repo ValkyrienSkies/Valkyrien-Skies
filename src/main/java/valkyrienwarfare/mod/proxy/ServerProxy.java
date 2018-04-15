@@ -16,11 +16,9 @@
 
 package valkyrienwarfare.mod.proxy;
 
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import valkyrienwarfare.mod.event.EventsServer;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.addons.Module;
 import valkyrienwarfare.api.addons.ModuleProxy;
@@ -42,7 +40,6 @@ public class ServerProxy extends CommonProxy {
     @Override
     public void init(FMLInitializationEvent e) {
         super.init(e);
-        MinecraftForge.EVENT_BUS.register(new EventsServer());
 
         for (Module addon : ValkyrienWarfareMod.addons) {
             ModuleProxy proxy = addon.getServerProxy();

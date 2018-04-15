@@ -17,6 +17,8 @@
 package valkyrienwarfare.addon.control.tileentity;
 
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import valkyrienwarfare.addon.control.controlsystems.ShipPulseImpulseControlSystem;
 import valkyrienwarfare.addon.control.network.ThrustModulatorGuiInputMessage;
@@ -25,25 +27,28 @@ import valkyrienwarfare.addon.control.proxy.ClientProxyControl;
 import valkyrienwarfare.physics.calculations.PhysicsCalculations;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
-public class ThrustModulatorTileEntity extends ImplPhysicsProcessorNodeTileEntity {
+public class TileEntityThrustModulator extends ImplPhysicsProcessorNodeTileEntity {
 
-    public ShipPulseImpulseControlSystem controlSystem;
+    public static final int PHYSICS_PROCESSOR_PRIORITY = 100;
     public double idealYHeight = 25D;
     public double maximumYVelocity = 10D;
+    private final ShipPulseImpulseControlSystem controlSystem;
 
-    public ThrustModulatorTileEntity() {
-        super();
+    // Initialize this ThrustModulatorTileEntity with a default priority of 100.
+    public TileEntityThrustModulator() {
+        super(PHYSICS_PROCESSOR_PRIORITY);
         controlSystem = new ShipPulseImpulseControlSystem(this);
     }
 
     @Override
     public void onPhysicsTick(PhysicsObject object, PhysicsCalculations calculations, double secondsToSimulate) {
+        // System.out.println("debug");
+        // System.out.println(this.getNode().getNodeNetwork().getNetworkedNodes().size());
         controlSystem.solveThrustValues(calculations);
-//    	System.out.println("test");
     }
 
     @Override
-    public void onDataPacket(net.minecraft.network.NetworkManager net, net.minecraft.network.play.server.SPacketUpdateTileEntity pkt) {
+    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
         super.onDataPacket(net, pkt);
         ClientProxyControl.checkForTextFieldUpdate(this);
     }

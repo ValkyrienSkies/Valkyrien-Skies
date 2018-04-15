@@ -16,6 +16,10 @@
 
 package valkyrienwarfare.addon.combat.render;
 
+import java.util.Map;
+
+import javax.annotation.Nullable;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.culling.ICamera;
@@ -26,10 +30,6 @@ import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.mod.client.render.PhysObjectRenderManager;
-
-import javax.annotation.Nullable;
-import java.util.Map;
 
 public class RenderManagerOverride extends RenderManager {
 
@@ -45,7 +45,7 @@ public class RenderManagerOverride extends RenderManager {
 	 */
 
     private boolean shouldRender(Entity entity) {
-        return PhysObjectRenderManager.renderingMountedEntities || !ValkyrienWarfareMod.physicsManager.isEntityFixed(entity);
+        return !ValkyrienWarfareMod.physicsManager.isEntityFixed(entity);
     }
 
     @Override

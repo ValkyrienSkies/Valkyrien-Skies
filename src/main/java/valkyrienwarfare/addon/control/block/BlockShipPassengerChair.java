@@ -16,6 +16,10 @@
 
 package valkyrienwarfare.addon.control.block;
 
+import java.util.List;
+
+import javax.annotation.Nullable;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
@@ -37,9 +41,6 @@ import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
-import javax.annotation.Nullable;
-import java.util.List;
-
 public class BlockShipPassengerChair extends Block {
 
     public static final PropertyDirection FACING = BlockHorizontal.FACING;
@@ -50,9 +51,7 @@ public class BlockShipPassengerChair extends Block {
 
     public static double getChairYaw(IBlockState state, BlockPos pos) {
         EnumFacing enumFace = state.getValue(BlockShipPassengerChair.FACING);
-
         double chairYaw = -enumFace.getHorizontalAngle() - 90;
-
         return chairYaw;
     }
 
@@ -86,7 +85,6 @@ public class BlockShipPassengerChair extends Block {
                 }
             }
         }
-
         return false;
     }
 
@@ -103,7 +101,7 @@ public class BlockShipPassengerChair extends Block {
     }
 
     private Vector getPlayerMountOffset(IBlockState state, BlockPos pos) {
-        EnumFacing facing = (EnumFacing) state.getValue(FACING);
+        EnumFacing facing = state.getValue(FACING);
         switch (facing) {
             case NORTH:
                 return new Vector(pos.getX() + .5D, pos.getY(), pos.getZ() + .6D);
@@ -139,7 +137,7 @@ public class BlockShipPassengerChair extends Block {
 
     @Override
     public int getMetaFromState(IBlockState state) {
-        int i = ((EnumFacing) state.getValue(FACING)).getIndex();
+        int i = state.getValue(FACING).getIndex();
         return i;
     }
 

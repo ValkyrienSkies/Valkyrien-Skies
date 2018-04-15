@@ -40,7 +40,7 @@ public class PhysWrapperPositionHandler implements IMessageHandler<PhysWrapperPo
                 if (ent != null && ent instanceof PhysicsWrapperEntity) {
                     PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity) ent;
 
-                    wrapper.wrapping.coordTransform.stack.pushMessage(message);
+                    wrapper.wrapping.coordTransform.serverBuffer.pushMessage(message);
 
                     // wrapper.wrapping.centerCoord = message.centerOfMass;
                     //

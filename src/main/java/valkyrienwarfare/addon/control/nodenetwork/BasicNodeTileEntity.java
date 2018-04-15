@@ -17,13 +17,14 @@
 package valkyrienwarfare.addon.control.nodenetwork;
 
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
 
 public abstract class BasicNodeTileEntity extends TileEntity implements INodeProvider, ITickable {
 
-    public final Node tileNode;
+    private final Node tileNode;
 
     public BasicNodeTileEntity() {
         tileNode = new Node(this);
@@ -36,7 +37,7 @@ public abstract class BasicNodeTileEntity extends TileEntity implements INodePro
     }
 
     @Override
-    public void onDataPacket(net.minecraft.network.NetworkManager net, net.minecraft.network.play.server.SPacketUpdateTileEntity pkt) {
+    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
         readFromNBT(pkt.getNbtCompound());
     }
 

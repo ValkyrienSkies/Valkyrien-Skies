@@ -16,6 +16,10 @@
 
 package valkyrienwarfare.addon.control.item;
 
+import java.util.List;
+
+import javax.annotation.Nullable;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.util.ITooltipFlag;
@@ -35,9 +39,6 @@ import valkyrienwarfare.addon.control.capability.ICapabilityLastRelay;
 import valkyrienwarfare.addon.control.nodenetwork.INodeProvider;
 import valkyrienwarfare.addon.control.nodenetwork.Node;
 
-import javax.annotation.Nullable;
-import java.util.List;
-
 public class ItemRelayWire extends Item {
 
     public static double range = 8D;
@@ -56,7 +57,7 @@ public class ItemRelayWire extends Item {
     public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         IBlockState clickedState = worldIn.getBlockState(pos);
         Block block = clickedState.getBlock();
-
+        
         TileEntity currentTile = worldIn.getTileEntity(pos);
 
         ItemStack stack = player.getHeldItem(hand);
@@ -64,6 +65,7 @@ public class ItemRelayWire extends Item {
         if (currentTile instanceof INodeProvider && !worldIn.isRemote) {
             ICapabilityLastRelay inst = stack.getCapability(ValkyrienWarfareControl.lastRelayCapability, null);
             if (inst != null) {
+                
                 if (!inst.hasLastRelay()) {
 
                     inst.setLastRelay(pos);

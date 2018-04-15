@@ -34,7 +34,7 @@ public class TileEntityPilotsChair extends ImplTileEntityPilotable {
     @Override
     void processControlMessage(PilotControlsMessage message, EntityPlayerMP sender) {
         IBlockState blockState = getWorld().getBlockState(getPos());
-        if (blockState.getBlock() == ValkyrienWarfareControl.INSTANCE.pilotsChair) {
+        if (blockState.getBlock() == ValkyrienWarfareControl.INSTANCE.blocks.pilotsChair) {
             PhysicsWrapperEntity wrapper = getParentPhysicsEntity();
             if (wrapper != null) {
                 processCalculationsForControlMessageAndApplyCalculations(wrapper, message, blockState);
@@ -126,8 +126,7 @@ public class TileEntityPilotsChair extends ImplTileEntityPilotable {
 //		Vector shipUpOffset = shipUpPos.getSubtraction(shipUp);
         Vector shipUpOffset = shipUp.getSubtraction(shipUpPos);
 
-
-        double mass = controlledShip.physicsProcessor.mass;
+        double mass = controlledShip.physicsProcessor.getMass();
 
 //		idealAngularDirection.multiply(mass/2.5D);
         idealLinearVelocity.multiply(mass / 5D);
@@ -143,8 +142,8 @@ public class TileEntityPilotsChair extends ImplTileEntityPilotable {
 
         Vector velocityCompensationAlignment = controlledShip.physicsProcessor.angularVelocity.cross(shipUpPos);
 
-        velocityCompensationAlignment.multiply(controlledShip.physicsProcessor.physRawSpeed);
-        velocityCompensationAngular.multiply(2D * controlledShip.physicsProcessor.physRawSpeed);
+        velocityCompensationAlignment.multiply(controlledShip.physicsProcessor.getPhysicsTimeDeltaPerGameTick());
+        velocityCompensationAngular.multiply(2D * controlledShip.physicsProcessor.getPhysicsTimeDeltaPerGameTick());
 
         shipUpOffset.subtract(velocityCompensationAlignment);
         velocityCompensationAngular.subtract(velocityCompensationAngular);

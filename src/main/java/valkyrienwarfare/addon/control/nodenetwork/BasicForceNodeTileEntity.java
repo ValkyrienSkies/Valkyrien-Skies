@@ -19,30 +19,38 @@ package valkyrienwarfare.addon.control.nodenetwork;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import valkyrienwarfare.util.NBTUtils;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.physics.calculations.PhysicsCalculations;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.util.NBTUtils;
 
 public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity implements IForceTile {
 
-    protected double maxThrust = 5000D;
-    protected double currentThrust = 0D;
-    private Vector forceOutputVector = new Vector();
+    protected double maxThrust;
+    protected double currentThrust;
+    private Vector forceOutputVector;
     private Vector normalVelocityUnoriented;
-    private int ticksSinceLastControlSignal = 0;
-    //Tells if the tile is in Ship Space, if it isn't then it doesn't try to find a parent Ship object
-    private boolean hasAlreadyCheckedForParent = false;
+    private int ticksSinceLastControlSignal;
+    // Tells if the tile is in Ship Space, if it isn't then it doesn't try to find a
+    // parent Ship object
+    private boolean hasAlreadyCheckedForParent;
 
     /**
-     * Only used for the NBT creation, other <init> calls should go through the other methods
+     * Only used for the NBT creation, other <init> calls should go through the
+     * other constructors first
      */
     public BasicForceNodeTileEntity() {
+        this.maxThrust = 5000D;
+        this.currentThrust = 0D;
+        this.forceOutputVector = new Vector();
+        this.ticksSinceLastControlSignal = 0;
+        this.hasAlreadyCheckedForParent = false;
     }
 
     public BasicForceNodeTileEntity(Vector normalVeclocityUnoriented, boolean isForceOutputOriented, double maxThrust) {
+        this();
         this.normalVelocityUnoriented = normalVeclocityUnoriented;
         this.maxThrust = maxThrust;
     }
@@ -72,7 +80,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
         Vector outputForce = getForceOutputUnoriented(secondsToApply);
         if (isForceOutputOriented()) {
             if (updateParentShip()) {
-                RotationMatrices.applyTransform(tileNode.getPhysicsObject().coordTransform.lToWRotation, outputForce);
+                RotationMatrices.applyTransform(getNode().getPhysicsObject().coordTransform.lToWRotation, outputForce);
             }
         }
         return outputForce;
@@ -84,12 +92,17 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
     }
 
     @Override
-    public double getThrust() {
+    public double getThrustActual() {
         return currentThrust;
     }
 
     @Override
-    public void setThrust(double newMagnitude) {
+    public double getThrustGoal() {
+        return currentThrust;
+    }
+
+    @Override
+    public void setThrustGoal(double newMagnitude) {
         currentThrust = newMagnitude;
     }
 
@@ -98,7 +111,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
         if (updateParentShip()) {
             return null;
         }
-        PhysicsWrapperEntity parentShip = tileNode.getPhysicsObject().wrapper;
+        PhysicsWrapperEntity parentShip = getNode().getPhysicsObject().wrapper;
         Vector engineCenter = new Vector(getPos().getX() + .5D, getPos().getY() + .5D, getPos().getZ() + .5D);
         RotationMatrices.applyTransform(parentShip.wrapping.coordTransform.lToWTransform, engineCenter);
         engineCenter.subtract(parentShip.posX, parentShip.posY, parentShip.posZ);
@@ -110,7 +123,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
         if (updateParentShip()) {
             return null;
         }
-        PhysicsCalculations calculations = tileNode.getPhysicsObject().physicsProcessor;
+        PhysicsCalculations calculations = getNode().getPhysicsObject().physicsProcessor;
         return calculations.getVelocityAtPoint(getPositionInLocalSpaceWithOrientation());
     }
 
@@ -119,7 +132,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
         if (updateParentShip()) {
             return null;
         }
-        PhysicsCalculations calculations = tileNode.getPhysicsObject().physicsProcessor;
+        PhysicsCalculations calculations = getNode().getPhysicsObject().physicsProcessor;
         return calculations.linearMomentum;
     }
 
@@ -128,10 +141,9 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
         if (updateParentShip()) {
             return null;
         }
-        PhysicsCalculations calculations = tileNode.getPhysicsObject().physicsProcessor;
+        PhysicsCalculations calculations = getNode().getPhysicsObject().physicsProcessor;
         return calculations.angularVelocity.cross(getPositionInLocalSpaceWithOrientation());
     }
-
 
     @Override
     public void readFromNBT(NBTTagCompound compound) {
@@ -158,15 +170,15 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
      */
     public boolean updateParentShip() {
         if (hasAlreadyCheckedForParent) {
-            return tileNode.getPhysicsObject() == null;
+            return getNode().getPhysicsObject() == null;
         }
         BlockPos pos = this.getPos();
         World world = this.getWorld();
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
-        //Already checked
+        // Already checked
         hasAlreadyCheckedForParent = true;
         if (wrapper != null) {
-            tileNode.updateParentEntity(wrapper.wrapping);
+            getNode().updateParentEntity(wrapper.wrapping);
             return false;
         } else {
             return true;
@@ -180,10 +192,9 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
     @Override
     public void update() {
         super.update();
-
         ticksSinceLastControlSignal++;
         if (ticksSinceLastControlSignal > 5) {
-            setThrust(getThrust() * .9D);
+            setThrustGoal(getThrustActual() * .9D);
         }
     }
 

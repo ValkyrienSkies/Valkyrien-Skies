@@ -16,6 +16,13 @@
 
 package valkyrienwarfare.physics.management;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.ChunkPos;
@@ -28,63 +35,65 @@ import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.minecraftforge.common.ForgeChunkManager.Type;
 import valkyrienwarfare.ValkyrienWarfareMod;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
-
 /**
- * This class essentially handles all the issues with ticking and handling physics Objects in the given world
+ * This class essentially handles all the issues with ticking and handling
+ * physics Objects in the given world
  *
  * @author BigBastard
  */
 public class WorldPhysObjectManager {
 
-    public final Ticket chunkLoadingTicket;
-    public final HashMap<ChunkPos, PhysicsWrapperEntity> chunkPosToPhysicsEntityMap = new HashMap<ChunkPos, PhysicsWrapperEntity>();
-    // private static double ShipRangeCheck = 120D;
-    public World worldObj;
-    public ArrayList<PhysicsWrapperEntity> physicsEntities = new ArrayList<PhysicsWrapperEntity>();
-    public ArrayList<PhysicsWrapperEntity> physicsEntitiesToUnload = new ArrayList<PhysicsWrapperEntity>();
-    public ArrayList<Callable<Void>> physCollisonCallables = new ArrayList<Callable<Void>>();
-//	private static Field droppedChunksField;
-
-    public Future physicsThreadStatus = null;
+    private final Ticket chunkLoadingTicket;
+    private final Map<ChunkPos, PhysicsWrapperEntity> chunkPosToPhysicsEntityMap;
+    public final World worldObj;
+    public final List<PhysicsWrapperEntity> physicsEntities;
+    public final List<PhysicsWrapperEntity> physicsEntitiesToUnload;
+    private final List<Callable<Void>> physCollisonCallables;
+    private Future<Void> physicsThreadStatus;
 
     public WorldPhysObjectManager(World toManage) {
-        worldObj = toManage;
-        chunkLoadingTicket = ForgeChunkManager.requestTicket(ValkyrienWarfareMod.INSTANCE, toManage, Type.NORMAL);
+        this.worldObj = toManage;
+        this.chunkLoadingTicket = ForgeChunkManager.requestTicket(ValkyrienWarfareMod.INSTANCE, toManage, Type.NORMAL);
+        this.physicsEntities = new ArrayList<PhysicsWrapperEntity>();
+        this.physicsEntitiesToUnload = new ArrayList<PhysicsWrapperEntity>();
+        this.physCollisonCallables = new ArrayList<Callable<Void>>();
+        this.chunkPosToPhysicsEntityMap = new HashMap<ChunkPos, PhysicsWrapperEntity>();
+        this.physicsThreadStatus = null;
     }
 
     /**
-     * Returns the list of PhysicsEntities that aren't too far away from players to justify being ticked
+     * Returns the list of PhysicsEntities that aren't too far away from players to
+     * justify being ticked
      *
      * @return
      */
-    public ArrayList<PhysicsWrapperEntity> getTickablePhysicsEntities() {
-        ArrayList<PhysicsWrapperEntity> list = (ArrayList<PhysicsWrapperEntity>) physicsEntities.clone();
-
-        ArrayList<PhysicsWrapperEntity> frozenShips = new ArrayList<PhysicsWrapperEntity>();
+    public List<PhysicsWrapperEntity> getTickablePhysicsEntities() {
+        List<PhysicsWrapperEntity> list = new ArrayList<PhysicsWrapperEntity>(physicsEntities);
+        List<PhysicsWrapperEntity> frozenShips = new ArrayList<PhysicsWrapperEntity>();
 
         if (worldObj instanceof WorldServer) {
             WorldServer worldServer = (WorldServer) worldObj;
             for (PhysicsWrapperEntity wrapper : list) {
                 if (!wrapper.isDead) {
                     if (wrapper.wrapping.surroundingWorldChunksCache != null) {
-                        int chunkCacheX = MathHelper.floor(wrapper.posX / 16D) - wrapper.wrapping.surroundingWorldChunksCache.chunkX;
-                        int chunkCacheZ = MathHelper.floor(wrapper.posZ / 16D) - wrapper.wrapping.surroundingWorldChunksCache.chunkZ;
+                        int chunkCacheX = MathHelper.floor(wrapper.posX / 16D)
+                                - wrapper.wrapping.surroundingWorldChunksCache.chunkX;
+                        int chunkCacheZ = MathHelper.floor(wrapper.posZ / 16D)
+                                - wrapper.wrapping.surroundingWorldChunksCache.chunkZ;
 
-                        chunkCacheX = Math.max(0, Math.min(chunkCacheX, wrapper.wrapping.surroundingWorldChunksCache.chunkArray.length - 1));
-                        chunkCacheZ = Math.max(0, Math.min(chunkCacheZ, wrapper.wrapping.surroundingWorldChunksCache.chunkArray[0].length - 1));
+                        chunkCacheX = Math.max(0, Math.min(chunkCacheX,
+                                wrapper.wrapping.surroundingWorldChunksCache.chunkArray.length - 1));
+                        chunkCacheZ = Math.max(0, Math.min(chunkCacheZ,
+                                wrapper.wrapping.surroundingWorldChunksCache.chunkArray[0].length - 1));
 
                         Chunk chunk = wrapper.wrapping.surroundingWorldChunksCache.chunkArray[chunkCacheX][chunkCacheZ];
 
-//		        		Chunk chunk = wrapper.wrapping.surroundingWorldChunksCache.chunkArray[(wrapper.wrapping.surroundingWorldChunksCache.chunkArray.length)/2][(wrapper.wrapping.surroundingWorldChunksCache.chunkArray[0].length)/2];
+                        // Chunk chunk =
+                        // wrapper.wrapping.surroundingWorldChunksCache.chunkArray[(wrapper.wrapping.surroundingWorldChunksCache.chunkArray.length)/2][(wrapper.wrapping.surroundingWorldChunksCache.chunkArray[0].length)/2];
 
                         if (chunk != null && !worldServer.playerChunkMap.contains(chunk.x, chunk.z)) {
                             frozenShips.add(wrapper);
-                            //Then I should freeze any ships in this chunk
+                            // Then I should freeze any ships in this chunk
                         }
                     }
                 } else {
@@ -93,37 +102,14 @@ public class WorldPhysObjectManager {
             }
         }
 
-        ArrayList<PhysicsWrapperEntity> dumbShips = new ArrayList<PhysicsWrapperEntity>();
+        List<PhysicsWrapperEntity> dumbShips = new ArrayList<PhysicsWrapperEntity>();
 
         for (PhysicsWrapperEntity wrapper : list) {
-            if (wrapper.isDead || wrapper.wrapping == null || (wrapper.wrapping.physicsProcessor == null && !wrapper.world.isRemote)) {
+            if (wrapper.isDead || wrapper.wrapping == null
+                    || (wrapper.wrapping.physicsProcessor == null && !wrapper.world.isRemote)) {
                 dumbShips.add(wrapper);
             }
         }
-
-		/*if(droppedChunksField == null){
-            try{
-				if(ValkyrienWarfarePlugin.isObfuscatedEnvironment){
-					droppedChunksField = ChunkProviderServer.class.getDeclaredField("field_73248_b");
-				}else{
-					droppedChunksField = ChunkProviderServer.class.getDeclaredField("droppedChunksSet");
-				}
-				droppedChunksField.setAccessible(true);
-			}catch(Exception e){}
-		}
-		ChunkProviderServer serverProvider = (ChunkProviderServer) worldObj.getChunkProvider();
-
-		try{
-			Set<Long> droppedChunks = (Set<Long>) droppedChunksField.get(serverProvider);
-
-			for(PhysicsWrapperEntity entity:list){
-				int chunkX = entity.chunkCoordX;
-				int chunkZ = entity.chunkCoordZ;
-				if(droppedChunks.contains(ChunkPos.chunkXZ2Int(chunkX, chunkZ))){
-					frozenShips.add(entity);
-				}
-			}
-		}catch(Exception e){}*/
 
         list.removeAll(frozenShips);
         list.removeAll(dumbShips);
@@ -132,34 +118,28 @@ public class WorldPhysObjectManager {
     }
 
     public void onLoad(PhysicsWrapperEntity loaded) {
-        if (!loaded.wrapping.fromSplit) {
-            if (loaded.world.isRemote) {
-                ArrayList<PhysicsWrapperEntity> potentialMatches = new ArrayList<PhysicsWrapperEntity>();
-                for (PhysicsWrapperEntity wrapper : physicsEntities) {
-                    if (wrapper.getPersistentID().equals(loaded.getPersistentID())) {
-                        potentialMatches.add(wrapper);
-                    }
-                }
-
-                for (PhysicsWrapperEntity caught : potentialMatches) {
-                    physicsEntities.remove(caught);
-                    physCollisonCallables.remove(caught.wrapping.collisionCallable);
-                    caught.wrapping.onThisUnload();
-//					System.out.println("Caught one");
+        if (loaded.world.isRemote) {
+            List<PhysicsWrapperEntity> potentialMatches = new ArrayList<PhysicsWrapperEntity>();
+            for (PhysicsWrapperEntity wrapper : physicsEntities) {
+                if (wrapper.getPersistentID().equals(loaded.getPersistentID())) {
+                    potentialMatches.add(wrapper);
                 }
             }
-            loaded.isDead = false;
-            physicsEntities.add(loaded);
-            physCollisonCallables.add(loaded.wrapping.collisionCallable);
-//            preloadPhysicsWrapperEntityMappings(loaded);
-        } else {
-            // reset check to prevent strange errors
-            loaded.wrapping.fromSplit = false;
+            for (PhysicsWrapperEntity caught : potentialMatches) {
+                physicsEntities.remove(caught);
+                physCollisonCallables.remove(caught.wrapping.collisionCallable);
+                caught.wrapping.onThisUnload();
+                // System.out.println("Caught one");
+            }
         }
+        loaded.isDead = false;
+        physicsEntities.add(loaded);
+        physCollisonCallables.add(loaded.wrapping.collisionCallable);
     }
 
     /**
-     * By preloading this, TileEntities loaded within ship chunks can have a direct link to the ship object while it still loading
+     * By preloading this, TileEntities loaded within ship chunks can have a direct
+     * link to the ship object while it still loading
      *
      * @param loaded
      */
@@ -187,7 +167,8 @@ public class WorldPhysObjectManager {
     }
 
     /**
-     * In the future this will be moved to a Mixins system, for now though this is worse
+     * In the future this will be moved to a Mixins system, for now though this is
+     * worse
      *
      * @param chunk
      * @return
@@ -207,7 +188,7 @@ public class WorldPhysObjectManager {
         AxisAlignedBB expandedCheck = toCheck.expand(6, 6, 6);
 
         for (PhysicsWrapperEntity wrapper : physicsEntities) {
-            if (wrapper.wrapping.collisionBB.intersects(expandedCheck)) {
+            if (wrapper.wrapping.getCollisionBoundingBox().intersects(expandedCheck)) {
                 ships.add(wrapper);
             }
         }
@@ -216,25 +197,17 @@ public class WorldPhysObjectManager {
     }
 
     public boolean isEntityFixed(Entity entity) {
-        if (getShipFixedOnto(entity, false) != null) {
-            return true;
-        }
-        return false;
+        return getShipFixedOnto(entity) != null;
     }
 
-    public PhysicsWrapperEntity getShipFixedOnto(Entity entity, boolean considerUUID) {
+    public PhysicsWrapperEntity getShipFixedOnto(Entity entity) {
         for (PhysicsWrapperEntity wrapper : physicsEntities) {
             if (wrapper.wrapping.isEntityFixed(entity)) {
-                if (considerUUID) {
-                    if (wrapper.wrapping.entityLocalPositions.containsKey(entity.getPersistentID().hashCode())) {
-                        return wrapper;
-                    }
-                }
-
                 if (wrapper.riddenByEntities.contains(entity)) {
                     return wrapper;
                 }
-                //If one of the entities riding has this entity too, then be sure to check for it
+                // If one of the entities riding has this entity too, then be sure to check for
+                // it
                 for (Entity e : wrapper.riddenByEntities) {
                     if (!e.isDead && e.riddenByEntities.contains(entity)) {
                         return wrapper;
@@ -245,4 +218,19 @@ public class WorldPhysObjectManager {
         return null;
     }
 
+    public void setPhysicsThread(Future<Void> physicsThread) {
+        this.physicsThreadStatus = physicsThread;
+    }
+
+    // Wait for the physics thread to finish before returning
+    public void awaitPhysics() {
+        if (physicsThreadStatus != null && !physicsThreadStatus.isDone()) {
+            try {
+                // Wait for the physicsThread to return before moving on.
+                physicsThreadStatus.get();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }

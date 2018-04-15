@@ -16,7 +16,14 @@
 
 package valkyrienwarfare.mod.command;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.annotation.Nullable;
+
 import com.google.common.collect.Lists;
+
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -30,24 +37,19 @@ import net.minecraft.util.text.TextFormatting;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 public class AirshipSettingsCommand extends CommandBase {
 
-    public static final ArrayList<String> completionOptions = new ArrayList<String>();
+    public static final List<String> COMPLETION_OPTIONS = new ArrayList<String>();
 
     static {
-        completionOptions.add("transfer");
-        completionOptions.add("allowPlayer");
-        completionOptions.add("claim");
+        COMPLETION_OPTIONS.add("transfer");
+        COMPLETION_OPTIONS.add("allowplayer");
+        COMPLETION_OPTIONS.add("claim");
     }
 
     //Ripoff of world.rayTraceBlocks(), blame LEX and his Side code
     public static RayTraceResult rayTraceBothSides(EntityPlayer player, double blockReachDistance, float partialTicks) {
-        Vec3d vec3d = new Vec3d(player.posX, player.posY + (double) player.getEyeHeight(), player.posZ);
+        Vec3d vec3d = new Vec3d(player.posX, player.posY + player.getEyeHeight(), player.posZ);
         Vec3d vec3d1 = player.getLook(partialTicks);
         Vec3d vec3d2 = vec3d.addVector(vec3d1.x * blockReachDistance, vec3d1.y * blockReachDistance, vec3d1.z * blockReachDistance);
         return player.world.rayTraceBlocks(vec3d, vec3d2, false, false, true);
@@ -55,12 +57,12 @@ public class AirshipSettingsCommand extends CommandBase {
 
     @Override
     public String getName() {
-        return "airshipSettings";
+        return "airshipsettings";
     }
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "/airshipSettings <setting name> [value]" + "\n" + "Avaliable Settings: [transfer, allowPlayer, claim]";
+        return "/airshipsettings <setting name> [value]" + "\n" + "Avaliable Settings: [transfer, allowplayer, claim]";
     }
 
     @Override
@@ -114,7 +116,7 @@ public class AirshipSettingsCommand extends CommandBase {
                     }
                     return;
                 }
-            } else if (args[0].equals("allowPlayer")) {
+            } else if (args[0].equals("allowplayer")) {
                 if (args.length == 1) {
                     StringBuilder result = new StringBuilder("<");
                     Iterator<String> iter = wrapper.wrapping.allowedUsers.iterator();
@@ -150,7 +152,7 @@ public class AirshipSettingsCommand extends CommandBase {
             p.sendMessage(new TextComponentString("You need to be the owner of an airship to change airship settings!"));
         }
         if (args[0].equals("help")) {
-            for (String command : completionOptions) {
+            for (String command : COMPLETION_OPTIONS) {
                 sender.sendMessage(new TextComponentString(command));
             }
         }
@@ -161,7 +163,7 @@ public class AirshipSettingsCommand extends CommandBase {
     @Override
     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos) {
         if (args.length == 1) {
-            ArrayList<String> possibleArgs = (ArrayList<String>) completionOptions.clone();
+            List<String> possibleArgs = new ArrayList<String>(COMPLETION_OPTIONS);
 
             for (Iterator<String> iterator = possibleArgs.iterator(); iterator.hasNext(); ) { //Don't like this, but I have to because concurrentmodificationexception
                 if (!iterator.next().startsWith(args[0])) {

@@ -16,6 +16,9 @@
 
 package valkyrienwarfare.physics.data;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
@@ -24,14 +27,15 @@ import valkyrienwarfare.api.IBlockForceProvider;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
-import java.util.HashMap;
-
 public class BlockForce {
 
-    public static BlockForce basicForces = new BlockForce();
+    public static final BlockForce basicForces = new BlockForce();
+    private final Map<Block, Force> blocksToForces;
 
-    public HashMap<Block, Force> blocksToForces = new HashMap<Block, Force>();
-
+    public BlockForce() {
+        blocksToForces = new HashMap<Block, Force>();
+    }
+    
     public static void registerBlockForce(Block block, Vector forceVec, boolean isLocal) {
         Force force = new Force(forceVec.X, forceVec.Y, forceVec.Z, isLocal);
         basicForces.blocksToForces.put(block, force);

@@ -18,21 +18,21 @@ package valkyrienwarfare.addon.control.tileentity;
 
 import net.minecraft.nbt.NBTTagCompound;
 import valkyrienwarfare.addon.control.nodenetwork.BasicNodeTileEntity;
-import valkyrienwarfare.addon.control.nodenetwork.IPhysicsProcessorNode;
+import valkyrienwarfare.addon.control.nodenetwork.INodePhysicsProcessor;
 
-public abstract class ImplPhysicsProcessorNodeTileEntity extends BasicNodeTileEntity implements IPhysicsProcessorNode {
+public abstract class ImplPhysicsProcessorNodeTileEntity extends BasicNodeTileEntity implements INodePhysicsProcessor {
 
+    private static int priorityTieBreaker = 0;
     /**
      * If -1, the algorithm will ignore this processor
      */
-    private int priority = -1;
+    private int priority;
+    private int tieBreaker;
 
-    public ImplPhysicsProcessorNodeTileEntity(int processorPriority) {
-        this();
-        setPriority(processorPriority);
-    }
-
-    public ImplPhysicsProcessorNodeTileEntity() {
+    public ImplPhysicsProcessorNodeTileEntity(int priority) {
+        this.priority = priority;
+        this.tieBreaker = priorityTieBreaker;
+        priorityTieBreaker++;
     }
 
     @Override
@@ -46,6 +46,11 @@ public abstract class ImplPhysicsProcessorNodeTileEntity extends BasicNodeTileEn
     }
 
     @Override
+    public int getTieBreaker() {
+        return tieBreaker;
+    }
+
+    @Override
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
         priority = compound.getInteger("priority");
@@ -56,6 +61,17 @@ public abstract class ImplPhysicsProcessorNodeTileEntity extends BasicNodeTileEn
         compound = super.writeToNBT(compound);
         compound.setInteger("priority", priority);
         return compound;
+    }
+
+    // Used maintain order of which processors get called first. If both processors
+    // have equal priorities, then we use the tieBreaker() to break ties.
+    @Override
+    public int compareTo(INodePhysicsProcessor other) {
+        if (getPriority() != other.getPriority()) {
+            return getPriority() - other.getPriority();
+        } else {
+            return getTieBreaker() - other.getTieBreaker();
+        }
     }
 
 }

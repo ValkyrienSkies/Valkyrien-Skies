@@ -16,6 +16,8 @@
 
 package valkyrienwarfare.mod.client.render;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.culling.ICamera;
@@ -23,41 +25,43 @@ import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
-import org.lwjgl.opengl.GL11;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.math.Quaternion;
+import valkyrienwarfare.mod.proxy.ClientProxy;
 import valkyrienwarfare.physics.management.PhysicsObject;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
-import valkyrienwarfare.mod.proxy.ClientProxy;
-
-import java.nio.FloatBuffer;
 
 /**
- * Object owned by each physObject responsible for handling all rendering operations
+ * Object owned by each physObject responsible for handling all rendering
+ * operations
  *
  * @author thebest108
  */
 public class PhysObjectRenderManager {
 
-    public static boolean renderingMountedEntities = false;
-
-    public int glCallListSolid = -1;
-    public int glCallListTranslucent = -1;
-    public int glCallListCutout = -1;
-    public int glCallListCutoutMipped = -1;
-    public PhysicsObject parent;
+    private int glCallListSolid;
+    private int glCallListTranslucent;
+    private int glCallListCutout;
+    private int glCallListCutoutMipped;
+    private PhysicsObject parent;
     // This pos is used to prevent Z-Buffer Errors D:
     // It's actual value is completely irrelevant as long as it's close to the
     // Ship's centerBlockPos
     public BlockPos offsetPos;
     public double curPartialTick;
-    public PhysRenderChunk[][] renderChunks;
-    private FloatBuffer transformBuffer = null;
+    private PhysRenderChunk[][] renderChunks;
 
     public PhysObjectRenderManager(PhysicsObject toRender) {
-        parent = toRender;
+        this.parent = toRender;
+        this.glCallListSolid = -1;
+        this.glCallListTranslucent = -1;
+        this.glCallListCutout = -1;
+        this.glCallListCutoutMipped = -1;
+        this.offsetPos = null;
+        this.curPartialTick = 0;
+        this.renderChunks = null;
     }
 
     public void updateOffsetPos(BlockPos newPos) {
@@ -79,12 +83,13 @@ public class PhysObjectRenderManager {
 
         GL11.glPushMatrix();
         Minecraft.getMinecraft().entityRenderer.enableLightmap();
-//		int i = parent.wrapper.getBrightnessForRender((float) partialTicks);
+        // int i = parent.wrapper.getBrightnessForRender((float) partialTicks);
 
-//		int j = i % 65536;
-//		int k = i / 65536;
-//		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float) j, (float) k);
-//		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        // int j = i % 65536;
+        // int k = i / 65536;
+        // OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)
+        // j, (float) k);
+        // GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
         setupTranslation(partialTicks);
         for (PhysRenderChunk[] chunkArray : renderChunks) {
@@ -128,13 +133,18 @@ public class PhysObjectRenderManager {
 
         for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
             for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
-                //TODO: Fix this render bug
+                // TODO: Fix this render bug
                 try {
-                    if (chunkX >= parent.ownedChunks.minX && chunkZ >= parent.ownedChunks.minZ && chunkX - parent.ownedChunks.minX < renderChunks.length && chunkZ - parent.ownedChunks.minZ < renderChunks[0].length) {
-                        PhysRenderChunk renderChunk = renderChunks[chunkX - parent.ownedChunks.minX][chunkZ - parent.ownedChunks.minZ];
+                    if (chunkX >= parent.ownedChunks.minX && chunkZ >= parent.ownedChunks.minZ
+                            && chunkX - parent.ownedChunks.minX < renderChunks.length
+                            && chunkZ - parent.ownedChunks.minZ < renderChunks[0].length) {
+                        PhysRenderChunk renderChunk = renderChunks[chunkX - parent.ownedChunks.minX][chunkZ
+                                - parent.ownedChunks.minZ];
                         renderChunk.updateLayers(minBlockArrayY, maxBlockArrayY);
                     } else {
-//						ValkyrienWarfareMod.VWLogger.info("updateRange Just attempted to update blocks outside of a Ship's block Range. ANY ERRORS PAST THIS ARE LIKELY RELATED!");
+                        // ValkyrienWarfareMod.VWLogger.info("updateRange Just attempted to update
+                        // blocks outside of a Ship's block Range. ANY ERRORS PAST THIS ARE LIKELY
+                        // RELATED!");
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -158,7 +168,7 @@ public class PhysObjectRenderManager {
 
     public boolean shouldRender() {
         ICamera camera = ((ClientProxy) ValkyrienWarfareMod.proxy).lastCamera;
-        return camera == null || camera.isBoundingBoxInFrustum(parent.collisionBB);
+        return camera == null || camera.isBoundingBoxInFrustum(parent.getCollisionBoundingBox());
     }
 
     public void setupTranslation(double partialTicks) {
@@ -180,11 +190,14 @@ public class PhysObjectRenderManager {
         double moddedY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks;
         double moddedZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks;
 
-//		System.out.println(entity.roll - entity.prevRoll);
+        // System.out.println(entity.roll - entity.prevRoll);
 
-        double p0 = Minecraft.getMinecraft().player.lastTickPosX + (Minecraft.getMinecraft().player.posX - Minecraft.getMinecraft().player.lastTickPosX) * (double) partialTicks;
-        double p1 = Minecraft.getMinecraft().player.lastTickPosY + (Minecraft.getMinecraft().player.posY - Minecraft.getMinecraft().player.lastTickPosY) * (double) partialTicks;
-        double p2 = Minecraft.getMinecraft().player.lastTickPosZ + (Minecraft.getMinecraft().player.posZ - Minecraft.getMinecraft().player.lastTickPosZ) * (double) partialTicks;
+        double p0 = Minecraft.getMinecraft().player.lastTickPosX
+                + (Minecraft.getMinecraft().player.posX - Minecraft.getMinecraft().player.lastTickPosX) * partialTicks;
+        double p1 = Minecraft.getMinecraft().player.lastTickPosY
+                + (Minecraft.getMinecraft().player.posY - Minecraft.getMinecraft().player.lastTickPosY) * partialTicks;
+        double p2 = Minecraft.getMinecraft().player.lastTickPosZ
+                + (Minecraft.getMinecraft().player.posZ - Minecraft.getMinecraft().player.lastTickPosZ) * partialTicks;
 
         Quaternion smoothRotation = getSmoothRotationQuat(partialTicks);
         double[] radians = smoothRotation.toRadians();
@@ -212,10 +225,12 @@ public class PhysObjectRenderManager {
     public Quaternion getSmoothRotationQuat(double partialTick) {
         PhysicsWrapperEntity entity = parent.wrapper;
         double[] oldRotation = RotationMatrices.getDoubleIdentity();
-        oldRotation = RotationMatrices.rotateAndTranslate(oldRotation, entity.prevPitch, entity.prevYaw, entity.prevRoll, new Vector());
+        oldRotation = RotationMatrices.rotateAndTranslate(oldRotation, entity.prevPitch, entity.prevYaw,
+                entity.prevRoll, new Vector());
         Quaternion oneTickBefore = Quaternion.QuaternionFromMatrix(oldRotation);
         double[] newRotation = RotationMatrices.getDoubleIdentity();
-        newRotation = RotationMatrices.rotateAndTranslate(newRotation, entity.pitch, entity.yaw, entity.roll, new Vector());
+        newRotation = RotationMatrices.rotateAndTranslate(newRotation, entity.pitch, entity.yaw, entity.roll,
+                new Vector());
         Quaternion nextQuat = Quaternion.QuaternionFromMatrix(newRotation);
         return Quaternion.getBetweenQuat(oneTickBefore, nextQuat, partialTick);
     }
@@ -229,9 +244,12 @@ public class PhysObjectRenderManager {
         double moddedX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks;
         double moddedY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks;
         double moddedZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks;
-        double p0 = Minecraft.getMinecraft().player.lastTickPosX + (Minecraft.getMinecraft().player.posX - Minecraft.getMinecraft().player.lastTickPosX) * (double) partialTicks;
-        double p1 = Minecraft.getMinecraft().player.lastTickPosY + (Minecraft.getMinecraft().player.posY - Minecraft.getMinecraft().player.lastTickPosY) * (double) partialTicks;
-        double p2 = Minecraft.getMinecraft().player.lastTickPosZ + (Minecraft.getMinecraft().player.posZ - Minecraft.getMinecraft().player.lastTickPosZ) * (double) partialTicks;
+        double p0 = Minecraft.getMinecraft().player.lastTickPosX
+                + (Minecraft.getMinecraft().player.posX - Minecraft.getMinecraft().player.lastTickPosX) * partialTicks;
+        double p1 = Minecraft.getMinecraft().player.lastTickPosY
+                + (Minecraft.getMinecraft().player.posY - Minecraft.getMinecraft().player.lastTickPosY) * partialTicks;
+        double p2 = Minecraft.getMinecraft().player.lastTickPosZ
+                + (Minecraft.getMinecraft().player.posZ - Minecraft.getMinecraft().player.lastTickPosZ) * partialTicks;
 
         Quaternion smoothRotation = getSmoothRotationQuat(partialTicks);
         double[] radians = smoothRotation.toRadians();
@@ -240,7 +258,8 @@ public class PhysObjectRenderManager {
         double moddedYaw = Math.toDegrees(radians[1]);
         double moddedRoll = Math.toDegrees(radians[2]);
 
-//		parent.coordTransform.updateRenderMatrices(moddedX, moddedY, moddedZ, moddedPitch, moddedYaw, moddedRoll);
+        // parent.coordTransform.updateRenderMatrices(moddedX, moddedY, moddedZ,
+        // moddedPitch, moddedYaw, moddedRoll);
 
         if (offsetPos != null) {
             double offsetX = offsetPos.getX() - centerOfRotation.X;

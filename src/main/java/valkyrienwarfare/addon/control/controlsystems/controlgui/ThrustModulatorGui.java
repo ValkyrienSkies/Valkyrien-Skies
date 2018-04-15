@@ -16,40 +16,42 @@
 
 package valkyrienwarfare.addon.control.controlsystems.controlgui;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang3.math.NumberUtils;
+import org.lwjgl.input.Keyboard;
+
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiLabel;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
-import org.lwjgl.input.Keyboard;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.network.ThrustModulatorGuiInputMessage;
-import valkyrienwarfare.addon.control.tileentity.ThrustModulatorTileEntity;
-
-import java.io.IOException;
-import java.util.ArrayList;
+import valkyrienwarfare.addon.control.tileentity.TileEntityThrustModulator;
 
 public class ThrustModulatorGui extends GuiScreen {
 
-    private static ResourceLocation background = new ResourceLocation("valkyrienwarfarecontrol", "textures/gui/thrustmodulator.png");
-    public ThrustModulatorTileEntity tileEnt;
-    public ArrayList<GuiTextField> textFields = new ArrayList<GuiTextField>();
+    private static final ResourceLocation BACKGROUND = new ResourceLocation("valkyrienwarfarecontrol",
+            "textures/gui/thrustmodulator.png");
+    private final TileEntityThrustModulator tileEnt;
+    private final List<GuiTextField> textFields;
 
-    public ThrustModulatorGui(EntityPlayer player, ThrustModulatorTileEntity entity) {
-        super();
+    public ThrustModulatorGui(EntityPlayer player, TileEntityThrustModulator entity) {
         mc = Minecraft.getMinecraft();
         tileEnt = entity;
+        textFields = new ArrayList<GuiTextField>();
     }
 
     public void updateTextFields() {
-        textFields.get(0).setText(tileEnt.idealYHeight + ""); // TOP
-        textFields.get(1).setText(tileEnt.maximumYVelocity + ""); // MID
+        textFields.get(0).setText("" + tileEnt.idealYHeight); // Top button
+        textFields.get(1).setText("" + tileEnt.maximumYVelocity); // Middle button
     }
 
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-        // super.mouseClicked(mouseX,mouseY,mouseButton);
         boolean prevFocused = false;
         boolean postFocused = false;
         for (GuiTextField text : textFields) {
@@ -63,11 +65,13 @@ public class ThrustModulatorGui extends GuiScreen {
     }
 
     public void updateServer() {
-        if (tileEnt == null) {
-            return;
+        if (tileEnt != null && NumberUtils.isCreatable(textFields.get(0).getText())
+                && NumberUtils.isCreatable(textFields.get(1).getText())) {
+            float data = Float.parseFloat(textFields.get(0).getText());
+            float data2 = Float.parseFloat(textFields.get(1).getText());
+            ThrustModulatorGuiInputMessage toSend = new ThrustModulatorGuiInputMessage(tileEnt.getPos(), data, data2);
+            ValkyrienWarfareControl.controlNetwork.sendToServer(toSend);
         }
-        ThrustModulatorGuiInputMessage toSend = new ThrustModulatorGuiInputMessage(tileEnt.getPos(), Float.parseFloat(textFields.get(0).getText()), Float.parseFloat(textFields.get(1).getText()));
-        ValkyrienWarfareControl.controlNetwork.sendToServer(toSend);
     }
 
     @Override
@@ -96,8 +100,10 @@ public class ThrustModulatorGui extends GuiScreen {
         textFields.clear();
         int fieldWidth = 40;
         int fieldHeight = 20;
-        GuiTextField top = new GuiTextField(0, fontRenderer, (width - fieldWidth) / 2 - 57, (height - fieldHeight) / 2 - 77, fieldWidth, fieldHeight);
-        GuiTextField mid = new GuiTextField(0, fontRenderer, (width - fieldWidth) / 2 - 57, (height - fieldHeight) / 2 - 49, fieldWidth, fieldHeight);
+        GuiTextField top = new GuiTextField(0, fontRenderer, (width - fieldWidth) / 2 - 57,
+                (height - fieldHeight) / 2 - 77, fieldWidth, fieldHeight);
+        GuiTextField mid = new GuiTextField(0, fontRenderer, (width - fieldWidth) / 2 - 57,
+                (height - fieldHeight) / 2 - 49, fieldWidth, fieldHeight);
         top.setEnableBackgroundDrawing(false);
         mid.setEnableBackgroundDrawing(false);
         textFields.add(top);
@@ -111,25 +117,21 @@ public class ThrustModulatorGui extends GuiScreen {
         super.onGuiClosed();
         updateServer();
         Keyboard.enableRepeatEvents(false);
-        // Minecraft.getMinecraft().thePlayer.closeScreenAndDropStack();
-        // Minecraft.getMinecraft().thePlayer.cra
-        // this.inventorySlots.removeCraftingFromCrafters(this);
     }
 
     @Override
     public void drawScreen(int par1, int par2, float par3) {
         super.drawScreen(par1, par2, par3);
-        mc.getTextureManager().bindTexture(background);
+        mc.getTextureManager().bindTexture(BACKGROUND);
 
-        //int textureWidth = 332;
-        //int textureHeight = 352;
         int textureWidth = 239;
         int textureHeight = 232;
 
-        drawTexturedModalRect((width - textureWidth) / 2, (height - textureHeight) / 2, 7, 7, textureWidth, textureHeight);
+        drawTexturedModalRect((width - textureWidth) / 2, (height - textureHeight) / 2, 7, 7, textureWidth,
+                textureHeight);
 
         for (int j = 0; j < this.labelList.size(); ++j) {
-            ((GuiLabel) this.labelList.get(j)).drawLabel(this.mc, par1, par2);
+            this.labelList.get(j).drawLabel(this.mc, par1, par2);
         }
         for (GuiTextField text : textFields) {
             text.drawTextBox();

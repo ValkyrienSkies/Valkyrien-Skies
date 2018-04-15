@@ -16,29 +16,28 @@
 
 package valkyrienwarfare.mixin.entity;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.MoverType;
-import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.MoverType;
+import net.minecraft.world.World;
+import valkyrienwarfare.api.MixinMethods;
 import valkyrienwarfare.physics.collision.EntityCollisionInjector;
 import valkyrienwarfare.physics.collision.EntityCollisionInjector.IntermediateMovementVariableStorage;
-import valkyrienwarfare.api.MixinMethods;
 
 @Mixin(value = Entity.class, priority = 1)
 public abstract class MixinEntityIntrinsic {
+
     @Shadow
     public double posX;
-
     @Shadow
     public double posY;
-
     @Shadow
     public double posZ;
-
     @Shadow
     public World world;
     public Entity thisClassAsAnEntity = Entity.class.cast(this);
@@ -48,53 +47,40 @@ public abstract class MixinEntityIntrinsic {
     @Shadow
     public abstract void move(MoverType type, double x, double y, double z);
 
-    @Inject(method = "move",
-            at = @At("HEAD"),
-            cancellable = true)
+    @Inject(method = "move", at = @At("HEAD"), cancellable = true)
     public void changeMoveArgs(MoverType type, double dx, double dy, double dz, CallbackInfo callbackInfo) {
         if (!hasChanged) {
             alteredMovement = MixinMethods.handleMove(type, dx, dy, dz, thisClassAsAnEntity);
             if (alteredMovement != null) {
                 hasChanged = true;
-                this.move(type,
-                        alteredMovement.dxyz.X,
-                        alteredMovement.dxyz.Y,
-                        alteredMovement.dxyz.Z);
+                this.move(type, alteredMovement.dxyz.X, alteredMovement.dxyz.Y, alteredMovement.dxyz.Z);
                 hasChanged = false;
                 callbackInfo.cancel();
             }
         }
     }
 
-    /*@ModifyArgs(method = "move",
-            at = @At(value = "INVOKE",
-                    target = "Lnet/minecraft/entity/Entity;setEntityBoundingBox(Lnet/minecraft/util/math/AxisAlignedBB;)V",
-                    ordinal = 0))
-    public void changeMoveArgs1(Args args, MoverType type, double dx, double dy, double dz) {
-        alteredMovement = MixinMethods.handleMove(args, type, dx, dy, dz, thisClassAsAnEntity);
-    }
+    /*
+     * @ModifyArgs(method = "move", at = @At(value = "INVOKE", target =
+     * "Lnet/minecraft/entity/Entity;setEntityBoundingBox(Lnet/minecraft/util/math/AxisAlignedBB;)V",
+     * ordinal = 0)) public void changeMoveArgs1(Args args, MoverType type, double
+     * dx, double dy, double dz) { alteredMovement = MixinMethods.handleMove(args,
+     * type, dx, dy, dz, thisClassAsAnEntity); }
+     * 
+     * @ModifyArgs(method = "move", at = @At(value = "INVOKE", target =
+     * "Lnet/minecraft/world/World;getTotalWorldTime()J", ordinal = 0)) public void
+     * changeMoveArgs2(Args args, MoverType type, double dx, double dy, double dz) {
+     * alteredMovement = MixinMethods.handleMove(args, type, dx, dy, dz,
+     * thisClassAsAnEntity); hasChanged = true; }
+     * 
+     * @ModifyArgs(method = "move", at = @At(value = "INVOKE", target =
+     * "Lnet/minecraft/profiler/Profiler;startSection(Ljava/lang/String;)V", ordinal
+     * = 0)) public void changeMoveArgs3(Args args, MoverType type, double dx,
+     * double dy, double dz) { if (!hasChanged) { alteredMovement =
+     * MixinMethods.handleMove(args, type, dx, dy, dz, thisClassAsAnEntity); } }
+     */
 
-    @ModifyArgs(method = "move",
-            at = @At(value = "INVOKE",
-                    target = "Lnet/minecraft/world/World;getTotalWorldTime()J",
-                    ordinal = 0))
-    public void changeMoveArgs2(Args args, MoverType type, double dx, double dy, double dz) {
-        alteredMovement = MixinMethods.handleMove(args, type, dx, dy, dz, thisClassAsAnEntity);
-        hasChanged = true;
-    }
-
-    @ModifyArgs(method = "move",
-            at = @At(value = "INVOKE",
-                    target = "Lnet/minecraft/profiler/Profiler;startSection(Ljava/lang/String;)V",
-                    ordinal = 0))
-    public void changeMoveArgs3(Args args, MoverType type, double dx, double dy, double dz) {
-        if (!hasChanged) {
-            alteredMovement = MixinMethods.handleMove(args, type, dx, dy, dz, thisClassAsAnEntity);
-        }
-    }*/
-
-    @Inject(method = "move",
-            at = @At("RETURN"))
+    @Inject(method = "move", at = @At("RETURN"))
     public void postMove(CallbackInfo callbackInfo) {
         if (hasChanged) {
             EntityCollisionInjector.alterEntityMovementPost(thisClassAsAnEntity, alteredMovement);

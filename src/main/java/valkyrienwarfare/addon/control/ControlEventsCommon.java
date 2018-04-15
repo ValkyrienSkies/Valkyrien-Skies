@@ -16,52 +16,22 @@
 
 package valkyrienwarfare.addon.control;
 
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagIntArray;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import valkyrienwarfare.addon.control.capability.ICapabilityLastRelay;
+import valkyrienwarfare.addon.control.capability.LastNodeCapabilityProvider;
 import valkyrienwarfare.addon.control.item.ItemRelayWire;
 
 public class ControlEventsCommon {
 
     @SubscribeEvent
     public void onAttachCapabilityEventItem(AttachCapabilitiesEvent event) {
-        if (event.getObject() instanceof Item) {
+        if (event.getObject() instanceof ItemStack) {
             ItemStack stack = (ItemStack) event.getObject();
-
             if (stack.getItem() instanceof ItemRelayWire) {
-
-//				System.out.println("Obama?");
-
-                event.addCapability(new ResourceLocation(ValkyrienWarfareControl.INSTANCE.getModID(), "LastRelay"), new ICapabilitySerializable<NBTTagIntArray>() {
-                    ICapabilityLastRelay inst = ValkyrienWarfareControl.lastRelayCapability.getDefaultInstance();
-
-                    @Override
-                    public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
-                        return capability == ValkyrienWarfareControl.lastRelayCapability;
-                    }
-
-                    @Override
-                    public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
-                        return capability == ValkyrienWarfareControl.lastRelayCapability ? ValkyrienWarfareControl.lastRelayCapability.<T>cast(inst) : null;
-                    }
-
-                    @Override
-                    public NBTTagIntArray serializeNBT() {
-                        return (NBTTagIntArray) ValkyrienWarfareControl.lastRelayCapability.getStorage().writeNBT(ValkyrienWarfareControl.lastRelayCapability, inst, null);
-                    }
-
-                    @Override
-                    public void deserializeNBT(NBTTagIntArray nbt) {
-                        ValkyrienWarfareControl.lastRelayCapability.getStorage().readNBT(ValkyrienWarfareControl.lastRelayCapability, inst, null, nbt);
-                    }
-                });
+                event.addCapability(new ResourceLocation(ValkyrienWarfareControl.INSTANCE.getModID(), "LastRelay"),
+                        new LastNodeCapabilityProvider());
             }
         }
     }

@@ -25,6 +25,7 @@ import java.lang.reflect.Field;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
@@ -102,24 +103,21 @@ import valkyrienwarfare.util.RealMethods;
 
 @Mod(modid = ValkyrienWarfareMod.MODID, name = ValkyrienWarfareMod.MODNAME, version = ValkyrienWarfareMod.MODVER, guiFactory = "valkyrienwarfare.mod.gui.GuiFactoryValkyrienWarfare", updateJSON = "https://raw.githubusercontent.com/BigBastard/Valkyrien-Warfare-Revamped/update.json")
 public class ValkyrienWarfareMod {
-	public static final ArrayList<Module> addons = new ArrayList<>();
+	public static final List<Module> addons = new ArrayList<>();
 	public static final String MODID = "valkyrienwarfare";
 	public static final String MODNAME = "Valkyrien Warfare";
 	public static final String MODVER = "0.9_alpha";
 	@CapabilityInject(IAirshipCounterCapability.class)
 	public static final Capability<IAirshipCounterCapability> airshipCounter = null;
-	// NOTE: These only calculate physics, so they are only relevant to the Server
-	// end
-	public static final ExecutorService MultiThreadExecutor = Executors.newWorkStealingPool();
-	public static final ExecutorService PhysicsMasterThread = Executors.newCachedThreadPool();
+    // Used as a way to process the physics tasks in parallel during the game tick.
+    // Sends physics tasks to the Executor Service.
+    public static ExecutorService PHYSICS_THREADS = null;
+    // This service is directly responsible for running collision tasks.
+    public static ExecutorService PHYSICS_THREADS_EXECUTOR = null;
 	@SidedProxy(clientSide = "valkyrienwarfare.mod.proxy.ClientProxy", serverSide = "valkyrienwarfare.mod.proxy.ServerProxy")
 	public static CommonProxy proxy;
 	public static File configFile;
 	public static Configuration config;
-	public static boolean dynamicLighting;
-	public static boolean multiThreadedPhysics;
-	public static boolean doSplitting = false;
-	public static boolean doShipCollision = false;
 	public static boolean shipsSpawnParticles = false;
 	public static Vector gravity = new Vector(0, -9.8D, 0);
 	public static int physIter = 10;
@@ -141,6 +139,7 @@ public class ValkyrienWarfareMod {
 	public static boolean highAccuracyCollisions = false;
 	public static boolean accurateRain = false;
 	public static boolean runAirshipPermissions = false;
+	public static int threadCount = -1;
 	public static double shipmobs_spawnrate = .01D;
 	public static Logger VWLogger;
 	private static boolean hasAddonRegistrationEnded = false;
@@ -158,9 +157,6 @@ public class ValkyrienWarfareMod {
 		// "DynamicLighting", false).getBoolean();
 		// Property spawnParticlesParticle = config.get(Configuration.CATEGORY_GENERAL,
 		// "Ships spawn particles", false).getBoolean();
-		multiThreadedPhysics = config
-				.get(Configuration.CATEGORY_GENERAL, "Multi-Threaded physics", true, "Use Multi-Threaded physics")
-				.getBoolean();
 		shipUpperLimit = config.get(Configuration.CATEGORY_GENERAL, "Ship Y-Height Maximum", 1000D).getDouble();
 		shipLowerLimit = config.get(Configuration.CATEGORY_GENERAL, "Ship Y-Height Minimum", -30D).getDouble();
 		maxAirships = config.get(Configuration.CATEGORY_GENERAL, "Max airships per player", -1,
@@ -174,6 +170,16 @@ public class ValkyrienWarfareMod {
 				"Enables the airship permissions system").getBoolean();
 		shipmobs_spawnrate = config.get(Configuration.CATEGORY_GENERAL, "The spawn rate for ship mobs", .01D,
 				"The spawn rate for ship mobs").getDouble();
+
+		{
+			threadCount = config.get(Configuration.CATEGORY_GENERAL, "Physics thread count", -1,
+					"The number of threads to use for physics. If thread count <= 0 it will use the system core count.").getInt();
+
+			if (PHYSICS_THREADS_EXECUTOR == null) {
+				PHYSICS_THREADS_EXECUTOR = Executors.newFixedThreadPool(threadCount <= 0 ? Runtime.getRuntime().availableProcessors() : threadCount);
+				PHYSICS_THREADS = Executors.newFixedThreadPool(threadCount <= 0 ? Runtime.getRuntime().availableProcessors() : threadCount);
+			}
+		}
 	}
 
 	public static File getWorkingFolder() {
@@ -475,10 +481,8 @@ public class ValkyrienWarfareMod {
 
 		PhysicsSettings.doGravity = tag.getBoolean("doGravity", true);
 		PhysicsSettings.doPhysicsBlocks = tag.getBoolean("doPhysicsBlocks", true);
-		PhysicsSettings.doBalloons = tag.getBoolean("doBalloons", true);
 		PhysicsSettings.doAirshipRotation = tag.getBoolean("doAirshipRotation", true);
 		PhysicsSettings.doAirshipMovement = tag.getBoolean("doAirshipMovement", true);
-		ValkyrienWarfareMod.doSplitting = tag.getBoolean("doSplitting", false);
 		ValkyrienWarfareMod.maxShipSize = tag.getInteger("maxShipSize", 15000);
 		ValkyrienWarfareMod.physIter = tag.getInteger("physicsIterations", 8);
 		ValkyrienWarfareMod.physSpeed = tag.getDouble("physicsSpeed", 0.05);
@@ -493,10 +497,8 @@ public class ValkyrienWarfareMod {
 	public void saveConfig() {
 		tag.setBoolean("doGravity", PhysicsSettings.doGravity);
 		tag.setBoolean("doPhysicsBlocks", PhysicsSettings.doPhysicsBlocks);
-		tag.setBoolean("doBalloons", PhysicsSettings.doBalloons);
 		tag.setBoolean("doAirshipRotation", PhysicsSettings.doAirshipRotation);
 		tag.setBoolean("doAirshipMovement", PhysicsSettings.doAirshipMovement);
-		tag.setBoolean("doSplitting", ValkyrienWarfareMod.doSplitting);
 		tag.setInteger("maxShipSize", ValkyrienWarfareMod.maxShipSize);
 		tag.setDouble("gravityVecX", ValkyrienWarfareMod.gravity.X);
 		tag.setDouble("gravityVecY", ValkyrienWarfareMod.gravity.Y);

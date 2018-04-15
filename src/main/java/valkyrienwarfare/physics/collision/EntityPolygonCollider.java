@@ -25,35 +25,35 @@ import valkyrienwarfare.api.Vector;
  */
 public class EntityPolygonCollider {
 
-    public Vector[] potentialSeperatingAxes;
-    public boolean seperated = false;
-    public EntityCollisionObject[] collisions;
-    public int minDistanceIndex;
-    public double minDistance;
-    public EntityPolygon entity;
-    public Polygon block;
-    public Vector entityVelocity;
-    public boolean originallySeperated;
+    private final Vector[] collisionAxes;
+    private boolean seperated = false;
+    private final EntityCollisionObject[] collisions;
+    private int minDistanceIndex;
+    private double minDistance;
+    private final EntityPolygon entity;
+    private final Polygon block;
+    private final Vector entityVelocity;
+    private boolean originallySeperated;
 
     public EntityPolygonCollider(EntityPolygon movable, Polygon stationary, Vector[] axes, Vector entityVel) {
-        potentialSeperatingAxes = axes;
+        collisionAxes = axes;
         entity = movable;
         block = stationary;
         entityVelocity = entityVel;
+        collisions = new EntityCollisionObject[collisionAxes.length];
         processData();
     }
 
     public void processData() {
         seperated = false;
-        collisions = new EntityCollisionObject[potentialSeperatingAxes.length];
         for (int i = 0; i < collisions.length; i++) {
             if (!seperated) {
-                collisions[i] = new EntityCollisionObject(entity, block, potentialSeperatingAxes[i], entityVelocity);
-                if (collisions[i].seperated) {
+                collisions[i] = new EntityCollisionObject(entity, block, collisionAxes[i], entityVelocity);
+                if (collisions[i].arePolygonsSeperated()) {
                     seperated = true;
                     break;
                 }
-                if (!collisions[i].originallyCollided) {
+                if (!collisions[i].werePolygonsInitiallyColliding()) {
                     originallySeperated = true;
                 }
             }
@@ -62,19 +62,35 @@ public class EntityPolygonCollider {
             minDistance = 420;
             for (int i = 0; i < collisions.length; i++) {
                 if (originallySeperated) {
-                    if (Math.abs((collisions[i].penetrationDistance - collisions[i].velDot) / collisions[i].velDot) < minDistance && !collisions[i].originallyCollided) {
+                    if (Math.abs((collisions[i].getCollisionPenetrationDistance() - collisions[i].getVelDot()) / collisions[i].getVelDot()) < minDistance && !collisions[i].werePolygonsInitiallyColliding()) {
                         minDistanceIndex = i;
-                        minDistance = Math.abs((collisions[i].penetrationDistance - collisions[i].velDot) / collisions[i].velDot);
+                        minDistance = Math.abs((collisions[i].getCollisionPenetrationDistance() - collisions[i].getVelDot()) / collisions[i].getVelDot());
                     }
                 } else {
-                    // System.out.println("wtf happened here");
-                    if (Math.abs(collisions[i].penetrationDistance) < minDistance) {
+                    // This is wrong
+                    if (Math.abs(collisions[i].getCollisionPenetrationDistance()) < minDistance) {
                         minDistanceIndex = i;
-                        minDistance = Math.abs(collisions[i].penetrationDistance);
+                        minDistance = Math.abs(collisions[i].getCollisionPenetrationDistance());
                     }
                 }
             }
         }
+    }
+    
+    public EntityCollisionObject[] getCollisions() {
+        return collisions;
+    }
+    
+    public int getMinDistanceIndex() {
+        return minDistanceIndex;
+    }
+    
+    public boolean arePolygonsSeperated() {
+        return seperated;
+    }
+    
+    public Vector[] getCollisionAxes() {
+        return collisionAxes;
     }
 
 }

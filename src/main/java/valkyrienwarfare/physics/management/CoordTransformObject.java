@@ -16,6 +16,11 @@
 
 package valkyrienwarfare.physics.management;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -24,16 +29,14 @@ import net.minecraft.world.border.WorldBorder;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.mod.physmanagement.interaction.IDraggable;
 import valkyrienwarfare.mod.network.EntityRelativePositionMessage;
 import valkyrienwarfare.mod.network.PhysWrapperPositionMessage;
-
-import java.util.ArrayList;
+import valkyrienwarfare.mod.physmanagement.interaction.IDraggable;
 
 /**
- * Handles ALL functions for moving between Ship coordinates and world coordinates
+ * Stores coordinates and transforms for the ship.
  *
- * @author BigBastard
+ * @author thebest108
  */
 public class CoordTransformObject {
 
@@ -54,25 +57,30 @@ public class CoordTransformObject {
     public double[] prevLToWRotation;
     public double[] prevWToLRotation;
 
-    public Vector[] normals = Vector.generateAxisAlignedNorms();
+    public Vector[] normals;
 
-    public ShipTransformationStack stack = new ShipTransformationStack();
+    public final ShipTransformationBuffer serverBuffer;
 
     public CoordTransformObject(PhysicsObject object) {
-        parent = object;
+        this.parent = object;
         updateAllTransforms();
-        prevlToWTransform = lToWTransform;
-        prevwToLTransform = wToLTransform;
+        this.prevlToWTransform = lToWTransform;
+        this.prevwToLTransform = wToLTransform;
+        this.serverBuffer = new ShipTransformationBuffer();
+        this.normals = Vector.generateAxisAlignedNorms();
     }
 
     public void updateMatricesOnly() {
-        lToWTransform = RotationMatrices.getTranslationMatrix(parent.wrapper.posX, parent.wrapper.posY, parent.wrapper.posZ);
+        lToWTransform = RotationMatrices.getTranslationMatrix(parent.wrapper.posX, parent.wrapper.posY,
+                parent.wrapper.posZ);
 
-        lToWTransform = RotationMatrices.rotateAndTranslate(lToWTransform, parent.wrapper.pitch, parent.wrapper.yaw, parent.wrapper.roll, parent.centerCoord);
+        lToWTransform = RotationMatrices.rotateAndTranslate(lToWTransform, parent.wrapper.pitch, parent.wrapper.yaw,
+                parent.wrapper.roll, parent.centerCoord);
 
         lToWRotation = RotationMatrices.getDoubleIdentity();
 
-        lToWRotation = RotationMatrices.rotateOnly(lToWRotation, parent.wrapper.pitch, parent.wrapper.yaw, parent.wrapper.roll);
+        lToWRotation = RotationMatrices.rotateOnly(lToWRotation, parent.wrapper.pitch, parent.wrapper.yaw,
+                parent.wrapper.roll);
 
         wToLTransform = RotationMatrices.inverse(lToWTransform);
         wToLRotation = RotationMatrices.inverse(lToWRotation);
@@ -102,12 +110,17 @@ public class CoordTransformObject {
         prevWToLRotation = wToLRotation;
     }
 
+    private boolean updateParentAABB = true;
+    
     public void updateAllTransforms() {
         updatePosRelativeToWorldBorder();
         updateMatricesOnly();
-        updateParentAABB();
+        if (updateParentAABB) {
+            updateParentAABB();
+        }
         updateParentNormals();
         updatePassengerPositions();
+        updateParentAABB = !updateParentAABB;
     }
 
     /**
@@ -115,7 +128,7 @@ public class CoordTransformObject {
      */
     public void updatePosRelativeToWorldBorder() {
         WorldBorder border = parent.worldObj.getWorldBorder();
-        AxisAlignedBB shipBB = parent.collisionBB;
+        AxisAlignedBB shipBB = parent.getCollisionBoundingBox();
 
         if (shipBB.maxX > border.maxX()) {
             parent.wrapper.posX += border.maxX() - shipBB.maxX;
@@ -140,8 +153,7 @@ public class CoordTransformObject {
     public void sendPositionToPlayers() {
         PhysWrapperPositionMessage posMessage = new PhysWrapperPositionMessage(parent.wrapper);
 
-        ArrayList<Entity> entityList = new ArrayList<Entity>();
-
+        List<Entity> entityList = new ArrayList<Entity>();
         for (Entity entity : parent.worldObj.loadedEntityList) {
             if (entity instanceof IDraggable) {
                 IDraggable draggable = (IDraggable) entity;
@@ -151,7 +163,8 @@ public class CoordTransformObject {
             }
         }
 
-        EntityRelativePositionMessage otherPositionMessage = new EntityRelativePositionMessage(parent.wrapper, entityList);
+        EntityRelativePositionMessage otherPositionMessage = new EntityRelativePositionMessage(parent.wrapper,
+                entityList);
 
         for (EntityPlayerMP player : parent.watchingPlayers) {
             ValkyrienWarfareMod.physWrapperNetwork.sendTo(posMessage, player);
@@ -165,7 +178,7 @@ public class CoordTransformObject {
         Vector[] alignedNorms = Vector.generateAxisAlignedNorms();
         Vector[] rotatedNorms = generateRotationNormals();
         for (int i = 0; i < 6; i++) {
-            Vector currentNorm = null;
+            Vector currentNorm;
             if (i < 3) {
                 currentNorm = alignedNorms[i];
             } else {
@@ -200,7 +213,8 @@ public class CoordTransformObject {
     }
 
     public Vector[] getSeperatingAxisWithShip(PhysicsObject other) {
-        // Note: This Vector array still contains potential 0 vectors, those are removed later
+        // Note: This Vector array still contains potential 0 vectors, those are removed
+        // later
         Vector[] normals = new Vector[15];
         Vector[] otherNorms = other.coordTransform.normals;
         Vector[] rotatedNorms = normals;
@@ -226,48 +240,19 @@ public class CoordTransformObject {
         return normals;
     }
 
-    // TODO: FinishME
+    // TODO: Use Octrees to optimize this, or more preferably QuickHull3D.
     public void updateParentAABB() {
-        double mnX = 0, mnY = 0, mnZ = 0, mxX = 0, mxY = 0, mxZ = 0;
-
-        Vector currentLocation = new Vector();
-
-        mnX = mxX = parent.wrapper.posX;
-        mnY = mxY = parent.wrapper.posY;
-        mnZ = mxZ = parent.wrapper.posZ;
-
-        for (BlockPos pos : parent.blockPositions) {
-
-            currentLocation.X = pos.getX() + .5D;
-            currentLocation.Y = pos.getY() + .5D;
-            currentLocation.Z = pos.getZ() + .5D;
-
-            fromLocalToGlobal(currentLocation);
-
-            if (currentLocation.X < mnX) {
-                mnX = currentLocation.X;
-            }
-            if (currentLocation.X > mxX) {
-                mxX = currentLocation.X;
-            }
-
-            if (currentLocation.Y < mnY) {
-                mnY = currentLocation.Y;
-            }
-            if (currentLocation.Y > mxY) {
-                mxY = currentLocation.Y;
-            }
-
-            if (currentLocation.Z < mnZ) {
-                mnZ = currentLocation.Z;
-            }
-            if (currentLocation.Z > mxZ) {
-                mxZ = currentLocation.Z;
-            }
-
+        CollisionBBConsumer convexHullConsumer = new CollisionBBConsumer();
+        Stream<BlockPos> parentPositionsStream = null;
+        if (parent.blockPositions.size() < 300) {
+            // If its a small ship use a sequential stream.
+            parentPositionsStream = parent.blockPositions.stream();
+        } else {
+            // If its a big ship then we destroy the cpu consumption and go fully multithreaded!
+            parentPositionsStream = parent.blockPositions.parallelStream();
         }
-        AxisAlignedBB enclosingBB = new AxisAlignedBB(mnX, mnY, mnZ, mxX, mxY, mxZ).expand(.6D, .6D, .6D);
-        parent.collisionBB = enclosingBB;
+        parentPositionsStream.forEach(convexHullConsumer);
+        parent.setCollisionBoundingBox(convexHullConsumer.createWrappingAABB());
     }
 
     public void fromGlobalToLocal(Vector inGlobal) {
@@ -278,4 +263,40 @@ public class CoordTransformObject {
         RotationMatrices.applyTransform(lToWTransform, inLocal);
     }
 
+    private class CollisionBBConsumer implements Consumer<BlockPos> {
+        private final double[] M = lToWTransform;
+        double minX, minY, minZ, maxX, maxY, maxZ;
+
+        CollisionBBConsumer() {
+            minX = parent.wrapper.posX;
+            minY = parent.wrapper.posY;
+            minZ = parent.wrapper.posZ;
+            maxX = parent.wrapper.posX;
+            maxY = parent.wrapper.posY;
+            maxZ = parent.wrapper.posZ;
+        }
+        
+        @Override
+        public void accept(BlockPos pos) {
+            double x = pos.getX() + .5D;
+            double y = pos.getY() + .5D;
+            double z = pos.getZ() + .5D;
+            
+            double newX = x * M[0] + y * M[1] + z * M[2] + M[3];
+            double newY = x * M[4] + y * M[5] + z * M[6] + M[7];
+            double newZ = x * M[8] + y * M[9] + z * M[10] + M[11];
+            
+            minX = Math.min(newX, minX);
+            maxX = Math.max(newX, maxX);
+            minY = Math.min(newY, minY);
+            maxY = Math.max(newY, maxY);
+            minZ = Math.min(newZ, minZ);
+            maxZ = Math.max(newZ, maxZ);
+        }
+        
+        AxisAlignedBB createWrappingAABB() {
+            return new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ).expand(.6D, .6D, .6D);
+        }
+    
+    }
 }

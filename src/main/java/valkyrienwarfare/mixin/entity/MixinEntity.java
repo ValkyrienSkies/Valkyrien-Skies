@@ -16,17 +16,18 @@
 
 package valkyrienwarfare.mixin.entity;
 
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Redirect;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
@@ -36,13 +37,12 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 @Mixin(Entity.class)
 public abstract class MixinEntity implements IDraggable {
 
-    public PhysicsWrapperEntity worldBelowFeet;
-
-    public Vector velocityAddedToPlayer = new Vector();
-
-    public double yawDifVelocity;
-
-    public boolean cancelNextMove = false;
+    private PhysicsWrapperEntity worldBelowFeet;
+    private Vector velocityAddedToPlayer = new Vector();
+    private double yawDifVelocity;
+    private boolean cancelNextMove = false;
+    private Vector positionInShipSpace;
+    private Vector velocityInShipSpace;
     @Shadow
     public float rotationYaw;
     @Shadow
@@ -62,86 +62,83 @@ public abstract class MixinEntity implements IDraggable {
     IDraggable thisAsDraggable = IDraggable.class.cast(this);
     private Vector searchVector = null;
 
+    @Override
     public PhysicsWrapperEntity getWorldBelowFeet() {
         return worldBelowFeet;
     }
 
+    @Override
     public void setWorldBelowFeet(PhysicsWrapperEntity toSet) {
         worldBelowFeet = toSet;
     }
 
+    @Override
     public Vector getVelocityAddedToPlayer() {
         return velocityAddedToPlayer;
     }
 
+    @Override
     public void setVelocityAddedToPlayer(Vector toSet) {
         velocityAddedToPlayer = toSet;
     }
 
+    @Override
     public double getYawDifVelocity() {
         return yawDifVelocity;
     }
 
+    @Override
     public void setYawDifVelocity(double toSet) {
         yawDifVelocity = toSet;
     }
 
+    @Override
     public void setCancelNextMove(boolean toSet) {
         cancelNextMove = toSet;
     }
 
-    /*@Inject(method = "move(Lnet/minecraft/entity/MoverType;DDD)V", at = @At("HEAD"), cancellable = true)
-    public void preMove(MoverType type, double dx, double dy, double dz, CallbackInfo callbackInfo) {
-    	if(cancelNextMove){
-    		cancelNextMove = false;
-    		cancelNextMove2 = true;
-    		return;
-    	}
-
-    	if(cancelNextMove2){
-    		cancelNextMove2 = false;
-    		callbackInfo.cancel();
-    		return;
-    	}
-
-        double movDistSq = (dx * dx) + (dy * dy) + (dz * dz);
-        if (movDistSq > 10000) {
-            //Assume this will take us to Ship coordinates
-            double newX = this.posX + dx;
-            double newY = this.posY + dy;
-            double newZ = this.posZ + dz;
-            BlockPos newPosInBlock = new BlockPos(newX, newY, newZ);
-
-            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(this.world, newPosInBlock);
-
-            if (wrapper == null) {
-//				Just forget this even happened
-                callbackInfo.cancel();
-                return;
-            }
-
-            Vector endPos = new Vector(newX, newY, newZ);
-            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, endPos);
-
-            dx = endPos.X - this.posX;
-            dy = endPos.Y - this.posY;
-            dz = endPos.Z - this.posZ;
-        }
-
-        //callbackInfo.cancel() gets called by the method directly now
-        if(EntityCollisionInjector.alterEntityMovement(thisClassAsAnEntity, dx, dy, dz, callbackInfo)){
-//        	callbackInfo.cancel();
-        }
-    }*/
+    /*
+     * @Inject(method = "move(Lnet/minecraft/entity/MoverType;DDD)V", at
+     * = @At("HEAD"), cancellable = true) public void preMove(MoverType type, double
+     * dx, double dy, double dz, CallbackInfo callbackInfo) { if(cancelNextMove){
+     * cancelNextMove = false; cancelNextMove2 = true; return; }
+     * 
+     * if(cancelNextMove2){ cancelNextMove2 = false; callbackInfo.cancel(); return;
+     * }
+     * 
+     * double movDistSq = (dx * dx) + (dy * dy) + (dz * dz); if (movDistSq > 10000)
+     * { //Assume this will take us to Ship coordinates double newX = this.posX +
+     * dx; double newY = this.posY + dy; double newZ = this.posZ + dz; BlockPos
+     * newPosInBlock = new BlockPos(newX, newY, newZ);
+     * 
+     * PhysicsWrapperEntity wrapper =
+     * ValkyrienWarfareMod.physicsManager.getObjectManagingPos(this.world,
+     * newPosInBlock);
+     * 
+     * if (wrapper == null) { // Just forget this even happened
+     * callbackInfo.cancel(); return; }
+     * 
+     * Vector endPos = new Vector(newX, newY, newZ);
+     * RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.
+     * wToLTransform, endPos);
+     * 
+     * dx = endPos.X - this.posX; dy = endPos.Y - this.posY; dz = endPos.Z -
+     * this.posZ; }
+     * 
+     * //callbackInfo.cancel() gets called by the method directly now
+     * if(EntityCollisionInjector.alterEntityMovement(thisClassAsAnEntity, dx, dy,
+     * dz, callbackInfo)){ // callbackInfo.cancel(); } }
+     */
 
     /**
-     * This is easier to have as an overwrite because there's less laggy hackery to be done then :P
+     * This is easier to have as an overwrite because there's less laggy hackery to
+     * be done then :P
      *
      * @author DaPorkchop_
      */
     @Overwrite
     public Vec3d getLook(float partialTicks) {
-        //BEGIN VANILLA CODE
+        // BEGIN VANILLA CODE
         Vec3d original;
         if (partialTicks == 1.0F) {
             original = this.getVectorForRotation(this.rotationPitch, this.rotationYaw);
@@ -150,7 +147,7 @@ public abstract class MixinEntity implements IDraggable {
             float f1 = this.prevRotationYaw + (this.rotationYaw - this.prevRotationYaw) * partialTicks;
             original = this.getVectorForRotation(f, f1);
         }
-        //END VANILLA CODE
+        // END VANILLA CODE
 
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(Entity.class.cast(this));
         if (wrapper != null) {
@@ -169,13 +166,13 @@ public abstract class MixinEntity implements IDraggable {
      */
     @Overwrite
     protected final Vec3d getVectorForRotation(float pitch, float yaw) {
-        //BEGIN VANILLA CODE
+        // BEGIN VANILLA CODE
         float f = MathHelper.cos(-yaw * 0.017453292F - (float) Math.PI);
         float f1 = MathHelper.sin(-yaw * 0.017453292F - (float) Math.PI);
         float f2 = -MathHelper.cos(-pitch * 0.017453292F);
         float f3 = MathHelper.sin(-pitch * 0.017453292F);
-        Vec3d vanilla = new Vec3d((double) (f1 * f2), (double) f3, (double) (f * f2));
-        //END VANILLA CODE
+        Vec3d vanilla = new Vec3d(f1 * f2, f3, f * f2);
+        // END VANILLA CODE
 
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(Entity.class.cast(this));
         if (wrapper != null) {
@@ -185,6 +182,7 @@ public abstract class MixinEntity implements IDraggable {
         return vanilla;
     }
 
+    @Override
     @Shadow
     public abstract void move(MoverType type, double x, double y, double z);
 
@@ -192,7 +190,8 @@ public abstract class MixinEntity implements IDraggable {
     protected abstract void copyDataFromOld(Entity entityIn);
 
     /**
-     * This is easier to have as an overwrite because there's less laggy hackery to be done then :P
+     * This is easier to have as an overwrite because there's less laggy hackery to
+     * be done then :P
      *
      * @author DaPorkchop_
      */
@@ -205,7 +204,8 @@ public abstract class MixinEntity implements IDraggable {
         if (vanilla < 64.0D) {
             return vanilla;
         } else {
-            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(this.world, new BlockPos(x, y, z));
+            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(this.world,
+                    new BlockPos(x, y, z));
             if (wrapper != null) {
                 Vector posVec = new Vector(x, y, z);
                 wrapper.wrapping.coordTransform.fromLocalToGlobal(posVec);
@@ -221,7 +221,8 @@ public abstract class MixinEntity implements IDraggable {
     }
 
     /**
-     * This is easier to have as an overwrite because there's less laggy hackery to be done then :P
+     * This is easier to have as an overwrite because there's less laggy hackery to
+     * be done then :P
      *
      * @author DaPorkchop_
      */
@@ -246,10 +247,7 @@ public abstract class MixinEntity implements IDraggable {
         return vanilla;
     }
 
-    @Redirect(method = "createRunningParticles",
-            at = @At(value = "INVOKE",
-                    target = "Lnet/minecraft/util/math/MathHelper;floor(D)I",
-                    ordinal = 0))
+    @Redirect(method = "createRunningParticles", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/MathHelper;floor(D)I", ordinal = 0))
     public int runningParticlesFirstFloor(double d) {
         PhysicsWrapperEntity worldBelow = thisAsDraggable.getWorldBelowFeet();
 
@@ -263,10 +261,7 @@ public abstract class MixinEntity implements IDraggable {
         }
     }
 
-    @Redirect(method = "createRunningParticles",
-            at = @At(value = "INVOKE",
-                    target = "Lnet/minecraft/util/math/MathHelper;floor(D)I",
-                    ordinal = 1))
+    @Redirect(method = "createRunningParticles", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/MathHelper;floor(D)I", ordinal = 1))
     public int runningParticlesSecondFloor(double d) {
         if (searchVector == null) {
             return MathHelper.floor(d);
@@ -275,10 +270,7 @@ public abstract class MixinEntity implements IDraggable {
         }
     }
 
-    @Redirect(method = "createRunningParticles",
-            at = @At(value = "INVOKE",
-                    target = "Lnet/minecraft/util/math/MathHelper;floor(D)I",
-                    ordinal = 2))
+    @Redirect(method = "createRunningParticles", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/MathHelper;floor(D)I", ordinal = 2))
     public int runningParticlesThirdFloor(double d) {
         if (searchVector == null) {
             return MathHelper.floor(d);

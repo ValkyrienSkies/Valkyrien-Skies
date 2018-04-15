@@ -20,29 +20,33 @@ import valkyrienwarfare.mod.network.PhysWrapperPositionMessage;
 import valkyrienwarfare.physics.data.ShipTransformData;
 
 /**
- * Used by the client to manage all the transformations sent to it by the server, and queues them for smooth delivery and presentation on screen
- *
- * @author BigBastard
+ * Acts as a buffer to smooth incoming position data from the server.
  */
-public class ShipTransformationStack {
+public class ShipTransformationBuffer {
 
-    public ShipTransformData[] recentTransforms = new ShipTransformData[20];
+    private final ShipTransformData[] recentTransforms;
+
+    public ShipTransformationBuffer() {
+        recentTransforms = new ShipTransformData[20];
+    }
+
     // Number of ticks the parent ship has been active for
     // Increases by 1 for every message pushed onto the stack
-
     public void pushMessage(PhysWrapperPositionMessage toPush) {
         // Shift whole array to the right
         for (int index = recentTransforms.length - 2; index >= 0; index--) {
             recentTransforms[index + 1] = recentTransforms[index];
         }
+        // System.arraycopy(recentTransforms, 0, recentTransforms, 1,
+        // recentTransforms.length - 1);
         recentTransforms[0] = new ShipTransformData(toPush);
-
     }
 
     // TODO: Make this auto-adjust to best settings for the server
     public ShipTransformData getDataForTick(int lastTick) {
         if (recentTransforms[0] == null) {
-            System.err.println("A SHIP JUST RETURNED NULL FOR 'recentTransforms[0]==null'; ANY WEIRD ERRORS PAST HERE ARE DIRECTLY LINKED TO THAT!");
+            System.err.println(
+                    "A SHIP JUST RETURNED NULL FOR 'recentTransforms[0]==null'; ANY WEIRD ERRORS PAST HERE ARE DIRECTLY LINKED TO THAT!");
             return null;
         }
         int tickToGet = lastTick + 1;
@@ -51,7 +55,7 @@ public class ShipTransformationStack {
 
         if (realtimeTick - lastTick > 3) {
             tickToGet = realtimeTick - 2;
-//			System.out.println("Too Slow");
+            // System.out.println("Too Slow");
         }
 
         for (ShipTransformData transform : recentTransforms) {
@@ -62,7 +66,7 @@ public class ShipTransformationStack {
             }
         }
 
-//		System.out.println("Couldnt find the needed transform");
+        // System.out.println("Couldnt find the needed transform");
 
         if (recentTransforms[1] != null) {
             return recentTransforms[1];
@@ -72,4 +76,3 @@ public class ShipTransformationStack {
     }
 
 }
-

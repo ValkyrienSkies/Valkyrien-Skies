@@ -16,6 +16,8 @@
 
 package valkyrienwarfare.addon.control.renderer;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -24,7 +26,6 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import org.lwjgl.opengl.GL11;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.block.BlockShipHelm;
 import valkyrienwarfare.addon.control.tileentity.TileEntityShipHelm;
@@ -39,11 +40,12 @@ public class ShipHelmTileEntityRenderer extends TileEntitySpecialRenderer<TileEn
     }
 
     @Override
-    public void render(TileEntityShipHelm tileentity, double x, double y, double z, float partialTick, int destroyStage, float alpha) {
+    public void render(TileEntityShipHelm tileentity, double x, double y, double z, float partialTick, int destroyStage,
+            float alpha) {
         if (tileentity instanceof TileEntityShipHelm) {
             IBlockState helmState = tileentity.getWorld().getBlockState(tileentity.getPos());
 
-            if (helmState.getBlock() != ValkyrienWarfareControl.INSTANCE.shipHelm) {
+            if (helmState.getBlock() != ValkyrienWarfareControl.INSTANCE.blocks.shipHelm) {
                 return;
             }
 
@@ -80,15 +82,13 @@ public class ShipHelmTileEntityRenderer extends TileEntitySpecialRenderer<TileEn
 
             double smoothCompass = tileentity.lastCompassAngle + (smoothCompassDif) * partialTick + 180D;
             double smoothWheel = tileentity.lastWheelRotation + (smoothWheelDif) * partialTick;
-
             BlockPos originPos = tileentity.getPos();
 
-
-            IBlockState wheelState = ValkyrienWarfareControl.INSTANCE.shipWheel.getStateFromMeta(0);
-            IBlockState compassState = ValkyrienWarfareControl.INSTANCE.shipWheel.getStateFromMeta(1);
-            IBlockState glassState = ValkyrienWarfareControl.INSTANCE.shipWheel.getStateFromMeta(2);
-            IBlockState helmStateToRender = ValkyrienWarfareControl.INSTANCE.shipWheel.getStateFromMeta(3);
-            //TODO: Better rendering cache
+            IBlockState wheelState = ValkyrienWarfareControl.INSTANCE.blocks.shipWheel.getStateFromMeta(0);
+            IBlockState compassState = ValkyrienWarfareControl.INSTANCE.blocks.shipWheel.getStateFromMeta(1);
+            IBlockState glassState = ValkyrienWarfareControl.INSTANCE.blocks.shipWheel.getStateFromMeta(2);
+            IBlockState helmStateToRender = ValkyrienWarfareControl.INSTANCE.blocks.shipWheel.getStateFromMeta(3);
+            // TODO: Better rendering cache
             int brightness = tileentity.getWorld().getCombinedLight(tileentity.getPos(), 0);
 
             double multiplier = 2.0D;
@@ -97,39 +97,39 @@ public class ShipHelmTileEntityRenderer extends TileEntitySpecialRenderer<TileEn
             EnumFacing enumfacing = helmState.getValue(BlockShipHelm.FACING);
             double wheelAndCompassStateRotation = enumfacing.getHorizontalAngle();
 
-
             GL11.glTranslated(0.5D, 0, 0.5D);
             GL11.glRotated(wheelAndCompassStateRotation, 0, 1, 0);
             GL11.glTranslated(-0.5D, 0, -0.5D);
-
-            FastBlockModelRenderer.renderBlockModel(BufferBuilder, tessellator, tileentity.getWorld(), helmStateToRender, brightness);
-
+            FastBlockModelRenderer.renderBlockModel(BufferBuilder, tessellator, tileentity.getWorld(),
+                    helmStateToRender, brightness);
 
             GL11.glPushMatrix();
             GL11.glTranslated(.5, .522, 0);
             GL11.glRotated(smoothWheel, 0, 0, 1);
             GL11.glTranslated(-.5, -.522, 0);
-            FastBlockModelRenderer.renderBlockModel(BufferBuilder, tessellator, tileentity.getWorld(), wheelState, brightness);
+            FastBlockModelRenderer.renderBlockModel(BufferBuilder, tessellator, tileentity.getWorld(), wheelState,
+                    brightness);
             GL11.glPopMatrix();
 
             GL11.glPushMatrix();
             GL11.glTranslated(0.5D, 0, 0.5D);
             GL11.glRotated(smoothCompass, 0, 1, 0);
             GL11.glTranslated(-0.5D, 0, -0.5D);
-            FastBlockModelRenderer.renderBlockModel(BufferBuilder, tessellator, tileentity.getWorld(), compassState, brightness);
+            FastBlockModelRenderer.renderBlockModel(BufferBuilder, tessellator, tileentity.getWorld(), compassState,
+                    brightness);
             GL11.glPopMatrix();
 
             GlStateManager.enableAlpha();
             GlStateManager.enableBlend();
             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-            FastBlockModelRenderer.renderBlockModel(BufferBuilder, tessellator, tileentity.getWorld(), glassState, brightness);
+            FastBlockModelRenderer.renderBlockModel(BufferBuilder, tessellator, tileentity.getWorld(), glassState,
+                    brightness);
             GlStateManager.disableAlpha();
             GlStateManager.disableBlend();
 
             GL11.glPopMatrix();
 
             BufferBuilder.setTranslation(oldX, oldY, oldZ);
-
             GlStateManager.enableLighting();
             GlStateManager.resetColor();
         }

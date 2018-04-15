@@ -17,7 +17,7 @@
 package valkyrienwarfare.physics.collision;
 
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.math.BigBastardMath;
+import valkyrienwarfare.math.VWMath;
 
 public class PhysCollisionObject {
 
@@ -39,8 +39,8 @@ public class PhysCollisionObject {
 	}
 
 	public void generateCollision() {
-		playerMinMax = BigBastardMath.getMinMaxOfArray(movable.getProjectionOnVector(axis));
-		blockMinMax = BigBastardMath.getMinMaxOfArray(fixed.getProjectionOnVector(axis));
+		playerMinMax = VWMath.getMinMaxOfArray(movable.getProjectionOnVector(axis));
+		blockMinMax = VWMath.getMinMaxOfArray(fixed.getProjectionOnVector(axis));
 		movMaxFixMin = playerMinMax[0] - blockMinMax[1];
 		movMinFixMax = playerMinMax[1] - blockMinMax[0];
 		if (movMaxFixMin > 0 || movMinFixMax < 0) {

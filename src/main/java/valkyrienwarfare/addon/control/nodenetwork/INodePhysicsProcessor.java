@@ -14,17 +14,26 @@
  *
  */
 
-package valkyrienwarfare.addon.control.tileentity;
+package valkyrienwarfare.addon.control.nodenetwork;
 
-import valkyrienwarfare.addon.control.nodenetwork.BasicNodeTileEntity;
-import valkyrienwarfare.addon.control.nodenetwork.Node;
+import valkyrienwarfare.physics.calculations.PhysicsCalculations;
+import valkyrienwarfare.physics.management.PhysicsObject;
 
-public class ThrustRelayTileEntity extends BasicNodeTileEntity {
+public interface INodePhysicsProcessor extends Comparable<INodePhysicsProcessor> {
 
-    public ThrustRelayTileEntity() {
-        super();
-        Node node = this.getNode();
-        node.setIsNodeRelay(true);
-    }
+    public int getPriority();
+
+    public void setPriority(int newPriority);
+
+    public int getTieBreaker();
+    
+    /**
+     * Does nothing by default, insert processor logic here
+     *
+     * @param object
+     * @param calculations
+     * @param secondsToSimulate
+     */
+    public void onPhysicsTick(PhysicsObject object, PhysicsCalculations calculations, double secondsToSimulate);
 
 }

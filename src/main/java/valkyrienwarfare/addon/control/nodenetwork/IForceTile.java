@@ -21,7 +21,8 @@ import valkyrienwarfare.api.Vector;
 public interface IForceTile {
 
     /**
-     * Used to tell what direction of force an engine will output, this is calculated with respect to the orientation of the engine, DO NOT ALTER
+     * Used to tell what direction of force an engine will output, this is
+     * calculated with respect to the orientation of the engine, DO NOT ALTER
      *
      * @return
      */
@@ -53,15 +54,21 @@ public interface IForceTile {
      *
      * @return
      */
-    public double getThrust();
+    public double getThrustActual();
 
     /**
-     * Sets the force output vector to be this outputNormal() * newMagnitude
+     * Sets the goal for the force output vector to be
      *
      * @param toUse
      */
-    public void setThrust(double newMagnitude);
+    public void setThrustGoal(double newMagnitude);
 
+    /**
+     * Returns the current goal for the thrust
+     * @return
+     */
+    public double getThrustGoal();
+    
     /**
      * Matrix transformation stuff
      *
@@ -77,14 +84,16 @@ public interface IForceTile {
     public Vector getVelocityAtEngineCenter();
 
     /**
-     * Returns the velocity vector of this engine moving relative to the world, except only the linear component from the total velocity
+     * Returns the velocity vector of this engine moving relative to the world,
+     * except only the linear component from the total velocity
      *
      * @return
      */
     public Vector getLinearVelocityAtEngineCenter();
 
     /**
-     * Returns the velocity vector of this engine moving relative to the world, except only the angular component from the total velocity
+     * Returns the velocity vector of this engine moving relative to the world,
+     * except only the angular component from the total velocity
      *
      * @return
      */

@@ -30,7 +30,7 @@ import java.util.List;
  *
  * @author thebest108
  */
-public class BigBastardMath {
+public class VWMath {
 
     public static final int maxArrayListFusePasses = 5;
 

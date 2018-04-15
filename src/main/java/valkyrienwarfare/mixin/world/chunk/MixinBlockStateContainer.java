@@ -21,14 +21,6 @@ public class MixinBlockStateContainer implements IBitOctreeProvider {
     @Shadow
     BitArray storage;
 
-    // I know overwrite is a bit overkill here, but I am avoiding using
-    // redirects to prevent CallBack objects from being created. This set() 
-    // method is very low level, and creating new objects within it will cause
-    // serious performance problems.
-    // Also this method is set to protected in the BlockStateContainer class, 
-    // but its safer to set it to public to prevent conflicts with access 
-    // transformers from other mods.
-    // ~Alex Mastrangelo
     @Overwrite
     public void set(int index, IBlockState state) {
         int i = this.palette.idFor(state);

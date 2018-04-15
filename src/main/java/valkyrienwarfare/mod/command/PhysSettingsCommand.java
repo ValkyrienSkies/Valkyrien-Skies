@@ -16,49 +16,49 @@
 
 package valkyrienwarfare.mod.command;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.annotation.Nullable;
+
 import com.google.common.collect.Lists;
+
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
-import valkyrienwarfare.util.PhysicsSettings;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.Vector;
-
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import valkyrienwarfare.util.PhysicsSettings;
 
 public class PhysSettingsCommand extends CommandBase {
 
-    public static final ArrayList<String> completionOptions = new ArrayList<String>();
+    public static final List<String> COMPLETED_OPTIONS = new ArrayList<String>();
 
     static {
-        completionOptions.add("gravityVector");
-        completionOptions.add("doSplitting");
-        completionOptions.add("maxShipSize");
-        completionOptions.add("physicsIterations");
-        completionOptions.add("physicsSpeed");
-        completionOptions.add("doGravity");
-        completionOptions.add("doPhysicsBlocks");
-        completionOptions.add("doBalloons");
-        completionOptions.add("doAirshipRotation");
-        completionOptions.add("doAirshipMovement");
-        completionOptions.add("save");
-        completionOptions.add("doEtheriumLifting");
+        COMPLETED_OPTIONS.add("gravityvector");
+        COMPLETED_OPTIONS.add("maxshipsize");
+        COMPLETED_OPTIONS.add("physicsiterations");
+        COMPLETED_OPTIONS.add("physicsspeed");
+        COMPLETED_OPTIONS.add("dogravity");
+        COMPLETED_OPTIONS.add("dophysicsblocks");
+        COMPLETED_OPTIONS.add("doairshiprotation");
+        COMPLETED_OPTIONS.add("doairshipmovement");
+        COMPLETED_OPTIONS.add("save");
+        COMPLETED_OPTIONS.add("doetheriumlifting");
     }
 
     @Override
     public String getName() {
-        return "physSettings";
+        return "physsettings";
     }
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "/physSettings <setting name> [value]";
+        return "/physsettings <setting name> [value]";
     }
 
     @Override
@@ -70,24 +70,14 @@ public class PhysSettingsCommand extends CommandBase {
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
         if (args.length == 0) {
             sender.sendMessage(new TextComponentString("Avaliable physics Commands:"));
-            for (String command : completionOptions) {
+            for (String command : COMPLETED_OPTIONS) {
                 sender.sendMessage(new TextComponentString(command));
             }
         }
         String key = args[0];
-        if (key.equals("doSplitting")) {
+        if (key.equals("maxshipsize")) {
             if (args.length == 1) {
-                sender.sendMessage(new TextComponentString("doSplitting=" + ValkyrienWarfareMod.doSplitting + " (Default: false)"));
-                return;
-            } else if (args.length == 2) {
-                boolean value = Boolean.parseBoolean(args[1]);
-                ValkyrienWarfareMod.doSplitting = value;
-                sender.sendMessage(new TextComponentString("Set physics splitting to " + value));
-                return;
-            }
-        } else if (key.equals("maxShipSize")) {
-            if (args.length == 1) {
-                sender.sendMessage(new TextComponentString("maxShipSize=" + ValkyrienWarfareMod.maxShipSize + " (Default: 15000)"));
+                sender.sendMessage(new TextComponentString("maxshipsize=" + ValkyrienWarfareMod.maxShipSize + " (Default: 15000)"));
                 return;
             } else if (args.length == 2) {
                 int value = Integer.parseInt(args[1]);
@@ -95,9 +85,9 @@ public class PhysSettingsCommand extends CommandBase {
                 sender.sendMessage(new TextComponentString("Set maximum ship size to " + value));
                 return;
             }
-        } else if (key.equals("gravityVector")) {
+        } else if (key.equals("gravityvector")) {
             if (args.length == 1) {
-                sender.sendMessage(new TextComponentString("gravityVector=" + ValkyrienWarfareMod.gravity.toRoundedString() + " (Default: <0,-9.8,0>)"));
+                sender.sendMessage(new TextComponentString("gravityvector=" + ValkyrienWarfareMod.gravity.toRoundedString() + " (Default: <0,-9.8,0>)"));
                 return;
             } else if (args.length == 4) {
                 Vector newVector = new Vector(0, -9.8, 0);
@@ -107,7 +97,7 @@ public class PhysSettingsCommand extends CommandBase {
                         newVector.Y = Double.parseDouble(args[2]);
                         newVector.Z = Double.parseDouble(args[3]);
                     } else {
-                        sender.sendMessage(new TextComponentString("Usage: /physSettings gravityVector <x> <y> <z>"));
+                        sender.sendMessage(new TextComponentString("Usage: /physsettings gravityVector <x> <y> <z>"));
                         return;
                     }
                 } catch (Exception e) {
@@ -116,11 +106,11 @@ public class PhysSettingsCommand extends CommandBase {
                 sender.sendMessage(new TextComponentString("physics gravity set to " + newVector.toRoundedString() + " (Default: <0,-9.8,0>)"));
                 return;
             } else {
-                sender.sendMessage(new TextComponentString("Usage: /physSettings gravityVector <x> <y> <z>"));
+                sender.sendMessage(new TextComponentString("Usage: /physsettings gravityVector <x> <y> <z>"));
             }
-        } else if (key.equals("physicsIterations")) {
+        } else if (key.equals("physicsiterations")) {
             if (args.length == 1) {
-                sender.sendMessage(new TextComponentString("physicsIterations=" + ValkyrienWarfareMod.physIter + " (Default: 10)"));
+                sender.sendMessage(new TextComponentString("physicsiterations=" + ValkyrienWarfareMod.physIter + " (Default: 10)"));
                 return;
             } else if (args.length == 2) {
                 int value = Integer.parseInt(args[1]);
@@ -129,12 +119,12 @@ public class PhysSettingsCommand extends CommandBase {
                     return;
                 }
                 ValkyrienWarfareMod.physIter = value;
-                sender.sendMessage(new TextComponentString("Set physicsIterations to " + value));
+                sender.sendMessage(new TextComponentString("Set physicsiterations to " + value));
                 return;
             }
-        } else if (key.equals("physicsSpeed")) {
+        } else if (key.equals("physicsspeed")) {
             if (args.length == 1) {
-                sender.sendMessage(new TextComponentString("physicsSpeed=" + ValkyrienWarfareMod.physSpeed + " (Default: 100%)"));
+                sender.sendMessage(new TextComponentString("physicsspeed=" + ValkyrienWarfareMod.physSpeed + " (Default: 100%)"));
                 return;
             } else if (args.length == 2) {
                 double value = Double.parseDouble(args[1].replace('%', ' '));
@@ -143,67 +133,57 @@ public class PhysSettingsCommand extends CommandBase {
                     return;
                 }
                 ValkyrienWarfareMod.physSpeed = value * 0.05D / 100D;
-                sender.sendMessage(new TextComponentString("Set physicsSpeed to " + value + " percent"));
+                sender.sendMessage(new TextComponentString("Set physicsspeed to " + value + " percent"));
                 return;
             }
-        } else if (key.equals("doGravity")) {
+        } else if (key.equals("dogravity")) {
             if (args.length == 1) {
-                sender.sendMessage(new TextComponentString("doGravity=" + PhysicsSettings.doGravity + " (Default: true)"));
+                sender.sendMessage(new TextComponentString("dogravity=" + PhysicsSettings.doGravity + " (Default: true)"));
                 return;
             } else if (args.length == 2) {
                 boolean value = Boolean.parseBoolean(args[1]);
                 PhysicsSettings.doGravity = value;
-                sender.sendMessage(new TextComponentString("Set doGravity to " + (PhysicsSettings.doGravity ? "enabled" : "disabled")));
+                sender.sendMessage(new TextComponentString("Set dogravity to " + (PhysicsSettings.doGravity ? "enabled" : "disabled")));
                 return;
             }
-        } else if (key.equals("doPhysicsBlocks")) {
+        } else if (key.equals("dophysicsblocks")) {
             if (args.length == 1) {
-                sender.sendMessage(new TextComponentString("doPhysicsBlocks=" + PhysicsSettings.doPhysicsBlocks + " (Default: true)"));
+                sender.sendMessage(new TextComponentString("dophysicsblocks=" + PhysicsSettings.doPhysicsBlocks + " (Default: true)"));
                 return;
             } else if (args.length == 2) {
                 boolean value = Boolean.parseBoolean(args[1]);
                 PhysicsSettings.doPhysicsBlocks = value;
-                sender.sendMessage(new TextComponentString("Set doPhysicsBlocks to " + (PhysicsSettings.doPhysicsBlocks ? "enabled" : "disabled")));
+                sender.sendMessage(new TextComponentString("Set dophysicsblocks to " + (PhysicsSettings.doPhysicsBlocks ? "enabled" : "disabled")));
                 return;
             }
-        } else if (key.equals("doBalloons")) {
+        } else if (key.equals("doairshiprotation")) {
             if (args.length == 1) {
-                sender.sendMessage(new TextComponentString("doBalloons=" + PhysicsSettings.doBalloons + " (Default: true)"));
-                return;
-            } else if (args.length == 2) {
-                boolean value = Boolean.parseBoolean(args[1]);
-                PhysicsSettings.doBalloons = value;
-                sender.sendMessage(new TextComponentString("Set doBalloons to " + (PhysicsSettings.doBalloons ? "enabled" : "disabled")));
-                return;
-            }
-        } else if (key.equals("doAirshipRotation")) {
-            if (args.length == 1) {
-                sender.sendMessage(new TextComponentString("doAirshipRotation=" + PhysicsSettings.doAirshipRotation + " (Default: true)"));
+                sender.sendMessage(new TextComponentString("doairshiprotation=" + PhysicsSettings.doAirshipRotation + " (Default: true)"));
                 return;
             } else if (args.length == 2) {
                 boolean value = Boolean.parseBoolean(args[1]);
                 PhysicsSettings.doAirshipRotation = value;
-                sender.sendMessage(new TextComponentString("Set doAirshipRotation to " + (PhysicsSettings.doAirshipRotation ? "enabled" : "disabled")));
+                sender.sendMessage(new TextComponentString("Set doairshiprotation to " + (PhysicsSettings.doAirshipRotation ? "enabled" : "disabled")));
                 return;
             }
-        } else if (key.equals("doAirshipMovement")) {
+        } else if (key.equals("doairshipmovement")) {
             if (args.length == 1) {
-                sender.sendMessage(new TextComponentString("doAirshipMovement=" + PhysicsSettings.doAirshipMovement + " (Default: true)"));
+                sender.sendMessage(new TextComponentString("doairshipmovement=" + PhysicsSettings.doAirshipMovement + " (Default: true)"));
                 return;
             } else if (args.length == 2) {
                 boolean value = Boolean.parseBoolean(args[1]);
                 PhysicsSettings.doAirshipMovement = value;
-                sender.sendMessage(new TextComponentString("Set doAirshipMovement to " + (PhysicsSettings.doAirshipMovement ? "enabled" : "disabled")));
+                sender.sendMessage(new TextComponentString("Set doairshipmovement to " + (PhysicsSettings.doAirshipMovement ? "enabled" : "disabled")));
                 return;
             }
-        } else if (key.equals("doEtheriumLifting")) {
+        } else if (key.equals("doetheriumlifting")) {
             if (args.length == 1) {
-                sender.sendMessage(new TextComponentString("doEtheriumLifting=" + PhysicsSettings.doEtheriumLifting + " (Default: true)"));
+                sender.sendMessage(new TextComponentString("doetheriumlifting=" + PhysicsSettings.doEtheriumLifting + " (Default: true)"));
                 return;
             } else if (args.length == 2) {
                 boolean value = Boolean.parseBoolean(args[1]);
                 PhysicsSettings.doEtheriumLifting = value;
-                sender.sendMessage(new TextComponentString("Set doEtheriumLifting to " + (PhysicsSettings.doEtheriumLifting ? "enabled" : "disabled")));
+                sender.sendMessage(new TextComponentString("Set doetheriumlifting to " + (PhysicsSettings.doEtheriumLifting ? "enabled" : "disabled")));
                 return;
             }
         } else if (key.equals("save")) {
@@ -212,7 +192,7 @@ public class PhysSettingsCommand extends CommandBase {
             return;
         } else if (true || key.equals("help")) {
             sender.sendMessage(new TextComponentString("Avaliable physics Commands:"));
-            for (String command : completionOptions) {
+            for (String command : COMPLETED_OPTIONS) {
                 sender.sendMessage(new TextComponentString(command));
             }
         }
@@ -223,14 +203,12 @@ public class PhysSettingsCommand extends CommandBase {
     @Override
     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos) {
         if (args.length == 1) {
-            ArrayList<String> possibleArgs = (ArrayList<String>) completionOptions.clone();
-
+            List<String> possibleArgs = new ArrayList<String>(COMPLETED_OPTIONS);
             for (Iterator<String> iterator = possibleArgs.iterator(); iterator.hasNext(); ) { //Don't like this, but I have to because concurrentmodificationexception
                 if (!iterator.next().startsWith(args[0])) {
                     iterator.remove();
                 }
             }
-
             return possibleArgs;
         } else if (args.length == 2) {
             if (args[0].startsWith("do")) {

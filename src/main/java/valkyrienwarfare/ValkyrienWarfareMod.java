@@ -315,7 +315,7 @@ public class ValkyrienWarfareMod {
 			}
 		}
 
-		ALLADDONS: for (String className : allAddons) {
+		ALL_ADDONS: for (String className : allAddons) {
 			try {
 				Class<?> abstractclass = Class.forName(className);
 				if (abstractclass.isAnnotationPresent(VWAddon.class)) {
@@ -323,7 +323,7 @@ public class ValkyrienWarfareMod {
 						if (registered.getClass().getCanonicalName().equals(abstractclass.getCanonicalName())) {
 							System.out.println(
 									"Addon " + abstractclass.getCanonicalName() + " already registered, skipping...");
-							continue ALLADDONS;
+							continue ALL_ADDONS;
 						}
 					}
 					Module module = (Module) abstractclass.newInstance();
@@ -352,6 +352,14 @@ public class ValkyrienWarfareMod {
 
 		for (Module addon : addons) {
 			addon.doPreInit(event);
+		}
+		
+		try {
+            Field chunkCache = ForgeChunkManager.class.getDeclaredField("dormantChunkCacheSize");
+            chunkCache.setAccessible(true);
+            chunkCache.set(null, new Integer(1000));
+		} catch (Exception e) {
+		    e.printStackTrace();
 		}
 	}
 

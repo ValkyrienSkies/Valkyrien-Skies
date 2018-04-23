@@ -141,6 +141,7 @@ public class ValkyrienWarfareMod {
 	public static boolean runAirshipPermissions = false;
 	public static int threadCount = -1;
 	public static double shipmobs_spawnrate = .01D;
+	public static boolean singleBitOctrees = false;
 	public static Logger VWLogger;
 	private static boolean hasAddonRegistrationEnded = false;
 	public DataTag tag = null;
@@ -159,17 +160,12 @@ public class ValkyrienWarfareMod {
 		// "Ships spawn particles", false).getBoolean();
 		shipUpperLimit = config.get(Configuration.CATEGORY_GENERAL, "Ship Y-Height Maximum", 1000D).getDouble();
 		shipLowerLimit = config.get(Configuration.CATEGORY_GENERAL, "Ship Y-Height Minimum", -30D).getDouble();
-		maxAirships = config.get(Configuration.CATEGORY_GENERAL, "Max airships per player", -1,
-				"Players can't own more than this many airships at once. Set to -1 to disable.").getInt();
-		accurateRain = config.get(Configuration.CATEGORY_GENERAL, "Enable accurate rain on ships", false,
-				"Debug feature, takes a lot of processing power").getBoolean();
-		shipsSpawnParticles = config
-				.get(Configuration.CATEGORY_GENERAL, "Enable particle spawns on Ships", true, "Ex. Torch Particles")
-				.getBoolean();
-		runAirshipPermissions = config.get(Configuration.CATEGORY_GENERAL, "Enable airship permissions", false,
-				"Enables the airship permissions system").getBoolean();
-		shipmobs_spawnrate = config.get(Configuration.CATEGORY_GENERAL, "The spawn rate for ship mobs", .01D,
-				"The spawn rate for ship mobs").getDouble();
+		maxAirships = config.get(Configuration.CATEGORY_GENERAL, "Max airships per player", -1, "Players can't own more than this many airships at once. Set to -1 to disable.").getInt();
+		accurateRain = config.get(Configuration.CATEGORY_GENERAL, "Enable accurate rain on ships", false, "Debug feature, takes a lot of processing power").getBoolean();
+		shipsSpawnParticles = config.get(Configuration.CATEGORY_GENERAL, "Enable particle spawns on Ships", true, "Ex. Torch Particles").getBoolean();
+		runAirshipPermissions = config.get(Configuration.CATEGORY_GENERAL, "Enable airship permissions", false, "Enables the airship permissions system").getBoolean();
+		shipmobs_spawnrate = config.get(Configuration.CATEGORY_GENERAL, "The spawn rate for ship mobs", .01D, "The spawn rate for ship mobs").getDouble();
+		singleBitOctrees = config.get(Configuration.CATEGORY_GENERAL, "Single Bit octrees", true, "If true, octrees will use 1-bit entries. If false, they'll use 32-bit entries.\nSetting this to false gives a big memory boost, but is much slower.").getBoolean();
 
 		{
 			threadCount = config.get(Configuration.CATEGORY_GENERAL, "Physics thread count", -1,

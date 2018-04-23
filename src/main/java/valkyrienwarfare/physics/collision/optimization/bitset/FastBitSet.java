@@ -14,25 +14,33 @@
  *
  */
 
-package valkyrienwarfare.physics.collision.optimization;
+package valkyrienwarfare.physics.collision.optimization.bitset;
 
-public interface IBitOctree {
+/**
+ * Not as space efficient as BitSet (about 8x the size), but also has a much
+ * lower cpu cost. Has no bounds checking to reduce overhead.
+ */
+public class FastBitSet implements IBitSet {
 
-    int BLOCKS_TOTAL = 4096;
-    int TREE_LEVEL_ONE = 512;
-    int TREE_LEVEL_TWO = 64;
-    int TREE_LEVEL_THREE = 8;
-    int BITS_TOTAL = BLOCKS_TOTAL + TREE_LEVEL_ONE + TREE_LEVEL_TWO + TREE_LEVEL_THREE;
+    private final boolean[] data;
 
-    void set(int x, int y, int z, boolean bit);
+    public FastBitSet(int size) {
+        data = new boolean[size];
+    }
 
-    boolean get(int x, int y, int z);
+    @Override
+    public void set(int index) {
+        data[index] = true;
+    }
 
-    boolean getAtIndex(int index);
+    @Override
+    public void clear(int index) {
+        data[index] = false;
+    }
 
-    int getOctreeLevelOneIndex(int levelTwoIndex, int offset);
+    @Override
+    public boolean get(int index) {
+        return data[index];
+    }
 
-    int getOctreeLevelTwoIndex(int levelThreeIndex, int offset);
-
-    int getOctreeLevelThreeIndex(int offset);
 }

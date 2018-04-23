@@ -14,36 +14,32 @@
  *
  */
 
-package valkyrienwarfare.physics.collision.optimization;
+package valkyrienwarfare.physics.collision.optimization.bitset;
 
-// Not as space efficient as BitSet (about 8x the size), but also has a much
-// lower cpu cost. Has no bounds checking to reduce overhead.
-public class FastBitSet {
+/**
+ * Slightly slower implementation of {@link FastBitSet}, but has much lower memory requirements
+ * This is better than a byte[], as java promotes the bytes to ints while working on them anyway
+ */
+public class SmallFastBitSet implements IBitSet {
 
-    private final boolean[] data;
+    private final int[] data;
 
-    public FastBitSet(int size) {
-        data = new boolean[size];
+    public SmallFastBitSet(int size) {
+        data = new int[size >> 5];
     }
 
-    public void set(int index, boolean value) {
-        if (value) {
-            set(index);
-        } else {
-            clear(index);
-        }
-    }
-
+    @Override
     public void set(int index) {
-        data[index] = true;
+        data[index >> 5] |= 1 << (index & 0x1F);
     }
 
+    @Override
     public void clear(int index) {
-        data[index] = false;
+        data[index >> 5] ^= 1 << (index & 0x1F);
     }
 
+    @Override
     public boolean get(int index) {
-        return data[index];
+        return (((data[index >> 5]) >> (index & 0x1F)) & 1) == 1L;
     }
-
 }

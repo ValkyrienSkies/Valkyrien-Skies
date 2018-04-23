@@ -16,14 +16,17 @@
 
 package valkyrienwarfare.physics.collision.optimization;
 
+import valkyrienwarfare.ValkyrienWarfareMod;
+import valkyrienwarfare.physics.collision.optimization.bitset.FastBitSet;
+import valkyrienwarfare.physics.collision.optimization.bitset.IBitSet;
+import valkyrienwarfare.physics.collision.optimization.bitset.SmallFastBitSet;
+
 public class SimpleBitOctree implements IBitOctree {
 
-    private final FastBitSet bitbuffer;
-    // private final BitSet bifbuffer;
+    private final IBitSet bitbuffer;
 
     public SimpleBitOctree() {
-        bitbuffer = new FastBitSet(BITS_TOTAL);
-        // bitbuffer = new BitSet(BITS_TOTAL);
+        bitbuffer = ValkyrienWarfareMod.singleBitOctrees ? new FastBitSet(BITS_TOTAL) : new SmallFastBitSet(BITS_TOTAL);
     }
 
     @Override

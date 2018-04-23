@@ -14,25 +14,47 @@
  *
  */
 
-package valkyrienwarfare.physics.collision.optimization;
+package valkyrienwarfare.physics.collision.optimization.bitset;
 
-public interface IBitOctree {
+/**
+ * A basic representation of a BitSet implementation
+ *
+ * @author DaPorkchop_
+ */
+public interface IBitSet {
+    /**
+     * Sets the flag at the index to true
+     *
+     * @param index the index to set
+     */
+    void set(int index);
 
-    int BLOCKS_TOTAL = 4096;
-    int TREE_LEVEL_ONE = 512;
-    int TREE_LEVEL_TWO = 64;
-    int TREE_LEVEL_THREE = 8;
-    int BITS_TOTAL = BLOCKS_TOTAL + TREE_LEVEL_ONE + TREE_LEVEL_TWO + TREE_LEVEL_THREE;
+    /**
+     * Sets the flag at the index to false
+     *
+     * @param index the index to set
+     */
+    void clear(int index);
 
-    void set(int x, int y, int z, boolean bit);
+    /**
+     * Sets the flag at the index to a given value
+     *
+     * @param index the index to set
+     * @param val   the value to set
+     */
+    default void set(int index, boolean val) {
+        if (val) {
+            this.set(index);
+        } else {
+            this.clear(index);
+        }
+    }
 
-    boolean get(int x, int y, int z);
-
-    boolean getAtIndex(int index);
-
-    int getOctreeLevelOneIndex(int levelTwoIndex, int offset);
-
-    int getOctreeLevelTwoIndex(int levelThreeIndex, int offset);
-
-    int getOctreeLevelThreeIndex(int offset);
+    /**
+     * Get a value at an index
+     *
+     * @param index the index to get
+     * @return the value at the given index
+     */
+    boolean get(int index);
 }

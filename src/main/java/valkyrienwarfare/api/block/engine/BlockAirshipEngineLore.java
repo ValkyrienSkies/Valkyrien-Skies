@@ -23,6 +23,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -30,19 +31,22 @@ import java.util.List;
  */
 public abstract class BlockAirshipEngineLore extends BlockAirshipEngine {
 
-    String[] lore;
+    private String[] lore;
 
     public BlockAirshipEngineLore(Material materialIn, double enginePower) {
         super(materialIn, enginePower);
-        lore = new String[]{"" + TextFormatting.GRAY + TextFormatting.ITALIC + TextFormatting.BOLD + "Force:", "  " + this.getEnginePowerTooltip() + " Newtons"};
     }
 
     @Override
     public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation, ITooltipFlag advanced) {
-        for (String s : lore) {
-            itemInformation.add(s);
-        }
+        Collections.addAll(itemInformation, lore);
     }
 
     public abstract String getEnginePowerTooltip();
+
+    @Override
+    public void setEnginePower(double power) {
+        super.setEnginePower(power);
+        lore = new String[]{"" + TextFormatting.GRAY + TextFormatting.ITALIC + TextFormatting.BOLD + "Force:", "  " + this.getEnginePowerTooltip() + " Newtons"};
+    }
 }

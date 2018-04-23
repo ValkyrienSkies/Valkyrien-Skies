@@ -61,6 +61,12 @@ minecraft {
 	// makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 }
 
+configurations.all {
+    resolutionStrategy {
+        force("com.google.guava:guava:21.0")
+    }
+}
+
 repositories {
     maven {
         name = 'spongepowered-repo'

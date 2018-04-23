@@ -16,18 +16,19 @@
 
 package valkyrienwarfare.api.addons;
 
-import java.util.UUID;
-
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
+import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
 import valkyrienwarfare.ValkyrienWarfareMod;
+
+import java.util.UUID;
 
 public abstract class Module<ImplName> {
     private String name;
@@ -56,7 +57,6 @@ public abstract class Module<ImplName> {
 
     public final void doPreInit(FMLStateEvent event) {
         if (!donePreInit) {
-            setupConfig();
             registerEntities();
             registerCapabilities();
             preInit(event);
@@ -78,10 +78,6 @@ public abstract class Module<ImplName> {
             postInit(event);
             donePostInit = true;
         }
-    }
-
-    protected void setupConfig() {
-
     }
 
     public void registerItems(RegistryEvent.Register<Item> event) {
@@ -115,6 +111,8 @@ public abstract class Module<ImplName> {
     protected void registerCapabilities() {
         
     }
+
+    public abstract void applyConfig(Configuration config);
 
     public final ModuleProxy getClientProxy() {
         return client;

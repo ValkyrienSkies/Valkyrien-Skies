@@ -25,6 +25,7 @@ import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -37,10 +38,6 @@ public class CannonMod extends Module<CannonMod> {
 
     public CannonMod() {
         super(CannonModReference.MOD_ID, null, new ClientProxy(), null);
-    }
-
-    @Override
-    protected void setupConfig() {
     }
 
     @Override
@@ -91,6 +88,11 @@ public class CannonMod extends Module<CannonMod> {
 
     @Override
     protected void postInit(FMLStateEvent event) {
+
+    }
+
+    @Override
+    public void applyConfig(Configuration config) {
 
     }
 }

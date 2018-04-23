@@ -23,6 +23,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
@@ -97,7 +98,12 @@ public class ValkyrienWarfareCombat extends Module<ValkyrienWarfareCombat> {
 
     @Override
     public void registerRecipes(RegistryEvent.Register<IRecipe> event) {
-        registerRecipe(event, new ItemStack(cannonBall, 4), new Object[]{"II ", "II ", "   ", 'I', Items.IRON_INGOT});
-        registerRecipe(event, new ItemStack(powderPouch, 4), new Object[]{" S ", "SGS", " S ", 'S', Items.STRING, 'G', Items.GUNPOWDER});
+        registerRecipe(event, new ItemStack(cannonBall, 4), "II ", "II ", "   ", 'I', Items.IRON_INGOT);
+        registerRecipe(event, new ItemStack(powderPouch, 4), " S ", "SGS", " S ", 'S', Items.STRING, 'G', Items.GUNPOWDER);
+    }
+
+    @Override
+    public void applyConfig(Configuration config) {
+
     }
 }

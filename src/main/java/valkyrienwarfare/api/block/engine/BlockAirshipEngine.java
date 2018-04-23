@@ -40,11 +40,11 @@ import valkyrienwarfare.api.Vector;
 public abstract class BlockAirshipEngine extends Block implements IBlockForceProvider, ITileEntityProvider {
 
     public static final PropertyDirection FACING = PropertyDirection.create("facing");
-    public double enginePower = 4000D;
+    protected double enginePower;
 
     public BlockAirshipEngine(Material materialIn, double enginePower) {
         super(materialIn);
-        this.enginePower = enginePower;
+        this.setEnginePower(enginePower);
     }
 
     @Override
@@ -166,4 +166,7 @@ public abstract class BlockAirshipEngine extends Block implements IBlockForcePro
         return new TileEntityPropellerEngine(normalVector, true, enginePower);
     }
 
+    public void setEnginePower(double power) {
+        this.enginePower = power;
+    }
 }

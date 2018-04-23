@@ -21,6 +21,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
@@ -97,4 +98,8 @@ public class ValkyrienWarfareWorld extends Module<ValkyrienWarfareWorldGen> {
         GameRegistry.registerTileEntity(TileEntitySkyTempleController.class, "skydungeon_controller");
     }
 
+    @Override
+    public void applyConfig(Configuration config) {
+
+    }
 }

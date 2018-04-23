@@ -16,25 +16,6 @@
 
 package valkyrienwarfare;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Field;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.logging.Logger;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
@@ -100,6 +81,25 @@ import valkyrienwarfare.physics.management.DimensionPhysObjectManager;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.util.PhysicsSettings;
 import valkyrienwarfare.util.RealMethods;
+
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 
 @Mod(modid = ValkyrienWarfareMod.MODID, name = ValkyrienWarfareMod.MODNAME, version = ValkyrienWarfareMod.MODVER, guiFactory = "valkyrienwarfare.mod.gui.GuiFactoryValkyrienWarfare", updateJSON = "https://raw.githubusercontent.com/BigBastard/Valkyrien-Warfare-Revamped/update.json")
 public class ValkyrienWarfareMod {
@@ -180,6 +180,8 @@ public class ValkyrienWarfareMod {
 				PHYSICS_THREADS = Executors.newFixedThreadPool(threadCount <= 0 ? Runtime.getRuntime().availableProcessors() : threadCount);
 			}
 		}
+
+		addons.forEach(m -> m.applyConfig(config));
 	}
 
 	public static File getWorkingFolder() {
@@ -350,9 +352,7 @@ public class ValkyrienWarfareMod {
 		ValkyrienWarfareHooks.isValkyrienWarfareInstalled = true;
 		VWLogger = Logger.getLogger("ValkyrienWarfare");
 
-		for (Module addon : addons) {
-			addon.doPreInit(event);
-		}
+		addons.forEach(m -> m.doPreInit(event));
 		
 		try {
             Field chunkCache = ForgeChunkManager.class.getDeclaredField("dormantChunkCacheSize");
@@ -369,9 +369,7 @@ public class ValkyrienWarfareMod {
 		EntityRegistry.registerModEntity(new ResourceLocation(MODID, "PhysWrapper"), PhysicsWrapperEntity.class,
 				"PhysWrapper", 70, this, 120, 1, false);
 
-		for (Module addon : addons) {
-			addon.doInit(event);
-		}
+		addons.forEach(m -> m.doInit(event));
 	}
 
 	@EventHandler
@@ -404,9 +402,7 @@ public class ValkyrienWarfareMod {
 			System.err.println("DAMMIT LEX!");
 		}
 
-		for (Module addon : addons) {
-			addon.doPostInit(event);
-		}
+		addons.forEach(m -> m.doPostInit(event));
 	}
 
 	@EventHandler

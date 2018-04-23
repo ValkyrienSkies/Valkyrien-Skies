@@ -16,8 +16,6 @@
 
 package valkyrienwarfare.addon.control;
 
-import java.io.File;
-
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -79,7 +77,6 @@ public class ValkyrienWarfareControl extends Module<ValkyrienWarfareControl> {
 
     @CapabilityInject(ICapabilityLastRelay.class)
     public static final Capability<ICapabilityLastRelay> lastRelayCapability = null;
-    public static Configuration config;
     public static ValkyrienWarfareControl INSTANCE;
     public static SimpleNetworkWrapper controlNetwork;
     public final BlocksValkyrienWarfareControl blocks;
@@ -94,13 +91,6 @@ public class ValkyrienWarfareControl extends Module<ValkyrienWarfareControl> {
         }
         blocks = new BlocksValkyrienWarfareControl(this);
         INSTANCE = this;
-    }
-
-    @Override
-    protected void setupConfig() {
-        config = new Configuration(new File(ValkyrienWarfareMod.getWorkingFolder() + "/config/valkyrienwarfarecontrol.cfg"));
-        config.load();
-        config.save();
     }
 
     @Override
@@ -188,4 +178,29 @@ public class ValkyrienWarfareControl extends Module<ValkyrienWarfareControl> {
         CapabilityManager.INSTANCE.register(ICapabilityLastRelay.class, new StorageLastRelay(), ImplCapabilityLastRelay.class);
     }
 
+    @Override
+    public void applyConfig(Configuration config) {
+        config.addCustomCategoryComment("control", "Settings for Valkyrien Warfare's control module");
+        double basicEnginePower = config.get("control.power.engine", "basicEnginePower", 4000D, "engine power for the basic engine").getDouble();
+        double advancedEnginePower = config.get("control.power.engine", "advancedEnginePower", 6000D, "engine power for the advanced engine").getDouble();
+        double eliteEnginePower = config.get("control.power.engine", "eliteEnginePower", 8000D, "engine power for the elite engine").getDouble();
+        double ultimateEnginePower = config.get("control.power.engine", "ultimateEnginePower", 16000D, "engine power for the ultimate engine").getDouble();
+        double redstoneEnginePower = config.get("control.power.engine", "redstoneEnginePower", 500D, "Multiplied by the redstone power (0-15) to the Redstone engine").getDouble();
+
+        double basicEtherCompressorPower = config.get("control.power.compressor", "basicEtherCompressorPower", 25000D, "engine power for the basic Ether Compressor").getDouble();
+        double advancedEtherCompressorPower = config.get("control.power.compressor", "advancedEtherCompressorPower", 45000D, "engine power for the advanced Ether Compressor").getDouble();
+        double eliteEtherCompressorPower = config.get("control.power.compressor", "eliteEtherCompressorPower", 80000D, "engine power for the elite Ether Compressor").getDouble();
+        double ultimateEtherCompressorPower = config.get("control.power.compressor", "ultimateEtherCompressorPower", 100000D, "engine power for the ultimate Ether Compressor").getDouble();
+
+        blocks.basicEngine.setEnginePower(basicEnginePower);
+        blocks.advancedEngine.setEnginePower(advancedEnginePower);
+        blocks.eliteEngine.setEnginePower(eliteEnginePower);
+        blocks.ultimateEngine.setEnginePower(ultimateEnginePower);
+        blocks.redstoneEngine.setEnginePower(redstoneEnginePower);
+
+        blocks.antigravityEngine.setEnginePower(basicEtherCompressorPower);
+        blocks.advancedEtherCompressor.setEnginePower(advancedEtherCompressorPower);
+        blocks.eliteEtherCompressor.setEnginePower(eliteEtherCompressorPower);
+        blocks.ultimateEtherCompressor.setEnginePower(ultimateEtherCompressorPower);
+    }
 }

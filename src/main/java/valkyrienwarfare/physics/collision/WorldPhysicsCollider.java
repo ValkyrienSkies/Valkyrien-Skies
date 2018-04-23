@@ -54,7 +54,7 @@ public class WorldPhysicsCollider {
     // Time in seconds between collision cache updates
     public static final double CACHE_UPDATE_FREQUENCY = 1D;
     // Determines how 'bouncy' collisions are
-    public static final double COLLISION_ELASTICITY = 1.52D;
+    public static final double COEFFICIENT_OF_RESTITUTION = .52D;
     // The radius which the algorithm will search for a nearby block to collide with
     public static final double COLLISION_RANGE_CHECK = .65D;
     // If true, will use the octree assisted algorithm for finding collisions,
@@ -347,15 +347,22 @@ public class WorldPhysicsCollider {
 
     // Finally, the end of all this spaghetti code! This step takes all of the math
     // generated before, and it directly adds the result to Ship velocities
-    private void calculateCollisionImpulseForce(Vector inBody, Vector momentumAtPoint, Vector axis, Vector offsetVector,
+    private void calculateCollisionImpulseForce(Vector inBody, Vector velocityAtPointOfCollision, Vector axis, Vector offsetVector,
             boolean didBlockBreakInShip, boolean didBlockBreakInWorld, double impulseApplied) {
         Vector firstCross = inBody.cross(axis);
         RotationMatrices.applyTransform3by3(calculator.invFramedMOI, firstCross);
 
         Vector secondCross = firstCross.cross(inBody);
 
-        double impulseMagnitude = -momentumAtPoint.dot(axis) * COLLISION_ELASTICITY
+        double impulseMagnitude = -velocityAtPointOfCollision.dot(axis)
                 / (calculator.getInvMass() + secondCross.dot(axis));
+        
+        // Below this speed our collision coefficient of restitution is zero.
+        final double slopR = .5D;
+        double collisionSpeed = Math.abs(velocityAtPointOfCollision.dot(axis));
+        if (collisionSpeed > slopR) {
+            impulseMagnitude *= (1 + COEFFICIENT_OF_RESTITUTION);
+        }
 
         Vector collisionImpulseForce = new Vector(axis, impulseMagnitude);
 
@@ -368,12 +375,12 @@ public class WorldPhysicsCollider {
         // PhysicsCalculations
         if (collisionImpulseForce.dot(offsetVector) < 0) {
             // collisionImpulseForce.multiply(1.8D);
-            double collisionVelocity = momentumAtPoint.dot(axis);
+            double collisionVelocity = velocityAtPointOfCollision.dot(axis);
 
             if (Math.abs(collisionVelocity) < 0.01D) {
                 collisionImpulseForce.zero();
             } else {
-                addFrictionToNormalForce(momentumAtPoint, collisionImpulseForce);
+                addFrictionToNormalForce(velocityAtPointOfCollision, collisionImpulseForce);
                 // calculateCoulumbFriction(inBody, momentumAtPoint, axis, offsetVector);
             }
 

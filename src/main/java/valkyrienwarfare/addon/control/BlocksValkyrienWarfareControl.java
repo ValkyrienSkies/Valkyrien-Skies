@@ -19,7 +19,6 @@ package valkyrienwarfare.addon.control;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.item.Item;
-import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.RegistryEvent;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.block.BlockAirshipController_Zepplin;
@@ -71,7 +70,9 @@ public class BlocksValkyrienWarfareControl {
     public Block gyroscope;
     public Block liftValve;
 
-    {
+    public BlocksValkyrienWarfareControl(ValkyrienWarfareControl mod_vwcontrol) {
+        this.mod_vwcontrol = mod_vwcontrol;
+
         basicEngine = (BlockNormalEngine) new BlockNormalEngine(Material.WOOD, 4000.0d).setHardness(5f).setUnlocalizedName("basicengine").setRegistryName(getModID(), "basicengine").setCreativeTab(ValkyrienWarfareMod.vwTab);
         advancedEngine = (BlockNormalEngine) new BlockNormalEngine(Material.ROCK, 6000.0d).setHardness(6f).setUnlocalizedName("advancedengine").setRegistryName(getModID(), "advancedengine").setCreativeTab(ValkyrienWarfareMod.vwTab);
         eliteEngine = (BlockNormalEngine) new BlockNormalEngine(Material.IRON, 8000.0d).setHardness(8f).setUnlocalizedName("eliteengine").setRegistryName(getModID(), "eliteengine").setCreativeTab(ValkyrienWarfareMod.vwTab);
@@ -103,10 +104,6 @@ public class BlocksValkyrienWarfareControl {
         gyroscope = new BlockGyroscope(Material.IRON).setHardness(5f).setUnlocalizedName("vw_gyroscope").setRegistryName(getModID(), "vw_gyroscope").setCreativeTab(ValkyrienWarfareMod.vwTab);
 
         liftValve = new BlockLiftValve(Material.IRON).setHardness(7f).setUnlocalizedName("vw_liftvalve").setRegistryName(getModID(), "vw_liftvalve").setCreativeTab(ValkyrienWarfareMod.vwTab);
-    }
-
-    public BlocksValkyrienWarfareControl(ValkyrienWarfareControl mod_vwcontrol) {
-        this.mod_vwcontrol = mod_vwcontrol;
     }
 
     protected void registerBlocks(RegistryEvent.Register<Block> event) {
@@ -173,11 +170,7 @@ public class BlocksValkyrienWarfareControl {
         Module.registerItemBlock(event, block);
     }
 
-    private Configuration getConfig() {
-        return ValkyrienWarfareMod.config;
-    }
-
     private String getModID() {
-        return ValkyrienWarfareMod.MODID;
+        return mod_vwcontrol.getModID();
     }
 }

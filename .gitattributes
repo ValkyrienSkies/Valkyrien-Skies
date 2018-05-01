@@ -1,2 +1,2 @@
-# Force LF everywhere!
-* text=auto
+# Auto detect text files and perform LF normalization
+*.java text=auto eol=lf

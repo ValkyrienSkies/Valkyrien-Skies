@@ -16,9 +16,14 @@
 
 package valkyrienwarfare.addon.control.tileentity;
 
+import li.cil.oc.api.machine.Arguments;
+import li.cil.oc.api.machine.Callback;
+import li.cil.oc.api.machine.Context;
+import li.cil.oc.api.network.SimpleComponent;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import valkyrienwarfare.addon.control.controlsystems.ShipPulseImpulseControlSystem;
 import valkyrienwarfare.addon.control.network.ThrustModulatorGuiInputMessage;
@@ -27,7 +32,8 @@ import valkyrienwarfare.addon.control.proxy.ClientProxyControl;
 import valkyrienwarfare.physics.calculations.PhysicsCalculations;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
-public class TileEntityThrustModulator extends ImplPhysicsProcessorNodeTileEntity {
+@Optional.Interface(iface = "li.cil.oc.api.network.SimpleComponent", modid = "opencomputers")
+public class TileEntityThrustModulator extends ImplPhysicsProcessorNodeTileEntity implements SimpleComponent {
 
     public static final int PHYSICS_PROCESSOR_PRIORITY = 100;
     public double idealYHeight = 25D;
@@ -76,4 +82,38 @@ public class TileEntityThrustModulator extends ImplPhysicsProcessorNodeTileEntit
         this.markDirty();
     }
 
+    @Override
+    public String getComponentName() {
+        return "thrust_modulator";
+    }
+
+    @Callback
+    @Optional.Method(modid = "opencomputers")
+    public Object[] setYHeight(Context context, Arguments args) {
+        boolean success = false;
+        try {
+            ThrustModulatorGuiInputMessage msg = new ThrustModulatorGuiInputMessage();
+            msg.idealYHeight = (float)args.checkDouble(0);
+            msg.maximumYVelocity = (float)maximumYVelocity;
+
+            handleGUIInput(msg, null);
+            success = true;
+        } catch (IllegalArgumentException e) { }
+        return new Object[]{ success };
+    }
+
+    @Callback
+    @Optional.Method(modid = "opencomputers")
+    public Object[] setYVelocity(Context context, Arguments args) {
+        boolean success = false;
+        try {
+            ThrustModulatorGuiInputMessage msg = new ThrustModulatorGuiInputMessage();
+            msg.idealYHeight = (float)idealYHeight;
+            msg.maximumYVelocity = (float)args.checkDouble(0);
+
+            handleGUIInput(msg, null);
+            success = true;
+        } catch (IllegalArgumentException e) {  }
+        return new Object[]{ success };
+    }
 }

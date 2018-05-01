@@ -72,6 +72,10 @@ repositories {
         name = 'spongepowered-repo'
         url = 'http://repo.spongepowered.org/maven/'
     }
+    maven {
+        name = "OpenComputers"
+        url = "http://maven.cil.li/"
+    }
     mavenCentral()
 }
 
@@ -80,7 +84,7 @@ dependencies {
     compile("org.spongepowered:mixin:0.7.5-SNAPSHOT") {
         exclude module: "launchwrapper"
     }
-    // Basically just mods that are being bugtested with ValkyrienWarfare go here, they will get autocompiled and mixed into the project
+    compileOnly "li.cil.oc:OpenComputers:MC1.12.1-1.7.1.+:api"
 }
 
 processResources {

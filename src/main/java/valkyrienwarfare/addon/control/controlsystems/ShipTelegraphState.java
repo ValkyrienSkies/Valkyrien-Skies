@@ -18,7 +18,7 @@ package valkyrienwarfare.addon.control.controlsystems;
 
 public enum ShipTelegraphState {
 
-    ÄUSSERSTE_0(1.0D),
+    AUSSERSTE_0(1.0D),
     VOLLE_KRAFT_0(2.0D),
     HALBE_KRAFT_0(3.0D),
     LANGSAM_0(4.0D),
@@ -30,15 +30,11 @@ public enum ShipTelegraphState {
     LANGSAM_1(10.0D),
     HALBE_KRAFT_1(11.0D),
     VOLLE_KRAFT_1(12.0D),
-    ÄUSSERSTE_1(13.0D);
+    AUSSERSTE_1(13.0D);
 
-    private double renderRotation;
+    public final double renderRotation;
 
-    private ShipTelegraphState(double renderRotation) {
+    ShipTelegraphState(double renderRotation) {
         this.renderRotation = renderRotation;
-    }
-
-    public double getRenderRotation() {
-        return renderRotation;
     }
 }

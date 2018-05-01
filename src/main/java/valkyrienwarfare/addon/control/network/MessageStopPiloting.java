@@ -35,13 +35,20 @@ public class MessageStopPiloting implements IMessage {
     @Override
     public void fromBytes(ByteBuf buf) {
         PacketBuffer packetBuf = new PacketBuffer(buf);
-        posToStopPiloting = packetBuf.readBlockPos();
+        posToStopPiloting = new BlockPos(
+                packetBuf.readInt(),
+                packetBuf.readInt(),
+                packetBuf.readInt()
+        );
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
         PacketBuffer packetBuf = new PacketBuffer(buf);
-        packetBuf.writeBlockPos(posToStopPiloting);
+        packetBuf.writeInt(posToStopPiloting.getX());
+        packetBuf.writeInt(posToStopPiloting.getY());
+        packetBuf.writeInt(posToStopPiloting.getZ());
+        //use absolute coordinates instead of writeBlockPos in case we ever add compatibility with cubic chunks
     }
 
 }

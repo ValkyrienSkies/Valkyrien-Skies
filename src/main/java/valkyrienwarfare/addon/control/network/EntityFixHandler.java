@@ -16,28 +16,28 @@
 
 package valkyrienwarfare.addon.control.network;
 
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.client.Minecraft;
 import net.minecraft.util.IThreadListener;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import valkyrienwarfare.addon.control.tileentity.TileEntityThrustModulator;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
-public class ThrustModulatorGuiInputMessageHandler implements IMessageHandler<ThrustModulatorGuiInputMessage, IMessage> {
+public class EntityFixHandler implements IMessageHandler<EntityFixMessage, IMessage> {
 
     @Override
-    public IMessage onMessage(ThrustModulatorGuiInputMessage message, MessageContext ctx) {
-        IThreadListener mainThread = ctx.getServerHandler().serverController;
+    public IMessage onMessage(final EntityFixMessage message, MessageContext ctx) {
+        IThreadListener mainThread = Minecraft.getMinecraft();
         mainThread.addScheduledTask(new Runnable() {
             @Override
             public void run() {
-                TileEntity tileEnt = ctx.getServerHandler().player.world.getTileEntity(message.tileEntityPos);
-                if (tileEnt != null) {
-                    if (tileEnt instanceof TileEntityThrustModulator) {
-                        ((TileEntityThrustModulator) tileEnt).handleGUIInput(message, ctx);
+                PhysicsWrapperEntity toFixOn = (PhysicsWrapperEntity) Minecraft.getMinecraft().world.getEntityByID(message.shipId);
+                if (toFixOn != null) {
+                    if (message.isFixing) {
+                        toFixOn.wrapping.fixEntityUUID(message.entityUUID, message.localPosition);
+                    } else {
+                        toFixOn.wrapping.removeEntityUUID(message.entityUUID);
                     }
-                } else {
-                    System.out.println("Player: " + ctx.getServerHandler().player.getName() + " sent a broken packet");
                 }
             }
         });

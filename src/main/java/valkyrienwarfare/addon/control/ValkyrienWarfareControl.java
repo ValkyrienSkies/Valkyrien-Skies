@@ -40,8 +40,8 @@ import valkyrienwarfare.addon.control.gui.ControlGUIHandler;
 import valkyrienwarfare.addon.control.item.ItemRelayWire;
 import valkyrienwarfare.addon.control.item.ItemShipStealer;
 import valkyrienwarfare.addon.control.item.ItemSystemLinker;
+import valkyrienwarfare.addon.control.network.EntityFixHandler;
 import valkyrienwarfare.addon.control.network.EntityFixMessage;
-import valkyrienwarfare.addon.control.network.EntityFixMessageHandler;
 import valkyrienwarfare.addon.control.network.HovercraftControllerGUIInputHandler;
 import valkyrienwarfare.addon.control.network.HovercraftControllerGUIInputMessage;
 import valkyrienwarfare.addon.control.network.MessagePlayerStoppedPiloting;
@@ -50,8 +50,8 @@ import valkyrienwarfare.addon.control.network.MessageStartPiloting;
 import valkyrienwarfare.addon.control.network.MessageStartPilotingHandler;
 import valkyrienwarfare.addon.control.network.MessageStopPiloting;
 import valkyrienwarfare.addon.control.network.MessageStopPilotingHandler;
+import valkyrienwarfare.addon.control.network.ThrustModulatorGuiInputHandler;
 import valkyrienwarfare.addon.control.network.ThrustModulatorGuiInputMessage;
-import valkyrienwarfare.addon.control.network.ThrustModulatorGuiInputMessageHandler;
 import valkyrienwarfare.addon.control.piloting.PilotControlsMessage;
 import valkyrienwarfare.addon.control.piloting.PilotControlsMessageHandler;
 import valkyrienwarfare.addon.control.proxy.ClientProxyControl;
@@ -164,13 +164,13 @@ public class ValkyrienWarfareControl extends Module<ValkyrienWarfareControl> {
     @Override
     protected void registerNetworks() {
         controlNetwork = NetworkRegistry.INSTANCE.newSimpleChannel("controlnetwork");
-        controlNetwork.registerMessage(EntityFixMessageHandler.class, EntityFixMessage.class, 0, Side.CLIENT);
+        controlNetwork.registerMessage(EntityFixHandler.class, EntityFixMessage.class, 0, Side.CLIENT);
         controlNetwork.registerMessage(HovercraftControllerGUIInputHandler.class, HovercraftControllerGUIInputMessage.class, 1, Side.SERVER);
         controlNetwork.registerMessage(PilotControlsMessageHandler.class, PilotControlsMessage.class, 2, Side.SERVER);
         controlNetwork.registerMessage(MessageStartPilotingHandler.class, MessageStartPiloting.class, 3, Side.CLIENT);
         controlNetwork.registerMessage(MessageStopPilotingHandler.class, MessageStopPiloting.class, 4, Side.CLIENT);
         controlNetwork.registerMessage(MessagePlayerStoppedPilotingHandler.class, MessagePlayerStoppedPiloting.class, 5, Side.SERVER);
-        controlNetwork.registerMessage(ThrustModulatorGuiInputMessageHandler.class, ThrustModulatorGuiInputMessage.class, 6, Side.SERVER);
+        controlNetwork.registerMessage(ThrustModulatorGuiInputHandler.class, ThrustModulatorGuiInputMessage.class, 6, Side.SERVER);
     }
 
     @Override

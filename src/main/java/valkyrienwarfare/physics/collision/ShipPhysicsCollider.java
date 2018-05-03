@@ -149,13 +149,13 @@ public class ShipPhysicsCollider {
 
 					if (Math.abs(polyColObj.movMaxFixMin) > Math.abs(polyColObj.movMinFixMax)) {
 						for (Vector v : polyColObj.movable.getVertices()) {
-							if (v.dot(polyColObj.axis) == polyColObj.playerMinMax[1]) {
+							if (v.dot(polyColObj.collision_normal) == polyColObj.playerMinMax[1]) {
 								polyColObj.firstContactPoint = v;
 							}
 						}
 					} else {
 						for (Vector v : polyColObj.movable.getVertices()) {
-							if (v.dot(polyColObj.axis) == polyColObj.playerMinMax[0]) {
+							if (v.dot(polyColObj.collision_normal) == polyColObj.playerMinMax[0]) {
 								polyColObj.firstContactPoint = v;
 							}
 						}
@@ -200,21 +200,21 @@ public class ShipPhysicsCollider {
 
 		e = .9;
 
-		double topJ = -(e + 1D) * netVelocity.dot(object.axis);
+		double topJ = -(e + 1D) * netVelocity.dot(object.collision_normal);
 
 		double bottomJ = parent.physicsProcessor.getInvMass() + toCollideWith.physicsProcessor.getInvMass();
 
 		bottomJ += RotationMatrices
-				.get3by3TransformedVec(toCollideWith.physicsProcessor.invFramedMOI, inFirstShip.cross(object.axis))
-				.cross(inFirstShip).dot(object.axis);
+				.get3by3TransformedVec(toCollideWith.physicsProcessor.invFramedMOI, inFirstShip.cross(object.collision_normal))
+				.cross(inFirstShip).dot(object.collision_normal);
 
 		bottomJ += RotationMatrices
-				.get3by3TransformedVec(toCollideWith.physicsProcessor.invFramedMOI, inSecondShip.cross(object.axis))
-				.cross(inSecondShip).dot(object.axis);
+				.get3by3TransformedVec(toCollideWith.physicsProcessor.invFramedMOI, inSecondShip.cross(object.collision_normal))
+				.cross(inSecondShip).dot(object.collision_normal);
 
 		double j = topJ / bottomJ;
 
-		Vector responseVec = new Vector(object.axis, j);
+		Vector responseVec = new Vector(object.collision_normal, j);
 		// System.out.println(object.axis);
 		if (responseVec.dot(object.getResponse()) < 0) {
 			responseVec.multiply(-1D);

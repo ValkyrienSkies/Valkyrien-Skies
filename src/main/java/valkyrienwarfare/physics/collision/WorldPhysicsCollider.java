@@ -273,8 +273,7 @@ public class WorldPhysicsCollider {
     // ideal value that is to be followed
     private boolean handleActualCollision(PhysPolygonCollider collider, BlockPos inWorldPos, BlockPos inLocalPos,
             IBlockState inWorldState, IBlockState inLocalState) {
-        PhysCollisionObject toCollideWith;
-        toCollideWith = collider.collisions[1];
+        PhysCollisionObject toCollideWith = collider.collisions[1];
 
         if (toCollideWith.penetrationDistance > AXIS_TOLERANCE || toCollideWith.penetrationDistance < -AXIS_TOLERANCE) {
             toCollideWith = collider.collisions[collider.minDistanceIndex];
@@ -293,8 +292,7 @@ public class WorldPhysicsCollider {
         // inLocalState, inWorldState, inLocalPos, inWorldPos, didBlockBreakInShip,
         // didBlockBreakInWorld);
 
-        Vector[] collisionPoints = PolygonCollisionPointFinder.getPointsOfCollisionForPolygons(collider, toCollideWith,
-                velocityAtPoint);
+        Vector[] collisionPoints = PolygonCollisionPointFinder.getPointsOfCollisionForPolygons(toCollideWith);
 
         impulseApplied /= collisionPoints.length;
 
@@ -303,7 +301,7 @@ public class WorldPhysicsCollider {
                     .getSubtraction(new Vector(parent.wrapper.posX, parent.wrapper.posY, parent.wrapper.posZ));
             inBody.multiply(-1D);
             Vector momentumAtPoint = calculator.getVelocityAtPoint(inBody);
-            Vector axis = toCollideWith.axis;
+            Vector axis = toCollideWith.collision_normal;
             Vector offsetVector = toCollideWith.getResponse();
             calculateCollisionImpulseForce(inBody, momentumAtPoint, axis, offsetVector, false, false, impulseApplied);
             // calculateCollisionImpulseForce(inBody, momentumAtPoint, axis, offsetVector,

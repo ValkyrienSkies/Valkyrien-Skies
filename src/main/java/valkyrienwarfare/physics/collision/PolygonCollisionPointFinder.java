@@ -4,46 +4,88 @@ import valkyrienwarfare.api.Vector;
 
 public class PolygonCollisionPointFinder {
 
-    // TODO: This algorithm isn't correct, fix it later on!
-    public static Vector[] getPointsOfCollisionForPolygons(PhysPolygonCollider collider,
-            PhysCollisionObject somethingElse, Vector velocity) {
-        double minSecondsAgo = 69D;
-        int minCollisionIndex = 0;
-
-        for (int cont = 0; cont < collider.collisions.length; cont++) {
-            PhysCollisionObject toCollideWith = collider.collisions[cont];
-            Vector axis = somethingElse.axis;
-            double reverseVelocityAlongAxis = -velocity.dot(axis);
-            double minDot = 9999999999999D;
-            int minIndex = 0;
-
-            for (int i = 0; i < 8; i++) {
-                Vector vertice = toCollideWith.movable.getVertices()[i];
-                double dot = vertice.dot(axis) * reverseVelocityAlongAxis;
-                if (dot < minDot) {
-                    minDot = dot;
-                    minIndex = i;
-                }
-            }
-
-            Vector contactPoint = toCollideWith.movable.getVertices()[minIndex];
-            double secondsAgo = 69;
-            if (Math.signum(reverseVelocityAlongAxis) == 1.0D) {
-                secondsAgo = toCollideWith.movMinFixMax / reverseVelocityAlongAxis;
-            } else {
-                secondsAgo = toCollideWith.movMaxFixMin / reverseVelocityAlongAxis;
-            }
-
-            if (secondsAgo < minSecondsAgo) {
-                minSecondsAgo = secondsAgo;
-                minCollisionIndex = cont;
+    public static Vector[] getPointsOfCollisionForPolygons(PhysCollisionObject collisionInfo) {
+        Polygon topPoly = null;
+        Polygon bottomPoly = null;
+        Vector collisionNormal = collisionInfo.collision_normal;
+        
+        Vector centerDifference = collisionInfo.movable.getCenter().getSubtraction(collisionInfo.fixed.getCenter());
+        if (centerDifference.dot(collisionNormal) > 0) {
+            // Then the movable is the bottom
+            topPoly = collisionInfo.fixed;
+            bottomPoly = collisionInfo.movable;
+        } else {
+            // Then the fixed is the bottom
+            topPoly = collisionInfo.movable;
+            bottomPoly = collisionInfo.fixed;
+        }
+        
+        // First find the top point and bottom point:
+        double minDot = Double.MAX_VALUE;
+        int topPointIndex = -1;
+        for (int i = 0; i < topPoly.getVertices().length; i++) {
+            double dotProduct = topPoly.getVertices()[i].dot(collisionNormal);
+            if (dotProduct < minDot) {
+                minDot = dotProduct;
+                topPointIndex = i;
             }
         }
-
-        return new Vector[] {
-                // contactPoint
-                collider.collisions[minCollisionIndex].firstContactPoint,
-                collider.collisions[minCollisionIndex].getSecondContactPoint() };
+        
+        double maxDot = -9999999999D; //Double.MIN_VALUE;
+        int bottomPointIndex = -1;
+        for (int i = 0; i < bottomPoly.getVertices().length; i++) {
+            double dotProduct = bottomPoly.getVertices()[i].dot(collisionNormal);
+            if (dotProduct > maxDot) {
+                maxDot = dotProduct;
+                bottomPointIndex = i;
+            }
+        }
+        
+        Vector currentTopVertice = topPoly.getVertices()[topPointIndex];
+        Vector currentBottomVertice = bottomPoly.getVertices()[bottomPointIndex];
+        
+        boolean useFastCollision = true;
+        
+        if (useFastCollision) {
+            return new Vector[] {currentTopVertice, currentBottomVertice};
+        } else {
+            // Now use the surface normals that are most perpendicular to the collision normals for
+            // culling.
+            Vector topCullingNormal = null;
+            double maxTopAbsDot = -1;
+            for (Vector topNormal : topPoly.getNormals()) {
+                double absDotProduct = Math.abs(topNormal.dot(collisionNormal));
+                if (absDotProduct > maxTopAbsDot) {
+                    topCullingNormal = topNormal;
+                    maxTopAbsDot = absDotProduct;
+                }
+            }
+            
+            Vector bottomCullingNormal = null;
+            double maxBottomAbsDot = -1;
+            for (Vector bottomNormal : bottomPoly.getNormals()) {
+                double absDotProduct = Math.abs(bottomNormal.dot(collisionNormal));
+                if (absDotProduct > maxBottomAbsDot) {
+                    bottomCullingNormal = bottomNormal;
+                    maxBottomAbsDot = absDotProduct;
+                }
+            }
+            // Make sure the normals are facing in the right direction
+            if (topCullingNormal.dot(collisionNormal) > 0) {
+                topCullingNormal = new Vector(topCullingNormal, -1);
+            }
+            
+            if (bottomCullingNormal.dot(collisionNormal) < 0) {
+                bottomCullingNormal = new Vector(bottomCullingNormal, -1);
+            }
+            
+            ClippedPolygon clippedTop = new ClippedPolygon(topPoly, bottomCullingNormal, currentBottomVertice);
+            ClippedPolygon clippedBottom = new ClippedPolygon(bottomPoly, topCullingNormal, currentTopVertice);
+            
+            // Now with our normals found and the plane vertice, we now search for the points of collision.
+            
+            return new Vector[] {currentTopVertice, currentBottomVertice};
+        }
     }
 
 }

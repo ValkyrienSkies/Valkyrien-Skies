@@ -29,10 +29,12 @@ public class Polygon {
 
 	private final Vector[] vertices;
 	private final Vector velocity;
+	private final Vector[] normals;
 
 	public Polygon(AxisAlignedBB bb) {
 		this.vertices = getCornersForAABB(bb);
 		this.velocity = new Vector();
+		this.normals = Vector.generateAxisAlignedNorms();
 	}
 
 	public Polygon(AxisAlignedBB bb, double[] rotationMatrix) {
@@ -40,10 +42,24 @@ public class Polygon {
 		for (int i = 0; i < vertices.length; i++) {
 			RotationMatrices.applyTransform(rotationMatrix, vertices[i]);
 		}
+		for (Vector normal : normals) {
+		    RotationMatrices.doRotationOnly(rotationMatrix, normal);
+		}
+	}
+	
+	// Copies one polygon onto another.
+	protected Polygon(Polygon other) {
+	    this.velocity = other.velocity;
+	    this.vertices = new Vector[other.vertices.length];
+	    this.normals = other.normals;
 	}
 
 	public Vector[] getVertices() {
 		return vertices;
+	}
+	
+	public Vector[] getNormals() {
+	    return normals;
 	}
 
 	public double[] getProjectionOnVector(Vector axis) {

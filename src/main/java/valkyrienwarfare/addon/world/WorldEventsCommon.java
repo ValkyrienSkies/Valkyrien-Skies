@@ -16,19 +16,57 @@
 
 package valkyrienwarfare.addon.world;
 
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
-import valkyrienwarfare.util.PhysicsSettings;
+import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
 import valkyrienwarfare.addon.world.block.BlockEtheriumOre;
+import valkyrienwarfare.addon.world.capability.AntiGravityCapabilityProvider;
 import valkyrienwarfare.fixes.IInventoryPlayerFix;
+import valkyrienwarfare.util.PhysicsSettings;
 
 public class WorldEventsCommon {
 
+    @SubscribeEvent
+    public void onAttachCapabilityEventItem(AttachCapabilitiesEvent event) {
+        if (event.getObject() instanceof ItemStack) {
+            ItemStack stack = (ItemStack) event.getObject();
+            if (stack.getItem() instanceof ItemEtheriumCrystal) {
+                event.addCapability(new ResourceLocation(ValkyrienWarfareWorld.INSTANCE.getModID(), "AntiGravityValue"),
+                        new AntiGravityCapabilityProvider());
+            } else if (stack.getItem() instanceof ItemBlock) {
+                ItemBlock itemBlock = (ItemBlock) stack.getItem();
+                if (itemBlock.getBlock() == ValkyrienWarfareWorld.INSTANCE.etheriumOre) {
+                    event.addCapability(new ResourceLocation(ValkyrienWarfareWorld.INSTANCE.getModID(), "AntiGravityValue"),
+                            new AntiGravityCapabilityProvider());
+                }
+            }
+        }
+    }
+    
+    @SubscribeEvent
+    public void worldTick(WorldTickEvent event) {
+        if (event.phase == Phase.START) {
+            for (Entity entity : event.world.loadedEntityList) {
+                if (entity instanceof EntityItem) {
+                    EntityItem itemEntity = (EntityItem) entity;
+                    ItemStack itemStack = itemEntity.getItem();
+                    if (itemStack.hasCapability(ValkyrienWarfareWorld.ANTI_GRAVITY_CAPABILITY, null)) {
+                        itemEntity.addVelocity(0, .1 - (itemEntity.motionY * .12D), 0);
+                    }
+                }
+            }
+        }
+    }
+    
     @SubscribeEvent
     public void playerTick(PlayerTickEvent event) {
         if (event.phase == Phase.START) {

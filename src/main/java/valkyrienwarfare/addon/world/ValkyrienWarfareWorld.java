@@ -21,6 +21,9 @@ import net.minecraft.block.material.Material;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
@@ -30,6 +33,9 @@ import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.world.block.BlockEtheriumOre;
 import valkyrienwarfare.addon.world.block.BlockQuartzFence;
 import valkyrienwarfare.addon.world.block.BlockSkyTempleController;
+import valkyrienwarfare.addon.world.capability.ICapabilityAntiGravity;
+import valkyrienwarfare.addon.world.capability.ImplCapabilityAntiGravity;
+import valkyrienwarfare.addon.world.capability.StorageAntiGravity;
 import valkyrienwarfare.addon.world.proxy.ClientProxyWorld;
 import valkyrienwarfare.addon.world.proxy.CommonProxyWorld;
 import valkyrienwarfare.addon.world.tileentity.TileEntitySkyTempleController;
@@ -40,6 +46,8 @@ import valkyrienwarfare.api.addons.VWAddon;
 @VWAddon
 public class ValkyrienWarfareWorld extends Module<ValkyrienWarfareWorldGen> {
 
+    @CapabilityInject(ICapabilityAntiGravity.class)
+    public static final Capability<ICapabilityAntiGravity> ANTI_GRAVITY_CAPABILITY = null;
     private static final WorldEventsCommon worldEventsCommon = new WorldEventsCommon();
     public static ValkyrienWarfareWorld INSTANCE;
     public Block etheriumOre;
@@ -98,6 +106,11 @@ public class ValkyrienWarfareWorld extends Module<ValkyrienWarfareWorldGen> {
         GameRegistry.registerTileEntity(TileEntitySkyTempleController.class, "skydungeon_controller");
     }
 
+    @Override
+    protected void registerCapabilities() {
+        CapabilityManager.INSTANCE.register(ICapabilityAntiGravity.class, new StorageAntiGravity(), ImplCapabilityAntiGravity.class);
+    }
+    
     @Override
     public void applyConfig(Configuration config) {
 

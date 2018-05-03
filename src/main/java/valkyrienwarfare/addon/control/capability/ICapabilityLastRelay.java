@@ -16,9 +16,9 @@
 
 package valkyrienwarfare.addon.control.capability;
 
-import net.minecraft.util.math.BlockPos;
-
 import javax.annotation.Nullable;
+
+import net.minecraft.util.math.BlockPos;
 
 public interface ICapabilityLastRelay {
 

@@ -33,53 +33,57 @@ public class MixinCPacketPlayer implements IExtendedCPacketPlayer {
     private double localX;
     private double localY;
     private double localZ;
-    
+
     @Override
     public boolean hasShipWorldBelowFeet() {
         return getWorldBelowFeetID() != -1;
     }
-    
+
     @Override
     public void setWorldBelowFeetID(int entityID) {
-       worldBelowID = entityID;
+        worldBelowID = entityID;
     }
-    
+
     @Override
     public int getWorldBelowFeetID() {
         return worldBelowID;
     }
+
     @Override
     public void setLocalCoords(double localX, double localY, double localZ) {
         this.localX = localX;
         this.localY = localY;
         this.localZ = localZ;
     }
+
     @Override
     public Vector getLocalCoordsVector() {
         return new Vector(localX, localY, localZ);
     }
 
-    
     // TODO: This doesnt work yet
     @Overwrite
     public void processPacket(INetHandlerPlayServer handler) {
-//        System.out.println(this.getLocalCoordsVector());
+        // System.out.println(this.getLocalCoordsVector());
         if (worldBelowID != -1) {
-//            System.out.println("RTest");
+            // System.out.println("RTest");
             try {
                 NetHandlerPlayServer serverHandler = (NetHandlerPlayServer) handler;
                 World world = serverHandler.player.getEntityWorld();
                 Entity theEntity = world.getEntityByID(worldBelowID);
                 PhysicsWrapperEntity worldBelow = (PhysicsWrapperEntity) theEntity;
-                Vector positionInGlobal = new Vector(localX, localY, localZ, worldBelow.wrapping.coordTransform.lToWTransform);
+                Vector positionInGlobal = new Vector(localX, localY, localZ,
+                        worldBelow.wrapping.coordTransform.lToWTransform);
                 Vector distanceDiscrepency = new Vector(x, y, z);
                 distanceDiscrepency.subtract(positionInGlobal);
                 x = positionInGlobal.X;
                 y = positionInGlobal.Y;
                 z = positionInGlobal.Z;
-                System.out.println("Coords transformed to <" + x + ", " + y + ", " + z + ">");
-                System.out.println("Distance discrepency of " + distanceDiscrepency + ", of length "+ distanceDiscrepency.length() + " meters");
-            } catch(Exception e) {
+                // System.out.println("Coords transformed to <" + x + ", " + y + ", " + z +
+                // ">");
+                // System.out.println("Distance discrepency of " + distanceDiscrepency + ", of
+                // length "+ distanceDiscrepency.length() + " meters");
+            } catch (Exception e) {
                 return;
             }
         }
@@ -100,6 +104,5 @@ public class MixinCPacketPlayer implements IExtendedCPacketPlayer {
     public double getLocalZ() {
         return localZ;
     }
-    
 
 }

@@ -11,16 +11,14 @@ import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.mod.network.IExtendedCPacketPlayer;
 import valkyrienwarfare.mod.physmanagement.interaction.IDraggable;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
+// Made abstract because the super class already implements this interface (from MixinCPacketPlayer), the compiled side of java just doesn't
+// know it yet.
 @Mixin(CPacketPlayer.PositionRotation.class)
-public class MixinCPacketPlayer$PositionRotation extends CPacketPlayer {
-
-    private int worldBelowID = -1;
-    private double localX;
-    private double localY;
-    private double localZ;
+public abstract class MixinCPacketPlayer$PositionRotation extends CPacketPlayer implements IExtendedCPacketPlayer {
     
     @Inject(method = "<init>*", at = @At("RETURN"))
     private void postInit(CallbackInfo info) {
@@ -28,28 +26,24 @@ public class MixinCPacketPlayer$PositionRotation extends CPacketPlayer {
             if(isPlayerStandingOnShip()) {
                 PhysicsWrapperEntity worldBelow = getWorldBelowFeet();
                 Vector positionInLocal = new Vector(x, y, z, worldBelow.wrapping.coordTransform.wToLTransform);
-                localX = positionInLocal.X;
-                localY = positionInLocal.Y;
-                localZ = positionInLocal.Z;
-                worldBelowID = worldBelow.getEntityId();
+                this.setLocalCoords(positionInLocal.X, positionInLocal.Y, positionInLocal.Z);
+                this.setWorldBelowFeetID(worldBelow.getEntityId());
             }
         }
     }
     
     @Inject(method = "readPacketData", at = @At("RETURN"))
     public void readPacketDataPost(PacketBuffer buf, CallbackInfo info) {
-        this.worldBelowID = buf.readInt();
-        this.localX = buf.readDouble();
-        this.localY = buf.readDouble();
-        this.localZ = buf.readDouble();
+        this.setWorldBelowFeetID(buf.readInt());
+        this.setLocalCoords(buf.readDouble(), buf.readDouble(), buf.readDouble());
     }
 
     @Inject(method = "writePacketData", at = @At("RETURN"))
     public void writePacketDataPost(PacketBuffer buf, CallbackInfo info) {
-        buf.writeInt(worldBelowID);
-        buf.writeDouble(localX);
-        buf.writeDouble(localY);
-        buf.writeDouble(localZ);
+        buf.writeInt(this.getWorldBelowFeetID());
+        buf.writeDouble(this.getLocalX());
+        buf.writeDouble(this.getLocalY());
+        buf.writeDouble(this.getLocalZ());
     }
     
     // Returns true if this packet was made by a client, and is set to be modified

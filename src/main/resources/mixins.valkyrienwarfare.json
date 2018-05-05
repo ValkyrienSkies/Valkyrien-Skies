@@ -21,7 +21,10 @@
     "entity.player.MixinEntityPlayer",
     "network.play.client.MixinCPacketPlayerDigging",
     "network.play.client.MixinCPacketPlayerTryUseItemOnBlock",
-    "network.play.client.MixinCPacketUpdateSign"
+    "network.play.client.MixinCPacketUpdateSign",
+    "network.play.client.MixinCPacketPlayer$Position",
+    "network.play.client.MixinCPacketPlayer$PositionRotation",
+    "network.play.client.MixinCPacketPlayer$Rotation"
   ],
   "client": [
     "client.renderer.tileentity.MixinTileEntityRendererDispatcher",

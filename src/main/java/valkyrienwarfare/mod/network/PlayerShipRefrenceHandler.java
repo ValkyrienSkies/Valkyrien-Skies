@@ -16,20 +16,17 @@
 
 package valkyrienwarfare.mod.network;
 
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.IThreadListener;
-import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public class PlayerShipRefrenceHandler implements IMessageHandler<PlayerShipRefrenceMessage, IMessage> {
 
+    // Ignore all this for now
     @Override
     public IMessage onMessage(PlayerShipRefrenceMessage message, MessageContext ctx) {
-        //This seems to be being called on the server!!!
+        /*
+        // This seems to be being called on the server!!!
         IThreadListener mainThread = ctx.getServerHandler().serverController;
         mainThread.addScheduledTask(new Runnable() {
             @Override
@@ -84,6 +81,7 @@ public class PlayerShipRefrenceHandler implements IMessageHandler<PlayerShipRefr
                 }
             }
         });
+        */
         return null;
     }
 

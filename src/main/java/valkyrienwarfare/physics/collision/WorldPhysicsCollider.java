@@ -594,7 +594,7 @@ public class WorldPhysicsCollider {
                     for (int localY = minY; localY < maxY; localY++) {
                         if (parent.ownsChunk(localX >> 4, localZ >> 4)) {
                             Chunk chunkIn = parent.VKChunkCache.getChunkAt(localX >> 4, localZ >> 4);
-                            if (chunkIn.storageArrays[localY >> 4] != null) {
+                            if (localY >> 4  < 16 && chunkIn.storageArrays[localY >> 4] != null) {
                                 IBitOctreeProvider provider = IBitOctreeProvider.class
                                         .cast(chunkIn.storageArrays[localY >> 4].getData());
                                 IBitOctree octreeInLocal = provider.getBitOctree();

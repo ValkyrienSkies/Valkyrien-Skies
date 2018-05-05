@@ -12,7 +12,7 @@ public class MixinCPacketPlayer$Rotation extends CPacketPlayer {
 
     @Inject(method = "<init>*", at = @At("RETURN"))
     private void postInit(CallbackInfo info) {
-        System.out.println("Rotation Check");
+//        System.out.println(info.getId());
     }
 
 }

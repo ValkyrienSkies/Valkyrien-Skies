@@ -12,7 +12,7 @@ public class MixinCPacketPlayer$Position extends CPacketPlayer {
 
     @Inject(method = "<init>*", at = @At("RETURN"))
     private void postInit(CallbackInfo info) {
-        System.out.println("Position Check");
+//        System.out.println("Position Check");
     }
 
 }

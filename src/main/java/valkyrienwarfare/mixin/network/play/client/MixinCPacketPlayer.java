@@ -79,6 +79,10 @@ public class MixinCPacketPlayer implements IExtendedCPacketPlayer {
                 x = positionInGlobal.X;
                 y = positionInGlobal.Y;
                 z = positionInGlobal.Z;
+                
+                // TODO: We shouldnt trust the clients about this either
+                serverHandler.floatingTickCount = 0;
+                serverHandler.floating = false;
                 // System.out.println("Coords transformed to <" + x + ", " + y + ", " + z +
                 // ">");
                 // System.out.println("Distance discrepency of " + distanceDiscrepency + ", of

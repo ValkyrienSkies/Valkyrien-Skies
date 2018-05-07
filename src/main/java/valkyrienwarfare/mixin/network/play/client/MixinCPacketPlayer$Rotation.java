@@ -15,6 +15,8 @@ import valkyrienwarfare.mod.network.IExtendedCPacketPlayer;
 import valkyrienwarfare.mod.physmanagement.interaction.IDraggable;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
+// Made abstract because the super class already implements this interface (from MixinCPacketPlayer), the compiled side of java just doesn't
+// know it yet.
 @Mixin(CPacketPlayer.Rotation.class)
 public abstract class MixinCPacketPlayer$Rotation extends CPacketPlayer implements IExtendedCPacketPlayer {
 

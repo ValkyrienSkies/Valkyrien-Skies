@@ -15,9 +15,10 @@ import valkyrienwarfare.mod.network.IExtendedCPacketPlayer;
 import valkyrienwarfare.mod.physmanagement.interaction.IDraggable;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
+// Made abstract because the super class already implements this interface (from MixinCPacketPlayer), the compiled side of java just doesn't
+// know it yet.
 @Mixin(CPacketPlayer.Position.class)
 public abstract class MixinCPacketPlayer$Position extends CPacketPlayer implements IExtendedCPacketPlayer {
-
 
     @Inject(method = "<init>*", at = @At("RETURN"))
     private void postInit(CallbackInfo info) {

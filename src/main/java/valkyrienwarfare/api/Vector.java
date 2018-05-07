@@ -18,6 +18,7 @@ package valkyrienwarfare.api;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.Vec3d;
 
 /**
@@ -68,6 +69,27 @@ public class Vector {
 
     public Vector(Vector theNormal, double[] matrixTransform) {
         this(theNormal.X, theNormal.Y, theNormal.Z, matrixTransform);
+    }
+    public Vector(EnumFacing facing){
+        switch (facing) {
+            case DOWN:
+                Y=1d;
+                break;
+            case UP:
+                Y=-1d;
+                break;
+            case EAST:
+                X=-1d;
+                break;
+            case NORTH:
+                Z=1d;
+                break;
+            case WEST:
+                X=1d;
+                break;
+            case SOUTH:
+                Z=-1d;
+        }
     }
 
     public static Vector[] generateAxisAlignedNorms() {

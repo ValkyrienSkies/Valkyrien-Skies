@@ -142,28 +142,7 @@ public abstract class BlockAirshipEngine extends Block implements IBlockForcePro
     public TileEntity createNewTileEntity(World worldIn, int meta) {
         Vector normalVector = new Vector(1, 0, 0);
         IBlockState state = getStateFromMeta(meta);
-        EnumFacing facing = state.getValue(FACING);
-        switch (facing) {
-            case DOWN:
-                normalVector = new Vector(0, 1, 0);
-                break;
-            case UP:
-                normalVector = new Vector(0, -1, 0);
-                break;
-            case EAST:
-                normalVector = new Vector(-1, 0, 0);
-                break;
-            case NORTH:
-                normalVector = new Vector(0, 0, 1);
-                break;
-            case WEST:
-                normalVector = new Vector(1, 0, 0);
-                break;
-            case SOUTH:
-                normalVector = new Vector(0, 0, -1);
-        }
-
-        return new TileEntityPropellerEngine(normalVector, true, enginePower);
+        return new TileEntityPropellerEngine(new Vector(state.getValue(FACING)), true, enginePower);
     }
 
     public void setEnginePower(double power) {

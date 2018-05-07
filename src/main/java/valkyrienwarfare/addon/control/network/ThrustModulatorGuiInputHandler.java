@@ -14,47 +14,30 @@
  *
  */
 
-package valkyrienwarfare.mod.network;
+package valkyrienwarfare.addon.control.network;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IThreadListener;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.addon.control.tileentity.TileEntityThrustModulator;
 
-public class EntityRelativePositionMessageHandler implements IMessageHandler<EntityRelativePositionMessage, IMessage> {
+public class ThrustModulatorGuiInputHandler implements IMessageHandler<ThrustModulatorGuiInputMessage, IMessage> {
 
     @Override
-    public IMessage onMessage(EntityRelativePositionMessage message, MessageContext ctx) {
-        if (Minecraft.getMinecraft().player == null) {
-            return null;
-        }
-
-        IThreadListener mainThread = Minecraft.getMinecraft();
+    public IMessage onMessage(ThrustModulatorGuiInputMessage message, MessageContext ctx) {
+        IThreadListener mainThread = ctx.getServerHandler().serverController;
         mainThread.addScheduledTask(new Runnable() {
             @Override
             public void run() {
-                Entity ent = Minecraft.getMinecraft().world.getEntityByID(message.wrapperEntityId);
-                if (ent != null && ent instanceof PhysicsWrapperEntity) {
-                    PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity) ent;
-                    double[] lToWTransform = wrapper.wrapping.coordTransform.lToWTransform;
-
-                    for (int i = 0; i < message.listSize; i++) {
-                        int entityID = message.entitiesToSendIDs.get(i);
-                        Vector entityPosition = message.entitiesRelativePosition.get(i);
-
-                        Entity entity = Minecraft.getMinecraft().world.getEntityByID(entityID);
-
-                        if (entity != null && entity != Minecraft.getMinecraft().player) {
-//                    		System.out.println("worked");
-                            entityPosition.transform(lToWTransform);
-
-//                    		entity.setPosition(entityPosition.X, entityPosition.Y, entityPosition.Z);
-                        }
+                TileEntity tileEnt = ctx.getServerHandler().player.world.getTileEntity(message.tileEntityPos);
+                if (tileEnt != null) {
+                    if (tileEnt instanceof TileEntityThrustModulator) {
+                        ((TileEntityThrustModulator) tileEnt).handleGUIInput(message, ctx);
                     }
+                } else {
+                    System.out.println("Player: " + ctx.getServerHandler().player.getName() + " sent a broken packet");
                 }
             }
         });

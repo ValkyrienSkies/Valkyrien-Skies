@@ -35,9 +35,9 @@ public class PhysWrapperPositionMessage implements IMessage {
     public PhysWrapperPositionMessage() {
     }
 
-    public PhysWrapperPositionMessage(PhysicsWrapperEntity toSend) {
+    public PhysWrapperPositionMessage(PhysicsWrapperEntity toSend, int relativeTick) {
         toSpawn = toSend;
-        relativeTick = toSend.ticksExisted;
+        this.relativeTick = relativeTick;
     }
 
     public PhysWrapperPositionMessage(PhysicsObject toRunLocally) {

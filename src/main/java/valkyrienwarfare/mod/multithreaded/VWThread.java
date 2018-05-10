@@ -3,6 +3,7 @@ package valkyrienwarfare.mod.multithreaded;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.Vector;
@@ -16,33 +17,44 @@ public class VWThread extends Thread {
     // The ships we will be ticking physics for every tick, and sending those
     // updates to players.
     private final List<PhysicsWrapperEntity> ships;
-    private final int MS_PER_TICK = 50;
+    private final long MS_PER_TICK = 50;
+    private int positionTickID;
 
     public VWThread(World host) {
+        super("VW World Thread: " + host.getProviderName());
         hostWorld = host;
         ships = new ArrayList<PhysicsWrapperEntity>();
+        positionTickID = 0;
     }
 
     @Override
     public void run() {
         // System.out.println("Thread running");
-        try {
+        while (true) {
+            long start = System.currentTimeMillis();
             runGameLoop();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            try {
+                long sleepTime = start + MS_PER_TICK - System.currentTimeMillis();
+                // Sending a negative number would cause a crash.
+                if (sleepTime > 0) {
+                    sleep(sleepTime);
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    private void runGameLoop() throws InterruptedException {
-        long start = System.currentTimeMillis();
-//        physicsTick();
-
-        sleep(start + MS_PER_TICK - System.currentTimeMillis());
+    private void runGameLoop() {
+        if (hostWorld.getMinecraftServer().isServerRunning() && !Minecraft.getMinecraft().isGamePaused()) {
+            physicsTick();
+        }
     }
 
     // The whole time need to be careful the game thread isn't messing with these
     // values
     private void physicsTick() {
+        // System.out.println("Physics ticking");
         // First tick the physics
         // physics.tick();
         // Then tick the collision
@@ -52,13 +64,13 @@ public class VWThread extends Thread {
 
         // And then send an update to all the players
         // ships.sendToPlayers();
-        
+
         // TODO: Temporary fix:
         WorldPhysObjectManager manager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(hostWorld);
         List<PhysicsWrapperEntity> physicsEntities = manager.getTickablePhysicsEntities();
         ships.clear();
         ships.addAll(physicsEntities);
-
+        // System.out.println(ships.size());
         for (int i = 0; i < ValkyrienWarfareMod.physIter; i++) {
             tickThePhysicsAndCollision();
             tickTheTransformUpdates();
@@ -108,19 +120,23 @@ public class VWThread extends Thread {
         for (PhysicsWrapperEntity wrapper : ships) {
             if (!wrapper.firstUpdate) {
                 wrapper.wrapping.physicsProcessor.rawPhysTickPostCol();
+            } else {
+                wrapper.wrapping.coordTransform.updateAllTransforms();
             }
-            wrapper.wrapping.coordTransform.updateAllTransforms();
         }
     }
 
     private void tickSendUpdatesToPlayers() {
         for (PhysicsWrapperEntity wrapper : ships) {
-            wrapper.wrapping.coordTransform.sendPositionToPlayers();
+            wrapper.wrapping.coordTransform.sendPositionToPlayers(positionTickID);
         }
+        positionTickID++;
     }
 
     public void kill() {
+        System.out.println("VW Thread Killed");
         stop();
         ships.clear();
+        this.destroy();
     }
 }

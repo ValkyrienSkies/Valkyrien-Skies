@@ -16,8 +16,6 @@
 
 package valkyrienwarfare.physics.management;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -29,9 +27,7 @@ import net.minecraft.world.border.WorldBorder;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.mod.network.EntityRelativePositionMessage;
 import valkyrienwarfare.mod.network.PhysWrapperPositionMessage;
-import valkyrienwarfare.mod.physmanagement.interaction.IDraggable;
 
 /**
  * Stores coordinates and transforms for the ship.
@@ -150,9 +146,10 @@ public class CoordTransformObject {
         }
     }
 
-    public void sendPositionToPlayers() {
-        PhysWrapperPositionMessage posMessage = new PhysWrapperPositionMessage(parent.wrapper);
+    public void sendPositionToPlayers(int positionTickID) {
+        PhysWrapperPositionMessage posMessage = new PhysWrapperPositionMessage(parent.wrapper, positionTickID);
 
+        /*
         List<Entity> entityList = new ArrayList<Entity>();
         for (Entity entity : parent.worldObj.loadedEntityList) {
             if (entity instanceof IDraggable) {
@@ -165,10 +162,11 @@ public class CoordTransformObject {
 
         EntityRelativePositionMessage otherPositionMessage = new EntityRelativePositionMessage(parent.wrapper,
                 entityList);
-
+         */
+        
         for (EntityPlayerMP player : parent.watchingPlayers) {
             ValkyrienWarfareMod.physWrapperNetwork.sendTo(posMessage, player);
-            ValkyrienWarfareMod.physWrapperNetwork.sendTo(otherPositionMessage, player);
+//            ValkyrienWarfareMod.physWrapperNetwork.sendTo(otherPositionMessage, player);
         }
     }
 

@@ -43,24 +43,32 @@ public class PhysicsTickHandler {
             wrapper.wrapping.updateChunkCache();
         }
 
-        PhysicsTickThreadTask physicsThreadTask = new PhysicsTickThreadTask(ValkyrienWarfareMod.physIter,
-                physicsEntities, manager);
-
-        try {
-            manager.setPhysicsThread(ValkyrienWarfareMod.PHYSICS_THREADS.submit(physicsThreadTask));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        /*
+         * All moved off the game tick thread, there is simply no other way to fix the
+         * physics.
+         * 
+         * PhysicsTickThreadTask physicsThreadTask = new
+         * PhysicsTickThreadTask(ValkyrienWarfareMod.physIter, physicsEntities,
+         * manager);
+         * 
+         * try { manager.setPhysicsThread(ValkyrienWarfareMod.PHYSICS_THREADS.submit(
+         * physicsThreadTask)); } catch (Exception e) { e.printStackTrace(); }
+         */
     }
 
     public static void onWorldTickEnd(World world) {
         WorldPhysObjectManager manager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(world);
         List<PhysicsWrapperEntity> physicsEntities = manager.getTickablePhysicsEntities();
-        manager.awaitPhysics();
+        // manager.awaitPhysics();
 
-        for (PhysicsWrapperEntity wrapper : physicsEntities) {
-            wrapper.wrapping.coordTransform.sendPositionToPlayers();
-        }
+        /*
+         * Also moving this off the game tick thread, players need consistency within
+         * subspaces.
+         * 
+         * for (PhysicsWrapperEntity wrapper : physicsEntities) {
+         * wrapper.wrapping.coordTransform.sendPositionToPlayers(); }
+         */
+        // Remember only to run this from the game tick thread.
         EntityDraggable.tickAddedVelocityForWorld(world);
         for (PhysicsWrapperEntity wrapperEnt : physicsEntities) {
             wrapperEnt.wrapping.onPostTick();

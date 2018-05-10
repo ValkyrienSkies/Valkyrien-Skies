@@ -42,7 +42,6 @@ import valkyrienwarfare.math.VWMath;
 import valkyrienwarfare.physics.collision.WorldPhysicsCollider;
 import valkyrienwarfare.physics.data.BlockForce;
 import valkyrienwarfare.physics.data.BlockMass;
-import valkyrienwarfare.physics.data.PhysicsQueuedForce;
 import valkyrienwarfare.physics.management.CoordTransformObject;
 import valkyrienwarfare.physics.management.PhysicsObject;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
@@ -294,7 +293,6 @@ public class PhysicsCalculations {
     protected void calculateForces() {
         applyAirDrag();
         applyGravity();
-        addQueuedForces();
 
         Collections.shuffle(activeForcePositions);
 
@@ -360,23 +358,7 @@ public class PhysicsCalculations {
         linearMomentum.multiply(drag);
         angularVelocity.multiply(drag);
     }
-
-    public void addQueuedForces() {
-        Collections.shuffle(parent.queuedPhysForces);
-        for (PhysicsQueuedForce queuedForce : parent.queuedPhysForces) {
-            Vector forceVec = new Vector(queuedForce.force);
-            if (queuedForce.isLocal) {
-                RotationMatrices.doRotationOnly(parent.coordTransform.lToWRotation, forceVec);
-            }
-            forceVec.multiply(getPhysicsTimeDeltaPerPhysTick());
-            Vector posVec = new Vector(queuedForce.inBodyPos);
-            posVec.X -= wrapperEnt.posX;
-            posVec.Y -= wrapperEnt.posY;
-            posVec.Z -= wrapperEnt.posZ;
-            addForceAtPoint(posVec, forceVec);
-        }
-    }
-
+    
     public void convertTorqueToVelocity() {
         if (!torque.isZero()) {
             angularVelocity.add(RotationMatrices.get3by3TransformedVec(invFramedMOI, torque));

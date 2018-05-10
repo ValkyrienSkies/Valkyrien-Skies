@@ -64,6 +64,7 @@ import valkyrienwarfare.addon.combat.entity.EntityMountingWeaponBase;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.mod.capability.IAirshipCounterCapability;
+import valkyrienwarfare.mod.multithreaded.VWThreadManager;
 import valkyrienwarfare.mod.physmanagement.interaction.ValkyrienWarfareWorldEventListener;
 import valkyrienwarfare.physics.management.PhysicsTickHandler;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
@@ -174,6 +175,7 @@ public class EventsCommon {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onWorldLoad(WorldEvent.Load event) {
         event.getWorld().addEventListener(new ValkyrienWarfareWorldEventListener(event.getWorld()));
+        VWThreadManager.createVWThreadForWorld(event.getWorld());
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -185,6 +187,7 @@ public class EventsCommon {
             lastPositions.clear();
         }
         ValkyrienWarfareMod.physicsManager.removeWorld(event.getWorld());
+        VWThreadManager.killVWThreadForWorld(event.getWorld());
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)

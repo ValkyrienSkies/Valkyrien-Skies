@@ -27,7 +27,6 @@ import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.math.VWMath;
 import valkyrienwarfare.physics.calculations.PhysicsCalculations;
-import valkyrienwarfare.physics.calculations.PhysicsCalculationsOrbital;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
 public class ShipPhysicsCollider {
@@ -48,18 +47,6 @@ public class ShipPhysicsCollider {
 	}
 
 	public void doShipCollision(PhysicsObject toCollideWith) {
-		// Don't process collision if either of them are phased
-		if (toCollideWith.physicsProcessor instanceof PhysicsCalculationsOrbital) {
-			if (((PhysicsCalculationsOrbital) toCollideWith.physicsProcessor).isOrbitalPhased) {
-				return;
-			}
-		}
-		if (parent.physicsProcessor instanceof PhysicsCalculationsOrbital) {
-			if (((PhysicsCalculationsOrbital) parent.physicsProcessor).isOrbitalPhased) {
-				return;
-			}
-		}
-
 		AxisAlignedBB firstBB = parent.getCollisionBoundingBox();
 		AxisAlignedBB secondBB = toCollideWith.getCollisionBoundingBox();
 		AxisAlignedBB betweenBB = VWMath.getBetweenAABB(firstBB, secondBB);

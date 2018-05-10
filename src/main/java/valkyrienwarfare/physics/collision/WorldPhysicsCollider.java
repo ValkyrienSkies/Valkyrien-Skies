@@ -18,6 +18,7 @@ package valkyrienwarfare.physics.collision;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Random;
 
 import com.jackredcreeper.cannon.world.NewExp2;
@@ -115,7 +116,7 @@ public class WorldPhysicsCollider {
         }
     }
 
-    public void splitIntoCollisionTasks(Collection<ShipCollisionTask> toAdd) {
+    public void splitIntoCollisionTasks(List<ShipCollisionTask> toAdd) {
         if (updateCollisionTasksCache) {
             tasks.clear();
             int index = 0;

@@ -45,20 +45,22 @@ public class ValkyrienWarfareWorldEventListener implements IWorldEventListener {
         worldObj = world;
     }
 
-    //TODO: Maybe replace the ASM setBlockState with this instead
+    // TODO: Maybe replace the ASM setBlockState with this instead
     @Override
     public void notifyBlockUpdate(World worldIn, BlockPos pos, IBlockState oldState, IBlockState newState, int flags) {
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldObj, pos);
         if (worldObj.isRemote) {
-            worldIn.markBlockRangeForRenderUpdate(pos.getX(), pos.getY(), pos.getZ(), pos.getX(), pos.getY(), pos.getZ());
-            //Strange bounding box error on CLIENT SIDE Fix, possibly broken and terrible, but probably ok
+            worldIn.markBlockRangeForRenderUpdate(pos.getX(), pos.getY(), pos.getZ(), pos.getX(), pos.getY(),
+                    pos.getZ());
+            // Strange bounding box error on CLIENT SIDE Fix, possibly broken and terrible,
+            // but probably ok
             if (wrapper != null) {
                 wrapper.wrapping.onSetBlockState(oldState, newState, pos);
             }
         } else {
             if (wrapper != null) {
-                //TODO: Find a new way to make this happen
-//                wrapper.wrapping.pilotingController.onSetBlockInShip(pos, newState);
+                // TODO: Find a new way to make this happen
+                // wrapper.wrapping.pilotingController.onSetBlockInShip(pos, newState);
             }
         }
     }
@@ -71,21 +73,22 @@ public class ValkyrienWarfareWorldEventListener implements IWorldEventListener {
 
     @Override
     public void markBlockRangeForRenderUpdate(int x1, int y1, int z1, int x2, int y2, int z2) {
-//		if(worldObj.isRemote){
-//			int midX = (x1 + x2) / 2;
-//			int midY = (y1 + y2) / 2;
-//			int midZ = (z1 + z2) / 2;
-//			BlockPos newPos = new BlockPos(midX, midY, midZ);
-//			PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldObj, newPos);
-//			if (wrapper != null && wrapper.wrapping.renderer != null) {
-//				wrapper.wrapping.renderer.updateRange(x1-1, y1-1, z1-1, x2+1, y2+1, z2+1);
-//			}
-//		}
+        // if(worldObj.isRemote){
+        // int midX = (x1 + x2) / 2;
+        // int midY = (y1 + y2) / 2;
+        // int midZ = (z1 + z2) / 2;
+        // BlockPos newPos = new BlockPos(midX, midY, midZ);
+        // PhysicsWrapperEntity wrapper =
+        // ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldObj, newPos);
+        // if (wrapper != null && wrapper.wrapping.renderer != null) {
+        // wrapper.wrapping.renderer.updateRange(x1-1, y1-1, z1-1, x2+1, y2+1, z2+1);
+        // }
+        // }
     }
 
     @Override
     public void playSoundToAllNearExcept(EntityPlayer player, SoundEvent soundIn, SoundCategory category, double x,
-                                         double y, double z, float volume, float pitch) {
+            double y, double z, float volume, float pitch) {
         // TODO Auto-generated method stub
 
     }
@@ -97,13 +100,13 @@ public class ValkyrienWarfareWorldEventListener implements IWorldEventListener {
     }
 
     @Override
-    public void spawnParticle(int particleID, boolean ignoreRange, double x, double y, double z,
-                              double xSpeed, double ySpeed, double zSpeed, int... parameters) {
+    public void spawnParticle(int particleID, boolean ignoreRange, double x, double y, double z, double xSpeed,
+            double ySpeed, double zSpeed, int... parameters) {
         // TODO Auto-generated method stub
 
     }
 
-    //TODO: Fix conflicts with EventsCommon.onEntityJoinWorldEvent()
+    // TODO: Fix conflicts with EventsCommon.onEntityJoinWorldEvent()
     @Override
     public void onEntityAdded(Entity entityIn) {
         int oldChunkX = MathHelper.floor(entityIn.posX / 16.0D);
@@ -112,12 +115,14 @@ public class ValkyrienWarfareWorldEventListener implements IWorldEventListener {
         BlockPos posAt = new BlockPos(entityIn);
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldObj, posAt);
         if (!(entityIn instanceof EntityFallingBlock) && wrapper != null && wrapper.wrapping.coordTransform != null) {
-            if (entityIn instanceof EntityMountingWeaponBase || entityIn instanceof EntityArmorStand || entityIn instanceof EntityPig || entityIn instanceof EntityBoat) {
-//				entity.startRiding(wrapper);
+            if (entityIn instanceof EntityMountingWeaponBase || entityIn instanceof EntityArmorStand
+                    || entityIn instanceof EntityPig || entityIn instanceof EntityBoat) {
+                // entity.startRiding(wrapper);
                 wrapper.wrapping.fixEntity(entityIn, new Vector(entityIn));
                 wrapper.wrapping.queueEntityForMounting(entityIn);
             }
-            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, wrapper.wrapping.coordTransform.lToWRotation, entityIn);
+            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform,
+                    wrapper.wrapping.coordTransform.lToWRotation, entityIn);
 
             int newChunkX = MathHelper.floor(entityIn.posX / 16.0D);
             int newChunkZ = MathHelper.floor(entityIn.posZ / 16.0D);
@@ -130,14 +135,15 @@ public class ValkyrienWarfareWorldEventListener implements IWorldEventListener {
             ValkyrienWarfareMod.physicsManager.onShipLoad((PhysicsWrapperEntity) entityIn);
         }
 
-
         if (!(entityIn instanceof EntityFallingBlock) && wrapper != null && wrapper.wrapping.coordTransform != null) {
-            if (entityIn instanceof EntityMountingWeaponBase || entityIn instanceof EntityArmorStand || entityIn instanceof EntityPig || entityIn instanceof EntityBoat) {
-//				entity.startRiding(wrapper);
+            if (entityIn instanceof EntityMountingWeaponBase || entityIn instanceof EntityArmorStand
+                    || entityIn instanceof EntityPig || entityIn instanceof EntityBoat) {
+                // entity.startRiding(wrapper);
                 wrapper.wrapping.fixEntity(entityIn, new Vector(entityIn));
                 wrapper.wrapping.queueEntityForMounting(entityIn);
             }
-            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, wrapper.wrapping.coordTransform.lToWRotation, entityIn);
+            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform,
+                    wrapper.wrapping.coordTransform.lToWRotation, entityIn);
         }
     }
 
@@ -167,7 +173,8 @@ public class ValkyrienWarfareWorldEventListener implements IWorldEventListener {
                 if (entityplayermp != null && entityplayermp.getEntityId() != breakerId) {
                     Vector posVector = new Vector(pos.getX(), pos.getY(), pos.getZ());
 
-                    PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldObj, pos);
+                    PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldObj,
+                            pos);
 
                     if (wrapper != null) {
                         RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, posVector);
@@ -178,7 +185,8 @@ public class ValkyrienWarfareWorldEventListener implements IWorldEventListener {
                     double d2 = posVector.Z - entityplayermp.posZ;
 
                     if (d0 * d0 + d1 * d1 + d2 * d2 < 1024.0D) {
-                        ((EntityPlayerMP) entityplayermp).connection.sendPacket(new SPacketBlockBreakAnim(breakerId, pos, progress));
+                        ((EntityPlayerMP) entityplayermp).connection
+                                .sendPacket(new SPacketBlockBreakAnim(breakerId, pos, progress));
                     }
                 }
             }
@@ -187,11 +195,10 @@ public class ValkyrienWarfareWorldEventListener implements IWorldEventListener {
 
     @Override
     public void spawnParticle(int p_190570_1_, boolean p_190570_2_, boolean p_190570_3_, double p_190570_4_,
-                              double p_190570_6_, double p_190570_8_, double p_190570_10_, double p_190570_12_, double p_190570_14_,
-                              int... p_190570_16_) {
+            double p_190570_6_, double p_190570_8_, double p_190570_10_, double p_190570_12_, double p_190570_14_,
+            int... p_190570_16_) {
         // TODO Auto-generated method stub
 
     }
-
 
 }

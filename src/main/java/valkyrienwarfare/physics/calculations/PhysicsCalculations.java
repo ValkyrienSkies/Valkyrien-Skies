@@ -80,7 +80,7 @@ public class PhysicsCalculations {
     public PhysicsCalculations(PhysicsObject toProcess) {
         parent = toProcess;
         wrapperEnt = parent.wrapper;
-        worldObj = toProcess.worldObj;
+        worldObj = toProcess.getWorldObj();
         worldCollision = new WorldPhysicsCollider(this);
 
         MoITensor = RotationMatrices.getZeroMatrix(3);

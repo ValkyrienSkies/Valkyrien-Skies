@@ -155,7 +155,7 @@ public class PhysObjectRenderManager {
 
     public void renderTileEntities(float partialTicks) {
         for (BlockPos pos : parent.blockPositions) {
-            TileEntity tileEnt = parent.worldObj.getTileEntity(pos);
+            TileEntity tileEnt = parent.getWorldObj().getTileEntity(pos);
             if (tileEnt != null) {
                 try {
                     TileEntityRendererDispatcher.instance.render(tileEnt, partialTicks, -1);

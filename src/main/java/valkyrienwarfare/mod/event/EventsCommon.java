@@ -68,7 +68,6 @@ import valkyrienwarfare.mod.multithreaded.VWThreadManager;
 import valkyrienwarfare.mod.physmanagement.interaction.ValkyrienWarfareWorldEventListener;
 import valkyrienwarfare.physics.management.PhysicsTickHandler;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
-import valkyrienwarfare.physics.management.ShipType;
 
 public class EventsCommon {
 
@@ -352,9 +351,6 @@ public class EventsCommon {
                                 + (physObj.wrapping.creator == null || physObj.wrapping.creator.trim().isEmpty()
                                         ? " Try using \"/airshipSettings claim\"!"
                                         : "")));
-                event.setCanceled(true);
-            } else if (physObj.wrapping.getShipType() == ShipType.Oribtal) {
-                // Do not let it place any blocks
                 event.setCanceled(true);
             }
         }

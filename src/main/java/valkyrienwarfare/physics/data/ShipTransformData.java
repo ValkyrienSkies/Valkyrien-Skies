@@ -16,6 +16,7 @@
 
 package valkyrienwarfare.physics.data;
 
+import net.minecraft.util.math.AxisAlignedBB;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.mod.network.PhysWrapperPositionMessage;
 import valkyrienwarfare.physics.management.PhysicsObject;
@@ -26,6 +27,7 @@ public class ShipTransformData {
     public final double posX, posY, posZ;
     public final double pitch, yaw, roll;
     public final Vector centerOfRotation;
+    private AxisAlignedBB shipBB;
 
     public ShipTransformData(PhysWrapperPositionMessage wrapperMessage) {
         posX = wrapperMessage.posX;
@@ -39,6 +41,7 @@ public class ShipTransformData {
         centerOfRotation = wrapperMessage.centerOfMass;
 
         relativeTick = wrapperMessage.relativeTick;
+        shipBB = wrapperMessage.shipBB;
     }
     
     public ShipTransformData(ShipTransformData before, ShipTransformData after) {
@@ -53,6 +56,8 @@ public class ShipTransformData {
         centerOfRotation = before.centerOfRotation.getAddition(after.centerOfRotation).getProduct(.5D);
         
         relativeTick = before.relativeTick;
+        // TODO: Make this proper
+        shipBB = before.shipBB;
     }
 
     // Apply all the position/rotation variables accordingly onto the passed physObject
@@ -66,5 +71,7 @@ public class ShipTransformData {
         physObj.wrapper.roll = roll;
 
         physObj.centerCoord = centerOfRotation;
+        
+        physObj.setCollisionBoundingBox(shipBB);
     }
 }

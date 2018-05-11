@@ -17,6 +17,8 @@
 package valkyrienwarfare.mod.network;
 
 import io.netty.buffer.ByteBuf;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.physics.management.PhysicsObject;
@@ -31,13 +33,15 @@ public class PhysWrapperPositionMessage implements IMessage {
     public double pitch, yaw, roll;
     public Vector centerOfMass;
     public int relativeTick;
+    public AxisAlignedBB shipBB;
 
     public PhysWrapperPositionMessage() {
     }
 
     public PhysWrapperPositionMessage(PhysicsWrapperEntity toSend, int relativeTick) {
-        toSpawn = toSend;
+        this.toSpawn = toSend;
         this.relativeTick = relativeTick;
+        this.shipBB = toSend.getCollisionBoundingBox();
     }
 
     public PhysWrapperPositionMessage(PhysicsObject toRunLocally) {
@@ -50,6 +54,7 @@ public class PhysWrapperPositionMessage implements IMessage {
         roll = toRunLocally.wrapper.roll;
 
         centerOfMass = toRunLocally.centerCoord;
+        shipBB = toRunLocally.getCollisionBoundingBox();
     }
 
     @Override
@@ -66,6 +71,7 @@ public class PhysWrapperPositionMessage implements IMessage {
         roll = buf.readDouble();
 
         centerOfMass = new Vector(buf.readDouble(), buf.readDouble(), buf.readDouble());
+        shipBB = new AxisAlignedBB(buf.readDouble(), buf.readDouble(), buf.readDouble(), buf.readDouble(), buf.readDouble(), buf.readDouble());
     }
 
     @Override
@@ -84,6 +90,17 @@ public class PhysWrapperPositionMessage implements IMessage {
         buf.writeDouble(toSpawn.wrapping.centerCoord.X);
         buf.writeDouble(toSpawn.wrapping.centerCoord.Y);
         buf.writeDouble(toSpawn.wrapping.centerCoord.Z);
+        
+        
+        if (shipBB == null) {
+            shipBB = Entity.ZERO_AABB;
+        }
+        buf.writeDouble(shipBB.minX);
+        buf.writeDouble(shipBB.maxX);
+        buf.writeDouble(shipBB.minY);
+        buf.writeDouble(shipBB.maxY);
+        buf.writeDouble(shipBB.minZ);
+        buf.writeDouble(shipBB.maxZ);
     }
 
 }

@@ -106,6 +106,10 @@ public class CoordTransformObject {
         prevWToLRotation = wToLRotation;
     }
 
+    /**
+     * Updates all the transformations, only updates the AABB if passed true.
+     * @param updateParentAABB
+     */
     public void updateAllTransforms(boolean updateParentAABB) {
         updatePosRelativeToWorldBorder();
         updateMatricesOnly();
@@ -120,7 +124,7 @@ public class CoordTransformObject {
      * Keeps the Ship from exiting the world border
      */
     public void updatePosRelativeToWorldBorder() {
-        WorldBorder border = parent.worldObj.getWorldBorder();
+        WorldBorder border = parent.getWorldObj().getWorldBorder();
         AxisAlignedBB shipBB = parent.getCollisionBoundingBox();
 
         if (shipBB.maxX > border.maxX()) {

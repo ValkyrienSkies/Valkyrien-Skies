@@ -81,8 +81,7 @@ import valkyrienwarfare.physics.data.ShipTransformData;
 import valkyrienwarfare.util.NBTUtils;
 
 public class PhysicsObject {
-
-    public final World worldObj;
+    
     public final PhysicsWrapperEntity wrapper;
     // This handles sending packets to players involving block changes in the Ship
     // space
@@ -124,12 +123,10 @@ public class PhysicsObject {
     private Map<Integer, Vector> entityLocalPositions;
     private ShipType shipType;
 
-    // public HashSet<nodenetwork> nodeNetworks = new HashSet<nodenetwork>();
     public final Set<Node> nodesWithinShip;
 
     public PhysicsObject(PhysicsWrapperEntity host) {
         wrapper = host;
-        worldObj = host.world;
         if (host.world.isRemote) {
             renderer = new PhysObjectRenderManager(this);
         } else {
@@ -173,7 +170,7 @@ public class PhysicsObject {
         }
 
         if ((isOldAir && !isNewAir)) {
-            if (!worldObj.isRemote) {
+            if (!getWorldObj().isRemote) {
                 blockPositions.add(posAt);
             } else {
                 if (!blockPositions.contains(posAt)) {
@@ -187,7 +184,7 @@ public class PhysicsObject {
 
         if (blockPositions.isEmpty()) {
             try {
-                if (!worldObj.isRemote) {
+                if (!getWorldObj().isRemote) {
                     if (creator != null) {
                         EntityPlayer player = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList()
                                 .getPlayerByUsername(creator);
@@ -209,7 +206,7 @@ public class PhysicsObject {
                                 }
                             }
                         }
-                        ValkyrienWarfareMod.chunkManager.getManagerForWorld(worldObj).data.avalibleChunkKeys
+                        ValkyrienWarfareMod.chunkManager.getManagerForWorld(getWorldObj()).data.avalibleChunkKeys
                                 .add(ownedChunks.centerX);
                     }
                 }
@@ -220,7 +217,7 @@ public class PhysicsObject {
             destroy();
         }
 
-        if (!worldObj.isRemote) {
+        if (!getWorldObj().isRemote) {
             if (physicsProcessor != null) {
                 physicsProcessor.onSetBlockState(oldState, newState, posAt);
             }
@@ -262,7 +259,7 @@ public class PhysicsObject {
      */
     public void processChunkClaims(EntityPlayer player) {
         BlockPos centerInWorld = new BlockPos(wrapper.posX, wrapper.posY, wrapper.posZ);
-        SpatialDetector detector = DetectorManager.getDetectorFor(detectorID, centerInWorld, worldObj,
+        SpatialDetector detector = DetectorManager.getDetectorFor(detectorID, centerInWorld, getWorldObj(),
                 ValkyrienWarfareMod.maxShipSize + 1, true);
         if (detector.foundSet.size() > ValkyrienWarfareMod.maxShipSize || detector.cleanHouse) {
             if (player != null) {
@@ -291,7 +288,7 @@ public class PhysicsObject {
         claimedChunksEntries = new PlayerChunkMapEntry[(ownedChunks.radius * 2) + 1][(ownedChunks.radius * 2) + 1];
         for (int x = ownedChunks.minX; x <= ownedChunks.maxX; x++) {
             for (int z = ownedChunks.minZ; z <= ownedChunks.maxZ; z++) {
-                Chunk chunk = new Chunk(worldObj, x, z);
+                Chunk chunk = new Chunk(getWorldObj(), x, z);
                 injectChunkIntoWorld(chunk, x, z, true);
                 claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ] = chunk;
             }
@@ -299,7 +296,7 @@ public class PhysicsObject {
 
         replaceOuterChunksWithAir();
 
-        VKChunkCache = new VWChunkCache(worldObj, claimedChunks);
+        VKChunkCache = new VWChunkCache(getWorldObj(), claimedChunks);
 
         refrenceBlockPos = getRegionCenter();
         centerCoord = new Vector(refrenceBlockPos.getX(), refrenceBlockPos.getY(), refrenceBlockPos.getZ());
@@ -307,7 +304,7 @@ public class PhysicsObject {
         createPhysicsCalculations();
         BlockPos centerDifference = refrenceBlockPos.subtract(centerInWorld);
 
-        toFollow.placeBlockAndTilesInWorld(worldObj, centerDifference);
+        toFollow.placeBlockAndTilesInWorld(getWorldObj(), centerDifference);
 
         detectBlockPositions();
 
@@ -376,7 +373,7 @@ public class PhysicsObject {
         claimedChunksEntries = new PlayerChunkMapEntry[(ownedChunks.radius * 2) + 1][(ownedChunks.radius * 2) + 1];
         for (int x = ownedChunks.minX; x <= ownedChunks.maxX; x++) {
             for (int z = ownedChunks.minZ; z <= ownedChunks.maxZ; z++) {
-                Chunk chunk = new Chunk(worldObj, x, z);
+                Chunk chunk = new Chunk(getWorldObj(), x, z);
                 injectChunkIntoWorld(chunk, x, z, true);
                 claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ] = chunk;
             }
@@ -385,7 +382,7 @@ public class PhysicsObject {
         // Prevents weird shit from spawning at the edges of a ship
         replaceOuterChunksWithAir();
 
-        VKChunkCache = new VWChunkCache(worldObj, claimedChunks);
+        VKChunkCache = new VWChunkCache(getWorldObj(), claimedChunks);
         int minChunkX = claimedChunks[0][0].x;
         int minChunkZ = claimedChunks[0][0].z;
 
@@ -446,7 +443,7 @@ public class PhysicsObject {
                     tileEntNBT.setInteger("controllerPosZ", controllerPosZ + centerDifference.getZ());
                 }
 
-                TileEntity newInstance = TileEntity.create(worldObj, tileEntNBT);
+                TileEntity newInstance = TileEntity.create(getWorldObj(), tileEntNBT);
                 newInstance.validate();
 
                 Class tileClass = newInstance.getClass();
@@ -486,7 +483,7 @@ public class PhysicsObject {
                     ((INodeProvider) newInstance).getNode().updateParentEntity(this);
                 }
 
-                worldObj.setTileEntity(newInstance.getPos(), newInstance);
+                getWorldObj().setTileEntity(newInstance.getPos(), newInstance);
 
                 if (newInstance instanceof INodeProvider) {
                     // System.out.println(newInstance.getClass().getName());
@@ -505,11 +502,11 @@ public class PhysicsObject {
             detector.setPosWithRespectTo(i, centerInWorld, pos);
             // detector.cache.setBlockState(pos, Blocks.air.getDefaultState());
             // TODO: Get this to update on clientside as well, you bastard!
-            TileEntity tile = worldObj.getTileEntity(pos);
+            TileEntity tile = getWorldObj().getTileEntity(pos);
             if (tile != null) {
                 tile.invalidate();
             }
-            worldObj.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
+            getWorldObj().setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
         }
         // centerDifference = new
         // BlockPos(claimedChunks[ownedChunks.radius+1][ownedChunks.radius+1].x*16,128,claimedChunks[ownedChunks.radius+1][ownedChunks.radius+1].z*16);
@@ -547,7 +544,7 @@ public class PhysicsObject {
     }
 
     public void injectChunkIntoWorld(Chunk chunk, int x, int z, boolean putInId2ChunkMap) {
-        ChunkProviderServer provider = (ChunkProviderServer) worldObj.getChunkProvider();
+        ChunkProviderServer provider = (ChunkProviderServer) getWorldObj().getChunkProvider();
         // TileEntities will break if you don't do this
         chunk.loaded = true;
         chunk.dirty = true;
@@ -557,7 +554,7 @@ public class PhysicsObject {
             provider.id2ChunkMap.put(ChunkPos.asLong(x, z), chunk);
         }
 
-        PlayerChunkMap map = ((WorldServer) worldObj).getPlayerChunkMap();
+        PlayerChunkMap map = ((WorldServer) getWorldObj()).getPlayerChunkMap();
 
         PlayerChunkMapEntry entry = new PlayerChunkMapEntry(map, x, z) {
             // @Override
@@ -597,8 +594,8 @@ public class PhysicsObject {
                         || z == ownedChunks.maxZ + 1) {
                     // This is satisfied for the chunks surrounding a Ship, do fill it with empty
                     // space
-                    Chunk chunk = new Chunk(worldObj, x, z);
-                    ChunkProviderServer provider = (ChunkProviderServer) worldObj.getChunkProvider();
+                    Chunk chunk = new Chunk(getWorldObj(), x, z);
+                    ChunkProviderServer provider = (ChunkProviderServer) getWorldObj().getChunkProvider();
                     chunk.dirty = true;
                     provider.id2ChunkMap.put(ChunkPos.asLong(x, z), chunk);
                 }
@@ -616,7 +613,7 @@ public class PhysicsObject {
                 SPacketChunkData data = new SPacketChunkData(chunk, 65535);
                 for (EntityPlayerMP player : newWatchers) {
                     player.connection.sendPacket(data);
-                    ((WorldServer) worldObj).getEntityTracker().sendLeashedEntitiesInChunk(player, chunk);
+                    ((WorldServer) getWorldObj()).getEntityTracker().sendLeashedEntitiesInChunk(player, chunk);
                 }
             }
         }
@@ -648,7 +645,7 @@ public class PhysicsObject {
      * Called when this entity has been unloaded from the world
      */
     public void onThisUnload() {
-        if (!worldObj.isRemote) {
+        if (!getWorldObj().isRemote) {
             unloadShipChunksFromWorld();
         } else {
             renderer.killRenderers();
@@ -656,7 +653,7 @@ public class PhysicsObject {
     }
 
     public void unloadShipChunksFromWorld() {
-        ChunkProviderServer provider = (ChunkProviderServer) worldObj.getChunkProvider();
+        ChunkProviderServer provider = (ChunkProviderServer) getWorldObj().getChunkProvider();
         for (int x = ownedChunks.minX; x <= ownedChunks.maxX; x++) {
             for (int z = ownedChunks.minZ; z <= ownedChunks.maxZ; z++) {
                 provider.queueUnload(claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ]);
@@ -674,7 +671,7 @@ public class PhysicsObject {
 
     private Set getPlayersThatJustWatched() {
         HashSet newPlayers = new HashSet();
-        for (Object o : ((WorldServer) worldObj).getEntityTracker().getTrackingPlayers(wrapper)) {
+        for (Object o : ((WorldServer) getWorldObj()).getEntityTracker().getTrackingPlayers(wrapper)) {
             EntityPlayerMP player = (EntityPlayerMP) o;
             if (!watchingPlayers.contains(player)) {
                 newPlayers.add(player);
@@ -685,7 +682,7 @@ public class PhysicsObject {
     }
 
     public void onTick() {
-        if (!worldObj.isRemote) {
+        if (!getWorldObj().isRemote) {
             for (Entity e : queuedEntitiesToMount) {
                 if (e != null) {
                     e.startRiding(this.wrapper, true);
@@ -733,14 +730,16 @@ public class PhysicsObject {
         }
 
         coordTransform.setPrevMatrices();
-        // TODO: Send AABB data to client instead
-        coordTransform.updateAllTransforms(true);
+        coordTransform.updateAllTransforms(getCollisionBoundingBox().equals(Entity.ZERO_AABB));
+        if (getCollisionBoundingBox().equals(Entity.ZERO_AABB)) {
+            System.out.println("Client had to do its own AABB processing, this indicates a problem server side.");
+        }
     }
 
     public void updateChunkCache() {
         BlockPos min = new BlockPos(collisionBB.minX, Math.max(collisionBB.minY, 0), collisionBB.minZ);
         BlockPos max = new BlockPos(collisionBB.maxX, Math.min(collisionBB.maxY, 255), collisionBB.maxZ);
-        surroundingWorldChunksCache = new ChunkCache(worldObj, min, max, 0);
+        surroundingWorldChunksCache = new ChunkCache(getWorldObj(), min, max, 0);
     }
 
     public void loadClaimedChunks() {
@@ -752,13 +751,13 @@ public class PhysicsObject {
         claimedChunksEntries = new PlayerChunkMapEntry[(ownedChunks.radius * 2) + 1][(ownedChunks.radius * 2) + 1];
         for (int x = ownedChunks.minX; x <= ownedChunks.maxX; x++) {
             for (int z = ownedChunks.minZ; z <= ownedChunks.maxZ; z++) {
-                Chunk chunk = worldObj.getChunkFromChunkCoords(x, z);
+                Chunk chunk = getWorldObj().getChunkFromChunkCoords(x, z);
                 if (chunk == null) {
                     System.out.println("Just a loaded a null chunk");
-                    chunk = new Chunk(worldObj, x, z);
+                    chunk = new Chunk(getWorldObj(), x, z);
                 }
                 // Do this to get it re-integrated into the world
-                if (!worldObj.isRemote) {
+                if (!getWorldObj().isRemote) {
                     injectChunkIntoWorld(chunk, x, z, false);
                 }
                 for (Entry<BlockPos, TileEntity> entry : chunk.tileEntities.entrySet()) {
@@ -770,10 +769,10 @@ public class PhysicsObject {
                 claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ] = chunk;
             }
         }
-        VKChunkCache = new VWChunkCache(worldObj, claimedChunks);
+        VKChunkCache = new VWChunkCache(getWorldObj(), claimedChunks);
         refrenceBlockPos = getRegionCenter();
         coordTransform = new CoordTransformObject(this);
-        if (!worldObj.isRemote) {
+        if (!getWorldObj().isRemote) {
             createPhysicsCalculations();
         }
         detectBlockPositions();
@@ -820,9 +819,9 @@ public class PhysicsObject {
                                             BlockPos pos = new BlockPos(chunk.x * 16 + x, index * 16 + y,
                                                     chunk.z * 16 + z);
                                             blockPositions.add(pos);
-                                            if (!worldObj.isRemote) {
+                                            if (!getWorldObj().isRemote) {
                                                 if (BlockForce.basicForces.isBlockProvidingForce(
-                                                        worldObj.getBlockState(pos), pos, worldObj)) {
+                                                        getWorldObj().getBlockState(pos), pos, getWorldObj())) {
                                                     physicsProcessor.addPotentialActiveForcePos(pos);
                                                 }
                                             }
@@ -951,7 +950,7 @@ public class PhysicsObject {
         claimedChunksInMap = compound.getBoolean("claimedChunksInMap");
         for (int x = ownedChunks.minX; x <= ownedChunks.maxX; x++) {
             for (int z = ownedChunks.minZ; z <= ownedChunks.maxZ; z++) {
-                worldObj.getChunkFromChunkCoords(x, z);
+                getWorldObj().getChunkFromChunkCoords(x, z);
             }
         }
 
@@ -1102,5 +1101,12 @@ public class PhysicsObject {
 
     public void setCollisionBoundingBox(AxisAlignedBB newCollisionBB) {
         this.collisionBB = newCollisionBB;
+    }
+
+    /**
+     * @return the worldObj
+     */
+    public World getWorldObj() {
+        return wrapper.getEntityWorld();
     }
 }

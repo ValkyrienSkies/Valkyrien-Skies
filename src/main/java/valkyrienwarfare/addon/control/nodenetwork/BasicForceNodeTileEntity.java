@@ -80,7 +80,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
         Vector outputForce = getForceOutputUnoriented(secondsToApply);
         if (isForceOutputOriented()) {
             if (updateParentShip()) {
-                getNode().getPhysicsObject().coordTransform.currentTransform.rotate(outputForce, TransformType.LOCAL_TO_GLOBAL);
+                getNode().getPhysicsObject().coordTransform.getCurrentTransform().rotate(outputForce, TransformType.LOCAL_TO_GLOBAL);
 //                RotationMatrices.doRotationOnly(getNode().getPhysicsObject().coordTransform.lToWTransform, outputForce);
             }
         }
@@ -115,7 +115,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
         PhysicsWrapperEntity parentShip = getNode().getPhysicsObject().wrapper;
         Vector engineCenter = new Vector(getPos().getX() + .5D, getPos().getY() + .5D, getPos().getZ() + .5D);
 //        RotationMatrices.applyTransform(parentShip.wrapping.coordTransform.lToWTransform, engineCenter);
-        parentShip.wrapping.coordTransform.currentTransform.transform(engineCenter, TransformType.LOCAL_TO_GLOBAL);
+        parentShip.wrapping.coordTransform.getCurrentTransform().transform(engineCenter, TransformType.LOCAL_TO_GLOBAL);
         engineCenter.subtract(parentShip.posX, parentShip.posY, parentShip.posZ);
         return engineCenter;
     }

@@ -60,7 +60,7 @@ public class EntityCannonBasic extends EntityMountingWeaponBase {
         Vector projectileSpawnPos = new Vector(0, .5, 0);
 
         if (wrapper != null) {
-            wrapper.wrapping.coordTransform.currentTransform.rotate(projectileSpawnPos, TransformType.LOCAL_TO_GLOBAL);
+            wrapper.wrapping.coordTransform.getCurrentTransform().rotate(projectileSpawnPos, TransformType.LOCAL_TO_GLOBAL);
         }
 
         projectile.posX += projectileSpawnPos.X;

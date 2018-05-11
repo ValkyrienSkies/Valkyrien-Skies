@@ -62,7 +62,7 @@ public abstract class MixinChunkPos {
         if (wrapper != null) {
             Vector entityPosInLocal = new Vector(entityIn);
 //            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, entityPosInLocal);
-            wrapper.wrapping.coordTransform.currentTransform.transform(entityPosInLocal, TransformType.GLOBAL_TO_LOCAL);
+            wrapper.wrapping.coordTransform.getCurrentTransform().transform(entityPosInLocal, TransformType.GLOBAL_TO_LOCAL);
             entityPosInLocal.subtract(d0, entityPosInLocal.Y, d1);
             return entityPosInLocal.lengthSq();
         }

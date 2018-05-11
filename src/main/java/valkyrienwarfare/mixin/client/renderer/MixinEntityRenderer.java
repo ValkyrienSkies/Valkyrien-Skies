@@ -77,7 +77,7 @@ public abstract class MixinEntityRenderer {
             Vector playerPosNew = new Vector(entity.posX, entity.posY, entity.posZ);
 //            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, playerPosNew);
 
-            wrapper.wrapping.coordTransform.currentTransform.transform(playerPosNew, TransformType.LOCAL_TO_GLOBAL);
+            wrapper.wrapping.coordTransform.getCurrentTransform().transform(playerPosNew, TransformType.LOCAL_TO_GLOBAL);
             entity.posX = entity.prevPosX = entity.lastTickPosX = playerPosNew.X;
             entity.posY = entity.prevPosY = entity.lastTickPosY = playerPosNew.Y;
             entity.posZ = entity.prevPosZ = entity.lastTickPosZ = playerPosNew.Z;
@@ -112,7 +112,7 @@ public abstract class MixinEntityRenderer {
 
 //            RotationMatrices.applyTransform(fixedOnto.wrapping.coordTransform.RlToWTransform, playerPosition);
 
-            fixedOnto.wrapping.coordTransform.renderTransform.transform(playerPosition, TransformType.LOCAL_TO_GLOBAL);
+            fixedOnto.wrapping.coordTransform.getRenderTransform().transform(playerPosition, TransformType.LOCAL_TO_GLOBAL);
             
             d0 = playerPosition.X;
             d1 = playerPosition.Y;
@@ -273,7 +273,7 @@ public abstract class MixinEntityRenderer {
         if (wrapper == null) {
             return vec.distanceTo(in);
         } else {
-            return this.mc.objectMouseOver.hitVec.distanceTo(wrapper.wrapping.coordTransform.currentTransform.transform(in, TransformType.GLOBAL_TO_LOCAL));
+            return this.mc.objectMouseOver.hitVec.distanceTo(wrapper.wrapping.coordTransform.getCurrentTransform().transform(in, TransformType.GLOBAL_TO_LOCAL));
         }
     }
 }

@@ -23,12 +23,12 @@ import valkyrienwarfare.physics.management.WorldPhysObjectManager;
  */
 public class VWThread extends Thread {
 
+    private final static long MS_PER_TICK = 50;
+    private final static long MAX_LOST_TIME = 1000;
     private final World hostWorld;
     // The ships we will be ticking physics for every tick, and sending those
     // updates to players.
     private final List<PhysicsWrapperEntity> ships;
-    private final static long MS_PER_TICK = 50;
-    private final static long MAX_LOST_TIME = 1000;
     private int positionTickID;
     // Used to give each VW thread a unique name
     private static int threadID = 0;
@@ -40,7 +40,7 @@ public class VWThread extends Thread {
         this.hostWorld = host;
         this.ships = new ArrayList<PhysicsWrapperEntity>();
         this.positionTickID = 0;
-        threadRunning = true;
+        this.threadRunning = true;
     }
 
     @Override
@@ -184,6 +184,9 @@ public class VWThread extends Thread {
         positionTickID++;
     }
 
+    /**
+     * Ends this physics thread; should only be called after a world is unloaded.
+     */
     public void kill() {
         System.out.println("VW Physics Thread " + threadID + " Killed");
         threadRunning = false;

@@ -46,7 +46,7 @@ public class RealMethods implements DummyMethods {
     @Override
     public double[] getShipTransformMatrix(Entity shipEnt) {
         PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity) shipEnt;
-        return wrapper.wrapping.coordTransform.currentTransform.getInternalMatrix(TransformType.LOCAL_TO_GLOBAL);
+        return wrapper.wrapping.coordTransform.getCurrentTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL);
     }
 
     // Note, do not call this from World coordinates; first subtract the world

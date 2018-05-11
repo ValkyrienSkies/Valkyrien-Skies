@@ -121,7 +121,7 @@ public abstract class ImplTileEntityPilotable extends BasicNodeTileEntity implem
         Vector pos = new Vector(getPos().getX(), getPos().getY(), getPos().getZ());
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(getWorld(), getPos());
         if (wrapper != null) {
-            wrapper.wrapping.coordTransform.currentTransform.transform(pos, TransformType.LOCAL_TO_GLOBAL);
+            wrapper.wrapping.coordTransform.getCurrentTransform().transform(pos, TransformType.LOCAL_TO_GLOBAL);
 //            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, pos);
         }
         serverWorld.mcServer.getPlayerList().sendToAllNearExcept(null, pos.X, pos.Y, pos.Z, 128D, getWorld().provider.getDimension(), spacketupdatetileentity);

@@ -90,7 +90,7 @@ public abstract class MixinWorld implements IWorldVW {
         if (wrapper != null) {
             Vector newPosVec = new Vector(x, y, z);
 //            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, newPosVec);
-            wrapper.wrapping.coordTransform.currentTransform.transform(newPosVec, TransformType.LOCAL_TO_GLOBAL);
+            wrapper.wrapping.coordTransform.getCurrentTransform().transform(newPosVec, TransformType.LOCAL_TO_GLOBAL);
             x = newPosVec.X;
             y = newPosVec.Y;
             z = newPosVec.Z;
@@ -207,7 +207,7 @@ public abstract class MixinWorld implements IWorldVW {
         BlockPos pos = new BlockPos((aabb.minX + aabb.maxX) / 2D, (aabb.minY + aabb.maxY) / 2D, (aabb.minZ + aabb.maxZ) / 2D);
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(World.class.cast(this), pos);
         if (wrapper != null) {
-            Polygon poly = new Polygon(aabb, wrapper.wrapping.coordTransform.currentTransform, TransformType.LOCAL_TO_GLOBAL);
+            Polygon poly = new Polygon(aabb, wrapper.wrapping.coordTransform.getCurrentTransform(), TransformType.LOCAL_TO_GLOBAL);
             aabb = poly.getEnclosedAABB();//.contract(.3D);
             toReturn.addAll(this.getEntitiesWithinAABBOriginal(clazz, aabb, filter));
 
@@ -244,7 +244,7 @@ public abstract class MixinWorld implements IWorldVW {
         BlockPos pos = new BlockPos((boundingBox.minX + boundingBox.maxX) / 2D, (boundingBox.minY + boundingBox.maxY) / 2D, (boundingBox.minZ + boundingBox.maxZ) / 2D);
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(World.class.cast(this), pos);
         if (wrapper != null) {
-            Polygon poly = new Polygon(boundingBox, wrapper.wrapping.coordTransform.currentTransform, TransformType.LOCAL_TO_GLOBAL);
+            Polygon poly = new Polygon(boundingBox, wrapper.wrapping.coordTransform.getCurrentTransform(), TransformType.LOCAL_TO_GLOBAL);
             boundingBox = poly.getEnclosedAABB().shrink(.3D);
             toReturn.addAll(this.getEntitiesInAABBexcludingOriginal(entityIn, boundingBox, predicate));
 
@@ -285,7 +285,7 @@ public abstract class MixinWorld implements IWorldVW {
             PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(thisClassAsWorld, pos);
             if (wrapper != null && wrapper.wrapping != null && wrapper.wrapping.coordTransform != null && pos != null) {
 //                BlockPos realPos = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, pos);
-                BlockPos realPos = wrapper.wrapping.coordTransform.currentTransform.transform(pos, TransformType.LOCAL_TO_GLOBAL);
+                BlockPos realPos = wrapper.wrapping.coordTransform.getCurrentTransform().transform(pos, TransformType.LOCAL_TO_GLOBAL);
                 Biome toReturn = thisClassAsWorld.getBiome(realPos);
                 if (toReturn != null) {
                     callbackInfoReturnable.setReturnValue(toReturn);
@@ -402,8 +402,8 @@ public abstract class MixinWorld implements IWorldVW {
                 // ValkyrienWarfareMod.proxy.updateShipPartialTicks(wrapper);
             }
 
-            playerEyesPos = wrapper.wrapping.coordTransform.renderTransform.transform(playerEyesPos, TransformType.GLOBAL_TO_LOCAL);
-            playerReachVector = wrapper.wrapping.coordTransform.renderTransform.rotate(playerReachVector, TransformType.GLOBAL_TO_LOCAL);
+            playerEyesPos = wrapper.wrapping.coordTransform.getRenderTransform().transform(playerEyesPos, TransformType.GLOBAL_TO_LOCAL);
+            playerReachVector = wrapper.wrapping.coordTransform.getRenderTransform().rotate(playerReachVector, TransformType.GLOBAL_TO_LOCAL);
             
             Vec3d playerEyesReachAdded = playerEyesPos.addVector(playerReachVector.x * reachDistance, playerReachVector.y * reachDistance, playerReachVector.z * reachDistance);
             RayTraceResult resultInShip = thisClassAsWorld.rayTraceBlocks(playerEyesPos, playerEyesReachAdded, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
@@ -411,7 +411,7 @@ public abstract class MixinWorld implements IWorldVW {
                 double shipResultDistFromPlayer = resultInShip.hitVec.distanceTo(playerEyesPos);
                 if (shipResultDistFromPlayer < worldResultDistFromPlayer) {
                     worldResultDistFromPlayer = shipResultDistFromPlayer;
-                    resultInShip.hitVec = wrapper.wrapping.coordTransform.renderTransform.transform(resultInShip.hitVec, TransformType.LOCAL_TO_GLOBAL);
+                    resultInShip.hitVec = wrapper.wrapping.coordTransform.getRenderTransform().transform(resultInShip.hitVec, TransformType.LOCAL_TO_GLOBAL);
                     vanillaTrace = resultInShip;
                     transformedEntity = wrapper;
                 }
@@ -420,7 +420,7 @@ public abstract class MixinWorld implements IWorldVW {
 
         if (transformedEntity != null) {
             Vec3d hitVec2 = vanillaTrace.hitVec;
-            hitVec2 = transformedEntity.wrapping.coordTransform.renderTransform.transform(hitVec2, TransformType.GLOBAL_TO_LOCAL);
+            hitVec2 = transformedEntity.wrapping.coordTransform.getRenderTransform().transform(hitVec2, TransformType.GLOBAL_TO_LOCAL);
             vanillaTrace.hitVec = hitVec2;
         }
 

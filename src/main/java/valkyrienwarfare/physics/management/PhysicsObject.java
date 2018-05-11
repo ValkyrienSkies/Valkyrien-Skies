@@ -715,7 +715,7 @@ public class PhysicsObject {
         if (toUse != null) {
             Vector CMDif = toUse.centerOfRotation.getSubtraction(centerCoord);
             lastMessageTick = toUse.relativeTick;
-            coordTransform.currentTransform.rotate(CMDif, TransformType.LOCAL_TO_GLOBAL);
+            coordTransform.getCurrentTransform().rotate(CMDif, TransformType.LOCAL_TO_GLOBAL);
 //            RotationMatrices.doRotationOnly(coordTransform.lToWTransform, CMDif);
             wrapper.lastTickPosX -= CMDif.X;
             wrapper.lastTickPosY -= CMDif.Y;

@@ -61,7 +61,7 @@ public class EventsClient {
 
         if (wrapper != null) {
             Vector newSoundLocation = new Vector(sound.getXPosF(), sound.getYPosF(), sound.getZPosF());
-            wrapper.wrapping.coordTransform.currentTransform.transform(newSoundLocation, TransformType.LOCAL_TO_GLOBAL);
+            wrapper.wrapping.coordTransform.getCurrentTransform().transform(newSoundLocation, TransformType.LOCAL_TO_GLOBAL);
 
             SoundFixWrapper soundFix = new SoundFixWrapper(sound, wrapper, newSoundLocation);
 

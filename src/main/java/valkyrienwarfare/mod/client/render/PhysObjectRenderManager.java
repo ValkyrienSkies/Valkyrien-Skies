@@ -206,7 +206,7 @@ public class PhysObjectRenderManager {
         double moddedYaw = Math.toDegrees(radians[1]);
         double moddedRoll = Math.toDegrees(radians[2]);
 
-        parent.coordTransform.updateRenderMatrices(moddedX, moddedY, moddedZ, moddedPitch, moddedYaw, moddedRoll);
+        parent.coordTransform.updateRenderTransform(moddedX, moddedY, moddedZ, moddedPitch, moddedYaw, moddedRoll);
 
         if (offsetPos != null) {
             double offsetX = offsetPos.getX() - centerOfRotation.X;
@@ -223,8 +223,8 @@ public class PhysObjectRenderManager {
     }
 
     public Quaternion getSmoothRotationQuat(double partialTick) {
-        Quaternion oneTickBefore = parent.coordTransform.prevTransform.createRotationQuaternion(TransformType.LOCAL_TO_GLOBAL);
-        Quaternion nextQuat = parent.coordTransform.currentTransform.createRotationQuaternion(TransformType.LOCAL_TO_GLOBAL);
+        Quaternion oneTickBefore = parent.coordTransform.getPrevTransform().createRotationQuaternion(TransformType.LOCAL_TO_GLOBAL);
+        Quaternion nextQuat = parent.coordTransform.getCurrentTransform().createRotationQuaternion(TransformType.LOCAL_TO_GLOBAL);
         return Quaternion.getBetweenQuat(oneTickBefore, nextQuat, partialTick);
     }
 

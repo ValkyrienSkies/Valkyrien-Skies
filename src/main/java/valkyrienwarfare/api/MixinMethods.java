@@ -51,7 +51,7 @@ public class MixinMethods {
 
             Vector endPos = new Vector(newX, newY, newZ);
 //            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, endPos);
-            wrapper.wrapping.coordTransform.currentTransform.transform(endPos, TransformType.GLOBAL_TO_LOCAL);
+            wrapper.wrapping.coordTransform.getCurrentTransform().transform(endPos, TransformType.GLOBAL_TO_LOCAL);
             dx = endPos.X - this_.posX;
             dy = endPos.Y - this_.posY;
             dz = endPos.Z - this_.posZ;

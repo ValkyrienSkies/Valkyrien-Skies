@@ -114,6 +114,6 @@ public class ClientProxy extends CommonProxy {
         double moddedYaw = Math.toDegrees(radians[1]);
         double moddedRoll = Math.toDegrees(radians[2]);
 
-        entity.wrapping.coordTransform.updateRenderMatrices(moddedX, moddedY, moddedZ, moddedPitch, moddedYaw, moddedRoll);
+        entity.wrapping.coordTransform.updateRenderTransform(moddedX, moddedY, moddedZ, moddedPitch, moddedYaw, moddedRoll);
     }
 }

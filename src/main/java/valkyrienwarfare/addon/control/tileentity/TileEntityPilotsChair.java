@@ -104,8 +104,8 @@ public class TileEntityPilotsChair extends ImplTileEntityPilotable {
             idealLinearVelocity.subtract(playerDirection);
         }
 
-        controlledShip.coordTransform.currentTransform.rotate(idealLinearVelocity, TransformType.LOCAL_TO_GLOBAL);
-        controlledShip.coordTransform.currentTransform.rotate(shipUp, TransformType.LOCAL_TO_GLOBAL);
+        controlledShip.coordTransform.getCurrentTransform().rotate(idealLinearVelocity, TransformType.LOCAL_TO_GLOBAL);
+        controlledShip.coordTransform.getCurrentTransform().rotate(shipUp, TransformType.LOCAL_TO_GLOBAL);
 //        RotationMatrices.doRotationOnly(controlledShip.coordTransform.lToWTransform, idealLinearVelocity);
 //        RotationMatrices.doRotationOnly(controlledShip.coordTransform.lToWTransform, shipUp);
 

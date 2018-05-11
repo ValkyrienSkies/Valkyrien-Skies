@@ -53,8 +53,8 @@ public class ShipPulseImpulseControlSystem {
         double totalPotentialThrust = getMaxThrustForAllThrusters();
         double currentThrust = getTotalThrustForAllThrusters();
 
-        double[] rotationAndTranslationMatrix = calculations.parent.coordTransform.currentTransform.getInternalMatrix(TransformType.LOCAL_TO_GLOBAL);
-        double[] invRotationAndTranslationMatrix = calculations.parent.coordTransform.currentTransform.getInternalMatrix(TransformType.GLOBAL_TO_LOCAL);
+        double[] rotationAndTranslationMatrix = calculations.parent.coordTransform.getCurrentTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL);
+        double[] invRotationAndTranslationMatrix = calculations.parent.coordTransform.getCurrentTransform().getInternalMatrix(TransformType.GLOBAL_TO_LOCAL);
         double[] invMOIMatrix = calculations.invFramedMOI;
 
         Vector posInWorld = new Vector(calculations.parent.wrapper.posX, calculations.parent.wrapper.posY, calculations.parent.wrapper.posZ);

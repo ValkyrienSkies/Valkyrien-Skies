@@ -261,7 +261,7 @@ public class WorldPhysicsCollider {
         // List<AxisAlignedBB> colBB = worldObj.getCollisionBoxes(inLocalBB);
         // inLocalBB = colBB.get(0);
 
-        Polygon shipInWorld = new Polygon(inLocalBB, parent.coordTransform.currentTransform, TransformType.LOCAL_TO_GLOBAL);
+        Polygon shipInWorld = new Polygon(inLocalBB, parent.coordTransform.getCurrentTransform(), TransformType.LOCAL_TO_GLOBAL);
         Polygon worldPoly = new Polygon(inGlobalBB);
         PhysPolygonCollider collider = new PhysPolygonCollider(shipInWorld, worldPoly, parent.coordTransform.normals);
         if (!collider.seperated) {

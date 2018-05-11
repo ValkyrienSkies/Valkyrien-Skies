@@ -27,6 +27,10 @@ public class ShipTransform {
         this.localToGlobal = localToGlobal;
         this.globalToLocal = RotationMatrices.inverse(localToGlobal);
     }
+    
+    public ShipTransform() {
+        this(RotationMatrices.getDoubleIdentity());
+    }
 
     public void transform(Vector vector, TransformType transformType) {
         if (transformType == TransformType.LOCAL_TO_GLOBAL) {

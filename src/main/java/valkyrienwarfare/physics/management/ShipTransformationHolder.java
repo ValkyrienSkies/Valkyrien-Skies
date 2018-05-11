@@ -38,50 +38,58 @@ import valkyrienwarfare.physics.data.TransformType;
  */
 public class ShipTransformationHolder {
 
-    public PhysicsObject parent;
-//    public double[] lToWTransform = RotationMatrices.getDoubleIdentity();
-//    public double[] wToLTransform = RotationMatrices.getDoubleIdentity();
-    public ShipTransform currentTransform = new ShipTransform(RotationMatrices.getDoubleIdentity());
-    public ShipTransform renderTransform = new ShipTransform(RotationMatrices.getDoubleIdentity());
-    public ShipTransform prevTransform = new ShipTransform(RotationMatrices.getDoubleIdentity());
+    private static final ShipTransform ZERO_TRANSFORM = new ShipTransform();
+    private PhysicsObject parent;
+    private ShipTransform currentTransform;
+    private ShipTransform renderTransform;
+    private ShipTransform prevTransform;
     public Vector[] normals;
     public final ShipTransformationBuffer serverBuffer;
 
-    public ShipTransformationHolder(PhysicsObject object) {
-        this.parent = object;
+    public ShipTransformationHolder(PhysicsObject parent) {
+        this.parent = parent;
+        this.currentTransform = ZERO_TRANSFORM;
+        this.renderTransform = ZERO_TRANSFORM;
+        this.prevTransform = ZERO_TRANSFORM;
         this.updateAllTransforms(true);
-        this.serverBuffer = new ShipTransformationBuffer();
         this.normals = Vector.generateAxisAlignedNorms();
+        this.serverBuffer = new ShipTransformationBuffer();
     }
 
-    public void updateMatricesOnly() {
+    /**
+     * Polls position and rotation data from the parent ship, and creates a new
+     * current transform made from this data.
+     */
+    public void updateCurrentTransform() {
         double[] lToWTransform = RotationMatrices.getTranslationMatrix(parent.wrapper.posX, parent.wrapper.posY,
                 parent.wrapper.posZ);
-
         lToWTransform = RotationMatrices.rotateAndTranslate(lToWTransform, parent.wrapper.pitch, parent.wrapper.yaw,
                 parent.wrapper.roll, parent.centerCoord);
-
-        currentTransform = new ShipTransform(lToWTransform);
+        setCurrentTransform(new ShipTransform(lToWTransform));
     }
 
-    public void updateRenderMatrices(double x, double y, double z, double pitch, double yaw, double roll) {
+    public void updateRenderTransform(double x, double y, double z, double pitch, double yaw, double roll) {
         double[] RlToWTransform = RotationMatrices.getTranslationMatrix(x, y, z);
         RlToWTransform = RotationMatrices.rotateAndTranslate(RlToWTransform, pitch, yaw, roll, parent.centerCoord);
-        renderTransform = new ShipTransform(RlToWTransform);
+        setRenderTransform(new ShipTransform(RlToWTransform));
     }
 
+    /**
+     * Sets the previous transform to the current transform.
+     */
     public void updatePrevTransform() {
         // Transformation objects are immutable, so this is 100% safe!
-        prevTransform = currentTransform;
+        setPrevTransform(getCurrentTransform());
     }
 
     /**
      * Updates all the transformations, only updates the AABB if passed true.
+     * 
      * @param updateParentAABB
      */
     public void updateAllTransforms(boolean updateParentAABB) {
         updatePosRelativeToWorldBorder();
-        updateMatricesOnly();
+        updateCurrentTransform();
         if (updateParentAABB) {
             updateParentAABB();
         }
@@ -120,23 +128,18 @@ public class ShipTransformationHolder {
         PhysWrapperPositionMessage posMessage = new PhysWrapperPositionMessage(parent.wrapper, positionTickID);
 
         /*
-        List<Entity> entityList = new ArrayList<Entity>();
-        for (Entity entity : parent.worldObj.loadedEntityList) {
-            if (entity instanceof IDraggable) {
-                IDraggable draggable = (IDraggable) entity;
-                if (draggable.getWorldBelowFeet() == parent.wrapper) {
-                    entityList.add(entity);
-                }
-            }
-        }
-
-        EntityRelativePositionMessage otherPositionMessage = new EntityRelativePositionMessage(parent.wrapper,
-                entityList);
+         * List<Entity> entityList = new ArrayList<Entity>(); for (Entity entity :
+         * parent.worldObj.loadedEntityList) { if (entity instanceof IDraggable) {
+         * IDraggable draggable = (IDraggable) entity; if (draggable.getWorldBelowFeet()
+         * == parent.wrapper) { entityList.add(entity); } } }
+         * 
+         * EntityRelativePositionMessage otherPositionMessage = new
+         * EntityRelativePositionMessage(parent.wrapper, entityList);
          */
-        
+
         for (EntityPlayerMP player : parent.watchingPlayers) {
             ValkyrienWarfareMod.physWrapperNetwork.sendTo(posMessage, player);
-//            ValkyrienWarfareMod.physWrapperNetwork.sendTo(otherPositionMessage, player);
+            // ValkyrienWarfareMod.physWrapperNetwork.sendTo(otherPositionMessage, player);
         }
     }
 
@@ -175,7 +178,7 @@ public class ShipTransformationHolder {
     public Vector[] generateRotationNormals() {
         Vector[] norms = Vector.generateAxisAlignedNorms();
         for (int i = 0; i < 3; i++) {
-            currentTransform.rotate(norms[i], TransformType.LOCAL_TO_GLOBAL);
+            getCurrentTransform().rotate(norms[i], TransformType.LOCAL_TO_GLOBAL);
         }
         return norms;
     }
@@ -216,7 +219,8 @@ public class ShipTransformationHolder {
             // If its a small ship use a sequential stream.
             parentPositionsStream = parent.blockPositions.stream();
         } else {
-            // If its a big ship then we destroy the cpu consumption and go fully multithreaded!
+            // If its a big ship then we destroy the cpu consumption and go fully
+            // multithreaded!
             parentPositionsStream = parent.blockPositions.parallelStream();
         }
         parentPositionsStream.forEach(convexHullConsumer);
@@ -224,16 +228,58 @@ public class ShipTransformationHolder {
     }
 
     public void fromGlobalToLocal(Vector inGlobal) {
-        currentTransform.transform(inGlobal, TransformType.GLOBAL_TO_LOCAL);
+        getCurrentTransform().transform(inGlobal, TransformType.GLOBAL_TO_LOCAL);
     }
 
     public void fromLocalToGlobal(Vector inLocal) {
-        currentTransform.transform(inLocal, TransformType.LOCAL_TO_GLOBAL);
+        getCurrentTransform().transform(inLocal, TransformType.LOCAL_TO_GLOBAL);
+    }
+
+    /**
+     * @return the currentTransform
+     */
+    public ShipTransform getCurrentTransform() {
+        return currentTransform;
+    }
+
+    /**
+     * @param currentTransform the currentTransform to set
+     */
+    private void setCurrentTransform(ShipTransform currentTransform) {
+        this.currentTransform = currentTransform;
+    }
+
+    /**
+     * @return the renderTransform
+     */
+    public ShipTransform getRenderTransform() {
+        return renderTransform;
+    }
+
+    /**
+     * @param renderTransform the renderTransform to set
+     */
+    private void setRenderTransform(ShipTransform renderTransform) {
+        this.renderTransform = renderTransform;
+    }
+
+    /**
+     * @return the prevTransform
+     */
+    public ShipTransform getPrevTransform() {
+        return prevTransform;
+    }
+
+    /**
+     * @param prevTransform the prevTransform to set
+     */
+    private void setPrevTransform(ShipTransform prevTransform) {
+        this.prevTransform = prevTransform;
     }
 
     private class CollisionBBConsumer implements Consumer<BlockPos> {
         private static final double AABB_EXPANSION = 1.6D;
-        private final double[] M = currentTransform.getInternalMatrix(TransformType.LOCAL_TO_GLOBAL);
+        private final double[] M = getCurrentTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL);
         double minX, minY, minZ, maxX, maxY, maxZ;
 
         CollisionBBConsumer() {
@@ -244,17 +290,17 @@ public class ShipTransformationHolder {
             maxY = parent.wrapper.posY;
             maxZ = parent.wrapper.posZ;
         }
-        
+
         @Override
         public void accept(BlockPos pos) {
             double x = pos.getX() + .5D;
             double y = pos.getY() + .5D;
             double z = pos.getZ() + .5D;
-            
+
             double newX = x * M[0] + y * M[1] + z * M[2] + M[3];
             double newY = x * M[4] + y * M[5] + z * M[6] + M[7];
             double newZ = x * M[8] + y * M[9] + z * M[10] + M[11];
-            
+
             minX = Math.min(newX, minX);
             maxX = Math.max(newX, maxX);
             minY = Math.min(newY, minY);
@@ -262,10 +308,11 @@ public class ShipTransformationHolder {
             minZ = Math.min(newZ, minZ);
             maxZ = Math.max(newZ, maxZ);
         }
-        
+
         AxisAlignedBB createWrappingAABB() {
-            return new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ).expand(AABB_EXPANSION, AABB_EXPANSION, AABB_EXPANSION);
+            return new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ).expand(AABB_EXPANSION, AABB_EXPANSION,
+                    AABB_EXPANSION);
         }
-    
+
     }
 }

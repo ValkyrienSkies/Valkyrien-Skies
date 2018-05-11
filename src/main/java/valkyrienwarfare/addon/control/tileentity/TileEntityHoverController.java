@@ -74,7 +74,7 @@ public class TileEntityHoverController extends TileEntity {
 
         PhysicsCalculations calculations = physObj.physicsProcessor;
 
-        double[] rotationAndTranslationMatrix = physObj.coordTransform.currentTransform.getInternalMatrix(TransformType.LOCAL_TO_GLOBAL);
+        double[] rotationAndTranslationMatrix = physObj.coordTransform.getCurrentTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL);
         Vector angularVelocity = new Vector(calculations.angularVelocity);
         Vector linearMomentum = new Vector(calculations.linearMomentum);
 
@@ -143,8 +143,8 @@ public class TileEntityHoverController extends TileEntity {
 
         double idealYDif = unOrientedPosDif.dot(normalVector);
 
-        physObj.coordTransform.currentTransform.rotate(controllerPos, TransformType.LOCAL_TO_GLOBAL);
-        physObj.coordTransform.currentTransform.rotate(enginePosVec, TransformType.LOCAL_TO_GLOBAL);
+        physObj.coordTransform.getCurrentTransform().rotate(controllerPos, TransformType.LOCAL_TO_GLOBAL);
+        physObj.coordTransform.getCurrentTransform().rotate(enginePosVec, TransformType.LOCAL_TO_GLOBAL);
 
         // RotationMatrices.doRotationOnly(physObj.coordTransform.lToWTransform,
         // controllerPos);

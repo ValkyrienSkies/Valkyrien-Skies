@@ -27,7 +27,7 @@ public abstract class MixinCPacketPlayer$PositionRotation extends CPacketPlayer 
             if(isPlayerStandingOnShip()) {
                 PhysicsWrapperEntity worldBelow = getWorldBelowFeet();
                 Vector positionInLocal = new Vector(x, y, z); // , worldBelow.wrapping.coordTransform.wToLTransform);
-                worldBelow.wrapping.coordTransform.currentTransform.transform(positionInLocal, TransformType.GLOBAL_TO_LOCAL);
+                worldBelow.wrapping.coordTransform.getCurrentTransform().transform(positionInLocal, TransformType.GLOBAL_TO_LOCAL);
                 this.setLocalCoords(positionInLocal.X, positionInLocal.Y, positionInLocal.Z);
                 this.setWorldBelowFeetID(worldBelow.getEntityId());
             }

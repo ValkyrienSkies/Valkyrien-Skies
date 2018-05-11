@@ -40,7 +40,7 @@ public class ShipFluidProcessor {
     public void updateSubmergedPositionsCalculations(float maxTime) {
         int yOceanLevel = getWaterLevelAtShip();
         Vector shipUpNormal = new Vector(0D, 1D, 0D);
-        parent.coordTransform.currentTransform.rotate(shipUpNormal, TransformType.LOCAL_TO_GLOBAL);
+        parent.coordTransform.getCurrentTransform().rotate(shipUpNormal, TransformType.LOCAL_TO_GLOBAL);
 //        RotationMatrices.doRotationOnly(parent.coordTransform.lToWTransform, shipUpNormal);
         
         int maxYToCheck = yOceanLevel;

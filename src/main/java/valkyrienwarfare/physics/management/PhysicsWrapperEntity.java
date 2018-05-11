@@ -123,7 +123,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
                     newEntityPosition.Z + f);
             wrapping.coordTransform.fromLocalToGlobal(newEntityPosition);
             passenger.setPosition(newEntityPosition.X, newEntityPosition.Y, newEntityPosition.Z);
-            Polygon entityBBPoly = new Polygon(inLocalAABB, wrapping.coordTransform.currentTransform, TransformType.LOCAL_TO_GLOBAL);
+            Polygon entityBBPoly = new Polygon(inLocalAABB, wrapping.coordTransform.getCurrentTransform(), TransformType.LOCAL_TO_GLOBAL);
 
             AxisAlignedBB newEntityBB = entityBBPoly.getEnclosedAABB();
             passenger.setEntityBoundingBox(newEntityBB);

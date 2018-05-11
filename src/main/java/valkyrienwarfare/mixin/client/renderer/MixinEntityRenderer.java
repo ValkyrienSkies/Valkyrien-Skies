@@ -16,6 +16,13 @@
 
 package valkyrienwarfare.mixin.client.renderer;
 
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Redirect;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -29,18 +36,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.piloting.IShipPilot;
 import valkyrienwarfare.api.MixinMethods;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.math.Quaternion;
+import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 //import valkyrienwarfare.api.MixinMethods;
@@ -61,13 +63,6 @@ public abstract class MixinEntityRenderer {
     @Shadow
     public Entity pointedEntity;
 
-    //TODO: refactor to real mixins
-
-    /**
-     * aa
-     *
-     * @author partialTicks
-     */
     @Overwrite
     public void orientCamera(float partialTicks) {
         Entity entity = this.mc.getRenderViewEntity();
@@ -93,9 +88,9 @@ public abstract class MixinEntityRenderer {
             eyeVector.Y += .7D;
         }
 
-        double d0 = entity.prevPosX + (entity.posX - entity.prevPosX) * (double) partialTicks;
-        double d1 = entity.prevPosY + (entity.posY - entity.prevPosY) * (double) partialTicks;
-        double d2 = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * (double) partialTicks;
+        double d0 = entity.prevPosX + (entity.posX - entity.prevPosX) * partialTicks;
+        double d1 = entity.prevPosY + (entity.posY - entity.prevPosY) * partialTicks;
+        double d2 = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * partialTicks;
 
         PhysicsWrapperEntity fixedOnto = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(entity);
         //Probably overkill, but this should 100% fix the crash in issue #78
@@ -114,8 +109,10 @@ public abstract class MixinEntityRenderer {
 
             Vector playerPosition = new Vector(fixedOnto.wrapping.getLocalPositionForEntity(entity));
 
-            RotationMatrices.applyTransform(fixedOnto.wrapping.coordTransform.RlToWTransform, playerPosition);
+//            RotationMatrices.applyTransform(fixedOnto.wrapping.coordTransform.RlToWTransform, playerPosition);
 
+            fixedOnto.wrapping.coordTransform.renderTransform.transform(playerPosition, TransformType.LOCAL_TO_GLOBAL);
+            
             d0 = playerPosition.X;
             d1 = playerPosition.Y;
             d2 = playerPosition.Z;
@@ -149,7 +146,7 @@ public abstract class MixinEntityRenderer {
                     float angleYaw = 0;
 
                     if (block != null && block.isBed(state, entity.world, bedPos, entity)) {
-                        angleYaw = (float) (block.getBedDirection(state, entity.world, bedPos).getHorizontalIndex() * 90);
+                        angleYaw = block.getBedDirection(state, entity.world, bedPos).getHorizontalIndex() * 90;
                         angleYaw += 180;
                     }
 
@@ -168,7 +165,7 @@ public abstract class MixinEntityRenderer {
 
             }
         } else if (this.mc.gameSettings.thirdPersonView > 0) {
-            double d3 = (double) (this.thirdPersonDistancePrev + (4.0F - this.thirdPersonDistancePrev) * partialTicks);
+            double d3 = this.thirdPersonDistancePrev + (4.0F - this.thirdPersonDistancePrev) * partialTicks;
 
             IShipPilot shipPilot = IShipPilot.class.cast(Minecraft.getMinecraft().player);
 
@@ -187,21 +184,21 @@ public abstract class MixinEntityRenderer {
                     f2 += 180.0F;
                 }
 
-                double d4 = (double) (-MathHelper.sin(f1 * 0.017453292F) * MathHelper.cos(f2 * 0.017453292F)) * d3;
-                double d5 = (double) (MathHelper.cos(f1 * 0.017453292F) * MathHelper.cos(f2 * 0.017453292F)) * d3;
-                double d6 = (double) (-MathHelper.sin(f2 * 0.017453292F)) * d3;
+                double d4 = -MathHelper.sin(f1 * 0.017453292F) * MathHelper.cos(f2 * 0.017453292F) * d3;
+                double d5 = MathHelper.cos(f1 * 0.017453292F) * MathHelper.cos(f2 * 0.017453292F) * d3;
+                double d6 = (-MathHelper.sin(f2 * 0.017453292F)) * d3;
 
                 for (int i = 0; i < 8; ++i) {
-                    float f3 = (float) ((i & 1) * 2 - 1);
-                    float f4 = (float) ((i >> 1 & 1) * 2 - 1);
-                    float f5 = (float) ((i >> 2 & 1) * 2 - 1);
+                    float f3 = (i & 1) * 2 - 1;
+                    float f4 = (i >> 1 & 1) * 2 - 1;
+                    float f5 = (i >> 2 & 1) * 2 - 1;
                     f3 = f3 * 0.1F;
                     f4 = f4 * 0.1F;
                     f5 = f5 * 0.1F;
 
                     IShipPilot pilot = IShipPilot.class.cast(Minecraft.getMinecraft().player);
 
-                    RayTraceResult raytraceresult = MixinMethods.rayTraceBlocksIgnoreShip(Minecraft.getMinecraft().world, new Vec3d(d0 + (double) f3, d1 + (double) f4, d2 + (double) f5), new Vec3d(d0 - d4 + (double) f3 + (double) f5, d1 - d6 + (double) f4, d2 - d5 + (double) f5), false, false, false, pilot.getPilotedShip());
+                    RayTraceResult raytraceresult = MixinMethods.rayTraceBlocksIgnoreShip(Minecraft.getMinecraft().world, new Vec3d(d0 + f3, d1 + f4, d2 + f5), new Vec3d(d0 - d4 + f3 + f5, d1 - d6 + f4, d2 - d5 + f5), false, false, false, pilot.getPilotedShip());
 //                    renderer.mc.theWorld.rayTraceBlocks(new Vec3d(d0 + (double)f3, d1 + (double)f4, d2 + (double)f5), new Vec3d(d0 - d4 + (double)f3 + (double)f5, d1 - d6 + (double)f4, d2 - d5 + (double)f5));
 
                     if (raytraceresult != null) {
@@ -259,9 +256,9 @@ public abstract class MixinEntityRenderer {
 
 
         GlStateManager.translate(-eyeVector.X, -eyeVector.Y, -eyeVector.Z);
-        d0 = entity.prevPosX + (entity.posX - entity.prevPosX) * (double) partialTicks + eyeVector.X;
-        d1 = entity.prevPosY + (entity.posY - entity.prevPosY) * (double) partialTicks + eyeVector.Y;
-        d2 = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * (double) partialTicks + eyeVector.Z;
+        d0 = entity.prevPosX + (entity.posX - entity.prevPosX) * partialTicks + eyeVector.X;
+        d1 = entity.prevPosY + (entity.posY - entity.prevPosY) * partialTicks + eyeVector.Y;
+        d2 = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * partialTicks + eyeVector.Z;
         this.cloudFog = this.mc.renderGlobal.hasCloudFog(d0, d1, d2, partialTicks);
     }
 

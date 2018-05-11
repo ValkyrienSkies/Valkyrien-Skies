@@ -14,6 +14,13 @@ import valkyrienwarfare.physics.collision.optimization.ShipCollisionTask;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.physics.management.WorldPhysObjectManager;
 
+/**
+ * Handles all the physics processing for a world separate from the game tick.
+ * Currently filled with tons of synchronization issues.
+ * 
+ * @author thebest108
+ *
+ */
 public class VWThread extends Thread {
 
     private final World hostWorld;
@@ -161,7 +168,7 @@ public class VWThread extends Thread {
             if (!wrapper.firstUpdate) {
                 try {
                     wrapper.wrapping.physicsProcessor.rawPhysTickPostCol();
-                } catch(Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             } else {
@@ -178,7 +185,7 @@ public class VWThread extends Thread {
     }
 
     public void kill() {
-        System.out.println("VW Physics Thread Killed");
+        System.out.println("VW Physics Thread " + threadID + " Killed");
         threadRunning = false;
         stop();
     }

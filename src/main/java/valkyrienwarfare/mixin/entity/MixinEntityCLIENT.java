@@ -27,10 +27,11 @@ import net.minecraft.util.math.Vec3d;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 @Mixin(Entity.class)
-public abstract class MixinEntityCLIENT {
+public abstract class MixinEntityClient {
     @Shadow
     public double posX;
 
@@ -51,8 +52,7 @@ public abstract class MixinEntityCLIENT {
 
         if (wrapper != null) {
             Vector playerPosition = new Vector(wrapper.wrapping.getLocalPositionForEntity(Entity.class.cast(this)));
-
-            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.RlToWTransform, playerPosition);
+            wrapper.wrapping.coordTransform.renderTransform.transform(playerPosition, TransformType.LOCAL_TO_GLOBAL);
 
             Vector playerEyes = new Vector(0, this.getEyeHeight(), 0);
             //Remove the original position added for the player's eyes

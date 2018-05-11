@@ -29,9 +29,9 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.mod.physmanagement.interaction.IDraggable;
+import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 @Mixin(Entity.class)
@@ -151,9 +151,7 @@ public abstract class MixinEntity implements IDraggable {
 
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(Entity.class.cast(this));
         if (wrapper != null) {
-            Vector newOutput = new Vector(original);
-            RotationMatrices.doRotationOnly(wrapper.wrapping.coordTransform.RlToWTransform, newOutput);
-            return newOutput.toVec3d();
+            return wrapper.wrapping.coordTransform.renderTransform.rotate(original, TransformType.LOCAL_TO_GLOBAL);
         } else {
             return original;
         }
@@ -176,7 +174,7 @@ public abstract class MixinEntity implements IDraggable {
 
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(Entity.class.cast(this));
         if (wrapper != null) {
-            return RotationMatrices.doRotationOnly(wrapper.wrapping.coordTransform.RlToWTransform, vanilla);
+            return wrapper.wrapping.coordTransform.renderTransform.rotate(vanilla, TransformType.LOCAL_TO_GLOBAL);
         }
 
         return vanilla;

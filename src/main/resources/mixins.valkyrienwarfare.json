@@ -30,9 +30,9 @@
   "client": [
     "client.renderer.tileentity.MixinTileEntityRendererDispatcher",
     "client.renderer.entity.MixinRenderManager",
-    "entity.MixinEntityCLIENT",
+    "entity.MixinEntityClient",
     "client.renderer.MixinEntityRenderer",
-    "world.MixinWorldCLIENT",
+    "world.MixinWorldClient",
     "client.particle.MixinParticleManager",
     "client.renderer.MixinRenderGlobal",
     "client.multiplayer.MixinWorldClient",

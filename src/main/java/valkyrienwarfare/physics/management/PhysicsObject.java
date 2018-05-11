@@ -77,7 +77,7 @@ import valkyrienwarfare.mod.schematics.SchematicReader.Schematic;
 import valkyrienwarfare.physics.calculations.PhysicsCalculations;
 import valkyrienwarfare.physics.calculations.PhysicsCalculationsManualControl;
 import valkyrienwarfare.physics.data.BlockForce;
-import valkyrienwarfare.physics.data.ShipTransformData;
+import valkyrienwarfare.physics.data.ShipTransformationPacketHolder;
 import valkyrienwarfare.util.NBTUtils;
 
 public class PhysicsObject {
@@ -90,7 +90,7 @@ public class PhysicsObject {
     // blockpos inside the ship space.
     public BlockPos refrenceBlockPos;
     public Vector centerCoord;
-    public CoordTransformObject coordTransform;
+    public ShipTransformationHolder coordTransform;
     public final PhysObjectRenderManager renderer;
     public PhysicsCalculations physicsProcessor;
     public Set<BlockPos> blockPositions;
@@ -317,7 +317,7 @@ public class PhysicsObject {
             }
         }
 
-        coordTransform = new CoordTransformObject(this);
+        coordTransform = new ShipTransformationHolder(this);
         physicsProcessor.processInitialPhysicsData();
         physicsProcessor.updateParentCenterOfMass();
 
@@ -531,7 +531,7 @@ public class PhysicsObject {
             }
         }
 
-        coordTransform = new CoordTransformObject(this);
+        coordTransform = new ShipTransformationHolder(this);
         physicsProcessor.processInitialPhysicsData();
         physicsProcessor.updateParentCenterOfMass();
 
@@ -710,7 +710,7 @@ public class PhysicsObject {
         wrapper.lastTickPosY = wrapper.posY;
         wrapper.lastTickPosZ = wrapper.posZ;
 
-        ShipTransformData toUse = coordTransform.serverBuffer.getDataForTick(lastMessageTick);
+        ShipTransformationPacketHolder toUse = coordTransform.serverBuffer.getDataForTick(lastMessageTick);
 
         if (toUse != null) {
             Vector CMDif = toUse.centerOfRotation.getSubtraction(centerCoord);
@@ -722,7 +722,7 @@ public class PhysicsObject {
             toUse.applyToPhysObject(this);
         }
 
-        coordTransform.setPrevMatrices();
+        coordTransform.updatePrevTransform();
         coordTransform.updateAllTransforms(getCollisionBoundingBox().equals(Entity.ZERO_AABB));
         if (getCollisionBoundingBox().equals(Entity.ZERO_AABB)) {
             System.out.println("Client had to do its own AABB processing, this indicates a problem server side.");
@@ -764,7 +764,7 @@ public class PhysicsObject {
         }
         VKChunkCache = new VWChunkCache(getWorldObj(), claimedChunks);
         refrenceBlockPos = getRegionCenter();
-        coordTransform = new CoordTransformObject(this);
+        coordTransform = new ShipTransformationHolder(this);
         if (!getWorldObj().isRemote) {
             createPhysicsCalculations();
         }

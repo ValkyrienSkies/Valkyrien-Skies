@@ -21,7 +21,7 @@ import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.mod.network.PhysWrapperPositionMessage;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
-public class ShipTransformData {
+public class ShipTransformationPacketHolder {
 
     public final int relativeTick;
     public final double posX, posY, posZ;
@@ -29,7 +29,7 @@ public class ShipTransformData {
     public final Vector centerOfRotation;
     private AxisAlignedBB shipBB;
 
-    public ShipTransformData(PhysWrapperPositionMessage wrapperMessage) {
+    public ShipTransformationPacketHolder(PhysWrapperPositionMessage wrapperMessage) {
         posX = wrapperMessage.posX;
         posY = wrapperMessage.posY;
         posZ = wrapperMessage.posZ;
@@ -44,7 +44,7 @@ public class ShipTransformData {
         shipBB = wrapperMessage.shipBB;
     }
     
-    public ShipTransformData(ShipTransformData before, ShipTransformData after) {
+    public ShipTransformationPacketHolder(ShipTransformationPacketHolder before, ShipTransformationPacketHolder after) {
         posX = (before.posX + after.posX) / 2D;
         posY = (before.posY + after.posY) / 2D;
         posZ = (before.posZ + after.posZ) / 2D;

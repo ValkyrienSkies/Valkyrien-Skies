@@ -59,6 +59,7 @@ import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.fixes.WorldChunkloadingCrashFix;
 import valkyrienwarfare.mod.physmanagement.interaction.IWorldVW;
 import valkyrienwarfare.physics.collision.Polygon;
+import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.physics.management.WorldPhysObjectManager;
 
@@ -399,16 +400,17 @@ public abstract class MixinWorld implements IWorldVW {
             if (World.class.cast(this).isRemote) {
                 // ValkyrienWarfareMod.proxy.updateShipPartialTicks(wrapper);
             }
-            // Transform the coordinate system for the player eye pos
-            playerEyesPos = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.RwToLTransform, playerEyesPos);
-            playerReachVector = RotationMatrices.doRotationOnly(wrapper.wrapping.coordTransform.RwToLTransform, playerReachVector);
+
+            playerEyesPos = wrapper.wrapping.coordTransform.renderTransform.transform(playerEyesPos, TransformType.GLOBAL_TO_LOCAL);
+            playerReachVector = wrapper.wrapping.coordTransform.renderTransform.rotate(playerReachVector, TransformType.GLOBAL_TO_LOCAL);
+            
             Vec3d playerEyesReachAdded = playerEyesPos.addVector(playerReachVector.x * reachDistance, playerReachVector.y * reachDistance, playerReachVector.z * reachDistance);
             RayTraceResult resultInShip = thisClassAsWorld.rayTraceBlocks(playerEyesPos, playerEyesReachAdded, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
             if (resultInShip != null && resultInShip.hitVec != null && resultInShip.typeOfHit == RayTraceResult.Type.BLOCK) {
                 double shipResultDistFromPlayer = resultInShip.hitVec.distanceTo(playerEyesPos);
                 if (shipResultDistFromPlayer < worldResultDistFromPlayer) {
                     worldResultDistFromPlayer = shipResultDistFromPlayer;
-                    resultInShip.hitVec = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.RlToWTransform, resultInShip.hitVec);
+                    resultInShip.hitVec = wrapper.wrapping.coordTransform.renderTransform.transform(resultInShip.hitVec, TransformType.LOCAL_TO_GLOBAL);
                     vanillaTrace = resultInShip;
                     transformedEntity = wrapper;
                 }
@@ -417,7 +419,7 @@ public abstract class MixinWorld implements IWorldVW {
 
         if (transformedEntity != null) {
             Vec3d hitVec2 = vanillaTrace.hitVec;
-            hitVec2 = RotationMatrices.applyTransform(transformedEntity.wrapping.coordTransform.RwToLTransform, hitVec2);
+            hitVec2 = transformedEntity.wrapping.coordTransform.renderTransform.transform(hitVec2, TransformType.GLOBAL_TO_LOCAL);
             vanillaTrace.hitVec = hitVec2;
         }
 

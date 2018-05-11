@@ -17,7 +17,7 @@
 package valkyrienwarfare.physics.management;
 
 import valkyrienwarfare.mod.network.PhysWrapperPositionMessage;
-import valkyrienwarfare.physics.data.ShipTransformData;
+import valkyrienwarfare.physics.data.ShipTransformationPacketHolder;
 
 /**
  * Acts as a buffer to smooth incoming position data from the server.
@@ -25,10 +25,10 @@ import valkyrienwarfare.physics.data.ShipTransformData;
 public class ShipTransformationBuffer {
 
     public static final int PACKET_BUFFER_SIZE = 10;
-    private final ShipTransformData[] recentTransforms;
+    private final ShipTransformationPacketHolder[] recentTransforms;
 
     public ShipTransformationBuffer() {
-        recentTransforms = new ShipTransformData[PACKET_BUFFER_SIZE];
+        recentTransforms = new ShipTransformationPacketHolder[PACKET_BUFFER_SIZE];
     }
 
     // Number of ticks the parent ship has been active for
@@ -40,11 +40,11 @@ public class ShipTransformationBuffer {
         }
         // System.arraycopy(recentTransforms, 0, recentTransforms, 1,
         // recentTransforms.length - 1);
-        recentTransforms[0] = new ShipTransformData(toPush);
+        recentTransforms[0] = new ShipTransformationPacketHolder(toPush);
     }
 
     // TODO: Make this auto-adjust to best settings for the server
-    public ShipTransformData getDataForTick(int lastTick) {
+    public ShipTransformationPacketHolder getDataForTick(int lastTick) {
         if (recentTransforms[0] == null) {
             System.err.println(
                     "A SHIP JUST RETURNED NULL FOR 'recentTransforms[0]==null'; ANY WEIRD ERRORS PAST HERE ARE DIRECTLY LINKED TO THAT!");
@@ -59,7 +59,7 @@ public class ShipTransformationBuffer {
             // System.out.println("Too Slow");
         }
 
-        for (ShipTransformData transform : recentTransforms) {
+        for (ShipTransformationPacketHolder transform : recentTransforms) {
             if (transform != null) {
                 if (transform.relativeTick == tickToGet) {
                     return transform;

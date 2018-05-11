@@ -29,8 +29,9 @@ import valkyrienwarfare.addon.combat.entity.EntityCannonBall;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.mod.event.EventsClient;
-import valkyrienwarfare.physics.management.CoordTransformObject;
+import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.management.ShipTransformationHolder;
 
 public abstract class EntityDraggable {
     public static void tickAddedVelocityForWorld(World world) {
@@ -77,7 +78,7 @@ public abstract class EntityDraggable {
     public static void doTheEntityThing(Entity entity) {
         IDraggable draggable = EntityDraggable.getDraggableFromEntity(entity);
         if (draggable.getWorldBelowFeet() != null && !ValkyrienWarfareMod.physicsManager.isEntityFixed(entity)) {
-            CoordTransformObject coordTransform = draggable.getWorldBelowFeet().wrapping.coordTransform;
+            ShipTransformationHolder coordTransform = draggable.getWorldBelowFeet().wrapping.coordTransform;
 
             if (entity.world.isRemote && entity instanceof EntityPlayer) {
                 EventsClient.updatePlayerMouseOver(entity);
@@ -90,7 +91,8 @@ public abstract class EntityDraggable {
 
             Vector oldPos = new Vector(entity);
 
-            RotationMatrices.applyTransform(coordTransform.prevwToLTransform, entity);
+//            RotationMatrices.applyTransform(coordTransform.prevwToLTransform, entity);
+            RotationMatrices.applyTransform(coordTransform.prevTransform, entity, TransformType.GLOBAL_TO_LOCAL);
             RotationMatrices.applyTransform(coordTransform.lToWTransform, entity);
 
             Vector newPos = new Vector(entity);
@@ -108,7 +110,8 @@ public abstract class EntityDraggable {
             entity.prevRotationPitch = prevPitch;
 
             Vector oldLookingPos = new Vector(entity.getLook(1.0F));
-            RotationMatrices.doRotationOnly(coordTransform.prevwToLTransform, oldLookingPos);
+//            RotationMatrices.doRotationOnly(coordTransform.prevwToLTransform, oldLookingPos);
+            coordTransform.prevTransform.rotate(oldLookingPos, TransformType.GLOBAL_TO_LOCAL);
             RotationMatrices.doRotationOnly(coordTransform.lToWTransform, oldLookingPos);
 
             double newPitch = Math.asin(oldLookingPos.Y) * -180D / Math.PI;

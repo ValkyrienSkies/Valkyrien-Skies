@@ -23,6 +23,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import valkyrienwarfare.math.VWMath;
+import valkyrienwarfare.physics.data.ShipTransform;
+import valkyrienwarfare.physics.data.TransformType;
 
 /**
  * This class creates and processes rotation matrix transforms used by Valkyrien
@@ -169,6 +171,52 @@ public class RotationMatrices {
 
 		ent.setPosition(entityPos.X, entityPos.Y, entityPos.Z);
 	}
+	
+	@Deprecated
+    public static void applyTransform(ShipTransform shipTransform, Entity ent, TransformType transformType) {
+        Vector entityPos = new Vector(ent.posX, ent.posY, ent.posZ);
+        Vector entityLook = new Vector(ent.getLook(1.0F));
+        Vector entityMotion = new Vector(ent.motionX, ent.motionY, ent.motionZ);
+
+        if (ent instanceof EntityFireball) {
+            EntityFireball ball = (EntityFireball) ent;
+            entityMotion.X = ball.accelerationX;
+            entityMotion.Y = ball.accelerationY;
+            entityMotion.Z = ball.accelerationZ;
+        }
+
+        shipTransform.transform(entityPos, transformType);
+        shipTransform.rotate(entityLook, transformType);
+        shipTransform.rotate(entityMotion, transformType);
+
+        entityLook.normalize();
+
+        // This is correct
+        ent.rotationPitch = (float) MathHelper.wrapDegrees(VWMath.getPitchFromVec3d(entityLook));
+        ent.prevRotationPitch = ent.rotationPitch;
+
+        ent.rotationYaw = (float) MathHelper.wrapDegrees(VWMath.getYawFromVec3d(entityLook, ent.rotationPitch));
+        ent.prevRotationYaw = ent.rotationYaw;
+
+        if (ent instanceof EntityLiving) {
+            EntityLiving living = (EntityLiving) ent;
+            living.rotationYawHead = ent.rotationYaw;
+            living.prevRotationYawHead = ent.rotationYaw;
+        }
+
+        if (ent instanceof EntityFireball) {
+            EntityFireball ball = (EntityFireball) ent;
+            ball.accelerationX = entityMotion.X;
+            ball.accelerationY = entityMotion.Y;
+            ball.accelerationZ = entityMotion.Z;
+        }
+
+        ent.motionX = entityMotion.X;
+        ent.motionY = entityMotion.Y;
+        ent.motionZ = entityMotion.Z;
+
+        ent.setPosition(entityPos.X, entityPos.Y, entityPos.Z);
+    }
 
 	public static BlockPos applyTransform(double[] M, BlockPos pos) {
 		Vector blockPosVec = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);

@@ -42,7 +42,7 @@ import valkyrienwarfare.math.VWMath;
 import valkyrienwarfare.physics.collision.WorldPhysicsCollider;
 import valkyrienwarfare.physics.data.BlockForce;
 import valkyrienwarfare.physics.data.BlockMass;
-import valkyrienwarfare.physics.management.CoordTransformObject;
+import valkyrienwarfare.physics.management.ShipTransformationHolder;
 import valkyrienwarfare.physics.management.PhysicsObject;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.util.NBTUtils;
@@ -386,7 +386,7 @@ public class PhysicsCalculations {
     }
 
     public void applyAngularVelocity() {
-        CoordTransformObject coordTrans = parent.coordTransform;
+        ShipTransformationHolder coordTrans = parent.coordTransform;
 
         double[] rotationChange = RotationMatrices.getRotationMatrix(angularVelocity.X, angularVelocity.Y,
                 angularVelocity.Z, angularVelocity.length() * getPhysicsTimeDeltaPerPhysTick());

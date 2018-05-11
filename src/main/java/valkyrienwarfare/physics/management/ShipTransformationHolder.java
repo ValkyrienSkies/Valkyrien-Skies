@@ -28,29 +28,28 @@ import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.mod.network.PhysWrapperPositionMessage;
+import valkyrienwarfare.physics.data.ShipTransform;
 
 /**
  * Stores coordinates and transforms for the ship.
  *
  * @author thebest108
  */
-public class CoordTransformObject {
+public class ShipTransformationHolder {
 
     public PhysicsObject parent;
     public double[] lToWTransform = RotationMatrices.getDoubleIdentity();
     public double[] wToLTransform = RotationMatrices.getDoubleIdentity();
-    public double[] RlToWTransform = RotationMatrices.getDoubleIdentity();
-    public double[] RwToLTransform = RotationMatrices.getDoubleIdentity();
-    public double[] prevlToWTransform;
-    public double[] prevwToLTransform;
+//    public double[] RlToWTransform = RotationMatrices.getDoubleIdentity();
+//    public double[] RwToLTransform = RotationMatrices.getDoubleIdentity();
+    public ShipTransform renderTransform = new ShipTransform(RotationMatrices.getDoubleIdentity());
+    public ShipTransform prevTransform = new ShipTransform(RotationMatrices.getDoubleIdentity());
     public Vector[] normals;
     public final ShipTransformationBuffer serverBuffer;
 
-    public CoordTransformObject(PhysicsObject object) {
+    public ShipTransformationHolder(PhysicsObject object) {
         this.parent = object;
         this.updateAllTransforms(true);
-        this.prevlToWTransform = lToWTransform;
-        this.prevwToLTransform = wToLTransform;
         this.serverBuffer = new ShipTransformationBuffer();
         this.normals = Vector.generateAxisAlignedNorms();
     }
@@ -64,22 +63,16 @@ public class CoordTransformObject {
 
         wToLTransform = RotationMatrices.inverse(lToWTransform);
 
-        RlToWTransform = lToWTransform;
-        RwToLTransform = wToLTransform;
     }
 
     public void updateRenderMatrices(double x, double y, double z, double pitch, double yaw, double roll) {
-        RlToWTransform = RotationMatrices.getTranslationMatrix(x, y, z);
-
+        double[] RlToWTransform = RotationMatrices.getTranslationMatrix(x, y, z);
         RlToWTransform = RotationMatrices.rotateAndTranslate(RlToWTransform, pitch, yaw, roll, parent.centerCoord);
-
-        RwToLTransform = RotationMatrices.inverse(RlToWTransform);
+        renderTransform = new ShipTransform(RlToWTransform);
     }
 
-    // Used for the moveRiders() method
-    public void setPrevMatrices() {
-        prevlToWTransform = lToWTransform;
-        prevwToLTransform = wToLTransform;
+    public void updatePrevTransform() {
+        prevTransform = new ShipTransform(lToWTransform);
     }
 
     /**

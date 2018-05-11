@@ -29,6 +29,7 @@ import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.math.Quaternion;
 import valkyrienwarfare.mod.proxy.ClientProxy;
+import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsObject;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
@@ -222,7 +223,7 @@ public class PhysObjectRenderManager {
     }
 
     public Quaternion getSmoothRotationQuat(double partialTick) {
-        Quaternion oneTickBefore = Quaternion.QuaternionFromMatrix(parent.coordTransform.prevlToWTransform);
+        Quaternion oneTickBefore = parent.coordTransform.prevTransform.createRotationQuaternion(TransformType.LOCAL_TO_GLOBAL);
         Quaternion nextQuat = Quaternion.QuaternionFromMatrix(parent.coordTransform.lToWTransform);
         return Quaternion.getBetweenQuat(oneTickBefore, nextQuat, partialTick);
     }

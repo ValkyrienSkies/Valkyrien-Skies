@@ -38,7 +38,7 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import java.util.List;
 
 @Mixin(World.class)
-public abstract class MixinWorldCLIENT {
+public abstract class MixinWorldClient {
 
     @Shadow
     public int getLightFromNeighborsFor(EnumSkyBlock type, BlockPos pos) {

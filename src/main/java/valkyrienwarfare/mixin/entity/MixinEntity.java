@@ -254,7 +254,8 @@ public abstract class MixinEntity implements IDraggable {
             return MathHelper.floor(d);
         } else {
             searchVector = new Vector(this.posX, this.posY - 0.20000000298023224D, this.posZ);
-            searchVector.transform(worldBelow.wrapping.coordTransform.wToLTransform);
+//            searchVector.transform(worldBelow.wrapping.coordTransform.wToLTransform);
+            worldBelow.wrapping.coordTransform.currentTransform.transform(searchVector, TransformType.GLOBAL_TO_LOCAL);
             return MathHelper.floor(searchVector.X);
         }
     }

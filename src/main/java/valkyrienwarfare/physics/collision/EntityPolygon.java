@@ -18,6 +18,8 @@ package valkyrienwarfare.physics.collision;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.AxisAlignedBB;
+import valkyrienwarfare.physics.data.ShipTransform;
+import valkyrienwarfare.physics.data.TransformType;
 
 public class EntityPolygon extends Polygon {
 
@@ -28,8 +30,8 @@ public class EntityPolygon extends Polygon {
         entityFor = ent;
     }
 
-    public EntityPolygon(AxisAlignedBB bb, double[] matrix, Entity ent) {
-        super(bb, matrix);
+    public EntityPolygon(AxisAlignedBB bb, ShipTransform transform, TransformType transformType, Entity ent) {
+        super(bb, transform, transformType);
         entityFor = ent;
     }
 

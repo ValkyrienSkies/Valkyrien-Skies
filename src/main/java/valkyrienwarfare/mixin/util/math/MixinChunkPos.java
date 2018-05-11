@@ -16,16 +16,17 @@
 
 package valkyrienwarfare.mixin.util.math;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+
+import net.minecraft.entity.Entity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 @Mixin(ChunkPos.class)
@@ -46,8 +47,8 @@ public abstract class MixinChunkPos {
      */
     @Overwrite
     public double getDistanceSq(Entity entityIn) {
-        double d0 = (double) (this.x * 16 + 8);
-        double d1 = (double) (this.z * 16 + 8);
+        double d0 = this.x * 16 + 8;
+        double d1 = this.z * 16 + 8;
         double d2 = d0 - entityIn.posX;
         double d3 = d1 - entityIn.posZ;
         double vanilla = d2 * d2 + d3 * d3;
@@ -60,7 +61,8 @@ public abstract class MixinChunkPos {
 
         if (wrapper != null) {
             Vector entityPosInLocal = new Vector(entityIn);
-            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, entityPosInLocal);
+//            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, entityPosInLocal);
+            wrapper.wrapping.coordTransform.currentTransform.transform(entityPosInLocal, TransformType.GLOBAL_TO_LOCAL);
             entityPosInLocal.subtract(d0, entityPosInLocal.Y, d1);
             return entityPosInLocal.lengthSq();
         }

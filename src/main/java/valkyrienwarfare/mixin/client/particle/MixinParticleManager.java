@@ -25,12 +25,13 @@ import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.util.math.BlockPos;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 @Mixin(ParticleManager.class)
 public abstract class MixinParticleManager {
+    
     @Inject(method = "addEffect(Lnet/minecraft/client/particle/Particle;)V", at = @At("HEAD"), cancellable = true)
     public void preAddEffect(Particle effect, CallbackInfo callbackInfoReturnable) {
         if (effect == null) {
@@ -44,7 +45,8 @@ public abstract class MixinParticleManager {
             Vector posVec = new Vector(effect.posX, effect.posY, effect.posZ);
             Vector velocity = new Vector(effect.motionX, effect.motionY, effect.motionZ);
             wrapper.wrapping.coordTransform.fromLocalToGlobal(posVec);
-            RotationMatrices.doRotationOnly(wrapper.wrapping.coordTransform.lToWTransform, velocity);
+//            RotationMatrices.doRotationOnly(wrapper.wrapping.coordTransform.lToWTransform, velocity);
+            wrapper.wrapping.coordTransform.currentTransform.rotate(velocity, TransformType.LOCAL_TO_GLOBAL);
             effect.setPosition(posVec.X, posVec.Y, posVec.Z);
             effect.motionX = velocity.X;
             effect.motionY = velocity.Y;

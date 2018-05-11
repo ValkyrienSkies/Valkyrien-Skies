@@ -28,6 +28,7 @@ import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.api.block.ethercompressor.TileEntityEtherCompressor;
 import valkyrienwarfare.math.VWMath;
 import valkyrienwarfare.physics.calculations.PhysicsCalculations;
+import valkyrienwarfare.physics.data.TransformType;
 
 public class ShipPulseImpulseControlSystem {
 
@@ -52,8 +53,8 @@ public class ShipPulseImpulseControlSystem {
         double totalPotentialThrust = getMaxThrustForAllThrusters();
         double currentThrust = getTotalThrustForAllThrusters();
 
-        double[] rotationAndTranslationMatrix = calculations.parent.coordTransform.lToWTransform;
-        double[] invRotationAndTranslationMatrix = calculations.parent.coordTransform.wToLTransform;
+        double[] rotationAndTranslationMatrix = calculations.parent.coordTransform.currentTransform.getInternalMatrix(TransformType.LOCAL_TO_GLOBAL);
+        double[] invRotationAndTranslationMatrix = calculations.parent.coordTransform.currentTransform.getInternalMatrix(TransformType.GLOBAL_TO_LOCAL);
         double[] invMOIMatrix = calculations.invFramedMOI;
 
         Vector posInWorld = new Vector(calculations.parent.wrapper.posX, calculations.parent.wrapper.posY, calculations.parent.wrapper.posZ);
@@ -83,7 +84,7 @@ public class ShipPulseImpulseControlSystem {
 
         Vector idealNormal = new Vector(theNormal);
         Vector currentNormal = new Vector(theNormal);
-        RotationMatrices.doRotationOnly(calculations.parent.coordTransform.lToWTransform, currentNormal);
+        RotationMatrices.doRotationOnly(rotationAndTranslationMatrix, currentNormal);
 
         Vector currentNormalError = currentNormal.getSubtraction(idealNormal);
 

@@ -17,13 +17,10 @@
 package valkyrienwarfare.mod.network;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
 import net.minecraft.util.IThreadListener;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public class EntityRelativePositionMessageHandler implements IMessageHandler<EntityRelativePositionMessage, IMessage> {
 
@@ -37,6 +34,7 @@ public class EntityRelativePositionMessageHandler implements IMessageHandler<Ent
         mainThread.addScheduledTask(new Runnable() {
             @Override
             public void run() {
+                /*
                 Entity ent = Minecraft.getMinecraft().world.getEntityByID(message.wrapperEntityId);
                 if (ent != null && ent instanceof PhysicsWrapperEntity) {
                     PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity) ent;
@@ -56,6 +54,7 @@ public class EntityRelativePositionMessageHandler implements IMessageHandler<Ent
                         }
                     }
                 }
+                */
             }
         });
         return null;

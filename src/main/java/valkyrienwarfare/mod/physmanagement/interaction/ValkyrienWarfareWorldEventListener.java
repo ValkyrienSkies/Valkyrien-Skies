@@ -35,6 +35,7 @@ import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.combat.entity.EntityMountingWeaponBase;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public class ValkyrienWarfareWorldEventListener implements IWorldEventListener {
@@ -121,7 +122,7 @@ public class ValkyrienWarfareWorldEventListener implements IWorldEventListener {
                 wrapper.wrapping.fixEntity(entityIn, new Vector(entityIn));
                 wrapper.wrapping.queueEntityForMounting(entityIn);
             }
-            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, entityIn);
+            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.currentTransform, entityIn, TransformType.LOCAL_TO_GLOBAL);
 
             int newChunkX = MathHelper.floor(entityIn.posX / 16.0D);
             int newChunkZ = MathHelper.floor(entityIn.posZ / 16.0D);
@@ -141,7 +142,7 @@ public class ValkyrienWarfareWorldEventListener implements IWorldEventListener {
                 wrapper.wrapping.fixEntity(entityIn, new Vector(entityIn));
                 wrapper.wrapping.queueEntityForMounting(entityIn);
             }
-            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, entityIn);
+            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.currentTransform, entityIn, TransformType.LOCAL_TO_GLOBAL);
         }
     }
 
@@ -175,7 +176,8 @@ public class ValkyrienWarfareWorldEventListener implements IWorldEventListener {
                             pos);
 
                     if (wrapper != null) {
-                        RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, posVector);
+                        wrapper.wrapping.coordTransform.currentTransform.transform(posVector, TransformType.LOCAL_TO_GLOBAL);
+//                        RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, posVector);
                     }
 
                     double d0 = posVector.X - entityplayermp.posX;

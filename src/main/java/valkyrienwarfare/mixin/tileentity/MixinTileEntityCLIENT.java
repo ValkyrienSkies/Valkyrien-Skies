@@ -16,15 +16,21 @@
 
 package valkyrienwarfare.mixin.tileentity;
 
+import org.spongepowered.asm.mixin.Implements;
+import org.spongepowered.asm.mixin.Interface;
+import org.spongepowered.asm.mixin.Intrinsic;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.spongepowered.asm.mixin.*;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.physics.collision.Polygon;
-import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.client.render.IntrinsicTileEntityInterface;
+import valkyrienwarfare.physics.collision.Polygon;
+import valkyrienwarfare.physics.data.TransformType;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 @Mixin(TileEntity.class)
 @Implements(@Interface(iface = IntrinsicTileEntityInterface.class, prefix = "vw$"))
@@ -38,7 +44,7 @@ public abstract class MixinTileEntityCLIENT {
         BlockPos pos = new BlockPos(toReturn.minX, toReturn.minY, toReturn.minZ);
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
         if (wrapper != null) {
-            Polygon poly = new Polygon(toReturn, wrapper.wrapping.coordTransform.lToWTransform);
+            Polygon poly = new Polygon(toReturn, wrapper.wrapping.coordTransform.currentTransform, TransformType.LOCAL_TO_GLOBAL);
             return poly.getEnclosedAABB();
         }
         return toReturn;

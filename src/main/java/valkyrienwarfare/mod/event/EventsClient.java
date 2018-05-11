@@ -32,12 +32,12 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.fixes.SoundFixWrapper;
 import valkyrienwarfare.mod.network.PlayerShipRefrenceMessage;
 import valkyrienwarfare.mod.physmanagement.interaction.EntityDraggable;
 import valkyrienwarfare.mod.physmanagement.interaction.IDraggable;
+import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.physics.management.WorldPhysObjectManager;
 
@@ -61,7 +61,7 @@ public class EventsClient {
 
         if (wrapper != null) {
             Vector newSoundLocation = new Vector(sound.getXPosF(), sound.getYPosF(), sound.getZPosF());
-            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, newSoundLocation);
+            wrapper.wrapping.coordTransform.currentTransform.transform(newSoundLocation, TransformType.LOCAL_TO_GLOBAL);
 
             SoundFixWrapper soundFix = new SoundFixWrapper(sound, wrapper, newSoundLocation);
 

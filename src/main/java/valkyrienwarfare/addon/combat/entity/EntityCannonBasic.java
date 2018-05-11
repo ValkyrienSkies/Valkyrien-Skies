@@ -24,9 +24,9 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import valkyrienwarfare.addon.combat.ValkyrienWarfareCombat;
-import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.fixes.IInventoryPlayerFix;
+import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public class EntityCannonBasic extends EntityMountingWeaponBase {
@@ -60,7 +60,7 @@ public class EntityCannonBasic extends EntityMountingWeaponBase {
         Vector projectileSpawnPos = new Vector(0, .5, 0);
 
         if (wrapper != null) {
-            RotationMatrices.doRotationOnly(wrapper.wrapping.coordTransform.lToWTransform, projectileSpawnPos);
+            wrapper.wrapping.coordTransform.currentTransform.rotate(projectileSpawnPos, TransformType.LOCAL_TO_GLOBAL);
         }
 
         projectile.posX += projectileSpawnPos.X;

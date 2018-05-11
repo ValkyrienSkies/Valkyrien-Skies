@@ -16,21 +16,22 @@
 
 package valkyrienwarfare.mixin.client.multiplayer;
 
-import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
+import java.util.List;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.api.RotationMatrices;
-import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
-import java.util.List;
+import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.World;
+import valkyrienwarfare.ValkyrienWarfareMod;
+import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.physics.data.TransformType;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 @Mixin(WorldClient.class)
 public abstract class MixinWorldClient extends World {
@@ -54,7 +55,8 @@ public abstract class MixinWorldClient extends World {
             hasChanged = true;
             for (PhysicsWrapperEntity wrapper : physEntities) {
                 Vector playPosInShip = new Vector(posX + .5D, posY + .5D, posZ + .5D);
-                RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, playPosInShip);
+//                RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, playPosInShip);
+                wrapper.wrapping.coordTransform.currentTransform.transform(playPosInShip, TransformType.GLOBAL_TO_LOCAL);
                 this.doVoidFogParticles(MathHelper.floor(playPosInShip.X), MathHelper.floor(playPosInShip.Y), MathHelper.floor(playPosInShip.Z));
             }
             hasChanged = false;

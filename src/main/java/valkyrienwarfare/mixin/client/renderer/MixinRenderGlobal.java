@@ -16,13 +16,36 @@
 
 package valkyrienwarfare.mixin.client.renderer;
 
-import net.minecraft.block.*;
+import java.util.Iterator;
+import java.util.Map;
+
+import org.lwjgl.opengl.GL11;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockChest;
+import net.minecraft.block.BlockEnderChest;
+import net.minecraft.block.BlockSign;
+import net.minecraft.block.BlockSkull;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.particle.Particle;
-import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.BlockRendererDispatcher;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.DestroyBlockProgress;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderGlobal;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -35,23 +58,11 @@ import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
-import org.lwjgl.opengl.GL11;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.proxy.ClientProxy;
-
-import java.util.Iterator;
-import java.util.Map;
+import valkyrienwarfare.physics.data.TransformType;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 @Mixin(RenderGlobal.class)
 public abstract class MixinRenderGlobal {
@@ -103,9 +114,9 @@ public abstract class MixinRenderGlobal {
      */
     @Overwrite
     public void drawBlockDamageTexture(Tessellator tessellatorIn, BufferBuilder worldRendererIn, Entity entityIn, float partialTicks) {
-        double d0 = entityIn.lastTickPosX + (entityIn.posX - entityIn.lastTickPosX) * (double) partialTicks;
-        double d1 = entityIn.lastTickPosY + (entityIn.posY - entityIn.lastTickPosY) * (double) partialTicks;
-        double d2 = entityIn.lastTickPosZ + (entityIn.posZ - entityIn.lastTickPosZ) * (double) partialTicks;
+        double d0 = entityIn.lastTickPosX + (entityIn.posX - entityIn.lastTickPosX) * partialTicks;
+        double d1 = entityIn.lastTickPosY + (entityIn.posY - entityIn.lastTickPosY) * partialTicks;
+        double d2 = entityIn.lastTickPosZ + (entityIn.posZ - entityIn.lastTickPosZ) * partialTicks;
 
         if (!this.damagedBlocks.isEmpty()) {
             this.renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
@@ -118,9 +129,9 @@ public abstract class MixinRenderGlobal {
             while (iterator.hasNext()) {
                 DestroyBlockProgress destroyblockprogress = iterator.next();
                 BlockPos blockpos = destroyblockprogress.getPosition();
-                double d3 = (double) blockpos.getX() - d0;
-                double d4 = (double) blockpos.getY() - d1;
-                double d5 = (double) blockpos.getZ() - d2;
+                double d3 = blockpos.getX() - d0;
+                double d4 = blockpos.getY() - d1;
+                double d5 = blockpos.getZ() - d2;
                 Block block = this.world.getBlockState(blockpos).getBlock();
                 TileEntity te = this.world.getTileEntity(blockpos);
                 boolean hasBreak = block instanceof BlockChest || block instanceof BlockEnderChest || block instanceof BlockSign || block instanceof BlockSkull;
@@ -182,9 +193,9 @@ public abstract class MixinRenderGlobal {
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder BufferBuilder = tessellator.getBuffer();
 
-            double xOff = (player.lastTickPosX + (player.posX - player.lastTickPosX) * (double) partialTicks) - wrapper.wrapping.renderer.offsetPos.getX();
-            double yOff = (player.lastTickPosY + (player.posY - player.lastTickPosY) * (double) partialTicks) - wrapper.wrapping.renderer.offsetPos.getY();
-            double zOff = (player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * (double) partialTicks) - wrapper.wrapping.renderer.offsetPos.getZ();
+            double xOff = (player.lastTickPosX + (player.posX - player.lastTickPosX) * partialTicks) - wrapper.wrapping.renderer.offsetPos.getX();
+            double yOff = (player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTicks) - wrapper.wrapping.renderer.offsetPos.getY();
+            double zOff = (player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * partialTicks) - wrapper.wrapping.renderer.offsetPos.getZ();
 
             BufferBuilder.xOffset += xOff;
             BufferBuilder.yOffset += yOff;
@@ -213,9 +224,9 @@ public abstract class MixinRenderGlobal {
             IBlockState iblockstate = this.world.getBlockState(blockpos);
 
             if (iblockstate.getMaterial() != Material.AIR && this.world.getWorldBorder().contains(blockpos)) {
-                double d0 = player.lastTickPosX + (player.posX - player.lastTickPosX) * (double) partialTicks;
-                double d1 = player.lastTickPosY + (player.posY - player.lastTickPosY) * (double) partialTicks;
-                double d2 = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * (double) partialTicks;
+                double d0 = player.lastTickPosX + (player.posX - player.lastTickPosX) * partialTicks;
+                double d1 = player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTicks;
+                double d2 = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * partialTicks;
                 drawSelectionBoundingBox(iblockstate.getSelectedBoundingBox(this.world, blockpos).grow(0.0020000000949949026D).offset(-d0, -d1, -d2), 0.0F, 0.0F, 0.0F, 0.4F);
             }
 
@@ -296,8 +307,8 @@ public abstract class MixinRenderGlobal {
             PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(this.world, particlePos);
             if (wrapper != null) {
                 Vector newCoords = new Vector(x, y, z);
-                RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, newCoords);
-
+//                RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, newCoords);
+                wrapper.wrapping.coordTransform.currentTransform.transform(newCoords, TransformType.LOCAL_TO_GLOBAL);
                 x = newCoords.X;
                 y = newCoords.Y;
                 z = newCoords.Z;

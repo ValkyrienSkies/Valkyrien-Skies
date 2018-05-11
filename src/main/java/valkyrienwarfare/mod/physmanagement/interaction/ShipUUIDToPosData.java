@@ -29,6 +29,7 @@ import net.minecraft.world.storage.MapStorage;
 import net.minecraft.world.storage.WorldSavedData;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.util.NBTUtils;
 
@@ -113,12 +114,13 @@ public class ShipUUIDToPosData extends WorldSavedData {
 	}
 
 	public class ShipPositionData {
+	    
 		private final Vector shipPosition;
 		private final float[] lToWTransform;
 
 		private ShipPositionData(PhysicsWrapperEntity wrapper) {
 			shipPosition = new Vector(wrapper.posX, wrapper.posY, wrapper.posZ);
-			lToWTransform = RotationMatrices.convertToFloat(wrapper.wrapping.coordTransform.lToWTransform);
+			lToWTransform = RotationMatrices.convertToFloat(wrapper.wrapping.coordTransform.currentTransform.getInternalMatrix(TransformType.LOCAL_TO_GLOBAL));
 		}
 
 		private ShipPositionData(ByteBuffer buffer) {
@@ -142,7 +144,7 @@ public class ShipUUIDToPosData extends WorldSavedData {
 			shipPosition.X = wrapper.posX;
 			shipPosition.Y = wrapper.posY;
 			shipPosition.Z = wrapper.posZ;
-			RotationMatrices.convertToFloat(wrapper.wrapping.coordTransform.lToWTransform, lToWTransform);
+			RotationMatrices.convertToFloat(wrapper.wrapping.coordTransform.currentTransform.getInternalMatrix(TransformType.LOCAL_TO_GLOBAL), lToWTransform);
 		}
 
 		public double getPosX() {

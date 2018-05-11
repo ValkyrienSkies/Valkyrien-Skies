@@ -37,6 +37,7 @@ import valkyrienwarfare.mod.capability.IAirshipCounterCapability;
 import valkyrienwarfare.mod.physmanagement.interaction.ShipNameUUIDData;
 import valkyrienwarfare.mod.schematics.SchematicReader.Schematic;
 import valkyrienwarfare.physics.collision.Polygon;
+import valkyrienwarfare.physics.data.TransformType;
 
 /**
  * This entity's only purpose is to use the functionality of sending itself to
@@ -122,7 +123,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
                     newEntityPosition.Z + f);
             wrapping.coordTransform.fromLocalToGlobal(newEntityPosition);
             passenger.setPosition(newEntityPosition.X, newEntityPosition.Y, newEntityPosition.Z);
-            Polygon entityBBPoly = new Polygon(inLocalAABB, wrapping.coordTransform.lToWTransform);
+            Polygon entityBBPoly = new Polygon(inLocalAABB, wrapping.coordTransform.currentTransform, TransformType.LOCAL_TO_GLOBAL);
 
             AxisAlignedBB newEntityBB = entityBBPoly.getEnclosedAABB();
             passenger.setEntityBoundingBox(newEntityBB);

@@ -32,6 +32,7 @@ import valkyrienwarfare.physics.collision.CollisionInformationHolder;
 import valkyrienwarfare.physics.collision.PhysPolygonCollider;
 import valkyrienwarfare.physics.collision.Polygon;
 import valkyrienwarfare.physics.collision.WorldPhysicsCollider;
+import valkyrienwarfare.physics.data.TransformType;
 
 public class ShipCollisionTask implements Callable<Void> {
 
@@ -153,7 +154,7 @@ public class ShipCollisionTask implements Callable<Void> {
 				// List<AxisAlignedBB> colBB = worldObj.getCollisionBoxes(inLocalBB);
 				// inLocalBB = colBB.get(0);
 
-				Polygon shipInWorld = new Polygon(inLocalBB, toTask.getParent().coordTransform.lToWTransform);
+				Polygon shipInWorld = new Polygon(inLocalBB, toTask.getParent().coordTransform.currentTransform, TransformType.LOCAL_TO_GLOBAL);
 				Polygon worldPoly = new Polygon(inGlobalBB);
 
 				PhysPolygonCollider collider = new PhysPolygonCollider(shipInWorld, worldPoly,

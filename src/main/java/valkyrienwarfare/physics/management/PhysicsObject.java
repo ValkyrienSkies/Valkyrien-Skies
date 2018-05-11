@@ -63,7 +63,6 @@ import valkyrienwarfare.addon.control.network.EntityFixMessage;
 import valkyrienwarfare.addon.control.nodenetwork.INodeProvider;
 import valkyrienwarfare.addon.control.nodenetwork.Node;
 import valkyrienwarfare.api.EnumChangeOwnerResult;
-import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.api.block.ethercompressor.TileEntityEtherCompressor;
 import valkyrienwarfare.mod.BlockPhysicsRegistration;
@@ -78,6 +77,7 @@ import valkyrienwarfare.physics.calculations.PhysicsCalculations;
 import valkyrienwarfare.physics.calculations.PhysicsCalculationsManualControl;
 import valkyrienwarfare.physics.data.BlockForce;
 import valkyrienwarfare.physics.data.ShipTransformationPacketHolder;
+import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.util.NBTUtils;
 
 public class PhysicsObject {
@@ -715,7 +715,8 @@ public class PhysicsObject {
         if (toUse != null) {
             Vector CMDif = toUse.centerOfRotation.getSubtraction(centerCoord);
             lastMessageTick = toUse.relativeTick;
-            RotationMatrices.doRotationOnly(coordTransform.lToWTransform, CMDif);
+            coordTransform.currentTransform.rotate(CMDif, TransformType.LOCAL_TO_GLOBAL);
+//            RotationMatrices.doRotationOnly(coordTransform.lToWTransform, CMDif);
             wrapper.lastTickPosX -= CMDif.X;
             wrapper.lastTickPosY -= CMDif.Y;
             wrapper.lastTickPosZ -= CMDif.Z;

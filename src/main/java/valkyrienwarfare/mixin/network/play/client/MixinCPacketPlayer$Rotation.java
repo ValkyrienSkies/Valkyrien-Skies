@@ -13,6 +13,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.mod.network.IExtendedCPacketPlayer;
 import valkyrienwarfare.mod.physmanagement.interaction.IDraggable;
+import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 // Made abstract because the super class already implements this interface (from MixinCPacketPlayer), the compiled side of java just doesn't
@@ -25,7 +26,8 @@ public abstract class MixinCPacketPlayer$Rotation extends CPacketPlayer implemen
         if (isClientPacket()) {
             if(isPlayerStandingOnShip()) {
                 PhysicsWrapperEntity worldBelow = getWorldBelowFeet();
-                Vector positionInLocal = new Vector(x, y, z, worldBelow.wrapping.coordTransform.wToLTransform);
+                Vector positionInLocal = new Vector(x, y, z); // , worldBelow.wrapping.coordTransform.wToLTransform);
+                worldBelow.wrapping.coordTransform.currentTransform.transform(positionInLocal, TransformType.GLOBAL_TO_LOCAL);
                 this.setLocalCoords(positionInLocal.X, positionInLocal.Y, positionInLocal.Z);
                 this.setWorldBelowFeetID(worldBelow.getEntityId());
             }

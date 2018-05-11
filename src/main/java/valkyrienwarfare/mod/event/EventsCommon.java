@@ -66,6 +66,7 @@ import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.mod.capability.IAirshipCounterCapability;
 import valkyrienwarfare.mod.multithreaded.VWThreadManager;
 import valkyrienwarfare.mod.physmanagement.interaction.ValkyrienWarfareWorldEventListener;
+import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsTickHandler;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
@@ -121,7 +122,7 @@ public class EventsCommon {
                 wrapper.wrapping.fixEntity(entity, new Vector(entity));
                 wrapper.wrapping.queueEntityForMounting(entity);
             }
-            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, entity);
+            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.currentTransform, entity, TransformType.LOCAL_TO_GLOBAL);
         }
     }
 

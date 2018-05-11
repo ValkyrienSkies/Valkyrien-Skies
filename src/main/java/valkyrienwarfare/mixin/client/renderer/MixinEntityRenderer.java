@@ -75,8 +75,9 @@ public abstract class MixinEntityRenderer {
 
         if (wrapper != null) {
             Vector playerPosNew = new Vector(entity.posX, entity.posY, entity.posZ);
-            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, playerPosNew);
+//            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, playerPosNew);
 
+            wrapper.wrapping.coordTransform.currentTransform.transform(playerPosNew, TransformType.LOCAL_TO_GLOBAL);
             entity.posX = entity.prevPosX = entity.lastTickPosX = playerPosNew.X;
             entity.posY = entity.prevPosY = entity.lastTickPosY = playerPosNew.Y;
             entity.posZ = entity.prevPosZ = entity.lastTickPosZ = playerPosNew.Z;
@@ -272,7 +273,7 @@ public abstract class MixinEntityRenderer {
         if (wrapper == null) {
             return vec.distanceTo(in);
         } else {
-            return this.mc.objectMouseOver.hitVec.distanceTo(RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, in));
+            return this.mc.objectMouseOver.hitVec.distanceTo(wrapper.wrapping.coordTransform.currentTransform.transform(in, TransformType.GLOBAL_TO_LOCAL));
         }
     }
 }

@@ -27,8 +27,8 @@ import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.block.BlockShipHelm;
 import valkyrienwarfare.addon.control.piloting.ControllerInputType;
 import valkyrienwarfare.addon.control.piloting.PilotControlsMessage;
-import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public class TileEntityShipHelm extends ImplTileEntityPilotable implements ITickable {
@@ -96,14 +96,16 @@ public class TileEntityShipHelm extends ImplTileEntityPilotable implements ITick
 
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(getWorld(), getPos());
         if (wrapper != null) {
-            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, compassPoint);
+            wrapper.wrapping.coordTransform.currentTransform.transform(compassPoint, TransformType.LOCAL_TO_GLOBAL);
+//            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, compassPoint);
         }
 
         Vector compassDirection = new Vector(compassPoint);
         compassDirection.subtract(spawnPos.getX(), spawnPos.getY(), spawnPos.getZ());
 
         if (wrapper != null) {
-            RotationMatrices.doRotationOnly(wrapper.wrapping.coordTransform.wToLTransform, compassDirection);
+            wrapper.wrapping.coordTransform.currentTransform.rotate(compassDirection, TransformType.GLOBAL_TO_LOCAL);
+//            RotationMatrices.doRotationOnly(wrapper.wrapping.coordTransform.wToLTransform, compassDirection);
         }
 
         compassDirection.normalize();

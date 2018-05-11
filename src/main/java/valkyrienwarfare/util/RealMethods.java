@@ -22,6 +22,7 @@ import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.DummyMethods;
 import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public class RealMethods implements DummyMethods {
@@ -45,7 +46,7 @@ public class RealMethods implements DummyMethods {
     @Override
     public double[] getShipTransformMatrix(Entity shipEnt) {
         PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity) shipEnt;
-        return wrapper.wrapping.coordTransform.lToWTransform;
+        return wrapper.wrapping.coordTransform.currentTransform.getInternalMatrix(TransformType.LOCAL_TO_GLOBAL);
     }
 
     // Note, do not call this from World coordinates; first subtract the world

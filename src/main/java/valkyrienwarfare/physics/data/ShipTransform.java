@@ -1,5 +1,6 @@
 package valkyrienwarfare.physics.data;
 
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
@@ -61,5 +62,25 @@ public class ShipTransform {
         } else {
             return Quaternion.QuaternionFromMatrix(globalToLocal);
         }
+    }
+    
+    /**
+     * Please never use this except in cases where its absolutely necessary.
+     * @param transformType
+     * @return
+     */
+    @Deprecated
+    public double[] getInternalMatrix(TransformType transformType) {
+        if (transformType == TransformType.LOCAL_TO_GLOBAL) {
+            return localToGlobal;
+        } else {
+            return globalToLocal;
+        }
+    }
+
+    public BlockPos transform(BlockPos pos, TransformType transformType) {
+        Vector blockPosAsVector = new Vector(pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5);
+        transform(blockPosAsVector, transformType);
+        return new BlockPos(blockPosAsVector.X - .5D, blockPosAsVector.Y - .5D, blockPosAsVector.Z - .5D);
     }
 }

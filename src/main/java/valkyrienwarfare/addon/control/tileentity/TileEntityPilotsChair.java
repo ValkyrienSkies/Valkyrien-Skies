@@ -26,6 +26,7 @@ import valkyrienwarfare.addon.control.piloting.ControllerInputType;
 import valkyrienwarfare.addon.control.piloting.PilotControlsMessage;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsObject;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
@@ -103,9 +104,10 @@ public class TileEntityPilotsChair extends ImplTileEntityPilotable {
             idealLinearVelocity.subtract(playerDirection);
         }
 
-        RotationMatrices.doRotationOnly(controlledShip.coordTransform.lToWTransform, idealLinearVelocity);
-
-        RotationMatrices.doRotationOnly(controlledShip.coordTransform.lToWTransform, shipUp);
+        controlledShip.coordTransform.currentTransform.rotate(idealLinearVelocity, TransformType.LOCAL_TO_GLOBAL);
+        controlledShip.coordTransform.currentTransform.rotate(shipUp, TransformType.LOCAL_TO_GLOBAL);
+//        RotationMatrices.doRotationOnly(controlledShip.coordTransform.lToWTransform, idealLinearVelocity);
+//        RotationMatrices.doRotationOnly(controlledShip.coordTransform.lToWTransform, shipUp);
 
         if (message.airshipUp_KeyDown) {
             idealLinearVelocity.add(upDirection);

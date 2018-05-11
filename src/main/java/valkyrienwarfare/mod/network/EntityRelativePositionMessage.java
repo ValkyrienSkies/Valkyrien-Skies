@@ -16,15 +16,16 @@
 
 package valkyrienwarfare.mod.network;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class EntityRelativePositionMessage implements IMessage {
 
@@ -38,12 +39,13 @@ public class EntityRelativePositionMessage implements IMessage {
 
         listSize = entitiesToSendRelativePosition.size();
 
-        double[] wToLTransformationMatrix = wrapperEntity.wrapping.coordTransform.wToLTransform;
+//        double[] wToLTransformationMatrix = wrapperEntity.wrapping.coordTransform.wToLTransform;
 
         for (int i = 0; i < entitiesToSendRelativePosition.size(); i++) {
             Entity entity = entitiesToSendRelativePosition.get(i);
             Vector entityPosition = new Vector(entity);
-            entityPosition.transform(wToLTransformationMatrix);
+            wrapperEntity.wrapping.coordTransform.currentTransform.transform(entityPosition, TransformType.GLOBAL_TO_LOCAL);
+//            entityPosition.transform(wToLTransformationMatrix);
             entitiesToSendIDs.add(entity.getEntityId());
             entitiesRelativePosition.add(entityPosition);
         }

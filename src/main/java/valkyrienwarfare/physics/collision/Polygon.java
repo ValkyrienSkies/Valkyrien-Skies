@@ -17,8 +17,9 @@
 package valkyrienwarfare.physics.collision;
 
 import net.minecraft.util.math.AxisAlignedBB;
-import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.physics.data.ShipTransform;
+import valkyrienwarfare.physics.data.TransformType;
 
 /**
  * Stores vertices for a polygon, and also has some other operations
@@ -37,13 +38,13 @@ public class Polygon {
 		this.normals = Vector.generateAxisAlignedNorms();
 	}
 
-	public Polygon(AxisAlignedBB bb, double[] rotationMatrix) {
+	public Polygon(AxisAlignedBB bb, ShipTransform transformation, TransformType transformType) {
 		this(bb);
 		for (int i = 0; i < vertices.length; i++) {
-			RotationMatrices.applyTransform(rotationMatrix, vertices[i]);
+		    transformation.transform(vertices[i], transformType);
 		}
 		for (Vector normal : normals) {
-		    RotationMatrices.doRotationOnly(rotationMatrix, normal);
+		    transformation.rotate(normal, transformType);
 		}
 	}
 	

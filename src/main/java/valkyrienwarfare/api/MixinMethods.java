@@ -25,11 +25,8 @@ import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.physmanagement.interaction.IWorldVW;
 import valkyrienwarfare.physics.collision.EntityCollisionInjector;
+import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 public class MixinMethods {
     public static EntityCollisionInjector.IntermediateMovementVariableStorage handleMove(/*Args args, */MoverType type, double dx, double dy, double dz, Entity this_) {
@@ -53,7 +50,8 @@ public class MixinMethods {
             }
 
             Vector endPos = new Vector(newX, newY, newZ);
-            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, endPos);
+//            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, endPos);
+            wrapper.wrapping.coordTransform.currentTransform.transform(endPos, TransformType.GLOBAL_TO_LOCAL);
             dx = endPos.X - this_.posX;
             dy = endPos.Y - this_.posY;
             dz = endPos.Z - this_.posZ;

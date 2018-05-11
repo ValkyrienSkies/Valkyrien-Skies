@@ -40,6 +40,7 @@ import valkyrienwarfare.physics.calculations.PhysicsCalculations;
 import valkyrienwarfare.physics.collision.optimization.IBitOctree;
 import valkyrienwarfare.physics.collision.optimization.IBitOctreeProvider;
 import valkyrienwarfare.physics.collision.optimization.ShipCollisionTask;
+import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
 // A manager used to process collisions between ships and the game world
@@ -260,7 +261,7 @@ public class WorldPhysicsCollider {
         // List<AxisAlignedBB> colBB = worldObj.getCollisionBoxes(inLocalBB);
         // inLocalBB = colBB.get(0);
 
-        Polygon shipInWorld = new Polygon(inLocalBB, parent.coordTransform.lToWTransform);
+        Polygon shipInWorld = new Polygon(inLocalBB, parent.coordTransform.currentTransform, TransformType.LOCAL_TO_GLOBAL);
         Polygon worldPoly = new Polygon(inGlobalBB);
         PhysPolygonCollider collider = new PhysPolygonCollider(shipInWorld, worldPoly, parent.coordTransform.normals);
         if (!collider.seperated) {

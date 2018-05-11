@@ -27,6 +27,7 @@ import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.math.VWMath;
 import valkyrienwarfare.physics.calculations.PhysicsCalculations;
+import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
 public class ShipPhysicsCollider {
@@ -51,7 +52,7 @@ public class ShipPhysicsCollider {
 		AxisAlignedBB secondBB = toCollideWith.getCollisionBoundingBox();
 		AxisAlignedBB betweenBB = VWMath.getBetweenAABB(firstBB, secondBB);
 
-		Polygon betweenBBPoly = new Polygon(betweenBB, toCollideWith.coordTransform.wToLTransform);
+		Polygon betweenBBPoly = new Polygon(betweenBB, toCollideWith.coordTransform.currentTransform, TransformType.GLOBAL_TO_LOCAL);
 
 		List<AxisAlignedBB> bbsInFirst = parent.getWorldObj().getCollisionBoxes(parent.wrapper,
 				betweenBBPoly.getEnclosedAABB());
@@ -64,11 +65,11 @@ public class ShipPhysicsCollider {
 		while (firstRandIter.hasNext()) {
 			AxisAlignedBB fromIter = firstRandIter.next();
 
-			Polygon firstInWorld = new Polygon(fromIter, toCollideWith.coordTransform.lToWTransform);
+			Polygon firstInWorld = new Polygon(fromIter, toCollideWith.coordTransform.currentTransform, TransformType.LOCAL_TO_GLOBAL);
 
 			AxisAlignedBB inWorldAABB = firstInWorld.getEnclosedAABB();
 
-			Polygon inShip2Poly = new Polygon(inWorldAABB, parent.coordTransform.wToLTransform);
+			Polygon inShip2Poly = new Polygon(inWorldAABB, parent.coordTransform.currentTransform, TransformType.GLOBAL_TO_LOCAL);
 
 			// This is correct
 			List<AxisAlignedBB> bbsInSecond = parent.getWorldObj().getCollisionBoxes(parent.wrapper,
@@ -78,7 +79,7 @@ public class ShipPhysicsCollider {
 
 			while (secondRandIter.hasNext()) {
 				// System.out.println("test");
-				Polygon secondInWorld = new Polygon(secondRandIter.next(), parent.coordTransform.lToWTransform);
+				Polygon secondInWorld = new Polygon(secondRandIter.next(), parent.coordTransform.currentTransform, TransformType.LOCAL_TO_GLOBAL);
 
 				// Both of these are in WORLD coordinates
 				Vector firstCenter = firstInWorld.getCenter();

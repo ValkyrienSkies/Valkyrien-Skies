@@ -20,9 +20,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.physics.calculations.PhysicsCalculations;
+import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.util.NBTUtils;
 
@@ -80,7 +80,8 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
         Vector outputForce = getForceOutputUnoriented(secondsToApply);
         if (isForceOutputOriented()) {
             if (updateParentShip()) {
-                RotationMatrices.doRotationOnly(getNode().getPhysicsObject().coordTransform.lToWTransform, outputForce);
+                getNode().getPhysicsObject().coordTransform.currentTransform.rotate(outputForce, TransformType.LOCAL_TO_GLOBAL);
+//                RotationMatrices.doRotationOnly(getNode().getPhysicsObject().coordTransform.lToWTransform, outputForce);
             }
         }
         return outputForce;
@@ -113,7 +114,8 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
         }
         PhysicsWrapperEntity parentShip = getNode().getPhysicsObject().wrapper;
         Vector engineCenter = new Vector(getPos().getX() + .5D, getPos().getY() + .5D, getPos().getZ() + .5D);
-        RotationMatrices.applyTransform(parentShip.wrapping.coordTransform.lToWTransform, engineCenter);
+//        RotationMatrices.applyTransform(parentShip.wrapping.coordTransform.lToWTransform, engineCenter);
+        parentShip.wrapping.coordTransform.currentTransform.transform(engineCenter, TransformType.LOCAL_TO_GLOBAL);
         engineCenter.subtract(parentShip.posX, parentShip.posY, parentShip.posZ);
         return engineCenter;
     }

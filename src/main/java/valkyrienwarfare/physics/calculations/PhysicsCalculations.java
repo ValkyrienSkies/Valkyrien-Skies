@@ -42,9 +42,10 @@ import valkyrienwarfare.math.VWMath;
 import valkyrienwarfare.physics.collision.WorldPhysicsCollider;
 import valkyrienwarfare.physics.data.BlockForce;
 import valkyrienwarfare.physics.data.BlockMass;
-import valkyrienwarfare.physics.management.ShipTransformationHolder;
+import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsObject;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.management.ShipTransformationHolder;
 import valkyrienwarfare.util.NBTUtils;
 import valkyrienwarfare.util.PhysicsSettings;
 
@@ -250,8 +251,9 @@ public class PhysicsCalculations {
         Vector parentCM = parent.centerCoord;
         if (!parent.centerCoord.equals(centerOfMass)) {
             Vector CMDif = centerOfMass.getSubtraction(parentCM);
-            RotationMatrices.doRotationOnly(parent.coordTransform.lToWTransform, CMDif);
+//            RotationMatrices.doRotationOnly(parent.coordTransform.lToWTransform, CMDif);
 
+            parent.coordTransform.currentTransform.rotate(CMDif, TransformType.LOCAL_TO_GLOBAL);
             parent.wrapper.posX -= CMDif.X;
             parent.wrapper.posY -= CMDif.Y;
             parent.wrapper.posZ -= CMDif.Z;
@@ -321,7 +323,7 @@ public class PhysicsCalculations {
             for (BlockPos pos : activeForcePositions) {
                 IBlockState state = parent.VKChunkCache.getBlockState(pos);
                 Block blockAt = state.getBlock();
-                VWMath.getBodyPosWithOrientation(pos, centerOfMass, parent.coordTransform.lToWTransform, inBodyWO);
+                VWMath.getBodyPosWithOrientation(pos, centerOfMass, parent.coordTransform.currentTransform.getInternalMatrix(TransformType.LOCAL_TO_GLOBAL), inBodyWO);
 
                 BlockForce.basicForces.getForceFromState(state, pos, worldObj, getPhysicsTimeDeltaPerPhysTick(), parent,
                         blockForce);
@@ -332,7 +334,7 @@ public class PhysicsCalculations {
                                 pos, state, parent.wrapper, getPhysicsTimeDeltaPerPhysTick());
                         if (otherPosition != null) {
                             VWMath.getBodyPosWithOrientation(otherPosition, centerOfMass,
-                                    parent.coordTransform.lToWTransform, inBodyWO);
+                                    parent.coordTransform.currentTransform.getInternalMatrix(TransformType.LOCAL_TO_GLOBAL), inBodyWO);
                         }
                     }
                     addForceAtPoint(inBodyWO, blockForce, crossVector);
@@ -391,7 +393,7 @@ public class PhysicsCalculations {
         double[] rotationChange = RotationMatrices.getRotationMatrix(angularVelocity.X, angularVelocity.Y,
                 angularVelocity.Z, angularVelocity.length() * getPhysicsTimeDeltaPerPhysTick());
         Quaternion finalTransform = Quaternion
-                .QuaternionFromMatrix(RotationMatrices.getMatrixProduct(rotationChange, coordTrans.lToWTransform));
+                .QuaternionFromMatrix(RotationMatrices.getMatrixProduct(rotationChange, coordTrans.currentTransform.getInternalMatrix(TransformType.LOCAL_TO_GLOBAL)));
 
         double[] radians = finalTransform.toRadians();
         wrapperEnt.pitch = Double.isNaN(radians[0]) ? 0.0f : (float) Math.toDegrees(radians[0]);

@@ -33,9 +33,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.physics.data.BlockMass;
+import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 @Mixin(Explosion.class)
@@ -74,7 +74,8 @@ public abstract class MixinExplosion {
         // TODO: Make this compatible and shit!
         for (PhysicsWrapperEntity ship : shipsNear) {
             Vector inLocal = new Vector(center);
-            RotationMatrices.applyTransform(ship.wrapping.coordTransform.wToLTransform, inLocal);
+//            RotationMatrices.applyTransform(ship.wrapping.coordTransform.wToLTransform, inLocal);
+            ship.wrapping.coordTransform.currentTransform.transform(inLocal, TransformType.GLOBAL_TO_LOCAL);
             // inLocal.roundToWhole();
             Explosion expl = new Explosion(ship.world, null, inLocal.X, inLocal.Y, inLocal.Z, radius, false, false);
 
@@ -122,7 +123,8 @@ public abstract class MixinExplosion {
                             forceVector.normalize();
                             forceVector.multiply(explosionForce / vectorDist);
 
-                            RotationMatrices.doRotationOnly(ship.wrapping.coordTransform.lToWTransform, forceVector);
+//                            RotationMatrices.doRotationOnly(ship.wrapping.coordTransform.lToWTransform, forceVector);
+                            ship.wrapping.coordTransform.currentTransform.transform(forceVector, TransformType.LOCAL_TO_GLOBAL);
                             // TODO: Make this work again
                             // PhysicsQueuedForce queuedForce = new PhysicsQueuedForce(forceVector,
                             // posVector, false, 1);

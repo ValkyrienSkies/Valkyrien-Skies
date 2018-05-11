@@ -30,6 +30,7 @@ import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.mod.physmanagement.interaction.INHPServerVW;
 import valkyrienwarfare.mod.physmanagement.interaction.PlayerDataBackup;
+import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 @Mixin(CPacketPlayerTryUseItemOnBlock.class)
@@ -51,7 +52,7 @@ public abstract class MixinCPacketPlayerTryUseItemOnBlock {
 			player.interactionManager.setBlockReachDistance(vw.dummyBlockReachDist());
 		}
 		if (wrapper != null && wrapper.wrapping.coordTransform != null) {
-			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, player);
+			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.currentTransform, player, TransformType.GLOBAL_TO_LOCAL);
 			if (player.getHeldItem(packetIn.getHand()) != null && player.getHeldItem(packetIn.getHand()).getItem() instanceof ItemBucket) {
 				player.interactionManager.setBlockReachDistance(vw.lastGoodBlockReachDist());
 			}

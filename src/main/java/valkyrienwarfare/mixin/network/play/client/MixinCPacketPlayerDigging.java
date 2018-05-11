@@ -29,6 +29,7 @@ import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.mod.physmanagement.interaction.INHPServerVW;
 import valkyrienwarfare.mod.physmanagement.interaction.PlayerDataBackup;
+import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 @Mixin(CPacketPlayerDigging.class)
@@ -50,9 +51,9 @@ public abstract class MixinCPacketPlayerDigging {
 			player.interactionManager.setBlockReachDistance(vw.dummyBlockReachDist());
 		}
 		if (wrapper != null && wrapper.wrapping.coordTransform != null) {
-			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, player);
+			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.currentTransform, player, TransformType.GLOBAL_TO_LOCAL);
 			server.processPlayerDigging(packetIn);
-			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, player);
+			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.currentTransform, player, TransformType.LOCAL_TO_GLOBAL);
 			playerBackup.restorePlayerToBackup();
 		} else {
 			server.processPlayerDigging(packetIn);

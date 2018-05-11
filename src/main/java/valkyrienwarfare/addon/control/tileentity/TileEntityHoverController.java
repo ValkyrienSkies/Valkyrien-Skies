@@ -30,6 +30,7 @@ import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.api.block.ethercompressor.TileEntityEtherCompressor;
 import valkyrienwarfare.physics.calculations.PhysicsCalculations;
+import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsObject;
 import valkyrienwarfare.util.NBTUtils;
 
@@ -57,7 +58,8 @@ public class TileEntityHoverController extends TileEntity {
     /*
      * Returns the Force Vector the engine will send to the physics engine
      */
-    public Vector getForceForEngine(TileEntityEtherCompressor engine, World world, BlockPos enginePos, IBlockState state, PhysicsObject physObj, double secondsToApply) {
+    public Vector getForceForEngine(TileEntityEtherCompressor engine, World world, BlockPos enginePos,
+            IBlockState state, PhysicsObject physObj, double secondsToApply) {
         // physObj.physicsProcessor.convertTorqueToVelocity();
         // secondsToApply*=5D;
         // idealHeight = 100D;
@@ -67,19 +69,17 @@ public class TileEntityHoverController extends TileEntity {
         shipVel.multiply(physObj.physicsProcessor.getInvMass());
 
         if (!world.isBlockPowered(getPos()) || autoStabalizerControl) {
-//            setAutoStabilizationValue(physObj);
+            // setAutoStabilizationValue(physObj);
         }
-
 
         PhysicsCalculations calculations = physObj.physicsProcessor;
 
-        double[] rotationAndTranslationMatrix = physObj.coordTransform.lToWTransform;
+        double[] rotationAndTranslationMatrix = physObj.coordTransform.currentTransform.getInternalMatrix(TransformType.LOCAL_TO_GLOBAL);
         Vector angularVelocity = new Vector(calculations.angularVelocity);
         Vector linearMomentum = new Vector(calculations.linearMomentum);
 
         double currentErrorY = -getControllerDistFromIdealY(physObj);
         double currentEngineErrorAngularY = -getEngineDistFromIdealAngular(enginePos, physObj, secondsToApply);
-
 
         Vector potentialMaxForce = new Vector(0, engine.getMaxThrust(), 0);
         potentialMaxForce.multiply(calculations.getInvMass());
@@ -92,14 +92,18 @@ public class TileEntityHoverController extends TileEntity {
         double maxYDelta = 10D;
 
         double futureCurrentErrorY = currentErrorY + linearThama * potentialMaxForce.Y;
-        double futureEngineErrorAngularY = getEngineDistFromIdealAngular(engine.getPos(), rotationAndTranslationMatrix, angularVelocity.getAddition(potentialMaxThrust), calculations.centerOfMass, calculations.getPhysicsTimeDeltaPerPhysTick());
+        double futureEngineErrorAngularY = getEngineDistFromIdealAngular(engine.getPos(), rotationAndTranslationMatrix,
+                angularVelocity.getAddition(potentialMaxThrust), calculations.centerOfMass,
+                calculations.getPhysicsTimeDeltaPerPhysTick());
 
         boolean doesForceMinimizeError = false;
 
-        if (Math.abs(futureCurrentErrorY) < Math.abs(currentErrorY) && Math.abs(futureEngineErrorAngularY) < Math.abs(currentEngineErrorAngularY)) {
+        if (Math.abs(futureCurrentErrorY) < Math.abs(currentErrorY)
+                && Math.abs(futureEngineErrorAngularY) < Math.abs(currentEngineErrorAngularY)) {
             doesForceMinimizeError = true;
             if (Math.abs(linearMomentum.Y * calculations.getInvMass()) > maxYDelta) {
-                if (Math.abs((potentialMaxForce.Y + linearMomentum.Y) * calculations.getInvMass()) > Math.abs(linearMomentum.Y * calculations.getInvMass())) {
+                if (Math.abs((potentialMaxForce.Y + linearMomentum.Y) * calculations.getInvMass()) > Math
+                        .abs(linearMomentum.Y * calculations.getInvMass())) {
                     doesForceMinimizeError = false;
                 }
             } else {
@@ -119,12 +123,12 @@ public class TileEntityHoverController extends TileEntity {
             engine.setThrustGoal(0);
         }
 
-//		calculations.convertTorqueToVelocity();
+        // calculations.convertTorqueToVelocity();
 
         // System.out.println(aggregateForce);
 
         return engine.getForceOutputNormal().getProduct(engine.getThrustActual() * secondsToApply);
-//		return new Vector();
+        // return new Vector();
     }
 
     public double getEngineDistFromIdealAngular(BlockPos enginePos, PhysicsObject physObj, double secondsToApply) {
@@ -134,12 +138,18 @@ public class TileEntityHoverController extends TileEntity {
         controllerPos.subtract(physObj.physicsProcessor.centerOfMass);
         enginePosVec.subtract(physObj.physicsProcessor.centerOfMass);
 
-        Vector unOrientedPosDif = new Vector(enginePosVec.X - controllerPos.X, enginePosVec.Y - controllerPos.Y, enginePosVec.Z - controllerPos.Z);
+        Vector unOrientedPosDif = new Vector(enginePosVec.X - controllerPos.X, enginePosVec.Y - controllerPos.Y,
+                enginePosVec.Z - controllerPos.Z);
 
         double idealYDif = unOrientedPosDif.dot(normalVector);
 
-        RotationMatrices.doRotationOnly(physObj.coordTransform.lToWTransform, controllerPos);
-        RotationMatrices.doRotationOnly(physObj.coordTransform.lToWTransform, enginePosVec);
+        physObj.coordTransform.currentTransform.rotate(controllerPos, TransformType.LOCAL_TO_GLOBAL);
+        physObj.coordTransform.currentTransform.rotate(enginePosVec, TransformType.LOCAL_TO_GLOBAL);
+
+        // RotationMatrices.doRotationOnly(physObj.coordTransform.lToWTransform,
+        // controllerPos);
+        // RotationMatrices.doRotationOnly(physObj.coordTransform.lToWTransform,
+        // enginePosVec);
 
         double inWorldYDif = enginePosVec.Y - controllerPos.Y;
 
@@ -149,7 +159,8 @@ public class TileEntityHoverController extends TileEntity {
         return idealYDif - (inWorldYDif + angularVelocityAtPoint.Y * angularVelocityBias);
     }
 
-    public double getEngineDistFromIdealAngular(BlockPos enginePos, double[] lToWRotation, Vector angularVelocity, Vector centerOfMass, double secondsToApply) {
+    public double getEngineDistFromIdealAngular(BlockPos enginePos, double[] lToWRotation, Vector angularVelocity,
+            Vector centerOfMass, double secondsToApply) {
 
         Vector controllerPos = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
         Vector enginePosVec = new Vector(enginePos.getX() + .5D, enginePos.getY() + .5D, enginePos.getZ() + .5D);
@@ -157,7 +168,8 @@ public class TileEntityHoverController extends TileEntity {
         controllerPos.subtract(centerOfMass);
         enginePosVec.subtract(centerOfMass);
 
-        Vector unOrientedPosDif = new Vector(enginePosVec.X - controllerPos.X, enginePosVec.Y - controllerPos.Y, enginePosVec.Z - controllerPos.Z);
+        Vector unOrientedPosDif = new Vector(enginePosVec.X - controllerPos.X, enginePosVec.Y - controllerPos.Y,
+                enginePosVec.Z - controllerPos.Z);
 
         double idealYDif = unOrientedPosDif.dot(normalVector);
 
@@ -175,7 +187,8 @@ public class TileEntityHoverController extends TileEntity {
     public double getControllerDistFromIdealY(PhysicsObject physObj) {
         Vector controllerPos = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
         physObj.coordTransform.fromLocalToGlobal(controllerPos);
-        return idealHeight - (physObj.physicsProcessor.wrapperEnt.posY + (physObj.physicsProcessor.linearMomentum.Y * physObj.physicsProcessor.getInvMass() * linearVelocityBias * 3D));
+        return idealHeight - (physObj.physicsProcessor.wrapperEnt.posY + (physObj.physicsProcessor.linearMomentum.Y
+                * physObj.physicsProcessor.getInvMass() * linearVelocityBias * 3D));
     }
 
     public void handleGUIInput(HovercraftControllerGUIInputMessage message, MessageContext ctx) {
@@ -183,12 +196,12 @@ public class TileEntityHoverController extends TileEntity {
 
         if (message.newStablitiyBias < 0 || message.newStablitiyBias > 1D) {
             // Out of bounds, set to auto
-//			autoStabalizerControl = true;
+            // autoStabalizerControl = true;
         } else {
             double stabilityDif = Math.abs(stabilityBias - message.newStablitiyBias);
             // if(stabilityDif>.05D){
             stabilityBias = message.newStablitiyBias;
-//			autoStabalizerControl = false;
+            // autoStabalizerControl = false;
             // }
         }
 
@@ -201,9 +214,10 @@ public class TileEntityHoverController extends TileEntity {
         physObj.coordTransform.fromLocalToGlobal(controllerPos);
 
         double controllerDistToIdeal = -(idealHeight - physObj.physicsProcessor.wrapperEnt.posY);
-        double yVelocity = physObj.physicsProcessor.linearMomentum.Y * physObj.physicsProcessor.getInvMass() * linearVelocityBias;
+        double yVelocity = physObj.physicsProcessor.linearMomentum.Y * physObj.physicsProcessor.getInvMass()
+                * linearVelocityBias;
 
-//		System.out.println("ay");
+        // System.out.println("ay");
 
         double biasChange = .00005D;
 
@@ -214,23 +228,25 @@ public class TileEntityHoverController extends TileEntity {
 
                 if (Math.abs(controllerDistToIdeal + yVelocity) < 40D) {
                     if (Math.abs(controllerDistToIdeal) > .5D) {
-//						System.out.println("easy");
+                        // System.out.println("easy");
                         stabilityBias *= .9999D;
                     }
                 } else {
-//					System.out.println("hard");
-                    stabilityBias -= (biasChange) * Math.max(Math.log10(Math.abs(controllerDistToIdeal + yVelocity)), 0D) * modifiyer;
+                    // System.out.println("hard");
+                    stabilityBias -= (biasChange)
+                            * Math.max(Math.log10(Math.abs(controllerDistToIdeal + yVelocity)), 0D) * modifiyer;
                 }
 
-//				modifiyer = math.abs(controllerDistToIdeal + yVelocity)/1000D;
-
+                // modifiyer = math.abs(controllerDistToIdeal + yVelocity)/1000D;
 
             } else {
-//				stabilityBias += (biasChange * .25D / math.pow((math.min(.25D, math.abs(controllerDistToIdeal + yVelocity))), .5D));
+                // stabilityBias += (biasChange * .25D / math.pow((math.min(.25D,
+                // math.abs(controllerDistToIdeal + yVelocity))), .5D));
             }
-//			stabilityBias -= biasChange;
+            // stabilityBias -= biasChange;
         } else {
-            stabilityBias += (biasChange * .5D / Math.pow((Math.min(.5D, Math.abs(controllerDistToIdeal + yVelocity))), .5D)) / 10D;
+            stabilityBias += (biasChange * .5D
+                    / Math.pow((Math.min(.5D, Math.abs(controllerDistToIdeal + yVelocity))), .5D)) / 10D;
         }
 
         stabilityBias = Math.max(Math.min(stabilityBias, 1D), 0.01D);
@@ -244,7 +260,8 @@ public class TileEntityHoverController extends TileEntity {
     }
 
     @Override
-    public void onDataPacket(net.minecraft.network.NetworkManager net, net.minecraft.network.play.server.SPacketUpdateTileEntity pkt) {
+    public void onDataPacket(net.minecraft.network.NetworkManager net,
+            net.minecraft.network.play.server.SPacketUpdateTileEntity pkt) {
         readFromNBT(pkt.getNbtCompound());
     }
 

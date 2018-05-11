@@ -29,6 +29,7 @@ import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.mod.network.PhysWrapperPositionMessage;
 import valkyrienwarfare.physics.data.ShipTransform;
+import valkyrienwarfare.physics.data.TransformType;
 
 /**
  * Stores coordinates and transforms for the ship.
@@ -38,10 +39,9 @@ import valkyrienwarfare.physics.data.ShipTransform;
 public class ShipTransformationHolder {
 
     public PhysicsObject parent;
-    public double[] lToWTransform = RotationMatrices.getDoubleIdentity();
-    public double[] wToLTransform = RotationMatrices.getDoubleIdentity();
-//    public double[] RlToWTransform = RotationMatrices.getDoubleIdentity();
-//    public double[] RwToLTransform = RotationMatrices.getDoubleIdentity();
+//    public double[] lToWTransform = RotationMatrices.getDoubleIdentity();
+//    public double[] wToLTransform = RotationMatrices.getDoubleIdentity();
+    public ShipTransform currentTransform = new ShipTransform(RotationMatrices.getDoubleIdentity());
     public ShipTransform renderTransform = new ShipTransform(RotationMatrices.getDoubleIdentity());
     public ShipTransform prevTransform = new ShipTransform(RotationMatrices.getDoubleIdentity());
     public Vector[] normals;
@@ -55,14 +55,13 @@ public class ShipTransformationHolder {
     }
 
     public void updateMatricesOnly() {
-        lToWTransform = RotationMatrices.getTranslationMatrix(parent.wrapper.posX, parent.wrapper.posY,
+        double[] lToWTransform = RotationMatrices.getTranslationMatrix(parent.wrapper.posX, parent.wrapper.posY,
                 parent.wrapper.posZ);
 
         lToWTransform = RotationMatrices.rotateAndTranslate(lToWTransform, parent.wrapper.pitch, parent.wrapper.yaw,
                 parent.wrapper.roll, parent.centerCoord);
 
-        wToLTransform = RotationMatrices.inverse(lToWTransform);
-
+        currentTransform = new ShipTransform(lToWTransform);
     }
 
     public void updateRenderMatrices(double x, double y, double z, double pitch, double yaw, double roll) {
@@ -72,7 +71,8 @@ public class ShipTransformationHolder {
     }
 
     public void updatePrevTransform() {
-        prevTransform = new ShipTransform(lToWTransform);
+        // Transformation objects are immutable, so this is 100% safe!
+        prevTransform = currentTransform;
     }
 
     /**
@@ -175,7 +175,7 @@ public class ShipTransformationHolder {
     public Vector[] generateRotationNormals() {
         Vector[] norms = Vector.generateAxisAlignedNorms();
         for (int i = 0; i < 3; i++) {
-            RotationMatrices.doRotationOnly(lToWTransform, norms[i]);
+            currentTransform.rotate(norms[i], TransformType.LOCAL_TO_GLOBAL);
         }
         return norms;
     }
@@ -224,16 +224,16 @@ public class ShipTransformationHolder {
     }
 
     public void fromGlobalToLocal(Vector inGlobal) {
-        RotationMatrices.applyTransform(wToLTransform, inGlobal);
+        currentTransform.transform(inGlobal, TransformType.GLOBAL_TO_LOCAL);
     }
 
     public void fromLocalToGlobal(Vector inLocal) {
-        RotationMatrices.applyTransform(lToWTransform, inLocal);
+        currentTransform.transform(inLocal, TransformType.LOCAL_TO_GLOBAL);
     }
 
     private class CollisionBBConsumer implements Consumer<BlockPos> {
         private static final double AABB_EXPANSION = 1.6D;
-        private final double[] M = lToWTransform;
+        private final double[] M = currentTransform.getInternalMatrix(TransformType.LOCAL_TO_GLOBAL);
         double minX, minY, minZ, maxX, maxY, maxZ;
 
         CollisionBBConsumer() {

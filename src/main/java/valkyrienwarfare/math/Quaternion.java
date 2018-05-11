@@ -17,7 +17,7 @@
 package valkyrienwarfare.math;
 
 /**
- * Used in rendering interpolation and in applying Angular Velocity in the physics Controller
+ * Used for rendering interpolation and applying angular velocity to the physics controller
  *
  * @author thebest108
  */

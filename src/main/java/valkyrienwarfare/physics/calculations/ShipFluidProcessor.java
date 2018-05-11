@@ -23,8 +23,8 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
 public class ShipFluidProcessor {
@@ -40,7 +40,8 @@ public class ShipFluidProcessor {
     public void updateSubmergedPositionsCalculations(float maxTime) {
         int yOceanLevel = getWaterLevelAtShip();
         Vector shipUpNormal = new Vector(0D, 1D, 0D);
-        RotationMatrices.doRotationOnly(parent.coordTransform.lToWTransform, shipUpNormal);
+        parent.coordTransform.currentTransform.rotate(shipUpNormal, TransformType.LOCAL_TO_GLOBAL);
+//        RotationMatrices.doRotationOnly(parent.coordTransform.lToWTransform, shipUpNormal);
         
         int maxYToCheck = yOceanLevel;
         int minYToCheck = Math.max(MathHelper.floor(parent.wrapper.getEntityBoundingBox().minY), 0);

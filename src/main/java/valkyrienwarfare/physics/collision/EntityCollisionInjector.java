@@ -37,11 +37,11 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.math.VWMath;
 import valkyrienwarfare.mod.physmanagement.interaction.EntityDraggable;
 import valkyrienwarfare.mod.physmanagement.interaction.IDraggable;
+import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.physics.management.WorldPhysObjectManager;
 
@@ -259,9 +259,10 @@ public class EntityCollisionInjector {
         entity.onGround = entity.collidedVertically && origDy < 0 || alreadyOnGround || entity.onGround;
         entity.collided = entity.collidedHorizontally || entity.collidedVertically;
 
-        Vector entityPosInShip = new Vector(entity.posX, entity.posY - 0.20000000298023224D, entity.posZ,
-                worldBelow.wrapping.coordTransform.wToLTransform);
+        Vector entityPosInShip = new Vector(entity.posX, entity.posY - 0.20000000298023224D, entity.posZ);
 
+        worldBelow.wrapping.coordTransform.currentTransform.transform(entityPosInShip, TransformType.GLOBAL_TO_LOCAL);
+        
         int j4 = MathHelper.floor(entityPosInShip.X);
         int l4 = MathHelper.floor(entityPosInShip.Y);
         int i5 = MathHelper.floor(entityPosInShip.Z);
@@ -386,7 +387,7 @@ public class EntityCollisionInjector {
         for (PhysicsWrapperEntity wrapper : ships) {
             try {
                 if (!entity.isRidingSameEntity(wrapper)) {
-                    Polygon playerInLocal = new Polygon(entityBB, wrapper.wrapping.coordTransform.wToLTransform);
+                    Polygon playerInLocal = new Polygon(entityBB, wrapper.wrapping.coordTransform.currentTransform, TransformType.GLOBAL_TO_LOCAL);
                     AxisAlignedBB bb = playerInLocal.getEnclosedAABB();
 
                     if ((bb.maxX - bb.minX) * (bb.maxZ - bb.minZ) > 9898989) {
@@ -401,7 +402,7 @@ public class EntityCollisionInjector {
                     }
 
                     for (AxisAlignedBB inLocal : collidingBBs) {
-                        ShipPolygon poly = new ShipPolygon(inLocal, wrapper.wrapping.coordTransform.lToWTransform,
+                        ShipPolygon poly = new ShipPolygon(inLocal, wrapper.wrapping.coordTransform.currentTransform, TransformType.LOCAL_TO_GLOBAL,
                                 wrapper.wrapping.coordTransform.normals, wrapper.wrapping);
                         collisions.add(poly);
                     }
@@ -418,7 +419,9 @@ public class EntityCollisionInjector {
                 double posZ = entity.posZ;
 
                 Vector entityPos = new Vector(posX, posY, posZ);
-                RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, entityPos);
+                
+                wrapper.wrapping.coordTransform.currentTransform.transform(entityPos, TransformType.GLOBAL_TO_LOCAL);
+//                RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, entityPos);
 
                 setEntityPositionAndUpdateBB(entity, entityPos.X, entityPos.Y, entityPos.Z);
 

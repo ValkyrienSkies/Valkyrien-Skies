@@ -43,15 +43,11 @@ public class CoordTransformObject {
     public double[] lToWTransform = RotationMatrices.getDoubleIdentity();
     public double[] wToLTransform = RotationMatrices.getDoubleIdentity();
 
-    public double[] RlToWRotation = RotationMatrices.getDoubleIdentity();
-    public double[] RwToLRotation = RotationMatrices.getDoubleIdentity();
     public double[] RlToWTransform = RotationMatrices.getDoubleIdentity();
     public double[] RwToLTransform = RotationMatrices.getDoubleIdentity();
 
     public double[] prevlToWTransform;
     public double[] prevwToLTransform;
-    public double[] prevLToWRotation;
-    public double[] prevWToLRotation;
 
     public Vector[] normals;
 
@@ -83,8 +79,6 @@ public class CoordTransformObject {
 
         RlToWTransform = lToWTransform;
         RwToLTransform = wToLTransform;
-        RlToWRotation = lToWRotation;
-        RwToLRotation = wToLRotation;
     }
 
     public void updateRenderMatrices(double x, double y, double z, double pitch, double yaw, double roll) {
@@ -93,17 +87,12 @@ public class CoordTransformObject {
         RlToWTransform = RotationMatrices.rotateAndTranslate(RlToWTransform, pitch, yaw, roll, parent.centerCoord);
 
         RwToLTransform = RotationMatrices.inverse(RlToWTransform);
-
-        RlToWRotation = RotationMatrices.rotateOnly(RotationMatrices.getDoubleIdentity(), pitch, yaw, roll);
-        RwToLRotation = RotationMatrices.inverse(RlToWRotation);
     }
 
     // Used for the moveRiders() method
     public void setPrevMatrices() {
         prevlToWTransform = lToWTransform;
         prevwToLTransform = wToLTransform;
-        prevLToWRotation = lToWRotation;
-        prevWToLRotation = wToLRotation;
     }
 
     /**

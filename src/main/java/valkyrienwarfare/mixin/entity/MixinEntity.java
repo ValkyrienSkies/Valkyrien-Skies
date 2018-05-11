@@ -152,7 +152,7 @@ public abstract class MixinEntity implements IDraggable {
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(Entity.class.cast(this));
         if (wrapper != null) {
             Vector newOutput = new Vector(original);
-            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.RlToWRotation, newOutput);
+            RotationMatrices.doRotationOnly(wrapper.wrapping.coordTransform.RlToWTransform, newOutput);
             return newOutput.toVec3d();
         } else {
             return original;
@@ -176,7 +176,7 @@ public abstract class MixinEntity implements IDraggable {
 
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(Entity.class.cast(this));
         if (wrapper != null) {
-            return RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.RlToWRotation, vanilla);
+            return RotationMatrices.doRotationOnly(wrapper.wrapping.coordTransform.RlToWTransform, vanilla);
         }
 
         return vanilla;

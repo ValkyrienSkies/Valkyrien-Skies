@@ -103,9 +103,9 @@ public class TileEntityPilotsChair extends ImplTileEntityPilotable {
             idealLinearVelocity.subtract(playerDirection);
         }
 
-        RotationMatrices.applyTransform(controlledShip.coordTransform.lToWRotation, idealLinearVelocity);
+        RotationMatrices.doRotationOnly(controlledShip.coordTransform.lToWTransform, idealLinearVelocity);
 
-        RotationMatrices.applyTransform(controlledShip.coordTransform.lToWRotation, shipUp);
+        RotationMatrices.doRotationOnly(controlledShip.coordTransform.lToWTransform, shipUp);
 
         if (message.airshipUp_KeyDown) {
             idealLinearVelocity.add(upDirection);

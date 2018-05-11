@@ -122,7 +122,7 @@ public abstract class MixinExplosion {
                             forceVector.normalize();
                             forceVector.multiply(explosionForce / vectorDist);
 
-                            RotationMatrices.doRotationOnly(ship.wrapping.coordTransform.lToWRotation, forceVector);
+                            RotationMatrices.doRotationOnly(ship.wrapping.coordTransform.lToWTransform, forceVector);
                             // TODO: Make this work again
                             // PhysicsQueuedForce queuedForce = new PhysicsQueuedForce(forceVector,
                             // posVector, false, 1);

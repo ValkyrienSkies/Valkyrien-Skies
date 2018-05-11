@@ -109,7 +109,7 @@ public abstract class EntityDraggable {
 
             Vector oldLookingPos = new Vector(entity.getLook(1.0F));
             RotationMatrices.doRotationOnly(coordTransform.prevwToLTransform, oldLookingPos);
-            RotationMatrices.applyTransform(coordTransform.lToWRotation, oldLookingPos);
+            RotationMatrices.doRotationOnly(coordTransform.lToWTransform, oldLookingPos);
 
             double newPitch = Math.asin(oldLookingPos.Y) * -180D / Math.PI;
             double f4 = -Math.cos(-newPitch * 0.017453292D);

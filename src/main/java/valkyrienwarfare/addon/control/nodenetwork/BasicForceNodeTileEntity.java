@@ -80,7 +80,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
         Vector outputForce = getForceOutputUnoriented(secondsToApply);
         if (isForceOutputOriented()) {
             if (updateParentShip()) {
-                RotationMatrices.applyTransform(getNode().getPhysicsObject().coordTransform.lToWRotation, outputForce);
+                RotationMatrices.doRotationOnly(getNode().getPhysicsObject().coordTransform.lToWTransform, outputForce);
             }
         }
         return outputForce;

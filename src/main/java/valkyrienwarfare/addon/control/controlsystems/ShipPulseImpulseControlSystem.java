@@ -21,8 +21,8 @@ import java.util.Set;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import valkyrienwarfare.addon.control.nodenetwork.Node;
-import valkyrienwarfare.addon.control.tileentity.TileEntityThrustModulator;
 import valkyrienwarfare.addon.control.tileentity.TileEntityNormalEtherCompressor;
+import valkyrienwarfare.addon.control.tileentity.TileEntityThrustModulator;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.api.block.ethercompressor.TileEntityEtherCompressor;
@@ -52,7 +52,6 @@ public class ShipPulseImpulseControlSystem {
         double totalPotentialThrust = getMaxThrustForAllThrusters();
         double currentThrust = getTotalThrustForAllThrusters();
 
-        double[] rotationMatrix = calculations.parent.coordTransform.lToWRotation;
         double[] rotationAndTranslationMatrix = calculations.parent.coordTransform.lToWTransform;
         double[] invRotationAndTranslationMatrix = calculations.parent.coordTransform.wToLTransform;
         double[] invMOIMatrix = calculations.invFramedMOI;
@@ -83,7 +82,8 @@ public class ShipPulseImpulseControlSystem {
         Vector theNormal = new Vector(0, 1, 0);
 
         Vector idealNormal = new Vector(theNormal);
-        Vector currentNormal = new Vector(theNormal, calculations.parent.coordTransform.lToWRotation);
+        Vector currentNormal = new Vector(theNormal);
+        RotationMatrices.doRotationOnly(calculations.parent.coordTransform.lToWTransform, currentNormal);
 
         Vector currentNormalError = currentNormal.getSubtraction(idealNormal);
 

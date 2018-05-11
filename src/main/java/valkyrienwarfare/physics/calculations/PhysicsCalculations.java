@@ -250,7 +250,7 @@ public class PhysicsCalculations {
         Vector parentCM = parent.centerCoord;
         if (!parent.centerCoord.equals(centerOfMass)) {
             Vector CMDif = centerOfMass.getSubtraction(parentCM);
-            RotationMatrices.applyTransform(parent.coordTransform.lToWRotation, CMDif);
+            RotationMatrices.doRotationOnly(parent.coordTransform.lToWTransform, CMDif);
 
             parent.wrapper.posX -= CMDif.X;
             parent.wrapper.posY -= CMDif.Y;
@@ -321,7 +321,7 @@ public class PhysicsCalculations {
             for (BlockPos pos : activeForcePositions) {
                 IBlockState state = parent.VKChunkCache.getBlockState(pos);
                 Block blockAt = state.getBlock();
-                VWMath.getBodyPosWithOrientation(pos, centerOfMass, parent.coordTransform.lToWRotation, inBodyWO);
+                VWMath.getBodyPosWithOrientation(pos, centerOfMass, parent.coordTransform.lToWTransform, inBodyWO);
 
                 BlockForce.basicForces.getForceFromState(state, pos, worldObj, getPhysicsTimeDeltaPerPhysTick(), parent,
                         blockForce);
@@ -332,7 +332,7 @@ public class PhysicsCalculations {
                                 pos, state, parent.wrapper, getPhysicsTimeDeltaPerPhysTick());
                         if (otherPosition != null) {
                             VWMath.getBodyPosWithOrientation(otherPosition, centerOfMass,
-                                    parent.coordTransform.lToWRotation, inBodyWO);
+                                    parent.coordTransform.lToWTransform, inBodyWO);
                         }
                     }
                     addForceAtPoint(inBodyWO, blockForce, crossVector);
@@ -391,7 +391,7 @@ public class PhysicsCalculations {
         double[] rotationChange = RotationMatrices.getRotationMatrix(angularVelocity.X, angularVelocity.Y,
                 angularVelocity.Z, angularVelocity.length() * getPhysicsTimeDeltaPerPhysTick());
         Quaternion finalTransform = Quaternion
-                .QuaternionFromMatrix(RotationMatrices.getMatrixProduct(rotationChange, coordTrans.lToWRotation));
+                .QuaternionFromMatrix(RotationMatrices.getMatrixProduct(rotationChange, coordTrans.lToWTransform));
 
         double[] radians = finalTransform.toRadians();
         wrapperEnt.pitch = Double.isNaN(radians[0]) ? 0.0f : (float) Math.toDegrees(radians[0]);

@@ -37,20 +37,13 @@ import valkyrienwarfare.mod.network.PhysWrapperPositionMessage;
 public class CoordTransformObject {
 
     public PhysicsObject parent;
-
-    public double[] lToWRotation = RotationMatrices.getDoubleIdentity();
-    public double[] wToLRotation = RotationMatrices.getDoubleIdentity();
     public double[] lToWTransform = RotationMatrices.getDoubleIdentity();
     public double[] wToLTransform = RotationMatrices.getDoubleIdentity();
-
     public double[] RlToWTransform = RotationMatrices.getDoubleIdentity();
     public double[] RwToLTransform = RotationMatrices.getDoubleIdentity();
-
     public double[] prevlToWTransform;
     public double[] prevwToLTransform;
-
     public Vector[] normals;
-
     public final ShipTransformationBuffer serverBuffer;
 
     public CoordTransformObject(PhysicsObject object) {
@@ -69,13 +62,7 @@ public class CoordTransformObject {
         lToWTransform = RotationMatrices.rotateAndTranslate(lToWTransform, parent.wrapper.pitch, parent.wrapper.yaw,
                 parent.wrapper.roll, parent.centerCoord);
 
-        lToWRotation = RotationMatrices.getDoubleIdentity();
-
-        lToWRotation = RotationMatrices.rotateOnly(lToWRotation, parent.wrapper.pitch, parent.wrapper.yaw,
-                parent.wrapper.roll);
-
         wToLTransform = RotationMatrices.inverse(lToWTransform);
-        wToLRotation = RotationMatrices.inverse(lToWRotation);
 
         RlToWTransform = lToWTransform;
         RwToLTransform = wToLTransform;
@@ -195,7 +182,7 @@ public class CoordTransformObject {
     public Vector[] generateRotationNormals() {
         Vector[] norms = Vector.generateAxisAlignedNorms();
         for (int i = 0; i < 3; i++) {
-            RotationMatrices.applyTransform(lToWRotation, norms[i]);
+            RotationMatrices.doRotationOnly(lToWTransform, norms[i]);
         }
         return norms;
     }

@@ -16,13 +16,14 @@
 
 package valkyrienwarfare.mixin.entity;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import net.minecraft.entity.Entity;
+import net.minecraft.util.math.Vec3d;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
@@ -55,7 +56,7 @@ public abstract class MixinEntityCLIENT {
 
             Vector playerEyes = new Vector(0, this.getEyeHeight(), 0);
             //Remove the original position added for the player's eyes
-            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWRotation, playerEyes);
+            RotationMatrices.doRotationOnly(wrapper.wrapping.coordTransform.lToWTransform, playerEyes);
             //Add the new rotate player eyes to the position
             playerPosition.add(playerEyes);
             callbackInfo.setReturnValue(playerPosition.toVec3d());

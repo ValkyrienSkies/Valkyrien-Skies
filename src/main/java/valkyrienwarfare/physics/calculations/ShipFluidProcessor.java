@@ -16,15 +16,16 @@
 
 package valkyrienwarfare.physics.calculations;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.physics.management.PhysicsObject;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ShipFluidProcessor {
 
@@ -38,8 +39,9 @@ public class ShipFluidProcessor {
 
     public void updateSubmergedPositionsCalculations(float maxTime) {
         int yOceanLevel = getWaterLevelAtShip();
-        Vector shipUpNormal = new Vector(0D, 1D, 0D, parent.coordTransform.lToWRotation);
-
+        Vector shipUpNormal = new Vector(0D, 1D, 0D);
+        RotationMatrices.doRotationOnly(parent.coordTransform.lToWTransform, shipUpNormal);
+        
         int maxYToCheck = yOceanLevel;
         int minYToCheck = Math.max(MathHelper.floor(parent.wrapper.getEntityBoundingBox().minY), 0);
 

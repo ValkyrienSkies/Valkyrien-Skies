@@ -41,8 +41,8 @@ public class PlayerShipRefrenceMessage implements IMessage {
         playerLookVectorInLocal = new Vector(playerToSend.getLook(1.0F));
 
         RotationMatrices.applyTransform(shipOn.wrapping.coordTransform.wToLTransform, playerPosInLocal);
-        RotationMatrices.doRotationOnly(shipOn.wrapping.coordTransform.wToLRotation, velocityInLocal);
-        RotationMatrices.doRotationOnly(shipOn.wrapping.coordTransform.wToLRotation, playerLookVectorInLocal);
+        RotationMatrices.doRotationOnly(shipOn.wrapping.coordTransform.wToLTransform, velocityInLocal);
+        RotationMatrices.doRotationOnly(shipOn.wrapping.coordTransform.wToLTransform, playerLookVectorInLocal);
 
         shipInID = shipOn.getEntityId();
     }

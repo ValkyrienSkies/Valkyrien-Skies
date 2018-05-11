@@ -87,7 +87,7 @@ public class TileEntityShipHelm extends ImplTileEntityPilotable implements ITick
         lastCompassAngle = compassAngle;
 
         IBlockState helmState = getWorld().getBlockState(getPos());
-        EnumFacing enumfacing = (EnumFacing) helmState.getValue(BlockShipHelm.FACING);
+        EnumFacing enumfacing = helmState.getValue(BlockShipHelm.FACING);
         double wheelAndCompassStateRotation = enumfacing.getHorizontalAngle();
 
         BlockPos spawnPos = getWorld().getSpawnPoint();
@@ -103,7 +103,7 @@ public class TileEntityShipHelm extends ImplTileEntityPilotable implements ITick
         compassDirection.subtract(spawnPos.getX(), spawnPos.getY(), spawnPos.getZ());
 
         if (wrapper != null) {
-            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLRotation, compassDirection);
+            RotationMatrices.doRotationOnly(wrapper.wrapping.coordTransform.wToLTransform, compassDirection);
         }
 
         compassDirection.normalize();
@@ -111,12 +111,14 @@ public class TileEntityShipHelm extends ImplTileEntityPilotable implements ITick
         compassAngle = (compassAngle + 360D) % 360D;
     }
 
+    @Override
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
 
         lastWheelRotation = wheelRotation = compound.getDouble("wheelRotation");
     }
 
+    @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         NBTTagCompound toReturn = super.writeToNBT(compound);
 

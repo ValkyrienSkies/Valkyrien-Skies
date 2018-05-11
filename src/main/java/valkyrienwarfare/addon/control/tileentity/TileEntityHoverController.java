@@ -138,8 +138,8 @@ public class TileEntityHoverController extends TileEntity {
 
         double idealYDif = unOrientedPosDif.dot(normalVector);
 
-        RotationMatrices.doRotationOnly(physObj.coordTransform.lToWRotation, controllerPos);
-        RotationMatrices.doRotationOnly(physObj.coordTransform.lToWRotation, enginePosVec);
+        RotationMatrices.doRotationOnly(physObj.coordTransform.lToWTransform, controllerPos);
+        RotationMatrices.doRotationOnly(physObj.coordTransform.lToWTransform, enginePosVec);
 
         double inWorldYDif = enginePosVec.Y - controllerPos.Y;
 

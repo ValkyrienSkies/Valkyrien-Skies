@@ -16,13 +16,14 @@
 
 package valkyrienwarfare.mixin.client.particle;
 
-import net.minecraft.client.particle.Particle;
-import net.minecraft.client.particle.ParticleManager;
-import net.minecraft.util.math.BlockPos;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import net.minecraft.client.particle.Particle;
+import net.minecraft.client.particle.ParticleManager;
+import net.minecraft.util.math.BlockPos;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
@@ -43,7 +44,7 @@ public abstract class MixinParticleManager {
             Vector posVec = new Vector(effect.posX, effect.posY, effect.posZ);
             Vector velocity = new Vector(effect.motionX, effect.motionY, effect.motionZ);
             wrapper.wrapping.coordTransform.fromLocalToGlobal(posVec);
-            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWRotation, velocity);
+            RotationMatrices.doRotationOnly(wrapper.wrapping.coordTransform.lToWTransform, velocity);
             effect.setPosition(posVec.X, posVec.Y, posVec.Z);
             effect.motionX = velocity.X;
             effect.motionY = velocity.Y;

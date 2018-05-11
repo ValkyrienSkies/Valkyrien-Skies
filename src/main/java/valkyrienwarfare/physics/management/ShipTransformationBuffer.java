@@ -24,10 +24,11 @@ import valkyrienwarfare.physics.data.ShipTransformData;
  */
 public class ShipTransformationBuffer {
 
+    public static final int PACKET_BUFFER_SIZE = 10;
     private final ShipTransformData[] recentTransforms;
 
     public ShipTransformationBuffer() {
-        recentTransforms = new ShipTransformData[20];
+        recentTransforms = new ShipTransformData[PACKET_BUFFER_SIZE];
     }
 
     // Number of ticks the parent ship has been active for

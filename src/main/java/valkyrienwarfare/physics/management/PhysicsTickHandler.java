@@ -111,7 +111,7 @@ public class PhysicsTickHandler {
             if (!wrapper.firstUpdate) {
                 wrapper.wrapping.physicsProcessor.rawPhysTickPostCol();
             } else {
-                wrapper.wrapping.coordTransform.updateAllTransforms();
+                wrapper.wrapping.coordTransform.updateAllTransforms(false);
             }
         }
 

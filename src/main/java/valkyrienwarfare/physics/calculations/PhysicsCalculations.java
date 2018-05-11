@@ -230,6 +230,7 @@ public class PhysicsCalculations {
                 linearMomentum.zero();
                 angularVelocity.zero();
             }
+            parent.coordTransform.updateAllTransforms(true);
         }
     }
 
@@ -256,7 +257,7 @@ public class PhysicsCalculations {
             parent.wrapper.posZ -= CMDif.Z;
 
             parent.centerCoord = new Vector(centerOfMass);
-            parent.coordTransform.updateAllTransforms();
+            parent.coordTransform.updateAllTransforms(false);
         }
     }
 
@@ -396,7 +397,6 @@ public class PhysicsCalculations {
         wrapperEnt.pitch = Double.isNaN(radians[0]) ? 0.0f : (float) Math.toDegrees(radians[0]);
         wrapperEnt.yaw = Double.isNaN(radians[1]) ? 0.0f : (float) Math.toDegrees(radians[1]);
         wrapperEnt.roll = Double.isNaN(radians[2]) ? 0.0f : (float) Math.toDegrees(radians[2]);
-        coordTrans.updateAllTransforms();
     }
 
     public void applyLinearVelocity() {

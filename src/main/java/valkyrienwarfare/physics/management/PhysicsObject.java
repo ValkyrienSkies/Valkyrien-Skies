@@ -326,7 +326,7 @@ public class PhysicsObject {
         physicsProcessor.processInitialPhysicsData();
         physicsProcessor.updateParentCenterOfMass();
 
-        coordTransform.updateAllTransforms();
+        coordTransform.updateAllTransforms(false);
     }
 
     /**
@@ -733,7 +733,8 @@ public class PhysicsObject {
         }
 
         coordTransform.setPrevMatrices();
-        coordTransform.updateAllTransforms();
+        // TODO: Send AABB data to client instead
+        coordTransform.updateAllTransforms(true);
     }
 
     public void updateChunkCache() {
@@ -793,7 +794,7 @@ public class PhysicsObject {
             }
         }
 
-        coordTransform.updateAllTransforms();
+        coordTransform.updateAllTransforms(false);
     }
 
     // Generates the blockPos array; must be loaded DIRECTLY after the chunks are

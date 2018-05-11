@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.physics.collision.optimization.ShipCollisionTask;
@@ -17,27 +20,50 @@ public class VWThread extends Thread {
     // The ships we will be ticking physics for every tick, and sending those
     // updates to players.
     private final List<PhysicsWrapperEntity> ships;
-    private final long MS_PER_TICK = 50;
+    private final static long MS_PER_TICK = 50;
+    private final static long MAX_LOST_TIME = 1000;
     private int positionTickID;
+    // Used to give each VW thread a unique name
+    private static int threadID = 0;
+    private boolean threadRunning;
 
     public VWThread(World host) {
-        super("VW World Thread: " + host.getProviderName());
-        hostWorld = host;
-        ships = new ArrayList<PhysicsWrapperEntity>();
-        positionTickID = 0;
+        super("VW World Thread: " + threadID);
+        threadID++;
+        this.hostWorld = host;
+        this.ships = new ArrayList<PhysicsWrapperEntity>();
+        this.positionTickID = 0;
+        threadRunning = true;
     }
 
     @Override
     public void run() {
         // System.out.println("Thread running");
-        while (true) {
+        // Used to make up for any lost time when we tick
+        long lostTickTime = 0;
+        while (threadRunning) {
+            // Limit the tick smoothing to just one second (1000ms), if lostTickTime becomes
+            // too large then physics would move too quickly after the lag source was
+            // removed.
+            if (lostTickTime > MAX_LOST_TIME) {
+                lostTickTime %= MAX_LOST_TIME;
+            }
             long start = System.currentTimeMillis();
             runGameLoop();
             try {
                 long sleepTime = start + MS_PER_TICK - System.currentTimeMillis();
                 // Sending a negative number would cause a crash.
                 if (sleepTime > 0) {
-                    sleep(sleepTime);
+                    if (sleepTime > lostTickTime) {
+                        sleepTime -= lostTickTime;
+                        lostTickTime = 0;
+                        sleep(sleepTime);
+                    } else {
+                        lostTickTime -= sleepTime;
+                    }
+                } else {
+                    // We were late in processing this tick, add it to the lost tick time.
+                    lostTickTime -= sleepTime;
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -46,9 +72,23 @@ public class VWThread extends Thread {
     }
 
     private void runGameLoop() {
-        if (hostWorld.getMinecraftServer().isServerRunning() && !Minecraft.getMinecraft().isGamePaused()) {
-            physicsTick();
+        MinecraftServer mcServer = hostWorld.getMinecraftServer();
+        if (mcServer.isServerRunning()) {
+            if (mcServer.isDedicatedServer()) {
+                // Always tick the physics
+                physicsTick();
+            } else {
+                // Only tick the physics if the game isn't paused
+                if (!isSinglePlayerPaused()) {
+                    physicsTick();
+                }
+            }
         }
+    }
+
+    @SideOnly(Side.CLIENT)
+    private boolean isSinglePlayerPaused() {
+        return Minecraft.getMinecraft().isGamePaused();
     }
 
     // The whole time need to be careful the game thread isn't messing with these
@@ -119,9 +159,13 @@ public class VWThread extends Thread {
     private void tickTheTransformUpdates() {
         for (PhysicsWrapperEntity wrapper : ships) {
             if (!wrapper.firstUpdate) {
-                wrapper.wrapping.physicsProcessor.rawPhysTickPostCol();
+                try {
+                    wrapper.wrapping.physicsProcessor.rawPhysTickPostCol();
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
             } else {
-                wrapper.wrapping.coordTransform.updateAllTransforms();
+                wrapper.wrapping.coordTransform.updateAllTransforms(false);
             }
         }
     }
@@ -135,8 +179,7 @@ public class VWThread extends Thread {
 
     public void kill() {
         System.out.println("VW Thread Killed");
+        threadRunning = false;
         stop();
-        ships.clear();
-        this.destroy();
     }
 }

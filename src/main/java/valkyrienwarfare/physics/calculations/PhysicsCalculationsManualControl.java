@@ -82,7 +82,7 @@ public class PhysicsCalculationsManualControl extends PhysicsCalculations {
         parent.wrapper.posY += linearForce.Y;
         parent.wrapper.posZ += linearForce.Z;
 
-        parent.coordTransform.updateAllTransforms();
+        parent.coordTransform.updateAllTransforms(true);
     }
 
     @Override

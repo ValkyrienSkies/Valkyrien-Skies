@@ -59,7 +59,7 @@ public class CoordTransformObject {
 
     public CoordTransformObject(PhysicsObject object) {
         this.parent = object;
-        updateAllTransforms();
+        this.updateAllTransforms(true);
         this.prevlToWTransform = lToWTransform;
         this.prevwToLTransform = wToLTransform;
         this.serverBuffer = new ShipTransformationBuffer();
@@ -106,9 +106,7 @@ public class CoordTransformObject {
         prevWToLRotation = wToLRotation;
     }
 
-    private boolean updateParentAABB = true;
-    
-    public void updateAllTransforms() {
+    public void updateAllTransforms(boolean updateParentAABB) {
         updatePosRelativeToWorldBorder();
         updateMatricesOnly();
         if (updateParentAABB) {
@@ -116,7 +114,6 @@ public class CoordTransformObject {
         }
         updateParentNormals();
         updatePassengerPositions();
-        updateParentAABB = !updateParentAABB;
     }
 
     /**

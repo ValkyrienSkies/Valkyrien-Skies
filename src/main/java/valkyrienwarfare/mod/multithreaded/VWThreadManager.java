@@ -7,7 +7,8 @@ import net.minecraft.world.World;
 
 /**
  * Only needs to run for the server end of things, the client end will just
- * receive more physics ticks as a result.
+ * receive more physics ticks as a result. Handles separate physics threads for
+ * different worlds.
  * 
  * @author Alexander
  *
@@ -26,6 +27,6 @@ public class VWThreadManager {
     }
 
     public static void killVWThreadForWorld(World world) {
-        WORLDS_TO_THREADS.remove(world).stop();
+        WORLDS_TO_THREADS.remove(world).kill();
     }
 }

@@ -47,15 +47,11 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 
     public static final DataParameter<Boolean> IS_NAME_CUSTOM = EntityDataManager.<Boolean>createKey(Entity.class,
             DataSerializers.BOOLEAN);
-    public static final AxisAlignedBB ZERO_BB = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
     public final PhysicsObject wrapping;
     // TODO: Replace these raw types with something safer
     public double pitch;
     public double yaw;
     public double roll;
-    public double prevPitch;
-    public double prevYaw;
-    public double prevRoll;
 
     public PhysicsWrapperEntity(World worldIn) {
         super(worldIn);
@@ -89,7 +85,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
         posY = y;
         posZ = z;
 
-        wrapping.creator = "god";
+        wrapping.creator = "thebest108";
         wrapping.detectorID = 0;
         wrapping.setShipType(shipType);
 

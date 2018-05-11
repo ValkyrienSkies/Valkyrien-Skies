@@ -26,7 +26,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.math.Quaternion;
 import valkyrienwarfare.mod.proxy.ClientProxy;
@@ -223,19 +222,11 @@ public class PhysObjectRenderManager {
     }
 
     public Quaternion getSmoothRotationQuat(double partialTick) {
-        PhysicsWrapperEntity entity = parent.wrapper;
-        double[] oldRotation = RotationMatrices.getDoubleIdentity();
-        oldRotation = RotationMatrices.rotateAndTranslate(oldRotation, entity.prevPitch, entity.prevYaw,
-                entity.prevRoll, new Vector());
-        Quaternion oneTickBefore = Quaternion.QuaternionFromMatrix(oldRotation);
-        double[] newRotation = RotationMatrices.getDoubleIdentity();
-        newRotation = RotationMatrices.rotateAndTranslate(newRotation, entity.pitch, entity.yaw, entity.roll,
-                new Vector());
-        Quaternion nextQuat = Quaternion.QuaternionFromMatrix(newRotation);
+        Quaternion oneTickBefore = Quaternion.QuaternionFromMatrix(parent.coordTransform.prevlToWTransform);
+        Quaternion nextQuat = Quaternion.QuaternionFromMatrix(parent.coordTransform.lToWTransform);
         return Quaternion.getBetweenQuat(oneTickBefore, nextQuat, partialTick);
     }
 
-    // TODO: Program me
     public void inverseTransform(double partialTicks) {
         PhysicsWrapperEntity entity = parent.wrapper;
         Vector centerOfRotation = entity.wrapping.centerCoord;

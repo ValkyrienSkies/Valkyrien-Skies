@@ -81,17 +81,15 @@ import valkyrienwarfare.physics.data.ShipTransformData;
 import valkyrienwarfare.util.NBTUtils;
 
 public class PhysicsObject {
-    
+
     public final PhysicsWrapperEntity wrapper;
     // This handles sending packets to players involving block changes in the Ship
     // space
     public final List<EntityPlayerMP> watchingPlayers;
-
-    // It is from this position that the x,y,z coords in local are 0; and that the
-    // posX,
-    // posY and posZ align with in the global coords
+    // Used when rendering to avoid horrible floating point errors, just a random
+    // blockpos inside the ship space.
     public BlockPos refrenceBlockPos;
-    public Vector centerCoord, lastTickCenterCoord;
+    public Vector centerCoord;
     public CoordTransformObject coordTransform;
     public final PhysObjectRenderManager renderer;
     public PhysicsCalculations physicsProcessor;
@@ -708,15 +706,10 @@ public class PhysicsObject {
     private int lastMessageTick = -1;
 
     public void onPostTickClient() {
-        wrapper.prevPitch = wrapper.pitch;
-        wrapper.prevYaw = wrapper.yaw;
-        wrapper.prevRoll = wrapper.roll;
-
         wrapper.lastTickPosX = wrapper.posX;
         wrapper.lastTickPosY = wrapper.posY;
         wrapper.lastTickPosZ = wrapper.posZ;
 
-        lastTickCenterCoord = centerCoord;
         ShipTransformData toUse = coordTransform.serverBuffer.getDataForTick(lastMessageTick);
 
         if (toUse != null) {
@@ -917,7 +910,7 @@ public class PhysicsObject {
 
     public void readFromNBTTag(NBTTagCompound compound) {
         ownedChunks = new ChunkSet(compound);
-        lastTickCenterCoord = centerCoord = NBTUtils.readVectorFromNBT("c", compound);
+        centerCoord = NBTUtils.readVectorFromNBT("c", compound);
         wrapper.pitch = compound.getDouble("pitch");
         wrapper.yaw = compound.getDouble("yaw");
         wrapper.roll = compound.getDouble("roll");
@@ -971,10 +964,6 @@ public class PhysicsObject {
         wrapper.pitch = modifiedBuffer.readDouble();
         wrapper.yaw = modifiedBuffer.readDouble();
         wrapper.roll = modifiedBuffer.readDouble();
-
-        wrapper.prevPitch = wrapper.pitch;
-        wrapper.prevYaw = wrapper.yaw;
-        wrapper.prevRoll = wrapper.roll;
 
         wrapper.lastTickPosX = wrapper.posX;
         wrapper.lastTickPosY = wrapper.posY;

@@ -178,7 +178,7 @@ public class VWThread extends Thread {
     }
 
     public void kill() {
-        System.out.println("VW Thread Killed");
+        System.out.println("VW Physics Thread Killed");
         threadRunning = false;
         stop();
     }

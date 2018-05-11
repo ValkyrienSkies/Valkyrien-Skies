@@ -263,6 +263,7 @@ public class CoordTransformObject {
     }
 
     private class CollisionBBConsumer implements Consumer<BlockPos> {
+        private static final double AABB_EXPANSION = 1.6D;
         private final double[] M = lToWTransform;
         double minX, minY, minZ, maxX, maxY, maxZ;
 
@@ -294,7 +295,7 @@ public class CoordTransformObject {
         }
         
         AxisAlignedBB createWrappingAABB() {
-            return new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ).expand(.6D, .6D, .6D);
+            return new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ).expand(AABB_EXPANSION, AABB_EXPANSION, AABB_EXPANSION);
         }
     
     }

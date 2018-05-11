@@ -125,7 +125,7 @@ public class RotationMatrices {
 	}
 
 	@Deprecated
-	public static void applyTransform(double[] wholeTransform, double[] rotationTransform, Entity ent) {
+	public static void applyTransform(double[] wholeTransform, Entity ent) {
 		Vector entityPos = new Vector(ent.posX, ent.posY, ent.posZ);
 		Vector entityLook = new Vector(ent.getLook(1.0F));
 		Vector entityMotion = new Vector(ent.motionX, ent.motionY, ent.motionZ);
@@ -138,8 +138,8 @@ public class RotationMatrices {
 		}
 
 		applyTransform(wholeTransform, entityPos);
-		doRotationOnly(rotationTransform, entityLook);
-		doRotationOnly(rotationTransform, entityMotion);
+		doRotationOnly(wholeTransform, entityLook);
+		doRotationOnly(wholeTransform, entityMotion);
 
 		entityLook.normalize();
 
@@ -268,5 +268,11 @@ public class RotationMatrices {
 		inverse[15] = 1.0D;
 		return inverse;
 	}
+
+    public static Vec3d doRotationOnly(double[] transform, Vec3d vanilla) {
+        Vector converted = new Vector(vanilla);
+        doRotationOnly(transform, converted);
+        return converted.toVec3d();
+    }
 
 }

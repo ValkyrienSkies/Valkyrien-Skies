@@ -121,8 +121,7 @@ public class ValkyrienWarfareWorldEventListener implements IWorldEventListener {
                 wrapper.wrapping.fixEntity(entityIn, new Vector(entityIn));
                 wrapper.wrapping.queueEntityForMounting(entityIn);
             }
-            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform,
-                    wrapper.wrapping.coordTransform.lToWRotation, entityIn);
+            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, entityIn);
 
             int newChunkX = MathHelper.floor(entityIn.posX / 16.0D);
             int newChunkZ = MathHelper.floor(entityIn.posZ / 16.0D);
@@ -142,8 +141,7 @@ public class ValkyrienWarfareWorldEventListener implements IWorldEventListener {
                 wrapper.wrapping.fixEntity(entityIn, new Vector(entityIn));
                 wrapper.wrapping.queueEntityForMounting(entityIn);
             }
-            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform,
-                    wrapper.wrapping.coordTransform.lToWRotation, entityIn);
+            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, entityIn);
         }
     }
 

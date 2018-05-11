@@ -121,8 +121,7 @@ public class EventsCommon {
                 wrapper.wrapping.fixEntity(entity, new Vector(entity));
                 wrapper.wrapping.queueEntityForMounting(entity);
             }
-            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform,
-                    wrapper.wrapping.coordTransform.lToWRotation, entity);
+            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, entity);
         }
     }
 

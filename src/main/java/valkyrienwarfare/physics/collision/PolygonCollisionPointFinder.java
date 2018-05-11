@@ -24,7 +24,7 @@ public class PolygonCollisionPointFinder {
         Polygon topPoly = null;
         Polygon bottomPoly = null;
         Vector collisionNormal = collisionInfo.collision_normal;
-        
+
         Vector centerDifference = collisionInfo.movable.getCenter().getSubtraction(collisionInfo.fixed.getCenter());
         if (centerDifference.dot(collisionNormal) > 0) {
             // Then the movable is the bottom
@@ -35,9 +35,9 @@ public class PolygonCollisionPointFinder {
             topPoly = collisionInfo.movable;
             bottomPoly = collisionInfo.fixed;
         }
-        
+
         // First find the top point and bottom point:
-        double minDot = Double.MAX_VALUE;
+        double minDot = 99999999D;
         int topPointIndex = -1;
         for (int i = 0; i < topPoly.getVertices().length; i++) {
             double dotProduct = topPoly.getVertices()[i].dot(collisionNormal);
@@ -46,8 +46,8 @@ public class PolygonCollisionPointFinder {
                 topPointIndex = i;
             }
         }
-        
-        double maxDot = -9999999999D; //Double.MIN_VALUE;
+
+        double maxDot = -9999999999D; // Double.MIN_VALUE;
         int bottomPointIndex = -1;
         for (int i = 0; i < bottomPoly.getVertices().length; i++) {
             double dotProduct = bottomPoly.getVertices()[i].dot(collisionNormal);
@@ -56,16 +56,19 @@ public class PolygonCollisionPointFinder {
                 bottomPointIndex = i;
             }
         }
-        
+
         Vector currentTopVertice = topPoly.getVertices()[topPointIndex];
         Vector currentBottomVertice = bottomPoly.getVertices()[bottomPointIndex];
-        
+
         boolean useFastCollision = true;
-        
+
         if (useFastCollision) {
-            return new Vector[] {currentTopVertice, currentBottomVertice};
+            // TODO: We're oversolving for the collision here, but it prevents things going through eachother.
+            return new Vector[] { currentTopVertice, currentBottomVertice, currentTopVertice, currentBottomVertice };
+            // return new Vector[] { currentTopVertice, currentBottomVertice };
         } else {
-            // Now use the surface normals that are most perpendicular to the collision normals for
+            // Now use the surface normals that are most perpendicular to the collision
+            // normals for
             // culling.
             Vector topCullingNormal = null;
             double maxTopAbsDot = -1;
@@ -76,7 +79,7 @@ public class PolygonCollisionPointFinder {
                     maxTopAbsDot = absDotProduct;
                 }
             }
-            
+
             Vector bottomCullingNormal = null;
             double maxBottomAbsDot = -1;
             for (Vector bottomNormal : bottomPoly.getNormals()) {
@@ -90,17 +93,18 @@ public class PolygonCollisionPointFinder {
             if (topCullingNormal.dot(collisionNormal) > 0) {
                 topCullingNormal = new Vector(topCullingNormal, -1);
             }
-            
+
             if (bottomCullingNormal.dot(collisionNormal) < 0) {
                 bottomCullingNormal = new Vector(bottomCullingNormal, -1);
             }
-            
+
             ClippedPolygon clippedTop = new ClippedPolygon(topPoly, bottomCullingNormal, currentBottomVertice);
             ClippedPolygon clippedBottom = new ClippedPolygon(bottomPoly, topCullingNormal, currentTopVertice);
-            
-            // Now with our normals found and the plane vertice, we now search for the points of collision.
-            
-            return new Vector[] {currentTopVertice, currentBottomVertice};
+
+            // Now with our normals found and the plane vertice, we now search for the
+            // points of collision.
+
+            return new Vector[] { currentTopVertice, currentBottomVertice };
         }
     }
 

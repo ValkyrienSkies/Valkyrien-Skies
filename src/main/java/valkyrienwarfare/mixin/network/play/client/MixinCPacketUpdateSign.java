@@ -16,14 +16,15 @@
 
 package valkyrienwarfare.mixin.network.play.client;
 
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Redirect;
+
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.play.INetHandlerPlayServer;
 import net.minecraft.network.play.client.CPacketUpdateSign;
 import net.minecraft.util.math.BlockPos;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.mod.physmanagement.interaction.INHPServerVW;
@@ -50,9 +51,9 @@ public abstract class MixinCPacketUpdateSign {
         }
 
         if (wrapper != null && wrapper.wrapping.coordTransform != null) {
-            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, wrapper.wrapping.coordTransform.wToLRotation, player);
+            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, player);
             server.processUpdateSign(packetIn);
-            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, wrapper.wrapping.coordTransform.lToWRotation, player);
+            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, player);
             playerBackup.restorePlayerToBackup();
         } else {
             server.processUpdateSign(packetIn);

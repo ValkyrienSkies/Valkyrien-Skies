@@ -90,8 +90,8 @@ public abstract class EntityDraggable {
 
             Vector oldPos = new Vector(entity);
 
-            RotationMatrices.applyTransform(coordTransform.prevwToLTransform, coordTransform.prevWToLRotation, entity);
-            RotationMatrices.applyTransform(coordTransform.lToWTransform, coordTransform.lToWRotation, entity);
+            RotationMatrices.applyTransform(coordTransform.prevwToLTransform, entity);
+            RotationMatrices.applyTransform(coordTransform.lToWTransform, entity);
 
             Vector newPos = new Vector(entity);
 

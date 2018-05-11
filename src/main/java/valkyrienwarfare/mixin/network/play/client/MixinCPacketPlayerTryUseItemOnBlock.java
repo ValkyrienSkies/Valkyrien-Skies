@@ -51,7 +51,7 @@ public abstract class MixinCPacketPlayerTryUseItemOnBlock {
 			player.interactionManager.setBlockReachDistance(vw.dummyBlockReachDist());
 		}
 		if (wrapper != null && wrapper.wrapping.coordTransform != null) {
-			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, wrapper.wrapping.coordTransform.wToLRotation, player);
+			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, player);
 			if (player.getHeldItem(packetIn.getHand()) != null && player.getHeldItem(packetIn.getHand()).getItem() instanceof ItemBucket) {
 				player.interactionManager.setBlockReachDistance(vw.lastGoodBlockReachDist());
 			}

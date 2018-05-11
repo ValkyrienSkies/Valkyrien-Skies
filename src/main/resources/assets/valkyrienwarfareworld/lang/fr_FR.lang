@@ -1,0 +1,8 @@
+#ITEMS
+item.etheriumcrystal.name=Cristal d'etherium
+item.explosivearrow.name=Flèche explosive
+
+#BLOCKS
+tile.etheriumore.name=Minerais d'etherium
+tile.skydungeon_controller.name=Contrôleur de forteresse volante
+tile.quartz_fence.name=Barrière en quartz

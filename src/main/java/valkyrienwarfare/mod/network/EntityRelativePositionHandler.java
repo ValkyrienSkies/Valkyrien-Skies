@@ -14,31 +14,45 @@
  *
  */
 
-package valkyrienwarfare.addon.control.network;
+package valkyrienwarfare.mod.network;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.IThreadListener;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
-public class EntityFixMessageHandler implements IMessageHandler<EntityFixMessage, IMessage> {
+public class EntityRelativePositionHandler implements IMessageHandler<EntityRelativePositionMessage, IMessage> {
 
     @Override
-    public IMessage onMessage(final EntityFixMessage message, MessageContext ctx) {
+    public IMessage onMessage(EntityRelativePositionMessage message, MessageContext ctx) {
+        if (Minecraft.getMinecraft().player == null) {
+            return null;
+        }
+
         IThreadListener mainThread = Minecraft.getMinecraft();
         mainThread.addScheduledTask(new Runnable() {
             @Override
             public void run() {
-                PhysicsWrapperEntity toFixOn = (PhysicsWrapperEntity) Minecraft.getMinecraft().world.getEntityByID(message.shipId);
-                if (toFixOn != null) {
-                    if (message.isFixing) {
-                        toFixOn.wrapping.fixEntityUUID(message.entityUUID, message.localPosition);
-                    } else {
-                        toFixOn.wrapping.removeEntityUUID(message.entityUUID);
+                /*
+                Entity ent = Minecraft.getMinecraft().world.getEntityByID(message.wrapperEntityId);
+                if (ent != null && ent instanceof PhysicsWrapperEntity) {
+                    PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity) ent;
+                    double[] lToWTransform = wrapper.wrapping.coordTransform.lToWTransform;
+
+                for (int i = 0; i < message.listSize; i++) {
+                    int entityID = message.entitiesToSendIDs.get(i);
+                    Vector entityPosition = message.entitiesRelativePosition.get(i);
+
+                    Entity entity = Minecraft.getMinecraft().world.getEntityByID(entityID);
+
+                    if (entity != null && entity != Minecraft.getMinecraft().player) {
+                        entityPosition.transform(lToWTransform);
+
+//                    	entity.setPosition(entityPosition.X, entityPosition.Y, entityPosition.Z);
                     }
                 }
+                */
             }
         });
         return null;

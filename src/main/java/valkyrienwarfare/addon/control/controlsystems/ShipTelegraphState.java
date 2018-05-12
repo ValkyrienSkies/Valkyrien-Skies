@@ -32,13 +32,9 @@ public enum ShipTelegraphState {
     VOLLE_KRAFT_1(12.0D),
     AUSSERSTE_1(13.0D);
 
-    private double renderRotation;
+    public final double renderRotation;
 
-    private ShipTelegraphState(double renderRotation) {
+    ShipTelegraphState(double renderRotation) {
         this.renderRotation = renderRotation;
-    }
-
-    public double getRenderRotation() {
-        return renderRotation;
     }
 }

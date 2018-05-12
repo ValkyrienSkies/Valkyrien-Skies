@@ -43,12 +43,19 @@ import valkyrienwarfare.physics.collision.optimization.ShipCollisionTask;
 import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
-// A manager used to process collisions between ships and the game world
+/**
+ * Handles the task of finding and processing collisions between a PhysicsObject
+ * and the game world.
+ * 
+ * @author thebest108
+ *
+ */
 public class WorldPhysicsCollider {
 
     // Used to expand the AABB used to check for potential collisions; helps prevent
     // ships ghosting through blocks
     public static final double AABB_EXPANSION = 2D;
+    // The range we check for possible collisions with a block.
     public static final double RANGE_CHECK = 1.8D;
     // The minimum depth a collision projection must have, to not use the default
     // collision normal of <0, 1, 0>
@@ -567,7 +574,6 @@ public class WorldPhysicsCollider {
             // parent.physicsProcessor.setVectorToVelocityAtPoint(inBody, speedInBody);
             // speedInBody.multiply(-parent.physicsProcessor.getPhysicsTimeDeltaPerGameTick());
 
-            
             // TODO: This isnt ideal, but we do gain a lot of performance.
             speedInBody.zero();
 

@@ -43,7 +43,6 @@ import valkyrienwarfare.physics.data.BlockForce;
 import valkyrienwarfare.physics.data.BlockMass;
 import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsObject;
-import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.physics.management.ShipTransformationHolder;
 import valkyrienwarfare.util.NBTUtils;
 import valkyrienwarfare.util.PhysicsSettings;
@@ -56,8 +55,6 @@ public class PhysicsCalculations {
     public static final double EPSILON = 0xE - 8;
 
     public final PhysicsObject parent;
-    public final PhysicsWrapperEntity wrapperEnt;
-    public final World worldObj;
     public final WorldPhysicsCollider worldCollision;
 
     public Vector centerOfMass;
@@ -65,7 +62,6 @@ public class PhysicsCalculations {
     public Vector angularVelocity;
     private Vector torque;
     private double mass;
-
     // The time occurring on each PhysTick
     private double physRawSpeed;
     // Number of iterations the solver runs on each game tick
@@ -80,8 +76,6 @@ public class PhysicsCalculations {
 
     public PhysicsCalculations(PhysicsObject toProcess) {
         parent = toProcess;
-        wrapperEnt = parent.wrapper;
-        worldObj = toProcess.getWorldObj();
         worldCollision = new WorldPhysicsCollider(this);
 
         MoITensor = RotationMatrices.getZeroMatrix(3);
@@ -101,8 +95,6 @@ public class PhysicsCalculations {
 
     public PhysicsCalculations(PhysicsCalculations toCopy) {
         parent = toCopy.parent;
-        wrapperEnt = toCopy.wrapperEnt;
-        worldObj = toCopy.worldObj;
         worldCollision = toCopy.worldCollision;
         centerOfMass = toCopy.centerOfMass;
         linearMomentum = toCopy.linearMomentum;
@@ -121,6 +113,7 @@ public class PhysicsCalculations {
     }
 
     public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos pos) {
+        World worldObj = parent.getWorldObj();
         if (!newState.equals(oldState)) {
             if (oldState.getBlock() == Blocks.AIR) {
                 if (BlockForce.basicForces.isBlockProvidingForce(newState, pos, worldObj)) {
@@ -302,6 +295,7 @@ public class PhysicsCalculations {
         Vector blockForce = new Vector();
         Vector inBodyWO = new Vector();
         Vector crossVector = new Vector();
+        World worldObj = parent.getWorldObj();
 
         if (PhysicsSettings.doPhysicsBlocks) {
 
@@ -398,17 +392,17 @@ public class PhysicsCalculations {
                 coordTrans.getCurrentTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL)));
 
         double[] radians = finalTransform.toRadians();
-        wrapperEnt.pitch = Double.isNaN(radians[0]) ? 0.0f : (float) Math.toDegrees(radians[0]);
-        wrapperEnt.yaw = Double.isNaN(radians[1]) ? 0.0f : (float) Math.toDegrees(radians[1]);
-        wrapperEnt.roll = Double.isNaN(radians[2]) ? 0.0f : (float) Math.toDegrees(radians[2]);
+        parent.wrapper.pitch = Double.isNaN(radians[0]) ? 0.0f : (float) Math.toDegrees(radians[0]);
+        parent.wrapper.yaw = Double.isNaN(radians[1]) ? 0.0f : (float) Math.toDegrees(radians[1]);
+        parent.wrapper.roll = Double.isNaN(radians[2]) ? 0.0f : (float) Math.toDegrees(radians[2]);
     }
 
     public void applyLinearVelocity() {
         double momentMod = getPhysicsTimeDeltaPerPhysTick() * getInvMass();
-        wrapperEnt.posX += (linearMomentum.X * momentMod);
-        wrapperEnt.posY += (linearMomentum.Y * momentMod);
-        wrapperEnt.posZ += (linearMomentum.Z * momentMod);
-        wrapperEnt.posY = Math.min(Math.max(wrapperEnt.posY, ValkyrienWarfareMod.shipLowerLimit),
+        parent.wrapper.posX += (linearMomentum.X * momentMod);
+        parent.wrapper.posY += (linearMomentum.Y * momentMod);
+        parent.wrapper.posZ += (linearMomentum.Z * momentMod);
+        parent.wrapper.posY = Math.min(Math.max(parent.wrapper.posY, ValkyrienWarfareMod.shipLowerLimit),
                 ValkyrienWarfareMod.shipUpperLimit);
     }
 

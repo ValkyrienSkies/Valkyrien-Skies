@@ -35,7 +35,7 @@ public class VWThread extends Thread {
     private boolean threadRunning;
 
     public VWThread(World host) {
-        super("VW World Thread: " + threadID);
+        super("VW World Thread " + threadID);
         threadID++;
         this.hostWorld = host;
         this.ships = new ArrayList<PhysicsWrapperEntity>();
@@ -177,7 +177,7 @@ public class VWThread extends Thread {
      * Ends this physics thread; should only be called after a world is unloaded.
      */
     public void kill() {
-        System.out.println(super.getName() + " Killed");
+        System.out.println(super.getName() + " killed.");
         threadRunning = false;
         stop();
     }

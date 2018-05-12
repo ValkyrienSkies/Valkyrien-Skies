@@ -56,11 +56,14 @@ public class VWThread extends Thread {
                 lostTickTime %= MAX_LOST_TIME;
             }
             long start = System.currentTimeMillis();
+            // Run the physics code
             runGameLoop();
             try {
                 long sleepTime = start + MS_PER_TICK - System.currentTimeMillis();
                 // Sending a negative sleepTime would crash the thread.
                 if (sleepTime > 0) {
+                    // If our lostTickTime is greater than zero then we're behind a few ticks, try
+                    // to make up for it by skipping sleep() time.
                     if (sleepTime > lostTickTime) {
                         sleepTime -= lostTickTime;
                         lostTickTime = 0;
@@ -177,7 +180,7 @@ public class VWThread extends Thread {
      * Ends this physics thread; should only be called after a world is unloaded.
      */
     public void kill() {
-        System.out.println(super.getName() + " killed.");
+        System.out.println(super.getName() + " killed");
         threadRunning = false;
         stop();
     }

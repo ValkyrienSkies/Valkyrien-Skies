@@ -16,11 +16,10 @@
 
 package valkyrienwarfare.physics.calculations;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.vecmath.Matrix3d;
 
@@ -72,7 +71,8 @@ public class PhysicsCalculations {
     // Number of iterations the solver runs on each game tick
     private int iterations;
 
-    private final List<BlockPos> activeForcePositions;
+    // CopyOnWrite to provide concurrency between threads.
+    private final Set<BlockPos> activeForcePositions;
     private final SortedSet<INodePhysicsProcessor> physicsTasks;
     public double[] MoITensor, invMoITensor;
     public double[] framedMOI, invFramedMOI;
@@ -94,8 +94,8 @@ public class PhysicsCalculations {
         angularVelocity = new Vector();
         torque = new Vector();
         iterations = 5;
-
-        activeForcePositions = new ArrayList<BlockPos>();
+        // We need thread safe access to this.
+        activeForcePositions = ConcurrentHashMap.newKeySet();
         physicsTasks = new TreeSet<INodePhysicsProcessor>();
     }
 
@@ -251,7 +251,7 @@ public class PhysicsCalculations {
         Vector parentCM = parent.centerCoord;
         if (!parent.centerCoord.equals(centerOfMass)) {
             Vector CMDif = centerOfMass.getSubtraction(parentCM);
-//            RotationMatrices.doRotationOnly(parent.coordTransform.lToWTransform, CMDif);
+            // RotationMatrices.doRotationOnly(parent.coordTransform.lToWTransform, CMDif);
 
             parent.coordTransform.getCurrentTransform().rotate(CMDif, TransformType.LOCAL_TO_GLOBAL);
             parent.wrapper.posX -= CMDif.X;
@@ -297,7 +297,7 @@ public class PhysicsCalculations {
         applyAirDrag();
         applyGravity();
 
-        Collections.shuffle(activeForcePositions);
+        // Collections.shuffle(activeForcePositions);
 
         Vector blockForce = new Vector();
         Vector inBodyWO = new Vector();
@@ -323,7 +323,9 @@ public class PhysicsCalculations {
             for (BlockPos pos : activeForcePositions) {
                 IBlockState state = parent.VKChunkCache.getBlockState(pos);
                 Block blockAt = state.getBlock();
-                VWMath.getBodyPosWithOrientation(pos, centerOfMass, parent.coordTransform.getCurrentTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL), inBodyWO);
+                VWMath.getBodyPosWithOrientation(pos, centerOfMass,
+                        parent.coordTransform.getCurrentTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL),
+                        inBodyWO);
 
                 BlockForce.basicForces.getForceFromState(state, pos, worldObj, getPhysicsTimeDeltaPerPhysTick(), parent,
                         blockForce);
@@ -333,8 +335,8 @@ public class PhysicsCalculations {
                         Vector otherPosition = ((IBlockForceProvider) blockAt).getCustomBlockForcePosition(worldObj,
                                 pos, state, parent.wrapper, getPhysicsTimeDeltaPerPhysTick());
                         if (otherPosition != null) {
-                            VWMath.getBodyPosWithOrientation(otherPosition, centerOfMass,
-                                    parent.coordTransform.getCurrentTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL), inBodyWO);
+                            VWMath.getBodyPosWithOrientation(otherPosition, centerOfMass, parent.coordTransform
+                                    .getCurrentTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL), inBodyWO);
                         }
                     }
                     addForceAtPoint(inBodyWO, blockForce, crossVector);
@@ -361,7 +363,7 @@ public class PhysicsCalculations {
         linearMomentum.multiply(drag);
         angularVelocity.multiply(drag);
     }
-    
+
     public void convertTorqueToVelocity() {
         if (!torque.isZero()) {
             angularVelocity.add(RotationMatrices.get3by3TransformedVec(invFramedMOI, torque));
@@ -392,8 +394,8 @@ public class PhysicsCalculations {
 
         double[] rotationChange = RotationMatrices.getRotationMatrix(angularVelocity.X, angularVelocity.Y,
                 angularVelocity.Z, angularVelocity.length() * getPhysicsTimeDeltaPerPhysTick());
-        Quaternion finalTransform = Quaternion
-                .QuaternionFromMatrix(RotationMatrices.getMatrixProduct(rotationChange, coordTrans.getCurrentTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL)));
+        Quaternion finalTransform = Quaternion.QuaternionFromMatrix(RotationMatrices.getMatrixProduct(rotationChange,
+                coordTrans.getCurrentTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL)));
 
         double[] radians = finalTransform.toRadians();
         wrapperEnt.pitch = Double.isNaN(radians[0]) ? 0.0f : (float) Math.toDegrees(radians[0]);

@@ -261,7 +261,8 @@ public class WorldPhysicsCollider {
         // List<AxisAlignedBB> colBB = worldObj.getCollisionBoxes(inLocalBB);
         // inLocalBB = colBB.get(0);
 
-        Polygon shipInWorld = new Polygon(inLocalBB, parent.coordTransform.getCurrentTransform(), TransformType.LOCAL_TO_GLOBAL);
+        Polygon shipInWorld = new Polygon(inLocalBB, parent.coordTransform.getCurrentTransform(),
+                TransformType.LOCAL_TO_GLOBAL);
         Polygon worldPoly = new Polygon(inGlobalBB);
         PhysPolygonCollider collider = new PhysPolygonCollider(shipInWorld, worldPoly, parent.coordTransform.normals);
         if (!collider.seperated) {
@@ -347,8 +348,8 @@ public class WorldPhysicsCollider {
 
     // Finally, the end of all this spaghetti code! This step takes all of the math
     // generated before, and it directly adds the result to Ship velocities
-    private void calculateCollisionImpulseForce(Vector inBody, Vector velocityAtPointOfCollision, Vector axis, Vector offsetVector,
-            boolean didBlockBreakInShip, boolean didBlockBreakInWorld, double impulseApplied) {
+    private void calculateCollisionImpulseForce(Vector inBody, Vector velocityAtPointOfCollision, Vector axis,
+            Vector offsetVector, boolean didBlockBreakInShip, boolean didBlockBreakInWorld, double impulseApplied) {
         Vector firstCross = inBody.cross(axis);
         RotationMatrices.applyTransform3by3(calculator.invFramedMOI, firstCross);
 
@@ -356,7 +357,7 @@ public class WorldPhysicsCollider {
 
         double impulseMagnitude = -velocityAtPointOfCollision.dot(axis)
                 / (calculator.getInvMass() + secondCross.dot(axis));
-        
+
         // Below this speed our collision coefficient of restitution is zero.
         final double slopR = .5D;
         double collisionSpeed = Math.abs(velocityAtPointOfCollision.dot(axis));
@@ -413,8 +414,10 @@ public class WorldPhysicsCollider {
     }
 
     private void updatePotentialCollisionCache() {
-        final AxisAlignedBB collisionBB = parent.getCollisionBoundingBox().expand(calculator.linearMomentum.X * calculator.getInvMass(),
-                calculator.linearMomentum.Y * calculator.getInvMass(), calculator.linearMomentum.Z * calculator.getInvMass())
+        final AxisAlignedBB collisionBB = parent.getCollisionBoundingBox()
+                .expand(calculator.linearMomentum.X * calculator.getInvMass(),
+                        calculator.linearMomentum.Y * calculator.getInvMass(),
+                        calculator.linearMomentum.Z * calculator.getInvMass())
                 .grow(AABB_EXPANSION);
         ticksSinceCacheUpdate = 0D;
         // This is being used to occasionally offset the collision cache update, in the
@@ -486,7 +489,7 @@ public class WorldPhysicsCollider {
                                                     int levelOneIndex = octree.getOctreeLevelOneIndex(levelTwoIndex,
                                                             levelOne);
                                                     if (octree.getAtIndex(levelOneIndex)) {
-                                                        
+
                                                         int baseX = ((levelThree % 2) * 8) + ((levelTwo % 2) * 4)
                                                                 + ((levelOne % 2) * 2);
                                                         int baseY = (((levelThree >> 1) % 2) * 8)
@@ -561,8 +564,12 @@ public class WorldPhysicsCollider {
             parent.coordTransform.fromGlobalToLocal(inLocal);
 
             inBody.setSubtraction(inLocal, parent.centerCoord);
-            parent.physicsProcessor.setVectorToVelocityAtPoint(inBody, speedInBody);
-            speedInBody.multiply(-parent.physicsProcessor.getPhysicsTimeDeltaPerGameTick());
+            // parent.physicsProcessor.setVectorToVelocityAtPoint(inBody, speedInBody);
+            // speedInBody.multiply(-parent.physicsProcessor.getPhysicsTimeDeltaPerGameTick());
+
+            
+            // TODO: This isnt ideal, but we do gain a lot of performance.
+            speedInBody.zero();
 
             int minX, minY, minZ, maxX, maxY, maxZ;
             if (speedInBody.X > 0) {
@@ -588,7 +595,7 @@ public class WorldPhysicsCollider {
                 minZ = MathHelper.floor(inLocal.Z - RANGE_CHECK + speedInBody.Z);
                 maxZ = MathHelper.floor(inLocal.Z + RANGE_CHECK);
             }
-            
+
             minY = Math.min(255, Math.max(minY, 0));
 
             outermostloop: for (int localX = minX; localX < maxX; localX++) {
@@ -596,7 +603,7 @@ public class WorldPhysicsCollider {
                     for (int localY = minY; localY < maxY; localY++) {
                         if (parent.ownsChunk(localX >> 4, localZ >> 4)) {
                             Chunk chunkIn = parent.VKChunkCache.getChunkAt(localX >> 4, localZ >> 4);
-                            if (localY >> 4  < 16 && chunkIn.storageArrays[localY >> 4] != null) {
+                            if (localY >> 4 < 16 && chunkIn.storageArrays[localY >> 4] != null) {
                                 IBitOctreeProvider provider = IBitOctreeProvider.class
                                         .cast(chunkIn.storageArrays[localY >> 4].getData());
                                 IBitOctree octreeInLocal = provider.getBitOctree();

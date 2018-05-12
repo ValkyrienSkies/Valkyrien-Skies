@@ -51,7 +51,7 @@ public class ShipTransformationHolder {
         this.currentTransform = ZERO_TRANSFORM;
         this.renderTransform = ZERO_TRANSFORM;
         this.prevTransform = ZERO_TRANSFORM;
-        this.updateAllTransforms(true);
+        this.updateAllTransforms(true, true);
         this.normals = Vector.generateAxisAlignedNorms();
         this.serverBuffer = new ShipTransformationBuffer();
     }
@@ -87,14 +87,16 @@ public class ShipTransformationHolder {
      * 
      * @param updateParentAABB
      */
-    public void updateAllTransforms(boolean updateParentAABB) {
+    public void updateAllTransforms(boolean updateParentAABB, boolean updatePassengers) {
         updatePosRelativeToWorldBorder();
         updateCurrentTransform();
         if (updateParentAABB) {
             updateParentAABB();
         }
         updateParentNormals();
-        updatePassengerPositions();
+        if (updatePassengers) {
+            updatePassengerPositions();
+        }
     }
 
     /**

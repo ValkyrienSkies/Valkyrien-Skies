@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import gnu.trove.iterator.TIntIterator;
 import io.netty.buffer.ByteBuf;
@@ -93,6 +94,7 @@ public class PhysicsObject {
     public ShipTransformationHolder coordTransform;
     public final PhysObjectRenderManager renderer;
     public PhysicsCalculations physicsProcessor;
+    // Has to be concurrent
     public Set<BlockPos> blockPositions;
     private AxisAlignedBB collisionBB;
 
@@ -136,7 +138,9 @@ public class PhysicsObject {
         allowedUsers = new ArrayList<String>();
         entityLocalPositions = new HashMap<Integer, Vector>();
         doPhysics = true;
-        blockPositions = new HashSet<BlockPos>();
+        // blockPositions = new HashSet<BlockPos>();
+        // We need safe access to this across multiple threads.
+        blockPositions = ConcurrentHashMap.newKeySet();
         collisionBB = PhysicsWrapperEntity.ZERO_AABB;
         collisionCallable = new PhysCollisionCallable(this);
         watchingPlayers = new ArrayList<EntityPlayerMP>();
@@ -321,7 +325,7 @@ public class PhysicsObject {
         physicsProcessor.processInitialPhysicsData();
         physicsProcessor.updateParentCenterOfMass();
 
-        coordTransform.updateAllTransforms(false);
+        coordTransform.updateAllTransforms(false, false);
     }
 
     /**
@@ -716,7 +720,7 @@ public class PhysicsObject {
             Vector CMDif = toUse.centerOfRotation.getSubtraction(centerCoord);
             lastMessageTick = toUse.relativeTick;
             coordTransform.getCurrentTransform().rotate(CMDif, TransformType.LOCAL_TO_GLOBAL);
-//            RotationMatrices.doRotationOnly(coordTransform.lToWTransform, CMDif);
+            // RotationMatrices.doRotationOnly(coordTransform.lToWTransform, CMDif);
             wrapper.lastTickPosX -= CMDif.X;
             wrapper.lastTickPosY -= CMDif.Y;
             wrapper.lastTickPosZ -= CMDif.Z;
@@ -724,7 +728,7 @@ public class PhysicsObject {
         }
 
         coordTransform.updatePrevTransform();
-        coordTransform.updateAllTransforms(getCollisionBoundingBox().equals(Entity.ZERO_AABB));
+        coordTransform.updateAllTransforms(getCollisionBoundingBox().equals(Entity.ZERO_AABB), true);
         if (getCollisionBoundingBox().equals(Entity.ZERO_AABB)) {
             System.out.println("Client had to do its own AABB processing, this indicates a problem server side.");
         }
@@ -775,7 +779,7 @@ public class PhysicsObject {
             if (node != null) {
                 node.updateParentEntity(this);
             } else {
-                System.err.println("How the fuck did we get a null node?");
+                System.err.println("How did we get a null node?");
             }
         }
         for (TileEntity tile : nodeTileEntitiesToUpdate) {
@@ -783,11 +787,11 @@ public class PhysicsObject {
             if (node != null) {
                 node.updateBuildState();
             } else {
-                System.err.println("How the fuck did we get a null node?");
+                System.err.println("How did we get a null node?");
             }
         }
 
-        coordTransform.updateAllTransforms(false);
+        coordTransform.updateAllTransforms(false, false);
     }
 
     // Generates the blockPos array; must be loaded DIRECTLY after the chunks are

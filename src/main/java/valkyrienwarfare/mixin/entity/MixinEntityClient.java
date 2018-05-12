@@ -31,12 +31,11 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 @Mixin(Entity.class)
 public abstract class MixinEntityClient {
+
     @Shadow
     public double posX;
-
     @Shadow
     public double posY;
-
     @Shadow
     public double posZ;
 
@@ -51,16 +50,18 @@ public abstract class MixinEntityClient {
 
         if (wrapper != null) {
             Vector playerPosition = new Vector(wrapper.wrapping.getLocalPositionForEntity(Entity.class.cast(this)));
-            wrapper.wrapping.coordTransform.getRenderTransform().transform(playerPosition, TransformType.LOCAL_TO_GLOBAL);
+            wrapper.wrapping.coordTransform.getRenderTransform().transform(playerPosition,
+                    TransformType.LOCAL_TO_GLOBAL);
 
             Vector playerEyes = new Vector(0, this.getEyeHeight(), 0);
-            //Remove the original position added for the player's eyes
-//            RotationMatrices.doRotationOnly(wrapper.wrapping.coordTransform.lToWTransform, playerEyes);
+            // Remove the original position added for the player's eyes
+            // RotationMatrices.doRotationOnly(wrapper.wrapping.coordTransform.lToWTransform,
+            // playerEyes);
             wrapper.wrapping.coordTransform.getCurrentTransform().rotate(playerEyes, TransformType.LOCAL_TO_GLOBAL);
-            //Add the new rotate player eyes to the position
+            // Add the new rotate player eyes to the position
             playerPosition.add(playerEyes);
             callbackInfo.setReturnValue(playerPosition.toVec3d());
-            callbackInfo.cancel(); //return the value, as opposed to the default one
+            callbackInfo.cancel(); // return the value, as opposed to the default one
         }
     }
 }

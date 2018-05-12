@@ -59,7 +59,7 @@ public class VWThread extends Thread {
             runGameLoop();
             try {
                 long sleepTime = start + MS_PER_TICK - System.currentTimeMillis();
-                // Sending a negative number would cause a crash.
+                // Sending a negative sleepTime would crash the thread.
                 if (sleepTime > 0) {
                     if (sleepTime > lostTickTime) {
                         sleepTime -= lostTickTime;
@@ -99,19 +99,8 @@ public class VWThread extends Thread {
     }
 
     // The whole time need to be careful the game thread isn't messing with these
-    // values
+    // values.
     private void physicsTick() {
-        // System.out.println("Physics ticking");
-        // First tick the physics
-        // physics.tick();
-        // Then tick the collision
-        // collision.tick();
-        // Finally update the position/rotation
-        // ships.updateTransforms();
-
-        // And then send an update to all the players
-        // ships.sendToPlayers();
-
         // TODO: Temporary fix:
         WorldPhysObjectManager manager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(hostWorld);
         List<PhysicsWrapperEntity> physicsEntities = manager.getTickablePhysicsEntities();
@@ -172,7 +161,7 @@ public class VWThread extends Thread {
                     e.printStackTrace();
                 }
             } else {
-                wrapper.wrapping.coordTransform.updateAllTransforms(false);
+                wrapper.wrapping.coordTransform.updateAllTransforms(false, false);
             }
         }
     }
@@ -188,7 +177,7 @@ public class VWThread extends Thread {
      * Ends this physics thread; should only be called after a world is unloaded.
      */
     public void kill() {
-        System.out.println("VW Physics Thread " + threadID + " Killed");
+        System.out.println(super.getName() + " Killed");
         threadRunning = false;
         stop();
     }

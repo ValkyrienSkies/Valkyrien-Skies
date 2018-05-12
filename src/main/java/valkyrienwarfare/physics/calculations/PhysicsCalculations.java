@@ -231,7 +231,7 @@ public class PhysicsCalculations {
                 linearMomentum.zero();
                 angularVelocity.zero();
             }
-            parent.coordTransform.updateAllTransforms(true);
+            parent.coordTransform.updateAllTransforms(true, true);
         }
     }
 
@@ -259,7 +259,7 @@ public class PhysicsCalculations {
             parent.wrapper.posZ -= CMDif.Z;
 
             parent.centerCoord = new Vector(centerOfMass);
-            parent.coordTransform.updateAllTransforms(false);
+            parent.coordTransform.updateAllTransforms(false, false);
         }
     }
 

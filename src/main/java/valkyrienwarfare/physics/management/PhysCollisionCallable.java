@@ -32,7 +32,7 @@ public class PhysCollisionCallable implements Callable<Void> {
             toRun.physicsProcessor.processWorldCollision();
             toRun.physicsProcessor.rawPhysTickPostCol();
         } else {
-            toRun.coordTransform.updateAllTransforms(false);
+            toRun.coordTransform.updateAllTransforms(false, false);
         }
         return null;
     }

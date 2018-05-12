@@ -16,8 +16,6 @@
 
 package valkyrienwarfare.addon.control.piloting;
 
-import java.util.UUID;
-
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.PacketBuffer;
@@ -25,6 +23,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import valkyrienwarfare.VWKeyHandler;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+
+import java.util.UUID;
 
 public class PilotControlsMessage implements IMessage {
 
@@ -62,22 +62,29 @@ public class PilotControlsMessage implements IMessage {
     public void fromBytes(ByteBuf buf) {
         PacketBuffer packetBuf = new PacketBuffer(buf);
 
-        airshipUp_KeyDown = packetBuf.readBoolean();
-        airshipDown_KeyDown = packetBuf.readBoolean();
-        airshipForward_KeyDown = packetBuf.readBoolean();
-        airshipBackward_KeyDown = packetBuf.readBoolean();
-        airshipLeft_KeyDown = packetBuf.readBoolean();
-        airshipRight_KeyDown = packetBuf.readBoolean();
-        airshipSprinting = packetBuf.readBoolean();
-        airshipStop_KeyDown = packetBuf.readBoolean();
+        {
+            byte b = packetBuf.readByte();
+            airshipUp_KeyDown = (b & 1) == 0;
+            airshipDown_KeyDown = ((b >> 1) & 1) == 0;
+            airshipForward_KeyDown = ((b >> 2) & 1) == 0;
+            airshipBackward_KeyDown = ((b >> 3) & 1) == 0;
+            airshipLeft_KeyDown = ((b >> 4) & 1) == 0;
+            airshipRight_KeyDown = ((b >> 5) & 1) == 0;
+            airshipSprinting = ((b >> 6) & 1) == 0;
+            airshipStop_KeyDown = ((b >> 7) & 1) == 0;
+        }
 
-        airshipUp_KeyPressed = packetBuf.readBoolean();
-        airshipDown_KeyPressed = packetBuf.readBoolean();
-        airshipForward_KeyPressed = packetBuf.readBoolean();
-        airshipBackward_KeyPressed = packetBuf.readBoolean();
-        airshipLeft_KeyPressed = packetBuf.readBoolean();
-        airshipRight_KeyPressed = packetBuf.readBoolean();
-        airshipStop_KeyPressed = packetBuf.readBoolean();
+        {
+            byte b = packetBuf.readByte();
+            airshipUp_KeyPressed = (b & 1) == 0;
+            airshipDown_KeyPressed = ((b >> 1) & 1) == 0;
+            airshipForward_KeyPressed = ((b >> 2) & 1) == 0;
+            airshipBackward_KeyPressed = ((b >> 3) & 1) == 0;
+            airshipLeft_KeyPressed = ((b >> 4) & 1) == 0;
+            airshipRight_KeyPressed = ((b >> 5) & 1) == 0;
+            airshipStop_KeyPressed = ((b >> 6) & 1) == 0;
+            //ignore most significant byte
+        }
 
         inputType = packetBuf.readEnumValue(ControllerInputType.class);
         shipFor = packetBuf.readUniqueId();
@@ -88,22 +95,30 @@ public class PilotControlsMessage implements IMessage {
     public void toBytes(ByteBuf buf) {
         PacketBuffer packetBuf = new PacketBuffer(buf);
 
-        packetBuf.writeBoolean(airshipUp_KeyDown);
-        packetBuf.writeBoolean(airshipDown_KeyDown);
-        packetBuf.writeBoolean(airshipForward_KeyDown);
-        packetBuf.writeBoolean(airshipBackward_KeyDown);
-        packetBuf.writeBoolean(airshipLeft_KeyDown);
-        packetBuf.writeBoolean(airshipRight_KeyDown);
-        packetBuf.writeBoolean(airshipSprinting);
-        packetBuf.writeBoolean(airshipStop_KeyDown);
+        {
+            int i = 0;
+            i |= airshipUp_KeyDown ? 0 : 1;
+            i |= (airshipDown_KeyDown ? 0 : 1) << 1;
+            i |= (airshipForward_KeyDown ? 0 : 1) << 2;
+            i |= (airshipBackward_KeyDown ? 0 : 1) << 3;
+            i |= (airshipLeft_KeyDown ? 0 : 1) << 4;
+            i |= (airshipRight_KeyDown ? 0 : 1) << 5;
+            i |= (airshipSprinting ? 0 : 1) << 6;
+            i |= (airshipStop_KeyDown ? 0 : 1) << 7;
+            packetBuf.writeByte(i);
+        }
 
-        packetBuf.writeBoolean(airshipUp_KeyPressed);
-        packetBuf.writeBoolean(airshipDown_KeyPressed);
-        packetBuf.writeBoolean(airshipForward_KeyPressed);
-        packetBuf.writeBoolean(airshipBackward_KeyPressed);
-        packetBuf.writeBoolean(airshipLeft_KeyPressed);
-        packetBuf.writeBoolean(airshipRight_KeyPressed);
-        packetBuf.writeBoolean(airshipStop_KeyPressed);
+        {
+            int i = 0;
+            i |= airshipUp_KeyPressed ? 0 : 1;
+            i |= (airshipDown_KeyPressed ? 0 : 1) << 1;
+            i |= (airshipForward_KeyPressed ? 0 : 1) << 2;
+            i |= (airshipBackward_KeyPressed ? 0 : 1) << 3;
+            i |= (airshipLeft_KeyPressed ? 0 : 1) << 4;
+            i |= (airshipRight_KeyPressed ? 0 : 1) << 5;
+            i |= (airshipStop_KeyPressed ? 0 : 1) << 6;
+            packetBuf.writeByte(i);
+        }
 
         packetBuf.writeEnumValue(inputType);
         packetBuf.writeUniqueId(shipFor);

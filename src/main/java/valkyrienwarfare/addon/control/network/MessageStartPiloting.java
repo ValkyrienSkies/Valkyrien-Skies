@@ -40,7 +40,11 @@ public class MessageStartPiloting implements IMessage {
     @Override
     public void fromBytes(ByteBuf buf) {
         PacketBuffer packetBuf = new PacketBuffer(buf);
-        posToStartPiloting = packetBuf.readBlockPos();
+        posToStartPiloting = new BlockPos(
+                packetBuf.readInt(),
+                packetBuf.readInt(),
+                packetBuf.readInt()
+        );
         setPhysicsWrapperEntityToPilot = packetBuf.readBoolean();
         controlType = packetBuf.readEnumValue(ControllerInputType.class);
     }
@@ -48,7 +52,10 @@ public class MessageStartPiloting implements IMessage {
     @Override
     public void toBytes(ByteBuf buf) {
         PacketBuffer packetBuf = new PacketBuffer(buf);
-        packetBuf.writeBlockPos(posToStartPiloting);
+        packetBuf.writeInt(posToStartPiloting.getX());
+        packetBuf.writeInt(posToStartPiloting.getY());
+        packetBuf.writeInt(posToStartPiloting.getZ());
+        //use absolute coordinates instead of writeBlockPos in case we ever add compatibility with cubic chunks
         packetBuf.writeBoolean(setPhysicsWrapperEntityToPilot);
         packetBuf.writeEnumValue(controlType);
     }

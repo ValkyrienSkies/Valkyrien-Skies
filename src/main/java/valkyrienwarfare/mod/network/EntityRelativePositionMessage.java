@@ -16,9 +16,8 @@
 
 package valkyrienwarfare.mod.network;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketBuffer;
@@ -27,12 +26,15 @@ import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class EntityRelativePositionMessage implements IMessage {
 
-    public Integer wrapperEntityId;
+    public int wrapperEntityId;
     public int listSize;
-    public List<Integer> entitiesToSendIDs = new ArrayList<Integer>();
-    public List<Vector> entitiesRelativePosition = new ArrayList<Vector>();
+    public TIntList entitiesToSendIDs = new TIntArrayList();
+    public List<Vector> entitiesRelativePosition = new ArrayList<>();
 
     public EntityRelativePositionMessage(PhysicsWrapperEntity wrapperEntity, List<Entity> entitiesToSendRelativePosition) {
         wrapperEntityId = wrapperEntity.getEntityId();
@@ -85,5 +87,4 @@ public class EntityRelativePositionMessage implements IMessage {
             toWrite.writeToByteBuf(packetBuf);
         }
     }
-
 }

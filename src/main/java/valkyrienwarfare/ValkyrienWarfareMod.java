@@ -69,8 +69,8 @@ import valkyrienwarfare.mod.capability.ImplAirshipCounterCapability;
 import valkyrienwarfare.mod.capability.StorageAirshipCounter;
 import valkyrienwarfare.mod.command.ModCommands;
 import valkyrienwarfare.mod.gui.TabValkyrienWarfare;
+import valkyrienwarfare.mod.network.EntityRelativePositionHandler;
 import valkyrienwarfare.mod.network.EntityRelativePositionMessage;
-import valkyrienwarfare.mod.network.EntityRelativePositionMessageHandler;
 import valkyrienwarfare.mod.network.PhysWrapperPositionHandler;
 import valkyrienwarfare.mod.network.PhysWrapperPositionMessage;
 import valkyrienwarfare.mod.network.PlayerShipRefrenceHandler;
@@ -416,7 +416,7 @@ public class ValkyrienWarfareMod {
 				Side.CLIENT);
 		physWrapperNetwork.registerMessage(PlayerShipRefrenceHandler.class, PlayerShipRefrenceMessage.class, 1,
 				Side.SERVER);
-		physWrapperNetwork.registerMessage(EntityRelativePositionMessageHandler.class,
+		physWrapperNetwork.registerMessage(EntityRelativePositionHandler.class,
 				EntityRelativePositionMessage.class, 2, Side.CLIENT);
 	}
 

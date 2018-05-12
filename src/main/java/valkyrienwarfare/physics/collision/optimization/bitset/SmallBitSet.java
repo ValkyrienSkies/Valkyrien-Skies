@@ -20,11 +20,11 @@ package valkyrienwarfare.physics.collision.optimization.bitset;
  * Slightly slower implementation of {@link FastBitSet}, but has much lower memory requirements
  * This is better than a byte[], as java promotes the bytes to ints while working on them anyway
  */
-public class SmallFastBitSet implements IBitSet {
+public class SmallBitSet implements IBitSet {
 
     private final int[] data;
 
-    public SmallFastBitSet(int size) {
+    public SmallBitSet(int size) {
         data = new int[size >> 5];
     }
 
@@ -35,7 +35,7 @@ public class SmallFastBitSet implements IBitSet {
 
     @Override
     public void clear(int index) {
-        data[index >> 5] ^= 1 << (index & 0x1F);
+        data[index >> 5] &= ~(1 << (index & 0x1F));
     }
 
     @Override

@@ -49,9 +49,9 @@ public class PhysWrapperPositionMessage implements IMessage {
         posY = toRunLocally.wrapper.posY;
         posZ = toRunLocally.wrapper.posZ;
 
-        pitch = toRunLocally.wrapper.pitch;
-        yaw = toRunLocally.wrapper.yaw;
-        roll = toRunLocally.wrapper.roll;
+        pitch = toRunLocally.wrapper.getPitch();
+        yaw = toRunLocally.wrapper.getYaw();
+        roll = toRunLocally.wrapper.getRoll();
 
         centerOfMass = toRunLocally.centerCoord;
         shipBB = toRunLocally.getCollisionBoundingBox();
@@ -83,9 +83,9 @@ public class PhysWrapperPositionMessage implements IMessage {
         buf.writeDouble(toSpawn.posY);
         buf.writeDouble(toSpawn.posZ);
 
-        buf.writeDouble(toSpawn.pitch);
-        buf.writeDouble(toSpawn.yaw);
-        buf.writeDouble(toSpawn.roll);
+        buf.writeDouble(toSpawn.getPitch());
+        buf.writeDouble(toSpawn.getYaw());
+        buf.writeDouble(toSpawn.getRoll());
 
         buf.writeDouble(toSpawn.wrapping.centerCoord.X);
         buf.writeDouble(toSpawn.wrapping.centerCoord.Y);

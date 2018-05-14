@@ -14,23 +14,44 @@
  *
  */
 
-package valkyrienwarfare.physics.collision;
+package valkyrienwarfare.physics.collision.polygons;
 
-import net.minecraft.util.math.AxisAlignedBB;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.physics.data.ShipTransform;
-import valkyrienwarfare.physics.data.TransformType;
-import valkyrienwarfare.physics.management.PhysicsObject;
 
-public class ShipPolygon extends Polygon {
+public class PhysPolygonCollider {
 
-    public Vector[] normals;
-    public PhysicsObject shipFrom;
+    public Vector[] potentialSeperatingAxes = null;
+    public boolean seperated = false;
+    public PhysCollisionObject[] collisions = null;
+    public int minDistanceIndex;
+    public double minDistance;
+    public Polygon entity;
+    public Polygon block;
 
-    public ShipPolygon(AxisAlignedBB bb, ShipTransform transformation, TransformType type, Vector[] norms, PhysicsObject shipFor) {
-        super(bb, transformation, type);
-        normals = norms;
-        shipFrom = shipFor;
+    public PhysPolygonCollider(Polygon movable, Polygon stationary, Vector[] axes) {
+        potentialSeperatingAxes = axes;
+        entity = movable;
+        block = stationary;
+        processData();
+    }
+
+    // TODO: Fix this, processes the penetration distances backwards from their reality
+    public void processData() {
+        collisions = new PhysCollisionObject[potentialSeperatingAxes.length];
+        for (int i = 0; i < potentialSeperatingAxes.length && !seperated; i++) {
+            collisions[i] = new PhysCollisionObject(entity, block, potentialSeperatingAxes[i]);
+            seperated = collisions[i].seperated;
+        }
+        if (!seperated) {
+            minDistance = 420;
+            for (int i = 0; i < potentialSeperatingAxes.length; i++) {
+                // Take the collision response closest to 0
+                if (Math.abs(collisions[i].penetrationDistance) < minDistance) {
+                    minDistanceIndex = i;
+                    minDistance = Math.abs(collisions[i].penetrationDistance);
+                }
+            }
+        }
     }
 
 }

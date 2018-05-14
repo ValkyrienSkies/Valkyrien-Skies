@@ -51,9 +51,9 @@ public abstract class MixinCPacketPlayerDigging {
 			player.interactionManager.setBlockReachDistance(vw.dummyBlockReachDist());
 		}
 		if (wrapper != null && wrapper.wrapping.coordTransform != null) {
-			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.getCurrentTransform(), player, TransformType.GLOBAL_TO_LOCAL);
+			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.getCurrentTickTransform(), player, TransformType.GLOBAL_TO_LOCAL);
 			server.processPlayerDigging(packetIn);
-			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.getCurrentTransform(), player, TransformType.LOCAL_TO_GLOBAL);
+			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.getCurrentTickTransform(), player, TransformType.LOCAL_TO_GLOBAL);
 			playerBackup.restorePlayerToBackup();
 		} else {
 			server.processPlayerDigging(packetIn);

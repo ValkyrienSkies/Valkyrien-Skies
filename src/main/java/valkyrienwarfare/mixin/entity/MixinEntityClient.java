@@ -57,7 +57,7 @@ public abstract class MixinEntityClient {
             // Remove the original position added for the player's eyes
             // RotationMatrices.doRotationOnly(wrapper.wrapping.coordTransform.lToWTransform,
             // playerEyes);
-            wrapper.wrapping.coordTransform.getCurrentTransform().rotate(playerEyes, TransformType.LOCAL_TO_GLOBAL);
+            wrapper.wrapping.coordTransform.getCurrentTickTransform().rotate(playerEyes, TransformType.LOCAL_TO_GLOBAL);
             // Add the new rotate player eyes to the position
             playerPosition.add(playerEyes);
             callbackInfo.setReturnValue(playerPosition.toVec3d());

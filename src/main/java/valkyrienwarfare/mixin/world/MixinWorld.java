@@ -57,7 +57,7 @@ import valkyrienwarfare.addon.control.nodenetwork.INodeProvider;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.fixes.WorldChunkloadingCrashFix;
 import valkyrienwarfare.mod.physmanagement.interaction.IWorldVW;
-import valkyrienwarfare.physics.collision.Polygon;
+import valkyrienwarfare.physics.collision.polygons.Polygon;
 import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.physics.management.WorldPhysObjectManager;
@@ -90,7 +90,7 @@ public abstract class MixinWorld implements IWorldVW {
         if (wrapper != null) {
             Vector newPosVec = new Vector(x, y, z);
 //            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, newPosVec);
-            wrapper.wrapping.coordTransform.getCurrentTransform().transform(newPosVec, TransformType.LOCAL_TO_GLOBAL);
+            wrapper.wrapping.coordTransform.getCurrentTickTransform().transform(newPosVec, TransformType.LOCAL_TO_GLOBAL);
             x = newPosVec.X;
             y = newPosVec.Y;
             z = newPosVec.Z;
@@ -207,7 +207,7 @@ public abstract class MixinWorld implements IWorldVW {
         BlockPos pos = new BlockPos((aabb.minX + aabb.maxX) / 2D, (aabb.minY + aabb.maxY) / 2D, (aabb.minZ + aabb.maxZ) / 2D);
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(World.class.cast(this), pos);
         if (wrapper != null) {
-            Polygon poly = new Polygon(aabb, wrapper.wrapping.coordTransform.getCurrentTransform(), TransformType.LOCAL_TO_GLOBAL);
+            Polygon poly = new Polygon(aabb, wrapper.wrapping.coordTransform.getCurrentTickTransform(), TransformType.LOCAL_TO_GLOBAL);
             aabb = poly.getEnclosedAABB();//.contract(.3D);
             toReturn.addAll(this.getEntitiesWithinAABBOriginal(clazz, aabb, filter));
 
@@ -244,7 +244,7 @@ public abstract class MixinWorld implements IWorldVW {
         BlockPos pos = new BlockPos((boundingBox.minX + boundingBox.maxX) / 2D, (boundingBox.minY + boundingBox.maxY) / 2D, (boundingBox.minZ + boundingBox.maxZ) / 2D);
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(World.class.cast(this), pos);
         if (wrapper != null) {
-            Polygon poly = new Polygon(boundingBox, wrapper.wrapping.coordTransform.getCurrentTransform(), TransformType.LOCAL_TO_GLOBAL);
+            Polygon poly = new Polygon(boundingBox, wrapper.wrapping.coordTransform.getCurrentTickTransform(), TransformType.LOCAL_TO_GLOBAL);
             boundingBox = poly.getEnclosedAABB().shrink(.3D);
             toReturn.addAll(this.getEntitiesInAABBexcludingOriginal(entityIn, boundingBox, predicate));
 
@@ -285,7 +285,7 @@ public abstract class MixinWorld implements IWorldVW {
             PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(thisClassAsWorld, pos);
             if (wrapper != null && wrapper.wrapping != null && wrapper.wrapping.coordTransform != null && pos != null) {
 //                BlockPos realPos = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, pos);
-                BlockPos realPos = wrapper.wrapping.coordTransform.getCurrentTransform().transform(pos, TransformType.LOCAL_TO_GLOBAL);
+                BlockPos realPos = wrapper.wrapping.coordTransform.getCurrentTickTransform().transform(pos, TransformType.LOCAL_TO_GLOBAL);
                 Biome toReturn = thisClassAsWorld.getBiome(realPos);
                 if (toReturn != null) {
                     callbackInfoReturnable.setReturnValue(toReturn);

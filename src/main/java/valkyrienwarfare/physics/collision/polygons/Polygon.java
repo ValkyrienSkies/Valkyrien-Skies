@@ -14,7 +14,7 @@
  *
  */
 
-package valkyrienwarfare.physics.collision;
+package valkyrienwarfare.physics.collision.polygons;
 
 import net.minecraft.util.math.AxisAlignedBB;
 import valkyrienwarfare.api.Vector;

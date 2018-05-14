@@ -1,4 +1,4 @@
-package valkyrienwarfare.physics.collision;
+package valkyrienwarfare.physics.collision.polygons;
 
 import java.util.ArrayList;
 import java.util.Collections;

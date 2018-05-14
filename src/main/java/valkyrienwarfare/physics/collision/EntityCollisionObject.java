@@ -17,6 +17,7 @@
 package valkyrienwarfare.physics.collision;
 
 import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.physics.collision.polygons.Polygon;
 
 /**
  * An enhanced version of the collision Object, designed to prevent entities
@@ -33,7 +34,7 @@ public class EntityCollisionObject {
 	private double[] playerMinMax;
 	private double[] blockMinMax;
 	private Vector entityVelocity;
-	private boolean originallyCollided = false;
+	private boolean originallyCollided;
 	private double velDot;
 
 	public EntityCollisionObject(Polygon movable_, Polygon stationary, Vector axes, Vector entityVel) {
@@ -41,6 +42,7 @@ public class EntityCollisionObject {
 		movable = movable_;
 		fixed = stationary;
 		entityVelocity = entityVel;
+		originallyCollided = false;
 		generateCollision();
 	}
 

@@ -14,42 +14,66 @@
  *
  */
 
-package valkyrienwarfare.physics.collision;
+package valkyrienwarfare.physics.collision.polygons;
 
 import valkyrienwarfare.api.Vector;
 
-public class PhysPolygonCollider {
+/**
+ * Heavily modified version of the original Polygon Collider, with checks on polygons passing through eachother, normals not to be considered, and a consideration for Net Velocity between the polygons
+ *
+ * @author thebest108
+ */
+public class ReverseEntityPolyCollider {
 
-    public Vector[] potentialSeperatingAxes = null;
+    public Vector[] potentialSeperatingAxes;
     public boolean seperated = false;
-    public PhysCollisionObject[] collisions = null;
+    public ReverseEntityCollisionObject[] collisions;
     public int minDistanceIndex;
     public double minDistance;
     public Polygon entity;
     public Polygon block;
+    public Vector entityVelocity;
+    public boolean originallySeperated;
+    public int minIndexInReverse;
 
-    public PhysPolygonCollider(Polygon movable, Polygon stationary, Vector[] axes) {
+    public ReverseEntityPolyCollider(Polygon movable, Polygon stationary, Vector[] axes, Vector entityVel) {
         potentialSeperatingAxes = axes;
         entity = movable;
         block = stationary;
+        entityVelocity = entityVel;
         processData();
     }
 
-    // TODO: Fix this, processes the penetration distances backwards from their reality
     public void processData() {
-        collisions = new PhysCollisionObject[potentialSeperatingAxes.length];
-        for (int i = 0; i < potentialSeperatingAxes.length && !seperated; i++) {
-            collisions[i] = new PhysCollisionObject(entity, block, potentialSeperatingAxes[i]);
-            seperated = collisions[i].seperated;
+        seperated = false;
+        collisions = new ReverseEntityCollisionObject[potentialSeperatingAxes.length];
+        for (int i = 0; i < collisions.length; i++) {
+            if (!seperated) {
+                collisions[i] = new ReverseEntityCollisionObject(entity, block, potentialSeperatingAxes[i], entityVelocity);
+                if (collisions[i].seperated) {
+                    seperated = true;
+                    break;
+                }
+            }
         }
         if (!seperated) {
             minDistance = 420;
-            for (int i = 0; i < potentialSeperatingAxes.length; i++) {
+            double minNegativeImpactTime = 0D;
+            for (int i = 0; i < collisions.length; i++) {
                 // Take the collision response closest to 0
                 if (Math.abs(collisions[i].penetrationDistance) < minDistance) {
                     minDistanceIndex = i;
                     minDistance = Math.abs(collisions[i].penetrationDistance);
                 }
+                double velDot = collisions[i].axis.dot(entityVelocity);
+                double negativeTime = -velDot / collisions[i].penetrationDistance;
+                if (negativeTime < minNegativeImpactTime) {
+                    minNegativeImpactTime = negativeTime;
+                    minIndexInReverse = i;
+                }
+            }
+            if (entityVelocity.isZero()) {
+                minIndexInReverse = minDistanceIndex;
             }
         }
     }

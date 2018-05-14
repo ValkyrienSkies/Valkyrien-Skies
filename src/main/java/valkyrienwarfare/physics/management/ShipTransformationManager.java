@@ -24,6 +24,8 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.border.WorldBorder;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
@@ -32,25 +34,31 @@ import valkyrienwarfare.physics.data.ShipTransform;
 import valkyrienwarfare.physics.data.TransformType;
 
 /**
- * Stores coordinates and transforms for the ship.
+ * Stores various coordinates and transforms for the ship.
  *
  * @author thebest108
  */
-public class ShipTransformationHolder {
+public class ShipTransformationManager {
 
-    private static final ShipTransform ZERO_TRANSFORM = new ShipTransform();
-    private PhysicsObject parent;
-    private ShipTransform currentTransform;
+    // A transformation that does no rotation, and does no translation.
+    public static final ShipTransform ZERO_TRANSFORM = new ShipTransform();
+    private final PhysicsObject parent;
+    private ShipTransform currentTickTransform;
     private ShipTransform renderTransform;
-    private ShipTransform prevTransform;
+    private ShipTransform prevTickTransform;
+    // Used exclusively by the physics engine; should never even be used by the
+    // client.
+    private ShipTransform physicsTransform;
     public Vector[] normals;
+    // A buffer to hold ship transform data sent from server to the client.
     public final ShipTransformationBuffer serverBuffer;
 
-    public ShipTransformationHolder(PhysicsObject parent) {
+    public ShipTransformationManager(PhysicsObject parent) {
         this.parent = parent;
-        this.currentTransform = ZERO_TRANSFORM;
+        this.currentTickTransform = ZERO_TRANSFORM;
         this.renderTransform = ZERO_TRANSFORM;
-        this.prevTransform = ZERO_TRANSFORM;
+        this.prevTickTransform = ZERO_TRANSFORM;
+        this.physicsTransform = ZERO_TRANSFORM;
         this.updateAllTransforms(true, true);
         this.normals = Vector.generateAxisAlignedNorms();
         this.serverBuffer = new ShipTransformationBuffer();
@@ -60,12 +68,12 @@ public class ShipTransformationHolder {
      * Polls position and rotation data from the parent ship, and creates a new
      * current transform made from this data.
      */
-    public void updateCurrentTransform() {
+    public void updateCurrentTickTransform() {
         double[] lToWTransform = RotationMatrices.getTranslationMatrix(parent.wrapper.posX, parent.wrapper.posY,
                 parent.wrapper.posZ);
-        lToWTransform = RotationMatrices.rotateAndTranslate(lToWTransform, parent.wrapper.pitch, parent.wrapper.yaw,
-                parent.wrapper.roll, parent.centerCoord);
-        setCurrentTransform(new ShipTransform(lToWTransform));
+        lToWTransform = RotationMatrices.rotateAndTranslate(lToWTransform, parent.wrapper.getPitch(),
+                parent.wrapper.getYaw(), parent.wrapper.getRoll(), parent.centerCoord);
+        setCurrentTickTransform(new ShipTransform(lToWTransform));
     }
 
     public void updateRenderTransform(double x, double y, double z, double pitch, double yaw, double roll) {
@@ -77,9 +85,9 @@ public class ShipTransformationHolder {
     /**
      * Sets the previous transform to the current transform.
      */
-    public void updatePrevTransform() {
+    public void updatePrevTickTransform() {
         // Transformation objects are immutable, so this is 100% safe!
-        setPrevTransform(getCurrentTransform());
+        setPrevTickTransform(getCurrentTickTransform());
     }
 
     /**
@@ -87,9 +95,10 @@ public class ShipTransformationHolder {
      * 
      * @param updateParentAABB
      */
+    @Deprecated
     public void updateAllTransforms(boolean updateParentAABB, boolean updatePassengers) {
-        updatePosRelativeToWorldBorder();
-        updateCurrentTransform();
+        forceShipIntoWorldBorder();
+        updateCurrentTickTransform();
         if (updateParentAABB) {
             updateParentAABB();
         }
@@ -100,9 +109,9 @@ public class ShipTransformationHolder {
     }
 
     /**
-     * Keeps the Ship from exiting the world border
+     * Keeps the Ship in the world border
      */
-    public void updatePosRelativeToWorldBorder() {
+    private void forceShipIntoWorldBorder() {
         WorldBorder border = parent.getWorldObj().getWorldBorder();
         AxisAlignedBB shipBB = parent.getCollisionBoundingBox();
 
@@ -180,7 +189,7 @@ public class ShipTransformationHolder {
     public Vector[] generateRotationNormals() {
         Vector[] norms = Vector.generateAxisAlignedNorms();
         for (int i = 0; i < 3; i++) {
-            getCurrentTransform().rotate(norms[i], TransformType.LOCAL_TO_GLOBAL);
+            getCurrentTickTransform().rotate(norms[i], TransformType.LOCAL_TO_GLOBAL);
         }
         return norms;
     }
@@ -229,26 +238,40 @@ public class ShipTransformationHolder {
         parent.setCollisionBoundingBox(convexHullConsumer.createWrappingAABB());
     }
 
+    /**
+     * Transforms a vector from global coordinates to local coordinates, using the
+     * getCurrentTickTransform()
+     * 
+     * @param inGlobal
+     */
     public void fromGlobalToLocal(Vector inGlobal) {
-        getCurrentTransform().transform(inGlobal, TransformType.GLOBAL_TO_LOCAL);
+        getCurrentTickTransform().transform(inGlobal, TransformType.GLOBAL_TO_LOCAL);
     }
 
+    /**
+     * Transforms a vector from local coordinates to global coordinates, using the
+     * getCurrentTickTransform()
+     * 
+     * @param inLocal
+     */
     public void fromLocalToGlobal(Vector inLocal) {
-        getCurrentTransform().transform(inLocal, TransformType.LOCAL_TO_GLOBAL);
+        getCurrentTickTransform().transform(inLocal, TransformType.LOCAL_TO_GLOBAL);
     }
 
     /**
-     * @return the currentTransform
+     * @return the current transformation being used this tick.
      */
-    public ShipTransform getCurrentTransform() {
-        return currentTransform;
+    public ShipTransform getCurrentTickTransform() {
+        return currentTickTransform;
     }
 
     /**
-     * @param currentTransform the currentTransform to set
+     * @param currentTransform
+     *            the currentTransform to set
      */
-    private void setCurrentTransform(ShipTransform currentTransform) {
-        this.currentTransform = currentTransform;
+    @Deprecated
+    private void setCurrentTickTransform(ShipTransform currentTransform) {
+        this.currentTickTransform = currentTransform;
     }
 
     /**
@@ -259,8 +282,10 @@ public class ShipTransformationHolder {
     }
 
     /**
-     * @param renderTransform the renderTransform to set
+     * @param renderTransform
+     *            the renderTransform to set
      */
+    @Deprecated
     private void setRenderTransform(ShipTransform renderTransform) {
         this.renderTransform = renderTransform;
     }
@@ -268,20 +293,42 @@ public class ShipTransformationHolder {
     /**
      * @return the prevTransform
      */
-    public ShipTransform getPrevTransform() {
-        return prevTransform;
+    public ShipTransform getPrevTickTransform() {
+        return prevTickTransform;
     }
 
     /**
-     * @param prevTransform the prevTransform to set
+     * @param prevTransform
+     *            the prevTransform to set
      */
-    private void setPrevTransform(ShipTransform prevTransform) {
-        this.prevTransform = prevTransform;
+    private void setPrevTickTransform(ShipTransform prevTransform) {
+        this.prevTickTransform = prevTransform;
+    }
+
+    /**
+     * Returns the transformation data used for physics processing. Added @SideOnly
+     * as a check to crash the game if the client ever calls this.
+     * 
+     * @return the physics transform
+     */
+    @SideOnly(Side.SERVER)
+    public ShipTransform getPhysicsTransform() {
+        return physicsTransform;
+    }
+
+    /**
+     * Sets the physics transform to the given input.
+     * 
+     * @param physicsTransform
+     */
+    @SideOnly(Side.SERVER)
+    public void setPhysicsTransform(ShipTransform physicsTransform) {
+        this.physicsTransform = physicsTransform;
     }
 
     private class CollisionBBConsumer implements Consumer<BlockPos> {
         private static final double AABB_EXPANSION = 1.6D;
-        private final double[] M = getCurrentTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL);
+        private final double[] M = getCurrentTickTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL);
         double minX, minY, minZ, maxX, maxY, maxZ;
 
         CollisionBBConsumer() {

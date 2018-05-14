@@ -46,7 +46,7 @@ public class EntityRelativePositionMessage implements IMessage {
         for (int i = 0; i < entitiesToSendRelativePosition.size(); i++) {
             Entity entity = entitiesToSendRelativePosition.get(i);
             Vector entityPosition = new Vector(entity);
-            wrapperEntity.wrapping.coordTransform.getCurrentTransform().transform(entityPosition, TransformType.GLOBAL_TO_LOCAL);
+            wrapperEntity.wrapping.coordTransform.getCurrentTickTransform().transform(entityPosition, TransformType.GLOBAL_TO_LOCAL);
 //            entityPosition.transform(wToLTransformationMatrix);
             entitiesToSendIDs.add(entity.getEntityId());
             entitiesRelativePosition.add(entityPosition);

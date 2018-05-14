@@ -66,9 +66,9 @@ public class ShipTransformationPacketHolder {
         physObj.wrapper.posY = posY;
         physObj.wrapper.posZ = posZ;
 
-        physObj.wrapper.pitch = pitch;
-        physObj.wrapper.yaw = yaw;
-        physObj.wrapper.roll = roll;
+        physObj.wrapper.setPitch(pitch);
+        physObj.wrapper.setYaw(yaw);
+        physObj.wrapper.setRoll(roll);
 
         physObj.centerCoord = centerOfRotation;
         

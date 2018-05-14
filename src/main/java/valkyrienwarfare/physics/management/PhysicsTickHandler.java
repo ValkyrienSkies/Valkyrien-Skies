@@ -39,7 +39,7 @@ public class PhysicsTickHandler {
         List<PhysicsWrapperEntity> physicsEntities = manager.getTickablePhysicsEntities();
 
         for (PhysicsWrapperEntity wrapper : physicsEntities) {
-            wrapper.wrapping.coordTransform.updatePrevTransform();
+            wrapper.wrapping.coordTransform.updatePrevTickTransform();
             wrapper.wrapping.updateChunkCache();
         }
 

@@ -74,7 +74,7 @@ public class MixinCPacketPlayer implements IExtendedCPacketPlayer {
                 Entity theEntity = world.getEntityByID(worldBelowID);
                 PhysicsWrapperEntity worldBelow = (PhysicsWrapperEntity) theEntity;
                 Vector positionInGlobal = new Vector(localX, localY, localZ);
-                worldBelow.wrapping.coordTransform.getCurrentTransform().transform(positionInGlobal, TransformType.LOCAL_TO_GLOBAL);
+                worldBelow.wrapping.coordTransform.getCurrentTickTransform().transform(positionInGlobal, TransformType.LOCAL_TO_GLOBAL);
                 Vector distanceDiscrepency = new Vector(x, y, z);
                 distanceDiscrepency.subtract(positionInGlobal);
                 x = positionInGlobal.X;

@@ -35,7 +35,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.physics.collision.EntityPolygon;
+import valkyrienwarfare.physics.collision.polygons.EntityPolygon;
 import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
@@ -89,7 +89,7 @@ public abstract class MixinEntityLivingBase extends Entity {
                 return false;*/
             //not needed, we already do this check
 
-            EntityPolygon playerPoly = new EntityPolygon(this.getEntityBoundingBox(), physWrapper.wrapping.coordTransform.getCurrentTransform(), TransformType.GLOBAL_TO_LOCAL, this);
+            EntityPolygon playerPoly = new EntityPolygon(this.getEntityBoundingBox(), physWrapper.wrapping.coordTransform.getCurrentTickTransform(), TransformType.GLOBAL_TO_LOCAL, this);
             AxisAlignedBB bb = playerPoly.getEnclosedAABB();
             for (int x = MathHelper.floor(bb.minX); x < bb.maxX; x++) {
                 for (int y = MathHelper.floor(bb.minY); y < bb.maxY; y++) {

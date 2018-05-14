@@ -59,18 +59,18 @@ public class PhysicsCalculationsManualControl extends PhysicsCalculations {
     @Override
     public void rawPhysTickPostCol() {
         applyLinearVelocity();
-        double previousYaw = parent.wrapper.yaw;
+        double previousYaw = parent.wrapper.getYaw();
         applyAngularVelocity();
 
         //We don't want the up normal to exactly align with the world normal, it causes problems with collision
         if (!this.actAsArchimedes) {
-            parent.wrapper.pitch = 0.01F;
-            parent.wrapper.roll = 0.01F;
-            parent.wrapper.yaw = previousYaw;
-            parent.wrapper.yaw -= (getYawRate() * getPhysicsTimeDeltaPerPhysTick());
+            parent.wrapper.setPitch(0.01F);
+            parent.wrapper.setRoll(0.01F);
+            parent.wrapper.setYaw(previousYaw);
+            parent.wrapper.setYaw(parent.wrapper.getYaw() - (getYawRate() * getPhysicsTimeDeltaPerPhysTick()));
         }
 
-        double[] existingRotationMatrix = RotationMatrices.getRotationMatrix(0, parent.wrapper.yaw, 0);
+        double[] existingRotationMatrix = RotationMatrices.getRotationMatrix(0, parent.wrapper.getYaw(), 0);
         Vector linearForce = new Vector(getForwardRate(), getUpRate(), 0, existingRotationMatrix);
         if (isUseLinearMomentumForce()) {
             linearForce = new Vector(linearMomentum, getInvMass());

@@ -39,7 +39,7 @@ public class GPSTileEntity extends TileEntity implements SimpleComponent {
         if (ValkyrienWarfareHooks.isBlockPartOfShip(world, pos))
         {
             PhysicsWrapperEntity ship = ValkyrienWarfareHooks.getShipEntityManagingPos(getWorld(), getPos());
-            return new Object[]{ ship.yaw, ship.pitch, ship.roll };
+            return new Object[]{ ship.getYaw(), ship.getPitch(), ship.getRoll() };
         }
         return null;
     }

@@ -36,7 +36,7 @@ import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.mod.capability.IAirshipCounterCapability;
 import valkyrienwarfare.mod.physmanagement.interaction.ShipNameUUIDData;
 import valkyrienwarfare.mod.schematics.SchematicReader.Schematic;
-import valkyrienwarfare.physics.collision.Polygon;
+import valkyrienwarfare.physics.collision.polygons.Polygon;
 import valkyrienwarfare.physics.data.TransformType;
 
 /**
@@ -50,9 +50,9 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
             DataSerializers.BOOLEAN);
     public final PhysicsObject wrapping;
     // TODO: Replace these raw types with something safer
-    public double pitch;
-    public double yaw;
-    public double roll;
+    private double pitch;
+    private double yaw;
+    private double roll;
 
     public PhysicsWrapperEntity(World worldIn) {
         super(worldIn);
@@ -123,7 +123,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
                     newEntityPosition.Z + f);
             wrapping.coordTransform.fromLocalToGlobal(newEntityPosition);
             passenger.setPosition(newEntityPosition.X, newEntityPosition.Y, newEntityPosition.Z);
-            Polygon entityBBPoly = new Polygon(inLocalAABB, wrapping.coordTransform.getCurrentTransform(), TransformType.LOCAL_TO_GLOBAL);
+            Polygon entityBBPoly = new Polygon(inLocalAABB, wrapping.coordTransform.getCurrentTickTransform(), TransformType.LOCAL_TO_GLOBAL);
 
             AxisAlignedBB newEntityBB = entityBBPoly.getEnclosedAABB();
             passenger.setEntityBoundingBox(newEntityBB);
@@ -236,5 +236,50 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
     @Override
     public void readSpawnData(ByteBuf additionalData) {
         wrapping.readSpawnData(additionalData);
+    }
+
+    /**
+     * @return the roll value being currently used by the game tick
+     */
+    public double getRoll() {
+        return roll;
+    }
+
+    /**
+     * @param roll the roll to set
+     */
+    @Deprecated
+    public void setRoll(double roll) {
+        this.roll = roll;
+    }
+
+    /**
+     * @return the yaw value being currently used by the game tick
+     */
+    public double getYaw() {
+        return yaw;
+    }
+
+    /**
+     * @param yaw the yaw to set
+     */
+    @Deprecated
+    public void setYaw(double yaw) {
+        this.yaw = yaw;
+    }
+
+    /**
+     * @return the pitch value being currently used by the game tick
+     */
+    public double getPitch() {
+        return pitch;
+    }
+
+    /**
+     * @param pitch the pitch to set
+     */
+    @Deprecated
+    public void setPitch(double pitch) {
+        this.pitch = pitch;
     }
 }

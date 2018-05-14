@@ -122,7 +122,7 @@ public class ValkyrienWarfareWorldEventListener implements IWorldEventListener {
                 wrapper.wrapping.fixEntity(entityIn, new Vector(entityIn));
                 wrapper.wrapping.queueEntityForMounting(entityIn);
             }
-            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.getCurrentTransform(), entityIn, TransformType.LOCAL_TO_GLOBAL);
+            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.getCurrentTickTransform(), entityIn, TransformType.LOCAL_TO_GLOBAL);
 
             int newChunkX = MathHelper.floor(entityIn.posX / 16.0D);
             int newChunkZ = MathHelper.floor(entityIn.posZ / 16.0D);
@@ -142,7 +142,7 @@ public class ValkyrienWarfareWorldEventListener implements IWorldEventListener {
                 wrapper.wrapping.fixEntity(entityIn, new Vector(entityIn));
                 wrapper.wrapping.queueEntityForMounting(entityIn);
             }
-            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.getCurrentTransform(), entityIn, TransformType.LOCAL_TO_GLOBAL);
+            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.getCurrentTickTransform(), entityIn, TransformType.LOCAL_TO_GLOBAL);
         }
     }
 
@@ -176,7 +176,7 @@ public class ValkyrienWarfareWorldEventListener implements IWorldEventListener {
                             pos);
 
                     if (wrapper != null) {
-                        wrapper.wrapping.coordTransform.getCurrentTransform().transform(posVector, TransformType.LOCAL_TO_GLOBAL);
+                        wrapper.wrapping.coordTransform.getCurrentTickTransform().transform(posVector, TransformType.LOCAL_TO_GLOBAL);
 //                        RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, posVector);
                     }
 

@@ -14,25 +14,23 @@
  *
  */
 
-package valkyrienwarfare.physics.collision;
+package valkyrienwarfare.physics.collision.polygons;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.util.math.AxisAlignedBB;
+import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.physics.data.ShipTransform;
 import valkyrienwarfare.physics.data.TransformType;
+import valkyrienwarfare.physics.management.PhysicsObject;
 
-public class EntityPolygon extends Polygon {
+public class ShipPolygon extends Polygon {
 
-    private final Entity entityFor;
+    public Vector[] normals;
+    public PhysicsObject shipFrom;
 
-    public EntityPolygon(AxisAlignedBB bb, Entity ent) {
-        super(bb);
-        entityFor = ent;
-    }
-
-    public EntityPolygon(AxisAlignedBB bb, ShipTransform transform, TransformType transformType, Entity ent) {
-        super(bb, transform, transformType);
-        entityFor = ent;
+    public ShipPolygon(AxisAlignedBB bb, ShipTransform transformation, TransformType type, Vector[] norms, PhysicsObject shipFor) {
+        super(bb, transformation, type);
+        normals = norms;
+        shipFrom = shipFor;
     }
 
 }

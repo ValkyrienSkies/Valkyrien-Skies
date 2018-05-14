@@ -91,7 +91,7 @@ public class PhysicsObject {
     // blockpos inside the ship space.
     public BlockPos refrenceBlockPos;
     public Vector centerCoord;
-    public ShipTransformationHolder coordTransform;
+    public ShipTransformationManager coordTransform;
     public final PhysObjectRenderManager renderer;
     public PhysicsCalculations physicsProcessor;
     // Has to be concurrent
@@ -99,7 +99,6 @@ public class PhysicsObject {
     private AxisAlignedBB collisionBB;
 
     public boolean doPhysics;
-
     public String creator;
     public final PhysCollisionCallable collisionCallable;
     public int detectorID;
@@ -321,7 +320,7 @@ public class PhysicsObject {
             }
         }
 
-        coordTransform = new ShipTransformationHolder(this);
+        coordTransform = new ShipTransformationManager(this);
         physicsProcessor.processInitialPhysicsData();
         physicsProcessor.updateParentCenterOfMass();
 
@@ -535,13 +534,12 @@ public class PhysicsObject {
             }
         }
 
-        coordTransform = new ShipTransformationHolder(this);
+        coordTransform = new ShipTransformationManager(this);
         physicsProcessor.processInitialPhysicsData();
         physicsProcessor.updateParentCenterOfMass();
 
         for (Node node : this.nodesWithinShip) {
             node.updateBuildState();
-            ;
         }
     }
 
@@ -719,7 +717,7 @@ public class PhysicsObject {
         if (toUse != null) {
             Vector CMDif = toUse.centerOfRotation.getSubtraction(centerCoord);
             lastMessageTick = toUse.relativeTick;
-            coordTransform.getCurrentTransform().rotate(CMDif, TransformType.LOCAL_TO_GLOBAL);
+            coordTransform.getCurrentTickTransform().rotate(CMDif, TransformType.LOCAL_TO_GLOBAL);
             // RotationMatrices.doRotationOnly(coordTransform.lToWTransform, CMDif);
             wrapper.lastTickPosX -= CMDif.X;
             wrapper.lastTickPosY -= CMDif.Y;
@@ -727,7 +725,7 @@ public class PhysicsObject {
             toUse.applyToPhysObject(this);
         }
 
-        coordTransform.updatePrevTransform();
+        coordTransform.updatePrevTickTransform();
         coordTransform.updateAllTransforms(getCollisionBoundingBox().equals(Entity.ZERO_AABB), true);
         if (getCollisionBoundingBox().equals(Entity.ZERO_AABB)) {
             System.out.println("Client had to do its own AABB processing, this indicates a problem server side.");
@@ -769,7 +767,7 @@ public class PhysicsObject {
         }
         VKChunkCache = new VWChunkCache(getWorldObj(), claimedChunks);
         refrenceBlockPos = getRegionCenter();
-        coordTransform = new ShipTransformationHolder(this);
+        coordTransform = new ShipTransformationManager(this);
         if (!getWorldObj().isRemote) {
             createPhysicsCalculations();
         }
@@ -888,9 +886,9 @@ public class PhysicsObject {
     public void writeToNBTTag(NBTTagCompound compound) {
         ownedChunks.writeToNBT(compound);
         NBTUtils.writeVectorToNBT("c", centerCoord, compound);
-        compound.setDouble("pitch", wrapper.pitch);
-        compound.setDouble("yaw", wrapper.yaw);
-        compound.setDouble("roll", wrapper.roll);
+        compound.setDouble("pitch", wrapper.getPitch());
+        compound.setDouble("yaw", wrapper.getYaw());
+        compound.setDouble("roll", wrapper.getRoll());
         compound.setBoolean("doPhysics", doPhysics);
         for (int row = 0; row < ownedChunks.chunkOccupiedInLocal.length; row++) {
             boolean[] curArray = ownedChunks.chunkOccupiedInLocal[row];
@@ -916,9 +914,9 @@ public class PhysicsObject {
     public void readFromNBTTag(NBTTagCompound compound) {
         ownedChunks = new ChunkSet(compound);
         centerCoord = NBTUtils.readVectorFromNBT("c", compound);
-        wrapper.pitch = compound.getDouble("pitch");
-        wrapper.yaw = compound.getDouble("yaw");
-        wrapper.roll = compound.getDouble("roll");
+        wrapper.setPitch(compound.getDouble("pitch"));
+        wrapper.setYaw(compound.getDouble("yaw"));
+        wrapper.setRoll(compound.getDouble("roll"));
         doPhysics = compound.getBoolean("doPhysics");
         for (int row = 0; row < ownedChunks.chunkOccupiedInLocal.length; row++) {
             boolean[] curArray = ownedChunks.chunkOccupiedInLocal[row];
@@ -966,9 +964,9 @@ public class PhysicsObject {
         wrapper.posY = modifiedBuffer.readDouble();
         wrapper.posZ = modifiedBuffer.readDouble();
 
-        wrapper.pitch = modifiedBuffer.readDouble();
-        wrapper.yaw = modifiedBuffer.readDouble();
-        wrapper.roll = modifiedBuffer.readDouble();
+        wrapper.setPitch(modifiedBuffer.readDouble());
+        wrapper.setYaw(modifiedBuffer.readDouble());
+        wrapper.setRoll(modifiedBuffer.readDouble());
 
         wrapper.lastTickPosX = wrapper.posX;
         wrapper.lastTickPosY = wrapper.posY;
@@ -1012,9 +1010,9 @@ public class PhysicsObject {
         modifiedBuffer.writeDouble(wrapper.posY);
         modifiedBuffer.writeDouble(wrapper.posZ);
 
-        modifiedBuffer.writeDouble(wrapper.pitch);
-        modifiedBuffer.writeDouble(wrapper.yaw);
-        modifiedBuffer.writeDouble(wrapper.roll);
+        modifiedBuffer.writeDouble(wrapper.getPitch());
+        modifiedBuffer.writeDouble(wrapper.getYaw());
+        modifiedBuffer.writeDouble(wrapper.getRoll());
 
         centerCoord.writeToByteBuf(modifiedBuffer);
         for (boolean[] array : ownedChunks.chunkOccupiedInLocal) {

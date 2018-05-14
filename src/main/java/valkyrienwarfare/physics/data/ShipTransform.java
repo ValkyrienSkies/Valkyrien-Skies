@@ -27,7 +27,7 @@ public class ShipTransform {
         this.localToGlobal = localToGlobal;
         this.globalToLocal = RotationMatrices.inverse(localToGlobal);
     }
-    
+
     public ShipTransform() {
         this(RotationMatrices.getDoubleIdentity());
     }
@@ -47,13 +47,13 @@ public class ShipTransform {
             RotationMatrices.doRotationOnly(globalToLocal, vector);
         }
     }
-    
+
     public Vec3d transform(Vec3d vec3d, TransformType transformType) {
         Vector vec3dAsVector = new Vector(vec3d);
         transform(vec3dAsVector, transformType);
         return vec3dAsVector.toVec3d();
     }
-    
+
     public Vec3d rotate(Vec3d vec3d, TransformType transformType) {
         Vector vec3dAsVector = new Vector(vec3d);
         rotate(vec3dAsVector, transformType);
@@ -67,9 +67,10 @@ public class ShipTransform {
             return Quaternion.QuaternionFromMatrix(globalToLocal);
         }
     }
-    
+
     /**
-     * Please never use this except in cases where its absolutely necessary.
+     * Please do not ever use this unless it is absolutely necessary!
+     * 
      * @param transformType
      * @return
      */

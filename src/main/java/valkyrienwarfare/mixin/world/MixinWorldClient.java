@@ -61,7 +61,7 @@ public abstract class MixinWorldClient {
 
             for (PhysicsWrapperEntity physEnt : physEnts) {
 //                BlockPos posInLocal = RotationMatrices.applyTransform(physEnt.wrapping.coordTransform.wToLTransform, pos);
-                BlockPos posInLocal = physEnt.wrapping.coordTransform.getCurrentTransform().transform(pos, TransformType.GLOBAL_TO_LOCAL);
+                BlockPos posInLocal = physEnt.wrapping.coordTransform.getCurrentTickTransform().transform(pos, TransformType.GLOBAL_TO_LOCAL);
                 int localI = this.getLightFromNeighborsFor(EnumSkyBlock.SKY, posInLocal);
                 int localJ = this.getLightFromNeighborsFor(EnumSkyBlock.BLOCK, posInLocal);
                 if (localI == 0 && localJ == 0) {

@@ -14,45 +14,25 @@
  *
  */
 
-package valkyrienwarfare.mixin.tileentity;
+package valkyrienwarfare.physics.collision.polygons;
 
-import org.spongepowered.asm.mixin.Implements;
-import org.spongepowered.asm.mixin.Interface;
-import org.spongepowered.asm.mixin.Intrinsic;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.mod.client.render.IntrinsicTileEntityInterface;
-import valkyrienwarfare.physics.collision.polygons.Polygon;
+import valkyrienwarfare.physics.data.ShipTransform;
 import valkyrienwarfare.physics.data.TransformType;
-import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
-@Mixin(TileEntity.class)
-@Implements(@Interface(iface = IntrinsicTileEntityInterface.class, prefix = "vw$"))
-public abstract class MixinTileEntityCLIENT {
-    @Shadow
-    public World world;
+public class EntityPolygon extends Polygon {
 
-    @Intrinsic(displace = true)
-    public AxisAlignedBB vw$getRenderBoundingBox() {
-        AxisAlignedBB toReturn = getRenderBoundingBox();
-        BlockPos pos = new BlockPos(toReturn.minX, toReturn.minY, toReturn.minZ);
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
-        if (wrapper != null) {
-            Polygon poly = new Polygon(toReturn, wrapper.wrapping.coordTransform.getCurrentTickTransform(), TransformType.LOCAL_TO_GLOBAL);
-            return poly.getEnclosedAABB();
-        }
-        return toReturn;
+    private final Entity entityFor;
+
+    public EntityPolygon(AxisAlignedBB bb, Entity ent) {
+        super(bb);
+        entityFor = ent;
     }
 
-    @Shadow
-    public abstract AxisAlignedBB getRenderBoundingBox();
+    public EntityPolygon(AxisAlignedBB bb, ShipTransform transform, TransformType transformType, Entity ent) {
+        super(bb, transform, transformType);
+        entityFor = ent;
+    }
 
-    @Shadow
-    public abstract BlockPos getPos();
 }

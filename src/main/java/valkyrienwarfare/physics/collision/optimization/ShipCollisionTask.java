@@ -29,9 +29,9 @@ import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.mod.physmanagement.relocation.SpatialDetector;
 import valkyrienwarfare.physics.collision.CollisionInformationHolder;
-import valkyrienwarfare.physics.collision.PhysPolygonCollider;
-import valkyrienwarfare.physics.collision.Polygon;
 import valkyrienwarfare.physics.collision.WorldPhysicsCollider;
+import valkyrienwarfare.physics.collision.polygons.PhysPolygonCollider;
+import valkyrienwarfare.physics.collision.polygons.Polygon;
 import valkyrienwarfare.physics.data.TransformType;
 
 public class ShipCollisionTask implements Callable<Void> {
@@ -154,7 +154,7 @@ public class ShipCollisionTask implements Callable<Void> {
 				// List<AxisAlignedBB> colBB = worldObj.getCollisionBoxes(inLocalBB);
 				// inLocalBB = colBB.get(0);
 
-				Polygon shipInWorld = new Polygon(inLocalBB, toTask.getParent().coordTransform.getCurrentTransform(), TransformType.LOCAL_TO_GLOBAL);
+				Polygon shipInWorld = new Polygon(inLocalBB, toTask.getParent().coordTransform.getCurrentTickTransform(), TransformType.LOCAL_TO_GLOBAL);
 				Polygon worldPoly = new Polygon(inGlobalBB);
 
 				PhysPolygonCollider collider = new PhysPolygonCollider(shipInWorld, worldPoly,

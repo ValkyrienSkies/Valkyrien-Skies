@@ -14,68 +14,84 @@
  *
  */
 
-package valkyrienwarfare.physics.collision;
+package valkyrienwarfare.physics.collision.polygons;
 
 import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.physics.collision.EntityCollisionObject;
 
 /**
  * Heavily modified version of the original Polygon Collider, with checks on polygons passing through eachother, normals not to be considered, and a consideration for Net Velocity between the polygons
  *
  * @author thebest108
  */
-public class ReverseEntityPolyCollider {
+public class EntityPolygonCollider {
 
-    public Vector[] potentialSeperatingAxes;
-    public boolean seperated = false;
-    public ReverseEntityCollisionObject[] collisions;
-    public int minDistanceIndex;
-    public double minDistance;
-    public Polygon entity;
-    public Polygon block;
-    public Vector entityVelocity;
-    public boolean originallySeperated;
-    public int minIndexInReverse;
+    private final Vector[] collisionAxes;
+    private boolean seperated = false;
+    private final EntityCollisionObject[] collisions;
+    private int minDistanceIndex;
+    private double minDistance;
+    private final EntityPolygon entity;
+    private final Polygon block;
+    private final Vector entityVelocity;
+    private boolean originallySeperated;
 
-    public ReverseEntityPolyCollider(Polygon movable, Polygon stationary, Vector[] axes, Vector entityVel) {
-        potentialSeperatingAxes = axes;
+    public EntityPolygonCollider(EntityPolygon movable, Polygon stationary, Vector[] axes, Vector entityVel) {
+        collisionAxes = axes;
         entity = movable;
         block = stationary;
         entityVelocity = entityVel;
+        collisions = new EntityCollisionObject[collisionAxes.length];
         processData();
     }
 
     public void processData() {
         seperated = false;
-        collisions = new ReverseEntityCollisionObject[potentialSeperatingAxes.length];
         for (int i = 0; i < collisions.length; i++) {
             if (!seperated) {
-                collisions[i] = new ReverseEntityCollisionObject(entity, block, potentialSeperatingAxes[i], entityVelocity);
-                if (collisions[i].seperated) {
+                collisions[i] = new EntityCollisionObject(entity, block, collisionAxes[i], entityVelocity);
+                if (collisions[i].arePolygonsSeperated()) {
                     seperated = true;
                     break;
+                }
+                if (!collisions[i].werePolygonsInitiallyColliding()) {
+                    originallySeperated = true;
                 }
             }
         }
         if (!seperated) {
             minDistance = 420;
-            double minNegativeImpactTime = 0D;
             for (int i = 0; i < collisions.length; i++) {
-                // Take the collision response closest to 0
-                if (Math.abs(collisions[i].penetrationDistance) < minDistance) {
-                    minDistanceIndex = i;
-                    minDistance = Math.abs(collisions[i].penetrationDistance);
+                if (originallySeperated) {
+                    if (Math.abs((collisions[i].getCollisionPenetrationDistance() - collisions[i].getVelDot()) / collisions[i].getVelDot()) < minDistance && !collisions[i].werePolygonsInitiallyColliding()) {
+                        minDistanceIndex = i;
+                        minDistance = Math.abs((collisions[i].getCollisionPenetrationDistance() - collisions[i].getVelDot()) / collisions[i].getVelDot());
+                    }
+                } else {
+                    // This is wrong
+                    if (Math.abs(collisions[i].getCollisionPenetrationDistance()) < minDistance) {
+                        minDistanceIndex = i;
+                        minDistance = Math.abs(collisions[i].getCollisionPenetrationDistance());
+                    }
                 }
-                double velDot = collisions[i].axis.dot(entityVelocity);
-                double negativeTime = -velDot / collisions[i].penetrationDistance;
-                if (negativeTime < minNegativeImpactTime) {
-                    minNegativeImpactTime = negativeTime;
-                    minIndexInReverse = i;
-                }
-            }
-            if (entityVelocity.isZero()) {
-                minIndexInReverse = minDistanceIndex;
             }
         }
+    }
+    
+    public EntityCollisionObject[] getCollisions() {
+        return collisions;
+    }
+    
+    public int getMinDistanceIndex() {
+        return minDistanceIndex;
+    }
+    
+    public boolean arePolygonsSeperated() {
+        return seperated;
+    }
+    
+    public Vector[] getCollisionAxes() {
+        return collisionAxes;
     }
 
 }

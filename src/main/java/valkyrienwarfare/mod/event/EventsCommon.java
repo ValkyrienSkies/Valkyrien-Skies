@@ -122,7 +122,7 @@ public class EventsCommon {
                 wrapper.wrapping.fixEntity(entity, new Vector(entity));
                 wrapper.wrapping.queueEntityForMounting(entity);
             }
-            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.getCurrentTransform(), entity, TransformType.LOCAL_TO_GLOBAL);
+            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.getCurrentTickTransform(), entity, TransformType.LOCAL_TO_GLOBAL);
         }
     }
 

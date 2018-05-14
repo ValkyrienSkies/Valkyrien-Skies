@@ -223,8 +223,8 @@ public class PhysObjectRenderManager {
     }
 
     public Quaternion getSmoothRotationQuat(double partialTick) {
-        Quaternion oneTickBefore = parent.coordTransform.getPrevTransform().createRotationQuaternion(TransformType.LOCAL_TO_GLOBAL);
-        Quaternion nextQuat = parent.coordTransform.getCurrentTransform().createRotationQuaternion(TransformType.LOCAL_TO_GLOBAL);
+        Quaternion oneTickBefore = parent.coordTransform.getPrevTickTransform().createRotationQuaternion(TransformType.LOCAL_TO_GLOBAL);
+        Quaternion nextQuat = parent.coordTransform.getCurrentTickTransform().createRotationQuaternion(TransformType.LOCAL_TO_GLOBAL);
         return Quaternion.getBetweenQuat(oneTickBefore, nextQuat, partialTick);
     }
 

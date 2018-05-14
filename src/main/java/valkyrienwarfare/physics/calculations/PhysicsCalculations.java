@@ -43,13 +43,14 @@ import valkyrienwarfare.physics.data.BlockForce;
 import valkyrienwarfare.physics.data.BlockMass;
 import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsObject;
-import valkyrienwarfare.physics.management.ShipTransformationHolder;
+import valkyrienwarfare.physics.management.ShipTransformationManager;
 import valkyrienwarfare.util.NBTUtils;
 import valkyrienwarfare.util.PhysicsSettings;
 
 public class PhysicsCalculations {
 
-    public static final double BLOCKS_TO_METERS = 1.8D;
+    // Without this the physics feels too slow
+    public static final double PHYSICS_SPEEDUP_FACTOR = 1.8D;
     public static final double DRAG_CONSTANT = .99D;
     public static final double INERTIA_OFFSET = .4D;
     public static final double EPSILON = 0xE - 8;
@@ -246,13 +247,13 @@ public class PhysicsCalculations {
             Vector CMDif = centerOfMass.getSubtraction(parentCM);
             // RotationMatrices.doRotationOnly(parent.coordTransform.lToWTransform, CMDif);
 
-            parent.coordTransform.getCurrentTransform().rotate(CMDif, TransformType.LOCAL_TO_GLOBAL);
+            parent.coordTransform.getCurrentTickTransform().rotate(CMDif, TransformType.LOCAL_TO_GLOBAL);
             parent.wrapper.posX -= CMDif.X;
             parent.wrapper.posY -= CMDif.Y;
             parent.wrapper.posZ -= CMDif.Z;
 
             parent.centerCoord = new Vector(centerOfMass);
-            parent.coordTransform.updateAllTransforms(false, false);
+            // parent.coordTransform.updateAllTransforms(false, false);
         }
     }
 
@@ -263,9 +264,9 @@ public class PhysicsCalculations {
         Matrix3d pitch = new Matrix3d();
         Matrix3d yaw = new Matrix3d();
         Matrix3d roll = new Matrix3d();
-        pitch.rotX(Math.toRadians(parent.wrapper.pitch));
-        yaw.rotY(Math.toRadians(parent.wrapper.yaw));
-        roll.rotZ(Math.toRadians(parent.wrapper.roll));
+        pitch.rotX(Math.toRadians(parent.wrapper.getPitch()));
+        yaw.rotY(Math.toRadians(parent.wrapper.getYaw()));
+        roll.rotZ(Math.toRadians(parent.wrapper.getRoll()));
         pitch.mul(yaw);
         pitch.mul(roll);
         pitch.normalize();
@@ -317,9 +318,8 @@ public class PhysicsCalculations {
             for (BlockPos pos : activeForcePositions) {
                 IBlockState state = parent.VKChunkCache.getBlockState(pos);
                 Block blockAt = state.getBlock();
-                VWMath.getBodyPosWithOrientation(pos, centerOfMass,
-                        parent.coordTransform.getCurrentTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL),
-                        inBodyWO);
+                VWMath.getBodyPosWithOrientation(pos, centerOfMass, parent.coordTransform.getCurrentTickTransform()
+                        .getInternalMatrix(TransformType.LOCAL_TO_GLOBAL), inBodyWO);
 
                 BlockForce.basicForces.getForceFromState(state, pos, worldObj, getPhysicsTimeDeltaPerPhysTick(), parent,
                         blockForce);
@@ -330,7 +330,8 @@ public class PhysicsCalculations {
                                 pos, state, parent.wrapper, getPhysicsTimeDeltaPerPhysTick());
                         if (otherPosition != null) {
                             VWMath.getBodyPosWithOrientation(otherPosition, centerOfMass, parent.coordTransform
-                                    .getCurrentTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL), inBodyWO);
+                                    .getCurrentTickTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL),
+                                    inBodyWO);
                         }
                     }
                     addForceAtPoint(inBodyWO, blockForce, crossVector);
@@ -366,13 +367,13 @@ public class PhysicsCalculations {
     }
 
     public void addForceAtPoint(Vector inBodyWO, Vector forceToApply) {
-        forceToApply.multiply(BLOCKS_TO_METERS);
+        forceToApply.multiply(PHYSICS_SPEEDUP_FACTOR);
         torque.add(inBodyWO.cross(forceToApply));
         linearMomentum.add(forceToApply);
     }
 
     public void addForceAtPoint(Vector inBodyWO, Vector forceToApply, Vector crossVector) {
-        forceToApply.multiply(BLOCKS_TO_METERS);
+        forceToApply.multiply(PHYSICS_SPEEDUP_FACTOR);
         crossVector.setCross(inBodyWO, forceToApply);
         torque.add(crossVector);
         linearMomentum.add(forceToApply);
@@ -384,17 +385,17 @@ public class PhysicsCalculations {
     }
 
     public void applyAngularVelocity() {
-        ShipTransformationHolder coordTrans = parent.coordTransform;
+        ShipTransformationManager coordTrans = parent.coordTransform;
 
         double[] rotationChange = RotationMatrices.getRotationMatrix(angularVelocity.X, angularVelocity.Y,
                 angularVelocity.Z, angularVelocity.length() * getPhysicsTimeDeltaPerPhysTick());
         Quaternion finalTransform = Quaternion.QuaternionFromMatrix(RotationMatrices.getMatrixProduct(rotationChange,
-                coordTrans.getCurrentTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL)));
+                coordTrans.getCurrentTickTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL)));
 
         double[] radians = finalTransform.toRadians();
-        parent.wrapper.pitch = Double.isNaN(radians[0]) ? 0.0f : (float) Math.toDegrees(radians[0]);
-        parent.wrapper.yaw = Double.isNaN(radians[1]) ? 0.0f : (float) Math.toDegrees(radians[1]);
-        parent.wrapper.roll = Double.isNaN(radians[2]) ? 0.0f : (float) Math.toDegrees(radians[2]);
+        parent.wrapper.setPitch(Double.isNaN(radians[0]) ? 0.0f : (float) Math.toDegrees(radians[0]));
+        parent.wrapper.setYaw(Double.isNaN(radians[1]) ? 0.0f : (float) Math.toDegrees(radians[1]));
+        parent.wrapper.setRoll(Double.isNaN(radians[2]) ? 0.0f : (float) Math.toDegrees(radians[2]));
     }
 
     public void applyLinearVelocity() {

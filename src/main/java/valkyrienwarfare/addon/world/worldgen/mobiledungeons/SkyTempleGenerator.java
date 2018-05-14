@@ -69,7 +69,7 @@ public class SkyTempleGenerator {
 
         wrapperEntity.world.setBlockState(realSkyControllerPos, ValkyrienWarfareWorld.INSTANCE.skydungeon_controller.getDefaultState());
 
-        wrapperEntity.yaw = Math.random() * 360D;
+        wrapperEntity.setYaw(Math.random() * 360D);
 
         TileEntityShulkerBox skulkerTile = (TileEntityShulkerBox) wrapperEntity.world.getTileEntity(realSkulkerBoxPos);
 

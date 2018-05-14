@@ -56,7 +56,7 @@ public abstract class MixinWorldClient extends World {
             for (PhysicsWrapperEntity wrapper : physEntities) {
                 Vector playPosInShip = new Vector(posX + .5D, posY + .5D, posZ + .5D);
 //                RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, playPosInShip);
-                wrapper.wrapping.coordTransform.getCurrentTransform().transform(playPosInShip, TransformType.GLOBAL_TO_LOCAL);
+                wrapper.wrapping.coordTransform.getCurrentTickTransform().transform(playPosInShip, TransformType.GLOBAL_TO_LOCAL);
                 this.doVoidFogParticles(MathHelper.floor(playPosInShip.X), MathHelper.floor(playPosInShip.Y), MathHelper.floor(playPosInShip.Z));
             }
             hasChanged = false;

@@ -32,7 +32,8 @@ public class VWThread extends Thread {
     private int positionTickID;
     // Used to give each VW thread a unique name
     private static int threadID = 0;
-    private boolean threadRunning;
+    // Used by the game thread to mark this thread for death.
+    private volatile boolean threadRunning;
 
     public VWThread(World host) {
         super("VW World Thread " + threadID);
@@ -79,6 +80,9 @@ public class VWThread extends Thread {
                 e.printStackTrace();
             }
         }
+        // If we get to this point of run(), then we are about to return and this thread
+        // will terminate.
+        System.out.println(super.getName() + " killed");
     }
 
     private void runGameLoop() {
@@ -87,10 +91,12 @@ public class VWThread extends Thread {
             if (mcServer.isDedicatedServer()) {
                 // Always tick the physics
                 physicsTick();
+                tickSendUpdatesToPlayers();
             } else {
                 // Only tick the physics if the game isn't paused
                 if (!isSinglePlayerPaused()) {
                     physicsTick();
+                    tickSendUpdatesToPlayers();
                 }
             }
         }
@@ -114,7 +120,6 @@ public class VWThread extends Thread {
             tickThePhysicsAndCollision();
             tickTheTransformUpdates();
         }
-        tickSendUpdatesToPlayers();
     }
 
     private void tickThePhysicsAndCollision() {
@@ -180,8 +185,10 @@ public class VWThread extends Thread {
      * Ends this physics thread; should only be called after a world is unloaded.
      */
     public void kill() {
-        System.out.println(super.getName() + " killed");
+        System.out.println(super.getName() + " marked for death.");
         threadRunning = false;
-        stop();
+        // Because we set threadRunning to false, the run() method will return and the
+        // thread will stop on its own, so we don't even need to run stop().
+        // stop();
     }
 }

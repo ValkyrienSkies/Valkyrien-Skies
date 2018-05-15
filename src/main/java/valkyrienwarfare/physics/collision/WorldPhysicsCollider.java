@@ -18,10 +18,9 @@ package valkyrienwarfare.physics.collision;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-
-import com.jackredcreeper.cannon.world.NewExp2;
 
 import gnu.trove.list.array.TIntArrayList;
 import net.minecraft.block.state.IBlockState;
@@ -147,11 +146,22 @@ public class WorldPhysicsCollider {
         MutableBlockPos inWorldPos = new MutableBlockPos();
         MutableBlockPos inLocalPos = new MutableBlockPos();
 
-        for (CollisionInformationHolder info : task.getCollisionInformationGenerated()) {
+        Iterator<CollisionInformationHolder> collisionIterator = task.getCollisionInformationIterator();
+
+        while (collisionIterator.hasNext()) {
+            CollisionInformationHolder info = collisionIterator.next();
             inWorldPos.setPos(info.inWorldX, info.inWorldY, info.inWorldZ);
             inLocalPos.setPos(info.inLocalX, info.inLocalY, info.inLocalZ);
             handleActualCollision(info.collider, inWorldPos, inLocalPos, info.inWorldState, info.inLocalState);
         }
+
+        /*
+         * for (CollisionInformationHolder info :
+         * task.getCollisionInformationGenerated()) { inWorldPos.setPos(info.inWorldX,
+         * info.inWorldY, info.inWorldZ); inLocalPos.setPos(info.inLocalX,
+         * info.inLocalY, info.inLocalZ); handleActualCollision(info.collider,
+         * inWorldPos, inLocalPos, info.inWorldState, info.inLocalState); }
+         */
 
         task.getCollisionInformationGenerated().clear();
     }
@@ -173,7 +183,10 @@ public class WorldPhysicsCollider {
             inWorld.X = mutablePos.getX() + .5;
             inWorld.Y = mutablePos.getY() + .5;
             inWorld.Z = mutablePos.getZ() + .5;
-            parent.coordTransform.fromGlobalToLocal(inWorld);
+
+            parent.coordTransform.getCurrentPhysicsTransform().transform(inWorld, TransformType.GLOBAL_TO_LOCAL);
+
+            // parent.coordTransform.fromGlobalToLocal(inWorld);
 
             int minX = MathHelper.floor(inWorld.X - COLLISION_RANGE_CHECK);
             int minY = MathHelper.floor(inWorld.Y - COLLISION_RANGE_CHECK);
@@ -272,7 +285,7 @@ public class WorldPhysicsCollider {
         // List<AxisAlignedBB> colBB = worldObj.getCollisionBoxes(inLocalBB);
         // inLocalBB = colBB.get(0);
 
-        Polygon shipInWorld = new Polygon(inLocalBB, parent.coordTransform.getCurrentTickTransform(),
+        Polygon shipInWorld = new Polygon(inLocalBB, parent.coordTransform.getCurrentPhysicsTransform(),
                 TransformType.LOCAL_TO_GLOBAL);
         Polygon worldPoly = new Polygon(inGlobalBB);
         PhysPolygonCollider collider = new PhysPolygonCollider(shipInWorld, worldPoly, parent.coordTransform.normals);
@@ -318,40 +331,6 @@ public class WorldPhysicsCollider {
             Vector axis = toCollideWith.collision_normal;
             Vector offsetVector = toCollideWith.getResponse();
             calculateCollisionImpulseForce(inBody, momentumAtPoint, axis, offsetVector, false, false, impulseApplied);
-            // calculateCollisionImpulseForce(inBody, momentumAtPoint, axis, offsetVector,
-            // didBlockBreakInShip.getValue(),
-            // didBlockBreakInWorld.getValue(), impulseApplied);
-        }
-
-        // This is causing crashes
-        // TODO: Fix the crashes
-        if (false) {
-            if (false) { // didBlockBreakInShip.getValue()) {
-                worldObj.destroyBlock(inLocalPos, true);
-            }
-
-            if (false) { // didBlockBreakInWorld.getValue()) {
-
-                if (worldObj.getBlockState(inWorldPos)
-                        .getBlock() instanceof com.jackredcreeper.cannon.blocks.BlockAirMine) {
-                    double x = inWorldPos.getX();
-                    double y = inWorldPos.getY();
-                    double z = inWorldPos.getZ();
-
-                    float size = 8F;
-                    float power = 0F;
-                    float blast = 0F;
-                    float damage = 100F;
-
-                    NewExp2 explosion1 = new NewExp2(worldObj, null, x, y, z, size, power, damage, blast, false, true);
-                    explosion1.newBoom(worldObj, null, x, y, z, size, power, damage, blast, false, true);
-
-                    worldObj.setBlockToAir(inWorldPos);
-                } else
-
-                    worldObj.destroyBlock(inWorldPos, true);
-                return true;
-            }
         }
 
         return false;
@@ -366,6 +345,11 @@ public class WorldPhysicsCollider {
 
         Vector secondCross = firstCross.cross(inBody);
 
+        // TODO: Find a much better solution to this please!
+        // if (velocityAtPointOfCollision.lengthSq() < .1) {
+        // velocityAtPointOfCollision.add(offsetVector.getProduct(1));
+        // }
+
         double impulseMagnitude = -velocityAtPointOfCollision.dot(axis)
                 / (calculator.getInvMass() + secondCross.dot(axis));
 
@@ -378,10 +362,10 @@ public class WorldPhysicsCollider {
 
         Vector collisionImpulseForce = new Vector(axis, impulseMagnitude);
 
-        if (didBlockBreakInShip || didBlockBreakInWorld) {
-            // collisionImpulseForce.multiply(BlockRammingManager.collisionImpulseAfterRamming);
-            collisionImpulseForce.multiply(impulseApplied);
-        }
+        // if (didBlockBreakInShip || didBlockBreakInWorld) {
+        // collisionImpulseForce.multiply(BlockRammingManager.collisionImpulseAfterRamming);
+        // collisionImpulseForce.multiply(impulseApplied);
+        // }
 
         // This is just an optimized way to add this force quickly to the
         // PhysicsCalculations
@@ -389,13 +373,7 @@ public class WorldPhysicsCollider {
             // collisionImpulseForce.multiply(1.8D);
             double collisionVelocity = velocityAtPointOfCollision.dot(axis);
 
-            if (Math.abs(collisionVelocity) < 0.01D) {
-                collisionImpulseForce.zero();
-            } else {
-                addFrictionToNormalForce(velocityAtPointOfCollision, collisionImpulseForce);
-                // calculateCoulumbFriction(inBody, momentumAtPoint, axis, offsetVector);
-            }
-
+            addFrictionToNormalForce(velocityAtPointOfCollision, collisionImpulseForce);
             calculator.linearMomentum.add(collisionImpulseForce);
             Vector thirdCross = inBody.cross(collisionImpulseForce);
 
@@ -572,7 +550,8 @@ public class WorldPhysicsCollider {
             inLocal.Y = y + .5D;
             inLocal.Z = z + .5D;
             // TODO: Something
-            parent.coordTransform.fromGlobalToLocal(inLocal);
+            // parent.coordTransform.fromGlobalToLocal(inLocal);
+            parent.coordTransform.getCurrentPhysicsTransform().transform(inLocal, TransformType.GLOBAL_TO_LOCAL);
 
             inBody.setSubtraction(inLocal, parent.centerCoord);
             // parent.physicsProcessor.setVectorToVelocityAtPoint(inBody, speedInBody);

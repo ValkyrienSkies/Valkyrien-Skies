@@ -2,13 +2,14 @@ package valkyrienwarfare.physics.data;
 
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import scala.actors.threadpool.Arrays;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.math.Quaternion;
 
 /**
  * Immutable wrapper around the rotation matrices used by ships. The
- * immutability is extremely important to enforce for preventing multithreaded
+ * immutability is extremely important to enforce for preventing multi-threaded
  * access issues. All access to the internal arrays is blocked to guarantee
  * nothing goes wrong.
  * 
@@ -28,8 +29,25 @@ public class ShipTransform {
         this.globalToLocal = RotationMatrices.inverse(localToGlobal);
     }
 
+    public ShipTransform(double posX, double posY, double posZ, double pitch, double yaw, double roll, Vector centerCoord) {
+        double[] lToWTransform = RotationMatrices.getTranslationMatrix(posX, posY, posZ);
+        lToWTransform = RotationMatrices.rotateAndTranslate(lToWTransform, pitch, yaw, roll, centerCoord);
+        this.localToGlobal = lToWTransform;
+        this.globalToLocal = RotationMatrices.inverse(localToGlobal);
+    }
+    
     public ShipTransform() {
         this(RotationMatrices.getDoubleIdentity());
+    }
+
+    /**
+     * Initializes this as a copy of the given ShipTransform.
+     * 
+     * @param toCopy
+     */
+    public ShipTransform(ShipTransform toCopy) {
+        this.localToGlobal = Arrays.copyOf(toCopy.localToGlobal, toCopy.localToGlobal.length);
+        this.globalToLocal = Arrays.copyOf(toCopy.globalToLocal, toCopy.globalToLocal.length);
     }
 
     public void transform(Vector vector, TransformType transformType) {

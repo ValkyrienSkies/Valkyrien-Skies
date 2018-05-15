@@ -1,6 +1,5 @@
 package valkyrienwarfare.mod.multithreaded;
 
-import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.physics.data.ShipTransform;
 
 /**
@@ -12,13 +11,8 @@ import valkyrienwarfare.physics.data.ShipTransform;
  */
 public class PhysicsShipTransform extends ShipTransform {
 
-    private Vector centerOfMassLocal;
-    private Vector angularVelocity;
-    private Vector linearVelocity;
-    private Vector torque;
-    // 3 x 3 MOI matrix
-    private double[] momentOfIntertiaMatrix;
-    private double[] inverseMomentOfIntertiaMatrix;
-    private double mass;
-    
+    public PhysicsShipTransform(ShipTransform transform) {
+        super(transform);
+    }
+
 }

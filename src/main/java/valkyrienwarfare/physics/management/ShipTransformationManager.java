@@ -24,8 +24,6 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.border.WorldBorder;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
@@ -48,7 +46,8 @@ public class ShipTransformationManager {
     private ShipTransform prevTickTransform;
     // Used exclusively by the physics engine; should never even be used by the
     // client.
-    private ShipTransform physicsTransform;
+    private ShipTransform currentPhysicsTransform;
+    private ShipTransform prevPhysicsTransform;
     public Vector[] normals;
     // A buffer to hold ship transform data sent from server to the client.
     public final ShipTransformationBuffer serverBuffer;
@@ -58,7 +57,8 @@ public class ShipTransformationManager {
         this.currentTickTransform = ZERO_TRANSFORM;
         this.renderTransform = ZERO_TRANSFORM;
         this.prevTickTransform = ZERO_TRANSFORM;
-        this.physicsTransform = ZERO_TRANSFORM;
+        this.currentPhysicsTransform = ZERO_TRANSFORM;
+        this.prevPhysicsTransform = ZERO_TRANSFORM;
         this.updateAllTransforms(true, true);
         this.normals = Vector.generateAxisAlignedNorms();
         this.serverBuffer = new ShipTransformationBuffer();
@@ -311,9 +311,9 @@ public class ShipTransformationManager {
      * 
      * @return the physics transform
      */
-    @SideOnly(Side.SERVER)
-    public ShipTransform getPhysicsTransform() {
-        return physicsTransform;
+    public ShipTransform getCurrentPhysicsTransform() {
+        return getCurrentTickTransform();
+        // TODO: return physicsTransform;
     }
 
     /**
@@ -321,11 +321,18 @@ public class ShipTransformationManager {
      * 
      * @param physicsTransform
      */
-    @SideOnly(Side.SERVER)
-    public void setPhysicsTransform(ShipTransform physicsTransform) {
-        this.physicsTransform = physicsTransform;
+    public void setCurrentPhysicsTransform(ShipTransform currentPhysicsTransform) {
+        this.currentPhysicsTransform = currentPhysicsTransform;
     }
 
+    public ShipTransform getPreviousPhysicsTransform() {
+        return prevPhysicsTransform;
+    }
+    
+    public void updatePreviousPhysicsTransform() {
+        this.prevPhysicsTransform = currentPhysicsTransform;
+    }
+    
     private class CollisionBBConsumer implements Consumer<BlockPos> {
         private static final double AABB_EXPANSION = 1.6D;
         private final double[] M = getCurrentTickTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL);

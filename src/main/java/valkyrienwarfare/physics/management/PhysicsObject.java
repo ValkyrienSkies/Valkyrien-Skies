@@ -68,6 +68,7 @@ import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.api.block.ethercompressor.TileEntityEtherCompressor;
 import valkyrienwarfare.mod.BlockPhysicsRegistration;
 import valkyrienwarfare.mod.client.render.PhysObjectRenderManager;
+import valkyrienwarfare.mod.multithreaded.PhysicsShipTransform;
 import valkyrienwarfare.mod.network.PhysWrapperPositionMessage;
 import valkyrienwarfare.mod.physmanagement.chunk.ChunkSet;
 import valkyrienwarfare.mod.physmanagement.relocation.DetectorManager;
@@ -123,6 +124,8 @@ public class PhysicsObject {
     private ShipType shipType;
 
     public final Set<Node> nodesWithinShip;
+    
+    private PhysicsShipTransform physicsTransform;
 
     public PhysicsObject(PhysicsWrapperEntity host) {
         wrapper = host;

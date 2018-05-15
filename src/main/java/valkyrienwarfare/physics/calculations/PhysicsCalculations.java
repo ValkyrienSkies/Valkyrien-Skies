@@ -38,9 +38,11 @@ import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.math.Quaternion;
 import valkyrienwarfare.math.VWMath;
+import valkyrienwarfare.mod.multithreaded.PhysicsShipTransform;
 import valkyrienwarfare.physics.collision.WorldPhysicsCollider;
 import valkyrienwarfare.physics.data.BlockForce;
 import valkyrienwarfare.physics.data.BlockMass;
+import valkyrienwarfare.physics.data.ShipTransform;
 import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsObject;
 import valkyrienwarfare.physics.management.ShipTransformationManager;
@@ -74,6 +76,9 @@ public class PhysicsCalculations {
     public double[] MoITensor, invMoITensor;
     public double[] framedMOI, invFramedMOI;
     public boolean actAsArchimedes = false;
+
+    private double physRoll, physPitch, physYaw;
+    private double physX, physY, physZ;
 
     public PhysicsCalculations(PhysicsObject toProcess) {
         parent = toProcess;
@@ -193,6 +198,18 @@ public class PhysicsCalculations {
     }
 
     public void rawPhysTickPreCol(double newPhysSpeed, int iters) {
+        if (parent.coordTransform.getCurrentPhysicsTransform() == null) {
+            // Create a new physics transform.
+            parent.coordTransform.setCurrentPhysicsTransform(
+                    new PhysicsShipTransform(parent.coordTransform.getCurrentTickTransform()));
+            parent.coordTransform.updatePreviousPhysicsTransform();
+            physRoll = parent.wrapper.getRoll();
+            physPitch = parent.wrapper.getPitch();
+            physYaw = parent.wrapper.getYaw();
+            physX = parent.wrapper.posX;
+            physY = parent.wrapper.posY;
+            physZ = parent.wrapper.posZ;
+        }
         if (parent.doPhysics) {
             updatePhysSpeedAndIters(newPhysSpeed, iters);
             updateParentCenterOfMass();
@@ -225,6 +242,11 @@ public class PhysicsCalculations {
                 linearMomentum.zero();
                 angularVelocity.zero();
             }
+            ShipTransform finalPhysTransform = new ShipTransform(physX, physY, physZ, physPitch, physYaw, physRoll,
+                    centerOfMass);
+
+            parent.coordTransform.setCurrentPhysicsTransform(finalPhysTransform);
+
             parent.coordTransform.updateAllTransforms(true, true);
         }
     }
@@ -257,33 +279,38 @@ public class PhysicsCalculations {
         }
     }
 
-    // Applies the rotation transform onto the Moment of Inertia to generate the
-    // REAL MOI at that given instant
+    /**
+     * Generates the rotated moment of inertia tensor with the body; uses the
+     * following formula: I' = R * I * R-transpose; where I' is the rotated inertia,
+     * I is unrotated interim, and R is the rotation matrix.
+     */
     private void calculateFramedMOITensor() {
         framedMOI = RotationMatrices.getZeroMatrix(3);
-        Matrix3d pitch = new Matrix3d();
-        Matrix3d yaw = new Matrix3d();
-        Matrix3d roll = new Matrix3d();
-        pitch.rotX(Math.toRadians(parent.wrapper.getPitch()));
-        yaw.rotY(Math.toRadians(parent.wrapper.getYaw()));
-        roll.rotZ(Math.toRadians(parent.wrapper.getRoll()));
-        pitch.mul(yaw);
-        pitch.mul(roll);
-        pitch.normalize();
+
+        double[] internalRotationMatrix = parent.coordTransform.getCurrentPhysicsTransform()
+                .getInternalMatrix(TransformType.LOCAL_TO_GLOBAL);
+
+        Matrix3d rotationMatrix = new Matrix3d(internalRotationMatrix[0], internalRotationMatrix[1],
+                internalRotationMatrix[2], internalRotationMatrix[4], internalRotationMatrix[5],
+                internalRotationMatrix[6], internalRotationMatrix[8], internalRotationMatrix[9],
+                internalRotationMatrix[10]);
+
         Matrix3d inertiaBodyFrame = new Matrix3d(MoITensor);
-        Matrix3d multipled = new Matrix3d();
-        multipled.mul(pitch, inertiaBodyFrame);
-        pitch.transpose();
-        multipled.mul(pitch);
-        framedMOI[0] = multipled.m00;
-        framedMOI[1] = multipled.m01;
-        framedMOI[2] = multipled.m02;
-        framedMOI[3] = multipled.m10;
-        framedMOI[4] = multipled.m11;
-        framedMOI[5] = multipled.m12;
-        framedMOI[6] = multipled.m20;
-        framedMOI[7] = multipled.m21;
-        framedMOI[8] = multipled.m22;
+        // The product of the overall rotation matrix with the inertia tensor.
+        inertiaBodyFrame.mul(rotationMatrix);
+        rotationMatrix.transpose();
+        // The product of the inertia tensor multiplied with the transpose of the
+        // rotation transpose.
+        inertiaBodyFrame.mul(rotationMatrix);
+        framedMOI[0] = inertiaBodyFrame.m00;
+        framedMOI[1] = inertiaBodyFrame.m01;
+        framedMOI[2] = inertiaBodyFrame.m02;
+        framedMOI[3] = inertiaBodyFrame.m10;
+        framedMOI[4] = inertiaBodyFrame.m11;
+        framedMOI[5] = inertiaBodyFrame.m12;
+        framedMOI[6] = inertiaBodyFrame.m20;
+        framedMOI[7] = inertiaBodyFrame.m21;
+        framedMOI[8] = inertiaBodyFrame.m22;
         invFramedMOI = RotationMatrices.inverse3by3(framedMOI);
     }
 
@@ -318,7 +345,7 @@ public class PhysicsCalculations {
             for (BlockPos pos : activeForcePositions) {
                 IBlockState state = parent.VKChunkCache.getBlockState(pos);
                 Block blockAt = state.getBlock();
-                VWMath.getBodyPosWithOrientation(pos, centerOfMass, parent.coordTransform.getCurrentTickTransform()
+                VWMath.getBodyPosWithOrientation(pos, centerOfMass, parent.coordTransform.getCurrentPhysicsTransform()
                         .getInternalMatrix(TransformType.LOCAL_TO_GLOBAL), inBodyWO);
 
                 BlockForce.basicForces.getForceFromState(state, pos, worldObj, getPhysicsTimeDeltaPerPhysTick(), parent,
@@ -330,7 +357,7 @@ public class PhysicsCalculations {
                                 pos, state, parent.wrapper, getPhysicsTimeDeltaPerPhysTick());
                         if (otherPosition != null) {
                             VWMath.getBodyPosWithOrientation(otherPosition, centerOfMass, parent.coordTransform
-                                    .getCurrentTickTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL),
+                                    .getCurrentPhysicsTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL),
                                     inBodyWO);
                         }
                     }
@@ -393,6 +420,14 @@ public class PhysicsCalculations {
                 coordTrans.getCurrentTickTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL)));
 
         double[] radians = finalTransform.toRadians();
+
+        // physPitch = Double.isNaN(radians[0]) ? 0.0f : (float)
+        // Math.toDegrees(radians[0]);
+        // physYaw = Double.isNaN(radians[1]) ? 0.0f : (float)
+        // Math.toDegrees(radians[1]);
+        // physRoll = Double.isNaN(radians[2]) ? 0.0f : (float)
+        // Math.toDegrees(radians[2]);
+
         parent.wrapper.setPitch(Double.isNaN(radians[0]) ? 0.0f : (float) Math.toDegrees(radians[0]));
         parent.wrapper.setYaw(Double.isNaN(radians[1]) ? 0.0f : (float) Math.toDegrees(radians[1]));
         parent.wrapper.setRoll(Double.isNaN(radians[2]) ? 0.0f : (float) Math.toDegrees(radians[2]));
@@ -400,6 +435,14 @@ public class PhysicsCalculations {
 
     public void applyLinearVelocity() {
         double momentMod = getPhysicsTimeDeltaPerPhysTick() * getInvMass();
+
+        // physX += (linearMomentum.X * momentMod);
+        // physY += (linearMomentum.Y * momentMod);
+        // physZ += (linearMomentum.Z * momentMod);
+        // physY = Math.min(Math.max(parent.wrapper.posY,
+        // ValkyrienWarfareMod.shipLowerLimit),
+        // ValkyrienWarfareMod.shipUpperLimit);
+
         parent.wrapper.posX += (linearMomentum.X * momentMod);
         parent.wrapper.posY += (linearMomentum.Y * momentMod);
         parent.wrapper.posZ += (linearMomentum.Z * momentMod);

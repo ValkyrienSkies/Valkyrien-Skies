@@ -312,8 +312,7 @@ public class ShipTransformationManager {
      * @return the physics transform
      */
     public ShipTransform getCurrentPhysicsTransform() {
-        return getCurrentTickTransform();
-        // TODO: return physicsTransform;
+        return currentPhysicsTransform;
     }
 
     /**
@@ -328,11 +327,11 @@ public class ShipTransformationManager {
     public ShipTransform getPreviousPhysicsTransform() {
         return prevPhysicsTransform;
     }
-    
+
     public void updatePreviousPhysicsTransform() {
         this.prevPhysicsTransform = currentPhysicsTransform;
     }
-    
+
     private class CollisionBBConsumer implements Consumer<BlockPos> {
         private static final double AABB_EXPANSION = 1.6D;
         private final double[] M = getCurrentTickTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL);

@@ -198,7 +198,7 @@ public class PhysicsCalculations {
     }
 
     public void rawPhysTickPreCol(double newPhysSpeed, int iters) {
-        if (parent.coordTransform.getCurrentPhysicsTransform() == null) {
+        if (parent.coordTransform.getCurrentPhysicsTransform() == ShipTransformationManager.ZERO_TRANSFORM) {
             // Create a new physics transform.
             parent.coordTransform.setCurrentPhysicsTransform(
                     new PhysicsShipTransform(parent.coordTransform.getCurrentTickTransform()));
@@ -247,8 +247,20 @@ public class PhysicsCalculations {
 
             parent.coordTransform.setCurrentPhysicsTransform(finalPhysTransform);
 
+            updateParentToPhysCoords();
+
             parent.coordTransform.updateAllTransforms(true, true);
         }
+    }
+
+    private void updateParentToPhysCoords() {
+        parent.wrapper.setPitch(physPitch);
+        parent.wrapper.setYaw(physYaw);
+        parent.wrapper.setRoll(physRoll);
+        
+        parent.wrapper.posX = physX;
+        parent.wrapper.posY = physY;
+        parent.wrapper.posZ = physZ;
     }
 
     // If the ship is moving at these speeds, its likely something in the physics
@@ -417,37 +429,36 @@ public class PhysicsCalculations {
         double[] rotationChange = RotationMatrices.getRotationMatrix(angularVelocity.X, angularVelocity.Y,
                 angularVelocity.Z, angularVelocity.length() * getPhysicsTimeDeltaPerPhysTick());
         Quaternion finalTransform = Quaternion.QuaternionFromMatrix(RotationMatrices.getMatrixProduct(rotationChange,
-                coordTrans.getCurrentTickTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL)));
+                coordTrans.getCurrentPhysicsTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL)));
 
         double[] radians = finalTransform.toRadians();
 
-        // physPitch = Double.isNaN(radians[0]) ? 0.0f : (float)
-        // Math.toDegrees(radians[0]);
-        // physYaw = Double.isNaN(radians[1]) ? 0.0f : (float)
-        // Math.toDegrees(radians[1]);
-        // physRoll = Double.isNaN(radians[2]) ? 0.0f : (float)
-        // Math.toDegrees(radians[2]);
+        physPitch = Double.isNaN(radians[0]) ? 0.0f : (float) Math.toDegrees(radians[0]);
+        physYaw = Double.isNaN(radians[1]) ? 0.0f : (float) Math.toDegrees(radians[1]);
+        physRoll = Double.isNaN(radians[2]) ? 0.0f : (float) Math.toDegrees(radians[2]);
 
-        parent.wrapper.setPitch(Double.isNaN(radians[0]) ? 0.0f : (float) Math.toDegrees(radians[0]));
-        parent.wrapper.setYaw(Double.isNaN(radians[1]) ? 0.0f : (float) Math.toDegrees(radians[1]));
-        parent.wrapper.setRoll(Double.isNaN(radians[2]) ? 0.0f : (float) Math.toDegrees(radians[2]));
+        // parent.wrapper.setPitch(Double.isNaN(radians[0]) ? 0.0f : (float)
+        // Math.toDegrees(radians[0]));
+        // parent.wrapper.setYaw(Double.isNaN(radians[1]) ? 0.0f : (float)
+        // Math.toDegrees(radians[1]));
+        // parent.wrapper.setRoll(Double.isNaN(radians[2]) ? 0.0f : (float)
+        // Math.toDegrees(radians[2]));
     }
 
     public void applyLinearVelocity() {
         double momentMod = getPhysicsTimeDeltaPerPhysTick() * getInvMass();
 
-        // physX += (linearMomentum.X * momentMod);
-        // physY += (linearMomentum.Y * momentMod);
-        // physZ += (linearMomentum.Z * momentMod);
-        // physY = Math.min(Math.max(parent.wrapper.posY,
+        physX += (linearMomentum.X * momentMod);
+        physY += (linearMomentum.Y * momentMod);
+        physZ += (linearMomentum.Z * momentMod);
+        physY = Math.min(Math.max(physY, ValkyrienWarfareMod.shipLowerLimit), ValkyrienWarfareMod.shipUpperLimit);
+
+        // parent.wrapper.posX += (linearMomentum.X * momentMod);
+        // parent.wrapper.posY += (linearMomentum.Y * momentMod);
+        // parent.wrapper.posZ += (linearMomentum.Z * momentMod);
+        // parent.wrapper.posY = Math.min(Math.max(parent.wrapper.posY,
         // ValkyrienWarfareMod.shipLowerLimit),
         // ValkyrienWarfareMod.shipUpperLimit);
-
-        parent.wrapper.posX += (linearMomentum.X * momentMod);
-        parent.wrapper.posY += (linearMomentum.Y * momentMod);
-        parent.wrapper.posZ += (linearMomentum.Z * momentMod);
-        parent.wrapper.posY = Math.min(Math.max(parent.wrapper.posY, ValkyrienWarfareMod.shipLowerLimit),
-                ValkyrienWarfareMod.shipUpperLimit);
     }
 
     public Vector getVelocityAtPoint(Vector inBodyWO) {

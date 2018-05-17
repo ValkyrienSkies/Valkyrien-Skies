@@ -101,7 +101,7 @@ public class ShipPulseImpulseControlSystem {
                 //Assume zero change
                 double currentErrorY = (posInWorld.Y - idealHeight) + linearThama * (linearMomentum.Y * calculations.getInvMass());
 
-                double currentEngineErrorAngularY = getEngineDistFromIdealAngular(forceTile.getPos(), rotationAndTranslationMatrix, angularVelocity, calculations.centerOfMass, calculations.getPhysicsTimeDeltaPerPhysTick());
+                double currentEngineErrorAngularY = getEngineDistFromIdealAngular(forceTile.getPos(), rotationAndTranslationMatrix, angularVelocity, calculations.gameTickCenterOfMass, calculations.getPhysicsTimeDeltaPerPhysTick());
 
 
                 Vector potentialMaxForce = new Vector(0, forceTile.getMaxThrust(), 0);
@@ -112,7 +112,7 @@ public class ShipPulseImpulseControlSystem {
                 potentialMaxThrust.multiply(calculations.getPhysicsTimeDeltaPerPhysTick());
 
                 double futureCurrentErrorY = currentErrorY + linearThama * potentialMaxForce.Y;
-                double futureEngineErrorAngularY = getEngineDistFromIdealAngular(forceTile.getPos(), rotationAndTranslationMatrix, angularVelocity.getAddition(potentialMaxThrust), calculations.centerOfMass, calculations.getPhysicsTimeDeltaPerPhysTick());
+                double futureEngineErrorAngularY = getEngineDistFromIdealAngular(forceTile.getPos(), rotationAndTranslationMatrix, angularVelocity.getAddition(potentialMaxThrust), calculations.gameTickCenterOfMass, calculations.getPhysicsTimeDeltaPerPhysTick());
 
 
                 boolean doesForceMinimizeError = false;

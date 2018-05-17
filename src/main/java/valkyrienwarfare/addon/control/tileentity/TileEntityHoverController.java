@@ -93,7 +93,7 @@ public class TileEntityHoverController extends TileEntity {
 
         double futureCurrentErrorY = currentErrorY + linearThama * potentialMaxForce.Y;
         double futureEngineErrorAngularY = getEngineDistFromIdealAngular(engine.getPos(), rotationAndTranslationMatrix,
-                angularVelocity.getAddition(potentialMaxThrust), calculations.centerOfMass,
+                angularVelocity.getAddition(potentialMaxThrust), calculations.gameTickCenterOfMass,
                 calculations.getPhysicsTimeDeltaPerPhysTick());
 
         boolean doesForceMinimizeError = false;
@@ -135,8 +135,8 @@ public class TileEntityHoverController extends TileEntity {
         Vector controllerPos = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
         Vector enginePosVec = new Vector(enginePos.getX() + .5D, enginePos.getY() + .5D, enginePos.getZ() + .5D);
 
-        controllerPos.subtract(physObj.physicsProcessor.centerOfMass);
-        enginePosVec.subtract(physObj.physicsProcessor.centerOfMass);
+        controllerPos.subtract(physObj.physicsProcessor.gameTickCenterOfMass);
+        enginePosVec.subtract(physObj.physicsProcessor.gameTickCenterOfMass);
 
         Vector unOrientedPosDif = new Vector(enginePosVec.X - controllerPos.X, enginePosVec.Y - controllerPos.Y,
                 enginePosVec.Z - controllerPos.Z);

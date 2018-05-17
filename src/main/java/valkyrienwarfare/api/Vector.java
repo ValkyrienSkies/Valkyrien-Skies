@@ -245,5 +245,15 @@ public class Vector {
     public static Vector readFromBuffer(ByteBuf buffer) {
         return new Vector(buffer.readFloat(), buffer.readFloat(), buffer.readFloat());
     }
+    
+    public void setValue(double x, double y, double z) {
+        X = x;
+        Y = y;
+        Z = z;
+    }
+
+    public void setValue(Vector toCopy) {
+        setValue(toCopy.X, toCopy.Y, toCopy.Z);
+    }
 
 }

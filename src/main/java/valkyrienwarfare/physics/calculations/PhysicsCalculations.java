@@ -60,7 +60,8 @@ public class PhysicsCalculations {
     public final PhysicsObject parent;
     public final WorldPhysicsCollider worldCollision;
 
-    public Vector centerOfMass;
+    public Vector gameTickCenterOfMass;
+    private Vector physCenterOfMass;
     public Vector linearMomentum;
     public Vector angularVelocity;
     private Vector torque;
@@ -89,8 +90,9 @@ public class PhysicsCalculations {
         framedMOI = RotationMatrices.getZeroMatrix(3);
         invFramedMOI = RotationMatrices.getZeroMatrix(3);
 
-        centerOfMass = new Vector(toProcess.centerCoord);
+        gameTickCenterOfMass = new Vector(toProcess.centerCoord);
         linearMomentum = new Vector();
+        physCenterOfMass = new Vector();
         angularVelocity = new Vector();
         torque = new Vector();
         iterations = 5;
@@ -102,7 +104,7 @@ public class PhysicsCalculations {
     public PhysicsCalculations(PhysicsCalculations toCopy) {
         parent = toCopy.parent;
         worldCollision = toCopy.worldCollision;
-        centerOfMass = toCopy.centerOfMass;
+        gameTickCenterOfMass = toCopy.gameTickCenterOfMass;
         linearMomentum = toCopy.linearMomentum;
         angularVelocity = toCopy.angularVelocity;
         torque = toCopy.torque;
@@ -164,21 +166,21 @@ public class PhysicsCalculations {
     }
 
     private void addMassAt(double x, double y, double z, double addedMass) {
-        Vector prevCenterOfMass = new Vector(centerOfMass);
+        Vector prevCenterOfMass = new Vector(gameTickCenterOfMass);
         if (mass > .0001D) {
-            centerOfMass.multiply(mass);
-            centerOfMass.add(new Vector(x, y, z).getProduct(addedMass));
-            centerOfMass.multiply(1.0D / (mass + addedMass));
+            gameTickCenterOfMass.multiply(mass);
+            gameTickCenterOfMass.add(new Vector(x, y, z).getProduct(addedMass));
+            gameTickCenterOfMass.multiply(1.0D / (mass + addedMass));
         } else {
-            centerOfMass = new Vector(x, y, z);
+            gameTickCenterOfMass = new Vector(x, y, z);
             MoITensor = RotationMatrices.getZeroMatrix(3);
         }
-        double cmShiftX = prevCenterOfMass.X - centerOfMass.X;
-        double cmShiftY = prevCenterOfMass.Y - centerOfMass.Y;
-        double cmShiftZ = prevCenterOfMass.Z - centerOfMass.Z;
-        double rx = x - centerOfMass.X;
-        double ry = y - centerOfMass.Y;
-        double rz = z - centerOfMass.Z;
+        double cmShiftX = prevCenterOfMass.X - gameTickCenterOfMass.X;
+        double cmShiftY = prevCenterOfMass.Y - gameTickCenterOfMass.Y;
+        double cmShiftZ = prevCenterOfMass.Z - gameTickCenterOfMass.Z;
+        double rx = x - gameTickCenterOfMass.X;
+        double ry = y - gameTickCenterOfMass.Y;
+        double rz = z - gameTickCenterOfMass.Z;
 
         MoITensor[0] = MoITensor[0] + (cmShiftY * cmShiftY + cmShiftZ * cmShiftZ) * mass
                 + (ry * ry + rz * rz) * addedMass;
@@ -209,6 +211,7 @@ public class PhysicsCalculations {
             physX = parent.wrapper.posX;
             physY = parent.wrapper.posY;
             physZ = parent.wrapper.posZ;
+            physCenterOfMass.setValue(gameTickCenterOfMass);
         }
         if (parent.doPhysics) {
             updatePhysSpeedAndIters(newPhysSpeed, iters);
@@ -243,10 +246,11 @@ public class PhysicsCalculations {
                 angularVelocity.zero();
             }
             ShipTransform finalPhysTransform = new ShipTransform(physX, physY, physZ, physPitch, physYaw, physRoll,
-                    centerOfMass);
+                    physCenterOfMass);
 
             parent.coordTransform.setCurrentPhysicsTransform(finalPhysTransform);
 
+            updatePhysCenterOfMass();
             updateParentToPhysCoords();
 
             parent.coordTransform.updateAllTransforms(true, true);
@@ -257,7 +261,7 @@ public class PhysicsCalculations {
         parent.wrapper.setPitch(physPitch);
         parent.wrapper.setYaw(physYaw);
         parent.wrapper.setRoll(physRoll);
-        
+
         parent.wrapper.posX = physX;
         parent.wrapper.posY = physY;
         parent.wrapper.posZ = physZ;
@@ -277,8 +281,8 @@ public class PhysicsCalculations {
     // changes.
     public void updateParentCenterOfMass() {
         Vector parentCM = parent.centerCoord;
-        if (!parent.centerCoord.equals(centerOfMass)) {
-            Vector CMDif = centerOfMass.getSubtraction(parentCM);
+        if (!parent.centerCoord.equals(gameTickCenterOfMass)) {
+            Vector CMDif = gameTickCenterOfMass.getSubtraction(parentCM);
             // RotationMatrices.doRotationOnly(parent.coordTransform.lToWTransform, CMDif);
 
             parent.coordTransform.getCurrentTickTransform().rotate(CMDif, TransformType.LOCAL_TO_GLOBAL);
@@ -286,8 +290,26 @@ public class PhysicsCalculations {
             parent.wrapper.posY -= CMDif.Y;
             parent.wrapper.posZ -= CMDif.Z;
 
-            parent.centerCoord = new Vector(centerOfMass);
+            parent.centerCoord.setValue(gameTickCenterOfMass);
             // parent.coordTransform.updateAllTransforms(false, false);
+        }
+    }
+
+    /**
+     * Updates the physics center of mass to the game center of mass; does not do
+     * any transformation updates on its own.
+     */
+    private void updatePhysCenterOfMass() {
+        if (!physCenterOfMass.equals(gameTickCenterOfMass)) {
+            Vector CMDif = physCenterOfMass.getSubtraction(gameTickCenterOfMass);
+            // RotationMatrices.doRotationOnly(parent.coordTransform.lToWTransform, CMDif);
+
+            parent.coordTransform.getCurrentPhysicsTransform().rotate(CMDif, TransformType.LOCAL_TO_GLOBAL);
+            physX += CMDif.X;
+            physY += CMDif.Y;
+            physZ += CMDif.Z;
+
+            physCenterOfMass.setValue(gameTickCenterOfMass);
         }
     }
 
@@ -302,6 +324,7 @@ public class PhysicsCalculations {
         double[] internalRotationMatrix = parent.coordTransform.getCurrentPhysicsTransform()
                 .getInternalMatrix(TransformType.LOCAL_TO_GLOBAL);
 
+        // Copy the rotation matrix, ignore the translation and scaling parts.
         Matrix3d rotationMatrix = new Matrix3d(internalRotationMatrix[0], internalRotationMatrix[1],
                 internalRotationMatrix[2], internalRotationMatrix[4], internalRotationMatrix[5],
                 internalRotationMatrix[6], internalRotationMatrix[8], internalRotationMatrix[9],
@@ -357,8 +380,8 @@ public class PhysicsCalculations {
             for (BlockPos pos : activeForcePositions) {
                 IBlockState state = parent.VKChunkCache.getBlockState(pos);
                 Block blockAt = state.getBlock();
-                VWMath.getBodyPosWithOrientation(pos, centerOfMass, parent.coordTransform.getCurrentPhysicsTransform()
-                        .getInternalMatrix(TransformType.LOCAL_TO_GLOBAL), inBodyWO);
+                VWMath.getBodyPosWithOrientation(pos, physCenterOfMass, parent.coordTransform
+                        .getCurrentPhysicsTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL), inBodyWO);
 
                 BlockForce.basicForces.getForceFromState(state, pos, worldObj, getPhysicsTimeDeltaPerPhysTick(), parent,
                         blockForce);
@@ -368,7 +391,7 @@ public class PhysicsCalculations {
                         Vector otherPosition = ((IBlockForceProvider) blockAt).getCustomBlockForcePosition(worldObj,
                                 pos, state, parent.wrapper, getPhysicsTimeDeltaPerPhysTick());
                         if (otherPosition != null) {
-                            VWMath.getBodyPosWithOrientation(otherPosition, centerOfMass, parent.coordTransform
+                            VWMath.getBodyPosWithOrientation(otherPosition, gameTickCenterOfMass, parent.coordTransform
                                     .getCurrentPhysicsTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL),
                                     inBodyWO);
                         }
@@ -483,7 +506,7 @@ public class PhysicsCalculations {
 
         NBTUtils.writeVectorToNBT("linear", linearMomentum, compound);
         NBTUtils.writeVectorToNBT("angularVelocity", angularVelocity, compound);
-        NBTUtils.writeVectorToNBT("CM", centerOfMass, compound);
+        NBTUtils.writeVectorToNBT("CM", gameTickCenterOfMass, compound);
 
         NBTUtils.write3x3MatrixToNBT("MOI", MoITensor, compound);
     }
@@ -493,7 +516,7 @@ public class PhysicsCalculations {
 
         linearMomentum = NBTUtils.readVectorFromNBT("linear", compound);
         angularVelocity = NBTUtils.readVectorFromNBT("angularVelocity", compound);
-        centerOfMass = NBTUtils.readVectorFromNBT("CM", compound);
+        gameTickCenterOfMass = NBTUtils.readVectorFromNBT("CM", compound);
 
         MoITensor = NBTUtils.read3x3MatrixFromNBT("MOI", compound);
 

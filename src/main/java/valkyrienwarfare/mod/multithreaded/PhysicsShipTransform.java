@@ -1,11 +1,14 @@
 package valkyrienwarfare.mod.multithreaded;
 
+import net.minecraft.util.math.AxisAlignedBB;
 import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.physics.collision.polygons.Polygon;
 import valkyrienwarfare.physics.data.ShipTransform;
+import valkyrienwarfare.physics.data.TransformType;
 
 /**
  * An extension of ShipTransform with extra data not required by most other
- * ShipTransform objeccts.
+ * ShipTransform objects.
  * 
  * @author thebest108
  *
@@ -19,9 +22,11 @@ public class PhysicsShipTransform extends ShipTransform {
     private final double yaw;
     private final double roll;
     private final Vector centerOfMass;
+    private final AxisAlignedBB shipBoundingBox;
 
     /**
-     * Creates the PhysicsShipTransform 
+     * Creates the PhysicsShipTransform.
+     * 
      * @param physX
      * @param physY
      * @param physZ
@@ -29,9 +34,10 @@ public class PhysicsShipTransform extends ShipTransform {
      * @param physYaw
      * @param physRoll
      * @param physCenterOfMass
+     * @param shipBoundingBox
      */
     public PhysicsShipTransform(double physX, double physY, double physZ, double physPitch, double physYaw,
-            double physRoll, Vector physCenterOfMass) {
+            double physRoll, Vector physCenterOfMass, AxisAlignedBB gameTickShipBoundingBox, ShipTransform gameTickTransform) {
         super(physX, physY, physZ, physPitch, physYaw, physRoll, physCenterOfMass);
         this.posX = physX;
         this.posY = physY;
@@ -40,8 +46,24 @@ public class PhysicsShipTransform extends ShipTransform {
         this.yaw = physYaw;
         this.roll = physRoll;
         this.centerOfMass = new Vector(physCenterOfMass);
+        this.shipBoundingBox = createApproxBoundingBox(gameTickShipBoundingBox, gameTickTransform);
     }
 
+    /**
+     * Makes a reasonable approximation for what the parent AABB would be with the
+     * physics transformation instead of the game transformation. Reasonably
+     * accurate for small differences in time, but shouldn't be used for time deltas
+     * greater than a tick or two.
+     * 
+     * @return An approximation of a physics collision bounding box.
+     */
+    private AxisAlignedBB createApproxBoundingBox(AxisAlignedBB gameTickBB, ShipTransform gameTickTransform) {
+        Polygon gameTickBBPoly = new Polygon(gameTickBB);
+        gameTickBBPoly.transform(gameTickTransform, TransformType.GLOBAL_TO_LOCAL);
+        gameTickBBPoly.transform(this, TransformType.LOCAL_TO_GLOBAL);
+        return gameTickBBPoly.getEnclosedAABB();
+    }
+    
     public double getPosX() {
         return posX;
     }
@@ -68,6 +90,17 @@ public class PhysicsShipTransform extends ShipTransform {
 
     public Vector getCenterOfMass() {
         return centerOfMass;
+    }
+
+    /**
+     * Used for approximation purposes such that the AABB only has to be properly
+     * recalculated every game tick instead of every physics tick.
+     * 
+     * @return An approximation for what the ship collision bounding box would be
+     *         using the physics transformations instead of game transformation.
+     */
+    public AxisAlignedBB getShipBoundingBox() {
+        return shipBoundingBox;
     }
 
 }

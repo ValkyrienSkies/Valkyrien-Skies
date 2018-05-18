@@ -30,37 +30,39 @@ public class ShipTransformationPacketHolder {
     private AxisAlignedBB shipBB;
 
     public ShipTransformationPacketHolder(PhysWrapperPositionMessage wrapperMessage) {
-        posX = wrapperMessage.posX;
-        posY = wrapperMessage.posY;
-        posZ = wrapperMessage.posZ;
+        posX = wrapperMessage.getPosX();
+        posY = wrapperMessage.getPosY();
+        posZ = wrapperMessage.getPosZ();
 
-        pitch = wrapperMessage.pitch;
-        yaw = wrapperMessage.yaw;
-        roll = wrapperMessage.roll;
+        pitch = wrapperMessage.getPitch();
+        yaw = wrapperMessage.getYaw();
+        roll = wrapperMessage.getRoll();
 
-        centerOfRotation = wrapperMessage.centerOfMass;
+        centerOfRotation = wrapperMessage.getCenterOfMass();
 
-        relativeTick = wrapperMessage.relativeTick;
-        shipBB = wrapperMessage.shipBB;
+        relativeTick = wrapperMessage.getRelativeTick();
+        shipBB = wrapperMessage.getShipBB();
+        // System.out.println(wrapperMessage.shipBB);
     }
-    
+
     public ShipTransformationPacketHolder(ShipTransformationPacketHolder before, ShipTransformationPacketHolder after) {
         posX = (before.posX + after.posX) / 2D;
         posY = (before.posY + after.posY) / 2D;
         posZ = (before.posZ + after.posZ) / 2D;
-        
+
         pitch = (before.pitch + after.pitch) / 2D;
         yaw = (before.yaw + after.yaw) / 2D;
         roll = (before.roll + after.roll) / 2D;
-        
+
         centerOfRotation = before.centerOfRotation.getAddition(after.centerOfRotation).getProduct(.5D);
-        
+
         relativeTick = before.relativeTick;
         // TODO: Make this proper
         shipBB = before.shipBB;
     }
 
-    // Apply all the position/rotation variables accordingly onto the passed physObject
+    // Apply all the position/rotation variables accordingly onto the passed
+    // physObject
     public void applyToPhysObject(PhysicsObject physObj) {
         physObj.wrapper.posX = posX;
         physObj.wrapper.posY = posY;
@@ -71,7 +73,7 @@ public class ShipTransformationPacketHolder {
         physObj.wrapper.setRoll(roll);
 
         physObj.centerCoord = centerOfRotation;
-        
+
         physObj.setCollisionBoundingBox(shipBB);
     }
 }

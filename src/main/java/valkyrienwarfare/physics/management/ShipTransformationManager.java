@@ -27,6 +27,7 @@ import net.minecraft.world.border.WorldBorder;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.mod.multithreaded.PhysicsShipTransform;
 import valkyrienwarfare.mod.network.PhysWrapperPositionMessage;
 import valkyrienwarfare.physics.data.ShipTransform;
 import valkyrienwarfare.physics.data.TransformType;
@@ -136,21 +137,16 @@ public class ShipTransformationManager {
     }
 
     public void sendPositionToPlayers(int positionTickID) {
-        PhysWrapperPositionMessage posMessage = new PhysWrapperPositionMessage(parent.wrapper, positionTickID);
-
-        /*
-         * List<Entity> entityList = new ArrayList<Entity>(); for (Entity entity :
-         * parent.worldObj.loadedEntityList) { if (entity instanceof IDraggable) {
-         * IDraggable draggable = (IDraggable) entity; if (draggable.getWorldBelowFeet()
-         * == parent.wrapper) { entityList.add(entity); } } }
-         * 
-         * EntityRelativePositionMessage otherPositionMessage = new
-         * EntityRelativePositionMessage(parent.wrapper, entityList);
-         */
-
+        PhysWrapperPositionMessage posMessage = null;
+        if (getCurrentPhysicsTransform() != ZERO_TRANSFORM) {
+            posMessage = new PhysWrapperPositionMessage((PhysicsShipTransform) getCurrentPhysicsTransform(),
+                    parent.wrapper.getEntityId(), positionTickID);
+        } else {
+            posMessage = new PhysWrapperPositionMessage(parent.wrapper, positionTickID);
+        }
+        
         for (EntityPlayerMP player : parent.watchingPlayers) {
             ValkyrienWarfareMod.physWrapperNetwork.sendTo(posMessage, player);
-            // ValkyrienWarfareMod.physWrapperNetwork.sendTo(otherPositionMessage, player);
         }
     }
 
@@ -324,7 +320,7 @@ public class ShipTransformationManager {
         this.currentPhysicsTransform = currentPhysicsTransform;
     }
 
-    public ShipTransform getPreviousPhysicsTransform() {
+    public ShipTransform getPrevPhysicsTransform() {
         return prevPhysicsTransform;
     }
 

@@ -210,7 +210,8 @@ public class PhysicsCalculations {
             physZ = parent.wrapper.posZ;
             physCenterOfMass.setValue(gameTickCenterOfMass);
             ShipTransform physicsTransform = new PhysicsShipTransform(physX, physY, physZ, physPitch, physYaw, physRoll,
-                    physCenterOfMass);
+                    physCenterOfMass, parent.getCollisionBoundingBox(),
+                    parent.coordTransform.getCurrentTickTransform());
             parent.coordTransform.setCurrentPhysicsTransform(physicsTransform);
             parent.coordTransform.updatePreviousPhysicsTransform();
         }
@@ -246,8 +247,10 @@ public class PhysicsCalculations {
                 linearMomentum.zero();
                 angularVelocity.zero();
             }
-            ShipTransform finalPhysTransform = new PhysicsShipTransform(physX, physY, physZ, physPitch, physYaw,
-                    physRoll, physCenterOfMass);
+
+            PhysicsShipTransform finalPhysTransform = new PhysicsShipTransform(physX, physY, physZ, physPitch, physYaw,
+                    physRoll, physCenterOfMass, parent.getCollisionBoundingBox(),
+                    parent.coordTransform.getCurrentTickTransform());
 
             parent.coordTransform.updatePreviousPhysicsTransform();
             parent.coordTransform.setCurrentPhysicsTransform(finalPhysTransform);
@@ -255,19 +258,8 @@ public class PhysicsCalculations {
             updatePhysCenterOfMass();
             // Moved out to VW Thread. Code run in this class should have no direct effect
             // on the physics object.
-            // updateParentToPhysCoords();
             // parent.coordTransform.updateAllTransforms(true, true);
         }
-    }
-
-    private void updateParentToPhysCoords() {
-        parent.wrapper.setPitch(physPitch);
-        parent.wrapper.setYaw(physYaw);
-        parent.wrapper.setRoll(physRoll);
-
-        parent.wrapper.posX = physX;
-        parent.wrapper.posY = physY;
-        parent.wrapper.posZ = physZ;
     }
 
     // If the ship is moving at these speeds, its likely something in the physics

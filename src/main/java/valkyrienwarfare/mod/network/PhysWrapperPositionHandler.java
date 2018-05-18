@@ -36,7 +36,7 @@ public class PhysWrapperPositionHandler implements IMessageHandler<PhysWrapperPo
         mainThread.addScheduledTask(new Runnable() {
             @Override
             public void run() {
-                Entity ent = Minecraft.getMinecraft().world.getEntityByID(message.entityID);
+                Entity ent = Minecraft.getMinecraft().world.getEntityByID(message.getEntityID());
                 if (ent != null && ent instanceof PhysicsWrapperEntity) {
                     PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity) ent;
 

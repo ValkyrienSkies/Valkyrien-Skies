@@ -40,12 +40,7 @@ public class Polygon {
 
 	public Polygon(AxisAlignedBB bb, ShipTransform transformation, TransformType transformType) {
 		this(bb);
-		for (int i = 0; i < vertices.length; i++) {
-		    transformation.transform(vertices[i], transformType);
-		}
-		for (Vector normal : normals) {
-		    transformation.rotate(normal, transformType);
-		}
+		transform(transformation, transformType);
 	}
 	
 	// Copies one polygon onto another.
@@ -78,6 +73,15 @@ public class Polygon {
 		}
 		center.divide(vertices.length);
 		return center;
+	}
+	
+	public void transform(ShipTransform transformation, TransformType transformType) {
+	    for (int i = 0; i < vertices.length; i++) {
+            transformation.transform(vertices[i], transformType);
+        }
+        for (Vector normal : normals) {
+            transformation.rotate(normal, transformType);
+        }
 	}
 
 	public AxisAlignedBB getEnclosedAABB() {

@@ -341,7 +341,7 @@ public class WorldPhysicsCollider {
     private void calculateCollisionImpulseForce(Vector inBody, Vector velocityAtPointOfCollision, Vector axis,
             Vector offsetVector, boolean didBlockBreakInShip, boolean didBlockBreakInWorld, double impulseApplied) {
         Vector firstCross = inBody.cross(axis);
-        RotationMatrices.applyTransform3by3(calculator.invFramedMOI, firstCross);
+        RotationMatrices.applyTransform3by3(calculator.getPhysInvMOITensor(), firstCross);
 
         Vector secondCross = firstCross.cross(inBody);
 
@@ -377,7 +377,7 @@ public class WorldPhysicsCollider {
             calculator.linearMomentum.add(collisionImpulseForce);
             Vector thirdCross = inBody.cross(collisionImpulseForce);
 
-            RotationMatrices.applyTransform3by3(calculator.invFramedMOI, thirdCross);
+            RotationMatrices.applyTransform3by3(calculator.getPhysInvMOITensor(), thirdCross);
             calculator.angularVelocity.add(thirdCross);
         }
     }

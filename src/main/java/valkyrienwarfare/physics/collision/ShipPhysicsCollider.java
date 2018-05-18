@@ -196,11 +196,11 @@ public class ShipPhysicsCollider {
 		double bottomJ = parent.physicsProcessor.getInvMass() + toCollideWith.physicsProcessor.getInvMass();
 
 		bottomJ += RotationMatrices
-				.get3by3TransformedVec(toCollideWith.physicsProcessor.invFramedMOI, inFirstShip.cross(object.collision_normal))
+				.get3by3TransformedVec(toCollideWith.physicsProcessor.getPhysInvMOITensor(), inFirstShip.cross(object.collision_normal))
 				.cross(inFirstShip).dot(object.collision_normal);
 
 		bottomJ += RotationMatrices
-				.get3by3TransformedVec(toCollideWith.physicsProcessor.invFramedMOI, inSecondShip.cross(object.collision_normal))
+				.get3by3TransformedVec(toCollideWith.physicsProcessor.getPhysInvMOITensor(), inSecondShip.cross(object.collision_normal))
 				.cross(inSecondShip).dot(object.collision_normal);
 
 		double j = topJ / bottomJ;
@@ -211,13 +211,13 @@ public class ShipPhysicsCollider {
 			responseVec.multiply(-1D);
 			parent.physicsProcessor.linearMomentum.add(responseVec);
 			Vector cross = inFirstShip.cross(responseVec);
-			RotationMatrices.applyTransform3by3(parent.physicsProcessor.invFramedMOI, cross);
+			RotationMatrices.applyTransform3by3(parent.physicsProcessor.getPhysInvMOITensor(), cross);
 			parent.physicsProcessor.angularVelocity.add(cross);
 
 			responseVec.multiply(-1D);
 			toCollideWith.physicsProcessor.linearMomentum.add(responseVec);
 			cross = inSecondShip.cross(responseVec);
-			RotationMatrices.applyTransform3by3(toCollideWith.physicsProcessor.invFramedMOI, cross);
+			RotationMatrices.applyTransform3by3(toCollideWith.physicsProcessor.getPhysInvMOITensor(), cross);
 			toCollideWith.physicsProcessor.angularVelocity.add(cross);
 		}
 	}

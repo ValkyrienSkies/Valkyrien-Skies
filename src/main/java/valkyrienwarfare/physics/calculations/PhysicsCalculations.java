@@ -65,7 +65,8 @@ public class PhysicsCalculations {
     public Vector linearMomentum;
     public Vector angularVelocity;
     private Vector torque;
-    private double mass;
+    private double gameTickMass;
+    private double physMass;
     // The time occurring on each PhysTick
     private double physRawSpeed;
     // Number of iterations the solver runs on each game tick
@@ -74,8 +75,9 @@ public class PhysicsCalculations {
     // CopyOnWrite to provide concurrency between threads.
     private final Set<BlockPos> activeForcePositions;
     private final SortedSet<INodePhysicsProcessor> physicsTasks;
-    public double[] MoITensor, invMoITensor;
-    public double[] framedMOI, invFramedMOI;
+    private double[] gameMoITensor;
+    private double[] physMOITensor;
+    private double[] physInvMOITensor;
     public boolean actAsArchimedes = false;
 
     private double physRoll, physPitch, physYaw;
@@ -85,10 +87,9 @@ public class PhysicsCalculations {
         parent = toProcess;
         worldCollision = new WorldPhysicsCollider(this);
 
-        MoITensor = RotationMatrices.getZeroMatrix(3);
-        invMoITensor = RotationMatrices.getZeroMatrix(3);
-        framedMOI = RotationMatrices.getZeroMatrix(3);
-        invFramedMOI = RotationMatrices.getZeroMatrix(3);
+        gameMoITensor = RotationMatrices.getZeroMatrix(3);
+        physMOITensor = RotationMatrices.getZeroMatrix(3);
+        setPhysInvMOITensor(RotationMatrices.getZeroMatrix(3));
 
         gameTickCenterOfMass = new Vector(toProcess.centerCoord);
         linearMomentum = new Vector();
@@ -108,14 +109,13 @@ public class PhysicsCalculations {
         linearMomentum = toCopy.linearMomentum;
         angularVelocity = toCopy.angularVelocity;
         torque = toCopy.torque;
-        mass = toCopy.mass;
+        gameTickMass = toCopy.gameTickMass;
         physRawSpeed = toCopy.physRawSpeed;
         iterations = toCopy.iterations;
         activeForcePositions = toCopy.activeForcePositions;
-        MoITensor = toCopy.MoITensor;
-        invMoITensor = toCopy.invMoITensor;
-        framedMOI = toCopy.framedMOI;
-        invFramedMOI = toCopy.invFramedMOI;
+        gameMoITensor = toCopy.gameMoITensor;
+        physMOITensor = toCopy.physMOITensor;
+        setPhysInvMOITensor(toCopy.getPhysInvMOITensor());
         actAsArchimedes = toCopy.actAsArchimedes;
         physicsTasks = toCopy.physicsTasks;
     }
@@ -167,13 +167,13 @@ public class PhysicsCalculations {
 
     private void addMassAt(double x, double y, double z, double addedMass) {
         Vector prevCenterOfMass = new Vector(gameTickCenterOfMass);
-        if (mass > .0001D) {
-            gameTickCenterOfMass.multiply(mass);
+        if (gameTickMass > .0001D) {
+            gameTickCenterOfMass.multiply(gameTickMass);
             gameTickCenterOfMass.add(new Vector(x, y, z).getProduct(addedMass));
-            gameTickCenterOfMass.multiply(1.0D / (mass + addedMass));
+            gameTickCenterOfMass.multiply(1.0D / (gameTickMass + addedMass));
         } else {
             gameTickCenterOfMass = new Vector(x, y, z);
-            MoITensor = RotationMatrices.getZeroMatrix(3);
+            gameMoITensor = RotationMatrices.getZeroMatrix(3);
         }
         double cmShiftX = prevCenterOfMass.X - gameTickCenterOfMass.X;
         double cmShiftY = prevCenterOfMass.Y - gameTickCenterOfMass.Y;
@@ -182,21 +182,20 @@ public class PhysicsCalculations {
         double ry = y - gameTickCenterOfMass.Y;
         double rz = z - gameTickCenterOfMass.Z;
 
-        MoITensor[0] = MoITensor[0] + (cmShiftY * cmShiftY + cmShiftZ * cmShiftZ) * mass
+        gameMoITensor[0] = gameMoITensor[0] + (cmShiftY * cmShiftY + cmShiftZ * cmShiftZ) * gameTickMass
                 + (ry * ry + rz * rz) * addedMass;
-        MoITensor[1] = MoITensor[1] - cmShiftX * cmShiftY * mass - rx * ry * addedMass;
-        MoITensor[2] = MoITensor[2] - cmShiftX * cmShiftZ * mass - rx * rz * addedMass;
-        MoITensor[3] = MoITensor[1];
-        MoITensor[4] = MoITensor[4] + (cmShiftX * cmShiftX + cmShiftZ * cmShiftZ) * mass
+        gameMoITensor[1] = gameMoITensor[1] - cmShiftX * cmShiftY * gameTickMass - rx * ry * addedMass;
+        gameMoITensor[2] = gameMoITensor[2] - cmShiftX * cmShiftZ * gameTickMass - rx * rz * addedMass;
+        gameMoITensor[3] = gameMoITensor[1];
+        gameMoITensor[4] = gameMoITensor[4] + (cmShiftX * cmShiftX + cmShiftZ * cmShiftZ) * gameTickMass
                 + (rx * rx + rz * rz) * addedMass;
-        MoITensor[5] = MoITensor[5] - cmShiftY * cmShiftZ * mass - ry * rz * addedMass;
-        MoITensor[6] = MoITensor[2];
-        MoITensor[7] = MoITensor[5];
-        MoITensor[8] = MoITensor[8] + (cmShiftX * cmShiftX + cmShiftY * cmShiftY) * mass
+        gameMoITensor[5] = gameMoITensor[5] - cmShiftY * cmShiftZ * gameTickMass - ry * rz * addedMass;
+        gameMoITensor[6] = gameMoITensor[2];
+        gameMoITensor[7] = gameMoITensor[5];
+        gameMoITensor[8] = gameMoITensor[8] + (cmShiftX * cmShiftX + cmShiftY * cmShiftY) * gameTickMass
                 + (rx * rx + ry * ry) * addedMass;
 
-        mass += addedMass;
-        invMoITensor = RotationMatrices.inverse3by3(MoITensor);
+        gameTickMass += addedMass;
     }
 
     public void rawPhysTickPreCol(double newPhysSpeed, int iters) {
@@ -319,7 +318,7 @@ public class PhysicsCalculations {
      * I is unrotated interim, and R is the rotation matrix.
      */
     private void calculateFramedMOITensor() {
-        framedMOI = RotationMatrices.getZeroMatrix(3);
+        double[] framedMOI = RotationMatrices.getZeroMatrix(3);
 
         double[] internalRotationMatrix = parent.coordTransform.getCurrentPhysicsTransform()
                 .getInternalMatrix(TransformType.LOCAL_TO_GLOBAL);
@@ -330,7 +329,7 @@ public class PhysicsCalculations {
                 internalRotationMatrix[6], internalRotationMatrix[8], internalRotationMatrix[9],
                 internalRotationMatrix[10]);
 
-        Matrix3d inertiaBodyFrame = new Matrix3d(MoITensor);
+        Matrix3d inertiaBodyFrame = new Matrix3d(gameMoITensor);
         // The product of the overall rotation matrix with the inertia tensor.
         inertiaBodyFrame.mul(rotationMatrix);
         rotationMatrix.transpose();
@@ -346,7 +345,9 @@ public class PhysicsCalculations {
         framedMOI[6] = inertiaBodyFrame.m20;
         framedMOI[7] = inertiaBodyFrame.m21;
         framedMOI[8] = inertiaBodyFrame.m22;
-        invFramedMOI = RotationMatrices.inverse3by3(framedMOI);
+
+        physMOITensor = framedMOI;
+        setPhysInvMOITensor(RotationMatrices.inverse3by3(framedMOI));
     }
 
     protected void calculateForces() {
@@ -407,7 +408,7 @@ public class PhysicsCalculations {
     public void applyGravity() {
         if (PhysicsSettings.doGravity) {
             addForceAtPoint(new Vector(0, 0, 0),
-                    ValkyrienWarfareMod.gravity.getProduct(mass * getPhysicsTimeDeltaPerPhysTick()));
+                    ValkyrienWarfareMod.gravity.getProduct(gameTickMass * getPhysicsTimeDeltaPerPhysTick()));
         }
     }
 
@@ -423,7 +424,7 @@ public class PhysicsCalculations {
 
     public void convertTorqueToVelocity() {
         if (!torque.isZero()) {
-            angularVelocity.add(RotationMatrices.get3by3TransformedVec(invFramedMOI, torque));
+            angularVelocity.add(RotationMatrices.get3by3TransformedVec(getPhysInvMOITensor(), torque));
             torque.zero();
         }
     }
@@ -502,25 +503,23 @@ public class PhysicsCalculations {
     }
 
     public void writeToNBTTag(NBTTagCompound compound) {
-        compound.setDouble("mass", mass);
+        compound.setDouble("mass", gameTickMass);
 
         NBTUtils.writeVectorToNBT("linear", linearMomentum, compound);
         NBTUtils.writeVectorToNBT("angularVelocity", angularVelocity, compound);
         NBTUtils.writeVectorToNBT("CM", gameTickCenterOfMass, compound);
 
-        NBTUtils.write3x3MatrixToNBT("MOI", MoITensor, compound);
+        NBTUtils.write3x3MatrixToNBT("MOI", gameMoITensor, compound);
     }
 
     public void readFromNBTTag(NBTTagCompound compound) {
-        mass = compound.getDouble("mass");
+        gameTickMass = compound.getDouble("mass");
 
         linearMomentum = NBTUtils.readVectorFromNBT("linear", compound);
         angularVelocity = NBTUtils.readVectorFromNBT("angularVelocity", compound);
         gameTickCenterOfMass = NBTUtils.readVectorFromNBT("CM", compound);
 
-        MoITensor = NBTUtils.read3x3MatrixFromNBT("MOI", compound);
-
-        invMoITensor = RotationMatrices.inverse3by3(MoITensor);
+        gameMoITensor = NBTUtils.read3x3MatrixFromNBT("MOI", compound);
     }
 
     // Called upon a Ship being created from the World, and generates the physics
@@ -536,11 +535,11 @@ public class PhysicsCalculations {
     // the mass,
     // preventing outside code from breaking things
     public double getMass() {
-        return mass;
+        return gameTickMass;
     }
 
     public double getInvMass() {
-        return 1D / mass;
+        return 1D / gameTickMass;
     }
 
     public double getPhysicsTimeDeltaPerPhysTick() {
@@ -561,6 +560,30 @@ public class PhysicsCalculations {
 
     public void addPotentialActiveForcePos(BlockPos pos) {
         this.activeForcePositions.add(pos);
+    }
+
+    /**
+     * @return The inverse moment of inertia tensor with local translation (0 vector
+     *         is at the center of mass), but rotated into world coordinates.
+     */
+    public double[] getPhysInvMOITensor() {
+        return physInvMOITensor;
+    }
+
+    /**
+     * @param physInvMOITensor
+     *            the physInvMOITensor to set
+     */
+    private void setPhysInvMOITensor(double[] physInvMOITensor) {
+        this.physInvMOITensor = physInvMOITensor;
+    }
+
+    /**
+     * @return The moment of inertia tensor with local translation (0 vector
+     *         is at the center of mass), but rotated into world coordinates.
+     */
+    public double[] getPhysMOITensor() {
+        return this.physMOITensor;
     }
 
 }

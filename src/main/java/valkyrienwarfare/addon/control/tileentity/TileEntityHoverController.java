@@ -85,7 +85,7 @@ public class TileEntityHoverController extends TileEntity {
         potentialMaxForce.multiply(calculations.getInvMass());
         potentialMaxForce.multiply(calculations.getPhysicsTimeDeltaPerPhysTick());
         Vector potentialMaxThrust = engine.getPositionInLocalSpaceWithOrientation().cross(potentialMaxForce);
-        RotationMatrices.applyTransform3by3(calculations.invFramedMOI, potentialMaxThrust);
+        RotationMatrices.applyTransform3by3(calculations.getPhysInvMOITensor(), potentialMaxThrust);
         potentialMaxThrust.multiply(calculations.getPhysicsTimeDeltaPerPhysTick());
 
         double linearThama = 4.5D;

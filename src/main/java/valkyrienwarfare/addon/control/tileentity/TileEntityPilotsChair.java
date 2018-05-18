@@ -150,8 +150,8 @@ public class TileEntityPilotsChair extends ImplTileEntityPilotable {
         shipUpOffset.subtract(velocityCompensationAlignment);
         velocityCompensationAngular.subtract(velocityCompensationAngular);
 
-        RotationMatrices.applyTransform3by3(controlledShip.physicsProcessor.framedMOI, idealAngularDirection);
-        RotationMatrices.applyTransform3by3(controlledShip.physicsProcessor.framedMOI, shipUpOffset);
+        RotationMatrices.applyTransform3by3(controlledShip.physicsProcessor.getPhysMOITensor(), idealAngularDirection);
+        RotationMatrices.applyTransform3by3(controlledShip.physicsProcessor.getPhysMOITensor(), shipUpOffset);
 
 
         if (message.airshipSprinting) {

@@ -16,6 +16,25 @@
 
 package valkyrienwarfare;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
@@ -83,25 +102,6 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.util.PhysicsSettings;
 import valkyrienwarfare.util.RealMethods;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Field;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.logging.Logger;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
-
 @Mod(modid = ValkyrienWarfareMod.MODID, name = ValkyrienWarfareMod.MODNAME, version = ValkyrienWarfareMod.MODVER, guiFactory = "valkyrienwarfare.mod.gui.GuiFactoryValkyrienWarfare", updateJSON = "https://raw.githubusercontent.com/BigBastard/Valkyrien-Warfare-Revamped/update.json")
 public class ValkyrienWarfareMod {
 	public static final List<Module> addons = new ArrayList<>();
@@ -121,8 +121,7 @@ public class ValkyrienWarfareMod {
 	public static Configuration config;
 	public static boolean shipsSpawnParticles = false;
 	public static Vector gravity = new Vector(0, -9.8D, 0);
-	public static int physIter = 10;
-	public static double physSpeed = .05D;
+	public static double physSpeed = .01D;
 	public static Block physicsInfuser;
 	public static Block physicsInfuserCreative;
 	public static SimpleNetworkWrapper physWrapperNetwork;
@@ -487,7 +486,6 @@ public class ValkyrienWarfareMod {
 		PhysicsSettings.doAirshipRotation = tag.getBoolean("doAirshipRotation", true);
 		PhysicsSettings.doAirshipMovement = tag.getBoolean("doAirshipMovement", true);
 		ValkyrienWarfareMod.maxShipSize = tag.getInteger("maxShipSize", 15000);
-		ValkyrienWarfareMod.physIter = tag.getInteger("physicsIterations", 8);
 		ValkyrienWarfareMod.physSpeed = tag.getDouble("physicsSpeed", 0.05);
 		ValkyrienWarfareMod.gravity = new Vector(tag.getDouble("gravityVecX", 0.0), tag.getDouble("gravityVecY", -9.8),
 				tag.getDouble("gravityVecZ", 0.0));
@@ -506,7 +504,6 @@ public class ValkyrienWarfareMod {
 		tag.setDouble("gravityVecX", ValkyrienWarfareMod.gravity.X);
 		tag.setDouble("gravityVecY", ValkyrienWarfareMod.gravity.Y);
 		tag.setDouble("gravityVecZ", ValkyrienWarfareMod.gravity.Z);
-		tag.setInteger("physicsIterations", ValkyrienWarfareMod.physIter);
 		tag.setDouble("physicsSpeed", ValkyrienWarfareMod.physSpeed);
 		tag.save();
 	}

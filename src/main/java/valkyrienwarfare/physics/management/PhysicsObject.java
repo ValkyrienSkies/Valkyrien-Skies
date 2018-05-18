@@ -568,6 +568,7 @@ public class PhysicsObject {
             // }
         };
 
+        // TODO: This is causing concurrency crashes
         long i = map.getIndex(x, z);
 
         map.entryMap.put(i, entry);

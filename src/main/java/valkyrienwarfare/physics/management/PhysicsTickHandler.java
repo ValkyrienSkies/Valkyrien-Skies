@@ -103,13 +103,12 @@ public class PhysicsTickHandler {
     public static void runPhysicsIteration(List<PhysicsWrapperEntity> physicsEntities, WorldPhysObjectManager manager) {
         double newPhysSpeed = ValkyrienWarfareMod.physSpeed;
         Vector newGravity = ValkyrienWarfareMod.gravity;
-        int iters = ValkyrienWarfareMod.physIter;
 
         List<ShipCollisionTask> collisionTasks = new ArrayList<ShipCollisionTask>(physicsEntities.size() * 2);
 
         for (PhysicsWrapperEntity wrapper : physicsEntities) {
             if (!wrapper.firstUpdate) {
-                wrapper.wrapping.physicsProcessor.rawPhysTickPreCol(newPhysSpeed, iters);
+                wrapper.wrapping.physicsProcessor.rawPhysTickPreCol(newPhysSpeed);
                 wrapper.wrapping.physicsProcessor.worldCollision.tickUpdatingTheCollisionCache();
                 wrapper.wrapping.physicsProcessor.worldCollision.splitIntoCollisionTasks(collisionTasks);
             }
@@ -141,22 +140,18 @@ public class PhysicsTickHandler {
 
     private static class PhysicsTickThreadTask implements Callable<Void> {
 
-        private final int iters;
         private final List physicsEntities;
         private final WorldPhysObjectManager manager;
 
-        public PhysicsTickThreadTask(int iters, List physicsEntities, WorldPhysObjectManager manager) {
-            this.iters = iters;
+        public PhysicsTickThreadTask(List physicsEntities, WorldPhysObjectManager manager) {
             this.physicsEntities = physicsEntities;
             this.manager = manager;
         }
 
         @Override
         public Void call() throws Exception {
-            for (int pass = 0; pass < iters; pass++) {
-                // Run PRE-Col
-                runPhysicsIteration(physicsEntities, manager);
-            }
+            // Run PRE-Col
+            runPhysicsIteration(physicsEntities, manager);
             return null;
         }
 

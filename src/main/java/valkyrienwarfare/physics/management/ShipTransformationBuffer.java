@@ -24,7 +24,7 @@ import valkyrienwarfare.physics.data.ShipTransformationPacketHolder;
  */
 public class ShipTransformationBuffer {
 
-    public static final int PACKET_BUFFER_SIZE = 10;
+    public static final int PACKET_BUFFER_SIZE = 50;
     private final ShipTransformationPacketHolder[] recentTransforms;
 
     public ShipTransformationBuffer() {
@@ -50,30 +50,36 @@ public class ShipTransformationBuffer {
                     "A SHIP JUST RETURNED NULL FOR 'recentTransforms[0]==null'; ANY WEIRD ERRORS PAST HERE ARE DIRECTLY LINKED TO THAT!");
             return null;
         }
-        int tickToGet = lastTick + 1;
 
-        int realtimeTick = recentTransforms[0].relativeTick;
+        if (recentTransforms[5] != null) {
+            return recentTransforms[5];
+        } else {
 
-        if (realtimeTick - lastTick > 3) {
-            tickToGet = realtimeTick - 2;
-            // System.out.println("Too Slow");
-        }
+            int tickToGet = lastTick + 1;
 
-        for (ShipTransformationPacketHolder transform : recentTransforms) {
-            if (transform != null) {
-                if (transform.relativeTick == tickToGet) {
-                    return transform;
+            int realtimeTick = recentTransforms[0].relativeTick;
+
+            if (realtimeTick - lastTick > 3) {
+                tickToGet = realtimeTick - 2;
+                // System.out.println("Too Slow");
+            }
+
+            for (ShipTransformationPacketHolder transform : recentTransforms) {
+                if (transform != null) {
+                    if (transform.relativeTick == tickToGet) {
+                        return transform;
+                    }
                 }
             }
+
+            // System.out.println("Couldnt find the needed transform");
+
+            if (recentTransforms[1] != null) {
+                return recentTransforms[1];
+            }
+
+            return recentTransforms[0];
         }
-
-        // System.out.println("Couldnt find the needed transform");
-
-        if (recentTransforms[1] != null) {
-            return recentTransforms[1];
-        }
-
-        return recentTransforms[0];
     }
 
 }

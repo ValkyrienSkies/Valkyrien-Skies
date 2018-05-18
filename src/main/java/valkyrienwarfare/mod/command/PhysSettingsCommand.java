@@ -41,7 +41,6 @@ public class PhysSettingsCommand extends CommandBase {
     static {
         COMPLETED_OPTIONS.add("gravityvector");
         COMPLETED_OPTIONS.add("maxshipsize");
-        COMPLETED_OPTIONS.add("physicsiterations");
         COMPLETED_OPTIONS.add("physicsspeed");
         COMPLETED_OPTIONS.add("dogravity");
         COMPLETED_OPTIONS.add("dophysicsblocks");
@@ -107,20 +106,6 @@ public class PhysSettingsCommand extends CommandBase {
                 return;
             } else {
                 sender.sendMessage(new TextComponentString("Usage: /physsettings gravityVector <x> <y> <z>"));
-            }
-        } else if (key.equals("physicsiterations")) {
-            if (args.length == 1) {
-                sender.sendMessage(new TextComponentString("physicsiterations=" + ValkyrienWarfareMod.physIter + " (Default: 10)"));
-                return;
-            } else if (args.length == 2) {
-                int value = Integer.parseInt(args[1]);
-                if (value < 0 || value > 1000) {
-                    sender.sendMessage(new TextComponentString("Please enter a value between 0 and 1000"));
-                    return;
-                }
-                ValkyrienWarfareMod.physIter = value;
-                sender.sendMessage(new TextComponentString("Set physicsiterations to " + value));
-                return;
             }
         } else if (key.equals("physicsspeed")) {
             if (args.length == 1) {

@@ -69,9 +69,7 @@ public class PhysicsCalculations {
     // TODO: Get this in one day
     // private double physMass;
     // The time occurring on each PhysTick
-    private double physRawSpeed;
-    // Number of iterations the solver runs on each game tick
-    private int iterations;
+    private double physTickTimeDelta;
 
     // CopyOnWrite to provide concurrency between threads.
     private final Set<BlockPos> activeForcePositions;
@@ -97,7 +95,6 @@ public class PhysicsCalculations {
         physCenterOfMass = new Vector();
         angularVelocity = new Vector();
         torque = new Vector();
-        iterations = 5;
         // We need thread safe access to this.
         activeForcePositions = ConcurrentHashMap.newKeySet();
         physicsTasks = new TreeSet<INodePhysicsProcessor>();
@@ -111,8 +108,7 @@ public class PhysicsCalculations {
         angularVelocity = toCopy.angularVelocity;
         torque = toCopy.torque;
         gameTickMass = toCopy.gameTickMass;
-        physRawSpeed = toCopy.physRawSpeed;
-        iterations = toCopy.iterations;
+        physTickTimeDelta = toCopy.physTickTimeDelta;
         activeForcePositions = toCopy.activeForcePositions;
         gameMoITensor = toCopy.gameMoITensor;
         physMOITensor = toCopy.physMOITensor;
@@ -206,7 +202,7 @@ public class PhysicsCalculations {
         }
     }
 
-    public void rawPhysTickPreCol(double newPhysSpeed, int iters) {
+    public void rawPhysTickPreCol(double newPhysSpeed) {
         if (parent.coordTransform.getCurrentPhysicsTransform() == ShipTransformationManager.ZERO_TRANSFORM) {
             // Create a new physics transform.
             physRoll = parent.wrapper.getRoll();
@@ -223,7 +219,7 @@ public class PhysicsCalculations {
             parent.coordTransform.updatePreviousPhysicsTransform();
         }
         if (parent.doPhysics) {
-            updatePhysSpeedAndIters(newPhysSpeed, iters);
+            updatePhysSpeedAndIters(newPhysSpeed);
             updateParentCenterOfMass();
             calculateFramedMOITensor();
             if (!actAsArchimedes) {
@@ -378,7 +374,7 @@ public class PhysicsCalculations {
             // This iterates over a SortedSet to retain sorted order, allowing some tasks to
             // be given greater priority than others.
             for (INodePhysicsProcessor physicsProcessorNode : physicsTasks) {
-                physicsProcessorNode.onPhysicsTick(parent, this, physRawSpeed);
+                physicsProcessorNode.onPhysicsTick(parent, this, physTickTimeDelta);
             }
 
             for (BlockPos pos : activeForcePositions) {
@@ -445,9 +441,8 @@ public class PhysicsCalculations {
         linearMomentum.add(forceToApply);
     }
 
-    public void updatePhysSpeedAndIters(double newPhysSpeed, int iters) {
-        physRawSpeed = newPhysSpeed;
-        iterations = iters;
+    public void updatePhysSpeedAndIters(double newPhysSpeed) {
+        physTickTimeDelta = newPhysSpeed;
     }
 
     public void applyAngularVelocity() {
@@ -546,15 +541,7 @@ public class PhysicsCalculations {
     }
 
     public double getPhysicsTimeDeltaPerPhysTick() {
-        return getPhysicsTimeDeltaPerGameTick() / getPhysicsTicksPerGameTick();
-    }
-
-    public double getPhysicsTimeDeltaPerGameTick() {
-        return physRawSpeed;
-    }
-
-    public int getPhysicsTicksPerGameTick() {
-        return iterations;
+        return physTickTimeDelta;
     }
 
     public double getDragForPhysTick() {

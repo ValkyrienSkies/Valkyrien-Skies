@@ -23,8 +23,8 @@ import valkyrienwarfare.physics.management.WorldPhysObjectManager;
  */
 public class VWThread extends Thread {
 
-    private final static long MS_PER_TICK = 50;
-    private final static long MAX_LOST_TIME = 1000;
+    private final static long NS_PER_TICK = 10000000;
+    private final static long MAX_LOST_TIME_NS = 1000000000;
     private final World hostWorld;
     // The ships we will be ticking physics for every tick, and sending those
     // updates to players.
@@ -44,6 +44,11 @@ public class VWThread extends Thread {
         this.threadRunning = true;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Thread#run()
+     */
     @Override
     public void run() {
         // System.out.println("Thread running");
@@ -53,14 +58,14 @@ public class VWThread extends Thread {
             // Limit the tick smoothing to just one second (1000ms), if lostTickTime becomes
             // too large then physics would move too quickly after the lag source was
             // removed.
-            if (lostTickTime > MAX_LOST_TIME) {
-                lostTickTime %= MAX_LOST_TIME;
+            if (lostTickTime > MAX_LOST_TIME_NS) {
+                lostTickTime %= MAX_LOST_TIME_NS;
             }
-            long start = System.currentTimeMillis();
+            long start = System.nanoTime();
             // Run the physics code
             runGameLoop();
             try {
-                long sleepTime = start + MS_PER_TICK - System.currentTimeMillis();
+                long sleepTime = start + 10000000 - System.nanoTime();
                 // Sending a negative sleepTime would crash the thread.
                 if (sleepTime > 0) {
                     // If our lostTickTime is greater than zero then we're behind a few ticks, try
@@ -68,7 +73,7 @@ public class VWThread extends Thread {
                     if (sleepTime > lostTickTime) {
                         sleepTime -= lostTickTime;
                         lostTickTime = 0;
-                        sleep(sleepTime);
+                        sleep(sleepTime / 1000000L);
                     } else {
                         lostTickTime -= sleepTime;
                     }
@@ -116,23 +121,19 @@ public class VWThread extends Thread {
         ships.clear();
         ships.addAll(physicsEntities);
         // System.out.println(ships.size());
-        for (int i = 0; i < ValkyrienWarfareMod.physIter; i++) {
-            tickThePhysicsAndCollision();
-            tickTheTransformUpdates();
-        }
+        tickThePhysicsAndCollision();
+        tickTheTransformUpdates();
     }
 
     private void tickThePhysicsAndCollision() {
-        double newPhysSpeed = ValkyrienWarfareMod.physSpeed;
+        double newPhysSpeed = 0.01D; // ValkyrienWarfareMod.physSpeed;
         Vector newGravity = ValkyrienWarfareMod.gravity;
-        int iters = ValkyrienWarfareMod.physIter;
-
         List<ShipCollisionTask> collisionTasks = new ArrayList<ShipCollisionTask>(ships.size() * 2);
 
         for (PhysicsWrapperEntity wrapper : ships) {
             if (!wrapper.firstUpdate) {
                 // Update the physics simulation
-                wrapper.wrapping.physicsProcessor.rawPhysTickPreCol(newPhysSpeed, iters);
+                wrapper.wrapping.physicsProcessor.rawPhysTickPreCol(newPhysSpeed);
                 // Update the collision task if necessary
                 wrapper.wrapping.physicsProcessor.worldCollision.tickUpdatingTheCollisionCache();
                 // Take the big collision and split into tiny ones

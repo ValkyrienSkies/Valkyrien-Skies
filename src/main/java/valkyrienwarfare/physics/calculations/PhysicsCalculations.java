@@ -196,7 +196,14 @@ public class PhysicsCalculations {
         gameMoITensor[8] = gameMoITensor[8] + (cmShiftX * cmShiftX + cmShiftY * cmShiftY) * gameTickMass
                 + (rx * rx + ry * ry) * addedMass;
 
-        gameTickMass += addedMass;
+        // Do this to avoid a mass of zero, which runs the risk of dividing by zero and
+        // crashing the program.
+        if (gameTickMass + addedMass < .0001D) {
+            gameTickMass = .0001D;
+            parent.doPhysics = false;
+        } else {
+            gameTickMass += addedMass;
+        }
     }
 
     public void rawPhysTickPreCol(double newPhysSpeed, int iters) {

@@ -22,93 +22,95 @@ import valkyrienwarfare.physics.data.ShipTransform;
 import valkyrienwarfare.physics.data.TransformType;
 
 /**
- * Stores vertices for a polygon, and also has some other operations
+ * The basis for the entire collision engine, this implementation of Polygon
+ * stores normals as well as vertices and supports transformations, creating
+ * AABB, and checking for collision with other Polygon objects. The polygon can
+ * theoretically support an arbitrary amount of vertices and normals, but
+ * typically eight vertices and three normals are used. Only supports convex
+ * polygons.
  *
  * @author thebest108
  */
 public class Polygon {
 
-	private final Vector[] vertices;
-	private final Vector velocity;
-	private final Vector[] normals;
+    private final Vector[] vertices;
+    private final Vector[] normals;
 
-	public Polygon(AxisAlignedBB bb) {
-		this.vertices = getCornersForAABB(bb);
-		this.velocity = new Vector();
-		this.normals = Vector.generateAxisAlignedNorms();
-	}
+    public Polygon(AxisAlignedBB bb) {
+        this.vertices = getCornersForAABB(bb);
+        this.normals = Vector.generateAxisAlignedNorms();
+    }
 
-	public Polygon(AxisAlignedBB bb, ShipTransform transformation, TransformType transformType) {
-		this(bb);
-		transform(transformation, transformType);
-	}
-	
-	// Copies one polygon onto another.
-	protected Polygon(Polygon other) {
-	    this.velocity = other.velocity;
-	    this.vertices = new Vector[other.vertices.length];
-	    this.normals = other.normals;
-	}
+    public Polygon(AxisAlignedBB bb, ShipTransform transformation, TransformType transformType) {
+        this(bb);
+        transform(transformation, transformType);
+    }
 
-	public Vector[] getVertices() {
-		return vertices;
-	}
-	
-	public Vector[] getNormals() {
-	    return normals;
-	}
+    // Copies one polygon onto another.
+    protected Polygon(Polygon other) {
+        this.vertices = new Vector[other.vertices.length];
+        this.normals = other.normals;
+    }
 
-	public double[] getProjectionOnVector(Vector axis) {
-		double[] distances = new double[vertices.length];
-		for (int i = 0; i < vertices.length; i++) {
-			distances[i] = axis.dot(vertices[i]);
-		}
-		return distances;
-	}
+    public Vector[] getVertices() {
+        return vertices;
+    }
 
-	public Vector getCenter() {
-		Vector center = new Vector();
-		for (Vector v : vertices) {
-			center.add(v);
-		}
-		center.divide(vertices.length);
-		return center;
-	}
-	
-	public void transform(ShipTransform transformation, TransformType transformType) {
-	    for (int i = 0; i < vertices.length; i++) {
+    public Vector[] getNormals() {
+        return normals;
+    }
+
+    public double[] getProjectionOnVector(Vector axis) {
+        double[] distances = new double[vertices.length];
+        for (int i = 0; i < vertices.length; i++) {
+            distances[i] = axis.dot(vertices[i]);
+        }
+        return distances;
+    }
+
+    public Vector getCenter() {
+        Vector center = new Vector();
+        for (Vector v : vertices) {
+            center.add(v);
+        }
+        center.divide(vertices.length);
+        return center;
+    }
+
+    public void transform(ShipTransform transformation, TransformType transformType) {
+        for (int i = 0; i < vertices.length; i++) {
             transformation.transform(vertices[i], transformType);
         }
         for (Vector normal : normals) {
             transformation.rotate(normal, transformType);
         }
-	}
+    }
 
-	public AxisAlignedBB getEnclosedAABB() {
-		Vector vector = vertices[0];
-		double mnX = vector.X;
-		double mnY = vector.Y;
-		double mnZ = vector.Z;
-		double mxX = vector.X;
-		double mxY = vector.Y;
-		double mxZ = vector.Z;
-		for (int i = 1; i < vertices.length; i++) {
-			vector = vertices[i];
-			mnX = Math.min(mnX, vector.X);
-			mnY = Math.min(mnY, vector.Y);
-			mnZ = Math.min(mnZ, vector.Z);
-			mxX = Math.max(mxX, vector.X);
-			mxY = Math.max(mxY, vector.Y);
-			mxZ = Math.max(mxZ, vector.Z);
-		}
-		return new AxisAlignedBB(mnX, mnY, mnZ, mxX, mxY, mxZ);
-	}
+    public AxisAlignedBB getEnclosedAABB() {
+        Vector firstVertice = vertices[0];
+        double mnX = firstVertice.X;
+        double mnY = firstVertice.Y;
+        double mnZ = firstVertice.Z;
+        double mxX = firstVertice.X;
+        double mxY = firstVertice.Y;
+        double mxZ = firstVertice.Z;
+        for (int i = 1; i < vertices.length; i++) {
+            Vector vertice = vertices[i];
+            mnX = Math.min(mnX, vertice.X);
+            mnY = Math.min(mnY, vertice.Y);
+            mnZ = Math.min(mnZ, vertice.Z);
+            mxX = Math.max(mxX, vertice.X);
+            mxY = Math.max(mxY, vertice.Y);
+            mxZ = Math.max(mxZ, vertice.Z);
+        }
+        return new AxisAlignedBB(mnX, mnY, mnZ, mxX, mxY, mxZ);
+    }
 
-	private static Vector[] getCornersForAABB(AxisAlignedBB bb) {
-		return new Vector[] { new Vector(bb.minX, bb.minY, bb.minZ), new Vector(bb.minX, bb.maxY, bb.minZ),
-				new Vector(bb.minX, bb.minY, bb.maxZ), new Vector(bb.minX, bb.maxY, bb.maxZ),
-				new Vector(bb.maxX, bb.minY, bb.minZ), new Vector(bb.maxX, bb.maxY, bb.minZ),
-				new Vector(bb.maxX, bb.minY, bb.maxZ), new Vector(bb.maxX, bb.maxY, bb.maxZ) };
-	}
+    private static Vector[] getCornersForAABB(AxisAlignedBB bb) {
+        return new Vector[] { new Vector(bb.minX, bb.minY, bb.minZ), new Vector(bb.minX, bb.maxY, bb.minZ),
+                new Vector(bb.minX, bb.minY, bb.maxZ), new Vector(bb.minX, bb.maxY, bb.maxZ),
+                new Vector(bb.maxX, bb.minY, bb.minZ), new Vector(bb.maxX, bb.maxY, bb.minZ),
+                new Vector(bb.maxX, bb.minY, bb.maxZ), new Vector(bb.maxX, bb.maxY, bb.maxZ) };
+    }
 
 }

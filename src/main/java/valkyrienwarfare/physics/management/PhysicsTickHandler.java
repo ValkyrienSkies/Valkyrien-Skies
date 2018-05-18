@@ -23,6 +23,7 @@ import java.util.concurrent.Callable;
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.mod.multithreaded.PhysicsShipTransform;
 import valkyrienwarfare.mod.physmanagement.interaction.EntityDraggable;
 import valkyrienwarfare.physics.collision.optimization.ShipCollisionTask;
 
@@ -40,6 +41,27 @@ public class PhysicsTickHandler {
 
         for (PhysicsWrapperEntity wrapper : physicsEntities) {
             wrapper.wrapping.coordTransform.updatePrevTickTransform();
+
+            if (wrapper.wrapping.coordTransform.getCurrentPhysicsTransform() instanceof PhysicsShipTransform) {
+                // Here we poll our transforms from the physics tick, and apply the latest one
+                // to the game tick.
+                // This is (for the most part) the only place in the code that bridges the
+                // physics tick with the game tick, and so all of the game tick code that
+                // depends on ship movement should go right here! Will possibly be moved to the
+                // end of the game tick instead.
+                PhysicsShipTransform physTransform = (PhysicsShipTransform) wrapper.wrapping.coordTransform
+                        .getCurrentPhysicsTransform();
+
+                wrapper.posX = physTransform.getPosX();
+                wrapper.posY = physTransform.getPosY();
+                wrapper.posZ = physTransform.getPosZ();
+                wrapper.setPitch(physTransform.getPitch());
+                wrapper.setYaw(physTransform.getYaw());
+                wrapper.setRoll(physTransform.getRoll());
+
+                wrapper.wrapping.coordTransform.updateAllTransforms(true, true);
+            }
+
             wrapper.wrapping.updateChunkCache();
         }
 
@@ -47,7 +69,7 @@ public class PhysicsTickHandler {
          * All moved off the game tick thread, there is simply no other way to fix the
          * physics.
          */
-        
+
         // PhysicsTickThreadTask physicsThreadTask = new
         // PhysicsTickThreadTask(ValkyrienWarfareMod.physIter, physicsEntities,
         // manager);
@@ -66,7 +88,7 @@ public class PhysicsTickHandler {
          * Also moving this off the game tick thread, players need consistency within
          * subspaces.
          */
-        
+
         // for (PhysicsWrapperEntity wrapper : physicsEntities) {
         // wrapper.wrapping.coordTransform.sendPositionToPlayers();
         // }

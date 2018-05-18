@@ -34,6 +34,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.mod.multithreaded.PhysicsShipTransform;
 import valkyrienwarfare.mod.physmanagement.relocation.SpatialDetector;
 import valkyrienwarfare.physics.calculations.PhysicsCalculations;
 import valkyrienwarfare.physics.collision.optimization.IBitOctree;
@@ -403,11 +404,18 @@ public class WorldPhysicsCollider {
     }
 
     private void updatePotentialCollisionCache() {
-        final AxisAlignedBB collisionBB = parent.getCollisionBoundingBox()
-                .expand(calculator.linearMomentum.X * calculator.getInvMass(),
-                        calculator.linearMomentum.Y * calculator.getInvMass(),
-                        calculator.linearMomentum.Z * calculator.getInvMass())
-                .grow(AABB_EXPANSION);
+        PhysicsShipTransform currentPhysicsTransform = (PhysicsShipTransform) parent.coordTransform
+                .getCurrentPhysicsTransform();
+        // final AxisAlignedBB collisionBB = parent.getCollisionBoundingBox()
+        // .expand(calculator.linearMomentum.X * calculator.getInvMass(),
+        // calculator.linearMomentum.Y * calculator.getInvMass(),
+        // calculator.linearMomentum.Z * calculator.getInvMass())
+        // .grow(AABB_EXPANSION);
+        // Use the physics tick collision box instead of the game tick collision box.
+        final AxisAlignedBB collisionBB = currentPhysicsTransform.getShipBoundingBox().grow(AABB_EXPANSION).expand(
+                calculator.linearMomentum.X * calculator.getInvMass(),
+                calculator.linearMomentum.Y * calculator.getInvMass(),
+                calculator.linearMomentum.Z * calculator.getInvMass());
         ticksSinceCacheUpdate = 0D;
         // This is being used to occasionally offset the collision cache update, in the
         // hopes this will prevent multiple ships from all updating

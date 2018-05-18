@@ -365,8 +365,7 @@ public class ShipTransformationManager {
         }
 
         AxisAlignedBB createWrappingAABB() {
-            return new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ).expand(AABB_EXPANSION, AABB_EXPANSION,
-                    AABB_EXPANSION);
+            return new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ).grow(AABB_EXPANSION);
         }
 
     }

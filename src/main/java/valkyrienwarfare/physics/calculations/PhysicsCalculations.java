@@ -66,7 +66,8 @@ public class PhysicsCalculations {
     public Vector angularVelocity;
     private Vector torque;
     private double gameTickMass;
-    private double physMass;
+    // TODO: Get this in one day
+    // private double physMass;
     // The time occurring on each PhysTick
     private double physRawSpeed;
     // Number of iterations the solver runs on each game tick
@@ -201,9 +202,6 @@ public class PhysicsCalculations {
     public void rawPhysTickPreCol(double newPhysSpeed, int iters) {
         if (parent.coordTransform.getCurrentPhysicsTransform() == ShipTransformationManager.ZERO_TRANSFORM) {
             // Create a new physics transform.
-            parent.coordTransform.setCurrentPhysicsTransform(
-                    new PhysicsShipTransform(parent.coordTransform.getCurrentTickTransform()));
-            parent.coordTransform.updatePreviousPhysicsTransform();
             physRoll = parent.wrapper.getRoll();
             physPitch = parent.wrapper.getPitch();
             physYaw = parent.wrapper.getYaw();
@@ -211,6 +209,10 @@ public class PhysicsCalculations {
             physY = parent.wrapper.posY;
             physZ = parent.wrapper.posZ;
             physCenterOfMass.setValue(gameTickCenterOfMass);
+            ShipTransform physicsTransform = new PhysicsShipTransform(physX, physY, physZ, physPitch, physYaw, physRoll,
+                    physCenterOfMass);
+            parent.coordTransform.setCurrentPhysicsTransform(physicsTransform);
+            parent.coordTransform.updatePreviousPhysicsTransform();
         }
         if (parent.doPhysics) {
             updatePhysSpeedAndIters(newPhysSpeed, iters);
@@ -244,15 +246,17 @@ public class PhysicsCalculations {
                 linearMomentum.zero();
                 angularVelocity.zero();
             }
-            ShipTransform finalPhysTransform = new ShipTransform(physX, physY, physZ, physPitch, physYaw, physRoll,
-                    physCenterOfMass);
+            ShipTransform finalPhysTransform = new PhysicsShipTransform(physX, physY, physZ, physPitch, physYaw,
+                    physRoll, physCenterOfMass);
 
+            parent.coordTransform.updatePreviousPhysicsTransform();
             parent.coordTransform.setCurrentPhysicsTransform(finalPhysTransform);
 
             updatePhysCenterOfMass();
-            updateParentToPhysCoords();
-
-            parent.coordTransform.updateAllTransforms(true, true);
+            // Moved out to VW Thread. Code run in this class should have no direct effect
+            // on the physics object.
+            // updateParentToPhysCoords();
+            // parent.coordTransform.updateAllTransforms(true, true);
         }
     }
 
@@ -284,7 +288,7 @@ public class PhysicsCalculations {
             Vector CMDif = gameTickCenterOfMass.getSubtraction(parentCM);
             // RotationMatrices.doRotationOnly(parent.coordTransform.lToWTransform, CMDif);
 
-            parent.coordTransform.getCurrentTickTransform().rotate(CMDif, TransformType.LOCAL_TO_GLOBAL);
+            parent.coordTransform.getCurrentPhysicsTransform().rotate(CMDif, TransformType.LOCAL_TO_GLOBAL);
             parent.wrapper.posX -= CMDif.X;
             parent.wrapper.posY -= CMDif.Y;
             parent.wrapper.posZ -= CMDif.Z;
@@ -579,8 +583,8 @@ public class PhysicsCalculations {
     }
 
     /**
-     * @return The moment of inertia tensor with local translation (0 vector
-     *         is at the center of mass), but rotated into world coordinates.
+     * @return The moment of inertia tensor with local translation (0 vector is at
+     *         the center of mass), but rotated into world coordinates.
      */
     public double[] getPhysMOITensor() {
         return this.physMOITensor;

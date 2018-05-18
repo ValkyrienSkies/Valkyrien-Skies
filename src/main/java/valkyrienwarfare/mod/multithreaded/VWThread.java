@@ -165,6 +165,16 @@ public class VWThread extends Thread {
             if (!wrapper.firstUpdate) {
                 try {
                     wrapper.wrapping.physicsProcessor.rawPhysTickPostCol();
+                    PhysicsShipTransform physTransform = (PhysicsShipTransform) wrapper.wrapping.coordTransform.getCurrentPhysicsTransform();
+                    
+                    wrapper.posX = physTransform.getPosX();
+                    wrapper.posY = physTransform.getPosY();
+                    wrapper.posZ = physTransform.getPosZ();
+                    wrapper.setPitch(physTransform.getPitch());
+                    wrapper.setYaw(physTransform.getYaw());
+                    wrapper.setRoll(physTransform.getRoll());
+                    
+                    wrapper.wrapping.coordTransform.updateAllTransforms(true, true);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

@@ -20,7 +20,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 
 import net.minecraft.entity.Entity;
@@ -37,16 +39,16 @@ import valkyrienwarfare.ValkyrienWarfareMod;
 
 /**
  * This class essentially handles all the issues with ticking and handling
- * physics Objects in the given world
+ * physics objects in the given world
  *
- * @author BigBastard
+ * @author thebest108
  */
 public class WorldPhysObjectManager {
 
     private final Ticket chunkLoadingTicket;
     private final Map<ChunkPos, PhysicsWrapperEntity> chunkPosToPhysicsEntityMap;
     public final World worldObj;
-    public final List<PhysicsWrapperEntity> physicsEntities;
+    public final Set<PhysicsWrapperEntity> physicsEntities;
     public final List<PhysicsWrapperEntity> physicsEntitiesToUnload;
     private final List<Callable<Void>> physCollisonCallables;
     private Future<Void> physicsThreadStatus;
@@ -54,7 +56,7 @@ public class WorldPhysObjectManager {
     public WorldPhysObjectManager(World toManage) {
         this.worldObj = toManage;
         this.chunkLoadingTicket = ForgeChunkManager.requestTicket(ValkyrienWarfareMod.INSTANCE, toManage, Type.NORMAL);
-        this.physicsEntities = new ArrayList<PhysicsWrapperEntity>();
+        this.physicsEntities = ConcurrentHashMap.newKeySet();
         this.physicsEntitiesToUnload = new ArrayList<PhysicsWrapperEntity>();
         this.physCollisonCallables = new ArrayList<Callable<Void>>();
         this.chunkPosToPhysicsEntityMap = new HashMap<ChunkPos, PhysicsWrapperEntity>();
@@ -168,7 +170,7 @@ public class WorldPhysObjectManager {
 
     /**
      * In the future this will be moved to a Mixins system, for now though this is
-     * worse
+     * worse.
      *
      * @param chunk
      * @return

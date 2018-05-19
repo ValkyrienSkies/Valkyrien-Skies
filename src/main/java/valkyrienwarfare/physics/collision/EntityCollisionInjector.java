@@ -265,8 +265,9 @@ public class EntityCollisionInjector {
 
         Vector entityPosInShip = new Vector(entity.posX, entity.posY - 0.20000000298023224D, entity.posZ);
 
-        worldBelow.wrapping.coordTransform.getCurrentTickTransform().transform(entityPosInShip, TransformType.GLOBAL_TO_LOCAL);
-        
+        worldBelow.wrapping.coordTransform.getCurrentTickTransform().transform(entityPosInShip,
+                TransformType.GLOBAL_TO_LOCAL);
+
         int j4 = MathHelper.floor(entityPosInShip.X);
         int l4 = MathHelper.floor(entityPosInShip.Y);
         int i5 = MathHelper.floor(entityPosInShip.Z);
@@ -391,7 +392,8 @@ public class EntityCollisionInjector {
         for (PhysicsWrapperEntity wrapper : ships) {
             try {
                 if (!entity.isRidingSameEntity(wrapper)) {
-                    Polygon playerInLocal = new Polygon(entityBB, wrapper.wrapping.coordTransform.getCurrentTickTransform(), TransformType.GLOBAL_TO_LOCAL);
+                    Polygon playerInLocal = new Polygon(entityBB,
+                            wrapper.wrapping.coordTransform.getCurrentTickTransform(), TransformType.GLOBAL_TO_LOCAL);
                     AxisAlignedBB bb = playerInLocal.getEnclosedAABB();
 
                     if ((bb.maxX - bb.minX) * (bb.maxZ - bb.minZ) > 9898989) {
@@ -406,8 +408,10 @@ public class EntityCollisionInjector {
                     }
 
                     for (AxisAlignedBB inLocal : collidingBBs) {
-                        ShipPolygon poly = new ShipPolygon(inLocal, wrapper.wrapping.coordTransform.getCurrentTickTransform(), TransformType.LOCAL_TO_GLOBAL,
-                                wrapper.wrapping.coordTransform.normals, wrapper.wrapping);
+                        ShipPolygon poly = new ShipPolygon(inLocal,
+                                wrapper.wrapping.coordTransform.getCurrentTickTransform(),
+                                TransformType.LOCAL_TO_GLOBAL, wrapper.wrapping.coordTransform.normals,
+                                wrapper.wrapping);
                         collisions.add(poly);
                     }
                 }
@@ -423,9 +427,11 @@ public class EntityCollisionInjector {
                 double posZ = entity.posZ;
 
                 Vector entityPos = new Vector(posX, posY, posZ);
-                
-                wrapper.wrapping.coordTransform.getCurrentTickTransform().transform(entityPos, TransformType.GLOBAL_TO_LOCAL);
-//                RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, entityPos);
+
+                wrapper.wrapping.coordTransform.getCurrentTickTransform().transform(entityPos,
+                        TransformType.GLOBAL_TO_LOCAL);
+                // RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform,
+                // entityPos);
 
                 setEntityPositionAndUpdateBB(entity, entityPos.X, entityPos.Y, entityPos.Z);
 
@@ -434,8 +440,7 @@ public class EntityCollisionInjector {
 
                 if (wrapper.wrapping.ownsChunk(entityChunkX, entityChunkZ)) {
                     Chunk chunkIn = wrapper.wrapping.claimedChunks[entityChunkX
-                            - wrapper.wrapping.claimedChunks[0][0].x][entityChunkZ
-                                    - wrapper.wrapping.claimedChunks[0][0].z];
+                            - wrapper.wrapping.ownedChunks.minX][entityChunkZ - wrapper.wrapping.ownedChunks.minZ];
 
                     int chunkYIndex = MathHelper.floor(entity.posY / 16.0D);
 

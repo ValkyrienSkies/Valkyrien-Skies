@@ -50,13 +50,11 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IWorldEventListener;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.nodenetwork.INodeProvider;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.fixes.WorldChunkloadingCrashFix;
-import valkyrienwarfare.mod.physmanagement.chunk.PhysicsChunkManager;
 import valkyrienwarfare.mod.physmanagement.interaction.IWorldVW;
 import valkyrienwarfare.physics.collision.polygons.Polygon;
 import valkyrienwarfare.physics.data.TransformType;
@@ -302,7 +300,8 @@ public abstract class MixinWorld implements IWorldVW {
         }
     }
 
-    // TODO: Rewrite this to use @Overwrite
+    // TODO: Something about this is just too buggy to work reliably
+    /*
     @Inject(method = "getBiome(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/world/biome/Biome;", at = @At("HEAD"), cancellable = true)
     public void preGetBiome(final BlockPos pos, CallbackInfoReturnable<Biome> callbackInfoReturnable) {
         if (PhysicsChunkManager.isLikelyShipChunk(pos.getX() >> 4, pos.getZ() >> 4)) {
@@ -331,6 +330,7 @@ public abstract class MixinWorld implements IWorldVW {
         }
         // do nothing and run vanilla
     }
+    */
 
     /**
      * aa

@@ -56,7 +56,7 @@ public class ValkyrienWarfareWorldEventListener implements IWorldEventListener {
             // Strange bounding box error on CLIENT SIDE Fix, possibly broken and terrible,
             // but probably ok
             if (wrapper != null) {
-                wrapper.wrapping.onSetBlockState(oldState, newState, pos);
+                // wrapper.wrapping.onSetBlockState(oldState, newState, pos);
             }
         } else {
             if (wrapper != null) {

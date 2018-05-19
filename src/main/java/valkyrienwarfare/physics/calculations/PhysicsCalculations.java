@@ -118,6 +118,8 @@ public class PhysicsCalculations {
     }
 
     public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos pos) {
+        
+        System.out.println("Test change");
         World worldObj = parent.getWorldObj();
         if (!newState.equals(oldState)) {
             if (oldState.getBlock() == Blocks.AIR) {

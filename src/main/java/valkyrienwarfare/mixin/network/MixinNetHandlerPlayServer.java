@@ -19,30 +19,24 @@ package valkyrienwarfare.mixin.network;
 import org.apache.logging.log4j.Logger;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.MobEffects;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.Packet;
-import net.minecraft.network.PacketThreadUtil;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.world.GameType;
-import net.minecraft.world.WorldServer;
+import valkyrienwarfare.fixes.SpongeStrangenessFixes;
 import valkyrienwarfare.mod.physmanagement.interaction.EntityDraggable;
 import valkyrienwarfare.mod.physmanagement.interaction.IDraggable;
 import valkyrienwarfare.mod.physmanagement.interaction.INHPServerVW;
 
 //TODO: a lot of these mixins can probably be done using overrides instead of overwrites, i should have a look at some point
-@Mixin(NetHandlerPlayServer.class)
+@Mixin(value = NetHandlerPlayServer.class, priority = 5)
 public abstract class MixinNetHandlerPlayServer implements INHPServerVW {
     
     @Shadow
@@ -120,7 +114,8 @@ public abstract class MixinNetHandlerPlayServer implements INHPServerVW {
 
     @Override
     public void checkForPacketEnqueueTrap(Packet packetIn) {
-        PacketThreadUtil.checkThreadAndEnqueue(packetIn, NetHandlerPlayServer.class.cast(this), player.getServerWorld());
+        // Thanks sponge for breaking it
+        SpongeStrangenessFixes.checkThreadAndEnqueue_SpongeFree(packetIn, NetHandlerPlayServer.class.cast(this), player.getServerWorld());
     }
 
     @Override
@@ -143,6 +138,7 @@ public abstract class MixinNetHandlerPlayServer implements INHPServerVW {
     public void setPlayerLocation(double x, double y, double z, float yaw, float pitch) {}
     
     // Because of MCs bad coding I have to copy an entire method just to edit one line of code.
+    /*
     @Overwrite
     public void processPlayer(CPacketPlayer packetIn) {
         PacketThreadUtil.checkThreadAndEnqueue(packetIn, thisAsNetHandler, this.player.getServerWorld());
@@ -286,5 +282,6 @@ public abstract class MixinNetHandlerPlayServer implements INHPServerVW {
             }
         }
     }
+    */
 
 }

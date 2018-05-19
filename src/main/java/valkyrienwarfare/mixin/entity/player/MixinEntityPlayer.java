@@ -66,7 +66,7 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements IShi
 
 				callbackInfo.setReturnValue(bedLocation);
 			} else {
-				System.err.println("A ship just had Chunks claimed persistant, but not any position data persistant");
+				System.err.println("A ship just had chunks claimed persistant, but not any position data persistant");
 			}
 		}
 	}

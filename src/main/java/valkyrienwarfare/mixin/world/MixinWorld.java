@@ -62,7 +62,7 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.physics.management.WorldPhysObjectManager;
 
 //TODO this class is horrible
-@Mixin(World.class)
+@Mixin(value = World.class, priority = 5)
 @Implements(@Interface(iface = WorldChunkloadingCrashFix.class, prefix = "vw$", remap = Remap.NONE))
 public abstract class MixinWorld implements IWorldVW {
 
@@ -296,6 +296,7 @@ public abstract class MixinWorld implements IWorldVW {
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(World.class.cast(this),
                 pos);
         if (wrapper != null) {
+            System.out.println("Got the state 1");
             wrapper.wrapping.onSetBlockState(oldState, newState, pos);
         }
     }

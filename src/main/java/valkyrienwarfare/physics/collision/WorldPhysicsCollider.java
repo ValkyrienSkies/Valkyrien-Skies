@@ -458,7 +458,7 @@ public class WorldPhysicsCollider {
                 int arrayChunkZ = chunkZ - cache.chunkZ;
 
                 if (!(arrayChunkX < 0 || arrayChunkZ < 0 || arrayChunkX > cache.chunkArray.length - 1
-                        || arrayChunkZ > cache.chunkArray[0].length - 1)) {
+                        || arrayChunkZ > cache.chunkArray[0].length - 1) && cache.chunkArray[arrayChunkX][arrayChunkZ] != null) {
                     Chunk chunk = cache.chunkArray[arrayChunkX][arrayChunkZ];
                     for (int storageY = storageMinY; storageY < storageMaxY; storageY++) {
                         ExtendedBlockStorage extendedblockstorage = chunk.storageArrays[storageY];

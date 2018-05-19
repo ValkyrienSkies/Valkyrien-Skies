@@ -37,10 +37,13 @@ public abstract class MixinCPacketPlayerDigging {
 
 	@Redirect(method = "processPacket", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/play/INetHandlerPlayServer;processPlayerDigging(Lnet/minecraft/network/play/client/CPacketPlayerDigging;)V"))
 	public void handleDiggingPacket(INetHandlerPlayServer server, CPacketPlayerDigging packetIn) {
-		INHPServerVW vw = (INHPServerVW) (NetHandlerPlayServer) server;
+	    // System.out.println("Redirected");
+	    INHPServerVW vw = (INHPServerVW) (NetHandlerPlayServer) server;
 		vw.checkForPacketEnqueueTrap(packetIn);
 		EntityPlayerMP player = vw.getEntityPlayerFromHandler();
 
+		// System.out.println("Redirected2");
+		
 		BlockPos packetPos = packetIn.getPosition();
 		PlayerDataBackup playerBackup = new PlayerDataBackup(player);
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.world, packetPos);
@@ -51,10 +54,12 @@ public abstract class MixinCPacketPlayerDigging {
 			player.interactionManager.setBlockReachDistance(vw.dummyBlockReachDist());
 		}
 		if (wrapper != null && wrapper.wrapping.coordTransform != null) {
+		    // System.out.println("Redirecte3");
 			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.getCurrentTickTransform(), player, TransformType.GLOBAL_TO_LOCAL);
 			server.processPlayerDigging(packetIn);
 			RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.getCurrentTickTransform(), player, TransformType.LOCAL_TO_GLOBAL);
 			playerBackup.restorePlayerToBackup();
+			// System.out.println("Redirected4");
 		} else {
 			server.processPlayerDigging(packetIn);
 		}

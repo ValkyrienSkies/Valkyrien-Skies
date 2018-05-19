@@ -157,6 +157,7 @@ public class PhysicsObject {
         if (!ownedChunks.isChunkEnclosedInSet(posAt.getX() >> 4, posAt.getZ() >> 4)) {
             return;
         }
+        
         // If the block here is not to be physicsed, just treat it like you'd treat AIR
         // blocks.
         if (oldState != null && BlockPhysicsRegistration.blocksToNotPhysicise.contains(oldState.getBlock())) {
@@ -169,6 +170,8 @@ public class PhysicsObject {
         boolean isOldAir = oldState == null || oldState.getBlock().equals(Blocks.AIR);
         boolean isNewAir = newState == null || newState.getBlock().equals(Blocks.AIR);
 
+        System.out.println(oldState.getBlock().getLocalizedName());
+        System.out.println(newState.getBlock().getLocalizedName());
         if (isNewAir) {
             blockPositions.remove(posAt);
         }

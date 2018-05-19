@@ -485,7 +485,11 @@ public class ValkyrienWarfareMod {
 		PhysicsSettings.doAirshipRotation = tag.getBoolean("doAirshipRotation", true);
 		PhysicsSettings.doAirshipMovement = tag.getBoolean("doAirshipMovement", true);
 		ValkyrienWarfareMod.maxShipSize = tag.getInteger("maxShipSize", 15000);
-		ValkyrienWarfareMod.physSpeed = tag.getDouble("physicsSpeed", 0.05);
+		ValkyrienWarfareMod.physSpeed = tag.getDouble("physicsSpeed", 0.01D);
+		// TODO: Remove me later; this is just to force players VW configs to update.
+		if (ValkyrienWarfareMod.physSpeed == .05D) {
+		    ValkyrienWarfareMod.physSpeed = .01D;
+		}
 		ValkyrienWarfareMod.gravity = new Vector(tag.getDouble("gravityVecX", 0.0), tag.getDouble("gravityVecY", -9.8),
 				tag.getDouble("gravityVecZ", 0.0));
 		PhysicsSettings.doEtheriumLifting = tag.getBoolean("doEtheriumLifting", true);

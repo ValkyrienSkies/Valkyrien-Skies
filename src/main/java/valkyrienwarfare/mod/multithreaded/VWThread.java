@@ -126,7 +126,7 @@ public class VWThread extends Thread {
     }
 
     private void tickThePhysicsAndCollision() {
-        double newPhysSpeed = 0.01D; // ValkyrienWarfareMod.physSpeed;
+        double newPhysSpeed = ValkyrienWarfareMod.physSpeed;
         Vector newGravity = ValkyrienWarfareMod.gravity;
         List<ShipCollisionTask> collisionTasks = new ArrayList<ShipCollisionTask>(ships.size() * 2);
 

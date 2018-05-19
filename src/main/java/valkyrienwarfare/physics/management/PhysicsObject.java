@@ -716,7 +716,7 @@ public class PhysicsObject {
         wrapper.lastTickPosY = wrapper.posY;
         wrapper.lastTickPosZ = wrapper.posZ;
 
-        ShipTransformationPacketHolder toUse = coordTransform.serverBuffer.getDataForTick(lastMessageTick);
+        ShipTransformationPacketHolder toUse = coordTransform.serverBuffer.pollForClientTransform();
 
         if (toUse != null) {
             Vector CMDif = toUse.centerOfRotation.getSubtraction(centerCoord);

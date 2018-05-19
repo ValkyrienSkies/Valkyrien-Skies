@@ -98,6 +98,10 @@ public class ShipTransformationManager {
      */
     @Deprecated
     public void updateAllTransforms(boolean updateParentAABB, boolean updatePassengers) {
+        // The client should never be updating the AABB on its own.
+        if (parent.getWorldObj().isRemote) {
+            updateParentAABB = false;
+        }
         forceShipIntoWorldBorder();
         updateCurrentTickTransform();
         if (updateParentAABB) {

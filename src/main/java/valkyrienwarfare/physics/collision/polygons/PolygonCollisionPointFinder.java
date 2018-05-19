@@ -103,8 +103,8 @@ public class PolygonCollisionPointFinder {
 
             // Now with our normals found and the plane vertice, we now search for the
             // points of collision.
-
-            return new Vector[] { currentTopVertice, currentBottomVertice };
+            // TODO: Find a real algorithm for this please!
+            return new Vector[] { currentTopVertice, currentBottomVertice, currentTopVertice, currentBottomVertice };
         }
     }
 

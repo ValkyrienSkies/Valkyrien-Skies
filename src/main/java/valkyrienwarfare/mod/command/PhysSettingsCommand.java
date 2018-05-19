@@ -117,7 +117,7 @@ public class PhysSettingsCommand extends CommandBase {
                     sender.sendMessage(new TextComponentString("Please enter a value between 0 and 1000"));
                     return;
                 }
-                ValkyrienWarfareMod.physSpeed = value * 0.05D / 100D;
+                ValkyrienWarfareMod.physSpeed = value / 10000D;
                 sender.sendMessage(new TextComponentString("Set physicsspeed to " + value + " percent"));
                 return;
             }

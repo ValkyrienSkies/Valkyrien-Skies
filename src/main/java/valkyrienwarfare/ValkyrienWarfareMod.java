@@ -70,7 +70,6 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.relauncher.Side;
-import valkyrienwarfare.addon.combat.ValkyrienWarfareCombat;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.opencomputers.ValkyrienWarfareOC;
 import valkyrienwarfare.addon.world.ValkyrienWarfareWorld;
@@ -241,11 +240,11 @@ public class ValkyrienWarfareMod {
 		final boolean isAddonBugFixed = false;
 
 		if (!isAddonBugFixed) {
-			ValkyrienWarfareCombat combatModule = new ValkyrienWarfareCombat();
+			// ValkyrienWarfareCombat combatModule = new ValkyrienWarfareCombat();
 			ValkyrienWarfareControl controlModule = new ValkyrienWarfareControl();
 			ValkyrienWarfareWorld worldModule = new ValkyrienWarfareWorld();
 			ValkyrienWarfareOC opencomputersModule = new ValkyrienWarfareOC();
-			registerAddon(combatModule);
+			// registerAddon(combatModule);
 			registerAddon(controlModule);
 			registerAddon(worldModule);
 			registerAddon(opencomputersModule);
@@ -327,7 +326,7 @@ public class ValkyrienWarfareMod {
 						}
 					}
 					Module module = (Module) abstractclass.newInstance();
-					registerAddon(module);
+					// registerAddon(module);
 				} else {
 					System.out.println("Class " + className + " does not have @VWAddon annonation, not loading");
 				}

@@ -16,18 +16,17 @@
 
 package valkyrienwarfare.mod.multithreaded;
 
+import net.minecraft.world.World;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import net.minecraft.world.World;
 
 /**
  * Only needs to run for the server end of things, the client end will just
  * receive more physics ticks as a result. Handles separate physics threads for
  * different worlds.
- * 
- * @author thebest108
  *
+ * @author thebest108
  */
 public class VWThreadManager {
 

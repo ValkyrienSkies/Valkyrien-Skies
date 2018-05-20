@@ -16,27 +16,8 @@
 
 package valkyrienwarfare.mixin.world;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.annotation.Nullable;
-
-import org.spongepowered.asm.mixin.Implements;
-import org.spongepowered.asm.mixin.Interface;
-import org.spongepowered.asm.mixin.Interface.Remap;
-import org.spongepowered.asm.mixin.Intrinsic;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
-
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -51,6 +32,17 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IWorldEventListener;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
+import org.spongepowered.asm.mixin.Implements;
+import org.spongepowered.asm.mixin.Interface;
+import org.spongepowered.asm.mixin.Interface.Remap;
+import org.spongepowered.asm.mixin.Intrinsic;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.nodenetwork.INodeProvider;
 import valkyrienwarfare.api.Vector;
@@ -60,6 +52,11 @@ import valkyrienwarfare.physics.collision.polygons.Polygon;
 import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.physics.management.WorldPhysObjectManager;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 //TODO this class is horrible
 @Mixin(value = World.class, priority = 1005)
@@ -79,7 +76,7 @@ public abstract class MixinWorld implements IWorldVW {
 
     @Inject(method = "setBlockState", at = @At("HEAD"))
     public void preSetBlockState(BlockPos pos, IBlockState newState, int flags,
-            CallbackInfoReturnable callbackInfo) {
+                                 CallbackInfoReturnable callbackInfo) {
         PhysicsWrapperEntity physEntity = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(thisClassAsWorld,
                 pos);
         if (physEntity != null) {
@@ -100,7 +97,7 @@ public abstract class MixinWorld implements IWorldVW {
      */
     @Overwrite
     public void spawnParticle(int particleID, boolean ignoreRange, double x, double y, double z, double xSpeed,
-            double ySpeed, double zSpeed, int... parameters) {
+                              double ySpeed, double zSpeed, int... parameters) {
         BlockPos pos = new BlockPos(x, y, z);
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(World.class.cast(this),
                 pos);
@@ -134,7 +131,7 @@ public abstract class MixinWorld implements IWorldVW {
     }
 
     public <T extends Entity> List<T> getEntitiesWithinAABBOriginal(Class<? extends T> clazz, AxisAlignedBB aabb,
-            @Nullable Predicate<? super T> filter) {
+                                                                    @Nullable Predicate<? super T> filter) {
         int i = MathHelper.floor((aabb.minX - MAX_ENTITY_RADIUS_ALT) / 16.0D);
         int j = MathHelper.ceil((aabb.maxX + MAX_ENTITY_RADIUS_ALT) / 16.0D);
         int k = MathHelper.floor((aabb.minZ - MAX_ENTITY_RADIUS_ALT) / 16.0D);
@@ -153,7 +150,7 @@ public abstract class MixinWorld implements IWorldVW {
     }
 
     public List<Entity> getEntitiesInAABBexcludingOriginal(@Nullable Entity entityIn, AxisAlignedBB boundingBox,
-            @Nullable Predicate<? super Entity> predicate) {
+                                                           @Nullable Predicate<? super Entity> predicate) {
         List<Entity> list = Lists.newArrayList();
         int i = MathHelper.floor((boundingBox.minX - MAX_ENTITY_RADIUS_ALT) / 16.0D);
         int j = MathHelper.floor((boundingBox.maxX + MAX_ENTITY_RADIUS_ALT) / 16.0D);
@@ -222,7 +219,7 @@ public abstract class MixinWorld implements IWorldVW {
      */
     @Overwrite
     public <T extends Entity> List<T> getEntitiesWithinAABB(Class<? extends T> clazz, AxisAlignedBB aabb,
-            @Nullable Predicate<? super T> filter) {
+                                                            @Nullable Predicate<? super T> filter) {
         List toReturn = this.getEntitiesWithinAABBOriginal(clazz, aabb, filter);
 
         if (ValkyrienWarfareMod.physicsManager == null) {
@@ -251,7 +248,7 @@ public abstract class MixinWorld implements IWorldVW {
      */
     @Overwrite
     public List<Entity> getEntitiesInAABBexcluding(@Nullable Entity entityIn, AxisAlignedBB boundingBox,
-            @Nullable Predicate<? super Entity> predicate) {
+                                                   @Nullable Predicate<? super Entity> predicate) {
         if ((boundingBox.maxX - boundingBox.minX) * (boundingBox.maxZ - boundingBox.minZ) > 1000000D) {
             return new ArrayList();
         }
@@ -291,7 +288,7 @@ public abstract class MixinWorld implements IWorldVW {
     // TODO: acutally move the sound, i don't think this does anything yet
     @Inject(method = "playSound(DDDLnet/minecraft/util/SoundEvent;Lnet/minecraft/util/SoundCategory;FFZ)V", at = @At("HEAD"))
     public void prePlaySound(double x, double y, double z, SoundEvent soundIn, SoundCategory category, float volume,
-            float pitch, boolean distanceDelay, CallbackInfo callbackInfo) {
+                             float pitch, boolean distanceDelay, CallbackInfo callbackInfo) {
         BlockPos pos = new BlockPos(x, y, z);
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(World.class.cast(this),
                 pos);
@@ -359,7 +356,7 @@ public abstract class MixinWorld implements IWorldVW {
                     tileEntityIn.setPos(pos);
                     if (tileEntityIn.getWorld() != thisClassAsWorld)
                         tileEntityIn.setWorld(thisClassAsWorld); // Forge - set the world early as vanilla doesn't set
-                                                                 // it until next tick
+                    // it until next tick
                     Iterator<TileEntity> iterator = this.addedTileEntityList.iterator();
 
                     while (iterator.hasNext()) {
@@ -402,7 +399,7 @@ public abstract class MixinWorld implements IWorldVW {
 
     @Inject(method = "rayTraceBlocks(Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Vec3d;ZZZ)Lnet/minecraft/util/math/RayTraceResult;", at = @At("HEAD"), cancellable = true)
     public void preRayTraceBlocks(Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox,
-            boolean returnLastUncollidableBlock, CallbackInfoReturnable<RayTraceResult> callbackInfo) {
+                                  boolean returnLastUncollidableBlock, CallbackInfoReturnable<RayTraceResult> callbackInfo) {
         if (!isRaytracingRecursive) {
             callbackInfo.setReturnValue(rayTraceBlocksIgnoreShip(vec31, vec32, stopOnLiquid,
                     ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock, null));
@@ -411,7 +408,7 @@ public abstract class MixinWorld implements IWorldVW {
 
     @Override
     public RayTraceResult rayTraceBlocksIgnoreShip(Vec3d vec31, Vec3d vec32, boolean stopOnLiquid,
-            boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock, PhysicsWrapperEntity toIgnore) {
+                                                   boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock, PhysicsWrapperEntity toIgnore) {
         isRaytracingRecursive = true;
         RayTraceResult vanillaTrace = thisClassAsWorld.rayTraceBlocks(vec31, vec32, stopOnLiquid,
                 ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);

@@ -83,7 +83,7 @@ public class ValkyrienWarfareControl extends Module<ValkyrienWarfareControl> {
     public Item systemLinker;
     public Item airshipStealer;
     public Item relayWire;
-    
+
     public ValkyrienWarfareControl() {
         super("VW_Control", new CommonProxyControl(), "valkyrienwarfarecontrol");
         if (ValkyrienWarfareMod.INSTANCE.isRunningOnClient()) {
@@ -105,7 +105,7 @@ public class ValkyrienWarfareControl extends Module<ValkyrienWarfareControl> {
 
     @Override
     protected void postInit(FMLStateEvent event) {
-        
+
     }
 
     @Override

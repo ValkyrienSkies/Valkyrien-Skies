@@ -29,12 +29,12 @@ public class TileEntityNodeRelay extends BasicNodeTileEntity {
         Node node = this.getNode();
         node.setIsNodeRelay(true);
     }
-    
+
     @Override
     @SideOnly(Side.CLIENT)
     public AxisAlignedBB getRenderBoundingBox() {
         return super.getRenderBoundingBox();
 //        return INFINITE_EXTENT_AABB;
     }
-    
+
 }

@@ -16,10 +16,10 @@
 
 package valkyrienwarfare.physics.management;
 
-import java.util.LinkedList;
-
 import valkyrienwarfare.mod.network.PhysWrapperPositionMessage;
 import valkyrienwarfare.physics.data.ShipTransformationPacketHolder;
+
+import java.util.LinkedList;
 
 /**
  * Acts as a buffer to smooth incoming position data from the server.

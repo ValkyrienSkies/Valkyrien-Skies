@@ -16,14 +16,14 @@
 
 package valkyrienwarfare.mod;
 
-import java.util.ArrayList;
-
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.physics.data.BlockForce;
 import valkyrienwarfare.physics.data.BlockMass;
+
+import java.util.ArrayList;
 
 public class BlockPhysicsRegistration {
 

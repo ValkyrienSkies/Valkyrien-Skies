@@ -35,7 +35,7 @@ public interface IBlockForceProvider {
      * @return
      */
     default Vector getBlockForceInWorldSpace(World world, BlockPos pos, IBlockState state, Entity shipEntity,
-            double secondsToApply) {
+                                             double secondsToApply) {
         Vector toReturn = getBlockForceInShipSpace(world, pos, state, shipEntity, secondsToApply);
         if (toReturn == null || shipEntity == null) {
             return null;
@@ -63,7 +63,7 @@ public interface IBlockForceProvider {
      * @return
      */
     Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state, Entity shipEntity,
-            double secondsToApply);
+                                    double secondsToApply);
 
     /**
      * Returns true by default, blocks that shouldn't have their force rotated (Like
@@ -91,7 +91,7 @@ public interface IBlockForceProvider {
      * @return
      */
     default Vector getCustomBlockForcePosition(World world, BlockPos pos, IBlockState state, Entity shipEntity,
-            double secondsToApply) {
+                                               double secondsToApply) {
         return null;
     }
 

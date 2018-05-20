@@ -16,10 +16,6 @@
 
 package valkyrienwarfare.physics.collision;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -33,193 +29,197 @@ import valkyrienwarfare.physics.collision.polygons.Polygon;
 import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 public class ShipPhysicsCollider {
 
-	public static double axisTolerance = .3D;
-	public PhysicsCalculations calculator;
-	public World worldObj;
-	public PhysicsObject parent;
-	public double e = .35D;
-	private ArrayList<BlockPos> cachedPotentialHits;
-	// Ensures this always updates the first tick after creation
-	private double ticksSinceCacheUpdate = 420;
+    public static double axisTolerance = .3D;
+    public PhysicsCalculations calculator;
+    public World worldObj;
+    public PhysicsObject parent;
+    public double e = .35D;
+    private ArrayList<BlockPos> cachedPotentialHits;
+    // Ensures this always updates the first tick after creation
+    private double ticksSinceCacheUpdate = 420;
 
-	public ShipPhysicsCollider(PhysicsCalculations calculations) {
-		calculator = calculations;
-		parent = calculations.parent;
-		worldObj = parent.getWorldObj();
-	}
+    public ShipPhysicsCollider(PhysicsCalculations calculations) {
+        calculator = calculations;
+        parent = calculations.parent;
+        worldObj = parent.getWorldObj();
+    }
 
-	public void doShipCollision(PhysicsObject toCollideWith) {
-		AxisAlignedBB firstBB = parent.getCollisionBoundingBox();
-		AxisAlignedBB secondBB = toCollideWith.getCollisionBoundingBox();
-		AxisAlignedBB betweenBB = VWMath.getBetweenAABB(firstBB, secondBB);
+    public void doShipCollision(PhysicsObject toCollideWith) {
+        AxisAlignedBB firstBB = parent.getCollisionBoundingBox();
+        AxisAlignedBB secondBB = toCollideWith.getCollisionBoundingBox();
+        AxisAlignedBB betweenBB = VWMath.getBetweenAABB(firstBB, secondBB);
 
-		Polygon betweenBBPoly = new Polygon(betweenBB, toCollideWith.coordTransform.getCurrentTickTransform(), TransformType.GLOBAL_TO_LOCAL);
+        Polygon betweenBBPoly = new Polygon(betweenBB, toCollideWith.coordTransform.getCurrentTickTransform(), TransformType.GLOBAL_TO_LOCAL);
 
-		List<AxisAlignedBB> bbsInFirst = parent.getWorldObj().getCollisionBoxes(parent.wrapper,
-				betweenBBPoly.getEnclosedAABB());
-		if (bbsInFirst.isEmpty()) {
-			return;
-		}
+        List<AxisAlignedBB> bbsInFirst = parent.getWorldObj().getCollisionBoxes(parent.wrapper,
+                betweenBBPoly.getEnclosedAABB());
+        if (bbsInFirst.isEmpty()) {
+            return;
+        }
 
-		Vector[] axes = parent.coordTransform.getSeperatingAxisWithShip(toCollideWith);
-		Iterator<AxisAlignedBB> firstRandIter = bbsInFirst.iterator();// RandomIterator.getRandomIteratorForList(bbsInFirst);
-		while (firstRandIter.hasNext()) {
-			AxisAlignedBB fromIter = firstRandIter.next();
+        Vector[] axes = parent.coordTransform.getSeperatingAxisWithShip(toCollideWith);
+        Iterator<AxisAlignedBB> firstRandIter = bbsInFirst.iterator();// RandomIterator.getRandomIteratorForList(bbsInFirst);
+        while (firstRandIter.hasNext()) {
+            AxisAlignedBB fromIter = firstRandIter.next();
 
-			Polygon firstInWorld = new Polygon(fromIter, toCollideWith.coordTransform.getCurrentTickTransform(), TransformType.LOCAL_TO_GLOBAL);
+            Polygon firstInWorld = new Polygon(fromIter, toCollideWith.coordTransform.getCurrentTickTransform(), TransformType.LOCAL_TO_GLOBAL);
 
-			AxisAlignedBB inWorldAABB = firstInWorld.getEnclosedAABB();
+            AxisAlignedBB inWorldAABB = firstInWorld.getEnclosedAABB();
 
-			Polygon inShip2Poly = new Polygon(inWorldAABB, parent.coordTransform.getCurrentTickTransform(), TransformType.GLOBAL_TO_LOCAL);
+            Polygon inShip2Poly = new Polygon(inWorldAABB, parent.coordTransform.getCurrentTickTransform(), TransformType.GLOBAL_TO_LOCAL);
 
-			// This is correct
-			List<AxisAlignedBB> bbsInSecond = parent.getWorldObj().getCollisionBoxes(parent.wrapper,
-					inShip2Poly.getEnclosedAABB());
+            // This is correct
+            List<AxisAlignedBB> bbsInSecond = parent.getWorldObj().getCollisionBoxes(parent.wrapper,
+                    inShip2Poly.getEnclosedAABB());
 
-			Iterator<AxisAlignedBB> secondRandIter = bbsInSecond.iterator();// RandomIterator.getRandomIteratorForList(bbsInSecond);
+            Iterator<AxisAlignedBB> secondRandIter = bbsInSecond.iterator();// RandomIterator.getRandomIteratorForList(bbsInSecond);
 
-			while (secondRandIter.hasNext()) {
-				// System.out.println("test");
-				Polygon secondInWorld = new Polygon(secondRandIter.next(), parent.coordTransform.getCurrentTickTransform(), TransformType.LOCAL_TO_GLOBAL);
+            while (secondRandIter.hasNext()) {
+                // System.out.println("test");
+                Polygon secondInWorld = new Polygon(secondRandIter.next(), parent.coordTransform.getCurrentTickTransform(), TransformType.LOCAL_TO_GLOBAL);
 
-				// Both of these are in WORLD coordinates
-				Vector firstCenter = firstInWorld.getCenter();
-				Vector secondCenter = secondInWorld.getCenter();
+                // Both of these are in WORLD coordinates
+                Vector firstCenter = firstInWorld.getCenter();
+                Vector secondCenter = secondInWorld.getCenter();
 
-				Vector inBodyFirst = new Vector(firstCenter.X - parent.wrapper.posX,
-						firstCenter.Y - parent.wrapper.posY, firstCenter.Z - parent.wrapper.posZ);
-				Vector inBodySecond = new Vector(secondCenter.X - toCollideWith.wrapper.posX,
-						secondCenter.Y - toCollideWith.wrapper.posY, secondCenter.Z - toCollideWith.wrapper.posZ);
+                Vector inBodyFirst = new Vector(firstCenter.X - parent.wrapper.posX,
+                        firstCenter.Y - parent.wrapper.posY, firstCenter.Z - parent.wrapper.posZ);
+                Vector inBodySecond = new Vector(secondCenter.X - toCollideWith.wrapper.posX,
+                        secondCenter.Y - toCollideWith.wrapper.posY, secondCenter.Z - toCollideWith.wrapper.posZ);
 
-				Vector velAtFirst = parent.physicsProcessor.getVelocityAtPoint(inBodyFirst);
-				Vector velAtSecond = toCollideWith.physicsProcessor.getVelocityAtPoint(inBodySecond);
+                Vector velAtFirst = parent.physicsProcessor.getVelocityAtPoint(inBodyFirst);
+                Vector velAtSecond = toCollideWith.physicsProcessor.getVelocityAtPoint(inBodySecond);
 
-				velAtFirst.subtract(velAtSecond);
+                velAtFirst.subtract(velAtSecond);
 
-				PhysPolygonCollider polyCol = new PhysPolygonCollider(firstInWorld, secondInWorld, axes);
-				if (!polyCol.seperated) {
+                PhysPolygonCollider polyCol = new PhysPolygonCollider(firstInWorld, secondInWorld, axes);
+                if (!polyCol.seperated) {
 
-					Vector speedAtPoint = velAtFirst;
+                    Vector speedAtPoint = velAtFirst;
 
-					double xDot = Math.abs(speedAtPoint.X);
-					double yDot = Math.abs(speedAtPoint.Y);
-					double zDot = Math.abs(speedAtPoint.Z);
+                    double xDot = Math.abs(speedAtPoint.X);
+                    double yDot = Math.abs(speedAtPoint.Y);
+                    double zDot = Math.abs(speedAtPoint.Z);
 
-					PhysCollisionObject polyColObj = null;
+                    PhysCollisionObject polyColObj = null;
 
-					// NOTE: This is all EXPERIMENTAL! Could possibly revert
+                    // NOTE: This is all EXPERIMENTAL! Could possibly revert
 
-					if (yDot > xDot && yDot > zDot) {
-						// Y speed is greatest
-						if (xDot > zDot) {
-							polyColObj = polyCol.collisions[2];
-						} else {
-							polyColObj = polyCol.collisions[0];
-						}
-					} else {
-						if (xDot > zDot) {
-							// X speed is greatest
-							polyColObj = polyCol.collisions[1];
-						} else {
-							// Z speed is greatest
-							polyColObj = polyCol.collisions[1];
-						}
-					}
+                    if (yDot > xDot && yDot > zDot) {
+                        // Y speed is greatest
+                        if (xDot > zDot) {
+                            polyColObj = polyCol.collisions[2];
+                        } else {
+                            polyColObj = polyCol.collisions[0];
+                        }
+                    } else {
+                        if (xDot > zDot) {
+                            // X speed is greatest
+                            polyColObj = polyCol.collisions[1];
+                        } else {
+                            // Z speed is greatest
+                            polyColObj = polyCol.collisions[1];
+                        }
+                    }
 
-					// PhysCollisionObject polyColObj = polyCol.collisions[1];
-					if (polyColObj.penetrationDistance > axisTolerance
-							|| polyColObj.penetrationDistance < -axisTolerance) {
-						polyColObj = polyCol.collisions[polyCol.minDistanceIndex];
-					}
+                    // PhysCollisionObject polyColObj = polyCol.collisions[1];
+                    if (polyColObj.penetrationDistance > axisTolerance
+                            || polyColObj.penetrationDistance < -axisTolerance) {
+                        polyColObj = polyCol.collisions[polyCol.minDistanceIndex];
+                    }
 
-					// PhysCollisionObject physCol = new
-					// PhysCollisionObject(firstInWorld,secondInWorld,polyColObj.axis);
-					processCollisionAtPoint(toCollideWith, polyColObj);
+                    // PhysCollisionObject physCol = new
+                    // PhysCollisionObject(firstInWorld,secondInWorld,polyColObj.axis);
+                    processCollisionAtPoint(toCollideWith, polyColObj);
 
-					if (Math.abs(polyColObj.movMaxFixMin) > Math.abs(polyColObj.movMinFixMax)) {
-						for (Vector v : polyColObj.movable.getVertices()) {
-							if (v.dot(polyColObj.collision_normal) == polyColObj.playerMinMax[1]) {
-								polyColObj.firstContactPoint = v;
-							}
-						}
-					} else {
-						for (Vector v : polyColObj.movable.getVertices()) {
-							if (v.dot(polyColObj.collision_normal) == polyColObj.playerMinMax[0]) {
-								polyColObj.firstContactPoint = v;
-							}
-						}
-					}
+                    if (Math.abs(polyColObj.movMaxFixMin) > Math.abs(polyColObj.movMinFixMax)) {
+                        for (Vector v : polyColObj.movable.getVertices()) {
+                            if (v.dot(polyColObj.collision_normal) == polyColObj.playerMinMax[1]) {
+                                polyColObj.firstContactPoint = v;
+                            }
+                        }
+                    } else {
+                        for (Vector v : polyColObj.movable.getVertices()) {
+                            if (v.dot(polyColObj.collision_normal) == polyColObj.playerMinMax[0]) {
+                                polyColObj.firstContactPoint = v;
+                            }
+                        }
+                    }
 
-					// physCol.firstContactPoint = physCol.getSecondContactPoint();
-					processCollisionAtPoint(toCollideWith, polyColObj);
-				}
-			}
-		}
-	}
+                    // physCol.firstContactPoint = physCol.getSecondContactPoint();
+                    processCollisionAtPoint(toCollideWith, polyColObj);
+                }
+            }
+        }
+    }
 
-	private void processCollisionAtPoint(PhysicsObject toCollideWith, PhysCollisionObject object) {
-		double e;
-		Vector inFirstShip = new Vector(object.firstContactPoint);
-		Vector inSecondShip = new Vector(object.firstContactPoint);
-		// inFirstShip.subtract(firstController.centerOfMass);
-		// inSecondShip.subtract(secondController.centerOfMass);
-		// System.out.println(object.axis);
-		// BigBastardMath.setInBodyWOFromInWorld(object.firstContactPoint,
-		// parent.physicsProcessor.centerOfMass, parent.coordTransform.lToWRotation,
-		// parent.coordTransform.wToLTransform,inFirstShip);
+    private void processCollisionAtPoint(PhysicsObject toCollideWith, PhysCollisionObject object) {
+        double e;
+        Vector inFirstShip = new Vector(object.firstContactPoint);
+        Vector inSecondShip = new Vector(object.firstContactPoint);
+        // inFirstShip.subtract(firstController.centerOfMass);
+        // inSecondShip.subtract(secondController.centerOfMass);
+        // System.out.println(object.axis);
+        // BigBastardMath.setInBodyWOFromInWorld(object.firstContactPoint,
+        // parent.physicsProcessor.centerOfMass, parent.coordTransform.lToWRotation,
+        // parent.coordTransform.wToLTransform,inFirstShip);
 
-		// BigBastardMath.setInBodyWOFromInWorld(object.firstContactPoint,
-		// toCollideWith.physicsProcessor.centerOfMass,
-		// toCollideWith.coordTransform.lToWRotation,
-		// toCollideWith.coordTransform.wToLTransform,inSecondShip);
+        // BigBastardMath.setInBodyWOFromInWorld(object.firstContactPoint,
+        // toCollideWith.physicsProcessor.centerOfMass,
+        // toCollideWith.coordTransform.lToWRotation,
+        // toCollideWith.coordTransform.wToLTransform,inSecondShip);
 
-		inFirstShip.X -= parent.wrapper.posX;
-		inFirstShip.Y -= parent.wrapper.posY;
-		inFirstShip.Z -= parent.wrapper.posZ;
+        inFirstShip.X -= parent.wrapper.posX;
+        inFirstShip.Y -= parent.wrapper.posY;
+        inFirstShip.Z -= parent.wrapper.posZ;
 
-		inSecondShip.X -= toCollideWith.wrapper.posX;
-		inSecondShip.Y -= toCollideWith.wrapper.posY;
-		inSecondShip.Z -= toCollideWith.wrapper.posZ;
+        inSecondShip.X -= toCollideWith.wrapper.posX;
+        inSecondShip.Y -= toCollideWith.wrapper.posY;
+        inSecondShip.Z -= toCollideWith.wrapper.posZ;
 
-		Vector momentumInFirst = parent.physicsProcessor.getVelocityAtPoint(inFirstShip);
-		Vector momentumInSecond = toCollideWith.physicsProcessor.getVelocityAtPoint(inSecondShip);
+        Vector momentumInFirst = parent.physicsProcessor.getVelocityAtPoint(inFirstShip);
+        Vector momentumInSecond = toCollideWith.physicsProcessor.getVelocityAtPoint(inSecondShip);
 
-		// COULD BE WRONG!!!
-		Vector netVelocity = momentumInFirst.getSubtraction(momentumInSecond);
+        // COULD BE WRONG!!!
+        Vector netVelocity = momentumInFirst.getSubtraction(momentumInSecond);
 
-		e = .9;
+        e = .9;
 
-		double topJ = -(e + 1D) * netVelocity.dot(object.collision_normal);
+        double topJ = -(e + 1D) * netVelocity.dot(object.collision_normal);
 
-		double bottomJ = parent.physicsProcessor.getInvMass() + toCollideWith.physicsProcessor.getInvMass();
+        double bottomJ = parent.physicsProcessor.getInvMass() + toCollideWith.physicsProcessor.getInvMass();
 
-		bottomJ += RotationMatrices
-				.get3by3TransformedVec(toCollideWith.physicsProcessor.getPhysInvMOITensor(), inFirstShip.cross(object.collision_normal))
-				.cross(inFirstShip).dot(object.collision_normal);
+        bottomJ += RotationMatrices
+                .get3by3TransformedVec(toCollideWith.physicsProcessor.getPhysInvMOITensor(), inFirstShip.cross(object.collision_normal))
+                .cross(inFirstShip).dot(object.collision_normal);
 
-		bottomJ += RotationMatrices
-				.get3by3TransformedVec(toCollideWith.physicsProcessor.getPhysInvMOITensor(), inSecondShip.cross(object.collision_normal))
-				.cross(inSecondShip).dot(object.collision_normal);
+        bottomJ += RotationMatrices
+                .get3by3TransformedVec(toCollideWith.physicsProcessor.getPhysInvMOITensor(), inSecondShip.cross(object.collision_normal))
+                .cross(inSecondShip).dot(object.collision_normal);
 
-		double j = topJ / bottomJ;
+        double j = topJ / bottomJ;
 
-		Vector responseVec = new Vector(object.collision_normal, j);
-		// System.out.println(object.axis);
-		if (responseVec.dot(object.getResponse()) < 0) {
-			responseVec.multiply(-1D);
-			parent.physicsProcessor.linearMomentum.add(responseVec);
-			Vector cross = inFirstShip.cross(responseVec);
-			RotationMatrices.applyTransform3by3(parent.physicsProcessor.getPhysInvMOITensor(), cross);
-			parent.physicsProcessor.angularVelocity.add(cross);
+        Vector responseVec = new Vector(object.collision_normal, j);
+        // System.out.println(object.axis);
+        if (responseVec.dot(object.getResponse()) < 0) {
+            responseVec.multiply(-1D);
+            parent.physicsProcessor.linearMomentum.add(responseVec);
+            Vector cross = inFirstShip.cross(responseVec);
+            RotationMatrices.applyTransform3by3(parent.physicsProcessor.getPhysInvMOITensor(), cross);
+            parent.physicsProcessor.angularVelocity.add(cross);
 
-			responseVec.multiply(-1D);
-			toCollideWith.physicsProcessor.linearMomentum.add(responseVec);
-			cross = inSecondShip.cross(responseVec);
-			RotationMatrices.applyTransform3by3(toCollideWith.physicsProcessor.getPhysInvMOITensor(), cross);
-			toCollideWith.physicsProcessor.angularVelocity.add(cross);
-		}
-	}
+            responseVec.multiply(-1D);
+            toCollideWith.physicsProcessor.linearMomentum.add(responseVec);
+            cross = inSecondShip.cross(responseVec);
+            RotationMatrices.applyTransform3by3(toCollideWith.physicsProcessor.getPhysInvMOITensor(), cross);
+            toCollideWith.physicsProcessor.angularVelocity.add(cross);
+        }
+    }
 
 }

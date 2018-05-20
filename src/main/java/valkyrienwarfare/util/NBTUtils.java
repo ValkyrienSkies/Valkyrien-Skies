@@ -42,7 +42,7 @@ public class NBTUtils {
     }
 
     public static final void writeBlockPosArrayListToNBT(String name, ArrayList<BlockPos> posArray,
-            NBTTagCompound compound) {
+                                                         NBTTagCompound compound) {
         int[] xArray = new int[posArray.size()];
         int[] yArray = new int[posArray.size()];
         int[] zArray = new int[posArray.size()];

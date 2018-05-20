@@ -16,8 +16,6 @@
 
 package valkyrienwarfare.addon.control.controlsystems;
 
-import java.util.Set;
-
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import valkyrienwarfare.addon.control.nodenetwork.Node;
@@ -29,6 +27,8 @@ import valkyrienwarfare.api.block.ethercompressor.TileEntityEtherCompressor;
 import valkyrienwarfare.math.VWMath;
 import valkyrienwarfare.physics.calculations.PhysicsCalculations;
 import valkyrienwarfare.physics.data.TransformType;
+
+import java.util.Set;
 
 public class ShipPulseImpulseControlSystem {
 

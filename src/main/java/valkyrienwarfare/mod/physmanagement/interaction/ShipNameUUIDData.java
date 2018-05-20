@@ -20,8 +20,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.MapStorage;
 import net.minecraft.world.storage.WorldSavedData;
-import valkyrienwarfare.util.NBTUtils;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.util.NBTUtils;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;

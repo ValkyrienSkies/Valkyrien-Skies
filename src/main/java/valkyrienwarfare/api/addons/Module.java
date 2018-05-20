@@ -109,7 +109,7 @@ public abstract class Module<ImplName> {
     }
 
     protected void registerCapabilities() {
-        
+
     }
 
     public abstract void applyConfig(Configuration config);

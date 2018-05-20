@@ -16,18 +16,17 @@
 
 package valkyrienwarfare.mod.physmanagement.interaction;
 
-import javax.annotation.concurrent.Immutable;
-
 import net.minecraft.entity.player.EntityPlayer;
+
+import javax.annotation.concurrent.Immutable;
 
 /**
  * PlayerDataBackup creates a copy of player position, rotation and velocity
  * information, and provides functionality to reset the player to that given
  * state. Used when transforming the player to local coordinates for block
  * placing and breaking.
- * 
- * @author thebest108
  *
+ * @author thebest108
  */
 @Immutable
 public class PlayerDataBackup {

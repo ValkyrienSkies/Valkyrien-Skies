@@ -16,25 +16,21 @@
 
 package valkyrienwarfare.mod.physmanagement.chunk;
 
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.MapStorage;
 import net.minecraft.world.storage.WorldSavedData;
 
-import java.util.ArrayList;
-
 public class ChunkKeysWorldData extends WorldSavedData {
 
     private static final String key = "ChunkKeys";
-    public ArrayList<Integer> avalibleChunkKeys = new ArrayList<Integer>();
+    public TIntList avalibleChunkKeys = new TIntArrayList();
     public int chunkKey;
 
     public ChunkKeysWorldData() {
         super(key);
-    }
-
-    public ChunkKeysWorldData(String name) {
-        super(name);
     }
 
     public static ChunkKeysWorldData get(World world) {

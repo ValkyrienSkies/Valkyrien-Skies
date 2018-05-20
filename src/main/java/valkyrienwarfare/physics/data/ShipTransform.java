@@ -16,8 +16,6 @@
 
 package valkyrienwarfare.physics.data;
 
-import javax.annotation.concurrent.Immutable;
-
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import scala.actors.threadpool.Arrays;
@@ -25,17 +23,18 @@ import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.math.Quaternion;
 
+import javax.annotation.concurrent.Immutable;
+
 /**
  * Immutable wrapper around the rotation matrices used by ships. The
  * immutability is extremely important to enforce for preventing multi-threaded
  * access issues. All access to the internal arrays is blocked to guarantee
  * nothing goes wrong.
- * 
+ * <p>
  * Used to transform vectors between the global coordinate system, and the local
  * (ship) coordinate system.
- * 
- * @author thebest108
  *
+ * @author thebest108
  */
 @Immutable
 public class ShipTransform {
@@ -54,14 +53,14 @@ public class ShipTransform {
         this.localToGlobal = lToWTransform;
         this.globalToLocal = RotationMatrices.inverse(localToGlobal);
     }
-    
+
     public ShipTransform() {
         this(RotationMatrices.getDoubleIdentity());
     }
 
     /**
      * Initializes this as a copy of the given ShipTransform.
-     * 
+     *
      * @param toCopy
      */
     public ShipTransform(ShipTransform toCopy) {
@@ -107,7 +106,7 @@ public class ShipTransform {
 
     /**
      * Please do not ever use this unless it is absolutely necessary!
-     * 
+     *
      * @param transformType
      * @return
      */

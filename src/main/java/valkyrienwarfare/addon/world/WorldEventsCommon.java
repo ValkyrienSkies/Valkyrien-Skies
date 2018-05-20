@@ -51,7 +51,7 @@ public class WorldEventsCommon {
             }
         }
     }
-    
+
     @SubscribeEvent
     public void worldTick(WorldTickEvent event) {
         if (event.phase == Phase.START) {
@@ -66,7 +66,7 @@ public class WorldEventsCommon {
             }
         }
     }
-    
+
     @SubscribeEvent
     public void playerTick(PlayerTickEvent event) {
         if (event.phase == Phase.START) {

@@ -34,8 +34,8 @@ import net.minecraft.world.World;
 
 /**
  * Like a regular falling block, but it falls up.
- * @author thebest108
  *
+ * @author thebest108
  */
 public class EntityFallingUpBlock extends EntityFallingBlock {
 

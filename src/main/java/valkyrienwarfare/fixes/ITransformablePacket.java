@@ -18,17 +18,16 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
  * store and retrieve a player data backup to prevent the player from getting
  * teleported somewhere else. Also comes with helper default methods packets
  * implementing this can use.
- * 
- * @author thebest108
  *
+ * @author thebest108
  */
 public interface ITransformablePacket {
 
     BlockPos getBlockPos();
 
-    void setPlayerDataBackup(PlayerDataBackup backup);
-
     PlayerDataBackup getPlayerDataBackup();
+
+    void setPlayerDataBackup(PlayerDataBackup backup);
 
     default boolean shouldTransformInCurrentEnvironment() {
         return MixinLoadManager.isSpongeEnabled;

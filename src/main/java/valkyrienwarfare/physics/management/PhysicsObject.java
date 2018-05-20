@@ -87,22 +87,23 @@ public class PhysicsObject {
     // This handles sending packets to players involving block changes in the Ship
     // space
     public final List<EntityPlayerMP> watchingPlayers;
+    public final PhysObjectRenderManager renderer;
+    public final PhysCollisionCallable collisionCallable;
+    public final Set<String> allowedUsers = new HashSet<>();
+    public final Set<Node> nodesWithinShip;
+    // This is used to delay mountEntity() operations by 1 tick
+    private final List<Entity> queuedEntitiesToMount;
     // Used when rendering to avoid horrible floating point errors, just a random
     // blockpos inside the ship space.
     public BlockPos refrenceBlockPos;
     public Vector centerCoord;
     public ShipTransformationManager coordTransform;
-    public final PhysObjectRenderManager renderer;
     public PhysicsCalculations physicsProcessor;
     // Has to be concurrent
     public Set<BlockPos> blockPositions;
-    private AxisAlignedBB collisionBB;
-
     public boolean doPhysics;
     public String creator;
-    public final PhysCollisionCallable collisionCallable;
     public int detectorID;
-
     // The closest Chunks to the Ship cached in here
     public ChunkCache surroundingWorldChunksCache;
     // TODO: Make for re-organizing these to make Ship sizes Dynamic
@@ -113,16 +114,13 @@ public class PhysicsObject {
     // Some badly written mods use these Maps to determine who to send packets to,
     // so we need to manually fill them with nearby players
     public PlayerChunkMapEntry[][] claimedChunksEntries;
-    public final Set<String> allowedUsers = new HashSet<>();
     // Compatibility for ships made before the update
     public boolean claimedChunksInMap;
     public boolean isNameCustom;
-    // This is used to delay mountEntity() operations by 1 tick
-    private final List<Entity> queuedEntitiesToMount;
+    private AxisAlignedBB collisionBB;
     private TIntObjectMap<Vector> entityLocalPositions;
     private ShipType shipType;
-
-    public final Set<Node> nodesWithinShip;
+    private int lastMessageTick = -1;
 
     public PhysicsObject(PhysicsWrapperEntity host) {
         wrapper = host;
@@ -153,7 +151,7 @@ public class PhysicsObject {
         if (!ownedChunks.isChunkEnclosedInSet(posAt.getX() >> 4, posAt.getZ() >> 4)) {
             return;
         }
-        
+
         // If the block here is not to be physicsed, just treat it like you'd treat AIR
         // blocks.
         if (oldState != null && BlockPhysicsRegistration.blocksToNotPhysicise.contains(oldState.getBlock())) {
@@ -631,8 +629,7 @@ public class PhysicsObject {
      * TODO: Make this further get the player to stop all further tracking of those
      * physObject
      *
-     * @param untracking
-     *            EntityPlayer that stopped tracking
+     * @param untracking EntityPlayer that stopped tracking
      */
     public void onPlayerUntracking(EntityPlayer untracking) {
         watchingPlayers.remove(untracking);
@@ -707,8 +704,6 @@ public class PhysicsObject {
             }
         }
     }
-
-    private int lastMessageTick = -1;
 
     public void onPostTickClient() {
         wrapper.lastTickPosX = wrapper.posX;
@@ -1081,12 +1076,12 @@ public class PhysicsObject {
         return EnumChangeOwnerResult.SUCCESS;
     }
 
-    public void setShipType(ShipType shipType) {
-        this.shipType = shipType;
-    }
-
     public ShipType getShipType() {
         return shipType;
+    }
+
+    public void setShipType(ShipType shipType) {
+        this.shipType = shipType;
     }
 
     public AxisAlignedBB getCollisionBoundingBox() {

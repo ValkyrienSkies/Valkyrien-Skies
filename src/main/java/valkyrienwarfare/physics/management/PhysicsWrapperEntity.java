@@ -16,8 +16,6 @@
 
 package valkyrienwarfare.physics.management;
 
-import javax.annotation.Nullable;
-
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -38,6 +36,8 @@ import valkyrienwarfare.mod.physmanagement.interaction.ShipNameUUIDData;
 import valkyrienwarfare.mod.schematics.SchematicReader.Schematic;
 import valkyrienwarfare.physics.collision.polygons.Polygon;
 import valkyrienwarfare.physics.data.TransformType;
+
+import javax.annotation.Nullable;
 
 /**
  * This entity's only purpose is to use the functionality of sending itself to
@@ -61,7 +61,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
     }
 
     public PhysicsWrapperEntity(World worldIn, double x, double y, double z, @Nullable EntityPlayer creator,
-            int detectorID, ShipType shipType) {
+                                int detectorID, ShipType shipType) {
         this(worldIn);
         posX = x;
         posY = y;
@@ -204,7 +204,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
     @Override
     @SideOnly(Side.CLIENT)
     public void setPositionAndRotationDirect(double x, double y, double z, float yaw, float pitch,
-            int posRotationIncrements, boolean teleport) {
+                                             int posRotationIncrements, boolean teleport) {
     }
 
     @Override

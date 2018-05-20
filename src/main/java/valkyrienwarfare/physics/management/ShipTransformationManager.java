@@ -16,9 +16,6 @@
 
 package valkyrienwarfare.physics.management;
 
-import java.util.function.Consumer;
-import java.util.stream.Stream;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -32,6 +29,9 @@ import valkyrienwarfare.mod.network.PhysWrapperPositionMessage;
 import valkyrienwarfare.physics.data.ShipTransform;
 import valkyrienwarfare.physics.data.TransformType;
 
+import java.util.function.Consumer;
+import java.util.stream.Stream;
+
 /**
  * Stores various coordinates and transforms for the ship.
  *
@@ -41,7 +41,10 @@ public class ShipTransformationManager {
 
     // A transformation that does no rotation, and does no translation.
     public static final ShipTransform ZERO_TRANSFORM = new ShipTransform();
+    // A buffer to hold ship transform data sent from server to the client.
+    public final ShipTransformationBuffer serverBuffer;
     private final PhysicsObject parent;
+    public Vector[] normals;
     private ShipTransform currentTickTransform;
     private ShipTransform renderTransform;
     private ShipTransform prevTickTransform;
@@ -49,9 +52,6 @@ public class ShipTransformationManager {
     // client.
     private ShipTransform currentPhysicsTransform;
     private ShipTransform prevPhysicsTransform;
-    public Vector[] normals;
-    // A buffer to hold ship transform data sent from server to the client.
-    public final ShipTransformationBuffer serverBuffer;
 
     public ShipTransformationManager(PhysicsObject parent) {
         this.parent = parent;
@@ -93,7 +93,7 @@ public class ShipTransformationManager {
 
     /**
      * Updates all the transformations, only updates the AABB if passed true.
-     * 
+     *
      * @param updateParentAABB
      */
     @Deprecated
@@ -148,7 +148,7 @@ public class ShipTransformationManager {
         } else {
             posMessage = new PhysWrapperPositionMessage(parent.wrapper, positionTickID);
         }
-        
+
         for (EntityPlayerMP player : parent.watchingPlayers) {
             ValkyrienWarfareMod.physWrapperNetwork.sendTo(posMessage, player);
         }
@@ -241,7 +241,7 @@ public class ShipTransformationManager {
     /**
      * Transforms a vector from global coordinates to local coordinates, using the
      * getCurrentTickTransform()
-     * 
+     *
      * @param inGlobal
      */
     public void fromGlobalToLocal(Vector inGlobal) {
@@ -251,7 +251,7 @@ public class ShipTransformationManager {
     /**
      * Transforms a vector from local coordinates to global coordinates, using the
      * getCurrentTickTransform()
-     * 
+     *
      * @param inLocal
      */
     public void fromLocalToGlobal(Vector inLocal) {
@@ -266,8 +266,7 @@ public class ShipTransformationManager {
     }
 
     /**
-     * @param currentTransform
-     *            the currentTransform to set
+     * @param currentTransform the currentTransform to set
      */
     @Deprecated
     private void setCurrentTickTransform(ShipTransform currentTransform) {
@@ -282,8 +281,7 @@ public class ShipTransformationManager {
     }
 
     /**
-     * @param renderTransform
-     *            the renderTransform to set
+     * @param renderTransform the renderTransform to set
      */
     @Deprecated
     private void setRenderTransform(ShipTransform renderTransform) {
@@ -298,8 +296,7 @@ public class ShipTransformationManager {
     }
 
     /**
-     * @param prevTransform
-     *            the prevTransform to set
+     * @param prevTransform the prevTransform to set
      */
     private void setPrevTickTransform(ShipTransform prevTransform) {
         this.prevTickTransform = prevTransform;
@@ -308,7 +305,7 @@ public class ShipTransformationManager {
     /**
      * Returns the transformation data used for physics processing. Added @SideOnly
      * as a check to crash the game if the client ever calls this.
-     * 
+     *
      * @return the physics transform
      */
     public ShipTransform getCurrentPhysicsTransform() {
@@ -317,7 +314,7 @@ public class ShipTransformationManager {
 
     /**
      * Sets the physics transform to the given input.
-     * 
+     *
      * @param physicsTransform
      */
     public void setCurrentPhysicsTransform(ShipTransform currentPhysicsTransform) {

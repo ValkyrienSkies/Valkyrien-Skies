@@ -49,8 +49,8 @@ public class ReverseEntityCollisionObject {
         double movMaxFixMin = playerMinMax[0] - blockMinMax[1];
         double movMinFixMax = playerMinMax[1] - blockMinMax[0];
         /*
-		 * if(velDot>0){ movMaxFixMin-=velDot; }else{ movMinFixMax-=velDot; // }
-		 */
+         * if(velDot>0){ movMaxFixMin-=velDot; }else{ movMinFixMax-=velDot; // }
+         */
         if (movMaxFixMin > 0 || movMinFixMax < 0) {
             seperated = true;
             penetrationDistance = 0.0D;

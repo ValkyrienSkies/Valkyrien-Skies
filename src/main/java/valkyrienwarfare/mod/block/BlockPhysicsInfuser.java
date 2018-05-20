@@ -29,10 +29,10 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
+import valkyrienwarfare.mod.physmanagement.relocation.DetectorManager;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.physics.management.ShipType;
 import valkyrienwarfare.physics.management.WorldPhysObjectManager;
-import valkyrienwarfare.mod.physmanagement.relocation.DetectorManager;
 
 import java.util.List;
 

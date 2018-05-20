@@ -20,14 +20,14 @@ import net.minecraftforge.fml.common.event.FMLStateEvent;
 
 public class ClientProxyOC extends CommonProxyOC {
     @Override
-    public void preInit(FMLStateEvent e)
-    { }
+    public void preInit(FMLStateEvent e) {
+    }
 
     @Override
-    public void init(FMLStateEvent e)
-    { }
+    public void init(FMLStateEvent e) {
+    }
 
     @Override
-    public void postInit(FMLStateEvent e)
-    { }
+    public void postInit(FMLStateEvent e) {
+    }
 }

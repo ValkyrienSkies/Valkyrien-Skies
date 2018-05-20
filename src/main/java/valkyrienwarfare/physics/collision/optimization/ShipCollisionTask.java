@@ -16,11 +16,6 @@
 
 package valkyrienwarfare.physics.collision.optimization;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.Callable;
-
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
@@ -34,6 +29,11 @@ import valkyrienwarfare.physics.collision.WorldPhysicsCollider;
 import valkyrienwarfare.physics.collision.polygons.PhysPolygonCollider;
 import valkyrienwarfare.physics.collision.polygons.Polygon;
 import valkyrienwarfare.physics.data.TransformType;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.Callable;
 
 public class ShipCollisionTask implements Callable<Void> {
 
@@ -83,7 +83,7 @@ public class ShipCollisionTask implements Callable<Void> {
      * Returns an iterator that loops over the collision information in quasi-random
      * order. This is important to avoid biasing one side over another, because
      * otherwise one side would slowly sink into the ground.
-     * 
+     *
      * @return
      */
     public Iterator<CollisionInformationHolder> getCollisionInformationIterator() {
@@ -92,67 +92,6 @@ public class ShipCollisionTask implements Callable<Void> {
         } else {
             return collisionInformationGenerated.iterator();
         }
-    }
-
-    /**
-     * Quasi-Random Iterator that uses a linear congruential generator to generate
-     * the order of iteration.
-     * 
-     * @author thebest108
-     *
-     * @param <E>
-     */
-    private class QuasiRandomIterator<E> implements Iterator<E> {
-
-        private final List<E> internalList;
-        private int index;
-
-        // Any large prime number works here.
-        private final static int c = 65537;
-        private final int startIndex;
-        private boolean isFinished;
-
-        /**
-         * Creates a new quasi random iterator for the given list, the list passed must
-         * not be empty otherwise an IllegalArgumentException is thrown.
-         * 
-         * @param list
-         */
-        QuasiRandomIterator(List<E> list) {
-            if (list.size() == 0) {
-                throw new IllegalArgumentException();
-            }
-            this.internalList = list;
-            this.isFinished = false;
-            // Start the index at a random value between 0 <= x < list.size()
-            this.startIndex = (int) (Math.random() * list.size());
-            this.index = startIndex;
-        }
-
-        @Override
-        public boolean hasNext() {
-            return !isFinished;
-        }
-
-        @Override
-        public E next() {
-            int oldIndex = index;
-            advanceIndex();
-            return internalList.get(oldIndex);
-        }
-
-        /**
-         * Sets index to be the next value in the linear congruential generator. Also
-         * marks the iterator as finished once a full period has occured.
-         */
-        private void advanceIndex() {
-            index = (index + c) % internalList.size();
-            // Stop the iterator after we've been over every element.
-            if (index == startIndex) {
-                isFinished = true;
-            }
-        }
-
     }
 
     private void processNumber(int integer) {
@@ -255,6 +194,65 @@ public class ShipCollisionTask implements Callable<Void> {
 
     public WorldPhysicsCollider getToTask() {
         return toTask;
+    }
+
+    /**
+     * Quasi-Random Iterator that uses a linear congruential generator to generate
+     * the order of iteration.
+     *
+     * @param <E>
+     * @author thebest108
+     */
+    private class QuasiRandomIterator<E> implements Iterator<E> {
+
+        // Any large prime number works here.
+        private final static int c = 65537;
+        private final List<E> internalList;
+        private final int startIndex;
+        private int index;
+        private boolean isFinished;
+
+        /**
+         * Creates a new quasi random iterator for the given list, the list passed must
+         * not be empty otherwise an IllegalArgumentException is thrown.
+         *
+         * @param list
+         */
+        QuasiRandomIterator(List<E> list) {
+            if (list.size() == 0) {
+                throw new IllegalArgumentException();
+            }
+            this.internalList = list;
+            this.isFinished = false;
+            // Start the index at a random value between 0 <= x < list.size()
+            this.startIndex = (int) (Math.random() * list.size());
+            this.index = startIndex;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return !isFinished;
+        }
+
+        @Override
+        public E next() {
+            int oldIndex = index;
+            advanceIndex();
+            return internalList.get(oldIndex);
+        }
+
+        /**
+         * Sets index to be the next value in the linear congruential generator. Also
+         * marks the iterator as finished once a full period has occured.
+         */
+        private void advanceIndex() {
+            index = (index + c) % internalList.size();
+            // Stop the iterator after we've been over every element.
+            if (index == startIndex) {
+                isFinished = true;
+            }
+        }
+
     }
 
 }

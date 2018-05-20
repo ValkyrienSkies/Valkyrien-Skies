@@ -33,12 +33,11 @@ import valkyrienwarfare.mod.client.render.FastBlockModelRenderer;
 public class EntityCannonBasicRender extends Render<EntityCannonBasic> implements IRenderVW {
 
     public static IRenderVW instance;
+    private IBlockState baseState, headState;
 
     {
         instance = this;
     }
-
-    private IBlockState baseState, headState;
 
     protected EntityCannonBasicRender(RenderManager renderManager) {
         super(renderManager);

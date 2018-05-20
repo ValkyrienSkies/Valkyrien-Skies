@@ -16,12 +16,6 @@
 
 package valkyrienwarfare.physics.collision;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
-
 import gnu.trove.list.array.TIntArrayList;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -47,12 +41,17 @@ import valkyrienwarfare.physics.collision.polygons.PolygonCollisionPointFinder;
 import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
+
 /**
  * Handles the task of finding and processing collisions between a PhysicsObject
  * and the game world.
- * 
- * @author thebest108
  *
+ * @author thebest108
  */
 public class WorldPhysicsCollider {
 
@@ -209,7 +208,8 @@ public class WorldPhysicsCollider {
             int maxChunkY = maxY >> 4;
             int maxChunkZ = maxZ >> 4;
 
-            entireLoop: if (!(minChunkY > 15 || maxChunkY < 0)) {
+            entireLoop:
+            if (!(minChunkY > 15 || maxChunkY < 0)) {
                 for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
                     for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
                         if (parent.ownsChunk(chunkX, chunkZ)) {
@@ -274,7 +274,7 @@ public class WorldPhysicsCollider {
     // Tests two block positions directly against each other, and figures out
     // whether a collision is occuring or not
     private boolean handleLikelyCollision(BlockPos inWorldPos, BlockPos inLocalPos, IBlockState inWorldState,
-            IBlockState inLocalState) {
+                                          IBlockState inLocalState) {
         // System.out.println("Handling a likely collision");
         AxisAlignedBB inLocalBB = new AxisAlignedBB(inLocalPos.getX(), inLocalPos.getY(), inLocalPos.getZ(),
                 inLocalPos.getX() + 1, inLocalPos.getY() + 1, inLocalPos.getZ() + 1);
@@ -300,7 +300,7 @@ public class WorldPhysicsCollider {
     // Takes the collision data along all axes generated prior, and creates the
     // ideal value that is to be followed
     private boolean handleActualCollision(PhysPolygonCollider collider, BlockPos inWorldPos, BlockPos inLocalPos,
-            IBlockState inWorldState, IBlockState inLocalState) {
+                                          IBlockState inWorldState, IBlockState inLocalState) {
         PhysCollisionObject toCollideWith = collider.collisions[1];
 
         if (toCollideWith.penetrationDistance > AXIS_TOLERANCE || toCollideWith.penetrationDistance < -AXIS_TOLERANCE) {
@@ -340,7 +340,7 @@ public class WorldPhysicsCollider {
     // Finally, the end of all this spaghetti code! This step takes all of the math
     // generated before, and it directly adds the result to Ship velocities
     private void calculateCollisionImpulseForce(Vector inBody, Vector velocityAtPointOfCollision, Vector axis,
-            Vector offsetVector, boolean didBlockBreakInShip, boolean didBlockBreakInWorld, double impulseApplied) {
+                                                Vector offsetVector, boolean didBlockBreakInShip, boolean didBlockBreakInWorld, double impulseApplied) {
         Vector firstCross = inBody.cross(axis);
         RotationMatrices.applyTransform3by3(calculator.getPhysInvMOITensor(), firstCross);
 
@@ -552,7 +552,7 @@ public class WorldPhysicsCollider {
     }
 
     private void checkForCollision(int x, int y, int z, ExtendedBlockStorage storage, IBitOctree octree, Vector inLocal,
-            Vector inBody, Vector speedInBody) {
+                                   Vector inBody, Vector speedInBody) {
         if (octree.get(x & 15, y & 15, z & 15)) {
             inLocal.X = x + .5D;
             inLocal.Y = y + .5D;
@@ -595,7 +595,8 @@ public class WorldPhysicsCollider {
 
             minY = Math.min(255, Math.max(minY, 0));
 
-            outermostloop: for (int localX = minX; localX < maxX; localX++) {
+            outermostloop:
+            for (int localX = minX; localX < maxX; localX++) {
                 for (int localZ = minZ; localZ < maxZ; localZ++) {
                     for (int localY = minY; localY < maxY; localY++) {
                         if (parent.ownsChunk(localX >> 4, localZ >> 4)) {

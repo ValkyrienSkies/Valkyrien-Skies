@@ -16,11 +16,14 @@
 
 package code.elix_x.excomms.asm.transform;
 
-import com.google.common.collect.ImmutableList;
+import gnu.trove.impl.unmodifiable.TUnmodifiableIntList;
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
 import org.objectweb.asm.Opcodes;
 
 public class OpcodeGroups {
-
-    public static final ImmutableList<Integer> RETURN = ImmutableList.of(Opcodes.IRETURN, Opcodes.LRETURN, Opcodes.FRETURN, Opcodes.DRETURN, Opcodes.ARETURN, Opcodes.RETURN);
-
+    public static final TIntList RETURN = new TUnmodifiableIntList(new TIntArrayList(
+            new int[]{
+                    Opcodes.IRETURN, Opcodes.LRETURN, Opcodes.FRETURN, Opcodes.DRETURN, Opcodes.ARETURN, Opcodes.RETURN
+            }));
 }

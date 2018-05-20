@@ -16,8 +16,6 @@
 
 package valkyrienwarfare.mod.client.render;
 
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.culling.ICamera;
@@ -25,6 +23,7 @@ import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
+import org.lwjgl.opengl.GL11;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.math.Quaternion;
@@ -41,16 +40,16 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
  */
 public class PhysObjectRenderManager {
 
-    private int glCallListSolid;
-    private int glCallListTranslucent;
-    private int glCallListCutout;
-    private int glCallListCutoutMipped;
-    private PhysicsObject parent;
     // This pos is used to prevent Z-Buffer Errors D:
     // It's actual value is completely irrelevant as long as it's close to the
     // Ship's centerBlockPos
     public BlockPos offsetPos;
     public double curPartialTick;
+    private int glCallListSolid;
+    private int glCallListTranslucent;
+    private int glCallListCutout;
+    private int glCallListCutoutMipped;
+    private PhysicsObject parent;
     private PhysRenderChunk[][] renderChunks;
 
     public PhysObjectRenderManager(PhysicsObject toRender) {

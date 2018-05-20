@@ -24,15 +24,15 @@ import net.minecraft.network.Packet;
  */
 public interface INHPServerVW {
 
-	double dummyBlockReachDist();
+    double dummyBlockReachDist();
 
-	void dummyBlockReachDist(double in);
+    void dummyBlockReachDist(double in);
 
-	double lastGoodBlockReachDist();
+    double lastGoodBlockReachDist();
 
-	void lastGoodBlockReachDist(double in);
+    void lastGoodBlockReachDist(double in);
 
-	void checkForPacketEnqueueTrap(Packet packet);
+    void checkForPacketEnqueueTrap(Packet packet);
 
-	EntityPlayerMP getEntityPlayerFromHandler();
+    EntityPlayerMP getEntityPlayerFromHandler();
 }

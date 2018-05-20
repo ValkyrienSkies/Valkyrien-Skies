@@ -17,7 +17,7 @@
 package valkyrienwarfare.util;
 
 public final class PhysicsSettings {
-    
+
     public static boolean doGravity = true;
     public static boolean doPhysicsBlocks = true;
     public static boolean doAirshipRotation = true;

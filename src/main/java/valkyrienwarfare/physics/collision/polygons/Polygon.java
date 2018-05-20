@@ -52,6 +52,13 @@ public class Polygon {
         this.normals = other.normals;
     }
 
+    private static Vector[] getCornersForAABB(AxisAlignedBB bb) {
+        return new Vector[]{new Vector(bb.minX, bb.minY, bb.minZ), new Vector(bb.minX, bb.maxY, bb.minZ),
+                new Vector(bb.minX, bb.minY, bb.maxZ), new Vector(bb.minX, bb.maxY, bb.maxZ),
+                new Vector(bb.maxX, bb.minY, bb.minZ), new Vector(bb.maxX, bb.maxY, bb.minZ),
+                new Vector(bb.maxX, bb.minY, bb.maxZ), new Vector(bb.maxX, bb.maxY, bb.maxZ)};
+    }
+
     public Vector[] getVertices() {
         return vertices;
     }
@@ -104,13 +111,6 @@ public class Polygon {
             mxZ = Math.max(mxZ, vertice.Z);
         }
         return new AxisAlignedBB(mnX, mnY, mnZ, mxX, mxY, mxZ);
-    }
-
-    private static Vector[] getCornersForAABB(AxisAlignedBB bb) {
-        return new Vector[] { new Vector(bb.minX, bb.minY, bb.minZ), new Vector(bb.minX, bb.maxY, bb.minZ),
-                new Vector(bb.minX, bb.minY, bb.maxZ), new Vector(bb.minX, bb.maxY, bb.maxZ),
-                new Vector(bb.maxX, bb.minY, bb.minZ), new Vector(bb.maxX, bb.maxY, bb.minZ),
-                new Vector(bb.maxX, bb.minY, bb.maxZ), new Vector(bb.maxX, bb.maxY, bb.maxZ) };
     }
 
 }

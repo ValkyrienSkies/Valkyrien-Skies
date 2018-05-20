@@ -27,13 +27,13 @@ import valkyrienwarfare.physics.collision.EntityCollisionObject;
 public class EntityPolygonCollider {
 
     private final Vector[] collisionAxes;
-    private boolean seperated = false;
     private final EntityCollisionObject[] collisions;
-    private int minDistanceIndex;
-    private double minDistance;
     private final EntityPolygon entity;
     private final Polygon block;
     private final Vector entityVelocity;
+    private boolean seperated = false;
+    private int minDistanceIndex;
+    private double minDistance;
     private boolean originallySeperated;
 
     public EntityPolygonCollider(EntityPolygon movable, Polygon stationary, Vector[] axes, Vector entityVel) {
@@ -77,19 +77,19 @@ public class EntityPolygonCollider {
             }
         }
     }
-    
+
     public EntityCollisionObject[] getCollisions() {
         return collisions;
     }
-    
+
     public int getMinDistanceIndex() {
         return minDistanceIndex;
     }
-    
+
     public boolean arePolygonsSeperated() {
         return seperated;
     }
-    
+
     public Vector[] getCollisionAxes() {
         return collisionAxes;
     }

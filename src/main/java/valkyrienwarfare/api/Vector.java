@@ -70,32 +70,43 @@ public class Vector {
     public Vector(Vector theNormal, double[] matrixTransform) {
         this(theNormal.X, theNormal.Y, theNormal.Z, matrixTransform);
     }
-    public Vector(EnumFacing facing){
+
+    public Vector(EnumFacing facing) {
         switch (facing) {
             case DOWN:
-                Y=1d;
+                Y = 1d;
                 break;
             case UP:
-                Y=-1d;
+                Y = -1d;
                 break;
             case EAST:
-                X=-1d;
+                X = -1d;
                 break;
             case NORTH:
-                Z=1d;
+                Z = 1d;
                 break;
             case WEST:
-                X=1d;
+                X = 1d;
                 break;
             case SOUTH:
-                Z=-1d;
+                Z = -1d;
         }
     }
 
     public static Vector[] generateAxisAlignedNorms() {
-        Vector[] norms = new Vector[] { new Vector(1.0D, 0.0D, 0.0D), new Vector(0.0D, 1.0D, 0.0D),
-                new Vector(0.0D, 0.0D, 1.0D) };
+        Vector[] norms = new Vector[]{new Vector(1.0D, 0.0D, 0.0D), new Vector(0.0D, 1.0D, 0.0D),
+                new Vector(0.0D, 0.0D, 1.0D)};
         return norms;
+    }
+
+    public static void writeToBuffer(Vector vector, ByteBuf buffer) {
+        buffer.writeFloat((float) vector.X);
+        buffer.writeFloat((float) vector.Y);
+        buffer.writeFloat((float) vector.Z);
+    }
+
+    public static Vector readFromBuffer(ByteBuf buffer) {
+        return new Vector(buffer.readFloat(), buffer.readFloat(), buffer.readFloat());
     }
 
     public Vector getSubtraction(Vector v) {
@@ -236,16 +247,6 @@ public class Vector {
         RotationMatrices.applyTransform(rotationMatrix, this);
     }
 
-    public static void writeToBuffer(Vector vector, ByteBuf buffer) {
-        buffer.writeFloat((float) vector.X);
-        buffer.writeFloat((float) vector.Y);
-        buffer.writeFloat((float) vector.Z);
-    }
-
-    public static Vector readFromBuffer(ByteBuf buffer) {
-        return new Vector(buffer.readFloat(), buffer.readFloat(), buffer.readFloat());
-    }
-    
     public void setValue(double x, double y, double z) {
         X = x;
         Y = y;

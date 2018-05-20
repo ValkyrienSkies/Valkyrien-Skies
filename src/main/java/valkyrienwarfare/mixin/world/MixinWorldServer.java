@@ -14,49 +14,39 @@
  *
  */
 
-package valkyrienwarfare.addon.opencomputers.tileentity;
+package valkyrienwarfare.mixin.world;
 
-import li.cil.oc.api.machine.Arguments;
-import li.cil.oc.api.machine.Callback;
-import li.cil.oc.api.machine.Context;
-import li.cil.oc.api.network.SimpleComponent;
-import net.minecraft.tileentity.TileEntity;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.common.Optional;
-import valkyrienwarfare.api.ValkyrienWarfareHooks;
+import net.minecraft.world.WorldServer;
+import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
-@Optional.Interface(iface = "li.cil.oc.api.network.SimpleComponent", modid = "opencomputers")
-public class GPSTileEntity extends TileEntity implements SimpleComponent {
-    public GPSTileEntity() {
-		super();
-    }
+@Mixin(value = WorldServer.class, priority = 1005)
+public abstract class MixinWorldServer {
 
-	// Used by OpenComputers
-    @Override
-    public String getComponentName() {
-        return "ship_gps";
-    }
-
-    @Callback
-    @Optional.Method(modid = "opencomputers")
-    public Object[] getPosition(Context context, Arguments args) {
-        if (ValkyrienWarfareHooks.isBlockPartOfShip(world, pos))
-        {
-            BlockPos pos = ValkyrienWarfareHooks.getShipEntityManagingPos(getWorld(), getPos()).getPosition();
-            return new Object[]{ pos.getX(), pos.getY(), pos.getZ() };
+    private final WorldServer thisWorldServer = WorldServer.class.cast(this);
+    
+    @Inject(method = "setBlockState", at = @At("HEAD"))
+    public void duringMarkAndNotifyBlock(BlockPos pos, IBlockState newState, int flags,
+            CallbackInfoReturnable callbackInfo) {
+        PhysicsWrapperEntity physEntity = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(thisWorldServer,
+                pos);
+        if (physEntity != null) {
+            IBlockState oldState = this.getBlockState(pos);
+            physEntity.wrapping.onSetBlockState(oldState, newState, pos);
+            if (oldState != newState) {
+                System.out.println(oldState.getBlock().getLocalizedName());
+                System.out.println(newState.getBlock().getLocalizedName());
+            }
         }
-        return null;
     }
-
-    @Callback
-    @Optional.Method(modid = "opencomputers")
-    public Object[] getRotation(Context context, Arguments args) {
-        if (ValkyrienWarfareHooks.isBlockPartOfShip(world, pos))
-        {
-            PhysicsWrapperEntity ship = ValkyrienWarfareHooks.getShipEntityManagingPos(getWorld(), getPos());
-            return new Object[]{ ship.getYaw(), ship.getPitch(), ship.getRoll() };
-        }
-        return null;
-    }
+    
+    @Shadow public abstract IBlockState getBlockState(BlockPos pos);
 }

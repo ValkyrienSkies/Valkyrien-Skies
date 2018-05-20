@@ -16,8 +16,6 @@
 
 package valkyrienwarfare.addon.control.tileentity;
 
-import java.util.ArrayList;
-
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
@@ -34,10 +32,12 @@ import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsObject;
 import valkyrienwarfare.util.NBTUtils;
 
+import java.util.ArrayList;
+
 @Deprecated
 public class TileEntityHoverController extends TileEntity {
 
-    public ArrayList<BlockPos> enginePositions = new ArrayList<BlockPos>();
+    public ArrayList<BlockPos> enginePositions = new ArrayList<>();
     public double idealHeight = 16D;
     public double stabilityBias = .45D;
 

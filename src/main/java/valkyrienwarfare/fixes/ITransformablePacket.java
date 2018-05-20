@@ -23,52 +23,61 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
  */
 public interface ITransformablePacket {
 
-    BlockPos getBlockPos();
+	BlockPos getBlockPos();
 
-    PlayerDataBackup getPlayerDataBackup();
+	PlayerDataBackup getPlayerDataBackup();
 
-    void setPlayerDataBackup(PlayerDataBackup backup);
+	void setPlayerDataBackup(PlayerDataBackup backup);
 
-    default boolean shouldTransformInCurrentEnvironment() {
-        return MixinLoadManager.isSpongeEnabled;
-    }
+	default boolean shouldTransformInCurrentEnvironment() {
+		return MixinLoadManager.isSpongeEnabled;
+	}
 
-    default void doPreProcessing(INetHandlerPlayServer server, boolean callingFromSponge) {
-        if (!MixinLoadManager.isSpongeEnabled || callingFromSponge) {
-            INHPServerVW vw = (INHPServerVW) (NetHandlerPlayServer) server;
-            EntityPlayerMP player = vw.getEntityPlayerFromHandler();
-            if (player.getServerWorld().isCallingFromMinecraftThread()) {
-                BlockPos packetPos = getBlockPos();
-                PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.world,
-                        packetPos);
-                if (wrapper != null && wrapper.wrapping.coordTransform != null) {
-                    setPlayerDataBackup(new PlayerDataBackup(player));
-                    RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.getCurrentTickTransform(), player,
-                            TransformType.GLOBAL_TO_LOCAL);
-                }
-            }
-        }
-    }
+	/**
+	 * Puts the player into local coordinates and makes a record of where they used
+	 * to be.
+	 * 
+	 * @param server
+	 * @param callingFromSponge
+	 */
+	default void doPreProcessing(INetHandlerPlayServer server, boolean callingFromSponge) {
+		if (!MixinLoadManager.isSpongeEnabled || callingFromSponge) {
+			INHPServerVW vw = (INHPServerVW) (NetHandlerPlayServer) server;
+			EntityPlayerMP player = vw.getEntityPlayerFromHandler();
+			if (player.getServerWorld().isCallingFromMinecraftThread()) {
+				BlockPos packetPos = getBlockPos();
+				PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.world,
+						packetPos);
+				if (wrapper != null && wrapper.wrapping.coordTransform != null) {
+					setPlayerDataBackup(new PlayerDataBackup(player));
+					RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.getCurrentTickTransform(), player,
+							TransformType.GLOBAL_TO_LOCAL);
+				}
+			}
+		}
+	}
 
-    default void doPostProcessing(INetHandlerPlayServer server, boolean callingFromSponge) {
-        if (!MixinLoadManager.isSpongeEnabled || callingFromSponge) {
-            INHPServerVW vw = (INHPServerVW) (NetHandlerPlayServer) server;
-            EntityPlayerMP player = vw.getEntityPlayerFromHandler();
-            if (player.getServerWorld().isCallingFromMinecraftThread()) {
-                BlockPos packetPos = getBlockPos();
-                PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.world,
-                        packetPos);
-                if (wrapper != null && wrapper.wrapping.coordTransform != null) {
-                    if (getPlayerDataBackup() != null) {
-                        getPlayerDataBackup().restorePlayerToBackup();
-                    } else {
-                        System.err.println("COULD NOT RESTORE PLAYER BACKUP: DANGEROUS BEHAVIOR BOUND TO OCCUR!");
-                    }
-                    // RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.getCurrentTickTransform(),
-                    // player,
-                    // TransformType.LOCAL_TO_GLOBAL);
-                }
-            }
-        }
-    }
+	/**
+	 * Restores the player from local coordinates to where they used to be.
+	 * 
+	 * @param server
+	 * @param callingFromSponge
+	 */
+	default void doPostProcessing(INetHandlerPlayServer server, boolean callingFromSponge) {
+		if (!MixinLoadManager.isSpongeEnabled || callingFromSponge) {
+			INHPServerVW vw = (INHPServerVW) (NetHandlerPlayServer) server;
+			EntityPlayerMP player = vw.getEntityPlayerFromHandler();
+			if (player.getServerWorld().isCallingFromMinecraftThread()) {
+				BlockPos packetPos = getBlockPos();
+				PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.world,
+						packetPos);
+				// I don't care what happened to that ship in the time between, we must restore
+				// the player to their proper coordinates.
+				if (getPlayerDataBackup() != null) {
+					getPlayerDataBackup().restorePlayerToBackup();
+				}
+
+			}
+		}
+	}
 }

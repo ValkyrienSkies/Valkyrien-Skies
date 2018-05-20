@@ -897,6 +897,7 @@ public class PhysicsObject {
         NBTUtils.writeEntityPositionMapToNBT("entityPosHashMap", entityLocalPositions, compound);
         physicsProcessor.writeToNBTTag(compound);
 
+        // TODO: This is occasionally crashing the Ship save
         StringBuilder result = new StringBuilder("");
         allowedUsers.forEach(s -> {
             result.append(s);

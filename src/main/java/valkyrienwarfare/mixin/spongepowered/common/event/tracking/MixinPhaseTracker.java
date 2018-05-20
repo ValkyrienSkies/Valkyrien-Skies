@@ -6,7 +6,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.common.interfaces.world.IMixinWorldServer;
-import org.spongepowered.common.world.WorldUtil;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
@@ -36,7 +35,7 @@ public class MixinPhaseTracker {
     @Inject(method = "setBlockState(Lorg/spongepowered/common/interfaces/world/IMixinWorldServer;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/state/IBlockState;Lorg/spongepowered/api/world/BlockChangeFlag;)Z", at = @At(value = "HEAD"))
     public void preSetBlockState2(IMixinWorldServer mixinWorld, BlockPos pos, IBlockState newState,
             BlockChangeFlag flag, CallbackInfoReturnable info) {
-        World world = WorldUtil.asNative(mixinWorld);
+        World world = mixinWorld.asMinecraftWorld();
         PhysicsWrapperEntity physEntity = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
         if (physEntity != null) {
             IBlockState oldState = world.getBlockState(pos);

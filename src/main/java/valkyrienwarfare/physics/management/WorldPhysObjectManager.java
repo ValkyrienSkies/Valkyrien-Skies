@@ -32,10 +32,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraftforge.common.ForgeChunkManager;
-import net.minecraftforge.common.ForgeChunkManager.Ticket;
-import net.minecraftforge.common.ForgeChunkManager.Type;
-import valkyrienwarfare.ValkyrienWarfareMod;
 
 /**
  * This class essentially handles all the issues with ticking and handling
@@ -45,7 +41,6 @@ import valkyrienwarfare.ValkyrienWarfareMod;
  */
 public class WorldPhysObjectManager {
 
-    private final Ticket chunkLoadingTicket;
     private final Map<ChunkPos, PhysicsWrapperEntity> chunkPosToPhysicsEntityMap;
     public final World worldObj;
     public final Set<PhysicsWrapperEntity> physicsEntities;
@@ -55,7 +50,6 @@ public class WorldPhysObjectManager {
 
     public WorldPhysObjectManager(World toManage) {
         this.worldObj = toManage;
-        this.chunkLoadingTicket = ForgeChunkManager.requestTicket(ValkyrienWarfareMod.INSTANCE, toManage, Type.NORMAL);
         this.physicsEntities = ConcurrentHashMap.newKeySet();
         this.physicsEntitiesToUnload = new ArrayList<PhysicsWrapperEntity>();
         this.physCollisonCallables = new ArrayList<Callable<Void>>();

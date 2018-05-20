@@ -16,15 +16,14 @@
 
 package valkyrienwarfare.mixin.entity;
 
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.MoverType;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.MoverType;
-import net.minecraft.world.World;
 import valkyrienwarfare.api.MixinMethods;
 import valkyrienwarfare.physics.collision.EntityCollisionInjector;
 import valkyrienwarfare.physics.collision.EntityCollisionInjector.IntermediateMovementVariableStorage;
@@ -66,13 +65,13 @@ public abstract class MixinEntityIntrinsic {
      * ordinal = 0)) public void changeMoveArgs1(Args args, MoverType type, double
      * dx, double dy, double dz) { alteredMovement = MixinMethods.handleMove(args,
      * type, dx, dy, dz, thisClassAsAnEntity); }
-     * 
+     *
      * @ModifyArgs(method = "move", at = @At(value = "INVOKE", target =
      * "Lnet/minecraft/world/World;getTotalWorldTime()J", ordinal = 0)) public void
      * changeMoveArgs2(Args args, MoverType type, double dx, double dy, double dz) {
      * alteredMovement = MixinMethods.handleMove(args, type, dx, dy, dz,
      * thisClassAsAnEntity); hasChanged = true; }
-     * 
+     *
      * @ModifyArgs(method = "move", at = @At(value = "INVOKE", target =
      * "Lnet/minecraft/profiler/Profiler;startSection(Ljava/lang/String;)V", ordinal
      * = 0)) public void changeMoveArgs3(Args args, MoverType type, double dx,

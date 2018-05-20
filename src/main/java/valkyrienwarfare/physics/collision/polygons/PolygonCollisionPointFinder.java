@@ -64,7 +64,7 @@ public class PolygonCollisionPointFinder {
 
         if (useFastCollision) {
             // TODO: We're oversolving for the collision here, but it prevents things going through eachother.
-            return new Vector[] { currentTopVertice, currentBottomVertice, currentTopVertice, currentBottomVertice };
+            return new Vector[]{currentTopVertice, currentBottomVertice, currentTopVertice, currentBottomVertice};
             // return new Vector[] { currentTopVertice, currentBottomVertice };
         } else {
             // Now use the surface normals that are most perpendicular to the collision
@@ -104,7 +104,7 @@ public class PolygonCollisionPointFinder {
             // Now with our normals found and the plane vertice, we now search for the
             // points of collision.
             // TODO: Find a real algorithm for this please!
-            return new Vector[] { currentTopVertice, currentBottomVertice, currentTopVertice, currentBottomVertice };
+            return new Vector[]{currentTopVertice, currentBottomVertice, currentTopVertice, currentBottomVertice};
         }
     }
 

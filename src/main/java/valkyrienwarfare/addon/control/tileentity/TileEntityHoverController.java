@@ -16,8 +16,6 @@
 
 package valkyrienwarfare.addon.control.tileentity;
 
-import java.util.ArrayList;
-
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
@@ -34,10 +32,12 @@ import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsObject;
 import valkyrienwarfare.util.NBTUtils;
 
+import java.util.ArrayList;
+
 @Deprecated
 public class TileEntityHoverController extends TileEntity {
 
-    public ArrayList<BlockPos> enginePositions = new ArrayList<BlockPos>();
+    public ArrayList<BlockPos> enginePositions = new ArrayList<>();
     public double idealHeight = 16D;
     public double stabilityBias = .45D;
 
@@ -59,7 +59,7 @@ public class TileEntityHoverController extends TileEntity {
      * Returns the Force Vector the engine will send to the physics engine
      */
     public Vector getForceForEngine(TileEntityEtherCompressor engine, World world, BlockPos enginePos,
-            IBlockState state, PhysicsObject physObj, double secondsToApply) {
+                                    IBlockState state, PhysicsObject physObj, double secondsToApply) {
         // physObj.physicsProcessor.convertTorqueToVelocity();
         // secondsToApply*=5D;
         // idealHeight = 100D;
@@ -160,7 +160,7 @@ public class TileEntityHoverController extends TileEntity {
     }
 
     public double getEngineDistFromIdealAngular(BlockPos enginePos, double[] lToWRotation, Vector angularVelocity,
-            Vector centerOfMass, double secondsToApply) {
+                                                Vector centerOfMass, double secondsToApply) {
 
         Vector controllerPos = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
         Vector enginePosVec = new Vector(enginePos.getX() + .5D, enginePos.getY() + .5D, enginePos.getZ() + .5D);
@@ -261,7 +261,7 @@ public class TileEntityHoverController extends TileEntity {
 
     @Override
     public void onDataPacket(net.minecraft.network.NetworkManager net,
-            net.minecraft.network.play.server.SPacketUpdateTileEntity pkt) {
+                             net.minecraft.network.play.server.SPacketUpdateTileEntity pkt) {
         readFromNBT(pkt.getNbtCompound());
     }
 

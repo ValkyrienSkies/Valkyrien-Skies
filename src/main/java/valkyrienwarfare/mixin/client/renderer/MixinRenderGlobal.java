@@ -16,19 +16,6 @@
 
 package valkyrienwarfare.mixin.client.renderer;
 
-import java.util.Iterator;
-import java.util.Map;
-
-import org.lwjgl.opengl.GL11;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockChest;
 import net.minecraft.block.BlockEnderChest;
@@ -58,11 +45,23 @@ import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import org.lwjgl.opengl.GL11;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.mod.proxy.ClientProxy;
 import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+
+import java.util.Iterator;
+import java.util.Map;
 
 @Mixin(RenderGlobal.class)
 public abstract class MixinRenderGlobal {

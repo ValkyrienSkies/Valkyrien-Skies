@@ -64,7 +64,7 @@ public class SimpleBitOctree implements IBitOctree {
     public int getOctreeLevelThreeIndex(int offset) {
         return BLOCKS_TOTAL + (73 * offset);
     }
-    
+
     // If something tried calling code outside of the buffer size, throw an
     // IllegalArgumentException its way.
     private void ensureCapacity(int index) {

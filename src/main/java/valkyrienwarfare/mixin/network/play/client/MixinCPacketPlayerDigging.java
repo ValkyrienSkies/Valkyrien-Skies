@@ -16,14 +16,13 @@
 
 package valkyrienwarfare.mixin.network.play.client;
 
+import net.minecraft.network.play.INetHandlerPlayServer;
+import net.minecraft.network.play.client.CPacketPlayerDigging;
+import net.minecraft.util.math.BlockPos;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import net.minecraft.network.play.INetHandlerPlayServer;
-import net.minecraft.network.play.client.CPacketPlayerDigging;
-import net.minecraft.util.math.BlockPos;
 import valkyrienwarfare.fixes.ITransformablePacket;
 import valkyrienwarfare.mod.physmanagement.interaction.PlayerDataBackup;
 
@@ -49,12 +48,12 @@ public class MixinCPacketPlayerDigging implements ITransformablePacket {
     }
 
     @Override
-    public void setPlayerDataBackup(PlayerDataBackup backup) {
-        this.playerBackup = backup;
+    public PlayerDataBackup getPlayerDataBackup() {
+        return this.playerBackup;
     }
 
     @Override
-    public PlayerDataBackup getPlayerDataBackup() {
-        return this.playerBackup;
+    public void setPlayerDataBackup(PlayerDataBackup backup) {
+        this.playerBackup = backup;
     }
 }

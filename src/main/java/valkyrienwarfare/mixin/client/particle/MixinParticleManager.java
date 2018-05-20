@@ -16,14 +16,13 @@
 
 package valkyrienwarfare.mixin.client.particle;
 
+import net.minecraft.client.particle.Particle;
+import net.minecraft.client.particle.ParticleManager;
+import net.minecraft.util.math.BlockPos;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import net.minecraft.client.particle.Particle;
-import net.minecraft.client.particle.ParticleManager;
-import net.minecraft.util.math.BlockPos;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.physics.data.TransformType;
@@ -31,7 +30,7 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 @Mixin(ParticleManager.class)
 public abstract class MixinParticleManager {
-    
+
     @Inject(method = "addEffect(Lnet/minecraft/client/particle/Particle;)V", at = @At("HEAD"), cancellable = true)
     public void preAddEffect(Particle effect, CallbackInfo callbackInfoReturnable) {
         if (effect == null) {

@@ -16,9 +16,8 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 /**
  * Used to hook into the setBlockState() method when Sponge is loaded.
- * 
- * @author thebest108
  *
+ * @author thebest108
  */
 @Mixin(targets = "org/spongepowered/common/event/tracking/PhaseTracker", remap = false)
 public class MixinPhaseTracker {
@@ -27,7 +26,7 @@ public class MixinPhaseTracker {
      * This basically replaces the World.setBlockState() when Sponge is loaded, so
      * we'll have to inject our hooks here as well when Sponge is loaded. All
      * setBlockState() calls that occur in Sponge get sent through here.
-     * 
+     *
      * @param mixinWorld
      * @param pos
      * @param newState

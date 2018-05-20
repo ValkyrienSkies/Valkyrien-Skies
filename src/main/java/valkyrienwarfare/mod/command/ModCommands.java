@@ -18,10 +18,6 @@ package valkyrienwarfare.mod.command;
 
 import net.minecraft.command.ServerCommandManager;
 import net.minecraft.server.MinecraftServer;
-import valkyrienwarfare.mod.command.AirshipMapCommand;
-import valkyrienwarfare.mod.command.AirshipSettingsCommand;
-import valkyrienwarfare.mod.command.PhysSettingsCommand;
-import valkyrienwarfare.mod.command.ValkyrienWarfareHelpCommand;
 
 public class ModCommands {
 

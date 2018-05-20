@@ -16,8 +16,6 @@
 
 package valkyrienwarfare.addon.control.renderer;
 
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -26,6 +24,7 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import org.lwjgl.opengl.GL11;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.block.BlockShipHelm;
 import valkyrienwarfare.addon.control.tileentity.TileEntityShipHelm;
@@ -41,7 +40,7 @@ public class ShipHelmTileEntityRenderer extends TileEntitySpecialRenderer<TileEn
 
     @Override
     public void render(TileEntityShipHelm tileentity, double x, double y, double z, float partialTick, int destroyStage,
-            float alpha) {
+                       float alpha) {
         if (tileentity instanceof TileEntityShipHelm) {
             IBlockState helmState = tileentity.getWorld().getBlockState(tileentity.getPos());
 

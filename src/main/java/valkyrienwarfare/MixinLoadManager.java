@@ -16,14 +16,13 @@
 
 package valkyrienwarfare;
 
-import java.util.List;
-import java.util.Set;
-
+import net.minecraftforge.fml.common.FMLLog;
 import org.spongepowered.asm.lib.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
-import net.minecraftforge.fml.common.FMLLog;
+import java.util.List;
+import java.util.Set;
 
 public class MixinLoadManager implements IMixinConfigPlugin {
 

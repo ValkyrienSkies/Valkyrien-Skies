@@ -45,7 +45,7 @@ public abstract class TileEntityEtherCompressor extends BasicForceNodeTileEntity
         etherGas = 0;
         etherGasCapacity = 1000;
     }
-    
+
     public TileEntityEtherCompressor() {
         this(null, 0);
     }
@@ -109,7 +109,7 @@ public abstract class TileEntityEtherCompressor extends BasicForceNodeTileEntity
         }
         return super.getForceOutputUnoriented(secondsToApply);
     }
-    
+
     @Override
     public int getCurrentEtherGas() {
         return etherGas;
@@ -119,7 +119,7 @@ public abstract class TileEntityEtherCompressor extends BasicForceNodeTileEntity
     public int getEtherGasCapacity() {
         return etherGasCapacity;
     }
-    
+
     // pre : Throws an IllegalArgumentExcepion if more gas is added than there is
     //       capacity for this engine.
     @Override

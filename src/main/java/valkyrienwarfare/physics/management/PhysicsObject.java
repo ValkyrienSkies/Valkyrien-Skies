@@ -16,21 +16,9 @@
 
 package valkyrienwarfare.physics.management;
 
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-
 import gnu.trove.iterator.TIntIterator;
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -68,7 +56,6 @@ import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.api.block.ethercompressor.TileEntityEtherCompressor;
 import valkyrienwarfare.mod.BlockPhysicsRegistration;
 import valkyrienwarfare.mod.client.render.PhysObjectRenderManager;
-import valkyrienwarfare.mod.multithreaded.PhysicsShipTransform;
 import valkyrienwarfare.mod.network.PhysWrapperPositionMessage;
 import valkyrienwarfare.mod.physmanagement.chunk.ChunkSet;
 import valkyrienwarfare.mod.physmanagement.relocation.DetectorManager;
@@ -82,28 +69,41 @@ import valkyrienwarfare.physics.data.ShipTransformationPacketHolder;
 import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.util.NBTUtils;
 
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+
 public class PhysicsObject {
 
     public final PhysicsWrapperEntity wrapper;
     // This handles sending packets to players involving block changes in the Ship
     // space
     public final List<EntityPlayerMP> watchingPlayers;
+    public final PhysObjectRenderManager renderer;
+    public final PhysCollisionCallable collisionCallable;
+    public final Set<String> allowedUsers = new HashSet<>();
+    public final Set<Node> nodesWithinShip;
+    // This is used to delay mountEntity() operations by 1 tick
+    private final List<Entity> queuedEntitiesToMount;
     // Used when rendering to avoid horrible floating point errors, just a random
     // blockpos inside the ship space.
     public BlockPos refrenceBlockPos;
     public Vector centerCoord;
     public ShipTransformationManager coordTransform;
-    public final PhysObjectRenderManager renderer;
     public PhysicsCalculations physicsProcessor;
     // Has to be concurrent
     public Set<BlockPos> blockPositions;
-    private AxisAlignedBB collisionBB;
-
     public boolean doPhysics;
     public String creator;
-    public final PhysCollisionCallable collisionCallable;
     public int detectorID;
-
     // The closest Chunks to the Ship cached in here
     public ChunkCache surroundingWorldChunksCache;
     // TODO: Make for re-organizing these to make Ship sizes Dynamic
@@ -114,18 +114,13 @@ public class PhysicsObject {
     // Some badly written mods use these Maps to determine who to send packets to,
     // so we need to manually fill them with nearby players
     public PlayerChunkMapEntry[][] claimedChunksEntries;
-    public final List<String> allowedUsers;
     // Compatibility for ships made before the update
     public boolean claimedChunksInMap;
     public boolean isNameCustom;
-    // This is used to delay mountEntity() operations by 1 tick
-    private final List<Entity> queuedEntitiesToMount;
-    private Map<Integer, Vector> entityLocalPositions;
+    private AxisAlignedBB collisionBB;
+    private TIntObjectMap<Vector> entityLocalPositions;
     private ShipType shipType;
-
-    public final Set<Node> nodesWithinShip;
-    
-    private PhysicsShipTransform physicsTransform;
+    private int lastMessageTick = -1;
 
     public PhysicsObject(PhysicsWrapperEntity host) {
         wrapper = host;
@@ -136,17 +131,16 @@ public class PhysicsObject {
         }
         isNameCustom = false;
         claimedChunksInMap = false;
-        queuedEntitiesToMount = new ArrayList<Entity>();
-        allowedUsers = new ArrayList<String>();
-        entityLocalPositions = new HashMap<Integer, Vector>();
+        queuedEntitiesToMount = new ArrayList<>();
+        entityLocalPositions = new TIntObjectHashMap<>();
         doPhysics = true;
         // blockPositions = new HashSet<BlockPos>();
         // We need safe access to this across multiple threads.
         blockPositions = ConcurrentHashMap.newKeySet();
         collisionBB = PhysicsWrapperEntity.ZERO_AABB;
         collisionCallable = new PhysCollisionCallable(this);
-        watchingPlayers = new ArrayList<EntityPlayerMP>();
-        nodesWithinShip = new HashSet<Node>();
+        watchingPlayers = new ArrayList<>();
+        nodesWithinShip = new HashSet<>();
     }
 
     public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos posAt) {
@@ -157,7 +151,7 @@ public class PhysicsObject {
         if (!ownedChunks.isChunkEnclosedInSet(posAt.getX() >> 4, posAt.getZ() >> 4)) {
             return;
         }
-        
+
         // If the block here is not to be physicsed, just treat it like you'd treat AIR
         // blocks.
         if (oldState != null && BlockPhysicsRegistration.blocksToNotPhysicise.contains(oldState.getBlock())) {
@@ -355,7 +349,7 @@ public class PhysicsObject {
 
         while (iter.hasNext()) {
             int i = iter.next();
-            detector.setPosWithRespectTo(i, BlockPos.ORIGIN, pos);
+            SpatialDetector.setPosWithRespectTo(i, BlockPos.ORIGIN, pos);
 
             int xRad = Math.abs(pos.getX() >> 4);
             int zRad = Math.abs(pos.getZ() >> 4);
@@ -401,7 +395,7 @@ public class PhysicsObject {
         BlockPos centerDifference = refrenceBlockPos.subtract(centerInWorld);
         while (iter.hasNext()) {
             int i = iter.next();
-            detector.setPosWithRespectTo(i, centerInWorld, pos);
+            SpatialDetector.setPosWithRespectTo(i, centerInWorld, pos);
 
             IBlockState state = detector.cache.getBlockState(pos);
 
@@ -414,7 +408,7 @@ public class PhysicsObject {
             Chunk chunkToSet = claimedChunks[(pos.getX() >> 4) - minChunkX][(pos.getZ() >> 4) - minChunkZ];
             int storageIndex = pos.getY() >> 4;
 
-            if (chunkToSet.storageArrays[storageIndex] == chunkToSet.NULL_BLOCK_STORAGE) {
+            if (chunkToSet.storageArrays[storageIndex] == Chunk.NULL_BLOCK_STORAGE) {
                 chunkToSet.storageArrays[storageIndex] = new ExtendedBlockStorage(storageIndex << 4, true);
             }
 
@@ -462,7 +456,7 @@ public class PhysicsObject {
                         if (o != null) {
                             if (o instanceof BlockPos) {
                                 BlockPos inTilePos = (BlockPos) o;
-                                int hash = detector.getHashWithRespectTo(inTilePos.getX(), inTilePos.getY(),
+                                int hash = SpatialDetector.getHashWithRespectTo(inTilePos.getX(), inTilePos.getY(),
                                         inTilePos.getZ(), detector.firstBlock);
                                 if (detector.foundSet.contains(hash)) {
                                     if (!(o instanceof MutableBlockPos)) {
@@ -506,7 +500,7 @@ public class PhysicsObject {
         while (iter.hasNext()) {
             int i = iter.next();
             // BlockPos respectTo = detector.getPosWithRespectTo(i, centerInWorld);
-            detector.setPosWithRespectTo(i, centerInWorld, pos);
+            SpatialDetector.setPosWithRespectTo(i, centerInWorld, pos);
             // detector.cache.setBlockState(pos, Blocks.air.getDefaultState());
             // TODO: Get this to update on clientside as well, you bastard!
             TileEntity tile = getWorldObj().getTileEntity(pos);
@@ -572,7 +566,7 @@ public class PhysicsObject {
         };
 
         // TODO: This is causing concurrency crashes
-        long i = map.getIndex(x, z);
+        long i = PlayerChunkMap.getIndex(x, z);
 
         map.entryMap.put(i, entry);
         map.entries.add(entry);
@@ -635,8 +629,7 @@ public class PhysicsObject {
      * TODO: Make this further get the player to stop all further tracking of those
      * physObject
      *
-     * @param untracking
-     *            EntityPlayer that stopped tracking
+     * @param untracking EntityPlayer that stopped tracking
      */
     public void onPlayerUntracking(EntityPlayer untracking) {
         watchingPlayers.remove(untracking);
@@ -711,8 +704,6 @@ public class PhysicsObject {
             }
         }
     }
-
-    private int lastMessageTick = -1;
 
     public void onPostTickClient() {
         wrapper.lastTickPosX = wrapper.posX;
@@ -906,12 +897,13 @@ public class PhysicsObject {
         NBTUtils.writeEntityPositionMapToNBT("entityPosHashMap", entityLocalPositions, compound);
         physicsProcessor.writeToNBTTag(compound);
 
-        Iterator<String> iter = allowedUsers.iterator();
         StringBuilder result = new StringBuilder("");
-        while (iter.hasNext()) {
-            result.append(iter.next() + (iter.hasNext() ? ";" : ""));
-        }
-        compound.setString("allowedUsers", result.toString());
+        allowedUsers.forEach(s -> {
+            result.append(s);
+            result.append(";");
+        });
+        compound.setString("allowedUsers", result.substring(0, result.length() - 1));
+
         compound.setString("owner", creator);
         compound.setBoolean("claimedChunksInMap", claimedChunksInMap);
         compound.setBoolean("isNameCustom", isNameCustom);
@@ -944,10 +936,8 @@ public class PhysicsObject {
         entityLocalPositions = NBTUtils.readEntityPositionMap("entityPosHashMap", compound);
         physicsProcessor.readFromNBTTag(compound);
 
-        String[] toAllow = compound.getString("allowedUsers").split(";");
-        for (String s : toAllow) {
-            allowedUsers.add(s);
-        }
+        allowedUsers.clear();
+        Collections.addAll(allowedUsers, compound.getString("allowedUsers").split(";"));
 
         creator = compound.getString("owner");
         claimedChunksInMap = compound.getBoolean("claimedChunksInMap");
@@ -1086,12 +1076,12 @@ public class PhysicsObject {
         return EnumChangeOwnerResult.SUCCESS;
     }
 
-    public void setShipType(ShipType shipType) {
-        this.shipType = shipType;
-    }
-
     public ShipType getShipType() {
         return shipType;
+    }
+
+    public void setShipType(ShipType shipType) {
+        this.shipType = shipType;
     }
 
     public AxisAlignedBB getCollisionBoundingBox() {

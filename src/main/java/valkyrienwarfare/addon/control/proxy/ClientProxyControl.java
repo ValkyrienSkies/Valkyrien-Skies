@@ -30,11 +30,11 @@ import valkyrienwarfare.addon.control.renderer.BasicNodeTileEntityRenderer;
 import valkyrienwarfare.addon.control.renderer.PropellerEngineTileEntityRenderer;
 import valkyrienwarfare.addon.control.renderer.ShipHelmTileEntityRenderer;
 import valkyrienwarfare.addon.control.renderer.ShipTelegraphTileEntityRenderer;
-import valkyrienwarfare.addon.control.tileentity.TileEntityThrustModulator;
 import valkyrienwarfare.addon.control.tileentity.TileEntityNodeRelay;
 import valkyrienwarfare.addon.control.tileentity.TileEntityPropellerEngine;
 import valkyrienwarfare.addon.control.tileentity.TileEntityShipHelm;
 import valkyrienwarfare.addon.control.tileentity.TileEntityShipTelegraph;
+import valkyrienwarfare.addon.control.tileentity.TileEntityThrustModulator;
 
 public class ClientProxyControl extends CommonProxyControl {
 
@@ -60,13 +60,13 @@ public class ClientProxyControl extends CommonProxyControl {
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.blocks.advancedEtherCompressor);
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.blocks.eliteEtherCompressor);
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.blocks.ultimateEtherCompressor);
-        
+
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.blocks.creativeEtherCompressor);
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.blocks.pilotsChair);
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.blocks.passengerChair);
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.blocks.shipHelm);
 //		registerBlockItem(ValkyrienWarfareControlMod.INSTANCE.shipWheel);
-        
+
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.blocks.shipTelegraph);
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.blocks.dopedEtherium);
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.blocks.thrustRelay);

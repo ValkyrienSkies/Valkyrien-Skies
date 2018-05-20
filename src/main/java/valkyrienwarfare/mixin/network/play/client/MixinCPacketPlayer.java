@@ -23,15 +23,14 @@
 
 package valkyrienwarfare.mixin.network.play.client;
 
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.play.INetHandlerPlayServer;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.world.World;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.mod.network.IExtendedCPacketPlayer;
 import valkyrienwarfare.physics.data.TransformType;
@@ -57,13 +56,13 @@ public class MixinCPacketPlayer implements IExtendedCPacketPlayer {
     }
 
     @Override
-    public void setWorldBelowFeetID(int entityID) {
-        worldBelowID = entityID;
+    public int getWorldBelowFeetID() {
+        return worldBelowID;
     }
 
     @Override
-    public int getWorldBelowFeetID() {
-        return worldBelowID;
+    public void setWorldBelowFeetID(int entityID) {
+        worldBelowID = entityID;
     }
 
     @Override
@@ -96,7 +95,7 @@ public class MixinCPacketPlayer implements IExtendedCPacketPlayer {
                 x = positionInGlobal.X;
                 y = positionInGlobal.Y;
                 z = positionInGlobal.Z;
-                
+
                 // TODO: We shouldnt trust the clients about this either
                 serverHandler.floatingTickCount = 0;
                 serverHandler.floating = false;

@@ -16,11 +16,6 @@
 
 package valkyrienwarfare.addon.control.nodenetwork;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.server.management.PlayerList;
@@ -29,8 +24,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldServer;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 public class Node {
 
+    private final TileEntity parentTile;
     private boolean isRelay;
     private boolean isFullyBuilt;
     private byte channel = 0;
@@ -39,8 +40,7 @@ public class Node {
     // No duplicate connections, use Set<Node> to guarantee this
     private Set<Node> linkedNodes;
     private Set<BlockPos> linkedNodesPos;
-    private final TileEntity parentTile;
-    
+
     public Node(TileEntity parent) {
         this.parentTile = parent;
         this.linkedNodes = new HashSet<Node>();
@@ -65,7 +65,7 @@ public class Node {
         other.linkedNodes.add(this);
         linkedNodesPos.add(other.parentTile.getPos());
         other.linkedNodesPos.add(this.parentTile.getPos());
-        parentNetwork.mergeWithNetworks(new NodeNetwork[] { other.parentNetwork });
+        parentNetwork.mergeWithNetworks(new NodeNetwork[]{other.parentNetwork});
 
         if (!parentTile.getWorld().isRemote) {
             sendUpdatesToNearby();
@@ -166,7 +166,7 @@ public class Node {
                         if (node != null) {
                             linkedNodes.add(node);
                             node.linkedNodes.add(this);
-                            parentNetwork.mergeWithNetworks(new NodeNetwork[] { node.parentNetwork });
+                            parentNetwork.mergeWithNetworks(new NodeNetwork[]{node.parentNetwork});
                         }
                     }
                 } else {

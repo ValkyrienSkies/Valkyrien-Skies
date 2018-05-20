@@ -42,7 +42,7 @@ public class ValkyrienWarfareWorldGen implements IWorldGenerator {
 
     @Override
     public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) {
-        if (this.genEtheriumOre == null)    {
+        if (this.genEtheriumOre == null) {
             this.genEtheriumOre = new WorldGenMinable(ValkyrienWarfareWorld.INSTANCE.etheriumOre.getDefaultState(), 8);
         }
         switch (world.provider.getDimension()) {

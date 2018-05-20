@@ -16,12 +16,12 @@
 
 package valkyrienwarfare.addon.control.nodenetwork;
 
+import valkyrienwarfare.physics.management.PhysicsObject;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import valkyrienwarfare.physics.management.PhysicsObject;
 
 /**
  * A class that keeps track of all the nodes attached to a network; gets
@@ -41,6 +41,15 @@ public class NodeNetwork {
 
     public NodeNetwork(PhysicsObject parentEntity) {
         this(new HashSet<Node>(), parentEntity);
+    }
+
+    private static void fillWithConnections(Node start, Set<Node> toFill) {
+        toFill.add(start);
+        for (Node otherNodes : start.getConnectedNodes()) {
+            if (!toFill.contains(otherNodes)) {
+                fillWithConnections(otherNodes, toFill);
+            }
+        }
     }
 
     /**
@@ -88,31 +97,22 @@ public class NodeNetwork {
         // System.out.println("New network of Size " + networkedNodes.size());
     }
 
+    public PhysicsObject getParentPhysicsObject() {
+        return parentEntity;
+    }
+
     /**
      * Ideally this wouldn't exist because parentEntity would be final, however when
      * loading in from NBT it takes a while for the ship entity to be fully loaded,
      * which occurs after the network. So unfortunately this method has to exist.
-     * 
+     *
      * @param physObj
      */
     public void setParentPhysicsObject(PhysicsObject physObj) {
         parentEntity = physObj;
     }
 
-    public PhysicsObject getParentPhysicsObject() {
-        return parentEntity;
-    }
-
     public Set<Node> getNetworkedNodes() {
         return networkedNodes;
-    }
-    
-    private static void fillWithConnections(Node start, Set<Node> toFill) {
-        toFill.add(start);
-        for (Node otherNodes : start.getConnectedNodes()) {
-            if (!toFill.contains(otherNodes)) {
-                fillWithConnections(otherNodes, toFill);
-            }
-        }
     }
 }

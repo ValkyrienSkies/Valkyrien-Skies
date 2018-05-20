@@ -16,14 +16,6 @@
 
 package valkyrienwarfare.mixin.entity;
 
-import java.util.List;
-
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -33,11 +25,18 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.physics.collision.polygons.EntityPolygon;
 import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+
+import java.util.List;
 
 @Mixin(EntityLivingBase.class)
 public abstract class MixinEntityLivingBase extends Entity {

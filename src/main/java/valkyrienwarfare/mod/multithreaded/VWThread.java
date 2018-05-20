@@ -16,9 +16,6 @@
 
 package valkyrienwarfare.mod.multithreaded;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
@@ -30,24 +27,26 @@ import valkyrienwarfare.physics.collision.optimization.ShipCollisionTask;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.physics.management.WorldPhysObjectManager;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Handles all the physics processing for a world separate from the game tick.
  * Currently filled with tons of synchronization issues.
- * 
- * @author thebest108
  *
+ * @author thebest108
  */
 public class VWThread extends Thread {
 
     private final static long NS_PER_TICK = 10000000;
     private final static long MAX_LOST_TIME_NS = 1000000000;
+    // Used to give each VW thread a unique name
+    private static int threadID = 0;
     private final World hostWorld;
     // The ships we will be ticking physics for every tick, and sending those
     // updates to players.
     private final List<PhysicsWrapperEntity> ships;
     private int positionTickID;
-    // Used to give each VW thread a unique name
-    private static int threadID = 0;
     // Used by the game thread to mark this thread for death.
     private volatile boolean threadRunning;
 
@@ -62,7 +61,7 @@ public class VWThread extends Thread {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Thread#run()
      */
     @Override

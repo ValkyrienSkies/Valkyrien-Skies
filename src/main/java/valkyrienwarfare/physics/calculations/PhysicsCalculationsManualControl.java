@@ -97,8 +97,8 @@ public class PhysicsCalculationsManualControl extends PhysicsCalculations {
     public void readFromNBTTag(NBTTagCompound compound) {
         super.readFromNBTTag(compound);
         setYawRate(compound.getDouble("yawRate"));
-		setForwardRate(compound.getDouble("forwardRate"));
-		setUpRate(compound.getDouble("upRate"));
+        setForwardRate(compound.getDouble("forwardRate"));
+        setUpRate(compound.getDouble("upRate"));
     }
 
     public boolean isUseLinearMomentumForce() {

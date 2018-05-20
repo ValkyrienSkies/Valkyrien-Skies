@@ -16,25 +16,6 @@
 
 package valkyrienwarfare;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Field;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.logging.Logger;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
@@ -101,427 +82,445 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.util.PhysicsSettings;
 import valkyrienwarfare.util.RealMethods;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
+
 @Mod(modid = ValkyrienWarfareMod.MODID, name = ValkyrienWarfareMod.MODNAME, version = ValkyrienWarfareMod.MODVER, guiFactory = "valkyrienwarfare.mod.gui.GuiFactoryValkyrienWarfare", updateJSON = "https://raw.githubusercontent.com/BigBastard/Valkyrien-Warfare-Revamped/update.json")
 public class ValkyrienWarfareMod {
-	public static final List<Module> addons = new ArrayList<>();
-	public static final String MODID = "valkyrienwarfare";
-	public static final String MODNAME = "Valkyrien Warfare";
-	public static final String MODVER = "0.9_alpha";
-	@CapabilityInject(IAirshipCounterCapability.class)
-	public static final Capability<IAirshipCounterCapability> airshipCounter = null;
+    public static final List<Module> addons = new ArrayList<>();
+    public static final String MODID = "valkyrienwarfare";
+    public static final String MODNAME = "Valkyrien Warfare";
+    public static final String MODVER = "0.9_alpha";
+    @CapabilityInject(IAirshipCounterCapability.class)
+    public static final Capability<IAirshipCounterCapability> airshipCounter = null;
     // Used as a way to process the physics tasks in parallel during the game tick.
     // Sends physics tasks to the Executor Service.
     public static ExecutorService PHYSICS_THREADS = null;
     // This service is directly responsible for running collision tasks.
     public static ExecutorService PHYSICS_THREADS_EXECUTOR = null;
-	@SidedProxy(clientSide = "valkyrienwarfare.mod.proxy.ClientProxy", serverSide = "valkyrienwarfare.mod.proxy.ServerProxy")
-	public static CommonProxy proxy;
-	public static File configFile;
-	public static Configuration config;
-	public static boolean shipsSpawnParticles = false;
-	public static Vector gravity = new Vector(0, -9.8D, 0);
-	public static double physSpeed = .01D;
-	public static Block physicsInfuser;
-	public static Block physicsInfuserCreative;
-	public static SimpleNetworkWrapper physWrapperNetwork;
-	public static DimensionPhysicsChunkManager chunkManager;
-	public static DimensionPhysObjectManager physicsManager;
-	public static CreativeTabs vwTab = new TabValkyrienWarfare();
-	@Instance(MODID)
-	public static ValkyrienWarfareMod INSTANCE = new ValkyrienWarfareMod();
-	public static int airStateIndex;
-	public static double standingTolerance = .42D;
-	public static int maxShipSize = 1500000;
-	public static double shipUpperLimit = 1000D;
-	public static double shipLowerLimit = -30D;
-	public static int maxAirships = -1;
-	public static boolean highAccuracyCollisions = false;
-	public static boolean accurateRain = false;
-	public static boolean runAirshipPermissions = false;
-	public static int threadCount = -1;
-	public static double shipmobs_spawnrate = .01D;
-	public static boolean singleBitOctrees = false;
-	public static Logger VWLogger;
-	private static boolean hasAddonRegistrationEnded = false;
-	public DataTag tag = null;
+    @SidedProxy(clientSide = "valkyrienwarfare.mod.proxy.ClientProxy", serverSide = "valkyrienwarfare.mod.proxy.ServerProxy")
+    public static CommonProxy proxy;
+    public static File configFile;
+    public static Configuration config;
+    public static boolean shipsSpawnParticles = false;
+    public static Vector gravity = new Vector(0, -9.8D, 0);
+    public static double physSpeed = .01D;
+    public static Block physicsInfuser;
+    public static Block physicsInfuserCreative;
+    public static SimpleNetworkWrapper physWrapperNetwork;
+    public static DimensionPhysicsChunkManager chunkManager;
+    public static DimensionPhysObjectManager physicsManager;
+    public static CreativeTabs vwTab = new TabValkyrienWarfare();
+    @Instance(MODID)
+    public static ValkyrienWarfareMod INSTANCE = new ValkyrienWarfareMod();
+    public static int airStateIndex;
+    public static double standingTolerance = .42D;
+    public static int maxShipSize = 1500000;
+    public static double shipUpperLimit = 1000D;
+    public static double shipLowerLimit = -30D;
+    public static int maxAirships = -1;
+    public static boolean highAccuracyCollisions = false;
+    public static boolean accurateRain = false;
+    public static boolean runAirshipPermissions = false;
+    public static int threadCount = -1;
+    public static double shipmobs_spawnrate = .01D;
+    public static boolean singleBitOctrees = false;
+    public static Logger VWLogger;
+    private static boolean hasAddonRegistrationEnded = false;
+    public DataTag tag = null;
 
-	/**
-	 * Called by the game when loading the configuration file, also called whenever
-	 * the player makes a change in the MOD OPTIONS menu, effectively reloading all
-	 * the configuration values
-	 *
-	 * @param conf
-	 */
-	public static void applyConfig(Configuration conf) {
-		// dynamicLighting = config.get(Configuration.CATEGORY_GENERAL,
-		// "DynamicLighting", false).getBoolean();
-		// Property spawnParticlesParticle = config.get(Configuration.CATEGORY_GENERAL,
-		// "Ships spawn particles", false).getBoolean();
-		shipUpperLimit = config.get(Configuration.CATEGORY_GENERAL, "Ship Y-Height Maximum", 1000D).getDouble();
-		shipLowerLimit = config.get(Configuration.CATEGORY_GENERAL, "Ship Y-Height Minimum", -30D).getDouble();
-		maxAirships = config.get(Configuration.CATEGORY_GENERAL, "Max airships per player", -1, "Players can't own more than this many airships at once. Set to -1 to disable.").getInt();
-		accurateRain = config.get(Configuration.CATEGORY_GENERAL, "Enable accurate rain on ships", false, "Debug feature, takes a lot of processing power").getBoolean();
-		shipsSpawnParticles = config.get(Configuration.CATEGORY_GENERAL, "Enable particle spawns on Ships", true, "Ex. Torch Particles").getBoolean();
-		runAirshipPermissions = config.get(Configuration.CATEGORY_GENERAL, "Enable airship permissions", false, "Enables the airship permissions system").getBoolean();
-		shipmobs_spawnrate = config.get(Configuration.CATEGORY_GENERAL, "The spawn rate for ship mobs", .01D, "The spawn rate for ship mobs").getDouble();
-		singleBitOctrees = config.get(Configuration.CATEGORY_GENERAL, "Single Bit octrees", true, "If true, octrees will use 1-bit entries. If false, they'll use 32-bit entries.\nSetting this to false gives a big memory boost, but is much slower.").getBoolean();
+    /**
+     * Called by the game when loading the configuration file, also called whenever
+     * the player makes a change in the MOD OPTIONS menu, effectively reloading all
+     * the configuration values
+     *
+     * @param conf
+     */
+    public static void applyConfig(Configuration conf) {
+        // dynamicLighting = config.get(Configuration.CATEGORY_GENERAL,
+        // "DynamicLighting", false).getBoolean();
+        // Property spawnParticlesParticle = config.get(Configuration.CATEGORY_GENERAL,
+        // "Ships spawn particles", false).getBoolean();
+        shipUpperLimit = config.get(Configuration.CATEGORY_GENERAL, "Ship Y-Height Maximum", 1000D).getDouble();
+        shipLowerLimit = config.get(Configuration.CATEGORY_GENERAL, "Ship Y-Height Minimum", -30D).getDouble();
+        maxAirships = config.get(Configuration.CATEGORY_GENERAL, "Max airships per player", -1, "Players can't own more than this many airships at once. Set to -1 to disable.").getInt();
+        accurateRain = config.get(Configuration.CATEGORY_GENERAL, "Enable accurate rain on ships", false, "Debug feature, takes a lot of processing power").getBoolean();
+        shipsSpawnParticles = config.get(Configuration.CATEGORY_GENERAL, "Enable particle spawns on Ships", true, "Ex. Torch Particles").getBoolean();
+        runAirshipPermissions = config.get(Configuration.CATEGORY_GENERAL, "Enable airship permissions", false, "Enables the airship permissions system").getBoolean();
+        shipmobs_spawnrate = config.get(Configuration.CATEGORY_GENERAL, "The spawn rate for ship mobs", .01D, "The spawn rate for ship mobs").getDouble();
+        singleBitOctrees = config.get(Configuration.CATEGORY_GENERAL, "Single Bit octrees", true, "If true, octrees will use 1-bit entries. If false, they'll use 32-bit entries.\nSetting this to false gives a big memory boost, but is much slower.").getBoolean();
 
-		{
-			threadCount = config.get(Configuration.CATEGORY_GENERAL, "Physics thread count", -1,
-					"The number of threads to use for physics. If thread count <= 0 it will use the system core count.").getInt();
+        {
+            threadCount = config.get(Configuration.CATEGORY_GENERAL, "Physics thread count", -1,
+                    "The number of threads to use for physics. If thread count <= 0 it will use the system core count.").getInt();
 
-			if (PHYSICS_THREADS_EXECUTOR == null) {
-				PHYSICS_THREADS_EXECUTOR = Executors.newFixedThreadPool(threadCount <= 0 ? Runtime.getRuntime().availableProcessors() : threadCount);
-				PHYSICS_THREADS = Executors.newFixedThreadPool(threadCount <= 0 ? Runtime.getRuntime().availableProcessors() : threadCount);
-			}
-		}
+            if (PHYSICS_THREADS_EXECUTOR == null) {
+                PHYSICS_THREADS_EXECUTOR = Executors.newFixedThreadPool(threadCount <= 0 ? Runtime.getRuntime().availableProcessors() : threadCount);
+                PHYSICS_THREADS = Executors.newFixedThreadPool(threadCount <= 0 ? Runtime.getRuntime().availableProcessors() : threadCount);
+            }
+        }
 
-		addons.forEach(m -> m.applyConfig(config));
-	}
+        addons.forEach(m -> m.applyConfig(config));
+    }
 
-	public static File getWorkingFolder() {
-		File toBeReturned;
-		try {
-			if (FMLCommonHandler.instance().getSide().isClient()) {
-				toBeReturned = Minecraft.getMinecraft().mcDataDir;
-			} else {
-				toBeReturned = FMLCommonHandler.instance().getMinecraftServerInstance().getFile("");
-			}
-			return toBeReturned;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+    public static File getWorkingFolder() {
+        File toBeReturned;
+        try {
+            if (FMLCommonHandler.instance().getSide().isClient()) {
+                toBeReturned = Minecraft.getMinecraft().mcDataDir;
+            } else {
+                toBeReturned = FMLCommonHandler.instance().getMinecraftServerInstance().getFile("");
+            }
+            return toBeReturned;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
-	/**
-	 * Checks to see if a player's airship counter can be changed.
-	 *
-	 * @param isAdding
-	 *            Should be true if you are adding a player, false if removing the
-	 *            player.
-	 * @param player
-	 *            The player to check for
-	 * @return
-	 */
-	public static boolean canChangeAirshipCounter(boolean isAdding, EntityPlayer player) {
-		if (isAdding) {
-			if (ValkyrienWarfareMod.maxAirships == -1) {
-				return true;
-			}
+    /**
+     * Checks to see if a player's airship counter can be changed.
+     *
+     * @param isAdding Should be true if you are adding a player, false if removing the
+     *                 player.
+     * @param player   The player to check for
+     * @return
+     */
+    public static boolean canChangeAirshipCounter(boolean isAdding, EntityPlayer player) {
+        if (isAdding) {
+            if (ValkyrienWarfareMod.maxAirships == -1) {
+                return true;
+            }
 
-			return player.getCapability(ValkyrienWarfareMod.airshipCounter, null)
-					.getAirshipCount() < ValkyrienWarfareMod.maxAirships;
-		} else {
-			return player.getCapability(ValkyrienWarfareMod.airshipCounter, null).getAirshipCount() > 0;
-		}
-	}
+            return player.getCapability(ValkyrienWarfareMod.airshipCounter, null)
+                    .getAirshipCount() < ValkyrienWarfareMod.maxAirships;
+        } else {
+            return player.getCapability(ValkyrienWarfareMod.airshipCounter, null).getAirshipCount() > 0;
+        }
+    }
 
-	public static void registerAddon(Module module) {
-		if (hasAddonRegistrationEnded) {
-			throw new IllegalStateException("Attempting to register addon after FMLConstructionEvent");
-		} else {
-			System.out.println("[VW Addon System] Registering addon: " + module.getClass().getCanonicalName());
-			for (Module registered : addons) {
-				if (registered.getClass().getCanonicalName().equals(module.getClass().getCanonicalName())) {
-					System.out.println(
-							"Addon " + module.getClass().getCanonicalName() + " already registered, skipping...");
-					return;
-				}
-			}
-			addons.add(module);
-		}
-	}
+    public static void registerAddon(Module module) {
+        if (hasAddonRegistrationEnded) {
+            throw new IllegalStateException("Attempting to register addon after FMLConstructionEvent");
+        } else {
+            System.out.println("[VW Addon System] Registering addon: " + module.getClass().getCanonicalName());
+            for (Module registered : addons) {
+                if (registered.getClass().getCanonicalName().equals(module.getClass().getCanonicalName())) {
+                    System.out.println(
+                            "Addon " + module.getClass().getCanonicalName() + " already registered, skipping...");
+                    return;
+                }
+            }
+            addons.add(module);
+        }
+    }
 
-	@EventHandler
-	public void fmlConstruct(FMLConstructionEvent event) {
-		URLClassLoader classLoader = (URLClassLoader) getClass().getClassLoader();
-		ArrayList<String> allAddons = new ArrayList<>();
-		final boolean isAddonBugFixed = false;
+    @EventHandler
+    public void fmlConstruct(FMLConstructionEvent event) {
+        URLClassLoader classLoader = (URLClassLoader) getClass().getClassLoader();
+        ArrayList<String> allAddons = new ArrayList<>();
+        final boolean isAddonBugFixed = false;
 
-		if (!isAddonBugFixed) {
-			// ValkyrienWarfareCombat combatModule = new ValkyrienWarfareCombat();
-			ValkyrienWarfareControl controlModule = new ValkyrienWarfareControl();
-			ValkyrienWarfareWorld worldModule = new ValkyrienWarfareWorld();
-			ValkyrienWarfareOC opencomputersModule = new ValkyrienWarfareOC();
-			// registerAddon(combatModule);
-			registerAddon(controlModule);
-			registerAddon(worldModule);
-			registerAddon(opencomputersModule);
-		}
+        if (!isAddonBugFixed) {
+            // ValkyrienWarfareCombat combatModule = new ValkyrienWarfareCombat();
+            ValkyrienWarfareControl controlModule = new ValkyrienWarfareControl();
+            ValkyrienWarfareWorld worldModule = new ValkyrienWarfareWorld();
+            ValkyrienWarfareOC opencomputersModule = new ValkyrienWarfareOC();
+            // registerAddon(combatModule);
+            registerAddon(controlModule);
+            registerAddon(worldModule);
+            registerAddon(opencomputersModule);
+        }
 
-		if (!MixinLoaderForge.isObfuscatedEnvironment) { // if in dev, read default addons from gradle output folder
-			File f = ValkyrienWarfareMod.getWorkingFolder();
-			File defaultAddons;
-			String[] list = f.list();
-			boolean rootDir = false;
-			for (String s : list) {
-				if (s.endsWith("build.gradle")) {
-					rootDir = true;
-				}
-			}
-			if (rootDir) { // assume root directory
-				defaultAddons = new File(f.getPath() + File.separatorChar + "src" + File.separatorChar + "main"
-						+ File.separatorChar + "resources" + File.separatorChar + "vwAddon_default");
-			} else { // assume run/ directory or similar
-				defaultAddons = new File(f.getAbsoluteFile().getParentFile().getParent() + File.separatorChar + "src"
-						+ File.separatorChar + "main" + File.separatorChar + "resources" + File.separatorChar
-						+ "vwAddon_default");
-			}
-			System.out.println(defaultAddons.getAbsolutePath());
-			try {
-				InputStream inputStream = new FileInputStream(defaultAddons);
-				Scanner scanner = new Scanner(inputStream);
-				while (scanner.hasNextLine()) {
-					String className = scanner.nextLine().trim();
-					allAddons.add(className);
-					System.out.println("Found addon " + className);
-				}
-				scanner.close();
-				inputStream.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		for (URL url : classLoader.getURLs()) {
-			try {
-				// ZipFile file = new ZipFile(new File(url.toURI()));
-				ZipInputStream zis = new ZipInputStream(
-						new BufferedInputStream(new FileInputStream(new File(url.getPath()))));
-				ZipEntry entry;
-				while ((entry = zis.getNextEntry()) != null) {
-					if (entry.getName().startsWith("vwAddon_")) {
-						try {
-							ZipFile file = new ZipFile(new File(url.getPath()));
-							InputStream inputStream = file.getInputStream(file.getEntry(entry.getName()));
-							Scanner scanner = new Scanner(inputStream);
-							while (scanner.hasNextLine()) {
-								String className = scanner.nextLine().trim();
-								allAddons.add(className);
-								System.out.println("Found addon " + className);
-							}
-							scanner.close();
-							inputStream.close();
-						} catch (IOException e) {
-							// wtf java
-						}
-						break;
-					}
-				}
-				zis.close();
-			} catch (IOException e) {
-				// wtf java
-			}
-		}
+        if (!MixinLoaderForge.isObfuscatedEnvironment) { // if in dev, read default addons from gradle output folder
+            File f = ValkyrienWarfareMod.getWorkingFolder();
+            File defaultAddons;
+            String[] list = f.list();
+            boolean rootDir = false;
+            for (String s : list) {
+                if (s.endsWith("build.gradle")) {
+                    rootDir = true;
+                }
+            }
+            if (rootDir) { // assume root directory
+                defaultAddons = new File(f.getPath() + File.separatorChar + "src" + File.separatorChar + "main"
+                        + File.separatorChar + "resources" + File.separatorChar + "vwAddon_default");
+            } else { // assume run/ directory or similar
+                defaultAddons = new File(f.getAbsoluteFile().getParentFile().getParent() + File.separatorChar + "src"
+                        + File.separatorChar + "main" + File.separatorChar + "resources" + File.separatorChar
+                        + "vwAddon_default");
+            }
+            System.out.println(defaultAddons.getAbsolutePath());
+            try {
+                InputStream inputStream = new FileInputStream(defaultAddons);
+                Scanner scanner = new Scanner(inputStream);
+                while (scanner.hasNextLine()) {
+                    String className = scanner.nextLine().trim();
+                    allAddons.add(className);
+                    System.out.println("Found addon " + className);
+                }
+                scanner.close();
+                inputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        for (URL url : classLoader.getURLs()) {
+            try {
+                // ZipFile file = new ZipFile(new File(url.toURI()));
+                ZipInputStream zis = new ZipInputStream(
+                        new BufferedInputStream(new FileInputStream(new File(url.getPath()))));
+                ZipEntry entry;
+                while ((entry = zis.getNextEntry()) != null) {
+                    if (entry.getName().startsWith("vwAddon_")) {
+                        try {
+                            ZipFile file = new ZipFile(new File(url.getPath()));
+                            InputStream inputStream = file.getInputStream(file.getEntry(entry.getName()));
+                            Scanner scanner = new Scanner(inputStream);
+                            while (scanner.hasNextLine()) {
+                                String className = scanner.nextLine().trim();
+                                allAddons.add(className);
+                                System.out.println("Found addon " + className);
+                            }
+                            scanner.close();
+                            inputStream.close();
+                        } catch (IOException e) {
+                            // wtf java
+                        }
+                        break;
+                    }
+                }
+                zis.close();
+            } catch (IOException e) {
+                // wtf java
+            }
+        }
 
-		ALL_ADDONS: for (String className : allAddons) {
-			try {
-				Class<?> abstractclass = Class.forName(className);
-				if (abstractclass.isAnnotationPresent(VWAddon.class)) {
-					for (Module registered : addons) {
-						if (registered.getClass().getCanonicalName().equals(abstractclass.getCanonicalName())) {
-							System.out.println(
-									"Addon " + abstractclass.getCanonicalName() + " already registered, skipping...");
-							continue ALL_ADDONS;
-						}
-					}
-					Module module = (Module) abstractclass.newInstance();
-					// registerAddon(module);
-				} else {
-					System.out.println("Class " + className + " does not have @VWAddon annonation, not loading");
-				}
-			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-				e.printStackTrace();
-				System.out.println("Not loading addon: " + className);
-			}
-		}
-	}
+        ALL_ADDONS:
+        for (String className : allAddons) {
+            try {
+                Class<?> abstractclass = Class.forName(className);
+                if (abstractclass.isAnnotationPresent(VWAddon.class)) {
+                    for (Module registered : addons) {
+                        if (registered.getClass().getCanonicalName().equals(abstractclass.getCanonicalName())) {
+                            System.out.println(
+                                    "Addon " + abstractclass.getCanonicalName() + " already registered, skipping...");
+                            continue ALL_ADDONS;
+                        }
+                    }
+                    Module module = (Module) abstractclass.newInstance();
+                    // registerAddon(module);
+                } else {
+                    System.out.println("Class " + className + " does not have @VWAddon annonation, not loading");
+                }
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+                e.printStackTrace();
+                System.out.println("Not loading addon: " + className);
+            }
+        }
+    }
 
-	@EventHandler
-	public void preInit(FMLPreInitializationEvent event) {
-		hasAddonRegistrationEnded = true;
+    @EventHandler
+    public void preInit(FMLPreInitializationEvent event) {
+        hasAddonRegistrationEnded = true;
 
-		proxy.preInit(event);
-		registerNetworks(event);
-		runConfiguration(event);
-		registerCapibilities();
-		ValkyrienWarfareHooks.methods = new RealMethods();
-		ValkyrienWarfareHooks.isValkyrienWarfareInstalled = true;
-		VWLogger = Logger.getLogger("ValkyrienWarfare");
+        proxy.preInit(event);
+        registerNetworks(event);
+        runConfiguration(event);
+        registerCapibilities();
+        ValkyrienWarfareHooks.methods = new RealMethods();
+        ValkyrienWarfareHooks.isValkyrienWarfareInstalled = true;
+        VWLogger = Logger.getLogger("ValkyrienWarfare");
 
-		addons.forEach(m -> m.doPreInit(event));
-		
-		try {
+        addons.forEach(m -> m.doPreInit(event));
+
+        try {
             Field chunkCache = ForgeChunkManager.class.getDeclaredField("dormantChunkCacheSize");
             chunkCache.setAccessible(true);
             chunkCache.set(null, new Integer(1000));
-		} catch (Exception e) {
-		    e.printStackTrace();
-		}
-	}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-	@EventHandler
-	public void init(FMLInitializationEvent event) {
-		proxy.init(event);
-		EntityRegistry.registerModEntity(new ResourceLocation(MODID, "PhysWrapper"), PhysicsWrapperEntity.class,
-				"PhysWrapper", 70, this, 120, 1, false);
+    @EventHandler
+    public void init(FMLInitializationEvent event) {
+        proxy.init(event);
+        EntityRegistry.registerModEntity(new ResourceLocation(MODID, "PhysWrapper"), PhysicsWrapperEntity.class,
+                "PhysWrapper", 70, this, 120, 1, false);
 
-		addons.forEach(m -> m.doInit(event));
-	}
+        addons.forEach(m -> m.doInit(event));
+    }
 
-	@EventHandler
-	public void postInit(FMLPostInitializationEvent event) {
-		proxy.postInit(event);
-		airStateIndex = Block.getStateId(Blocks.AIR.getDefaultState());
-		BlockPhysicsRegistration.registerCustomBlockMasses();
-		BlockPhysicsRegistration.registerVanillaBlockForces();
-		BlockPhysicsRegistration.registerBlocksToNotPhysicise();
+    @EventHandler
+    public void postInit(FMLPostInitializationEvent event) {
+        proxy.postInit(event);
+        airStateIndex = Block.getStateId(Blocks.AIR.getDefaultState());
+        BlockPhysicsRegistration.registerCustomBlockMasses();
+        BlockPhysicsRegistration.registerVanillaBlockForces();
+        BlockPhysicsRegistration.registerBlocksToNotPhysicise();
 
-		ForgeChunkManager.setForcedChunkLoadingCallback(INSTANCE, new VWChunkLoadingCallback());
-		//// We're stealing these tickets bois!////
-		try {
-			Field ticketConstraintsField = ForgeChunkManager.class.getDeclaredField("ticketConstraints");
-			Field chunkConstraintsField = ForgeChunkManager.class.getDeclaredField("chunkConstraints");
+        ForgeChunkManager.setForcedChunkLoadingCallback(INSTANCE, new VWChunkLoadingCallback());
+        //// We're stealing these tickets bois!////
+        try {
+            Field ticketConstraintsField = ForgeChunkManager.class.getDeclaredField("ticketConstraints");
+            Field chunkConstraintsField = ForgeChunkManager.class.getDeclaredField("chunkConstraints");
 
-			ticketConstraintsField.setAccessible(true);
-			chunkConstraintsField.setAccessible(true);
+            ticketConstraintsField.setAccessible(true);
+            chunkConstraintsField.setAccessible(true);
 
-			Object ticketConstraints = ticketConstraintsField.get(null);
-			Object chunkConstraints = chunkConstraintsField.get(null);
+            Object ticketConstraints = ticketConstraintsField.get(null);
+            Object chunkConstraints = chunkConstraintsField.get(null);
 
-			Map<String, Integer> ticketsMap = (Map<String, Integer>) ticketConstraints;
-			Map<String, Integer> chunksMap = (Map<String, Integer>) chunkConstraints;
+            Map<String, Integer> ticketsMap = (Map<String, Integer>) ticketConstraints;
+            Map<String, Integer> chunksMap = (Map<String, Integer>) chunkConstraints;
 
-			ticketsMap.put(MODID, Integer.MAX_VALUE);
-			chunksMap.put(MODID, Integer.MAX_VALUE);
-		} catch (Throwable e) {
-			e.printStackTrace();
-			System.err.println("DAMMIT LEX!");
-		}
+            ticketsMap.put(MODID, Integer.MAX_VALUE);
+            chunksMap.put(MODID, Integer.MAX_VALUE);
+        } catch (Throwable e) {
+            e.printStackTrace();
+            System.err.println("DAMMIT LEX!");
+        }
 
-		addons.forEach(m -> m.doPostInit(event));
-	}
+        addons.forEach(m -> m.doPostInit(event));
+    }
 
-	@EventHandler
-	public void serverStart(FMLServerStartingEvent event) {
-		MinecraftServer server = event.getServer();
-		ModCommands.registerCommands(server);
-	}
+    @EventHandler
+    public void serverStart(FMLServerStartingEvent event) {
+        MinecraftServer server = event.getServer();
+        ModCommands.registerCommands(server);
+    }
 
-	private void registerNetworks(FMLStateEvent event) {
-		physWrapperNetwork = NetworkRegistry.INSTANCE.newSimpleChannel("physChannel");
-		physWrapperNetwork.registerMessage(PhysWrapperPositionHandler.class, PhysWrapperPositionMessage.class, 0,
-				Side.CLIENT);
-		physWrapperNetwork.registerMessage(PlayerShipRefrenceHandler.class, PlayerShipRefrenceMessage.class, 1,
-				Side.SERVER);
-		physWrapperNetwork.registerMessage(EntityRelativePositionHandler.class,
-				EntityRelativePositionMessage.class, 2, Side.CLIENT);
-	}
+    private void registerNetworks(FMLStateEvent event) {
+        physWrapperNetwork = NetworkRegistry.INSTANCE.newSimpleChannel("physChannel");
+        physWrapperNetwork.registerMessage(PhysWrapperPositionHandler.class, PhysWrapperPositionMessage.class, 0,
+                Side.CLIENT);
+        physWrapperNetwork.registerMessage(PlayerShipRefrenceHandler.class, PlayerShipRefrenceMessage.class, 1,
+                Side.SERVER);
+        physWrapperNetwork.registerMessage(EntityRelativePositionHandler.class,
+                EntityRelativePositionMessage.class, 2, Side.CLIENT);
+    }
 
-	public void registerBlocks(RegistryEvent.Register<Block> event) {
-		physicsInfuser = new BlockPhysicsInfuser(Material.ROCK).setHardness(12f).setUnlocalizedName("shipblock")
-				.setRegistryName(MODID, "shipblock").setCreativeTab(vwTab);
-		physicsInfuserCreative = new BlockPhysicsInfuserCreative(Material.ROCK).setHardness(12f)
-				.setUnlocalizedName("shipblockcreative").setRegistryName(MODID, "shipblockcreative")
-				.setCreativeTab(vwTab);
+    public void registerBlocks(RegistryEvent.Register<Block> event) {
+        physicsInfuser = new BlockPhysicsInfuser(Material.ROCK).setHardness(12f).setUnlocalizedName("shipblock")
+                .setRegistryName(MODID, "shipblock").setCreativeTab(vwTab);
+        physicsInfuserCreative = new BlockPhysicsInfuserCreative(Material.ROCK).setHardness(12f)
+                .setUnlocalizedName("shipblockcreative").setRegistryName(MODID, "shipblockcreative")
+                .setCreativeTab(vwTab);
 
-		event.getRegistry().register(physicsInfuser);
-		event.getRegistry().register(physicsInfuserCreative);
-	}
+        event.getRegistry().register(physicsInfuser);
+        event.getRegistry().register(physicsInfuserCreative);
+    }
 
-	public void registerItems(RegistryEvent.Register<Item> event) {
-		Module.registerItemBlock(event, physicsInfuser);
-		Module.registerItemBlock(event, physicsInfuserCreative);
-	}
+    public void registerItems(RegistryEvent.Register<Item> event) {
+        Module.registerItemBlock(event, physicsInfuser);
+        Module.registerItemBlock(event, physicsInfuserCreative);
+    }
 
-	public void registerRecipies(RegistryEvent.Register<IRecipe> event) {
-		Module.registerRecipe(event, new ItemStack(physicsInfuser), "IEI", "ODO", "IEI", 'E', Items.ENDER_PEARL, 'D',
-				Items.DIAMOND, 'O', Item.getItemFromBlock(Blocks.OBSIDIAN), 'I', Items.IRON_INGOT);
-	}
+    public void registerRecipies(RegistryEvent.Register<IRecipe> event) {
+        Module.registerRecipe(event, new ItemStack(physicsInfuser), "IEI", "ODO", "IEI", 'E', Items.ENDER_PEARL, 'D',
+                Items.DIAMOND, 'O', Item.getItemFromBlock(Blocks.OBSIDIAN), 'I', Items.IRON_INGOT);
+    }
 
-	private void runConfiguration(FMLPreInitializationEvent event) {
-		configFile = event.getSuggestedConfigurationFile();
-		config = new Configuration(configFile);
-		config.load();
-		applyConfig(config);
-		config.save();
-	}
+    private void runConfiguration(FMLPreInitializationEvent event) {
+        configFile = event.getSuggestedConfigurationFile();
+        config = new Configuration(configFile);
+        config.load();
+        applyConfig(config);
+        config.save();
+    }
 
-	@EventHandler
-	public void onServerStarted(FMLServerStartedEvent event) {
-		this.loadConfig();
-	}
+    @EventHandler
+    public void onServerStarted(FMLServerStartedEvent event) {
+        this.loadConfig();
+    }
 
-	@EventHandler
-	public void onServerStopping(FMLServerStoppingEvent event) {
-		this.saveConfig();
-	}
+    @EventHandler
+    public void onServerStopping(FMLServerStoppingEvent event) {
+        this.saveConfig();
+    }
 
-	public void loadConfig() {
-		File file = new File(ValkyrienWarfareMod.getWorkingFolder(), "/valkyrienwarfaresettings.dat");
+    public void loadConfig() {
+        File file = new File(ValkyrienWarfareMod.getWorkingFolder(), "/valkyrienwarfaresettings.dat");
 
-		if (!file.exists()) {
-			tag = new DataTag(file);
-			tag.setBoolean("doGravity", true);
-			tag.setBoolean("doPhysicsBlocks", true);
-			tag.setBoolean("doBalloons", true);
-			tag.setBoolean("doAirshipRotation", true);
-			tag.setBoolean("doAirshipMovement", true);
-			tag.setBoolean("doSplitting", false);
-			tag.setInteger("maxShipSize", 15000);
-			tag.setDouble("gravityVecX", 0);
-			tag.setDouble("gravityVecY", -9.8);
-			tag.setDouble("gravityVecZ", 0);
-			tag.setInteger("physicsIterations", 10);
-			tag.setDouble("physicsSpeed", 0.05);
-			tag.setBoolean("doEtheriumLifting", true);
-			tag.save();
-		} else {
-			tag = new DataTag(file);
-		}
+        if (!file.exists()) {
+            tag = new DataTag(file);
+            tag.setBoolean("doGravity", true);
+            tag.setBoolean("doPhysicsBlocks", true);
+            tag.setBoolean("doBalloons", true);
+            tag.setBoolean("doAirshipRotation", true);
+            tag.setBoolean("doAirshipMovement", true);
+            tag.setBoolean("doSplitting", false);
+            tag.setInteger("maxShipSize", 15000);
+            tag.setDouble("gravityVecX", 0);
+            tag.setDouble("gravityVecY", -9.8);
+            tag.setDouble("gravityVecZ", 0);
+            tag.setInteger("physicsIterations", 10);
+            tag.setDouble("physicsSpeed", 0.05);
+            tag.setBoolean("doEtheriumLifting", true);
+            tag.save();
+        } else {
+            tag = new DataTag(file);
+        }
 
-		PhysicsSettings.doGravity = tag.getBoolean("doGravity", true);
-		PhysicsSettings.doPhysicsBlocks = tag.getBoolean("doPhysicsBlocks", true);
-		PhysicsSettings.doAirshipRotation = tag.getBoolean("doAirshipRotation", true);
-		PhysicsSettings.doAirshipMovement = tag.getBoolean("doAirshipMovement", true);
-		ValkyrienWarfareMod.maxShipSize = tag.getInteger("maxShipSize", 15000);
-		ValkyrienWarfareMod.physSpeed = tag.getDouble("physicsSpeed", 0.01D);
-		// TODO: Remove me later; this is just to force players VW configs to update.
-		if (ValkyrienWarfareMod.physSpeed == .05D) {
-		    ValkyrienWarfareMod.physSpeed = .01D;
-		}
-		ValkyrienWarfareMod.gravity = new Vector(tag.getDouble("gravityVecX", 0.0), tag.getDouble("gravityVecY", -9.8),
-				tag.getDouble("gravityVecZ", 0.0));
-		PhysicsSettings.doEtheriumLifting = tag.getBoolean("doEtheriumLifting", true);
+        PhysicsSettings.doGravity = tag.getBoolean("doGravity", true);
+        PhysicsSettings.doPhysicsBlocks = tag.getBoolean("doPhysicsBlocks", true);
+        PhysicsSettings.doAirshipRotation = tag.getBoolean("doAirshipRotation", true);
+        PhysicsSettings.doAirshipMovement = tag.getBoolean("doAirshipMovement", true);
+        ValkyrienWarfareMod.maxShipSize = tag.getInteger("maxShipSize", 15000);
+        ValkyrienWarfareMod.physSpeed = tag.getDouble("physicsSpeed", 0.01D);
+        // TODO: Remove me later; this is just to force players VW configs to update.
+        if (ValkyrienWarfareMod.physSpeed == .05D) {
+            ValkyrienWarfareMod.physSpeed = .01D;
+        }
+        ValkyrienWarfareMod.gravity = new Vector(tag.getDouble("gravityVecX", 0.0), tag.getDouble("gravityVecY", -9.8),
+                tag.getDouble("gravityVecZ", 0.0));
+        PhysicsSettings.doEtheriumLifting = tag.getBoolean("doEtheriumLifting", true);
 
-		// save the tag in case new fields are added, this way they are saved right away
-		tag.save();
-	}
+        // save the tag in case new fields are added, this way they are saved right away
+        tag.save();
+    }
 
-	public void saveConfig() {
-		tag.setBoolean("doGravity", PhysicsSettings.doGravity);
-		tag.setBoolean("doPhysicsBlocks", PhysicsSettings.doPhysicsBlocks);
-		tag.setBoolean("doAirshipRotation", PhysicsSettings.doAirshipRotation);
-		tag.setBoolean("doAirshipMovement", PhysicsSettings.doAirshipMovement);
-		tag.setInteger("maxShipSize", ValkyrienWarfareMod.maxShipSize);
-		tag.setDouble("gravityVecX", ValkyrienWarfareMod.gravity.X);
-		tag.setDouble("gravityVecY", ValkyrienWarfareMod.gravity.Y);
-		tag.setDouble("gravityVecZ", ValkyrienWarfareMod.gravity.Z);
-		tag.setDouble("physicsSpeed", ValkyrienWarfareMod.physSpeed);
-		tag.save();
-	}
+    public void saveConfig() {
+        tag.setBoolean("doGravity", PhysicsSettings.doGravity);
+        tag.setBoolean("doPhysicsBlocks", PhysicsSettings.doPhysicsBlocks);
+        tag.setBoolean("doAirshipRotation", PhysicsSettings.doAirshipRotation);
+        tag.setBoolean("doAirshipMovement", PhysicsSettings.doAirshipMovement);
+        tag.setInteger("maxShipSize", ValkyrienWarfareMod.maxShipSize);
+        tag.setDouble("gravityVecX", ValkyrienWarfareMod.gravity.X);
+        tag.setDouble("gravityVecY", ValkyrienWarfareMod.gravity.Y);
+        tag.setDouble("gravityVecZ", ValkyrienWarfareMod.gravity.Z);
+        tag.setDouble("physicsSpeed", ValkyrienWarfareMod.physSpeed);
+        tag.save();
+    }
 
-	public void registerCapibilities() {
-		CapabilityManager.INSTANCE.register(IAirshipCounterCapability.class, new StorageAirshipCounter(),
-				ImplAirshipCounterCapability.class);
-	}
+    public void registerCapibilities() {
+        CapabilityManager.INSTANCE.register(IAirshipCounterCapability.class, new StorageAirshipCounter(),
+                ImplAirshipCounterCapability.class);
+    }
 
-	/**
-	 * Checks instance of ServerProxy to avoid calling client code on server side
-	 *
-	 * @return
-	 */
-	public boolean isRunningOnClient() {
-		return !(proxy instanceof ServerProxy);
-	}
+    /**
+     * Checks instance of ServerProxy to avoid calling client code on server side
+     *
+     * @return
+     */
+    public boolean isRunningOnClient() {
+        return !(proxy instanceof ServerProxy);
+    }
 }

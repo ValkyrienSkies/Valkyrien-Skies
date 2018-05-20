@@ -16,13 +16,6 @@
 
 package valkyrienwarfare.physics.calculations;
 
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.concurrent.ConcurrentHashMap;
-
-import javax.vecmath.Matrix3d;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -49,6 +42,12 @@ import valkyrienwarfare.physics.management.ShipTransformationManager;
 import valkyrienwarfare.util.NBTUtils;
 import valkyrienwarfare.util.PhysicsSettings;
 
+import javax.vecmath.Matrix3d;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
+
 public class PhysicsCalculations {
 
     // Without this the physics feels too slow
@@ -59,26 +58,23 @@ public class PhysicsCalculations {
 
     public final PhysicsObject parent;
     public final WorldPhysicsCollider worldCollision;
-
+    // CopyOnWrite to provide concurrency between threads.
+    private final Set<BlockPos> activeForcePositions;
+    private final SortedSet<INodePhysicsProcessor> physicsTasks;
     public Vector gameTickCenterOfMass;
-    private Vector physCenterOfMass;
     public Vector linearMomentum;
     public Vector angularVelocity;
+    public boolean actAsArchimedes = false;
+    private Vector physCenterOfMass;
     private Vector torque;
     private double gameTickMass;
     // TODO: Get this in one day
     // private double physMass;
     // The time occurring on each PhysTick
     private double physTickTimeDelta;
-
-    // CopyOnWrite to provide concurrency between threads.
-    private final Set<BlockPos> activeForcePositions;
-    private final SortedSet<INodePhysicsProcessor> physicsTasks;
     private double[] gameMoITensor;
     private double[] physMOITensor;
     private double[] physInvMOITensor;
-    public boolean actAsArchimedes = false;
-
     private double physRoll, physPitch, physYaw;
     private double physX, physY, physZ;
 
@@ -392,7 +388,7 @@ public class PhysicsCalculations {
                                 pos, state, parent.wrapper, getPhysicsTimeDeltaPerPhysTick());
                         if (otherPosition != null) {
                             VWMath.getBodyPosWithOrientation(otherPosition, gameTickCenterOfMass, parent.coordTransform
-                                    .getCurrentPhysicsTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL),
+                                            .getCurrentPhysicsTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL),
                                     inBodyWO);
                         }
                     }
@@ -554,15 +550,14 @@ public class PhysicsCalculations {
 
     /**
      * @return The inverse moment of inertia tensor with local translation (0 vector
-     *         is at the center of mass), but rotated into world coordinates.
+     * is at the center of mass), but rotated into world coordinates.
      */
     public double[] getPhysInvMOITensor() {
         return physInvMOITensor;
     }
 
     /**
-     * @param physInvMOITensor
-     *            the physInvMOITensor to set
+     * @param physInvMOITensor the physInvMOITensor to set
      */
     private void setPhysInvMOITensor(double[] physInvMOITensor) {
         this.physInvMOITensor = physInvMOITensor;
@@ -570,7 +565,7 @@ public class PhysicsCalculations {
 
     /**
      * @return The moment of inertia tensor with local translation (0 vector is at
-     *         the center of mass), but rotated into world coordinates.
+     * the center of mass), but rotated into world coordinates.
      */
     public double[] getPhysMOITensor() {
         return this.physMOITensor;

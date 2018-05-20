@@ -27,15 +27,15 @@ import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import valkyrienwarfare.mod.event.EventsClient;
 import valkyrienwarfare.VWKeyHandler;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.api.addons.Module;
 import valkyrienwarfare.api.addons.ModuleProxy;
 import valkyrienwarfare.math.Quaternion;
-import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.client.render.PhysObjectRenderFactory;
+import valkyrienwarfare.mod.event.EventsClient;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public class ClientProxy extends CommonProxy {
 

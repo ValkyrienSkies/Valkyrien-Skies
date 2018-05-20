@@ -72,9 +72,9 @@ public class ValkyrienWarfareOC extends Module<ValkyrienWarfareOC> {
     }
 
     @Override
-	public void registerItems(RegistryEvent.Register<Item> event) {
-		registerItemBlock(event, gpsBlock);
-	}
+    public void registerItems(RegistryEvent.Register<Item> event) {
+        registerItemBlock(event, gpsBlock);
+    }
 
     @Override
     public void registerTileEntities() {

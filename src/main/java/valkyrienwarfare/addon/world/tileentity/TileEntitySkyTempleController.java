@@ -46,7 +46,7 @@ public class TileEntitySkyTempleController extends ImplPhysicsProcessorNodeTileE
         originPos = new Vector();
         orbitDistance = 0.0D;
     }
-    
+
     @Override
     public void onPhysicsTick(PhysicsObject object, PhysicsCalculations calculations, double secondsToSimulate) {
         if (calculations instanceof PhysicsCalculationsManualControl) {

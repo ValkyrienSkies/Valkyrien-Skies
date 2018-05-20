@@ -30,9 +30,8 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
  * coming from the physics tick and isn't exactly the same as the game tick;
  * this is done so that the client can see ship movement smoothly even when the
  * server game tick is lagging.
- * 
- * @author thebest108
  *
+ * @author thebest108
  */
 public class PhysWrapperPositionMessage implements IMessage {
 

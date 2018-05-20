@@ -16,10 +16,6 @@
 
 package valkyrienwarfare.mod.event;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
-
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityArmorStand;
@@ -70,6 +66,10 @@ import valkyrienwarfare.mod.physmanagement.interaction.ValkyrienWarfareWorldEven
 import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsTickHandler;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
 
 public class EventsCommon {
 
@@ -161,7 +161,7 @@ public class EventsCommon {
             try {
                 if (pos[0] != p.posX || pos[2] != p.posZ) { // Player has moved
                     if (Math.abs(p.posX) > 27000000 || Math.abs(p.posZ) > 27000000) { // Player is outside of world
-                                                                                      // border, tp them back
+                        // border, tp them back
                         p.attemptTeleport(pos[0], pos[1], pos[2]);
                         p.sendMessage(new TextComponentString(
                                 "You can't go beyond 27000000 blocks because airships are stored there!"));
@@ -268,7 +268,7 @@ public class EventsCommon {
     public void onJoin(PlayerLoggedInEvent event) {
         if (!event.player.world.isRemote) {
             EntityPlayerMP player = (EntityPlayerMP) event.player;
-            lastPositions.put(player, new Double[] { 0D, 256D, 0D });
+            lastPositions.put(player, new Double[]{0D, 256D, 0D});
 
             if (player.getName().equals("Drake_Eldridge") || player.getDisplayName().equals("Drake_Eldridge")) {
                 WorldServer server = (WorldServer) event.player.world;
@@ -307,8 +307,8 @@ public class EventsCommon {
                     event.getEntityPlayer()
                             .sendMessage(new TextComponentString("You need to be added to the airship to do that!"
                                     + (physObj.wrapping.creator == null || physObj.wrapping.creator.trim().isEmpty()
-                                            ? " Try using \"/airshipSettings claim\"!"
-                                            : "")));
+                                    ? " Try using \"/airshipSettings claim\"!"
+                                    : "")));
                     event.setCanceled(true);
                     return;
                 } else {
@@ -336,8 +336,8 @@ public class EventsCommon {
                     event.getPlayer()
                             .sendMessage(new TextComponentString("You need to be added to the airship to do that!"
                                     + (physObj.wrapping.creator == null || physObj.wrapping.creator.trim().isEmpty()
-                                            ? " Try using \"/airshipSettings claim\"!"
-                                            : "")));
+                                    ? " Try using \"/airshipSettings claim\"!"
+                                    : "")));
                     event.setCanceled(true);
                     return;
                 }
@@ -363,12 +363,12 @@ public class EventsCommon {
         if (physObj != null) {
             if (ValkyrienWarfareMod.runAirshipPermissions
                     && !(physObj.wrapping.creator.equals(event.getPlayer().entityUniqueID.toString())
-                            || physObj.wrapping.allowedUsers.contains(event.getPlayer().entityUniqueID.toString()))) {
+                    || physObj.wrapping.allowedUsers.contains(event.getPlayer().entityUniqueID.toString()))) {
                 event.getPlayer()
                         .sendMessage(new TextComponentString("You need to be added to the airship to do that!"
                                 + (physObj.wrapping.creator == null || physObj.wrapping.creator.trim().isEmpty()
-                                        ? " Try using \"/airshipSettings claim\"!"
-                                        : "")));
+                                ? " Try using \"/airshipSettings claim\"!"
+                                : "")));
                 event.setCanceled(true);
                 return;
             }

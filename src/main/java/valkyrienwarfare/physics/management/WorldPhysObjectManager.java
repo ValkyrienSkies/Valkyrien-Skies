@@ -16,6 +16,14 @@
 
 package valkyrienwarfare.physics.management;
 
+import net.minecraft.entity.Entity;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
+import net.minecraft.world.chunk.Chunk;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,14 +33,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
-import net.minecraft.world.chunk.Chunk;
-
 /**
  * This class essentially handles all the issues with ticking and handling
  * physics objects in the given world
@@ -41,10 +41,10 @@ import net.minecraft.world.chunk.Chunk;
  */
 public class WorldPhysObjectManager {
 
-    private final Map<ChunkPos, PhysicsWrapperEntity> chunkPosToPhysicsEntityMap;
     public final World worldObj;
     public final Set<PhysicsWrapperEntity> physicsEntities;
     public final List<PhysicsWrapperEntity> physicsEntitiesToUnload;
+    private final Map<ChunkPos, PhysicsWrapperEntity> chunkPosToPhysicsEntityMap;
     private final List<Callable<Void>> physCollisonCallables;
     private Future<Void> physicsThreadStatus;
 

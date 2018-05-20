@@ -23,8 +23,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 import valkyrienwarfare.addon.control.controlsystems.controlgui.ThrustModulatorGui;
-import valkyrienwarfare.addon.control.tileentity.TileEntityThrustModulator;
 import valkyrienwarfare.addon.control.tileentity.TileEntityHoverController;
+import valkyrienwarfare.addon.control.tileentity.TileEntityThrustModulator;
 
 public class ControlGUIHandler implements IGuiHandler {
 

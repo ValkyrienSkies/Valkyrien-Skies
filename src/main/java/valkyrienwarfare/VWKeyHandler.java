@@ -16,8 +16,6 @@
 
 package valkyrienwarfare;
 
-import org.lwjgl.input.Keyboard;
-
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -26,6 +24,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Keyboard;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.network.MessagePlayerStoppedPiloting;
 import valkyrienwarfare.addon.control.piloting.IShipPilotClient;

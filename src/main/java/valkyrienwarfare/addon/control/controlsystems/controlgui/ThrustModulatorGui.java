@@ -16,21 +16,20 @@
 
 package valkyrienwarfare.addon.control.controlsystems.controlgui;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.lang3.math.NumberUtils;
-import org.lwjgl.input.Keyboard;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.lwjgl.input.Keyboard;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.network.ThrustModulatorGuiInputMessage;
 import valkyrienwarfare.addon.control.tileentity.TileEntityThrustModulator;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ThrustModulatorGui extends GuiScreen {
 

@@ -47,7 +47,7 @@ public class PlayerShipRefrenceMessage implements IMessage {
         shipOn.wrapping.coordTransform.getCurrentTickTransform().transform(playerPosInLocal, TransformType.GLOBAL_TO_LOCAL);
         shipOn.wrapping.coordTransform.getCurrentTickTransform().rotate(velocityInLocal, TransformType.GLOBAL_TO_LOCAL);
         shipOn.wrapping.coordTransform.getCurrentTickTransform().rotate(playerLookVectorInLocal, TransformType.GLOBAL_TO_LOCAL);
-        
+
         shipInID = shipOn.getEntityId();
     }
 

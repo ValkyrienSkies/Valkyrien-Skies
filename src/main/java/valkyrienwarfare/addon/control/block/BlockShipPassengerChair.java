@@ -16,10 +16,6 @@
 
 package valkyrienwarfare.addon.control.block;
 
-import java.util.List;
-
-import javax.annotation.Nullable;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
@@ -40,6 +36,9 @@ import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+
+import javax.annotation.Nullable;
+import java.util.List;
 
 public class BlockShipPassengerChair extends Block {
 

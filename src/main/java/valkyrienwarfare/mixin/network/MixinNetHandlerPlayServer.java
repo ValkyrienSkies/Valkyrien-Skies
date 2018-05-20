@@ -16,13 +16,6 @@
 
 package valkyrienwarfare.mixin.network;
 
-import org.apache.logging.log4j.Logger;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
-
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.Packet;
@@ -31,6 +24,12 @@ import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
+import org.apache.logging.log4j.Logger;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import valkyrienwarfare.mod.physmanagement.interaction.EntityDraggable;
 import valkyrienwarfare.mod.physmanagement.interaction.IDraggable;
 import valkyrienwarfare.mod.physmanagement.interaction.INHPServerVW;
@@ -38,7 +37,10 @@ import valkyrienwarfare.mod.physmanagement.interaction.INHPServerVW;
 //TODO: a lot of these mixins can probably be done using overrides instead of overwrites, i should have a look at some point
 @Mixin(value = NetHandlerPlayServer.class, priority = 5)
 public abstract class MixinNetHandlerPlayServer implements INHPServerVW {
-    
+
+    @Shadow
+    @Final
+    public static Logger LOGGER;
     @Shadow
     public EntityPlayerMP player;
     @Shadow
@@ -65,17 +67,19 @@ public abstract class MixinNetHandlerPlayServer implements INHPServerVW {
     @Shadow
     public int movePacketCounter;
     @Shadow
-    @Final
-    public static Logger LOGGER;
-    @Shadow
     public int lastMovePacketCounter;
     @Shadow
     public boolean floating;
-    
+
     private double dummyBlockReachDist = 9999999999999999999999999999D;
     private double lastGoodBlockReachDist;
     // Thanks java
     private NetHandlerPlayServer thisAsNetHandler = NetHandlerPlayServer.class.cast(this);
+
+    @Shadow
+    private static boolean isMovePlayerPacketInvalid(CPacketPlayer packetIn) {
+        return false;
+    }
 
     @Redirect(method = "update",
             at = @At(value = "INVOKE",
@@ -123,21 +127,19 @@ public abstract class MixinNetHandlerPlayServer implements INHPServerVW {
     public EntityPlayerMP getEntityPlayerFromHandler() {
         return player;
     }
-    
+
     @Shadow
-    private static boolean isMovePlayerPacketInvalid(CPacketPlayer packetIn) {
-        return false;
+    public void disconnect(final ITextComponent textComponent) {
     }
-    
+
     @Shadow
-    public void disconnect(final ITextComponent textComponent) {}
-    
+    public void captureCurrentPosition() {
+    }
+
     @Shadow
-    public void captureCurrentPosition() {}
-    
-    @Shadow
-    public void setPlayerLocation(double x, double y, double z, float yaw, float pitch) {}
-    
+    public void setPlayerLocation(double x, double y, double z, float yaw, float pitch) {
+    }
+
     // Because of MCs bad coding I have to copy an entire method just to edit one line of code.
     /*
     @Overwrite

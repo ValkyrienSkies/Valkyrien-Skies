@@ -16,8 +16,6 @@
 
 package valkyrienwarfare.mod.physmanagement.interaction;
 
-import java.util.List;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
@@ -32,6 +30,8 @@ import valkyrienwarfare.mod.event.EventsClient;
 import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.physics.management.ShipTransformationManager;
+
+import java.util.List;
 
 public abstract class EntityDraggable {
     public static void tickAddedVelocityForWorld(World world) {

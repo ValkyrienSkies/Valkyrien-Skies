@@ -16,16 +16,8 @@
 
 package valkyrienwarfare.mod.command;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.annotation.Nullable;
-
 import com.google.common.collect.Lists;
-
 import net.minecraft.command.CommandBase;
-import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
@@ -36,6 +28,11 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class AirshipSettingsCommand extends CommandBase {
 
@@ -66,7 +63,7 @@ public class AirshipSettingsCommand extends CommandBase {
     }
 
     @Override
-    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+    public void execute(MinecraftServer server, ICommandSender sender, String[] args) {
         if (!(sender instanceof EntityPlayer)) {
             sender.sendMessage(new TextComponentString("You need to be a player to do that!"));
             return;
@@ -118,11 +115,11 @@ public class AirshipSettingsCommand extends CommandBase {
                 }
             } else if (args[0].equals("allowplayer")) {
                 if (args.length == 1) {
-                    StringBuilder result = new StringBuilder("<");
-                    Iterator<String> iter = wrapper.wrapping.allowedUsers.iterator();
-                    while (iter.hasNext()) {
-                        result.append(iter.next() + (iter.hasNext() ? ", " : ">"));
-                    }
+                    StringBuilder result = new StringBuilder();
+                    wrapper.wrapping.allowedUsers.forEach(s -> {
+                        result.append(s);
+                        result.append(" ");
+                    });
                     p.sendMessage(new TextComponentString(result.toString()));
                     return;
                 }

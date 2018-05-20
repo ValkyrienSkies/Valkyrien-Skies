@@ -16,9 +16,6 @@
 
 package valkyrienwarfare.physics.collision;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSlime;
 import net.minecraft.block.SoundType;
@@ -49,13 +46,16 @@ import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.physics.management.WorldPhysObjectManager;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class EntityCollisionInjector {
 
     private static final double errorSignificance = .001D;
 
     // Returns false if game should use default collision
     public static IntermediateMovementVariableStorage alterEntityMovement(Entity entity, MoverType type, double dx,
-            double dy, double dz) {
+                                                                          double dy, double dz) {
 
         Vector velVec = new Vector(dx, dy, dz);
         double origDx = dx;
@@ -314,7 +314,7 @@ public class EntityCollisionInjector {
         }
 
         if (/** entity.canTriggerWalking() **/
-        entity instanceof EntityPlayer && !entity.isRiding()) {
+                entity instanceof EntityPlayer && !entity.isRiding()) {
             if (dy != origDy) {
                 // if (!(entity.motionY > 0 && dy > 0)) {
                 block.onLanded(entity.world, entity);
@@ -339,9 +339,9 @@ public class EntityCollisionInjector {
                  * if (this.isInWater()) { float f = MathHelper.sqrt_double(this.motionX *
                  * this.motionX * 0.20000000298023224D + this.motionY * this.motionY +
                  * this.motionZ * this.motionZ * 0.20000000298023224D) * 0.35F;
-                 * 
+                 *
                  * if (f > 1.0F) { f = 1.0F; }
-                 * 
+                 *
                  * this.playSound(this.getSwimSound(), f, 1.0F + (this.rand.nextFloat() -
                  * this.rand.nextFloat()) * 0.4F); }
                  */
@@ -490,7 +490,7 @@ public class EntityCollisionInjector {
         public final float oldFallDistance;
 
         public IntermediateMovementVariableStorage(Vector dxyz, Vector origDxyz, Vector origPosXyz,
-                boolean alreadyOnGround, double motionYBefore, float oldFallDistance) {
+                                                   boolean alreadyOnGround, double motionYBefore, float oldFallDistance) {
             this.dxyz = dxyz;
             this.origDxyz = origDxyz;
             this.origPosXyz = origPosXyz;

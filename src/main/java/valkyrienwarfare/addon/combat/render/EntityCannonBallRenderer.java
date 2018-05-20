@@ -34,12 +34,11 @@ import valkyrienwarfare.mod.client.render.FastBlockModelRenderer;
 public class EntityCannonBallRenderer extends Render<EntityCannonBall> implements IRenderVW {
 
     public static IRenderVW instance;
+    private IBlockState cannonballState;
 
     {
         instance = this;
     }
-
-    private IBlockState cannonballState;
 
     protected EntityCannonBallRenderer(RenderManager renderManager) {
         super(renderManager);

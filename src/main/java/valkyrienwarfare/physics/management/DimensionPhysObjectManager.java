@@ -16,13 +16,13 @@
 
 package valkyrienwarfare.physics.management;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import valkyrienwarfare.mod.physmanagement.chunk.PhysicsChunkManager;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class DimensionPhysObjectManager {
 

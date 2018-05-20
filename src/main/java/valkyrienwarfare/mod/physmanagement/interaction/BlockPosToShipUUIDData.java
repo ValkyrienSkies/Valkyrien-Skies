@@ -16,17 +16,20 @@
 
 package valkyrienwarfare.mod.physmanagement.interaction;
 
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.MapStorage;
 import net.minecraft.world.storage.WorldSavedData;
-import valkyrienwarfare.util.NBTUtils;
 import valkyrienwarfare.mod.physmanagement.chunk.ChunkSet;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.util.NBTUtils;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
@@ -35,8 +38,8 @@ public class BlockPosToShipUUIDData extends WorldSavedData {
 
     private static final String key = "BlockPosToShipUUIDData";
     //Not the persistent map, used for performance reasons
-    private HashMap<Long, UUID> chunkposToShipUUID = new HashMap<Long, UUID>();
-    private HashMap<UUID, ChunkSet> UUIDToChunkSet = new HashMap<UUID, ChunkSet>();
+    private TLongObjectMap<UUID> chunkposToShipUUID = new TLongObjectHashMap<>();
+    private Map<UUID, ChunkSet> UUIDToChunkSet = new HashMap<>();
 
     public BlockPosToShipUUIDData(String name) {
         super(name);

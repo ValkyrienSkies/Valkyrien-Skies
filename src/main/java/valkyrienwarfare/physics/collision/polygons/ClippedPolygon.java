@@ -16,17 +16,17 @@
 
 package valkyrienwarfare.physics.collision.polygons;
 
+import valkyrienwarfare.api.Vector;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import valkyrienwarfare.api.Vector;
 
 public class ClippedPolygon extends Polygon {
 
     private final List<Vector> clippedVertices;
     private final List<Vector> clippedVerticesUnmodifiable;
-    
+
     public ClippedPolygon(Polygon other, Vector planeNormal, Vector planePos) {
         super(other);
         this.clippedVertices = new ArrayList<Vector>();
@@ -42,11 +42,11 @@ public class ClippedPolygon extends Polygon {
         // Nothing else should be editing this list.
         clippedVerticesUnmodifiable = Collections.unmodifiableList(clippedVertices);
     }
-    
+
     public List<Vector> getUnmodifiableClippedVertices() {
         return clippedVerticesUnmodifiable;
     }
-    
+
     private boolean isVerticeInFrontOfCullingPlane(Vector vertice, Vector planeNormal, Vector planePos) {
         Vector difference = vertice.getSubtraction(planePos);
         // If its less than zero, we are behind the culling plane, so we do not cull this point

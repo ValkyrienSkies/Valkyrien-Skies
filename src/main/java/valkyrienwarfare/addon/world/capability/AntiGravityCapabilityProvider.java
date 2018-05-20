@@ -25,7 +25,7 @@ import valkyrienwarfare.addon.world.ValkyrienWarfareWorld;
 public class AntiGravityCapabilityProvider implements ICapabilitySerializable<NBTTagDouble> {
 
     private ICapabilityAntiGravity inst = ValkyrienWarfareWorld.ANTI_GRAVITY_CAPABILITY.getDefaultInstance();
-    
+
     @Override
     public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
         return capability == ValkyrienWarfareWorld.ANTI_GRAVITY_CAPABILITY;

@@ -62,7 +62,8 @@ public class PhysicsChunkManager {
         int chunkZ = zChunkStartingPos;
 
         if (data.avalibleChunkKeys.size() < 0) {
-            chunkX = data.avalibleChunkKeys.remove(0);
+            chunkX = data.avalibleChunkKeys.get(0);
+            data.avalibleChunkKeys.remove(0);
         } else {
             nextChunkSetKey += chunkSetIncrement;
             data.chunkKey = nextChunkSetKey;

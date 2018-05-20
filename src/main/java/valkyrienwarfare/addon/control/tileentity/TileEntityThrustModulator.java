@@ -36,9 +36,9 @@ import valkyrienwarfare.physics.management.PhysicsObject;
 public class TileEntityThrustModulator extends ImplPhysicsProcessorNodeTileEntity implements SimpleComponent {
 
     public static final int PHYSICS_PROCESSOR_PRIORITY = 100;
+    private final ShipPulseImpulseControlSystem controlSystem;
     public double idealYHeight = 25D;
     public double maximumYVelocity = 10D;
-    private final ShipPulseImpulseControlSystem controlSystem;
 
     // Initialize this ThrustModulatorTileEntity with a default priority of 100.
     public TileEntityThrustModulator() {
@@ -93,13 +93,14 @@ public class TileEntityThrustModulator extends ImplPhysicsProcessorNodeTileEntit
         boolean success = false;
         try {
             ThrustModulatorGuiInputMessage msg = new ThrustModulatorGuiInputMessage();
-            msg.idealYHeight = (float)args.checkDouble(0);
-            msg.maximumYVelocity = (float)maximumYVelocity;
+            msg.idealYHeight = (float) args.checkDouble(0);
+            msg.maximumYVelocity = (float) maximumYVelocity;
 
             handleGUIInput(msg, null);
             success = true;
-        } catch (IllegalArgumentException e) { }
-        return new Object[]{ success };
+        } catch (IllegalArgumentException e) {
+        }
+        return new Object[]{success};
     }
 
     @Callback
@@ -108,12 +109,13 @@ public class TileEntityThrustModulator extends ImplPhysicsProcessorNodeTileEntit
         boolean success = false;
         try {
             ThrustModulatorGuiInputMessage msg = new ThrustModulatorGuiInputMessage();
-            msg.idealYHeight = (float)idealYHeight;
-            msg.maximumYVelocity = (float)args.checkDouble(0);
+            msg.idealYHeight = (float) idealYHeight;
+            msg.maximumYVelocity = (float) args.checkDouble(0);
 
             handleGUIInput(msg, null);
             success = true;
-        } catch (IllegalArgumentException e) {  }
-        return new Object[]{ success };
+        } catch (IllegalArgumentException e) {
+        }
+        return new Object[]{success};
     }
 }

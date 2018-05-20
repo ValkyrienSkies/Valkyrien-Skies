@@ -16,13 +16,8 @@
 
 package valkyrienwarfare.mod.physmanagement.interaction;
 
-import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.UUID;
-
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.MapStorage;
@@ -33,136 +28,135 @@ import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.util.NBTUtils;
 
+import java.nio.ByteBuffer;
+import java.util.UUID;
+
 public class ShipUUIDToPosData extends WorldSavedData {
 
-	public static final String SHIP_UUID_TO_POS_DATA_KEY = "ShipUUIDToPosData";
-	private final Map<Long, ShipPositionData> dataMap;
+    public static final String SHIP_UUID_TO_POS_DATA_KEY = "ShipUUIDToPosData";
+    private final TLongObjectMap<ShipPositionData> dataMap = new TLongObjectHashMap<>();
 
-	public ShipUUIDToPosData(String name) {
-		super(name);
-		dataMap = new HashMap<Long, ShipPositionData>();
-	}
+    public ShipUUIDToPosData(String name) {
+        super(name);
+    }
 
-	public ShipUUIDToPosData() {
-		this(SHIP_UUID_TO_POS_DATA_KEY);
-	}
+    public ShipUUIDToPosData() {
+        this(SHIP_UUID_TO_POS_DATA_KEY);
+    }
 
-	public static ShipUUIDToPosData getShipUUIDDataForWorld(World world) {
-		MapStorage storage = world.getPerWorldStorage();
-		ShipUUIDToPosData data = (ShipUUIDToPosData) storage.getOrLoadData(ShipUUIDToPosData.class, SHIP_UUID_TO_POS_DATA_KEY);
-		if (data == null) {
-			data = new ShipUUIDToPosData();
-			world.setData(SHIP_UUID_TO_POS_DATA_KEY, data);
-		}
-		return data;
-	}
+    public static ShipUUIDToPosData getShipUUIDDataForWorld(World world) {
+        MapStorage storage = world.getPerWorldStorage();
+        ShipUUIDToPosData data = (ShipUUIDToPosData) storage.getOrLoadData(ShipUUIDToPosData.class, SHIP_UUID_TO_POS_DATA_KEY);
+        if (data == null) {
+            data = new ShipUUIDToPosData();
+            world.setData(SHIP_UUID_TO_POS_DATA_KEY, data);
+        }
+        return data;
+    }
 
-	public ShipPositionData getShipPositionData(UUID shipID) {
-		return dataMap.get(shipID.getMostSignificantBits());
-	}
+    public ShipPositionData getShipPositionData(UUID shipID) {
+        return dataMap.get(shipID.getMostSignificantBits());
+    }
 
-	public ShipPositionData getShipPositionData(long mostSigBits) {
-		return dataMap.get(mostSigBits);
-	}
+    public ShipPositionData getShipPositionData(long mostSigBits) {
+        return dataMap.get(mostSigBits);
+    }
 
-	public void updateShipPosition(PhysicsWrapperEntity wrapper) {
-		UUID entityID = wrapper.getPersistentID();
-		long key = entityID.getMostSignificantBits();
-		ShipPositionData data = dataMap.get(key);
-		if (data != null) {
-			data.updateData(wrapper);
-		} else {
-			data = new ShipPositionData(wrapper);
-			dataMap.put(key, data);
-		}
-		markDirty();
-	}
+    public void updateShipPosition(PhysicsWrapperEntity wrapper) {
+        UUID entityID = wrapper.getPersistentID();
+        long key = entityID.getMostSignificantBits();
+        ShipPositionData data = dataMap.get(key);
+        if (data != null) {
+            data.updateData(wrapper);
+        } else {
+            data = new ShipPositionData(wrapper);
+            dataMap.put(key, data);
+        }
+        markDirty();
+    }
 
-	public void removeShipFromMap(PhysicsWrapperEntity wrapper) {
-		UUID entityID = wrapper.getPersistentID();
-		// TODO: Check if this is safe / correct.
-		dataMap.remove(entityID.getMostSignificantBits());
-		markDirty();
-	}
+    public void removeShipFromMap(PhysicsWrapperEntity wrapper) {
+        UUID entityID = wrapper.getPersistentID();
+        // TODO: Check if this is safe / correct.
+        dataMap.remove(entityID.getMostSignificantBits());
+        markDirty();
+    }
 
-	@Override
-	public void readFromNBT(NBTTagCompound nbt) {
-		ByteBuffer buffer = NBTUtils.getByteBuf("ShipPositionByteBuf", nbt);
-		while (buffer.hasRemaining()) {
-			long mostBits = buffer.getLong();
-			ShipPositionData data = new ShipPositionData(buffer);
-			dataMap.put(mostBits, data);
-		}
-	}
+    @Override
+    public void readFromNBT(NBTTagCompound nbt) {
+        ByteBuffer buffer = NBTUtils.getByteBuf("ShipPositionByteBuf", nbt);
+        while (buffer.hasRemaining()) {
+            long mostBits = buffer.getLong();
+            ShipPositionData data = new ShipPositionData(buffer);
+            dataMap.put(mostBits, data);
+        }
+    }
 
-	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-		Set<Entry<Long, ShipPositionData>> entries = dataMap.entrySet();
+    @Override
+    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+        // Each ship has 19 floats, and 1 long; that comes out (19 * 4 + 1 * 8) = 84
+        // bytes per ship
+        int byteArraySize = dataMap.size() * 84;
+        ByteBuffer buffer = ByteBuffer.allocate(byteArraySize);
+        dataMap.forEachEntry((k, v) -> {
+            buffer.putLong(k);
+            v.writeToByteBuffer(buffer);
+            return true;
+        });
+        NBTUtils.setByteBuf("ShipPositionByteBuf", buffer, compound);
+        return compound;
+    }
 
-		// Each ship has 19 floats, and 1 long; that comes out (19 * 4 + 1 * 8) = 84
-		// bytes per ship
-		int byteArraySize = entries.size() * 84;
-		ByteBuffer buffer = ByteBuffer.allocate(byteArraySize);
-		for (Entry<Long, ShipPositionData> entry : entries) {
-			long mostBits = entry.getKey();
-			ShipPositionData posData = entry.getValue();
-			buffer.putLong(mostBits);
-			posData.writeToByteBuffer(buffer);
-		}
-		NBTUtils.setByteBuf("ShipPositionByteBuf", buffer, compound);
-		return compound;
-	}
+    public class ShipPositionData {
 
-	public class ShipPositionData {
-	    
-		private final Vector shipPosition;
-		private final float[] lToWTransform;
+        private final Vector shipPosition;
+        private final float[] lToWTransform;
 
-		private ShipPositionData(PhysicsWrapperEntity wrapper) {
-			shipPosition = new Vector(wrapper.posX, wrapper.posY, wrapper.posZ);
-			lToWTransform = RotationMatrices.convertToFloat(wrapper.wrapping.coordTransform.getCurrentTickTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL));
-		}
+        private ShipPositionData(PhysicsWrapperEntity wrapper) {
+            shipPosition = new Vector(wrapper.posX, wrapper.posY, wrapper.posZ);
+            lToWTransform = RotationMatrices.convertToFloat(wrapper.wrapping.coordTransform.getCurrentTickTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL));
+        }
 
-		private ShipPositionData(ByteBuffer buffer) {
-			shipPosition = new Vector(buffer.getFloat(), buffer.getFloat(), buffer.getFloat());
-			lToWTransform = new float[16];
-			for (int i = 0; i < 16; i++) {
-				lToWTransform[i] = buffer.getFloat();
-			}
-		}
+        private ShipPositionData(ByteBuffer buffer) {
+            shipPosition = new Vector(buffer.getFloat(), buffer.getFloat(), buffer.getFloat());
+            lToWTransform = new float[16];
+            for (int i = 0; i < 16; i++) {
+                lToWTransform[i] = buffer.getFloat();
+            }
+        }
 
-		private void writeToByteBuffer(ByteBuffer buffer) {
-			buffer.putFloat((float) shipPosition.X);
-			buffer.putFloat((float) shipPosition.Y);
-			buffer.putFloat((float) shipPosition.Z);
-			for (int i = 0; i < 16; i++) {
-				buffer.putFloat(lToWTransform[i]);
-			}
-		}
+        private void writeToByteBuffer(ByteBuffer buffer) {
+            buffer.putFloat((float) shipPosition.X);
+            buffer.putFloat((float) shipPosition.Y);
+            buffer.putFloat((float) shipPosition.Z);
+            for (int i = 0; i < 16; i++) {
+                buffer.putFloat(lToWTransform[i]);
+            }
+        }
 
-		private void updateData(PhysicsWrapperEntity wrapper) {
-			shipPosition.X = wrapper.posX;
-			shipPosition.Y = wrapper.posY;
-			shipPosition.Z = wrapper.posZ;
-			RotationMatrices.convertToFloat(wrapper.wrapping.coordTransform.getCurrentTickTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL), lToWTransform);
-		}
+        private void updateData(PhysicsWrapperEntity wrapper) {
+            shipPosition.X = wrapper.posX;
+            shipPosition.Y = wrapper.posY;
+            shipPosition.Z = wrapper.posZ;
+            RotationMatrices.convertToFloat(wrapper.wrapping.coordTransform.getCurrentTickTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL), lToWTransform);
+        }
 
-		public double getPosX() {
-			return shipPosition.X;
-		}
+        public double getPosX() {
+            return shipPosition.X;
+        }
 
-		public double getPosY() {
-			return shipPosition.Y;
-		}
+        public double getPosY() {
+            return shipPosition.Y;
+        }
 
-		public double getPosZ() {
-			return shipPosition.Z;
-		}
+        public double getPosZ() {
+            return shipPosition.Z;
+        }
 
-		// Returns a copy of of the lToWTransform as a double array.
-		public double[] getLToWTransform() {
-			return RotationMatrices.convertToDouble(lToWTransform);
-		}
-	}
+        // Returns a copy of of the lToWTransform as a double array.
+        public double[] getLToWTransform() {
+            return RotationMatrices.convertToDouble(lToWTransform);
+        }
+    }
 
 }

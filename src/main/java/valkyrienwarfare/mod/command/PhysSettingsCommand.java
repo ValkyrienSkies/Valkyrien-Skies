@@ -16,14 +16,7 @@
 
 package valkyrienwarfare.mod.command;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.annotation.Nullable;
-
 import com.google.common.collect.Lists;
-
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -33,6 +26,11 @@ import net.minecraft.util.text.TextComponentString;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.util.PhysicsSettings;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class PhysSettingsCommand extends CommandBase {
 

@@ -110,7 +110,7 @@ public class ValkyrienWarfareWorld extends Module<ValkyrienWarfareWorldGen> {
     protected void registerCapabilities() {
         CapabilityManager.INSTANCE.register(ICapabilityAntiGravity.class, new StorageAntiGravity(), ImplCapabilityAntiGravity.class);
     }
-    
+
     @Override
     public void applyConfig(Configuration config) {
 

@@ -16,18 +16,17 @@
 
 package valkyrienwarfare.mixin.entity;
 
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.mod.physmanagement.interaction.IDraggable;
@@ -37,12 +36,6 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 @Mixin(Entity.class)
 public abstract class MixinEntity implements IDraggable {
 
-    private PhysicsWrapperEntity worldBelowFeet;
-    private Vector velocityAddedToPlayer = new Vector();
-    private double yawDifVelocity;
-    private boolean cancelNextMove = false;
-    private Vector positionInShipSpace;
-    private Vector velocityInShipSpace;
     @Shadow
     public float rotationYaw;
     @Shadow
@@ -60,6 +53,12 @@ public abstract class MixinEntity implements IDraggable {
     @Shadow
     public double posZ;
     IDraggable thisAsDraggable = IDraggable.class.cast(this);
+    private PhysicsWrapperEntity worldBelowFeet;
+    private Vector velocityAddedToPlayer = new Vector();
+    private double yawDifVelocity;
+    private boolean cancelNextMove = false;
+    private Vector positionInShipSpace;
+    private Vector velocityInShipSpace;
     private Vector searchVector = null;
 
     @Override
@@ -102,29 +101,29 @@ public abstract class MixinEntity implements IDraggable {
      * = @At("HEAD"), cancellable = true) public void preMove(MoverType type, double
      * dx, double dy, double dz, CallbackInfo callbackInfo) { if(cancelNextMove){
      * cancelNextMove = false; cancelNextMove2 = true; return; }
-     * 
+     *
      * if(cancelNextMove2){ cancelNextMove2 = false; callbackInfo.cancel(); return;
      * }
-     * 
+     *
      * double movDistSq = (dx * dx) + (dy * dy) + (dz * dz); if (movDistSq > 10000)
      * { //Assume this will take us to Ship coordinates double newX = this.posX +
      * dx; double newY = this.posY + dy; double newZ = this.posZ + dz; BlockPos
      * newPosInBlock = new BlockPos(newX, newY, newZ);
-     * 
+     *
      * PhysicsWrapperEntity wrapper =
      * ValkyrienWarfareMod.physicsManager.getObjectManagingPos(this.world,
      * newPosInBlock);
-     * 
+     *
      * if (wrapper == null) { // Just forget this even happened
      * callbackInfo.cancel(); return; }
-     * 
+     *
      * Vector endPos = new Vector(newX, newY, newZ);
      * RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.
      * wToLTransform, endPos);
-     * 
+     *
      * dx = endPos.X - this.posX; dy = endPos.Y - this.posY; dz = endPos.Z -
      * this.posZ; }
-     * 
+     *
      * //callbackInfo.cancel() gets called by the method directly now
      * if(EntityCollisionInjector.alterEntityMovement(thisClassAsAnEntity, dx, dy,
      * dz, callbackInfo)){ // callbackInfo.cancel(); } }

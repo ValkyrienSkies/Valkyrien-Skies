@@ -16,8 +16,6 @@
 
 package valkyrienwarfare.addon.control.renderer;
 
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -25,6 +23,7 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import org.lwjgl.opengl.GL11;
 import valkyrienwarfare.addon.control.nodenetwork.BasicNodeTileEntity;
 import valkyrienwarfare.addon.control.nodenetwork.Node;
 
@@ -79,7 +78,7 @@ public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer {
     }
 
     protected void renderWire(double x, double y, double z, double entity1x, double entity1y, double entity1z,
-            double entity2x, double entity2y, double entity2z) {
+                              double entity2x, double entity2y, double entity2z) {
         // Vec3d vec = new Vec3d(x,y,z);
         // if (vec.lengthSquared() < .01D) {
         // System.out.println("REE");
@@ -88,9 +87,9 @@ public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
         double d0 = 0;// this.interpolateValue(entity.prevRotationYaw, entity.rotationYaw,
-                      // partialTicks * 0.5F) * 0.01745329238474369D;
+        // partialTicks * 0.5F) * 0.01745329238474369D;
         double d1 = 0;// this.interpolateValue(entity.prevRotationPitch, entity.rotationPitch,
-                      // partialTicks * 0.5F) * 0.01745329238474369D;
+        // partialTicks * 0.5F) * 0.01745329238474369D;
         double d2 = Math.cos(d0);
         double d3 = Math.sin(d0);
         double d4 = Math.sin(d1);

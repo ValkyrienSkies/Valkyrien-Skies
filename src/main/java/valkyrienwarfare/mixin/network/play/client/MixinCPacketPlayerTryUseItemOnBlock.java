@@ -18,11 +18,11 @@ package valkyrienwarfare.mixin.network.play.client;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetHandlerPlayServer;
-import net.minecraft.network.PacketThreadUtil;
 import net.minecraft.network.play.INetHandlerPlayServer;
 import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
 import net.minecraft.util.math.BlockPos;
@@ -33,30 +33,42 @@ import valkyrienwarfare.mod.physmanagement.interaction.PlayerDataBackup;
 import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
-@Mixin(CPacketPlayerTryUseItemOnBlock.class)
+@Mixin(value = CPacketPlayerTryUseItemOnBlock.class, priority = 1005)
 public abstract class MixinCPacketPlayerTryUseItemOnBlock {
 
-    @Redirect(method = "processPacket", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/play/INetHandlerPlayServer;processTryUseItemOnBlock(Lnet/minecraft/network/play/client/CPacketPlayerTryUseItemOnBlock;)V"))
-    public void handleUseItemPacket(INetHandlerPlayServer server, CPacketPlayerTryUseItemOnBlock packetIn) {
+    private final CPacketPlayerTryUseItemOnBlock thisPacketTryUse = CPacketPlayerTryUseItemOnBlock.class.cast(this);
+    private PlayerDataBackup playerBackup;
+
+    @Inject(method = "processPacket", at = @At(value = "HEAD"))
+    public void preHandleUseItemPacket(INetHandlerPlayServer server, CallbackInfo info) {
         INHPServerVW vw = (INHPServerVW) (NetHandlerPlayServer) server;
         EntityPlayerMP player = vw.getEntityPlayerFromHandler();
-        PacketThreadUtil.checkThreadAndEnqueue(CPacketPlayerTryUseItemOnBlock.class.cast(this), server, player.getServerWorld());
-        
-        BlockPos packetPos = packetIn.getPos();
-        PlayerDataBackup playerBackup = new PlayerDataBackup(player);
+        if (player.getServerWorld().isCallingFromMinecraftThread()) {
+            BlockPos packetPos = thisPacketTryUse.getPos();
+            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.world,
+                    packetPos);
+            if (wrapper != null && wrapper.wrapping.coordTransform != null) {
+                playerBackup = new PlayerDataBackup(player);
+                RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.getCurrentTickTransform(), player,
+                        TransformType.GLOBAL_TO_LOCAL);
+            }
+        }
+    }
 
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.world, packetPos);
-        if (wrapper != null && wrapper.wrapping.coordTransform != null) {
-            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.getCurrentTickTransform(), player,
-                    TransformType.GLOBAL_TO_LOCAL);
-        }
-        try {
-            server.processTryUseItemOnBlock(packetIn);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        if (wrapper != null && wrapper.wrapping.coordTransform != null) {
-            playerBackup.restorePlayerToBackup();
+    @Inject(method = "processPacket", at = @At(value = "TAIL"))
+    public void postHandleUseItemPacket(INetHandlerPlayServer server, CallbackInfo info) {
+        INHPServerVW vw = (INHPServerVW) (NetHandlerPlayServer) server;
+        EntityPlayerMP player = vw.getEntityPlayerFromHandler();
+        if (player.getServerWorld().isCallingFromMinecraftThread()) {
+            BlockPos packetPos = thisPacketTryUse.getPos();
+            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.world,
+                    packetPos);
+            if (wrapper != null && wrapper.wrapping.coordTransform != null) {
+                playerBackup.restorePlayerToBackup();
+                // RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.getCurrentTickTransform(),
+                // player,
+                // TransformType.LOCAL_TO_GLOBAL);
+            }
         }
     }
 

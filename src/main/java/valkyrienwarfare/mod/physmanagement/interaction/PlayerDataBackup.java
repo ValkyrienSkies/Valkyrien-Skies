@@ -47,7 +47,6 @@ public class PlayerDataBackup {
         motionX = playerToBackup.motionX;
         motionY = playerToBackup.motionY;
         motionZ = playerToBackup.motionZ;
-        blockReachDistance = playerToBackup.getEntityAttribute(EntityPlayer.REACH_DISTANCE).getAttributeValue();
     }
 
     public void restorePlayerToBackup() {
@@ -65,6 +64,5 @@ public class PlayerDataBackup {
         playerToBackup.motionX = motionX;
         playerToBackup.motionY = motionY;
         playerToBackup.motionZ = motionZ;
-        playerToBackup.getEntityAttribute(EntityPlayer.REACH_DISTANCE).setBaseValue(blockReachDistance);
     }
 }

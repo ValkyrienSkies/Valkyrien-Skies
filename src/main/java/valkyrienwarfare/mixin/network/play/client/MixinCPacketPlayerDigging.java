@@ -18,12 +18,11 @@ package valkyrienwarfare.mixin.network.play.client;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetHandlerPlayServer;
-import net.minecraft.network.PacketThreadUtil;
 import net.minecraft.network.play.INetHandlerPlayServer;
 import net.minecraft.network.play.client.CPacketPlayerDigging;
 import net.minecraft.util.math.BlockPos;
@@ -37,30 +36,39 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 @Mixin(CPacketPlayerDigging.class)
 public abstract class MixinCPacketPlayerDigging {
 
-	@Redirect(method = "processPacket", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/play/INetHandlerPlayServer;processPlayerDigging(Lnet/minecraft/network/play/client/CPacketPlayerDigging;)V"))
-	public void handleDiggingPacket(INetHandlerPlayServer server, CPacketPlayerDigging packetIn) {
-	    INHPServerVW vw = (INHPServerVW) (NetHandlerPlayServer) server;
+    private final CPacketPlayerDigging thisPacketTryUse = CPacketPlayerDigging.class.cast(this);
+    private PlayerDataBackup playerBackup;
+
+    @Inject(method = "processPacket", at = @At(value = "HEAD"))
+    public void preHandleUseItemPacket(INetHandlerPlayServer server, CallbackInfo info) {
+        INHPServerVW vw = (INHPServerVW) (NetHandlerPlayServer) server;
         EntityPlayerMP player = vw.getEntityPlayerFromHandler();
-        player.getEntityAttribute(EntityPlayer.REACH_DISTANCE).setBaseValue(vw.dummyBlockReachDist());
-        PacketThreadUtil.checkThreadAndEnqueue(CPacketPlayerDigging.class.cast(this), server, player.getServerWorld());
-        
-        BlockPos packetPos = packetIn.getPosition();
-        PlayerDataBackup playerBackup = new PlayerDataBackup(player);
+        if (player.getServerWorld().isCallingFromMinecraftThread()) {
+            BlockPos packetPos = thisPacketTryUse.getPosition();
+            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.world,
+                    packetPos);
+            if (wrapper != null && wrapper.wrapping.coordTransform != null) {
+                playerBackup = new PlayerDataBackup(player);
+                RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.getCurrentTickTransform(), player,
+                        TransformType.GLOBAL_TO_LOCAL);
+            }
+        }
+    }
 
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.world, packetPos);
-        if (wrapper != null && wrapper.wrapping.coordTransform != null) {
-            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.getCurrentTickTransform(), player,
-                    TransformType.GLOBAL_TO_LOCAL);
-            player.getEntityAttribute(EntityPlayer.REACH_DISTANCE).setBaseValue(vw.dummyBlockReachDist());
+    @Inject(method = "processPacket", at = @At(value = "TAIL"))
+    public void postHandleUseItemPacket(INetHandlerPlayServer server, CallbackInfo info) {
+        INHPServerVW vw = (INHPServerVW) (NetHandlerPlayServer) server;
+        EntityPlayerMP player = vw.getEntityPlayerFromHandler();
+        if (player.getServerWorld().isCallingFromMinecraftThread()) {
+            BlockPos packetPos = thisPacketTryUse.getPosition();
+            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.world,
+                    packetPos);
+            if (wrapper != null && wrapper.wrapping.coordTransform != null) {
+                playerBackup.restorePlayerToBackup();
+                // RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.getCurrentTickTransform(),
+                // player,
+                // TransformType.LOCAL_TO_GLOBAL);
+            }
         }
-        try {
-            server.processPlayerDigging(packetIn);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        if (wrapper != null && wrapper.wrapping.coordTransform != null) {
-            playerBackup.restorePlayerToBackup();
-        }
-	}
-
+    }
 }

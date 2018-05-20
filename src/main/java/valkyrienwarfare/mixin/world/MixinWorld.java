@@ -62,7 +62,7 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.physics.management.WorldPhysObjectManager;
 
 //TODO this class is horrible
-@Mixin(value = World.class, priority = 5)
+@Mixin(value = World.class, priority = 1005)
 @Implements(@Interface(iface = WorldChunkloadingCrashFix.class, prefix = "vw$", remap = Remap.NONE))
 public abstract class MixinWorld implements IWorldVW {
 
@@ -291,30 +291,14 @@ public abstract class MixinWorld implements IWorldVW {
 
     /*
      * @Inject(method =
-     * "setBlockState(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/state/IBlockState;I)Z",
-     * at = @At("TAIL")) public void duringMarkAndNotifyBlock(BlockPos pos,
-     * IBlockState newState, int flags, CallbackInfoReturnable callbackInfo) {
-     * BlockSnapshot blockSnapshot =
-     * BlockSnapshot.getBlockSnapshot(thisClassAsWorld, pos, flags); IBlockState
-     * oldState = blockSnapshot.getReplacedBlock(); // this.getBlockState(pos);
-     * PhysicsWrapperEntity wrapper =
+     * "markAndNotifyBlock(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/world/chunk/Chunk;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/block/state/IBlockState;I)V",
+     * at = @At("HEAD")) public void preMarkAndNotifyBlock(BlockPos pos, Chunk
+     * chunk, IBlockState oldState, IBlockState newState, int flags, CallbackInfo
+     * callbackInfo) { PhysicsWrapperEntity wrapper =
      * ValkyrienWarfareMod.physicsManager.getObjectManagingPos(World.class.cast(this
      * ), pos); if (wrapper != null) { System.out.println("Got the state 1");
      * wrapper.wrapping.onSetBlockState(oldState, newState, pos); } }
      */
-
-    /*
-    @Inject(method = "markAndNotifyBlock(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/world/chunk/Chunk;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/block/state/IBlockState;I)V", at = @At("HEAD"))
-    public void preMarkAndNotifyBlock(BlockPos pos, Chunk chunk, IBlockState oldState, IBlockState newState, int flags,
-            CallbackInfo callbackInfo) {
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(World.class.cast(this),
-                pos);
-        if (wrapper != null) {
-            System.out.println("Got the state 1");
-            wrapper.wrapping.onSetBlockState(oldState, newState, pos);
-        }
-    }
-    */
 
     // TODO: Something about this is just too buggy to work reliably
     /*

@@ -32,6 +32,11 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+/**
+ * Like a regular falling block, but it falls up.
+ * @author thebest108
+ *
+ */
 public class EntityFallingUpBlock extends EntityFallingBlock {
 
     public EntityFallingUpBlock(World worldIn) {

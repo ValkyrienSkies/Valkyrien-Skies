@@ -351,7 +351,7 @@ public class EventsCommon {
         // System.out.println(newState.getBlock().getLocalizedName());
         PhysicsWrapperEntity physObj = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
         if (physObj != null) {
-            physObj.wrapping.onSetBlockState(oldState, newState, pos);
+            // physObj.wrapping.onSetBlockState(oldState, newState, pos);
             // System.out.println("Sucess!");
         }
     }

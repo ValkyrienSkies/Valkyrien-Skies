@@ -8,6 +8,7 @@
     "entity.MixinEntityLivingBase",
     "tileentity.MixinTileEntity",
     "world.MixinWorld",
+    "world.MixinWorldServer",
     "world.chunk.MixinChunk",
     "world.chunk.MixinBlockStateContainer",
     "entity.MixinEntityIntrinsic",

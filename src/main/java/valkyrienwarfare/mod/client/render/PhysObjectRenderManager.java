@@ -140,7 +140,11 @@ public class PhysObjectRenderManager {
                             && chunkZ - parent.ownedChunks.minZ < renderChunks[0].length) {
                         PhysRenderChunk renderChunk = renderChunks[chunkX - parent.ownedChunks.minX][chunkZ
                                 - parent.ownedChunks.minZ];
-                        renderChunk.updateLayers(minBlockArrayY, maxBlockArrayY);
+                        if (renderChunk != null) {
+                            renderChunk.updateLayers(minBlockArrayY, maxBlockArrayY);
+                        } else {
+                            System.err.println("SHIP RENDER CHUNK CAME OUT NULL! THIS IS VERY WRONG!!");
+                        }
                     } else {
                         // ValkyrienWarfareMod.VWLogger.info("updateRange Just attempted to update
                         // blocks outside of a Ship's block Range. ANY ERRORS PAST THIS ARE LIKELY
@@ -223,8 +227,10 @@ public class PhysObjectRenderManager {
     }
 
     public Quaternion getSmoothRotationQuat(double partialTick) {
-        Quaternion oneTickBefore = parent.coordTransform.getPrevTickTransform().createRotationQuaternion(TransformType.LOCAL_TO_GLOBAL);
-        Quaternion nextQuat = parent.coordTransform.getCurrentTickTransform().createRotationQuaternion(TransformType.LOCAL_TO_GLOBAL);
+        Quaternion oneTickBefore = parent.coordTransform.getPrevTickTransform()
+                .createRotationQuaternion(TransformType.LOCAL_TO_GLOBAL);
+        Quaternion nextQuat = parent.coordTransform.getCurrentTickTransform()
+                .createRotationQuaternion(TransformType.LOCAL_TO_GLOBAL);
         return Quaternion.getBetweenQuat(oneTickBefore, nextQuat, partialTick);
     }
 

@@ -16,22 +16,25 @@
 
 package valkyrienwarfare;
 
-import net.minecraftforge.fml.common.FMLLog;
+import java.util.List;
+import java.util.Set;
+
 import org.spongepowered.asm.lib.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
-import java.util.List;
-import java.util.Set;
+import net.minecraftforge.fml.common.FMLLog;
 
 public class MixinLoadManager implements IMixinConfigPlugin {
+
     public static boolean isSpongeEnabled;
 
     @Override
     public void onLoad(String mixinPackage) {
         isSpongeEnabled = isSponge();
         if (isSpongeEnabled) {
-            FMLLog.bigWarning("SpongeForge has been detected. This will cause problems with Valkyrien Warfare, no doubt.");
+            FMLLog.bigWarning(
+                    "SpongeForge has been detected. This will cause problems with Valkyrien Warfare, no doubt.");
         } else {
             FMLLog.info("Sponge ain't here! Everything is good and also nice");
         }
@@ -46,7 +49,13 @@ public class MixinLoadManager implements IMixinConfigPlugin {
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
         if (isSpongeEnabled) {
             if (mixinClassName.startsWith("valkyrienwarfare.mixin.world.MixinExplosion")) {
-                FMLLog.bigWarning("Not loading valkyrienwarfare.mixin.world.MixinExplosion because SpongeForge is enabled!");
+                FMLLog.bigWarning(
+                        "Not loading valkyrienwarfare.mixin.world.MixinExplosion because SpongeForge is enabled!");
+                return false;
+            }
+        } else {
+            if (mixinClassName.contains("spongepowered")) {
+                FMLLog.bigWarning("Not applying" + mixinClassName + " because Sponge isn't enabled!");
                 return false;
             }
         }
@@ -60,7 +69,7 @@ public class MixinLoadManager implements IMixinConfigPlugin {
                 return true;
             }
         } catch (ClassNotFoundException e) {
-            //nobody cares!
+            // nobody cares!
         }
         return false;
     }

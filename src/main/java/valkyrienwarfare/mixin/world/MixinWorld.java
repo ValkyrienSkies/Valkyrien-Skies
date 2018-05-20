@@ -77,6 +77,21 @@ public abstract class MixinWorld implements IWorldVW {
     private WorldPhysObjectManager physManager;
     private boolean isRaytracingRecursive = false;
 
+    @Inject(method = "setBlockState", at = @At("HEAD"))
+    public void preSetBlockState(BlockPos pos, IBlockState newState, int flags,
+            CallbackInfoReturnable callbackInfo) {
+        PhysicsWrapperEntity physEntity = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(thisClassAsWorld,
+                pos);
+        if (physEntity != null) {
+            IBlockState oldState = thisClassAsWorld.getBlockState(pos);
+            physEntity.wrapping.onSetBlockState(oldState, newState, pos);
+            // if (oldState != newState) {
+            // System.out.println(oldState.getBlock().getLocalizedName());
+            // System.out.println(newState.getBlock().getLocalizedName());
+            // }
+        }
+    }
+
     /**
      * This is easier to have as an overwrite because there's less laggy hackery to
      * be done then :P

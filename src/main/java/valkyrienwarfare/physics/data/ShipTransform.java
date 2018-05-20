@@ -1,5 +1,7 @@
 package valkyrienwarfare.physics.data;
 
+import javax.annotation.concurrent.Immutable;
+
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import scala.actors.threadpool.Arrays;
@@ -19,6 +21,7 @@ import valkyrienwarfare.math.Quaternion;
  * @author thebest108
  *
  */
+@Immutable
 public class ShipTransform {
 
     private final double[] localToGlobal;

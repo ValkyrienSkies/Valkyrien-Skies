@@ -16,24 +16,32 @@
 
 package valkyrienwarfare.mod.physmanagement.interaction;
 
+import javax.annotation.concurrent.Immutable;
+
 import net.minecraft.entity.player.EntityPlayer;
 
+/**
+ * PlayerDataBackup creates a copy of player position, rotation and velocity
+ * information, and provides functionality to reset the player to that given
+ * state. Used when transforming the player to local coordinates for block
+ * placing and breaking.
+ * 
+ * @author thebest108
+ *
+ */
+@Immutable
 public class PlayerDataBackup {
 
-    private final EntityPlayer playerToBackup;
-    private double posX, posY, posZ;
-    private double lastTickPosX, lastTickPosY, lastTickPosZ;
-    private float rotationYaw, rotationPitch;
-    private float prevRotationYaw, prevRotationPitch;
-    private double motionX, motionY, motionZ;
-    private double blockReachDistance;
+    private final EntityPlayer player;
+    private final double posX, posY, posZ;
+    private final double lastTickPosX, lastTickPosY, lastTickPosZ;
+    private final float rotationYaw, rotationPitch;
+    private final float prevRotationYaw, prevRotationPitch;
+    private final double motionX, motionY, motionZ;
 
     public PlayerDataBackup(EntityPlayer playerToBackup) {
-        this.playerToBackup = playerToBackup;
-        generatePlayerBackup();
-    }
-
-    public void generatePlayerBackup() {
+        player = playerToBackup;
+        // Set all the variables past here.
         posX = playerToBackup.posX;
         lastTickPosX = playerToBackup.lastTickPosX;
         posY = playerToBackup.posY;
@@ -50,19 +58,19 @@ public class PlayerDataBackup {
     }
 
     public void restorePlayerToBackup() {
-        playerToBackup.posX = posX;
-        playerToBackup.lastTickPosX = lastTickPosX;
-        playerToBackup.posY = posY;
-        playerToBackup.lastTickPosY = lastTickPosY;
-        playerToBackup.posZ = posZ;
-        playerToBackup.lastTickPosZ = lastTickPosZ;
-        playerToBackup.rotationYaw = rotationYaw;
-        playerToBackup.rotationPitch = rotationPitch;
-        playerToBackup.prevRotationYaw = prevRotationYaw;
-        playerToBackup.prevRotationPitch = prevRotationPitch;
-        playerToBackup.setPosition(posX, posY, posZ);
-        playerToBackup.motionX = motionX;
-        playerToBackup.motionY = motionY;
-        playerToBackup.motionZ = motionZ;
+        player.posX = posX;
+        player.lastTickPosX = lastTickPosX;
+        player.posY = posY;
+        player.lastTickPosY = lastTickPosY;
+        player.posZ = posZ;
+        player.lastTickPosZ = lastTickPosZ;
+        player.rotationYaw = rotationYaw;
+        player.rotationPitch = rotationPitch;
+        player.prevRotationYaw = prevRotationYaw;
+        player.prevRotationPitch = prevRotationPitch;
+        player.setPosition(posX, posY, posZ);
+        player.motionX = motionX;
+        player.motionY = motionY;
+        player.motionZ = motionZ;
     }
 }

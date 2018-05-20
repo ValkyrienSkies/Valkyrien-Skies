@@ -8,7 +8,6 @@
     "entity.MixinEntityLivingBase",
     "tileentity.MixinTileEntity",
     "world.MixinWorld",
-    "world.MixinWorldServer",
     "world.chunk.MixinChunk",
     "world.chunk.MixinBlockStateContainer",
     "entity.MixinEntityIntrinsic",
@@ -26,7 +25,9 @@
     "network.play.client.MixinCPacketPlayer$Position",
     "network.play.client.MixinCPacketPlayer$PositionRotation",
     "network.play.client.MixinCPacketPlayer$Rotation",
-    "network.play.client.MixinCPacketPlayer"
+    "network.play.client.MixinCPacketPlayer",
+    "spongepowered.common.network.MixinPacketUtil",
+    "spongepowered.common.event.tracking.MixinPhaseTracker"
   ],
   "client": [
     "client.renderer.tileentity.MixinTileEntityRendererDispatcher",

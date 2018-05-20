@@ -21,54 +21,40 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.play.INetHandlerPlayServer;
 import net.minecraft.network.play.client.CPacketPlayerDigging;
 import net.minecraft.util.math.BlockPos;
-import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.api.RotationMatrices;
-import valkyrienwarfare.mod.physmanagement.interaction.INHPServerVW;
+import valkyrienwarfare.fixes.ITransformablePacket;
 import valkyrienwarfare.mod.physmanagement.interaction.PlayerDataBackup;
-import valkyrienwarfare.physics.data.TransformType;
-import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 @Mixin(CPacketPlayerDigging.class)
-public abstract class MixinCPacketPlayerDigging {
+public class MixinCPacketPlayerDigging implements ITransformablePacket {
 
     private final CPacketPlayerDigging thisPacketTryUse = CPacketPlayerDigging.class.cast(this);
     private PlayerDataBackup playerBackup;
 
     @Inject(method = "processPacket", at = @At(value = "HEAD"))
-    public void preHandleUseItemPacket(INetHandlerPlayServer server, CallbackInfo info) {
-        INHPServerVW vw = (INHPServerVW) (NetHandlerPlayServer) server;
-        EntityPlayerMP player = vw.getEntityPlayerFromHandler();
-        if (player.getServerWorld().isCallingFromMinecraftThread()) {
-            BlockPos packetPos = thisPacketTryUse.getPosition();
-            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.world,
-                    packetPos);
-            if (wrapper != null && wrapper.wrapping.coordTransform != null) {
-                playerBackup = new PlayerDataBackup(player);
-                RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.getCurrentTickTransform(), player,
-                        TransformType.GLOBAL_TO_LOCAL);
-            }
-        }
+    public void preDiggingProcessPacket(INetHandlerPlayServer server, CallbackInfo info) {
+        this.doPreProcessing(server, false);
     }
 
     @Inject(method = "processPacket", at = @At(value = "TAIL"))
-    public void postHandleUseItemPacket(INetHandlerPlayServer server, CallbackInfo info) {
-        INHPServerVW vw = (INHPServerVW) (NetHandlerPlayServer) server;
-        EntityPlayerMP player = vw.getEntityPlayerFromHandler();
-        if (player.getServerWorld().isCallingFromMinecraftThread()) {
-            BlockPos packetPos = thisPacketTryUse.getPosition();
-            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.world,
-                    packetPos);
-            if (wrapper != null && wrapper.wrapping.coordTransform != null) {
-                playerBackup.restorePlayerToBackup();
-                // RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.getCurrentTickTransform(),
-                // player,
-                // TransformType.LOCAL_TO_GLOBAL);
-            }
-        }
+    public void postDiggingProcessPacket(INetHandlerPlayServer server, CallbackInfo info) {
+        this.doPostProcessing(server, false);
+    }
+
+    @Override
+    public BlockPos getBlockPos() {
+        return thisPacketTryUse.getPosition();
+    }
+
+    @Override
+    public void setPlayerDataBackup(PlayerDataBackup backup) {
+        this.playerBackup = backup;
+    }
+
+    @Override
+    public PlayerDataBackup getPlayerDataBackup() {
+        return this.playerBackup;
     }
 }

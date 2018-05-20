@@ -18,47 +18,44 @@ package valkyrienwarfare.mixin.network.play.client;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.play.INetHandlerPlayServer;
 import net.minecraft.network.play.client.CPacketUpdateSign;
 import net.minecraft.util.math.BlockPos;
-import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.api.RotationMatrices;
-import valkyrienwarfare.mod.physmanagement.interaction.INHPServerVW;
+import valkyrienwarfare.fixes.ITransformablePacket;
 import valkyrienwarfare.mod.physmanagement.interaction.PlayerDataBackup;
-import valkyrienwarfare.physics.data.TransformType;
-import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 @Mixin(CPacketUpdateSign.class)
-public abstract class MixinCPacketUpdateSign {
-    @Redirect(method = "processPacket",
-            at = @At(value = "INVOKE",
-                    target = "Lnet/minecraft/network/play/INetHandlerPlayServer;processUpdateSign(Lnet/minecraft/network/play/client/CPacketUpdateSign;)V"))
-    public void handleUpdateSignPacket(INetHandlerPlayServer server, CPacketUpdateSign packetIn) {
-        EntityPlayerMP player = ((NetHandlerPlayServer) server).player;
-        INHPServerVW vw = (INHPServerVW) (NetHandlerPlayServer) server;
+public class MixinCPacketUpdateSign implements ITransformablePacket {
 
-        BlockPos packetPos = packetIn.getPosition();
-        PlayerDataBackup playerBackup = new PlayerDataBackup(player);
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.world, packetPos);
-        if (player.interactionManager.getBlockReachDistance() != vw.dummyBlockReachDist()) {
-            vw.lastGoodBlockReachDist(player.interactionManager.getBlockReachDistance());
-        }
-        if (wrapper != null) {
-            player.interactionManager.setBlockReachDistance(vw.dummyBlockReachDist());
-        }
+    private final CPacketUpdateSign thisAsPacketSign = CPacketUpdateSign.class.cast(this);
+    private PlayerDataBackup playerBackup;
 
-        if (wrapper != null && wrapper.wrapping.coordTransform != null) {
-            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.getCurrentTickTransform(), player, TransformType.GLOBAL_TO_LOCAL);
-            server.processUpdateSign(packetIn);
-            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.getCurrentTickTransform(), player, TransformType.LOCAL_TO_GLOBAL);
-            playerBackup.restorePlayerToBackup();
-        } else {
-            server.processUpdateSign(packetIn);
-        }
-        player.interactionManager.setBlockReachDistance(vw.lastGoodBlockReachDist());
+    @Inject(method = "processPacket", at = @At(value = "HEAD"))
+    public void preHandleUseItemPacket(INetHandlerPlayServer server, CallbackInfo info) {
+        this.doPreProcessing(server, false);
     }
+
+    @Inject(method = "processPacket", at = @At(value = "TAIL"))
+    public void postHandleUseItemPacket(INetHandlerPlayServer server, CallbackInfo info) {
+        this.doPostProcessing(server, false);
+    }
+
+    @Override
+    public BlockPos getBlockPos() {
+        return thisAsPacketSign.getPosition();
+    }
+
+    @Override
+    public void setPlayerDataBackup(PlayerDataBackup backup) {
+        this.playerBackup = backup;
+    }
+
+    @Override
+    public PlayerDataBackup getPlayerDataBackup() {
+        return playerBackup;
+    }
+
 }

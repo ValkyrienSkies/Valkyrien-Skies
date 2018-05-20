@@ -26,11 +26,11 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.Packet;
+import net.minecraft.network.PacketThreadUtil;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
-import valkyrienwarfare.fixes.SpongeStrangenessFixes;
 import valkyrienwarfare.mod.physmanagement.interaction.EntityDraggable;
 import valkyrienwarfare.mod.physmanagement.interaction.IDraggable;
 import valkyrienwarfare.mod.physmanagement.interaction.INHPServerVW;
@@ -115,7 +115,8 @@ public abstract class MixinNetHandlerPlayServer implements INHPServerVW {
     @Override
     public void checkForPacketEnqueueTrap(Packet packetIn) {
         // Thanks sponge for breaking it
-        SpongeStrangenessFixes.checkThreadAndEnqueue_SpongeFree(packetIn, NetHandlerPlayServer.class.cast(this), player.getServerWorld());
+        PacketThreadUtil.checkThreadAndEnqueue(packetIn, NetHandlerPlayServer.class.cast(this), this.player.getServerWorld());
+        // SpongeStrangenessFixes.checkThreadAndEnqueue_SpongeFree(packetIn, NetHandlerPlayServer.class.cast(this), player.getServerWorld());
     }
 
     @Override

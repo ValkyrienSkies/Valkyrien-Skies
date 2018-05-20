@@ -16,21 +16,24 @@
 
 package valkyrienwarfare.mixin.world.chunk;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.IChunkProvider;
-import net.minecraft.world.gen.IChunkGenerator;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraft.world.gen.IChunkGenerator;
 import valkyrienwarfare.mod.physmanagement.chunk.PhysicsChunkManager;
 
-@Mixin(Chunk.class)
+@Mixin(value = Chunk.class, priority = 1001)
 public abstract class MixinChunk {
 
     @Shadow
@@ -44,6 +47,12 @@ public abstract class MixinChunk {
     @Shadow
     @Final
     public World world;
+
+    /*
+     * @Overwrite public IBlockState setBlockState(BlockPos pos, IBlockState
+     * newState, IBlockState currentState, @Nullable BlockSnapshot newBlockSnapshot,
+     * BlockChangeFlag flag) { System.out.println("pls"); return null; }
+     */
 
     @Inject(method = "Lnet/minecraft/world/chunk/Chunk;populate(Lnet/minecraft/world/chunk/IChunkProvider;Lnet/minecraft/world/gen/IChunkGenerator;)V", at = @At("HEAD"), cancellable = true)
     public void prePopulateChunk(IChunkProvider provider, IChunkGenerator generator, CallbackInfo callbackInfo) {
@@ -60,13 +69,17 @@ public abstract class MixinChunk {
         int j = MathHelper.floor(entityIn.posZ / 16.0D);
 
         if (i == this.x && j == this.z) {
-            //do nothing, and let vanilla code take over after our injected code is done (now)
+            // do nothing, and let vanilla code take over after our injected code is done
+            // (now)
         } else {
             Chunk realChunkFor = world.getChunkFromChunkCoords(i, j);
             if (!realChunkFor.isEmpty() && realChunkFor.loaded) {
                 realChunkFor.addEntity(entityIn);
-                callbackInfo.cancel(); //don't run the code on this chunk!!!
+                callbackInfo.cancel(); // don't run the code on this chunk!!!
             }
         }
     }
+
+    @Shadow
+    public abstract IBlockState getBlockState(BlockPos pos);
 }

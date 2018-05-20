@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityArmorStand;
 import net.minecraft.entity.item.EntityBoat;
@@ -28,6 +29,7 @@ import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayer.SleepResult;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemNameTag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagIntArray;
@@ -48,7 +50,6 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.event.world.BlockEvent;
-import net.minecraftforge.event.world.BlockEvent.PlaceEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.Event.Result;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -122,7 +123,8 @@ public class EventsCommon {
                 wrapper.wrapping.fixEntity(entity, new Vector(entity));
                 wrapper.wrapping.queueEntityForMounting(entity);
             }
-            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.getCurrentTickTransform(), entity, TransformType.LOCAL_TO_GLOBAL);
+            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.getCurrentTickTransform(), entity,
+                    TransformType.LOCAL_TO_GLOBAL);
         }
     }
 
@@ -317,7 +319,12 @@ public class EventsCommon {
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void onBlockBreakFirst(BlockEvent.BreakEvent event) {
+        event.setResult(Result.ALLOW);
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onBlockBreak(BlockEvent.BreakEvent event) {
         if (!event.getWorld().isRemote) {
             PhysicsWrapperEntity physObj = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(event.getWorld(),
@@ -336,10 +343,21 @@ public class EventsCommon {
                 }
             }
         }
+        onBlockChange(event.getWorld(), event.getPos(), event.getState(), Blocks.AIR.getDefaultState());
     }
 
-    @SubscribeEvent
-    public void onPlaceEvent(PlaceEvent event) {
+    private void onBlockChange(World world, BlockPos pos, IBlockState oldState, IBlockState newState) {
+        // System.out.println(oldState.getBlock().getLocalizedName());
+        // System.out.println(newState.getBlock().getLocalizedName());
+        PhysicsWrapperEntity physObj = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
+        if (physObj != null) {
+            physObj.wrapping.onSetBlockState(oldState, newState, pos);
+            // System.out.println("Sucess!");
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public void onPlaceEvent(BlockEvent.PlaceEvent event) {
         PhysicsWrapperEntity physObj = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(event.getWorld(),
                 event.getPos());
         if (physObj != null) {
@@ -352,8 +370,16 @@ public class EventsCommon {
                                         ? " Try using \"/airshipSettings claim\"!"
                                         : "")));
                 event.setCanceled(true);
+                return;
             }
         }
+        onBlockChange(event.getWorld(), event.getPos(), event.getBlockSnapshot().getReplacedBlock(),
+                event.getBlockSnapshot().getCurrentBlock());
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public void onBlockEvent(BlockEvent event) {
+        // System.out.println(event.getClass());
     }
 
 }

@@ -289,10 +289,24 @@ public abstract class MixinWorld implements IWorldVW {
         }
     }
 
-    @Inject(method = "setBlockState(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/state/IBlockState;I)Z", at = @At("HEAD"))
-    public void duringMarkAndNotifyBlock(BlockPos pos, IBlockState newState, int flags,
-            CallbackInfoReturnable callbackInfo) {
-        IBlockState oldState = this.getBlockState(pos);
+    /*
+     * @Inject(method =
+     * "setBlockState(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/state/IBlockState;I)Z",
+     * at = @At("TAIL")) public void duringMarkAndNotifyBlock(BlockPos pos,
+     * IBlockState newState, int flags, CallbackInfoReturnable callbackInfo) {
+     * BlockSnapshot blockSnapshot =
+     * BlockSnapshot.getBlockSnapshot(thisClassAsWorld, pos, flags); IBlockState
+     * oldState = blockSnapshot.getReplacedBlock(); // this.getBlockState(pos);
+     * PhysicsWrapperEntity wrapper =
+     * ValkyrienWarfareMod.physicsManager.getObjectManagingPos(World.class.cast(this
+     * ), pos); if (wrapper != null) { System.out.println("Got the state 1");
+     * wrapper.wrapping.onSetBlockState(oldState, newState, pos); } }
+     */
+
+    /*
+    @Inject(method = "markAndNotifyBlock(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/world/chunk/Chunk;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/block/state/IBlockState;I)V", at = @At("HEAD"))
+    public void preMarkAndNotifyBlock(BlockPos pos, Chunk chunk, IBlockState oldState, IBlockState newState, int flags,
+            CallbackInfo callbackInfo) {
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(World.class.cast(this),
                 pos);
         if (wrapper != null) {
@@ -300,38 +314,28 @@ public abstract class MixinWorld implements IWorldVW {
             wrapper.wrapping.onSetBlockState(oldState, newState, pos);
         }
     }
+    */
 
     // TODO: Something about this is just too buggy to work reliably
     /*
-    @Inject(method = "getBiome(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/world/biome/Biome;", at = @At("HEAD"), cancellable = true)
-    public void preGetBiome(final BlockPos pos, CallbackInfoReturnable<Biome> callbackInfoReturnable) {
-        if (PhysicsChunkManager.isLikelyShipChunk(pos.getX() >> 4, pos.getZ() >> 4)) {
-            try {
-                if (ValkyrienWarfareMod.physicsManager == null || pos == null || thisClassAsWorld == null) {
-                    return;
-                }
-                PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(thisClassAsWorld,
-                        pos);
-                if (wrapper != null && wrapper.wrapping != null && wrapper.wrapping.coordTransform != null
-                        && pos != null) {
-                    // BlockPos realPos =
-                    // RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform,
-                    // pos);
-                    BlockPos realPos = wrapper.wrapping.coordTransform.getCurrentTickTransform().transform(pos,
-                            TransformType.LOCAL_TO_GLOBAL);
-                    Biome toReturn = thisClassAsWorld.getBiome(realPos);
-                    if (toReturn != null) {
-                        callbackInfoReturnable.setReturnValue(toReturn);
-                        return;
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        // do nothing and run vanilla
-    }
-    */
+     * @Inject(method =
+     * "getBiome(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/world/biome/Biome;",
+     * at = @At("HEAD"), cancellable = true) public void preGetBiome(final BlockPos
+     * pos, CallbackInfoReturnable<Biome> callbackInfoReturnable) { if
+     * (PhysicsChunkManager.isLikelyShipChunk(pos.getX() >> 4, pos.getZ() >> 4)) {
+     * try { if (ValkyrienWarfareMod.physicsManager == null || pos == null ||
+     * thisClassAsWorld == null) { return; } PhysicsWrapperEntity wrapper =
+     * ValkyrienWarfareMod.physicsManager.getObjectManagingPos(thisClassAsWorld,
+     * pos); if (wrapper != null && wrapper.wrapping != null &&
+     * wrapper.wrapping.coordTransform != null && pos != null) { // BlockPos realPos
+     * = // RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.
+     * lToWTransform, // pos); BlockPos realPos =
+     * wrapper.wrapping.coordTransform.getCurrentTickTransform().transform(pos,
+     * TransformType.LOCAL_TO_GLOBAL); Biome toReturn =
+     * thisClassAsWorld.getBiome(realPos); if (toReturn != null) {
+     * callbackInfoReturnable.setReturnValue(toReturn); return; } } } catch
+     * (Exception e) { e.printStackTrace(); } } // do nothing and run vanilla }
+     */
 
     /**
      * aa

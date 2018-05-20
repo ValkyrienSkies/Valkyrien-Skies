@@ -170,8 +170,8 @@ public class PhysicsObject {
         boolean isOldAir = oldState == null || oldState.getBlock().equals(Blocks.AIR);
         boolean isNewAir = newState == null || newState.getBlock().equals(Blocks.AIR);
 
-        System.out.println(oldState.getBlock().getLocalizedName());
-        System.out.println(newState.getBlock().getLocalizedName());
+//        System.out.println(oldState.getBlock().getLocalizedName());
+//        System.out.println(newState.getBlock().getLocalizedName());
         if (isNewAir) {
             blockPositions.remove(posAt);
         }

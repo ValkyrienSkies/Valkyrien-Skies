@@ -67,12 +67,12 @@ public class PhysicsChunkManager {
 		int chunkX = xChunkStartingPos + nextChunkSetKey;
 		int chunkZ = zChunkStartingPos;
 
-		if (data.avalibleChunkKeys.size() < 0) {
-			chunkX = data.avalibleChunkKeys.get(0);
-			data.avalibleChunkKeys.remove(0);
+		if (data.getAvalibleChunkKeys().size() < 0) {
+			chunkX = data.getAvalibleChunkKeys().get(0);
+			data.getAvalibleChunkKeys().remove(0);
 		} else {
 			nextChunkSetKey += chunkSetIncrement;
-			data.chunkKey = nextChunkSetKey;
+			data.setChunkKey(nextChunkSetKey);
 		}
 		data.markDirty();
 		return new ChunkSet(chunkX, chunkZ, chunkRadius);
@@ -83,7 +83,7 @@ public class PhysicsChunkManager {
 	 */
 	public void loadDataFromWorld() {
 		data = ChunkKeysWorldData.get(worldObj);
-		nextChunkSetKey = data.chunkKey;
+		nextChunkSetKey = data.getChunkKey();
 	}
 
 }

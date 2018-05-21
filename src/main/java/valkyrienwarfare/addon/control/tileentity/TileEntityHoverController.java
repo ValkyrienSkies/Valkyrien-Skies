@@ -187,7 +187,7 @@ public class TileEntityHoverController extends TileEntity {
     public double getControllerDistFromIdealY(PhysicsObject physObj) {
         Vector controllerPos = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
         physObj.coordTransform.fromLocalToGlobal(controllerPos);
-        return idealHeight - (physObj.physicsProcessor.parent.wrapper.posY + (physObj.physicsProcessor.linearMomentum.Y
+        return idealHeight - (physObj.physicsProcessor.parent.getWrapperEntity().posY + (physObj.physicsProcessor.linearMomentum.Y
                 * physObj.physicsProcessor.getInvMass() * linearVelocityBias * 3D));
     }
 
@@ -213,7 +213,7 @@ public class TileEntityHoverController extends TileEntity {
         Vector controllerPos = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
         physObj.coordTransform.fromLocalToGlobal(controllerPos);
 
-        double controllerDistToIdeal = -(idealHeight - physObj.physicsProcessor.parent.wrapper.posY);
+        double controllerDistToIdeal = -(idealHeight - physObj.physicsProcessor.parent.getWrapperEntity().posY);
         double yVelocity = physObj.physicsProcessor.linearMomentum.Y * physObj.physicsProcessor.getInvMass()
                 * linearVelocityBias;
 

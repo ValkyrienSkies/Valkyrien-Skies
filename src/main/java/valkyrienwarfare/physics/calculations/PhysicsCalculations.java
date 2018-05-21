@@ -201,12 +201,12 @@ public class PhysicsCalculations {
     public void rawPhysTickPreCol(double newPhysSpeed) {
         if (parent.coordTransform.getCurrentPhysicsTransform() == ShipTransformationManager.ZERO_TRANSFORM) {
             // Create a new physics transform.
-            physRoll = parent.wrapper.getRoll();
-            physPitch = parent.wrapper.getPitch();
-            physYaw = parent.wrapper.getYaw();
-            physX = parent.wrapper.posX;
-            physY = parent.wrapper.posY;
-            physZ = parent.wrapper.posZ;
+            physRoll = parent.getWrapperEntity().getRoll();
+            physPitch = parent.getWrapperEntity().getPitch();
+            physYaw = parent.getWrapperEntity().getYaw();
+            physX = parent.getWrapperEntity().posX;
+            physY = parent.getWrapperEntity().posY;
+            physZ = parent.getWrapperEntity().posZ;
             physCenterOfMass.setValue(gameTickCenterOfMass);
             ShipTransform physicsTransform = new PhysicsShipTransform(physX, physY, physZ, physPitch, physYaw, physRoll,
                     physCenterOfMass, parent.getCollisionBoundingBox(),
@@ -280,9 +280,9 @@ public class PhysicsCalculations {
             // RotationMatrices.doRotationOnly(parent.coordTransform.lToWTransform, CMDif);
 
             parent.coordTransform.getCurrentPhysicsTransform().rotate(CMDif, TransformType.LOCAL_TO_GLOBAL);
-            parent.wrapper.posX -= CMDif.X;
-            parent.wrapper.posY -= CMDif.Y;
-            parent.wrapper.posZ -= CMDif.Z;
+            parent.getWrapperEntity().posX -= CMDif.X;
+            parent.getWrapperEntity().posY -= CMDif.Y;
+            parent.getWrapperEntity().posZ -= CMDif.Z;
 
             parent.centerCoord.setValue(gameTickCenterOfMass);
             // parent.coordTransform.updateAllTransforms(false, false);
@@ -385,7 +385,7 @@ public class PhysicsCalculations {
                 if (blockForce != null) {
                     if (blockAt instanceof IBlockForceProvider) {
                         Vector otherPosition = ((IBlockForceProvider) blockAt).getCustomBlockForcePosition(worldObj,
-                                pos, state, parent.wrapper, getPhysicsTimeDeltaPerPhysTick());
+                                pos, state, parent.getWrapperEntity(), getPhysicsTimeDeltaPerPhysTick());
                         if (otherPosition != null) {
                             VWMath.getBodyPosWithOrientation(otherPosition, gameTickCenterOfMass, parent.coordTransform
                                             .getCurrentPhysicsTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL),

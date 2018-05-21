@@ -59,18 +59,18 @@ public class PhysicsCalculationsManualControl extends PhysicsCalculations {
     @Override
     public void rawPhysTickPostCol() {
         applyLinearVelocity();
-        double previousYaw = parent.wrapper.getYaw();
+        double previousYaw = parent.getWrapperEntity().getYaw();
         applyAngularVelocity();
 
         //We don't want the up normal to exactly align with the world normal, it causes problems with collision
         if (!this.actAsArchimedes) {
-            parent.wrapper.setPitch(0.01F);
-            parent.wrapper.setRoll(0.01F);
-            parent.wrapper.setYaw(previousYaw);
-            parent.wrapper.setYaw(parent.wrapper.getYaw() - (getYawRate() * getPhysicsTimeDeltaPerPhysTick()));
+            parent.getWrapperEntity().setPitch(0.01F);
+            parent.getWrapperEntity().setRoll(0.01F);
+            parent.getWrapperEntity().setYaw(previousYaw);
+            parent.getWrapperEntity().setYaw(parent.getWrapperEntity().getYaw() - (getYawRate() * getPhysicsTimeDeltaPerPhysTick()));
         }
 
-        double[] existingRotationMatrix = RotationMatrices.getRotationMatrix(0, parent.wrapper.getYaw(), 0);
+        double[] existingRotationMatrix = RotationMatrices.getRotationMatrix(0, parent.getWrapperEntity().getYaw(), 0);
         Vector linearForce = new Vector(getForwardRate(), getUpRate(), 0, existingRotationMatrix);
         if (isUseLinearMomentumForce()) {
             linearForce = new Vector(linearMomentum, getInvMass());
@@ -78,9 +78,9 @@ public class PhysicsCalculationsManualControl extends PhysicsCalculations {
 
         linearForce.multiply(getPhysicsTimeDeltaPerPhysTick());
 
-        parent.wrapper.posX += linearForce.X;
-        parent.wrapper.posY += linearForce.Y;
-        parent.wrapper.posZ += linearForce.Z;
+        parent.getWrapperEntity().posX += linearForce.X;
+        parent.getWrapperEntity().posY += linearForce.Y;
+        parent.getWrapperEntity().posZ += linearForce.Z;
 
         parent.coordTransform.updateAllTransforms(true, true);
     }

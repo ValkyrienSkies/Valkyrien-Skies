@@ -167,7 +167,7 @@ public class VWThread extends Thread {
         // Then those collision points have to be processed in series afterwards, all in
         // this thread.
         for (ShipCollisionTask task : collisionTasks) {
-            PhysicsWrapperEntity wrapper = task.getToTask().getParent().wrapper;
+            PhysicsWrapperEntity wrapper = task.getToTask().getParent().getWrapperEntity();
             if (!wrapper.firstUpdate) {
                 task.getToTask().processCollisionTask(task);
             }

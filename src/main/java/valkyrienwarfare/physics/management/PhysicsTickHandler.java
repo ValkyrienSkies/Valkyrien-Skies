@@ -122,7 +122,7 @@ public class PhysicsTickHandler {
         }
 
         for (ShipCollisionTask task : collisionTasks) {
-            PhysicsWrapperEntity wrapper = task.getToTask().getParent().wrapper;
+            PhysicsWrapperEntity wrapper = task.getToTask().getParent().getWrapperEntity();
             if (!wrapper.firstUpdate) {
                 task.getToTask().processCollisionTask(task);
             }

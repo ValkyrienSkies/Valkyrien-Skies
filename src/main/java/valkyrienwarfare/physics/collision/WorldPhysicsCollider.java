@@ -311,7 +311,7 @@ public class WorldPhysicsCollider {
         // NestedBoolean didBlockBreakInWorld = new NestedBoolean(false);
 
         Vector positionInBody = collider.entity.getCenter();
-        positionInBody.subtract(parent.wrapper.posX, parent.wrapper.posY, parent.wrapper.posZ);
+        positionInBody.subtract(parent.getWrapperEntity().posX, parent.getWrapperEntity().posY, parent.getWrapperEntity().posZ);
 
         Vector velocityAtPoint = calculator.getVelocityAtPoint(positionInBody);
 
@@ -326,7 +326,7 @@ public class WorldPhysicsCollider {
 
         for (Vector collisionPos : collisionPoints) {
             Vector inBody = collisionPos
-                    .getSubtraction(new Vector(parent.wrapper.posX, parent.wrapper.posY, parent.wrapper.posZ));
+                    .getSubtraction(new Vector(parent.getWrapperEntity().posX, parent.getWrapperEntity().posY, parent.getWrapperEntity().posZ));
             inBody.multiply(-1D);
             Vector momentumAtPoint = calculator.getVelocityAtPoint(inBody);
             Vector axis = toCollideWith.collision_normal;

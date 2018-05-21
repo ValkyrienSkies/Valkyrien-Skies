@@ -70,10 +70,10 @@ public class ShipTransformationManager {
      * current transform made from this data.
      */
     public void updateCurrentTickTransform() {
-        double[] lToWTransform = RotationMatrices.getTranslationMatrix(parent.wrapper.posX, parent.wrapper.posY,
-                parent.wrapper.posZ);
-        lToWTransform = RotationMatrices.rotateAndTranslate(lToWTransform, parent.wrapper.getPitch(),
-                parent.wrapper.getYaw(), parent.wrapper.getRoll(), parent.centerCoord);
+        double[] lToWTransform = RotationMatrices.getTranslationMatrix(parent.getWrapperEntity().posX, parent.getWrapperEntity().posY,
+                parent.getWrapperEntity().posZ);
+        lToWTransform = RotationMatrices.rotateAndTranslate(lToWTransform, parent.getWrapperEntity().getPitch(),
+                parent.getWrapperEntity().getYaw(), parent.getWrapperEntity().getRoll(), parent.centerCoord);
         setCurrentTickTransform(new ShipTransform(lToWTransform));
     }
 
@@ -121,22 +121,22 @@ public class ShipTransformationManager {
         AxisAlignedBB shipBB = parent.getCollisionBoundingBox();
 
         if (shipBB.maxX > border.maxX()) {
-            parent.wrapper.posX += border.maxX() - shipBB.maxX;
+            parent.getWrapperEntity().posX += border.maxX() - shipBB.maxX;
         }
         if (shipBB.minX < border.minX()) {
-            parent.wrapper.posX += border.minX() - shipBB.minX;
+            parent.getWrapperEntity().posX += border.minX() - shipBB.minX;
         }
         if (shipBB.maxZ > border.maxZ()) {
-            parent.wrapper.posZ += border.maxZ() - shipBB.maxZ;
+            parent.getWrapperEntity().posZ += border.maxZ() - shipBB.maxZ;
         }
         if (shipBB.minZ < border.minZ()) {
-            parent.wrapper.posZ += border.minZ() - shipBB.minZ;
+            parent.getWrapperEntity().posZ += border.minZ() - shipBB.minZ;
         }
     }
 
     public void updatePassengerPositions() {
-        for (Entity entity : parent.wrapper.riddenByEntities) {
-            parent.wrapper.updatePassenger(entity);
+        for (Entity entity : parent.getWrapperEntity().riddenByEntities) {
+            parent.getWrapperEntity().updatePassenger(entity);
         }
     }
 
@@ -144,9 +144,9 @@ public class ShipTransformationManager {
         PhysWrapperPositionMessage posMessage = null;
         if (getCurrentPhysicsTransform() != ZERO_TRANSFORM) {
             posMessage = new PhysWrapperPositionMessage((PhysicsShipTransform) getCurrentPhysicsTransform(),
-                    parent.wrapper.getEntityId(), positionTickID);
+                    parent.getWrapperEntity().getEntityId(), positionTickID);
         } else {
-            posMessage = new PhysWrapperPositionMessage(parent.wrapper, positionTickID);
+            posMessage = new PhysWrapperPositionMessage(parent.getWrapperEntity(), positionTickID);
         }
 
         for (EntityPlayerMP player : parent.watchingPlayers) {
@@ -335,12 +335,12 @@ public class ShipTransformationManager {
         double minX, minY, minZ, maxX, maxY, maxZ;
 
         CollisionBBConsumer() {
-            minX = parent.wrapper.posX;
-            minY = parent.wrapper.posY;
-            minZ = parent.wrapper.posZ;
-            maxX = parent.wrapper.posX;
-            maxY = parent.wrapper.posY;
-            maxZ = parent.wrapper.posZ;
+            minX = parent.getWrapperEntity().posX;
+            minY = parent.getWrapperEntity().posY;
+            minZ = parent.getWrapperEntity().posZ;
+            maxX = parent.getWrapperEntity().posX;
+            maxY = parent.getWrapperEntity().posY;
+            maxZ = parent.getWrapperEntity().posZ;
         }
 
         @Override

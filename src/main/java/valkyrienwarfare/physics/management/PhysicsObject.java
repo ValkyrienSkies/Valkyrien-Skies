@@ -83,7 +83,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class PhysicsObject {
 
-    public final PhysicsWrapperEntity wrapper;
+    private final PhysicsWrapperEntity wrapper;
     // This handles sending packets to players involving block changes in the Ship
     // space
     public final List<EntityPlayerMP> watchingPlayers;
@@ -207,7 +207,7 @@ public class PhysicsObject {
                                 }
                             }
                         }
-                        ValkyrienWarfareMod.chunkManager.getManagerForWorld(getWorldObj()).data.avalibleChunkKeys
+                        ValkyrienWarfareMod.chunkManager.getManagerForWorld(getWorldObj()).data.getAvalibleChunkKeys()
                                 .add(ownedChunks.getCenterX());
                     }
                 }
@@ -228,7 +228,7 @@ public class PhysicsObject {
     }
 
     public void destroy() {
-        wrapper.setDead();
+        getWrapperEntity().setDead();
         List<EntityPlayerMP> watchersCopy = new ArrayList<EntityPlayerMP>(watchingPlayers);
         for (int x = ownedChunks.getMinX(); x <= ownedChunks.getMaxX(); x++) {
             for (int z = ownedChunks.getMinZ(); z <= ownedChunks.getMaxZ(); z++) {
@@ -242,16 +242,16 @@ public class PhysicsObject {
             // onPlayerUntracking(wachingPlayer);
         }
         watchingPlayers.clear();
-        ValkyrienWarfareMod.chunkManager.removeRegistedChunksForShip(wrapper);
-        ValkyrienWarfareMod.chunkManager.removeShipPosition(wrapper);
-        ValkyrienWarfareMod.chunkManager.removeShipNameRegistry(wrapper);
-        ValkyrienWarfareMod.physicsManager.onShipUnload(wrapper);
+        ValkyrienWarfareMod.chunkManager.removeRegistedChunksForShip(getWrapperEntity());
+        ValkyrienWarfareMod.chunkManager.removeShipPosition(getWrapperEntity());
+        ValkyrienWarfareMod.chunkManager.removeShipNameRegistry(getWrapperEntity());
+        ValkyrienWarfareMod.physicsManager.onShipUnload(getWrapperEntity());
     }
 
     public void claimNewChunks(int radius) {
-        ownedChunks = ValkyrienWarfareMod.chunkManager.getManagerForWorld(wrapper.world)
+        ownedChunks = ValkyrienWarfareMod.chunkManager.getManagerForWorld(getWrapperEntity().world)
                 .getNextAvaliableChunkSet(radius);
-        ValkyrienWarfareMod.chunkManager.registerChunksForShip(wrapper);
+        ValkyrienWarfareMod.chunkManager.registerChunksForShip(getWrapperEntity());
         claimedChunksInMap = true;
     }
 
@@ -259,7 +259,7 @@ public class PhysicsObject {
      * Generates the new chunks
      */
     public void processChunkClaims(EntityPlayer player) {
-        BlockPos centerInWorld = new BlockPos(wrapper.posX, wrapper.posY, wrapper.posZ);
+        BlockPos centerInWorld = new BlockPos(getWrapperEntity().posX, getWrapperEntity().posY, getWrapperEntity().posZ);
         SpatialDetector detector = DetectorManager.getDetectorFor(detectorID, centerInWorld, getWorldObj(),
                 ValkyrienWarfareMod.maxShipSize + 1, true);
         if (detector.foundSet.size() > ValkyrienWarfareMod.maxShipSize || detector.cleanHouse) {
@@ -267,7 +267,7 @@ public class PhysicsObject {
                 player.sendMessage(new TextComponentString(
                         "Ship construction canceled because its exceeding the ship size limit (Raise with /physSettings maxShipSize <number>) ; Or because it's attatched to bedrock)"));
             }
-            wrapper.setDead();
+            getWrapperEntity().setDead();
             return;
         }
         assembleShip(player, detector, centerInWorld);
@@ -283,7 +283,7 @@ public class PhysicsObject {
 
         claimNewChunks(radiusNeeded);
 
-        ValkyrienWarfareMod.physicsManager.onShipPreload(wrapper);
+        ValkyrienWarfareMod.physicsManager.onShipPreload(getWrapperEntity());
 
         claimedChunks = new Chunk[(ownedChunks.getRadius() * 2) + 1][(ownedChunks.getRadius() * 2) + 1];
         claimedChunksEntries = new PlayerChunkMapEntry[(ownedChunks.getRadius() * 2) + 1][(ownedChunks.getRadius() * 2) + 1];
@@ -362,13 +362,13 @@ public class PhysicsObject {
         iter = detector.foundSet.iterator();
 
         radiusNeeded = Math.min(radiusNeeded,
-                ValkyrienWarfareMod.chunkManager.getManagerForWorld(wrapper.world).maxChunkRadius);
+                ValkyrienWarfareMod.chunkManager.getManagerForWorld(getWrapperEntity().world).maxChunkRadius);
 
         // System.out.println(radiusNeeded);
 
         claimNewChunks(radiusNeeded);
 
-        ValkyrienWarfareMod.physicsManager.onShipPreload(wrapper);
+        ValkyrienWarfareMod.physicsManager.onShipPreload(getWrapperEntity());
 
         claimedChunks = new Chunk[(ownedChunks.getRadius() * 2) + 1][(ownedChunks.getRadius() * 2) + 1];
         claimedChunksEntries = new PlayerChunkMapEntry[(ownedChunks.getRadius() * 2) + 1][(ownedChunks.getRadius() * 2) + 1];
@@ -671,7 +671,7 @@ public class PhysicsObject {
 
     private Set getPlayersThatJustWatched() {
         HashSet newPlayers = new HashSet();
-        for (Object o : ((WorldServer) getWorldObj()).getEntityTracker().getTrackingPlayers(wrapper)) {
+        for (Object o : ((WorldServer) getWorldObj()).getEntityTracker().getTrackingPlayers(getWrapperEntity())) {
             EntityPlayerMP player = (EntityPlayerMP) o;
             if (!watchingPlayers.contains(player)) {
                 newPlayers.add(player);
@@ -685,7 +685,7 @@ public class PhysicsObject {
         if (!getWorldObj().isRemote) {
             for (Entity e : queuedEntitiesToMount) {
                 if (e != null) {
-                    e.startRiding(this.wrapper, true);
+                    e.startRiding(this.getWrapperEntity(), true);
                 }
             }
             queuedEntitiesToMount.clear();
@@ -694,11 +694,11 @@ public class PhysicsObject {
     }
 
     public void onPostTick() {
-        if (!wrapper.isDead && !wrapper.world.isRemote) {
-            ValkyrienWarfareMod.chunkManager.updateShipPosition(wrapper);
+        if (!getWrapperEntity().isDead && !getWrapperEntity().world.isRemote) {
+            ValkyrienWarfareMod.chunkManager.updateShipPosition(getWrapperEntity());
             if (!claimedChunksInMap) {
                 // Old ships not in the map will add themselves in once loaded
-                ValkyrienWarfareMod.chunkManager.registerChunksForShip(wrapper);
+                ValkyrienWarfareMod.chunkManager.registerChunksForShip(getWrapperEntity());
                 System.out.println("Old ship detected, adding to the registered Chunks map");
                 claimedChunksInMap = true;
             }
@@ -706,9 +706,9 @@ public class PhysicsObject {
     }
 
     public void onPostTickClient() {
-        wrapper.lastTickPosX = wrapper.posX;
-        wrapper.lastTickPosY = wrapper.posY;
-        wrapper.lastTickPosZ = wrapper.posZ;
+        getWrapperEntity().lastTickPosX = getWrapperEntity().posX;
+        getWrapperEntity().lastTickPosY = getWrapperEntity().posY;
+        getWrapperEntity().lastTickPosZ = getWrapperEntity().posZ;
 
         ShipTransformationPacketHolder toUse = coordTransform.serverBuffer.pollForClientTransform();
 
@@ -717,9 +717,9 @@ public class PhysicsObject {
             lastMessageTick = toUse.relativeTick;
             coordTransform.getCurrentTickTransform().rotate(CMDif, TransformType.LOCAL_TO_GLOBAL);
             // RotationMatrices.doRotationOnly(coordTransform.lToWTransform, CMDif);
-            wrapper.lastTickPosX -= CMDif.X;
-            wrapper.lastTickPosY -= CMDif.Y;
-            wrapper.lastTickPosZ -= CMDif.Z;
+            getWrapperEntity().lastTickPosX -= CMDif.X;
+            getWrapperEntity().lastTickPosY -= CMDif.Y;
+            getWrapperEntity().lastTickPosZ -= CMDif.Z;
             toUse.applyToPhysObject(this);
         }
 
@@ -739,7 +739,7 @@ public class PhysicsObject {
     public void loadClaimedChunks() {
         List<TileEntity> nodeTileEntitiesToUpdate = new ArrayList<TileEntity>();
 
-        ValkyrienWarfareMod.physicsManager.onShipPreload(wrapper);
+        ValkyrienWarfareMod.physicsManager.onShipPreload(getWrapperEntity());
 
         claimedChunks = new Chunk[(ownedChunks.getRadius() * 2) + 1][(ownedChunks.getRadius() * 2) + 1];
         claimedChunksEntries = new PlayerChunkMapEntry[(ownedChunks.getRadius() * 2) + 1][(ownedChunks.getRadius() * 2) + 1];
@@ -846,7 +846,7 @@ public class PhysicsObject {
      * @param posInLocal
      */
     public void fixEntity(Entity toFix, Vector posInLocal) {
-        EntityFixMessage entityFixingMessage = new EntityFixMessage(wrapper, toFix, true, posInLocal);
+        EntityFixMessage entityFixingMessage = new EntityFixMessage(getWrapperEntity(), toFix, true, posInLocal);
         for (EntityPlayerMP watcher : watchingPlayers) {
             ValkyrienWarfareControl.controlNetwork.sendTo(entityFixingMessage, watcher);
         }
@@ -857,7 +857,7 @@ public class PhysicsObject {
      * ONLY USE THESE 2 METHODS TO EVER ADD/REMOVE ENTITIES
      */
     public void unFixEntity(Entity toUnfix) {
-        EntityFixMessage entityUnfixingMessage = new EntityFixMessage(wrapper, toUnfix, false, null);
+        EntityFixMessage entityUnfixingMessage = new EntityFixMessage(getWrapperEntity(), toUnfix, false, null);
         for (EntityPlayerMP watcher : watchingPlayers) {
             ValkyrienWarfareControl.controlNetwork.sendTo(entityUnfixingMessage, watcher);
         }
@@ -884,9 +884,9 @@ public class PhysicsObject {
     public void writeToNBTTag(NBTTagCompound compound) {
         ownedChunks.writeToNBT(compound);
         NBTUtils.writeVectorToNBT("c", centerCoord, compound);
-        compound.setDouble("pitch", wrapper.getPitch());
-        compound.setDouble("yaw", wrapper.getYaw());
-        compound.setDouble("roll", wrapper.getRoll());
+        compound.setDouble("pitch", getWrapperEntity().getPitch());
+        compound.setDouble("yaw", getWrapperEntity().getYaw());
+        compound.setDouble("roll", getWrapperEntity().getRoll());
         compound.setBoolean("doPhysics", doPhysics);
         for (int row = 0; row < ownedChunks.chunkOccupiedInLocal.length; row++) {
             boolean[] curArray = ownedChunks.chunkOccupiedInLocal[row];
@@ -914,9 +914,9 @@ public class PhysicsObject {
     public void readFromNBTTag(NBTTagCompound compound) {
         ownedChunks = new ChunkSet(compound);
         centerCoord = NBTUtils.readVectorFromNBT("c", compound);
-        wrapper.setPitch(compound.getDouble("pitch"));
-        wrapper.setYaw(compound.getDouble("yaw"));
-        wrapper.setRoll(compound.getDouble("roll"));
+        getWrapperEntity().setPitch(compound.getDouble("pitch"));
+        getWrapperEntity().setYaw(compound.getDouble("yaw"));
+        getWrapperEntity().setRoll(compound.getDouble("roll"));
         doPhysics = compound.getBoolean("doPhysics");
         for (int row = 0; row < ownedChunks.chunkOccupiedInLocal.length; row++) {
             boolean[] curArray = ownedChunks.chunkOccupiedInLocal[row];
@@ -949,8 +949,7 @@ public class PhysicsObject {
         }
 
         isNameCustom = compound.getBoolean("isNameCustom");
-
-        wrapper.dataManager.set(PhysicsWrapperEntity.IS_NAME_CUSTOM, isNameCustom);
+        getWrapperEntity().dataManager.set(PhysicsWrapperEntity.IS_NAME_CUSTOM, isNameCustom);
     }
 
     public void readSpawnData(ByteBuf additionalData) {
@@ -958,17 +957,17 @@ public class PhysicsObject {
 
         ownedChunks = new ChunkSet(modifiedBuffer.readInt(), modifiedBuffer.readInt(), modifiedBuffer.readInt());
 
-        wrapper.posX = modifiedBuffer.readDouble();
-        wrapper.posY = modifiedBuffer.readDouble();
-        wrapper.posZ = modifiedBuffer.readDouble();
+        getWrapperEntity().posX = modifiedBuffer.readDouble();
+        getWrapperEntity().posY = modifiedBuffer.readDouble();
+        getWrapperEntity().posZ = modifiedBuffer.readDouble();
 
-        wrapper.setPitch(modifiedBuffer.readDouble());
-        wrapper.setYaw(modifiedBuffer.readDouble());
-        wrapper.setRoll(modifiedBuffer.readDouble());
+        getWrapperEntity().setPitch(modifiedBuffer.readDouble());
+        getWrapperEntity().setYaw(modifiedBuffer.readDouble());
+        getWrapperEntity().setRoll(modifiedBuffer.readDouble());
 
-        wrapper.lastTickPosX = wrapper.posX;
-        wrapper.lastTickPosY = wrapper.posY;
-        wrapper.lastTickPosZ = wrapper.posZ;
+        getWrapperEntity().lastTickPosX = getWrapperEntity().posX;
+        getWrapperEntity().lastTickPosY = getWrapperEntity().posY;
+        getWrapperEntity().lastTickPosZ = getWrapperEntity().posZ;
 
         centerCoord = new Vector(modifiedBuffer);
         for (boolean[] array : ownedChunks.chunkOccupiedInLocal) {
@@ -1004,13 +1003,13 @@ public class PhysicsObject {
         modifiedBuffer.writeInt(ownedChunks.getCenterZ());
         modifiedBuffer.writeInt(ownedChunks.getRadius());
 
-        modifiedBuffer.writeDouble(wrapper.posX);
-        modifiedBuffer.writeDouble(wrapper.posY);
-        modifiedBuffer.writeDouble(wrapper.posZ);
+        modifiedBuffer.writeDouble(getWrapperEntity().posX);
+        modifiedBuffer.writeDouble(getWrapperEntity().posY);
+        modifiedBuffer.writeDouble(getWrapperEntity().posZ);
 
-        modifiedBuffer.writeDouble(wrapper.getPitch());
-        modifiedBuffer.writeDouble(wrapper.getYaw());
-        modifiedBuffer.writeDouble(wrapper.getRoll());
+        modifiedBuffer.writeDouble(getWrapperEntity().getPitch());
+        modifiedBuffer.writeDouble(getWrapperEntity().getYaw());
+        modifiedBuffer.writeDouble(getWrapperEntity().getRoll());
 
         centerCoord.writeToByteBuf(modifiedBuffer);
         for (boolean[] array : ownedChunks.chunkOccupiedInLocal) {
@@ -1094,9 +1093,16 @@ public class PhysicsObject {
     }
 
     /**
-     * @return the worldObj
+     * @return The World this PhysicsObject exists in.
      */
     public World getWorldObj() {
-        return wrapper.getEntityWorld();
+        return getWrapperEntity().getEntityWorld();
     }
+
+	/**
+	 * @return The Entity that wraps around this PhysicsObject.
+	 */
+	public PhysicsWrapperEntity getWrapperEntity() {
+		return wrapper;
+	}
 }

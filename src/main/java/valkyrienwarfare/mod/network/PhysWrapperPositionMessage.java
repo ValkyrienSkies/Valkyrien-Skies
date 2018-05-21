@@ -72,13 +72,13 @@ public class PhysWrapperPositionMessage implements IMessage {
     }
 
     public PhysWrapperPositionMessage(PhysicsObject toRunLocally) {
-        setPosX(toRunLocally.wrapper.posX);
-        setPosY(toRunLocally.wrapper.posY);
-        setPosZ(toRunLocally.wrapper.posZ);
+        setPosX(toRunLocally.getWrapperEntity().posX);
+        setPosY(toRunLocally.getWrapperEntity().posY);
+        setPosZ(toRunLocally.getWrapperEntity().posZ);
 
-        setPitch(toRunLocally.wrapper.getPitch());
-        setYaw(toRunLocally.wrapper.getYaw());
-        setRoll(toRunLocally.wrapper.getRoll());
+        setPitch(toRunLocally.getWrapperEntity().getPitch());
+        setYaw(toRunLocally.getWrapperEntity().getYaw());
+        setRoll(toRunLocally.getWrapperEntity().getRoll());
 
         setCenterOfMass(toRunLocally.centerCoord);
         setShipBB(toRunLocally.getCollisionBoundingBox());

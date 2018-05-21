@@ -57,7 +57,7 @@ public class ShipPhysicsCollider {
 
         Polygon betweenBBPoly = new Polygon(betweenBB, toCollideWith.coordTransform.getCurrentTickTransform(), TransformType.GLOBAL_TO_LOCAL);
 
-        List<AxisAlignedBB> bbsInFirst = parent.getWorldObj().getCollisionBoxes(parent.wrapper,
+        List<AxisAlignedBB> bbsInFirst = parent.getWorldObj().getCollisionBoxes(parent.getWrapperEntity(),
                 betweenBBPoly.getEnclosedAABB());
         if (bbsInFirst.isEmpty()) {
             return;
@@ -75,7 +75,7 @@ public class ShipPhysicsCollider {
             Polygon inShip2Poly = new Polygon(inWorldAABB, parent.coordTransform.getCurrentTickTransform(), TransformType.GLOBAL_TO_LOCAL);
 
             // This is correct
-            List<AxisAlignedBB> bbsInSecond = parent.getWorldObj().getCollisionBoxes(parent.wrapper,
+            List<AxisAlignedBB> bbsInSecond = parent.getWorldObj().getCollisionBoxes(parent.getWrapperEntity(),
                     inShip2Poly.getEnclosedAABB());
 
             Iterator<AxisAlignedBB> secondRandIter = bbsInSecond.iterator();// RandomIterator.getRandomIteratorForList(bbsInSecond);
@@ -88,10 +88,10 @@ public class ShipPhysicsCollider {
                 Vector firstCenter = firstInWorld.getCenter();
                 Vector secondCenter = secondInWorld.getCenter();
 
-                Vector inBodyFirst = new Vector(firstCenter.X - parent.wrapper.posX,
-                        firstCenter.Y - parent.wrapper.posY, firstCenter.Z - parent.wrapper.posZ);
-                Vector inBodySecond = new Vector(secondCenter.X - toCollideWith.wrapper.posX,
-                        secondCenter.Y - toCollideWith.wrapper.posY, secondCenter.Z - toCollideWith.wrapper.posZ);
+                Vector inBodyFirst = new Vector(firstCenter.X - parent.getWrapperEntity().posX,
+                        firstCenter.Y - parent.getWrapperEntity().posY, firstCenter.Z - parent.getWrapperEntity().posZ);
+                Vector inBodySecond = new Vector(secondCenter.X - toCollideWith.getWrapperEntity().posX,
+                        secondCenter.Y - toCollideWith.getWrapperEntity().posY, secondCenter.Z - toCollideWith.getWrapperEntity().posZ);
 
                 Vector velAtFirst = parent.physicsProcessor.getVelocityAtPoint(inBodyFirst);
                 Vector velAtSecond = toCollideWith.physicsProcessor.getVelocityAtPoint(inBodySecond);
@@ -175,13 +175,13 @@ public class ShipPhysicsCollider {
         // toCollideWith.coordTransform.lToWRotation,
         // toCollideWith.coordTransform.wToLTransform,inSecondShip);
 
-        inFirstShip.X -= parent.wrapper.posX;
-        inFirstShip.Y -= parent.wrapper.posY;
-        inFirstShip.Z -= parent.wrapper.posZ;
+        inFirstShip.X -= parent.getWrapperEntity().posX;
+        inFirstShip.Y -= parent.getWrapperEntity().posY;
+        inFirstShip.Z -= parent.getWrapperEntity().posZ;
 
-        inSecondShip.X -= toCollideWith.wrapper.posX;
-        inSecondShip.Y -= toCollideWith.wrapper.posY;
-        inSecondShip.Z -= toCollideWith.wrapper.posZ;
+        inSecondShip.X -= toCollideWith.getWrapperEntity().posX;
+        inSecondShip.Y -= toCollideWith.getWrapperEntity().posY;
+        inSecondShip.Z -= toCollideWith.getWrapperEntity().posZ;
 
         Vector momentumInFirst = parent.physicsProcessor.getVelocityAtPoint(inFirstShip);
         Vector momentumInSecond = toCollideWith.physicsProcessor.getVelocityAtPoint(inSecondShip);

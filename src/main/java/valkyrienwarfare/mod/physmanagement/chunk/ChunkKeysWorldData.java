@@ -25,42 +25,64 @@ import net.minecraft.world.storage.WorldSavedData;
 
 public class ChunkKeysWorldData extends WorldSavedData {
 
-    private static final String key = "ChunkKeys";
-    public TIntList avalibleChunkKeys = new TIntArrayList();
-    public int chunkKey;
+    private static final String CHUNK_POS_DATA_KEY = "ChunkKeys";
+    private final TIntList avalibleChunkKeys;
+    private int chunkKey;
 
     public ChunkKeysWorldData() {
-        super(key);
+        super(CHUNK_POS_DATA_KEY);
+        this.avalibleChunkKeys = new TIntArrayList();
     }
 
     public static ChunkKeysWorldData get(World world) {
         MapStorage storage = world.getPerWorldStorage();
-        ChunkKeysWorldData data = (ChunkKeysWorldData) storage.getOrLoadData(ChunkKeysWorldData.class, key);
+        ChunkKeysWorldData data = (ChunkKeysWorldData) storage.getOrLoadData(ChunkKeysWorldData.class, CHUNK_POS_DATA_KEY);
         if (data == null) {
             data = new ChunkKeysWorldData();
-            world.setData(key, data);
+            world.setData(CHUNK_POS_DATA_KEY, data);
         }
         return data;
     }
 
     @Override
     public void readFromNBT(NBTTagCompound nbt) {
-        chunkKey = nbt.getInteger("chunkKey");
+        setChunkKey(nbt.getInteger("chunkKey"));
         int[] array = nbt.getIntArray("avalibleChunkKeys");
         for (int i : array) {
-            avalibleChunkKeys.add(i);
+            getAvalibleChunkKeys().add(i);
         }
     }
 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
-        nbt.setInteger("chunkKey", chunkKey);
-        int[] array = new int[avalibleChunkKeys.size()];
-        for (int i = 0; i < avalibleChunkKeys.size(); i++) {
-            array[i] = avalibleChunkKeys.get(i);
+        nbt.setInteger("chunkKey", getChunkKey());
+        int[] array = new int[getAvalibleChunkKeys().size()];
+        for (int i = 0; i < getAvalibleChunkKeys().size(); i++) {
+            array[i] = getAvalibleChunkKeys().get(i);
         }
         nbt.setIntArray("avalibleChunkKeys", array);
         return nbt;
     }
+
+	/**
+	 * @return the avalibleChunkKeys
+	 */
+	public TIntList getAvalibleChunkKeys() {
+		return avalibleChunkKeys;
+	}
+
+	/**
+	 * @return the chunkKey
+	 */
+	public int getChunkKey() {
+		return chunkKey;
+	}
+
+	/**
+	 * @param chunkKey the chunkKey to set
+	 */
+	public void setChunkKey(int chunkKey) {
+		this.chunkKey = chunkKey;
+	}
 
 }

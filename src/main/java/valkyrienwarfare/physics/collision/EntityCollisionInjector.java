@@ -89,7 +89,7 @@ public class EntityCollisionInjector {
                             velVec.getAddition(total));
                     if (!fast.arePolygonsSeperated()) {
                         // fastCollisions.add(fast);
-                        worldBelow = shipPoly.shipFrom.wrapper;
+                        worldBelow = shipPoly.shipFrom.getWrapperEntity();
 
                         Vector response = fast.getCollisions()[fast.getMinDistanceIndex()].getResponse();
                         // TODO: Add more potential yResponses

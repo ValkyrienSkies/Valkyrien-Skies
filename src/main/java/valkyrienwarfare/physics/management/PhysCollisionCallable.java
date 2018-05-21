@@ -28,7 +28,7 @@ public class PhysCollisionCallable implements Callable<Void> {
 
     @Override
     public Void call() throws Exception {
-        if (!toRun.wrapper.firstUpdate) {
+        if (!toRun.getWrapperEntity().firstUpdate) {
             toRun.physicsProcessor.processWorldCollision();
             toRun.physicsProcessor.rawPhysTickPostCol();
         } else {

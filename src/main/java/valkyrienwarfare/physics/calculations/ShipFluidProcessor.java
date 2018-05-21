@@ -44,7 +44,7 @@ public class ShipFluidProcessor {
 //        RotationMatrices.doRotationOnly(parent.coordTransform.lToWTransform, shipUpNormal);
 
         int maxYToCheck = yOceanLevel;
-        int minYToCheck = Math.max(MathHelper.floor(parent.wrapper.getEntityBoundingBox().minY), 0);
+        int minYToCheck = Math.max(MathHelper.floor(parent.getWrapperEntity().getEntityBoundingBox().minY), 0);
 
         for (int currentY = maxYToCheck; currentY > minYToCheck; currentY++) {
 

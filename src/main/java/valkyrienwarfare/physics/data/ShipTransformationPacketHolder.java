@@ -64,13 +64,13 @@ public class ShipTransformationPacketHolder {
     // Apply all the position/rotation variables accordingly onto the passed
     // physObject
     public void applyToPhysObject(PhysicsObject physObj) {
-        physObj.wrapper.posX = posX;
-        physObj.wrapper.posY = posY;
-        physObj.wrapper.posZ = posZ;
+        physObj.getWrapperEntity().posX = posX;
+        physObj.getWrapperEntity().posY = posY;
+        physObj.getWrapperEntity().posZ = posZ;
 
-        physObj.wrapper.setPitch(pitch);
-        physObj.wrapper.setYaw(yaw);
-        physObj.wrapper.setRoll(roll);
+        physObj.getWrapperEntity().setPitch(pitch);
+        physObj.getWrapperEntity().setYaw(yaw);
+        physObj.getWrapperEntity().setRoll(roll);
 
         physObj.centerCoord = centerOfRotation;
 

@@ -57,7 +57,7 @@ public class ShipPulseImpulseControlSystem {
         double[] invRotationAndTranslationMatrix = calculations.parent.coordTransform.getCurrentPhysicsTransform().getInternalMatrix(TransformType.GLOBAL_TO_LOCAL);
         double[] invMOIMatrix = calculations.getPhysInvMOITensor();
 
-        Vector posInWorld = new Vector(calculations.parent.wrapper.posX, calculations.parent.wrapper.posY, calculations.parent.wrapper.posZ);
+        Vector posInWorld = new Vector(calculations.parent.getWrapperEntity().posX, calculations.parent.getWrapperEntity().posY, calculations.parent.getWrapperEntity().posZ);
         Vector angularVelocity = new Vector(calculations.angularVelocity);
         Vector linearMomentum = new Vector(calculations.linearMomentum);
         Vector linearVelocity = new Vector(linearMomentum, calculations.getInvMass());

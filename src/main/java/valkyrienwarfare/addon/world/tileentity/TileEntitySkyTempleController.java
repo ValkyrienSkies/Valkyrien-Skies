@@ -55,12 +55,12 @@ public class TileEntitySkyTempleController extends ImplPhysicsProcessorNodeTileE
             ((PhysicsCalculationsManualControl) calculations).setUseLinearMomentumForce(true);
 
             if (originPos == null || originPos.isZero()) {
-                setOriginPos(new Vector(object.wrapper.posX, object.wrapper.posY, object.wrapper.posZ));
+                setOriginPos(new Vector(object.getWrapperEntity().posX, object.getWrapperEntity().posY, object.getWrapperEntity().posZ));
             }
 
             manualControl.setYawRate(yawChangeRate);
 
-            Vector distanceFromCenter = new Vector(object.wrapper.posX - originPos.X, 0, object.wrapper.posZ - originPos.Z);
+            Vector distanceFromCenter = new Vector(object.getWrapperEntity().posX - originPos.X, 0, object.getWrapperEntity().posZ - originPos.Z);
 
             double realDist = distanceFromCenter.length();
 

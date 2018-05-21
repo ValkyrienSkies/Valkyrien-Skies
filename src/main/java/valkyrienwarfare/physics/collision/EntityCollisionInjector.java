@@ -440,7 +440,7 @@ public class EntityCollisionInjector {
 
                 if (wrapper.getPhysicsObject().ownsChunk(entityChunkX, entityChunkZ)) {
                     Chunk chunkIn = wrapper.getPhysicsObject().claimedChunks[entityChunkX
-                            - wrapper.getPhysicsObject().ownedChunks.minX][entityChunkZ - wrapper.getPhysicsObject().ownedChunks.minZ];
+                            - wrapper.getPhysicsObject().ownedChunks.getMinX()][entityChunkZ - wrapper.getPhysicsObject().ownedChunks.getMinZ()];
 
                     int chunkYIndex = MathHelper.floor(entity.posY / 16.0D);
 

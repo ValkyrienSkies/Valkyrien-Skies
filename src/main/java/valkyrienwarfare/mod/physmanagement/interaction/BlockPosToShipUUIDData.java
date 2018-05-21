@@ -68,9 +68,9 @@ public class BlockPosToShipUUIDData extends WorldSavedData {
     public void addShipToPersistantMap(PhysicsWrapperEntity toAdd) {
         UUID shipID = toAdd.getPersistentID();
 
-        int centerX = toAdd.getPhysicsObject().ownedChunks.centerX;
-        int centerZ = toAdd.getPhysicsObject().ownedChunks.centerZ;
-        int radius = toAdd.getPhysicsObject().ownedChunks.radius;
+        int centerX = toAdd.getPhysicsObject().ownedChunks.getCenterX();
+        int centerZ = toAdd.getPhysicsObject().ownedChunks.getCenterZ();
+        int radius = toAdd.getPhysicsObject().ownedChunks.getRadius();
 
         for (int x = centerX - radius; x <= centerX + radius; x++) {
             for (int z = centerZ - radius; z <= centerZ + radius; z++) {
@@ -83,9 +83,9 @@ public class BlockPosToShipUUIDData extends WorldSavedData {
     }
 
     public void removeShipFromPersistantMap(PhysicsWrapperEntity toRemove) {
-        int centerX = toRemove.getPhysicsObject().ownedChunks.centerX;
-        int centerZ = toRemove.getPhysicsObject().ownedChunks.centerZ;
-        int radius = toRemove.getPhysicsObject().ownedChunks.radius;
+        int centerX = toRemove.getPhysicsObject().ownedChunks.getCenterX();
+        int centerZ = toRemove.getPhysicsObject().ownedChunks.getCenterZ();
+        int radius = toRemove.getPhysicsObject().ownedChunks.getRadius();
 
         for (int x = centerX - radius; x <= centerX + radius; x++) {
             for (int z = centerZ - radius; z <= centerZ + radius; z++) {
@@ -133,9 +133,9 @@ public class BlockPosToShipUUIDData extends WorldSavedData {
         int byteArraySize = entries.size() * 25;
         ByteBuffer buffer = ByteBuffer.allocate(byteArraySize);
         for (Entry<UUID, ChunkSet> entry : entries) {
-            int centerX = entry.getValue().centerX;
-            int centerZ = entry.getValue().centerZ;
-            byte radius = (byte) entry.getValue().radius;
+            int centerX = entry.getValue().getCenterX();
+            int centerZ = entry.getValue().getCenterZ();
+            byte radius = (byte) entry.getValue().getRadius();
             long mostBits = entry.getKey().getMostSignificantBits();
             long leastBits = entry.getKey().getLeastSignificantBits();
 

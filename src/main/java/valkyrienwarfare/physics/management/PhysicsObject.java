@@ -208,7 +208,7 @@ public class PhysicsObject {
                             }
                         }
                         ValkyrienWarfareMod.chunkManager.getManagerForWorld(getWorldObj()).data.avalibleChunkKeys
-                                .add(ownedChunks.centerX);
+                                .add(ownedChunks.getCenterX());
                     }
                 }
             } catch (Exception e) {
@@ -230,8 +230,8 @@ public class PhysicsObject {
     public void destroy() {
         wrapper.setDead();
         List<EntityPlayerMP> watchersCopy = new ArrayList<EntityPlayerMP>(watchingPlayers);
-        for (int x = ownedChunks.minX; x <= ownedChunks.maxX; x++) {
-            for (int z = ownedChunks.minZ; z <= ownedChunks.maxZ; z++) {
+        for (int x = ownedChunks.getMinX(); x <= ownedChunks.getMaxX(); x++) {
+            for (int z = ownedChunks.getMinZ(); z <= ownedChunks.getMaxZ(); z++) {
                 SPacketUnloadChunk unloadPacket = new SPacketUnloadChunk(x, z);
                 for (EntityPlayerMP wachingPlayer : watchersCopy) {
                     wachingPlayer.connection.sendPacket(unloadPacket);
@@ -285,13 +285,13 @@ public class PhysicsObject {
 
         ValkyrienWarfareMod.physicsManager.onShipPreload(wrapper);
 
-        claimedChunks = new Chunk[(ownedChunks.radius * 2) + 1][(ownedChunks.radius * 2) + 1];
-        claimedChunksEntries = new PlayerChunkMapEntry[(ownedChunks.radius * 2) + 1][(ownedChunks.radius * 2) + 1];
-        for (int x = ownedChunks.minX; x <= ownedChunks.maxX; x++) {
-            for (int z = ownedChunks.minZ; z <= ownedChunks.maxZ; z++) {
+        claimedChunks = new Chunk[(ownedChunks.getRadius() * 2) + 1][(ownedChunks.getRadius() * 2) + 1];
+        claimedChunksEntries = new PlayerChunkMapEntry[(ownedChunks.getRadius() * 2) + 1][(ownedChunks.getRadius() * 2) + 1];
+        for (int x = ownedChunks.getMinX(); x <= ownedChunks.getMaxX(); x++) {
+            for (int z = ownedChunks.getMinZ(); z <= ownedChunks.getMaxZ(); z++) {
                 Chunk chunk = new Chunk(getWorldObj(), x, z);
                 injectChunkIntoWorld(chunk, x, z, true);
-                claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ] = chunk;
+                claimedChunks[x - ownedChunks.getMinX()][z - ownedChunks.getMinZ()] = chunk;
             }
         }
 
@@ -310,8 +310,8 @@ public class PhysicsObject {
         detectBlockPositions();
 
         // TODO: This fixes the lighting, but it adds lag; maybe remove this
-        for (int x = ownedChunks.minX; x <= ownedChunks.maxX; x++) {
-            for (int z = ownedChunks.minZ; z <= ownedChunks.maxZ; z++) {
+        for (int x = ownedChunks.getMinX(); x <= ownedChunks.getMaxX(); x++) {
+            for (int z = ownedChunks.getMinZ(); z <= ownedChunks.getMaxZ(); z++) {
                 // claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ].isTerrainPopulated
                 // = true;
                 // claimedChunks[x - ownedChunks.minX][z -
@@ -370,13 +370,13 @@ public class PhysicsObject {
 
         ValkyrienWarfareMod.physicsManager.onShipPreload(wrapper);
 
-        claimedChunks = new Chunk[(ownedChunks.radius * 2) + 1][(ownedChunks.radius * 2) + 1];
-        claimedChunksEntries = new PlayerChunkMapEntry[(ownedChunks.radius * 2) + 1][(ownedChunks.radius * 2) + 1];
-        for (int x = ownedChunks.minX; x <= ownedChunks.maxX; x++) {
-            for (int z = ownedChunks.minZ; z <= ownedChunks.maxZ; z++) {
+        claimedChunks = new Chunk[(ownedChunks.getRadius() * 2) + 1][(ownedChunks.getRadius() * 2) + 1];
+        claimedChunksEntries = new PlayerChunkMapEntry[(ownedChunks.getRadius() * 2) + 1][(ownedChunks.getRadius() * 2) + 1];
+        for (int x = ownedChunks.getMinX(); x <= ownedChunks.getMaxX(); x++) {
+            for (int z = ownedChunks.getMinZ(); z <= ownedChunks.getMaxZ(); z++) {
                 Chunk chunk = new Chunk(getWorldObj(), x, z);
                 injectChunkIntoWorld(chunk, x, z, true);
-                claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ] = chunk;
+                claimedChunks[x - ownedChunks.getMinX()][z - ownedChunks.getMinZ()] = chunk;
             }
         }
 
@@ -513,19 +513,19 @@ public class PhysicsObject {
         // BlockPos(claimedChunks[ownedChunks.radius+1][ownedChunks.radius+1].x*16,128,claimedChunks[ownedChunks.radius+1][ownedChunks.radius+1].z*16);
         // System.out.println(chunkCache.getBlockState(centerDifference).getBlock());
 
-        for (int x = ownedChunks.minX; x <= ownedChunks.maxX; x++) {
-            for (int z = ownedChunks.minZ; z <= ownedChunks.maxZ; z++) {
-                claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ].isTerrainPopulated = true;
-                claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ].generateSkylightMap();
-                claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ].checkLight();
+        for (int x = ownedChunks.getMinX(); x <= ownedChunks.getMaxX(); x++) {
+            for (int z = ownedChunks.getMinZ(); z <= ownedChunks.getMaxZ(); z++) {
+                claimedChunks[x - ownedChunks.getMinX()][z - ownedChunks.getMinZ()].isTerrainPopulated = true;
+                claimedChunks[x - ownedChunks.getMinX()][z - ownedChunks.getMinZ()].generateSkylightMap();
+                claimedChunks[x - ownedChunks.getMinX()][z - ownedChunks.getMinZ()].checkLight();
             }
         }
 
         detectBlockPositions();
 
         // TODO: This fixes the lighting, but it adds lag; maybe remove this
-        for (int x = ownedChunks.minX; x <= ownedChunks.maxX; x++) {
-            for (int z = ownedChunks.minZ; z <= ownedChunks.maxZ; z++) {
+        for (int x = ownedChunks.getMinX(); x <= ownedChunks.getMaxX(); x++) {
+            for (int z = ownedChunks.getMinZ(); z <= ownedChunks.getMaxZ(); z++) {
                 // claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ].isTerrainPopulated
                 // = true;
                 // claimedChunks[x - ownedChunks.minX][z -
@@ -548,7 +548,7 @@ public class PhysicsObject {
         // TileEntities will break if you don't do this
         chunk.loaded = true;
         chunk.dirty = true;
-        claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ] = chunk;
+        claimedChunks[x - ownedChunks.getMinX()][z - ownedChunks.getMinZ()] = chunk;
 
         if (putInId2ChunkMap) {
             provider.id2ChunkMap.put(ChunkPos.asLong(x, z), chunk);
@@ -574,7 +574,7 @@ public class PhysicsObject {
         entry.sentToPlayers = true;
         entry.players = watchingPlayers;
 
-        claimedChunksEntries[x - ownedChunks.minX][z - ownedChunks.minZ] = entry;
+        claimedChunksEntries[x - ownedChunks.getMinX()][z - ownedChunks.getMinZ()] = entry;
 
         // Ticket ticket =
         // ValkyrienWarfareMod.physicsManager.getManagerForWorld(this.worldObj).chunkLoadingTicket;
@@ -589,10 +589,10 @@ public class PhysicsObject {
 
     // Experimental, could fix issues with random shit generating inside of Ships
     private void replaceOuterChunksWithAir() {
-        for (int x = ownedChunks.minX - 1; x <= ownedChunks.maxX + 1; x++) {
-            for (int z = ownedChunks.minZ - 1; z <= ownedChunks.maxZ + 1; z++) {
-                if (x == ownedChunks.minX - 1 || x == ownedChunks.maxX + 1 || z == ownedChunks.minZ - 1
-                        || z == ownedChunks.maxZ + 1) {
+        for (int x = ownedChunks.getMinX() - 1; x <= ownedChunks.getMaxX() + 1; x++) {
+            for (int z = ownedChunks.getMinZ() - 1; z <= ownedChunks.getMaxZ() + 1; z++) {
+                if (x == ownedChunks.getMinX() - 1 || x == ownedChunks.getMaxX() + 1 || z == ownedChunks.getMinZ() - 1
+                        || z == ownedChunks.getMaxZ() + 1) {
                     // This is satisfied for the chunks surrounding a Ship, do fill it with empty
                     // space
                     Chunk chunk = new Chunk(getWorldObj(), x, z);
@@ -621,8 +621,8 @@ public class PhysicsObject {
     }
 
     public BlockPos getRegionCenter() {
-        return new BlockPos((claimedChunks[ownedChunks.radius + 1][ownedChunks.radius + 1].x * 16) - 8, 127,
-                (claimedChunks[ownedChunks.radius + 1][ownedChunks.radius + 1].z * 16) - 8);
+        return new BlockPos((claimedChunks[ownedChunks.getRadius() + 1][ownedChunks.getRadius() + 1].x * 16) - 8, 127,
+                (claimedChunks[ownedChunks.getRadius() + 1][ownedChunks.getRadius() + 1].z * 16) - 8);
     }
 
     /**
@@ -633,8 +633,8 @@ public class PhysicsObject {
      */
     public void onPlayerUntracking(EntityPlayer untracking) {
         watchingPlayers.remove(untracking);
-        for (int x = ownedChunks.minX; x <= ownedChunks.maxX; x++) {
-            for (int z = ownedChunks.minZ; z <= ownedChunks.maxZ; z++) {
+        for (int x = ownedChunks.getMinX(); x <= ownedChunks.getMaxX(); x++) {
+            for (int z = ownedChunks.getMinZ(); z <= ownedChunks.getMaxZ(); z++) {
                 SPacketUnloadChunk unloadPacket = new SPacketUnloadChunk(x, z);
                 ((EntityPlayerMP) untracking).connection.sendPacket(unloadPacket);
             }
@@ -654,9 +654,9 @@ public class PhysicsObject {
 
     public void unloadShipChunksFromWorld() {
         ChunkProviderServer provider = (ChunkProviderServer) getWorldObj().getChunkProvider();
-        for (int x = ownedChunks.minX; x <= ownedChunks.maxX; x++) {
-            for (int z = ownedChunks.minZ; z <= ownedChunks.maxZ; z++) {
-                provider.queueUnload(claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ]);
+        for (int x = ownedChunks.getMinX(); x <= ownedChunks.getMaxX(); x++) {
+            for (int z = ownedChunks.getMinZ(); z <= ownedChunks.getMaxZ(); z++) {
+                provider.queueUnload(claimedChunks[x - ownedChunks.getMinX()][z - ownedChunks.getMinZ()]);
 
                 // Ticket ticket =
                 // ValkyrienWarfareMod.physicsManager.getManagerForWorld(this.worldObj).chunkLoadingTicket;
@@ -741,10 +741,10 @@ public class PhysicsObject {
 
         ValkyrienWarfareMod.physicsManager.onShipPreload(wrapper);
 
-        claimedChunks = new Chunk[(ownedChunks.radius * 2) + 1][(ownedChunks.radius * 2) + 1];
-        claimedChunksEntries = new PlayerChunkMapEntry[(ownedChunks.radius * 2) + 1][(ownedChunks.radius * 2) + 1];
-        for (int x = ownedChunks.minX; x <= ownedChunks.maxX; x++) {
-            for (int z = ownedChunks.minZ; z <= ownedChunks.maxZ; z++) {
+        claimedChunks = new Chunk[(ownedChunks.getRadius() * 2) + 1][(ownedChunks.getRadius() * 2) + 1];
+        claimedChunksEntries = new PlayerChunkMapEntry[(ownedChunks.getRadius() * 2) + 1][(ownedChunks.getRadius() * 2) + 1];
+        for (int x = ownedChunks.getMinX(); x <= ownedChunks.getMaxX(); x++) {
+            for (int z = ownedChunks.getMinZ(); z <= ownedChunks.getMaxZ(); z++) {
                 Chunk chunk = getWorldObj().getChunkFromChunkCoords(x, z);
                 if (chunk == null) {
                     System.out.println("Just a loaded a null chunk");
@@ -760,7 +760,7 @@ public class PhysicsObject {
                         nodeTileEntitiesToUpdate.add(tile);
                     }
                 }
-                claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ] = chunk;
+                claimedChunks[x - ownedChunks.getMinX()][z - ownedChunks.getMinZ()] = chunk;
             }
         }
         VKChunkCache = new VWChunkCache(getWorldObj(), claimedChunks);
@@ -942,8 +942,8 @@ public class PhysicsObject {
 
         creator = compound.getString("owner");
         claimedChunksInMap = compound.getBoolean("claimedChunksInMap");
-        for (int x = ownedChunks.minX; x <= ownedChunks.maxX; x++) {
-            for (int z = ownedChunks.minZ; z <= ownedChunks.maxZ; z++) {
+        for (int x = ownedChunks.getMinX(); x <= ownedChunks.getMaxX(); x++) {
+            for (int z = ownedChunks.getMinZ(); z <= ownedChunks.getMaxZ(); z++) {
                 getWorldObj().getChunkFromChunkCoords(x, z);
             }
         }
@@ -1000,9 +1000,9 @@ public class PhysicsObject {
     public void writeSpawnData(ByteBuf buffer) {
         PacketBuffer modifiedBuffer = new PacketBuffer(buffer);
 
-        modifiedBuffer.writeInt(ownedChunks.centerX);
-        modifiedBuffer.writeInt(ownedChunks.centerZ);
-        modifiedBuffer.writeInt(ownedChunks.radius);
+        modifiedBuffer.writeInt(ownedChunks.getCenterX());
+        modifiedBuffer.writeInt(ownedChunks.getCenterZ());
+        modifiedBuffer.writeInt(ownedChunks.getRadius());
 
         modifiedBuffer.writeDouble(wrapper.posX);
         modifiedBuffer.writeDouble(wrapper.posY);

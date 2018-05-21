@@ -26,21 +26,16 @@ import net.minecraft.world.World;
  */
 public class ChunkSet {
 
-    public World world;
-    public int centerX, centerZ;
-    public int radius;
-    public int minX, maxX, minZ, maxZ;
-    public boolean[][] chunkOccupiedInLocal;
+    private final int centerX;
+    private final int centerZ;
+    private final int radius;
+    public final boolean[][] chunkOccupiedInLocal;
 
     public ChunkSet(int x, int z, int size) {
-        centerX = x;
-        centerZ = z;
-        radius = size;
-        minX = centerX - radius;
-        maxX = centerX + radius;
-        minZ = centerZ - radius;
-        maxZ = centerZ + radius;
-        chunkOccupiedInLocal = new boolean[(radius * 2) + 1][(radius * 2) + 1];
+        this.centerX = x;
+        this.centerZ = z;
+        this.radius = size;
+        this.chunkOccupiedInLocal = new boolean[(getRadius() * 2) + 1][(getRadius() * 2) + 1];
     }
 
     public ChunkSet(NBTTagCompound readFrom) {
@@ -48,35 +43,84 @@ public class ChunkSet {
     }
 
     public void writeToNBT(NBTTagCompound toSave) {
-        toSave.setInteger("centerX", centerX);
-        toSave.setInteger("centerZ", centerZ);
-        toSave.setInteger("radius", radius);
+        toSave.setInteger("centerX", getCenterX());
+        toSave.setInteger("centerZ", getCenterZ());
+        toSave.setInteger("radius", getRadius());
     }
 
     public boolean isChunkEnclosedInMaxSet(int chunkX, int chunkZ) {
-        boolean inX = (chunkX >= centerX - 12) && (chunkX <= centerX + 12);
-        boolean inZ = (chunkZ >= centerZ - 12) && (chunkZ <= centerZ + 12);
+        boolean inX = (chunkX >= getCenterX() - 12) && (chunkX <= getCenterX() + 12);
+        boolean inZ = (chunkZ >= getCenterZ() - 12) && (chunkZ <= getCenterZ() + 12);
         return inX && inZ;
     }
 
     public boolean isChunkEnclosedInSet(int chunkX, int chunkZ) {
-        boolean inX = (chunkX >= minX) && (chunkX <= maxX);
-        boolean inZ = (chunkZ >= minZ) && (chunkZ <= maxZ);
+        boolean inX = (chunkX >= getMinX()) && (chunkX <= getMaxX());
+        boolean inZ = (chunkZ >= getMinZ()) && (chunkZ <= getMaxZ());
         return inX && inZ;
     }
 
     @Override
     public String toString() {
-        return centerX + ":" + centerZ + ":" + radius;
+        return getCenterX() + ":" + getCenterZ() + ":" + getRadius();
     }
 
     @Override
     public boolean equals(Object o) {
         if (o instanceof ChunkSet) {
             ChunkSet other = (ChunkSet) o;
-            return other.centerX == centerX && other.centerZ == centerZ && other.radius == radius;
+            return other.getCenterX() == getCenterX() && other.getCenterZ() == getCenterZ() && other.getRadius() == getRadius();
         }
         return false;
     }
+
+	/**
+	 * @return the centerX
+	 */
+	public int getCenterX() {
+		return centerX;
+	}
+
+	/**
+	 * @return the centerZ
+	 */
+	public int getCenterZ() {
+		return centerZ;
+	}
+
+	/**
+	 * @return the radius
+	 */
+	public int getRadius() {
+		return radius;
+	}
+
+	/**
+	 * @return the maxX
+	 */
+	public int getMaxX() {
+		return getCenterX() + getRadius();
+	}
+
+	/**
+	 * @return the maxZ
+	 */
+	public int getMaxZ() {
+		return getCenterZ() + getRadius();
+	}
+
+	/**
+	 * @return the minZ
+	 */
+	public int getMinZ() {
+		return getCenterZ() - getRadius();
+	}
+
+	/**
+	 * @return the minX
+	 */
+	public int getMinX() {
+		return getCenterX() - getRadius();
+	}
 
 }

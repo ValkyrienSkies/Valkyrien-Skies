@@ -140,8 +140,8 @@ public class WorldPhysObjectManager {
      * @param loaded
      */
     public void preloadPhysicsWrapperEntityMappings(PhysicsWrapperEntity loaded) {
-        for (int x = loaded.getPhysicsObject().ownedChunks.minX; x <= loaded.getPhysicsObject().ownedChunks.maxX; x++) {
-            for (int z = loaded.getPhysicsObject().ownedChunks.minZ; z <= loaded.getPhysicsObject().ownedChunks.maxZ; z++) {
+        for (int x = loaded.getPhysicsObject().ownedChunks.getMinX(); x <= loaded.getPhysicsObject().ownedChunks.getMaxX(); x++) {
+            for (int z = loaded.getPhysicsObject().ownedChunks.getMinZ(); z <= loaded.getPhysicsObject().ownedChunks.getMaxZ(); z++) {
                 chunkPosToPhysicsEntityMap.put(new ChunkPos(x, z), loaded);
             }
         }

@@ -32,8 +32,8 @@ import java.util.Map;
 
 public class FastBlockModelRenderer {
 
-    public static HashMap<IBlockState, BufferBuilder.State> blockstateToVertexData = new HashMap<IBlockState, BufferBuilder.State>();
-    public static HashMap<IBlockState, Map<Integer, Integer>> highRamGLList = new HashMap<IBlockState, Map<Integer, Integer>>();
+    public static Map<IBlockState, BufferBuilder.State> blockstateToVertexData = new HashMap<IBlockState, BufferBuilder.State>();
+    public static Map<IBlockState, Map<Integer, Integer>> highRamGLList = new HashMap<IBlockState, Map<Integer, Integer>>();
 
     public static void renderBlockModel(BufferBuilder BufferBuilder, Tessellator tessellator, World world, IBlockState blockstateToRender, int brightness) {
         renderBlockModelHighQualityHighRam(BufferBuilder, tessellator, world, blockstateToRender, brightness);

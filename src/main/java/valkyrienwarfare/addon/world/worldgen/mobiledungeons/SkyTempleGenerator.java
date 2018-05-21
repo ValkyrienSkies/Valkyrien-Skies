@@ -62,7 +62,7 @@ public class SkyTempleGenerator {
     public static void runFinishingTouches(PhysicsWrapperEntity wrapperEntity, Schematic lootGet) {
         BlockPos centerInSchematic = new BlockPos(-(lootGet.width / 2), 128 - (lootGet.height / 2), -(lootGet.length / 2));
 
-        BlockPos centerDifference = wrapperEntity.wrapping.refrenceBlockPos.subtract(centerInSchematic);
+        BlockPos centerDifference = wrapperEntity.getPhysicsObject().refrenceBlockPos.subtract(centerInSchematic);
 
         BlockPos realSkyControllerPos = skyControllerPos.add(centerDifference);
         BlockPos realSkulkerBoxPos = skulkerBoxPos.add(centerDifference);

@@ -116,14 +116,14 @@ public class EventsCommon {
         World world = entity.world;
         BlockPos posAt = new BlockPos(entity);
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, posAt);
-        if (!(entity instanceof EntityFallingBlock) && wrapper != null && wrapper.wrapping.coordTransform != null) {
+        if (!(entity instanceof EntityFallingBlock) && wrapper != null && wrapper.getPhysicsObject().coordTransform != null) {
             if (entity instanceof EntityMountingWeaponBase || entity instanceof EntityArmorStand
                     || entity instanceof EntityPig || entity instanceof EntityBoat) {
                 // entity.startRiding(wrapper);
-                wrapper.wrapping.fixEntity(entity, new Vector(entity));
-                wrapper.wrapping.queueEntityForMounting(entity);
+                wrapper.getPhysicsObject().fixEntity(entity, new Vector(entity));
+                wrapper.getPhysicsObject().queueEntityForMounting(entity);
             }
-            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.getCurrentTickTransform(), entity,
+            RotationMatrices.applyTransform(wrapper.getPhysicsObject().coordTransform.getCurrentTickTransform(), entity,
                     TransformType.LOCAL_TO_GLOBAL);
         }
     }
@@ -206,7 +206,7 @@ public class EventsCommon {
         if (!event.getEntityPlayer().world.isRemote) {
             Entity ent = event.getTarget();
             if (ent instanceof PhysicsWrapperEntity) {
-                ((PhysicsWrapperEntity) ent).wrapping.onPlayerUntracking(event.getEntityPlayer());
+                ((PhysicsWrapperEntity) ent).getPhysicsObject().onPlayerUntracking(event.getEntityPlayer());
             }
         }
     }
@@ -301,12 +301,12 @@ public class EventsCommon {
             PhysicsWrapperEntity physObj = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(event.getWorld(),
                     event.getPos());
             if (physObj != null) {
-                if (ValkyrienWarfareMod.runAirshipPermissions && !(physObj.wrapping.creator
+                if (ValkyrienWarfareMod.runAirshipPermissions && !(physObj.getPhysicsObject().creator
                         .equals(event.getEntityPlayer().entityUniqueID.toString())
-                        || physObj.wrapping.allowedUsers.contains(event.getEntityPlayer().entityUniqueID.toString()))) {
+                        || physObj.getPhysicsObject().allowedUsers.contains(event.getEntityPlayer().entityUniqueID.toString()))) {
                     event.getEntityPlayer()
                             .sendMessage(new TextComponentString("You need to be added to the airship to do that!"
-                                    + (physObj.wrapping.creator == null || physObj.wrapping.creator.trim().isEmpty()
+                                    + (physObj.getPhysicsObject().creator == null || physObj.getPhysicsObject().creator.trim().isEmpty()
                                     ? " Try using \"/airshipSettings claim\"!"
                                     : "")));
                     event.setCanceled(true);
@@ -330,12 +330,12 @@ public class EventsCommon {
             PhysicsWrapperEntity physObj = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(event.getWorld(),
                     event.getPos());
             if (physObj != null) {
-                if (ValkyrienWarfareMod.runAirshipPermissions && !(physObj.wrapping.creator
+                if (ValkyrienWarfareMod.runAirshipPermissions && !(physObj.getPhysicsObject().creator
                         .equals(event.getPlayer().entityUniqueID.toString())
-                        || physObj.wrapping.allowedUsers.contains(event.getPlayer().entityUniqueID.toString()))) {
+                        || physObj.getPhysicsObject().allowedUsers.contains(event.getPlayer().entityUniqueID.toString()))) {
                     event.getPlayer()
                             .sendMessage(new TextComponentString("You need to be added to the airship to do that!"
-                                    + (physObj.wrapping.creator == null || physObj.wrapping.creator.trim().isEmpty()
+                                    + (physObj.getPhysicsObject().creator == null || physObj.getPhysicsObject().creator.trim().isEmpty()
                                     ? " Try using \"/airshipSettings claim\"!"
                                     : "")));
                     event.setCanceled(true);
@@ -362,11 +362,11 @@ public class EventsCommon {
                 event.getPos());
         if (physObj != null) {
             if (ValkyrienWarfareMod.runAirshipPermissions
-                    && !(physObj.wrapping.creator.equals(event.getPlayer().entityUniqueID.toString())
-                    || physObj.wrapping.allowedUsers.contains(event.getPlayer().entityUniqueID.toString()))) {
+                    && !(physObj.getPhysicsObject().creator.equals(event.getPlayer().entityUniqueID.toString())
+                    || physObj.getPhysicsObject().allowedUsers.contains(event.getPlayer().entityUniqueID.toString()))) {
                 event.getPlayer()
                         .sendMessage(new TextComponentString("You need to be added to the airship to do that!"
-                                + (physObj.wrapping.creator == null || physObj.wrapping.creator.trim().isEmpty()
+                                + (physObj.getPhysicsObject().creator == null || physObj.getPhysicsObject().creator.trim().isEmpty()
                                 ? " Try using \"/airshipSettings claim\"!"
                                 : "")));
                 event.setCanceled(true);

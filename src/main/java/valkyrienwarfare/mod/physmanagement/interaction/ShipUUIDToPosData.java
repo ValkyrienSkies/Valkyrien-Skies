@@ -114,7 +114,7 @@ public class ShipUUIDToPosData extends WorldSavedData {
 
         private ShipPositionData(PhysicsWrapperEntity wrapper) {
             shipPosition = new Vector(wrapper.posX, wrapper.posY, wrapper.posZ);
-            lToWTransform = RotationMatrices.convertToFloat(wrapper.wrapping.coordTransform.getCurrentTickTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL));
+            lToWTransform = RotationMatrices.convertToFloat(wrapper.getPhysicsObject().coordTransform.getCurrentTickTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL));
         }
 
         private ShipPositionData(ByteBuffer buffer) {
@@ -138,7 +138,7 @@ public class ShipUUIDToPosData extends WorldSavedData {
             shipPosition.X = wrapper.posX;
             shipPosition.Y = wrapper.posY;
             shipPosition.Z = wrapper.posZ;
-            RotationMatrices.convertToFloat(wrapper.wrapping.coordTransform.getCurrentTickTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL), lToWTransform);
+            RotationMatrices.convertToFloat(wrapper.getPhysicsObject().coordTransform.getCurrentTickTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL), lToWTransform);
         }
 
         public double getPosX() {

@@ -39,7 +39,7 @@ public abstract class MixinWorldServer {
                 pos);
         if (physEntity != null) {
             IBlockState oldState = this.getBlockState(pos);
-            physEntity.wrapping.onSetBlockState(oldState, newState, pos);
+            physEntity.getPhysicsObject().onSetBlockState(oldState, newState, pos);
             if (oldState != newState) {
                 System.out.println(oldState.getBlock().getLocalizedName());
                 System.out.println(newState.getBlock().getLocalizedName());

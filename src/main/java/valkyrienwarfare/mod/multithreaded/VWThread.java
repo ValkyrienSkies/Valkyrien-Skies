@@ -148,11 +148,11 @@ public class VWThread extends Thread {
         for (PhysicsWrapperEntity wrapper : ships) {
             if (!wrapper.firstUpdate) {
                 // Update the physics simulation
-                wrapper.wrapping.physicsProcessor.rawPhysTickPreCol(newPhysSpeed);
+                wrapper.getPhysicsObject().physicsProcessor.rawPhysTickPreCol(newPhysSpeed);
                 // Update the collision task if necessary
-                wrapper.wrapping.physicsProcessor.worldCollision.tickUpdatingTheCollisionCache();
+                wrapper.getPhysicsObject().physicsProcessor.worldCollision.tickUpdatingTheCollisionCache();
                 // Take the big collision and split into tiny ones
-                wrapper.wrapping.physicsProcessor.worldCollision.splitIntoCollisionTasks(collisionTasks);
+                wrapper.getPhysicsObject().physicsProcessor.worldCollision.splitIntoCollisionTasks(collisionTasks);
             }
         }
 
@@ -180,7 +180,7 @@ public class VWThread extends Thread {
         for (PhysicsWrapperEntity wrapper : ships) {
             if (!wrapper.firstUpdate) {
                 try {
-                    wrapper.wrapping.physicsProcessor.rawPhysTickPostCol();
+                    wrapper.getPhysicsObject().physicsProcessor.rawPhysTickPostCol();
 
                     // PhysicsShipTransform physTransform = (PhysicsShipTransform)
                     // wrapper.wrapping.coordTransform
@@ -196,14 +196,14 @@ public class VWThread extends Thread {
                     e.printStackTrace();
                 }
             } else {
-                wrapper.wrapping.coordTransform.updateAllTransforms(false, false);
+                wrapper.getPhysicsObject().coordTransform.updateAllTransforms(false, false);
             }
         }
     }
 
     private void tickSendUpdatesToPlayers() {
         for (PhysicsWrapperEntity wrapper : ships) {
-            wrapper.wrapping.coordTransform.sendPositionToPlayers(positionTickID);
+            wrapper.getPhysicsObject().coordTransform.sendPositionToPlayers(positionTickID);
         }
         positionTickID++;
     }

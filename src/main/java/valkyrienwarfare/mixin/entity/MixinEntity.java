@@ -150,7 +150,7 @@ public abstract class MixinEntity implements IDraggable {
 
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(Entity.class.cast(this));
         if (wrapper != null) {
-            return wrapper.wrapping.coordTransform.getRenderTransform().rotate(original, TransformType.LOCAL_TO_GLOBAL);
+            return wrapper.getPhysicsObject().coordTransform.getRenderTransform().rotate(original, TransformType.LOCAL_TO_GLOBAL);
         } else {
             return original;
         }
@@ -173,7 +173,7 @@ public abstract class MixinEntity implements IDraggable {
 
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(Entity.class.cast(this));
         if (wrapper != null) {
-            return wrapper.wrapping.coordTransform.getRenderTransform().rotate(vanilla, TransformType.LOCAL_TO_GLOBAL);
+            return wrapper.getPhysicsObject().coordTransform.getRenderTransform().rotate(vanilla, TransformType.LOCAL_TO_GLOBAL);
         }
 
         return vanilla;
@@ -205,7 +205,7 @@ public abstract class MixinEntity implements IDraggable {
                     new BlockPos(x, y, z));
             if (wrapper != null) {
                 Vector posVec = new Vector(x, y, z);
-                wrapper.wrapping.coordTransform.fromLocalToGlobal(posVec);
+                wrapper.getPhysicsObject().coordTransform.fromLocalToGlobal(posVec);
                 posVec.X -= this.posX;
                 posVec.Y -= this.posY;
                 posVec.Z -= this.posZ;
@@ -232,7 +232,7 @@ public abstract class MixinEntity implements IDraggable {
             PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(this.world, pos);
             if (wrapper != null) {
                 Vector posVec = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
-                wrapper.wrapping.coordTransform.fromLocalToGlobal(posVec);
+                wrapper.getPhysicsObject().coordTransform.fromLocalToGlobal(posVec);
                 posVec.X -= this.posX;
                 posVec.Y -= this.posY;
                 posVec.Z -= this.posZ;
@@ -254,7 +254,7 @@ public abstract class MixinEntity implements IDraggable {
         } else {
             searchVector = new Vector(this.posX, this.posY - 0.20000000298023224D, this.posZ);
 //            searchVector.transform(worldBelow.wrapping.coordTransform.wToLTransform);
-            worldBelow.wrapping.coordTransform.getCurrentTickTransform().transform(searchVector, TransformType.GLOBAL_TO_LOCAL);
+            worldBelow.getPhysicsObject().coordTransform.getCurrentTickTransform().transform(searchVector, TransformType.GLOBAL_TO_LOCAL);
             return MathHelper.floor(searchVector.X);
         }
     }

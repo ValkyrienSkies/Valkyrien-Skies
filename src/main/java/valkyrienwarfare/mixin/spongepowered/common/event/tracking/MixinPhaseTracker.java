@@ -39,7 +39,7 @@ public class MixinPhaseTracker {
         PhysicsWrapperEntity physEntity = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
         if (physEntity != null) {
             IBlockState oldState = world.getBlockState(pos);
-            physEntity.wrapping.onSetBlockState(oldState, newState, pos);
+            physEntity.getPhysicsObject().onSetBlockState(oldState, newState, pos);
         }
     }
 }

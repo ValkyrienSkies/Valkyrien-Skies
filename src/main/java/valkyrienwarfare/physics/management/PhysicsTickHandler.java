@@ -40,16 +40,16 @@ public class PhysicsTickHandler {
         List<PhysicsWrapperEntity> physicsEntities = manager.getTickablePhysicsEntities();
 
         for (PhysicsWrapperEntity wrapper : physicsEntities) {
-            wrapper.wrapping.coordTransform.updatePrevTickTransform();
+            wrapper.getPhysicsObject().coordTransform.updatePrevTickTransform();
 
-            if (wrapper.wrapping.coordTransform.getCurrentPhysicsTransform() instanceof PhysicsShipTransform) {
+            if (wrapper.getPhysicsObject().coordTransform.getCurrentPhysicsTransform() instanceof PhysicsShipTransform) {
                 // Here we poll our transforms from the physics tick, and apply the latest one
                 // to the game tick.
                 // This is (for the most part) the only place in the code that bridges the
                 // physics tick with the game tick, and so all of the game tick code that
                 // depends on ship movement should go right here! Will possibly be moved to the
                 // end of the game tick instead.
-                PhysicsShipTransform physTransform = (PhysicsShipTransform) wrapper.wrapping.coordTransform
+                PhysicsShipTransform physTransform = (PhysicsShipTransform) wrapper.getPhysicsObject().coordTransform
                         .getCurrentPhysicsTransform();
 
                 wrapper.posX = physTransform.getPosX();
@@ -59,10 +59,10 @@ public class PhysicsTickHandler {
                 wrapper.setYaw(physTransform.getYaw());
                 wrapper.setRoll(physTransform.getRoll());
 
-                wrapper.wrapping.coordTransform.updateAllTransforms(true, true);
+                wrapper.getPhysicsObject().coordTransform.updateAllTransforms(true, true);
             }
 
-            wrapper.wrapping.updateChunkCache();
+            wrapper.getPhysicsObject().updateChunkCache();
         }
 
         /*
@@ -96,7 +96,7 @@ public class PhysicsTickHandler {
         // Remember only to run this from the game tick thread.
         EntityDraggable.tickAddedVelocityForWorld(world);
         for (PhysicsWrapperEntity wrapperEnt : physicsEntities) {
-            wrapperEnt.wrapping.onPostTick();
+            wrapperEnt.getPhysicsObject().onPostTick();
         }
     }
 
@@ -108,9 +108,9 @@ public class PhysicsTickHandler {
 
         for (PhysicsWrapperEntity wrapper : physicsEntities) {
             if (!wrapper.firstUpdate) {
-                wrapper.wrapping.physicsProcessor.rawPhysTickPreCol(newPhysSpeed);
-                wrapper.wrapping.physicsProcessor.worldCollision.tickUpdatingTheCollisionCache();
-                wrapper.wrapping.physicsProcessor.worldCollision.splitIntoCollisionTasks(collisionTasks);
+                wrapper.getPhysicsObject().physicsProcessor.rawPhysTickPreCol(newPhysSpeed);
+                wrapper.getPhysicsObject().physicsProcessor.worldCollision.tickUpdatingTheCollisionCache();
+                wrapper.getPhysicsObject().physicsProcessor.worldCollision.splitIntoCollisionTasks(collisionTasks);
             }
         }
 
@@ -130,9 +130,9 @@ public class PhysicsTickHandler {
 
         for (PhysicsWrapperEntity wrapper : physicsEntities) {
             if (!wrapper.firstUpdate) {
-                wrapper.wrapping.physicsProcessor.rawPhysTickPostCol();
+                wrapper.getPhysicsObject().physicsProcessor.rawPhysTickPostCol();
             } else {
-                wrapper.wrapping.coordTransform.updateAllTransforms(false, false);
+                wrapper.getPhysicsObject().coordTransform.updateAllTransforms(false, false);
             }
         }
 

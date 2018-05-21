@@ -96,12 +96,12 @@ public abstract class TileEntityEtherCompressor extends BasicForceNodeTileEntity
             Vector output = super.getForceOutputUnoriented(secondsToApply);
             return output;
         }
-
+        // TODO: Causing physics crash with the Sponge
         TileEntity controllerTile = world.getTileEntity(controllerPos);
         if (controllerTile != null) {
             if (controllerTile instanceof TileEntityHoverController) {
                 TileEntityHoverController controller = (TileEntityHoverController) controllerTile;
-                PhysicsObject physObj = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos).wrapping;
+                PhysicsObject physObj = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos).getPhysicsObject();
                 Vector notToReturn = controller.getForceForEngine(this, world, getPos(), world.getBlockState(pos),
                         physObj, secondsToApply);
                 this.currentThrust = notToReturn.length() / secondsToApply;

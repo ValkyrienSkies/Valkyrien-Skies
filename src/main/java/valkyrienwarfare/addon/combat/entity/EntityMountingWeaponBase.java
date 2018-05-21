@@ -70,11 +70,11 @@ public abstract class EntityMountingWeaponBase extends Entity implements IEntity
 //				RotationMatrices.applyTransform(rotationMatricesCompensation, passengerOffset);
 
 
-                wrapper.wrapping.coordTransform.fromGlobalToLocal(posInLocal);
+                wrapper.getPhysicsObject().coordTransform.fromGlobalToLocal(posInLocal);
 
                 posInLocal.add(passengerOffset);
 
-                wrapper.wrapping.fixEntity(player, posInLocal);
+                wrapper.getPhysicsObject().fixEntity(player, posInLocal);
             }
         }
         return false;

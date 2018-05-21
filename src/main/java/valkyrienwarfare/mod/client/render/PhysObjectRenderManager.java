@@ -186,7 +186,7 @@ public class PhysObjectRenderManager {
 
     public void updateTranslation(double partialTicks) {
         PhysicsWrapperEntity entity = parent.wrapper;
-        Vector centerOfRotation = entity.wrapping.centerCoord;
+        Vector centerOfRotation = entity.getPhysicsObject().centerCoord;
         curPartialTick = partialTicks;
 
         double moddedX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks;
@@ -235,7 +235,7 @@ public class PhysObjectRenderManager {
 
     public void inverseTransform(double partialTicks) {
         PhysicsWrapperEntity entity = parent.wrapper;
-        Vector centerOfRotation = entity.wrapping.centerCoord;
+        Vector centerOfRotation = entity.getPhysicsObject().centerCoord;
         curPartialTick = partialTicks;
 
         double moddedX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks;

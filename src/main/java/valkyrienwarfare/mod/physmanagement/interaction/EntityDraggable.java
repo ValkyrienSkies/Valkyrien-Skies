@@ -78,7 +78,7 @@ public abstract class EntityDraggable {
     public static void doTheEntityThing(Entity entity) {
         IDraggable draggable = EntityDraggable.getDraggableFromEntity(entity);
         if (draggable.getWorldBelowFeet() != null && !ValkyrienWarfareMod.physicsManager.isEntityFixed(entity)) {
-            ShipTransformationManager coordTransform = draggable.getWorldBelowFeet().wrapping.coordTransform;
+            ShipTransformationManager coordTransform = draggable.getWorldBelowFeet().getPhysicsObject().coordTransform;
 
             if (entity.world.isRemote && entity instanceof EntityPlayer) {
                 EventsClient.updatePlayerMouseOver(entity);

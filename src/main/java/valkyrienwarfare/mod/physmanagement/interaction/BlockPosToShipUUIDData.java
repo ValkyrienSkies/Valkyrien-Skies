@@ -68,9 +68,9 @@ public class BlockPosToShipUUIDData extends WorldSavedData {
     public void addShipToPersistantMap(PhysicsWrapperEntity toAdd) {
         UUID shipID = toAdd.getPersistentID();
 
-        int centerX = toAdd.wrapping.ownedChunks.centerX;
-        int centerZ = toAdd.wrapping.ownedChunks.centerZ;
-        int radius = toAdd.wrapping.ownedChunks.radius;
+        int centerX = toAdd.getPhysicsObject().ownedChunks.centerX;
+        int centerZ = toAdd.getPhysicsObject().ownedChunks.centerZ;
+        int radius = toAdd.getPhysicsObject().ownedChunks.radius;
 
         for (int x = centerX - radius; x <= centerX + radius; x++) {
             for (int z = centerZ - radius; z <= centerZ + radius; z++) {
@@ -78,14 +78,14 @@ public class BlockPosToShipUUIDData extends WorldSavedData {
                 chunkposToShipUUID.put(chunkPos, shipID);
             }
         }
-        UUIDToChunkSet.put(toAdd.getPersistentID(), toAdd.wrapping.ownedChunks);
+        UUIDToChunkSet.put(toAdd.getPersistentID(), toAdd.getPhysicsObject().ownedChunks);
         markDirty();
     }
 
     public void removeShipFromPersistantMap(PhysicsWrapperEntity toRemove) {
-        int centerX = toRemove.wrapping.ownedChunks.centerX;
-        int centerZ = toRemove.wrapping.ownedChunks.centerZ;
-        int radius = toRemove.wrapping.ownedChunks.radius;
+        int centerX = toRemove.getPhysicsObject().ownedChunks.centerX;
+        int centerZ = toRemove.getPhysicsObject().ownedChunks.centerZ;
+        int radius = toRemove.getPhysicsObject().ownedChunks.radius;
 
         for (int x = centerX - radius; x <= centerX + radius; x++) {
             for (int z = centerZ - radius; z <= centerZ + radius; z++) {

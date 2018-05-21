@@ -46,12 +46,12 @@ public class ItemShipStealer extends Item {
         PhysicsWrapperEntity entity = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(playerIn.getEntityWorld(), looking);
 
         if (entity != null) {
-            String oldOwner = entity.wrapping.creator;
+            String oldOwner = entity.getPhysicsObject().creator;
             if (oldOwner == playerIn.entityUniqueID.toString()) {
                 playerIn.sendMessage(new TextComponentString("You can't steal your own airship!"));
                 return EnumActionResult.SUCCESS;
             }
-            switch (entity.wrapping.changeOwner(playerIn)) {
+            switch (entity.getPhysicsObject().changeOwner(playerIn)) {
                 case ERROR_NEWOWNER_NOT_ENOUGH:
                     playerIn.sendMessage(new TextComponentString("You already own the maximum amount of airships!"));
                     break;

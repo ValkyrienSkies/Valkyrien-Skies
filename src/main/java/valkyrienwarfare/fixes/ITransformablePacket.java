@@ -48,9 +48,9 @@ public interface ITransformablePacket {
 				BlockPos packetPos = getBlockPos();
 				PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.world,
 						packetPos);
-				if (wrapper != null && wrapper.wrapping.coordTransform != null) {
+				if (wrapper != null && wrapper.getPhysicsObject().coordTransform != null) {
 					setPlayerDataBackup(new PlayerDataBackup(player));
-					RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.getCurrentTickTransform(), player,
+					RotationMatrices.applyTransform(wrapper.getPhysicsObject().coordTransform.getCurrentTickTransform(), player,
 							TransformType.GLOBAL_TO_LOCAL);
 				}
 			}

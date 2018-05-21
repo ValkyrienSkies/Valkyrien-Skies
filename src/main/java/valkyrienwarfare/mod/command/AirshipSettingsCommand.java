@@ -86,7 +86,7 @@ public class AirshipSettingsCommand extends CommandBase {
             sender.sendMessage(new TextComponentString("You need to be looking at an airship to do that!"));
             return;
         }
-        if (p.entityUniqueID.toString().equals(wrapper.wrapping.creator)) {
+        if (p.entityUniqueID.toString().equals(wrapper.getPhysicsObject().creator)) {
             if (args[0].equals("transfer")) {
                 if (args.length == 1) {
                     return;
@@ -97,7 +97,7 @@ public class AirshipSettingsCommand extends CommandBase {
                         p.sendMessage(new TextComponentString("That player is not online!"));
                         return;
                     }
-                    switch (wrapper.wrapping.changeOwner(target)) {
+                    switch (wrapper.getPhysicsObject().changeOwner(target)) {
                         case ERROR_IMPOSSIBLE_STATUS:
                             p.sendMessage(new TextComponentString("An error occured, please report to mod devs"));
                             break;
@@ -116,7 +116,7 @@ public class AirshipSettingsCommand extends CommandBase {
             } else if (args[0].equals("allowplayer")) {
                 if (args.length == 1) {
                     StringBuilder result = new StringBuilder();
-                    wrapper.wrapping.allowedUsers.forEach(s -> {
+                    wrapper.getPhysicsObject().allowedUsers.forEach(s -> {
                         result.append(s);
                         result.append(" ");
                     });
@@ -129,19 +129,19 @@ public class AirshipSettingsCommand extends CommandBase {
                         p.sendMessage(new TextComponentString("That player is not online!"));
                         return;
                     }
-                    if (target.entityUniqueID.toString().equals(wrapper.wrapping.creator)) {
+                    if (target.entityUniqueID.toString().equals(wrapper.getPhysicsObject().creator)) {
                         p.sendMessage(new TextComponentString("You can't add yourself to your own airship!"));
                         return;
                     }
-                    wrapper.wrapping.allowedUsers.add(target.entityUniqueID.toString());
+                    wrapper.getPhysicsObject().allowedUsers.add(target.entityUniqueID.toString());
                     p.sendMessage(new TextComponentString("Success! " + target.getName() + " can now interact with this airship!"));
                     return;
                 }
             }
         } else {
-            if (wrapper.wrapping.creator == null || wrapper.wrapping.creator.trim().isEmpty()) {
+            if (wrapper.getPhysicsObject().creator == null || wrapper.getPhysicsObject().creator.trim().isEmpty()) {
                 if (args.length == 1 && args[0].equals("claim")) {
-                    wrapper.wrapping.creator = p.entityUniqueID.toString();
+                    wrapper.getPhysicsObject().creator = p.entityUniqueID.toString();
                     p.sendMessage(new TextComponentString("You've successfully claimed an airship!"));
                     return;
                 }

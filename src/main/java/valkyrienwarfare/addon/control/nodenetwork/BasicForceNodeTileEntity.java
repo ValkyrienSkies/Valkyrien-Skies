@@ -115,7 +115,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
         PhysicsWrapperEntity parentShip = getNode().getPhysicsObject().wrapper;
         Vector engineCenter = new Vector(getPos().getX() + .5D, getPos().getY() + .5D, getPos().getZ() + .5D);
 //        RotationMatrices.applyTransform(parentShip.wrapping.coordTransform.lToWTransform, engineCenter);
-        parentShip.wrapping.coordTransform.getCurrentTickTransform().transform(engineCenter, TransformType.LOCAL_TO_GLOBAL);
+        parentShip.getPhysicsObject().coordTransform.getCurrentTickTransform().transform(engineCenter, TransformType.LOCAL_TO_GLOBAL);
         engineCenter.subtract(parentShip.posX, parentShip.posY, parentShip.posZ);
         return engineCenter;
     }
@@ -180,7 +180,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
         // Already checked
         hasAlreadyCheckedForParent = true;
         if (wrapper != null) {
-            getNode().updateParentEntity(wrapper.wrapping);
+            getNode().updateParentEntity(wrapper.getPhysicsObject());
             return false;
         } else {
             return true;

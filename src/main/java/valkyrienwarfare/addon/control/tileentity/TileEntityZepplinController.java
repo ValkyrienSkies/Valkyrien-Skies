@@ -29,7 +29,7 @@ public class TileEntityZepplinController extends ImplTileEntityPilotable {
     public void onStopTileUsage() {
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(getWorld(), getPos());
         if (wrapper != null) {
-            PhysicsCalculationsManualControl zepplinPhysics = (PhysicsCalculationsManualControl) wrapper.wrapping.physicsProcessor;
+            PhysicsCalculationsManualControl zepplinPhysics = (PhysicsCalculationsManualControl) wrapper.getPhysicsObject().physicsProcessor;
             zepplinPhysics.setUpRate(0);
             zepplinPhysics.setForwardRate(0);
         }
@@ -49,7 +49,7 @@ public class TileEntityZepplinController extends ImplTileEntityPilotable {
     void processControlMessage(PilotControlsMessage message, EntityPlayerMP sender) {
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(getWorld(), getPos());
         if (wrapper != null) {
-            PhysicsCalculationsManualControl zepplinPhysics = (PhysicsCalculationsManualControl) wrapper.wrapping.physicsProcessor;
+            PhysicsCalculationsManualControl zepplinPhysics = (PhysicsCalculationsManualControl) wrapper.getPhysicsObject().physicsProcessor;
             if (message.airshipLeft_KeyDown) {
                 zepplinPhysics.setYawRate(zepplinPhysics.getYawRate() - 2.5);
             }

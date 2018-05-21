@@ -30,14 +30,14 @@ public class RealMethods implements DummyMethods {
     @Override
     public Vector getLinearVelocity(Entity shipEnt, double secondsToApply) {
         PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity) shipEnt;
-        return wrapper.wrapping.physicsProcessor.linearMomentum
-                .getProduct(secondsToApply * wrapper.wrapping.physicsProcessor.getInvMass());
+        return wrapper.getPhysicsObject().physicsProcessor.linearMomentum
+                .getProduct(secondsToApply * wrapper.getPhysicsObject().physicsProcessor.getInvMass());
     }
 
     @Override
     public Vector getAngularVelocity(Entity shipEnt) {
         PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity) shipEnt;
-        return wrapper.wrapping.physicsProcessor.angularVelocity;
+        return wrapper.getPhysicsObject().physicsProcessor.angularVelocity;
     }
 
     // Returns the matrix which converts local coordinates (The positions of the
@@ -46,7 +46,7 @@ public class RealMethods implements DummyMethods {
     @Override
     public double[] getShipTransformMatrix(Entity shipEnt) {
         PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity) shipEnt;
-        return wrapper.wrapping.coordTransform.getCurrentTickTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL);
+        return wrapper.getPhysicsObject().coordTransform.getCurrentTickTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL);
     }
 
     // Note, do not call this from World coordinates; first subtract the world
@@ -54,7 +54,7 @@ public class RealMethods implements DummyMethods {
     @Override
     public Vector getVelocityAtPoint(Entity shipEnt, Vector inBody, double secondsToApply) {
         PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity) shipEnt;
-        Vector toReturn = wrapper.wrapping.physicsProcessor.getVelocityAtPoint(inBody);
+        Vector toReturn = wrapper.getPhysicsObject().physicsProcessor.getVelocityAtPoint(inBody);
         toReturn.multiply(secondsToApply);
         return toReturn;
     }
@@ -62,14 +62,14 @@ public class RealMethods implements DummyMethods {
     @Override
     public double getShipMass(Entity shipEnt) {
         PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity) shipEnt;
-        return wrapper.wrapping.physicsProcessor.getMass();
+        return wrapper.getPhysicsObject().physicsProcessor.getMass();
     }
 
     @Override
     public Vector getPositionInShipFromReal(World worldObj, Entity shipEnt, Vector positionInWorld) {
         PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity) shipEnt;
         Vector inLocal = new Vector(positionInWorld);
-        wrapper.wrapping.coordTransform.fromLocalToGlobal(inLocal);
+        wrapper.getPhysicsObject().coordTransform.fromLocalToGlobal(inLocal);
         return inLocal;
     }
 
@@ -77,7 +77,7 @@ public class RealMethods implements DummyMethods {
     public Vector getPositionInRealFromShip(World worldObj, Entity shipEnt, Vector pos) {
         PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity) shipEnt;
         Vector inReal = new Vector(pos);
-        wrapper.wrapping.coordTransform.fromLocalToGlobal(inReal);
+        wrapper.getPhysicsObject().coordTransform.fromLocalToGlobal(inReal);
         return inReal;
     }
 
@@ -94,7 +94,7 @@ public class RealMethods implements DummyMethods {
 
     @Override
     public Vector getShipCenterOfMass(Entity shipEnt) {
-        return new Vector(((PhysicsWrapperEntity) shipEnt).wrapping.physicsProcessor.gameTickCenterOfMass);
+        return new Vector(((PhysicsWrapperEntity) shipEnt).getPhysicsObject().physicsProcessor.gameTickCenterOfMass);
     }
 
     @Override

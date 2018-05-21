@@ -55,16 +55,16 @@ public abstract class MixinRenderManager {
                 double oldLastPosY = entityIn.lastTickPosY;
                 double oldLastPosZ = entityIn.lastTickPosZ;
 
-                Vector localPosition = fixedOnto.wrapping.getLocalPositionForEntity(entityIn);
+                Vector localPosition = fixedOnto.getPhysicsObject().getLocalPositionForEntity(entityIn);
 
-                fixedOnto.wrapping.renderer.setupTranslation(partialTicks);
+                fixedOnto.getPhysicsObject().renderer.setupTranslation(partialTicks);
 
                 if (localPosition != null) {
                     localPosition = new Vector(localPosition);
 
-                    localPosition.X -= fixedOnto.wrapping.renderer.offsetPos.getX();
-                    localPosition.Y -= fixedOnto.wrapping.renderer.offsetPos.getY();
-                    localPosition.Z -= fixedOnto.wrapping.renderer.offsetPos.getZ();
+                    localPosition.X -= fixedOnto.getPhysicsObject().renderer.offsetPos.getX();
+                    localPosition.Y -= fixedOnto.getPhysicsObject().renderer.offsetPos.getY();
+                    localPosition.Z -= fixedOnto.getPhysicsObject().renderer.offsetPos.getZ();
 
                     x = entityIn.posX = entityIn.lastTickPosX = localPosition.X;
                     y = entityIn.posY = entityIn.lastTickPosY = localPosition.Y;
@@ -88,7 +88,7 @@ public abstract class MixinRenderManager {
                             makePlayerMount = true;
 
                             //Now fix the rotation of sleeping players
-                            Vector playerPosInLocal = new Vector(fixedOnto.wrapping.getLocalPositionForEntity(entityIn));
+                            Vector playerPosInLocal = new Vector(fixedOnto.getPhysicsObject().getLocalPositionForEntity(entityIn));
 
                             playerPosInLocal.subtract(.5D, .6875, .5);
                             playerPosInLocal.roundToWhole();
@@ -122,7 +122,7 @@ public abstract class MixinRenderManager {
                 }
 
                 if (localPosition != null) {
-                    fixedOnto.wrapping.renderer.inverseTransform(partialTicks);
+                    fixedOnto.getPhysicsObject().renderer.inverseTransform(partialTicks);
                 }
 
                 entityIn.posX = oldPosX;

@@ -81,7 +81,7 @@ public abstract class MixinWorld implements IWorldVW {
                 pos);
         if (physEntity != null) {
             IBlockState oldState = thisClassAsWorld.getBlockState(pos);
-            physEntity.wrapping.onSetBlockState(oldState, newState, pos);
+            physEntity.getPhysicsObject().onSetBlockState(oldState, newState, pos);
             // if (oldState != newState) {
             // System.out.println(oldState.getBlock().getLocalizedName());
             // System.out.println(newState.getBlock().getLocalizedName());
@@ -105,7 +105,7 @@ public abstract class MixinWorld implements IWorldVW {
             Vector newPosVec = new Vector(x, y, z);
             // RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform,
             // newPosVec);
-            wrapper.wrapping.coordTransform.getCurrentTickTransform().transform(newPosVec,
+            wrapper.getPhysicsObject().coordTransform.getCurrentTickTransform().transform(newPosVec,
                     TransformType.LOCAL_TO_GLOBAL);
             x = newPosVec.X;
             y = newPosVec.Y;
@@ -197,8 +197,8 @@ public abstract class MixinWorld implements IWorldVW {
         BlockPos newPos = new BlockPos(midX, midY, midZ);
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(World.class.cast(this),
                 newPos);
-        if (wrapper != null && wrapper.wrapping.renderer != null) {
-            wrapper.wrapping.renderer.updateRange(x1 - 1, y1 - 1, z1 - 1, x2 + 1, y2 + 1, z2 + 1);
+        if (wrapper != null && wrapper.getPhysicsObject().renderer != null) {
+            wrapper.getPhysicsObject().renderer.updateRange(x1 - 1, y1 - 1, z1 - 1, x2 + 1, y2 + 1, z2 + 1);
         }
 
         if (wrapper == null) {
@@ -231,7 +231,7 @@ public abstract class MixinWorld implements IWorldVW {
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(World.class.cast(this),
                 pos);
         if (wrapper != null) {
-            Polygon poly = new Polygon(aabb, wrapper.wrapping.coordTransform.getCurrentTickTransform(),
+            Polygon poly = new Polygon(aabb, wrapper.getPhysicsObject().coordTransform.getCurrentTickTransform(),
                     TransformType.LOCAL_TO_GLOBAL);
             aabb = poly.getEnclosedAABB();// .contract(.3D);
             toReturn.addAll(this.getEntitiesWithinAABBOriginal(clazz, aabb, filter));
@@ -275,7 +275,7 @@ public abstract class MixinWorld implements IWorldVW {
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(World.class.cast(this),
                 pos);
         if (wrapper != null) {
-            Polygon poly = new Polygon(boundingBox, wrapper.wrapping.coordTransform.getCurrentTickTransform(),
+            Polygon poly = new Polygon(boundingBox, wrapper.getPhysicsObject().coordTransform.getCurrentTickTransform(),
                     TransformType.LOCAL_TO_GLOBAL);
             boundingBox = poly.getEnclosedAABB().shrink(.3D);
             toReturn.addAll(this.getEntitiesInAABBexcludingOriginal(entityIn, boundingBox, predicate));
@@ -294,7 +294,7 @@ public abstract class MixinWorld implements IWorldVW {
                 pos);
         if (wrapper != null) {
             Vector posVec = new Vector(x, y, z);
-            wrapper.wrapping.coordTransform.fromLocalToGlobal(posVec);
+            wrapper.getPhysicsObject().coordTransform.fromLocalToGlobal(posVec);
             x = posVec.X;
             y = posVec.Y;
             z = posVec.Z;
@@ -346,7 +346,7 @@ public abstract class MixinWorld implements IWorldVW {
             PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(thisClassAsWorld,
                     pos);
             if (wrapper != null) {
-                ((INodeProvider) tileEntityIn).getNode().updateParentEntity(wrapper.wrapping);
+                ((INodeProvider) tileEntityIn).getNode().updateParentEntity(wrapper.getPhysicsObject());
             }
         }
 
@@ -443,9 +443,9 @@ public abstract class MixinWorld implements IWorldVW {
                 // ValkyrienWarfareMod.proxy.updateShipPartialTicks(wrapper);
             }
 
-            playerEyesPos = wrapper.wrapping.coordTransform.getRenderTransform().transform(playerEyesPos,
+            playerEyesPos = wrapper.getPhysicsObject().coordTransform.getRenderTransform().transform(playerEyesPos,
                     TransformType.GLOBAL_TO_LOCAL);
-            playerReachVector = wrapper.wrapping.coordTransform.getRenderTransform().rotate(playerReachVector,
+            playerReachVector = wrapper.getPhysicsObject().coordTransform.getRenderTransform().rotate(playerReachVector,
                     TransformType.GLOBAL_TO_LOCAL);
 
             Vec3d playerEyesReachAdded = playerEyesPos.addVector(playerReachVector.x * reachDistance,
@@ -457,7 +457,7 @@ public abstract class MixinWorld implements IWorldVW {
                 double shipResultDistFromPlayer = resultInShip.hitVec.distanceTo(playerEyesPos);
                 if (shipResultDistFromPlayer < worldResultDistFromPlayer) {
                     worldResultDistFromPlayer = shipResultDistFromPlayer;
-                    resultInShip.hitVec = wrapper.wrapping.coordTransform.getRenderTransform()
+                    resultInShip.hitVec = wrapper.getPhysicsObject().coordTransform.getRenderTransform()
                             .transform(resultInShip.hitVec, TransformType.LOCAL_TO_GLOBAL);
                     vanillaTrace = resultInShip;
                     transformedEntity = wrapper;
@@ -467,7 +467,7 @@ public abstract class MixinWorld implements IWorldVW {
 
         if (transformedEntity != null) {
             Vec3d hitVec2 = vanillaTrace.hitVec;
-            hitVec2 = transformedEntity.wrapping.coordTransform.getRenderTransform().transform(hitVec2,
+            hitVec2 = transformedEntity.getPhysicsObject().coordTransform.getRenderTransform().transform(hitVec2,
                     TransformType.GLOBAL_TO_LOCAL);
             vanillaTrace.hitVec = hitVec2;
         }

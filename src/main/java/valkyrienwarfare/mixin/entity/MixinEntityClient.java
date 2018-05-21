@@ -48,15 +48,15 @@ public abstract class MixinEntityClient {
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(Entity.class.cast(this));
 
         if (wrapper != null) {
-            Vector playerPosition = new Vector(wrapper.wrapping.getLocalPositionForEntity(Entity.class.cast(this)));
-            wrapper.wrapping.coordTransform.getRenderTransform().transform(playerPosition,
+            Vector playerPosition = new Vector(wrapper.getPhysicsObject().getLocalPositionForEntity(Entity.class.cast(this)));
+            wrapper.getPhysicsObject().coordTransform.getRenderTransform().transform(playerPosition,
                     TransformType.LOCAL_TO_GLOBAL);
 
             Vector playerEyes = new Vector(0, this.getEyeHeight(), 0);
             // Remove the original position added for the player's eyes
             // RotationMatrices.doRotationOnly(wrapper.wrapping.coordTransform.lToWTransform,
             // playerEyes);
-            wrapper.wrapping.coordTransform.getCurrentTickTransform().rotate(playerEyes, TransformType.LOCAL_TO_GLOBAL);
+            wrapper.getPhysicsObject().coordTransform.getCurrentTickTransform().rotate(playerEyes, TransformType.LOCAL_TO_GLOBAL);
             // Add the new rotate player eyes to the position
             playerPosition.add(playerEyes);
             callbackInfo.setReturnValue(playerPosition.toVec3d());

@@ -94,11 +94,11 @@ public class ClientProxy extends CommonProxy {
     public void updateShipPartialTicks(PhysicsWrapperEntity entity) {
         double partialTicks = Minecraft.getMinecraft().getRenderPartialTicks();
         // entity.wrapping.renderer.updateTranslation(partialTicks);
-        Vector centerOfRotation = entity.wrapping.centerCoord;
-        if (entity.wrapping.renderer == null) {
+        Vector centerOfRotation = entity.getPhysicsObject().centerCoord;
+        if (entity.getPhysicsObject().renderer == null) {
             return;
         }
-        entity.wrapping.renderer.curPartialTick = partialTicks;
+        entity.getPhysicsObject().renderer.curPartialTick = partialTicks;
 
         double moddedX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks;
         double moddedY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks;
@@ -107,13 +107,13 @@ public class ClientProxy extends CommonProxy {
         double p1 = Minecraft.getMinecraft().player.lastTickPosY + (Minecraft.getMinecraft().player.posY - Minecraft.getMinecraft().player.lastTickPosY) * (double) partialTicks;
         double p2 = Minecraft.getMinecraft().player.lastTickPosZ + (Minecraft.getMinecraft().player.posZ - Minecraft.getMinecraft().player.lastTickPosZ) * (double) partialTicks;
 
-        Quaternion smoothRotation = entity.wrapping.renderer.getSmoothRotationQuat(partialTicks);
+        Quaternion smoothRotation = entity.getPhysicsObject().renderer.getSmoothRotationQuat(partialTicks);
         double[] radians = smoothRotation.toRadians();
 
         double moddedPitch = Math.toDegrees(radians[0]);
         double moddedYaw = Math.toDegrees(radians[1]);
         double moddedRoll = Math.toDegrees(radians[2]);
 
-        entity.wrapping.coordTransform.updateRenderTransform(moddedX, moddedY, moddedZ, moddedPitch, moddedYaw, moddedRoll);
+        entity.getPhysicsObject().coordTransform.updateRenderTransform(moddedX, moddedY, moddedZ, moddedPitch, moddedYaw, moddedRoll);
     }
 }

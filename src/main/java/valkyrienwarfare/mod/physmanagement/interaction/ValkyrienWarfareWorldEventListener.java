@@ -115,14 +115,14 @@ public class ValkyrienWarfareWorldEventListener implements IWorldEventListener {
 
         BlockPos posAt = new BlockPos(entityIn);
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldObj, posAt);
-        if (!(entityIn instanceof EntityFallingBlock) && wrapper != null && wrapper.wrapping.coordTransform != null) {
+        if (!(entityIn instanceof EntityFallingBlock) && wrapper != null && wrapper.getPhysicsObject().coordTransform != null) {
             if (entityIn instanceof EntityMountingWeaponBase || entityIn instanceof EntityArmorStand
                     || entityIn instanceof EntityPig || entityIn instanceof EntityBoat) {
                 // entity.startRiding(wrapper);
-                wrapper.wrapping.fixEntity(entityIn, new Vector(entityIn));
-                wrapper.wrapping.queueEntityForMounting(entityIn);
+                wrapper.getPhysicsObject().fixEntity(entityIn, new Vector(entityIn));
+                wrapper.getPhysicsObject().queueEntityForMounting(entityIn);
             }
-            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.getCurrentTickTransform(), entityIn, TransformType.LOCAL_TO_GLOBAL);
+            RotationMatrices.applyTransform(wrapper.getPhysicsObject().coordTransform.getCurrentTickTransform(), entityIn, TransformType.LOCAL_TO_GLOBAL);
 
             int newChunkX = MathHelper.floor(entityIn.posX / 16.0D);
             int newChunkZ = MathHelper.floor(entityIn.posZ / 16.0D);
@@ -135,14 +135,14 @@ public class ValkyrienWarfareWorldEventListener implements IWorldEventListener {
             ValkyrienWarfareMod.physicsManager.onShipLoad((PhysicsWrapperEntity) entityIn);
         }
 
-        if (!(entityIn instanceof EntityFallingBlock) && wrapper != null && wrapper.wrapping.coordTransform != null) {
+        if (!(entityIn instanceof EntityFallingBlock) && wrapper != null && wrapper.getPhysicsObject().coordTransform != null) {
             if (entityIn instanceof EntityMountingWeaponBase || entityIn instanceof EntityArmorStand
                     || entityIn instanceof EntityPig || entityIn instanceof EntityBoat) {
                 // entity.startRiding(wrapper);
-                wrapper.wrapping.fixEntity(entityIn, new Vector(entityIn));
-                wrapper.wrapping.queueEntityForMounting(entityIn);
+                wrapper.getPhysicsObject().fixEntity(entityIn, new Vector(entityIn));
+                wrapper.getPhysicsObject().queueEntityForMounting(entityIn);
             }
-            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.getCurrentTickTransform(), entityIn, TransformType.LOCAL_TO_GLOBAL);
+            RotationMatrices.applyTransform(wrapper.getPhysicsObject().coordTransform.getCurrentTickTransform(), entityIn, TransformType.LOCAL_TO_GLOBAL);
         }
     }
 
@@ -176,7 +176,7 @@ public class ValkyrienWarfareWorldEventListener implements IWorldEventListener {
                             pos);
 
                     if (wrapper != null) {
-                        wrapper.wrapping.coordTransform.getCurrentTickTransform().transform(posVector, TransformType.LOCAL_TO_GLOBAL);
+                        wrapper.getPhysicsObject().coordTransform.getCurrentTickTransform().transform(posVector, TransformType.LOCAL_TO_GLOBAL);
 //                        RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, posVector);
                     }
 

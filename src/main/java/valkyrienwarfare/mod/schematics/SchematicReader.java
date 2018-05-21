@@ -152,7 +152,7 @@ public class SchematicReader {
 
                 if (wrapperEntity != null) {
                     if (newInstance instanceof INodeProvider) {
-                        wrapperEntity.wrapping.nodesWithinShip.add(((INodeProvider) newInstance).getNode());
+                        wrapperEntity.getPhysicsObject().nodesWithinShip.add(((INodeProvider) newInstance).getNode());
                     }
                 }
 

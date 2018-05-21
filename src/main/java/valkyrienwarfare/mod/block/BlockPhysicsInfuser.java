@@ -57,7 +57,7 @@ public class BlockPhysicsInfuser extends Block {
             if (manager != null) {
                 PhysicsWrapperEntity wrapperEnt = manager.getManagingObjectForChunk(worldIn.getChunkFromBlockCoords(pos));
                 if (wrapperEnt != null) {
-                    wrapperEnt.wrapping.doPhysics = !wrapperEnt.wrapping.doPhysics;
+                    wrapperEnt.getPhysicsObject().doPhysics = !wrapperEnt.getPhysicsObject().doPhysics;
                     return true;
                 }
             }

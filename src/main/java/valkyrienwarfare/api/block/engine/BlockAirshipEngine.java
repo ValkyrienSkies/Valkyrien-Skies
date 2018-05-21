@@ -33,6 +33,7 @@ import net.minecraft.world.World;
 import valkyrienwarfare.addon.control.tileentity.TileEntityPropellerEngine;
 import valkyrienwarfare.api.IBlockForceProvider;
 import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 /**
  * All engines should extend this class, that way other kinds of engines can be made without making tons of new classes for them. Only engines that add new functionality should have their own class.
@@ -81,7 +82,7 @@ public abstract class BlockAirshipEngine extends Block implements IBlockForcePro
             //Just set the Thrust to be the maximum
             ((TileEntityPropellerEngine) tileEntity).setThrustGoal(this.getEnginePower(world, pos, state, shipEntity));
             ((TileEntityPropellerEngine) tileEntity).updateTicksSinceLastRecievedSignal();
-            return ((TileEntityPropellerEngine) tileEntity).getForceOutputUnoriented(secondsToApply);
+            return ((TileEntityPropellerEngine) tileEntity).getForceOutputUnoriented(secondsToApply, ((PhysicsWrapperEntity) shipEntity).getPhysicsObject());
         }
 
         return acting;

@@ -28,116 +28,118 @@ import valkyrienwarfare.physics.management.PhysicsObject;
 
 public abstract class TileEntityEtherCompressor extends BasicForceNodeTileEntity implements IEtherGasEngine {
 
-    // These deprecated fields will be deleted at some point, but for now its best
-    // to keep them around to maintain compatibility with older controls.
-    @Deprecated
-    private Vector linearThrust = new Vector();
-    @Deprecated
-    private Vector angularThrust = new Vector();
-    @Deprecated
-    private BlockPos controllerPos;
-    private int etherGas;
-    private int etherGasCapacity;
+	// These deprecated fields will be deleted at some point, but for now its best
+	// to keep them around to maintain compatibility with older controls.
+	@Deprecated
+	private Vector linearThrust = new Vector();
+	@Deprecated
+	private Vector angularThrust = new Vector();
+	@Deprecated
+	private BlockPos controllerPos;
+	private int etherGas;
+	private int etherGasCapacity;
 
-    public TileEntityEtherCompressor(Vector normalForceVector, double power) {
-        super(normalForceVector, false, power);
-        validate();
-        etherGas = 0;
-        etherGasCapacity = 1000;
-    }
+	public TileEntityEtherCompressor(Vector normalForceVector, double power) {
+		super(normalForceVector, false, power);
+		validate();
+		etherGas = 0;
+		etherGasCapacity = 1000;
+	}
 
-    public TileEntityEtherCompressor() {
-        this(null, 0);
-    }
+	public TileEntityEtherCompressor() {
+		this(null, 0);
+	}
 
-    @Deprecated
-    public BlockPos getControllerPos() {
-        return controllerPos;
-    }
+	@Deprecated
+	public BlockPos getControllerPos() {
+		return controllerPos;
+	}
 
-    @Deprecated
-    public void setControllerPos(BlockPos toSet) {
-        controllerPos = toSet;
-        this.markDirty();
-    }
+	@Deprecated
+	public void setControllerPos(BlockPos toSet) {
+		controllerPos = toSet;
+		this.markDirty();
+	}
 
-    @Override
-    public void readFromNBT(NBTTagCompound compound) {
-        super.readFromNBT(compound);
-        int controllerPosX = compound.getInteger("controllerPosX");
-        int controllerPosY = compound.getInteger("controllerPosY");
-        int controllerPosZ = compound.getInteger("controllerPosZ");
-        controllerPos = new BlockPos(controllerPosX, controllerPosY, controllerPosZ);
-        etherGas = compound.getInteger("etherGas");
-        etherGasCapacity = compound.getInteger("etherGasCapacity");
-    }
+	@Override
+	public void readFromNBT(NBTTagCompound compound) {
+		super.readFromNBT(compound);
+		int controllerPosX = compound.getInteger("controllerPosX");
+		int controllerPosY = compound.getInteger("controllerPosY");
+		int controllerPosZ = compound.getInteger("controllerPosZ");
+		controllerPos = new BlockPos(controllerPosX, controllerPosY, controllerPosZ);
+		etherGas = compound.getInteger("etherGas");
+		etherGasCapacity = compound.getInteger("etherGasCapacity");
+	}
 
-    @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-        NBTTagCompound toReturn = super.writeToNBT(compound);
-        if (controllerPos != null) {
-            toReturn.setInteger("controllerPosX", controllerPos.getX());
-            toReturn.setInteger("controllerPosY", controllerPos.getY());
-            toReturn.setInteger("controllerPosZ", controllerPos.getZ());
-        }
-        toReturn.setInteger("etherGas", etherGas);
-        toReturn.setInteger("etherGasCapacity", etherGasCapacity);
-        return toReturn;
-    }
+	@Override
+	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+		NBTTagCompound toReturn = super.writeToNBT(compound);
+		if (controllerPos != null) {
+			toReturn.setInteger("controllerPosX", controllerPos.getX());
+			toReturn.setInteger("controllerPosY", controllerPos.getY());
+			toReturn.setInteger("controllerPosZ", controllerPos.getZ());
+		}
+		toReturn.setInteger("etherGas", etherGas);
+		toReturn.setInteger("etherGasCapacity", etherGasCapacity);
+		return toReturn;
+	}
 
-    @Override
-    public boolean isForceOutputOriented() {
-        return false;
-    }
+	@Override
+	public boolean isForceOutputOriented() {
+		return false;
+	}
 
-    @Override
-    public Vector getForceOutputUnoriented(double secondsToApply) {
-        if (controllerPos == null) {
-            Vector output = super.getForceOutputUnoriented(secondsToApply);
-            return output;
-        }
-        // TODO: Causing physics crash with the Sponge
-        TileEntity controllerTile = world.getTileEntity(controllerPos);
-        if (controllerTile != null) {
-            if (controllerTile instanceof TileEntityHoverController) {
-                TileEntityHoverController controller = (TileEntityHoverController) controllerTile;
-                PhysicsObject physObj = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos).getPhysicsObject();
-                Vector notToReturn = controller.getForceForEngine(this, world, getPos(), world.getBlockState(pos),
-                        physObj, secondsToApply);
-                this.currentThrust = notToReturn.length() / secondsToApply;
-            }
-        }
-        return super.getForceOutputUnoriented(secondsToApply);
-    }
+	@Override
+	public Vector getForceOutputUnoriented(double secondsToApply, PhysicsObject physicsObject) {
+		if (controllerPos == null) {
+			Vector output = super.getForceOutputUnoriented(secondsToApply, physicsObject);
+			return output;
+		}
+		// TODO: Causing physics crash with the Sponge
+		// TileEntity controllerTile = world.getTileEntity(controllerPos);
+		TileEntity controllerTile = physicsObject.vwChunkCache.getTileEntity(controllerPos);
+		if (controllerTile != null) {
+			if (controllerTile instanceof TileEntityHoverController) {
+				TileEntityHoverController controller = (TileEntityHoverController) controllerTile;
+				PhysicsObject physObj = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos)
+						.getPhysicsObject();
+				Vector notToReturn = controller.getForceForEngine(this, world, getPos(), world.getBlockState(pos),
+						physObj, secondsToApply);
+				this.currentThrust = notToReturn.length() / secondsToApply;
+			}
+		}
+		return super.getForceOutputUnoriented(secondsToApply, physicsObject);
+	}
 
-    @Override
-    public int getCurrentEtherGas() {
-        return etherGas;
-    }
+	@Override
+	public int getCurrentEtherGas() {
+		return etherGas;
+	}
 
-    @Override
-    public int getEtherGasCapacity() {
-        return etherGasCapacity;
-    }
+	@Override
+	public int getEtherGasCapacity() {
+		return etherGasCapacity;
+	}
 
-    // pre : Throws an IllegalArgumentExcepion if more gas is added than there is
-    //       capacity for this engine.
-    @Override
-    public void addEtherGas(int gas) {
-        if (etherGas + gas > etherGasCapacity) {
-            throw new IllegalArgumentException();
-        }
-        etherGas += gas;
-    }
+	// pre : Throws an IllegalArgumentExcepion if more gas is added than there is
+	// capacity for this engine.
+	@Override
+	public void addEtherGas(int gas) {
+		if (etherGas + gas > etherGasCapacity) {
+			throw new IllegalArgumentException();
+		}
+		etherGas += gas;
+	}
 
-    @Deprecated
-    public Vector getLinearThrust() {
-        return linearThrust;
-    }
+	@Deprecated
+	public Vector getLinearThrust() {
+		return linearThrust;
+	}
 
-    @Deprecated
-    public Vector getAngularThrust() {
-        return angularThrust;
-    }
+	@Deprecated
+	public Vector getAngularThrust() {
+		return angularThrust;
+	}
 
 }

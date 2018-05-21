@@ -29,15 +29,23 @@ public class ChunkKeysWorldData extends WorldSavedData {
     private final TIntList avalibleChunkKeys;
     private int chunkKey;
 
+    public ChunkKeysWorldData(String key) {
+    	super(key);
+    	this.avalibleChunkKeys = new TIntArrayList();
+    	this.markDirty();
+    }
+    
     public ChunkKeysWorldData() {
         super(CHUNK_POS_DATA_KEY);
         this.avalibleChunkKeys = new TIntArrayList();
+        this.markDirty();
     }
 
     public static ChunkKeysWorldData get(World world) {
         MapStorage storage = world.getPerWorldStorage();
         ChunkKeysWorldData data = (ChunkKeysWorldData) storage.getOrLoadData(ChunkKeysWorldData.class, CHUNK_POS_DATA_KEY);
         if (data == null) {
+        	System.err.println("Had to create a null ChunkKeysWorldData; could this be corruption?");
             data = new ChunkKeysWorldData();
             world.setData(CHUNK_POS_DATA_KEY, data);
         }

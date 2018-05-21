@@ -55,7 +55,7 @@ public class Node {
         parentPhysicsObject = physObj;
         parentNetwork.setParentPhysicsObject(physObj);
         if (physObj != null) {
-            physObj.nodesWithinShip.add(this);
+            physObj.concurrentNodesWithinShip.add(this);
         }
     }
 
@@ -122,8 +122,10 @@ public class Node {
         parentNetwork.recalculateNetworks(this);
 
         if (parentPhysicsObject != null) {
-            parentPhysicsObject.nodesWithinShip.remove(this);
+            parentPhysicsObject.concurrentNodesWithinShip.remove(this);
         }
+        
+        System.out.println("NODE DESTROYED!!!");
         // Assume this gets handled by the tileentity.invalidate() method, otherwise
         // this won't work!
         // if(!parentTile.getWorld().isRemote){

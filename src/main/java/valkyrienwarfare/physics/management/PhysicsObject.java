@@ -90,7 +90,7 @@ public class PhysicsObject {
     public final PhysObjectRenderManager renderer;
     public final PhysCollisionCallable collisionCallable;
     public final Set<String> allowedUsers = new HashSet<>();
-    public final Set<Node> nodesWithinShip;
+    public final Set<Node> concurrentNodesWithinShip;
     // This is used to delay mountEntity() operations by 1 tick
     private final List<Entity> queuedEntitiesToMount;
     // Used when rendering to avoid horrible floating point errors, just a random
@@ -110,7 +110,7 @@ public class PhysicsObject {
     public ChunkSet ownedChunks;
     // Used for faster memory access to the Chunks this object 'owns'
     public Chunk[][] claimedChunks;
-    public VWChunkCache VKChunkCache;
+    public VWChunkCache vwChunkCache;
     // Some badly written mods use these Maps to determine who to send packets to,
     // so we need to manually fill them with nearby players
     public PlayerChunkMapEntry[][] claimedChunksEntries;
@@ -136,11 +136,11 @@ public class PhysicsObject {
         doPhysics = true;
         // blockPositions = new HashSet<BlockPos>();
         // We need safe access to this across multiple threads.
-        blockPositions = ConcurrentHashMap.newKeySet();
+        blockPositions = ConcurrentHashMap.<BlockPos>newKeySet();
         collisionBB = PhysicsWrapperEntity.ZERO_AABB;
         collisionCallable = new PhysCollisionCallable(this);
         watchingPlayers = new ArrayList<>();
-        nodesWithinShip = new HashSet<>();
+        concurrentNodesWithinShip = ConcurrentHashMap.<Node>newKeySet();
     }
 
     public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos posAt) {
@@ -297,7 +297,7 @@ public class PhysicsObject {
 
         replaceOuterChunksWithAir();
 
-        VKChunkCache = new VWChunkCache(getWorldObj(), claimedChunks);
+        vwChunkCache = new VWChunkCache(getWorldObj(), claimedChunks);
 
         refrenceBlockPos = getRegionCenter();
         centerCoord = new Vector(refrenceBlockPos.getX(), refrenceBlockPos.getY(), refrenceBlockPos.getZ());
@@ -383,7 +383,7 @@ public class PhysicsObject {
         // Prevents weird shit from spawning at the edges of a ship
         replaceOuterChunksWithAir();
 
-        VKChunkCache = new VWChunkCache(getWorldObj(), claimedChunks);
+        vwChunkCache = new VWChunkCache(getWorldObj(), claimedChunks);
         int minChunkX = claimedChunks[0][0].x;
         int minChunkZ = claimedChunks[0][0].z;
 
@@ -488,7 +488,7 @@ public class PhysicsObject {
 
                 if (newInstance instanceof INodeProvider) {
                     // System.out.println(newInstance.getClass().getName());
-                    this.nodesWithinShip.add(((INodeProvider) newInstance).getNode());
+                    this.concurrentNodesWithinShip.add(((INodeProvider) newInstance).getNode());
                 }
 
                 newInstance.markDirty();
@@ -538,7 +538,7 @@ public class PhysicsObject {
         physicsProcessor.processInitialPhysicsData();
         physicsProcessor.updateParentCenterOfMass();
 
-        for (Node node : this.nodesWithinShip) {
+        for (Node node : this.concurrentNodesWithinShip) {
             node.updateBuildState();
         }
     }
@@ -726,7 +726,7 @@ public class PhysicsObject {
         coordTransform.updatePrevTickTransform();
         coordTransform.updateAllTransforms(getCollisionBoundingBox().equals(Entity.ZERO_AABB), true);
         if (getCollisionBoundingBox().equals(Entity.ZERO_AABB)) {
-            System.out.println("Client had to do its own AABB processing, this indicates a problem server side.");
+            // System.out.println("Client had to do its own AABB processing, this indicates a problem server side.");
         }
     }
 
@@ -763,7 +763,7 @@ public class PhysicsObject {
                 claimedChunks[x - ownedChunks.getMinX()][z - ownedChunks.getMinZ()] = chunk;
             }
         }
-        VKChunkCache = new VWChunkCache(getWorldObj(), claimedChunks);
+        vwChunkCache = new VWChunkCache(getWorldObj(), claimedChunks);
         refrenceBlockPos = getRegionCenter();
         coordTransform = new ShipTransformationManager(this);
         if (!getWorldObj().isRemote) {
@@ -1104,5 +1104,9 @@ public class PhysicsObject {
 	 */
 	public PhysicsWrapperEntity getWrapperEntity() {
 		return wrapper;
+	}
+	
+	public boolean areShipChunksFullyLoaded() {
+		return vwChunkCache != null;
 	}
 }

@@ -75,7 +75,11 @@ public class VWChunkCache {
             return null;
         if (cachedChunks[i][j] == null)
             return null;
-        return this.cachedChunks[i][j].getTileEntity(pos, Chunk.EnumCreateEntityType.IMMEDIATE);
+        TileEntity tileEntity = cachedChunks[i][j].getTileEntity(pos, Chunk.EnumCreateEntityType.QUEUED);
+        if (tileEntity == null) {
+        	System.err.println("Physics Thread got a null TileEntity! Maybe it wasn't supposed to?");
+        }
+        return tileEntity;
     }
 
     private boolean hasChunkAt(int chunkX, int chunkZ) {

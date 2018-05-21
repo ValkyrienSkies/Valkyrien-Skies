@@ -356,10 +356,10 @@ public class PhysicsCalculations {
         Vector crossVector = new Vector();
         World worldObj = parent.getWorldObj();
 
-        if (PhysicsSettings.doPhysicsBlocks) {
+        if (PhysicsSettings.doPhysicsBlocks && parent.areShipChunksFullyLoaded()) {
 
             physicsTasks.clear();
-            for (Node node : parent.nodesWithinShip) {
+            for (Node node : parent.concurrentNodesWithinShip) {
                 TileEntity nodeTile = node.getParentTile();
                 if (nodeTile instanceof INodePhysicsProcessor) {
                     // Iterate through them in sorted order
@@ -374,7 +374,7 @@ public class PhysicsCalculations {
             }
 
             for (BlockPos pos : activeForcePositions) {
-                IBlockState state = parent.VKChunkCache.getBlockState(pos);
+                IBlockState state = parent.vwChunkCache.getBlockState(pos);
                 Block blockAt = state.getBlock();
                 VWMath.getBodyPosWithOrientation(pos, physCenterOfMass, parent.coordTransform
                         .getCurrentPhysicsTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL), inBodyWO);
@@ -521,7 +521,7 @@ public class PhysicsCalculations {
     public void processInitialPhysicsData() {
         IBlockState air = Blocks.AIR.getDefaultState();
         for (BlockPos pos : parent.blockPositions) {
-            onSetBlockState(air, parent.VKChunkCache.getBlockState(pos), pos);
+            onSetBlockState(air, parent.vwChunkCache.getBlockState(pos), pos);
         }
     }
 

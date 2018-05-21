@@ -23,6 +23,7 @@ import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.physics.calculations.PhysicsCalculations;
 import valkyrienwarfare.physics.data.TransformType;
+import valkyrienwarfare.physics.management.PhysicsObject;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.util.NBTUtils;
 
@@ -71,13 +72,13 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
     }
 
     @Override
-    public Vector getForceOutputUnoriented(double secondsToApply) {
+    public Vector getForceOutputUnoriented(double secondsToApply, PhysicsObject physicsObject) {
         return normalVelocityUnoriented.getProduct(currentThrust * secondsToApply);
     }
 
     @Override
-    public Vector getForceOutputOriented(double secondsToApply) {
-        Vector outputForce = getForceOutputUnoriented(secondsToApply);
+    public Vector getForceOutputOriented(double secondsToApply, PhysicsObject physicsObject) {
+        Vector outputForce = getForceOutputUnoriented(secondsToApply, physicsObject);
         if (isForceOutputOriented()) {
             if (updateParentShip()) {
                 getNode().getPhysicsObject().coordTransform.getCurrentTickTransform().rotate(outputForce, TransformType.LOCAL_TO_GLOBAL);

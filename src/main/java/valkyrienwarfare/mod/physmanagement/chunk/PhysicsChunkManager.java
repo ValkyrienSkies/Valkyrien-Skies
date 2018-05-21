@@ -42,11 +42,11 @@ public class PhysicsChunkManager {
 	public PhysicsChunkManager(World worldFor) {
 		worldObj = worldFor;
 		chunkSetIncrement = (maxChunkRadius * 2) + distanceBetweenSets;
-		try {
+//		try {
 			loadDataFromWorld();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
 	}
 
 	// The +50 is used to make sure chunks too close to ships dont interfere
@@ -64,10 +64,14 @@ public class PhysicsChunkManager {
 	 * @return
 	 */
 	public ChunkSet getNextAvaliableChunkSet(int chunkRadius) {
+		loadDataFromWorld();
+		// System.out.println("Got next avaliable chunk set.");
+		
 		int chunkX = xChunkStartingPos + nextChunkSetKey;
 		int chunkZ = zChunkStartingPos;
 
-		if (data.getAvalibleChunkKeys().size() < 0) {
+		// This is broken; don't try recycling old chunks for now.
+		if (data.getAvalibleChunkKeys().size() > 0 && false) {
 			chunkX = data.getAvalibleChunkKeys().get(0);
 			data.getAvalibleChunkKeys().remove(0);
 		} else {

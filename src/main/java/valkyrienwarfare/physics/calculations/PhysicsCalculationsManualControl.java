@@ -46,7 +46,7 @@ public class PhysicsCalculationsManualControl extends PhysicsCalculations {
         applyAirDrag();
 
         if (PhysicsSettings.doPhysicsBlocks) {
-            for (Node node : parent.nodesWithinShip) {
+            for (Node node : parent.concurrentNodesWithinShip) {
                 TileEntity nodeTile = node.getParentTile();
                 if (nodeTile instanceof INodePhysicsProcessor) {
 //					System.out.println("test");

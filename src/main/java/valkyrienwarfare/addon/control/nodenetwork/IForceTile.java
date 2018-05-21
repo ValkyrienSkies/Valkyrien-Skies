@@ -17,6 +17,7 @@
 package valkyrienwarfare.addon.control.nodenetwork;
 
 import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.physics.management.PhysicsObject;
 
 public interface IForceTile {
 
@@ -33,14 +34,14 @@ public interface IForceTile {
      *
      * @return
      */
-    public Vector getForceOutputUnoriented(double secondsToApply);
+    public Vector getForceOutputUnoriented(double secondsToApply, PhysicsObject physicsObject);
 
     /**
      * Returns the current oriented force output vector of this engine
      *
      * @return
      */
-    public Vector getForceOutputOriented(double secondsToApply);
+    public Vector getForceOutputOriented(double secondsToApply, PhysicsObject physicsObject);
 
     /**
      * Returns the maximum magnitude of force this engine can provide

@@ -182,6 +182,7 @@ public class EventsCommon {
         event.getWorld().addEventListener(new ValkyrienWarfareWorldEventListener(event.getWorld()));
         // Don't make any VW threads for client worlds
         if (!event.getWorld().isRemote) {
+        	ValkyrienWarfareMod.chunkManager.initWorld(event.getWorld());
             VWThreadManager.createVWThreadForWorld(event.getWorld());
         }
     }

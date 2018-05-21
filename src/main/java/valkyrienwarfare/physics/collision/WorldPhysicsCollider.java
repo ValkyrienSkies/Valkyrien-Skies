@@ -213,7 +213,7 @@ public class WorldPhysicsCollider {
                 for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
                     for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
                         if (parent.ownsChunk(chunkX, chunkZ)) {
-                            final Chunk chunkIn = parent.VKChunkCache.getChunkAt(chunkX, chunkZ);
+                            final Chunk chunkIn = parent.vwChunkCache.getChunkAt(chunkX, chunkZ);
 
                             int minXToCheck = chunkX << 4;
                             int maxXToCheck = minXToCheck + 15;
@@ -600,7 +600,7 @@ public class WorldPhysicsCollider {
                 for (int localZ = minZ; localZ < maxZ; localZ++) {
                     for (int localY = minY; localY < maxY; localY++) {
                         if (parent.ownsChunk(localX >> 4, localZ >> 4)) {
-                            Chunk chunkIn = parent.VKChunkCache.getChunkAt(localX >> 4, localZ >> 4);
+                            Chunk chunkIn = parent.vwChunkCache.getChunkAt(localX >> 4, localZ >> 4);
                             if (localY >> 4 < 16 && chunkIn.storageArrays[localY >> 4] != null) {
                                 IBitOctreeProvider provider = IBitOctreeProvider.class
                                         .cast(chunkIn.storageArrays[localY >> 4].getData());

@@ -140,7 +140,7 @@ public class ShipPulseImpulseControlSystem {
                     forceTile.setThrustGoal(0);
                 }
 
-                Vector forceOutputWithRespectToTime = forceTile.getForceOutputOriented(calculations.getPhysicsTimeDeltaPerPhysTick());
+                Vector forceOutputWithRespectToTime = forceTile.getForceOutputOriented(calculations.getPhysicsTimeDeltaPerPhysTick(), calculations.parent);
                 linearMomentum.add(forceOutputWithRespectToTime);
                 Vector torque = forceTile.getPositionInLocalSpaceWithOrientation().cross(forceOutputWithRespectToTime);
                 RotationMatrices.applyTransform3by3(invMOIMatrix, torque);

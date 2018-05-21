@@ -49,21 +49,19 @@ public class ValkyrienWarfareWorldEventListener implements IWorldEventListener {
     // TODO: Maybe replace the ASM setBlockState with this instead
     @Override
     public void notifyBlockUpdate(World worldIn, BlockPos pos, IBlockState oldState, IBlockState newState, int flags) {
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldObj, pos);
-        if (worldObj.isRemote) {
-            worldIn.markBlockRangeForRenderUpdate(pos.getX(), pos.getY(), pos.getZ(), pos.getX(), pos.getY(),
-                    pos.getZ());
-            // Strange bounding box error on CLIENT SIDE Fix, possibly broken and terrible,
-            // but probably ok
-            if (wrapper != null) {
-                // wrapper.wrapping.onSetBlockState(oldState, newState, pos);
-            }
-        } else {
-            if (wrapper != null) {
-                // TODO: Find a new way to make this happen
-                // wrapper.wrapping.pilotingController.onSetBlockInShip(pos, newState);
-            }
-        }
+    	if (worldObj.isRemote) {
+    		int minX = pos.getX();
+    		int maxX = pos.getX();
+    		int minY = pos.getY();
+    		int maxY = pos.getY();
+    		int minZ = pos.getZ();
+    		int maxZ = pos.getZ();
+    		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldObj, new BlockPos(minX, minY, minZ));
+    		if (wrapper != null) {
+    			// System.out.println("Update");
+    			wrapper.getPhysicsObject().renderer.updateRange(minX - 1, minY - 1, minZ - 1, maxX + 1, maxY + 1, maxZ + 1);
+    		}
+    	}
     }
 
     @Override
@@ -73,18 +71,8 @@ public class ValkyrienWarfareWorldEventListener implements IWorldEventListener {
     }
 
     @Override
-    public void markBlockRangeForRenderUpdate(int x1, int y1, int z1, int x2, int y2, int z2) {
-        // if(worldObj.isRemote){
-        // int midX = (x1 + x2) / 2;
-        // int midY = (y1 + y2) / 2;
-        // int midZ = (z1 + z2) / 2;
-        // BlockPos newPos = new BlockPos(midX, midY, midZ);
-        // PhysicsWrapperEntity wrapper =
-        // ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldObj, newPos);
-        // if (wrapper != null && wrapper.wrapping.renderer != null) {
-        // wrapper.wrapping.renderer.updateRange(x1-1, y1-1, z1-1, x2+1, y2+1, z2+1);
-        // }
-        // }
+    public void markBlockRangeForRenderUpdate(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
+    	// System.out.println("Render update");
     }
 
     @Override

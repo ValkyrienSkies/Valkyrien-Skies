@@ -40,7 +40,7 @@ import valkyrienwarfare.api.addons.Module;
 import valkyrienwarfare.api.addons.VWAddon;
 
 @VWAddon
-public class ValkyrienWarfareCombat extends Module<ValkyrienWarfareCombat> {
+public class ValkyrienWarfareCombat extends Module {
     public static ValkyrienWarfareCombat INSTANCE;
     public Item basicCannonSpawner;
     public Item cannonBall;

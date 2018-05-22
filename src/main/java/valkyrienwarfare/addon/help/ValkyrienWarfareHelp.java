@@ -14,76 +14,44 @@
  *
  */
 
-package com.jackredcreeper.cannon;
+package valkyrienwarfare.addon.help;
 
-import com.jackredcreeper.cannon.init.ModBlocks;
-import com.jackredcreeper.cannon.init.ModItems;
-import com.jackredcreeper.cannon.proxy.ClientProxy;
-import com.jackredcreeper.cannon.tileentity.TileEntityCannon;
-import com.jackredcreeper.cannon.world.ExplosionHandler;
-import net.minecraft.block.Block;
 import net.minecraft.item.Item;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import valkyrienwarfare.ValkyrienWarfareMod;
+import valkyrienwarfare.addon.help.item.ItemManual;
+import valkyrienwarfare.addon.help.proxy.ClientProxyHelp;
 import valkyrienwarfare.api.addons.Module;
-import valkyrienwarfare.api.addons.VWAddon;
+import valkyrienwarfare.api.addons.ModuleProxy;
 
-@VWAddon
-public class CannonMod extends Module {
-    public static CannonMod instance;
+/**
+ * @author DaPorkchop_
+ */
+public class ValkyrienWarfareHelp extends Module {
+    public static ValkyrienWarfareHelp INSTANCE;
 
-    public CannonMod() {
-        super(CannonModReference.MOD_ID, null, new ClientProxy(), null);
+    public Item manual;
+
+    public ValkyrienWarfareHelp() {
+        super("VW_Help", null, new ClientProxyHelp(), null);
+        INSTANCE = this;
     }
 
     @Override
-    public void registerItems(RegistryEvent.Register<Item> event) {
-        ModItems.init();
-        ModItems.register(event);
-    }
+    public void applyConfig(Configuration config) {
 
-    @Override
-    public void registerItemBlocks(RegistryEvent.Register<Item> event) {
-    }
-
-    @Override
-    public void registerBlocks(RegistryEvent.Register<Block> event) {
-        ModBlocks.init();
-        ModBlocks.register(event);
-    }
-
-    @Override
-    public void registerRecipes(RegistryEvent.Register<IRecipe> event) {
-    }
-
-    @Override
-    protected void registerEntities() {
-    }
-
-    @Override
-    protected void registerTileEntities() {
-        GameRegistry.registerTileEntity(TileEntityCannon.class, CannonModReference.MOD_ID + "TileEntityCannon");
-    }
-
-    @Override
-    protected void registerNetworks() {
-    }
-
-    @Override
-    protected void registerCapabilities() {
     }
 
     @Override
     protected void preInit(FMLStateEvent event) {
+
     }
 
     @Override
     protected void init(FMLStateEvent event) {
-        MinecraftForge.EVENT_BUS.register(new ExplosionHandler());
+
     }
 
     @Override
@@ -92,7 +60,9 @@ public class CannonMod extends Module {
     }
 
     @Override
-    public void applyConfig(Configuration config) {
+    public void registerItems(RegistryEvent.Register<Item> event) {
+        this.manual = new ItemManual().setUnlocalizedName("manual").setRegistryName(getModID(), "manual").setCreativeTab(ValkyrienWarfareMod.vwTab).setMaxStackSize(1);
 
+        event.getRegistry().register(this.manual);
     }
 }

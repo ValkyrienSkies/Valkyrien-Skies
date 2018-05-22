@@ -44,7 +44,7 @@ import valkyrienwarfare.api.addons.Module;
 import valkyrienwarfare.api.addons.VWAddon;
 
 @VWAddon
-public class ValkyrienWarfareWorld extends Module<ValkyrienWarfareWorldGen> {
+public class ValkyrienWarfareWorld extends Module {
 
     @CapabilityInject(ICapabilityAntiGravity.class)
     public static final Capability<ICapabilityAntiGravity> ANTI_GRAVITY_CAPABILITY = null;

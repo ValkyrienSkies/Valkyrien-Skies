@@ -35,11 +35,13 @@ import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLConstructionEvent;
+import net.minecraftforge.fml.common.event.FMLFingerprintViolationEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -101,7 +103,12 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
-@Mod(modid = ValkyrienWarfareMod.MODID, name = ValkyrienWarfareMod.MODNAME, version = ValkyrienWarfareMod.MODVER, guiFactory = "valkyrienwarfare.mod.gui.GuiFactoryValkyrienWarfare", updateJSON = "https://raw.githubusercontent.com/BigBastard/Valkyrien-Warfare-Revamped/update.json")
+@Mod(modid = ValkyrienWarfareMod.MODID,
+        name = ValkyrienWarfareMod.MODNAME,
+        version = ValkyrienWarfareMod.MODVER,
+        guiFactory = "valkyrienwarfare.mod.gui.GuiFactoryValkyrienWarfare",
+        updateJSON = "https://raw.githubusercontent.com/BigBastard/Valkyrien-Warfare-Revamped/update.json",
+        certificateFingerprint = "8f639e7b2d1117d8f2c5d545e2231f0a0519f0ce")
 public class ValkyrienWarfareMod {
     public static final List<Module> addons = new ArrayList<>();
     public static final String MODID = "valkyrienwarfare";
@@ -229,6 +236,12 @@ public class ValkyrienWarfareMod {
             }
             addons.add(module);
         }
+    }
+
+    @Mod.EventHandler
+    public void onFingerprintViolation(FMLFingerprintViolationEvent event) {
+        FMLLog.bigWarning("Valkyrien Warfare JAR fingerprint corrupted. Download the mod from CurseForge: https://minecraft.curseforge.com/projects/valkyrien-warfare");
+        FMLCommonHandler.instance().exitJava(123, true);
     }
 
     @EventHandler

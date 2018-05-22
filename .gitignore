@@ -115,3 +115,5 @@ mods/spongeforge-1.10.2-2281-5.2.0-BETA-2353-dev-shaded.jar.disabled
 mods/CodeChickenLib-1.11.2-2.7.0.268-deobf.jar
 mods/EnderStorage-1.11.2-2.3.1.114-deobf.jar
 *.log
+
+*.jks

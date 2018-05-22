@@ -73,7 +73,7 @@ import valkyrienwarfare.api.addons.Module;
 import valkyrienwarfare.api.addons.VWAddon;
 
 @VWAddon
-public class ValkyrienWarfareControl extends Module<ValkyrienWarfareControl> {
+public class ValkyrienWarfareControl extends Module {
 
     @CapabilityInject(ICapabilityLastRelay.class)
     public static final Capability<ICapabilityLastRelay> lastRelayCapability = null;

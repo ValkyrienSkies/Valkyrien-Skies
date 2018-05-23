@@ -107,7 +107,7 @@ import java.util.zip.ZipInputStream;
         name = ValkyrienWarfareMod.MODNAME,
         version = ValkyrienWarfareMod.MODVER,
         guiFactory = "valkyrienwarfare.mod.gui.GuiFactoryValkyrienWarfare",
-        updateJSON = "https://raw.githubusercontent.com/BigBastard/Valkyrien-Warfare-Revamped/update.json",
+        updateJSON = "https://raw.githubusercontent.com/Valkyrien-Warfare/Valkyrien-Warfare-Revamped/update.json",
         certificateFingerprint = "8f639e7b2d1117d8f2c5d545e2231f0a0519f0ce")
 public class ValkyrienWarfareMod {
     public static final List<Module> addons = new ArrayList<>();
@@ -240,8 +240,11 @@ public class ValkyrienWarfareMod {
 
     @Mod.EventHandler
     public void onFingerprintViolation(FMLFingerprintViolationEvent event) {
-        FMLLog.bigWarning("Valkyrien Warfare JAR fingerprint corrupted. Download the mod from CurseForge: https://minecraft.curseforge.com/projects/valkyrien-warfare");
-        FMLCommonHandler.instance().exitJava(123, true);
+    	// Don't crash for signatures if we're in dev environment.
+    	if (MixinLoaderForge.isObfuscatedEnvironment) {
+    		FMLLog.bigWarning("Valkyrien Warfare JAR fingerprint corrupted. Download the mod from CurseForge: https://minecraft.curseforge.com/projects/valkyrien-warfare");
+        	FMLCommonHandler.instance().exitJava(123, true);
+    	}
     }
 
     @EventHandler

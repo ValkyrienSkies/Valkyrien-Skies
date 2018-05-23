@@ -188,6 +188,7 @@ public abstract class MixinNetHandlerPlayServer implements INHPServerVW {
 			}
 		}
 	}
+	
 	// Because of MCs bad coding I have to copy an entire method just to edit one
 	// line of code.
 	/*

@@ -377,6 +377,9 @@ public class ValkyrienWarfareMod {
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
+    	// Print out a message of core count, we want this to know what AnvilNode is giving us.
+    	System.out.println("Valyrien Warfare Initilization");
+    	System.out.println("We are running on " + Runtime.getRuntime().availableProcessors() + " threads; 4 or more is recommended!");
         proxy.init(event);
         EntityRegistry.registerModEntity(new ResourceLocation(MODID, "PhysWrapper"), PhysicsWrapperEntity.class,
                 "PhysWrapper", 70, this, 120, 1, false);

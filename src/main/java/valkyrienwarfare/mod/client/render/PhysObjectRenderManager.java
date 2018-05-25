@@ -111,7 +111,7 @@ public class PhysObjectRenderManager {
         }
     }
 
-    public void updateRange(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
+    public void updateRange(int minX, int minY, int minZ, int maxX, int maxY, int maxZ, boolean updateImmediately) {
         if (renderChunks == null || parent == null || parent.ownedChunks == null) {
             return;
         }

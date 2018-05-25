@@ -91,6 +91,7 @@ public class FastBlockModelRenderer {
         int cont = BufferBuilder.getVertexCount();
         int offsetUV = BufferBuilder.vertexFormat.getUvOffsetById(1) / 4;
         int bufferNextSize = BufferBuilder.vertexFormat.getIntegerSize();
+        
         for (int contont = 0; contont < cont; contont += 4) {
             try {
                 int i = (contont) * bufferNextSize + offsetUV;
@@ -100,16 +101,6 @@ public class FastBlockModelRenderer {
                 BufferBuilder.rawIntBuffer.put(i + j * 2, brightness);
                 BufferBuilder.rawIntBuffer.put(i + j * 3, brightness);
 
-                if (contont + 4 < cont) {
-                    contont += 4;
-
-                    i = (contont) * bufferNextSize + offsetUV;
-
-                    BufferBuilder.rawIntBuffer.put(i, brightness);
-                    BufferBuilder.rawIntBuffer.put(i + j, brightness);
-                    BufferBuilder.rawIntBuffer.put(i + j * 2, brightness);
-                    BufferBuilder.rawIntBuffer.put(i + j * 3, brightness);
-                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -119,12 +110,12 @@ public class FastBlockModelRenderer {
         GL11.glPopMatrix();
     }
 
-    private static void generateRenderDataFor(BufferBuilder BufferBuilder, Tessellator tessellator, World world, IBlockState state) {
+    private static void generateRenderDataFor(BufferBuilder bufferBuilder, Tessellator tessellator, World world, IBlockState state) {
         GL11.glPushMatrix();
-        BufferBuilder.begin(7, DefaultVertexFormats.BLOCK);
+        bufferBuilder.begin(7, DefaultVertexFormats.BLOCK);
         BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
-        blockrendererdispatcher.getBlockModelRenderer().renderModel(world, blockrendererdispatcher.getModelForState(state), state, BlockPos.ORIGIN, BufferBuilder, false, 0);
-        BufferBuilder.State toReturn = BufferBuilder.getVertexState();
+        blockrendererdispatcher.getBlockModelRenderer().renderModel(world, blockrendererdispatcher.getModelForState(state), state, BlockPos.ORIGIN, bufferBuilder, false, 0);
+        BufferBuilder.State toReturn = bufferBuilder.getVertexState();
         tessellator.draw();
         GL11.glPopMatrix();
         blockstateToVertexData.put(state, toReturn);

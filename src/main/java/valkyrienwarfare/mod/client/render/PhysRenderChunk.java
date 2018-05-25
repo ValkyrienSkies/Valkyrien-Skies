@@ -16,6 +16,11 @@
 
 package valkyrienwarfare.mod.client.render;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -30,10 +35,7 @@ import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraftforge.client.ForgeHooksClient;
-import org.lwjgl.opengl.GL11;
 import valkyrienwarfare.physics.management.PhysicsObject;
-
-import java.util.ArrayList;
 
 public class PhysRenderChunk {
 
@@ -90,7 +92,7 @@ public class PhysRenderChunk {
         int glCallListCutout, glCallListCutoutMipped, glCallListSolid, glCallListTranslucent;
         PhysRenderChunk parent;
         boolean needsCutoutUpdate, needsCutoutMippedUpdate, needsSolidUpdate, needsTranslucentUpdate;
-        ArrayList<TileEntity> renderTiles = new ArrayList<TileEntity>();
+        List<TileEntity> renderTiles = new ArrayList<TileEntity>();
 
         public RenderLayer(Chunk chunk, int yMin, int yMax, PhysRenderChunk parent) {
             chunkToRender = chunk;
@@ -109,11 +111,10 @@ public class PhysRenderChunk {
             needsCutoutMippedUpdate = true;
             needsSolidUpdate = true;
             needsTranslucentUpdate = true;
-            updateRenderTileEntities();
         }
 
         public void updateRenderTileEntities() {
-            ArrayList<TileEntity> updatedRenderTiles = new ArrayList<TileEntity>();
+            List<TileEntity> updatedRenderTiles = new ArrayList<TileEntity>();
 
             MutableBlockPos pos = new MutableBlockPos();
             for (int x = chunkToRender.x * 16; x < chunkToRender.x * 16 + 16; x++) {
@@ -121,7 +122,7 @@ public class PhysRenderChunk {
                     for (int y = yMin; y <= yMax; y++) {
                         pos.setPos(x, y, z);
 
-                        TileEntity tile = chunkToRender.getWorld().getTileEntity(pos);
+                        TileEntity tile = parent.toRender.vwChunkCache.getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK);
                         if (tile != null) {
                             updatedRenderTiles.add(tile);
                         }

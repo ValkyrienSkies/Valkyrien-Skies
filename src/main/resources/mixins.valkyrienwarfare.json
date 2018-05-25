@@ -34,6 +34,7 @@
     "client.renderer.entity.MixinRenderManager",
     "entity.MixinEntityClient",
     "client.renderer.MixinEntityRenderer",
+    "client.renderer.MixinViewFrustum",
     "world.MixinWorldClient",
     "client.particle.MixinParticleManager",
     "client.renderer.MixinRenderGlobal",

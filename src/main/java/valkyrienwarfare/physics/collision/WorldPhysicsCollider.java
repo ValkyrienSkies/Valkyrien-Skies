@@ -394,6 +394,7 @@ public class WorldPhysicsCollider {
 		impulseVector.add(frictionVector);
 	}
 
+	// TODO: The greatest physics lag starts here.
 	private void updatePotentialCollisionCache() {
 		PhysicsShipTransform currentPhysicsTransform = (PhysicsShipTransform) parent.coordTransform
 				.getCurrentPhysicsTransform();

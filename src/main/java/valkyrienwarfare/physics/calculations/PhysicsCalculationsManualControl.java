@@ -82,7 +82,7 @@ public class PhysicsCalculationsManualControl extends PhysicsCalculations {
         parent.getWrapperEntity().posY += linearForce.Y;
         parent.getWrapperEntity().posZ += linearForce.Z;
 
-        parent.coordTransform.updateAllTransforms(true, true);
+        parent.coordTransform.updateAllTransforms(true, false);
     }
 
     @Override

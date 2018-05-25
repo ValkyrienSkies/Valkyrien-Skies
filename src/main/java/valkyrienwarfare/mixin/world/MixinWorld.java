@@ -58,7 +58,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-//TODO this class is horrible
+// TODO this class is horrible
 @Mixin(value = World.class, priority = 1005)
 @Implements(@Interface(iface = WorldChunkloadingCrashFix.class, prefix = "vw$", remap = Remap.NONE))
 public abstract class MixinWorld implements IWorldVW {
@@ -82,10 +82,6 @@ public abstract class MixinWorld implements IWorldVW {
         if (physEntity != null) {
             IBlockState oldState = thisClassAsWorld.getBlockState(pos);
             physEntity.getPhysicsObject().onSetBlockState(oldState, newState, pos);
-            // if (oldState != newState) {
-            // System.out.println(oldState.getBlock().getLocalizedName());
-            // System.out.println(newState.getBlock().getLocalizedName());
-            // }
         }
     }
 
@@ -167,49 +163,6 @@ public abstract class MixinWorld implements IWorldVW {
         }
 
         return list;
-    }
-
-    /**
-     * aa
-     *
-     * @author xd
-     */
-    @Overwrite
-    public void markBlockRangeForRenderUpdate(int x1, int y1, int z1, int x2, int y2, int z2) {
-        // System.out.println((x2-x1)*(y2-y1)*(z2-z1));
-        // System.out.println(x1+":"+x2+":"+y1+":"+y2+":"+z1+":"+z2);
-
-        // Stupid OpenComputers fix, blame those assholes
-        if (x2 == 1 && y1 == 0 && z2 == 1) {
-            x2 = x1 + 1;
-            x1--;
-
-            y1 = y2 - 1;
-            y2++;
-
-            z2 = z1 + 1;
-            z2--;
-        }
-
-        int midX = (x1 + x2) / 2;
-        int midY = (y1 + y2) / 2;
-        int midZ = (z1 + z2) / 2;
-        BlockPos newPos = new BlockPos(midX, midY, midZ);
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(World.class.cast(this),
-                newPos);
-        if (wrapper != null && wrapper.getPhysicsObject().renderer != null) {
-            wrapper.getPhysicsObject().renderer.updateRange(x1 - 1, y1 - 1, z1 - 1, x2 + 1, y2 + 1, z2 + 1);
-        }
-
-        if (wrapper == null) {
-            this.markBlockRangeForRenderUpdateOriginal(x1, y1, z1, x2, y2, z2);
-        }
-    }
-
-    public void markBlockRangeForRenderUpdateOriginal(int x1, int y1, int z1, int x2, int y2, int z2) {
-        for (int i = 0; i < this.eventListeners.size(); ++i) {
-            this.eventListeners.get(i).markBlockRangeForRenderUpdate(x1, y1, z1, x2, y2, z2);
-        }
     }
 
     /**

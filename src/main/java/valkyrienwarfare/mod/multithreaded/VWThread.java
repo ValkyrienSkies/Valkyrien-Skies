@@ -200,17 +200,6 @@ public class VWThread extends Thread {
 			if (!wrapper.firstUpdate) {
 				try {
 					wrapper.getPhysicsObject().physicsProcessor.rawPhysTickPostCol();
-
-					// PhysicsShipTransform physTransform = (PhysicsShipTransform)
-					// wrapper.wrapping.coordTransform
-					// .getCurrentPhysicsTransform();
-					// wrapper.posX = physTransform.getPosX();
-					// wrapper.posY = physTransform.getPosY();
-					// wrapper.posZ = physTransform.getPosZ();
-					// wrapper.setPitch(physTransform.getPitch());
-					// wrapper.setYaw(physTransform.getYaw());
-					// wrapper.setRoll(physTransform.getRoll());
-					// wrapper.wrapping.coordTransform.updateAllTransforms(true, true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -222,22 +211,28 @@ public class VWThread extends Thread {
 
 	private void tickSendUpdatesToPlayers() {
 		for (PhysicsWrapperEntity wrapper : ships) {
+			// if (wrapper.getPhysicsObject().blockPositions.size() > 10000) {
+			// System.out.println(wrapper.getPhysicsObject().blockPositions.size());
+			// }
 			wrapper.getPhysicsObject().coordTransform.sendPositionToPlayers(positionTickID);
 		}
 		positionTickID++;
 	}
 
 	/**
-	 * Ends this physics thread; should only be called after a world is unloaded.
+	 * Marks this physics thread for death. Doesn't immediately end the thread, but
+	 * instead ensures the thread will die after the current running physics tick is
+	 * finished.
 	 */
 	public void kill() {
 		System.out.println(super.getName() + " marked for death.");
 		threadRunning = false;
-		// Because we set threadRunning to false, the run() method will return and the
-		// thread will stop on its own, so we don't even need to run stop().
-		// stop();
 	}
 
+	/**
+	 * 
+	 * @return The average runtime of the last 100 physics ticks in nanoseconds.
+	 */
 	public long getAveragePhysicsTickTimeNano() {
 		if (latestPhysicsTickTimes.size() >= TICK_TIME_QUEUE) {
 			long average = 0;
@@ -246,6 +241,8 @@ public class VWThread extends Thread {
 			}
 			return average / TICK_TIME_QUEUE;
 		}
+		// If we don't have enough data to get an average, just assume its the ideal
+		// tick time.
 		return NS_PER_TICK;
 	}
 }

@@ -20,7 +20,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Queue;
 import java.util.Random;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
 
 import gnu.trove.list.TIntList;
@@ -408,9 +410,10 @@ public class WorldPhysicsCollider {
 		// .grow(AABB_EXPANSION);
 		// Use the physics tick collision box instead of the game tick collision box.
 		final AxisAlignedBB collisionBB = currentPhysicsTransform.getShipBoundingBox().grow(AABB_EXPANSION).expand(
-				calculator.linearMomentum.X * calculator.getInvMass(),
-				calculator.linearMomentum.Y * calculator.getInvMass(),
-				calculator.linearMomentum.Z * calculator.getInvMass());
+				calculator.linearMomentum.X * calculator.getInvMass() * calculator.getPhysicsTimeDeltaPerPhysTick() * 5,
+				calculator.linearMomentum.Y * calculator.getInvMass() * calculator.getPhysicsTimeDeltaPerPhysTick() * 5,
+				calculator.linearMomentum.Z * calculator.getInvMass() * calculator.getPhysicsTimeDeltaPerPhysTick() * 5);
+		final AxisAlignedBB shipBB = currentPhysicsTransform.getShipBoundingBox();
 		ticksSinceCacheUpdate = 0D;
 		// This is being used to occasionally offset the collision cache update, in the
 		// hopes this will prevent multiple ships from all updating
@@ -418,6 +421,7 @@ public class WorldPhysicsCollider {
 		if (Math.random() > .5) {
 			ticksSinceCacheUpdate -= .05D;
 		}
+		int oldSize = cachedPotentialHits.size();
 		// Resets the potential hits array in O(1) time! Isn't that something.
 		cachedPotentialHits.resetQuick();
 		// Ship is outside of world blockSpace, just skip this all together
@@ -447,7 +451,6 @@ public class WorldPhysicsCollider {
 		int maxY = max.getY();
 		int maxZ = max.getZ();
 
-		
 		// More multithreading!
 		if (parent.blockPositions.size() > 100) {
 			List<Tuple<Integer, Integer>> tasks = new ArrayList<Tuple<Integer, Integer>>();
@@ -459,36 +462,27 @@ public class WorldPhysicsCollider {
 			}
 
 			Consumer<Tuple<Integer, Integer>> consumer = i -> { // i is a Tuple<Integer, Integer>
-				TIntList intList = updateCollisionCacheParrallel(cache, i.getFirst(), i.getSecond(), minX, minY, minZ, maxX, maxY, maxZ);
-				if (intList != null) {
-				    mergeTIntList(intList);
-				}
+				// updateCollisionCacheParrallel(cache, cachedPotentialHits, i.getFirst(),
+				// i.getSecond(), minX, minY, minZ, maxX, maxY, maxZ);
+				updateCollisionCacheSequential(cache, i.getFirst(), i.getSecond(), minX, minY, minZ, maxX, maxY, maxZ,
+						shipBB);
 			};
 
 			tasks.parallelStream().forEach(consumer);
 		} else {
 			for (int chunkX = chunkMinX; chunkX < chunkMaxX; chunkX++) {
 				for (int chunkZ = chunkMinZ; chunkZ < chunkMaxZ; chunkZ++) {
-					updateCollisionCacheSequential(cache, chunkX, chunkZ, minX, minY, minZ, maxX, maxY, maxZ);
+					updateCollisionCacheSequential(cache, chunkX, chunkZ, minX, minY, minZ, maxX, maxY, maxZ, shipBB);
 				}
 			}
 		}
 	}
-	
-	// Merge a TIntList into the cachedCollisions list.
-	private void mergeTIntList(TIntList list) {
-		synchronized (cachedPotentialHits){
-			cachedPotentialHits.addAll(list);
-		}
-	}
 
-	private TIntList updateCollisionCacheParrallel(ChunkCache cache, int chunkX, int chunkZ, int minX, int minY, int minZ, int maxX,
-			int maxY, int maxZ) {
+	private void updateCollisionCacheParrallel(ChunkCache cache, Queue<Integer> dataQueue, int chunkX, int chunkZ,
+			int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
 		int arrayChunkX = chunkX - cache.chunkX;
 		int arrayChunkZ = chunkZ - cache.chunkZ;
 
-		TIntList intList = null;
-		
 		if (!(arrayChunkX < 0 || arrayChunkZ < 0 || arrayChunkX > cache.chunkArray.length - 1
 				|| arrayChunkZ > cache.chunkArray[0].length - 1)
 				&& cache.chunkArray[arrayChunkX][arrayChunkZ] != null) {
@@ -497,8 +491,6 @@ public class WorldPhysicsCollider {
 			Vector temp2 = new Vector();
 			Vector temp3 = new Vector();
 
-			intList = new TIntArrayList();
-			
 			Chunk chunk = cache.chunkArray[arrayChunkX][arrayChunkZ];
 			for (int storageY = minY >> 4; storageY <= maxY >> 4; storageY++) {
 				ExtendedBlockStorage extendedblockstorage = chunk.storageArrays[storageY];
@@ -536,24 +528,26 @@ public class WorldPhysicsCollider {
 												int y = baseY + minStorageY;
 												int z = baseZ + minStorageZ;
 
+												dataQueue.add(0);
+
 												if (x >= minX && x <= maxX && y >= minY && y <= maxY && z >= minZ
-														&& z <= maxZ) {
+														&& z <= maxZ && false) {
 													checkForCollision(x, y, z, extendedblockstorage, octree, temp1,
-															temp2, temp3, intList);
+															temp2, temp3, dataQueue);
 													checkForCollision(x, y, z + 1, extendedblockstorage, octree, temp1,
-															temp2, temp3, intList);
+															temp2, temp3, dataQueue);
 													checkForCollision(x, y + 1, z, extendedblockstorage, octree, temp1,
-															temp2, temp3, intList);
+															temp2, temp3, dataQueue);
 													checkForCollision(x, y + 1, z + 1, extendedblockstorage, octree,
-															temp1, temp2, temp3, intList);
+															temp1, temp2, temp3, dataQueue);
 													checkForCollision(x + 1, y, z, extendedblockstorage, octree, temp1,
-															temp2, temp3, intList);
+															temp2, temp3, dataQueue);
 													checkForCollision(x + 1, y, z + 1, extendedblockstorage, octree,
-															temp1, temp2, temp3, intList);
+															temp1, temp2, temp3, dataQueue);
 													checkForCollision(x + 1, y + 1, z, extendedblockstorage, octree,
-															temp1, temp2, temp3, intList);
+															temp1, temp2, temp3, dataQueue);
 													checkForCollision(x + 1, y + 1, z + 1, extendedblockstorage, octree,
-															temp1, temp2, temp3, intList);
+															temp1, temp2, temp3, dataQueue);
 												}
 											}
 										}
@@ -565,7 +559,8 @@ public class WorldPhysicsCollider {
 						for (int x = minStorageX; x < maxStorageX; x++) {
 							for (int y = minStorageY; y < maxStorageY; y++) {
 								for (int z = minStorageZ; z < maxStorageZ; z++) {
-									checkForCollision(x, y, z, extendedblockstorage, octree, temp1, temp2, temp3, intList);
+									checkForCollision(x, y, z, extendedblockstorage, octree, temp1, temp2, temp3,
+											dataQueue);
 								}
 							}
 						}
@@ -573,11 +568,10 @@ public class WorldPhysicsCollider {
 				}
 			}
 		}
-		return intList;
 	}
-	
-	private void updateCollisionCacheSequential(ChunkCache cache, int chunkX, int chunkZ, int minX, int minY, int minZ, int maxX,
-			int maxY, int maxZ) {
+
+	private void updateCollisionCacheSequential(ChunkCache cache, int chunkX, int chunkZ, int minX, int minY, int minZ,
+			int maxX, int maxY, int maxZ, AxisAlignedBB shipBB) {
 		int arrayChunkX = chunkX - cache.chunkX;
 		int arrayChunkZ = chunkZ - cache.chunkZ;
 
@@ -629,21 +623,21 @@ public class WorldPhysicsCollider {
 												if (x >= minX && x <= maxX && y >= minY && y <= maxY && z >= minZ
 														&& z <= maxZ) {
 													checkForCollision(x, y, z, extendedblockstorage, octree, temp1,
-															temp2, temp3);
+															temp2, temp3, shipBB);
 													checkForCollision(x, y, z + 1, extendedblockstorage, octree, temp1,
-															temp2, temp3);
+															temp2, temp3, shipBB);
 													checkForCollision(x, y + 1, z, extendedblockstorage, octree, temp1,
-															temp2, temp3);
+															temp2, temp3, shipBB);
 													checkForCollision(x, y + 1, z + 1, extendedblockstorage, octree,
-															temp1, temp2, temp3);
+															temp1, temp2, temp3, shipBB);
 													checkForCollision(x + 1, y, z, extendedblockstorage, octree, temp1,
-															temp2, temp3);
+															temp2, temp3, shipBB);
 													checkForCollision(x + 1, y, z + 1, extendedblockstorage, octree,
-															temp1, temp2, temp3);
+															temp1, temp2, temp3, shipBB);
 													checkForCollision(x + 1, y + 1, z, extendedblockstorage, octree,
-															temp1, temp2, temp3);
+															temp1, temp2, temp3, shipBB);
 													checkForCollision(x + 1, y + 1, z + 1, extendedblockstorage, octree,
-															temp1, temp2, temp3);
+															temp1, temp2, temp3, shipBB);
 												}
 											}
 										}
@@ -655,7 +649,8 @@ public class WorldPhysicsCollider {
 						for (int x = minStorageX; x < maxStorageX; x++) {
 							for (int y = minStorageY; y < maxStorageY; y++) {
 								for (int z = minStorageZ; z < maxStorageZ; z++) {
-									checkForCollision(x, y, z, extendedblockstorage, octree, temp1, temp2, temp3);
+									checkForCollision(x, y, z, extendedblockstorage, octree, temp1, temp2, temp3,
+											shipBB);
 								}
 							}
 						}
@@ -666,63 +661,104 @@ public class WorldPhysicsCollider {
 	}
 
 	private void checkForCollision(int x, int y, int z, ExtendedBlockStorage storage, IBitOctree octree, Vector inLocal,
-			Vector inBody, Vector speedInBody) {
+			Vector inBody, Vector speedInBody, AxisAlignedBB shipBB) {
 		if (octree.get(x & 15, y & 15, z & 15)) {
 			inLocal.X = x + .5D;
 			inLocal.Y = y + .5D;
 			inLocal.Z = z + .5D;
 			// TODO: Something
 			// parent.coordTransform.fromGlobalToLocal(inLocal);
-			parent.coordTransform.getCurrentPhysicsTransform().transform(inLocal, TransformType.GLOBAL_TO_LOCAL);
+			if (inLocal.X > shipBB.minX && inLocal.X < shipBB.maxX && inLocal.Y > shipBB.minY && inLocal.Y < shipBB.maxY
+					&& inLocal.Z > shipBB.minZ && inLocal.Z < shipBB.maxZ) {
+				parent.coordTransform.getCurrentPhysicsTransform().transform(inLocal, TransformType.GLOBAL_TO_LOCAL);
 
-			inBody.setSubtraction(inLocal, parent.centerCoord);
-			// parent.physicsProcessor.setVectorToVelocityAtPoint(inBody, speedInBody);
-			// speedInBody.multiply(-parent.physicsProcessor.getPhysicsTimeDeltaPerGameTick());
+				inBody.setSubtraction(inLocal, parent.centerCoord);
+				// parent.physicsProcessor.setVectorToVelocityAtPoint(inBody, speedInBody);
+				// speedInBody.multiply(-parent.physicsProcessor.getPhysicsTimeDeltaPerGameTick());
 
-			// TODO: This isnt ideal, but we do gain a lot of performance.
-			speedInBody.zero();
+				// TODO: This isnt ideal, but we do gain a lot of performance.
+				speedInBody.zero();
 
-			int minX, minY, minZ, maxX, maxY, maxZ;
-			if (speedInBody.X > 0) {
-				minX = MathHelper.floor(inLocal.X - RANGE_CHECK);
-				maxX = MathHelper.floor(inLocal.X + RANGE_CHECK + speedInBody.X);
-			} else {
-				minX = MathHelper.floor(inLocal.X - RANGE_CHECK + speedInBody.X);
-				maxX = MathHelper.floor(inLocal.X + RANGE_CHECK);
-			}
+				// double RANGE_CHECK = 1;
 
-			if (speedInBody.Y > 0) {
-				minY = MathHelper.floor(inLocal.Y - RANGE_CHECK);
-				maxY = MathHelper.floor(inLocal.Y + RANGE_CHECK + speedInBody.Y);
-			} else {
-				minY = MathHelper.floor(inLocal.Y - RANGE_CHECK + speedInBody.Y);
-				maxY = MathHelper.floor(inLocal.Y + RANGE_CHECK);
-			}
+				int minX, minY, minZ, maxX, maxY, maxZ;
+				if (speedInBody.X > 0) {
+					minX = MathHelper.floor(inLocal.X - RANGE_CHECK);
+					maxX = MathHelper.floor(inLocal.X + RANGE_CHECK + speedInBody.X);
+				} else {
+					minX = MathHelper.floor(inLocal.X - RANGE_CHECK + speedInBody.X);
+					maxX = MathHelper.floor(inLocal.X + RANGE_CHECK);
+				}
 
-			if (speedInBody.Z > 0) {
-				minZ = MathHelper.floor(inLocal.Z - RANGE_CHECK);
-				maxZ = MathHelper.floor(inLocal.Z + RANGE_CHECK + speedInBody.Z);
-			} else {
-				minZ = MathHelper.floor(inLocal.Z - RANGE_CHECK + speedInBody.Z);
-				maxZ = MathHelper.floor(inLocal.Z + RANGE_CHECK);
-			}
+				if (speedInBody.Y > 0) {
+					minY = MathHelper.floor(inLocal.Y - RANGE_CHECK);
+					maxY = MathHelper.floor(inLocal.Y + RANGE_CHECK + speedInBody.Y);
+				} else {
+					minY = MathHelper.floor(inLocal.Y - RANGE_CHECK + speedInBody.Y);
+					maxY = MathHelper.floor(inLocal.Y + RANGE_CHECK);
+				}
 
-			minY = Math.min(255, Math.max(minY, 0));
+				if (speedInBody.Z > 0) {
+					minZ = MathHelper.floor(inLocal.Z - RANGE_CHECK);
+					maxZ = MathHelper.floor(inLocal.Z + RANGE_CHECK + speedInBody.Z);
+				} else {
+					minZ = MathHelper.floor(inLocal.Z - RANGE_CHECK + speedInBody.Z);
+					maxZ = MathHelper.floor(inLocal.Z + RANGE_CHECK);
+				}
 
-			outermostloop: for (int localX = minX; localX < maxX; localX++) {
-				for (int localZ = minZ; localZ < maxZ; localZ++) {
-					for (int localY = minY; localY < maxY; localY++) {
-						if (parent.ownsChunk(localX >> 4, localZ >> 4)) {
-							Chunk chunkIn = parent.vwChunkCache.getChunkAt(localX >> 4, localZ >> 4);
-							if (localY >> 4 < 16 && chunkIn.storageArrays[localY >> 4] != null) {
-								IBitOctreeProvider provider = IBitOctreeProvider.class
-										.cast(chunkIn.storageArrays[localY >> 4].getData());
-								IBitOctree octreeInLocal = provider.getBitOctree();
-								if (octreeInLocal.get(localX & 15, localY & 15, localZ & 15)) {
-									int hash = SpatialDetector.getHashWithRespectTo(x, y, z, centerPotentialHit);
-									cachedPotentialHits.add(hash);
-									break outermostloop;
+				minY = Math.min(255, Math.max(minY, 0));
+				maxY = Math.min(255, Math.max(maxY, 0));
+
+				// int localX = MathHelper.floor(inLocal.X);
+				// int localY = MathHelper.floor(inLocal.Y);
+				// int localZ = MathHelper.floor(inLocal.Z);
+
+				// tooTiredToName(localX, localY, localZ, x, y, z);
+				// if (false)
+				// maxX = Math.min(maxX, minX << 4);
+				// maxZ = Math.min(maxZ, minZ << 4);
+
+				if (parent.ownsChunk(minX >> 4, minZ >> 4) && parent.ownsChunk(maxX >> 4, maxZ >> 4)) {
+
+					Chunk chunkIn00 = parent.vwChunkCache.getChunkAt(minX >> 4, minZ >> 4);
+					Chunk chunkIn01 = parent.vwChunkCache.getChunkAt(minX >> 4, maxZ >> 4);
+					Chunk chunkIn10 = parent.vwChunkCache.getChunkAt(maxX >> 4, minZ >> 4);
+					Chunk chunkIn11 = parent.vwChunkCache.getChunkAt(maxX >> 4, maxZ >> 4);
+
+					breakThisLoop: for (int localX = minX; localX < maxX; localX++) {
+						for (int localZ = minZ; localZ < maxZ; localZ++) {
+							Chunk theChunk = null;
+							if (localX >> 4 == minX >> 4) {
+								if (localZ >> 4 == minZ >> 4) {
+									theChunk = chunkIn00;
+								} else {
+									theChunk = chunkIn01;
 								}
+							} else {
+								if (localZ >> 4 == minZ >> 4) {
+									theChunk = chunkIn10;
+								} else {
+									theChunk = chunkIn11;
+								}
+							}
+							for (int localY = minY; localY < maxY; localY++) {
+								boolean result = tooTiredToName(theChunk, localX, localY, localZ, x, y, z);
+								if (result) {
+									break breakThisLoop;
+								}
+								
+								/*
+								if (false)
+									// TODO: This code isn't thread safe.
+									try {
+										boolean result = tooTiredToName(localX, localY, localZ, x, y, z);
+										if (result) {
+											break breakThisLoop;
+										}
+									} catch (Exception e) {
+										e.printStackTrace();
+									}
+									*/
 							}
 						}
 					}
@@ -731,8 +767,42 @@ public class WorldPhysicsCollider {
 		}
 	}
 	
+	private boolean tooTiredToName(final Chunk chunk, final int localX, final int localY, final int localZ, final int x, final int y,
+			final int z) {
+		if (chunk.storageArrays[localY >> 4] != null) {
+			IBitOctreeProvider provider = (IBitOctreeProvider) ((Object) chunk.storageArrays[localY >> 4].getData());
+			IBitOctree octreeInLocal = provider.getBitOctree();
+			if (octreeInLocal.get(localX & 15, localY & 15, localZ & 15)) {
+				int hash = SpatialDetector.getHashWithRespectTo(x, y, z, centerPotentialHit);
+				cachedPotentialHits.add(hash);
+				return true;
+				// break outermostloop;
+			}
+			// }
+		}
+		return false;
+	}
+
+	private boolean tooTiredToName(final int localX, final int localY, final int localZ, final int x, final int y,
+			final int z) {
+		// if (false) {
+		Chunk chunkIn = parent.vwChunkCache.getChunkAt(localX >> 4, localZ >> 4);
+		if (chunkIn.storageArrays[localY >> 4] != null) {
+			IBitOctreeProvider provider = (IBitOctreeProvider) ((Object) chunkIn.storageArrays[localY >> 4].getData());
+			IBitOctree octreeInLocal = provider.getBitOctree();
+			if (octreeInLocal.get(localX & 15, localY & 15, localZ & 15)) {
+				int hash = SpatialDetector.getHashWithRespectTo(x, y, z, centerPotentialHit);
+				cachedPotentialHits.add(hash);
+				return true;
+				// break outermostloop;
+			}
+			// }
+		}
+		return false;
+	}
+
 	private void checkForCollision(int x, int y, int z, ExtendedBlockStorage storage, IBitOctree octree, Vector inLocal,
-			Vector inBody, Vector speedInBody, TIntList list) {
+			Vector inBody, Vector speedInBody, Collection<Integer> collection) {
 		if (octree.get(x & 15, y & 15, z & 15)) {
 			inLocal.X = x + .5D;
 			inLocal.Y = y + .5D;
@@ -788,7 +858,7 @@ public class WorldPhysicsCollider {
 								IBitOctree octreeInLocal = provider.getBitOctree();
 								if (octreeInLocal.get(localX & 15, localY & 15, localZ & 15)) {
 									int hash = SpatialDetector.getHashWithRespectTo(x, y, z, centerPotentialHit);
-									list.add(hash);
+									collection.add(hash);
 									break outermostloop;
 								}
 							}

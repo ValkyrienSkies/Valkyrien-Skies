@@ -235,7 +235,11 @@ public class PhysicsCalculations {
     public void rawPhysTickPostCol() {
         if (parent.doPhysics) {
             if (!isPhysicsBroken()) {
-                if (PhysicsSettings.doAirshipRotation) {
+            	
+//            	this.angularVelocity.zero();
+//            	this.linearMomentum.zero();
+                
+            	if (PhysicsSettings.doAirshipRotation) {
                     applyAngularVelocity();
                 }
                 if (PhysicsSettings.doAirshipMovement) {

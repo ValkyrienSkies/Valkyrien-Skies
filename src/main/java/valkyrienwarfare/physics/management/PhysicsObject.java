@@ -133,7 +133,7 @@ public class PhysicsObject {
         claimedChunksInMap = false;
         queuedEntitiesToMount = new ArrayList<>();
         entityLocalPositions = new TIntObjectHashMap<>();
-        doPhysics = true;
+        doPhysics = false;
         // blockPositions = new HashSet<BlockPos>();
         // We need safe access to this across multiple threads.
         blockPositions = ConcurrentHashMap.<BlockPos>newKeySet();
@@ -342,6 +342,7 @@ public class PhysicsObject {
     }
 
     private void assembleShip(EntityPlayer player, SpatialDetector detector, BlockPos centerInWorld) {
+    	this.doPhysics = true;
         MutableBlockPos pos = new MutableBlockPos();
         TIntIterator iter = detector.foundSet.iterator();
 
@@ -919,7 +920,7 @@ public class PhysicsObject {
         getWrapperEntity().setPitch(compound.getDouble("pitch"));
         getWrapperEntity().setYaw(compound.getDouble("yaw"));
         getWrapperEntity().setRoll(compound.getDouble("roll"));
-        doPhysics = compound.getBoolean("doPhysics");
+
         for (int row = 0; row < ownedChunks.chunkOccupiedInLocal.length; row++) {
             boolean[] curArray = ownedChunks.chunkOccupiedInLocal[row];
             for (int column = 0; column < curArray.length; column++) {
@@ -954,6 +955,8 @@ public class PhysicsObject {
         getWrapperEntity().dataManager.set(PhysicsWrapperEntity.IS_NAME_CUSTOM, isNameCustom);
         
         this.setCollisionBoundingBox(NBTUtils.readAABBFromNBT("collision_aabb", compound));
+        
+        doPhysics = compound.getBoolean("doPhysics");
     }
 
     public void readSpawnData(ByteBuf additionalData) {

@@ -17,9 +17,9 @@
 package valkyrienwarfare.mod.multithreaded;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
@@ -53,7 +53,7 @@ public class VWThread extends Thread {
 	private int positionTickID;
 	// Used by the game thread to mark this thread for death.
 	private volatile boolean threadRunning;
-	private final LinkedList<Long> latestPhysicsTickTimes;
+	private final Queue<Long> latestPhysicsTickTimes;
 
 	public VWThread(World host) {
 		super("VW World Thread " + threadID);
@@ -62,7 +62,7 @@ public class VWThread extends Thread {
 		this.ships = new ArrayList<PhysicsWrapperEntity>();
 		this.positionTickID = 0;
 		this.threadRunning = true;
-		this.latestPhysicsTickTimes = new LinkedList<Long>();
+		this.latestPhysicsTickTimes = new ConcurrentLinkedQueue<Long>();
 	}
 
 	/*
@@ -240,16 +240,11 @@ public class VWThread extends Thread {
 
 	public long getAveragePhysicsTickTimeNano() {
 		if (latestPhysicsTickTimes.size() >= TICK_TIME_QUEUE) {
-			try {
-				LinkedList<Long> latestPhysicsTicks = (LinkedList<Long>) latestPhysicsTickTimes.clone();
-				long average = 0;
-				for (Long tickTime : latestPhysicsTicks) {
-					average += tickTime;
-				}
-				return average / TICK_TIME_QUEUE;
-			} catch (Exception e) {
-				e.printStackTrace();
+			long average = 0;
+			for (Long tickTime : latestPhysicsTickTimes) {
+				average += tickTime;
 			}
+			return average / TICK_TIME_QUEUE;
 		}
 		return NS_PER_TICK;
 	}

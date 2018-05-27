@@ -40,6 +40,7 @@ public class VWThread extends Thread {
 
     private final static long NS_PER_TICK = 10000000;
     private final static long MAX_LOST_TIME_NS = 1000000000;
+    private final static long TICK_TIME_QUEUE = 100;
     // Used to give each VW thread a unique name
     private static int threadID = 0;
     private final World hostWorld;
@@ -50,6 +51,10 @@ public class VWThread extends Thread {
     // Used by the game thread to mark this thread for death.
     private volatile boolean threadRunning;
 
+    // The average physics tick time in nano seconds.
+    private long averageTickTimeNano;
+    // The number of physics ticks to be considered in the average tick time.
+    
     public VWThread(World host) {
         super("VW World Thread " + threadID);
         threadID++;
@@ -57,6 +62,7 @@ public class VWThread extends Thread {
         this.ships = new ArrayList<PhysicsWrapperEntity>();
         this.positionTickID = 0;
         this.threadRunning = true;
+        this.averageTickTimeNano = NS_PER_TICK;
     }
 
     /*
@@ -70,17 +76,20 @@ public class VWThread extends Thread {
         // Used to make up for any lost time when we tick
         long lostTickTime = 0;
         while (threadRunning) {
+            long startOfPhysicsTickTimeNano = System.nanoTime();
             // Limit the tick smoothing to just one second (1000ms), if lostTickTime becomes
             // too large then physics would move too quickly after the lag source was
             // removed.
             if (lostTickTime > MAX_LOST_TIME_NS) {
                 lostTickTime %= MAX_LOST_TIME_NS;
             }
-            long start = System.nanoTime();
             // Run the physics code
             runGameLoop();
+            long endOfPhysicsTickTimeNano = System.nanoTime();
+            long deltaPhysicsTickTimeNano = endOfPhysicsTickTimeNano - startOfPhysicsTickTimeNano;
+                
             try {
-                long sleepTime = start + 10000000 - System.nanoTime();
+                long sleepTime = NS_PER_TICK - deltaPhysicsTickTimeNano;
                 // Sending a negative sleepTime would crash the thread.
                 if (sleepTime > 0) {
                     // If our lostTickTime is greater than zero then we're behind a few ticks, try
@@ -99,6 +108,12 @@ public class VWThread extends Thread {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            
+            long endOfTickTimeFullNano = System.nanoTime();
+            long deltaTickTimeFullNano = endOfTickTimeFullNano - startOfPhysicsTickTimeNano;
+            // Update the average tick time here:
+            averageTickTimeNano = (TICK_TIME_QUEUE * averageTickTimeNano) / (TICK_TIME_QUEUE + 1L);
+            averageTickTimeNano += deltaTickTimeFullNano;
         }
         // If we get to this point of run(), then we are about to return and this thread
         // will terminate.
@@ -217,5 +232,9 @@ public class VWThread extends Thread {
         // Because we set threadRunning to false, the run() method will return and the
         // thread will stop on its own, so we don't even need to run stop().
         // stop();
+    }
+    
+    public long getAveragePhysicsTickTimeNano() {
+    	return averageTickTimeNano;
     }
 }

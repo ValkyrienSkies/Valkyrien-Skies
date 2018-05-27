@@ -265,7 +265,7 @@ public class PhysicsObject {
         if (detector.foundSet.size() > ValkyrienWarfareMod.maxShipSize || detector.cleanHouse) {
             if (player != null) {
                 player.sendMessage(new TextComponentString(
-                        "Ship construction canceled because its exceeding the ship size limit (Raise with /physSettings maxShipSize <number>) ; Or because it's attatched to bedrock)"));
+                        "Ship construction canceled because its exceeding the ship size limit; or because it's attatched to bedrock. Raise it with /physsettings maxshipsize [number]"));
             }
             getWrapperEntity().setDead();
             return;

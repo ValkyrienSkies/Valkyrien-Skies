@@ -116,9 +116,6 @@ public class ValkyrienWarfareMod {
     public static final String MODVER = "0.9_alpha";
     @CapabilityInject(IAirshipCounterCapability.class)
     public static final Capability<IAirshipCounterCapability> airshipCounter = null;
-    // Used as a way to process the physics tasks in parallel during the game tick.
-    // Sends physics tasks to the Executor Service.
-    public static ExecutorService PHYSICS_THREADS = null;
     // This service is directly responsible for running collision tasks.
     public static ExecutorService PHYSICS_THREADS_EXECUTOR = null;
     @SidedProxy(clientSide = "valkyrienwarfare.mod.proxy.ClientProxy", serverSide = "valkyrienwarfare.mod.proxy.ServerProxy")
@@ -179,7 +176,6 @@ public class ValkyrienWarfareMod {
 
             if (PHYSICS_THREADS_EXECUTOR == null) {
                 PHYSICS_THREADS_EXECUTOR = Executors.newFixedThreadPool(threadCount <= 0 ? Runtime.getRuntime().availableProcessors() : threadCount);
-                PHYSICS_THREADS = Executors.newFixedThreadPool(threadCount <= 0 ? Runtime.getRuntime().availableProcessors() : threadCount);
             }
         }
 

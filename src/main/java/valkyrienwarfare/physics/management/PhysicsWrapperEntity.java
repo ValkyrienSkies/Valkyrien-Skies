@@ -177,7 +177,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 
     @Override
     public AxisAlignedBB getEntityBoundingBox() {
-        return getPhysicsObject().getCollisionBoundingBox();
+        return boundingBox;
     }
 
     @Override

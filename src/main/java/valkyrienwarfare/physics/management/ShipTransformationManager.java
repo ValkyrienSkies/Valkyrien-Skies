@@ -149,8 +149,12 @@ public class ShipTransformationManager {
             posMessage = new PhysWrapperPositionMessage(parent.getWrapperEntity(), positionTickID);
         }
 
-        for (EntityPlayerMP player : parent.watchingPlayers) {
-            ValkyrienWarfareMod.physWrapperNetwork.sendTo(posMessage, player);
+        // Do a standard loop here to avoid a concurrentModificationException. A standard for each loop could cause a crash.
+        for (int i = 0; i < parent.watchingPlayers.size(); i++) {
+        	EntityPlayerMP player = parent.watchingPlayers.get(i);
+        	if (player != null) {
+        		ValkyrienWarfareMod.physWrapperNetwork.sendTo(posMessage, player);
+        	}
         }
     }
 

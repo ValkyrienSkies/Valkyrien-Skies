@@ -220,6 +220,7 @@ public abstract class EntityDraggable {
 
         AxisAlignedBB potentialCrashBB = thisClassAsAnEntity.getEntityBoundingBox().offset(x, y, z);
         
+        // TODO: This is a band aid not a solution
         if (potentialCrashBB.getAverageEdgeLength() > 999999) {
         	// The player went too fast, something is wrong.
         	System.err.println("Entity with ID " + thisClassAsAnEntity.getEntityId() + " went way too fast! Reseting its position.");

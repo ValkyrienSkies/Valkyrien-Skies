@@ -66,7 +66,7 @@ public class ValkyrienWarfareHelpCommand extends CommandBase {
 			VWThread worldPhysicsThread = VWThreadManager.getVWThreadForWorld(world);
 			if (worldPhysicsThread != null) {
 				long averagePhysTickTimeNano = worldPhysicsThread.getAveragePhysicsTickTimeNano();
-				double ticksPerSecond = 100000000000D / ((double) averagePhysTickTimeNano);
+				double ticksPerSecond = 1000000000D / ((double) averagePhysTickTimeNano);
 				double ticksPerSecondTwoDecimals = Math.floor(ticksPerSecond * 100) / 100;
 				sender.sendMessage(new TextComponentString("Player world: " + ticksPerSecondTwoDecimals + " physics ticks per second"));
 			}

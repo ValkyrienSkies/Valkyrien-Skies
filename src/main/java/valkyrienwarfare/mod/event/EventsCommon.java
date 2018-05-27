@@ -142,6 +142,7 @@ public class EventsCommon {
                 if (event.phase == Phase.START) {
                     PhysicsTickHandler.onWorldTickStart(worldFor);
                 } else if (event.phase == Phase.END) {
+                	// TODO: This is a big source of tick lag.
                     PhysicsTickHandler.onWorldTickEnd(worldFor);
                 }
             }

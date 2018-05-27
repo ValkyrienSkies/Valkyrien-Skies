@@ -16,6 +16,8 @@
 
 package valkyrienwarfare.mod.physmanagement.interaction;
 
+import java.util.List;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
@@ -30,8 +32,6 @@ import valkyrienwarfare.mod.event.EventsClient;
 import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.physics.management.ShipTransformationManager;
-
-import java.util.List;
 
 public abstract class EntityDraggable {
     public static void tickAddedVelocityForWorld(World world) {
@@ -218,8 +218,15 @@ public abstract class EntityDraggable {
         double d3 = y;
         double d4 = z;
 
-        List<AxisAlignedBB> list1 = thisClassAsAnEntity.world.getCollisionBoxes(thisClassAsAnEntity,
-                thisClassAsAnEntity.getEntityBoundingBox().offset(x, y, z));
+        AxisAlignedBB potentialCrashBB = thisClassAsAnEntity.getEntityBoundingBox().offset(x, y, z);
+        
+        if (potentialCrashBB.getAverageEdgeLength() > 999999) {
+        	// The player went too fast, something is wrong.
+        	System.err.println("Entity with ID " + thisClassAsAnEntity.getEntityId() + " went way too fast! Reseting its position.");
+        	return new Vector();
+        }
+        
+        List<AxisAlignedBB> list1 = thisClassAsAnEntity.world.getCollisionBoxes(thisClassAsAnEntity, potentialCrashBB);
         AxisAlignedBB axisalignedbb = thisClassAsAnEntity.getEntityBoundingBox();
 
         if (y != 0.0D) {

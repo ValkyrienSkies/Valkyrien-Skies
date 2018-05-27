@@ -16,15 +16,16 @@
 
 package valkyrienwarfare.util;
 
-import gnu.trove.map.TIntObjectMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.BlockPos;
-import valkyrienwarfare.api.Vector;
-
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import valkyrienwarfare.api.Vector;
 
 public class NBTUtils {
 
@@ -162,5 +163,19 @@ public class NBTUtils {
     public static ByteBuffer getByteBuf(String name, NBTTagCompound compound) {
         return ByteBuffer.wrap(compound.getByteArray(name));
     }
-
+    
+    public static final void writeAABBToNBT(String name, AxisAlignedBB aabb, NBTTagCompound compound) {
+    	compound.setDouble(name + "minX", aabb.minX);
+    	compound.setDouble(name + "minY", aabb.minY);
+    	compound.setDouble(name + "minZ", aabb.minZ);
+    	compound.setDouble(name + "maxX", aabb.maxX);
+    	compound.setDouble(name + "maxY", aabb.maxY);
+    	compound.setDouble(name + "maxZ", aabb.maxZ);
+    }
+    
+    public static final AxisAlignedBB readAABBFromNBT(String name, NBTTagCompound compound) {
+    	AxisAlignedBB aabb = new AxisAlignedBB(compound.getDouble(name + "minX"), compound.getDouble(name + "minY"), compound.getDouble(name + "minZ"), compound.getDouble(name + "maxX"), compound.getDouble(name + "maxY"), compound.getDouble(name + "maxZ"));
+    	return aabb;
+    }
+    
 }

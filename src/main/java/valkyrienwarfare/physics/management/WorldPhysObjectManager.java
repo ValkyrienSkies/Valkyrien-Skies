@@ -16,22 +16,21 @@
 
 package valkyrienwarfare.physics.management;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
-import net.minecraft.world.chunk.Chunk;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
+
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
+import net.minecraft.world.chunk.Chunk;
 
 /**
  * This class essentially handles all the issues with ticking and handling
@@ -44,7 +43,7 @@ public class WorldPhysObjectManager {
     public final World worldObj;
     public final Set<PhysicsWrapperEntity> physicsEntities;
     public final List<PhysicsWrapperEntity> physicsEntitiesToUnload;
-    private final Map<ChunkPos, PhysicsWrapperEntity> chunkPosToPhysicsEntityMap;
+    private final Long2ObjectMap<PhysicsWrapperEntity> chunkPosToPhysicsEntityMap;
     private final List<Callable<Void>> physCollisonCallables;
     private Future<Void> physicsThreadStatus;
 
@@ -53,7 +52,7 @@ public class WorldPhysObjectManager {
         this.physicsEntities = ConcurrentHashMap.newKeySet();
         this.physicsEntitiesToUnload = new ArrayList<PhysicsWrapperEntity>();
         this.physCollisonCallables = new ArrayList<Callable<Void>>();
-        this.chunkPosToPhysicsEntityMap = new HashMap<ChunkPos, PhysicsWrapperEntity>();
+        this.chunkPosToPhysicsEntityMap = new Long2ObjectOpenHashMap<PhysicsWrapperEntity>();
         this.physicsThreadStatus = null;
     }
 
@@ -142,7 +141,7 @@ public class WorldPhysObjectManager {
     public void preloadPhysicsWrapperEntityMappings(PhysicsWrapperEntity loaded) {
         for (int x = loaded.getPhysicsObject().ownedChunks.getMinX(); x <= loaded.getPhysicsObject().ownedChunks.getMaxX(); x++) {
             for (int z = loaded.getPhysicsObject().ownedChunks.getMinZ(); z <= loaded.getPhysicsObject().ownedChunks.getMaxZ(); z++) {
-                chunkPosToPhysicsEntityMap.put(new ChunkPos(x, z), loaded);
+                chunkPosToPhysicsEntityMap.put(getLongFromInts(x, z), loaded);
             }
         }
     }
@@ -154,7 +153,7 @@ public class WorldPhysObjectManager {
             loaded.getPhysicsObject().onThisUnload();
             for (Chunk[] chunks : loaded.getPhysicsObject().claimedChunks) {
                 for (Chunk chunk : chunks) {
-                    chunkPosToPhysicsEntityMap.remove(chunk.getPos());
+                    chunkPosToPhysicsEntityMap.remove(getLongFromInts(chunk.x, chunk.z));
                 }
             }
         } else {
@@ -175,8 +174,7 @@ public class WorldPhysObjectManager {
     }
 
     public PhysicsWrapperEntity getManagingObjectForChunkPosition(int chunkX, int chunkZ) {
-        ChunkPos chunkPos = new ChunkPos(chunkX, chunkZ);
-        return chunkPosToPhysicsEntityMap.get(chunkPos);
+        return chunkPosToPhysicsEntityMap.get(getLongFromInts(chunkX, chunkZ));
     }
 
     public List<PhysicsWrapperEntity> getNearbyPhysObjects(AxisAlignedBB toCheck) {
@@ -228,5 +226,9 @@ public class WorldPhysObjectManager {
                 e.printStackTrace();
             }
         }
+    }
+    
+    private long getLongFromInts(int x, int z) {
+    	return (long)x & 4294967295L | ((long)z & 4294967295L) << 32;
     }
 }

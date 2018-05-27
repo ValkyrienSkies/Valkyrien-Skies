@@ -909,6 +909,8 @@ public class PhysicsObject {
         compound.setBoolean("claimedChunksInMap", claimedChunksInMap);
         compound.setBoolean("isNameCustom", isNameCustom);
         compound.setString("shipType", shipType.name());
+        // Write and read AABB from NBT to speed things up.
+        NBTUtils.writeAABBToNBT("collision_aabb", getCollisionBoundingBox(), compound);
     }
 
     public void readFromNBTTag(NBTTagCompound compound) {
@@ -950,6 +952,8 @@ public class PhysicsObject {
 
         isNameCustom = compound.getBoolean("isNameCustom");
         getWrapperEntity().dataManager.set(PhysicsWrapperEntity.IS_NAME_CUSTOM, isNameCustom);
+        
+        this.setCollisionBoundingBox(NBTUtils.readAABBFromNBT("collision_aabb", compound));
     }
 
     public void readSpawnData(ByteBuf additionalData) {

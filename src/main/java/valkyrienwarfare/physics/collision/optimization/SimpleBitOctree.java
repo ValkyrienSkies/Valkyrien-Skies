@@ -17,9 +17,6 @@
 package valkyrienwarfare.physics.collision.optimization;
 
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.physics.collision.optimization.bitset.FastBitSet;
-import valkyrienwarfare.physics.collision.optimization.bitset.IBitSet;
-import valkyrienwarfare.physics.collision.optimization.bitset.SmallBitSet;
 
 public class SimpleBitOctree implements IBitOctree {
 

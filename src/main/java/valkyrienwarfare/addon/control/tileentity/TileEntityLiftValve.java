@@ -18,7 +18,7 @@ package valkyrienwarfare.addon.control.tileentity;
 
 import valkyrienwarfare.addon.control.nodenetwork.Node;
 import valkyrienwarfare.api.block.ethercompressor.TileEntityEtherCompressor;
-import valkyrienwarfare.physics.calculations.PhysicsCalculations;
+import valkyrienwarfare.physics.PhysicsCalculations;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
 public class TileEntityLiftValve extends ImplPhysicsProcessorNodeTileEntity {

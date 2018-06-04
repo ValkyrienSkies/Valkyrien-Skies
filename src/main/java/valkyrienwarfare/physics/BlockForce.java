@@ -14,7 +14,7 @@
  *
  */
 
-package valkyrienwarfare.physics.data;
+package valkyrienwarfare.physics;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;

@@ -57,16 +57,16 @@ import valkyrienwarfare.api.block.ethercompressor.TileEntityEtherCompressor;
 import valkyrienwarfare.mod.BlockPhysicsRegistration;
 import valkyrienwarfare.mod.client.render.PhysObjectRenderManager;
 import valkyrienwarfare.mod.network.PhysWrapperPositionMessage;
-import valkyrienwarfare.mod.physmanagement.chunk.ChunkSet;
+import valkyrienwarfare.mod.physmanagement.chunk.VWChunkClaim;
 import valkyrienwarfare.mod.physmanagement.relocation.DetectorManager;
 import valkyrienwarfare.mod.physmanagement.relocation.SpatialDetector;
 import valkyrienwarfare.mod.physmanagement.relocation.VWChunkCache;
 import valkyrienwarfare.mod.schematics.SchematicReader.Schematic;
-import valkyrienwarfare.physics.calculations.PhysicsCalculations;
-import valkyrienwarfare.physics.calculations.PhysicsCalculationsManualControl;
-import valkyrienwarfare.physics.data.BlockForce;
-import valkyrienwarfare.physics.data.ShipTransformationPacketHolder;
-import valkyrienwarfare.physics.data.TransformType;
+import valkyrienwarfare.physics.BlockForce;
+import valkyrienwarfare.physics.PhysicsCalculations;
+import valkyrienwarfare.physics.PhysicsCalculationsManualControl;
+import valkyrienwarfare.physics.ShipTransformationPacketHolder;
+import valkyrienwarfare.physics.TransformType;
 import valkyrienwarfare.util.NBTUtils;
 
 import java.io.File;
@@ -88,8 +88,7 @@ public class PhysicsObject {
     // space
     public final List<EntityPlayerMP> watchingPlayers;
     public final PhysObjectRenderManager renderer;
-    public final PhysCollisionCallable collisionCallable;
-    public final Set<String> allowedUsers = new HashSet<>();
+    public final Set<String> allowedUsers = new HashSet<String>();
     public final Set<Node> concurrentNodesWithinShip;
     // This is used to delay mountEntity() operations by 1 tick
     private final List<Entity> queuedEntitiesToMount;
@@ -107,7 +106,7 @@ public class PhysicsObject {
     // The closest Chunks to the Ship cached in here
     public ChunkCache cachedSurroundingChunks;
     // TODO: Make for re-organizing these to make Ship sizes Dynamic
-    public ChunkSet ownedChunks;
+    public VWChunkClaim ownedChunks;
     // Used for faster memory access to the Chunks this object 'owns'
     public Chunk[][] claimedChunks;
     public VWChunkCache shipChunks;
@@ -138,7 +137,6 @@ public class PhysicsObject {
         // We need safe access to this across multiple threads.
         blockPositions = ConcurrentHashMap.<BlockPos>newKeySet();
         collisionBB = PhysicsWrapperEntity.ZERO_AABB;
-        collisionCallable = new PhysCollisionCallable(this);
         watchingPlayers = new ArrayList<>();
         concurrentNodesWithinShip = ConcurrentHashMap.<Node>newKeySet();
     }
@@ -916,7 +914,7 @@ public class PhysicsObject {
     }
 
     public void readFromNBTTag(NBTTagCompound compound) {
-        ownedChunks = new ChunkSet(compound);
+        ownedChunks = new VWChunkClaim(compound);
         centerCoord = NBTUtils.readVectorFromNBT("c", compound);
         getWrapperEntity().setPitch(compound.getDouble("pitch"));
         getWrapperEntity().setYaw(compound.getDouble("yaw"));
@@ -963,7 +961,7 @@ public class PhysicsObject {
     public void readSpawnData(ByteBuf additionalData) {
         PacketBuffer modifiedBuffer = new PacketBuffer(additionalData);
 
-        ownedChunks = new ChunkSet(modifiedBuffer.readInt(), modifiedBuffer.readInt(), modifiedBuffer.readInt());
+        ownedChunks = new VWChunkClaim(modifiedBuffer.readInt(), modifiedBuffer.readInt(), modifiedBuffer.readInt());
 
         getWrapperEntity().posX = modifiedBuffer.readDouble();
         getWrapperEntity().posY = modifiedBuffer.readDouble();

@@ -14,17 +14,20 @@
  *
  */
 
-package valkyrienwarfare.physics.data;
+package valkyrienwarfare.mod.command;
 
-import valkyrienwarfare.api.Vector;
+import net.minecraft.command.ServerCommandManager;
+import net.minecraft.server.MinecraftServer;
 
-public class Force extends Vector {
+public class VWModCommandRegistry {
 
-    public final boolean inLocal;
-
-    public Force(double x, double y, double z, boolean isInLocalCoords) {
-        super(x, y, z);
-        inLocal = isInLocalCoords;
+    // There's some Strange bug with registering commands in the Mod File (The client loading server classes, and then freaking out). Best to just do them all in
+    // a separate class
+    public static void registerCommands(MinecraftServer server) {
+        ServerCommandManager manager = (ServerCommandManager) server.getCommandManager();
+        manager.registerCommand(new PhysSettingsCommand());
+        manager.registerCommand(new AirshipSettingsCommand());
+        manager.registerCommand(new AirshipMapCommand());
+        manager.registerCommand(new VWCommandHelp());
     }
-
 }

@@ -29,7 +29,7 @@ import valkyrienwarfare.addon.control.controlsystems.ShipPulseImpulseControlSyst
 import valkyrienwarfare.addon.control.network.ThrustModulatorGuiInputMessage;
 import valkyrienwarfare.addon.control.nodenetwork.Node;
 import valkyrienwarfare.addon.control.proxy.ClientProxyControl;
-import valkyrienwarfare.physics.calculations.PhysicsCalculations;
+import valkyrienwarfare.physics.PhysicsCalculations;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
 @Optional.Interface(iface = "li.cil.oc.api.network.SimpleComponent", modid = "opencomputers")

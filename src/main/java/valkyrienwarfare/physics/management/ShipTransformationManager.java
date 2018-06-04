@@ -26,8 +26,8 @@ import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.mod.multithreaded.PhysicsShipTransform;
 import valkyrienwarfare.mod.network.PhysWrapperPositionMessage;
-import valkyrienwarfare.physics.data.ShipTransform;
-import valkyrienwarfare.physics.data.TransformType;
+import valkyrienwarfare.physics.ShipTransform;
+import valkyrienwarfare.physics.TransformType;
 
 import java.util.function.Consumer;
 import java.util.stream.Stream;

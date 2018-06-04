@@ -14,7 +14,7 @@
  *
  */
 
-package valkyrienwarfare.physics.data;
+package valkyrienwarfare.physics;
 
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;

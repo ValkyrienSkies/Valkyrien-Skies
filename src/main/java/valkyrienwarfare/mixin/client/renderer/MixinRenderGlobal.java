@@ -57,7 +57,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.mod.proxy.ClientProxy;
-import valkyrienwarfare.physics.data.TransformType;
+import valkyrienwarfare.physics.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 import java.util.Iterator;

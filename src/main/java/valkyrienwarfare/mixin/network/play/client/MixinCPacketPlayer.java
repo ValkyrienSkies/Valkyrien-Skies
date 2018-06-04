@@ -33,7 +33,7 @@ import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.mod.network.IExtendedCPacketPlayer;
-import valkyrienwarfare.physics.data.TransformType;
+import valkyrienwarfare.physics.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 @Mixin(CPacketPlayer.class)

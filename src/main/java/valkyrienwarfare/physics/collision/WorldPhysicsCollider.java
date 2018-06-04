@@ -41,7 +41,8 @@ import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.mod.multithreaded.PhysicsShipTransform;
 import valkyrienwarfare.mod.physmanagement.relocation.SpatialDetector;
-import valkyrienwarfare.physics.calculations.PhysicsCalculations;
+import valkyrienwarfare.physics.PhysicsCalculations;
+import valkyrienwarfare.physics.TransformType;
 import valkyrienwarfare.physics.collision.optimization.IBitOctree;
 import valkyrienwarfare.physics.collision.optimization.IBitOctreeProvider;
 import valkyrienwarfare.physics.collision.optimization.ShipCollisionTask;
@@ -49,7 +50,6 @@ import valkyrienwarfare.physics.collision.polygons.PhysCollisionObject;
 import valkyrienwarfare.physics.collision.polygons.PhysPolygonCollider;
 import valkyrienwarfare.physics.collision.polygons.Polygon;
 import valkyrienwarfare.physics.collision.polygons.PolygonCollisionPointFinder;
-import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
 /**

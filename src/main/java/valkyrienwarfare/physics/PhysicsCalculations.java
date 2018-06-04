@@ -14,7 +14,7 @@
  *
  */
 
-package valkyrienwarfare.physics.calculations;
+package valkyrienwarfare.physics;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -33,10 +33,6 @@ import valkyrienwarfare.math.Quaternion;
 import valkyrienwarfare.math.VWMath;
 import valkyrienwarfare.mod.multithreaded.PhysicsShipTransform;
 import valkyrienwarfare.physics.collision.WorldPhysicsCollider;
-import valkyrienwarfare.physics.data.BlockForce;
-import valkyrienwarfare.physics.data.BlockMass;
-import valkyrienwarfare.physics.data.ShipTransform;
-import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsObject;
 import valkyrienwarfare.physics.management.ShipTransformationManager;
 import valkyrienwarfare.util.NBTUtils;

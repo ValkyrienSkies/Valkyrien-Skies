@@ -29,7 +29,7 @@ import valkyrienwarfare.addon.control.piloting.ControllerInputType;
 import valkyrienwarfare.addon.control.piloting.ITileEntityPilotable;
 import valkyrienwarfare.addon.control.piloting.PilotControlsMessage;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.physics.data.TransformType;
+import valkyrienwarfare.physics.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 /**

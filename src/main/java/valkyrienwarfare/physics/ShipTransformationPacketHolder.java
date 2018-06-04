@@ -14,7 +14,7 @@
  *
  */
 
-package valkyrienwarfare.physics.data;
+package valkyrienwarfare.physics;
 
 import net.minecraft.util.math.AxisAlignedBB;
 import valkyrienwarfare.api.Vector;

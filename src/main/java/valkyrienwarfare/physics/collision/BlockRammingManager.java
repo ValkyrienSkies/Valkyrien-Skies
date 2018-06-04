@@ -18,7 +18,7 @@ package valkyrienwarfare.physics.collision;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
-import valkyrienwarfare.physics.data.BlockMass;
+import valkyrienwarfare.physics.BlockMass;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 /**

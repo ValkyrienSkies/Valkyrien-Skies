@@ -14,27 +14,33 @@
  *
  */
 
-package valkyrienwarfare.physics.management;
+package valkyrienwarfare.physics.collision.optimization;
 
-import java.util.concurrent.Callable;
+/**
+ * Not as space efficient as BitSet (about 8x the size), but also has a much
+ * lower cpu cost. Has no bounds checking to reduce overhead.
+ */
+public class FastBitSet implements IBitSet {
 
-public class PhysCollisionCallable implements Callable<Void> {
+    private final boolean[] data;
 
-    private final PhysicsObject toRun;
-
-    public PhysCollisionCallable(PhysicsObject physicsCalculations) {
-        toRun = physicsCalculations;
+    public FastBitSet(int size) {
+        data = new boolean[size];
     }
 
     @Override
-    public Void call() throws Exception {
-        if (!toRun.getWrapperEntity().firstUpdate) {
-            toRun.physicsProcessor.processWorldCollision();
-            toRun.physicsProcessor.rawPhysTickPostCol();
-        } else {
-            toRun.coordTransform.updateAllTransforms(false, false);
-        }
-        return null;
+    public void set(int index) {
+        data[index] = true;
+    }
+
+    @Override
+    public void clear(int index) {
+        data[index] = false;
+    }
+
+    @Override
+    public boolean get(int index) {
+        return data[index];
     }
 
 }

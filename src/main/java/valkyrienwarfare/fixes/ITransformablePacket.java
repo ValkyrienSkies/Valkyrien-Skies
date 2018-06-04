@@ -9,7 +9,7 @@ import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.mod.physmanagement.interaction.INHPServerVW;
 import valkyrienwarfare.mod.physmanagement.interaction.PlayerDataBackup;
-import valkyrienwarfare.physics.data.TransformType;
+import valkyrienwarfare.physics.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 /**

@@ -63,7 +63,7 @@ import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.mod.capability.IAirshipCounterCapability;
 import valkyrienwarfare.mod.multithreaded.VWThreadManager;
 import valkyrienwarfare.mod.physmanagement.interaction.ValkyrienWarfareWorldEventListener;
-import valkyrienwarfare.physics.data.TransformType;
+import valkyrienwarfare.physics.TransformType;
 import valkyrienwarfare.physics.management.PhysicsTickHandler;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 

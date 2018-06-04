@@ -48,8 +48,8 @@ import valkyrienwarfare.addon.control.nodenetwork.INodeProvider;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.fixes.WorldChunkloadingCrashFix;
 import valkyrienwarfare.mod.physmanagement.interaction.IWorldVW;
+import valkyrienwarfare.physics.TransformType;
 import valkyrienwarfare.physics.collision.polygons.Polygon;
-import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.physics.management.WorldPhysObjectManager;
 

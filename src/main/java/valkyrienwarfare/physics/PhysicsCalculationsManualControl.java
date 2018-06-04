@@ -14,7 +14,7 @@
  *
  */
 
-package valkyrienwarfare.physics.calculations;
+package valkyrienwarfare.physics;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;

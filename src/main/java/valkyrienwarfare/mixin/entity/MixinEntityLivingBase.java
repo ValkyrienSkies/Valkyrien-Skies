@@ -32,8 +32,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.physics.TransformType;
 import valkyrienwarfare.physics.collision.polygons.EntityPolygon;
-import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 import java.util.List;

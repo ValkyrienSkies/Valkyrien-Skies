@@ -14,47 +14,36 @@
  *
  */
 
-package valkyrienwarfare.physics.collision.optimization.bitset;
+package valkyrienwarfare.physics.collision.optimization;
+
+import java.util.BitSet;
 
 /**
- * A basic representation of a BitSet implementation
- *
- * @author DaPorkchop_
+ * Slightly slower implementation of {@link FastBitSet}, but has much lower
+ * memory requirements This is better than a byte[], as java promotes the bytes
+ * to ints while working on them anyway. Fits much better into the cpu cache.
  */
-public interface IBitSet {
-    /**
-     * Sets the flag at the index to true
-     *
-     * @param index the index to set
-     */
-    void set(int index);
+public class SmallBitSet implements IBitSet {
 
-    /**
-     * Sets the flag at the index to false
-     *
-     * @param index the index to set
-     */
-    void clear(int index);
+	private final int[] data;
 
-    /**
-     * Sets the flag at the index to a given value
-     *
-     * @param index the index to set
-     * @param val   the value to set
-     */
-    default void set(int index, boolean val) {
-        if (val) {
-            this.set(index);
-        } else {
-            this.clear(index);
-        }
-    }
+	public SmallBitSet(int size) {
+		// We are using 32 bit integers, 2^5.
+		data = new int[(size >> 5) + 1];
+	}
 
-    /**
-     * Get a value at an index
-     *
-     * @param index the index to get
-     * @return the value at the given index
-     */
-    boolean get(int index);
+	@Override
+	public void set(int index) {
+		data[index >> 5] |= 1 << (index & 0x1F);
+	}
+
+	@Override
+	public void clear(int index) {
+		data[index >> 5] &= ~(1 << (index & 0x1F));
+	}
+
+	@Override
+	public boolean get(int index) {
+		return (((data[index >> 5]) >> (index & 0x1F)) & 1) == 1L;
+	}
 }

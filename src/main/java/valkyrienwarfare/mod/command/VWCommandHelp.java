@@ -28,7 +28,7 @@ import net.minecraft.world.World;
 import valkyrienwarfare.mod.multithreaded.VWThread;
 import valkyrienwarfare.mod.multithreaded.VWThreadManager;
 
-public class ValkyrienWarfareHelpCommand extends CommandBase {
+public class VWCommandHelp extends CommandBase {
 
 	public static final List<String> COMMANDS = new ArrayList<String>();
 

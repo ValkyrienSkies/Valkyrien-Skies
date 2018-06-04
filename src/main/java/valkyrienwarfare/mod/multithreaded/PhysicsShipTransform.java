@@ -18,9 +18,9 @@ package valkyrienwarfare.mod.multithreaded;
 
 import net.minecraft.util.math.AxisAlignedBB;
 import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.physics.ShipTransform;
+import valkyrienwarfare.physics.TransformType;
 import valkyrienwarfare.physics.collision.polygons.Polygon;
-import valkyrienwarfare.physics.data.ShipTransform;
-import valkyrienwarfare.physics.data.TransformType;
 
 /**
  * An extension of ShipTransform with extra data not required by most other

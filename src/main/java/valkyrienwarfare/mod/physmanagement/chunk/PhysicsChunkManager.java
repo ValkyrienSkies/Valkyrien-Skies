@@ -37,7 +37,7 @@ public class PhysicsChunkManager {
 	// affecting
 	// each other remotely if this value is too small (ex. 0)
 	public int distanceBetweenSets = 1;
-	public ChunkKeysWorldData data;
+	public ChunkClaimWorldData data;
 
 	public PhysicsChunkManager(World worldFor) {
 		worldObj = worldFor;
@@ -63,7 +63,7 @@ public class PhysicsChunkManager {
 	 *
 	 * @return
 	 */
-	public ChunkSet getNextAvaliableChunkSet(int chunkRadius) {
+	public VWChunkClaim getNextAvaliableChunkSet(int chunkRadius) {
 		loadDataFromWorld();
 		// System.out.println("Got next avaliable chunk set.");
 		
@@ -79,14 +79,14 @@ public class PhysicsChunkManager {
 			data.setChunkKey(nextChunkSetKey);
 		}
 		data.markDirty();
-		return new ChunkSet(chunkX, chunkZ, chunkRadius);
+		return new VWChunkClaim(chunkX, chunkZ, chunkRadius);
 	}
 
 	/**
 	 * This retrieves the ChunkSetKey data for the specific world
 	 */
 	public void loadDataFromWorld() {
-		data = ChunkKeysWorldData.get(worldObj);
+		data = ChunkClaimWorldData.get(worldObj);
 		nextChunkSetKey = data.getChunkKey();
 	}
 

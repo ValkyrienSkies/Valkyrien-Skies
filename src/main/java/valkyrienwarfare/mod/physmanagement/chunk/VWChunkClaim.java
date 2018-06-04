@@ -24,21 +24,21 @@ import net.minecraft.world.World;
  *
  * @author thebest108
  */
-public class ChunkSet {
+public class VWChunkClaim {
 
     private final int centerX;
     private final int centerZ;
     private final int radius;
     public final boolean[][] chunkOccupiedInLocal;
 
-    public ChunkSet(int x, int z, int size) {
+    public VWChunkClaim(int x, int z, int size) {
         this.centerX = x;
         this.centerZ = z;
         this.radius = size;
         this.chunkOccupiedInLocal = new boolean[(getRadius() * 2) + 1][(getRadius() * 2) + 1];
     }
 
-    public ChunkSet(NBTTagCompound readFrom) {
+    public VWChunkClaim(NBTTagCompound readFrom) {
         this(readFrom.getInteger("centerX"), readFrom.getInteger("centerZ"), readFrom.getInteger("radius"));
     }
 
@@ -67,8 +67,8 @@ public class ChunkSet {
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof ChunkSet) {
-            ChunkSet other = (ChunkSet) o;
+        if (o instanceof VWChunkClaim) {
+            VWChunkClaim other = (VWChunkClaim) o;
             return other.getCenterX() == getCenterX() && other.getCenterZ() == getCenterZ() && other.getRadius() == getRadius();
         }
         return false;

@@ -14,33 +14,18 @@
  *
  */
 
-package valkyrienwarfare.physics.collision.optimization.bitset;
+package valkyrienwarfare.physics;
 
 /**
- * Not as space efficient as BitSet (about 8x the size), but also has a much
- * lower cpu cost. Has no bounds checking to reduce overhead.
+ * A simple enum used to tell the ship transform which coordinates system we are
+ * want to change to.
+ * <p>
+ * Ex. Moving from local to global at (0, 0, 0) will give us to the position of
+ * the center of mass of the ship relative to the game world.
+ *
+ * @author thebest108
  */
-public class FastBitSet implements IBitSet {
+public enum TransformType {
 
-    private final boolean[] data;
-
-    public FastBitSet(int size) {
-        data = new boolean[size];
-    }
-
-    @Override
-    public void set(int index) {
-        data[index] = true;
-    }
-
-    @Override
-    public void clear(int index) {
-        data[index] = false;
-    }
-
-    @Override
-    public boolean get(int index) {
-        return data[index];
-    }
-
+    LOCAL_TO_GLOBAL, GLOBAL_TO_LOCAL
 }

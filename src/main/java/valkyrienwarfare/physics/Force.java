@@ -14,18 +14,17 @@
  *
  */
 
-package valkyrienwarfare.physics.data;
+package valkyrienwarfare.physics;
 
-/**
- * A simple enum used to tell the ship transform which coordinates system we are
- * want to change to.
- * <p>
- * Ex. Moving from local to global at (0, 0, 0) will give us to the position of
- * the center of mass of the ship relative to the game world.
- *
- * @author thebest108
- */
-public enum TransformType {
+import valkyrienwarfare.api.Vector;
 
-    LOCAL_TO_GLOBAL, GLOBAL_TO_LOCAL
+public class Force extends Vector {
+
+    public final boolean inLocal;
+
+    public Force(double x, double y, double z, boolean isInLocalCoords) {
+        super(x, y, z);
+        inLocal = isInLocalCoords;
+    }
+
 }

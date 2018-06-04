@@ -22,7 +22,7 @@ import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.DummyMethods;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.physics.data.TransformType;
+import valkyrienwarfare.physics.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public class RealMethods implements DummyMethods {

@@ -27,8 +27,8 @@ import valkyrienwarfare.addon.control.network.HovercraftControllerGUIInputMessag
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.api.block.ethercompressor.TileEntityEtherCompressor;
-import valkyrienwarfare.physics.calculations.PhysicsCalculations;
-import valkyrienwarfare.physics.data.TransformType;
+import valkyrienwarfare.physics.PhysicsCalculations;
+import valkyrienwarfare.physics.TransformType;
 import valkyrienwarfare.physics.management.PhysicsObject;
 import valkyrienwarfare.util.NBTUtils;
 

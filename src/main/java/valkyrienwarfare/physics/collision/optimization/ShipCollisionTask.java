@@ -24,11 +24,11 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.mod.physmanagement.relocation.SpatialDetector;
+import valkyrienwarfare.physics.TransformType;
 import valkyrienwarfare.physics.collision.CollisionInformationHolder;
 import valkyrienwarfare.physics.collision.WorldPhysicsCollider;
 import valkyrienwarfare.physics.collision.polygons.PhysPolygonCollider;
 import valkyrienwarfare.physics.collision.polygons.Polygon;
-import valkyrienwarfare.physics.data.TransformType;
 
 import java.util.ArrayList;
 import java.util.Iterator;

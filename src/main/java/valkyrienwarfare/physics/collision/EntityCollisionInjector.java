@@ -38,11 +38,11 @@ import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.math.VWMath;
 import valkyrienwarfare.mod.physmanagement.interaction.EntityDraggable;
 import valkyrienwarfare.mod.physmanagement.interaction.IDraggable;
+import valkyrienwarfare.physics.TransformType;
 import valkyrienwarfare.physics.collision.polygons.EntityPolygon;
 import valkyrienwarfare.physics.collision.polygons.EntityPolygonCollider;
 import valkyrienwarfare.physics.collision.polygons.Polygon;
 import valkyrienwarfare.physics.collision.polygons.ShipPolygon;
-import valkyrienwarfare.physics.data.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.physics.management.WorldPhysObjectManager;
 

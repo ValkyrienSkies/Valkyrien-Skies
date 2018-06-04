@@ -23,30 +23,30 @@ import net.minecraft.world.World;
 import net.minecraft.world.storage.MapStorage;
 import net.minecraft.world.storage.WorldSavedData;
 
-public class ChunkKeysWorldData extends WorldSavedData {
+public class ChunkClaimWorldData extends WorldSavedData {
 
     private static final String CHUNK_POS_DATA_KEY = "ChunkKeys";
     private final TIntList avalibleChunkKeys;
     private int chunkKey;
 
-    public ChunkKeysWorldData(String key) {
+    public ChunkClaimWorldData(String key) {
     	super(key);
     	this.avalibleChunkKeys = new TIntArrayList();
     	this.markDirty();
     }
     
-    public ChunkKeysWorldData() {
+    public ChunkClaimWorldData() {
         super(CHUNK_POS_DATA_KEY);
         this.avalibleChunkKeys = new TIntArrayList();
         this.markDirty();
     }
 
-    public static ChunkKeysWorldData get(World world) {
+    public static ChunkClaimWorldData get(World world) {
         MapStorage storage = world.getPerWorldStorage();
-        ChunkKeysWorldData data = (ChunkKeysWorldData) storage.getOrLoadData(ChunkKeysWorldData.class, CHUNK_POS_DATA_KEY);
+        ChunkClaimWorldData data = (ChunkClaimWorldData) storage.getOrLoadData(ChunkClaimWorldData.class, CHUNK_POS_DATA_KEY);
         if (data == null) {
         	System.err.println("Had to create a null ChunkKeysWorldData; could this be corruption?");
-            data = new ChunkKeysWorldData();
+            data = new ChunkClaimWorldData();
             world.setData(CHUNK_POS_DATA_KEY, data);
         }
         return data;

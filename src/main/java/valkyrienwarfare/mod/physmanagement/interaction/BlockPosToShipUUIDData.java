@@ -23,7 +23,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.MapStorage;
 import net.minecraft.world.storage.WorldSavedData;
-import valkyrienwarfare.mod.physmanagement.chunk.ChunkSet;
+import valkyrienwarfare.mod.physmanagement.chunk.VWChunkClaim;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.util.NBTUtils;
 
@@ -39,7 +39,7 @@ public class BlockPosToShipUUIDData extends WorldSavedData {
     private static final String key = "BlockPosToShipUUIDData";
     //Not the persistent map, used for performance reasons
     private TLongObjectMap<UUID> chunkposToShipUUID = new TLongObjectHashMap<>();
-    private Map<UUID, ChunkSet> UUIDToChunkSet = new HashMap<>();
+    private Map<UUID, VWChunkClaim> UUIDToChunkSet = new HashMap<>();
 
     public BlockPosToShipUUIDData(String name) {
         super(name);
@@ -113,7 +113,7 @@ public class BlockPosToShipUUIDData extends WorldSavedData {
 //			System.out.println("Loaded a ChunkSet at " + centerX + ":" + centerZ);
 
             UUID persistantID = new UUID(mostBits, leastBits);
-            ChunkSet set = new ChunkSet(centerX, centerZ, radius);
+            VWChunkClaim set = new VWChunkClaim(centerX, centerZ, radius);
 
             UUIDToChunkSet.put(persistantID, set);
 
@@ -127,12 +127,12 @@ public class BlockPosToShipUUIDData extends WorldSavedData {
 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-        Set<Entry<UUID, ChunkSet>> entries = UUIDToChunkSet.entrySet();
+        Set<Entry<UUID, VWChunkClaim>> entries = UUIDToChunkSet.entrySet();
 
         //2 ints, 1 byte (radius), and 2 longs for each ship, that comes out to 25 bytes per entry
         int byteArraySize = entries.size() * 25;
         ByteBuffer buffer = ByteBuffer.allocate(byteArraySize);
-        for (Entry<UUID, ChunkSet> entry : entries) {
+        for (Entry<UUID, VWChunkClaim> entry : entries) {
             int centerX = entry.getValue().getCenterX();
             int centerZ = entry.getValue().getCenterZ();
             byte radius = (byte) entry.getValue().getRadius();

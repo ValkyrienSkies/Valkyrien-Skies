@@ -23,8 +23,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import valkyrienwarfare.math.VWMath;
-import valkyrienwarfare.physics.data.ShipTransform;
-import valkyrienwarfare.physics.data.TransformType;
+import valkyrienwarfare.physics.ShipTransform;
+import valkyrienwarfare.physics.TransformType;
 
 /**
  * This class creates and processes rotation matrix transforms used by Valkyrien

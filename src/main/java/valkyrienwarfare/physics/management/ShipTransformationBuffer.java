@@ -17,7 +17,7 @@
 package valkyrienwarfare.physics.management;
 
 import valkyrienwarfare.mod.network.PhysWrapperPositionMessage;
-import valkyrienwarfare.physics.data.ShipTransformationPacketHolder;
+import valkyrienwarfare.physics.ShipTransformationPacketHolder;
 
 import java.util.LinkedList;
 

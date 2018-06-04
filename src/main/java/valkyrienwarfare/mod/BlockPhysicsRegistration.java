@@ -20,8 +20,8 @@ import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.physics.data.BlockForce;
-import valkyrienwarfare.physics.data.BlockMass;
+import valkyrienwarfare.physics.BlockForce;
+import valkyrienwarfare.physics.BlockMass;
 
 import java.util.ArrayList;
 

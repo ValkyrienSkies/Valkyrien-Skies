@@ -16,6 +16,8 @@
 
 package valkyrienwarfare.mod.event;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -29,14 +31,11 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
-import org.lwjgl.opengl.GL11;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.fixes.SoundFixWrapper;
-import valkyrienwarfare.mod.network.PlayerShipRefrenceMessage;
 import valkyrienwarfare.mod.physmanagement.interaction.EntityDraggable;
-import valkyrienwarfare.mod.physmanagement.interaction.IDraggable;
-import valkyrienwarfare.physics.data.TransformType;
+import valkyrienwarfare.physics.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.physics.management.WorldPhysObjectManager;
 
@@ -79,15 +78,6 @@ public class EventsClient {
                         wrapper.getPhysicsObject().onPostTickClient();
                     }
                     EntityDraggable.tickAddedVelocityForWorld(mc.world);
-                }
-            }
-            if (event.phase == Phase.END) {
-                Object o = Minecraft.getMinecraft().player;
-                IDraggable draggable = (IDraggable) o;
-
-                if (draggable.getWorldBelowFeet() != null) {
-                    PlayerShipRefrenceMessage playerPosMessage = new PlayerShipRefrenceMessage(Minecraft.getMinecraft().player, draggable.getWorldBelowFeet());
-                    ValkyrienWarfareMod.physWrapperNetwork.sendToServer(playerPosMessage);
                 }
             }
         }

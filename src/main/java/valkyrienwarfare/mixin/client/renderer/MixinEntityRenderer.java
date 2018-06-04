@@ -41,7 +41,7 @@ import valkyrienwarfare.api.MixinMethods;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.math.Quaternion;
-import valkyrienwarfare.physics.data.TransformType;
+import valkyrienwarfare.physics.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 //import valkyrienwarfare.api.MixinMethods;

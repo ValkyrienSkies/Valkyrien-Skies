@@ -34,8 +34,8 @@ import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.mod.capability.IAirshipCounterCapability;
 import valkyrienwarfare.mod.physmanagement.interaction.ShipNameUUIDData;
 import valkyrienwarfare.mod.schematics.SchematicReader.Schematic;
+import valkyrienwarfare.physics.TransformType;
 import valkyrienwarfare.physics.collision.polygons.Polygon;
-import valkyrienwarfare.physics.data.TransformType;
 
 import javax.annotation.Nullable;
 

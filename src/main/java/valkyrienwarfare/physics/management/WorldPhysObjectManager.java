@@ -44,14 +44,12 @@ public class WorldPhysObjectManager {
     public final Set<PhysicsWrapperEntity> physicsEntities;
     public final List<PhysicsWrapperEntity> physicsEntitiesToUnload;
     private final Long2ObjectMap<PhysicsWrapperEntity> chunkPosToPhysicsEntityMap;
-    private final List<Callable<Void>> physCollisonCallables;
     private Future<Void> physicsThreadStatus;
 
     public WorldPhysObjectManager(World toManage) {
         this.worldObj = toManage;
         this.physicsEntities = ConcurrentHashMap.newKeySet();
         this.physicsEntitiesToUnload = new ArrayList<PhysicsWrapperEntity>();
-        this.physCollisonCallables = new ArrayList<Callable<Void>>();
         this.chunkPosToPhysicsEntityMap = new Long2ObjectOpenHashMap<PhysicsWrapperEntity>();
         this.physicsThreadStatus = null;
     }
@@ -122,14 +120,12 @@ public class WorldPhysObjectManager {
             }
             for (PhysicsWrapperEntity caught : potentialMatches) {
                 physicsEntities.remove(caught);
-                physCollisonCallables.remove(caught.getPhysicsObject().collisionCallable);
                 caught.getPhysicsObject().onThisUnload();
                 // System.out.println("Caught one");
             }
         }
         loaded.isDead = false;
         physicsEntities.add(loaded);
-        physCollisonCallables.add(loaded.getPhysicsObject().collisionCallable);
     }
 
     /**
@@ -149,7 +145,6 @@ public class WorldPhysObjectManager {
     public void onUnload(PhysicsWrapperEntity loaded) {
         if (!loaded.world.isRemote) {
             physicsEntities.remove(loaded);
-            physCollisonCallables.remove(loaded.getPhysicsObject().collisionCallable);
             loaded.getPhysicsObject().onThisUnload();
             for (Chunk[] chunks : loaded.getPhysicsObject().claimedChunks) {
                 for (Chunk chunk : chunks) {

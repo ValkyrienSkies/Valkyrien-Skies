@@ -43,7 +43,7 @@ import valkyrienwarfare.mod.physmanagement.chunk.PhysicsChunkManager;
 import valkyrienwarfare.mod.physmanagement.interaction.EntityDraggable;
 import valkyrienwarfare.mod.physmanagement.interaction.IDraggable;
 import valkyrienwarfare.mod.physmanagement.interaction.INHPServerVW;
-import valkyrienwarfare.physics.data.TransformType;
+import valkyrienwarfare.physics.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 //TODO: a lot of these mixins can probably be done using overrides instead of overwrites, i should have a look at some point
@@ -189,8 +189,7 @@ public abstract class MixinNetHandlerPlayServer implements INHPServerVW {
 		}
 	}
 	
-	// Because of MCs bad coding I have to copy an entire method just to edit one
-	// line of code.
+	// This code used to fix the issues with "Player moved incorrectly", but it's not good enough. We'll need to use something else.
 	/*
 	 * @Overwrite public void processPlayer(CPacketPlayer packetIn) {
 	 * PacketThreadUtil.checkThreadAndEnqueue(packetIn, thisAsNetHandler,

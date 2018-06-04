@@ -31,8 +31,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.physics.data.BlockMass;
-import valkyrienwarfare.physics.data.TransformType;
+import valkyrienwarfare.physics.BlockMass;
+import valkyrienwarfare.physics.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 import java.util.List;

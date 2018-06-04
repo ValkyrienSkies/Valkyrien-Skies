@@ -18,8 +18,8 @@ package valkyrienwarfare.physics.collision.polygons;
 
 import net.minecraft.util.math.AxisAlignedBB;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.physics.data.ShipTransform;
-import valkyrienwarfare.physics.data.TransformType;
+import valkyrienwarfare.physics.ShipTransform;
+import valkyrienwarfare.physics.TransformType;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
 public class ShipPolygon extends Polygon {

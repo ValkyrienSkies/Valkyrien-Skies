@@ -16,6 +16,25 @@
 
 package valkyrienwarfare;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
@@ -68,14 +87,10 @@ import valkyrienwarfare.mod.block.BlockPhysicsInfuserCreative;
 import valkyrienwarfare.mod.capability.IAirshipCounterCapability;
 import valkyrienwarfare.mod.capability.ImplAirshipCounterCapability;
 import valkyrienwarfare.mod.capability.StorageAirshipCounter;
-import valkyrienwarfare.mod.command.ModCommands;
+import valkyrienwarfare.mod.command.VWModCommandRegistry;
 import valkyrienwarfare.mod.gui.TabValkyrienWarfare;
-import valkyrienwarfare.mod.network.EntityRelativePositionHandler;
-import valkyrienwarfare.mod.network.EntityRelativePositionMessage;
 import valkyrienwarfare.mod.network.PhysWrapperPositionHandler;
 import valkyrienwarfare.mod.network.PhysWrapperPositionMessage;
-import valkyrienwarfare.mod.network.PlayerShipRefrenceHandler;
-import valkyrienwarfare.mod.network.PlayerShipRefrenceMessage;
 import valkyrienwarfare.mod.physmanagement.chunk.DimensionPhysicsChunkManager;
 import valkyrienwarfare.mod.proxy.CommonProxy;
 import valkyrienwarfare.mod.proxy.ServerProxy;
@@ -83,25 +98,6 @@ import valkyrienwarfare.physics.management.DimensionPhysObjectManager;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.util.PhysicsSettings;
 import valkyrienwarfare.util.RealMethods;
-
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Field;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.logging.Logger;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
 
 @Mod(modid = ValkyrienWarfareMod.MODID,
         name = ValkyrienWarfareMod.MODNAME,
@@ -419,17 +415,13 @@ public class ValkyrienWarfareMod {
     @EventHandler
     public void serverStart(FMLServerStartingEvent event) {
         MinecraftServer server = event.getServer();
-        ModCommands.registerCommands(server);
+        VWModCommandRegistry.registerCommands(server);
     }
 
     private void registerNetworks(FMLStateEvent event) {
         physWrapperNetwork = NetworkRegistry.INSTANCE.newSimpleChannel("physChannel");
         physWrapperNetwork.registerMessage(PhysWrapperPositionHandler.class, PhysWrapperPositionMessage.class, 0,
                 Side.CLIENT);
-        physWrapperNetwork.registerMessage(PlayerShipRefrenceHandler.class, PlayerShipRefrenceMessage.class, 1,
-                Side.SERVER);
-        physWrapperNetwork.registerMessage(EntityRelativePositionHandler.class,
-                EntityRelativePositionMessage.class, 2, Side.CLIENT);
     }
 
     public void registerBlocks(RegistryEvent.Register<Block> event) {

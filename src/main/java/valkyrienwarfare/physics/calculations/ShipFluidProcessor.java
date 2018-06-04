@@ -61,7 +61,7 @@ public class ShipFluidProcessor {
 
     public void generateYLevelData() {
         for (BlockPos pos : parent.blockPositions) {
-            IBlockState state = parent.vwChunkCache.getBlockState(pos);
+            IBlockState state = parent.shipChunks.getBlockState(pos);
             if (doesStateBlockWater(state)) {
                 int yPos = pos.getY();
                 ArrayList<BlockPos> dataAtY = solidPositionsAtYLevel[yPos];

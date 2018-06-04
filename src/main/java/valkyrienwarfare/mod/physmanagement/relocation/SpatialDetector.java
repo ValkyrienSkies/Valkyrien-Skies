@@ -16,13 +16,15 @@
 
 package valkyrienwarfare.mod.physmanagement.relocation;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.set.hash.TIntHashSet;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
+import net.minecraft.world.ChunkCache;
 import net.minecraft.world.World;
-
-import java.util.ArrayList;
 
 /**
  * Used to efficiently detect a connected set of blocks TODO: Incorporate a
@@ -38,7 +40,7 @@ public abstract class SpatialDetector {
     public final TIntHashSet foundSet = new TIntHashSet(250);
     public final BlockPos firstBlock;
     public final MutableBlockPos tempPos = new MutableBlockPos();
-    public final VWChunkCache cache;
+    public final ChunkCache cache;
     public final World worldObj;
     public final int maxSize;
     public final boolean corners;
@@ -51,8 +53,9 @@ public abstract class SpatialDetector {
         worldObj = worldIn;
         maxSize = maximum;
         corners = checkCorners;
-        cache = new VWChunkCache(worldIn, start.getX() - 128, start.getZ() - 128, start.getX() + 128,
-                start.getZ() + 128);
+        BlockPos minPos = new BlockPos(start.getX() - 128, 0, start.getZ() - 128);
+        BlockPos maxPos = new BlockPos(start.getX() + 128, 255, start.getZ() + 128);
+        cache = new ChunkCache(worldIn, minPos, maxPos, 0);
     }
 
     public static int getHashWithRespectTo(int realX, int realY, int realZ, BlockPos start) {
@@ -86,8 +89,8 @@ public abstract class SpatialDetector {
         }
     }
 
-    public ArrayList<BlockPos> getBlockPosArrayList() {
-        ArrayList<BlockPos> detectedBlockPos = new ArrayList<BlockPos>();
+    public List<BlockPos> getBlockPosArrayList() {
+        List<BlockPos> detectedBlockPos = new ArrayList<BlockPos>(foundSet.size());
         TIntIterator intIter = foundSet.iterator();
         while (intIter.hasNext()) {
             int hash = intIter.next();

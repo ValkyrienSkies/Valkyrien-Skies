@@ -27,7 +27,8 @@
     "network.play.client.MixinCPacketPlayer$Rotation",
     "network.play.client.MixinCPacketPlayer",
     "spongepowered.common.network.MixinPacketUtil",
-    "spongepowered.common.event.tracking.MixinPhaseTracker"
+    "spongepowered.common.event.tracking.MixinPhaseTracker",
+    "world.gen.MixinChunkProviderServer"
   ],
   "client": [
     "client.renderer.tileentity.MixinTileEntityRendererDispatcher",

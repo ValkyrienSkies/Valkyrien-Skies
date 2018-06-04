@@ -16,21 +16,25 @@
 
 package valkyrienwarfare.mod.command;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.annotation.Nullable;
+
 import com.google.common.collect.Lists;
+
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.mod.multithreaded.VWThreadManager;
 import valkyrienwarfare.util.PhysicsSettings;
-
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 public class PhysSettingsCommand extends CommandBase {
 
@@ -46,6 +50,7 @@ public class PhysSettingsCommand extends CommandBase {
         COMPLETED_OPTIONS.add("doairshipmovement");
         COMPLETED_OPTIONS.add("save");
         COMPLETED_OPTIONS.add("doetheriumlifting");
+        COMPLETED_OPTIONS.add("restartcrashedphysics");
     }
 
     @Override
@@ -70,6 +75,7 @@ public class PhysSettingsCommand extends CommandBase {
             for (String command : COMPLETED_OPTIONS) {
                 sender.sendMessage(new TextComponentString(command));
             }
+            return;
         }
         String key = args[0];
         if (key.equals("maxshipsize")) {
@@ -173,6 +179,10 @@ public class PhysSettingsCommand extends CommandBase {
             ValkyrienWarfareMod.INSTANCE.saveConfig();
             sender.sendMessage(new TextComponentString("Saved phyisics settings"));
             return;
+        }else if (key.equals("restartcrashedphysics")) {
+        	List<World> crashedWorlds = VWThreadManager.restartCrashedPhysicsThreads();
+        	sender.sendMessage(new TextComponentString("Restart physics threads for " + crashedWorlds.size() + " worlds."));
+        	return;
         } else if (true || key.equals("help")) {
             sender.sendMessage(new TextComponentString("Avaliable physics Commands:"));
             for (String command : COMPLETED_OPTIONS) {

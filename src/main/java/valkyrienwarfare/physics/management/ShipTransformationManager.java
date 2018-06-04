@@ -307,8 +307,7 @@ public class ShipTransformationManager {
     }
 
     /**
-     * Returns the transformation data used for physics processing. Added @SideOnly
-     * as a check to crash the game if the client ever calls this.
+     * Returns the transformation data used for physics processing.
      *
      * @return the physics transform
      */

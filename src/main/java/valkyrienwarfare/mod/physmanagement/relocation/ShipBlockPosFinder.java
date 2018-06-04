@@ -17,10 +17,13 @@
 package valkyrienwarfare.mod.physmanagement.relocation;
 
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.world.World;
 import valkyrienwarfare.mod.BlockPhysicsRegistration;
 
 public class ShipBlockPosFinder extends SpatialDetector {
+	
+    private final MutableBlockPos mutablePos = new MutableBlockPos();
 
     public ShipBlockPosFinder(BlockPos start, World worldIn, int maximum, boolean checkCorners) {
         super(start, worldIn, maximum, checkCorners);
@@ -29,7 +32,8 @@ public class ShipBlockPosFinder extends SpatialDetector {
 
     @Override
     public boolean isValidExpansion(int x, int y, int z) {
-        return !BlockPhysicsRegistration.blocksToNotPhysicise.contains(cache.getBlockState(x, y, z).getBlock());
+    	mutablePos.setPos(x, y, z);
+        return !BlockPhysicsRegistration.blocksToNotPhysicise.contains(cache.getBlockState(mutablePos).getBlock());
     }
 
 }

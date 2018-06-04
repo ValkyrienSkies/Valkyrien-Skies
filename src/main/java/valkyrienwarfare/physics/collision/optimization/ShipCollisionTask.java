@@ -97,7 +97,7 @@ public class ShipCollisionTask implements Callable<Void> {
 
     private void processNumber(int integer) {
         SpatialDetector.setPosWithRespectTo(integer, toTask.getCenterPotentialHit(), mutablePos);
-        inWorldState = toTask.getParent().surroundingWorldChunksCache.getBlockState(mutablePos);
+        inWorldState = toTask.getParent().cachedSurroundingChunks.getBlockState(mutablePos);
 
         inWorld.X = mutablePos.getX() + .5;
         inWorld.Y = mutablePos.getY() + .5;
@@ -144,7 +144,7 @@ public class ShipCollisionTask implements Callable<Void> {
     }
 
     public void checkPosition(int x, int y, int z, int positionHash) {
-        final Chunk chunkIn = toTask.getParent().vwChunkCache.getChunkAt(x >> 4, z >> 4);
+        final Chunk chunkIn = toTask.getParent().shipChunks.getChunkAt(x >> 4, z >> 4);
         y = Math.max(0, Math.min(y, 255));
 
         ExtendedBlockStorage storage = chunkIn.storageArrays[y >> 4];

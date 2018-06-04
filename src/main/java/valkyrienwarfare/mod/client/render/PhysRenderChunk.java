@@ -122,7 +122,7 @@ public class PhysRenderChunk {
                     for (int y = yMin; y <= yMax; y++) {
                         pos.setPos(x, y, z);
 
-                        TileEntity tile = parent.toRender.vwChunkCache.getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK);
+                        TileEntity tile = parent.toRender.shipChunks.getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK);
                         if (tile != null) {
                             updatedRenderTiles.add(tile);
                         }

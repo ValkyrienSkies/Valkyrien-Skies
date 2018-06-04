@@ -105,12 +105,12 @@ public class PhysicsObject {
     public String creator;
     public int detectorID;
     // The closest Chunks to the Ship cached in here
-    public ChunkCache surroundingWorldChunksCache;
+    public ChunkCache cachedSurroundingChunks;
     // TODO: Make for re-organizing these to make Ship sizes Dynamic
     public ChunkSet ownedChunks;
     // Used for faster memory access to the Chunks this object 'owns'
     public Chunk[][] claimedChunks;
-    public VWChunkCache vwChunkCache;
+    public VWChunkCache shipChunks;
     // Some badly written mods use these Maps to determine who to send packets to,
     // so we need to manually fill them with nearby players
     public PlayerChunkMapEntry[][] claimedChunksEntries;
@@ -297,7 +297,7 @@ public class PhysicsObject {
 
         replaceOuterChunksWithAir();
 
-        vwChunkCache = new VWChunkCache(getWorldObj(), claimedChunks);
+        shipChunks = new VWChunkCache(getWorldObj(), claimedChunks);
 
         refrenceBlockPos = getRegionCenter();
         centerCoord = new Vector(refrenceBlockPos.getX(), refrenceBlockPos.getY(), refrenceBlockPos.getZ());
@@ -384,7 +384,7 @@ public class PhysicsObject {
         // Prevents weird shit from spawning at the edges of a ship
         replaceOuterChunksWithAir();
 
-        vwChunkCache = new VWChunkCache(getWorldObj(), claimedChunks);
+        shipChunks = new VWChunkCache(getWorldObj(), claimedChunks);
         int minChunkX = claimedChunks[0][0].x;
         int minChunkZ = claimedChunks[0][0].z;
 
@@ -732,9 +732,10 @@ public class PhysicsObject {
     }
 
     public void updateChunkCache() {
-        BlockPos min = new BlockPos(collisionBB.minX, Math.max(collisionBB.minY, 0), collisionBB.minZ);
-        BlockPos max = new BlockPos(collisionBB.maxX, Math.min(collisionBB.maxY, 255), collisionBB.maxZ);
-        surroundingWorldChunksCache = new ChunkCache(getWorldObj(), min, max, 0);
+    	AxisAlignedBB cacheBB = this.getCollisionBoundingBox();
+        BlockPos min = new BlockPos(cacheBB.minX, Math.max(cacheBB.minY, 0), cacheBB.minZ);
+        BlockPos max = new BlockPos(cacheBB.maxX, Math.min(cacheBB.maxY, 255), cacheBB.maxZ);
+        cachedSurroundingChunks = new ChunkCache(getWorldObj(), min, max, 0);
     }
 
     public void loadClaimedChunks() {
@@ -764,7 +765,7 @@ public class PhysicsObject {
                 claimedChunks[x - ownedChunks.getMinX()][z - ownedChunks.getMinZ()] = chunk;
             }
         }
-        vwChunkCache = new VWChunkCache(getWorldObj(), claimedChunks);
+        shipChunks = new VWChunkCache(getWorldObj(), claimedChunks);
         refrenceBlockPos = getRegionCenter();
         coordTransform = new ShipTransformationManager(this);
         if (!getWorldObj().isRemote) {
@@ -1114,6 +1115,6 @@ public class PhysicsObject {
 	}
 	
 	public boolean areShipChunksFullyLoaded() {
-		return vwChunkCache != null;
+		return shipChunks != null;
 	}
 }

@@ -217,7 +217,7 @@ public class WorldPhysicsCollider {
 				for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
 					for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
 						if (parent.ownsChunk(chunkX, chunkZ)) {
-							final Chunk chunkIn = parent.vwChunkCache.getChunkAt(chunkX, chunkZ);
+							final Chunk chunkIn = parent.shipChunks.getChunkAt(chunkX, chunkZ);
 
 							int minXToCheck = chunkX << 4;
 							int maxXToCheck = minXToCheck + 15;
@@ -251,7 +251,7 @@ public class WorldPhysicsCollider {
 													localCollisionPos.setPos(x, y, z);
 
 													boolean brokeAWorldBlock = handleLikelyCollision(mutablePos,
-															localCollisionPos, parent.surroundingWorldChunksCache
+															localCollisionPos, parent.cachedSurroundingChunks
 																	.getBlockState(mutablePos),
 															state);
 
@@ -412,7 +412,8 @@ public class WorldPhysicsCollider {
 		final AxisAlignedBB collisionBB = currentPhysicsTransform.getShipBoundingBox().grow(AABB_EXPANSION).expand(
 				calculator.linearMomentum.X * calculator.getInvMass() * calculator.getPhysicsTimeDeltaPerPhysTick() * 5,
 				calculator.linearMomentum.Y * calculator.getInvMass() * calculator.getPhysicsTimeDeltaPerPhysTick() * 5,
-				calculator.linearMomentum.Z * calculator.getInvMass() * calculator.getPhysicsTimeDeltaPerPhysTick() * 5);
+				calculator.linearMomentum.Z * calculator.getInvMass() * calculator.getPhysicsTimeDeltaPerPhysTick()
+						* 5);
 		final AxisAlignedBB shipBB = currentPhysicsTransform.getShipBoundingBox();
 		ticksSinceCacheUpdate = 0D;
 		// This is being used to occasionally offset the collision cache update, in the
@@ -436,7 +437,7 @@ public class WorldPhysicsCollider {
 		centerPotentialHit = new BlockPos((min.getX() + max.getX()) / 2D, (min.getY() + max.getY()) / 2D,
 				(min.getZ() + max.getZ()) / 2D);
 
-		ChunkCache cache = parent.surroundingWorldChunksCache;
+		ChunkCache cache = parent.cachedSurroundingChunks;
 
 		int chunkMinX = min.getX() >> 4;
 		int chunkMaxX = (max.getX() >> 4) + 1;
@@ -467,8 +468,11 @@ public class WorldPhysicsCollider {
 				updateCollisionCacheSequential(cache, i.getFirst(), i.getSecond(), minX, minY, minZ, maxX, maxY, maxZ,
 						shipBB);
 			};
-
-			tasks.parallelStream().forEach(consumer);
+			try {
+				tasks.parallelStream().forEach(consumer);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		} else {
 			for (int chunkX = chunkMinX; chunkX < chunkMaxX; chunkX++) {
 				for (int chunkZ = chunkMinZ; chunkZ < chunkMaxZ; chunkZ++) {
@@ -483,9 +487,8 @@ public class WorldPhysicsCollider {
 		int arrayChunkX = chunkX - cache.chunkX;
 		int arrayChunkZ = chunkZ - cache.chunkZ;
 
-		if (!(arrayChunkX < 0 || arrayChunkZ < 0 || arrayChunkX > cache.chunkArray.length - 1
-				|| arrayChunkZ > cache.chunkArray[0].length - 1)
-				&& cache.chunkArray[arrayChunkX][arrayChunkZ] != null) {
+		if (cache.chunkArray[arrayChunkX][arrayChunkZ] != null && !(arrayChunkX < 0 || arrayChunkZ < 0 || arrayChunkX > cache.chunkArray.length - 1
+				|| arrayChunkZ > cache.chunkArray[0].length - 1)) {
 
 			Vector temp1 = new Vector();
 			Vector temp2 = new Vector();
@@ -720,10 +723,10 @@ public class WorldPhysicsCollider {
 
 				if (parent.ownsChunk(minX >> 4, minZ >> 4) && parent.ownsChunk(maxX >> 4, maxZ >> 4)) {
 
-					Chunk chunkIn00 = parent.vwChunkCache.getChunkAt(minX >> 4, minZ >> 4);
-					Chunk chunkIn01 = parent.vwChunkCache.getChunkAt(minX >> 4, maxZ >> 4);
-					Chunk chunkIn10 = parent.vwChunkCache.getChunkAt(maxX >> 4, minZ >> 4);
-					Chunk chunkIn11 = parent.vwChunkCache.getChunkAt(maxX >> 4, maxZ >> 4);
+					Chunk chunkIn00 = parent.shipChunks.getChunkAt(minX >> 4, minZ >> 4);
+					Chunk chunkIn01 = parent.shipChunks.getChunkAt(minX >> 4, maxZ >> 4);
+					Chunk chunkIn10 = parent.shipChunks.getChunkAt(maxX >> 4, minZ >> 4);
+					Chunk chunkIn11 = parent.shipChunks.getChunkAt(maxX >> 4, maxZ >> 4);
 
 					breakThisLoop: for (int localX = minX; localX < maxX; localX++) {
 						for (int localZ = minZ; localZ < maxZ; localZ++) {
@@ -742,23 +745,16 @@ public class WorldPhysicsCollider {
 								}
 							}
 							for (int localY = minY; localY < maxY; localY++) {
-								boolean result = tooTiredToName(theChunk, localX, localY, localZ, x, y, z);
+								boolean result = checkForCollisionFast(theChunk, localX, localY, localZ, x, y, z);
 								if (result) {
 									break breakThisLoop;
 								}
-								
+
 								/*
-								if (false)
-									// TODO: This code isn't thread safe.
-									try {
-										boolean result = tooTiredToName(localX, localY, localZ, x, y, z);
-										if (result) {
-											break breakThisLoop;
-										}
-									} catch (Exception e) {
-										e.printStackTrace();
-									}
-									*/
+								 * if (false) // TODO: This code isn't thread safe. try { boolean result =
+								 * tooTiredToName(localX, localY, localZ, x, y, z); if (result) { break
+								 * breakThisLoop; } } catch (Exception e) { e.printStackTrace(); }
+								 */
 							}
 						}
 					}
@@ -766,15 +762,20 @@ public class WorldPhysicsCollider {
 			}
 		}
 	}
-	
-	private boolean tooTiredToName(final Chunk chunk, final int localX, final int localY, final int localZ, final int x, final int y,
-			final int z) {
+
+	private boolean checkForCollisionFast(final Chunk chunk, final int localX, final int localY, final int localZ, final int x,
+			final int y, final int z) {
 		if (chunk.storageArrays[localY >> 4] != null) {
 			IBitOctreeProvider provider = (IBitOctreeProvider) ((Object) chunk.storageArrays[localY >> 4].getData());
 			IBitOctree octreeInLocal = provider.getBitOctree();
 			if (octreeInLocal.get(localX & 15, localY & 15, localZ & 15)) {
 				int hash = SpatialDetector.getHashWithRespectTo(x, y, z, centerPotentialHit);
-				cachedPotentialHits.add(hash);
+				// Sometimes we end up adding to the hits array in multiple threads at once, crashing the physics.
+				try {
+					cachedPotentialHits.add(hash);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 				return true;
 				// break outermostloop;
 			}
@@ -786,7 +787,7 @@ public class WorldPhysicsCollider {
 	private boolean tooTiredToName(final int localX, final int localY, final int localZ, final int x, final int y,
 			final int z) {
 		// if (false) {
-		Chunk chunkIn = parent.vwChunkCache.getChunkAt(localX >> 4, localZ >> 4);
+		Chunk chunkIn = parent.shipChunks.getChunkAt(localX >> 4, localZ >> 4);
 		if (chunkIn.storageArrays[localY >> 4] != null) {
 			IBitOctreeProvider provider = (IBitOctreeProvider) ((Object) chunkIn.storageArrays[localY >> 4].getData());
 			IBitOctree octreeInLocal = provider.getBitOctree();
@@ -851,7 +852,7 @@ public class WorldPhysicsCollider {
 				for (int localZ = minZ; localZ < maxZ; localZ++) {
 					for (int localY = minY; localY < maxY; localY++) {
 						if (parent.ownsChunk(localX >> 4, localZ >> 4)) {
-							Chunk chunkIn = parent.vwChunkCache.getChunkAt(localX >> 4, localZ >> 4);
+							Chunk chunkIn = parent.shipChunks.getChunkAt(localX >> 4, localZ >> 4);
 							if (localY >> 4 < 16 && chunkIn.storageArrays[localY >> 4] != null) {
 								IBitOctreeProvider provider = IBitOctreeProvider.class
 										.cast(chunkIn.storageArrays[localY >> 4].getData());

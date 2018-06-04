@@ -70,18 +70,18 @@ public class WorldPhysObjectManager {
             WorldServer worldServer = (WorldServer) worldObj;
             for (PhysicsWrapperEntity wrapper : list) {
                 if (!wrapper.isDead) {
-                    if (wrapper.getPhysicsObject().surroundingWorldChunksCache != null) {
+                    if (wrapper.getPhysicsObject().cachedSurroundingChunks != null) {
                         int chunkCacheX = MathHelper.floor(wrapper.posX / 16D)
-                                - wrapper.getPhysicsObject().surroundingWorldChunksCache.chunkX;
+                                - wrapper.getPhysicsObject().cachedSurroundingChunks.chunkX;
                         int chunkCacheZ = MathHelper.floor(wrapper.posZ / 16D)
-                                - wrapper.getPhysicsObject().surroundingWorldChunksCache.chunkZ;
+                                - wrapper.getPhysicsObject().cachedSurroundingChunks.chunkZ;
 
                         chunkCacheX = Math.max(0, Math.min(chunkCacheX,
-                                wrapper.getPhysicsObject().surroundingWorldChunksCache.chunkArray.length - 1));
+                                wrapper.getPhysicsObject().cachedSurroundingChunks.chunkArray.length - 1));
                         chunkCacheZ = Math.max(0, Math.min(chunkCacheZ,
-                                wrapper.getPhysicsObject().surroundingWorldChunksCache.chunkArray[0].length - 1));
+                                wrapper.getPhysicsObject().cachedSurroundingChunks.chunkArray[0].length - 1));
 
-                        Chunk chunk = wrapper.getPhysicsObject().surroundingWorldChunksCache.chunkArray[chunkCacheX][chunkCacheZ];
+                        Chunk chunk = wrapper.getPhysicsObject().cachedSurroundingChunks.chunkArray[chunkCacheX][chunkCacheZ];
 
                         // Chunk chunk =
                         // wrapper.wrapping.surroundingWorldChunksCache.chunkArray[(wrapper.wrapping.surroundingWorldChunksCache.chunkArray.length)/2][(wrapper.wrapping.surroundingWorldChunksCache.chunkArray[0].length)/2];

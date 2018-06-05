@@ -230,7 +230,7 @@ public class PhysObjectRenderManager {
                 .createRotationQuaternion(TransformType.LOCAL_TO_GLOBAL);
         Quaternion nextQuat = parent.coordTransform.getCurrentTickTransform()
                 .createRotationQuaternion(TransformType.LOCAL_TO_GLOBAL);
-        return Quaternion.getBetweenQuat(oneTickBefore, nextQuat, partialTick);
+        return Quaternion.slerpInterpolate(oneTickBefore, nextQuat, partialTick);
     }
 
     public void inverseTransform(double partialTicks) {

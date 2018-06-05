@@ -16,6 +16,8 @@
 
 package valkyrienwarfare.math;
 
+import valkyrienwarfare.api.RotationMatrices;
+
 /**
  * Used for rendering interpolation and applying angular velocity to the physics controller
  *
@@ -23,7 +25,7 @@ package valkyrienwarfare.math;
  */
 public class Quaternion {
 
-    public double x, y, z, w;
+    private double x, y, z, w;
 
     public Quaternion(double xx, double yy, double zz, double ww) {
         x = xx;
@@ -47,7 +49,7 @@ public class Quaternion {
         return q;
     }
 
-    public static Quaternion getBetweenQuat(Quaternion old, Quaternion newOne, double timeStep) {
+    public static Quaternion slerpInterpolate(Quaternion old, Quaternion newOne, double timeStep) {
         double dotProduct = dotProduct(old, newOne);
         boolean makeNegative = dotProduct < 0;
         if (makeNegative) {
@@ -94,24 +96,16 @@ public class Quaternion {
         return q;
     }
 
+    /**
+     * Creates a new Quaternion object for the given rotation. 
+     * @param pitch in degrees
+     * @param yaw in degrees
+     * @param roll in degrees
+     * @return
+     */
     public static Quaternion fromEuler(double pitch, double yaw, double roll) {
-        double heading = Math.toRadians(pitch);
-        double attitude = Math.toRadians(yaw);
-        double bank = Math.toRadians(roll);
-        double c1 = Math.cos(heading / 2);
-        double s1 = Math.sin(heading / 2);
-        double c2 = Math.cos(attitude / 2);
-        double s2 = Math.sin(attitude / 2);
-        double c3 = Math.cos(bank / 2);
-        double s3 = Math.sin(bank / 2);
-        double c1c2 = c1 * c2;
-        double s1s2 = s1 * s2;
-        Quaternion quat = new Quaternion();
-        quat.x = s1 * c2 * c3 + c1 * s2 * s3;
-        quat.y = c1 * s2 * c3 - s1 * c2 * s3;
-        quat.z = c1c2 * s3 + s1s2 * c3;
-        quat.w = c1c2 * c3 - s1s2 * s3;
-        return quat;
+    	double[] rotationMatrix = RotationMatrices.getRotationMatrix(pitch, yaw, roll);
+        return QuaternionFromMatrix(rotationMatrix);
     }
 
     public static double dotProduct(Quaternion first, Quaternion second) {

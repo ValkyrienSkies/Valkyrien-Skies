@@ -703,15 +703,15 @@ public class PhysicsObject {
         }
     }
 
+	/**
+	 * Updates the position and orientation of the client according to the data sent
+	 * from the server.
+	 */
     public void onPostTickClient() {
-        getWrapperEntity().lastTickPosX = getWrapperEntity().posX;
-        getWrapperEntity().lastTickPosY = getWrapperEntity().posY;
-        getWrapperEntity().lastTickPosZ = getWrapperEntity().posZ;
-
         ShipTransformationPacketHolder toUse = coordTransform.serverBuffer.pollForClientTransform();
-
         if (toUse != null) {
-            toUse.applyToPhysObject(this);
+            // toUse.applyToPhysObject(this);
+        	toUse.applySmoothLerp(this, .7D);
         }
 
         coordTransform.updatePrevTickTransform();

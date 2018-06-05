@@ -16,7 +16,6 @@
 
 package valkyrienwarfare.physics;
 
-
 import net.minecraft.util.math.AxisAlignedBB;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.math.Quaternion;
@@ -56,34 +55,35 @@ public class ShipTransformationPacketHolder {
 		// System.out.println(wrapperMessage.shipBB);
 		creationTimeNano = System.nanoTime();
 	}
-	
+
 	public ShipTransformationPacketHolder(ShipTransformationPacketHolder[] transformations, double[] weights) {
 		double x = 0;
 		double y = 0;
 		double z = 0;
-		
+
 		for (int i = 0; i < transformations.length; i++) {
-			// Vector centerOfRotationDif = transformations[0].centerOfRotation.getSubtraction(transformations[i].centerOfRotation);
+			// Vector centerOfRotationDif =
+			// transformations[0].centerOfRotation.getSubtraction(transformations[i].centerOfRotation);
 			x += weights[i] * transformations[i].posX;
 			y += weights[i] * transformations[i].posY;
 			z += weights[i] * transformations[i].posZ;
 		}
-		
+
 		this.posX = x; // transformations[0].posX;
 		this.posY = y; // transformations[0].posY;
 		this.posZ = z; // transformations[0].posZ;
-		
-//		System.out.println(Arrays.toString(weights));
-		
+
+		// System.out.println(Arrays.toString(weights));
+
 		for (int i = 0; i < transformations.length; i++) {
-			
-			//quaternions[i] = 
+
+			// quaternions[i] =
 		}
-		
+
 		this.pitch = transformations[0].pitch;
 		this.yaw = transformations[0].yaw;
 		this.roll = transformations[0].roll;
-		
+
 		this.centerOfRotation = transformations[0].centerOfRotation;
 		this.relativeTick = -1;
 		this.shipBB = transformations[0].shipBB;
@@ -99,7 +99,7 @@ public class ShipTransformationPacketHolder {
 		physObj.getWrapperEntity().lastTickPosX -= CMDif.X;
 		physObj.getWrapperEntity().lastTickPosY -= CMDif.Y;
 		physObj.getWrapperEntity().lastTickPosZ -= CMDif.Z;
-		
+
 		physObj.getWrapperEntity().posX = posX;
 		physObj.getWrapperEntity().posY = posY;
 		physObj.getWrapperEntity().posZ = posZ;
@@ -107,6 +107,48 @@ public class ShipTransformationPacketHolder {
 		physObj.getWrapperEntity().setPitch(pitch);
 		physObj.getWrapperEntity().setYaw(yaw);
 		physObj.getWrapperEntity().setRoll(roll);
+
+		physObj.centerCoord = centerOfRotation;
+
+		physObj.setCollisionBoundingBox(shipBB);
+	}
+
+	/**
+	 * Apply this physics transform similar to how a vanilla boat would. Not the
+	 * best solution, but its simple and robust, and works well enough for now.
+	 * 
+	 * @param physObj
+	 *            The PhysicsObject to apply this transform to.
+	 * @param lerpFactor
+	 *            A number between 0 and 1, where 0 applies none of the transform
+	 *            and 1 applies all of it. A number around .7 or .8 is ideal here.
+	 */
+	public void applySmoothLerp(PhysicsObject physObj, double lerpFactor) {
+		Vector CMDif = centerOfRotation.getSubtraction(physObj.centerCoord);
+		physObj.coordTransform.getCurrentTickTransform().rotate(CMDif, TransformType.LOCAL_TO_GLOBAL);
+		// CMDif.multiply(lerpFactor);
+
+		physObj.getWrapperEntity().posX -= CMDif.X;
+		physObj.getWrapperEntity().posY -= CMDif.Y;
+		physObj.getWrapperEntity().posZ -= CMDif.Z;
+
+		physObj.getWrapperEntity().lastTickPosX = physObj.getWrapperEntity().posX;
+		physObj.getWrapperEntity().lastTickPosY = physObj.getWrapperEntity().posY;
+		physObj.getWrapperEntity().lastTickPosZ = physObj.getWrapperEntity().posZ;
+
+		physObj.getWrapperEntity().posX += (posX - physObj.getWrapperEntity().posX) * lerpFactor;
+		physObj.getWrapperEntity().posY += (posY - physObj.getWrapperEntity().posY) * lerpFactor;
+		physObj.getWrapperEntity().posZ += (posZ - physObj.getWrapperEntity().posZ) * lerpFactor;
+
+		Quaternion prevRotation = physObj.coordTransform.getCurrentTickTransform()
+				.createRotationQuaternion(TransformType.LOCAL_TO_GLOBAL);
+		Quaternion newRotation = Quaternion.fromEuler(pitch, yaw, roll);
+		Quaternion lerpedRotation = Quaternion.slerpInterpolate(prevRotation, newRotation, lerpFactor);
+		double[] lerpedRotationAngles = lerpedRotation.toRadians();
+
+		physObj.getWrapperEntity().setPitch(Math.toDegrees(lerpedRotationAngles[0]));
+		physObj.getWrapperEntity().setYaw(Math.toDegrees(lerpedRotationAngles[1]));
+		physObj.getWrapperEntity().setRoll(Math.toDegrees(lerpedRotationAngles[2]));
 
 		physObj.centerCoord = centerOfRotation;
 

@@ -58,6 +58,8 @@ public class ShipTransformationBuffer {
     
     // Doesn't really do anything yet.
     private ShipTransformationPacketHolder generateSmoothTransform() {
+    	return transformations.get(0);
+    	/*
     	double[] weights = new double[TRANSFORMS_SMOOTHED];
     	ShipTransformationPacketHolder[] transforms = new ShipTransformationPacketHolder[TRANSFORMS_SMOOTHED];
     	for (int i = 0; i < TRANSFORMS_SMOOTHED; i++) {
@@ -65,6 +67,7 @@ public class ShipTransformationBuffer {
     		transforms[i] = transformations.get(i);
     	}
     	return transforms[0]; // new ShipTransformationPacketHolder(transforms, weights);
+    	*/
     }
     
     private class BezierWeightGenerator {

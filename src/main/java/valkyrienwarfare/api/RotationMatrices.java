@@ -57,6 +57,17 @@ public class RotationMatrices {
         return input;
     }
 
+	/**
+	 * Returns a rotation matrix with the described rotation and no translation.
+	 * 
+	 * @param pitch
+	 *            in degrees
+	 * @param yaw
+	 *            in degrees
+	 * @param roll
+	 *            in degrees
+	 * @return
+	 */
     public static double[] getRotationMatrix(double pitch, double yaw, double roll) {
         double[] input = RotationMatrices.getRotationMatrix(1.0D, 0.0D, 0.0D, Math.toRadians(pitch));
         input = RotationMatrices.getMatrixProduct(input, RotationMatrices.getRotationMatrix(0.0D, 1.0D, 0.0D, Math.toRadians(yaw)));

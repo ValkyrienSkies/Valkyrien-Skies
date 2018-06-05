@@ -180,12 +180,14 @@ task signJar(type: SignJar, dependsOn: shadowJar) {
         project.hasProperty('keyStore')
     }
 
-    keyStore = project.keyStore // This needs to be a path to the keystore file
-    alias = project.keyStoreAlias
-    storePass = project.keyStorePass
-    keyPass = project.keyStoreKeyPass
-    inputFile = shadowJar.archivePath
-    outputFile = shadowJar.archivePath
+	if (project.hasProperty('keyStore')) {
+		keyStore = project.keyStore // This needs to be a path to the keystore file
+		alias = project.keyStoreAlias
+		storePass = project.keyStorePass
+		keyPass = project.keyStoreKeyPass
+		inputFile = shadowJar.archivePath
+		outputFile = shadowJar.archivePath
+	}
 }
 
 build.dependsOn signJar

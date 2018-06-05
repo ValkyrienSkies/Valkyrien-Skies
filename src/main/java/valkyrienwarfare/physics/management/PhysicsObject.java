@@ -119,7 +119,6 @@ public class PhysicsObject {
     private AxisAlignedBB collisionBB;
     private TIntObjectMap<Vector> entityLocalPositions;
     private ShipType shipType;
-    private int lastMessageTick = -1;
 
     public PhysicsObject(PhysicsWrapperEntity host) {
         wrapper = host;
@@ -712,21 +711,11 @@ public class PhysicsObject {
         ShipTransformationPacketHolder toUse = coordTransform.serverBuffer.pollForClientTransform();
 
         if (toUse != null) {
-            Vector CMDif = toUse.centerOfRotation.getSubtraction(centerCoord);
-            lastMessageTick = toUse.relativeTick;
-            coordTransform.getCurrentTickTransform().rotate(CMDif, TransformType.LOCAL_TO_GLOBAL);
-            // RotationMatrices.doRotationOnly(coordTransform.lToWTransform, CMDif);
-            getWrapperEntity().lastTickPosX -= CMDif.X;
-            getWrapperEntity().lastTickPosY -= CMDif.Y;
-            getWrapperEntity().lastTickPosZ -= CMDif.Z;
             toUse.applyToPhysObject(this);
         }
 
         coordTransform.updatePrevTickTransform();
         coordTransform.updateAllTransforms(getCollisionBoundingBox().equals(Entity.ZERO_AABB), true);
-        if (getCollisionBoundingBox().equals(Entity.ZERO_AABB)) {
-            // System.out.println("Client had to do its own AABB processing, this indicates a problem server side.");
-        }
     }
 
     public void updateChunkCache() {

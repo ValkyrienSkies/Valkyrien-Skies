@@ -16,64 +16,100 @@
 
 package valkyrienwarfare.physics;
 
+
 import net.minecraft.util.math.AxisAlignedBB;
 import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.math.Quaternion;
 import valkyrienwarfare.mod.network.PhysWrapperPositionMessage;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
+/**
+ * This class holds the information from a received PositionMessage, and has
+ * code to apply it onto a PhysicsObject.
+ * 
+ * @author thebest108
+ *
+ */
 public class ShipTransformationPacketHolder {
 
-    public final int relativeTick;
-    public final double posX, posY, posZ;
-    public final double pitch, yaw, roll;
-    public final Vector centerOfRotation;
-    private AxisAlignedBB shipBB;
+	private final int relativeTick;
+	private final double posX, posY, posZ;
+	private final double pitch, yaw, roll;
+	private final Vector centerOfRotation;
+	private final AxisAlignedBB shipBB;
+	// The time stamp for this objects creation.
+	private final long creationTimeNano;
 
-    public ShipTransformationPacketHolder(PhysWrapperPositionMessage wrapperMessage) {
-        posX = wrapperMessage.getPosX();
-        posY = wrapperMessage.getPosY();
-        posZ = wrapperMessage.getPosZ();
+	public ShipTransformationPacketHolder(PhysWrapperPositionMessage wrapperMessage) {
+		posX = wrapperMessage.getPosX();
+		posY = wrapperMessage.getPosY();
+		posZ = wrapperMessage.getPosZ();
 
-        pitch = wrapperMessage.getPitch();
-        yaw = wrapperMessage.getYaw();
-        roll = wrapperMessage.getRoll();
+		pitch = wrapperMessage.getPitch();
+		yaw = wrapperMessage.getYaw();
+		roll = wrapperMessage.getRoll();
 
-        centerOfRotation = wrapperMessage.getCenterOfMass();
+		centerOfRotation = wrapperMessage.getCenterOfMass();
 
-        relativeTick = wrapperMessage.getRelativeTick();
-        shipBB = wrapperMessage.getShipBB();
-        // System.out.println(wrapperMessage.shipBB);
-    }
+		relativeTick = wrapperMessage.getRelativeTick();
+		shipBB = wrapperMessage.getShipBB();
+		// System.out.println(wrapperMessage.shipBB);
+		creationTimeNano = System.nanoTime();
+	}
+	
+	public ShipTransformationPacketHolder(ShipTransformationPacketHolder[] transformations, double[] weights) {
+		double x = 0;
+		double y = 0;
+		double z = 0;
+		
+		for (int i = 0; i < transformations.length; i++) {
+			// Vector centerOfRotationDif = transformations[0].centerOfRotation.getSubtraction(transformations[i].centerOfRotation);
+			x += weights[i] * transformations[i].posX;
+			y += weights[i] * transformations[i].posY;
+			z += weights[i] * transformations[i].posZ;
+		}
+		
+		this.posX = x; // transformations[0].posX;
+		this.posY = y; // transformations[0].posY;
+		this.posZ = z; // transformations[0].posZ;
+		
+//		System.out.println(Arrays.toString(weights));
+		
+		for (int i = 0; i < transformations.length; i++) {
+			
+			//quaternions[i] = 
+		}
+		
+		this.pitch = transformations[0].pitch;
+		this.yaw = transformations[0].yaw;
+		this.roll = transformations[0].roll;
+		
+		this.centerOfRotation = transformations[0].centerOfRotation;
+		this.relativeTick = -1;
+		this.shipBB = transformations[0].shipBB;
+		creationTimeNano = -1;
+	}
 
-    public ShipTransformationPacketHolder(ShipTransformationPacketHolder before, ShipTransformationPacketHolder after) {
-        posX = (before.posX + after.posX) / 2D;
-        posY = (before.posY + after.posY) / 2D;
-        posZ = (before.posZ + after.posZ) / 2D;
+	// Apply all the position/rotation variables accordingly onto the passed
+	// physObject
+	public void applyToPhysObject(PhysicsObject physObj) {
+		Vector CMDif = centerOfRotation.getSubtraction(physObj.centerCoord);
+		physObj.coordTransform.getCurrentTickTransform().rotate(CMDif, TransformType.LOCAL_TO_GLOBAL);
 
-        pitch = (before.pitch + after.pitch) / 2D;
-        yaw = (before.yaw + after.yaw) / 2D;
-        roll = (before.roll + after.roll) / 2D;
+		physObj.getWrapperEntity().lastTickPosX -= CMDif.X;
+		physObj.getWrapperEntity().lastTickPosY -= CMDif.Y;
+		physObj.getWrapperEntity().lastTickPosZ -= CMDif.Z;
+		
+		physObj.getWrapperEntity().posX = posX;
+		physObj.getWrapperEntity().posY = posY;
+		physObj.getWrapperEntity().posZ = posZ;
 
-        centerOfRotation = before.centerOfRotation.getAddition(after.centerOfRotation).getProduct(.5D);
+		physObj.getWrapperEntity().setPitch(pitch);
+		physObj.getWrapperEntity().setYaw(yaw);
+		physObj.getWrapperEntity().setRoll(roll);
 
-        relativeTick = before.relativeTick;
-        // TODO: Make this proper
-        shipBB = before.shipBB;
-    }
+		physObj.centerCoord = centerOfRotation;
 
-    // Apply all the position/rotation variables accordingly onto the passed
-    // physObject
-    public void applyToPhysObject(PhysicsObject physObj) {
-        physObj.getWrapperEntity().posX = posX;
-        physObj.getWrapperEntity().posY = posY;
-        physObj.getWrapperEntity().posZ = posZ;
-
-        physObj.getWrapperEntity().setPitch(pitch);
-        physObj.getWrapperEntity().setYaw(yaw);
-        physObj.getWrapperEntity().setRoll(roll);
-
-        physObj.centerCoord = centerOfRotation;
-
-        physObj.setCollisionBoundingBox(shipBB);
-    }
+		physObj.setCollisionBoundingBox(shipBB);
+	}
 }

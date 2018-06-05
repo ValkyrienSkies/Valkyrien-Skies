@@ -1,0 +1,29 @@
+#ITEMS
+item.systemlinker.name=Системный Связыватель
+item.airshipStealer.name=Вор Дирижаблей
+item.relaywire.name=Провод
+
+#Blocks
+tile.shippilotschair.name=Кресло Пилота
+tile.shippassengerchair.name=Кресло Пассажира
+tile.dopedetherium.name=Легированный Эфир
+tile.balloonburner.name=Горелка Воздушного Шара
+tile.basichovercraftcontroller.name=Базовый Контроллер Полета
+tile.thrustrelay.name=Ретранслятор Тяги
+tile.thrustmodulator.name=Модулятор Тяги
+tile.shiphelm.name=Штурвал
+tile.shiptelegraph.name=Телеграф
+
+#ENGINES
+tile.basicengine.name=Базовый Двигатель
+tile.advancedengine.name=Улучшенный Двигатель
+tile.eliteengine.name=Элитный Двигатель
+tile.ultimateengine.name=Невероятный Двигатель
+tile.redstoneengine.name=Двигатель На Красной Пыли
+
+#ETHER Compressors
+tile.antigravengine.name=Базовый Компрессор Эфира
+tile.advancedethercompressor.name=Улучшенный Компрессор Эфира
+tile.eliteethercompressor.name=Элитный Компрессор Эфира
+tile.ultimateethercompressor.name=Невероятный Компрессор Эфира
+tile.creativeethercompressor.name=Креативный Компрессор Эфира

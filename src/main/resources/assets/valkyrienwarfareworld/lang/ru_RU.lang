@@ -1,0 +1,8 @@
+#ITEMS
+item.etheriumcrystal.name=Кристалл Эфира
+item.explosivearrow.name=Разрывная Стрела
+
+#BLOCKS
+tile.etheriumore.name=Эфирная Руда
+tile.skydungeon_controller.name=Контроллер Небесной Крепости
+tile.quartz_fence.name=Кварцевый Забор

@@ -78,13 +78,7 @@ public class TileEntityPilotsChair extends ImplTileEntityPilotable {
 
         Vector playerDirection = new Vector(1, 0, 0);
 
-        Vector rightDirection = new Vector(0, 0, 1);
-
-        Vector leftDirection = new Vector(0, 0, -1);
-
         RotationMatrices.applyTransform(pilotRotationMatrix, playerDirection);
-        RotationMatrices.applyTransform(pilotRotationMatrix, rightDirection);
-        RotationMatrices.applyTransform(pilotRotationMatrix, leftDirection);
 
         Vector upDirection = new Vector(0, 1, 0);
 
@@ -106,70 +100,32 @@ public class TileEntityPilotsChair extends ImplTileEntityPilotable {
 
         controlledShip.coordTransform.getCurrentTickTransform().rotate(idealLinearVelocity, TransformType.LOCAL_TO_GLOBAL);
         controlledShip.coordTransform.getCurrentTickTransform().rotate(shipUp, TransformType.LOCAL_TO_GLOBAL);
-//        RotationMatrices.doRotationOnly(controlledShip.coordTransform.lToWTransform, idealLinearVelocity);
-//        RotationMatrices.doRotationOnly(controlledShip.coordTransform.lToWTransform, shipUp);
 
-        if (message.airshipUp_KeyDown) {
-            idealLinearVelocity.add(upDirection);
-        }
-        if (message.airshipDown_KeyDown) {
-            idealLinearVelocity.add(downDirection);
-        }
+		if (message.airshipUp_KeyDown) {
+			idealLinearVelocity.add(upDirection);
+		}
+		if (message.airshipDown_KeyDown) {
+			idealLinearVelocity.add(downDirection);
+		}
 
+		if (message.airshipRight_KeyDown) {
+			idealAngularDirection.subtract(shipUp);
+		}
+		if (message.airshipLeft_KeyDown) {
+			idealAngularDirection.add(shipUp);
+		}
+		idealAngularDirection.multiply(2);
+		// The vector that points in the direction of the normal of the plane that
+		// contains shipUp and shipUpPos. This is our axis of rotation.
+		Vector shipUpRotationVector = shipUp.cross(shipUpPos);
+		// This isnt quite right, but it handles the cases quite well.
+		double shipUpTheta = shipUp.angleBetween(shipUpPos) + Math.PI / 2;
+		shipUpRotationVector.multiply(shipUpTheta);
 
-        if (message.airshipRight_KeyDown) {
-            idealAngularDirection.add(rightDirection);
-        }
-        if (message.airshipLeft_KeyDown) {
-            idealAngularDirection.add(leftDirection);
-        }
-
-        //Upside down if you want it
-//		Vector shipUpOffset = shipUpPos.getSubtraction(shipUp);
-        Vector shipUpOffset = shipUp.getSubtraction(shipUpPos);
-
-        double mass = controlledShip.physicsProcessor.getMass();
-
-//		idealAngularDirection.multiply(mass/2.5D);
-        idealLinearVelocity.multiply(mass / 5D);
-//		shipUpOffset.multiply(mass/2.5D);
-
-
-        idealAngularDirection.multiply(1D / 6D);
-        shipUpOffset.multiply(1D / 3D);
-
-        Vector velocityCompenstationLinear = controlledShip.physicsProcessor.linearMomentum;
-
-        Vector velocityCompensationAngular = controlledShip.physicsProcessor.angularVelocity.cross(playerDirection);
-
-        Vector velocityCompensationAlignment = controlledShip.physicsProcessor.angularVelocity.cross(shipUpPos);
-
-        velocityCompensationAlignment.multiply(5D * controlledShip.physicsProcessor.getPhysicsTimeDeltaPerPhysTick());
-        velocityCompensationAngular.multiply(2D * controlledShip.physicsProcessor.getPhysicsTimeDeltaPerPhysTick());
-
-        shipUpOffset.subtract(velocityCompensationAlignment);
-        velocityCompensationAngular.subtract(velocityCompensationAngular);
-
-        RotationMatrices.applyTransform3by3(controlledShip.physicsProcessor.getPhysMOITensor(), idealAngularDirection);
-        RotationMatrices.applyTransform3by3(controlledShip.physicsProcessor.getPhysMOITensor(), shipUpOffset);
-
-
-        if (message.airshipSprinting) {
-            idealLinearVelocity.multiply(2D);
-        }
-
-        idealLinearVelocity.subtract(idealAngularDirection);
-        idealLinearVelocity.subtract(shipUpOffset);
-
-        //TEMPORARY CODE!!!
-
-        controlledShip.physicsProcessor.addForceAtPoint(playerDirection, idealAngularDirection);
-
-        controlledShip.physicsProcessor.addForceAtPoint(shipUpPos, shipUpOffset);
-
-        controlledShip.physicsProcessor.addForceAtPoint(new Vector(), idealLinearVelocity);
-
-        controlledShip.physicsProcessor.convertTorqueToVelocity();
-    }
+		idealAngularDirection.add(shipUpRotationVector);
+		idealLinearVelocity.multiply(10D * controlledShip.physicsProcessor.getMass());
+		controlledShip.physicsProcessor.linearMomentum.setValue(idealLinearVelocity);
+		controlledShip.physicsProcessor.angularVelocity.setValue(idealAngularDirection);
+	}
 
 }

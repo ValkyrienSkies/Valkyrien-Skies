@@ -257,4 +257,10 @@ public class Vector {
         setValue(toCopy.X, toCopy.Y, toCopy.Z);
     }
 
+	public double angleBetween(Vector other) {
+		double dotProduct = this.dot(other);
+		double normalizedDotProduect = dotProduct / (this.length() * other.length());
+		return Math.asin(dotProduct);
+	}
+
 }

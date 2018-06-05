@@ -111,28 +111,17 @@ public class PhysRenderChunk {
             needsCutoutMippedUpdate = true;
             needsSolidUpdate = true;
             needsTranslucentUpdate = true;
+            updateRenderTileEntities();
         }
 
+        // TODO: There's probably a faster way of doing this.
         public void updateRenderTileEntities() {
-            List<TileEntity> updatedRenderTiles = new ArrayList<TileEntity>();
-
-            MutableBlockPos pos = new MutableBlockPos();
-            for (int x = chunkToRender.x * 16; x < chunkToRender.x * 16 + 16; x++) {
-                for (int z = chunkToRender.z * 16; z < chunkToRender.z * 16 + 16; z++) {
-                    for (int y = yMin; y <= yMax; y++) {
-                        pos.setPos(x, y, z);
-
-                        TileEntity tile = parent.toRender.shipChunks.getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK);
-                        if (tile != null) {
-                            updatedRenderTiles.add(tile);
-                        }
-                    }
-                }
+        	ITileEntitiesToRenderProvider provider = ITileEntitiesToRenderProvider.class.cast(chunkToRender);
+            List<TileEntity> updatedRenderTiles = provider.getTileEntitiesToRender(yMin >> 4);
+            if (updatedRenderTiles != null) {
+            	Minecraft.getMinecraft().renderGlobal.updateTileEntities(renderTiles, updatedRenderTiles);
+            	renderTiles = new ArrayList<TileEntity>(updatedRenderTiles);
             }
-
-            Minecraft.getMinecraft().renderGlobal.updateTileEntities(renderTiles, updatedRenderTiles);
-
-            renderTiles = updatedRenderTiles;
         }
 
         public void deleteRenderLayer() {

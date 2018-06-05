@@ -16,24 +16,31 @@
 
 package valkyrienwarfare.mixin.world.chunk;
 
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.IChunkProvider;
-import net.minecraft.world.gen.IChunkGenerator;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraft.world.gen.IChunkGenerator;
+import valkyrienwarfare.mod.client.render.ITileEntitiesToRenderProvider;
 import valkyrienwarfare.mod.physmanagement.chunk.PhysicsChunkManager;
 
 @Mixin(value = Chunk.class, priority = 1001)
-public abstract class MixinChunk {
+public abstract class MixinChunk implements ITileEntitiesToRenderProvider {
 
     @Shadow
     @Final
@@ -47,11 +54,38 @@ public abstract class MixinChunk {
     @Final
     public World world;
 
-    /*
-     * @Overwrite public IBlockState setBlockState(BlockPos pos, IBlockState
-     * newState, IBlockState currentState, @Nullable BlockSnapshot newBlockSnapshot,
-     * BlockChangeFlag flag) { System.out.println("pls"); return null; }
-     */
+    // We keep track of these so we can quickly update the tile entities that need rendering.
+    private List<TileEntity>[] tileEntitesByExtendedData = new List[16];
+    
+    public List<TileEntity> getTileEntitiesToRender(int chunkExtendedDataIndex) {
+    	return tileEntitesByExtendedData[chunkExtendedDataIndex];
+    }
+    
+    @Inject(method = "addTileEntity(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/tileentity/TileEntity;)V", at = @At("TAIL"))
+    public void post_addTileEntity(BlockPos pos, TileEntity tileEntityIn, CallbackInfo callbackInfo) {
+    	int yIndex = pos.getY() >> 4;
+    	removeTileEntityFromIndex(pos, yIndex);
+    	tileEntitesByExtendedData[yIndex].add(tileEntityIn);
+    }
+    
+    @Inject(method = "removeTileEntity(Lnet/minecraft/util/math/BlockPos;)V", at = @At("TAIL"))
+    public void post_removeTileEntity(BlockPos pos, CallbackInfo callbackInfo) {
+    	int yIndex = pos.getY() >> 4;
+    	removeTileEntityFromIndex(pos, yIndex);
+    }
+    
+    private void removeTileEntityFromIndex(BlockPos pos, int yIndex) {
+    	if (tileEntitesByExtendedData[yIndex] == null) {
+    		tileEntitesByExtendedData[yIndex] = new ArrayList<TileEntity>();
+    	}
+    	Iterator<TileEntity> tileEntitiesIterator = tileEntitesByExtendedData[yIndex].iterator();
+    	while (tileEntitiesIterator.hasNext()) {
+    		TileEntity tile = tileEntitiesIterator.next();
+    		if (tile.getPos().equals(pos) || tile.isInvalid()) {
+    			tileEntitiesIterator.remove();
+    		}
+    	}
+    }
 
     @Inject(method = "Lnet/minecraft/world/chunk/Chunk;populate(Lnet/minecraft/world/chunk/IChunkProvider;Lnet/minecraft/world/gen/IChunkGenerator;)V", at = @At("HEAD"), cancellable = true)
     public void prePopulateChunk(IChunkProvider provider, IChunkGenerator generator, CallbackInfo callbackInfo) {

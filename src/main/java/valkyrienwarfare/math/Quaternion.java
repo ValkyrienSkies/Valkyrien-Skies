@@ -131,12 +131,12 @@ public class Quaternion {
         }
         if (sqw < -.9) {
             System.out.println("Quaternion singularity at South Pole");
-            roll = -2 * Math.atan2(x, w);
-            yaw = -Math.PI / 2;
-            pitch = 0;
-        }
-        return new double[]{pitch, yaw, roll};
-    }
+			roll = -2 * Math.atan2(x, w);
+			yaw = -Math.PI / 2;
+			pitch = 0;
+		}
+		return new double[] { pitch, yaw, roll };
+	}
 
     public void multiply(Quaternion q1) {
         double oldw = w;

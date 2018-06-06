@@ -89,7 +89,7 @@ public class TileEntityPilotsChair extends ImplTileEntityPilotable {
         Vector idealLinearVelocity = new Vector();
 
         Vector shipUp = new Vector(0, 1, 0);
-        Vector shipUpPos = new Vector(0, 1, 0);
+        Vector shipUpPosIdeal = new Vector(0, 1, 0);
 
         if (message.airshipForward_KeyDown) {
             idealLinearVelocity.add(playerDirection);
@@ -107,25 +107,46 @@ public class TileEntityPilotsChair extends ImplTileEntityPilotable {
 		if (message.airshipDown_KeyDown) {
 			idealLinearVelocity.add(downDirection);
 		}
+		
+		double sidePitch = 0;
 
 		if (message.airshipRight_KeyDown) {
 			idealAngularDirection.subtract(shipUp);
+			sidePitch += 15D;
 		}
 		if (message.airshipLeft_KeyDown) {
 			idealAngularDirection.add(shipUp);
+			sidePitch -= 15D;
 		}
+		
+		Vector sidesRotationAxis = new Vector(playerDirection);
+		controlledShip.coordTransform.getCurrentTickTransform().rotate(sidesRotationAxis, TransformType.LOCAL_TO_GLOBAL);
+		
+		double[] rotationSidesTransform = RotationMatrices.getRotationMatrix(sidesRotationAxis.X, sidesRotationAxis.Y,
+				sidesRotationAxis.Z, Math.toRadians(sidePitch));
+		shipUpPosIdeal.transform(rotationSidesTransform);
+		
 		idealAngularDirection.multiply(2);
 		// The vector that points in the direction of the normal of the plane that
 		// contains shipUp and shipUpPos. This is our axis of rotation.
-		Vector shipUpRotationVector = shipUp.cross(shipUpPos);
+		Vector shipUpRotationVector = shipUp.cross(shipUpPosIdeal);
 		// This isnt quite right, but it handles the cases quite well.
-		double shipUpTheta = shipUp.angleBetween(shipUpPos) + Math.PI / 2;
+		double shipUpTheta = shipUp.angleBetween(shipUpPosIdeal) + Math.PI / 2;
 		shipUpRotationVector.multiply(shipUpTheta);
 
 		idealAngularDirection.add(shipUpRotationVector);
 		idealLinearVelocity.multiply(20D * controlledShip.physicsProcessor.getMass());
-		controlledShip.physicsProcessor.linearMomentum.setValue(idealLinearVelocity);
-		controlledShip.physicsProcessor.angularVelocity.setValue(idealAngularDirection);
+		
+		
+		double lerpFactor = .3D;
+		Vector linearMomentumDif = idealLinearVelocity.getSubtraction(controlledShip.physicsProcessor.linearMomentum);
+		Vector angularVelocityDif = idealAngularDirection.getSubtraction(controlledShip.physicsProcessor.angularVelocity);
+		
+		linearMomentumDif.multiply(lerpFactor);
+		angularVelocityDif.multiply(lerpFactor / 2);
+		
+		controlledShip.physicsProcessor.linearMomentum.subtract(linearMomentumDif);
+		controlledShip.physicsProcessor.angularVelocity.subtract(angularVelocityDif);
 	}
 
 }

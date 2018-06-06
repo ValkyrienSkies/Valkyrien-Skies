@@ -75,6 +75,19 @@ public class RotationMatrices {
         return input;
     }
 
+	/**
+	 * Creates a rotation matrix for the given rotation axis and angle.
+	 * 
+	 * @param ux
+	 *            the x component of the rotation axis
+	 * @param uy
+	 *            the y component of the rotation axis
+	 * @param uz
+	 *            the z component of the rotation axis
+	 * @param angle
+	 *            in radians
+	 * @return
+	 */
     public static double[] getRotationMatrix(double ux, double uy, double uz, double angle) {
         if ((ux == 0.0D) && (uy == 0.0D) && (uz == 0.0D)) {
             return getDoubleIdentity();

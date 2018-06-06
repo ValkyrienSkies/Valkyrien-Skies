@@ -19,7 +19,6 @@ package valkyrienwarfare.physics.management;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 
@@ -31,6 +30,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
+import valkyrienwarfare.mod.physmanagement.chunk.VWChunkClaim;
 
 /**
  * This class essentially handles all the issues with ticking and handling
@@ -142,17 +142,18 @@ public class WorldPhysObjectManager {
         }
     }
 
-    public void onUnload(PhysicsWrapperEntity loaded) {
-        if (!loaded.world.isRemote) {
-            physicsEntities.remove(loaded);
-            loaded.getPhysicsObject().onThisUnload();
-            for (Chunk[] chunks : loaded.getPhysicsObject().claimedChunks) {
-                for (Chunk chunk : chunks) {
-                    chunkPosToPhysicsEntityMap.remove(getLongFromInts(chunk.x, chunk.z));
-                }
-            }
-        } else {
-            loaded.isDead = true;
+	public void onUnload(PhysicsWrapperEntity loaded) {
+		if (!loaded.world.isRemote) {
+			physicsEntities.remove(loaded);
+			loaded.getPhysicsObject().onThisUnload();
+			VWChunkClaim vwChunkClaim = loaded.getPhysicsObject().ownedChunks;
+			for (int chunkX = vwChunkClaim.getMinX(); chunkX <= vwChunkClaim.getMaxX(); chunkX++) {
+				for (int chunkZ = vwChunkClaim.getMinZ(); chunkZ <= vwChunkClaim.getMaxZ(); chunkZ++) {
+					chunkPosToPhysicsEntityMap.remove(getLongFromInts(chunkX, chunkZ));
+				}
+			}
+		} else {
+			loaded.isDead = true;
         }
     }
 

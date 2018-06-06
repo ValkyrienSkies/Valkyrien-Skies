@@ -96,9 +96,10 @@ public class PhysicsObject {
     public Vector centerCoord;
     public ShipTransformationManager coordTransform;
     public PhysicsCalculations physicsProcessor;
-    // Has to be concurrent
-    public Set<BlockPos> blockPositions;
-    private boolean isPhysicsEnabled;
+	// Has to be concurrent, only exists properly on the server. Do not use this for
+	// anything client side!
+	public Set<BlockPos> blockPositions;
+	private boolean isPhysicsEnabled;
     public String creator;
     public int detectorID;
     // The closest Chunks to the Ship cached in here
@@ -106,7 +107,7 @@ public class PhysicsObject {
     // TODO: Make for re-organizing these to make Ship sizes Dynamic
     public VWChunkClaim ownedChunks;
     // Used for faster memory access to the Chunks this object 'owns'
-    public Chunk[][] claimedChunks;
+    private Chunk[][] claimedChunks;
     public VWChunkCache shipChunks;
     // Some badly written mods use these Maps to determine who to send packets to,
     // so we need to manually fill them with nearby players

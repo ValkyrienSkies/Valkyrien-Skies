@@ -126,4 +126,12 @@ public class VWChunkClaim {
 	public BlockPos getRegionCenter() {
 		return new BlockPos(this.getCenterX() * 16, 128, this.getCenterZ() * 16);
 	}
+	
+	public int getChunkLengthX() {
+		return getMaxX() - getMinX() + 1;
+	}
+	
+	public int getChunkLengthZ() {
+		return getMaxZ() - getMinZ() + 1;
+	}
 }

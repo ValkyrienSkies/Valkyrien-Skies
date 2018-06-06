@@ -69,15 +69,17 @@ public class PhysObjectRenderManager {
 
     public void renderBlockLayer(BlockRenderLayer layerToRender, double partialTicks, int pass) {
         if (renderChunks == null) {
-            if (parent.claimedChunks == null) {
-                return;
-            }
-            renderChunks = new PhysRenderChunk[parent.claimedChunks.length][parent.claimedChunks[0].length];
-            for (int xChunk = 0; xChunk < parent.claimedChunks.length; xChunk++) {
-                for (int zChunk = 0; zChunk < parent.claimedChunks.length; zChunk++) {
-                    renderChunks[xChunk][zChunk] = new PhysRenderChunk(parent, parent.claimedChunks[xChunk][zChunk]);
-                }
-            }
+            if (!parent.areShipChunksFullyLoaded()) {
+				return;
+			}
+			renderChunks = new PhysRenderChunk[parent.ownedChunks.getChunkLengthX()][parent.ownedChunks
+					.getChunkLengthZ()];
+			for (int xChunk = 0; xChunk < parent.ownedChunks.getChunkLengthX(); xChunk++) {
+				for (int zChunk = 0; zChunk < parent.ownedChunks.getChunkLengthZ(); zChunk++) {
+					renderChunks[xChunk][zChunk] = new PhysRenderChunk(parent, parent.shipChunks
+							.getChunkAt(xChunk + parent.ownedChunks.getMinX(), zChunk + parent.ownedChunks.getMinZ()));
+				}
+			}
         }
 
         GL11.glPushMatrix();

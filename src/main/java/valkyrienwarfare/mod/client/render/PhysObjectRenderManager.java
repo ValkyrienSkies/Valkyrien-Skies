@@ -171,7 +171,7 @@ public class PhysObjectRenderManager {
 
     public boolean shouldRender() {
         ICamera camera = ((ClientProxy) ValkyrienWarfareMod.proxy).lastCamera;
-        return camera == null || camera.isBoundingBoxInFrustum(parent.getCollisionBoundingBox());
+        return camera == null || camera.isBoundingBoxInFrustum(parent.getShipBoundingBox());
     }
 
     public void setupTranslation(double partialTicks) {

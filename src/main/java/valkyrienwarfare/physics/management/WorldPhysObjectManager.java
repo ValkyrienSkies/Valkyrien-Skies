@@ -177,7 +177,7 @@ public class WorldPhysObjectManager {
         AxisAlignedBB expandedCheck = toCheck.expand(6, 6, 6);
 
         for (PhysicsWrapperEntity wrapper : physicsEntities) {
-            if (wrapper.getPhysicsObject().getCollisionBoundingBox().intersects(expandedCheck)) {
+            if (wrapper.getPhysicsObject().getShipBoundingBox().intersects(expandedCheck)) {
                 ships.add(wrapper);
             }
         }

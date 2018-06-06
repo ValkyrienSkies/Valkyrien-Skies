@@ -99,7 +99,7 @@ public class WorldPhysicsCollider {
 
 	public WorldPhysicsCollider(PhysicsCalculations calculations) {
 		this.calculator = calculations;
-		this.parent = calculations.parent;
+		this.parent = calculations.getParent();
 		this.worldObj = parent.getWorldObj();
 		this.cachedPotentialHits = TCollections.synchronizedList(new TIntArrayList());
 		this.cachedHitsToRemove = new TIntArrayList();

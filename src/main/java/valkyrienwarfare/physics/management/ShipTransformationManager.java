@@ -118,7 +118,7 @@ public class ShipTransformationManager {
      */
     private void forceShipIntoWorldBorder() {
         WorldBorder border = parent.getWorldObj().getWorldBorder();
-        AxisAlignedBB shipBB = parent.getCollisionBoundingBox();
+        AxisAlignedBB shipBB = parent.getShipBoundingBox();
 
         if (shipBB.maxX > border.maxX()) {
             parent.getWrapperEntity().posX += border.maxX() - shipBB.maxX;
@@ -239,7 +239,7 @@ public class ShipTransformationManager {
             parentPositionsStream = parent.blockPositions.parallelStream();
         }
         parentPositionsStream.forEach(convexHullConsumer);
-        parent.setCollisionBoundingBox(convexHullConsumer.createWrappingAABB());
+        parent.setShipBoundingBox(convexHullConsumer.createWrappingAABB());
     }
 
     /**

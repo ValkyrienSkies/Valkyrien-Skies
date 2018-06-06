@@ -168,10 +168,13 @@ public class VWThread extends Thread {
 			if (!wrapper.firstUpdate) {
 				// Update the physics simulation
 				wrapper.getPhysicsObject().physicsProcessor.rawPhysTickPreCol(newPhysSpeed);
-				// Update the collision task if necessary
-				wrapper.getPhysicsObject().physicsProcessor.worldCollision.tickUpdatingTheCollisionCache();
-				// Take the big collision and split into tiny ones
-				wrapper.getPhysicsObject().physicsProcessor.worldCollision.splitIntoCollisionTasks(collisionTasks);
+				if (wrapper.getPhysicsObject().isPhysicsEnabled()) {
+					// Update the collision task if necessary
+					wrapper.getPhysicsObject().physicsProcessor.getWorldCollision().tickUpdatingTheCollisionCache();
+					// Take the big collision and split into tiny ones
+					wrapper.getPhysicsObject().physicsProcessor.getWorldCollision()
+							.splitIntoCollisionTasks(collisionTasks);
+				}
 			}
 		}
 

@@ -46,11 +46,11 @@ public class PhysicsCalculationsManualControl extends PhysicsCalculations {
         applyAirDrag();
 
         if (PhysicsSettings.doPhysicsBlocks) {
-            for (Node node : parent.concurrentNodesWithinShip) {
+            for (Node node : getParent().concurrentNodesWithinShip) {
                 TileEntity nodeTile = node.getParentTile();
                 if (nodeTile instanceof INodePhysicsProcessor) {
 //					System.out.println("test");
-                    ((INodePhysicsProcessor) nodeTile).onPhysicsTick(parent, this, this.getPhysicsTimeDeltaPerPhysTick());
+                    ((INodePhysicsProcessor) nodeTile).onPhysicsTick(getParent(), this, this.getPhysicsTimeDeltaPerPhysTick());
                 }
             }
         }
@@ -59,18 +59,18 @@ public class PhysicsCalculationsManualControl extends PhysicsCalculations {
     @Override
     public void rawPhysTickPostCol() {
         applyLinearVelocity();
-        double previousYaw = parent.getWrapperEntity().getYaw();
+        double previousYaw = getParent().getWrapperEntity().getYaw();
         applyAngularVelocity();
 
         //We don't want the up normal to exactly align with the world normal, it causes problems with collision
         if (!this.actAsArchimedes) {
-            parent.getWrapperEntity().setPitch(0.01F);
-            parent.getWrapperEntity().setRoll(0.01F);
-            parent.getWrapperEntity().setYaw(previousYaw);
-            parent.getWrapperEntity().setYaw(parent.getWrapperEntity().getYaw() - (getYawRate() * getPhysicsTimeDeltaPerPhysTick()));
+            getParent().getWrapperEntity().setPitch(0.01F);
+            getParent().getWrapperEntity().setRoll(0.01F);
+            getParent().getWrapperEntity().setYaw(previousYaw);
+            getParent().getWrapperEntity().setYaw(getParent().getWrapperEntity().getYaw() - (getYawRate() * getPhysicsTimeDeltaPerPhysTick()));
         }
 
-        double[] existingRotationMatrix = RotationMatrices.getRotationMatrix(0, parent.getWrapperEntity().getYaw(), 0);
+        double[] existingRotationMatrix = RotationMatrices.getRotationMatrix(0, getParent().getWrapperEntity().getYaw(), 0);
         Vector linearForce = new Vector(getForwardRate(), getUpRate(), 0, existingRotationMatrix);
         if (isUseLinearMomentumForce()) {
             linearForce = new Vector(linearMomentum, getInvMass());
@@ -78,11 +78,11 @@ public class PhysicsCalculationsManualControl extends PhysicsCalculations {
 
         linearForce.multiply(getPhysicsTimeDeltaPerPhysTick());
 
-        parent.getWrapperEntity().posX += linearForce.X;
-        parent.getWrapperEntity().posY += linearForce.Y;
-        parent.getWrapperEntity().posZ += linearForce.Z;
+        getParent().getWrapperEntity().posX += linearForce.X;
+        getParent().getWrapperEntity().posY += linearForce.Y;
+        getParent().getWrapperEntity().posZ += linearForce.Z;
 
-        parent.coordTransform.updateAllTransforms(true, false);
+        getParent().coordTransform.updateAllTransforms(true, false);
     }
 
     @Override

@@ -53,16 +53,16 @@ public class ShipPulseImpulseControlSystem {
         double totalPotentialThrust = getMaxThrustForAllThrusters();
         double currentThrust = getTotalThrustForAllThrusters();
 
-        double[] rotationAndTranslationMatrix = calculations.parent.coordTransform.getCurrentPhysicsTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL);
-        double[] invRotationAndTranslationMatrix = calculations.parent.coordTransform.getCurrentPhysicsTransform().getInternalMatrix(TransformType.GLOBAL_TO_LOCAL);
+        double[] rotationAndTranslationMatrix = calculations.getParent().coordTransform.getCurrentPhysicsTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL);
+        double[] invRotationAndTranslationMatrix = calculations.getParent().coordTransform.getCurrentPhysicsTransform().getInternalMatrix(TransformType.GLOBAL_TO_LOCAL);
         double[] invMOIMatrix = calculations.getPhysInvMOITensor();
 
-        Vector posInWorld = new Vector(calculations.parent.getWrapperEntity().posX, calculations.parent.getWrapperEntity().posY, calculations.parent.getWrapperEntity().posZ);
+        Vector posInWorld = new Vector(calculations.getParent().getWrapperEntity().posX, calculations.getParent().getWrapperEntity().posY, calculations.getParent().getWrapperEntity().posZ);
         Vector angularVelocity = new Vector(calculations.angularVelocity);
         Vector linearMomentum = new Vector(calculations.linearMomentum);
         Vector linearVelocity = new Vector(linearMomentum, calculations.getInvMass());
 
-        BlockPos shipRefrencePos = calculations.parent.refrenceBlockPos;
+        BlockPos shipRefrencePos = calculations.getParent().refrenceBlockPos;
 
         double maxYDelta = parentTile.maximumYVelocity;
         double idealHeight = parentTile.idealYHeight + getBobForTime();
@@ -140,7 +140,7 @@ public class ShipPulseImpulseControlSystem {
                     forceTile.setThrustGoal(0);
                 }
 
-                Vector forceOutputWithRespectToTime = forceTile.getForceOutputOriented(calculations.getPhysicsTimeDeltaPerPhysTick(), calculations.parent);
+                Vector forceOutputWithRespectToTime = forceTile.getForceOutputOriented(calculations.getPhysicsTimeDeltaPerPhysTick(), calculations.getParent());
                 linearMomentum.add(forceOutputWithRespectToTime);
                 Vector torque = forceTile.getPositionInLocalSpaceWithOrientation().cross(forceOutputWithRespectToTime);
                 RotationMatrices.applyTransform3by3(invMOIMatrix, torque);

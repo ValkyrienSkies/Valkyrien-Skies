@@ -49,7 +49,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
     public static final DataParameter<Boolean> IS_NAME_CUSTOM = EntityDataManager.<Boolean>createKey(Entity.class,
             DataSerializers.BOOLEAN);
     private final PhysicsObject physicsObject;
-    // TODO: Replace these raw types with something safer
+    // TODO: Replace these raw types with something safer.
     private double pitch;
     private double yaw;
     private double roll;
@@ -183,7 +183,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
     @Override
     @SideOnly(Side.CLIENT)
     public AxisAlignedBB getRenderBoundingBox() {
-        return getPhysicsObject().getCollisionBoundingBox();
+        return getPhysicsObject().getShipBoundingBox();
     }
 
     @Override

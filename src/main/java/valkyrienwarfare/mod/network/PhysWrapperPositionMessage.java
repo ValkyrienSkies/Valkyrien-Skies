@@ -61,7 +61,7 @@ public class PhysWrapperPositionMessage implements IMessage {
     public PhysWrapperPositionMessage(PhysicsWrapperEntity toSend, int relativeTick) {
         this.setEntityID(toSend.getEntityId());
         this.setRelativeTick(relativeTick);
-        this.setShipBB(toSend.getPhysicsObject().getCollisionBoundingBox());
+        this.setShipBB(toSend.getPhysicsObject().getShipBoundingBox());
         this.setPosX(toSend.posX);
         this.setPosY(toSend.posY);
         this.setPosZ(toSend.posZ);
@@ -81,7 +81,7 @@ public class PhysWrapperPositionMessage implements IMessage {
         setRoll(toRunLocally.getWrapperEntity().getRoll());
 
         setCenterOfMass(toRunLocally.centerCoord);
-        setShipBB(toRunLocally.getCollisionBoundingBox());
+        setShipBB(toRunLocally.getShipBoundingBox());
     }
 
     @Override

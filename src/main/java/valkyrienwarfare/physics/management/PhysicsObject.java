@@ -83,12 +83,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class PhysicsObject {
 
-    private final PhysicsWrapperEntity wrapper;
-    // This handles sending packets to players involving block changes in the Ship
-    // space
+	private final PhysicsWrapperEntity wrapper;
     public final List<EntityPlayerMP> watchingPlayers;
     public final PhysObjectRenderManager renderer;
-    public final Set<String> allowedUsers = new HashSet<String>();
+    public final Set<String> allowedUsers;
     public final Set<Node> concurrentNodesWithinShip;
     // This is used to delay mountEntity() operations by 1 tick
     private final List<Entity> queuedEntitiesToMount;
@@ -100,7 +98,7 @@ public class PhysicsObject {
     public PhysicsCalculations physicsProcessor;
     // Has to be concurrent
     public Set<BlockPos> blockPositions;
-    public boolean doPhysics;
+    private boolean isPhysicsEnabled;
     public String creator;
     public int detectorID;
     // The closest Chunks to the Ship cached in here
@@ -112,32 +110,34 @@ public class PhysicsObject {
     public VWChunkCache shipChunks;
     // Some badly written mods use these Maps to determine who to send packets to,
     // so we need to manually fill them with nearby players
-    public PlayerChunkMapEntry[][] claimedChunksEntries;
+    private PlayerChunkMapEntry[][] claimedChunksEntries;
     // Compatibility for ships made before the update
     public boolean claimedChunksInMap;
     public boolean isNameCustom;
-    private AxisAlignedBB collisionBB;
+    private AxisAlignedBB shipBoundingBox;
     private TIntObjectMap<Vector> entityLocalPositions;
     private ShipType shipType;
 
     public PhysicsObject(PhysicsWrapperEntity host) {
-        wrapper = host;
+    	this.wrapper = host;
         if (host.world.isRemote) {
-            renderer = new PhysObjectRenderManager(this);
+        	this.renderer = new PhysObjectRenderManager(this);
         } else {
-            renderer = null;
+        	this.renderer = null;
         }
-        isNameCustom = false;
-        claimedChunksInMap = false;
-        queuedEntitiesToMount = new ArrayList<>();
-        entityLocalPositions = new TIntObjectHashMap<>();
-        doPhysics = false;
+        this.isNameCustom = false;
+        this.claimedChunksInMap = false;
+        this.queuedEntitiesToMount = new ArrayList<>();
+        this.entityLocalPositions = new TIntObjectHashMap<>();
+        this.setPhysicsEnabled(false);
         // blockPositions = new HashSet<BlockPos>();
         // We need safe access to this across multiple threads.
-        blockPositions = ConcurrentHashMap.<BlockPos>newKeySet();
-        collisionBB = PhysicsWrapperEntity.ZERO_AABB;
-        watchingPlayers = new ArrayList<>();
-        concurrentNodesWithinShip = ConcurrentHashMap.<Node>newKeySet();
+        this.blockPositions = ConcurrentHashMap.<BlockPos>newKeySet();
+        this.shipBoundingBox = Entity.ZERO_AABB;
+        this.watchingPlayers = new ArrayList<EntityPlayerMP>();
+        this.concurrentNodesWithinShip = ConcurrentHashMap.<Node>newKeySet();
+        this.isPhysicsEnabled = false;
+        this.allowedUsers = new HashSet<String>();
     }
 
     public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos posAt) {
@@ -339,7 +339,7 @@ public class PhysicsObject {
     }
 
     private void assembleShip(EntityPlayer player, SpatialDetector detector, BlockPos centerInWorld) {
-    	this.doPhysics = true;
+    	this.setPhysicsEnabled(true);
         MutableBlockPos pos = new MutableBlockPos();
         TIntIterator iter = detector.foundSet.iterator();
 
@@ -715,11 +715,11 @@ public class PhysicsObject {
         }
 
         coordTransform.updatePrevTickTransform();
-        coordTransform.updateAllTransforms(getCollisionBoundingBox().equals(Entity.ZERO_AABB), true);
+        coordTransform.updateAllTransforms(getShipBoundingBox().equals(Entity.ZERO_AABB), true);
     }
 
     public void updateChunkCache() {
-    	AxisAlignedBB cacheBB = this.getCollisionBoundingBox();
+    	AxisAlignedBB cacheBB = this.getShipBoundingBox();
         BlockPos min = new BlockPos(cacheBB.minX, Math.max(cacheBB.minY, 0), cacheBB.minZ);
         BlockPos max = new BlockPos(cacheBB.maxX, Math.min(cacheBB.maxY, 255), cacheBB.maxZ);
         cachedSurroundingChunks = new ChunkCache(getWorldObj(), min, max, 0);
@@ -876,7 +876,7 @@ public class PhysicsObject {
         compound.setDouble("pitch", getWrapperEntity().getPitch());
         compound.setDouble("yaw", getWrapperEntity().getYaw());
         compound.setDouble("roll", getWrapperEntity().getRoll());
-        compound.setBoolean("doPhysics", doPhysics);
+        compound.setBoolean("doPhysics", isPhysicsEnabled());
         for (int row = 0; row < ownedChunks.chunkOccupiedInLocal.length; row++) {
             boolean[] curArray = ownedChunks.chunkOccupiedInLocal[row];
             for (int column = 0; column < curArray.length; column++) {
@@ -899,7 +899,7 @@ public class PhysicsObject {
         compound.setBoolean("isNameCustom", isNameCustom);
         compound.setString("shipType", shipType.name());
         // Write and read AABB from NBT to speed things up.
-        NBTUtils.writeAABBToNBT("collision_aabb", getCollisionBoundingBox(), compound);
+        NBTUtils.writeAABBToNBT("collision_aabb", getShipBoundingBox(), compound);
     }
 
     public void readFromNBTTag(NBTTagCompound compound) {
@@ -942,9 +942,9 @@ public class PhysicsObject {
         isNameCustom = compound.getBoolean("isNameCustom");
         getWrapperEntity().dataManager.set(PhysicsWrapperEntity.IS_NAME_CUSTOM, isNameCustom);
         
-        this.setCollisionBoundingBox(NBTUtils.readAABBFromNBT("collision_aabb", compound));
+        this.setShipBoundingBox(NBTUtils.readAABBFromNBT("collision_aabb", compound));
         
-        doPhysics = compound.getBoolean("doPhysics");
+        setPhysicsEnabled(compound.getBoolean("doPhysics"));
     }
 
     public void readSpawnData(ByteBuf additionalData) {
@@ -1079,12 +1079,12 @@ public class PhysicsObject {
         this.shipType = shipType;
     }
 
-    public AxisAlignedBB getCollisionBoundingBox() {
-        return collisionBB;
+    public AxisAlignedBB getShipBoundingBox() {
+        return shipBoundingBox;
     }
 
-    public void setCollisionBoundingBox(AxisAlignedBB newCollisionBB) {
-        this.collisionBB = newCollisionBB;
+    public void setShipBoundingBox(AxisAlignedBB newShipBB) {
+        this.shipBoundingBox = newShipBB;
     }
 
     /**
@@ -1103,5 +1103,21 @@ public class PhysicsObject {
 	
 	public boolean areShipChunksFullyLoaded() {
 		return shipChunks != null;
+	}
+
+	/**
+	 * @return true if physics are enabled
+	 */
+	public boolean isPhysicsEnabled() {
+		return isPhysicsEnabled;
+	}
+
+	/**
+	 * @param physicsEnabled
+	 *            If true enables physics processing for this physics object, if
+	 *            false disables physics processing.
+	 */
+	public void setPhysicsEnabled(boolean physicsEnabled) {
+		this.isPhysicsEnabled = physicsEnabled;
 	}
 }

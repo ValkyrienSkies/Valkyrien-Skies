@@ -374,7 +374,7 @@ public class ValkyrienWarfareMod {
     	System.out.println("We are running on " + Runtime.getRuntime().availableProcessors() + " threads; 4 or more is recommended!");
         proxy.init(event);
         EntityRegistry.registerModEntity(new ResourceLocation(MODID, "PhysWrapper"), PhysicsWrapperEntity.class,
-                "PhysWrapper", 70, this, 120, 1, false);
+                "PhysWrapper", 70, this, 300, 5, false);
 
         addons.forEach(m -> m.doInit(event));
     }
@@ -386,28 +386,6 @@ public class ValkyrienWarfareMod {
         BlockPhysicsRegistration.registerCustomBlockMasses();
         BlockPhysicsRegistration.registerVanillaBlockForces();
         BlockPhysicsRegistration.registerBlocksToNotPhysicise();
-
-        ForgeChunkManager.setForcedChunkLoadingCallback(INSTANCE, new VWChunkLoadingCallback());
-        //// We're stealing these tickets bois!////
-        try {
-            Field ticketConstraintsField = ForgeChunkManager.class.getDeclaredField("ticketConstraints");
-            Field chunkConstraintsField = ForgeChunkManager.class.getDeclaredField("chunkConstraints");
-
-            ticketConstraintsField.setAccessible(true);
-            chunkConstraintsField.setAccessible(true);
-
-            Object ticketConstraints = ticketConstraintsField.get(null);
-            Object chunkConstraints = chunkConstraintsField.get(null);
-
-            Map<String, Integer> ticketsMap = (Map<String, Integer>) ticketConstraints;
-            Map<String, Integer> chunksMap = (Map<String, Integer>) chunkConstraints;
-
-            ticketsMap.put(MODID, Integer.MAX_VALUE);
-            chunksMap.put(MODID, Integer.MAX_VALUE);
-        } catch (Throwable e) {
-            e.printStackTrace();
-            System.err.println("DAMMIT LEX!");
-        }
 
         addons.forEach(m -> m.doPostInit(event));
     }
@@ -425,7 +403,7 @@ public class ValkyrienWarfareMod {
     }
 
     public void registerBlocks(RegistryEvent.Register<Block> event) {
-        physicsInfuser = new BlockPhysicsInfuser(Material.ROCK).setHardness(12f).setUnlocalizedName("shipblock")
+        physicsInfuser = new BlockPhysicsInfuser(Material.ROCK).setHardness(8f).setUnlocalizedName("shipblock")
                 .setRegistryName(MODID, "shipblock").setCreativeTab(vwTab);
         physicsInfuserCreative = new BlockPhysicsInfuserCreative(Material.ROCK).setHardness(12f)
                 .setUnlocalizedName("shipblockcreative").setRegistryName(MODID, "shipblockcreative")

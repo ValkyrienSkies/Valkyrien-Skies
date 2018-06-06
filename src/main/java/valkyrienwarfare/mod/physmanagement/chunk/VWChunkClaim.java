@@ -17,7 +17,7 @@
 package valkyrienwarfare.mod.physmanagement.chunk;
 
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.World;
+import net.minecraft.util.math.BlockPos;
 
 /**
  * This stores the chunk claims for a PhysicsObject; not the chunks themselves
@@ -123,4 +123,7 @@ public class VWChunkClaim {
 		return getCenterX() - getRadius();
 	}
 
+	public BlockPos getRegionCenter() {
+		return new BlockPos(this.getCenterX() * 16, 128, this.getCenterZ() * 16);
+	}
 }

@@ -619,8 +619,7 @@ public class PhysicsObject {
     }
 
     public BlockPos getRegionCenter() {
-        return new BlockPos((claimedChunks[ownedChunks.getRadius() + 1][ownedChunks.getRadius() + 1].x * 16) - 8, 127,
-                (claimedChunks[ownedChunks.getRadius() + 1][ownedChunks.getRadius() + 1].z * 16) - 8);
+        return ownedChunks.getRegionCenter();
     }
 
     /**
@@ -757,8 +756,9 @@ public class PhysicsObject {
         coordTransform = new ShipTransformationManager(this);
         if (!getWorldObj().isRemote) {
             createPhysicsCalculations();
+            // The client doesn't need to keep track of this.
+            detectBlockPositions();
         }
-        detectBlockPositions();
         for (TileEntity tile : nodeTileEntitiesToUpdate) {
             Node node = ((INodeProvider) tile).getNode();
             if (node != null) {
@@ -798,18 +798,16 @@ public class PhysicsObject {
                                 for (x = 0; x < 16; x++) {
                                     for (z = 0; z < 16; z++) {
                                         if (storage.data.storage
-                                                .getAt(y << 8 | z << 4 | x) != ValkyrienWarfareMod.airStateIndex) {
-                                            BlockPos pos = new BlockPos(chunk.x * 16 + x, index * 16 + y,
-                                                    chunk.z * 16 + z);
-                                            blockPositions.add(pos);
-                                            if (!getWorldObj().isRemote) {
-                                                if (BlockForce.basicForces.isBlockProvidingForce(
-                                                        getWorldObj().getBlockState(pos), pos, getWorldObj())) {
-                                                    physicsProcessor.addPotentialActiveForcePos(pos);
-                                                }
-                                            }
-                                        }
-                                    }
+												.getAt(y << 8 | z << 4 | x) != ValkyrienWarfareMod.airStateIndex) {
+											BlockPos pos = new BlockPos(chunk.x * 16 + x, index * 16 + y,
+													chunk.z * 16 + z);
+											blockPositions.add(pos);
+											if (BlockForce.basicForces.isBlockProvidingForce(
+													getWorldObj().getBlockState(pos), pos, getWorldObj())) {
+												physicsProcessor.addPotentialActiveForcePos(pos);
+											}
+										}
+									}
                                 }
                             }
                         }

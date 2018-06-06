@@ -102,10 +102,10 @@ public class TileEntityPilotsChair extends ImplTileEntityPilotable {
         controlledShip.coordTransform.getCurrentTickTransform().rotate(shipUp, TransformType.LOCAL_TO_GLOBAL);
 
 		if (message.airshipUp_KeyDown) {
-			idealLinearVelocity.add(upDirection);
+			idealLinearVelocity.add(upDirection.getProduct(.5));
 		}
 		if (message.airshipDown_KeyDown) {
-			idealLinearVelocity.add(downDirection);
+			idealLinearVelocity.add(downDirection.getProduct(.5));
 		}
 		
 		double sidePitch = 0;

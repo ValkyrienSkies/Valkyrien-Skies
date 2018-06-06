@@ -38,11 +38,11 @@ import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.physics.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
-public class ValkyrienWarfareWorldEventListener implements IWorldEventListener {
+public class VWWorldEventListener implements IWorldEventListener {
 
 	private final World worldObj;
 
-	public ValkyrienWarfareWorldEventListener(World world) {
+	public VWWorldEventListener(World world) {
 		worldObj = world;
 	}
 

@@ -69,8 +69,9 @@ public class WorldPhysicsCollider {
 	// The minimum depth a collision projection must have, to not use the default
 	// collision normal of <0, 1, 0>
 	public static final double AXIS_TOLERANCE = .3D;
-	// Time in seconds between collision cache updates
-	public static final double CACHE_UPDATE_FREQUENCY = 1D;
+	// Time in seconds between collision cache updates. A value of .1D means we
+	// update the collision cache every 1/10th of a second.
+	public static final double CACHE_UPDATE_FREQUENCY = .075D;
 	// Determines how 'bouncy' collisions are
 	public static final double COEFFICIENT_OF_RESTITUTION = .52D;
 	// The radius which the algorithm will search for a nearby block to collide with
@@ -119,7 +120,7 @@ public class WorldPhysicsCollider {
 
 	public void tickUpdatingTheCollisionCache() {
 		// Multiply by 20 to convert seconds (physTickSpeed) into ticks
-		ticksSinceCacheUpdate += 20D * calculator.getPhysicsTimeDeltaPerPhysTick();
+		ticksSinceCacheUpdate += calculator.getPhysicsTimeDeltaPerPhysTick();
 		for (int i = 0; i < cachedHitsToRemove.size(); i++) {
 			cachedPotentialHits.remove(cachedHitsToRemove.get(i));
 		}
@@ -129,7 +130,7 @@ public class WorldPhysicsCollider {
 			updateCollisionTasksCache = true;
 		}
 		if (Math.random() < COLLISION_TASK_SHUFFLE_FREQUENCY) {
-			// cachedPotentialHits.shuffle(rand);
+			cachedPotentialHits.shuffle(rand);
 		}
 	}
 

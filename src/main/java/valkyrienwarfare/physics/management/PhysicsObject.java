@@ -711,7 +711,7 @@ public class PhysicsObject {
         ShipTransformationPacketHolder toUse = coordTransform.serverBuffer.pollForClientTransform();
         if (toUse != null) {
             // toUse.applyToPhysObject(this);
-        	toUse.applySmoothLerp(this, .7D);
+        	toUse.applySmoothLerp(this, .6D);
         }
 
         coordTransform.updatePrevTickTransform();

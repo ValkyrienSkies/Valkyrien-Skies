@@ -152,6 +152,9 @@ public class ShipTransformationPacketHolder {
 
 		physObj.centerCoord = centerOfRotation;
 
-		physObj.setCollisionBoundingBox(shipBB);
+		// Create an AABB that contains both the previous AABB and the new one, bigger
+		// is always better!
+		AxisAlignedBB expandedBB = physObj.getCollisionBoundingBox().union(shipBB);
+		physObj.setCollisionBoundingBox(expandedBB);
 	}
 }

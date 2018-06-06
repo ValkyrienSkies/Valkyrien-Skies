@@ -123,7 +123,7 @@ public class TileEntityPilotsChair extends ImplTileEntityPilotable {
 		shipUpRotationVector.multiply(shipUpTheta);
 
 		idealAngularDirection.add(shipUpRotationVector);
-		idealLinearVelocity.multiply(10D * controlledShip.physicsProcessor.getMass());
+		idealLinearVelocity.multiply(20D * controlledShip.physicsProcessor.getMass());
 		controlledShip.physicsProcessor.linearMomentum.setValue(idealLinearVelocity);
 		controlledShip.physicsProcessor.angularVelocity.setValue(idealAngularDirection);
 	}

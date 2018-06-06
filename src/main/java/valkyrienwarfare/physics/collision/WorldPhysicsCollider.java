@@ -22,9 +22,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
 import java.util.Random;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
 
+import gnu.trove.TCollections;
+import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import net.minecraft.block.state.IBlockState;
@@ -89,7 +90,7 @@ public class WorldPhysicsCollider {
 	private final PhysicsCalculations calculator;
 	private final World worldObj;
 	private final PhysicsObject parent;
-	private final TIntArrayList cachedPotentialHits;
+	private final TIntList cachedPotentialHits;
 	private final TIntArrayList cachedHitsToRemove;
 	// Ensures this always updates the first tick after creation
 	private double ticksSinceCacheUpdate;
@@ -100,7 +101,7 @@ public class WorldPhysicsCollider {
 		this.calculator = calculations;
 		this.parent = calculations.parent;
 		this.worldObj = parent.getWorldObj();
-		this.cachedPotentialHits = new TIntArrayList();
+		this.cachedPotentialHits = TCollections.synchronizedList(new TIntArrayList());
 		this.cachedHitsToRemove = new TIntArrayList();
 		this.rand = new Random();
 		this.mutablePos = new MutableBlockPos();
@@ -128,7 +129,7 @@ public class WorldPhysicsCollider {
 			updateCollisionTasksCache = true;
 		}
 		if (Math.random() < COLLISION_TASK_SHUFFLE_FREQUENCY) {
-			cachedPotentialHits.shuffle(rand);
+			// cachedPotentialHits.shuffle(rand);
 		}
 	}
 
@@ -181,9 +182,10 @@ public class WorldPhysicsCollider {
 		final MutableBlockPos localCollisionPos = new MutableBlockPos();
 		final Vector inWorld = new Vector();
 
-		for (int i = 0; i < cachedPotentialHits.size(); i++) {
+		TIntIterator cachedHitsIterator = cachedPotentialHits.iterator();
+		while (cachedHitsIterator.hasNext()) {
 			// Converts the int to a mutablePos
-			SpatialDetector.setPosWithRespectTo(cachedPotentialHits.get(i), centerPotentialHit, mutablePos);
+			SpatialDetector.setPosWithRespectTo(cachedHitsIterator.next(), centerPotentialHit, mutablePos);
 
 			inWorld.X = mutablePos.getX() + .5;
 			inWorld.Y = mutablePos.getY() + .5;
@@ -424,7 +426,8 @@ public class WorldPhysicsCollider {
 		}
 		int oldSize = cachedPotentialHits.size();
 		// Resets the potential hits array in O(1) time! Isn't that something.
-		cachedPotentialHits.resetQuick();
+		// cachedPotentialHits.resetQuick();
+		cachedPotentialHits.clear();
 		// Ship is outside of world blockSpace, just skip this all together
 		if (collisionBB.maxY < 0 || collisionBB.minY > 255) {
 			return;
@@ -776,24 +779,6 @@ public class WorldPhysicsCollider {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				return true;
-				// break outermostloop;
-			}
-			// }
-		}
-		return false;
-	}
-
-	private boolean tooTiredToName(final int localX, final int localY, final int localZ, final int x, final int y,
-			final int z) {
-		// if (false) {
-		Chunk chunkIn = parent.shipChunks.getChunkAt(localX >> 4, localZ >> 4);
-		if (chunkIn.storageArrays[localY >> 4] != null) {
-			IBitOctreeProvider provider = (IBitOctreeProvider) ((Object) chunkIn.storageArrays[localY >> 4].getData());
-			IBitOctree octreeInLocal = provider.getBitOctree();
-			if (octreeInLocal.get(localX & 15, localY & 15, localZ & 15)) {
-				int hash = SpatialDetector.getHashWithRespectTo(x, y, z, centerPotentialHit);
-				cachedPotentialHits.add(hash);
 				return true;
 				// break outermostloop;
 			}

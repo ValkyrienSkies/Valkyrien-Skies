@@ -443,6 +443,11 @@ public class WorldPhysicsCollider {
 
 		ChunkCache cache = parent.cachedSurroundingChunks;
 
+		if (cache == null) {
+			System.err.println("VW Cached Surrounding Chunks was null! This is going to cause catastophric terrible events!!");
+			return;
+		}
+		
 		int chunkMinX = min.getX() >> 4;
 		int chunkMaxX = (max.getX() >> 4) + 1;
 		int chunkMinZ = min.getZ() >> 4;

@@ -20,13 +20,24 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.annotation.Nullable;
+
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.physics.ShipTransform;
+import valkyrienwarfare.physics.TransformType;
 
+/**
+ * NBTUtils is filled with helper methods for saving and loading different
+ * objects from NBTTagCompound.
+ * 
+ * @author thebest108
+ *
+ */
 public class NBTUtils {
 
     public static final void writeBlockPosToNBT(String name, BlockPos pos, NBTTagCompound compound) {
@@ -164,18 +175,45 @@ public class NBTUtils {
         return ByteBuffer.wrap(compound.getByteArray(name));
     }
     
-    public static final void writeAABBToNBT(String name, AxisAlignedBB aabb, NBTTagCompound compound) {
+    public static void writeAABBToNBT(String name, AxisAlignedBB aabb, NBTTagCompound compound) {
     	compound.setDouble(name + "minX", aabb.minX);
     	compound.setDouble(name + "minY", aabb.minY);
     	compound.setDouble(name + "minZ", aabb.minZ);
     	compound.setDouble(name + "maxX", aabb.maxX);
     	compound.setDouble(name + "maxY", aabb.maxY);
     	compound.setDouble(name + "maxZ", aabb.maxZ);
-    }
-    
-    public static final AxisAlignedBB readAABBFromNBT(String name, NBTTagCompound compound) {
-    	AxisAlignedBB aabb = new AxisAlignedBB(compound.getDouble(name + "minX"), compound.getDouble(name + "minY"), compound.getDouble(name + "minZ"), compound.getDouble(name + "maxX"), compound.getDouble(name + "maxY"), compound.getDouble(name + "maxZ"));
-    	return aabb;
+	}
+
+	public static AxisAlignedBB readAABBFromNBT(String name, NBTTagCompound compound) {
+		AxisAlignedBB aabb = new AxisAlignedBB(compound.getDouble(name + "minX"), compound.getDouble(name + "minY"),
+				compound.getDouble(name + "minZ"), compound.getDouble(name + "maxX"), compound.getDouble(name + "maxY"),
+				compound.getDouble(name + "maxZ"));
+		return aabb;
+	}
+
+	public static void writeShipTransformToNBT(String name, ShipTransform shipTransform, NBTTagCompound compound) {
+		double[] localToGlobalInternalArray = shipTransform.getInternalMatrix(TransformType.LOCAL_TO_GLOBAL);
+		byte[] localToGlobalAsBytes = toByteArray(localToGlobalInternalArray);
+		compound.setByteArray("vw_ST_" + name, localToGlobalAsBytes);
+	}
+
+	/**
+	 * 
+	 * @param name
+	 * @param compound
+	 * @return Returns null if there was an error loading the ShipTransform.
+	 *         Otherwise the proper ShipTransform is returned.
+	 */
+	@Nullable
+	public static ShipTransform readShipTransformFromNBT(String name, NBTTagCompound compound) {
+		byte[] localToGlobalAsBytes = compound.getByteArray("vw_ST_" + name);
+		if (localToGlobalAsBytes.length == 0) {
+			System.err.println(
+					"Loading from the ShipTransform has failed, now we are forced to fallback on Vanilla MC positions. This probably won't go well at all!");
+			return null;
+		}
+    	double[] localToGlobalInternalArray = toDoubleArray(localToGlobalAsBytes);
+    	return new ShipTransform(localToGlobalInternalArray);
     }
     
 }

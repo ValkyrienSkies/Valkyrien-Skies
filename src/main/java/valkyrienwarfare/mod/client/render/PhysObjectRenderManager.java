@@ -158,19 +158,6 @@ public class PhysObjectRenderManager {
         }
     }
 
-    public void renderTileEntities(float partialTicks) {
-        for (BlockPos pos : parent.blockPositions) {
-            TileEntity tileEnt = parent.getWorldObj().getTileEntity(pos);
-            if (tileEnt != null) {
-                try {
-                    TileEntityRendererDispatcher.instance.render(tileEnt, partialTicks, -1);
-                } catch (Exception e) {
-                    // e.printStackTrace();
-                }
-            }
-        }
-    }
-
     public boolean shouldRender() {
         ICamera camera = ((ClientProxy) ValkyrienWarfareMod.proxy).lastCamera;
         return camera == null || camera.isBoundingBoxInFrustum(parent.getShipBoundingBox());

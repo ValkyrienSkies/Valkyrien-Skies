@@ -16,6 +16,10 @@
 
 package valkyrienwarfare.addon.control.block;
 
+import java.util.List;
+
+import javax.annotation.Nullable;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.ITileEntityProvider;
@@ -38,10 +42,9 @@ import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.tileentity.TileEntityPilotsChair;
 import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.mod.physmanagement.interaction.EntityDraggable;
+import valkyrienwarfare.mod.physmanagement.interaction.IDraggable;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
-
-import javax.annotation.Nullable;
-import java.util.List;
 
 public class BlockShipPilotsChair extends Block implements ITileEntityProvider {
 
@@ -75,16 +78,15 @@ public class BlockShipPilotsChair extends Block implements ITileEntityProvider {
                         playerIn.posY = playerPos.Y;
                         playerIn.posZ = playerPos.Z;
 
-                        playerIn.startRiding(wrapper);
-                        Vector localMountPos = getPlayerMountOffset(state, pos);
-                        wrapper.getPhysicsObject().fixEntity(playerIn, localMountPos);
-
-
-                        //Nope
-//                        wrapper.wrapping.pilotingController.setPilotEntity((EntityPlayerMP) playerIn, false);
+                        IDraggable entityDraggable = EntityDraggable.getDraggableFromEntity(playerIn);
+                        // Only mount the player if they're standing on the ship.
+                        if (entityDraggable.getWorldBelowFeet() == wrapper) {
+	                        playerIn.startRiding(wrapper);
+	                        Vector localMountPos = getPlayerMountOffset(state, pos);
+	                        wrapper.getPhysicsObject().fixEntity(playerIn, localMountPos);
+                        }
 
                         ((TileEntityPilotsChair) tileEntity).setPilotEntity(playerIn);
-
                         wrapper.getPhysicsObject().coordTransform.fromGlobalToLocal(playerPos);
 
                         playerIn.posX = playerPos.X;
@@ -94,11 +96,11 @@ public class BlockShipPilotsChair extends Block implements ITileEntityProvider {
                         return true;
                     }
                 }
-            }
-        }
+			}
+		}
 
-        return false;
-    }
+		return false;
+	}
 
     @Override
     public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation, ITooltipFlag advanced) {

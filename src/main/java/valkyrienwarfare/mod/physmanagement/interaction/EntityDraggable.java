@@ -33,7 +33,13 @@ import valkyrienwarfare.physics.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.physics.management.ShipTransformationManager;
 
-public abstract class EntityDraggable {
+/**
+ * Just holds some static helper methods to deal with IDraggable objects.
+ * @author thebest108
+ *
+ */
+public class EntityDraggable {
+	
     public static void tickAddedVelocityForWorld(World world) {
         try {
             // TODO: Fix this

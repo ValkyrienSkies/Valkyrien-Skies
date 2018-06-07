@@ -104,14 +104,16 @@ public class ShipTransform {
         }
     }
 
-    /**
-     * Please do not ever use this unless it is absolutely necessary!
-     *
-     * @param transformType
-     * @return
-     */
-    @Deprecated
-    public double[] getInternalMatrix(TransformType transformType) {
+	/**
+	 * Please do not ever use this unless it is absolutely necessary! This exposes
+	 * the internal arrays and they cannot be made safe without sacrificing a lot of
+	 * performance.
+	 *
+	 * @param transformType
+	 * @return
+	 */
+	@Deprecated
+	public double[] getInternalMatrix(TransformType transformType) {
         if (transformType == TransformType.LOCAL_TO_GLOBAL) {
             return localToGlobal;
         } else {

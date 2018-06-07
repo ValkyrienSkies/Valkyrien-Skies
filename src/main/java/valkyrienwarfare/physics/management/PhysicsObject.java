@@ -16,6 +16,18 @@
 
 package valkyrienwarfare.physics.management;
 
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
@@ -54,6 +66,7 @@ import valkyrienwarfare.addon.control.nodenetwork.Node;
 import valkyrienwarfare.api.EnumChangeOwnerResult;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.api.block.ethercompressor.TileEntityEtherCompressor;
+import valkyrienwarfare.math.Quaternion;
 import valkyrienwarfare.mod.BlockPhysicsRegistration;
 import valkyrienwarfare.mod.client.render.PhysObjectRenderManager;
 import valkyrienwarfare.mod.network.PhysWrapperPositionMessage;
@@ -65,21 +78,10 @@ import valkyrienwarfare.mod.schematics.SchematicReader.Schematic;
 import valkyrienwarfare.physics.BlockForce;
 import valkyrienwarfare.physics.PhysicsCalculations;
 import valkyrienwarfare.physics.PhysicsCalculationsManualControl;
+import valkyrienwarfare.physics.ShipTransform;
 import valkyrienwarfare.physics.ShipTransformationPacketHolder;
 import valkyrienwarfare.physics.TransformType;
 import valkyrienwarfare.util.NBTUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class PhysicsObject {
 
@@ -129,7 +131,7 @@ public class PhysicsObject {
         this.isNameCustom = false;
         this.claimedChunksInMap = false;
         this.queuedEntitiesToMount = new ArrayList<>();
-        this.entityLocalPositions = new TIntObjectHashMap<>();
+        this.entityLocalPositions = new TIntObjectHashMap<Vector>();
         this.setPhysicsEnabled(false);
         // blockPositions = new HashSet<BlockPos>();
         // We need safe access to this across multiple threads.
@@ -141,89 +143,78 @@ public class PhysicsObject {
         this.allowedUsers = new HashSet<String>();
     }
 
-    public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos posAt) {
-        if (!ownedChunks.isChunkEnclosedInMaxSet(posAt.getX() >> 4, posAt.getZ() >> 4)) {
-            return;
-        }
+	public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos posAt) {
+		if (getWorldObj().isRemote) {
+			return;
+		}
 
-        if (!ownedChunks.isChunkEnclosedInSet(posAt.getX() >> 4, posAt.getZ() >> 4)) {
-            return;
-        }
+		if (!ownedChunks.isChunkEnclosedInSet(posAt.getX() >> 4, posAt.getZ() >> 4)) {
+			return;
+		}
 
-        // If the block here is not to be physicsed, just treat it like you'd treat AIR
-        // blocks.
-        if (oldState != null && BlockPhysicsRegistration.blocksToNotPhysicise.contains(oldState.getBlock())) {
-            oldState = Blocks.AIR.getDefaultState();
-        }
-        if (newState != null && BlockPhysicsRegistration.blocksToNotPhysicise.contains(newState.getBlock())) {
-            newState = Blocks.AIR.getDefaultState();
-        }
+		// If the block here is not to be made with physics, just treat it like you'd
+		// treat AIR blocks.
+		if (oldState != null && BlockPhysicsRegistration.blocksToNotPhysicise.contains(oldState.getBlock())) {
+			oldState = Blocks.AIR.getDefaultState();
+		}
+		if (newState != null && BlockPhysicsRegistration.blocksToNotPhysicise.contains(newState.getBlock())) {
+			newState = Blocks.AIR.getDefaultState();
+		}
 
-        boolean isOldAir = oldState == null || oldState.getBlock().equals(Blocks.AIR);
-        boolean isNewAir = newState == null || newState.getBlock().equals(Blocks.AIR);
+		boolean isOldAir = oldState == null || oldState.getBlock().equals(Blocks.AIR);
+		boolean isNewAir = newState == null || newState.getBlock().equals(Blocks.AIR);
 
-//        System.out.println(oldState.getBlock().getLocalizedName());
-//        System.out.println(newState.getBlock().getLocalizedName());
-        if (isNewAir) {
-            blockPositions.remove(posAt);
-        }
+		if (isNewAir) {
+			blockPositions.remove(posAt);
+		}
 
-        if ((isOldAir && !isNewAir)) {
-            if (!getWorldObj().isRemote) {
-                blockPositions.add(posAt);
-            } else {
-                if (!blockPositions.contains(posAt)) {
-                    blockPositions.add(posAt);
-                }
-            }
-            int chunkX = (posAt.getX() >> 4) - claimedChunks[0][0].x;
-            int chunkZ = (posAt.getZ() >> 4) - claimedChunks[0][0].z;
-            ownedChunks.chunkOccupiedInLocal[chunkX][chunkZ] = true;
-        }
+		if ((isOldAir && !isNewAir)) {
+			blockPositions.add(posAt);
+			int chunkX = (posAt.getX() >> 4) - claimedChunks[0][0].x;
+			int chunkZ = (posAt.getZ() >> 4) - claimedChunks[0][0].z;
+			ownedChunks.chunkOccupiedInLocal[chunkX][chunkZ] = true;
+		}
 
-        if (blockPositions.isEmpty()) {
-            try {
-                if (!getWorldObj().isRemote) {
-                    if (creator != null) {
-                        EntityPlayer player = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList()
-                                .getPlayerByUsername(creator);
-                        if (player != null) {
-                            player.getCapability(ValkyrienWarfareMod.airshipCounter, null).onLose();
-                        } else {
-                            // TODO: Fix this later
-                            if (false) {
-                                try {
-                                    File f = new File(DimensionManager.getCurrentSaveRootDirectory(),
-                                            "playerdata/" + creator + ".dat");
-                                    NBTTagCompound tag = CompressedStreamTools.read(f);
-                                    NBTTagCompound capsTag = tag.getCompoundTag("ForgeCaps");
-                                    capsTag.setInteger("valkyrienwarfare:IAirshipCounter",
-                                            capsTag.getInteger("valkyrienwarfare:IAirshipCounter") - 1);
-                                    CompressedStreamTools.safeWrite(tag, f);
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-                        ValkyrienWarfareMod.chunkManager.getManagerForWorld(getWorldObj()).data.getAvalibleChunkKeys()
-                                .add(ownedChunks.getCenterX());
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+		if (blockPositions.isEmpty()) {
+			try {
+				if (creator != null) {
+					EntityPlayer player = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList()
+							.getPlayerByUsername(creator);
+					if (player != null) {
+						player.getCapability(ValkyrienWarfareMod.airshipCounter, null).onLose();
+					} else {
+						// TODO: Fix this later
+						if (false) {
+							try {
+								File f = new File(DimensionManager.getCurrentSaveRootDirectory(),
+										"playerdata/" + creator + ".dat");
+								NBTTagCompound tag = CompressedStreamTools.read(f);
+								NBTTagCompound capsTag = tag.getCompoundTag("ForgeCaps");
+								capsTag.setInteger("valkyrienwarfare:IAirshipCounter",
+										capsTag.getInteger("valkyrienwarfare:IAirshipCounter") - 1);
+								CompressedStreamTools.safeWrite(tag, f);
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+						}
+					}
+					ValkyrienWarfareMod.chunkManager.getManagerForWorld(getWorldObj()).data.getAvalibleChunkKeys()
+							.add(ownedChunks.getCenterX());
+				}
 
-            destroy();
-        }
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 
-        if (!getWorldObj().isRemote) {
-            if (physicsProcessor != null) {
-                physicsProcessor.onSetBlockState(oldState, newState, posAt);
-            }
-        }
+			destroy();
+		}
 
-        // System.out.println(blockPositions.size() + ":" + wrapper.isDead);
-    }
+		if (physicsProcessor != null) {
+			physicsProcessor.onSetBlockState(oldState, newState, posAt);
+		}
+
+		// System.out.println(blockPositions.size() + ":" + wrapper.isDead);
+	}
 
     public void destroy() {
         getWrapperEntity().setDead();
@@ -358,7 +349,6 @@ public class PhysicsObject {
 
         // radiusNeeded = math.max(radiusNeeded, 5);
 
-        iter = detector.foundSet.iterator();
 
         radiusNeeded = Math.min(radiusNeeded,
                 ValkyrienWarfareMod.chunkManager.getManagerForWorld(getWrapperEntity().world).maxChunkRadius);
@@ -391,6 +381,7 @@ public class PhysicsObject {
 
         createPhysicsCalculations();
 
+        iter = detector.foundSet.iterator();
         BlockPos centerDifference = refrenceBlockPos.subtract(centerInWorld);
         while (iter.hasNext()) {
             int i = iter.next();
@@ -872,9 +863,7 @@ public class PhysicsObject {
     public void writeToNBTTag(NBTTagCompound compound) {
         ownedChunks.writeToNBT(compound);
         NBTUtils.writeVectorToNBT("c", centerCoord, compound);
-        compound.setDouble("pitch", getWrapperEntity().getPitch());
-        compound.setDouble("yaw", getWrapperEntity().getYaw());
-        compound.setDouble("roll", getWrapperEntity().getRoll());
+        NBTUtils.writeShipTransformToNBT("currentTickTransform", coordTransform.getCurrentTickTransform(), compound);
         compound.setBoolean("doPhysics", isPhysicsEnabled());
         for (int row = 0; row < ownedChunks.chunkOccupiedInLocal.length; row++) {
             boolean[] curArray = ownedChunks.chunkOccupiedInLocal[row];
@@ -904,10 +893,27 @@ public class PhysicsObject {
     public void readFromNBTTag(NBTTagCompound compound) {
         ownedChunks = new VWChunkClaim(compound);
         centerCoord = NBTUtils.readVectorFromNBT("c", compound);
-        getWrapperEntity().setPitch(compound.getDouble("pitch"));
-        getWrapperEntity().setYaw(compound.getDouble("yaw"));
-        getWrapperEntity().setRoll(compound.getDouble("roll"));
-
+        ShipTransform savedTransform = NBTUtils.readShipTransformFromNBT("currentTickTransform", compound);
+        if (savedTransform != null) {
+        	Vector centerOfMassInGlobal = new Vector(centerCoord);
+        	savedTransform.transform(centerOfMassInGlobal, TransformType.LOCAL_TO_GLOBAL);
+        	
+        	getWrapperEntity().posX = centerOfMassInGlobal.X;
+        	getWrapperEntity().posY = centerOfMassInGlobal.Y;
+        	getWrapperEntity().posZ = centerOfMassInGlobal.Z;
+        	
+        	Quaternion rotationQuaternion = savedTransform.createRotationQuaternion(TransformType.LOCAL_TO_GLOBAL);
+        	double[] angles = rotationQuaternion.toRadians();
+        	this.getWrapperEntity().setPitch(Math.toDegrees(angles[0]));
+        	this.getWrapperEntity().setYaw(Math.toDegrees(angles[1]));
+        	this.getWrapperEntity().setRoll(Math.toDegrees(angles[2]));
+        } else {
+        	// Old code here for compatibility reasons. Should be removed by MC 1.13
+        	getWrapperEntity().setPitch(compound.getDouble("pitch"));
+            getWrapperEntity().setYaw(compound.getDouble("yaw"));
+            getWrapperEntity().setRoll(compound.getDouble("roll"));
+        }
+        
         for (int row = 0; row < ownedChunks.chunkOccupiedInLocal.length; row++) {
             boolean[] curArray = ownedChunks.chunkOccupiedInLocal[row];
             for (int column = 0; column < curArray.length; column++) {

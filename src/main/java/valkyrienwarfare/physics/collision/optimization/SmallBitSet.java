@@ -19,9 +19,10 @@ package valkyrienwarfare.physics.collision.optimization;
 import java.util.BitSet;
 
 /**
- * Slightly slower implementation of {@link FastBitSet}, but has much lower
- * memory requirements This is better than a byte[], as java promotes the bytes
- * to ints while working on them anyway. Fits much better into the cpu cache.
+ * Slightly slower implementation of {@link BooleanArrayBitSet}, but has much
+ * lower memory requirements This is better than a byte[], as java promotes the
+ * bytes to ints while working on them anyway. Fits much better into the cpu
+ * cache, yielding better performance during iteration.
  */
 public class SmallBitSet implements IBitSet {
 

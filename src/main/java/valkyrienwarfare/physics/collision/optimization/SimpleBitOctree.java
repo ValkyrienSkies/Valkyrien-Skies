@@ -23,7 +23,7 @@ public class SimpleBitOctree implements IBitOctree {
     private final IBitSet bitbuffer;
 
     public SimpleBitOctree() {
-        bitbuffer = ValkyrienWarfareMod.singleBitOctrees ? new FastBitSet(BITS_TOTAL) : new SmallBitSet(BITS_TOTAL);
+        bitbuffer = new SmallBitSet(BITS_TOTAL);
     }
 
     @Override
@@ -66,7 +66,7 @@ public class SimpleBitOctree implements IBitOctree {
     // IllegalArgumentException its way.
     private void ensureCapacity(int index) {
         if (index > BITS_TOTAL) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Tried accessing an element out of bounds!");
         }
     }
 

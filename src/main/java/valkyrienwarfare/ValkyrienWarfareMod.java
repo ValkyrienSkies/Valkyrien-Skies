@@ -106,10 +106,10 @@ import valkyrienwarfare.util.RealMethods;
         updateJSON = "https://raw.githubusercontent.com/Valkyrien-Warfare/Valkyrien-Warfare-Revamped/update.json",
         certificateFingerprint = "8f639e7b2d1117d8f2c5d545e2231f0a0519f0ce")
 public class ValkyrienWarfareMod {
-    public static final List<Module> addons = new ArrayList<>();
+    public static final List<Module> addons = new ArrayList<Module>();
     public static final String MODID = "valkyrienwarfare";
     public static final String MODNAME = "Valkyrien Warfare";
-    public static final String MODVER = "0.9_alpha";
+    public static final String MODVER = "0.9_prerelease_5";
     public static final int SHIP_ENTITY_PLAYER_LOAD_DISTANCE = 128;
     @CapabilityInject(IAirshipCounterCapability.class)
     public static final Capability<IAirshipCounterCapability> airshipCounter = null;
@@ -141,7 +141,6 @@ public class ValkyrienWarfareMod {
     public static boolean runAirshipPermissions = false;
     public static int threadCount = -1;
     public static double shipmobs_spawnrate = .01D;
-    public static boolean singleBitOctrees = false;
     public static Logger VWLogger;
     private static boolean hasAddonRegistrationEnded = false;
     public DataTag tag = null;
@@ -165,8 +164,6 @@ public class ValkyrienWarfareMod {
         shipsSpawnParticles = config.get(Configuration.CATEGORY_GENERAL, "Enable particle spawns on Ships", true, "Ex. Torch Particles").getBoolean();
         runAirshipPermissions = config.get(Configuration.CATEGORY_GENERAL, "Enable airship permissions", false, "Enables the airship permissions system").getBoolean();
         shipmobs_spawnrate = config.get(Configuration.CATEGORY_GENERAL, "The spawn rate for ship mobs", .01D, "The spawn rate for ship mobs").getDouble();
-        singleBitOctrees = config.get(Configuration.CATEGORY_GENERAL, "Single Bit octrees", true, "If true, octrees will use 1-bit entries. If false, they'll use 32-bit entries.\nSetting this to false gives a big memory boost, but is much slower.").getBoolean();
-
         {
             threadCount = config.get(Configuration.CATEGORY_GENERAL, "Physics thread count", -1,
                     "The number of threads to use for physics. If thread count <= 0 it will use the system core count.").getInt();

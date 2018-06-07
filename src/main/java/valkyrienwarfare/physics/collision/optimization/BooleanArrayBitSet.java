@@ -20,11 +20,11 @@ package valkyrienwarfare.physics.collision.optimization;
  * Not as space efficient as BitSet (about 8x the size), but also has a much
  * lower cpu cost. Has no bounds checking to reduce overhead.
  */
-public class FastBitSet implements IBitSet {
+public class BooleanArrayBitSet implements IBitSet {
 
     private final boolean[] data;
 
-    public FastBitSet(int size) {
+    public BooleanArrayBitSet(int size) {
         data = new boolean[size];
     }
 

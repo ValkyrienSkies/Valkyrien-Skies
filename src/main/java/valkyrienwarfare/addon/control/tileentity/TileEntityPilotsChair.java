@@ -112,11 +112,11 @@ public class TileEntityPilotsChair extends ImplTileEntityPilotable {
 
 		if (message.airshipRight_KeyDown) {
 			idealAngularDirection.subtract(shipUp);
-			sidePitch += 15D;
+			sidePitch -= 10D;
 		}
 		if (message.airshipLeft_KeyDown) {
 			idealAngularDirection.add(shipUp);
-			sidePitch -= 15D;
+			sidePitch += 10D;
 		}
 		
 		Vector sidesRotationAxis = new Vector(playerDirection);
@@ -142,7 +142,7 @@ public class TileEntityPilotsChair extends ImplTileEntityPilotable {
 		Vector linearMomentumDif = idealLinearVelocity.getSubtraction(controlledShip.physicsProcessor.linearMomentum);
 		Vector angularVelocityDif = idealAngularDirection.getSubtraction(controlledShip.physicsProcessor.angularVelocity);
 		
-		linearMomentumDif.multiply(lerpFactor);
+		linearMomentumDif.multiply(lerpFactor / 2);
 		angularVelocityDif.multiply(lerpFactor / 2);
 		
 		controlledShip.physicsProcessor.linearMomentum.subtract(linearMomentumDif);

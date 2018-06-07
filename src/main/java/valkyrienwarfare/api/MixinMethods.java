@@ -29,7 +29,8 @@ import valkyrienwarfare.physics.collision.EntityCollisionInjector;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public class MixinMethods {
-    public static EntityCollisionInjector.IntermediateMovementVariableStorage handleMove(/*Args args, */MoverType type, double dx, double dy, double dz, Entity this_) {
+	
+    public static EntityCollisionInjector.IntermediateMovementVariableStorage handleMove(MoverType type, double dx, double dy, double dz, Entity this_) {
         if (PhysicsWrapperEntity.class.isInstance(this_)) {
             //Don't move at all
             return null;

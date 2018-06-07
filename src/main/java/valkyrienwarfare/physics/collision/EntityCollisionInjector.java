@@ -72,10 +72,6 @@ public class EntityCollisionInjector {
 		EntityPolygon playerBeforeMove = new EntityPolygon(entity.getEntityBoundingBox(), entity);
 		List<Polygon> colPolys = getCollidingPolygonsAndDoBlockCols(entity, velocity);
 
-		if (colPolys.isEmpty()) {
-			return null;
-		}
-		
 		PhysicsWrapperEntity worldBelow = null;
 		IDraggable draggable = EntityDraggable.getDraggableFromEntity(entity);
 

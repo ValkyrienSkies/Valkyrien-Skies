@@ -154,18 +154,10 @@ public class EntityDraggable {
                 draggable.getVelocityAddedToPlayer().zero();
             }
 
-            // Bad @DaPorkChop >:/
-            // if (draggable.getWorldBelowFeet() != null) {
-            // entity.onGround = true;
-            // }
 
             Vector velocityProper = new Vector(draggable.getVelocityAddedToPlayer());
             AxisAlignedBB originalBoundingBox = entity.getEntityBoundingBox();
             draggable.setVelocityAddedToPlayer(getVelocityProper(velocityProper, entity));
-
-            // entity.move(MoverType.SELF, draggable.getVelocityAddedToPlayer().X,
-            // draggable.getVelocityAddedToPlayer().Y,
-            // draggable.getVelocityAddedToPlayer().Z);
 
             entity.setEntityBoundingBox(originalBoundingBox);
 
@@ -173,13 +165,7 @@ public class EntityDraggable {
                     draggable.getVelocityAddedToPlayer().Y, draggable.getVelocityAddedToPlayer().Z));
             entity.resetPositionToBB();
 
-            if (EntityArrow.class.isInstance(entity)) {
-                entity.prevRotationYaw = entity.rotationYaw;
-                entity.rotationYaw -= draggable.getYawDifVelocity();
-            } else {
-                entity.prevRotationYaw = entity.rotationYaw;
-                entity.rotationYaw += draggable.getYawDifVelocity();
-            }
+            entity.rotationYaw += draggable.getYawDifVelocity();
 
             // Do not add this movement as if the entity were walking it
             // entity.distanceWalkedModified = originalWalked;

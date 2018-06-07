@@ -110,6 +110,7 @@ public class ValkyrienWarfareMod {
     public static final String MODID = "valkyrienwarfare";
     public static final String MODNAME = "Valkyrien Warfare";
     public static final String MODVER = "0.9_alpha";
+    public static final int SHIP_ENTITY_PLAYER_LOAD_DISTANCE = 128;
     @CapabilityInject(IAirshipCounterCapability.class)
     public static final Capability<IAirshipCounterCapability> airshipCounter = null;
     // This service is directly responsible for running collision tasks.
@@ -358,6 +359,7 @@ public class ValkyrienWarfareMod {
 
         addons.forEach(m -> m.doPreInit(event));
 
+        /*
         try {
             Field chunkCache = ForgeChunkManager.class.getDeclaredField("dormantChunkCacheSize");
             chunkCache.setAccessible(true);
@@ -365,6 +367,7 @@ public class ValkyrienWarfareMod {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        */
     }
 
     @EventHandler
@@ -374,7 +377,7 @@ public class ValkyrienWarfareMod {
     	System.out.println("We are running on " + Runtime.getRuntime().availableProcessors() + " threads; 4 or more is recommended!");
         proxy.init(event);
         EntityRegistry.registerModEntity(new ResourceLocation(MODID, "PhysWrapper"), PhysicsWrapperEntity.class,
-                "PhysWrapper", 70, this, 300, 5, false);
+                "PhysWrapper", 70, this, SHIP_ENTITY_PLAYER_LOAD_DISTANCE, 5, false);
 
         addons.forEach(m -> m.doInit(event));
     }

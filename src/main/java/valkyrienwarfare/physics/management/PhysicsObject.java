@@ -938,12 +938,6 @@ public class PhysicsObject {
 
         creator = compound.getString("owner");
         claimedChunksInMap = compound.getBoolean("claimedChunksInMap");
-        for (int x = ownedChunks.getMinX(); x <= ownedChunks.getMaxX(); x++) {
-            for (int z = ownedChunks.getMinZ(); z <= ownedChunks.getMaxZ(); z++) {
-                getWorldObj().getChunkFromChunkCoords(x, z);
-            }
-        }
-
         isNameCustom = compound.getBoolean("isNameCustom");
         getWrapperEntity().dataManager.set(PhysicsWrapperEntity.IS_NAME_CUSTOM, isNameCustom);
         
@@ -983,10 +977,6 @@ public class PhysicsObject {
         try {
             NBTTagCompound entityFixedPositionNBT = modifiedBuffer.readCompoundTag();
             entityLocalPositions = NBTUtils.readEntityPositionMap("entityFixedPosMap", entityFixedPositionNBT);
-            // if(worldObj.isRemote){
-            // System.out.println(entityLocalPositions.containsKey(Minecraft.getMinecraft().thePlayer.getPersistentID().hashCode()));
-            // System.out.println(Minecraft.getMinecraft().thePlayer.getPersistentID().hashCode());
-            // }
         } catch (IOException e) {
             System.err.println("Couldn't load the entityFixedPosNBT; this is really bad.");
             e.printStackTrace();

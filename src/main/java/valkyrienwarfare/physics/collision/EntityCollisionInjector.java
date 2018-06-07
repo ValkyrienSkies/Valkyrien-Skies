@@ -16,6 +16,11 @@
 
 package valkyrienwarfare.physics.collision;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Nullable;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSlime;
 import net.minecraft.block.SoundType;
@@ -46,14 +51,12 @@ import valkyrienwarfare.physics.collision.polygons.ShipPolygon;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.physics.management.WorldPhysObjectManager;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class EntityCollisionInjector {
 
 	private static final double errorSignificance = .001D;
 
 	// Returns false if game should use default collision
+	@Nullable
 	public static IntermediateMovementVariableStorage alterEntityMovement(Entity entity, MoverType type, double dx,
 			double dy, double dz) {
 
@@ -67,8 +70,12 @@ public class EntityCollisionInjector {
 		boolean isLiving = entity instanceof EntityLivingBase;
 		Vec3d velocity = new Vec3d(dx, dy, dz);
 		EntityPolygon playerBeforeMove = new EntityPolygon(entity.getEntityBoundingBox(), entity);
-		ArrayList<Polygon> colPolys = getCollidingPolygonsAndDoBlockCols(entity, velocity);
+		List<Polygon> colPolys = getCollidingPolygonsAndDoBlockCols(entity, velocity);
 
+		if (colPolys.isEmpty()) {
+			return null;
+		}
+		
 		PhysicsWrapperEntity worldBelow = null;
 		IDraggable draggable = EntityDraggable.getDraggableFromEntity(entity);
 

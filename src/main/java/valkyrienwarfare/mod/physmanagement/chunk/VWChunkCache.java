@@ -14,7 +14,7 @@
  *
  */
 
-package valkyrienwarfare.mod.physmanagement.relocation;
+package valkyrienwarfare.mod.physmanagement.chunk;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -82,7 +82,8 @@ public class VWChunkCache {
             return null;
         TileEntity tileEntity = cachedChunks[i][j].getTileEntity(pos, type);
         if (tileEntity == null) {
-        	System.err.println("Physics Thread got a null TileEntity! Maybe it wasn't supposed to?");
+        	// TODO: Re-enable this for debug testing
+        	// System.err.println("Physics Thread got a null TileEntity! Maybe it wasn't supposed to?");
         }
         return tileEntity;
     }

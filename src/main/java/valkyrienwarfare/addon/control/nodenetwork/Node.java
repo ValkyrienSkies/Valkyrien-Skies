@@ -125,7 +125,7 @@ public class Node {
             parentPhysicsObject.concurrentNodesWithinShip.remove(this);
         }
         
-        System.out.println("NODE DESTROYED!!!");
+        // System.out.println("NODE DESTROYED!!!");
         // Assume this gets handled by the tileentity.invalidate() method, otherwise
         // this won't work!
         // if(!parentTile.getWorld().isRemote){

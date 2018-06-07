@@ -39,7 +39,7 @@ public class TileEntityShipHelm extends ImplTileEntityPilotable implements ITick
     public double wheelRotation = 0;
     public double lastWheelRotation = 0;
 
-    double nextWheelRotation;
+    private double nextWheelRotation;
 
     @Override
     public void update() {
@@ -47,7 +47,7 @@ public class TileEntityShipHelm extends ImplTileEntityPilotable implements ITick
             calculateCompassAngle();
 
             lastWheelRotation = wheelRotation;
-            wheelRotation = nextWheelRotation;
+            wheelRotation += (nextWheelRotation - wheelRotation) * .25D;
         } else {
             double toOriginRate = 5D;
             if (Math.abs(wheelRotation) < toOriginRate) {

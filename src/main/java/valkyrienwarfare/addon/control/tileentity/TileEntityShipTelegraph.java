@@ -70,7 +70,7 @@ public class TileEntityShipTelegraph extends ImplTileEntityPilotable implements 
     public void update() {
         if (getWorld().isRemote) {
             oldHandleRotation = handleRotation;
-            handleRotation = nextHandleRotation;
+            handleRotation += (nextHandleRotation - handleRotation) * .35D;
         } else {
             sendUpdatePacketToAllNearby();
         }

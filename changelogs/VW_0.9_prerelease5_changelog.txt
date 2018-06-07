@@ -1,5 +1,5 @@
 * New multi-threaded physics engine
-* Dramatically improved physics performance, with ships up to 500,000 blocks large only causing minor lag
+* Dramatically improved physics performance, with ships up to 500,000 blocks large causing only minor lag
 * Added Sponge compatibility
 * Added '/vw tps' command to see physics tick rate
 * Added smooth ship interpolation to the client, similar to what vanilla boats use
@@ -8,4 +8,5 @@
 * Fixed issues with Flans mod
 * Fixed the lighting bugs
 * Made physics collision push only, no pull collisions to get ships stuck in the ground
+* Fixed bug that gave players infinite block reach distance
 * Players in survival mode are no longer "kicked for flying", they are however still kicked for moving too quickly; perhaps that can be fixed by next update

@@ -30,10 +30,13 @@ import org.lwjgl.opengl.GL11;
 import java.util.HashMap;
 import java.util.Map;
 
+// TODO: Upon further inspection this class does the exact opposite of what its name implies 
+// and takes a stupid slow approach to rendering simple geometries. Remove this and create a 
+// vertex buffer based solution soon!
 public class FastBlockModelRenderer {
 
-    public static Map<IBlockState, BufferBuilder.State> blockstateToVertexData = new HashMap<IBlockState, BufferBuilder.State>();
-    public static Map<IBlockState, Map<Integer, Integer>> highRamGLList = new HashMap<IBlockState, Map<Integer, Integer>>();
+	public static Map<IBlockState, BufferBuilder.State> blockstateToVertexData = new HashMap<IBlockState, BufferBuilder.State>();
+	public static Map<IBlockState, Map<Integer, Integer>> highRamGLList = new HashMap<IBlockState, Map<Integer, Integer>>();
 
     public static void renderBlockModel(BufferBuilder BufferBuilder, Tessellator tessellator, World world, IBlockState blockstateToRender, int brightness) {
         renderBlockModelHighQualityHighRam(BufferBuilder, tessellator, world, blockstateToRender, brightness);
@@ -87,7 +90,7 @@ public class FastBlockModelRenderer {
         BufferBuilder.begin(7, DefaultVertexFormats.BLOCK);
 
         BufferBuilder.setVertexState(data);
-        int j = BufferBuilder.vertexFormat.getIntegerSize() >> 2;
+        int j = BufferBuilder.vertexFormat.getNextOffset() >> 2;
         int cont = BufferBuilder.getVertexCount();
         int offsetUV = BufferBuilder.vertexFormat.getUvOffsetById(1) / 4;
         int bufferNextSize = BufferBuilder.vertexFormat.getIntegerSize();

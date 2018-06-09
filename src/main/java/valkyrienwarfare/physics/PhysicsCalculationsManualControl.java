@@ -64,10 +64,7 @@ public class PhysicsCalculationsManualControl extends PhysicsCalculations {
 
         //We don't want the up normal to exactly align with the world normal, it causes problems with collision
         if (!this.actAsArchimedes) {
-            getParent().getWrapperEntity().setPitch(0.01F);
-            getParent().getWrapperEntity().setRoll(0.01F);
-            getParent().getWrapperEntity().setYaw(previousYaw);
-            getParent().getWrapperEntity().setYaw(getParent().getWrapperEntity().getYaw() - (getYawRate() * getPhysicsTimeDeltaPerPhysTick()));
+            getParent().getWrapperEntity().setPhysicsEntityRotation(0.001D, previousYaw - (getYawRate() * getPhysicsTimeDeltaPerPhysTick()), 0.001D);
         }
 
         double[] existingRotationMatrix = RotationMatrices.getRotationMatrix(0, getParent().getWrapperEntity().getYaw(), 0);

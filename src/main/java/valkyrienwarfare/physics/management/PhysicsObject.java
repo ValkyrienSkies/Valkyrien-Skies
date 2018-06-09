@@ -912,14 +912,10 @@ public class PhysicsObject {
         	
         	Quaternion rotationQuaternion = savedTransform.createRotationQuaternion(TransformType.LOCAL_TO_GLOBAL);
         	double[] angles = rotationQuaternion.toRadians();
-        	this.getWrapperEntity().setPitch(Math.toDegrees(angles[0]));
-        	this.getWrapperEntity().setYaw(Math.toDegrees(angles[1]));
-        	this.getWrapperEntity().setRoll(Math.toDegrees(angles[2]));
+        	getWrapperEntity().setPhysicsEntityRotation(angles[0], angles[1], angles[2]);
         } else {
         	// Old code here for compatibility reasons. Should be removed by MC 1.13
-        	getWrapperEntity().setPitch(compound.getDouble("pitch"));
-            getWrapperEntity().setYaw(compound.getDouble("yaw"));
-            getWrapperEntity().setRoll(compound.getDouble("roll"));
+            getWrapperEntity().setPhysicsEntityRotation(compound.getDouble("pitch"), compound.getDouble("yaw"), compound.getDouble("roll"));
         }
         
         for (int row = 0; row < getOwnedChunks().chunkOccupiedInLocal.length; row++) {
@@ -959,17 +955,14 @@ public class PhysicsObject {
 
         setOwnedChunks(new VWChunkClaim(modifiedBuffer.readInt(), modifiedBuffer.readInt(), modifiedBuffer.readInt()));
 
-        getWrapperEntity().posX = modifiedBuffer.readDouble();
-        getWrapperEntity().posY = modifiedBuffer.readDouble();
-        getWrapperEntity().posZ = modifiedBuffer.readDouble();
-
-        getWrapperEntity().setPitch(modifiedBuffer.readDouble());
-        getWrapperEntity().setYaw(modifiedBuffer.readDouble());
-        getWrapperEntity().setRoll(modifiedBuffer.readDouble());
-
-        getWrapperEntity().lastTickPosX = getWrapperEntity().posX;
-        getWrapperEntity().lastTickPosY = getWrapperEntity().posY;
-        getWrapperEntity().lastTickPosZ = getWrapperEntity().posZ;
+        double posX = modifiedBuffer.readDouble();
+        double posY = modifiedBuffer.readDouble();
+        double posZ = modifiedBuffer.readDouble();
+        double pitch = modifiedBuffer.readDouble();
+        double yaw = modifiedBuffer.readDouble();
+        double roll = modifiedBuffer.readDouble();
+        
+        getWrapperEntity().setPhysicsEntityPositionAndRotation(posX, posY, posZ, pitch, yaw, roll);
 
         setCenterCoord(new Vector(modifiedBuffer));
         for (boolean[] array : getOwnedChunks().chunkOccupiedInLocal) {
@@ -1127,6 +1120,20 @@ public class PhysicsObject {
 		this.isPhysicsEnabled = physicsEnabled;
 	}
 
+	/**
+	 * Sets the consecutive tick counter to 0.
+	 */
+	public void resetConsecutiveProperTicks() {
+		this.physicsObjectConsecutiveTicks = 0;
+	}
+	
+	/**
+	 * @return true if this PhysicsObject needs to update the collision cache immediately.
+	 */
+	public boolean needsImmediateCollisionCacheUpdate() {
+		return physicsObjectConsecutiveTicks == MIN_TICKS_EXISTED_BEFORE_PHYSICS;
+	}
+	
 	/**
 	 * @return this ships ShipTransformationManager
 	 */
@@ -1308,8 +1315,5 @@ public class PhysicsObject {
 	public void setRefrenceBlockPos(BlockPos refrenceBlockPos) {
 		this.refrenceBlockPos = refrenceBlockPos;
 	}
-	
-	public void resetConsecutiveProperTicks() {
-		this.physicsObjectConsecutiveTicks = 0;
-	}
+
 }

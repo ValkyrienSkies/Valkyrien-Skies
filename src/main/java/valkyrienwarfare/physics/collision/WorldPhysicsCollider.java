@@ -125,7 +125,7 @@ public class WorldPhysicsCollider {
 			cachedPotentialHits.remove(cachedHitsToRemove.get(i));
 		}
 		cachedHitsToRemove.resetQuick();
-		if (ticksSinceCacheUpdate > CACHE_UPDATE_FREQUENCY) {
+		if (ticksSinceCacheUpdate > CACHE_UPDATE_FREQUENCY || parent.needsImmediateCollisionCacheUpdate()) {
 			updatePotentialCollisionCache();
 			updateCollisionTasksCache = true;
 		}

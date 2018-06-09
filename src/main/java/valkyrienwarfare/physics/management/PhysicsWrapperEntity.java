@@ -176,11 +176,6 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
     }
 
     @Override
-    public AxisAlignedBB getEntityBoundingBox() {
-        return Entity.ZERO_AABB;
-    }
-
-    @Override
     @SideOnly(Side.CLIENT)
     public AxisAlignedBB getRenderBoundingBox() {
         return getPhysicsObject().getShipBoundingBox();
@@ -246,26 +241,10 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
     }
 
     /**
-     * @param roll the roll to set
-     */
-    @Deprecated
-    public void setRoll(double roll) {
-        this.roll = roll;
-    }
-
-    /**
      * @return the yaw value being currently used by the game tick
      */
     public double getYaw() {
         return yaw;
-    }
-
-    /**
-     * @param yaw the yaw to set
-     */
-    @Deprecated
-    public void setYaw(double yaw) {
-        this.yaw = yaw;
     }
 
     /**
@@ -275,18 +254,28 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
         return pitch;
     }
 
-    /**
-     * @param pitch the pitch to set
-     */
-    @Deprecated
-    public void setPitch(double pitch) {
-        this.pitch = pitch;
-    }
-
 	/**
 	 * @return The PhysicsObject this entity is wrapping around.
 	 */
 	public PhysicsObject getPhysicsObject() {
 		return physicsObject;
 	}
+	
+	public void setPhysicsEntityPositionAndRotation(double posX, double posY, double posZ, double pitch, double yaw, double roll) {
+		this.lastTickPosX = this.posX;
+		this.lastTickPosY = this.posY;
+		this.lastTickPosZ = this.posZ;
+		this.posX = posX;
+		this.posY = posY;
+		this.posZ = posZ;
+		setPhysicsEntityRotation(pitch, yaw, roll);
+		this.setEntityBoundingBox(new AxisAlignedBB(this.posX, this.posY, this.posZ, this.posX, this.posY, this.posZ).grow(.1D));
+	}
+	
+	public void setPhysicsEntityRotation(double pitch, double yaw, double roll) {
+		this.pitch = pitch;
+		this.yaw = yaw;
+		this.roll = roll;
+	}
+
 }

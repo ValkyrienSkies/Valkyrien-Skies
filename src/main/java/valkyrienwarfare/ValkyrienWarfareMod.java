@@ -153,10 +153,6 @@ public class ValkyrienWarfareMod {
      * @param conf
      */
     public static void applyConfig(Configuration conf) {
-        // dynamicLighting = config.get(Configuration.CATEGORY_GENERAL,
-        // "DynamicLighting", false).getBoolean();
-        // Property spawnParticlesParticle = config.get(Configuration.CATEGORY_GENERAL,
-        // "Ships spawn particles", false).getBoolean();
         shipUpperLimit = config.get(Configuration.CATEGORY_GENERAL, "Ship Y-Height Maximum", 1000D).getDouble();
         shipLowerLimit = config.get(Configuration.CATEGORY_GENERAL, "Ship Y-Height Minimum", -30D).getDouble();
         maxAirships = config.get(Configuration.CATEGORY_GENERAL, "Max airships per player", -1, "Players can't own more than this many airships at once. Set to -1 to disable.").getInt();
@@ -165,11 +161,11 @@ public class ValkyrienWarfareMod {
         runAirshipPermissions = config.get(Configuration.CATEGORY_GENERAL, "Enable airship permissions", false, "Enables the airship permissions system").getBoolean();
         shipmobs_spawnrate = config.get(Configuration.CATEGORY_GENERAL, "The spawn rate for ship mobs", .01D, "The spawn rate for ship mobs").getDouble();
         {
-            threadCount = config.get(Configuration.CATEGORY_GENERAL, "Physics thread count", -1,
-                    "The number of threads to use for physics. If thread count <= 0 it will use the system core count.").getInt();
+            threadCount = config.get(Configuration.CATEGORY_GENERAL, "Physics thread count", Runtime.getRuntime().availableProcessors() - 2,
+                    "The number of threads to use for physics, recommened to use your cpu's thread count minus 2.").getInt();
 
             if (PHYSICS_THREADS_EXECUTOR == null) {
-                PHYSICS_THREADS_EXECUTOR = Executors.newFixedThreadPool(threadCount <= 0 ? Runtime.getRuntime().availableProcessors() : threadCount);
+                PHYSICS_THREADS_EXECUTOR = Executors.newFixedThreadPool(Math.max(2, threadCount));
             }
         }
 

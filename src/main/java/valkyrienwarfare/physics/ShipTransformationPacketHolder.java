@@ -123,9 +123,7 @@ public class ShipTransformationPacketHolder {
 		Quaternion lerpedRotation = Quaternion.slerpInterpolate(prevRotation, newRotation, lerpFactor);
 		double[] lerpedRotationAngles = lerpedRotation.toRadians();
 
-		physObj.getWrapperEntity().setPitch(Math.toDegrees(lerpedRotationAngles[0]));
-		physObj.getWrapperEntity().setYaw(Math.toDegrees(lerpedRotationAngles[1]));
-		physObj.getWrapperEntity().setRoll(Math.toDegrees(lerpedRotationAngles[2]));
+		physObj.getWrapperEntity().setPhysicsEntityRotation(Math.toDegrees(lerpedRotationAngles[0]), Math.toDegrees(lerpedRotationAngles[1]), Math.toDegrees(lerpedRotationAngles[2]));
 
 		physObj.setCenterCoord(centerOfRotation);
 

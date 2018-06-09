@@ -52,13 +52,7 @@ public class PhysicsTickHandler {
                 PhysicsShipTransform physTransform = (PhysicsShipTransform) wrapper.getPhysicsObject().getShipTransformationManager()
                         .getCurrentPhysicsTransform();
 
-                wrapper.posX = physTransform.getPosX();
-                wrapper.posY = physTransform.getPosY();
-                wrapper.posZ = physTransform.getPosZ();
-                wrapper.setPitch(physTransform.getPitch());
-                wrapper.setYaw(physTransform.getYaw());
-                wrapper.setRoll(physTransform.getRoll());
-
+                wrapper.setPhysicsEntityPositionAndRotation(physTransform.getPosX(), physTransform.getPosY(), physTransform.getPosZ(), physTransform.getPitch(), physTransform.getYaw(), physTransform.getRoll());
                 wrapper.getPhysicsObject().getShipTransformationManager().updateAllTransforms(true, true);
             }
 

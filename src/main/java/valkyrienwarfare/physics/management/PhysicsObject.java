@@ -963,7 +963,8 @@ public class PhysicsObject {
         double roll = modifiedBuffer.readDouble();
         
         getWrapperEntity().setPhysicsEntityPositionAndRotation(posX, posY, posZ, pitch, yaw, roll);
-
+        getWrapperEntity().physicsUpdateLastTickPositions();
+        
         setCenterCoord(new Vector(modifiedBuffer));
         for (boolean[] array : getOwnedChunks().chunkOccupiedInLocal) {
             for (int i = 0; i < array.length; i++) {

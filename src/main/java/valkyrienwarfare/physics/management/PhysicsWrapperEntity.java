@@ -262,16 +262,19 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 	}
 	
 	public void setPhysicsEntityPositionAndRotation(double posX, double posY, double posZ, double pitch, double yaw, double roll) {
-		this.lastTickPosX = this.posX;
-		this.lastTickPosY = this.posY;
-		this.lastTickPosZ = this.posZ;
 		this.posX = posX;
 		this.posY = posY;
 		this.posZ = posZ;
 		setPhysicsEntityRotation(pitch, yaw, roll);
 		this.setEntityBoundingBox(new AxisAlignedBB(this.posX, this.posY, this.posZ, this.posX, this.posY, this.posZ).grow(.1D));
 	}
-	
+
+	public void physicsUpdateLastTickPositions() {
+		this.lastTickPosX = this.posX;
+		this.lastTickPosY = this.posY;
+		this.lastTickPosZ = this.posZ;
+	}
+
 	public void setPhysicsEntityRotation(double pitch, double yaw, double roll) {
 		this.pitch = pitch;
 		this.yaw = yaw;

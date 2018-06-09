@@ -52,6 +52,7 @@ public class PhysicsTickHandler {
                 PhysicsShipTransform physTransform = (PhysicsShipTransform) wrapper.getPhysicsObject().getShipTransformationManager()
                         .getCurrentPhysicsTransform();
 
+                wrapper.physicsUpdateLastTickPositions();
                 wrapper.setPhysicsEntityPositionAndRotation(physTransform.getPosX(), physTransform.getPosY(), physTransform.getPosZ(), physTransform.getPitch(), physTransform.getYaw(), physTransform.getRoll());
                 wrapper.getPhysicsObject().getShipTransformationManager().updateAllTransforms(true, true);
             }

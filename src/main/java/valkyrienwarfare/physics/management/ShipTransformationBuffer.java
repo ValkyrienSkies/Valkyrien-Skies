@@ -22,7 +22,12 @@ import valkyrienwarfare.mod.network.PhysWrapperPositionMessage;
 import valkyrienwarfare.physics.ShipTransformationPacketHolder;
 
 /**
- * Acts as a buffer to smooth incoming position data from the server.
+ * Ideally this would smooth out data coming from the sever, but for now it
+ * mostly does nothing aside from storing the previous transforms. May possibly
+ * add something here in the future.
+ * 
+ * @author thebest108
+ *
  */
 public class ShipTransformationBuffer {
 
@@ -53,12 +58,12 @@ public class ShipTransformationBuffer {
     }
 
     private boolean isSmoothTransformReady() {
-    	return transformations.size() > TRANSFORMS_SMOOTHED;
+    	return true; /*transformations.size() > TRANSFORMS_SMOOTHED;*/
     }
     
     // Doesn't really do anything yet.
     private ShipTransformationPacketHolder generateSmoothTransform() {
-    	return transformations.get(0);
+    	return transformations.pollFirst();
     	/*
     	double[] weights = new double[TRANSFORMS_SMOOTHED];
     	ShipTransformationPacketHolder[] transforms = new ShipTransformationPacketHolder[TRANSFORMS_SMOOTHED];
@@ -70,26 +75,27 @@ public class ShipTransformationBuffer {
     	*/
     }
     
-    private class BezierWeightGenerator {
-    	
-    	private final int order;
-    	
-    	public BezierWeightGenerator(int order) {
-    		this.order = order;
-    	}
-    	
-    	public double getTermWeight(double deltaTime, int term) {
-    		return 2 * Math.pow(deltaTime, term) * Math.pow(1 - deltaTime, order - term) * binomial(TRANSFORMS_SMOOTHED - 1, term);
-    	}
-    	
-    	private int binomial(int n, int k) {
-            if (k>n-k)
-                k=n-k;
-            int b=1;
-            for (int i=1, m=n; i<=k; i++, m--)
-                b=b*m/i;
-            return b;
-        }
-    	
-    }
+	private class BezierWeightGenerator {
+
+		private final int order;
+
+		public BezierWeightGenerator(int order) {
+			this.order = order;
+		}
+
+		public double getTermWeight(double deltaTime, int term) {
+			return 2 * Math.pow(deltaTime, term) * Math.pow(1 - deltaTime, order - term)
+					* binomial(TRANSFORMS_SMOOTHED - 1, term);
+		}
+
+		private int binomial(int n, int k) {
+			if (k > n - k)
+				k = n - k;
+			int b = 1;
+			for (int i = 1, m = n; i <= k; i++, m--)
+				b = b * m / i;
+			return b;
+		}
+
+	}
 }

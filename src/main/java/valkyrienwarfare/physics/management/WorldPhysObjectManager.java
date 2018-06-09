@@ -91,6 +91,7 @@ public class WorldPhysObjectManager {
                     }
                 } else {
                     frozenShips.add(wrapper);
+                    wrapper.getPhysicsObject().resetConsecutiveProperTicks();
                 }
             }
         }
@@ -101,6 +102,7 @@ public class WorldPhysObjectManager {
             if (wrapper.isDead || wrapper.getPhysicsObject() == null
                     || (wrapper.getPhysicsObject().getPhysicsProcessor() == null && !wrapper.world.isRemote)) {
                 dumbShips.add(wrapper);
+                wrapper.getPhysicsObject().resetConsecutiveProperTicks();
             }
         }
 
@@ -125,6 +127,7 @@ public class WorldPhysObjectManager {
             }
         }
         loaded.isDead = false;
+        loaded.getPhysicsObject().resetConsecutiveProperTicks();
         physicsEntities.add(loaded);
     }
 
@@ -155,6 +158,7 @@ public class WorldPhysObjectManager {
 		} else {
 			loaded.isDead = true;
         }
+		loaded.getPhysicsObject().resetConsecutiveProperTicks();
     }
 
     /**

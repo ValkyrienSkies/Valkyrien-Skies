@@ -50,7 +50,7 @@ public class VWThread extends Thread {
 	// The ships we will be ticking physics for every tick, and sending those
 	// updates to players.
 	private final List<PhysicsWrapperEntity> ships;
-	private int positionTickID;
+	private int physicsTicksCount;
 	// Used by the game thread to mark this thread for death.
 	private volatile boolean threadRunning;
 	private final Queue<Long> latestPhysicsTickTimes;
@@ -60,7 +60,7 @@ public class VWThread extends Thread {
 		threadID++;
 		this.hostWorld = host;
 		this.ships = new ArrayList<PhysicsWrapperEntity>();
-		this.positionTickID = 0;
+		this.physicsTicksCount = 0;
 		this.threadRunning = true;
 		this.latestPhysicsTickTimes = new ConcurrentLinkedQueue<Long>();
 	}
@@ -142,7 +142,7 @@ public class VWThread extends Thread {
 	}
 
 	@SideOnly(Side.CLIENT)
-	private boolean isSinglePlayerPaused() {
+	private static boolean isSinglePlayerPaused() {
 		return Minecraft.getMinecraft().isGamePaused();
 	}
 
@@ -217,9 +217,9 @@ public class VWThread extends Thread {
 			// if (wrapper.getPhysicsObject().blockPositions.size() > 10000) {
 			// System.out.println(wrapper.getPhysicsObject().blockPositions.size());
 			// }
-			wrapper.getPhysicsObject().getShipTransformationManager().sendPositionToPlayers(positionTickID);
+			wrapper.getPhysicsObject().getShipTransformationManager().sendPositionToPlayers(physicsTicksCount);
 		}
-		positionTickID++;
+		physicsTicksCount++;
 	}
 
 	/**

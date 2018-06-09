@@ -90,29 +90,6 @@ public class ShipTransformationPacketHolder {
 		creationTimeNano = -1;
 	}
 
-	// Apply all the position/rotation variables accordingly onto the passed
-	// physObject
-	public void applyToPhysObject(PhysicsObject physObj) {
-		Vector CMDif = centerOfRotation.getSubtraction(physObj.getCenterCoord());
-		physObj.getShipTransformationManager().getCurrentTickTransform().rotate(CMDif, TransformType.LOCAL_TO_GLOBAL);
-
-		physObj.getWrapperEntity().lastTickPosX -= CMDif.X;
-		physObj.getWrapperEntity().lastTickPosY -= CMDif.Y;
-		physObj.getWrapperEntity().lastTickPosZ -= CMDif.Z;
-
-		physObj.getWrapperEntity().posX = posX;
-		physObj.getWrapperEntity().posY = posY;
-		physObj.getWrapperEntity().posZ = posZ;
-
-		physObj.getWrapperEntity().setPitch(pitch);
-		physObj.getWrapperEntity().setYaw(yaw);
-		physObj.getWrapperEntity().setRoll(roll);
-
-		physObj.setCenterCoord(centerOfRotation);
-
-		physObj.setShipBoundingBox(shipBB);
-	}
-
 	/**
 	 * Apply this physics transform similar to how a vanilla boat would. Not the
 	 * best solution, but its simple and robust, and works well enough for now.

@@ -83,8 +83,17 @@ import valkyrienwarfare.physics.ShipTransformationPacketHolder;
 import valkyrienwarfare.physics.TransformType;
 import valkyrienwarfare.util.NBTUtils;
 
+/**
+ * The heart and soul of this mod. The physics object does everything from
+ * custom collision, block interactions, physics, networking, rendering, and
+ * more!
+ * 
+ * @author thebest108
+ *
+ */
 public class PhysicsObject {
 
+	public static final int MIN_TICKS_EXISTED_BEFORE_PHYSICS = 5;
 	private final PhysicsWrapperEntity wrapper;
     private final List<EntityPlayerMP> watchingPlayers;
     private PhysObjectRenderManager shipRenderer;
@@ -120,6 +129,7 @@ public class PhysicsObject {
     private AxisAlignedBB shipBoundingBox;
     private TIntObjectMap<Vector> entityLocalPositions;
     private ShipType shipType;
+    private int physicsObjectConsecutiveTicks;
 
     public PhysicsObject(PhysicsWrapperEntity host) {
     	this.wrapper = host;
@@ -138,6 +148,7 @@ public class PhysicsObject {
         this.concurrentNodesWithinShip = ConcurrentHashMap.<Node>newKeySet();
         this.isPhysicsEnabled = false;
         this.allowedUsers = new HashSet<String>();
+        this.physicsObjectConsecutiveTicks = 0;
     }
 
 	public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos posAt) {
@@ -676,7 +687,7 @@ public class PhysicsObject {
             }
             queuedEntitiesToMount.clear();
         }
-        // wrapper.isDead = true;
+        physicsObjectConsecutiveTicks++;
     }
 
     public void onPostTick() {
@@ -698,12 +709,11 @@ public class PhysicsObject {
     public void onPostTickClient() {
         ShipTransformationPacketHolder toUse = getShipTransformationManager().serverBuffer.pollForClientTransform();
         if (toUse != null) {
-            // toUse.applyToPhysObject(this);
         	toUse.applySmoothLerp(this, .6D);
         }
 
         getShipTransformationManager().updatePrevTickTransform();
-        getShipTransformationManager().updateAllTransforms(getShipBoundingBox().equals(Entity.ZERO_AABB), true);
+        getShipTransformationManager().updateAllTransforms(false, true);
     }
 
     public void updateChunkCache() {
@@ -860,11 +870,12 @@ public class PhysicsObject {
     public void writeToNBTTag(NBTTagCompound compound) {
         getOwnedChunks().writeToNBT(compound);
         NBTUtils.writeVectorToNBT("c", getCenterCoord(), compound);
-        NBTUtils.writeShipTransformToNBT("currentTickTransform", getShipTransformationManager().getCurrentTickTransform(), compound);
-        compound.setBoolean("doPhysics", isPhysicsEnabled());
-        for (int row = 0; row < getOwnedChunks().chunkOccupiedInLocal.length; row++) {
-            boolean[] curArray = getOwnedChunks().chunkOccupiedInLocal[row];
-            for (int column = 0; column < curArray.length; column++) {
+		NBTUtils.writeShipTransformToNBT("currentTickTransform",
+				getShipTransformationManager().getCurrentTickTransform(), compound);
+		compound.setBoolean("doPhysics", isPhysicsEnabled/* isPhysicsEnabled() */);
+		for (int row = 0; row < getOwnedChunks().chunkOccupiedInLocal.length; row++) {
+			boolean[] curArray = getOwnedChunks().chunkOccupiedInLocal[row];
+			for (int column = 0; column < curArray.length; column++) {
                 compound.setBoolean("CC:" + row + ":" + column, curArray[column]);
             }
         }
@@ -1104,7 +1115,7 @@ public class PhysicsObject {
 	 * @return true if physics are enabled
 	 */
 	public boolean isPhysicsEnabled() {
-		return isPhysicsEnabled;
+		return isPhysicsEnabled && physicsObjectConsecutiveTicks >= MIN_TICKS_EXISTED_BEFORE_PHYSICS;
 	}
 
 	/**
@@ -1296,5 +1307,9 @@ public class PhysicsObject {
 	 */
 	public void setRefrenceBlockPos(BlockPos refrenceBlockPos) {
 		this.refrenceBlockPos = refrenceBlockPos;
+	}
+	
+	public void resetConsecutiveProperTicks() {
+		this.physicsObjectConsecutiveTicks = 0;
 	}
 }

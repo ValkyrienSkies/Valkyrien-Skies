@@ -129,7 +129,8 @@ public class PhysicsObject {
     private AxisAlignedBB shipBoundingBox;
     private TIntObjectMap<Vector> entityLocalPositions;
     private ShipType shipType;
-    private volatile int physicsObjectConsecutiveTicks;
+    private volatile int gameConsecutiveTicks;
+    private volatile int physicsConsecutiveTicks;
 
     public PhysicsObject(PhysicsWrapperEntity host) {
     	this.wrapper = host;
@@ -148,7 +149,8 @@ public class PhysicsObject {
         this.concurrentNodesWithinShip = ConcurrentHashMap.<Node>newKeySet();
         this.isPhysicsEnabled = false;
         this.allowedUsers = new HashSet<String>();
-        this.physicsObjectConsecutiveTicks = 0;
+        this.gameConsecutiveTicks = 0;
+        this.physicsConsecutiveTicks = 0;
     }
 
 	public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos posAt) {
@@ -687,7 +689,7 @@ public class PhysicsObject {
             }
             queuedEntitiesToMount.clear();
         }
-        physicsObjectConsecutiveTicks++;
+        gameConsecutiveTicks++;
     }
 
     public void onPostTick() {
@@ -1132,7 +1134,7 @@ public class PhysicsObject {
 	// TODO: This still breaks when the server is lagging, because it will skip
 	// ticks and therefore the counter will go higher than it really should be.
 	public boolean isPhysicsEnabled() {
-		return isPhysicsEnabled && physicsObjectConsecutiveTicks >= MIN_TICKS_EXISTED_BEFORE_PHYSICS;
+		return isPhysicsEnabled && gameConsecutiveTicks >= MIN_TICKS_EXISTED_BEFORE_PHYSICS && physicsConsecutiveTicks >= MIN_TICKS_EXISTED_BEFORE_PHYSICS * 5;
 	}
 
 	/**
@@ -1148,14 +1150,19 @@ public class PhysicsObject {
 	 * Sets the consecutive tick counter to 0.
 	 */
 	public void resetConsecutiveProperTicks() {
-		this.physicsObjectConsecutiveTicks = 0;
+		this.gameConsecutiveTicks = 0;
+		this.physicsConsecutiveTicks = 0;
+	}
+	
+	public void advanceConsecutivePhysicsTicksCounter() {
+		this.physicsConsecutiveTicks++;
 	}
 	
 	/**
 	 * @return true if this PhysicsObject needs to update the collision cache immediately.
 	 */
 	public boolean needsImmediateCollisionCacheUpdate() {
-		return physicsObjectConsecutiveTicks == MIN_TICKS_EXISTED_BEFORE_PHYSICS;
+		return gameConsecutiveTicks == MIN_TICKS_EXISTED_BEFORE_PHYSICS;
 	}
 	
 	/**

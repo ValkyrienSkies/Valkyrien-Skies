@@ -167,6 +167,7 @@ public class VWThread extends Thread {
 		for (PhysicsWrapperEntity wrapper : ships) {
 			if (!wrapper.firstUpdate) {
 				// Update the physics simulation
+				wrapper.getPhysicsObject().advanceConsecutivePhysicsTicksCounter();
 				wrapper.getPhysicsObject().getPhysicsProcessor().rawPhysTickPreCol(newPhysSpeed);
 				if (wrapper.getPhysicsObject().isPhysicsEnabled()) {
 					// Update the collision task if necessary

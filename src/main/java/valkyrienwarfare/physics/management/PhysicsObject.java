@@ -129,7 +129,7 @@ public class PhysicsObject {
     private AxisAlignedBB shipBoundingBox;
     private TIntObjectMap<Vector> entityLocalPositions;
     private ShipType shipType;
-    private int physicsObjectConsecutiveTicks;
+    private volatile int physicsObjectConsecutiveTicks;
 
     public PhysicsObject(PhysicsWrapperEntity host) {
     	this.wrapper = host;
@@ -718,9 +718,30 @@ public class PhysicsObject {
 
     public void updateChunkCache() {
     	AxisAlignedBB cacheBB = this.getShipBoundingBox();
+    	// Check if all those surrounding chunks are loaded
         BlockPos min = new BlockPos(cacheBB.minX, Math.max(cacheBB.minY, 0), cacheBB.minZ);
         BlockPos max = new BlockPos(cacheBB.maxX, Math.min(cacheBB.maxY, 255), cacheBB.maxZ);
-        setCachedSurroundingChunks(new ChunkCache(getWorldObj(), min, max, 0));
+        if (!getWorldObj().isRemote) {
+        	ChunkProviderServer serverChunkProvider = (ChunkProviderServer) getWorldObj().getChunkProvider();
+        	int chunkMinX = min.getX() >> 4;
+            int chunkMaxX = max.getX() >> 4;
+            int chunkMinZ = min.getZ() >> 4;
+            int chunkMaxZ = max.getZ() >> 4;
+            boolean areSurroundingChunksLoaded = true;
+            for (int chunkX = chunkMinX; chunkX <= chunkMaxX; chunkX++) {
+            	for (int chunkZ = chunkMinZ; chunkZ <= chunkMaxZ; chunkZ++) {
+            		boolean isChunkLoaded = serverChunkProvider.chunkExists(chunkX, chunkZ);
+            		areSurroundingChunksLoaded &= isChunkLoaded;
+            	}
+            }
+            if (areSurroundingChunksLoaded) {
+            	setCachedSurroundingChunks(new ChunkCache(getWorldObj(), min, max, 0));
+            } else {
+            	this.resetConsecutiveProperTicks();
+            }
+        } else {
+            setCachedSurroundingChunks(new ChunkCache(getWorldObj(), min, max, 0));
+        }
     }
 
     public void loadClaimedChunks() {
@@ -1108,6 +1129,8 @@ public class PhysicsObject {
 	/**
 	 * @return true if physics are enabled
 	 */
+	// TODO: This still breaks when the server is lagging, because it will skip
+	// ticks and therefore the counter will go higher than it really should be.
 	public boolean isPhysicsEnabled() {
 		return isPhysicsEnabled && physicsObjectConsecutiveTicks >= MIN_TICKS_EXISTED_BEFORE_PHYSICS;
 	}
@@ -1311,7 +1334,8 @@ public class PhysicsObject {
 	}
 
 	/**
-	 * @param refrenceBlockPos the refrenceBlockPos to set
+	 * @param refrenceBlockPos
+	 *            the refrenceBlockPos to set
 	 */
 	public void setRefrenceBlockPos(BlockPos refrenceBlockPos) {
 		this.refrenceBlockPos = refrenceBlockPos;

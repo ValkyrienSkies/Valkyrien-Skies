@@ -228,38 +228,34 @@ public class PhysicsCalculations {
         }
     }
 
-    public void rawPhysTickPostCol() {
-        if (getParent().isPhysicsEnabled()) {
-            if (!isPhysicsBroken()) {
-            	
-//            	this.angularVelocity.zero();
-//            	this.linearMomentum.zero();
-                
-            	if (PhysicsSettings.doAirshipRotation) {
-                    applyAngularVelocity();
-                }
-                if (PhysicsSettings.doAirshipMovement) {
-                    applyLinearVelocity();
-                }
-            } else {
-                getParent().setPhysicsEnabled(false);
-                linearMomentum.zero();
-                angularVelocity.zero();
-            }
+	public void rawPhysTickPostCol() {
+		if (!isPhysicsBroken()) {
+			if (getParent().isPhysicsEnabled()) {
+				if (PhysicsSettings.doAirshipRotation) {
+					applyAngularVelocity();
+				}
+				if (PhysicsSettings.doAirshipMovement) {
+					applyLinearVelocity();
+				}
+			}
+		} else {
+			getParent().setPhysicsEnabled(false);
+			linearMomentum.zero();
+			angularVelocity.zero();
+		}
 
-            PhysicsShipTransform finalPhysTransform = new PhysicsShipTransform(physX, physY, physZ, physPitch, physYaw,
-                    physRoll, physCenterOfMass, getParent().getShipBoundingBox(),
-                    getParent().getShipTransformationManager().getCurrentTickTransform());
+		PhysicsShipTransform finalPhysTransform = new PhysicsShipTransform(physX, physY, physZ, physPitch, physYaw,
+				physRoll, physCenterOfMass, getParent().getShipBoundingBox(),
+				getParent().getShipTransformationManager().getCurrentTickTransform());
 
-            getParent().getShipTransformationManager().updatePreviousPhysicsTransform();
-            getParent().getShipTransformationManager().setCurrentPhysicsTransform(finalPhysTransform);
+		getParent().getShipTransformationManager().updatePreviousPhysicsTransform();
+		getParent().getShipTransformationManager().setCurrentPhysicsTransform(finalPhysTransform);
 
-            updatePhysCenterOfMass();
-            // Moved out to VW Thread. Code run in this class should have no direct effect
-            // on the physics object.
-            // parent.coordTransform.updateAllTransforms(true, true);
-        }
-    }
+		updatePhysCenterOfMass();
+		// Moved out to VW Thread. Code run in this class should have no direct effect
+		// on the physics object.
+		// parent.coordTransform.updateAllTransforms(true, true);
+	}
 
     // If the ship is moving at these speeds, its likely something in the physics
     // broke. This method helps detect that.

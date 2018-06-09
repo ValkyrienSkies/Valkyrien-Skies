@@ -186,8 +186,8 @@ public class VWThread extends Thread {
 			e.printStackTrace();
 		}
 
-		// Then those collision points have to be processed in series afterwards, all in
-		// this thread.
+		// Then those collision points have to be processed sequentially afterwards, all in
+		// this thread. Thankfully this step is not cpu intensive.
 		for (ShipCollisionTask task : collisionTasks) {
 			PhysicsWrapperEntity wrapper = task.getToTask().getParent().getWrapperEntity();
 			if (!wrapper.firstUpdate) {

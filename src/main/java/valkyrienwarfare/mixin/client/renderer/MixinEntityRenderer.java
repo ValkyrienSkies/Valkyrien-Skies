@@ -76,7 +76,7 @@ public abstract class MixinEntityRenderer {
             Vector playerPosNew = new Vector(entity.posX, entity.posY, entity.posZ);
 //            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, playerPosNew);
 
-            wrapper.getPhysicsObject().coordTransform.getCurrentTickTransform().transform(playerPosNew, TransformType.LOCAL_TO_GLOBAL);
+            wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(playerPosNew, TransformType.LOCAL_TO_GLOBAL);
             entity.posX = entity.prevPosX = entity.lastTickPosX = playerPosNew.X;
             entity.posY = entity.prevPosY = entity.lastTickPosY = playerPosNew.Y;
             entity.posZ = entity.prevPosZ = entity.lastTickPosZ = playerPosNew.Z;
@@ -94,8 +94,8 @@ public abstract class MixinEntityRenderer {
 
         PhysicsWrapperEntity fixedOnto = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(entity);
         //Probably overkill, but this should 100% fix the crash in issue #78
-        if (fixedOnto != null && fixedOnto.getPhysicsObject() != null && fixedOnto.getPhysicsObject().renderer != null && fixedOnto.getPhysicsObject().renderer.offsetPos != null) {
-            Quaternion orientationQuat = fixedOnto.getPhysicsObject().renderer.getSmoothRotationQuat(partialTicks);
+        if (fixedOnto != null && fixedOnto.getPhysicsObject() != null && fixedOnto.getPhysicsObject().getShipRenderer() != null && fixedOnto.getPhysicsObject().getShipRenderer().offsetPos != null) {
+            Quaternion orientationQuat = fixedOnto.getPhysicsObject().getShipRenderer().getSmoothRotationQuat(partialTicks);
 
             double[] radians = orientationQuat.toRadians();
 
@@ -111,7 +111,7 @@ public abstract class MixinEntityRenderer {
 
 //            RotationMatrices.applyTransform(fixedOnto.wrapping.coordTransform.RlToWTransform, playerPosition);
 
-            fixedOnto.getPhysicsObject().coordTransform.getRenderTransform().transform(playerPosition, TransformType.LOCAL_TO_GLOBAL);
+            fixedOnto.getPhysicsObject().getShipTransformationManager().getRenderTransform().transform(playerPosition, TransformType.LOCAL_TO_GLOBAL);
 
             d0 = playerPosition.X;
             d1 = playerPosition.Y;
@@ -240,8 +240,8 @@ public abstract class MixinEntityRenderer {
             GlStateManager.rotate(event.getYaw(), 0.0F, 1.0F, 0.0F);
         }
 
-        if (fixedOnto != null && fixedOnto.getPhysicsObject() != null && fixedOnto.getPhysicsObject().renderer != null && fixedOnto.getPhysicsObject().renderer.offsetPos != null) {
-            Quaternion orientationQuat = fixedOnto.getPhysicsObject().renderer.getSmoothRotationQuat(partialTicks);
+        if (fixedOnto != null && fixedOnto.getPhysicsObject() != null && fixedOnto.getPhysicsObject().getShipRenderer() != null && fixedOnto.getPhysicsObject().getShipRenderer().offsetPos != null) {
+            Quaternion orientationQuat = fixedOnto.getPhysicsObject().getShipRenderer().getSmoothRotationQuat(partialTicks);
 
             double[] radians = orientationQuat.toRadians();
 
@@ -272,7 +272,7 @@ public abstract class MixinEntityRenderer {
         if (wrapper == null) {
             return vec.distanceTo(in);
         } else {
-            return this.mc.objectMouseOver.hitVec.distanceTo(wrapper.getPhysicsObject().coordTransform.getCurrentTickTransform().transform(in, TransformType.GLOBAL_TO_LOCAL));
+            return this.mc.objectMouseOver.hitVec.distanceTo(wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(in, TransformType.GLOBAL_TO_LOCAL));
         }
     }
 }

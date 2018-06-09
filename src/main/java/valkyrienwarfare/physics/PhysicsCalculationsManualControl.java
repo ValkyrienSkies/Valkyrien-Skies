@@ -46,7 +46,7 @@ public class PhysicsCalculationsManualControl extends PhysicsCalculations {
         applyAirDrag();
 
         if (PhysicsSettings.doPhysicsBlocks) {
-            for (Node node : getParent().concurrentNodesWithinShip) {
+            for (Node node : getParent().getConcurrentNodesWithinShip()) {
                 TileEntity nodeTile = node.getParentTile();
                 if (nodeTile instanceof INodePhysicsProcessor) {
 //					System.out.println("test");
@@ -82,7 +82,7 @@ public class PhysicsCalculationsManualControl extends PhysicsCalculations {
         getParent().getWrapperEntity().posY += linearForce.Y;
         getParent().getWrapperEntity().posZ += linearForce.Z;
 
-        getParent().coordTransform.updateAllTransforms(true, false);
+        getParent().getShipTransformationManager().updateAllTransforms(true, false);
     }
 
     @Override

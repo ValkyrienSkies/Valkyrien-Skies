@@ -271,7 +271,7 @@ public class EntityCollisionInjector {
 
 		Vector entityPosInShip = new Vector(entity.posX, entity.posY - 0.20000000298023224D, entity.posZ);
 
-		worldBelow.getPhysicsObject().coordTransform.getCurrentTickTransform().transform(entityPosInShip,
+		worldBelow.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(entityPosInShip,
 				TransformType.GLOBAL_TO_LOCAL);
 
 		int j4 = MathHelper.floor(entityPosInShip.X);
@@ -399,7 +399,7 @@ public class EntityCollisionInjector {
 			try {
 				if (!entity.isRidingSameEntity(wrapper)) {
 					Polygon playerInLocal = new Polygon(entityBB,
-							wrapper.getPhysicsObject().coordTransform.getCurrentTickTransform(),
+							wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform(),
 							TransformType.GLOBAL_TO_LOCAL);
 					AxisAlignedBB bb = playerInLocal.getEnclosedAABB();
 
@@ -416,8 +416,8 @@ public class EntityCollisionInjector {
 
 					for (AxisAlignedBB inLocal : collidingBBs) {
 						ShipPolygon poly = new ShipPolygon(inLocal,
-								wrapper.getPhysicsObject().coordTransform.getCurrentTickTransform(),
-								TransformType.LOCAL_TO_GLOBAL, wrapper.getPhysicsObject().coordTransform.normals,
+								wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform(),
+								TransformType.LOCAL_TO_GLOBAL, wrapper.getPhysicsObject().getShipTransformationManager().normals,
 								wrapper.getPhysicsObject());
 						collisions.add(poly);
 					}
@@ -435,7 +435,7 @@ public class EntityCollisionInjector {
 
 				Vector entityPos = new Vector(posX, posY, posZ);
 
-				wrapper.getPhysicsObject().coordTransform.getCurrentTickTransform().transform(entityPos,
+				wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(entityPos,
 						TransformType.GLOBAL_TO_LOCAL);
 				// RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform,
 				// entityPos);
@@ -446,7 +446,7 @@ public class EntityCollisionInjector {
 				int entityChunkZ = MathHelper.floor(entity.posZ / 16.0D);
 
 				if (wrapper.getPhysicsObject().ownsChunk(entityChunkX, entityChunkZ)) {
-					Chunk chunkIn = wrapper.getPhysicsObject().shipChunks.getChunkAt(entityChunkX, entityChunkZ);
+					Chunk chunkIn = wrapper.getPhysicsObject().getShipChunks().getChunkAt(entityChunkX, entityChunkZ);
 
 					int chunkYIndex = MathHelper.floor(entity.posY / 16.0D);
 

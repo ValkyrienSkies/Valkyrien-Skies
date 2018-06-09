@@ -59,7 +59,7 @@ public class EventsClient {
 
         if (wrapper != null) {
             Vector newSoundLocation = new Vector(sound.getXPosF(), sound.getYPosF(), sound.getZPosF());
-            wrapper.getPhysicsObject().coordTransform.getCurrentTickTransform().transform(newSoundLocation, TransformType.LOCAL_TO_GLOBAL);
+            wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(newSoundLocation, TransformType.LOCAL_TO_GLOBAL);
 
             SoundFixWrapper soundFix = new SoundFixWrapper(sound, wrapper, newSoundLocation);
 
@@ -90,7 +90,7 @@ public class EventsClient {
         BlockPos pos = Minecraft.getMinecraft().objectMouseOver.getBlockPos();
         if (pos != null) {
             PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(Minecraft.getMinecraft().world, pos);
-            if (wrapper != null && wrapper.getPhysicsObject() != null && wrapper.getPhysicsObject().renderer != null && wrapper.getPhysicsObject().centerCoord != null) {
+            if (wrapper != null && wrapper.getPhysicsObject() != null && wrapper.getPhysicsObject().getShipRenderer() != null && wrapper.getPhysicsObject().getCenterCoord() != null) {
                 RayTraceResult objectOver = Minecraft.getMinecraft().objectMouseOver;
                 if (objectOver != null && objectOver.hitVec != null) {
                     BufferBuilder buffer = Tessellator.getInstance().getBuffer();
@@ -98,9 +98,9 @@ public class EventsClient {
                     oldYOff = buffer.yOffset;
                     oldZOff = buffer.zOffset;
 
-                    buffer.setTranslation(-wrapper.getPhysicsObject().renderer.offsetPos.getX(), -wrapper.getPhysicsObject().renderer.offsetPos.getY(), -wrapper.getPhysicsObject().renderer.offsetPos.getZ());
+                    buffer.setTranslation(-wrapper.getPhysicsObject().getShipRenderer().offsetPos.getX(), -wrapper.getPhysicsObject().getShipRenderer().offsetPos.getY(), -wrapper.getPhysicsObject().getShipRenderer().offsetPos.getZ());
 
-                    wrapper.getPhysicsObject().renderer.setupTranslation(event.getPartialTicks());
+                    wrapper.getPhysicsObject().getShipRenderer().setupTranslation(event.getPartialTicks());
 //            		objectOver.hitVec = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, objectOver.hitVec);
                 }
             }
@@ -112,7 +112,7 @@ public class EventsClient {
         BlockPos pos = Minecraft.getMinecraft().objectMouseOver.getBlockPos();
         if (pos != null) {
             PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(Minecraft.getMinecraft().world, pos);
-            if (wrapper != null && wrapper.getPhysicsObject() != null && wrapper.getPhysicsObject().renderer != null && wrapper.getPhysicsObject().centerCoord != null) {
+            if (wrapper != null && wrapper.getPhysicsObject() != null && wrapper.getPhysicsObject().getShipRenderer() != null && wrapper.getPhysicsObject().getCenterCoord() != null) {
                 RayTraceResult objectOver = Minecraft.getMinecraft().objectMouseOver;
                 if (objectOver != null && objectOver.hitVec != null) {
                     BufferBuilder buffer = Tessellator.getInstance().getBuffer();

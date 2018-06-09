@@ -90,14 +90,14 @@ public class VWWorldEventListener implements IWorldEventListener {
 		BlockPos posAt = new BlockPos(entityIn);
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldObj, posAt);
 		if (!(entityIn instanceof EntityFallingBlock) && wrapper != null
-				&& wrapper.getPhysicsObject().coordTransform != null) {
+				&& wrapper.getPhysicsObject().getShipTransformationManager() != null) {
 			if (entityIn instanceof EntityMountingWeaponBase || entityIn instanceof EntityArmorStand
 					|| entityIn instanceof EntityPig || entityIn instanceof EntityBoat) {
 				// entity.startRiding(wrapper);
 				wrapper.getPhysicsObject().fixEntity(entityIn, new Vector(entityIn));
 				wrapper.getPhysicsObject().queueEntityForMounting(entityIn);
 			}
-			RotationMatrices.applyTransform(wrapper.getPhysicsObject().coordTransform.getCurrentTickTransform(),
+			RotationMatrices.applyTransform(wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform(),
 					entityIn, TransformType.LOCAL_TO_GLOBAL);
 
 			int newChunkX = MathHelper.floor(entityIn.posX / 16.0D);
@@ -112,14 +112,14 @@ public class VWWorldEventListener implements IWorldEventListener {
 		}
 
 		if (!(entityIn instanceof EntityFallingBlock) && wrapper != null
-				&& wrapper.getPhysicsObject().coordTransform != null) {
+				&& wrapper.getPhysicsObject().getShipTransformationManager() != null) {
 			if (entityIn instanceof EntityMountingWeaponBase || entityIn instanceof EntityArmorStand
 					|| entityIn instanceof EntityPig || entityIn instanceof EntityBoat) {
 				// entity.startRiding(wrapper);
 				wrapper.getPhysicsObject().fixEntity(entityIn, new Vector(entityIn));
 				wrapper.getPhysicsObject().queueEntityForMounting(entityIn);
 			}
-			RotationMatrices.applyTransform(wrapper.getPhysicsObject().coordTransform.getCurrentTickTransform(),
+			RotationMatrices.applyTransform(wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform(),
 					entityIn, TransformType.LOCAL_TO_GLOBAL);
 		}
 	}
@@ -154,7 +154,7 @@ public class VWWorldEventListener implements IWorldEventListener {
 							pos);
 
 					if (wrapper != null) {
-						wrapper.getPhysicsObject().coordTransform.getCurrentTickTransform().transform(posVector,
+						wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(posVector,
 								TransformType.LOCAL_TO_GLOBAL);
 						// RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform,
 						// posVector);

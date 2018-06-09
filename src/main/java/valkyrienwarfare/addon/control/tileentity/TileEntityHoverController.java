@@ -64,17 +64,17 @@ public class TileEntityHoverController extends TileEntity {
         // secondsToApply*=5D;
         // idealHeight = 100D;
 
-        Vector shipVel = new Vector(physObj.physicsProcessor.linearMomentum);
+        Vector shipVel = new Vector(physObj.getPhysicsProcessor().linearMomentum);
 
-        shipVel.multiply(physObj.physicsProcessor.getInvMass());
+        shipVel.multiply(physObj.getPhysicsProcessor().getInvMass());
 
         if (!world.isBlockPowered(getPos()) || autoStabalizerControl) {
             // setAutoStabilizationValue(physObj);
         }
 
-        PhysicsCalculations calculations = physObj.physicsProcessor;
+        PhysicsCalculations calculations = physObj.getPhysicsProcessor();
 
-        double[] rotationAndTranslationMatrix = physObj.coordTransform.getCurrentTickTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL);
+        double[] rotationAndTranslationMatrix = physObj.getShipTransformationManager().getCurrentTickTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL);
         Vector angularVelocity = new Vector(calculations.angularVelocity);
         Vector linearMomentum = new Vector(calculations.linearMomentum);
 
@@ -135,16 +135,16 @@ public class TileEntityHoverController extends TileEntity {
         Vector controllerPos = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
         Vector enginePosVec = new Vector(enginePos.getX() + .5D, enginePos.getY() + .5D, enginePos.getZ() + .5D);
 
-        controllerPos.subtract(physObj.physicsProcessor.gameTickCenterOfMass);
-        enginePosVec.subtract(physObj.physicsProcessor.gameTickCenterOfMass);
+        controllerPos.subtract(physObj.getPhysicsProcessor().gameTickCenterOfMass);
+        enginePosVec.subtract(physObj.getPhysicsProcessor().gameTickCenterOfMass);
 
         Vector unOrientedPosDif = new Vector(enginePosVec.X - controllerPos.X, enginePosVec.Y - controllerPos.Y,
                 enginePosVec.Z - controllerPos.Z);
 
         double idealYDif = unOrientedPosDif.dot(normalVector);
 
-        physObj.coordTransform.getCurrentTickTransform().rotate(controllerPos, TransformType.LOCAL_TO_GLOBAL);
-        physObj.coordTransform.getCurrentTickTransform().rotate(enginePosVec, TransformType.LOCAL_TO_GLOBAL);
+        physObj.getShipTransformationManager().getCurrentTickTransform().rotate(controllerPos, TransformType.LOCAL_TO_GLOBAL);
+        physObj.getShipTransformationManager().getCurrentTickTransform().rotate(enginePosVec, TransformType.LOCAL_TO_GLOBAL);
 
         // RotationMatrices.doRotationOnly(physObj.coordTransform.lToWTransform,
         // controllerPos);
@@ -153,7 +153,7 @@ public class TileEntityHoverController extends TileEntity {
 
         double inWorldYDif = enginePosVec.Y - controllerPos.Y;
 
-        Vector angularVelocityAtPoint = physObj.physicsProcessor.angularVelocity.cross(enginePosVec);
+        Vector angularVelocityAtPoint = physObj.getPhysicsProcessor().angularVelocity.cross(enginePosVec);
         angularVelocityAtPoint.multiply(secondsToApply);
 
         return idealYDif - (inWorldYDif + angularVelocityAtPoint.Y * angularVelocityBias);
@@ -186,9 +186,9 @@ public class TileEntityHoverController extends TileEntity {
 
     public double getControllerDistFromIdealY(PhysicsObject physObj) {
         Vector controllerPos = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
-        physObj.coordTransform.fromLocalToGlobal(controllerPos);
-        return idealHeight - (physObj.physicsProcessor.getParent().getWrapperEntity().posY + (physObj.physicsProcessor.linearMomentum.Y
-                * physObj.physicsProcessor.getInvMass() * linearVelocityBias * 3D));
+        physObj.getShipTransformationManager().fromLocalToGlobal(controllerPos);
+        return idealHeight - (physObj.getPhysicsProcessor().getParent().getWrapperEntity().posY + (physObj.getPhysicsProcessor().linearMomentum.Y
+                * physObj.getPhysicsProcessor().getInvMass() * linearVelocityBias * 3D));
     }
 
     public void handleGUIInput(HovercraftControllerGUIInputMessage message, MessageContext ctx) {
@@ -211,10 +211,10 @@ public class TileEntityHoverController extends TileEntity {
 
     private void setAutoStabilizationValue(PhysicsObject physObj) {
         Vector controllerPos = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
-        physObj.coordTransform.fromLocalToGlobal(controllerPos);
+        physObj.getShipTransformationManager().fromLocalToGlobal(controllerPos);
 
-        double controllerDistToIdeal = -(idealHeight - physObj.physicsProcessor.getParent().getWrapperEntity().posY);
-        double yVelocity = physObj.physicsProcessor.linearMomentum.Y * physObj.physicsProcessor.getInvMass()
+        double controllerDistToIdeal = -(idealHeight - physObj.getPhysicsProcessor().getParent().getWrapperEntity().posY);
+        double yVelocity = physObj.getPhysicsProcessor().linearMomentum.Y * physObj.getPhysicsProcessor().getInvMass()
                 * linearVelocityBias;
 
         // System.out.println("ay");

@@ -68,7 +68,7 @@ public class PhysWrapperPositionMessage implements IMessage {
         this.setPitch(toSend.getPitch());
         this.setYaw(toSend.getYaw());
         this.setRoll(toSend.getRoll());
-        this.setCenterOfMass(toSend.getPhysicsObject().centerCoord);
+        this.setCenterOfMass(toSend.getPhysicsObject().getCenterCoord());
     }
 
     public PhysWrapperPositionMessage(PhysicsObject toRunLocally) {
@@ -80,7 +80,7 @@ public class PhysWrapperPositionMessage implements IMessage {
         setYaw(toRunLocally.getWrapperEntity().getYaw());
         setRoll(toRunLocally.getWrapperEntity().getRoll());
 
-        setCenterOfMass(toRunLocally.centerCoord);
+        setCenterOfMass(toRunLocally.getCenterCoord());
         setShipBB(toRunLocally.getShipBoundingBox());
     }
 

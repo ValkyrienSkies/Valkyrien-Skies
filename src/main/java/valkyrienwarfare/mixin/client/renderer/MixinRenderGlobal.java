@@ -144,8 +144,8 @@ public abstract class MixinRenderGlobal {
                     } else {
                         IBlockState iblockstate = this.world.getBlockState(blockpos);
                         if (wrapper != null) {
-                            wrapper.getPhysicsObject().renderer.setupTranslation(partialTicks);
-                            worldRendererIn.setTranslation(-wrapper.getPhysicsObject().renderer.offsetPos.getX(), -wrapper.getPhysicsObject().renderer.offsetPos.getY(), -wrapper.getPhysicsObject().renderer.offsetPos.getZ());
+                            wrapper.getPhysicsObject().getShipRenderer().setupTranslation(partialTicks);
+                            worldRendererIn.setTranslation(-wrapper.getPhysicsObject().getShipRenderer().offsetPos.getX(), -wrapper.getPhysicsObject().getShipRenderer().offsetPos.getY(), -wrapper.getPhysicsObject().getShipRenderer().offsetPos.getZ());
                         }
                         if (iblockstate.getMaterial() != Material.AIR) {
                             int i = destroyblockprogress.getPartialBlockDamage();
@@ -162,7 +162,7 @@ public abstract class MixinRenderGlobal {
                         if (wrapper != null) {
                             tessellatorIn.draw();
                             worldRendererIn.begin(7, DefaultVertexFormats.BLOCK);
-                            wrapper.getPhysicsObject().renderer.inverseTransform(partialTicks);
+                            wrapper.getPhysicsObject().getShipRenderer().inverseTransform(partialTicks);
                         }
                     }
                 }
@@ -182,8 +182,8 @@ public abstract class MixinRenderGlobal {
     @Overwrite
     public void drawSelectionBox(EntityPlayer player, RayTraceResult movingObjectPositionIn, int execute, float partialTicks) {
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.world, movingObjectPositionIn.getBlockPos());
-        if (wrapper != null && wrapper.getPhysicsObject() != null && wrapper.getPhysicsObject().renderer != null && wrapper.getPhysicsObject().renderer.offsetPos != null) {
-            wrapper.getPhysicsObject().renderer.setupTranslation(partialTicks);
+        if (wrapper != null && wrapper.getPhysicsObject() != null && wrapper.getPhysicsObject().getShipRenderer() != null && wrapper.getPhysicsObject().getShipRenderer().offsetPos != null) {
+            wrapper.getPhysicsObject().getShipRenderer().setupTranslation(partialTicks);
 
             Minecraft.getMinecraft().entityRenderer.getMouseOver(partialTicks);
 
@@ -192,9 +192,9 @@ public abstract class MixinRenderGlobal {
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder BufferBuilder = tessellator.getBuffer();
 
-            double xOff = (player.lastTickPosX + (player.posX - player.lastTickPosX) * partialTicks) - wrapper.getPhysicsObject().renderer.offsetPos.getX();
-            double yOff = (player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTicks) - wrapper.getPhysicsObject().renderer.offsetPos.getY();
-            double zOff = (player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * partialTicks) - wrapper.getPhysicsObject().renderer.offsetPos.getZ();
+            double xOff = (player.lastTickPosX + (player.posX - player.lastTickPosX) * partialTicks) - wrapper.getPhysicsObject().getShipRenderer().offsetPos.getX();
+            double yOff = (player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTicks) - wrapper.getPhysicsObject().getShipRenderer().offsetPos.getY();
+            double zOff = (player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * partialTicks) - wrapper.getPhysicsObject().getShipRenderer().offsetPos.getZ();
 
             BufferBuilder.xOffset += xOff;
             BufferBuilder.yOffset += yOff;
@@ -206,7 +206,7 @@ public abstract class MixinRenderGlobal {
             BufferBuilder.yOffset -= yOff;
             BufferBuilder.zOffset -= zOff;
 
-            wrapper.getPhysicsObject().renderer.inverseTransform(partialTicks);
+            wrapper.getPhysicsObject().getShipRenderer().inverseTransform(partialTicks);
         } else {
             this.drawSelectionBoxOriginal(player, movingObjectPositionIn, execute, partialTicks);
         }
@@ -246,8 +246,8 @@ public abstract class MixinRenderGlobal {
 
         for (PhysicsWrapperEntity wrapper : ValkyrienWarfareMod.physicsManager.getManagerForWorld(this.world).physicsEntities) {
             GL11.glPushMatrix();
-            if (wrapper.getPhysicsObject().renderer != null && wrapper.getPhysicsObject().renderer.shouldRender()) {
-                wrapper.getPhysicsObject().renderer.renderBlockLayer(blockLayerIn, partialTicks, pass);
+            if (wrapper.getPhysicsObject().getShipRenderer() != null && wrapper.getPhysicsObject().getShipRenderer().shouldRender()) {
+                wrapper.getPhysicsObject().getShipRenderer().renderBlockLayer(blockLayerIn, partialTicks, pass);
             }
             GL11.glPopMatrix();
         }
@@ -307,7 +307,7 @@ public abstract class MixinRenderGlobal {
             if (wrapper != null) {
                 Vector newCoords = new Vector(x, y, z);
 //                RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, newCoords);
-                wrapper.getPhysicsObject().coordTransform.getCurrentTickTransform().transform(newCoords, TransformType.LOCAL_TO_GLOBAL);
+                wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(newCoords, TransformType.LOCAL_TO_GLOBAL);
                 x = newCoords.X;
                 y = newCoords.Y;
                 z = newCoords.Z;

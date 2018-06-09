@@ -81,7 +81,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
         Vector outputForce = getForceOutputUnoriented(secondsToApply, physicsObject);
         if (isForceOutputOriented()) {
             if (updateParentShip()) {
-                getNode().getPhysicsObject().coordTransform.getCurrentTickTransform().rotate(outputForce, TransformType.LOCAL_TO_GLOBAL);
+                getNode().getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().rotate(outputForce, TransformType.LOCAL_TO_GLOBAL);
 //                RotationMatrices.doRotationOnly(getNode().getPhysicsObject().coordTransform.lToWTransform, outputForce);
             }
         }
@@ -116,7 +116,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
         PhysicsWrapperEntity parentShip = getNode().getPhysicsObject().getWrapperEntity();
         Vector engineCenter = new Vector(getPos().getX() + .5D, getPos().getY() + .5D, getPos().getZ() + .5D);
 //        RotationMatrices.applyTransform(parentShip.wrapping.coordTransform.lToWTransform, engineCenter);
-        parentShip.getPhysicsObject().coordTransform.getCurrentTickTransform().transform(engineCenter, TransformType.LOCAL_TO_GLOBAL);
+        parentShip.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(engineCenter, TransformType.LOCAL_TO_GLOBAL);
         engineCenter.subtract(parentShip.posX, parentShip.posY, parentShip.posZ);
         return engineCenter;
     }
@@ -126,7 +126,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
         if (updateParentShip()) {
             return null;
         }
-        PhysicsCalculations calculations = getNode().getPhysicsObject().physicsProcessor;
+        PhysicsCalculations calculations = getNode().getPhysicsObject().getPhysicsProcessor();
         return calculations.getVelocityAtPoint(getPositionInLocalSpaceWithOrientation());
     }
 
@@ -135,7 +135,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
         if (updateParentShip()) {
             return null;
         }
-        PhysicsCalculations calculations = getNode().getPhysicsObject().physicsProcessor;
+        PhysicsCalculations calculations = getNode().getPhysicsObject().getPhysicsProcessor();
         return calculations.linearMomentum;
     }
 
@@ -144,7 +144,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
         if (updateParentShip()) {
             return null;
         }
-        PhysicsCalculations calculations = getNode().getPhysicsObject().physicsProcessor;
+        PhysicsCalculations calculations = getNode().getPhysicsObject().getPhysicsProcessor();
         return calculations.angularVelocity.cross(getPositionInLocalSpaceWithOrientation());
     }
 

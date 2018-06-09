@@ -73,13 +73,13 @@ public class ShipTransformationManager {
         double[] lToWTransform = RotationMatrices.getTranslationMatrix(parent.getWrapperEntity().posX, parent.getWrapperEntity().posY,
                 parent.getWrapperEntity().posZ);
         lToWTransform = RotationMatrices.rotateAndTranslate(lToWTransform, parent.getWrapperEntity().getPitch(),
-                parent.getWrapperEntity().getYaw(), parent.getWrapperEntity().getRoll(), parent.centerCoord);
+                parent.getWrapperEntity().getYaw(), parent.getWrapperEntity().getRoll(), parent.getCenterCoord());
         setCurrentTickTransform(new ShipTransform(lToWTransform));
     }
 
     public void updateRenderTransform(double x, double y, double z, double pitch, double yaw, double roll) {
         double[] RlToWTransform = RotationMatrices.getTranslationMatrix(x, y, z);
-        RlToWTransform = RotationMatrices.rotateAndTranslate(RlToWTransform, pitch, yaw, roll, parent.centerCoord);
+        RlToWTransform = RotationMatrices.rotateAndTranslate(RlToWTransform, pitch, yaw, roll, parent.getCenterCoord());
         setRenderTransform(new ShipTransform(RlToWTransform));
     }
 
@@ -150,8 +150,8 @@ public class ShipTransformationManager {
         }
 
         // Do a standard loop here to avoid a concurrentModificationException. A standard for each loop could cause a crash.
-        for (int i = 0; i < parent.watchingPlayers.size(); i++) {
-        	EntityPlayerMP player = parent.watchingPlayers.get(i);
+        for (int i = 0; i < parent.getWatchingPlayers().size(); i++) {
+        	EntityPlayerMP player = parent.getWatchingPlayers().get(i);
         	if (player != null) {
         		ValkyrienWarfareMod.physWrapperNetwork.sendTo(posMessage, player);
         	}
@@ -202,7 +202,7 @@ public class ShipTransformationManager {
         // Note: This Vector array still contains potential 0 vectors, those are removed
         // later
         Vector[] normals = new Vector[15];
-        Vector[] otherNorms = other.coordTransform.normals;
+        Vector[] otherNorms = other.getShipTransformationManager().normals;
         Vector[] rotatedNorms = normals;
         for (int i = 0; i < 6; i++) {
             if (i < 3) {
@@ -230,13 +230,13 @@ public class ShipTransformationManager {
     public void updateParentAABB() {
         CollisionBBConsumer convexHullConsumer = new CollisionBBConsumer();
         Stream<BlockPos> parentPositionsStream = null;
-        if (parent.blockPositions.size() < 300) {
+        if (parent.getBlockPositions().size() < 300) {
             // If its a small ship use a sequential stream.
-            parentPositionsStream = parent.blockPositions.stream();
+            parentPositionsStream = parent.getBlockPositions().stream();
         } else {
             // If its a big ship then we destroy the cpu consumption and go fully
             // multithreaded!
-            parentPositionsStream = parent.blockPositions.parallelStream();
+            parentPositionsStream = parent.getBlockPositions().parallelStream();
         }
         parentPositionsStream.forEach(convexHullConsumer);
         parent.setShipBoundingBox(convexHullConsumer.createWrappingAABB());

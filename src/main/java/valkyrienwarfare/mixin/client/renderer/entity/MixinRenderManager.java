@@ -57,14 +57,14 @@ public abstract class MixinRenderManager {
 
                 Vector localPosition = fixedOnto.getPhysicsObject().getLocalPositionForEntity(entityIn);
 
-                fixedOnto.getPhysicsObject().renderer.setupTranslation(partialTicks);
+                fixedOnto.getPhysicsObject().getShipRenderer().setupTranslation(partialTicks);
 
                 if (localPosition != null) {
                     localPosition = new Vector(localPosition);
 
-                    localPosition.X -= fixedOnto.getPhysicsObject().renderer.offsetPos.getX();
-                    localPosition.Y -= fixedOnto.getPhysicsObject().renderer.offsetPos.getY();
-                    localPosition.Z -= fixedOnto.getPhysicsObject().renderer.offsetPos.getZ();
+                    localPosition.X -= fixedOnto.getPhysicsObject().getShipRenderer().offsetPos.getX();
+                    localPosition.Y -= fixedOnto.getPhysicsObject().getShipRenderer().offsetPos.getY();
+                    localPosition.Z -= fixedOnto.getPhysicsObject().getShipRenderer().offsetPos.getZ();
 
                     x = entityIn.posX = entityIn.lastTickPosX = localPosition.X;
                     y = entityIn.posY = entityIn.lastTickPosY = localPosition.Y;
@@ -122,7 +122,7 @@ public abstract class MixinRenderManager {
                 }
 
                 if (localPosition != null) {
-                    fixedOnto.getPhysicsObject().renderer.inverseTransform(partialTicks);
+                    fixedOnto.getPhysicsObject().getShipRenderer().inverseTransform(partialTicks);
                 }
 
                 entityIn.posX = oldPosX;

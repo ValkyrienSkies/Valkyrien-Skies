@@ -74,7 +74,7 @@ public abstract class MixinEntityLivingBase extends Entity {
         List<PhysicsWrapperEntity> nearbyPhys = ValkyrienWarfareMod.physicsManager.getManagerForWorld(this.world).getNearbyPhysObjects(this.getEntityBoundingBox());
         for (PhysicsWrapperEntity physWrapper : nearbyPhys) {
             Vector playerPos = new Vector(EntityLivingBase.class.cast(this));
-            physWrapper.getPhysicsObject().coordTransform.fromGlobalToLocal(playerPos);
+            physWrapper.getPhysicsObject().getShipTransformationManager().fromGlobalToLocal(playerPos);
             int i = MathHelper.floor(playerPos.X);
             int j = MathHelper.floor(playerPos.Y);
             int k = MathHelper.floor(playerPos.Z);
@@ -88,7 +88,7 @@ public abstract class MixinEntityLivingBase extends Entity {
                 return false;*/
             //not needed, we already do this check
 
-            EntityPolygon playerPoly = new EntityPolygon(this.getEntityBoundingBox(), physWrapper.getPhysicsObject().coordTransform.getCurrentTickTransform(), TransformType.GLOBAL_TO_LOCAL, this);
+            EntityPolygon playerPoly = new EntityPolygon(this.getEntityBoundingBox(), physWrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform(), TransformType.GLOBAL_TO_LOCAL, this);
             AxisAlignedBB bb = playerPoly.getEnclosedAABB();
             for (int x = MathHelper.floor(bb.minX); x < bb.maxX; x++) {
                 for (int y = MathHelper.floor(bb.minY); y < bb.maxY; y++) {

@@ -52,7 +52,7 @@ public class MixinMethods {
 
             Vector endPos = new Vector(newX, newY, newZ);
 //            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, endPos);
-            wrapper.getPhysicsObject().coordTransform.getCurrentTickTransform().transform(endPos, TransformType.GLOBAL_TO_LOCAL);
+            wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(endPos, TransformType.GLOBAL_TO_LOCAL);
             dx = endPos.X - this_.posX;
             dy = endPos.Y - this_.posY;
             dz = endPos.Z - this_.posZ;

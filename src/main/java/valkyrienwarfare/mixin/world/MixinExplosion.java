@@ -74,7 +74,7 @@ public abstract class MixinExplosion {
         for (PhysicsWrapperEntity ship : shipsNear) {
             Vector inLocal = new Vector(center);
 //            RotationMatrices.applyTransform(ship.wrapping.coordTransform.wToLTransform, inLocal);
-            ship.getPhysicsObject().coordTransform.getCurrentTickTransform().transform(inLocal, TransformType.GLOBAL_TO_LOCAL);
+            ship.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(inLocal, TransformType.GLOBAL_TO_LOCAL);
             // inLocal.roundToWhole();
             Explosion expl = new Explosion(ship.world, null, inLocal.X, inLocal.Y, inLocal.Z, radius, false, false);
 
@@ -111,7 +111,7 @@ public abstract class MixinExplosion {
                         block.onBlockExploded(ship.world, pos, expl);
                         if (!worldIn.isRemote && false) {
                             Vector posVector = new Vector(pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5);
-                            ship.getPhysicsObject().coordTransform.fromLocalToGlobal(posVector);
+                            ship.getPhysicsObject().getShipTransformationManager().fromLocalToGlobal(posVector);
 
                             double mass = BlockMass.basicMass.getMassFromState(state, pos, ship.world);
                             double explosionForce = Math.sqrt(this.size) * 1000D * mass;
@@ -123,7 +123,7 @@ public abstract class MixinExplosion {
                             forceVector.multiply(explosionForce / vectorDist);
 
 //                            RotationMatrices.doRotationOnly(ship.wrapping.coordTransform.lToWTransform, forceVector);
-                            ship.getPhysicsObject().coordTransform.getCurrentTickTransform().transform(forceVector, TransformType.LOCAL_TO_GLOBAL);
+                            ship.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(forceVector, TransformType.LOCAL_TO_GLOBAL);
                             // TODO: Make this work again
                             // PhysicsQueuedForce queuedForce = new PhysicsQueuedForce(forceVector,
                             // posVector, false, 1);

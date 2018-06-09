@@ -59,8 +59,8 @@ public abstract class MixinPlayerList {
         }
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldIn, pos);
         Vector packetPosition = new Vector(x, y, z);
-        if (wrapper != null && wrapper.getPhysicsObject().coordTransform != null) {
-            wrapper.getPhysicsObject().coordTransform.fromLocalToGlobal(packetPosition);
+        if (wrapper != null && wrapper.getPhysicsObject().getShipTransformationManager() != null) {
+            wrapper.getPhysicsObject().getShipTransformationManager().fromLocalToGlobal(packetPosition);
 
             if (packetIn instanceof SPacketSoundEffect) {
                 SPacketSoundEffect soundEffect = (SPacketSoundEffect) packetIn;

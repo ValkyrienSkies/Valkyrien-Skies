@@ -70,7 +70,7 @@ public abstract class EntityMountingWeaponBase extends Entity implements IEntity
 //				RotationMatrices.applyTransform(rotationMatricesCompensation, passengerOffset);
 
 
-                wrapper.getPhysicsObject().coordTransform.fromGlobalToLocal(posInLocal);
+                wrapper.getPhysicsObject().getShipTransformationManager().fromGlobalToLocal(posInLocal);
 
                 posInLocal.add(passengerOffset);
 

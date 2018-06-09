@@ -98,7 +98,7 @@ public abstract class TileEntityEtherCompressor extends BasicForceNodeTileEntity
 		}
 		// TODO: Causing physics crash with the Sponge
 		// TileEntity controllerTile = world.getTileEntity(controllerPos);
-		TileEntity controllerTile = physicsObject.shipChunks.getTileEntity(controllerPos);
+		TileEntity controllerTile = physicsObject.getShipChunks().getTileEntity(controllerPos);
 		if (controllerTile != null) {
 			if (controllerTile instanceof TileEntityHoverController) {
 				TileEntityHoverController controller = (TileEntityHoverController) controllerTile;

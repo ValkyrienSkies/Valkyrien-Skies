@@ -62,7 +62,7 @@ public class BlockShipPassengerChair extends Block {
                 if (playerIn.getLowestRidingEntity() != wrapper.getLowestRidingEntity()) {
                     Vector playerPos = new Vector(playerIn);
 
-                    wrapper.getPhysicsObject().coordTransform.fromLocalToGlobal(playerPos);
+                    wrapper.getPhysicsObject().getShipTransformationManager().fromLocalToGlobal(playerPos);
 
                     playerIn.posX = playerPos.X;
                     playerIn.posY = playerPos.Y;
@@ -74,7 +74,7 @@ public class BlockShipPassengerChair extends Block {
 
 //					wrapper.wrapping.pilotingController.setPilotEntity((EntityPlayerMP) playerIn, false);
 
-                    wrapper.getPhysicsObject().coordTransform.fromGlobalToLocal(playerPos);
+                    wrapper.getPhysicsObject().getShipTransformationManager().fromGlobalToLocal(playerPos);
 
                     playerIn.posX = playerPos.X;
                     playerIn.posY = playerPos.Y;

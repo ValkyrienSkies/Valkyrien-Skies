@@ -60,7 +60,7 @@ public abstract class MixinWorldClient {
 
             for (PhysicsWrapperEntity physEnt : physEnts) {
 //                BlockPos posInLocal = RotationMatrices.applyTransform(physEnt.wrapping.coordTransform.wToLTransform, pos);
-                BlockPos posInLocal = physEnt.getPhysicsObject().coordTransform.getCurrentTickTransform().transform(pos, TransformType.GLOBAL_TO_LOCAL);
+                BlockPos posInLocal = physEnt.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(pos, TransformType.GLOBAL_TO_LOCAL);
                 int localI = this.getLightFromNeighborsFor(EnumSkyBlock.SKY, posInLocal);
                 int localJ = this.getLightFromNeighborsFor(EnumSkyBlock.BLOCK, posInLocal);
                 if (localI == 0 && localJ == 0) {
@@ -125,7 +125,7 @@ public abstract class MixinWorldClient {
                 PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(World.class.cast(this), result.getBlockPos());
                 if (wrapper != null) {
                     Vector blockPosVector = new Vector(result.getBlockPos().getX() + .5D, result.getBlockPos().getY() + .5D, result.getBlockPos().getZ() + .5D);
-                    wrapper.getPhysicsObject().coordTransform.fromLocalToGlobal(blockPosVector);
+                    wrapper.getPhysicsObject().getShipTransformationManager().fromLocalToGlobal(blockPosVector);
                     BlockPos toReturn = new BlockPos(pos.getX(), blockPosVector.Y + .5D, pos.getZ());
                     return toReturn;
                 }

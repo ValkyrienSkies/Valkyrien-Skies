@@ -44,7 +44,7 @@ public abstract class BlockEtherCompressor extends Block implements ITileEntityP
     public Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state, Entity shipEntity, double secondsToApply) {
         PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity) shipEntity;
         PhysicsObject obj = wrapper.getPhysicsObject();
-        TileEntity worldTile = obj.shipChunks.getTileEntity(pos);
+        TileEntity worldTile = obj.getShipChunks().getTileEntity(pos);
         if (worldTile == null) {
             return null;
         }

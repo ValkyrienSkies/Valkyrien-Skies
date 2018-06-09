@@ -58,12 +58,12 @@ public class TileEntityPilotsChair extends ImplTileEntityPilotable {
 
     @Override
     public final void onStartTileUsage(EntityPlayer player) {
-        getParentPhysicsEntity().getPhysicsObject().physicsProcessor.actAsArchimedes = true;
+        getParentPhysicsEntity().getPhysicsObject().getPhysicsProcessor().actAsArchimedes = true;
     }
 
     @Override
     public final void onStopTileUsage() {
-        getParentPhysicsEntity().getPhysicsObject().physicsProcessor.actAsArchimedes = false;
+        getParentPhysicsEntity().getPhysicsObject().getPhysicsProcessor().actAsArchimedes = false;
     }
 
     private final void processCalculationsForControlMessageAndApplyCalculations(PhysicsWrapperEntity wrapper, PilotControlsMessage message, IBlockState state) {
@@ -98,8 +98,8 @@ public class TileEntityPilotsChair extends ImplTileEntityPilotable {
             idealLinearVelocity.subtract(playerDirection);
         }
 
-        controlledShip.coordTransform.getCurrentTickTransform().rotate(idealLinearVelocity, TransformType.LOCAL_TO_GLOBAL);
-        controlledShip.coordTransform.getCurrentTickTransform().rotate(shipUp, TransformType.LOCAL_TO_GLOBAL);
+        controlledShip.getShipTransformationManager().getCurrentTickTransform().rotate(idealLinearVelocity, TransformType.LOCAL_TO_GLOBAL);
+        controlledShip.getShipTransformationManager().getCurrentTickTransform().rotate(shipUp, TransformType.LOCAL_TO_GLOBAL);
 
 		if (message.airshipUp_KeyDown) {
 			idealLinearVelocity.add(upDirection.getProduct(.5));
@@ -120,7 +120,7 @@ public class TileEntityPilotsChair extends ImplTileEntityPilotable {
 		}
 		
 		Vector sidesRotationAxis = new Vector(playerDirection);
-		controlledShip.coordTransform.getCurrentTickTransform().rotate(sidesRotationAxis, TransformType.LOCAL_TO_GLOBAL);
+		controlledShip.getShipTransformationManager().getCurrentTickTransform().rotate(sidesRotationAxis, TransformType.LOCAL_TO_GLOBAL);
 		
 		double[] rotationSidesTransform = RotationMatrices.getRotationMatrix(sidesRotationAxis.X, sidesRotationAxis.Y,
 				sidesRotationAxis.Z, Math.toRadians(sidePitch));
@@ -135,18 +135,18 @@ public class TileEntityPilotsChair extends ImplTileEntityPilotable {
 		shipUpRotationVector.multiply(shipUpTheta);
 
 		idealAngularDirection.add(shipUpRotationVector);
-		idealLinearVelocity.multiply(20D * controlledShip.physicsProcessor.getMass());
+		idealLinearVelocity.multiply(20D * controlledShip.getPhysicsProcessor().getMass());
 		
 		
 		double lerpFactor = .3D;
-		Vector linearMomentumDif = idealLinearVelocity.getSubtraction(controlledShip.physicsProcessor.linearMomentum);
-		Vector angularVelocityDif = idealAngularDirection.getSubtraction(controlledShip.physicsProcessor.angularVelocity);
+		Vector linearMomentumDif = idealLinearVelocity.getSubtraction(controlledShip.getPhysicsProcessor().linearMomentum);
+		Vector angularVelocityDif = idealAngularDirection.getSubtraction(controlledShip.getPhysicsProcessor().angularVelocity);
 		
 		linearMomentumDif.multiply(lerpFactor / 2);
 		angularVelocityDif.multiply(lerpFactor / 2);
 		
-		controlledShip.physicsProcessor.linearMomentum.subtract(linearMomentumDif);
-		controlledShip.physicsProcessor.angularVelocity.subtract(angularVelocityDif);
+		controlledShip.getPhysicsProcessor().linearMomentum.subtract(linearMomentumDif);
+		controlledShip.getPhysicsProcessor().angularVelocity.subtract(angularVelocityDif);
 	}
 
 }

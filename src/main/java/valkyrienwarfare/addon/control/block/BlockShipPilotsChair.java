@@ -72,7 +72,7 @@ public class BlockShipPilotsChair extends Block implements ITileEntityProvider {
                     if (tileEntity instanceof TileEntityPilotsChair) {
                         Vector playerPos = new Vector(playerIn);
 
-                        wrapper.getPhysicsObject().coordTransform.fromLocalToGlobal(playerPos);
+                        wrapper.getPhysicsObject().getShipTransformationManager().fromLocalToGlobal(playerPos);
 
                         playerIn.posX = playerPos.X;
                         playerIn.posY = playerPos.Y;
@@ -87,7 +87,7 @@ public class BlockShipPilotsChair extends Block implements ITileEntityProvider {
                         }
 
                         ((TileEntityPilotsChair) tileEntity).setPilotEntity(playerIn);
-                        wrapper.getPhysicsObject().coordTransform.fromGlobalToLocal(playerPos);
+                        wrapper.getPhysicsObject().getShipTransformationManager().fromGlobalToLocal(playerPos);
 
                         playerIn.posX = playerPos.X;
                         playerIn.posY = playerPos.Y;

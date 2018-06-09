@@ -68,18 +68,18 @@ public class WorldPhysObjectManager {
             WorldServer worldServer = (WorldServer) worldObj;
             for (PhysicsWrapperEntity wrapper : list) {
                 if (!wrapper.isDead) {
-                    if (wrapper.getPhysicsObject().cachedSurroundingChunks != null) {
+                    if (wrapper.getPhysicsObject().getCachedSurroundingChunks() != null) {
                         int chunkCacheX = MathHelper.floor(wrapper.posX / 16D)
-                                - wrapper.getPhysicsObject().cachedSurroundingChunks.chunkX;
+                                - wrapper.getPhysicsObject().getCachedSurroundingChunks().chunkX;
                         int chunkCacheZ = MathHelper.floor(wrapper.posZ / 16D)
-                                - wrapper.getPhysicsObject().cachedSurroundingChunks.chunkZ;
+                                - wrapper.getPhysicsObject().getCachedSurroundingChunks().chunkZ;
 
                         chunkCacheX = Math.max(0, Math.min(chunkCacheX,
-                                wrapper.getPhysicsObject().cachedSurroundingChunks.chunkArray.length - 1));
+                                wrapper.getPhysicsObject().getCachedSurroundingChunks().chunkArray.length - 1));
                         chunkCacheZ = Math.max(0, Math.min(chunkCacheZ,
-                                wrapper.getPhysicsObject().cachedSurroundingChunks.chunkArray[0].length - 1));
+                                wrapper.getPhysicsObject().getCachedSurroundingChunks().chunkArray[0].length - 1));
 
-                        Chunk chunk = wrapper.getPhysicsObject().cachedSurroundingChunks.chunkArray[chunkCacheX][chunkCacheZ];
+                        Chunk chunk = wrapper.getPhysicsObject().getCachedSurroundingChunks().chunkArray[chunkCacheX][chunkCacheZ];
 
                         // Chunk chunk =
                         // wrapper.wrapping.surroundingWorldChunksCache.chunkArray[(wrapper.wrapping.surroundingWorldChunksCache.chunkArray.length)/2][(wrapper.wrapping.surroundingWorldChunksCache.chunkArray[0].length)/2];
@@ -99,7 +99,7 @@ public class WorldPhysObjectManager {
 
         for (PhysicsWrapperEntity wrapper : list) {
             if (wrapper.isDead || wrapper.getPhysicsObject() == null
-                    || (wrapper.getPhysicsObject().physicsProcessor == null && !wrapper.world.isRemote)) {
+                    || (wrapper.getPhysicsObject().getPhysicsProcessor() == null && !wrapper.world.isRemote)) {
                 dumbShips.add(wrapper);
             }
         }
@@ -135,8 +135,8 @@ public class WorldPhysObjectManager {
      * @param loaded
      */
     public void preloadPhysicsWrapperEntityMappings(PhysicsWrapperEntity loaded) {
-        for (int x = loaded.getPhysicsObject().ownedChunks.getMinX(); x <= loaded.getPhysicsObject().ownedChunks.getMaxX(); x++) {
-            for (int z = loaded.getPhysicsObject().ownedChunks.getMinZ(); z <= loaded.getPhysicsObject().ownedChunks.getMaxZ(); z++) {
+        for (int x = loaded.getPhysicsObject().getOwnedChunks().getMinX(); x <= loaded.getPhysicsObject().getOwnedChunks().getMaxX(); x++) {
+            for (int z = loaded.getPhysicsObject().getOwnedChunks().getMinZ(); z <= loaded.getPhysicsObject().getOwnedChunks().getMaxZ(); z++) {
                 chunkPosToPhysicsEntityMap.put(getLongFromInts(x, z), loaded);
             }
         }
@@ -146,7 +146,7 @@ public class WorldPhysObjectManager {
 		if (!loaded.world.isRemote) {
 			physicsEntities.remove(loaded);
 			loaded.getPhysicsObject().onThisUnload();
-			VWChunkClaim vwChunkClaim = loaded.getPhysicsObject().ownedChunks;
+			VWChunkClaim vwChunkClaim = loaded.getPhysicsObject().getOwnedChunks();
 			for (int chunkX = vwChunkClaim.getMinX(); chunkX <= vwChunkClaim.getMaxX(); chunkX++) {
 				for (int chunkZ = vwChunkClaim.getMinZ(); chunkZ <= vwChunkClaim.getMaxZ(); chunkZ++) {
 					chunkPosToPhysicsEntityMap.remove(getLongFromInts(chunkX, chunkZ));

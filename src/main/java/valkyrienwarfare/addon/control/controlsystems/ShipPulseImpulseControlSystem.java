@@ -53,8 +53,8 @@ public class ShipPulseImpulseControlSystem {
         double totalPotentialThrust = getMaxThrustForAllThrusters();
         double currentThrust = getTotalThrustForAllThrusters();
 
-        double[] rotationAndTranslationMatrix = calculations.getParent().coordTransform.getCurrentPhysicsTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL);
-        double[] invRotationAndTranslationMatrix = calculations.getParent().coordTransform.getCurrentPhysicsTransform().getInternalMatrix(TransformType.GLOBAL_TO_LOCAL);
+        double[] rotationAndTranslationMatrix = calculations.getParent().getShipTransformationManager().getCurrentPhysicsTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL);
+        double[] invRotationAndTranslationMatrix = calculations.getParent().getShipTransformationManager().getCurrentPhysicsTransform().getInternalMatrix(TransformType.GLOBAL_TO_LOCAL);
         double[] invMOIMatrix = calculations.getPhysInvMOITensor();
 
         Vector posInWorld = new Vector(calculations.getParent().getWrapperEntity().posX, calculations.getParent().getWrapperEntity().posY, calculations.getParent().getWrapperEntity().posZ);
@@ -62,7 +62,7 @@ public class ShipPulseImpulseControlSystem {
         Vector linearMomentum = new Vector(calculations.linearMomentum);
         Vector linearVelocity = new Vector(linearMomentum, calculations.getInvMass());
 
-        BlockPos shipRefrencePos = calculations.getParent().refrenceBlockPos;
+        BlockPos shipRefrencePos = calculations.getParent().getRefrenceBlockPos();
 
         double maxYDelta = parentTile.maximumYVelocity;
         double idealHeight = parentTile.idealYHeight + getBobForTime();

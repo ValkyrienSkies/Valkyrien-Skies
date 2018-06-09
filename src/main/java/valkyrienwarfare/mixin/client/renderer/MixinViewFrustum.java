@@ -24,7 +24,7 @@ public class MixinViewFrustum {
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, new BlockPos(minX, minY, minZ));
 		if (wrapper != null) {
 			// System.out.println("Update");
-			wrapper.getPhysicsObject().renderer.updateRange(minX, minY, minZ, maxX, maxY, maxZ, updateImmediately);
+			wrapper.getPhysicsObject().getShipRenderer().updateRange(minX, minY, minZ, maxX, maxY, maxZ, updateImmediately);
 		}
 	}
 }

@@ -167,12 +167,12 @@ public class VWThread extends Thread {
 		for (PhysicsWrapperEntity wrapper : ships) {
 			if (!wrapper.firstUpdate) {
 				// Update the physics simulation
-				wrapper.getPhysicsObject().physicsProcessor.rawPhysTickPreCol(newPhysSpeed);
+				wrapper.getPhysicsObject().getPhysicsProcessor().rawPhysTickPreCol(newPhysSpeed);
 				if (wrapper.getPhysicsObject().isPhysicsEnabled()) {
 					// Update the collision task if necessary
-					wrapper.getPhysicsObject().physicsProcessor.getWorldCollision().tickUpdatingTheCollisionCache();
+					wrapper.getPhysicsObject().getPhysicsProcessor().getWorldCollision().tickUpdatingTheCollisionCache();
 					// Take the big collision and split into tiny ones
-					wrapper.getPhysicsObject().physicsProcessor.getWorldCollision()
+					wrapper.getPhysicsObject().getPhysicsProcessor().getWorldCollision()
 							.splitIntoCollisionTasks(collisionTasks);
 				}
 			}
@@ -202,12 +202,12 @@ public class VWThread extends Thread {
 		for (PhysicsWrapperEntity wrapper : ships) {
 			if (!wrapper.firstUpdate) {
 				try {
-					wrapper.getPhysicsObject().physicsProcessor.rawPhysTickPostCol();
+					wrapper.getPhysicsObject().getPhysicsProcessor().rawPhysTickPostCol();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			} else {
-				wrapper.getPhysicsObject().coordTransform.updateAllTransforms(false, false);
+				wrapper.getPhysicsObject().getShipTransformationManager().updateAllTransforms(false, false);
 			}
 		}
 	}
@@ -217,7 +217,7 @@ public class VWThread extends Thread {
 			// if (wrapper.getPhysicsObject().blockPositions.size() > 10000) {
 			// System.out.println(wrapper.getPhysicsObject().blockPositions.size());
 			// }
-			wrapper.getPhysicsObject().coordTransform.sendPositionToPlayers(positionTickID);
+			wrapper.getPhysicsObject().getShipTransformationManager().sendPositionToPlayers(positionTickID);
 		}
 		positionTickID++;
 	}

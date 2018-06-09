@@ -55,7 +55,7 @@ public abstract class MixinTileEntityRendererDispatcher {
             BlockPos pos = tileentityIn.getPos();
             PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(tileentityIn.getWorld(), pos);
 
-            if (wrapper != null && wrapper.getPhysicsObject() != null && wrapper.getPhysicsObject().renderer != null) {
+            if (wrapper != null && wrapper.getPhysicsObject() != null && wrapper.getPhysicsObject().getShipRenderer() != null) {
                 try {
                     GlStateManager.resetColor();
 
@@ -64,15 +64,15 @@ public abstract class MixinTileEntityRendererDispatcher {
                         this.preDrawBatch();
                     }
 
-                    wrapper.getPhysicsObject().renderer.setupTranslation(partialTicks);
+                    wrapper.getPhysicsObject().getShipRenderer().setupTranslation(partialTicks);
 
                     double playerX = TileEntityRendererDispatcher.staticPlayerX;
                     double playerY = TileEntityRendererDispatcher.staticPlayerY;
                     double playerZ = TileEntityRendererDispatcher.staticPlayerZ;
 
-                    TileEntityRendererDispatcher.staticPlayerX = wrapper.getPhysicsObject().renderer.offsetPos.getX();
-                    TileEntityRendererDispatcher.staticPlayerY = wrapper.getPhysicsObject().renderer.offsetPos.getY();
-                    TileEntityRendererDispatcher.staticPlayerZ = wrapper.getPhysicsObject().renderer.offsetPos.getZ();
+                    TileEntityRendererDispatcher.staticPlayerX = wrapper.getPhysicsObject().getShipRenderer().offsetPos.getX();
+                    TileEntityRendererDispatcher.staticPlayerY = wrapper.getPhysicsObject().getShipRenderer().offsetPos.getY();
+                    TileEntityRendererDispatcher.staticPlayerZ = wrapper.getPhysicsObject().getShipRenderer().offsetPos.getZ();
 
                     hasChanged = true;
                     if (drawingBatch) {
@@ -87,7 +87,7 @@ public abstract class MixinTileEntityRendererDispatcher {
                     TileEntityRendererDispatcher.staticPlayerY = playerY;
                     TileEntityRendererDispatcher.staticPlayerZ = playerZ;
 
-                    wrapper.getPhysicsObject().renderer.inverseTransform(partialTicks);
+                    wrapper.getPhysicsObject().getShipRenderer().inverseTransform(partialTicks);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

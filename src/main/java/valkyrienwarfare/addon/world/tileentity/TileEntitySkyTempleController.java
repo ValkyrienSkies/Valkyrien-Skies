@@ -93,8 +93,8 @@ public class TileEntitySkyTempleController extends ImplPhysicsProcessorNodeTileE
         if (!getWorld().isRemote) {
             PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(getWorld(), getPos());
             if (wrapper != null) {
-                if (wrapper.getPhysicsObject().physicsProcessor instanceof PhysicsCalculationsManualControl) {
-                    wrapper.getPhysicsObject().physicsProcessor = ((PhysicsCalculationsManualControl) wrapper.getPhysicsObject().physicsProcessor).downgradeToNormalCalculations();
+                if (wrapper.getPhysicsObject().getPhysicsProcessor() instanceof PhysicsCalculationsManualControl) {
+                    wrapper.getPhysicsObject().setPhysicsProcessor(((PhysicsCalculationsManualControl) wrapper.getPhysicsObject().getPhysicsProcessor()).downgradeToNormalCalculations());
                     wrapper.getPhysicsObject().setShipType(ShipType.Full_Unlocked);
                 }
             }

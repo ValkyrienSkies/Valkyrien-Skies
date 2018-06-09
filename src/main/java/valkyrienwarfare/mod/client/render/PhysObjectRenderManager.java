@@ -72,12 +72,12 @@ public class PhysObjectRenderManager {
             if (!parent.areShipChunksFullyLoaded()) {
 				return;
 			}
-			renderChunks = new PhysRenderChunk[parent.ownedChunks.getChunkLengthX()][parent.ownedChunks
+			renderChunks = new PhysRenderChunk[parent.getOwnedChunks().getChunkLengthX()][parent.getOwnedChunks()
 					.getChunkLengthZ()];
-			for (int xChunk = 0; xChunk < parent.ownedChunks.getChunkLengthX(); xChunk++) {
-				for (int zChunk = 0; zChunk < parent.ownedChunks.getChunkLengthZ(); zChunk++) {
-					renderChunks[xChunk][zChunk] = new PhysRenderChunk(parent, parent.shipChunks
-							.getChunkAt(xChunk + parent.ownedChunks.getMinX(), zChunk + parent.ownedChunks.getMinZ()));
+			for (int xChunk = 0; xChunk < parent.getOwnedChunks().getChunkLengthX(); xChunk++) {
+				for (int zChunk = 0; zChunk < parent.getOwnedChunks().getChunkLengthZ(); zChunk++) {
+					renderChunks[xChunk][zChunk] = new PhysRenderChunk(parent, parent.getShipChunks()
+							.getChunkAt(xChunk + parent.getOwnedChunks().getMinX(), zChunk + parent.getOwnedChunks().getMinZ()));
 				}
 			}
         }
@@ -114,7 +114,7 @@ public class PhysObjectRenderManager {
     }
 
     public void updateRange(int minX, int minY, int minZ, int maxX, int maxY, int maxZ, boolean updateImmediately) {
-        if (renderChunks == null || parent == null || parent.ownedChunks == null) {
+        if (renderChunks == null || parent == null || parent.getOwnedChunks() == null) {
             return;
         }
 
@@ -136,11 +136,11 @@ public class PhysObjectRenderManager {
             for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
                 // TODO: Fix this render bug
                 try {
-                    if (chunkX >= parent.ownedChunks.getMinX() && chunkZ >= parent.ownedChunks.getMinZ()
-                            && chunkX - parent.ownedChunks.getMinX() < renderChunks.length
-                            && chunkZ - parent.ownedChunks.getMinZ() < renderChunks[0].length) {
-                        PhysRenderChunk renderChunk = renderChunks[chunkX - parent.ownedChunks.getMinX()][chunkZ
-                                - parent.ownedChunks.getMinZ()];
+                    if (chunkX >= parent.getOwnedChunks().getMinX() && chunkZ >= parent.getOwnedChunks().getMinZ()
+                            && chunkX - parent.getOwnedChunks().getMinX() < renderChunks.length
+                            && chunkZ - parent.getOwnedChunks().getMinZ() < renderChunks[0].length) {
+                        PhysRenderChunk renderChunk = renderChunks[chunkX - parent.getOwnedChunks().getMinX()][chunkZ
+                                - parent.getOwnedChunks().getMinZ()];
                         if (renderChunk != null) {
                             renderChunk.updateLayers(minBlockArrayY, maxBlockArrayY);
                         } else {
@@ -175,7 +175,7 @@ public class PhysObjectRenderManager {
 
     public void updateTranslation(double partialTicks) {
         PhysicsWrapperEntity entity = parent.getWrapperEntity();
-        Vector centerOfRotation = entity.getPhysicsObject().centerCoord;
+        Vector centerOfRotation = entity.getPhysicsObject().getCenterCoord();
         curPartialTick = partialTicks;
 
         double moddedX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks;
@@ -198,7 +198,7 @@ public class PhysObjectRenderManager {
         double moddedYaw = Math.toDegrees(radians[1]);
         double moddedRoll = Math.toDegrees(radians[2]);
 
-        parent.coordTransform.updateRenderTransform(moddedX, moddedY, moddedZ, moddedPitch, moddedYaw, moddedRoll);
+        parent.getShipTransformationManager().updateRenderTransform(moddedX, moddedY, moddedZ, moddedPitch, moddedYaw, moddedRoll);
 
         if (offsetPos != null) {
             double offsetX = offsetPos.getX() - centerOfRotation.X;
@@ -215,16 +215,16 @@ public class PhysObjectRenderManager {
     }
 
     public Quaternion getSmoothRotationQuat(double partialTick) {
-        Quaternion oneTickBefore = parent.coordTransform.getPrevTickTransform()
+        Quaternion oneTickBefore = parent.getShipTransformationManager().getPrevTickTransform()
                 .createRotationQuaternion(TransformType.LOCAL_TO_GLOBAL);
-        Quaternion nextQuat = parent.coordTransform.getCurrentTickTransform()
+        Quaternion nextQuat = parent.getShipTransformationManager().getCurrentTickTransform()
                 .createRotationQuaternion(TransformType.LOCAL_TO_GLOBAL);
         return Quaternion.slerpInterpolate(oneTickBefore, nextQuat, partialTick);
     }
 
     public void inverseTransform(double partialTicks) {
         PhysicsWrapperEntity entity = parent.getWrapperEntity();
-        Vector centerOfRotation = entity.getPhysicsObject().centerCoord;
+        Vector centerOfRotation = entity.getPhysicsObject().getCenterCoord();
         curPartialTick = partialTicks;
 
         double moddedX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks;

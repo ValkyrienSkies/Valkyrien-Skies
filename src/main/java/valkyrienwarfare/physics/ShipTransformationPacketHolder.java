@@ -93,8 +93,8 @@ public class ShipTransformationPacketHolder {
 	// Apply all the position/rotation variables accordingly onto the passed
 	// physObject
 	public void applyToPhysObject(PhysicsObject physObj) {
-		Vector CMDif = centerOfRotation.getSubtraction(physObj.centerCoord);
-		physObj.coordTransform.getCurrentTickTransform().rotate(CMDif, TransformType.LOCAL_TO_GLOBAL);
+		Vector CMDif = centerOfRotation.getSubtraction(physObj.getCenterCoord());
+		physObj.getShipTransformationManager().getCurrentTickTransform().rotate(CMDif, TransformType.LOCAL_TO_GLOBAL);
 
 		physObj.getWrapperEntity().lastTickPosX -= CMDif.X;
 		physObj.getWrapperEntity().lastTickPosY -= CMDif.Y;
@@ -108,7 +108,7 @@ public class ShipTransformationPacketHolder {
 		physObj.getWrapperEntity().setYaw(yaw);
 		physObj.getWrapperEntity().setRoll(roll);
 
-		physObj.centerCoord = centerOfRotation;
+		physObj.setCenterCoord(centerOfRotation);
 
 		physObj.setShipBoundingBox(shipBB);
 	}
@@ -124,8 +124,8 @@ public class ShipTransformationPacketHolder {
 	 *            and 1 applies all of it. A number around .7 or .8 is ideal here.
 	 */
 	public void applySmoothLerp(PhysicsObject physObj, double lerpFactor) {
-		Vector CMDif = centerOfRotation.getSubtraction(physObj.centerCoord);
-		physObj.coordTransform.getCurrentTickTransform().rotate(CMDif, TransformType.LOCAL_TO_GLOBAL);
+		Vector CMDif = centerOfRotation.getSubtraction(physObj.getCenterCoord());
+		physObj.getShipTransformationManager().getCurrentTickTransform().rotate(CMDif, TransformType.LOCAL_TO_GLOBAL);
 		// CMDif.multiply(lerpFactor);
 
 		physObj.getWrapperEntity().posX -= CMDif.X;
@@ -140,7 +140,7 @@ public class ShipTransformationPacketHolder {
 		physObj.getWrapperEntity().posY += (posY - physObj.getWrapperEntity().posY) * lerpFactor;
 		physObj.getWrapperEntity().posZ += (posZ - physObj.getWrapperEntity().posZ) * lerpFactor;
 
-		Quaternion prevRotation = physObj.coordTransform.getCurrentTickTransform()
+		Quaternion prevRotation = physObj.getShipTransformationManager().getCurrentTickTransform()
 				.createRotationQuaternion(TransformType.LOCAL_TO_GLOBAL);
 		Quaternion newRotation = Quaternion.fromEuler(pitch, yaw, roll);
 		Quaternion lerpedRotation = Quaternion.slerpInterpolate(prevRotation, newRotation, lerpFactor);
@@ -150,7 +150,7 @@ public class ShipTransformationPacketHolder {
 		physObj.getWrapperEntity().setYaw(Math.toDegrees(lerpedRotationAngles[1]));
 		physObj.getWrapperEntity().setRoll(Math.toDegrees(lerpedRotationAngles[2]));
 
-		physObj.centerCoord = centerOfRotation;
+		physObj.setCenterCoord(centerOfRotation);
 
 		// Create an AABB that contains both the previous AABB and the new one, bigger
 		// is always better!

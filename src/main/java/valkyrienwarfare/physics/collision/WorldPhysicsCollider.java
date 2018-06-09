@@ -192,7 +192,7 @@ public class WorldPhysicsCollider {
 			inWorld.Y = mutablePos.getY() + .5;
 			inWorld.Z = mutablePos.getZ() + .5;
 
-			parent.coordTransform.getCurrentPhysicsTransform().transform(inWorld, TransformType.GLOBAL_TO_LOCAL);
+			parent.getShipTransformationManager().getCurrentPhysicsTransform().transform(inWorld, TransformType.GLOBAL_TO_LOCAL);
 
 			// parent.coordTransform.fromGlobalToLocal(inWorld);
 
@@ -220,7 +220,7 @@ public class WorldPhysicsCollider {
 				for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
 					for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
 						if (parent.ownsChunk(chunkX, chunkZ)) {
-							final Chunk chunkIn = parent.shipChunks.getChunkAt(chunkX, chunkZ);
+							final Chunk chunkIn = parent.getShipChunks().getChunkAt(chunkX, chunkZ);
 
 							int minXToCheck = chunkX << 4;
 							int maxXToCheck = minXToCheck + 15;
@@ -254,7 +254,7 @@ public class WorldPhysicsCollider {
 													localCollisionPos.setPos(x, y, z);
 
 													boolean brokeAWorldBlock = handleLikelyCollision(mutablePos,
-															localCollisionPos, parent.cachedSurroundingChunks
+															localCollisionPos, parent.getCachedSurroundingChunks()
 																	.getBlockState(mutablePos),
 															state);
 
@@ -293,10 +293,10 @@ public class WorldPhysicsCollider {
 		// List<AxisAlignedBB> colBB = worldObj.getCollisionBoxes(inLocalBB);
 		// inLocalBB = colBB.get(0);
 
-		Polygon shipInWorld = new Polygon(inLocalBB, parent.coordTransform.getCurrentPhysicsTransform(),
+		Polygon shipInWorld = new Polygon(inLocalBB, parent.getShipTransformationManager().getCurrentPhysicsTransform(),
 				TransformType.LOCAL_TO_GLOBAL);
 		Polygon worldPoly = new Polygon(inGlobalBB);
-		PhysPolygonCollider collider = new PhysPolygonCollider(shipInWorld, worldPoly, parent.coordTransform.normals);
+		PhysPolygonCollider collider = new PhysPolygonCollider(shipInWorld, worldPoly, parent.getShipTransformationManager().normals);
 		if (!collider.seperated) {
 			return handleActualCollision(collider, inWorldPos, inLocalPos, inWorldState, inLocalState);
 		}
@@ -404,7 +404,7 @@ public class WorldPhysicsCollider {
 
 	// TODO: The greatest physics lag starts here.
 	private void updatePotentialCollisionCache() {
-		PhysicsShipTransform currentPhysicsTransform = (PhysicsShipTransform) parent.coordTransform
+		PhysicsShipTransform currentPhysicsTransform = (PhysicsShipTransform) parent.getShipTransformationManager()
 				.getCurrentPhysicsTransform();
 		// final AxisAlignedBB collisionBB = parent.getCollisionBoundingBox()
 		// .expand(calculator.linearMomentum.X * calculator.getInvMass(),
@@ -441,7 +441,7 @@ public class WorldPhysicsCollider {
 		centerPotentialHit = new BlockPos((min.getX() + max.getX()) / 2D, (min.getY() + max.getY()) / 2D,
 				(min.getZ() + max.getZ()) / 2D);
 
-		ChunkCache cache = parent.cachedSurroundingChunks;
+		ChunkCache cache = parent.getCachedSurroundingChunks();
 
 		if (cache == null) {
 			System.err.println("VW Cached Surrounding Chunks was null! This is going to cause catastophric terrible events!!");
@@ -462,7 +462,7 @@ public class WorldPhysicsCollider {
 		int maxZ = max.getZ();
 
 		// More multithreading!
-		if (parent.blockPositions.size() > 100) {
+		if (parent.getBlockPositions().size() > 100) {
 			List<Tuple<Integer, Integer>> tasks = new ArrayList<Tuple<Integer, Integer>>();
 
 			for (int chunkX = chunkMinX; chunkX < chunkMaxX; chunkX++) {
@@ -682,9 +682,9 @@ public class WorldPhysicsCollider {
 			// parent.coordTransform.fromGlobalToLocal(inLocal);
 			if (inLocal.X > shipBB.minX && inLocal.X < shipBB.maxX && inLocal.Y > shipBB.minY && inLocal.Y < shipBB.maxY
 					&& inLocal.Z > shipBB.minZ && inLocal.Z < shipBB.maxZ) {
-				parent.coordTransform.getCurrentPhysicsTransform().transform(inLocal, TransformType.GLOBAL_TO_LOCAL);
+				parent.getShipTransformationManager().getCurrentPhysicsTransform().transform(inLocal, TransformType.GLOBAL_TO_LOCAL);
 
-				inBody.setSubtraction(inLocal, parent.centerCoord);
+				inBody.setSubtraction(inLocal, parent.getCenterCoord());
 				// parent.physicsProcessor.setVectorToVelocityAtPoint(inBody, speedInBody);
 				// speedInBody.multiply(-parent.physicsProcessor.getPhysicsTimeDeltaPerGameTick());
 
@@ -732,10 +732,10 @@ public class WorldPhysicsCollider {
 
 				if (parent.ownsChunk(minX >> 4, minZ >> 4) && parent.ownsChunk(maxX >> 4, maxZ >> 4)) {
 
-					Chunk chunkIn00 = parent.shipChunks.getChunkAt(minX >> 4, minZ >> 4);
-					Chunk chunkIn01 = parent.shipChunks.getChunkAt(minX >> 4, maxZ >> 4);
-					Chunk chunkIn10 = parent.shipChunks.getChunkAt(maxX >> 4, minZ >> 4);
-					Chunk chunkIn11 = parent.shipChunks.getChunkAt(maxX >> 4, maxZ >> 4);
+					Chunk chunkIn00 = parent.getShipChunks().getChunkAt(minX >> 4, minZ >> 4);
+					Chunk chunkIn01 = parent.getShipChunks().getChunkAt(minX >> 4, maxZ >> 4);
+					Chunk chunkIn10 = parent.getShipChunks().getChunkAt(maxX >> 4, minZ >> 4);
+					Chunk chunkIn11 = parent.getShipChunks().getChunkAt(maxX >> 4, maxZ >> 4);
 
 					breakThisLoop: for (int localX = minX; localX < maxX; localX++) {
 						for (int localZ = minZ; localZ < maxZ; localZ++) {
@@ -801,9 +801,9 @@ public class WorldPhysicsCollider {
 			inLocal.Z = z + .5D;
 			// TODO: Something
 			// parent.coordTransform.fromGlobalToLocal(inLocal);
-			parent.coordTransform.getCurrentPhysicsTransform().transform(inLocal, TransformType.GLOBAL_TO_LOCAL);
+			parent.getShipTransformationManager().getCurrentPhysicsTransform().transform(inLocal, TransformType.GLOBAL_TO_LOCAL);
 
-			inBody.setSubtraction(inLocal, parent.centerCoord);
+			inBody.setSubtraction(inLocal, parent.getCenterCoord());
 			// parent.physicsProcessor.setVectorToVelocityAtPoint(inBody, speedInBody);
 			// speedInBody.multiply(-parent.physicsProcessor.getPhysicsTimeDeltaPerGameTick());
 
@@ -843,7 +843,7 @@ public class WorldPhysicsCollider {
 				for (int localZ = minZ; localZ < maxZ; localZ++) {
 					for (int localY = minY; localY < maxY; localY++) {
 						if (parent.ownsChunk(localX >> 4, localZ >> 4)) {
-							Chunk chunkIn = parent.shipChunks.getChunkAt(localX >> 4, localZ >> 4);
+							Chunk chunkIn = parent.getShipChunks().getChunkAt(localX >> 4, localZ >> 4);
 							if (localY >> 4 < 16 && chunkIn.storageArrays[localY >> 4] != null) {
 								IBitOctreeProvider provider = IBitOctreeProvider.class
 										.cast(chunkIn.storageArrays[localY >> 4].getData());

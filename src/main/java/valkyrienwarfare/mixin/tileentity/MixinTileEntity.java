@@ -56,7 +56,7 @@ public abstract class MixinTileEntity implements net.minecraftforge.common.capab
 
                 if (wrapper != null) {
                     Vector tilePos = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
-                    wrapper.getPhysicsObject().coordTransform.fromLocalToGlobal(tilePos);
+                    wrapper.getPhysicsObject().getShipTransformationManager().fromLocalToGlobal(tilePos);
 
                     tilePos.X -= x;
                     tilePos.Y -= y;

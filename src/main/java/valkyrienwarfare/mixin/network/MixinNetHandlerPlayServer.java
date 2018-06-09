@@ -174,7 +174,7 @@ public abstract class MixinNetHandlerPlayServer implements INHPServerVW {
 						pos);
 				if (physicsEntity != null) {
 					Vector tpPos = new Vector(x, y, z);
-					physicsEntity.getPhysicsObject().coordTransform.getCurrentTickTransform().transform(tpPos,
+					physicsEntity.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(tpPos,
 							TransformType.LOCAL_TO_GLOBAL);
 					// Now call this again with the transformed position.
 					// player.sendMessage(new TextComponentString("Transformed the player tp from <"

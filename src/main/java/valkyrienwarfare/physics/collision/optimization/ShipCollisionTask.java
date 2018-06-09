@@ -97,14 +97,14 @@ public class ShipCollisionTask implements Callable<Void> {
 
     private void processNumber(int integer) {
         SpatialDetector.setPosWithRespectTo(integer, toTask.getCenterPotentialHit(), mutablePos);
-        inWorldState = toTask.getParent().cachedSurroundingChunks.getBlockState(mutablePos);
+        inWorldState = toTask.getParent().getCachedSurroundingChunks().getBlockState(mutablePos);
 
         inWorld.X = mutablePos.getX() + .5;
         inWorld.Y = mutablePos.getY() + .5;
         inWorld.Z = mutablePos.getZ() + .5;
 
 //        toTask.getParent().coordTransform.fromGlobalToLocal(inWorld);
-        toTask.getParent().coordTransform.getCurrentPhysicsTransform().transform(inWorld, TransformType.GLOBAL_TO_LOCAL);
+        toTask.getParent().getShipTransformationManager().getCurrentPhysicsTransform().transform(inWorld, TransformType.GLOBAL_TO_LOCAL);
 
         int midX = MathHelper.floor(inWorld.X + .5D);
         int midY = MathHelper.floor(inWorld.Y + .5D);
@@ -144,7 +144,7 @@ public class ShipCollisionTask implements Callable<Void> {
     }
 
     public void checkPosition(int x, int y, int z, int positionHash) {
-        final Chunk chunkIn = toTask.getParent().shipChunks.getChunkAt(x >> 4, z >> 4);
+        final Chunk chunkIn = toTask.getParent().getShipChunks().getChunkAt(x >> 4, z >> 4);
         y = Math.max(0, Math.min(y, 255));
 
         ExtendedBlockStorage storage = chunkIn.storageArrays[y >> 4];
@@ -173,12 +173,12 @@ public class ShipCollisionTask implements Callable<Void> {
                 // inLocalBB = colBB.get(0);
 
                 Polygon shipInWorld = new Polygon(inLocalBB,
-                        toTask.getParent().coordTransform.getCurrentPhysicsTransform(), TransformType.LOCAL_TO_GLOBAL);
+                        toTask.getParent().getShipTransformationManager().getCurrentPhysicsTransform(), TransformType.LOCAL_TO_GLOBAL);
                 Polygon worldPoly = new Polygon(inGlobalBB);
 
                 // TODO: Remove the normals crap
                 PhysPolygonCollider collider = new PhysPolygonCollider(shipInWorld, worldPoly,
-                        toTask.getParent().coordTransform.normals);
+                        toTask.getParent().getShipTransformationManager().normals);
 
                 if (!collider.seperated) {
                     // return handleActualCollision(collider, mutablePos, inLocalPos, inWorldState,

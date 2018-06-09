@@ -55,7 +55,7 @@ public class Node {
         parentPhysicsObject = physObj;
         parentNetwork.setParentPhysicsObject(physObj);
         if (physObj != null) {
-            physObj.concurrentNodesWithinShip.add(this);
+            physObj.getConcurrentNodesWithinShip().add(this);
         }
     }
 
@@ -122,7 +122,7 @@ public class Node {
         parentNetwork.recalculateNetworks(this);
 
         if (parentPhysicsObject != null) {
-            parentPhysicsObject.concurrentNodesWithinShip.remove(this);
+            parentPhysicsObject.getConcurrentNodesWithinShip().remove(this);
         }
         
         // System.out.println("NODE DESTROYED!!!");

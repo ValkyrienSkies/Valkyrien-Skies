@@ -49,7 +49,6 @@ public class VWThread extends Thread {
 	private final World hostWorld;
 	// The ships we will be ticking physics for every tick, and sending those
 	// updates to players.
-	private final List<PhysicsWrapperEntity> ships;
 	private int physicsTicksCount;
 	// Used by the game thread to mark this thread for death.
 	private volatile boolean threadRunning;
@@ -59,7 +58,6 @@ public class VWThread extends Thread {
 		super("VW World Thread " + threadID);
 		threadID++;
 		this.hostWorld = host;
-		this.ships = new ArrayList<PhysicsWrapperEntity>();
 		this.physicsTicksCount = 0;
 		this.threadRunning = true;
 		this.latestPhysicsTickTimes = new ConcurrentLinkedQueue<Long>();
@@ -130,12 +128,10 @@ public class VWThread extends Thread {
 			if (mcServer.isDedicatedServer()) {
 				// Always tick the physics
 				physicsTick();
-				tickSendUpdatesToPlayers();
 			} else {
 				// Only tick the physics if the game isn't paused
 				if (!isSinglePlayerPaused()) {
 					physicsTick();
-					tickSendUpdatesToPlayers();
 				}
 			}
 		}
@@ -152,30 +148,34 @@ public class VWThread extends Thread {
 		// TODO: Temporary fix:
 		WorldPhysObjectManager manager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(hostWorld);
 		List<PhysicsWrapperEntity> physicsEntities = manager.getTickablePhysicsEntities();
-		ships.clear();
-		ships.addAll(physicsEntities);
-		// System.out.println(ships.size());
-		tickThePhysicsAndCollision();
-		tickTheTransformUpdates();
+		List<PhysicsWrapperEntity> shipsWithPhysics = new ArrayList<PhysicsWrapperEntity>();
+		for (PhysicsWrapperEntity wrapper : physicsEntities) {
+			if (wrapper.getPhysicsObject().isPhysicsEnabled()) {
+				shipsWithPhysics.add(wrapper);
+			}
+			wrapper.getPhysicsObject().advanceConsecutivePhysicsTicksCounter();
+		}
+		tickThePhysicsAndCollision(shipsWithPhysics);
+		tickSendUpdatesToPlayers(physicsEntities);
 	}
 
-	private void tickThePhysicsAndCollision() {
+	/**
+	 * Ticks physics and collision for the List of PhysicsWrapperEntity passed in.
+	 * @param shipsWithPhysics
+	 */
+	private void tickThePhysicsAndCollision(List<PhysicsWrapperEntity> shipsWithPhysics) {
 		double newPhysSpeed = ValkyrienWarfareMod.physSpeed;
 		Vector newGravity = ValkyrienWarfareMod.gravity;
-		List<ShipCollisionTask> collisionTasks = new ArrayList<ShipCollisionTask>(ships.size() * 2);
-
-		for (PhysicsWrapperEntity wrapper : ships) {
+		List<ShipCollisionTask> collisionTasks = new ArrayList<ShipCollisionTask>(shipsWithPhysics.size() * 2);
+		for (PhysicsWrapperEntity wrapper : shipsWithPhysics) {
 			if (!wrapper.firstUpdate) {
 				// Update the physics simulation
-				wrapper.getPhysicsObject().advanceConsecutivePhysicsTicksCounter();
 				wrapper.getPhysicsObject().getPhysicsProcessor().rawPhysTickPreCol(newPhysSpeed);
-				if (wrapper.getPhysicsObject().isPhysicsEnabled()) {
-					// Update the collision task if necessary
-					wrapper.getPhysicsObject().getPhysicsProcessor().getWorldCollision().tickUpdatingTheCollisionCache();
-					// Take the big collision and split into tiny ones
-					wrapper.getPhysicsObject().getPhysicsProcessor().getWorldCollision()
-							.splitIntoCollisionTasks(collisionTasks);
-				}
+				// Update the collision task if necessary
+				wrapper.getPhysicsObject().getPhysicsProcessor().getWorldCollision().tickUpdatingTheCollisionCache();
+				// Take the big collision and split into tiny ones
+				wrapper.getPhysicsObject().getPhysicsProcessor().getWorldCollision()
+						.splitIntoCollisionTasks(collisionTasks);
 			}
 		}
 
@@ -195,12 +195,8 @@ public class VWThread extends Thread {
 				task.getToTask().processCollisionTask(task);
 			}
 		}
-	}
-
-	// TODO: Try to synchronize this better with the main game thread, otherwise we
-	// could end up with instability.
-	private void tickTheTransformUpdates() {
-		for (PhysicsWrapperEntity wrapper : ships) {
+		
+		for (PhysicsWrapperEntity wrapper : shipsWithPhysics) {
 			if (!wrapper.firstUpdate) {
 				try {
 					wrapper.getPhysicsObject().getPhysicsProcessor().rawPhysTickPostCol();
@@ -213,11 +209,8 @@ public class VWThread extends Thread {
 		}
 	}
 
-	private void tickSendUpdatesToPlayers() {
+	private void tickSendUpdatesToPlayers(List<PhysicsWrapperEntity> ships) {
 		for (PhysicsWrapperEntity wrapper : ships) {
-			// if (wrapper.getPhysicsObject().blockPositions.size() > 10000) {
-			// System.out.println(wrapper.getPhysicsObject().blockPositions.size());
-			// }
 			wrapper.getPhysicsObject().getShipTransformationManager().sendPositionToPlayers(physicsTicksCount);
 		}
 		physicsTicksCount++;

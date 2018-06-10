@@ -260,7 +260,21 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 	public PhysicsObject getPhysicsObject() {
 		return physicsObject;
 	}
-	
+
+	/**
+	 * Sets the position and rotation of the PhysicsWrapperEntity, and updates the pseudo
+	 * ship AABB (not the same as the actual collision one).
+	 * 
+	 * @param posX
+	 * @param posY
+	 * @param posZ
+	 * @param pitch
+	 *            in degrees
+	 * @param yaw
+	 *            in degrees
+	 * @param roll
+	 *            in degrees
+	 */
 	public void setPhysicsEntityPositionAndRotation(double posX, double posY, double posZ, double pitch, double yaw, double roll) {
 		this.posX = posX;
 		this.posY = posY;
@@ -269,12 +283,25 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 		this.setEntityBoundingBox(new AxisAlignedBB(this.posX, this.posY, this.posZ, this.posX, this.posY, this.posZ).grow(.1D));
 	}
 
+	/**
+	 * Sets the lastTickPos fields to be the current position. Only should be used by the client.
+	 */
 	public void physicsUpdateLastTickPositions() {
 		this.lastTickPosX = this.posX;
 		this.lastTickPosY = this.posY;
 		this.lastTickPosZ = this.posZ;
 	}
 
+	/**
+	 * Sets the rotation of this PhysicsWrapperEntity to the given values.
+	 * 
+	 * @param pitch
+	 *            in degrees
+	 * @param yaw
+	 *            in degrees
+	 * @param roll
+	 *            in degrees
+	 */
 	public void setPhysicsEntityRotation(double pitch, double yaw, double roll) {
 		this.pitch = pitch;
 		this.yaw = yaw;

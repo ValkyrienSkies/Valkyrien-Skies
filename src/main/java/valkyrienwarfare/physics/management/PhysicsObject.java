@@ -935,7 +935,7 @@ public class PhysicsObject {
         	
         	Quaternion rotationQuaternion = savedTransform.createRotationQuaternion(TransformType.LOCAL_TO_GLOBAL);
         	double[] angles = rotationQuaternion.toRadians();
-        	getWrapperEntity().setPhysicsEntityRotation(angles[0], angles[1], angles[2]);
+        	getWrapperEntity().setPhysicsEntityRotation(Math.toDegrees(angles[0]), Math.toDegrees(angles[1]), Math.toDegrees(angles[2]));
         } else {
         	// Old code here for compatibility reasons. Should be removed by MC 1.13
             getWrapperEntity().setPhysicsEntityRotation(compound.getDouble("pitch"), compound.getDouble("yaw"), compound.getDouble("roll"));

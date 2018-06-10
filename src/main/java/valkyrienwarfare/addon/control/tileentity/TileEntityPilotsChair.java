@@ -138,12 +138,12 @@ public class TileEntityPilotsChair extends ImplTileEntityPilotable {
 		idealLinearVelocity.multiply(20D * controlledShip.getPhysicsProcessor().getMass());
 		
 		
-		double lerpFactor = .3D;
+		double lerpFactor = .2D;
 		Vector linearMomentumDif = idealLinearVelocity.getSubtraction(controlledShip.getPhysicsProcessor().linearMomentum);
 		Vector angularVelocityDif = idealAngularDirection.getSubtraction(controlledShip.getPhysicsProcessor().angularVelocity);
 		
-		linearMomentumDif.multiply(lerpFactor / 2);
-		angularVelocityDif.multiply(lerpFactor / 2);
+		linearMomentumDif.multiply(lerpFactor);
+		angularVelocityDif.multiply(lerpFactor);
 		
 		controlledShip.getPhysicsProcessor().linearMomentum.subtract(linearMomentumDif);
 		controlledShip.getPhysicsProcessor().angularVelocity.subtract(angularVelocityDif);

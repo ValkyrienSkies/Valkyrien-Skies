@@ -26,7 +26,7 @@ import net.minecraft.world.World;
 import valkyrienwarfare.addon.combat.ValkyrienWarfareCombat;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.fixes.IInventoryPlayerFix;
-import valkyrienwarfare.physics.TransformType;
+import valkyrienwarfare.mod.coordinates.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public class EntityCannonBasic extends EntityMountingWeaponBase {

@@ -27,8 +27,8 @@ import org.lwjgl.opengl.GL11;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.math.Quaternion;
+import valkyrienwarfare.mod.coordinates.TransformType;
 import valkyrienwarfare.mod.proxy.ClientProxy;
-import valkyrienwarfare.physics.TransformType;
 import valkyrienwarfare.physics.management.PhysicsObject;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 

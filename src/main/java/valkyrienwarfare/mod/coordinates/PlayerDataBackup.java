@@ -14,7 +14,7 @@
  *
  */
 
-package valkyrienwarfare.mod.physmanagement.interaction;
+package valkyrienwarfare.mod.coordinates;
 
 import net.minecraft.entity.player.EntityPlayer;
 

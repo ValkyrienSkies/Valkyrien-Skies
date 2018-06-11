@@ -28,8 +28,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.physics.ShipTransform;
-import valkyrienwarfare.physics.TransformType;
+import valkyrienwarfare.mod.coordinates.ShipTransform;
+import valkyrienwarfare.mod.coordinates.TransformType;
 
 /**
  * NBTUtils is filled with helper methods for saving and loading different

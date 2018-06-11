@@ -18,8 +18,8 @@ package valkyrienwarfare.physics.management;
 
 import java.util.LinkedList;
 
+import valkyrienwarfare.mod.coordinates.ShipTransformationPacketHolder;
 import valkyrienwarfare.mod.network.PhysWrapperPositionMessage;
-import valkyrienwarfare.physics.ShipTransformationPacketHolder;
 
 /**
  * Ideally this would smooth out data coming from the sever, but for now it

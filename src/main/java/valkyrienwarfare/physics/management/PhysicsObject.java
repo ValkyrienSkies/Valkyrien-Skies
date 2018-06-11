@@ -69,6 +69,9 @@ import valkyrienwarfare.api.block.ethercompressor.TileEntityEtherCompressor;
 import valkyrienwarfare.math.Quaternion;
 import valkyrienwarfare.mod.BlockPhysicsRegistration;
 import valkyrienwarfare.mod.client.render.PhysObjectRenderManager;
+import valkyrienwarfare.mod.coordinates.ShipTransform;
+import valkyrienwarfare.mod.coordinates.ShipTransformationPacketHolder;
+import valkyrienwarfare.mod.coordinates.TransformType;
 import valkyrienwarfare.mod.network.PhysWrapperPositionMessage;
 import valkyrienwarfare.mod.physmanagement.chunk.VWChunkCache;
 import valkyrienwarfare.mod.physmanagement.chunk.VWChunkClaim;
@@ -78,9 +81,6 @@ import valkyrienwarfare.mod.schematics.SchematicReader.Schematic;
 import valkyrienwarfare.physics.BlockForce;
 import valkyrienwarfare.physics.PhysicsCalculations;
 import valkyrienwarfare.physics.PhysicsCalculationsManualControl;
-import valkyrienwarfare.physics.ShipTransform;
-import valkyrienwarfare.physics.ShipTransformationPacketHolder;
-import valkyrienwarfare.physics.TransformType;
 import valkyrienwarfare.util.NBTUtils;
 
 /**

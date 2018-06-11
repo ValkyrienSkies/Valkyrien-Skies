@@ -18,8 +18,8 @@ package valkyrienwarfare.physics.collision.polygons;
 
 import net.minecraft.util.math.AxisAlignedBB;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.physics.ShipTransform;
-import valkyrienwarfare.physics.TransformType;
+import valkyrienwarfare.mod.coordinates.ShipTransform;
+import valkyrienwarfare.mod.coordinates.TransformType;
 
 /**
  * The basis for the entire collision engine, this implementation of Polygon

@@ -25,8 +25,8 @@ import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.api.block.ethercompressor.TileEntityEtherCompressor;
 import valkyrienwarfare.math.VWMath;
+import valkyrienwarfare.mod.coordinates.TransformType;
 import valkyrienwarfare.physics.PhysicsCalculations;
-import valkyrienwarfare.physics.TransformType;
 
 import java.util.Set;
 

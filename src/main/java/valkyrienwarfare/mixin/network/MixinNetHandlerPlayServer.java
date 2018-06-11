@@ -39,16 +39,15 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.mod.coordinates.TransformType;
 import valkyrienwarfare.mod.physmanagement.chunk.PhysicsChunkManager;
 import valkyrienwarfare.mod.physmanagement.interaction.EntityDraggable;
 import valkyrienwarfare.mod.physmanagement.interaction.IDraggable;
-import valkyrienwarfare.mod.physmanagement.interaction.INHPServerVW;
-import valkyrienwarfare.physics.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 //TODO: a lot of these mixins can probably be done using overrides instead of overwrites, i should have a look at some point
 @Mixin(value = NetHandlerPlayServer.class, priority = 5)
-public abstract class MixinNetHandlerPlayServer implements INHPServerVW {
+public abstract class MixinNetHandlerPlayServer {
 
 	@Shadow
 	@Final
@@ -106,31 +105,6 @@ public abstract class MixinNetHandlerPlayServer implements INHPServerVW {
 		server.lastGoodX += draggable.getVelocityAddedToPlayer().X;
 		server.lastGoodY += draggable.getVelocityAddedToPlayer().Y;
 		server.lastGoodZ += draggable.getVelocityAddedToPlayer().Z;
-	}
-
-	@Override
-	public double dummyBlockReachDist() {
-		return dummyBlockReachDist;
-	}
-
-	@Override
-	public void dummyBlockReachDist(double in) {
-		dummyBlockReachDist = in;
-	}
-
-	@Override
-	public double lastGoodBlockReachDist() {
-		return lastGoodBlockReachDist;
-	}
-
-	@Override
-	public void lastGoodBlockReachDist(double in) {
-		lastGoodBlockReachDist = in;
-	}
-
-	@Override
-	public EntityPlayerMP getEntityPlayerFromHandler() {
-		return player;
 	}
 
 	@Shadow

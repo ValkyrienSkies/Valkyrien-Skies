@@ -20,6 +20,14 @@ import net.minecraft.entity.MoverType;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
+/**
+ * This interface is really quite bad, and will be removed once subspaces are
+ * complete.
+ * 
+ * @author thebest108
+ *
+ */
+@Deprecated
 public interface IDraggable {
 
     PhysicsWrapperEntity getWorldBelowFeet();

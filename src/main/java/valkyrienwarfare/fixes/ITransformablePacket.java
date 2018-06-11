@@ -7,9 +7,8 @@ import net.minecraft.util.math.BlockPos;
 import valkyrienwarfare.MixinLoadManager;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.RotationMatrices;
-import valkyrienwarfare.mod.physmanagement.interaction.INHPServerVW;
-import valkyrienwarfare.mod.physmanagement.interaction.PlayerDataBackup;
-import valkyrienwarfare.physics.TransformType;
+import valkyrienwarfare.mod.coordinates.PlayerDataBackup;
+import valkyrienwarfare.mod.coordinates.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 /**
@@ -43,8 +42,8 @@ public interface ITransformablePacket {
 	default void doPreProcessing(INetHandlerPlayServer server, boolean callingFromSponge) {
 		if (!MixinLoadManager.isSpongeEnabled() || callingFromSponge) {
 			System.out.println("Pre packet process");
-			INHPServerVW vw = (INHPServerVW) (NetHandlerPlayServer) server;
-			EntityPlayerMP player = vw.getEntityPlayerFromHandler();
+			NetHandlerPlayServer serverHandler = (NetHandlerPlayServer) server;
+			EntityPlayerMP player = serverHandler.player;
 			if (player.getServerWorld().isCallingFromMinecraftThread()) {
 				BlockPos packetPos = getBlockPos();
 				PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.world,
@@ -67,8 +66,8 @@ public interface ITransformablePacket {
 	default void doPostProcessing(INetHandlerPlayServer server, boolean callingFromSponge) {
 		if (!MixinLoadManager.isSpongeEnabled() || callingFromSponge) {
 			System.out.println("Post packet process");
-			INHPServerVW vw = (INHPServerVW) (NetHandlerPlayServer) server;
-			EntityPlayerMP player = vw.getEntityPlayerFromHandler();
+			NetHandlerPlayServer serverHandler = (NetHandlerPlayServer) server;
+			EntityPlayerMP player = serverHandler.player;
 			if (player.getServerWorld().isCallingFromMinecraftThread()) {
 				BlockPos packetPos = getBlockPos();
 				PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.world,

@@ -61,9 +61,9 @@ import valkyrienwarfare.addon.combat.entity.EntityMountingWeaponBase;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.mod.capability.IAirshipCounterCapability;
+import valkyrienwarfare.mod.coordinates.TransformType;
 import valkyrienwarfare.mod.multithreaded.VWThreadManager;
 import valkyrienwarfare.mod.physmanagement.interaction.VWWorldEventListener;
-import valkyrienwarfare.physics.TransformType;
 import valkyrienwarfare.physics.management.PhysicsTickHandler;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 

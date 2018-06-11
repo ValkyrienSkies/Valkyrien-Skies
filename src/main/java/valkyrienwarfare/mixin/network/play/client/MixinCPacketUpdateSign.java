@@ -24,7 +24,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import valkyrienwarfare.fixes.ITransformablePacket;
-import valkyrienwarfare.mod.physmanagement.interaction.PlayerDataBackup;
+import valkyrienwarfare.mod.coordinates.PlayerDataBackup;
 
 @Mixin(CPacketUpdateSign.class)
 public class MixinCPacketUpdateSign implements ITransformablePacket {

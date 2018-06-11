@@ -30,7 +30,7 @@ public interface ITransformablePacket {
 	void setPlayerDataBackup(PlayerDataBackup backup);
 
 	default boolean shouldTransformInCurrentEnvironment() {
-		return MixinLoadManager.isSpongeEnabled;
+		return MixinLoadManager.isSpongeEnabled();
 	}
 
 	/**
@@ -41,7 +41,8 @@ public interface ITransformablePacket {
 	 * @param callingFromSponge
 	 */
 	default void doPreProcessing(INetHandlerPlayServer server, boolean callingFromSponge) {
-		if (!MixinLoadManager.isSpongeEnabled || callingFromSponge) {
+		if (!MixinLoadManager.isSpongeEnabled() || callingFromSponge) {
+			System.out.println("Pre packet process");
 			INHPServerVW vw = (INHPServerVW) (NetHandlerPlayServer) server;
 			EntityPlayerMP player = vw.getEntityPlayerFromHandler();
 			if (player.getServerWorld().isCallingFromMinecraftThread()) {
@@ -64,7 +65,8 @@ public interface ITransformablePacket {
 	 * @param callingFromSponge
 	 */
 	default void doPostProcessing(INetHandlerPlayServer server, boolean callingFromSponge) {
-		if (!MixinLoadManager.isSpongeEnabled || callingFromSponge) {
+		if (!MixinLoadManager.isSpongeEnabled() || callingFromSponge) {
+			System.out.println("Post packet process");
 			INHPServerVW vw = (INHPServerVW) (NetHandlerPlayServer) server;
 			EntityPlayerMP player = vw.getEntityPlayerFromHandler();
 			if (player.getServerWorld().isCallingFromMinecraftThread()) {

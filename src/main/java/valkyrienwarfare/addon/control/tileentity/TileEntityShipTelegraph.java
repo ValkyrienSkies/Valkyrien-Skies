@@ -16,10 +16,14 @@
 
 package valkyrienwarfare.addon.control.tileentity;
 
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
+import valkyrienwarfare.addon.control.block.BlockShipHelm;
+import valkyrienwarfare.addon.control.block.BlockShipTelegraph;
 import valkyrienwarfare.addon.control.controlsystems.ShipTelegraphState;
 import valkyrienwarfare.addon.control.piloting.ControllerInputType;
 import valkyrienwarfare.addon.control.piloting.PilotControlsMessage;
@@ -34,16 +38,31 @@ public class TileEntityShipTelegraph extends ImplTileEntityPilotable implements 
 
     @Override
     void processControlMessage(PilotControlsMessage message, EntityPlayerMP sender) {
-        int ordinal = telegraphState.ordinal();
-        if (message.airshipLeft_KeyPressed && ordinal > 0) {
-            handleRotation -= 22.5D;
-            ordinal--;
-        }
-        if (message.airshipRight_KeyPressed && ordinal < 12) {
-            handleRotation += 22.5D;
-            ordinal++;
-        }
-//		ordinal = math.max(0, math.min(12, ordinal));
+    	int deltaOrdinal = 0;
+    	double deltaRotation = 0;
+    	if (message.airshipLeft_KeyPressed) {
+    		deltaOrdinal -= 1;
+    		deltaRotation -= 22.5;
+    	}
+    	if (message.airshipRight_KeyPressed) {
+    		deltaOrdinal += 1;
+    		deltaRotation += 22.5;
+    	}
+    	IBlockState blockState = this.getWorld().getBlockState(getPos());
+		if (blockState.getBlock() instanceof BlockShipTelegraph) {
+			EnumFacing facing = blockState.getValue(BlockShipTelegraph.FACING);
+			if (this.isPlayerInFront(sender, facing)) {
+				deltaOrdinal *= -1;
+				deltaRotation *= -1;
+			}
+		}
+
+    	
+    	int ordinal = telegraphState.ordinal();
+    	if ((ordinal > 0 && ordinal < 12) || (ordinal == 0 && deltaOrdinal > 0) || (ordinal == 12 && deltaOrdinal < 0)) {
+    		handleRotation += deltaRotation;
+            ordinal += deltaOrdinal;
+    	}
         telegraphState = ShipTelegraphState.values()[ordinal];
     }
 

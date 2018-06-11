@@ -49,13 +49,15 @@ public class TileEntityShipHelm extends ImplTileEntityPilotable implements ITick
             lastWheelRotation = wheelRotation;
             wheelRotation += (nextWheelRotation - wheelRotation) * .25D;
         } else {
-            double toOriginRate = 5D;
+            
+        	double friction = .05D;
+            double toOriginRate = .05D;
             if (Math.abs(wheelRotation) < toOriginRate) {
                 wheelRotation = 0;
             } else {
 //            	wheelRotation -= math.signum(wheelRotation) * wheelRotation;
-
-                wheelRotation += -Math.signum(wheelRotation) * toOriginRate;
+            	double deltaForce = Math.max(Math.abs(wheelRotation * toOriginRate) - friction, 0);
+                wheelRotation += deltaForce * -1 * Math.signum(wheelRotation);
             }
 
             sendUpdatePacketToAllNearby();
@@ -141,13 +143,22 @@ public class TileEntityShipHelm extends ImplTileEntityPilotable implements ITick
 
     @Override
     void processControlMessage(PilotControlsMessage message, EntityPlayerMP sender) {
-//		System.out.println("We Gotem!");
+    	double rotationDelta = 0;
         if (message.airshipLeft_KeyDown) {
-            wheelRotation -= 10D;
-        }
-        if (message.airshipRight_KeyDown) {
-            wheelRotation += 10D;
-        }
-    }
+        	rotationDelta -= 15D;
+		}
+		if (message.airshipRight_KeyDown) {
+			rotationDelta += 15D;
+		}
+		IBlockState blockState = this.getWorld().getBlockState(getPos());
+		if (blockState.getBlock() instanceof BlockShipHelm) {
+			EnumFacing facing = blockState.getValue(BlockShipHelm.FACING);
+			if (this.isPlayerInFront(sender, facing)) {
+				wheelRotation += rotationDelta;
+			} else {
+				wheelRotation -= rotationDelta;
+			}
+		}
+	}
 
 }

@@ -25,6 +25,7 @@ import net.minecraft.util.math.Vec3d;
 import valkyrienwarfare.math.VWMath;
 import valkyrienwarfare.physics.ShipTransform;
 import valkyrienwarfare.physics.TransformType;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 /**
  * This class creates and processes rotation matrix transforms used by Valkyrien
@@ -163,6 +164,10 @@ public class RotationMatrices {
             entityMotion.Z = ball.accelerationZ;
         }
 
+        if (ent instanceof PhysicsWrapperEntity) {
+        	System.err.println("Ship just got transformed. This was never supposed to happen!");
+        }
+        
         applyTransform(wholeTransform, entityPos);
         doRotationOnly(wholeTransform, entityLook);
         doRotationOnly(wholeTransform, entityMotion);

@@ -102,7 +102,7 @@ public abstract class MixinWorld implements IWorldVW {
             // RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform,
             // newPosVec);
             wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(newPosVec,
-                    TransformType.LOCAL_TO_GLOBAL);
+                    TransformType.SUBSPACE_TO_GLOBAL);
             x = newPosVec.X;
             y = newPosVec.Y;
             z = newPosVec.Z;
@@ -185,7 +185,7 @@ public abstract class MixinWorld implements IWorldVW {
                 pos);
         if (wrapper != null) {
             Polygon poly = new Polygon(aabb, wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform(),
-                    TransformType.LOCAL_TO_GLOBAL);
+                    TransformType.SUBSPACE_TO_GLOBAL);
             aabb = poly.getEnclosedAABB();// .contract(.3D);
             toReturn.addAll(this.getEntitiesWithinAABBOriginal(clazz, aabb, filter));
 
@@ -229,7 +229,7 @@ public abstract class MixinWorld implements IWorldVW {
                 pos);
         if (wrapper != null) {
             Polygon poly = new Polygon(boundingBox, wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform(),
-                    TransformType.LOCAL_TO_GLOBAL);
+                    TransformType.SUBSPACE_TO_GLOBAL);
             boundingBox = poly.getEnclosedAABB().shrink(.3D);
             toReturn.addAll(this.getEntitiesInAABBexcludingOriginal(entityIn, boundingBox, predicate));
 
@@ -397,9 +397,9 @@ public abstract class MixinWorld implements IWorldVW {
             }
 
             playerEyesPos = wrapper.getPhysicsObject().getShipTransformationManager().getRenderTransform().transform(playerEyesPos,
-                    TransformType.GLOBAL_TO_LOCAL);
+                    TransformType.GLOBAL_TO_SUBSPACE);
             playerReachVector = wrapper.getPhysicsObject().getShipTransformationManager().getRenderTransform().rotate(playerReachVector,
-                    TransformType.GLOBAL_TO_LOCAL);
+                    TransformType.GLOBAL_TO_SUBSPACE);
 
             Vec3d playerEyesReachAdded = playerEyesPos.addVector(playerReachVector.x * reachDistance,
                     playerReachVector.y * reachDistance, playerReachVector.z * reachDistance);
@@ -411,7 +411,7 @@ public abstract class MixinWorld implements IWorldVW {
                 if (shipResultDistFromPlayer < worldResultDistFromPlayer) {
                     worldResultDistFromPlayer = shipResultDistFromPlayer;
                     resultInShip.hitVec = wrapper.getPhysicsObject().getShipTransformationManager().getRenderTransform()
-                            .transform(resultInShip.hitVec, TransformType.LOCAL_TO_GLOBAL);
+                            .transform(resultInShip.hitVec, TransformType.SUBSPACE_TO_GLOBAL);
                     vanillaTrace = resultInShip;
                     transformedEntity = wrapper;
                 }
@@ -421,7 +421,7 @@ public abstract class MixinWorld implements IWorldVW {
         if (transformedEntity != null) {
             Vec3d hitVec2 = vanillaTrace.hitVec;
             hitVec2 = transformedEntity.getPhysicsObject().getShipTransformationManager().getRenderTransform().transform(hitVec2,
-                    TransformType.GLOBAL_TO_LOCAL);
+                    TransformType.GLOBAL_TO_SUBSPACE);
             vanillaTrace.hitVec = hitVec2;
         }
 

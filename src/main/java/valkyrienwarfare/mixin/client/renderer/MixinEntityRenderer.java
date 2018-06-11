@@ -76,7 +76,7 @@ public abstract class MixinEntityRenderer {
             Vector playerPosNew = new Vector(entity.posX, entity.posY, entity.posZ);
 //            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, playerPosNew);
 
-            wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(playerPosNew, TransformType.LOCAL_TO_GLOBAL);
+            wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(playerPosNew, TransformType.SUBSPACE_TO_GLOBAL);
             entity.posX = entity.prevPosX = entity.lastTickPosX = playerPosNew.X;
             entity.posY = entity.prevPosY = entity.lastTickPosY = playerPosNew.Y;
             entity.posZ = entity.prevPosZ = entity.lastTickPosZ = playerPosNew.Z;
@@ -111,7 +111,7 @@ public abstract class MixinEntityRenderer {
 
 //            RotationMatrices.applyTransform(fixedOnto.wrapping.coordTransform.RlToWTransform, playerPosition);
 
-            fixedOnto.getPhysicsObject().getShipTransformationManager().getRenderTransform().transform(playerPosition, TransformType.LOCAL_TO_GLOBAL);
+            fixedOnto.getPhysicsObject().getShipTransformationManager().getRenderTransform().transform(playerPosition, TransformType.SUBSPACE_TO_GLOBAL);
 
             d0 = playerPosition.X;
             d1 = playerPosition.Y;
@@ -272,7 +272,7 @@ public abstract class MixinEntityRenderer {
         if (wrapper == null) {
             return vec.distanceTo(in);
         } else {
-            return this.mc.objectMouseOver.hitVec.distanceTo(wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(in, TransformType.GLOBAL_TO_LOCAL));
+            return this.mc.objectMouseOver.hitVec.distanceTo(wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(in, TransformType.GLOBAL_TO_SUBSPACE));
         }
     }
 }

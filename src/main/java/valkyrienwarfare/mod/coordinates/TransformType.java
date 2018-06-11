@@ -20,12 +20,12 @@ package valkyrienwarfare.mod.coordinates;
  * A simple enum used to tell the ship transform which coordinates system we are
  * want to change to.
  * <p>
- * Ex. Moving from local to global at (0, 0, 0) will give us to the position of
- * the center of mass of the ship relative to the game world.
+ * Ex. Moving from subspace to global at the center of mass will give us to the
+ * position of the center of mass of the ship relative to the game world.
  *
  * @author thebest108
  */
 public enum TransformType {
 
-    LOCAL_TO_GLOBAL, GLOBAL_TO_LOCAL
+	GLOBAL_TO_SUBSPACE, SUBSPACE_TO_GLOBAL
 }

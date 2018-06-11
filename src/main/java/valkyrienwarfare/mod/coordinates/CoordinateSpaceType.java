@@ -9,5 +9,5 @@ package valkyrienwarfare.mod.coordinates;
  */
 public enum CoordinateSpaceType {
 
-	GLOBAL_COORDINATES, LOCAL_COORDINATES
+	GLOBAL_COORDINATES, SUBSPACE_COORDINATES
 }

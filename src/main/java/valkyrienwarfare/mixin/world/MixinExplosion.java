@@ -74,7 +74,7 @@ public abstract class MixinExplosion {
         for (PhysicsWrapperEntity ship : shipsNear) {
             Vector inLocal = new Vector(center);
 //            RotationMatrices.applyTransform(ship.wrapping.coordTransform.wToLTransform, inLocal);
-            ship.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(inLocal, TransformType.GLOBAL_TO_LOCAL);
+            ship.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(inLocal, TransformType.GLOBAL_TO_SUBSPACE);
             // inLocal.roundToWhole();
             Explosion expl = new Explosion(ship.world, null, inLocal.X, inLocal.Y, inLocal.Z, radius, false, false);
 
@@ -123,7 +123,7 @@ public abstract class MixinExplosion {
                             forceVector.multiply(explosionForce / vectorDist);
 
 //                            RotationMatrices.doRotationOnly(ship.wrapping.coordTransform.lToWTransform, forceVector);
-                            ship.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(forceVector, TransformType.LOCAL_TO_GLOBAL);
+                            ship.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(forceVector, TransformType.SUBSPACE_TO_GLOBAL);
                             // TODO: Make this work again
                             // PhysicsQueuedForce queuedForce = new PhysicsQueuedForce(forceVector,
                             // posVector, false, 1);

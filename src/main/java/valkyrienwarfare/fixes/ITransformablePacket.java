@@ -51,7 +51,7 @@ public interface ITransformablePacket {
 				if (wrapper != null && wrapper.getPhysicsObject().getShipTransformationManager() != null) {
 					setPlayerDataBackup(new PlayerDataBackup(player));
 					RotationMatrices.applyTransform(wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform(), player,
-							TransformType.GLOBAL_TO_LOCAL);
+							TransformType.GLOBAL_TO_SUBSPACE);
 				}
 			}
 		}

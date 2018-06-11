@@ -193,7 +193,7 @@ public class ShipTransformationManager {
     public Vector[] generateRotationNormals() {
         Vector[] norms = Vector.generateAxisAlignedNorms();
         for (int i = 0; i < 3; i++) {
-            getCurrentTickTransform().rotate(norms[i], TransformType.LOCAL_TO_GLOBAL);
+            getCurrentTickTransform().rotate(norms[i], TransformType.SUBSPACE_TO_GLOBAL);
         }
         return norms;
     }
@@ -249,7 +249,7 @@ public class ShipTransformationManager {
      * @param inGlobal
      */
     public void fromGlobalToLocal(Vector inGlobal) {
-        getCurrentTickTransform().transform(inGlobal, TransformType.GLOBAL_TO_LOCAL);
+        getCurrentTickTransform().transform(inGlobal, TransformType.GLOBAL_TO_SUBSPACE);
     }
 
     /**
@@ -259,7 +259,7 @@ public class ShipTransformationManager {
      * @param inLocal
      */
     public void fromLocalToGlobal(Vector inLocal) {
-        getCurrentTickTransform().transform(inLocal, TransformType.LOCAL_TO_GLOBAL);
+        getCurrentTickTransform().transform(inLocal, TransformType.SUBSPACE_TO_GLOBAL);
     }
 
     /**
@@ -334,7 +334,7 @@ public class ShipTransformationManager {
 
     private class CollisionBBConsumer implements Consumer<BlockPos> {
         private static final double AABB_EXPANSION = 1.6D;
-        private final double[] M = getCurrentTickTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL);
+        private final double[] M = getCurrentTickTransform().getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL);
         double minX, minY, minZ, maxX, maxY, maxZ;
 
         CollisionBBConsumer() {

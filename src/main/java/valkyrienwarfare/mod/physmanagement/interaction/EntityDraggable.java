@@ -20,7 +20,6 @@ import java.util.List;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -34,10 +33,11 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.physics.management.ShipTransformationManager;
 
 /**
- * Just holds some static helper methods to deal with IDraggable objects.
+ * Bad class, delete soon!
  * @author thebest108
  *
  */
+@Deprecated
 public class EntityDraggable {
 	
     public static void tickAddedVelocityForWorld(World world) {
@@ -98,8 +98,8 @@ public class EntityDraggable {
             Vector oldPos = new Vector(entity);
 
 //            RotationMatrices.applyTransform(coordTransform.prevwToLTransform, entity);
-            RotationMatrices.applyTransform(coordTransform.getPrevTickTransform(), entity, TransformType.GLOBAL_TO_LOCAL);
-            RotationMatrices.applyTransform(coordTransform.getCurrentTickTransform(), entity, TransformType.LOCAL_TO_GLOBAL);
+            RotationMatrices.applyTransform(coordTransform.getPrevTickTransform(), entity, TransformType.GLOBAL_TO_SUBSPACE);
+            RotationMatrices.applyTransform(coordTransform.getCurrentTickTransform(), entity, TransformType.SUBSPACE_TO_GLOBAL);
 
             Vector newPos = new Vector(entity);
 
@@ -117,8 +117,8 @@ public class EntityDraggable {
 
             Vector oldLookingPos = new Vector(entity.getLook(1.0F));
 //            RotationMatrices.doRotationOnly(coordTransform.prevwToLTransform, oldLookingPos);
-            coordTransform.getPrevTickTransform().rotate(oldLookingPos, TransformType.GLOBAL_TO_LOCAL);
-            coordTransform.getCurrentTickTransform().rotate(oldLookingPos, TransformType.LOCAL_TO_GLOBAL);
+            coordTransform.getPrevTickTransform().rotate(oldLookingPos, TransformType.GLOBAL_TO_SUBSPACE);
+            coordTransform.getCurrentTickTransform().rotate(oldLookingPos, TransformType.SUBSPACE_TO_GLOBAL);
 //            RotationMatrices.doRotationOnly(coordTransform.lToWTransform, oldLookingPos);
 
             double newPitch = Math.asin(oldLookingPos.Y) * -180D / Math.PI;

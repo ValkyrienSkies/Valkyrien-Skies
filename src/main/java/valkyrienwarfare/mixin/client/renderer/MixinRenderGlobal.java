@@ -307,7 +307,7 @@ public abstract class MixinRenderGlobal {
             if (wrapper != null) {
                 Vector newCoords = new Vector(x, y, z);
 //                RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, newCoords);
-                wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(newCoords, TransformType.LOCAL_TO_GLOBAL);
+                wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(newCoords, TransformType.SUBSPACE_TO_GLOBAL);
                 x = newCoords.X;
                 y = newCoords.Y;
                 z = newCoords.Z;

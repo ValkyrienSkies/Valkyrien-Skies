@@ -192,7 +192,7 @@ public class NBTUtils {
 	}
 
 	public static void writeShipTransformToNBT(String name, ShipTransform shipTransform, NBTTagCompound compound) {
-		double[] localToGlobalInternalArray = shipTransform.getInternalMatrix(TransformType.LOCAL_TO_GLOBAL);
+		double[] localToGlobalInternalArray = shipTransform.getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL);
 		byte[] localToGlobalAsBytes = toByteArray(localToGlobalInternalArray);
 		compound.setByteArray("vw_ST_" + name, localToGlobalAsBytes);
 	}

@@ -124,7 +124,7 @@ public class EventsCommon {
                 wrapper.getPhysicsObject().queueEntityForMounting(entity);
             }
             RotationMatrices.applyTransform(wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform(), entity,
-                    TransformType.LOCAL_TO_GLOBAL);
+                    TransformType.SUBSPACE_TO_GLOBAL);
         }
     }
 

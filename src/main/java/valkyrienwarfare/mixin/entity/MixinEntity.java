@@ -16,25 +16,29 @@
 
 package valkyrienwarfare.mixin.entity;
 
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Redirect;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.mod.coordinates.CoordinateSpaceType;
+import valkyrienwarfare.mod.coordinates.ISubSpacable;
 import valkyrienwarfare.mod.coordinates.TransformType;
+import valkyrienwarfare.mod.physmanagement.chunk.PhysicsChunkManager;
 import valkyrienwarfare.mod.physmanagement.interaction.IDraggable;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 @Mixin(Entity.class)
-public abstract class MixinEntity implements IDraggable {
+public abstract class MixinEntity implements IDraggable, ISubSpacable {
 
     @Shadow
     public float rotationYaw;
@@ -61,6 +65,18 @@ public abstract class MixinEntity implements IDraggable {
     private Vector velocityInShipSpace;
     private Vector searchVector = null;
 
+    @Override
+    public CoordinateSpaceType currentSubspaceType() {
+    	int entityChunkXPosition = ((int) posX) >> 4;
+    	int entityChunkZPosition = ((int) posZ) >> 4;
+    	boolean isInShipChunks = PhysicsChunkManager.isLikelyShipChunk(entityChunkXPosition, entityChunkZPosition);
+    	if (isInShipChunks) {
+    		return CoordinateSpaceType.SUBSPACE_COORDINATES;
+    	} else {
+    		return CoordinateSpaceType.GLOBAL_COORDINATES;
+    	}
+    }
+    
     @Override
     public PhysicsWrapperEntity getWorldBelowFeet() {
         return worldBelowFeet;
@@ -96,39 +112,6 @@ public abstract class MixinEntity implements IDraggable {
         cancelNextMove = toSet;
     }
 
-    /*
-     * @Inject(method = "move(Lnet/minecraft/entity/MoverType;DDD)V", at
-     * = @At("HEAD"), cancellable = true) public void preMove(MoverType type, double
-     * dx, double dy, double dz, CallbackInfo callbackInfo) { if(cancelNextMove){
-     * cancelNextMove = false; cancelNextMove2 = true; return; }
-     *
-     * if(cancelNextMove2){ cancelNextMove2 = false; callbackInfo.cancel(); return;
-     * }
-     *
-     * double movDistSq = (dx * dx) + (dy * dy) + (dz * dz); if (movDistSq > 10000)
-     * { //Assume this will take us to Ship coordinates double newX = this.posX +
-     * dx; double newY = this.posY + dy; double newZ = this.posZ + dz; BlockPos
-     * newPosInBlock = new BlockPos(newX, newY, newZ);
-     *
-     * PhysicsWrapperEntity wrapper =
-     * ValkyrienWarfareMod.physicsManager.getObjectManagingPos(this.world,
-     * newPosInBlock);
-     *
-     * if (wrapper == null) { // Just forget this even happened
-     * callbackInfo.cancel(); return; }
-     *
-     * Vector endPos = new Vector(newX, newY, newZ);
-     * RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.
-     * wToLTransform, endPos);
-     *
-     * dx = endPos.X - this.posX; dy = endPos.Y - this.posY; dz = endPos.Z -
-     * this.posZ; }
-     *
-     * //callbackInfo.cancel() gets called by the method directly now
-     * if(EntityCollisionInjector.alterEntityMovement(thisClassAsAnEntity, dx, dy,
-     * dz, callbackInfo)){ // callbackInfo.cancel(); } }
-     */
-
     /**
      * This is easier to have as an overwrite because there's less laggy hackery to
      * be done then :P
@@ -150,7 +133,7 @@ public abstract class MixinEntity implements IDraggable {
 
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(Entity.class.cast(this));
         if (wrapper != null) {
-            return wrapper.getPhysicsObject().getShipTransformationManager().getRenderTransform().rotate(original, TransformType.LOCAL_TO_GLOBAL);
+            return wrapper.getPhysicsObject().getShipTransformationManager().getRenderTransform().rotate(original, TransformType.SUBSPACE_TO_GLOBAL);
         } else {
             return original;
         }
@@ -173,7 +156,7 @@ public abstract class MixinEntity implements IDraggable {
 
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(Entity.class.cast(this));
         if (wrapper != null) {
-            return wrapper.getPhysicsObject().getShipTransformationManager().getRenderTransform().rotate(vanilla, TransformType.LOCAL_TO_GLOBAL);
+            return wrapper.getPhysicsObject().getShipTransformationManager().getRenderTransform().rotate(vanilla, TransformType.SUBSPACE_TO_GLOBAL);
         }
 
         return vanilla;
@@ -254,7 +237,7 @@ public abstract class MixinEntity implements IDraggable {
         } else {
             searchVector = new Vector(this.posX, this.posY - 0.20000000298023224D, this.posZ);
 //            searchVector.transform(worldBelow.wrapping.coordTransform.wToLTransform);
-            worldBelow.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(searchVector, TransformType.GLOBAL_TO_LOCAL);
+            worldBelow.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(searchVector, TransformType.GLOBAL_TO_SUBSPACE);
             return MathHelper.floor(searchVector.X);
         }
     }

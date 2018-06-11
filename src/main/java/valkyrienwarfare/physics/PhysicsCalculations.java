@@ -277,7 +277,7 @@ public class PhysicsCalculations {
             Vector CMDif = gameTickCenterOfMass.getSubtraction(parentCM);
             // RotationMatrices.doRotationOnly(parent.coordTransform.lToWTransform, CMDif);
 
-            getParent().getShipTransformationManager().getCurrentPhysicsTransform().rotate(CMDif, TransformType.LOCAL_TO_GLOBAL);
+            getParent().getShipTransformationManager().getCurrentPhysicsTransform().rotate(CMDif, TransformType.SUBSPACE_TO_GLOBAL);
             getParent().getWrapperEntity().posX -= CMDif.X;
             getParent().getWrapperEntity().posY -= CMDif.Y;
             getParent().getWrapperEntity().posZ -= CMDif.Z;
@@ -296,7 +296,7 @@ public class PhysicsCalculations {
             Vector CMDif = physCenterOfMass.getSubtraction(gameTickCenterOfMass);
             // RotationMatrices.doRotationOnly(parent.coordTransform.lToWTransform, CMDif);
 
-            getParent().getShipTransformationManager().getCurrentPhysicsTransform().rotate(CMDif, TransformType.LOCAL_TO_GLOBAL);
+            getParent().getShipTransformationManager().getCurrentPhysicsTransform().rotate(CMDif, TransformType.SUBSPACE_TO_GLOBAL);
             physX += CMDif.X;
             physY += CMDif.Y;
             physZ += CMDif.Z;
@@ -314,7 +314,7 @@ public class PhysicsCalculations {
         double[] framedMOI = RotationMatrices.getZeroMatrix(3);
 
         double[] internalRotationMatrix = getParent().getShipTransformationManager().getCurrentPhysicsTransform()
-                .getInternalMatrix(TransformType.LOCAL_TO_GLOBAL);
+                .getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL);
 
         // Copy the rotation matrix, ignore the translation and scaling parts.
         Matrix3d rotationMatrix = new Matrix3d(internalRotationMatrix[0], internalRotationMatrix[1],
@@ -375,7 +375,7 @@ public class PhysicsCalculations {
                 IBlockState state = getParent().getShipChunks().getBlockState(pos);
                 Block blockAt = state.getBlock();
                 VWMath.getBodyPosWithOrientation(pos, physCenterOfMass, getParent().getShipTransformationManager()
-                        .getCurrentPhysicsTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL), inBodyWO);
+                        .getCurrentPhysicsTransform().getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL), inBodyWO);
 
                 BlockForce.basicForces.getForceFromState(state, pos, worldObj, getPhysicsTimeDeltaPerPhysTick(), getParent(),
                         blockForce);
@@ -386,7 +386,7 @@ public class PhysicsCalculations {
                                 pos, state, getParent().getWrapperEntity(), getPhysicsTimeDeltaPerPhysTick());
                         if (otherPosition != null) {
                             VWMath.getBodyPosWithOrientation(otherPosition, gameTickCenterOfMass, getParent().getShipTransformationManager()
-                                            .getCurrentPhysicsTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL),
+                                            .getCurrentPhysicsTransform().getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL),
                                     inBodyWO);
                         }
                     }
@@ -445,7 +445,7 @@ public class PhysicsCalculations {
         double[] rotationChange = RotationMatrices.getRotationMatrix(angularVelocity.X, angularVelocity.Y,
                 angularVelocity.Z, angularVelocity.length() * getPhysicsTimeDeltaPerPhysTick());
         Quaternion finalTransform = Quaternion.QuaternionFromMatrix(RotationMatrices.getMatrixProduct(rotationChange,
-                coordTrans.getCurrentPhysicsTransform().getInternalMatrix(TransformType.LOCAL_TO_GLOBAL)));
+                coordTrans.getCurrentPhysicsTransform().getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL)));
 
         double[] radians = finalTransform.toRadians();
 

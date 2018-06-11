@@ -31,7 +31,7 @@ import javax.annotation.concurrent.Immutable;
  * access issues. All access to the internal arrays is blocked to guarantee
  * nothing goes wrong.
  * <p>
- * Used to transform vectors between the global coordinate system, and the local
+ * Used to transform vectors between the global coordinate system, and the subspace
  * (ship) coordinate system.
  *
  * @author thebest108
@@ -39,19 +39,19 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public class ShipTransform {
 
-    private final double[] localToGlobal;
-    private final double[] globalToLocal;
+    private final double[] subspaceToGlobal;
+    private final double[] globalToSubspace;
 
-    public ShipTransform(double[] localToGlobal) {
-        this.localToGlobal = localToGlobal;
-        this.globalToLocal = RotationMatrices.inverse(localToGlobal);
+    public ShipTransform(double[] subspaceToGlobal) {
+        this.subspaceToGlobal = subspaceToGlobal;
+        this.globalToSubspace = RotationMatrices.inverse(subspaceToGlobal);
     }
 
     public ShipTransform(double posX, double posY, double posZ, double pitch, double yaw, double roll, Vector centerCoord) {
         double[] lToWTransform = RotationMatrices.getTranslationMatrix(posX, posY, posZ);
         lToWTransform = RotationMatrices.rotateAndTranslate(lToWTransform, pitch, yaw, roll, centerCoord);
-        this.localToGlobal = lToWTransform;
-        this.globalToLocal = RotationMatrices.inverse(localToGlobal);
+        this.subspaceToGlobal = lToWTransform;
+        this.globalToSubspace = RotationMatrices.inverse(subspaceToGlobal);
     }
 
     public ShipTransform() {
@@ -64,23 +64,23 @@ public class ShipTransform {
      * @param toCopy
      */
     public ShipTransform(ShipTransform toCopy) {
-        this.localToGlobal = Arrays.copyOf(toCopy.localToGlobal, toCopy.localToGlobal.length);
-        this.globalToLocal = Arrays.copyOf(toCopy.globalToLocal, toCopy.globalToLocal.length);
+        this.subspaceToGlobal = Arrays.copyOf(toCopy.subspaceToGlobal, toCopy.subspaceToGlobal.length);
+        this.globalToSubspace = Arrays.copyOf(toCopy.globalToSubspace, toCopy.globalToSubspace.length);
     }
 
     public void transform(Vector vector, TransformType transformType) {
-        if (transformType == TransformType.LOCAL_TO_GLOBAL) {
-            RotationMatrices.applyTransform(localToGlobal, vector);
+        if (transformType == TransformType.SUBSPACE_TO_GLOBAL) {
+            RotationMatrices.applyTransform(subspaceToGlobal, vector);
         } else {
-            RotationMatrices.applyTransform(globalToLocal, vector);
+            RotationMatrices.applyTransform(globalToSubspace, vector);
         }
     }
 
     public void rotate(Vector vector, TransformType transformType) {
-        if (transformType == TransformType.LOCAL_TO_GLOBAL) {
-            RotationMatrices.doRotationOnly(localToGlobal, vector);
+        if (transformType == TransformType.SUBSPACE_TO_GLOBAL) {
+            RotationMatrices.doRotationOnly(subspaceToGlobal, vector);
         } else {
-            RotationMatrices.doRotationOnly(globalToLocal, vector);
+            RotationMatrices.doRotationOnly(globalToSubspace, vector);
         }
     }
 
@@ -97,27 +97,30 @@ public class ShipTransform {
     }
 
     public Quaternion createRotationQuaternion(TransformType transformType) {
-        if (transformType == TransformType.LOCAL_TO_GLOBAL) {
-            return Quaternion.QuaternionFromMatrix(localToGlobal);
+        if (transformType == TransformType.SUBSPACE_TO_GLOBAL) {
+            return Quaternion.QuaternionFromMatrix(subspaceToGlobal);
         } else {
-            return Quaternion.QuaternionFromMatrix(globalToLocal);
+            return Quaternion.QuaternionFromMatrix(globalToSubspace);
         }
     }
 
 	/**
 	 * Please do not ever use this unless it is absolutely necessary! This exposes
-	 * the internal arrays and they cannot be made safe without sacrificing a lot of
-	 * performance.
+	 * the internal arrays and they unfortunately cannot be made safe without
+	 * sacrificing a lot of performance.
 	 *
 	 * @param transformType
-	 * @return
+	 * @return Unsafe internal arrays; for the love of god do not modify them!
 	 */
 	@Deprecated
 	public double[] getInternalMatrix(TransformType transformType) {
-        if (transformType == TransformType.LOCAL_TO_GLOBAL) {
-            return localToGlobal;
+        if (transformType == TransformType.SUBSPACE_TO_GLOBAL) {
+            return subspaceToGlobal;
+        } else if (transformType == TransformType.GLOBAL_TO_SUBSPACE){
+            return globalToSubspace;
         } else {
-            return globalToLocal;
+        	System.err.println("Unexpected TransformType Enum");
+        	return null;
         }
     }
 

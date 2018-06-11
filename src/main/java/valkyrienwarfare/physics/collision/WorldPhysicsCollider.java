@@ -192,7 +192,7 @@ public class WorldPhysicsCollider {
 			inWorld.Y = mutablePos.getY() + .5;
 			inWorld.Z = mutablePos.getZ() + .5;
 
-			parent.getShipTransformationManager().getCurrentPhysicsTransform().transform(inWorld, TransformType.GLOBAL_TO_LOCAL);
+			parent.getShipTransformationManager().getCurrentPhysicsTransform().transform(inWorld, TransformType.GLOBAL_TO_SUBSPACE);
 
 			// parent.coordTransform.fromGlobalToLocal(inWorld);
 
@@ -294,7 +294,7 @@ public class WorldPhysicsCollider {
 		// inLocalBB = colBB.get(0);
 
 		Polygon shipInWorld = new Polygon(inLocalBB, parent.getShipTransformationManager().getCurrentPhysicsTransform(),
-				TransformType.LOCAL_TO_GLOBAL);
+				TransformType.SUBSPACE_TO_GLOBAL);
 		Polygon worldPoly = new Polygon(inGlobalBB);
 		PhysPolygonCollider collider = new PhysPolygonCollider(shipInWorld, worldPoly, parent.getShipTransformationManager().normals);
 		if (!collider.seperated) {
@@ -682,7 +682,7 @@ public class WorldPhysicsCollider {
 			// parent.coordTransform.fromGlobalToLocal(inLocal);
 			if (inLocal.X > shipBB.minX && inLocal.X < shipBB.maxX && inLocal.Y > shipBB.minY && inLocal.Y < shipBB.maxY
 					&& inLocal.Z > shipBB.minZ && inLocal.Z < shipBB.maxZ) {
-				parent.getShipTransformationManager().getCurrentPhysicsTransform().transform(inLocal, TransformType.GLOBAL_TO_LOCAL);
+				parent.getShipTransformationManager().getCurrentPhysicsTransform().transform(inLocal, TransformType.GLOBAL_TO_SUBSPACE);
 
 				inBody.setSubtraction(inLocal, parent.getCenterCoord());
 				// parent.physicsProcessor.setVectorToVelocityAtPoint(inBody, speedInBody);
@@ -801,7 +801,7 @@ public class WorldPhysicsCollider {
 			inLocal.Z = z + .5D;
 			// TODO: Something
 			// parent.coordTransform.fromGlobalToLocal(inLocal);
-			parent.getShipTransformationManager().getCurrentPhysicsTransform().transform(inLocal, TransformType.GLOBAL_TO_LOCAL);
+			parent.getShipTransformationManager().getCurrentPhysicsTransform().transform(inLocal, TransformType.GLOBAL_TO_SUBSPACE);
 
 			inBody.setSubtraction(inLocal, parent.getCenterCoord());
 			// parent.physicsProcessor.setVectorToVelocityAtPoint(inBody, speedInBody);

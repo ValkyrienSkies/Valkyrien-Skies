@@ -216,9 +216,9 @@ public class PhysObjectRenderManager {
 
     public Quaternion getSmoothRotationQuat(double partialTick) {
         Quaternion oneTickBefore = parent.getShipTransformationManager().getPrevTickTransform()
-                .createRotationQuaternion(TransformType.LOCAL_TO_GLOBAL);
+                .createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
         Quaternion nextQuat = parent.getShipTransformationManager().getCurrentTickTransform()
-                .createRotationQuaternion(TransformType.LOCAL_TO_GLOBAL);
+                .createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
         return Quaternion.slerpInterpolate(oneTickBefore, nextQuat, partialTick);
     }
 

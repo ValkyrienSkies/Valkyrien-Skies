@@ -43,7 +43,7 @@ public abstract class MixinTileEntityCLIENT {
         BlockPos pos = new BlockPos(toReturn.minX, toReturn.minY, toReturn.minZ);
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
         if (wrapper != null) {
-            Polygon poly = new Polygon(toReturn, wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform(), TransformType.LOCAL_TO_GLOBAL);
+            Polygon poly = new Polygon(toReturn, wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform(), TransformType.SUBSPACE_TO_GLOBAL);
             return poly.getEnclosedAABB();
         }
         return toReturn;

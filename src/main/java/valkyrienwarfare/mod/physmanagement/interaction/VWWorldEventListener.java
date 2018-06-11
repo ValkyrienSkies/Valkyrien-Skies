@@ -98,7 +98,7 @@ public class VWWorldEventListener implements IWorldEventListener {
 				wrapper.getPhysicsObject().queueEntityForMounting(entityIn);
 			}
 			RotationMatrices.applyTransform(wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform(),
-					entityIn, TransformType.LOCAL_TO_GLOBAL);
+					entityIn, TransformType.SUBSPACE_TO_GLOBAL);
 
 			int newChunkX = MathHelper.floor(entityIn.posX / 16.0D);
 			int newChunkZ = MathHelper.floor(entityIn.posZ / 16.0D);
@@ -120,7 +120,7 @@ public class VWWorldEventListener implements IWorldEventListener {
 				wrapper.getPhysicsObject().queueEntityForMounting(entityIn);
 			}
 			RotationMatrices.applyTransform(wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform(),
-					entityIn, TransformType.LOCAL_TO_GLOBAL);
+					entityIn, TransformType.SUBSPACE_TO_GLOBAL);
 		}
 	}
 
@@ -155,7 +155,7 @@ public class VWWorldEventListener implements IWorldEventListener {
 
 					if (wrapper != null) {
 						wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(posVector,
-								TransformType.LOCAL_TO_GLOBAL);
+								TransformType.SUBSPACE_TO_GLOBAL);
 						// RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform,
 						// posVector);
 					}

@@ -128,7 +128,7 @@ public abstract class ImplTileEntityPilotable extends BasicNodeTileEntity implem
 		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(getWorld(), getPos());
 		if (wrapper != null) {
 			wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(pos,
-					TransformType.LOCAL_TO_GLOBAL);
+					TransformType.SUBSPACE_TO_GLOBAL);
 			// RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform,
 			// pos);
 		}
@@ -147,7 +147,7 @@ public abstract class ImplTileEntityPilotable extends BasicNodeTileEntity implem
 				this.getPos().getZ() + .5);
 		if (this.getParentPhysicsEntity() != null) {
 			this.getParentPhysicsEntity().getPhysicsObject().getShipTransformationManager().getCurrentTickTransform()
-					.transform(tileRelativePos, TransformType.LOCAL_TO_GLOBAL);
+					.transform(tileRelativePos, TransformType.SUBSPACE_TO_GLOBAL);
 		}
 		tileRelativePos.subtract(player.posX, player.posY, player.posZ);
 		Vector normal = new Vector(blockFacing.getDirectionVec().getX() * -1, blockFacing.getDirectionVec().getY(),
@@ -155,7 +155,7 @@ public abstract class ImplTileEntityPilotable extends BasicNodeTileEntity implem
 
 		if (this.getParentPhysicsEntity() != null) {
 			this.getParentPhysicsEntity().getPhysicsObject().getShipTransformationManager().getCurrentTickTransform()
-					.rotate(normal, TransformType.LOCAL_TO_GLOBAL);
+					.rotate(normal, TransformType.SUBSPACE_TO_GLOBAL);
 		}
 
 		double dotProduct = tileRelativePos.dot(normal);

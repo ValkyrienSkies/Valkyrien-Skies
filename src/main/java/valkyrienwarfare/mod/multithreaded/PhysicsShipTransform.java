@@ -74,8 +74,8 @@ public class PhysicsShipTransform extends ShipTransform {
      */
     private AxisAlignedBB createApproxBoundingBox(AxisAlignedBB gameTickBB, ShipTransform gameTickTransform) {
         Polygon gameTickBBPoly = new Polygon(gameTickBB);
-        gameTickBBPoly.transform(gameTickTransform, TransformType.GLOBAL_TO_LOCAL);
-        gameTickBBPoly.transform(this, TransformType.LOCAL_TO_GLOBAL);
+        gameTickBBPoly.transform(gameTickTransform, TransformType.GLOBAL_TO_SUBSPACE);
+        gameTickBBPoly.transform(this, TransformType.SUBSPACE_TO_GLOBAL);
         return gameTickBBPoly.getEnclosedAABB();
     }
 

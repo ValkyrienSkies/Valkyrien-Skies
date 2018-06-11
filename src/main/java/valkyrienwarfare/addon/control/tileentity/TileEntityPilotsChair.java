@@ -98,8 +98,8 @@ public class TileEntityPilotsChair extends ImplTileEntityPilotable {
             idealLinearVelocity.subtract(playerDirection);
         }
 
-        controlledShip.getShipTransformationManager().getCurrentTickTransform().rotate(idealLinearVelocity, TransformType.LOCAL_TO_GLOBAL);
-        controlledShip.getShipTransformationManager().getCurrentTickTransform().rotate(shipUp, TransformType.LOCAL_TO_GLOBAL);
+        controlledShip.getShipTransformationManager().getCurrentTickTransform().rotate(idealLinearVelocity, TransformType.SUBSPACE_TO_GLOBAL);
+        controlledShip.getShipTransformationManager().getCurrentTickTransform().rotate(shipUp, TransformType.SUBSPACE_TO_GLOBAL);
 
 		if (message.airshipUp_KeyDown) {
 			idealLinearVelocity.add(upDirection.getProduct(.5));
@@ -120,7 +120,7 @@ public class TileEntityPilotsChair extends ImplTileEntityPilotable {
 		}
 		
 		Vector sidesRotationAxis = new Vector(playerDirection);
-		controlledShip.getShipTransformationManager().getCurrentTickTransform().rotate(sidesRotationAxis, TransformType.LOCAL_TO_GLOBAL);
+		controlledShip.getShipTransformationManager().getCurrentTickTransform().rotate(sidesRotationAxis, TransformType.SUBSPACE_TO_GLOBAL);
 		
 		double[] rotationSidesTransform = RotationMatrices.getRotationMatrix(sidesRotationAxis.X, sidesRotationAxis.Y,
 				sidesRotationAxis.Z, Math.toRadians(sidePitch));

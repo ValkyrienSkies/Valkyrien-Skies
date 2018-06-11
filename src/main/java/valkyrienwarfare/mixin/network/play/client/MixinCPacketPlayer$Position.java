@@ -42,7 +42,7 @@ public abstract class MixinCPacketPlayer$Position extends CPacketPlayer implemen
             if (isPlayerStandingOnShip()) {
                 PhysicsWrapperEntity worldBelow = getWorldBelowFeet();
                 Vector positionInLocal = new Vector(x, y, z); // , worldBelow.wrapping.coordTransform.wToLTransform);
-                worldBelow.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(positionInLocal, TransformType.GLOBAL_TO_LOCAL);
+                worldBelow.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(positionInLocal, TransformType.GLOBAL_TO_SUBSPACE);
                 this.setLocalCoords(positionInLocal.X, positionInLocal.Y, positionInLocal.Z);
                 this.setWorldBelowFeetID(worldBelow.getEntityId());
             }

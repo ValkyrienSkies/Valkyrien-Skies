@@ -102,7 +102,7 @@ public class ShipTransformationPacketHolder {
 	 */
 	public void applySmoothLerp(PhysicsObject physObj, double lerpFactor) {
 		Vector CMDif = centerOfRotation.getSubtraction(physObj.getCenterCoord());
-		physObj.getShipTransformationManager().getCurrentTickTransform().rotate(CMDif, TransformType.LOCAL_TO_GLOBAL);
+		physObj.getShipTransformationManager().getCurrentTickTransform().rotate(CMDif, TransformType.SUBSPACE_TO_GLOBAL);
 		// CMDif.multiply(lerpFactor);
 
 		physObj.getWrapperEntity().posX -= CMDif.X;
@@ -118,7 +118,7 @@ public class ShipTransformationPacketHolder {
 		physObj.getWrapperEntity().posZ += (posZ - physObj.getWrapperEntity().posZ) * lerpFactor;
 
 		Quaternion prevRotation = physObj.getShipTransformationManager().getCurrentTickTransform()
-				.createRotationQuaternion(TransformType.LOCAL_TO_GLOBAL);
+				.createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
 		Quaternion newRotation = Quaternion.fromEuler(pitch, yaw, roll);
 		Quaternion lerpedRotation = Quaternion.slerpInterpolate(prevRotation, newRotation, lerpFactor);
 		double[] lerpedRotationAngles = lerpedRotation.toRadians();

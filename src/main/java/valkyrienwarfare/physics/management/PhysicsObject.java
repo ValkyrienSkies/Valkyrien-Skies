@@ -927,13 +927,13 @@ public class PhysicsObject {
         ShipTransform savedTransform = NBTUtils.readShipTransformFromNBT("currentTickTransform", compound);
         if (savedTransform != null) {
         	Vector centerOfMassInGlobal = new Vector(getCenterCoord());
-        	savedTransform.transform(centerOfMassInGlobal, TransformType.LOCAL_TO_GLOBAL);
+        	savedTransform.transform(centerOfMassInGlobal, TransformType.SUBSPACE_TO_GLOBAL);
         	
         	getWrapperEntity().posX = centerOfMassInGlobal.X;
         	getWrapperEntity().posY = centerOfMassInGlobal.Y;
         	getWrapperEntity().posZ = centerOfMassInGlobal.Z;
         	
-        	Quaternion rotationQuaternion = savedTransform.createRotationQuaternion(TransformType.LOCAL_TO_GLOBAL);
+        	Quaternion rotationQuaternion = savedTransform.createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
         	double[] angles = rotationQuaternion.toRadians();
         	getWrapperEntity().setPhysicsEntityRotation(Math.toDegrees(angles[0]), Math.toDegrees(angles[1]), Math.toDegrees(angles[2]));
         } else {

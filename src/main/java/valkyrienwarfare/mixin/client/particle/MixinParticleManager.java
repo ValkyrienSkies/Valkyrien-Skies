@@ -45,7 +45,7 @@ public abstract class MixinParticleManager {
             Vector velocity = new Vector(effect.motionX, effect.motionY, effect.motionZ);
             wrapper.getPhysicsObject().getShipTransformationManager().fromLocalToGlobal(posVec);
 //            RotationMatrices.doRotationOnly(wrapper.wrapping.coordTransform.lToWTransform, velocity);
-            wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().rotate(velocity, TransformType.LOCAL_TO_GLOBAL);
+            wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().rotate(velocity, TransformType.SUBSPACE_TO_GLOBAL);
             effect.setPosition(posVec.X, posVec.Y, posVec.Z);
             effect.motionX = velocity.X;
             effect.motionY = velocity.Y;

@@ -98,7 +98,7 @@ public class TileEntityShipHelm extends ImplTileEntityPilotable implements ITick
 
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(getWorld(), getPos());
         if (wrapper != null) {
-            wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(compassPoint, TransformType.LOCAL_TO_GLOBAL);
+            wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(compassPoint, TransformType.SUBSPACE_TO_GLOBAL);
 //            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, compassPoint);
         }
 
@@ -106,7 +106,7 @@ public class TileEntityShipHelm extends ImplTileEntityPilotable implements ITick
         compassDirection.subtract(spawnPos.getX(), spawnPos.getY(), spawnPos.getZ());
 
         if (wrapper != null) {
-            wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().rotate(compassDirection, TransformType.GLOBAL_TO_LOCAL);
+            wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().rotate(compassDirection, TransformType.GLOBAL_TO_SUBSPACE);
 //            RotationMatrices.doRotationOnly(wrapper.wrapping.coordTransform.wToLTransform, compassDirection);
         }
 

@@ -272,7 +272,7 @@ public class EntityCollisionInjector {
 		Vector entityPosInShip = new Vector(entity.posX, entity.posY - 0.20000000298023224D, entity.posZ);
 
 		worldBelow.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(entityPosInShip,
-				TransformType.GLOBAL_TO_LOCAL);
+				TransformType.GLOBAL_TO_SUBSPACE);
 
 		int j4 = MathHelper.floor(entityPosInShip.X);
 		int l4 = MathHelper.floor(entityPosInShip.Y);
@@ -400,7 +400,7 @@ public class EntityCollisionInjector {
 				if (!entity.isRidingSameEntity(wrapper)) {
 					Polygon playerInLocal = new Polygon(entityBB,
 							wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform(),
-							TransformType.GLOBAL_TO_LOCAL);
+							TransformType.GLOBAL_TO_SUBSPACE);
 					AxisAlignedBB bb = playerInLocal.getEnclosedAABB();
 
 					if ((bb.maxX - bb.minX) * (bb.maxZ - bb.minZ) > 9898989) {
@@ -417,7 +417,7 @@ public class EntityCollisionInjector {
 					for (AxisAlignedBB inLocal : collidingBBs) {
 						ShipPolygon poly = new ShipPolygon(inLocal,
 								wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform(),
-								TransformType.LOCAL_TO_GLOBAL, wrapper.getPhysicsObject().getShipTransformationManager().normals,
+								TransformType.SUBSPACE_TO_GLOBAL, wrapper.getPhysicsObject().getShipTransformationManager().normals,
 								wrapper.getPhysicsObject());
 						collisions.add(poly);
 					}
@@ -436,7 +436,7 @@ public class EntityCollisionInjector {
 				Vector entityPos = new Vector(posX, posY, posZ);
 
 				wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(entityPos,
-						TransformType.GLOBAL_TO_LOCAL);
+						TransformType.GLOBAL_TO_SUBSPACE);
 				// RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform,
 				// entityPos);
 

@@ -59,26 +59,6 @@ public abstract class MixinEntityIntrinsic {
         }
     }
 
-    /*
-     * @ModifyArgs(method = "move", at = @At(value = "INVOKE", target =
-     * "Lnet/minecraft/entity/Entity;setEntityBoundingBox(Lnet/minecraft/util/math/AxisAlignedBB;)V",
-     * ordinal = 0)) public void changeMoveArgs1(Args args, MoverType type, double
-     * dx, double dy, double dz) { alteredMovement = MixinMethods.handleMove(args,
-     * type, dx, dy, dz, thisClassAsAnEntity); }
-     *
-     * @ModifyArgs(method = "move", at = @At(value = "INVOKE", target =
-     * "Lnet/minecraft/world/World;getTotalWorldTime()J", ordinal = 0)) public void
-     * changeMoveArgs2(Args args, MoverType type, double dx, double dy, double dz) {
-     * alteredMovement = MixinMethods.handleMove(args, type, dx, dy, dz,
-     * thisClassAsAnEntity); hasChanged = true; }
-     *
-     * @ModifyArgs(method = "move", at = @At(value = "INVOKE", target =
-     * "Lnet/minecraft/profiler/Profiler;startSection(Ljava/lang/String;)V", ordinal
-     * = 0)) public void changeMoveArgs3(Args args, MoverType type, double dx,
-     * double dy, double dz) { if (!hasChanged) { alteredMovement =
-     * MixinMethods.handleMove(args, type, dx, dy, dz, thisClassAsAnEntity); } }
-     */
-
     @Inject(method = "move", at = @At("RETURN"))
     public void postMove(CallbackInfo callbackInfo) {
         if (hasChanged) {

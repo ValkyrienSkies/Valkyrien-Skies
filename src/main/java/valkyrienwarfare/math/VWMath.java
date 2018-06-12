@@ -16,14 +16,14 @@
 
 package valkyrienwarfare.math;
 
+import java.util.List;
+
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
-
-import java.util.Arrays;
-import java.util.List;
+import valkyrienwarfare.mod.coordinates.VectorImmutable;
 
 /**
  * A lot of useful math functions belong here
@@ -34,14 +34,14 @@ public class VWMath {
 
     public static final int AABB_MERGE_PASSES = 5;
 
-    public static double getPitchFromVec3d(Vector vec) {
-        double pitchFromRotVec = -Math.asin(vec.Y) * 180 / Math.PI;
+    public static double getPitchFromVectorImmutable(VectorImmutable vec) {
+        double pitchFromRotVec = -Math.asin(vec.getY()) * 180 / Math.PI;
         return pitchFromRotVec;
     }
 
-    public static double getYawFromVec3d(Vector vec, double rotPitch) {
+    public static double getYawFromVectorImmutable(VectorImmutable vec, double rotPitch) {
         double f2 = -Math.cos(-rotPitch *( Math.PI / 180));
-        double yawFromRotVec = Math.atan2(vec.X / f2, vec.Z / f2);
+        double yawFromRotVec = Math.atan2(vec.getX() / f2, vec.getZ() / f2);
         yawFromRotVec += Math.PI;
         yawFromRotVec /= -0.017453292F;
         return yawFromRotVec;

@@ -7,14 +7,16 @@ public class ImplSubspacedEntityRecord implements ISubspacedEntityRecord {
 	private final ISubspacedEntity parentEntity;
 	private final ISubspace parentSubspace;
 	private final VectorImmutable position;
+	private final VectorImmutable positionLastTick;
 	private final VectorImmutable lookVector;
 	private final VectorImmutable velocity;
 
 	public ImplSubspacedEntityRecord(ISubspacedEntity parentEntity, ISubspace parentSubspace, VectorImmutable position,
-			VectorImmutable lookVector, VectorImmutable velocity) {
+			VectorImmutable positionLastTick, VectorImmutable lookVector, VectorImmutable velocity) {
 		this.parentEntity = parentEntity;
 		this.parentSubspace = parentSubspace;
 		this.position = position;
+		this.positionLastTick = positionLastTick;
 		this.lookVector = lookVector;
 		this.velocity = velocity;
 	}
@@ -34,6 +36,11 @@ public class ImplSubspacedEntityRecord implements ISubspacedEntityRecord {
 		return position;
 	}
 
+	@Override
+	public VectorImmutable getPositionLastTick() {
+		return positionLastTick;
+	}
+	
 	@Override
 	public VectorImmutable getLookDirection() {
 		return lookVector;

@@ -48,6 +48,7 @@ public class ImplSubspace implements ISubspace {
 	
 	private ISubspacedEntityRecord createRecordForSubspacedEntity(ISubspacedEntity subspacedEntity) {
 		Vector position = subspacedEntity.createCurrentPositionVector();
+		Vector positionLastTick = subspacedEntity.createLastTickPositionVector();
 		Vector look = subspacedEntity.createCurrentLookVector();
 		Vector velocity = subspacedEntity.createCurrentVelocityVector();
 		ShipTransform subspaceTransform = getSubspaceTransform();
@@ -56,7 +57,8 @@ public class ImplSubspace implements ISubspace {
 			subspaceTransform.rotate(look, TransformType.GLOBAL_TO_SUBSPACE);
 			subspaceTransform.rotate(velocity, TransformType.GLOBAL_TO_SUBSPACE);
 		}
-		return new ImplSubspacedEntityRecord(subspacedEntity, this, position.toImmutable(), look.toImmutable(), velocity.toImmutable());
+		return new ImplSubspacedEntityRecord(subspacedEntity, this, position.toImmutable(),
+				positionLastTick.toImmutable(), look.toImmutable(), velocity.toImmutable());
 	}
 
 	@Override

@@ -12,10 +12,14 @@ import valkyrienwarfare.api.Vector;
 public interface ISubspacedEntity {
 
 	CoordinateSpaceType currentSubspaceType();
-	
+
 	Vector createCurrentPositionVector();
+
+	Vector createLastTickPositionVector();
 	
 	Vector createCurrentLookVector();
-	
+
 	Vector createCurrentVelocityVector();
+	
+	void restoreSubspacedEntityStateToRecord(ISubspacedEntityRecord record);
 }

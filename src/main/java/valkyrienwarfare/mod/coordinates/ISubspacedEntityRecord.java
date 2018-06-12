@@ -19,6 +19,8 @@ public interface ISubspacedEntityRecord {
 
 	VectorImmutable getPosition();
 
+	VectorImmutable getPositionLastTick();
+	
 	VectorImmutable getLookDirection();
 
 	VectorImmutable getVelocity();

@@ -16,22 +16,21 @@
 
 package valkyrienwarfare.mixin.network.play.client;
 
-import net.minecraft.network.play.INetHandlerPlayServer;
-import net.minecraft.network.play.client.CPacketUpdateSign;
-import net.minecraft.util.math.BlockPos;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import net.minecraft.network.play.INetHandlerPlayServer;
+import net.minecraft.network.play.client.CPacketUpdateSign;
+import net.minecraft.util.math.BlockPos;
 import valkyrienwarfare.fixes.ITransformablePacket;
-import valkyrienwarfare.mod.coordinates.PlayerDataBackup;
 
 @Mixin(CPacketUpdateSign.class)
 public class MixinCPacketUpdateSign implements ITransformablePacket {
 
     private final CPacketUpdateSign thisAsPacketSign = CPacketUpdateSign.class.cast(this);
-    private PlayerDataBackup playerBackup;
-
+    
     @Inject(method = "processPacket", at = @At(value = "HEAD"))
     public void preHandleUseItemPacket(INetHandlerPlayServer server, CallbackInfo info) {
         this.doPreProcessing(server, false);
@@ -45,16 +44,6 @@ public class MixinCPacketUpdateSign implements ITransformablePacket {
     @Override
     public BlockPos getBlockPos() {
         return thisAsPacketSign.getPosition();
-    }
-
-    @Override
-    public PlayerDataBackup getPlayerDataBackup() {
-        return playerBackup;
-    }
-
-    @Override
-    public void setPlayerDataBackup(PlayerDataBackup backup) {
-        this.playerBackup = backup;
     }
 
 }

@@ -149,25 +149,33 @@ public class RotationMatrices {
         double y = vec.Y;
         double z = vec.Z;
         vec.X = x * M[0] + y * M[1] + z * M[2] + M[3];
-        vec.Y = x * M[4] + y * M[5] + z * M[6] + M[7];
-        vec.Z = x * M[8] + y * M[9] + z * M[10] + M[11];
-    }
+		vec.Y = x * M[4] + y * M[5] + z * M[6] + M[7];
+		vec.Z = x * M[8] + y * M[9] + z * M[10] + M[11];
+	}
 
-    @Deprecated
-    public static void applyTransform(ShipTransform shipTransform, Entity entity, TransformType transformType) {
-    	ISubspacedEntity entitySubspaceTracker = ISubspacedEntity.class.cast(entity);
-    	if (transformType == TransformType.SUBSPACE_TO_GLOBAL && entitySubspaceTracker.currentSubspaceType() != CoordinateSpaceType.SUBSPACE_COORDINATES) {
-    		throw new IllegalArgumentException("Entity " + entity.getName() + " is already in global coordinates. This is wrong!");
-    	}
-    	if (transformType == TransformType.GLOBAL_TO_SUBSPACE && entitySubspaceTracker.currentSubspaceType() != CoordinateSpaceType.GLOBAL_COORDINATES) {
-    		throw new IllegalArgumentException("Entity " + entity.getName() + " is already in subspace coordinates. This is wrong!");
-    	}
-    	
-        Vector entityPos = new Vector(entity.posX, entity.posY, entity.posZ);
-        Vector entityLook = new Vector(entity.getLook(1.0F));
-        Vector entityMotion = new Vector(entity.motionX, entity.motionY, entity.motionZ);
+	@Deprecated
+	public static void applyTransform(ShipTransform shipTransform, Entity entity, TransformType transformType) {
+		if (entity instanceof PhysicsWrapperEntity) {
+			throw new IllegalArgumentException(
+					"Tried applying a transform to the PhysicsWrapeerEntity, this creates instability so we crash here!");
+		}
+		ISubspacedEntity entitySubspaceTracker = ISubspacedEntity.class.cast(entity);
+		if (transformType == TransformType.SUBSPACE_TO_GLOBAL
+				&& entitySubspaceTracker.currentSubspaceType() != CoordinateSpaceType.SUBSPACE_COORDINATES) {
+			throw new IllegalArgumentException(
+					"Entity " + entity.getName() + " is already in global coordinates. This is wrong!");
+		}
+		if (transformType == TransformType.GLOBAL_TO_SUBSPACE
+				&& entitySubspaceTracker.currentSubspaceType() != CoordinateSpaceType.GLOBAL_COORDINATES) {
+			throw new IllegalArgumentException(
+					"Entity " + entity.getName() + " is already in subspace coordinates. This is wrong!");
+		}
 
-        if (entity instanceof EntityFireball) {
+		Vector entityPos = new Vector(entity.posX, entity.posY, entity.posZ);
+		Vector entityLook = new Vector(entity.getLook(1.0F));
+		Vector entityMotion = new Vector(entity.motionX, entity.motionY, entity.motionZ);
+
+		if (entity instanceof EntityFireball) {
             EntityFireball ball = (EntityFireball) entity;
             entityMotion.X = ball.accelerationX;
             entityMotion.Y = ball.accelerationY;
@@ -180,13 +188,7 @@ public class RotationMatrices {
 
         entityLook.normalize();
 
-        // This is correct
-        entity.rotationPitch = (float) MathHelper.wrapDegrees(VWMath.getPitchFromVec3d(entityLook));
-        entity.prevRotationPitch = entity.rotationPitch;
-
-        entity.rotationYaw = (float) MathHelper.wrapDegrees(VWMath.getYawFromVec3d(entityLook, entity.rotationPitch));
-        entity.prevRotationYaw = entity.rotationYaw;
-
+        // This is correct, works properly when tested with cows
         if (entity instanceof EntityLiving) {
             EntityLiving living = (EntityLiving) entity;
             living.rotationYawHead = entity.rotationYaw;

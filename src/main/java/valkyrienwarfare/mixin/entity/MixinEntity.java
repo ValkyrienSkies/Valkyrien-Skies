@@ -30,9 +30,12 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.math.VWMath;
 import valkyrienwarfare.mod.coordinates.CoordinateSpaceType;
 import valkyrienwarfare.mod.coordinates.ISubspacedEntity;
+import valkyrienwarfare.mod.coordinates.ISubspacedEntityRecord;
 import valkyrienwarfare.mod.coordinates.TransformType;
+import valkyrienwarfare.mod.coordinates.VectorImmutable;
 import valkyrienwarfare.mod.physmanagement.chunk.PhysicsChunkManager;
 import valkyrienwarfare.mod.physmanagement.interaction.IDraggable;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
@@ -84,6 +87,11 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
     }
 	
     @Override
+    public Vector createLastTickPositionVector() {
+    	return new Vector(thisAsEntity.lastTickPosX, thisAsEntity.lastTickPosY, thisAsEntity.lastTickPosZ);
+    }
+    
+    @Override
 	public Vector createCurrentLookVector() {
     	return new Vector(thisAsEntity.getLookVec());
     }
@@ -91,6 +99,26 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
     @Override
 	public Vector createCurrentVelocityVector() {
     	return new Vector(thisAsEntity.motionX, thisAsEntity.motionY, thisAsEntity.motionZ);
+    }
+    
+    @Override
+    public void restoreSubspacedEntityStateToRecord(ISubspacedEntityRecord record) {
+    	VectorImmutable coordinates = record.getPosition();
+    	VectorImmutable coordinatesLastTick = record.getPositionLastTick();
+    	VectorImmutable lookVector = record.getLookDirection();
+    	VectorImmutable velocityVector = record.getVelocity();
+    	
+    	thisAsEntity.lastTickPosX = coordinatesLastTick.getX();
+    	thisAsEntity.lastTickPosY = coordinatesLastTick.getY();
+    	thisAsEntity.lastTickPosZ = coordinatesLastTick.getZ();
+    	
+    	double pitch = VWMath.getPitchFromVectorImmutable(lookVector);
+    	double yaw = VWMath.getYawFromVectorImmutable(lookVector, pitch);
+    	
+    	this.rotationPitch = (float) pitch;
+    	this.rotationYaw = (float) yaw;
+    	
+    	thisAsEntity.setPosition(coordinates.getX(), coordinates.getY(), coordinates.getZ());
     }
     
     @Override

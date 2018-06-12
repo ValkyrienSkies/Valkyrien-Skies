@@ -7,7 +7,10 @@ import net.minecraft.util.math.BlockPos;
 import valkyrienwarfare.MixinLoadManager;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.RotationMatrices;
-import valkyrienwarfare.mod.coordinates.PlayerDataBackup;
+import valkyrienwarfare.mod.coordinates.ISubspace;
+import valkyrienwarfare.mod.coordinates.ISubspaceProvider;
+import valkyrienwarfare.mod.coordinates.ISubspacedEntity;
+import valkyrienwarfare.mod.coordinates.ISubspacedEntityRecord;
 import valkyrienwarfare.mod.coordinates.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
@@ -23,10 +26,6 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 public interface ITransformablePacket {
 
 	BlockPos getBlockPos();
-
-	PlayerDataBackup getPlayerDataBackup();
-
-	void setPlayerDataBackup(PlayerDataBackup backup);
 
 	default boolean shouldTransformInCurrentEnvironment() {
 		return MixinLoadManager.isSpongeEnabled();
@@ -49,7 +48,9 @@ public interface ITransformablePacket {
 				PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.world,
 						packetPos);
 				if (wrapper != null && wrapper.getPhysicsObject().getShipTransformationManager() != null) {
-					setPlayerDataBackup(new PlayerDataBackup(player));
+					ISubspaceProvider worldProvider = ISubspaceProvider.class.cast(player.getServerWorld());
+					ISubspace worldSubspace = worldProvider.getSubspace();
+					worldSubspace.snapshotSubspacedEntity(ISubspacedEntity.class.cast(player));
 					RotationMatrices.applyTransform(
 							wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform(), player,
 							TransformType.GLOBAL_TO_SUBSPACE);
@@ -75,9 +76,13 @@ public interface ITransformablePacket {
 						packetPos);
 				// I don't care what happened to that ship in the time between, we must restore
 				// the player to their proper coordinates.
-				if (getPlayerDataBackup() != null) {
-					getPlayerDataBackup().restorePlayerToBackup();
-				}
+				ISubspaceProvider worldProvider = ISubspaceProvider.class.cast(player.getServerWorld());
+				ISubspace worldSubspace = worldProvider.getSubspace();
+				ISubspacedEntity subspacedEntity = ISubspacedEntity.class.cast(player);
+				ISubspacedEntityRecord record = worldSubspace.getRecordForSubspacedEntity(subspacedEntity);
+				subspacedEntity.restoreSubspacedEntityStateToRecord(record);
+				// We need this because Sponge Mixins prevent this from properly working
+				player.setPosition(player.posX, player.posY, player.posZ);
 			}
 		}
 	}

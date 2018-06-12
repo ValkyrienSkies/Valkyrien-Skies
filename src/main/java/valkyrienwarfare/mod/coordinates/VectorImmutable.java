@@ -1,14 +1,18 @@
 package valkyrienwarfare.mod.coordinates;
 
+import javax.annotation.concurrent.Immutable;
+
 import valkyrienwarfare.api.Vector;
 
 /**
  * An immutable version of the Vector class that is wrapping another vector.
- * Used to guarantee nothing breaks the data used by ISubspace objects.
+ * Used to ensure that the the data used by ISubspace objects is never tampered,
+ * and we can therefore consider it completely safe.
  * 
  * @author thebest108
  *
  */
+@Immutable
 public class VectorImmutable {
 
 	private final Vector vectorData;
@@ -31,5 +35,9 @@ public class VectorImmutable {
 	
 	public double getZ() {
 		return vectorData.Z;
+	}
+	
+	public Vector createMutibleVectorCopy() {
+		return new Vector(vectorData);
 	}
 }

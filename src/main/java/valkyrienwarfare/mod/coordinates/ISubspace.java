@@ -10,7 +10,7 @@ public interface ISubspace {
 	 * @param subspaced
 	 * @return
 	 */
-	boolean hasCoordinatesForSubspacedEntity(ISubspacedEntity subspaced);
+	boolean hasRecordForSubspacedEntity(ISubspacedEntity subspaced);
 
 	/**
 	 * Returns the coordinates Vector for the given ISubspacedEntity relative to
@@ -19,11 +19,21 @@ public interface ISubspace {
 	 * @param subspaced
 	 * @return
 	 */
-	Vector getCoordinatesOfSubspacedEntity(ISubspacedEntity subspaced);
+	ISubspacedEntityRecord getRecordForSubspacedEntity(ISubspacedEntity subspaced);
 
 	/**
-	 * Records the position of this 
+	 * Creates a ISubspacedEntityRecord for the given ISubspacedEntity and stores
+	 * the data with the ISubSpace.
+	 * 
 	 * @param subspaced
 	 */
 	void snapshotSubspacedEntity(ISubspacedEntity subspaced);
+
+	/**
+	 * Returns GLOBAL if this subspace is the world, and SUBSPACE for PhysicsObject
+	 * subspaces.
+	 * 
+	 * @return
+	 */
+	CoordinateSpaceType getSubspaceCoordinatesType();
 }

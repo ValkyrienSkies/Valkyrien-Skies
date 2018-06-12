@@ -20,7 +20,7 @@ public class MixinPacketUtil {
         }
     }
 
-    @Inject(method = "onProcessPacket", at = @At(value = "TAIL"))
+    @Inject(method = "onProcessPacket", at = @At(value = "RETURN"))
     private static void postOnProcessPacket(Packet packetIn, INetHandler netHandler, CallbackInfo info) {
         if (packetIn instanceof ITransformablePacket) {
             ITransformablePacket transformPacket = (ITransformablePacket) packetIn;

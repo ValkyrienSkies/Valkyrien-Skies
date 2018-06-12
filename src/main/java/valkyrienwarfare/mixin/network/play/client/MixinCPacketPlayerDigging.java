@@ -37,7 +37,7 @@ public class MixinCPacketPlayerDigging implements ITransformablePacket {
         this.doPreProcessing(server, false);
     }
 
-    @Inject(method = "processPacket", at = @At(value = "TAIL"))
+    @Inject(method = "processPacket", at = @At(value = "RETURN"))
     public void postDiggingProcessPacket(INetHandlerPlayServer server, CallbackInfo info) {
         this.doPostProcessing(server, false);
     }

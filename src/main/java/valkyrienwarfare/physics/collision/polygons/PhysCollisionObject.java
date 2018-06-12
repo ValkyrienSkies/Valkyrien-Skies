@@ -25,11 +25,11 @@ public class PhysCollisionObject {
     public final Polygon movable, fixed;
     public double penetrationDistance;
     public boolean seperated;
-    public double[] playerMinMax;
-    public double[] blockMinMax;
-    public double movMaxFixMin;
-    public double movMinFixMax;
-    public Vector firstContactPoint;
+    private double[] playerMinMax;
+    private double[] blockMinMax;
+    private double movMaxFixMin;
+    private double movMinFixMax;
+    private Vector firstContactPoint;
 
     public PhysCollisionObject(Polygon movable_, Polygon stationary, Vector axes) {
         collision_normal = axes;

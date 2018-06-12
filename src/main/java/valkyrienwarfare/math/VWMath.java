@@ -32,63 +32,38 @@ import java.util.List;
  */
 public class VWMath {
 
-    public static final int maxArrayListFusePasses = 5;
+    public static final int AABB_MERGE_PASSES = 5;
 
     public static double getPitchFromVec3d(Vector vec) {
-        double pitchFromRotVec = -Math.asin(vec.Y) / 0.017453292F;
+        double pitchFromRotVec = -Math.asin(vec.Y) * 180 / Math.PI;
         return pitchFromRotVec;
     }
 
     public static double getYawFromVec3d(Vector vec, double rotPitch) {
-        double f2 = -Math.cos(-rotPitch * 0.017453292F);
+        double f2 = -Math.cos(-rotPitch *( Math.PI / 180));
         double yawFromRotVec = Math.atan2(vec.X / f2, vec.Z / f2);
         yawFromRotVec += Math.PI;
         yawFromRotVec /= -0.017453292F;
         return yawFromRotVec;
-    }
+	}
 
-    // Assuming they're colliding, OR ELSE!
-    public static AxisAlignedBB getBetweenAABB(AxisAlignedBB ship1, AxisAlignedBB ship2) {
-        if (!ship1.intersects(ship2)) {
-            System.out.println("Tried getting relevent BB's for 2 ships not colliding!!!");
-            return null;
-        }
-        final double[] xVals = new double[4];
-        final double[] yVals = new double[4];
-        final double[] zVals = new double[4];
-        xVals[0] = ship1.minX;
-        xVals[1] = ship1.maxX;
-        xVals[2] = ship2.minX;
-        xVals[3] = ship2.maxX;
-        yVals[0] = ship1.minY;
-        yVals[1] = ship1.maxY;
-        yVals[2] = ship2.minY;
-        yVals[3] = ship2.maxY;
-        zVals[0] = ship1.minZ;
-        zVals[1] = ship1.maxZ;
-        zVals[2] = ship2.minZ;
-        zVals[3] = ship2.maxZ;
-        Arrays.sort(xVals);
-        Arrays.sort(yVals);
-        Arrays.sort(zVals);
-        return new AxisAlignedBB(xVals[1], yVals[1], zVals[1], xVals[2], yVals[2], zVals[2]);
-    }
-
-    // Maybe update to use Arrays.sort() but that could actually be slower because I
-    // only need the min and max arranged
-    public static double[] getMinMaxOfArray(double[] distances) {
-        double[] minMax = new double[2];
-        // Min at 0
-        // Max at 1
-        minMax[0] = minMax[1] = distances[0];
-        for (int i = 1; i < distances.length; i++) {
-            if (distances[i] < minMax[0]) {
-                minMax[0] = distances[i];
-            }
-            if (distances[i] > minMax[1]) {
-                minMax[1] = distances[i];
-            }
-        }
+	/**
+	 * Sorts the array, returns a new array of 2 elements. Element 0 is the minimum
+	 * of the array passed in, element 1 is the maximum of the array.
+	 * 
+	 * @param elements
+	 * @return
+	 */
+	public static double[] getMinMaxOfArray(double[] elements) {
+		double[] minMax = new double[2];
+		minMax[0] = minMax[1] = elements[elements.length - 1];
+		// We iterate backwards because that way the number we are comparing against is
+		// 0, which doesn't have to get loaded into a register to be compared by the
+		// cpu. Its not much, but it is technically faster.
+		for (int i = elements.length - 2; i >= 0; i--) {
+			minMax[0] = Math.min(minMax[0], elements[i]);
+			minMax[1] = Math.max(minMax[1], elements[i]);
+		}
         return minMax;
     }
 
@@ -123,9 +98,6 @@ public class VWMath {
      * @return true/false
      */
     public static boolean canStandOnNormal(Vector normal) {
-        // if(normal.Y<0){
-        // return false;
-        // }
         double radius = normal.X * normal.X + normal.Z * normal.Z;
         return radius < ValkyrienWarfareMod.standingTolerance;
     }
@@ -139,7 +111,7 @@ public class VWMath {
     public static void mergeAABBList(List<AxisAlignedBB> toFuse) {
         boolean changed = true;
         int passes = 0;
-        while (changed && passes < maxArrayListFusePasses) {
+        while (changed && passes < AABB_MERGE_PASSES) {
             changed = false;
             passes++;
             for (int i = 0; i < toFuse.size(); i++) {

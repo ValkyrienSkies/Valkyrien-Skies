@@ -54,6 +54,9 @@ public class ShipTransform {
         this.globalToSubspace = RotationMatrices.inverse(subspaceToGlobal);
     }
 
+    /**
+     * Initializes an empty ShipTransform that does no translation or rotation.
+     */
     public ShipTransform() {
         this(RotationMatrices.getDoubleIdentity());
     }

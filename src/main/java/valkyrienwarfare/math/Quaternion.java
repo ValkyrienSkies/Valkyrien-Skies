@@ -82,28 +82,18 @@ public class Quaternion {
         return betweenQuat;
     }
 
-    public static Quaternion fromAxisAngle(double x, double y, double z, double angle) {
-        double axismag = Math.sqrt(x * x + y * y + z * z);
-        x /= axismag;
-        y /= axismag;
-        z /= axismag;
-        Quaternion q = new Quaternion();
-        double sinMod = Math.sin(angle / 2D);
-        q.x = x * sinMod;
-        q.y = y * sinMod;
-        q.z = z * sinMod;
-        q.w = Math.cos(angle / 2D);
-        return q;
-    }
-
     /**
-     * Creates a new Quaternion object for the given rotation. 
-     * @param pitch in degrees
-     * @param yaw in degrees
-     * @param roll in degrees
-     * @return
-     */
-    public static Quaternion fromEuler(double pitch, double yaw, double roll) {
+	 * Creates a new Quaternion object for the given rotation.
+	 * 
+	 * @param pitch
+	 *            in degrees
+	 * @param yaw
+	 *            in degrees
+	 * @param roll
+	 *            in degrees
+	 * @return
+	 */
+	public static Quaternion fromEuler(double pitch, double yaw, double roll) {
     	double[] rotationMatrix = RotationMatrices.getRotationMatrix(pitch, yaw, roll);
         return QuaternionFromMatrix(rotationMatrix);
     }
@@ -112,7 +102,6 @@ public class Quaternion {
         return (first.x * second.x) + (first.y * second.y) + (first.z * second.z) + (first.w * second.w);
     }
 
-    // MicroOptimization; avoid creating an extra double
     public double[] toRadians() {
         // double test = x*y + z*w;
         double sqw = w * w;
@@ -148,7 +137,7 @@ public class Quaternion {
         y = oldw * q1.y + q1.w * oldy - oldx * q1.z + oldz * q1.x;
         z = oldw * q1.z + q1.w * oldz + oldx * q1.y - oldy * q1.x;
         oldw = x * x + y * y + z * z + w * w;
-        if (Math.abs(1D - oldw) > .0000000000000001) {
+        if (Math.abs(1D - oldw) > .001) {
             oldw = Math.sqrt(oldw);
             w /= oldw;
             x /= oldw;

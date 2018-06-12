@@ -206,12 +206,11 @@ public class RotationMatrices {
     @Deprecated
     public static void applyTransform(ShipTransform shipTransform, Entity entity, TransformType transformType) {
     	ISubSpacable entitySubspaceTracker = ISubSpacable.class.cast(entity);
-//    	System.out.println("REEE");
     	if (transformType == TransformType.SUBSPACE_TO_GLOBAL && entitySubspaceTracker.currentSubspaceType() != CoordinateSpaceType.SUBSPACE_COORDINATES) {
-//    		throw new IllegalArgumentException("Entity " + entity.getName() + " is already in global coordinates. This is wrong, so I force a crash!");
+    		throw new IllegalArgumentException("Entity " + entity.getName() + " is already in global coordinates. This is wrong, so I force a crash!");
     	}
     	if (transformType == TransformType.GLOBAL_TO_SUBSPACE && entitySubspaceTracker.currentSubspaceType() != CoordinateSpaceType.GLOBAL_COORDINATES) {
-//    		throw new IllegalArgumentException("Entity " + entity.getName() + " is already in subspace coordinates. This is wrong, so I force a crash!");
+    		throw new IllegalArgumentException("Entity " + entity.getName() + " is already in subspace coordinates. This is wrong, so I force a crash!");
     	}
     	
         Vector entityPos = new Vector(entity.posX, entity.posY, entity.posZ);

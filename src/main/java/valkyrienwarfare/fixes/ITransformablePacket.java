@@ -41,7 +41,7 @@ public interface ITransformablePacket {
 	 */
 	default void doPreProcessing(INetHandlerPlayServer server, boolean callingFromSponge) {
 		if (!MixinLoadManager.isSpongeEnabled() || callingFromSponge) {
-			System.out.println("Pre packet process");
+//			System.out.println("Pre packet process");
 			NetHandlerPlayServer serverHandler = (NetHandlerPlayServer) server;
 			EntityPlayerMP player = serverHandler.player;
 			if (player.getServerWorld().isCallingFromMinecraftThread()) {
@@ -65,7 +65,7 @@ public interface ITransformablePacket {
 	 */
 	default void doPostProcessing(INetHandlerPlayServer server, boolean callingFromSponge) {
 		if (!MixinLoadManager.isSpongeEnabled() || callingFromSponge) {
-			System.out.println("Post packet process");
+//			System.out.println("Post packet process");
 			NetHandlerPlayServer serverHandler = (NetHandlerPlayServer) server;
 			EntityPlayerMP player = serverHandler.player;
 			if (player.getServerWorld().isCallingFromMinecraftThread()) {

@@ -31,14 +31,14 @@ import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.mod.coordinates.CoordinateSpaceType;
-import valkyrienwarfare.mod.coordinates.ISubSpacable;
+import valkyrienwarfare.mod.coordinates.ISubspacedEntity;
 import valkyrienwarfare.mod.coordinates.TransformType;
 import valkyrienwarfare.mod.physmanagement.chunk.PhysicsChunkManager;
 import valkyrienwarfare.mod.physmanagement.interaction.IDraggable;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 @Mixin(Entity.class)
-public abstract class MixinEntity implements IDraggable, ISubSpacable {
+public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
 
     @Shadow
     public float rotationYaw;

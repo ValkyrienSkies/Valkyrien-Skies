@@ -7,7 +7,7 @@ package valkyrienwarfare.mod.coordinates;
  * @author thebest108
  *
  */
-public interface ISubSpacable {
+public interface ISubspacedEntity {
 
 	CoordinateSpaceType currentSubspaceType();
 }

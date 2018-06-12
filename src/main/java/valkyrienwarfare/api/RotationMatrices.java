@@ -24,7 +24,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import valkyrienwarfare.math.VWMath;
 import valkyrienwarfare.mod.coordinates.CoordinateSpaceType;
-import valkyrienwarfare.mod.coordinates.ISubSpacable;
+import valkyrienwarfare.mod.coordinates.ISubspacedEntity;
 import valkyrienwarfare.mod.coordinates.ShipTransform;
 import valkyrienwarfare.mod.coordinates.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
@@ -205,12 +205,12 @@ public class RotationMatrices {
 
     @Deprecated
     public static void applyTransform(ShipTransform shipTransform, Entity entity, TransformType transformType) {
-    	ISubSpacable entitySubspaceTracker = ISubSpacable.class.cast(entity);
+    	ISubspacedEntity entitySubspaceTracker = ISubspacedEntity.class.cast(entity);
     	if (transformType == TransformType.SUBSPACE_TO_GLOBAL && entitySubspaceTracker.currentSubspaceType() != CoordinateSpaceType.SUBSPACE_COORDINATES) {
-    		throw new IllegalArgumentException("Entity " + entity.getName() + " is already in global coordinates. This is wrong, so I force a crash!");
+    		throw new IllegalArgumentException("Entity " + entity.getName() + " is already in global coordinates. This is wrong!");
     	}
     	if (transformType == TransformType.GLOBAL_TO_SUBSPACE && entitySubspaceTracker.currentSubspaceType() != CoordinateSpaceType.GLOBAL_COORDINATES) {
-    		throw new IllegalArgumentException("Entity " + entity.getName() + " is already in subspace coordinates. This is wrong, so I force a crash!");
+    		throw new IllegalArgumentException("Entity " + entity.getName() + " is already in subspace coordinates. This is wrong!");
     	}
     	
         Vector entityPos = new Vector(entity.posX, entity.posY, entity.posZ);

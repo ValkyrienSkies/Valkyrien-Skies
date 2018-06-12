@@ -69,19 +69,11 @@ public class ShipTransform {
     }
 
     public void transform(Vector vector, TransformType transformType) {
-        if (transformType == TransformType.SUBSPACE_TO_GLOBAL) {
-            RotationMatrices.applyTransform(subspaceToGlobal, vector);
-        } else {
-            RotationMatrices.applyTransform(globalToSubspace, vector);
-        }
+    	RotationMatrices.applyTransform(getInternalMatrix(transformType), vector);
     }
 
     public void rotate(Vector vector, TransformType transformType) {
-        if (transformType == TransformType.SUBSPACE_TO_GLOBAL) {
-            RotationMatrices.doRotationOnly(subspaceToGlobal, vector);
-        } else {
-            RotationMatrices.doRotationOnly(globalToSubspace, vector);
-        }
+        RotationMatrices.doRotationOnly(getInternalMatrix(transformType), vector);
     }
 
     public Vec3d transform(Vec3d vec3d, TransformType transformType) {
@@ -97,11 +89,7 @@ public class ShipTransform {
     }
 
     public Quaternion createRotationQuaternion(TransformType transformType) {
-        if (transformType == TransformType.SUBSPACE_TO_GLOBAL) {
-            return Quaternion.QuaternionFromMatrix(subspaceToGlobal);
-        } else {
-            return Quaternion.QuaternionFromMatrix(globalToSubspace);
-        }
+        return Quaternion.QuaternionFromMatrix(getInternalMatrix(transformType));
     }
 
 	/**
@@ -119,8 +107,7 @@ public class ShipTransform {
         } else if (transformType == TransformType.GLOBAL_TO_SUBSPACE){
             return globalToSubspace;
         } else {
-        	System.err.println("Unexpected TransformType Enum");
-        	return null;
+        	throw new IllegalArgumentException("Unexpected TransformType Enum!");
         }
     }
 

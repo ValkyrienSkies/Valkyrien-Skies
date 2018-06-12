@@ -23,6 +23,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import valkyrienwarfare.math.VWMath;
+import valkyrienwarfare.mod.coordinates.CoordinateSpaceType;
+import valkyrienwarfare.mod.coordinates.ISubSpacable;
 import valkyrienwarfare.mod.coordinates.ShipTransform;
 import valkyrienwarfare.mod.coordinates.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
@@ -202,13 +204,22 @@ public class RotationMatrices {
     }
 
     @Deprecated
-    public static void applyTransform(ShipTransform shipTransform, Entity ent, TransformType transformType) {
-        Vector entityPos = new Vector(ent.posX, ent.posY, ent.posZ);
-        Vector entityLook = new Vector(ent.getLook(1.0F));
-        Vector entityMotion = new Vector(ent.motionX, ent.motionY, ent.motionZ);
+    public static void applyTransform(ShipTransform shipTransform, Entity entity, TransformType transformType) {
+    	ISubSpacable entitySubspaceTracker = ISubSpacable.class.cast(entity);
+//    	System.out.println("REEE");
+    	if (transformType == TransformType.SUBSPACE_TO_GLOBAL && entitySubspaceTracker.currentSubspaceType() != CoordinateSpaceType.SUBSPACE_COORDINATES) {
+//    		throw new IllegalArgumentException("Entity " + entity.getName() + " is already in global coordinates. This is wrong, so I force a crash!");
+    	}
+    	if (transformType == TransformType.GLOBAL_TO_SUBSPACE && entitySubspaceTracker.currentSubspaceType() != CoordinateSpaceType.GLOBAL_COORDINATES) {
+//    		throw new IllegalArgumentException("Entity " + entity.getName() + " is already in subspace coordinates. This is wrong, so I force a crash!");
+    	}
+    	
+        Vector entityPos = new Vector(entity.posX, entity.posY, entity.posZ);
+        Vector entityLook = new Vector(entity.getLook(1.0F));
+        Vector entityMotion = new Vector(entity.motionX, entity.motionY, entity.motionZ);
 
-        if (ent instanceof EntityFireball) {
-            EntityFireball ball = (EntityFireball) ent;
+        if (entity instanceof EntityFireball) {
+            EntityFireball ball = (EntityFireball) entity;
             entityMotion.X = ball.accelerationX;
             entityMotion.Y = ball.accelerationY;
             entityMotion.Z = ball.accelerationZ;
@@ -221,30 +232,30 @@ public class RotationMatrices {
         entityLook.normalize();
 
         // This is correct
-        ent.rotationPitch = (float) MathHelper.wrapDegrees(VWMath.getPitchFromVec3d(entityLook));
-        ent.prevRotationPitch = ent.rotationPitch;
+        entity.rotationPitch = (float) MathHelper.wrapDegrees(VWMath.getPitchFromVec3d(entityLook));
+        entity.prevRotationPitch = entity.rotationPitch;
 
-        ent.rotationYaw = (float) MathHelper.wrapDegrees(VWMath.getYawFromVec3d(entityLook, ent.rotationPitch));
-        ent.prevRotationYaw = ent.rotationYaw;
+        entity.rotationYaw = (float) MathHelper.wrapDegrees(VWMath.getYawFromVec3d(entityLook, entity.rotationPitch));
+        entity.prevRotationYaw = entity.rotationYaw;
 
-        if (ent instanceof EntityLiving) {
-            EntityLiving living = (EntityLiving) ent;
-            living.rotationYawHead = ent.rotationYaw;
-            living.prevRotationYawHead = ent.rotationYaw;
+        if (entity instanceof EntityLiving) {
+            EntityLiving living = (EntityLiving) entity;
+            living.rotationYawHead = entity.rotationYaw;
+            living.prevRotationYawHead = entity.rotationYaw;
         }
 
-        if (ent instanceof EntityFireball) {
-            EntityFireball ball = (EntityFireball) ent;
+        if (entity instanceof EntityFireball) {
+            EntityFireball ball = (EntityFireball) entity;
             ball.accelerationX = entityMotion.X;
             ball.accelerationY = entityMotion.Y;
             ball.accelerationZ = entityMotion.Z;
         }
 
-        ent.motionX = entityMotion.X;
-        ent.motionY = entityMotion.Y;
-        ent.motionZ = entityMotion.Z;
+        entity.motionX = entityMotion.X;
+        entity.motionY = entityMotion.Y;
+        entity.motionZ = entityMotion.Z;
 
-        ent.setPosition(entityPos.X, entityPos.Y, entityPos.Z);
+        entity.setPosition(entityPos.X, entityPos.Y, entityPos.Z);
     }
 
     public static BlockPos applyTransform(double[] M, BlockPos pos) {
@@ -311,28 +322,30 @@ public class RotationMatrices {
         Vector vec = new Vector(v);
         applyTransform(M, vec);
         return vec;
-    }
+	}
 
-    public static double[] inverse3by3(double[] matrix) {
-        double[] inverse = new double[9];
-        inverse[0] = (matrix[4] * matrix[8] - matrix[5] * matrix[7]);
-        inverse[3] = (matrix[5] * matrix[6] - matrix[3] * matrix[8]);
-        inverse[6] = (matrix[3] * matrix[7] - matrix[4] * matrix[6]);
-        inverse[1] = (matrix[2] * matrix[6] - matrix[1] * matrix[8]);
-        inverse[4] = (matrix[0] * matrix[8] - matrix[2] * matrix[6]);
-        inverse[7] = (matrix[6] * matrix[1] - matrix[0] * matrix[7]);
-        inverse[2] = (matrix[1] * matrix[5] - matrix[2] * matrix[4]);
-        inverse[5] = (matrix[2] * matrix[3] - matrix[0] * matrix[5]);
-        inverse[8] = (matrix[0] * matrix[4] - matrix[1] * matrix[3]);
-        double det = matrix[0] * inverse[0] + matrix[1] * inverse[3] + matrix[2] * inverse[6];
-        for (int i = 0; i < 9; i++) {
-            inverse[i] /= det;
-        }
-        return inverse;
-    }
+	public static double[] inverse3by3(double[] matrix) {
+		double[] inverse = new double[9];
+		inverse[0] = (matrix[4] * matrix[8] - matrix[5] * matrix[7]);
+		inverse[3] = (matrix[5] * matrix[6] - matrix[3] * matrix[8]);
+		inverse[6] = (matrix[3] * matrix[7] - matrix[4] * matrix[6]);
+		inverse[1] = (matrix[2] * matrix[6] - matrix[1] * matrix[8]);
+		inverse[4] = (matrix[0] * matrix[8] - matrix[2] * matrix[6]);
+		inverse[7] = (matrix[6] * matrix[1] - matrix[0] * matrix[7]);
+		inverse[2] = (matrix[1] * matrix[5] - matrix[2] * matrix[4]);
+		inverse[5] = (matrix[2] * matrix[3] - matrix[0] * matrix[5]);
+		inverse[8] = (matrix[0] * matrix[4] - matrix[1] * matrix[3]);
+		double det = matrix[0] * inverse[0] + matrix[1] * inverse[3] + matrix[2] * inverse[6];
+		for (int i = 0; i < 9; i += 3) {
+			inverse[i] /= det;
+			inverse[i + 1] /= det;
+			inverse[i + 2] /= det;
+		}
+		return inverse;
+	}
 
-    public static double[] inverse(double[] matrix) {
-        double[] inverse = new double[16];
+	public static double[] inverse(double[] matrix) {
+		double[] inverse = new double[16];
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 inverse[(i * 4 + j)] = matrix[(i + j * 4)];

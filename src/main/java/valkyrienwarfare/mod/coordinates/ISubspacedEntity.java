@@ -22,4 +22,6 @@ public interface ISubspacedEntity {
 	Vector createCurrentVelocityVector();
 	
 	void restoreSubspacedEntityStateToRecord(ISubspacedEntityRecord record);
+	
+	int getSubspacedEntityID();
 }

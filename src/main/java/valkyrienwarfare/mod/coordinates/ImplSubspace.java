@@ -72,7 +72,7 @@ public class ImplSubspace implements ISubspace {
 
 	@Override
 	public ShipTransform getSubspaceTransform() {
-		if (parent == null) {
+		if (getSubspaceCoordinatesType() == CoordinateSpaceType.GLOBAL_COORDINATES) {
 			return null;
 		} else {
 			ShipTransform transform = parent.getShipTransformationManager().getCurrentTickTransform();
@@ -82,6 +82,15 @@ public class ImplSubspace implements ISubspace {
 			}
 			return transform;
 		}
+	}
+
+	@Override
+	public int getSubspaceParentEntityID() {
+		if (getSubspaceCoordinatesType() == CoordinateSpaceType.GLOBAL_COORDINATES) {
+			throw new IllegalStateException(
+					"The World coordinate subspace doesn't have an entity ID. Don't call this method unless you're sure that the subspace isn't the world.");
+		}
+		return parent.getWrapperEntity().getEntityId();
 	}
 
 }

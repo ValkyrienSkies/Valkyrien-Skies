@@ -91,6 +91,8 @@ import valkyrienwarfare.mod.command.VWModCommandRegistry;
 import valkyrienwarfare.mod.gui.TabValkyrienWarfare;
 import valkyrienwarfare.mod.network.PhysWrapperPositionHandler;
 import valkyrienwarfare.mod.network.PhysWrapperPositionMessage;
+import valkyrienwarfare.mod.network.SubspacedEntityRecordHandler;
+import valkyrienwarfare.mod.network.SubspacedEntityRecordMessage;
 import valkyrienwarfare.mod.physmanagement.chunk.DimensionPhysicsChunkManager;
 import valkyrienwarfare.mod.proxy.CommonProxy;
 import valkyrienwarfare.mod.proxy.ServerProxy;
@@ -396,6 +398,8 @@ public class ValkyrienWarfareMod {
         physWrapperNetwork = NetworkRegistry.INSTANCE.newSimpleChannel("physChannel");
         physWrapperNetwork.registerMessage(PhysWrapperPositionHandler.class, PhysWrapperPositionMessage.class, 0,
                 Side.CLIENT);
+        physWrapperNetwork.registerMessage(SubspacedEntityRecordHandler.class, SubspacedEntityRecordMessage.class, 1, Side.CLIENT);
+        physWrapperNetwork.registerMessage(SubspacedEntityRecordHandler.class, SubspacedEntityRecordMessage.class, 2, Side.SERVER);
     }
 
     public void registerBlocks(RegistryEvent.Register<Block> event) {

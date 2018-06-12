@@ -45,4 +45,13 @@ public interface ISubspace {
 	 */
 	@Nullable
 	ShipTransform getSubspaceTransform();
+
+	/**
+	 * Returns the entityID for the PhysicsWrapperEntity that owns this subspace. If
+	 * however this is called on the world subspace then an IllegalStateException is
+	 * thrown.
+	 * 
+	 * @return
+	 */
+	int getSubspaceParentEntityID();
 }

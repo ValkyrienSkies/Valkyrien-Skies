@@ -39,20 +39,7 @@ public class PhysWrapperPositionHandler implements IMessageHandler<PhysWrapperPo
                 Entity ent = Minecraft.getMinecraft().world.getEntityByID(message.getEntityID());
                 if (ent != null && ent instanceof PhysicsWrapperEntity) {
                     PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity) ent;
-
                     wrapper.getPhysicsObject().getShipTransformationManager().serverBuffer.pushMessage(message);
-
-                    // wrapper.wrapping.centerCoord = message.centerOfMass;
-                    //
-                    // wrapper.posX = message.posX;
-                    // wrapper.posY = message.posY;
-                    // wrapper.posZ = message.posZ;
-                    //
-                    // wrapper.pitch = message.pitch;
-                    // wrapper.yaw = message.yaw;
-                    // wrapper.roll = message.roll;
-                    //
-                    // wrapper.wrapping.coordTransform.updateAllTransforms();
                 }
             }
         });

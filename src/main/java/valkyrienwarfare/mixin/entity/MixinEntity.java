@@ -122,6 +122,11 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
     }
     
     @Override
+    public int getSubspacedEntityID() {
+    	return thisAsEntity.getEntityId();
+    }
+    
+    @Override
     public PhysicsWrapperEntity getWorldBelowFeet() {
         return worldBelowFeet;
     }

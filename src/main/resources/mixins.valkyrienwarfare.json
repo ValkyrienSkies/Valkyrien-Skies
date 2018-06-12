@@ -42,6 +42,7 @@
     "client.multiplayer.MixinPlayerControllerMP",
     "tileentity.MixinTileEntityCLIENT",
     "client.entity.MixinsAbstractClientPlayer",
-    "util.MixinMovementInputFromOptions"
+    "util.MixinMovementInputFromOptions",
+    "client.entity.MixinEntityPlayerSP"
   ]
 }

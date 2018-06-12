@@ -7,6 +7,7 @@ import net.minecraft.util.math.BlockPos;
 import valkyrienwarfare.MixinLoadManager;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.RotationMatrices;
+import valkyrienwarfare.mod.coordinates.CoordinateSpaceType;
 import valkyrienwarfare.mod.coordinates.ISubspace;
 import valkyrienwarfare.mod.coordinates.ISubspaceProvider;
 import valkyrienwarfare.mod.coordinates.ISubspacedEntity;
@@ -67,7 +68,6 @@ public interface ITransformablePacket {
 	 */
 	default void doPostProcessing(INetHandlerPlayServer server, boolean callingFromSponge) {
 		if (!MixinLoadManager.isSpongeEnabled() || callingFromSponge) {
-			// System.out.println("Post packet process");
 			NetHandlerPlayServer serverHandler = (NetHandlerPlayServer) server;
 			EntityPlayerMP player = serverHandler.player;
 			if (player.getServerWorld().isCallingFromMinecraftThread()) {
@@ -80,9 +80,14 @@ public interface ITransformablePacket {
 				ISubspace worldSubspace = worldProvider.getSubspace();
 				ISubspacedEntity subspacedEntity = ISubspacedEntity.class.cast(player);
 				ISubspacedEntityRecord record = worldSubspace.getRecordForSubspacedEntity(subspacedEntity);
-				subspacedEntity.restoreSubspacedEntityStateToRecord(record);
-				// We need this because Sponge Mixins prevent this from properly working
-				player.setPosition(player.posX, player.posY, player.posZ);
+				// System.out.println(player.getPosition());
+				if (subspacedEntity.currentSubspaceType() == CoordinateSpaceType.SUBSPACE_COORDINATES) {
+					subspacedEntity.restoreSubspacedEntityStateToRecord(record);
+					player.setPosition(player.posX, player.posY, player.posZ);
+				}
+				// System.out.println(player.getPosition());
+				// We need this because Sponge Mixins prevent this from properly working. This
+				// won't be necessary on client however.
 			}
 		}
 	}

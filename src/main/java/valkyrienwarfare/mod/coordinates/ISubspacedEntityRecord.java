@@ -22,4 +22,5 @@ public interface ISubspacedEntityRecord {
 	VectorImmutable getLookDirection();
 
 	VectorImmutable getVelocity();
+
 }

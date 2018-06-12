@@ -1,5 +1,7 @@
 package valkyrienwarfare.mod.coordinates;
 
+import valkyrienwarfare.api.Vector;
+
 /**
  * An interface that allows entities to interact safely within the context of
  * multiple subspaces.
@@ -10,4 +12,10 @@ package valkyrienwarfare.mod.coordinates;
 public interface ISubspacedEntity {
 
 	CoordinateSpaceType currentSubspaceType();
+	
+	Vector createCurrentPositionVector();
+	
+	Vector createCurrentLookVector();
+	
+	Vector createCurrentVelocityVector();
 }

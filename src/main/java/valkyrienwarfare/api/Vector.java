@@ -20,6 +20,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.Vec3d;
+import valkyrienwarfare.mod.coordinates.VectorImmutable;
 
 /**
  * Custom Vector Class used by Valkyrien Warfare
@@ -263,4 +264,7 @@ public class Vector {
 		return Math.asin(dotProduct);
 	}
 
+	public VectorImmutable toImmutable() {
+		return new VectorImmutable(this);
+	}
 }

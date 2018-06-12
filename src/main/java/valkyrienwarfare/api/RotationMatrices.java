@@ -154,56 +154,6 @@ public class RotationMatrices {
     }
 
     @Deprecated
-    public static void applyTransform(double[] wholeTransform, Entity ent) {
-        Vector entityPos = new Vector(ent.posX, ent.posY, ent.posZ);
-        Vector entityLook = new Vector(ent.getLook(1.0F));
-        Vector entityMotion = new Vector(ent.motionX, ent.motionY, ent.motionZ);
-
-        if (ent instanceof EntityFireball) {
-            EntityFireball ball = (EntityFireball) ent;
-            entityMotion.X = ball.accelerationX;
-            entityMotion.Y = ball.accelerationY;
-            entityMotion.Z = ball.accelerationZ;
-        }
-
-        if (ent instanceof PhysicsWrapperEntity) {
-        	System.err.println("Ship just got transformed. This was never supposed to happen!");
-        }
-        
-        applyTransform(wholeTransform, entityPos);
-        doRotationOnly(wholeTransform, entityLook);
-        doRotationOnly(wholeTransform, entityMotion);
-
-        entityLook.normalize();
-
-        // This is correct
-        ent.rotationPitch = (float) MathHelper.wrapDegrees(VWMath.getPitchFromVec3d(entityLook));
-        ent.prevRotationPitch = ent.rotationPitch;
-
-        ent.rotationYaw = (float) MathHelper.wrapDegrees(VWMath.getYawFromVec3d(entityLook, ent.rotationPitch));
-        ent.prevRotationYaw = ent.rotationYaw;
-
-        if (ent instanceof EntityLiving) {
-            EntityLiving living = (EntityLiving) ent;
-            living.rotationYawHead = ent.rotationYaw;
-            living.prevRotationYawHead = ent.rotationYaw;
-        }
-
-        if (ent instanceof EntityFireball) {
-            EntityFireball ball = (EntityFireball) ent;
-            ball.accelerationX = entityMotion.X;
-            ball.accelerationY = entityMotion.Y;
-            ball.accelerationZ = entityMotion.Z;
-        }
-
-        ent.motionX = entityMotion.X;
-        ent.motionY = entityMotion.Y;
-        ent.motionZ = entityMotion.Z;
-
-        ent.setPosition(entityPos.X, entityPos.Y, entityPos.Z);
-    }
-
-    @Deprecated
     public static void applyTransform(ShipTransform shipTransform, Entity entity, TransformType transformType) {
     	ISubspacedEntity entitySubspaceTracker = ISubspacedEntity.class.cast(entity);
     	if (transformType == TransformType.SUBSPACE_TO_GLOBAL && entitySubspaceTracker.currentSubspaceType() != CoordinateSpaceType.SUBSPACE_COORDINATES) {

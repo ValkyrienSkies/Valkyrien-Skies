@@ -90,6 +90,12 @@ public class ShipTransform {
         rotate(vec3dAsVector, transformType);
         return vec3dAsVector.toVec3d();
     }
+    
+    public BlockPos transform(BlockPos pos, TransformType transformType) {
+        Vector blockPosAsVector = new Vector(pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5);
+        transform(blockPosAsVector, transformType);
+        return new BlockPos(blockPosAsVector.X - .5D, blockPosAsVector.Y - .5D, blockPosAsVector.Z - .5D);
+    }
 
     public Quaternion createRotationQuaternion(TransformType transformType) {
         return Quaternion.QuaternionFromMatrix(getInternalMatrix(transformType));
@@ -114,9 +120,4 @@ public class ShipTransform {
         }
     }
 
-    public BlockPos transform(BlockPos pos, TransformType transformType) {
-        Vector blockPosAsVector = new Vector(pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5);
-        transform(blockPosAsVector, transformType);
-        return new BlockPos(blockPosAsVector.X - .5D, blockPosAsVector.Y - .5D, blockPosAsVector.Z - .5D);
-    }
 }

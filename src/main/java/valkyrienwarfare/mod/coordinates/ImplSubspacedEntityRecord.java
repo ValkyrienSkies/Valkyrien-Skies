@@ -1,5 +1,7 @@
 package valkyrienwarfare.mod.coordinates;
 
+import valkyrienwarfare.api.Vector;
+
 public class ImplSubspacedEntityRecord implements ISubspacedEntityRecord {
 
 	private final ISubspacedEntity parentEntity;
@@ -41,4 +43,5 @@ public class ImplSubspacedEntityRecord implements ISubspacedEntityRecord {
 	public VectorImmutable getVelocity() {
 		return velocity;
 	}
+
 }

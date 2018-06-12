@@ -69,6 +69,9 @@ import valkyrienwarfare.api.block.ethercompressor.TileEntityEtherCompressor;
 import valkyrienwarfare.math.Quaternion;
 import valkyrienwarfare.mod.BlockPhysicsRegistration;
 import valkyrienwarfare.mod.client.render.PhysObjectRenderManager;
+import valkyrienwarfare.mod.coordinates.ISubspace;
+import valkyrienwarfare.mod.coordinates.ISubspaceProvider;
+import valkyrienwarfare.mod.coordinates.ImplSubspace;
 import valkyrienwarfare.mod.coordinates.ShipTransform;
 import valkyrienwarfare.mod.coordinates.ShipTransformationPacketHolder;
 import valkyrienwarfare.mod.coordinates.TransformType;
@@ -91,7 +94,7 @@ import valkyrienwarfare.util.NBTUtils;
  * @author thebest108
  *
  */
-public class PhysicsObject {
+public class PhysicsObject implements ISubspaceProvider {
 
 	public static final int MIN_TICKS_EXISTED_BEFORE_PHYSICS = 5;
 	private final PhysicsWrapperEntity wrapper;
@@ -131,6 +134,7 @@ public class PhysicsObject {
     private ShipType shipType;
     private volatile int gameConsecutiveTicks;
     private volatile int physicsConsecutiveTicks;
+    private final ISubspace shipSubspace;
 
     public PhysicsObject(PhysicsWrapperEntity host) {
     	this.wrapper = host;
@@ -151,6 +155,7 @@ public class PhysicsObject {
         this.allowedUsers = new HashSet<String>();
         this.gameConsecutiveTicks = 0;
         this.physicsConsecutiveTicks = 0;
+        this.shipSubspace = new ImplSubspace(this);
     }
 
 	public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos posAt) {
@@ -1346,6 +1351,11 @@ public class PhysicsObject {
 	 */
 	public void setRefrenceBlockPos(BlockPos refrenceBlockPos) {
 		this.refrenceBlockPos = refrenceBlockPos;
+	}
+
+	@Override
+	public ISubspace getSubspace() {
+		return this.shipSubspace;
 	}
 
 }

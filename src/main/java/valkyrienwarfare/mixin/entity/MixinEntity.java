@@ -56,7 +56,8 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
     public double posY;
     @Shadow
     public double posZ;
-    IDraggable thisAsDraggable = IDraggable.class.cast(this);
+    private final IDraggable thisAsDraggable = IDraggable.class.cast(this);
+    private final Entity thisAsEntity = Entity.class.cast(this);
     private PhysicsWrapperEntity worldBelowFeet;
     private Vector velocityAddedToPlayer = new Vector();
     private double yawDifVelocity;
@@ -75,6 +76,21 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
     	} else {
     		return CoordinateSpaceType.GLOBAL_COORDINATES;
     	}
+    }
+    
+    @Override
+	public Vector createCurrentPositionVector() {
+    	return new Vector(posX, posY, posZ);
+    }
+	
+    @Override
+	public Vector createCurrentLookVector() {
+    	return new Vector(thisAsEntity.getLookVec());
+    }
+	
+    @Override
+	public Vector createCurrentVelocityVector() {
+    	return new Vector(thisAsEntity.motionX, thisAsEntity.motionY, thisAsEntity.motionZ);
     }
     
     @Override

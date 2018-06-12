@@ -16,8 +16,27 @@
 
 package valkyrienwarfare.mixin.world;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.annotation.Nullable;
+
+import org.spongepowered.asm.mixin.Implements;
+import org.spongepowered.asm.mixin.Interface;
+import org.spongepowered.asm.mixin.Interface.Remap;
+import org.spongepowered.asm.mixin.Intrinsic;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -32,36 +51,23 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IWorldEventListener;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
-import org.spongepowered.asm.mixin.Implements;
-import org.spongepowered.asm.mixin.Interface;
-import org.spongepowered.asm.mixin.Interface.Remap;
-import org.spongepowered.asm.mixin.Intrinsic;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.nodenetwork.INodeProvider;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.fixes.WorldChunkloadingCrashFix;
+import valkyrienwarfare.mod.coordinates.ISubspace;
+import valkyrienwarfare.mod.coordinates.ISubspaceProvider;
+import valkyrienwarfare.mod.coordinates.ImplSubspace;
 import valkyrienwarfare.mod.coordinates.TransformType;
 import valkyrienwarfare.mod.physmanagement.interaction.IWorldVW;
 import valkyrienwarfare.physics.collision.polygons.Polygon;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.physics.management.WorldPhysObjectManager;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 // TODO this class is horrible
 @Mixin(value = World.class, priority = 1005)
 @Implements(@Interface(iface = WorldChunkloadingCrashFix.class, prefix = "vw$", remap = Remap.NONE))
-public abstract class MixinWorld implements IWorldVW {
+public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
 
     private static double MAX_ENTITY_RADIUS_ALT = 2.0D;
     @Shadow
@@ -73,7 +79,13 @@ public abstract class MixinWorld implements IWorldVW {
     private World thisClassAsWorld = World.class.cast(this);
     private WorldPhysObjectManager physManager;
     private boolean isRaytracingRecursive = false;
+    private final ISubspace worldSubspace = new ImplSubspace(null);
 
+    @Override
+    public ISubspace getSubspace() {
+    	return worldSubspace;
+    }
+    
     @Inject(method = "setBlockState", at = @At("HEAD"))
     public void preSetBlockState(BlockPos pos, IBlockState newState, int flags,
                                  CallbackInfoReturnable callbackInfo) {

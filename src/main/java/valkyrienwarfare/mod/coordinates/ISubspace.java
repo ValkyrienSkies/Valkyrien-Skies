@@ -1,6 +1,6 @@
 package valkyrienwarfare.mod.coordinates;
 
-import valkyrienwarfare.api.Vector;
+import javax.annotation.Nullable;
 
 public interface ISubspace {
 
@@ -26,6 +26,8 @@ public interface ISubspace {
 	 * the data with the ISubSpace.
 	 * 
 	 * @param subspaced
+	 *            Needs to be in the global coordinate system when we take this
+	 *            snapshot, otherwise this will throw an IllegalArgumentException.
 	 */
 	void snapshotSubspacedEntity(ISubspacedEntity subspaced);
 
@@ -36,4 +38,11 @@ public interface ISubspace {
 	 * @return
 	 */
 	CoordinateSpaceType getSubspaceCoordinatesType();
+
+	/**
+	 * 
+	 * @return Null for the world subspace.
+	 */
+	@Nullable
+	ShipTransform getSubspaceTransform();
 }

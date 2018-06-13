@@ -87,7 +87,7 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
 		return worldSubspace;
 	}
 
-	@Inject(method = "getBiomeForCoordsBody", at = @At("HEAD"), cancellable = true)
+	@Inject(method = "getBiomeForCoordsBody", at = @At("HEAD"), cancellable = true, remap = false)
 	public void preGetBiomeForCoordsBody(BlockPos pos, CallbackInfoReturnable callbackInfo) {
 		PhysicsWrapperEntity physEntity = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(thisClassAsWorld,
 				pos);

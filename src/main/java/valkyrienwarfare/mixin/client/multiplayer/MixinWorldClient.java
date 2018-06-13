@@ -50,7 +50,7 @@ public abstract class MixinWorldClient extends World {
         if (!hasChanged && ValkyrienWarfareMod.shipsSpawnParticles) {
             int range = 15;
             AxisAlignedBB aabb = new AxisAlignedBB(posX - range, posY - range, posZ - range, posX + range, posY + range, posZ + range);
-            List<PhysicsWrapperEntity> physEntities = ValkyrienWarfareMod.physicsManager.getManagerForWorld(WorldClient.class.cast(this)).getNearbyPhysObjects(aabb);
+            List<PhysicsWrapperEntity> physEntities = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getManagerForWorld(WorldClient.class.cast(this)).getNearbyPhysObjects(aabb);
             hasChanged = true;
             for (PhysicsWrapperEntity wrapper : physEntities) {
                 Vector playPosInShip = new Vector(posX + .5D, posY + .5D, posZ + .5D);

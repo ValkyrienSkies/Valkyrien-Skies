@@ -83,7 +83,7 @@ public class EntityDraggable {
 
     public static void doTheEntityThing(Entity entity) {
         IDraggable draggable = EntityDraggable.getDraggableFromEntity(entity);
-        if (draggable.getWorldBelowFeet() != null && !ValkyrienWarfareMod.physicsManager.isEntityFixed(entity)) {
+        if (draggable.getWorldBelowFeet() != null && !ValkyrienWarfareMod.VW_PHYSICS_MANAGER.isEntityFixed(entity)) {
             ShipTransformationManager coordTransform = draggable.getWorldBelowFeet().getPhysicsObject().getShipTransformationManager();
 
             if (entity.world.isRemote && entity instanceof EntityPlayer) {
@@ -147,7 +147,7 @@ public class EntityDraggable {
             }
         }
 
-        if (!ValkyrienWarfareMod.physicsManager.isEntityFixed(entity)) {
+        if (!ValkyrienWarfareMod.VW_PHYSICS_MANAGER.isEntityFixed(entity)) {
             boolean originallySneaking = entity.isSneaking();
             entity.setSneaking(false);
             if (draggable.getWorldBelowFeet() == null && entity.onGround) {

@@ -68,7 +68,7 @@ public abstract class MixinEntityRenderer {
 
         BlockPos playerPos = new BlockPos(entity);
 
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(entity.world, playerPos);
+        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(entity.world, playerPos);
 
 //		Minecraft.getMinecraft().thePlayer.sleeping = false;
 
@@ -92,7 +92,7 @@ public abstract class MixinEntityRenderer {
         double d1 = entity.prevPosY + (entity.posY - entity.prevPosY) * partialTicks;
         double d2 = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * partialTicks;
 
-        PhysicsWrapperEntity fixedOnto = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(entity);
+        PhysicsWrapperEntity fixedOnto = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getShipFixedOnto(entity);
         //Probably overkill, but this should 100% fix the crash in issue #78
         if (fixedOnto != null && fixedOnto.getPhysicsObject() != null && fixedOnto.getPhysicsObject().getShipRenderer() != null && fixedOnto.getPhysicsObject().getShipRenderer().offsetPos != null) {
             Quaternion orientationQuat = fixedOnto.getPhysicsObject().getShipRenderer().getSmoothRotationQuat(partialTicks);
@@ -267,7 +267,7 @@ public abstract class MixinEntityRenderer {
                     target = "Lnet/minecraft/util/math/Vec3d;distanceTo(Lnet/minecraft/util/math/Vec3d;)D",
                     ordinal = 0))
     public double betterMouseOver(Vec3d vec, Vec3d in) {
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(mc.world, mc.objectMouseOver.getBlockPos());
+        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(mc.world, mc.objectMouseOver.getBlockPos());
 
         if (wrapper == null) {
             return vec.distanceTo(in);

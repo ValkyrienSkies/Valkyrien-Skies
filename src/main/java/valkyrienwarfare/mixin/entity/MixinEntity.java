@@ -180,7 +180,7 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
         }
         // END VANILLA CODE
 
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(Entity.class.cast(this));
+        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getShipFixedOnto(Entity.class.cast(this));
         if (wrapper != null) {
             return wrapper.getPhysicsObject().getShipTransformationManager().getRenderTransform().rotate(original, TransformType.SUBSPACE_TO_GLOBAL);
         } else {
@@ -203,7 +203,7 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
         Vec3d vanilla = new Vec3d(f1 * f2, f3, f * f2);
         // END VANILLA CODE
 
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(Entity.class.cast(this));
+        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getShipFixedOnto(Entity.class.cast(this));
         if (wrapper != null) {
             return wrapper.getPhysicsObject().getShipTransformationManager().getRenderTransform().rotate(vanilla, TransformType.SUBSPACE_TO_GLOBAL);
         }
@@ -233,7 +233,7 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
         if (vanilla < 64.0D) {
             return vanilla;
         } else {
-            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(this.world,
+            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(this.world,
                     new BlockPos(x, y, z));
             if (wrapper != null) {
                 Vector posVec = new Vector(x, y, z);
@@ -261,7 +261,7 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
         if (vanilla < 64.0D) {
             return vanilla;
         } else {
-            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(this.world, pos);
+            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(this.world, pos);
             if (wrapper != null) {
                 Vector posVec = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
                 wrapper.getPhysicsObject().getShipTransformationManager().fromLocalToGlobal(posVec);

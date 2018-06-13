@@ -68,7 +68,7 @@ public abstract class MixinExplosion {
 
         AxisAlignedBB toCheck = new AxisAlignedBB(center.X - radius, center.Y - radius, center.Z - radius,
                 center.X + radius, center.Y + radius, center.Z + radius);
-        List<PhysicsWrapperEntity> shipsNear = ValkyrienWarfareMod.physicsManager.getManagerForWorld(this.world)
+        List<PhysicsWrapperEntity> shipsNear = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getManagerForWorld(this.world)
                 .getNearbyPhysObjects(toCheck);
         // TODO: Make this compatible and shit!
         for (PhysicsWrapperEntity ship : shipsNear) {

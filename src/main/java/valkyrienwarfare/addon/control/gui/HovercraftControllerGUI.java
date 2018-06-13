@@ -184,7 +184,7 @@ public class HovercraftControllerGUI extends GuiContainer {
     private HovercraftControllerGUIInputMessage getMessage() {
         HovercraftControllerGUIInputMessage toReturn = new HovercraftControllerGUIInputMessage();
         toReturn.tilePos = tileEnt.getPos();
-        toReturn.physEntId = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(mc.world, toReturn.tilePos).getEntityId();
+        toReturn.physEntId = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(mc.world, toReturn.tilePos).getEntityId();
         try {
             toReturn.newIdealHeight = Double.parseDouble(textFields.get(0).getText());
             toReturn.newStablitiyBias = Double.parseDouble(textFields.get(1).getText()) / 100D;

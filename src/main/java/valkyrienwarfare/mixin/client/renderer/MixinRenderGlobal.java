@@ -138,7 +138,7 @@ public abstract class MixinRenderGlobal {
                     hasBreak = te != null && te.canRenderBreaking();
 
                 if (!hasBreak) {
-                    PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(this.world, blockpos);
+                    PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(this.world, blockpos);
                     if (wrapper == null && (d3 * d3 + d4 * d4 + d5 * d5 > 1024.0D)) {
                         iterator.remove();
                     } else {
@@ -181,7 +181,7 @@ public abstract class MixinRenderGlobal {
      */
     @Overwrite
     public void drawSelectionBox(EntityPlayer player, RayTraceResult movingObjectPositionIn, int execute, float partialTicks) {
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.world, movingObjectPositionIn.getBlockPos());
+        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(player.world, movingObjectPositionIn.getBlockPos());
         if (wrapper != null && wrapper.getPhysicsObject() != null && wrapper.getPhysicsObject().getShipRenderer() != null && wrapper.getPhysicsObject().getShipRenderer().offsetPos != null) {
             wrapper.getPhysicsObject().getShipRenderer().setupTranslation(partialTicks);
 
@@ -244,7 +244,7 @@ public abstract class MixinRenderGlobal {
     public void preRenderBlockLayer(BlockRenderLayer blockLayerIn, double partialTicks, int pass, Entity entityIn, CallbackInfoReturnable callbackInfo) {
         RenderHelper.disableStandardItemLighting();
 
-        for (PhysicsWrapperEntity wrapper : ValkyrienWarfareMod.physicsManager.getManagerForWorld(this.world).physicsEntities) {
+        for (PhysicsWrapperEntity wrapper : ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getManagerForWorld(this.world).physicsEntities) {
             GL11.glPushMatrix();
             if (wrapper.getPhysicsObject().getShipRenderer() != null && wrapper.getPhysicsObject().getShipRenderer().shouldRender()) {
                 wrapper.getPhysicsObject().getShipRenderer().renderBlockLayer(blockLayerIn, partialTicks, pass);
@@ -303,7 +303,7 @@ public abstract class MixinRenderGlobal {
     public Particle spawnEntityFX(int particleID, boolean ignoreRange, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, int... parameters) {
         if (ValkyrienWarfareMod.shipsSpawnParticles) {
             BlockPos particlePos = new BlockPos(x, y, z);
-            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(this.world, particlePos);
+            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(this.world, particlePos);
             if (wrapper != null) {
                 Vector newCoords = new Vector(x, y, z);
 //                RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, newCoords);

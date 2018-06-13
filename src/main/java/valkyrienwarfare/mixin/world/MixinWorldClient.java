@@ -56,7 +56,7 @@ public abstract class MixinWorldClient {
             int i = this.getLightFromNeighborsFor(EnumSkyBlock.SKY, pos);
             int j = this.getLightFromNeighborsFor(EnumSkyBlock.BLOCK, pos);
             AxisAlignedBB lightBB = new AxisAlignedBB(pos.getX() - 2, pos.getY() - 2, pos.getZ() - 2, pos.getX() + 2, pos.getY() + 2, pos.getZ() + 2);
-            List<PhysicsWrapperEntity> physEnts = ValkyrienWarfareMod.physicsManager.getManagerForWorld(World.class.cast(this)).getNearbyPhysObjects(lightBB);
+            List<PhysicsWrapperEntity> physEnts = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getManagerForWorld(World.class.cast(this)).getNearbyPhysObjects(lightBB);
 
             for (PhysicsWrapperEntity physEnt : physEnts) {
 //                BlockPos posInLocal = RotationMatrices.applyTransform(physEnt.wrapping.coordTransform.wToLTransform, pos);
@@ -122,7 +122,7 @@ public abstract class MixinWorldClient {
             RayTraceResult result = rayTraceBlocks(traceStart.toVec3d(), traceEnd.toVec3d(), true, true, false);
 
             if (result != null && result.typeOfHit != RayTraceResult.Type.MISS && result.getBlockPos() != null) {
-                PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(World.class.cast(this), result.getBlockPos());
+                PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(World.class.cast(this), result.getBlockPos());
                 if (wrapper != null) {
                     Vector blockPosVector = new Vector(result.getBlockPos().getX() + .5D, result.getBlockPos().getY() + .5D, result.getBlockPos().getZ() + .5D);
                     wrapper.getPhysicsObject().getShipTransformationManager().fromLocalToGlobal(blockPosVector);

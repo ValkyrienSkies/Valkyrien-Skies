@@ -127,8 +127,8 @@ public class ValkyrienWarfareMod {
     public static Block physicsInfuser;
     public static Block physicsInfuserCreative;
     public static SimpleNetworkWrapper physWrapperNetwork;
-    public static DimensionPhysicsChunkManager chunkManager;
-    public static DimensionPhysObjectManager physicsManager;
+    public static final DimensionPhysicsChunkManager VW_CHUNK_MANAGER = new DimensionPhysicsChunkManager();
+    public static final DimensionPhysObjectManager VW_PHYSICS_MANAGER = new DimensionPhysObjectManager();
     public static CreativeTabs vwTab = new TabValkyrienWarfare();
     @Instance(MODID)
     public static ValkyrienWarfareMod INSTANCE = new ValkyrienWarfareMod();

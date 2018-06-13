@@ -52,7 +52,7 @@ public abstract class MixinTileEntity implements net.minecraftforge.common.capab
             //Assume on Ship
             if (tileWorld.isRemote && toReturn > 9999999D) {
                 BlockPos pos = this.pos;
-                PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(this.world, pos);
+                PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(this.world, pos);
 
                 if (wrapper != null) {
                     Vector tilePos = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);

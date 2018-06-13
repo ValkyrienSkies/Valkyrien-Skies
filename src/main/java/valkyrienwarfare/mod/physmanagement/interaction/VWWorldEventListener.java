@@ -88,7 +88,7 @@ public class VWWorldEventListener implements IWorldEventListener {
 		int oldChunkZ = MathHelper.floor(entityIn.posZ / 16.0D);
 
 		BlockPos posAt = new BlockPos(entityIn);
-		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldObj, posAt);
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(worldObj, posAt);
 		if (!(entityIn instanceof EntityFallingBlock) && wrapper != null
 				&& wrapper.getPhysicsObject().getShipTransformationManager() != null) {
 			if (entityIn instanceof EntityMountingWeaponBase || entityIn instanceof EntityArmorStand
@@ -108,7 +108,7 @@ public class VWWorldEventListener implements IWorldEventListener {
 
 		}
 		if (entityIn instanceof PhysicsWrapperEntity) {
-			ValkyrienWarfareMod.physicsManager.onShipLoad((PhysicsWrapperEntity) entityIn);
+			ValkyrienWarfareMod.VW_PHYSICS_MANAGER.onShipLoad((PhysicsWrapperEntity) entityIn);
 		}
 
 		if (!(entityIn instanceof EntityFallingBlock) && wrapper != null
@@ -127,7 +127,7 @@ public class VWWorldEventListener implements IWorldEventListener {
 	@Override
 	public void onEntityRemoved(Entity entityIn) {
 		if (entityIn instanceof PhysicsWrapperEntity) {
-			ValkyrienWarfareMod.physicsManager.onShipUnload((PhysicsWrapperEntity) entityIn);
+			ValkyrienWarfareMod.VW_PHYSICS_MANAGER.onShipUnload((PhysicsWrapperEntity) entityIn);
 		}
 	}
 
@@ -150,7 +150,7 @@ public class VWWorldEventListener implements IWorldEventListener {
 				if (entityplayermp != null && entityplayermp.getEntityId() != breakerId) {
 					Vector posVector = new Vector(pos.getX(), pos.getY(), pos.getZ());
 
-					PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldObj,
+					PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(worldObj,
 							pos);
 
 					if (wrapper != null) {

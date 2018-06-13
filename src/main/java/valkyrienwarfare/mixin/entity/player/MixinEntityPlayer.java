@@ -51,9 +51,9 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements IShi
         int chunkX = bedLocation.getX() >> 4;
         int chunkZ = bedLocation.getZ() >> 4;
 
-        UUID shipManagingID = ValkyrienWarfareMod.chunkManager.getShipIDManagingPos_Persistant(worldIn, chunkX, chunkZ);
+        UUID shipManagingID = ValkyrienWarfareMod.VW_CHUNK_MANAGER.getShipIDManagingPos_Persistant(worldIn, chunkX, chunkZ);
         if (shipManagingID != null) {
-            ShipUUIDToPosData.ShipPositionData positionData = ValkyrienWarfareMod.chunkManager.getShipPosition_Persistant(worldIn, shipManagingID);
+            ShipUUIDToPosData.ShipPositionData positionData = ValkyrienWarfareMod.VW_CHUNK_MANAGER.getShipPosition_Persistant(worldIn, shipManagingID);
 
             if (positionData != null) {
                 double[] lToWTransform = positionData.getLToWTransform();

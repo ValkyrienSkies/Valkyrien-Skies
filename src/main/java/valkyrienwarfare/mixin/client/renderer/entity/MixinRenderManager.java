@@ -44,7 +44,7 @@ public abstract class MixinRenderManager {
             cancellable = true)
     public void preDoRenderEntity(Entity entityIn, double x, double y, double z, float yaw, float partialTicks, boolean p_188391_10_, CallbackInfo callbackInfo) {
         if (!hasChanged) {
-            PhysicsWrapperEntity fixedOnto = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(entityIn);
+            PhysicsWrapperEntity fixedOnto = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getShipFixedOnto(entityIn);
 
             if (fixedOnto != null) {
                 double oldPosX = entityIn.posX;

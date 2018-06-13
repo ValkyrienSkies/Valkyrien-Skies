@@ -53,7 +53,7 @@ public abstract class MixinTileEntityRendererDispatcher {
     public void preRender(TileEntity tileentityIn, float partialTicks, int destroyStage, CallbackInfo callbackInfo) {
         if (!hasChanged) {
             BlockPos pos = tileentityIn.getPos();
-            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(tileentityIn.getWorld(), pos);
+            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(tileentityIn.getWorld(), pos);
 
             if (wrapper != null && wrapper.getPhysicsObject() != null && wrapper.getPhysicsObject().getShipRenderer() != null) {
                 try {

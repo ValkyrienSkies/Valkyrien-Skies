@@ -27,7 +27,7 @@ public class TileEntityZepplinController extends ImplTileEntityPilotable {
 
     @Override
     public void onStopTileUsage() {
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(getWorld(), getPos());
+        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(getWorld(), getPos());
         if (wrapper != null) {
             PhysicsCalculationsManualControl zepplinPhysics = (PhysicsCalculationsManualControl) wrapper.getPhysicsObject().getPhysicsProcessor();
             zepplinPhysics.setUpRate(0);
@@ -47,7 +47,7 @@ public class TileEntityZepplinController extends ImplTileEntityPilotable {
 
     @Override
     void processControlMessage(PilotControlsMessage message, EntityPlayerMP sender) {
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(getWorld(), getPos());
+        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(getWorld(), getPos());
         if (wrapper != null) {
             PhysicsCalculationsManualControl zepplinPhysics = (PhysicsCalculationsManualControl) wrapper.getPhysicsObject().getPhysicsProcessor();
             if (message.airshipLeft_KeyDown) {

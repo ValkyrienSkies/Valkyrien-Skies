@@ -30,7 +30,7 @@ import java.util.concurrent.Callable;
 public class PhysicsTickHandler {
 
     public static void onWorldTickStart(World world) {
-        WorldPhysObjectManager manager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(world);
+        WorldPhysObjectManager manager = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getManagerForWorld(world);
 
         List<PhysicsWrapperEntity> toUnload = new ArrayList<PhysicsWrapperEntity>(manager.physicsEntitiesToUnload);
         for (PhysicsWrapperEntity wrapper : toUnload) {
@@ -75,7 +75,7 @@ public class PhysicsTickHandler {
     }
 
     public static void onWorldTickEnd(World world) {
-        WorldPhysObjectManager manager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(world);
+        WorldPhysObjectManager manager = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getManagerForWorld(world);
         List<PhysicsWrapperEntity> physicsEntities = manager.getTickablePhysicsEntities();
         // manager.awaitPhysics();
 

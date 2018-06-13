@@ -390,7 +390,7 @@ public class EntityCollisionInjector {
 		AxisAlignedBB entityBB = entity.getEntityBoundingBox().offset(velocity.x, velocity.y, velocity.z).expand(1, 1,
 				1);
 
-		WorldPhysObjectManager localPhysManager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(entity.world);
+		WorldPhysObjectManager localPhysManager = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getManagerForWorld(entity.world);
 
 		List<PhysicsWrapperEntity> ships = localPhysManager.getNearbyPhysObjects(entityBB);
 		// If a player is riding a Ship, don't process any collision between that Ship

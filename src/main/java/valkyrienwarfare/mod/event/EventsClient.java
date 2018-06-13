@@ -55,7 +55,7 @@ public class EventsClient {
     public void onPlaySoundEvent(PlaySoundEvent event) {
         ISound sound = event.getSound();
         BlockPos pos = new BlockPos(sound.getXPosF(), sound.getYPosF(), sound.getZPosF());
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(Minecraft.getMinecraft().world, pos);
+        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(Minecraft.getMinecraft().world, pos);
 
         if (wrapper != null) {
             Vector newSoundLocation = new Vector(sound.getXPosF(), sound.getYPosF(), sound.getZPosF());
@@ -72,7 +72,7 @@ public class EventsClient {
         Minecraft mc = Minecraft.getMinecraft();
         if (mc.world != null) {
             if (!mc.isGamePaused()) {
-                WorldPhysObjectManager manager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(mc.world);
+                WorldPhysObjectManager manager = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getManagerForWorld(mc.world);
                 if (event.phase == Phase.END) {
                     for (PhysicsWrapperEntity wrapper : manager.physicsEntities) {
                         wrapper.getPhysicsObject().onPostTickClient();
@@ -89,7 +89,7 @@ public class EventsClient {
         GL11.glPushMatrix();
         BlockPos pos = Minecraft.getMinecraft().objectMouseOver.getBlockPos();
         if (pos != null) {
-            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(Minecraft.getMinecraft().world, pos);
+            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(Minecraft.getMinecraft().world, pos);
             if (wrapper != null && wrapper.getPhysicsObject() != null && wrapper.getPhysicsObject().getShipRenderer() != null && wrapper.getPhysicsObject().getCenterCoord() != null) {
                 RayTraceResult objectOver = Minecraft.getMinecraft().objectMouseOver;
                 if (objectOver != null && objectOver.hitVec != null) {
@@ -111,7 +111,7 @@ public class EventsClient {
     public void onDrawBlockHighlightEventLast(DrawBlockHighlightEvent event) {
         BlockPos pos = Minecraft.getMinecraft().objectMouseOver.getBlockPos();
         if (pos != null) {
-            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(Minecraft.getMinecraft().world, pos);
+            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(Minecraft.getMinecraft().world, pos);
             if (wrapper != null && wrapper.getPhysicsObject() != null && wrapper.getPhysicsObject().getShipRenderer() != null && wrapper.getPhysicsObject().getCenterCoord() != null) {
                 RayTraceResult objectOver = Minecraft.getMinecraft().objectMouseOver;
                 if (objectOver != null && objectOver.hitVec != null) {

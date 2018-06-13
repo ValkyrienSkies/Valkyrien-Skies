@@ -48,7 +48,7 @@ public class BlockAirshipController_Zepplin extends Block implements ITileEntity
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
         if (!worldIn.isRemote) {
-            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldIn, pos);
+            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(worldIn, pos);
 //			if(wrapper.wrapping.shipType != )
             TileEntityZepplinController tileEnt = (TileEntityZepplinController) worldIn.getTileEntity(pos);
             if (wrapper != null) {

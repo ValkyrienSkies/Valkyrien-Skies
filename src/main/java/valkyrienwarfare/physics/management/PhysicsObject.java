@@ -213,7 +213,7 @@ public class PhysicsObject implements ISubspaceProvider {
 							}
 						}
 					}
-					ValkyrienWarfareMod.chunkManager.getManagerForWorld(getWorldObj()).data.getAvalibleChunkKeys()
+					ValkyrienWarfareMod.VW_CHUNK_MANAGER.getManagerForWorld(getWorldObj()).data.getAvalibleChunkKeys()
 							.add(getOwnedChunks().getCenterX());
 				}
 
@@ -246,16 +246,16 @@ public class PhysicsObject implements ISubspaceProvider {
             // onPlayerUntracking(wachingPlayer);
         }
         getWatchingPlayers().clear();
-        ValkyrienWarfareMod.chunkManager.removeRegistedChunksForShip(getWrapperEntity());
-        ValkyrienWarfareMod.chunkManager.removeShipPosition(getWrapperEntity());
-        ValkyrienWarfareMod.chunkManager.removeShipNameRegistry(getWrapperEntity());
-        ValkyrienWarfareMod.physicsManager.onShipUnload(getWrapperEntity());
+        ValkyrienWarfareMod.VW_CHUNK_MANAGER.removeRegistedChunksForShip(getWrapperEntity());
+        ValkyrienWarfareMod.VW_CHUNK_MANAGER.removeShipPosition(getWrapperEntity());
+        ValkyrienWarfareMod.VW_CHUNK_MANAGER.removeShipNameRegistry(getWrapperEntity());
+        ValkyrienWarfareMod.VW_PHYSICS_MANAGER.onShipUnload(getWrapperEntity());
     }
 
     public void claimNewChunks(int radius) {
-        setOwnedChunks(ValkyrienWarfareMod.chunkManager.getManagerForWorld(getWrapperEntity().world)
+        setOwnedChunks(ValkyrienWarfareMod.VW_CHUNK_MANAGER.getManagerForWorld(getWrapperEntity().world)
                 .getNextAvaliableChunkSet(radius));
-        ValkyrienWarfareMod.chunkManager.registerChunksForShip(getWrapperEntity());
+        ValkyrienWarfareMod.VW_CHUNK_MANAGER.registerChunksForShip(getWrapperEntity());
         claimedChunksInMap = true;
     }
 
@@ -287,7 +287,7 @@ public class PhysicsObject implements ISubspaceProvider {
 
         claimNewChunks(radiusNeeded);
 
-        ValkyrienWarfareMod.physicsManager.onShipPreload(getWrapperEntity());
+        ValkyrienWarfareMod.VW_PHYSICS_MANAGER.onShipPreload(getWrapperEntity());
 
         claimedChunks = new Chunk[(getOwnedChunks().getRadius() * 2) + 1][(getOwnedChunks().getRadius() * 2) + 1];
         claimedChunksEntries = new PlayerChunkMapEntry[(getOwnedChunks().getRadius() * 2) + 1][(getOwnedChunks().getRadius() * 2) + 1];
@@ -366,13 +366,13 @@ public class PhysicsObject implements ISubspaceProvider {
 
 
         radiusNeeded = Math.min(radiusNeeded,
-                ValkyrienWarfareMod.chunkManager.getManagerForWorld(getWrapperEntity().world).maxChunkRadius);
+                ValkyrienWarfareMod.VW_CHUNK_MANAGER.getManagerForWorld(getWrapperEntity().world).maxChunkRadius);
 
         // System.out.println(radiusNeeded);
 
         claimNewChunks(radiusNeeded);
 
-        ValkyrienWarfareMod.physicsManager.onShipPreload(getWrapperEntity());
+        ValkyrienWarfareMod.VW_PHYSICS_MANAGER.onShipPreload(getWrapperEntity());
 
         claimedChunks = new Chunk[(getOwnedChunks().getRadius() * 2) + 1][(getOwnedChunks().getRadius() * 2) + 1];
         claimedChunksEntries = new PlayerChunkMapEntry[(getOwnedChunks().getRadius() * 2) + 1][(getOwnedChunks().getRadius() * 2) + 1];
@@ -699,10 +699,10 @@ public class PhysicsObject implements ISubspaceProvider {
 
     public void onPostTick() {
         if (!getWrapperEntity().isDead && !getWrapperEntity().world.isRemote) {
-            ValkyrienWarfareMod.chunkManager.updateShipPosition(getWrapperEntity());
+            ValkyrienWarfareMod.VW_CHUNK_MANAGER.updateShipPosition(getWrapperEntity());
             if (!claimedChunksInMap) {
                 // Old ships not in the map will add themselves in once loaded
-                ValkyrienWarfareMod.chunkManager.registerChunksForShip(getWrapperEntity());
+                ValkyrienWarfareMod.VW_CHUNK_MANAGER.registerChunksForShip(getWrapperEntity());
                 System.out.println("Old ship detected, adding to the registered Chunks map");
                 claimedChunksInMap = true;
             }
@@ -754,7 +754,7 @@ public class PhysicsObject implements ISubspaceProvider {
     public void loadClaimedChunks() {
         List<TileEntity> nodeTileEntitiesToUpdate = new ArrayList<TileEntity>();
 
-        ValkyrienWarfareMod.physicsManager.onShipPreload(getWrapperEntity());
+        ValkyrienWarfareMod.VW_PHYSICS_MANAGER.onShipPreload(getWrapperEntity());
 
         claimedChunks = new Chunk[(getOwnedChunks().getRadius() * 2) + 1][(getOwnedChunks().getRadius() * 2) + 1];
         claimedChunksEntries = new PlayerChunkMapEntry[(getOwnedChunks().getRadius() * 2) + 1][(getOwnedChunks().getRadius() * 2) + 1];

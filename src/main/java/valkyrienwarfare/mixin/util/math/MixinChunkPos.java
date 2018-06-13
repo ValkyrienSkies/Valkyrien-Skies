@@ -59,7 +59,7 @@ public abstract class MixinChunkPos {
 		}
 
 		try {
-			PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(entityIn.world,
+			PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(entityIn.world,
 					new BlockPos(d0, 127, d1));
 			if (wrapper != null) {
 				Vector entityPosInLocal = new Vector(entityIn);

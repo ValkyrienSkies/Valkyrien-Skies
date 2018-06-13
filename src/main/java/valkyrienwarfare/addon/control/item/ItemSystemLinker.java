@@ -73,8 +73,8 @@ public class ItemSystemLinker extends Item {
                 if (controllerPos.equals(BlockPos.ORIGIN)) {
                     playerIn.sendMessage(new TextComponentString("No selected Controller"));
                 } else {
-                    PhysicsWrapperEntity controllerWrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldIn, controllerPos);
-                    PhysicsWrapperEntity engineWrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldIn, pos);
+                    PhysicsWrapperEntity controllerWrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(worldIn, controllerPos);
+                    PhysicsWrapperEntity engineWrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(worldIn, pos);
 
                     if (controllerWrapper != engineWrapper) {
                         playerIn.sendMessage(new TextComponentString("Controller and engine are on seperate ships"));

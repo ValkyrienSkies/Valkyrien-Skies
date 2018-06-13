@@ -44,7 +44,7 @@ public class MixinMethods {
             double newY = this_.posY + dy;
             double newZ = this_.posZ + dz;
             BlockPos newPosInBlock = new BlockPos(newX, newY, newZ);
-            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(this_.world, newPosInBlock);
+            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(this_.world, newPosInBlock);
 
             if (wrapper == null) {
                 return null;

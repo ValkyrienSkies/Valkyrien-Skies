@@ -45,7 +45,7 @@ public abstract class MixinEntityClient {
 
     @Inject(method = "getPositionEyes(F)Lnet/minecraft/util/math/Vec3d;", at = @At("HEAD"), cancellable = true)
     public void getPositionEyesInject(float partialTicks, CallbackInfoReturnable<Vec3d> callbackInfo) {
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(Entity.class.cast(this));
+        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getShipFixedOnto(Entity.class.cast(this));
 
         if (wrapper != null) {
             Vector playerPosition = new Vector(wrapper.getPhysicsObject().getLocalPositionForEntity(Entity.class.cast(this)));

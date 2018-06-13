@@ -83,7 +83,7 @@ public abstract class ImplTileEntityPilotable extends BasicNodeTileEntity implem
 
 	@Override
 	public final PhysicsWrapperEntity getParentPhysicsEntity() {
-		return ValkyrienWarfareMod.physicsManager.getObjectManagingPos(getWorld(), getPos());
+		return ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(getWorld(), getPos());
 	}
 
 	// Always call this before setting the pilotPlayerEntity to equal newPilot
@@ -125,7 +125,7 @@ public abstract class ImplTileEntityPilotable extends BasicNodeTileEntity implem
 		SPacketUpdateTileEntity spacketupdatetileentity = getUpdatePacket();
 		WorldServer serverWorld = (WorldServer) world;
 		Vector pos = new Vector(getPos().getX(), getPos().getY(), getPos().getZ());
-		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(getWorld(), getPos());
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(getWorld(), getPos());
 		if (wrapper != null) {
 			wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(pos,
 					TransformType.SUBSPACE_TO_GLOBAL);

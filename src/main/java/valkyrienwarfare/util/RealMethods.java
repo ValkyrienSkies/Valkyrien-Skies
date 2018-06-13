@@ -88,7 +88,7 @@ public class RealMethods implements DummyMethods {
 
     @Override
     public PhysicsWrapperEntity getShipEntityManagingPos(World worldObj, BlockPos pos) {
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldObj, pos);
+        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(worldObj, pos);
         return wrapper;
     }
 

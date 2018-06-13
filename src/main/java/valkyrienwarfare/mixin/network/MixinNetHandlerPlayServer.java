@@ -144,7 +144,7 @@ public abstract class MixinNetHandlerPlayServer {
 				callbackInfo.cancel();
 				redirectingSetPlayerLocation = true;
 				World world = player.getEntityWorld();
-				PhysicsWrapperEntity physicsEntity = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world,
+				PhysicsWrapperEntity physicsEntity = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(world,
 						pos);
 				if (physicsEntity != null) {
 					Vector tpPos = new Vector(x, y, z);

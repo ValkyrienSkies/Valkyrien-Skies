@@ -36,7 +36,7 @@ public class MixinPhaseTracker {
     public void preSetBlockState2(IMixinWorldServer mixinWorld, BlockPos pos, IBlockState newState,
             BlockChangeFlag flag, CallbackInfoReturnable info) {
         World world = (World) mixinWorld;
-        PhysicsWrapperEntity physEntity = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
+        PhysicsWrapperEntity physEntity = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(world, pos);
         if (physEntity != null) {
             IBlockState oldState = world.getBlockState(pos);
             physEntity.getPhysicsObject().onSetBlockState(oldState, newState, pos);

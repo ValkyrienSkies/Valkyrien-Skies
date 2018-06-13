@@ -43,7 +43,7 @@ public class ItemShipStealer extends Item {
     @Override
     public EnumActionResult onItemUse(EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         BlockPos looking = playerIn.rayTrace(playerIn.isCreative() ? 5.0 : 4.5, 1).getBlockPos();
-        PhysicsWrapperEntity entity = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(playerIn.getEntityWorld(), looking);
+        PhysicsWrapperEntity entity = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(playerIn.getEntityWorld(), looking);
 
         if (entity != null) {
             String oldOwner = entity.getPhysicsObject().getCreator();

@@ -74,7 +74,7 @@ public class DimensionPhysObjectManager {
             return null;
         }
         if (world.getChunkProvider() == null) {
-            // System.out.println("A seperate mod has coded a World with no Chunks in it!");
+            // System.err.println("A separate mod has coded a World with no Chunks in it!");
             return null;
         }
         if (!PhysicsChunkManager.isLikelyShipChunk(pos.getX() >> 4, pos.getZ() >> 4)) {

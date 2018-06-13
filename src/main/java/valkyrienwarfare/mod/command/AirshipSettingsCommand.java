@@ -80,7 +80,7 @@ public class AirshipSettingsCommand extends CommandBase {
 
         BlockPos pos = rayTraceBothSides(p, p.isCreative() ? 5.0 : 4.5, 1).getBlockPos();
 
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(p.getEntityWorld(), pos);
+        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(p.getEntityWorld(), pos);
 
         if (wrapper == null) {
             sender.sendMessage(new TextComponentString("You need to be looking at an airship to do that!"));

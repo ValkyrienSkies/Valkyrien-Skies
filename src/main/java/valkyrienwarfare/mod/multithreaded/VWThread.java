@@ -146,7 +146,7 @@ public class VWThread extends Thread {
 	// values.
 	private void physicsTick() {
 		// TODO: Temporary fix:
-		WorldPhysObjectManager manager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(hostWorld);
+		WorldPhysObjectManager manager = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getManagerForWorld(hostWorld);
 		List<PhysicsWrapperEntity> physicsEntities = manager.getTickablePhysicsEntities();
 		List<PhysicsWrapperEntity> shipsWithPhysics = new ArrayList<PhysicsWrapperEntity>();
 		for (PhysicsWrapperEntity wrapper : physicsEntities) {

@@ -57,7 +57,7 @@ public abstract class MixinPlayerList {
         } else {
             worldIn = except.world;
         }
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldIn, pos);
+        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(worldIn, pos);
         Vector packetPosition = new Vector(x, y, z);
         if (wrapper != null && wrapper.getPhysicsObject().getShipTransformationManager() != null) {
             wrapper.getPhysicsObject().getShipTransformationManager().fromLocalToGlobal(packetPosition);

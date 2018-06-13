@@ -34,7 +34,7 @@ public class PilotControlsMessageHandler implements IMessageHandler<PilotControl
             @Override
             public void run() {
                 World worldObj = ctx.getServerHandler().player.world;
-                if (ValkyrienWarfareMod.physicsManager.getManagerForWorld(worldObj) != null) {
+                if (ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getManagerForWorld(worldObj) != null) {
 //                	UUID shipId = message.shipFor;
                     BlockPos posFor = message.controlBlockPos;
                     TileEntity tile = worldObj.getTileEntity(posFor);

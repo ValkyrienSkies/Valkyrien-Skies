@@ -47,7 +47,7 @@ public class BlockHovercraftController extends Block implements ITileEntityProvi
 
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldIn, pos);
+        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(worldIn, pos);
         ItemStack heldItem = playerIn.getHeldItem(hand);
         if (heldItem != null && heldItem.getItem() instanceof ItemSystemLinker) {
             return false;

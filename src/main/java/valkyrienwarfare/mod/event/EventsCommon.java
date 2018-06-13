@@ -79,7 +79,7 @@ public class EventsCommon {
     public void onPlayerSleepInBedEvent(PlayerSleepInBedEvent event) {
         EntityPlayer player = event.getEntityPlayer();
         BlockPos pos = event.getPos();
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.world, pos);
+        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(player.world, pos);
         if (wrapper != null) {
             if (player instanceof EntityPlayerMP) {
                 EntityPlayerMP playerMP = (EntityPlayerMP) player;
@@ -98,7 +98,7 @@ public class EventsCommon {
                 BlockPos posAt = event.getPos();
                 EntityPlayer player = event.getEntityPlayer();
                 World world = event.getWorld();
-                PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, posAt);
+                PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(world, posAt);
                 if (wrapper != null) {
                     wrapper.setCustomNameTag(stack.getDisplayName());
                     --stack.stackSize;
@@ -115,7 +115,7 @@ public class EventsCommon {
         Entity entity = event.getEntity();
         World world = entity.world;
         BlockPos posAt = new BlockPos(entity);
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, posAt);
+        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(world, posAt);
         if (!(entity instanceof EntityFallingBlock) && wrapper != null && wrapper.getPhysicsObject().getShipTransformationManager() != null) {
             if (entity instanceof EntityMountingWeaponBase || entity instanceof EntityArmorStand
                     || entity instanceof EntityPig || entity instanceof EntityBoat) {
@@ -183,7 +183,7 @@ public class EventsCommon {
         event.getWorld().addEventListener(new VWWorldEventListener(event.getWorld()));
         // Don't make any VW threads for client worlds
         if (!event.getWorld().isRemote) {
-        	ValkyrienWarfareMod.chunkManager.initWorld(event.getWorld());
+        	ValkyrienWarfareMod.VW_CHUNK_MANAGER.initWorld(event.getWorld());
             VWThreadManager.createVWThreadForWorld(event.getWorld());
         }
     }
@@ -191,12 +191,12 @@ public class EventsCommon {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onWorldUnload(WorldEvent.Unload event) {
         if (!event.getWorld().isRemote) {
-            ValkyrienWarfareMod.chunkManager.removeWorld(event.getWorld());
+            ValkyrienWarfareMod.VW_CHUNK_MANAGER.removeWorld(event.getWorld());
         } else {
             // Fixes memory leak; @DaPorkChop please don't leave static maps lying around D:
             lastPositions.clear();
         }
-        ValkyrienWarfareMod.physicsManager.removeWorld(event.getWorld());
+        ValkyrienWarfareMod.VW_PHYSICS_MANAGER.removeWorld(event.getWorld());
         // Don't make any VW threads for client worlds
         if (!event.getWorld().isRemote) {
             VWThreadManager.killVWThreadForWorld(event.getWorld());
@@ -216,7 +216,7 @@ public class EventsCommon {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onPlayerInteractEvent(PlayerInteractEvent event) {
         BlockPos pos = event.getPos();
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(event.getWorld(), pos);
+        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(event.getWorld(), pos);
         if (wrapper != null) {
             event.setResult(Result.ALLOW);
         }
@@ -300,7 +300,7 @@ public class EventsCommon {
     @SubscribeEvent
     public void onRightClick(PlayerInteractEvent.RightClickBlock event) {
         if (!event.getWorld().isRemote) {
-            PhysicsWrapperEntity physObj = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(event.getWorld(),
+            PhysicsWrapperEntity physObj = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(event.getWorld(),
                     event.getPos());
             if (physObj != null) {
                 if (ValkyrienWarfareMod.runAirshipPermissions && !(physObj.getPhysicsObject().getCreator()
@@ -329,7 +329,7 @@ public class EventsCommon {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onBlockBreak(BlockEvent.BreakEvent event) {
         if (!event.getWorld().isRemote) {
-            PhysicsWrapperEntity physObj = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(event.getWorld(),
+            PhysicsWrapperEntity physObj = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(event.getWorld(),
                     event.getPos());
             if (physObj != null) {
                 if (ValkyrienWarfareMod.runAirshipPermissions && !(physObj.getPhysicsObject().getCreator()
@@ -351,7 +351,7 @@ public class EventsCommon {
     private void onBlockChange(World world, BlockPos pos, IBlockState oldState, IBlockState newState) {
         // System.out.println(oldState.getBlock().getLocalizedName());
         // System.out.println(newState.getBlock().getLocalizedName());
-        PhysicsWrapperEntity physObj = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
+        PhysicsWrapperEntity physObj = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(world, pos);
         if (physObj != null) {
             // physObj.wrapping.onSetBlockState(oldState, newState, pos);
             // System.out.println("Sucess!");
@@ -360,7 +360,7 @@ public class EventsCommon {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onPlaceEvent(BlockEvent.PlaceEvent event) {
-        PhysicsWrapperEntity physObj = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(event.getWorld(),
+        PhysicsWrapperEntity physObj = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(event.getWorld(),
                 event.getPos());
         if (physObj != null) {
             if (ValkyrienWarfareMod.runAirshipPermissions

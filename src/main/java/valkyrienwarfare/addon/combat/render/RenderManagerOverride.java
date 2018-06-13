@@ -44,7 +44,7 @@ public class RenderManagerOverride extends RenderManager {
      */
 
     private boolean shouldRender(Entity entity) {
-        return !ValkyrienWarfareMod.physicsManager.isEntityFixed(entity);
+        return !ValkyrienWarfareMod.VW_PHYSICS_MANAGER.isEntityFixed(entity);
     }
 
     @Override

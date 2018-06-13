@@ -42,8 +42,6 @@ public class CommonProxy {
 
     public void init(FMLInitializationEvent e) {
         MinecraftForge.EVENT_BUS.register(new EventsCommon());
-        ValkyrienWarfareMod.chunkManager = new DimensionPhysicsChunkManager();
-        ValkyrienWarfareMod.physicsManager = new DimensionPhysObjectManager();
 
         for (Module addon : ValkyrienWarfareMod.addons) {
             ModuleProxy proxy = addon.getCommonProxy();

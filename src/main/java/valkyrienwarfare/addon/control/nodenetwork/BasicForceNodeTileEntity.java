@@ -177,7 +177,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
         }
         BlockPos pos = this.getPos();
         World world = this.getWorld();
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
+        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(world, pos);
         // Already checked
         hasAlreadyCheckedForParent = true;
         if (wrapper != null) {

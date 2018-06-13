@@ -39,7 +39,7 @@ public abstract class MixinParticleManager {
         }
 
         BlockPos pos = new BlockPos(effect.posX, effect.posY, effect.posZ);
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(effect.world, pos);
+        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(effect.world, pos);
         if (wrapper != null) {
             Vector posVec = new Vector(effect.posX, effect.posY, effect.posZ);
             Vector velocity = new Vector(effect.motionX, effect.motionY, effect.motionZ);

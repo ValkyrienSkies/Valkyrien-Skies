@@ -46,7 +46,7 @@ public interface ITransformablePacket {
 			EntityPlayerMP player = serverHandler.player;
 			if (player.getServerWorld().isCallingFromMinecraftThread()) {
 				BlockPos packetPos = getBlockPos();
-				PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.world,
+				PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(player.world,
 						packetPos);
 				if (wrapper != null && wrapper.getPhysicsObject().getShipTransformationManager() != null) {
 					ISubspaceProvider worldProvider = ISubspaceProvider.class.cast(player.getServerWorld());
@@ -72,7 +72,7 @@ public interface ITransformablePacket {
 			EntityPlayerMP player = serverHandler.player;
 			if (player.getServerWorld().isCallingFromMinecraftThread()) {
 				BlockPos packetPos = getBlockPos();
-				PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(player.world,
+				PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(player.world,
 						packetPos);
 				// I don't care what happened to that ship in the time between, we must restore
 				// the player to their proper coordinates.

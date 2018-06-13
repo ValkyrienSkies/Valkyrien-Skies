@@ -128,7 +128,7 @@ public class SchematicReader {
                 }
             }
 
-            PhysicsWrapperEntity wrapperEntity = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldObj, centerDifference);
+            PhysicsWrapperEntity wrapperEntity = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(worldObj, centerDifference);
 
             for (int i = 0; i < tileentities.tagCount(); i++) {
                 NBTTagCompound tileData = tileentities.getCompoundTagAt(i).copy();

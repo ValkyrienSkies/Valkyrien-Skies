@@ -57,7 +57,7 @@ public class BlockShipPassengerChair extends Block {
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
         if (!worldIn.isRemote) {
-            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldIn, pos);
+            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(worldIn, pos);
             if (wrapper != null) {
                 if (playerIn.getLowestRidingEntity() != wrapper.getLowestRidingEntity()) {
                     Vector playerPos = new Vector(playerIn);
@@ -95,7 +95,7 @@ public class BlockShipPassengerChair extends Block {
 
     @Override
     public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldIn, pos);
+        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(worldIn, pos);
         return wrapper != null;
     }
 

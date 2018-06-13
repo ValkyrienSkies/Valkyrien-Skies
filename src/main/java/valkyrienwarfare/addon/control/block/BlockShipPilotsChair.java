@@ -65,7 +65,7 @@ public class BlockShipPilotsChair extends Block implements ITileEntityProvider {
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
         if (!worldIn.isRemote) {
-            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldIn, pos);
+            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(worldIn, pos);
             if (wrapper != null) {
                 if (playerIn.getLowestRidingEntity() != wrapper.getLowestRidingEntity()) {
                     TileEntity tileEntity = worldIn.getTileEntity(pos);
@@ -108,7 +108,7 @@ public class BlockShipPilotsChair extends Block implements ITileEntityProvider {
 
     @Override
     public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldIn, pos);
+        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(worldIn, pos);
         return wrapper != null;
     }
 

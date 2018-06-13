@@ -550,25 +550,18 @@ public class PhysicsObject implements ISubspaceProvider {
 
     public void injectChunkIntoWorld(Chunk chunk, int x, int z, boolean putInId2ChunkMap) {
         ChunkProviderServer provider = (ChunkProviderServer) getWorldObj().getChunkProvider();
-        // TileEntities will break if you don't do this
-        chunk.loaded = true;
         chunk.dirty = true;
         claimedChunks[x - getOwnedChunks().getMinX()][z - getOwnedChunks().getMinZ()] = chunk;
 
         if (putInId2ChunkMap) {
             provider.id2ChunkMap.put(ChunkPos.asLong(x, z), chunk);
         }
+        
+        chunk.onLoad();
 
         PlayerChunkMap map = ((WorldServer) getWorldObj()).getPlayerChunkMap();
 
-        PlayerChunkMapEntry entry = new PlayerChunkMapEntry(map, x, z) {
-            // @Override
-            // public boolean hasPlayerMatchingInRange(double range,
-            // Predicate<EntityPlayerMP> predicate)
-            // {
-            // return true;
-            // }
-        };
+        PlayerChunkMapEntry entry = new PlayerChunkMapEntry(map, x, z);
 
         // TODO: This is causing concurrency crashes
         long i = PlayerChunkMap.getIndex(x, z);
@@ -580,16 +573,6 @@ public class PhysicsObject implements ISubspaceProvider {
         entry.players = getWatchingPlayers();
 
         claimedChunksEntries[x - getOwnedChunks().getMinX()][z - getOwnedChunks().getMinZ()] = entry;
-
-        // Ticket ticket =
-        // ValkyrienWarfareMod.physicsManager.getManagerForWorld(this.worldObj).chunkLoadingTicket;
-
-        // MinecraftForge.EVENT_BUS.post(new ForceChunkEvent(ticket, new ChunkPos(x,
-        // z)));
-
-        // Laggy as fuck, hell no!
-        // ForgeChunkManager.forceChunk(ticket, new ChunkPos(x, z));
-        // MinecraftForge.EVENT_BUS.post(new ChunkEvent.Load(chunk));
     }
 
     // Experimental, could fix issues with random shit generating inside of Ships

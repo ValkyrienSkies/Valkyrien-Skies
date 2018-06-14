@@ -23,10 +23,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ShipSpawnDetector extends SpatialDetector {
 
-    private static final ArrayList<Block> blackList = new ArrayList<Block>();
+    private static final List<Block> blackList = new ArrayList<>();
 
     static {
         blackList.add(Blocks.AIR);
@@ -48,6 +49,22 @@ public class ShipSpawnDetector extends SpatialDetector {
         blackList.add(Blocks.FLOWING_LAVA);
         blackList.add(Blocks.GRASS_PATH);
         blackList.add(Blocks.BEDROCK);
+        blackList.add(Blocks.END_PORTAL_FRAME);
+        blackList.add(Blocks.END_PORTAL);
+        blackList.add(Blocks.END_GATEWAY);
+        blackList.add(Blocks.PORTAL);
+    }
+
+    public static void registerBlacklistEntry(Block block)  {
+        synchronized (blackList) {
+            if (block == null) {
+                throw new NullPointerException("block");
+            } else {
+                if (!blackList.contains(block)) {
+                    blackList.add(block);
+                }
+            }
+        }
     }
 
     public ShipSpawnDetector(BlockPos start, World worldIn, int maximum, boolean checkCorners) {

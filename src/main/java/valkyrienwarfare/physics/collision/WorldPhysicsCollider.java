@@ -112,12 +112,6 @@ public class WorldPhysicsCollider {
 		this.centerPotentialHit = null;
 	}
 
-	// Runs the collision code
-	public void runPhysCollision() {
-		tickUpdatingTheCollisionCache();
-		processPotentialCollisionsAccurately();
-	}
-
 	public void tickUpdatingTheCollisionCache() {
 		// Multiply by 20 to convert seconds (physTickSpeed) into ticks
 		ticksSinceCacheUpdate += calculator.getPhysicsTimeDeltaPerPhysTick();

@@ -23,7 +23,7 @@ import net.minecraft.util.math.Vec3d;
 import valkyrienwarfare.mod.coordinates.VectorImmutable;
 
 /**
- * Custom Vector Class used by Valkyrien Warfare
+ * Custom Vector class used by Valkyrien Warfare
  *
  * @author thebest108
  */

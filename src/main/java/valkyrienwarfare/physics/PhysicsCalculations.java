@@ -224,12 +224,6 @@ public class PhysicsCalculations {
         }
     }
 
-    public void processWorldCollision() {
-        if (getParent().isPhysicsEnabled()) {
-            getWorldCollision().runPhysCollision();
-        }
-    }
-
 	public void rawPhysTickPostCol() {
 		if (!isPhysicsBroken()) {
 			if (getParent().isPhysicsEnabled()) {

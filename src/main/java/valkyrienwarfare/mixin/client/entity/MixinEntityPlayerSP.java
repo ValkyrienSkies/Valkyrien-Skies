@@ -17,8 +17,15 @@ public class MixinEntityPlayerSP {
 
 	private final ISubspacedEntity thisAsSubspaced = ISubspacedEntity.class.cast(this);
 
-	@Inject(method = "onUpdateWalkingPlayer", at = @At("RETURN"))
-	private void postOnUpdateWalkingPlayer(CallbackInfo info) {
+	/**
+	 * This method is to send the position of the player relative to the subspace
+	 * its on. Specifically sent right before the game regularly sends the player
+	 * position update to the server.
+	 * 
+	 * @param info
+	 */
+	@Inject(method = "onUpdateWalkingPlayer", at = @At("HEAD"))
+	private void preOnUpdateWalkingPlayer(CallbackInfo info) {
 		IDraggable draggable = IDraggable.class.cast(this);
 		if (draggable.getWorldBelowFeet() != null) {
 			draggable.getWorldBelowFeet().getPhysicsObject().getSubspace().snapshotSubspacedEntity(thisAsSubspaced);
@@ -26,8 +33,6 @@ public class MixinEntityPlayerSP {
 					.getRecordForSubspacedEntity(thisAsSubspaced);
 			SubspacedEntityRecordMessage recordMessage = new SubspacedEntityRecordMessage(entityRecord);
 			ValkyrienWarfareMod.physWrapperNetwork.sendToServer(recordMessage);
-			// Do the magic
-			// System.out.println("REEEEEEEEEEEEE3#3333EEEEEEE!!!!!!!");
 		}
 	}
 }

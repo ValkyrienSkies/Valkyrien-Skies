@@ -5,9 +5,19 @@ import javax.annotation.Nullable;
 import io.netty.buffer.ByteBuf;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import valkyrienwarfare.mod.coordinates.CoordinateSpaceType;
+import valkyrienwarfare.mod.coordinates.ISubspace;
+import valkyrienwarfare.mod.coordinates.ISubspacedEntity;
 import valkyrienwarfare.mod.coordinates.ISubspacedEntityRecord;
+import valkyrienwarfare.mod.coordinates.ImplSubspacedEntityRecord;
 import valkyrienwarfare.mod.coordinates.VectorImmutable;
 
+/**
+ * A message that sends the SubspacedEntityRecord from server to client and from
+ * client to server.s
+ * 
+ * @author thebest108
+ *
+ */
 public class SubspacedEntityRecordMessage implements IMessage {
 
 	// This object only exists on the side that created this packet.
@@ -53,6 +63,10 @@ public class SubspacedEntityRecordMessage implements IMessage {
 		subspacedEntityRecord.getPositionLastTick().writeToByteBuf(buf);
 		subspacedEntityRecord.getLookDirection().writeToByteBuf(buf);
 		subspacedEntityRecord.getVelocity().writeToByteBuf(buf);
+	}
+	
+	public ISubspacedEntityRecord createRecordForThisMessage(ISubspacedEntity entity, ISubspace provider) {
+		return new ImplSubspacedEntityRecord(entity, provider, position, positionLastTick, lookDirection, velocity);
 	}
 
 }

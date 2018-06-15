@@ -76,6 +76,9 @@ repositories {
         name = "OpenComputers"
         url = "http://maven.cil.li/"
     }
+	maven {
+		url 'https://maven.daporkchop.net/'
+	}
     mavenCentral()
 }
 
@@ -87,6 +90,8 @@ dependencies {
 	// We want to prevent any conflicts with SpongeForge
 	compileOnly("org.spongepowered:spongeforge:1.12.2-2611-7.1.0-BETA-3002:dev")
     compileOnly "li.cil.oc:OpenComputers:MC1.12.1-1.7.1.+:api"
+	// Porky datastructures
+	compile 'net.daporkchop.lib:primitive:0.0.5'
 }
 
 processResources {

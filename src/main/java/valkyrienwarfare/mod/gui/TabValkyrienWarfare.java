@@ -24,7 +24,7 @@ import valkyrienwarfare.ValkyrienWarfareMod;
 public class TabValkyrienWarfare extends CreativeTabs {
 
     public TabValkyrienWarfare() {
-        super(CreativeTabs.getNextID(), "valkyrienwarfare");
+        super("valkyrienwarfare");
     }
 
     @Override

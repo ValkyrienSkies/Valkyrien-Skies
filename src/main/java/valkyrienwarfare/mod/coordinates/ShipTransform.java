@@ -120,4 +120,15 @@ public class ShipTransform {
         }
     }
 
+	public VectorImmutable transform(VectorImmutable vector, TransformType transformType) {
+		Vector vectorMutable = vector.createMutibleVectorCopy();
+		this.transform(vectorMutable, transformType);
+		return vectorMutable.toImmutable();
+	}
+
+	public VectorImmutable rotate(VectorImmutable vector, TransformType transformType) {
+		Vector vectorMutable = vector.createMutibleVectorCopy();
+		this.rotate(vectorMutable, transformType);
+		return vectorMutable.toImmutable();
+	}
 }

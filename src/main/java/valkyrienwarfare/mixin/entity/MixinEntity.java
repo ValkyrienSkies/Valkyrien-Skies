@@ -62,6 +62,7 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
     private final IDraggable thisAsDraggable = IDraggable.class.cast(this);
     private final Entity thisAsEntity = Entity.class.cast(this);
     private PhysicsWrapperEntity worldBelowFeet;
+    private PhysicsWrapperEntity forcedRelativeWorldBelowFeet;
     private Vector velocityAddedToPlayer = new Vector();
     private double yawDifVelocity;
     private boolean cancelNextMove = false;
@@ -160,6 +161,16 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
     public void setCancelNextMove(boolean toSet) {
         cancelNextMove = toSet;
     }
+    
+    @Override
+    public void setForcedRelativeSubspace(PhysicsWrapperEntity toSet) {
+    	forcedRelativeWorldBelowFeet = toSet;
+    }
+    
+    @Override
+    public PhysicsWrapperEntity getForcedSubspaceBelowFeet() {
+    	return forcedRelativeWorldBelowFeet;
+    }
 
     /**
      * This is easier to have as an overwrite because there's less laggy hackery to
@@ -211,7 +222,6 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
         return vanilla;
     }
 
-    @Override
     @Shadow
     public abstract void move(MoverType type, double x, double y, double z);
 

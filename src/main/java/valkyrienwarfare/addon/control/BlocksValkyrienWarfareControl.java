@@ -65,8 +65,6 @@ public class BlocksValkyrienWarfareControl {
     public Block shipTelegraph;
     public Block thrustRelay;
     public Block thrustModulator;
-    public Block airshipController_zepplin;
-    public Block shipHullSealer;
     public Block gyroscope;
     public Block liftValve;
 
@@ -97,10 +95,6 @@ public class BlocksValkyrienWarfareControl {
         thrustRelay = new BlockThrustRelay(Material.IRON).setHardness(5f).setUnlocalizedName("thrustrelay").setRegistryName(getModID(), "thrustrelay").setCreativeTab(ValkyrienWarfareMod.vwTab);
         thrustModulator = new BlockThrustModulator(Material.IRON).setHardness(8f).setUnlocalizedName("thrustmodulator").setRegistryName(getModID(), "thrustmodulator").setCreativeTab(ValkyrienWarfareMod.vwTab);
 
-        shipHullSealer = new BlockShipHullSealer(Material.IRON).setHardness(5f).setUnlocalizedName("shiphullsealer").setRegistryName(getModID(), "shiphullsealer").setCreativeTab(ValkyrienWarfareMod.vwTab);
-
-        airshipController_zepplin = new BlockAirshipController_Zepplin(Material.WOOD).setHardness(5f).setUnlocalizedName("airshipcontroller_zepplin").setRegistryName(getModID(), "airshipcontroller_zepplin").setCreativeTab(ValkyrienWarfareMod.vwTab);
-
         gyroscope = new BlockGyroscope(Material.IRON).setHardness(5f).setUnlocalizedName("vw_gyroscope").setRegistryName(getModID(), "vw_gyroscope").setCreativeTab(ValkyrienWarfareMod.vwTab);
 
         liftValve = new BlockLiftValve(Material.IRON).setHardness(7f).setUnlocalizedName("vw_liftvalve").setRegistryName(getModID(), "vw_liftvalve").setCreativeTab(ValkyrienWarfareMod.vwTab);
@@ -130,8 +124,6 @@ public class BlocksValkyrienWarfareControl {
         event.getRegistry().register(thrustRelay);
         event.getRegistry().register(thrustModulator);
 
-        event.getRegistry().register(shipHullSealer);
-        event.getRegistry().register(airshipController_zepplin);
         event.getRegistry().register(gyroscope);
         event.getRegistry().register(liftValve);
     }
@@ -160,8 +152,6 @@ public class BlocksValkyrienWarfareControl {
         registerItemBlock(event, thrustRelay);
         registerItemBlock(event, thrustModulator);
 
-        registerItemBlock(event, shipHullSealer);
-        registerItemBlock(event, airshipController_zepplin);
         registerItemBlock(event, gyroscope);
         registerItemBlock(event, liftValve);
     }

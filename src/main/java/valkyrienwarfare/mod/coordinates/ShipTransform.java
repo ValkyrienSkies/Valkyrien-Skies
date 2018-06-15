@@ -116,7 +116,7 @@ public class ShipTransform {
         } else if (transformType == TransformType.GLOBAL_TO_SUBSPACE){
             return globalToSubspace;
         } else {
-        	throw new IllegalArgumentException("Unexpected TransformType Enum! " + transformType);
+        	throw new IllegalArgumentException("Unexpected TransformType Enum " + transformType + "!");
         }
     }
 

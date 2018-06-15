@@ -65,20 +65,15 @@ public class ClientProxyControl extends CommonProxyControl {
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.blocks.pilotsChair);
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.blocks.passengerChair);
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.blocks.shipHelm);
-//		registerBlockItem(ValkyrienWarfareControlMod.INSTANCE.shipWheel);
 
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.blocks.shipTelegraph);
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.blocks.dopedEtherium);
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.blocks.thrustRelay);
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.blocks.thrustModulator);
-
-        registerBlockItem(ValkyrienWarfareControl.INSTANCE.blocks.shipHullSealer);
-        registerBlockItem(ValkyrienWarfareControl.INSTANCE.blocks.airshipController_zepplin);
     }
 
     private static void registerItemModels() {
         registerItemModel(ValkyrienWarfareControl.INSTANCE.systemLinker);
-        registerItemModel(ValkyrienWarfareControl.INSTANCE.airshipStealer);
         registerItemModel(ValkyrienWarfareControl.INSTANCE.relayWire);
     }
 

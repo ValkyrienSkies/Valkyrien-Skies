@@ -47,7 +47,7 @@ public class ValkyrienWarfareWorldGen implements IWorldGenerator {
         switch (world.provider.getDimension()) {
             case 0: //Overworld
                 this.runEtheriumGenerator(this.genEtheriumOre, world, random, chunkX, chunkZ, 2, 0, 25);
-//                runDungeonGenerator(world, random, chunkX, chunkZ, 1);
+                // runDungeonGenerator(world, random, chunkX, chunkZ, 1);
                 break;
             case -1: //Nether
                 break;
@@ -71,13 +71,13 @@ public class ValkyrienWarfareWorldGen implements IWorldGenerator {
     }
 
     private void runDungeonGenerator(World world, Random rand, int chunk_X, int chunk_Z, int chancesToSpawn) {
-        boolean isLikelyShipChunk = PhysicsChunkManager.isLikelyShipChunk(chunk_X, chunk_Z);
+    	boolean isLikelyShipChunk = PhysicsChunkManager.isLikelyShipChunk(chunk_X, chunk_Z);
 
         //TODO: Enable this
         if (!isLikelyShipChunk && Minecraft.getMinecraft().player != null) {
             double random = Math.random();
 
-            // SkyTempleGenerator.runGenerator(world, chunk_X, chunk_Z, random);
+             SkyTempleGenerator.runGenerator(world, chunk_X, chunk_Z, random);
         }
     }
 }

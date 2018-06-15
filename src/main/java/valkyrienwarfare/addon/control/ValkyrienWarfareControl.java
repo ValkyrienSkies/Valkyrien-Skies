@@ -81,7 +81,6 @@ public class ValkyrienWarfareControl extends Module {
     public static SimpleNetworkWrapper controlNetwork;
     public final BlocksValkyrienWarfareControl blocks;
     public Item systemLinker;
-    public Item airshipStealer;
     public Item relayWire;
 
     public ValkyrienWarfareControl() {
@@ -132,11 +131,9 @@ public class ValkyrienWarfareControl extends Module {
     @Override
     public void registerItems(RegistryEvent.Register<Item> event) {
         systemLinker = new ItemSystemLinker().setUnlocalizedName("systemlinker").setRegistryName(getModID(), "systemlinker").setCreativeTab(ValkyrienWarfareMod.vwTab).setMaxStackSize(1);
-        airshipStealer = new ItemShipStealer().setUnlocalizedName("airshipStealer").setRegistryName(getModID(), "airshipStealer").setCreativeTab(ValkyrienWarfareMod.vwTab).setMaxStackSize(1);
         relayWire = new ItemRelayWire().setUnlocalizedName("relaywire").setRegistryName(getModID(), "relaywire").setCreativeTab(ValkyrienWarfareMod.vwTab).setMaxStackSize(1);
 
         event.getRegistry().register(systemLinker);
-        event.getRegistry().register(airshipStealer);
         event.getRegistry().register(relayWire);
 
         blocks.registerBlockItems(event);

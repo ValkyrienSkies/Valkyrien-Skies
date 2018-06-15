@@ -299,23 +299,25 @@ public abstract class MixinRenderGlobal {
      *
      * @author xd
      */
-    //@Overwrite
-    public Particle spawnEntityFX(int particleID, boolean ignoreRange, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, int... parameters) {
-        if (ValkyrienWarfareMod.shipsSpawnParticles) {
-            BlockPos particlePos = new BlockPos(x, y, z);
-            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(this.world, particlePos);
-            if (wrapper != null) {
-                Vector newCoords = new Vector(x, y, z);
-//                RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, newCoords);
-                wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(newCoords, TransformType.SUBSPACE_TO_GLOBAL);
-                x = newCoords.X;
-                y = newCoords.Y;
-                z = newCoords.Z;
-            }
-        }
-        //vanilla code follows
-        return this.spawnParticle0(particleID, ignoreRange, false, x, y, z, xSpeed, ySpeed, zSpeed, parameters);
-    }
+	// @Overwrite
+	public Particle spawnEntityFX(int particleID, boolean ignoreRange, double x, double y, double z, double xSpeed,
+			double ySpeed, double zSpeed, int... parameters) {
+		BlockPos particlePos = new BlockPos(x, y, z);
+		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(this.world,
+				particlePos);
+		if (wrapper != null) {
+			Vector newCoords = new Vector(x, y, z);
+			// RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform,
+			// newCoords);
+			wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(newCoords,
+					TransformType.SUBSPACE_TO_GLOBAL);
+			x = newCoords.X;
+			y = newCoords.Y;
+			z = newCoords.Z;
+		}
+		// vanilla code follows
+		return this.spawnParticle0(particleID, ignoreRange, false, x, y, z, xSpeed, ySpeed, zSpeed, parameters);
+	}
 
     @Shadow
     public Particle spawnParticle0(int particleID, boolean ignoreRange, boolean minParticles, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, int... parameters) {

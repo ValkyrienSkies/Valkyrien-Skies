@@ -49,27 +49,30 @@ public class ClientProxyControl extends CommonProxyControl {
     }
 
     private static void registerBlockItemModels() {
-        registerBlockItem(ValkyrienWarfareControl.INSTANCE.blocks.basicEngine);
-        registerBlockItem(ValkyrienWarfareControl.INSTANCE.blocks.advancedEngine);
-        registerBlockItem(ValkyrienWarfareControl.INSTANCE.blocks.eliteEngine);
-        registerBlockItem(ValkyrienWarfareControl.INSTANCE.blocks.ultimateEngine);
-        registerBlockItem(ValkyrienWarfareControl.INSTANCE.blocks.redstoneEngine);
+        registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.basicEngine);
+        registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.advancedEngine);
+        registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.eliteEngine);
+        registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.ultimateEngine);
+        registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.redstoneEngine);
 
-        registerBlockItem(ValkyrienWarfareControl.INSTANCE.blocks.basicHoverController);
-        registerBlockItem(ValkyrienWarfareControl.INSTANCE.blocks.antigravityEngine);
-        registerBlockItem(ValkyrienWarfareControl.INSTANCE.blocks.advancedEtherCompressor);
-        registerBlockItem(ValkyrienWarfareControl.INSTANCE.blocks.eliteEtherCompressor);
-        registerBlockItem(ValkyrienWarfareControl.INSTANCE.blocks.ultimateEtherCompressor);
+        registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.basicHoverController);
+        registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.antigravityEngine);
+        registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.advancedEtherCompressor);
+        registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.eliteEtherCompressor);
+        registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.ultimateEtherCompressor);
 
-        registerBlockItem(ValkyrienWarfareControl.INSTANCE.blocks.creativeEtherCompressor);
-        registerBlockItem(ValkyrienWarfareControl.INSTANCE.blocks.pilotsChair);
-        registerBlockItem(ValkyrienWarfareControl.INSTANCE.blocks.passengerChair);
-        registerBlockItem(ValkyrienWarfareControl.INSTANCE.blocks.shipHelm);
+        registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.creativeEtherCompressor);
+        registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.pilotsChair);
+        registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.passengerChair);
+        registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipHelm);
 
-        registerBlockItem(ValkyrienWarfareControl.INSTANCE.blocks.shipTelegraph);
-        registerBlockItem(ValkyrienWarfareControl.INSTANCE.blocks.dopedEtherium);
-        registerBlockItem(ValkyrienWarfareControl.INSTANCE.blocks.thrustRelay);
-        registerBlockItem(ValkyrienWarfareControl.INSTANCE.blocks.thrustModulator);
+        registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipTelegraph);
+        registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.dopedEtherium);
+        registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.thrustRelay);
+        registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.thrustModulator);
+        
+        registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.gyroscope);
+        registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.liftValve);
     }
 
     private static void registerItemModels() {
@@ -98,11 +101,6 @@ public class ClientProxyControl extends CommonProxyControl {
 
     @Override
     public void init(FMLStateEvent event) {
-
-//		item item = item.getItemFromBlock(ValkyrienWarfareControlMod.INSTANCE.pilotsChair);
-//        ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(ValkyrienWarfareControlMod.MODID.toLowerCase() + ":" + ValkyrienWarfareControlMod.INSTANCE.pilotsChair.unlocalizedName, "inventory"));
-        // Minecraft.getMinecraft().getRenderItem().getItemModelMesher()
-        // .register(ValkyrienWarfareControlMod.INSTANCE.systemLinker, 0, new ModelResourceLocation(ValkyrienWarfareMod.MODID+":systemLinker", "inventory"));
     }
 
     @Override

@@ -96,16 +96,6 @@ public abstract class MixinRenderGlobal {
     @Shadow
     public abstract void postRenderDamagedBlocks();
 
-    //TODO: fix the rest of the mod to test this
-    /*@Inject(method = "drawBlockDamageTexture",
-            at = @At(value = "INVOKE",
-                    target = "Lnet/minecraft/world/World;getBlockState(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/block/state/IBlockState;",
-                    ordinal = 1),
-            locals = LocalCapture.PRINT)
-    public void preGetBlockStateDamage(Tessellator tessellatorIn, BufferBuilder bufferBuilderIn, Entity entityIn, float partialTicks, CallbackInfo callbackInfo) {
-        //this.wrapperEntity = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(this.world, blockpos);
-    }*/
-
     /**
      * aa
      *
@@ -252,75 +242,7 @@ public abstract class MixinRenderGlobal {
             GL11.glPopMatrix();
         }
 
-		/*
-        if (blockLayerIn == BlockRenderLayer.TRANSLUCENT) {
-			GlStateManager.pushMatrix();
-			GL11.glEnable(GL11.GL_STENCIL_TEST);
-			GlStateManager.colorMask(false, false, false, false);
-//	        GlStateManager.depthMask(false);
-			GL11.glStencilFunc(GL11.GL_ALWAYS, 1, 255);
-			GL11.glStencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_REPLACE);
-			GL11.glStencilMask(255);
-			GL11.glDepthMask(false);
-			GlStateManager.clear(GL11.GL_STENCIL_BUFFER_BIT);
-			
-			for (PhysicsWrapperEntity wrapper : ValkyrienWarfareMod.physicsManager.getManagerForWorld(this.world).physicsEntities) {
-				GL11.glPushMatrix();
-				if (wrapper.wrapping.renderer != null && wrapper.wrapping.renderer.shouldRender()) {
-//	                wrapper.wrapping.renderer.renderBlockLayer(BlockRenderLayer.SOLID, partialTicks, pass);
-				}
-				GL11.glPopMatrix();
-			}
-			
-			GlStateManager.colorMask(true, true, true, true);
-			GL11.glStencilMask(0);
-			GL11.glStencilFunc(GL11.GL_NOTEQUAL, 1, 255);
-			GL11.glDepthMask(true);
-		}
-		*/
-
         GlStateManager.resetColor();
-        //vanilla code follows
     }
 
-
-    @Inject(method = "renderBlockLayer(Lnet/minecraft/util/BlockRenderLayer;DILnet/minecraft/entity/Entity;)I", at = @At("RETURN"))
-    public void postRenderBlockLayer(BlockRenderLayer blockLayerIn, double partialTicks, int pass, Entity entityIn, CallbackInfoReturnable callbackInfo) {
-        /*
-		if (blockLayerIn == BlockRenderLayer.TRANSLUCENT) {
-			GL11.glDisable(GL11.GL_STENCIL_TEST);
-			GlStateManager.popMatrix();
-		}
-		*/
-    }
-
-    /**
-     * aa
-     *
-     * @author xd
-     */
-	// @Overwrite
-	public Particle spawnEntityFX(int particleID, boolean ignoreRange, double x, double y, double z, double xSpeed,
-			double ySpeed, double zSpeed, int... parameters) {
-		BlockPos particlePos = new BlockPos(x, y, z);
-		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(this.world,
-				particlePos);
-		if (wrapper != null) {
-			Vector newCoords = new Vector(x, y, z);
-			// RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform,
-			// newCoords);
-			wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(newCoords,
-					TransformType.SUBSPACE_TO_GLOBAL);
-			x = newCoords.X;
-			y = newCoords.Y;
-			z = newCoords.Z;
-		}
-		// vanilla code follows
-		return this.spawnParticle0(particleID, ignoreRange, false, x, y, z, xSpeed, ySpeed, zSpeed, parameters);
-	}
-
-    @Shadow
-    public Particle spawnParticle0(int particleID, boolean ignoreRange, boolean minParticles, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, int... parameters) {
-        return null;
-    }
 }

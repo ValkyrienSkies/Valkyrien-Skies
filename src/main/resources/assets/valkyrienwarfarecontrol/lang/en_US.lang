@@ -13,6 +13,8 @@ tile.thrustrelay.name=Thrust Relay
 tile.thrustmodulator.name=Thrust Modulator
 tile.shiphelm.name=Ship Helm
 tile.shiptelegraph.name=Ship Telegraph
+tile.vw_gyroscope.name=Ship Gyroscope
+tile.vw_liftvalve.name=Lift Valve
 
 #ENGINES
 tile.basicengine.name=Basic Engine

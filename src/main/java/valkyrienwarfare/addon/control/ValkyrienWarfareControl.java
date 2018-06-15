@@ -38,7 +38,6 @@ import valkyrienwarfare.addon.control.capability.ImplCapabilityLastRelay;
 import valkyrienwarfare.addon.control.capability.StorageLastRelay;
 import valkyrienwarfare.addon.control.gui.ControlGUIHandler;
 import valkyrienwarfare.addon.control.item.ItemRelayWire;
-import valkyrienwarfare.addon.control.item.ItemShipStealer;
 import valkyrienwarfare.addon.control.item.ItemSystemLinker;
 import valkyrienwarfare.addon.control.network.EntityFixHandler;
 import valkyrienwarfare.addon.control.network.EntityFixMessage;
@@ -67,7 +66,6 @@ import valkyrienwarfare.addon.control.tileentity.TileEntityPropellerEngine;
 import valkyrienwarfare.addon.control.tileentity.TileEntityShipHelm;
 import valkyrienwarfare.addon.control.tileentity.TileEntityShipTelegraph;
 import valkyrienwarfare.addon.control.tileentity.TileEntityThrustModulator;
-import valkyrienwarfare.addon.control.tileentity.TileEntityZepplinController;
 import valkyrienwarfare.addon.world.ValkyrienWarfareWorld;
 import valkyrienwarfare.api.addons.Module;
 import valkyrienwarfare.api.addons.VWAddon;
@@ -79,7 +77,7 @@ public class ValkyrienWarfareControl extends Module {
     public static final Capability<ICapabilityLastRelay> lastRelayCapability = null;
     public static ValkyrienWarfareControl INSTANCE;
     public static SimpleNetworkWrapper controlNetwork;
-    public final BlocksValkyrienWarfareControl blocks;
+    public final BlocksValkyrienWarfareControl vwControlBlocks;
     public Item systemLinker;
     public Item relayWire;
 
@@ -88,7 +86,7 @@ public class ValkyrienWarfareControl extends Module {
         if (ValkyrienWarfareMod.INSTANCE.isRunningOnClient()) {
             this.setClientProxy(new ClientProxyControl());
         }
-        blocks = new BlocksValkyrienWarfareControl(this);
+        vwControlBlocks = new BlocksValkyrienWarfareControl(this);
         INSTANCE = this;
     }
 
@@ -109,7 +107,7 @@ public class ValkyrienWarfareControl extends Module {
 
     @Override
     public void registerBlocks(RegistryEvent.Register<Block> event) {
-        blocks.registerBlocks(event);
+        vwControlBlocks.registerBlocks(event);
     }
 
     @Override
@@ -122,7 +120,6 @@ public class ValkyrienWarfareControl extends Module {
         GameRegistry.registerTileEntity(TileEntityShipHelm.class, "tileshiphelm");
         GameRegistry.registerTileEntity(TileEntityShipTelegraph.class, "tileshiptelegraph");
         GameRegistry.registerTileEntity(TileEntityPropellerEngine.class, "tilepropellerengine");
-        GameRegistry.registerTileEntity(TileEntityZepplinController.class, "tilezepplin_controller");
         GameRegistry.registerTileEntity(TileEntityHullSealer.class, "tileshiphullsealer");
         GameRegistry.registerTileEntity(TileEntityGyroscope.class, "tilegyroscope");
         GameRegistry.registerTileEntity(TileEntityLiftValve.class, "tileliftvalve");
@@ -136,26 +133,26 @@ public class ValkyrienWarfareControl extends Module {
         event.getRegistry().register(systemLinker);
         event.getRegistry().register(relayWire);
 
-        blocks.registerBlockItems(event);
+        vwControlBlocks.registerBlockItems(event);
     }
 
     @Override
     public void registerRecipes(RegistryEvent.Register<IRecipe> event) {
-        registerRecipe(event, new ItemStack(blocks.pilotsChair), "SLS", "EWE", " S ", 'S', Items.STICK, 'L', Items.LEATHER, 'W', Item.getItemFromBlock(Blocks.LOG), 'E', ValkyrienWarfareWorld.INSTANCE.etheriumCrystal);
+        registerRecipe(event, new ItemStack(vwControlBlocks.pilotsChair), "SLS", "EWE", " S ", 'S', Items.STICK, 'L', Items.LEATHER, 'W', Item.getItemFromBlock(Blocks.LOG), 'E', ValkyrienWarfareWorld.INSTANCE.etheriumCrystal);
         registerRecipe(event, new ItemStack(systemLinker), "IR ", " DR", "I I", 'I', Items.IRON_INGOT, 'D', Items.DIAMOND, 'R', Items.REDSTONE);
-        registerRecipe(event, new ItemStack(blocks.basicHoverController), "III", "TCT", "III", 'I', Item.getItemFromBlock(Blocks.IRON_BLOCK), 'C', Items.COMPASS, 'T', Item.getItemFromBlock(Blocks.CRAFTING_TABLE));
+        registerRecipe(event, new ItemStack(vwControlBlocks.basicHoverController), "III", "TCT", "III", 'I', Item.getItemFromBlock(Blocks.IRON_BLOCK), 'C', Items.COMPASS, 'T', Item.getItemFromBlock(Blocks.CRAFTING_TABLE));
 
-        registerRecipe(event, new ItemStack(blocks.antigravityEngine, 4), "#I#", "#E#", "WEW", '#', Item.getItemFromBlock(Blocks.PLANKS), 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorld.INSTANCE.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));
-        registerRecipe(event, new ItemStack(blocks.advancedEtherCompressor, 4), "#I#", "#E#", "WEW", '#', Item.getItemFromBlock(Blocks.STONE), 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorld.INSTANCE.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));
-        registerRecipe(event, new ItemStack(blocks.advancedEtherCompressor, 2), "#I#", "#E#", "WEW", '#', Item.getItemFromBlock(Blocks.COBBLESTONE), 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorld.INSTANCE.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));
-        registerRecipe(event, new ItemStack(blocks.eliteEtherCompressor, 4), "III", "IEI", "WEW", 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorld.INSTANCE.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));
-        registerRecipe(event, new ItemStack(blocks.ultimateEtherCompressor, 4), "#I#", "#E#", "WEW", '#', Item.getItemFromBlock(Blocks.OBSIDIAN), 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorld.INSTANCE.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));
+        registerRecipe(event, new ItemStack(vwControlBlocks.antigravityEngine, 4), "#I#", "#E#", "WEW", '#', Item.getItemFromBlock(Blocks.PLANKS), 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorld.INSTANCE.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));
+        registerRecipe(event, new ItemStack(vwControlBlocks.advancedEtherCompressor, 4), "#I#", "#E#", "WEW", '#', Item.getItemFromBlock(Blocks.STONE), 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorld.INSTANCE.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));
+        registerRecipe(event, new ItemStack(vwControlBlocks.advancedEtherCompressor, 2), "#I#", "#E#", "WEW", '#', Item.getItemFromBlock(Blocks.COBBLESTONE), 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorld.INSTANCE.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));
+        registerRecipe(event, new ItemStack(vwControlBlocks.eliteEtherCompressor, 4), "III", "IEI", "WEW", 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorld.INSTANCE.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));
+        registerRecipe(event, new ItemStack(vwControlBlocks.ultimateEtherCompressor, 4), "#I#", "#E#", "WEW", '#', Item.getItemFromBlock(Blocks.OBSIDIAN), 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorld.INSTANCE.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));
 
-        registerRecipe(event, new ItemStack(blocks.basicEngine, 4), "I##", "IPP", "I##", '#', Item.getItemFromBlock(Blocks.PLANKS), 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT);
-        registerRecipe(event, new ItemStack(blocks.advancedEngine, 4), "I##", "IPP", "I##", '#', Item.getItemFromBlock(Blocks.STONE), 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT);
-        registerRecipe(event, new ItemStack(blocks.advancedEngine, 2), "I##", "IPP", "I##", '#', Item.getItemFromBlock(Blocks.COBBLESTONE), 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT);
-        registerRecipe(event, new ItemStack(blocks.eliteEngine, 4), "III", "IPP", "III", 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT);
-        registerRecipe(event, new ItemStack(blocks.ultimateEngine, 4), "I##", "IPP", "I##", '#', Item.getItemFromBlock(Blocks.OBSIDIAN), 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT);
+        registerRecipe(event, new ItemStack(vwControlBlocks.basicEngine, 4), "I##", "IPP", "I##", '#', Item.getItemFromBlock(Blocks.PLANKS), 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT);
+        registerRecipe(event, new ItemStack(vwControlBlocks.advancedEngine, 4), "I##", "IPP", "I##", '#', Item.getItemFromBlock(Blocks.STONE), 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT);
+        registerRecipe(event, new ItemStack(vwControlBlocks.advancedEngine, 2), "I##", "IPP", "I##", '#', Item.getItemFromBlock(Blocks.COBBLESTONE), 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT);
+        registerRecipe(event, new ItemStack(vwControlBlocks.eliteEngine, 4), "III", "IPP", "III", 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT);
+        registerRecipe(event, new ItemStack(vwControlBlocks.ultimateEngine, 4), "I##", "IPP", "I##", '#', Item.getItemFromBlock(Blocks.OBSIDIAN), 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT);
     }
 
     @Override
@@ -189,15 +186,15 @@ public class ValkyrienWarfareControl extends Module {
         double eliteEtherCompressorPower = config.get("control.power.compressor", "eliteEtherCompressorPower", 80000D, "engine power for the elite Ether Compressor").getDouble();
         double ultimateEtherCompressorPower = config.get("control.power.compressor", "ultimateEtherCompressorPower", 100000D, "engine power for the ultimate Ether Compressor").getDouble();
 
-        blocks.basicEngine.setEnginePower(basicEnginePower);
-        blocks.advancedEngine.setEnginePower(advancedEnginePower);
-        blocks.eliteEngine.setEnginePower(eliteEnginePower);
-        blocks.ultimateEngine.setEnginePower(ultimateEnginePower);
-        blocks.redstoneEngine.setEnginePower(redstoneEnginePower);
+        vwControlBlocks.basicEngine.setEnginePower(basicEnginePower);
+        vwControlBlocks.advancedEngine.setEnginePower(advancedEnginePower);
+        vwControlBlocks.eliteEngine.setEnginePower(eliteEnginePower);
+        vwControlBlocks.ultimateEngine.setEnginePower(ultimateEnginePower);
+        vwControlBlocks.redstoneEngine.setEnginePower(redstoneEnginePower);
 
-        blocks.antigravityEngine.setEnginePower(basicEtherCompressorPower);
-        blocks.advancedEtherCompressor.setEnginePower(advancedEtherCompressorPower);
-        blocks.eliteEtherCompressor.setEnginePower(eliteEtherCompressorPower);
-        blocks.ultimateEtherCompressor.setEnginePower(ultimateEtherCompressorPower);
+        vwControlBlocks.antigravityEngine.setEnginePower(basicEtherCompressorPower);
+        vwControlBlocks.advancedEtherCompressor.setEnginePower(advancedEtherCompressorPower);
+        vwControlBlocks.eliteEtherCompressor.setEnginePower(eliteEtherCompressorPower);
+        vwControlBlocks.ultimateEtherCompressor.setEnginePower(ultimateEtherCompressorPower);
     }
 }

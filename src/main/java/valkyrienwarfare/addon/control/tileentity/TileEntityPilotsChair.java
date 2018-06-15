@@ -35,7 +35,7 @@ public class TileEntityPilotsChair extends ImplTileEntityPilotable {
     @Override
     void processControlMessage(PilotControlsMessage message, EntityPlayerMP sender) {
         IBlockState blockState = getWorld().getBlockState(getPos());
-        if (blockState.getBlock() == ValkyrienWarfareControl.INSTANCE.blocks.pilotsChair) {
+        if (blockState.getBlock() == ValkyrienWarfareControl.INSTANCE.vwControlBlocks.pilotsChair) {
             PhysicsWrapperEntity wrapper = getParentPhysicsEntity();
             if (wrapper != null) {
                 processCalculationsForControlMessageAndApplyCalculations(wrapper, message, blockState);

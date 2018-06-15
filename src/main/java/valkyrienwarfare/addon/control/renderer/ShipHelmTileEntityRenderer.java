@@ -44,7 +44,7 @@ public class ShipHelmTileEntityRenderer extends TileEntitySpecialRenderer<TileEn
         if (tileentity instanceof TileEntityShipHelm) {
             IBlockState helmState = tileentity.getWorld().getBlockState(tileentity.getPos());
 
-            if (helmState.getBlock() != ValkyrienWarfareControl.INSTANCE.blocks.shipHelm) {
+            if (helmState.getBlock() != ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipHelm) {
                 return;
             }
 
@@ -83,10 +83,10 @@ public class ShipHelmTileEntityRenderer extends TileEntitySpecialRenderer<TileEn
             double smoothWheel = tileentity.lastWheelRotation + (smoothWheelDif) * partialTick;
             BlockPos originPos = tileentity.getPos();
 
-            IBlockState wheelState = ValkyrienWarfareControl.INSTANCE.blocks.shipWheel.getStateFromMeta(0);
-            IBlockState compassState = ValkyrienWarfareControl.INSTANCE.blocks.shipWheel.getStateFromMeta(1);
-            IBlockState glassState = ValkyrienWarfareControl.INSTANCE.blocks.shipWheel.getStateFromMeta(2);
-            IBlockState helmStateToRender = ValkyrienWarfareControl.INSTANCE.blocks.shipWheel.getStateFromMeta(3);
+            IBlockState wheelState = ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipWheel.getStateFromMeta(0);
+            IBlockState compassState = ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipWheel.getStateFromMeta(1);
+            IBlockState glassState = ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipWheel.getStateFromMeta(2);
+            IBlockState helmStateToRender = ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipWheel.getStateFromMeta(3);
             // TODO: Better rendering cache
             int brightness = tileentity.getWorld().getCombinedLight(tileentity.getPos(), 0);
 

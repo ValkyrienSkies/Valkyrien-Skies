@@ -38,12 +38,10 @@ public class Node {
     private NodeNetwork parentNetwork;
     private PhysicsObject parentPhysicsObject;
     // No duplicate connections, use Set<Node> to guarantee this
-    private Set<Node> linkedNodes;
     private Set<BlockPos> linkedNodesPos;
 
     public Node(TileEntity parent) {
         this.parentTile = parent;
-        this.linkedNodes = new HashSet<Node>();
         this.linkedNodesPos = new HashSet<BlockPos>();
         this.parentNetwork = new NodeNetwork(parentPhysicsObject);
         this.parentNetwork.getNetworkedNodes().add(this);
@@ -60,9 +58,6 @@ public class Node {
     }
 
     public void linkNode(Node other) {
-        updateBuildState();
-        linkedNodes.add(other);
-        other.linkedNodes.add(this);
         linkedNodesPos.add(other.parentTile.getPos());
         other.linkedNodesPos.add(this.parentTile.getPos());
         parentNetwork.mergeWithNetworks(new NodeNetwork[]{other.parentNetwork});
@@ -74,9 +69,6 @@ public class Node {
     }
 
     public void unlinkNode(Node other, boolean updateNodeNetwork, boolean sendToClient) {
-        updateBuildState();
-        linkedNodes.remove(other);
-        other.linkedNodes.remove(this);
         linkedNodesPos.remove(other.parentTile.getPos());
         other.linkedNodesPos.remove(this.parentTile.getPos());
 
@@ -110,82 +102,30 @@ public class Node {
      * for the node network to rebuild itself
      */
     public void destroyNode() {
-        if (parentTile.getWorld().isRemote) {
-            // This is needed because it never gets called anywhere else in the client code
-            this.updateBuildState();
-        }
-
-        List<Node> connectedNodesCopy = new ArrayList<Node>(linkedNodes);
-        for (Node node : connectedNodesCopy) {
-            unlinkNode(node, false, false);
+    	System.out.println("Wtf");
+        List<BlockPos> connectedNodesCopy = new ArrayList<BlockPos>(linkedNodesPos);
+        for (BlockPos pos : connectedNodesCopy) {
+        	TileEntity nodeProvider = parentTile.getWorld().getTileEntity(pos);
+        	if (nodeProvider != null) {
+        		Node node = INodeProvider.class.cast(nodeProvider).getNode();
+        		if (node != null) {
+        			unlinkNode(node, false, false);
+        		} else {
+        			linkedNodesPos.remove(pos);
+        		}
+        	} else {
+        		linkedNodesPos.remove(pos);
+        	}
         }
         parentNetwork.recalculateNetworks(this);
 
         if (parentPhysicsObject != null) {
             parentPhysicsObject.getConcurrentNodesWithinShip().remove(this);
         }
-        
-        // System.out.println("NODE DESTROYED!!!");
-        // Assume this gets handled by the tileentity.invalidate() method, otherwise
-        // this won't work!
-        // if(!parentTile.getWorld().isRemote){
-        // sendUpdatesToNearby();
-        // for(Object node : backingArray){
-        // ((Node)node).sendUpdatesToNearby();
-        // }
-        // }
     }
 
     public PhysicsObject getPhysicsObject() {
         return parentPhysicsObject;
-    }
-
-    public void updateBuildState() {
-        if (!isFullyBuilt) {
-            isFullyBuilt = attemptToBuildNodeSet();
-            if (!isFullyBuilt) {
-                System.err.println("Node network building failed");
-            } else {
-                // System.out.println("Node network built successfully!");
-            }
-        }
-    }
-
-    /**
-     * Return true if set was built fully, false if otherwise
-     *
-     * @return
-     */
-    public boolean attemptToBuildNodeSet() {
-        List<BlockPos> toRemove = new ArrayList<BlockPos>();
-        for (BlockPos pos : linkedNodesPos) {
-            if (parentTile.getWorld().isBlockLoaded(pos)) {
-                boolean isLoaded = parentTile.getWorld().isBlockLoaded(pos);
-                TileEntity tile = parentTile.getWorld().getTileEntity(pos);
-                if (tile != null) {
-                    if (tile instanceof INodeProvider) {
-                        Node node = ((INodeProvider) tile).getNode();
-                        if (node != null) {
-                            linkedNodes.add(node);
-                            node.linkedNodes.add(this);
-                            parentNetwork.mergeWithNetworks(new NodeNetwork[]{node.parentNetwork});
-                        }
-                    }
-                } else {
-                    if (isLoaded) {
-                        // Assume the node somehow died on its own
-                        toRemove.add(pos);
-                    }
-                }
-            }
-        }
-        // TODO: This used to call remove(), which is wrong, watch out for any errors
-        // here.
-        linkedNodesPos.removeAll(toRemove);
-        if (linkedNodes.size() == linkedNodesPos.size()) {
-            return true;
-        }
-        return false;
     }
 
     /**
@@ -283,12 +223,27 @@ public class Node {
         return parentTile;
     }
 
-    public Set<Node> getConnectedNodes() {
-        return linkedNodes;
-    }
-
     public Set<BlockPos> getConnectedNodesBlockPos() {
         return linkedNodesPos;
     }
 
+    // TODO: Remove this.
+    public Set<Node> getConnectedNodes() {
+    	Set<Node> connectedNodes = new HashSet<Node>();
+    	for (BlockPos pos : getConnectedNodesBlockPos()) {
+    		TileEntity tile = parentTile.getWorld().getTileEntity(pos);
+    		if (tile != null && tile instanceof INodeProvider) {
+    			INodeProvider provider = (INodeProvider) tile;
+    			Node node = provider.getNode();
+    			if (node != null) {
+    				connectedNodes.add(node);
+    			}
+    		}
+    	}
+    	return connectedNodes;
+    }
+    
+    public void updateBuildState() {
+    	// Does nothing
+    }
 }

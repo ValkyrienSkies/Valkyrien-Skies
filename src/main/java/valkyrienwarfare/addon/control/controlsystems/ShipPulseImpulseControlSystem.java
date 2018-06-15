@@ -113,8 +113,6 @@ public class ShipPulseImpulseControlSystem {
 
                 double futureCurrentErrorY = currentErrorY + linearThama * potentialMaxForce.Y;
                 double futureEngineErrorAngularY = getEngineDistFromIdealAngular(forceTile.getPos(), rotationAndTranslationMatrix, angularVelocity.getAddition(potentialMaxThrust), calculations.gameTickCenterOfMass, calculations.getPhysicsTimeDeltaPerPhysTick());
-
-
                 boolean doesForceMinimizeError = false;
 
                 if (Math.abs(futureCurrentErrorY) < Math.abs(currentErrorY) && Math.abs(futureEngineErrorAngularY) < Math.abs(currentEngineErrorAngularY)) {
@@ -128,7 +126,6 @@ public class ShipPulseImpulseControlSystem {
                             doesForceMinimizeError = false;
                         }
                     }
-
                 }
 
                 if (doesForceMinimizeError) {
@@ -147,33 +144,6 @@ public class ShipPulseImpulseControlSystem {
                 angularVelocity.add(torque);
             }
         }
-
-
-
-
-		/*for(Node node : getNetworkedNodesList()) {
-            if(node.parentTile instanceof TileEntityEtherCompressor && !((TileEntityEtherCompressor) node.parentTile).updateParentShip()) {
-				TileEntityEtherCompressor forceTile = (TileEntityEtherCompressor) node.parentTile;
-
-				Vector tileForce = getForceForEngine(forceTile, forceTile.getPos(), calculations.invMass, linearMomentum, angularVelocity, rotationAndTranslationMatrix, posInWorld, calculations.centerOfMass, calculations.physTickSpeed);
-
-				tileForce.multiply(1D / calculations.physTickSpeed);
-
-				Vector forcePos = forceTile.getPositionInLocalSpaceWithOrientation();
-
-				double tileForceMagnitude = tileForce.length();
-
-				forceTile.setThrust(BigBastardMath.limitToRange(tileForceMagnitude, 0D, forceTile.getMaxThrust()));
-
-				Vector forceOutputWithRespectToTime = forceTile.getForceOutputOriented(calculations.physTickSpeed);
-
-				linearMomentum.add(forceOutputWithRespectToTime);
-
-				Vector torque = forceTile.getPositionInLocalSpaceWithOrientation().cross(forceOutputWithRespectToTime);
-				RotationMatrices.applyTransform3by3(invMOIMatrix, torque);
-				angularVelocity.add(torque);
-			}
-		}*/
 
         totalSecondsRunning += calculations.getPhysicsTimeDeltaPerPhysTick();
     }

@@ -542,10 +542,6 @@ public class PhysicsObject implements ISubspaceProvider {
         setShipTransformationManager(new ShipTransformationManager(this));
         getPhysicsProcessor().processInitialPhysicsData();
         getPhysicsProcessor().updateParentCenterOfMass();
-
-        for (Node node : this.getConcurrentNodesWithinShip()) {
-            node.updateBuildState();
-        }
     }
 
     public void injectChunkIntoWorld(Chunk chunk, int x, int z, boolean putInId2ChunkMap) {
@@ -773,14 +769,6 @@ public class PhysicsObject implements ISubspaceProvider {
             Node node = ((INodeProvider) tile).getNode();
             if (node != null) {
                 node.updateParentEntity(this);
-            } else {
-                System.err.println("How did we get a null node?");
-            }
-        }
-        for (TileEntity tile : nodeTileEntitiesToUpdate) {
-            Node node = ((INodeProvider) tile).getNode();
-            if (node != null) {
-                node.updateBuildState();
             } else {
                 System.err.println("How did we get a null node?");
             }

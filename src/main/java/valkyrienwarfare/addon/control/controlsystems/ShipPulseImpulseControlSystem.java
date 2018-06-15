@@ -199,31 +199,6 @@ public class ShipPulseImpulseControlSystem {
         return linearMomentumError;
     }
 
-    public Vector getForceForEngine(TileEntityEtherCompressor engine, BlockPos enginePos, double invMass, Vector linearMomentum, Vector angularVelocity, double[] rotationAndTranslationMatrix, Vector shipPos, Vector centerOfMass, double secondsToApply, double idealHeight) {
-        double stabilityVal = .145D;
-
-        Vector shipVel = new Vector(linearMomentum);
-
-        shipVel.multiply(invMass);
-
-        double linearDist = -getControllerDistFromIdealY(rotationAndTranslationMatrix, invMass, shipPos.Y, linearMomentum, idealHeight);
-        double angularDist = -getEngineDistFromIdealAngular(enginePos, rotationAndTranslationMatrix, angularVelocity, centerOfMass, secondsToApply);
-
-        engine.getAngularThrust().Y -= (angularConstant * secondsToApply) * angularDist;
-        engine.getLinearThrust().Y -= (linearConstant * secondsToApply) * linearDist;
-
-        engine.getAngularThrust().Y = Math.max(engine.getAngularThrust().Y, 0D);
-        engine.getLinearThrust().Y = Math.max(engine.getLinearThrust().Y, 0D);
-
-        engine.getAngularThrust().Y = Math.min(engine.getAngularThrust().Y, engine.getMaxThrust() * stabilityVal);
-        engine.getLinearThrust().Y = Math.min(engine.getLinearThrust().Y, engine.getMaxThrust() * (1D - stabilityVal));
-
-        Vector aggregateForce = engine.getLinearThrust().getAddition(engine.getAngularThrust());
-        aggregateForce.multiply(secondsToApply);
-
-        return aggregateForce;
-    }
-
     public double getEngineDistFromIdealAngular(BlockPos enginePos, double[] lToWRotation, Vector angularVelocity, Vector centerOfMass, double secondsToApply) {
         BlockPos pos = parentTile.getPos();
 

@@ -72,12 +72,5 @@ public class ValkyrienWarfareWorldGen implements IWorldGenerator {
 
     private void runDungeonGenerator(World world, Random rand, int chunk_X, int chunk_Z, int chancesToSpawn) {
     	boolean isLikelyShipChunk = PhysicsChunkManager.isLikelyShipChunk(chunk_X, chunk_Z);
-
-        //TODO: Enable this
-        if (!isLikelyShipChunk && Minecraft.getMinecraft().player != null) {
-            double random = Math.random();
-
-             SkyTempleGenerator.runGenerator(world, chunk_X, chunk_Z, random);
-        }
     }
 }

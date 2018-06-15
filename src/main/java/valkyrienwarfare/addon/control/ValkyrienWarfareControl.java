@@ -38,11 +38,8 @@ import valkyrienwarfare.addon.control.capability.ImplCapabilityLastRelay;
 import valkyrienwarfare.addon.control.capability.StorageLastRelay;
 import valkyrienwarfare.addon.control.gui.ControlGUIHandler;
 import valkyrienwarfare.addon.control.item.ItemRelayWire;
-import valkyrienwarfare.addon.control.item.ItemSystemLinker;
 import valkyrienwarfare.addon.control.network.EntityFixHandler;
 import valkyrienwarfare.addon.control.network.EntityFixMessage;
-import valkyrienwarfare.addon.control.network.HovercraftControllerGUIInputHandler;
-import valkyrienwarfare.addon.control.network.HovercraftControllerGUIInputMessage;
 import valkyrienwarfare.addon.control.network.MessagePlayerStoppedPiloting;
 import valkyrienwarfare.addon.control.network.MessagePlayerStoppedPilotingHandler;
 import valkyrienwarfare.addon.control.network.MessageStartPiloting;
@@ -56,8 +53,6 @@ import valkyrienwarfare.addon.control.piloting.PilotControlsMessageHandler;
 import valkyrienwarfare.addon.control.proxy.ClientProxyControl;
 import valkyrienwarfare.addon.control.proxy.CommonProxyControl;
 import valkyrienwarfare.addon.control.tileentity.TileEntityGyroscope;
-import valkyrienwarfare.addon.control.tileentity.TileEntityHoverController;
-import valkyrienwarfare.addon.control.tileentity.TileEntityHullSealer;
 import valkyrienwarfare.addon.control.tileentity.TileEntityLiftValve;
 import valkyrienwarfare.addon.control.tileentity.TileEntityNodeRelay;
 import valkyrienwarfare.addon.control.tileentity.TileEntityNormalEtherCompressor;
@@ -78,7 +73,6 @@ public class ValkyrienWarfareControl extends Module {
     public static ValkyrienWarfareControl INSTANCE;
     public static SimpleNetworkWrapper controlNetwork;
     public final BlocksValkyrienWarfareControl vwControlBlocks;
-    public Item systemLinker;
     public Item relayWire;
 
     public ValkyrienWarfareControl() {
@@ -112,7 +106,6 @@ public class ValkyrienWarfareControl extends Module {
 
     @Override
     protected void registerTileEntities() {
-        GameRegistry.registerTileEntity(TileEntityHoverController.class, "tilehovercontroller");
         GameRegistry.registerTileEntity(TileEntityNormalEtherCompressor.class, "tileantigravengine");
         GameRegistry.registerTileEntity(TileEntityPilotsChair.class, "tilemanualshipcontroller");
         GameRegistry.registerTileEntity(TileEntityNodeRelay.class, "tilethrustrelay");
@@ -120,17 +113,14 @@ public class ValkyrienWarfareControl extends Module {
         GameRegistry.registerTileEntity(TileEntityShipHelm.class, "tileshiphelm");
         GameRegistry.registerTileEntity(TileEntityShipTelegraph.class, "tileshiptelegraph");
         GameRegistry.registerTileEntity(TileEntityPropellerEngine.class, "tilepropellerengine");
-        GameRegistry.registerTileEntity(TileEntityHullSealer.class, "tileshiphullsealer");
         GameRegistry.registerTileEntity(TileEntityGyroscope.class, "tilegyroscope");
         GameRegistry.registerTileEntity(TileEntityLiftValve.class, "tileliftvalve");
     }
 
     @Override
     public void registerItems(RegistryEvent.Register<Item> event) {
-        systemLinker = new ItemSystemLinker().setUnlocalizedName("systemlinker").setRegistryName(getModID(), "systemlinker").setCreativeTab(ValkyrienWarfareMod.vwTab).setMaxStackSize(1);
-        relayWire = new ItemRelayWire().setUnlocalizedName("relaywire").setRegistryName(getModID(), "relaywire").setCreativeTab(ValkyrienWarfareMod.vwTab).setMaxStackSize(1);
+    	relayWire = new ItemRelayWire().setUnlocalizedName("relaywire").setRegistryName(getModID(), "relaywire").setCreativeTab(ValkyrienWarfareMod.vwTab).setMaxStackSize(1);
 
-        event.getRegistry().register(systemLinker);
         event.getRegistry().register(relayWire);
 
         vwControlBlocks.registerBlockItems(event);
@@ -139,8 +129,6 @@ public class ValkyrienWarfareControl extends Module {
     @Override
     public void registerRecipes(RegistryEvent.Register<IRecipe> event) {
         registerRecipe(event, new ItemStack(vwControlBlocks.pilotsChair), "SLS", "EWE", " S ", 'S', Items.STICK, 'L', Items.LEATHER, 'W', Item.getItemFromBlock(Blocks.LOG), 'E', ValkyrienWarfareWorld.INSTANCE.etheriumCrystal);
-        registerRecipe(event, new ItemStack(systemLinker), "IR ", " DR", "I I", 'I', Items.IRON_INGOT, 'D', Items.DIAMOND, 'R', Items.REDSTONE);
-        registerRecipe(event, new ItemStack(vwControlBlocks.basicHoverController), "III", "TCT", "III", 'I', Item.getItemFromBlock(Blocks.IRON_BLOCK), 'C', Items.COMPASS, 'T', Item.getItemFromBlock(Blocks.CRAFTING_TABLE));
 
         registerRecipe(event, new ItemStack(vwControlBlocks.antigravityEngine, 4), "#I#", "#E#", "WEW", '#', Item.getItemFromBlock(Blocks.PLANKS), 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorld.INSTANCE.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));
         registerRecipe(event, new ItemStack(vwControlBlocks.advancedEtherCompressor, 4), "#I#", "#E#", "WEW", '#', Item.getItemFromBlock(Blocks.STONE), 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorld.INSTANCE.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));
@@ -159,7 +147,6 @@ public class ValkyrienWarfareControl extends Module {
     protected void registerNetworks() {
         controlNetwork = NetworkRegistry.INSTANCE.newSimpleChannel("controlnetwork");
         controlNetwork.registerMessage(EntityFixHandler.class, EntityFixMessage.class, 0, Side.CLIENT);
-        controlNetwork.registerMessage(HovercraftControllerGUIInputHandler.class, HovercraftControllerGUIInputMessage.class, 1, Side.SERVER);
         controlNetwork.registerMessage(PilotControlsMessageHandler.class, PilotControlsMessage.class, 2, Side.SERVER);
         controlNetwork.registerMessage(MessageStartPilotingHandler.class, MessageStartPiloting.class, 3, Side.CLIENT);
         controlNetwork.registerMessage(MessageStopPilotingHandler.class, MessageStopPiloting.class, 4, Side.CLIENT);

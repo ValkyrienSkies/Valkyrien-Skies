@@ -17,12 +17,9 @@
 package valkyrienwarfare.api.block.ethercompressor;
 
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.fuel.IEtherGasEngine;
 import valkyrienwarfare.addon.control.nodenetwork.BasicForceNodeTileEntity;
-import valkyrienwarfare.addon.control.tileentity.TileEntityHoverController;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
@@ -95,19 +92,6 @@ public abstract class TileEntityEtherCompressor extends BasicForceNodeTileEntity
 		if (controllerPos == null) {
 			Vector output = super.getForceOutputUnoriented(secondsToApply, physicsObject);
 			return output;
-		}
-		// TODO: Causing physics crash with the Sponge
-		// TileEntity controllerTile = world.getTileEntity(controllerPos);
-		TileEntity controllerTile = physicsObject.getShipChunks().getTileEntity(controllerPos);
-		if (controllerTile != null) {
-			if (controllerTile instanceof TileEntityHoverController) {
-				TileEntityHoverController controller = (TileEntityHoverController) controllerTile;
-				PhysicsObject physObj = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(world, pos)
-						.getPhysicsObject();
-				Vector notToReturn = controller.getForceForEngine(this, world, getPos(), world.getBlockState(pos),
-						physObj, secondsToApply);
-				this.currentThrust = notToReturn.length() / secondsToApply;
-			}
 		}
 		return super.getForceOutputUnoriented(secondsToApply, physicsObject);
 	}

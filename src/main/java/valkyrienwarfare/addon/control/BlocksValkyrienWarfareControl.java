@@ -23,7 +23,6 @@ import net.minecraftforge.event.RegistryEvent;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.block.BlockDopedEtherium;
 import valkyrienwarfare.addon.control.block.BlockGyroscope;
-import valkyrienwarfare.addon.control.block.BlockHovercraftController;
 import valkyrienwarfare.addon.control.block.BlockLiftValve;
 import valkyrienwarfare.addon.control.block.BlockShipHelm;
 import valkyrienwarfare.addon.control.block.BlockShipPassengerChair;
@@ -54,7 +53,6 @@ public class BlocksValkyrienWarfareControl {
     public BlockNormalEtherCompressor ultimateEtherCompressor;
     public BlockCreativeEtherCompressor creativeEtherCompressor;
 
-    public Block basicHoverController;
     public Block dopedEtherium;
     public Block pilotsChair;
     public Block passengerChair;
@@ -81,7 +79,6 @@ public class BlocksValkyrienWarfareControl {
         ultimateEtherCompressor = (BlockNormalEtherCompressor) new BlockNormalEtherCompressor(Material.GROUND, 100000.0d).setHardness(8f).setUnlocalizedName("ultimateethercompressor").setRegistryName(getModID(), "ultimateethercompressor").setCreativeTab(ValkyrienWarfareMod.vwTab);
         creativeEtherCompressor = (BlockCreativeEtherCompressor) new BlockCreativeEtherCompressor(Material.BARRIER, Double.MAX_VALUE / 4).setHardness(0.0f).setUnlocalizedName("creativeethercompressor").setRegistryName(getModID(), "creativeethercompressor").setCreativeTab(ValkyrienWarfareMod.vwTab);
 
-        basicHoverController = new BlockHovercraftController(Material.IRON).setHardness(10f).setUnlocalizedName("basichovercraftcontroller").setRegistryName(getModID(), "basichovercraftcontroller").setCreativeTab(ValkyrienWarfareMod.vwTab);
         dopedEtherium = new BlockDopedEtherium(Material.GLASS).setHardness(4f).setUnlocalizedName("dopedetherium").setRegistryName(getModID(), "dopedetherium").setCreativeTab(ValkyrienWarfareMod.vwTab);
         pilotsChair = new BlockShipPilotsChair(Material.IRON).setHardness(4f).setUnlocalizedName("shippilotschair").setRegistryName(getModID(), "shippilotschair").setCreativeTab(ValkyrienWarfareMod.vwTab);
 
@@ -111,7 +108,6 @@ public class BlocksValkyrienWarfareControl {
         event.getRegistry().register(ultimateEtherCompressor);
         event.getRegistry().register(creativeEtherCompressor);
 
-        event.getRegistry().register(basicHoverController);
         event.getRegistry().register(dopedEtherium);
         event.getRegistry().register(pilotsChair);
         event.getRegistry().register(passengerChair);
@@ -139,7 +135,6 @@ public class BlocksValkyrienWarfareControl {
         registerItemBlock(event, ultimateEtherCompressor);
         registerItemBlock(event, creativeEtherCompressor);
 
-        registerItemBlock(event, basicHoverController);
         registerItemBlock(event, dopedEtherium);
         registerItemBlock(event, pilotsChair);
         registerItemBlock(event, passengerChair);

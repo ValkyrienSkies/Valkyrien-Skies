@@ -55,7 +55,6 @@ public class ClientProxyControl extends CommonProxyControl {
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.ultimateEngine);
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.redstoneEngine);
 
-        registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.basicHoverController);
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.antigravityEngine);
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.advancedEtherCompressor);
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.eliteEtherCompressor);
@@ -76,7 +75,6 @@ public class ClientProxyControl extends CommonProxyControl {
     }
 
     private static void registerItemModels() {
-        registerItemModel(ValkyrienWarfareControl.INSTANCE.systemLinker);
         registerItemModel(ValkyrienWarfareControl.INSTANCE.relayWire);
     }
 

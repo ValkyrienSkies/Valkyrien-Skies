@@ -22,12 +22,12 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
 
-public abstract class BasicNodeTileEntity extends TileEntity implements INodeProvider, ITickable {
+public abstract class BasicNodeTileEntity extends TileEntity implements IVWNodeProvider, ITickable {
 
-	private final Node tileNode;
+	private final VWNode_TileEntity tileNode;
 
 	public BasicNodeTileEntity() {
-		tileNode = new Node(this);
+		tileNode = new VWNode_TileEntity(this);
 	}
 
 	@Override
@@ -66,7 +66,7 @@ public abstract class BasicNodeTileEntity extends TileEntity implements INodePro
 	}
 
 	@Override
-	public Node getNode() {
+	public VWNode_TileEntity getNode() {
 		return tileNode;
 	}
 
@@ -74,9 +74,9 @@ public abstract class BasicNodeTileEntity extends TileEntity implements INodePro
 	public void invalidate() {
 		// The Node just got destroyed
 		this.tileEntityInvalid = true;
-		Node toInvalidate = getNode();
-
-		toInvalidate.destroyNode();
+		VWNode_TileEntity toInvalidate = getNode();
+		toInvalidate.breakAllConnections();
+		toInvalidate.invalidate();
 	}
 
 	/**
@@ -85,6 +85,7 @@ public abstract class BasicNodeTileEntity extends TileEntity implements INodePro
 	@Override
 	public void validate() {
 		this.tileEntityInvalid = false;
+		getNode().validate();
 	}
 
 	@Override

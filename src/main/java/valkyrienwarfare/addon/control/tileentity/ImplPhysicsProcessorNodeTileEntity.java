@@ -22,17 +22,13 @@ import valkyrienwarfare.addon.control.nodenetwork.INodePhysicsProcessor;
 
 public abstract class ImplPhysicsProcessorNodeTileEntity extends BasicNodeTileEntity implements INodePhysicsProcessor {
 
-    private static int priorityTieBreaker = 0;
     /**
      * If -1, the algorithm will ignore this processor
      */
     private int priority;
-    private int tieBreaker;
 
     public ImplPhysicsProcessorNodeTileEntity(int priority) {
         this.priority = priority;
-        this.tieBreaker = priorityTieBreaker;
-        priorityTieBreaker++;
     }
 
     @Override
@@ -44,12 +40,6 @@ public abstract class ImplPhysicsProcessorNodeTileEntity extends BasicNodeTileEn
     public void setPriority(int newPriority) {
         priority = newPriority;
     }
-
-    @Override
-    public int getTieBreaker() {
-        return tieBreaker;
-    }
-
     @Override
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
@@ -61,17 +51,6 @@ public abstract class ImplPhysicsProcessorNodeTileEntity extends BasicNodeTileEn
         compound = super.writeToNBT(compound);
         compound.setInteger("priority", priority);
         return compound;
-    }
-
-    // Used maintain order of which processors get called first. If both processors
-    // have equal priorities, then we use the tieBreaker() to break ties.
-    @Override
-    public int compareTo(INodePhysicsProcessor other) {
-        if (getPriority() != other.getPriority()) {
-            return getPriority() - other.getPriority();
-        } else {
-            return getTieBreaker() - other.getTieBreaker();
-        }
     }
 
 }

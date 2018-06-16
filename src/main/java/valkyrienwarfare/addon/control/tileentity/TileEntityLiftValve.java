@@ -16,7 +16,7 @@
 
 package valkyrienwarfare.addon.control.tileentity;
 
-import valkyrienwarfare.addon.control.nodenetwork.Node;
+import valkyrienwarfare.addon.control.nodenetwork.VWNode_TileEntity;
 import valkyrienwarfare.api.block.ethercompressor.TileEntityEtherCompressor;
 import valkyrienwarfare.physics.PhysicsCalculations;
 import valkyrienwarfare.physics.management.PhysicsObject;
@@ -31,12 +31,6 @@ public class TileEntityLiftValve extends ImplPhysicsProcessorNodeTileEntity {
 
     @Override
     public void onPhysicsTick(PhysicsObject object, PhysicsCalculations calculations, double secondsToSimulate) {
-        for (Node node : getNode().getConnectedNodes()) {
-            if (node.getParentTile() instanceof TileEntityEtherCompressor) {
-                TileEntityEtherCompressor compressor = (TileEntityEtherCompressor) node.getParentTile();
-                compressor.addEtherGas(10);
-            }
-        }
 
     }
 

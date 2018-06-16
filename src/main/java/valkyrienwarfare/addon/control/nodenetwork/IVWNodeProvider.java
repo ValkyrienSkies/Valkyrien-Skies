@@ -16,7 +16,7 @@
 
 package valkyrienwarfare.addon.control.nodenetwork;
 
-public interface INodeProvider {
+public interface IVWNodeProvider {
 
-    public Node getNode();
+    public IVWNode getNode();
 }

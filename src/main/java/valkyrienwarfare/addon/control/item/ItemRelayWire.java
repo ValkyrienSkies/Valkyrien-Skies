@@ -32,8 +32,9 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.capability.ICapabilityLastRelay;
-import valkyrienwarfare.addon.control.nodenetwork.INodeProvider;
-import valkyrienwarfare.addon.control.nodenetwork.Node;
+import valkyrienwarfare.addon.control.nodenetwork.IVWNode;
+import valkyrienwarfare.addon.control.nodenetwork.IVWNodeProvider;
+import valkyrienwarfare.addon.control.nodenetwork.VWNode_TileEntity;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -61,7 +62,7 @@ public class ItemRelayWire extends Item {
 
         ItemStack stack = player.getHeldItem(hand);
 
-        if (currentTile instanceof INodeProvider && !worldIn.isRemote) {
+        if (currentTile instanceof IVWNodeProvider && !worldIn.isRemote) {
             ICapabilityLastRelay inst = stack.getCapability(ValkyrienWarfareControl.lastRelayCapability, null);
             if (inst != null) {
 
@@ -80,15 +81,15 @@ public class ItemRelayWire extends Item {
                     if (!lastPos.equals(pos) && lastPosTile != null && currentTile != null) {
 
                         if (distance < range * range) {
-                            Node lastPosNode = ((INodeProvider) lastPosTile).getNode();
-                            Node currentPosNode = ((INodeProvider) currentTile).getNode();
+                        	IVWNode lastPosNode = ((IVWNodeProvider) lastPosTile).getNode();
+                            IVWNode currentPosNode = ((IVWNodeProvider) currentTile).getNode();
                             //Connect the two bastards
 //							inst.setLastRelay(pos);
                             inst.setLastRelay(null);
 
                             if (lastPosNode != null && currentPosNode != null) {
                                 if (currentPosNode.canLinkToNode(lastPosNode)) {
-                                    currentPosNode.linkNode(lastPosNode);
+                                    currentPosNode.makeConnection(lastPosNode);
                                 } else {
                                     player.sendMessage(new TextComponentString("One of the connections must be to a thrust relay node"));
                                     inst.setLastRelay(null);
@@ -108,7 +109,7 @@ public class ItemRelayWire extends Item {
             }
         }
 
-        if (currentTile instanceof INodeProvider) {
+        if (currentTile instanceof IVWNodeProvider) {
             return EnumActionResult.SUCCESS;
         }
 

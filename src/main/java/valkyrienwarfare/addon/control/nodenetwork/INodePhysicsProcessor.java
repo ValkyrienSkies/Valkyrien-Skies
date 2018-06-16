@@ -25,8 +25,6 @@ public interface INodePhysicsProcessor extends Comparable<INodePhysicsProcessor>
 
     public void setPriority(int newPriority);
 
-    public int getTieBreaker();
-
     /**
      * Does nothing by default, insert processor logic here
      *
@@ -36,4 +34,10 @@ public interface INodePhysicsProcessor extends Comparable<INodePhysicsProcessor>
      */
     public void onPhysicsTick(PhysicsObject object, PhysicsCalculations calculations, double secondsToSimulate);
 
+    // Used maintain order of which processors get called first. If both processors
+    // have equal priorities, then we use the tieBreaker() to break ties.
+    @Override
+    public default int compareTo(INodePhysicsProcessor other) {
+    	return getPriority() - other.getPriority();
+    }
 }

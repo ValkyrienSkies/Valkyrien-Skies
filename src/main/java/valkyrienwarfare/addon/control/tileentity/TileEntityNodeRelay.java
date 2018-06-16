@@ -20,13 +20,13 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import valkyrienwarfare.addon.control.nodenetwork.BasicNodeTileEntity;
-import valkyrienwarfare.addon.control.nodenetwork.Node;
+import valkyrienwarfare.addon.control.nodenetwork.VWNode_TileEntity;
 
 public class TileEntityNodeRelay extends BasicNodeTileEntity {
 
     public TileEntityNodeRelay() {
         super();
-        Node node = this.getNode();
+        VWNode_TileEntity node = this.getNode();
         node.setIsNodeRelay(true);
     }
 

@@ -61,8 +61,7 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.network.EntityFixMessage;
-import valkyrienwarfare.addon.control.nodenetwork.INodeProvider;
-import valkyrienwarfare.addon.control.nodenetwork.Node;
+import valkyrienwarfare.addon.control.nodenetwork.IVWNodeProvider;
 import valkyrienwarfare.api.EnumChangeOwnerResult;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.api.block.ethercompressor.TileEntityEtherCompressor;
@@ -83,7 +82,6 @@ import valkyrienwarfare.mod.physmanagement.relocation.SpatialDetector;
 import valkyrienwarfare.mod.schematics.SchematicReader.Schematic;
 import valkyrienwarfare.physics.BlockForce;
 import valkyrienwarfare.physics.PhysicsCalculations;
-import valkyrienwarfare.physics.PhysicsCalculationsManualControl;
 import valkyrienwarfare.util.NBTUtils;
 
 /**
@@ -101,7 +99,6 @@ public class PhysicsObject implements ISubspaceProvider {
     private final List<EntityPlayerMP> watchingPlayers;
     private PhysObjectRenderManager shipRenderer;
     private final Set<String> allowedUsers;
-    private final Set<Node> concurrentNodesWithinShip;
     // This is used to delay mountEntity() operations by 1 tick
     private final List<Entity> queuedEntitiesToMount;
     // Used when rendering to avoid horrible floating point errors, just a random
@@ -150,7 +147,6 @@ public class PhysicsObject implements ISubspaceProvider {
         this.setBlockPositions(ConcurrentHashMap.<BlockPos>newKeySet());
         this.shipBoundingBox = Entity.ZERO_AABB;
         this.watchingPlayers = new ArrayList<EntityPlayerMP>();
-        this.concurrentNodesWithinShip = ConcurrentHashMap.<Node>newKeySet();
         this.isPhysicsEnabled = false;
         this.allowedUsers = new HashSet<String>();
         this.gameConsecutiveTicks = 0;
@@ -336,14 +332,10 @@ public class PhysicsObject implements ISubspaceProvider {
      * be overridden to change the class of the Object
      */
     private void createPhysicsCalculations() {
-        if (getPhysicsProcessor() == null) {
-            if (shipType == ShipType.Zepplin || shipType == ShipType.Dungeon_Sky) {
-                setPhysicsProcessor(new PhysicsCalculationsManualControl(this));
-            } else {
-                setPhysicsProcessor(new PhysicsCalculations(this));
-            }
-        }
-    }
+		if (getPhysicsProcessor() == null) {
+			setPhysicsProcessor(new PhysicsCalculations(this));
+		}
+	}
 
     private void assembleShip(EntityPlayer player, SpatialDetector detector, BlockPos centerInWorld) {
     	this.setPhysicsEnabled(true);
@@ -428,7 +420,7 @@ public class PhysicsObject implements ISubspaceProvider {
                 tileEntNBT.setInteger("z", pos.getZ());
 
                 // Translates the Node connections from World space into Ship space
-                if (worldTile instanceof INodeProvider) {
+                if (worldTile instanceof IVWNodeProvider) {
                     int[] backingPositionArray = tileEntNBT.getIntArray("connectednodesarray");
                     for (int cont = 0; cont < backingPositionArray.length; cont += 3) {
                         backingPositionArray[cont] = backingPositionArray[cont] + centerDifference.getX();
@@ -482,18 +474,6 @@ public class PhysicsObject implements ISubspaceProvider {
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
                     }
-                }
-
-                // TODO: Maybe move this after the setTileEntity() method
-                if (newInstance instanceof INodeProvider) {
-                    ((INodeProvider) newInstance).getNode().updateParentEntity(this);
-                }
-
-                getWorldObj().setTileEntity(newInstance.getPos(), newInstance);
-
-                if (newInstance instanceof INodeProvider) {
-                    // System.out.println(newInstance.getClass().getName());
-                    this.getConcurrentNodesWithinShip().add(((INodeProvider) newInstance).getNode());
                 }
 
                 newInstance.markDirty();
@@ -750,7 +730,7 @@ public class PhysicsObject implements ISubspaceProvider {
                 }
                 for (Entry<BlockPos, TileEntity> entry : chunk.tileEntities.entrySet()) {
                     TileEntity tile = entry.getValue();
-                    if (tile instanceof INodeProvider) {
+                    if (tile instanceof IVWNodeProvider) {
                         nodeTileEntitiesToUpdate.add(tile);
                     }
                 }
@@ -764,14 +744,6 @@ public class PhysicsObject implements ISubspaceProvider {
             createPhysicsCalculations();
             // The client doesn't need to keep track of this.
             detectBlockPositions();
-        }
-        for (TileEntity tile : nodeTileEntitiesToUpdate) {
-            Node node = ((INodeProvider) tile).getNode();
-            if (node != null) {
-                node.updateParentEntity(this);
-            } else {
-                System.err.println("How did we get a null node?");
-            }
         }
 
         getShipTransformationManager().updateAllTransforms(false, false);
@@ -1230,13 +1202,6 @@ public class PhysicsObject implements ISubspaceProvider {
 	 */
 	public void setBlockPositions(Set<BlockPos> blockPositions) {
 		this.blockPositions = blockPositions;
-	}
-
-	/**
-	 * @return the concurrentNodesWithinShip
-	 */
-	public Set<Node> getConcurrentNodesWithinShip() {
-		return concurrentNodesWithinShip;
 	}
 
 	/**

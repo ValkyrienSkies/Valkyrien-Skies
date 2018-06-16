@@ -25,9 +25,8 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import valkyrienwarfare.addon.control.controlsystems.ShipPulseImpulseControlSystem;
 import valkyrienwarfare.addon.control.network.ThrustModulatorGuiInputMessage;
-import valkyrienwarfare.addon.control.nodenetwork.Node;
+import valkyrienwarfare.addon.control.nodenetwork.VWNode_TileEntity;
 import valkyrienwarfare.addon.control.proxy.ClientProxyControl;
 import valkyrienwarfare.physics.PhysicsCalculations;
 import valkyrienwarfare.physics.management.PhysicsObject;
@@ -36,21 +35,18 @@ import valkyrienwarfare.physics.management.PhysicsObject;
 public class TileEntityThrustModulator extends ImplPhysicsProcessorNodeTileEntity implements SimpleComponent {
 
     public static final int PHYSICS_PROCESSOR_PRIORITY = 100;
-    private final ShipPulseImpulseControlSystem controlSystem;
     public double idealYHeight = 25D;
     public double maximumYVelocity = 10D;
 
     // Initialize this ThrustModulatorTileEntity with a default priority of 100.
     public TileEntityThrustModulator() {
         super(PHYSICS_PROCESSOR_PRIORITY);
-        controlSystem = new ShipPulseImpulseControlSystem(this);
     }
 
     @Override
     public void onPhysicsTick(PhysicsObject object, PhysicsCalculations calculations, double secondsToSimulate) {
         // System.out.println("debug");
         // System.out.println(this.getNode().getNodeNetwork().getNetworkedNodes().size());
-        controlSystem.solveThrustValues(calculations);
     }
 
     @Override
@@ -77,8 +73,7 @@ public class TileEntityThrustModulator extends ImplPhysicsProcessorNodeTileEntit
     public void handleGUIInput(ThrustModulatorGuiInputMessage message, MessageContext ctx) {
         idealYHeight = Math.min(message.idealYHeight, 5000D);
         maximumYVelocity = Math.max(Math.min(message.maximumYVelocity, 100D), 0D);
-        Node thisTileEntitiesNode = this.getNode();
-        thisTileEntitiesNode.sendUpdatesToNearby();
+        VWNode_TileEntity thisTileEntitiesNode = this.getNode();
         this.markDirty();
     }
 

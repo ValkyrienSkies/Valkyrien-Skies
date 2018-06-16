@@ -25,7 +25,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.nodenetwork.INodePhysicsProcessor;
-import valkyrienwarfare.addon.control.nodenetwork.Node;
+import valkyrienwarfare.addon.control.nodenetwork.VWNode_TileEntity;
 import valkyrienwarfare.api.IBlockForceProvider;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
@@ -58,7 +58,6 @@ public class PhysicsCalculations {
     private final WorldPhysicsCollider worldCollision;
     // CopyOnWrite to provide concurrency between threads.
     private final Set<BlockPos> activeForcePositions;
-    private final SortedSet<INodePhysicsProcessor> physicsTasks;
     public Vector gameTickCenterOfMass;
     public Vector linearMomentum;
     public Vector angularVelocity;
@@ -91,7 +90,6 @@ public class PhysicsCalculations {
         torque = new Vector();
         // We need thread safe access to this.
         activeForcePositions = ConcurrentHashMap.newKeySet();
-        physicsTasks = new TreeSet<INodePhysicsProcessor>();
     }
 
     public PhysicsCalculations(PhysicsCalculations toCopy) {
@@ -108,7 +106,6 @@ public class PhysicsCalculations {
         physMOITensor = toCopy.physMOITensor;
         setPhysInvMOITensor(toCopy.getPhysInvMOITensor());
         actAsArchimedes = toCopy.actAsArchimedes;
-        physicsTasks = toCopy.physicsTasks;
     }
 
     public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos pos) {
@@ -349,22 +346,6 @@ public class PhysicsCalculations {
         World worldObj = getParent().getWorldObj();
 
         if (PhysicsSettings.doPhysicsBlocks && getParent().areShipChunksFullyLoaded()) {
-
-            physicsTasks.clear();
-            for (Node node : getParent().getConcurrentNodesWithinShip()) {
-                TileEntity nodeTile = node.getParentTile();
-                if (nodeTile instanceof INodePhysicsProcessor) {
-                    // Iterate through them in sorted order
-                    physicsTasks.add((INodePhysicsProcessor) nodeTile);
-                }
-            }
-
-            // This iterates over a SortedSet to retain sorted order, allowing some tasks to
-            // be given greater priority than others.
-            for (INodePhysicsProcessor physicsProcessorNode : physicsTasks) {
-                physicsProcessorNode.onPhysicsTick(getParent(), this, physTickTimeDelta);
-            }
-
             for (BlockPos pos : activeForcePositions) {
                 IBlockState state = getParent().getShipChunks().getBlockState(pos);
                 Block blockAt = state.getBlock();
@@ -446,13 +427,6 @@ public class PhysicsCalculations {
         physPitch = Double.isNaN(radians[0]) ? 0.0f : (float) Math.toDegrees(radians[0]);
         physYaw = Double.isNaN(radians[1]) ? 0.0f : (float) Math.toDegrees(radians[1]);
         physRoll = Double.isNaN(radians[2]) ? 0.0f : (float) Math.toDegrees(radians[2]);
-
-        // parent.wrapper.setPitch(Double.isNaN(radians[0]) ? 0.0f : (float)
-        // Math.toDegrees(radians[0]));
-        // parent.wrapper.setYaw(Double.isNaN(radians[1]) ? 0.0f : (float)
-        // Math.toDegrees(radians[1]));
-        // parent.wrapper.setRoll(Double.isNaN(radians[2]) ? 0.0f : (float)
-        // Math.toDegrees(radians[2]));
     }
 
     public void applyLinearVelocity() {
@@ -462,13 +436,6 @@ public class PhysicsCalculations {
         physY += (linearMomentum.Y * momentMod);
         physZ += (linearMomentum.Z * momentMod);
         physY = Math.min(Math.max(physY, ValkyrienWarfareMod.shipLowerLimit), ValkyrienWarfareMod.shipUpperLimit);
-
-        // parent.wrapper.posX += (linearMomentum.X * momentMod);
-        // parent.wrapper.posY += (linearMomentum.Y * momentMod);
-        // parent.wrapper.posZ += (linearMomentum.Z * momentMod);
-        // parent.wrapper.posY = Math.min(Math.max(parent.wrapper.posY,
-        // ValkyrienWarfareMod.shipLowerLimit),
-        // ValkyrienWarfareMod.shipUpperLimit);
     }
 
     public Vector getVelocityAtPoint(Vector inBodyWO) {

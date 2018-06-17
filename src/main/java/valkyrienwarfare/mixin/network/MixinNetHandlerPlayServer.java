@@ -113,7 +113,7 @@ public abstract class MixinNetHandlerPlayServer {
 		}
 	}
 
-	@Inject(method = "processPlayer", at = @At("HEAD"))
+	// @Inject(method = "processPlayer", at = @At("HEAD"))
 	private void preProcessPlayer(CPacketPlayer packetIn, CallbackInfo info) {
 		WorldServer worldserver = this.serverController.getWorld(this.player.dimension);
 		if (worldserver.isCallingFromMinecraftThread()) {

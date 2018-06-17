@@ -35,6 +35,7 @@ import valkyrienwarfare.physics.management.PhysicsObject;
 
 public class VWNode_TileEntity implements IVWNode {
 
+	public static final String NBT_DATA_KEY = "VWNode_Tile_Data";
 	private final TileEntity parentTile;
 	// No duplicate connections, use Set<Node> to guarantee this
 	private final Set<BlockPos> linkedNodesPos;
@@ -155,12 +156,12 @@ public class VWNode_TileEntity implements IVWNode {
 			positions[cont + 2] = pos.getZ();
 			cont += 3;
 		}
-		compound.setIntArray("VWNode_Tile_Data", positions);
+		compound.setIntArray(NBT_DATA_KEY, positions);
 	}
 
 	@Override
 	public void readFromNBT(NBTTagCompound compound) {
-		int[] positions = compound.getIntArray("VWNode_Tile_Data");
+		int[] positions = compound.getIntArray(NBT_DATA_KEY);
 		for (int i = 0; i < positions.length; i += 3) {
 			getLinkedNodesPosMutable().add(new BlockPos(positions[i], positions[i + 1], positions[i + 2]));
 		}

@@ -135,6 +135,7 @@ public class PhysicsObject implements ISubspaceProvider {
     private volatile int physicsConsecutiveTicks;
     private final ISubspace shipSubspace;
 	private final Set<INodePhysicsProcessor> physicsControllers;
+	private final Set<INodePhysicsProcessor> physicsControllersImmutable;
 
     public PhysicsObject(PhysicsWrapperEntity host) {
     	this.wrapper = host;
@@ -156,6 +157,7 @@ public class PhysicsObject implements ISubspaceProvider {
         this.physicsConsecutiveTicks = 0;
         this.shipSubspace = new ImplSubspace(this);
         this.physicsControllers = Sets.<INodePhysicsProcessor>newConcurrentHashSet();
+        this.physicsControllersImmutable = Collections.<INodePhysicsProcessor>unmodifiableSet(this.physicsControllers);
     }
 
 	public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos posAt) {
@@ -1249,6 +1251,11 @@ public class PhysicsObject implements ISubspaceProvider {
 			}
 		}
 		// System.out.println(physicsControllers.size());
+	}
+	
+	// Do not allow anything external to modify the physics controllers Set.
+	public Set<INodePhysicsProcessor> getPhysicsControllersInShip() {
+		return physicsControllersImmutable;
 	}
 
 }

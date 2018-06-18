@@ -42,9 +42,14 @@ public interface INodePhysicsProcessor extends Comparable<INodePhysicsProcessor>
     BlockPos getNodePos();
     
     // Used maintain order of which processors get called first. If both processors
-    // have equal priorities, then we use the tieBreaker() to break ties.
+    // have equal priorities, then we use the BlockPos as a tiebreaker.
     @Override
     default int compareTo(INodePhysicsProcessor other) {
-    	return getPriority() - other.getPriority();
+    	if (getPriority() != other.getPriority()) {
+    		return getPriority() - other.getPriority();
+    	} else {
+    		// break the tie
+    		return getNodePos().compareTo(other.getNodePos());
+    	}
     }
 }

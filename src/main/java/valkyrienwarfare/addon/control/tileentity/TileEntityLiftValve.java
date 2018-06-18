@@ -23,15 +23,19 @@ import valkyrienwarfare.physics.management.PhysicsObject;
 
 public class TileEntityLiftValve extends ImplPhysicsProcessorNodeTileEntity {
 
-    public static final int PHYSICS_PROCESSOR_PRIORITY = 10;
+	public static final int PHYSICS_PROCESSOR_PRIORITY = 10;
 
-    public TileEntityLiftValve() {
-        super(PHYSICS_PROCESSOR_PRIORITY);
-    }
+	public TileEntityLiftValve() {
+		super(PHYSICS_PROCESSOR_PRIORITY);
+	}
 
-    @Override
-    public void onPhysicsTick(PhysicsObject object, PhysicsCalculations calculations, double secondsToSimulate) {
-
-    }
+	@Override
+	public void onPhysicsTick(PhysicsObject object, PhysicsCalculations calculations, double secondsToSimulate) {
+		// Confirmed working
+		/*
+		 * int size = 0; for (Object o : this.getNetworkedConnections()) { size++; }
+		 * System.out.println("debug2: " + size);
+		 */
+	}
 
 }

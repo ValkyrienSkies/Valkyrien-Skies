@@ -45,7 +45,8 @@ public class TileEntityThrustModulator extends ImplPhysicsProcessorNodeTileEntit
 
     @Override
     public void onPhysicsTick(PhysicsObject object, PhysicsCalculations calculations, double secondsToSimulate) {
-         System.out.println("debug");
+        // Confirmed working
+    	// System.out.println("debug1");
         // System.out.println(this.getNode().getNodeNetwork().getNetworkedNodes().size());
     }
 

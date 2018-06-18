@@ -16,16 +16,21 @@
 
 package valkyrienwarfare.physics;
 
+import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
+import javax.vecmath.Matrix3d;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.nodenetwork.INodePhysicsProcessor;
-import valkyrienwarfare.addon.control.nodenetwork.VWNode_TileEntity;
 import valkyrienwarfare.api.IBlockForceProvider;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
@@ -39,12 +44,6 @@ import valkyrienwarfare.physics.management.PhysicsObject;
 import valkyrienwarfare.physics.management.ShipTransformationManager;
 import valkyrienwarfare.util.NBTUtils;
 import valkyrienwarfare.util.PhysicsSettings;
-
-import javax.vecmath.Matrix3d;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class PhysicsCalculations {
 
@@ -346,6 +345,17 @@ public class PhysicsCalculations {
         World worldObj = getParent().getWorldObj();
 
         if (PhysicsSettings.doPhysicsBlocks && getParent().areShipChunksFullyLoaded()) {
+        	// We want to loop through all the physics nodes in a sorted order. Priority Queue handles that.
+        	Queue<INodePhysicsProcessor> nodesPriorityQueue = new PriorityQueue<INodePhysicsProcessor>();
+        	for (INodePhysicsProcessor processor : parent.getPhysicsControllersInShip()) {
+        		nodesPriorityQueue.add(processor);
+        	}
+        	
+        	while (nodesPriorityQueue.size() > 0) {
+        		INodePhysicsProcessor controller = nodesPriorityQueue.poll();
+        		controller.onPhysicsTick(parent, this, this.getPhysicsTimeDeltaPerPhysTick());
+        	}
+        	
             for (BlockPos pos : activeForcePositions) {
                 IBlockState state = getParent().getShipChunks().getBlockState(pos);
                 Block blockAt = state.getBlock();

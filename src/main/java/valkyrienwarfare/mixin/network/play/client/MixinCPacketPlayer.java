@@ -11,6 +11,7 @@ import net.minecraft.network.play.INetHandlerPlayServer;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.world.GameType;
 import valkyrienwarfare.fixes.ITransformablePacket;
+import valkyrienwarfare.math.VWMath;
 import valkyrienwarfare.mod.coordinates.ISubspace;
 import valkyrienwarfare.mod.coordinates.ISubspacedEntity;
 import valkyrienwarfare.mod.coordinates.ISubspacedEntityRecord;
@@ -45,12 +46,21 @@ public class MixinCPacketPlayer implements ITransformablePacket {
 				VectorImmutable positionGlobal = entityRecord.getPositionInGlobalCoordinates();
 				VectorImmutable lookVectorGlobal = entityRecord.getLookDirectionInGlobalCoordinates();
 
+				float pitch = (float) VWMath.getPitchFromVectorImmutable(lookVectorGlobal);
+				float yaw = (float) VWMath.getYawFromVectorImmutable(lookVectorGlobal, pitch);
+				
+				// ===== Set the proper position values for the player packet ====
 				thisPacket.moving = true;
 				thisPacket.onGround = true;
 				thisPacket.x = positionGlobal.getX();
 				thisPacket.y = positionGlobal.getY();
 				thisPacket.z = positionGlobal.getZ();
-
+				
+				// ===== Set the proper rotation values for the player packet =====
+				thisPacket.rotating = true;
+				thisPacket.yaw = yaw;
+				thisPacket.pitch = pitch;
+				
 				// ===== Dangerous code here =====
 				cachedPlayerGameType = getPacketPlayer(server).interactionManager.gameType;
 				getPacketPlayer(server).interactionManager.gameType = GameType.CREATIVE;

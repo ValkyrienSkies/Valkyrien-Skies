@@ -35,7 +35,7 @@ public interface ISubspacedEntityRecord {
 	
 	default VectorImmutable getPositionLastTickInGlobalCoordinates() {
 		if (getParentSubspace().getSubspaceCoordinatesType() == CoordinateSpaceType.GLOBAL_COORDINATES) {
-			return getPosition();
+			return getPositionLastTick();
 		} else {
 			return getParentSubspace().getSubspaceTransform().transform(getPositionLastTick(), TransformType.SUBSPACE_TO_GLOBAL);
 		}
@@ -43,7 +43,7 @@ public interface ISubspacedEntityRecord {
 	
 	default VectorImmutable getLookDirectionInGlobalCoordinates() {
 		if (getParentSubspace().getSubspaceCoordinatesType() == CoordinateSpaceType.GLOBAL_COORDINATES) {
-			return getPosition();
+			return getLookDirection();
 		} else {
 			return getParentSubspace().getSubspaceTransform().rotate(getLookDirection(), TransformType.SUBSPACE_TO_GLOBAL);
 		}
@@ -51,7 +51,7 @@ public interface ISubspacedEntityRecord {
 	
 	default VectorImmutable getVelocityInGlobalCoordinates() {
 		if (getParentSubspace().getSubspaceCoordinatesType() == CoordinateSpaceType.GLOBAL_COORDINATES) {
-			return getPosition();
+			return getVelocity();
 		} else {
 			return getParentSubspace().getSubspaceTransform().rotate(getVelocity(), TransformType.SUBSPACE_TO_GLOBAL);
 		}

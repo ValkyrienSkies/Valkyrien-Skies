@@ -20,13 +20,13 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.projectile.EntityFireball;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import valkyrienwarfare.math.VWMath;
 import valkyrienwarfare.mod.coordinates.CoordinateSpaceType;
 import valkyrienwarfare.mod.coordinates.ISubspacedEntity;
 import valkyrienwarfare.mod.coordinates.ShipTransform;
 import valkyrienwarfare.mod.coordinates.TransformType;
+import valkyrienwarfare.mod.coordinates.VectorImmutable;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 /**
@@ -194,6 +194,13 @@ public class RotationMatrices {
             living.rotationYawHead = entity.rotationYaw;
             living.prevRotationYawHead = entity.rotationYaw;
         }
+        
+        // ===== Fix change the entity rotation to be proper relative to ship space =====
+        VectorImmutable entityLookImmutable = entityLook.toImmutable();
+        double pitch = VWMath.getPitchFromVectorImmutable(entityLookImmutable);
+        double yaw = VWMath.getYawFromVectorImmutable(entityLookImmutable, pitch);
+        entity.rotationYaw = (float) yaw;
+        entity.rotationPitch = (float) pitch;
 
         if (entity instanceof EntityFireball) {
             EntityFireball ball = (EntityFireball) entity;

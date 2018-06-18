@@ -16,6 +16,12 @@
 
 package valkyrienwarfare.addon.control.nodenetwork;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import gigaherz.graph.api.Graph;
+import gigaherz.graph.api.GraphObject;
+import gigaherz.graph.api.Mergeable;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
@@ -25,9 +31,12 @@ import net.minecraft.util.ITickable;
 public abstract class BasicNodeTileEntity extends TileEntity implements IVWNodeProvider, ITickable {
 
 	private final VWNode_TileEntity tileNode;
+	private boolean firstUpdate;
 
 	public BasicNodeTileEntity() {
-		tileNode = new VWNode_TileEntity(this);
+		this.tileNode = new VWNode_TileEntity(this);
+		this.firstUpdate = true;
+		Graph.integrate(tileNode, new ArrayList(1), (graph) -> new GraphData());
 	}
 
 	@Override
@@ -77,6 +86,10 @@ public abstract class BasicNodeTileEntity extends TileEntity implements IVWNodeP
 		VWNode_TileEntity toInvalidate = getNode();
 		toInvalidate.breakAllConnections();
 		toInvalidate.invalidate();
+		Graph graph = toInvalidate.getGraph();
+		if (graph != null) {
+			graph.remove(toInvalidate);
+		}
 	}
 
 	/**
@@ -90,6 +103,42 @@ public abstract class BasicNodeTileEntity extends TileEntity implements IVWNodeP
 
 	@Override
 	public void update() {
-
+		if (firstUpdate) {
+			firstUpdate = false;
+			init();
+		}
 	}
+
+	private void init() {
+		tileNode.getGraph().addNeighours(tileNode, tileNode.getNeighbours());
+	}
+
+	public static class GraphData implements Mergeable<GraphData> {
+		private static int sUid = 0;
+
+		private final int uid;
+
+		public GraphData() {
+			uid = ++sUid;
+		}
+
+		public GraphData(int uid) {
+			this.uid = uid;
+		}
+
+		@Override
+		public GraphData mergeWith(GraphData other) {
+			return new GraphData(uid + other.uid);
+		}
+
+		@Override
+		public GraphData copy() {
+			return new GraphData();
+		}
+
+		public int getUid() {
+			return uid;
+		}
+	}
+
 }

@@ -1,7 +1,9 @@
 package valkyrienwarfare.addon.control.nodenetwork;
 
+import java.util.List;
 import java.util.Set;
 
+import gigaherz.graph.api.GraphObject;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -12,7 +14,7 @@ import valkyrienwarfare.physics.management.PhysicsObject;
  * @author thebest108
  *
  */
-public interface IVWNode {
+public interface IVWNode extends GraphObject {
 
 	public static final String NBT_DATA_KEY = "VWNode_Tile_Data";
 	
@@ -90,8 +92,6 @@ public interface IVWNode {
 
 	PhysicsObject getPhysicsObject();
 	
-	IVWGraph getNodeGraph();
-	
-	void setNodeGraph(IVWGraph graph);
+	List<GraphObject> getNeighbours();
 	
 }

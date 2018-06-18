@@ -24,6 +24,8 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
+import gigaherz.graph.api.Graph;
+import gigaherz.graph.api.GraphObject;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.server.management.PlayerList;
@@ -31,9 +33,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.physics.management.PhysicsObject;
-import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public class VWNode_TileEntity implements IVWNode {
 
@@ -46,8 +46,8 @@ public class VWNode_TileEntity implements IVWNode {
 	private boolean isValid;
 	private boolean isRelay;
 	private PhysicsObject parentPhysicsObject;
-	private IVWGraph nodeGraph;
-	
+	private Graph nodeGraph;
+
 	public VWNode_TileEntity(TileEntity parent) {
 		this.parentTile = parent;
 		this.linkedNodesPos = new HashSet<BlockPos>();
@@ -60,7 +60,7 @@ public class VWNode_TileEntity implements IVWNode {
 
 	@Override
 	public Iterable<IVWNode> getDirectlyConnectedNodes() {
-		assertValidity();
+		// assertValidity();
 		List<IVWNode> nodesList = new ArrayList<IVWNode>();
 		for (BlockPos pos : linkedNodesPos) {
 			IVWNode node = getVWNode_TileEntity(getNodeWorld(), pos);
@@ -80,7 +80,11 @@ public class VWNode_TileEntity implements IVWNode {
 			parentTile.markDirty();
 			other.makeConnection(this);
 			sendNodeUpdates();
-			getNodeGraph().addNode(other);
+			List stupid = new ArrayList(1);
+			stupid.add(other);
+			getGraph().addNeighours(this, stupid);
+			// System.out.println("Connections: " + getGraph().getObjects().size());
+			// getNodeGraph().addNode(other);
 		}
 	}
 
@@ -93,7 +97,9 @@ public class VWNode_TileEntity implements IVWNode {
 			parentTile.markDirty();
 			other.breakConnection(this);
 			sendNodeUpdates();
-			getNodeGraph().removeNode(other);
+			getGraph().removeNeighbour(this, other);
+			// System.out.println(getGraph().getObjects().size());
+			// getNodeGraph().removeNode(other);
 		}
 	}
 
@@ -242,20 +248,6 @@ public class VWNode_TileEntity implements IVWNode {
 	}
 
 	@Override
-	public IVWGraph getNodeGraph() {
-		assertValidity();
-		if (nodeGraph == null) {
-			nodeGraph = SimpleVWGraph.createVWGraphWithStart(this);
-		}
-		return nodeGraph;
-	}
-
-	@Override
-	public void setNodeGraph(IVWGraph graph) {
-		this.nodeGraph = graph;
-	}
-
-	@Override
 	public boolean equals(Object other) {
 		if (this == other) {
 			return true;
@@ -265,5 +257,39 @@ public class VWNode_TileEntity implements IVWNode {
 		} else {
 			return false;
 		}
+	}
+
+	@Override
+	public Graph getGraph() {
+		return nodeGraph;
+	}
+
+	@Override
+	public void setGraph(Graph graph) {
+		this.nodeGraph = graph;
+	}
+
+	private List<GraphObject> getNeighbors() {
+		List<GraphObject> neighbors = new ArrayList<GraphObject>();
+		for (BlockPos pos : getLinkedNodesPos()) {
+			IVWNode node = getVWNode_TileEntity(this.getNodeWorld(), pos);
+			if (node == null) {
+				throw new IllegalStateException();
+			}
+			neighbors.add(node);
+		}
+		return neighbors;
+	}
+
+	@Override
+	public List<GraphObject> getNeighbours() {
+		List<GraphObject> nodesList = new ArrayList<GraphObject>();
+		for (BlockPos pos : linkedNodesPos) {
+			IVWNode node = getVWNode_TileEntity(getNodeWorld(), pos);
+			if (node != null) {
+				nodesList.add(node);
+			}
+		}
+		return nodesList;
 	}
 }

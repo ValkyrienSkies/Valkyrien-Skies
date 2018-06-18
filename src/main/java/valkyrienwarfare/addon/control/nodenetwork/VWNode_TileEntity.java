@@ -46,13 +46,16 @@ public class VWNode_TileEntity implements IVWNode {
 	private boolean isValid;
 	private boolean isRelay;
 	private PhysicsObject parentPhysicsObject;
-
+	private IVWGraph nodeGraph;
+	
 	public VWNode_TileEntity(TileEntity parent) {
 		this.parentTile = parent;
 		this.linkedNodesPos = new HashSet<BlockPos>();
 		this.unmodifiableLinkedNodesPos = Collections.unmodifiableSet(linkedNodesPos);
 		this.isRelay = false;
 		this.isValid = false;
+		this.parentPhysicsObject = null;
+		this.nodeGraph = null;
 	}
 
 	@Override
@@ -77,6 +80,7 @@ public class VWNode_TileEntity implements IVWNode {
 			parentTile.markDirty();
 			other.makeConnection(this);
 			sendNodeUpdates();
+			getNodeGraph().addNode(other);
 		}
 	}
 
@@ -89,6 +93,7 @@ public class VWNode_TileEntity implements IVWNode {
 			parentTile.markDirty();
 			other.breakConnection(this);
 			sendNodeUpdates();
+			getNodeGraph().removeNode(other);
 		}
 	}
 
@@ -114,7 +119,8 @@ public class VWNode_TileEntity implements IVWNode {
 	}
 
 	@Nullable
-	private static IVWNode getVWNode_TileEntity(World world, BlockPos pos) {
+	@Deprecated
+	public static IVWNode getVWNode_TileEntity(World world, BlockPos pos) {
 		if (world == null || pos == null) {
 			throw new IllegalArgumentException("Null arguments");
 		}
@@ -235,4 +241,29 @@ public class VWNode_TileEntity implements IVWNode {
 		this.parentPhysicsObject = parent;
 	}
 
+	@Override
+	public IVWGraph getNodeGraph() {
+		assertValidity();
+		if (nodeGraph == null) {
+			nodeGraph = SimpleVWGraph.createVWGraphWithStart(this);
+		}
+		return nodeGraph;
+	}
+
+	@Override
+	public void setNodeGraph(IVWGraph graph) {
+		this.nodeGraph = graph;
+	}
+
+	@Override
+	public boolean equals(Object other) {
+		if (this == other) {
+			return true;
+		} else if (other instanceof VWNode_TileEntity) {
+			VWNode_TileEntity otherNode = (VWNode_TileEntity) other;
+			return otherNode.getNodePos().equals(this.getNodePos());
+		} else {
+			return false;
+		}
+	}
 }

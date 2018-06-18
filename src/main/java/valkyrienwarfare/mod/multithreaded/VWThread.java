@@ -34,7 +34,6 @@ import valkyrienwarfare.physics.management.WorldPhysObjectManager;
 
 /**
  * Handles all the physics processing for a world separate from the game tick.
- * Currently filled with tons of synchronization issues.
  *
  * @author thebest108
  */

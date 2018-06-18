@@ -89,4 +89,9 @@ public interface IVWNode {
 	void setParentPhysicsObject(PhysicsObject parent);
 
 	PhysicsObject getPhysicsObject();
+	
+	IVWGraph getNodeGraph();
+	
+	void setNodeGraph(IVWGraph graph);
+	
 }

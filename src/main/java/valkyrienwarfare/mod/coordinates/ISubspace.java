@@ -56,5 +56,5 @@ public interface ISubspace {
 	 */
 	int getSubspaceParentEntityID();
 	
-	void forceSubspaceRecord(ISubspacedEntity entity, ISubspacedEntityRecord record);
+	void forceSubspaceRecord(ISubspacedEntity entity, @Nullable ISubspacedEntityRecord record);
 }

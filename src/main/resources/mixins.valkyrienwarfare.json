@@ -23,7 +23,8 @@
     "network.play.client.MixinCPacketPlayerTryUseItemOnBlock",
     "network.play.client.MixinCPacketUpdateSign",
     "spongepowered.common.network.MixinPacketUtil",
-    "spongepowered.common.event.tracking.MixinPhaseTracker"
+    "spongepowered.common.event.tracking.MixinPhaseTracker",
+    "network.play.client.MixinCPacketPlayer"
   ],
   "client": [
     "client.renderer.tileentity.MixinTileEntityRendererDispatcher",

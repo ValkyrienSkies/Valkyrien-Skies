@@ -26,7 +26,7 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
  */
 public interface ITransformablePacket {
 
-	static boolean isPacketOnMainThread(INetHandlerPlayServer server, boolean callingFromSponge) {
+	default boolean isPacketOnMainThread(INetHandlerPlayServer server, boolean callingFromSponge) {
 		if (!MixinLoadManager.isSpongeEnabled() || callingFromSponge) {
 			NetHandlerPlayServer serverHandler = (NetHandlerPlayServer) server;
 			EntityPlayerMP player = serverHandler.player;

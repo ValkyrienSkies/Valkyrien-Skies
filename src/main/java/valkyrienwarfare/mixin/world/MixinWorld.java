@@ -290,7 +290,8 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
         return getPersistentChunkIterable(replacementIterator);
     }
 
-    @Shadow
+    // This is a forge method not vanilla, so we don't remap this.
+    @Shadow(remap = false)
     public abstract Iterator<Chunk> getPersistentChunkIterable(Iterator<Chunk> chunkIterator);
 
     @Shadow

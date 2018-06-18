@@ -16,14 +16,15 @@
 
 package valkyrienwarfare.addon.control.nodenetwork;
 
+import net.minecraft.util.math.BlockPos;
 import valkyrienwarfare.physics.PhysicsCalculations;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
 public interface INodePhysicsProcessor extends Comparable<INodePhysicsProcessor> {
 
-    public int getPriority();
+    int getPriority();
 
-    public void setPriority(int newPriority);
+    void setPriority(int newPriority);
 
     /**
      * Does nothing by default, insert processor logic here
@@ -32,12 +33,18 @@ public interface INodePhysicsProcessor extends Comparable<INodePhysicsProcessor>
      * @param calculations
      * @param secondsToSimulate
      */
-    public void onPhysicsTick(PhysicsObject object, PhysicsCalculations calculations, double secondsToSimulate);
+    void onPhysicsTick(PhysicsObject object, PhysicsCalculations calculations, double secondsToSimulate);
 
+    /**
+     * Returns the position of the TileEntity that is behind this interface.
+     * @return
+     */
+    BlockPos getNodePos();
+    
     // Used maintain order of which processors get called first. If both processors
     // have equal priorities, then we use the tieBreaker() to break ties.
     @Override
-    public default int compareTo(INodePhysicsProcessor other) {
+    default int compareTo(INodePhysicsProcessor other) {
     	return getPriority() - other.getPriority();
     }
 }

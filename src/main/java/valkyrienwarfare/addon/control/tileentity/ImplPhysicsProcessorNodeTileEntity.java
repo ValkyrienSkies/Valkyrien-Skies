@@ -17,6 +17,7 @@
 package valkyrienwarfare.addon.control.tileentity;
 
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
 import valkyrienwarfare.addon.control.nodenetwork.BasicNodeTileEntity;
 import valkyrienwarfare.addon.control.nodenetwork.INodePhysicsProcessor;
 
@@ -40,6 +41,12 @@ public abstract class ImplPhysicsProcessorNodeTileEntity extends BasicNodeTileEn
     public void setPriority(int newPriority) {
         priority = newPriority;
     }
+    
+    @Override
+    public BlockPos getNodePos() {
+    	return this.getPos();
+    }
+    
     @Override
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
@@ -53,4 +60,8 @@ public abstract class ImplPhysicsProcessorNodeTileEntity extends BasicNodeTileEn
         return compound;
     }
 
+    @Override
+    public int hashCode() {
+    	return getNodePos().hashCode();
+    }
 }

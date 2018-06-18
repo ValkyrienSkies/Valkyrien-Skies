@@ -80,8 +80,7 @@ public class VWNode_TileEntity implements IVWNode {
 			parentTile.markDirty();
 			other.makeConnection(this);
 			sendNodeUpdates();
-			List stupid = new ArrayList(1);
-			stupid.add(other);
+			List stupid = Collections.singletonList(other);
 			getGraph().addNeighours(this, stupid);
 			// System.out.println("Connections: " + getGraph().getObjects().size());
 			// getNodeGraph().addNode(other);

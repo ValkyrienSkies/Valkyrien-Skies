@@ -17,7 +17,8 @@
 package valkyrienwarfare.addon.control.nodenetwork;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
+import java.util.Iterator;
 
 import gigaherz.graph.api.Graph;
 import gigaherz.graph.api.GraphObject;
@@ -36,7 +37,7 @@ public abstract class BasicNodeTileEntity extends TileEntity implements IVWNodeP
 	public BasicNodeTileEntity() {
 		this.tileNode = new VWNode_TileEntity(this);
 		this.firstUpdate = true;
-		Graph.integrate(tileNode, new ArrayList(1), (graph) -> new GraphData());
+		Graph.integrate(tileNode, Collections.EMPTY_LIST, (graph) -> new GraphData());
 	}
 
 	@Override
@@ -138,6 +139,36 @@ public abstract class BasicNodeTileEntity extends TileEntity implements IVWNodeP
 
 		public int getUid() {
 			return uid;
+		}
+	}
+
+	@Override
+	public Iterable<IVWNode> getNetworkedConnections() {
+		Iterator<GraphObject> objects = tileNode.getGraph().getObjects().iterator();
+		Iterator<IVWNode> nodes = new IteratorCaster(objects);
+		return new Iterable<IVWNode>() {
+			@Override
+			public Iterator<IVWNode> iterator() {
+				return nodes;
+			}
+		};
+	}
+
+	private class IteratorCaster implements Iterator<IVWNode> {
+		private final Iterator toCast;
+
+		private IteratorCaster(Iterator toCast) {
+			this.toCast = toCast;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return toCast.hasNext();
+		}
+
+		@Override
+		public IVWNode next() {
+			return (IVWNode) toCast.next();
 		}
 	}
 

@@ -18,15 +18,17 @@ package valkyrienwarfare.physics.management;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+
+import com.google.common.collect.Sets;
 
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.map.TIntObjectMap;
@@ -61,11 +63,10 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.network.EntityFixMessage;
-import valkyrienwarfare.addon.control.nodenetwork.IVWNode;
+import valkyrienwarfare.addon.control.nodenetwork.INodePhysicsProcessor;
 import valkyrienwarfare.addon.control.nodenetwork.IVWNodeProvider;
 import valkyrienwarfare.api.EnumChangeOwnerResult;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.api.block.ethercompressor.TileEntityEtherCompressor;
 import valkyrienwarfare.math.Quaternion;
 import valkyrienwarfare.mod.BlockPhysicsRegistration;
 import valkyrienwarfare.mod.client.render.PhysObjectRenderManager;
@@ -133,6 +134,7 @@ public class PhysicsObject implements ISubspaceProvider {
     private volatile int gameConsecutiveTicks;
     private volatile int physicsConsecutiveTicks;
     private final ISubspace shipSubspace;
+	private final Set<INodePhysicsProcessor> physicsControllers;
 
     public PhysicsObject(PhysicsWrapperEntity host) {
     	this.wrapper = host;
@@ -153,6 +155,7 @@ public class PhysicsObject implements ISubspaceProvider {
         this.gameConsecutiveTicks = 0;
         this.physicsConsecutiveTicks = 0;
         this.shipSubspace = new ImplSubspace(this);
+        this.physicsControllers = Sets.<INodePhysicsProcessor>newConcurrentHashSet();
     }
 
 	public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos posAt) {
@@ -418,8 +421,9 @@ public class PhysicsObject implements ISubspaceProvider {
                 	IVWNodeProvider.class.cast(newInstance).getNode().setParentPhysicsObject(this);
                 }
                 newInstance.validate();
-
+                
                 getWorldObj().setTileEntity(pos, newInstance);
+                this.onSetTileEntity(pos, newInstance);
                 newInstance.markDirty();
             }
         }
@@ -650,8 +654,6 @@ public class PhysicsObject implements ISubspaceProvider {
     }
 
     public void loadClaimedChunks() {
-        List<TileEntity> nodeTileEntitiesToUpdate = new ArrayList<TileEntity>();
-
         ValkyrienWarfareMod.VW_PHYSICS_MANAGER.onShipPreload(getWrapperEntity());
 
         claimedChunks = new Chunk[(getOwnedChunks().getRadius() * 2) + 1][(getOwnedChunks().getRadius() * 2) + 1];
@@ -668,10 +670,7 @@ public class PhysicsObject implements ISubspaceProvider {
                     injectChunkIntoWorld(chunk, x, z, false);
                 }
                 for (Entry<BlockPos, TileEntity> entry : chunk.tileEntities.entrySet()) {
-                    TileEntity tile = entry.getValue();
-                    if (tile instanceof IVWNodeProvider) {
-                        nodeTileEntitiesToUpdate.add(tile);
-                    }
+                    this.onSetTileEntity(entry.getKey(), entry.getValue());
                 }
                 claimedChunks[x - getOwnedChunks().getMinX()][z - getOwnedChunks().getMinZ()] = chunk;
             }
@@ -1231,6 +1230,25 @@ public class PhysicsObject implements ISubspaceProvider {
 	@Override
 	public ISubspace getSubspace() {
 		return this.shipSubspace;
+	}
+
+	// ===== Keep track of all Node Processors in a concurrent Set =====
+	public void onSetTileEntity(BlockPos pos, TileEntity tileentity) {
+		if (tileentity instanceof INodePhysicsProcessor) {
+			physicsControllers.add((INodePhysicsProcessor) tileentity);
+		}
+		// System.out.println(physicsControllers.size());
+	}
+	
+	public void onRemoveTileEntity(BlockPos pos) {
+		Iterator<INodePhysicsProcessor> controllersIterator = physicsControllers.iterator();
+		while (controllersIterator.hasNext()) {
+			INodePhysicsProcessor next = controllersIterator.next();
+			if (next.getNodePos().equals(pos)) {
+				controllersIterator.remove();
+			}
+		}
+		// System.out.println(physicsControllers.size());
 	}
 
 }

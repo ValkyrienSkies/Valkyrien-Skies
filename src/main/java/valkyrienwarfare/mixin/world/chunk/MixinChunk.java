@@ -36,8 +36,10 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.IChunkGenerator;
+import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.client.render.ITileEntitiesToRenderProvider;
 import valkyrienwarfare.mod.physmanagement.chunk.PhysicsChunkManager;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 @Mixin(value = Chunk.class, priority = 1001)
 public abstract class MixinChunk implements ITileEntitiesToRenderProvider {
@@ -66,12 +68,20 @@ public abstract class MixinChunk implements ITileEntitiesToRenderProvider {
     	int yIndex = pos.getY() >> 4;
     	removeTileEntityFromIndex(pos, yIndex);
     	tileEntitesByExtendedData[yIndex].add(tileEntityIn);
+    	PhysicsWrapperEntity entity = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(world, pos);
+    	if (entity != null) {
+    		entity.getPhysicsObject().onSetTileEntity(pos, tileEntityIn);
+    	}
     }
     
     @Inject(method = "removeTileEntity(Lnet/minecraft/util/math/BlockPos;)V", at = @At("TAIL"))
     public void post_removeTileEntity(BlockPos pos, CallbackInfo callbackInfo) {
     	int yIndex = pos.getY() >> 4;
     	removeTileEntityFromIndex(pos, yIndex);
+    	PhysicsWrapperEntity entity = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(world, pos);
+    	if (entity != null) {
+    		entity.getPhysicsObject().onRemoveTileEntity(pos);
+    	}
     }
     
     private void removeTileEntityFromIndex(BlockPos pos, int yIndex) {

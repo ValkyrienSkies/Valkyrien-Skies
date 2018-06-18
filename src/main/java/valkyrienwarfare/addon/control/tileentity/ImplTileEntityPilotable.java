@@ -88,13 +88,13 @@ public abstract class ImplTileEntityPilotable extends BasicNodeTileEntity implem
 
 	// Always call this before setting the pilotPlayerEntity to equal newPilot
 	private final void sendPilotUpdatePackets(EntityPlayerMP newPilot, EntityPlayerMP oldPilot) {
-		MessageStopPiloting stopMessage = new MessageStopPiloting(getPos());
-		MessageStartPiloting startMessage = new MessageStartPiloting(getPos(), setClientPilotingEntireShip(),
-				getControlInputType());
 		if (oldPilot != null) {
+			MessageStopPiloting stopMessage = new MessageStopPiloting(getPos());
 			ValkyrienWarfareControl.controlNetwork.sendTo(stopMessage, oldPilot);
 		}
 		if (newPilot != null) {
+			MessageStartPiloting startMessage = new MessageStartPiloting(getPos(), setClientPilotingEntireShip(),
+					getControlInputType());
 			ValkyrienWarfareControl.controlNetwork.sendTo(startMessage, newPilot);
 		}
 	}

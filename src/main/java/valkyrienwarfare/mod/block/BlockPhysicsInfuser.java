@@ -68,6 +68,7 @@ public class BlockPhysicsInfuser extends Block {
 			 * System.out.println("Position: " + playerIn.getPositionVector()); if (true) {
 			 * return false; }
 			 */
+			// ===== Debug Code End =====
 			WorldPhysObjectManager manager = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getManagerForWorld(worldIn);
 			if (manager != null) {
 				PhysicsWrapperEntity wrapperEnt = manager

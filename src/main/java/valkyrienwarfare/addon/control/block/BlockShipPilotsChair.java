@@ -56,9 +56,7 @@ public class BlockShipPilotsChair extends Block implements ITileEntityProvider {
 
     public static double getChairYaw(IBlockState state, BlockPos pos) {
         EnumFacing enumFace = state.getValue(BlockShipPilotsChair.FACING);
-
         double chairYaw = -enumFace.getHorizontalAngle() - 90;
-
         return chairYaw;
     }
 

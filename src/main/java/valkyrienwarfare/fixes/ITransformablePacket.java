@@ -19,8 +19,7 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
  * Used to indicate when a packet must be transformed into ship space to work
  * properly (Digging packets for example). Also comes with functionality to
  * store and retrieve a player data backup to prevent the player from getting
- * teleported somewhere else. Also comes with helper default methods packets
- * implementing this can use.
+ * teleported somewhere else, but this is not necessarily required.
  *
  * @author thebest108
  */

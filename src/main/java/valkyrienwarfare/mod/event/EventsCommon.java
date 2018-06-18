@@ -169,7 +169,7 @@ public class EventsCommon {
                     }
                 }
             } catch (NullPointerException e) {
-                ValkyrienWarfareMod.VWLogger.log(Level.WARNING, "Nullpointer EventsCommon.java:onPlayerTickEvent");
+                ValkyrienWarfareMod.VW_LOGGER.log(Level.WARNING, "Nullpointer EventsCommon.java:onPlayerTickEvent");
             }
 
             pos[0] = p.posX;

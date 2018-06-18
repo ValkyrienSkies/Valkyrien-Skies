@@ -137,11 +137,10 @@ public class ValkyrienWarfareMod {
     public static double shipUpperLimit = 1000D;
     public static double shipLowerLimit = -30D;
     public static int maxAirships = -1;
-    public static boolean highAccuracyCollisions = false;
     public static boolean accurateRain = false;
     public static boolean runAirshipPermissions = false;
     public static int threadCount = -1;
-    public static Logger VWLogger;
+    public static Logger VW_LOGGER;
     private static boolean hasAddonRegistrationEnded = false;
     public DataTag tag = null;
 
@@ -343,7 +342,7 @@ public class ValkyrienWarfareMod {
         registerCapibilities();
         ValkyrienWarfareHooks.methods = new RealMethods();
         ValkyrienWarfareHooks.isValkyrienWarfareInstalled = true;
-        VWLogger = Logger.getLogger("ValkyrienWarfare");
+        VW_LOGGER = Logger.getLogger("ValkyrienWarfare");
 
         addons.forEach(m -> m.doPreInit(event));
 

@@ -13,7 +13,8 @@ import net.minecraft.world.World;
 
 /**
  * Creates a more dynamic version of the IVWNode but that only exists
- * internally, as to prevent any issues with saving and loading.
+ * internally, as to prevent any issues with saving and loading. This was the
+ * original plan, but I'm out sourcing because I'm lazy. Praise gigaherz!
  * 
  * @author thebest108
  *
@@ -67,13 +68,19 @@ public class SimpleVWGraph implements IVWGraph {
 	public void removeNode(IVWNode toRemove) {
 		removeNode(new SimpleVWGraphNode(toRemove));
 	}
-	
+
 	private void removeNode(SimpleVWGraphNode graphNode) {
 		// If we already don't have this node, then theres nothing to remove.
 		if (nodes.containsKey(graphNode.realWorldNode.getNodePos())) {
-			
+			// First remove this node from all its surrounding nodes.
+			for (SimpleVWGraphNode connectedNode : graphNode.connections) {
+				connectedNode.connections.remove(graphNode);
+			}
+			// Now go over each connection.
 		} else {
-			throw new IllegalStateException();
+			// This shouldn't throw an exception because the interface provides no way for
+			// clients to know when they cannot use this method.
+			// throw new IllegalStateException();
 		}
 	}
 
@@ -105,15 +112,14 @@ public class SimpleVWGraph implements IVWGraph {
 		public boolean equals(Object other) {
 			if (this == other) {
 				return true;
-			}
-			if (other instanceof SimpleVWGraphNode) {
+			} else if (other instanceof SimpleVWGraphNode) {
 				return SimpleVWGraphNode.class.cast(other).realWorldNode.equals(realWorldNode);
 			} else {
 				return false;
 			}
 		}
 
-		// Use this for contains() functionality by the graph
+		// Need this for proper contains() functionality within the HashMap.
 		@Override
 		public int hashCode() {
 			return realWorldNode.getNodePos().hashCode();

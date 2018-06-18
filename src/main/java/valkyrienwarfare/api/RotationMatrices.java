@@ -153,6 +153,12 @@ public class RotationMatrices {
 		vec.Z = x * M[8] + y * M[9] + z * M[10] + M[11];
 	}
 
+    /**
+     * Needs to be replaced with some more robust code.
+     * @param shipTransform
+     * @param entity
+     * @param transformType
+     */
 	@Deprecated
 	public static void applyTransform(ShipTransform shipTransform, Entity entity, TransformType transformType) {
 		if (entity instanceof PhysicsWrapperEntity) {

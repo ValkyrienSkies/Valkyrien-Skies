@@ -31,28 +31,33 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.physics.management.PhysicsObject;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public class VWNode_TileEntity implements IVWNode {
 
-	public static final String NBT_DATA_KEY = "VWNode_Tile_Data";
 	private final TileEntity parentTile;
 	// No duplicate connections, use Set<Node> to guarantee this
 	private final Set<BlockPos> linkedNodesPos;
+	// A wrapper unmodifiable Set that allows external classes to see an immutable
+	// version of linkedNodesPos.
 	private final Set<BlockPos> unmodifiableLinkedNodesPos;
 	private boolean isValid;
 	private boolean isRelay;
+	private PhysicsObject parentPhysicsObject;
 
 	public VWNode_TileEntity(TileEntity parent) {
 		this.parentTile = parent;
 		this.linkedNodesPos = new HashSet<BlockPos>();
 		this.unmodifiableLinkedNodesPos = Collections.unmodifiableSet(linkedNodesPos);
-		this.isValid = false;
 		this.isRelay = false;
+		this.isValid = false;
 	}
 
 	@Override
-	public Iterable<IVWNode> getConnectedNodes() {
+	public Iterable<IVWNode> getDirectlyConnectedNodes() {
+		assertValidity();
 		List<IVWNode> nodesList = new ArrayList<IVWNode>();
 		for (BlockPos pos : linkedNodesPos) {
 			IVWNode node = getVWNode_TileEntity(getNodeWorld(), pos);
@@ -65,24 +70,31 @@ public class VWNode_TileEntity implements IVWNode {
 
 	@Override
 	public void makeConnection(IVWNode other) {
-		getLinkedNodesPosMutable().add(other.getNodePos());
-		other.getLinkedNodesPosMutable().add(this.getNodePos());
-
-		sendNodeUpdates();
-		other.sendNodeUpdates();
+		assertValidity();
+		boolean contains = linkedNodesPos.contains(other.getNodePos());
+		if (!contains) {
+			linkedNodesPos.add(other.getNodePos());
+			parentTile.markDirty();
+			other.makeConnection(this);
+			sendNodeUpdates();
+		}
 	}
 
 	@Override
 	public void breakConnection(IVWNode other) {
-		getLinkedNodesPosMutable().remove(other.getNodePos());
-		other.getLinkedNodesPosMutable().remove(this.getNodePos());
-
-		sendNodeUpdates();
-		other.sendNodeUpdates();
+		assertValidity();
+		boolean contains = linkedNodesPos.contains(other.getNodePos());
+		if (contains) {
+			linkedNodesPos.remove(other.getNodePos());
+			parentTile.markDirty();
+			other.breakConnection(this);
+			sendNodeUpdates();
+		}
 	}
 
 	@Override
 	public BlockPos getNodePos() {
+		assertValidity();
 		return parentTile.getPos();
 	}
 
@@ -104,7 +116,7 @@ public class VWNode_TileEntity implements IVWNode {
 	@Nullable
 	private static IVWNode getVWNode_TileEntity(World world, BlockPos pos) {
 		if (world == null || pos == null) {
-			throw new IllegalArgumentException("Null aruements");
+			throw new IllegalArgumentException("Null arguments");
 		}
 		boolean isChunkLoaded = world.isBlockLoaded(pos);
 		if (!isChunkLoaded) {
@@ -137,20 +149,15 @@ public class VWNode_TileEntity implements IVWNode {
 	}
 
 	@Override
-	public Set<BlockPos> getImmutableLinkedNodesPos() {
+	public Set<BlockPos> getLinkedNodesPos() {
 		return unmodifiableLinkedNodesPos;
 	}
 
 	@Override
-	public Set<BlockPos> getLinkedNodesPosMutable() {
-		return linkedNodesPos;
-	}
-
-	@Override
 	public void writeToNBT(NBTTagCompound compound) {
-		int[] positions = new int[getImmutableLinkedNodesPos().size() * 3];
+		int[] positions = new int[getLinkedNodesPos().size() * 3];
 		int cont = 0;
-		for (BlockPos pos : getImmutableLinkedNodesPos()) {
+		for (BlockPos pos : getLinkedNodesPos()) {
 			positions[cont] = pos.getX();
 			positions[cont + 1] = pos.getY();
 			positions[cont + 2] = pos.getZ();
@@ -163,7 +170,7 @@ public class VWNode_TileEntity implements IVWNode {
 	public void readFromNBT(NBTTagCompound compound) {
 		int[] positions = compound.getIntArray(NBT_DATA_KEY);
 		for (int i = 0; i < positions.length; i += 3) {
-			getLinkedNodesPosMutable().add(new BlockPos(positions[i], positions[i + 1], positions[i + 2]));
+			linkedNodesPos.add(new BlockPos(positions[i], positions[i + 1], positions[i + 2]));
 		}
 	}
 
@@ -177,9 +184,9 @@ public class VWNode_TileEntity implements IVWNode {
 		return isRelay;
 	}
 
+	@Override
 	public PhysicsObject getPhysicsObject() {
-		// TODO Auto-generated method stub
-		return null;
+		return parentPhysicsObject;
 	}
 
 	@Override
@@ -198,6 +205,34 @@ public class VWNode_TileEntity implements IVWNode {
 				list.sendToAllNearExcept(null, xPos, yPos, zPos, 128D, serverWorld.provider.getDimension(), toSend);
 			}
 		}
+	}
+
+	private void assertValidity() {
+		if (!isValid()) {
+			throw new IllegalStateException("This node is not valid / initialized!");
+		}
+	}
+
+	@Override
+	public void shiftConnections(BlockPos offset) {
+		if (isValid()) {
+			throw new IllegalStateException("Cannot shift the connections of a Node while it is valid and in use!");
+		}
+		List<BlockPos> shiftedNodesPos = new ArrayList<BlockPos>(linkedNodesPos.size());
+		for (BlockPos originalPos : linkedNodesPos) {
+			shiftedNodesPos.add(originalPos.add(offset));
+		}
+		linkedNodesPos.clear();
+		linkedNodesPos.addAll(shiftedNodesPos);
+	}
+
+	@Override
+	public void setParentPhysicsObject(PhysicsObject parent) {
+		if (isValid()) {
+			throw new IllegalStateException(
+					"Cannot change the parent physics object of a Node while it is valid and in use!");
+		}
+		this.parentPhysicsObject = parent;
 	}
 
 }

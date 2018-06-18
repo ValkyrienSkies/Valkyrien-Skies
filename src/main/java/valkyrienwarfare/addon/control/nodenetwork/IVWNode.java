@@ -5,15 +5,29 @@ import java.util.Set;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import valkyrienwarfare.physics.management.PhysicsObject;
 
+/**
+ * The nodes that form the graphs of control elements.
+ * @author thebest108
+ *
+ */
 public interface IVWNode {
 
-	Iterable<IVWNode> getConnectedNodes();
+	public static final String NBT_DATA_KEY = "VWNode_Tile_Data";
 	
+	/**
+	 * This does not return the full graph of connected nodes, just the ones that
+	 * are directly connected to this node.
+	 * 
+	 * @return
+	 */
+	Iterable<IVWNode> getDirectlyConnectedNodes();
+
 	void makeConnection(IVWNode other);
-	
+
 	void breakConnection(IVWNode other);
-	
+
 	/**
 	 * Mark this IVWNode as safe to use.
 	 */
@@ -38,7 +52,7 @@ public interface IVWNode {
 	
 	World getNodeWorld();
 	
-	Set<BlockPos> getImmutableLinkedNodesPos();
+	Set<BlockPos> getLinkedNodesPos();
 	
 	void writeToNBT(NBTTagCompound compound);
 	
@@ -48,15 +62,8 @@ public interface IVWNode {
 	
 	boolean isNodeRelay();
 	
-	/**
-	 * Only used for internal purposes.
-	 * @return
-	 */
-	@Deprecated
-	Set<BlockPos> getLinkedNodesPosMutable();
-	
 	default void breakAllConnections() {
-		for (IVWNode node : getConnectedNodes()) {
+		for (IVWNode node : getDirectlyConnectedNodes()) {
 			breakConnection(node);
 		}
 	}
@@ -66,4 +73,20 @@ public interface IVWNode {
 	}
 	
 	void sendNodeUpdates();
+
+	/**
+	 * Can only be called while this node is invalid. Otherwise an
+	 * IllegalStateException is thrown.
+	 * 
+	 * @param offset
+	 */
+	void shiftConnections(BlockPos offset);
+	
+	/**
+	 * Should only be called when after shiftConnections()
+	 * @param parent
+	 */
+	void setParentPhysicsObject(PhysicsObject parent);
+
+	PhysicsObject getPhysicsObject();
 }

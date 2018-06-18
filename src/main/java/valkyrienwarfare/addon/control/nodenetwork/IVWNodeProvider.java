@@ -16,7 +16,18 @@
 
 package valkyrienwarfare.addon.control.nodenetwork;
 
+import net.minecraft.util.math.BlockPos;
+
 public interface IVWNodeProvider {
 
-    public IVWNode getNode();
+	public IVWNode getNode();
+
+	/**
+	 * Shifts all of the internal state data, like connections to other nodes.
+	 * 
+	 * @param offset
+	 */
+	public default void shiftInternalData(BlockPos offset) {
+		getNode().shiftConnections(offset);
+	}
 }

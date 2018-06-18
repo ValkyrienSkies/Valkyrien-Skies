@@ -45,7 +45,7 @@ public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer {
                 GL11.glTranslated(.5D, -1D, .5D);
                 // GL11.glTranslated(0, y, 0);
 
-                for (BlockPos otherPos : tileNode.getImmutableLinkedNodesPos()) {
+                for (BlockPos otherPos : tileNode.getLinkedNodesPos()) {
                     // render wire between these two blockPos
                     GL11.glPushMatrix();
                     // GlStateManager.resetColor();

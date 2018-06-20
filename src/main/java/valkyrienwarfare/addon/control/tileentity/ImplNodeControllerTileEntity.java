@@ -14,42 +14,54 @@
  *
  */
 
-package valkyrienwarfare.addon.control.nodenetwork;
+package valkyrienwarfare.addon.control.tileentity;
 
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
-import valkyrienwarfare.physics.PhysicsCalculations;
-import valkyrienwarfare.physics.management.PhysicsObject;
+import valkyrienwarfare.addon.control.nodenetwork.BasicNodeTileEntity;
+import valkyrienwarfare.addon.control.nodenetwork.INodeController;
 
-public interface INodePhysicsProcessor extends Comparable<INodePhysicsProcessor> {
-
-    int getPriority();
-
-    void setPriority(int newPriority);
+public abstract class ImplNodeControllerTileEntity extends BasicNodeTileEntity implements INodeController {
 
     /**
-     * Does nothing by default, insert processor logic here
-     *
-     * @param object
-     * @param calculations
-     * @param secondsToSimulate
+     * If -1, the algorithm will ignore this processor
      */
-    void onPhysicsTick(PhysicsObject object, PhysicsCalculations calculations, double secondsToSimulate);
+    private int priority;
 
-    /**
-     * Returns the position of the TileEntity that is behind this interface.
-     * @return
-     */
-    BlockPos getNodePos();
-    
-    // Used maintain order of which processors get called first. If both processors
-    // have equal priorities, then we use the BlockPos as a tiebreaker.
+    public ImplNodeControllerTileEntity(int priority) {
+        this.priority = priority;
+    }
+
     @Override
-    default int compareTo(INodePhysicsProcessor other) {
-    	if (getPriority() != other.getPriority()) {
-    		return getPriority() - other.getPriority();
-    	} else {
-    		// break the tie
-    		return getNodePos().compareTo(other.getNodePos());
-    	}
+    public int getPriority() {
+        return priority;
+    }
+
+    @Override
+    public void setPriority(int newPriority) {
+        priority = newPriority;
+    }
+    
+    @Override
+    public BlockPos getNodePos() {
+    	return this.getPos();
+    }
+    
+    @Override
+    public void readFromNBT(NBTTagCompound compound) {
+        super.readFromNBT(compound);
+        priority = compound.getInteger("priority");
+    }
+
+    @Override
+    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+        compound = super.writeToNBT(compound);
+        compound.setInteger("priority", priority);
+        return compound;
+    }
+
+    @Override
+    public int hashCode() {
+    	return getNodePos().hashCode();
     }
 }

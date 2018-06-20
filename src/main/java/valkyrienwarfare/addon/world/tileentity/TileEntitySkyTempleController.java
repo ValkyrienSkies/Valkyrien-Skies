@@ -17,12 +17,12 @@
 package valkyrienwarfare.addon.world.tileentity;
 
 import net.minecraft.nbt.NBTTagCompound;
-import valkyrienwarfare.addon.control.tileentity.ImplPhysicsProcessorNodeTileEntity;
+import valkyrienwarfare.addon.control.tileentity.ImplNodeControllerTileEntity;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.physics.PhysicsCalculations;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
-public class TileEntitySkyTempleController extends ImplPhysicsProcessorNodeTileEntity {
+public class TileEntitySkyTempleController extends ImplNodeControllerTileEntity {
 
     public static final int PHYSICS_PROCESSOR_PRIORITY = 105;
 

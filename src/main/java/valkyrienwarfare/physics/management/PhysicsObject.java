@@ -63,7 +63,7 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.network.EntityFixMessage;
-import valkyrienwarfare.addon.control.nodenetwork.INodePhysicsProcessor;
+import valkyrienwarfare.addon.control.nodenetwork.INodeController;
 import valkyrienwarfare.addon.control.nodenetwork.IVWNodeProvider;
 import valkyrienwarfare.api.EnumChangeOwnerResult;
 import valkyrienwarfare.api.Vector;
@@ -134,8 +134,8 @@ public class PhysicsObject implements ISubspaceProvider {
     private volatile int gameConsecutiveTicks;
     private volatile int physicsConsecutiveTicks;
     private final ISubspace shipSubspace;
-	private final Set<INodePhysicsProcessor> physicsControllers;
-	private final Set<INodePhysicsProcessor> physicsControllersImmutable;
+	private final Set<INodeController> physicsControllers;
+	private final Set<INodeController> physicsControllersImmutable;
 
     public PhysicsObject(PhysicsWrapperEntity host) {
     	this.wrapper = host;
@@ -156,8 +156,8 @@ public class PhysicsObject implements ISubspaceProvider {
         this.gameConsecutiveTicks = 0;
         this.physicsConsecutiveTicks = 0;
         this.shipSubspace = new ImplSubspace(this);
-        this.physicsControllers = Sets.<INodePhysicsProcessor>newConcurrentHashSet();
-        this.physicsControllersImmutable = Collections.<INodePhysicsProcessor>unmodifiableSet(this.physicsControllers);
+        this.physicsControllers = Sets.<INodeController>newConcurrentHashSet();
+        this.physicsControllersImmutable = Collections.<INodeController>unmodifiableSet(this.physicsControllers);
     }
 
 	public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos posAt) {
@@ -1236,16 +1236,16 @@ public class PhysicsObject implements ISubspaceProvider {
 
 	// ===== Keep track of all Node Processors in a concurrent Set =====
 	public void onSetTileEntity(BlockPos pos, TileEntity tileentity) {
-		if (tileentity instanceof INodePhysicsProcessor) {
-			physicsControllers.add((INodePhysicsProcessor) tileentity);
+		if (tileentity instanceof INodeController) {
+			physicsControllers.add((INodeController) tileentity);
 		}
 		// System.out.println(physicsControllers.size());
 	}
 	
 	public void onRemoveTileEntity(BlockPos pos) {
-		Iterator<INodePhysicsProcessor> controllersIterator = physicsControllers.iterator();
+		Iterator<INodeController> controllersIterator = physicsControllers.iterator();
 		while (controllersIterator.hasNext()) {
-			INodePhysicsProcessor next = controllersIterator.next();
+			INodeController next = controllersIterator.next();
 			if (next.getNodePos().equals(pos)) {
 				controllersIterator.remove();
 			}
@@ -1254,7 +1254,7 @@ public class PhysicsObject implements ISubspaceProvider {
 	}
 	
 	// Do not allow anything external to modify the physics controllers Set.
-	public Set<INodePhysicsProcessor> getPhysicsControllersInShip() {
+	public Set<INodeController> getPhysicsControllersInShip() {
 		return physicsControllersImmutable;
 	}
 

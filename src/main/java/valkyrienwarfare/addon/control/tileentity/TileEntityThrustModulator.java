@@ -32,7 +32,7 @@ import valkyrienwarfare.physics.PhysicsCalculations;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
 @Optional.Interface(iface = "li.cil.oc.api.network.SimpleComponent", modid = "opencomputers")
-public class TileEntityThrustModulator extends ImplPhysicsProcessorNodeTileEntity implements SimpleComponent {
+public class TileEntityThrustModulator extends ImplNodeControllerTileEntity implements SimpleComponent {
 
     public static final int PHYSICS_PROCESSOR_PRIORITY = 100;
     public double idealYHeight = 25D;

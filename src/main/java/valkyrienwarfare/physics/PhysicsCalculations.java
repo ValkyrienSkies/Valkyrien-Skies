@@ -30,7 +30,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.addon.control.nodenetwork.INodePhysicsProcessor;
+import valkyrienwarfare.addon.control.nodenetwork.INodeController;
 import valkyrienwarfare.api.IBlockForceProvider;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
@@ -346,13 +346,13 @@ public class PhysicsCalculations {
 
         if (PhysicsSettings.doPhysicsBlocks && getParent().areShipChunksFullyLoaded()) {
         	// We want to loop through all the physics nodes in a sorted order. Priority Queue handles that.
-        	Queue<INodePhysicsProcessor> nodesPriorityQueue = new PriorityQueue<INodePhysicsProcessor>();
-        	for (INodePhysicsProcessor processor : parent.getPhysicsControllersInShip()) {
+        	Queue<INodeController> nodesPriorityQueue = new PriorityQueue<INodeController>();
+        	for (INodeController processor : parent.getPhysicsControllersInShip()) {
         		nodesPriorityQueue.add(processor);
         	}
         	
         	while (nodesPriorityQueue.size() > 0) {
-        		INodePhysicsProcessor controller = nodesPriorityQueue.poll();
+        		INodeController controller = nodesPriorityQueue.poll();
         		controller.onPhysicsTick(parent, this, this.getPhysicsTimeDeltaPerPhysTick());
         	}
         	

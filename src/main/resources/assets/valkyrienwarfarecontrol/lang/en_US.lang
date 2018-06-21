@@ -13,6 +13,8 @@ tile.shiptelegraph.name=Ship Telegraph
 tile.vw_gyroscope.name=Ship Gyroscope
 tile.vw_liftvalve.name=Lift Valve
 tile.vw_networkdisplay.name=Network Display
+tile.vw_liftcontrol.name=Lift Control
+tile.vw_ethergascompressor.name=Ether Gas Compressor
 
 #ENGINES
 tile.basicengine.name=Basic Engine

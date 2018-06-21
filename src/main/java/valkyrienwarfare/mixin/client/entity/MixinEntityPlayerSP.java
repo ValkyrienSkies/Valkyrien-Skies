@@ -123,8 +123,9 @@ public class MixinEntityPlayerSP {
             double d3 = (double)(player.rotationYaw - lastReportedYaw);
             double d4 = (double)(player.rotationPitch - lastReportedPitch);
             ++positionUpdateTicks;
-            boolean flag2 = d0 * d0 + d1 * d1 + d2 * d2 > 9.0E-4D || positionUpdateTicks >= 20;
-            boolean flag3 = d3 != 0.0D || d4 != 0.0D;
+            // Always true because why not.
+            boolean flag2 = true; // d0 * d0 + d1 * d1 + d2 * d2 > 9.0E-4D || positionUpdateTicks >= 20;
+            boolean flag3 = true; // d3 != 0.0D || d4 != 0.0D;
 
             if (player.isRiding())
             {
@@ -142,11 +143,6 @@ public class MixinEntityPlayerSP {
             else if (flag3)
             {
             	player.connection.sendPacket(new CPacketPlayer.Rotation(player.rotationYaw, player.rotationPitch, player.onGround));
-            }
-            // We must ALWAYS send a player packet!
-            else if (true /*prevOnGround != player.onGround*/)
-            {
-            	player.connection.sendPacket(new CPacketPlayer(player.onGround));
             }
 
             if (flag2)

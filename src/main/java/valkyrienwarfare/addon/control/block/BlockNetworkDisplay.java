@@ -47,7 +47,6 @@ public class BlockNetworkDisplay extends Block implements ITileEntityProvider {
 				playerIn.sendMessage(new TextComponentString("Networked objects connected: " + connectedNodes.size()));
 				playerIn.sendMessage(new TextComponentString("Types of objects connected: " + networkedClassTypeCounts.toString()));
 			}
-			return true;
 		}
 		return true;
 	}

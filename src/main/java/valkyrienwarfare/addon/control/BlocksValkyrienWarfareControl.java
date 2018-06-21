@@ -22,7 +22,9 @@ import net.minecraft.item.Item;
 import net.minecraftforge.event.RegistryEvent;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.block.BlockDopedEtherium;
+import valkyrienwarfare.addon.control.block.BlockEtherGasCompressor;
 import valkyrienwarfare.addon.control.block.BlockGyroscope;
+import valkyrienwarfare.addon.control.block.BlockLiftControl;
 import valkyrienwarfare.addon.control.block.BlockLiftValve;
 import valkyrienwarfare.addon.control.block.BlockNetworkDisplay;
 import valkyrienwarfare.addon.control.block.BlockShipHelm;
@@ -42,29 +44,31 @@ public class BlocksValkyrienWarfareControl {
 
     private final ValkyrienWarfareControl mod_vwcontrol;
 
-    public BlockNormalEngine basicEngine;
-    public BlockNormalEngine advancedEngine;
-    public BlockNormalEngine eliteEngine;
-    public BlockNormalEngine ultimateEngine;
-    public BlockRedstoneEngine redstoneEngine;
+    public final BlockNormalEngine basicEngine;
+    public final BlockNormalEngine advancedEngine;
+    public final BlockNormalEngine eliteEngine;
+    public final BlockNormalEngine ultimateEngine;
+    public final BlockRedstoneEngine redstoneEngine;
 
-    public BlockNormalEtherCompressor antigravityEngine; // leaving it with the old name to prevent blocks disappearing
-    public BlockNormalEtherCompressor advancedEtherCompressor;
-    public BlockNormalEtherCompressor eliteEtherCompressor;
-    public BlockNormalEtherCompressor ultimateEtherCompressor;
-    public BlockCreativeEtherCompressor creativeEtherCompressor;
+    public final BlockNormalEtherCompressor antigravityEngine; // leaving it with the old name to prevent blocks disappearing
+    public final BlockNormalEtherCompressor advancedEtherCompressor;
+    public final BlockNormalEtherCompressor eliteEtherCompressor;
+    public final BlockNormalEtherCompressor ultimateEtherCompressor;
+    public final BlockCreativeEtherCompressor creativeEtherCompressor;
 
-    public Block dopedEtherium;
-    public Block pilotsChair;
-    public Block passengerChair;
-    public Block shipHelm;
-    public Block shipWheel;
-    public Block shipTelegraph;
-    public Block thrustRelay;
-    public Block thrustModulator;
-    public Block gyroscope;
-    public Block liftValve;
-    public Block networkDisplay;
+    public final Block dopedEtherium;
+    public final Block pilotsChair;
+    public final Block passengerChair;
+    public final Block shipHelm;
+    public final Block shipWheel;
+    public final Block shipTelegraph;
+    public final Block thrustRelay;
+    public final Block thrustModulator;
+    public final Block gyroscope;
+    public final Block liftValve;
+    public final Block networkDisplay;
+    public final Block liftControl;
+    public final Block etherGasCompressor;
 
     public BlocksValkyrienWarfareControl(ValkyrienWarfareControl mod_vwcontrol) {
         this.mod_vwcontrol = mod_vwcontrol;
@@ -95,7 +99,9 @@ public class BlocksValkyrienWarfareControl {
         gyroscope = new BlockGyroscope(Material.IRON).setHardness(5f).setUnlocalizedName("vw_gyroscope").setRegistryName(getModID(), "vw_gyroscope").setCreativeTab(ValkyrienWarfareMod.vwTab);
 
         liftValve = new BlockLiftValve(Material.IRON).setHardness(7f).setUnlocalizedName("vw_liftvalve").setRegistryName(getModID(), "vw_liftvalve").setCreativeTab(ValkyrienWarfareMod.vwTab);
-        networkDisplay = new BlockNetworkDisplay(Material.IRON).setHardness(5f).setUnlocalizedName("vw_networkdisplay").setRegistryName(getModID(), "vw_networkdisplay").setCreativeTab(ValkyrienWarfareMod.vwTab);;
+        networkDisplay = new BlockNetworkDisplay(Material.IRON).setHardness(5f).setUnlocalizedName("vw_networkdisplay").setRegistryName(getModID(), "vw_networkdisplay").setCreativeTab(ValkyrienWarfareMod.vwTab);
+        liftControl = new BlockLiftControl(Material.IRON).setHardness(5f).setUnlocalizedName("vw_liftcontrol").setRegistryName(getModID(), "vw_liftcontrol").setCreativeTab(ValkyrienWarfareMod.vwTab);
+        etherGasCompressor = new BlockEtherGasCompressor(Material.IRON).setHardness(5f).setUnlocalizedName("vw_ethergascompressor").setRegistryName(getModID(), "vw_ethergascompressor").setCreativeTab(ValkyrienWarfareMod.vwTab);
     }
 
     protected void registerBlocks(RegistryEvent.Register<Block> event) {
@@ -124,6 +130,8 @@ public class BlocksValkyrienWarfareControl {
         event.getRegistry().register(gyroscope);
         event.getRegistry().register(liftValve);
         event.getRegistry().register(networkDisplay);
+        event.getRegistry().register(liftControl);
+        event.getRegistry().register(etherGasCompressor);
     }
 
     protected void registerBlockItems(RegistryEvent.Register<Item> event) {
@@ -152,6 +160,8 @@ public class BlocksValkyrienWarfareControl {
         registerItemBlock(event, gyroscope);
         registerItemBlock(event, liftValve);
         registerItemBlock(event, networkDisplay);
+        registerItemBlock(event, liftControl);
+        registerItemBlock(event, etherGasCompressor);
     }
 
     private void registerItemBlock(RegistryEvent.Register<Item> event, Block block) {

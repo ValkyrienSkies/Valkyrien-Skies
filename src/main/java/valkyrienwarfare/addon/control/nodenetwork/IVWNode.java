@@ -5,6 +5,7 @@ import java.util.Set;
 
 import gigaherz.graph.api.GraphObject;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import valkyrienwarfare.physics.management.PhysicsObject;
@@ -93,5 +94,7 @@ public interface IVWNode extends GraphObject {
 	PhysicsObject getPhysicsObject();
 	
 	List<GraphObject> getNeighbours();
+	
+	TileEntity getParentTile();
 	
 }

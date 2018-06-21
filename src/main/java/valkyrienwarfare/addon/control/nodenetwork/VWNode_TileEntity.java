@@ -291,4 +291,9 @@ public class VWNode_TileEntity implements IVWNode {
 		}
 		return nodesList;
 	}
+
+	@Override
+	public TileEntity getParentTile() {
+		return parentTile;
+	}
 }

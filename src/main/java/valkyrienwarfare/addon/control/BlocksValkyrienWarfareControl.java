@@ -24,6 +24,7 @@ import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.block.BlockDopedEtherium;
 import valkyrienwarfare.addon.control.block.BlockGyroscope;
 import valkyrienwarfare.addon.control.block.BlockLiftValve;
+import valkyrienwarfare.addon.control.block.BlockNetworkDisplay;
 import valkyrienwarfare.addon.control.block.BlockShipHelm;
 import valkyrienwarfare.addon.control.block.BlockShipPassengerChair;
 import valkyrienwarfare.addon.control.block.BlockShipPilotsChair;
@@ -63,6 +64,7 @@ public class BlocksValkyrienWarfareControl {
     public Block thrustModulator;
     public Block gyroscope;
     public Block liftValve;
+    public Block networkDisplay;
 
     public BlocksValkyrienWarfareControl(ValkyrienWarfareControl mod_vwcontrol) {
         this.mod_vwcontrol = mod_vwcontrol;
@@ -93,6 +95,7 @@ public class BlocksValkyrienWarfareControl {
         gyroscope = new BlockGyroscope(Material.IRON).setHardness(5f).setUnlocalizedName("vw_gyroscope").setRegistryName(getModID(), "vw_gyroscope").setCreativeTab(ValkyrienWarfareMod.vwTab);
 
         liftValve = new BlockLiftValve(Material.IRON).setHardness(7f).setUnlocalizedName("vw_liftvalve").setRegistryName(getModID(), "vw_liftvalve").setCreativeTab(ValkyrienWarfareMod.vwTab);
+        networkDisplay = new BlockNetworkDisplay(Material.IRON).setHardness(5f).setUnlocalizedName("vw_networkdisplay").setRegistryName(getModID(), "vw_networkdisplay").setCreativeTab(ValkyrienWarfareMod.vwTab);;
     }
 
     protected void registerBlocks(RegistryEvent.Register<Block> event) {
@@ -120,6 +123,7 @@ public class BlocksValkyrienWarfareControl {
 
         event.getRegistry().register(gyroscope);
         event.getRegistry().register(liftValve);
+        event.getRegistry().register(networkDisplay);
     }
 
     protected void registerBlockItems(RegistryEvent.Register<Item> event) {
@@ -147,6 +151,7 @@ public class BlocksValkyrienWarfareControl {
 
         registerItemBlock(event, gyroscope);
         registerItemBlock(event, liftValve);
+        registerItemBlock(event, networkDisplay);
     }
 
     private void registerItemBlock(RegistryEvent.Register<Item> event, Block block) {

@@ -72,6 +72,7 @@ public class ClientProxyControl extends CommonProxyControl {
         
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.gyroscope);
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.liftValve);
+        registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.networkDisplay);
     }
 
     private static void registerItemModels() {

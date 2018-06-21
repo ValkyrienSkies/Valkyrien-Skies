@@ -130,7 +130,7 @@ public class TileEntityPilotsChair extends ImplTileEntityPilotable {
 		// contains shipUp and shipUpPos. This is our axis of rotation.
 		Vector shipUpRotationVector = shipUp.cross(shipUpPosIdeal);
 		// This isnt quite right, but it handles the cases quite well.
-		double shipUpTheta = shipUp.angleBetween(shipUpPosIdeal) + Math.PI / 2;
+		double shipUpTheta = shipUp.angleBetween(shipUpPosIdeal) + Math.PI;
 		shipUpRotationVector.multiply(shipUpTheta);
 
 		idealAngularDirection.add(shipUpRotationVector);

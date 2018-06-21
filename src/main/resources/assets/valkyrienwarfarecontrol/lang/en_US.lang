@@ -1,17 +1,18 @@
 #ITEMS
-item.relaywire.name=Relay Wire
+item.relaywire.name=Control Relay Wire
 
 #Blocks
-tile.shippilotschair.name=Piloting Chair
+tile.shippilotschair.name=Pilots Chair
 tile.shippassengerchair.name=Passenger Chair
-tile.dopedetherium.name=Doped Etherium
+tile.dopedetherium.name=Compacted Etherium
 tile.balloonburner.name=Balloon Burner
-tile.thrustrelay.name=Thrust Relay
-tile.thrustmodulator.name=Thrust Modulator
+tile.thrustrelay.name=Network Control Relay
+tile.thrustmodulator.name=Old Control Block
 tile.shiphelm.name=Ship Helm
 tile.shiptelegraph.name=Ship Telegraph
 tile.vw_gyroscope.name=Ship Gyroscope
 tile.vw_liftvalve.name=Lift Valve
+tile.vw_networkdisplay.name=Network Display
 
 #ENGINES
 tile.basicengine.name=Basic Engine

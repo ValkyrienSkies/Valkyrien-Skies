@@ -54,6 +54,7 @@ import valkyrienwarfare.addon.control.proxy.ClientProxyControl;
 import valkyrienwarfare.addon.control.proxy.CommonProxyControl;
 import valkyrienwarfare.addon.control.tileentity.TileEntityGyroscope;
 import valkyrienwarfare.addon.control.tileentity.TileEntityLiftValve;
+import valkyrienwarfare.addon.control.tileentity.TileEntityNetworkDisplay;
 import valkyrienwarfare.addon.control.tileentity.TileEntityNodeRelay;
 import valkyrienwarfare.addon.control.tileentity.TileEntityNormalEtherCompressor;
 import valkyrienwarfare.addon.control.tileentity.TileEntityPilotsChair;
@@ -115,6 +116,7 @@ public class ValkyrienWarfareControl extends Module {
         GameRegistry.registerTileEntity(TileEntityPropellerEngine.class, "tilepropellerengine");
         GameRegistry.registerTileEntity(TileEntityGyroscope.class, "tilegyroscope");
         GameRegistry.registerTileEntity(TileEntityLiftValve.class, "tileliftvalve");
+        GameRegistry.registerTileEntity(TileEntityNetworkDisplay.class, "tilenetworkdisplay");
     }
 
     @Override

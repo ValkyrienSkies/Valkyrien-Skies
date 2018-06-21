@@ -65,7 +65,6 @@ public abstract class BasicNodeTileEntity extends TileEntity implements IVWNodeP
 	@Override
 	public NBTTagCompound getUpdateTag() {
 		NBTTagCompound toReturn = super.getUpdateTag();
-
 		return writeToNBT(toReturn);
 	}
 

@@ -553,4 +553,11 @@ public class PhysicsCalculations {
 		return worldCollision;
 	}
 
+	public double getInertiaAlongRotationAxis() {
+		Vector rotationAxis = new Vector(angularVelocity);
+		rotationAxis.normalize();
+		RotationMatrices.applyTransform3by3(getPhysMOITensor(), rotationAxis);
+		return rotationAxis.length();
+	}
+
 }

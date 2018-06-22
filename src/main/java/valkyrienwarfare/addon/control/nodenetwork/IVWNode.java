@@ -95,6 +95,11 @@ public interface IVWNode extends GraphObject {
 	
 	int getMaximumConnections();
 	
+	/**
+	 * 
+	 * @param other
+	 * @return True if the nodes are linked.
+	 */
 	default boolean isLinkedToNode(IVWNode other) {
 		return getLinkedNodesPos().contains(other.getNodePos());
 	}

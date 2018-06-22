@@ -32,25 +32,15 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import valkyrienwarfare.addon.control.piloting.ITileEntityPilotable;
 import valkyrienwarfare.addon.control.tileentity.TileEntityShipTelegraph;
 
-public class BlockShipTelegraph extends Block implements ITileEntityProvider {
+public class BlockShipTelegraph extends BlockPilotableBasic {
 
     public static final PropertyDirection FACING = BlockHorizontal.FACING;
 
     public BlockShipTelegraph(Material materialIn) {
         super(materialIn);
-    }
-
-    @Override
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
-        if (!worldIn.isRemote) {
-            TileEntity tileIn = worldIn.getTileEntity(pos);
-            if (tileIn instanceof TileEntityShipTelegraph) {
-                ((TileEntityShipTelegraph) tileIn).setPilotEntity(playerIn);
-            }
-        }
-        return true;
     }
 
     @Override

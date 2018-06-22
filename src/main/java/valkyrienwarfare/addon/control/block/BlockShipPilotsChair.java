@@ -46,7 +46,7 @@ import valkyrienwarfare.mod.physmanagement.interaction.EntityDraggable;
 import valkyrienwarfare.mod.physmanagement.interaction.IDraggable;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
-public class BlockShipPilotsChair extends Block implements ITileEntityProvider {
+public class BlockShipPilotsChair extends BlockPilotableBasic {
 
     public static final PropertyDirection FACING = BlockHorizontal.FACING;
 

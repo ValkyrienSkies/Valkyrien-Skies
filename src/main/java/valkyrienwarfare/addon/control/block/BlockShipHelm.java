@@ -34,23 +34,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import valkyrienwarfare.addon.control.tileentity.TileEntityShipHelm;
 
-public class BlockShipHelm extends Block implements ITileEntityProvider {
+public class BlockShipHelm extends BlockPilotableBasic {
 
     public static final PropertyDirection FACING = BlockHorizontal.FACING;
 
     public BlockShipHelm(Material materialIn) {
         super(materialIn);
-    }
-
-    @Override
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
-        if (!worldIn.isRemote) {
-            TileEntity tileIn = worldIn.getTileEntity(pos);
-            if (tileIn instanceof TileEntityShipHelm) {
-                ((TileEntityShipHelm) tileIn).setPilotEntity(playerIn);
-            }
-        }
-        return true;
     }
 
     @Override

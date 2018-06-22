@@ -427,6 +427,13 @@ public class PhysicsCalculations {
     public void applyAngularVelocity() {
         ShipTransformationManager coordTrans = getParent().getShipTransformationManager();
 
+        if (angularVelocity.lengthSq() < .05) {
+        	double linearSpeedSq = linearMomentum.lengthSq() * this.getInvMass() * this.getInvMass();
+        	if (linearSpeedSq < .05) { 
+        		angularVelocity.zero();
+        	}
+        }
+        
         double[] rotationChange = RotationMatrices.getRotationMatrix(angularVelocity.X, angularVelocity.Y,
                 angularVelocity.Z, angularVelocity.length() * getPhysicsTimeDeltaPerPhysTick());
         Quaternion finalTransform = Quaternion.QuaternionFromMatrix(RotationMatrices.getMatrixProduct(rotationChange,

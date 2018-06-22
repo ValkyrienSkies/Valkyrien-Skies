@@ -422,7 +422,8 @@ public class WorldPhysicsCollider {
 		double E = 2 * deltaAngularVelocity.dot(initialAngularVelocity);
 		double F = deltaAngularVelocity.lengthSq();
 
-		if (initialAngularVelocity.lengthSq() < .1) {
+		// This is tied to PhysicsCalculations line 430
+		if (initialAngularVelocity.lengthSq() < .05 && initialVelocity.lengthSq() < .05) {
 			// Remove rotational friction if we are rotating slow enough
 			D = E = F = 0;
 		}

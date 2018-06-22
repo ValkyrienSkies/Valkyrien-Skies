@@ -20,7 +20,7 @@ public enum ControllerInputType {
 
 	PilotsChair(true), ShipHelm(true), Zepplin(false), Telegraph(true), LiftControl(true);
 
-	private boolean lockPlayerMovement;
+	private final boolean lockPlayerMovement;
 
 	private ControllerInputType(boolean lockPlayerMovement) {
 		this.lockPlayerMovement = lockPlayerMovement;

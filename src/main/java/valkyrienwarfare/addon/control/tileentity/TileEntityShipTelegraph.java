@@ -123,9 +123,4 @@ public class TileEntityShipTelegraph extends ImplTileEntityPilotable implements 
         return ControllerInputType.Telegraph;
     }
 
-    @Override
-    boolean setClientPilotingEntireShip() {
-        return false;
-    }
-
 }

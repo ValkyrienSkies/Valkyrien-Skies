@@ -35,7 +35,7 @@ public abstract class BasicNodeTileEntity extends TileEntity implements IVWNodeP
 	private boolean firstUpdate;
 
 	public BasicNodeTileEntity() {
-		this.tileNode = new VWNode_TileEntity(this);
+		this.tileNode = new VWNode_TileEntity(this, getMaximumConnections());
 		this.firstUpdate = true;
 		Graph.integrate(tileNode, Collections.EMPTY_LIST, (graph) -> new GraphData());
 	}
@@ -107,6 +107,14 @@ public abstract class BasicNodeTileEntity extends TileEntity implements IVWNodeP
 			firstUpdate = false;
 			init();
 		}
+	}
+
+	/**
+	 * 
+	 * @return The maximum number of nodes this tile entity can be connected to.
+	 */
+	protected int getMaximumConnections() {
+		return 1;
 	}
 
 	private void init() {

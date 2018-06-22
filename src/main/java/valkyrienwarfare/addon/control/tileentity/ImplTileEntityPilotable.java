@@ -107,11 +107,14 @@ public abstract class ImplTileEntityPilotable extends BasicNodeTileEntity implem
 	abstract ControllerInputType getControlInputType();
 
 	/**
-	 * Unique for each tileentity type
+	 * Returns true if this control type is piloting the ship.
 	 *
 	 * @return
 	 */
-	abstract boolean setClientPilotingEntireShip();
+	@Deprecated
+	boolean setClientPilotingEntireShip() {
+		return false;
+	}
 
 	/**
 	 * Unique for each tileentity type, only called if the sender player is the same

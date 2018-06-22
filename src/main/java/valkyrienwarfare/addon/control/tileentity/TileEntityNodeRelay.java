@@ -27,9 +27,13 @@ public class TileEntityNodeRelay extends BasicNodeTileEntity {
     public TileEntityNodeRelay() {
         super();
         VWNode_TileEntity node = this.getNode();
-        node.setIsNodeRelay(true);
     }
 
+    @Override
+    protected int getMaximumConnections() {
+    	return 4;
+    }
+    
     @Override
     @SideOnly(Side.CLIENT)
     public AxisAlignedBB getRenderBoundingBox() {

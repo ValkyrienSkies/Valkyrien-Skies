@@ -61,18 +61,14 @@ public interface IVWNode extends GraphObject {
 	
 	void readFromNBT(NBTTagCompound compound);
 	
-	void setIsNodeRelay(boolean isRelay);
-	
-	boolean isNodeRelay();
-	
 	default void breakAllConnections() {
 		for (IVWNode node : getDirectlyConnectedNodes()) {
 			breakConnection(node);
 		}
 	}
 
-	default boolean canLinkToNode(IVWNode other) {
-		return isNodeRelay() || other.isNodeRelay();
+	default boolean canLinkToOtherNode(IVWNode other) {
+		return getLinkedNodesPos().size() < getMaximumConnections() && other.getLinkedNodesPos().size() < other.getMaximumConnections();
 	}
 	
 	void sendNodeUpdates();
@@ -97,4 +93,9 @@ public interface IVWNode extends GraphObject {
 	
 	TileEntity getParentTile();
 	
+	int getMaximumConnections();
+	
+	default boolean isLinkedToNode(IVWNode other) {
+		return getLinkedNodesPos().contains(other.getNodePos());
+	}
 }

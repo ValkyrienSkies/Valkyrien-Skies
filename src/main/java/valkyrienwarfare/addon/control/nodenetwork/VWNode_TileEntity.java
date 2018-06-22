@@ -44,18 +44,18 @@ public class VWNode_TileEntity implements IVWNode {
 	// version of linkedNodesPos.
 	private final Set<BlockPos> unmodifiableLinkedNodesPos;
 	private boolean isValid;
-	private boolean isRelay;
 	private PhysicsObject parentPhysicsObject;
 	private Graph nodeGraph;
+	private final int maximumConnections;
 
-	public VWNode_TileEntity(TileEntity parent) {
+	public VWNode_TileEntity(TileEntity parent, int maximumConnections) {
 		this.parentTile = parent;
 		this.linkedNodesPos = new HashSet<BlockPos>();
 		this.unmodifiableLinkedNodesPos = Collections.unmodifiableSet(linkedNodesPos);
-		this.isRelay = false;
 		this.isValid = false;
 		this.parentPhysicsObject = null;
 		this.nodeGraph = null;
+		this.maximumConnections = maximumConnections;
 	}
 
 	@Override
@@ -186,16 +186,6 @@ public class VWNode_TileEntity implements IVWNode {
 	}
 
 	@Override
-	public void setIsNodeRelay(boolean isRelay) {
-		this.isRelay = isRelay;
-	}
-
-	@Override
-	public boolean isNodeRelay() {
-		return isRelay;
-	}
-
-	@Override
 	public PhysicsObject getPhysicsObject() {
 		return parentPhysicsObject;
 	}
@@ -295,5 +285,10 @@ public class VWNode_TileEntity implements IVWNode {
 	@Override
 	public TileEntity getParentTile() {
 		return parentTile;
+	}
+
+	@Override
+	public int getMaximumConnections() {
+		return maximumConnections;
 	}
 }

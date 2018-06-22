@@ -13,11 +13,6 @@ public class TileEntityLiftControl extends ImplTileEntityPilotable {
 	}
 
 	@Override
-	boolean setClientPilotingEntireShip() {
-		return false;
-	}
-
-	@Override
 	void processControlMessage(PilotControlsMessage message, EntityPlayerMP sender) {
 		if (message.airshipForward_KeyDown) {
 			System.out.println("Lift Up");

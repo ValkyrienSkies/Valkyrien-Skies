@@ -51,7 +51,7 @@ public class TileEntityPilotsChair extends ImplTileEntityPilotable {
     }
 
     @Override
-    final boolean setClientPilotingEntireShip() {
+    boolean setClientPilotingEntireShip() {
         return true;
     }
 

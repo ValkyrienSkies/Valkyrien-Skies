@@ -223,6 +223,7 @@ public class PhysicsCalculations {
 	public void rawPhysTickPostCol() {
 		if (!isPhysicsBroken()) {
 			if (getParent().isPhysicsEnabled()) {
+				enforceStaticFriction();
 				if (PhysicsSettings.doAirshipRotation) {
 					applyAngularVelocity();
 				}
@@ -257,6 +258,21 @@ public class PhysicsCalculations {
             return true;
         }
         return false;
+    }
+    
+    /**
+     * This method will set the linear and angular velocities to zero if both are too small.
+     */
+    private void enforceStaticFriction() {
+        if (angularVelocity.lengthSq() < .001) {
+        	double linearSpeedSq = linearMomentum.lengthSq() * this.getInvMass() * this.getInvMass();
+        	if (linearSpeedSq < .05) {
+        		angularVelocity.zero();
+        		if (linearSpeedSq < .0001) {
+        			linearMomentum.zero();
+        		}
+        	}
+        }
     }
 
     // The x/y/z variables need to be updated when the centerOfMass location
@@ -426,13 +442,6 @@ public class PhysicsCalculations {
 
     public void applyAngularVelocity() {
         ShipTransformationManager coordTrans = getParent().getShipTransformationManager();
-
-        if (angularVelocity.lengthSq() < .05) {
-        	double linearSpeedSq = linearMomentum.lengthSq() * this.getInvMass() * this.getInvMass();
-        	if (linearSpeedSq < .05) { 
-        		angularVelocity.zero();
-        	}
-        }
         
         double[] rotationChange = RotationMatrices.getRotationMatrix(angularVelocity.X, angularVelocity.Y,
                 angularVelocity.Z, angularVelocity.length() * getPhysicsTimeDeltaPerPhysTick());

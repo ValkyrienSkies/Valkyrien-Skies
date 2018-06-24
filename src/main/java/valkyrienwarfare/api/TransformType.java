@@ -14,7 +14,7 @@
  *
  */
 
-package valkyrienwarfare.mod.coordinates;
+package valkyrienwarfare.api;
 
 /**
  * A simple enum used to tell the ship transform which coordinates system we are

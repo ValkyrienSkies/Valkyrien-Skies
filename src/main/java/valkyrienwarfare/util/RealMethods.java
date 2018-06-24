@@ -20,9 +20,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
+import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.deprecated_api.DummyMethods;
 import valkyrienwarfare.math.Vector;
-import valkyrienwarfare.mod.coordinates.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public class RealMethods implements DummyMethods {

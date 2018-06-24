@@ -24,8 +24,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import valkyrienwarfare.ValkyrienWarfareMod;
+import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.math.Vector;
-import valkyrienwarfare.mod.coordinates.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 @Mixin(Entity.class)

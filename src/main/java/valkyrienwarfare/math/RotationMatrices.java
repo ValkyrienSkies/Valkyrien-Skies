@@ -21,10 +21,10 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.projectile.EntityFireball;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.mod.coordinates.CoordinateSpaceType;
 import valkyrienwarfare.mod.coordinates.ISubspacedEntity;
 import valkyrienwarfare.mod.coordinates.ShipTransform;
-import valkyrienwarfare.mod.coordinates.TransformType;
 import valkyrienwarfare.mod.coordinates.VectorImmutable;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 

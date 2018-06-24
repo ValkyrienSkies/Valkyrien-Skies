@@ -22,9 +22,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.MapStorage;
 import net.minecraft.world.storage.WorldSavedData;
+import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.math.RotationMatrices;
 import valkyrienwarfare.math.Vector;
-import valkyrienwarfare.mod.coordinates.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.util.NBTUtils;
 

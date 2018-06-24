@@ -24,9 +24,9 @@ import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.block.BlockShipPilotsChair;
 import valkyrienwarfare.addon.control.piloting.ControllerInputType;
 import valkyrienwarfare.addon.control.piloting.PilotControlsMessage;
+import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.math.RotationMatrices;
 import valkyrienwarfare.math.Vector;
-import valkyrienwarfare.mod.coordinates.TransformType;
 import valkyrienwarfare.physics.management.PhysicsObject;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 

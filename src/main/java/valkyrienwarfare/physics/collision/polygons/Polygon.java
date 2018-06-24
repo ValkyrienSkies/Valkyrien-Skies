@@ -17,9 +17,9 @@
 package valkyrienwarfare.physics.collision.polygons;
 
 import net.minecraft.util.math.AxisAlignedBB;
+import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.mod.coordinates.ShipTransform;
-import valkyrienwarfare.mod.coordinates.TransformType;
 
 /**
  * The basis for the entire collision engine, this implementation of Polygon

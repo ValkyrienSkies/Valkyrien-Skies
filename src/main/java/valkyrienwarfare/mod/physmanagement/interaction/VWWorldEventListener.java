@@ -33,9 +33,9 @@ import net.minecraft.world.IWorldEventListener;
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.combat.entity.EntityMountingWeaponBase;
+import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.math.RotationMatrices;
 import valkyrienwarfare.math.Vector;
-import valkyrienwarfare.mod.coordinates.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public class VWWorldEventListener implements IWorldEventListener {

@@ -17,6 +17,7 @@
 package valkyrienwarfare.mod.coordinates;
 
 import net.minecraft.util.math.AxisAlignedBB;
+import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.math.Quaternion;
 import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.mod.network.PhysWrapperPositionMessage;

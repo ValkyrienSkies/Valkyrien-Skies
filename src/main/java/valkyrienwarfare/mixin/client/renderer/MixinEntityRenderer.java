@@ -37,11 +37,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.piloting.IShipPilot;
+import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.deprecated_api.MixinMethods;
 import valkyrienwarfare.math.Quaternion;
 import valkyrienwarfare.math.RotationMatrices;
 import valkyrienwarfare.math.Vector;
-import valkyrienwarfare.mod.coordinates.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 //import valkyrienwarfare.api.MixinMethods;

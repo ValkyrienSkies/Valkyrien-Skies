@@ -22,10 +22,10 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.border.WorldBorder;
 import valkyrienwarfare.ValkyrienWarfareMod;
+import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.math.RotationMatrices;
 import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.mod.coordinates.ShipTransform;
-import valkyrienwarfare.mod.coordinates.TransformType;
 import valkyrienwarfare.mod.multithreaded.PhysicsShipTransform;
 import valkyrienwarfare.mod.network.PhysWrapperPositionMessage;
 

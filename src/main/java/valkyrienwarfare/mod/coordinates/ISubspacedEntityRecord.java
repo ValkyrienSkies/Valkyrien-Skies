@@ -2,6 +2,8 @@ package valkyrienwarfare.mod.coordinates;
 
 import javax.annotation.concurrent.Immutable;
 
+import valkyrienwarfare.api.TransformType;
+
 /**
  * An immutable record for an Entity within a subspace. Holds information which
  * can be used to restore the state of the given entity back to a safe value;

@@ -16,6 +16,10 @@
 
 package valkyrienwarfare.mod.event;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityArmorStand;
@@ -43,6 +47,7 @@ import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.event.world.BlockEvent;
@@ -66,10 +71,6 @@ import valkyrienwarfare.mod.multithreaded.VWThreadManager;
 import valkyrienwarfare.mod.physmanagement.interaction.VWWorldEventListener;
 import valkyrienwarfare.physics.management.PhysicsTickHandler;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
 
 public class EventsCommon {
 
@@ -106,6 +107,14 @@ public class EventsCommon {
                 }
             }
         }
+    }
+    
+    @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
+    public void onLeftClickBlock(LeftClickBlock event) {
+    	// Take that Chisels and Bits!
+//    	event.setCanceled(false);
+//    	event.setUseBlock(Result.ALLOW);
+//    	event.setUseItem(Result.ALLOW);
     }
 
     // TODO: Fix conflicts with EventListener.onEntityAdded()
@@ -169,7 +178,7 @@ public class EventsCommon {
                     }
                 }
             } catch (NullPointerException e) {
-                ValkyrienWarfareMod.VWLogger.log(Level.WARNING, "Nullpointer EventsCommon.java:onPlayerTickEvent");
+                ValkyrienWarfareMod.VW_LOGGER.log(Level.WARNING, "Nullpointer EventsCommon.java:onPlayerTickEvent");
             }
 
             pos[0] = p.posX;

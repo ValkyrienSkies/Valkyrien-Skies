@@ -14,42 +14,42 @@
  *
  */
 
-package valkyrienwarfare.addon.control.network;
+package valkyrienwarfare.addon.control.nodenetwork;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import valkyrienwarfare.physics.PhysicsCalculations;
+import valkyrienwarfare.physics.management.PhysicsObject;
 
-public class HovercraftControllerGUIInputMessage implements IMessage {
+public interface INodeController extends Comparable<INodeController> {
 
-    public BlockPos tilePos;
-    public int physEntId;
+    int getPriority();
 
-    public double newIdealHeight;
-    public double newStablitiyBias;
-    public double newLinearVelocityBias;
+    void setPriority(int newPriority);
 
-    public HovercraftControllerGUIInputMessage() {
-    }
+    /**
+     * Does nothing by default, insert processor logic here
+     *
+     * @param object
+     * @param calculations
+     * @param secondsToSimulate
+     */
+    void onPhysicsTick(PhysicsObject object, PhysicsCalculations calculations, double secondsToSimulate);
 
+    /**
+     * Returns the position of the TileEntity that is behind this interface.
+     * @return
+     */
+    BlockPos getNodePos();
+    
+    // Used maintain order of which processors get called first. If both processors
+    // have equal priorities, then we use the BlockPos as a tiebreaker.
     @Override
-    public void fromBytes(ByteBuf buf) {
-        tilePos = new BlockPos(buf.readInt(), buf.readInt(), buf.readInt());
-        physEntId = buf.readInt();
-        newIdealHeight = buf.readDouble();
-        newStablitiyBias = buf.readDouble();
-        newLinearVelocityBias = buf.readDouble();
+    default int compareTo(INodeController other) {
+    	if (getPriority() != other.getPriority()) {
+    		return getPriority() - other.getPriority();
+    	} else {
+    		// break the tie
+    		return getNodePos().compareTo(other.getNodePos());
+    	}
     }
-
-    @Override
-    public void toBytes(ByteBuf buf) {
-        buf.writeInt(tilePos.getX());
-        buf.writeInt(tilePos.getY());
-        buf.writeInt(tilePos.getZ());
-        buf.writeInt(physEntId);
-        buf.writeDouble(newIdealHeight);
-        buf.writeDouble(newStablitiyBias);
-        buf.writeDouble(newLinearVelocityBias);
-    }
-
 }

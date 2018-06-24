@@ -1,8 +1,0 @@
-{
-  "parent": "block/cube_bottom_top",
-  "textures": {
-    "bottom": "valkyrienwarfarecontrol:blocks/basichovercraftcontrollerbottom",
-    "top": "valkyrienwarfarecontrol:blocks/basichovercraftcontrollertop",
-    "side": "valkyrienwarfarecontrol:blocks/basichovercraftcontrollersides"
-  }
-}

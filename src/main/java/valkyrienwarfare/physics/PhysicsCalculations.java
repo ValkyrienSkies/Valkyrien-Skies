@@ -16,16 +16,21 @@
 
 package valkyrienwarfare.physics;
 
+import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
+import javax.vecmath.Matrix3d;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.addon.control.nodenetwork.INodePhysicsProcessor;
-import valkyrienwarfare.addon.control.nodenetwork.Node;
+import valkyrienwarfare.addon.control.nodenetwork.INodeController;
 import valkyrienwarfare.api.IBlockForceProvider;
 import valkyrienwarfare.api.RotationMatrices;
 import valkyrienwarfare.api.Vector;
@@ -40,12 +45,6 @@ import valkyrienwarfare.physics.management.ShipTransformationManager;
 import valkyrienwarfare.util.NBTUtils;
 import valkyrienwarfare.util.PhysicsSettings;
 
-import javax.vecmath.Matrix3d;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.concurrent.ConcurrentHashMap;
-
 public class PhysicsCalculations {
 
     // Without this the physics feels too slow
@@ -58,7 +57,6 @@ public class PhysicsCalculations {
     private final WorldPhysicsCollider worldCollision;
     // CopyOnWrite to provide concurrency between threads.
     private final Set<BlockPos> activeForcePositions;
-    private final SortedSet<INodePhysicsProcessor> physicsTasks;
     public Vector gameTickCenterOfMass;
     public Vector linearMomentum;
     public Vector angularVelocity;
@@ -91,7 +89,6 @@ public class PhysicsCalculations {
         torque = new Vector();
         // We need thread safe access to this.
         activeForcePositions = ConcurrentHashMap.newKeySet();
-        physicsTasks = new TreeSet<INodePhysicsProcessor>();
     }
 
     public PhysicsCalculations(PhysicsCalculations toCopy) {
@@ -108,7 +105,6 @@ public class PhysicsCalculations {
         physMOITensor = toCopy.physMOITensor;
         setPhysInvMOITensor(toCopy.getPhysInvMOITensor());
         actAsArchimedes = toCopy.actAsArchimedes;
-        physicsTasks = toCopy.physicsTasks;
     }
 
     public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos pos) {
@@ -227,6 +223,7 @@ public class PhysicsCalculations {
 	public void rawPhysTickPostCol() {
 		if (!isPhysicsBroken()) {
 			if (getParent().isPhysicsEnabled()) {
+				enforceStaticFriction();
 				if (PhysicsSettings.doAirshipRotation) {
 					applyAngularVelocity();
 				}
@@ -261,6 +258,21 @@ public class PhysicsCalculations {
             return true;
         }
         return false;
+    }
+    
+    /**
+     * This method will set the linear and angular velocities to zero if both are too small.
+     */
+    private void enforceStaticFriction() {
+        if (angularVelocity.lengthSq() < .001) {
+        	double linearSpeedSq = linearMomentum.lengthSq() * this.getInvMass() * this.getInvMass();
+        	if (linearSpeedSq < .05) {
+        		angularVelocity.zero();
+        		if (linearSpeedSq < .0001) {
+        			linearMomentum.zero();
+        		}
+        	}
+        }
     }
 
     // The x/y/z variables need to be updated when the centerOfMass location
@@ -349,22 +361,17 @@ public class PhysicsCalculations {
         World worldObj = getParent().getWorldObj();
 
         if (PhysicsSettings.doPhysicsBlocks && getParent().areShipChunksFullyLoaded()) {
-
-            physicsTasks.clear();
-            for (Node node : getParent().getConcurrentNodesWithinShip()) {
-                TileEntity nodeTile = node.getParentTile();
-                if (nodeTile instanceof INodePhysicsProcessor) {
-                    // Iterate through them in sorted order
-                    physicsTasks.add((INodePhysicsProcessor) nodeTile);
-                }
-            }
-
-            // This iterates over a SortedSet to retain sorted order, allowing some tasks to
-            // be given greater priority than others.
-            for (INodePhysicsProcessor physicsProcessorNode : physicsTasks) {
-                physicsProcessorNode.onPhysicsTick(getParent(), this, physTickTimeDelta);
-            }
-
+        	// We want to loop through all the physics nodes in a sorted order. Priority Queue handles that.
+        	Queue<INodeController> nodesPriorityQueue = new PriorityQueue<INodeController>();
+        	for (INodeController processor : parent.getPhysicsControllersInShip()) {
+        		nodesPriorityQueue.add(processor);
+        	}
+        	
+        	while (nodesPriorityQueue.size() > 0) {
+        		INodeController controller = nodesPriorityQueue.poll();
+        		controller.onPhysicsTick(parent, this, this.getPhysicsTimeDeltaPerPhysTick());
+        	}
+        	
             for (BlockPos pos : activeForcePositions) {
                 IBlockState state = getParent().getShipChunks().getBlockState(pos);
                 Block blockAt = state.getBlock();
@@ -435,7 +442,7 @@ public class PhysicsCalculations {
 
     public void applyAngularVelocity() {
         ShipTransformationManager coordTrans = getParent().getShipTransformationManager();
-
+        
         double[] rotationChange = RotationMatrices.getRotationMatrix(angularVelocity.X, angularVelocity.Y,
                 angularVelocity.Z, angularVelocity.length() * getPhysicsTimeDeltaPerPhysTick());
         Quaternion finalTransform = Quaternion.QuaternionFromMatrix(RotationMatrices.getMatrixProduct(rotationChange,
@@ -446,13 +453,6 @@ public class PhysicsCalculations {
         physPitch = Double.isNaN(radians[0]) ? 0.0f : (float) Math.toDegrees(radians[0]);
         physYaw = Double.isNaN(radians[1]) ? 0.0f : (float) Math.toDegrees(radians[1]);
         physRoll = Double.isNaN(radians[2]) ? 0.0f : (float) Math.toDegrees(radians[2]);
-
-        // parent.wrapper.setPitch(Double.isNaN(radians[0]) ? 0.0f : (float)
-        // Math.toDegrees(radians[0]));
-        // parent.wrapper.setYaw(Double.isNaN(radians[1]) ? 0.0f : (float)
-        // Math.toDegrees(radians[1]));
-        // parent.wrapper.setRoll(Double.isNaN(radians[2]) ? 0.0f : (float)
-        // Math.toDegrees(radians[2]));
     }
 
     public void applyLinearVelocity() {
@@ -462,13 +462,6 @@ public class PhysicsCalculations {
         physY += (linearMomentum.Y * momentMod);
         physZ += (linearMomentum.Z * momentMod);
         physY = Math.min(Math.max(physY, ValkyrienWarfareMod.shipLowerLimit), ValkyrienWarfareMod.shipUpperLimit);
-
-        // parent.wrapper.posX += (linearMomentum.X * momentMod);
-        // parent.wrapper.posY += (linearMomentum.Y * momentMod);
-        // parent.wrapper.posZ += (linearMomentum.Z * momentMod);
-        // parent.wrapper.posY = Math.min(Math.max(parent.wrapper.posY,
-        // ValkyrienWarfareMod.shipLowerLimit),
-        // ValkyrienWarfareMod.shipUpperLimit);
     }
 
     public Vector getVelocityAtPoint(Vector inBodyWO) {
@@ -574,6 +567,13 @@ public class PhysicsCalculations {
 	 */
 	public WorldPhysicsCollider getWorldCollision() {
 		return worldCollision;
+	}
+
+	public double getInertiaAlongRotationAxis() {
+		Vector rotationAxis = new Vector(angularVelocity);
+		rotationAxis.normalize();
+		RotationMatrices.applyTransform3by3(getPhysMOITensor(), rotationAxis);
+		return rotationAxis.length();
 	}
 
 }

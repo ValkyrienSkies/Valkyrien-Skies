@@ -19,6 +19,7 @@ public interface ISubspace {
 	 * @param subspaced
 	 * @return
 	 */
+	@Nullable
 	ISubspacedEntityRecord getRecordForSubspacedEntity(ISubspacedEntity subspaced);
 
 	/**
@@ -54,4 +55,6 @@ public interface ISubspace {
 	 * @return
 	 */
 	int getSubspaceParentEntityID();
+	
+	void forceSubspaceRecord(ISubspacedEntity entity, @Nullable ISubspacedEntityRecord record);
 }

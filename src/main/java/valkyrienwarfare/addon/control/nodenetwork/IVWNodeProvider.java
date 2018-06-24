@@ -16,24 +16,27 @@
 
 package valkyrienwarfare.addon.control.nodenetwork;
 
-import valkyrienwarfare.physics.PhysicsCalculations;
-import valkyrienwarfare.physics.management.PhysicsObject;
+import net.minecraft.util.math.BlockPos;
 
-public interface INodePhysicsProcessor extends Comparable<INodePhysicsProcessor> {
+public interface IVWNodeProvider {
 
-    public int getPriority();
+	IVWNode getNode();
 
-    public void setPriority(int newPriority);
+	/**
+	 * Shifts all of the internal state data, like connections to other nodes.
+	 * 
+	 * @param offset
+	 */
+	default void shiftInternalData(BlockPos offset) {
+		getNode().shiftConnections(offset);
+	}
 
-    public int getTieBreaker();
-
-    /**
-     * Does nothing by default, insert processor logic here
-     *
-     * @param object
-     * @param calculations
-     * @param secondsToSimulate
-     */
-    public void onPhysicsTick(PhysicsObject object, PhysicsCalculations calculations, double secondsToSimulate);
-
+	/**
+	 * This is the result from all of the graphing code. We specifically want
+	 * nothing external to interact with anything but this, to so we can easily
+	 * replacing graph code.
+	 * 
+	 * @return
+	 */
+	Iterable<IVWNode> getNetworkedConnections();
 }

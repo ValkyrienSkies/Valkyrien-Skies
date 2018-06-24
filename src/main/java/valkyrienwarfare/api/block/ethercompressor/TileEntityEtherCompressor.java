@@ -17,25 +17,14 @@
 package valkyrienwarfare.api.block.ethercompressor;
 
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.fuel.IEtherGasEngine;
 import valkyrienwarfare.addon.control.nodenetwork.BasicForceNodeTileEntity;
-import valkyrienwarfare.addon.control.tileentity.TileEntityHoverController;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
 public abstract class TileEntityEtherCompressor extends BasicForceNodeTileEntity implements IEtherGasEngine {
 
-	// These deprecated fields will be deleted at some point, but for now its best
-	// to keep them around to maintain compatibility with older controls.
-	@Deprecated
-	private Vector linearThrust = new Vector();
-	@Deprecated
-	private Vector angularThrust = new Vector();
-	@Deprecated
-	private BlockPos controllerPos;
 	private int etherGas;
 	private int etherGasCapacity;
 
@@ -50,24 +39,9 @@ public abstract class TileEntityEtherCompressor extends BasicForceNodeTileEntity
 		this(null, 0);
 	}
 
-	@Deprecated
-	public BlockPos getControllerPos() {
-		return controllerPos;
-	}
-
-	@Deprecated
-	public void setControllerPos(BlockPos toSet) {
-		controllerPos = toSet;
-		this.markDirty();
-	}
-
 	@Override
 	public void readFromNBT(NBTTagCompound compound) {
 		super.readFromNBT(compound);
-		int controllerPosX = compound.getInteger("controllerPosX");
-		int controllerPosY = compound.getInteger("controllerPosY");
-		int controllerPosZ = compound.getInteger("controllerPosZ");
-		controllerPos = new BlockPos(controllerPosX, controllerPosY, controllerPosZ);
 		etherGas = compound.getInteger("etherGas");
 		etherGasCapacity = compound.getInteger("etherGasCapacity");
 	}
@@ -75,11 +49,6 @@ public abstract class TileEntityEtherCompressor extends BasicForceNodeTileEntity
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 		NBTTagCompound toReturn = super.writeToNBT(compound);
-		if (controllerPos != null) {
-			toReturn.setInteger("controllerPosX", controllerPos.getX());
-			toReturn.setInteger("controllerPosY", controllerPos.getY());
-			toReturn.setInteger("controllerPosZ", controllerPos.getZ());
-		}
 		toReturn.setInteger("etherGas", etherGas);
 		toReturn.setInteger("etherGasCapacity", etherGasCapacity);
 		return toReturn;
@@ -88,28 +57,6 @@ public abstract class TileEntityEtherCompressor extends BasicForceNodeTileEntity
 	@Override
 	public boolean isForceOutputOriented() {
 		return false;
-	}
-
-	@Override
-	public Vector getForceOutputUnoriented(double secondsToApply, PhysicsObject physicsObject) {
-		if (controllerPos == null) {
-			Vector output = super.getForceOutputUnoriented(secondsToApply, physicsObject);
-			return output;
-		}
-		// TODO: Causing physics crash with the Sponge
-		// TileEntity controllerTile = world.getTileEntity(controllerPos);
-		TileEntity controllerTile = physicsObject.getShipChunks().getTileEntity(controllerPos);
-		if (controllerTile != null) {
-			if (controllerTile instanceof TileEntityHoverController) {
-				TileEntityHoverController controller = (TileEntityHoverController) controllerTile;
-				PhysicsObject physObj = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(world, pos)
-						.getPhysicsObject();
-				Vector notToReturn = controller.getForceForEngine(this, world, getPos(), world.getBlockState(pos),
-						physObj, secondsToApply);
-				this.currentThrust = notToReturn.length() / secondsToApply;
-			}
-		}
-		return super.getForceOutputUnoriented(secondsToApply, physicsObject);
 	}
 
 	@Override
@@ -130,16 +77,6 @@ public abstract class TileEntityEtherCompressor extends BasicForceNodeTileEntity
 			throw new IllegalArgumentException();
 		}
 		etherGas += gas;
-	}
-
-	@Deprecated
-	public Vector getLinearThrust() {
-		return linearThrust;
-	}
-
-	@Deprecated
-	public Vector getAngularThrust() {
-		return angularThrust;
 	}
 
 }

@@ -35,7 +35,7 @@ public class TileEntityPilotsChair extends ImplTileEntityPilotable {
     @Override
     void processControlMessage(PilotControlsMessage message, EntityPlayerMP sender) {
         IBlockState blockState = getWorld().getBlockState(getPos());
-        if (blockState.getBlock() == ValkyrienWarfareControl.INSTANCE.blocks.pilotsChair) {
+        if (blockState.getBlock() == ValkyrienWarfareControl.INSTANCE.vwControlBlocks.pilotsChair) {
             PhysicsWrapperEntity wrapper = getParentPhysicsEntity();
             if (wrapper != null) {
                 processCalculationsForControlMessageAndApplyCalculations(wrapper, message, blockState);
@@ -51,10 +51,9 @@ public class TileEntityPilotsChair extends ImplTileEntityPilotable {
     }
 
     @Override
-    final boolean setClientPilotingEntireShip() {
+    boolean setClientPilotingEntireShip() {
         return true;
     }
-
 
     @Override
     public final void onStartTileUsage(EntityPlayer player) {
@@ -131,12 +130,16 @@ public class TileEntityPilotsChair extends ImplTileEntityPilotable {
 		// contains shipUp and shipUpPos. This is our axis of rotation.
 		Vector shipUpRotationVector = shipUp.cross(shipUpPosIdeal);
 		// This isnt quite right, but it handles the cases quite well.
-		double shipUpTheta = shipUp.angleBetween(shipUpPosIdeal) + Math.PI / 2;
+		double shipUpTheta = shipUp.angleBetween(shipUpPosIdeal) + Math.PI;
 		shipUpRotationVector.multiply(shipUpTheta);
 
 		idealAngularDirection.add(shipUpRotationVector);
 		idealLinearVelocity.multiply(20D * controlledShip.getPhysicsProcessor().getMass());
 		
+		// Move the ship faster if the player holds the sprint key.
+		if (message.airshipSprinting) {
+			idealLinearVelocity.multiply(2D);
+		}
 		
 		double lerpFactor = .2D;
 		Vector linearMomentumDif = idealLinearVelocity.getSubtraction(controlledShip.getPhysicsProcessor().linearMomentum);

@@ -53,6 +53,7 @@ public class VWThreadManager {
 	 * Restarts all crashed physics threads, also returns a list of the worlds that
 	 * had crashed physics. Not very safe, but its better than restarting a server.
 	 */
+	// TODO: This doesn't really work yet.
 	@Deprecated
 	public static List<World> restartCrashedPhysicsThreads() {
 		List<World> crashedWorlds = new ArrayList<World>();

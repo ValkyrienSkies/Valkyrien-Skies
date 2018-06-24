@@ -172,20 +172,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
      * @return
      */
     public boolean updateParentShip() {
-        if (hasAlreadyCheckedForParent) {
-            return getNode().getPhysicsObject() == null;
-        }
-        BlockPos pos = this.getPos();
-        World world = this.getWorld();
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(world, pos);
-        // Already checked
-        hasAlreadyCheckedForParent = true;
-        if (wrapper != null) {
-            getNode().updateParentEntity(wrapper.getPhysicsObject());
-            return false;
-        } else {
-            return true;
-        }
+        return true;
     }
 
     public void updateTicksSinceLastRecievedSignal() {

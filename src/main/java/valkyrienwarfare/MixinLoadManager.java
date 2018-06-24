@@ -54,7 +54,7 @@ public class MixinLoadManager implements IMixinConfigPlugin {
             }
         } else {
             if (mixinClassName.contains("spongepowered")) {
-                FMLLog.bigWarning("Not applying" + mixinClassName + " because Sponge isn't enabled!");
+                FMLLog.bigWarning("Not applying" + mixinClassName + " because Sponge isn't here!");
                 return false;
             }
         }

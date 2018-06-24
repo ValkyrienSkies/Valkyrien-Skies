@@ -41,7 +41,7 @@ public class ImplSubspace implements ISubspace {
 			throw new IllegalArgumentException("Subspace snapshots can only be taken for entities that in the global coordinates system!");
 		}
 		if (subspaced instanceof PhysicsWrapperEntity) {
-			throw new IllegalArgumentException("Do not create subspace records for PhysicsWraperEntities!!");
+			throw new IllegalArgumentException("Do not create subspace records for PhysicsWrapperEntities!!");
 		}
 		subspacedEntityRecords.put(subspaced, createRecordForSubspacedEntity(subspaced));
 	}
@@ -91,6 +91,11 @@ public class ImplSubspace implements ISubspace {
 					"The World coordinate subspace doesn't have an entity ID. Don't call this method unless you're sure that the subspace isn't the world.");
 		}
 		return parent.getWrapperEntity().getEntityId();
+	}
+
+	@Override
+	public void forceSubspaceRecord(ISubspacedEntity entity, ISubspacedEntityRecord record) {
+		subspacedEntityRecords.put(entity, record);
 	}
 
 }

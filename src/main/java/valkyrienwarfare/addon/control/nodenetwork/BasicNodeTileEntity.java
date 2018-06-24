@@ -16,18 +16,28 @@
 
 package valkyrienwarfare.addon.control.nodenetwork;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+
+import gigaherz.graph.api.Graph;
+import gigaherz.graph.api.GraphObject;
+import gigaherz.graph.api.Mergeable;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
 
-public abstract class BasicNodeTileEntity extends TileEntity implements INodeProvider, ITickable {
+public abstract class BasicNodeTileEntity extends TileEntity implements IVWNodeProvider, ITickable {
 
-	private final Node tileNode;
+	private final VWNode_TileEntity tileNode;
+	private boolean firstUpdate;
 
 	public BasicNodeTileEntity() {
-		tileNode = new Node(this);
+		this.tileNode = new VWNode_TileEntity(this, getMaximumConnections());
+		this.firstUpdate = true;
+		Graph.integrate(tileNode, Collections.EMPTY_LIST, (graph) -> new GraphData());
 	}
 
 	@Override
@@ -55,7 +65,6 @@ public abstract class BasicNodeTileEntity extends TileEntity implements INodePro
 	@Override
 	public NBTTagCompound getUpdateTag() {
 		NBTTagCompound toReturn = super.getUpdateTag();
-
 		return writeToNBT(toReturn);
 	}
 
@@ -66,7 +75,7 @@ public abstract class BasicNodeTileEntity extends TileEntity implements INodePro
 	}
 
 	@Override
-	public Node getNode() {
+	public VWNode_TileEntity getNode() {
 		return tileNode;
 	}
 
@@ -74,9 +83,13 @@ public abstract class BasicNodeTileEntity extends TileEntity implements INodePro
 	public void invalidate() {
 		// The Node just got destroyed
 		this.tileEntityInvalid = true;
-		Node toInvalidate = getNode();
-
-		toInvalidate.destroyNode();
+		VWNode_TileEntity toInvalidate = getNode();
+		toInvalidate.breakAllConnections();
+		toInvalidate.invalidate();
+		Graph graph = toInvalidate.getGraph();
+		if (graph != null) {
+			graph.remove(toInvalidate);
+		}
 	}
 
 	/**
@@ -85,10 +98,85 @@ public abstract class BasicNodeTileEntity extends TileEntity implements INodePro
 	@Override
 	public void validate() {
 		this.tileEntityInvalid = false;
+		getNode().validate();
 	}
 
 	@Override
 	public void update() {
-
+		if (firstUpdate) {
+			firstUpdate = false;
+			init();
+		}
 	}
+
+	/**
+	 * 
+	 * @return The maximum number of nodes this tile entity can be connected to.
+	 */
+	protected int getMaximumConnections() {
+		return 1;
+	}
+
+	private void init() {
+		tileNode.getGraph().addNeighours(tileNode, tileNode.getNeighbours());
+	}
+
+	public static class GraphData implements Mergeable<GraphData> {
+		private static int sUid = 0;
+
+		private final int uid;
+
+		public GraphData() {
+			uid = ++sUid;
+		}
+
+		public GraphData(int uid) {
+			this.uid = uid;
+		}
+
+		@Override
+		public GraphData mergeWith(GraphData other) {
+			return new GraphData(uid + other.uid);
+		}
+
+		@Override
+		public GraphData copy() {
+			return new GraphData();
+		}
+
+		public int getUid() {
+			return uid;
+		}
+	}
+
+	@Override
+	public Iterable<IVWNode> getNetworkedConnections() {
+		Iterator<GraphObject> objects = tileNode.getGraph().getObjects().iterator();
+		Iterator<IVWNode> nodes = new IteratorCaster(objects);
+		return new Iterable<IVWNode>() {
+			@Override
+			public Iterator<IVWNode> iterator() {
+				return nodes;
+			}
+		};
+	}
+
+	private class IteratorCaster implements Iterator<IVWNode> {
+		private final Iterator toCast;
+
+		private IteratorCaster(Iterator toCast) {
+			this.toCast = toCast;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return toCast.hasNext();
+		}
+
+		@Override
+		public IVWNode next() {
+			return (IVWNode) toCast.next();
+		}
+	}
+
 }

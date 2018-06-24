@@ -34,7 +34,6 @@ import valkyrienwarfare.physics.management.WorldPhysObjectManager;
 
 /**
  * Handles all the physics processing for a world separate from the game tick.
- * Currently filled with tons of synchronization issues.
  *
  * @author thebest108
  */
@@ -61,6 +60,7 @@ public class VWThread extends Thread {
 		this.physicsTicksCount = 0;
 		this.threadRunning = true;
 		this.latestPhysicsTickTimes = new ConcurrentLinkedQueue<Long>();
+		ValkyrienWarfareMod.VW_LOGGER.fine(this.getName() + " thread created.");
 	}
 
 	/*
@@ -70,7 +70,6 @@ public class VWThread extends Thread {
 	 */
 	@Override
 	public void run() {
-		// System.out.println("Thread running");
 		// Used to make up for any lost time when we tick
 		long lostTickTime = 0;
 		while (threadRunning) {
@@ -118,8 +117,8 @@ public class VWThread extends Thread {
 			}
 		}
 		// If we get to this point of run(), then we are about to return and this thread
-		// will terminate.
-		System.out.println(super.getName() + " killed");
+		// will terminate soon.
+		ValkyrienWarfareMod.VW_LOGGER.fine(super.getName() + " killed");
 	}
 
 	private void runGameLoop() {
@@ -222,7 +221,7 @@ public class VWThread extends Thread {
 	 * finished.
 	 */
 	public void kill() {
-		System.out.println(super.getName() + " marked for death.");
+		ValkyrienWarfareMod.VW_LOGGER.fine(super.getName() + " marked for death.");
 		threadRunning = false;
 	}
 

@@ -8,6 +8,9 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import valkyrienwarfare.mod.coordinates.ISubspacedEntity;
+import valkyrienwarfare.mod.coordinates.ISubspacedEntityRecord;
+import valkyrienwarfare.mod.physmanagement.interaction.IDraggable;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public class SubspacedEntityRecordHandler implements IMessageHandler<SubspacedEntityRecordMessage, IMessage> {
@@ -31,6 +34,11 @@ public class SubspacedEntityRecordHandler implements IMessageHandler<SubspacedEn
 			Entity subspacedEntity = worldFinal.getEntityByID(message.entitySubspacedID);
 			if (physicsEntity != null && subspacedEntity != null) {
 				PhysicsWrapperEntity wrapperEntity = (PhysicsWrapperEntity) physicsEntity;
+				ISubspacedEntityRecord record = message.createRecordForThisMessage(
+						ISubspacedEntity.class.cast(subspacedEntity), wrapperEntity.getPhysicsObject().getSubspace());
+				IDraggable draggable = IDraggable.class.cast(subspacedEntity);
+				draggable.setForcedRelativeSubspace(wrapperEntity);
+				wrapperEntity.getPhysicsObject().getSubspace().forceSubspaceRecord(record.getParentEntity(), record);
 				// Now just synchronize the player to the data sent by the client.
 			} else {
 				System.err.println("An incorrect SubspacedEntityRecordMessage has been thrown out");
@@ -48,6 +56,5 @@ public class SubspacedEntityRecordHandler implements IMessageHandler<SubspacedEn
 	private World getClientWorld() {
 		return net.minecraft.client.Minecraft.getMinecraft().world;
 	}
-	
 
 }

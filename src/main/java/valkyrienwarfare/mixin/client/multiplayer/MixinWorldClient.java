@@ -47,7 +47,7 @@ public abstract class MixinWorldClient extends World {
             at = @At("HEAD"),
             cancellable = true)
     public void preDoVoidParticles(int posX, int posY, int posZ, CallbackInfo callbackInfo) {
-        if (!hasChanged && ValkyrienWarfareMod.shipsSpawnParticles) {
+        if (!hasChanged) {
             int range = 15;
             AxisAlignedBB aabb = new AxisAlignedBB(posX - range, posY - range, posZ - range, posX + range, posY + range, posZ + range);
             List<PhysicsWrapperEntity> physEntities = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getManagerForWorld(WorldClient.class.cast(this)).getNearbyPhysObjects(aabb);

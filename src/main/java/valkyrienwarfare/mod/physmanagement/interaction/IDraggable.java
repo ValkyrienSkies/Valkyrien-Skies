@@ -45,5 +45,9 @@ public interface IDraggable {
     void setCancelNextMove(boolean toSet);
 
     void move(MoverType type, double dx, double dy, double dz);
+    
+    void setForcedRelativeSubspace(PhysicsWrapperEntity toSet);
+    
+    PhysicsWrapperEntity getForcedSubspaceBelowFeet();
 
 }

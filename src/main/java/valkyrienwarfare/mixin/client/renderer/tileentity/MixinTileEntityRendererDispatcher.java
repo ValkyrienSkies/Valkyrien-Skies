@@ -32,15 +32,15 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 @Mixin(TileEntityRendererDispatcher.class)
 public abstract class MixinTileEntityRendererDispatcher {
 
-    @Shadow
+    @Shadow(remap = false)
     private boolean drawingBatch;
     private boolean hasChanged = false;
 
-    @Shadow
+    @Shadow(remap = false)
     public void drawBatch(int pass) {
     }
 
-    @Shadow
+    @Shadow(remap = false)
     public void preDrawBatch() {
     }
 

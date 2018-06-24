@@ -40,6 +40,7 @@ public class VWKeyHandler {
     public static final KeyBinding airshipLeft = new KeyBinding("Airship Turn Left", Keyboard.KEY_A, keybindIdentifyer);
     public static final KeyBinding airshipRight = new KeyBinding("Airship Turn Right", Keyboard.KEY_D, keybindIdentifyer);
     public static final KeyBinding airshipDown = new KeyBinding("Airship Down", Keyboard.KEY_X, keybindIdentifyer);
+    public static final KeyBinding airshipSpriting = new KeyBinding("Airship Sprinting", Keyboard.KEY_LCONTROL, keybindIdentifyer);
 
     public static final KeyBinding airshipUp_Zepplin = new KeyBinding("Zepplin Airship Up", Keyboard.KEY_ADD, keybindIdentifyer);
     public static final KeyBinding airshipForward_Zepplin = new KeyBinding("Zepplin Airship Forward", Keyboard.KEY_NUMPAD8, keybindIdentifyer);
@@ -59,6 +60,7 @@ public class VWKeyHandler {
         ClientRegistry.registerKeyBinding(airshipLeft);
         ClientRegistry.registerKeyBinding(airshipRight);
         ClientRegistry.registerKeyBinding(airshipDown);
+        ClientRegistry.registerKeyBinding(airshipSpriting);
         ClientRegistry.registerKeyBinding(dismountKey);
 
         ClientRegistry.registerKeyBinding(airshipUp_Zepplin);

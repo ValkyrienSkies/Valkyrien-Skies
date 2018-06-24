@@ -31,7 +31,8 @@ import valkyrienwarfare.ValkyrienWarfareMod;
 import java.util.UUID;
 
 public abstract class Module {
-    private String name;
+	
+    private final String name;
     private boolean donePreInit = false, doneInit = false, donePostInit = false;
     private ModuleProxy common, client, server; //tODO: call these
     private String modid;

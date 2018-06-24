@@ -34,14 +34,14 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 @Mixin(TileEntity.class)
 @Implements(@Interface(iface = IntrinsicTileEntityInterface.class, prefix = "vw$"))
 public abstract class MixinTileEntityCLIENT {
-    @Shadow
-    public World world;
-
+	
+    private final TileEntity thisAsTileEntity = TileEntity.class.cast(this);
+    
     @Intrinsic(displace = true)
     public AxisAlignedBB vw$getRenderBoundingBox() {
-        AxisAlignedBB toReturn = getRenderBoundingBox();
+        AxisAlignedBB toReturn = thisAsTileEntity.getRenderBoundingBox();
         BlockPos pos = new BlockPos(toReturn.minX, toReturn.minY, toReturn.minZ);
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(world, pos);
+        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(thisAsTileEntity.getWorld(), pos);
         if (wrapper != null) {
             Polygon poly = new Polygon(toReturn, wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform(), TransformType.SUBSPACE_TO_GLOBAL);
             return poly.getEnclosedAABB();
@@ -49,9 +49,4 @@ public abstract class MixinTileEntityCLIENT {
         return toReturn;
     }
 
-    @Shadow
-    public abstract AxisAlignedBB getRenderBoundingBox();
-
-    @Shadow
-    public abstract BlockPos getPos();
 }

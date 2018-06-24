@@ -39,7 +39,7 @@ public class PropellerEngineTileEntityRenderer extends TileEntitySpecialRenderer
             EnumFacing facing = state.getValue(BlockAirshipEngine.FACING);
 
             IBlockState engineRenderState = getRenderState(state);
-            IBlockState propellerRenderState = ValkyrienWarfareControl.INSTANCE.blocks.shipWheel.getStateFromMeta(14);
+            IBlockState propellerRenderState = ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipWheel.getStateFromMeta(14);
 
             this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
             GlStateManager.pushMatrix();
@@ -108,22 +108,22 @@ public class PropellerEngineTileEntityRenderer extends TileEntitySpecialRenderer
     }
 
     private IBlockState getRenderState(IBlockState inWorldState) {
-        if (inWorldState.getBlock() == ValkyrienWarfareControl.INSTANCE.blocks.ultimateEngine) {
-            return ValkyrienWarfareControl.INSTANCE.blocks.shipWheel.getStateFromMeta(9);
+        if (inWorldState.getBlock() == ValkyrienWarfareControl.INSTANCE.vwControlBlocks.ultimateEngine) {
+            return ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipWheel.getStateFromMeta(9);
         }
-        if (inWorldState.getBlock() == ValkyrienWarfareControl.INSTANCE.blocks.redstoneEngine) {
-            return ValkyrienWarfareControl.INSTANCE.blocks.shipWheel.getStateFromMeta(10);
+        if (inWorldState.getBlock() == ValkyrienWarfareControl.INSTANCE.vwControlBlocks.redstoneEngine) {
+            return ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipWheel.getStateFromMeta(10);
         }
-        if (inWorldState.getBlock() == ValkyrienWarfareControl.INSTANCE.blocks.eliteEngine) {
-            return ValkyrienWarfareControl.INSTANCE.blocks.shipWheel.getStateFromMeta(11);
+        if (inWorldState.getBlock() == ValkyrienWarfareControl.INSTANCE.vwControlBlocks.eliteEngine) {
+            return ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipWheel.getStateFromMeta(11);
         }
-        if (inWorldState.getBlock() == ValkyrienWarfareControl.INSTANCE.blocks.basicEngine) {
-            return ValkyrienWarfareControl.INSTANCE.blocks.shipWheel.getStateFromMeta(12);
+        if (inWorldState.getBlock() == ValkyrienWarfareControl.INSTANCE.vwControlBlocks.basicEngine) {
+            return ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipWheel.getStateFromMeta(12);
         }
-        if (inWorldState.getBlock() == ValkyrienWarfareControl.INSTANCE.blocks.advancedEngine) {
-            return ValkyrienWarfareControl.INSTANCE.blocks.shipWheel.getStateFromMeta(13);
+        if (inWorldState.getBlock() == ValkyrienWarfareControl.INSTANCE.vwControlBlocks.advancedEngine) {
+            return ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipWheel.getStateFromMeta(13);
         }
 
-        return ValkyrienWarfareControl.INSTANCE.blocks.shipWheel.getStateFromMeta(9);
+        return ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipWheel.getStateFromMeta(9);
     }
 }

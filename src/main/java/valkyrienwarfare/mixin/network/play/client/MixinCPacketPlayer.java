@@ -1,128 +1,99 @@
-/*
- * Adapted from the Wizardry License
- *
- * Copyright (c) 2015-2018 the Valkyrien Warfare team
- *
- * Permission is hereby granted to any persons and/or organizations using this software to copy, modify, merge, publish, and distribute it.
- * Said persons and/or organizations are not allowed to use the software or any derivatives of the work for commercial use or any other means to generate income unless it is to be used as a part of a larger project (IE: "modpacks"), nor are they allowed to claim this software as their own.
- *
- * The persons and/or organizations are also disallowed from sub-licensing and/or trademarking this software without explicit permission from the Valkyrien Warfare team.
- *
- * Any persons and/or organizations using this software must disclose their source code and have it publicly available, include this license, provide sufficient credit to the original authors of the project (IE: The Valkyrien Warfare team), as well as provide a link to the original project.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- */
-
-// A modified version of the CPacketPlayer class that adds extra fields for local coordinates
-// relative to a ship. This is the superclass of all three types of CPacketPlayer, so it is the 
-// class that holds the extra fields we'll need to store this information. It does not however send
-// these fields over the byteBuffers by default; because of the way Mixins handle @Overwrites and 
-// @Injections we'll have to send these extra fields by overwriting the write and reads methods of
-// the leaf class.
-
 package valkyrienwarfare.mixin.network.play.client;
 
-import net.minecraft.entity.Entity;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.play.INetHandlerPlayServer;
 import net.minecraft.network.play.client.CPacketPlayer;
-import net.minecraft.world.World;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
-import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.mod.coordinates.TransformType;
-import valkyrienwarfare.mod.network.IExtendedCPacketPlayer;
+import net.minecraft.world.GameType;
+import valkyrienwarfare.fixes.ITransformablePacket;
+import valkyrienwarfare.math.VWMath;
+import valkyrienwarfare.mod.coordinates.ISubspace;
+import valkyrienwarfare.mod.coordinates.ISubspacedEntity;
+import valkyrienwarfare.mod.coordinates.ISubspacedEntityRecord;
+import valkyrienwarfare.mod.coordinates.VectorImmutable;
+import valkyrienwarfare.mod.physmanagement.interaction.IDraggable;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 @Mixin(CPacketPlayer.class)
-public class MixinCPacketPlayer implements IExtendedCPacketPlayer {
+public class MixinCPacketPlayer implements ITransformablePacket {
 
-    @Shadow
-    protected double x;
-    @Shadow
-    protected double y;
-    @Shadow
-    protected double z;
-    private int worldBelowID = -1;
-    private double localX;
-    private double localY;
-    private double localZ;
+	private final CPacketPlayer thisPacket = CPacketPlayer.class.cast(this);
+	private GameType cachedPlayerGameType = null;
 
-    @Override
-    public boolean hasShipWorldBelowFeet() {
-        return getWorldBelowFeetID() != -1;
-    }
+	@Inject(method = "processPacket", at = @At(value = "HEAD"))
+	public void preDiggingProcessPacket(INetHandlerPlayServer server, CallbackInfo info) {
+		this.doPreProcessing(server, false);
+	}
 
-    @Override
-    public int getWorldBelowFeetID() {
-        return worldBelowID;
-    }
+	@Inject(method = "processPacket", at = @At(value = "RETURN"))
+	public void postDiggingProcessPacket(INetHandlerPlayServer server, CallbackInfo info) {
+		this.doPostProcessing(server, false);
+	}
 
-    @Override
-    public void setWorldBelowFeetID(int entityID) {
-        worldBelowID = entityID;
-    }
+	@Override
+	public void doPreProcessing(INetHandlerPlayServer server, boolean callingFromSponge) {
+		if (isPacketOnMainThread(server, callingFromSponge)) {
+			PhysicsWrapperEntity parent = getPacketParent((NetHandlerPlayServer) server);
+			if (parent != null) {
+				ISubspace parentSubspace = parent.getPhysicsObject().getSubspace();
+				ISubspacedEntityRecord entityRecord = parentSubspace
+						.getRecordForSubspacedEntity(ISubspacedEntity.class.cast(getPacketPlayer(server)));
+				VectorImmutable positionGlobal = entityRecord.getPositionInGlobalCoordinates();
+				VectorImmutable lookVectorGlobal = entityRecord.getLookDirectionInGlobalCoordinates();
 
-    @Override
-    public void setLocalCoords(double localX, double localY, double localZ) {
-        this.localX = localX;
-        this.localY = localY;
-        this.localZ = localZ;
-    }
+				float pitch = (float) VWMath.getPitchFromVectorImmutable(lookVectorGlobal);
+				float yaw = (float) VWMath.getYawFromVectorImmutable(lookVectorGlobal, pitch);
+				
+				// ===== Set the proper position values for the player packet ====
+				thisPacket.moving = true;
+				thisPacket.onGround = true;
+				thisPacket.x = positionGlobal.getX();
+				thisPacket.y = positionGlobal.getY();
+				thisPacket.z = positionGlobal.getZ();
+				
+				// ===== Set the proper rotation values for the player packet =====
+				thisPacket.rotating = true;
+				thisPacket.yaw = yaw;
+				thisPacket.pitch = pitch;
+				
+				// ===== Dangerous code here =====
+				cachedPlayerGameType = getPacketPlayer(server).interactionManager.gameType;
+				getPacketPlayer(server).interactionManager.gameType = GameType.CREATIVE;
+			}
+		}
+	}
 
-    @Override
-    public Vector getLocalCoordsVector() {
-        return new Vector(localX, localY, localZ);
-    }
+	@Override
+	public void doPostProcessing(INetHandlerPlayServer server, boolean callingFromSponge) {
+		if (isPacketOnMainThread(server, callingFromSponge)) {
+			// ===== Dangerous code here =====
+			if (cachedPlayerGameType != null) {
+				getPacketPlayer(server).interactionManager.gameType = cachedPlayerGameType;
+			}
+			PhysicsWrapperEntity parent = getPacketParent((NetHandlerPlayServer) server);
+			if (parent != null) {
+				parent.getPhysicsObject().getSubspace()
+						.forceSubspaceRecord(ISubspacedEntity.class.cast(getPacketPlayer(server)), null);
+			}
+			IDraggable draggable = IDraggable.class.cast(getPacketPlayer(server));
+			draggable.setForcedRelativeSubspace(null);
+		}
+	}
 
-    // TODO: This doesnt work yet
-    @Overwrite
-    public void processPacket(INetHandlerPlayServer handler) {
-        // System.out.println(this.getLocalCoordsVector());
-        if (worldBelowID != -1) {
-            // System.out.println("RTest");
-            try {
-                NetHandlerPlayServer serverHandler = (NetHandlerPlayServer) handler;
-                World world = serverHandler.player.getEntityWorld();
-                Entity theEntity = world.getEntityByID(worldBelowID);
-                PhysicsWrapperEntity worldBelow = (PhysicsWrapperEntity) theEntity;
-                Vector positionInGlobal = new Vector(localX, localY, localZ);
-                worldBelow.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(positionInGlobal, TransformType.SUBSPACE_TO_GLOBAL);
-                Vector distanceDiscrepency = new Vector(x, y, z);
-                distanceDiscrepency.subtract(positionInGlobal);
-                x = positionInGlobal.X;
-                y = positionInGlobal.Y;
-                z = positionInGlobal.Z;
+	@Override
+	public PhysicsWrapperEntity getPacketParent(NetHandlerPlayServer server) {
+		EntityPlayerMP player = server.player;
+		IDraggable draggable = IDraggable.class.cast(player);
+		return draggable.getForcedSubspaceBelowFeet();
+	}
 
-                // TODO: We shouldnt trust the clients about this either
-                serverHandler.floatingTickCount = 0;
-                serverHandler.floating = false;
-                // System.out.println("Coords transformed to <" + x + ", " + y + ", " + z +
-                // ">");
-                // System.out.println("Distance discrepency of " + distanceDiscrepency + ", of
-                // length "+ distanceDiscrepency.length() + " meters");
-            } catch (Exception e) {
-                return;
-            }
-        }
-        handler.processPlayer(CPacketPlayer.class.cast(this));
-    }
-
-    @Override
-    public double getLocalX() {
-        return localX;
-    }
-
-    @Override
-    public double getLocalY() {
-        return localY;
-    }
-
-    @Override
-    public double getLocalZ() {
-        return localZ;
-    }
+	private EntityPlayerMP getPacketPlayer(INetHandlerPlayServer server) {
+		return ((NetHandlerPlayServer) server).player;
+	}
 
 }

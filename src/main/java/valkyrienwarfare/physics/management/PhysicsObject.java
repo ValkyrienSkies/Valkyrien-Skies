@@ -18,15 +18,17 @@ package valkyrienwarfare.physics.management;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+
+import com.google.common.collect.Sets;
 
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.map.TIntObjectMap;
@@ -61,11 +63,10 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.network.EntityFixMessage;
-import valkyrienwarfare.addon.control.nodenetwork.INodeProvider;
-import valkyrienwarfare.addon.control.nodenetwork.Node;
+import valkyrienwarfare.addon.control.nodenetwork.INodeController;
+import valkyrienwarfare.addon.control.nodenetwork.IVWNodeProvider;
 import valkyrienwarfare.api.EnumChangeOwnerResult;
 import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.api.block.ethercompressor.TileEntityEtherCompressor;
 import valkyrienwarfare.math.Quaternion;
 import valkyrienwarfare.mod.BlockPhysicsRegistration;
 import valkyrienwarfare.mod.client.render.PhysObjectRenderManager;
@@ -83,7 +84,6 @@ import valkyrienwarfare.mod.physmanagement.relocation.SpatialDetector;
 import valkyrienwarfare.mod.schematics.SchematicReader.Schematic;
 import valkyrienwarfare.physics.BlockForce;
 import valkyrienwarfare.physics.PhysicsCalculations;
-import valkyrienwarfare.physics.PhysicsCalculationsManualControl;
 import valkyrienwarfare.util.NBTUtils;
 
 /**
@@ -101,7 +101,6 @@ public class PhysicsObject implements ISubspaceProvider {
     private final List<EntityPlayerMP> watchingPlayers;
     private PhysObjectRenderManager shipRenderer;
     private final Set<String> allowedUsers;
-    private final Set<Node> concurrentNodesWithinShip;
     // This is used to delay mountEntity() operations by 1 tick
     private final List<Entity> queuedEntitiesToMount;
     // Used when rendering to avoid horrible floating point errors, just a random
@@ -135,6 +134,8 @@ public class PhysicsObject implements ISubspaceProvider {
     private volatile int gameConsecutiveTicks;
     private volatile int physicsConsecutiveTicks;
     private final ISubspace shipSubspace;
+	private final Set<INodeController> physicsControllers;
+	private final Set<INodeController> physicsControllersImmutable;
 
     public PhysicsObject(PhysicsWrapperEntity host) {
     	this.wrapper = host;
@@ -150,12 +151,13 @@ public class PhysicsObject implements ISubspaceProvider {
         this.setBlockPositions(ConcurrentHashMap.<BlockPos>newKeySet());
         this.shipBoundingBox = Entity.ZERO_AABB;
         this.watchingPlayers = new ArrayList<EntityPlayerMP>();
-        this.concurrentNodesWithinShip = ConcurrentHashMap.<Node>newKeySet();
         this.isPhysicsEnabled = false;
         this.allowedUsers = new HashSet<String>();
         this.gameConsecutiveTicks = 0;
         this.physicsConsecutiveTicks = 0;
         this.shipSubspace = new ImplSubspace(this);
+        this.physicsControllers = Sets.<INodeController>newConcurrentHashSet();
+        this.physicsControllersImmutable = Collections.<INodeController>unmodifiableSet(this.physicsControllers);
     }
 
 	public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos posAt) {
@@ -336,42 +338,28 @@ public class PhysicsObject implements ISubspaceProvider {
      * be overridden to change the class of the Object
      */
     private void createPhysicsCalculations() {
-        if (getPhysicsProcessor() == null) {
-            if (shipType == ShipType.Zepplin || shipType == ShipType.Dungeon_Sky) {
-                setPhysicsProcessor(new PhysicsCalculationsManualControl(this));
-            } else {
-                setPhysicsProcessor(new PhysicsCalculations(this));
-            }
-        }
-    }
+		if (getPhysicsProcessor() == null) {
+			setPhysicsProcessor(new PhysicsCalculations(this));
+		}
+	}
 
     private void assembleShip(EntityPlayer player, SpatialDetector detector, BlockPos centerInWorld) {
     	this.setPhysicsEnabled(true);
         MutableBlockPos pos = new MutableBlockPos();
         TIntIterator iter = detector.foundSet.iterator();
-
         int radiusNeeded = 1;
 
         while (iter.hasNext()) {
             int i = iter.next();
             SpatialDetector.setPosWithRespectTo(i, BlockPos.ORIGIN, pos);
-
             int xRad = Math.abs(pos.getX() >> 4);
             int zRad = Math.abs(pos.getZ() >> 4);
-
             radiusNeeded = Math.max(Math.max(zRad, xRad), radiusNeeded + 1);
         }
 
-        // radiusNeeded = math.max(radiusNeeded, 5);
-
-
         radiusNeeded = Math.min(radiusNeeded,
                 ValkyrienWarfareMod.VW_CHUNK_MANAGER.getManagerForWorld(getWrapperEntity().world).maxChunkRadius);
-
-        // System.out.println(radiusNeeded);
-
         claimNewChunks(radiusNeeded);
-
         ValkyrienWarfareMod.VW_PHYSICS_MANAGER.onShipPreload(getWrapperEntity());
 
         claimedChunks = new Chunk[(getOwnedChunks().getRadius() * 2) + 1][(getOwnedChunks().getRadius() * 2) + 1];
@@ -416,9 +404,10 @@ public class PhysicsObject implements ISubspaceProvider {
             if (chunkToSet.storageArrays[storageIndex] == Chunk.NULL_BLOCK_STORAGE) {
                 chunkToSet.storageArrays[storageIndex] = new ExtendedBlockStorage(storageIndex << 4, true);
             }
-
             chunkToSet.storageArrays[storageIndex].set(pos.getX() & 15, pos.getY() & 15, pos.getZ() & 15, state);
 
+            // All this code just tries to transform the TileEntity properly without deleting its data.
+            // TODO: Replace this with the system vanilla uses
             if (worldTile != null) {
                 NBTTagCompound tileEntNBT = new NBTTagCompound();
                 tileEntNBT = worldTile.writeToNBT(tileEntNBT);
@@ -427,79 +416,18 @@ public class PhysicsObject implements ISubspaceProvider {
                 tileEntNBT.setInteger("y", pos.getY());
                 tileEntNBT.setInteger("z", pos.getZ());
 
-                // Translates the Node connections from World space into Ship space
-                if (worldTile instanceof INodeProvider) {
-                    int[] backingPositionArray = tileEntNBT.getIntArray("connectednodesarray");
-                    for (int cont = 0; cont < backingPositionArray.length; cont += 3) {
-                        backingPositionArray[cont] = backingPositionArray[cont] + centerDifference.getX();
-                        backingPositionArray[cont + 1] = backingPositionArray[cont + 1] + centerDifference.getY();
-                        backingPositionArray[cont + 2] = backingPositionArray[cont + 2] + centerDifference.getZ();
-                    }
-                    tileEntNBT.setIntArray("connectednodesarray", backingPositionArray);
-                }
-
-                // TODO: Remove this later
-                if (worldTile instanceof TileEntityEtherCompressor) {
-                    int controllerPosX = tileEntNBT.getInteger("controllerPosX");
-                    int controllerPosY = tileEntNBT.getInteger("controllerPosY");
-                    int controllerPosZ = tileEntNBT.getInteger("controllerPosZ");
-
-                    tileEntNBT.setInteger("controllerPosX", controllerPosX + centerDifference.getX());
-                    tileEntNBT.setInteger("controllerPosY", controllerPosY + centerDifference.getY());
-                    tileEntNBT.setInteger("controllerPosZ", controllerPosZ + centerDifference.getZ());
-                }
-
                 TileEntity newInstance = TileEntity.create(getWorldObj(), tileEntNBT);
+                // Order the IVWNodeProvider to move by the given offset.
+                if (newInstance != null && newInstance instanceof IVWNodeProvider) {
+                	IVWNodeProvider.class.cast(newInstance).shiftInternalData(centerDifference);
+                	IVWNodeProvider.class.cast(newInstance).getNode().setParentPhysicsObject(this);
+                }
                 newInstance.validate();
-
-                Class tileClass = newInstance.getClass();
-                Field[] fields = tileClass.getDeclaredFields();
-                for (Field field : fields) {
-                    try {
-                        field.setAccessible(true);
-                        Object o = field.get(newInstance);
-                        if (o != null) {
-                            if (o instanceof BlockPos) {
-                                BlockPos inTilePos = (BlockPos) o;
-                                int hash = SpatialDetector.getHashWithRespectTo(inTilePos.getX(), inTilePos.getY(),
-                                        inTilePos.getZ(), detector.firstBlock);
-                                if (detector.foundSet.contains(hash)) {
-                                    if (!(o instanceof MutableBlockPos)) {
-                                        inTilePos = inTilePos.add(centerDifference.getX(), centerDifference.getY(),
-                                                centerDifference.getZ());
-                                        field.set(newInstance, inTilePos);
-                                    } else {
-                                        MutableBlockPos mutable = (MutableBlockPos) o;
-                                        mutable.setPos(inTilePos.getX() + centerDifference.getX(),
-                                                inTilePos.getY() + centerDifference.getY(),
-                                                inTilePos.getZ() + centerDifference.getZ());
-                                    }
-                                }
-                            }
-                        }
-                    } catch (IllegalArgumentException e) {
-                        e.printStackTrace();
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                // TODO: Maybe move this after the setTileEntity() method
-                if (newInstance instanceof INodeProvider) {
-                    ((INodeProvider) newInstance).getNode().updateParentEntity(this);
-                }
-
-                getWorldObj().setTileEntity(newInstance.getPos(), newInstance);
-
-                if (newInstance instanceof INodeProvider) {
-                    // System.out.println(newInstance.getClass().getName());
-                    this.getConcurrentNodesWithinShip().add(((INodeProvider) newInstance).getNode());
-                }
-
+                
+                getWorldObj().setTileEntity(pos, newInstance);
+                this.onSetTileEntity(pos, newInstance);
                 newInstance.markDirty();
             }
-            // chunkCache.setBlockState(pos, state);
-            // worldObj.setBlockState(pos, state);
         }
         iter = detector.foundSet.iterator();
         while (iter.hasNext()) {
@@ -514,10 +442,7 @@ public class PhysicsObject implements ISubspaceProvider {
             }
             getWorldObj().setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
         }
-        // centerDifference = new
-        // BlockPos(claimedChunks[ownedChunks.radius+1][ownedChunks.radius+1].x*16,128,claimedChunks[ownedChunks.radius+1][ownedChunks.radius+1].z*16);
-        // System.out.println(chunkCache.getBlockState(centerDifference).getBlock());
-
+        
         for (int x = getOwnedChunks().getMinX(); x <= getOwnedChunks().getMaxX(); x++) {
             for (int z = getOwnedChunks().getMinZ(); z <= getOwnedChunks().getMaxZ(); z++) {
                 claimedChunks[x - getOwnedChunks().getMinX()][z - getOwnedChunks().getMinZ()].isTerrainPopulated = true;
@@ -542,10 +467,6 @@ public class PhysicsObject implements ISubspaceProvider {
         setShipTransformationManager(new ShipTransformationManager(this));
         getPhysicsProcessor().processInitialPhysicsData();
         getPhysicsProcessor().updateParentCenterOfMass();
-
-        for (Node node : this.getConcurrentNodesWithinShip()) {
-            node.updateBuildState();
-        }
     }
 
     public void injectChunkIntoWorld(Chunk chunk, int x, int z, boolean putInId2ChunkMap) {
@@ -735,8 +656,6 @@ public class PhysicsObject implements ISubspaceProvider {
     }
 
     public void loadClaimedChunks() {
-        List<TileEntity> nodeTileEntitiesToUpdate = new ArrayList<TileEntity>();
-
         ValkyrienWarfareMod.VW_PHYSICS_MANAGER.onShipPreload(getWrapperEntity());
 
         claimedChunks = new Chunk[(getOwnedChunks().getRadius() * 2) + 1][(getOwnedChunks().getRadius() * 2) + 1];
@@ -753,10 +672,7 @@ public class PhysicsObject implements ISubspaceProvider {
                     injectChunkIntoWorld(chunk, x, z, false);
                 }
                 for (Entry<BlockPos, TileEntity> entry : chunk.tileEntities.entrySet()) {
-                    TileEntity tile = entry.getValue();
-                    if (tile instanceof INodeProvider) {
-                        nodeTileEntitiesToUpdate.add(tile);
-                    }
+                    this.onSetTileEntity(entry.getKey(), entry.getValue());
                 }
                 claimedChunks[x - getOwnedChunks().getMinX()][z - getOwnedChunks().getMinZ()] = chunk;
             }
@@ -768,22 +684,6 @@ public class PhysicsObject implements ISubspaceProvider {
             createPhysicsCalculations();
             // The client doesn't need to keep track of this.
             detectBlockPositions();
-        }
-        for (TileEntity tile : nodeTileEntitiesToUpdate) {
-            Node node = ((INodeProvider) tile).getNode();
-            if (node != null) {
-                node.updateParentEntity(this);
-            } else {
-                System.err.println("How did we get a null node?");
-            }
-        }
-        for (TileEntity tile : nodeTileEntitiesToUpdate) {
-            Node node = ((INodeProvider) tile).getNode();
-            if (node != null) {
-                node.updateBuildState();
-            } else {
-                System.err.println("How did we get a null node?");
-            }
         }
 
         getShipTransformationManager().updateAllTransforms(false, false);
@@ -1245,13 +1145,6 @@ public class PhysicsObject implements ISubspaceProvider {
 	}
 
 	/**
-	 * @return the concurrentNodesWithinShip
-	 */
-	public Set<Node> getConcurrentNodesWithinShip() {
-		return concurrentNodesWithinShip;
-	}
-
-	/**
 	 * @return the shipChunks
 	 */
 	public VWChunkCache getShipChunks() {
@@ -1339,6 +1232,30 @@ public class PhysicsObject implements ISubspaceProvider {
 	@Override
 	public ISubspace getSubspace() {
 		return this.shipSubspace;
+	}
+
+	// ===== Keep track of all Node Processors in a concurrent Set =====
+	public void onSetTileEntity(BlockPos pos, TileEntity tileentity) {
+		if (tileentity instanceof INodeController) {
+			physicsControllers.add((INodeController) tileentity);
+		}
+		// System.out.println(physicsControllers.size());
+	}
+	
+	public void onRemoveTileEntity(BlockPos pos) {
+		Iterator<INodeController> controllersIterator = physicsControllers.iterator();
+		while (controllersIterator.hasNext()) {
+			INodeController next = controllersIterator.next();
+			if (next.getNodePos().equals(pos)) {
+				controllersIterator.remove();
+			}
+		}
+		// System.out.println(physicsControllers.size());
+	}
+	
+	// Do not allow anything external to modify the physics controllers Set.
+	public Set<INodeController> getPhysicsControllersInShip() {
+		return physicsControllersImmutable;
 	}
 
 }

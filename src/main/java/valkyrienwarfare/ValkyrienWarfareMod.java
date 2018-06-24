@@ -121,7 +121,6 @@ public class ValkyrienWarfareMod {
     public static CommonProxy proxy;
     public static File configFile;
     public static Configuration config;
-    public static boolean shipsSpawnParticles = false;
     public static Vector gravity = new Vector(0, -9.8D, 0);
     public static double physSpeed = .01D;
     public static Block physicsInfuser;
@@ -138,12 +137,10 @@ public class ValkyrienWarfareMod {
     public static double shipUpperLimit = 1000D;
     public static double shipLowerLimit = -30D;
     public static int maxAirships = -1;
-    public static boolean highAccuracyCollisions = false;
     public static boolean accurateRain = false;
     public static boolean runAirshipPermissions = false;
     public static int threadCount = -1;
-    public static double shipmobs_spawnrate = .01D;
-    public static Logger VWLogger;
+    public static Logger VW_LOGGER;
     private static boolean hasAddonRegistrationEnded = false;
     public DataTag tag = null;
 
@@ -159,18 +156,12 @@ public class ValkyrienWarfareMod {
         shipLowerLimit = config.get(Configuration.CATEGORY_GENERAL, "Ship Y-Height Minimum", -30D).getDouble();
         maxAirships = config.get(Configuration.CATEGORY_GENERAL, "Max airships per player", -1, "Players can't own more than this many airships at once. Set to -1 to disable.").getInt();
         accurateRain = config.get(Configuration.CATEGORY_GENERAL, "Enable accurate rain on ships", false, "Debug feature, takes a lot of processing power").getBoolean();
-        shipsSpawnParticles = config.get(Configuration.CATEGORY_GENERAL, "Enable particle spawns on Ships", true, "Ex. Torch Particles").getBoolean();
         runAirshipPermissions = config.get(Configuration.CATEGORY_GENERAL, "Enable airship permissions", false, "Enables the airship permissions system").getBoolean();
-        shipmobs_spawnrate = config.get(Configuration.CATEGORY_GENERAL, "The spawn rate for ship mobs", .01D, "The spawn rate for ship mobs").getDouble();
-        {
-            threadCount = config.get(Configuration.CATEGORY_GENERAL, "Physics thread count", Runtime.getRuntime().availableProcessors() - 2,
-                    "The number of threads to use for physics, recommened to use your cpu's thread count minus 2.").getInt();
-
-            if (PHYSICS_THREADS_EXECUTOR == null) {
-                PHYSICS_THREADS_EXECUTOR = Executors.newFixedThreadPool(Math.max(2, threadCount));
-            }
+        threadCount = config.get(Configuration.CATEGORY_GENERAL, "Physics thread count", Runtime.getRuntime().availableProcessors() - 2,
+                "The number of threads to use for physics, recommened to use your cpu's thread count minus 2.").getInt();
+        if (PHYSICS_THREADS_EXECUTOR == null) {
+            PHYSICS_THREADS_EXECUTOR = Executors.newFixedThreadPool(Math.max(2, threadCount));
         }
-
         addons.forEach(m -> m.applyConfig(config));
     }
 
@@ -351,7 +342,7 @@ public class ValkyrienWarfareMod {
         registerCapibilities();
         ValkyrienWarfareHooks.methods = new RealMethods();
         ValkyrienWarfareHooks.isValkyrienWarfareInstalled = true;
-        VWLogger = Logger.getLogger("ValkyrienWarfare");
+        VW_LOGGER = Logger.getLogger("ValkyrienWarfare");
 
         addons.forEach(m -> m.doPreInit(event));
 

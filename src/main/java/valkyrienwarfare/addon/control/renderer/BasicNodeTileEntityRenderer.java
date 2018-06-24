@@ -25,7 +25,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import org.lwjgl.opengl.GL11;
 import valkyrienwarfare.addon.control.nodenetwork.BasicNodeTileEntity;
-import valkyrienwarfare.addon.control.nodenetwork.Node;
+import valkyrienwarfare.addon.control.nodenetwork.VWNode_TileEntity;
 
 public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer {
 
@@ -39,13 +39,13 @@ public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer {
     public void render(TileEntity te, double x, double y, double z, float partialTick, int destroyStage, float alpha) {
         if (te instanceof BasicNodeTileEntity) {
             GlStateManager.disableBlend();
-            Node tileNode = ((BasicNodeTileEntity) (te)).getNode();
+            VWNode_TileEntity tileNode = ((BasicNodeTileEntity) (te)).getNode();
             if (tileNode != null) {
                 GL11.glPushMatrix();
                 GL11.glTranslated(.5D, -1D, .5D);
                 // GL11.glTranslated(0, y, 0);
 
-                for (BlockPos otherPos : tileNode.getConnectedNodesBlockPos()) {
+                for (BlockPos otherPos : tileNode.getLinkedNodesPos()) {
                     // render wire between these two blockPos
                     GL11.glPushMatrix();
                     // GlStateManager.resetColor();

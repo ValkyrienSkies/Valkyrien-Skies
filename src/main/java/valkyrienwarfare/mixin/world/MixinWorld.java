@@ -53,7 +53,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.addon.control.nodenetwork.INodeProvider;
+import valkyrienwarfare.addon.control.nodenetwork.IVWNodeProvider;
 import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.fixes.WorldChunkloadingCrashFix;
 import valkyrienwarfare.mod.coordinates.ISubspace;
@@ -278,52 +278,6 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
         }
     }
 
-    /**
-     * aa
-     *
-     * @author xd
-     */
-    @Overwrite
-    public void setTileEntity(BlockPos pos, @Nullable TileEntity tileEntityIn) {
-        pos = pos.toImmutable(); // Forge - prevent mutable BlockPos leaks
-
-        if (tileEntityIn instanceof INodeProvider) {
-            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(thisClassAsWorld,
-                    pos);
-            if (wrapper != null) {
-                ((INodeProvider) tileEntityIn).getNode().updateParentEntity(wrapper.getPhysicsObject());
-            }
-        }
-
-        if (!this.isOutsideBuildHeight(pos)) {
-            if (tileEntityIn != null && !tileEntityIn.isInvalid()) {
-                if (processingLoadedTiles) {
-                    tileEntityIn.setPos(pos);
-                    if (tileEntityIn.getWorld() != thisClassAsWorld)
-                        tileEntityIn.setWorld(thisClassAsWorld); // Forge - set the world early as vanilla doesn't set
-                    // it until next tick
-                    Iterator<TileEntity> iterator = this.addedTileEntityList.iterator();
-
-                    while (iterator.hasNext()) {
-                        TileEntity tileentity = iterator.next();
-
-                        if (tileentity.getPos().equals(pos)) {
-                            tileentity.invalidate();
-                            iterator.remove();
-                        }
-                    }
-
-                    this.addedTileEntityList.add(tileEntityIn);
-                } else {
-                    Chunk chunk = thisClassAsWorld.getChunkFromBlockCoords(pos);
-                    if (chunk != null)
-                        chunk.addTileEntity(pos, tileEntityIn);
-                    thisClassAsWorld.addTileEntity(tileEntityIn);
-                }
-            }
-        }
-    }
-
     @Intrinsic(displace = true)
     public Iterator<Chunk> vw$getPersistentChunkIterable(Iterator<Chunk> chunkIterator) {
         ArrayList<Chunk> persistantChunks = new ArrayList<Chunk>();
@@ -336,7 +290,8 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
         return getPersistentChunkIterable(replacementIterator);
     }
 
-    @Shadow
+    // This is a forge method not vanilla, so we don't remap this.
+    @Shadow(remap = false)
     public abstract Iterator<Chunk> getPersistentChunkIterable(Iterator<Chunk> chunkIterator);
 
     @Shadow

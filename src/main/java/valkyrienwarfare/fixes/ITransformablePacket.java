@@ -19,17 +19,20 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
  * Used to indicate when a packet must be transformed into ship space to work
  * properly (Digging packets for example). Also comes with functionality to
  * store and retrieve a player data backup to prevent the player from getting
- * teleported somewhere else. Also comes with helper default methods packets
- * implementing this can use.
+ * teleported somewhere else, but this is not necessarily required.
  *
  * @author thebest108
  */
 public interface ITransformablePacket {
 
-	BlockPos getBlockPos();
-
-	default boolean shouldTransformInCurrentEnvironment() {
-		return MixinLoadManager.isSpongeEnabled();
+	default boolean isPacketOnMainThread(INetHandlerPlayServer server, boolean callingFromSponge) {
+		if (!MixinLoadManager.isSpongeEnabled() || callingFromSponge) {
+			NetHandlerPlayServer serverHandler = (NetHandlerPlayServer) server;
+			EntityPlayerMP player = serverHandler.player;
+			return player.getServerWorld().isCallingFromMinecraftThread();
+		} else {
+			return false;
+		}
 	}
 
 	/**
@@ -40,23 +43,20 @@ public interface ITransformablePacket {
 	 * @param callingFromSponge
 	 */
 	default void doPreProcessing(INetHandlerPlayServer server, boolean callingFromSponge) {
-		if (!MixinLoadManager.isSpongeEnabled() || callingFromSponge) {
+		if (isPacketOnMainThread(server, callingFromSponge)) {
 			// System.out.println("Pre packet process");
 			NetHandlerPlayServer serverHandler = (NetHandlerPlayServer) server;
 			EntityPlayerMP player = serverHandler.player;
-			if (player.getServerWorld().isCallingFromMinecraftThread()) {
-				BlockPos packetPos = getBlockPos();
-				PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(player.world,
-						packetPos);
-				if (wrapper != null && wrapper.getPhysicsObject().getShipTransformationManager() != null) {
-					ISubspaceProvider worldProvider = ISubspaceProvider.class.cast(player.getServerWorld());
-					ISubspace worldSubspace = worldProvider.getSubspace();
-					worldSubspace.snapshotSubspacedEntity(ISubspacedEntity.class.cast(player));
-					RotationMatrices.applyTransform(
-							wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform(), player,
-							TransformType.GLOBAL_TO_SUBSPACE);
-				}
+			PhysicsWrapperEntity wrapper = getPacketParent(serverHandler);
+			if (wrapper != null && wrapper.getPhysicsObject().getShipTransformationManager() != null) {
+				ISubspaceProvider worldProvider = ISubspaceProvider.class.cast(player.getServerWorld());
+				ISubspace worldSubspace = worldProvider.getSubspace();
+				worldSubspace.snapshotSubspacedEntity(ISubspacedEntity.class.cast(player));
+				RotationMatrices.applyTransform(
+						wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform(), player,
+						TransformType.GLOBAL_TO_SUBSPACE);
 			}
+
 		}
 	}
 
@@ -67,28 +67,26 @@ public interface ITransformablePacket {
 	 * @param callingFromSponge
 	 */
 	default void doPostProcessing(INetHandlerPlayServer server, boolean callingFromSponge) {
-		if (!MixinLoadManager.isSpongeEnabled() || callingFromSponge) {
+		if (isPacketOnMainThread(server, callingFromSponge)) {
 			NetHandlerPlayServer serverHandler = (NetHandlerPlayServer) server;
 			EntityPlayerMP player = serverHandler.player;
-			if (player.getServerWorld().isCallingFromMinecraftThread()) {
-				BlockPos packetPos = getBlockPos();
-				PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(player.world,
-						packetPos);
-				// I don't care what happened to that ship in the time between, we must restore
-				// the player to their proper coordinates.
-				ISubspaceProvider worldProvider = ISubspaceProvider.class.cast(player.getServerWorld());
-				ISubspace worldSubspace = worldProvider.getSubspace();
-				ISubspacedEntity subspacedEntity = ISubspacedEntity.class.cast(player);
-				ISubspacedEntityRecord record = worldSubspace.getRecordForSubspacedEntity(subspacedEntity);
-				// System.out.println(player.getPosition());
-				if (subspacedEntity.currentSubspaceType() == CoordinateSpaceType.SUBSPACE_COORDINATES) {
-					subspacedEntity.restoreSubspacedEntityStateToRecord(record);
-					player.setPosition(player.posX, player.posY, player.posZ);
-				}
-				// System.out.println(player.getPosition());
-				// We need this because Sponge Mixins prevent this from properly working. This
-				// won't be necessary on client however.
+			PhysicsWrapperEntity wrapper = getPacketParent(serverHandler);
+			// I don't care what happened to that ship in the time between, we must restore
+			// the player to their proper coordinates.
+			ISubspaceProvider worldProvider = ISubspaceProvider.class.cast(player.getServerWorld());
+			ISubspace worldSubspace = worldProvider.getSubspace();
+			ISubspacedEntity subspacedEntity = ISubspacedEntity.class.cast(player);
+			ISubspacedEntityRecord record = worldSubspace.getRecordForSubspacedEntity(subspacedEntity);
+			// System.out.println(player.getPosition());
+			if (subspacedEntity.currentSubspaceType() == CoordinateSpaceType.SUBSPACE_COORDINATES) {
+				subspacedEntity.restoreSubspacedEntityStateToRecord(record);
+				player.setPosition(player.posX, player.posY, player.posZ);
 			}
+			// System.out.println(player.getPosition());
+			// We need this because Sponge Mixins prevent this from properly working. This
+			// won't be necessary on client however.
 		}
 	}
+
+	PhysicsWrapperEntity getPacketParent(NetHandlerPlayServer server);
 }

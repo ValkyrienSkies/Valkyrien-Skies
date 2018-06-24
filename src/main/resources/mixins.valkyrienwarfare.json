@@ -22,12 +22,9 @@
     "network.play.client.MixinCPacketPlayerDigging",
     "network.play.client.MixinCPacketPlayerTryUseItemOnBlock",
     "network.play.client.MixinCPacketUpdateSign",
-    "network.play.client.MixinCPacketPlayer$Position",
-    "network.play.client.MixinCPacketPlayer$PositionRotation",
-    "network.play.client.MixinCPacketPlayer$Rotation",
-    "network.play.client.MixinCPacketPlayer",
     "spongepowered.common.network.MixinPacketUtil",
-    "spongepowered.common.event.tracking.MixinPhaseTracker"
+    "spongepowered.common.event.tracking.MixinPhaseTracker",
+    "network.play.client.MixinCPacketPlayer"
   ],
   "client": [
     "client.renderer.tileentity.MixinTileEntityRendererDispatcher",

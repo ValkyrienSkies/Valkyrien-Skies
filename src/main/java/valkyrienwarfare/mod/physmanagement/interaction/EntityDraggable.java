@@ -98,6 +98,7 @@ public class EntityDraggable {
             Vector oldPos = new Vector(entity);
 
 //            RotationMatrices.applyTransform(coordTransform.prevwToLTransform, entity);
+            // This is causing crashes
             RotationMatrices.applyTransform(coordTransform.getPrevTickTransform(), entity, TransformType.GLOBAL_TO_SUBSPACE);
             RotationMatrices.applyTransform(coordTransform.getCurrentTickTransform(), entity, TransformType.SUBSPACE_TO_GLOBAL);
 

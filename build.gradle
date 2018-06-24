@@ -37,6 +37,7 @@ ext.configFile = file "project.properties"
 apply plugin: "net.minecraftforge.gradle.forge"
 apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'maven-publish'
 
 configFile.withReader { 
     // read config.  it shall from now on be referenced as simply config or as project.config 

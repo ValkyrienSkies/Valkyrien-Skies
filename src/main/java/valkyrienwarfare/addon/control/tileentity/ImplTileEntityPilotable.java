@@ -31,7 +31,7 @@ import valkyrienwarfare.addon.control.nodenetwork.BasicNodeTileEntity;
 import valkyrienwarfare.addon.control.piloting.ControllerInputType;
 import valkyrienwarfare.addon.control.piloting.ITileEntityPilotable;
 import valkyrienwarfare.addon.control.piloting.PilotControlsMessage;
-import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.mod.coordinates.TransformType;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 

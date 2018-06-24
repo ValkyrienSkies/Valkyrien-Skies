@@ -14,9 +14,11 @@
  *
  */
 
-@API(apiVersion = VW_APIProps.VERSION, owner = "valkyrienwarfare", provides = "Valkyrien Warfare api")
-package valkyrienwarfare.api;
+package valkyrienwarfare.deprecated_api;
 
-import net.minecraftforge.fml.common.API;
-
-// This file keeps the api version up to latest for all mods!
+public enum EnumChangeOwnerResult {
+    ERROR_NEWOWNER_NOT_ENOUGH,
+    ERROR_IMPOSSIBLE_STATUS,
+    SUCCESS,
+    ALREADY_CLAIMED
+}

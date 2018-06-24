@@ -30,7 +30,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.combat.entity.EntityMountingWeaponBase;
-import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.mod.capability.IAirshipCounterCapability;
 import valkyrienwarfare.mod.coordinates.TransformType;
 import valkyrienwarfare.mod.physmanagement.interaction.ShipNameUUIDData;

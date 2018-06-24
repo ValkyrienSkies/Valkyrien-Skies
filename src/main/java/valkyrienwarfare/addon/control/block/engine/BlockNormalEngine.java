@@ -17,7 +17,6 @@
 package valkyrienwarfare.addon.control.block.engine;
 
 import net.minecraft.block.material.Material;
-import valkyrienwarfare.api.block.engine.BlockAirshipEngineLore;
 
 public class BlockNormalEngine extends BlockAirshipEngineLore {
 

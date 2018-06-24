@@ -19,7 +19,7 @@ package valkyrienwarfare.mod.network;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.mod.multithreaded.PhysicsShipTransform;
 import valkyrienwarfare.physics.management.PhysicsObject;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;

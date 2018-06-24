@@ -14,15 +14,40 @@
  *
  */
 
-package valkyrienwarfare.api;
+package valkyrienwarfare.addon.control.block.ethercompressor;
 
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.block.material.Material;
+import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
-//Blocks implement this to add a variable mass based on certain conditions
-public interface IBlockMassProvider {
+import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.List;
 
-    double getBlockMass(World world, BlockPos pos, IBlockState state);
+public abstract class BlockEtherCompressorLore extends BlockEtherCompressor {
 
+    private String[] lore;
+
+    public BlockEtherCompressorLore(Material materialIn, double enginePower) {
+        super(materialIn, enginePower);
+    }
+
+    @Override
+    public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation, ITooltipFlag advanced) {
+        Collections.addAll(itemInformation, this.lore);
+    }
+
+    public abstract String getEnginePowerTooltip();
+
+    @Override
+    public void setEnginePower(double power) {
+        super.setEnginePower(power);
+        this.updateLore();
+    }
+
+    protected void updateLore() {
+        lore = new String[]{"" + TextFormatting.GRAY + TextFormatting.ITALIC + TextFormatting.BOLD + "Power:", "  " + this.getEnginePowerTooltip()};
+    }
 }

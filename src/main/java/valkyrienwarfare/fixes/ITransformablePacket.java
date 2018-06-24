@@ -6,7 +6,7 @@ import net.minecraft.network.play.INetHandlerPlayServer;
 import net.minecraft.util.math.BlockPos;
 import valkyrienwarfare.MixinLoadManager;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.api.RotationMatrices;
+import valkyrienwarfare.math.RotationMatrices;
 import valkyrienwarfare.mod.coordinates.CoordinateSpaceType;
 import valkyrienwarfare.mod.coordinates.ISubspace;
 import valkyrienwarfare.mod.coordinates.ISubspaceProvider;

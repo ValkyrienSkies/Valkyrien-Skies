@@ -1,6 +1,6 @@
 package valkyrienwarfare.mod.coordinates;
 
-import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.math.Vector;
 
 /**
  * An interface that allows entities to interact safely within the context of

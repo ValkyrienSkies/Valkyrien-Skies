@@ -16,8 +16,8 @@
 
 package valkyrienwarfare.addon.control.tileentity;
 
-import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.api.block.ethercompressor.TileEntityEtherCompressor;
+import valkyrienwarfare.addon.control.block.ethercompressor.TileEntityEtherCompressor;
+import valkyrienwarfare.math.Vector;
 
 public class TileEntityNormalEtherCompressor extends TileEntityEtherCompressor {
 

@@ -1,6 +1,6 @@
 package valkyrienwarfare.mod.coordinates;
 
-import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.math.Vector;
 
 public class ImplSubspacedEntityRecord implements ISubspacedEntityRecord {
 

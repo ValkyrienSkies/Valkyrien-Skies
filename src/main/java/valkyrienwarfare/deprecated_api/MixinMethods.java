@@ -14,7 +14,7 @@
  *
  */
 
-package valkyrienwarfare.api;
+package valkyrienwarfare.deprecated_api;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
@@ -23,6 +23,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
+import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.mod.coordinates.TransformType;
 import valkyrienwarfare.mod.physmanagement.interaction.IWorldVW;
 import valkyrienwarfare.physics.collision.EntityCollisionInjector;

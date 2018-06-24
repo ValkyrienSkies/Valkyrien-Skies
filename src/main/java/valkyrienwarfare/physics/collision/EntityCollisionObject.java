@@ -16,7 +16,7 @@
 
 package valkyrienwarfare.physics.collision;
 
-import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.physics.collision.polygons.Polygon;
 
 /**

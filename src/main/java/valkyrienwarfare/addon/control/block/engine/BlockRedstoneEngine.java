@@ -21,7 +21,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import valkyrienwarfare.api.block.engine.BlockAirshipEngineLore;
 
 public class BlockRedstoneEngine extends BlockAirshipEngineLore {
 

@@ -17,7 +17,7 @@
 package valkyrienwarfare.mod.physmanagement.interaction;
 
 import net.minecraft.entity.MoverType;
-import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 /**

@@ -20,8 +20,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import valkyrienwarfare.api.IBlockForceProvider;
-import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.deprecated_api.IBlockForceProvider;
+import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
 import java.util.HashMap;

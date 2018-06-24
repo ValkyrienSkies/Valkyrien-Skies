@@ -27,7 +27,7 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 import valkyrienwarfare.addon.combat.ValkyrienWarfareCombat;
 import valkyrienwarfare.addon.combat.entity.EntityCannonBasic;
-import valkyrienwarfare.api.IRenderVW;
+import valkyrienwarfare.deprecated_api.IRenderVW;
 import valkyrienwarfare.mod.client.render.FastBlockModelRenderer;
 
 public class EntityCannonBasicRender extends Render<EntityCannonBasic> implements IRenderVW {

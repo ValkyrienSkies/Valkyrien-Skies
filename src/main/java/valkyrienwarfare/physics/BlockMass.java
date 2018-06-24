@@ -22,7 +22,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import valkyrienwarfare.api.IBlockMassProvider;
+import valkyrienwarfare.deprecated_api.IBlockMassProvider;
 
 import java.util.HashMap;
 

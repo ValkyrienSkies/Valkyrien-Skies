@@ -17,7 +17,7 @@
 package valkyrienwarfare.addon.control.tileentity;
 
 import valkyrienwarfare.addon.control.nodenetwork.BasicForceNodeTileEntity;
-import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.math.Vector;
 
 public class TileEntityPropellerEngine extends BasicForceNodeTileEntity {
 

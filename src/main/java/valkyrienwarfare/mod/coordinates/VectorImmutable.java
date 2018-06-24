@@ -3,7 +3,7 @@ package valkyrienwarfare.mod.coordinates;
 import javax.annotation.concurrent.Immutable;
 
 import io.netty.buffer.ByteBuf;
-import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.math.Vector;
 
 /**
  * An immutable version of the Vector class that is wrapping another vector.

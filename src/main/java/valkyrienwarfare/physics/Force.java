@@ -16,7 +16,7 @@
 
 package valkyrienwarfare.physics;
 
-import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.math.Vector;
 
 public class Force extends Vector {
 

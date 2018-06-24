@@ -27,8 +27,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.piloting.ControllerInputType;
 import valkyrienwarfare.addon.control.piloting.IShipPilot;
-import valkyrienwarfare.api.RotationMatrices;
-import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.math.RotationMatrices;
+import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.mod.physmanagement.interaction.ShipUUIDToPosData;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 

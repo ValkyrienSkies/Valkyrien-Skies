@@ -14,7 +14,7 @@
  *
  */
 
-package valkyrienwarfare.api;
+package valkyrienwarfare.math;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;

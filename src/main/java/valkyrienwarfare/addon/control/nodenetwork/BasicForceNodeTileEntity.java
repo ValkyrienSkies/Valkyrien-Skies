@@ -20,7 +20,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.mod.coordinates.TransformType;
 import valkyrienwarfare.physics.PhysicsCalculations;
 import valkyrienwarfare.physics.management.PhysicsObject;

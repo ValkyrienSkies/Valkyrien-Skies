@@ -20,8 +20,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import valkyrienwarfare.addon.control.tileentity.TileEntityNormalEtherCompressor;
-import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.api.block.ethercompressor.BlockEtherCompressorLore;
+import valkyrienwarfare.math.Vector;
 
 public class BlockNormalEtherCompressor extends BlockEtherCompressorLore {
 

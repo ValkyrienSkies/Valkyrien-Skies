@@ -14,40 +14,38 @@
  *
  */
 
-package valkyrienwarfare.api.block.ethercompressor;
+package valkyrienwarfare.deprecated_api;
 
-import net.minecraft.block.material.Material;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import valkyrienwarfare.math.Vector;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
-import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.List;
+public interface DummyMethods {
+    // DO NOT RUN METHODS FROM HERE! USE PhysicsEntityHooks
 
-public abstract class BlockEtherCompressorLore extends BlockEtherCompressor {
+    Vector getShipCenterOfMass(Entity shipEnt);
 
-    private String[] lore;
+    boolean isEntityAShip(Entity entityToTest);
 
-    public BlockEtherCompressorLore(Material materialIn, double enginePower) {
-        super(materialIn, enginePower);
-    }
+    Vector getPositionInShipFromReal(World worldObj, Entity shipEnt, Vector positionInWorld);
 
-    @Override
-    public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation, ITooltipFlag advanced) {
-        Collections.addAll(itemInformation, this.lore);
-    }
+    Vector getPositionInRealFromShip(World worldObj, Entity shipEnt, Vector posInShip);
 
-    public abstract String getEnginePowerTooltip();
+    boolean isBlockPartOfShip(World worldObj, BlockPos pos);
 
-    @Override
-    public void setEnginePower(double power) {
-        super.setEnginePower(power);
-        this.updateLore();
-    }
+    PhysicsWrapperEntity getShipEntityManagingPos(World worldObj, BlockPos pos);
 
-    protected void updateLore() {
-        lore = new String[]{"" + TextFormatting.GRAY + TextFormatting.ITALIC + TextFormatting.BOLD + "Power:", "  " + this.getEnginePowerTooltip()};
-    }
+    Vector getLinearVelocity(Entity shipEnt, double secondsToApply);
+
+    Vector getAngularVelocity(Entity shipEnt);
+
+    // Returns the matrix which converts local coordinates (The positions of the blocks in the world) to the entity coordinates (The position in front of the player)
+    double[] getShipTransformMatrix(Entity shipEnt);
+
+    // Note, do not call this from World coordinates; first subtract the world coords from the shipEntity xyz and then call!
+    Vector getVelocityAtPoint(Entity shipEnt, Vector inBody, double secondsToApply);
+
+    double getShipMass(Entity shipEnt);
 }

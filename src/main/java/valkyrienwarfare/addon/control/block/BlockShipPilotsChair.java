@@ -41,7 +41,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.tileentity.TileEntityPilotsChair;
-import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.mod.physmanagement.interaction.EntityDraggable;
 import valkyrienwarfare.mod.physmanagement.interaction.IDraggable;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;

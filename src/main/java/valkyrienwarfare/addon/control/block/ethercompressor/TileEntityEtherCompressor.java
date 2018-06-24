@@ -14,13 +14,13 @@
  *
  */
 
-package valkyrienwarfare.api.block.ethercompressor;
+package valkyrienwarfare.addon.control.block.ethercompressor;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import valkyrienwarfare.addon.control.fuel.IEtherGasEngine;
 import valkyrienwarfare.addon.control.nodenetwork.BasicForceNodeTileEntity;
-import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
 public abstract class TileEntityEtherCompressor extends BasicForceNodeTileEntity implements IEtherGasEngine {

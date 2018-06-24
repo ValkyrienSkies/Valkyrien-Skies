@@ -14,12 +14,9 @@
  *
  */
 
-package valkyrienwarfare.api;
+@API(apiVersion = ".9_dev", owner = "valkyrienwarfare", provides = "Valkyrien Warfare API")
+package valkyrienwarfare.deprecated_api;
 
-public class VW_APIProps {
+import net.minecraftforge.fml.common.API;
 
-    // Do not change the VERSION text unless you want to ruin everything.
-
-    public static final String VERSION = ".9_dev";
-
-}
+// This file keeps the api version up to latest for all mods!

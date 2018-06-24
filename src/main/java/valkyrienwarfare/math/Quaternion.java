@@ -16,8 +16,6 @@
 
 package valkyrienwarfare.math;
 
-import valkyrienwarfare.api.RotationMatrices;
-
 /**
  * Used for rendering interpolation and applying angular velocity to the physics controller
  *

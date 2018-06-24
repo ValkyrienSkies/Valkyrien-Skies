@@ -21,7 +21,7 @@
 
 package valkyrienwarfare.mod.network;
 
-import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.math.Vector;
 
 public interface IExtendedCPacketPlayer {
 

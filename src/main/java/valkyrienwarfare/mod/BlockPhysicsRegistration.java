@@ -19,7 +19,7 @@ package valkyrienwarfare.mod;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
-import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.physics.BlockForce;
 import valkyrienwarfare.physics.BlockMass;
 

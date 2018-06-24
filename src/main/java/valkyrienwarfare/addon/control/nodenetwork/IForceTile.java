@@ -16,7 +16,7 @@
 
 package valkyrienwarfare.addon.control.nodenetwork;
 
-import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
 public interface IForceTile {

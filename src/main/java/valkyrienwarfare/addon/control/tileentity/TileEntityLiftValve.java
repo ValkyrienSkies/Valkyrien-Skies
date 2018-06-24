@@ -16,8 +16,8 @@
 
 package valkyrienwarfare.addon.control.tileentity;
 
+import valkyrienwarfare.addon.control.block.ethercompressor.TileEntityEtherCompressor;
 import valkyrienwarfare.addon.control.nodenetwork.VWNode_TileEntity;
-import valkyrienwarfare.api.block.ethercompressor.TileEntityEtherCompressor;
 import valkyrienwarfare.physics.PhysicsCalculations;
 import valkyrienwarfare.physics.management.PhysicsObject;
 

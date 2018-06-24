@@ -19,9 +19,9 @@ package valkyrienwarfare.mod.coordinates;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import scala.actors.threadpool.Arrays;
-import valkyrienwarfare.api.RotationMatrices;
-import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.math.Quaternion;
+import valkyrienwarfare.math.RotationMatrices;
+import valkyrienwarfare.math.Vector;
 
 import javax.annotation.concurrent.Immutable;
 

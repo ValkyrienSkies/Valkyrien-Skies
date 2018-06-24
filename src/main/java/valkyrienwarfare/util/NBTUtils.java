@@ -27,7 +27,7 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.mod.coordinates.ShipTransform;
 import valkyrienwarfare.mod.coordinates.TransformType;
 

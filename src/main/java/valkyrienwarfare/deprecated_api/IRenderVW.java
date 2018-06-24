@@ -14,7 +14,7 @@
  *
  */
 
-package valkyrienwarfare.api;
+package valkyrienwarfare.deprecated_api;
 
 public interface IRenderVW {
     void cacheStates();

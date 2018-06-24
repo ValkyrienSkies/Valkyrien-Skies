@@ -23,7 +23,7 @@ import li.cil.oc.api.network.SimpleComponent;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.Optional;
-import valkyrienwarfare.api.ValkyrienWarfareHooks;
+import valkyrienwarfare.deprecated_api.ValkyrienWarfareHooks;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 @Optional.Interface(iface = "li.cil.oc.api.network.SimpleComponent", modid = "opencomputers")

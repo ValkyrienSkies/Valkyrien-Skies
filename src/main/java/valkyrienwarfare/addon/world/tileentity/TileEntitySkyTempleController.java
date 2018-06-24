@@ -18,7 +18,7 @@ package valkyrienwarfare.addon.world.tileentity;
 
 import net.minecraft.nbt.NBTTagCompound;
 import valkyrienwarfare.addon.control.tileentity.ImplNodeControllerTileEntity;
-import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.physics.PhysicsCalculations;
 import valkyrienwarfare.physics.management.PhysicsObject;
 

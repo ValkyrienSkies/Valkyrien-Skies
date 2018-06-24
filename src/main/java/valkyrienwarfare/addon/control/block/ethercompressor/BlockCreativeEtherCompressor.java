@@ -23,8 +23,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import valkyrienwarfare.addon.control.tileentity.TileEntityNormalEtherCompressor;
-import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.api.block.ethercompressor.BlockEtherCompressorLore;
+import valkyrienwarfare.math.Vector;
 
 import javax.annotation.Nullable;
 import java.util.List;

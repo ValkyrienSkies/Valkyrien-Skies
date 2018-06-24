@@ -14,7 +14,7 @@
  *
  */
 
-package valkyrienwarfare.api;
+package valkyrienwarfare.deprecated_api;
 
 import java.io.EOFException;
 import java.io.File;

@@ -22,7 +22,7 @@ import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
-import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.mod.coordinates.TransformType;
 import valkyrienwarfare.mod.physmanagement.relocation.SpatialDetector;
 import valkyrienwarfare.physics.collision.CollisionInformationHolder;

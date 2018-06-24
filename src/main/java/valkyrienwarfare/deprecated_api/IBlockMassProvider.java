@@ -14,39 +14,15 @@
  *
  */
 
-package valkyrienwarfare.api.block.engine;
+package valkyrienwarfare.deprecated_api;
 
-import net.minecraft.block.material.Material;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.List;
+//Blocks implement this to add a variable mass based on certain conditions
+public interface IBlockMassProvider {
 
-/**
- * The same as a normal engine, but says speed in the tooltip
- */
-public abstract class BlockAirshipEngineLore extends BlockAirshipEngine {
+    double getBlockMass(World world, BlockPos pos, IBlockState state);
 
-    private String[] lore;
-
-    public BlockAirshipEngineLore(Material materialIn, double enginePower) {
-        super(materialIn, enginePower);
-    }
-
-    @Override
-    public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation, ITooltipFlag advanced) {
-        Collections.addAll(itemInformation, lore);
-    }
-
-    public abstract String getEnginePowerTooltip();
-
-    @Override
-    public void setEnginePower(double power) {
-        super.setEnginePower(power);
-        lore = new String[]{"" + TextFormatting.GRAY + TextFormatting.ITALIC + TextFormatting.BOLD + "Force:", "  " + this.getEnginePowerTooltip() + " Newtons"};
-    }
 }

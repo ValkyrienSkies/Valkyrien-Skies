@@ -1,5 +1,5 @@
 /*
- * Adapted from the Wizardry License
+* Adapted from the Wizardry License
  *
  * Copyright (c) 2015-2018 the Valkyrien Warfare team
  *
@@ -14,11 +14,12 @@
  *
  */
 
-package valkyrienwarfare.api;
+package valkyrienwarfare.deprecated_api;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 /**

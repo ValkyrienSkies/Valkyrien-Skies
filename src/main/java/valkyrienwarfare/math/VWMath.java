@@ -21,8 +21,6 @@ import java.util.List;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.api.RotationMatrices;
-import valkyrienwarfare.api.Vector;
 import valkyrienwarfare.mod.coordinates.VectorImmutable;
 
 /**

@@ -16,6 +16,10 @@
 
 package valkyrienwarfare.addon.control.tileentity;
 
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.ScaledResolution;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import valkyrienwarfare.addon.control.block.ethercompressor.TileEntityEtherCompressor;
 import valkyrienwarfare.addon.control.nodenetwork.VWNode_TileEntity;
 import valkyrienwarfare.physics.PhysicsCalculations;

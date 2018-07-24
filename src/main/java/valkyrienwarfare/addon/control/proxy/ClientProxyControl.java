@@ -22,8 +22,10 @@ import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.model.obj.OBJLoader;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
+import valkyrienwarfare.addon.control.ControlEventsClient;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.controlsystems.controlgui.ThrustModulatorGui;
 import valkyrienwarfare.addon.control.renderer.BasicNodeTileEntityRenderer;
@@ -102,6 +104,7 @@ public class ClientProxyControl extends CommonProxyControl {
 
     @Override
     public void init(FMLStateEvent event) {
+    	MinecraftForge.EVENT_BUS.register(new ControlEventsClient());
     }
 
     @Override

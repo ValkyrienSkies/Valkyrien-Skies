@@ -27,7 +27,7 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public class SoundFixWrapper implements ISound {
 
-    final Vector soundLocation;
+    private final Vector soundLocation;
     private final ISound wrappedSound;
     private final PhysicsWrapperEntity wrapper;
 

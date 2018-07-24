@@ -52,6 +52,12 @@ public abstract class BasicNodeTileEntity extends TileEntity implements IVWNodeP
 	}
 
 	@Override
+	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+		tileNode.writeToNBT(compound);
+		return super.writeToNBT(compound);
+	}
+	
+	@Override
 	public void readFromNBT(NBTTagCompound compound) {
 		super.readFromNBT(compound);
 		tileNode.readFromNBT(compound);
@@ -66,12 +72,6 @@ public abstract class BasicNodeTileEntity extends TileEntity implements IVWNodeP
 	public NBTTagCompound getUpdateTag() {
 		NBTTagCompound toReturn = super.getUpdateTag();
 		return writeToNBT(toReturn);
-	}
-
-	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-		tileNode.writeToNBT(compound);
-		return super.writeToNBT(compound);
 	}
 
 	@Override

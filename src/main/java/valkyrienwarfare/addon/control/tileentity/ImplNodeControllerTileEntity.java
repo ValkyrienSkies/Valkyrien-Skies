@@ -16,8 +16,12 @@
 
 package valkyrienwarfare.addon.control.tileentity;
 
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import valkyrienwarfare.addon.control.nodenetwork.BasicNodeTileEntity;
 import valkyrienwarfare.addon.control.nodenetwork.INodeController;
 
@@ -64,4 +68,5 @@ public abstract class ImplNodeControllerTileEntity extends BasicNodeTileEntity i
     public int hashCode() {
     	return getNodePos().hashCode();
     }
+    
 }

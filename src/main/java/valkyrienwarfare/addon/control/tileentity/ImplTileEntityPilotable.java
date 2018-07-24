@@ -17,11 +17,15 @@
 package valkyrienwarfare.addon.control.tileentity;
 
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.block.BlockShipHelm;
@@ -45,6 +49,11 @@ public abstract class ImplTileEntityPilotable extends BasicNodeTileEntity implem
 
 	private EntityPlayer pilotPlayerEntity;
 
+	ImplTileEntityPilotable() {
+		super();
+		this.pilotPlayerEntity = null;
+	}
+	
 	@Override
 	public final void onPilotControlsMessage(PilotControlsMessage message, EntityPlayerMP sender) {
 		if (sender == pilotPlayerEntity) {
@@ -165,4 +174,15 @@ public abstract class ImplTileEntityPilotable extends BasicNodeTileEntity implem
 		return dotProduct > 0;
 	}
 
+	/**
+	 * This is called during the post render of every frame in Minecraft. Override
+	 * this to allow a pilot tileentity to display info as text on the screen.
+	 * 
+	 * @param renderer
+	 * @param gameResolution
+	 */
+	@SideOnly(Side.CLIENT)
+	public void renderPilotText(FontRenderer renderer, ScaledResolution gameResolution) {
+
+	}
 }

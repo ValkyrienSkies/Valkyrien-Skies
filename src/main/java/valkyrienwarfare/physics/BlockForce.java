@@ -29,44 +29,27 @@ import java.util.Map;
 
 public class BlockForce {
 
-    public static final BlockForce basicForces = new BlockForce();
-    private final Map<Block, Force> blocksToForces;
+	public static final BlockForce basicForces = new BlockForce();
 
-    public BlockForce() {
-        blocksToForces = new HashMap<Block, Force>();
-    }
+	public void getForceFromState(IBlockState state, BlockPos pos, World world, double secondsToApply,
+			PhysicsObject obj, Vector toSet) {
+		Block block = state.getBlock();
+		if (block instanceof IBlockForceProvider) {
+			Vector forceVector = ((IBlockForceProvider) block).getBlockForceInWorldSpace(world, pos, state,
+					obj.getWrapperEntity(), secondsToApply);
+			if (forceVector == null) {
+				toSet.zero();
+			} else {
+				toSet.X = forceVector.X;
+				toSet.Y = forceVector.Y;
+				toSet.Z = forceVector.Z;
+			}
+		}
+	}
 
-    public static void registerBlockForce(Block block, Vector forceVec, boolean isLocal) {
-        Force force = new Force(forceVec.X, forceVec.Y, forceVec.Z, isLocal);
-        basicForces.blocksToForces.put(block, force);
-    }
-
-    public void getForceFromState(IBlockState state, BlockPos pos, World world, double secondsToApply, PhysicsObject obj, Vector toSet) {
-        Block block = state.getBlock();
-        if (block instanceof IBlockForceProvider) {
-            Vector forceVector = ((IBlockForceProvider) block).getBlockForceInWorldSpace(world, pos, state, obj.getWrapperEntity(), secondsToApply);
-            if (forceVector == null) {
-                toSet.zero();
-                return;
-            }
-            toSet.X = forceVector.X;
-            toSet.Y = forceVector.Y;
-            toSet.Z = forceVector.Z;
-            return;
-        }
-        Force force = basicForces.blocksToForces.get(block);
-        if (force != null) {
-            toSet.X = force.X * secondsToApply;
-            toSet.Y = force.Y * secondsToApply;
-            toSet.Z = force.Z * secondsToApply;
-        } else {
-            toSet.zero();
-        }
-    }
-
-    public boolean isBlockProvidingForce(IBlockState state, BlockPos pos, World world) {
-        Block block = state.getBlock();
-        return basicForces.blocksToForces.containsKey(block) || block instanceof IBlockForceProvider;
-    }
+	public boolean isBlockProvidingForce(IBlockState state, BlockPos pos, World world) {
+		Block block = state.getBlock();
+		return block instanceof IBlockForceProvider;
+	}
 
 }

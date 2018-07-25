@@ -16,16 +16,16 @@
 
 package valkyrienwarfare.addon.control.tileentity;
 
-import valkyrienwarfare.addon.control.block.ethercompressor.TileEntityEtherCompressor;
+import valkyrienwarfare.addon.control.block.ethercompressor.TileEntityEtherPropulsion;
 import valkyrienwarfare.math.Vector;
 
-public class TileEntityNormalEtherCompressor extends TileEntityEtherCompressor {
+public class TileEntityLegacyEtherCompressor extends TileEntityEtherPropulsion {
 
-    public TileEntityNormalEtherCompressor() {
+    public TileEntityLegacyEtherCompressor() {
         super();
     }
 
-    public TileEntityNormalEtherCompressor(Vector normalForceVector, double power) {
+    public TileEntityLegacyEtherCompressor(Vector normalForceVector, double power) {
         super(normalForceVector, power);
     }
 

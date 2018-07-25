@@ -43,33 +43,36 @@ public interface IForceTile {
      */
     public Vector getForceOutputOriented(double secondsToApply, PhysicsObject physicsObject);
 
-    /**
-     * Returns the maximum magnitude of force this engine can provide
-     *
-     * @return
-     */
-    public double getMaxThrust();
+	/**
+	 * Returns the maximum magnitude of force this engine can provide at this
+	 * instant under its current conditions. This number should never be cached in
+	 * any way is it is can always change.
+	 *
+	 * @return
+	 */
+	public double getMaxThrust();
 
-    /**
-     * Returns the thrust value of this ForceTile
-     *
-     * @return
-     */
+	/**
+	 * Returns the thrust value of this ForceTile
+	 *
+	 * @return
+	 */
     public double getThrustActual();
 
     /**
-     * Returns the current goal for the thrust
+     * Returns the current force multiplier goal.
      *
      * @return
      */
-    public double getThrustGoal();
+    public double getThrustMultiplierGoal();
 
     /**
-     * Sets the goal for the force output vector to be
-     *
-     * @param toUse
-     */
-    public void setThrustGoal(double newMagnitude);
+	 * Sets the goal for the force output, multiplier must be between 0 and 1. The
+	 * actual goal thrust is the getMaxThrust() * getThrustMultiplierGoal();
+	 *
+	 * @param toUse
+	 */
+    public void setThrustMultiplierGoal(double multiplier);
 
     /**
      * Matrix transformation stuff

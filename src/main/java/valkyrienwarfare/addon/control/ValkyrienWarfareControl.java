@@ -58,7 +58,7 @@ import valkyrienwarfare.addon.control.tileentity.TileEntityLiftControl;
 import valkyrienwarfare.addon.control.tileentity.TileEntityLiftValve;
 import valkyrienwarfare.addon.control.tileentity.TileEntityNetworkDisplay;
 import valkyrienwarfare.addon.control.tileentity.TileEntityNodeRelay;
-import valkyrienwarfare.addon.control.tileentity.TileEntityNormalEtherCompressor;
+import valkyrienwarfare.addon.control.tileentity.TileEntityLegacyEtherCompressor;
 import valkyrienwarfare.addon.control.tileentity.TileEntityPilotsChair;
 import valkyrienwarfare.addon.control.tileentity.TileEntityPropellerEngine;
 import valkyrienwarfare.addon.control.tileentity.TileEntityShipHelm;
@@ -109,7 +109,7 @@ public class ValkyrienWarfareControl extends Module {
 
     @Override
     protected void registerTileEntities() {
-        GameRegistry.registerTileEntity(TileEntityNormalEtherCompressor.class, "tileantigravengine");
+        GameRegistry.registerTileEntity(TileEntityLegacyEtherCompressor.class, "tileantigravengine");
         GameRegistry.registerTileEntity(TileEntityPilotsChair.class, "tilemanualshipcontroller");
         GameRegistry.registerTileEntity(TileEntityNodeRelay.class, "tilethrustrelay");
         GameRegistry.registerTileEntity(TileEntityThrustModulator.class, "tilethrustmodulator");

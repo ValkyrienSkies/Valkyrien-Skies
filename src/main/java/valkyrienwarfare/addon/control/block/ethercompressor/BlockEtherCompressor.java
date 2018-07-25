@@ -48,8 +48,8 @@ public abstract class BlockEtherCompressor extends Block implements ITileEntityP
         if (worldTile == null) {
             return null;
         }
-        if (worldTile instanceof TileEntityEtherCompressor) {
-            TileEntityEtherCompressor engineTile = (TileEntityEtherCompressor) worldTile;
+        if (worldTile instanceof TileEntityEtherPropulsion) {
+            TileEntityEtherPropulsion engineTile = (TileEntityEtherPropulsion) worldTile;
             return engineTile.getForceOutputUnoriented(secondsToApply, obj);
         }
         return null;

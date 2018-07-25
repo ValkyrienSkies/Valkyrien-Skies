@@ -17,66 +17,58 @@
 package valkyrienwarfare.addon.control.block.ethercompressor;
 
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.BlockPos;
-import valkyrienwarfare.addon.control.fuel.IEtherGasEngine;
+import valkyrienwarfare.ValkyrienWarfareMod;
+import valkyrienwarfare.addon.control.fuel.IEtherEngine;
 import valkyrienwarfare.addon.control.nodenetwork.BasicForceNodeTileEntity;
+import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.math.Vector;
-import valkyrienwarfare.physics.management.PhysicsObject;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
-public abstract class TileEntityEtherCompressor extends BasicForceNodeTileEntity implements IEtherGasEngine {
+public abstract class TileEntityEtherPropulsion extends BasicForceNodeTileEntity implements IEtherEngine {
 
-	private int etherGas;
-	private int etherGasCapacity;
-
-	public TileEntityEtherCompressor(Vector normalForceVector, double power) {
+	public TileEntityEtherPropulsion(Vector normalForceVector, double power) {
 		super(normalForceVector, false, power);
 		validate();
-		etherGas = 0;
-		etherGasCapacity = 1000;
 	}
 
-	public TileEntityEtherCompressor() {
+	public TileEntityEtherPropulsion() {
 		this(null, 0);
 	}
 
 	@Override
+	public double getCurrentEtherEfficiency() {
+		PhysicsWrapperEntity tilePhysics = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(getWorld(), getPos());
+		if (tilePhysics != null) {
+			Vector tilePos = new Vector(getPos().getX() + .5D, getPos().getY() + .5D, getPos().getZ() + .5D);
+			tilePhysics.getPhysicsObject().getShipTransformationManager().getCurrentPhysicsTransform().transform(tilePos, TransformType.SUBSPACE_TO_GLOBAL);
+			double yPos = tilePos.Y;
+			if (yPos < 0) {
+				return 1;
+			} else {
+				double absoluteHeight = yPos + 50;
+				double efficiency = 30 / absoluteHeight;
+				efficiency = Math.max(0, Math.min(1, efficiency));
+				return efficiency;
+			}
+		} else {
+			return 1;
+		}
+	}
+	
+	@Override
 	public void readFromNBT(NBTTagCompound compound) {
 		super.readFromNBT(compound);
-		etherGas = compound.getInteger("etherGas");
-		etherGasCapacity = compound.getInteger("etherGasCapacity");
 	}
 
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 		NBTTagCompound toReturn = super.writeToNBT(compound);
-		toReturn.setInteger("etherGas", etherGas);
-		toReturn.setInteger("etherGasCapacity", etherGasCapacity);
 		return toReturn;
 	}
 
 	@Override
 	public boolean isForceOutputOriented() {
 		return false;
-	}
-
-	@Override
-	public int getCurrentEtherGas() {
-		return etherGas;
-	}
-
-	@Override
-	public int getEtherGasCapacity() {
-		return etherGasCapacity;
-	}
-
-	// pre : Throws an IllegalArgumentExcepion if more gas is added than there is
-	// capacity for this engine.
-	@Override
-	public void addEtherGas(int gas) {
-		if (etherGas + gas > etherGasCapacity) {
-			throw new IllegalArgumentException();
-		}
-		etherGas += gas;
 	}
 
 }

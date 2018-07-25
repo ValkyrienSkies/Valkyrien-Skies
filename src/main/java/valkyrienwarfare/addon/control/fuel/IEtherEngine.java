@@ -16,13 +16,12 @@
 
 package valkyrienwarfare.addon.control.fuel;
 
-public interface IEtherGasEngine {
+public interface IEtherEngine {
 
-    int getCurrentEtherGas();
-
-    int getEtherGasCapacity();
-
-    // pre : Throws an IllegalArgumentExcepion if more gas is added than there is
-    //       capacity for this engine.
-    void addEtherGas(int gas);
+	/**
+	 * Between 0 and 1, where 0 is no lift and 1 is 100% lift.
+	 * 
+	 * @return
+	 */
+	double getCurrentEtherEfficiency();
 }

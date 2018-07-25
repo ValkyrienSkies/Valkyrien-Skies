@@ -29,7 +29,7 @@ import java.util.HashMap;
 public class BlockMass {
 
     // 80N, Something like ~ 20lbs
-    private final static double defaultMass = 50D;
+    private final static double DEFAULT_MASS = 50D;
     public static BlockMass basicMass = new BlockMass();
     public HashMap<Block, Double> blockToMass = new HashMap<Block, Double>();
     public HashMap<Material, Double> materialMass = new HashMap<Material, Double>();
@@ -100,7 +100,7 @@ public class BlockMass {
     public double getMassFromMaterial(Material material) {
         Double mass = materialMass.get(material);
         if (mass == null) {
-            mass = defaultMass;
+            mass = DEFAULT_MASS;
             materialMass.put(material, mass);
         }
         return mass;

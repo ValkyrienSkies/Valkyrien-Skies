@@ -47,11 +47,7 @@ public class BlockPhysicsRegistration {
         // blockMass.registerBlockMass(Blocks.OBSIDIAN, 500D);
         BlockMass.registerBlockMass(Blocks.BEDROCK, 5000D);
     }
-
-    public static void registerVanillaBlockForces() {
-        BlockForce.registerBlockForce(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.dopedEtherium, new Vector(0, 10000D, 0), false);
-    }
-
+    
     public static void registerBlocksToNotPhysicise() {
         blocksToNotPhysicise.add(Blocks.AIR);
         blocksToNotPhysicise.add(Blocks.WATER);

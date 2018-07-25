@@ -31,6 +31,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
 
     protected double maxThrust;
     protected double currentThrust;
+    private double thrusGoalMultiplier;
     private Vector forceOutputVector;
     private Vector normalVelocityUnoriented;
     private int ticksSinceLastControlSignal;
@@ -45,6 +46,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
     public BasicForceNodeTileEntity() {
         this.maxThrust = 5000D;
         this.currentThrust = 0D;
+        this.thrusGoalMultiplier = 0D;
         this.forceOutputVector = new Vector();
         this.ticksSinceLastControlSignal = 0;
         this.hasAlreadyCheckedForParent = false;
@@ -99,13 +101,13 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
     }
 
     @Override
-    public double getThrustGoal() {
-        return currentThrust;
+    public double getThrustMultiplierGoal() {
+        return thrusGoalMultiplier;
     }
 
     @Override
-    public void setThrustGoal(double newMagnitude) {
-        currentThrust = newMagnitude;
+    public void setThrustMultiplierGoal(double multiplier) {
+    	thrusGoalMultiplier = multiplier;
     }
 
     @Override
@@ -115,7 +117,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
         }
         PhysicsWrapperEntity parentShip = getNode().getPhysicsObject().getWrapperEntity();
         Vector engineCenter = new Vector(getPos().getX() + .5D, getPos().getY() + .5D, getPos().getZ() + .5D);
-//        RotationMatrices.applyTransform(parentShip.wrapping.coordTransform.lToWTransform, engineCenter);
+        // RotationMatrices.applyTransform(parentShip.wrapping.coordTransform.lToWTransform, engineCenter);
         parentShip.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(engineCenter, TransformType.SUBSPACE_TO_GLOBAL);
         engineCenter.subtract(parentShip.posX, parentShip.posY, parentShip.posZ);
         return engineCenter;
@@ -184,7 +186,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
         super.update();
         ticksSinceLastControlSignal++;
         if (ticksSinceLastControlSignal > 5) {
-            setThrustGoal(getThrustActual() * .9D);
+            setThrustMultiplierGoal(getThrustActual() * .9D);
         }
     }
 

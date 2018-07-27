@@ -14,7 +14,7 @@
  *
  */
 
-package valkyrienwarfare.addon.control.block.ethercompressor;
+package valkyrienwarfare.addon.control.tileentity;
 
 import net.minecraft.nbt.NBTTagCompound;
 import valkyrienwarfare.ValkyrienWarfareMod;
@@ -22,6 +22,7 @@ import valkyrienwarfare.addon.control.fuel.IEtherEngine;
 import valkyrienwarfare.addon.control.nodenetwork.BasicForceNodeTileEntity;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.math.Vector;
+import valkyrienwarfare.physics.management.PhysicsObject;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public abstract class TileEntityEtherPropulsion extends BasicForceNodeTileEntity implements IEtherEngine {
@@ -55,15 +56,13 @@ public abstract class TileEntityEtherPropulsion extends BasicForceNodeTileEntity
 		}
 	}
 	
+	/**
+	 * Ether engines force output is not affected by the orientation of the engine,
+	 * so the force vector is always unoriented.
+	 */
 	@Override
-	public void readFromNBT(NBTTagCompound compound) {
-		super.readFromNBT(compound);
-	}
-
-	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-		NBTTagCompound toReturn = super.writeToNBT(compound);
-		return toReturn;
+	public Vector getForceOutputOriented(double secondsToApply, PhysicsObject physicsObject) {
+		return this.getForceOutputUnoriented(secondsToApply, physicsObject);
 	}
 
 	@Override

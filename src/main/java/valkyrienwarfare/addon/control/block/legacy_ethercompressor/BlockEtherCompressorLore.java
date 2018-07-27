@@ -14,7 +14,7 @@
  *
  */
 
-package valkyrienwarfare.addon.control.block.ethercompressor;
+package valkyrienwarfare.addon.control.block.legacy_ethercompressor;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.client.util.ITooltipFlag;

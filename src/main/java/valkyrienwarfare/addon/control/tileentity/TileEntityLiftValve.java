@@ -20,7 +20,6 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import valkyrienwarfare.addon.control.block.ethercompressor.TileEntityEtherPropulsion;
 import valkyrienwarfare.addon.control.nodenetwork.VWNode_TileEntity;
 import valkyrienwarfare.physics.PhysicsCalculations;
 import valkyrienwarfare.physics.management.PhysicsObject;

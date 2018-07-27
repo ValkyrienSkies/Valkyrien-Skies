@@ -52,9 +52,9 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
         this.hasAlreadyCheckedForParent = false;
     }
 
-    public BasicForceNodeTileEntity(Vector normalVeclocityUnoriented, boolean isForceOutputOriented, double maxThrust) {
+    public BasicForceNodeTileEntity(Vector normalVelocityUnoriented, boolean isForceOutputOriented, double maxThrust) {
         this();
-        this.normalVelocityUnoriented = normalVeclocityUnoriented;
+        this.normalVelocityUnoriented = normalVelocityUnoriented;
         this.maxThrust = maxThrust;
     }
 
@@ -75,7 +75,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
 
     @Override
     public Vector getForceOutputUnoriented(double secondsToApply, PhysicsObject physicsObject) {
-        return normalVelocityUnoriented.getProduct(currentThrust * secondsToApply);
+        return normalVelocityUnoriented.getProduct(getThrustActual() * secondsToApply);
     }
 
     @Override

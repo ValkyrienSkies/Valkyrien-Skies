@@ -14,7 +14,7 @@
  *
  */
 
-package valkyrienwarfare.addon.control.block.ethercompressor;
+package valkyrienwarfare.addon.control.block.legacy_ethercompressor;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
@@ -26,6 +26,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import valkyrienwarfare.addon.control.tileentity.TileEntityEtherPropulsion;
 import valkyrienwarfare.deprecated_api.IBlockForceProvider;
 import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.physics.management.PhysicsObject;

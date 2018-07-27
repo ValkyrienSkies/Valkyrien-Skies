@@ -16,7 +16,6 @@
 
 package valkyrienwarfare.addon.control.tileentity;
 
-import valkyrienwarfare.addon.control.block.ethercompressor.TileEntityEtherPropulsion;
 import valkyrienwarfare.math.Vector;
 
 public class TileEntityLegacyEtherCompressor extends TileEntityEtherPropulsion {

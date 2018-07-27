@@ -53,7 +53,7 @@ public interface IForceTile {
 	public double getMaxThrust();
 
 	/**
-	 * Returns the thrust value of this ForceTile
+	 * Returns magnitude of thrust in Newtons being produced.
 	 *
 	 * @return
 	 */

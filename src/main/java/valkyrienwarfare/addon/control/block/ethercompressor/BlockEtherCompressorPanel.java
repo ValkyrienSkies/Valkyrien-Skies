@@ -17,7 +17,34 @@ public class BlockEtherCompressorPanel extends BlockForceProviderBasic {
 	public BlockEtherCompressorPanel(Material materialIn) {
 		super(materialIn);
 	}
-
+	
+	@Override
+	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
+		TileEntity tile = worldIn.getTileEntity(pos);
+	    if (tile != null && tile instanceof TileEntityEtherCompressorPanel) {
+	    	TileEntityEtherCompressorPanel multiBlock = (TileEntityEtherCompressorPanel) tile;
+	        if (multiBlock.isPartOfMultiBlock()) {
+	            if (multiBlock.isMultiBlockMaster()) {
+	            	System.out.println("Testing master");
+	                if (!multiBlock.checkIfMultiBlockFormed())
+	                    multiBlock.resetStructure();
+	            } else {
+	            	if (!multiBlock.checkForMaster()) {
+                        multiBlock.reset();
+                        System.out.println("Queueing update");
+                        worldIn.neighborChanged(pos.east(), blockIn, pos);
+                        worldIn.neighborChanged(pos.west(), blockIn, pos);
+                        worldIn.neighborChanged(pos.north(), blockIn, pos);
+                        worldIn.neighborChanged(pos.south(), blockIn, pos);
+                        worldIn.neighborChanged(pos.up(), blockIn, pos);
+                        worldIn.neighborChanged(pos.down(), blockIn, pos);
+                    }
+	            }
+	        }
+	    }
+	    super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
+    }
+	
 	@Override
 	public TileEntity createNewTileEntity(World worldIn, int meta) {
 		return new TileEntityEtherCompressorPanel(new Vector(0, 1, 0), 100000D);

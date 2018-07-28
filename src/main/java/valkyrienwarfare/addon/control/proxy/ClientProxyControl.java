@@ -79,6 +79,7 @@ public class ClientProxyControl extends CommonProxyControl {
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.etherGasCompressor);
         
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.etherCompressorPanel);
+        registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.blockEtherCompressorStabilizer);
     }
 
     private static void registerItemModels() {

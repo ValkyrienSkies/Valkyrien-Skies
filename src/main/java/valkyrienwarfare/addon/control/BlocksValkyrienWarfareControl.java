@@ -37,6 +37,7 @@ import valkyrienwarfare.addon.control.block.BlockThrustRelay;
 import valkyrienwarfare.addon.control.block.engine.BlockNormalEngine;
 import valkyrienwarfare.addon.control.block.engine.BlockRedstoneEngine;
 import valkyrienwarfare.addon.control.block.ethercompressor.BlockEtherCompressorPanel;
+import valkyrienwarfare.addon.control.block.ethercompressor.BlockEtherCompressorStabilizer;
 import valkyrienwarfare.addon.control.block.legacy_ethercompressor.BlockCreativeEtherCompressor;
 import valkyrienwarfare.addon.control.block.legacy_ethercompressor.BlockNormalEtherCompressor;
 import valkyrienwarfare.api.addons.Module;
@@ -72,6 +73,7 @@ public class BlocksValkyrienWarfareControl {
     public final Block etherGasCompressor;
     
     public final Block etherCompressorPanel;
+    public final Block blockEtherCompressorStabilizer;
 
     public BlocksValkyrienWarfareControl(ValkyrienWarfareControl mod_vwcontrol) {
         this.mod_vwcontrol = mod_vwcontrol;
@@ -107,6 +109,8 @@ public class BlocksValkyrienWarfareControl {
         etherGasCompressor = new BlockEtherGasCompressor(Material.IRON).setHardness(5f).setUnlocalizedName("vw_ethergascompressor").setRegistryName(getModID(), "vw_ethergascompressor").setCreativeTab(ValkyrienWarfareMod.vwTab);
     
         etherCompressorPanel = new BlockEtherCompressorPanel(Material.IRON).setHardness(6f).setUnlocalizedName("vw_ethercompressorpanel").setRegistryName(getModID(), "vw_ethercompressorpanel").setCreativeTab(ValkyrienWarfareMod.vwTab);
+    
+        blockEtherCompressorStabilizer = new BlockEtherCompressorStabilizer(Material.IRON).setHardness(6f).setUnlocalizedName("vw_ethercompressorstabilizer").setRegistryName(getModID(), "vw_ethercompressorstabilizer").setCreativeTab(ValkyrienWarfareMod.vwTab);;
     }
 
     protected void registerBlocks(RegistryEvent.Register<Block> event) {
@@ -139,6 +143,7 @@ public class BlocksValkyrienWarfareControl {
         event.getRegistry().register(etherGasCompressor);
         
         event.getRegistry().register(etherCompressorPanel);
+        event.getRegistry().register(blockEtherCompressorStabilizer);
     }
 
     protected void registerBlockItems(RegistryEvent.Register<Item> event) {
@@ -170,6 +175,7 @@ public class BlocksValkyrienWarfareControl {
         registerItemBlock(event, liftControl);
         registerItemBlock(event, etherGasCompressor);
         registerItemBlock(event, etherCompressorPanel);
+        registerItemBlock(event, blockEtherCompressorStabilizer);
     }
 
     private void registerItemBlock(RegistryEvent.Register<Item> event, Block block) {

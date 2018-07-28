@@ -11,6 +11,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import valkyrienwarfare.addon.control.block.BlockForceProviderBasic;
 import valkyrienwarfare.addon.control.piloting.ITileEntityPilotable;
 import valkyrienwarfare.addon.control.tileentity.TileEntityEtherCompressorPanel;
 import valkyrienwarfare.deprecated_api.IBlockForceProvider;

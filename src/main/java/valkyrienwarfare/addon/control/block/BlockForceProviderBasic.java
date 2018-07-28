@@ -1,4 +1,4 @@
-package valkyrienwarfare.addon.control.block.ethercompressor;
+package valkyrienwarfare.addon.control.block;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;

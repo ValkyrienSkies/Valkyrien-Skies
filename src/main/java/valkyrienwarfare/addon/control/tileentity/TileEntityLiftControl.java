@@ -45,8 +45,11 @@ public class TileEntityLiftControl extends ImplTileEntityPilotable {
 				if (tile instanceof TileEntityEtherCompressorPanel) {
 					BlockPos masterPos = ((TileEntityEtherCompressorPanel) tile).getMasterPos();
 					TileEntityEtherCompressorPanel masterTile = (TileEntityEtherCompressorPanel) tile.getWorld().getTileEntity(masterPos);
-					masterTile.setThrustMultiplierGoal(((double) liftPercentage) / 100D);
-					masterTile.updateTicksSinceLastRecievedSignal();
+					// This is a transient problem that only occurs during world loading.
+					if (masterTile != null) {
+						masterTile.setThrustMultiplierGoal(((double) liftPercentage) / 100D);
+						masterTile.updateTicksSinceLastRecievedSignal();
+					}
 				}
 			}
 		}

@@ -16,8 +16,26 @@
 
 package valkyrienwarfare.addon.control.tileentity;
 
+import gigaherz.graph.api.GraphObject;
+import net.minecraft.tileentity.TileEntity;
 import valkyrienwarfare.addon.control.nodenetwork.BasicNodeTileEntity;
+import valkyrienwarfare.addon.control.nodenetwork.VWNode_TileEntity;
 
 public class TileEntityGyroscope extends BasicNodeTileEntity {
 
+	@Override
+	public void update() {
+		super.update();
+		
+		VWNode_TileEntity thisNode = this.getNode();
+		for (GraphObject object : thisNode.getGraph().getObjects()) {
+			VWNode_TileEntity otherNode = (VWNode_TileEntity) object;
+			TileEntity tile = otherNode.getParentTile();
+			// Do Ether Stabilizer Code Here
+			if (tile instanceof TileEntityEtherCompressorStabilizer) {
+				TileEntityEtherCompressorStabilizer stabilizerTile = (TileEntityEtherCompressorStabilizer) tile;
+				// System.out.println("haha, yes!");
+			}
+		}
+	}
 }

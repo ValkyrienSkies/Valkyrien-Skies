@@ -1,14 +1,17 @@
 package valkyrienwarfare.addon.control.tileentity;
 
+import gigaherz.graph.api.GraphObject;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import valkyrienwarfare.addon.control.nodenetwork.BasicNodeTileEntity;
+import valkyrienwarfare.addon.control.nodenetwork.VWNode_TileEntity;
 import valkyrienwarfare.addon.control.piloting.ControllerInputType;
 import valkyrienwarfare.addon.control.piloting.PilotControlsMessage;
 
@@ -34,6 +37,18 @@ public class TileEntityLiftControl extends ImplTileEntityPilotable {
 			this.liftPercentage = nextLiftPercentage;
 		} else {
 			sendUpdatePacketToAllNearby();
+			
+			VWNode_TileEntity thisNode = this.getNode();
+			for (GraphObject object : thisNode.getGraph().getObjects()) {
+				VWNode_TileEntity otherNode = (VWNode_TileEntity) object;
+				TileEntity tile = otherNode.getParentTile();
+				if (tile instanceof TileEntityEtherCompressorPanel) {
+					BlockPos masterPos = ((TileEntityEtherCompressorPanel) tile).getMasterPos();
+					TileEntityEtherCompressorPanel masterTile = (TileEntityEtherCompressorPanel) tile.getWorld().getTileEntity(masterPos);
+					masterTile.setThrustMultiplierGoal(((double) liftPercentage) / 100D);
+					masterTile.updateTicksSinceLastRecievedSignal();
+				}
+			}
 		}
 	}
 	

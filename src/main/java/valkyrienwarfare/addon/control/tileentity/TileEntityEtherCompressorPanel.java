@@ -85,7 +85,7 @@ public class TileEntityEtherCompressorPanel extends TileEntityEtherPropulsion {
 					TileEntity tileAtPos = this.getWorld().getTileEntity(testPos);
 					TileEntityEtherCompressorPanel tileEtherPanel = (TileEntityEtherCompressorPanel) tileAtPos;
 					tileEtherPanel.isPartOfMultiBlock = true;
-					tileEtherPanel.masterPos = new BlockPos(testPos);
+					tileEtherPanel.masterPos = this.getPos();
 					if (tileEtherPanel != this) {
 						tileEtherPanel.isMultiBlockMaster = false;
 					} else {
@@ -165,8 +165,24 @@ public class TileEntityEtherCompressorPanel extends TileEntityEtherPropulsion {
 	
 	@Override
 	public double getThrustActual() {
-		return this.getMaxThrust() * this.getCurrentEtherEfficiency(); // * this.getThrustMultiplierGoal();
+		if (isPartOfMultiBlock() && !getWorld().isRemote) {
+			TileEntity masterTile = getWorld().getTileEntity(getMasterPos());
+			if (masterTile instanceof TileEntityEtherCompressorPanel) {
+				TileEntityEtherCompressorPanel masterTileEther = (TileEntityEtherCompressorPanel) masterTile;
+				// System.out.println(masterTileEther.getThrustMultiplierGoal());
+				return this.getMaxThrust() * this.getCurrentEtherEfficiency() * masterTileEther.getThrustMultiplierGoal(); // * this.getThrustMultiplierGoal();
+			} else {
+				return 0;
+			}
+		} else {
+			return 0;
+		}
 	}
+	
+	@Override
+    public void setThrustMultiplierGoal(double multiplier) {
+		super.setThrustMultiplierGoal(multiplier);
+    }
 
 	@Override
 	public void readFromNBT(NBTTagCompound compound) {

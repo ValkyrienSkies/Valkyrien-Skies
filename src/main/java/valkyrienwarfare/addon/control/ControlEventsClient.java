@@ -1,5 +1,7 @@
 package valkyrienwarfare.addon.control;
 
+import java.lang.annotation.ElementType;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
@@ -18,7 +20,7 @@ public class ControlEventsClient {
 		Minecraft minecraft = Minecraft.getMinecraft();
 		EntityPlayer player = Minecraft.getMinecraft().player;
 		FontRenderer fontRenderer = minecraft.fontRenderer;
-		if (fontRenderer != null && player != null) {
+		if (fontRenderer != null && player != null && event.getType() == net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType.TEXT) {
 			IShipPilot playerPilot = IShipPilot.class.cast(player);
 			if (playerPilot.isPiloting()) {
 				BlockPos tilePilotedPos = playerPilot.getPosBeingControlled();

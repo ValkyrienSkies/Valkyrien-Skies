@@ -97,7 +97,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
 
     @Override
     public double getThrustActual() {
-        return currentThrust;
+        return this.getMaxThrust() * this.getThrustMultiplierGoal();
     }
 
     @Override

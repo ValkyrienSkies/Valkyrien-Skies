@@ -258,6 +258,11 @@ public class Vector {
         setValue(toCopy.X, toCopy.Y, toCopy.Z);
     }
 
+	/**
+	 * 
+	 * @param other
+	 * @return The angle between these two vectors in radians.
+	 */
 	public double angleBetween(Vector other) {
 		double dotProduct = this.dot(other);
 		double normalizedDotProduect = dotProduct / (this.length() * other.length());

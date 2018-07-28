@@ -21,11 +21,9 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import valkyrienwarfare.deprecated_api.IBlockForceProvider;
+import valkyrienwarfare.deprecated_api.IBlockTorqueProvider;
 import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.physics.management.PhysicsObject;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class BlockForce {
 
@@ -49,7 +47,7 @@ public class BlockForce {
 
 	public boolean isBlockProvidingForce(IBlockState state, BlockPos pos, World world) {
 		Block block = state.getBlock();
-		return block instanceof IBlockForceProvider;
+		return block instanceof IBlockForceProvider || block instanceof IBlockTorqueProvider;
 	}
 
 }

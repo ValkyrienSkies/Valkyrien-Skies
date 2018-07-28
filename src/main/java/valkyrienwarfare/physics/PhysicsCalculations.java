@@ -33,6 +33,7 @@ import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.nodenetwork.INodeController;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.deprecated_api.IBlockForceProvider;
+import valkyrienwarfare.deprecated_api.IBlockTorqueProvider;
 import valkyrienwarfare.math.Quaternion;
 import valkyrienwarfare.math.RotationMatrices;
 import valkyrienwarfare.math.VWMath;
@@ -223,7 +224,8 @@ public class PhysicsCalculations {
 	public void rawPhysTickPostCol() {
 		if (!isPhysicsBroken()) {
 			if (getParent().isPhysicsEnabled()) {
-				enforceStaticFriction();
+				// This wasn't implemented very well at all! Maybe in the future I'll try again.
+				// enforceStaticFriction();
 				if (PhysicsSettings.doAirshipRotation) {
 					applyAngularVelocity();
 				}
@@ -378,21 +380,29 @@ public class PhysicsCalculations {
                 VWMath.getBodyPosWithOrientation(pos, physCenterOfMass, getParent().getShipTransformationManager()
                         .getCurrentPhysicsTransform().getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL), inBodyWO);
 
-                BlockForce.basicForces.getForceFromState(state, pos, worldObj, getPhysicsTimeDeltaPerPhysTick(), getParent(),
-                        blockForce);
+				if (blockAt instanceof IBlockForceProvider) {
+					BlockForce.basicForces.getForceFromState(state, pos, worldObj, getPhysicsTimeDeltaPerPhysTick(),
+							getParent(), blockForce);
+					if (blockForce != null) {
+						Vector otherPosition = ((IBlockForceProvider) blockAt).getCustomBlockForcePosition(worldObj,
+								pos, state, getParent().getWrapperEntity(), getPhysicsTimeDeltaPerPhysTick());
+						if (otherPosition != null) {
+							VWMath.getBodyPosWithOrientation(otherPosition, gameTickCenterOfMass,
+									getParent().getShipTransformationManager().getCurrentPhysicsTransform()
+											.getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL),
+									inBodyWO);
+						}
 
-                if (blockForce != null) {
-                    if (blockAt instanceof IBlockForceProvider) {
-                        Vector otherPosition = ((IBlockForceProvider) blockAt).getCustomBlockForcePosition(worldObj,
-                                pos, state, getParent().getWrapperEntity(), getPhysicsTimeDeltaPerPhysTick());
-                        if (otherPosition != null) {
-                            VWMath.getBodyPosWithOrientation(otherPosition, gameTickCenterOfMass, getParent().getShipTransformationManager()
-                                            .getCurrentPhysicsTransform().getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL),
-                                    inBodyWO);
-                        }
-                    }
-                    addForceAtPoint(inBodyWO, blockForce, crossVector);
-                }
+						addForceAtPoint(inBodyWO, blockForce, crossVector);
+					}
+				} else if (blockAt instanceof IBlockTorqueProvider) {
+					Vector torqueVector = IBlockTorqueProvider.class.cast(blockAt).getTorqueInGlobal(this, pos);
+					if (torqueVector != null) {
+						torque.add(torqueVector);
+					}
+					// System.out.print("REEEE");
+				}
+
             }
         }
 

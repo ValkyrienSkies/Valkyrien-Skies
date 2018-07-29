@@ -10,7 +10,8 @@ tile.thrustrelay.name=Network Control Relay
 tile.thrustmodulator.name=Old Control Block
 tile.shiphelm.name=Ship Helm
 tile.shiptelegraph.name=Ship Telegraph
-tile.vw_gyroscope.name=Ship Gyroscope
+tile.vw_gyroscope_stabilizer.name=Ship Gyroscope Stabilizer
+tile.vw_gyroscope_dampener.name=Ship Gyroscope Dampener
 tile.vw_liftvalve.name=Lift Valve
 tile.vw_networkdisplay.name=Network Display
 tile.vw_liftcontrol.name=Lift Control
@@ -29,3 +30,5 @@ tile.advancedethercompressor.name=Advanced Ether Compressor
 tile.eliteethercompressor.name=Elite Ether Compressor
 tile.ultimateethercompressor.name=Ultimate Ether Compressor
 tile.creativeethercompressor.name=Creative Ether Compressor
+
+tile.vw_ethercompressorpanel.name=Ether Compressor Panel

@@ -22,27 +22,27 @@ import net.minecraft.block.material.Material;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import valkyrienwarfare.addon.control.tileentity.TileEntityGyroscope;
+import valkyrienwarfare.addon.control.tileentity.TileEntityGyroscopeStabilizer;
 import valkyrienwarfare.deprecated_api.IBlockTorqueProvider;
 import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.physics.PhysicsCalculations;
 
-public class BlockGyroscope extends Block implements ITileEntityProvider, IBlockTorqueProvider {
+public class BlockGyroscopeStabilizer extends Block implements ITileEntityProvider, IBlockTorqueProvider {
 
-    public BlockGyroscope(Material materialIn) {
+    public BlockGyroscopeStabilizer(Material materialIn) {
         super(materialIn);
     }
 
     @Override
     public TileEntity createNewTileEntity(World worldIn, int meta) {
-        return new TileEntityGyroscope();
+        return new TileEntityGyroscopeStabilizer();
     }
 
 	@Override
 	public Vector getTorqueInGlobal(PhysicsCalculations physicsCalculations, BlockPos pos) {
 		TileEntity thisTile = physicsCalculations.getParent().getWorldObj().getTileEntity(pos);
-		if (thisTile instanceof TileEntityGyroscope) {
-			TileEntityGyroscope tileGyroscope = (TileEntityGyroscope) thisTile;
+		if (thisTile instanceof TileEntityGyroscopeStabilizer) {
+			TileEntityGyroscopeStabilizer tileGyroscope = (TileEntityGyroscopeStabilizer) thisTile;
 			return tileGyroscope.getTorqueInGlobal(physicsCalculations, pos);
 		}
 		return null;

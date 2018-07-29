@@ -25,18 +25,26 @@ import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.physics.PhysicsCalculations;
 
-public class TileEntityGyroscope extends TileEntity {
+public class TileEntityGyroscopeStabilizer extends TileEntity {
 
 	private static final Vector GRAVITY_UP = new Vector(0, 1, 0);
-	private double torquePower = 10000;
+	// 300,000 newton-meters maximum of torque.
+	private double maximumTorque = 300000;
 	
 	public Vector getTorqueInGlobal(PhysicsCalculations physicsCalculations, BlockPos pos) {
 		Vector shipLevelNormal = new Vector(GRAVITY_UP);
 		physicsCalculations.getParent().getShipTransformationManager().getCurrentPhysicsTransform().rotate(shipLevelNormal, TransformType.SUBSPACE_TO_GLOBAL);
 		Vector torqueDir = GRAVITY_UP.cross(shipLevelNormal);
-		double angleBetween = GRAVITY_UP.angleBetween(shipLevelNormal);
+		double angleBetween = Math.toDegrees(GRAVITY_UP.angleBetween(shipLevelNormal));
 		torqueDir.normalize();
-		torqueDir.multiply(physicsCalculations.getPhysicsTimeDeltaPerPhysTick() * torquePower * angleBetween * -100);
+		
+		double torquePowerFactor = angleBetween / 5;
+		
+		torquePowerFactor = Math.max(Math.min(1, torquePowerFactor), 0);
+		
+		// System.out.println(angleBetween);
+		
+		torqueDir.multiply(maximumTorque * torquePowerFactor * physicsCalculations.getPhysicsTimeDeltaPerPhysTick() * -1D);
 		return torqueDir;
 	}
 

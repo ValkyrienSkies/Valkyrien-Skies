@@ -23,7 +23,8 @@ import net.minecraftforge.event.RegistryEvent;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.block.BlockDopedEtherium;
 import valkyrienwarfare.addon.control.block.BlockEtherGasCompressor;
-import valkyrienwarfare.addon.control.block.BlockGyroscope;
+import valkyrienwarfare.addon.control.block.BlockGyroscopeDampener;
+import valkyrienwarfare.addon.control.block.BlockGyroscopeStabilizer;
 import valkyrienwarfare.addon.control.block.BlockLiftControl;
 import valkyrienwarfare.addon.control.block.BlockLiftValve;
 import valkyrienwarfare.addon.control.block.BlockNetworkDisplay;
@@ -66,7 +67,7 @@ public class BlocksValkyrienWarfareControl {
     public final Block shipTelegraph;
     public final Block thrustRelay;
     public final Block thrustModulator;
-    public final Block gyroscope;
+    public final Block gyroscopeStabilizer;
     public final Block liftValve;
     public final Block networkDisplay;
     public final Block liftControl;
@@ -74,6 +75,7 @@ public class BlocksValkyrienWarfareControl {
     
     public final Block etherCompressorPanel;
     public final Block blockEtherCompressorStabilizer;
+    public final Block gyroscopeDampener;
 
     public BlocksValkyrienWarfareControl(ValkyrienWarfareControl mod_vwcontrol) {
         this.mod_vwcontrol = mod_vwcontrol;
@@ -101,7 +103,7 @@ public class BlocksValkyrienWarfareControl {
         thrustRelay = new BlockThrustRelay(Material.IRON).setHardness(5f).setUnlocalizedName("thrustrelay").setRegistryName(getModID(), "thrustrelay").setCreativeTab(ValkyrienWarfareMod.vwTab);
         thrustModulator = new BlockThrustModulator(Material.IRON).setHardness(8f).setUnlocalizedName("thrustmodulator").setRegistryName(getModID(), "thrustmodulator").setCreativeTab(ValkyrienWarfareMod.vwTab);
 
-        gyroscope = new BlockGyroscope(Material.IRON).setHardness(5f).setUnlocalizedName("vw_gyroscope").setRegistryName(getModID(), "vw_gyroscope").setCreativeTab(ValkyrienWarfareMod.vwTab);
+        gyroscopeStabilizer = new BlockGyroscopeStabilizer(Material.IRON).setHardness(5f).setUnlocalizedName("vw_gyroscope_stabilizer").setRegistryName(getModID(), "vw_gyroscope_stabilizer").setCreativeTab(ValkyrienWarfareMod.vwTab);
 
         liftValve = new BlockLiftValve(Material.IRON).setHardness(7f).setUnlocalizedName("vw_liftvalve").setRegistryName(getModID(), "vw_liftvalve").setCreativeTab(ValkyrienWarfareMod.vwTab);
         networkDisplay = new BlockNetworkDisplay(Material.IRON).setHardness(5f).setUnlocalizedName("vw_networkdisplay").setRegistryName(getModID(), "vw_networkdisplay").setCreativeTab(ValkyrienWarfareMod.vwTab);
@@ -110,7 +112,8 @@ public class BlocksValkyrienWarfareControl {
     
         etherCompressorPanel = new BlockEtherCompressorPanel(Material.IRON).setHardness(6f).setUnlocalizedName("vw_ethercompressorpanel").setRegistryName(getModID(), "vw_ethercompressorpanel").setCreativeTab(ValkyrienWarfareMod.vwTab);
     
-        blockEtherCompressorStabilizer = new BlockEtherCompressorStabilizer(Material.IRON).setHardness(6f).setUnlocalizedName("vw_ethercompressorstabilizer").setRegistryName(getModID(), "vw_ethercompressorstabilizer").setCreativeTab(ValkyrienWarfareMod.vwTab);;
+        blockEtherCompressorStabilizer = new BlockEtherCompressorStabilizer(Material.IRON).setHardness(6f).setUnlocalizedName("vw_ethercompressorstabilizer").setRegistryName(getModID(), "vw_ethercompressorstabilizer").setCreativeTab(ValkyrienWarfareMod.vwTab);
+        gyroscopeDampener = new BlockGyroscopeDampener(Material.IRON).setHardness(6f).setUnlocalizedName("vw_gyroscope_dampener").setRegistryName(getModID(), "vw_gyroscope_dampener").setCreativeTab(ValkyrienWarfareMod.vwTab);
     }
 
     protected void registerBlocks(RegistryEvent.Register<Block> event) {
@@ -136,7 +139,7 @@ public class BlocksValkyrienWarfareControl {
         event.getRegistry().register(thrustRelay);
         event.getRegistry().register(thrustModulator);
 
-        event.getRegistry().register(gyroscope);
+        event.getRegistry().register(gyroscopeStabilizer);
         event.getRegistry().register(liftValve);
         event.getRegistry().register(networkDisplay);
         event.getRegistry().register(liftControl);
@@ -144,6 +147,7 @@ public class BlocksValkyrienWarfareControl {
         
         event.getRegistry().register(etherCompressorPanel);
         event.getRegistry().register(blockEtherCompressorStabilizer);
+        event.getRegistry().register(gyroscopeDampener);
     }
 
     protected void registerBlockItems(RegistryEvent.Register<Item> event) {
@@ -169,13 +173,14 @@ public class BlocksValkyrienWarfareControl {
         registerItemBlock(event, thrustRelay);
         registerItemBlock(event, thrustModulator);
 
-        registerItemBlock(event, gyroscope);
+        registerItemBlock(event, gyroscopeStabilizer);
         registerItemBlock(event, liftValve);
         registerItemBlock(event, networkDisplay);
         registerItemBlock(event, liftControl);
         registerItemBlock(event, etherGasCompressor);
         registerItemBlock(event, etherCompressorPanel);
         registerItemBlock(event, blockEtherCompressorStabilizer);
+        registerItemBlock(event, gyroscopeDampener);
     }
 
     private void registerItemBlock(RegistryEvent.Register<Item> event, Block block) {

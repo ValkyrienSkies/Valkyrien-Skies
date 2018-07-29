@@ -16,9 +16,13 @@
 
 package valkyrienwarfare.physics;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.vecmath.Matrix3d;
@@ -374,13 +378,14 @@ public class PhysicsCalculations {
         		controller.onPhysicsTick(parent, this, this.getPhysicsTimeDeltaPerPhysTick());
         	}
         	
+        	SortedMap<IBlockTorqueProvider, List<BlockPos>> torqueProviders = new TreeMap<IBlockTorqueProvider, List<BlockPos>>();
             for (BlockPos pos : activeForcePositions) {
                 IBlockState state = getParent().getShipChunks().getBlockState(pos);
                 Block blockAt = state.getBlock();
-                VWMath.getBodyPosWithOrientation(pos, physCenterOfMass, getParent().getShipTransformationManager()
-                        .getCurrentPhysicsTransform().getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL), inBodyWO);
 
 				if (blockAt instanceof IBlockForceProvider) {
+	                VWMath.getBodyPosWithOrientation(pos, physCenterOfMass, getParent().getShipTransformationManager()
+	                        .getCurrentPhysicsTransform().getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL), inBodyWO);
 					BlockForce.basicForces.getForceFromState(state, pos, worldObj, getPhysicsTimeDeltaPerPhysTick(),
 							getParent(), blockForce);
 					if (blockForce != null) {
@@ -396,14 +401,26 @@ public class PhysicsCalculations {
 						addForceAtPoint(inBodyWO, blockForce, crossVector);
 					}
 				} else if (blockAt instanceof IBlockTorqueProvider) {
-					Vector torqueVector = IBlockTorqueProvider.class.cast(blockAt).getTorqueInGlobal(this, pos);
+					// Add it to the torque sorted map; we do this so the torque dampeners can run
+					// after the gyroscope stabilizers.
+					IBlockTorqueProvider torqueProviderBlock = (IBlockTorqueProvider) blockAt;
+					if (!torqueProviders.containsKey(torqueProviderBlock)) {
+						torqueProviders.put(torqueProviderBlock, new LinkedList<BlockPos>());
+					}
+					torqueProviders.get(torqueProviderBlock).add(pos);
+				}
+            }
+            
+			// Now add the torque from the torque providers, in a sorted order!
+			for (IBlockTorqueProvider torqueProviderBlock : torqueProviders.keySet()) {
+				List<BlockPos> blockPositions = torqueProviders.get(torqueProviderBlock);
+				for (BlockPos pos : blockPositions) {
+					Vector torqueVector = torqueProviderBlock.getTorqueInGlobal(this, pos);
 					if (torqueVector != null) {
 						torque.add(torqueVector);
 					}
-					// System.out.print("REEEE");
 				}
-
-            }
+			}
         }
 
         convertTorqueToVelocity();

@@ -55,7 +55,8 @@ import valkyrienwarfare.addon.control.proxy.CommonProxyControl;
 import valkyrienwarfare.addon.control.tileentity.TileEntityEtherCompressorPanel;
 import valkyrienwarfare.addon.control.tileentity.TileEntityEtherCompressorStabilizer;
 import valkyrienwarfare.addon.control.tileentity.TileEntityEtherGasCompressor;
-import valkyrienwarfare.addon.control.tileentity.TileEntityGyroscope;
+import valkyrienwarfare.addon.control.tileentity.TileEntityGyroscopeDampener;
+import valkyrienwarfare.addon.control.tileentity.TileEntityGyroscopeStabilizer;
 import valkyrienwarfare.addon.control.tileentity.TileEntityLiftControl;
 import valkyrienwarfare.addon.control.tileentity.TileEntityLiftValve;
 import valkyrienwarfare.addon.control.tileentity.TileEntityNetworkDisplay;
@@ -118,13 +119,15 @@ public class ValkyrienWarfareControl extends Module {
         GameRegistry.registerTileEntity(TileEntityShipHelm.class, "tileshiphelm");
         GameRegistry.registerTileEntity(TileEntityShipTelegraph.class, "tileshiptelegraph");
         GameRegistry.registerTileEntity(TileEntityPropellerEngine.class, "tilepropellerengine");
-        GameRegistry.registerTileEntity(TileEntityGyroscope.class, "tilegyroscope");
+        GameRegistry.registerTileEntity(TileEntityGyroscopeStabilizer.class, "tilegyroscope_stabilizer");
         GameRegistry.registerTileEntity(TileEntityLiftValve.class, "tileliftvalve");
         GameRegistry.registerTileEntity(TileEntityNetworkDisplay.class, "tilenetworkdisplay");
         GameRegistry.registerTileEntity(TileEntityLiftControl.class, "tileliftcontrol");
         GameRegistry.registerTileEntity(TileEntityEtherGasCompressor.class, "tileethergascompressor");
         GameRegistry.registerTileEntity(TileEntityEtherCompressorPanel.class, "tileethergascompressor_panel");
+        // Unused
         GameRegistry.registerTileEntity(TileEntityEtherCompressorStabilizer.class, "tileenthercompressor_stabilizer");
+        GameRegistry.registerTileEntity(TileEntityGyroscopeDampener.class, "tilegyroscope_dampener");
     }
 
     @Override

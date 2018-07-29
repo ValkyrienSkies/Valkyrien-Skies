@@ -384,21 +384,25 @@ public class PhysicsCalculations {
                 Block blockAt = state.getBlock();
 
 				if (blockAt instanceof IBlockForceProvider) {
-	                VWMath.getBodyPosWithOrientation(pos, physCenterOfMass, getParent().getShipTransformationManager()
-	                        .getCurrentPhysicsTransform().getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL), inBodyWO);
-					BlockForce.basicForces.getForceFromState(state, pos, worldObj, getPhysicsTimeDeltaPerPhysTick(),
-							getParent(), blockForce);
-					if (blockForce != null) {
-						Vector otherPosition = ((IBlockForceProvider) blockAt).getCustomBlockForcePosition(worldObj,
-								pos, state, getParent().getWrapperEntity(), getPhysicsTimeDeltaPerPhysTick());
-						if (otherPosition != null) {
-							VWMath.getBodyPosWithOrientation(otherPosition, gameTickCenterOfMass,
-									getParent().getShipTransformationManager().getCurrentPhysicsTransform()
-											.getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL),
-									inBodyWO);
+					try {
+		                VWMath.getBodyPosWithOrientation(pos, physCenterOfMass, getParent().getShipTransformationManager()
+		                        .getCurrentPhysicsTransform().getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL), inBodyWO);
+						BlockForce.basicForces.getForceFromState(state, pos, worldObj, getPhysicsTimeDeltaPerPhysTick(),
+								getParent(), blockForce);
+						if (blockForce != null) {
+							Vector otherPosition = ((IBlockForceProvider) blockAt).getCustomBlockForcePosition(worldObj,
+									pos, state, getParent().getWrapperEntity(), getPhysicsTimeDeltaPerPhysTick());
+							if (otherPosition != null) {
+								VWMath.getBodyPosWithOrientation(otherPosition, gameTickCenterOfMass,
+										getParent().getShipTransformationManager().getCurrentPhysicsTransform()
+												.getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL),
+										inBodyWO);
+							}
+	
+							addForceAtPoint(inBodyWO, blockForce, crossVector);
 						}
-
-						addForceAtPoint(inBodyWO, blockForce, crossVector);
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
 				} else if (blockAt instanceof IBlockTorqueProvider) {
 					// Add it to the torque sorted map; we do this so the torque dampeners can run

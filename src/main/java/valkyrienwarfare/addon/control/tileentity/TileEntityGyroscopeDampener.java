@@ -11,43 +11,26 @@ public class TileEntityGyroscopeDampener extends TileEntity {
 
 	private static final Vector GRAVITY_UP = new Vector(0, 1, 0);
 	// 300,000 newton-meters maximum of torque.
-	private double maximumTorque = 300000;
+	private double maximumTorque = 10000;
 	
 	public Vector getTorqueInGlobal(PhysicsCalculations physicsCalculations, BlockPos pos) {
 		Vector shipLevelNormal = new Vector(GRAVITY_UP);
 		physicsCalculations.getParent().getShipTransformationManager().getCurrentPhysicsTransform().rotate(shipLevelNormal, TransformType.SUBSPACE_TO_GLOBAL);
-		// Do not change this value!
-		physicsCalculations.convertTorqueToVelocity();
-		Vector angulerVelocityAsTorque = new Vector(physicsCalculations.angularVelocity);
-		// RotationMatrices.applyTransform3by3(physicsCalculations.getPhysMOITensor(), angulerVelocityAsTorque);
 		
-		Vector upwardsAngularVelocityPlaneNormal = GRAVITY_UP.cross(shipLevelNormal);
+		double dampingComponent = shipLevelNormal.dot(physicsCalculations.angularVelocity);
+		Vector angularChangeAllowed = shipLevelNormal.getProduct(shipLevelNormal.dot(physicsCalculations.angularVelocity));
+		Vector angularVelocityToDamp = physicsCalculations.angularVelocity.getSubtraction(angularChangeAllowed);
 		
-		RotationMatrices.applyTransform3by3(physicsCalculations.getPhysMOITensor(), angulerVelocityAsTorque);
-		RotationMatrices.applyTransform3by3(physicsCalculations.getPhysMOITensor(), upwardsAngularVelocityPlaneNormal);
+		Vector dampingTorque = angularVelocityToDamp.getProduct(physicsCalculations.getPhysicsTimeDeltaPerPhysTick());
 		
-		upwardsAngularVelocityPlaneNormal.normalize();
-		// We want to first remove the component in the direction of the plane normal, that isn't within the plane.
-		double angularTorquePlaneNormalComponent = upwardsAngularVelocityPlaneNormal.dot(angulerVelocityAsTorque);
-		Vector componentToRemove = upwardsAngularVelocityPlaneNormal.getProduct(angularTorquePlaneNormalComponent);
+		Vector dampingTorqueWithRespectToInertia = RotationMatrices.get3by3TransformedVec(physicsCalculations.getPhysMOITensor(), dampingTorque);
 		
-		Vector componentToDampen = angulerVelocityAsTorque.getSubtraction(componentToRemove);
-		
-		Vector toReturn = componentToDampen.getProduct(.9D);
-		
-		double magnitude = toReturn.length();
-		maximumTorque = 10000;
-		
-		if (magnitude > maximumTorque) {
-			toReturn.multiply(maximumTorque / magnitude);
+		double dampingTorqueRespectMagnitude = dampingTorqueWithRespectToInertia.length();
+		if (dampingTorqueRespectMagnitude > maximumTorque) {
+			dampingTorqueWithRespectToInertia.multiply(maximumTorque / dampingTorqueRespectMagnitude);
+			System.out.println("yee");
 		}
 		
-		// System.out.println(magnitude);
-		
-		if (toReturn.dot(angulerVelocityAsTorque) > 0) {
-			System.out.println("thats not right");
-			// return null;
-		}
-		return toReturn.getProduct(physicsCalculations.getPhysicsTimeDeltaPerPhysTick());
+		return dampingTorqueWithRespectToInertia;
 	}
 }

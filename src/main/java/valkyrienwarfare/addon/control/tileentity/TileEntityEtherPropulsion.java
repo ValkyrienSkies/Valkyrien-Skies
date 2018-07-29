@@ -43,11 +43,10 @@ public abstract class TileEntityEtherPropulsion extends BasicForceNodeTileEntity
 			Vector tilePos = new Vector(getPos().getX() + .5D, getPos().getY() + .5D, getPos().getZ() + .5D);
 			tilePhysics.getPhysicsObject().getShipTransformationManager().getCurrentPhysicsTransform().transform(tilePos, TransformType.SUBSPACE_TO_GLOBAL);
 			double yPos = tilePos.Y;
-			if (yPos < 0) {
+			if (yPos <= -30) {
 				return 1;
 			} else {
-				double absoluteHeight = yPos + 50;
-				double efficiency = 30 / absoluteHeight;
+				double efficiency = 1D - ((yPos + 30) / 330);
 				efficiency = Math.max(0, Math.min(1, efficiency));
 				return efficiency;
 			}

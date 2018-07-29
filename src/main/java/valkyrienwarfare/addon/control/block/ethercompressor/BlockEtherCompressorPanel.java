@@ -63,7 +63,7 @@ public class BlockEtherCompressorPanel extends BlockForceProviderBasic {
 	
 	@Override
 	public TileEntity createNewTileEntity(World worldIn, int meta) {
-		return new TileEntityEtherCompressorPanel(new Vector(0, 1, 0), 100000D);
+		return new TileEntityEtherCompressorPanel(new Vector(0, 1, 0), 50000D);
 	}
 
 	@Override

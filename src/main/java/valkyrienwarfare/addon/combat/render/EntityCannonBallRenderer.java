@@ -55,7 +55,7 @@ public class EntityCannonBallRenderer extends Render<EntityCannonBall> implement
         BufferBuilder BufferBuilder = tessellator.getBuffer();
 
         GlStateManager.translate((float) (x - .25D), (float) (y - .07D), (float) (z + .278D));
-        FastBlockModelRenderer.renderBlockModel(BufferBuilder, tessellator, world, cannonballState, entity.getBrightnessForRender());
+        FastBlockModelRenderer.renderBlockModel(tessellator, world, cannonballState, entity.getBrightnessForRender());
 
         if (this.renderOutlines) {
             GlStateManager.disableOutlineMode();

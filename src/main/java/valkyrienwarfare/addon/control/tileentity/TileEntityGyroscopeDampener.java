@@ -28,7 +28,7 @@ public class TileEntityGyroscopeDampener extends TileEntity {
 		double dampingTorqueRespectMagnitude = dampingTorqueWithRespectToInertia.length();
 		if (dampingTorqueRespectMagnitude > maximumTorque) {
 			dampingTorqueWithRespectToInertia.multiply(maximumTorque / dampingTorqueRespectMagnitude);
-			System.out.println("yee");
+			// System.out.println("yee");
 		}
 		
 		return dampingTorqueWithRespectToInertia;

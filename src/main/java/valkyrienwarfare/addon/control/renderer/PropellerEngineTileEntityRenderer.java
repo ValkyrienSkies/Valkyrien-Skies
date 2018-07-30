@@ -86,7 +86,7 @@ public class PropellerEngineTileEntityRenderer extends TileEntitySpecialRenderer
 
             GL11.glTranslated(-0.5D, -0.5D, -0.5D);
 
-            FastBlockModelRenderer.renderBlockModel(BufferBuilder, tessellator, tileentity.getWorld(),
+            FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(),
                     engineRenderState, brightness);
 
             GL11.glPushMatrix();
@@ -96,7 +96,7 @@ public class PropellerEngineTileEntityRenderer extends TileEntitySpecialRenderer
             GL11.glScaled(1.5D, 1.5D, 1);
             GL11.glTranslated(-0.5D, -0.21D, -0.5D);
 
-            FastBlockModelRenderer.renderBlockModel(BufferBuilder, tessellator, tileentity.getWorld(),
+            FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(),
                     propellerRenderState, brightness);
 
             GL11.glPopMatrix();

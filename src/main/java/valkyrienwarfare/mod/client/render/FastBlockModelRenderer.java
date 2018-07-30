@@ -38,8 +38,10 @@ public class FastBlockModelRenderer {
 	public static Map<IBlockState, BufferBuilder.State> blockstateToVertexData = new HashMap<IBlockState, BufferBuilder.State>();
 	public static Map<IBlockState, Map<Integer, Integer>> highRamGLList = new HashMap<IBlockState, Map<Integer, Integer>>();
 
-    public static void renderBlockModel(BufferBuilder BufferBuilder, Tessellator tessellator, World world, IBlockState blockstateToRender, int brightness) {
-        renderBlockModelHighQualityHighRam(BufferBuilder, tessellator, world, blockstateToRender, brightness);
+	private static final BufferBuilder VERTEX_BUILDER = new BufferBuilder(500000);
+	
+    public static void renderBlockModel(Tessellator tessellator, World world, IBlockState blockstateToRender, int brightness) {
+        renderBlockModelHighQualityHighRam(tessellator.getBuffer(), tessellator, world, blockstateToRender, brightness);
     }
 
     private static void renderBlockModelHighQualityHighRam(BufferBuilder BufferBuilder, Tessellator tessellator, World world, IBlockState blockstateToRender, int brightness) {
@@ -77,7 +79,7 @@ public class FastBlockModelRenderer {
 //		BufferBuilder.setTranslation(0, 0, 0);
 
         if (vertexData == null) {
-            generateRenderDataFor(BufferBuilder, tessellator, world, blockstateToRender);
+            generateRenderDataFor(world, blockstateToRender);
             vertexData = blockstateToVertexData.get(blockstateToRender);
         }
         renderVertexState(vertexData, BufferBuilder, tessellator, brightness);
@@ -113,14 +115,12 @@ public class FastBlockModelRenderer {
         GL11.glPopMatrix();
     }
 
-    private static void generateRenderDataFor(BufferBuilder bufferBuilder, Tessellator tessellator, World world, IBlockState state) {
-        GL11.glPushMatrix();
-        bufferBuilder.begin(7, DefaultVertexFormats.BLOCK);
+    private static void generateRenderDataFor(World world, IBlockState state) {
+        VERTEX_BUILDER.begin(7, DefaultVertexFormats.BLOCK);
         BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
-        blockrendererdispatcher.getBlockModelRenderer().renderModel(world, blockrendererdispatcher.getModelForState(state), state, BlockPos.ORIGIN, bufferBuilder, false, 0);
-        BufferBuilder.State toReturn = bufferBuilder.getVertexState();
-        tessellator.draw();
-        GL11.glPopMatrix();
+        blockrendererdispatcher.getBlockModelRenderer().renderModel(world, blockrendererdispatcher.getModelForState(state), state, BlockPos.ORIGIN, VERTEX_BUILDER, false, 0);
+        BufferBuilder.State toReturn = VERTEX_BUILDER.getVertexState();
+        VERTEX_BUILDER.finishDrawing();
         blockstateToVertexData.put(state, toReturn);
     }
 

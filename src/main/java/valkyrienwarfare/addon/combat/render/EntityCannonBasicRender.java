@@ -116,7 +116,7 @@ public class EntityCannonBasicRender extends Render<EntityCannonBasic> implement
         BufferBuilder BufferBuilder = tessellator.getBuffer();
         GL11.glPushMatrix();
         GL11.glTranslated(-0.5D, 0, -0.5D);
-        FastBlockModelRenderer.renderBlockModel(BufferBuilder, tessellator, entity.world, baseState, entity.getBrightnessForRender());
+        FastBlockModelRenderer.renderBlockModel(tessellator, entity.world, baseState, entity.getBrightnessForRender());
         GL11.glPopMatrix();
     }
 
@@ -125,7 +125,7 @@ public class EntityCannonBasicRender extends Render<EntityCannonBasic> implement
         BufferBuilder BufferBuilder = tessellator.getBuffer();
         GL11.glPushMatrix();
         GL11.glTranslated(-0.5D, 0, -0.5D);
-        FastBlockModelRenderer.renderBlockModel(BufferBuilder, tessellator, entity.world, headState, entity.getBrightnessForRender());
+        FastBlockModelRenderer.renderBlockModel(tessellator, entity.world, headState, entity.getBrightnessForRender());
         GL11.glPopMatrix();
     }
 

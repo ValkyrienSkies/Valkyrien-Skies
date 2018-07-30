@@ -16,15 +16,22 @@
 
 package valkyrienwarfare.addon.control.renderer;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BlockRendererDispatcher;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import org.lwjgl.opengl.GL11;
+import net.minecraftforge.client.model.ModelLoaderRegistry;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.block.BlockShipHelm;
 import valkyrienwarfare.addon.control.tileentity.TileEntityShipHelm;
@@ -99,29 +106,41 @@ public class ShipHelmTileEntityRenderer extends TileEntitySpecialRenderer<TileEn
             GL11.glTranslated(0.5D, 0, 0.5D);
             GL11.glRotated(wheelAndCompassStateRotation, 0, 1, 0);
             GL11.glTranslated(-0.5D, 0, -0.5D);
-            FastBlockModelRenderer.renderBlockModel(BufferBuilder, tessellator, tileentity.getWorld(),
+            FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(),
                     helmStateToRender, brightness);
 
             GL11.glPushMatrix();
             GL11.glTranslated(.5, .522, 0);
             GL11.glRotated(smoothWheel, 0, 0, 1);
             GL11.glTranslated(-.5, -.522, 0);
-            FastBlockModelRenderer.renderBlockModel(BufferBuilder, tessellator, tileentity.getWorld(), wheelState,
-                    brightness);
+            
+            //FastBlockModelRenderer.renderBlockModel(BufferBuilder, tessellator, tileentity.getWorld(), wheelState,
+            //        brightness);
+
+            GL11.glPushMatrix();
+            BufferBuilder.begin(7, DefaultVertexFormats.BLOCK);
+            BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
+            
+            blockrendererdispatcher.getBlockModelRenderer().renderModel(tileentity.getWorld(), blockrendererdispatcher.getModelForState(wheelState), wheelState, BlockPos.ORIGIN, BufferBuilder, false, 0);
+            BufferBuilder.State toReturn = BufferBuilder.getVertexState();
+            tessellator.draw();
+            GL11.glPopMatrix();
+            
+            
             GL11.glPopMatrix();
 
             GL11.glPushMatrix();
             GL11.glTranslated(0.5D, 0, 0.5D);
             GL11.glRotated(smoothCompass, 0, 1, 0);
             GL11.glTranslated(-0.5D, 0, -0.5D);
-            FastBlockModelRenderer.renderBlockModel(BufferBuilder, tessellator, tileentity.getWorld(), compassState,
+            FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(), compassState,
                     brightness);
             GL11.glPopMatrix();
 
             GlStateManager.enableAlpha();
             GlStateManager.enableBlend();
             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-            FastBlockModelRenderer.renderBlockModel(BufferBuilder, tessellator, tileentity.getWorld(), glassState,
+            FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(), glassState,
                     brightness);
             GlStateManager.disableAlpha();
             GlStateManager.disableBlend();

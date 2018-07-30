@@ -16,22 +16,15 @@
 
 package valkyrienwarfare.addon.control.renderer;
 
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BlockRendererDispatcher;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.client.model.ModelLoaderRegistry;
+import org.lwjgl.opengl.GL11;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.block.BlockShipHelm;
 import valkyrienwarfare.addon.control.tileentity.TileEntityShipHelm;
@@ -113,20 +106,8 @@ public class ShipHelmTileEntityRenderer extends TileEntitySpecialRenderer<TileEn
             GL11.glTranslated(.5, .522, 0);
             GL11.glRotated(smoothWheel, 0, 0, 1);
             GL11.glTranslated(-.5, -.522, 0);
-            
-            //FastBlockModelRenderer.renderBlockModel(BufferBuilder, tessellator, tileentity.getWorld(), wheelState,
-            //        brightness);
-
-            GL11.glPushMatrix();
-            BufferBuilder.begin(7, DefaultVertexFormats.BLOCK);
-            BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
-            
-            blockrendererdispatcher.getBlockModelRenderer().renderModel(tileentity.getWorld(), blockrendererdispatcher.getModelForState(wheelState), wheelState, BlockPos.ORIGIN, BufferBuilder, false, 0);
-            BufferBuilder.State toReturn = BufferBuilder.getVertexState();
-            tessellator.draw();
-            GL11.glPopMatrix();
-            
-            
+            FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(), wheelState,
+                    brightness);
             GL11.glPopMatrix();
 
             GL11.glPushMatrix();

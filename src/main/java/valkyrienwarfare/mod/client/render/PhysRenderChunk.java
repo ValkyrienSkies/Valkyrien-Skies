@@ -168,7 +168,7 @@ public class PhysRenderChunk {
             }
         }
 
-        public void updateList(BlockRenderLayer layerToUpdate) {
+        private void updateList(BlockRenderLayer layerToUpdate) {
             if (parent.toRender.getShipRenderer() == null) {
                 return;
             }

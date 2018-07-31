@@ -91,10 +91,10 @@ public class PropellerEngineTileEntityRenderer extends TileEntitySpecialRenderer
 
             GL11.glPushMatrix();
 
-            GL11.glTranslated(0.5D, 0.21D, 0.5D);
+            GL11.glTranslated(0.5D, 0.214D, 0.5D);
             GL11.glRotated(tileentity.getPropellerAngle(partialTick), 0, 0, 1);
             GL11.glScaled(1.5D, 1.5D, 1);
-            GL11.glTranslated(-0.5D, -0.21D, -0.5D);
+            GL11.glTranslated(-0.5D, -0.214D, -0.5D);
 
             FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(),
                     propellerRenderState, brightness);

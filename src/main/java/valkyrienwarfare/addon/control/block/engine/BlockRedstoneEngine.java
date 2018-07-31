@@ -30,7 +30,8 @@ public class BlockRedstoneEngine extends BlockAirshipEngineLore {
 
     @Override
     public double getEnginePower(World world, BlockPos pos, IBlockState state, Entity shipEntity) {
-        return world.isBlockIndirectlyGettingPowered(pos) * this.enginePower;
+        // Fixes "It seems like redstone engines have been nerfed". ~Del
+    	return 100 * world.isBlockIndirectlyGettingPowered(pos) * this.enginePower;
     }
 
     @Override

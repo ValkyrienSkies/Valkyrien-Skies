@@ -29,7 +29,7 @@ import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBufferUploader;
+import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexBuffer;
 import net.minecraft.client.renderer.vertex.VertexFormatElement;
@@ -46,7 +46,8 @@ public class FastBlockModelRenderer {
 	// Maps IBlockState to a map that maps brightness to VertexBuffer that are already uploaded to gpu memory.
 	public static final Map<IBlockState, Map<Integer, VertexBuffer>> blockstateBrightnessToVertexBuffer = new HashMap<IBlockState, Map<Integer, VertexBuffer>>();
 
-	public static boolean useVBOs = false;
+	// They are just so much faster than displaylists, leave this to true!
+	public static boolean useVBOs = true;
 	
 	private static final BufferBuilder VERTEX_BUILDER = new BufferBuilder(500000);
 	
@@ -55,7 +56,6 @@ public class FastBlockModelRenderer {
     }
 
     private static void renderBlockModelHighQualityHighRam(Tessellator tessellator, World world, IBlockState blockstateToRender, int brightness) {
-    	useVBOs = true;
     	if (!useVBOs) {
             Map<Integer, Integer> brightnessToGLListMap = highRamGLList.get(blockstateToRender);
 
@@ -125,7 +125,7 @@ public class FastBlockModelRenderer {
 				blockstateBrightnessToVertexBuffer.get(blockstateToRender).put(brightness, blockVertexBuffer);
 			}
         	
-        	// Just to test the state of the State if I ever need to.
+        	// Just to test the look of the State in case I ever need to.
 			if (false) {
 				BufferBuilder.State bufferBuilderState = blockstateToVertexData.get(blockstateToRender);
 				tessellator.getBuffer().begin(7, DefaultVertexFormats.BLOCK);
@@ -138,13 +138,13 @@ public class FastBlockModelRenderer {
 			// Guaranteed not be null.
 			VertexBuffer blockVertexBuffer = blockstateBrightnessToVertexBuffer.get(blockstateToRender).get(brightness);
 
-			GlStateManager.glEnableClientState(32884);
+			GlStateManager.glEnableClientState(GL11.GL_VERTEX_ARRAY);
 			OpenGlHelper.setClientActiveTexture(OpenGlHelper.defaultTexUnit);
-			GlStateManager.glEnableClientState(32888);
+			GlStateManager.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
 			OpenGlHelper.setClientActiveTexture(OpenGlHelper.lightmapTexUnit);
-			GlStateManager.glEnableClientState(32888);
+			GlStateManager.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
 			OpenGlHelper.setClientActiveTexture(OpenGlHelper.defaultTexUnit);
-			GlStateManager.glEnableClientState(32886);
+			GlStateManager.glEnableClientState(GL11.GL_COLOR_ARRAY);
 
 			GlStateManager.pushMatrix();
 			blockVertexBuffer.bindBuffer();
@@ -181,7 +181,6 @@ public class FastBlockModelRenderer {
 			}
 
 			GlStateManager.popMatrix();
-
 		}
 	}
 
@@ -237,7 +236,8 @@ public class FastBlockModelRenderer {
     private static void generateRenderDataFor(World world, IBlockState state) {
         VERTEX_BUILDER.begin(7, DefaultVertexFormats.BLOCK);
         BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
-        blockrendererdispatcher.getBlockModelRenderer().renderModel(world, blockrendererdispatcher.getModelForState(state), state, BlockPos.ORIGIN, VERTEX_BUILDER, false, 0);
+        IBakedModel modelFromState = blockrendererdispatcher.getModelForState(state);
+        blockrendererdispatcher.getBlockModelRenderer().renderModel(world, modelFromState, state, BlockPos.ORIGIN, VERTEX_BUILDER, false, 0);
         BufferBuilder.State toReturn = VERTEX_BUILDER.getVertexState();
         VERTEX_BUILDER.finishDrawing();
         blockstateToVertexData.put(state, toReturn);

@@ -29,6 +29,8 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
+import net.minecraftforge.client.model.IModel;
+import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
@@ -136,6 +138,7 @@ public class EventsClient {
      */
     @SubscribeEvent
     public static void onTextureStitchEvent(TextureStitchEvent.Pre event) {
+		GibsModelRegistry.generateIModels();
     	for (ResourceLocation textureLocation : GibsModelRegistry.MODEL_TEXTURES_IMMUTABLE) {
     		event.getMap().registerSprite(textureLocation);
     	}

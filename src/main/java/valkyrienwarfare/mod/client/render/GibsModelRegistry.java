@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.collect.ImmutableMap;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -37,6 +39,12 @@ public class GibsModelRegistry {
 	private static final Map<String, BufferBuilder.State> NAMES_TO_BUFFER_STATES = new HashMap<String, BufferBuilder.State>();
 	private static final Map<String, Map<Integer, VertexBuffer>> NAMES_AND_BRIGHTNESS_TO_VERTEX_BUFFER = new HashMap<String, Map<Integer, VertexBuffer>>();
 	
+	private static final ImmutableMap.Builder<String, String> FLIP_UV_CUSTOM_DATA_BUILDER = new ImmutableMap.Builder<String, String>();
+	static {
+		FLIP_UV_CUSTOM_DATA_BUILDER.put("flip-v", "true");
+	}
+	private static final ImmutableMap<String, String> FLIP_UV_CUSTOM_DATA = FLIP_UV_CUSTOM_DATA_BUILDER.build();
+	
 	public static void renderGibsModel(String name, int brightness) {
 		if (!NAMES_TO_RESOURCE_LOCATION.containsKey(name)) {
 			throw new IllegalArgumentException("No registed gibs model with the name " + name + "!");
@@ -45,7 +53,7 @@ public class GibsModelRegistry {
 		if (!NAMES_TO_BAKED_MODELS.containsKey(name)) {
 			ResourceLocation location = NAMES_TO_RESOURCE_LOCATION.get(name);
 			try {
-				IModel model = ModelLoaderRegistry.getModel(location);
+				IModel model = ModelLoaderRegistry.getModel(location).process(FLIP_UV_CUSTOM_DATA);
 				IBakedModel bakedModel = model.bake(model.getDefaultState(), DefaultVertexFormats.BLOCK, ModelLoader.defaultTextureGetter());
 				NAMES_TO_BAKED_MODELS.put(name, bakedModel);
 			} catch(Exception e) {
@@ -113,16 +121,27 @@ public class GibsModelRegistry {
 	}
 	
 	/**
-	 * Must be run before TextureStitchEvent.Pre is thrown, otherwise this will not work.
+	 * Must be run before TextureStitchEvent.Pre is thrown, otherwise this will not
+	 * work.
+	 * 
 	 * @param name
 	 * @param modelLocation
 	 */
 	public static void registerGibsModel(String name, ResourceLocation modelLocation) {
-		try {
-			IModel model = ModelLoaderRegistry.getModel(modelLocation);
-			MODEL_TEXTURES_INTERNAL.addAll(model.getTextures());
-		} catch (Exception e) {
-			e.printStackTrace();
+		NAMES_TO_RESOURCE_LOCATION.put(name, modelLocation);
+	}
+	
+	public static void generateIModels() {
+		for (String name : GibsModelRegistry.NAMES_TO_RESOURCE_LOCATION.keySet()) {
+			ResourceLocation modelLocation = GibsModelRegistry.NAMES_TO_RESOURCE_LOCATION.get(name);
+			IModel model;
+			try {
+				model = ModelLoaderRegistry.getModel(modelLocation);
+				GibsModelRegistry.MODEL_TEXTURES_INTERNAL.addAll(model.getTextures());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}	
 		}
 	}
 

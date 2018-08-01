@@ -29,6 +29,7 @@ import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.block.BlockShipHelm;
 import valkyrienwarfare.addon.control.tileentity.TileEntityShipHelm;
 import valkyrienwarfare.mod.client.render.FastBlockModelRenderer;
+import valkyrienwarfare.mod.client.render.GibsModelRegistry;
 
 public class ShipHelmTileEntityRenderer extends TileEntitySpecialRenderer<TileEntityShipHelm> {
 
@@ -101,6 +102,8 @@ public class ShipHelmTileEntityRenderer extends TileEntitySpecialRenderer<TileEn
             GL11.glTranslated(-0.5D, 0, -0.5D);
             FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(),
                     helmStateToRender, brightness);
+            
+            // GibsModelRegistry.renderGibsModel("doggy", brightness);
 
             GL11.glPushMatrix();
             GL11.glTranslated(.5, .522, 0);

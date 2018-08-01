@@ -21,6 +21,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -37,6 +38,7 @@ import valkyrienwarfare.addon.control.tileentity.TileEntityPropellerEngine;
 import valkyrienwarfare.addon.control.tileentity.TileEntityShipHelm;
 import valkyrienwarfare.addon.control.tileentity.TileEntityShipTelegraph;
 import valkyrienwarfare.addon.control.tileentity.TileEntityThrustModulator;
+import valkyrienwarfare.mod.client.render.GibsModelRegistry;
 
 public class ClientProxyControl extends CommonProxyControl {
 
@@ -104,6 +106,7 @@ public class ClientProxyControl extends CommonProxyControl {
     @Override
     public void preInit(FMLStateEvent event) {
         OBJLoader.INSTANCE.addDomain(ValkyrienWarfareControl.INSTANCE.getModID().toLowerCase());
+        // GibsModelRegistry.registerGibsModel("doggy", new ResourceLocation("valkyrienwarfarecontrol", "block/shiphelmbase.obj"));
     }
 
     @Override

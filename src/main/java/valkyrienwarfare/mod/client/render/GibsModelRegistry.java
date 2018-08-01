@@ -130,8 +130,7 @@ public class GibsModelRegistry {
 	}
 	
 	/**
-	 * Must be run before TextureStitchEvent.Pre is thrown, otherwise this will not
-	 * work.
+	 * Must be run when TextureStitchEvent.Pre is thrown.
 	 * 
 	 * @param name
 	 * @param modelLocation
@@ -154,11 +153,4 @@ public class GibsModelRegistry {
 		}
 	}
 
-	private static IBakedModel getGibModel(ResourceLocation gibLocation) throws Exception {
-		IModel model = ModelLoaderRegistry.getModel(gibLocation);
-		IBakedModel bakedModel = model.bake(model.getDefaultState(), DefaultVertexFormats.ITEM,
-				ModelLoader.defaultTextureGetter());
-		return bakedModel;
-	}
-	
 }

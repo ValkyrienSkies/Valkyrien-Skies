@@ -42,167 +42,131 @@ import net.minecraft.world.World;
 public class FastBlockModelRenderer {
 
 	public static final Map<IBlockState, BufferBuilder.State> blockstateToVertexData = new HashMap<IBlockState, BufferBuilder.State>();
-	public static final Map<IBlockState, Map<Integer, Integer>> highRamGLList = new HashMap<IBlockState, Map<Integer, Integer>>();
 	// Maps IBlockState to a map that maps brightness to VertexBuffer that are already uploaded to gpu memory.
 	public static final Map<IBlockState, Map<Integer, VertexBuffer>> blockstateBrightnessToVertexBuffer = new HashMap<IBlockState, Map<Integer, VertexBuffer>>();
-
-	// They are just so much faster than displaylists, leave this to true!
-	public static boolean useVBOs = true;
 	
-	private static final BufferBuilder VERTEX_BUILDER = new BufferBuilder(500000);
+	protected static final BufferBuilder VERTEX_BUILDER = new BufferBuilder(500000);
 	
     public static void renderBlockModel(Tessellator tessellator, World world, IBlockState blockstateToRender, int brightness) {
         renderBlockModelHighQualityHighRam(tessellator, world, blockstateToRender, brightness);
-    }
+	}
 
-    private static void renderBlockModelHighQualityHighRam(Tessellator tessellator, World world, IBlockState blockstateToRender, int brightness) {
-    	if (!useVBOs) {
-            Map<Integer, Integer> brightnessToGLListMap = highRamGLList.get(blockstateToRender);
-
-            if (brightnessToGLListMap == null) {
-                highRamGLList.put(blockstateToRender, new HashMap<Integer, Integer>());
-                brightnessToGLListMap = highRamGLList.get(blockstateToRender);
-            }
-        	
-	        Integer glListForBrightness = brightnessToGLListMap.get(brightness);
-	        if (glListForBrightness == null) {
-	            GL11.glPushMatrix();
-	            int glList = GLAllocation.generateDisplayLists(1);
-	            GL11.glNewList(glList, GL11.GL_COMPILE);
-	            renderBlockModelHighQuality(tessellator, world, blockstateToRender, brightness);
-	            GL11.glEndList();
-	            GL11.glPopMatrix();
-	            glListForBrightness = glList;
-	            brightnessToGLListMap.put(brightness, glList);
-	        }
-	
-			GL11.glPushMatrix();
-			GL11.glCallList(glListForBrightness);
-			GL11.glPopMatrix();
-		} else {
-	        if (!blockstateToVertexData.containsKey(blockstateToRender)) {
-	            generateRenderDataFor(world, blockstateToRender);
-	        }
-			
-			// We're using the VBO, check if a compiled VertexBuffer already exists. If
-			// there isn't one we will create it, then render.
-			if (!blockstateBrightnessToVertexBuffer.containsKey(blockstateToRender)) {
-				blockstateBrightnessToVertexBuffer.put(blockstateToRender, new HashMap<Integer, VertexBuffer>());
-			}
-        	if (!blockstateBrightnessToVertexBuffer.get(blockstateToRender).containsKey(brightness)) {
-        		// We have to create the VertexBuffer
-    	        BufferBuilder.State bufferBuilderState = blockstateToVertexData.get(blockstateToRender);
-        		
-    	        VERTEX_BUILDER.setTranslation(0, 0, 0);
-        		VERTEX_BUILDER.begin(7, DefaultVertexFormats.BLOCK);
-        		VERTEX_BUILDER.setVertexState(bufferBuilderState);
-
-				// This code adjusts the brightness of the model rendered.
-				int j = VERTEX_BUILDER.vertexFormat.getNextOffset() >> 2;
-				int cont = VERTEX_BUILDER.getVertexCount();
-				int offsetUV = VERTEX_BUILDER.vertexFormat.getUvOffsetById(1) / 4;
-				int bufferNextSize = VERTEX_BUILDER.vertexFormat.getIntegerSize();
-
-				for (int contont = 0; contont < cont; contont += 4) {
-					try {
-						int i = (contont) * bufferNextSize + offsetUV;
-						VERTEX_BUILDER.rawIntBuffer.put(i, brightness);
-						VERTEX_BUILDER.rawIntBuffer.put(i + j, brightness);
-						VERTEX_BUILDER.rawIntBuffer.put(i + j * 2, brightness);
-						VERTEX_BUILDER.rawIntBuffer.put(i + j * 3, brightness);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-
-        		VertexBuffer blockVertexBuffer = new VertexBuffer(DefaultVertexFormats.BLOCK);
-                // Now that the VERTEX_BUILDER has been filled with all the render data, we must upload it to the gpu.
-                // The VERTEX_UPLOADER copies the state of the VERTEX_BUILDER to blockVertexBuffer, and then uploads it to the gpu.
-                VERTEX_BUILDER.finishDrawing();
-        		VERTEX_BUILDER.reset();
-        		blockVertexBuffer.bufferData(VERTEX_BUILDER.getByteBuffer());
-        		// Put the VertexBuffer for that data into the Map for future rendering.
-				blockstateBrightnessToVertexBuffer.get(blockstateToRender).put(brightness, blockVertexBuffer);
-			}
-        	
-        	// Just to test the look of the State in case I ever need to.
-			if (false) {
-				BufferBuilder.State bufferBuilderState = blockstateToVertexData.get(blockstateToRender);
-				tessellator.getBuffer().begin(7, DefaultVertexFormats.BLOCK);
-				tessellator.getBuffer().setVertexState(bufferBuilderState);
-				tessellator.getBuffer().finishDrawing();
-				tessellator.draw();
-			}
-			
-			GlStateManager.pushMatrix();
-			// Guaranteed not be null.
-			VertexBuffer blockVertexBuffer = blockstateBrightnessToVertexBuffer.get(blockstateToRender).get(brightness);
-
-			GlStateManager.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-			OpenGlHelper.setClientActiveTexture(OpenGlHelper.defaultTexUnit);
-			GlStateManager.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-			OpenGlHelper.setClientActiveTexture(OpenGlHelper.lightmapTexUnit);
-			GlStateManager.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-			OpenGlHelper.setClientActiveTexture(OpenGlHelper.defaultTexUnit);
-			GlStateManager.glEnableClientState(GL11.GL_COLOR_ARRAY);
-
-			GlStateManager.pushMatrix();
-			blockVertexBuffer.bindBuffer();
-
-			GlStateManager.glVertexPointer(3, 5126, 28, 0);
-			GlStateManager.glColorPointer(4, 5121, 28, 12);
-			GlStateManager.glTexCoordPointer(2, 5126, 28, 16);
-			OpenGlHelper.setClientActiveTexture(OpenGlHelper.lightmapTexUnit);
-			GlStateManager.glTexCoordPointer(2, 5122, 28, 24);
-			OpenGlHelper.setClientActiveTexture(OpenGlHelper.defaultTexUnit);
-
-			blockVertexBuffer.drawArrays(7);
-			GlStateManager.popMatrix();
-			blockVertexBuffer.unbindBuffer();
-			GlStateManager.resetColor();
-
-			for (VertexFormatElement vertexformatelement : DefaultVertexFormats.BLOCK.getElements()) {
-				VertexFormatElement.EnumUsage vertexformatelement$enumusage = vertexformatelement.getUsage();
-				int i = vertexformatelement.getIndex();
-
-				switch (vertexformatelement$enumusage) {
-				case POSITION:
-					GlStateManager.glDisableClientState(32884);
-					break;
-				case UV:
-					OpenGlHelper.setClientActiveTexture(OpenGlHelper.defaultTexUnit + i);
-					GlStateManager.glDisableClientState(32888);
-					OpenGlHelper.setClientActiveTexture(OpenGlHelper.defaultTexUnit);
-					break;
-				case COLOR:
-					GlStateManager.glDisableClientState(32886);
-					GlStateManager.resetColor();
-				}
-			}
-
-			GlStateManager.popMatrix();
+	private static void renderBlockModelHighQualityHighRam(Tessellator tessellator, World world,
+			IBlockState blockstateToRender, int brightness) {
+		if (!blockstateToVertexData.containsKey(blockstateToRender)) {
+			generateRenderDataFor(world, blockstateToRender);
 		}
+
+		// We're using the VBO, check if a compiled VertexBuffer already exists. If
+		// there isn't one we will create it, then render.
+		if (!blockstateBrightnessToVertexBuffer.containsKey(blockstateToRender)) {
+			blockstateBrightnessToVertexBuffer.put(blockstateToRender, new HashMap<Integer, VertexBuffer>());
+		}
+		if (!blockstateBrightnessToVertexBuffer.get(blockstateToRender).containsKey(brightness)) {
+			// We have to create the VertexBuffer
+			BufferBuilder.State bufferBuilderState = blockstateToVertexData.get(blockstateToRender);
+
+			VERTEX_BUILDER.setTranslation(0, 0, 0);
+			VERTEX_BUILDER.begin(7, DefaultVertexFormats.BLOCK);
+			VERTEX_BUILDER.setVertexState(bufferBuilderState);
+
+			// This code adjusts the brightness of the model rendered.
+			int j = VERTEX_BUILDER.vertexFormat.getNextOffset() >> 2;
+			int cont = VERTEX_BUILDER.getVertexCount();
+			int offsetUV = VERTEX_BUILDER.vertexFormat.getUvOffsetById(1) / 4;
+			int bufferNextSize = VERTEX_BUILDER.vertexFormat.getIntegerSize();
+
+			for (int contont = 0; contont < cont; contont += 4) {
+				try {
+					int i = (contont) * bufferNextSize + offsetUV;
+					VERTEX_BUILDER.rawIntBuffer.put(i, brightness);
+					VERTEX_BUILDER.rawIntBuffer.put(i + j, brightness);
+					VERTEX_BUILDER.rawIntBuffer.put(i + j * 2, brightness);
+					VERTEX_BUILDER.rawIntBuffer.put(i + j * 3, brightness);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+
+			VertexBuffer blockVertexBuffer = new VertexBuffer(DefaultVertexFormats.BLOCK);
+			// Now that the VERTEX_BUILDER has been filled with all the render data, we must
+			// upload it to the gpu.
+			// The VERTEX_UPLOADER copies the state of the VERTEX_BUILDER to
+			// blockVertexBuffer, and then uploads it to the gpu.
+			VERTEX_BUILDER.finishDrawing();
+			VERTEX_BUILDER.reset();
+			blockVertexBuffer.bufferData(VERTEX_BUILDER.getByteBuffer());
+			// Put the VertexBuffer for that data into the Map for future rendering.
+			blockstateBrightnessToVertexBuffer.get(blockstateToRender).put(brightness, blockVertexBuffer);
+		}
+
+		// Just to test the look of the State in case I ever need to.
+		if (false) {
+			BufferBuilder.State bufferBuilderState = blockstateToVertexData.get(blockstateToRender);
+			tessellator.getBuffer().begin(7, DefaultVertexFormats.BLOCK);
+			tessellator.getBuffer().setVertexState(bufferBuilderState);
+			tessellator.getBuffer().finishDrawing();
+			tessellator.draw();
+		}
+
+		renderVertexBuffer(blockstateBrightnessToVertexBuffer.get(blockstateToRender).get(brightness));		
+	}
+	
+	protected static void renderVertexBuffer(VertexBuffer vertexBuffer) {
+		GlStateManager.pushMatrix();
+		// Guaranteed not be null.
+		GlStateManager.glEnableClientState(GL11.GL_VERTEX_ARRAY);
+		OpenGlHelper.setClientActiveTexture(OpenGlHelper.defaultTexUnit);
+		GlStateManager.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+		OpenGlHelper.setClientActiveTexture(OpenGlHelper.lightmapTexUnit);
+		GlStateManager.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+		OpenGlHelper.setClientActiveTexture(OpenGlHelper.defaultTexUnit);
+		GlStateManager.glEnableClientState(GL11.GL_COLOR_ARRAY);
+
+		GlStateManager.pushMatrix();
+		vertexBuffer.bindBuffer();
+
+		GlStateManager.glVertexPointer(3, 5126, 28, 0);
+		GlStateManager.glColorPointer(4, 5121, 28, 12);
+		GlStateManager.glTexCoordPointer(2, 5126, 28, 16);
+		OpenGlHelper.setClientActiveTexture(OpenGlHelper.lightmapTexUnit);
+		GlStateManager.glTexCoordPointer(2, 5122, 28, 24);
+		OpenGlHelper.setClientActiveTexture(OpenGlHelper.defaultTexUnit);
+
+		vertexBuffer.drawArrays(7);
+		GlStateManager.popMatrix();
+		vertexBuffer.unbindBuffer();
+		GlStateManager.resetColor();
+
+		for (VertexFormatElement vertexformatelement : DefaultVertexFormats.BLOCK.getElements()) {
+			VertexFormatElement.EnumUsage vertexformatelement$enumusage = vertexformatelement.getUsage();
+			int i = vertexformatelement.getIndex();
+
+			switch (vertexformatelement$enumusage) {
+			case POSITION:
+				GlStateManager.glDisableClientState(32884);
+				break;
+			case UV:
+				OpenGlHelper.setClientActiveTexture(OpenGlHelper.defaultTexUnit + i);
+				GlStateManager.glDisableClientState(32888);
+				OpenGlHelper.setClientActiveTexture(OpenGlHelper.defaultTexUnit);
+				break;
+			case COLOR:
+				GlStateManager.glDisableClientState(32886);
+				GlStateManager.resetColor();
+			}
+		}
+		GlStateManager.popMatrix();
 	}
 
     private static void renderBlockModelHighQuality(Tessellator tessellator, World world, IBlockState blockstateToRender, int brightness) {
         BufferBuilder.State vertexData = blockstateToVertexData.get(blockstateToRender);
 
-        double oldX = tessellator.getBuffer().xOffset;
-        double oldY = tessellator.getBuffer().yOffset;
-        double oldZ = tessellator.getBuffer().zOffset;
-
-//		BufferBuilder.setTranslation(0, 0, 0);
-
         if (vertexData == null) {
             generateRenderDataFor(world, blockstateToRender);
             vertexData = blockstateToVertexData.get(blockstateToRender);
         }
-        
-        // VERTEX_UPLOADER.draw(vertexData);;
-        
         renderVertexState(vertexData, tessellator, brightness);
-
-        tessellator.getBuffer().setTranslation(oldX, oldY, oldZ);
     }
 
     private static void renderVertexState(BufferBuilder.State data, Tessellator tessellator, int brightness) {
@@ -240,6 +204,7 @@ public class FastBlockModelRenderer {
         blockrendererdispatcher.getBlockModelRenderer().renderModel(world, modelFromState, state, BlockPos.ORIGIN, VERTEX_BUILDER, false, 0);
         BufferBuilder.State toReturn = VERTEX_BUILDER.getVertexState();
         VERTEX_BUILDER.finishDrawing();
+        VERTEX_BUILDER.reset();
         blockstateToVertexData.put(state, toReturn);
     }
 

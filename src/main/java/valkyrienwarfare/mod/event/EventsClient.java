@@ -23,9 +23,11 @@ import net.minecraft.client.audio.ISound;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
+import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -35,6 +37,7 @@ import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.fixes.SoundFixWrapper;
 import valkyrienwarfare.math.Vector;
+import valkyrienwarfare.mod.client.render.GibsModelRegistry;
 import valkyrienwarfare.mod.physmanagement.interaction.EntityDraggable;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.physics.management.WorldPhysObjectManager;
@@ -125,5 +128,16 @@ public class EventsClient {
             }
         }
         GL11.glPopMatrix();
+    }
+    
+    /**
+     * Register textures for all the models registered in the GibsModelRegistry.
+     * @param event
+     */
+    @SubscribeEvent
+    public static void onTextureStitchEvent(TextureStitchEvent.Pre event) {
+    	for (ResourceLocation textureLocation : GibsModelRegistry.MODEL_TEXTURES_IMMUTABLE) {
+    		event.getMap().registerSprite(textureLocation);
+    	}
     }
 }

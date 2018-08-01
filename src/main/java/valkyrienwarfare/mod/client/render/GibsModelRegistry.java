@@ -1,17 +1,23 @@
 package valkyrienwarfare.mod.client.render;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import com.google.common.collect.ImmutableMap;
-
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BlockRendererDispatcher;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.renderer.vertex.VertexBuffer;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
-import net.minecraftforge.common.model.IModelState;
 
 /**
  * Used to register and get IBakedModels for 'gibs', which are basically any
@@ -23,28 +29,108 @@ import net.minecraftforge.common.model.IModelState;
  */
 public class GibsModelRegistry {
 
-	private static final Map<ResourceLocation, IBakedModel> GIBS_BAKED_MODEL_CACHE = new HashMap<ResourceLocation, IBakedModel>();
+	private static final List<ResourceLocation> MODEL_TEXTURES_INTERNAL = new ArrayList<ResourceLocation>();
+	public static final List<ResourceLocation> MODEL_TEXTURES_IMMUTABLE = Collections.unmodifiableList(MODEL_TEXTURES_INTERNAL);
 	
-	public static IBakedModel getGibModel(ResourceLocation gibLocation) {
-		if (GIBS_BAKED_MODEL_CACHE.containsKey(gibLocation)) {
-			return GIBS_BAKED_MODEL_CACHE.get(gibLocation);
+	private static final Map<String, ResourceLocation> NAMES_TO_RESOURCE_LOCATION = new HashMap<String, ResourceLocation>();
+	private static final Map<String, IBakedModel> NAMES_TO_BAKED_MODELS = new HashMap<String, IBakedModel>();
+	private static final Map<String, BufferBuilder.State> NAMES_TO_BUFFER_STATES = new HashMap<String, BufferBuilder.State>();
+	private static final Map<String, Map<Integer, VertexBuffer>> NAMES_AND_BRIGHTNESS_TO_VERTEX_BUFFER = new HashMap<String, Map<Integer, VertexBuffer>>();
+	
+	public static void renderGibsModel(String name, int brightness) {
+		if (!NAMES_TO_RESOURCE_LOCATION.containsKey(name)) {
+			throw new IllegalArgumentException("No registed gibs model with the name " + name + "!");
 		}
-		// We don't have this model cached, we're going to have to build it.
-		
-		IModel mod;
+		// If we don't have an IBakedModel for this gib then make one.
+		if (!NAMES_TO_BAKED_MODELS.containsKey(name)) {
+			ResourceLocation location = NAMES_TO_RESOURCE_LOCATION.get(name);
+			try {
+				IModel model = ModelLoaderRegistry.getModel(location);
+				IBakedModel bakedModel = model.bake(model.getDefaultState(), DefaultVertexFormats.BLOCK, ModelLoader.defaultTextureGetter());
+				NAMES_TO_BAKED_MODELS.put(name, bakedModel);
+			} catch(Exception e) {
+				e.printStackTrace();
+				throw new IllegalStateException();
+			}
+		}
+		// Then if we don't have a BufferBuilder.State for this gib then make one.
+		if (!NAMES_TO_BUFFER_STATES.containsKey(name)) {
+			FastBlockModelRenderer.VERTEX_BUILDER.begin(7, DefaultVertexFormats.BLOCK);
+			BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
+			IBakedModel modelFromState = NAMES_TO_BAKED_MODELS.get(name);
+			blockrendererdispatcher.getBlockModelRenderer().renderModel(Minecraft.getMinecraft().world, modelFromState,
+					Blocks.AIR.getDefaultState(), BlockPos.ORIGIN, FastBlockModelRenderer.VERTEX_BUILDER, false, 0);
+			BufferBuilder.State bufferState = FastBlockModelRenderer.VERTEX_BUILDER.getVertexState();
+			FastBlockModelRenderer.VERTEX_BUILDER.finishDrawing();
+			FastBlockModelRenderer.VERTEX_BUILDER.reset();
+			NAMES_TO_BUFFER_STATES.put(name, bufferState);
+		}
+		// Then if we don't have a brightness to VertexBuffer map for this gib then make one.
+		if (!NAMES_AND_BRIGHTNESS_TO_VERTEX_BUFFER.containsKey(name)) {
+			NAMES_AND_BRIGHTNESS_TO_VERTEX_BUFFER.put(name, new HashMap<Integer, VertexBuffer>());
+		}
+		// Then if the brightness to VertexBuffer map doesn't have a VertexBuffer for the given brightness then make one.
+		if (!NAMES_AND_BRIGHTNESS_TO_VERTEX_BUFFER.get(name).containsKey(brightness)) {
+			BufferBuilder.State bufferState = NAMES_TO_BUFFER_STATES.get(name);
+			
+			FastBlockModelRenderer.VERTEX_BUILDER.setTranslation(0, 0, 0);
+			FastBlockModelRenderer.VERTEX_BUILDER.begin(7, DefaultVertexFormats.BLOCK);
+			FastBlockModelRenderer.VERTEX_BUILDER.setVertexState(bufferState);
+
+			// This code adjusts the brightness of the model rendered.
+			int j = FastBlockModelRenderer.VERTEX_BUILDER.vertexFormat.getNextOffset() >> 2;
+			int cont = FastBlockModelRenderer.VERTEX_BUILDER.getVertexCount();
+			int offsetUV = FastBlockModelRenderer.VERTEX_BUILDER.vertexFormat.getUvOffsetById(1) / 4;
+			int bufferNextSize = FastBlockModelRenderer.VERTEX_BUILDER.vertexFormat.getIntegerSize();
+
+			// Set the brightness manually, so that we don't have to create a new IBakedModel for each brightness. 
+			for (int contont = 0; contont < cont; contont += 4) {
+				try {
+					int i = (contont) * bufferNextSize + offsetUV;
+					FastBlockModelRenderer.VERTEX_BUILDER.rawIntBuffer.put(i, brightness);
+					FastBlockModelRenderer.VERTEX_BUILDER.rawIntBuffer.put(i + j, brightness);
+					FastBlockModelRenderer.VERTEX_BUILDER.rawIntBuffer.put(i + j * 2, brightness);
+					FastBlockModelRenderer.VERTEX_BUILDER.rawIntBuffer.put(i + j * 3, brightness);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+
+			VertexBuffer gibVertexBuffer = new VertexBuffer(DefaultVertexFormats.BLOCK);
+			// Now that the VERTEX_BUILDER has been filled with all the render data, we must
+			// upload it to the gpu.
+			// The VERTEX_UPLOADER copies the state of the VERTEX_BUILDER to
+			// blockVertexBuffer, and then uploads it to the gpu.
+			FastBlockModelRenderer.VERTEX_BUILDER.finishDrawing();
+			FastBlockModelRenderer.VERTEX_BUILDER.reset();
+			// Copy the data over from the BufferBuilder into the VertexBuffer, and then
+			// upload that data to the gpu memory.
+			gibVertexBuffer.bufferData(FastBlockModelRenderer.VERTEX_BUILDER.getByteBuffer());
+			NAMES_AND_BRIGHTNESS_TO_VERTEX_BUFFER.get(name).put(brightness, gibVertexBuffer);
+		}
+		// Finally, once past all these checks, we can render it.
+		FastBlockModelRenderer.renderVertexBuffer(NAMES_AND_BRIGHTNESS_TO_VERTEX_BUFFER.get(name).get(brightness));
+	}
+	
+	/**
+	 * Must be run before TextureStitchEvent.Pre is thrown, otherwise this will not work.
+	 * @param name
+	 * @param modelLocation
+	 */
+	public static void registerGibsModel(String name, ResourceLocation modelLocation) {
 		try {
-			mod = ModelLoaderRegistry.getModel(gibLocation);
-			IModelState state = mod.getDefaultState();
-	        
-	        IBakedModel model = mod.bake(state, DefaultVertexFormats.BLOCK, ModelLoader.defaultTextureGetter());
-	        // loadedModels.put(handle.getKey(), model);
-//	        return model;
+			IModel model = ModelLoaderRegistry.getModel(modelLocation);
+			MODEL_TEXTURES_INTERNAL.addAll(model.getTextures());
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        
-		
-		return null;
 	}
+
+	private static IBakedModel getGibModel(ResourceLocation gibLocation) throws Exception {
+		IModel model = ModelLoaderRegistry.getModel(gibLocation);
+		IBakedModel bakedModel = model.bake(model.getDefaultState(), DefaultVertexFormats.ITEM,
+				ModelLoader.defaultTextureGetter());
+		return bakedModel;
+	}
+	
 }

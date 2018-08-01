@@ -33,6 +33,7 @@ import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexBuffer;
 import net.minecraft.client.renderer.vertex.VertexFormatElement;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -201,7 +202,7 @@ public class FastBlockModelRenderer {
         VERTEX_BUILDER.begin(7, DefaultVertexFormats.BLOCK);
         BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
         IBakedModel modelFromState = blockrendererdispatcher.getModelForState(state);
-        blockrendererdispatcher.getBlockModelRenderer().renderModel(world, modelFromState, state, BlockPos.ORIGIN, VERTEX_BUILDER, false, 0);
+        blockrendererdispatcher.getBlockModelRenderer().renderModel(Minecraft.getMinecraft().world, modelFromState, Blocks.AIR.getDefaultState(), BlockPos.ORIGIN, VERTEX_BUILDER, false, 0);
         BufferBuilder.State toReturn = VERTEX_BUILDER.getVertexState();
         VERTEX_BUILDER.finishDrawing();
         VERTEX_BUILDER.reset();

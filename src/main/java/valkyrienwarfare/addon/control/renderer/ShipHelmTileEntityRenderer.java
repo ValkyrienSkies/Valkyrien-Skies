@@ -100,10 +100,9 @@ public class ShipHelmTileEntityRenderer extends TileEntitySpecialRenderer<TileEn
             GL11.glTranslated(0.5D, 0, 0.5D);
             GL11.glRotated(wheelAndCompassStateRotation, 0, 1, 0);
             GL11.glTranslated(-0.5D, 0, -0.5D);
-            FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(),
-                    helmStateToRender, brightness);
             
-            // GibsModelRegistry.renderGibsModel("doggy", brightness);
+//            FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(), helmStateToRender, brightness);
+            GibsModelRegistry.renderGibsModel("doggy", brightness);
 
             GL11.glPushMatrix();
             GL11.glTranslated(.5, .522, 0);

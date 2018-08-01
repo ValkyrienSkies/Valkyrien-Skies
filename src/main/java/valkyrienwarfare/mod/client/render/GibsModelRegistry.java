@@ -42,9 +42,18 @@ public class GibsModelRegistry {
 	private static final ImmutableMap.Builder<String, String> FLIP_UV_CUSTOM_DATA_BUILDER = new ImmutableMap.Builder<String, String>();
 	static {
 		FLIP_UV_CUSTOM_DATA_BUILDER.put("flip-v", "true");
+		FLIP_UV_CUSTOM_DATA_BUILDER.put("ambient", "true");
 	}
+	// Used to flip the UVs of obj models. Normally this data is put in the
+	// blockstates.json, but since we're bypassing that it has to be added
+	// directly to the IModel.
 	private static final ImmutableMap<String, String> FLIP_UV_CUSTOM_DATA = FLIP_UV_CUSTOM_DATA_BUILDER.build();
 	
+	/**
+	 * Note this method is very unfinished, and really is only confirmed to work on obj models.
+	 * @param name
+	 * @param brightness
+	 */
 	public static void renderGibsModel(String name, int brightness) {
 		if (!NAMES_TO_RESOURCE_LOCATION.containsKey(name)) {
 			throw new IllegalArgumentException("No registed gibs model with the name " + name + "!");
@@ -54,7 +63,7 @@ public class GibsModelRegistry {
 			ResourceLocation location = NAMES_TO_RESOURCE_LOCATION.get(name);
 			try {
 				IModel model = ModelLoaderRegistry.getModel(location).process(FLIP_UV_CUSTOM_DATA);
-				IBakedModel bakedModel = model.bake(model.getDefaultState(), DefaultVertexFormats.BLOCK, ModelLoader.defaultTextureGetter());
+				IBakedModel bakedModel = model.bake(model.getDefaultState(), DefaultVertexFormats.ITEM, ModelLoader.defaultTextureGetter());
 				NAMES_TO_BAKED_MODELS.put(name, bakedModel);
 			} catch(Exception e) {
 				e.printStackTrace();

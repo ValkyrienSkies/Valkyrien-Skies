@@ -106,7 +106,7 @@ public class ClientProxyControl extends CommonProxyControl {
     @Override
     public void preInit(FMLStateEvent event) {
         OBJLoader.INSTANCE.addDomain(ValkyrienWarfareControl.INSTANCE.getModID().toLowerCase());
-        // GibsModelRegistry.registerGibsModel("doggy", new ResourceLocation("valkyrienwarfarecontrol", "block/shiphelmbase.obj"));
+        GibsModelRegistry.registerGibsModel("doggy", new ResourceLocation("valkyrienwarfarecontrol", "block/shiphelmbase.obj"));
     }
 
     @Override

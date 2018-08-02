@@ -1,19 +1,19 @@
-package com.best108.atom_animation_reader.basic_parser;
+package com.best108.atom_animation_reader.parsers;
 
 import java.util.Scanner;
 import java.util.Stack;
 
-public class BasicParser {
+public class AtomParser {
 
-	public final ParserElement head;
-	private final Stack<ParserElement> elementBacktrace;
+	public final AtomParserElement head;
+	private final Stack<AtomParserElement> elementBacktrace;
 	
-	public BasicParser(Scanner input) {
-		this.head = new ParserElement();
-		this.elementBacktrace = new Stack<ParserElement>();
+	public AtomParser(Scanner input) {
+		this.head = new AtomParserElement();
+		this.elementBacktrace = new Stack<AtomParserElement>();
 		elementBacktrace.add(head);
 		
-		while (input.hasNext()) {
+		while (input.hasNextLine()) {
 			readLine(input.nextLine());
 		}
 	}
@@ -25,14 +25,14 @@ public class BasicParser {
 		String[] properties = line.split("[ \t]+");
 		if (line.contains("{")) {
 			// Create a new element on the tree, push it onto the backtrace.
-			ParserElement element = new ParserElement(properties[0]);
+			AtomParserElement element = new AtomParserElement(properties[0]);
 			elementBacktrace.peek().branches.add(element);
 			elementBacktrace.push(element);
 		} else if (line.contains("}")) {
 			// Finished with an element on the tree, pop it from the backtrace.
 			elementBacktrace.pop();
 		} else {
-			ParserElement currentElement = elementBacktrace.peek();
+			AtomParserElement currentElement = elementBacktrace.peek();
 			currentElement.properties.add(properties);
 		}
 	}

@@ -119,6 +119,7 @@ public class ClientProxyControl extends CommonProxyControl {
         registerGibs("enginevalvewheel_geo");
         
         GibsAnimationRegistry.registerAnimation("bigengine", new ResourceLocation("valkyrienwarfarecontrol", "models/block/multipart_engines/engine_keyframes.atom"));
+        GibsAnimationRegistry.registerPivots(new ResourceLocation("valkyrienwarfarecontrol", "models/block/multipart_engines/enginepivotpoints.pivot"));
     }
     
     private void registerGibs(String name) {

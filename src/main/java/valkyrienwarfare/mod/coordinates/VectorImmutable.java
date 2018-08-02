@@ -16,6 +16,7 @@ import valkyrienwarfare.math.Vector;
 @Immutable
 public class VectorImmutable {
 
+	public static final VectorImmutable ZERO_VECTOR = new VectorImmutable(0, 0, 0);
 	private final double x;
 	private final double y;
 	private final double z;

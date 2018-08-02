@@ -6,8 +6,8 @@ import java.util.List;
 import com.best108.atom_animation_reader.IAtomAnimation;
 import com.best108.atom_animation_reader.IAtomAnimationBuilder;
 import com.best108.atom_animation_reader.IModelRenderer;
-import com.best108.atom_animation_reader.basic_parser.BasicParser;
-import com.best108.atom_animation_reader.basic_parser.ParserElement;
+import com.best108.atom_animation_reader.parsers.AtomParser;
+import com.best108.atom_animation_reader.parsers.AtomParserElement;
 
 public class BasicAtomAnimationBuilder implements IAtomAnimationBuilder {
 
@@ -15,12 +15,12 @@ public class BasicAtomAnimationBuilder implements IAtomAnimationBuilder {
 	private final int maxKeyFrame;
 	private final List<DagNode> renderNodes;
 	
-	public BasicAtomAnimationBuilder(BasicParser parser) {
+	public BasicAtomAnimationBuilder(AtomParser parser) {
 		minKeyFrame = Integer.valueOf(parser.head.properties.get(6)[1]);
 		maxKeyFrame = Integer.valueOf(parser.head.properties.get(7)[1]);
 		this.renderNodes = new ArrayList<DagNode>();
 		
-		for (ParserElement dagNodesParsed : parser.head.branches) {
+		for (AtomParserElement dagNodesParsed : parser.head.branches) {
 			renderNodes.add(new DagNode(dagNodesParsed));
 		}
 		
@@ -58,7 +58,7 @@ public class BasicAtomAnimationBuilder implements IAtomAnimationBuilder {
 		// Nodes in the order their transform will be applied.
 		final List<AnimationDataNode> animationNodes;
 		
-		DagNode(ParserElement parserElement) {
+		DagNode(AtomParserElement parserElement) {
 			List<String[]> properties = parserElement.properties;
 			this.modelName = properties.get(0)[0];
 			this.animationNodes = new ArrayList<AnimationDataNode>();

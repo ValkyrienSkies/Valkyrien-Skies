@@ -9,6 +9,9 @@ import com.best108.atom_animation_reader.IModelRenderer;
 import com.best108.atom_animation_reader.parsers.AtomParser;
 import com.best108.atom_animation_reader.parsers.AtomParserElement;
 
+import valkyrienwarfare.math.Vector;
+import valkyrienwarfare.mod.client.render.GibsAnimationRegistry;
+
 public class BasicAtomAnimationBuilder implements IAtomAnimationBuilder {
 
 	private final int minKeyFrame;
@@ -41,13 +44,31 @@ public class BasicAtomAnimationBuilder implements IAtomAnimationBuilder {
 		// Generate the compiled IAtomAnimation
 		List<BasicDagNodeRenderer> dagNodeRenderers = new ArrayList<BasicDagNodeRenderer>();
 		for (DagNode dagNode : renderNodes) {
-			List<BasicAnimationTransform> animations = new ArrayList<BasicAnimationTransform>();
-			for (AnimationDataNode animationNode : dagNode.animationNodes) {
-				BasicAnimationTransform basicTransform = new BasicAnimationTransform(animationNode.animationType, animationNode.animKeyframes.keyframes);
-				animations.add(basicTransform);
+			// This hacky bit of code is kinda crap, maybe one day Ill move the pivot detection somewhere else.
+			if (dagNode.modelName.contains("_pivot")) {
+				// This is a pivot, do something else.
+				Vector pivotPoint = new Vector();
+				for (AnimationDataNode animData : dagNode.animationNodes) {
+					if (animData.animationType.equals("translateX")) {
+						pivotPoint.X = Double.valueOf(animData.animKeyframes.keyframes.get(0)[1]);
+					}
+					if (animData.animationType.equals("translateY")) {
+						pivotPoint.Y = Double.valueOf(animData.animKeyframes.keyframes.get(0)[1]);
+					}
+					if (animData.animationType.equals("translateZ")) {
+						pivotPoint.Z = Double.valueOf(animData.animKeyframes.keyframes.get(0)[1]);
+					}
+				}
+				GibsAnimationRegistry.registerPivot(dagNode.modelName.replaceFirst("_pivot", ""), pivotPoint.toImmutable());
+			} else {
+				List<BasicAnimationTransform> animations = new ArrayList<BasicAnimationTransform>();
+				for (AnimationDataNode animationNode : dagNode.animationNodes) {
+					BasicAnimationTransform basicTransform = new BasicAnimationTransform(animationNode.animationType, animationNode.animKeyframes.keyframes);
+					animations.add(basicTransform);
+				}
+				BasicDagNodeRenderer dagRenderer = new BasicDagNodeRenderer(dagNode.modelName, animations, modelRenderer);
+				dagNodeRenderers.add(dagRenderer);
 			}
-			BasicDagNodeRenderer dagRenderer = new BasicDagNodeRenderer(dagNode.modelName, animations, modelRenderer);
-			dagNodeRenderers.add(dagRenderer);
 		}
 		
 		return new BasicAtomAnimation(dagNodeRenderers, minKeyFrame, maxKeyFrame);

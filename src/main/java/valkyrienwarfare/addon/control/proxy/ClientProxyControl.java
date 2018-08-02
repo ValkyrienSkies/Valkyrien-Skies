@@ -125,10 +125,23 @@ public class ClientProxyControl extends CommonProxyControl {
         registerControlGibs("liftcontrolhandle_geo");
         registerControlGibs("liftcontrolhandle_pivot_geo");
         
+        registerGearboxGibs("gear1_geo");
+        registerGearboxGibs("gear1_pivot_geo");
+        registerGearboxGibs("gear2_geo");
+        registerGearboxGibs("gear2_pivot_geo");
+        registerGearboxGibs("gear3_geo");
+        registerGearboxGibs("gear3_pivot_geo");
+        registerGearboxGibs("gear4_geo");
+        registerGearboxGibs("gear4_pivot_geo");
+        registerGearboxGibs("gearbox_geo");
+        registerGearboxGibs("gearbox_pivot_geo");
+        
         GibsAnimationRegistry.registerAnimation("bigengine", new ResourceLocation("valkyrienwarfarecontrol", "models/block/multipart_engines/engine_keyframes.atom"));
         GibsAnimationRegistry.registerPivots(new ResourceLocation("valkyrienwarfarecontrol", "models/block/multipart_engines/enginepivotpoints.pivot"));
     
         GibsAnimationRegistry.registerAnimation("liftlever", new ResourceLocation("valkyrienwarfarecontrol", "models/block/controls/liftcontrol_keyframes.atom"));
+        
+        GibsAnimationRegistry.registerAnimation("boxofgears", new ResourceLocation("valkyrienwarfarecontrol", "models/block/gearbox/gearbox_keyframes.atom"));
     }
     
     private void registerEngineGibs(String name) {
@@ -139,6 +152,10 @@ public class ClientProxyControl extends CommonProxyControl {
     	GibsModelRegistry.registerGibsModel(name, new ResourceLocation("valkyrienwarfarecontrol", "block/controls/" + name + ".obj"));
     }
 
+    private void registerGearboxGibs(String name) {
+    	GibsModelRegistry.registerGibsModel(name, new ResourceLocation("valkyrienwarfarecontrol", "block/gearbox/" + name + ".obj"));
+    }
+    
     @Override
     public void init(FMLStateEvent event) {
     	MinecraftForge.EVENT_BUS.register(new ControlEventsClient());

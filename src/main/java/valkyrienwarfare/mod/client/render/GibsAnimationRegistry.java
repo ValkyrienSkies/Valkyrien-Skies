@@ -55,6 +55,7 @@ public class GibsAnimationRegistry {
 		if (MODEL_NAME_TO_PIVOTS.containsKey(modelName)) {
 			throw new IllegalArgumentException();
 		}
+		System.out.println("Registered the pivot " + pivotPoint.createMutibleVectorCopy().toRoundedString() + " for " + modelName);
 		MODEL_NAME_TO_PIVOTS.put(modelName, pivotPoint);
 	}
 	

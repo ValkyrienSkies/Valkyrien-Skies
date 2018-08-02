@@ -118,15 +118,6 @@ public class ClientProxyControl extends CommonProxyControl {
         registerGibs("enginepowercog_geo");
         registerGibs("enginevalvewheel_geo");
         
-        registerGibs("enginevalvewheel_geo_pivot");
-        registerGibs("engine_geo_pivot");
-        registerGibs("engineconnectionrod_geo_pivot");
-        registerGibs("enginegaugehand1_geo_pivot");
-        registerGibs("enginegaugehand2_geo_pivot");
-        registerGibs("enginemaincog_geo_pivot");
-        registerGibs("enginepiston_geo_pivot");
-        registerGibs("enginepowercog_geo_pivot");
-        
         GibsAnimationRegistry.registerAnimation("bigengine", new ResourceLocation("valkyrienwarfarecontrol", "models/block/multipart_engines/engine_keyframes.atom"));
     }
     

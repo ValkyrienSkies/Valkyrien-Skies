@@ -4,11 +4,13 @@ import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 
+import valkyrienwarfare.math.Vector;
+
 public class BasicAnimationTransform {
 
 	private final String animationTransform;
 	private final BasicKeyframeInterpolator interpolator;
-	
+
 	public BasicAnimationTransform(String animationTransform, List<String[]> keyframes) {
 		this.animationTransform = animationTransform;
 		this.interpolator = new BasicKeyframeInterpolator(keyframes);
@@ -27,10 +29,12 @@ public class BasicAnimationTransform {
                 GL11.glTranslated(value, 0, 0);
                 break;
             case "translateY":
-                GL11.glTranslated(0, 0, -value);
+                GL11.glTranslated(0, value, 0);
+//                netTranslation.Y += value;
                 break;
             case "translateZ":
-                GL11.glTranslated(0, value, 0);
+                GL11.glTranslated(0, 0, value);
+//                netTranslation.Z += value;
                 break;
             case "rotateX":
                 GL11.glRotated(value, 1, 0, 0);
@@ -52,5 +56,22 @@ public class BasicAnimationTransform {
                 break;
         }
 //		 System.out.println(animationTransform + " : " + value);
+	}
+	
+	public void changePivot(Vector pivotChange, double keyframe) {
+		double value = interpolator.getValue(keyframe);
+		
+		switch(animationTransform)
+        {
+            case "translateX":
+            	pivotChange.X += value;
+                break;
+            case "translateY":
+            	pivotChange.Y += value;
+                break;
+            case "translateZ":
+            	pivotChange.Z += value;
+                break;
+        }
 	}
 }

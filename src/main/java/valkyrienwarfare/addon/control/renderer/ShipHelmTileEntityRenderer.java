@@ -87,6 +87,7 @@ public class ShipHelmTileEntityRenderer extends TileEntitySpecialRenderer<TileEn
             int brightness = tileentity.getWorld().getCombinedLight(tileentity.getPos(), 0);
 
             GL11.glPushMatrix();
+//            GL11.glTranslated(-1, 0, -1);
             GibsAnimationRegistry.getAnimation("bigengine").renderAnimation(keyframe + 1, brightness);
             GL11.glPopMatrix();
             

@@ -17,6 +17,7 @@
 package valkyrienwarfare.addon.control.renderer;
 
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -65,14 +66,13 @@ public class ShipTelegraphTileEntityRenderer extends TileEntitySpecialRenderer<T
         int brightness = tileentity.getWorld().getCombinedLight(tileentity.getPos(), 0);
 
 //        GL11.glTranslated(-0.026, -0.334, 0.333);
+        // GL11.glTranslated(0.252, 0.3, 0.697);
         GL11.glPushMatrix();
-        GL11.glTranslated(0.252, 0.697, -0.3);
-        GL11.glTranslated(-.5D, -1, -.5D);
-        GL11.glPushMatrix();
-//         GL11.glRotated(360 * Math.random(), 0, 0, 1);
+        GL11.glTranslated(0.252, 0.3, 0.697);
+        GL11.glRotated(Minecraft.getMinecraft().world.getTotalWorldTime(), 0, 0, 1);
+        GL11.glTranslated(-0.252, -0.3, -0.697);
         GibsModelRegistry.renderGibsModel("enginemaincog_geo", brightness);
-        GL11.glPopMatrix();
-//         GL11.glTranslated(-0.252, -0.697, 0.3);
+        
         GL11.glPopMatrix();
         
         double multiplier = 1.5D;

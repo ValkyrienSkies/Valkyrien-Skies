@@ -29,6 +29,7 @@ import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.block.BlockShipTelegraph;
 import valkyrienwarfare.addon.control.tileentity.TileEntityShipTelegraph;
 import valkyrienwarfare.mod.client.render.FastBlockModelRenderer;
+import valkyrienwarfare.mod.client.render.GibsModelRegistry;
 
 public class ShipTelegraphTileEntityRenderer extends TileEntitySpecialRenderer<TileEntityShipTelegraph> {
 
@@ -49,14 +50,7 @@ public class ShipTelegraphTileEntityRenderer extends TileEntitySpecialRenderer<T
         this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
         GlStateManager.pushMatrix();
         GlStateManager.disableLighting();
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder BufferBuilder = tessellator.getBuffer();
-
-        double oldX = BufferBuilder.xOffset;
-        double oldY = BufferBuilder.yOffset;
-        double oldZ = BufferBuilder.zOffset;
-
-        BufferBuilder.setTranslation(0, 0, 0);
+   
         GL11.glTranslated(x, y, z);
         GlStateManager.disableAlpha();
         GlStateManager.disableBlend();
@@ -70,8 +64,20 @@ public class ShipTelegraphTileEntityRenderer extends TileEntitySpecialRenderer<T
         IBlockState helmStateToRender = ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipWheel.getStateFromMeta(4);
         int brightness = tileentity.getWorld().getCombinedLight(tileentity.getPos(), 0);
 
+//        GL11.glTranslated(-0.026, -0.334, 0.333);
+        GL11.glPushMatrix();
+        GL11.glTranslated(0.252, 0.697, -0.3);
+        GL11.glTranslated(-.5D, -1, -.5D);
+        GL11.glPushMatrix();
+//         GL11.glRotated(360 * Math.random(), 0, 0, 1);
+        GibsModelRegistry.renderGibsModel("enginemaincog_geo", brightness);
+        GL11.glPopMatrix();
+//         GL11.glTranslated(-0.252, -0.697, 0.3);
+        GL11.glPopMatrix();
+        
         double multiplier = 1.5D;
 
+        /*
         GL11.glTranslated((1D - multiplier) / 2.0D, 0, (1D - multiplier) / 2.0D);
         GL11.glScaled(multiplier, multiplier, multiplier);
         EnumFacing enumfacing = telegraphState.getValue(BlockShipTelegraph.FACING);
@@ -105,6 +111,8 @@ public class ShipTelegraphTileEntityRenderer extends TileEntitySpecialRenderer<T
 
         GL11.glPopMatrix();
         BufferBuilder.setTranslation(oldX, oldY, oldZ);
+        */
+        GL11.glPopMatrix();
 
         GlStateManager.enableLighting();
         GlStateManager.resetColor();

@@ -11,13 +11,11 @@ import com.best108.atom_animation_reader.basic_parser.ParserElement;
 
 public class BasicAtomAnimationBuilder implements IAtomAnimationBuilder {
 
-	private final IModelRenderer modelRenderer;
 	private final int minKeyFrame;
 	private final int maxKeyFrame;
 	private final List<DagNode> renderNodes;
 	
-	public BasicAtomAnimationBuilder(IModelRenderer modelRenderer, BasicParser parser) {
-		this.modelRenderer = modelRenderer;
+	public BasicAtomAnimationBuilder(BasicParser parser) {
 		minKeyFrame = Integer.valueOf(parser.head.properties.get(6)[1]);
 		maxKeyFrame = Integer.valueOf(parser.head.properties.get(7)[1]);
 		this.renderNodes = new ArrayList<DagNode>();
@@ -39,7 +37,7 @@ public class BasicAtomAnimationBuilder implements IAtomAnimationBuilder {
 	}
 	
 	@Override
-	public IAtomAnimation build() {
+	public IAtomAnimation build(IModelRenderer modelRenderer) {
 		// Generate the compiled IAtomAnimation
 		List<BasicDagNodeRenderer> dagNodeRenderers = new ArrayList<BasicDagNodeRenderer>();
 		for (DagNode dagNode : renderNodes) {

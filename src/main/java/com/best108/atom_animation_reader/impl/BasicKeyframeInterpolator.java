@@ -23,8 +23,14 @@ public class BasicKeyframeInterpolator {
 	}
 	
 	public double getValue(double keyframe) {
+		if (knownFrames.size() == 1) {
+			return knownFrames.get(0).getValue();
+		}
 		for (int i = 0; i < knownFrames.size(); i++) {
 			double currentKeyframe = knownFrames.get(i).getKey();
+			if (currentKeyframe == keyframe) {
+				return knownFrames.get(i).getValue();
+			}
 			if (currentKeyframe > keyframe) {
 				double lastKeyFrame = knownFrames.get(i - 1).getKey();
 				double currentKeyFrameValue = knownFrames.get(i).getValue();

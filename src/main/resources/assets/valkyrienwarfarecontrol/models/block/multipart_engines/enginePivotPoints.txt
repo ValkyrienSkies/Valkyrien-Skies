@@ -1,0 +1,39 @@
+enginemaincog_geo pivot: 
+translate x: 0.252
+translate y: 0.3
+translate z: 0.697
+
+engineconnectionrod_geo pivot: 
+translate x: 0.592
+translate y: 0.241
+translate z: 0.621
+
+enginepiston_geo pivot: 
+translate x: 0.592
+translate y: 0.241
+translate z: 0.622
+
+engine_geo pivot: 
+translate x: 0.517
+translate y: 0.267
+translate z: 0.748
+
+enginepowercog_geo pivot: 
+translate x: 0.474
+translate y: 0.166
+translate z: 0.833
+
+enginevalvewheel_geo pivot: 
+translate x: 0.593
+translate y: 0.355
+translate z: 0.714
+
+enginegaugehand1_geo pivot: 
+translate x: 0.699
+translate y: 0.363
+translate z: 0.712
+
+enginegaugehand2_geo pivot: 
+translate x: 0.68
+translate y: 0.345
+translate z: 0.712

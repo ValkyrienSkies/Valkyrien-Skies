@@ -38,6 +38,7 @@ import valkyrienwarfare.addon.control.tileentity.TileEntityPropellerEngine;
 import valkyrienwarfare.addon.control.tileentity.TileEntityShipHelm;
 import valkyrienwarfare.addon.control.tileentity.TileEntityShipTelegraph;
 import valkyrienwarfare.addon.control.tileentity.TileEntityThrustModulator;
+import valkyrienwarfare.mod.client.render.GibsAnimationRegistry;
 import valkyrienwarfare.mod.client.render.GibsModelRegistry;
 
 public class ClientProxyControl extends CommonProxyControl {
@@ -107,7 +108,30 @@ public class ClientProxyControl extends CommonProxyControl {
     public void preInit(FMLStateEvent event) {
         OBJLoader.INSTANCE.addDomain(ValkyrienWarfareControl.INSTANCE.getModID().toLowerCase());
         GibsModelRegistry.registerGibsModel("doggy", new ResourceLocation("valkyrienwarfarecontrol", "block/shiphelmbase.obj"));
-        GibsModelRegistry.registerGibsModel("testmodel", new ResourceLocation("valkyrienwarfarecontrol", "block/multipart_engines/engine_geo.obj"));
+        registerGibs("engine_geo");
+        registerGibs("engineconnectionrod_geo");
+        registerGibs("enginepiston_geo");
+        registerGibs("enginegaugehand1_geo");
+        registerGibs("enginegaugehand2_geo");
+        registerGibs("enginemaincog_geo");
+        registerGibs("enginepiston_geo");
+        registerGibs("enginepowercog_geo");
+        registerGibs("enginevalvewheel_geo");
+        
+        registerGibs("enginevalvewheel_geo_pivot");
+        registerGibs("engine_geo_pivot");
+        registerGibs("engineconnectionrod_geo_pivot");
+        registerGibs("enginegaugehand1_geo_pivot");
+        registerGibs("enginegaugehand2_geo_pivot");
+        registerGibs("enginemaincog_geo_pivot");
+        registerGibs("enginepiston_geo_pivot");
+        registerGibs("enginepowercog_geo_pivot");
+        
+        GibsAnimationRegistry.registerAnimation("bigengine", new ResourceLocation("valkyrienwarfarecontrol", "models/block/multipart_engines/engine_keyframes.atom"));
+    }
+    
+    private void registerGibs(String name) {
+    	GibsModelRegistry.registerGibsModel(name, new ResourceLocation("valkyrienwarfarecontrol", "block/multipart_engines/" + name + ".obj"));
     }
 
     @Override

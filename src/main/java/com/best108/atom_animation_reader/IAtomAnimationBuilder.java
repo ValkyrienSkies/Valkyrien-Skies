@@ -13,5 +13,5 @@ public interface IAtomAnimationBuilder {
 	 * 
 	 * @return
 	 */
-	IAtomAnimation build();
+	IAtomAnimation build(IModelRenderer modelRenderer);
 }

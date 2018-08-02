@@ -2,6 +2,8 @@ package com.best108.atom_animation_reader.impl;
 
 import java.util.List;
 
+import org.lwjgl.opengl.GL11;
+
 import com.best108.atom_animation_reader.IAtomAnimation;
 
 public class BasicAtomAnimation implements IAtomAnimation {
@@ -19,7 +21,9 @@ public class BasicAtomAnimation implements IAtomAnimation {
 	@Override
 	public void renderAnimation(double keyframe, int brightness) {
 		for (BasicDagNodeRenderer dagNode : dagNodes) {
+			GL11.glPushMatrix();
 			dagNode.render(keyframe, brightness);
+			GL11.glPopMatrix();
 		}
 	}
 

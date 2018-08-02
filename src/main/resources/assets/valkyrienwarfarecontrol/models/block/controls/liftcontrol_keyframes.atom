@@ -1,0 +1,236 @@
+atomVersion 1.0;
+mayaVersion 2018;
+mayaSceneFile D:/Drakes Documents/Projects/VW/MODELS/FINAL MODELS/Models_SimpleVoxelised_V9.ma;
+timeUnit film;
+linearUnit cm;
+angularUnit deg;
+startTime 1;
+endTime 100;
+dagNode {
+  liftcontrolhandle_pivot_geo 2 1;
+  anim translate.translateX translateX 0;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0.49601221 auto auto 1 0 0;
+    }
+  }
+  anim translate.translateY translateY 1;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0.22870608 auto auto 1 0 0;
+    }
+  }
+  anim translate.translateZ translateZ 2;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0.27610781 auto auto 1 0 0;
+    }
+  }
+}
+dagNode {
+  liftcontrol_geo 2 1;
+  anim translate.translateX translateX 0;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0 auto auto 1 0 0;
+    }
+  }
+  anim translate.translateY translateY 1;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0 auto auto 1 0 0;
+    }
+  }
+  anim translate.translateZ translateZ 2;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0 auto auto 1 0 0;
+    }
+  }
+}
+dagNode {
+  liftcontrolgrate_geo 2 1;
+  anim translate.translateX translateX 0;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0 auto auto 1 0 0;
+    }
+  }
+  anim translate.translateY translateY 1;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0 auto auto 1 0 0;
+    }
+  }
+  anim translate.translateZ translateZ 2;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0 auto auto 1 0 0;
+    }
+  }
+}
+dagNode {
+  liftcontrolglass_geo 2 1;
+  anim translate.translateX translateX 0;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0 auto auto 1 0 0;
+    }
+  }
+  anim translate.translateY translateY 1;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0 auto auto 1 0 0;
+    }
+  }
+  anim translate.translateZ translateZ 2;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0 auto auto 1 0 0;
+    }
+  }
+}
+dagNode {
+  liftcontrolhandle_geo 2 1;
+  anim translate.translateX translateX 0;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0 linear linear 1 0 0;
+      5 0 linear linear 1 0 0;
+      10 0 linear linear 1 0 0;
+      15 0 linear linear 1 0 0;
+      20 0 linear linear 1 0 0;
+    }
+  }
+  anim translate.translateY translateY 1;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0 linear linear 1 0 0;
+      5 0.049463555 linear linear 1 0 0;
+      10 0.098927096 linear linear 1 0 0;
+      15 -0.049463585 linear linear 1 0 0;
+      20 -0.098927125 linear linear 1 0 0;
+    }
+  }
+  anim translate.translateZ translateZ 2;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0 linear linear 1 0 0;
+      5 0.13090991 linear linear 1 0 0;
+      10 0.2479528 linear linear 1 0 0;
+      15 -0.11594433 linear linear 1 0 0;
+      20 -0.23724338 linear linear 1 0 0;
+    }
+  }
+}
+dagNode {
+  liftcontrol_light_geo 2 1;
+  anim translate.translateX translateX 0;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 5 auto auto 1 0 0;
+    }
+  }
+  anim translate.translateY translateY 1;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0 auto auto 1 0 0;
+    }
+  }
+  anim translate.translateZ translateZ 2;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0 auto auto 1 0 0;
+    }
+  }
+}

@@ -108,22 +108,35 @@ public class ClientProxyControl extends CommonProxyControl {
     public void preInit(FMLStateEvent event) {
         OBJLoader.INSTANCE.addDomain(ValkyrienWarfareControl.INSTANCE.getModID().toLowerCase());
         GibsModelRegistry.registerGibsModel("doggy", new ResourceLocation("valkyrienwarfarecontrol", "block/shiphelmbase.obj"));
-        registerGibs("engine_geo");
-        registerGibs("engineconnectionrod_geo");
-        registerGibs("enginepiston_geo");
-        registerGibs("enginegaugehand1_geo");
-        registerGibs("enginegaugehand2_geo");
-        registerGibs("enginemaincog_geo");
-        registerGibs("enginepiston_geo");
-        registerGibs("enginepowercog_geo");
-        registerGibs("enginevalvewheel_geo");
+        registerEngineGibs("engine_geo");
+        registerEngineGibs("engineconnectionrod_geo");
+        registerEngineGibs("enginepiston_geo");
+        registerEngineGibs("enginegaugehand1_geo");
+        registerEngineGibs("enginegaugehand2_geo");
+        registerEngineGibs("enginemaincog_geo");
+        registerEngineGibs("enginepiston_geo");
+        registerEngineGibs("enginepowercog_geo");
+        registerEngineGibs("enginevalvewheel_geo");
+        
+        registerControlGibs("liftcontrol_geo");
+        registerControlGibs("liftcontrol_light_geo");
+        registerControlGibs("liftcontrolglass_geo");
+        registerControlGibs("liftcontrolgrate_geo");
+        registerControlGibs("liftcontrolhandle_geo");
+        registerControlGibs("liftcontrolhandle_pivot_geo");
         
         GibsAnimationRegistry.registerAnimation("bigengine", new ResourceLocation("valkyrienwarfarecontrol", "models/block/multipart_engines/engine_keyframes.atom"));
         GibsAnimationRegistry.registerPivots(new ResourceLocation("valkyrienwarfarecontrol", "models/block/multipart_engines/enginepivotpoints.pivot"));
+    
+        GibsAnimationRegistry.registerAnimation("liftlever", new ResourceLocation("valkyrienwarfarecontrol", "models/block/controls/liftcontrol_keyframes.atom"));
     }
     
-    private void registerGibs(String name) {
+    private void registerEngineGibs(String name) {
     	GibsModelRegistry.registerGibsModel(name, new ResourceLocation("valkyrienwarfarecontrol", "block/multipart_engines/" + name + ".obj"));
+    }
+    
+    private void registerControlGibs(String name) {
+    	GibsModelRegistry.registerGibsModel(name, new ResourceLocation("valkyrienwarfarecontrol", "block/controls/" + name + ".obj"));
     }
 
     @Override

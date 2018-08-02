@@ -3,8 +3,6 @@ package com.best108.atom_animation_reader.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import javafx.util.Pair;
-
 /**
  * A linear basic keyframe interpolator.
  * @author thebest108
@@ -12,12 +10,12 @@ import javafx.util.Pair;
  */
 public class BasicKeyframeInterpolator {
 
-	private final List<Pair<Double, Double>> knownFrames;
+	private final List<KeyFrame> knownFrames;
 	
 	public BasicKeyframeInterpolator(List<String[]> keyframes) {
-		this.knownFrames = new ArrayList<Pair<Double, Double>>();
+		this.knownFrames = new ArrayList<KeyFrame>();
 		for (String[] frame : keyframes) {
-			Pair<Double, Double> framePair = new Pair<Double, Double>(Double.valueOf(frame[0]), Double.valueOf(frame[1]));
+			KeyFrame framePair = new KeyFrame(Double.valueOf(frame[0]), Double.valueOf(frame[1]));
 			knownFrames.add(framePair);
 		}
 	}
@@ -42,5 +40,23 @@ public class BasicKeyframeInterpolator {
 			}
 		}
 		return 0;
+	}
+	
+	private class KeyFrame {
+		final double keyframe;
+		final double value;
+		
+		KeyFrame(double keyframe, double value) {
+			this.keyframe = keyframe;
+			this.value = value;
+		}
+		
+		double getKey()	{
+			return keyframe;
+		}
+		
+		double getValue() {
+			return value;
+		}
 	}
 }

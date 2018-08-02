@@ -126,15 +126,10 @@ public class ClientProxyControl extends CommonProxyControl {
         registerControlGibs("liftcontrolhandle_pivot_geo");
         
         registerGearboxGibs("gear1_geo");
-        registerGearboxGibs("gear1_pivot_geo");
         registerGearboxGibs("gear2_geo");
-        registerGearboxGibs("gear2_pivot_geo");
         registerGearboxGibs("gear3_geo");
-        registerGearboxGibs("gear3_pivot_geo");
         registerGearboxGibs("gear4_geo");
-        registerGearboxGibs("gear4_pivot_geo");
         registerGearboxGibs("gearbox_geo");
-        registerGearboxGibs("gearbox_pivot_geo");
         
         GibsAnimationRegistry.registerAnimation("bigengine", new ResourceLocation("valkyrienwarfarecontrol", "models/block/multipart_engines/engine_keyframes.atom"));
         GibsAnimationRegistry.registerPivots(new ResourceLocation("valkyrienwarfarecontrol", "models/block/multipart_engines/enginepivotpoints.pivot"));

@@ -1,6 +1,6 @@
 # This file uses centimeters as units for non-parametric coordinates.
 
-mtllib gear4_pivot_geo.mtl
+mtllib gear4_geo_pivot.mtl
 v 0.334244 0.617841 0.620325
 v 0.413195 0.617841 0.620325
 v 0.334244 0.696791 0.620325

@@ -7,7 +7,7 @@ angularUnit deg;
 startTime 1;
 endTime 1;
 dagNode {
-  gear4_pivot_geo 2 1;
+  gear4_geo_pivot 2 1;
   anim translate.translateX translateX 0;
   animData {
     input time;
@@ -54,7 +54,7 @@ dagNode {
   }
 }
 dagNode {
-  gear3_pivot_geo 2 1;
+  gear3_geo_pivot 2 1;
   anim translate.translateX translateX 0;
   animData {
     input time;
@@ -101,7 +101,7 @@ dagNode {
   }
 }
 dagNode {
-  gear1_pivot_geo 2 1;
+  gear1_geo_pivot 2 1;
   anim translate.translateX translateX 0;
   animData {
     input time;
@@ -148,7 +148,7 @@ dagNode {
   }
 }
 dagNode {
-  gear2_pivot_geo 2 1;
+  gear2_geo_pivot 2 1;
   anim translate.translateX translateX 0;
   animData {
     input time;
@@ -434,7 +434,7 @@ dagNode {
   }
 }
 dagNode {
-  gearbox_pivot_geo 2 1;
+  gearbox_geo_pivot 2 1;
   anim translate.translateX translateX 0;
   animData {
     input time;

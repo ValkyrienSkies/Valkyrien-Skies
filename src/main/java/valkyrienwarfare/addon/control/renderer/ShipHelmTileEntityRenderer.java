@@ -90,7 +90,7 @@ public class ShipHelmTileEntityRenderer extends TileEntitySpecialRenderer<TileEn
             GL11.glPushMatrix();
 //            GL11.glTranslated(-1, 0, -1);
 //            GL11.glScaled(3, 3, 3);
-            GibsAnimationRegistry.getAnimation("boxofgears").renderAnimation(keyframe + 1, brightness);
+            GibsAnimationRegistry.getAnimation("bigengine").renderAnimation(keyframe + 1, brightness);
             GL11.glPopMatrix();
             
             keyframe = (2 * (Minecraft.getMinecraft().world.getTotalWorldTime() + partialTick)) % 99;

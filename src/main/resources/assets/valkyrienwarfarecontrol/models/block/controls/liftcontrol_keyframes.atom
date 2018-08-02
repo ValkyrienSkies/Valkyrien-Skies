@@ -5,9 +5,9 @@ timeUnit film;
 linearUnit cm;
 angularUnit deg;
 startTime 1;
-endTime 100;
+endTime 1;
 dagNode {
-  liftcontrolhandle_pivot_geo 2 1;
+  liftcontrolhandle_geo_pivot 2 1;
   anim translate.translateX translateX 0;
   animData {
     input time;

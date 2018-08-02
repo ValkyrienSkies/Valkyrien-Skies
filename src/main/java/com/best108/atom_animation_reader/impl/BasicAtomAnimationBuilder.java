@@ -45,7 +45,7 @@ public class BasicAtomAnimationBuilder implements IAtomAnimationBuilder {
 		List<BasicDagNodeRenderer> dagNodeRenderers = new ArrayList<BasicDagNodeRenderer>();
 		for (DagNode dagNode : renderNodes) {
 			// This hacky bit of code is kinda crap, maybe one day Ill move the pivot detection somewhere else.
-			if (dagNode.modelName.contains("_pivot")) {
+			if (dagNode.modelName.endsWith("_pivot")) {
 				// This is a pivot, do something else.
 				Vector pivotPoint = new Vector();
 				for (AnimationDataNode animData : dagNode.animationNodes) {
@@ -59,7 +59,7 @@ public class BasicAtomAnimationBuilder implements IAtomAnimationBuilder {
 						pivotPoint.Z = Double.valueOf(animData.animKeyframes.keyframes.get(0)[1]);
 					}
 				}
-				GibsAnimationRegistry.registerPivot(dagNode.modelName.replaceFirst("_pivot", ""), pivotPoint.toImmutable());
+				GibsAnimationRegistry.registerPivot(dagNode.modelName.substring(0, dagNode.modelName.length() - 6), pivotPoint.toImmutable());
 			} else {
 				List<BasicAnimationTransform> animations = new ArrayList<BasicAnimationTransform>();
 				for (AnimationDataNode animationNode : dagNode.animationNodes) {

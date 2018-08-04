@@ -35,17 +35,7 @@ public class BasicDagNodeRenderer {
 			transformations.get(i).transform(keyframe);
 			GL11.glTranslated(-customPivot.X, -customPivot.Y, -customPivot.Z);
 		}
-
-//		GL11.glPushMatrix();
-		for (int i = transformations.size() - 1;i >= 0; i--) {
-//			GL11.glTranslated(pivot.X, pivot.Y, pivot.Z);
-//			transformations.get(i).transform(keyframe);
-//			GL11.glTranslated(-pivot.X, -pivot.Y, -pivot.Z);
-		}
-		
-		if (!modelName.equals("e2ngine_geo")) {
-			modelRenderer.renderModel(modelName, brightness);
-		}
+		modelRenderer.renderModel(modelName, brightness);
 		GL11.glPopMatrix();
 	}
 }

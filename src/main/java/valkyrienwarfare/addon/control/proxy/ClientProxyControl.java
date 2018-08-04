@@ -131,12 +131,28 @@ public class ClientProxyControl extends CommonProxyControl {
         registerGearboxGibs("gear4_geo");
         registerGearboxGibs("gearbox_geo");
         
+        registerPocketwatchGibs("pocketwatch_geo");
+        registerPocketwatchGibs("pocketwatchbighand_geo");
+        registerPocketwatchGibs("pocketwatchlid_geo");
+        registerPocketwatchGibs("pocketwatchsmallhand_geo");
+        
+        registerTelescopeGibs("telescope_forth_geo");
+        registerTelescopeGibs("telescope_second_geo");
+        registerTelescopeGibs("telescope_third_geo");
+        registerTelescopeGibs("telescope_top_geo");
+        
         GibsAnimationRegistry.registerAnimation("bigengine", new ResourceLocation("valkyrienwarfarecontrol", "models/block/multipart_engines/engine_keyframes.atom"));
         GibsAnimationRegistry.registerPivots(new ResourceLocation("valkyrienwarfarecontrol", "models/block/multipart_engines/enginepivotpoints.pivot"));
     
         GibsAnimationRegistry.registerAnimation("liftlever", new ResourceLocation("valkyrienwarfarecontrol", "models/block/controls/liftcontrol_keyframes.atom"));
         
         GibsAnimationRegistry.registerAnimation("boxofgears", new ResourceLocation("valkyrienwarfarecontrol", "models/block/gearbox/gearbox_keyframes.atom"));
+    
+        GibsAnimationRegistry.registerAnimation("pocketwatch_body", new ResourceLocation("valkyrienwarfarecontrol", "models/block/pocketwatch/pocketwatch_keyframes.atom"));
+        
+        GibsAnimationRegistry.registerAnimation("pocketwatch_lid", new ResourceLocation("valkyrienwarfarecontrol", "models/block/pocketwatch/pocketwatchlid_keyframes.atom"));
+    
+        GibsAnimationRegistry.registerAnimation("telescope", new ResourceLocation("valkyrienwarfarecontrol", "models/block/telescope/telescope_keyframes.atom"));
     }
     
     private void registerEngineGibs(String name) {
@@ -149,6 +165,14 @@ public class ClientProxyControl extends CommonProxyControl {
 
     private void registerGearboxGibs(String name) {
     	GibsModelRegistry.registerGibsModel(name, new ResourceLocation("valkyrienwarfarecontrol", "block/gearbox/" + name + ".obj"));
+    }
+    
+    private void registerPocketwatchGibs(String name) {
+    	GibsModelRegistry.registerGibsModel(name, new ResourceLocation("valkyrienwarfarecontrol", "block/pocketwatch/" + name + ".obj"));
+    }
+    
+    private void registerTelescopeGibs(String name) {
+    	GibsModelRegistry.registerGibsModel(name, new ResourceLocation("valkyrienwarfarecontrol", "block/telescope/" + name + ".obj"));
     }
     
     @Override

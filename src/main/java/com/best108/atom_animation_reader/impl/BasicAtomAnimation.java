@@ -27,7 +27,7 @@ public class BasicAtomAnimation implements IAtomAnimation {
 	public void renderAnimation(double keyframe, int brightness) {
 		// Something is wrong with the maxKeyFrame
 		if (keyframe < minKeyFrame || keyframe > maxKeyFrame) {
-			// throw new IllegalArgumentException("Input keyframe " + keyframe + " is out of bounds!" + "\n:" + minKeyFrame + ":" + maxKeyFrame + ":");
+			// throw new IllegalArgumentException("Input keyframe " + keyframe + " is out of bounds!\n" + minKeyFrame + ":" + maxKeyFrame + ":");
 		}
 		for (BasicDagNodeRenderer dagNode : dagNodes) {
 			GL11.glPushMatrix();

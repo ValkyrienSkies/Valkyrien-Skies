@@ -2,6 +2,7 @@ package com.best108.atom_animation_reader.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import com.best108.atom_animation_reader.IAtomAnimation;
 import com.best108.atom_animation_reader.IAtomAnimationBuilder;
@@ -81,7 +82,13 @@ public class BasicAtomAnimationBuilder implements IAtomAnimationBuilder {
 		
 		DagNode(AtomParserElement parserElement) {
 			List<String[]> properties = parserElement.properties;
-			this.modelName = properties.get(0)[0];
+			if (!properties.get(0)[0].contains("|")) {
+				this.modelName = properties.get(0)[0];
+			} else {
+				// To handle any group names in the atom files.
+				this.modelName = properties.get(0)[0].split(Pattern.quote("|"))[1];
+			}
+			
 			this.animationNodes = new ArrayList<AnimationDataNode>();
 			int currentBranch = 0;
 			for (String[] line : properties) {

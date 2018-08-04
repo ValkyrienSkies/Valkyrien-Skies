@@ -21,8 +21,17 @@ public class BasicKeyframeInterpolator {
 	}
 	
 	public double getValue(double keyframe) {
+		// Only 1 keyframe, only one value.
 		if (knownFrames.size() == 1) {
 			return knownFrames.get(0).getValue();
+		}
+		// If the keyframe is below the known frames, use the lowest keyframe value.
+		if (keyframe <= knownFrames.get(0).keyframe) {
+			return knownFrames.get(0).getValue();
+		}
+		// If the keyframe is above the known frames, use the largest keyframe value.
+		if (keyframe >= knownFrames.get(knownFrames.size() - 1).keyframe) {
+			return knownFrames.get(knownFrames.size() - 1).getValue();
 		}
 		for (int i = 0; i < knownFrames.size(); i++) {
 			double currentKeyframe = knownFrames.get(i).getKey();

@@ -136,11 +136,9 @@ public class EventsClient {
      * Register textures for all the models registered in the GibsModelRegistry.
      * @param event
      */
-    @SubscribeEvent
-    public static void onTextureStitchEvent(TextureStitchEvent.Pre event) {
-		GibsModelRegistry.generateIModels();
-    	for (ResourceLocation textureLocation : GibsModelRegistry.MODEL_TEXTURES_IMMUTABLE) {
-    		event.getMap().registerSprite(textureLocation);
-    	}
-    }
+    // Defunct, doesn't work
+	@SubscribeEvent
+	public static void onTextureStitchEvent(TextureStitchEvent.Pre event) {
+		event.getMap().registerSprite(new ResourceLocation("valkyrienwarfarecontrol", "blocks/pocketwatch512"));
+	}
 }

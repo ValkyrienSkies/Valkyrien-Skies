@@ -33,10 +33,13 @@ import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import valkyrienwarfare.ValkyrienWarfareMod;
+import valkyrienwarfare.addon.control.block.multiblocks.BigEngineMultiblockSchematic;
+import valkyrienwarfare.addon.control.block.multiblocks.TileEntityBigEnginePart;
 import valkyrienwarfare.addon.control.capability.ICapabilityLastRelay;
 import valkyrienwarfare.addon.control.capability.ImplCapabilityLastRelay;
 import valkyrienwarfare.addon.control.capability.StorageLastRelay;
 import valkyrienwarfare.addon.control.gui.ControlGUIHandler;
+import valkyrienwarfare.addon.control.item.ItemMultiblockWrench;
 import valkyrienwarfare.addon.control.item.ItemRelayWire;
 import valkyrienwarfare.addon.control.network.EntityFixHandler;
 import valkyrienwarfare.addon.control.network.EntityFixMessage;
@@ -57,11 +60,11 @@ import valkyrienwarfare.addon.control.tileentity.TileEntityEtherCompressorStabil
 import valkyrienwarfare.addon.control.tileentity.TileEntityEtherGasCompressor;
 import valkyrienwarfare.addon.control.tileentity.TileEntityGyroscopeDampener;
 import valkyrienwarfare.addon.control.tileentity.TileEntityGyroscopeStabilizer;
+import valkyrienwarfare.addon.control.tileentity.TileEntityLegacyEtherCompressor;
 import valkyrienwarfare.addon.control.tileentity.TileEntityLiftControl;
 import valkyrienwarfare.addon.control.tileentity.TileEntityLiftValve;
 import valkyrienwarfare.addon.control.tileentity.TileEntityNetworkDisplay;
 import valkyrienwarfare.addon.control.tileentity.TileEntityNodeRelay;
-import valkyrienwarfare.addon.control.tileentity.TileEntityLegacyEtherCompressor;
 import valkyrienwarfare.addon.control.tileentity.TileEntityPilotsChair;
 import valkyrienwarfare.addon.control.tileentity.TileEntityPropellerEngine;
 import valkyrienwarfare.addon.control.tileentity.TileEntityShipHelm;
@@ -80,6 +83,7 @@ public class ValkyrienWarfareControl extends Module {
     public static SimpleNetworkWrapper controlNetwork;
     public final BlocksValkyrienWarfareControl vwControlBlocks;
     public Item relayWire;
+    public Item multiblockWrench;
 
     public ValkyrienWarfareControl() {
         super("VW_Control", new CommonProxyControl(), "valkyrienwarfarecontrol");
@@ -128,15 +132,19 @@ public class ValkyrienWarfareControl extends Module {
         // Unused
         GameRegistry.registerTileEntity(TileEntityEtherCompressorStabilizer.class, "tileenthercompressor_stabilizer");
         GameRegistry.registerTileEntity(TileEntityGyroscopeDampener.class, "tilegyroscope_dampener");
+        GameRegistry.registerTileEntity(TileEntityBigEnginePart.class, "tile_big_engine_part");
     }
 
     @Override
     public void registerItems(RegistryEvent.Register<Item> event) {
-    	relayWire = new ItemRelayWire().setUnlocalizedName("relaywire").setRegistryName(getModID(), "relaywire").setCreativeTab(ValkyrienWarfareMod.vwTab).setMaxStackSize(1);
-
-        event.getRegistry().register(relayWire);
+    	relayWire = new ItemRelayWire().setUnlocalizedName("relaywire").setRegistryName(getModID(), "relaywire").setCreativeTab(ValkyrienWarfareMod.vwTab);
+    	multiblockWrench = new ItemMultiblockWrench().setUnlocalizedName("vw_multiblock_wrench").setRegistryName(getModID(), "vw_multiblock_wrench").setCreativeTab(ValkyrienWarfareMod.vwTab);
+    	
+    	event.getRegistry().register(relayWire);
+    	event.getRegistry().register(multiblockWrench);
 
         vwControlBlocks.registerBlockItems(event);
+        MultiblockRegistry.registerSchematic(1, new BigEngineMultiblockSchematic());
     }
 
     @Override

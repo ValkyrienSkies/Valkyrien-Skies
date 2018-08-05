@@ -28,8 +28,10 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
 import valkyrienwarfare.addon.control.ControlEventsClient;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
+import valkyrienwarfare.addon.control.block.multiblocks.TileEntityBigEnginePart;
 import valkyrienwarfare.addon.control.controlsystems.controlgui.ThrustModulatorGui;
 import valkyrienwarfare.addon.control.renderer.BasicNodeTileEntityRenderer;
+import valkyrienwarfare.addon.control.renderer.BigEnginePartTileEntityRenderer;
 import valkyrienwarfare.addon.control.renderer.PropellerEngineTileEntityRenderer;
 import valkyrienwarfare.addon.control.renderer.ShipHelmTileEntityRenderer;
 import valkyrienwarfare.addon.control.renderer.ShipTelegraphTileEntityRenderer;
@@ -84,10 +86,13 @@ public class ClientProxyControl extends CommonProxyControl {
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.etherCompressorPanel);
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.blockEtherCompressorStabilizer);
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.gyroscopeDampener);
+        
+        registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.bigEnginePart);
     }
 
     private static void registerItemModels() {
         registerItemModel(ValkyrienWarfareControl.INSTANCE.relayWire);
+        registerItemModel(ValkyrienWarfareControl.INSTANCE.multiblockWrench);
     }
 
     private static void registerTileEntityRenderers() {
@@ -95,6 +100,7 @@ public class ClientProxyControl extends CommonProxyControl {
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityShipHelm.class, new ShipHelmTileEntityRenderer(TileEntityShipHelm.class));
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityShipTelegraph.class, new ShipTelegraphTileEntityRenderer(TileEntityShipTelegraph.class));
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPropellerEngine.class, new PropellerEngineTileEntityRenderer());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityBigEnginePart.class, new BigEnginePartTileEntityRenderer());
     }
 
     public static void checkForTextFieldUpdate(TileEntityThrustModulator entity) {

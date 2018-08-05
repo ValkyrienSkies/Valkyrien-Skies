@@ -16,5 +16,7 @@ public interface ITileEntityMultiblockPart {
 	
 	void dissembleMultiblock();
 	
-	void dissembleMutliblockLocal();
+	void dissembleMultiblockLocal();
+
+	void assembleMultiblock(IMulitblockSchematic schematic, BlockPos relativePos);
 }

@@ -22,26 +22,36 @@ public interface IMulitblockSchematic {
 	 */
 	List<BlockPosBlockPair> getStructureRelativeToCenter();
 	
-	/**
-	 * This should get called after canCreateMultiblock() returns true.
-	 * @param world
-	 * @param pos
-	 */
-	void createMultiblock(World world, BlockPos pos);
-	
 	int getSchematicID();
 
-	default boolean canCreateMultiblock(World world, BlockPos pos) {
+	default boolean createMultiblock(World world, BlockPos pos) {
 		if (getStructureRelativeToCenter().size() == 0) {
 			throw new IllegalStateException("No structure info found in the multiblock schematic!");
 		}
-		for (BlockPosBlockPair pair : getStructureRelativeToCenter()) {
-			BlockPos relativePos = pos.add(pair.getPos());
-			IBlockState state = world.getBlockState(relativePos);
-			if (state.getBlock() != pair.getBlock()) {
-				return false;
+		
+		for (EnumMultiblockRotation potentialRotation : EnumMultiblockRotation.values()) {
+			boolean buildSuccessful = true;
+			for (BlockPosBlockPair pair : getStructureRelativeToCenter()) {
+				BlockPos realPos = pos.add(potentialRotation.rotatePos(pair.getPos()));
+				IBlockState state = world.getBlockState(realPos);
+				if (state.getBlock() != pair.getBlock()) {
+					// This rotation didn't work
+					buildSuccessful = false;
+					break;
+				}
+			}
+			
+			if (buildSuccessful) {
+				for (BlockPosBlockPair pair : getStructureRelativeToCenter()) {
+					BlockPos realPos = pos.add(potentialRotation.rotatePos(pair.getPos()));
+					applyMultiblockCreation(world, realPos, potentialRotation.rotatePos(pair.getPos()), potentialRotation);
+				}
+				return true;
 			}
 		}
-		return true;
+		
+		return false;
 	}
+	
+	void applyMultiblockCreation(World world, BlockPos tilePos, BlockPos relativePos, EnumMultiblockRotation rotation);
 }

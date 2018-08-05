@@ -18,5 +18,7 @@ public interface ITileEntityMultiblockPart {
 	
 	void dissembleMultiblockLocal();
 
-	void assembleMultiblock(IMulitblockSchematic schematic, BlockPos relativePos);
+	void assembleMultiblock(IMulitblockSchematic schematic, EnumMultiblockRotation rotation, BlockPos relativePos);
+	
+	EnumMultiblockRotation getMultiblockRotation();
 }

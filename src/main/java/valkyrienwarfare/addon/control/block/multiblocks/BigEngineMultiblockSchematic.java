@@ -38,22 +38,18 @@ public class BigEngineMultiblockSchematic implements IMulitblockSchematic {
 	}
 
 	@Override
-	public void createMultiblock(World world, BlockPos pos) {
-		for (BlockPosBlockPair pair : getStructureRelativeToCenter()) {
-			BlockPos realPos = pair.getPos().add(pos);
-			TileEntity tileEntity = world.getTileEntity(realPos);
-			if (!(tileEntity instanceof TileEntityBigEnginePart)) {
-				throw new IllegalStateException();
-			}
-			TileEntityBigEnginePart enginePart = (TileEntityBigEnginePart) tileEntity;
-			enginePart.assembleMultiblock(this, pair.getPos());
-		}
-		System.out.println("Success!");
+	public int getSchematicID() {
+		return this.schematicID;
 	}
 
 	@Override
-	public int getSchematicID() {
-		return this.schematicID;
+	public void applyMultiblockCreation(World world, BlockPos tilePos, BlockPos relativePos, EnumMultiblockRotation rotation) {
+		TileEntity tileEntity = world.getTileEntity(tilePos);
+		if (!(tileEntity instanceof TileEntityBigEnginePart)) {
+			throw new IllegalStateException();
+		}
+		TileEntityBigEnginePart enginePart = (TileEntityBigEnginePart) tileEntity;
+		enginePart.assembleMultiblock(this, rotation, relativePos);
 	}
 
 }

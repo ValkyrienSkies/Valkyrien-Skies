@@ -35,9 +35,8 @@ public class ItemMultiblockWrench extends Item {
 			IMulitblockSchematic multiblockSchematic = MultiblockRegistry.getSchematicByID(1);
 			System
 			.out.println("close");
-			if (multiblockSchematic.canCreateMultiblock(worldIn, pos)) {
+			if (multiblockSchematic.createMultiblock(worldIn, pos)) {
 				System.out.println("YE");
-				multiblockSchematic.createMultiblock(worldIn, pos);
 				return EnumActionResult.PASS;
 			}
 		}

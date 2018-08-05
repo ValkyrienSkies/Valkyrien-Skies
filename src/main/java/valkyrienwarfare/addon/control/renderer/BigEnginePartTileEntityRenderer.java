@@ -42,8 +42,11 @@ public class BigEnginePartTileEntityRenderer extends TileEntitySpecialRenderer<T
 			FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(), state, brightness);
 
 		} else if (tileentity.isMaster()) {
-			GlStateManager.translate(-1, 0, -2);
+			
+			
+			GlStateManager.rotate(tileentity.getMultiblockRotation().getYaw(), 0, 1, 0);
 			GlStateManager.scale(3, 3, 3);
+			GlStateManager.translate(-1D/3D, 0, -2D/3D);
 			
 			double keyframe = ((Minecraft.getMinecraft().world.getTotalWorldTime() + partialTick) % 99) + 1;
 			

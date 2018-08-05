@@ -19,6 +19,7 @@ public abstract class TileEntityMultiblockPart extends BasicNodeTileEntity imple
 	// The relative position of this tile to its master.
 	protected BlockPos offsetPos;
 	protected IMulitblockSchematic multiblockSchematic;
+	protected EnumMultiblockRotation multiblockRotation;
 	
 	public TileEntityMultiblockPart() {
 		super();
@@ -26,6 +27,7 @@ public abstract class TileEntityMultiblockPart extends BasicNodeTileEntity imple
 		this.isMaster = false;
 		this.offsetPos = BlockPos.ORIGIN;
 		this.multiblockSchematic = null;
+		this.multiblockRotation = EnumMultiblockRotation.None;
 	}
 	
 	@Override
@@ -63,7 +65,7 @@ public abstract class TileEntityMultiblockPart extends BasicNodeTileEntity imple
 	public void dissembleMultiblock() {
 		if (multiblockSchematic != null) {
 			for (BlockPosBlockPair pair : multiblockSchematic.getStructureRelativeToCenter()) {
-				BlockPos posToBreak = pair.getPos().add(getMultiblockOrigin());
+				BlockPos posToBreak = multiblockRotation.rotatePos(pair.getPos()).add(getMultiblockOrigin());
 				TileEntity tileToBreak = this.getWorld().getTileEntity(posToBreak);
 				if (tileToBreak instanceof ITileEntityMultiblockPart) {
 					((ITileEntityMultiblockPart) tileToBreak).dissembleMultiblockLocal();
@@ -82,6 +84,11 @@ public abstract class TileEntityMultiblockPart extends BasicNodeTileEntity imple
 	}
 	
 	@Override
+	public EnumMultiblockRotation getMultiblockRotation() {
+		return multiblockRotation;
+	}
+	
+	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 		NBTTagCompound toReturn = super.writeToNBT(compound);
 		toReturn.setBoolean("isAssembled", isAssembled);
@@ -94,6 +101,7 @@ public abstract class TileEntityMultiblockPart extends BasicNodeTileEntity imple
 		} else {
 			toReturn.setInteger("multiblockSchematicID", -1);
 		}
+		toReturn.setInteger("rotationOrdinal", multiblockRotation.ordinal());
 		return toReturn;
 	}
 	
@@ -104,6 +112,7 @@ public abstract class TileEntityMultiblockPart extends BasicNodeTileEntity imple
 		isMaster = compound.getBoolean("isMaster");
 		offsetPos = new BlockPos(compound.getInteger("offsetPosX"), compound.getInteger("offsetPosY"), compound.getInteger("offsetPosZ"));
 		this.multiblockSchematic = MultiblockRegistry.getSchematicByID(compound.getInteger("multiblockSchematicID"));
+		this.multiblockRotation = EnumMultiblockRotation.values()[compound.getInteger("rotationOrdinal")];
 	}
 
 	protected final void sendUpdatePacketToAllNearby() {

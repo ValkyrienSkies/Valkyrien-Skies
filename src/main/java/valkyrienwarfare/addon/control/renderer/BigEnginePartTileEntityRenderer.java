@@ -38,7 +38,6 @@ public class BigEnginePartTileEntityRenderer extends TileEntitySpecialRenderer<T
 			IBlockState state = Blocks.IRON_BLOCK.getDefaultState();
 			Tessellator tessellator = Tessellator.getInstance();
 			FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(), state, brightness);
-
 		} else if (tileentity.isMaster()) {
 			// Im not sure why this has to be done, something is wrong with my rotation
 			// intuition.

@@ -2,9 +2,9 @@ package com.best108.atom_animation_reader.impl;
 
 import java.util.List;
 
-import org.lwjgl.opengl.GL11;
-
 import com.best108.atom_animation_reader.IAtomAnimation;
+
+import net.minecraft.client.renderer.GlStateManager;
 
 /**
  * A very basic implementation of the IAtomAnimation interface.
@@ -30,9 +30,9 @@ public class BasicAtomAnimation implements IAtomAnimation {
 			// throw new IllegalArgumentException("Input keyframe " + keyframe + " is out of bounds!\n" + minKeyFrame + ":" + maxKeyFrame + ":");
 		}
 		for (BasicDagNodeRenderer dagNode : dagNodes) {
-			GL11.glPushMatrix();
+			GlStateManager.pushMatrix();
 			dagNode.render(keyframe, brightness);
-			GL11.glPopMatrix();
+			GlStateManager.popMatrix();
 		}
 	}
 

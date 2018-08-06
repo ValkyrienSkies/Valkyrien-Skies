@@ -33,10 +33,12 @@ import valkyrienwarfare.addon.control.controlsystems.controlgui.ThrustModulatorG
 import valkyrienwarfare.addon.control.renderer.BasicNodeTileEntityRenderer;
 import valkyrienwarfare.addon.control.renderer.EthereumEnginePartTileEntityRenderer;
 import valkyrienwarfare.addon.control.renderer.GearboxTileEntityRenderer;
+import valkyrienwarfare.addon.control.renderer.LiftControlTileEntityRenderer;
 import valkyrienwarfare.addon.control.renderer.PropellerEngineTileEntityRenderer;
 import valkyrienwarfare.addon.control.renderer.ShipHelmTileEntityRenderer;
 import valkyrienwarfare.addon.control.renderer.ShipTelegraphTileEntityRenderer;
 import valkyrienwarfare.addon.control.tileentity.TileEntityGearbox;
+import valkyrienwarfare.addon.control.tileentity.TileEntityLiftControl;
 import valkyrienwarfare.addon.control.tileentity.TileEntityNodeRelay;
 import valkyrienwarfare.addon.control.tileentity.TileEntityPropellerEngine;
 import valkyrienwarfare.addon.control.tileentity.TileEntityShipHelm;
@@ -105,6 +107,7 @@ public class ClientProxyControl extends CommonProxyControl {
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPropellerEngine.class, new PropellerEngineTileEntityRenderer());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityEthereumEnginePart.class, new EthereumEnginePartTileEntityRenderer());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityGearbox.class, new GearboxTileEntityRenderer());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityLiftControl.class, new LiftControlTileEntityRenderer());
     }
 
     public static void checkForTextFieldUpdate(TileEntityThrustModulator entity) {
@@ -117,7 +120,7 @@ public class ClientProxyControl extends CommonProxyControl {
     @Override
     public void preInit(FMLStateEvent event) {
         OBJLoader.INSTANCE.addDomain(ValkyrienWarfareControl.INSTANCE.getModID().toLowerCase());
-        GibsModelRegistry.registerGibsModel("doggy", new ResourceLocation("valkyrienwarfarecontrol", "block/shiphelmbase.obj"));
+
         registerEngineGibs("engine_geo");
         registerEngineGibs("engineconnectionrod_geo");
         registerEngineGibs("enginepiston_geo");
@@ -154,7 +157,7 @@ public class ClientProxyControl extends CommonProxyControl {
         GibsAnimationRegistry.registerAnimation("ethereum_engine", new ResourceLocation("valkyrienwarfarecontrol", "models/block/multipart_engines/engine_keyframes.atom"));
         GibsAnimationRegistry.registerPivots(new ResourceLocation("valkyrienwarfarecontrol", "models/block/multipart_engines/enginepivotpoints.pivot"));
     
-        GibsAnimationRegistry.registerAnimation("liftlever", new ResourceLocation("valkyrienwarfarecontrol", "models/block/controls/liftcontrol_keyframes.atom"));
+        GibsAnimationRegistry.registerAnimation("lift_control", new ResourceLocation("valkyrienwarfarecontrol", "models/block/controls/liftcontrol_keyframes.atom"));
         
         GibsAnimationRegistry.registerAnimation("gearbox", new ResourceLocation("valkyrienwarfarecontrol", "models/block/gearbox/gearbox_keyframes.atom"));
     

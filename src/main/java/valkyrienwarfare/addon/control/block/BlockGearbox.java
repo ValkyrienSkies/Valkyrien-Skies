@@ -17,8 +17,6 @@ import net.minecraft.world.World;
 import valkyrienwarfare.addon.control.tileentity.TileEntityGearbox;
 
 public class BlockGearbox extends Block implements ITileEntityProvider {
-
-	public static final PropertyDirection FACING = BlockHorizontal.FACING;
 	
 	public BlockGearbox(Material materialIn) {
 		super(materialIn);
@@ -30,12 +28,12 @@ public class BlockGearbox extends Block implements ITileEntityProvider {
         if (!placer.isSneaking()) {
             facingHorizontal = facingHorizontal.getOpposite();
         }
-        return this.getDefaultState().withProperty(FACING, facingHorizontal);
+        return this.getDefaultState().withProperty(BlockHorizontal.FACING, facingHorizontal);
     }
 
     @Override
     protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, new IProperty[]{FACING});
+        return new BlockStateContainer(this, new IProperty[]{BlockHorizontal.FACING});
     }
 
     @Override
@@ -44,12 +42,12 @@ public class BlockGearbox extends Block implements ITileEntityProvider {
         if (enumfacing.getAxis() == EnumFacing.Axis.Y) {
             enumfacing = EnumFacing.NORTH;
         }
-        return this.getDefaultState().withProperty(FACING, enumfacing);
+        return this.getDefaultState().withProperty(BlockHorizontal.FACING, enumfacing);
     }
 
     @Override
     public int getMetaFromState(IBlockState state) {
-        int i = ((EnumFacing) state.getValue(FACING)).getIndex();
+        int i = ((EnumFacing) state.getValue(BlockHorizontal.FACING)).getIndex();
         return i;
     }
 

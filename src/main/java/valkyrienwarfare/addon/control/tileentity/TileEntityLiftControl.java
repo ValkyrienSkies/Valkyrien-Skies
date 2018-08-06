@@ -107,5 +107,13 @@ public class TileEntityLiftControl extends ImplTileEntityPilotable {
 		toReturn.setInteger("liftPercentage", liftPercentage);
 		return toReturn;
 	}
+	
+	public int getLiftPercentage() {
+		return liftPercentage;
+	}
+	
+	public int getNextLiftPercentage() {
+		return nextLiftPercentage;
+	}
 
 }

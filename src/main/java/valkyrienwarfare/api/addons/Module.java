@@ -47,9 +47,9 @@ public abstract class Module {
         this.modid = modid;
     }
 
-    public static final void registerRecipe(RegistryEvent.Register<IRecipe> event, ItemStack out, Object... in) {
+    public static final void registerRecipe(RegistryEvent.Register<IRecipe> event, String registryName, ItemStack out, Object... in) {
         CraftingHelper.ShapedPrimer primer = CraftingHelper.parseShaped(in);
-        event.getRegistry().register(new ShapedRecipes(ValkyrienWarfareMod.MODID, primer.width, primer.height, primer.input, out).setRegistryName(ValkyrienWarfareMod.MODID, UUID.randomUUID().toString()));
+        event.getRegistry().register(new ShapedRecipes(ValkyrienWarfareMod.MODID, primer.width, primer.height, primer.input, out).setRegistryName(ValkyrienWarfareMod.MODID, registryName));
     }
 
     public static final void registerItemBlock(RegistryEvent.Register<Item> event, Block block) {

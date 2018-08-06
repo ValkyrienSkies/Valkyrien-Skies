@@ -98,8 +98,8 @@ public class ValkyrienWarfareCombat extends Module {
 
     @Override
     public void registerRecipes(RegistryEvent.Register<IRecipe> event) {
-        registerRecipe(event, new ItemStack(cannonBall, 4), "II ", "II ", "   ", 'I', Items.IRON_INGOT);
-        registerRecipe(event, new ItemStack(powderPouch, 4), " S ", "SGS", " S ", 'S', Items.STRING, 'G', Items.GUNPOWDER);
+        registerRecipe(event, "recipe_cannon_ball", new ItemStack(cannonBall, 4), "II ", "II ", "   ", 'I', Items.IRON_INGOT);
+        registerRecipe(event, "recipe_powder_pouch", new ItemStack(powderPouch, 4), " S ", "SGS", " S ", 'S', Items.STRING, 'G', Items.GUNPOWDER);
     }
 
     @Override

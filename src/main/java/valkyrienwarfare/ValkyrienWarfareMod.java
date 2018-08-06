@@ -410,7 +410,7 @@ public class ValkyrienWarfareMod {
     }
 
     public void registerRecipies(RegistryEvent.Register<IRecipe> event) {
-        Module.registerRecipe(event, new ItemStack(physicsInfuser), "IEI", "ODO", "IEI", 'E', Items.ENDER_PEARL, 'D',
+        Module.registerRecipe(event, "recipe_physics_infuser", new ItemStack(physicsInfuser), "IEI", "ODO", "IEI", 'E', Items.ENDER_PEARL, 'D',
                 Items.DIAMOND, 'O', Item.getItemFromBlock(Blocks.OBSIDIAN), 'I', Items.IRON_INGOT);
     }
 

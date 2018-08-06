@@ -20,10 +20,7 @@
       "model": "valkyrienwarfarecontrol:empty"
     },
     "inventory": {
-      "model": "valkyrienwarfarecontrol:shiphelmhand.obj",
-      "custom": {
-        "flip-v": true
-      }
+      "model": "minecraft:iron_block"
     }
   }
 }

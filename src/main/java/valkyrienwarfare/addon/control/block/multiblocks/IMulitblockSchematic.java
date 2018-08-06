@@ -3,6 +3,7 @@ package valkyrienwarfare.addon.control.block.multiblocks;
 import java.util.List;
 
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -38,6 +39,19 @@ public interface IMulitblockSchematic {
 					// This rotation didn't work
 					buildSuccessful = false;
 					break;
+				} else {
+					TileEntity tile = world.getTileEntity(realPos);
+					if (tile instanceof ITileEntityMultiblockPart) {
+						ITileEntityMultiblockPart multiblockPart = (ITileEntityMultiblockPart) tile;
+						if (multiblockPart.isPartOfAssembledMultiblock()) {
+							// If its already a part of a multiblock then do not allow this to assemble.
+							buildSuccessful = false;
+							break;
+						}
+					} else {
+						buildSuccessful = false;
+						break;
+					}
 				}
 			}
 			

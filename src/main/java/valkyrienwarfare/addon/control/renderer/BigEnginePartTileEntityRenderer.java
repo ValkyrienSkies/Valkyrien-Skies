@@ -27,34 +27,35 @@ public class BigEnginePartTileEntityRenderer extends TileEntitySpecialRenderer<T
         GlStateManager.pushMatrix();
         GlStateManager.disableLighting();
 
-        GL11.glTranslated(x, y, z);
+        GlStateManager.translate(x, y, z);
         GlStateManager.disableAlpha();
         GlStateManager.disableBlend();
 
-        // TODO: Better rendering cache
         int brightness = tileentity.getWorld().getCombinedLight(tileentity.getPos(), 0);
 
-        GL11.glPushMatrix();
-
+        GlStateManager.pushMatrix();
         if (!tileentity.isPartOfAssembledMultiblock()) {
 			IBlockState state = Blocks.IRON_BLOCK.getDefaultState();
 			Tessellator tessellator = Tessellator.getInstance();
 			FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(), state, brightness);
 
 		} else if (tileentity.isMaster()) {
+			// Im not sure why this has to be done, something is wrong with my rotation
+			// intuition.
+			float tileYaw = -tileentity.getMultiblockRotation().getYaw() + 180;
 			
-			
-			GlStateManager.rotate(tileentity.getMultiblockRotation().getYaw(), 0, 1, 0);
+			GlStateManager.translate(.5, 0, .5);
 			GlStateManager.scale(3, 3, 3);
-			GlStateManager.translate(-1D/3D, 0, -2D/3D);
+			GlStateManager.rotate(tileYaw, 0, 1, 0);
+			GlStateManager.translate(-.5, 0, -.5);
 			
 			double keyframe = ((Minecraft.getMinecraft().world.getTotalWorldTime() + partialTick) % 99) + 1;
 			
 			GibsAnimationRegistry.getAnimation("bigengine").renderAnimation(keyframe, brightness);
 		}
         
-        GL11.glPopMatrix();
-        GL11.glPopMatrix();
+        GlStateManager.popMatrix();
+        GlStateManager.popMatrix();
         GlStateManager.enableLighting();
         GlStateManager.resetColor();
 	}

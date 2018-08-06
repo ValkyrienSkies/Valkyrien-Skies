@@ -13,14 +13,14 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.block.BlockShipHelm;
-import valkyrienwarfare.addon.control.block.multiblocks.TileEntityBigEnginePart;
+import valkyrienwarfare.addon.control.block.multiblocks.TileEntityEthereumEnginePart;
 import valkyrienwarfare.mod.client.render.FastBlockModelRenderer;
 import valkyrienwarfare.mod.client.render.GibsAnimationRegistry;
 
-public class BigEnginePartTileEntityRenderer extends TileEntitySpecialRenderer<TileEntityBigEnginePart> {
+public class EthereumEnginePartTileEntityRenderer extends TileEntitySpecialRenderer<TileEntityEthereumEnginePart> {
 
 	@Override
-	public void render(TileEntityBigEnginePart tileentity, double x, double y, double z, float partialTick,
+	public void render(TileEntityEthereumEnginePart tileentity, double x, double y, double z, float partialTick,
 			int destroyStage, float alpha) {
 
 		this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
@@ -50,7 +50,7 @@ public class BigEnginePartTileEntityRenderer extends TileEntitySpecialRenderer<T
 			
 			double keyframe = ((Minecraft.getMinecraft().world.getTotalWorldTime() + partialTick) % 99) + 1;
 			
-			GibsAnimationRegistry.getAnimation("bigengine").renderAnimation(keyframe, brightness);
+			GibsAnimationRegistry.getAnimation("ethereum_engine").renderAnimation(keyframe, brightness);
 		}
         
         GlStateManager.popMatrix();

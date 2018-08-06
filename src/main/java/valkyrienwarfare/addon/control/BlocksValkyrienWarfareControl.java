@@ -23,6 +23,7 @@ import net.minecraftforge.event.RegistryEvent;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.block.BlockDopedEtherium;
 import valkyrienwarfare.addon.control.block.BlockEtherGasCompressor;
+import valkyrienwarfare.addon.control.block.BlockGearbox;
 import valkyrienwarfare.addon.control.block.BlockGyroscopeDampener;
 import valkyrienwarfare.addon.control.block.BlockGyroscopeStabilizer;
 import valkyrienwarfare.addon.control.block.BlockLiftControl;
@@ -41,7 +42,7 @@ import valkyrienwarfare.addon.control.block.ethercompressor.BlockEtherCompressor
 import valkyrienwarfare.addon.control.block.ethercompressor.BlockEtherCompressorStabilizer;
 import valkyrienwarfare.addon.control.block.legacy_ethercompressor.BlockCreativeEtherCompressor;
 import valkyrienwarfare.addon.control.block.legacy_ethercompressor.BlockNormalEtherCompressor;
-import valkyrienwarfare.addon.control.block.multiblocks.BlockBigEnginePart;
+import valkyrienwarfare.addon.control.block.multiblocks.BlockEthereumEnginePart;
 import valkyrienwarfare.api.addons.Module;
 
 public class BlocksValkyrienWarfareControl {
@@ -78,7 +79,8 @@ public class BlocksValkyrienWarfareControl {
     public final Block blockEtherCompressorStabilizer;
     public final Block gyroscopeDampener;
     
-    public final Block bigEnginePart;
+    public final Block ethereumEnginePart;
+    public final Block gearbox;
 
     public BlocksValkyrienWarfareControl(ValkyrienWarfareControl mod_vwcontrol) {
         this.mod_vwcontrol = mod_vwcontrol;
@@ -117,7 +119,8 @@ public class BlocksValkyrienWarfareControl {
     
         blockEtherCompressorStabilizer = new BlockEtherCompressorStabilizer(Material.IRON).setHardness(6f).setUnlocalizedName("vw_ethercompressorstabilizer").setRegistryName(getModID(), "vw_ethercompressorstabilizer").setCreativeTab(ValkyrienWarfareMod.vwTab);
         gyroscopeDampener = new BlockGyroscopeDampener(Material.IRON).setHardness(6f).setUnlocalizedName("vw_gyroscope_dampener").setRegistryName(getModID(), "vw_gyroscope_dampener").setCreativeTab(ValkyrienWarfareMod.vwTab);
-        bigEnginePart = new BlockBigEnginePart(Material.IRON).setHardness(6f).setUnlocalizedName("vw_bigenginepart").setRegistryName(getModID(), "vw_bigenginepart").setCreativeTab(ValkyrienWarfareMod.vwTab);
+        ethereumEnginePart = new BlockEthereumEnginePart(Material.IRON).setHardness(6f).setUnlocalizedName("vw_ethereum_enginepart").setRegistryName(getModID(), "vw_ethereum_enginepart").setCreativeTab(ValkyrienWarfareMod.vwTab);
+        gearbox = new BlockGearbox(Material.IRON).setHardness(6f).setUnlocalizedName("vw_gearbox").setRegistryName(getModID(), "vw_gearbox").setCreativeTab(ValkyrienWarfareMod.vwTab);
     }
 
     protected void registerBlocks(RegistryEvent.Register<Block> event) {
@@ -152,7 +155,8 @@ public class BlocksValkyrienWarfareControl {
         event.getRegistry().register(etherCompressorPanel);
         event.getRegistry().register(blockEtherCompressorStabilizer);
         event.getRegistry().register(gyroscopeDampener);
-        event.getRegistry().register(bigEnginePart);
+        event.getRegistry().register(ethereumEnginePart);
+        event.getRegistry().register(gearbox);
     }
 
     protected void registerBlockItems(RegistryEvent.Register<Item> event) {
@@ -187,7 +191,8 @@ public class BlocksValkyrienWarfareControl {
         registerItemBlock(event, blockEtherCompressorStabilizer);
         registerItemBlock(event, gyroscopeDampener);
         
-        registerItemBlock(event, bigEnginePart);
+        registerItemBlock(event, ethereumEnginePart);
+        registerItemBlock(event, gearbox);
     }
 
     private void registerItemBlock(RegistryEvent.Register<Item> event, Block block) {

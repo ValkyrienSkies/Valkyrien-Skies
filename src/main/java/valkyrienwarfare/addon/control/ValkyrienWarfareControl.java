@@ -33,8 +33,8 @@ import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.addon.control.block.multiblocks.BigEngineMultiblockSchematic;
-import valkyrienwarfare.addon.control.block.multiblocks.TileEntityBigEnginePart;
+import valkyrienwarfare.addon.control.block.multiblocks.EthereumEngineMultiblockSchematic;
+import valkyrienwarfare.addon.control.block.multiblocks.TileEntityEthereumEnginePart;
 import valkyrienwarfare.addon.control.capability.ICapabilityLastRelay;
 import valkyrienwarfare.addon.control.capability.ImplCapabilityLastRelay;
 import valkyrienwarfare.addon.control.capability.StorageLastRelay;
@@ -58,6 +58,7 @@ import valkyrienwarfare.addon.control.proxy.CommonProxyControl;
 import valkyrienwarfare.addon.control.tileentity.TileEntityEtherCompressorPanel;
 import valkyrienwarfare.addon.control.tileentity.TileEntityEtherCompressorStabilizer;
 import valkyrienwarfare.addon.control.tileentity.TileEntityEtherGasCompressor;
+import valkyrienwarfare.addon.control.tileentity.TileEntityGearbox;
 import valkyrienwarfare.addon.control.tileentity.TileEntityGyroscopeDampener;
 import valkyrienwarfare.addon.control.tileentity.TileEntityGyroscopeStabilizer;
 import valkyrienwarfare.addon.control.tileentity.TileEntityLegacyEtherCompressor;
@@ -132,7 +133,8 @@ public class ValkyrienWarfareControl extends Module {
         // Unused
         GameRegistry.registerTileEntity(TileEntityEtherCompressorStabilizer.class, "tileenthercompressor_stabilizer");
         GameRegistry.registerTileEntity(TileEntityGyroscopeDampener.class, "tilegyroscope_dampener");
-        GameRegistry.registerTileEntity(TileEntityBigEnginePart.class, "tile_big_engine_part");
+        GameRegistry.registerTileEntity(TileEntityEthereumEnginePart.class, "tile_big_engine_part");
+        GameRegistry.registerTileEntity(TileEntityGearbox.class, "tile_gearbox");
     }
 
     @Override
@@ -144,7 +146,7 @@ public class ValkyrienWarfareControl extends Module {
     	event.getRegistry().register(multiblockWrench);
 
         vwControlBlocks.registerBlockItems(event);
-        MultiblockRegistry.registerSchematic(1, new BigEngineMultiblockSchematic());
+        MultiblockRegistry.registerSchematic(1, new EthereumEngineMultiblockSchematic());
     }
 
     @Override

@@ -28,13 +28,15 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
 import valkyrienwarfare.addon.control.ControlEventsClient;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
-import valkyrienwarfare.addon.control.block.multiblocks.TileEntityBigEnginePart;
+import valkyrienwarfare.addon.control.block.multiblocks.TileEntityEthereumEnginePart;
 import valkyrienwarfare.addon.control.controlsystems.controlgui.ThrustModulatorGui;
 import valkyrienwarfare.addon.control.renderer.BasicNodeTileEntityRenderer;
-import valkyrienwarfare.addon.control.renderer.BigEnginePartTileEntityRenderer;
+import valkyrienwarfare.addon.control.renderer.EthereumEnginePartTileEntityRenderer;
+import valkyrienwarfare.addon.control.renderer.GearboxTileEntityRenderer;
 import valkyrienwarfare.addon.control.renderer.PropellerEngineTileEntityRenderer;
 import valkyrienwarfare.addon.control.renderer.ShipHelmTileEntityRenderer;
 import valkyrienwarfare.addon.control.renderer.ShipTelegraphTileEntityRenderer;
+import valkyrienwarfare.addon.control.tileentity.TileEntityGearbox;
 import valkyrienwarfare.addon.control.tileentity.TileEntityNodeRelay;
 import valkyrienwarfare.addon.control.tileentity.TileEntityPropellerEngine;
 import valkyrienwarfare.addon.control.tileentity.TileEntityShipHelm;
@@ -87,7 +89,8 @@ public class ClientProxyControl extends CommonProxyControl {
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.blockEtherCompressorStabilizer);
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.gyroscopeDampener);
         
-        registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.bigEnginePart);
+        registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.ethereumEnginePart);
+        registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.gearbox);
     }
 
     private static void registerItemModels() {
@@ -100,7 +103,8 @@ public class ClientProxyControl extends CommonProxyControl {
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityShipHelm.class, new ShipHelmTileEntityRenderer(TileEntityShipHelm.class));
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityShipTelegraph.class, new ShipTelegraphTileEntityRenderer(TileEntityShipTelegraph.class));
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPropellerEngine.class, new PropellerEngineTileEntityRenderer());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityBigEnginePart.class, new BigEnginePartTileEntityRenderer());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityEthereumEnginePart.class, new EthereumEnginePartTileEntityRenderer());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityGearbox.class, new GearboxTileEntityRenderer());
     }
 
     public static void checkForTextFieldUpdate(TileEntityThrustModulator entity) {
@@ -147,12 +151,12 @@ public class ClientProxyControl extends CommonProxyControl {
         registerTelescopeGibs("telescope_third_geo");
         registerTelescopeGibs("telescope_top_geo");
         
-        GibsAnimationRegistry.registerAnimation("bigengine", new ResourceLocation("valkyrienwarfarecontrol", "models/block/multipart_engines/engine_keyframes.atom"));
+        GibsAnimationRegistry.registerAnimation("ethereum_engine", new ResourceLocation("valkyrienwarfarecontrol", "models/block/multipart_engines/engine_keyframes.atom"));
         GibsAnimationRegistry.registerPivots(new ResourceLocation("valkyrienwarfarecontrol", "models/block/multipart_engines/enginepivotpoints.pivot"));
     
         GibsAnimationRegistry.registerAnimation("liftlever", new ResourceLocation("valkyrienwarfarecontrol", "models/block/controls/liftcontrol_keyframes.atom"));
         
-        GibsAnimationRegistry.registerAnimation("boxofgears", new ResourceLocation("valkyrienwarfarecontrol", "models/block/gearbox/gearbox_keyframes.atom"));
+        GibsAnimationRegistry.registerAnimation("gearbox", new ResourceLocation("valkyrienwarfarecontrol", "models/block/gearbox/gearbox_keyframes.atom"));
     
         GibsAnimationRegistry.registerAnimation("pocketwatch_body", new ResourceLocation("valkyrienwarfarecontrol", "models/block/pocketwatch/pocketwatch_keyframes.atom"));
         

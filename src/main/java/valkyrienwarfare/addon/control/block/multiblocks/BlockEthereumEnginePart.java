@@ -9,15 +9,15 @@ import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class BlockBigEnginePart extends Block implements ITileEntityProvider {
+public class BlockEthereumEnginePart extends Block implements ITileEntityProvider {
 
-	public BlockBigEnginePart(Material materialIn) {
+	public BlockEthereumEnginePart(Material materialIn) {
 		super(materialIn);
 	}
 
 	@Override
 	public TileEntity createNewTileEntity(World worldIn, int meta) {
-		return new TileEntityBigEnginePart();
+		return new TileEntityEthereumEnginePart();
 	}
 
     @Override
@@ -38,8 +38,8 @@ public class BlockBigEnginePart extends Block implements ITileEntityProvider {
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
     	TileEntity tile = worldIn.getTileEntity(pos);
-    	if (tile instanceof TileEntityBigEnginePart) {
-    		TileEntityBigEnginePart.class.cast(tile).dissembleMultiblock();
+    	if (tile instanceof TileEntityEthereumEnginePart) {
+    		TileEntityEthereumEnginePart.class.cast(tile).dissembleMultiblock();
     	}
     	super.breakBlock(worldIn, pos, state);
     }

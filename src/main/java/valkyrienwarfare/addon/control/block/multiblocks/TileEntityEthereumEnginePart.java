@@ -2,7 +2,7 @@ package valkyrienwarfare.addon.control.block.multiblocks;
 
 import net.minecraft.util.math.BlockPos;
 
-public class TileEntityBigEnginePart extends TileEntityMultiblockPart {
+public class TileEntityEthereumEnginePart extends TileEntityMultiblockPart {
 
 	@Override
 	public void assembleMultiblock(IMulitblockSchematic schematic, EnumMultiblockRotation rotation, BlockPos relativePos) {

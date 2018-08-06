@@ -12,7 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import valkyrienwarfare.addon.control.MultiblockRegistry;
 import valkyrienwarfare.addon.control.block.multiblocks.IMulitblockSchematic;
-import valkyrienwarfare.addon.control.block.multiblocks.TileEntityBigEnginePart;
+import valkyrienwarfare.addon.control.block.multiblocks.TileEntityEthereumEnginePart;
 
 public class ItemMultiblockWrench extends Item {
 
@@ -31,7 +31,7 @@ public class ItemMultiblockWrench extends Item {
 		Block block = clickedState.getBlock();
 		TileEntity blockTile = worldIn.getTileEntity(pos);
 		
-		if (blockTile instanceof TileEntityBigEnginePart) {
+		if (blockTile instanceof TileEntityEthereumEnginePart) {
 			IMulitblockSchematic multiblockSchematic = MultiblockRegistry.getSchematicByID(1);
 			System
 			.out.println("close");

@@ -19,7 +19,7 @@ public class AtomParser {
 	}
 	
 	private void readLine(String line) {
-		// First remove these semicolons.
+		// First remove these semicolons, as well as any leading or trailing spaces.
 		line = line.replaceAll(";", "").trim();
 		// First remove any whitespace from this string.
 		String[] properties = line.split("[ \t]+");

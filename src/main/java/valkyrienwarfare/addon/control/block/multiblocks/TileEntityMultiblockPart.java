@@ -14,12 +14,12 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public abstract class TileEntityMultiblockPart extends BasicNodeTileEntity implements ITileEntityMultiblockPart {
 
-	protected boolean isAssembled;
-	protected boolean isMaster;
+	private boolean isAssembled;
+	private boolean isMaster;
 	// The relative position of this tile to its master.
-	protected BlockPos offsetPos;
-	protected IMulitblockSchematic multiblockSchematic;
-	protected EnumMultiblockRotation multiblockRotation;
+	private BlockPos offsetPos;
+	private IMulitblockSchematic multiblockSchematic;
+	private EnumMultiblockRotation multiblockRotation;
 	
 	public TileEntityMultiblockPart() {
 		super();
@@ -86,6 +86,17 @@ public abstract class TileEntityMultiblockPart extends BasicNodeTileEntity imple
 	@Override
 	public EnumMultiblockRotation getMultiblockRotation() {
 		return multiblockRotation;
+	}
+	
+	@Override
+	public void assembleMultiblock(IMulitblockSchematic schematic, EnumMultiblockRotation rotation, BlockPos relativePos) {
+		this.isAssembled = true;
+		this.isMaster = relativePos.equals(BlockPos.ORIGIN);
+		this.offsetPos = relativePos;
+		this.multiblockSchematic = schematic;
+		this.multiblockRotation = rotation;
+		this.sendUpdatePacketToAllNearby();
+		this.markDirty();
 	}
 	
 	@Override

@@ -33,14 +33,16 @@ import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import valkyrienwarfare.ValkyrienWarfareMod;
+import valkyrienwarfare.addon.control.block.multiblocks.EthereumCompressorMultiblockSchematic;
 import valkyrienwarfare.addon.control.block.multiblocks.EthereumEngineMultiblockSchematic;
+import valkyrienwarfare.addon.control.block.multiblocks.TileEntityEthereumCompressorPart;
 import valkyrienwarfare.addon.control.block.multiblocks.TileEntityEthereumEnginePart;
 import valkyrienwarfare.addon.control.capability.ICapabilityLastRelay;
 import valkyrienwarfare.addon.control.capability.ImplCapabilityLastRelay;
 import valkyrienwarfare.addon.control.capability.StorageLastRelay;
 import valkyrienwarfare.addon.control.gui.ControlGUIHandler;
-import valkyrienwarfare.addon.control.item.ItemWrench;
 import valkyrienwarfare.addon.control.item.ItemRelayWire;
+import valkyrienwarfare.addon.control.item.ItemWrench;
 import valkyrienwarfare.addon.control.network.EntityFixHandler;
 import valkyrienwarfare.addon.control.network.EntityFixMessage;
 import valkyrienwarfare.addon.control.network.MessagePlayerStoppedPiloting;
@@ -55,8 +57,6 @@ import valkyrienwarfare.addon.control.piloting.PilotControlsMessage;
 import valkyrienwarfare.addon.control.piloting.PilotControlsMessageHandler;
 import valkyrienwarfare.addon.control.proxy.ClientProxyControl;
 import valkyrienwarfare.addon.control.proxy.CommonProxyControl;
-import valkyrienwarfare.addon.control.tileentity.TileEntityEtherCompressorPanel;
-import valkyrienwarfare.addon.control.tileentity.TileEntityEtherCompressorStabilizer;
 import valkyrienwarfare.addon.control.tileentity.TileEntityEtherGasCompressor;
 import valkyrienwarfare.addon.control.tileentity.TileEntityGearbox;
 import valkyrienwarfare.addon.control.tileentity.TileEntityGyroscopeDampener;
@@ -129,12 +129,11 @@ public class ValkyrienWarfareControl extends Module {
         GameRegistry.registerTileEntity(TileEntityNetworkDisplay.class, "tilenetworkdisplay");
         GameRegistry.registerTileEntity(TileEntityLiftControl.class, "tileliftcontrol");
         GameRegistry.registerTileEntity(TileEntityEtherGasCompressor.class, "tileethergascompressor");
-        GameRegistry.registerTileEntity(TileEntityEtherCompressorPanel.class, "tileethergascompressor_panel");
-        // Unused
-        GameRegistry.registerTileEntity(TileEntityEtherCompressorStabilizer.class, "tileenthercompressor_stabilizer");
+
         GameRegistry.registerTileEntity(TileEntityGyroscopeDampener.class, "tilegyroscope_dampener");
         GameRegistry.registerTileEntity(TileEntityEthereumEnginePart.class, "tile_big_engine_part");
         GameRegistry.registerTileEntity(TileEntityGearbox.class, "tile_gearbox");
+        GameRegistry.registerTileEntity(TileEntityEthereumCompressorPart.class, "tile_ethereum_compressor_part");
     }
 
     @Override
@@ -146,7 +145,9 @@ public class ValkyrienWarfareControl extends Module {
     	event.getRegistry().register(multiblockWrench);
 
         vwControlBlocks.registerBlockItems(event);
+        // This doesn't really belong here, but whatever.
         MultiblockRegistry.registerSchematic(1, new EthereumEngineMultiblockSchematic());
+        MultiblockRegistry.registerSchematic(2, new EthereumCompressorMultiblockSchematic());
     }
 
     @Override

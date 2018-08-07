@@ -17,6 +17,7 @@
 package valkyrienwarfare.addon.control.nodenetwork;
 
 import valkyrienwarfare.math.Vector;
+import valkyrienwarfare.mod.coordinates.VectorImmutable;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
 public interface IForceTile {
@@ -27,21 +28,18 @@ public interface IForceTile {
      *
      * @return
      */
-    public Vector getForceOutputNormal();
+    public VectorImmutable getForceOutputNormal();
 
     /**
      * Returns the current unoriented force output vector of this engine
      *
      * @return
      */
-    public Vector getForceOutputUnoriented(double secondsToApply, PhysicsObject physicsObject);
-
-    /**
-     * Returns the current oriented force output vector of this engine
-     *
-     * @return
-     */
-    public Vector getForceOutputOriented(double secondsToApply, PhysicsObject physicsObject);
+    public default Vector getForceOutputUnoriented(double secondsToApply, PhysicsObject physicsObject) {
+    	Vector forceVector = getForceOutputNormal().createMutibleVectorCopy();
+    	forceVector.multiply(getThrustMagnitude() * secondsToApply);
+    	return forceVector;
+    }
 
 	/**
 	 * Returns the maximum magnitude of force this engine can provide at this
@@ -51,13 +49,15 @@ public interface IForceTile {
 	 * @return
 	 */
 	public double getMaxThrust();
+	
+	public void setMaxThrust(double maxThrust);
 
 	/**
 	 * Returns magnitude of thrust in Newtons being produced.
 	 *
 	 * @return
 	 */
-    public double getThrustActual();
+    public double getThrustMagnitude();
 
     /**
      * Returns the current force multiplier goal.
@@ -72,35 +72,6 @@ public interface IForceTile {
 	 *
 	 * @param toUse
 	 */
-    public void setThrustMultiplierGoal(double multiplier);
+    public void setThrustMultiplierGoal(double thrustMultiplierGoal);
 
-    /**
-     * Matrix transformation stuff
-     *
-     * @return
-     */
-    public Vector getPositionInLocalSpaceWithOrientation();
-
-    /**
-     * Returns the velocity vector this engine is moving to relative to the world
-     *
-     * @return
-     */
-    public Vector getVelocityAtEngineCenter();
-
-    /**
-     * Returns the velocity vector of this engine moving relative to the world,
-     * except only the linear component from the total velocity
-     *
-     * @return
-     */
-    public Vector getLinearVelocityAtEngineCenter();
-
-    /**
-     * Returns the velocity vector of this engine moving relative to the world,
-     * except only the angular component from the total velocity
-     *
-     * @return
-     */
-    public Vector getAngularVelocityAtEngineCenter();
 }

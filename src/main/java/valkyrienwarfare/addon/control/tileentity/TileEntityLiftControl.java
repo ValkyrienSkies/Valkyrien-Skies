@@ -11,6 +11,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import valkyrienwarfare.addon.control.block.multiblocks.TileEntityEthereumCompressorPart;
+import valkyrienwarfare.addon.control.block.multiblocks.TileEntityEthereumEnginePart;
 import valkyrienwarfare.addon.control.nodenetwork.VWNode_TileEntity;
 import valkyrienwarfare.addon.control.piloting.ControllerInputType;
 import valkyrienwarfare.addon.control.piloting.PilotControlsMessage;
@@ -51,13 +53,13 @@ public class TileEntityLiftControl extends ImplTileEntityPilotable {
 			for (GraphObject object : thisNode.getGraph().getObjects()) {
 				VWNode_TileEntity otherNode = (VWNode_TileEntity) object;
 				TileEntity tile = otherNode.getParentTile();
-				if (tile instanceof TileEntityEtherCompressorPanel) {
-					BlockPos masterPos = ((TileEntityEtherCompressorPanel) tile).getMasterPos();
-					TileEntityEtherCompressorPanel masterTile = (TileEntityEtherCompressorPanel) tile.getWorld().getTileEntity(masterPos);
+				if (tile instanceof TileEntityEthereumCompressorPart) {
+					BlockPos masterPos = ((TileEntityEthereumCompressorPart) tile).getMultiblockOrigin();
+					TileEntityEthereumCompressorPart masterTile = (TileEntityEthereumCompressorPart) tile.getWorld().getTileEntity(masterPos);
 					// This is a transient problem that only occurs during world loading.
 					if (masterTile != null) {
 						masterTile.setThrustMultiplierGoal(((double) liftPercentage) / 100D);
-						masterTile.updateTicksSinceLastRecievedSignal();
+						// masterTile.updateTicksSinceLastRecievedSignal();
 					}
 				}
 			}

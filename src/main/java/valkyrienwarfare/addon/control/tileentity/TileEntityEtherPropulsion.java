@@ -55,15 +55,6 @@ public abstract class TileEntityEtherPropulsion extends BasicForceNodeTileEntity
 		}
 	}
 	
-	/**
-	 * Ether engines force output is not affected by the orientation of the engine,
-	 * so the force vector is always unoriented.
-	 */
-	@Override
-	public Vector getForceOutputOriented(double secondsToApply, PhysicsObject physicsObject) {
-		return this.getForceOutputUnoriented(secondsToApply, physicsObject);
-	}
-
 	@Override
 	public boolean isForceOutputOriented() {
 		return false;

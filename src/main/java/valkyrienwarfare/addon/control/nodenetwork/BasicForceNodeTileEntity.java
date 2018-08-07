@@ -17,14 +17,8 @@
 package valkyrienwarfare.addon.control.nodenetwork;
 
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.math.Vector;
-import valkyrienwarfare.physics.PhysicsCalculations;
-import valkyrienwarfare.physics.management.PhysicsObject;
-import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.coordinates.VectorImmutable;
 import valkyrienwarfare.util.NBTUtils;
 
 public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity implements IForceTile {
@@ -68,26 +62,9 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
     }
 
     @Override
-    public Vector getForceOutputNormal() {
+    public VectorImmutable getForceOutputNormal() {
         // TODO Auto-generated method stub
-        return normalVelocityUnoriented;
-    }
-
-    @Override
-    public Vector getForceOutputUnoriented(double secondsToApply, PhysicsObject physicsObject) {
-        return normalVelocityUnoriented.getProduct(getThrustActual() * secondsToApply);
-    }
-
-    @Override
-    public Vector getForceOutputOriented(double secondsToApply, PhysicsObject physicsObject) {
-        Vector outputForce = getForceOutputUnoriented(secondsToApply, physicsObject);
-        if (isForceOutputOriented()) {
-            if (updateParentShip()) {
-                getNode().getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().rotate(outputForce, TransformType.SUBSPACE_TO_GLOBAL);
-//                RotationMatrices.doRotationOnly(getNode().getPhysicsObject().coordTransform.lToWTransform, outputForce);
-            }
-        }
-        return outputForce;
+        return normalVelocityUnoriented.toImmutable();
     }
 
     @Override
@@ -96,7 +73,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
     }
 
     @Override
-    public double getThrustActual() {
+    public double getThrustMagnitude() {
         return this.getMaxThrust() * this.getThrustMultiplierGoal();
     }
 
@@ -108,46 +85,6 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
     @Override
     public void setThrustMultiplierGoal(double multiplier) {
     	thrusGoalMultiplier = multiplier;
-    }
-
-    @Override
-    public Vector getPositionInLocalSpaceWithOrientation() {
-        if (updateParentShip()) {
-            return null;
-        }
-        PhysicsWrapperEntity parentShip = getNode().getPhysicsObject().getWrapperEntity();
-        Vector engineCenter = new Vector(getPos().getX() + .5D, getPos().getY() + .5D, getPos().getZ() + .5D);
-        // RotationMatrices.applyTransform(parentShip.wrapping.coordTransform.lToWTransform, engineCenter);
-        parentShip.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(engineCenter, TransformType.SUBSPACE_TO_GLOBAL);
-        engineCenter.subtract(parentShip.posX, parentShip.posY, parentShip.posZ);
-        return engineCenter;
-    }
-
-    @Override
-    public Vector getVelocityAtEngineCenter() {
-        if (updateParentShip()) {
-            return null;
-        }
-        PhysicsCalculations calculations = getNode().getPhysicsObject().getPhysicsProcessor();
-        return calculations.getVelocityAtPoint(getPositionInLocalSpaceWithOrientation());
-    }
-
-    @Override
-    public Vector getLinearVelocityAtEngineCenter() {
-        if (updateParentShip()) {
-            return null;
-        }
-        PhysicsCalculations calculations = getNode().getPhysicsObject().getPhysicsProcessor();
-        return calculations.linearMomentum;
-    }
-
-    @Override
-    public Vector getAngularVelocityAtEngineCenter() {
-        if (updateParentShip()) {
-            return null;
-        }
-        PhysicsCalculations calculations = getNode().getPhysicsObject().getPhysicsProcessor();
-        return calculations.angularVelocity.cross(getPositionInLocalSpaceWithOrientation());
     }
 
     @Override
@@ -188,6 +125,10 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
         if (ticksSinceLastControlSignal > 5 && getThrustMultiplierGoal() != 0) {
             setThrustMultiplierGoal(this.getThrustMultiplierGoal() * .9D);
         }
+    }
+    
+    public void setMaxThrust(double maxThrust) {
+    	this.maxThrust = maxThrust;
     }
 
 }

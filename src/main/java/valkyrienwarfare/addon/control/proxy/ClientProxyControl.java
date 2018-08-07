@@ -28,9 +28,11 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
 import valkyrienwarfare.addon.control.ControlEventsClient;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
+import valkyrienwarfare.addon.control.block.multiblocks.TileEntityEthereumCompressorPart;
 import valkyrienwarfare.addon.control.block.multiblocks.TileEntityEthereumEnginePart;
 import valkyrienwarfare.addon.control.controlsystems.controlgui.ThrustModulatorGui;
 import valkyrienwarfare.addon.control.renderer.BasicNodeTileEntityRenderer;
+import valkyrienwarfare.addon.control.renderer.EthereumCompressorPartTileEntityRenderer;
 import valkyrienwarfare.addon.control.renderer.EthereumEnginePartTileEntityRenderer;
 import valkyrienwarfare.addon.control.renderer.GearboxTileEntityRenderer;
 import valkyrienwarfare.addon.control.renderer.LiftControlTileEntityRenderer;
@@ -88,7 +90,6 @@ public class ClientProxyControl extends CommonProxyControl {
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.etherGasCompressor);
         
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.etherCompressorPanel);
-        registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.blockEtherCompressorStabilizer);
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.gyroscopeDampener);
         
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.ethereumEnginePart);
@@ -108,6 +109,7 @@ public class ClientProxyControl extends CommonProxyControl {
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityEthereumEnginePart.class, new EthereumEnginePartTileEntityRenderer());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityGearbox.class, new GearboxTileEntityRenderer());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityLiftControl.class, new LiftControlTileEntityRenderer());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityEthereumCompressorPart.class, new EthereumCompressorPartTileEntityRenderer());
     }
 
     public static void checkForTextFieldUpdate(TileEntityThrustModulator entity) {

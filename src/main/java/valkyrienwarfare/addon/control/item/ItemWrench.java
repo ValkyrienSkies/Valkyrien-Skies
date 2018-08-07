@@ -12,6 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import valkyrienwarfare.addon.control.MultiblockRegistry;
 import valkyrienwarfare.addon.control.block.multiblocks.IMulitblockSchematic;
+import valkyrienwarfare.addon.control.block.multiblocks.TileEntityEthereumCompressorPart;
 import valkyrienwarfare.addon.control.block.multiblocks.TileEntityEthereumEnginePart;
 
 public class ItemWrench extends Item {
@@ -33,6 +34,13 @@ public class ItemWrench extends Item {
 		
 		if (blockTile instanceof TileEntityEthereumEnginePart) {
 			IMulitblockSchematic ethereumEngineMultiblockSchematic = MultiblockRegistry.getSchematicByID(1);
+			if (ethereumEngineMultiblockSchematic.attemptToCreateMultiblock(worldIn, pos)) {
+				return EnumActionResult.SUCCESS;
+			}
+		}
+		
+		if (blockTile instanceof TileEntityEthereumCompressorPart) {
+			IMulitblockSchematic ethereumEngineMultiblockSchematic = MultiblockRegistry.getSchematicByID(2);
 			if (ethereumEngineMultiblockSchematic.attemptToCreateMultiblock(worldIn, pos)) {
 				return EnumActionResult.SUCCESS;
 			}

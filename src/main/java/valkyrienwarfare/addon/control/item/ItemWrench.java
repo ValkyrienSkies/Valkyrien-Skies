@@ -33,7 +33,7 @@ public class ItemWrench extends Item {
 		
 		if (blockTile instanceof TileEntityEthereumEnginePart) {
 			IMulitblockSchematic multiblockSchematic = MultiblockRegistry.getSchematicByID(1);
-			if (multiblockSchematic.createMultiblock(worldIn, pos)) {
+			if (multiblockSchematic.attemptToCreateMultiblock(worldIn, pos)) {
 				return EnumActionResult.SUCCESS;
 			}
 		}

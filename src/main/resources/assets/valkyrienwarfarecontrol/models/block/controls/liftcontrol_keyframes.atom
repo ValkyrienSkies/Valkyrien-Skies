@@ -1,13 +1,13 @@
 atomVersion 1.0;
 mayaVersion 2018;
-mayaSceneFile D:/Drakes Documents/Projects/VW/MODELS/FINAL MODELS/Models_SimpleVoxelised_V9.ma;
+mayaSceneFile D:/Drakes Documents/Projects/VW/MODELS/FINAL MODELS/vwmodels/vwmodels.ma;
 timeUnit film;
 linearUnit cm;
 angularUnit deg;
 startTime 1;
-endTime 1;
+endTime 100;
 dagNode {
-  liftcontrolhandle_geo_pivot 2 1;
+  liftcontrolhandle_geo_pivot 3 1;
   anim translate.translateX translateX 0;
   animData {
     input time;
@@ -43,7 +43,7 @@ dagNode {
   }
 }
 dagNode {
-  liftcontrol_geo 2 1;
+  liftcontrol_geo 3 1;
   anim translate.translateX translateX 0;
   animData {
     input time;
@@ -79,7 +79,7 @@ dagNode {
   }
 }
 dagNode {
-  liftcontrolgrate_geo 2 1;
+  liftcontrolgrate_geo 3 1;
   anim translate.translateX translateX 0;
   animData {
     input time;
@@ -115,7 +115,7 @@ dagNode {
   }
 }
 dagNode {
-  liftcontrolglass_geo 2 1;
+  liftcontrolglass_geo 3 1;
   anim translate.translateX translateX 0;
   animData {
     input time;
@@ -151,7 +151,7 @@ dagNode {
   }
 }
 dagNode {
-  liftcontrolhandle_geo 2 1;
+  liftcontrolhandle_geo 3 1;
   anim translate.translateX translateX 0;
   animData {
     input time;
@@ -161,10 +161,10 @@ dagNode {
     postInfinity constant;
     keys {
       1 0 linear linear 1 0 0;
-      5 0 linear linear 1 0 0;
-      10 0 linear linear 1 0 0;
       15 0 linear linear 1 0 0;
-      20 0 linear linear 1 0 0;
+      25 0 linear linear 1 0 0;
+      35 0 linear linear 1 0 0;
+      45 0 linear linear 1 0 0;
     }
   }
   anim translate.translateY translateY 1;
@@ -175,11 +175,11 @@ dagNode {
     preInfinity constant;
     postInfinity constant;
     keys {
-      1 0 linear linear 1 0 0;
-      5 0.049463555 linear linear 1 0 0;
-      10 0.098927096 linear linear 1 0 0;
+      1 -0.098927125 linear linear 1 0 0;
       15 -0.049463585 linear linear 1 0 0;
-      20 -0.098927125 linear linear 1 0 0;
+      25 0 linear linear 1 0 0;
+      35 0.049463555 linear linear 1 0 0;
+      45 0.098927096 linear linear 1 0 0;
     }
   }
   anim translate.translateZ translateZ 2;
@@ -190,16 +190,16 @@ dagNode {
     preInfinity constant;
     postInfinity constant;
     keys {
-      1 0 linear linear 1 0 0;
-      5 0.13090991 linear linear 1 0 0;
-      10 0.2479528 linear linear 1 0 0;
+      1 -0.23724338 linear linear 1 0 0;
       15 -0.11594433 linear linear 1 0 0;
-      20 -0.23724338 linear linear 1 0 0;
+      25 0 linear linear 1 0 0;
+      35 0.13090991 linear linear 1 0 0;
+      45 0.2479528 linear linear 1 0 0;
     }
   }
 }
 dagNode {
-  liftcontrol_light_geo 2 1;
+  liftcontrol_light_geo 3 1;
   anim translate.translateX translateX 0;
   animData {
     input time;

@@ -20,10 +20,18 @@ public class TileEntityLiftControl extends ImplTileEntityPilotable {
 	private int liftPercentage;
 	private int nextLiftPercentage;
 	
+	// Between 0 and 1, where .5 is the middle.
+	private float leverOffset;
+	private float nextLeverOffset;
+	private float prevLeverOffset;
+	
 	public TileEntityLiftControl() {
 		super();
 		this.liftPercentage = 0;
 		this.nextLiftPercentage = 0;
+		this.leverOffset = .5f;
+		this.nextLeverOffset = .5f;
+		this.prevLeverOffset = .5f;
 	}
 	
 	@Override
@@ -35,9 +43,10 @@ public class TileEntityLiftControl extends ImplTileEntityPilotable {
 	public void update() {
 		if (this.getWorld().isRemote) {
 			this.liftPercentage = nextLiftPercentage;
+			this.prevLeverOffset = this.leverOffset;
+			this.leverOffset = (float) (((nextLeverOffset - leverOffset) * .7) + leverOffset);
 		} else {
 			sendUpdatePacketToAllNearby();
-			
 			VWNode_TileEntity thisNode = this.getNode();
 			for (GraphObject object : thisNode.getGraph().getObjects()) {
 				VWNode_TileEntity otherNode = (VWNode_TileEntity) object;
@@ -71,40 +80,58 @@ public class TileEntityLiftControl extends ImplTileEntityPilotable {
 	
 	@Override
 	void processControlMessage(PilotControlsMessage message, EntityPlayerMP sender) {
+		final float controlRate = .075f;
+		
 		if (message.airshipForward_KeyDown) {
 			liftPercentage++;
+			leverOffset += controlRate;
 			// System.out.println("Lift Up");
 		}
 		if (message.airshipBackward_KeyDown) {
 			liftPercentage--;
+			leverOffset -= controlRate;
 			// System.out.println("Lift Down");
 		}
+		
+		leverOffset = Math.max(0, Math.min(1, leverOffset));
 		liftPercentage = Math.min(100, Math.max(0, liftPercentage));
+		
+		if (!message.airshipForward_KeyDown && !message.airshipBackward_KeyDown) {
+			if (leverOffset > .5 + controlRate) {
+				leverOffset -= controlRate;
+			} else if (leverOffset < .5 - controlRate) {
+				leverOffset += controlRate;
+			} else {
+				leverOffset = .5f;
+			}
+		}
 	}
 	
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 		NBTTagCompound toReturn = super.writeToNBT(compound);
 		compound.setInteger("liftPercentage", liftPercentage);
+		compound.setFloat("leverOffset", leverOffset);
 		return toReturn;
 	}
 	
 	@Override
 	public void readFromNBT(NBTTagCompound compound) {
 		super.readFromNBT(compound);
-		nextLiftPercentage = liftPercentage = compound.getInteger("liftPercentage");
+		liftPercentage = compound.getInteger("liftPercentage");
 	}
 	
 	@Override
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
 		nextLiftPercentage = pkt.getNbtCompound().getInteger("liftPercentage");
-		// System.out.println(nextLiftPercentage);
+		nextLeverOffset = pkt.getNbtCompound().getFloat("leverOffset");
 	}
 	
 	@Override
 	public NBTTagCompound getUpdateTag() {
 		NBTTagCompound toReturn = super.getUpdateTag();
 		toReturn.setInteger("liftPercentage", liftPercentage);
+		toReturn.setFloat("leverOffset", leverOffset);
 		return toReturn;
 	}
 	
@@ -114,6 +141,18 @@ public class TileEntityLiftControl extends ImplTileEntityPilotable {
 	
 	public int getNextLiftPercentage() {
 		return nextLiftPercentage;
+	}
+	
+	public float getLeverOffset() {
+		return leverOffset;
+	}
+	
+	public float getNextLeverOffet() {
+		return nextLeverOffset;
+	}
+	
+	public float getPrevLeverOffset() {
+		return prevLeverOffset;
 	}
 
 }

@@ -16,8 +16,9 @@
 
 package valkyrienwarfare.addon.control.renderer;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -25,12 +26,10 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import org.lwjgl.opengl.GL11;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.block.BlockShipTelegraph;
 import valkyrienwarfare.addon.control.tileentity.TileEntityShipTelegraph;
 import valkyrienwarfare.mod.client.render.FastBlockModelRenderer;
-import valkyrienwarfare.mod.client.render.GibsModelRegistry;
 
 public class ShipTelegraphTileEntityRenderer extends TileEntitySpecialRenderer<TileEntityShipTelegraph> {
 
@@ -51,7 +50,14 @@ public class ShipTelegraphTileEntityRenderer extends TileEntitySpecialRenderer<T
         this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
         GlStateManager.pushMatrix();
         GlStateManager.disableLighting();
-   
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder tessellatorBuffer = tessellator.getBuffer();
+
+        double oldX = tessellatorBuffer.xOffset;
+        double oldY = tessellatorBuffer.yOffset;
+        double oldZ = tessellatorBuffer.zOffset;
+
+        tessellatorBuffer.setTranslation(0, 0, 0);
         GL11.glTranslated(x, y, z);
         GlStateManager.disableAlpha();
         GlStateManager.disableBlend();
@@ -65,19 +71,8 @@ public class ShipTelegraphTileEntityRenderer extends TileEntitySpecialRenderer<T
         IBlockState helmStateToRender = ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipWheel.getStateFromMeta(4);
         int brightness = tileentity.getWorld().getCombinedLight(tileentity.getPos(), 0);
 
-//        GL11.glTranslated(-0.026, -0.334, 0.333);
-        // GL11.glTranslated(0.252, 0.3, 0.697);
-        GL11.glPushMatrix();
-        GL11.glTranslated(0.252, 0.3, 0.697);
-        GL11.glRotated(Minecraft.getMinecraft().world.getTotalWorldTime(), 0, 0, 1);
-        GL11.glTranslated(-0.252, -0.3, -0.697);
-        GibsModelRegistry.renderGibsModel("enginemaincog_geo", brightness);
-        
-        GL11.glPopMatrix();
-        
         double multiplier = 1.5D;
 
-        /*
         GL11.glTranslated((1D - multiplier) / 2.0D, 0, (1D - multiplier) / 2.0D);
         GL11.glScaled(multiplier, multiplier, multiplier);
         EnumFacing enumfacing = telegraphState.getValue(BlockShipTelegraph.FACING);
@@ -110,9 +105,7 @@ public class ShipTelegraphTileEntityRenderer extends TileEntitySpecialRenderer<T
         GlStateManager.disableBlend();
 
         GL11.glPopMatrix();
-        BufferBuilder.setTranslation(oldX, oldY, oldZ);
-        */
-        GL11.glPopMatrix();
+        tessellatorBuffer.setTranslation(oldX, oldY, oldZ);
 
         GlStateManager.enableLighting();
         GlStateManager.resetColor();

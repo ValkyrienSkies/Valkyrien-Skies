@@ -58,8 +58,12 @@ public class LiftControlTileEntityRenderer extends TileEntitySpecialRenderer<Til
 			GlStateManager.translate(-0.5, -0.5, -0.5);
         }
 
-		double keyframe = ((Minecraft.getMinecraft().world.getTotalWorldTime() + partialTick) % 19) + 1;
-		GibsAnimationRegistry.getAnimation("lift_control").renderAnimation(3, brightness);
+        float leverOffset = tileentity.getPrevLeverOffset() + (tileentity.getLeverOffset() - tileentity.getPrevLeverOffset()) * partialTick;
+        
+		// double keyframe = ((Minecraft.getMinecraft().world.getTotalWorldTime() + partialTick) % 44) + 1;
+		
+		double keyframe = (44 * leverOffset) + 1;
+		GibsAnimationRegistry.getAnimation("lift_control").renderAnimation(keyframe, brightness);
 
         GlStateManager.popMatrix();
         GlStateManager.popMatrix();

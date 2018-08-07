@@ -69,7 +69,7 @@ public class TileEntityLiftControl extends ImplTileEntityPilotable {
     public void renderPilotText(FontRenderer renderer, ScaledResolution gameResolution) {
 		// White text.
 		int color = 0xFFFFFF;
-		// Extra spaces so the that the text is closer to the midde when rendered.
+		// Extra spaces so the that the text is closer to the middle when rendered.
 		String message = "Power:    ";
 		int i = gameResolution.getScaledWidth();
         int height = gameResolution.getScaledHeight() - 35;

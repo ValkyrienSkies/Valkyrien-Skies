@@ -25,6 +25,12 @@ public interface IMulitblockSchematic {
 	
 	int getSchematicID();
 
+	/**
+	 * Returns true if the multiblock was successfully created.
+	 * @param world
+	 * @param pos
+	 * @return
+	 */
 	default boolean attemptToCreateMultiblock(World world, BlockPos pos) {
 		if (getStructureRelativeToCenter().size() == 0) {
 			throw new IllegalStateException("No structure info found in the multiblock schematic!");

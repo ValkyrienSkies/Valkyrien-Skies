@@ -155,8 +155,7 @@ public class ClientProxyControl extends CommonProxyControl {
         registerTelescopeGibs("telescope_top_geo");
         
         GibsAnimationRegistry.registerAnimation("ethereum_engine", new ResourceLocation("valkyrienwarfarecontrol", "models/block/multipart_engines/engine_keyframes.atom"));
-        GibsAnimationRegistry.registerPivots(new ResourceLocation("valkyrienwarfarecontrol", "models/block/multipart_engines/enginepivotpoints.pivot"));
-    
+        
         GibsAnimationRegistry.registerAnimation("lift_control", new ResourceLocation("valkyrienwarfarecontrol", "models/block/controls/liftcontrol_keyframes.atom"));
         
         GibsAnimationRegistry.registerAnimation("gearbox", new ResourceLocation("valkyrienwarfarecontrol", "models/block/gearbox/gearbox_keyframes.atom"));

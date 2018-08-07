@@ -1,7 +1,9 @@
 package com.best108.atom_animation_reader.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import com.best108.atom_animation_reader.IAtomAnimation;
@@ -11,7 +13,7 @@ import com.best108.atom_animation_reader.parsers.AtomParser;
 import com.best108.atom_animation_reader.parsers.AtomParserElement;
 
 import valkyrienwarfare.math.Vector;
-import valkyrienwarfare.mod.client.render.GibsAnimationRegistry;
+import valkyrienwarfare.mod.coordinates.VectorImmutable;
 
 public class BasicAtomAnimationBuilder implements IAtomAnimationBuilder {
 
@@ -44,10 +46,11 @@ public class BasicAtomAnimationBuilder implements IAtomAnimationBuilder {
 	public IAtomAnimation build(IModelRenderer modelRenderer) {
 		// Generate the compiled IAtomAnimation
 		List<BasicDagNodeRenderer> dagNodeRenderers = new ArrayList<BasicDagNodeRenderer>();
+		Map<String, VectorImmutable> modelNamesToPivots = new HashMap<String, VectorImmutable>();
 		for (DagNode dagNode : renderNodes) {
-			// This hacky bit of code is kinda crap, maybe one day Ill move the pivot detection somewhere else.
+			// Is this node defining a pivot, or an animation?
 			if (dagNode.modelName.endsWith("_pivot")) {
-				// This is a pivot, do something else.
+				// This is a pivot, add it to the local registry.
 				Vector pivotPoint = new Vector();
 				for (AnimationDataNode animData : dagNode.animationNodes) {
 					if (animData.animationType.equals("translateX")) {
@@ -60,8 +63,10 @@ public class BasicAtomAnimationBuilder implements IAtomAnimationBuilder {
 						pivotPoint.Z = Double.valueOf(animData.animKeyframes.keyframes.get(0)[1]);
 					}
 				}
-				GibsAnimationRegistry.registerPivot(dagNode.modelName.substring(0, dagNode.modelName.length() - 6), pivotPoint.toImmutable());
+				// Put the pivot in the local registry.
+				modelNamesToPivots.put(dagNode.modelName.substring(0, dagNode.modelName.length() - 6), pivotPoint.toImmutable());
 			} else {
+				// This is an animation node.
 				List<BasicAnimationTransform> animations = new ArrayList<BasicAnimationTransform>();
 				for (AnimationDataNode animationNode : dagNode.animationNodes) {
 					BasicAnimationTransform basicTransform = new BasicAnimationTransform(animationNode.animationType, animationNode.animKeyframes.keyframes);
@@ -69,6 +74,14 @@ public class BasicAtomAnimationBuilder implements IAtomAnimationBuilder {
 				}
 				BasicDagNodeRenderer dagRenderer = new BasicDagNodeRenderer(dagNode.modelName, animations, modelRenderer);
 				dagNodeRenderers.add(dagRenderer);
+			}
+		}
+		
+		// Put the pivots into the animation nodes.
+		for (BasicDagNodeRenderer dagNodeRenderer : dagNodeRenderers) {
+			String modelName = dagNodeRenderer.getModelName();
+			if (modelNamesToPivots.containsKey(modelName)) {
+				dagNodeRenderer.setPivot(modelNamesToPivots.get(modelName));
 			}
 		}
 		

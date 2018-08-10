@@ -22,7 +22,6 @@ import net.minecraft.item.Item;
 import net.minecraftforge.event.RegistryEvent;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.block.BlockDopedEtherium;
-import valkyrienwarfare.addon.control.block.BlockEtherGasCompressor;
 import valkyrienwarfare.addon.control.block.BlockGearbox;
 import valkyrienwarfare.addon.control.block.BlockGyroscopeDampener;
 import valkyrienwarfare.addon.control.block.BlockGyroscopeStabilizer;
@@ -72,8 +71,7 @@ public class BlocksValkyrienWarfareControl {
     public final Block liftValve;
     public final Block networkDisplay;
     public final Block liftControl;
-    public final Block etherGasCompressor;
-    
+
     public final Block etherCompressorPanel;
     public final Block gyroscopeDampener;
     
@@ -111,8 +109,7 @@ public class BlocksValkyrienWarfareControl {
         liftValve = new BlockLiftValve(Material.IRON).setHardness(7f).setUnlocalizedName("vw_liftvalve").setRegistryName(getModID(), "vw_liftvalve").setCreativeTab(ValkyrienWarfareMod.vwTab);
         networkDisplay = new BlockNetworkDisplay(Material.IRON).setHardness(5f).setUnlocalizedName("vw_networkdisplay").setRegistryName(getModID(), "vw_networkdisplay").setCreativeTab(ValkyrienWarfareMod.vwTab);
         liftControl = new BlockLiftControl(Material.IRON).setHardness(5f).setUnlocalizedName("vw_liftcontrol").setRegistryName(getModID(), "vw_liftcontrol").setCreativeTab(ValkyrienWarfareMod.vwTab);
-        etherGasCompressor = new BlockEtherGasCompressor(Material.IRON).setHardness(5f).setUnlocalizedName("vw_ethergascompressor").setRegistryName(getModID(), "vw_ethergascompressor").setCreativeTab(ValkyrienWarfareMod.vwTab);
-    
+
         etherCompressorPanel = new BlockEtherCompressorPart(Material.IRON).setHardness(6f).setUnlocalizedName("vw_ethercompressorpanel").setRegistryName(getModID(), "vw_ethercompressorpanel").setCreativeTab(ValkyrienWarfareMod.vwTab);
     
         gyroscopeDampener = new BlockGyroscopeDampener(Material.IRON).setHardness(6f).setUnlocalizedName("vw_gyroscope_dampener").setRegistryName(getModID(), "vw_gyroscope_dampener").setCreativeTab(ValkyrienWarfareMod.vwTab);
@@ -147,7 +144,6 @@ public class BlocksValkyrienWarfareControl {
         event.getRegistry().register(liftValve);
         event.getRegistry().register(networkDisplay);
         event.getRegistry().register(liftControl);
-        event.getRegistry().register(etherGasCompressor);
         
         event.getRegistry().register(etherCompressorPanel);
         event.getRegistry().register(gyroscopeDampener);
@@ -182,7 +178,6 @@ public class BlocksValkyrienWarfareControl {
         registerItemBlock(event, liftValve);
         registerItemBlock(event, networkDisplay);
         registerItemBlock(event, liftControl);
-        registerItemBlock(event, etherGasCompressor);
         registerItemBlock(event, etherCompressorPanel);
         registerItemBlock(event, gyroscopeDampener);
         

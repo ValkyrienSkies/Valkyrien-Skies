@@ -57,7 +57,6 @@ import valkyrienwarfare.addon.control.piloting.PilotControlsMessage;
 import valkyrienwarfare.addon.control.piloting.PilotControlsMessageHandler;
 import valkyrienwarfare.addon.control.proxy.ClientProxyControl;
 import valkyrienwarfare.addon.control.proxy.CommonProxyControl;
-import valkyrienwarfare.addon.control.tileentity.TileEntityEtherGasCompressor;
 import valkyrienwarfare.addon.control.tileentity.TileEntityGearbox;
 import valkyrienwarfare.addon.control.tileentity.TileEntityGyroscopeDampener;
 import valkyrienwarfare.addon.control.tileentity.TileEntityGyroscopeStabilizer;
@@ -128,7 +127,6 @@ public class ValkyrienWarfareControl extends Module {
         GameRegistry.registerTileEntity(TileEntityLiftValve.class, "tileliftvalve");
         GameRegistry.registerTileEntity(TileEntityNetworkDisplay.class, "tilenetworkdisplay");
         GameRegistry.registerTileEntity(TileEntityLiftControl.class, "tileliftcontrol");
-        GameRegistry.registerTileEntity(TileEntityEtherGasCompressor.class, "tileethergascompressor");
 
         GameRegistry.registerTileEntity(TileEntityGyroscopeDampener.class, "tilegyroscope_dampener");
         GameRegistry.registerTileEntity(TileEntityEthereumEnginePart.class, "tile_big_engine_part");

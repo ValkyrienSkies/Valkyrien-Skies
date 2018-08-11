@@ -28,7 +28,7 @@ import valkyrienwarfare.physics.PhysicsCalculations;
 public class TileEntityGyroscopeStabilizer extends TileEntity {
 
 	private static final Vector GRAVITY_UP = new Vector(0, 1, 0);
-	// 300,000 newton-meters maximum of torque.
+	// Up to 300,000 newton-meters of torque generated.
 	private double maximumTorque = 300000;
 	
 	public Vector getTorqueInGlobal(PhysicsCalculations physicsCalculations, BlockPos pos) {

@@ -52,13 +52,7 @@ public class TileEntityEthereumCompressorPart extends TileEntityMultiblockPartFo
 			Vector tilePos = new Vector(getPos().getX() + .5D, getPos().getY() + .5D, getPos().getZ() + .5D);
 			tilePhysics.getPhysicsObject().getShipTransformationManager().getCurrentPhysicsTransform().transform(tilePos, TransformType.SUBSPACE_TO_GLOBAL);
 			double yPos = tilePos.Y;
-			if (yPos <= -30) {
-				return 1;
-			} else {
-				double efficiency = 1D - ((yPos + 30) / 330);
-				efficiency = Math.max(0, Math.min(1, efficiency));
-				return efficiency;
-			}
+			return IEtherEngine.getEtherEfficiencyFromHeight(yPos);
 		} else {
 			return 1;
 		}

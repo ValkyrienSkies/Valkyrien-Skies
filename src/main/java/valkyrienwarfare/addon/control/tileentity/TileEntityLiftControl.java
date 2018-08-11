@@ -11,29 +11,29 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.block.multiblocks.TileEntityEthereumCompressorPart;
-import valkyrienwarfare.addon.control.block.multiblocks.TileEntityEthereumEnginePart;
 import valkyrienwarfare.addon.control.nodenetwork.VWNode_TileEntity;
 import valkyrienwarfare.addon.control.piloting.ControllerInputType;
 import valkyrienwarfare.addon.control.piloting.PilotControlsMessage;
+import valkyrienwarfare.math.Vector;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public class TileEntityLiftControl extends ImplTileEntityPilotable {
-
-	private int liftPercentage;
-	private int nextLiftPercentage;
 	
 	// Between 0 and 1, where .5 is the middle.
 	private float leverOffset;
 	private float nextLeverOffset;
 	private float prevLeverOffset;
 	
+	private double heightReference;
+	
 	public TileEntityLiftControl() {
 		super();
-		this.liftPercentage = 0;
-		this.nextLiftPercentage = 0;
 		this.leverOffset = .5f;
 		this.nextLeverOffset = .5f;
 		this.prevLeverOffset = .5f;
+		this.heightReference = 0;
 	}
 	
 	@Override
@@ -44,12 +44,12 @@ public class TileEntityLiftControl extends ImplTileEntityPilotable {
 	@Override
 	public void update() {
 		if (this.getWorld().isRemote) {
-			this.liftPercentage = nextLiftPercentage;
 			this.prevLeverOffset = this.leverOffset;
 			this.leverOffset = (float) (((nextLeverOffset - leverOffset) * .7) + leverOffset);
 		} else {
 			sendUpdatePacketToAllNearby();
 			VWNode_TileEntity thisNode = this.getNode();
+			PhysicsWrapperEntity parentEntity = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(this.getWorld(), this.getPos());
 			for (GraphObject object : thisNode.getGraph().getObjects()) {
 				VWNode_TileEntity otherNode = (VWNode_TileEntity) object;
 				TileEntity tile = otherNode.getParentTile();
@@ -57,11 +57,27 @@ public class TileEntityLiftControl extends ImplTileEntityPilotable {
 					BlockPos masterPos = ((TileEntityEthereumCompressorPart) tile).getMultiblockOrigin();
 					TileEntityEthereumCompressorPart masterTile = (TileEntityEthereumCompressorPart) tile.getWorld().getTileEntity(masterPos);
 					// This is a transient problem that only occurs during world loading.
-					if (masterTile != null) {
-						masterTile.setThrustMultiplierGoal(((double) liftPercentage) / 100D);
-						// masterTile.updateTicksSinceLastRecievedSignal();
+					if (masterTile != null && parentEntity != null) {
+						double shipYHeight = parentEntity.getPhysicsObject().getWrapperEntity().posY;
+						double shipYVelocity = parentEntity.getPhysicsObject().getPhysicsProcessor().getVelocityAtPoint(new Vector()).Y;
+						
+						double effectiveHeight = shipYHeight + shipYVelocity;
+						
+						double controlOffset = this.heightReference - effectiveHeight;
+
+						// Simple impulse control scheme.
+						if (controlOffset > 0) {
+							masterTile.setThrustMultiplierGoal(1);
+						} else {
+							masterTile.setThrustMultiplierGoal(0);
+						}
 					}
+					// masterTile.updateTicksSinceLastRecievedSignal();
 				}
+			}
+			
+			if (this.getPilotEntity() == null) {
+				this.leverOffset = .5f;
 			}
 		}
 	}
@@ -72,37 +88,36 @@ public class TileEntityLiftControl extends ImplTileEntityPilotable {
 		// White text.
 		int color = 0xFFFFFF;
 		// Extra spaces so the that the text is closer to the middle when rendered.
-		String message = "Power:    ";
+		String message = "Target Altitude:    ";
 		int i = gameResolution.getScaledWidth();
         int height = gameResolution.getScaledHeight() - 35;
 		float middle = (float)(i / 2 - renderer.getStringWidth(message) / 2);
-		message = "Power: " + liftPercentage + "%";
+		message = "Target Altitude: " + heightReference;
 		renderer.drawStringWithShadow(message , middle, height, color);
     }
 	
 	@Override
 	void processControlMessage(PilotControlsMessage message, EntityPlayerMP sender) {
-		final float controlRate = .075f;
+		final float leverPullRate = .075f;
 		
 		if (message.airshipForward_KeyDown) {
-			liftPercentage++;
-			leverOffset += controlRate;
-			// System.out.println("Lift Up");
+			// liftPercentage++;
+			leverOffset += leverPullRate;
+			heightReference += .5;
 		}
 		if (message.airshipBackward_KeyDown) {
-			liftPercentage--;
-			leverOffset -= controlRate;
-			// System.out.println("Lift Down");
+			// liftPercentage--;
+			leverOffset -= leverPullRate;
+			heightReference -= .5;
 		}
 		
 		leverOffset = Math.max(0, Math.min(1, leverOffset));
-		liftPercentage = Math.min(100, Math.max(0, liftPercentage));
 		
 		if (!message.airshipForward_KeyDown && !message.airshipBackward_KeyDown) {
-			if (leverOffset > .5 + controlRate) {
-				leverOffset -= controlRate;
-			} else if (leverOffset < .5 - controlRate) {
-				leverOffset += controlRate;
+			if (leverOffset > .5 + leverPullRate) {
+				leverOffset -= leverPullRate;
+			} else if (leverOffset < .5 - leverPullRate) {
+				leverOffset += leverPullRate;
 			} else {
 				leverOffset = .5f;
 			}
@@ -112,45 +127,34 @@ public class TileEntityLiftControl extends ImplTileEntityPilotable {
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 		NBTTagCompound toReturn = super.writeToNBT(compound);
-		compound.setInteger("liftPercentage", liftPercentage);
 		compound.setFloat("leverOffset", leverOffset);
+		compound.setDouble("heightReference", heightReference);
 		return toReturn;
 	}
 	
 	@Override
 	public void readFromNBT(NBTTagCompound compound) {
 		super.readFromNBT(compound);
-		liftPercentage = compound.getInteger("liftPercentage");
+		leverOffset = compound.getFloat("leverOffset");
+		heightReference = compound.getDouble("heightReference");
 	}
 	
 	@Override
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
-		nextLiftPercentage = pkt.getNbtCompound().getInteger("liftPercentage");
 		nextLeverOffset = pkt.getNbtCompound().getFloat("leverOffset");
+		heightReference = pkt.getNbtCompound().getDouble("heightReference");
 	}
 	
 	@Override
 	public NBTTagCompound getUpdateTag() {
 		NBTTagCompound toReturn = super.getUpdateTag();
-		toReturn.setInteger("liftPercentage", liftPercentage);
 		toReturn.setFloat("leverOffset", leverOffset);
+		toReturn.setDouble("heightReference", heightReference);
 		return toReturn;
-	}
-	
-	public int getLiftPercentage() {
-		return liftPercentage;
-	}
-	
-	public int getNextLiftPercentage() {
-		return nextLiftPercentage;
 	}
 	
 	public float getLeverOffset() {
 		return leverOffset;
-	}
-	
-	public float getNextLeverOffet() {
-		return nextLeverOffset;
 	}
 	
 	public float getPrevLeverOffset() {

@@ -25,6 +25,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import valkyrienwarfare.ValkyrienWarfareMod;
+import valkyrienwarfare.addon.control.BlocksValkyrienWarfareControl;
+import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.block.BlockShipHelm;
 import valkyrienwarfare.addon.control.piloting.ControllerInputType;
 import valkyrienwarfare.addon.control.piloting.PilotControlsMessage;
@@ -86,6 +88,9 @@ public class TileEntityShipHelm extends ImplTileEntityPilotable implements ITick
 		lastCompassAngle = compassAngle;
 
 		IBlockState helmState = getWorld().getBlockState(getPos());
+		if (helmState.getBlock() != ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipHelm) {
+			return;
+		}
 		EnumFacing enumfacing = helmState.getValue(BlockShipHelm.FACING);
 		double wheelAndCompassStateRotation = enumfacing.getHorizontalAngle();
 

@@ -65,14 +65,9 @@ public class ShipTelegraphTileEntityRenderer extends TileEntitySpecialRenderer<T
 
         BlockPos originPos = tileentity.getPos();
 
-        IBlockState glassState = ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipWheel.getStateFromMeta(8);
-        IBlockState dialState = ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipWheel.getStateFromMeta(7);
-        IBlockState leftHandleState = ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipWheel.getStateFromMeta(6);
-        IBlockState rightHandleState = ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipWheel.getStateFromMeta(5);
-        IBlockState helmStateToRender = ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipWheel.getStateFromMeta(4);
         int brightness = tileentity.getWorld().getCombinedLight(tileentity.getPos(), 0);
 
-        double multiplier = 2D;
+        double multiplier = 1.9D;
 
         GL11.glTranslated((1D - multiplier) / 2.0D, 0, (1D - multiplier) / 2.0D);
         GL11.glScaled(multiplier, multiplier, multiplier);
@@ -94,7 +89,7 @@ public class ShipTelegraphTileEntityRenderer extends TileEntitySpecialRenderer<T
         GL11.glPushMatrix();
 
         GL11.glTranslated(0.497D, 0.857D, 0.5D);
-        GL11.glRotated(tileentity.getHandleRenderRotation(), 0D, 0D, 1D);
+        GL11.glRotated(tileentity.getHandleRenderRotation(partialTick), 0D, 0D, 1D);
         GL11.glTranslated(-0.497D, -0.857D, -0.5D);
 
         // FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(), rightHandleState, brightness);

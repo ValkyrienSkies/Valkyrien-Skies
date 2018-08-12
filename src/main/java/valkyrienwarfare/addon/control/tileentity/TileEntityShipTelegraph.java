@@ -62,6 +62,7 @@ public class TileEntityShipTelegraph extends ImplTileEntityPilotable implements 
     	newTelegraphOrdinal += deltaOrdinal;
     	newTelegraphOrdinal = Math.max(0, Math.min(ShipChadburnState.values().length - 1, newTelegraphOrdinal));
         telegraphState = ShipChadburnState.values()[newTelegraphOrdinal];
+        this.markDirty();
     }
 
 

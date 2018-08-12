@@ -33,6 +33,7 @@ import valkyrienwarfare.addon.control.block.BlockShipPassengerChair;
 import valkyrienwarfare.addon.control.block.BlockShipPilotsChair;
 import valkyrienwarfare.addon.control.block.BlockShipTelegraph;
 import valkyrienwarfare.addon.control.block.BlockShipWheel;
+import valkyrienwarfare.addon.control.block.BlockTelegraphDummy;
 import valkyrienwarfare.addon.control.block.BlockThrustModulator;
 import valkyrienwarfare.addon.control.block.BlockThrustRelay;
 import valkyrienwarfare.addon.control.block.engine.BlockNormalEngine;
@@ -65,6 +66,7 @@ public class BlocksValkyrienWarfareControl {
     public final Block shipHelm;
     public final Block shipWheel;
     public final Block shipTelegraph;
+    public final Block shipTelegraphDummy;
     public final Block thrustRelay;
     public final Block thrustModulator;
     public final Block gyroscopeStabilizer;
@@ -115,6 +117,7 @@ public class BlocksValkyrienWarfareControl {
         gyroscopeDampener = new BlockGyroscopeDampener(Material.IRON).setHardness(6f).setUnlocalizedName("vw_gyroscope_dampener").setRegistryName(getModID(), "vw_gyroscope_dampener").setCreativeTab(ValkyrienWarfareMod.vwTab);
         ethereumEnginePart = new BlockEthereumEnginePart(Material.IRON).setHardness(6f).setUnlocalizedName("vw_ethereum_enginepart").setRegistryName(getModID(), "vw_ethereum_enginepart").setCreativeTab(ValkyrienWarfareMod.vwTab);
         gearbox = new BlockGearbox(Material.IRON).setHardness(6f).setUnlocalizedName("vw_gearbox").setRegistryName(getModID(), "vw_gearbox").setCreativeTab(ValkyrienWarfareMod.vwTab);
+        shipTelegraphDummy = new BlockTelegraphDummy(Material.WOOD).setHardness(5f).setUnlocalizedName("shiptelegraph_dummy").setRegistryName(getModID(), "shiptelegraph_dummy");
     }
 
     protected void registerBlocks(RegistryEvent.Register<Block> event) {
@@ -149,6 +152,7 @@ public class BlocksValkyrienWarfareControl {
         event.getRegistry().register(gyroscopeDampener);
         event.getRegistry().register(ethereumEnginePart);
         event.getRegistry().register(gearbox);
+        event.getRegistry().register(shipTelegraphDummy);
     }
 
     protected void registerBlockItems(RegistryEvent.Register<Item> event) {

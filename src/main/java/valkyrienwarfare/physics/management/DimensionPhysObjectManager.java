@@ -84,7 +84,8 @@ public class DimensionPhysObjectManager {
         if (wrapperEntity == null) {
         	return null;
         }
-        if (wrapperEntity.getPhysicsObject() == null || wrapperEntity.getPhysicsObject().getShipTransformationManager() == null) {
+        // I hate debug messages.
+        if (false && wrapperEntity.getPhysicsObject() == null || wrapperEntity.getPhysicsObject().getShipTransformationManager() == null) {
         	System.err.println("Broken ship with UUID: " + wrapperEntity.getCachedUniqueIdString() + " at " + wrapperEntity.getPositionVector());
         	System.err.println("Other info: " + wrapperEntity.getYaw());
         	return null;

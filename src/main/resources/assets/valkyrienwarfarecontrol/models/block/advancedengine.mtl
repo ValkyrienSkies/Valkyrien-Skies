@@ -15,7 +15,7 @@ Ni 1.00
 map_Kd valkyrienwarfarecontrol:blocks/rusty_shaft
 
 
-
+#All the crap past here is just to get Minecraft to include the textures for models that don't belong to blocks. I should figure a better way to do this.
 
 newmtl pocketwatch_mtlSG
 illum 4
@@ -39,4 +39,44 @@ Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
 map_Kd valkyrienwarfarecontrol:blocks/telescope512
+Ni 1.00
+
+newmtl chadburndial_mtlSG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd valkyrienwarfarecontrol:blocks/chadburndial512
+Ni 1.00
+
+newmtl chadburnglass_mtlSG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd valkyrienwarfarecontrol:blocks/chadburnglass512
+Ni 1.00
+
+newmtl chadburnhandles_mtlSG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd valkyrienwarfarecontrol:blocks/chadburnhandles512
+Ni 1.00
+
+newmtl chadburnspeedtelegraph_mtlSG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd valkyrienwarfarecontrol:blocks/chadburnshiptelegraph512
+Ni 1.00
+
+newmtl lambert2SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd valkyrienwarfarecontrol:blocks/chadburndial2512
 Ni 1.00

@@ -139,6 +139,11 @@ public class ClientProxyControl extends CommonProxyControl {
         registerControlGibs("liftcontrolhandle_geo");
         registerControlGibs("liftcontrolhandle_pivot_geo");
         
+        registerControlGibs("chadburn_dial_simplevoxel_geo");
+        registerControlGibs("chadburn_glass_simplevoxel_geo");
+        registerControlGibs("chadburn_handles_simplevoxel_geo");
+        registerControlGibs("chadburn_speedtelegraph_simplevoxel_geo");
+        
         registerGearboxGibs("gear1_geo");
         registerGearboxGibs("gear2_geo");
         registerGearboxGibs("gear3_geo");

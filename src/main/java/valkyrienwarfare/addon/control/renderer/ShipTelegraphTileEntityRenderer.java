@@ -30,6 +30,7 @@ import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.block.BlockShipTelegraph;
 import valkyrienwarfare.addon.control.tileentity.TileEntityShipTelegraph;
 import valkyrienwarfare.mod.client.render.FastBlockModelRenderer;
+import valkyrienwarfare.mod.client.render.GibsModelRegistry;
 
 public class ShipTelegraphTileEntityRenderer extends TileEntitySpecialRenderer<TileEntityShipTelegraph> {
 
@@ -71,7 +72,7 @@ public class ShipTelegraphTileEntityRenderer extends TileEntitySpecialRenderer<T
         IBlockState helmStateToRender = ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipWheel.getStateFromMeta(4);
         int brightness = tileentity.getWorld().getCombinedLight(tileentity.getPos(), 0);
 
-        double multiplier = 1.5D;
+        double multiplier = 2D;
 
         GL11.glTranslated((1D - multiplier) / 2.0D, 0, (1D - multiplier) / 2.0D);
         GL11.glScaled(multiplier, multiplier, multiplier);
@@ -82,25 +83,35 @@ public class ShipTelegraphTileEntityRenderer extends TileEntitySpecialRenderer<T
         GL11.glRotated(wheelAndCompassStateRotation, 0, 1, 0);
         GL11.glTranslated(-0.5D, 0, -0.5D);
 
-        FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(), helmStateToRender, brightness);
+        // FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(), helmStateToRender, brightness);
+        
+        GibsModelRegistry.renderGibsModel("chadburn_speedtelegraph_simplevoxel_geo", brightness);
 
-        FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(), dialState, brightness);
+        // FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(), dialState, brightness);
 
+        GibsModelRegistry.renderGibsModel("chadburn_dial_simplevoxel_geo", brightness);
+        
         GL11.glPushMatrix();
 
         GL11.glTranslated(0.497D, 0.857D, 0.5D);
         GL11.glRotated(tileentity.getHandleRenderRotation(), 0D, 0D, 1D);
         GL11.glTranslated(-0.497D, -0.857D, -0.5D);
 
-        FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(), rightHandleState, brightness);
-        FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(), leftHandleState, brightness);
+        // FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(), rightHandleState, brightness);
+        
+        GibsModelRegistry.renderGibsModel("chadburn_handles_simplevoxel_geo", brightness);
+        
+        // FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(), leftHandleState, brightness);
 
         GL11.glPopMatrix();
 
         GlStateManager.enableAlpha();
         GlStateManager.enableBlend();
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(), glassState, brightness);
+        // GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        
+        // FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(), glassState, brightness);
+        GibsModelRegistry.renderGibsModel("chadburn_glass_simplevoxel_geo", brightness);
+        
         GlStateManager.disableAlpha();
         GlStateManager.disableBlend();
 

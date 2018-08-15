@@ -85,6 +85,9 @@ repositories {
 	maven {
         url 'http://dogforce-games.com/maven'
     }
+	maven {
+		url 'https://maven.daporkchop.net/'
+	}
     mavenCentral()
 }
 
@@ -99,6 +102,7 @@ dependencies {
 	// Porky datastructures
 	compile 'net.daporkchop.lib:primitive:0.0.5'
 	compile 'gigaherz.graph:GraphLib:1.4.0'
+	compile 'valkyrienwarfare:api:1.0'
 }
 
 processResources {
@@ -165,6 +169,7 @@ shadowJar {
     dependencies {
         include(dependency('org.spongepowered:mixin'))
 		include(dependency(':GraphLib:'))
+		include(dependency(':api:'))
     }
     exclude 'dummyThing'
     exclude 'LICENSE.txt'

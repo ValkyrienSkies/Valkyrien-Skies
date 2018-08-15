@@ -419,6 +419,7 @@ public class PhysicsCalculations {
 			for (IBlockTorqueProvider torqueProviderBlock : torqueProviders.keySet()) {
 				List<BlockPos> blockPositions = torqueProviders.get(torqueProviderBlock);
 				for (BlockPos pos : blockPositions) {
+					this.convertTorqueToVelocity();
 					Vector torqueVector = torqueProviderBlock.getTorqueInGlobal(this, pos);
 					if (torqueVector != null) {
 						torque.add(torqueVector);

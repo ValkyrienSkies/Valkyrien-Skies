@@ -24,13 +24,12 @@ public class BlockTelegraphDummy extends Block {
 	@Override
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
 			EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
-		if (playerIn.getHeldItem(hand) == ItemStack.EMPTY) {
+		if (!worldIn.isRemote) {
 			IBlockState belowState = worldIn.getBlockState(pos.down());
-			return belowState.getBlock().onBlockActivated(worldIn, pos.down(), belowState, playerIn, hand, side, hitX,
-					hitY, hitZ);
-		} else {
-			return super.onBlockActivated(worldIn, pos, state, playerIn, hand, side, hitX, hitY, hitZ);
+			belowState.getBlock().onBlockActivated(worldIn, pos.down(), belowState, playerIn, hand, side, hitX, hitY,
+					hitZ);
 		}
+		return true;
 	}
 
 	@Override

@@ -22,15 +22,21 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
 import valkyrienwarfare.ValkyrienWarfareMod;
 
+import java.util.Hashtable;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class Module<ImplName> {
+    private static final Map<ResourceLocation, AtomicInteger> registeredRecipies = new Hashtable<>();
+
     private String name;
     private boolean donePreInit = false, doneInit = false, donePostInit = false;
     private ModuleProxy common, client, server; //tODO: call these
@@ -48,7 +54,8 @@ public abstract class Module<ImplName> {
 
     public static final void registerRecipe(RegistryEvent.Register<IRecipe> event, ItemStack out, Object... in) {
         CraftingHelper.ShapedPrimer primer = CraftingHelper.parseShaped(in);
-        event.getRegistry().register(new ShapedRecipes(ValkyrienWarfareMod.MODID, primer.width, primer.height, primer.input, out).setRegistryName(ValkyrienWarfareMod.MODID, UUID.randomUUID().toString()));
+        event.getRegistry().register(new ShapedRecipes(ValkyrienWarfareMod.MODID, primer.width, primer.height, primer.input, out)
+                .setRegistryName(ValkyrienWarfareMod.MODID, String.format("%s_%d", out.item.getRegistryName().getResourcePath(), registeredRecipies.computeIfAbsent(out.item.getRegistryName(), a -> new AtomicInteger()).getAndIncrement())));
     }
 
     public static final void registerItemBlock(RegistryEvent.Register<Item> event, Block block) {

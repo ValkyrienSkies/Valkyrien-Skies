@@ -145,8 +145,8 @@ public class ValkyrienWarfareControl extends Module<ValkyrienWarfareControl> {
     @Override
     public void registerRecipes(RegistryEvent.Register<IRecipe> event) {
         registerRecipe(event, new ItemStack(blocks.pilotsChair), "SLS", "EWE", " S ", 'S', Items.STICK, 'L', Items.LEATHER, 'W', Item.getItemFromBlock(Blocks.LOG), 'E', ValkyrienWarfareWorld.INSTANCE.etheriumCrystal);
-        registerRecipe(event, new ItemStack(systemLinker), "IR ", " DR", "I I", 'I', Items.IRON_INGOT, 'D', Items.DIAMOND, 'R', Items.REDSTONE);
-        registerRecipe(event, new ItemStack(blocks.basicHoverController), "III", "TCT", "III", 'I', Item.getItemFromBlock(Blocks.IRON_BLOCK), 'C', Items.COMPASS, 'T', Item.getItemFromBlock(Blocks.CRAFTING_TABLE));
+        //registerRecipe(event, new ItemStack(systemLinker), "IR ", " DR", "I I", 'I', Items.IRON_INGOT, 'D', Items.DIAMOND, 'R', Items.REDSTONE);
+        //registerRecipe(event, new ItemStack(blocks.basicHoverController), "III", "TCT", "III", 'I', Item.getItemFromBlock(Blocks.IRON_BLOCK), 'C', Items.COMPASS, 'T', Item.getItemFromBlock(Blocks.CRAFTING_TABLE));
 
         registerRecipe(event, new ItemStack(blocks.antigravityEngine, 4), "#I#", "#E#", "WEW", '#', Item.getItemFromBlock(Blocks.PLANKS), 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorld.INSTANCE.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));
         registerRecipe(event, new ItemStack(blocks.advancedEtherCompressor, 4), "#I#", "#E#", "WEW", '#', Item.getItemFromBlock(Blocks.STONE), 'I', Items.IRON_INGOT, 'E', ValkyrienWarfareWorld.INSTANCE.etheriumCrystal, 'W', Item.getItemFromBlock(Blocks.LOG));
@@ -159,6 +159,10 @@ public class ValkyrienWarfareControl extends Module<ValkyrienWarfareControl> {
         registerRecipe(event, new ItemStack(blocks.advancedEngine, 2), "I##", "IPP", "I##", '#', Item.getItemFromBlock(Blocks.COBBLESTONE), 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT);
         registerRecipe(event, new ItemStack(blocks.eliteEngine, 4), "III", "IPP", "III", 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT);
         registerRecipe(event, new ItemStack(blocks.ultimateEngine, 4), "I##", "IPP", "I##", '#', Item.getItemFromBlock(Blocks.OBSIDIAN), 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT);
+
+        registerRecipe(event, new ItemStack(blocks.thrustRelay, 8), " R ", "IRI", " # ", 'R', Items.REDSTONE, 'I', Items.IRON_INGOT, '#', Item.getItemFromBlock(Blocks.PLANKS));
+        registerRecipe(event, new ItemStack(blocks.thrustModulator), "III", "TCT", "III", 'I', Item.getItemFromBlock(Blocks.IRON_BLOCK), 'C', Items.COMPASS, 'T', Item.getItemFromBlock(Blocks.CRAFTING_TABLE));
+        registerRecipe(event, new ItemStack(relayWire), " I ", "RRR", " I ", 'I', Items.IRON_INGOT, 'R', Items.REDSTONE);
     }
 
     @Override

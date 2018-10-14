@@ -28,7 +28,6 @@ import valkyrienwarfare.mod.physmanagement.interaction.EntityDraggable;
 import valkyrienwarfare.mod.physmanagement.interaction.IDraggable;
 import valkyrienwarfare.mod.physmanagement.interaction.INHPServerVW;
 
-//TODO: a lot of these mixins can probably be done using overrides instead of overwrites, i should have a look at some point
 @Mixin(NetHandlerPlayServer.class)
 public abstract class MixinNetHandlerPlayServer implements INHPServerVW {
     @Shadow
@@ -82,4 +81,14 @@ public abstract class MixinNetHandlerPlayServer implements INHPServerVW {
         return player;
     }
 
+    @Redirect(
+            method = "Lnet/minecraft/network/NetHandlerPlayServer;processPlayer(Lnet/minecraft/network/play/client/CPacketPlayer;)V",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/entity/player/EntityPlayerMP;isInvulnerableDimensionChange()Z"
+            )
+    )
+    private boolean redirectIsInvulnerableDimensionChange(EntityPlayerMP player)  {
+        return true;
+    }
 }

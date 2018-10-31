@@ -87,22 +87,6 @@ public class ShipHelmTileEntityRenderer extends TileEntitySpecialRenderer<TileEn
             // TODO: Better rendering cache
             int brightness = tileentity.getWorld().getCombinedLight(tileentity.getPos(), 0);
 
-            GL11.glPushMatrix();
-//            GL11.glTranslated(-1, 0, -1);
-//            GL11.glScaled(3, 3, 3);
-            
-//            keyframe = 1;
-            // GibsAnimationRegistry.getAnimation("pocketwatch_body").renderAnimation(keyframe + 1, brightness);
-            
-            // GibsAnimationRegistry.getAnimation("pocketwatch_lid").renderAnimation(2, brightness);
-            
-            GibsAnimationRegistry.getAnimation("telescope").renderAnimation(1, brightness);
-            
-            GL11.glPopMatrix();
-            
-            keyframe = ((Minecraft.getMinecraft().world.getTotalWorldTime() + partialTick)) % 99;
-            
-            if (false) {
             double multiplier = 2.0D;
             GL11.glTranslated((1D - multiplier) / 2.0D, 0, (1D - multiplier) / 2.0D);
             GL11.glScaled(multiplier, multiplier, multiplier);
@@ -112,38 +96,30 @@ public class ShipHelmTileEntityRenderer extends TileEntitySpecialRenderer<TileEn
             GL11.glTranslated(0.5D, 0, 0.5D);
             GL11.glRotated(wheelAndCompassStateRotation, 0, 1, 0);
             GL11.glTranslated(-0.5D, 0, -0.5D);
+            GibsModelRegistry.renderGibsModel("shiphelmbase", brightness);
             
-//            FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(), helmStateToRender, brightness);
-//            GibsModelRegistry.renderGibsModel("doggy", brightness);
-            
-//            GL11.glPushMatrix();
-//            GL11.glTranslated(.5, .522, 0);
-//            GL11.glRotated(smoothWheel, 0, 0, 1);
-//            GL11.glTranslated(-.5, -.522, 0);
-//            FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(), wheelState,
-//                    brightness);
-//            GL11.glPopMatrix();
-
-//            GL11.glPushMatrix();
-//            GL11.glTranslated(0.5D, 0, 0.5D);
-//            GL11.glRotated(smoothCompass, 0, 1, 0);
-//            GL11.glTranslated(-0.5D, 0, -0.5D);
-//            FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(), compassState,
-//                    brightness);
-//            GL11.glPopMatrix();
-
-            }
-//            GlStateManager.enableAlpha();
-//            GlStateManager.enableBlend();
-//            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-            //FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(), glassState,
-            //        brightness);
-//            GlStateManager.disableAlpha();
-//            GlStateManager.disableBlend();
-
+            GL11.glPushMatrix();
+            GL11.glTranslated(.5, .522, 0);
+            GL11.glRotated(smoothWheel, 0, 0, 1);
+            GL11.glTranslated(-.5, -.522, 0);
+            GibsModelRegistry.renderGibsModel("shiphelmwheel", brightness);
             GL11.glPopMatrix();
 
-//            BufferBuilder.setTranslation(oldX, oldY, oldZ);
+            GL11.glPushMatrix();
+            GL11.glTranslated(0.5D, 0, 0.5D);
+            GL11.glRotated(smoothCompass, 0, 1, 0);
+            GL11.glTranslated(-0.5D, 0, -0.5D);
+            GibsModelRegistry.renderGibsModel("shiphelmdial", brightness);
+
+            GL11.glPopMatrix();
+            GlStateManager.enableAlpha();
+            GlStateManager.enableBlend();
+            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+            GibsModelRegistry.renderGibsModel("shiphelmdialglass", brightness);
+            GlStateManager.disableAlpha();
+            GlStateManager.disableBlend();
+            GL11.glPopMatrix();
+
             GlStateManager.enableLighting();
             GlStateManager.resetColor();
         }

@@ -42,6 +42,7 @@ import valkyrienwarfare.addon.control.block.legacy_ethercompressor.BlockCreative
 import valkyrienwarfare.addon.control.block.legacy_ethercompressor.BlockNormalEtherCompressor;
 import valkyrienwarfare.addon.control.block.multiblocks.BlockEtherCompressorPart;
 import valkyrienwarfare.addon.control.block.multiblocks.BlockEthereumEnginePart;
+import valkyrienwarfare.addon.control.block.multiblocks.BlockRudderAxelPart;
 import valkyrienwarfare.api.addons.Module;
 
 public class BlocksValkyrienWarfareControl {
@@ -79,6 +80,8 @@ public class BlocksValkyrienWarfareControl {
     
     public final Block ethereumEnginePart;
     public final Block gearbox;
+    
+    public final Block rudderAxelPart;
 
     public BlocksValkyrienWarfareControl(ValkyrienWarfareControl mod_vwcontrol) {
         this.mod_vwcontrol = mod_vwcontrol;
@@ -118,6 +121,7 @@ public class BlocksValkyrienWarfareControl {
         ethereumEnginePart = new BlockEthereumEnginePart(Material.IRON).setHardness(6f).setUnlocalizedName("vw_ethereum_enginepart").setRegistryName(getModID(), "vw_ethereum_enginepart").setCreativeTab(ValkyrienWarfareMod.vwTab);
         gearbox = new BlockGearbox(Material.IRON).setHardness(6f).setUnlocalizedName("vw_gearbox").setRegistryName(getModID(), "vw_gearbox").setCreativeTab(ValkyrienWarfareMod.vwTab);
         shipTelegraphDummy = new BlockTelegraphDummy(Material.WOOD).setHardness(5f).setUnlocalizedName("shiptelegraph_dummy").setRegistryName(getModID(), "shiptelegraph_dummy");
+        rudderAxelPart = new BlockRudderAxelPart(Material.IRON).setHardness(5f).setUnlocalizedName("vw_rudder_axel_part").setRegistryName(getModID(), "vw_rudder_axel_part").setCreativeTab(ValkyrienWarfareMod.vwTab);;
     }
 
     protected void registerBlocks(RegistryEvent.Register<Block> event) {
@@ -153,6 +157,7 @@ public class BlocksValkyrienWarfareControl {
         event.getRegistry().register(ethereumEnginePart);
         event.getRegistry().register(gearbox);
         event.getRegistry().register(shipTelegraphDummy);
+        event.getRegistry().register(rudderAxelPart);
     }
 
     protected void registerBlockItems(RegistryEvent.Register<Item> event) {
@@ -187,6 +192,7 @@ public class BlocksValkyrienWarfareControl {
         
         registerItemBlock(event, ethereumEnginePart);
         registerItemBlock(event, gearbox);
+        registerItemBlock(event, rudderAxelPart);
     }
 
     private void registerItemBlock(RegistryEvent.Register<Item> event, Block block) {

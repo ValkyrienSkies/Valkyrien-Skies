@@ -93,6 +93,7 @@ public class ClientProxyControl extends CommonProxyControl {
         
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.ethereumEnginePart);
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.gearbox);
+        registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.rudderAxelPart);
     }
 
     private static void registerItemModels() {
@@ -143,6 +144,11 @@ public class ClientProxyControl extends CommonProxyControl {
         registerControlGibs("chadburn_glass_simplevoxel_geo");
         registerControlGibs("chadburn_handles_simplevoxel_geo");
         registerControlGibs("chadburn_speedtelegraph_simplevoxel_geo");
+        
+        registerControlGibs("shiphelmbase");
+        registerControlGibs("shiphelmdial");
+        registerControlGibs("shiphelmdialglass");
+        registerControlGibs("shiphelmwheel");
         
         registerGearboxGibs("gear1_geo");
         registerGearboxGibs("gear2_geo");

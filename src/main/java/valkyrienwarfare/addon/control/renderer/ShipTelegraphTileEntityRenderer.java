@@ -48,6 +48,7 @@ public class ShipTelegraphTileEntityRenderer extends TileEntitySpecialRenderer<T
             return;
         }
 
+        GlStateManager.resetColor();
         this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
         GlStateManager.pushMatrix();
         GlStateManager.disableLighting();

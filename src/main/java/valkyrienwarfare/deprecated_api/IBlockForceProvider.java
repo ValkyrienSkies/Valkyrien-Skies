@@ -57,8 +57,7 @@ public interface IBlockForceProvider {
 
     /**
      * The force Vector this block gives within its local space (Not within World
-     * space), should only be used for static blocks with forces that do not need
-     * updating.
+     * space).
      *
      * @param world
      * @param pos

@@ -48,7 +48,7 @@ public class EthereumEnginePartTileEntityRenderer extends TileEntitySpecialRende
 			GlStateManager.rotate(tileYaw, 0, 1, 0);
 			GlStateManager.translate(-.5, 0, -.5);
 			
-			double keyframe = ((Minecraft.getMinecraft().world.getTotalWorldTime() + partialTick) % 99) + 1;
+			double keyframe = tileentity.getCurrentKeyframe(partialTick);
 			
 			GibsAnimationRegistry.getAnimation("ethereum_engine").renderAnimation(keyframe, brightness);
 		}

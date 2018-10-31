@@ -48,36 +48,52 @@ public class TileEntityLiftControl extends ImplTileEntityPilotable {
 			this.leverOffset = (float) (((nextLeverOffset - leverOffset) * .7) + leverOffset);
 		} else {
 			sendUpdatePacketToAllNearby();
-			VWNode_TileEntity thisNode = this.getNode();
-			PhysicsWrapperEntity parentEntity = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(this.getWorld(), this.getPos());
-			for (GraphObject object : thisNode.getGraph().getObjects()) {
-				VWNode_TileEntity otherNode = (VWNode_TileEntity) object;
-				TileEntity tile = otherNode.getParentTile();
-				if (tile instanceof TileEntityEthereumCompressorPart) {
-					BlockPos masterPos = ((TileEntityEthereumCompressorPart) tile).getMultiblockOrigin();
-					TileEntityEthereumCompressorPart masterTile = (TileEntityEthereumCompressorPart) tile.getWorld().getTileEntity(masterPos);
-					// This is a transient problem that only occurs during world loading.
-					if (masterTile != null && parentEntity != null) {
-						double shipYHeight = parentEntity.getPhysicsObject().getWrapperEntity().posY;
-						double shipYVelocity = parentEntity.getPhysicsObject().getPhysicsProcessor().getVelocityAtPoint(new Vector()).Y;
-						
-						double effectiveHeight = shipYHeight + shipYVelocity;
-						
-						double controlOffset = this.heightReference - effectiveHeight;
-
-						// Simple impulse control scheme.
-						if (controlOffset > 0) {
-							masterTile.setThrustMultiplierGoal(1);
-						} else {
-							masterTile.setThrustMultiplierGoal(0);
-						}
-					}
-					// masterTile.updateTicksSinceLastRecievedSignal();
-				}
-			}
-			
 			if (this.getPilotEntity() == null) {
 				this.leverOffset = .5f;
+			}
+			
+			VWNode_TileEntity thisNode = this.getNode();
+			PhysicsWrapperEntity parentEntity = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(this.getWorld(), this.getPos());
+			
+			if (parentEntity != null) {
+				Vector linearVel = parentEntity.getPhysicsObject().getPhysicsProcessor().getVelocityAtPoint(new Vector());
+				Vector physPos = parentEntity.getPhysicsObject().getPhysicsProcessor().getCopyOfPhysCoordinates();
+				
+				double totalMaxUpwardThrust = 0;
+				for (GraphObject object : thisNode.getGraph().getObjects()) {
+					VWNode_TileEntity otherNode = (VWNode_TileEntity) object;
+					TileEntity tile = otherNode.getParentTile();
+					if (tile instanceof TileEntityEthereumCompressorPart) {
+						BlockPos masterPos = ((TileEntityEthereumCompressorPart) tile).getMultiblockOrigin();
+						TileEntityEthereumCompressorPart masterTile = (TileEntityEthereumCompressorPart) tile.getWorld().getTileEntity(masterPos);
+						// This is a transient problem that only occurs during world loading.
+						if (masterTile != null && parentEntity != null) {
+							totalMaxUpwardThrust += masterTile.getMaxThrust();
+						}
+						// masterTile.updateTicksSinceLastRecievedSignal();
+					}
+				}
+				
+				// Utilizing a proper PI controller for very smooth control.
+				
+				double heightWithIntegral = physPos.Y + linearVel.Y * .3D;
+				double heightDelta = heightReference - heightWithIntegral;
+				double multiplier = heightDelta / 2D;
+				multiplier = Math.max(0, Math.min(1, multiplier));
+	
+				for (GraphObject object : thisNode.getGraph().getObjects()) {
+					VWNode_TileEntity otherNode = (VWNode_TileEntity) object;
+					TileEntity tile = otherNode.getParentTile();
+					if (tile instanceof TileEntityEthereumCompressorPart) {
+						BlockPos masterPos = ((TileEntityEthereumCompressorPart) tile).getMultiblockOrigin();
+						TileEntityEthereumCompressorPart masterTile = (TileEntityEthereumCompressorPart) tile.getWorld().getTileEntity(masterPos);
+						// This is a transient problem that only occurs during world loading.
+						if (masterTile != null && parentEntity != null) {
+							masterTile.setThrustMultiplierGoal(multiplier);
+						}
+						// masterTile.updateTicksSinceLastRecievedSignal();
+					}
+				}
 			}
 		}
 	}

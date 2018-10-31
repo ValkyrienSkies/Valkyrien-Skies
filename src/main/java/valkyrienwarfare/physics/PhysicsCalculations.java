@@ -607,5 +607,10 @@ public class PhysicsCalculations {
 		RotationMatrices.applyTransform3by3(getPhysMOITensor(), rotationAxis);
 		return rotationAxis.length();
 	}
+	
+	@Deprecated
+	public Vector getCopyOfPhysCoordinates() {
+		return new Vector(physX, physY, physZ);
+	}
 
 }

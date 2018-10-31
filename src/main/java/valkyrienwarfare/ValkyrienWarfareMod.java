@@ -220,8 +220,7 @@ public class ValkyrienWarfareMod {
     @Mod.EventHandler
 	public void onFingerprintViolation(FMLFingerprintViolationEvent event) {
 		// Don't crash for signatures if we're in dev environment.
-    	// Disabling this for now lol
-		if (MixinLoaderForge.isObfuscatedEnvironment && false) {
+		if (MixinLoaderForge.isObfuscatedEnvironment) {
 			FMLLog.bigWarning(
 					"Valkyrien Warfare JAR fingerprint corrupted, which means this copy of the mod may have come from unofficial sources. Download the mod from CurseForge: https://minecraft.curseforge.com/projects/valkyrien-warfare");
 			FMLCommonHandler.instance().exitJava(123, true);

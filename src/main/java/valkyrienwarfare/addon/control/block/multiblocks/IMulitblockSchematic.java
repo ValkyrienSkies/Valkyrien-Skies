@@ -1,5 +1,6 @@
 package valkyrienwarfare.addon.control.block.multiblocks;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.block.state.IBlockState;
@@ -13,7 +14,7 @@ public interface IMulitblockSchematic {
 	 * This should generate the getStructureRelativeToCenter() list.
 	 * @param schematicID
 	 */
-	void registerMultiblockSchematic(int schematicID);
+	void initializeMultiblockSchematic(String schematicID);
 	
 	/**
 	 * Should return a static immutable list that represents how this multiblock is
@@ -23,7 +24,13 @@ public interface IMulitblockSchematic {
 	 */
 	List<BlockPosBlockPair> getStructureRelativeToCenter();
 	
-	int getSchematicID();
+	/**
+	 * Returns a common schematic prefix for all multiblocks of this type.
+	 * @return
+	 */
+	String getSchematicPrefix();
+	
+	String getSchematicID();
 
 	/**
 	 * Returns true if the multiblock was successfully created.
@@ -36,42 +43,55 @@ public interface IMulitblockSchematic {
 			throw new IllegalStateException("No structure info found in the multiblock schematic!");
 		}
 		
-		for (EnumMultiblockRotation potentialRotation : EnumMultiblockRotation.values()) {
-			boolean buildSuccessful = true;
-			for (BlockPosBlockPair pair : getStructureRelativeToCenter()) {
-				BlockPos realPos = pos.add(potentialRotation.rotatePos(pair.getPos()));
-				IBlockState state = world.getBlockState(realPos);
-				if (state.getBlock() != pair.getBlock()) {
-					// This rotation didn't work
-					buildSuccessful = false;
-					break;
-				} else {
-					TileEntity tile = world.getTileEntity(realPos);
-					if (tile instanceof ITileEntityMultiblockPart) {
-						ITileEntityMultiblockPart multiblockPart = (ITileEntityMultiblockPart) tile;
-						if (multiblockPart.isPartOfAssembledMultiblock()) {
-							// If its already a part of a multiblock then do not allow this to assemble.
-							buildSuccessful = false;
-							break;
-						}
-					} else {
+		boolean buildSuccessful = true;
+		for (BlockPosBlockPair pair : getStructureRelativeToCenter()) {
+			BlockPos realPos = pos.add(pair.getPos());
+			IBlockState state = world.getBlockState(realPos);
+			if (state.getBlock() != pair.getBlock()) {
+				// This rotation didn't work
+				buildSuccessful = false;
+				break;
+			} else {
+				TileEntity tile = world.getTileEntity(realPos);
+				if (tile instanceof ITileEntityMultiblockPart) {
+					ITileEntityMultiblockPart multiblockPart = (ITileEntityMultiblockPart) tile;
+					if (multiblockPart.isPartOfAssembledMultiblock()) {
+						// If its already a part of a multiblock then do not allow this to assemble.
 						buildSuccessful = false;
 						break;
 					}
+				} else {
+					buildSuccessful = false;
+					break;
 				}
 			}
-			
-			if (buildSuccessful) {
-				for (BlockPosBlockPair pair : getStructureRelativeToCenter()) {
-					BlockPos realPos = pos.add(potentialRotation.rotatePos(pair.getPos()));
-					applyMultiblockCreation(world, realPos, potentialRotation.rotatePos(pair.getPos()), potentialRotation);
-				}
-				return true;
+		}
+		
+		if (buildSuccessful) {
+			for (BlockPosBlockPair pair : getStructureRelativeToCenter()) {
+				BlockPos realPos = pos.add(pair.getPos());
+				applyMultiblockCreation(world, realPos, pair.getPos(), getMultiblockRotation());
 			}
+			return true;
 		}
 		
 		return false;
 	}
 	
 	void applyMultiblockCreation(World world, BlockPos tilePos, BlockPos relativePos, EnumMultiblockRotation rotation);
+
+	/**
+	 * Should only be called once by initialization code. Doesn't have any non
+	 * static properties but java doesn't allow static interface methods.
+	 * 
+	 * The order in which the schematics are in this list will be used as priority
+	 * order for which schematic variants are tested for first.
+	 * 
+	 * @return
+	 */
+	List<IMulitblockSchematic> generateAllVariants();
+
+	default EnumMultiblockRotation getMultiblockRotation() {
+		return EnumMultiblockRotation.None;
+	}
 }

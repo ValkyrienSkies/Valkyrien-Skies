@@ -7,20 +7,21 @@ import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import valkyrienwarfare.addon.control.MultiblockRegistry;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 
 public class EthereumCompressorMultiblockSchematic implements IMulitblockSchematic {
 
 	private final List<BlockPosBlockPair> structureRelativeToCenter;
-	private int schematicID;
+	private String schematicID;
 	
 	public EthereumCompressorMultiblockSchematic() {
 		this.structureRelativeToCenter = new ArrayList<BlockPosBlockPair>();
-		this.schematicID = -1;
+		this.schematicID = MultiblockRegistry.EMPTY_SCHEMATIC_ID;
 	}
 	
 	@Override
-	public void registerMultiblockSchematic(int schematicID) {
+	public void initializeMultiblockSchematic(String schematicID) {
 		Block enginePart = ValkyrienWarfareControl.INSTANCE.vwControlBlocks.etherCompressorPanel;
 		for (int x = 0; x <= 1; x++) {
 			for (int y = 0; y <= 1; y++) {
@@ -38,7 +39,7 @@ public class EthereumCompressorMultiblockSchematic implements IMulitblockSchemat
 	}
 
 	@Override
-	public int getSchematicID() {
+	public String getSchematicID() {
 		return this.schematicID;
 	}
 
@@ -50,6 +51,33 @@ public class EthereumCompressorMultiblockSchematic implements IMulitblockSchemat
 		}
 		TileEntityEthereumCompressorPart enginePart = (TileEntityEthereumCompressorPart) tileEntity;
 		enginePart.assembleMultiblock(this, rotation, relativePos);
+	}
+
+	@Override
+	public String getSchematicPrefix() {
+		return "multiblock_ether_compressor";
+	}
+
+	@Override
+	public List<IMulitblockSchematic> generateAllVariants() {
+		List<IMulitblockSchematic> varients = new ArrayList<IMulitblockSchematic>();
+		
+		for (EnumMultiblockRotation potentialRotation : EnumMultiblockRotation.values()) {
+			EthereumCompressorMultiblockSchematic varient = new EthereumCompressorMultiblockSchematic();
+			
+			varient.initializeMultiblockSchematic(getSchematicPrefix() + ":rot:" + potentialRotation.toString());
+			
+			List<BlockPosBlockPair> rotatedPairs = new ArrayList<BlockPosBlockPair>();
+			for (BlockPosBlockPair unrotatedPairs : varient.structureRelativeToCenter) {
+				BlockPos rotatedPos = potentialRotation.rotatePos(unrotatedPairs.getPos());
+				rotatedPairs.add(new BlockPosBlockPair(rotatedPos, unrotatedPairs.getBlock()));
+			}
+			varient.structureRelativeToCenter.clear();
+			varient.structureRelativeToCenter.addAll(rotatedPairs);
+			varients.add(varient);
+		}
+		// TODO Auto-generated method stub
+		return varients;
 	}
 
 }

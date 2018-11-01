@@ -29,4 +29,10 @@ public class TileEntityEthereumEnginePart extends TileEntityMultiblockPart {
 		return prevKeyframe + (increment * partialTick) + 1;
 	}
 	
+	@Override
+	public void assembleMultiblock(IMulitblockSchematic schematic, EnumMultiblockRotation rotation, BlockPos relativePos) {
+		super.assembleMultiblock(schematic, rotation, relativePos);
+		System.out.println("YEEEEET");
+	}
+	
 }

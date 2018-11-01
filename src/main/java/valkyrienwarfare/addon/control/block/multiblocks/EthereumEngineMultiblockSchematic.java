@@ -7,20 +7,23 @@ import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import valkyrienwarfare.addon.control.MultiblockRegistry;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 
 public class EthereumEngineMultiblockSchematic implements IMulitblockSchematic {
 
 	private final List<BlockPosBlockPair> structureRelativeToCenter;
-	private int schematicID;
+	private String schematicID;
+	private EnumMultiblockRotation multiblockRotation;
 	
 	public EthereumEngineMultiblockSchematic() {
 		this.structureRelativeToCenter = new ArrayList<BlockPosBlockPair>();
-		this.schematicID = -1;
+		this.schematicID = MultiblockRegistry.EMPTY_SCHEMATIC_ID;
+		this.multiblockRotation = EnumMultiblockRotation.None;
 	}
 	
 	@Override
-	public void registerMultiblockSchematic(int schematicID) {
+	public void initializeMultiblockSchematic(String schematicID) {
 		Block enginePart = ValkyrienWarfareControl.INSTANCE.vwControlBlocks.ethereumEnginePart;
 		for (int x = -1; x <= 1; x++) {
 			for (int y = 0; y <= 1; y++) {
@@ -38,7 +41,7 @@ public class EthereumEngineMultiblockSchematic implements IMulitblockSchematic {
 	}
 
 	@Override
-	public int getSchematicID() {
+	public String getSchematicID() {
 		return this.schematicID;
 	}
 
@@ -50,6 +53,39 @@ public class EthereumEngineMultiblockSchematic implements IMulitblockSchematic {
 		}
 		TileEntityEthereumEnginePart enginePart = (TileEntityEthereumEnginePart) tileEntity;
 		enginePart.assembleMultiblock(this, rotation, relativePos);
+	}
+
+	@Override
+	public String getSchematicPrefix() {
+		return "multiblock_ether_engine";
+	}
+
+	@Override
+	public List<IMulitblockSchematic> generateAllVariants() {
+		List<IMulitblockSchematic> variants = new ArrayList<IMulitblockSchematic>();
+		
+		for (EnumMultiblockRotation potentialRotation : EnumMultiblockRotation.values()) {
+			EthereumEngineMultiblockSchematic variant = new EthereumEngineMultiblockSchematic();
+			
+			variant.initializeMultiblockSchematic(getSchematicPrefix() + ":rot:" + potentialRotation.toString());
+			
+			List<BlockPosBlockPair> rotatedPairs = new ArrayList<BlockPosBlockPair>();
+			for (BlockPosBlockPair unrotatedPairs : variant.structureRelativeToCenter) {
+				BlockPos rotatedPos = potentialRotation.rotatePos(unrotatedPairs.getPos());
+				rotatedPairs.add(new BlockPosBlockPair(rotatedPos, unrotatedPairs.getBlock()));
+			}
+			variant.structureRelativeToCenter.clear();
+			variant.structureRelativeToCenter.addAll(rotatedPairs);
+			variant.multiblockRotation = potentialRotation;
+			variants.add(variant);
+		}
+		// TODO Auto-generated method stub
+		return variants;
+	}
+	
+	@Override
+	public EnumMultiblockRotation getMultiblockRotation() {
+		return multiblockRotation;
 	}
 
 }

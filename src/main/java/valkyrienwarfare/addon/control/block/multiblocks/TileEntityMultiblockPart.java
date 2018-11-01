@@ -65,7 +65,7 @@ public abstract class TileEntityMultiblockPart extends BasicNodeTileEntity imple
 	public void dissembleMultiblock() {
 		if (multiblockSchematic != null) {
 			for (BlockPosBlockPair pair : multiblockSchematic.getStructureRelativeToCenter()) {
-				BlockPos posToBreak = multiblockRotation.rotatePos(pair.getPos()).add(getMultiblockOrigin());
+				BlockPos posToBreak = pair.getPos().add(getMultiblockOrigin());
 				TileEntity tileToBreak = this.getWorld().getTileEntity(posToBreak);
 				if (tileToBreak instanceof ITileEntityMultiblockPart) {
 					((ITileEntityMultiblockPart) tileToBreak).dissembleMultiblockLocal();
@@ -108,9 +108,9 @@ public abstract class TileEntityMultiblockPart extends BasicNodeTileEntity imple
 		toReturn.setInteger("offsetPosY", offsetPos.getY());
 		toReturn.setInteger("offsetPosZ", offsetPos.getZ());
 		if (multiblockSchematic != null) {
-			toReturn.setInteger("multiblockSchematicID", multiblockSchematic.getSchematicID());
+			toReturn.setString("multiblockSchematicID", multiblockSchematic.getSchematicID());
 		} else {
-			toReturn.setInteger("multiblockSchematicID", -1);
+			toReturn.setString("multiblockSchematicID", "unknown");
 		}
 		toReturn.setInteger("rotationOrdinal", multiblockRotation.ordinal());
 		return toReturn;
@@ -122,7 +122,7 @@ public abstract class TileEntityMultiblockPart extends BasicNodeTileEntity imple
 		isAssembled = compound.getBoolean("isAssembled");
 		isMaster = compound.getBoolean("isMaster");
 		offsetPos = new BlockPos(compound.getInteger("offsetPosX"), compound.getInteger("offsetPosY"), compound.getInteger("offsetPosZ"));
-		this.multiblockSchematic = MultiblockRegistry.getSchematicByID(compound.getInteger("multiblockSchematicID"));
+		this.multiblockSchematic = MultiblockRegistry.getSchematicByID(compound.getString("multiblockSchematicID"));
 		this.multiblockRotation = EnumMultiblockRotation.values()[compound.getInteger("rotationOrdinal")];
 	}
 

@@ -2,15 +2,68 @@ package valkyrienwarfare.addon.control.block.multiblocks;
 
 import java.util.Optional;
 
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.world.WorldServer;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import valkyrienwarfare.mod.coordinates.VectorImmutable;
 
 public class TileEntityRudderAxlePart extends TileEntityMultiblockPartForce {
 
+	// Angle must be between -90 and 90
+	private double rudderAngle;
+	// For client rendering purposes only
+	private double prevRudderAngle;
+	private double nextRudderAngle;
+	
 	public TileEntityRudderAxlePart() {
 		super();
+		this.rudderAngle = 0;
+		this.prevRudderAngle = 0;
+		this.nextRudderAngle = 0;
 	}
 	
+	@Override
+	public void update() {
+		super.update();
+		this.prevRudderAngle = rudderAngle;
+		if (this.getWorld().isRemote) {
+			// Do this to smooth out lag between the server sending packets.
+			this.rudderAngle = rudderAngle + .5 * (nextRudderAngle - rudderAngle);
+		}
+	}
+
+	public void setRudderAngle(double forcedValue) {
+		this.rudderAngle = forcedValue;
+		SPacketUpdateTileEntity spacketupdatetileentity = getUpdatePacket();
+		WorldServer serverWorld = (WorldServer) world;
+		serverWorld.mcServer.getPlayerList().sendToAllNearExcept(null, this.getPos().getX(), getPos().getY(),
+				getPos().getZ(), 128D, getWorld().provider.getDimension(), spacketupdatetileentity);
+	}
+
+	@Override
+	public void readFromNBT(NBTTagCompound compound) {
+		super.readFromNBT(compound);
+		rudderAngle = compound.getDouble("rudderAngle");
+	}
+
+    @Override
+    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+        NBTTagCompound toReturn = super.writeToNBT(compound);
+        toReturn.setDouble("rudderAngle", rudderAngle);
+        return toReturn;
+    }
+	
+    @Override
+    public void onDataPacket(net.minecraft.network.NetworkManager net, net.minecraft.network.play.server.SPacketUpdateTileEntity pkt) {
+      	double currentRudderAngle = rudderAngle;
+    	super.onDataPacket(net, pkt);
+    	nextRudderAngle = pkt.getNbtCompound().getDouble("rudderAngle");
+    	this.rudderAngle = currentRudderAngle;
+    }
+    
 	@Override
 	public VectorImmutable getForceOutputNormal() {
 		// TODO Auto-generated method stub
@@ -56,6 +109,14 @@ public class TileEntityRudderAxlePart extends TileEntityMultiblockPartForce {
 		} else {
 			return Optional.empty();
 		}
+	}
+	
+	public double getRudderAngle() {
+		return this.rudderAngle;
+	}
+	
+	public double getRenderRudderAngle(double partialTicks) {
+		return this.prevRudderAngle + ((this.rudderAngle - this.prevRudderAngle) * partialTicks);
 	}
 	
 }

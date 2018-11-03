@@ -21,6 +21,7 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public class TileEntityLiftControl extends ImplTileEntityPilotable {
 	
+	public static final double leverPullRate = .075D;
 	// Between 0 and 1, where .5 is the middle.
 	private float leverOffset;
 	private float nextLeverOffset;
@@ -47,10 +48,10 @@ public class TileEntityLiftControl extends ImplTileEntityPilotable {
 			this.prevLeverOffset = this.leverOffset;
 			this.leverOffset = (float) (((nextLeverOffset - leverOffset) * .7) + leverOffset);
 		} else {
-			sendUpdatePacketToAllNearby();
 			if (this.getPilotEntity() == null) {
-				this.leverOffset = .5f;
+				leverOffset += .5 * (.5 - leverOffset);
 			}
+			heightReference += leverOffset - .5;
 			
 			VWNode_TileEntity thisNode = this.getNode();
 			PhysicsWrapperEntity parentEntity = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(this.getWorld(), this.getPos());
@@ -75,7 +76,6 @@ public class TileEntityLiftControl extends ImplTileEntityPilotable {
 				}
 				
 				// Utilizing a proper PI controller for very smooth control.
-				
 				double heightWithIntegral = physPos.Y + linearVel.Y * .3D;
 				double heightDelta = heightReference - heightWithIntegral;
 				double multiplier = heightDelta / 2D;
@@ -95,6 +95,8 @@ public class TileEntityLiftControl extends ImplTileEntityPilotable {
 					}
 				}
 			}
+			
+			sendUpdatePacketToAllNearby();
 		}
 	}
 	
@@ -108,36 +110,32 @@ public class TileEntityLiftControl extends ImplTileEntityPilotable {
 		int i = gameResolution.getScaledWidth();
         int height = gameResolution.getScaledHeight() - 35;
 		float middle = (float)(i / 2 - renderer.getStringWidth(message) / 2);
-		message = "Target Altitude: " + heightReference;
+		message = "Target Altitude: " + Math.round(heightReference);
 		renderer.drawStringWithShadow(message , middle, height, color);
     }
 	
 	@Override
 	void processControlMessage(PilotControlsMessage message, EntityPlayerMP sender) {
-		final float leverPullRate = .075f;
-		
 		if (message.airshipForward_KeyDown) {
 			// liftPercentage++;
 			leverOffset += leverPullRate;
-			heightReference += .5;
 		}
 		if (message.airshipBackward_KeyDown) {
 			// liftPercentage--;
 			leverOffset -= leverPullRate;
-			heightReference -= .5;
 		}
-		
-		leverOffset = Math.max(0, Math.min(1, leverOffset));
 		
 		if (!message.airshipForward_KeyDown && !message.airshipBackward_KeyDown) {
 			if (leverOffset > .5 + leverPullRate) {
-				leverOffset -= leverPullRate;
+				leverOffset -= leverPullRate / 2;
 			} else if (leverOffset < .5 - leverPullRate) {
-				leverOffset += leverPullRate;
+				leverOffset += leverPullRate / 2;
 			} else {
 				leverOffset = .5f;
 			}
 		}
+		
+		leverOffset = Math.max(0, Math.min(1, leverOffset));
 	}
 	
 	@Override

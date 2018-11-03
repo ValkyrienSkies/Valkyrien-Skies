@@ -16,18 +16,22 @@
 
 package valkyrienwarfare.addon.control.tileentity;
 
+import gigaherz.graph.api.GraphObject;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.addon.control.BlocksValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.block.BlockShipHelm;
+import valkyrienwarfare.addon.control.block.multiblocks.TileEntityEthereumCompressorPart;
+import valkyrienwarfare.addon.control.block.multiblocks.TileEntityRudderAxlePart;
+import valkyrienwarfare.addon.control.nodenetwork.VWNode_TileEntity;
 import valkyrienwarfare.addon.control.piloting.ControllerInputType;
 import valkyrienwarfare.addon.control.piloting.PilotControlsMessage;
 import valkyrienwarfare.api.TransformType;
@@ -59,6 +63,40 @@ public class TileEntityShipHelm extends ImplTileEntityPilotable implements ITick
 				// wheelRotation -= math.signum(wheelRotation) * wheelRotation;
 				double deltaForce = Math.max(Math.abs(wheelRotation * toOriginRate) - friction, 0);
 				wheelRotation += deltaForce * -1 * Math.signum(wheelRotation);
+			}
+
+			VWNode_TileEntity thisNode = this.getNode();
+			double totalMaxUpwardThrust = 0;
+			for (GraphObject object : thisNode.getGraph().getObjects()) {
+				VWNode_TileEntity otherNode = (VWNode_TileEntity) object;
+				TileEntity tile = otherNode.getParentTile();
+				if (tile instanceof TileEntityEthereumCompressorPart) {
+					BlockPos masterPos = ((TileEntityEthereumCompressorPart) tile).getMultiblockOrigin();
+					TileEntityEthereumCompressorPart masterTile = (TileEntityEthereumCompressorPart) tile.getWorld()
+							.getTileEntity(masterPos);
+					// This is a transient problem that only occurs during world loading.
+					if (masterTile != null) {
+						totalMaxUpwardThrust += masterTile.getMaxThrust();
+					}
+					// masterTile.updateTicksSinceLastRecievedSignal();
+				}
+			}
+
+			for (GraphObject object : thisNode.getGraph().getObjects()) {
+				VWNode_TileEntity otherNode = (VWNode_TileEntity) object;
+				TileEntity tile = otherNode.getParentTile();
+				if (tile instanceof TileEntityRudderAxlePart) {
+					BlockPos masterPos = ((TileEntityRudderAxlePart) tile).getMultiblockOrigin();
+					TileEntityRudderAxlePart masterTile = (TileEntityRudderAxlePart) tile.getWorld()
+							.getTileEntity(masterPos);
+					// This is a transient problem that only occurs during world loading.
+					if (masterTile != null) {
+						masterTile.setRudderAngle(wheelRotation / 5D);
+
+					}
+					// masterTile.updateTicksSinceLastRecievedSignal();
+				}
+
 			}
 
 			sendUpdatePacketToAllNearby();

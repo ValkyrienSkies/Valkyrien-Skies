@@ -3,6 +3,7 @@ package valkyrienwarfare.addon.control.renderer;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -94,6 +95,25 @@ public class RudderAxlePartTileEntityRenderer extends TileEntitySpecialRenderer<
 				GL11.glTranslated(.5, 0, .5);
 				GL11.glRotated(rotYaw, 0, 1, 0);
 				GL11.glTranslated(-.5, 0, -.5);
+				
+				// Render rudder cloth code goes here:
+				GL11.glPushMatrix();
+				GL11.glTranslated(.5, 0, .5);
+				GL11.glRotated(tileentity.getRenderRudderAngle(partialTick), 0, 1, 0);
+				GL11.glTranslated(-.5, 0, -.5);
+				GL11.glTranslated(0, 0, -1);
+				// Temp while I wait for Del
+				for (int i = 0; i < tileentity.getRudderAxleLength().get(); i++) {
+					GL11.glPushMatrix();
+					GL11.glTranslated(.5, .5, .5);
+					GL11.glScaled(.4, .995, 2);
+					GL11.glTranslated(-.5, -.5, -.5);
+					FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(), Blocks.STONE_BRICK_STAIRS.getStateFromMeta(0), brightness);
+					GL11.glPopMatrix();
+					GL11.glTranslated(0, 1, 0);
+				}
+				GL11.glPopMatrix();
+				
 				for (int i = 0; i < tileentity.getRudderAxleLength().get(); i++) {
 					FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(), state, brightness);
 					GL11.glTranslated(0, 1, 0);

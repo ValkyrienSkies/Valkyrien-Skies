@@ -17,16 +17,16 @@ public class RudderAxleMultiblockSchematic implements IMulitblockSchematic {
 	public static final int MAX_AXLE_LENGTH = 6;
 	private final List<BlockPosBlockPair> structureRelativeToCenter;
 	private String schematicID;
-	private EnumMultiblockRotation multiblockRotation;
 	private int axleLength;
-	private EnumFacing axleDirection;
+	private EnumFacing axleAxis;
+	private EnumFacing axleFacing;
 	
 	public RudderAxleMultiblockSchematic() {
 		this.structureRelativeToCenter = new ArrayList<BlockPosBlockPair>();
 		this.schematicID = MultiblockRegistry.EMPTY_SCHEMATIC_ID;
-		this.multiblockRotation = EnumMultiblockRotation.None;
 		this.axleLength = -1;
-		this.axleDirection = EnumFacing.UP;
+		this.axleAxis = EnumFacing.UP;
+		this.axleFacing = EnumFacing.UP;
 	}
 	
 	@Override
@@ -66,38 +66,39 @@ public class RudderAxleMultiblockSchematic implements IMulitblockSchematic {
 		// Order matters here
 		List<IMulitblockSchematic> variants = new ArrayList<IMulitblockSchematic>();
 		for (int length = MAX_AXLE_LENGTH; length >= MIN_AXLE_LENGTH; length--) {
-			for (EnumFacing possibleAxleDirection : EnumFacing.VALUES) {
-				for (EnumMultiblockRotation multiblockRotation : EnumMultiblockRotation.values()) {
-					BlockPos originPos = new BlockPos(0, 0, 0);
-					RudderAxleMultiblockSchematic schematicVariant = new RudderAxleMultiblockSchematic();
-					schematicVariant.initializeMultiblockSchematic(
-							getSchematicPrefix() + "axel_direction:" + possibleAxleDirection.toString() + ":axel_len:" + length
-									+ ":rot:" + multiblockRotation.toString());
-					schematicVariant.multiblockRotation = multiblockRotation;
-					schematicVariant.axleLength = length;
-					schematicVariant.axleDirection = possibleAxleDirection;
-					for (int i = 0; i < length; i++) {
-						schematicVariant.structureRelativeToCenter
-								.add(new BlockPosBlockPair(BlockPos.ORIGIN.offset(possibleAxleDirection, i), rudderAxelBlock));
+			for (EnumFacing possibleAxleAxisDirection : EnumFacing.VALUES) {
+				for (EnumFacing possibleAxleFacingDirection : EnumFacing.VALUES) {
+					if (possibleAxleAxisDirection.getAxis() != possibleAxleFacingDirection.getAxis()) {
+						BlockPos originPos = new BlockPos(0, 0, 0);
+						RudderAxleMultiblockSchematic schematicVariant = new RudderAxleMultiblockSchematic();
+						schematicVariant.initializeMultiblockSchematic(getSchematicPrefix() + "axel_axis_direction:"
+								+ possibleAxleAxisDirection.toString() + ":axel_facing:"
+								+ possibleAxleFacingDirection.toString() + ":length:" + length);
+						schematicVariant.axleAxis = possibleAxleAxisDirection;
+						schematicVariant.axleFacing = possibleAxleFacingDirection;
+						schematicVariant.axleLength = length;
+						for (int i = 0; i < length; i++) {
+							schematicVariant.structureRelativeToCenter
+									.add(new BlockPosBlockPair(BlockPos.ORIGIN.offset(possibleAxleAxisDirection, i), rudderAxelBlock));
+						}
+						variants.add(schematicVariant);
 					}
-					variants.add(schematicVariant);
 				}
 			}
 		}
 		return variants;
-	}
-
-	@Override
-	public EnumMultiblockRotation getMultiblockRotation() {
-		return multiblockRotation;
 	}
 	
 	public int getAxleLength() {
 		return axleLength;
 	}
 	
-	public EnumFacing getAxleDirection() {
-		return axleDirection;
+	public EnumFacing getAxleAxisDirection() {
+		return axleAxis;
+	}
+	
+	public EnumFacing getAxleFacingDirection() {
+		return axleFacing;
 	}
 
 }

@@ -110,9 +110,7 @@ public class FastBlockModelRenderer {
 			tessellator.draw();
 		}
 
-		GlStateManager.disableLighting();
 		renderVertexBuffer(blockstateBrightnessToVertexBuffer.get(blockstateToRender).get(brightness));		
-		GlStateManager.enableLighting();
 	}
 	
 	protected static void renderVertexBuffer(VertexBuffer vertexBuffer) {

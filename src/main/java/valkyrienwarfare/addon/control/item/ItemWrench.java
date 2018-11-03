@@ -11,6 +11,7 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import valkyrienwarfare.addon.control.MultiblockRegistry;
 import valkyrienwarfare.addon.control.block.multiblocks.IMulitblockSchematic;
@@ -18,7 +19,6 @@ import valkyrienwarfare.addon.control.block.multiblocks.RudderAxleMultiblockSche
 import valkyrienwarfare.addon.control.block.multiblocks.TileEntityEthereumCompressorPart;
 import valkyrienwarfare.addon.control.block.multiblocks.TileEntityEthereumEnginePart;
 import valkyrienwarfare.addon.control.block.multiblocks.TileEntityRudderAxlePart;
-import valkyrienwarfare.math.Vector;
 
 public class ItemWrench extends Item {
 
@@ -62,22 +62,15 @@ public class ItemWrench extends Item {
 					.getSchematicsWithPrefix("multiblock_rudder_axle");
 			for (IMulitblockSchematic schematic : rudderAxelMultiblockSchematics) {
 				RudderAxleMultiblockSchematic rudderSchem = (RudderAxleMultiblockSchematic) schematic;
-				if (facing.getAxis() != rudderSchem.getAxleDirection().getAxis()) {
-					Vector north = new Vector(0, 0, -1);
-					Vector south = new Vector(0, 0, 1);
-					Vector east = new Vector(1, 0, 0);
-					Vector west = new Vector(-1, 0, 0);
-					
-					int angle = (int) facing.getHorizontalAngle();
-					if (rudderSchem.getMultiblockRotation().getYaw() == angle) {
-					
-					
-					if (schematic.attemptToCreateMultiblock(worldIn, pos)) {
-						System.out.println(facing);
-						System.out.println(rudderSchem.getSchematicID());
-						return EnumActionResult.SUCCESS;
+				if (facing.getAxis() != rudderSchem.getAxleAxisDirection().getAxis()) {
+					if (rudderSchem.getAxleFacingDirection() == facing) {
+						if (schematic.attemptToCreateMultiblock(worldIn, pos)) {
+							System.out.println(facing);
+							System.out.println(rudderSchem.getSchematicID());
+							return EnumActionResult.SUCCESS;
+						}
 					}
-					}
+
 				}
 			}
 		}

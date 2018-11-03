@@ -141,4 +141,8 @@ public abstract class TileEntityMultiblockPart extends BasicNodeTileEntity imple
 				getWorld().provider.getDimension(), spacketupdatetileentity);
 	}
 	
+	protected IMulitblockSchematic getMultiblockSchematic() {
+		return multiblockSchematic;
+	}
+	
 }

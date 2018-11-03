@@ -5,9 +5,12 @@ import java.util.Optional;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.mod.coordinates.VectorImmutable;
 
 public class TileEntityRudderAxlePart extends TileEntityMultiblockPartForce {
@@ -118,5 +121,30 @@ public class TileEntityRudderAxlePart extends TileEntityMultiblockPartForce {
 	public double getRenderRudderAngle(double partialTicks) {
 		return this.prevRudderAngle + ((this.rudderAngle - this.prevRudderAngle) * partialTicks);
 	}
+	
+	@Override
+    @SideOnly(Side.CLIENT)
+    public AxisAlignedBB getRenderBoundingBox() {
+    	if (this.isPartOfAssembledMultiblock() && this.isMaster()) {
+    		AxisAlignedBB renderBox = super.getRenderBoundingBox();
+    		EnumFacing axleAxis = getRudderAxleAxisDirection().get();
+			EnumFacing axleFacing = getRudderAxleFacingDirection().get();
+			int axleLength = getRudderAxleLength().get();
+			renderBox = renderBox.expand(axleAxis.getDirectionVec().getX() * axleLength,
+					axleAxis.getDirectionVec().getY() * axleLength, axleAxis.getDirectionVec().getZ() * axleLength);
+			
+			renderBox = renderBox.expand(axleFacing.getDirectionVec().getX() * axleLength,
+					axleFacing.getDirectionVec().getY() * axleLength, axleFacing.getDirectionVec().getZ() * axleLength);
+			
+			Vec3i otherAxis = axleAxis.getDirectionVec().crossProduct(axleFacing.getDirectionVec());
+
+			renderBox = renderBox.expand(Math.abs(otherAxis.getX() * axleLength / 2),
+					Math.abs(otherAxis.getY() * axleLength / 2), Math.abs(otherAxis.getZ() * axleLength / 2));
+
+			return renderBox;
+		} else {
+			return super.getRenderBoundingBox();
+    	}
+    }
 	
 }

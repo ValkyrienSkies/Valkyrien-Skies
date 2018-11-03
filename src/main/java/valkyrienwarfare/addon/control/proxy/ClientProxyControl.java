@@ -169,7 +169,7 @@ public class ClientProxyControl extends CommonProxyControl {
         registerTelescopeGibs("telescope_third_geo");
         registerTelescopeGibs("telescope_top_geo");
         
-        registerRudderGibs("rudder_axel_geo");
+        registerRudderGibs("rudder_axle_geo");
         registerRudderGibs("rudder_geo");
         
         GibsAnimationRegistry.registerAnimation("ethereum_engine", new ResourceLocation("valkyrienwarfarecontrol", "models/block/multipart_engines/engine_keyframes.atom"));

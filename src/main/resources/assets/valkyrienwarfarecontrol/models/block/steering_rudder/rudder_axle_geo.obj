@@ -1,6 +1,6 @@
 # This file uses centimeters as units for non-parametric coordinates.
 
-mtllib rudder_axel_geo.mtl
+mtllib rudder_axle_geo.mtl
 v 0.479070 0.999422 0.487094
 v 0.492000 0.999422 0.474165
 v 0.492000 0.999173 0.487094
@@ -476,7 +476,7 @@ vn 1.000000 -0.000002 0.000000
 vn 0.000009 0.000000 -1.000000
 vn 0.000009 0.000000 -1.000000
 s 1
-usemtl Rudder_AxelSG
+usemtl rudderaxel_mtlSG
 f 26/1/1 25/39/2 27/40/3 28/2/4
 s 2
 f 29/3/5 31/5/6 32/6/7 30/4/8

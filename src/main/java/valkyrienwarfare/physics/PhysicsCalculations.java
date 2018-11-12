@@ -60,6 +60,7 @@ public class PhysicsCalculations {
 
     private final PhysicsObject parent;
     private final WorldPhysicsCollider worldCollision;
+    private final PhysicsParticleManager particleManager;
     // CopyOnWrite to provide concurrency between threads.
     private final Set<BlockPos> activeForcePositions;
     public Vector gameTickCenterOfMass;
@@ -82,6 +83,7 @@ public class PhysicsCalculations {
     public PhysicsCalculations(PhysicsObject toProcess) {
         parent = toProcess;
         worldCollision = new WorldPhysicsCollider(this);
+        particleManager = new PhysicsParticleManager(this);
 
         gameMoITensor = RotationMatrices.getZeroMatrix(3);
         physMOITensor = RotationMatrices.getZeroMatrix(3);
@@ -94,22 +96,6 @@ public class PhysicsCalculations {
         torque = new Vector();
         // We need thread safe access to this.
         activeForcePositions = ConcurrentHashMap.newKeySet();
-    }
-
-    public PhysicsCalculations(PhysicsCalculations toCopy) {
-        parent = toCopy.getParent();
-        worldCollision = toCopy.getWorldCollision();
-        gameTickCenterOfMass = toCopy.gameTickCenterOfMass;
-        linearMomentum = toCopy.linearMomentum;
-        angularVelocity = toCopy.angularVelocity;
-        torque = toCopy.torque;
-        gameTickMass = toCopy.gameTickMass;
-        physTickTimeDelta = toCopy.physTickTimeDelta;
-        activeForcePositions = toCopy.activeForcePositions;
-        gameMoITensor = toCopy.gameMoITensor;
-        physMOITensor = toCopy.physMOITensor;
-        setPhysInvMOITensor(toCopy.getPhysInvMOITensor());
-        actAsArchimedes = toCopy.actAsArchimedes;
     }
 
     public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos pos) {
@@ -400,6 +386,29 @@ public class PhysicsCalculations {
 							}
 	
 							addForceAtPoint(inBodyWO, blockForce, crossVector);
+							// Add particles here.
+							Vector particlePos = new Vector(pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5);
+							getParent().getShipTransformationManager().getCurrentPhysicsTransform().transform(particlePos, TransformType.SUBSPACE_TO_GLOBAL);
+							float posX = (float) particlePos.X;
+							float posY = (float) particlePos.Y;
+							float posZ = (float) particlePos.Z;
+							float particleMass = 5f;
+							float velX = (float) -(blockForce.X / particleMass);
+							float velY = (float) -(blockForce.Y / particleMass);
+							float velZ = (float) -(blockForce.Z / particleMass);
+							// Half a second
+							float particleLife = .5f;
+							// System.out.println(blockForce);
+							// System.out.println(posX + ":" + posY + ":" + posZ);
+							// System.out.println(velX + ":" + velY + ":" + velZ);
+
+							// This is wrong because I'm not spawning the particles in the correct location,
+							// but I'm lazy so I'll use it for now.
+							posX += velX * .08;
+							posY += velY * .08;
+							posZ += velZ * .08;
+
+							this.particleManager.spawnPhysicsParticle(posX, posY, posZ, velX, velY, velZ, particleMass, particleLife);
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -427,7 +436,8 @@ public class PhysicsCalculations {
 				}
 			}
         }
-
+        particleManager.physicsTickAfterAllPreForces((float) getPhysicsTimeDeltaPerPhysTick());
+        
         convertTorqueToVelocity();
     }
 

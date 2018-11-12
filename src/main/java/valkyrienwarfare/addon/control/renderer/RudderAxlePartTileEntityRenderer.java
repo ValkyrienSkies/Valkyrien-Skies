@@ -22,6 +22,8 @@ public class RudderAxlePartTileEntityRenderer extends TileEntitySpecialRenderer<
 	@Override
 	public void render(TileEntityRudderAxlePart tileentity, double x, double y, double z, float partialTick,
 			int destroyStage, float alpha) {
+		double RUDDER_AXLE_SCALE_FACTOR = 4D;
+		
 		Tessellator tessellator = Tessellator.getInstance();
 		this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
         GlStateManager.pushMatrix();
@@ -35,7 +37,10 @@ public class RudderAxlePartTileEntityRenderer extends TileEntitySpecialRenderer<
 
         GlStateManager.pushMatrix();
         if (!tileentity.isPartOfAssembledMultiblock()) {
-        	GibsModelRegistry.renderGibsModel("rudder_geo", brightness);
+        	GL11.glTranslated(0.5, 0, 0.5);
+        	GL11.glScaled(RUDDER_AXLE_SCALE_FACTOR, 1, RUDDER_AXLE_SCALE_FACTOR);
+			GL11.glTranslated(-0.5, 0, -0.5);
+        	GibsModelRegistry.renderGibsModel("rudder_axel_geo", brightness);
 		} else {
 			if (tileentity.isMaster()) {
 				IBlockState state = Blocks.DISPENSER.getDefaultState();
@@ -99,7 +104,7 @@ public class RudderAxlePartTileEntityRenderer extends TileEntitySpecialRenderer<
 				// Render rudder cloth code goes here:
 				GL11.glPushMatrix();
 				GL11.glTranslated(.5, 0, .5);
-				GL11.glRotated(tileentity.getRenderRudderAngle(partialTick) + 180, 0, 1, 0);
+				GL11.glRotated(tileentity.getRenderRudderAngle(partialTick) + 90, 0, 1, 0);
 				GL11.glTranslated(-.5, 0, -.5);
 				// GL11.glTranslated(0, 0, -1);
 				// Temp while I wait for Del
@@ -108,7 +113,7 @@ public class RudderAxlePartTileEntityRenderer extends TileEntitySpecialRenderer<
 				
 				GL11.glPushMatrix();
 				GL11.glTranslated(.5, 0, .5);
-				GL11.glScaled(1, rudderAxelLength, rudderAxelLength);
+				GL11.glScaled(rudderAxelLength, rudderAxelLength, rudderAxelLength);
 				GL11.glTranslated(-.5, 0, -.5);
 
 				GibsModelRegistry.renderGibsModel("rudder_geo", brightness);
@@ -117,7 +122,15 @@ public class RudderAxlePartTileEntityRenderer extends TileEntitySpecialRenderer<
 
 				for (int i = 0; i < tileentity.getRudderAxleLength().get(); i++) {
 					// FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(), state, brightness);
-					GibsModelRegistry.renderGibsModel("rudder_axle_geo", brightness);
+					GL11.glPushMatrix();
+					// To center the axle relative to the rotating rudder.
+					// GL11.glTranslated(0, 0, RUDDER_OFFSET);
+
+					GL11.glTranslated(0.5, 0.5, 0.5);
+		        	GL11.glScaled(RUDDER_AXLE_SCALE_FACTOR, 1, RUDDER_AXLE_SCALE_FACTOR);
+					GL11.glTranslated(-0.5, -0.5, -0.5);
+					GibsModelRegistry.renderGibsModel("rudder_axel_geo", brightness);
+					GL11.glPopMatrix();
 					GL11.glTranslated(0, 1, 0);
 				}
 				GL11.glPopMatrix();

@@ -51,7 +51,7 @@ public class TileEntityLiftControl extends ImplTileEntityPilotable {
 			if (this.getPilotEntity() == null) {
 				leverOffset += .5 * (.5 - leverOffset);
 			}
-			heightReference += leverOffset - .5;
+			heightReference += (leverOffset - .5) / 4D;
 			
 			VWNode_TileEntity thisNode = this.getNode();
 			PhysicsWrapperEntity parentEntity = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(this.getWorld(), this.getPos());

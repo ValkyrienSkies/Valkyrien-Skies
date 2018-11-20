@@ -46,8 +46,6 @@ public class PhysicsParticleManager {
 					bufferVectorForce.setValue(physicsParticle.velX * physicsParticle.mass,
 							physicsParticle.velY * physicsParticle.mass, physicsParticle.velZ * physicsParticle.mass);
 					parent.addForceAtPoint(bufferVectorForcePos, bufferVectorForce);
-					
-					// System.out.println("Add the momentum!");
 				}
 			}
 		}

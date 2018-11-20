@@ -42,7 +42,7 @@ public class RudderAxlePartTileEntityRenderer extends TileEntitySpecialRenderer<
 			GL11.glTranslated(-0.5, 0, -0.5);
         	GibsModelRegistry.renderGibsModel("rudder_axel_geo", brightness);
 		} else {
-			if (tileentity.isMaster()) {
+			if (tileentity.isMaster() && tileentity.getRudderAxleAxisDirection().isPresent()) {
 				IBlockState state = Blocks.DISPENSER.getDefaultState();
 				
 				EnumFacing axleAxis = tileentity.getRudderAxleAxisDirection().get();

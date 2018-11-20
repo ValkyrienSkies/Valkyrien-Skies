@@ -150,4 +150,13 @@ public abstract class BlockAirshipEngine extends Block implements IBlockForcePro
     public void setEnginePower(double power) {
         this.enginePower = power;
     }
+    
+	/**
+	 * The spinning rotor engines must obey the rules of airflow, otherwise idiots
+	 * would stick all their engines inside leaving nothing exposed.
+	 */
+	@Override
+	public boolean doesForceSpawnParticles() {
+		return true;
+	}
 }

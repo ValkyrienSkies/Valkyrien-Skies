@@ -52,8 +52,9 @@ import valkyrienwarfare.util.PhysicsSettings;
 
 public class PhysicsCalculations {
 
-    // Without this the physics feels too slow
-    public static final double PHYSICS_SPEEDUP_FACTOR = 1.8D;
+    // TODO: Kill this constant
+	@Deprecated
+    public static final double PHYSICS_SPEEDUP_FACTOR = 1.0D;
     public static final double DRAG_CONSTANT = .99D;
     public static final double INERTIA_OFFSET = .4D;
     public static final double EPSILON = 0xE - 8;
@@ -387,28 +388,37 @@ public class PhysicsCalculations {
 	
 							addForceAtPoint(inBodyWO, blockForce, crossVector);
 							// Add particles here.
-							Vector particlePos = new Vector(pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5);
-							getParent().getShipTransformationManager().getCurrentPhysicsTransform().transform(particlePos, TransformType.SUBSPACE_TO_GLOBAL);
-							float posX = (float) particlePos.X;
-							float posY = (float) particlePos.Y;
-							float posZ = (float) particlePos.Z;
-							float particleMass = 5f;
-							float velX = (float) -(blockForce.X / particleMass);
-							float velY = (float) -(blockForce.Y / particleMass);
-							float velZ = (float) -(blockForce.Z / particleMass);
-							// Half a second
-							float particleLife = .5f;
-							// System.out.println(blockForce);
-							// System.out.println(posX + ":" + posY + ":" + posZ);
-							// System.out.println(velX + ":" + velY + ":" + velZ);
+							if (IBlockForceProvider.class.cast(blockAt).doesForceSpawnParticles()) {
+								// Dumb hack because addForceAtPoint changes the value of blockForce. Will be
+								// removed soon.
+								blockForce.multiply(1 / PHYSICS_SPEEDUP_FACTOR);
+								// Dumb hack end.
 
-							// This is wrong because I'm not spawning the particles in the correct location,
-							// but I'm lazy so I'll use it for now.
-							posX += velX * .08;
-							posY += velY * .08;
-							posZ += velZ * .08;
+								Vector particlePos;
+								if (otherPosition != null) {
+									particlePos = new Vector(otherPosition);
+								} else {
+									particlePos = new Vector(pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5);
+								}
+								parent.getShipTransformationManager().getCurrentPhysicsTransform()
+										.transform(particlePos, TransformType.SUBSPACE_TO_GLOBAL);
+								// System.out.println(particlePos);
+								float posX = (float) particlePos.X;
+								float posY = (float) particlePos.Y;
+								float posZ = (float) particlePos.Z;
+								float particleMass = 5f;
+								float velX = (float) -(blockForce.X / particleMass);
+								float velY = (float) -(blockForce.Y / particleMass);
+								float velZ = (float) -(blockForce.Z / particleMass);
+								// Half a second
+								float particleLife = .5f;
+								// System.out.println(blockForce);
+								// System.out.println(posX + ":" + posY + ":" + posZ);
+								// System.out.println(velX + ":" + velY + ":" + velZ);
 
-							this.particleManager.spawnPhysicsParticle(posX, posY, posZ, velX, velY, velZ, particleMass, particleLife);
+								this.particleManager.spawnPhysicsParticle(posX, posY, posZ, velX, velY, velZ,
+										particleMass, particleLife);
+							}
 						}
 					} catch (Exception e) {
 						e.printStackTrace();

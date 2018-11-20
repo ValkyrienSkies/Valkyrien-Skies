@@ -130,7 +130,7 @@ public class TileEntityRudderAxlePart extends TileEntityMultiblockPartForce {
 	@Override
     @SideOnly(Side.CLIENT)
     public AxisAlignedBB getRenderBoundingBox() {
-    	if (this.isPartOfAssembledMultiblock() && this.isMaster()) {
+    	if (this.isPartOfAssembledMultiblock() && this.isMaster() && getRudderAxleAxisDirection().isPresent()) {
     		BlockPos minPos = this.pos;
     		EnumFacing axleAxis = getRudderAxleAxisDirection().get();
 			EnumFacing axleFacing = getRudderAxleFacingDirection().get();

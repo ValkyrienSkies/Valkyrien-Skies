@@ -175,20 +175,22 @@ public class RotationMatrices {
 					"Tried applying a transform to the PhysicsWrapeerEntity, this creates instability so we crash here!");
 		}
 		ISubspacedEntity entitySubspaceTracker = ISubspacedEntity.class.cast(entity);
-		
-		if (transformType == TransformType.SUBSPACE_TO_GLOBAL
-				&& entitySubspaceTracker.currentSubspaceType() != CoordinateSpaceType.SUBSPACE_COORDINATES) {
-			// throw new IllegalArgumentException(
-			//		"Entity " + entity.getName() + " is already in global coordinates. This is wrong!");
-			System.err.println(
-					"Entity " + entity.getName() + " is already in global coordinates. This is wrong!");
+
+		// RIP
+		if (false) {
+			if (transformType == TransformType.SUBSPACE_TO_GLOBAL
+					&& entitySubspaceTracker.currentSubspaceType() != CoordinateSpaceType.SUBSPACE_COORDINATES) {
+				// throw new IllegalArgumentException(
+				// "Entity " + entity.getName() + " is already in global coordinates. This is
+				// wrong!");
+				System.err.println("Entity " + entity.getName() + " is already in global coordinates. This is wrong!");
+			}
+			if (transformType == TransformType.GLOBAL_TO_SUBSPACE
+					&& entitySubspaceTracker.currentSubspaceType() != CoordinateSpaceType.GLOBAL_COORDINATES) {
+				throw new IllegalArgumentException(
+						"Entity " + entity.getName() + " is already in subspace coordinates. This is wrong!");
+			}
 		}
-		if (transformType == TransformType.GLOBAL_TO_SUBSPACE
-				&& entitySubspaceTracker.currentSubspaceType() != CoordinateSpaceType.GLOBAL_COORDINATES) {
-			throw new IllegalArgumentException(
-					"Entity " + entity.getName() + " is already in subspace coordinates. This is wrong!");
-		}
-		
 
 		Vector entityPos = new Vector(entity.posX, entity.posY, entity.posZ);
 		Vector entityLook = new Vector(entity.getLook(1.0F));

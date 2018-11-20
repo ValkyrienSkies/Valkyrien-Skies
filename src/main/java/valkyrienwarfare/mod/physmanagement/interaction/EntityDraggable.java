@@ -28,6 +28,7 @@ import valkyrienwarfare.addon.combat.entity.EntityCannonBall;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.math.RotationMatrices;
 import valkyrienwarfare.math.Vector;
+import valkyrienwarfare.mod.coordinates.ShipTransform;
 import valkyrienwarfare.mod.event.EventsClient;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.physics.management.ShipTransformationManager;
@@ -99,8 +100,17 @@ public class EntityDraggable {
 
 //            RotationMatrices.applyTransform(coordTransform.prevwToLTransform, entity);
             // This is causing crashes
-            RotationMatrices.applyTransform(coordTransform.getPrevTickTransform(), entity, TransformType.GLOBAL_TO_SUBSPACE);
-            RotationMatrices.applyTransform(coordTransform.getCurrentTickTransform(), entity, TransformType.SUBSPACE_TO_GLOBAL);
+            double[] prev = coordTransform.getPrevTickTransform().getInternalMatrix(TransformType.GLOBAL_TO_SUBSPACE);
+            double[] next = coordTransform.getCurrentTickTransform().getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL);
+            
+            Vector playerPos = new Vector(entity);
+            ShipTransform betweenTransform = new ShipTransform(RotationMatrices.getMatrixProduct(next, prev));
+            // betweenTransform.transform(playerPos, TransformType.SUBSPACE_TO_GLOBAL);
+            
+            RotationMatrices.applyTransform(betweenTransform, entity, TransformType.SUBSPACE_TO_GLOBAL);
+            // This is what the code used to do, but this caused problems when other threads read this data.
+            // RotationMatrices.applyTransform(coordTransform.getPrevTickTransform(), entity, TransformType.GLOBAL_TO_SUBSPACE);
+            // RotationMatrices.applyTransform(coordTransform.getCurrentTickTransform(), entity, TransformType.SUBSPACE_TO_GLOBAL);
 
             Vector newPos = new Vector(entity);
 
@@ -117,10 +127,9 @@ public class EntityDraggable {
             entity.prevRotationPitch = prevPitch;
 
             Vector oldLookingPos = new Vector(entity.getLook(1.0F));
-//            RotationMatrices.doRotationOnly(coordTransform.prevwToLTransform, oldLookingPos);
-            coordTransform.getPrevTickTransform().rotate(oldLookingPos, TransformType.GLOBAL_TO_SUBSPACE);
-            coordTransform.getCurrentTickTransform().rotate(oldLookingPos, TransformType.SUBSPACE_TO_GLOBAL);
-//            RotationMatrices.doRotationOnly(coordTransform.lToWTransform, oldLookingPos);
+//            coordTransform.getPrevTickTransform().rotate(oldLookingPos, TransformType.GLOBAL_TO_SUBSPACE);
+//            coordTransform.getCurrentTickTransform().rotate(oldLookingPos, TransformType.SUBSPACE_TO_GLOBAL);
+            betweenTransform.rotate(oldLookingPos, TransformType.SUBSPACE_TO_GLOBAL);
 
             double newPitch = Math.asin(oldLookingPos.Y) * -180D / Math.PI;
             double f4 = -Math.cos(-newPitch * 0.017453292D);

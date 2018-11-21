@@ -18,6 +18,7 @@ package valkyrienwarfare.deprecated_api;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
@@ -35,6 +36,9 @@ public class MixinMethods {
         if (PhysicsWrapperEntity.class.isInstance(this_)) {
             //Don't move at all
             return null;
+        }
+        if (this_ instanceof EntityPlayer && ((EntityPlayer) this_).isSpectator()) {
+        	return null;
         }
 
         double movDistSq = (dx * dx) + (dy * dy) + (dz * dz);

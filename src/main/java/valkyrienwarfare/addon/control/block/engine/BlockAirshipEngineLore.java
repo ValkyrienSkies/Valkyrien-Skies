@@ -32,6 +32,7 @@ import net.minecraft.world.World;
 import valkyrienwarfare.addon.control.tileentity.TileEntityPropellerEngine;
 import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.mod.coordinates.VectorImmutable;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 /**
  * The same as a normal engine, but says speed in the tooltip
@@ -62,18 +63,21 @@ public abstract class BlockAirshipEngineLore extends BlockAirshipEngine {
 		return true;
 	}
     
-    @Override
-    public Vector getCustomBlockForcePosition(World world, BlockPos pos, IBlockState state, Entity shipEntity,
-            double secondsToApply) {
-    	TileEntityPropellerEngine engineTile = (TileEntityPropellerEngine) world.getTileEntity(pos);
+	@Override
+	public Vector getCustomBlockForcePosition(World world, BlockPos pos, IBlockState state, Entity shipEntity,
+			double secondsToApply) {
+		TileEntityPropellerEngine engineTile = (TileEntityPropellerEngine) world.getTileEntity(pos);
 		if (engineTile != null) {
-			VectorImmutable forceOutputNormal = engineTile.getForceOutputNormal();
-			// System.out.println(forceOutputNormal.getX() + ":" + forceOutputNormal.getY() + ":" + forceOutputNormal.getZ());
-			return new Vector(pos.getX() + .5D - forceOutputNormal.getX() * .75, pos.getY() + .5D - forceOutputNormal.getY() * .75,
+			VectorImmutable forceOutputNormal = engineTile.getForceOutputNormal(secondsToApply,
+					PhysicsWrapperEntity.class.cast(shipEntity).getPhysicsObject());
+			// System.out.println(forceOutputNormal.getX() + ":" + forceOutputNormal.getY()
+			// + ":" + forceOutputNormal.getZ());
+			return new Vector(pos.getX() + .5D - forceOutputNormal.getX() * .75,
+					pos.getY() + .5D - forceOutputNormal.getY() * .75,
 					pos.getZ() + .5D - forceOutputNormal.getZ() * .75);
 		} else {
 			return null;
 		}
-    }
+	}
 
 }

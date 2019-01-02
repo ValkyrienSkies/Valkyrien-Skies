@@ -36,6 +36,7 @@ import valkyrienwarfare.addon.control.piloting.ControllerInputType;
 import valkyrienwarfare.addon.control.piloting.PilotControlsMessage;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.math.Vector;
+import valkyrienwarfare.mod.coordinates.VectorImmutable;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public class TileEntityShipHelm extends ImplTileEntityPilotable implements ITickable {
@@ -82,6 +83,15 @@ public class TileEntityShipHelm extends ImplTileEntityPilotable implements ITick
 				}
 			}
 
+			PhysicsWrapperEntity parentPhysicsEntity = this.getParentPhysicsEntity();
+			VectorImmutable torqueAttemptedNormalImmutable = null;
+			if (parentPhysicsEntity != null) {
+				Vector torqueAttempted = new Vector(0, Math.signum(wheelRotation), 0);
+				// parentPhysicsEntity.getPhysicsObject().getShipTransformationManager().getCurrentPhysicsTransform()
+				//		.rotate(torqueAttempted, TransformType.SUBSPACE_TO_GLOBAL);
+				torqueAttemptedNormalImmutable = torqueAttempted.toImmutable();
+			}
+			
 			for (GraphObject object : thisNode.getGraph().getObjects()) {
 				VWNode_TileEntity otherNode = (VWNode_TileEntity) object;
 				TileEntity tile = otherNode.getParentTile();
@@ -91,8 +101,11 @@ public class TileEntityShipHelm extends ImplTileEntityPilotable implements ITick
 							.getTileEntity(masterPos);
 					// This is a transient problem that only occurs during world loading.
 					if (masterTile != null) {
-						masterTile.setRudderAngle(wheelRotation / 5D);
-
+						if (parentPhysicsEntity == null) {
+							masterTile.setRudderAngle(wheelRotation / 5D);
+						} else {
+							masterTile.attemptTorque(parentPhysicsEntity.getPhysicsObject(), torqueAttemptedNormalImmutable, this.wheelRotation / 5D);
+						}
 					}
 					// masterTile.updateTicksSinceLastRecievedSignal();
 				}

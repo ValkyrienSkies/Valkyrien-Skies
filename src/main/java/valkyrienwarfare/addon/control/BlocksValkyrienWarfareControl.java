@@ -38,8 +38,6 @@ import valkyrienwarfare.addon.control.block.BlockThrustModulator;
 import valkyrienwarfare.addon.control.block.BlockThrustRelay;
 import valkyrienwarfare.addon.control.block.engine.BlockNormalEngine;
 import valkyrienwarfare.addon.control.block.engine.BlockRedstoneEngine;
-import valkyrienwarfare.addon.control.block.legacy_ethercompressor.BlockCreativeEtherCompressor;
-import valkyrienwarfare.addon.control.block.legacy_ethercompressor.BlockNormalEtherCompressor;
 import valkyrienwarfare.addon.control.block.multiblocks.BlockEtherCompressorPart;
 import valkyrienwarfare.addon.control.block.multiblocks.BlockEthereumEnginePart;
 import valkyrienwarfare.addon.control.block.multiblocks.BlockRudderAxlePart;
@@ -54,12 +52,6 @@ public class BlocksValkyrienWarfareControl {
     public final BlockNormalEngine eliteEngine;
     public final BlockNormalEngine ultimateEngine;
     public final BlockRedstoneEngine redstoneEngine;
-
-    public final BlockNormalEtherCompressor antigravityEngine; // leaving it with the old name to prevent blocks disappearing
-    public final BlockNormalEtherCompressor advancedEtherCompressor;
-    public final BlockNormalEtherCompressor eliteEtherCompressor;
-    public final BlockNormalEtherCompressor ultimateEtherCompressor;
-    public final BlockCreativeEtherCompressor creativeEtherCompressor;
 
     public final Block dopedEtherium;
     public final Block pilotsChair;
@@ -91,12 +83,6 @@ public class BlocksValkyrienWarfareControl {
         eliteEngine = (BlockNormalEngine) new BlockNormalEngine(Material.IRON, 8000.0d).setHardness(8f).setUnlocalizedName("eliteengine").setRegistryName(getModID(), "eliteengine").setCreativeTab(ValkyrienWarfareMod.vwTab);
         ultimateEngine = (BlockNormalEngine) new BlockNormalEngine(Material.GROUND, 16000.0d).setHardness(10f).setUnlocalizedName("ultimateengine").setRegistryName(getModID(), "ultimateengine").setCreativeTab(ValkyrienWarfareMod.vwTab);
         redstoneEngine = (BlockRedstoneEngine) new BlockRedstoneEngine(Material.REDSTONE_LIGHT, 500.0d).setHardness(7.0f).setUnlocalizedName("redstoneengine").setRegistryName(getModID(), "redstoneengine").setCreativeTab(ValkyrienWarfareMod.vwTab);
-
-        antigravityEngine = (BlockNormalEtherCompressor) new BlockNormalEtherCompressor(Material.WOOD, 25000.0d).setHardness(8f).setUnlocalizedName("antigravengine").setRegistryName(getModID(), "antigravengine").setCreativeTab(ValkyrienWarfareMod.vwTab);
-        advancedEtherCompressor = (BlockNormalEtherCompressor) new BlockNormalEtherCompressor(Material.ROCK, 45000.0d).setHardness(8f).setUnlocalizedName("advancedethercompressor").setRegistryName(getModID(), "advancedethercompressor").setCreativeTab(ValkyrienWarfareMod.vwTab);
-        eliteEtherCompressor = (BlockNormalEtherCompressor) new BlockNormalEtherCompressor(Material.IRON, 80000.0d).setHardness(8f).setUnlocalizedName("eliteethercompressor").setRegistryName(getModID(), "eliteethercompressor").setCreativeTab(ValkyrienWarfareMod.vwTab);
-        ultimateEtherCompressor = (BlockNormalEtherCompressor) new BlockNormalEtherCompressor(Material.GROUND, 100000.0d).setHardness(8f).setUnlocalizedName("ultimateethercompressor").setRegistryName(getModID(), "ultimateethercompressor").setCreativeTab(ValkyrienWarfareMod.vwTab);
-        creativeEtherCompressor = (BlockCreativeEtherCompressor) new BlockCreativeEtherCompressor(Material.BARRIER, Double.MAX_VALUE / 4).setHardness(0.0f).setUnlocalizedName("creativeethercompressor").setRegistryName(getModID(), "creativeethercompressor").setCreativeTab(ValkyrienWarfareMod.vwTab);
 
         dopedEtherium = new BlockDopedEtherium(Material.GLASS).setHardness(4f).setUnlocalizedName("dopedetherium").setRegistryName(getModID(), "dopedetherium").setCreativeTab(ValkyrienWarfareMod.vwTab);
         pilotsChair = new BlockShipPilotsChair(Material.IRON).setHardness(4f).setUnlocalizedName("shippilotschair").setRegistryName(getModID(), "shippilotschair").setCreativeTab(ValkyrienWarfareMod.vwTab);
@@ -131,12 +117,6 @@ public class BlocksValkyrienWarfareControl {
         event.getRegistry().register(ultimateEngine);
         event.getRegistry().register(redstoneEngine);
 
-        event.getRegistry().register(antigravityEngine);
-        event.getRegistry().register(advancedEtherCompressor);
-        event.getRegistry().register(eliteEtherCompressor);
-        event.getRegistry().register(ultimateEtherCompressor);
-        event.getRegistry().register(creativeEtherCompressor);
-
         event.getRegistry().register(dopedEtherium);
         event.getRegistry().register(pilotsChair);
         event.getRegistry().register(passengerChair);
@@ -166,12 +146,6 @@ public class BlocksValkyrienWarfareControl {
         registerItemBlock(event, eliteEngine);
         registerItemBlock(event, ultimateEngine);
         registerItemBlock(event, redstoneEngine);
-
-        registerItemBlock(event, antigravityEngine);
-        registerItemBlock(event, advancedEtherCompressor);
-        registerItemBlock(event, eliteEtherCompressor);
-        registerItemBlock(event, ultimateEtherCompressor);
-        registerItemBlock(event, creativeEtherCompressor);
 
         registerItemBlock(event, dopedEtherium);
         registerItemBlock(event, pilotsChair);

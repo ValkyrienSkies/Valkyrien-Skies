@@ -1,11 +1,11 @@
 package valkyrienwarfare.addon.control.block.multiblocks;
 
-import net.minecraft.util.math.BlockPos;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.fuel.IEtherEngine;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.mod.coordinates.VectorImmutable;
+import valkyrienwarfare.physics.management.PhysicsObject;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public class TileEntityEthereumCompressorPart extends TileEntityMultiblockPartForce implements IEtherEngine {
@@ -22,7 +22,7 @@ public class TileEntityEthereumCompressorPart extends TileEntityMultiblockPartFo
 	}
 	
 	@Override
-	public VectorImmutable getForceOutputNormal() {
+	public VectorImmutable getForceOutputNormal(double secondsToApply, PhysicsObject object) {
 		return FORCE_NORMAL;
 	}
 

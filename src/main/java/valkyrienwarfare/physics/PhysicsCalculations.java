@@ -57,7 +57,7 @@ public class PhysicsCalculations {
     public static final double PHYSICS_SPEEDUP_FACTOR = 1.0D;
     public static final double DRAG_CONSTANT = .99D;
     public static final double INERTIA_OFFSET = .4D;
-    public static final double EPSILON = 0xE - 8;
+    public static final double EPSILON = .00000001;
 
     private final PhysicsObject parent;
     private final WorldPhysicsCollider worldCollision;

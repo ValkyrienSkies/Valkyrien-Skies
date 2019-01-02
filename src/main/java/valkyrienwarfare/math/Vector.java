@@ -21,6 +21,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.Vec3d;
 import valkyrienwarfare.mod.coordinates.VectorImmutable;
+import valkyrienwarfare.physics.PhysicsCalculations;
 
 /**
  * Custom Vector class used by Valkyrien Warfare
@@ -267,6 +268,24 @@ public class Vector {
 		double dotProduct = this.dot(other);
 		double normalizedDotProduect = dotProduct / (this.length() * other.length());
 		return Math.acos(dotProduct);
+	}
+	
+	/**
+	 * Returns true if both vectors are parallel.
+	 * @param other
+	 * @return
+	 */
+	public boolean isParrallelTo(Vector other) {
+		return Math.abs(angleBetween(other)) <= PhysicsCalculations.EPSILON;
+	}
+	
+	/**
+	 * Returns true if both vectors are perpendicular.
+	 * @param other
+	 * @return
+	 */
+	public boolean isPerpendicularTo(Vector other) {
+		return angleBetween(other) >= Math.PI - PhysicsCalculations.EPSILON;
 	}
 
 	public VectorImmutable toImmutable() {

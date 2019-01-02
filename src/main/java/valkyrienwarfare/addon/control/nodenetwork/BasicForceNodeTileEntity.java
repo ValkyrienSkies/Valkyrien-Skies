@@ -19,6 +19,7 @@ package valkyrienwarfare.addon.control.nodenetwork;
 import net.minecraft.nbt.NBTTagCompound;
 import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.mod.coordinates.VectorImmutable;
+import valkyrienwarfare.physics.management.PhysicsObject;
 import valkyrienwarfare.util.NBTUtils;
 
 public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity implements IForceTile {
@@ -62,7 +63,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
     }
 
     @Override
-    public VectorImmutable getForceOutputNormal() {
+    public VectorImmutable getForceOutputNormal(double secondsToApply, PhysicsObject object) {
         // TODO Auto-generated method stub
         return normalVelocityUnoriented.toImmutable();
     }

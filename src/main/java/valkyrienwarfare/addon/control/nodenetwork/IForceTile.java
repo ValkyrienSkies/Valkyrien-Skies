@@ -23,23 +23,22 @@ import valkyrienwarfare.physics.management.PhysicsObject;
 public interface IForceTile {
 
     /**
-     * Used to tell what direction of force an engine will output, this is
-     * calculated with respect to the orientation of the engine, DO NOT ALTER
+     * Used to tell what direction of force an engine will output at a given instant.
      *
      * @return
      */
-    public VectorImmutable getForceOutputNormal();
+    public VectorImmutable getForceOutputNormal(double secondsToApply, PhysicsObject physicsObject);
 
     /**
      * Returns the current unoriented force output vector of this engine
      *
      * @return
      */
-    public default Vector getForceOutputUnoriented(double secondsToApply, PhysicsObject physicsObject) {
-    	Vector forceVector = getForceOutputNormal().createMutibleVectorCopy();
-    	forceVector.multiply(getThrustMagnitude() * secondsToApply);
-    	return forceVector;
-    }
+	public default Vector getForceOutputUnoriented(double secondsToApply, PhysicsObject physicsObject) {
+		Vector forceVector = getForceOutputNormal(secondsToApply, physicsObject).createMutibleVectorCopy();
+		forceVector.multiply(getThrustMagnitude() * secondsToApply);
+		return forceVector;
+	}
 
 	/**
 	 * Returns the maximum magnitude of force this engine can provide at this

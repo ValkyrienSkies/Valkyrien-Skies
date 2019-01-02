@@ -20,6 +20,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import valkyrienwarfare.mod.coordinates.VectorImmutable;
 import valkyrienwarfare.physics.PhysicsCalculations;
 
@@ -95,7 +96,11 @@ public class Vector {
         }
     }
 
-    public static Vector[] generateAxisAlignedNorms() {
+    public Vector(Vec3i directionVec) {
+		this(directionVec.getX(), directionVec.getY(), directionVec.getZ());
+	}
+
+	public static Vector[] generateAxisAlignedNorms() {
         Vector[] norms = new Vector[]{new Vector(1.0D, 0.0D, 0.0D), new Vector(0.0D, 1.0D, 0.0D),
                 new Vector(0.0D, 0.0D, 1.0D)};
         return norms;
@@ -276,7 +281,7 @@ public class Vector {
 	 * @return
 	 */
 	public boolean isParrallelTo(Vector other) {
-		return Math.abs(angleBetween(other)) <= PhysicsCalculations.EPSILON;
+		return (this.dot(other) * this.dot(other)) / (this.lengthSq() * other.lengthSq()) > .99; 
 	}
 	
 	/**
@@ -285,7 +290,7 @@ public class Vector {
 	 * @return
 	 */
 	public boolean isPerpendicularTo(Vector other) {
-		return angleBetween(other) >= Math.PI - PhysicsCalculations.EPSILON;
+		return Math.abs(this.dot(other)) < PhysicsCalculations.EPSILON;
 	}
 
 	public VectorImmutable toImmutable() {

@@ -27,6 +27,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import valkyrienwarfare.ValkyrienWarfareMod;
+import valkyrienwarfare.addon.control.BlocksValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.block.BlockShipHelm;
 import valkyrienwarfare.addon.control.block.multiblocks.TileEntityEthereumCompressorPart;
@@ -104,7 +105,10 @@ public class TileEntityShipHelm extends ImplTileEntityPilotable implements ITick
 						if (parentPhysicsEntity == null) {
 							masterTile.setRudderAngle(wheelRotation / 5D);
 						} else {
-							masterTile.attemptTorque(parentPhysicsEntity.getPhysicsObject(), torqueAttemptedNormalImmutable, this.wheelRotation / 5D);
+							masterTile.attemptTorque(parentPhysicsEntity.getPhysicsObject(),
+									torqueAttemptedNormalImmutable, this.wheelRotation / 4D,
+									new Vector(EnumFacing.getFront(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipHelm
+											.getMetaFromState(this.getWorld().getBlockState(this.getPos()))).getDirectionVec()));
 						}
 					}
 					// masterTile.updateTicksSinceLastRecievedSignal();

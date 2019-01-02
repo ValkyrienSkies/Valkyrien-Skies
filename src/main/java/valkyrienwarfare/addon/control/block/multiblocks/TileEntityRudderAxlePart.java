@@ -1,5 +1,10 @@
 package valkyrienwarfare.addon.control.block.multiblocks;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 import net.minecraft.nbt.NBTTagCompound;
@@ -59,11 +64,12 @@ public class TileEntityRudderAxlePart extends TileEntityMultiblockPartForce {
 	 * @param torqueAttemptNormal
 	 * @param angleDegrees
 	 */
-	public void attemptTorque(PhysicsObject physicsObject, VectorImmutable torqueAttemptNormal, double angleDegrees) {
+	public void attemptTorque(PhysicsObject physicsObject, VectorImmutable torqueAttemptNormal, double angleDegrees, Vector helmForwardDirecton) {
+		if (Math.abs(angleDegrees) < 1) {
+			angleDegrees = 0;
+		}
+		// This method essentially assumes the drag to be calculated with a linear vel of helmForwardDirecton and angular vel of zero.
 		if (getRudderAxleSchematic().isPresent()) {
-			// TODO: The ship blocks should decide this.
-			Vector forwardVector = new Vector(1, 0, 0);
-			// TODO: END
 			Vector rudderOriginInLocal = new Vector(getPos().getX() + .5, getPos().getY() + .5, getPos().getZ() + .5);
 			Vector localTorqueAttempt = torqueAttemptNormal.createMutibleVectorCopy();
 			rudderOriginInLocal.subtract(physicsObject.getPhysicsProcessor().gameTickCenterOfMass);
@@ -72,50 +78,79 @@ public class TileEntityRudderAxlePart extends TileEntityMultiblockPartForce {
 			double axleLength = getRudderAxleLength().get();
 			Vector facingOffset = new Vector(directionFacing.getX(), directionFacing.getY(), directionFacing.getZ());
 			Vector axleOffset = new Vector(directionAxle.getX(), directionAxle.getY(), directionAxle.getZ());
-			if (axleOffset.isParrallelTo(rudderOriginInLocal)) {
+			if (false) {
 				// Thank god, the easy case.
 				this.setRudderAngle(0);
 			} else {
-				// Force magnitude is proportional to cos(90 +/- R)
-				// Create rotation transforms for both possible cases.
-				double[] rotateClockwise = RotationMatrices.getRotationMatrix(directionAxle.getX(), directionAxle.getY(), directionAxle.getZ(), Math.toRadians(angleDegrees));
-				double[] rotateCounterClockwise = RotationMatrices.getRotationMatrix(directionAxle.getX(), directionAxle.getY(), directionAxle.getZ(), Math.toRadians(-angleDegrees));
 				// Then estimate the torque output for both, and use the one that has a positive dot product to torqueAttemptNormal.
 				axleOffset.multiply(axleLength / 2D);
 				facingOffset.multiply(axleLength / 2D);
 				Vector totalOffset = axleOffset.getAddition(facingOffset);
-				// First handle the clockwise case:
-				Vector totalOffsetClockwise = new Vector(totalOffset);
-				RotationMatrices.applyTransform(rotateClockwise, totalOffsetClockwise);
-				// The R0
-				Vector forcePositionClockwise = rudderOriginInLocal.getAddition(totalOffsetClockwise);
-				Vector dragForceClockwise = new Vector(forwardVector, -totalOffsetClockwise.dot(forwardVector));
-				// Clockwise case output torque
-				Vector torqueMadeClockwise = forcePositionClockwise.cross(dragForceClockwise);
 
-				// Then handle the counterclockwise case:
-				Vector totalOffsetCounterClockwise = new Vector(totalOffset);
-				RotationMatrices.applyTransform(rotateCounterClockwise, totalOffsetCounterClockwise);
-				// The R0
-				Vector forcePositionCounterClockwise = rudderOriginInLocal.getAddition(totalOffsetCounterClockwise);
-				Vector dragForceCounterClockwise = new Vector(forwardVector, -totalOffsetCounterClockwise.dot(forwardVector));
-				// Clockwise case output torque
-				Vector torqueMadeCounterClockwise = forcePositionCounterClockwise.cross(dragForceCounterClockwise);
-				// Then finally select the one with the smallest angle to torqueAttemptNormal
 				
-				double torqueClockwiseCorrectness = torqueMadeClockwise.dot(localTorqueAttempt);
-				double torqueCounterClockwiseCorrectness = torqueMadeCounterClockwise.dot(localTorqueAttempt);
-				
-				if (torqueClockwiseCorrectness < .1 && torqueCounterClockwiseCorrectness < .1) {
-					this.setRudderAngle(0);
-				} else if (torqueClockwiseCorrectness > torqueCounterClockwiseCorrectness) {
-					this.setRudderAngle(angleDegrees);
-				} else {
-					this.setRudderAngle(-angleDegrees);
+
+				List<Double> rudderZeroCases = new ArrayList<Double>();
+				// Add the possible cases
+				rudderZeroCases.add(0D);
+				rudderZeroCases.add(90D);
+				Map<Double, Double> zeroCasesCorrectness = new HashMap<Double, Double>();
+				for (Double possibleZeroCase : rudderZeroCases) {
+					Vector possibleTorque = calculateTorqueFromAngleAndVelocity(helmForwardDirecton, new Vector(directionAxle), new Vector(totalOffset), rudderOriginInLocal, possibleZeroCase);
+					zeroCasesCorrectness.put(possibleZeroCase, possibleTorque.lengthSq());
+				}
+				Entry<Double, Double> min = null;
+				for (Entry<Double, Double> entry : zeroCasesCorrectness.entrySet()) {
+				    if (min == null || min.getValue() > entry.getValue()) {
+				    	min = entry;
+				    }
 				}
 
+				double rudderZeroTorqueAngle = min.getKey();
+				double[] rotationMatrix = RotationMatrices.getRotationMatrix(directionAxle.getX(), directionAxle.getY(), directionAxle.getZ(), Math.toRadians(rudderZeroTorqueAngle));
+				RotationMatrices.applyTransform(rotationMatrix, totalOffset);
+				
+				
+				List<Double> rudderRotationCases = new ArrayList<Double>();
+				// Add the possible cases
+				rudderRotationCases.add(0D);
+				rudderRotationCases.add(angleDegrees);
+				rudderRotationCases.add(-angleDegrees);
+
+				Map<Double, Double> rotationToTorqueCorrectness = new HashMap<Double, Double>();
+				for (Double possibleRotationDegrees : rudderRotationCases) {
+					// Divide by 10 because we're only checking for direction. We don't want directions changing because of amplitude.
+					Vector possibleTorque = calculateTorqueFromAngleAndVelocity(helmForwardDirecton, new Vector(directionAxle), new Vector(totalOffset), rudderOriginInLocal, possibleRotationDegrees / 10);
+					double angleCorrectness = possibleTorque.dot(localTorqueAttempt);
+					rotationToTorqueCorrectness.put(possibleRotationDegrees, angleCorrectness);
+				}
+
+				Entry<Double, Double> max = null;
+				for (Entry<Double, Double> entry : rotationToTorqueCorrectness.entrySet()) {
+				    if (max == null || max.getValue() < entry.getValue()) {
+				    	max = entry;
+				    }
+				}
+				
+				// TODO: This might not be correct. Lets just hope it is.
+				this.setRudderAngle(max.getKey() + rudderZeroTorqueAngle);
 			}
 		}
+	}
+	
+	private Vector calculateTorqueFromAngleAndVelocity(Vector velocity, Vector rotationAxis, Vector forcePos, Vector rudderOriginInLocal, double angleDegrees) {
+		double[] rotationMatrix = RotationMatrices.getRotationMatrix(rotationAxis.X, rotationAxis.Y, rotationAxis.Z, Math.toRadians(angleDegrees));
+		Vector totalOffsetClockwise = new Vector(forcePos);
+		RotationMatrices.applyTransform(rotationMatrix, totalOffsetClockwise);
+		Vector forcePositionInShipSpace = rudderOriginInLocal.getAddition(totalOffsetClockwise);
+		
+		Vector surfaceNormal = totalOffsetClockwise.cross(rotationAxis);
+		surfaceNormal.normalize();
+		double dragMagnitude = Math.abs(surfaceNormal.dot(velocity));
+		
+		Vector dragForceClockwise = new Vector(velocity, dragMagnitude);
+		// Clockwise case output torque
+		Vector torqueMadeClockwise = forcePositionInShipSpace.cross(dragForceClockwise);
+		return torqueMadeClockwise;
 	}
 
 	@Override

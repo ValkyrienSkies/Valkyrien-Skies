@@ -78,65 +78,63 @@ public class TileEntityRudderAxlePart extends TileEntityMultiblockPartForce {
 			double axleLength = getRudderAxleLength().get();
 			Vector facingOffset = new Vector(directionFacing.getX(), directionFacing.getY(), directionFacing.getZ());
 			Vector axleOffset = new Vector(directionAxle.getX(), directionAxle.getY(), directionAxle.getZ());
-			if (false) {
-				// Thank god, the easy case.
-				this.setRudderAngle(0);
-			} else {
-				// Then estimate the torque output for both, and use the one that has a positive dot product to torqueAttemptNormal.
-				axleOffset.multiply(axleLength / 2D);
-				facingOffset.multiply(axleLength / 2D);
-				Vector totalOffset = axleOffset.getAddition(facingOffset);
+			// Then estimate the torque output for both, and use the one that has a positive
+			// dot product to torqueAttemptNormal.
+			axleOffset.multiply(axleLength / 2D);
+			facingOffset.multiply(axleLength / 2D);
+			Vector totalOffset = axleOffset.getAddition(facingOffset);
 
-				
-
-				List<Double> rudderZeroCases = new ArrayList<Double>();
-				// Add the possible cases
-				rudderZeroCases.add(0D);
-				rudderZeroCases.add(90D);
-				Map<Double, Double> zeroCasesCorrectness = new HashMap<Double, Double>();
-				for (Double possibleZeroCase : rudderZeroCases) {
-					Vector possibleTorque = calculateTorqueFromAngleAndVelocity(helmForwardDirecton, new Vector(directionAxle), new Vector(totalOffset), rudderOriginInLocal, possibleZeroCase);
-					zeroCasesCorrectness.put(possibleZeroCase, possibleTorque.lengthSq());
-				}
-				Entry<Double, Double> min = null;
-				for (Entry<Double, Double> entry : zeroCasesCorrectness.entrySet()) {
-				    if (min == null || min.getValue() > entry.getValue()) {
-				    	min = entry;
-				    }
-				}
-
-				double rudderZeroTorqueAngle = min.getKey();
-				double[] rotationMatrix = RotationMatrices.getRotationMatrix(directionAxle.getX(), directionAxle.getY(), directionAxle.getZ(), Math.toRadians(rudderZeroTorqueAngle));
-				RotationMatrices.applyTransform(rotationMatrix, totalOffset);
-				
-				
-				List<Double> rudderRotationCases = new ArrayList<Double>();
-				// Add the possible cases
-				rudderRotationCases.add(0D);
-				rudderRotationCases.add(angleDegrees);
-				rudderRotationCases.add(-angleDegrees);
-
-				Map<Double, Double> rotationToTorqueCorrectness = new HashMap<Double, Double>();
-				for (Double possibleRotationDegrees : rudderRotationCases) {
-					// Divide by 10 because we're only checking for direction. We don't want directions changing because of amplitude.
-					Vector possibleTorque = calculateTorqueFromAngleAndVelocity(helmForwardDirecton, new Vector(directionAxle), new Vector(totalOffset), rudderOriginInLocal, possibleRotationDegrees / 10);
-					double angleCorrectness = possibleTorque.dot(localTorqueAttempt);
-					rotationToTorqueCorrectness.put(possibleRotationDegrees, angleCorrectness);
-				}
-
-				Entry<Double, Double> max = null;
-				for (Entry<Double, Double> entry : rotationToTorqueCorrectness.entrySet()) {
-				    if (max == null || max.getValue() < entry.getValue()) {
-				    	max = entry;
-				    }
-				}
-				
-				// TODO: This might not be correct. Lets just hope it is.
-				this.setRudderAngle(max.getKey() + rudderZeroTorqueAngle);
+			List<Double> rudderZeroCases = new ArrayList<Double>();
+			// Add the possible cases
+			rudderZeroCases.add(0D);
+			rudderZeroCases.add(90D);
+			Map<Double, Double> zeroCasesCorrectness = new HashMap<Double, Double>();
+			for (Double possibleZeroCase : rudderZeroCases) {
+				Vector possibleTorque = calculateTorqueFromAngleAndVelocity(helmForwardDirecton,
+						new Vector(directionAxle), new Vector(totalOffset), rudderOriginInLocal, possibleZeroCase);
+				zeroCasesCorrectness.put(possibleZeroCase, possibleTorque.lengthSq());
 			}
+			Entry<Double, Double> min = null;
+			for (Entry<Double, Double> entry : zeroCasesCorrectness.entrySet()) {
+				if (min == null || min.getValue() > entry.getValue()) {
+					min = entry;
+				}
+			}
+
+			double rudderZeroTorqueAngle = min.getKey();
+			double[] rotationMatrix = RotationMatrices.getRotationMatrix(directionAxle.getX(), directionAxle.getY(),
+					directionAxle.getZ(), Math.toRadians(rudderZeroTorqueAngle));
+			RotationMatrices.applyTransform(rotationMatrix, totalOffset);
+
+			List<Double> rudderRotationCases = new ArrayList<Double>();
+			// Add the possible cases
+			rudderRotationCases.add(0D);
+			rudderRotationCases.add(angleDegrees);
+			rudderRotationCases.add(-angleDegrees);
+
+			Map<Double, Double> rotationToTorqueCorrectness = new HashMap<Double, Double>();
+			for (Double possibleRotationDegrees : rudderRotationCases) {
+				// Divide by 10 because we're only checking for direction. We don't want
+				// directions changing because of amplitude.
+				Vector possibleTorque = calculateTorqueFromAngleAndVelocity(helmForwardDirecton,
+						new Vector(directionAxle), new Vector(totalOffset), rudderOriginInLocal,
+						possibleRotationDegrees / 10);
+				double angleCorrectness = possibleTorque.dot(localTorqueAttempt);
+				rotationToTorqueCorrectness.put(possibleRotationDegrees, angleCorrectness);
+			}
+
+			Entry<Double, Double> max = null;
+			for (Entry<Double, Double> entry : rotationToTorqueCorrectness.entrySet()) {
+				if (max == null || max.getValue() < entry.getValue()) {
+					max = entry;
+				}
+			}
+
+			// TODO: This might not be correct. Lets just hope it is.
+			this.setRudderAngle(max.getKey() + rudderZeroTorqueAngle);
 		}
 	}
-	
+
 	private Vector calculateTorqueFromAngleAndVelocity(Vector velocity, Vector rotationAxis, Vector forcePos, Vector rudderOriginInLocal, double angleDegrees) {
 		double[] rotationMatrix = RotationMatrices.getRotationMatrix(rotationAxis.X, rotationAxis.Y, rotationAxis.Z, Math.toRadians(angleDegrees));
 		Vector totalOffsetClockwise = new Vector(forcePos);

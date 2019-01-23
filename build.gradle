@@ -59,7 +59,7 @@ minecraft {
     runDir = "run"
     mappings = project.mcpVersion
     coreMod = "valkyrienwarfare.mixin.MixinLoaderForge"
-	// makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
+    // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 }
 
 configurations.all {
@@ -69,6 +69,7 @@ configurations.all {
 }
 
 repositories {
+    mavenLocal()
     maven {
         name = 'spongepowered-repo'
         url = 'http://repo.spongepowered.org/maven/'
@@ -77,17 +78,14 @@ repositories {
         name = "OpenComputers"
         url = "http://maven.cil.li/"
     }
-	// This one is for porky datastructures.
-	maven {
-		url 'https://maven.daporkchop.net/'
-	}
-	// This one is for graph datastructures.
-	maven {
+    // This one is for porky datastructures.
+    maven {
+        url 'https://maven.daporkchop.net/'
+    }
+    // This one is for graph datastructures.
+    maven {
         url 'http://dogforce-games.com/maven'
     }
-	maven {
-		url 'https://maven.daporkchop.net/'
-	}
     mavenCentral()
 }
 
@@ -96,13 +94,15 @@ dependencies {
     compile("org.spongepowered:mixin:0.7.5-SNAPSHOT") {
         exclude module: "launchwrapper"
     }
-	// We want to prevent any conflicts with SpongeForge
-	compileOnly("org.spongepowered:spongeforge:1.12.2-2611-7.1.0-BETA-3002:dev")
+    // We want to prevent any conflicts with SpongeForge
+    compileOnly("org.spongepowered:spongeforge:1.12.2-2611-7.1.0-BETA-3002:dev")  {
+        exclude group: "org.apache.logging.log4j"
+    }
     compileOnly "li.cil.oc:OpenComputers:MC1.12.1-1.7.1.+:api"
-	// Porky datastructures
-	compile 'net.daporkchop.lib:primitive:0.0.5'
-	compile 'gigaherz.graph:GraphLib:1.4.0'
-	compile 'valkyrienwarfare:api:1.0'
+    // Porky datastructures
+    compile 'net.daporkchop.lib:primitive:0.0.5'
+    compile 'gigaherz.graph:GraphLib:1.4.0'
+    compile 'valkyrienwarfare:api:1.0'
 }
 
 processResources {

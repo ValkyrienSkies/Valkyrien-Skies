@@ -1,5 +1,7 @@
 package valkyrienwarfare.addon.control.block.multiblocks;
 
+import java.util.Optional;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
@@ -52,10 +54,28 @@ public class BlockRudderAxlePart extends Block implements ITileEntityProvider, I
 			double secondsToApply) {
 		return null;
 	}
+	
+    @Override
+    public Vector getCustomBlockForcePosition(World world, BlockPos pos, IBlockState state, Entity shipEntity,
+                                               double secondsToApply) {
+    	if (world.getTileEntity(pos) instanceof TileEntityRudderAxlePart) {
+    		TileEntityRudderAxlePart tileEntity = (TileEntityRudderAxlePart) world.getTileEntity(pos);
+    		Vector customForcePosition = tileEntity.getForcePositionInShipSpace();
+    		// TODO: return the above
+    		return null;
+    	} else {
+    		return null;
+    	}
+    }
+
 
 	@Override
 	public boolean shouldLocalForceBeRotated(World world, BlockPos pos, IBlockState state, double secondsToApply) {
-		return false;
+		return true;
+	}
+	
+	private static Optional<Double> getRudderRotationDegrees(World world, BlockPos pos) {
+		return Optional.empty();
 	}
 
 }

@@ -57,6 +57,33 @@ public class TileEntityRudderAxlePart extends TileEntityMultiblockPartForce {
 		serverWorld.mcServer.getPlayerList().sendToAllNearExcept(null, this.getPos().getX(), getPos().getY(),
 				getPos().getZ(), 128D, getWorld().provider.getDimension(), spacketupdatetileentity);
 	}
+
+	public Vector getForcePositionInShipSpace() {
+		Vector facingOffset = getForcePosRelativeToAxleInShipSpace();
+		if (facingOffset != null) {
+			return new Vector(facingOffset.X + pos.getX() + .5, facingOffset.Y + pos.getY() + .5, facingOffset.Z + pos.getZ() +.5);
+		} else {
+			return null;
+		}
+	}
+
+	private Vector getForcePosRelativeToAxleInShipSpace() {
+		if (getRudderAxleSchematic().isPresent()) {
+			Vec3i directionFacing = getRudderAxleFacingDirection().get().getDirectionVec();
+			Vec3i directionAxle = this.getRudderAxleAxisDirection().get().getDirectionVec();
+			Vector facingOffset = new Vector(directionFacing.getX(), directionFacing.getY(), directionFacing.getZ());
+			double axleLength = getRudderAxleLength().get();
+			// Then estimate the torque output for both, and use the one that has a positive
+			// dot product to torqueAttemptNormal.
+			facingOffset.multiply(axleLength / 2D);
+			// Then rotate the offset vector
+			double[] rotationMatrix = RotationMatrices.getRotationMatrix(directionAxle.getX(), directionAxle.getY(), directionAxle.getZ(), Math.toRadians(rudderAngle));
+			RotationMatrices.applyTransform(rotationMatrix, facingOffset);
+			return facingOffset;
+		} else {
+			return null;
+		}
+	}
 	
 	/**
 	 * Well shit I hope this works.
@@ -143,12 +170,37 @@ public class TileEntityRudderAxlePart extends TileEntityMultiblockPartForce {
 		
 		Vector surfaceNormal = totalOffsetClockwise.cross(rotationAxis);
 		surfaceNormal.normalize();
-		double dragMagnitude = Math.abs(surfaceNormal.dot(velocity));
+		double dragMagnitude = surfaceNormal.dot(velocity);
 		
-		Vector dragForceClockwise = new Vector(velocity, dragMagnitude);
+		Vector dragForceClockwise = new Vector(surfaceNormal, dragMagnitude);
 		// Clockwise case output torque
 		Vector torqueMadeClockwise = forcePositionInShipSpace.cross(dragForceClockwise);
 		return torqueMadeClockwise;
+	}
+
+	public Vector calculateForceFromVelocity(PhysicsObject physicsObject) {
+		if (getRudderAxleSchematic().isPresent() && false) {
+			Vector velocity = null; // TODO Fill this
+			Vector forcePos = null;
+			
+			Vec3i directionFacing = getRudderAxleFacingDirection().get().getDirectionVec();
+			Vec3i directionAxle = this.getRudderAxleAxisDirection().get().getDirectionVec();
+			Vector facingOffset = new Vector(directionFacing.getX(), directionFacing.getY(), directionFacing.getZ());
+			double axleLength = getRudderAxleLength().get();
+			double[] rotationMatrix = RotationMatrices.getRotationMatrix(directionAxle.getX(), directionAxle.getY(),
+					directionAxle.getZ(), Math.toRadians(rudderAngle));
+			Vector totalOffsetClockwise = new Vector(forcePos);
+			RotationMatrices.applyTransform(rotationMatrix, totalOffsetClockwise);
+
+			Vector surfaceNormal = totalOffsetClockwise.cross(new Vector(directionFacing));
+			surfaceNormal.normalize();
+			double dragMagnitude = surfaceNormal.dot(velocity);
+
+			Vector dragForceClockwise = new Vector(surfaceNormal, dragMagnitude);
+			return dragForceClockwise;
+		} else {
+			return null;
+		}
 	}
 
 	@Override
@@ -157,14 +209,14 @@ public class TileEntityRudderAxlePart extends TileEntityMultiblockPartForce {
 		rudderAngle = compound.getDouble("rudderAngle");
 	}
 
-    @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-        NBTTagCompound toReturn = super.writeToNBT(compound);
-        toReturn.setDouble("rudderAngle", rudderAngle);
-        return toReturn;
-    }
-	
-    @Override
+	@Override
+	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+		NBTTagCompound toReturn = super.writeToNBT(compound);
+		toReturn.setDouble("rudderAngle", rudderAngle);
+		return toReturn;
+	}
+
+	@Override
     public void onDataPacket(net.minecraft.network.NetworkManager net, net.minecraft.network.play.server.SPacketUpdateTileEntity pkt) {
       	double currentRudderAngle = rudderAngle;
     	super.onDataPacket(net, pkt);

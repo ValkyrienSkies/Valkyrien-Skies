@@ -101,6 +101,19 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
 		}
 	}
 
+	@Inject(method = "getCollisionBoxes", at = @At("HEAD"), cancellable = true)
+	public void preGetCollisionBoxes(@Nullable Entity entityIn, AxisAlignedBB aabb, boolean p_191504_3_,
+			@Nullable List<AxisAlignedBB> outList, CallbackInfoReturnable callbackInfo) {
+		double deltaX = Math.abs(aabb.maxX - aabb.minX);
+		double deltaY = Math.abs(aabb.maxY - aabb.minY);
+		double deltaZ = Math.abs(aabb.maxZ - aabb.minZ);
+		if (Math.max(deltaX, Math.max(deltaY, deltaZ)) > 99999D) {
+			System.err.println(entityIn + "\ntried going extremely fast during the collision step");
+			callbackInfo.setReturnValue(Boolean.FALSE);
+			callbackInfo.cancel();
+		}
+	}
+
 	@Inject(method = "setBlockState", at = @At("HEAD"))
 	public void preSetBlockState(BlockPos pos, IBlockState newState, int flags, CallbackInfoReturnable callbackInfo) {
 		PhysicsWrapperEntity physEntity = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(thisClassAsWorld,
@@ -189,11 +202,6 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
         return list;
     }
 
-    /**
-     * aa
-     *
-     * @author xd
-     */
     @Overwrite
     public <T extends Entity> List<T> getEntitiesWithinAABB(Class<? extends T> clazz, AxisAlignedBB aabb,
                                                             @Nullable Predicate<? super T> filter) {

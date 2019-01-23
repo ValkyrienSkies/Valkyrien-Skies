@@ -32,14 +32,14 @@ public class TileEntityRudderAxlePart extends TileEntityMultiblockPartForce {
 	// For client rendering purposes only
 	private double prevRudderAngle;
 	private double nextRudderAngle;
-	
+
 	public TileEntityRudderAxlePart() {
 		super();
 		this.rudderAngle = 0;
 		this.prevRudderAngle = 0;
 		this.nextRudderAngle = 0;
 	}
-	
+
 	@Override
 	public void update() {
 		super.update();
@@ -84,7 +84,7 @@ public class TileEntityRudderAxlePart extends TileEntityMultiblockPartForce {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Well shit I hope this works.
 	 * @param physicsObject
@@ -167,36 +167,38 @@ public class TileEntityRudderAxlePart extends TileEntityMultiblockPartForce {
 		Vector totalOffsetClockwise = new Vector(forcePos);
 		RotationMatrices.applyTransform(rotationMatrix, totalOffsetClockwise);
 		Vector forcePositionInShipSpace = rudderOriginInLocal.getAddition(totalOffsetClockwise);
-		
+
 		Vector surfaceNormal = totalOffsetClockwise.cross(rotationAxis);
 		surfaceNormal.normalize();
 		double dragMagnitude = surfaceNormal.dot(velocity);
-		
-		Vector dragForceClockwise = new Vector(surfaceNormal, dragMagnitude);
+
+		Vector dragForceClockwise = new Vector(surfaceNormal, -dragMagnitude);
 		// Clockwise case output torque
 		Vector torqueMadeClockwise = forcePositionInShipSpace.cross(dragForceClockwise);
 		return torqueMadeClockwise;
 	}
 
 	public Vector calculateForceFromVelocity(PhysicsObject physicsObject) {
-		if (getRudderAxleSchematic().isPresent() && false) {
-			Vector velocity = null; // TODO Fill this
-			Vector forcePos = null;
-			
-			Vec3i directionFacing = getRudderAxleFacingDirection().get().getDirectionVec();
-			Vec3i directionAxle = this.getRudderAxleAxisDirection().get().getDirectionVec();
-			Vector facingOffset = new Vector(directionFacing.getX(), directionFacing.getY(), directionFacing.getZ());
-			double axleLength = getRudderAxleLength().get();
-			double[] rotationMatrix = RotationMatrices.getRotationMatrix(directionAxle.getX(), directionAxle.getY(),
-					directionAxle.getZ(), Math.toRadians(rudderAngle));
-			Vector totalOffsetClockwise = new Vector(forcePos);
-			RotationMatrices.applyTransform(rotationMatrix, totalOffsetClockwise);
+		if (getRudderAxleSchematic().isPresent()) {
+			Vector directionFacing = this.getForcePosRelativeToAxleInShipSpace();
+			Vector forcePosRelativeToShipCenter = this.getForcePositionInShipSpace();
+			forcePosRelativeToShipCenter.subtract(physicsObject.getPhysicsProcessor().gameTickCenterOfMass);
+			physicsObject.getShipTransformationManager().getCurrentPhysicsTransform().rotate(forcePosRelativeToShipCenter, TransformType.SUBSPACE_TO_GLOBAL);
 
-			Vector surfaceNormal = totalOffsetClockwise.cross(new Vector(directionFacing));
+
+			Vector velocity = physicsObject.getPhysicsProcessor().getVelocityAtPoint(forcePosRelativeToShipCenter);
+			physicsObject.getShipTransformationManager().getCurrentPhysicsTransform().rotate(velocity, TransformType.GLOBAL_TO_SUBSPACE);
+			// Now we have the velocity in local, the position in local, and the position relative to the axle
+			Vec3i directionAxle = this.getRudderAxleAxisDirection().get().getDirectionVec();
+			Vector directionAxleVector = new Vector(directionAxle);
+
+			Vector surfaceNormal = directionAxleVector.cross(new Vector(directionFacing));
 			surfaceNormal.normalize();
 			double dragMagnitude = surfaceNormal.dot(velocity);
 
-			Vector dragForceClockwise = new Vector(surfaceNormal, dragMagnitude);
+			Vector dragForceClockwise = new Vector(surfaceNormal, -dragMagnitude);
+			// TODO: :(
+			dragForceClockwise.multiply(100000);
 			return dragForceClockwise;
 		} else {
 			return null;
@@ -223,7 +225,7 @@ public class TileEntityRudderAxlePart extends TileEntityMultiblockPartForce {
     	nextRudderAngle = pkt.getNbtCompound().getDouble("rudderAngle");
     	this.rudderAngle = currentRudderAngle;
     }
-    
+
 	@Override
 	public VectorImmutable getForceOutputNormal(double secondsToApply, PhysicsObject object) {
 		Vector inBody = new Vector(this.pos.getX() + .5D, this.pos.getY() + .5D, this.pos.getZ() + .5D);
@@ -237,7 +239,7 @@ public class TileEntityRudderAxlePart extends TileEntityMultiblockPartForce {
 	public double getThrustMagnitude() {
 		return 0;
 	}
-	
+
 	public Optional<EnumFacing> getRudderAxleAxisDirection() {
 		Optional<RudderAxleMultiblockSchematic> rudderAxleSchematicOptional = getRudderAxleSchematic();
 		if (rudderAxleSchematicOptional.isPresent()) {
@@ -246,7 +248,7 @@ public class TileEntityRudderAxlePart extends TileEntityMultiblockPartForce {
 			return Optional.empty();
 		}
 	}
-	
+
 	public Optional<EnumFacing> getRudderAxleFacingDirection() {
 		Optional<RudderAxleMultiblockSchematic> rudderAxleSchematicOptional = getRudderAxleSchematic();
 		if (rudderAxleSchematicOptional.isPresent()) {
@@ -255,7 +257,7 @@ public class TileEntityRudderAxlePart extends TileEntityMultiblockPartForce {
 			return Optional.empty();
 		}
 	}
-	
+
 	public Optional<Integer> getRudderAxleLength() {
 		Optional<RudderAxleMultiblockSchematic> rudderAxleSchematicOptional = getRudderAxleSchematic();
 		if (rudderAxleSchematicOptional.isPresent()) {
@@ -273,15 +275,15 @@ public class TileEntityRudderAxlePart extends TileEntityMultiblockPartForce {
 			return Optional.empty();
 		}
 	}
-	
+
 	public double getRudderAngle() {
 		return this.rudderAngle;
 	}
-	
+
 	public double getRenderRudderAngle(double partialTicks) {
 		return this.prevRudderAngle + ((this.rudderAngle - this.prevRudderAngle) * partialTicks);
 	}
-	
+
 	@Override
     @SideOnly(Side.CLIENT)
     public AxisAlignedBB getRenderBoundingBox() {
@@ -290,25 +292,25 @@ public class TileEntityRudderAxlePart extends TileEntityMultiblockPartForce {
     		EnumFacing axleAxis = getRudderAxleAxisDirection().get();
 			EnumFacing axleFacing = getRudderAxleFacingDirection().get();
 			Vec3i otherAxis = axleAxis.getDirectionVec().crossProduct(axleFacing.getDirectionVec());
-			
+
 			int nexAxisX = axleAxis.getDirectionVec().getX() + axleFacing.getDirectionVec().getX();
 			int nexAxisY = axleAxis.getDirectionVec().getY() + axleFacing.getDirectionVec().getY();
 			int nexAxisZ = axleAxis.getDirectionVec().getZ() + axleFacing.getDirectionVec().getZ();
-			
+
 			int axleLength = getRudderAxleLength().get();
-			
+
 			int offsetX = nexAxisX * axleLength;
 			int offsetY = nexAxisY * axleLength;
 			int offsetZ = nexAxisZ * axleLength;
-			
+
     		BlockPos maxPos = minPos.add(offsetX, offsetY, offsetZ);
-    		
+
     		int otherAxisXExpanded = otherAxis.getX() * axleLength;
     		int otherAxisYExpanded = otherAxis.getY() * axleLength;
     		int otherAxisZExpanded = otherAxis.getZ() * axleLength;
-    		
+
     		AxisAlignedBB toReturn = (new AxisAlignedBB(minPos, maxPos)).grow(otherAxisXExpanded, otherAxisYExpanded, otherAxisZExpanded).grow(.5, .5, .5);
-    		
+
     		// Do this to transform the output when in ship space.
     		PhysicsWrapperEntity physicsEntity = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(getWorld(), getPos());
     		if (physicsEntity != null) {
@@ -320,5 +322,5 @@ public class TileEntityRudderAxlePart extends TileEntityMultiblockPartForce {
 			return super.getRenderBoundingBox();
     	}
     }
-	
+
 }

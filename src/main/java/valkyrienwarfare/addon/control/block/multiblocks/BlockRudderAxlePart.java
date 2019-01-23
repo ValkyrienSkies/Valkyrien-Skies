@@ -13,6 +13,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import valkyrienwarfare.deprecated_api.IBlockForceProvider;
 import valkyrienwarfare.math.Vector;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public class BlockRudderAxlePart extends Block implements ITileEntityProvider, IBlockForceProvider {
 
@@ -52,7 +53,17 @@ public class BlockRudderAxlePart extends Block implements ITileEntityProvider, I
 	@Override
 	public Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state, Entity shipEntity,
 			double secondsToApply) {
-		return null;
+		if (world.getTileEntity(pos) instanceof TileEntityRudderAxlePart) {
+			TileEntityRudderAxlePart tileEntity = (TileEntityRudderAxlePart) world.getTileEntity(pos);
+			Vector forceBeforeTimeScale = tileEntity.calculateForceFromVelocity(((PhysicsWrapperEntity) shipEntity).getPhysicsObject());
+			if (forceBeforeTimeScale != null) {
+				return forceBeforeTimeScale.getProduct(secondsToApply);
+			} else {
+				return null;
+			}
+		} else {
+			return null;
+		}
 	}
 	
     @Override
@@ -60,9 +71,7 @@ public class BlockRudderAxlePart extends Block implements ITileEntityProvider, I
                                                double secondsToApply) {
     	if (world.getTileEntity(pos) instanceof TileEntityRudderAxlePart) {
     		TileEntityRudderAxlePart tileEntity = (TileEntityRudderAxlePart) world.getTileEntity(pos);
-    		Vector customForcePosition = tileEntity.getForcePositionInShipSpace();
-    		// TODO: return the above
-    		return null;
+    		return null; // tileEntity.getForcePositionInShipSpace();
     	} else {
     		return null;
     	}

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 
 import com.best108.atom_animation_reader.IAtomAnimation;
 import com.best108.atom_animation_reader.IAtomAnimationBuilder;
@@ -31,6 +32,21 @@ public class GibsAnimationRegistry {
 			Scanner data = new Scanner(animationResource.getInputStream());
 			AtomParser dataParser = new AtomParser(data);
 			IAtomAnimationBuilder animationBuilder = new BasicAtomAnimationBuilder(dataParser);
+			// Then register all the models associated with this animation
+			Set<String> modelsUsed = animationBuilder.getModelObjsUsed();
+			String resourceDomainName = location.getResourceDomain();
+
+			String modelResourceFolder = "";
+			String[] temp = location.getResourcePath().split("/");
+			for (int i = 1; i < temp.length - 1; i++) {
+				modelResourceFolder += temp[i] + "/";
+			}
+
+			for (String modelName : modelsUsed) {
+				ResourceLocation modelToRegister = new ResourceLocation(resourceDomainName, modelResourceFolder + modelName + ".obj");
+				System.out.println(modelToRegister);
+				GibsModelRegistry.registerGibsModel(modelName, modelToRegister);
+			}
 			ANIMATION_MAP.put(name, animationBuilder.build(MODEL_RENDERER));
 		} catch (IOException e) {
 			e.printStackTrace();

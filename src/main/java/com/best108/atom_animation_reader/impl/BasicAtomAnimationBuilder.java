@@ -1,9 +1,6 @@
 package com.best108.atom_animation_reader.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import com.best108.atom_animation_reader.IAtomAnimation;
@@ -115,6 +112,16 @@ public class BasicAtomAnimationBuilder implements IAtomAnimationBuilder {
 				}
 			}
 		}
+	}
+
+	public Set<String> getModelObjsUsed() {
+		Set<String> toReturn = new HashSet<String>();
+		for (DagNode dagNode : renderNodes) {
+			if (!dagNode.modelName.endsWith("_pivot")) {
+				toReturn.add(dagNode.modelName);
+			}
+		}
+		return toReturn;
 	}
 	
 	class AnimationDataNode {

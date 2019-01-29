@@ -120,91 +120,34 @@ public class ClientProxyControl extends CommonProxyControl {
     public void preInit(FMLStateEvent event) {
         OBJLoader.INSTANCE.addDomain(ValkyrienWarfareControl.INSTANCE.getModID().toLowerCase());
 
-        registerEngineGibs("engine_geo");
-        registerEngineGibs("engineconnectionrod_geo");
-        registerEngineGibs("enginepiston_geo");
-        registerEngineGibs("enginegaugehand1_geo");
-        registerEngineGibs("enginegaugehand2_geo");
-        registerEngineGibs("enginemaincog_geo");
-        registerEngineGibs("enginepiston_geo");
-        registerEngineGibs("enginepowercog_geo");
-        registerEngineGibs("enginevalvewheel_geo");
-        
-        registerControlGibs("liftcontrol_geo");
-        registerControlGibs("liftcontrol_light_geo");
-        registerControlGibs("liftcontrolglass_geo");
-        registerControlGibs("liftcontrolgrate_geo");
-        registerControlGibs("liftcontrolhandle_geo");
-        registerControlGibs("liftcontrolhandle_pivot_geo");
-        
         registerControlGibs("chadburn_dial_simplevoxel_geo");
         registerControlGibs("chadburn_glass_simplevoxel_geo");
         registerControlGibs("chadburn_handles_simplevoxel_geo");
         registerControlGibs("chadburn_speedtelegraph_simplevoxel_geo");
-        
+
         registerControlGibs("shiphelmbase");
         registerControlGibs("shiphelmdial");
         registerControlGibs("shiphelmdialglass");
         registerControlGibs("shiphelmwheel");
-        
-        registerGearboxGibs("gear1_geo");
-        registerGearboxGibs("gear2_geo");
-        registerGearboxGibs("gear3_geo");
-        registerGearboxGibs("gear4_geo");
-        registerGearboxGibs("gearbox_geo");
-        
-        registerPocketwatchGibs("pocketwatch_geo");
-        registerPocketwatchGibs("pocketwatchbighand_geo");
-        registerPocketwatchGibs("pocketwatchlid_geo");
-        registerPocketwatchGibs("pocketwatchsmallhand_geo");
-        
-        registerTelescopeGibs("telescope_forth_geo");
-        registerTelescopeGibs("telescope_second_geo");
-        registerTelescopeGibs("telescope_third_geo");
-        registerTelescopeGibs("telescope_top_geo");
-        
-        registerRudderGibs("rudder_axel_geo");
-        registerRudderGibs("rudder_geo");
-        
         GibsAnimationRegistry.registerAnimation("ethereum_engine", new ResourceLocation("valkyrienwarfarecontrol", "models/block/multipart_engines/engine_keyframes.atom"));
-        
+
         GibsAnimationRegistry.registerAnimation("lift_control", new ResourceLocation("valkyrienwarfarecontrol", "models/block/controls/liftcontrol_keyframes.atom"));
-        
+
         GibsAnimationRegistry.registerAnimation("gearbox", new ResourceLocation("valkyrienwarfarecontrol", "models/block/gearbox/gearbox_keyframes.atom"));
-    
+
         GibsAnimationRegistry.registerAnimation("pocketwatch_body", new ResourceLocation("valkyrienwarfarecontrol", "models/block/pocketwatch/pocketwatch_keyframes.atom"));
-        
+
         GibsAnimationRegistry.registerAnimation("pocketwatch_lid", new ResourceLocation("valkyrienwarfarecontrol", "models/block/pocketwatch/pocketwatchlid_keyframes.atom"));
-    
+
         GibsAnimationRegistry.registerAnimation("telescope", new ResourceLocation("valkyrienwarfarecontrol", "models/block/telescope/telescope_keyframes.atom"));
-        
+
         GibsAnimationRegistry.registerAnimation("steering_rudder", new ResourceLocation("valkyrienwarfarecontrol", "models/block/steering_rudder/rudder_animation.atom"));
     }
-    
-    private void registerRudderGibs(String name) {
-    	GibsModelRegistry.registerGibsModel(name, new ResourceLocation("valkyrienwarfarecontrol", "block/steering_rudder/" + name + ".obj"));
-    }
-    
-    private void registerEngineGibs(String name) {
-    	GibsModelRegistry.registerGibsModel(name, new ResourceLocation("valkyrienwarfarecontrol", "block/multipart_engines/" + name + ".obj"));
-    }
-    
+
     private void registerControlGibs(String name) {
     	GibsModelRegistry.registerGibsModel(name, new ResourceLocation("valkyrienwarfarecontrol", "block/controls/" + name + ".obj"));
     }
 
-    private void registerGearboxGibs(String name) {
-    	GibsModelRegistry.registerGibsModel(name, new ResourceLocation("valkyrienwarfarecontrol", "block/gearbox/" + name + ".obj"));
-    }
-    
-    private void registerPocketwatchGibs(String name) {
-    	GibsModelRegistry.registerGibsModel(name, new ResourceLocation("valkyrienwarfarecontrol", "block/pocketwatch/" + name + ".obj"));
-    }
-    
-    private void registerTelescopeGibs(String name) {
-    	GibsModelRegistry.registerGibsModel(name, new ResourceLocation("valkyrienwarfarecontrol", "block/telescope/" + name + ".obj"));
-    }
-    
     @Override
     public void init(FMLStateEvent event) {
     	MinecraftForge.EVENT_BUS.register(new ControlEventsClient());

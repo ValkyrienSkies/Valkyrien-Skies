@@ -56,4 +56,10 @@ public class VectorImmutable {
 	public static VectorImmutable readFromByteBuf(ByteBuf bufToRead) {
 		return new VectorImmutable(bufToRead.readDouble(), bufToRead.readDouble(), bufToRead.readDouble());
 	}
+
+	@Override
+	public String toString() {
+		String coords = new String("<" + x + ", " + y + ", " + z + ">");
+		return coords;
+	}
 }

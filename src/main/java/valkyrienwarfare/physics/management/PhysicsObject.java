@@ -327,7 +327,7 @@ public class PhysicsObject implements ISubspaceProvider {
         }
 
         setShipTransformationManager(new ShipTransformationManager(this));
-        getPhysicsProcessor().processInitialPhysicsData();
+        getPhysicsProcessor().recalculateShipInertia();
         getPhysicsProcessor().updateParentCenterOfMass();
 
         getShipTransformationManager().updateAllTransforms(false, false);
@@ -465,7 +465,7 @@ public class PhysicsObject implements ISubspaceProvider {
         }
 
         setShipTransformationManager(new ShipTransformationManager(this));
-        getPhysicsProcessor().processInitialPhysicsData();
+        getPhysicsProcessor().recalculateShipInertia();
         getPhysicsProcessor().updateParentCenterOfMass();
     }
 

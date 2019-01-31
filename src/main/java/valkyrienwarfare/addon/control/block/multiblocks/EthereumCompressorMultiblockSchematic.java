@@ -14,6 +14,7 @@ public class EthereumCompressorMultiblockSchematic implements IMulitblockSchemat
 
 	private final List<BlockPosBlockPair> structureRelativeToCenter;
 	private String schematicID;
+	private EnumMultiblockRotation multiblockRotation;
 	
 	public EthereumCompressorMultiblockSchematic() {
 		this.structureRelativeToCenter = new ArrayList<BlockPosBlockPair>();
@@ -74,10 +75,15 @@ public class EthereumCompressorMultiblockSchematic implements IMulitblockSchemat
 			}
 			varient.structureRelativeToCenter.clear();
 			varient.structureRelativeToCenter.addAll(rotatedPairs);
+			varient.multiblockRotation = potentialRotation;
 			varients.add(varient);
 		}
-		// TODO Auto-generated method stub
 		return varients;
+	}
+
+	@Override
+	public EnumMultiblockRotation getMultiblockRotation() {
+		return multiblockRotation;
 	}
 
 }

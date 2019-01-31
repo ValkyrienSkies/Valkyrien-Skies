@@ -66,6 +66,7 @@ public class GibsModelRegistry {
 				IBakedModel bakedModel = model.bake(model.getDefaultState(), DefaultVertexFormats.ITEM, ModelLoader.defaultTextureGetter());
 				NAMES_TO_BAKED_MODELS.put(name, bakedModel);
 			} catch(Exception e) {
+				System.err.println("No model found for: " + name);
 				e.printStackTrace();
 				throw new IllegalStateException();
 			}

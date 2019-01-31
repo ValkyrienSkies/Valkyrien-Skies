@@ -310,19 +310,11 @@ public class WorldPhysicsCollider {
 			toCollideWith = collider.collisions[collider.minDistanceIndex];
 		}
 
-		// NestedBoolean didBlockBreakInShip = new NestedBoolean(false);
-		// NestedBoolean didBlockBreakInWorld = new NestedBoolean(false);
-
 		Vector positionInBody = collider.entity.getCenter();
 		positionInBody.subtract(parent.getWrapperEntity().posX, parent.getWrapperEntity().posY,
 				parent.getWrapperEntity().posZ);
 
-		Vector velocityAtPoint = calculator.getVelocityAtPoint(positionInBody);
-
 		double impulseApplied = 1D;
-		// BlockRammingManager.processBlockRamming(parent.wrapper, collisionSpeed,
-		// inLocalState, inWorldState, inLocalPos, inWorldPos, didBlockBreakInShip,
-		// didBlockBreakInWorld);
 
 		Vector[] collisionPoints = PolygonCollisionPointFinder.getPointsOfCollisionForPolygons(toCollideWith);
 

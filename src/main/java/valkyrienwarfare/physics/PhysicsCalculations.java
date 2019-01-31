@@ -52,9 +52,6 @@ import valkyrienwarfare.util.PhysicsSettings;
 
 public class PhysicsCalculations {
 
-    // TODO: Kill this constant
-	@Deprecated
-    public static final double PHYSICS_SPEEDUP_FACTOR = 1.0D;
     public static final double DRAG_CONSTANT = .99D;
     public static final double INERTIA_OFFSET = .4D;
     public static final double EPSILON = .00000001;
@@ -64,10 +61,6 @@ public class PhysicsCalculations {
     private final PhysicsParticleManager particleManager;
     // CopyOnWrite to provide concurrency between threads.
     private final Set<BlockPos> activeForcePositions;
-    public Vector gameTickCenterOfMass;
-    public Vector linearMomentum;
-    public Vector angularVelocity;
-    public boolean actAsArchimedes = false;
     private Vector physCenterOfMass;
     private Vector torque;
     private double gameTickMass;
@@ -80,6 +73,11 @@ public class PhysicsCalculations {
     private double[] physInvMOITensor;
     private double physRoll, physPitch, physYaw;
     private double physX, physY, physZ;
+
+    public Vector gameTickCenterOfMass;
+    public Vector linearMomentum;
+    public Vector angularVelocity;
+    public boolean actAsArchimedes = false;
 
     public PhysicsCalculations(PhysicsObject toProcess) {
         parent = toProcess;
@@ -218,10 +216,10 @@ public class PhysicsCalculations {
 				// This wasn't implemented very well at all! Maybe in the future I'll try again.
 				// enforceStaticFriction();
 				if (PhysicsSettings.doAirshipRotation) {
-					applyAngularVelocity();
+					integrateAngularVelocity();
 				}
 				if (PhysicsSettings.doAirshipMovement) {
-					applyLinearVelocity();
+					integrateLinearVelocity();
 				}
 			}
 		} else {
@@ -274,7 +272,6 @@ public class PhysicsCalculations {
         Vector parentCM = getParent().getCenterCoord();
         if (!getParent().getCenterCoord().equals(gameTickCenterOfMass)) {
             Vector CMDif = gameTickCenterOfMass.getSubtraction(parentCM);
-            // RotationMatrices.doRotationOnly(parent.coordTransform.lToWTransform, CMDif);
 
             getParent().getShipTransformationManager().getCurrentPhysicsTransform().rotate(CMDif, TransformType.SUBSPACE_TO_GLOBAL);
             getParent().getWrapperEntity().posX -= CMDif.X;
@@ -282,7 +279,6 @@ public class PhysicsCalculations {
             getParent().getWrapperEntity().posZ -= CMDif.Z;
 
             getParent().getCenterCoord().setValue(gameTickCenterOfMass);
-            // parent.coordTransform.updateAllTransforms(false, false);
         }
     }
 
@@ -293,7 +289,6 @@ public class PhysicsCalculations {
     private void updatePhysCenterOfMass() {
         if (!physCenterOfMass.equals(gameTickCenterOfMass)) {
             Vector CMDif = physCenterOfMass.getSubtraction(gameTickCenterOfMass);
-            // RotationMatrices.doRotationOnly(parent.coordTransform.lToWTransform, CMDif);
 
             getParent().getShipTransformationManager().getCurrentPhysicsTransform().rotate(CMDif, TransformType.SUBSPACE_TO_GLOBAL);
             physX += CMDif.X;
@@ -307,7 +302,7 @@ public class PhysicsCalculations {
     /**
      * Generates the rotated moment of inertia tensor with the body; uses the
      * following formula: I' = R * I * R-transpose; where I' is the rotated inertia,
-     * I is unrotated interim, and R is the rotation matrix.
+     * I is un-rotated interim, and R is the rotation matrix.
      */
     private void calculateFramedMOITensor() {
         double[] framedMOI = RotationMatrices.getZeroMatrix(3);
@@ -390,11 +385,6 @@ public class PhysicsCalculations {
 							addForceAtPoint(inBodyWO, blockForce, crossVector);
 							// Add particles here.
 							if (IBlockForceProvider.class.cast(blockAt).doesForceSpawnParticles()) {
-								// Dumb hack because addForceAtPoint changes the value of blockForce. Will be
-								// removed soon.
-								blockForce.multiply(1 / PHYSICS_SPEEDUP_FACTOR);
-								// Dumb hack end.
-
 								Vector particlePos;
 								if (otherPosition != null) {
 									particlePos = new Vector(otherPosition);
@@ -477,13 +467,11 @@ public class PhysicsCalculations {
     }
 
     public void addForceAtPoint(Vector inBodyWO, Vector forceToApply) {
-        forceToApply.multiply(PHYSICS_SPEEDUP_FACTOR);
         torque.add(inBodyWO.cross(forceToApply));
         linearMomentum.add(forceToApply);
     }
 
     public void addForceAtPoint(Vector inBodyWO, Vector forceToApply, Vector crossVector) {
-        forceToApply.multiply(PHYSICS_SPEEDUP_FACTOR);
         crossVector.setCross(inBodyWO, forceToApply);
         torque.add(crossVector);
         linearMomentum.add(forceToApply);
@@ -493,7 +481,10 @@ public class PhysicsCalculations {
         physTickTimeDelta = newPhysSpeed;
     }
 
-    public void applyAngularVelocity() {
+    /**
+     * Only run ONCE per phys tick!
+     */
+    private void integrateAngularVelocity() {
         ShipTransformationManager coordTrans = getParent().getShipTransformationManager();
         
         double[] rotationChange = RotationMatrices.getRotationMatrix(angularVelocity.X, angularVelocity.Y,
@@ -503,12 +494,16 @@ public class PhysicsCalculations {
 
         double[] radians = finalTransform.toRadians();
 
+        // Update the pitch/yaw/roll angles for the physics object
         physPitch = Double.isNaN(radians[0]) ? 0.0f : (float) Math.toDegrees(radians[0]);
         physYaw = Double.isNaN(radians[1]) ? 0.0f : (float) Math.toDegrees(radians[1]);
         physRoll = Double.isNaN(radians[2]) ? 0.0f : (float) Math.toDegrees(radians[2]);
     }
 
-    public void applyLinearVelocity() {
+    /**
+     * Only run ONCE per phys tick!
+     */
+    private void integrateLinearVelocity() {
         double momentMod = getPhysicsTimeDeltaPerPhysTick() * getInvMass();
 
         physX += (linearMomentum.X * momentMod);
@@ -524,14 +519,6 @@ public class PhysicsCalculations {
         speed.Y += (linearMomentum.Y * invMass);
         speed.Z += (linearMomentum.Z * invMass);
         return speed;
-    }
-
-    public void setVectorToVelocityAtPoint(Vector inBodyWO, Vector toSet) {
-        toSet.setCross(angularVelocity, inBodyWO);
-        double invMass = getInvMass();
-        toSet.X += (linearMomentum.X * invMass);
-        toSet.Y += (linearMomentum.Y * invMass);
-        toSet.Z += (linearMomentum.Z * invMass);
     }
 
     public void writeToNBTTag(NBTTagCompound compound) {
@@ -556,7 +543,7 @@ public class PhysicsCalculations {
 
     // Called upon a Ship being created from the World, and generates the physics
     // data for it
-    public void processInitialPhysicsData() {
+    public void recalculateShipInertia() {
         IBlockState air = Blocks.AIR.getDefaultState();
         for (BlockPos pos : getParent().getBlockPositions()) {
             onSetBlockState(air, getParent().getShipChunks().getBlockState(pos), pos);

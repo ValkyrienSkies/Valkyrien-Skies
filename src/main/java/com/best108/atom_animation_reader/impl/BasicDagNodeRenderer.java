@@ -32,6 +32,8 @@ public class BasicDagNodeRenderer {
 			transformations.get(i).transform(keyframe);
 			GlStateManager.translate(-customPivot.X, -customPivot.Y, -customPivot.Z);
 		}
+//		Vector customPivot = pivot.createMutibleVectorCopy();
+//		GlStateManager.translate(-customPivot.X, -customPivot.Y, -customPivot.Z);
 		modelRenderer.renderModel(modelName, brightness);
 	}
 	

@@ -26,8 +26,7 @@ public class BasicAtomAnimationBuilder implements IAtomAnimationBuilder {
 		for (AtomParserElement dagNodesParsed : parser.head.branches) {
 			renderNodes.add(new DagNode(dagNodesParsed));
 		}
-		
-		// Print shit
+
 		for (DagNode dagNode : renderNodes) {
 			// System.out.println(dagNode.modelName);
 			for (AnimationDataNode animationNode : dagNode.animationNodes) {

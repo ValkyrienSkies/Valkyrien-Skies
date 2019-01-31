@@ -11,6 +11,8 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 public class TileEntityEthereumCompressorPart extends TileEntityMultiblockPartForce implements IEtherEngine {
 
 	private static final VectorImmutable FORCE_NORMAL = new VectorImmutable(0, 1, 0);
+	private double prevKeyframe;
+	private double currentKeyframe;
 
 	public TileEntityEthereumCompressorPart() {
 		super();
@@ -19,8 +21,18 @@ public class TileEntityEthereumCompressorPart extends TileEntityMultiblockPartFo
 	public TileEntityEthereumCompressorPart(double maxThrust) {
 		this();
 		this.setMaxThrust(maxThrust);
+		this.prevKeyframe = 0;
+		this.currentKeyframe = 0;
 	}
-	
+
+	@Override
+	public void update() {
+		super.update();
+		prevKeyframe = currentKeyframe;
+		currentKeyframe += 2.5;
+		currentKeyframe = currentKeyframe % 99;
+	}
+
 	@Override
 	public VectorImmutable getForceOutputNormal(double secondsToApply, PhysicsObject object) {
 		return FORCE_NORMAL;
@@ -56,6 +68,14 @@ public class TileEntityEthereumCompressorPart extends TileEntityMultiblockPartFo
 		} else {
 			return 1;
 		}
+	}
+
+	public double getCurrentKeyframe(double partialTick) {
+		double increment = currentKeyframe - prevKeyframe;
+		if (increment < 0) {
+			increment = (increment % 99) + 99;
+		}
+		return prevKeyframe + (increment * partialTick) + 1;
 	}
 
 }

@@ -43,11 +43,20 @@ public class GibsAnimationRegistry {
 			}
 
 			for (String modelName : modelsUsed) {
+				String modelFullPath = modelResourceFolder + modelName;
 				ResourceLocation modelToRegister = new ResourceLocation(resourceDomainName, modelResourceFolder + modelName + ".obj");
-				System.out.println(modelToRegister);
-				GibsModelRegistry.registerGibsModel(modelName, modelToRegister);
+				GibsModelRegistry.registerGibsModel(modelFullPath, modelToRegister);
 			}
-			ANIMATION_MAP.put(name, animationBuilder.build(MODEL_RENDERER));
+
+			final String modelResourceFolderFinal = modelResourceFolder;
+			ANIMATION_MAP.put(name, animationBuilder.build(new IModelRenderer() {
+				String modelPath = modelResourceFolderFinal;
+
+				@Override
+				public void renderModel(String modelName, int renderBrightness) {
+					GibsModelRegistry.renderGibsModel(modelResourceFolderFinal + modelName, renderBrightness);
+				}
+			}));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

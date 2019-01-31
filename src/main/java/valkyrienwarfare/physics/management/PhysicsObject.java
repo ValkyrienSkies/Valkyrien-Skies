@@ -97,6 +97,7 @@ import valkyrienwarfare.util.NBTUtils;
 public class PhysicsObject implements ISubspaceProvider {
 
 	public static final int MIN_TICKS_EXISTED_BEFORE_PHYSICS = 5;
+
 	private final PhysicsWrapperEntity wrapper;
     private final List<EntityPlayerMP> watchingPlayers;
     private PhysObjectRenderManager shipRenderer;

@@ -29,7 +29,7 @@ public class TileEntityEthereumCompressorPart extends TileEntityMultiblockPartFo
 	public void update() {
 		super.update();
 		prevKeyframe = currentKeyframe;
-		currentKeyframe += 2.5;
+		currentKeyframe += 1.2;
 		currentKeyframe = currentKeyframe % 99;
 	}
 

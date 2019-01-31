@@ -65,16 +65,6 @@ public class VWMath {
         return minMax;
     }
 
-    public static double limitToRange(double input, double minimum, double maximum) {
-        return Math.max(Math.min(maximum, input), minimum);
-    }
-
-    public static Vector getBodyPosWithOrientation(BlockPos pos, Vector centerOfMass, double[] rotationTransform) {
-        final Vector inBody = new Vector(pos.getX() + .5D - centerOfMass.X, pos.getY() + .5D - centerOfMass.Y, pos.getZ() + .5D - centerOfMass.Z);
-        RotationMatrices.doRotationOnly(rotationTransform, inBody);
-        return inBody;
-    }
-
     public static void getBodyPosWithOrientation(BlockPos pos, Vector centerOfMass, double[] rotationTransform, Vector inBody) {
         inBody.X = pos.getX() + .5D - centerOfMass.X;
         inBody.Y = pos.getY() + .5D - centerOfMass.Y;
@@ -129,7 +119,7 @@ public class VWMath {
         }
     }
 
-    public static AxisAlignedBB getFusedBoundingBox(AxisAlignedBB bb1, AxisAlignedBB bb2) {
+    private static AxisAlignedBB getFusedBoundingBox(AxisAlignedBB bb1, AxisAlignedBB bb2) {
         double mnX = bb1.minX;
         double mnY = bb1.minY;
         double mnZ = bb1.minZ;
@@ -157,43 +147,43 @@ public class VWMath {
         return new AxisAlignedBB(mnX, mnY, mnZ, mxX, mxY, mxZ);
     }
 
-    public static boolean connected(AxisAlignedBB bb1, AxisAlignedBB bb2) {
+    private static boolean connected(AxisAlignedBB bb1, AxisAlignedBB bb2) {
         return (connectedInX(bb1, bb2) || connectedInY(bb1, bb2) || connectedInZ(bb1, bb2));
     }
 
-    public static boolean connectedInX(AxisAlignedBB bb1, AxisAlignedBB bb2) {
+    private static boolean connectedInX(AxisAlignedBB bb1, AxisAlignedBB bb2) {
         return (intersectInX(bb1, bb2)) && (areXAligned(bb1, bb2));
     }
 
-    public static boolean connectedInY(AxisAlignedBB bb1, AxisAlignedBB bb2) {
+    private static boolean connectedInY(AxisAlignedBB bb1, AxisAlignedBB bb2) {
         return (intersectInY(bb1, bb2)) && (areYAligned(bb1, bb2));
     }
 
-    public static boolean connectedInZ(AxisAlignedBB bb1, AxisAlignedBB bb2) {
+    private static boolean connectedInZ(AxisAlignedBB bb1, AxisAlignedBB bb2) {
         return (intersectInZ(bb1, bb2)) && (areZAligned(bb1, bb2));
     }
 
-    public static boolean intersectInX(AxisAlignedBB bb1, AxisAlignedBB bb2) {
+    private static boolean intersectInX(AxisAlignedBB bb1, AxisAlignedBB bb2) {
         return ((bb1.maxX >= bb2.minX) && (bb1.maxX < bb2.maxX)) || ((bb1.minX > bb2.minX) && (bb1.minX <= bb2.maxX));
     }
 
-    public static boolean intersectInY(AxisAlignedBB bb1, AxisAlignedBB bb2) {
+    private static boolean intersectInY(AxisAlignedBB bb1, AxisAlignedBB bb2) {
         return ((bb1.maxY >= bb2.minY) && (bb1.maxY < bb2.maxY)) || ((bb1.minY > bb2.minY) && (bb1.minY <= bb2.maxY));
     }
 
-    public static boolean intersectInZ(AxisAlignedBB bb1, AxisAlignedBB bb2) {
+    private static boolean intersectInZ(AxisAlignedBB bb1, AxisAlignedBB bb2) {
         return ((bb1.maxZ >= bb2.minZ) && (bb1.maxZ < bb2.maxZ)) || ((bb1.minZ > bb2.minZ) && (bb1.minZ <= bb2.maxZ));
     }
 
-    public static boolean areXAligned(AxisAlignedBB bb1, AxisAlignedBB bb2) {
+    private static boolean areXAligned(AxisAlignedBB bb1, AxisAlignedBB bb2) {
         return (bb1.minY == bb2.minY) && (bb1.minZ == bb2.minZ) && (bb1.maxY == bb2.maxY) && (bb1.maxZ == bb2.maxZ);
     }
 
-    public static boolean areYAligned(AxisAlignedBB bb1, AxisAlignedBB bb2) {
+    private static boolean areYAligned(AxisAlignedBB bb1, AxisAlignedBB bb2) {
         return (bb1.minX == bb2.minX) && (bb1.minZ == bb2.minZ) && (bb1.maxX == bb2.maxX) && (bb1.maxZ == bb2.maxZ);
     }
 
-    public static boolean areZAligned(AxisAlignedBB bb1, AxisAlignedBB bb2) {
+    private static boolean areZAligned(AxisAlignedBB bb1, AxisAlignedBB bb2) {
         return (bb1.minX == bb2.minX) && (bb1.minY == bb2.minY) && (bb1.maxX == bb2.maxX) && (bb1.maxY == bb2.maxY);
     }
 

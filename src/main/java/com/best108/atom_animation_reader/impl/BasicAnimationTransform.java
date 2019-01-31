@@ -25,11 +25,9 @@ public class BasicAnimationTransform {
 			break;
 		case "translateY":
 			GlStateManager.translate(0, value, 0);
-			// netTranslation.Y += value;
 			break;
 		case "translateZ":
 			GlStateManager.translate(0, 0, value);
-			// netTranslation.Z += value;
 			break;
 		case "rotateX":
 			GlStateManager.rotate(value, 1, 0, 0);

@@ -77,7 +77,7 @@ public class PhysicsCalculations {
     public Vector gameTickCenterOfMass;
     public Vector linearMomentum;
     public Vector angularVelocity;
-    public boolean actAsArchimedes = false;
+    public boolean actAsArchimedes;
 
     public PhysicsCalculations(PhysicsObject toProcess) {
         parent = toProcess;
@@ -93,6 +93,7 @@ public class PhysicsCalculations {
         physCenterOfMass = new Vector();
         angularVelocity = new Vector();
         torque = new Vector();
+        actAsArchimedes = false;
         // We need thread safe access to this.
         activeForcePositions = ConcurrentHashMap.newKeySet();
     }
@@ -236,9 +237,6 @@ public class PhysicsCalculations {
 		getParent().getShipTransformationManager().setCurrentPhysicsTransform(finalPhysTransform);
 
 		updatePhysCenterOfMass();
-		// Moved out to VW Thread. Code run in this class should have no direct effect
-		// on the physics object.
-		// parent.coordTransform.updateAllTransforms(true, true);
 	}
 
     // If the ship is moving at these speeds, its likely something in the physics
@@ -251,21 +249,6 @@ public class PhysicsCalculations {
         return false;
     }
     
-    /**
-     * This method will set the linear and angular velocities to zero if both are too small.
-     */
-    private void enforceStaticFriction() {
-        if (angularVelocity.lengthSq() < .001) {
-        	double linearSpeedSq = linearMomentum.lengthSq() * this.getInvMass() * this.getInvMass();
-        	if (linearSpeedSq < .05) {
-        		angularVelocity.zero();
-        		if (linearSpeedSq < .0001) {
-        			linearMomentum.zero();
-        		}
-        	}
-        }
-    }
-
     // The x/y/z variables need to be updated when the centerOfMass location
     // changes.
     public void updateParentCenterOfMass() {

@@ -21,6 +21,7 @@ public class WorldShipManager {
 
     public void initialize(World world) {
         this.world = world;
+        System.out.println("INITIALIZATION SUCCESS!");
     }
 
 }

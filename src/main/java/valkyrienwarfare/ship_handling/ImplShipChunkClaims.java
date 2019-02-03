@@ -1,15 +1,33 @@
 package valkyrienwarfare.ship_handling;
 
+import net.minecraft.server.management.PlayerChunkMap;
+import net.minecraft.server.management.PlayerChunkMapEntry;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
+import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.gen.ChunkProviderServer;
 
 import java.util.*;
 
 public class ImplShipChunkClaims implements IShipChunkClaims {
 
     private final Set<ChunkPos> claimedPositions;
+    private transient Map<Long, Chunk> loadedChunksMap;
+    private transient WorldShipManager worldShipManager;
+    private transient ShipHolder shipHolder;
 
     protected ImplShipChunkClaims() {
         this.claimedPositions = new TreeSet<>();
+    }
+
+    public void initializeTransients(WorldShipManager worldShipManager, ShipHolder shipHolder) {
+        if (loadedChunksMap != null || worldShipManager != null || shipHolder != null) {
+            throw new IllegalStateException();
+        }
+        loadedChunksMap = new HashMap<>();
+        this.worldShipManager = worldShipManager;
+        this.shipHolder = shipHolder;
     }
 
     @Override
@@ -28,7 +46,54 @@ public class ImplShipChunkClaims implements IShipChunkClaims {
     }
 
     @Override
+    public boolean loadAllChunkClaims() {
+        for (ChunkPos chunkPos : claimedPositions) {
+            Chunk chunk = getWorldObj().getChunkFromChunkCoords(chunkPos.x, chunkPos.z);
+            if (chunk == null) {
+                System.out.println("Just a loaded a null chunk");
+                chunk = new Chunk(getWorldObj(), chunkPos.x, chunkPos.z);
+            }
+            injectChunkIntoWorld(chunkPos.x, chunkPos.z, chunk);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean areChunkClaimsFullyLoaded() {
+        // TODO: This is a terrible way of checking, must be replaced eventually.
+        return loadedChunksMap.keySet().size() == claimedPositions.size();
+    }
+
+    @Override
     public boolean claimPos(ChunkPos pos) {
         return claimedPositions.add(pos);
+    }
+
+    private void injectChunkIntoWorld(int x, int z, Chunk chunk) {
+        ChunkProviderServer provider = (ChunkProviderServer) this.getWorldObj().getChunkProvider();
+        chunk.dirty = true;
+        // claimedChunks[x - getOwnedChunks().getMinX()][z - getOwnedChunks().getMinZ()] = chunk;
+        loadedChunksMap.put(ChunkPos.asLong(x, z), chunk);
+
+        provider.id2ChunkMap.put(ChunkPos.asLong(x, z), chunk);
+
+        chunk.onLoad();
+
+        PlayerChunkMap map = ((WorldServer) this.getWorldObj()).getPlayerChunkMap();
+
+        PlayerChunkMapEntry entry = new PlayerChunkMapEntry(map, x, z);
+
+        long i = PlayerChunkMap.getIndex(x, z);
+        // TODO: In future we need to do better to account for concurrency.
+        map.entryMap.put(i, entry);
+        map.entries.add(entry);
+
+        entry.sentToPlayers = true;
+        // TODO: In future we need to do better to account for concurrency.
+        entry.players = Collections.unmodifiableList(shipHolder.getWatchingPlayers());
+    }
+
+    private World getWorldObj() {
+        return worldShipManager.getWorld();
     }
 }

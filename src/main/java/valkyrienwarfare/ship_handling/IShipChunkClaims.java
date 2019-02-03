@@ -13,4 +13,10 @@ public interface IShipChunkClaims {
     boolean claimPos(ChunkPos pos);
 
     boolean removeClaim(ChunkPos pos);
+
+    boolean loadAllChunkClaims();
+
+    boolean areChunkClaimsFullyLoaded();
+
+    void initializeTransients(WorldShipManager worldShipManager, ShipHolder shipHolder);
 }

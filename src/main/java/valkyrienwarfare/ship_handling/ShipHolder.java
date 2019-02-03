@@ -1,6 +1,10 @@
 package valkyrienwarfare.ship_handling;
 
+import net.minecraft.entity.player.EntityPlayerMP;
 import valkyrienwarfare.physics.management.PhysicsObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ShipHolder {
 
@@ -10,19 +14,50 @@ public class ShipHolder {
     private double shipPosZ;
     private IShipChunkClaims shipChunkClaims;
     private transient PhysicsObject ship;
-    private boolean isActive;
+    private transient List<EntityPlayerMP> watchingPlayers = new ArrayList<>();
+    private transient boolean isActive = false;
+    private transient WorldShipManager worldShipManager;
 
-    protected ShipHolder() {
+    protected void initializeTransients(WorldShipManager worldShipManager) {
+        this.worldShipManager = worldShipManager;
+        shipChunkClaims.initializeTransients(worldShipManager, this);
     }
 
     protected boolean markShipAsActive() {
-        if (ship == null) {
-            return false;
+        // If the chunks aren't yet loaded, tell the game to load them
+        if (!this.shipChunkClaims.areChunkClaimsFullyLoaded()) {
+            this.shipChunkClaims.loadAllChunkClaims();
+        } else {
+            // If the chunks are completely loaded, then we shall generate the PhysicsObject.
+            // ship = new PhysicsObject(this);
+            this.isActive = true;
         }
-        return true;
+        return this.shipChunkClaims.areChunkClaimsFullyLoaded();
     }
 
-    protected boolean markShipAsInactive() {
-        return true;
+    protected void markShipAsInactive() {
+        // TODO: Implement chunk unloading
+        this.isActive = false;
     }
+
+    protected boolean isActive() {
+        return isActive;
+    }
+
+    protected double getShipPosX() {
+        return shipPosX;
+    }
+
+    protected double getShipPosZ() {
+        return shipPosZ;
+    }
+
+    protected PhysicsObject getShip() {
+        return ship;
+    }
+
+    protected List<EntityPlayerMP> getWatchingPlayers() {
+        return watchingPlayers;
+    }
+
 }

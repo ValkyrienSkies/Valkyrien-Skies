@@ -21,7 +21,12 @@ public class MixinWorldServer implements IHasShipManager {
         // } else {
         manager = new WorldShipManager();
         // }
-        manager.initialize(World.class.cast(this));
+        manager.initializeTransients(World.class.cast(this));
+    }
+
+    @Inject(method = "tick", at = @At("RETURN"))
+    private void onTickPost(CallbackInfo callbackInfo) {
+        manager.tick();
     }
 
     @Override

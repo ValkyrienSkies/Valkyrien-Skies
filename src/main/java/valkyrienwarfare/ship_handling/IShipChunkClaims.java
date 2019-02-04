@@ -18,5 +18,5 @@ public interface IShipChunkClaims {
 
     boolean areChunkClaimsFullyLoaded();
 
-    void initializeTransients(WorldShipManager worldShipManager, ShipHolder shipHolder);
+    void initializeTransients(IWorldShipManager worldShipManager, ShipHolder shipHolder);
 }

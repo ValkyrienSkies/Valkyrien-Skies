@@ -7,19 +7,19 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import valkyrienwarfare.ship_handling.IHasShipManager;
-import valkyrienwarfare.ship_handling.WorldShipManager;
+import valkyrienwarfare.ship_handling.WorldServerShipManager;
 
 @Mixin(value = WorldServer.class)
 public class MixinWorldServer implements IHasShipManager {
 
-    private WorldShipManager manager = null;
+    private WorldServerShipManager manager = null;
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void onConstructorFinished(CallbackInfo callbackInfo) {
         // if (PorkDB.contains(worldid) {
         // manager = PorkDB.load(worldid)
         // } else {
-        manager = new WorldShipManager();
+        manager = new WorldServerShipManager();
         // }
         manager.initializeTransients(World.class.cast(this));
     }
@@ -30,7 +30,7 @@ public class MixinWorldServer implements IHasShipManager {
     }
 
     @Override
-    public WorldShipManager getManager() {
+    public WorldServerShipManager getManager() {
         return manager;
     }
 }

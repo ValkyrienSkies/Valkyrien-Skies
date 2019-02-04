@@ -29,16 +29,27 @@ import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.ship_handling.IHasShipManager;
+import valkyrienwarfare.ship_handling.WorldClientShipManager;
+import valkyrienwarfare.ship_handling.WorldServerShipManager;
 
 import java.util.List;
 
 @Mixin(World.class)
-public abstract class MixinWorldClient {
+public abstract class MixinWorldClient implements IHasShipManager {
+
+    private final WorldClientShipManager manager = new WorldClientShipManager(World.class.cast(this));
+
+    @Inject(method = "tick", at = @At("RETURN"))
+    private void onTickPost(CallbackInfo callbackInfo) {
+        manager.tick();
+    }
 
     @Shadow
     public int getLightFromNeighborsFor(EnumSkyBlock type, BlockPos pos) {
@@ -132,5 +143,10 @@ public abstract class MixinWorldClient {
             }
         }
         return pos;
+    }
+
+    @Override
+    public WorldClientShipManager getManager() {
+        return manager;
     }
 }

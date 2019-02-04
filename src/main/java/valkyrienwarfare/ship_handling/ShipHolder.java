@@ -16,9 +16,9 @@ public class ShipHolder {
     private transient PhysicsObject ship;
     private transient List<EntityPlayerMP> watchingPlayers = new ArrayList<>();
     private transient boolean isActive = false;
-    private transient WorldShipManager worldShipManager;
+    private transient IWorldShipManager worldShipManager;
 
-    protected void initializeTransients(WorldShipManager worldShipManager) {
+    protected void initializeTransients(IWorldShipManager worldShipManager) {
         this.worldShipManager = worldShipManager;
         shipChunkClaims.initializeTransients(worldShipManager, this);
     }

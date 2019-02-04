@@ -26,7 +26,8 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import valkyrienwarfare.mod.multithreaded.VWThread;
-import valkyrienwarfare.mod.multithreaded.VWThreadManager;
+import valkyrienwarfare.ship_handling.IHasShipManager;
+import valkyrienwarfare.ship_handling.WorldServerShipManager;
 
 public class VWCommandHelp extends CommandBase {
 
@@ -63,7 +64,7 @@ public class VWCommandHelp extends CommandBase {
 			sender.sendMessage(new TextComponentString("To see avaliable subcommands, type /command help"));
 		} else if (args.length == 1 && args[0].equals("tps")) {
 			World world = sender.getEntityWorld();
-			VWThread worldPhysicsThread = VWThreadManager.getVWThreadForWorld(world);
+			VWThread worldPhysicsThread = ((WorldServerShipManager) IHasShipManager.class.cast(world).getManager()).getPhysicsThread();
 			if (worldPhysicsThread != null) {
 				long averagePhysTickTimeNano = worldPhysicsThread.getAveragePhysicsTickTimeNano();
 				double ticksPerSecond = 1000000000D / ((double) averagePhysTickTimeNano);

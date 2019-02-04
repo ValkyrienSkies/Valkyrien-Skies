@@ -14,14 +14,14 @@ public class ImplShipChunkClaims implements IShipChunkClaims {
 
     private final Set<ChunkPos> claimedPositions;
     private transient Map<Long, Chunk> loadedChunksMap;
-    private transient WorldShipManager worldShipManager;
+    private transient IWorldShipManager worldShipManager;
     private transient ShipHolder shipHolder;
 
     protected ImplShipChunkClaims() {
         this.claimedPositions = new TreeSet<>();
     }
 
-    public void initializeTransients(WorldShipManager worldShipManager, ShipHolder shipHolder) {
+    public void initializeTransients(IWorldShipManager worldShipManager, ShipHolder shipHolder) {
         if (loadedChunksMap != null || worldShipManager != null || shipHolder != null) {
             throw new IllegalStateException();
         }

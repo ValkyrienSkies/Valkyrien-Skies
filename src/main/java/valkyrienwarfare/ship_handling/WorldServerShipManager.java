@@ -3,16 +3,18 @@ package valkyrienwarfare.ship_handling;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.World;
+import valkyrienwarfare.mod.multithreaded.VWThread;
 
 import java.util.*;
 
-public class WorldShipManager {
+public class WorldServerShipManager implements IWorldShipManager {
 
     private transient World world;
     private IQuickShipAccess shipAccess;
     private transient Map<EntityPlayer, List<ShipHolder>> playerToWatchingShips;
+    private transient VWThread physicsThread;
 
-    public WorldShipManager() {
+    public WorldServerShipManager() {
         this.world = null;
         this.playerToWatchingShips = null;
         this.shipAccess = new SimpleQuickShipAccess();
@@ -20,11 +22,24 @@ public class WorldShipManager {
 
     public void initializeTransients(World world) {
         this.world = world;
-        this.playerToWatchingShips = new HashMap<EntityPlayer, List<ShipHolder>>();
+        this.playerToWatchingShips = new HashMap<>();
+        this.physicsThread = new VWThread(this.world);
+        this.physicsThread.start();
         System.out.println("INITIALIZATION SUCCESS!");
     }
 
+    @Override
+    public void onWorldUnload() {
+        this.physicsThread.kill();
+        // Save into PorkDB
+    }
+
     public void tick() {
+        for (ShipHolder activeShip : shipAccess.activeShips()) {
+            // activeShip.tick();
+        }
+
+
         for (EntityPlayer player : world.playerEntities) {
             if (!playerToWatchingShips.containsKey(player)) {
                 // Then the player hasn't been initialized into the system yet.
@@ -64,7 +79,11 @@ public class WorldShipManager {
         ship.getWatchingPlayers().remove(player);
     }
 
-    protected World getWorld() {
+    public World getWorld() {
         return world;
+    }
+
+    public VWThread getPhysicsThread() {
+        return this.physicsThread;
     }
 }

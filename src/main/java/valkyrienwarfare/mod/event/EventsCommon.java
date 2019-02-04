@@ -67,7 +67,6 @@ import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.math.RotationMatrices;
 import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.mod.capability.IAirshipCounterCapability;
-import valkyrienwarfare.mod.multithreaded.VWThreadManager;
 import valkyrienwarfare.mod.physmanagement.interaction.VWWorldEventListener;
 import valkyrienwarfare.physics.management.PhysicsTickHandler;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
@@ -190,10 +189,8 @@ public class EventsCommon {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onWorldLoad(WorldEvent.Load event) {
         event.getWorld().addEventListener(new VWWorldEventListener(event.getWorld()));
-        // Don't make any VW threads for client worlds
         if (!event.getWorld().isRemote) {
-        	ValkyrienWarfareMod.VW_CHUNK_MANAGER.initWorld(event.getWorld());
-            VWThreadManager.createVWThreadForWorld(event.getWorld());
+            ValkyrienWarfareMod.VW_CHUNK_MANAGER.initWorld(event.getWorld());
         }
     }
 
@@ -206,10 +203,6 @@ public class EventsCommon {
             lastPositions.clear();
         }
         ValkyrienWarfareMod.VW_PHYSICS_MANAGER.removeWorld(event.getWorld());
-        // Don't make any VW threads for client worlds
-        if (!event.getWorld().isRemote) {
-            VWThreadManager.killVWThreadForWorld(event.getWorld());
-        }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)

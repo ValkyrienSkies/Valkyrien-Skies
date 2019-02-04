@@ -30,10 +30,8 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.math.Vector;
-import valkyrienwarfare.mod.multithreaded.VWThreadManager;
 import valkyrienwarfare.util.PhysicsSettings;
 
 public class PhysSettingsCommand extends CommandBase {
@@ -179,10 +177,6 @@ public class PhysSettingsCommand extends CommandBase {
             ValkyrienWarfareMod.INSTANCE.saveConfig();
             sender.sendMessage(new TextComponentString("Saved phyisics settings"));
             return;
-        }else if (key.equals("restartcrashedphysics")) {
-        	List<World> crashedWorlds = VWThreadManager.restartCrashedPhysicsThreads();
-        	sender.sendMessage(new TextComponentString("Restart physics threads for " + crashedWorlds.size() + " worlds."));
-        	return;
         } else if (true || key.equals("help")) {
             sender.sendMessage(new TextComponentString("Avaliable physics Commands:"));
             for (String command : COMPLETED_OPTIONS) {

@@ -25,11 +25,14 @@ public class WorldServerShipManager implements IWorldShipManager {
         this.playerToWatchingShips = new HashMap<>();
         this.physicsThread = new VWThread(this.world);
         this.physicsThread.start();
-        System.out.println("INITIALIZATION SUCCESS!");
     }
 
     @Override
     public void onWorldUnload() {
+        this.world = null;
+        // Just to avoid memory leaks.
+        this.playerToWatchingShips.clear();
+        this.playerToWatchingShips = null;
         this.physicsThread.kill();
         // Save into PorkDB
     }

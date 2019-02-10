@@ -65,7 +65,7 @@ public class TileEntityShipHelm extends ImplTileEntityPilotable implements ITick
 			if (this.getPilotEntity() == null) {
 				double friction = .05D;
 				double toOriginRate = .05D;
-				if (Math.abs(wheelRotation) < toOriginRate) {
+				if (Math.abs(wheelRotation) < 1.5) {
 					wheelRotation = 0;
 				} else {
 					// wheelRotation -= math.signum(wheelRotation) * wheelRotation;

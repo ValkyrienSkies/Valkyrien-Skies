@@ -92,73 +92,88 @@ public class TileEntityRudderAxlePart extends TileEntityMultiblockPartForce {
 	 * @param angleDegrees
 	 */
 	public void attemptTorque(PhysicsObject physicsObject, VectorImmutable torqueAttemptNormal, double angleDegrees, Vector helmForwardDirecton) {
-		if (Math.abs(angleDegrees) < 1) {
-			angleDegrees = 0;
-		}
-		// This method essentially assumes the drag to be calculated with a linear vel of helmForwardDirecton and angular vel of zero.
-		if (getRudderAxleSchematic().isPresent()) {
-			Vector rudderOriginInLocal = new Vector(getPos().getX() + .5, getPos().getY() + .5, getPos().getZ() + .5);
-			Vector localTorqueAttempt = torqueAttemptNormal.createMutibleVectorCopy();
-			rudderOriginInLocal.subtract(physicsObject.getPhysicsProcessor().gameTickCenterOfMass);
-			Vec3i directionFacing = getRudderAxleFacingDirection().get().getDirectionVec();
-			Vec3i directionAxle = this.getRudderAxleAxisDirection().get().getDirectionVec();
-			double axleLength = getRudderAxleLength().get();
-			Vector facingOffset = new Vector(directionFacing.getX(), directionFacing.getY(), directionFacing.getZ());
-			Vector axleOffset = new Vector(directionAxle.getX(), directionAxle.getY(), directionAxle.getZ());
-			// Then estimate the torque output for both, and use the one that has a positive
-			// dot product to torqueAttemptNormal.
-			axleOffset.multiply(axleLength / 2D);
-			facingOffset.multiply(axleLength / 2D);
-			Vector totalOffset = axleOffset.getAddition(facingOffset);
-
-			List<Double> rudderZeroCases = new ArrayList<Double>();
-			// Add the possible cases
-			rudderZeroCases.add(0D);
-			rudderZeroCases.add(90D);
-			Map<Double, Double> zeroCasesCorrectness = new HashMap<Double, Double>();
-			for (Double possibleZeroCase : rudderZeroCases) {
-				Vector possibleTorque = calculateTorqueFromAngleAndVelocity(helmForwardDirecton,
-						new Vector(directionAxle), new Vector(totalOffset), rudderOriginInLocal, possibleZeroCase);
-				zeroCasesCorrectness.put(possibleZeroCase, possibleTorque.lengthSq());
+		if (!this.isMaster()) {
+			this.setRudderAngle(angleDegrees);
+		} else {
+			if (Math.abs(angleDegrees) < 1) {
+				angleDegrees = 0;
 			}
-			Entry<Double, Double> min = null;
-			for (Entry<Double, Double> entry : zeroCasesCorrectness.entrySet()) {
-				if (min == null || min.getValue() > entry.getValue()) {
-					min = entry;
+			// This method essentially assumes the drag to be calculated with a linear vel of helmForwardDirecton and angular vel of zero.
+			if (getRudderAxleSchematic().isPresent()) {
+				Vector rudderOriginInLocal = new Vector(getPos().getX() + .5, getPos().getY() + .5, getPos().getZ() + .5);
+				Vector localTorqueAttempt = torqueAttemptNormal.createMutibleVectorCopy();
+				rudderOriginInLocal.subtract(physicsObject.getPhysicsProcessor().gameTickCenterOfMass);
+				Vec3i directionFacing = getRudderAxleFacingDirection().get().getDirectionVec();
+				Vec3i directionAxle = this.getRudderAxleAxisDirection().get().getDirectionVec();
+				double axleLength = getRudderAxleLength().get();
+				Vector facingOffset = new Vector(directionFacing.getX(), directionFacing.getY(), directionFacing.getZ());
+				Vector axleOffset = new Vector(directionAxle.getX(), directionAxle.getY(), directionAxle.getZ());
+				// Then estimate the torque output for both, and use the one that has a positive
+				// dot product to torqueAttemptNormal.
+				axleOffset.multiply(axleLength / 2D);
+				facingOffset.multiply(axleLength / 2D);
+				Vector totalOffset = axleOffset.getAddition(facingOffset);
+
+				List<Double> rudderZeroCases = new ArrayList<Double>();
+				// Add the possible cases
+				rudderZeroCases.add(0D);
+				rudderZeroCases.add(90D);
+				Map<Double, Double> zeroCasesCorrectness = new HashMap<Double, Double>();
+				for (Double possibleZeroCase : rudderZeroCases) {
+					Vector possibleTorque = calculateTorqueFromAngleAndVelocity(helmForwardDirecton,
+							new Vector(directionAxle), new Vector(totalOffset), rudderOriginInLocal, possibleZeroCase);
+					zeroCasesCorrectness.put(possibleZeroCase, possibleTorque.lengthSq());
+				}
+				Entry<Double, Double> min = null;
+				for (Entry<Double, Double> entry : zeroCasesCorrectness.entrySet()) {
+					if (min == null || min.getValue() > entry.getValue()) {
+						min = entry;
+					}
+				}
+
+				double rudderZeroTorqueAngle = min.getKey();
+				double[] rotationMatrix = RotationMatrices.getRotationMatrix(directionAxle.getX(), directionAxle.getY(),
+						directionAxle.getZ(), Math.toRadians(rudderZeroTorqueAngle));
+				RotationMatrices.applyTransform(rotationMatrix, totalOffset);
+
+				List<Double> rudderRotationCases = new ArrayList<Double>();
+				// Add the possible cases
+				rudderRotationCases.add(0D);
+				rudderRotationCases.add(angleDegrees);
+				rudderRotationCases.add(-angleDegrees);
+
+				Map<Double, Double> rotationToTorqueCorrectness = new HashMap<Double, Double>();
+				for (Double possibleRotationDegrees : rudderRotationCases) {
+					// Divide by 10 because we're only checking for direction. We don't want
+					// directions changing because of amplitude.
+					Vector possibleTorque = calculateTorqueFromAngleAndVelocity(helmForwardDirecton,
+							new Vector(directionAxle), new Vector(totalOffset), rudderOriginInLocal,
+							possibleRotationDegrees / 10);
+					double angleCorrectness = possibleTorque.dot(localTorqueAttempt);
+					rotationToTorqueCorrectness.put(possibleRotationDegrees, angleCorrectness);
+				}
+
+				Entry<Double, Double> max = null;
+				for (Entry<Double, Double> entry : rotationToTorqueCorrectness.entrySet()) {
+					if (max == null || max.getValue() < entry.getValue()) {
+						max = entry;
+					}
+				}
+
+				// TODO: This might not be correct. Lets just hope it is.
+				angleDegrees = (max.getKey() + rudderZeroTorqueAngle);
+			}
+
+			this.setRudderAngle(angleDegrees);
+			if (getMultiblockSchematic() != null) {
+				for (BlockPosBlockPair pair : getMultiblockSchematic().getStructureRelativeToCenter()) {
+					BlockPos pos = this.getPos().add(pair.getPos());
+					TileEntityRudderAxlePart childTile = (TileEntityRudderAxlePart) this.getWorld().getTileEntity(pos);
+					if (childTile != null) {
+						childTile.setRudderAngle(angleDegrees);
+					}
 				}
 			}
-
-			double rudderZeroTorqueAngle = min.getKey();
-			double[] rotationMatrix = RotationMatrices.getRotationMatrix(directionAxle.getX(), directionAxle.getY(),
-					directionAxle.getZ(), Math.toRadians(rudderZeroTorqueAngle));
-			RotationMatrices.applyTransform(rotationMatrix, totalOffset);
-
-			List<Double> rudderRotationCases = new ArrayList<Double>();
-			// Add the possible cases
-			rudderRotationCases.add(0D);
-			rudderRotationCases.add(angleDegrees);
-			rudderRotationCases.add(-angleDegrees);
-
-			Map<Double, Double> rotationToTorqueCorrectness = new HashMap<Double, Double>();
-			for (Double possibleRotationDegrees : rudderRotationCases) {
-				// Divide by 10 because we're only checking for direction. We don't want
-				// directions changing because of amplitude.
-				Vector possibleTorque = calculateTorqueFromAngleAndVelocity(helmForwardDirecton,
-						new Vector(directionAxle), new Vector(totalOffset), rudderOriginInLocal,
-						possibleRotationDegrees / 10);
-				double angleCorrectness = possibleTorque.dot(localTorqueAttempt);
-				rotationToTorqueCorrectness.put(possibleRotationDegrees, angleCorrectness);
-			}
-
-			Entry<Double, Double> max = null;
-			for (Entry<Double, Double> entry : rotationToTorqueCorrectness.entrySet()) {
-				if (max == null || max.getValue() < entry.getValue()) {
-					max = entry;
-				}
-			}
-
-			// TODO: This might not be correct. Lets just hope it is.
-			this.setRudderAngle(max.getKey() + rudderZeroTorqueAngle);
 		}
 	}
 
@@ -198,7 +213,7 @@ public class TileEntityRudderAxlePart extends TileEntityMultiblockPartForce {
 
 			Vector dragForceClockwise = new Vector(surfaceNormal, -dragMagnitude);
 			// TODO: :(
-			dragForceClockwise.multiply(100000);
+			dragForceClockwise.multiply(10000);
 			return dragForceClockwise;
 		} else {
 			return null;
@@ -226,13 +241,14 @@ public class TileEntityRudderAxlePart extends TileEntityMultiblockPartForce {
     	this.rudderAngle = currentRudderAngle;
     }
 
+    @Override
+	public Vector getForceOutputUnoriented(double secondsToApply, PhysicsObject physicsObject) {
+		return null;
+	}
+
 	@Override
 	public VectorImmutable getForceOutputNormal(double secondsToApply, PhysicsObject object) {
-		Vector inBody = new Vector(this.pos.getX() + .5D, this.pos.getY() + .5D, this.pos.getZ() + .5D);
-		inBody.subtract(object.getPhysicsProcessor().gameTickCenterOfMass);
-		object.getShipTransformationManager().getCurrentPhysicsTransform().rotate(inBody, TransformType.SUBSPACE_TO_GLOBAL);
-		Vector velocityAtPoint = object.getPhysicsProcessor().getVelocityAtPoint(inBody);
-		return new VectorImmutable(1, 0, 0);
+		return null;
 	}
 
 	@Override

@@ -56,7 +56,8 @@ public class BlockRudderAxlePart extends Block implements ITileEntityProvider, I
 		if (world.getTileEntity(pos) instanceof TileEntityRudderAxlePart) {
 			TileEntityRudderAxlePart tileEntity = (TileEntityRudderAxlePart) world.getTileEntity(pos);
 			Vector forceBeforeTimeScale = tileEntity.calculateForceFromVelocity(((PhysicsWrapperEntity) shipEntity).getPhysicsObject());
-			if (forceBeforeTimeScale != null) {
+			if (forceBeforeTimeScale != null && forceBeforeTimeScale.lengthSq() > 1) {
+				// System.out.println(forceBeforeTimeScale.toRoundedString());
 				return forceBeforeTimeScale.getProduct(secondsToApply);
 			} else {
 				return null;

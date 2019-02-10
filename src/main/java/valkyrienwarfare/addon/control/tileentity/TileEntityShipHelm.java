@@ -102,11 +102,12 @@ public class TileEntityShipHelm extends ImplTileEntityPilotable implements ITick
 							.getTileEntity(masterPos);
 					// This is a transient problem that only occurs during world loading.
 					if (masterTile != null) {
+						// Wheel rotation is flipped because I'm an idiot
 						if (parentPhysicsEntity == null) {
-							masterTile.setRudderAngle(wheelRotation / 5D);
+							masterTile.setRudderAngle(-this.wheelRotation / 4D);
 						} else {
 							masterTile.attemptTorque(parentPhysicsEntity.getPhysicsObject(),
-									torqueAttemptedNormalImmutable, this.wheelRotation / 4D,
+									torqueAttemptedNormalImmutable, -this.wheelRotation / 4D,
 									new Vector(EnumFacing.getFront(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipHelm
 											.getMetaFromState(this.getWorld().getBlockState(this.getPos()))).getDirectionVec()));
 						}

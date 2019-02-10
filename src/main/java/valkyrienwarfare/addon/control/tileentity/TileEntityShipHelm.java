@@ -18,6 +18,8 @@ package valkyrienwarfare.addon.control.tileentity;
 
 import gigaherz.graph.api.GraphObject;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -26,6 +28,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.BlocksValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
@@ -57,14 +61,17 @@ public class TileEntityShipHelm extends ImplTileEntityPilotable implements ITick
 			lastWheelRotation = wheelRotation;
 			wheelRotation += (nextWheelRotation - wheelRotation) * .25D;
 		} else {
-			double friction = .05D;
-			double toOriginRate = .05D;
-			if (Math.abs(wheelRotation) < toOriginRate) {
-				wheelRotation = 0;
-			} else {
-				// wheelRotation -= math.signum(wheelRotation) * wheelRotation;
-				double deltaForce = Math.max(Math.abs(wheelRotation * toOriginRate) - friction, 0);
-				wheelRotation += deltaForce * -1 * Math.signum(wheelRotation);
+			// Only decay rotation when there's no pilot
+			if (this.getPilotEntity() == null) {
+				double friction = .05D;
+				double toOriginRate = .05D;
+				if (Math.abs(wheelRotation) < toOriginRate) {
+					wheelRotation = 0;
+				} else {
+					// wheelRotation -= math.signum(wheelRotation) * wheelRotation;
+					double deltaForce = Math.max(Math.abs(wheelRotation * toOriginRate) - friction, 0);
+					wheelRotation += deltaForce * -1 * Math.signum(wheelRotation);
+				}
 			}
 
 			VWNode_TileEntity thisNode = this.getNode();
@@ -87,7 +94,8 @@ public class TileEntityShipHelm extends ImplTileEntityPilotable implements ITick
 			PhysicsWrapperEntity parentPhysicsEntity = this.getParentPhysicsEntity();
 			VectorImmutable torqueAttemptedNormalImmutable = null;
 			if (parentPhysicsEntity != null) {
-				Vector torqueAttempted = new Vector(0, Math.signum(wheelRotation), 0);
+				// Wheel rotation is flipped because I'm an idiot
+				Vector torqueAttempted = new Vector(0, -Math.signum(wheelRotation), 0);
 				// parentPhysicsEntity.getPhysicsObject().getShipTransformationManager().getCurrentPhysicsTransform()
 				//		.rotate(torqueAttempted, TransformType.SUBSPACE_TO_GLOBAL);
 				torqueAttemptedNormalImmutable = torqueAttempted.toImmutable();
@@ -104,10 +112,10 @@ public class TileEntityShipHelm extends ImplTileEntityPilotable implements ITick
 					if (masterTile != null) {
 						// Wheel rotation is flipped because I'm an idiot
 						if (parentPhysicsEntity == null) {
-							masterTile.setRudderAngle(-this.wheelRotation / 4D);
+							masterTile.setRudderAngle(-this.wheelRotation / 8D);
 						} else {
 							masterTile.attemptTorque(parentPhysicsEntity.getPhysicsObject(),
-									torqueAttemptedNormalImmutable, -this.wheelRotation / 4D,
+									torqueAttemptedNormalImmutable, -this.wheelRotation / 8D,
 									new Vector(EnumFacing.getFront(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipHelm
 											.getMetaFromState(this.getWorld().getBlockState(this.getPos()))).getDirectionVec()));
 						}
@@ -201,10 +209,10 @@ public class TileEntityShipHelm extends ImplTileEntityPilotable implements ITick
 	void processControlMessage(PilotControlsMessage message, EntityPlayerMP sender) {
 		double rotationDelta = 0;
 		if (message.airshipLeft_KeyDown) {
-			rotationDelta -= 15D;
+			rotationDelta -= 12.5D;
 		}
 		if (message.airshipRight_KeyDown) {
-			rotationDelta += 15D;
+			rotationDelta += 12.5D;
 		}
 		IBlockState blockState = this.getWorld().getBlockState(getPos());
 		if (blockState.getBlock() instanceof BlockShipHelm) {
@@ -215,6 +223,22 @@ public class TileEntityShipHelm extends ImplTileEntityPilotable implements ITick
 				wheelRotation -= rotationDelta;
 			}
 		}
+		double max_rotation = 720D;
+		wheelRotation = Math.min(Math.max(wheelRotation, -max_rotation), max_rotation);
+	}
+
+	@SideOnly(Side.CLIENT)
+	@Override
+	public void renderPilotText(FontRenderer renderer, ScaledResolution gameResolution) {
+		// White text.
+		int color = 0xFFFFFF;
+		// Extra spaces so the that the text is closer to the middle when rendered.
+		String message = "Wheel Rotation:    ";
+		int i = gameResolution.getScaledWidth();
+		int height = gameResolution.getScaledHeight() - 35;
+		float middle = (float)(i / 2 - renderer.getStringWidth(message) / 2);
+		message = "Wheel Rotation: " + Math.round(wheelRotation);
+		renderer.drawStringWithShadow(message , middle, height, color);
 	}
 
 }

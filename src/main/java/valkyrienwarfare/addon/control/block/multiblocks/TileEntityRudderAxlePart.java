@@ -93,7 +93,14 @@ public class TileEntityRudderAxlePart extends TileEntityMultiblockPartForce {
 	 */
 	public void attemptTorque(PhysicsObject physicsObject, VectorImmutable torqueAttemptNormal, double angleDegrees, Vector helmForwardDirecton) {
 		if (!this.isMaster()) {
-			this.setRudderAngle(angleDegrees);
+			if (this.getRudderAxleSchematic().isPresent()) {
+				BlockPos masterPos = this.getPos().add(this.getRelativePos());
+				TileEntityRudderAxlePart masterTile = (TileEntityRudderAxlePart) this.getWorld().getTileEntity(masterPos);
+				if (masterTile != null) {
+					masterTile.attemptTorque(physicsObject, torqueAttemptNormal, angleDegrees, helmForwardDirecton);
+				}
+			}
+			// this.setRudderAngle(angleDegrees);
 		} else {
 			if (Math.abs(angleDegrees) < 1) {
 				angleDegrees = 0;

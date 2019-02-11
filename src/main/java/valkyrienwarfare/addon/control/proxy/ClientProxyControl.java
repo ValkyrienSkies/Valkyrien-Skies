@@ -133,6 +133,9 @@ public class ClientProxyControl extends CommonProxyControl {
         registerRudderGibs("rudder_geo");
         registerRudderGibs("rudder_axel_geo");
 
+        registerPropellerGibs("propeller_axel_geo");
+        registerPropellerGibs("propeller_geo");
+
         GibsAnimationRegistry.registerAnimation("ethereum_compressor", new ResourceLocation("valkyrienwarfarecontrol", "models/block/ether_compressor/compressoranimations.atom"));
 
         GibsAnimationRegistry.registerAnimation("ethereum_engine", new ResourceLocation("valkyrienwarfarecontrol", "models/block/multipart_engines/engine_keyframes.atom"));
@@ -149,6 +152,10 @@ public class ClientProxyControl extends CommonProxyControl {
 
         GibsAnimationRegistry.registerAnimation("steering_rudder", new ResourceLocation("valkyrienwarfarecontrol", "models/block/steering_rudder/rudder_animation.atom"));
 
+    }
+
+    private void registerPropellerGibs(String name) {
+        GibsModelRegistry.registerGibsModel(name, new ResourceLocation("valkyrienwarfarecontrol", "block/giant_propeller/" + name + ".obj"));
     }
 
     private void registerControlGibs(String name) {

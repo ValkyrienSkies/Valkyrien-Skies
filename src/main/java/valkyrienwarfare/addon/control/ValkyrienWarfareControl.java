@@ -32,13 +32,9 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
+import org.spongepowered.api.Game;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.addon.control.block.multiblocks.EthereumCompressorMultiblockSchematic;
-import valkyrienwarfare.addon.control.block.multiblocks.EthereumEngineMultiblockSchematic;
-import valkyrienwarfare.addon.control.block.multiblocks.RudderAxleMultiblockSchematic;
-import valkyrienwarfare.addon.control.block.multiblocks.TileEntityEthereumCompressorPart;
-import valkyrienwarfare.addon.control.block.multiblocks.TileEntityEthereumEnginePart;
-import valkyrienwarfare.addon.control.block.multiblocks.TileEntityRudderAxlePart;
+import valkyrienwarfare.addon.control.block.multiblocks.*;
 import valkyrienwarfare.addon.control.capability.ICapabilityLastRelay;
 import valkyrienwarfare.addon.control.capability.ImplCapabilityLastRelay;
 import valkyrienwarfare.addon.control.capability.StorageLastRelay;
@@ -133,6 +129,7 @@ public class ValkyrienWarfareControl extends Module {
         GameRegistry.registerTileEntity(TileEntityGearbox.class, "tile_gearbox");
         GameRegistry.registerTileEntity(TileEntityEthereumCompressorPart.class, "tile_ethereum_compressor_part");
         GameRegistry.registerTileEntity(TileEntityRudderAxlePart.class, "tile_rudder_axle_part");
+        GameRegistry.registerTileEntity(TileEntityGiantPropellerPart.class, "tile_giant_propeller_part");
     }
 
     @Override
@@ -148,6 +145,7 @@ public class ValkyrienWarfareControl extends Module {
         MultiblockRegistry.registerAllPossibleSchematicVariants(EthereumEngineMultiblockSchematic.class);
         MultiblockRegistry.registerAllPossibleSchematicVariants(EthereumCompressorMultiblockSchematic.class);
         MultiblockRegistry.registerAllPossibleSchematicVariants(RudderAxleMultiblockSchematic.class);
+        MultiblockRegistry.registerAllPossibleSchematicVariants(GiantPropellerMultiblockSchematic.class);
     }
 
     @Override

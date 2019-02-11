@@ -40,6 +40,7 @@ import valkyrienwarfare.addon.control.block.engine.BlockNormalEngine;
 import valkyrienwarfare.addon.control.block.engine.BlockRedstoneEngine;
 import valkyrienwarfare.addon.control.block.multiblocks.BlockEtherCompressorPart;
 import valkyrienwarfare.addon.control.block.multiblocks.BlockEthereumEnginePart;
+import valkyrienwarfare.addon.control.block.multiblocks.BlockGiantPropellerPart;
 import valkyrienwarfare.addon.control.block.multiblocks.BlockRudderAxlePart;
 import valkyrienwarfare.api.addons.Module;
 
@@ -72,8 +73,10 @@ public class BlocksValkyrienWarfareControl {
     
     public final Block ethereumEnginePart;
     public final Block gearbox;
-    
+
     public final Block rudderAxelPart;
+
+    public final Block giantPropellerPart;
 
     public BlocksValkyrienWarfareControl(ValkyrienWarfareControl mod_vwcontrol) {
         this.mod_vwcontrol = mod_vwcontrol;
@@ -108,6 +111,7 @@ public class BlocksValkyrienWarfareControl {
         gearbox = new BlockGearbox(Material.IRON).setHardness(6f).setUnlocalizedName("vw_gearbox").setRegistryName(getModID(), "vw_gearbox").setCreativeTab(ValkyrienWarfareMod.vwTab);
         shipTelegraphDummy = new BlockTelegraphDummy(Material.WOOD).setHardness(5f).setUnlocalizedName("shiptelegraph_dummy").setRegistryName(getModID(), "shiptelegraph_dummy");
         rudderAxelPart = new BlockRudderAxlePart(Material.IRON).setHardness(5f).setUnlocalizedName("vw_rudder_axle_part").setRegistryName(getModID(), "vw_rudder_axle_part").setCreativeTab(ValkyrienWarfareMod.vwTab);;
+        giantPropellerPart = new BlockGiantPropellerPart(Material.IRON).setHardness(5f).setUnlocalizedName("vw_giant_propeller_part").setRegistryName(getModID(), "vw_giant_propeller_part").setCreativeTab(ValkyrienWarfareMod.vwTab);;
     }
 
     protected void registerBlocks(RegistryEvent.Register<Block> event) {
@@ -138,6 +142,7 @@ public class BlocksValkyrienWarfareControl {
         event.getRegistry().register(gearbox);
         event.getRegistry().register(shipTelegraphDummy);
         event.getRegistry().register(rudderAxelPart);
+        event.getRegistry().register(giantPropellerPart);
     }
 
     protected void registerBlockItems(RegistryEvent.Register<Item> event) {
@@ -167,6 +172,7 @@ public class BlocksValkyrienWarfareControl {
         registerItemBlock(event, ethereumEnginePart);
         registerItemBlock(event, gearbox);
         registerItemBlock(event, rudderAxelPart);
+        registerItemBlock(event, giantPropellerPart);
     }
 
     private void registerItemBlock(RegistryEvent.Register<Item> event, Block block) {

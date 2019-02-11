@@ -30,17 +30,10 @@ import valkyrienwarfare.addon.control.ControlEventsClient;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.block.multiblocks.TileEntityEthereumCompressorPart;
 import valkyrienwarfare.addon.control.block.multiblocks.TileEntityEthereumEnginePart;
+import valkyrienwarfare.addon.control.block.multiblocks.TileEntityGiantPropellerPart;
 import valkyrienwarfare.addon.control.block.multiblocks.TileEntityRudderAxlePart;
 import valkyrienwarfare.addon.control.controlsystems.controlgui.ThrustModulatorGui;
-import valkyrienwarfare.addon.control.renderer.BasicNodeTileEntityRenderer;
-import valkyrienwarfare.addon.control.renderer.EthereumCompressorPartTileEntityRenderer;
-import valkyrienwarfare.addon.control.renderer.EthereumEnginePartTileEntityRenderer;
-import valkyrienwarfare.addon.control.renderer.GearboxTileEntityRenderer;
-import valkyrienwarfare.addon.control.renderer.LiftControlTileEntityRenderer;
-import valkyrienwarfare.addon.control.renderer.PropellerEngineTileEntityRenderer;
-import valkyrienwarfare.addon.control.renderer.RudderAxlePartTileEntityRenderer;
-import valkyrienwarfare.addon.control.renderer.ShipHelmTileEntityRenderer;
-import valkyrienwarfare.addon.control.renderer.ShipTelegraphTileEntityRenderer;
+import valkyrienwarfare.addon.control.renderer.*;
 import valkyrienwarfare.addon.control.tileentity.TileEntityGearbox;
 import valkyrienwarfare.addon.control.tileentity.TileEntityLiftControl;
 import valkyrienwarfare.addon.control.tileentity.TileEntityNodeRelay;
@@ -90,6 +83,8 @@ public class ClientProxyControl extends CommonProxyControl {
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.ethereumEnginePart);
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.gearbox);
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.rudderAxelPart);
+
+        registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.giantPropellerPart);
     }
 
     private static void registerItemModels() {
@@ -107,6 +102,7 @@ public class ClientProxyControl extends CommonProxyControl {
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityLiftControl.class, new LiftControlTileEntityRenderer());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityEthereumCompressorPart.class, new EthereumCompressorPartTileEntityRenderer());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRudderAxlePart.class, new RudderAxlePartTileEntityRenderer());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityGiantPropellerPart.class, new GiantPropellerPartTileEntityRenderer());
     }
 
     public static void checkForTextFieldUpdate(TileEntityThrustModulator entity) {

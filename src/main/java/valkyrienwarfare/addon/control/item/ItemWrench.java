@@ -13,12 +13,9 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
+import org.spongepowered.api.entity.living.monster.Giant;
 import valkyrienwarfare.addon.control.MultiblockRegistry;
-import valkyrienwarfare.addon.control.block.multiblocks.IMulitblockSchematic;
-import valkyrienwarfare.addon.control.block.multiblocks.RudderAxleMultiblockSchematic;
-import valkyrienwarfare.addon.control.block.multiblocks.TileEntityEthereumCompressorPart;
-import valkyrienwarfare.addon.control.block.multiblocks.TileEntityEthereumEnginePart;
-import valkyrienwarfare.addon.control.block.multiblocks.TileEntityRudderAxlePart;
+import valkyrienwarfare.addon.control.block.multiblocks.*;
 
 public class ItemWrench extends Item {
 
@@ -74,7 +71,19 @@ public class ItemWrench extends Item {
 				}
 			}
 		}
-		
+
+		if (blockTile instanceof TileEntityGiantPropellerPart) {
+			List<IMulitblockSchematic> giantPropellerMultiblockSchematics = MultiblockRegistry
+					.getSchematicsWithPrefix("multiblock_giant_propeller");
+			System.out.println(giantPropellerMultiblockSchematics.size());
+			for (IMulitblockSchematic schematic : giantPropellerMultiblockSchematics) {
+				GiantPropellerMultiblockSchematic propSchem = (GiantPropellerMultiblockSchematic) schematic;
+				if (schematic.attemptToCreateMultiblock(worldIn, pos)) {
+					return EnumActionResult.SUCCESS;
+				}
+			}
+		}
+
 		return EnumActionResult.PASS;
 	}
 }

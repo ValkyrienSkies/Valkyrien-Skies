@@ -22,12 +22,6 @@ public class BlockGiantPropellerPart extends Block implements ITileEntityProvide
 
     @Nullable
     @Override
-    public TileEntity createNewTileEntity(World worldIn, int meta) {
-        return new TileEntityGiantPropellerPart();
-    }
-
-    @Nullable
-    @Override
     public Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state, Entity shipEntity, double secondsToApply) {
         return null;
     }
@@ -35,6 +29,21 @@ public class BlockGiantPropellerPart extends Block implements ITileEntityProvide
     @Override
     public boolean shouldLocalForceBeRotated(World world, BlockPos pos, IBlockState state, double secondsToApply) {
         return true;
+    }
+
+    @Override
+    public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
+        TileEntity tile = worldIn.getTileEntity(pos);
+        if (tile instanceof TileEntityGiantPropellerPart) {
+            TileEntityGiantPropellerPart.class.cast(tile).dissembleMultiblock();
+        }
+        super.breakBlock(worldIn, pos, state);
+    }
+
+    @Nullable
+    @Override
+    public TileEntity createNewTileEntity(World worldIn, int meta) {
+        return new TileEntityGiantPropellerPart();
     }
 
     // Lighting crap

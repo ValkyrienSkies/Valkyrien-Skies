@@ -78,8 +78,10 @@ public class ItemWrench extends Item {
 			System.out.println(giantPropellerMultiblockSchematics.size());
 			for (IMulitblockSchematic schematic : giantPropellerMultiblockSchematics) {
 				GiantPropellerMultiblockSchematic propSchem = (GiantPropellerMultiblockSchematic) schematic;
-				if (schematic.attemptToCreateMultiblock(worldIn, pos)) {
-					return EnumActionResult.SUCCESS;
+				if (propSchem.getPropellerFacing() == facing) {
+					if (schematic.attemptToCreateMultiblock(worldIn, pos)) {
+						return EnumActionResult.SUCCESS;
+					}
 				}
 			}
 		}

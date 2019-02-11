@@ -47,9 +47,14 @@ public class FastBlockModelRenderer {
 	public static final Map<IBlockState, Map<Integer, VertexBuffer>> blockstateBrightnessToVertexBuffer = new HashMap<IBlockState, Map<Integer, VertexBuffer>>();
 	
 	protected static final BufferBuilder VERTEX_BUILDER = new BufferBuilder(500000);
-	
+	// Used to make sure that when we simulate rendering models they're not affected by light from other blocks.
+	private static final BlockPos offsetPos = new BlockPos(0, 512, 0);
+
     public static void renderBlockModel(Tessellator tessellator, World world, IBlockState blockstateToRender, int brightness) {
-        renderBlockModelHighQualityHighRam(tessellator, world, blockstateToRender, brightness);
+		GL11.glPushMatrix();
+		GL11.glTranslated(-offsetPos.getX(), -offsetPos.getY(), -offsetPos.getZ());
+		renderBlockModelHighQualityHighRam(tessellator, world, blockstateToRender, brightness);
+		GL11.glPopMatrix();
 	}
 
 	private static void renderBlockModelHighQualityHighRam(Tessellator tessellator, World world,
@@ -110,7 +115,7 @@ public class FastBlockModelRenderer {
 			tessellator.draw();
 		}
 
-		renderVertexBuffer(blockstateBrightnessToVertexBuffer.get(blockstateToRender).get(brightness));		
+		renderVertexBuffer(blockstateBrightnessToVertexBuffer.get(blockstateToRender).get(brightness));
 	}
 	
 	protected static void renderVertexBuffer(VertexBuffer vertexBuffer) {
@@ -202,7 +207,7 @@ public class FastBlockModelRenderer {
         VERTEX_BUILDER.begin(7, DefaultVertexFormats.BLOCK);
         BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
         IBakedModel modelFromState = blockrendererdispatcher.getModelForState(state);
-        blockrendererdispatcher.getBlockModelRenderer().renderModel(Minecraft.getMinecraft().world, modelFromState, Blocks.AIR.getDefaultState(), BlockPos.ORIGIN, VERTEX_BUILDER, false, 0);
+        blockrendererdispatcher.getBlockModelRenderer().renderModel(Minecraft.getMinecraft().world, modelFromState, Blocks.AIR.getDefaultState(), offsetPos, VERTEX_BUILDER, false, 0);
         BufferBuilder.State toReturn = VERTEX_BUILDER.getVertexState();
         VERTEX_BUILDER.finishDrawing();
         VERTEX_BUILDER.reset();

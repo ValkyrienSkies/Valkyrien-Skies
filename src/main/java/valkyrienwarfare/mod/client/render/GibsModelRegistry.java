@@ -11,6 +11,7 @@ import com.google.common.collect.ImmutableMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexBuffer;
@@ -48,7 +49,8 @@ public class GibsModelRegistry {
 	// blockstates.json, but since we're bypassing that it has to be added
 	// directly to the IModel.
 	private static final ImmutableMap<String, String> FLIP_UV_CUSTOM_DATA = FLIP_UV_CUSTOM_DATA_BUILDER.build();
-	
+	// Used to make sure that when we simulate rendering models they're not affected by light from other blocks.
+	private static final BlockPos offsetPos = new BlockPos(0, 512, 0);
 	/**
 	 * Note this method is very unfinished, and really is only confirmed to work on obj models.
 	 * @param name
@@ -77,7 +79,7 @@ public class GibsModelRegistry {
 			BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
 			IBakedModel modelFromState = NAMES_TO_BAKED_MODELS.get(name);
 			blockrendererdispatcher.getBlockModelRenderer().renderModel(Minecraft.getMinecraft().world, modelFromState,
-					Blocks.AIR.getDefaultState(), BlockPos.ORIGIN, FastBlockModelRenderer.VERTEX_BUILDER, false, 0);
+					Blocks.AIR.getDefaultState(), offsetPos, FastBlockModelRenderer.VERTEX_BUILDER, false, 0);
 			BufferBuilder.State bufferState = FastBlockModelRenderer.VERTEX_BUILDER.getVertexState();
 			FastBlockModelRenderer.VERTEX_BUILDER.finishDrawing();
 			FastBlockModelRenderer.VERTEX_BUILDER.reset();
@@ -127,7 +129,10 @@ public class GibsModelRegistry {
 			NAMES_AND_BRIGHTNESS_TO_VERTEX_BUFFER.get(name).put(brightness, gibVertexBuffer);
 		}
 		// Finally, once past all these checks, we can render it.
+		GlStateManager.pushMatrix();
+		GlStateManager.translate(-offsetPos.getX(), -offsetPos.getY(), -offsetPos.getZ());
 		FastBlockModelRenderer.renderVertexBuffer(NAMES_AND_BRIGHTNESS_TO_VERTEX_BUFFER.get(name).get(brightness));
+		GlStateManager.popMatrix();
 	}
 	
 	/**

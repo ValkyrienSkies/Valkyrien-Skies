@@ -50,6 +50,8 @@ public class TileEntityLiftControl extends ImplTileEntityPilotable {
 		} else {
 			if (this.getPilotEntity() == null) {
 				leverOffset += .5 * (.5 - leverOffset);
+			} else {
+				this.markDirty();
 			}
 			heightReference += (leverOffset - .5) / 4D;
 			

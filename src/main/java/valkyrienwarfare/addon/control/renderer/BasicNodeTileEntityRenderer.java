@@ -79,6 +79,12 @@ public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer {
 
     protected void renderWire(double x, double y, double z, double entity1x, double entity1y, double entity1z,
                               double entity2x, double entity2y, double entity2z) {
+        GlStateManager.enableAlpha();
+        GlStateManager.enableBlend();
+        float wireR = .6f;
+        float wireG = .25f;
+        float wireB = .02f;
+        float wireAlpha = 1.0f;
         // Vec3d vec = new Vec3d(x,y,z);
         // if (vec.lengthSquared() < .01D) {
         // System.out.println("REE");
@@ -100,8 +106,6 @@ public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer {
         // }
 
         double fakeYaw = 0;// Math.PI / 6D;
-
-        double fakeWidth = .5D;
 
         double d6 = entity1x;
         double d7 = entity1y;
@@ -126,23 +130,13 @@ public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer {
         bufferbuilder.begin(5, DefaultVertexFormats.POSITION_COLOR);
 
         for (int j = 0; j <= 24; ++j) {
-            float f = 204F / 255F;// .282F;//0.5F;
-            float f1 = 122F / 255F;// .176F;//0.4F;
-            float f2 = 0;// 0.078F;//0.3F;
-
-            if (j % 2 == 0) {
-                f *= 0.7F;
-                f1 *= 0.7F;
-                f2 *= 0.7F;
-            }
-
             float f3 = j / 24.0F;
             bufferbuilder.pos(x + d13 * f3 + 0.0D, y + d14 * (f3 * f3 + f3) * 0.5D + ((24.0F - j) / 18.0F + 0.125F),
-                    z + d15 * f3).color(f, f1, f2, 1.0F).endVertex();
+                    z + d15 * f3).color(wireR, wireG, wireB, wireAlpha).endVertex();
             bufferbuilder
                     .pos(x + d13 * f3 + 0.025D,
                             y + d14 * (f3 * f3 + f3) * 0.5D + ((24.0F - j) / 18.0F + 0.125F) + 0.025D, z + d15 * f3)
-                    .color(f, f1, f2, 1.0F).endVertex();
+                    .color(wireR, wireG, wireB, wireAlpha).endVertex();
         }
 
         tessellator.draw();
@@ -166,15 +160,18 @@ public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer {
             float f7 = k / 24.0F;
             bufferbuilder.pos(x + d13 * f7 + 0.0D,
                     y + d14 * (f7 * f7 + f7) * 0.5D + ((24.0F - k) / 18.0F + 0.125F) + 0.025D, z + d15 * f7)
-                    .color(f4, f5, f6, 1.0F).endVertex();
+                    .color(wireR, wireG, wireB, wireAlpha).endVertex();
             bufferbuilder.pos(x + d13 * f7 + 0.025D, y + d14 * (f7 * f7 + f7) * 0.5D + ((24.0F - k) / 18.0F + 0.125F),
-                    z + d15 * f7 + 0.025D).color(f4, f5, f6, 1.0F).endVertex();
+                    z + d15 * f7 + 0.025D).color(wireR, wireG, wireB, wireAlpha).endVertex();
         }
 
         tessellator.draw();
         GlStateManager.enableLighting();
         GlStateManager.enableTexture2D();
         GlStateManager.enableCull();
+
+        GlStateManager.disableAlpha();
+        GlStateManager.disableBlend();
     }
 
     private double interpolateValue(double start, double end, double pct) {

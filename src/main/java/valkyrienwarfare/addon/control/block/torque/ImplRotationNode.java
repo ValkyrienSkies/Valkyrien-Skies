@@ -3,25 +3,26 @@ package valkyrienwarfare.addon.control.block.torque;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
 
 import java.util.Optional;
 
-public class ImplTileTorque<T extends TileEntity & ITileTorqueProvider> implements ITileTorque {
+public class ImplRotationNode<T extends TileEntity & IRotationNodeProvider> implements IRotationNode {
 
     private final T tileEntity;
     private final Optional<Double>[] angularVelocityRatios;
     private double angularTorque;
     private double angularVelocity;
     private double angularRotation;
+    private boolean initialized;
 
-    public ImplTileTorque(T entity) {
+    public ImplRotationNode(T entity) {
         this.tileEntity = entity;
         // Size 6 because there are 6 sides
-        this.angularVelocityRatios = new Optional[6];
+        this.angularVelocityRatios = new Optional[] {Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()};
         this.angularTorque = 0;
         this.angularVelocity = 0;
         this.angularRotation = 0;
+        this.initialized = false;
     }
 
     @Override
@@ -35,22 +36,14 @@ public class ImplTileTorque<T extends TileEntity & ITileTorqueProvider> implemen
         return angularVelocityRatios[side.ordinal()];
     }
 
-    private TileEntity getTileEntityFromSide(EnumFacing side) {
-        BlockPos checkPos = tileEntity.getPos().add(side.getDirectionVec());
-        return tileEntity.getWorld().getTileEntity(checkPos);
-    }
-
     @Override
-    public ITileTorque getTileOnSide(EnumFacing side) {
-        if (!hasTileOnSide(side)) {
-            throw new IllegalArgumentException("No TorqueTile on for side " + side);
+    public Optional<IRotationNode> getTileOnSide(EnumFacing side) {
+        TileEntity sideTile = tileEntity.getWorld().getTileEntity(tileEntity.getPos().add(side.getDirectionVec()));
+        if (!(sideTile instanceof IRotationNodeProvider)) {
+            return Optional.empty();
+        } else {
+            return ((IRotationNodeProvider) sideTile).getRotationNode();
         }
-        return ITileTorqueProvider.class.cast(getTileOnSide(side)).getTileTorque();
-    }
-
-    @Override
-    public boolean hasTileOnSide(EnumFacing side) {
-        return getTileEntityFromSide(side) instanceof ITileTorqueProvider;
     }
 
     @Override
@@ -66,6 +59,21 @@ public class ImplTileTorque<T extends TileEntity & ITileTorqueProvider> implemen
     @Override
     public double getAngularRotation() {
         return angularRotation;
+    }
+
+    @Override
+    public void markInitialized() {
+        this.initialized = true;
+    }
+
+    @Override
+    public boolean isInitialized() {
+        return initialized;
+    }
+
+    @Override
+    public void setAngularVelocityRatio(EnumFacing side, Optional<Double> newRatio) {
+        angularVelocityRatios[side.ordinal()] = newRatio;
     }
 
     @Override

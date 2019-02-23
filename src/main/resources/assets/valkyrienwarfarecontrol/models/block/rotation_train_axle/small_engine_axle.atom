@@ -7,7 +7,7 @@ angularUnit deg;
 startTime 1;
 endTime 1;
 dagNode {
-  smallengineaxel_geo 2 1;
+  smallengine_axle_geo 2 1;
   anim rotate.rotateX rotateX 0;
   animData {
     input time;
@@ -120,7 +120,7 @@ dagNode {
   }
 }
 dagNode {
-  smallengineaxel_geo_pivot 2 1;
+  smallengine_axle_geo_pivot 2 1;
   anim translate.translateX translateX 0;
   animData {
     input time;

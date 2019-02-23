@@ -100,7 +100,7 @@ public class BlocksValkyrienWarfareControl {
         shipTelegraphDummy = new BlockTelegraphDummy(Material.WOOD).setHardness(5f).setUnlocalizedName("shiptelegraph_dummy").setRegistryName(getModID(), "shiptelegraph_dummy");
         rudderAxelPart = new BlockRudderAxlePart(Material.IRON).setHardness(5f).setUnlocalizedName("vw_rudder_axle_part").setRegistryName(getModID(), "vw_rudder_axle_part").setCreativeTab(ValkyrienWarfareMod.vwTab);;
         giantPropellerPart = new BlockGiantPropellerPart(Material.IRON).setHardness(5f).setUnlocalizedName("vw_giant_propeller_part").setRegistryName(getModID(), "vw_giant_propeller_part").setCreativeTab(ValkyrienWarfareMod.vwTab);;
-        rotationTrainAxle = new BlockAxle(Material.IRON).setHardness(5f).setUnlocalizedName("vw_block_rotation_train_axle").setRegistryName(getModID(), "vw_block_rotation_train_axle").setCreativeTab(ValkyrienWarfareMod.vwTab);;
+        rotationTrainAxle = new BlockRotationTrainAxle(Material.IRON).setHardness(5f).setUnlocalizedName("vw_block_rotation_train_axle").setRegistryName(getModID(), "vw_block_rotation_train_axle").setCreativeTab(ValkyrienWarfareMod.vwTab);;
     }
 
     protected void registerBlocks(RegistryEvent.Register<Block> event) {

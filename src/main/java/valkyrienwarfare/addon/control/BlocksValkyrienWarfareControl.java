@@ -21,21 +21,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.item.Item;
 import net.minecraftforge.event.RegistryEvent;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.addon.control.block.BlockDopedEtherium;
-import valkyrienwarfare.addon.control.block.BlockGearbox;
-import valkyrienwarfare.addon.control.block.BlockGyroscopeDampener;
-import valkyrienwarfare.addon.control.block.BlockGyroscopeStabilizer;
-import valkyrienwarfare.addon.control.block.BlockLiftControl;
-import valkyrienwarfare.addon.control.block.BlockLiftValve;
-import valkyrienwarfare.addon.control.block.BlockNetworkDisplay;
-import valkyrienwarfare.addon.control.block.BlockShipHelm;
-import valkyrienwarfare.addon.control.block.BlockShipPassengerChair;
-import valkyrienwarfare.addon.control.block.BlockShipPilotsChair;
-import valkyrienwarfare.addon.control.block.BlockShipTelegraph;
-import valkyrienwarfare.addon.control.block.BlockShipWheel;
-import valkyrienwarfare.addon.control.block.BlockTelegraphDummy;
-import valkyrienwarfare.addon.control.block.BlockThrustModulator;
-import valkyrienwarfare.addon.control.block.BlockThrustRelay;
+import valkyrienwarfare.addon.control.block.*;
 import valkyrienwarfare.addon.control.block.engine.BlockNormalEngine;
 import valkyrienwarfare.addon.control.block.engine.BlockRedstoneEngine;
 import valkyrienwarfare.addon.control.block.multiblocks.BlockEtherCompressorPart;
@@ -78,6 +64,8 @@ public class BlocksValkyrienWarfareControl {
 
     public final Block giantPropellerPart;
 
+    public final Block rotationTrainAxle;
+
     public BlocksValkyrienWarfareControl(ValkyrienWarfareControl mod_vwcontrol) {
         this.mod_vwcontrol = mod_vwcontrol;
 
@@ -112,6 +100,7 @@ public class BlocksValkyrienWarfareControl {
         shipTelegraphDummy = new BlockTelegraphDummy(Material.WOOD).setHardness(5f).setUnlocalizedName("shiptelegraph_dummy").setRegistryName(getModID(), "shiptelegraph_dummy");
         rudderAxelPart = new BlockRudderAxlePart(Material.IRON).setHardness(5f).setUnlocalizedName("vw_rudder_axle_part").setRegistryName(getModID(), "vw_rudder_axle_part").setCreativeTab(ValkyrienWarfareMod.vwTab);;
         giantPropellerPart = new BlockGiantPropellerPart(Material.IRON).setHardness(5f).setUnlocalizedName("vw_giant_propeller_part").setRegistryName(getModID(), "vw_giant_propeller_part").setCreativeTab(ValkyrienWarfareMod.vwTab);;
+        rotationTrainAxle = new BlockAxle(Material.IRON).setHardness(5f).setUnlocalizedName("vw_block_rotation_train_axle").setRegistryName(getModID(), "vw_block_rotation_train_axle").setCreativeTab(ValkyrienWarfareMod.vwTab);;
     }
 
     protected void registerBlocks(RegistryEvent.Register<Block> event) {
@@ -143,6 +132,7 @@ public class BlocksValkyrienWarfareControl {
         event.getRegistry().register(shipTelegraphDummy);
         event.getRegistry().register(rudderAxelPart);
         event.getRegistry().register(giantPropellerPart);
+        event.getRegistry().register(rotationTrainAxle);
     }
 
     protected void registerBlockItems(RegistryEvent.Register<Item> event) {
@@ -173,6 +163,7 @@ public class BlocksValkyrienWarfareControl {
         registerItemBlock(event, gearbox);
         registerItemBlock(event, rudderAxelPart);
         registerItemBlock(event, giantPropellerPart);
+        registerItemBlock(event, rotationTrainAxle);
     }
 
     private void registerItemBlock(RegistryEvent.Register<Item> event, Block block) {

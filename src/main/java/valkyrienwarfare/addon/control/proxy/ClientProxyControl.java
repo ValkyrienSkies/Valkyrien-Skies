@@ -21,6 +21,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.common.MinecraftForge;
@@ -32,6 +33,7 @@ import valkyrienwarfare.addon.control.block.multiblocks.TileEntityEthereumCompre
 import valkyrienwarfare.addon.control.block.multiblocks.TileEntityEthereumEnginePart;
 import valkyrienwarfare.addon.control.block.multiblocks.TileEntityGiantPropellerPart;
 import valkyrienwarfare.addon.control.block.multiblocks.TileEntityRudderAxlePart;
+import valkyrienwarfare.addon.control.block.torque.TileEntityAxle;
 import valkyrienwarfare.addon.control.controlsystems.controlgui.ThrustModulatorGui;
 import valkyrienwarfare.addon.control.renderer.*;
 import valkyrienwarfare.addon.control.tileentity.TileEntityGearbox;
@@ -85,6 +87,7 @@ public class ClientProxyControl extends CommonProxyControl {
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.rudderAxelPart);
 
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.giantPropellerPart);
+        registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.rotationTrainAxle);
     }
 
     private static void registerItemModels() {
@@ -103,6 +106,7 @@ public class ClientProxyControl extends CommonProxyControl {
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityEthereumCompressorPart.class, new EthereumCompressorPartTileEntityRenderer());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRudderAxlePart.class, new RudderAxlePartTileEntityRenderer());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityGiantPropellerPart.class, new GiantPropellerPartTileEntityRenderer());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAxle.class, new AxleTileEntityRenderer());
     }
 
     public static void checkForTextFieldUpdate(TileEntityThrustModulator entity) {
@@ -129,7 +133,7 @@ public class ClientProxyControl extends CommonProxyControl {
         registerRudderGibs("rudder_geo");
         registerRudderGibs("rudder_axel_geo");
 
-        registerPropellerGibs("propeller_axel_geo");
+        registerPropellerGibs("propeller_axle_geo");
         registerPropellerGibs("propeller_geo");
 
         GibsAnimationRegistry.registerAnimation("ethereum_compressor", new ResourceLocation("valkyrienwarfarecontrol", "models/block/ether_compressor/compressoranimations.atom"));
@@ -147,6 +151,8 @@ public class ClientProxyControl extends CommonProxyControl {
         GibsAnimationRegistry.registerAnimation("telescope", new ResourceLocation("valkyrienwarfarecontrol", "models/block/telescope/telescope_keyframes.atom"));
 
         GibsAnimationRegistry.registerAnimation("steering_rudder", new ResourceLocation("valkyrienwarfarecontrol", "models/block/steering_rudder/rudder_animation.atom"));
+
+        GibsAnimationRegistry.registerAnimation("rotation_train_axle", new ResourceLocation("valkyrienwarfarecontrol", "models/block/rotation_train_axle/small_engine_axle.atom"));
 
     }
 

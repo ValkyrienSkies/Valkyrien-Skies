@@ -35,6 +35,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import org.spongepowered.api.Game;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.block.multiblocks.*;
+import valkyrienwarfare.addon.control.block.torque.TileEntityAxle;
 import valkyrienwarfare.addon.control.capability.ICapabilityLastRelay;
 import valkyrienwarfare.addon.control.capability.ImplCapabilityLastRelay;
 import valkyrienwarfare.addon.control.capability.StorageLastRelay;
@@ -130,6 +131,7 @@ public class ValkyrienWarfareControl extends Module {
         GameRegistry.registerTileEntity(TileEntityEthereumCompressorPart.class, "tile_ethereum_compressor_part");
         GameRegistry.registerTileEntity(TileEntityRudderAxlePart.class, "tile_rudder_axle_part");
         GameRegistry.registerTileEntity(TileEntityGiantPropellerPart.class, "tile_giant_propeller_part");
+        GameRegistry.registerTileEntity(TileEntityAxle.class, "tile_rotation_train_axle");
     }
 
     @Override

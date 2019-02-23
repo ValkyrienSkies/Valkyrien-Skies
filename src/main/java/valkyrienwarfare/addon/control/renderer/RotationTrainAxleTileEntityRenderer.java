@@ -1,22 +1,20 @@
 package valkyrienwarfare.addon.control.renderer;
 
-import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import org.lwjgl.opengl.GL11;
-import valkyrienwarfare.addon.control.block.BlockAxle;
-import valkyrienwarfare.addon.control.block.torque.TileEntityAxle;
+import valkyrienwarfare.addon.control.block.BlockRotationTrainAxle;
+import valkyrienwarfare.addon.control.block.torque.TileEntityRotationTrainAxle;
 import valkyrienwarfare.mod.client.render.GibsAnimationRegistry;
 
-public class AxleTileEntityRenderer extends TileEntitySpecialRenderer<TileEntityAxle> {
+public class RotationTrainAxleTileEntityRenderer extends TileEntitySpecialRenderer<TileEntityRotationTrainAxle> {
 
     @Override
-    public void render(TileEntityAxle tileentity, double x, double y, double z, float partialTick, int destroyStage, float alpha) {
+    public void render(TileEntityRotationTrainAxle tileentity, double x, double y, double z, float partialTick, int destroyStage, float alpha) {
         this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
         GlStateManager.pushMatrix();
         GlStateManager.disableLighting();
@@ -27,8 +25,8 @@ public class AxleTileEntityRenderer extends TileEntitySpecialRenderer<TileEntity
 
         int brightness = tileentity.getWorld().getCombinedLight(tileentity.getPos(), 0);
         IBlockState gearState = Minecraft.getMinecraft().world.getBlockState(tileentity.getPos());
-        if (gearState.getBlock() instanceof BlockAxle) {
-            EnumFacing.Axis facingAxis = gearState.getValue(BlockAxle.AXIS);
+        if (gearState.getBlock() instanceof BlockRotationTrainAxle) {
+            EnumFacing.Axis facingAxis = gearState.getValue(BlockRotationTrainAxle.AXIS);
 
             GlStateManager.translate(0.5, 0.5, 0.5);
             switch (facingAxis) {

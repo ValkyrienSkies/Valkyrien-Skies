@@ -5,13 +5,13 @@ import net.minecraft.util.Tuple;
 
 import java.util.Optional;
 
-public class TileEntityAxle extends TileEntityBasicRotationTile {
+public class TileEntityRotationTrainAxle extends TileEntityBasicRotationTile {
 
-    public TileEntityAxle() {
+    public TileEntityRotationTrainAxle() {
         super();
     }
 
-    public TileEntityAxle(EnumFacing.Axis axleAxis) {
+    public TileEntityRotationTrainAxle(EnumFacing.Axis axleAxis) {
         super();
         setAxleAxis(axleAxis);
     }

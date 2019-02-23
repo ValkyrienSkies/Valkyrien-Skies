@@ -21,7 +21,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.common.MinecraftForge;
@@ -33,7 +32,7 @@ import valkyrienwarfare.addon.control.block.multiblocks.TileEntityEthereumCompre
 import valkyrienwarfare.addon.control.block.multiblocks.TileEntityEthereumEnginePart;
 import valkyrienwarfare.addon.control.block.multiblocks.TileEntityGiantPropellerPart;
 import valkyrienwarfare.addon.control.block.multiblocks.TileEntityRudderAxlePart;
-import valkyrienwarfare.addon.control.block.torque.TileEntityAxle;
+import valkyrienwarfare.addon.control.block.torque.TileEntityRotationTrainAxle;
 import valkyrienwarfare.addon.control.controlsystems.controlgui.ThrustModulatorGui;
 import valkyrienwarfare.addon.control.renderer.*;
 import valkyrienwarfare.addon.control.tileentity.TileEntityGearbox;
@@ -106,7 +105,7 @@ public class ClientProxyControl extends CommonProxyControl {
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityEthereumCompressorPart.class, new EthereumCompressorPartTileEntityRenderer());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRudderAxlePart.class, new RudderAxlePartTileEntityRenderer());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityGiantPropellerPart.class, new GiantPropellerPartTileEntityRenderer());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAxle.class, new AxleTileEntityRenderer());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRotationTrainAxle.class, new RotationTrainAxleTileEntityRenderer());
     }
 
     public static void checkForTextFieldUpdate(TileEntityThrustModulator entity) {

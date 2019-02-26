@@ -31,6 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.google.common.collect.Sets;
 
 import gnu.trove.iterator.TIntIterator;
+import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import io.netty.buffer.ByteBuf;
@@ -137,6 +138,8 @@ public class PhysicsObject implements ISubspaceProvider {
     private final ISubspace shipSubspace;
 	private final Set<INodeController> physicsControllers;
 	private final Set<INodeController> physicsControllersImmutable;
+	// Used to iterate over the ship blocks extremely quickly by taking advantage of the cache
+    private final TIntArrayList blockPositionsGameTick;
 
     public PhysicsObject(PhysicsWrapperEntity host) {
     	this.wrapper = host;
@@ -159,6 +162,7 @@ public class PhysicsObject implements ISubspaceProvider {
         this.shipSubspace = new ImplSubspace(this);
         this.physicsControllers = Sets.<INodeController>newConcurrentHashSet();
         this.physicsControllersImmutable = Collections.<INodeController>unmodifiableSet(this.physicsControllers);
+        this.blockPositionsGameTick = new TIntArrayList();
     }
 
 	public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos posAt) {
@@ -183,11 +187,17 @@ public class PhysicsObject implements ISubspaceProvider {
 		boolean isNewAir = newState == null || newState.getBlock().equals(Blocks.AIR);
 
 		if (isNewAir) {
-			getBlockPositions().remove(posAt);
+			boolean removed = getBlockPositions().remove(posAt);
+			if (removed) {
+			    this.blockPositionsGameTick.remove(this.getBlockPosToIntRelToShip(posAt));
+            }
 		}
 
 		if ((isOldAir && !isNewAir)) {
-			getBlockPositions().add(posAt);
+			boolean isAdded = getBlockPositions().add(posAt);
+			if (isAdded) {
+			    this.blockPositionsGameTick.add(this.getBlockPosToIntRelToShip(posAt));
+            }
 			int chunkX = (posAt.getX() >> 4) - claimedChunks[0][0].x;
 			int chunkZ = (posAt.getZ() >> 4) - claimedChunks[0][0].z;
 			getOwnedChunks().chunkOccupiedInLocal[chunkX][chunkZ] = true;
@@ -685,6 +695,7 @@ public class PhysicsObject implements ISubspaceProvider {
             createPhysicsCalculations();
             // The client doesn't need to keep track of this.
             detectBlockPositions();
+
         }
 
         getShipTransformationManager().updateAllTransforms(false, false);
@@ -713,6 +724,7 @@ public class PhysicsObject implements ISubspaceProvider {
 											BlockPos pos = new BlockPos(chunk.x * 16 + x, index * 16 + y,
 													chunk.z * 16 + z);
 											getBlockPositions().add(pos);
+                                            blockPositionsGameTick.add(this.getBlockPosToIntRelToShip(pos));
 											if (BlockForce.basicForces.isBlockProvidingForce(
 													getWorldObj().getBlockState(pos), pos, getWorldObj())) {
 												getPhysicsProcessor().addPotentialActiveForcePos(pos);
@@ -726,6 +738,7 @@ public class PhysicsObject implements ISubspaceProvider {
                 }
             }
         }
+
     }
 
     public boolean ownsChunk(int chunkX, int chunkZ) {
@@ -1141,7 +1154,7 @@ public class PhysicsObject implements ISubspaceProvider {
 	/**
 	 * @param blockPositions the blockPositions to set
 	 */
-	public void setBlockPositions(Set<BlockPos> blockPositions) {
+	private void setBlockPositions(Set<BlockPos> blockPositions) {
 		this.blockPositions = blockPositions;
 	}
 
@@ -1258,5 +1271,17 @@ public class PhysicsObject implements ISubspaceProvider {
 	public Set<INodeController> getPhysicsControllersInShip() {
 		return physicsControllersImmutable;
 	}
+
+	public int getBlockPosToIntRelToShip(BlockPos pos) {
+        return SpatialDetector.getHashWithRespectTo(pos.getX(), pos.getY(), pos.getZ(), this.refrenceBlockPos);
+    }
+
+    public void setBlockPosFromIntRelToShop(int pos, MutableBlockPos toSet) {
+        SpatialDetector.setPosWithRespectTo(pos, this.refrenceBlockPos, toSet);
+    }
+
+    public TIntArrayList getBlockPositionsGameTick() {
+	    return blockPositionsGameTick;
+    }
 
 }

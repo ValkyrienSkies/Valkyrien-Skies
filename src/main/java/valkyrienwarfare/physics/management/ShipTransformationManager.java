@@ -228,18 +228,48 @@ public class ShipTransformationManager {
 
     // TODO: Use Octrees to optimize this, or more preferably QuickHull3D.
     public void updateParentAABB() {
-        CollisionBBConsumer convexHullConsumer = new CollisionBBConsumer();
-        Stream<BlockPos> parentPositionsStream = null;
-        if (parent.getBlockPositions().size() < 300) {
-            // If its a small ship use a sequential stream.
-            parentPositionsStream = parent.getBlockPositions().stream();
-        } else {
-            // If its a big ship then we destroy the cpu consumption and go fully
-            // multithreaded!
-            parentPositionsStream = parent.getBlockPositions().parallelStream();
+        // Don't run otherwise make the game freeze
+        if (parent.getBlockPositionsGameTick().isEmpty()) {
+            return;
         }
-        parentPositionsStream.forEach(convexHullConsumer);
-        parent.setShipBoundingBox(convexHullConsumer.createWrappingAABB());
+        final BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+        final double[] MDouble = getCurrentTickTransform().getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL);
+        final float[] M = new float[MDouble.length];
+        for (int i = 0; i < MDouble.length; i++) {
+            M[i] = (float) MDouble[i];
+        }
+
+        float minX, minY, minZ, maxX, maxY, maxZ;
+        minX = minY = minZ = Float.MAX_VALUE;
+        maxX = maxY = maxZ = -Float.MAX_VALUE;
+
+        for (int i = parent.getBlockPositionsGameTick().size() - 1; i >= 0; i--) {
+            int blockPos = parent.getBlockPositionsGameTick().get(i);
+            parent.setBlockPosFromIntRelToShop(blockPos, pos);
+
+            float x = pos.getX() + .5F;
+            float y = pos.getY() + .5F;
+            float z = pos.getZ() + .5F;
+
+            float newX = x * M[0] + y * M[1] + z * M[2] + M[3];
+            float newY = x * M[4] + y * M[5] + z * M[6] + M[7];
+            float newZ = x * M[8] + y * M[9] + z * M[10] + M[11];
+
+            minX = Math.min(newX, minX);
+            maxX = Math.max(newX, maxX);
+            minY = Math.min(newY, minY);
+            maxY = Math.max(newY, maxY);
+            minZ = Math.min(newZ, minZ);
+            maxZ = Math.max(newZ, maxZ);
+        }
+        AxisAlignedBB newBB = new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ).grow(1.6D);
+        // Just a quick sanity check
+        if (newBB.getAverageEdgeLength() < 1000000D) {
+            parent.setShipBoundingBox(newBB);
+        } else {
+            // throw new IllegalStateException("Unexpectedly large shipBB!!!");
+
+        }
     }
 
     /**
@@ -318,7 +348,7 @@ public class ShipTransformationManager {
     /**
      * Sets the physics transform to the given input.
      *
-     * @param physicsTransform
+     * @param
      */
     public void setCurrentPhysicsTransform(ShipTransform currentPhysicsTransform) {
         this.currentPhysicsTransform = currentPhysicsTransform;
@@ -332,41 +362,4 @@ public class ShipTransformationManager {
         this.prevPhysicsTransform = currentPhysicsTransform;
     }
 
-    private class CollisionBBConsumer implements Consumer<BlockPos> {
-        private static final double AABB_EXPANSION = 1.6D;
-        private final double[] M = getCurrentTickTransform().getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL);
-        double minX, minY, minZ, maxX, maxY, maxZ;
-
-        CollisionBBConsumer() {
-            minX = parent.getWrapperEntity().posX;
-            minY = parent.getWrapperEntity().posY;
-            minZ = parent.getWrapperEntity().posZ;
-            maxX = parent.getWrapperEntity().posX;
-            maxY = parent.getWrapperEntity().posY;
-            maxZ = parent.getWrapperEntity().posZ;
-        }
-
-        @Override
-        public void accept(BlockPos pos) {
-            double x = pos.getX() + .5D;
-            double y = pos.getY() + .5D;
-            double z = pos.getZ() + .5D;
-
-            double newX = x * M[0] + y * M[1] + z * M[2] + M[3];
-            double newY = x * M[4] + y * M[5] + z * M[6] + M[7];
-            double newZ = x * M[8] + y * M[9] + z * M[10] + M[11];
-
-            minX = Math.min(newX, minX);
-            maxX = Math.max(newX, maxX);
-            minY = Math.min(newY, minY);
-            maxY = Math.max(newY, maxY);
-            minZ = Math.min(newZ, minZ);
-            maxZ = Math.max(newZ, maxZ);
-        }
-
-        AxisAlignedBB createWrappingAABB() {
-            return new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ).grow(AABB_EXPANSION);
-        }
-
-    }
 }

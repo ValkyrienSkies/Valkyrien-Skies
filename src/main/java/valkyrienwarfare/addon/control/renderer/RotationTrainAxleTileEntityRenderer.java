@@ -42,6 +42,7 @@ public class RotationTrainAxleTileEntityRenderer extends TileEntitySpecialRender
                     GL11.glRotated(-90, 0, 1, 0);
                     break;
             }
+            GL11.glRotated(Math.toDegrees(tileentity.getRenderRotationRadians(partialTick)), 1, 0, 0);
             GlStateManager.translate(-0.5, -0.5, -0.5);
         }
 

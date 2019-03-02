@@ -1,10 +1,12 @@
 package valkyrienwarfare.addon.control.block.multiblocks;
 
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import valkyrienwarfare.addon.control.block.torque.IRotationNode;
 import valkyrienwarfare.addon.control.block.torque.IRotationNodeProvider;
 import valkyrienwarfare.addon.control.block.torque.ImplRotationNode;
+import valkyrienwarfare.physics.management.PhysicsObject;
 
 import java.util.Optional;
 
@@ -26,10 +28,19 @@ public class TileEntityEthereumEnginePart extends TileEntityMultiblockPart<Ether
 	public void update() {
 		super.update();
 		prevKeyframe = currentKeyframe;
-		currentKeyframe += 2.5;
+		currentKeyframe += .1D; // this.getRotationNode().get().getAngularVelocity() / 20D;
 		currentKeyframe = currentKeyframe % 99;
 	}
-	
+
+	@Override
+	public double calculateInstantaneousTorque(PhysicsObject parent) {
+		double inertialTorque = calculateInstantaneousTorqueFromFriction(parent);
+		if (this.getRotationNode().get().getAngularVelocity() < Math.PI * 4D) {
+			inertialTorque += 10;
+		}
+		return inertialTorque;
+	}
+
 	public double getCurrentKeyframe(double partialTick) {
 		double increment = currentKeyframe - prevKeyframe;
 		if (increment < 0) {
@@ -41,8 +52,10 @@ public class TileEntityEthereumEnginePart extends TileEntityMultiblockPart<Ether
 	@Override
 	public void assembleMultiblock(EthereumEngineMultiblockSchematic schematic, BlockPos relativePos) {
 		super.assembleMultiblock(schematic, relativePos);
-		if (relativePos.equals(new BlockPos(-1, 0, -1))) {
-			System.out.println(this.getPos());
+		if (relativePos.equals(schematic.getTorqueOutputPos())) {
+			EnumFacing facing = EnumFacing.getFacingFromVector(schematic.getTorqueOutputDirection().getX(), schematic.getTorqueOutputDirection().getY(), schematic.getTorqueOutputDirection().getZ());
+			assert getRotationNode().isPresent() : "How the heck did we try assembling the multiblock without a rotation node initialized!";
+			getRotationNode().get().setAngularVelocityRatio(facing, Optional.of(1D));
 		}
 	}
 

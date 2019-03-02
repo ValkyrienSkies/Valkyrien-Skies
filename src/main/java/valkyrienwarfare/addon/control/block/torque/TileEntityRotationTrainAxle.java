@@ -7,16 +7,13 @@ import java.util.Optional;
 
 public class TileEntityRotationTrainAxle extends TileEntityBasicRotationTile {
 
-    public TileEntityRotationTrainAxle() {
-        super();
-    }
-
     public TileEntityRotationTrainAxle(EnumFacing.Axis axleAxis) {
         super();
         setAxleAxis(axleAxis);
     }
 
     public void setAxleAxis(EnumFacing.Axis axleAxis) {
+        assert this.getRotationNode().isPresent() : "There is no rotation node to rotate!";
         for (EnumFacing facing : EnumFacing.values()) {
             rotationNode.setAngularVelocityRatio(facing, Optional.empty());
         }

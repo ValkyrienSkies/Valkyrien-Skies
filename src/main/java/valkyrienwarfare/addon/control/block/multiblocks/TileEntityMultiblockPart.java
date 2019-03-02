@@ -12,6 +12,10 @@ import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
+/**
+ * Just a simple implementation of the interfaces.
+ * @param <E> The type of schematic for this TileEntity to use.
+ */
 public abstract class TileEntityMultiblockPart<E extends IMulitblockSchematic> extends BasicNodeTileEntity implements ITileEntityMultiblockPart<E> {
 
 	private boolean isAssembled;

@@ -19,6 +19,15 @@ public interface IRotationNodeProvider {
      * @return
      */
     default double calculateInstantaneousTorque(PhysicsObject parent) {
+        return calculateInstantaneousTorqueFromFriction(parent);
+    }
+
+    /**
+     * This probably should not be overriden unless you're changing the way rotational friction is calculated.
+     * @param parent
+     * @return
+     */
+    default double calculateInstantaneousTorqueFromFriction(PhysicsObject parent) {
         assert !parent.getWorldObj().isRemote : "Client should not be calculating this!";
         assert !((WorldServer) parent.getWorldObj()).getMinecraftServer().isCallingFromMinecraftThread() : "This should NEVER be called on the game thread!";
         Optional<IRotationNode> rotationNodeOptional = getRotationNode();

@@ -24,6 +24,7 @@ public class TileEntityBasicRotationTile extends TileEntity implements IRotation
     public TileEntityBasicRotationTile() {
         super();
         this.rotationNode = new ImplRotationNode<>(this);
+        this.rotationNode.setRotationalInertia(.05);
     }
 
     @Override
@@ -35,11 +36,13 @@ public class TileEntityBasicRotationTile extends TileEntity implements IRotation
         }
     }
 
+    @Override
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
         rotationNode.readFromNBT(compound);
     }
 
+    @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         super.writeToNBT(compound);
         rotationNode.writeToNBT(compound);

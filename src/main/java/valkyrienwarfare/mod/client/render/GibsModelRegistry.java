@@ -39,7 +39,7 @@ public class GibsModelRegistry {
 	private static final Map<String, IBakedModel> NAMES_TO_BAKED_MODELS = new HashMap<String, IBakedModel>();
 	private static final Map<String, BufferBuilder.State> NAMES_TO_BUFFER_STATES = new HashMap<String, BufferBuilder.State>();
 	private static final Map<String, Map<Integer, VertexBuffer>> NAMES_AND_BRIGHTNESS_TO_VERTEX_BUFFER = new HashMap<String, Map<Integer, VertexBuffer>>();
-	
+
 	private static final ImmutableMap.Builder<String, String> FLIP_UV_CUSTOM_DATA_BUILDER = new ImmutableMap.Builder<String, String>();
 	static {
 		FLIP_UV_CUSTOM_DATA_BUILDER.put("flip-v", "true");

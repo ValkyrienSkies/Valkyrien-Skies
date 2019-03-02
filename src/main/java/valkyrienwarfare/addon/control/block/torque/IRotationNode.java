@@ -2,12 +2,13 @@ package valkyrienwarfare.addon.control.block.torque;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import valkyrienwarfare.physics.management.PhysicsObject;
 
 import java.util.*;
 
 public interface IRotationNode extends Comparator<IRotationNode> {
 
-    double calculateInstantaneousTorque();
+    double calculateInstantaneousTorque(PhysicsObject parent);
 
     default boolean isConnectedToSide(EnumFacing side) {
         return getAngularVelocityRatioFor(side).isPresent();
@@ -28,11 +29,17 @@ public interface IRotationNode extends Comparator<IRotationNode> {
 
     double getAngularRotation();
 
+    double getRotationalInertia();
+
+    void setRotationalInertia(double newInertia);
+
     void markInitialized();
 
     boolean isInitialized();
 
     void setAngularVelocityRatio(EnumFacing side, Optional<Double> newRatio);
+
+    void resetNodeData();
 
     void writeToNBT(NBTTagCompound compound);
 

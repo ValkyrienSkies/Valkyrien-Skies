@@ -70,7 +70,7 @@ public interface IMulitblockSchematic {
 		if (buildSuccessful) {
 			for (BlockPosBlockPair pair : getStructureRelativeToCenter()) {
 				BlockPos realPos = pos.add(pair.getPos());
-				applyMultiblockCreation(world, realPos, pair.getPos(), getMultiblockRotation());
+				applyMultiblockCreation(world, realPos, pair.getPos());
 			}
 			return true;
 		}
@@ -78,7 +78,7 @@ public interface IMulitblockSchematic {
 		return false;
 	}
 	
-	void applyMultiblockCreation(World world, BlockPos tilePos, BlockPos relativePos, EnumMultiblockRotation rotation);
+	void applyMultiblockCreation(World world, BlockPos tilePos, BlockPos relativePos);
 
 	/**
 	 * Should only be called once by initialization code. Doesn't have any non

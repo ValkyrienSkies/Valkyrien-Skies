@@ -2,7 +2,7 @@ package valkyrienwarfare.addon.control.block.multiblocks;
 
 import net.minecraft.util.math.BlockPos;
 
-public interface ITileEntityMultiblockPart {
+public interface ITileEntityMultiblockPart<E extends IMulitblockSchematic> {
 	
 	boolean isPartOfAssembledMultiblock();
 	
@@ -18,7 +18,8 @@ public interface ITileEntityMultiblockPart {
 	
 	void dissembleMultiblockLocal();
 
-	void assembleMultiblock(IMulitblockSchematic schematic, EnumMultiblockRotation rotation, BlockPos relativePos);
-	
-	EnumMultiblockRotation getMultiblockRotation();
+	void assembleMultiblock(E schematic, BlockPos relativePos);
+
+	E getMultiBlockSchematic();
+
 }

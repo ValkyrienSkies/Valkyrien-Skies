@@ -41,7 +41,7 @@ public class EthereumEnginePartTileEntityRenderer extends TileEntitySpecialRende
 		} else if (tileentity.isMaster()) {
 			// Im not sure why this has to be done, something is wrong with my rotation
 			// intuition.
-			float tileYaw = -tileentity.getMultiblockRotation().getYaw() + 180;
+			float tileYaw = -tileentity.getMultiBlockSchematic().getMultiblockRotation().getYaw() + 180;
 			
 			GlStateManager.translate(.5, 0, .5);
 			GlStateManager.scale(3, 3, 3);

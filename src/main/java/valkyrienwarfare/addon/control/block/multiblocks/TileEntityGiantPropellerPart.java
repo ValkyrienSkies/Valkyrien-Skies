@@ -4,7 +4,7 @@ import net.minecraft.util.EnumFacing;
 import valkyrienwarfare.mod.coordinates.VectorImmutable;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
-public class TileEntityGiantPropellerPart extends TileEntityMultiblockPartForce {
+public class TileEntityGiantPropellerPart extends TileEntityMultiblockPartForce<GiantPropellerMultiblockSchematic> {
 
     private double prevPropellerAngle;
     private double propellerAngle;
@@ -34,14 +34,14 @@ public class TileEntityGiantPropellerPart extends TileEntityMultiblockPartForce 
         if (!this.isPartOfAssembledMultiblock()) {
             return null;
         }
-        return ((GiantPropellerMultiblockSchematic) getMultiblockSchematic()).getPropellerFacing();
+        return getMultiBlockSchematic().getPropellerFacing();
     }
 
     public int getPropellerRadius() {
         if (!this.isPartOfAssembledMultiblock()) {
             return 1;
         }
-        return ((GiantPropellerMultiblockSchematic) getMultiblockSchematic()).getPropellerRadius();
+        return getMultiBlockSchematic().getPropellerRadius();
     }
 
     public float getPropellerAngle(float partialTick) {

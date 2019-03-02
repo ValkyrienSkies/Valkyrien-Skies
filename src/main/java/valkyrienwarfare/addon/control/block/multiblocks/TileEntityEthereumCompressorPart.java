@@ -8,7 +8,7 @@ import valkyrienwarfare.mod.coordinates.VectorImmutable;
 import valkyrienwarfare.physics.management.PhysicsObject;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
-public class TileEntityEthereumCompressorPart extends TileEntityMultiblockPartForce implements IEtherEngine {
+public class TileEntityEthereumCompressorPart extends TileEntityMultiblockPartForce<EthereumCompressorMultiblockSchematic> implements IEtherEngine {
 
 	private static final VectorImmutable FORCE_NORMAL = new VectorImmutable(0, 1, 0);
 	private double prevKeyframe;

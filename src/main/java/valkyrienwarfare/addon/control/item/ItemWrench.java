@@ -31,7 +31,6 @@ public class ItemWrench extends Item {
 			return EnumActionResult.SUCCESS;
 		}
 		IBlockState clickedState = worldIn.getBlockState(pos);
-		Block block = clickedState.getBlock();
 		TileEntity blockTile = worldIn.getTileEntity(pos);
 
 		if (blockTile instanceof TileEntityEthereumEnginePart) {
@@ -62,8 +61,6 @@ public class ItemWrench extends Item {
 				if (facing.getAxis() != rudderSchem.getAxleAxisDirection().getAxis()) {
 					if (rudderSchem.getAxleFacingDirection() == facing) {
 						if (schematic.attemptToCreateMultiblock(worldIn, pos)) {
-							System.out.println(facing);
-							System.out.println(rudderSchem.getSchematicID());
 							return EnumActionResult.SUCCESS;
 						}
 					}
@@ -75,7 +72,6 @@ public class ItemWrench extends Item {
 		if (blockTile instanceof TileEntityGiantPropellerPart) {
 			List<IMulitblockSchematic> giantPropellerMultiblockSchematics = MultiblockRegistry
 					.getSchematicsWithPrefix("multiblock_giant_propeller");
-			System.out.println(giantPropellerMultiblockSchematics.size());
 			for (IMulitblockSchematic schematic : giantPropellerMultiblockSchematics) {
 				GiantPropellerMultiblockSchematic propSchem = (GiantPropellerMultiblockSchematic) schematic;
 				if (propSchem.getPropellerFacing() == facing) {

@@ -50,14 +50,13 @@ public class RudderAxleMultiblockSchematic implements IMulitblockSchematic {
 	}
 
 	@Override
-	public void applyMultiblockCreation(World world, BlockPos tilePos, BlockPos relativePos,
-			EnumMultiblockRotation rotation) {
+	public void applyMultiblockCreation(World world, BlockPos tilePos, BlockPos relativePos) {
 		TileEntity tileEntity = world.getTileEntity(tilePos);
 		if (!(tileEntity instanceof TileEntityRudderAxlePart)) {
 			throw new IllegalStateException();
 		}
 		TileEntityRudderAxlePart enginePart = (TileEntityRudderAxlePart) tileEntity;
-		enginePart.assembleMultiblock(this, rotation, relativePos);
+		enginePart.assembleMultiblock(this, relativePos);
 	}
 
 	@Override

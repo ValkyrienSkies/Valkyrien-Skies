@@ -8,7 +8,7 @@ import valkyrienwarfare.addon.control.block.torque.ImplRotationNode;
 
 import java.util.Optional;
 
-public class TileEntityEthereumEnginePart extends TileEntityMultiblockPart implements IRotationNodeProvider {
+public class TileEntityEthereumEnginePart extends TileEntityMultiblockPart<EthereumEngineMultiblockSchematic> implements IRotationNodeProvider {
 
 	protected final IRotationNode rotationNode;
 	private double prevKeyframe;
@@ -39,8 +39,8 @@ public class TileEntityEthereumEnginePart extends TileEntityMultiblockPart imple
 	}
 
 	@Override
-	public void assembleMultiblock(IMulitblockSchematic schematic, EnumMultiblockRotation rotation, BlockPos relativePos) {
-		super.assembleMultiblock(schematic, rotation, relativePos);
+	public void assembleMultiblock(EthereumEngineMultiblockSchematic schematic, BlockPos relativePos) {
+		super.assembleMultiblock(schematic, relativePos);
 		if (relativePos.equals(new BlockPos(-1, 0, -1))) {
 			System.out.println(this.getPos());
 		}

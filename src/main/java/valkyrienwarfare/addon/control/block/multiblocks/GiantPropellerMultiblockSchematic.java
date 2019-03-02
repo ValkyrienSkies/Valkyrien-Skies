@@ -73,13 +73,13 @@ public class GiantPropellerMultiblockSchematic implements IMulitblockSchematic {
     }
 
     @Override
-    public void applyMultiblockCreation(World world, BlockPos tilePos, BlockPos relativePos, EnumMultiblockRotation rotation) {
+    public void applyMultiblockCreation(World world, BlockPos tilePos, BlockPos relativePos) {
         TileEntity tileEntity = world.getTileEntity(tilePos);
         if (!(tileEntity instanceof TileEntityGiantPropellerPart)) {
             throw new IllegalStateException();
         }
         TileEntityGiantPropellerPart enginePart = (TileEntityGiantPropellerPart) tileEntity;
-        enginePart.assembleMultiblock(this, rotation, relativePos);
+        enginePart.assembleMultiblock(this, relativePos);
     }
 
     @Override

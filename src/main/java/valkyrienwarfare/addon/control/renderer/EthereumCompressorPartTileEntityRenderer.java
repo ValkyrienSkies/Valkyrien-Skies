@@ -39,7 +39,7 @@ public class EthereumCompressorPartTileEntityRenderer extends TileEntitySpecialR
 
 				GlStateManager.pushMatrix();
 
-				float rotationYaw = tileentity.getMultiblockRotation().getYaw();
+				float rotationYaw = tileentity.getMultiBlockSchematic().getMultiblockRotation().getYaw();
 
 				Vector centerOffset = new Vector(.5, 0, .5);
 				RotationMatrices.applyTransform(RotationMatrices.getRotationMatrix(0, -rotationYaw,0), centerOffset);

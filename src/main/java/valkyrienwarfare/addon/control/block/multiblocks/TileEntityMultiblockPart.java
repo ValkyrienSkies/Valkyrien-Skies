@@ -12,14 +12,13 @@ import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
-public abstract class TileEntityMultiblockPart extends BasicNodeTileEntity implements ITileEntityMultiblockPart {
+public abstract class TileEntityMultiblockPart<E extends IMulitblockSchematic> extends BasicNodeTileEntity implements ITileEntityMultiblockPart<E> {
 
 	private boolean isAssembled;
 	private boolean isMaster;
 	// The relative position of this tile to its master.
 	private BlockPos offsetPos;
-	private IMulitblockSchematic multiblockSchematic;
-	private EnumMultiblockRotation multiblockRotation;
+	private E multiblockSchematic;
 	
 	public TileEntityMultiblockPart() {
 		super();
@@ -27,7 +26,6 @@ public abstract class TileEntityMultiblockPart extends BasicNodeTileEntity imple
 		this.isMaster = false;
 		this.offsetPos = BlockPos.ORIGIN;
 		this.multiblockSchematic = null;
-		this.multiblockRotation = EnumMultiblockRotation.None;
 	}
 	
 	@Override
@@ -82,21 +80,20 @@ public abstract class TileEntityMultiblockPart extends BasicNodeTileEntity imple
 		this.sendUpdatePacketToAllNearby();
 		this.markDirty();
 	}
-	
+
 	@Override
-	public EnumMultiblockRotation getMultiblockRotation() {
-		return multiblockRotation;
-	}
-	
-	@Override
-	public void assembleMultiblock(IMulitblockSchematic schematic, EnumMultiblockRotation rotation, BlockPos relativePos) {
+	public void assembleMultiblock(E schematic, BlockPos relativePos) {
 		this.isAssembled = true;
 		this.isMaster = relativePos.equals(BlockPos.ORIGIN);
 		this.offsetPos = relativePos;
 		this.multiblockSchematic = schematic;
-		this.multiblockRotation = rotation;
 		this.sendUpdatePacketToAllNearby();
 		this.markDirty();
+	}
+
+	@Override
+	public E getMultiBlockSchematic() {
+		return this.multiblockSchematic;
 	}
 	
 	@Override
@@ -112,7 +109,6 @@ public abstract class TileEntityMultiblockPart extends BasicNodeTileEntity imple
 		} else {
 			toReturn.setString("multiblockSchematicID", "unknown");
 		}
-		toReturn.setInteger("rotationOrdinal", multiblockRotation.ordinal());
 		return toReturn;
 	}
 	
@@ -122,8 +118,7 @@ public abstract class TileEntityMultiblockPart extends BasicNodeTileEntity imple
 		isAssembled = compound.getBoolean("isAssembled");
 		isMaster = compound.getBoolean("isMaster");
 		offsetPos = new BlockPos(compound.getInteger("offsetPosX"), compound.getInteger("offsetPosY"), compound.getInteger("offsetPosZ"));
-		this.multiblockSchematic = MultiblockRegistry.getSchematicByID(compound.getString("multiblockSchematicID"));
-		this.multiblockRotation = EnumMultiblockRotation.values()[compound.getInteger("rotationOrdinal")];
+		this.multiblockSchematic = (E) MultiblockRegistry.getSchematicByID(compound.getString("multiblockSchematicID"));
 	}
 
 	protected final void sendUpdatePacketToAllNearby() {
@@ -139,10 +134,6 @@ public abstract class TileEntityMultiblockPart extends BasicNodeTileEntity imple
 		}
 		serverWorld.mcServer.getPlayerList().sendToAllNearExcept(null, pos.X, pos.Y, pos.Z, 128D,
 				getWorld().provider.getDimension(), spacketupdatetileentity);
-	}
-	
-	protected IMulitblockSchematic getMultiblockSchematic() {
-		return multiblockSchematic;
 	}
 	
 }

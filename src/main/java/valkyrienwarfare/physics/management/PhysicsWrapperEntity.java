@@ -57,7 +57,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
     public PhysicsWrapperEntity(World worldIn) {
         super(worldIn);
         this.physicsObject = new PhysicsObject(this);
-        dataManager.register(IS_NAME_CUSTOM, Boolean.valueOf(false));
+        dataManager.register(IS_NAME_CUSTOM, false);
     }
 
     public PhysicsWrapperEntity(World worldIn, double x, double y, double z, @Nullable EntityPlayer creator,

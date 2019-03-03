@@ -33,7 +33,7 @@ public class ShipNameUUIDData extends WorldSavedData {
 
     private static final String KEY = "ShipNameUUIDData";
 
-    public HashMap<String, Long> ShipNameToLongMap = new HashMap<String, Long>();
+    public HashMap<String, Long> ShipNameToLongMap = new HashMap<>();
 
     public ShipNameUUIDData(String name) {
         super(name);

@@ -150,7 +150,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
         if (!world.isRemote) {
             if (getCustomNameTag() != null && !getCustomNameTag().equals("")) {
                 // Update the name registry
-                boolean didRenameSuccessful = ShipNameUUIDData.get(world).renameShipInRegsitry(this, name,
+                boolean didRenameSuccessful = ShipNameUUIDData.get(world).renameShipInRegistry(this, name,
                         getCustomNameTag());
                 if (didRenameSuccessful) {
                     super.setCustomNameTag(name);

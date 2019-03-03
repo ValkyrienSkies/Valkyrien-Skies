@@ -72,7 +72,7 @@ public class ShipNameUUIDData extends WorldSavedData {
      * @param oldName
      * @return
      */
-    public boolean renameShipInRegsitry(PhysicsWrapperEntity wrapper, String newName, String oldName) {
+    public boolean renameShipInRegistry(PhysicsWrapperEntity wrapper, String newName, String oldName) {
         if (ShipNameToLongMap.containsKey(newName)) {
             return false;
         }

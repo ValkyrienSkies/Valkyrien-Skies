@@ -31,7 +31,7 @@ import java.util.Set;
 
 public class ShipNameUUIDData extends WorldSavedData {
 
-    private static final String key = "ShipNameUUIDData";
+    private static final String KEY = "ShipNameUUIDData";
 
     public HashMap<String, Long> ShipNameToLongMap = new HashMap<String, Long>();
 
@@ -40,15 +40,15 @@ public class ShipNameUUIDData extends WorldSavedData {
     }
 
     public ShipNameUUIDData() {
-        this(key);
+        this(KEY);
     }
 
     public static ShipNameUUIDData get(World world) {
         MapStorage storage = world.getPerWorldStorage();
-        ShipNameUUIDData data = (ShipNameUUIDData) storage.getOrLoadData(ShipNameUUIDData.class, key);
+        ShipNameUUIDData data = (ShipNameUUIDData) storage.getOrLoadData(ShipNameUUIDData.class, KEY);
         if (data == null) {
             data = new ShipNameUUIDData();
-            world.setData(key, data);
+            world.setData(KEY, data);
         }
         return data;
     }

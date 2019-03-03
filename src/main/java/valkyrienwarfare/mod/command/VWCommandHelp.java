@@ -42,13 +42,11 @@ public class VWCommandHelp extends CommandBase {
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
 		return "vw";
 	}
 
 	@Override
 	public String getUsage(ICommandSender sender) {
-		// TODO Auto-generated method stub
 		return "/vw       See entire list of commands for Valkyrien Warfare";
 	}
 

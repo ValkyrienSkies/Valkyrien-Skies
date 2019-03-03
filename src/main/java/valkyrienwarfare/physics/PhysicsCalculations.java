@@ -34,6 +34,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
+import valkyrienwarfare.addon.control.block.torque.IRotationNodeWorld;
+import valkyrienwarfare.addon.control.block.torque.ImplRotationNodeWorld;
 import valkyrienwarfare.addon.control.nodenetwork.INodeController;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.deprecated_api.IBlockForceProvider;
@@ -79,6 +81,8 @@ public class PhysicsCalculations {
     public Vector angularVelocity;
     public boolean actAsArchimedes;
 
+    private final IRotationNodeWorld physicsRotationNodeWorld;
+
     public PhysicsCalculations(PhysicsObject toProcess) {
         parent = toProcess;
         worldCollision = new WorldPhysicsCollider(this);
@@ -96,6 +100,7 @@ public class PhysicsCalculations {
         actAsArchimedes = false;
         // We need thread safe access to this.
         activeForcePositions = ConcurrentHashMap.newKeySet();
+        this.physicsRotationNodeWorld = new ImplRotationNodeWorld(parent);
     }
 
     public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos pos) {
@@ -342,7 +347,9 @@ public class PhysicsCalculations {
         		INodeController controller = nodesPriorityQueue.poll();
         		controller.onPhysicsTick(parent, this, this.getPhysicsTimeDeltaPerPhysTick());
         	}
-        	
+
+        	this.physicsRotationNodeWorld.processTorquePhysics(getPhysicsTimeDeltaPerPhysTick());
+
         	SortedMap<IBlockTorqueProvider, List<BlockPos>> torqueProviders = new TreeMap<IBlockTorqueProvider, List<BlockPos>>();
             for (BlockPos pos : activeForcePositions) {
                 IBlockState state = getParent().getShipChunks().getBlockState(pos);

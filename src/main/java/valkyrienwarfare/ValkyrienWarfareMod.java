@@ -24,10 +24,7 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
@@ -47,6 +44,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -97,6 +96,7 @@ import valkyrienwarfare.mod.physmanagement.chunk.DimensionPhysicsChunkManager;
 import valkyrienwarfare.mod.proxy.CommonProxy;
 import valkyrienwarfare.mod.proxy.ServerProxy;
 import valkyrienwarfare.physics.management.DimensionPhysObjectManager;
+import valkyrienwarfare.physics.management.PhysicsObject;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.util.PhysicsSettings;
 import valkyrienwarfare.util.RealMethods;
@@ -498,5 +498,14 @@ public class ValkyrienWarfareMod {
      */
     public boolean isRunningOnClient() {
         return !(proxy instanceof ServerProxy);
+    }
+
+    public static Optional<PhysicsObject> getPhysicsObject(World world, BlockPos pos) {
+        PhysicsWrapperEntity wrapperEntity = VW_PHYSICS_MANAGER.getObjectManagingPos(world, pos);
+        if (wrapperEntity != null) {
+            return Optional.of(wrapperEntity.getPhysicsObject());
+        } else {
+            return Optional.empty();
+        }
     }
 }

@@ -3,6 +3,8 @@ package valkyrienwarfare.addon.control.block.multiblocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import scala.tools.cmd.Opt;
+import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.block.torque.IRotationNode;
 import valkyrienwarfare.addon.control.block.torque.IRotationNodeProvider;
 import valkyrienwarfare.addon.control.block.torque.ImplRotationNode;
@@ -28,17 +30,8 @@ public class TileEntityEthereumEnginePart extends TileEntityMultiblockPart<Ether
 	public void update() {
 		super.update();
 		prevKeyframe = currentKeyframe;
-		currentKeyframe += .1D; // this.getRotationNode().get().getAngularVelocity() / 20D;
+		currentKeyframe += this.getRotationNode().get().getAngularVelocity() / 20D;
 		currentKeyframe = currentKeyframe % 99;
-	}
-
-	@Override
-	public double calculateInstantaneousTorque(PhysicsObject parent) {
-		double inertialTorque = calculateInstantaneousTorqueFromFriction(parent);
-		if (this.getRotationNode().get().getAngularVelocity() < Math.PI * 4D) {
-			inertialTorque += 10;
-		}
-		return inertialTorque;
 	}
 
 	public double getCurrentKeyframe(double partialTick) {
@@ -62,7 +55,10 @@ public class TileEntityEthereumEnginePart extends TileEntityMultiblockPart<Ether
 	@Override
 	public void dissembleMultiblockLocal() {
 		super.dissembleMultiblockLocal();
-		this.rotationNode.resetNodeData();
+		Optional<PhysicsObject> object = ValkyrienWarfareMod.getPhysicsObject(getWorld(), getPos());
+		if (object.isPresent()) {
+			this.rotationNode.resetNodeData();
+		}
 	}
 	// The following methods are basically just here because interfaces can't have fields.
 	@Override

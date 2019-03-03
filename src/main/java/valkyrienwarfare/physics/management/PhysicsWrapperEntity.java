@@ -75,7 +75,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
         IAirshipCounterCapability counter = creator.getCapability(ValkyrienWarfareMod.airshipCounter, null);
         counter.onCreate();
 
-        setCustomNameTagInitial(creator.getName() + ":" + counter.getAirshipCountEver());
+        super.setCustomNameTag(creator.getName() + ":" + counter.getAirshipCountEver());
         ShipNameUUIDData.get(worldIn).placeShipInRegistry(this, getCustomNameTag());
     }
 
@@ -92,7 +92,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 
         getPhysicsObject().processChunkClaims(schematic);
 
-        setCustomNameTagInitial("ShipRandom" + ":" + Math.random() * 10000000);
+        super.setCustomNameTag("ShipRandom" + ":" + Math.random() * 10000000);
         ShipNameUUIDData.get(worldIn).placeShipInRegistry(this, getCustomNameTag());
     }
 
@@ -206,10 +206,6 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
     @SideOnly(Side.CLIENT)
     public boolean getAlwaysRenderNameTagForRender() {
         return getPhysicsObject().isNameCustom();
-    }
-
-    public void setCustomNameTagInitial(String name) {
-        super.setCustomNameTag(name);
     }
 
     @Override

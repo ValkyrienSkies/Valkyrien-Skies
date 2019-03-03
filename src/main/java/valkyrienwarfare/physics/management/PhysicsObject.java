@@ -226,7 +226,7 @@ public class PhysicsObject implements ISubspaceProvider {
 							}
 						}
 					}
-					ValkyrienWarfareMod.VW_CHUNK_MANAGER.getManagerForWorld(getWorldObj()).data.getAvalibleChunkKeys()
+					ValkyrienWarfareMod.VW_CHUNK_MANAGER.getManagerForWorld(getWorldObj()).data.getAvailableChunkKeys()
 							.add(getOwnedChunks().getCenterX());
 				}
 

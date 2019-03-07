@@ -123,6 +123,18 @@ public class ImplRotationNode<T extends TileEntity & IRotationNodeProvider> impl
         angularVelocityRatios[side.ordinal()] = newRatio;
     }
 
+    @PhysicsThreadOnly
+    @Override
+    public void setAngularVelocity(double angularVelocity) {
+        this.angularVelocity = angularVelocity;
+    }
+
+    @PhysicsThreadOnly
+    @Override
+    public void setAngularRotation(double angularRotation) {
+        this.angularRotation = angularRotation;
+    }
+
     @Override
     public void writeToNBT(NBTTagCompound compound) {
         // TODO: Implement

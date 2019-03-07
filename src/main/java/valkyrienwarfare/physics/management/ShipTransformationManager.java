@@ -233,16 +233,18 @@ public class ShipTransformationManager {
             return;
         }
         final BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
-        final double[] MDouble = getCurrentTickTransform().getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL);
+        final double[] MDouble = getCurrentPhysicsTransform().getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL);
         final float[] M = new float[MDouble.length];
         for (int i = 0; i < MDouble.length; i++) {
             M[i] = (float) MDouble[i];
         }
 
         float minX, minY, minZ, maxX, maxY, maxZ;
-        minX = minY = minZ = Float.MAX_VALUE;
-        maxX = maxY = maxZ = -Float.MAX_VALUE;
+        maxX = minX = (float) parent.getWrapperEntity().posX;
+        maxY = minY = (float) parent.getWrapperEntity().posY;
+        maxZ = minZ = (float) parent.getWrapperEntity().posZ;
 
+        // We loop through this int list instead of a blockpos list because they fit much better in the cache,
         for (int i = parent.getBlockPositionsGameTick().size() - 1; i >= 0; i--) {
             int blockPos = parent.getBlockPositionsGameTick().get(i);
             parent.setBlockPosFromIntRelToShop(blockPos, pos);
@@ -262,7 +264,7 @@ public class ShipTransformationManager {
             minZ = Math.min(newZ, minZ);
             maxZ = Math.max(newZ, maxZ);
         }
-        AxisAlignedBB newBB = new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ).grow(1.6D);
+        AxisAlignedBB newBB = new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ).grow(3D);
         // Just a quick sanity check
         if (newBB.getAverageEdgeLength() < 1000000D) {
             parent.setShipBoundingBox(newBB);

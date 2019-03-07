@@ -519,6 +519,8 @@ public class PhysicsCalculations {
         NBTUtils.writeVectorToNBT("CM", gameTickCenterOfMass, compound);
 
         NBTUtils.write3x3MatrixToNBT("MOI", gameMoITensor, compound);
+
+        physicsRotationNodeWorld.writeToNBTTag(compound);
     }
 
     public void readFromNBTTag(NBTTagCompound compound) {
@@ -529,6 +531,8 @@ public class PhysicsCalculations {
         gameTickCenterOfMass = NBTUtils.readVectorFromNBT("CM", compound);
 
         gameMoITensor = NBTUtils.read3x3MatrixFromNBT("MOI", compound);
+
+        physicsRotationNodeWorld.readFromNBTTag(compound);
     }
 
     // Called upon a Ship being created from the World, and generates the physics

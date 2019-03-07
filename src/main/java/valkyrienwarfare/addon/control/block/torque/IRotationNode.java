@@ -12,6 +12,26 @@ import java.util.function.Function;
 public interface IRotationNode extends Comparator<IRotationNode> {
 
     @PhysicsThreadOnly
+    default double getEnergy() {
+        return getAngularVelocity() * getAngularVelocity() * getRotationalInertia()/ 2D;
+    }
+
+    @PhysicsThreadOnly
+    void setAngularVelocity(double angularVelocity);
+
+    @PhysicsThreadOnly
+    void setAngularRotation(double angularRotation);
+
+    @PhysicsThreadOnly
+    default void simulate(double timeStep, PhysicsObject parent) {
+        System.out.println("reee");
+        double torque = 1;//calculateInstantaneousTorque(parent);
+        double deltaVelocity = (torque / getRotationalInertia()) * timeStep;
+        this.setAngularRotation(this.getAngularRotation() + (this.getAngularVelocity() * timeStep) + ((torque / getRotationalInertia()) * timeStep * timeStep / 2D));
+        this.setAngularVelocity(this.getAngularVelocity() + deltaVelocity);
+    }
+
+    @PhysicsThreadOnly
     default double calculateInstantaneousTorque(PhysicsObject parent) {
         if (!getCustomTorqueFunction().isPresent()) {
             // Default friction calculation

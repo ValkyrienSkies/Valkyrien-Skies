@@ -71,7 +71,7 @@ public class TileEntityBasicRotationTile extends TileEntity implements IRotation
             lastRotation = rotation;
             rotation += (nextRotation - rotation) * .85D;
         } else {
-            rotation -= Math.PI / 40;
+            rotation -= this.rotationNode.getAngularRotation();
             sendUpdatePacketToAllNearby();
         }
     }

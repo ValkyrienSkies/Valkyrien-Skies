@@ -1,5 +1,6 @@
 package valkyrienwarfare.addon.control.block.torque;
 
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.function.Consumer;
@@ -68,5 +69,9 @@ public interface IRotationNodeWorld {
      */
     @PhysicsThreadOnly()
     IRotationNode removePos(BlockPos pos);
+
+    void readFromNBTTag(NBTTagCompound compound);
+
+    void writeToNBTTag(NBTTagCompound compound);
 
 }

@@ -673,19 +673,24 @@ public class PhysicsObject implements ISubspaceProvider {
         claimedChunksEntries = new PlayerChunkMapEntry[(getOwnedChunks().getRadius() * 2) + 1][(getOwnedChunks().getRadius() * 2) + 1];
         for (int x = getOwnedChunks().getMinX(); x <= getOwnedChunks().getMaxX(); x++) {
             for (int z = getOwnedChunks().getMinZ(); z <= getOwnedChunks().getMaxZ(); z++) {
-                Chunk chunk = getWorldObj().getChunkFromChunkCoords(x, z);
-                if (chunk == null) {
-                    System.out.println("Just a loaded a null chunk");
-                    chunk = new Chunk(getWorldObj(), x, z);
+                // Added try catch to prevent ships deleting themselves because of a failed tile entity load.
+                try {
+                    Chunk chunk = getWorldObj().getChunkFromChunkCoords(x, z);
+                    if (chunk == null) {
+                        System.out.println("Just a loaded a null chunk");
+                        chunk = new Chunk(getWorldObj(), x, z);
+                    }
+                    // Do this to get it re-integrated into the world
+                    if (!getWorldObj().isRemote) {
+                        injectChunkIntoWorld(chunk, x, z, false);
+                    }
+                    for (Entry<BlockPos, TileEntity> entry : chunk.tileEntities.entrySet()) {
+                        this.onSetTileEntity(entry.getKey(), entry.getValue());
+                    }
+                    claimedChunks[x - getOwnedChunks().getMinX()][z - getOwnedChunks().getMinZ()] = chunk;
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                // Do this to get it re-integrated into the world
-                if (!getWorldObj().isRemote) {
-                    injectChunkIntoWorld(chunk, x, z, false);
-                }
-                for (Entry<BlockPos, TileEntity> entry : chunk.tileEntities.entrySet()) {
-                    this.onSetTileEntity(entry.getKey(), entry.getValue());
-                }
-                claimedChunks[x - getOwnedChunks().getMinX()][z - getOwnedChunks().getMinZ()] = chunk;
             }
         }
         setShipChunks(new VWChunkCache(getWorldObj(), claimedChunks));
@@ -824,6 +829,9 @@ public class PhysicsObject implements ISubspaceProvider {
     }
 
     public void readFromNBTTag(NBTTagCompound compound) {
+        // First so we can get our torque loaded FIRST!
+        getPhysicsProcessor().readFromNBTTag(compound);
+
         setOwnedChunks(new VWChunkClaim(compound));
         setCenterCoord(NBTUtils.readVectorFromNBT("c", compound));
         ShipTransform savedTransform = NBTUtils.readShipTransformFromNBT("currentTickTransform", compound);
@@ -860,7 +868,6 @@ public class PhysicsObject implements ISubspaceProvider {
 
         loadClaimedChunks();
         entityLocalPositions = NBTUtils.readEntityPositionMap("entityPosHashMap", compound);
-        getPhysicsProcessor().readFromNBTTag(compound);
 
         getAllowedUsers().clear();
         Collections.addAll(getAllowedUsers(), compound.getString("allowedUsers").split(";"));

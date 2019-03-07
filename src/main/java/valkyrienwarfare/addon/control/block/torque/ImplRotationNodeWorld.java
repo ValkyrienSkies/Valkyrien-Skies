@@ -1,10 +1,11 @@
 package valkyrienwarfare.addon.control.block.torque;
 
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
 
@@ -53,9 +54,60 @@ public class ImplRotationNodeWorld implements IRotationNodeWorld {
     @PhysicsThreadOnly
     @Override
     public void processTorquePhysics(double timeDelta) {
+        System.out.println("Hi");
         PhysicsAssert.assertPhysicsThread();
         processQueuedTasks();
         // Write da code here!
+        SortedSet<IRotationNode> nodesToVisit = new TreeSet<>(posToNodeMap.values());
+        while (nodesToVisit.size() > 0) {
+            IRotationNode start = nodesToVisit.first();
+            try {
+                NodeTaskProcessed nodeNetworkResult = processNodeNetwork(start, null, null, nodesToVisit, timeDelta);
+                // Then set the crap
+                processNodeNetworkPhase2(start, Math.sqrt(nodeNetworkResult.totalEnergy * 2D / nodeNetworkResult.v_sqr_coefficent), new HashSet<>());
+            } catch (Exception e) {
+                processNodeNetworkPhase2(start, 0, new HashSet<>());
+            }
+        }
+    }
+
+    private NodeTaskProcessed processNodeNetwork(IRotationNode start, IRotationNode from, EnumFacing sideFrom, SortedSet<IRotationNode> nodesToVisit, double timeDelta) {
+        if (!nodesToVisit.contains(start)) {
+            throw new IllegalStateException("This is not an acyclic graph!");
+        }
+        // This first
+        nodesToVisit.remove(start);
+        // Then simulate torque added energy
+        start.simulate(timeDelta, this.parent);
+        // Then add energy to the count
+        double totalEnergy = start.getEnergy();
+        // Then calculate the coefficient
+        double coefficient = start.getRotationalInertia();
+        for (EnumFacing facing : EnumFacing.values()) {
+            Optional<IRotationNode> nodeAtFacing = start.getTileOnSide(facing);
+            if (nodeAtFacing.isPresent()) {
+                NodeTaskProcessed subTask = processNodeNetwork(nodeAtFacing.get(), start, facing, nodesToVisit, timeDelta);
+                totalEnergy += subTask.totalEnergy;
+                coefficient += subTask.v_sqr_coefficent;
+            }
+        }
+        // Finally multiply by the input ratio (Except in the case of the first one)
+        if (from != null) {
+            coefficient *= (from.getAngularVelocityRatioFor(sideFrom).get() / start.getAngularVelocityRatioFor(sideFrom.getOpposite()).get());
+        }
+        return new NodeTaskProcessed(totalEnergy, coefficient);
+    }
+
+    private void processNodeNetworkPhase2(IRotationNode start, double newAngularVel, Set<IRotationNode> visitedNodes) {
+        assert !visitedNodes.contains(start) : "This isn't right!";
+        visitedNodes.add(start);
+        start.setAngularVelocity(newAngularVel);
+        for (EnumFacing facing : EnumFacing.values()) {
+            Optional<IRotationNode> rotationNodeAtSide = start.getTileOnSide(facing);
+            if (rotationNodeAtSide.isPresent()) {
+                processNodeNetworkPhase2(rotationNodeAtSide.get(), newAngularVel * start.getAngularVelocityRatioFor(facing).get() / rotationNodeAtSide.get().getAngularVelocityRatioFor(facing.getOpposite()).get(), visitedNodes);
+            }
+        }
     }
 
     /**
@@ -107,5 +159,25 @@ public class ImplRotationNodeWorld implements IRotationNodeWorld {
     public IRotationNode removePos(BlockPos pos) {
         PhysicsAssert.assertPhysicsThread();
         return posToNodeMap.remove(pos);
+    }
+
+    @Override
+    public void readFromNBTTag(NBTTagCompound compound) {
+
+    }
+
+    @Override
+    public void writeToNBTTag(NBTTagCompound compound) {
+
+    }
+
+    private static class NodeTaskProcessed {
+        private double totalEnergy;
+        private double v_sqr_coefficent;
+
+        private NodeTaskProcessed(double totalEnergy, double v_sqr_coefficent) {
+            this.totalEnergy = totalEnergy;
+            this.v_sqr_coefficent = v_sqr_coefficent;
+        }
     }
 }

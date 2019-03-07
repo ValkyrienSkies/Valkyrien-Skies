@@ -7,6 +7,9 @@ import java.util.Optional;
 
 public class TileEntityRotationTrainAxle extends TileEntityBasicRotationTile {
 
+    // Used internally by Minecraft
+    public TileEntityRotationTrainAxle() {}
+
     public TileEntityRotationTrainAxle(EnumFacing.Axis axleAxis) {
         super();
         setAxleAxis(axleAxis);

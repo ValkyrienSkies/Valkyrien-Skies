@@ -3,6 +3,7 @@ package valkyrienwarfare.addon.control.block.multiblocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import org.lwjgl.Sys;
@@ -50,21 +51,38 @@ public class TileEntityEthereumEnginePart extends TileEntityMultiblockPart<Ether
 					this.rotationNode.markInitialized();
 				}
 			}
-			prevKeyframe = currentKeyframe;
-			currentKeyframe += this.getRotationNode().get().getAngularVelocity() / 20D;
-			currentKeyframe = currentKeyframe % 99;
+
+			if (this.isPartOfAssembledMultiblock() && this.isMaster()) {
+				BlockPos torqueOutputPos = this.getMultiBlockSchematic().getTorqueOutputPos().add(this.getPos());
+				TileEntity tileEntity = this.getWorld().getTileEntity(torqueOutputPos);
+				if (tileEntity instanceof TileEntityEthereumEnginePart) {
+					if (((TileEntityEthereumEnginePart) tileEntity).getRotationNode().isPresent()) {
+						prevKeyframe = currentKeyframe;
+						double radiansRotatedThisTick = ((TileEntityEthereumEnginePart) tileEntity).getRotationNode().get().getAngularVelocityUnsynchronized() / 20D;
+						// Thats about right, although the x1.3 multiplier tells me the world node math is wrong.
+						currentKeyframe += radiansRotatedThisTick * 99D * 1.3D / (6D * Math.PI);
+						currentKeyframe = currentKeyframe % 99;
+					}
+				}
+				sendUpdatePacketToAllNearby();
+			}
 		} else {
 			prevKeyframe = currentKeyframe;
-			currentKeyframe += (nextKeyframe - currentKeyframe) * .85;
+			double increment = nextKeyframe - currentKeyframe;
+			if (increment < 0) {
+				increment += 99;
+			}
+			currentKeyframe += (increment * .85);
+			currentKeyframe %= 99;
 		}
 	}
 
 	public double getCurrentKeyframe(double partialTick) {
 		double increment = currentKeyframe - prevKeyframe;
 		if (increment < 0) {
-			increment = (increment % 99) + 99;
+			increment += 99;
 		}
-		return prevKeyframe + (increment * partialTick) + 1;
+		return ((prevKeyframe + (increment * partialTick)) % 99) + 1;
 	}
 
 	@Override
@@ -76,9 +94,9 @@ public class TileEntityEthereumEnginePart extends TileEntityMultiblockPart<Ether
 				IRotationNodeWorld nodeWorld = objectOptional.get().getPhysicsProcessor().getPhysicsRotationNodeWorld();
 				EnumFacing facing = EnumFacing.getFacingFromVector(schematic.getTorqueOutputDirection().getX(), schematic.getTorqueOutputDirection().getY(), schematic.getTorqueOutputDirection().getZ());
 				assert getRotationNode().isPresent() : "How the heck did we try assembling the multiblock without a rotation node initialized!";
-				System.out.println(rotationNode.getNodePos());
+//				System.out.println(rotationNode.getNodePos());
 				this.rotationNode.queueTask(() -> {
-					rotationNode.setAngularVelocityRatio(facing, Optional.of(1D));
+					rotationNode.setAngularVelocityRatio(facing, Optional.of(-1D));
 					rotationNode.setCustomTorqueFunction((physicsObject -> 10 - rotationNode.getAngularVelocity()));
 				});
 				nodeWorld.enqueueTaskOntoWorld(() -> nodeWorld.setNodeFromPos(pos, this.rotationNode));

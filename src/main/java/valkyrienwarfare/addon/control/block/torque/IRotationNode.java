@@ -36,7 +36,7 @@ public interface IRotationNode extends Comparable<IRotationNode> {
     default double calculateInstantaneousTorque(PhysicsObject parent) {
         if (!getCustomTorqueFunction().isPresent()) {
             // Default friction calculation
-            return getAngularVelocity() * -.1 * getRotationalInertia();
+            return getAngularVelocity() * -.4 * getRotationalInertia();
         } else {
             // System.out.println("test");
             return getCustomTorqueFunction().get().apply(parent);
@@ -74,6 +74,8 @@ public interface IRotationNode extends Comparable<IRotationNode> {
     double getAngularRotation();
 
     double getAngularRotationUnsynchronized();
+
+    double getAngularVelocityUnsynchronized();
 
     double getRotationalInertia();
 

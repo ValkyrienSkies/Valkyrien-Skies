@@ -57,7 +57,7 @@ public class TileEntityBasicRotationTile extends TileEntity implements IRotation
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
         rotationNode.readFromNBT(compound);
-        this.lastRotation = this.rotation = this.nextRotation = rotationNode.getAngularRotation();
+        this.lastRotation = this.rotation = this.nextRotation = rotationNode.getAngularRotationUnsynchronized();
     }
 
     @Override

@@ -69,12 +69,12 @@ public class ImplRotationNodeWorld implements IRotationNodeWorld {
         // System.out.println("Hi");
         PhysicsAssert.assertPhysicsThread();
 
-        Iterator<Map.Entry<BlockPos, IRotationNode>> iter = posToNodeMap.entrySet().iterator();
-        while (iter.hasNext()) {
-            Map.Entry<BlockPos, IRotationNode> entry = iter.next();
+        Iterator<Map.Entry<BlockPos, IRotationNode>> nodeIterator = posToNodeMap.entrySet().iterator();
+        while (nodeIterator.hasNext()) {
+            Map.Entry<BlockPos, IRotationNode> entry = nodeIterator.next();
             if (entry.getValue().markedForDeletion()) {
                 System.out.println("Deleted");
-                iter.remove();
+                nodeIterator.remove();
             }
         }
 

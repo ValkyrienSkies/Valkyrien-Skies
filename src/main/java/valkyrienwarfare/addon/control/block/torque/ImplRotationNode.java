@@ -187,4 +187,9 @@ public class ImplRotationNode<T extends TileEntity & IRotationNodeProvider> impl
         return markedForDeletion.get();
     }
 
+    @Override
+    public double getAngularVelocityUnsynchronized() {
+        return this.angularVelocity;
+    }
+
 }

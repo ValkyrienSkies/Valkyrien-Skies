@@ -829,11 +829,15 @@ public class PhysicsObject implements ISubspaceProvider {
     }
 
     public void readFromNBTTag(NBTTagCompound compound) {
+        // This first
+        setCenterCoord(NBTUtils.readVectorFromNBT("c", compound));
+        // Then this second
+        createPhysicsCalculations();
+        assert getPhysicsProcessor() != null : "This is horrible!";
         // First so we can get our torque loaded FIRST!
         getPhysicsProcessor().readFromNBTTag(compound);
 
         setOwnedChunks(new VWChunkClaim(compound));
-        setCenterCoord(NBTUtils.readVectorFromNBT("c", compound));
         ShipTransform savedTransform = NBTUtils.readShipTransformFromNBT("currentTickTransform", compound);
         if (savedTransform != null) {
         	Vector centerOfMassInGlobal = new Vector(getCenterCoord());

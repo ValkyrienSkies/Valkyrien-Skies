@@ -12,6 +12,7 @@ import net.minecraft.world.WorldServer;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.math.Vector;
+import valkyrienwarfare.physics.management.PhysicsObject;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 import java.util.Optional;
@@ -32,14 +33,15 @@ public class TileEntityBasicRotationTile extends TileEntity implements IRotation
     private double rotation = 0;
     private double lastRotation = 0;
     private double nextRotation;
+    private boolean firstUpdate;
 
     public TileEntityBasicRotationTile() {
         super();
-        this.rotationNode = new ImplRotationNode<>(this);
-        this.rotationNode.setRotationalInertia(.05);
+        this.rotationNode = new ImplRotationNode<>(this, .1);
         this.rotation = 0;
         this.lastRotation = 0;
         this.nextRotation = 0;
+        this.firstUpdate = true;
     }
 
     @Override
@@ -71,7 +73,18 @@ public class TileEntityBasicRotationTile extends TileEntity implements IRotation
             lastRotation = rotation;
             rotation += (nextRotation - rotation) * .85D;
         } else {
-            rotation -= this.rotationNode.getAngularRotation();
+            if (this.firstUpdate) {
+                // Inject the rotation node into the physics world.
+                Optional<PhysicsObject> physicsObjectOptional = ValkyrienWarfareMod.getPhysicsObject(getWorld(), getPos());
+                if (physicsObjectOptional.isPresent()) {
+                    IRotationNodeWorld nodeWorld = physicsObjectOptional.get().getPhysicsProcessor().getPhysicsRotationNodeWorld();
+                    rotationNode.markInitialized();
+                    nodeWorld.enqueueTaskOntoWorld(() -> nodeWorld.setNodeFromPos(getPos(), rotationNode));
+                    // nodeWorld.enqueueTaskOntoNode((task) -> task.setCustomTorqueFunction((physObject) -> 0.1D), getPos());
+                }
+                this.firstUpdate = false;
+            }
+            rotation = this.rotationNode.getAngularRotationUnsynchronized();
             sendUpdatePacketToAllNearby();
         }
     }
@@ -90,6 +103,12 @@ public class TileEntityBasicRotationTile extends TileEntity implements IRotation
     @Override
     public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
         nextRotation = pkt.getNbtCompound().getDouble("rotation");
+    }
+
+    @Override
+    public void invalidate() {
+        super.invalidate();
+        rotationNode.queueNodeForDeletion();
     }
 
     private void sendUpdatePacketToAllNearby() {

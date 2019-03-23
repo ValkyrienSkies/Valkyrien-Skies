@@ -1,12 +1,16 @@
 package valkyrienwarfare.addon.control.block.multiblocks;
 
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import org.lwjgl.Sys;
 import scala.tools.cmd.Opt;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.block.torque.IRotationNode;
 import valkyrienwarfare.addon.control.block.torque.IRotationNodeProvider;
+import valkyrienwarfare.addon.control.block.torque.IRotationNodeWorld;
 import valkyrienwarfare.addon.control.block.torque.ImplRotationNode;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
@@ -17,21 +21,42 @@ public class TileEntityEthereumEnginePart extends TileEntityMultiblockPart<Ether
 	protected final IRotationNode rotationNode;
 	private double prevKeyframe;
 	private double currentKeyframe;
-	
+	private double nextKeyframe;
+	private boolean firstUpdate;
+
 	public TileEntityEthereumEnginePart() {
 		super();
 		this.prevKeyframe = 0;
 		this.currentKeyframe = 0;
-		this.rotationNode = new ImplRotationNode<>(this);
-		this.rotationNode.setRotationalInertia(5);
+		this.rotationNode = new ImplRotationNode<>(this, 5);
 	}
 
 	@Override
 	public void update() {
 		super.update();
-		prevKeyframe = currentKeyframe;
-		currentKeyframe += this.getRotationNode().get().getAngularVelocity() / 20D;
-		currentKeyframe = currentKeyframe % 99;
+		if (!this.getWorld().isRemote) {
+			if (this.firstUpdate) {
+				// Inject the rotation node into the physics world.
+				Optional<PhysicsObject> physicsObjectOptional = ValkyrienWarfareMod.getPhysicsObject(getWorld(), getPos());
+				if (physicsObjectOptional.isPresent()) {
+					IRotationNodeWorld nodeWorld = physicsObjectOptional.get().getPhysicsProcessor().getPhysicsRotationNodeWorld();
+					rotationNode.markInitialized();
+					nodeWorld.enqueueTaskOntoWorld(() -> nodeWorld.setNodeFromPos(getPos(), rotationNode));
+					// nodeWorld.enqueueTaskOntoNode((task) -> task.setCustomTorqueFunction((physObject) -> 0.1D), getPos());
+				}
+				this.firstUpdate = false;
+			} else {
+				if (!getRotationNode().isPresent()) {
+					this.rotationNode.markInitialized();
+				}
+			}
+			prevKeyframe = currentKeyframe;
+			currentKeyframe += this.getRotationNode().get().getAngularVelocity() / 20D;
+			currentKeyframe = currentKeyframe % 99;
+		} else {
+			prevKeyframe = currentKeyframe;
+			currentKeyframe += (nextKeyframe - currentKeyframe) * .85;
+		}
 	}
 
 	public double getCurrentKeyframe(double partialTick) {
@@ -46,9 +71,19 @@ public class TileEntityEthereumEnginePart extends TileEntityMultiblockPart<Ether
 	public void assembleMultiblock(EthereumEngineMultiblockSchematic schematic, BlockPos relativePos) {
 		super.assembleMultiblock(schematic, relativePos);
 		if (relativePos.equals(schematic.getTorqueOutputPos())) {
-			EnumFacing facing = EnumFacing.getFacingFromVector(schematic.getTorqueOutputDirection().getX(), schematic.getTorqueOutputDirection().getY(), schematic.getTorqueOutputDirection().getZ());
-			assert getRotationNode().isPresent() : "How the heck did we try assembling the multiblock without a rotation node initialized!";
-			getRotationNode().get().setAngularVelocityRatio(facing, Optional.of(1D));
+			Optional<PhysicsObject> objectOptional = ValkyrienWarfareMod.getPhysicsObject(getWorld(), getPos());
+			if (objectOptional.isPresent()) {
+				IRotationNodeWorld nodeWorld = objectOptional.get().getPhysicsProcessor().getPhysicsRotationNodeWorld();
+				EnumFacing facing = EnumFacing.getFacingFromVector(schematic.getTorqueOutputDirection().getX(), schematic.getTorqueOutputDirection().getY(), schematic.getTorqueOutputDirection().getZ());
+				assert getRotationNode().isPresent() : "How the heck did we try assembling the multiblock without a rotation node initialized!";
+				System.out.println(rotationNode.getNodePos());
+				this.rotationNode.queueTask(() -> {
+					rotationNode.setAngularVelocityRatio(facing, Optional.of(1D));
+					rotationNode.setCustomTorqueFunction((physicsObject -> 10 - rotationNode.getAngularVelocity()));
+				});
+				nodeWorld.enqueueTaskOntoWorld(() -> nodeWorld.setNodeFromPos(pos, this.rotationNode));
+			}
+
 		}
 	}
 
@@ -57,7 +92,8 @@ public class TileEntityEthereumEnginePart extends TileEntityMultiblockPart<Ether
 		super.dissembleMultiblockLocal();
 		Optional<PhysicsObject> object = ValkyrienWarfareMod.getPhysicsObject(getWorld(), getPos());
 		if (object.isPresent()) {
-			this.rotationNode.resetNodeData();
+			this.rotationNode.queueTask(() -> rotationNode.resetNodeData());
+
 		}
 	}
 	// The following methods are basically just here because interfaces can't have fields.
@@ -74,7 +110,7 @@ public class TileEntityEthereumEnginePart extends TileEntityMultiblockPart<Ether
 	public void readFromNBT(NBTTagCompound compound) {
 		super.readFromNBT(compound);
 		rotationNode.readFromNBT(compound);
-		rotationNode.markInitialized();
+//		rotationNode.markInitialized();
 	}
 
 	@Override
@@ -82,5 +118,18 @@ public class TileEntityEthereumEnginePart extends TileEntityMultiblockPart<Ether
 		super.writeToNBT(compound);
 		rotationNode.writeToNBT(compound);
 		return compound;
+	}
+
+	@Override
+	public SPacketUpdateTileEntity getUpdatePacket() {
+		NBTTagCompound tagToSend = super.getUpdateTag();
+		tagToSend.setDouble("currentKeyframe", currentKeyframe);
+		return new SPacketUpdateTileEntity(this.getPos(), 0, tagToSend);
+	}
+
+	@Override
+	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
+		super.onDataPacket(net, pkt);
+		nextKeyframe = pkt.getNbtCompound().getDouble("currentKeyframe");
 	}
 }

@@ -4,12 +4,15 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import org.lwjgl.Sys;
 import valkyrienwarfare.mod.multithreaded.VWThread;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
 public class ImplRotationNode<T extends TileEntity & IRotationNodeProvider> implements IRotationNode {
@@ -22,17 +25,21 @@ public class ImplRotationNode<T extends TileEntity & IRotationNodeProvider> impl
     private Optional<BlockPos> nodePos;
     private Optional<Function<PhysicsObject, Double>> customTorqueFunction;
     private boolean initialized;
+    private final ConcurrentLinkedQueue<Runnable> queuedTasks;
+    private AtomicBoolean markedForDeletion;
 
-    public ImplRotationNode(T entity) {
+    public ImplRotationNode(T entity, double rotationalInertia) {
         this.tileEntity = entity;
         // Size 6 because there are 6 sides
         this.angularVelocityRatios = new Optional[] {Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()};
         this.angularVelocity = 0;
         this.angularRotation = 0;
-        this.rotationalInertia = 1;
+        this.rotationalInertia = rotationalInertia;
         this.nodePos = Optional.empty();
         this.customTorqueFunction = Optional.empty();
         this.initialized = false;
+        this.queuedTasks = new ConcurrentLinkedQueue<>();
+        this.markedForDeletion = new AtomicBoolean(false);
     }
 
     @PhysicsThreadOnly
@@ -150,9 +157,34 @@ public class ImplRotationNode<T extends TileEntity & IRotationNodeProvider> impl
         return nodePos;
     }
 
+    @Override
+    public void queueTask(Runnable task) {
+        queuedTasks.add(task);
+    }
+
+    @Override
+    public ConcurrentLinkedQueue<Runnable> getQueuedTasks() {
+        return queuedTasks;
+    }
+
+    @Override
+    public double getAngularRotationUnsynchronized() {
+        return angularRotation;
+    }
+
     private void assertInitialized() {
         assert isInitialized() : "We are not yet initialized!";
         assert nodePos.isPresent(): "There is NO node pos!";
+    }
+
+    @Override
+    public void queueNodeForDeletion() {
+        this.markedForDeletion.set(true);
+    }
+
+    @Override
+    public boolean markedForDeletion() {
+        return markedForDeletion.get();
     }
 
 }

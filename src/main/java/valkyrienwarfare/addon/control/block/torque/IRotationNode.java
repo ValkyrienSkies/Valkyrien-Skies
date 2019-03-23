@@ -2,14 +2,16 @@ package valkyrienwarfare.addon.control.block.torque;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldServer;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Function;
 
-public interface IRotationNode extends Comparator<IRotationNode> {
+public interface IRotationNode extends Comparable<IRotationNode> {
 
     @PhysicsThreadOnly
     default double getEnergy() {
@@ -24,8 +26,7 @@ public interface IRotationNode extends Comparator<IRotationNode> {
 
     @PhysicsThreadOnly
     default void simulate(double timeStep, PhysicsObject parent) {
-        System.out.println("reee");
-        double torque = 1;//calculateInstantaneousTorque(parent);
+        double torque = calculateInstantaneousTorque(parent);
         double deltaVelocity = (torque / getRotationalInertia()) * timeStep;
         this.setAngularRotation(this.getAngularRotation() + (this.getAngularVelocity() * timeStep) + ((torque / getRotationalInertia()) * timeStep * timeStep / 2D));
         this.setAngularVelocity(this.getAngularVelocity() + deltaVelocity);
@@ -37,6 +38,7 @@ public interface IRotationNode extends Comparator<IRotationNode> {
             // Default friction calculation
             return getAngularVelocity() * -.1 * getRotationalInertia();
         } else {
+            // System.out.println("test");
             return getCustomTorqueFunction().get().apply(parent);
         }
     }
@@ -49,7 +51,11 @@ public interface IRotationNode extends Comparator<IRotationNode> {
 
     @PhysicsThreadOnly
     default boolean isConnectedToSide(EnumFacing side) {
-        return getAngularVelocityRatioFor(side).isPresent();
+        Optional<IRotationNode> connectedTo = getTileOnSide(side);
+        if (!connectedTo.isPresent()) {
+            return false;
+        }
+        return  getAngularVelocityRatioFor(side).isPresent() && connectedTo.get().getAngularVelocityRatioFor(side.getOpposite()).isPresent();
     }
 
     @PhysicsThreadOnly
@@ -66,6 +72,8 @@ public interface IRotationNode extends Comparator<IRotationNode> {
     double getAngularVelocity();
 
     double getAngularRotation();
+
+    double getAngularRotationUnsynchronized();
 
     double getRotationalInertia();
 
@@ -94,20 +102,28 @@ public interface IRotationNode extends Comparator<IRotationNode> {
     }
 
     @Override
-    default int compare(IRotationNode o1, IRotationNode o2) {
-        return o1.getSortingPriority() - o2.getSortingPriority();
+    default int compareTo(IRotationNode o2) {
+        return getSortingPriority() - o2.getSortingPriority();
     }
 
     @PhysicsThreadOnly
-    default List<IRotationNode> connectedTorqueTilesList() {
-        List<IRotationNode> connectedTiles = new ArrayList<>();
+    default List<Tuple<IRotationNode, EnumFacing>> connectedTorqueTilesList() {
+        List<Tuple<IRotationNode, EnumFacing>> connectedTiles = new ArrayList<>();
         for (EnumFacing facing : EnumFacing.values()) {
             if (isConnectedToSide(facing)) {
-                connectedTiles.add(getTileOnSide(facing).get());
+                connectedTiles.add(new Tuple(getTileOnSide(facing).get(), facing));
             }
         }
         return connectedTiles;
     }
 
     Optional<BlockPos> getNodePos();
+
+    void queueTask(Runnable task);
+
+    ConcurrentLinkedQueue<Runnable> getQueuedTasks();
+
+    void queueNodeForDeletion();
+
+    boolean markedForDeletion();
 }

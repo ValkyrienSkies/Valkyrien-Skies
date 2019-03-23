@@ -615,4 +615,7 @@ public class PhysicsCalculations {
 		return new Vector(physX, physY, physZ);
 	}
 
+	public IRotationNodeWorld getPhysicsRotationNodeWorld() {
+	    return physicsRotationNodeWorld;
+    }
 }

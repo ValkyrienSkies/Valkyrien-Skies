@@ -2,7 +2,9 @@ package valkyrienwarfare.addon.control.block.torque;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
+import org.lwjgl.Sys;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
 import java.util.*;
@@ -32,7 +34,12 @@ public class ImplRotationNodeWorld implements IRotationNodeWorld {
      */
     @Override
     public void enqueueTaskOntoNode(Consumer<IRotationNode> task, BlockPos taskPos) {
-        queuedTasks.add(() -> task.accept(getNodeFromPos(taskPos)));
+        queuedTasks.add(() -> {
+            IRotationNode nodeAtPos = getNodeFromPos(taskPos);
+            if (nodeAtPos != null) {
+                task.accept(nodeAtPos);
+            }
+        });
     }
 
     /**
@@ -46,6 +53,11 @@ public class ImplRotationNodeWorld implements IRotationNodeWorld {
             Runnable queuedTask = queuedTasks.remove();
             queuedTask.run();
         }
+        for (IRotationNode node : posToNodeMap.values()) {
+            while (!node.getQueuedTasks().isEmpty()) {
+                node.getQueuedTasks().remove().run();
+            }
+        }
     }
 
     /**
@@ -54,25 +66,36 @@ public class ImplRotationNodeWorld implements IRotationNodeWorld {
     @PhysicsThreadOnly
     @Override
     public void processTorquePhysics(double timeDelta) {
-        System.out.println("Hi");
+        // System.out.println("Hi");
         PhysicsAssert.assertPhysicsThread();
+
+        Iterator<Map.Entry<BlockPos, IRotationNode>> iter = posToNodeMap.entrySet().iterator();
+        while (iter.hasNext()) {
+            Map.Entry<BlockPos, IRotationNode> entry = iter.next();
+            if (entry.getValue().markedForDeletion()) {
+                System.out.println("Deleted");
+                iter.remove();
+            }
+        }
+
         processQueuedTasks();
         // Write da code here!
-        SortedSet<IRotationNode> nodesToVisit = new TreeSet<>(posToNodeMap.values());
+        List<IRotationNode> nodesToVisit = new ArrayList<>(posToNodeMap.values());
         while (nodesToVisit.size() > 0) {
-            IRotationNode start = nodesToVisit.first();
+            IRotationNode start = nodesToVisit.remove(nodesToVisit.size() - 1);
             try {
                 NodeTaskProcessed nodeNetworkResult = processNodeNetwork(start, null, null, nodesToVisit, timeDelta);
                 // Then set the crap
                 processNodeNetworkPhase2(start, Math.sqrt(nodeNetworkResult.totalEnergy * 2D / nodeNetworkResult.v_sqr_coefficent), new HashSet<>());
             } catch (Exception e) {
                 processNodeNetworkPhase2(start, 0, new HashSet<>());
+                e.printStackTrace();
             }
         }
     }
 
-    private NodeTaskProcessed processNodeNetwork(IRotationNode start, IRotationNode from, EnumFacing sideFrom, SortedSet<IRotationNode> nodesToVisit, double timeDelta) {
-        if (!nodesToVisit.contains(start)) {
+    private NodeTaskProcessed processNodeNetwork(IRotationNode start, IRotationNode from, EnumFacing sideFrom, List<IRotationNode> nodesToVisit, double timeDelta) {
+        if (!nodesToVisit.contains(start) && from != null) {
             throw new IllegalStateException("This is not an acyclic graph!");
         }
         // This first
@@ -83,17 +106,17 @@ public class ImplRotationNodeWorld implements IRotationNodeWorld {
         double totalEnergy = start.getEnergy();
         // Then calculate the coefficient
         double coefficient = start.getRotationalInertia();
-        for (EnumFacing facing : EnumFacing.values()) {
-            Optional<IRotationNode> nodeAtFacing = start.getTileOnSide(facing);
-            if (nodeAtFacing.isPresent()) {
-                NodeTaskProcessed subTask = processNodeNetwork(nodeAtFacing.get(), start, facing, nodesToVisit, timeDelta);
+        for (Tuple<IRotationNode, EnumFacing> connectedNode : start.connectedTorqueTilesList()) {
+            if (nodesToVisit.contains(connectedNode.getFirst())) {
+                NodeTaskProcessed subTask = processNodeNetwork(connectedNode.getFirst(), start, connectedNode.getSecond(), nodesToVisit, timeDelta);
                 totalEnergy += subTask.totalEnergy;
                 coefficient += subTask.v_sqr_coefficent;
             }
         }
+
         // Finally multiply by the input ratio (Except in the case of the first one)
         if (from != null) {
-            coefficient *= (from.getAngularVelocityRatioFor(sideFrom).get() / start.getAngularVelocityRatioFor(sideFrom.getOpposite()).get());
+//            coefficient *= (from.getAngularVelocityRatioFor(sideFrom).get() / start.getAngularVelocityRatioFor(sideFrom.getOpposite()).get());
         }
         return new NodeTaskProcessed(totalEnergy, coefficient);
     }
@@ -102,10 +125,9 @@ public class ImplRotationNodeWorld implements IRotationNodeWorld {
         assert !visitedNodes.contains(start) : "This isn't right!";
         visitedNodes.add(start);
         start.setAngularVelocity(newAngularVel);
-        for (EnumFacing facing : EnumFacing.values()) {
-            Optional<IRotationNode> rotationNodeAtSide = start.getTileOnSide(facing);
-            if (rotationNodeAtSide.isPresent()) {
-                processNodeNetworkPhase2(rotationNodeAtSide.get(), newAngularVel * start.getAngularVelocityRatioFor(facing).get() / rotationNodeAtSide.get().getAngularVelocityRatioFor(facing.getOpposite()).get(), visitedNodes);
+        for (Tuple<IRotationNode, EnumFacing> connectedNode : start.connectedTorqueTilesList()) {
+            if (!visitedNodes.contains(connectedNode.getFirst())) {
+                processNodeNetworkPhase2(connectedNode.getFirst(), newAngularVel * -1 * start.getAngularVelocityRatioFor(connectedNode.getSecond()).get() / connectedNode.getFirst().getAngularVelocityRatioFor(connectedNode.getSecond().getOpposite()).get(), visitedNodes);
             }
         }
     }

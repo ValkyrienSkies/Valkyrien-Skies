@@ -13,6 +13,7 @@ import valkyrienwarfare.addon.control.block.torque.IRotationNode;
 import valkyrienwarfare.addon.control.block.torque.IRotationNodeProvider;
 import valkyrienwarfare.addon.control.block.torque.IRotationNodeWorld;
 import valkyrienwarfare.addon.control.block.torque.ImplRotationNode;
+import valkyrienwarfare.addon.control.block.torque.custom_torque_functions.EtherEngineTorqueFunction;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
 import java.util.Optional;
@@ -39,11 +40,10 @@ public class TileEntityEthereumEnginePart extends TileEntityMultiblockPart<Ether
 			if (this.firstUpdate) {
 				// Inject the rotation node into the physics world.
 				Optional<PhysicsObject> physicsObjectOptional = ValkyrienWarfareMod.getPhysicsObject(getWorld(), getPos());
-				if (physicsObjectOptional.isPresent()) {
+				if (!physicsObjectOptional.isPresent() && this.getRelativePos().equals(getMultiBlockSchematic().getTorqueOutputPos())) {
 					IRotationNodeWorld nodeWorld = physicsObjectOptional.get().getPhysicsProcessor().getPhysicsRotationNodeWorld();
 					rotationNode.markInitialized();
 					nodeWorld.enqueueTaskOntoWorld(() -> nodeWorld.setNodeFromPos(getPos(), rotationNode));
-					// nodeWorld.enqueueTaskOntoNode((task) -> task.setCustomTorqueFunction((physObject) -> 0.1D), getPos());
 				}
 				this.firstUpdate = false;
 			} else {
@@ -52,7 +52,15 @@ public class TileEntityEthereumEnginePart extends TileEntityMultiblockPart<Ether
 				}
 			}
 
-			if (this.isPartOfAssembledMultiblock() && this.isMaster()) {
+			if (this.isPartOfAssembledMultiblock()) {
+				Optional<PhysicsObject> physicsObjectOptional = ValkyrienWarfareMod.getPhysicsObject(getWorld(), getPos());
+				if (physicsObjectOptional.isPresent() && !rotationNode.hasBeenPlacedIntoNodeWorld() && this.getRelativePos().equals(getMultiBlockSchematic().getTorqueOutputPos())) {
+					IRotationNodeWorld nodeWorld = physicsObjectOptional.get().getPhysicsProcessor().getPhysicsRotationNodeWorld();
+					if (nodeWorld != null) {
+						nodeWorld.enqueueTaskOntoWorld(() -> nodeWorld.setNodeFromPos(getPos(), rotationNode));
+					}
+				}
+
 				BlockPos torqueOutputPos = this.getMultiBlockSchematic().getTorqueOutputPos().add(this.getPos());
 				TileEntity tileEntity = this.getWorld().getTileEntity(torqueOutputPos);
 				if (tileEntity instanceof TileEntityEthereumEnginePart) {
@@ -66,6 +74,7 @@ public class TileEntityEthereumEnginePart extends TileEntityMultiblockPart<Ether
 				}
 				sendUpdatePacketToAllNearby();
 			}
+			this.markDirty();
 		} else {
 			prevKeyframe = currentKeyframe;
 			double increment = nextKeyframe - currentKeyframe;
@@ -97,7 +106,7 @@ public class TileEntityEthereumEnginePart extends TileEntityMultiblockPart<Ether
 //				System.out.println(rotationNode.getNodePos());
 				this.rotationNode.queueTask(() -> {
 					rotationNode.setAngularVelocityRatio(facing, Optional.of(-1D));
-					rotationNode.setCustomTorqueFunction((physicsObject -> 3 - rotationNode.getAngularVelocity()));
+					rotationNode.setCustomTorqueFunction(new EtherEngineTorqueFunction(rotationNode));
 				});
 				nodeWorld.enqueueTaskOntoWorld(() -> nodeWorld.setNodeFromPos(pos, this.rotationNode));
 			}
@@ -127,7 +136,9 @@ public class TileEntityEthereumEnginePart extends TileEntityMultiblockPart<Ether
 	@Override
 	public void readFromNBT(NBTTagCompound compound) {
 		super.readFromNBT(compound);
-		rotationNode.readFromNBT(compound);
+		if (this.getWorld() == null || !this.getWorld().isRemote) {
+			rotationNode.readFromNBT(compound);
+		}
 //		rotationNode.markInitialized();
 	}
 

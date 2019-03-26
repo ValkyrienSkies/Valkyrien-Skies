@@ -86,6 +86,7 @@ public class TileEntityBasicRotationTile extends TileEntity implements IRotation
             }
             rotation = this.rotationNode.getAngularRotationUnsynchronized();
             sendUpdatePacketToAllNearby();
+            this.markDirty();
         }
     }
 

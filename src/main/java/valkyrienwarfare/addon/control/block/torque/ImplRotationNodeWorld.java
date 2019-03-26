@@ -66,7 +66,6 @@ public class ImplRotationNodeWorld implements IRotationNodeWorld {
     @PhysicsThreadOnly
     @Override
     public void processTorquePhysics(double timeDelta) {
-        // System.out.println("Hi");
         PhysicsAssert.assertPhysicsThread();
 
         Iterator<Map.Entry<BlockPos, IRotationNode>> nodeIterator = posToNodeMap.entrySet().iterator();
@@ -81,6 +80,7 @@ public class ImplRotationNodeWorld implements IRotationNodeWorld {
         processQueuedTasks();
         // Write da code here!
         List<IRotationNode> nodesToVisit = new ArrayList<>(posToNodeMap.values());
+        // System.out.println(nodesToVisit.size());
         while (nodesToVisit.size() > 0) {
             IRotationNode start = nodesToVisit.remove(nodesToVisit.size() - 1);
             try {
@@ -90,6 +90,7 @@ public class ImplRotationNodeWorld implements IRotationNodeWorld {
                      // Try to avoid having rotation nodes randomly switching directions
                      firstNodeNewVelocity = Math.abs(firstNodeNewVelocity) * Math.signum(start.getAngularVelocity());
                 }
+
                 processNodeNetworkPhase2(start, firstNodeNewVelocity, new HashSet<>());
             } catch (Exception e) {
                 // Otherwise we shall set everything to zero!

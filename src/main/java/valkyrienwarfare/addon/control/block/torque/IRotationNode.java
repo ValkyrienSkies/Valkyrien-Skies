@@ -5,6 +5,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldServer;
+import valkyrienwarfare.addon.control.block.torque.custom_torque_functions.SimpleTorqueFunction;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
 import java.util.*;
@@ -44,10 +45,10 @@ public interface IRotationNode extends Comparable<IRotationNode> {
     }
 
     @PhysicsThreadOnly
-    void setCustomTorqueFunction(Function<PhysicsObject, Double> customTorqueFunction);
+    void setCustomTorqueFunction(SimpleTorqueFunction customTorqueFunction);
 
     @PhysicsThreadOnly
-    Optional<Function<PhysicsObject, Double>> getCustomTorqueFunction();
+    Optional<SimpleTorqueFunction> getCustomTorqueFunction();
 
     @PhysicsThreadOnly
     default boolean isConnectedToSide(EnumFacing side) {
@@ -128,4 +129,8 @@ public interface IRotationNode extends Comparable<IRotationNode> {
     void queueNodeForDeletion();
 
     boolean markedForDeletion();
+
+    boolean hasBeenPlacedIntoNodeWorld();
+
+    void setPlacedIntoNodeWorld(boolean status);
 }

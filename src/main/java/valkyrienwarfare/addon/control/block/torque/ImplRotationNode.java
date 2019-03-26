@@ -1,13 +1,19 @@
 package valkyrienwarfare.addon.control.block.torque;
 
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTUtil;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import org.lwjgl.Sys;
+import scala.tools.cmd.Opt;
+import valkyrienwarfare.addon.control.block.torque.custom_torque_functions.EtherEngineTorqueFunction;
+import valkyrienwarfare.addon.control.block.torque.custom_torque_functions.SimpleTorqueFunction;
 import valkyrienwarfare.mod.multithreaded.VWThread;
 import valkyrienwarfare.physics.management.PhysicsObject;
+import valkyrienwarfare.util.NBTUtils;
 
+import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -23,10 +29,11 @@ public class ImplRotationNode<T extends TileEntity & IRotationNodeProvider> impl
     private double angularRotation;
     private double rotationalInertia;
     private Optional<BlockPos> nodePos;
-    private Optional<Function<PhysicsObject, Double>> customTorqueFunction;
+    private Optional<SimpleTorqueFunction> customTorqueFunction;
     private boolean initialized;
     private final ConcurrentLinkedQueue<Runnable> queuedTasks;
     private AtomicBoolean markedForDeletion;
+    private AtomicBoolean hasBeenPlacedIntoNodeWorld;
 
     public ImplRotationNode(T entity, double rotationalInertia) {
         this.tileEntity = entity;
@@ -40,18 +47,19 @@ public class ImplRotationNode<T extends TileEntity & IRotationNodeProvider> impl
         this.initialized = false;
         this.queuedTasks = new ConcurrentLinkedQueue<>();
         this.markedForDeletion = new AtomicBoolean(false);
+        this.hasBeenPlacedIntoNodeWorld = new AtomicBoolean(false);
     }
 
     @PhysicsThreadOnly
     @Override
-    public Optional<Function<PhysicsObject, Double>> getCustomTorqueFunction() {
+    public Optional<SimpleTorqueFunction> getCustomTorqueFunction() {
         PhysicsAssert.assertPhysicsThread();
         return customTorqueFunction;
     }
 
     @PhysicsThreadOnly
     @Override
-    public void setCustomTorqueFunction(Function<PhysicsObject, Double> customTorqueFunction) {
+    public void setCustomTorqueFunction(SimpleTorqueFunction customTorqueFunction) {
         PhysicsAssert.assertPhysicsThread();
         this.customTorqueFunction = Optional.of(customTorqueFunction);
     }
@@ -144,12 +152,56 @@ public class ImplRotationNode<T extends TileEntity & IRotationNodeProvider> impl
 
     @Override
     public void writeToNBT(NBTTagCompound compound) {
-        // TODO: Implement
+        compound.setFloat("a_vel", (float) angularVelocity);
+        compound.setFloat("a_pos", (float) angularRotation);
+        compound.setFloat("a_inert", (float) rotationalInertia);
+        compound.setBoolean("a_has_pos", getNodePos().isPresent());
+        if (getNodePos().isPresent()) {
+            compound.setInteger("a_posX", getNodePos().get().getX());
+            compound.setInteger("a_posY", getNodePos().get().getY());
+            compound.setInteger("a_posZ", getNodePos().get().getZ());
+        }
+
+        for (int i = 0; i < 6; i++) {
+            if (angularVelocityRatios[i].isPresent()) {
+                compound.setFloat("a_vel_ratios_" + i, angularVelocityRatios[i].get().floatValue());
+            }
+        }
+
+        if (customTorqueFunction.isPresent()) {
+            this.customTorqueFunction = Optional.of(new EtherEngineTorqueFunction(this));
+            compound.setString("custom_torque_funct", customTorqueFunction.get().getClass().getName());
+        }
     }
 
     @Override
     public void readFromNBT(NBTTagCompound compound) {
-        // TODO: Implement
+        this.angularVelocity = compound.getFloat("a_vel");
+        this.angularRotation = compound.getFloat("a_pos");
+        this.rotationalInertia = compound.getFloat("a_inert");
+        if (compound.getBoolean("a_has_pos")) {
+            this.nodePos = Optional.of(new BlockPos(compound.getInteger("a_posX"), compound.getInteger("a_posY"), compound.getInteger("a_posZ")));
+        }
+
+        for (int i = 0; i < 6; i++) {
+            if (compound.hasKey("a_vel_ratios_" + i)) {
+                angularVelocityRatios[i] = Optional.of((double) compound.getFloat("a_vel_ratios_" + i));
+            }
+        }
+
+        if (compound.hasKey("custom_torque_funct")) {
+            String className = compound.getString("custom_torque_funct");
+            try {
+                Class<?> c = Class.forName(className);
+                Constructor<?> cons = c.getConstructor(IRotationNode.class);
+                Object customTorqueFunction = cons.newInstance(this);
+                this.customTorqueFunction = Optional.of((SimpleTorqueFunction) customTorqueFunction);
+            } catch (Exception e) {
+                System.err.println("Failed to load class: " + className);
+                e.printStackTrace();
+            }
+        }
+//        this.initialized = true;
     }
 
     @Override
@@ -190,6 +242,16 @@ public class ImplRotationNode<T extends TileEntity & IRotationNodeProvider> impl
     @Override
     public double getAngularVelocityUnsynchronized() {
         return this.angularVelocity;
+    }
+
+    @Override
+    public boolean hasBeenPlacedIntoNodeWorld() {
+        return hasBeenPlacedIntoNodeWorld.get();
+    }
+
+    @Override
+    public void setPlacedIntoNodeWorld(boolean status) {
+        hasBeenPlacedIntoNodeWorld.set(status);
     }
 
 }

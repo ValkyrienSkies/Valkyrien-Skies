@@ -15,7 +15,7 @@ public interface IRotationNode extends Comparable<IRotationNode> {
 
     @PhysicsThreadOnly
     default double getEnergy() {
-        return getAngularVelocity() * getAngularVelocity() * getRotationalInertia()/ 2D;
+        return getAngularVelocity() * getAngularVelocity() * getRotationalInertia() / 2D;
     }
 
     @PhysicsThreadOnly

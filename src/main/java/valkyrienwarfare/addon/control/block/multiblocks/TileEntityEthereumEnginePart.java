@@ -97,7 +97,7 @@ public class TileEntityEthereumEnginePart extends TileEntityMultiblockPart<Ether
 //				System.out.println(rotationNode.getNodePos());
 				this.rotationNode.queueTask(() -> {
 					rotationNode.setAngularVelocityRatio(facing, Optional.of(-1D));
-					rotationNode.setCustomTorqueFunction((physicsObject -> 10 - rotationNode.getAngularVelocity()));
+					rotationNode.setCustomTorqueFunction((physicsObject -> 3 - rotationNode.getAngularVelocity()));
 				});
 				nodeWorld.enqueueTaskOntoWorld(() -> nodeWorld.setNodeFromPos(pos, this.rotationNode));
 			}

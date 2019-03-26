@@ -85,9 +85,14 @@ public class ImplRotationNodeWorld implements IRotationNodeWorld {
             IRotationNode start = nodesToVisit.remove(nodesToVisit.size() - 1);
             try {
                 NodeTaskProcessed nodeNetworkResult = processNodeNetwork(start, null, null, nodesToVisit, timeDelta);
-                // Then set the crap
-                processNodeNetworkPhase2(start, Math.sqrt(nodeNetworkResult.totalEnergy * 2D / nodeNetworkResult.v_sqr_coefficent), new HashSet<>());
+                double firstNodeNewVelocity = Math.sqrt(nodeNetworkResult.totalEnergy * 2D / nodeNetworkResult.v_sqr_coefficent);
+                if (start.getAngularVelocity() != 0) {
+                     // Try to avoid having rotation nodes randomly switching directions
+                     firstNodeNewVelocity = Math.abs(firstNodeNewVelocity) * Math.signum(start.getAngularVelocity());
+                }
+                processNodeNetworkPhase2(start, firstNodeNewVelocity, new HashSet<>());
             } catch (Exception e) {
+                // Otherwise we shall set everything to zero!
                 processNodeNetworkPhase2(start, 0, new HashSet<>());
                 e.printStackTrace();
             }

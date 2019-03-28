@@ -240,9 +240,8 @@ public class ShipTransformationManager {
         }
 
         float minX, minY, minZ, maxX, maxY, maxZ;
-        maxX = minX = (float) parent.getWrapperEntity().posX;
-        maxY = minY = (float) parent.getWrapperEntity().posY;
-        maxZ = minZ = (float) parent.getWrapperEntity().posZ;
+        minX = minY = minZ = Float.MAX_VALUE;
+        maxX = maxY = maxZ = -Float.MAX_VALUE;
 
         // We loop through this int list instead of a blockpos list because they fit much better in the cache,
         for (int i = parent.getBlockPositionsGameTick().size() - 1; i >= 0; i--) {

@@ -84,7 +84,7 @@ public class ImplRotationNodeWorld implements IRotationNodeWorld {
         while (nodesToVisit.size() > 0) {
             IRotationNode start = nodesToVisit.remove(nodesToVisit.size() - 1);
             try {
-                NodeTaskProcessed nodeNetworkResult = processNodeNetwork(start, null, null, nodesToVisit, timeDelta);
+                NodeTaskProcessed nodeNetworkResult = processNodeNetwork(start, null, null, nodesToVisit, timeDelta, 1D);
                 double firstNodeNewVelocity = Math.sqrt(nodeNetworkResult.totalEnergy * 2D / nodeNetworkResult.v_sqr_coefficent);
                 if (start.getAngularVelocity() != 0) {
                      // Try to avoid having rotation nodes randomly switching directions
@@ -100,10 +100,21 @@ public class ImplRotationNodeWorld implements IRotationNodeWorld {
         }
     }
 
-    private NodeTaskProcessed processNodeNetwork(IRotationNode start, IRotationNode from, EnumFacing sideFrom, List<IRotationNode> nodesToVisit, double timeDelta) {
+    /**
+     *
+     * @param start
+     * @param from
+     * @param sideFrom
+     * @param nodesToVisit
+     * @param timeDelta
+     * @param multiplier The relative ratio of w_i / w_0.
+     * @return
+     */
+    private NodeTaskProcessed processNodeNetwork(IRotationNode start, IRotationNode from, EnumFacing sideFrom, List<IRotationNode> nodesToVisit, double timeDelta, double multiplier) {
         if (!nodesToVisit.contains(start) && from != null) {
             throw new IllegalStateException("This is not an acyclic graph!");
         }
+
         // This first
         nodesToVisit.remove(start);
         // Then simulate torque added energy
@@ -111,12 +122,14 @@ public class ImplRotationNodeWorld implements IRotationNodeWorld {
         // Then add energy to the count
         double totalEnergy = start.getEnergy();
         // Then calculate the coefficient
-        double coefficient = start.getRotationalInertia();
+        double coefficientAdded = start.getRotationalInertia() * multiplier * multiplier;
         for (Tuple<IRotationNode, EnumFacing> connectedNode : start.connectedTorqueTilesList()) {
             if (nodesToVisit.contains(connectedNode.getFirst())) {
-                NodeTaskProcessed subTask = processNodeNetwork(connectedNode.getFirst(), start, connectedNode.getSecond(), nodesToVisit, timeDelta);
+                double newMultiplier = multiplier * start.getAngularVelocityRatioFor(connectedNode.getSecond()).get() / connectedNode.getFirst().getAngularVelocityRatioFor(connectedNode.getSecond().getOpposite()).get();
+
+                NodeTaskProcessed subTask = processNodeNetwork(connectedNode.getFirst(), start, connectedNode.getSecond(), nodesToVisit, timeDelta, newMultiplier);
                 totalEnergy += subTask.totalEnergy;
-                coefficient += subTask.v_sqr_coefficent;
+                coefficientAdded += subTask.v_sqr_coefficent;
             }
         }
 
@@ -124,7 +137,7 @@ public class ImplRotationNodeWorld implements IRotationNodeWorld {
         if (from != null) {
 //            coefficient *= (from.getAngularVelocityRatioFor(sideFrom).get() / start.getAngularVelocityRatioFor(sideFrom.getOpposite()).get());
         }
-        return new NodeTaskProcessed(totalEnergy, coefficient);
+        return new NodeTaskProcessed(totalEnergy, coefficientAdded);
     }
 
     private void processNodeNetworkPhase2(IRotationNode start, double newAngularVel, Set<IRotationNode> visitedNodes) {

@@ -10,6 +10,7 @@ import net.minecraft.util.ITickable;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.WorldServer;
 import valkyrienwarfare.ValkyrienWarfareMod;
+import valkyrienwarfare.addon.control.nodenetwork.BasicNodeTileEntity;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.physics.management.PhysicsObject;
@@ -18,23 +19,14 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import java.util.Optional;
 
 /**
- * A simple implementation of an IRotationNodeProvider tile entity.
+ * A carbon copy of TileEntityBasicRotationTile except it extends BasicNodeTileEntity
  */
-public class TileEntityBasicRotationTile extends TileEntity implements IRotationNodeProvider, ITickable {
+public class TileEntityBasicRotationNodeTile extends BasicNodeTileEntity implements IRotationNodeProvider, ITickable {
 
     // Maps EnumFacing.Axis to both possible EnumFacing values.
     public static final ImmutableMap<EnumFacing.Axis, Tuple<EnumFacing, EnumFacing>> AXIS_TO_FACING_MAP;
-    public static final ImmutableMap<EnumFacing, Double> FACING_TO_RATIO_MAP;
     static {
         AXIS_TO_FACING_MAP = ImmutableMap.of(EnumFacing.Axis.X, new Tuple<>(EnumFacing.EAST, EnumFacing.WEST), EnumFacing.Axis.Y, new Tuple<>(EnumFacing.UP, EnumFacing.DOWN), EnumFacing.Axis.Z, new Tuple<>(EnumFacing.SOUTH, EnumFacing.NORTH));
-        FACING_TO_RATIO_MAP = ImmutableMap.<EnumFacing, Double>builder()
-                .put(EnumFacing.EAST, 1D)
-                .put(EnumFacing.WEST, -1D)
-                .put(EnumFacing.UP, 1D)
-                .put(EnumFacing.DOWN, -1D)
-                .put(EnumFacing.SOUTH, 1D)
-                .put(EnumFacing.NORTH, -1D)
-                .build();
     }
 
     protected final IRotationNode rotationNode;
@@ -44,7 +36,7 @@ public class TileEntityBasicRotationTile extends TileEntity implements IRotation
     private double nextRotation;
     private boolean firstUpdate;
 
-    public TileEntityBasicRotationTile() {
+    public TileEntityBasicRotationNodeTile() {
         super();
         this.rotationNode = new ImplRotationNode<>(this, .1);
         this.rotation = 0;

@@ -16,15 +16,23 @@
 
 package valkyrienwarfare.addon.control.tileentity;
 
+import gigaherz.graph.api.GraphObject;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.math.BlockPos;
+import scala.tools.cmd.Opt;
 import valkyrienwarfare.addon.control.block.BlockShipTelegraph;
+import valkyrienwarfare.addon.control.block.multiblocks.TileEntityEthereumCompressorPart;
+import valkyrienwarfare.addon.control.nodenetwork.VWNode_TileEntity;
 import valkyrienwarfare.addon.control.piloting.ControllerInputType;
 import valkyrienwarfare.addon.control.piloting.PilotControlsMessage;
+
+import java.util.Optional;
 
 public class TileEntityShipTelegraph extends ImplTileEntityPilotable implements ITickable {
 
@@ -90,6 +98,19 @@ public class TileEntityShipTelegraph extends ImplTileEntityPilotable implements 
         	this.handleRotation = this.handleRotation + (this.nextTelegraphState.renderRotation - this.handleRotation) * .5;
             this.telegraphState = nextTelegraphState;
         } else {
+            for (GraphObject object : this.getNode().getGraph().getObjects()) {
+                VWNode_TileEntity otherNode = (VWNode_TileEntity) object;
+                TileEntity tile = otherNode.getParentTile();
+                if (tile instanceof TileEntityGearbox) {
+                    TileEntityGearbox masterTile = (TileEntityGearbox) tile;
+                    // This is a transient problem that only occurs during world loading.
+                    if (telegraphState == ShipChadburnState.STOP) {
+                        masterTile.setOutputRatio(Optional.empty());
+                    } else {
+                        masterTile.setOutputRatio(Optional.of(telegraphState.gearboxOutputRatio));
+                    }
+                }
+            }
             sendUpdatePacketToAllNearby();
         }
     }
@@ -120,13 +141,15 @@ public class TileEntityShipTelegraph extends ImplTileEntityPilotable implements 
 
 	private enum ShipChadburnState {
 
-		FULL_AHEAD(-120), HALF_AHEAD(-80), SLOW_AHEAD(-40), STOP(0), SLOW_ASTERN(40), HALF_ASTERN(80), FULL_ASTERN(120);
+		FULL_AHEAD(-120, 4), HALF_AHEAD(-80, 2), SLOW_AHEAD(-40, 1), STOP(0, 0), SLOW_ASTERN(40, -1), HALF_ASTERN(80, -2), FULL_ASTERN(120, -4);
 
 		// The rotation in degrees in the clockwise direction relative to midnight.
 		public final double renderRotation;
+		public final double gearboxOutputRatio;
 
-		ShipChadburnState(double renderRotation) {
+		ShipChadburnState(double renderRotation, double gearboxOutputRatio) {
 			this.renderRotation = renderRotation;
+            this.gearboxOutputRatio = gearboxOutputRatio;
 		}
 	}
 

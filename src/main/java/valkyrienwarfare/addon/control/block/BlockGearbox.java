@@ -53,7 +53,8 @@ public class BlockGearbox extends Block implements ITileEntityProvider {
 
 	@Override
 	public TileEntity createNewTileEntity(World worldIn, int meta) {
-		return new TileEntityGearbox();
+        EnumFacing facing = EnumFacing.getFront(meta);
+        return new TileEntityGearbox(facing);
 	}
 
     @Override

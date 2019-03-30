@@ -312,6 +312,9 @@ public class ShipTransformationManager {
      * @return the renderTransform
      */
     public ShipTransform getRenderTransform() {
+        if (!this.parent.getWorldObj().isRemote) {
+            return currentTickTransform;
+        }
         return renderTransform;
     }
 

@@ -180,7 +180,9 @@ public class WorldPhysObjectManager {
         AxisAlignedBB expandedCheck = toCheck.expand(6, 6, 6);
 
         for (PhysicsWrapperEntity wrapper : physicsEntities) {
-            if (wrapper.getPhysicsObject().getShipBoundingBox().intersects(expandedCheck)) {
+            // This .expand() is only needed on server side, which tells me something is wrong with server side bounding
+            // boxes
+            if (wrapper.getPhysicsObject().getShipBoundingBox().expand(2, 2, 2).intersects(expandedCheck)) {
                 ships.add(wrapper);
             }
         }

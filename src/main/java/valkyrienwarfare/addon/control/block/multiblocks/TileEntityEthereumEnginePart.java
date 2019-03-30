@@ -31,25 +31,16 @@ public class TileEntityEthereumEnginePart extends TileEntityMultiblockPart<Ether
 		this.prevKeyframe = 0;
 		this.currentKeyframe = 0;
 		this.rotationNode = new ImplRotationNode<>(this, 5);
+		this.firstUpdate = true;
 	}
 
 	@Override
 	public void update() {
 		super.update();
 		if (!this.getWorld().isRemote) {
-			if (this.firstUpdate) {
-				// Inject the rotation node into the physics world.
-				Optional<PhysicsObject> physicsObjectOptional = ValkyrienWarfareMod.getPhysicsObject(getWorld(), getPos());
-				if (!physicsObjectOptional.isPresent() && this.getRelativePos().equals(getMultiBlockSchematic().getTorqueOutputPos())) {
-					IRotationNodeWorld nodeWorld = physicsObjectOptional.get().getPhysicsProcessor().getPhysicsRotationNodeWorld();
-					rotationNode.markInitialized();
-					nodeWorld.enqueueTaskOntoWorld(() -> nodeWorld.setNodeFromPos(getPos(), rotationNode));
-				}
-				this.firstUpdate = false;
-			} else {
-				if (!getRotationNode().isPresent()) {
-					this.rotationNode.markInitialized();
-				}
+			if (firstUpdate) {
+				this.rotationNode.markInitialized();
+				firstUpdate = false;
 			}
 
 			if (this.isPartOfAssembledMultiblock()) {
@@ -57,6 +48,7 @@ public class TileEntityEthereumEnginePart extends TileEntityMultiblockPart<Ether
 				if (physicsObjectOptional.isPresent() && !rotationNode.hasBeenPlacedIntoNodeWorld() && this.getRelativePos().equals(getMultiBlockSchematic().getTorqueOutputPos())) {
 					IRotationNodeWorld nodeWorld = physicsObjectOptional.get().getPhysicsProcessor().getPhysicsRotationNodeWorld();
 					if (nodeWorld != null) {
+						System.out.println("Placed into world");
 						nodeWorld.enqueueTaskOntoWorld(() -> nodeWorld.setNodeFromPos(getPos(), rotationNode));
 					}
 				}

@@ -88,7 +88,8 @@ public class ImplRotationNodeWorld implements IRotationNodeWorld {
                 double firstNodeNewVelocity = Math.sqrt(nodeNetworkResult.totalEnergy * 2D / nodeNetworkResult.v_sqr_coefficent);
                 if (start.getAngularVelocity() != 0) {
                      // Try to avoid having rotation nodes randomly switching directions
-                     firstNodeNewVelocity = Math.abs(firstNodeNewVelocity) * Math.signum(start.getAngularVelocity());
+                     // TODO: Fix this!
+                     firstNodeNewVelocity = Math.abs(firstNodeNewVelocity) * 1;// Math.signum(start.getAngularVelocity());
                 }
 
                 processNodeNetworkPhase2(start, firstNodeNewVelocity, new HashSet<>());
@@ -187,6 +188,7 @@ public class ImplRotationNodeWorld implements IRotationNodeWorld {
     public IRotationNode setNodeFromPos(BlockPos pos, IRotationNode node) {
         PhysicsAssert.assertPhysicsThread();
         assert (node == null) || node.isInitialized() : "NodeAtPos " + pos + " was not initialized!";
+        node.setPlacedIntoNodeWorld(true);
         return posToNodeMap.put(pos, node);
     }
 

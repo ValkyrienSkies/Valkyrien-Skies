@@ -28,11 +28,11 @@ public class GearboxTileEntityRenderer extends TileEntitySpecialRenderer<TileEnt
 	static {
 		FACING_TO_AXLE_NAME = ImmutableMap.<EnumFacing, String>builder()
 				.put(EnumFacing.DOWN, "gearboxvtopengineaxel_geo")
-				.put(EnumFacing.UP, "gearboxvbottomengineaxel_geo")
-				.put(EnumFacing.NORTH, "gearboxvbottomengineaxel_geo")
-				.put(EnumFacing.SOUTH, "gearboxvbottomengineaxel_geo")
-				.put(EnumFacing.EAST, "gearboxvbottomengineaxel_geo")
-				.put(EnumFacing.WEST, "gearboxvbottomengineaxel_geo")
+				.put(EnumFacing.UP, "gearboxbottomengineaxel_geo")
+				.put(EnumFacing.SOUTH, "gearboxfrontengineaxel_geo")
+				.put(EnumFacing.NORTH, "gearboxbackengineaxel_geo")
+				.put(EnumFacing.WEST, "gearboxrightengineaxel_geo")
+				.put(EnumFacing.EAST, "gearboxleftengineaxel_geo")
 				.build();
 	}
 
@@ -49,16 +49,6 @@ public class GearboxTileEntityRenderer extends TileEntitySpecialRenderer<TileEnt
         GlStateManager.disableBlend();
 		int brightness = tileentity.getWorld().getCombinedLight(tileentity.getPos(), 0);
 
-
-		ImmutableMap<EnumFacing, String> FACING_TO_AXLE_NAME_TEMP = ImmutableMap.<EnumFacing, String>builder()
-				.put(EnumFacing.DOWN, "gearboxvtopengineaxel_geo")
-				.put(EnumFacing.UP, "gearboxbottomengineaxel_geo")
-				.put(EnumFacing.SOUTH, "gearboxfrontengineaxel_geo")
-				.put(EnumFacing.NORTH, "gearboxbackengineaxel_geo")
-				.put(EnumFacing.WEST, "gearboxrightengineaxel_geo")
-				.put(EnumFacing.EAST, "gearboxleftengineaxel_geo")
-				.build();
-
 		// Render the side axles
 		float renderRotation = (float) Math.toDegrees(tileentity.getRenderRotationRadians(partialTick));
 		// Then render the six sides:
@@ -74,7 +64,7 @@ public class GearboxTileEntityRenderer extends TileEntitySpecialRenderer<TileEnt
 				double effectiveRenderRotation = renderRotation * ratio.get();
 				GlStateManager.rotate((float) effectiveRenderRotation, facingVec.getX(), facingVec.getY(), facingVec.getZ());
 				GlStateManager.translate(-.5, -.5, -.5);
-				GibsModelRegistry.renderGibsModel(FACING_TO_AXLE_NAME_TEMP.get(facing), brightness);
+				GibsModelRegistry.renderGibsModel(FACING_TO_AXLE_NAME.get(facing), brightness);
 				GlStateManager.popMatrix();
 			}
 		}

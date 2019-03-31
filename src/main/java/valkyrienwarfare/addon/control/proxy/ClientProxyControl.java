@@ -132,6 +132,13 @@ public class ClientProxyControl extends CommonProxyControl {
         registerRudderGibs("rudder_geo");
         registerRudderGibs("rudder_axel_geo");
 
+        registerGearboxGibs("gearboxbackengineaxel_geo");
+        registerGearboxGibs("gearboxbottomengineaxel_geo");
+        registerGearboxGibs("gearboxfrontengineaxel_geo");
+        registerGearboxGibs("gearboxleftengineaxel_geo");
+        registerGearboxGibs("gearboxrightengineaxel_geo");
+        registerGearboxGibs("gearboxvtopengineaxel_geo");
+
         GibsAnimationRegistry.registerAnimation("ethereum_compressor", new ResourceLocation("valkyrienwarfarecontrol", "models/block/ether_compressor/compressoranimations.atom"));
 
         GibsAnimationRegistry.registerAnimation("ethereum_engine", new ResourceLocation("valkyrienwarfarecontrol", "models/block/multipart_engines/engine_keyframes.atom"));
@@ -151,6 +158,10 @@ public class ClientProxyControl extends CommonProxyControl {
         GibsAnimationRegistry.registerAnimation("rotation_train_axle", new ResourceLocation("valkyrienwarfarecontrol", "models/block/rotation_train_axle/small_engine_axle.atom"));
 
         GibsAnimationRegistry.registerAnimation("giant_propeller", new ResourceLocation("valkyrienwarfarecontrol", "models/block/giant_propeller/small_propeller.atom"));
+    }
+
+    private void registerGearboxGibs(String name) {
+        GibsModelRegistry.registerGibsModel(name, new ResourceLocation("valkyrienwarfarecontrol", "block/gearbox/" + name + ".obj"));
     }
 
     private void registerControlGibs(String name) {

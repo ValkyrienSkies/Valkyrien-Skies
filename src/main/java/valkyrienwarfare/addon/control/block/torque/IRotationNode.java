@@ -5,6 +5,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import valkyrienwarfare.addon.control.block.torque.custom_torque_functions.SimpleTorqueFunction;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
@@ -56,7 +58,7 @@ public interface IRotationNode extends Comparable<IRotationNode> {
         if (!connectedTo.isPresent()) {
             return false;
         }
-        return  getAngularVelocityRatioFor(side).isPresent() && connectedTo.get().getAngularVelocityRatioFor(side.getOpposite()).isPresent();
+        return getAngularVelocityRatioFor(side).isPresent() && connectedTo.get().getAngularVelocityRatioFor(side.getOpposite()).isPresent();
     }
 
     @PhysicsThreadOnly
@@ -133,4 +135,22 @@ public interface IRotationNode extends Comparable<IRotationNode> {
     boolean hasBeenPlacedIntoNodeWorld();
 
     void setPlacedIntoNodeWorld(boolean status);
+
+    /**
+     *
+     * @return a copy of the internal data that is safe to modify.
+     */
+    Optional<Double>[] connectedRotationRatiosUnsychronized();
+
+    default boolean isConnectedToSideUnsynchronized(EnumFacing side) {
+        Optional<IRotationNode> connectedTo = getTileOnSideUnsynchronized(side);
+        if (!connectedTo.isPresent()) {
+            return false;
+        }
+        return getAngularVelocityRatioForUnsynchronized(side).isPresent() && connectedTo.get().getAngularVelocityRatioForUnsynchronized(side.getOpposite()).isPresent();
+    }
+
+    Optional<IRotationNode> getTileOnSideUnsynchronized(EnumFacing side);
+
+    Optional<Double> getAngularVelocityRatioForUnsynchronized(EnumFacing side);
 }

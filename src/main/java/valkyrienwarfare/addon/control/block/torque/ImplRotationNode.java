@@ -5,6 +5,8 @@ import net.minecraft.nbt.NBTUtil;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.Sys;
 import scala.tools.cmd.Opt;
 import valkyrienwarfare.addon.control.block.torque.custom_torque_functions.EtherEngineTorqueFunction;
@@ -254,4 +256,29 @@ public class ImplRotationNode<T extends TileEntity & IRotationNodeProvider> impl
         hasBeenPlacedIntoNodeWorld.set(status);
     }
 
+    @Override
+    public Optional<Double>[] connectedRotationRatiosUnsychronized() {
+        return angularVelocityRatios.clone();
+    }
+
+    @Override
+    public Optional<IRotationNode> getTileOnSideUnsynchronized(EnumFacing side) {
+        assertInitialized();
+        if (!nodePos.isPresent()) {
+            return Optional.empty();
+        }
+        BlockPos sideTilePos = nodePos.get().add(side.getDirectionVec());
+        TileEntity sideTile = tileEntity.getWorld().getTileEntity(sideTilePos);
+        if (!(sideTile instanceof IRotationNodeProvider)) {
+            return Optional.empty();
+        } else {
+            return ((IRotationNodeProvider) sideTile).getRotationNode();
+        }
+    }
+
+    @Override
+    public Optional<Double> getAngularVelocityRatioForUnsynchronized(EnumFacing side) {
+        assertInitialized();
+        return angularVelocityRatios[side.ordinal()];
+    }
 }

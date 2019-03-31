@@ -1,6 +1,7 @@
 package valkyrienwarfare.addon.control.renderer;
 
 import com.google.common.collect.ImmutableMap;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3i;
 import org.lwjgl.opengl.GL11;
 
@@ -108,7 +109,12 @@ public class GearboxTileEntityRenderer extends TileEntitySpecialRenderer<TileEnt
 			GlStateManager.translate(-0.5, -0.5, -0.5);
         }
 
-		double keyframe = ((Minecraft.getMinecraft().world.getTotalWorldTime() + partialTick) % 99) + 1;
+        // The rotation clamped from 0 to 360
+		double rotationFrom0To360 = renderRotation % 360;
+        if (rotationFrom0To360 < 0) {
+        	rotationFrom0To360 += 360;
+		}
+		double keyframe = (rotationFrom0To360 * 99D / 360D) + 1;
 		GibsAnimationRegistry.getAnimation("gearbox").renderAnimation(keyframe, brightness);
 
 		GlStateManager.popMatrix();

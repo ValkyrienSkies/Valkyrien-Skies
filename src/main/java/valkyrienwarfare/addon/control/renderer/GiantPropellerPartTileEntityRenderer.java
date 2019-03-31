@@ -8,6 +8,7 @@ import net.minecraft.util.EnumFacing;
 import org.lwjgl.opengl.GL11;
 import valkyrienwarfare.addon.control.block.multiblocks.TileEntityGiantPropellerPart;
 import valkyrienwarfare.addon.control.block.multiblocks.TileEntityRudderAxlePart;
+import valkyrienwarfare.mod.client.render.GibsAnimationRegistry;
 import valkyrienwarfare.mod.client.render.GibsModelRegistry;
 
 public class GiantPropellerPartTileEntityRenderer extends TileEntitySpecialRenderer<TileEntityGiantPropellerPart> {
@@ -28,7 +29,8 @@ public class GiantPropellerPartTileEntityRenderer extends TileEntitySpecialRende
 
         if (!tileentity.isPartOfAssembledMultiblock()) {
             GlStateManager.pushMatrix();
-            GibsModelRegistry.renderGibsModel("propeller_geo", brightness);
+            // GibsModelRegistry.renderGibsModel("aipropeller_geo", brightness);
+            GibsAnimationRegistry.getAnimation("giant_propeller").renderAnimation(1, brightness);
             GlStateManager.popMatrix();
         } else if (tileentity.isMaster()) {
             GlStateManager.pushMatrix();
@@ -61,7 +63,8 @@ public class GiantPropellerPartTileEntityRenderer extends TileEntitySpecialRende
             GlStateManager.rotate(tileentity.getPropellerAngle(partialTick),0,0,1);
             GlStateManager.translate(-.5,-.5,-.5);
 
-            GibsModelRegistry.renderGibsModel("propeller_geo", brightness);
+            // GibsModelRegistry.renderGibsModel("propeller_geo", brightness);
+            GibsAnimationRegistry.getAnimation("giant_propeller").renderAnimation(1, brightness);
             GlStateManager.popMatrix();
         }
         GlStateManager.popMatrix();

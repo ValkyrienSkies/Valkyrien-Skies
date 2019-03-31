@@ -1,7 +1,10 @@
 package valkyrienwarfare.addon.control.block.multiblocks;
 
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.MathHelper;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.block.torque.IRotationNode;
 import valkyrienwarfare.addon.control.block.torque.IRotationNodeProvider;
@@ -17,6 +20,7 @@ public class TileEntityGiantPropellerPart extends TileEntityMultiblockPartForce<
     protected final IRotationNode rotationNode;
     private double prevPropellerAngle;
     private double propellerAngle;
+    private double nextPropellerAngle;
     private boolean firstUpdate;
 
     public TileEntityGiantPropellerPart() {
@@ -42,24 +46,35 @@ public class TileEntityGiantPropellerPart extends TileEntityMultiblockPartForce<
 
     @Override
     public void update() {
-        this.prevPropellerAngle = this.propellerAngle;
-        this.propellerAngle += 5;
         if (!this.getWorld().isRemote) {
             if (firstUpdate) {
                 this.rotationNode.markInitialized();
+                this.rotationNode.queueTask(() -> this.rotationNode.setAngularVelocityRatio(this.getMultiBlockSchematic().getPropellerFacing().getOpposite(), Optional.of(-1D)));
                 firstUpdate = false;
             }
 
             if (this.isPartOfAssembledMultiblock()) {
                 Optional<PhysicsObject> physicsObjectOptional = ValkyrienWarfareMod.getPhysicsObject(getWorld(), getPos());
-                if (physicsObjectOptional.isPresent() && !rotationNode.hasBeenPlacedIntoNodeWorld() && this.isMaster()) {
-                    IRotationNodeWorld nodeWorld = physicsObjectOptional.get().getPhysicsProcessor().getPhysicsRotationNodeWorld();
-                    if (nodeWorld != null) {
-                        System.out.println("Placed into world");
-                        nodeWorld.enqueueTaskOntoWorld(() -> nodeWorld.setNodeFromPos(getPos(), rotationNode));
+                if (physicsObjectOptional.isPresent() && this.isMaster()) {
+                    if (!rotationNode.hasBeenPlacedIntoNodeWorld()) {
+                        IRotationNodeWorld nodeWorld = physicsObjectOptional.get().getPhysicsProcessor().getPhysicsRotationNodeWorld();
+                        if (nodeWorld != null) {
+                            nodeWorld.enqueueTaskOntoWorld(() -> nodeWorld.setNodeFromPos(getPos(), rotationNode));
+                        }
                     }
+                    this.prevPropellerAngle = this.propellerAngle;
+                    // May need to convert to degrees from radians.
+                    this.propellerAngle = Math.toDegrees(rotationNode.getAngularRotationUnsynchronized());
                 }
+                this.sendUpdatePacketToAllNearby();
             }
+        } else {
+            this.prevPropellerAngle = this.propellerAngle;
+            double increment = nextPropellerAngle - propellerAngle;
+            if (increment < 0) {
+                increment = MathHelper.wrapDegrees(increment);
+            }
+            this.propellerAngle = this.propellerAngle + increment * .85;
         }
     }
 
@@ -103,10 +118,7 @@ public class TileEntityGiantPropellerPart extends TileEntityMultiblockPartForce<
     @Override
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
-        if (this.getWorld() == null || !this.getWorld().isRemote) {
-            rotationNode.readFromNBT(compound);
-        }
-//		rotationNode.markInitialized();
+        rotationNode.readFromNBT(compound);
     }
 
     @Override
@@ -116,4 +128,18 @@ public class TileEntityGiantPropellerPart extends TileEntityMultiblockPartForce<
         return compound;
     }
 
+    @Override
+    public SPacketUpdateTileEntity getUpdatePacket() {
+        NBTTagCompound toSend = super.writeToNBT(new NBTTagCompound());
+        toSend.setDouble("propeller_angle", propellerAngle);
+        // Use super.writeToNBT to avoid sending the rotation node over nbt.
+        SPacketUpdateTileEntity packet = new SPacketUpdateTileEntity(pos, 0, toSend);
+        return packet;
+    }
+
+    @Override
+    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
+        super.onDataPacket(net, pkt);
+        this.nextPropellerAngle = pkt.getNbtCompound().getDouble("propeller_angle");
+    }
 }

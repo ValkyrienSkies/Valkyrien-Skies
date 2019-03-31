@@ -48,7 +48,6 @@ public class TileEntityEthereumEnginePart extends TileEntityMultiblockPart<Ether
 				if (physicsObjectOptional.isPresent() && !rotationNode.hasBeenPlacedIntoNodeWorld() && this.getRelativePos().equals(getMultiBlockSchematic().getTorqueOutputPos())) {
 					IRotationNodeWorld nodeWorld = physicsObjectOptional.get().getPhysicsProcessor().getPhysicsRotationNodeWorld();
 					if (nodeWorld != null) {
-						System.out.println("Placed into world");
 						nodeWorld.enqueueTaskOntoWorld(() -> nodeWorld.setNodeFromPos(getPos(), rotationNode));
 					}
 				}

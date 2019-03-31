@@ -89,7 +89,7 @@ public class ImplRotationNodeWorld implements IRotationNodeWorld {
                 if (start.getAngularVelocity() != 0) {
                      // Try to avoid having rotation nodes randomly switching directions
                      // TODO: Fix this!
-                     firstNodeNewVelocity = Math.abs(firstNodeNewVelocity) * 1;// Math.signum(start.getAngularVelocity());
+                     firstNodeNewVelocity = Math.abs(firstNodeNewVelocity) * Math.signum(start.getAngularVelocity());
                 }
 
                 processNodeNetworkPhase2(start, firstNodeNewVelocity, new HashSet<>());

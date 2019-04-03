@@ -59,7 +59,7 @@ public class TileEntityEthereumEnginePart extends TileEntityMultiblockPart<Ether
 						prevKeyframe = currentKeyframe;
 						double radiansRotatedThisTick = ((TileEntityEthereumEnginePart) tileEntity).getRotationNode().get().getAngularVelocityUnsynchronized() / 20D;
 						// Thats about right, although the x1.3 multiplier tells me the world node math is wrong.
-						currentKeyframe += radiansRotatedThisTick * 99D * 1.3D / (6D * Math.PI);
+						currentKeyframe += radiansRotatedThisTick * 99D / (6D * Math.PI);
 						currentKeyframe = currentKeyframe % 99;
 					}
 				}

@@ -11,6 +11,7 @@ public class EtherEngineTorqueFunction extends SimpleTorqueFunction {
 
     @Override
     public double apply(PhysicsObject object) {
-        return 3 - rotationNode.getAngularVelocity();
+        // Engines will try to rotate 180 degrees every second.
+        return 300 * (Math.PI  - rotationNode.getAngularVelocity());
     }
 }

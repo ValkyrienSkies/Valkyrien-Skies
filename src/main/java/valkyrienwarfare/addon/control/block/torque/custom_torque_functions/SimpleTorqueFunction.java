@@ -3,6 +3,10 @@ package valkyrienwarfare.addon.control.block.torque.custom_torque_functions;
 import valkyrienwarfare.addon.control.block.torque.IRotationNode;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
+/**
+ * Torque functions are used by the rotation nodes to determine their torque each physics tick. They must not be
+ * replaced by lambdas otherwise undefined behavior may occur.
+ */
 public class SimpleTorqueFunction {
 
     protected final IRotationNode rotationNode;

@@ -53,10 +53,10 @@ public class GiantPropellerPartTileEntityRenderer extends TileEntitySpecialRende
                     GlStateManager.rotate(270,0,1,0);
                     break;
                 case UP:
-                    GlStateManager.rotate(90,1,0,0);
+                    GlStateManager.rotate(-90,1,0,0);
                     break;
                 case DOWN:
-                    GlStateManager.rotate(-90,1,0,0);
+                    GlStateManager.rotate(90,1,0,0);
                     break;
             }
 

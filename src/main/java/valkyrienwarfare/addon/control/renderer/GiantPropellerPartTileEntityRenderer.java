@@ -42,12 +42,13 @@ public class GiantPropellerPartTileEntityRenderer extends TileEntitySpecialRende
 
             switch(propellerFacing) {
                 case NORTH:
+                    GlStateManager.rotate(180,0,1,0);
                     break;
                 case EAST:
                     GlStateManager.rotate(90,0,1,0);
                     break;
                 case SOUTH:
-                    GlStateManager.rotate(180,0,1,0);
+                    // GlStateManager.rotate(0,0,1,0);
                     break;
                 case WEST:
                     GlStateManager.rotate(270,0,1,0);

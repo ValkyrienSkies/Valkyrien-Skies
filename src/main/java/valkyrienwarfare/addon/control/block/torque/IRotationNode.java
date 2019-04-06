@@ -102,9 +102,7 @@ public interface IRotationNode extends Comparable<IRotationNode> {
     /**
      * Higher values are more likely to be chosen for building the torque network.
      */
-    default int getSortingPriority() {
-        return 0;
-    }
+    int getSortingPriority();
 
     @Override
     default int compareTo(IRotationNode o2) {
@@ -153,4 +151,7 @@ public interface IRotationNode extends Comparable<IRotationNode> {
     Optional<IRotationNode> getTileOnSideUnsynchronized(EnumFacing side);
 
     Optional<Double> getAngularVelocityRatioForUnsynchronized(EnumFacing side);
+
+    @PhysicsThreadOnly
+    void setSortingPriority(int newPriority);
 }

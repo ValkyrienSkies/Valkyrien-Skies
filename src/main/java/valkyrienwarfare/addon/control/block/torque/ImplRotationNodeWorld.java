@@ -80,16 +80,15 @@ public class ImplRotationNodeWorld implements IRotationNodeWorld {
         processQueuedTasks();
         // Write da code here!
         List<IRotationNode> nodesToVisit = new ArrayList<>(posToNodeMap.values());
+        Collections.sort(nodesToVisit);
         // System.out.println(nodesToVisit.size());
         while (nodesToVisit.size() > 0) {
             IRotationNode start = nodesToVisit.remove(nodesToVisit.size() - 1);
             try {
                 NodeTaskProcessed nodeNetworkResult = processNodeNetwork(start, null, null, nodesToVisit, timeDelta, 1D);
                 double firstNodeNewVelocity = Math.sqrt(nodeNetworkResult.totalEnergy * 2D / nodeNetworkResult.v_sqr_coefficent);
-                if (start.getAngularVelocity() != 0) {
-                     // Try to avoid having rotation nodes randomly switching directions
-                     // TODO: Fix this!
-                     firstNodeNewVelocity = Math.abs(firstNodeNewVelocity) * Math.signum(start.getAngularVelocity());
+                if (nodeNetworkResult.momentumMultDotProduct != 0D) {
+                    firstNodeNewVelocity *= Math.signum(nodeNetworkResult.momentumMultDotProduct);
                 }
 
                 processNodeNetworkPhase2(start, firstNodeNewVelocity, new HashSet<>());
@@ -122,6 +121,8 @@ public class ImplRotationNodeWorld implements IRotationNodeWorld {
         start.simulate(timeDelta, this.parent);
         // Then add energy to the count
         double totalEnergy = start.getEnergy();
+        // Calculate the dot; TODO change this to simulate entire gear networks as just 1 gear.
+        double dotProduct = start.getRotationalInertia() * start.getAngularVelocity() * Math.signum(multiplier);
         // Then calculate the coefficient
         double coefficientAdded = start.getRotationalInertia() * multiplier * multiplier;
         for (Tuple<IRotationNode, EnumFacing> connectedNode : start.connectedTorqueTilesList()) {
@@ -131,6 +132,7 @@ public class ImplRotationNodeWorld implements IRotationNodeWorld {
                 NodeTaskProcessed subTask = processNodeNetwork(connectedNode.getFirst(), start, connectedNode.getSecond(), nodesToVisit, timeDelta, newMultiplier);
                 totalEnergy += subTask.totalEnergy;
                 coefficientAdded += subTask.v_sqr_coefficent;
+                dotProduct += subTask.momentumMultDotProduct;
             }
         }
 
@@ -138,7 +140,7 @@ public class ImplRotationNodeWorld implements IRotationNodeWorld {
         if (from != null) {
 //            coefficient *= (from.getAngularVelocityRatioFor(sideFrom).get() / start.getAngularVelocityRatioFor(sideFrom.getOpposite()).get());
         }
-        return new NodeTaskProcessed(totalEnergy, coefficientAdded);
+        return new NodeTaskProcessed(totalEnergy, coefficientAdded, dotProduct);
     }
 
     private void processNodeNetworkPhase2(IRotationNode start, double newAngularVel, Set<IRotationNode> visitedNodes) {
@@ -217,10 +219,12 @@ public class ImplRotationNodeWorld implements IRotationNodeWorld {
     private static class NodeTaskProcessed {
         private double totalEnergy;
         private double v_sqr_coefficent;
+        private double momentumMultDotProduct;
 
-        private NodeTaskProcessed(double totalEnergy, double v_sqr_coefficent) {
+        private NodeTaskProcessed(double totalEnergy, double v_sqr_coefficent, double momentumMultDotProduct) {
             this.totalEnergy = totalEnergy;
             this.v_sqr_coefficent = v_sqr_coefficent;
+            this.momentumMultDotProduct = momentumMultDotProduct;
         }
     }
 }

@@ -17,6 +17,7 @@ import java.util.Optional;
 
 public class TileEntityGiantPropellerPart extends TileEntityMultiblockPartForce<GiantPropellerMultiblockSchematic> implements IRotationNodeProvider<TileEntityGiantPropellerPart> {
 
+    public static final int GIANT_PROPELLER_SORTING_PRIORITY = 50;
     protected final IRotationNode rotationNode;
     private double prevPropellerAngle;
     private double propellerAngle;
@@ -25,7 +26,7 @@ public class TileEntityGiantPropellerPart extends TileEntityMultiblockPartForce<
 
     public TileEntityGiantPropellerPart() {
         super();
-        this.rotationNode = new ImplRotationNode<>(this, 5);
+        this.rotationNode = new ImplRotationNode<>(this, 5, GIANT_PROPELLER_SORTING_PRIORITY);
         this.firstUpdate = true;
     }
 

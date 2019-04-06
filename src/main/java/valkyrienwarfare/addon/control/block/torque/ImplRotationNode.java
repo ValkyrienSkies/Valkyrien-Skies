@@ -36,6 +36,7 @@ public class ImplRotationNode<T extends TileEntity & IRotationNodeProvider> impl
     private final ConcurrentLinkedQueue<Runnable> queuedTasks;
     private AtomicBoolean markedForDeletion;
     private AtomicBoolean hasBeenPlacedIntoNodeWorld;
+    private int sortingPriority;
 
     public ImplRotationNode(T entity, double rotationalInertia) {
         this.tileEntity = entity;
@@ -50,6 +51,12 @@ public class ImplRotationNode<T extends TileEntity & IRotationNodeProvider> impl
         this.queuedTasks = new ConcurrentLinkedQueue<>();
         this.markedForDeletion = new AtomicBoolean(false);
         this.hasBeenPlacedIntoNodeWorld = new AtomicBoolean(false);
+        this.sortingPriority = 0;
+    }
+
+    public ImplRotationNode(T entity, double rotationalInertia, int sortingPriority) {
+        this(entity, rotationalInertia);
+        this.setSortingPriority(sortingPriority);
     }
 
     @PhysicsThreadOnly
@@ -158,6 +165,7 @@ public class ImplRotationNode<T extends TileEntity & IRotationNodeProvider> impl
         compound.setFloat("a_pos", (float) angularRotation);
         compound.setFloat("a_inert", (float) rotationalInertia);
         compound.setBoolean("a_has_pos", getNodePos().isPresent());
+        compound.setInteger("a_sort_prior", getSortingPriority());
         if (getNodePos().isPresent()) {
             compound.setInteger("a_posX", getNodePos().get().getX());
             compound.setInteger("a_posY", getNodePos().get().getY());
@@ -181,6 +189,11 @@ public class ImplRotationNode<T extends TileEntity & IRotationNodeProvider> impl
         this.angularVelocity = compound.getFloat("a_vel");
         this.angularRotation = compound.getFloat("a_pos");
         this.rotationalInertia = compound.getFloat("a_inert");
+
+        if (compound.hasKey("a_sort_prior")) {
+            this.setSortingPriority(compound.getInteger("a_sort_prior"));
+        }
+
         if (compound.getBoolean("a_has_pos")) {
             this.nodePos = Optional.of(new BlockPos(compound.getInteger("a_posX"), compound.getInteger("a_posY"), compound.getInteger("a_posZ")));
         }
@@ -280,5 +293,17 @@ public class ImplRotationNode<T extends TileEntity & IRotationNodeProvider> impl
     public Optional<Double> getAngularVelocityRatioForUnsynchronized(EnumFacing side) {
         assertInitialized();
         return angularVelocityRatios[side.ordinal()];
+    }
+
+    @PhysicsThreadOnly
+    @Override
+    public int getSortingPriority() {
+        return this.sortingPriority;
+    }
+
+    @PhysicsThreadOnly
+    @Override
+    public void setSortingPriority(int newPriority) {
+        this.sortingPriority = newPriority;
     }
 }

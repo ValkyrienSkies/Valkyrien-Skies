@@ -45,6 +45,11 @@ public class TileEntityBasicRotationNodeTile extends BasicNodeTileEntity impleme
         this.firstUpdate = true;
     }
 
+    public TileEntityBasicRotationNodeTile(int sortingPriority) {
+        this();
+        this.rotationNode.setSortingPriority(sortingPriority);
+    }
+
     @Override
     public Optional<IRotationNode> getRotationNode() {
         if (rotationNode.isInitialized()) {

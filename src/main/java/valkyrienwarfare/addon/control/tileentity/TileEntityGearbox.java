@@ -15,6 +15,7 @@ import java.util.Optional;
 
 public class TileEntityGearbox extends TileEntityBasicRotationNodeTile {
 
+    public static final int GEARBOX_SORTING_PRIORITY = 10;
     private EnumFacing inputFacing;
     private Optional<Double> outputRatio;
     private Optional<Double>[] connectedSidesRatios;
@@ -24,7 +25,7 @@ public class TileEntityGearbox extends TileEntityBasicRotationNodeTile {
     }
 
     public TileEntityGearbox(EnumFacing inputFacing) {
-        super();
+        super(GEARBOX_SORTING_PRIORITY);
         this.inputFacing = inputFacing;
         this.outputRatio = Optional.of(1D);
         this.connectedSidesRatios = new Optional[] {Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()};

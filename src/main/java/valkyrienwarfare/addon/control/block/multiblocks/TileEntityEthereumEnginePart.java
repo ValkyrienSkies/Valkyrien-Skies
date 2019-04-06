@@ -20,6 +20,7 @@ import java.util.Optional;
 
 public class TileEntityEthereumEnginePart extends TileEntityMultiblockPart<EthereumEngineMultiblockSchematic> implements IRotationNodeProvider {
 
+	public static final int ROTATION_NODE_SORT_PRIORITY = 10000;
 	protected final IRotationNode rotationNode;
 	private double prevKeyframe;
 	private double currentKeyframe;
@@ -30,7 +31,7 @@ public class TileEntityEthereumEnginePart extends TileEntityMultiblockPart<Ether
 		super();
 		this.prevKeyframe = 0;
 		this.currentKeyframe = 0;
-		this.rotationNode = new ImplRotationNode<>(this, 5);
+		this.rotationNode = new ImplRotationNode<>(this, 50, ROTATION_NODE_SORT_PRIORITY);
 		this.firstUpdate = true;
 	}
 

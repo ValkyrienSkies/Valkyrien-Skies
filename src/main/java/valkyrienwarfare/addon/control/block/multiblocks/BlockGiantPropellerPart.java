@@ -11,6 +11,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import valkyrienwarfare.deprecated_api.IBlockForceProvider;
 import valkyrienwarfare.math.Vector;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 import javax.annotation.Nullable;
 
@@ -23,6 +24,14 @@ public class BlockGiantPropellerPart extends Block implements ITileEntityProvide
     @Nullable
     @Override
     public Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state, Entity shipEntity, double secondsToApply) {
+        if (true) {
+//            return new Vector(0, 1000 * secondsToApply, 0);
+        }
+        TileEntity tileEntity = world.getTileEntity(pos);
+        if (tileEntity instanceof TileEntityGiantPropellerPart) {
+            TileEntityGiantPropellerPart tileCompressorPart = (TileEntityGiantPropellerPart) tileEntity;
+            return tileCompressorPart.getForceOutputUnoriented(secondsToApply, PhysicsWrapperEntity.class.cast(shipEntity).getPhysicsObject());
+        }
         return null;
     }
 

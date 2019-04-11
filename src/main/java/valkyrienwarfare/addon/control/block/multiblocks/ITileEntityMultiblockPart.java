@@ -2,13 +2,13 @@ package valkyrienwarfare.addon.control.block.multiblocks;
 
 import net.minecraft.util.math.BlockPos;
 
-public interface ITileEntityMultiblockPart<E extends IMulitblockSchematic> {
+public interface ITileEntityMultiblockPart<E extends IMulitblockSchematic, F extends ITileEntityMultiblockPart> {
 	
 	boolean isPartOfAssembledMultiblock();
 	
 	boolean isMaster();
 	
-	ITileEntityMultiblockPart getMaster();
+	F getMaster();
 	
 	BlockPos getMultiblockOrigin();
 	

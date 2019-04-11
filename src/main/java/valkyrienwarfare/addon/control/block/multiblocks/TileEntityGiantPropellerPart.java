@@ -10,12 +10,14 @@ import valkyrienwarfare.addon.control.block.torque.IRotationNode;
 import valkyrienwarfare.addon.control.block.torque.IRotationNodeProvider;
 import valkyrienwarfare.addon.control.block.torque.IRotationNodeWorld;
 import valkyrienwarfare.addon.control.block.torque.ImplRotationNode;
+import valkyrienwarfare.api.TransformType;
+import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.mod.coordinates.VectorImmutable;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
 import java.util.Optional;
 
-public class TileEntityGiantPropellerPart extends TileEntityMultiblockPartForce<GiantPropellerMultiblockSchematic> implements IRotationNodeProvider<TileEntityGiantPropellerPart> {
+public class TileEntityGiantPropellerPart extends TileEntityMultiblockPartForce<GiantPropellerMultiblockSchematic, TileEntityGiantPropellerPart> implements IRotationNodeProvider<TileEntityGiantPropellerPart> {
 
     public static final int GIANT_PROPELLER_SORTING_PRIORITY = 50;
     protected final IRotationNode rotationNode;
@@ -32,17 +34,58 @@ public class TileEntityGiantPropellerPart extends TileEntityMultiblockPartForce<
 
     @Override
     public double getMaxThrust() {
-        return super.getMaxThrust();
+        return 999999;
     }
 
     @Override
     public VectorImmutable getForceOutputNormal(double secondsToApply, PhysicsObject physicsObject) {
-        return null;
+        if (!this.isPartOfAssembledMultiblock()) {
+            return null;
+        } else {
+            if (!this.isMaster()) {
+                TileEntityGiantPropellerPart master = this.getMaster();
+                if (master != null) {
+                    return master.getForceOutputNormal(secondsToApply, physicsObject);
+                } else {
+                    return null;
+                }
+            } else {
+                if (!this.getRotationNode().isPresent()) {
+                    return null;
+                } else if (this.getRotationNode().get().getAngularVelocity() == 0) {
+                    return null;
+                }
+                Vector facingDir = new Vector(this.getPropellerFacing().getDirectionVec());
+                final double angularVelocity = this.getRotationNode().get().getAngularVelocity();
+                if (angularVelocity != 0) {
+                    facingDir.multiply(Math.signum(angularVelocity));
+                }
+                return new VectorImmutable(facingDir);
+            }
+        }
     }
 
     @Override
     public double getThrustMagnitude() {
-        return 0;
+        if (!this.isPartOfAssembledMultiblock()) {
+            return 0;
+        } else {
+            if (!this.isMaster()) {
+                TileEntityGiantPropellerPart master = this.getMaster();
+                if (master != null) {
+                    return master.getThrustMagnitude();
+                } else {
+                    return 0;
+                }
+            } else {
+                if (!this.getRotationNode().isPresent()) {
+                    return 0;
+                }
+                double angularVel = this.getRotationNode().get().getAngularVelocity();
+                // Temporary simple thrust function.
+                return 100D * angularVel * angularVel;
+            }
+        }
     }
 
     @Override
@@ -62,6 +105,8 @@ public class TileEntityGiantPropellerPart extends TileEntityMultiblockPartForce<
                         if (nodeWorld != null) {
                             nodeWorld.enqueueTaskOntoWorld(() -> nodeWorld.setNodeFromPos(getPos(), rotationNode));
                         }
+                        final int propellerRadius = this.getMultiBlockSchematic().getPropellerRadius();
+                        this.rotationNode.queueTask(() -> this.rotationNode.setRotationalInertia(propellerRadius * propellerRadius));
                     }
                     this.prevPropellerAngle = this.propellerAngle;
                     // May need to convert to degrees from radians.
@@ -75,7 +120,7 @@ public class TileEntityGiantPropellerPart extends TileEntityMultiblockPartForce<
             if (increment < 0) {
                 increment = MathHelper.wrapDegrees(increment);
             }
-            this.propellerAngle = this.propellerAngle + increment * .85;
+            this.propellerAngle = this.propellerAngle + increment * .75;
         }
     }
 

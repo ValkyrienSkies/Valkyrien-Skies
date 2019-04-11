@@ -18,7 +18,7 @@ import valkyrienwarfare.physics.management.PhysicsObject;
 
 import java.util.Optional;
 
-public class TileEntityEthereumEnginePart extends TileEntityMultiblockPart<EthereumEngineMultiblockSchematic> implements IRotationNodeProvider {
+public class TileEntityEthereumEnginePart extends TileEntityMultiblockPart<EthereumEngineMultiblockSchematic, TileEntityEthereumEnginePart> implements IRotationNodeProvider<TileEntityEthereumEnginePart> {
 
 	public static final int ROTATION_NODE_SORT_PRIORITY = 10000;
 	protected final IRotationNode rotationNode;

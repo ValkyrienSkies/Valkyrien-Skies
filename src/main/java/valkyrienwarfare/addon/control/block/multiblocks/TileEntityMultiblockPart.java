@@ -15,8 +15,9 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 /**
  * Just a simple implementation of the interfaces.
  * @param <E> The type of schematic for this TileEntity to use.
+ * @param <F> The type of class extending this class.
  */
-public abstract class TileEntityMultiblockPart<E extends IMulitblockSchematic> extends BasicNodeTileEntity implements ITileEntityMultiblockPart<E> {
+public abstract class TileEntityMultiblockPart<E extends IMulitblockSchematic, F extends TileEntityMultiblockPart> extends BasicNodeTileEntity implements ITileEntityMultiblockPart<E, F> {
 
 	private boolean isAssembled;
 	private boolean isMaster;
@@ -43,11 +44,11 @@ public abstract class TileEntityMultiblockPart<E extends IMulitblockSchematic> e
 	}
 
 	@Override
-	public ITileEntityMultiblockPart getMaster() {
+	public F getMaster() {
 		// TODO Auto-generated method stub
 		TileEntity masterTile = this.getWorld().getTileEntity(this.getMultiblockOrigin());
 		if (masterTile instanceof ITileEntityMultiblockPart) {
-			return (ITileEntityMultiblockPart) masterTile;
+			return (F) masterTile;
 		} else {
 			return null;
 		}

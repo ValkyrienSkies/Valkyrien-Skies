@@ -35,7 +35,11 @@ public interface IForceTile {
      * @return
      */
 	public default Vector getForceOutputUnoriented(double secondsToApply, PhysicsObject physicsObject) {
-		Vector forceVector = getForceOutputNormal(secondsToApply, physicsObject).createMutibleVectorCopy();
+		VectorImmutable forceVectorNormal = getForceOutputNormal(secondsToApply, physicsObject);
+		if (forceVectorNormal == null) {
+			return new Vector();
+		}
+		Vector forceVector = forceVectorNormal.createMutibleVectorCopy();
 		forceVector.multiply(getThrustMagnitude() * secondsToApply);
 		return forceVector;
 	}

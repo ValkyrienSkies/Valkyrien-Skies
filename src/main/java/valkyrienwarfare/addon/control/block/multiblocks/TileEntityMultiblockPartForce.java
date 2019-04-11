@@ -7,7 +7,7 @@ import valkyrienwarfare.addon.control.nodenetwork.IForceTile;
 import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
-public abstract class TileEntityMultiblockPartForce<E extends IMulitblockSchematic> extends TileEntityMultiblockPart<E> implements IForceTile {
+public abstract class TileEntityMultiblockPartForce<E extends IMulitblockSchematic, F extends TileEntityMultiblockPartForce> extends TileEntityMultiblockPart<E, F> implements IForceTile {
 
 	private double thrustMultiplierGoal;
 	private double maxThrust;

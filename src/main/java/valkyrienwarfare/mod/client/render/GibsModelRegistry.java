@@ -1,10 +1,6 @@
 package valkyrienwarfare.mod.client.render;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -15,6 +11,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexBuffer;
+import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -41,9 +38,22 @@ public class GibsModelRegistry {
 	private static final Map<String, Map<Integer, VertexBuffer>> NAMES_AND_BRIGHTNESS_TO_VERTEX_BUFFER = new HashMap<String, Map<Integer, VertexBuffer>>();
 
 	private static final ImmutableMap.Builder<String, String> FLIP_UV_CUSTOM_DATA_BUILDER = new ImmutableMap.Builder<String, String>();
+	// True if optifine is installed, false if not.
+	private static final boolean OPTIFINE_INSTALLED;
+	private static Optional<Boolean> OPTIFINE_SHADERS_ENABLED = Optional.empty();
 	static {
 		FLIP_UV_CUSTOM_DATA_BUILDER.put("flip-v", "true");
 		FLIP_UV_CUSTOM_DATA_BUILDER.put("ambient", "true");
+		// Check if optifine is installed
+		boolean optifineInstalled;
+		try {
+			Class.forName("Config", false, GibsModelRegistry.class.getClassLoader());
+			optifineInstalled = true;
+		} catch (ClassNotFoundException e) {
+			// Its ok, This just means that OptiFine isn't installed
+			optifineInstalled = false;
+		}
+		OPTIFINE_INSTALLED = optifineInstalled;
 	}
 	// Used to flip the UVs of obj models. Normally this data is put in the
 	// blockstates.json, but since we're bypassing that it has to be added
@@ -145,18 +155,34 @@ public class GibsModelRegistry {
 		NAMES_TO_RESOURCE_LOCATION.put(name, modelLocation);
 	}
 	
-	public static void generateIModels() {
-		for (String name : GibsModelRegistry.NAMES_TO_RESOURCE_LOCATION.keySet()) {
-			ResourceLocation modelLocation = GibsModelRegistry.NAMES_TO_RESOURCE_LOCATION.get(name);
-			IModel model;
-			try {
-				model = ModelLoaderRegistry.getModel(modelLocation);
-				GibsModelRegistry.MODEL_TEXTURES_INTERNAL.addAll(model.getTextures());
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}	
+	public static void onResourceManagerReload(IResourceManager resourceManager) {
+		// When Minecraft resources are reloaded we must delete the render caches.
+		// Otherwise we'll start rendering pink garbage.
+		System.out.println("Valkyrien Warfare got a resource reload event!");
+		NAMES_TO_BAKED_MODELS.clear();
+		NAMES_TO_BUFFER_STATES.clear();
+		NAMES_AND_BRIGHTNESS_TO_VERTEX_BUFFER.clear();
+		OPTIFINE_SHADERS_ENABLED = Optional.empty();
+		// Also clean up FastBlockModelRenderer
+		// TODO: Merge the functionality of Fast and Gibs eventually.
+		FastBlockModelRenderer.blockstateToVertexData.clear();
+		FastBlockModelRenderer.blockstateBrightnessToVertexBuffer.clear();
+	}
+
+	public static boolean isOptifineShadersEnabled() {
+		if (!OPTIFINE_SHADERS_ENABLED.isPresent()) {
+			if (OPTIFINE_INSTALLED) {
+				try {
+					OPTIFINE_SHADERS_ENABLED = Optional.of((Boolean) Class.forName("Config").getMethod("isShaders").invoke(null));
+				} catch(Exception e) {
+					e.printStackTrace();
+					return false;
+				}
+			} else {
+				OPTIFINE_SHADERS_ENABLED = Optional.of(false);
+			}
 		}
+		return OPTIFINE_SHADERS_ENABLED.get();
 	}
 
 }

@@ -19,6 +19,8 @@ package valkyrienwarfare.mod.client.render;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
+import net.minecraftforge.fml.common.Loader;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.block.state.IBlockState;
@@ -36,6 +38,7 @@ import net.minecraft.client.renderer.vertex.VertexFormatElement;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.lwjgl.opengl.GL20;
 
 // TODO: Upon further inspection this class does the exact opposite of what its name implies 
 // and takes a stupid slow approach to rendering simple geometries. Remove this and create a 
@@ -119,8 +122,12 @@ public class FastBlockModelRenderer {
 	}
 	
 	protected static void renderVertexBuffer(VertexBuffer vertexBuffer) {
+    	// Check if optifine shaders are currently loaded.
+    	final boolean areOptifineShadersEnabled = GibsModelRegistry.isOptifineShadersEnabled();
+
 		GlStateManager.pushMatrix();
-		// Guaranteed not be null.
+		GlStateManager.resetColor();
+
 		GlStateManager.glEnableClientState(GL11.GL_VERTEX_ARRAY);
 		OpenGlHelper.setClientActiveTexture(OpenGlHelper.defaultTexUnit);
 		GlStateManager.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
@@ -129,15 +136,39 @@ public class FastBlockModelRenderer {
 		OpenGlHelper.setClientActiveTexture(OpenGlHelper.defaultTexUnit);
 		GlStateManager.glEnableClientState(GL11.GL_COLOR_ARRAY);
 
+		// Extra OpenGL states that must be enabled when shaders are enabled.
+		if (areOptifineShadersEnabled) {
+			GL11.glEnableClientState(32885);
+			GL20.glEnableVertexAttribArray(11);
+			GL20.glEnableVertexAttribArray(12);
+			GL20.glEnableVertexAttribArray(10);
+		}
+
 		GlStateManager.pushMatrix();
 		vertexBuffer.bindBuffer();
 
-		GlStateManager.glVertexPointer(3, 5126, 28, 0);
-		GlStateManager.glColorPointer(4, 5121, 28, 12);
-		GlStateManager.glTexCoordPointer(2, 5126, 28, 16);
-		OpenGlHelper.setClientActiveTexture(OpenGlHelper.lightmapTexUnit);
-		GlStateManager.glTexCoordPointer(2, 5122, 28, 24);
-		OpenGlHelper.setClientActiveTexture(OpenGlHelper.defaultTexUnit);
+		// Even more OpenGL states that must be enabled when shaders are enabled.
+		if (areOptifineShadersEnabled) {
+			int vertexSizeI = 14;
+			GL11.glVertexPointer(3, 5126, 56, 0L);
+			GL11.glColorPointer(4, 5121, 56, 12L);
+			GL11.glTexCoordPointer(2, 5126, 56, 16L);
+			OpenGlHelper.setClientActiveTexture(OpenGlHelper.lightmapTexUnit);
+			GL11.glTexCoordPointer(2, 5122, 56, 24L);
+			OpenGlHelper.setClientActiveTexture(OpenGlHelper.defaultTexUnit);
+			GL11.glNormalPointer(5120, 56, 28L);
+			GL20.glVertexAttribPointer(11, 2, 5126, false, 56, 32L);
+			GL20.glVertexAttribPointer(12, 4, 5122, false, 56, 40L);
+			GL20.glVertexAttribPointer(10, 3, 5122, false, 56, 48L);
+		} else {
+
+			GlStateManager.glVertexPointer(3, 5126, 28, 0);
+			GlStateManager.glColorPointer(4, 5121, 28, 12);
+			GlStateManager.glTexCoordPointer(2, 5126, 28, 16);
+			OpenGlHelper.setClientActiveTexture(OpenGlHelper.lightmapTexUnit);
+			GlStateManager.glTexCoordPointer(2, 5122, 28, 24);
+			OpenGlHelper.setClientActiveTexture(OpenGlHelper.defaultTexUnit);
+		}
 
 		vertexBuffer.drawArrays(7);
 		GlStateManager.popMatrix();
@@ -162,6 +193,18 @@ public class FastBlockModelRenderer {
 				GlStateManager.resetColor();
 			}
 		}
+
+		OpenGlHelper.glBindBuffer(OpenGlHelper.GL_ARRAY_BUFFER, 0);
+
+		// Finally disable some of those extra OpenGL states that were be enabled due to shaders.
+		if (areOptifineShadersEnabled) {
+			GL11.glDisableClientState(32885);
+			GL20.glDisableVertexAttribArray(11);
+			GL20.glDisableVertexAttribArray(12);
+			GL20.glDisableVertexAttribArray(10);
+		}
+
+		GlStateManager.resetColor();
 		GlStateManager.popMatrix();
 	}
 

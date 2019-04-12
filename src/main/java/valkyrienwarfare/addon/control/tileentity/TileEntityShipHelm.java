@@ -94,8 +94,7 @@ public class TileEntityShipHelm extends ImplTileEntityPilotable implements ITick
 			PhysicsWrapperEntity parentPhysicsEntity = this.getParentPhysicsEntity();
 			VectorImmutable torqueAttemptedNormalImmutable = null;
 			if (parentPhysicsEntity != null) {
-				// Wheel rotation is flipped because I'm an idiot
-				Vector torqueAttempted = new Vector(0, -Math.signum(wheelRotation), 0);
+				Vector torqueAttempted = new Vector(0, Math.signum(wheelRotation), 0);
 				// parentPhysicsEntity.getPhysicsObject().getShipTransformationManager().getCurrentPhysicsTransform()
 				//		.rotate(torqueAttempted, TransformType.SUBSPACE_TO_GLOBAL);
 				torqueAttemptedNormalImmutable = torqueAttempted.toImmutable();

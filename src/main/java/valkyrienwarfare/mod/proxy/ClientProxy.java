@@ -20,6 +20,9 @@ import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.culling.ICamera;
+import net.minecraft.client.resources.IReloadableResourceManager;
+import net.minecraft.client.resources.IResourceManager;
+import net.minecraft.client.resources.IResourceManagerReloadListener;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.common.MinecraftForge;
@@ -33,6 +36,7 @@ import valkyrienwarfare.api.addons.Module;
 import valkyrienwarfare.api.addons.ModuleProxy;
 import valkyrienwarfare.math.Quaternion;
 import valkyrienwarfare.math.Vector;
+import valkyrienwarfare.mod.client.render.GibsModelRegistry;
 import valkyrienwarfare.mod.client.render.PhysObjectRenderFactory;
 import valkyrienwarfare.mod.event.EventsClient;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
@@ -47,6 +51,11 @@ public class ClientProxy extends CommonProxy {
         super.preInit(e);
         OBJLoader.INSTANCE.addDomain(ValkyrienWarfareMod.MODID.toLowerCase());
         RenderingRegistry.registerEntityRenderingHandler(PhysicsWrapperEntity.class, new PhysObjectRenderFactory());
+
+        // Register VW Minecraft resource reload listener.
+        IReloadableResourceManager mcResourceManager = (IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager();
+        // When Minecraft reloads resources tell GibsModelRegistry to delete all its caches.
+        mcResourceManager.registerReloadListener((resourceManager) -> GibsModelRegistry.onResourceManagerReload(resourceManager));
 
         for (Module addon : ValkyrienWarfareMod.addons) {
             ModuleProxy proxy = addon.getClientProxy();

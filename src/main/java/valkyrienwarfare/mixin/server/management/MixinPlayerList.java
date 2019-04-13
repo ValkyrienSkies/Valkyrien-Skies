@@ -45,14 +45,15 @@ import java.util.List;
 @Mixin(PlayerList.class)
 public abstract class MixinPlayerList {
 
-//    @Shadow
-//    @Final
-//    public List<EntityPlayerMP> playerEntityList;
-
     @Shadow
-    public abstract void sendToAllNearExcept(@Nullable EntityPlayer except, double x, double y, double z, double radius, int dimension, Packet<?> packetIn);
+    @Final
+    public List<EntityPlayerMP> playerEntityList;
+
+//    @Shadow
+//    public abstract void sendToAllNearExcept(@Nullable EntityPlayer except, double x, double y, double z, double radius, int dimension, Packet<?> packetIn);
 
 
+    /*
     @Inject(method = "sendToAllNearExcept(Lnet/minecraft/entity/player/EntityPlayer;DDDDILnet/minecraft/network/Packet;)V",
             at = @At(value = "HEAD"), cancellable = true)
     public void injectionToSendToAll(EntityPlayer except, double x, double y, double z, double radius, int dimension, Packet<?> packetIn, CallbackInfo info) {
@@ -87,13 +88,14 @@ public abstract class MixinPlayerList {
             return;
         }
     }
+    */
 
     /**
      * SHUT UP IDEA
      *
      * @author DaPorkchop_
      */
-    /*
+
     @Overwrite
     public void sendToAllNearExcept(@Nullable EntityPlayer except, double x, double y, double z, double radius, int dimension, Packet<?> packetIn) {
         BlockPos pos = new BlockPos(x, y, z);
@@ -130,6 +132,6 @@ public abstract class MixinPlayerList {
             entityplayermp.connection.sendPacket(packetIn);
         }
     }
-    */
+
 
 }

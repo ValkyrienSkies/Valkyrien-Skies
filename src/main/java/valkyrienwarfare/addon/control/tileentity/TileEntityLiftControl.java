@@ -9,6 +9,7 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import valkyrienwarfare.ValkyrienWarfareMod;
@@ -28,6 +29,8 @@ public class TileEntityLiftControl extends ImplTileEntityPilotable {
 	private float prevLeverOffset;
 	
 	private double heightReference;
+	// Assigned by onPilotsMessage(), when true the lever changes the reference height 5x quicker.
+	private boolean isPilotSprinting;
 	
 	public TileEntityLiftControl() {
 		super();
@@ -35,6 +38,13 @@ public class TileEntityLiftControl extends ImplTileEntityPilotable {
 		this.nextLeverOffset = .5f;
 		this.prevLeverOffset = .5f;
 		this.heightReference = 0;
+		this.isPilotSprinting = false;
+	}
+
+	public TileEntityLiftControl(World world) {
+		this();
+		// When placed in the world set target height to be the sea level + 10.
+		this.heightReference = world.getSeaLevel() + 10;
 	}
 	
 	@Override
@@ -53,8 +63,12 @@ public class TileEntityLiftControl extends ImplTileEntityPilotable {
 			} else {
 				this.markDirty();
 			}
-			heightReference += (leverOffset - .5) / 4D;
-			
+			if (!isPilotSprinting) {
+				heightReference += (leverOffset - .5) / 4D;
+			} else {
+				heightReference += (leverOffset - .5) * 1.25D;
+			}
+
 			VWNode_TileEntity thisNode = this.getNode();
 			PhysicsWrapperEntity parentEntity = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(this.getWorld(), this.getPos());
 			
@@ -118,6 +132,8 @@ public class TileEntityLiftControl extends ImplTileEntityPilotable {
 	
 	@Override
 	void processControlMessage(PilotControlsMessage message, EntityPlayerMP sender) {
+		isPilotSprinting = message.airshipSprinting;
+
 		if (message.airshipForward_KeyDown) {
 			// liftPercentage++;
 			leverOffset += leverPullRate;

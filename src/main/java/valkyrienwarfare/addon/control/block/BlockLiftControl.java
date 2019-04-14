@@ -65,7 +65,7 @@ public class BlockLiftControl extends BlockPilotableBasic {
     
 	@Override
 	public TileEntity createNewTileEntity(World worldIn, int meta) {
-		return new TileEntityLiftControl();
+		return new TileEntityLiftControl(worldIn);
 	}
 
 }

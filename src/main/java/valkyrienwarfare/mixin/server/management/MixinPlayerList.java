@@ -129,7 +129,16 @@ public abstract class MixinPlayerList {
         // Original method here.
         for (int i = 0; i < this.playerEntityList.size(); ++i) {
             EntityPlayerMP entityplayermp = this.playerEntityList.get(i);
-            entityplayermp.connection.sendPacket(packetIn);
+
+            if (entityplayermp != except && entityplayermp.dimension == dimension) {
+                double d0 = x - entityplayermp.posX;
+                double d1 = y - entityplayermp.posY;
+                double d2 = z - entityplayermp.posZ;
+
+                if (d0 * d0 + d1 * d1 + d2 * d2 < radius * radius) {
+                    entityplayermp.connection.sendPacket(packetIn);
+                }
+            }
         }
     }
 

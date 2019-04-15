@@ -523,6 +523,13 @@ public class WorldPhysicsCollider {
 				e.printStackTrace();
 			}
 		} else {
+			// Cast to double to avoid overflow errors
+			double size = ((double) (chunkMaxX - chunkMinX)) * ((double) (chunkMaxZ - chunkMinZ));
+			if (size > 300000) {
+				// Sanity check; don't execute the rest of the code because we'll just freeze the physics thread.
+				return;
+			}
+			// TODO: VW thread freezes here.
 			for (int chunkX = chunkMinX; chunkX < chunkMaxX; chunkX++) {
 				for (int chunkZ = chunkMinZ; chunkZ < chunkMaxZ; chunkZ++) {
 					updateCollisionCacheSequential(cache, chunkX, chunkZ, minX, minY, minZ, maxX, maxY, maxZ, shipBB);

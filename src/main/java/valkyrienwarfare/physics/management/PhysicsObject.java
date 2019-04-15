@@ -834,8 +834,6 @@ public class PhysicsObject implements ISubspaceProvider {
         // Then this second
         createPhysicsCalculations();
         assert getPhysicsProcessor() != null : "This is horrible!";
-        // First so we can get our torque loaded FIRST!
-        getPhysicsProcessor().readFromNBTTag(compound);
 
         setOwnedChunks(new VWChunkClaim(compound));
         ShipTransform savedTransform = NBTUtils.readShipTransformFromNBT("currentTickTransform", compound);
@@ -871,6 +869,9 @@ public class PhysicsObject implements ISubspaceProvider {
         }
 
         loadClaimedChunks();
+
+        // After we have loaded which positions are stored in the ship; we load the physics calculations object.
+        getPhysicsProcessor().readFromNBTTag(compound);
         entityLocalPositions = NBTUtils.readEntityPositionMap("entityPosHashMap", compound);
 
         getAllowedUsers().clear();

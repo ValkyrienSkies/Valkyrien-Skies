@@ -21,7 +21,7 @@ public class BlockEtherCompressorPart extends Block implements ITileEntityProvid
 	
 	@Override
 	public TileEntity createNewTileEntity(World worldIn, int meta) {
-		return new TileEntityEthereumCompressorPart(50000D);
+		return new TileEntityEthereumCompressorPart(500000D);
 	}
 
     @Override

@@ -45,7 +45,7 @@ public class BlockPhysicsRegistration {
         // blockMass.registerBlockMass(Blocks.STONE, 180D);
         // blockMass.registerBlockMass(Blocks.IRON_BLOCK, 250D);
         // blockMass.registerBlockMass(Blocks.OBSIDIAN, 500D);
-        BlockMass.registerBlockMass(Blocks.BEDROCK, 5000D);
+        BlockMass.registerBlockMass(Blocks.BEDROCK, 50000D);
     }
     
     public static void registerBlocksToNotPhysicise() {

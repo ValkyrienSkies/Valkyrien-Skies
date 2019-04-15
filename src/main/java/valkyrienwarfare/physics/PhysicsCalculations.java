@@ -521,23 +521,30 @@ public class PhysicsCalculations {
         NBTUtils.write3x3MatrixToNBT("MOI", gameMoITensor, compound);
 
         physicsRotationNodeWorld.writeToNBTTag(compound);
+        compound.setString("block_mass_ver", BlockMass.basicMass.blockMassVer());
     }
 
     public void readFromNBTTag(NBTTagCompound compound) {
-        gameTickMass = compound.getDouble("mass");
-
         linearMomentum = NBTUtils.readVectorFromNBT("linear", compound);
         angularVelocity = NBTUtils.readVectorFromNBT("angularVelocity", compound);
         gameTickCenterOfMass = NBTUtils.readVectorFromNBT("CM", compound);
-
+        gameTickMass = compound.getDouble("mass");
         gameMoITensor = NBTUtils.read3x3MatrixFromNBT("MOI", compound);
-
         physicsRotationNodeWorld.readFromNBTTag(compound);
+
+        if (!BlockMass.basicMass.blockMassVer().equals(compound.getString("block_mass_ver"))) {
+            this.recalculateShipInertia();
+        }
     }
 
     // Called upon a Ship being created from the World, and generates the physics
     // data for it
     public void recalculateShipInertia() {
+        linearMomentum.zero();
+        angularVelocity.zero();
+        gameTickCenterOfMass.zero();
+        gameTickMass = 0;
+        gameMoITensor = RotationMatrices.getZeroMatrix(3);
         IBlockState air = Blocks.AIR.getDefaultState();
         for (BlockPos pos : getParent().getBlockPositions()) {
             onSetBlockState(air, getParent().getShipChunks().getBlockState(pos), pos);

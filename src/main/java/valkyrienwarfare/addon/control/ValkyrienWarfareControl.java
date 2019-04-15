@@ -179,21 +179,18 @@ public class ValkyrienWarfareControl extends Module {
     @Override
     public void applyConfig(Configuration config) {
         config.addCustomCategoryComment("control", "Settings for Valkyrien Warfare's control module");
-        double basicEnginePower = config.get("control.power.engine", "basicEnginePower", 4000D, "engine power for the basic engine").getDouble();
-        double advancedEnginePower = config.get("control.power.engine", "advancedEnginePower", 6000D, "engine power for the advanced engine").getDouble();
-        double eliteEnginePower = config.get("control.power.engine", "eliteEnginePower", 8000D, "engine power for the elite engine").getDouble();
-        double ultimateEnginePower = config.get("control.power.engine", "ultimateEnginePower", 16000D, "engine power for the ultimate engine").getDouble();
-        double redstoneEnginePower = config.get("control.power.engine", "redstoneEnginePower", 500D, "Multiplied by the redstone power (0-15) to the Redstone engine").getDouble();
-
-        double basicEtherCompressorPower = config.get("control.power.compressor", "basicEtherCompressorPower", 25000D, "engine power for the basic Ether Compressor").getDouble();
-        double advancedEtherCompressorPower = config.get("control.power.compressor", "advancedEtherCompressorPower", 45000D, "engine power for the advanced Ether Compressor").getDouble();
-        double eliteEtherCompressorPower = config.get("control.power.compressor", "eliteEtherCompressorPower", 80000D, "engine power for the elite Ether Compressor").getDouble();
-        double ultimateEtherCompressorPower = config.get("control.power.compressor", "ultimateEtherCompressorPower", 100000D, "engine power for the ultimate Ether Compressor").getDouble();
-
-        vwControlBlocks.basicEngine.setEnginePower(basicEnginePower);
-        vwControlBlocks.advancedEngine.setEnginePower(advancedEnginePower);
-        vwControlBlocks.eliteEngine.setEnginePower(eliteEnginePower);
-        vwControlBlocks.ultimateEngine.setEnginePower(ultimateEnginePower);
-        vwControlBlocks.redstoneEngine.setEnginePower(redstoneEnginePower);
+        // Disabled for now.
+        // TODO: Re-enable eventually.
+//        double basicEnginePower = config.get("control.power.engine", "basicEnginePower", 2000, "engine power for the basic engine").getDouble();
+//        double advancedEnginePower = config.get("control.power.engine", "advancedEnginePower", 2500, "engine power for the advanced engine").getDouble();
+//        double eliteEnginePower = config.get("control.power.engine", "eliteEnginePower", 5000, "engine power for the elite engine").getDouble();
+//        double ultimateEnginePower = config.get("control.power.engine", "ultimateEnginePower", 10000, "engine power for the ultimate engine").getDouble();
+//        double redstoneEnginePower = config.get("control.power.engine", "redstoneEnginePower", 500, "Multiplied by the redstone power (0-15) to the Redstone engine").getDouble();
+//
+//        vwControlBlocks.basicEngine.setEnginePower(basicEnginePower);
+//        vwControlBlocks.advancedEngine.setEnginePower(advancedEnginePower);
+//        vwControlBlocks.eliteEngine.setEnginePower(eliteEnginePower);
+//        vwControlBlocks.ultimateEngine.setEnginePower(ultimateEnginePower);
+//        vwControlBlocks.redstoneEngine.setEnginePower(redstoneEnginePower);
     }
 }

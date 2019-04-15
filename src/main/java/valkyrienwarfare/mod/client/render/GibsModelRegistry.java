@@ -35,20 +35,17 @@ public class GibsModelRegistry {
     private static final Map<String, BufferBuilder.State> NAMES_TO_BUFFER_STATES = new HashMap<String, BufferBuilder.State>();
     private static final Map<String, Map<Integer, VertexBuffer>> NAMES_AND_BRIGHTNESS_TO_VERTEX_BUFFER = new HashMap<String, Map<Integer, VertexBuffer>>();
 
-    private static final ImmutableMap.Builder<String, String> FLIP_UV_CUSTOM_DATA_BUILDER = new ImmutableMap.Builder<String, String>();
     // True if optifine is installed, false if not.
     private static final boolean OPTIFINE_INSTALLED;
     // Used to flip the UVs of obj models. Normally this data is put in the
     // blockstates.json, but since we're bypassing that it has to be added
     // directly to the IModel.
-    private static final ImmutableMap<String, String> FLIP_UV_CUSTOM_DATA = FLIP_UV_CUSTOM_DATA_BUILDER.build();
+    private static final ImmutableMap<String, String> FLIP_UV_CUSTOM_DATA = ImmutableMap.of("flip-v", "true", "ambient", "true");
     // Used to make sure that when we simulate rendering models they're not affected by light from other blocks.
     private static final BlockPos offsetPos = new BlockPos(0, 512, 0);
     private static Optional<Boolean> OPTIFINE_SHADERS_ENABLED = Optional.empty();
 
     static {
-        FLIP_UV_CUSTOM_DATA_BUILDER.put("flip-v", "true");
-        FLIP_UV_CUSTOM_DATA_BUILDER.put("ambient", "true");
         // Check if optifine is installed
         boolean optifineInstalled;
         try {

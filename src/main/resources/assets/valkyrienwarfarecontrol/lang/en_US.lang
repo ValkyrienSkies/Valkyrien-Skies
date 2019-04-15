@@ -5,7 +5,7 @@ item.vw_wrench.name=VW Wrench
 #Blocks
 tile.shippilotschair.name=Captain's Chair
 tile.shippassengerchair.name=Passenger Chair
-tile.dopedetherium.name=Compacted Ethereum
+tile.dopedethereum.name=Compacted Ethereum
 tile.thrustrelay.name=Network Control Relay
 tile.thrustmodulator.name=Old Control Block
 tile.shiphelm.name=Ship Helm

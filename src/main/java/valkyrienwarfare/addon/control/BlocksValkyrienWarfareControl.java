@@ -40,7 +40,7 @@ public class BlocksValkyrienWarfareControl {
     public final BlockNormalEngine ultimateEngine;
     public final BlockRedstoneEngine redstoneEngine;
 
-    public final Block dopedEtherium;
+    public final Block dopedEthereum;
     public final Block pilotsChair;
     public final Block passengerChair;
     public final Block shipHelm;
@@ -75,7 +75,7 @@ public class BlocksValkyrienWarfareControl {
         ultimateEngine = (BlockNormalEngine) new BlockNormalEngine(Material.GROUND, 10000).setHardness(10f).setUnlocalizedName("ultimateengine").setRegistryName(getModID(), "ultimateengine").setCreativeTab(ValkyrienWarfareMod.vwTab);
         redstoneEngine = (BlockRedstoneEngine) new BlockRedstoneEngine(Material.REDSTONE_LIGHT, 500).setHardness(7.0f).setUnlocalizedName("redstoneengine").setRegistryName(getModID(), "redstoneengine").setCreativeTab(ValkyrienWarfareMod.vwTab);
 
-        dopedEtherium = new BlockDopedEtherium(Material.GLASS).setHardness(4f).setUnlocalizedName("dopedetherium").setRegistryName(getModID(), "dopedetherium").setCreativeTab(ValkyrienWarfareMod.vwTab);
+        dopedEthereum = new BlockDopedEthereum(Material.GLASS).setHardness(4f).setUnlocalizedName("dopedethereum").setRegistryName(getModID(), "dopedethereum").setCreativeTab(ValkyrienWarfareMod.vwTab);
         pilotsChair = new BlockShipPilotsChair(Material.IRON).setHardness(4f).setUnlocalizedName("shippilotschair").setRegistryName(getModID(), "shippilotschair").setCreativeTab(ValkyrienWarfareMod.vwTab);
 
         passengerChair = new BlockShipPassengerChair(Material.IRON).setHardness(4f).setUnlocalizedName("shippassengerchair").setRegistryName(getModID(), "shippassengerchair").setCreativeTab(ValkyrienWarfareMod.vwTab);
@@ -110,7 +110,7 @@ public class BlocksValkyrienWarfareControl {
         event.getRegistry().register(ultimateEngine);
         event.getRegistry().register(redstoneEngine);
 
-        event.getRegistry().register(dopedEtherium);
+        event.getRegistry().register(dopedEthereum);
         event.getRegistry().register(pilotsChair);
         event.getRegistry().register(passengerChair);
 
@@ -142,7 +142,7 @@ public class BlocksValkyrienWarfareControl {
         registerItemBlock(event, ultimateEngine);
         registerItemBlock(event, redstoneEngine);
 
-        registerItemBlock(event, dopedEtherium);
+        registerItemBlock(event, dopedEthereum);
         registerItemBlock(event, pilotsChair);
         registerItemBlock(event, passengerChair);
 

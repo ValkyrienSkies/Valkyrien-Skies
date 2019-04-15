@@ -32,7 +32,10 @@ public class RegisterEvents {
     public static void registerBlocks(RegistryEvent.Register<Block> event) {
         System.out.println("Registering blocks");
         ValkyrienWarfareMod.INSTANCE.registerBlocks(event);
-        addons.forEach(m -> m.registerBlocks(event));
+        addons.forEach(m -> {
+
+            m.registerBlocks(event);
+        });
     }
 
     @SubscribeEvent

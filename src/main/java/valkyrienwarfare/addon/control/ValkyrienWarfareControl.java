@@ -151,7 +151,7 @@ public class ValkyrienWarfareControl extends Module {
 
     @Override
     public void registerRecipes(RegistryEvent.Register<IRecipe> event) {
-        registerRecipe(event, "recipe_pilots_chair", new ItemStack(vwControlBlocks.pilotsChair), "SLS", "EWE", " S ", 'S', Items.STICK, 'L', Items.LEATHER, 'W', Item.getItemFromBlock(Blocks.LOG), 'E', ValkyrienWarfareWorld.INSTANCE.etheriumCrystal);
+        registerRecipe(event, "recipe_pilots_chair", new ItemStack(vwControlBlocks.pilotsChair), "SLS", "EWE", " S ", 'S', Items.STICK, 'L', Items.LEATHER, 'W', Item.getItemFromBlock(Blocks.LOG), 'E', ValkyrienWarfareWorld.INSTANCE.ethereumCrystal);
 
         registerRecipe(event, "recipe_basic_engine", new ItemStack(vwControlBlocks.basicEngine, 4), "I##", "IPP", "I##", '#', Item.getItemFromBlock(Blocks.PLANKS), 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT);
         registerRecipe(event, "recipe_advanced_engine1", new ItemStack(vwControlBlocks.advancedEngine, 4), "I##", "IPP", "I##", '#', Item.getItemFromBlock(Blocks.STONE), 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT);

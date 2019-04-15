@@ -14,22 +14,69 @@
  *
  */
 
-package valkyrienwarfare.addon.world;
+package valkyrienwarfare.addon.control.block;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.Item;
+import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import valkyrienwarfare.deprecated_api.IBlockForceProvider;
+import valkyrienwarfare.math.Vector;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.List;
 
-public class ItemEtheriumCrystal extends Item {
+public class BlockDopedEthereum extends Block implements IBlockForceProvider {
+
+    public static final double DOPED_ETHEREUM_FORCE = 200000;
+    private static final String[] lore = new String[]{"" + TextFormatting.GRAY + TextFormatting.ITALIC + TextFormatting.BOLD + "Force:", "  " + DOPED_ETHEREUM_FORCE + " Newtons"};
+
+    public BlockDopedEthereum(Material materialIn) {
+        super(materialIn);
+    }
+
+    /**
+     * The force Vector this block gives within its local space (Not within World
+     * space).
+     *
+     * @param world
+     * @param pos
+     * @param state
+     * @param shipEntity
+     * @param secondsToApply
+     * @return
+     */
+    @Nullable
+    @Override
+    public Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state, Entity shipEntity, double secondsToApply) {
+        // TODO: Shouldn't this depend on the gravity vector?
+        return new Vector(0, DOPED_ETHEREUM_FORCE * secondsToApply, 0);
+    }
+
+    /**
+     * Blocks that shouldn't have their force rotated (Like Ether Compressors) must
+     * return false.
+     *
+     * @param world
+     * @param pos
+     * @param state
+     * @param secondsToApply
+     * @return
+     */
+    @Override
+    public boolean shouldLocalForceBeRotated(World world, BlockPos pos, IBlockState state, double secondsToApply) {
+        return false;
+    }
 
     @Override
     public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation, ITooltipFlag advanced) {
-        itemInformation.add(TextFormatting.ITALIC + "" + TextFormatting.RED + TextFormatting.ITALIC + "Unfinished until v_0.91_alpha");
+        Collections.addAll(itemInformation, lore);
     }
 
 }

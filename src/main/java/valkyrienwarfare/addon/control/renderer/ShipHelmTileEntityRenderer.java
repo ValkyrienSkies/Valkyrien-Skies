@@ -17,10 +17,7 @@
 package valkyrienwarfare.addon.control.renderer;
 
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.EnumFacing;
@@ -29,8 +26,6 @@ import org.lwjgl.opengl.GL11;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.block.BlockShipHelm;
 import valkyrienwarfare.addon.control.tileentity.TileEntityShipHelm;
-import valkyrienwarfare.mod.client.render.FastBlockModelRenderer;
-import valkyrienwarfare.mod.client.render.GibsAnimationRegistry;
 import valkyrienwarfare.mod.client.render.GibsModelRegistry;
 
 public class ShipHelmTileEntityRenderer extends TileEntitySpecialRenderer<TileEntityShipHelm> {
@@ -97,7 +92,7 @@ public class ShipHelmTileEntityRenderer extends TileEntitySpecialRenderer<TileEn
             GL11.glRotated(wheelAndCompassStateRotation, 0, 1, 0);
             GL11.glTranslated(-0.5D, 0, -0.5D);
             GibsModelRegistry.renderGibsModel("shiphelmbase", brightness);
-            
+
             GL11.glPushMatrix();
             GL11.glTranslated(.5, .522, 0);
             GL11.glRotated(smoothWheel, 0, 0, 1);

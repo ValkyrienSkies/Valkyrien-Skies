@@ -16,14 +16,6 @@
 
 package valkyrienwarfare.mixin.entity;
 
-import java.util.List;
-
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -33,6 +25,11 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.math.VWMath;
@@ -43,40 +40,42 @@ import valkyrienwarfare.mod.coordinates.VectorImmutable;
 import valkyrienwarfare.physics.collision.polygons.EntityPolygon;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
+import java.util.List;
+
 @Mixin(EntityLivingBase.class)
 public abstract class MixinEntityLivingBase extends Entity implements ISubspacedEntity {
 
-	private final EntityLivingBase thisAsEntity = EntityLivingBase.class.cast(this);
-	
+    private final EntityLivingBase thisAsEntity = EntityLivingBase.class.cast(this);
+
     /**
      * This constructor is needed to make java compile this class, but doesn't actually affect anything
      */
     public MixinEntityLivingBase(World world) {
         super(world);
     }
-    
+
     @Override
     public void restoreSubspacedEntityStateToRecord(ISubspacedEntityRecord record) {
-    	VectorImmutable coordinates = record.getPosition();
-    	VectorImmutable coordinatesLastTick = record.getPositionLastTick();
-    	VectorImmutable lookVector = record.getLookDirection();
-    	VectorImmutable velocityVector = record.getVelocity();
-    	
-    	thisAsEntity.lastTickPosX = coordinatesLastTick.getX();
-    	thisAsEntity.lastTickPosY = coordinatesLastTick.getY();
-    	thisAsEntity.lastTickPosZ = coordinatesLastTick.getZ();
-    	
-    	double pitch = VWMath.getPitchFromVectorImmutable(lookVector);
-    	double yaw = VWMath.getYawFromVectorImmutable(lookVector, pitch);
-    	
-    	this.rotationPitch = (float) pitch;
-    	this.rotationYaw = (float) yaw;
-    	
-    	this.motionX = velocityVector.getX();
-    	this.motionY = velocityVector.getY();
-    	this.motionZ = velocityVector.getZ();
-    	
-    	thisAsEntity.setPosition(coordinates.getX(), coordinates.getY(), coordinates.getZ());
+        VectorImmutable coordinates = record.getPosition();
+        VectorImmutable coordinatesLastTick = record.getPositionLastTick();
+        VectorImmutable lookVector = record.getLookDirection();
+        VectorImmutable velocityVector = record.getVelocity();
+
+        thisAsEntity.lastTickPosX = coordinatesLastTick.getX();
+        thisAsEntity.lastTickPosY = coordinatesLastTick.getY();
+        thisAsEntity.lastTickPosZ = coordinatesLastTick.getZ();
+
+        double pitch = VWMath.getPitchFromVectorImmutable(lookVector);
+        double yaw = VWMath.getYawFromVectorImmutable(lookVector, pitch);
+
+        this.rotationPitch = (float) pitch;
+        this.rotationYaw = (float) yaw;
+
+        this.motionX = velocityVector.getX();
+        this.motionY = velocityVector.getY();
+        this.motionZ = velocityVector.getZ();
+
+        thisAsEntity.setPosition(coordinates.getX(), coordinates.getY(), coordinates.getZ());
     }
 
     @Inject(method = "dismountEntity", at = @At("HEAD"), cancellable = true)

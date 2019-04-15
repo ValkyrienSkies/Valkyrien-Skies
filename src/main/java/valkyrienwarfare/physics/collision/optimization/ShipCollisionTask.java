@@ -87,8 +87,8 @@ public class ShipCollisionTask implements Callable<Void> {
      * @return
      */
     public Iterator<CollisionInformationHolder> getCollisionInformationIterator() {
-    	// This is preventing the cpu from precaching the rest of the List, slowly things down considerably.
-        if (false  && collisionInformationGenerated.size() != 0) {
+        // This is preventing the cpu from precaching the rest of the List, slowly things down considerably.
+        if (false && collisionInformationGenerated.size() != 0) {
             return new QuasiRandomIterator(collisionInformationGenerated);
         } else {
             return collisionInformationGenerated.iterator();

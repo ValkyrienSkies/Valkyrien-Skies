@@ -37,19 +37,20 @@ public interface INodeController extends Comparable<INodeController> {
 
     /**
      * Returns the position of the TileEntity that is behind this interface.
+     *
      * @return
      */
     BlockPos getNodePos();
-    
+
     // Used maintain order of which processors get called first. If both processors
     // have equal priorities, then we use the BlockPos as a tiebreaker.
     @Override
     default int compareTo(INodeController other) {
-    	if (getPriority() != other.getPriority()) {
-    		return getPriority() - other.getPriority();
-    	} else {
-    		// break the tie
-    		return getNodePos().compareTo(other.getNodePos());
-    	}
+        if (getPriority() != other.getPriority()) {
+            return getPriority() - other.getPriority();
+        } else {
+            // break the tie
+            return getNodePos().compareTo(other.getNodePos());
+        }
     }
 }

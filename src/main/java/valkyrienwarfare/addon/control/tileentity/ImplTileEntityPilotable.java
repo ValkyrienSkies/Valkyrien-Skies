@@ -16,7 +16,6 @@
 
 package valkyrienwarfare.addon.control.tileentity;
 
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.player.EntityPlayer;
@@ -28,7 +27,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
-import valkyrienwarfare.addon.control.block.BlockShipHelm;
 import valkyrienwarfare.addon.control.network.MessageStartPiloting;
 import valkyrienwarfare.addon.control.network.MessageStopPiloting;
 import valkyrienwarfare.addon.control.nodenetwork.BasicNodeTileEntity;
@@ -47,142 +45,141 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
  */
 public abstract class ImplTileEntityPilotable extends BasicNodeTileEntity implements ITileEntityPilotable {
 
-	private EntityPlayer pilotPlayerEntity;
+    private EntityPlayer pilotPlayerEntity;
 
-	ImplTileEntityPilotable() {
-		super();
-		this.pilotPlayerEntity = null;
-	}
-	
-	@Override
-	public final void onPilotControlsMessage(PilotControlsMessage message, EntityPlayerMP sender) {
-		if (sender == pilotPlayerEntity) {
-			processControlMessage(message, sender);
-		} else {
-			// Wtf is this packet being sent for?
-		}
-	}
+    ImplTileEntityPilotable() {
+        super();
+        this.pilotPlayerEntity = null;
+    }
 
-	@Override
-	public final EntityPlayer getPilotEntity() {
-		return pilotPlayerEntity;
-	}
+    @Override
+    public final void onPilotControlsMessage(PilotControlsMessage message, EntityPlayerMP sender) {
+        if (sender == pilotPlayerEntity) {
+            processControlMessage(message, sender);
+        } else {
+            // Wtf is this packet being sent for?
+        }
+    }
 
-	@Override
-	public final void setPilotEntity(EntityPlayer toSet) {
-		if (!getWorld().isRemote) {
-			sendPilotUpdatePackets((EntityPlayerMP) toSet, (EntityPlayerMP) pilotPlayerEntity);
-		}
-		pilotPlayerEntity = toSet;
-		if (pilotPlayerEntity != null) {
-			onStartTileUsage(pilotPlayerEntity);
-		} else {
-			onStopTileUsage();
-		}
-	}
+    @Override
+    public final EntityPlayer getPilotEntity() {
+        return pilotPlayerEntity;
+    }
 
-	@Override
-	public final void playerWantsToStopPiloting(EntityPlayer player) {
-		if (player == getPilotEntity()) {
-			setPilotEntity(null);
-		} else {
-			// Wtf happened here?
-		}
-	}
+    @Override
+    public final void setPilotEntity(EntityPlayer toSet) {
+        if (!getWorld().isRemote) {
+            sendPilotUpdatePackets((EntityPlayerMP) toSet, (EntityPlayerMP) pilotPlayerEntity);
+        }
+        pilotPlayerEntity = toSet;
+        if (pilotPlayerEntity != null) {
+            onStartTileUsage(pilotPlayerEntity);
+        } else {
+            onStopTileUsage();
+        }
+    }
 
-	@Override
-	public final PhysicsWrapperEntity getParentPhysicsEntity() {
-		return ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(getWorld(), getPos());
-	}
+    @Override
+    public final void playerWantsToStopPiloting(EntityPlayer player) {
+        if (player == getPilotEntity()) {
+            setPilotEntity(null);
+        } else {
+            // Wtf happened here?
+        }
+    }
 
-	// Always call this before setting the pilotPlayerEntity to equal newPilot
-	private final void sendPilotUpdatePackets(EntityPlayerMP newPilot, EntityPlayerMP oldPilot) {
-		if (oldPilot != null) {
-			MessageStopPiloting stopMessage = new MessageStopPiloting(getPos());
-			ValkyrienWarfareControl.controlNetwork.sendTo(stopMessage, oldPilot);
-		}
-		if (newPilot != null) {
-			MessageStartPiloting startMessage = new MessageStartPiloting(getPos(), setClientPilotingEntireShip(),
-					getControlInputType());
-			ValkyrienWarfareControl.controlNetwork.sendTo(startMessage, newPilot);
-		}
-	}
+    @Override
+    public final PhysicsWrapperEntity getParentPhysicsEntity() {
+        return ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(getWorld(), getPos());
+    }
 
-	/**
-	 * Unique for each tileentity type
-	 *
-	 * @return
-	 */
-	abstract ControllerInputType getControlInputType();
+    // Always call this before setting the pilotPlayerEntity to equal newPilot
+    private final void sendPilotUpdatePackets(EntityPlayerMP newPilot, EntityPlayerMP oldPilot) {
+        if (oldPilot != null) {
+            MessageStopPiloting stopMessage = new MessageStopPiloting(getPos());
+            ValkyrienWarfareControl.controlNetwork.sendTo(stopMessage, oldPilot);
+        }
+        if (newPilot != null) {
+            MessageStartPiloting startMessage = new MessageStartPiloting(getPos(), setClientPilotingEntireShip(),
+                    getControlInputType());
+            ValkyrienWarfareControl.controlNetwork.sendTo(startMessage, newPilot);
+        }
+    }
 
-	/**
-	 * Returns true if this control type is piloting the ship.
-	 *
-	 * @return
-	 */
-	@Deprecated
-	boolean setClientPilotingEntireShip() {
-		return false;
-	}
+    /**
+     * Unique for each tileentity type
+     *
+     * @return
+     */
+    abstract ControllerInputType getControlInputType();
 
-	/**
-	 * Unique for each tileentity type, only called if the sender player is the same
-	 * as the pilotPlayerEntity
-	 *
-	 * @return
-	 */
-	abstract void processControlMessage(PilotControlsMessage message, EntityPlayerMP sender);
+    /**
+     * Returns true if this control type is piloting the ship.
+     *
+     * @return
+     */
+    @Deprecated
+    boolean setClientPilotingEntireShip() {
+        return false;
+    }
 
-	final void sendUpdatePacketToAllNearby() {
-		SPacketUpdateTileEntity spacketupdatetileentity = getUpdatePacket();
-		WorldServer serverWorld = (WorldServer) world;
-		Vector pos = new Vector(getPos().getX(), getPos().getY(), getPos().getZ());
-		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(getWorld(), getPos());
-		if (wrapper != null) {
-			wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(pos,
-					TransformType.SUBSPACE_TO_GLOBAL);
-			// RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform,
-			// pos);
-		}
-		serverWorld.mcServer.getPlayerList().sendToAllNearExcept(null, pos.X, pos.Y, pos.Z, 128D,
-				getWorld().provider.getDimension(), spacketupdatetileentity);
-	}
+    /**
+     * Unique for each tileentity type, only called if the sender player is the same
+     * as the pilotPlayerEntity
+     *
+     * @return
+     */
+    abstract void processControlMessage(PilotControlsMessage message, EntityPlayerMP sender);
 
-	/**
-	 * 
-	 * @param player
-	 * @param blockFacing
-	 * @return true if the passed player is in front of the given blockFacing, false if not.
-	 */
-	protected boolean isPlayerInFront(EntityPlayer player, EnumFacing blockFacing) {
-		Vector tileRelativePos = new Vector(this.getPos().getX() + .5, this.getPos().getY() + .5,
-				this.getPos().getZ() + .5);
-		if (this.getParentPhysicsEntity() != null) {
-			this.getParentPhysicsEntity().getPhysicsObject().getShipTransformationManager().getCurrentTickTransform()
-					.transform(tileRelativePos, TransformType.SUBSPACE_TO_GLOBAL);
-		}
-		tileRelativePos.subtract(player.posX, player.posY, player.posZ);
-		Vector normal = new Vector(blockFacing.getDirectionVec().getX() * -1, blockFacing.getDirectionVec().getY(),
-				blockFacing.getDirectionVec().getZ());
+    final void sendUpdatePacketToAllNearby() {
+        SPacketUpdateTileEntity spacketupdatetileentity = getUpdatePacket();
+        WorldServer serverWorld = (WorldServer) world;
+        Vector pos = new Vector(getPos().getX(), getPos().getY(), getPos().getZ());
+        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(getWorld(), getPos());
+        if (wrapper != null) {
+            wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(pos,
+                    TransformType.SUBSPACE_TO_GLOBAL);
+            // RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform,
+            // pos);
+        }
+        serverWorld.mcServer.getPlayerList().sendToAllNearExcept(null, pos.X, pos.Y, pos.Z, 128D,
+                getWorld().provider.getDimension(), spacketupdatetileentity);
+    }
 
-		if (this.getParentPhysicsEntity() != null) {
-			this.getParentPhysicsEntity().getPhysicsObject().getShipTransformationManager().getCurrentTickTransform()
-					.rotate(normal, TransformType.SUBSPACE_TO_GLOBAL);
-		}
+    /**
+     * @param player
+     * @param blockFacing
+     * @return true if the passed player is in front of the given blockFacing, false if not.
+     */
+    protected boolean isPlayerInFront(EntityPlayer player, EnumFacing blockFacing) {
+        Vector tileRelativePos = new Vector(this.getPos().getX() + .5, this.getPos().getY() + .5,
+                this.getPos().getZ() + .5);
+        if (this.getParentPhysicsEntity() != null) {
+            this.getParentPhysicsEntity().getPhysicsObject().getShipTransformationManager().getCurrentTickTransform()
+                    .transform(tileRelativePos, TransformType.SUBSPACE_TO_GLOBAL);
+        }
+        tileRelativePos.subtract(player.posX, player.posY, player.posZ);
+        Vector normal = new Vector(blockFacing.getDirectionVec().getX() * -1, blockFacing.getDirectionVec().getY(),
+                blockFacing.getDirectionVec().getZ());
 
-		double dotProduct = tileRelativePos.dot(normal);
-		return dotProduct > 0;
-	}
+        if (this.getParentPhysicsEntity() != null) {
+            this.getParentPhysicsEntity().getPhysicsObject().getShipTransformationManager().getCurrentTickTransform()
+                    .rotate(normal, TransformType.SUBSPACE_TO_GLOBAL);
+        }
 
-	/**
-	 * This is called during the post render of every frame in Minecraft. Override
-	 * this to allow a pilot tileentity to display info as text on the screen.
-	 * 
-	 * @param renderer
-	 * @param gameResolution
-	 */
-	@SideOnly(Side.CLIENT)
-	public void renderPilotText(FontRenderer renderer, ScaledResolution gameResolution) {
+        double dotProduct = tileRelativePos.dot(normal);
+        return dotProduct > 0;
+    }
 
-	}
+    /**
+     * This is called during the post render of every frame in Minecraft. Override
+     * this to allow a pilot tileentity to display info as text on the screen.
+     *
+     * @param renderer
+     * @param gameResolution
+     */
+    @SideOnly(Side.CLIENT)
+    public void renderPilotText(FontRenderer renderer, ScaledResolution gameResolution) {
+
+    }
 }

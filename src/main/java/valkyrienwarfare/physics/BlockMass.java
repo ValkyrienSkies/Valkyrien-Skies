@@ -28,8 +28,8 @@ import java.util.HashMap;
 
 public class BlockMass {
 
-    // 80N, Something like ~ 20lbs
-    private final static double DEFAULT_MASS = 50D;
+    // A 1x1x1 cube of DEFAULT is 500kg.
+    private final static double DEFAULT_MASS = 500D;
     public static BlockMass basicMass = new BlockMass();
     public HashMap<Block, Double> blockToMass = new HashMap<Block, Double>();
     public HashMap<Material, Double> materialMass = new HashMap<Material, Double>();
@@ -44,43 +44,51 @@ public class BlockMass {
 
     private void generateMaterialMasses() {
         materialMass.put(Material.AIR, 0D);
-        materialMass.put(Material.ANVIL, 200D);
+        materialMass.put(Material.ANVIL, 8000D);
         materialMass.put(Material.BARRIER, 0D);
-        materialMass.put(Material.CACTUS, 15D);
-        materialMass.put(Material.CAKE, 10D);
-        materialMass.put(Material.CARPET, 5D);
-        materialMass.put(Material.CIRCUITS, 15D);
-        materialMass.put(Material.CLAY, 40D);
-        materialMass.put(Material.CLOTH, 20D);
-        materialMass.put(Material.CORAL, 70D);
-        materialMass.put(Material.CRAFTED_SNOW, 20D);
-        materialMass.put(Material.DRAGON_EGG, 20D);
+        materialMass.put(Material.CACTUS, 400D);
+        materialMass.put(Material.CAKE, 100D);
+        materialMass.put(Material.CARPET, 100D);
+        materialMass.put(Material.CIRCUITS, 200D);
+        materialMass.put(Material.CLAY, 2000D);
+        materialMass.put(Material.CLOTH, 300D);
+        materialMass.put(Material.CORAL, 2000D);
+        materialMass.put(Material.CRAFTED_SNOW, 500D);
+        materialMass.put(Material.DRAGON_EGG, 500D);
         materialMass.put(Material.FIRE, 0D);
-        materialMass.put(Material.GLASS, 20D);
-        materialMass.put(Material.GOURD, 50D);
-        materialMass.put(Material.GRASS, 30D);
-        materialMass.put(Material.GROUND, 70D);
-        materialMass.put(Material.ICE, 50D);
-        materialMass.put(Material.IRON, 250D);
-        materialMass.put(Material.LAVA, 0D);
-        materialMass.put(Material.LEAVES, 10D);
-        materialMass.put(Material.PACKED_ICE, 40D);
-        materialMass.put(Material.PISTON, 15D);
-        materialMass.put(Material.PLANTS, 10D);
+        materialMass.put(Material.GLASS, 2000D);
+        materialMass.put(Material.GOURD, 1500D);
+        materialMass.put(Material.GRASS, 1500D);
+        materialMass.put(Material.GROUND, 1500D);
+        materialMass.put(Material.ICE, 500D);
+        materialMass.put(Material.IRON, 8000D);
+        materialMass.put(Material.LAVA, 2500D);
+        materialMass.put(Material.LEAVES, 100D);
+        materialMass.put(Material.PACKED_ICE, 500D);
+        materialMass.put(Material.PISTON, 3000D);
+        materialMass.put(Material.PLANTS, 300D);
         materialMass.put(Material.PORTAL, 0D);
-        materialMass.put(Material.REDSTONE_LIGHT, 10D);
-        materialMass.put(Material.ROCK, 220D);
-        materialMass.put(Material.SAND, 45D);
-        materialMass.put(Material.SNOW, 20D);
-        materialMass.put(Material.SPONGE, 20D);
+        materialMass.put(Material.REDSTONE_LIGHT, 100D);
+        materialMass.put(Material.ROCK, 3000D);
+        materialMass.put(Material.SAND, 2000D);
+        materialMass.put(Material.SNOW, 500D);
+        materialMass.put(Material.SPONGE, 100D);
         materialMass.put(Material.STRUCTURE_VOID, 0D);
-        materialMass.put(Material.TNT, 30D);
-        materialMass.put(Material.VINE, 5D);
-        materialMass.put(Material.WATER, 0D);
-        materialMass.put(Material.WEB, 10D);
-        materialMass.put(Material.WOOD, 25D);
+        materialMass.put(Material.TNT, 2000D);
+        materialMass.put(Material.VINE, 300D);
+        materialMass.put(Material.WATER, 1000D);
+        materialMass.put(Material.WEB, 100D);
+        materialMass.put(Material.WOOD, 500D);
     }
 
+    /**
+     * Get block mass, in kg.
+     *
+     * @param state
+     * @param pos
+     * @param world
+     * @return
+     */
     public double getMassFromState(IBlockState state, BlockPos pos, World world) {
         Block block = state.getBlock();
         if (block instanceof IBlockMassProvider) {
@@ -113,10 +121,10 @@ public class BlockMass {
         Material material = block.blockMaterial;
 
         return getMassFromMaterial(material);
-        //Old formula
-//		double hardness = block.blockHardness;
-//		double resistance = block.blockResistance;
-//		return hardness * 50D + 2 * math.pow(resistance, 1 / 4);
+    }
+
+    public String blockMassVer() {
+        return "v0.1";
     }
 
 }

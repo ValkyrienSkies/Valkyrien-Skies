@@ -26,10 +26,10 @@ import net.minecraft.util.math.BlockPos;
  */
 public class VWChunkClaim {
 
+    public final boolean[][] chunkOccupiedInLocal;
     private final int centerX;
     private final int centerZ;
     private final int radius;
-    public final boolean[][] chunkOccupiedInLocal;
 
     public VWChunkClaim(int x, int z, int size) {
         this.centerX = x;
@@ -74,64 +74,64 @@ public class VWChunkClaim {
         return false;
     }
 
-	/**
-	 * @return the centerX
-	 */
-	public int getCenterX() {
-		return centerX;
-	}
+    /**
+     * @return the centerX
+     */
+    public int getCenterX() {
+        return centerX;
+    }
 
-	/**
-	 * @return the centerZ
-	 */
-	public int getCenterZ() {
-		return centerZ;
-	}
+    /**
+     * @return the centerZ
+     */
+    public int getCenterZ() {
+        return centerZ;
+    }
 
-	/**
-	 * @return the radius
-	 */
-	public int getRadius() {
-		return radius;
-	}
+    /**
+     * @return the radius
+     */
+    public int getRadius() {
+        return radius;
+    }
 
-	/**
-	 * @return the maxX
-	 */
-	public int getMaxX() {
-		return getCenterX() + getRadius();
-	}
+    /**
+     * @return the maxX
+     */
+    public int getMaxX() {
+        return getCenterX() + getRadius();
+    }
 
-	/**
-	 * @return the maxZ
-	 */
-	public int getMaxZ() {
-		return getCenterZ() + getRadius();
-	}
+    /**
+     * @return the maxZ
+     */
+    public int getMaxZ() {
+        return getCenterZ() + getRadius();
+    }
 
-	/**
-	 * @return the minZ
-	 */
-	public int getMinZ() {
-		return getCenterZ() - getRadius();
-	}
+    /**
+     * @return the minZ
+     */
+    public int getMinZ() {
+        return getCenterZ() - getRadius();
+    }
 
-	/**
-	 * @return the minX
-	 */
-	public int getMinX() {
-		return getCenterX() - getRadius();
-	}
+    /**
+     * @return the minX
+     */
+    public int getMinX() {
+        return getCenterX() - getRadius();
+    }
 
-	public BlockPos getRegionCenter() {
-		return new BlockPos(this.getCenterX() * 16, 128, this.getCenterZ() * 16);
-	}
-	
-	public int getChunkLengthX() {
-		return getMaxX() - getMinX() + 1;
-	}
-	
-	public int getChunkLengthZ() {
-		return getMaxZ() - getMinZ() + 1;
-	}
+    public BlockPos getRegionCenter() {
+        return new BlockPos(this.getCenterX() * 16, 128, this.getCenterZ() * 16);
+    }
+
+    public int getChunkLengthX() {
+        return getMaxX() - getMinX() + 1;
+    }
+
+    public int getChunkLengthZ() {
+        return getMaxZ() - getMinZ() + 1;
+    }
 }

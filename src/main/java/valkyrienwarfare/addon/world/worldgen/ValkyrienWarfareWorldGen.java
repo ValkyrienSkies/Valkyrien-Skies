@@ -16,9 +16,6 @@
 
 package valkyrienwarfare.addon.world.worldgen;
 
-import java.util.Random;
-
-import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkProvider;
@@ -28,6 +25,8 @@ import net.minecraft.world.gen.feature.WorldGenerator;
 import net.minecraftforge.fml.common.IWorldGenerator;
 import valkyrienwarfare.addon.world.ValkyrienWarfareWorld;
 import valkyrienwarfare.mod.physmanagement.chunk.PhysicsChunkManager;
+
+import java.util.Random;
 
 /**
  * Created by joeyr on 4/18/2017.
@@ -42,7 +41,7 @@ public class ValkyrienWarfareWorldGen implements IWorldGenerator {
     @Override
     public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) {
         if (this.genEtheriumOre == null) {
-            this.genEtheriumOre = new WorldGenMinable(ValkyrienWarfareWorld.INSTANCE.etheriumOre.getDefaultState(), 8);
+            this.genEtheriumOre = new WorldGenMinable(ValkyrienWarfareWorld.INSTANCE.ethereumOre.getDefaultState(), 8);
         }
         switch (world.provider.getDimension()) {
             case 0: //Overworld
@@ -71,6 +70,6 @@ public class ValkyrienWarfareWorldGen implements IWorldGenerator {
     }
 
     private void runDungeonGenerator(World world, Random rand, int chunk_X, int chunk_Z, int chancesToSpawn) {
-    	boolean isLikelyShipChunk = PhysicsChunkManager.isLikelyShipChunk(chunk_X, chunk_Z);
+        boolean isLikelyShipChunk = PhysicsChunkManager.isLikelyShipChunk(chunk_X, chunk_Z);
     }
 }

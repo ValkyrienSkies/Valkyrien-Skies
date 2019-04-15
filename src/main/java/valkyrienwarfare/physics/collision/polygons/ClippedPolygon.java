@@ -16,11 +16,11 @@
 
 package valkyrienwarfare.physics.collision.polygons;
 
+import valkyrienwarfare.math.Vector;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import valkyrienwarfare.math.Vector;
 
 public class ClippedPolygon extends Polygon {
 

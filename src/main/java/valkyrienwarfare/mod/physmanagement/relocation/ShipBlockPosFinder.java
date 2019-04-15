@@ -22,7 +22,7 @@ import net.minecraft.world.World;
 import valkyrienwarfare.mod.BlockPhysicsRegistration;
 
 public class ShipBlockPosFinder extends SpatialDetector {
-	
+
     private final MutableBlockPos mutablePos = new MutableBlockPos();
 
     public ShipBlockPosFinder(BlockPos start, World worldIn, int maximum, boolean checkCorners) {
@@ -32,7 +32,7 @@ public class ShipBlockPosFinder extends SpatialDetector {
 
     @Override
     public boolean isValidExpansion(int x, int y, int z) {
-    	mutablePos.setPos(x, y, z);
+        mutablePos.setPos(x, y, z);
         return !BlockPhysicsRegistration.blocksToNotPhysicise.contains(cache.getBlockState(mutablePos).getBlock());
     }
 

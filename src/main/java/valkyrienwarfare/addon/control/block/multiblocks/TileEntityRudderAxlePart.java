@@ -1,12 +1,5 @@
 package valkyrienwarfare.addon.control.block.multiblocks;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
@@ -25,7 +18,10 @@ import valkyrienwarfare.physics.collision.polygons.Polygon;
 import valkyrienwarfare.physics.management.PhysicsObject;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
-public class TileEntityRudderAxlePart extends TileEntityMultiblockPartForce<RudderAxleMultiblockSchematic> {
+import java.util.*;
+import java.util.Map.Entry;
+
+public class TileEntityRudderAxlePart extends TileEntityMultiblockPartForce<RudderAxleMultiblockSchematic, TileEntityRudderAxlePart> {
 
     // Angle must be between -90 and 90
     private double rudderAngle;
@@ -213,7 +209,7 @@ public class TileEntityRudderAxlePart extends TileEntityMultiblockPartForce<Rudd
 
             Vector dragForceClockwise = new Vector(surfaceNormal, -dragMagnitude);
             // TODO: :(
-            dragForceClockwise.multiply(10000);
+            dragForceClockwise.multiply(100000);
             return dragForceClockwise;
         } else {
             return null;

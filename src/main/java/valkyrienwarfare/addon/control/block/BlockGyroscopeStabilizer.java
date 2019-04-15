@@ -38,14 +38,14 @@ public class BlockGyroscopeStabilizer extends Block implements ITileEntityProvid
         return new TileEntityGyroscopeStabilizer();
     }
 
-	@Override
-	public Vector getTorqueInGlobal(PhysicsCalculations physicsCalculations, BlockPos pos) {
-		TileEntity thisTile = physicsCalculations.getParent().getWorldObj().getTileEntity(pos);
-		if (thisTile instanceof TileEntityGyroscopeStabilizer) {
-			TileEntityGyroscopeStabilizer tileGyroscope = (TileEntityGyroscopeStabilizer) thisTile;
-			return tileGyroscope.getTorqueInGlobal(physicsCalculations, pos);
-		}
-		return null;
-	}
+    @Override
+    public Vector getTorqueInGlobal(PhysicsCalculations physicsCalculations, BlockPos pos) {
+        TileEntity thisTile = physicsCalculations.getParent().getWorldObj().getTileEntity(pos);
+        if (thisTile instanceof TileEntityGyroscopeStabilizer) {
+            TileEntityGyroscopeStabilizer tileGyroscope = (TileEntityGyroscopeStabilizer) thisTile;
+            return tileGyroscope.getTorqueInGlobal(physicsCalculations, pos);
+        }
+        return null;
+    }
 
 }

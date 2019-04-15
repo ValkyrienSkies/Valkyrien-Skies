@@ -28,7 +28,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
-import valkyrienwarfare.addon.world.block.BlockEtheriumOre;
+import valkyrienwarfare.addon.world.block.BlockEthereumOre;
 import valkyrienwarfare.addon.world.capability.AntiGravityCapabilityProvider;
 import valkyrienwarfare.fixes.IInventoryPlayerFix;
 import valkyrienwarfare.util.PhysicsSettings;
@@ -39,12 +39,12 @@ public class WorldEventsCommon {
     public void onAttachCapabilityEventItem(AttachCapabilitiesEvent event) {
         if (event.getObject() instanceof ItemStack) {
             ItemStack stack = (ItemStack) event.getObject();
-            if (stack.getItem() instanceof ItemEtheriumCrystal) {
+            if (stack.getItem() instanceof ItemEthereumCrystal) {
                 event.addCapability(new ResourceLocation(ValkyrienWarfareWorld.INSTANCE.getModID(), "AntiGravityValue"),
                         new AntiGravityCapabilityProvider());
             } else if (stack.getItem() instanceof ItemBlock) {
                 ItemBlock itemBlock = (ItemBlock) stack.getItem();
-                if (itemBlock.getBlock() == ValkyrienWarfareWorld.INSTANCE.etheriumOre) {
+                if (itemBlock.getBlock() == ValkyrienWarfareWorld.INSTANCE.ethereumOre) {
                     event.addCapability(new ResourceLocation(ValkyrienWarfareWorld.INSTANCE.getModID(), "AntiGravityValue"),
                             new AntiGravityCapabilityProvider());
                 }
@@ -81,10 +81,10 @@ public class WorldEventsCommon {
                             if (stack != null) {
                                 if (stack.getItem() instanceof ItemBlock) {
                                     ItemBlock blockItem = (ItemBlock) stack.getItem();
-                                    if (blockItem.getBlock() instanceof BlockEtheriumOre) {
+                                    if (blockItem.getBlock() instanceof BlockEthereumOre) {
                                         player.addVelocity(0, .0025D * stack.stackSize, 0);
                                     }
-                                } else if (stack.getItem() instanceof ItemEtheriumCrystal) {
+                                } else if (stack.getItem() instanceof ItemEthereumCrystal) {
                                     player.addVelocity(0, .0025D * stack.stackSize, 0);
                                 }
                             }

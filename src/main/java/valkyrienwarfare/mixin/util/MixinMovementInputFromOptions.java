@@ -29,14 +29,13 @@ import valkyrienwarfare.addon.control.piloting.IShipPilot;
 /**
  * This mixin prevents the player from moving while they're piloting something,
  * by blocking the code that checks if the movement keys are down.
- * 
- * @author thebest108
  *
+ * @author thebest108
  */
 @Mixin(MovementInputFromOptions.class)
 public abstract class MixinMovementInputFromOptions extends MovementInput {
-	
-	@Inject(method = "updatePlayerMoveState", at = @At("HEAD"), cancellable = true)
+
+    @Inject(method = "updatePlayerMoveState", at = @At("HEAD"), cancellable = true)
     public void preUpdatePlayerMoveState(CallbackInfo callbackInfo) {
         IShipPilot pilot = IShipPilot.class.cast(Minecraft.getMinecraft().player);
 
@@ -45,18 +44,18 @@ public abstract class MixinMovementInputFromOptions extends MovementInput {
             if (inputTypeEnum != null) {
                 if (inputTypeEnum.shouldLockPlayerMovement()) {
                     // Then don't let the player move anymore while it's piloting this bastard
-                	zeroAllPlayerMovements();
+                    zeroAllPlayerMovements();
                     callbackInfo.cancel();
                 }
             }
         }
     }
-    
-	/**
-	 * Stops all player movement.
-	 */
+
+    /**
+     * Stops all player movement.
+     */
     private void zeroAllPlayerMovements() {
-    	this.moveStrafe = 0;
+        this.moveStrafe = 0;
         this.moveForward = 0;
         this.jump = false;
     }

@@ -14,11 +14,11 @@ import valkyrienwarfare.mod.client.render.GibsAnimationRegistry;
 
 public class EthereumCompressorPartTileEntityRenderer extends TileEntitySpecialRenderer<TileEntityEthereumCompressorPart> {
 
-	@Override
-	public void render(TileEntityEthereumCompressorPart tileentity, double x, double y, double z, float partialTick,
-			int destroyStage, float alpha) {
+    @Override
+    public void render(TileEntityEthereumCompressorPart tileentity, double x, double y, double z, float partialTick,
+                       int destroyStage, float alpha) {
 
-		this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+        this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
         GlStateManager.pushMatrix();
         GlStateManager.disableLighting();
 
@@ -30,34 +30,34 @@ public class EthereumCompressorPartTileEntityRenderer extends TileEntitySpecialR
 
         GlStateManager.pushMatrix();
         if (!tileentity.isPartOfAssembledMultiblock()) {
-			IBlockState state = Blocks.GOLD_BLOCK.getDefaultState();
-			Tessellator tessellator = Tessellator.getInstance();
-			FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(), state, brightness);
-		} else {
-			if (tileentity.isMaster()) {
-				double keyframe = tileentity.getCurrentKeyframe(partialTick);
+            IBlockState state = Blocks.GOLD_BLOCK.getDefaultState();
+            Tessellator tessellator = Tessellator.getInstance();
+            FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(), state, brightness);
+        } else {
+            if (tileentity.isMaster()) {
+                double keyframe = tileentity.getCurrentKeyframe(partialTick);
 
-				GlStateManager.pushMatrix();
+                GlStateManager.pushMatrix();
 
-				float rotationYaw = tileentity.getMultiBlockSchematic().getMultiblockRotation().getYaw();
+                float rotationYaw = tileentity.getMultiBlockSchematic().getMultiblockRotation().getYaw();
 
-				Vector centerOffset = new Vector(.5, 0, .5);
-				RotationMatrices.applyTransform(RotationMatrices.getRotationMatrix(0, -rotationYaw,0), centerOffset);
-				GlStateManager.translate(centerOffset.X, centerOffset.Y, centerOffset.Z);
+                Vector centerOffset = new Vector(.5, 0, .5);
+                RotationMatrices.applyTransform(RotationMatrices.getRotationMatrix(0, -rotationYaw, 0), centerOffset);
+                GlStateManager.translate(centerOffset.X, centerOffset.Y, centerOffset.Z);
 
-				GlStateManager.translate(.5, 0, .5);
-				GlStateManager.scale(2,2,2);
-				GlStateManager.rotate(-rotationYaw,	0,1,0);
-				GlStateManager.translate(-.5, 0, -.5);
+                GlStateManager.translate(.5, 0, .5);
+                GlStateManager.scale(2, 2, 2);
+                GlStateManager.rotate(-rotationYaw, 0, 1, 0);
+                GlStateManager.translate(-.5, 0, -.5);
 
-				GibsAnimationRegistry.getAnimation("ethereum_compressor").renderAnimation(keyframe, brightness);
-				GlStateManager.popMatrix();
-			}
-		}
-        
+                GibsAnimationRegistry.getAnimation("ethereum_compressor").renderAnimation(keyframe, brightness);
+                GlStateManager.popMatrix();
+            }
+        }
+
         GlStateManager.popMatrix();
         GlStateManager.popMatrix();
         GlStateManager.enableLighting();
         GlStateManager.resetColor();
-	}
+    }
 }

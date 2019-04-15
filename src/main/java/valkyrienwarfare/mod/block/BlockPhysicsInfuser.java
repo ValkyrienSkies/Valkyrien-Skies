@@ -16,8 +16,6 @@
 
 package valkyrienwarfare.mod.block;
 
-import java.util.List;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -31,79 +29,78 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.math.VWMath;
-import valkyrienwarfare.math.Vector;
-import valkyrienwarfare.mod.coordinates.VectorImmutable;
 import valkyrienwarfare.mod.physmanagement.relocation.DetectorManager;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.physics.management.ShipType;
 import valkyrienwarfare.physics.management.WorldPhysObjectManager;
 
+import java.util.List;
+
 public class BlockPhysicsInfuser extends Block {
 
-	int shipSpawnDetectorID;
+    int shipSpawnDetectorID;
 
-	public BlockPhysicsInfuser(Material materialIn) {
-		super(materialIn);
-		shipSpawnDetectorID = DetectorManager.DetectorIDs.ShipSpawnerGeneral.ordinal();
-	}
+    public BlockPhysicsInfuser(Material materialIn) {
+        super(materialIn);
+        shipSpawnDetectorID = DetectorManager.DetectorIDs.ShipSpawnerGeneral.ordinal();
+    }
 
-	public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par4) {
-		itemInformation.add(TextFormatting.BLUE
-				+ "Turns any blocks attatched to this one into a brand new Ship, just be careful not to infuse your entire world");
-	}
+    public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par4) {
+        itemInformation.add(TextFormatting.BLUE
+                + "Turns any blocks attatched to this one into a brand new Ship, just be careful not to infuse your entire world");
+    }
 
-	@Override
-	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
-			EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
-		if (!worldIn.isRemote) {
-			// ===== Debug Testing Code =====
-			/*
-			 * System.out.println("yaw: " + playerIn.rotationYaw + "    pitch: " +
-			 * playerIn.rotationPitch); VectorImmutable immutable = (new
-			 * Vector(playerIn.getLookVec())).toImmutable(); double pitch =
-			 * VWMath.getPitchFromVectorImmutable(immutable); double yaw =
-			 * VWMath.getYawFromVectorImmutable(immutable, pitch);
-			 * System.out.println("yaw2: " + yaw + "    pitch2: " + pitch);
-			 * System.out.println("Position: " + playerIn.getPositionVector()); if (true) {
-			 * return false; }
-			 */
-			// ===== Debug Code End =====
-			WorldPhysObjectManager manager = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getManagerForWorld(worldIn);
-			if (manager != null) {
-				PhysicsWrapperEntity wrapperEnt = manager
-						.getManagingObjectForChunk(worldIn.getChunkFromBlockCoords(pos));
-				if (wrapperEnt != null) {
-					wrapperEnt.getPhysicsObject().setPhysicsEnabled(!wrapperEnt.getPhysicsObject().isPhysicsEnabled());
-					return true;
-				}
-			}
+    @Override
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
+                                    EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
+        if (!worldIn.isRemote) {
+            // ===== Debug Testing Code =====
+            /*
+             * System.out.println("yaw: " + playerIn.rotationYaw + "    pitch: " +
+             * playerIn.rotationPitch); VectorImmutable immutable = (new
+             * Vector(playerIn.getLookVec())).toImmutable(); double pitch =
+             * VWMath.getPitchFromVectorImmutable(immutable); double yaw =
+             * VWMath.getYawFromVectorImmutable(immutable, pitch);
+             * System.out.println("yaw2: " + yaw + "    pitch2: " + pitch);
+             * System.out.println("Position: " + playerIn.getPositionVector()); if (true) {
+             * return false; }
+             */
+            // ===== Debug Code End =====
+            WorldPhysObjectManager manager = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getManagerForWorld(worldIn);
+            if (manager != null) {
+                PhysicsWrapperEntity wrapperEnt = manager
+                        .getManagingObjectForChunk(worldIn.getChunkFromBlockCoords(pos));
+                if (wrapperEnt != null) {
+                    wrapperEnt.getPhysicsObject().setPhysicsEnabled(!wrapperEnt.getPhysicsObject().isPhysicsEnabled());
+                    return true;
+                }
+            }
 
-			if (ValkyrienWarfareMod.canChangeAirshipCounter(true, playerIn)) {
-				PhysicsWrapperEntity wrapper = new PhysicsWrapperEntity(worldIn, pos.getX(), pos.getY(), pos.getZ(),
-						playerIn, shipSpawnDetectorID, ShipType.Full_Unlocked);
-				worldIn.spawnEntity(wrapper);
-			} else {
-				playerIn.sendMessage(new TextComponentString(
-						"You've made too many airships! The limit per player is " + ValkyrienWarfareMod.maxAirships));
-			}
-		}
-		return true;
-	}
+            if (ValkyrienWarfareMod.canChangeAirshipCounter(true, playerIn)) {
+                PhysicsWrapperEntity wrapper = new PhysicsWrapperEntity(worldIn, pos.getX(), pos.getY(), pos.getZ(),
+                        playerIn, shipSpawnDetectorID, ShipType.Full_Unlocked);
+                worldIn.spawnEntity(wrapper);
+            } else {
+                playerIn.sendMessage(new TextComponentString(
+                        "You've made too many airships! The limit per player is " + ValkyrienWarfareMod.maxAirships));
+            }
+        }
+        return true;
+    }
 
-	@Override
-	public BlockRenderLayer getBlockLayer() {
-		return BlockRenderLayer.CUTOUT;
-	}
+    @Override
+    public BlockRenderLayer getBlockLayer() {
+        return BlockRenderLayer.CUTOUT;
+    }
 
-	@Override
-	public boolean isFullCube(IBlockState state) {
-		return false;
-	}
+    @Override
+    public boolean isFullCube(IBlockState state) {
+        return false;
+    }
 
-	@Override
-	public boolean isOpaqueCube(IBlockState state) {
-		return false;
-	}
+    @Override
+    public boolean isOpaqueCube(IBlockState state) {
+        return false;
+    }
 
 }

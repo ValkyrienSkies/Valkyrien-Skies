@@ -73,6 +73,10 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
         return maxThrust;
     }
 
+    public void setMaxThrust(double maxThrust) {
+        this.maxThrust = maxThrust;
+    }
+
     @Override
     public double getThrustMagnitude() {
         return this.getMaxThrust() * this.getThrustMultiplierGoal();
@@ -85,7 +89,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
 
     @Override
     public void setThrustMultiplierGoal(double multiplier) {
-    	thrusGoalMultiplier = multiplier;
+        thrusGoalMultiplier = multiplier;
     }
 
     @Override
@@ -126,10 +130,6 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
         if (ticksSinceLastControlSignal > 5 && getThrustMultiplierGoal() != 0) {
             setThrustMultiplierGoal(this.getThrustMultiplierGoal() * .9D);
         }
-    }
-    
-    public void setMaxThrust(double maxThrust) {
-    	this.maxThrust = maxThrust;
     }
 
 }

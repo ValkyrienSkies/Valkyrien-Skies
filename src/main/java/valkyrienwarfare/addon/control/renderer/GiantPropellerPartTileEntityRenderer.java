@@ -5,10 +5,8 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.EnumFacing;
-import org.lwjgl.opengl.GL11;
 import valkyrienwarfare.addon.control.block.multiblocks.TileEntityGiantPropellerPart;
-import valkyrienwarfare.addon.control.block.multiblocks.TileEntityRudderAxlePart;
-import valkyrienwarfare.mod.client.render.GibsModelRegistry;
+import valkyrienwarfare.mod.client.render.GibsAnimationRegistry;
 
 public class GiantPropellerPartTileEntityRenderer extends TileEntitySpecialRenderer<TileEntityGiantPropellerPart> {
 
@@ -28,40 +26,43 @@ public class GiantPropellerPartTileEntityRenderer extends TileEntitySpecialRende
 
         if (!tileentity.isPartOfAssembledMultiblock()) {
             GlStateManager.pushMatrix();
-            GibsModelRegistry.renderGibsModel("propeller_geo", brightness);
+            // GibsModelRegistry.renderGibsModel("aipropeller_geo", brightness);
+            GibsAnimationRegistry.getAnimation("giant_propeller").renderAnimation(1, brightness);
             GlStateManager.popMatrix();
         } else if (tileentity.isMaster()) {
             GlStateManager.pushMatrix();
             EnumFacing propellerFacing = tileentity.getPropellerFacing();
             int propellerRadius = (tileentity.getPropellerRadius() * 2) + 1;
 
-            GlStateManager.translate(.5,.5,.5);
+            GlStateManager.translate(.5, .5, .5);
             GlStateManager.scale(propellerRadius, propellerRadius, propellerRadius);
 
-            switch(propellerFacing) {
+            switch (propellerFacing) {
                 case NORTH:
+                    GlStateManager.rotate(180, 0, 1, 0);
                     break;
                 case EAST:
-                    GlStateManager.rotate(90,0,1,0);
+                    GlStateManager.rotate(90, 0, 1, 0);
                     break;
                 case SOUTH:
-                    GlStateManager.rotate(180,0,1,0);
+                    // GlStateManager.rotate(0,0,1,0);
                     break;
                 case WEST:
-                    GlStateManager.rotate(270,0,1,0);
+                    GlStateManager.rotate(270, 0, 1, 0);
                     break;
                 case UP:
-                    GlStateManager.rotate(90,1,0,0);
+                    GlStateManager.rotate(-90, 1, 0, 0);
                     break;
                 case DOWN:
-                    GlStateManager.rotate(-90,1,0,0);
+                    GlStateManager.rotate(90, 1, 0, 0);
                     break;
             }
 
-            GlStateManager.rotate(tileentity.getPropellerAngle(partialTick),0,0,1);
-            GlStateManager.translate(-.5,-.5,-.5);
+            GlStateManager.rotate(tileentity.getPropellerAngle(partialTick), 0, 0, 1);
+            GlStateManager.translate(-.5, -.5, -.5);
 
-            GibsModelRegistry.renderGibsModel("propeller_geo", brightness);
+            // GibsModelRegistry.renderGibsModel("propeller_geo", brightness);
+            GibsAnimationRegistry.getAnimation("giant_propeller").renderAnimation(1, brightness);
             GlStateManager.popMatrix();
         }
         GlStateManager.popMatrix();

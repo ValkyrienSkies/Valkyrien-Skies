@@ -16,15 +16,15 @@
 
 package valkyrienwarfare.mod.physmanagement.relocation;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.set.hash.TIntHashSet;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.world.ChunkCache;
 import net.minecraft.world.World;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Used to efficiently detect a connected set of blocks TODO: Incorporate a

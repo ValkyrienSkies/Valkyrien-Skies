@@ -71,7 +71,7 @@ public class VWChunkCache {
     public TileEntity getTileEntity(BlockPos pos) {
         return getTileEntity(pos, Chunk.EnumCreateEntityType.QUEUED);
     }
-    
+
     @Nullable
     public TileEntity getTileEntity(BlockPos pos, Chunk.EnumCreateEntityType type) {
         int i = (pos.getX() >> 4) - this.minChunkX;
@@ -82,8 +82,8 @@ public class VWChunkCache {
             return null;
         TileEntity tileEntity = cachedChunks[i][j].getTileEntity(pos, type);
         if (tileEntity == null) {
-        	// TODO: Re-enable this for debug testing
-        	// System.err.println("Physics Thread got a null TileEntity! Maybe it wasn't supposed to?");
+            // TODO: Re-enable this for debug testing
+            // System.err.println("Physics Thread got a null TileEntity! Maybe it wasn't supposed to?");
         }
         return tileEntity;
     }

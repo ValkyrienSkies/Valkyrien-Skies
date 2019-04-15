@@ -28,7 +28,7 @@ public class CommonProxyControl extends ModuleProxy {
     }
 
     public void init(FMLStateEvent event) {
-    	MinecraftForge.EVENT_BUS.register(new ControlEventsCommon());
+        MinecraftForge.EVENT_BUS.register(new ControlEventsCommon());
     }
 
     public void postInit(FMLStateEvent event) {

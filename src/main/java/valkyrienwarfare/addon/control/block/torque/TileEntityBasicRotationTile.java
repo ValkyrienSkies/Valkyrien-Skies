@@ -12,6 +12,7 @@ import net.minecraft.world.WorldServer;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.math.Vector;
+import valkyrienwarfare.physics.management.PhysicsObject;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 import java.util.Optional;
@@ -23,8 +24,18 @@ public class TileEntityBasicRotationTile extends TileEntity implements IRotation
 
     // Maps EnumFacing.Axis to both possible EnumFacing values.
     public static final ImmutableMap<EnumFacing.Axis, Tuple<EnumFacing, EnumFacing>> AXIS_TO_FACING_MAP;
+    public static final ImmutableMap<EnumFacing, Double> FACING_TO_RATIO_MAP;
+
     static {
         AXIS_TO_FACING_MAP = ImmutableMap.of(EnumFacing.Axis.X, new Tuple<>(EnumFacing.EAST, EnumFacing.WEST), EnumFacing.Axis.Y, new Tuple<>(EnumFacing.UP, EnumFacing.DOWN), EnumFacing.Axis.Z, new Tuple<>(EnumFacing.SOUTH, EnumFacing.NORTH));
+        FACING_TO_RATIO_MAP = ImmutableMap.<EnumFacing, Double>builder()
+                .put(EnumFacing.EAST, 1D)
+                .put(EnumFacing.WEST, -1D)
+                .put(EnumFacing.UP, 1D)
+                .put(EnumFacing.DOWN, -1D)
+                .put(EnumFacing.SOUTH, 1D)
+                .put(EnumFacing.NORTH, -1D)
+                .build();
     }
 
     protected final IRotationNode rotationNode;
@@ -32,14 +43,15 @@ public class TileEntityBasicRotationTile extends TileEntity implements IRotation
     private double rotation = 0;
     private double lastRotation = 0;
     private double nextRotation;
+    private boolean firstUpdate;
 
     public TileEntityBasicRotationTile() {
         super();
-        this.rotationNode = new ImplRotationNode<>(this);
-        this.rotationNode.setRotationalInertia(.05);
+        this.rotationNode = new ImplRotationNode<>(this, .1);
         this.rotation = 0;
         this.lastRotation = 0;
         this.nextRotation = 0;
+        this.firstUpdate = true;
     }
 
     @Override
@@ -55,7 +67,7 @@ public class TileEntityBasicRotationTile extends TileEntity implements IRotation
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
         rotationNode.readFromNBT(compound);
-        this.lastRotation = this.rotation = this.nextRotation = rotationNode.getAngularRotation();
+        this.lastRotation = this.rotation = this.nextRotation = rotationNode.getAngularRotationUnsynchronized();
     }
 
     @Override
@@ -71,8 +83,20 @@ public class TileEntityBasicRotationTile extends TileEntity implements IRotation
             lastRotation = rotation;
             rotation += (nextRotation - rotation) * .85D;
         } else {
-            rotation -= Math.PI / 40;
+            if (this.firstUpdate) {
+                // Inject the rotation node into the physics world.
+                Optional<PhysicsObject> physicsObjectOptional = ValkyrienWarfareMod.getPhysicsObject(getWorld(), getPos());
+                if (physicsObjectOptional.isPresent()) {
+                    IRotationNodeWorld nodeWorld = physicsObjectOptional.get().getPhysicsProcessor().getPhysicsRotationNodeWorld();
+                    rotationNode.markInitialized();
+                    nodeWorld.enqueueTaskOntoWorld(() -> nodeWorld.setNodeFromPos(getPos(), rotationNode));
+                    // nodeWorld.enqueueTaskOntoNode((task) -> task.setCustomTorqueFunction((physObject) -> 0.1D), getPos());
+                }
+                this.firstUpdate = false;
+            }
+            rotation = this.rotationNode.getAngularRotationUnsynchronized();
             sendUpdatePacketToAllNearby();
+            this.markDirty();
         }
     }
 
@@ -90,6 +114,12 @@ public class TileEntityBasicRotationTile extends TileEntity implements IRotation
     @Override
     public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
         nextRotation = pkt.getNbtCompound().getDouble("rotation");
+    }
+
+    @Override
+    public void invalidate() {
+        super.invalidate();
+        rotationNode.queueNodeForDeletion();
     }
 
     private void sendUpdatePacketToAllNearby() {

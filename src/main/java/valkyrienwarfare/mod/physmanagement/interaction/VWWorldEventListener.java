@@ -40,145 +40,145 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public class VWWorldEventListener implements IWorldEventListener {
 
-	private final World worldObj;
+    private final World worldObj;
 
-	public VWWorldEventListener(World world) {
-		worldObj = world;
-	}
+    public VWWorldEventListener(World world) {
+        worldObj = world;
+    }
 
-	@Override
-	public void notifyBlockUpdate(World worldIn, BlockPos pos, IBlockState oldState, IBlockState newState, int flags) {
+    @Override
+    public void notifyBlockUpdate(World worldIn, BlockPos pos, IBlockState oldState, IBlockState newState, int flags) {
 
-	}
+    }
 
-	@Override
-	public void notifyLightSet(BlockPos pos) {
-		// TODO Auto-generated method stub
+    @Override
+    public void notifyLightSet(BlockPos pos) {
+        // TODO Auto-generated method stub
 
-	}
+    }
 
-	@Override
-	public void markBlockRangeForRenderUpdate(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
-		// this.markBlocksForUpdate(minX - 1, minY - 1, minZ - 1, maxX + 1, maxY + 1, maxZ + 1, false);
-	}
+    @Override
+    public void markBlockRangeForRenderUpdate(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
+        // this.markBlocksForUpdate(minX - 1, minY - 1, minZ - 1, maxX + 1, maxY + 1, maxZ + 1, false);
+    }
 
-	@Override
-	public void playSoundToAllNearExcept(EntityPlayer player, SoundEvent soundIn, SoundCategory category, double x,
-			double y, double z, float volume, float pitch) {
+    @Override
+    public void playSoundToAllNearExcept(EntityPlayer player, SoundEvent soundIn, SoundCategory category, double x,
+                                         double y, double z, float volume, float pitch) {
 
-	}
+    }
 
-	@Override
-	public void playRecord(SoundEvent soundIn, BlockPos pos) {
-		// TODO Auto-generated method stub
+    @Override
+    public void playRecord(SoundEvent soundIn, BlockPos pos) {
+        // TODO Auto-generated method stub
 
-	}
+    }
 
-	@Override
-	public void spawnParticle(int particleID, boolean ignoreRange, double x, double y, double z, double xSpeed,
-			double ySpeed, double zSpeed, int... parameters) {
-		// TODO Auto-generated method stub
+    @Override
+    public void spawnParticle(int particleID, boolean ignoreRange, double x, double y, double z, double xSpeed,
+                              double ySpeed, double zSpeed, int... parameters) {
+        // TODO Auto-generated method stub
 
-	}
+    }
 
-	// TODO: Fix conflicts with EventsCommon.onEntityJoinWorldEvent()
-	@Override
-	public void onEntityAdded(Entity entityIn) {
-		int oldChunkX = MathHelper.floor(entityIn.posX / 16.0D);
-		int oldChunkZ = MathHelper.floor(entityIn.posZ / 16.0D);
+    // TODO: Fix conflicts with EventsCommon.onEntityJoinWorldEvent()
+    @Override
+    public void onEntityAdded(Entity entityIn) {
+        int oldChunkX = MathHelper.floor(entityIn.posX / 16.0D);
+        int oldChunkZ = MathHelper.floor(entityIn.posZ / 16.0D);
 
-		BlockPos posAt = new BlockPos(entityIn);
-		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(worldObj, posAt);
-		if (!(entityIn instanceof EntityFallingBlock) && wrapper != null
-				&& wrapper.getPhysicsObject().getShipTransformationManager() != null) {
-			if (entityIn instanceof EntityMountingWeaponBase || entityIn instanceof EntityArmorStand
-					|| entityIn instanceof EntityPig || entityIn instanceof EntityBoat) {
-				// entity.startRiding(wrapper);
-				wrapper.getPhysicsObject().fixEntity(entityIn, new Vector(entityIn));
-				wrapper.getPhysicsObject().queueEntityForMounting(entityIn);
-			}
-			RotationMatrices.applyTransform(wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform(),
-					entityIn, TransformType.SUBSPACE_TO_GLOBAL);
+        BlockPos posAt = new BlockPos(entityIn);
+        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(worldObj, posAt);
+        if (!(entityIn instanceof EntityFallingBlock) && wrapper != null
+                && wrapper.getPhysicsObject().getShipTransformationManager() != null) {
+            if (entityIn instanceof EntityMountingWeaponBase || entityIn instanceof EntityArmorStand
+                    || entityIn instanceof EntityPig || entityIn instanceof EntityBoat) {
+                // entity.startRiding(wrapper);
+                wrapper.getPhysicsObject().fixEntity(entityIn, new Vector(entityIn));
+                wrapper.getPhysicsObject().queueEntityForMounting(entityIn);
+            }
+            RotationMatrices.applyTransform(wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform(),
+                    entityIn, TransformType.SUBSPACE_TO_GLOBAL);
 
-			int newChunkX = MathHelper.floor(entityIn.posX / 16.0D);
-			int newChunkZ = MathHelper.floor(entityIn.posZ / 16.0D);
+            int newChunkX = MathHelper.floor(entityIn.posX / 16.0D);
+            int newChunkZ = MathHelper.floor(entityIn.posZ / 16.0D);
 
-			worldObj.getChunkFromChunkCoords(oldChunkX, oldChunkZ).removeEntity(entityIn);
-			worldObj.getChunkFromChunkCoords(newChunkX, newChunkZ).addEntity(entityIn);
+            worldObj.getChunkFromChunkCoords(oldChunkX, oldChunkZ).removeEntity(entityIn);
+            worldObj.getChunkFromChunkCoords(newChunkX, newChunkZ).addEntity(entityIn);
 
-		}
-		if (entityIn instanceof PhysicsWrapperEntity) {
-			ValkyrienWarfareMod.VW_PHYSICS_MANAGER.onShipLoad((PhysicsWrapperEntity) entityIn);
-		}
+        }
+        if (entityIn instanceof PhysicsWrapperEntity) {
+            ValkyrienWarfareMod.VW_PHYSICS_MANAGER.onShipLoad((PhysicsWrapperEntity) entityIn);
+        }
 
-		if (!(entityIn instanceof EntityFallingBlock) && wrapper != null
-				&& wrapper.getPhysicsObject().getShipTransformationManager() != null) {
-			if (entityIn instanceof EntityMountingWeaponBase || entityIn instanceof EntityArmorStand
-					|| entityIn instanceof EntityPig || entityIn instanceof EntityBoat) {
-				// entity.startRiding(wrapper);
-				wrapper.getPhysicsObject().fixEntity(entityIn, new Vector(entityIn));
-				wrapper.getPhysicsObject().queueEntityForMounting(entityIn);
-			}
-			RotationMatrices.applyTransform(wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform(),
-					entityIn, TransformType.SUBSPACE_TO_GLOBAL);
-		}
-	}
+        if (!(entityIn instanceof EntityFallingBlock) && wrapper != null
+                && wrapper.getPhysicsObject().getShipTransformationManager() != null) {
+            if (entityIn instanceof EntityMountingWeaponBase || entityIn instanceof EntityArmorStand
+                    || entityIn instanceof EntityPig || entityIn instanceof EntityBoat) {
+                // entity.startRiding(wrapper);
+                wrapper.getPhysicsObject().fixEntity(entityIn, new Vector(entityIn));
+                wrapper.getPhysicsObject().queueEntityForMounting(entityIn);
+            }
+            RotationMatrices.applyTransform(wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform(),
+                    entityIn, TransformType.SUBSPACE_TO_GLOBAL);
+        }
+    }
 
-	@Override
-	public void onEntityRemoved(Entity entityIn) {
-		if (entityIn instanceof PhysicsWrapperEntity) {
-			ValkyrienWarfareMod.VW_PHYSICS_MANAGER.onShipUnload((PhysicsWrapperEntity) entityIn);
-		}
-	}
+    @Override
+    public void onEntityRemoved(Entity entityIn) {
+        if (entityIn instanceof PhysicsWrapperEntity) {
+            ValkyrienWarfareMod.VW_PHYSICS_MANAGER.onShipUnload((PhysicsWrapperEntity) entityIn);
+        }
+    }
 
-	@Override
-	public void broadcastSound(int soundID, BlockPos pos, int data) {
-		// TODO Auto-generated method stub
+    @Override
+    public void broadcastSound(int soundID, BlockPos pos, int data) {
+        // TODO Auto-generated method stub
 
-	}
+    }
 
-	@Override
-	public void playEvent(EntityPlayer player, int type, BlockPos blockPosIn, int data) {
-		// TODO Auto-generated method stub
+    @Override
+    public void playEvent(EntityPlayer player, int type, BlockPos blockPosIn, int data) {
+        // TODO Auto-generated method stub
 
-	}
+    }
 
-	@Override
-	public void sendBlockBreakProgress(int breakerId, BlockPos pos, int progress) {
-		if (!worldObj.isRemote) {
-			for (EntityPlayer entityplayermp : worldObj.playerEntities) {
-				if (entityplayermp != null && entityplayermp.getEntityId() != breakerId) {
-					Vector posVector = new Vector(pos.getX(), pos.getY(), pos.getZ());
+    @Override
+    public void sendBlockBreakProgress(int breakerId, BlockPos pos, int progress) {
+        if (!worldObj.isRemote) {
+            for (EntityPlayer entityplayermp : worldObj.playerEntities) {
+                if (entityplayermp != null && entityplayermp.getEntityId() != breakerId) {
+                    Vector posVector = new Vector(pos.getX(), pos.getY(), pos.getZ());
 
-					PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(worldObj,
-							pos);
+                    PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(worldObj,
+                            pos);
 
-					if (wrapper != null) {
-						wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(posVector,
-								TransformType.SUBSPACE_TO_GLOBAL);
-						// RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform,
-						// posVector);
-					}
+                    if (wrapper != null) {
+                        wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(posVector,
+                                TransformType.SUBSPACE_TO_GLOBAL);
+                        // RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform,
+                        // posVector);
+                    }
 
-					double d0 = posVector.X - entityplayermp.posX;
-					double d1 = posVector.Y - entityplayermp.posY;
-					double d2 = posVector.Z - entityplayermp.posZ;
+                    double d0 = posVector.X - entityplayermp.posX;
+                    double d1 = posVector.Y - entityplayermp.posY;
+                    double d2 = posVector.Z - entityplayermp.posZ;
 
-					if (d0 * d0 + d1 * d1 + d2 * d2 < 1024.0D) {
-						((EntityPlayerMP) entityplayermp).connection
-								.sendPacket(new SPacketBlockBreakAnim(breakerId, pos, progress));
-					}
-				}
-			}
-		}
-	}
+                    if (d0 * d0 + d1 * d1 + d2 * d2 < 1024.0D) {
+                        ((EntityPlayerMP) entityplayermp).connection
+                                .sendPacket(new SPacketBlockBreakAnim(breakerId, pos, progress));
+                    }
+                }
+            }
+        }
+    }
 
-	@Override
-	public void spawnParticle(int p_190570_1_, boolean p_190570_2_, boolean p_190570_3_, double p_190570_4_,
-			double p_190570_6_, double p_190570_8_, double p_190570_10_, double p_190570_12_, double p_190570_14_,
-			int... p_190570_16_) {
-		// TODO Auto-generated method stub
+    @Override
+    public void spawnParticle(int p_190570_1_, boolean p_190570_2_, boolean p_190570_3_, double p_190570_4_,
+                              double p_190570_6_, double p_190570_8_, double p_190570_10_, double p_190570_12_, double p_190570_14_,
+                              int... p_190570_16_) {
+        // TODO Auto-generated method stub
 
-	}
+    }
 
 }

@@ -29,9 +29,6 @@ import valkyrienwarfare.mod.coordinates.ShipTransform;
 import valkyrienwarfare.mod.multithreaded.PhysicsShipTransform;
 import valkyrienwarfare.mod.network.PhysWrapperPositionMessage;
 
-import java.util.function.Consumer;
-import java.util.stream.Stream;
-
 /**
  * Stores various coordinates and transforms for the ship.
  *
@@ -151,10 +148,10 @@ public class ShipTransformationManager {
 
         // Do a standard loop here to avoid a concurrentModificationException. A standard for each loop could cause a crash.
         for (int i = 0; i < parent.getWatchingPlayers().size(); i++) {
-        	EntityPlayerMP player = parent.getWatchingPlayers().get(i);
-        	if (player != null) {
-        		ValkyrienWarfareMod.physWrapperNetwork.sendTo(posMessage, player);
-        	}
+            EntityPlayerMP player = parent.getWatchingPlayers().get(i);
+            if (player != null) {
+                ValkyrienWarfareMod.physWrapperNetwork.sendTo(posMessage, player);
+            }
         }
     }
 
@@ -233,7 +230,7 @@ public class ShipTransformationManager {
             return;
         }
         final BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
-        final double[] MDouble = getCurrentTickTransform().getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL);
+        final double[] MDouble = getCurrentPhysicsTransform().getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL);
         final float[] M = new float[MDouble.length];
         for (int i = 0; i < MDouble.length; i++) {
             M[i] = (float) MDouble[i];
@@ -243,6 +240,7 @@ public class ShipTransformationManager {
         minX = minY = minZ = Float.MAX_VALUE;
         maxX = maxY = maxZ = -Float.MAX_VALUE;
 
+        // We loop through this int list instead of a blockpos list because they fit much better in the cache,
         for (int i = parent.getBlockPositionsGameTick().size() - 1; i >= 0; i--) {
             int blockPos = parent.getBlockPositionsGameTick().get(i);
             parent.setBlockPosFromIntRelToShop(blockPos, pos);
@@ -262,7 +260,7 @@ public class ShipTransformationManager {
             minZ = Math.min(newZ, minZ);
             maxZ = Math.max(newZ, maxZ);
         }
-        AxisAlignedBB newBB = new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ).grow(1.6D);
+        AxisAlignedBB newBB = new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ).grow(3D);
         // Just a quick sanity check
         if (newBB.getAverageEdgeLength() < 1000000D) {
             parent.setShipBoundingBox(newBB);
@@ -311,6 +309,9 @@ public class ShipTransformationManager {
      * @return the renderTransform
      */
     public ShipTransform getRenderTransform() {
+        if (!this.parent.getWorldObj().isRemote) {
+            return currentTickTransform;
+        }
         return renderTransform;
     }
 

@@ -16,17 +16,6 @@
 
 package valkyrienwarfare.physics;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.concurrent.ConcurrentHashMap;
-
-import javax.vecmath.Matrix3d;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -52,6 +41,10 @@ import valkyrienwarfare.physics.management.ShipTransformationManager;
 import valkyrienwarfare.util.NBTUtils;
 import valkyrienwarfare.util.PhysicsSettings;
 
+import javax.vecmath.Matrix3d;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
 public class PhysicsCalculations {
 
     public static final double DRAG_CONSTANT = .99D;
@@ -63,6 +56,11 @@ public class PhysicsCalculations {
     private final PhysicsParticleManager particleManager;
     // CopyOnWrite to provide concurrency between threads.
     private final Set<BlockPos> activeForcePositions;
+    private final IRotationNodeWorld physicsRotationNodeWorld;
+    public Vector gameTickCenterOfMass;
+    public Vector linearMomentum;
+    public Vector angularVelocity;
+    public boolean actAsArchimedes;
     private Vector physCenterOfMass;
     private Vector torque;
     private double gameTickMass;
@@ -75,13 +73,6 @@ public class PhysicsCalculations {
     private double[] physInvMOITensor;
     private double physRoll, physPitch, physYaw;
     private double physX, physY, physZ;
-
-    public Vector gameTickCenterOfMass;
-    public Vector linearMomentum;
-    public Vector angularVelocity;
-    public boolean actAsArchimedes;
-
-    private final IRotationNodeWorld physicsRotationNodeWorld;
 
     public PhysicsCalculations(PhysicsObject toProcess) {
         parent = toProcess;
@@ -216,33 +207,33 @@ public class PhysicsCalculations {
         }
     }
 
-	public void rawPhysTickPostCol() {
-		if (!isPhysicsBroken()) {
-			if (getParent().isPhysicsEnabled()) {
-				// This wasn't implemented very well at all! Maybe in the future I'll try again.
-				// enforceStaticFriction();
-				if (PhysicsSettings.doAirshipRotation) {
-					integrateAngularVelocity();
-				}
-				if (PhysicsSettings.doAirshipMovement) {
-					integrateLinearVelocity();
-				}
-			}
-		} else {
-			getParent().setPhysicsEnabled(false);
-			linearMomentum.zero();
-			angularVelocity.zero();
-		}
+    public void rawPhysTickPostCol() {
+        if (!isPhysicsBroken()) {
+            if (getParent().isPhysicsEnabled()) {
+                // This wasn't implemented very well at all! Maybe in the future I'll try again.
+                // enforceStaticFriction();
+                if (PhysicsSettings.doAirshipRotation) {
+                    integrateAngularVelocity();
+                }
+                if (PhysicsSettings.doAirshipMovement) {
+                    integrateLinearVelocity();
+                }
+            }
+        } else {
+            getParent().setPhysicsEnabled(false);
+            linearMomentum.zero();
+            angularVelocity.zero();
+        }
 
-		PhysicsShipTransform finalPhysTransform = new PhysicsShipTransform(physX, physY, physZ, physPitch, physYaw,
-				physRoll, physCenterOfMass, getParent().getShipBoundingBox(),
-				getParent().getShipTransformationManager().getCurrentTickTransform());
+        PhysicsShipTransform finalPhysTransform = new PhysicsShipTransform(physX, physY, physZ, physPitch, physYaw,
+                physRoll, physCenterOfMass, getParent().getShipBoundingBox(),
+                getParent().getShipTransformationManager().getCurrentTickTransform());
 
-		getParent().getShipTransformationManager().updatePreviousPhysicsTransform();
-		getParent().getShipTransformationManager().setCurrentPhysicsTransform(finalPhysTransform);
+        getParent().getShipTransformationManager().updatePreviousPhysicsTransform();
+        getParent().getShipTransformationManager().setCurrentPhysicsTransform(finalPhysTransform);
 
-		updatePhysCenterOfMass();
-	}
+        updatePhysCenterOfMass();
+    }
 
     // If the ship is moving at these speeds, its likely something in the physics
     // broke. This method helps detect that.
@@ -253,7 +244,7 @@ public class PhysicsCalculations {
         }
         return false;
     }
-    
+
     // The x/y/z variables need to be updated when the centerOfMass location
     // changes.
     public void updateParentCenterOfMass() {
@@ -337,98 +328,98 @@ public class PhysicsCalculations {
         World worldObj = getParent().getWorldObj();
 
         if (PhysicsSettings.doPhysicsBlocks && getParent().areShipChunksFullyLoaded()) {
-        	// We want to loop through all the physics nodes in a sorted order. Priority Queue handles that.
-        	Queue<INodeController> nodesPriorityQueue = new PriorityQueue<INodeController>();
-        	for (INodeController processor : parent.getPhysicsControllersInShip()) {
-        		nodesPriorityQueue.add(processor);
-        	}
-        	
-        	while (nodesPriorityQueue.size() > 0) {
-        		INodeController controller = nodesPriorityQueue.poll();
-        		controller.onPhysicsTick(parent, this, this.getPhysicsTimeDeltaPerPhysTick());
-        	}
+            // We want to loop through all the physics nodes in a sorted order. Priority Queue handles that.
+            Queue<INodeController> nodesPriorityQueue = new PriorityQueue<INodeController>();
+            for (INodeController processor : parent.getPhysicsControllersInShip()) {
+                nodesPriorityQueue.add(processor);
+            }
 
-        	this.physicsRotationNodeWorld.processTorquePhysics(getPhysicsTimeDeltaPerPhysTick());
+            while (nodesPriorityQueue.size() > 0) {
+                INodeController controller = nodesPriorityQueue.poll();
+                controller.onPhysicsTick(parent, this, this.getPhysicsTimeDeltaPerPhysTick());
+            }
 
-        	SortedMap<IBlockTorqueProvider, List<BlockPos>> torqueProviders = new TreeMap<IBlockTorqueProvider, List<BlockPos>>();
+            this.physicsRotationNodeWorld.processTorquePhysics(getPhysicsTimeDeltaPerPhysTick());
+
+            SortedMap<IBlockTorqueProvider, List<BlockPos>> torqueProviders = new TreeMap<IBlockTorqueProvider, List<BlockPos>>();
             for (BlockPos pos : activeForcePositions) {
                 IBlockState state = getParent().getShipChunks().getBlockState(pos);
                 Block blockAt = state.getBlock();
 
-				if (blockAt instanceof IBlockForceProvider) {
-					try {
-		                VWMath.getBodyPosWithOrientation(pos, physCenterOfMass, getParent().getShipTransformationManager()
-		                        .getCurrentPhysicsTransform().getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL), inBodyWO);
-						BlockForce.basicForces.getForceFromState(state, pos, worldObj, getPhysicsTimeDeltaPerPhysTick(),
-								getParent(), blockForce);
-						if (blockForce != null) {
-							Vector otherPosition = ((IBlockForceProvider) blockAt).getCustomBlockForcePosition(worldObj,
-									pos, state, getParent().getWrapperEntity(), getPhysicsTimeDeltaPerPhysTick());
-							if (otherPosition != null) {
-								// This changes the values of the inBodyWO vector
-								VWMath.getBodyPosWithOrientation(otherPosition, gameTickCenterOfMass,
-										getParent().getShipTransformationManager().getCurrentPhysicsTransform()
-												.getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL),
-										inBodyWO);
-							}
-	
-							addForceAtPoint(inBodyWO, blockForce, crossVector);
-							// Add particles here.
-							if (IBlockForceProvider.class.cast(blockAt).doesForceSpawnParticles()) {
-								Vector particlePos;
-								if (otherPosition != null) {
-									particlePos = new Vector(otherPosition);
-								} else {
-									particlePos = new Vector(pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5);
-								}
-								parent.getShipTransformationManager().getCurrentPhysicsTransform()
-										.transform(particlePos, TransformType.SUBSPACE_TO_GLOBAL);
-								// System.out.println(particlePos);
-								float posX = (float) particlePos.X;
-								float posY = (float) particlePos.Y;
-								float posZ = (float) particlePos.Z;
-								float particleMass = 5f;
-								float velX = (float) -(blockForce.X / particleMass);
-								float velY = (float) -(blockForce.Y / particleMass);
-								float velZ = (float) -(blockForce.Z / particleMass);
-								// Half a second
-								float particleLife = .5f;
-								// System.out.println(blockForce);
-								// System.out.println(posX + ":" + posY + ":" + posZ);
-								// System.out.println(velX + ":" + velY + ":" + velZ);
+                if (blockAt instanceof IBlockForceProvider) {
+                    try {
+                        VWMath.getBodyPosWithOrientation(pos, physCenterOfMass, getParent().getShipTransformationManager()
+                                .getCurrentPhysicsTransform().getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL), inBodyWO);
+                        BlockForce.basicForces.getForceFromState(state, pos, worldObj, getPhysicsTimeDeltaPerPhysTick(),
+                                getParent(), blockForce);
+                        if (blockForce != null) {
+                            Vector otherPosition = ((IBlockForceProvider) blockAt).getCustomBlockForcePosition(worldObj,
+                                    pos, state, getParent().getWrapperEntity(), getPhysicsTimeDeltaPerPhysTick());
+                            if (otherPosition != null) {
+                                // This changes the values of the inBodyWO vector
+                                VWMath.getBodyPosWithOrientation(otherPosition, gameTickCenterOfMass,
+                                        getParent().getShipTransformationManager().getCurrentPhysicsTransform()
+                                                .getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL),
+                                        inBodyWO);
+                            }
 
-								this.particleManager.spawnPhysicsParticle(posX, posY, posZ, velX, velY, velZ,
-										particleMass, particleLife);
-							}
-						}
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				} else if (blockAt instanceof IBlockTorqueProvider) {
-					// Add it to the torque sorted map; we do this so the torque dampeners can run
-					// after the gyroscope stabilizers.
-					IBlockTorqueProvider torqueProviderBlock = (IBlockTorqueProvider) blockAt;
-					if (!torqueProviders.containsKey(torqueProviderBlock)) {
-						torqueProviders.put(torqueProviderBlock, new LinkedList<BlockPos>());
-					}
-					torqueProviders.get(torqueProviderBlock).add(pos);
-				}
+                            addForceAtPoint(inBodyWO, blockForce, crossVector);
+                            // Add particles here.
+                            if (IBlockForceProvider.class.cast(blockAt).doesForceSpawnParticles()) {
+                                Vector particlePos;
+                                if (otherPosition != null) {
+                                    particlePos = new Vector(otherPosition);
+                                } else {
+                                    particlePos = new Vector(pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5);
+                                }
+                                parent.getShipTransformationManager().getCurrentPhysicsTransform()
+                                        .transform(particlePos, TransformType.SUBSPACE_TO_GLOBAL);
+                                // System.out.println(particlePos);
+                                float posX = (float) particlePos.X;
+                                float posY = (float) particlePos.Y;
+                                float posZ = (float) particlePos.Z;
+                                float particleMass = 5f;
+                                float velX = (float) -(blockForce.X / particleMass);
+                                float velY = (float) -(blockForce.Y / particleMass);
+                                float velZ = (float) -(blockForce.Z / particleMass);
+                                // Half a second
+                                float particleLife = .5f;
+                                // System.out.println(blockForce);
+                                // System.out.println(posX + ":" + posY + ":" + posZ);
+                                // System.out.println(velX + ":" + velY + ":" + velZ);
+
+                                this.particleManager.spawnPhysicsParticle(posX, posY, posZ, velX, velY, velZ,
+                                        particleMass, particleLife);
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else if (blockAt instanceof IBlockTorqueProvider) {
+                    // Add it to the torque sorted map; we do this so the torque dampeners can run
+                    // after the gyroscope stabilizers.
+                    IBlockTorqueProvider torqueProviderBlock = (IBlockTorqueProvider) blockAt;
+                    if (!torqueProviders.containsKey(torqueProviderBlock)) {
+                        torqueProviders.put(torqueProviderBlock, new LinkedList<BlockPos>());
+                    }
+                    torqueProviders.get(torqueProviderBlock).add(pos);
+                }
             }
-            
-			// Now add the torque from the torque providers, in a sorted order!
-			for (IBlockTorqueProvider torqueProviderBlock : torqueProviders.keySet()) {
-				List<BlockPos> blockPositions = torqueProviders.get(torqueProviderBlock);
-				for (BlockPos pos : blockPositions) {
-					this.convertTorqueToVelocity();
-					Vector torqueVector = torqueProviderBlock.getTorqueInGlobal(this, pos);
-					if (torqueVector != null) {
-						torque.add(torqueVector);
-					}
-				}
-			}
+
+            // Now add the torque from the torque providers, in a sorted order!
+            for (IBlockTorqueProvider torqueProviderBlock : torqueProviders.keySet()) {
+                List<BlockPos> blockPositions = torqueProviders.get(torqueProviderBlock);
+                for (BlockPos pos : blockPositions) {
+                    this.convertTorqueToVelocity();
+                    Vector torqueVector = torqueProviderBlock.getTorqueInGlobal(this, pos);
+                    if (torqueVector != null) {
+                        torque.add(torqueVector);
+                    }
+                }
+            }
         }
         particleManager.physicsTickAfterAllPreForces((float) getPhysicsTimeDeltaPerPhysTick());
-        
+
         convertTorqueToVelocity();
     }
 
@@ -476,7 +467,7 @@ public class PhysicsCalculations {
      */
     private void integrateAngularVelocity() {
         ShipTransformationManager coordTrans = getParent().getShipTransformationManager();
-        
+
         double[] rotationChange = RotationMatrices.getRotationMatrix(angularVelocity.X, angularVelocity.Y,
                 angularVelocity.Z, angularVelocity.length() * getPhysicsTimeDeltaPerPhysTick());
         Quaternion finalTransform = Quaternion.QuaternionFromMatrix(RotationMatrices.getMatrixProduct(rotationChange,
@@ -519,32 +510,43 @@ public class PhysicsCalculations {
         NBTUtils.writeVectorToNBT("CM", gameTickCenterOfMass, compound);
 
         NBTUtils.write3x3MatrixToNBT("MOI", gameMoITensor, compound);
+
+        physicsRotationNodeWorld.writeToNBTTag(compound);
+        compound.setString("block_mass_ver", BlockMass.basicMass.blockMassVer());
     }
 
     public void readFromNBTTag(NBTTagCompound compound) {
-        gameTickMass = compound.getDouble("mass");
-
         linearMomentum = NBTUtils.readVectorFromNBT("linear", compound);
         angularVelocity = NBTUtils.readVectorFromNBT("angularVelocity", compound);
         gameTickCenterOfMass = NBTUtils.readVectorFromNBT("CM", compound);
-
+        gameTickMass = compound.getDouble("mass");
         gameMoITensor = NBTUtils.read3x3MatrixFromNBT("MOI", compound);
+        physicsRotationNodeWorld.readFromNBTTag(compound);
+
+        if (!BlockMass.basicMass.blockMassVer().equals(compound.getString("block_mass_ver"))) {
+            this.recalculateShipInertia();
+        }
     }
 
     // Called upon a Ship being created from the World, and generates the physics
     // data for it
     public void recalculateShipInertia() {
+        linearMomentum.zero();
+        angularVelocity.zero();
+        gameTickCenterOfMass.zero();
+        gameTickMass = 0;
+        gameMoITensor = RotationMatrices.getZeroMatrix(3);
         IBlockState air = Blocks.AIR.getDefaultState();
         for (BlockPos pos : getParent().getBlockPositions()) {
             onSetBlockState(air, getParent().getShipChunks().getBlockState(pos), pos);
         }
-	}
+    }
 
-	// These getter methods guarantee that only code within this class can modify
-	// the mass, preventing outside code from breaking things
-	public double getMass() {
-		return gameTickMass;
-	}
+    // These getter methods guarantee that only code within this class can modify
+    // the mass, preventing outside code from breaking things
+    public double getMass() {
+        return gameTickMass;
+    }
 
     public double getInvMass() {
         return 1D / gameTickMass;
@@ -585,30 +587,33 @@ public class PhysicsCalculations {
         return this.physMOITensor;
     }
 
-	/**
-	 * @return the parent
-	 */
-	public PhysicsObject getParent() {
-		return parent;
-	}
+    /**
+     * @return the parent
+     */
+    public PhysicsObject getParent() {
+        return parent;
+    }
 
-	/**
-	 * @return the worldCollision
-	 */
-	public WorldPhysicsCollider getWorldCollision() {
-		return worldCollision;
-	}
+    /**
+     * @return the worldCollision
+     */
+    public WorldPhysicsCollider getWorldCollision() {
+        return worldCollision;
+    }
 
-	public double getInertiaAlongRotationAxis() {
-		Vector rotationAxis = new Vector(angularVelocity);
-		rotationAxis.normalize();
-		RotationMatrices.applyTransform3by3(getPhysMOITensor(), rotationAxis);
-		return rotationAxis.length();
-	}
-	
-	@Deprecated
-	public Vector getCopyOfPhysCoordinates() {
-		return new Vector(physX, physY, physZ);
-	}
+    public double getInertiaAlongRotationAxis() {
+        Vector rotationAxis = new Vector(angularVelocity);
+        rotationAxis.normalize();
+        RotationMatrices.applyTransform3by3(getPhysMOITensor(), rotationAxis);
+        return rotationAxis.length();
+    }
 
+    @Deprecated
+    public Vector getCopyOfPhysCoordinates() {
+        return new Vector(physX, physY, physZ);
+    }
+
+    public IRotationNodeWorld getPhysicsRotationNodeWorld() {
+        return physicsRotationNodeWorld;
+    }
 }

@@ -16,18 +16,17 @@
 
 package valkyrienwarfare.physics.management;
 
-import java.util.LinkedList;
-
 import valkyrienwarfare.mod.coordinates.ShipTransformationPacketHolder;
 import valkyrienwarfare.mod.network.PhysWrapperPositionMessage;
+
+import java.util.LinkedList;
 
 /**
  * Ideally this would smooth out data coming from the sever, but for now it
  * mostly does nothing aside from storing the previous transforms. May possibly
  * add something here in the future.
- * 
- * @author thebest108
  *
+ * @author thebest108
  */
 public class ShipTransformationBuffer {
 
@@ -51,19 +50,19 @@ public class ShipTransformationBuffer {
 
     public ShipTransformationPacketHolder pollForClientTransform() {
         if (isSmoothTransformReady()) {
-        	return generateSmoothTransform();
+            return generateSmoothTransform();
         } else {
-        	return null;
+            return null;
         }
     }
 
     private boolean isSmoothTransformReady() {
-    	return true; /*transformations.size() > TRANSFORMS_SMOOTHED;*/
+        return true; /*transformations.size() > TRANSFORMS_SMOOTHED;*/
     }
-    
+
     // Doesn't really do anything yet.
     private ShipTransformationPacketHolder generateSmoothTransform() {
-    	return transformations.pollFirst();
+        return transformations.pollFirst();
     	/*
     	double[] weights = new double[TRANSFORMS_SMOOTHED];
     	ShipTransformationPacketHolder[] transforms = new ShipTransformationPacketHolder[TRANSFORMS_SMOOTHED];
@@ -74,28 +73,28 @@ public class ShipTransformationBuffer {
     	return transforms[0]; // new ShipTransformationPacketHolder(transforms, weights);
     	*/
     }
-    
-	private class BezierWeightGenerator {
 
-		private final int order;
+    private class BezierWeightGenerator {
 
-		public BezierWeightGenerator(int order) {
-			this.order = order;
-		}
+        private final int order;
 
-		public double getTermWeight(double deltaTime, int term) {
-			return 2 * Math.pow(deltaTime, term) * Math.pow(1 - deltaTime, order - term)
-					* binomial(TRANSFORMS_SMOOTHED - 1, term);
-		}
+        public BezierWeightGenerator(int order) {
+            this.order = order;
+        }
 
-		private int binomial(int n, int k) {
-			if (k > n - k)
-				k = n - k;
-			int b = 1;
-			for (int i = 1, m = n; i <= k; i++, m--)
-				b = b * m / i;
-			return b;
-		}
+        public double getTermWeight(double deltaTime, int term) {
+            return 2 * Math.pow(deltaTime, term) * Math.pow(1 - deltaTime, order - term)
+                    * binomial(TRANSFORMS_SMOOTHED - 1, term);
+        }
 
-	}
+        private int binomial(int n, int k) {
+            if (k > n - k)
+                k = n - k;
+            int b = 1;
+            for (int i = 1, m = n; i <= k; i++, m--)
+                b = b * m / i;
+            return b;
+        }
+
+    }
 }

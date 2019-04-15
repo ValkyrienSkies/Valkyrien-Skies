@@ -40,13 +40,13 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements IShi
     public BlockPos blockBeingControlled;
     public ControllerInputType controlInputType;
 
-	// Constructor doesn't do anything, just here because java wont compile if it
-	// wasn't.
-	public MixinEntityPlayer() {
-		super(null);
-	}
+    // Constructor doesn't do anything, just here because java wont compile if it
+    // wasn't.
+    public MixinEntityPlayer() {
+        super(null);
+    }
 
-	@Inject(method = "getBedSpawnLocation", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "getBedSpawnLocation", at = @At("HEAD"), cancellable = true)
     private static void preGetBedSpawnLocation(World worldIn, BlockPos bedLocation, boolean forceSpawn,
                                                CallbackInfoReturnable<BlockPos> callbackInfo) {
         int chunkX = bedLocation.getX() >> 4;

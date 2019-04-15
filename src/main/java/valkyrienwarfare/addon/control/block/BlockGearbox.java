@@ -5,7 +5,6 @@ import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
@@ -17,11 +16,11 @@ import net.minecraft.world.World;
 import valkyrienwarfare.addon.control.tileentity.TileEntityGearbox;
 
 public class BlockGearbox extends Block implements ITileEntityProvider {
-	
-	public BlockGearbox(Material materialIn) {
-		super(materialIn);
-	}
-	
+
+    public BlockGearbox(Material materialIn) {
+        super(materialIn);
+    }
+
     @Override
     public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
         EnumFacing facingHorizontal = placer.getHorizontalFacing();
@@ -51,10 +50,11 @@ public class BlockGearbox extends Block implements ITileEntityProvider {
         return i;
     }
 
-	@Override
-	public TileEntity createNewTileEntity(World worldIn, int meta) {
-		return new TileEntityGearbox();
-	}
+    @Override
+    public TileEntity createNewTileEntity(World worldIn, int meta) {
+        EnumFacing facing = EnumFacing.getFront(meta);
+        return new TileEntityGearbox(facing);
+    }
 
     @Override
     public BlockRenderLayer getBlockLayer() {

@@ -16,16 +16,16 @@
 
 package valkyrienwarfare.mod.physmanagement.chunk;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
 import net.minecraft.world.World;
 import valkyrienwarfare.mod.physmanagement.interaction.BlockPosToShipUUIDData;
 import valkyrienwarfare.mod.physmanagement.interaction.ShipNameUUIDData;
 import valkyrienwarfare.mod.physmanagement.interaction.ShipUUIDToPosData;
 import valkyrienwarfare.mod.physmanagement.interaction.ShipUUIDToPosData.ShipPositionData;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class DimensionPhysicsChunkManager {
 
@@ -37,7 +37,7 @@ public class DimensionPhysicsChunkManager {
 
     public void initWorld(World world) {
         if (!managerPerWorld.containsKey(world)) {
-        	System.out.println("Physics Chunk Manager Initialized");
+            System.out.println("Physics Chunk Manager Initialized");
             managerPerWorld.put(world, new PhysicsChunkManager(world));
         }
     }

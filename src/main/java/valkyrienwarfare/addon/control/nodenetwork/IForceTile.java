@@ -34,28 +34,32 @@ public interface IForceTile {
      *
      * @return
      */
-	public default Vector getForceOutputUnoriented(double secondsToApply, PhysicsObject physicsObject) {
-		Vector forceVector = getForceOutputNormal(secondsToApply, physicsObject).createMutibleVectorCopy();
-		forceVector.multiply(getThrustMagnitude() * secondsToApply);
-		return forceVector;
-	}
+    public default Vector getForceOutputUnoriented(double secondsToApply, PhysicsObject physicsObject) {
+        VectorImmutable forceVectorNormal = getForceOutputNormal(secondsToApply, physicsObject);
+        if (forceVectorNormal == null) {
+            return new Vector();
+        }
+        Vector forceVector = forceVectorNormal.createMutibleVectorCopy();
+        forceVector.multiply(getThrustMagnitude() * secondsToApply);
+        return forceVector;
+    }
 
-	/**
-	 * Returns the maximum magnitude of force this engine can provide at this
-	 * instant under its current conditions. This number should never be cached in
-	 * any way is it is can always change.
-	 *
-	 * @return
-	 */
-	public double getMaxThrust();
-	
-	public void setMaxThrust(double maxThrust);
+    /**
+     * Returns the maximum magnitude of force this engine can provide at this
+     * instant under its current conditions. This number should never be cached in
+     * any way is it is can always change.
+     *
+     * @return
+     */
+    public double getMaxThrust();
 
-	/**
-	 * Returns magnitude of thrust in Newtons being produced.
-	 *
-	 * @return
-	 */
+    public void setMaxThrust(double maxThrust);
+
+    /**
+     * Returns magnitude of thrust in Newtons being produced.
+     *
+     * @return
+     */
     public double getThrustMagnitude();
 
     /**
@@ -66,11 +70,11 @@ public interface IForceTile {
     public double getThrustMultiplierGoal();
 
     /**
-	 * Sets the goal for the force output, multiplier must be between 0 and 1. The
-	 * actual goal thrust is the getMaxThrust() * getThrustMultiplierGoal();
-	 *
-	 * @param toUse
-	 */
+     * Sets the goal for the force output, multiplier must be between 0 and 1. The
+     * actual goal thrust is the getMaxThrust() * getThrustMultiplierGoal();
+     *
+     * @param toUse
+     */
     public void setThrustMultiplierGoal(double thrustMultiplierGoal);
 
 }

@@ -51,30 +51,30 @@ public class BlockShipTelegraph extends BlockPilotableBasic {
 
         return this.getDefaultState().withProperty(FACING, facingHorizontal);
     }
-    
+
     @Override
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
-    	super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
-    	worldIn.setBlockState(pos.up(), ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipTelegraphDummy.getDefaultState());
+        super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
+        worldIn.setBlockState(pos.up(), ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipTelegraphDummy.getDefaultState());
     }
-    
+
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
-    	super.breakBlock(worldIn, pos, state);
-    	if (worldIn.getBlockState(pos.up()).getBlock() == ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipTelegraphDummy) {
-    		worldIn.setBlockToAir(pos.up());
-    	}
+        super.breakBlock(worldIn, pos, state);
+        if (worldIn.getBlockState(pos.up()).getBlock() == ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipTelegraphDummy) {
+            worldIn.setBlockToAir(pos.up());
+        }
     }
 
     @Override
     public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
-    	if (super.canPlaceBlockAt(worldIn, pos)) {
-    		return worldIn.getBlockState(pos.up()).getBlock().isReplaceable(worldIn, pos);
-    	} else {
-    		return false;
-    	}
+        if (super.canPlaceBlockAt(worldIn, pos)) {
+            return worldIn.getBlockState(pos.up()).getBlock().isReplaceable(worldIn, pos);
+        } else {
+            return false;
+        }
     }
-    
+
     @Override
     protected BlockStateContainer createBlockState() {
         return new BlockStateContainer(this, new IProperty[]{FACING});
@@ -114,7 +114,7 @@ public class BlockShipTelegraph extends BlockPilotableBasic {
     public TileEntity createNewTileEntity(World worldIn, int meta) {
         return new TileEntityShipTelegraph();
     }
-    
+
     @Override
     public EnumBlockRenderType getRenderType(IBlockState state) {
         return EnumBlockRenderType.INVISIBLE;

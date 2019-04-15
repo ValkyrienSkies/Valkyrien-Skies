@@ -14,12 +14,12 @@ import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.physics.management.PhysicsObject;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
-public abstract class BlockForceProviderBasic extends Block implements ITileEntityProvider, IBlockForceProvider  {
+public abstract class BlockForceProviderBasic extends Block implements ITileEntityProvider, IBlockForceProvider {
 
-	public BlockForceProviderBasic(Material materialIn) {
-		super(materialIn);
-		// TODO Auto-generated constructor stub
-	}
+    public BlockForceProviderBasic(Material materialIn) {
+        super(materialIn);
+        // TODO Auto-generated constructor stub
+    }
 
     @Override
     public Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state, Entity shipEntity, double secondsToApply) {
@@ -30,7 +30,7 @@ public abstract class BlockForceProviderBasic extends Block implements ITileEnti
             return null;
         }
         if (worldTile instanceof BasicForceNodeTileEntity) {
-        	BasicForceNodeTileEntity engineTile = (BasicForceNodeTileEntity) worldTile;
+            BasicForceNodeTileEntity engineTile = (BasicForceNodeTileEntity) worldTile;
             return engineTile.getForceOutputUnoriented(secondsToApply, obj);
         }
         return null;

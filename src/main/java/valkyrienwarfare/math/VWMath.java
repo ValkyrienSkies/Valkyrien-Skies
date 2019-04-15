@@ -16,12 +16,12 @@
 
 package valkyrienwarfare.math;
 
-import java.util.List;
-
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.coordinates.VectorImmutable;
+
+import java.util.List;
 
 /**
  * A lot of useful math functions belong here
@@ -38,30 +38,30 @@ public class VWMath {
     }
 
     public static double getYawFromVectorImmutable(VectorImmutable vec, double rotPitch) {
-        double f2 = -Math.cos(-rotPitch *( Math.PI / 180));
+        double f2 = -Math.cos(-rotPitch * (Math.PI / 180));
         double yawFromRotVec = Math.atan2(vec.getX() / f2, vec.getZ() / f2);
         yawFromRotVec += Math.PI;
         yawFromRotVec /= -0.017453292F;
         return yawFromRotVec;
-	}
+    }
 
-	/**
-	 * Sorts the array, returns a new array of 2 elements. Element 0 is the minimum
-	 * of the array passed in, element 1 is the maximum of the array.
-	 * 
-	 * @param elements
-	 * @return
-	 */
-	public static double[] getMinMaxOfArray(double[] elements) {
-		double[] minMax = new double[2];
-		minMax[0] = minMax[1] = elements[elements.length - 1];
-		// We iterate backwards because that way the number we are comparing against is
-		// 0, which doesn't have to get loaded into a register to be compared by the
-		// cpu. Its not much, but it is technically faster.
-		for (int i = elements.length - 2; i >= 0; i--) {
-			minMax[0] = Math.min(minMax[0], elements[i]);
-			minMax[1] = Math.max(minMax[1], elements[i]);
-		}
+    /**
+     * Sorts the array, returns a new array of 2 elements. Element 0 is the minimum
+     * of the array passed in, element 1 is the maximum of the array.
+     *
+     * @param elements
+     * @return
+     */
+    public static double[] getMinMaxOfArray(double[] elements) {
+        double[] minMax = new double[2];
+        minMax[0] = minMax[1] = elements[elements.length - 1];
+        // We iterate backwards because that way the number we are comparing against is
+        // 0, which doesn't have to get loaded into a register to be compared by the
+        // cpu. Its not much, but it is technically faster.
+        for (int i = elements.length - 2; i >= 0; i--) {
+            minMax[0] = Math.min(minMax[0], elements[i]);
+            minMax[1] = Math.max(minMax[1], elements[i]);
+        }
         return minMax;
     }
 

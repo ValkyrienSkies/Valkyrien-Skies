@@ -23,9 +23,8 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 /**
  * This interface is really quite bad, and will be removed once subspaces are
  * complete.
- * 
- * @author thebest108
  *
+ * @author thebest108
  */
 @Deprecated
 public interface IDraggable {
@@ -45,9 +44,9 @@ public interface IDraggable {
     void setCancelNextMove(boolean toSet);
 
     void move(MoverType type, double dx, double dy, double dz);
-    
+
     void setForcedRelativeSubspace(PhysicsWrapperEntity toSet);
-    
+
     PhysicsWrapperEntity getForcedSubspaceBelowFeet();
 
 }

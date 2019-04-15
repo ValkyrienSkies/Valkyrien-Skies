@@ -52,4 +52,13 @@ public class BlockRotationTrainAxle extends BlockRotatedPillar implements ITileE
         IBlockState state = getStateFromMeta(meta);
         return new TileEntityRotationTrainAxle((EnumFacing.Axis) state.getValue(AXIS));
     }
+
+    @Override
+    public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
+        super.breakBlock(worldIn, pos, state);
+        TileEntity tile = worldIn.getTileEntity(pos);
+        if (tile != null) {
+            tile.invalidate();
+        }
+    }
 }

@@ -19,14 +19,13 @@ package valkyrienwarfare.addon.control.tileentity;
 import net.minecraft.nbt.NBTTagCompound;
 import valkyrienwarfare.addon.control.nodenetwork.BasicForceNodeTileEntity;
 import valkyrienwarfare.math.Vector;
-import valkyrienwarfare.util.NBTUtils;
 
 public class TileEntityPropellerEngine extends BasicForceNodeTileEntity {
 
     private double propellerAngle;
     private double prevPropellerAngle;
-	private boolean isPowered;
-	private double propellerAngularVelocity;
+    private boolean isPowered;
+    private double propellerAngularVelocity;
 
     public TileEntityPropellerEngine(Vector normalVeclocityUnoriented, boolean isForceOutputOriented, double maxThrust) {
         super(normalVeclocityUnoriented, isForceOutputOriented, maxThrust);
@@ -55,20 +54,20 @@ public class TileEntityPropellerEngine extends BasicForceNodeTileEntity {
         super.update();
         isPowered = world.isBlockPowered(this.getPos());
         if (isPowered) {
-        	propellerAngularVelocity++;
+            propellerAngularVelocity++;
         } else {
-        	propellerAngularVelocity *= Math.max(Math.random(), .9) * 1.05;
-        	propellerAngularVelocity -= .75 * Math.random() * Math.random();
+            propellerAngularVelocity *= Math.max(Math.random(), .9) * 1.05;
+            propellerAngularVelocity -= .75 * Math.random() * Math.random();
         }
         propellerAngularVelocity = Math.max(0, Math.min(propellerAngularVelocity, 50));
         prevPropellerAngle = propellerAngle;
         propellerAngle += propellerAngularVelocity;
         propellerAngle %= 360D;
     }
-    
+
     @Override
     public void readFromNBT(NBTTagCompound compound) {
-    	propellerAngularVelocity = compound.getDouble("propellerAngularVelocity");
+        propellerAngularVelocity = compound.getDouble("propellerAngularVelocity");
         super.readFromNBT(compound);
     }
 

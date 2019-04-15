@@ -16,8 +16,6 @@
 
 package valkyrienwarfare.addon.control.renderer;
 
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -26,10 +24,10 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import org.lwjgl.opengl.GL11;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.block.BlockShipTelegraph;
 import valkyrienwarfare.addon.control.tileentity.TileEntityShipTelegraph;
-import valkyrienwarfare.mod.client.render.FastBlockModelRenderer;
 import valkyrienwarfare.mod.client.render.GibsModelRegistry;
 
 public class ShipTelegraphTileEntityRenderer extends TileEntitySpecialRenderer<TileEntityShipTelegraph> {
@@ -80,13 +78,13 @@ public class ShipTelegraphTileEntityRenderer extends TileEntitySpecialRenderer<T
         GL11.glTranslated(-0.5D, 0, -0.5D);
 
         // FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(), helmStateToRender, brightness);
-        
+
         GibsModelRegistry.renderGibsModel("chadburn_speedtelegraph_simplevoxel_geo", brightness);
 
         // FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(), dialState, brightness);
 
         GibsModelRegistry.renderGibsModel("chadburn_dial_simplevoxel_geo", brightness);
-        
+
         GL11.glPushMatrix();
 
         GL11.glTranslated(0.497D, 0.857D, 0.5D);
@@ -94,9 +92,9 @@ public class ShipTelegraphTileEntityRenderer extends TileEntitySpecialRenderer<T
         GL11.glTranslated(-0.497D, -0.857D, -0.5D);
 
         // FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(), rightHandleState, brightness);
-        
+
         GibsModelRegistry.renderGibsModel("chadburn_handles_simplevoxel_geo", brightness);
-        
+
         // FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(), leftHandleState, brightness);
 
         GL11.glPopMatrix();
@@ -104,10 +102,10 @@ public class ShipTelegraphTileEntityRenderer extends TileEntitySpecialRenderer<T
         GlStateManager.enableAlpha();
         GlStateManager.enableBlend();
         // GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        
+
         // FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(), glassState, brightness);
         GibsModelRegistry.renderGibsModel("chadburn_glass_simplevoxel_geo", brightness);
-        
+
         GlStateManager.disableAlpha();
         GlStateManager.disableBlend();
 

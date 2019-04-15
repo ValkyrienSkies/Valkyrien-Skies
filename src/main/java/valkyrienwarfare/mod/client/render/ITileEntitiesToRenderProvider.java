@@ -1,13 +1,12 @@
 package valkyrienwarfare.mod.client.render;
 
-import java.util.List;
+import net.minecraft.tileentity.TileEntity;
 
 import javax.annotation.Nullable;
-
-import net.minecraft.tileentity.TileEntity;
+import java.util.List;
 
 public interface ITileEntitiesToRenderProvider {
 
-	@Nullable
-	List<TileEntity> getTileEntitiesToRender(int chunkExtendedDataIndex);
+    @Nullable
+    List<TileEntity> getTileEntitiesToRender(int chunkExtendedDataIndex);
 }

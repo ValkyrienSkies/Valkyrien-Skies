@@ -31,14 +31,14 @@ import valkyrienwarfare.physics.collision.EntityCollisionInjector;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public class MixinMethods {
-	
+
     public static EntityCollisionInjector.IntermediateMovementVariableStorage handleMove(MoverType type, double dx, double dy, double dz, Entity this_) {
         if (PhysicsWrapperEntity.class.isInstance(this_)) {
             //Don't move at all
             return null;
         }
         if (this_ instanceof EntityPlayer && ((EntityPlayer) this_).isSpectator()) {
-        	return null;
+            return null;
         }
 
         double movDistSq = (dx * dx) + (dy * dy) + (dz * dz);

@@ -16,16 +16,14 @@
 
 package valkyrienwarfare.mixin.network.play.client;
 
+import net.minecraft.network.NetHandlerPlayServer;
+import net.minecraft.network.play.INetHandlerPlayServer;
+import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import net.minecraft.network.NetHandlerPlayServer;
-import net.minecraft.network.play.INetHandlerPlayServer;
-import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.fixes.ITransformablePacket;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
@@ -45,10 +43,10 @@ public class MixinCPacketPlayerTryUseItemOnBlock implements ITransformablePacket
         this.doPostProcessing(server, false);
     }
 
-	@Override
-	public PhysicsWrapperEntity getPacketParent(NetHandlerPlayServer server) {
-		World world = server.player.getEntityWorld();
-		return ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(world, thisPacketTryUse.getPos());
-	}
+    @Override
+    public PhysicsWrapperEntity getPacketParent(NetHandlerPlayServer server) {
+        World world = server.player.getEntityWorld();
+        return ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(world, thisPacketTryUse.getPos());
+    }
 
 }

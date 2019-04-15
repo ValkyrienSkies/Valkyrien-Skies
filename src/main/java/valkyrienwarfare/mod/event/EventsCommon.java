@@ -16,10 +16,6 @@
 
 package valkyrienwarfare.mod.event;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
-
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityArmorStand;
@@ -71,6 +67,10 @@ import valkyrienwarfare.mod.physmanagement.interaction.VWWorldEventListener;
 import valkyrienwarfare.physics.management.PhysicsTickHandler;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+
 public class EventsCommon {
 
     public static final Map<EntityPlayer, Double[]> lastPositions = new HashMap<EntityPlayer, Double[]>();
@@ -107,10 +107,10 @@ public class EventsCommon {
             }
         }
     }
-    
+
     @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
     public void onLeftClickBlock(LeftClickBlock event) {
-    	// Take that Chisels and Bits!
+        // Take that Chisels and Bits!
 //    	event.setCanceled(false);
 //    	event.setUseBlock(Result.ALLOW);
 //    	event.setUseItem(Result.ALLOW);
@@ -150,7 +150,7 @@ public class EventsCommon {
                 if (event.phase == Phase.START) {
                     PhysicsTickHandler.onWorldTickStart(worldFor);
                 } else if (event.phase == Phase.END) {
-                	// TODO: This is a big source of tick lag.
+                    // TODO: This is a big source of tick lag.
                     PhysicsTickHandler.onWorldTickEnd(worldFor);
                 }
             }

@@ -31,50 +31,50 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 @Mixin(ChunkPos.class)
 public abstract class MixinChunkPos {
 
-	@Shadow
-	@Final
-	public int x;
+    @Shadow
+    @Final
+    public int x;
 
-	@Shadow
-	@Final
-	public int z;
+    @Shadow
+    @Final
+    public int z;
 
-	/**
-	 * This is easier to have as an overwrite because there's less laggy hackery to
-	 * be done then :P
-	 *
-	 * @author DaPorkchop_
-	 */
-	@Overwrite
-	public double getDistanceSq(Entity entityIn) {
-		double d0 = this.x * 16 + 8;
-		double d1 = this.z * 16 + 8;
-		double d2 = d0 - entityIn.posX;
-		double d3 = d1 - entityIn.posZ;
-		double vanilla = d2 * d2 + d3 * d3;
+    /**
+     * This is easier to have as an overwrite because there's less laggy hackery to
+     * be done then :P
+     *
+     * @author DaPorkchop_
+     */
+    @Overwrite
+    public double getDistanceSq(Entity entityIn) {
+        double d0 = this.x * 16 + 8;
+        double d1 = this.z * 16 + 8;
+        double d2 = d0 - entityIn.posX;
+        double d3 = d1 - entityIn.posZ;
+        double vanilla = d2 * d2 + d3 * d3;
 
-		// A big number
-		if (vanilla < 91111) {
-			return vanilla;
-		}
+        // A big number
+        if (vanilla < 91111) {
+            return vanilla;
+        }
 
-		try {
-			PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(entityIn.world,
-					new BlockPos(d0, 127, d1));
-			if (wrapper != null) {
-				Vector entityPosInLocal = new Vector(entityIn);
-				// RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform,
-				// entityPosInLocal);
-				wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(entityPosInLocal,
-						TransformType.GLOBAL_TO_SUBSPACE);
-				entityPosInLocal.subtract(d0, entityPosInLocal.Y, d1);
-				return entityPosInLocal.lengthSq();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+        try {
+            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(entityIn.world,
+                    new BlockPos(d0, 127, d1));
+            if (wrapper != null) {
+                Vector entityPosInLocal = new Vector(entityIn);
+                // RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform,
+                // entityPosInLocal);
+                wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(entityPosInLocal,
+                        TransformType.GLOBAL_TO_SUBSPACE);
+                entityPosInLocal.subtract(d0, entityPosInLocal.Y, d1);
+                return entityPosInLocal.lengthSq();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-		return vanilla;
-	}
+        return vanilla;
+    }
 
 }

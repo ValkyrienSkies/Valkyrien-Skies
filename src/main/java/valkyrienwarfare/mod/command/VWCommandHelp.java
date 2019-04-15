@@ -16,9 +16,6 @@
 
 package valkyrienwarfare.mod.command;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -29,49 +26,52 @@ import valkyrienwarfare.mod.multithreaded.VWThread;
 import valkyrienwarfare.ship_handling.IHasShipManager;
 import valkyrienwarfare.ship_handling.WorldServerShipManager;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class VWCommandHelp extends CommandBase {
 
-	public static final List<String> COMMANDS = new ArrayList<String>();
+    public static final List<String> COMMANDS = new ArrayList<String>();
 
-	static {
-		COMMANDS.add("/physsettings");
-		COMMANDS.add("/airshipsettings");
-		COMMANDS.add("/airshipmappings");
-		COMMANDS.add("/vw tps");
-	}
+    static {
+        COMMANDS.add("/physsettings");
+        COMMANDS.add("/airshipsettings");
+        COMMANDS.add("/airshipmappings");
+        COMMANDS.add("/vw tps");
+    }
 
-	@Override
-	public String getName() {
-		// TODO Auto-generated method stub
-		return "vw";
-	}
+    @Override
+    public String getName() {
+        // TODO Auto-generated method stub
+        return "vw";
+    }
 
-	@Override
-	public String getUsage(ICommandSender sender) {
-		// TODO Auto-generated method stub
-		return "/vw       See entire list of commands for Valkyrien Warfare";
-	}
+    @Override
+    public String getUsage(ICommandSender sender) {
+        // TODO Auto-generated method stub
+        return "/vw       See entire list of commands for Valkyrien Warfare";
+    }
 
-	@Override
-	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-		if (args.length == 0) {
-			sender.sendMessage(new TextComponentString("All ValkyrienWarfare Commands"));
+    @Override
+    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+        if (args.length == 0) {
+            sender.sendMessage(new TextComponentString("All ValkyrienWarfare Commands"));
 
-			for (String command : COMMANDS) {
-				sender.sendMessage(new TextComponentString(command));
-			}
+            for (String command : COMMANDS) {
+                sender.sendMessage(new TextComponentString(command));
+            }
 
-			sender.sendMessage(new TextComponentString("To see avaliable subcommands, type /command help"));
-		} else if (args.length == 1 && args[0].equals("tps")) {
-			World world = sender.getEntityWorld();
-			VWThread worldPhysicsThread = ((WorldServerShipManager) IHasShipManager.class.cast(world).getManager()).getPhysicsThread();
-			if (worldPhysicsThread != null) {
-				long averagePhysTickTimeNano = worldPhysicsThread.getAveragePhysicsTickTimeNano();
-				double ticksPerSecond = 1000000000D / ((double) averagePhysTickTimeNano);
-				double ticksPerSecondTwoDecimals = Math.floor(ticksPerSecond * 100) / 100;
-				sender.sendMessage(new TextComponentString("Player world: " + ticksPerSecondTwoDecimals + " physics ticks per second"));
-			}
-		}
-	}
+            sender.sendMessage(new TextComponentString("To see avaliable subcommands, type /command help"));
+        } else if (args.length == 1 && args[0].equals("tps")) {
+            World world = sender.getEntityWorld();
+            VWThread worldPhysicsThread = ((WorldServerShipManager) IHasShipManager.class.cast(world).getManager()).getPhysicsThread();
+            if (worldPhysicsThread != null) {
+                long averagePhysTickTimeNano = worldPhysicsThread.getAveragePhysicsTickTimeNano();
+                double ticksPerSecond = 1000000000D / ((double) averagePhysTickTimeNano);
+                double ticksPerSecondTwoDecimals = Math.floor(ticksPerSecond * 100) / 100;
+                sender.sendMessage(new TextComponentString("Player world: " + ticksPerSecondTwoDecimals + " physics ticks per second"));
+            }
+        }
+    }
 
 }

@@ -24,7 +24,6 @@ import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.help.item.ItemManual;
 import valkyrienwarfare.addon.help.proxy.ClientProxyHelp;
 import valkyrienwarfare.api.addons.Module;
-import valkyrienwarfare.api.addons.ModuleProxy;
 
 /**
  * @author DaPorkchop_

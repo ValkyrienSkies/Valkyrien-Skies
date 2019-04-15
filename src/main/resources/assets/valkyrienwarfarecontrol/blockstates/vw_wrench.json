@@ -14,23 +14,89 @@
       },
       "transform": {
         "thirdperson_lefthand": {
-          "rotation": [{"x":130},{"y":-5},{"z":90}],
-          "translation": [0, 0.1, 0.15]
+          "rotation": [
+            {
+              "x": 130
+            },
+            {
+              "y": -5
+            },
+            {
+              "z": 90
+            }
+          ],
+          "translation": [
+            0,
+            0.1,
+            0.15
+          ]
         },
         "thirdperson_righthand": {
-          "rotation": [{"x":130},{"y":5},{"z":90}],
-          "translation": [0, 0.1, 0.15]
+          "rotation": [
+            {
+              "x": 130
+            },
+            {
+              "y": 5
+            },
+            {
+              "z": 90
+            }
+          ],
+          "translation": [
+            0,
+            0.1,
+            0.15
+          ]
         },
         "firstperson_lefthand": {
-          "rotation": [{"x":90},{"y":-10},{"z":90}],
-          "translation": [-0.1, 0.3, 0.2]
+          "rotation": [
+            {
+              "x": 90
+            },
+            {
+              "y": -10
+            },
+            {
+              "z": 90
+            }
+          ],
+          "translation": [
+            -0.1,
+            0.3,
+            0.2
+          ]
         },
         "firstperson_righthand": {
-          "rotation": [{"x":90},{"y":10},{"z":90}],
-          "translation": [-0.1, 0.3, 0.2]
+          "rotation": [
+            {
+              "x": 90
+            },
+            {
+              "y": 10
+            },
+            {
+              "z": 90
+            }
+          ],
+          "translation": [
+            -0.1,
+            0.3,
+            0.2
+          ]
         },
         "gui": {
-          "rotation": [{"x":90},{"y":-40},{"z":45}],
+          "rotation": [
+            {
+              "x": 90
+            },
+            {
+              "y": -40
+            },
+            {
+              "z": 45
+            }
+          ],
           "scale": 1.1
         }
       }

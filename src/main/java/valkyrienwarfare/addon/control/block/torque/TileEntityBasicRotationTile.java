@@ -25,6 +25,7 @@ public class TileEntityBasicRotationTile extends TileEntity implements IRotation
     // Maps EnumFacing.Axis to both possible EnumFacing values.
     public static final ImmutableMap<EnumFacing.Axis, Tuple<EnumFacing, EnumFacing>> AXIS_TO_FACING_MAP;
     public static final ImmutableMap<EnumFacing, Double> FACING_TO_RATIO_MAP;
+
     static {
         AXIS_TO_FACING_MAP = ImmutableMap.of(EnumFacing.Axis.X, new Tuple<>(EnumFacing.EAST, EnumFacing.WEST), EnumFacing.Axis.Y, new Tuple<>(EnumFacing.UP, EnumFacing.DOWN), EnumFacing.Axis.Z, new Tuple<>(EnumFacing.SOUTH, EnumFacing.NORTH));
         FACING_TO_RATIO_MAP = ImmutableMap.<EnumFacing, Double>builder()

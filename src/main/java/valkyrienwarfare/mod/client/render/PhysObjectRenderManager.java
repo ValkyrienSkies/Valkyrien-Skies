@@ -19,8 +19,6 @@ package valkyrienwarfare.mod.client.render;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.culling.ICamera;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
 import org.lwjgl.opengl.GL11;
@@ -70,16 +68,16 @@ public class PhysObjectRenderManager {
     public void renderBlockLayer(BlockRenderLayer layerToRender, double partialTicks, int pass) {
         if (renderChunks == null) {
             if (!parent.areShipChunksFullyLoaded()) {
-				return;
-			}
-			renderChunks = new PhysRenderChunk[parent.getOwnedChunks().getChunkLengthX()][parent.getOwnedChunks()
-					.getChunkLengthZ()];
-			for (int xChunk = 0; xChunk < parent.getOwnedChunks().getChunkLengthX(); xChunk++) {
-				for (int zChunk = 0; zChunk < parent.getOwnedChunks().getChunkLengthZ(); zChunk++) {
-					renderChunks[xChunk][zChunk] = new PhysRenderChunk(parent, parent.getShipChunks()
-							.getChunkAt(xChunk + parent.getOwnedChunks().getMinX(), zChunk + parent.getOwnedChunks().getMinZ()));
-				}
-			}
+                return;
+            }
+            renderChunks = new PhysRenderChunk[parent.getOwnedChunks().getChunkLengthX()][parent.getOwnedChunks()
+                    .getChunkLengthZ()];
+            for (int xChunk = 0; xChunk < parent.getOwnedChunks().getChunkLengthX(); xChunk++) {
+                for (int zChunk = 0; zChunk < parent.getOwnedChunks().getChunkLengthZ(); zChunk++) {
+                    renderChunks[xChunk][zChunk] = new PhysRenderChunk(parent, parent.getShipChunks()
+                            .getChunkAt(xChunk + parent.getOwnedChunks().getMinX(), zChunk + parent.getOwnedChunks().getMinZ()));
+                }
+            }
         }
 
         GL11.glPushMatrix();

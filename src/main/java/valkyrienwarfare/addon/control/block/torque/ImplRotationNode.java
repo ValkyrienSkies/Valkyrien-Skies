@@ -1,39 +1,29 @@
 package valkyrienwarfare.addon.control.block.torque;
 
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTUtil;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.Sys;
-import scala.tools.cmd.Opt;
 import valkyrienwarfare.addon.control.block.torque.custom_torque_functions.EtherEngineTorqueFunction;
 import valkyrienwarfare.addon.control.block.torque.custom_torque_functions.SimpleTorqueFunction;
-import valkyrienwarfare.mod.multithreaded.VWThread;
-import valkyrienwarfare.physics.management.PhysicsObject;
-import valkyrienwarfare.util.NBTUtils;
 
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Function;
 
 public class ImplRotationNode<T extends TileEntity & IRotationNodeProvider> implements IRotationNode {
 
     private final T tileEntity;
     private final Optional<Double>[] angularVelocityRatios;
+    private final ConcurrentLinkedQueue<Runnable> queuedTasks;
     private double angularVelocity;
     private double angularRotation;
     private double rotationalInertia;
     private Optional<BlockPos> nodePos;
     private Optional<SimpleTorqueFunction> customTorqueFunction;
     private boolean initialized;
-    private final ConcurrentLinkedQueue<Runnable> queuedTasks;
     private AtomicBoolean markedForDeletion;
     private AtomicBoolean hasBeenPlacedIntoNodeWorld;
     private int sortingPriority;
@@ -41,7 +31,7 @@ public class ImplRotationNode<T extends TileEntity & IRotationNodeProvider> impl
     public ImplRotationNode(T entity, double rotationalInertia) {
         this.tileEntity = entity;
         // Size 6 because there are 6 sides
-        this.angularVelocityRatios = new Optional[] {Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()};
+        this.angularVelocityRatios = new Optional[]{Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()};
         this.angularVelocity = 0;
         this.angularRotation = 0;
         this.rotationalInertia = rotationalInertia;
@@ -101,10 +91,22 @@ public class ImplRotationNode<T extends TileEntity & IRotationNodeProvider> impl
         return angularVelocity;
     }
 
+    @PhysicsThreadOnly
+    @Override
+    public void setAngularVelocity(double angularVelocity) {
+        this.angularVelocity = angularVelocity;
+    }
+
     @Override
     public double getAngularRotation() {
         assertInitialized();
         return angularRotation;
+    }
+
+    @PhysicsThreadOnly
+    @Override
+    public void setAngularRotation(double angularRotation) {
+        this.angularRotation = angularRotation;
     }
 
     @Override
@@ -145,18 +147,6 @@ public class ImplRotationNode<T extends TileEntity & IRotationNodeProvider> impl
         PhysicsAssert.assertPhysicsThread();
         assertInitialized();
         angularVelocityRatios[side.ordinal()] = newRatio;
-    }
-
-    @PhysicsThreadOnly
-    @Override
-    public void setAngularVelocity(double angularVelocity) {
-        this.angularVelocity = angularVelocity;
-    }
-
-    @PhysicsThreadOnly
-    @Override
-    public void setAngularRotation(double angularRotation) {
-        this.angularRotation = angularRotation;
     }
 
     @Override
@@ -241,7 +231,7 @@ public class ImplRotationNode<T extends TileEntity & IRotationNodeProvider> impl
 
     private void assertInitialized() {
         assert isInitialized() : "We are not yet initialized!";
-        assert nodePos.isPresent(): "There is NO node pos!";
+        assert nodePos.isPresent() : "There is NO node pos!";
     }
 
     @Override

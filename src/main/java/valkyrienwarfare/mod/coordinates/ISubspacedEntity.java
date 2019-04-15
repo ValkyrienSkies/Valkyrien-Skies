@@ -5,23 +5,22 @@ import valkyrienwarfare.math.Vector;
 /**
  * An interface that allows entities to interact safely within the context of
  * multiple subspaces.
- * 
- * @author thebest108
  *
+ * @author thebest108
  */
 public interface ISubspacedEntity {
 
-	CoordinateSpaceType currentSubspaceType();
+    CoordinateSpaceType currentSubspaceType();
 
-	Vector createCurrentPositionVector();
+    Vector createCurrentPositionVector();
 
-	Vector createLastTickPositionVector();
-	
-	Vector createCurrentLookVector();
+    Vector createLastTickPositionVector();
 
-	Vector createCurrentVelocityVector();
-	
-	void restoreSubspacedEntityStateToRecord(ISubspacedEntityRecord record);
-	
-	int getSubspacedEntityID();
+    Vector createCurrentLookVector();
+
+    Vector createCurrentVelocityVector();
+
+    void restoreSubspacedEntityStateToRecord(ISubspacedEntityRecord record);
+
+    int getSubspacedEntityID();
 }

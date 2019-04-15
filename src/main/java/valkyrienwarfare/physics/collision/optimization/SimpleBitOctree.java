@@ -16,8 +16,6 @@
 
 package valkyrienwarfare.physics.collision.optimization;
 
-import valkyrienwarfare.ValkyrienWarfareMod;
-
 public class SimpleBitOctree implements IBitOctree {
 
     private final IBitSet bitbuffer;

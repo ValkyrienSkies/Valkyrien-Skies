@@ -1,12 +1,5 @@
 package valkyrienwarfare.addon.control.block.multiblocks;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
@@ -24,6 +17,9 @@ import valkyrienwarfare.mod.coordinates.VectorImmutable;
 import valkyrienwarfare.physics.collision.polygons.Polygon;
 import valkyrienwarfare.physics.management.PhysicsObject;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 public class TileEntityRudderAxlePart extends TileEntityMultiblockPartForce<RudderAxleMultiblockSchematic, TileEntityRudderAxlePart> {
 

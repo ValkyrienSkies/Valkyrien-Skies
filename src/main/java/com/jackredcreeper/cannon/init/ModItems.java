@@ -16,13 +16,7 @@
 
 package com.jackredcreeper.cannon.init;
 
-import com.jackredcreeper.cannon.items.ItemCannonball;
-import com.jackredcreeper.cannon.items.ItemExplosiveball;
-import com.jackredcreeper.cannon.items.ItemGrapeshot;
-import com.jackredcreeper.cannon.items.ItemLoader;
-import com.jackredcreeper.cannon.items.ItemPrimer;
-import com.jackredcreeper.cannon.items.ItemSolidball;
-import com.jackredcreeper.cannon.items.ItemTuner;
+import com.jackredcreeper.cannon.items.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;

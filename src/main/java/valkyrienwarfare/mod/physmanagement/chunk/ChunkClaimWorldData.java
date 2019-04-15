@@ -30,11 +30,11 @@ public class ChunkClaimWorldData extends WorldSavedData {
     private int chunkKey;
 
     public ChunkClaimWorldData(String key) {
-    	super(key);
-    	this.avalibleChunkKeys = new TIntArrayList();
-    	this.markDirty();
+        super(key);
+        this.avalibleChunkKeys = new TIntArrayList();
+        this.markDirty();
     }
-    
+
     public ChunkClaimWorldData() {
         super(CHUNK_POS_DATA_KEY);
         this.avalibleChunkKeys = new TIntArrayList();
@@ -45,7 +45,7 @@ public class ChunkClaimWorldData extends WorldSavedData {
         MapStorage storage = world.getPerWorldStorage();
         ChunkClaimWorldData data = (ChunkClaimWorldData) storage.getOrLoadData(ChunkClaimWorldData.class, CHUNK_POS_DATA_KEY);
         if (data == null) {
-        	System.err.println("Had to create a null ChunkKeysWorldData; could this be corruption?");
+            System.err.println("Had to create a null ChunkKeysWorldData; could this be corruption?");
             data = new ChunkClaimWorldData();
             world.setData(CHUNK_POS_DATA_KEY, data);
         }
@@ -72,25 +72,25 @@ public class ChunkClaimWorldData extends WorldSavedData {
         return nbt;
     }
 
-	/**
-	 * @return the avalibleChunkKeys
-	 */
-	public TIntList getAvalibleChunkKeys() {
-		return avalibleChunkKeys;
-	}
+    /**
+     * @return the avalibleChunkKeys
+     */
+    public TIntList getAvalibleChunkKeys() {
+        return avalibleChunkKeys;
+    }
 
-	/**
-	 * @return the chunkKey
-	 */
-	public int getChunkKey() {
-		return chunkKey;
-	}
+    /**
+     * @return the chunkKey
+     */
+    public int getChunkKey() {
+        return chunkKey;
+    }
 
-	/**
-	 * @param chunkKey the chunkKey to set
-	 */
-	public void setChunkKey(int chunkKey) {
-		this.chunkKey = chunkKey;
-	}
+    /**
+     * @param chunkKey the chunkKey to set
+     */
+    public void setChunkKey(int chunkKey) {
+        this.chunkKey = chunkKey;
+    }
 
 }

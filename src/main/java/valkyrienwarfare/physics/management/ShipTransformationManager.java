@@ -29,9 +29,6 @@ import valkyrienwarfare.mod.coordinates.ShipTransform;
 import valkyrienwarfare.mod.multithreaded.PhysicsShipTransform;
 import valkyrienwarfare.mod.network.PhysWrapperPositionMessage;
 
-import java.util.function.Consumer;
-import java.util.stream.Stream;
-
 /**
  * Stores various coordinates and transforms for the ship.
  *
@@ -151,10 +148,10 @@ public class ShipTransformationManager {
 
         // Do a standard loop here to avoid a concurrentModificationException. A standard for each loop could cause a crash.
         for (int i = 0; i < parent.getWatchingPlayers().size(); i++) {
-        	EntityPlayerMP player = parent.getWatchingPlayers().get(i);
-        	if (player != null) {
-        		ValkyrienWarfareMod.physWrapperNetwork.sendTo(posMessage, player);
-        	}
+            EntityPlayerMP player = parent.getWatchingPlayers().get(i);
+            if (player != null) {
+                ValkyrienWarfareMod.physWrapperNetwork.sendTo(posMessage, player);
+            }
         }
     }
 

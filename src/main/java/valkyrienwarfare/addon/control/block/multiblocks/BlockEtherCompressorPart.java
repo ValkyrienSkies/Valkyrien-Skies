@@ -15,14 +15,14 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public class BlockEtherCompressorPart extends Block implements ITileEntityProvider, IBlockForceProvider {
 
-	public BlockEtherCompressorPart(Material materialIn) {
-		super(materialIn);
-	}
-	
-	@Override
-	public TileEntity createNewTileEntity(World worldIn, int meta) {
-		return new TileEntityEthereumCompressorPart(500000D);
-	}
+    public BlockEtherCompressorPart(Material materialIn) {
+        super(materialIn);
+    }
+
+    @Override
+    public TileEntity createNewTileEntity(World worldIn, int meta) {
+        return new TileEntityEthereumCompressorPart(500000D);
+    }
 
     @Override
     public BlockRenderLayer getBlockLayer() {
@@ -38,30 +38,30 @@ public class BlockEtherCompressorPart extends Block implements ITileEntityProvid
     public boolean isOpaqueCube(IBlockState state) {
         return false;
     }
-	
-	@Override
-	public boolean shouldLocalForceBeRotated(World world, BlockPos pos, IBlockState state, double secondsToApply) {
-		return false;
-	}
 
-	@Override
-	public Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state, Entity shipEntity,
-			double secondsToApply) {
-		TileEntity tileEntity = world.getTileEntity(pos);
-		if (tileEntity instanceof TileEntityEthereumCompressorPart) {
-			TileEntityEthereumCompressorPart tileCompressorPart = (TileEntityEthereumCompressorPart) tileEntity;
-			return tileCompressorPart.getForceOutputUnoriented(secondsToApply, PhysicsWrapperEntity.class.cast(shipEntity).getPhysicsObject());
-		}
-		return null;
-	}
-	
+    @Override
+    public boolean shouldLocalForceBeRotated(World world, BlockPos pos, IBlockState state, double secondsToApply) {
+        return false;
+    }
+
+    @Override
+    public Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state, Entity shipEntity,
+                                           double secondsToApply) {
+        TileEntity tileEntity = world.getTileEntity(pos);
+        if (tileEntity instanceof TileEntityEthereumCompressorPart) {
+            TileEntityEthereumCompressorPart tileCompressorPart = (TileEntityEthereumCompressorPart) tileEntity;
+            return tileCompressorPart.getForceOutputUnoriented(secondsToApply, PhysicsWrapperEntity.class.cast(shipEntity).getPhysicsObject());
+        }
+        return null;
+    }
+
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
-    	TileEntity tile = worldIn.getTileEntity(pos);
-    	if (tile instanceof TileEntityEthereumCompressorPart) {
-    		TileEntityEthereumCompressorPart.class.cast(tile).dissembleMultiblock();
-    	}
-    	super.breakBlock(worldIn, pos, state);
+        TileEntity tile = worldIn.getTileEntity(pos);
+        if (tile instanceof TileEntityEthereumCompressorPart) {
+            TileEntityEthereumCompressorPart.class.cast(tile).dissembleMultiblock();
+        }
+        super.breakBlock(worldIn, pos, state);
     }
 
 }

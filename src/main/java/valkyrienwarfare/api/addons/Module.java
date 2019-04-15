@@ -28,10 +28,8 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
 import valkyrienwarfare.ValkyrienWarfareMod;
 
-import java.util.UUID;
-
 public abstract class Module {
-	
+
     private final String name;
     private boolean donePreInit = false, doneInit = false, donePostInit = false;
     private ModuleProxy common, client, server; //tODO: call these

@@ -1,8 +1,6 @@
 package valkyrienwarfare.addon.control.block.torque;
 
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.WorldServer;
-import valkyrienwarfare.physics.management.PhysicsObject;
 
 import java.util.Optional;
 

@@ -4,7 +4,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
-import org.lwjgl.Sys;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
 import java.util.*;
@@ -30,6 +29,7 @@ public class ImplRotationNodeWorld implements IRotationNodeWorld {
 
     /**
      * This can be run by any thread.
+     *
      * @param task
      */
     @Override
@@ -101,13 +101,12 @@ public class ImplRotationNodeWorld implements IRotationNodeWorld {
     }
 
     /**
-     *
      * @param start
      * @param from
      * @param sideFrom
      * @param nodesToVisit
      * @param timeDelta
-     * @param multiplier The relative ratio of w_i / w_0.
+     * @param multiplier   The relative ratio of w_i / w_0.
      * @return
      */
     private NodeTaskProcessed processNodeNetwork(IRotationNode start, IRotationNode from, EnumFacing sideFrom, List<IRotationNode> nodesToVisit, double timeDelta, double multiplier) {
@@ -156,6 +155,7 @@ public class ImplRotationNodeWorld implements IRotationNodeWorld {
 
     /**
      * This can only be called by the physics thread.
+     *
      * @param pos
      * @return The node at that pos if there is one, null otherwise.
      */
@@ -170,6 +170,7 @@ public class ImplRotationNodeWorld implements IRotationNodeWorld {
 
     /**
      * This can only be called by the physics thread.
+     *
      * @param pos
      * @return The node at that pos if there is one, null otherwise.
      */
@@ -181,6 +182,7 @@ public class ImplRotationNodeWorld implements IRotationNodeWorld {
 
     /**
      * This can only be called by the physics thread.
+     *
      * @param pos
      * @param node
      * @return The prevous node if there was one, null otherwise.
@@ -196,6 +198,7 @@ public class ImplRotationNodeWorld implements IRotationNodeWorld {
 
     /**
      * This can only be called by the physics thread.
+     *
      * @param pos
      * @return The prevous node if there was one, null otherwise.
      */

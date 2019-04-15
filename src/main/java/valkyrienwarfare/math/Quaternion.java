@@ -81,18 +81,15 @@ public class Quaternion {
     }
 
     /**
-	 * Creates a new Quaternion object for the given rotation.
-	 * 
-	 * @param pitch
-	 *            in degrees
-	 * @param yaw
-	 *            in degrees
-	 * @param roll
-	 *            in degrees
-	 * @return
-	 */
-	public static Quaternion fromEuler(double pitch, double yaw, double roll) {
-    	double[] rotationMatrix = RotationMatrices.getRotationMatrix(pitch, yaw, roll);
+     * Creates a new Quaternion object for the given rotation.
+     *
+     * @param pitch in degrees
+     * @param yaw   in degrees
+     * @param roll  in degrees
+     * @return
+     */
+    public static Quaternion fromEuler(double pitch, double yaw, double roll) {
+        double[] rotationMatrix = RotationMatrices.getRotationMatrix(pitch, yaw, roll);
         return QuaternionFromMatrix(rotationMatrix);
     }
 
@@ -118,12 +115,12 @@ public class Quaternion {
         }
         if (sqw < -.9) {
             System.out.println("Quaternion singularity at South Pole");
-			roll = -2 * Math.atan2(x, w);
-			yaw = -Math.PI / 2;
-			pitch = 0;
-		}
-		return new double[] { pitch, yaw, roll };
-	}
+            roll = -2 * Math.atan2(x, w);
+            yaw = -Math.PI / 2;
+            pitch = 0;
+        }
+        return new double[]{pitch, yaw, roll};
+    }
 
     public void multiply(Quaternion q1) {
         double oldw = w;

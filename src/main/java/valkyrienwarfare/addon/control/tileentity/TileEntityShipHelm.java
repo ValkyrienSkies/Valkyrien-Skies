@@ -31,7 +31,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.addon.control.BlocksValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.block.BlockShipHelm;
 import valkyrienwarfare.addon.control.block.multiblocks.TileEntityEthereumCompressorPart;
@@ -46,198 +45,198 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public class TileEntityShipHelm extends ImplTileEntityPilotable implements ITickable {
 
-	public double compassAngle = 0;
-	public double lastCompassAngle = 0;
+    public double compassAngle = 0;
+    public double lastCompassAngle = 0;
 
-	public double wheelRotation = 0;
-	public double lastWheelRotation = 0;
+    public double wheelRotation = 0;
+    public double lastWheelRotation = 0;
 
-	private double nextWheelRotation;
+    private double nextWheelRotation;
 
-	@Override
-	public void update() {
-		if (this.getWorld().isRemote) {
-			calculateCompassAngle();
-			lastWheelRotation = wheelRotation;
-			wheelRotation += (nextWheelRotation - wheelRotation) * .25D;
-		} else {
-			// Only decay rotation when there's no pilot
-			if (this.getPilotEntity() == null) {
-				double friction = .05D;
-				double toOriginRate = .05D;
-				if (Math.abs(wheelRotation) < 1.5) {
-					wheelRotation = 0;
-				} else {
-					// wheelRotation -= math.signum(wheelRotation) * wheelRotation;
-					double deltaForce = Math.max(Math.abs(wheelRotation * toOriginRate) - friction, 0);
-					wheelRotation += deltaForce * -1 * Math.signum(wheelRotation);
-				}
-			}
+    @Override
+    public void update() {
+        if (this.getWorld().isRemote) {
+            calculateCompassAngle();
+            lastWheelRotation = wheelRotation;
+            wheelRotation += (nextWheelRotation - wheelRotation) * .25D;
+        } else {
+            // Only decay rotation when there's no pilot
+            if (this.getPilotEntity() == null) {
+                double friction = .05D;
+                double toOriginRate = .05D;
+                if (Math.abs(wheelRotation) < 1.5) {
+                    wheelRotation = 0;
+                } else {
+                    // wheelRotation -= math.signum(wheelRotation) * wheelRotation;
+                    double deltaForce = Math.max(Math.abs(wheelRotation * toOriginRate) - friction, 0);
+                    wheelRotation += deltaForce * -1 * Math.signum(wheelRotation);
+                }
+            }
 
-			VWNode_TileEntity thisNode = this.getNode();
-			double totalMaxUpwardThrust = 0;
-			for (GraphObject object : thisNode.getGraph().getObjects()) {
-				VWNode_TileEntity otherNode = (VWNode_TileEntity) object;
-				TileEntity tile = otherNode.getParentTile();
-				if (tile instanceof TileEntityEthereumCompressorPart) {
-					BlockPos masterPos = ((TileEntityEthereumCompressorPart) tile).getMultiblockOrigin();
-					TileEntityEthereumCompressorPart masterTile = (TileEntityEthereumCompressorPart) tile.getWorld()
-							.getTileEntity(masterPos);
-					// This is a transient problem that only occurs during world loading.
-					if (masterTile != null) {
-						totalMaxUpwardThrust += masterTile.getMaxThrust();
-					}
-					// masterTile.updateTicksSinceLastRecievedSignal();
-				}
-			}
+            VWNode_TileEntity thisNode = this.getNode();
+            double totalMaxUpwardThrust = 0;
+            for (GraphObject object : thisNode.getGraph().getObjects()) {
+                VWNode_TileEntity otherNode = (VWNode_TileEntity) object;
+                TileEntity tile = otherNode.getParentTile();
+                if (tile instanceof TileEntityEthereumCompressorPart) {
+                    BlockPos masterPos = ((TileEntityEthereumCompressorPart) tile).getMultiblockOrigin();
+                    TileEntityEthereumCompressorPart masterTile = (TileEntityEthereumCompressorPart) tile.getWorld()
+                            .getTileEntity(masterPos);
+                    // This is a transient problem that only occurs during world loading.
+                    if (masterTile != null) {
+                        totalMaxUpwardThrust += masterTile.getMaxThrust();
+                    }
+                    // masterTile.updateTicksSinceLastRecievedSignal();
+                }
+            }
 
-			PhysicsWrapperEntity parentPhysicsEntity = this.getParentPhysicsEntity();
-			VectorImmutable torqueAttemptedNormalImmutable = null;
-			if (parentPhysicsEntity != null) {
-				Vector torqueAttempted = new Vector(0, Math.signum(wheelRotation), 0);
-				// parentPhysicsEntity.getPhysicsObject().getShipTransformationManager().getCurrentPhysicsTransform()
-				//		.rotate(torqueAttempted, TransformType.SUBSPACE_TO_GLOBAL);
-				torqueAttemptedNormalImmutable = torqueAttempted.toImmutable();
-			}
-			
-			for (GraphObject object : thisNode.getGraph().getObjects()) {
-				VWNode_TileEntity otherNode = (VWNode_TileEntity) object;
-				TileEntity tile = otherNode.getParentTile();
-				if (tile instanceof TileEntityRudderAxlePart) {
-					BlockPos masterPos = ((TileEntityRudderAxlePart) tile).getMultiblockOrigin();
-					TileEntityRudderAxlePart masterTile = (TileEntityRudderAxlePart) tile.getWorld()
-							.getTileEntity(masterPos);
-					// This is a transient problem that only occurs during world loading.
-					if (masterTile != null) {
-						// Wheel rotation is flipped because I'm an idiot
-						if (parentPhysicsEntity == null) {
-							masterTile.setRudderAngle(-this.wheelRotation / 8D);
-						} else {
-							masterTile.attemptTorque(parentPhysicsEntity.getPhysicsObject(),
-									torqueAttemptedNormalImmutable, -this.wheelRotation / 8D,
-									new Vector(EnumFacing.getFront(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipHelm
-											.getMetaFromState(this.getWorld().getBlockState(this.getPos()))).getDirectionVec()));
-						}
-					}
-					// masterTile.updateTicksSinceLastRecievedSignal();
-				}
+            PhysicsWrapperEntity parentPhysicsEntity = this.getParentPhysicsEntity();
+            VectorImmutable torqueAttemptedNormalImmutable = null;
+            if (parentPhysicsEntity != null) {
+                Vector torqueAttempted = new Vector(0, Math.signum(wheelRotation), 0);
+                // parentPhysicsEntity.getPhysicsObject().getShipTransformationManager().getCurrentPhysicsTransform()
+                //		.rotate(torqueAttempted, TransformType.SUBSPACE_TO_GLOBAL);
+                torqueAttemptedNormalImmutable = torqueAttempted.toImmutable();
+            }
 
-			}
+            for (GraphObject object : thisNode.getGraph().getObjects()) {
+                VWNode_TileEntity otherNode = (VWNode_TileEntity) object;
+                TileEntity tile = otherNode.getParentTile();
+                if (tile instanceof TileEntityRudderAxlePart) {
+                    BlockPos masterPos = ((TileEntityRudderAxlePart) tile).getMultiblockOrigin();
+                    TileEntityRudderAxlePart masterTile = (TileEntityRudderAxlePart) tile.getWorld()
+                            .getTileEntity(masterPos);
+                    // This is a transient problem that only occurs during world loading.
+                    if (masterTile != null) {
+                        // Wheel rotation is flipped because I'm an idiot
+                        if (parentPhysicsEntity == null) {
+                            masterTile.setRudderAngle(-this.wheelRotation / 8D);
+                        } else {
+                            masterTile.attemptTorque(parentPhysicsEntity.getPhysicsObject(),
+                                    torqueAttemptedNormalImmutable, -this.wheelRotation / 8D,
+                                    new Vector(EnumFacing.getFront(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipHelm
+                                            .getMetaFromState(this.getWorld().getBlockState(this.getPos()))).getDirectionVec()));
+                        }
+                    }
+                    // masterTile.updateTicksSinceLastRecievedSignal();
+                }
 
-			sendUpdatePacketToAllNearby();
-		}
-	}
+            }
 
-	@Override
-	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
-		nextWheelRotation = pkt.getNbtCompound().getDouble("wheelRotation");
-	}
+            sendUpdatePacketToAllNearby();
+        }
+    }
 
-	@Override
-	public SPacketUpdateTileEntity getUpdatePacket() {
-		NBTTagCompound tagToSend = new NBTTagCompound();
-		tagToSend.setDouble("wheelRotation", wheelRotation);
-		return new SPacketUpdateTileEntity(this.getPos(), 0, tagToSend);
-	}
+    @Override
+    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
+        nextWheelRotation = pkt.getNbtCompound().getDouble("wheelRotation");
+    }
 
-	@Override
-	public NBTTagCompound getUpdateTag() {
-		NBTTagCompound toReturn = super.getUpdateTag();
-		toReturn.setDouble("wheelRotation", wheelRotation);
-		return toReturn;
-	}
+    @Override
+    public SPacketUpdateTileEntity getUpdatePacket() {
+        NBTTagCompound tagToSend = new NBTTagCompound();
+        tagToSend.setDouble("wheelRotation", wheelRotation);
+        return new SPacketUpdateTileEntity(this.getPos(), 0, tagToSend);
+    }
 
-	public void calculateCompassAngle() {
-		lastCompassAngle = compassAngle;
+    @Override
+    public NBTTagCompound getUpdateTag() {
+        NBTTagCompound toReturn = super.getUpdateTag();
+        toReturn.setDouble("wheelRotation", wheelRotation);
+        return toReturn;
+    }
 
-		IBlockState helmState = getWorld().getBlockState(getPos());
-		if (helmState.getBlock() != ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipHelm) {
-			return;
-		}
-		EnumFacing enumfacing = helmState.getValue(BlockShipHelm.FACING);
-		double wheelAndCompassStateRotation = enumfacing.getHorizontalAngle();
+    public void calculateCompassAngle() {
+        lastCompassAngle = compassAngle;
 
-		BlockPos spawnPos = getWorld().getSpawnPoint();
-		Vector compassPoint = new Vector(getPos().getX(), getPos().getY(), getPos().getZ());
-		compassPoint.add(1D, 2D, 1D);
+        IBlockState helmState = getWorld().getBlockState(getPos());
+        if (helmState.getBlock() != ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipHelm) {
+            return;
+        }
+        EnumFacing enumfacing = helmState.getValue(BlockShipHelm.FACING);
+        double wheelAndCompassStateRotation = enumfacing.getHorizontalAngle();
 
-		PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(getWorld(),
-				getPos());
-		if (wrapper != null) {
-			wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(compassPoint,
-					TransformType.SUBSPACE_TO_GLOBAL);
-			// RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform,
-			// compassPoint);
-		}
+        BlockPos spawnPos = getWorld().getSpawnPoint();
+        Vector compassPoint = new Vector(getPos().getX(), getPos().getY(), getPos().getZ());
+        compassPoint.add(1D, 2D, 1D);
 
-		Vector compassDirection = new Vector(compassPoint);
-		compassDirection.subtract(spawnPos.getX(), spawnPos.getY(), spawnPos.getZ());
+        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(getWorld(),
+                getPos());
+        if (wrapper != null) {
+            wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(compassPoint,
+                    TransformType.SUBSPACE_TO_GLOBAL);
+            // RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform,
+            // compassPoint);
+        }
 
-		if (wrapper != null) {
-			wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().rotate(compassDirection,
-					TransformType.GLOBAL_TO_SUBSPACE);
-			// RotationMatrices.doRotationOnly(wrapper.wrapping.coordTransform.wToLTransform,
-			// compassDirection);
-		}
+        Vector compassDirection = new Vector(compassPoint);
+        compassDirection.subtract(spawnPos.getX(), spawnPos.getY(), spawnPos.getZ());
 
-		compassDirection.normalize();
-		compassAngle = Math.toDegrees(Math.atan2(compassDirection.X, compassDirection.Z))
-				- wheelAndCompassStateRotation;
-		compassAngle = (compassAngle + 360D) % 360D;
-	}
+        if (wrapper != null) {
+            wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().rotate(compassDirection,
+                    TransformType.GLOBAL_TO_SUBSPACE);
+            // RotationMatrices.doRotationOnly(wrapper.wrapping.coordTransform.wToLTransform,
+            // compassDirection);
+        }
 
-	@Override
-	public void readFromNBT(NBTTagCompound compound) {
-		super.readFromNBT(compound);
-		lastWheelRotation = wheelRotation = compound.getDouble("wheelRotation");
-	}
+        compassDirection.normalize();
+        compassAngle = Math.toDegrees(Math.atan2(compassDirection.X, compassDirection.Z))
+                - wheelAndCompassStateRotation;
+        compassAngle = (compassAngle + 360D) % 360D;
+    }
 
-	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-		NBTTagCompound toReturn = super.writeToNBT(compound);
-		compound.setDouble("wheelRotation", wheelRotation);
-		return toReturn;
-	}
+    @Override
+    public void readFromNBT(NBTTagCompound compound) {
+        super.readFromNBT(compound);
+        lastWheelRotation = wheelRotation = compound.getDouble("wheelRotation");
+    }
 
-	@Override
-	ControllerInputType getControlInputType() {
-		return ControllerInputType.ShipHelm;
-	}
+    @Override
+    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+        NBTTagCompound toReturn = super.writeToNBT(compound);
+        compound.setDouble("wheelRotation", wheelRotation);
+        return toReturn;
+    }
 
-	@Override
-	void processControlMessage(PilotControlsMessage message, EntityPlayerMP sender) {
-		double rotationDelta = 0;
-		if (message.airshipLeft_KeyDown) {
-			rotationDelta -= 12.5D;
-		}
-		if (message.airshipRight_KeyDown) {
-			rotationDelta += 12.5D;
-		}
-		IBlockState blockState = this.getWorld().getBlockState(getPos());
-		if (blockState.getBlock() instanceof BlockShipHelm) {
-			EnumFacing facing = blockState.getValue(BlockShipHelm.FACING);
-			if (this.isPlayerInFront(sender, facing)) {
-				wheelRotation += rotationDelta;
-			} else {
-				wheelRotation -= rotationDelta;
-			}
-		}
-		double max_rotation = 720D;
-		wheelRotation = Math.min(Math.max(wheelRotation, -max_rotation), max_rotation);
-	}
+    @Override
+    ControllerInputType getControlInputType() {
+        return ControllerInputType.ShipHelm;
+    }
 
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void renderPilotText(FontRenderer renderer, ScaledResolution gameResolution) {
-		// White text.
-		int color = 0xFFFFFF;
-		// Extra spaces so the that the text is closer to the middle when rendered.
-		String message = "Wheel Rotation:    ";
-		int i = gameResolution.getScaledWidth();
-		int height = gameResolution.getScaledHeight() - 35;
-		float middle = (float)(i / 2 - renderer.getStringWidth(message) / 2);
-		message = "Wheel Rotation: " + Math.round(wheelRotation);
-		renderer.drawStringWithShadow(message , middle, height, color);
-	}
+    @Override
+    void processControlMessage(PilotControlsMessage message, EntityPlayerMP sender) {
+        double rotationDelta = 0;
+        if (message.airshipLeft_KeyDown) {
+            rotationDelta -= 12.5D;
+        }
+        if (message.airshipRight_KeyDown) {
+            rotationDelta += 12.5D;
+        }
+        IBlockState blockState = this.getWorld().getBlockState(getPos());
+        if (blockState.getBlock() instanceof BlockShipHelm) {
+            EnumFacing facing = blockState.getValue(BlockShipHelm.FACING);
+            if (this.isPlayerInFront(sender, facing)) {
+                wheelRotation += rotationDelta;
+            } else {
+                wheelRotation -= rotationDelta;
+            }
+        }
+        double max_rotation = 720D;
+        wheelRotation = Math.min(Math.max(wheelRotation, -max_rotation), max_rotation);
+    }
+
+    @SideOnly(Side.CLIENT)
+    @Override
+    public void renderPilotText(FontRenderer renderer, ScaledResolution gameResolution) {
+        // White text.
+        int color = 0xFFFFFF;
+        // Extra spaces so the that the text is closer to the middle when rendered.
+        String message = "Wheel Rotation:    ";
+        int i = gameResolution.getScaledWidth();
+        int height = gameResolution.getScaledHeight() - 35;
+        float middle = (float) (i / 2 - renderer.getStringWidth(message) / 2);
+        message = "Wheel Rotation: " + Math.round(wheelRotation);
+        renderer.drawStringWithShadow(message, middle, height, color);
+    }
 
 }

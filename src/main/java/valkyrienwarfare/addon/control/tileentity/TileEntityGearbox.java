@@ -6,7 +6,6 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import scala.tools.cmd.Opt;
 import valkyrienwarfare.addon.control.block.torque.IRotationNode;
 import valkyrienwarfare.addon.control.block.torque.TileEntityBasicRotationNodeTile;
 import valkyrienwarfare.addon.control.block.torque.TileEntityBasicRotationTile;
@@ -28,7 +27,7 @@ public class TileEntityGearbox extends TileEntityBasicRotationNodeTile {
         super(GEARBOX_SORTING_PRIORITY);
         this.inputFacing = inputFacing;
         this.outputRatio = Optional.of(1D);
-        this.connectedSidesRatios = new Optional[] {Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()};
+        this.connectedSidesRatios = new Optional[]{Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()};
         updateRotationNodeRatios();
     }
 
@@ -45,11 +44,6 @@ public class TileEntityGearbox extends TileEntityBasicRotationNodeTile {
             connectedSidesRatios = rotationNodeRatios;
         }
         this.markDirty();
-    }
-
-    public void setOutputRatio(Optional<Double> outputRatio) {
-        this.outputRatio = outputRatio;
-        this.updateRotationNodeRatios();
     }
 
     public void setInputFacing(EnumFacing inputFacing) {
@@ -140,6 +134,11 @@ public class TileEntityGearbox extends TileEntityBasicRotationNodeTile {
 
     public Optional<Double> getOutputRatio() {
         return outputRatio;
+    }
+
+    public void setOutputRatio(Optional<Double> outputRatio) {
+        this.outputRatio = outputRatio;
+        this.updateRotationNodeRatios();
     }
 
     public Optional<Double>[] getConnectedSidesRatios() {

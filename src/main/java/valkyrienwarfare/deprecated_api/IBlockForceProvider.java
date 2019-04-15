@@ -16,14 +16,14 @@
 
 package valkyrienwarfare.deprecated_api;
 
-import javax.annotation.Nullable;
-
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import valkyrienwarfare.math.RotationMatrices;
 import valkyrienwarfare.math.Vector;
+
+import javax.annotation.Nullable;
 
 public interface IBlockForceProvider {
 
@@ -38,7 +38,7 @@ public interface IBlockForceProvider {
      * @param secondsToApply
      * @return
      */
-	@Nullable
+    @Nullable
     default Vector getBlockForceInWorldSpace(World world, BlockPos pos, IBlockState state, Entity shipEntity,
                                              double secondsToApply) {
         Vector toReturn = getBlockForceInShipSpace(world, pos, state, shipEntity, secondsToApply);
@@ -66,47 +66,47 @@ public interface IBlockForceProvider {
      * @param secondsToApply
      * @return
      */
-	@Nullable
+    @Nullable
     Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state, Entity shipEntity,
                                     double secondsToApply);
 
-	/**
-	 * Blocks that shouldn't have their force rotated (Like Ether Compressors) must
-	 * return false.
-	 *
-	 * @param world
-	 * @param pos
-	 * @param state
-	 * @param secondsToApply
-	 * @return
-	 */
-	boolean shouldLocalForceBeRotated(World world, BlockPos pos, IBlockState state, double secondsToApply);
+    /**
+     * Blocks that shouldn't have their force rotated (Like Ether Compressors) must
+     * return false.
+     *
+     * @param world
+     * @param pos
+     * @param state
+     * @param secondsToApply
+     * @return
+     */
+    boolean shouldLocalForceBeRotated(World world, BlockPos pos, IBlockState state, double secondsToApply);
 
-	/**
-	 * This method returns null if no changes are needed, however some blocks like
-	 * the balloon Burner need to apply their force in a different position.
-	 *
-	 * @param world
-	 * @param pos
-	 * @param state
-	 * @param shipEntity
-	 * @param secondsToApply
-	 * @return
-	 */
+    /**
+     * This method returns null if no changes are needed, however some blocks like
+     * the balloon Burner need to apply their force in a different position.
+     *
+     * @param world
+     * @param pos
+     * @param state
+     * @param shipEntity
+     * @param secondsToApply
+     * @return
+     */
     @Nullable
     default Vector getCustomBlockForcePosition(World world, BlockPos pos, IBlockState state, Entity shipEntity,
                                                double secondsToApply) {
         return null;
     }
 
-	/**
-	 * Returns true if this force provider uses 'simulated airflow' particles.
-	 * Useful to make certain engines not function when placed indoors.
-	 * 
-	 * @return
-	 */
-	default boolean doesForceSpawnParticles() {
-		return false;
-	}
+    /**
+     * Returns true if this force provider uses 'simulated airflow' particles.
+     * Useful to make certain engines not function when placed indoors.
+     *
+     * @return
+     */
+    default boolean doesForceSpawnParticles() {
+        return false;
+    }
 
 }

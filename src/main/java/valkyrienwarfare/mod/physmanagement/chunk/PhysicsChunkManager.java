@@ -26,68 +26,68 @@ import net.minecraft.world.World;
  */
 public class PhysicsChunkManager {
 
-	public static int xChunkStartingPos = -1870000;
-	public static int zChunkStartingPos = -1870000;
-	// public int chunkRadius = 3;
-	public static int maxChunkRadius = 12;
-	public World worldObj;
-	public int nextChunkSetKey;
-	public int chunkSetIncrement;
-	// Currently at 3 to be safe, this is important because Ships could start
-	// affecting
-	// each other remotely if this value is too small (ex. 0)
-	public int distanceBetweenSets = 1;
-	public ChunkClaimWorldData data;
+    public static int xChunkStartingPos = -1870000;
+    public static int zChunkStartingPos = -1870000;
+    // public int chunkRadius = 3;
+    public static int maxChunkRadius = 12;
+    public World worldObj;
+    public int nextChunkSetKey;
+    public int chunkSetIncrement;
+    // Currently at 3 to be safe, this is important because Ships could start
+    // affecting
+    // each other remotely if this value is too small (ex. 0)
+    public int distanceBetweenSets = 1;
+    public ChunkClaimWorldData data;
 
-	public PhysicsChunkManager(World worldFor) {
-		worldObj = worldFor;
-		chunkSetIncrement = (maxChunkRadius * 2) + distanceBetweenSets;
+    public PhysicsChunkManager(World worldFor) {
+        worldObj = worldFor;
+        chunkSetIncrement = (maxChunkRadius * 2) + distanceBetweenSets;
 //		try {
-			loadDataFromWorld();
+        loadDataFromWorld();
 //		} catch (Exception e) {
 //			e.printStackTrace();
 //		}
-	}
+    }
 
-	// The +50 is used to make sure chunks too close to ships dont interfere
-	public static boolean isLikelyShipChunk(int chunkX, int chunkZ) {
-		if (chunkZ < zChunkStartingPos + maxChunkRadius + 50) {
-			return true;
-		}
-		return false;
-	}
+    // The +50 is used to make sure chunks too close to ships dont interfere
+    public static boolean isLikelyShipChunk(int chunkX, int chunkZ) {
+        if (chunkZ < zChunkStartingPos + maxChunkRadius + 50) {
+            return true;
+        }
+        return false;
+    }
 
-	/**
-	 * This finds the next empty chunkSet for use, currently only increases the xPos
-	 * to get new positions
-	 *
-	 * @return
-	 */
-	public VWChunkClaim getNextAvaliableChunkSet(int chunkRadius) {
-		loadDataFromWorld();
-		// System.out.println("Got next avaliable chunk set.");
-		
-		int chunkX = xChunkStartingPos + nextChunkSetKey;
-		int chunkZ = zChunkStartingPos;
+    /**
+     * This finds the next empty chunkSet for use, currently only increases the xPos
+     * to get new positions
+     *
+     * @return
+     */
+    public VWChunkClaim getNextAvaliableChunkSet(int chunkRadius) {
+        loadDataFromWorld();
+        // System.out.println("Got next avaliable chunk set.");
 
-		// This is broken; don't try recycling old chunks for now.
-		if (data.getAvalibleChunkKeys().size() > 0 && false) {
-			chunkX = data.getAvalibleChunkKeys().get(0);
-			data.getAvalibleChunkKeys().remove(0);
-		} else {
-			nextChunkSetKey += chunkSetIncrement;
-			data.setChunkKey(nextChunkSetKey);
-		}
-		data.markDirty();
-		return new VWChunkClaim(chunkX, chunkZ, chunkRadius);
-	}
+        int chunkX = xChunkStartingPos + nextChunkSetKey;
+        int chunkZ = zChunkStartingPos;
 
-	/**
-	 * This retrieves the ChunkSetKey data for the specific world
-	 */
-	public void loadDataFromWorld() {
-		data = ChunkClaimWorldData.get(worldObj);
-		nextChunkSetKey = data.getChunkKey();
-	}
+        // This is broken; don't try recycling old chunks for now.
+        if (data.getAvalibleChunkKeys().size() > 0 && false) {
+            chunkX = data.getAvalibleChunkKeys().get(0);
+            data.getAvalibleChunkKeys().remove(0);
+        } else {
+            nextChunkSetKey += chunkSetIncrement;
+            data.setChunkKey(nextChunkSetKey);
+        }
+        data.markDirty();
+        return new VWChunkClaim(chunkX, chunkZ, chunkRadius);
+    }
+
+    /**
+     * This retrieves the ChunkSetKey data for the specific world
+     */
+    public void loadDataFromWorld() {
+        data = ChunkClaimWorldData.get(worldObj);
+        nextChunkSetKey = data.getChunkKey();
+    }
 
 }

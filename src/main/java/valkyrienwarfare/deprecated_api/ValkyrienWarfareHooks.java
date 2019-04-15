@@ -1,5 +1,5 @@
 /*
-* Adapted from the Wizardry License
+ * Adapted from the Wizardry License
  *
  * Copyright (c) 2015-2018 the Valkyrien Warfare team
  *

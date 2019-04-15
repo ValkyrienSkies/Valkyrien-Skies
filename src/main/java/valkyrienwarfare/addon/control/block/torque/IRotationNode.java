@@ -4,15 +4,13 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.WorldServer;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import valkyrienwarfare.addon.control.block.torque.custom_torque_functions.SimpleTorqueFunction;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.function.Function;
 
 public interface IRotationNode extends Comparable<IRotationNode> {
 
@@ -20,12 +18,6 @@ public interface IRotationNode extends Comparable<IRotationNode> {
     default double getEnergy() {
         return getAngularVelocity() * getAngularVelocity() * getRotationalInertia() / 2D;
     }
-
-    @PhysicsThreadOnly
-    void setAngularVelocity(double angularVelocity);
-
-    @PhysicsThreadOnly
-    void setAngularRotation(double angularRotation);
 
     @PhysicsThreadOnly
     default void simulate(double timeStep, PhysicsObject parent) {
@@ -47,10 +39,10 @@ public interface IRotationNode extends Comparable<IRotationNode> {
     }
 
     @PhysicsThreadOnly
-    void setCustomTorqueFunction(SimpleTorqueFunction customTorqueFunction);
+    Optional<SimpleTorqueFunction> getCustomTorqueFunction();
 
     @PhysicsThreadOnly
-    Optional<SimpleTorqueFunction> getCustomTorqueFunction();
+    void setCustomTorqueFunction(SimpleTorqueFunction customTorqueFunction);
 
     @PhysicsThreadOnly
     default boolean isConnectedToSide(EnumFacing side) {
@@ -66,6 +58,7 @@ public interface IRotationNode extends Comparable<IRotationNode> {
 
     /**
      * The optional is only present if there is an attached tile for that side.
+     *
      * @param side
      * @return
      */
@@ -74,7 +67,13 @@ public interface IRotationNode extends Comparable<IRotationNode> {
 
     double getAngularVelocity();
 
+    @PhysicsThreadOnly
+    void setAngularVelocity(double angularVelocity);
+
     double getAngularRotation();
+
+    @PhysicsThreadOnly
+    void setAngularRotation(double angularRotation);
 
     double getAngularRotationUnsynchronized();
 
@@ -103,6 +102,9 @@ public interface IRotationNode extends Comparable<IRotationNode> {
      * Higher values are more likely to be chosen for building the torque network.
      */
     int getSortingPriority();
+
+    @PhysicsThreadOnly
+    void setSortingPriority(int newPriority);
 
     @Override
     default int compareTo(IRotationNode o2) {
@@ -135,7 +137,6 @@ public interface IRotationNode extends Comparable<IRotationNode> {
     void setPlacedIntoNodeWorld(boolean status);
 
     /**
-     *
      * @return a copy of the internal data that is safe to modify.
      */
     Optional<Double>[] connectedRotationRatiosUnsychronized();
@@ -151,7 +152,4 @@ public interface IRotationNode extends Comparable<IRotationNode> {
     Optional<IRotationNode> getTileOnSideUnsynchronized(EnumFacing side);
 
     Optional<Double> getAngularVelocityRatioForUnsynchronized(EnumFacing side);
-
-    @PhysicsThreadOnly
-    void setSortingPriority(int newPriority);
 }

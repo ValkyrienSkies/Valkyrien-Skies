@@ -26,7 +26,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.addon.control.nodenetwork.IVWNodeProvider;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 import java.io.InputStream;

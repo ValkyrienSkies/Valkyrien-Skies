@@ -16,36 +16,33 @@
 
 package valkyrienwarfare.addon.control.tileentity;
 
-import gigaherz.graph.api.GraphObject;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import valkyrienwarfare.addon.control.nodenetwork.BasicNodeTileEntity;
-import valkyrienwarfare.addon.control.nodenetwork.VWNode_TileEntity;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.physics.PhysicsCalculations;
 
 public class TileEntityGyroscopeStabilizer extends TileEntity {
 
-	private static final Vector GRAVITY_UP = new Vector(0, 1, 0);
-	// Up to 3,000,000 newton-meters of torque generated.
-	private double maximumTorque = 3000000;
-	
-	public Vector getTorqueInGlobal(PhysicsCalculations physicsCalculations, BlockPos pos) {
-		Vector shipLevelNormal = new Vector(GRAVITY_UP);
-		physicsCalculations.getParent().getShipTransformationManager().getCurrentPhysicsTransform().rotate(shipLevelNormal, TransformType.SUBSPACE_TO_GLOBAL);
-		Vector torqueDir = GRAVITY_UP.cross(shipLevelNormal);
-		double angleBetween = Math.toDegrees(GRAVITY_UP.angleBetween(shipLevelNormal));
-		torqueDir.normalize();
-		
-		double torquePowerFactor = angleBetween / 5;
-		
-		torquePowerFactor = Math.max(Math.min(1, torquePowerFactor), 0);
-		
-		// System.out.println(angleBetween);
-		
-		torqueDir.multiply(maximumTorque * torquePowerFactor * physicsCalculations.getPhysicsTimeDeltaPerPhysTick() * -1D);
-		return torqueDir;
-	}
+    private static final Vector GRAVITY_UP = new Vector(0, 1, 0);
+    // Up to 3,000,000 newton-meters of torque generated.
+    private double maximumTorque = 3000000;
+
+    public Vector getTorqueInGlobal(PhysicsCalculations physicsCalculations, BlockPos pos) {
+        Vector shipLevelNormal = new Vector(GRAVITY_UP);
+        physicsCalculations.getParent().getShipTransformationManager().getCurrentPhysicsTransform().rotate(shipLevelNormal, TransformType.SUBSPACE_TO_GLOBAL);
+        Vector torqueDir = GRAVITY_UP.cross(shipLevelNormal);
+        double angleBetween = Math.toDegrees(GRAVITY_UP.angleBetween(shipLevelNormal));
+        torqueDir.normalize();
+
+        double torquePowerFactor = angleBetween / 5;
+
+        torquePowerFactor = Math.max(Math.min(1, torquePowerFactor), 0);
+
+        // System.out.println(angleBetween);
+
+        torqueDir.multiply(maximumTorque * torquePowerFactor * physicsCalculations.getPhysicsTimeDeltaPerPhysTick() * -1D);
+        return torqueDir;
+    }
 
 }

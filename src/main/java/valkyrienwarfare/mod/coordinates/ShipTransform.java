@@ -73,7 +73,7 @@ public class ShipTransform {
     }
 
     public void transform(Vector vector, TransformType transformType) {
-    	RotationMatrices.applyTransform(getInternalMatrix(transformType), vector);
+        RotationMatrices.applyTransform(getInternalMatrix(transformType), vector);
     }
 
     public void rotate(Vector vector, TransformType transformType) {
@@ -91,7 +91,7 @@ public class ShipTransform {
         rotate(vec3dAsVector, transformType);
         return vec3dAsVector.toVec3d();
     }
-    
+
     public BlockPos transform(BlockPos pos, TransformType transformType) {
         Vector blockPosAsVector = new Vector(pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5);
         transform(blockPosAsVector, transformType);
@@ -102,34 +102,34 @@ public class ShipTransform {
         return Quaternion.QuaternionFromMatrix(getInternalMatrix(transformType));
     }
 
-	/**
-	 * Please do not ever use this unless it is absolutely necessary! This exposes
-	 * the internal arrays and they unfortunately cannot be made safe without
-	 * sacrificing a lot of performance.
-	 *
-	 * @param transformType
-	 * @return Unsafe internal arrays; for the love of god do not modify them!
-	 */
-	@Deprecated
-	public double[] getInternalMatrix(TransformType transformType) {
+    /**
+     * Please do not ever use this unless it is absolutely necessary! This exposes
+     * the internal arrays and they unfortunately cannot be made safe without
+     * sacrificing a lot of performance.
+     *
+     * @param transformType
+     * @return Unsafe internal arrays; for the love of god do not modify them!
+     */
+    @Deprecated
+    public double[] getInternalMatrix(TransformType transformType) {
         if (transformType == TransformType.SUBSPACE_TO_GLOBAL) {
             return subspaceToGlobal;
-        } else if (transformType == TransformType.GLOBAL_TO_SUBSPACE){
+        } else if (transformType == TransformType.GLOBAL_TO_SUBSPACE) {
             return globalToSubspace;
         } else {
-        	throw new IllegalArgumentException("Unexpected TransformType Enum " + transformType + "!");
+            throw new IllegalArgumentException("Unexpected TransformType Enum " + transformType + "!");
         }
     }
 
-	public VectorImmutable transform(VectorImmutable vector, TransformType transformType) {
-		Vector vectorMutable = vector.createMutibleVectorCopy();
-		this.transform(vectorMutable, transformType);
-		return vectorMutable.toImmutable();
-	}
+    public VectorImmutable transform(VectorImmutable vector, TransformType transformType) {
+        Vector vectorMutable = vector.createMutibleVectorCopy();
+        this.transform(vectorMutable, transformType);
+        return vectorMutable.toImmutable();
+    }
 
-	public VectorImmutable rotate(VectorImmutable vector, TransformType transformType) {
-		Vector vectorMutable = vector.createMutibleVectorCopy();
-		this.rotate(vectorMutable, transformType);
-		return vectorMutable.toImmutable();
-	}
+    public VectorImmutable rotate(VectorImmutable vector, TransformType transformType) {
+        Vector vectorMutable = vector.createMutibleVectorCopy();
+        this.rotate(vectorMutable, transformType);
+        return vectorMutable.toImmutable();
+    }
 }

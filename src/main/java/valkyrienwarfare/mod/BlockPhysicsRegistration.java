@@ -18,8 +18,6 @@ package valkyrienwarfare.mod;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
-import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
-import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.physics.BlockForce;
 import valkyrienwarfare.physics.BlockMass;
 
@@ -47,7 +45,7 @@ public class BlockPhysicsRegistration {
         // blockMass.registerBlockMass(Blocks.OBSIDIAN, 500D);
         BlockMass.registerBlockMass(Blocks.BEDROCK, 50000D);
     }
-    
+
     public static void registerBlocksToNotPhysicise() {
         blocksToNotPhysicise.add(Blocks.AIR);
         blocksToNotPhysicise.add(Blocks.WATER);

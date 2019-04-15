@@ -16,22 +16,6 @@
 
 package valkyrienwarfare;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Field;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.logging.Logger;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
@@ -46,7 +30,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
@@ -58,15 +41,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLConstructionEvent;
-import net.minecraftforge.fml.common.event.FMLFingerprintViolationEvent;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
-import net.minecraftforge.fml.common.event.FMLStateEvent;
+import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
@@ -101,6 +76,20 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.util.PhysicsSettings;
 import valkyrienwarfare.util.RealMethods;
 
+import java.io.*;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
+
 @Mod(modid = ValkyrienWarfareMod.MODID,
         name = ValkyrienWarfareMod.MODNAME,
         version = ValkyrienWarfareMod.MODVER,
@@ -115,6 +104,8 @@ public class ValkyrienWarfareMod {
     public static final int SHIP_ENTITY_PLAYER_LOAD_DISTANCE = 128;
     @CapabilityInject(IAirshipCounterCapability.class)
     public static final Capability<IAirshipCounterCapability> airshipCounter = null;
+    public static final DimensionPhysicsChunkManager VW_CHUNK_MANAGER = new DimensionPhysicsChunkManager();
+    public static final DimensionPhysObjectManager VW_PHYSICS_MANAGER = new DimensionPhysObjectManager();
     // This service is directly responsible for running collision tasks.
     public static ExecutorService PHYSICS_THREADS_EXECUTOR = null;
     @SidedProxy(clientSide = "valkyrienwarfare.mod.proxy.ClientProxy", serverSide = "valkyrienwarfare.mod.proxy.ServerProxy")
@@ -126,8 +117,6 @@ public class ValkyrienWarfareMod {
     public static Block physicsInfuser;
     public static Block physicsInfuserCreative;
     public static SimpleNetworkWrapper physWrapperNetwork;
-    public static final DimensionPhysicsChunkManager VW_CHUNK_MANAGER = new DimensionPhysicsChunkManager();
-    public static final DimensionPhysObjectManager VW_PHYSICS_MANAGER = new DimensionPhysObjectManager();
     public static CreativeTabs vwTab = new TabValkyrienWarfare();
     @Instance(MODID)
     public static ValkyrienWarfareMod INSTANCE = new ValkyrienWarfareMod();
@@ -217,15 +206,24 @@ public class ValkyrienWarfareMod {
         }
     }
 
+    public static Optional<PhysicsObject> getPhysicsObject(World world, BlockPos pos) {
+        PhysicsWrapperEntity wrapperEntity = VW_PHYSICS_MANAGER.getObjectManagingPos(world, pos);
+        if (wrapperEntity != null) {
+            return Optional.of(wrapperEntity.getPhysicsObject());
+        } else {
+            return Optional.empty();
+        }
+    }
+
     @Mod.EventHandler
-	public void onFingerprintViolation(FMLFingerprintViolationEvent event) {
-		// Don't crash for signatures if we're in dev environment.
-		if (MixinLoaderForge.isObfuscatedEnvironment) {
-			FMLLog.bigWarning(
-					"Valkyrien Warfare JAR fingerprint corrupted, which means this copy of the mod may have come from unofficial sources. Download the mod from CurseForge: https://minecraft.curseforge.com/projects/valkyrien-warfare");
-			FMLCommonHandler.instance().exitJava(123, true);
-		}
-	}
+    public void onFingerprintViolation(FMLFingerprintViolationEvent event) {
+        // Don't crash for signatures if we're in dev environment.
+        if (MixinLoaderForge.isObfuscatedEnvironment) {
+            FMLLog.bigWarning(
+                    "Valkyrien Warfare JAR fingerprint corrupted, which means this copy of the mod may have come from unofficial sources. Download the mod from CurseForge: https://minecraft.curseforge.com/projects/valkyrien-warfare");
+            FMLCommonHandler.instance().exitJava(123, true);
+        }
+    }
 
     @EventHandler
     public void fmlConstruct(FMLConstructionEvent event) {
@@ -359,9 +357,9 @@ public class ValkyrienWarfareMod {
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
-    	// Print out a message of core count, we want this to know what AnvilNode is giving us.
-    	System.out.println("Valyrien Warfare Initilization:");
-    	System.out.println("We are running on " + Runtime.getRuntime().availableProcessors() + " threads; 4 or more is recommended!");
+        // Print out a message of core count, we want this to know what AnvilNode is giving us.
+        System.out.println("Valyrien Warfare Initilization:");
+        System.out.println("We are running on " + Runtime.getRuntime().availableProcessors() + " threads; 4 or more is recommended!");
         proxy.init(event);
         EntityRegistry.registerModEntity(new ResourceLocation(MODID, "PhysWrapper"), PhysicsWrapperEntity.class,
                 "PhysWrapper", 70, this, SHIP_ENTITY_PLAYER_LOAD_DISTANCE, 5, false);
@@ -498,14 +496,5 @@ public class ValkyrienWarfareMod {
      */
     public boolean isRunningOnClient() {
         return !(proxy instanceof ServerProxy);
-    }
-
-    public static Optional<PhysicsObject> getPhysicsObject(World world, BlockPos pos) {
-        PhysicsWrapperEntity wrapperEntity = VW_PHYSICS_MANAGER.getObjectManagingPos(world, pos);
-        if (wrapperEntity != null) {
-            return Optional.of(wrapperEntity.getPhysicsObject());
-        } else {
-            return Optional.empty();
-        }
     }
 }

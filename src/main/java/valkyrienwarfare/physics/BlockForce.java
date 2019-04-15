@@ -27,27 +27,27 @@ import valkyrienwarfare.physics.management.PhysicsObject;
 
 public class BlockForce {
 
-	public static final BlockForce basicForces = new BlockForce();
+    public static final BlockForce basicForces = new BlockForce();
 
-	public void getForceFromState(IBlockState state, BlockPos pos, World world, double secondsToApply,
-			PhysicsObject obj, Vector toSet) {
-		Block block = state.getBlock();
-		if (block instanceof IBlockForceProvider) {
-			Vector forceVector = ((IBlockForceProvider) block).getBlockForceInWorldSpace(world, pos, state,
-					obj.getWrapperEntity(), secondsToApply);
-			if (forceVector == null) {
-				toSet.zero();
-			} else {
-				toSet.X = forceVector.X;
-				toSet.Y = forceVector.Y;
-				toSet.Z = forceVector.Z;
-			}
-		}
-	}
+    public void getForceFromState(IBlockState state, BlockPos pos, World world, double secondsToApply,
+                                  PhysicsObject obj, Vector toSet) {
+        Block block = state.getBlock();
+        if (block instanceof IBlockForceProvider) {
+            Vector forceVector = ((IBlockForceProvider) block).getBlockForceInWorldSpace(world, pos, state,
+                    obj.getWrapperEntity(), secondsToApply);
+            if (forceVector == null) {
+                toSet.zero();
+            } else {
+                toSet.X = forceVector.X;
+                toSet.Y = forceVector.Y;
+                toSet.Z = forceVector.Z;
+            }
+        }
+    }
 
-	public boolean isBlockProvidingForce(IBlockState state, BlockPos pos, World world) {
-		Block block = state.getBlock();
-		return block instanceof IBlockForceProvider || block instanceof IBlockTorqueProvider;
-	}
+    public boolean isBlockProvidingForce(IBlockState state, BlockPos pos, World world) {
+        Block block = state.getBlock();
+        return block instanceof IBlockForceProvider || block instanceof IBlockTorqueProvider;
+    }
 
 }

@@ -41,32 +41,12 @@ import valkyrienwarfare.addon.control.capability.StorageLastRelay;
 import valkyrienwarfare.addon.control.gui.ControlGUIHandler;
 import valkyrienwarfare.addon.control.item.ItemRelayWire;
 import valkyrienwarfare.addon.control.item.ItemWrench;
-import valkyrienwarfare.addon.control.network.EntityFixHandler;
-import valkyrienwarfare.addon.control.network.EntityFixMessage;
-import valkyrienwarfare.addon.control.network.MessagePlayerStoppedPiloting;
-import valkyrienwarfare.addon.control.network.MessagePlayerStoppedPilotingHandler;
-import valkyrienwarfare.addon.control.network.MessageStartPiloting;
-import valkyrienwarfare.addon.control.network.MessageStartPilotingHandler;
-import valkyrienwarfare.addon.control.network.MessageStopPiloting;
-import valkyrienwarfare.addon.control.network.MessageStopPilotingHandler;
-import valkyrienwarfare.addon.control.network.ThrustModulatorGuiInputHandler;
-import valkyrienwarfare.addon.control.network.ThrustModulatorGuiInputMessage;
+import valkyrienwarfare.addon.control.network.*;
 import valkyrienwarfare.addon.control.piloting.PilotControlsMessage;
 import valkyrienwarfare.addon.control.piloting.PilotControlsMessageHandler;
 import valkyrienwarfare.addon.control.proxy.ClientProxyControl;
 import valkyrienwarfare.addon.control.proxy.CommonProxyControl;
-import valkyrienwarfare.addon.control.tileentity.TileEntityGearbox;
-import valkyrienwarfare.addon.control.tileentity.TileEntityGyroscopeDampener;
-import valkyrienwarfare.addon.control.tileentity.TileEntityGyroscopeStabilizer;
-import valkyrienwarfare.addon.control.tileentity.TileEntityLiftControl;
-import valkyrienwarfare.addon.control.tileentity.TileEntityLiftValve;
-import valkyrienwarfare.addon.control.tileentity.TileEntityNetworkDisplay;
-import valkyrienwarfare.addon.control.tileentity.TileEntityNodeRelay;
-import valkyrienwarfare.addon.control.tileentity.TileEntityPilotsChair;
-import valkyrienwarfare.addon.control.tileentity.TileEntityPropellerEngine;
-import valkyrienwarfare.addon.control.tileentity.TileEntityShipHelm;
-import valkyrienwarfare.addon.control.tileentity.TileEntityShipTelegraph;
-import valkyrienwarfare.addon.control.tileentity.TileEntityThrustModulator;
+import valkyrienwarfare.addon.control.tileentity.*;
 import valkyrienwarfare.addon.world.ValkyrienWarfareWorld;
 import valkyrienwarfare.api.addons.Module;
 import valkyrienwarfare.api.addons.VWAddon;
@@ -135,11 +115,11 @@ public class ValkyrienWarfareControl extends Module {
 
     @Override
     public void registerItems(RegistryEvent.Register<Item> event) {
-    	relayWire = new ItemRelayWire().setUnlocalizedName("relaywire").setRegistryName(getModID(), "relaywire").setCreativeTab(ValkyrienWarfareMod.vwTab);
-    	multiblockWrench = new ItemWrench().setUnlocalizedName("vw_wrench").setRegistryName(getModID(), "vw_wrench").setCreativeTab(ValkyrienWarfareMod.vwTab);
-    	
-    	event.getRegistry().register(relayWire);
-    	event.getRegistry().register(multiblockWrench);
+        relayWire = new ItemRelayWire().setUnlocalizedName("relaywire").setRegistryName(getModID(), "relaywire").setCreativeTab(ValkyrienWarfareMod.vwTab);
+        multiblockWrench = new ItemWrench().setUnlocalizedName("vw_wrench").setRegistryName(getModID(), "vw_wrench").setCreativeTab(ValkyrienWarfareMod.vwTab);
+
+        event.getRegistry().register(relayWire);
+        event.getRegistry().register(multiblockWrench);
 
         vwControlBlocks.registerBlockItems(event);
         // This doesn't really belong here, but whatever.

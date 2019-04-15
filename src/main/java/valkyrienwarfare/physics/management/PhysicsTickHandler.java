@@ -18,14 +18,11 @@ package valkyrienwarfare.physics.management;
 
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.mod.multithreaded.PhysicsShipTransform;
 import valkyrienwarfare.mod.physmanagement.interaction.EntityDraggable;
-import valkyrienwarfare.physics.collision.optimization.ShipCollisionTask;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 public class PhysicsTickHandler {
 

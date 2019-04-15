@@ -16,18 +16,17 @@
 
 package valkyrienwarfare.mixin.entity;
 
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.math.VWMath;
@@ -43,6 +42,8 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 @Mixin(Entity.class)
 public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
 
+    private final IDraggable thisAsDraggable = IDraggable.class.cast(this);
+    private final Entity thisAsEntity = Entity.class.cast(this);
     @Shadow
     public float rotationYaw;
     @Shadow
@@ -59,8 +60,6 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
     public double posY;
     @Shadow
     public double posZ;
-    private final IDraggable thisAsDraggable = IDraggable.class.cast(this);
-    private final Entity thisAsEntity = Entity.class.cast(this);
     private PhysicsWrapperEntity worldBelowFeet;
     private PhysicsWrapperEntity forcedRelativeWorldBelowFeet;
     private Vector velocityAddedToPlayer = new Vector();
@@ -72,61 +71,61 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
 
     @Override
     public CoordinateSpaceType currentSubspaceType() {
-    	int entityChunkXPosition = ((int) posX) >> 4;
-    	int entityChunkZPosition = ((int) posZ) >> 4;
-    	boolean isInShipChunks = PhysicsChunkManager.isLikelyShipChunk(entityChunkXPosition, entityChunkZPosition);
-    	if (isInShipChunks) {
-    		return CoordinateSpaceType.SUBSPACE_COORDINATES;
-    	} else {
-    		return CoordinateSpaceType.GLOBAL_COORDINATES;
-    	}
+        int entityChunkXPosition = ((int) posX) >> 4;
+        int entityChunkZPosition = ((int) posZ) >> 4;
+        boolean isInShipChunks = PhysicsChunkManager.isLikelyShipChunk(entityChunkXPosition, entityChunkZPosition);
+        if (isInShipChunks) {
+            return CoordinateSpaceType.SUBSPACE_COORDINATES;
+        } else {
+            return CoordinateSpaceType.GLOBAL_COORDINATES;
+        }
     }
-    
+
     @Override
-	public Vector createCurrentPositionVector() {
-    	return new Vector(posX, posY, posZ);
+    public Vector createCurrentPositionVector() {
+        return new Vector(posX, posY, posZ);
     }
-	
+
     @Override
     public Vector createLastTickPositionVector() {
-    	return new Vector(thisAsEntity.lastTickPosX, thisAsEntity.lastTickPosY, thisAsEntity.lastTickPosZ);
+        return new Vector(thisAsEntity.lastTickPosX, thisAsEntity.lastTickPosY, thisAsEntity.lastTickPosZ);
     }
-    
+
     @Override
-	public Vector createCurrentLookVector() {
-    	return new Vector(thisAsEntity.getLookVec());
+    public Vector createCurrentLookVector() {
+        return new Vector(thisAsEntity.getLookVec());
     }
-	
+
     @Override
-	public Vector createCurrentVelocityVector() {
-    	return new Vector(thisAsEntity.motionX, thisAsEntity.motionY, thisAsEntity.motionZ);
+    public Vector createCurrentVelocityVector() {
+        return new Vector(thisAsEntity.motionX, thisAsEntity.motionY, thisAsEntity.motionZ);
     }
-    
+
     @Override
     public void restoreSubspacedEntityStateToRecord(ISubspacedEntityRecord record) {
-    	VectorImmutable coordinates = record.getPosition();
-    	VectorImmutable coordinatesLastTick = record.getPositionLastTick();
-    	VectorImmutable lookVector = record.getLookDirection();
-    	VectorImmutable velocityVector = record.getVelocity();
-    	
-    	thisAsEntity.lastTickPosX = coordinatesLastTick.getX();
-    	thisAsEntity.lastTickPosY = coordinatesLastTick.getY();
-    	thisAsEntity.lastTickPosZ = coordinatesLastTick.getZ();
-    	
-    	double pitch = VWMath.getPitchFromVectorImmutable(lookVector);
-    	double yaw = VWMath.getYawFromVectorImmutable(lookVector, pitch);
-    	
-    	this.rotationPitch = (float) pitch;
-    	this.rotationYaw = (float) yaw;
-    	
-    	thisAsEntity.setPosition(coordinates.getX(), coordinates.getY(), coordinates.getZ());
+        VectorImmutable coordinates = record.getPosition();
+        VectorImmutable coordinatesLastTick = record.getPositionLastTick();
+        VectorImmutable lookVector = record.getLookDirection();
+        VectorImmutable velocityVector = record.getVelocity();
+
+        thisAsEntity.lastTickPosX = coordinatesLastTick.getX();
+        thisAsEntity.lastTickPosY = coordinatesLastTick.getY();
+        thisAsEntity.lastTickPosZ = coordinatesLastTick.getZ();
+
+        double pitch = VWMath.getPitchFromVectorImmutable(lookVector);
+        double yaw = VWMath.getYawFromVectorImmutable(lookVector, pitch);
+
+        this.rotationPitch = (float) pitch;
+        this.rotationYaw = (float) yaw;
+
+        thisAsEntity.setPosition(coordinates.getX(), coordinates.getY(), coordinates.getZ());
     }
-    
+
     @Override
     public int getSubspacedEntityID() {
-    	return thisAsEntity.getEntityId();
+        return thisAsEntity.getEntityId();
     }
-    
+
     @Override
     public PhysicsWrapperEntity getWorldBelowFeet() {
         return worldBelowFeet;
@@ -161,15 +160,15 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
     public void setCancelNextMove(boolean toSet) {
         cancelNextMove = toSet;
     }
-    
+
     @Override
     public void setForcedRelativeSubspace(PhysicsWrapperEntity toSet) {
-    	forcedRelativeWorldBelowFeet = toSet;
+        forcedRelativeWorldBelowFeet = toSet;
     }
-    
+
     @Override
     public PhysicsWrapperEntity getForcedSubspaceBelowFeet() {
-    	return forcedRelativeWorldBelowFeet;
+        return forcedRelativeWorldBelowFeet;
     }
 
     /**

@@ -18,16 +18,16 @@ package valkyrienwarfare.addon.control.piloting;
 
 public enum ControllerInputType {
 
-	PilotsChair(true), ShipHelm(true), Zepplin(false), Telegraph(true), LiftControl(true);
+    PilotsChair(true), ShipHelm(true), Zepplin(false), Telegraph(true), LiftControl(true);
 
-	private final boolean lockPlayerMovement;
+    private final boolean lockPlayerMovement;
 
-	private ControllerInputType(boolean lockPlayerMovement) {
-		this.lockPlayerMovement = lockPlayerMovement;
-	}
+    private ControllerInputType(boolean lockPlayerMovement) {
+        this.lockPlayerMovement = lockPlayerMovement;
+    }
 
-	public boolean shouldLockPlayerMovement() {
-		return lockPlayerMovement;
-	}
+    public boolean shouldLockPlayerMovement() {
+        return lockPlayerMovement;
+    }
 
 }

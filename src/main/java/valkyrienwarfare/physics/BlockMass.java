@@ -83,6 +83,7 @@ public class BlockMass {
 
     /**
      * Get block mass, in kg.
+     *
      * @param state
      * @param pos
      * @param world

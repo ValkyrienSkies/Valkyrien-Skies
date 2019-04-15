@@ -37,7 +37,6 @@ import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.ship_handling.IHasShipManager;
 import valkyrienwarfare.ship_handling.WorldClientShipManager;
-import valkyrienwarfare.ship_handling.WorldServerShipManager;
 
 import java.util.List;
 

@@ -16,7 +16,6 @@
 
 package valkyrienwarfare.addon.world.tileentity;
 
-import net.minecraft.nbt.NBTTagCompound;
 import valkyrienwarfare.addon.control.tileentity.ImplNodeControllerTileEntity;
 import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.physics.PhysicsCalculations;
@@ -34,6 +33,7 @@ public class TileEntitySkyTempleController extends ImplNodeControllerTileEntity 
     public void onPhysicsTick(PhysicsObject object, PhysicsCalculations calculations, double secondsToSimulate) {
     }
 
-    public void setOriginPos(Vector v) {}
+    public void setOriginPos(Vector v) {
+    }
 
 }

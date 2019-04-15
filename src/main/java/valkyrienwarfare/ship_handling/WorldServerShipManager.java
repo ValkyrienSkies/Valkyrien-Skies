@@ -55,12 +55,12 @@ public class WorldServerShipManager implements IWorldShipManager {
             while (nearbyShips.hasNext()) {
                 ShipHolder nearbyShip = nearbyShips.next();
                 shipsToUnwatch.remove(nearbyShip);
-                 if (nearbyShip.isActive()) {
-                     setPlayerToWatchShip((EntityPlayerMP) player, nearbyShip);
-                     // nearbyShip.sendToPlayer((EntityPlayerMP) player);
-                 } else {
-                     nearbyShip.markShipAsActive();
-                 }
+                if (nearbyShip.isActive()) {
+                    setPlayerToWatchShip((EntityPlayerMP) player, nearbyShip);
+                    // nearbyShip.sendToPlayer((EntityPlayerMP) player);
+                } else {
+                    nearbyShip.markShipAsActive();
+                }
             }
             for (ShipHolder shipToUnwatch : shipsToUnwatch) {
                 setPlayerToUnwatchShip((EntityPlayerMP) player, shipToUnwatch);
@@ -68,9 +68,9 @@ public class WorldServerShipManager implements IWorldShipManager {
         }
 
         for (ShipHolder ship : shipAccess.activeShips()) {
-             if (ship.getWatchingPlayers().isEmpty()) {
-                 ship.markShipAsInactive();
-             }
+            if (ship.getWatchingPlayers().isEmpty()) {
+                ship.markShipAsInactive();
+            }
         }
     }
 

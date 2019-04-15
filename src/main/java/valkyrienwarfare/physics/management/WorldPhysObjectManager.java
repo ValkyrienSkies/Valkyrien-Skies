@@ -16,12 +16,6 @@
 
 package valkyrienwarfare.physics.management;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Future;
-
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.entity.Entity;
@@ -31,6 +25,11 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import valkyrienwarfare.mod.physmanagement.chunk.VWChunkClaim;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This class essentially handles all the issues with ticking and handling
@@ -143,20 +142,20 @@ public class WorldPhysObjectManager {
         }
     }
 
-	public void onUnload(PhysicsWrapperEntity loaded) {
-		if (!loaded.world.isRemote) {
-			physicsEntities.remove(loaded);
-			loaded.getPhysicsObject().onThisUnload();
-			VWChunkClaim vwChunkClaim = loaded.getPhysicsObject().getOwnedChunks();
-			for (int chunkX = vwChunkClaim.getMinX(); chunkX <= vwChunkClaim.getMaxX(); chunkX++) {
-				for (int chunkZ = vwChunkClaim.getMinZ(); chunkZ <= vwChunkClaim.getMaxZ(); chunkZ++) {
-					chunkPosToPhysicsEntityMap.remove(getLongFromInts(chunkX, chunkZ));
-				}
-			}
-		} else {
-			loaded.isDead = true;
+    public void onUnload(PhysicsWrapperEntity loaded) {
+        if (!loaded.world.isRemote) {
+            physicsEntities.remove(loaded);
+            loaded.getPhysicsObject().onThisUnload();
+            VWChunkClaim vwChunkClaim = loaded.getPhysicsObject().getOwnedChunks();
+            for (int chunkX = vwChunkClaim.getMinX(); chunkX <= vwChunkClaim.getMaxX(); chunkX++) {
+                for (int chunkZ = vwChunkClaim.getMinZ(); chunkZ <= vwChunkClaim.getMaxZ(); chunkZ++) {
+                    chunkPosToPhysicsEntityMap.remove(getLongFromInts(chunkX, chunkZ));
+                }
+            }
+        } else {
+            loaded.isDead = true;
         }
-		loaded.getPhysicsObject().resetConsecutiveProperTicks();
+        loaded.getPhysicsObject().resetConsecutiveProperTicks();
     }
 
     /**
@@ -211,8 +210,8 @@ public class WorldPhysObjectManager {
         }
         return null;
     }
-    
+
     private long getLongFromInts(int x, int z) {
-    	return (long)x & 4294967295L | ((long)z & 4294967295L) << 32;
+        return (long) x & 4294967295L | ((long) z & 4294967295L) << 32;
     }
 }

@@ -15,46 +15,46 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public class SubspacedEntityRecordHandler implements IMessageHandler<SubspacedEntityRecordMessage, IMessage> {
 
-	@Override
-	public IMessage onMessage(final SubspacedEntityRecordMessage message, final MessageContext ctx) {
-		IThreadListener threadScheduler = null;
-		World world = null;
-		if (ctx.side.isClient()) {
-			// We are receiving this on the client
-			threadScheduler = getClientThreadListener();
-			world = getClientWorld();
-		} else {
-			// Otherwise we are receiving this on the server
-			threadScheduler = ctx.getServerHandler().serverController;
-			world = ctx.getServerHandler().player.world;
-		}
-		final World worldFinal = world;
-		threadScheduler.addScheduledTask(() -> {
-			Entity physicsEntity = worldFinal.getEntityByID(message.physicsObjectWrapperID);
-			Entity subspacedEntity = worldFinal.getEntityByID(message.entitySubspacedID);
-			if (physicsEntity != null && subspacedEntity != null) {
-				PhysicsWrapperEntity wrapperEntity = (PhysicsWrapperEntity) physicsEntity;
-				ISubspacedEntityRecord record = message.createRecordForThisMessage(
-						ISubspacedEntity.class.cast(subspacedEntity), wrapperEntity.getPhysicsObject().getSubspace());
-				IDraggable draggable = IDraggable.class.cast(subspacedEntity);
-				draggable.setForcedRelativeSubspace(wrapperEntity);
-				wrapperEntity.getPhysicsObject().getSubspace().forceSubspaceRecord(record.getParentEntity(), record);
-				// Now just synchronize the player to the data sent by the client.
-			} else {
-				System.err.println("An incorrect SubspacedEntityRecordMessage has been thrown out");
-			}
-		});
-		return null;
-	}
+    @Override
+    public IMessage onMessage(final SubspacedEntityRecordMessage message, final MessageContext ctx) {
+        IThreadListener threadScheduler = null;
+        World world = null;
+        if (ctx.side.isClient()) {
+            // We are receiving this on the client
+            threadScheduler = getClientThreadListener();
+            world = getClientWorld();
+        } else {
+            // Otherwise we are receiving this on the server
+            threadScheduler = ctx.getServerHandler().serverController;
+            world = ctx.getServerHandler().player.world;
+        }
+        final World worldFinal = world;
+        threadScheduler.addScheduledTask(() -> {
+            Entity physicsEntity = worldFinal.getEntityByID(message.physicsObjectWrapperID);
+            Entity subspacedEntity = worldFinal.getEntityByID(message.entitySubspacedID);
+            if (physicsEntity != null && subspacedEntity != null) {
+                PhysicsWrapperEntity wrapperEntity = (PhysicsWrapperEntity) physicsEntity;
+                ISubspacedEntityRecord record = message.createRecordForThisMessage(
+                        ISubspacedEntity.class.cast(subspacedEntity), wrapperEntity.getPhysicsObject().getSubspace());
+                IDraggable draggable = IDraggable.class.cast(subspacedEntity);
+                draggable.setForcedRelativeSubspace(wrapperEntity);
+                wrapperEntity.getPhysicsObject().getSubspace().forceSubspaceRecord(record.getParentEntity(), record);
+                // Now just synchronize the player to the data sent by the client.
+            } else {
+                System.err.println("An incorrect SubspacedEntityRecordMessage has been thrown out");
+            }
+        });
+        return null;
+    }
 
-	@SideOnly(Side.CLIENT)
-	private IThreadListener getClientThreadListener() {
-		return net.minecraft.client.Minecraft.getMinecraft();
-	}
-	
-	@SideOnly(Side.CLIENT)
-	private World getClientWorld() {
-		return net.minecraft.client.Minecraft.getMinecraft().world;
-	}
+    @SideOnly(Side.CLIENT)
+    private IThreadListener getClientThreadListener() {
+        return net.minecraft.client.Minecraft.getMinecraft();
+    }
+
+    @SideOnly(Side.CLIENT)
+    private World getClientWorld() {
+        return net.minecraft.client.Minecraft.getMinecraft().world;
+    }
 
 }

@@ -15,9 +15,9 @@ import valkyrienwarfare.addon.control.tileentity.TileEntityLiftControl;
 
 public class BlockLiftControl extends BlockPilotableBasic {
 
-	public BlockLiftControl(Material materialIn) {
-		super(materialIn);
-	}
+    public BlockLiftControl(Material materialIn) {
+        super(materialIn);
+    }
 
     @Override
     public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
@@ -47,7 +47,7 @@ public class BlockLiftControl extends BlockPilotableBasic {
         int i = ((EnumFacing) state.getValue(BlockHorizontal.FACING)).getIndex();
         return i;
     }
-	
+
     @Override
     public BlockRenderLayer getBlockLayer() {
         return BlockRenderLayer.CUTOUT;
@@ -62,10 +62,10 @@ public class BlockLiftControl extends BlockPilotableBasic {
     public boolean isOpaqueCube(IBlockState state) {
         return false;
     }
-    
-	@Override
-	public TileEntity createNewTileEntity(World worldIn, int meta) {
-		return new TileEntityLiftControl(worldIn);
-	}
+
+    @Override
+    public TileEntity createNewTileEntity(World worldIn, int meta) {
+        return new TileEntityLiftControl(worldIn);
+    }
 
 }

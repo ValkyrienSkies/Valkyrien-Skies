@@ -16,41 +16,39 @@
 
 package valkyrienwarfare.addon.control.tileentity;
 
-import net.minecraft.nbt.NBTTagCompound;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.fuel.IEtherEngine;
 import valkyrienwarfare.addon.control.nodenetwork.BasicForceNodeTileEntity;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.math.Vector;
-import valkyrienwarfare.physics.management.PhysicsObject;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public abstract class TileEntityEtherPropulsion extends BasicForceNodeTileEntity implements IEtherEngine {
 
-	public TileEntityEtherPropulsion(Vector normalForceVector, double power) {
-		super(normalForceVector, false, power);
-		validate();
-	}
+    public TileEntityEtherPropulsion(Vector normalForceVector, double power) {
+        super(normalForceVector, false, power);
+        validate();
+    }
 
-	public TileEntityEtherPropulsion() {
-		this(null, 0);
-	}
+    public TileEntityEtherPropulsion() {
+        this(null, 0);
+    }
 
-	@Override
-	public double getCurrentEtherEfficiency() {
-		PhysicsWrapperEntity tilePhysics = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(getWorld(), getPos());
-		if (tilePhysics != null) {
-			Vector tilePos = new Vector(getPos().getX() + .5D, getPos().getY() + .5D, getPos().getZ() + .5D);
-			tilePhysics.getPhysicsObject().getShipTransformationManager().getCurrentPhysicsTransform().transform(tilePos, TransformType.SUBSPACE_TO_GLOBAL);
-			return IEtherEngine.getEtherEfficiencyFromHeight(tilePos.Y);
-		} else {
-			return 1;
-		}
-	}
-	
-	@Override
-	public boolean isForceOutputOriented() {
-		return false;
-	}
+    @Override
+    public double getCurrentEtherEfficiency() {
+        PhysicsWrapperEntity tilePhysics = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(getWorld(), getPos());
+        if (tilePhysics != null) {
+            Vector tilePos = new Vector(getPos().getX() + .5D, getPos().getY() + .5D, getPos().getZ() + .5D);
+            tilePhysics.getPhysicsObject().getShipTransformationManager().getCurrentPhysicsTransform().transform(tilePos, TransformType.SUBSPACE_TO_GLOBAL);
+            return IEtherEngine.getEtherEfficiencyFromHeight(tilePos.Y);
+        } else {
+            return 1;
+        }
+    }
+
+    @Override
+    public boolean isForceOutputOriented() {
+        return false;
+    }
 
 }

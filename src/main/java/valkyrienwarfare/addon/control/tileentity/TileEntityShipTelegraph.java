@@ -24,10 +24,7 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
-import net.minecraft.util.math.BlockPos;
-import scala.tools.cmd.Opt;
 import valkyrienwarfare.addon.control.block.BlockShipTelegraph;
-import valkyrienwarfare.addon.control.block.multiblocks.TileEntityEthereumCompressorPart;
 import valkyrienwarfare.addon.control.nodenetwork.VWNode_TileEntity;
 import valkyrienwarfare.addon.control.piloting.ControllerInputType;
 import valkyrienwarfare.addon.control.piloting.PilotControlsMessage;
@@ -36,39 +33,39 @@ import java.util.Optional;
 
 public class TileEntityShipTelegraph extends ImplTileEntityPilotable implements ITickable {
 
-	private ShipChadburnState telegraphState;
-	// The following fields are only used by the client for smooth interpolation
-	// rendering between state enums.
-	private ShipChadburnState nextTelegraphState;
-	private double handleRotation;
-	private double prevHandleRotation;
+    private ShipChadburnState telegraphState;
+    // The following fields are only used by the client for smooth interpolation
+    // rendering between state enums.
+    private ShipChadburnState nextTelegraphState;
+    private double handleRotation;
+    private double prevHandleRotation;
 
-	public TileEntityShipTelegraph() {
-		this.telegraphState = ShipChadburnState.STOP;
-		this.nextTelegraphState = ShipChadburnState.STOP;
-		this.handleRotation = 0;
-		this.prevHandleRotation = 0;
+    public TileEntityShipTelegraph() {
+        this.telegraphState = ShipChadburnState.STOP;
+        this.nextTelegraphState = ShipChadburnState.STOP;
+        this.handleRotation = 0;
+        this.prevHandleRotation = 0;
     }
-    
+
     @Override
     void processControlMessage(PilotControlsMessage message, EntityPlayerMP sender) {
-    	int deltaOrdinal = 0;
-    	if (message.airshipLeft_KeyPressed) {
-    		deltaOrdinal -= 1;
-    	}
-    	if (message.airshipRight_KeyPressed) {
-    		deltaOrdinal += 1;
-    	}
-    	IBlockState blockState = this.getWorld().getBlockState(getPos());
-		if (blockState.getBlock() instanceof BlockShipTelegraph) {
-			EnumFacing facing = blockState.getValue(BlockShipTelegraph.FACING);
-			if (this.isPlayerInFront(sender, facing)) {
-				deltaOrdinal *= -1;
-			}
-		}
-    	int newTelegraphOrdinal = telegraphState.ordinal();
-    	newTelegraphOrdinal += deltaOrdinal;
-    	newTelegraphOrdinal = Math.max(0, Math.min(ShipChadburnState.values().length - 1, newTelegraphOrdinal));
+        int deltaOrdinal = 0;
+        if (message.airshipLeft_KeyPressed) {
+            deltaOrdinal -= 1;
+        }
+        if (message.airshipRight_KeyPressed) {
+            deltaOrdinal += 1;
+        }
+        IBlockState blockState = this.getWorld().getBlockState(getPos());
+        if (blockState.getBlock() instanceof BlockShipTelegraph) {
+            EnumFacing facing = blockState.getValue(BlockShipTelegraph.FACING);
+            if (this.isPlayerInFront(sender, facing)) {
+                deltaOrdinal *= -1;
+            }
+        }
+        int newTelegraphOrdinal = telegraphState.ordinal();
+        newTelegraphOrdinal += deltaOrdinal;
+        newTelegraphOrdinal = Math.max(0, Math.min(ShipChadburnState.values().length - 1, newTelegraphOrdinal));
         telegraphState = ShipChadburnState.values()[newTelegraphOrdinal];
         this.markDirty();
     }
@@ -76,7 +73,7 @@ public class TileEntityShipTelegraph extends ImplTileEntityPilotable implements 
 
     @Override
     public void onDataPacket(net.minecraft.network.NetworkManager net, net.minecraft.network.play.server.SPacketUpdateTileEntity pkt) {
-    	nextTelegraphState = ShipChadburnState.valueOf(pkt.getNbtCompound().getString("TelegraphState"));
+        nextTelegraphState = ShipChadburnState.valueOf(pkt.getNbtCompound().getString("TelegraphState"));
     }
 
     @Override
@@ -87,15 +84,15 @@ public class TileEntityShipTelegraph extends ImplTileEntityPilotable implements 
     }
 
     public double getHandleRenderRotation(float partialTicks) {
-    	double interpolatedHandle = prevHandleRotation + (handleRotation - prevHandleRotation) * partialTicks;
+        double interpolatedHandle = prevHandleRotation + (handleRotation - prevHandleRotation) * partialTicks;
         return -interpolatedHandle + 112.5;
     }
 
     @Override
     public void update() {
         if (getWorld().isRemote) {
-        	this.prevHandleRotation = this.handleRotation;
-        	this.handleRotation = this.handleRotation + (this.nextTelegraphState.renderRotation - this.handleRotation) * .5;
+            this.prevHandleRotation = this.handleRotation;
+            this.handleRotation = this.handleRotation + (this.nextTelegraphState.renderRotation - this.handleRotation) * .5;
             this.telegraphState = nextTelegraphState;
         } else {
             for (GraphObject object : this.getNode().getGraph().getObjects()) {
@@ -139,18 +136,18 @@ public class TileEntityShipTelegraph extends ImplTileEntityPilotable implements 
         return ControllerInputType.Telegraph;
     }
 
-	private enum ShipChadburnState {
+    private enum ShipChadburnState {
 
-		FULL_AHEAD(-120, 4), HALF_AHEAD(-80, 2), SLOW_AHEAD(-40, 1), STOP(0, 0), SLOW_ASTERN(40, -1), HALF_ASTERN(80, -2), FULL_ASTERN(120, -4);
+        FULL_AHEAD(-120, 4), HALF_AHEAD(-80, 2), SLOW_AHEAD(-40, 1), STOP(0, 0), SLOW_ASTERN(40, -1), HALF_ASTERN(80, -2), FULL_ASTERN(120, -4);
 
-		// The rotation in degrees in the clockwise direction relative to midnight.
-		public final double renderRotation;
-		public final double gearboxOutputRatio;
+        // The rotation in degrees in the clockwise direction relative to midnight.
+        public final double renderRotation;
+        public final double gearboxOutputRatio;
 
-		ShipChadburnState(double renderRotation, double gearboxOutputRatio) {
-			this.renderRotation = renderRotation;
+        ShipChadburnState(double renderRotation, double gearboxOutputRatio) {
+            this.renderRotation = renderRotation;
             this.gearboxOutputRatio = gearboxOutputRatio;
-		}
-	}
+        }
+    }
 
 }

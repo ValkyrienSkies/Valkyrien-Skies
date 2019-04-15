@@ -34,80 +34,79 @@ import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.capability.ICapabilityLastRelay;
 import valkyrienwarfare.addon.control.nodenetwork.IVWNode;
 import valkyrienwarfare.addon.control.nodenetwork.IVWNodeProvider;
-import valkyrienwarfare.addon.control.nodenetwork.VWNode_TileEntity;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
 public class ItemRelayWire extends Item {
 
-	public static double range = 8D;
+    public static double range = 8D;
 
-	public ItemRelayWire() {
-		this.setMaxStackSize(1);
-		this.setMaxDamage(80);
-	}
+    public ItemRelayWire() {
+        this.setMaxStackSize(1);
+        this.setMaxDamage(80);
+    }
 
-	@Override
-	public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation,
-			ITooltipFlag advanced) {
-		itemInformation.add(TextFormatting.ITALIC + "" + TextFormatting.RED + TextFormatting.ITALIC
-				+ "Unfinished until v_0.91_alpha");
-	}
+    @Override
+    public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation,
+                               ITooltipFlag advanced) {
+        itemInformation.add(TextFormatting.ITALIC + "" + TextFormatting.RED + TextFormatting.ITALIC
+                + "Unfinished until v_0.91_alpha");
+    }
 
-	@Override
-	public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand,
-			EnumFacing facing, float hitX, float hitY, float hitZ) {
-		IBlockState clickedState = worldIn.getBlockState(pos);
-		Block block = clickedState.getBlock();
-		TileEntity currentTile = worldIn.getTileEntity(pos);
-		ItemStack stack = player.getHeldItem(hand);
+    @Override
+    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand,
+                                      EnumFacing facing, float hitX, float hitY, float hitZ) {
+        IBlockState clickedState = worldIn.getBlockState(pos);
+        Block block = clickedState.getBlock();
+        TileEntity currentTile = worldIn.getTileEntity(pos);
+        ItemStack stack = player.getHeldItem(hand);
 
-		if (currentTile instanceof IVWNodeProvider && !worldIn.isRemote) {
-			ICapabilityLastRelay inst = stack.getCapability(ValkyrienWarfareControl.lastRelayCapability, null);
-			if (inst != null) {
-				if (!inst.hasLastRelay()) {
-					inst.setLastRelay(pos);
-					// Draw a wire in the player's hand after this
-				} else {
-					BlockPos lastPos = inst.getLastRelay();
-					double distanceSq = lastPos.distanceSq(pos);
-					TileEntity lastPosTile = worldIn.getTileEntity(lastPos);
-					// System.out.println(lastPos.toString());
+        if (currentTile instanceof IVWNodeProvider && !worldIn.isRemote) {
+            ICapabilityLastRelay inst = stack.getCapability(ValkyrienWarfareControl.lastRelayCapability, null);
+            if (inst != null) {
+                if (!inst.hasLastRelay()) {
+                    inst.setLastRelay(pos);
+                    // Draw a wire in the player's hand after this
+                } else {
+                    BlockPos lastPos = inst.getLastRelay();
+                    double distanceSq = lastPos.distanceSq(pos);
+                    TileEntity lastPosTile = worldIn.getTileEntity(lastPos);
+                    // System.out.println(lastPos.toString());
 
-					if (!lastPos.equals(pos) && lastPosTile != null && currentTile != null) {
-						if (distanceSq < range * range) {
-							IVWNode lastPosNode = ((IVWNodeProvider) lastPosTile).getNode();
-							IVWNode currentPosNode = ((IVWNodeProvider) currentTile).getNode();
-							if (lastPosNode != null && currentPosNode != null) {
-								if (currentPosNode.isLinkedToNode(lastPosNode)) {
-									player.sendMessage(new TextComponentString("These nodes are already linked!"));
-								} else if (currentPosNode.canLinkToOtherNode(lastPosNode)) {
-									currentPosNode.makeConnection(lastPosNode);
-									stack.damageItem(1, player);
-								} else {
-									// Tell the player what they did wrong
-									player.sendMessage(new TextComponentString(
-											"One of the connections is maxed out . Relay Nodes can make 4 connections, all other objects however can only make 1 connection."));
-								}
-								inst.setLastRelay(null);
-							}
-						} else {
-							player.sendMessage(new TextComponentString("Nodes are too far away, try better wire"));
-							inst.setLastRelay(null);
-						}
-					} else {
-						inst.setLastRelay(pos);
-					}
-				}
-			}
-		}
+                    if (!lastPos.equals(pos) && lastPosTile != null && currentTile != null) {
+                        if (distanceSq < range * range) {
+                            IVWNode lastPosNode = ((IVWNodeProvider) lastPosTile).getNode();
+                            IVWNode currentPosNode = ((IVWNodeProvider) currentTile).getNode();
+                            if (lastPosNode != null && currentPosNode != null) {
+                                if (currentPosNode.isLinkedToNode(lastPosNode)) {
+                                    player.sendMessage(new TextComponentString("These nodes are already linked!"));
+                                } else if (currentPosNode.canLinkToOtherNode(lastPosNode)) {
+                                    currentPosNode.makeConnection(lastPosNode);
+                                    stack.damageItem(1, player);
+                                } else {
+                                    // Tell the player what they did wrong
+                                    player.sendMessage(new TextComponentString(
+                                            "One of the connections is maxed out . Relay Nodes can make 4 connections, all other objects however can only make 1 connection."));
+                                }
+                                inst.setLastRelay(null);
+                            }
+                        } else {
+                            player.sendMessage(new TextComponentString("Nodes are too far away, try better wire"));
+                            inst.setLastRelay(null);
+                        }
+                    } else {
+                        inst.setLastRelay(pos);
+                    }
+                }
+            }
+        }
 
-		if (currentTile instanceof IVWNodeProvider) {
-			return EnumActionResult.SUCCESS;
-		}
+        if (currentTile instanceof IVWNodeProvider) {
+            return EnumActionResult.SUCCESS;
+        }
 
-		return EnumActionResult.FAIL;
-	}
+        return EnumActionResult.FAIL;
+    }
 
 }

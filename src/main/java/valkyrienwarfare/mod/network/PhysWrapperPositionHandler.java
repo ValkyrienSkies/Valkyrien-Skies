@@ -26,26 +26,26 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public class PhysWrapperPositionHandler implements IMessageHandler<PhysWrapperPositionMessage, IMessage> {
 
-	@Override
-	public IMessage onMessage(final PhysWrapperPositionMessage message, MessageContext ctx) {
-		if (Minecraft.getMinecraft().player == null) {
-			return null;
-		}
+    @Override
+    public IMessage onMessage(final PhysWrapperPositionMessage message, MessageContext ctx) {
+        if (Minecraft.getMinecraft().player == null) {
+            return null;
+        }
 
-		IThreadListener mainThread = Minecraft.getMinecraft();
-		mainThread.addScheduledTask(new Runnable() {
-			@Override
-			public void run() {
-				if (Minecraft.getMinecraft().world != null) {
-					Entity ent = Minecraft.getMinecraft().world.getEntityByID(message.getEntityID());
-					if (ent != null && ent instanceof PhysicsWrapperEntity) {
-						PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity) ent;
-						wrapper.getPhysicsObject().getShipTransformationManager().serverBuffer.pushMessage(message);
-					}
-				}
-			}
-		});
-		return null;
-	}
+        IThreadListener mainThread = Minecraft.getMinecraft();
+        mainThread.addScheduledTask(new Runnable() {
+            @Override
+            public void run() {
+                if (Minecraft.getMinecraft().world != null) {
+                    Entity ent = Minecraft.getMinecraft().world.getEntityByID(message.getEntityID());
+                    if (ent != null && ent instanceof PhysicsWrapperEntity) {
+                        PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity) ent;
+                        wrapper.getPhysicsObject().getShipTransformationManager().serverBuffer.pushMessage(message);
+                    }
+                }
+            }
+        });
+        return null;
+    }
 
 }

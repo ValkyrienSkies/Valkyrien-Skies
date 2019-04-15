@@ -14,12 +14,14 @@ public interface IRotationNodeWorld {
 
     /**
      * This can be run by any thread.
+     *
      * @param task
      */
     void enqueueTaskOntoWorld(Runnable task);
 
     /**
      * This can be run by any thread.
+     *
      * @param task
      * @param taskPos
      */
@@ -39,6 +41,7 @@ public interface IRotationNodeWorld {
 
     /**
      * This can only be called by the physics thread.
+     *
      * @param pos
      * @return The node at that pos if there is one, null otherwise.
      */
@@ -47,6 +50,7 @@ public interface IRotationNodeWorld {
 
     /**
      * This can only be called by the physics thread.
+     *
      * @param pos
      * @return The node at that pos if there is one, null otherwise.
      */
@@ -55,6 +59,7 @@ public interface IRotationNodeWorld {
 
     /**
      * This can only be called by the physics thread.
+     *
      * @param pos
      * @param node
      * @return The prevous node if there was one, null otherwise.
@@ -64,6 +69,7 @@ public interface IRotationNodeWorld {
 
     /**
      * This can only be called by the physics thread.
+     *
      * @param pos
      * @return The prevous node if there was one, null otherwise.
      */

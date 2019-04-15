@@ -97,10 +97,10 @@ public class Vector {
     }
 
     public Vector(Vec3i directionVec) {
-		this(directionVec.getX(), directionVec.getY(), directionVec.getZ());
-	}
+        this(directionVec.getX(), directionVec.getY(), directionVec.getZ());
+    }
 
-	public static Vector[] generateAxisAlignedNorms() {
+    public static Vector[] generateAxisAlignedNorms() {
         Vector[] norms = new Vector[]{new Vector(1.0D, 0.0D, 0.0D), new Vector(0.0D, 1.0D, 0.0D),
                 new Vector(0.0D, 0.0D, 1.0D)};
         return norms;
@@ -264,36 +264,37 @@ public class Vector {
         setValue(toCopy.X, toCopy.Y, toCopy.Z);
     }
 
-	/**
-	 * 
-	 * @param other
-	 * @return The angle between these two vectors in radians.
-	 */
-	public double angleBetween(Vector other) {
-		double dotProduct = this.dot(other);
-		double normalizedDotProduect = dotProduct / (this.length() * other.length());
-		return Math.acos(dotProduct);
-	}
-	
-	/**
-	 * Returns true if both vectors are parallel.
-	 * @param other
-	 * @return
-	 */
-	public boolean isParrallelTo(Vector other) {
-		return (this.dot(other) * this.dot(other)) / (this.lengthSq() * other.lengthSq()) > .99; 
-	}
-	
-	/**
-	 * Returns true if both vectors are perpendicular.
-	 * @param other
-	 * @return
-	 */
-	public boolean isPerpendicularTo(Vector other) {
-		return Math.abs(this.dot(other)) < PhysicsCalculations.EPSILON;
-	}
+    /**
+     * @param other
+     * @return The angle between these two vectors in radians.
+     */
+    public double angleBetween(Vector other) {
+        double dotProduct = this.dot(other);
+        double normalizedDotProduect = dotProduct / (this.length() * other.length());
+        return Math.acos(dotProduct);
+    }
 
-	public VectorImmutable toImmutable() {
-		return new VectorImmutable(this);
-	}
+    /**
+     * Returns true if both vectors are parallel.
+     *
+     * @param other
+     * @return
+     */
+    public boolean isParrallelTo(Vector other) {
+        return (this.dot(other) * this.dot(other)) / (this.lengthSq() * other.lengthSq()) > .99;
+    }
+
+    /**
+     * Returns true if both vectors are perpendicular.
+     *
+     * @param other
+     * @return
+     */
+    public boolean isPerpendicularTo(Vector other) {
+        return Math.abs(this.dot(other)) < PhysicsCalculations.EPSILON;
+    }
+
+    public VectorImmutable toImmutable() {
+        return new VectorImmutable(this);
+    }
 }

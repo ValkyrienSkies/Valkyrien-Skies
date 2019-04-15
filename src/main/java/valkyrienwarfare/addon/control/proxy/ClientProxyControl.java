@@ -35,13 +35,7 @@ import valkyrienwarfare.addon.control.block.multiblocks.TileEntityRudderAxlePart
 import valkyrienwarfare.addon.control.block.torque.TileEntityRotationTrainAxle;
 import valkyrienwarfare.addon.control.controlsystems.controlgui.ThrustModulatorGui;
 import valkyrienwarfare.addon.control.renderer.*;
-import valkyrienwarfare.addon.control.tileentity.TileEntityGearbox;
-import valkyrienwarfare.addon.control.tileentity.TileEntityLiftControl;
-import valkyrienwarfare.addon.control.tileentity.TileEntityNodeRelay;
-import valkyrienwarfare.addon.control.tileentity.TileEntityPropellerEngine;
-import valkyrienwarfare.addon.control.tileentity.TileEntityShipHelm;
-import valkyrienwarfare.addon.control.tileentity.TileEntityShipTelegraph;
-import valkyrienwarfare.addon.control.tileentity.TileEntityThrustModulator;
+import valkyrienwarfare.addon.control.tileentity.*;
 import valkyrienwarfare.mod.client.render.GibsAnimationRegistry;
 import valkyrienwarfare.mod.client.render.GibsModelRegistry;
 
@@ -72,15 +66,15 @@ public class ClientProxyControl extends CommonProxyControl {
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.dopedEthereum);
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.thrustRelay);
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.thrustModulator);
-        
+
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.gyroscopeStabilizer);
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.liftValve);
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.networkDisplay);
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.liftControl);
-        
+
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.etherCompressorPanel);
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.gyroscopeDampener);
-        
+
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.ethereumEnginePart);
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.gearbox);
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.rudderAxelPart);
@@ -165,7 +159,7 @@ public class ClientProxyControl extends CommonProxyControl {
     }
 
     private void registerControlGibs(String name) {
-    	GibsModelRegistry.registerGibsModel(name, new ResourceLocation("valkyrienwarfarecontrol", "block/controls/" + name + ".obj"));
+        GibsModelRegistry.registerGibsModel(name, new ResourceLocation("valkyrienwarfarecontrol", "block/controls/" + name + ".obj"));
     }
 
     private void registerRudderGibs(String name) {
@@ -174,7 +168,7 @@ public class ClientProxyControl extends CommonProxyControl {
 
     @Override
     public void init(FMLStateEvent event) {
-    	MinecraftForge.EVENT_BUS.register(new ControlEventsClient());
+        MinecraftForge.EVENT_BUS.register(new ControlEventsClient());
     }
 
     @Override

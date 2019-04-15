@@ -16,11 +16,6 @@
 
 package valkyrienwarfare.mod.client.render;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -35,7 +30,11 @@ import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraftforge.client.ForgeHooksClient;
+import org.lwjgl.opengl.GL11;
 import valkyrienwarfare.physics.management.PhysicsObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PhysRenderChunk {
 
@@ -116,11 +115,11 @@ public class PhysRenderChunk {
 
         // TODO: There's probably a faster way of doing this.
         public void updateRenderTileEntities() {
-        	ITileEntitiesToRenderProvider provider = ITileEntitiesToRenderProvider.class.cast(chunkToRender);
+            ITileEntitiesToRenderProvider provider = ITileEntitiesToRenderProvider.class.cast(chunkToRender);
             List<TileEntity> updatedRenderTiles = provider.getTileEntitiesToRender(yMin >> 4);
             if (updatedRenderTiles != null) {
-            	Minecraft.getMinecraft().renderGlobal.updateTileEntities(renderTiles, updatedRenderTiles);
-            	renderTiles = new ArrayList<TileEntity>(updatedRenderTiles);
+                Minecraft.getMinecraft().renderGlobal.updateTileEntities(renderTiles, updatedRenderTiles);
+                renderTiles = new ArrayList<TileEntity>(updatedRenderTiles);
             }
         }
 

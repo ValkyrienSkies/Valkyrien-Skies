@@ -213,7 +213,7 @@ public class TileEntityRudderAxlePart extends TileEntityMultiblockPartForce<Rudd
 
             Vector dragForceClockwise = new Vector(surfaceNormal, -dragMagnitude);
             // TODO: :(
-            dragForceClockwise.multiply(10000);
+            dragForceClockwise.multiply(100000);
             return dragForceClockwise;
         } else {
             return null;

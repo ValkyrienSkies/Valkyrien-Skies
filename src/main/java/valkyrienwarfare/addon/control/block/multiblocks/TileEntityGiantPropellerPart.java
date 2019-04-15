@@ -83,7 +83,7 @@ public class TileEntityGiantPropellerPart extends TileEntityMultiblockPartForce<
                 }
                 double angularVel = this.getRotationNode().get().getAngularVelocity();
                 // Temporary simple thrust function.
-                return 100D * angularVel * angularVel;
+                return 500D * angularVel * angularVel;
             }
         }
     }

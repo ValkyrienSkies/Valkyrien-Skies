@@ -26,7 +26,8 @@ import net.minecraft.world.World;
  */
 public class PhysicsChunkManager {
 
-    public static int xChunkStartingPos = -1870000;
+    // Flipped these because I changed the key to the ChunkClaimWorldData.
+    public static int xChunkStartingPos = 1870000;
     public static int zChunkStartingPos = -1870000;
     // public int chunkRadius = 3;
     public static int maxChunkRadius = 12;
@@ -51,10 +52,7 @@ public class PhysicsChunkManager {
 
     // The +50 is used to make sure chunks too close to ships dont interfere
     public static boolean isLikelyShipChunk(int chunkX, int chunkZ) {
-        if (chunkZ < zChunkStartingPos + maxChunkRadius + 50) {
-            return true;
-        }
-        return false;
+        return chunkZ < zChunkStartingPos + maxChunkRadius + 50;
     }
 
     /**

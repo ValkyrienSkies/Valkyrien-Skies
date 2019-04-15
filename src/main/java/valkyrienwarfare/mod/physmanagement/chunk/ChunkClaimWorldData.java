@@ -22,10 +22,11 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.MapStorage;
 import net.minecraft.world.storage.WorldSavedData;
+import valkyrienwarfare.ValkyrienWarfareMod;
 
 public class ChunkClaimWorldData extends WorldSavedData {
 
-    private static final String CHUNK_POS_DATA_KEY = "ChunkKeys";
+    private static final String CHUNK_POS_DATA_KEY = ValkyrienWarfareMod.MODID;
     private final TIntList avalibleChunkKeys;
     private int chunkKey;
 
@@ -36,16 +37,14 @@ public class ChunkClaimWorldData extends WorldSavedData {
     }
 
     public ChunkClaimWorldData() {
-        super(CHUNK_POS_DATA_KEY);
-        this.avalibleChunkKeys = new TIntArrayList();
-        this.markDirty();
+        this(CHUNK_POS_DATA_KEY);
     }
 
     public static ChunkClaimWorldData get(World world) {
         MapStorage storage = world.getPerWorldStorage();
         ChunkClaimWorldData data = (ChunkClaimWorldData) storage.getOrLoadData(ChunkClaimWorldData.class, CHUNK_POS_DATA_KEY);
         if (data == null) {
-            System.err.println("Had to create a null ChunkKeysWorldData; could this be corruption?");
+            System.err.println("Had to create a null ChunkKeysWorldData for dimension " + world.provider.getDimension() + "; could this be corruption?");
             data = new ChunkClaimWorldData();
             world.setData(CHUNK_POS_DATA_KEY, data);
         }

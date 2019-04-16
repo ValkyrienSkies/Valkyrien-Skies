@@ -74,7 +74,7 @@ public class ChunkClaimWorldData extends WorldSavedData {
     /**
      * @return the avalibleChunkKeys
      */
-    public TIntList getAvalibleChunkKeys() {
+    public TIntList getAvailableChunkKeys() {
         return avalibleChunkKeys;
     }
 

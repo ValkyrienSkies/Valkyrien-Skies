@@ -69,9 +69,9 @@ public class PhysicsChunkManager {
         int chunkZ = zChunkStartingPos;
 
         // This is broken; don't try recycling old chunks for now.
-        if (data.getAvalibleChunkKeys().size() > 0 && false) {
-            chunkX = data.getAvalibleChunkKeys().get(0);
-            data.getAvalibleChunkKeys().remove(0);
+        if (data.getAvailableChunkKeys().size() > 0 && false) {
+            chunkX = data.getAvailableChunkKeys().get(0);
+            data.getAvailableChunkKeys().remove(0);
         } else {
             nextChunkSetKey += chunkSetIncrement;
             data.setChunkKey(nextChunkSetKey);

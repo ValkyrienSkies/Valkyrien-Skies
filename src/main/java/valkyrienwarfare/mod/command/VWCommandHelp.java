@@ -40,18 +40,15 @@ public class VWCommandHelp extends CommandBase {
         COMMANDS.add("/physsettings");
         COMMANDS.add("/airshipsettings");
         COMMANDS.add("/airshipmappings");
-        COMMANDS.add("/vw tps");
     }
 
     @Override
     public String getName() {
-        // TODO Auto-generated method stub
         return "vw";
     }
 
     @Override
     public String getUsage(ICommandSender sender) {
-        // TODO Auto-generated method stub
         return "/vw       See entire list of commands for Valkyrien Warfare";
     }
 
@@ -63,18 +60,54 @@ public class VWCommandHelp extends CommandBase {
             for (String command : COMMANDS) {
                 sender.sendMessage(new TextComponentString(command));
             }
-          
-            sender.sendMessage(new TextComponentString("To see avaliable subcommands, type /command help"));
-        } else if (args.length == 1 && args[0].equals("tps")) {
+            sender.sendMessage(new TextComponentString("To see avaliable subcommands, type /vw help"));
+        } else if (args.length == 1 && args[0].toLowerCase().equals("tps")) {
             World world = sender.getEntityWorld();
-            VWThread worldPhysicsThread = ((WorldServerShipManager) IHasShipManager.class.cast(world).getManager()).getPhysicsThread();
+            VWThread worldPhysicsThread = ((WorldServerShipManager) ((IHasShipManager) world).getManager()).getPhysicsThread();
             if (worldPhysicsThread != null) {
                 long averagePhysTickTimeNano = worldPhysicsThread.getAveragePhysicsTickTimeNano();
                 double ticksPerSecond = 1000000000D / ((double) averagePhysTickTimeNano);
                 double ticksPerSecondTwoDecimals = Math.floor(ticksPerSecond * 100) / 100;
                 sender.sendMessage(new TextComponentString("Player world: " + ticksPerSecondTwoDecimals + " physics ticks per second"));
             }
+        } else if (args[0].toLowerCase().equals("listships")) {
+            ShipNameUUIDData shipData = ShipNameUUIDData.get(sender.getEntityWorld());
+            String delimitedListOfAllShipNames = String.join("\n", shipData.shipNameToLongMap.keySet());
+            sender.sendMessage(new TextComponentString(delimitedListOfAllShipNames));
+        } else if (args[0].toLowerCase().equals("getshiplocation")) {
+            if (args.length == 1) {
+                sender.sendMessage(new TextComponentString("Please include a ship name! /vw getshiplocation <shipname>"));
+                return;
+            }
+            World world = sender.getEntityWorld();
+            ShipNameUUIDData shipData = ShipNameUUIDData.get(world);
+            Long shipUUID = shipData.shipNameToLongMap.get(
+                    // Combine remaining arguments
+                    String.join("", Arrays.copyOfRange(args, 1, args.length))
+            );
+
+            if (shipUUID == null) {
+                sender.sendMessage(new TextComponentString("Invalid ship name!"));
+                return;
+            }
+
+            ShipUUIDToPosData shipPosData = ShipUUIDToPosData.getShipUUIDDataForWorld(sender.getEntityWorld());
+            ShipUUIDToPosData.ShipPositionData shipPos = shipPosData.getShipPositionData(shipUUID);
+            sender.sendMessage(new TextComponentString(
+                    String.format(
+                            "Coordinates: %.1f, %.1f, %.1f",
+                            shipPos.getPosX(),
+                            shipPos.getPosY(),
+                            shipPos.getPosZ()
+                    )
+            ));
+        } else if (args[0].toLowerCase().equals("help")) {
+            sender.sendMessage(new TextComponentString("VW sub commands:"));
+            sender.sendMessage(new TextComponentString("/vw tps"));
+            sender.sendMessage(new TextComponentString("/vw listships"));
+            sender.sendMessage(new TextComponentString("/vw getshiplocation"));
+        } else {
+            sender.sendMessage(new TextComponentString("Invalid command!"));
         }
     }
-
 }

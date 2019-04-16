@@ -56,8 +56,8 @@ public class AirshipMapCommand extends CommandBase {
 
             ShipNameUUIDData data = ShipNameUUIDData.get(world);
 
-            if (data.ShipNameToLongMap.containsKey(shipName)) {
-                long shipUUIDMostSig = data.ShipNameToLongMap.get(shipName);
+            if (data.shipNameToLongMap.containsKey(shipName)) {
+                long shipUUIDMostSig = data.shipNameToLongMap.get(shipName);
 
                 ShipUUIDToPosData posData = ShipUUIDToPosData.getShipUUIDDataForWorld(world);
 

@@ -56,16 +56,16 @@ public class ChunkClaimWorldData extends WorldSavedData {
         setChunkKey(nbt.getInteger("chunkKey"));
         int[] array = nbt.getIntArray("avalibleChunkKeys");
         for (int i : array) {
-            getAvalibleChunkKeys().add(i);
+            getAvailableChunkKeys().add(i);
         }
     }
 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
         nbt.setInteger("chunkKey", getChunkKey());
-        int[] array = new int[getAvalibleChunkKeys().size()];
-        for (int i = 0; i < getAvalibleChunkKeys().size(); i++) {
-            array[i] = getAvalibleChunkKeys().get(i);
+        int[] array = new int[getAvailableChunkKeys().size()];
+        for (int i = 0; i < getAvailableChunkKeys().size(); i++) {
+            array[i] = getAvailableChunkKeys().get(i);
         }
         nbt.setIntArray("avalibleChunkKeys", array);
         return nbt;
@@ -74,7 +74,7 @@ public class ChunkClaimWorldData extends WorldSavedData {
     /**
      * @return the avalibleChunkKeys
      */
-    public TIntList getAvalibleChunkKeys() {
+    public TIntList getAvailableChunkKeys() {
         return avalibleChunkKeys;
     }
 

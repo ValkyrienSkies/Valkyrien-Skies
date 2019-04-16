@@ -186,6 +186,7 @@ public class PhysicsObject implements ISubspaceProvider {
             if (isAdded) {
                 this.blockPositionsGameTick.add(this.getBlockPosToIntRelToShip(posAt));
             }
+
             int chunkX = (posAt.getX() >> 4) - claimedChunks[0][0].x;
             int chunkZ = (posAt.getZ() >> 4) - claimedChunks[0][0].z;
             getOwnedChunks().chunkOccupiedInLocal[chunkX][chunkZ] = true;
@@ -214,7 +215,7 @@ public class PhysicsObject implements ISubspaceProvider {
                             }
                         }
                     }
-                    ValkyrienWarfareMod.VW_CHUNK_MANAGER.getManagerForWorld(getWorldObj()).data.getAvalibleChunkKeys()
+                    ValkyrienWarfareMod.VW_CHUNK_MANAGER.getManagerForWorld(getWorldObj()).data.getAvailableChunkKeys()
                             .add(getOwnedChunks().getCenterX());
                 }
 
@@ -305,10 +306,10 @@ public class PhysicsObject implements ISubspaceProvider {
         setShipChunks(new VWChunkCache(getWorldObj(), claimedChunks));
 
         setRefrenceBlockPos(getRegionCenter());
-        setCenterCoord(new Vector(getRefrenceBlockPos().getX(), getRefrenceBlockPos().getY(), getRefrenceBlockPos().getZ()));
+        setCenterCoord(new Vector(getReferenceBlockPos().getX(), getReferenceBlockPos().getY(), getReferenceBlockPos().getZ()));
 
         createPhysicsCalculations();
-        BlockPos centerDifference = getRefrenceBlockPos().subtract(centerInWorld);
+        BlockPos centerDifference = getReferenceBlockPos().subtract(centerInWorld);
 
         toFollow.placeBlockAndTilesInWorld(getWorldObj(), centerDifference);
 
@@ -379,12 +380,12 @@ public class PhysicsObject implements ISubspaceProvider {
         int minChunkZ = claimedChunks[0][0].z;
 
         setRefrenceBlockPos(getRegionCenter());
-        setCenterCoord(new Vector(getRefrenceBlockPos().getX(), getRefrenceBlockPos().getY(), getRefrenceBlockPos().getZ()));
+        setCenterCoord(new Vector(getReferenceBlockPos().getX(), getReferenceBlockPos().getY(), getReferenceBlockPos().getZ()));
 
         createPhysicsCalculations();
 
         iter = detector.foundSet.iterator();
-        BlockPos centerDifference = getRefrenceBlockPos().subtract(centerInWorld);
+        BlockPos centerDifference = getReferenceBlockPos().subtract(centerInWorld);
         while (iter.hasNext()) {
             int i = iter.next();
             SpatialDetector.setPosWithRespectTo(i, centerInWorld, pos);
@@ -897,7 +898,7 @@ public class PhysicsObject implements ISubspaceProvider {
             }
         }
         loadClaimedChunks();
-        getShipRenderer().updateOffsetPos(getRefrenceBlockPos());
+        getShipRenderer().updateOffsetPos(getReferenceBlockPos());
 
         getShipTransformationManager().serverBuffer.pushMessage(new PhysWrapperPositionMessage(this));
 
@@ -1282,4 +1283,7 @@ public class PhysicsObject implements ISubspaceProvider {
         return blockPositionsGameTick;
     }
 
+    private BlockPos getReferenceBlockPos() {
+        return this.refrenceBlockPos;
+    }
 }

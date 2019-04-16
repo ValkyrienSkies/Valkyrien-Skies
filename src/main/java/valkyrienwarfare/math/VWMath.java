@@ -82,7 +82,7 @@ public class VWMath {
     /**
      * Prevents sliding when moving on small angles dictated by the tolerance set in the ValkyrianWarfareMod class
      *
-     * @param Normalized direction Vector
+     * @param normal direction Vector
      * @return true/false
      */
     public static boolean canStandOnNormal(Vector normal) {
@@ -93,7 +93,7 @@ public class VWMath {
     /**
      * Takes an arrayList of AABB's and merges them into larger AABB's
      *
-     * @param bbs
+     * @param toFuse
      * @return
      */
     public static void mergeAABBList(List<AxisAlignedBB> toFuse) {

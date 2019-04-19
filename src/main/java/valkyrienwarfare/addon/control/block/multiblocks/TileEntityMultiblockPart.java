@@ -1,16 +1,11 @@
 package valkyrienwarfare.addon.control.block.multiblocks;
 
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.WorldServer;
-import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.MultiblockRegistry;
 import valkyrienwarfare.addon.control.nodenetwork.BasicNodeTileEntity;
-import valkyrienwarfare.api.TransformType;
-import valkyrienwarfare.math.Vector;
-import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.fixes.VWNetwork;
 
 /**
  * Just a simple implementation of the interfaces.
@@ -83,7 +78,7 @@ public abstract class TileEntityMultiblockPart<E extends IMulitblockSchematic, F
         this.isAssembled = false;
         this.isMaster = false;
         this.multiblockSchematic = null;
-        this.sendUpdatePacketToAllNearby();
+        VWNetwork.sendTileToAllNearby(this);
         this.markDirty();
     }
 
@@ -93,7 +88,7 @@ public abstract class TileEntityMultiblockPart<E extends IMulitblockSchematic, F
         this.isMaster = relativePos.equals(BlockPos.ORIGIN);
         this.offsetPos = relativePos;
         this.multiblockSchematic = schematic;
-        this.sendUpdatePacketToAllNearby();
+        VWNetwork.sendTileToAllNearby(this);
         this.markDirty();
     }
 
@@ -125,21 +120,6 @@ public abstract class TileEntityMultiblockPart<E extends IMulitblockSchematic, F
         isMaster = compound.getBoolean("isMaster");
         offsetPos = new BlockPos(compound.getInteger("offsetPosX"), compound.getInteger("offsetPosY"), compound.getInteger("offsetPosZ"));
         this.multiblockSchematic = (E) MultiblockRegistry.getSchematicByID(compound.getString("multiblockSchematicID"));
-    }
-
-    protected final void sendUpdatePacketToAllNearby() {
-        SPacketUpdateTileEntity spacketupdatetileentity = getUpdatePacket();
-        WorldServer serverWorld = (WorldServer) world;
-        Vector pos = new Vector(getPos().getX(), getPos().getY(), getPos().getZ());
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(getWorld(), getPos());
-        if (wrapper != null) {
-            wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(pos,
-                    TransformType.SUBSPACE_TO_GLOBAL);
-            // RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform,
-            // pos);
-        }
-        serverWorld.mcServer.getPlayerList().sendToAllNearExcept(null, pos.X, pos.Y, pos.Z, 128D,
-                getWorld().provider.getDimension(), spacketupdatetileentity);
     }
 
 }

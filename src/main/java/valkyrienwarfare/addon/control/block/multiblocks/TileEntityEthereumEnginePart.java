@@ -12,6 +12,7 @@ import valkyrienwarfare.addon.control.block.torque.IRotationNodeProvider;
 import valkyrienwarfare.addon.control.block.torque.IRotationNodeWorld;
 import valkyrienwarfare.addon.control.block.torque.ImplRotationNode;
 import valkyrienwarfare.addon.control.block.torque.custom_torque_functions.EtherEngineTorqueFunction;
+import valkyrienwarfare.fixes.VWNetwork;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
 import java.util.Optional;
@@ -62,7 +63,7 @@ public class TileEntityEthereumEnginePart extends TileEntityMultiblockPart<Ether
                         currentKeyframe = currentKeyframe % 99;
                     }
                 }
-                sendUpdatePacketToAllNearby();
+                VWNetwork.sendTileToAllNearby(this);
             }
             this.markDirty();
         } else {

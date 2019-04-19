@@ -28,6 +28,7 @@ import valkyrienwarfare.addon.control.block.BlockShipTelegraph;
 import valkyrienwarfare.addon.control.nodenetwork.VWNode_TileEntity;
 import valkyrienwarfare.addon.control.piloting.ControllerInputType;
 import valkyrienwarfare.addon.control.piloting.PilotControlsMessage;
+import valkyrienwarfare.fixes.VWNetwork;
 
 import java.util.Optional;
 
@@ -108,7 +109,7 @@ public class TileEntityShipTelegraph extends ImplTileEntityPilotable implements 
                     }
                 }
             }
-            sendUpdatePacketToAllNearby();
+            VWNetwork.sendTileToAllNearby(this);
         }
     }
 

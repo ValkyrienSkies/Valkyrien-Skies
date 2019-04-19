@@ -7,13 +7,10 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.Tuple;
-import net.minecraft.world.WorldServer;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.nodenetwork.BasicNodeTileEntity;
-import valkyrienwarfare.api.TransformType;
-import valkyrienwarfare.math.Vector;
+import valkyrienwarfare.fixes.VWNetwork;
 import valkyrienwarfare.physics.management.PhysicsObject;
-import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 import java.util.Optional;
 
@@ -91,7 +88,7 @@ public class TileEntityBasicRotationNodeTile extends BasicNodeTileEntity impleme
                 this.firstUpdate = false;
             }
             rotation = this.rotationNode.getAngularRotationUnsynchronized();
-            sendUpdatePacketToAllNearby();
+            VWNetwork.sendTileToAllNearby(this);
             this.markDirty();
         }
     }
@@ -116,21 +113,6 @@ public class TileEntityBasicRotationNodeTile extends BasicNodeTileEntity impleme
     public void invalidate() {
         super.invalidate();
         rotationNode.queueNodeForDeletion();
-    }
-
-    private void sendUpdatePacketToAllNearby() {
-        SPacketUpdateTileEntity spacketupdatetileentity = getUpdatePacket();
-        WorldServer serverWorld = (WorldServer) world;
-        Vector pos = new Vector(getPos().getX(), getPos().getY(), getPos().getZ());
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(getWorld(), getPos());
-        if (wrapper != null) {
-            wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(pos,
-                    TransformType.SUBSPACE_TO_GLOBAL);
-            // RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform,
-            // pos);
-        }
-        serverWorld.mcServer.getPlayerList().sendToAllNearExcept(null, pos.X, pos.Y, pos.Z, 128D,
-                getWorld().provider.getDimension(), spacketupdatetileentity);
     }
 
 }

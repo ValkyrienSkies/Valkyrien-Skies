@@ -1,16 +1,15 @@
 package valkyrienwarfare.addon.control.block.multiblocks;
 
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.TransformType;
+import valkyrienwarfare.fixes.VWNetwork;
 import valkyrienwarfare.math.RotationMatrices;
 import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.mod.coordinates.VectorImmutable;
@@ -18,8 +17,12 @@ import valkyrienwarfare.physics.collision.polygons.Polygon;
 import valkyrienwarfare.physics.management.PhysicsObject;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 public class TileEntityRudderAxlePart extends TileEntityMultiblockPartForce<RudderAxleMultiblockSchematic, TileEntityRudderAxlePart> {
 
@@ -293,10 +296,7 @@ public class TileEntityRudderAxlePart extends TileEntityMultiblockPartForce<Rudd
 
     public void setRudderAngle(double forcedValue) {
         this.rudderAngle = forcedValue;
-        SPacketUpdateTileEntity spacketupdatetileentity = getUpdatePacket();
-        WorldServer serverWorld = (WorldServer) world;
-        serverWorld.mcServer.getPlayerList().sendToAllNearExcept(null, this.getPos().getX(), getPos().getY(),
-                getPos().getZ(), 128D, getWorld().provider.getDimension(), spacketupdatetileentity);
+        VWNetwork.sendTileToAllNearby(this);
     }
 
     public double getRenderRudderAngle(double partialTicks) {

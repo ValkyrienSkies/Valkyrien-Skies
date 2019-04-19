@@ -20,9 +20,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import valkyrienwarfare.ValkyrienWarfareMod;
@@ -130,21 +128,6 @@ public abstract class ImplTileEntityPilotable extends BasicNodeTileEntity implem
      * @return
      */
     abstract void processControlMessage(PilotControlsMessage message, EntityPlayerMP sender);
-
-    final void sendUpdatePacketToAllNearby() {
-        SPacketUpdateTileEntity spacketupdatetileentity = getUpdatePacket();
-        WorldServer serverWorld = (WorldServer) world;
-        Vector pos = new Vector(getPos().getX(), getPos().getY(), getPos().getZ());
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(getWorld(), getPos());
-        if (wrapper != null) {
-            wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(pos,
-                    TransformType.SUBSPACE_TO_GLOBAL);
-            // RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform,
-            // pos);
-        }
-        serverWorld.mcServer.getPlayerList().sendToAllNearExcept(null, pos.X, pos.Y, pos.Z, 128D,
-                getWorld().provider.getDimension(), spacketupdatetileentity);
-    }
 
     /**
      * @param player

@@ -10,6 +10,7 @@ import valkyrienwarfare.addon.control.block.torque.IRotationNode;
 import valkyrienwarfare.addon.control.block.torque.IRotationNodeProvider;
 import valkyrienwarfare.addon.control.block.torque.IRotationNodeWorld;
 import valkyrienwarfare.addon.control.block.torque.ImplRotationNode;
+import valkyrienwarfare.fixes.VWNetwork;
 import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.mod.coordinates.VectorImmutable;
 import valkyrienwarfare.physics.management.PhysicsObject;
@@ -111,7 +112,7 @@ public class TileEntityGiantPropellerPart extends TileEntityMultiblockPartForce<
                     // May need to convert to degrees from radians.
                     this.propellerAngle = Math.toDegrees(rotationNode.getAngularRotationUnsynchronized());
                 }
-                this.sendUpdatePacketToAllNearby();
+                VWNetwork.sendTileToAllNearby(this);
             }
         } else {
             this.prevPropellerAngle = this.propellerAngle;

@@ -39,6 +39,7 @@ import valkyrienwarfare.addon.control.nodenetwork.VWNode_TileEntity;
 import valkyrienwarfare.addon.control.piloting.ControllerInputType;
 import valkyrienwarfare.addon.control.piloting.PilotControlsMessage;
 import valkyrienwarfare.api.TransformType;
+import valkyrienwarfare.fixes.VWNetwork;
 import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.mod.coordinates.VectorImmutable;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
@@ -123,7 +124,7 @@ public class TileEntityShipHelm extends ImplTileEntityPilotable implements ITick
 
             }
 
-            sendUpdatePacketToAllNearby();
+            VWNetwork.sendTileToAllNearby(this);
         }
     }
 

@@ -17,6 +17,7 @@ import valkyrienwarfare.addon.control.block.multiblocks.TileEntityEthereumCompre
 import valkyrienwarfare.addon.control.nodenetwork.VWNode_TileEntity;
 import valkyrienwarfare.addon.control.piloting.ControllerInputType;
 import valkyrienwarfare.addon.control.piloting.PilotControlsMessage;
+import valkyrienwarfare.fixes.VWNetwork;
 import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
@@ -112,7 +113,7 @@ public class TileEntityLiftControl extends ImplTileEntityPilotable {
                 }
             }
 
-            sendUpdatePacketToAllNearby();
+            VWNetwork.sendTileToAllNearby(this);
         }
     }
 

@@ -19,16 +19,18 @@ package valkyrienwarfare.addon.control.nodenetwork;
 import gigaherz.graph.api.Graph;
 import gigaherz.graph.api.GraphObject;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.Packet;
-import net.minecraft.server.management.PlayerList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
+import valkyrienwarfare.fixes.VWNetwork;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class VWNode_TileEntity implements IVWNode {
 
@@ -188,17 +190,9 @@ public class VWNode_TileEntity implements IVWNode {
     @Override
     public void sendNodeUpdates() {
         if (!this.getNodeWorld().isRemote) {
-            Packet toSend = parentTile.getUpdatePacket();
-
-            double xPos = parentTile.getPos().getX();
-            double yPos = parentTile.getPos().getY();
-            double zPos = parentTile.getPos().getZ();
-
-            WorldServer serverWorld = (WorldServer) this.getNodeWorld();
-            PlayerList list = serverWorld.mcServer.getPlayerList();
             // System.out.println("help");
             if (!parentTile.isInvalid()) {
-                list.sendToAllNearExcept(null, xPos, yPos, zPos, 128D, serverWorld.provider.getDimension(), toSend);
+                VWNetwork.sendTileToAllNearby(this.parentTile);
             }
         }
     }

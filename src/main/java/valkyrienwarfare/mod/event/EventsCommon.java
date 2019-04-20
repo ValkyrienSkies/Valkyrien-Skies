@@ -16,7 +16,6 @@
 
 package valkyrienwarfare.mod.event;
 
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityArmorStand;
 import net.minecraft.entity.item.EntityBoat;
@@ -25,7 +24,6 @@ import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayer.SleepResult;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemNameTag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagIntArray;
@@ -33,17 +31,15 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.event.world.BlockEvent;
@@ -108,38 +104,27 @@ public class EventsCommon {
         }
     }
 
-    @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
-    public void onLeftClickBlock(LeftClickBlock event) {
-        // Take that Chisels and Bits!
-//    	event.setCanceled(false);
-//    	event.setUseBlock(Result.ALLOW);
-//    	event.setUseItem(Result.ALLOW);
-    }
-
-    // TODO: Fix conflicts with EventListener.onEntityAdded()
-    // MAYBE REMOVE DUE TO CONFLICTS
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onEntityJoinWorldEvent(EntityJoinWorldEvent event) {
         Entity entity = event.getEntity();
         World world = entity.world;
         BlockPos posAt = new BlockPos(entity);
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(world, posAt);
-        if (!(entity instanceof EntityFallingBlock) && wrapper != null && wrapper.getPhysicsObject().getShipTransformationManager() != null) {
+        if (!event.getWorld().isRemote && !(entity instanceof EntityFallingBlock) && wrapper != null && wrapper.getPhysicsObject()
+                .getShipTransformationManager() != null) {
             if (entity instanceof EntityMountingWeaponBase || entity instanceof EntityArmorStand
                     || entity instanceof EntityPig || entity instanceof EntityBoat) {
-                // entity.startRiding(wrapper);
                 wrapper.getPhysicsObject().fixEntity(entity, new Vector(entity));
                 wrapper.getPhysicsObject().queueEntityForMounting(entity);
             }
             RotationMatrices.applyTransform(wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform(), entity,
                     TransformType.SUBSPACE_TO_GLOBAL);
+            event.setCanceled(true);
+            event.getWorld()
+                    .spawnEntity(entity);
         }
     }
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onEntityInteractEvent(EntityInteract event) {
-        event.setResult(Result.ALLOW);
-    }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onTickEvent(TickEvent event) {
@@ -150,7 +135,6 @@ public class EventsCommon {
                 if (event.phase == Phase.START) {
                     PhysicsTickHandler.onWorldTickStart(worldFor);
                 } else if (event.phase == Phase.END) {
-                    // TODO: This is a big source of tick lag.
                     PhysicsTickHandler.onWorldTickEnd(worldFor);
                 }
             }
@@ -224,11 +208,6 @@ public class EventsCommon {
         }
     }
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onPlayerOpenContainerEvent(PlayerContainerEvent event) {
-        event.setResult(Result.ALLOW);
-    }
-
     // Notice that this event fires for both Entities and TileEntities, so an
     // instanceof is needed to stop weird bugs
     @SubscribeEvent
@@ -274,19 +253,16 @@ public class EventsCommon {
             EntityPlayerMP player = (EntityPlayerMP) event.player;
             lastPositions.put(player, new Double[]{0D, 256D, 0D});
 
-            if (player.getName().equals("Drake_Eldridge") || player.getDisplayName().equals("Drake_Eldridge")) {
+            if (player.getName()
+                    .equals("Drake_Eldridge") || player.getName()
+                    .equals("thebest108") || player.getName()
+                    .equals("DaPorkChop")) {
                 WorldServer server = (WorldServer) event.player.world;
 
-                if (Math.random() < .01D) {
-                    player.setPosition(player.posX, 696969, player.posZ);
-                    server.mcServer.getPlayerList().sendMessage(new TextComponentString("Cheers m8!"));
-                }
-                server.mcServer.getPlayerList().sendMessage(new TextComponentString(
-                        "DEL is a very special boy, and this annoying greeting is made just for him"));
-
-                for (int i = 0; i < 3; i++) {
+                // 20% chance of getting memed on!
+                if (Math.random() < .2) {
                     server.mcServer.getPlayerList()
-                            .sendMessage(new TextComponentString("VW Version Alpha Beta (Outdated)"));
+                            .sendMessage(new TextComponentString(TextFormatting.BLUE + "An absolute " + TextFormatting.RED + TextFormatting.ITALIC + "legend" + TextFormatting.BLUE + " has arrived! Welcome " + TextFormatting.GOLD + TextFormatting.BOLD + player.getName()));
                 }
             }
         }
@@ -299,91 +275,13 @@ public class EventsCommon {
         }
     }
 
-    @SubscribeEvent
-    public void onRightClick(PlayerInteractEvent.RightClickBlock event) {
-        if (!event.getWorld().isRemote) {
-            PhysicsWrapperEntity physObj = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(event.getWorld(),
-                    event.getPos());
-            if (physObj != null) {
-                if (ValkyrienWarfareMod.runAirshipPermissions && !(physObj.getPhysicsObject().getCreator()
-                        .equals(event.getEntityPlayer().entityUniqueID.toString())
-                        || physObj.getPhysicsObject().getAllowedUsers().contains(event.getEntityPlayer().entityUniqueID.toString()))) {
-                    event.getEntityPlayer()
-                            .sendMessage(new TextComponentString("You need to be added to the airship to do that!"
-                                    + (physObj.getPhysicsObject().getCreator() == null || physObj.getPhysicsObject().getCreator().trim().isEmpty()
-                                    ? " Try using \"/airshipSettings claim\"!"
-                                    : "")));
-                    event.setCanceled(true);
-                    return;
-                } else {
-                    event.setResult(Result.ALLOW);
-                    event.setCanceled(false);
-                }
-            }
-        }
-    }
-
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onBlockBreakFirst(BlockEvent.BreakEvent event) {
-        event.setResult(Result.ALLOW);
-    }
-
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public void onBlockBreak(BlockEvent.BreakEvent event) {
-        if (!event.getWorld().isRemote) {
-            PhysicsWrapperEntity physObj = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(event.getWorld(),
-                    event.getPos());
-            if (physObj != null) {
-                if (ValkyrienWarfareMod.runAirshipPermissions && !(physObj.getPhysicsObject().getCreator()
-                        .equals(event.getPlayer().entityUniqueID.toString())
-                        || physObj.getPhysicsObject().getAllowedUsers().contains(event.getPlayer().entityUniqueID.toString()))) {
-                    event.getPlayer()
-                            .sendMessage(new TextComponentString("You need to be added to the airship to do that!"
-                                    + (physObj.getPhysicsObject().getCreator() == null || physObj.getPhysicsObject().getCreator().trim().isEmpty()
-                                    ? " Try using \"/airshipSettings claim\"!"
-                                    : "")));
-                    event.setCanceled(true);
-                    return;
-                }
-            }
+    public void onBlockBreakFirst(BlockEvent event) {
+        BlockPos pos = event.getPos();
+        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(event.getWorld(), pos);
+        if (wrapper != null) {
+            event.setResult(Result.ALLOW);
         }
-        onBlockChange(event.getWorld(), event.getPos(), event.getState(), Blocks.AIR.getDefaultState());
-    }
-
-    private void onBlockChange(World world, BlockPos pos, IBlockState oldState, IBlockState newState) {
-        // System.out.println(oldState.getBlock().getLocalizedName());
-        // System.out.println(newState.getBlock().getLocalizedName());
-        PhysicsWrapperEntity physObj = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(world, pos);
-        if (physObj != null) {
-            // physObj.wrapping.onSetBlockState(oldState, newState, pos);
-            // System.out.println("Sucess!");
-        }
-    }
-
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public void onPlaceEvent(BlockEvent.PlaceEvent event) {
-        PhysicsWrapperEntity physObj = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(event.getWorld(),
-                event.getPos());
-        if (physObj != null) {
-            if (ValkyrienWarfareMod.runAirshipPermissions
-                    && !(physObj.getPhysicsObject().getCreator().equals(event.getPlayer().entityUniqueID.toString())
-                    || physObj.getPhysicsObject().getAllowedUsers().contains(event.getPlayer().entityUniqueID.toString()))) {
-                event.getPlayer()
-                        .sendMessage(new TextComponentString("You need to be added to the airship to do that!"
-                                + (physObj.getPhysicsObject().getCreator() == null || physObj.getPhysicsObject().getCreator().trim().isEmpty()
-                                ? " Try using \"/airshipSettings claim\"!"
-                                : "")));
-                event.setCanceled(true);
-                return;
-            }
-        }
-        onBlockChange(event.getWorld(), event.getPos(), event.getBlockSnapshot().getReplacedBlock(),
-                event.getBlockSnapshot().getCurrentBlock());
-    }
-
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public void onBlockEvent(BlockEvent event) {
-        // System.out.println(event.getClass());
     }
 
 }

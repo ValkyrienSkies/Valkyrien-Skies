@@ -18,23 +18,16 @@ package valkyrienwarfare.mod.physmanagement.interaction;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityArmorStand;
-import net.minecraft.entity.item.EntityBoat;
-import net.minecraft.entity.item.EntityFallingBlock;
-import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.play.server.SPacketBlockBreakAnim;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IWorldEventListener;
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.addon.combat.entity.EntityMountingWeaponBase;
 import valkyrienwarfare.api.TransformType;
-import valkyrienwarfare.math.RotationMatrices;
 import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
@@ -84,43 +77,8 @@ public class VWWorldEventListener implements IWorldEventListener {
     // TODO: Fix conflicts with EventsCommon.onEntityJoinWorldEvent()
     @Override
     public void onEntityAdded(Entity entityIn) {
-        int oldChunkX = MathHelper.floor(entityIn.posX / 16.0D);
-        int oldChunkZ = MathHelper.floor(entityIn.posZ / 16.0D);
-
-        BlockPos posAt = new BlockPos(entityIn);
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(worldObj, posAt);
-        if (!(entityIn instanceof EntityFallingBlock) && wrapper != null
-                && wrapper.getPhysicsObject().getShipTransformationManager() != null) {
-            if (entityIn instanceof EntityMountingWeaponBase || entityIn instanceof EntityArmorStand
-                    || entityIn instanceof EntityPig || entityIn instanceof EntityBoat) {
-                // entity.startRiding(wrapper);
-                wrapper.getPhysicsObject().fixEntity(entityIn, new Vector(entityIn));
-                wrapper.getPhysicsObject().queueEntityForMounting(entityIn);
-            }
-            RotationMatrices.applyTransform(wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform(),
-                    entityIn, TransformType.SUBSPACE_TO_GLOBAL);
-
-            int newChunkX = MathHelper.floor(entityIn.posX / 16.0D);
-            int newChunkZ = MathHelper.floor(entityIn.posZ / 16.0D);
-
-            worldObj.getChunkFromChunkCoords(oldChunkX, oldChunkZ).removeEntity(entityIn);
-            worldObj.getChunkFromChunkCoords(newChunkX, newChunkZ).addEntity(entityIn);
-
-        }
         if (entityIn instanceof PhysicsWrapperEntity) {
             ValkyrienWarfareMod.VW_PHYSICS_MANAGER.onShipLoad((PhysicsWrapperEntity) entityIn);
-        }
-
-        if (!(entityIn instanceof EntityFallingBlock) && wrapper != null
-                && wrapper.getPhysicsObject().getShipTransformationManager() != null) {
-            if (entityIn instanceof EntityMountingWeaponBase || entityIn instanceof EntityArmorStand
-                    || entityIn instanceof EntityPig || entityIn instanceof EntityBoat) {
-                // entity.startRiding(wrapper);
-                wrapper.getPhysicsObject().fixEntity(entityIn, new Vector(entityIn));
-                wrapper.getPhysicsObject().queueEntityForMounting(entityIn);
-            }
-            RotationMatrices.applyTransform(wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform(),
-                    entityIn, TransformType.SUBSPACE_TO_GLOBAL);
         }
     }
 

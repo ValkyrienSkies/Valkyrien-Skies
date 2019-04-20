@@ -40,18 +40,20 @@ public class ValkyrienWarfareWorldGen implements IWorldGenerator {
 
     @Override
     public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) {
-        if (this.genEtheriumOre == null) {
-            this.genEtheriumOre = new WorldGenMinable(ValkyrienWarfareWorld.INSTANCE.ethereumOre.getDefaultState(), 8);
-        }
-        switch (world.provider.getDimension()) {
-            case 0: //Overworld
-                this.runEtheriumGenerator(this.genEtheriumOre, world, random, chunkX, chunkZ, 2, 0, 25);
-                // runDungeonGenerator(world, random, chunkX, chunkZ, 1);
-                break;
-            case -1: //Nether
-                break;
-            case 1: //End
-                break;
+        if (ValkyrienWarfareWorld.OREGEN_ENABLED) {
+            if (this.genEtheriumOre == null) {
+                this.genEtheriumOre = new WorldGenMinable(ValkyrienWarfareWorld.INSTANCE.ethereumOre.getDefaultState(), 8);
+            }
+            switch (world.provider.getDimension()) {
+                case 0: //Overworld
+                    this.runEtheriumGenerator(this.genEtheriumOre, world, random, chunkX, chunkZ, 2, 0, 25);
+                    // runDungeonGenerator(world, random, chunkX, chunkZ, 1);
+                    break;
+                case -1: //Nether
+                    break;
+                case 1: //End
+                    break;
+            }
         }
     }
 

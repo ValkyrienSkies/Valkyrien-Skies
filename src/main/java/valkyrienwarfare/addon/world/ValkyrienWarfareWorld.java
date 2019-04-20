@@ -54,6 +54,7 @@ public class ValkyrienWarfareWorld extends Module {
     public Block skydungeon_controller;
     public Block quartz_fence;
     public Item ethereumCrystal;
+    public static boolean OREGEN_ENABLED = true;
 
     public ValkyrienWarfareWorld() {
         super("VW_World", new CommonProxyWorld(), "valkyrienwarfareworld");
@@ -113,6 +114,7 @@ public class ValkyrienWarfareWorld extends Module {
 
     @Override
     public void applyConfig(Configuration config) {
-
+        OREGEN_ENABLED = config.get("world.generation", "OREGEN_ENABLED", true, "determines if vw ores generate in the world")
+                .getBoolean();
     }
 }

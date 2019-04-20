@@ -12,11 +12,19 @@ import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.client.event.ModelBakeEvent;
+import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Used to register and get IBakedModels for 'gibs', which are basically any
@@ -156,7 +164,8 @@ public class GibsModelRegistry {
     public static void onResourceManagerReload(IResourceManager resourceManager) {
         // When Minecraft resources are reloaded we must delete the render caches.
         // Otherwise we'll start rendering pink garbage.
-        System.out.println("Valkyrien Warfare got a resource reload event!");
+        System.out.println("Valkyrien Warfare got a resource reload event! " + NAMES_TO_RESOURCE_LOCATION.size());
+        System.out.println(NAMES_TO_RESOURCE_LOCATION.toString());
         NAMES_TO_BAKED_MODELS.clear();
         NAMES_TO_BUFFER_STATES.clear();
         NAMES_AND_BRIGHTNESS_TO_VERTEX_BUFFER.clear();
@@ -183,4 +192,26 @@ public class GibsModelRegistry {
         return OPTIFINE_SHADERS_ENABLED.get();
     }
 
+    public static void registerTextures(TextureStitchEvent event) {
+        System.out.println("Valkyrien Warfare got a register textures pre event! " + NAMES_TO_RESOURCE_LOCATION.size());
+
+        for (ResourceLocation location : NAMES_TO_RESOURCE_LOCATION.values()) {
+            try {
+                // Get the model so that registry will remember to register its textures.
+                IModel model = ModelLoaderRegistry.getModel(location);
+                Collection<ResourceLocation> resourceLocations = model.getTextures();
+                for (ResourceLocation texture : resourceLocations) {
+                    // Register the found texture into the texture map.
+                    event.getMap()
+                            .registerSprite(texture);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void onModelBakeEvent(ModelBakeEvent event) {
+        System.out.println("Valkyrien Warfare got a model bake event! " + NAMES_TO_RESOURCE_LOCATION.size());
+    }
 }

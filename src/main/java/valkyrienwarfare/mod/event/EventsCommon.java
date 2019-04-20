@@ -256,7 +256,7 @@ public class EventsCommon {
             if (player.getName()
                     .equals("Drake_Eldridge") || player.getName()
                     .equals("thebest108") || player.getName()
-                    .equals("DaPorkChop")) {
+                    .equals("DaPorkChop_")) {
                 WorldServer server = (WorldServer) event.player.world;
 
                 // 20% chance of getting memed on!

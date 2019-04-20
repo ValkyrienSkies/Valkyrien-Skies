@@ -19,7 +19,7 @@ public class ControlEventsClient {
         EntityPlayer player = Minecraft.getMinecraft().player;
         FontRenderer fontRenderer = minecraft.fontRenderer;
         if (fontRenderer != null && player != null && event.getType() == net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType.TEXT) {
-            IShipPilot playerPilot = IShipPilot.class.cast(player);
+            IShipPilot playerPilot = (IShipPilot) player;
             if (playerPilot.isPiloting()) {
                 BlockPos tilePilotedPos = playerPilot.getPosBeingControlled();
                 TileEntity pilotedTile = player.getEntityWorld().getTileEntity(tilePilotedPos);
@@ -31,4 +31,5 @@ public class ControlEventsClient {
             }
         }
     }
+
 }

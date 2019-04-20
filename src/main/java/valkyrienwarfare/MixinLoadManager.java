@@ -40,9 +40,7 @@ public class MixinLoadManager implements IMixinConfigPlugin {
         isSpongeEnabled = isSpongeEnabledSlow();
         if (isSpongeEnabled()) {
             FMLLog.bigWarning(
-                    "SpongeForge has been detected. This will cause problems with Valkyrien Warfare, no doubt.");
-        } else {
-            FMLLog.info("Sponge ain't here! Everything is good and also nice");
+                    "Valkyrien Warfare has detected SpongeForge!");
         }
     }
 

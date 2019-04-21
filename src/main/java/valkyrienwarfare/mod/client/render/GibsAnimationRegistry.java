@@ -48,14 +48,8 @@ public class GibsAnimationRegistry {
             }
 
             final String modelResourceFolderFinal = modelResourceFolder;
-            ANIMATION_MAP.put(name, animationBuilder.build(new IModelRenderer() {
-                String modelPath = modelResourceFolderFinal;
-
-                @Override
-                public void renderModel(String modelName, int renderBrightness) {
-                    GibsModelRegistry.renderGibsModel(modelResourceFolderFinal + modelName, renderBrightness);
-                }
-            }));
+            ANIMATION_MAP.put(name, animationBuilder.build((modelName, renderBrightness) ->
+                    GibsModelRegistry.renderGibsModel(modelResourceFolderFinal + modelName, renderBrightness)));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -65,4 +59,7 @@ public class GibsAnimationRegistry {
         return ANIMATION_MAP.get(name);
     }
 
+    public static void onResourceReload() {
+
+    }
 }

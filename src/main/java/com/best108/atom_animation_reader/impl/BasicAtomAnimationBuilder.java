@@ -8,7 +8,12 @@ import com.best108.atom_animation_reader.parsers.AtomParserElement;
 import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.mod.coordinates.VectorImmutable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 public class BasicAtomAnimationBuilder implements IAtomAnimationBuilder {
@@ -40,7 +45,7 @@ public class BasicAtomAnimationBuilder implements IAtomAnimationBuilder {
     @Override
     public IAtomAnimation build(IModelRenderer modelRenderer) {
         // Generate the compiled IAtomAnimation
-        List<BasicDagNodeRenderer> dagNodeRenderers = new ArrayList<BasicDagNodeRenderer>();
+        List<BasicDagNodeRenderer> dagNodeRenderers = new ArrayList<>();
         Map<String, VectorImmutable> modelNamesToPivots = new HashMap<String, VectorImmutable>();
         for (DagNode dagNode : renderNodes) {
             // Is this node defining a pivot, or an animation?
@@ -80,11 +85,67 @@ public class BasicAtomAnimationBuilder implements IAtomAnimationBuilder {
             }
         }
 
+        boolean hasChanged = true;
+        while (hasChanged) {
+            hasChanged = false;
+            for (BasicDagNodeRenderer dagNodeRenderer : dagNodeRenderers) {
+                String modelName = dagNodeRenderer.getModelName();
+                String[] split = modelName.split("_");
+
+                if (split.length > 0) {
+                    // Then we could possibly be a group
+                    if (modelName.contains("defgroup")) {
+                        int index = -1;
+                        for (int i = 0; i < split.length; i++) {
+                            if (split[i].contains("defgroup")) {
+                                index = i;
+                                break;
+                            }
+                        }
+                        if (index == -1) {
+                            throw new IllegalStateException("This is a total mystery!\nOffending model name: " + modelName + "\n");
+                        }
+                        // We are a group; let us gather the children.
+                        String groupName = split[index].replaceAll("defgroup", "");
+                        // Check all of the dagNodeRenderers for any children
+                        List<BasicDagNodeRenderer> children = new ArrayList<>();
+
+                        for (BasicDagNodeRenderer potentialChild : dagNodeRenderers) {
+                            // Check if the possible child belongs to a group
+                            if (potentialChild.getModelName()
+                                    .contains("_grp")) {
+                                String[] possibleChildNameSplit = potentialChild.getModelName()
+                                        .split("_");
+                                // Check if the suffix is in a group
+                                if (possibleChildNameSplit[possibleChildNameSplit.length - 1].contains("grp")) {
+                                    String possibleChildGroup = possibleChildNameSplit[possibleChildNameSplit.length - 1].replaceAll("grp", "");
+                                    // Check if this potential child is in this group
+                                    if (possibleChildGroup.equals(groupName)) {
+                                        children.add(potentialChild);
+                                    }
+                                }
+                            }
+                        }
+                        hasChanged = !children.isEmpty();
+                        if (hasChanged) {
+                            List<BasicDagNodeRenderer> newDagRenderers = new ArrayList<>(dagNodeRenderers);
+                            newDagRenderers.removeAll(children);
+                            newDagRenderers.remove(dagNodeRenderer);
+                            newDagRenderers.add(new GroupedDagNodeRenderer(dagNodeRenderer.getModelName(), dagNodeRenderer.transformations, children, dagNodeRenderer.pivot));
+
+                            dagNodeRenderers = newDagRenderers;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
         return new BasicAtomAnimation(dagNodeRenderers, minKeyFrame, maxKeyFrame);
     }
 
     public Set<String> getModelObjsUsed() {
-        Set<String> toReturn = new HashSet<String>();
+        Set<String> toReturn = new HashSet<>();
         for (DagNode dagNode : renderNodes) {
             if (!dagNode.modelName.endsWith("_pivot")) {
                 toReturn.add(dagNode.modelName);

@@ -167,7 +167,12 @@ public class EntityDraggable {
 
             Vector velocityProper = new Vector(draggable.getVelocityAddedToPlayer());
             AxisAlignedBB originalBoundingBox = entity.getEntityBoundingBox();
-            draggable.setVelocityAddedToPlayer(getVelocityProper(velocityProper, entity));
+            if (velocityProper.lengthSq() < 1000000) {
+                draggable.setVelocityAddedToPlayer(getVelocityProper(velocityProper, entity));
+            } else {
+                System.err.println(entity.getName() + " tried moving way too fast!");
+            }
+
 
             entity.setEntityBoundingBox(originalBoundingBox);
 

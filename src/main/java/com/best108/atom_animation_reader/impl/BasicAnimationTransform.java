@@ -1,7 +1,6 @@
 package com.best108.atom_animation_reader.impl;
 
 import net.minecraft.client.renderer.GlStateManager;
-import org.lwjgl.opengl.GL11;
 import valkyrienwarfare.math.Vector;
 
 import java.util.List;
@@ -40,13 +39,13 @@ public class BasicAnimationTransform {
                 break;
             // Unfinished operations; will most likely break any pivot points
             case "scaleX":
-                GL11.glScaled(value, 1, 1);
+                GlStateManager.scale(value, 1, 1);
                 break;
             case "scaleY":
-                GL11.glScaled(1, value, 1);
+                GlStateManager.scale(1, value, 1);
                 break;
             case "scaleZ":
-                GL11.glScaled(1, 1, value);
+                GlStateManager.scale(1, 1, value);
                 break;
         }
     }

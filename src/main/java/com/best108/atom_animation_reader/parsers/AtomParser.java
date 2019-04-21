@@ -10,7 +10,7 @@ public class AtomParser {
 
     public AtomParser(Scanner input) {
         this.head = new AtomParserElement();
-        this.elementBacktrace = new Stack<AtomParserElement>();
+        this.elementBacktrace = new Stack<>();
         elementBacktrace.add(head);
 
         while (input.hasNextLine()) {

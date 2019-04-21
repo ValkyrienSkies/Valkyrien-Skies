@@ -21,6 +21,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -29,11 +30,13 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
+import valkyrienwarfare.mod.block.tileentity.TileEntityPhysicsInfuser;
 import valkyrienwarfare.mod.physmanagement.relocation.DetectorManager;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.physics.management.ShipType;
 import valkyrienwarfare.physics.management.WorldPhysObjectManager;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class BlockPhysicsInfuser extends Block {
@@ -43,6 +46,15 @@ public class BlockPhysicsInfuser extends Block {
     public BlockPhysicsInfuser(Material materialIn) {
         super(materialIn);
         shipSpawnDetectorID = DetectorManager.DetectorIDs.ShipSpawnerGeneral.ordinal();
+    }
+
+    public boolean hasTileEntity(IBlockState state) {
+        return true;
+    }
+
+    @Nullable
+    public TileEntity createTileEntity(World world, IBlockState state) {
+        return new TileEntityPhysicsInfuser();
     }
 
     public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par4) {

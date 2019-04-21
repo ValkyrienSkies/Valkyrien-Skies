@@ -41,10 +41,19 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.*;
+import net.minecraftforge.fml.common.event.FMLConstructionEvent;
+import net.minecraftforge.fml.common.event.FMLFingerprintViolationEvent;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
+import net.minecraftforge.fml.common.event.FMLStateEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.opencomputers.ValkyrienWarfareOC;
@@ -58,6 +67,7 @@ import valkyrienwarfare.mixin.MixinLoaderForge;
 import valkyrienwarfare.mod.BlockPhysicsRegistration;
 import valkyrienwarfare.mod.block.BlockPhysicsInfuser;
 import valkyrienwarfare.mod.block.BlockPhysicsInfuserCreative;
+import valkyrienwarfare.mod.block.tileentity.TileEntityPhysicsInfuser;
 import valkyrienwarfare.mod.capability.IAirshipCounterCapability;
 import valkyrienwarfare.mod.capability.ImplAirshipCounterCapability;
 import valkyrienwarfare.mod.capability.StorageAirshipCounter;
@@ -76,7 +86,11 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.util.PhysicsSettings;
 import valkyrienwarfare.util.RealMethods;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -361,6 +375,7 @@ public class ValkyrienWarfareMod {
         System.out.println("Valyrien Warfare Initilization:");
         System.out.println("We are running on " + Runtime.getRuntime().availableProcessors() + " threads; 4 or more is recommended!");
         proxy.init(event);
+        registerTileEntities();
         EntityRegistry.registerModEntity(new ResourceLocation(MODID, "PhysWrapper"), PhysicsWrapperEntity.class,
                 "PhysWrapper", 70, this, SHIP_ENTITY_PLAYER_LOAD_DISTANCE, 5, false);
 
@@ -496,5 +511,9 @@ public class ValkyrienWarfareMod {
      */
     public boolean isRunningOnClient() {
         return !(proxy instanceof ServerProxy);
+    }
+
+    private void registerTileEntities() {
+        GameRegistry.registerTileEntity(TileEntityPhysicsInfuser.class, "tile_phys_infuser");
     }
 }

@@ -9,7 +9,6 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.Vec3i;
-import org.lwjgl.opengl.GL11;
 import valkyrienwarfare.addon.control.block.BlockGearbox;
 import valkyrienwarfare.addon.control.tileentity.TileEntityGearbox;
 import valkyrienwarfare.mod.client.render.GibsAnimationRegistry;
@@ -74,22 +73,22 @@ public class GearboxTileEntityRenderer extends TileEntitySpecialRenderer<TileEnt
             GlStateManager.translate(0.5, 0.5, 0.5);
             switch (facing) {
                 case UP:
-                    GL11.glRotated(-90, 1, 0, 0);
+                    GlStateManager.rotate(-90, 1, 0, 0);
                     break;
                 case DOWN:
-                    GL11.glRotated(90, 1, 0, 0);
+                    GlStateManager.rotate(90, 1, 0, 0);
                     break;
                 case NORTH:
-                    GL11.glRotated(180, 0, 1, 0);
+                    GlStateManager.rotate(180, 0, 1, 0);
                     break;
                 case EAST:
-                    GL11.glRotated(90, 0, 1, 0);
+                    GlStateManager.rotate(90, 0, 1, 0);
                     break;
                 case SOUTH:
-                    GL11.glRotated(0, 0, 1, 0);
+                    GlStateManager.rotate(0, 0, 1, 0);
                     break;
                 case WEST:
-                    GL11.glRotated(270, 0, 1, 0);
+                    GlStateManager.rotate(270, 0, 1, 0);
                     break;
             }
             GlStateManager.translate(-0.5, -0.5, -0.5);

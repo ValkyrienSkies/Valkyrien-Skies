@@ -10,9 +10,9 @@ import java.util.List;
 public class BasicDagNodeRenderer {
 
     private final String modelName;
-    private final List<BasicAnimationTransform> transformations;
+    protected final List<BasicAnimationTransform> transformations;
     private final IModelRenderer modelRenderer;
-    private VectorImmutable pivot;
+    protected VectorImmutable pivot;
 
     public BasicDagNodeRenderer(String modelName, List<BasicAnimationTransform> transformations, IModelRenderer modelRenderer) {
         this.modelName = modelName;

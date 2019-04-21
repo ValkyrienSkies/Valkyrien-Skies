@@ -171,6 +171,12 @@ public class ClientProxyControl extends CommonProxyControl {
         GibsAnimationRegistry.registerAnimation("rotation_train_axle", new ResourceLocation("valkyrienwarfarecontrol", "models/block/rotation_train_axle/small_engine_axle.atom"));
 
         GibsAnimationRegistry.registerAnimation("giant_propeller", new ResourceLocation("valkyrienwarfarecontrol", "models/block/giant_propeller/small_propeller.atom"));
+
+        GibsAnimationRegistry.registerAnimation("physics_infuser", new ResourceLocation("valkyrienwarfarecontrol", "models/block/basic_phys_infuser/physics_infuser.atom"));
+
+        GibsAnimationRegistry.registerAnimation("physics_infuser_empty", new ResourceLocation("valkyrienwarfarecontrol", "models/block/basic_phys_infuser/physics_infuser_empty.atom"));
+        // Not an actual animation, just easier to put in than writing out all the core names.
+        GibsAnimationRegistry.registerAnimation("physics_infuser_cores", new ResourceLocation("valkyrienwarfarecontrol", "models/block/basic_phys_infuser/cores.atom"));
     }
 
     private void registerGearboxGibs(String name) {

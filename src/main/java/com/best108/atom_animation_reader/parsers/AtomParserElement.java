@@ -11,8 +11,8 @@ public class AtomParserElement {
 
     AtomParserElement(String name) {
         this.name = name;
-        this.properties = new ArrayList<String[]>();
-        this.branches = new ArrayList<AtomParserElement>();
+        this.properties = new ArrayList<>();
+        this.branches = new ArrayList<>();
     }
 
     AtomParserElement() {

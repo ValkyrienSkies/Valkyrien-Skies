@@ -107,6 +107,7 @@ public class TileEntityGearbox extends TileEntityBasicRotationNodeTile {
     public SPacketUpdateTileEntity getUpdatePacket() {
         NBTTagCompound tagToSend = new NBTTagCompound();
         tagToSend.setDouble("rotation", rotation);
+        tagToSend.setShort("input_facing", (byte) inputFacing.ordinal());
         byte validSides = 0;
         for (int i = 0; i < 6; i++) {
             if (connectedSidesRatios[i].isPresent()) {
@@ -122,6 +123,8 @@ public class TileEntityGearbox extends TileEntityBasicRotationNodeTile {
     @Override
     public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
         nextRotation = pkt.getNbtCompound().getDouble("rotation");
+        inputFacing = EnumFacing.values()[pkt.getNbtCompound()
+                .getByte("input_facing")];
         byte validSidesByte = pkt.getNbtCompound().getByte("valid_sides_byte");
         for (int i = 0; i < 6; i++) {
             if ((validSidesByte & (1 << i)) != 0) {
@@ -143,6 +146,16 @@ public class TileEntityGearbox extends TileEntityBasicRotationNodeTile {
 
     public Optional<Double>[] getConnectedSidesRatios() {
         return connectedSidesRatios;
+    }
+
+    /**
+     * Should only be used for client rendering purposes.
+     *
+     * @return
+     */
+    @SideOnly(Side.CLIENT)
+    public EnumFacing getRenderFacing() {
+        return inputFacing;
     }
 
 }

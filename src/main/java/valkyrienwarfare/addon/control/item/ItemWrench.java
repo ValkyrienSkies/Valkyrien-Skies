@@ -10,7 +10,14 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import valkyrienwarfare.addon.control.MultiblockRegistry;
-import valkyrienwarfare.addon.control.block.multiblocks.*;
+import valkyrienwarfare.addon.control.block.multiblocks.GiantPropellerMultiblockSchematic;
+import valkyrienwarfare.addon.control.block.multiblocks.IMulitblockSchematic;
+import valkyrienwarfare.addon.control.block.multiblocks.RudderAxleMultiblockSchematic;
+import valkyrienwarfare.addon.control.block.multiblocks.TileEntityEthereumCompressorPart;
+import valkyrienwarfare.addon.control.block.multiblocks.TileEntityEthereumEnginePart;
+import valkyrienwarfare.addon.control.block.multiblocks.TileEntityGiantPropellerPart;
+import valkyrienwarfare.addon.control.block.multiblocks.TileEntityRudderAxlePart;
+import valkyrienwarfare.addon.control.tileentity.TileEntityGearbox;
 
 import java.util.List;
 
@@ -77,6 +84,10 @@ public class ItemWrench extends Item {
                     }
                 }
             }
+        }
+
+        if (blockTile instanceof TileEntityGearbox) {
+            ((TileEntityGearbox) blockTile).setInputFacing(!player.isSneaking() ? facing : facing.getOpposite());
         }
 
         return EnumActionResult.PASS;

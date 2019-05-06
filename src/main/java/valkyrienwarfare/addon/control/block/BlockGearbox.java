@@ -4,7 +4,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
@@ -15,6 +14,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import valkyrienwarfare.addon.control.tileentity.TileEntityGearbox;
 
+/**
+ * Class for the Gearbox block. Note that the FACING property is only used to determine the initial orientation of the gearbox. Afterwards the value stored by the tile tile entity dominates.
+ */
 public class BlockGearbox extends Block implements ITileEntityProvider {
 
     public BlockGearbox(Material materialIn) {
@@ -32,7 +34,7 @@ public class BlockGearbox extends Block implements ITileEntityProvider {
 
     @Override
     protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, new IProperty[]{BlockHorizontal.FACING});
+        return new BlockStateContainer(this, BlockHorizontal.FACING);
     }
 
     @Override
@@ -46,7 +48,8 @@ public class BlockGearbox extends Block implements ITileEntityProvider {
 
     @Override
     public int getMetaFromState(IBlockState state) {
-        int i = ((EnumFacing) state.getValue(BlockHorizontal.FACING)).getIndex();
+        int i = state.getValue(BlockHorizontal.FACING)
+                .getIndex();
         return i;
     }
 

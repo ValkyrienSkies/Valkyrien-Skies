@@ -1,7 +1,6 @@
 package valkyrienwarfare.addon.control.renderer;
 
 import com.google.common.collect.ImmutableMap;
-import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -67,7 +66,7 @@ public class GearboxTileEntityRenderer extends TileEntitySpecialRenderer<TileEnt
 
         IBlockState gearState = Minecraft.getMinecraft().world.getBlockState(tileentity.getPos());
         if (gearState.getBlock() instanceof BlockGearbox) {
-            EnumFacing facing = gearState.getValue(BlockHorizontal.FACING);
+            EnumFacing facing = tileentity.getRenderFacing();
             GlStateManager.pushMatrix();
 
             GlStateManager.translate(0.5, 0.5, 0.5);

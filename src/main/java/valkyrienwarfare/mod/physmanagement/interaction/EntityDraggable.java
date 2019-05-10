@@ -34,32 +34,24 @@ import valkyrienwarfare.physics.management.ShipTransformationManager;
 import java.util.List;
 
 /**
- * Bad class, delete soon!
+ * Horrible buggiest class imaginable! Delete eventually and start from scratch.
  *
  * @author thebest108
  */
 @Deprecated
 public class EntityDraggable {
 
+    /**
+     * Moves entities such that they move with the ship below them.
+     *
+     * @param world
+     */
     public static void tickAddedVelocityForWorld(World world) {
         try {
-            // TODO: Fix this
             for (int i = 0; i < world.loadedEntityList.size(); i++) {
                 Entity e = world.loadedEntityList.get(i);
-                // TODO: Maybe add a check to prevent moving entities that are fixed onto a
-                // Ship, but I like the visual effect
-                if (!(e instanceof PhysicsWrapperEntity) && !(e instanceof EntityCannonBall)) {
+                if (!(e instanceof PhysicsWrapperEntity) && !(e instanceof EntityCannonBall) && !e.isDead) {
                     IDraggable draggable = getDraggableFromEntity(e);
-                    // e.onGround = true;
-                    //
-                    doTheEntityThing(e);
-
-                    // draggable.tickAddedVelocity();
-                    //
-                    // e.onGround = true;
-                    // e.setPosition(draggable.getVelocityAddedToPlayer().X + e.posX,
-                    // draggable.getVelocityAddedToPlayer().Y + e.posY,
-                    // draggable.getVelocityAddedToPlayer().Z + e.posZ);
 
                     if (draggable.getWorldBelowFeet() == null) {
                         if (e.onGround) {
@@ -75,6 +67,11 @@ public class EntityDraggable {
                             }
                         }
                     }
+                    // Only run the added velocity code if there's a significant amount to add.
+                    if (draggable.getVelocityAddedToPlayer()
+                            .lengthSq() > .1) {
+                        addEntityVelocityFromShipBelow(e);
+                    }
                 }
             }
         } catch (Exception e) {
@@ -82,7 +79,12 @@ public class EntityDraggable {
         }
     }
 
-    public static void doTheEntityThing(Entity entity) {
+    /**
+     * Adds the ship below velocity to entity.
+     *
+     * @param entity
+     */
+    public static void addEntityVelocityFromShipBelow(Entity entity) {
         IDraggable draggable = EntityDraggable.getDraggableFromEntity(entity);
         if (draggable.getWorldBelowFeet() != null && !ValkyrienWarfareMod.VW_PHYSICS_MANAGER.isEntityFixed(entity)) {
             ShipTransformationManager coordTransform = draggable.getWorldBelowFeet().getPhysicsObject().getShipTransformationManager();
@@ -98,7 +100,7 @@ public class EntityDraggable {
 
             Vector oldPos = new Vector(entity);
 
-//            RotationMatrices.applyTransform(coordTransform.prevwToLTransform, entity);
+            //            RotationMatrices.applyTransform(coordTransform.prevwToLTransform, entity);
             // This is causing crashes
             double[] prev = coordTransform.getPrevTickTransform().getInternalMatrix(TransformType.GLOBAL_TO_SUBSPACE);
             double[] next = coordTransform.getCurrentTickTransform().getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL);
@@ -127,8 +129,8 @@ public class EntityDraggable {
             entity.prevRotationPitch = prevPitch;
 
             Vector oldLookingPos = new Vector(entity.getLook(1.0F));
-//            coordTransform.getPrevTickTransform().rotate(oldLookingPos, TransformType.GLOBAL_TO_SUBSPACE);
-//            coordTransform.getCurrentTickTransform().rotate(oldLookingPos, TransformType.SUBSPACE_TO_GLOBAL);
+            //            coordTransform.getPrevTickTransform().rotate(oldLookingPos, TransformType.GLOBAL_TO_SUBSPACE);
+            //            coordTransform.getCurrentTickTransform().rotate(oldLookingPos, TransformType.SUBSPACE_TO_GLOBAL);
             betweenTransform.rotate(oldLookingPos, TransformType.SUBSPACE_TO_GLOBAL);
 
             double newPitch = Math.asin(oldLookingPos.Y) * -180D / Math.PI;

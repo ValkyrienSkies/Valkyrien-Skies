@@ -67,9 +67,9 @@ public class EntityDraggable {
                             }
                         }
                     }
-                    // Only run the added velocity code if there's a significant amount to add.
+                    // Only run the added velocity code if there's a significant amount to add; or if we're standing on top of a ship.
                     if (draggable.getVelocityAddedToPlayer()
-                            .lengthSq() > .1) {
+                            .lengthSq() > .01 || draggable.getWorldBelowFeet() != null) {
                         addEntityVelocityFromShipBelow(e);
                     }
 

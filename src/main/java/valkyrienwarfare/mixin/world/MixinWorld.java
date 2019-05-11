@@ -21,7 +21,6 @@ import com.google.common.collect.Lists;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -73,10 +72,7 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
     private final ISubspace worldSubspace = new ImplSubspace(null);
     @Shadow
     List<IWorldEventListener> eventListeners;
-    @Shadow
-    boolean processingLoadedTiles;
-    @Shadow
-    List<TileEntity> addedTileEntityList;
+
     private World thisClassAsWorld = World.class.cast(this);
     private WorldPhysObjectManager physManager;
 
@@ -99,7 +95,7 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
         }
     }
 
-    @Inject(method = "getCollisionBoxes", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "getCollisionBoxes(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/AxisAlignedBB;ZLjava/util/List;)Z", at = @At("HEAD"), cancellable = true)
     public void preGetCollisionBoxes(@Nullable Entity entityIn, AxisAlignedBB aabb, boolean p_191504_3_,
                                      @Nullable List<AxisAlignedBB> outList, CallbackInfoReturnable callbackInfo) {
         double deltaX = Math.abs(aabb.maxX - aabb.minX);
@@ -112,7 +108,7 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
         }
     }
 
-    @Inject(method = "setBlockState", at = @At("HEAD"))
+    @Inject(method = "setBlockState(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/state/IBlockState;I)Z", at = @At("HEAD"))
     public void preSetBlockState(BlockPos pos, IBlockState newState, int flags, CallbackInfoReturnable callbackInfo) {
         PhysicsWrapperEntity physEntity = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(thisClassAsWorld,
                 pos);
@@ -204,6 +200,14 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
         return list;
     }
 
+    /**
+     * @param clazz
+     * @param aabb
+     * @param filter
+     * @param <T>
+     * @return
+     * @author thebest108
+     */
     @Overwrite
     public <T extends Entity> List<T> getEntitiesWithinAABB(Class<? extends T> clazz, AxisAlignedBB aabb,
                                                             @Nullable Predicate<? super T> filter) {

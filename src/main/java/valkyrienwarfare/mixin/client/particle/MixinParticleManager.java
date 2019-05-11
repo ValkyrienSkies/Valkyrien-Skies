@@ -31,7 +31,7 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 @Mixin(ParticleManager.class)
 public abstract class MixinParticleManager {
 
-    @Inject(method = "addEffect(Lnet/minecraft/client/particle/Particle;)V", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "addEffect", at = @At("HEAD"), cancellable = true)
     public void preAddEffect(Particle effect, CallbackInfo callbackInfoReturnable) {
         if (effect == null) {
             callbackInfoReturnable.cancel();

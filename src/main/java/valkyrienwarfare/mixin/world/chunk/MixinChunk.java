@@ -96,7 +96,7 @@ public abstract class MixinChunk implements ITileEntitiesToRenderProvider {
         }
     }
 
-    @Inject(method = "Lnet/minecraft/world/chunk/Chunk;populate(Lnet/minecraft/world/chunk/IChunkProvider;Lnet/minecraft/world/gen/IChunkGenerator;)V", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "populate(Lnet/minecraft/world/chunk/IChunkProvider;Lnet/minecraft/world/gen/IChunkGenerator;)V", at = @At("HEAD"), cancellable = true)
     public void prePopulateChunk(IChunkProvider provider, IChunkGenerator generator, CallbackInfo callbackInfo) {
         if (PhysicsChunkManager.isLikelyShipChunk(this.x, this.z)) {
             callbackInfo.cancel();

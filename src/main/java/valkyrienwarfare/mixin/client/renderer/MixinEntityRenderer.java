@@ -62,6 +62,10 @@ public abstract class MixinEntityRenderer {
     @Shadow
     public Entity pointedEntity;
 
+    /**
+     * @param partialTicks
+     * @author thebest108
+     */
     @Overwrite
     public void orientCamera(float partialTicks) {
         Entity entity = this.mc.getRenderViewEntity();
@@ -70,7 +74,7 @@ public abstract class MixinEntityRenderer {
 
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(entity.world, playerPos);
 
-//		Minecraft.getMinecraft().thePlayer.sleeping = false;
+        //		Minecraft.getMinecraft().thePlayer.sleeping = false;
 
         if (wrapper != null) {
             Vector playerPosNew = new Vector(entity.posX, entity.posY, entity.posZ);
@@ -109,7 +113,7 @@ public abstract class MixinEntityRenderer {
 
             Vector playerPosition = new Vector(fixedOnto.getPhysicsObject().getLocalPositionForEntity(entity));
 
-//            RotationMatrices.applyTransform(fixedOnto.wrapping.coordTransform.RlToWTransform, playerPosition);
+            //            RotationMatrices.applyTransform(fixedOnto.wrapping.coordTransform.RlToWTransform, playerPosition);
 
             fixedOnto.getPhysicsObject().getShipTransformationManager().getRenderTransform().transform(playerPosition, TransformType.SUBSPACE_TO_GLOBAL);
 
@@ -117,7 +121,7 @@ public abstract class MixinEntityRenderer {
             d1 = playerPosition.Y;
             d2 = playerPosition.Z;
 
-//			entity.posX = entity.prevPosX = entity.lastTickPosX = d0;
+            //			entity.posX = entity.prevPosX = entity.lastTickPosX = d0;
 //			entity.posY = entity.prevPosY = entity.lastTickPosY = d1;
 //			entity.posZ = entity.prevPosZ = entity.lastTickPosZ = d2;
         }
@@ -167,7 +171,7 @@ public abstract class MixinEntityRenderer {
         } else if (this.mc.gameSettings.thirdPersonView > 0) {
             double d3 = this.thirdPersonDistancePrev + (4.0F - this.thirdPersonDistancePrev) * partialTicks;
 
-            IShipPilot shipPilot = IShipPilot.class.cast(Minecraft.getMinecraft().player);
+            IShipPilot shipPilot = (IShipPilot) Minecraft.getMinecraft().player;
 
             if (shipPilot.isPilotingShip()) {
                 //TODO: Make this number scale with the Ship
@@ -196,7 +200,7 @@ public abstract class MixinEntityRenderer {
                     f4 = f4 * 0.1F;
                     f5 = f5 * 0.1F;
 
-                    IShipPilot pilot = IShipPilot.class.cast(Minecraft.getMinecraft().player);
+                    IShipPilot pilot = (IShipPilot) Minecraft.getMinecraft().player;
 
                     RayTraceResult raytraceresult = MixinMethods.rayTraceBlocksIgnoreShip(Minecraft.getMinecraft().world, new Vec3d(d0 + f3, d1 + f4, d2 + f5), new Vec3d(d0 - d4 + f3 + f5, d1 - d6 + f4, d2 - d5 + f5), false, false, false, pilot.getPilotedShip());
 //                    renderer.mc.theWorld.rayTraceBlocks(new Vec3d(d0 + (double)f3, d1 + (double)f4, d2 + (double)f5), new Vec3d(d0 - d4 + (double)f3 + (double)f5, d1 - d6 + (double)f4, d2 - d5 + (double)f5));

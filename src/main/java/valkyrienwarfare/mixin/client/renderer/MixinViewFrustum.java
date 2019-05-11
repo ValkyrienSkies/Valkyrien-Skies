@@ -19,7 +19,7 @@ public class MixinViewFrustum {
     @Final
     protected World world;
 
-    @Inject(at = {@At("HEAD")}, method = {"markBlocksForUpdate(IIIIIIZ)V"})
+    @Inject(at = {@At("HEAD")}, method = "markBlocksForUpdate")
     public void pre_markBlocksForUpdate(int minX, int minY, int minZ, int maxX, int maxY, int maxZ, boolean updateImmediately, CallbackInfo info) {
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(world, new BlockPos(minX, minY, minZ));
         if (wrapper != null) {

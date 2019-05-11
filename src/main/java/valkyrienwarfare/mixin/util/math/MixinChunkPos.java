@@ -31,6 +31,7 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 @Mixin(ChunkPos.class)
 public abstract class MixinChunkPos {
 
+    private static final double TOO_MUCH_DISTANCE = 100000;
     @Shadow
     @Final
     public int x;
@@ -54,7 +55,7 @@ public abstract class MixinChunkPos {
         double vanilla = d2 * d2 + d3 * d3;
 
         // A big number
-        if (vanilla < 91111) {
+        if (vanilla < TOO_MUCH_DISTANCE) {
             return vanilla;
         }
 

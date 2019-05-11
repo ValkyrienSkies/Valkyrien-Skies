@@ -8,7 +8,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.coordinates.ISubspacedEntity;
 import valkyrienwarfare.mod.coordinates.ISubspacedEntityRecord;
@@ -18,7 +17,7 @@ import valkyrienwarfare.mod.physmanagement.interaction.IDraggable;
 @Mixin(EntityPlayerSP.class)
 public class MixinEntityPlayerSP {
 
-    private final ISubspacedEntity thisAsSubspaced = ISubspacedEntity.class.cast(this);
+    private final ISubspacedEntity thisAsSubspaced = (ISubspacedEntity) this;
     private final EntityPlayerSP player = EntityPlayerSP.class.cast(this);
     @Shadow
     protected Minecraft mc;
@@ -44,31 +43,14 @@ public class MixinEntityPlayerSP {
     private boolean autoJumpEnabled;
 
     /**
-     * This method is to send the position of the player relative to the subspace
-     * its on. Specifically sent right before the game regularly sends the player
-     * position update to the server.
-     *
-     * @param info
+     * @reason is because we need to ensure the CPacketPlayer is always sent no matter what.
+     * @author thebest108
      */
-    // @Inject(method = "onUpdateWalkingPlayer", at = @At("HEAD"))
-    // Disabled for now since we're using the @Overwrite
-    private void preOnUpdateWalkingPlayer(CallbackInfo info) {
-        IDraggable draggable = IDraggable.class.cast(this);
-        if (draggable.getWorldBelowFeet() != null) {
-            draggable.getWorldBelowFeet().getPhysicsObject().getSubspace().snapshotSubspacedEntity(thisAsSubspaced);
-            ISubspacedEntityRecord entityRecord = draggable.getWorldBelowFeet().getPhysicsObject().getSubspace()
-                    .getRecordForSubspacedEntity(thisAsSubspaced);
-            SubspacedEntityRecordMessage recordMessage = new SubspacedEntityRecordMessage(entityRecord);
-            ValkyrienWarfareMod.physWrapperNetwork.sendToServer(recordMessage);
-        }
-    }
-
-    // @reason is because we need to ensure the CPacketPlayer is always sent no matter what.
     @Overwrite
     private void onUpdateWalkingPlayer() {
         // ===== Injection code starts here =====
 
-        IDraggable draggable = IDraggable.class.cast(this);
+        IDraggable draggable = (IDraggable) this;
         if (draggable.getWorldBelowFeet() != null) {
             draggable.getWorldBelowFeet().getPhysicsObject().getSubspace().snapshotSubspacedEntity(thisAsSubspaced);
             ISubspacedEntityRecord entityRecord = draggable.getWorldBelowFeet().getPhysicsObject().getSubspace()

@@ -52,28 +52,38 @@ import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.network.EntityFixMessage;
 import valkyrienwarfare.addon.control.nodenetwork.INodeController;
-import valkyrienwarfare.addon.control.nodenetwork.IVWNodeProvider;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.deprecated_api.EnumChangeOwnerResult;
 import valkyrienwarfare.math.Quaternion;
 import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.mod.BlockPhysicsRegistration;
 import valkyrienwarfare.mod.client.render.PhysObjectRenderManager;
-import valkyrienwarfare.mod.coordinates.*;
+import valkyrienwarfare.mod.coordinates.ISubspace;
+import valkyrienwarfare.mod.coordinates.ISubspaceProvider;
+import valkyrienwarfare.mod.coordinates.ImplSubspace;
+import valkyrienwarfare.mod.coordinates.ShipTransform;
+import valkyrienwarfare.mod.coordinates.ShipTransformationPacketHolder;
 import valkyrienwarfare.mod.network.PhysWrapperPositionMessage;
 import valkyrienwarfare.mod.physmanagement.chunk.VWChunkCache;
 import valkyrienwarfare.mod.physmanagement.chunk.VWChunkClaim;
 import valkyrienwarfare.mod.physmanagement.relocation.DetectorManager;
+import valkyrienwarfare.mod.physmanagement.relocation.MoveBlocks;
 import valkyrienwarfare.mod.physmanagement.relocation.SpatialDetector;
-import valkyrienwarfare.mod.schematics.SchematicReader.Schematic;
 import valkyrienwarfare.physics.BlockForce;
 import valkyrienwarfare.physics.PhysicsCalculations;
 import valkyrienwarfare.util.NBTUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -140,7 +150,7 @@ public class PhysicsObject implements ISubspaceProvider {
         this.entityLocalPositions = new TIntObjectHashMap<Vector>();
         this.setPhysicsEnabled(false);
         // We need safe access to this across multiple threads.
-        this.setBlockPositions(ConcurrentHashMap.<BlockPos>newKeySet());
+        this.setBlockPositions(ConcurrentHashMap.newKeySet());
         this.shipBoundingBox = Entity.ZERO_AABB;
         this.watchingPlayers = new ArrayList<EntityPlayerMP>();
         this.isPhysicsEnabled = false;
@@ -148,8 +158,8 @@ public class PhysicsObject implements ISubspaceProvider {
         this.gameConsecutiveTicks = 0;
         this.physicsConsecutiveTicks = 0;
         this.shipSubspace = new ImplSubspace(this);
-        this.physicsControllers = Sets.<INodeController>newConcurrentHashSet();
-        this.physicsControllersImmutable = Collections.<INodeController>unmodifiableSet(this.physicsControllers);
+        this.physicsControllers = Sets.newConcurrentHashSet();
+        this.physicsControllersImmutable = Collections.unmodifiableSet(this.physicsControllers);
         this.blockPositionsGameTick = new TIntArrayList();
     }
 
@@ -264,7 +274,7 @@ public class PhysicsObject implements ISubspaceProvider {
     /**
      * Generates the new chunks
      */
-    public void processChunkClaims(EntityPlayer player) {
+    public void assembleShipAsOrderedByPlayer(EntityPlayer player) {
         BlockPos centerInWorld = new BlockPos(getWrapperEntity().posX, getWrapperEntity().posY, getWrapperEntity().posZ);
         SpatialDetector detector = DetectorManager.getDetectorFor(getDetectorID(), centerInWorld, getWorldObj(),
                 ValkyrienWarfareMod.maxShipSize + 1, true);
@@ -277,60 +287,6 @@ public class PhysicsObject implements ISubspaceProvider {
             return;
         }
         assembleShip(player, detector, centerInWorld);
-    }
-
-    public void processChunkClaims(Schematic toFollow) {
-        BlockPos centerInWorld = new BlockPos(-(toFollow.width / 2), 128 - (toFollow.height / 2),
-                -(toFollow.length / 2));
-
-        int radiusNeeded = (Math.max(toFollow.length, toFollow.width) / 16) + 2;
-
-        // System.out.println(radiusNeeded);
-
-        claimNewChunks(radiusNeeded);
-
-        ValkyrienWarfareMod.VW_PHYSICS_MANAGER.onShipPreload(getWrapperEntity());
-
-        claimedChunks = new Chunk[(getOwnedChunks().getRadius() * 2) + 1][(getOwnedChunks().getRadius() * 2) + 1];
-        claimedChunksEntries = new PlayerChunkMapEntry[(getOwnedChunks().getRadius() * 2) + 1][(getOwnedChunks().getRadius() * 2) + 1];
-        for (int x = getOwnedChunks().getMinX(); x <= getOwnedChunks().getMaxX(); x++) {
-            for (int z = getOwnedChunks().getMinZ(); z <= getOwnedChunks().getMaxZ(); z++) {
-                Chunk chunk = new Chunk(getWorldObj(), x, z);
-                injectChunkIntoWorld(chunk, x, z, true);
-                claimedChunks[x - getOwnedChunks().getMinX()][z - getOwnedChunks().getMinZ()] = chunk;
-            }
-        }
-
-        replaceOuterChunksWithAir();
-
-        setShipChunks(new VWChunkCache(getWorldObj(), claimedChunks));
-
-        setRefrenceBlockPos(getRegionCenter());
-        setCenterCoord(new Vector(getReferenceBlockPos().getX(), getReferenceBlockPos().getY(), getReferenceBlockPos().getZ()));
-
-        createPhysicsCalculations();
-        BlockPos centerDifference = getReferenceBlockPos().subtract(centerInWorld);
-
-        toFollow.placeBlockAndTilesInWorld(getWorldObj(), centerDifference);
-
-        detectBlockPositions();
-
-        // TODO: This fixes the lighting, but it adds lag; maybe remove this
-        for (int x = getOwnedChunks().getMinX(); x <= getOwnedChunks().getMaxX(); x++) {
-            for (int z = getOwnedChunks().getMinZ(); z <= getOwnedChunks().getMaxZ(); z++) {
-                // claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ].isTerrainPopulated
-                // = true;
-                // claimedChunks[x - ownedChunks.minX][z -
-                // ownedChunks.minZ].generateSkylightMap();
-                // claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ].checkLight();
-            }
-        }
-
-        setShipTransformationManager(new ShipTransformationManager(this));
-        getPhysicsProcessor().recalculateShipInertia();
-        getPhysicsProcessor().updateParentCenterOfMass();
-
-        getShipTransformationManager().updateAllTransforms(false, false);
     }
 
     /**
@@ -376,8 +332,6 @@ public class PhysicsObject implements ISubspaceProvider {
         replaceOuterChunksWithAir();
 
         setShipChunks(new VWChunkCache(getWorldObj(), claimedChunks));
-        int minChunkX = claimedChunks[0][0].x;
-        int minChunkZ = claimedChunks[0][0].z;
 
         setRefrenceBlockPos(getRegionCenter());
         setCenterCoord(new Vector(getReferenceBlockPos().getX(), getReferenceBlockPos().getY(), getReferenceBlockPos().getZ()));
@@ -386,56 +340,24 @@ public class PhysicsObject implements ISubspaceProvider {
 
         iter = detector.foundSet.iterator();
         BlockPos centerDifference = getReferenceBlockPos().subtract(centerInWorld);
+
+        MutableBlockPos oldPos = new MutableBlockPos();
+        MutableBlockPos newPos = new MutableBlockPos();
+
+        // First copy all the blocks from ship to world.
         while (iter.hasNext()) {
             int i = iter.next();
-            SpatialDetector.setPosWithRespectTo(i, centerInWorld, pos);
-
-            IBlockState state = detector.cache.getBlockState(pos);
-
-            TileEntity worldTile = detector.cache.getTileEntity(pos);
-
-            pos.setPos(pos.getX() + centerDifference.getX(), pos.getY() + centerDifference.getY(),
-                    pos.getZ() + centerDifference.getZ());
-            getOwnedChunks().chunkOccupiedInLocal[(pos.getX() >> 4) - minChunkX][(pos.getZ() >> 4) - minChunkZ] = true;
-
-            Chunk chunkToSet = claimedChunks[(pos.getX() >> 4) - minChunkX][(pos.getZ() >> 4) - minChunkZ];
-            int storageIndex = pos.getY() >> 4;
-
-            if (chunkToSet.storageArrays[storageIndex] == Chunk.NULL_BLOCK_STORAGE) {
-                chunkToSet.storageArrays[storageIndex] = new ExtendedBlockStorage(storageIndex << 4, true);
-            }
-            chunkToSet.storageArrays[storageIndex].set(pos.getX() & 15, pos.getY() & 15, pos.getZ() & 15, state);
-
-            // All this code just tries to transform the TileEntity properly without deleting its data.
-            // TODO: Replace this with the system vanilla uses
-            if (worldTile != null) {
-                NBTTagCompound tileEntNBT = new NBTTagCompound();
-                tileEntNBT = worldTile.writeToNBT(tileEntNBT);
-                // Change the block position to be inside of the Ship
-                tileEntNBT.setInteger("x", pos.getX());
-                tileEntNBT.setInteger("y", pos.getY());
-                tileEntNBT.setInteger("z", pos.getZ());
-
-                TileEntity newInstance = TileEntity.create(getWorldObj(), tileEntNBT);
-                // Order the IVWNodeProvider to move by the given offset.
-                if (newInstance != null && newInstance instanceof IVWNodeProvider) {
-                    IVWNodeProvider.class.cast(newInstance).shiftInternalData(centerDifference);
-                    IVWNodeProvider.class.cast(newInstance).getNode().setParentPhysicsObject(this);
-                }
-                newInstance.validate();
-
-                getWorldObj().setTileEntity(pos, newInstance);
-                this.onSetTileEntity(pos, newInstance);
-                newInstance.markDirty();
-            }
+            SpatialDetector.setPosWithRespectTo(i, centerInWorld, oldPos);
+            SpatialDetector.setPosWithRespectTo(i, centerInWorld, newPos);
+            newPos.setPos(newPos.getX() + centerDifference.getX(), newPos.getY() + centerDifference.getY(), newPos.getZ() + centerDifference.getZ());
+            MoveBlocks.copyBlockToPos(getWorldObj(), oldPos, newPos, Optional.of(this));
         }
+
+        // Then destroy all of the blocks we copied from in world.
         iter = detector.foundSet.iterator();
         while (iter.hasNext()) {
             int i = iter.next();
-            // BlockPos respectTo = detector.getPosWithRespectTo(i, centerInWorld);
             SpatialDetector.setPosWithRespectTo(i, centerInWorld, pos);
-            // detector.cache.setBlockState(pos, Blocks.air.getDefaultState());
-            // TODO: Get this to update on clientside as well, you bastard!
             TileEntity tile = getWorldObj().getTileEntity(pos);
             if (tile != null) {
                 tile.invalidate();
@@ -451,19 +373,8 @@ public class PhysicsObject implements ISubspaceProvider {
             }
         }
 
+        // Some extra ship crap at the end.
         detectBlockPositions();
-
-        // TODO: This fixes the lighting, but it adds lag; maybe remove this
-        for (int x = getOwnedChunks().getMinX(); x <= getOwnedChunks().getMaxX(); x++) {
-            for (int z = getOwnedChunks().getMinZ(); z <= getOwnedChunks().getMaxZ(); z++) {
-                // claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ].isTerrainPopulated
-                // = true;
-                // claimedChunks[x - ownedChunks.minX][z -
-                // ownedChunks.minZ].generateSkylightMap();
-                // claimedChunks[x - ownedChunks.minX][z - ownedChunks.minZ].checkLight();
-            }
-        }
-
         setShipTransformationManager(new ShipTransformationManager(this));
         getPhysicsProcessor().recalculateShipInertia();
         getPhysicsProcessor().updateParentCenterOfMass();
@@ -1286,4 +1197,29 @@ public class PhysicsObject implements ISubspaceProvider {
     private BlockPos getReferenceBlockPos() {
         return this.refrenceBlockPos;
     }
+
+    public void tryToDeconstructShip() {
+        // First check if the ship orientation is close to that of the grid; if it isn't then don't let this ship deconstruct.
+        Quaternion zeroQuat = Quaternion.fromEuler(0, 0, 0);
+        Quaternion shipQuat = Quaternion.fromEuler(wrapper.getPitch(), wrapper.getYaw(), wrapper.getRoll());
+        double dotProduct = Quaternion.dotProduct(zeroQuat, shipQuat);
+        double anglesBetweenQuaternions = Math.toDegrees(Math.acos(dotProduct));
+
+        if (anglesBetweenQuaternions < 5) {
+            // We're pretty close to the grid; time 2 go.
+            MutableBlockPos newPos = new MutableBlockPos();
+            BlockPos centerDifference = new BlockPos(Math.round(centerCoord.X - getWrapperEntity().posX),
+                    Math.round(centerCoord.Y - getWrapperEntity().posY),
+                    Math.round(centerCoord.Z - getWrapperEntity().posZ));
+            // First copy all the blocks from ship to world.
+
+            for (BlockPos oldPos : this.blockPositions) {
+                newPos.setPos(oldPos.getX() - centerDifference.getX(), oldPos.getY() - centerDifference.getY(), oldPos.getZ() - centerDifference.getZ());
+                MoveBlocks.copyBlockToPos(getWorldObj(), oldPos, newPos, Optional.empty());
+            }
+
+            this.destroy();
+        }
+    }
+
 }

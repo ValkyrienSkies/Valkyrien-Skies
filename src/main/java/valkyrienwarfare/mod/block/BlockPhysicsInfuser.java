@@ -66,24 +66,16 @@ public class BlockPhysicsInfuser extends Block {
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
                                     EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
         if (!worldIn.isRemote) {
-            // ===== Debug Testing Code =====
-            /*
-             * System.out.println("yaw: " + playerIn.rotationYaw + "    pitch: " +
-             * playerIn.rotationPitch); VectorImmutable immutable = (new
-             * Vector(playerIn.getLookVec())).toImmutable(); double pitch =
-             * VWMath.getPitchFromVectorImmutable(immutable); double yaw =
-             * VWMath.getYawFromVectorImmutable(immutable, pitch);
-             * System.out.println("yaw2: " + yaw + "    pitch2: " + pitch);
-             * System.out.println("Position: " + playerIn.getPositionVector()); if (true) {
-             * return false; }
-             */
-            // ===== Debug Code End =====
             WorldPhysObjectManager manager = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getManagerForWorld(worldIn);
             if (manager != null) {
                 PhysicsWrapperEntity wrapperEnt = manager
                         .getManagingObjectForChunk(worldIn.getChunkFromBlockCoords(pos));
                 if (wrapperEnt != null) {
+                    // Alright destroy this ship.
+
                     wrapperEnt.getPhysicsObject().setPhysicsEnabled(!wrapperEnt.getPhysicsObject().isPhysicsEnabled());
+                    wrapperEnt.getPhysicsObject()
+                            .tryToDeconstructShip();
                     return true;
                 }
             }

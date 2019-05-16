@@ -34,7 +34,6 @@ import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.mod.capability.IAirshipCounterCapability;
 import valkyrienwarfare.mod.physmanagement.interaction.ShipNameUUIDData;
-import valkyrienwarfare.mod.schematics.SchematicReader.Schematic;
 import valkyrienwarfare.physics.collision.polygons.Polygon;
 
 import javax.annotation.Nullable;
@@ -46,7 +45,7 @@ import javax.annotation.Nullable;
  */
 public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpawnData {
 
-    public static final DataParameter<Boolean> IS_NAME_CUSTOM = EntityDataManager.<Boolean>createKey(Entity.class,
+    public static final DataParameter<Boolean> IS_NAME_CUSTOM = EntityDataManager.createKey(Entity.class,
             DataSerializers.BOOLEAN);
     private final PhysicsObject physicsObject;
     // TODO: Replace these raw types with something safer.
@@ -70,29 +69,12 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
         getPhysicsObject().setCreator(creator.entityUniqueID.toString());
         getPhysicsObject().setDetectorID(detectorID);
         getPhysicsObject().setShipType(shipType);
-        getPhysicsObject().processChunkClaims(creator);
+        getPhysicsObject().assembleShipAsOrderedByPlayer(creator);
 
         IAirshipCounterCapability counter = creator.getCapability(ValkyrienWarfareMod.airshipCounter, null);
         counter.onCreate();
 
         super.setCustomNameTag(creator.getName() + ":" + counter.getAirshipCountEver());
-        ShipNameUUIDData.get(worldIn).placeShipInRegistry(this, getCustomNameTag());
-    }
-
-    // TODO: Redesign this constructor
-    public PhysicsWrapperEntity(World worldIn, double x, double y, double z, ShipType shipType, Schematic schematic) {
-        this(worldIn);
-        posX = x;
-        posY = y;
-        posZ = z;
-
-        getPhysicsObject().setCreator("thebest108");
-        getPhysicsObject().setDetectorID(0);
-        getPhysicsObject().setShipType(shipType);
-
-        getPhysicsObject().processChunkClaims(schematic);
-
-        super.setCustomNameTag("ShipRandom" + ":" + Math.random() * 10000000);
         ShipNameUUIDData.get(worldIn).placeShipInRegistry(this, getCustomNameTag());
     }
 

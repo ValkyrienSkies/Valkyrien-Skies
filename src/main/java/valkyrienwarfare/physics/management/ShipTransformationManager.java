@@ -245,20 +245,20 @@ public class ShipTransformationManager {
             int blockPos = parent.getBlockPositionsGameTick().get(i);
             parent.setBlockPosFromIntRelToShop(blockPos, pos);
 
-            float x = pos.getX() + .5F;
-            float y = pos.getY() + .5F;
-            float z = pos.getZ() + .5F;
+            float x = pos.getX() + .5f;
+            float y = pos.getY() + .5f;
+            float z = pos.getZ() + .5f;
 
             float newX = x * M[0] + y * M[1] + z * M[2] + M[3];
             float newY = x * M[4] + y * M[5] + z * M[6] + M[7];
             float newZ = x * M[8] + y * M[9] + z * M[10] + M[11];
 
-            minX = Math.min(newX, minX);
-            maxX = Math.max(newX, maxX);
-            minY = Math.min(newY, minY);
-            maxY = Math.max(newY, maxY);
-            minZ = Math.min(newZ, minZ);
-            maxZ = Math.max(newZ, maxZ);
+            minX = Math.min(newX - .5f, minX);
+            maxX = Math.max(newX + .5f, maxX);
+            minY = Math.min(newY - .5f, minY);
+            maxY = Math.max(newY + .5f, maxY);
+            minZ = Math.min(newZ - .5f, minZ);
+            maxZ = Math.max(newZ + .5f, maxZ);
         }
         AxisAlignedBB newBB = new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ).grow(3D);
         // Just a quick sanity check

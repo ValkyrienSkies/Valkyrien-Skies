@@ -26,6 +26,7 @@ import net.minecraft.entity.player.EntityPlayer.SleepResult;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemNameTag;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
@@ -56,6 +57,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.combat.entity.EntityMountingWeaponBase;
 import valkyrienwarfare.api.TransformType;
+import valkyrienwarfare.fixes.IVWWorldDataCapability;
 import valkyrienwarfare.math.RotationMatrices;
 import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.mod.capability.IAirshipCounterCapability;
@@ -206,6 +208,40 @@ public class EventsCommon {
         if (wrapper != null) {
             event.setResult(Result.ALLOW);
         }
+    }
+
+    @SubscribeEvent
+    public void attachWorldCapabilities(AttachCapabilitiesEvent<World> event) {
+        event.addCapability(new ResourceLocation(ValkyrienWarfareMod.MODID, "vw_world_data_capability"),
+                new ICapabilitySerializable<NBTBase>() {
+                    IVWWorldDataCapability inst = ValkyrienWarfareMod.vwWorldData.getDefaultInstance()
+                            .setWorld(event.getObject());
+
+                    @Override
+                    public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
+                        return capability == ValkyrienWarfareMod.vwWorldData;
+                    }
+
+                    @Override
+                    public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
+                        return capability == ValkyrienWarfareMod.vwWorldData
+                                ? ValkyrienWarfareMod.vwWorldData.<T>cast(inst)
+                                : null;
+                    }
+
+                    @Override
+                    public NBTBase serializeNBT() {
+                        return ValkyrienWarfareMod.vwWorldData.getStorage()
+                                .writeNBT(ValkyrienWarfareMod.vwWorldData, inst, null);
+                    }
+
+                    @Override
+                    public void deserializeNBT(NBTBase nbt) {
+                        // Otherwise its old, then ignore it
+                        ValkyrienWarfareMod.vwWorldData.getStorage()
+                                .readNBT(ValkyrienWarfareMod.vwWorldData, inst, null, nbt);
+                    }
+                });
     }
 
     // Notice that this event fires for both Entities and TileEntities, so an

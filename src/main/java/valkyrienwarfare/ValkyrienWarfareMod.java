@@ -62,6 +62,9 @@ import valkyrienwarfare.api.addons.Module;
 import valkyrienwarfare.api.addons.VWAddon;
 import valkyrienwarfare.deprecated_api.DataTag;
 import valkyrienwarfare.deprecated_api.ValkyrienWarfareHooks;
+import valkyrienwarfare.fixes.IVWWorldDataCapability;
+import valkyrienwarfare.fixes.ImplVWWorldDataCapability;
+import valkyrienwarfare.fixes.StorageVWWorldData;
 import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.mixin.MixinLoaderForge;
 import valkyrienwarfare.mod.BlockPhysicsRegistration;
@@ -118,6 +121,8 @@ public class ValkyrienWarfareMod {
     public static final int SHIP_ENTITY_PLAYER_LOAD_DISTANCE = 128;
     @CapabilityInject(IAirshipCounterCapability.class)
     public static final Capability<IAirshipCounterCapability> airshipCounter = null;
+    @CapabilityInject(IVWWorldDataCapability.class)
+    public static final Capability<IVWWorldDataCapability> vwWorldData = null;
     public static final DimensionPhysicsChunkManager VW_CHUNK_MANAGER = new DimensionPhysicsChunkManager();
     public static final DimensionPhysObjectManager VW_PHYSICS_MANAGER = new DimensionPhysObjectManager();
     // This service is directly responsible for running collision tasks.
@@ -502,6 +507,8 @@ public class ValkyrienWarfareMod {
     public void registerCapibilities() {
         CapabilityManager.INSTANCE.register(IAirshipCounterCapability.class, new StorageAirshipCounter(),
                 ImplAirshipCounterCapability.class);
+        CapabilityManager.INSTANCE.register(IVWWorldDataCapability.class, new StorageVWWorldData(),
+                ImplVWWorldDataCapability.class);
     }
 
     /**

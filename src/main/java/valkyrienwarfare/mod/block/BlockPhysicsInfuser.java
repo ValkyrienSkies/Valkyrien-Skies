@@ -71,9 +71,8 @@ public class BlockPhysicsInfuser extends Block {
                 PhysicsWrapperEntity wrapperEnt = manager
                         .getManagingObjectForChunk(worldIn.getChunkFromBlockCoords(pos));
                 if (wrapperEnt != null) {
-                    // Alright destroy this ship.
-
                     wrapperEnt.getPhysicsObject().setPhysicsEnabled(!wrapperEnt.getPhysicsObject().isPhysicsEnabled());
+                    // Alright (try) to destroy this ship.
                     wrapperEnt.getPhysicsObject()
                             .tryToDeconstructShip();
                     return true;

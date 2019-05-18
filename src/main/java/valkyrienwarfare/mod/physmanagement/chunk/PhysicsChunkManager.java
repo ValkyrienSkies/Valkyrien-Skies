@@ -18,10 +18,8 @@ package valkyrienwarfare.mod.physmanagement.chunk;
 
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.fixes.IVWWorldDataCapability;
-import valkyrienwarfare.fixes.ShipChunkAllocator;
 
-import static valkyrienwarfare.fixes.ShipChunkAllocator.MAX_SHIP_CHUNK_RADIUS;
+import static valkyrienwarfare.mod.physmanagement.chunk.ShipChunkAllocator.MAX_SHIP_CHUNK_RADIUS;
 
 /**
  * This class is responsible for finding/allocating the Chunks for

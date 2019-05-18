@@ -16,4 +16,6 @@ public interface IVWWorldDataCapability {
      * @return
      */
     IVWWorldDataCapability setWorld(World world);
+
+    ShipChunkAllocator getChunkAllocator();
 }

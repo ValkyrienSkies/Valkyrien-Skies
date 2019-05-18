@@ -27,4 +27,9 @@ public class ImplVWWorldDataCapability implements IVWWorldDataCapability {
         this.world = world;
         return this;
     }
+
+    @Override
+    public ShipChunkAllocator getChunkAllocator() {
+        return shipChunkAllocator;
+    }
 }

@@ -17,6 +17,11 @@
 package valkyrienwarfare.mod.physmanagement.chunk;
 
 import net.minecraft.world.World;
+import valkyrienwarfare.ValkyrienWarfareMod;
+import valkyrienwarfare.fixes.IVWWorldDataCapability;
+import valkyrienwarfare.fixes.ShipChunkAllocator;
+
+import static valkyrienwarfare.fixes.ShipChunkAllocator.MAX_SHIP_CHUNK_RADIUS;
 
 /**
  * This class is responsible for finding/allocating the Chunks for
@@ -26,34 +31,17 @@ import net.minecraft.world.World;
  */
 public class PhysicsChunkManager {
 
-    // Flipped these because I changed the key to the ChunkClaimWorldData.
-    public static int xChunkStartingPos = 1870000;
-    public static int zChunkStartingPos = -1870000;
-    // public int chunkRadius = 3;
-    public static int maxChunkRadius = 12;
-    public World worldObj;
-    public int nextChunkSetKey;
-    public int chunkSetIncrement;
-    // Currently at 3 to be safe, this is important because Ships could start
-    // affecting
-    // each other remotely if this value is too small (ex. 0)
-    public int distanceBetweenSets = 1;
-    public ChunkClaimWorldData data;
+    // The +50 is used to make sure chunks too close to ships dont interfere
+    public static boolean isLikelyShipChunk(int chunkX, int chunkZ) {
+        boolean likelyLegacy = chunkZ < -1870000 + 12 + 50;
+        return likelyLegacy || ShipChunkAllocator.isLikelyShipChunk(chunkX, chunkZ);
+    }
 
     public PhysicsChunkManager(World worldFor) {
         worldObj = worldFor;
-        chunkSetIncrement = (maxChunkRadius * 2) + distanceBetweenSets;
-//		try {
-        loadDataFromWorld();
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
     }
 
-    // The +50 is used to make sure chunks too close to ships dont interfere
-    public static boolean isLikelyShipChunk(int chunkX, int chunkZ) {
-        return chunkZ < zChunkStartingPos + maxChunkRadius + 50;
-    }
+    public final World worldObj;
 
     /**
      * This finds the next empty chunkSet for use, currently only increases the xPos
@@ -61,31 +49,13 @@ public class PhysicsChunkManager {
      *
      * @return
      */
-    public VWChunkClaim getNextAvaliableChunkSet(int chunkRadius) {
-        loadDataFromWorld();
-        // System.out.println("Got next avaliable chunk set.");
+    public VWChunkClaim getNextAvaliableChunkSet(int radius) {
+        IVWWorldDataCapability worldDataCapability = worldObj.getCapability(ValkyrienWarfareMod.vwWorldData, null);
+        // TODO: Add the ship id to the allocation eventually.
+        ShipChunkAllocator.ChunkAllocation allocatedChunks = worldDataCapability.getChunkAllocator()
+                .allocateChunks("insert ship id here", radius);
 
-        int chunkX = xChunkStartingPos + nextChunkSetKey;
-        int chunkZ = zChunkStartingPos;
-
-        // This is broken; don't try recycling old chunks for now.
-        if (data.getAvailableChunkKeys().size() > 0 && false) {
-            chunkX = data.getAvailableChunkKeys().get(0);
-            data.getAvailableChunkKeys().remove(0);
-        } else {
-            nextChunkSetKey += chunkSetIncrement;
-            data.setChunkKey(nextChunkSetKey);
-        }
-        data.markDirty();
-        return new VWChunkClaim(chunkX, chunkZ, chunkRadius);
-    }
-
-    /**
-     * This retrieves the ChunkSetKey data for the specific world
-     */
-    public void loadDataFromWorld() {
-        data = ChunkClaimWorldData.get(worldObj);
-        nextChunkSetKey = data.getChunkKey();
+        return new VWChunkClaim(allocatedChunks.lowerChunkX + MAX_SHIP_CHUNK_RADIUS, allocatedChunks.lowerChunkZ + MAX_SHIP_CHUNK_RADIUS, radius);
     }
 
 }

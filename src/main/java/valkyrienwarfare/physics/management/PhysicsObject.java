@@ -54,6 +54,7 @@ import valkyrienwarfare.addon.control.network.EntityFixMessage;
 import valkyrienwarfare.addon.control.nodenetwork.INodeController;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.deprecated_api.EnumChangeOwnerResult;
+import valkyrienwarfare.fixes.ShipChunkAllocator;
 import valkyrienwarfare.math.Quaternion;
 import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.mod.BlockPhysicsRegistration;
@@ -225,8 +226,6 @@ public class PhysicsObject implements ISubspaceProvider {
                             }
                         }
                     }
-                    ValkyrienWarfareMod.VW_CHUNK_MANAGER.getManagerForWorld(getWorldObj()).data.getAvailableChunkKeys()
-                            .add(getOwnedChunks().getCenterX());
                 }
 
             } catch (Exception e) {
@@ -313,8 +312,7 @@ public class PhysicsObject implements ISubspaceProvider {
             radiusNeeded = Math.max(Math.max(zRad, xRad), radiusNeeded + 1);
         }
 
-        radiusNeeded = Math.min(radiusNeeded,
-                ValkyrienWarfareMod.VW_CHUNK_MANAGER.getManagerForWorld(getWrapperEntity().world).maxChunkRadius);
+        radiusNeeded = Math.min(radiusNeeded, ShipChunkAllocator.MAX_SHIP_CHUNK_RADIUS);
         claimNewChunks(radiusNeeded);
         ValkyrienWarfareMod.VW_PHYSICS_MANAGER.onShipPreload(getWrapperEntity());
 

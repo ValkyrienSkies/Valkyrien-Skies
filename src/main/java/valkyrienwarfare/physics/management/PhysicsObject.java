@@ -337,8 +337,6 @@ public class PhysicsObject implements ISubspaceProvider {
 
         setRefrenceBlockPos(getRegionCenter());
 
-        Vector originalCM = new Vector(getReferenceBlockPos().getX() + .5, getReferenceBlockPos().getY() + .5, getReferenceBlockPos().getZ() + .5);
-
         setCenterCoord(new Vector(getReferenceBlockPos().getX() + .5, getReferenceBlockPos().getY() + .5, getReferenceBlockPos().getZ() + .5));
 
         createPhysicsCalculations();
@@ -357,8 +355,6 @@ public class PhysicsObject implements ISubspaceProvider {
             newPos.setPos(newPos.getX() + centerDifference.getX(), newPos.getY() + centerDifference.getY(), newPos.getZ() + centerDifference.getZ());
 
             MoveBlocks.copyBlockToPos(getWorldObj(), oldPos, newPos, Optional.of(this));
-            // We still have to do this instead of relying on notifyBlockUpdate() because sponge delays notifyBlockUpdate() such that it won't happen immediately after World.setBlockState().
-            onSetBlockState(Blocks.AIR.getDefaultState(), getWorldObj().getBlockState(newPos), newPos);
         }
 
         // Then destroy all of the blocks we copied from in world.
@@ -375,9 +371,7 @@ public class PhysicsObject implements ISubspaceProvider {
 
         for (int x = getOwnedChunks().getMinX(); x <= getOwnedChunks().getMaxX(); x++) {
             for (int z = getOwnedChunks().getMinZ(); z <= getOwnedChunks().getMaxZ(); z++) {
-                claimedChunks[x - getOwnedChunks().getMinX()][z - getOwnedChunks().getMinZ()].isTerrainPopulated = true;
                 claimedChunks[x - getOwnedChunks().getMinX()][z - getOwnedChunks().getMinZ()].generateSkylightMap();
-                claimedChunks[x - getOwnedChunks().getMinX()][z - getOwnedChunks().getMinZ()].checkLight();
             }
         }
 

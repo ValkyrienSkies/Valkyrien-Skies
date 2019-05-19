@@ -1,6 +1,6 @@
 package valkyrienwarfare.mod.physmanagement.relocation;
 
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -19,7 +19,6 @@ public class MoveBlocks {
      * @param physicsObjectOptional Used when we're using this to copy from world to physics object; should be empty when other way around.
      */
     public static void copyBlockToPos(World world, BlockPos oldPos, BlockPos newPos, Optional<PhysicsObject> physicsObjectOptional) {
-        IBlockState state = world.getBlockState(oldPos);
         // Move pos to the ship space
 
         // To avoid any updates crap, just edit the chunk data array directly.
@@ -33,7 +32,14 @@ public class MoveBlocks {
         }
         chunkToSet.storageArrays[storageIndex].set(newPos.getX() & 15, newPos.getY() & 15, newPos.getZ() & 15, state);
          */
-        world.setBlockState(newPos, world.getBlockState(oldPos), 16);
+        if (physicsObjectOptional.isPresent()) {
+            world.setBlockState(newPos, world.getBlockState(oldPos), 16);
+            // We still have to do this instead of relying on notifyBlockUpdate() because sponge delays notifyBlockUpdate() such that it won't happen immediately after World.setBlockState().
+            physicsObjectOptional.get()
+                    .onSetBlockState(Blocks.AIR.getDefaultState(), world.getBlockState(newPos), newPos);
+        } else {
+            world.setBlockState(newPos, world.getBlockState(oldPos), 2);
+        }
 
         if (physicsObjectOptional.isPresent()) {
             int minChunkX = physicsObjectOptional.get()

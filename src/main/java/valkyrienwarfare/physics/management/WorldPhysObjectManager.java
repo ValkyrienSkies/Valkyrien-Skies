@@ -107,6 +107,7 @@ public class WorldPhysObjectManager {
             loaded.getPhysicsObject()
                     .onThisUnload();
         }
+        // Remove this ship from all our maps, we do not want to memory leak.
         this.physicsEntities.remove(loaded);
         List<Long> keysToRemove = new ArrayList();
         for (Map.Entry<Long, PhysicsWrapperEntity> entry : chunkPosToPhysicsEntityMap.entrySet()) {

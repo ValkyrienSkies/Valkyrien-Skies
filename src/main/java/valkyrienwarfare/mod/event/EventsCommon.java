@@ -109,6 +109,7 @@ public class EventsCommon {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onEntityJoinWorldEvent(EntityJoinWorldEvent event) {
         Entity entity = event.getEntity();
+
         World world = entity.world;
         BlockPos posAt = new BlockPos(entity);
         PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(world, posAt);
@@ -121,9 +122,9 @@ public class EventsCommon {
             }
             RotationMatrices.applyTransform(wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform(), entity,
                     TransformType.SUBSPACE_TO_GLOBAL);
-            event.setCanceled(true);
-            event.getWorld()
-                    .spawnEntity(entity);
+            // TODO: This should work but it doesn't because of sponge. Instead we have to rely on MixinChunk.preAddEntity() to fix this
+            // event.setCanceled(true);
+            // event.getWorld().spawnEntity(entity);
         }
     }
 

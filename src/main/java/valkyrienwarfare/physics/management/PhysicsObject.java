@@ -169,6 +169,9 @@ public class PhysicsObject implements ISubspaceProvider {
         if (getWorldObj().isRemote) {
             return;
         }
+        // System.out.println("OLD: " + oldState.getBlock());
+        // System.out.println("NEW: " + newState.getBlock());
+        // new Exception().printStackTrace();
 
         if (!getOwnedChunks().isChunkEnclosedInSet(posAt.getX() >> 4, posAt.getZ() >> 4)) {
             return;
@@ -333,7 +336,10 @@ public class PhysicsObject implements ISubspaceProvider {
         setShipChunks(new VWChunkCache(getWorldObj(), claimedChunks));
 
         setRefrenceBlockPos(getRegionCenter());
-        setCenterCoord(new Vector(getReferenceBlockPos().getX(), getReferenceBlockPos().getY(), getReferenceBlockPos().getZ()));
+
+        Vector originalCM = new Vector(getReferenceBlockPos().getX() + .5, getReferenceBlockPos().getY() + .5, getReferenceBlockPos().getZ() + .5);
+
+        setCenterCoord(new Vector(getReferenceBlockPos().getX() + .5, getReferenceBlockPos().getY() + .5, getReferenceBlockPos().getZ() + .5));
 
         createPhysicsCalculations();
 
@@ -350,7 +356,7 @@ public class PhysicsObject implements ISubspaceProvider {
             SpatialDetector.setPosWithRespectTo(i, centerInWorld, newPos);
             newPos.setPos(newPos.getX() + centerDifference.getX(), newPos.getY() + centerDifference.getY(), newPos.getZ() + centerDifference.getZ());
             MoveBlocks.copyBlockToPos(getWorldObj(), oldPos, newPos, Optional.of(this));
-            onSetBlockState(Blocks.AIR.getDefaultState(), getWorldObj().getBlockState(newPos), newPos);
+            // onSetBlockState(Blocks.AIR.getDefaultState(), getWorldObj().getBlockState(newPos), newPos);
         }
 
         // Then destroy all of the blocks we copied from in world.
@@ -376,8 +382,13 @@ public class PhysicsObject implements ISubspaceProvider {
         // Some extra ship crap at the end.
         detectBlockPositions();
         setShipTransformationManager(new ShipTransformationManager(this));
-        getPhysicsProcessor().recalculateShipInertia();
         getPhysicsProcessor().updateParentCenterOfMass();
+
+        // Since ship spawn position is broken it might as well be funny.
+        getWrapperEntity().posY += 10;
+
+        getShipTransformationManager().updateCurrentTickTransform();
+
     }
 
     public void injectChunkIntoWorld(Chunk chunk, int x, int z, boolean putInId2ChunkMap) {

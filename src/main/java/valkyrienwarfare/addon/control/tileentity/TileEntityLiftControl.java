@@ -65,7 +65,7 @@ public class TileEntityLiftControl extends ImplTileEntityPilotable {
                 this.markDirty();
             }
             if (!isPilotSprinting) {
-                heightReference += (leverOffset - .5) / 4D;
+                heightReference += (leverOffset - .5) / 2D;
             } else {
                 heightReference += (leverOffset - .5) * 1.25D;
             }
@@ -154,7 +154,11 @@ public class TileEntityLiftControl extends ImplTileEntityPilotable {
             }
         }
 
-        leverOffset = Math.max(0, Math.min(1, leverOffset));
+        if (message.airshipSprinting) {
+            leverOffset = Math.max(0, Math.min(1, leverOffset));
+        } else {
+            leverOffset = Math.max(.25f, Math.min(.75f, leverOffset));
+        }
     }
 
     @Override

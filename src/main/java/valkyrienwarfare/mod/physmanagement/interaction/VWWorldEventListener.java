@@ -26,8 +26,10 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorldEventListener;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.TransformType;
+import valkyrienwarfare.fixes.IPhysicsChunk;
 import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
@@ -41,7 +43,14 @@ public class VWWorldEventListener implements IWorldEventListener {
 
     @Override
     public void notifyBlockUpdate(World worldIn, BlockPos pos, IBlockState oldState, IBlockState newState, int flags) {
-
+        Chunk chunk = worldIn.getChunkFromBlockCoords(pos);
+        IPhysicsChunk physicsChunk = (IPhysicsChunk) chunk;
+        if (physicsChunk.getPhysicsObjectOptional()
+                .isPresent()) {
+            physicsChunk.getPhysicsObjectOptional()
+                    .get()
+                    .onSetBlockState(oldState, newState, pos);
+        }
     }
 
     @Override

@@ -31,17 +31,33 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import valkyrienwarfare.ValkyrienWarfareMod;
+import valkyrienwarfare.fixes.IPhysicsChunk;
 import valkyrienwarfare.mod.client.render.ITileEntitiesToRenderProvider;
 import valkyrienwarfare.mod.physmanagement.chunk.PhysicsChunkManager;
-import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.management.PhysicsObject;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 @Mixin(value = Chunk.class, priority = 1001)
-public abstract class MixinChunk implements ITileEntitiesToRenderProvider {
+public abstract class MixinChunk implements ITileEntitiesToRenderProvider, IPhysicsChunk {
+
+    private Optional<PhysicsObject> parentOptional = Optional.empty();
+
+    @Shadow
+    public abstract World getWorld();
+
+    @Override
+    public void setParentPhysicsObject(Optional<PhysicsObject> physicsObjectOptional) {
+        this.parentOptional = physicsObjectOptional;
+    }
+
+    @Override
+    public Optional<PhysicsObject> getPhysicsObjectOptional() {
+        return parentOptional;
+    }
 
     @Shadow
     @Final
@@ -67,9 +83,9 @@ public abstract class MixinChunk implements ITileEntitiesToRenderProvider {
         int yIndex = pos.getY() >> 4;
         removeTileEntityFromIndex(pos, yIndex);
         tileEntitesByExtendedData[yIndex].add(tileEntityIn);
-        PhysicsWrapperEntity entity = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(world, pos);
-        if (entity != null) {
-            entity.getPhysicsObject().onSetTileEntity(pos, tileEntityIn);
+        if (getPhysicsObjectOptional().isPresent()) {
+            getPhysicsObjectOptional().get()
+                    .onSetTileEntity(pos, tileEntityIn);
         }
     }
 
@@ -77,9 +93,9 @@ public abstract class MixinChunk implements ITileEntitiesToRenderProvider {
     public void post_removeTileEntity(BlockPos pos, CallbackInfo callbackInfo) {
         int yIndex = pos.getY() >> 4;
         removeTileEntityFromIndex(pos, yIndex);
-        PhysicsWrapperEntity entity = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(world, pos);
-        if (entity != null) {
-            entity.getPhysicsObject().onRemoveTileEntity(pos);
+        if (getPhysicsObjectOptional().isPresent()) {
+            getPhysicsObjectOptional().get()
+                    .onRemoveTileEntity(pos);
         }
     }
 

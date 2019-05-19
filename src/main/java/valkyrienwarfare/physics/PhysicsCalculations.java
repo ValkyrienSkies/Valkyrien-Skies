@@ -42,7 +42,13 @@ import valkyrienwarfare.util.NBTUtils;
 import valkyrienwarfare.util.PhysicsSettings;
 
 import javax.vecmath.Matrix3d;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PhysicsCalculations {
@@ -97,22 +103,9 @@ public class PhysicsCalculations {
     public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos pos) {
         World worldObj = getParent().getWorldObj();
         if (!newState.equals(oldState)) {
-            if (oldState.getBlock() == Blocks.AIR) {
-                if (BlockForce.basicForces.isBlockProvidingForce(newState, pos, worldObj)) {
-                    activeForcePositions.add(pos);
-                }
+            if (BlockForce.basicForces.isBlockProvidingForce(newState, pos, worldObj)) {
+                activeForcePositions.add(pos);
             } else {
-                if (activeForcePositions.contains(pos)) {
-                    if (!BlockForce.basicForces.isBlockProvidingForce(newState, pos, worldObj)) {
-                        activeForcePositions.remove(pos);
-                    }
-                } else {
-                    if (BlockForce.basicForces.isBlockProvidingForce(newState, pos, worldObj)) {
-                        activeForcePositions.add(pos);
-                    }
-                }
-            }
-            if (newState.getBlock() == Blocks.AIR) {
                 activeForcePositions.remove(pos);
             }
 
@@ -365,7 +358,7 @@ public class PhysicsCalculations {
 
                             addForceAtPoint(inBodyWO, blockForce, crossVector);
                             // Add particles here.
-                            if (IBlockForceProvider.class.cast(blockAt).doesForceSpawnParticles()) {
+                            if (((IBlockForceProvider) blockAt).doesForceSpawnParticles()) {
                                 Vector particlePos;
                                 if (otherPosition != null) {
                                     particlePos = new Vector(otherPosition);

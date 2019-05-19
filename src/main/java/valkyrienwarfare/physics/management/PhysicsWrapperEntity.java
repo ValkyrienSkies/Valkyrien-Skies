@@ -80,9 +80,6 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 
     @Override
     public void onUpdate() {
-        if (isDead) {
-            return;
-        }
         if (world.isRemote) {
             getPhysicsObject().setNameCustom(dataManager.get(IS_NAME_CUSTOM));
         }

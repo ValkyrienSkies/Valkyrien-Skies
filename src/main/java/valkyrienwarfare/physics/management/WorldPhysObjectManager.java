@@ -154,6 +154,8 @@ public class WorldPhysObjectManager {
             }
         } else {
             loaded.isDead = true;
+            loaded.getPhysicsObject()
+                    .onThisUnload();
         }
         loaded.getPhysicsObject().resetConsecutiveProperTicks();
     }

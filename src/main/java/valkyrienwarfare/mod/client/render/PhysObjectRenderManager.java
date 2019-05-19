@@ -22,7 +22,6 @@ import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
 import org.lwjgl.opengl.GL11;
-import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.math.Quaternion;
 import valkyrienwarfare.math.Vector;
@@ -157,7 +156,10 @@ public class PhysObjectRenderManager {
     }
 
     public boolean shouldRender() {
-        ICamera camera = ((ClientProxy) ValkyrienWarfareMod.proxy).lastCamera;
+        if (parent.getWrapperEntity().isDead) {
+            return false;
+        }
+        ICamera camera = ClientProxy.lastCamera;
         return camera == null || camera.isBoundingBoxInFrustum(parent.getShipBoundingBox());
     }
 

@@ -62,7 +62,11 @@ public class TileEntityPilotsChair extends ImplTileEntityPilotable {
 
     @Override
     public final void onStopTileUsage() {
-        getParentPhysicsEntity().getPhysicsObject().getPhysicsProcessor().actAsArchimedes = false;
+        // Sanity check, sometimes we can be piloting something that's been destroyed so there's nothing to change physics on.
+        if (getParentPhysicsEntity() != null) {
+            getParentPhysicsEntity().getPhysicsObject()
+                    .getPhysicsProcessor().actAsArchimedes = false;
+        }
     }
 
     private final void processCalculationsForControlMessageAndApplyCalculations(PhysicsWrapperEntity wrapper, PilotControlsMessage message, IBlockState state) {

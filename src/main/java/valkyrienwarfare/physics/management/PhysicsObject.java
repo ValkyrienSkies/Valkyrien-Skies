@@ -54,7 +54,7 @@ import valkyrienwarfare.addon.control.network.EntityFixMessage;
 import valkyrienwarfare.addon.control.nodenetwork.INodeController;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.deprecated_api.EnumChangeOwnerResult;
-import valkyrienwarfare.fixes.ShipChunkAllocator;
+import valkyrienwarfare.fixes.IPhysicsChunk;
 import valkyrienwarfare.math.Quaternion;
 import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.mod.BlockPhysicsRegistration;
@@ -65,6 +65,7 @@ import valkyrienwarfare.mod.coordinates.ImplSubspace;
 import valkyrienwarfare.mod.coordinates.ShipTransform;
 import valkyrienwarfare.mod.coordinates.ShipTransformationPacketHolder;
 import valkyrienwarfare.mod.network.PhysWrapperPositionMessage;
+import valkyrienwarfare.mod.physmanagement.chunk.ShipChunkAllocator;
 import valkyrienwarfare.mod.physmanagement.chunk.VWChunkCache;
 import valkyrienwarfare.mod.physmanagement.chunk.VWChunkClaim;
 import valkyrienwarfare.mod.physmanagement.relocation.DetectorManager;
@@ -349,6 +350,7 @@ public class PhysicsObject implements ISubspaceProvider {
             SpatialDetector.setPosWithRespectTo(i, centerInWorld, newPos);
             newPos.setPos(newPos.getX() + centerDifference.getX(), newPos.getY() + centerDifference.getY(), newPos.getZ() + centerDifference.getZ());
             MoveBlocks.copyBlockToPos(getWorldObj(), oldPos, newPos, Optional.of(this));
+            onSetBlockState(Blocks.AIR.getDefaultState(), getWorldObj().getBlockState(newPos), newPos);
         }
 
         // Then destroy all of the blocks we copied from in world.
@@ -379,6 +381,9 @@ public class PhysicsObject implements ISubspaceProvider {
     }
 
     public void injectChunkIntoWorld(Chunk chunk, int x, int z, boolean putInId2ChunkMap) {
+        // Make sure this chunk knows we own it.
+        ((IPhysicsChunk) chunk).setParentPhysicsObject(Optional.of(this));
+
         ChunkProviderServer provider = (ChunkProviderServer) getWorldObj().getChunkProvider();
         chunk.dirty = true;
         claimedChunks[x - getOwnedChunks().getMinX()][z - getOwnedChunks().getMinZ()] = chunk;
@@ -731,7 +736,7 @@ public class PhysicsObject implements ISubspaceProvider {
         setCenterCoord(NBTUtils.readVectorFromNBT("c", compound));
         // Then this second
         createPhysicsCalculations();
-        assert getPhysicsProcessor() != null : "This is horrible!";
+        assert getPhysicsProcessor() != null : "Insert error message here";
 
         setOwnedChunks(new VWChunkClaim(compound));
         ShipTransform savedTransform = NBTUtils.readShipTransformFromNBT("currentTickTransform", compound);

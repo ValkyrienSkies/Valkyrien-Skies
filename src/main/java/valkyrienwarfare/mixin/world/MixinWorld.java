@@ -108,16 +108,6 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
         }
     }
 
-    @Inject(method = "setBlockState(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/state/IBlockState;I)Z", at = @At("HEAD"))
-    public void preSetBlockState(BlockPos pos, IBlockState newState, int flags, CallbackInfoReturnable callbackInfo) {
-        PhysicsWrapperEntity physEntity = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(thisClassAsWorld,
-                pos);
-        if (physEntity != null) {
-            IBlockState oldState = thisClassAsWorld.getBlockState(pos);
-            physEntity.getPhysicsObject().onSetBlockState(oldState, newState, pos);
-        }
-    }
-
     /**
      * This is easier to have as an overwrite because there's less laggy hackery to
      * be done then :P

@@ -1,16 +1,6 @@
 package valkyrienwarfare.mixin.spongepowered.common.event.tracking;
 
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import org.spongepowered.api.world.BlockChangeFlag;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.common.interfaces.world.IMixinWorldServer;
-import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 /**
  * Used to hook into the setBlockState() method when Sponge is loaded.
@@ -31,14 +21,15 @@ public class MixinPhaseTracker {
      * @param flag
      * @param info
      */
+
+    /*
     @Inject(method = "setBlockState(Lorg/spongepowered/common/interfaces/world/IMixinWorldServer;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/state/IBlockState;Lorg/spongepowered/api/world/BlockChangeFlag;)Z", at = @At(value = "HEAD"))
     public void preSetBlockState2(IMixinWorldServer mixinWorld, BlockPos pos, IBlockState newState,
                                   BlockChangeFlag flag, CallbackInfoReturnable info) {
+        // For some reason sponge doesn't call this.
         World world = (World) mixinWorld;
-        PhysicsWrapperEntity physEntity = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(world, pos);
-        if (physEntity != null) {
-            IBlockState oldState = world.getBlockState(pos);
-            physEntity.getPhysicsObject().onSetBlockState(oldState, newState, pos);
-        }
+        IPhysicsChunk.class.cast(world.getChunkFromBlockCoords(pos)).onSetBlockStatePre(pos, newState);
     }
+
+     */
 }

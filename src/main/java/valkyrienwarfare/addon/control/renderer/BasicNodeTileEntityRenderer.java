@@ -27,53 +27,56 @@ import org.lwjgl.opengl.GL11;
 import valkyrienwarfare.addon.control.nodenetwork.BasicNodeTileEntity;
 import valkyrienwarfare.addon.control.nodenetwork.VWNode_TileEntity;
 
-public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer {
-
-    private final Class renderedTileEntityClass;
-
-    public BasicNodeTileEntityRenderer(Class toRender) {
-        renderedTileEntityClass = toRender;
-    }
+public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer<BasicNodeTileEntity> {
 
     @Override
-    public void render(TileEntity te, double x, double y, double z, float partialTick, int destroyStage, float alpha) {
-        if (te instanceof BasicNodeTileEntity) {
-            GlStateManager.disableBlend();
-            VWNode_TileEntity tileNode = ((BasicNodeTileEntity) (te)).getNode();
-            if (tileNode != null) {
-                GL11.glPushMatrix();
-                GL11.glTranslated(.5D, -1D, .5D);
-                // GL11.glTranslated(0, y, 0);
+    public void render(BasicNodeTileEntity te, double x, double y, double z, float partialTick, int destroyStage, float alpha) {
+        GlStateManager.disableBlend();
+        VWNode_TileEntity tileNode = te.getNode();
+        if (tileNode != null) {
+            GL11.glPushMatrix();
+            GL11.glTranslated(.5D, -1D, .5D);
+            // GL11.glTranslated(0, y, 0);
 
-                for (BlockPos otherPos : tileNode.getLinkedNodesPos()) {
-                    // render wire between these two blockPos
-                    GL11.glPushMatrix();
-                    // GlStateManager.resetColor();
-
-                    double startX = te.getPos().getX();
-                    double startY = te.getPos().getY();
-                    double startZ = te.getPos().getZ();
-
-                    double endX = (startX * 2) - otherPos.getX();
-                    double endY = (startY * 2) - otherPos.getY() - 1.5;
-                    double endZ = (startZ * 2) - otherPos.getZ();
-
-                    renderWire(x, y, z, startX, startY, startZ, endX, endY, endZ);
-
-                    // GL11.glEnd();
-                    GL11.glPopMatrix();
+            for (BlockPos otherPos : tileNode.getLinkedNodesPos()) {
+                TileEntity otherTile = getWorld().getTileEntity(otherPos);
+                if (otherTile instanceof BasicNodeTileEntity) {
+                    // Don't render the same connection twice.
+                    if (otherTile.getPos()
+                            .compareTo(te.getPos()) < 0) {
+                        continue;
+                    }
                 }
+                // render wire between these two blockPos
+                GL11.glPushMatrix();
+                // GlStateManager.resetColor();
 
-                GlStateManager.resetColor();
-                // bindTexture(new ResourceLocation("textures/entity/lead_knot.png"));
-                // GlStateManager.scale(-1.0F, -1.0F, 1.0F);
+                double startX = te.getPos()
+                        .getX();
+                double startY = te.getPos()
+                        .getY();
+                double startZ = te.getPos()
+                        .getZ();
 
-                // ModelLeashKnot knotRenderer = new ModelLeashKnot();
-                // knotRenderer.knotRenderer.render(0.0625F);
-                // BlockPos originPos = te.getPos();
+                double endX = (startX * 2) - otherPos.getX();
+                double endY = (startY * 2) - otherPos.getY() - 1.5;
+                double endZ = (startZ * 2) - otherPos.getZ();
 
+                renderWire(x, y, z, startX, startY, startZ, endX, endY, endZ);
+
+                // GL11.glEnd();
                 GL11.glPopMatrix();
             }
+
+            GlStateManager.resetColor();
+            // bindTexture(new ResourceLocation("textures/entity/lead_knot.png"));
+            // GlStateManager.scale(-1.0F, -1.0F, 1.0F);
+
+            // ModelLeashKnot knotRenderer = new ModelLeashKnot();
+            // knotRenderer.knotRenderer.render(0.0625F);
+            // BlockPos originPos = te.getPos();
+
+            GL11.glPopMatrix();
         }
     }
 

@@ -12,7 +12,7 @@
     ],
     "inventory": [
       {
-        "model": "valkyrienwarfare:physics-infuser.obj",
+        "model": "valkyrienwarfarecontrol:basic_phys_infuser/physics_infuser_inventorymodel_geo.obj",
         "custom": {
           "flip-v": true
         },

@@ -20,6 +20,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
@@ -67,6 +68,8 @@ public class ShipSpawnDetector extends SpatialDetector {
         }
     }
 
+    private final MutableBlockPos mutablePos = new MutableBlockPos();
+
     public ShipSpawnDetector(BlockPos start, World worldIn, int maximum, boolean checkCorners) {
         super(start, worldIn, maximum, checkCorners);
         startDetection();
@@ -74,7 +77,8 @@ public class ShipSpawnDetector extends SpatialDetector {
 
     @Override
     public boolean isValidExpansion(int x, int y, int z) {
-        IBlockState state = cache.getBlockState(x, y, z);
+        mutablePos.setPos(x, y, z);
+        IBlockState state = cache.getBlockState(mutablePos);
         if (state.getBlock() == Blocks.BEDROCK) {
             cleanHouse = true;
             return false;

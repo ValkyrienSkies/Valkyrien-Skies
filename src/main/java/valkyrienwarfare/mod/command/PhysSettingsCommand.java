@@ -16,14 +16,7 @@
 
 package valkyrienwarfare.mod.command;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.annotation.Nullable;
-
 import com.google.common.collect.Lists;
-
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -31,8 +24,13 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.util.PhysicsSettings;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class PhysSettingsCommand extends CommandBase {
 
@@ -41,7 +39,6 @@ public class PhysSettingsCommand extends CommandBase {
     static {
         COMPLETED_OPTIONS.add("gravityvector");
         COMPLETED_OPTIONS.add("maxshipsize");
-        COMPLETED_OPTIONS.add("physicsiterations");
         COMPLETED_OPTIONS.add("physicsspeed");
         COMPLETED_OPTIONS.add("dogravity");
         COMPLETED_OPTIONS.add("dophysicsblocks");
@@ -49,6 +46,7 @@ public class PhysSettingsCommand extends CommandBase {
         COMPLETED_OPTIONS.add("doairshipmovement");
         COMPLETED_OPTIONS.add("save");
         COMPLETED_OPTIONS.add("doetheriumlifting");
+        COMPLETED_OPTIONS.add("restartcrashedphysics");
     }
 
     @Override
@@ -73,6 +71,7 @@ public class PhysSettingsCommand extends CommandBase {
             for (String command : COMPLETED_OPTIONS) {
                 sender.sendMessage(new TextComponentString(command));
             }
+            return;
         }
         String key = args[0];
         if (key.equals("maxshipsize")) {
@@ -108,20 +107,6 @@ public class PhysSettingsCommand extends CommandBase {
             } else {
                 sender.sendMessage(new TextComponentString("Usage: /physsettings gravityVector <x> <y> <z>"));
             }
-        } else if (key.equals("physicsiterations")) {
-            if (args.length == 1) {
-                sender.sendMessage(new TextComponentString("physicsiterations=" + ValkyrienWarfareMod.physIter + " (Default: 10)"));
-                return;
-            } else if (args.length == 2) {
-                int value = Integer.parseInt(args[1]);
-                if (value < 0 || value > 1000) {
-                    sender.sendMessage(new TextComponentString("Please enter a value between 0 and 1000"));
-                    return;
-                }
-                ValkyrienWarfareMod.physIter = value;
-                sender.sendMessage(new TextComponentString("Set physicsiterations to " + value));
-                return;
-            }
         } else if (key.equals("physicsspeed")) {
             if (args.length == 1) {
                 sender.sendMessage(new TextComponentString("physicsspeed=" + ValkyrienWarfareMod.physSpeed + " (Default: 100%)"));
@@ -132,7 +117,7 @@ public class PhysSettingsCommand extends CommandBase {
                     sender.sendMessage(new TextComponentString("Please enter a value between 0 and 1000"));
                     return;
                 }
-                ValkyrienWarfareMod.physSpeed = value * 0.05D / 100D;
+                ValkyrienWarfareMod.physSpeed = value / 10000D;
                 sender.sendMessage(new TextComponentString("Set physicsspeed to " + value + " percent"));
                 return;
             }

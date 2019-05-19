@@ -25,15 +25,22 @@ import java.util.List;
 import java.util.Set;
 
 public class MixinLoadManager implements IMixinConfigPlugin {
-    public static boolean isSpongeEnabled;
+
+    private static boolean isSpongeEnabled;
+
+    /**
+     * @return the isSpongeEnabled
+     */
+    public static boolean isSpongeEnabled() {
+        return isSpongeEnabled;
+    }
 
     @Override
     public void onLoad(String mixinPackage) {
-        isSpongeEnabled = isSponge();
-        if (isSpongeEnabled) {
-            FMLLog.bigWarning("SpongeForge has been detected. This will cause problems with Valkyrien Warfare, no doubt.");
-        } else {
-            FMLLog.info("Sponge ain't here! Everything is good and also nice");
+        isSpongeEnabled = isSpongeEnabledSlow();
+        if (isSpongeEnabled()) {
+            FMLLog.bigWarning(
+                    "Valkyrien Warfare has detected SpongeForge!");
         }
     }
 
@@ -44,9 +51,15 @@ public class MixinLoadManager implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        if (isSpongeEnabled) {
+        if (isSpongeEnabled()) {
             if (mixinClassName.startsWith("valkyrienwarfare.mixin.world.MixinExplosion")) {
-                FMLLog.bigWarning("Not loading valkyrienwarfare.mixin.world.MixinExplosion because SpongeForge is enabled!");
+                FMLLog.bigWarning(
+                        "Not loading valkyrienwarfare.mixin.world.MixinExplosion because SpongeForge is enabled!");
+                return false;
+            }
+        } else {
+            if (mixinClassName.contains("spongepowered")) {
+                FMLLog.bigWarning("Not applying" + mixinClassName + " because Sponge isn't here!");
                 return false;
             }
         }
@@ -54,13 +67,13 @@ public class MixinLoadManager implements IMixinConfigPlugin {
         return true;
     }
 
-    private boolean isSponge() {
+    private boolean isSpongeEnabledSlow() {
         try {
             if (Class.forName("org.spongepowered.common.mixin.core.world.MixinExplosion") != null) {
                 return true;
             }
         } catch (ClassNotFoundException e) {
-            //nobody cares!
+            // nobody cares!
         }
         return false;
     }
@@ -81,4 +94,5 @@ public class MixinLoadManager implements IMixinConfigPlugin {
     @Override
     public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
     }
+
 }

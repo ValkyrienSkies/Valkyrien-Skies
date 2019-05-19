@@ -16,19 +16,15 @@
 
 package valkyrienwarfare.mod.client.render;
 
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.culling.ICamera;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
-import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.api.RotationMatrices;
-import valkyrienwarfare.api.Vector;
+import org.lwjgl.opengl.GL11;
+import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.math.Quaternion;
+import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.mod.proxy.ClientProxy;
 import valkyrienwarfare.physics.management.PhysicsObject;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
@@ -41,16 +37,16 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
  */
 public class PhysObjectRenderManager {
 
-    private int glCallListSolid;
-    private int glCallListTranslucent;
-    private int glCallListCutout;
-    private int glCallListCutoutMipped;
-    private PhysicsObject parent;
     // This pos is used to prevent Z-Buffer Errors D:
     // It's actual value is completely irrelevant as long as it's close to the
     // Ship's centerBlockPos
     public BlockPos offsetPos;
     public double curPartialTick;
+    private int glCallListSolid;
+    private int glCallListTranslucent;
+    private int glCallListCutout;
+    private int glCallListCutoutMipped;
+    private PhysicsObject parent;
     private PhysRenderChunk[][] renderChunks;
 
     public PhysObjectRenderManager(PhysicsObject toRender) {
@@ -70,13 +66,15 @@ public class PhysObjectRenderManager {
 
     public void renderBlockLayer(BlockRenderLayer layerToRender, double partialTicks, int pass) {
         if (renderChunks == null) {
-            if (parent.claimedChunks == null) {
+            if (!parent.areShipChunksFullyLoaded()) {
                 return;
             }
-            renderChunks = new PhysRenderChunk[parent.claimedChunks.length][parent.claimedChunks[0].length];
-            for (int xChunk = 0; xChunk < parent.claimedChunks.length; xChunk++) {
-                for (int zChunk = 0; zChunk < parent.claimedChunks.length; zChunk++) {
-                    renderChunks[xChunk][zChunk] = new PhysRenderChunk(parent, parent.claimedChunks[xChunk][zChunk]);
+            renderChunks = new PhysRenderChunk[parent.getOwnedChunks().getChunkLengthX()][parent.getOwnedChunks()
+                    .getChunkLengthZ()];
+            for (int xChunk = 0; xChunk < parent.getOwnedChunks().getChunkLengthX(); xChunk++) {
+                for (int zChunk = 0; zChunk < parent.getOwnedChunks().getChunkLengthZ(); zChunk++) {
+                    renderChunks[xChunk][zChunk] = new PhysRenderChunk(parent, parent.getShipChunks()
+                            .getChunkAt(xChunk + parent.getOwnedChunks().getMinX(), zChunk + parent.getOwnedChunks().getMinZ()));
                 }
             }
         }
@@ -112,8 +110,8 @@ public class PhysObjectRenderManager {
         }
     }
 
-    public void updateRange(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
-        if (renderChunks == null || parent == null || parent.ownedChunks == null) {
+    public void updateRange(int minX, int minY, int minZ, int maxX, int maxY, int maxZ, boolean updateImmediately) {
+        if (renderChunks == null || parent == null || parent.getOwnedChunks() == null) {
             return;
         }
 
@@ -135,12 +133,16 @@ public class PhysObjectRenderManager {
             for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
                 // TODO: Fix this render bug
                 try {
-                    if (chunkX >= parent.ownedChunks.minX && chunkZ >= parent.ownedChunks.minZ
-                            && chunkX - parent.ownedChunks.minX < renderChunks.length
-                            && chunkZ - parent.ownedChunks.minZ < renderChunks[0].length) {
-                        PhysRenderChunk renderChunk = renderChunks[chunkX - parent.ownedChunks.minX][chunkZ
-                                - parent.ownedChunks.minZ];
-                        renderChunk.updateLayers(minBlockArrayY, maxBlockArrayY);
+                    if (chunkX >= parent.getOwnedChunks().getMinX() && chunkZ >= parent.getOwnedChunks().getMinZ()
+                            && chunkX - parent.getOwnedChunks().getMinX() < renderChunks.length
+                            && chunkZ - parent.getOwnedChunks().getMinZ() < renderChunks[0].length) {
+                        PhysRenderChunk renderChunk = renderChunks[chunkX - parent.getOwnedChunks().getMinX()][chunkZ
+                                - parent.getOwnedChunks().getMinZ()];
+                        if (renderChunk != null) {
+                            renderChunk.updateLayers(minBlockArrayY, maxBlockArrayY);
+                        } else {
+                            System.err.println("SHIP RENDER CHUNK CAME OUT NULL! THIS IS VERY WRONG!!");
+                        }
                     } else {
                         // ValkyrienWarfareMod.VWLogger.info("updateRange Just attempted to update
                         // blocks outside of a Ship's block Range. ANY ERRORS PAST THIS ARE LIKELY
@@ -153,22 +155,12 @@ public class PhysObjectRenderManager {
         }
     }
 
-    public void renderTileEntities(float partialTicks) {
-        for (BlockPos pos : parent.blockPositions) {
-            TileEntity tileEnt = parent.worldObj.getTileEntity(pos);
-            if (tileEnt != null) {
-                try {
-                    TileEntityRendererDispatcher.instance.render(tileEnt, partialTicks, -1);
-                } catch (Exception e) {
-                    // e.printStackTrace();
-                }
-            }
-        }
-    }
-
     public boolean shouldRender() {
-        ICamera camera = ((ClientProxy) ValkyrienWarfareMod.proxy).lastCamera;
-        return camera == null || camera.isBoundingBoxInFrustum(parent.getCollisionBoundingBox());
+        if (parent.getWrapperEntity().isDead) {
+            return false;
+        }
+        ICamera camera = ClientProxy.lastCamera;
+        return camera == null || camera.isBoundingBoxInFrustum(parent.getShipBoundingBox());
     }
 
     public void setupTranslation(double partialTicks) {
@@ -182,8 +174,8 @@ public class PhysObjectRenderManager {
     }
 
     public void updateTranslation(double partialTicks) {
-        PhysicsWrapperEntity entity = parent.wrapper;
-        Vector centerOfRotation = entity.wrapping.centerCoord;
+        PhysicsWrapperEntity entity = parent.getWrapperEntity();
+        Vector centerOfRotation = entity.getPhysicsObject().getCenterCoord();
         curPartialTick = partialTicks;
 
         double moddedX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks;
@@ -206,7 +198,7 @@ public class PhysObjectRenderManager {
         double moddedYaw = Math.toDegrees(radians[1]);
         double moddedRoll = Math.toDegrees(radians[2]);
 
-        parent.coordTransform.updateRenderMatrices(moddedX, moddedY, moddedZ, moddedPitch, moddedYaw, moddedRoll);
+        parent.getShipTransformationManager().updateRenderTransform(moddedX, moddedY, moddedZ, moddedPitch, moddedYaw, moddedRoll);
 
         if (offsetPos != null) {
             double offsetX = offsetPos.getX() - centerOfRotation.X;
@@ -223,22 +215,16 @@ public class PhysObjectRenderManager {
     }
 
     public Quaternion getSmoothRotationQuat(double partialTick) {
-        PhysicsWrapperEntity entity = parent.wrapper;
-        double[] oldRotation = RotationMatrices.getDoubleIdentity();
-        oldRotation = RotationMatrices.rotateAndTranslate(oldRotation, entity.prevPitch, entity.prevYaw,
-                entity.prevRoll, new Vector());
-        Quaternion oneTickBefore = Quaternion.QuaternionFromMatrix(oldRotation);
-        double[] newRotation = RotationMatrices.getDoubleIdentity();
-        newRotation = RotationMatrices.rotateAndTranslate(newRotation, entity.pitch, entity.yaw, entity.roll,
-                new Vector());
-        Quaternion nextQuat = Quaternion.QuaternionFromMatrix(newRotation);
-        return Quaternion.getBetweenQuat(oneTickBefore, nextQuat, partialTick);
+        Quaternion oneTickBefore = parent.getShipTransformationManager().getPrevTickTransform()
+                .createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
+        Quaternion nextQuat = parent.getShipTransformationManager().getCurrentTickTransform()
+                .createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
+        return Quaternion.slerpInterpolate(oneTickBefore, nextQuat, partialTick);
     }
 
-    // TODO: Program me
     public void inverseTransform(double partialTicks) {
-        PhysicsWrapperEntity entity = parent.wrapper;
-        Vector centerOfRotation = entity.wrapping.centerCoord;
+        PhysicsWrapperEntity entity = parent.getWrapperEntity();
+        Vector centerOfRotation = entity.getPhysicsObject().getCenterCoord();
         curPartialTick = partialTicks;
 
         double moddedX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks;

@@ -16,10 +16,13 @@
 
 package valkyrienwarfare.addon.control.tileentity;
 
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
-import net.minecraft.world.WorldServer;
+import net.minecraft.util.EnumFacing;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.network.MessageStartPiloting;
@@ -28,12 +31,13 @@ import valkyrienwarfare.addon.control.nodenetwork.BasicNodeTileEntity;
 import valkyrienwarfare.addon.control.piloting.ControllerInputType;
 import valkyrienwarfare.addon.control.piloting.ITileEntityPilotable;
 import valkyrienwarfare.addon.control.piloting.PilotControlsMessage;
-import valkyrienwarfare.api.RotationMatrices;
-import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.api.TransformType;
+import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 /**
- * A basic implementation of the ITileEntityPilotable interface, other tile entities can extend this for easy controls
+ * A basic implementation of the ITileEntityPilotable interface, other tile
+ * entities can extend this for easy controls
  *
  * @author thebest108
  */
@@ -41,12 +45,17 @@ public abstract class ImplTileEntityPilotable extends BasicNodeTileEntity implem
 
     private EntityPlayer pilotPlayerEntity;
 
+    ImplTileEntityPilotable() {
+        super();
+        this.pilotPlayerEntity = null;
+    }
+
     @Override
     public final void onPilotControlsMessage(PilotControlsMessage message, EntityPlayerMP sender) {
         if (sender == pilotPlayerEntity) {
             processControlMessage(message, sender);
         } else {
-            //Wtf is this packet being sent for?
+            // Wtf is this packet being sent for?
         }
     }
 
@@ -73,23 +82,24 @@ public abstract class ImplTileEntityPilotable extends BasicNodeTileEntity implem
         if (player == getPilotEntity()) {
             setPilotEntity(null);
         } else {
-            //Wtf happened here?
+            // Wtf happened here?
         }
     }
 
     @Override
     public final PhysicsWrapperEntity getParentPhysicsEntity() {
-        return ValkyrienWarfareMod.physicsManager.getObjectManagingPos(getWorld(), getPos());
+        return ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(getWorld(), getPos());
     }
 
-    //Always call this before setting the pilotPlayerEntity to equal newPilot
+    // Always call this before setting the pilotPlayerEntity to equal newPilot
     private final void sendPilotUpdatePackets(EntityPlayerMP newPilot, EntityPlayerMP oldPilot) {
-        MessageStopPiloting stopMessage = new MessageStopPiloting(getPos());
-        MessageStartPiloting startMessage = new MessageStartPiloting(getPos(), setClientPilotingEntireShip(), getControlInputType());
         if (oldPilot != null) {
+            MessageStopPiloting stopMessage = new MessageStopPiloting(getPos());
             ValkyrienWarfareControl.controlNetwork.sendTo(stopMessage, oldPilot);
         }
         if (newPilot != null) {
+            MessageStartPiloting startMessage = new MessageStartPiloting(getPos(), setClientPilotingEntireShip(),
+                    getControlInputType());
             ValkyrienWarfareControl.controlNetwork.sendTo(startMessage, newPilot);
         }
     }
@@ -102,28 +112,57 @@ public abstract class ImplTileEntityPilotable extends BasicNodeTileEntity implem
     abstract ControllerInputType getControlInputType();
 
     /**
-     * Unique for each tileentity type
+     * Returns true if this control type is piloting the ship.
      *
      * @return
      */
-    abstract boolean setClientPilotingEntireShip();
+    @Deprecated
+    boolean setClientPilotingEntireShip() {
+        return false;
+    }
 
     /**
-     * Unique for each tileentity type, only called if the sender player is the same as the pilotPlayerEntity
+     * Unique for each tileentity type, only called if the sender player is the same
+     * as the pilotPlayerEntity
      *
      * @return
      */
     abstract void processControlMessage(PilotControlsMessage message, EntityPlayerMP sender);
 
-    final void sendUpdatePacketToAllNearby() {
-        SPacketUpdateTileEntity spacketupdatetileentity = getUpdatePacket();
-        WorldServer serverWorld = (WorldServer) world;
-        Vector pos = new Vector(getPos().getX(), getPos().getY(), getPos().getZ());
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(getWorld(), getPos());
-        if (wrapper != null) {
-            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, pos);
+    /**
+     * @param player
+     * @param blockFacing
+     * @return true if the passed player is in front of the given blockFacing, false if not.
+     */
+    protected boolean isPlayerInFront(EntityPlayer player, EnumFacing blockFacing) {
+        Vector tileRelativePos = new Vector(this.getPos().getX() + .5, this.getPos().getY() + .5,
+                this.getPos().getZ() + .5);
+        if (this.getParentPhysicsEntity() != null) {
+            this.getParentPhysicsEntity().getPhysicsObject().getShipTransformationManager().getCurrentTickTransform()
+                    .transform(tileRelativePos, TransformType.SUBSPACE_TO_GLOBAL);
         }
-        serverWorld.mcServer.getPlayerList().sendToAllNearExcept(null, pos.X, pos.Y, pos.Z, 128D, getWorld().provider.getDimension(), spacketupdatetileentity);
+        tileRelativePos.subtract(player.posX, player.posY, player.posZ);
+        Vector normal = new Vector(blockFacing.getDirectionVec().getX() * -1, blockFacing.getDirectionVec().getY(),
+                blockFacing.getDirectionVec().getZ());
+
+        if (this.getParentPhysicsEntity() != null) {
+            this.getParentPhysicsEntity().getPhysicsObject().getShipTransformationManager().getCurrentTickTransform()
+                    .rotate(normal, TransformType.SUBSPACE_TO_GLOBAL);
+        }
+
+        double dotProduct = tileRelativePos.dot(normal);
+        return dotProduct > 0;
     }
 
+    /**
+     * This is called during the post render of every frame in Minecraft. Override
+     * this to allow a pilot tileentity to display info as text on the screen.
+     *
+     * @param renderer
+     * @param gameResolution
+     */
+    @SideOnly(Side.CLIENT)
+    public void renderPilotText(FontRenderer renderer, ScaledResolution gameResolution) {
+
+    }
 }

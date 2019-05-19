@@ -33,10 +33,15 @@ buildscript {
     }
 }
 
+plugins {
+    id "io.franzbecker.gradle-lombok" version "1.14"
+}
+
 ext.configFile = file "project.properties"
 apply plugin: "net.minecraftforge.gradle.forge"
 apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'maven-publish'
 
 configFile.withReader { 
     // read config.  it shall from now on be referenced as simply config or as project.config 
@@ -58,7 +63,7 @@ minecraft {
     runDir = "run"
     mappings = project.mcpVersion
     coreMod = "valkyrienwarfare.mixin.MixinLoaderForge"
-	// makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
+    // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 }
 
 configurations.all {
@@ -68,6 +73,7 @@ configurations.all {
 }
 
 repositories {
+    mavenLocal()
     maven {
         name = 'spongepowered-repo'
         url = 'http://repo.spongepowered.org/maven/'
@@ -76,15 +82,31 @@ repositories {
         name = "OpenComputers"
         url = "http://maven.cil.li/"
     }
+    // This one is for porky datastructures.
+    maven {
+        url 'https://maven.daporkchop.net/'
+    }
+    // This one is for graph datastructures.
+    maven {
+        url 'http://dogforce-games.com/maven'
+    }
     mavenCentral()
 }
 
 dependencies {
-    //mixin needs to be distributed with the mod, very important
+    // mixin needs to be distributed with the mod, very important
     compile("org.spongepowered:mixin:0.7.5-SNAPSHOT") {
         exclude module: "launchwrapper"
     }
+    // We want to prevent any conflicts with SpongeForge
+    compile("org.spongepowered:spongeforge:1.12.2-2611-7.1.0-BETA-3002:dev")  {
+        exclude group: "org.apache.logging.log4j"
+    }
     compileOnly "li.cil.oc:OpenComputers:MC1.12.1-1.7.1.+:api"
+    // Porky datastructures
+    compile 'net.daporkchop.lib:primitive:0.0.5'
+    compile 'gigaherz.graph:GraphLib:1.4.0'
+    compile 'valkyrienwarfare:api:1.0'
 }
 
 processResources {
@@ -150,6 +172,8 @@ allprojects {
 shadowJar {
     dependencies {
         include(dependency('org.spongepowered:mixin'))
+		include(dependency(':GraphLib:'))
+		include(dependency(':api:'))
     }
     exclude 'dummyThing'
     exclude 'LICENSE.txt'
@@ -172,3 +196,20 @@ jar {
     }
 }
 sourceCompatibility = targetCompatibility = "1.8"
+
+task signJar(type: SignJar, dependsOn: shadowJar) {
+    onlyIf { // Skip the task if our secret data isn't available
+        project.hasProperty('keyStore')
+    }
+
+	if (project.hasProperty('keyStore')) {
+		keyStore = project.keyStore // This needs to be a path to the keystore file
+		alias = project.keyStoreAlias
+		storePass = project.keyStorePass
+		keyPass = project.keyStoreKeyPass
+		inputFile = shadowJar.archivePath
+		outputFile = shadowJar.archivePath
+	}
+}
+
+build.dependsOn signJar

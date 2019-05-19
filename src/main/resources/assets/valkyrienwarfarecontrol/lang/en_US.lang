@@ -1,18 +1,20 @@
 #ITEMS
-item.systemlinker.name=System Linker
-item.airshipstealer.name=Airship Stealer
 item.relaywire.name=Relay Wire
+item.vw_wrench.name=VW Wrench
 
 #Blocks
-tile.shippilotschair.name=Piloting Chair
+tile.shippilotschair.name=Captain's Chair
 tile.shippassengerchair.name=Passenger Chair
-tile.dopedetherium.name=Doped Etherium
-tile.balloonburner.name=Balloon Burner
-tile.basichovercraftcontroller.name=Basic Hovercraft Controller
-tile.thrustrelay.name=Thrust Relay
-tile.thrustmodulator.name=Thrust Modulator
+tile.dopedethereum.name=Compacted Ethereum
+tile.thrustrelay.name=Network Control Relay
+tile.thrustmodulator.name=Old Control Block
 tile.shiphelm.name=Ship Helm
-tile.shiptelegraph.name=Ship Telegraph
+tile.shiptelegraph.name=Speed Telegraph
+tile.vw_gyroscope_stabilizer.name=Ship Gyroscope Stabilizer
+tile.vw_gyroscope_dampener.name=Ship Gyroscope Dampener
+tile.vw_liftvalve.name=Lift Valve
+tile.vw_networkdisplay.name=Network Display
+tile.vw_liftcontrol.name=Lift Lever
 
 #ENGINES
 tile.basicengine.name=Basic Engine
@@ -21,9 +23,9 @@ tile.eliteengine.name=Elite Engine
 tile.ultimateengine.name=Ultimate Engine
 tile.redstoneengine.name=Redstone Engine
 
-#ETHER Compressors
-tile.antigravengine.name=Basic Ether Compressor
-tile.advancedethercompressor.name=Advanced Ether Compressor
-tile.eliteethercompressor.name=Elite Ether Compressor
-tile.ultimateethercompressor.name=Ultimate Ether Compressor
-tile.creativeethercompressor.name=Creative Ether Compressor
+tile.vw_ethercompressorpanel.name=Ether Compressor Panel
+tile.vw_ethereum_enginepart.name=Ethereum Engine Part
+tile.vw_gearbox.name=Gear Box
+tile.vw_rudder_axle_part.name=Rudder Axle
+tile.vw_giant_propeller_part.name=Gigantic Propeller Part
+tile.vw_block_rotation_train_axle.name=Rotation Axle

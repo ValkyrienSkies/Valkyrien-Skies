@@ -16,8 +16,6 @@
 
 package valkyrienwarfare.addon.control.renderer;
 
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -26,52 +24,43 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import org.lwjgl.opengl.GL11;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.block.BlockShipTelegraph;
 import valkyrienwarfare.addon.control.tileentity.TileEntityShipTelegraph;
-import valkyrienwarfare.mod.client.render.FastBlockModelRenderer;
+import valkyrienwarfare.mod.client.render.GibsModelRegistry;
 
 public class ShipTelegraphTileEntityRenderer extends TileEntitySpecialRenderer<TileEntityShipTelegraph> {
-
-    private final Class renderedTileEntityClass;
-
-    public ShipTelegraphTileEntityRenderer(Class toRender) {
-        renderedTileEntityClass = toRender;
-    }
 
     @Override
     public void render(TileEntityShipTelegraph tileentity, double x, double y, double z, float partialTick, int destroyStage, float alpha) {
         IBlockState telegraphState = tileentity.getWorld().getBlockState(tileentity.getPos());
 
-        if (telegraphState.getBlock() != ValkyrienWarfareControl.INSTANCE.blocks.shipTelegraph) {
+        if (telegraphState.getBlock() != ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipTelegraph) {
             return;
         }
 
+        GlStateManager.resetColor();
         this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
         GlStateManager.pushMatrix();
         GlStateManager.disableLighting();
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder BufferBuilder = tessellator.getBuffer();
+        BufferBuilder tessellatorBuffer = tessellator.getBuffer();
 
-        double oldX = BufferBuilder.xOffset;
-        double oldY = BufferBuilder.yOffset;
-        double oldZ = BufferBuilder.zOffset;
+        double oldX = tessellatorBuffer.xOffset;
+        double oldY = tessellatorBuffer.yOffset;
+        double oldZ = tessellatorBuffer.zOffset;
 
-        BufferBuilder.setTranslation(0, 0, 0);
+        tessellatorBuffer.setTranslation(0, 0, 0);
         GL11.glTranslated(x, y, z);
         GlStateManager.disableAlpha();
         GlStateManager.disableBlend();
 
         BlockPos originPos = tileentity.getPos();
 
-        IBlockState glassState = ValkyrienWarfareControl.INSTANCE.blocks.shipWheel.getStateFromMeta(8);
-        IBlockState dialState = ValkyrienWarfareControl.INSTANCE.blocks.shipWheel.getStateFromMeta(7);
-        IBlockState leftHandleState = ValkyrienWarfareControl.INSTANCE.blocks.shipWheel.getStateFromMeta(6);
-        IBlockState rightHandleState = ValkyrienWarfareControl.INSTANCE.blocks.shipWheel.getStateFromMeta(5);
-        IBlockState helmStateToRender = ValkyrienWarfareControl.INSTANCE.blocks.shipWheel.getStateFromMeta(4);
         int brightness = tileentity.getWorld().getCombinedLight(tileentity.getPos(), 0);
 
-        double multiplier = 1.5D;
+        double multiplier = 1.9D;
 
         GL11.glTranslated((1D - multiplier) / 2.0D, 0, (1D - multiplier) / 2.0D);
         GL11.glScaled(multiplier, multiplier, multiplier);
@@ -82,30 +71,40 @@ public class ShipTelegraphTileEntityRenderer extends TileEntitySpecialRenderer<T
         GL11.glRotated(wheelAndCompassStateRotation, 0, 1, 0);
         GL11.glTranslated(-0.5D, 0, -0.5D);
 
-        FastBlockModelRenderer.renderBlockModel(BufferBuilder, tessellator, tileentity.getWorld(), helmStateToRender, brightness);
+        // FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(), helmStateToRender, brightness);
 
-        FastBlockModelRenderer.renderBlockModel(BufferBuilder, tessellator, tileentity.getWorld(), dialState, brightness);
+        GibsModelRegistry.renderGibsModel("chadburn_speedtelegraph_simplevoxel_geo", brightness);
+
+        // FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(), dialState, brightness);
+
+        GibsModelRegistry.renderGibsModel("chadburn_dial_simplevoxel_geo", brightness);
 
         GL11.glPushMatrix();
 
         GL11.glTranslated(0.497D, 0.857D, 0.5D);
-        GL11.glRotated(tileentity.getHandleRenderRotation(), 0D, 0D, 1D);
+        GL11.glRotated(tileentity.getHandleRenderRotation(partialTick), 0D, 0D, 1D);
         GL11.glTranslated(-0.497D, -0.857D, -0.5D);
 
-        FastBlockModelRenderer.renderBlockModel(BufferBuilder, tessellator, tileentity.getWorld(), rightHandleState, brightness);
-        FastBlockModelRenderer.renderBlockModel(BufferBuilder, tessellator, tileentity.getWorld(), leftHandleState, brightness);
+        // FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(), rightHandleState, brightness);
+
+        GibsModelRegistry.renderGibsModel("chadburn_handles_simplevoxel_geo", brightness);
+
+        // FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(), leftHandleState, brightness);
 
         GL11.glPopMatrix();
 
         GlStateManager.enableAlpha();
         GlStateManager.enableBlend();
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        FastBlockModelRenderer.renderBlockModel(BufferBuilder, tessellator, tileentity.getWorld(), glassState, brightness);
+        // GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+
+        // FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(), glassState, brightness);
+        GibsModelRegistry.renderGibsModel("chadburn_glass_simplevoxel_geo", brightness);
+
         GlStateManager.disableAlpha();
         GlStateManager.disableBlend();
 
         GL11.glPopMatrix();
-        BufferBuilder.setTranslation(oldX, oldY, oldZ);
+        tessellatorBuffer.setTranslation(oldX, oldY, oldZ);
 
         GlStateManager.enableLighting();
         GlStateManager.resetColor();

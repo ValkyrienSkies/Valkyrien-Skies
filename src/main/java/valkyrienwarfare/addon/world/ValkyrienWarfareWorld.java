@@ -21,15 +21,21 @@ import net.minecraft.block.material.Material;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.addon.world.block.BlockEtheriumOre;
+import valkyrienwarfare.addon.world.block.BlockEthereumOre;
 import valkyrienwarfare.addon.world.block.BlockQuartzFence;
 import valkyrienwarfare.addon.world.block.BlockSkyTempleController;
+import valkyrienwarfare.addon.world.capability.ICapabilityAntiGravity;
+import valkyrienwarfare.addon.world.capability.ImplCapabilityAntiGravity;
+import valkyrienwarfare.addon.world.capability.StorageAntiGravity;
 import valkyrienwarfare.addon.world.proxy.ClientProxyWorld;
 import valkyrienwarfare.addon.world.proxy.CommonProxyWorld;
 import valkyrienwarfare.addon.world.tileentity.TileEntitySkyTempleController;
@@ -38,14 +44,17 @@ import valkyrienwarfare.api.addons.Module;
 import valkyrienwarfare.api.addons.VWAddon;
 
 @VWAddon
-public class ValkyrienWarfareWorld extends Module<ValkyrienWarfareWorldGen> {
+public class ValkyrienWarfareWorld extends Module {
 
+    @CapabilityInject(ICapabilityAntiGravity.class)
+    public static final Capability<ICapabilityAntiGravity> ANTI_GRAVITY_CAPABILITY = null;
     private static final WorldEventsCommon worldEventsCommon = new WorldEventsCommon();
     public static ValkyrienWarfareWorld INSTANCE;
-    public Block etheriumOre;
+    public Block ethereumOre;
     public Block skydungeon_controller;
     public Block quartz_fence;
-    public Item etheriumCrystal;
+    public Item ethereumCrystal;
+    public static boolean OREGEN_ENABLED = true;
 
     public ValkyrienWarfareWorld() {
         super("VW_World", new CommonProxyWorld(), "valkyrienwarfareworld");
@@ -73,22 +82,22 @@ public class ValkyrienWarfareWorld extends Module<ValkyrienWarfareWorldGen> {
 
     @Override
     public void registerBlocks(RegistryEvent.Register<Block> event) {
-        etheriumOre = new BlockEtheriumOre(Material.ROCK).setHardness(3f).setUnlocalizedName("etheriumore").setRegistryName(getModID(), "etheriumore").setCreativeTab(ValkyrienWarfareMod.vwTab);
-        skydungeon_controller = new BlockSkyTempleController(Material.GLASS).setHardness(15f).setUnlocalizedName("skydungeon_controller").setRegistryName(getModID(), "skydungeon_controller").setCreativeTab(ValkyrienWarfareMod.vwTab);
-        quartz_fence = new BlockQuartzFence(Material.GLASS).setHardness(8f).setUnlocalizedName("quartz_fence").setRegistryName(getModID(), "quartz_fence").setCreativeTab(ValkyrienWarfareMod.vwTab);
+        ethereumOre = new BlockEthereumOre(Material.ROCK).setHardness(3f).setUnlocalizedName("ethereumore").setRegistryName(getModID(), "ethereumore").setCreativeTab(ValkyrienWarfareMod.vwTab);
+        skydungeon_controller = new BlockSkyTempleController(Material.ROCK).setHardness(10f).setUnlocalizedName("skydungeon_controller").setRegistryName(getModID(), "skydungeon_controller").setCreativeTab(ValkyrienWarfareMod.vwTab);
+        quartz_fence = new BlockQuartzFence(Material.ROCK).setHardness(4f).setUnlocalizedName("quartz_fence").setRegistryName(getModID(), "quartz_fence").setCreativeTab(ValkyrienWarfareMod.vwTab);
 
-        event.getRegistry().register(etheriumOre);
+        event.getRegistry().register(ethereumOre);
         event.getRegistry().register(skydungeon_controller);
         event.getRegistry().register(quartz_fence);
     }
 
     @Override
     public void registerItems(RegistryEvent.Register<Item> event) {
-        etheriumCrystal = new ItemEtheriumCrystal().setUnlocalizedName("etheriumcrystal").setRegistryName(getModID(), "etheriumcrystal").setCreativeTab(ValkyrienWarfareMod.vwTab).setMaxStackSize(16);
+        ethereumCrystal = new ItemEthereumCrystal().setUnlocalizedName("ethereumcrystal").setRegistryName(getModID(), "ethereumcrystal").setCreativeTab(ValkyrienWarfareMod.vwTab).setMaxStackSize(16);
 
-        event.getRegistry().register(etheriumCrystal);
+        event.getRegistry().register(ethereumCrystal);
 
-        registerItemBlock(event, etheriumOre);
+        registerItemBlock(event, ethereumOre);
         registerItemBlock(event, skydungeon_controller);
         registerItemBlock(event, quartz_fence);
     }
@@ -99,7 +108,13 @@ public class ValkyrienWarfareWorld extends Module<ValkyrienWarfareWorldGen> {
     }
 
     @Override
-    public void applyConfig(Configuration config) {
+    protected void registerCapabilities() {
+        CapabilityManager.INSTANCE.register(ICapabilityAntiGravity.class, new StorageAntiGravity(), ImplCapabilityAntiGravity.class);
+    }
 
+    @Override
+    public void applyConfig(Configuration config) {
+        OREGEN_ENABLED = config.get("world.generation", "OREGEN_ENABLED", true, "determines if vw ores generate in the world")
+                .getBoolean();
     }
 }

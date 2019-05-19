@@ -27,18 +27,17 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 import valkyrienwarfare.addon.combat.ValkyrienWarfareCombat;
 import valkyrienwarfare.addon.combat.entity.EntityCannonBasic;
-import valkyrienwarfare.api.IRenderVW;
+import valkyrienwarfare.deprecated_api.IRenderVW;
 import valkyrienwarfare.mod.client.render.FastBlockModelRenderer;
 
 public class EntityCannonBasicRender extends Render<EntityCannonBasic> implements IRenderVW {
 
     public static IRenderVW instance;
+    private IBlockState baseState, headState;
 
     {
         instance = this;
     }
-
-    private IBlockState baseState, headState;
 
     protected EntityCannonBasicRender(RenderManager renderManager) {
         super(renderManager);
@@ -117,7 +116,7 @@ public class EntityCannonBasicRender extends Render<EntityCannonBasic> implement
         BufferBuilder BufferBuilder = tessellator.getBuffer();
         GL11.glPushMatrix();
         GL11.glTranslated(-0.5D, 0, -0.5D);
-        FastBlockModelRenderer.renderBlockModel(BufferBuilder, tessellator, entity.world, baseState, entity.getBrightnessForRender());
+        FastBlockModelRenderer.renderBlockModel(tessellator, entity.world, baseState, entity.getBrightnessForRender());
         GL11.glPopMatrix();
     }
 
@@ -126,7 +125,7 @@ public class EntityCannonBasicRender extends Render<EntityCannonBasic> implement
         BufferBuilder BufferBuilder = tessellator.getBuffer();
         GL11.glPushMatrix();
         GL11.glTranslated(-0.5D, 0, -0.5D);
-        FastBlockModelRenderer.renderBlockModel(BufferBuilder, tessellator, entity.world, headState, entity.getBrightnessForRender());
+        FastBlockModelRenderer.renderBlockModel(tessellator, entity.world, headState, entity.getBrightnessForRender());
         GL11.glPopMatrix();
     }
 

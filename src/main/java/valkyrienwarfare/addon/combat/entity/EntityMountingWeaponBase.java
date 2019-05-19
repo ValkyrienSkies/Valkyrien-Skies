@@ -29,8 +29,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
-import valkyrienwarfare.api.RotationMatrices;
-import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.math.RotationMatrices;
+import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 import javax.annotation.Nullable;
@@ -70,11 +70,11 @@ public abstract class EntityMountingWeaponBase extends Entity implements IEntity
 //				RotationMatrices.applyTransform(rotationMatricesCompensation, passengerOffset);
 
 
-                wrapper.wrapping.coordTransform.fromGlobalToLocal(posInLocal);
+                wrapper.getPhysicsObject().getShipTransformationManager().fromGlobalToLocal(posInLocal);
 
                 posInLocal.add(passengerOffset);
 
-                wrapper.wrapping.fixEntity(player, posInLocal);
+                wrapper.getPhysicsObject().fixEntity(player, posInLocal);
             }
         }
         return false;

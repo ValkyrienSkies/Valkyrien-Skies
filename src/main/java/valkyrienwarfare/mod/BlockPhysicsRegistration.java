@@ -16,14 +16,12 @@
 
 package valkyrienwarfare.mod;
 
-import java.util.ArrayList;
-
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
-import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
-import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.physics.data.BlockForce;
-import valkyrienwarfare.physics.data.BlockMass;
+import valkyrienwarfare.physics.BlockForce;
+import valkyrienwarfare.physics.BlockMass;
+
+import java.util.ArrayList;
 
 public class BlockPhysicsRegistration {
 
@@ -45,11 +43,7 @@ public class BlockPhysicsRegistration {
         // blockMass.registerBlockMass(Blocks.STONE, 180D);
         // blockMass.registerBlockMass(Blocks.IRON_BLOCK, 250D);
         // blockMass.registerBlockMass(Blocks.OBSIDIAN, 500D);
-        BlockMass.registerBlockMass(Blocks.BEDROCK, 5000D);
-    }
-
-    public static void registerVanillaBlockForces() {
-        BlockForce.registerBlockForce(ValkyrienWarfareControl.INSTANCE.blocks.dopedEtherium, new Vector(0, 10000D, 0), false);
+        BlockMass.registerBlockMass(Blocks.BEDROCK, 50000D);
     }
 
     public static void registerBlocksToNotPhysicise() {

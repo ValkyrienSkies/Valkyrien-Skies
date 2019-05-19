@@ -17,19 +17,16 @@
 package valkyrienwarfare.addon.control.nodenetwork;
 
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.api.RotationMatrices;
-import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.physics.calculations.PhysicsCalculations;
-import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.math.Vector;
+import valkyrienwarfare.mod.coordinates.VectorImmutable;
+import valkyrienwarfare.physics.management.PhysicsObject;
 import valkyrienwarfare.util.NBTUtils;
 
 public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity implements IForceTile {
 
     protected double maxThrust;
     protected double currentThrust;
+    private double thrusGoalMultiplier;
     private Vector forceOutputVector;
     private Vector normalVelocityUnoriented;
     private int ticksSinceLastControlSignal;
@@ -44,14 +41,15 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
     public BasicForceNodeTileEntity() {
         this.maxThrust = 5000D;
         this.currentThrust = 0D;
+        this.thrusGoalMultiplier = 0D;
         this.forceOutputVector = new Vector();
         this.ticksSinceLastControlSignal = 0;
         this.hasAlreadyCheckedForParent = false;
     }
 
-    public BasicForceNodeTileEntity(Vector normalVeclocityUnoriented, boolean isForceOutputOriented, double maxThrust) {
+    public BasicForceNodeTileEntity(Vector normalVelocityUnoriented, boolean isForceOutputOriented, double maxThrust) {
         this();
-        this.normalVelocityUnoriented = normalVeclocityUnoriented;
+        this.normalVelocityUnoriented = normalVelocityUnoriented;
         this.maxThrust = maxThrust;
     }
 
@@ -65,25 +63,9 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
     }
 
     @Override
-    public Vector getForceOutputNormal() {
+    public VectorImmutable getForceOutputNormal(double secondsToApply, PhysicsObject object) {
         // TODO Auto-generated method stub
-        return normalVelocityUnoriented;
-    }
-
-    @Override
-    public Vector getForceOutputUnoriented(double secondsToApply) {
-        return normalVelocityUnoriented.getProduct(currentThrust * secondsToApply);
-    }
-
-    @Override
-    public Vector getForceOutputOriented(double secondsToApply) {
-        Vector outputForce = getForceOutputUnoriented(secondsToApply);
-        if (isForceOutputOriented()) {
-            if (updateParentShip()) {
-                RotationMatrices.applyTransform(getNode().getPhysicsObject().coordTransform.lToWRotation, outputForce);
-            }
-        }
-        return outputForce;
+        return normalVelocityUnoriented.toImmutable();
     }
 
     @Override
@@ -91,58 +73,23 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
         return maxThrust;
     }
 
-    @Override
-    public double getThrustActual() {
-        return currentThrust;
+    public void setMaxThrust(double maxThrust) {
+        this.maxThrust = maxThrust;
     }
 
     @Override
-    public double getThrustGoal() {
-        return currentThrust;
+    public double getThrustMagnitude() {
+        return this.getMaxThrust() * this.getThrustMultiplierGoal();
     }
 
     @Override
-    public void setThrustGoal(double newMagnitude) {
-        currentThrust = newMagnitude;
+    public double getThrustMultiplierGoal() {
+        return thrusGoalMultiplier;
     }
 
     @Override
-    public Vector getPositionInLocalSpaceWithOrientation() {
-        if (updateParentShip()) {
-            return null;
-        }
-        PhysicsWrapperEntity parentShip = getNode().getPhysicsObject().wrapper;
-        Vector engineCenter = new Vector(getPos().getX() + .5D, getPos().getY() + .5D, getPos().getZ() + .5D);
-        RotationMatrices.applyTransform(parentShip.wrapping.coordTransform.lToWTransform, engineCenter);
-        engineCenter.subtract(parentShip.posX, parentShip.posY, parentShip.posZ);
-        return engineCenter;
-    }
-
-    @Override
-    public Vector getVelocityAtEngineCenter() {
-        if (updateParentShip()) {
-            return null;
-        }
-        PhysicsCalculations calculations = getNode().getPhysicsObject().physicsProcessor;
-        return calculations.getVelocityAtPoint(getPositionInLocalSpaceWithOrientation());
-    }
-
-    @Override
-    public Vector getLinearVelocityAtEngineCenter() {
-        if (updateParentShip()) {
-            return null;
-        }
-        PhysicsCalculations calculations = getNode().getPhysicsObject().physicsProcessor;
-        return calculations.linearMomentum;
-    }
-
-    @Override
-    public Vector getAngularVelocityAtEngineCenter() {
-        if (updateParentShip()) {
-            return null;
-        }
-        PhysicsCalculations calculations = getNode().getPhysicsObject().physicsProcessor;
-        return calculations.angularVelocity.cross(getPositionInLocalSpaceWithOrientation());
+    public void setThrustMultiplierGoal(double multiplier) {
+        thrusGoalMultiplier = multiplier;
     }
 
     @Override
@@ -169,20 +116,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
      * @return
      */
     public boolean updateParentShip() {
-        if (hasAlreadyCheckedForParent) {
-            return getNode().getPhysicsObject() == null;
-        }
-        BlockPos pos = this.getPos();
-        World world = this.getWorld();
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
-        // Already checked
-        hasAlreadyCheckedForParent = true;
-        if (wrapper != null) {
-            getNode().updateParentEntity(wrapper.wrapping);
-            return false;
-        } else {
-            return true;
-        }
+        return true;
     }
 
     public void updateTicksSinceLastRecievedSignal() {
@@ -193,8 +127,8 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
     public void update() {
         super.update();
         ticksSinceLastControlSignal++;
-        if (ticksSinceLastControlSignal > 5) {
-            setThrustGoal(getThrustActual() * .9D);
+        if (ticksSinceLastControlSignal > 5 && getThrustMultiplierGoal() != 0) {
+            setThrustMultiplierGoal(this.getThrustMultiplierGoal() * .9D);
         }
     }
 

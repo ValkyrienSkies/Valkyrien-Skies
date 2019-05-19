@@ -16,10 +16,6 @@
 
 package valkyrienwarfare.addon.control.block;
 
-import java.util.List;
-
-import javax.annotation.Nullable;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
@@ -38,8 +34,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+
+import javax.annotation.Nullable;
+import java.util.List;
 
 public class BlockShipPassengerChair extends Block {
 
@@ -58,12 +57,12 @@ public class BlockShipPassengerChair extends Block {
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
         if (!worldIn.isRemote) {
-            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldIn, pos);
+            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(worldIn, pos);
             if (wrapper != null) {
                 if (playerIn.getLowestRidingEntity() != wrapper.getLowestRidingEntity()) {
                     Vector playerPos = new Vector(playerIn);
 
-                    wrapper.wrapping.coordTransform.fromLocalToGlobal(playerPos);
+                    wrapper.getPhysicsObject().getShipTransformationManager().fromLocalToGlobal(playerPos);
 
                     playerIn.posX = playerPos.X;
                     playerIn.posY = playerPos.Y;
@@ -71,11 +70,11 @@ public class BlockShipPassengerChair extends Block {
 
                     playerIn.startRiding(wrapper);
                     Vector localMountPos = getPlayerMountOffset(state, pos);
-                    wrapper.wrapping.fixEntity(playerIn, localMountPos);
+                    wrapper.getPhysicsObject().fixEntity(playerIn, localMountPos);
 
 //					wrapper.wrapping.pilotingController.setPilotEntity((EntityPlayerMP) playerIn, false);
 
-                    wrapper.wrapping.coordTransform.fromGlobalToLocal(playerPos);
+                    wrapper.getPhysicsObject().getShipTransformationManager().fromGlobalToLocal(playerPos);
 
                     playerIn.posX = playerPos.X;
                     playerIn.posY = playerPos.Y;
@@ -96,7 +95,7 @@ public class BlockShipPassengerChair extends Block {
 
     @Override
     public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldIn, pos);
+        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(worldIn, pos);
         return wrapper != null;
     }
 

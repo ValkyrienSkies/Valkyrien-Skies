@@ -21,12 +21,10 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import valkyrienwarfare.mod.event.EventsCommon;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.addons.Module;
 import valkyrienwarfare.api.addons.ModuleProxy;
-import valkyrienwarfare.mod.physmanagement.chunk.DimensionPhysicsChunkManager;
-import valkyrienwarfare.physics.management.DimensionPhysObjectManager;
+import valkyrienwarfare.mod.event.EventsCommon;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public class CommonProxy {
@@ -42,8 +40,6 @@ public class CommonProxy {
 
     public void init(FMLInitializationEvent e) {
         MinecraftForge.EVENT_BUS.register(new EventsCommon());
-        ValkyrienWarfareMod.chunkManager = new DimensionPhysicsChunkManager();
-        ValkyrienWarfareMod.physicsManager = new DimensionPhysObjectManager();
 
         for (Module addon : ValkyrienWarfareMod.addons) {
             ModuleProxy proxy = addon.getCommonProxy();

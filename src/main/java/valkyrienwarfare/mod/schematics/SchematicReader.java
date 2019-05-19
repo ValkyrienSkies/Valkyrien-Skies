@@ -26,7 +26,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.addon.control.nodenetwork.INodeProvider;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 import java.io.InputStream;
@@ -128,7 +127,7 @@ public class SchematicReader {
                 }
             }
 
-            PhysicsWrapperEntity wrapperEntity = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldObj, centerDifference);
+            PhysicsWrapperEntity wrapperEntity = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(worldObj, centerDifference);
 
             for (int i = 0; i < tileentities.tagCount(); i++) {
                 NBTTagCompound tileData = tileentities.getCompoundTagAt(i).copy();
@@ -145,16 +144,6 @@ public class SchematicReader {
                 newInstance.validate();
 
                 worldObj.setTileEntity(newInstance.getPos(), newInstance);
-
-//                System.out.println(newInstance.getClass().getName());
-//                System.out.println(newInstance.getPos().subtract(centerDifference));
-
-
-                if (wrapperEntity != null) {
-                    if (newInstance instanceof INodeProvider) {
-                        wrapperEntity.wrapping.nodesWithinShip.add(((INodeProvider) newInstance).getNode());
-                    }
-                }
 
                 newInstance.markDirty();
             }

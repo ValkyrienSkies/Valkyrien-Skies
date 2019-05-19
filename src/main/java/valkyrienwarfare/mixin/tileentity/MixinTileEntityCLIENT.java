@@ -19,34 +19,32 @@ package valkyrienwarfare.mixin.tileentity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.Implements;
+import org.spongepowered.asm.mixin.Interface;
+import org.spongepowered.asm.mixin.Intrinsic;
+import org.spongepowered.asm.mixin.Mixin;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.physics.collision.Polygon;
-import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.mod.client.render.IntrinsicTileEntityInterface;
+import valkyrienwarfare.physics.collision.polygons.Polygon;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 @Mixin(TileEntity.class)
 @Implements(@Interface(iface = IntrinsicTileEntityInterface.class, prefix = "vw$"))
 public abstract class MixinTileEntityCLIENT {
-    @Shadow
-    public World world;
+
+    private final TileEntity thisAsTileEntity = TileEntity.class.cast(this);
 
     @Intrinsic(displace = true)
     public AxisAlignedBB vw$getRenderBoundingBox() {
-        AxisAlignedBB toReturn = getRenderBoundingBox();
+        AxisAlignedBB toReturn = thisAsTileEntity.getRenderBoundingBox();
         BlockPos pos = new BlockPos(toReturn.minX, toReturn.minY, toReturn.minZ);
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(world, pos);
+        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(thisAsTileEntity.getWorld(), pos);
         if (wrapper != null) {
-            Polygon poly = new Polygon(toReturn, wrapper.wrapping.coordTransform.lToWTransform);
+            Polygon poly = new Polygon(toReturn, wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform(), TransformType.SUBSPACE_TO_GLOBAL);
             return poly.getEnclosedAABB();
         }
         return toReturn;
     }
 
-    @Shadow
-    public abstract AxisAlignedBB getRenderBoundingBox();
-
-    @Shadow
-    public abstract BlockPos getPos();
 }

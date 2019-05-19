@@ -16,10 +16,6 @@
 
 package valkyrienwarfare.addon.combat.render;
 
-import java.util.Map;
-
-import javax.annotation.Nullable;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.culling.ICamera;
@@ -31,6 +27,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
 
+import javax.annotation.Nullable;
+import java.util.Map;
+
 public class RenderManagerOverride extends RenderManager {
 
     private final RenderManager def;
@@ -40,12 +39,12 @@ public class RenderManagerOverride extends RenderManager {
         this.def = def;
     }
 
-	/*
+    /*
      * INTERCEPT
-	 */
+     */
 
     private boolean shouldRender(Entity entity) {
-        return !ValkyrienWarfareMod.physicsManager.isEntityFixed(entity);
+        return !ValkyrienWarfareMod.VW_PHYSICS_MANAGER.isEntityFixed(entity);
     }
 
     @Override
@@ -65,9 +64,9 @@ public class RenderManagerOverride extends RenderManager {
             def.renderEntity(entityIn, x, y, z, yaw, partialTicks, p_188391_10_);
     }
 
-	/*
-	 * We don't care
-	 */
+    /*
+     * We don't care
+     */
 
     @Override
     public Map<String, RenderPlayer> getSkinMap() {

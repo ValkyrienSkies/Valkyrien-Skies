@@ -16,117 +16,74 @@
 
 package valkyrienwarfare.physics.management;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Callable;
-
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.mod.multithreaded.PhysicsShipTransform;
 import valkyrienwarfare.mod.physmanagement.interaction.EntityDraggable;
-import valkyrienwarfare.physics.collision.optimization.ShipCollisionTask;
+
+import java.util.List;
 
 public class PhysicsTickHandler {
 
     public static void onWorldTickStart(World world) {
-        WorldPhysObjectManager manager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(world);
-
-        List<PhysicsWrapperEntity> toUnload = new ArrayList<PhysicsWrapperEntity>(manager.physicsEntitiesToUnload);
-        for (PhysicsWrapperEntity wrapper : toUnload) {
-            manager.onUnload(wrapper);
-        }
+        WorldPhysObjectManager manager = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getManagerForWorld(world);
 
         List<PhysicsWrapperEntity> physicsEntities = manager.getTickablePhysicsEntities();
 
         for (PhysicsWrapperEntity wrapper : physicsEntities) {
-            wrapper.wrapping.coordTransform.setPrevMatrices();
-            wrapper.wrapping.updateChunkCache();
+            wrapper.getPhysicsObject().getShipTransformationManager().updatePrevTickTransform();
+
+            if (wrapper.getPhysicsObject().getShipTransformationManager().getCurrentPhysicsTransform() instanceof PhysicsShipTransform) {
+                // Here we poll our transforms from the physics tick, and apply the latest one
+                // to the game tick.
+                // This is (for the most part) the only place in the code that bridges the
+                // physics tick with the game tick, and so all of the game tick code that
+                // depends on ship movement should go right here! Will possibly be moved to the
+                // end of the game tick instead.
+                PhysicsShipTransform physTransform = (PhysicsShipTransform) wrapper.getPhysicsObject().getShipTransformationManager()
+                        .getCurrentPhysicsTransform();
+
+                wrapper.physicsUpdateLastTickPositions();
+                wrapper.setPhysicsEntityPositionAndRotation(physTransform.getPosX(), physTransform.getPosY(), physTransform.getPosZ(), physTransform.getPitch(), physTransform.getYaw(), physTransform.getRoll());
+                wrapper.getPhysicsObject().getShipTransformationManager().updateAllTransforms(true, true);
+            }
+
+            wrapper.getPhysicsObject().updateChunkCache();
         }
 
-        PhysicsTickThreadTask physicsThreadTask = new PhysicsTickThreadTask(ValkyrienWarfareMod.physIter,
-                physicsEntities, manager);
+        /*
+         * All moved off the game tick thread, there is simply no other way to fix the
+         * physics.
+         */
 
-        try {
-            manager.setPhysicsThread(ValkyrienWarfareMod.PHYSICS_THREADS.submit(physicsThreadTask));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        // PhysicsTickThreadTask physicsThreadTask = new
+        // PhysicsTickThreadTask(ValkyrienWarfareMod.physIter, physicsEntities,
+        // manager);
+
+        // try { manager.setPhysicsThread(ValkyrienWarfareMod.PHYSICS_THREADS.submit(
+        // physicsThreadTask)); } catch (Exception e) { e.printStackTrace(); }
+
     }
 
     public static void onWorldTickEnd(World world) {
-        WorldPhysObjectManager manager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(world);
+        WorldPhysObjectManager manager = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getManagerForWorld(world);
         List<PhysicsWrapperEntity> physicsEntities = manager.getTickablePhysicsEntities();
-        manager.awaitPhysics();
+        // manager.awaitPhysics();
 
-        for (PhysicsWrapperEntity wrapper : physicsEntities) {
-            wrapper.wrapping.coordTransform.sendPositionToPlayers();
-        }
+        /*
+         * Also moving this off the game tick thread, players need consistency within
+         * subspaces.
+         */
+
+        // for (PhysicsWrapperEntity wrapper : physicsEntities) {
+        // wrapper.wrapping.coordTransform.sendPositionToPlayers();
+        // }
+
+        // Remember only to run this from the game tick thread.
         EntityDraggable.tickAddedVelocityForWorld(world);
         for (PhysicsWrapperEntity wrapperEnt : physicsEntities) {
-            wrapperEnt.wrapping.onPostTick();
+            wrapperEnt.getPhysicsObject().onPostTick();
         }
-    }
-
-    public static void runPhysicsIteration(List<PhysicsWrapperEntity> physicsEntities, WorldPhysObjectManager manager) {
-        double newPhysSpeed = ValkyrienWarfareMod.physSpeed;
-        Vector newGravity = ValkyrienWarfareMod.gravity;
-        int iters = ValkyrienWarfareMod.physIter;
-
-        List<ShipCollisionTask> collisionTasks = new ArrayList<ShipCollisionTask>(physicsEntities.size() * 2);
-
-        for (PhysicsWrapperEntity wrapper : physicsEntities) {
-            if (!wrapper.firstUpdate) {
-                wrapper.wrapping.physicsProcessor.rawPhysTickPreCol(newPhysSpeed, iters);
-                wrapper.wrapping.physicsProcessor.worldCollision.tickUpdatingTheCollisionCache();
-                wrapper.wrapping.physicsProcessor.worldCollision.splitIntoCollisionTasks(collisionTasks);
-            }
-        }
-
-        try {
-            // TODO: Right here!
-            ValkyrienWarfareMod.PHYSICS_THREADS_EXECUTOR.invokeAll(collisionTasks);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        for (ShipCollisionTask task : collisionTasks) {
-            PhysicsWrapperEntity wrapper = task.getToTask().getParent().wrapper;
-            if (!wrapper.firstUpdate) {
-                task.getToTask().processCollisionTask(task);
-            }
-        }
-
-        for (PhysicsWrapperEntity wrapper : physicsEntities) {
-            if (!wrapper.firstUpdate) {
-                wrapper.wrapping.physicsProcessor.rawPhysTickPostCol();
-            } else {
-                wrapper.wrapping.coordTransform.updateAllTransforms();
-            }
-        }
-
-    }
-
-    private static class PhysicsTickThreadTask implements Callable<Void> {
-
-        private final int iters;
-        private final List physicsEntities;
-        private final WorldPhysObjectManager manager;
-
-        public PhysicsTickThreadTask(int iters, List physicsEntities, WorldPhysObjectManager manager) {
-            this.iters = iters;
-            this.physicsEntities = physicsEntities;
-            this.manager = manager;
-        }
-
-        @Override
-        public Void call() throws Exception {
-            for (int pass = 0; pass < iters; pass++) {
-                // Run PRE-Col
-                runPhysicsIteration(physicsEntities, manager);
-            }
-            return null;
-        }
-
     }
 
 }

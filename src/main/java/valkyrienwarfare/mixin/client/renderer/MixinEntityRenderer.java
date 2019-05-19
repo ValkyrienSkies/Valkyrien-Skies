@@ -37,10 +37,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.piloting.IShipPilot;
-import valkyrienwarfare.api.MixinMethods;
-import valkyrienwarfare.api.RotationMatrices;
-import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.api.TransformType;
+import valkyrienwarfare.deprecated_api.MixinMethods;
 import valkyrienwarfare.math.Quaternion;
+import valkyrienwarfare.math.RotationMatrices;
+import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 //import valkyrienwarfare.api.MixinMethods;
@@ -61,12 +62,9 @@ public abstract class MixinEntityRenderer {
     @Shadow
     public Entity pointedEntity;
 
-    //TODO: refactor to real mixins
-
     /**
-     * aa
-     *
-     * @author partialTicks
+     * @param partialTicks
+     * @author thebest108
      */
     @Overwrite
     public void orientCamera(float partialTicks) {
@@ -74,14 +72,15 @@ public abstract class MixinEntityRenderer {
 
         BlockPos playerPos = new BlockPos(entity);
 
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(entity.world, playerPos);
+        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(entity.world, playerPos);
 
-//		Minecraft.getMinecraft().thePlayer.sleeping = false;
+        //		Minecraft.getMinecraft().thePlayer.sleeping = false;
 
         if (wrapper != null) {
             Vector playerPosNew = new Vector(entity.posX, entity.posY, entity.posZ);
-            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, playerPosNew);
+//            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, playerPosNew);
 
+            wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(playerPosNew, TransformType.SUBSPACE_TO_GLOBAL);
             entity.posX = entity.prevPosX = entity.lastTickPosX = playerPosNew.X;
             entity.posY = entity.prevPosY = entity.lastTickPosY = playerPosNew.Y;
             entity.posZ = entity.prevPosZ = entity.lastTickPosZ = playerPosNew.Z;
@@ -93,14 +92,14 @@ public abstract class MixinEntityRenderer {
             eyeVector.Y += .7D;
         }
 
-        double d0 = entity.prevPosX + (entity.posX - entity.prevPosX) * (double) partialTicks;
-        double d1 = entity.prevPosY + (entity.posY - entity.prevPosY) * (double) partialTicks;
-        double d2 = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * (double) partialTicks;
+        double d0 = entity.prevPosX + (entity.posX - entity.prevPosX) * partialTicks;
+        double d1 = entity.prevPosY + (entity.posY - entity.prevPosY) * partialTicks;
+        double d2 = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * partialTicks;
 
-        PhysicsWrapperEntity fixedOnto = ValkyrienWarfareMod.physicsManager.getShipFixedOnto(entity);
+        PhysicsWrapperEntity fixedOnto = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getShipFixedOnto(entity);
         //Probably overkill, but this should 100% fix the crash in issue #78
-        if (fixedOnto != null && fixedOnto.wrapping != null && fixedOnto.wrapping.renderer != null && fixedOnto.wrapping.renderer.offsetPos != null) {
-            Quaternion orientationQuat = fixedOnto.wrapping.renderer.getSmoothRotationQuat(partialTicks);
+        if (fixedOnto != null && fixedOnto.getPhysicsObject() != null && fixedOnto.getPhysicsObject().getShipRenderer() != null && fixedOnto.getPhysicsObject().getShipRenderer().offsetPos != null) {
+            Quaternion orientationQuat = fixedOnto.getPhysicsObject().getShipRenderer().getSmoothRotationQuat(partialTicks);
 
             double[] radians = orientationQuat.toRadians();
 
@@ -112,15 +111,17 @@ public abstract class MixinEntityRenderer {
 
             RotationMatrices.applyTransform(orientationMatrix, eyeVector);
 
-            Vector playerPosition = new Vector(fixedOnto.wrapping.getLocalPositionForEntity(entity));
+            Vector playerPosition = new Vector(fixedOnto.getPhysicsObject().getLocalPositionForEntity(entity));
 
-            RotationMatrices.applyTransform(fixedOnto.wrapping.coordTransform.RlToWTransform, playerPosition);
+            //            RotationMatrices.applyTransform(fixedOnto.wrapping.coordTransform.RlToWTransform, playerPosition);
+
+            fixedOnto.getPhysicsObject().getShipTransformationManager().getRenderTransform().transform(playerPosition, TransformType.SUBSPACE_TO_GLOBAL);
 
             d0 = playerPosition.X;
             d1 = playerPosition.Y;
             d2 = playerPosition.Z;
 
-//			entity.posX = entity.prevPosX = entity.lastTickPosX = d0;
+            //			entity.posX = entity.prevPosX = entity.lastTickPosX = d0;
 //			entity.posY = entity.prevPosY = entity.lastTickPosY = d1;
 //			entity.posZ = entity.prevPosZ = entity.lastTickPosZ = d2;
         }
@@ -136,7 +137,7 @@ public abstract class MixinEntityRenderer {
             if (!this.mc.gameSettings.debugCamEnable) {
                 //VW code starts here
                 if (fixedOnto != null) {
-                    Vector playerPosInLocal = new Vector(fixedOnto.wrapping.getLocalPositionForEntity(entity));
+                    Vector playerPosInLocal = new Vector(fixedOnto.getPhysicsObject().getLocalPositionForEntity(entity));
 
                     playerPosInLocal.subtract(.5D, .6875, .5);
                     playerPosInLocal.roundToWhole();
@@ -149,7 +150,7 @@ public abstract class MixinEntityRenderer {
                     float angleYaw = 0;
 
                     if (block != null && block.isBed(state, entity.world, bedPos, entity)) {
-                        angleYaw = (float) (block.getBedDirection(state, entity.world, bedPos).getHorizontalIndex() * 90);
+                        angleYaw = block.getBedDirection(state, entity.world, bedPos).getHorizontalIndex() * 90;
                         angleYaw += 180;
                     }
 
@@ -168,9 +169,9 @@ public abstract class MixinEntityRenderer {
 
             }
         } else if (this.mc.gameSettings.thirdPersonView > 0) {
-            double d3 = (double) (this.thirdPersonDistancePrev + (4.0F - this.thirdPersonDistancePrev) * partialTicks);
+            double d3 = this.thirdPersonDistancePrev + (4.0F - this.thirdPersonDistancePrev) * partialTicks;
 
-            IShipPilot shipPilot = IShipPilot.class.cast(Minecraft.getMinecraft().player);
+            IShipPilot shipPilot = (IShipPilot) Minecraft.getMinecraft().player;
 
             if (shipPilot.isPilotingShip()) {
                 //TODO: Make this number scale with the Ship
@@ -187,21 +188,21 @@ public abstract class MixinEntityRenderer {
                     f2 += 180.0F;
                 }
 
-                double d4 = (double) (-MathHelper.sin(f1 * 0.017453292F) * MathHelper.cos(f2 * 0.017453292F)) * d3;
-                double d5 = (double) (MathHelper.cos(f1 * 0.017453292F) * MathHelper.cos(f2 * 0.017453292F)) * d3;
-                double d6 = (double) (-MathHelper.sin(f2 * 0.017453292F)) * d3;
+                double d4 = -MathHelper.sin(f1 * 0.017453292F) * MathHelper.cos(f2 * 0.017453292F) * d3;
+                double d5 = MathHelper.cos(f1 * 0.017453292F) * MathHelper.cos(f2 * 0.017453292F) * d3;
+                double d6 = (-MathHelper.sin(f2 * 0.017453292F)) * d3;
 
                 for (int i = 0; i < 8; ++i) {
-                    float f3 = (float) ((i & 1) * 2 - 1);
-                    float f4 = (float) ((i >> 1 & 1) * 2 - 1);
-                    float f5 = (float) ((i >> 2 & 1) * 2 - 1);
+                    float f3 = (i & 1) * 2 - 1;
+                    float f4 = (i >> 1 & 1) * 2 - 1;
+                    float f5 = (i >> 2 & 1) * 2 - 1;
                     f3 = f3 * 0.1F;
                     f4 = f4 * 0.1F;
                     f5 = f5 * 0.1F;
 
-                    IShipPilot pilot = IShipPilot.class.cast(Minecraft.getMinecraft().player);
+                    IShipPilot pilot = (IShipPilot) Minecraft.getMinecraft().player;
 
-                    RayTraceResult raytraceresult = MixinMethods.rayTraceBlocksIgnoreShip(Minecraft.getMinecraft().world, new Vec3d(d0 + (double) f3, d1 + (double) f4, d2 + (double) f5), new Vec3d(d0 - d4 + (double) f3 + (double) f5, d1 - d6 + (double) f4, d2 - d5 + (double) f5), false, false, false, pilot.getPilotedShip());
+                    RayTraceResult raytraceresult = MixinMethods.rayTraceBlocksIgnoreShip(Minecraft.getMinecraft().world, new Vec3d(d0 + f3, d1 + f4, d2 + f5), new Vec3d(d0 - d4 + f3 + f5, d1 - d6 + f4, d2 - d5 + f5), false, false, false, pilot.getPilotedShip());
 //                    renderer.mc.theWorld.rayTraceBlocks(new Vec3d(d0 + (double)f3, d1 + (double)f4, d2 + (double)f5), new Vec3d(d0 - d4 + (double)f3 + (double)f5, d1 - d6 + (double)f4, d2 - d5 + (double)f5));
 
                     if (raytraceresult != null) {
@@ -243,8 +244,8 @@ public abstract class MixinEntityRenderer {
             GlStateManager.rotate(event.getYaw(), 0.0F, 1.0F, 0.0F);
         }
 
-        if (fixedOnto != null && fixedOnto.wrapping != null && fixedOnto.wrapping.renderer != null && fixedOnto.wrapping.renderer.offsetPos != null) {
-            Quaternion orientationQuat = fixedOnto.wrapping.renderer.getSmoothRotationQuat(partialTicks);
+        if (fixedOnto != null && fixedOnto.getPhysicsObject() != null && fixedOnto.getPhysicsObject().getShipRenderer() != null && fixedOnto.getPhysicsObject().getShipRenderer().offsetPos != null) {
+            Quaternion orientationQuat = fixedOnto.getPhysicsObject().getShipRenderer().getSmoothRotationQuat(partialTicks);
 
             double[] radians = orientationQuat.toRadians();
 
@@ -259,9 +260,9 @@ public abstract class MixinEntityRenderer {
 
 
         GlStateManager.translate(-eyeVector.X, -eyeVector.Y, -eyeVector.Z);
-        d0 = entity.prevPosX + (entity.posX - entity.prevPosX) * (double) partialTicks + eyeVector.X;
-        d1 = entity.prevPosY + (entity.posY - entity.prevPosY) * (double) partialTicks + eyeVector.Y;
-        d2 = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * (double) partialTicks + eyeVector.Z;
+        d0 = entity.prevPosX + (entity.posX - entity.prevPosX) * partialTicks + eyeVector.X;
+        d1 = entity.prevPosY + (entity.posY - entity.prevPosY) * partialTicks + eyeVector.Y;
+        d2 = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * partialTicks + eyeVector.Z;
         this.cloudFog = this.mc.renderGlobal.hasCloudFog(d0, d1, d2, partialTicks);
     }
 
@@ -270,12 +271,12 @@ public abstract class MixinEntityRenderer {
                     target = "Lnet/minecraft/util/math/Vec3d;distanceTo(Lnet/minecraft/util/math/Vec3d;)D",
                     ordinal = 0))
     public double betterMouseOver(Vec3d vec, Vec3d in) {
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(mc.world, mc.objectMouseOver.getBlockPos());
+        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(mc.world, mc.objectMouseOver.getBlockPos());
 
         if (wrapper == null) {
             return vec.distanceTo(in);
         } else {
-            return this.mc.objectMouseOver.hitVec.distanceTo(RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, in));
+            return this.mc.objectMouseOver.hitVec.distanceTo(wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(in, TransformType.GLOBAL_TO_SUBSPACE));
         }
     }
 }

@@ -24,35 +24,26 @@ import valkyrienwarfare.mod.physmanagement.interaction.ShipUUIDToPosData.ShipPos
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class DimensionPhysicsChunkManager {
 
-    private HashMap<World, PhysicsChunkManager> managerPerWorld;
-    private PhysicsChunkManager cachedManager;
+    private final Map<World, PhysicsChunkManager> managerPerWorld;
 
     public DimensionPhysicsChunkManager() {
         managerPerWorld = new HashMap<World, PhysicsChunkManager>();
     }
 
-    public void initWorld(World toInit) {
-        if (!managerPerWorld.containsKey(toInit)) {
-            managerPerWorld.put(toInit, new PhysicsChunkManager(toInit));
+    public void initWorld(World world) {
+        if (!managerPerWorld.containsKey(world)) {
+            System.out.println("Physics Chunk Manager Initialized");
+            managerPerWorld.put(world, new PhysicsChunkManager(world));
         }
     }
 
     public PhysicsChunkManager getManagerForWorld(World world) {
-        if (world == null) {
-            return null;
-        }
-        if (cachedManager == null || cachedManager.worldObj != world) {
-            cachedManager = managerPerWorld.get(world);
-            if (cachedManager == null) {
-                initWorld(world);
-                cachedManager = managerPerWorld.get(world);
-            }
-        }
-        return cachedManager;
+        return managerPerWorld.get(world);
     }
 
     public void removeWorld(World world) {

@@ -16,86 +16,65 @@
 
 package valkyrienwarfare.addon.control.nodenetwork;
 
-import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.math.Vector;
+import valkyrienwarfare.mod.coordinates.VectorImmutable;
+import valkyrienwarfare.physics.management.PhysicsObject;
 
 public interface IForceTile {
 
     /**
-     * Used to tell what direction of force an engine will output, this is
-     * calculated with respect to the orientation of the engine, DO NOT ALTER
+     * Used to tell what direction of force an engine will output at a given instant.
      *
      * @return
      */
-    public Vector getForceOutputNormal();
+    public VectorImmutable getForceOutputNormal(double secondsToApply, PhysicsObject physicsObject);
 
     /**
      * Returns the current unoriented force output vector of this engine
      *
      * @return
      */
-    public Vector getForceOutputUnoriented(double secondsToApply);
+    public default Vector getForceOutputUnoriented(double secondsToApply, PhysicsObject physicsObject) {
+        VectorImmutable forceVectorNormal = getForceOutputNormal(secondsToApply, physicsObject);
+        if (forceVectorNormal == null) {
+            return new Vector();
+        }
+        Vector forceVector = forceVectorNormal.createMutibleVectorCopy();
+        forceVector.multiply(getThrustMagnitude() * secondsToApply);
+        return forceVector;
+    }
 
     /**
-     * Returns the current oriented force output vector of this engine
-     *
-     * @return
-     */
-    public Vector getForceOutputOriented(double secondsToApply);
-
-    /**
-     * Returns the maximum magnitude of force this engine can provide
+     * Returns the maximum magnitude of force this engine can provide at this
+     * instant under its current conditions. This number should never be cached in
+     * any way is it is can always change.
      *
      * @return
      */
     public double getMaxThrust();
 
+    public void setMaxThrust(double maxThrust);
+
     /**
-     * Returns the thrust value of this ForceTile
+     * Returns magnitude of thrust in Newtons being produced.
      *
      * @return
      */
-    public double getThrustActual();
+    public double getThrustMagnitude();
 
     /**
-     * Sets the goal for the force output vector to be
+     * Returns the current force multiplier goal.
+     *
+     * @return
+     */
+    public double getThrustMultiplierGoal();
+
+    /**
+     * Sets the goal for the force output, multiplier must be between 0 and 1. The
+     * actual goal thrust is the getMaxThrust() * getThrustMultiplierGoal();
      *
      * @param toUse
      */
-    public void setThrustGoal(double newMagnitude);
+    public void setThrustMultiplierGoal(double thrustMultiplierGoal);
 
-    /**
-     * Returns the current goal for the thrust
-     * @return
-     */
-    public double getThrustGoal();
-    
-    /**
-     * Matrix transformation stuff
-     *
-     * @return
-     */
-    public Vector getPositionInLocalSpaceWithOrientation();
-
-    /**
-     * Returns the velocity vector this engine is moving to relative to the world
-     *
-     * @return
-     */
-    public Vector getVelocityAtEngineCenter();
-
-    /**
-     * Returns the velocity vector of this engine moving relative to the world,
-     * except only the linear component from the total velocity
-     *
-     * @return
-     */
-    public Vector getLinearVelocityAtEngineCenter();
-
-    /**
-     * Returns the velocity vector of this engine moving relative to the world,
-     * except only the angular component from the total velocity
-     *
-     * @return
-     */
-    public Vector getAngularVelocityAtEngineCenter();
 }

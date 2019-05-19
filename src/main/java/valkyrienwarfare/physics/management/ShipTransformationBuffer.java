@@ -16,63 +16,85 @@
 
 package valkyrienwarfare.physics.management;
 
+import valkyrienwarfare.mod.coordinates.ShipTransformationPacketHolder;
 import valkyrienwarfare.mod.network.PhysWrapperPositionMessage;
-import valkyrienwarfare.physics.data.ShipTransformData;
+
+import java.util.LinkedList;
 
 /**
- * Acts as a buffer to smooth incoming position data from the server.
+ * Ideally this would smooth out data coming from the sever, but for now it
+ * mostly does nothing aside from storing the previous transforms. May possibly
+ * add something here in the future.
+ *
+ * @author thebest108
  */
 public class ShipTransformationBuffer {
 
-    private final ShipTransformData[] recentTransforms;
+    public static final int PACKET_BUFFER_SIZE = 50;
+    public static final int TRANSFORMS_SMOOTHED = 5;
+    public static final double TRANFORMATION_DELAY = .5D;
+    private final LinkedList<ShipTransformationPacketHolder> transformations;
+    private final BezierWeightGenerator weightGenerator;
 
     public ShipTransformationBuffer() {
-        recentTransforms = new ShipTransformData[20];
+        this.transformations = new LinkedList<ShipTransformationPacketHolder>();
+        this.weightGenerator = new BezierWeightGenerator(TRANSFORMS_SMOOTHED);
     }
 
-    // Number of ticks the parent ship has been active for
-    // Increases by 1 for every message pushed onto the stack
     public void pushMessage(PhysWrapperPositionMessage toPush) {
-        // Shift whole array to the right
-        for (int index = recentTransforms.length - 2; index >= 0; index--) {
-            recentTransforms[index + 1] = recentTransforms[index];
+        transformations.push(new ShipTransformationPacketHolder(toPush));
+        if (transformations.size() > PACKET_BUFFER_SIZE) {
+            transformations.removeLast();
         }
-        // System.arraycopy(recentTransforms, 0, recentTransforms, 1,
-        // recentTransforms.length - 1);
-        recentTransforms[0] = new ShipTransformData(toPush);
     }
 
-    // TODO: Make this auto-adjust to best settings for the server
-    public ShipTransformData getDataForTick(int lastTick) {
-        if (recentTransforms[0] == null) {
-            System.err.println(
-                    "A SHIP JUST RETURNED NULL FOR 'recentTransforms[0]==null'; ANY WEIRD ERRORS PAST HERE ARE DIRECTLY LINKED TO THAT!");
+    public ShipTransformationPacketHolder pollForClientTransform() {
+        if (isSmoothTransformReady()) {
+            return generateSmoothTransform();
+        } else {
             return null;
         }
-        int tickToGet = lastTick + 1;
-
-        int realtimeTick = recentTransforms[0].relativeTick;
-
-        if (realtimeTick - lastTick > 3) {
-            tickToGet = realtimeTick - 2;
-            // System.out.println("Too Slow");
-        }
-
-        for (ShipTransformData transform : recentTransforms) {
-            if (transform != null) {
-                if (transform.relativeTick == tickToGet) {
-                    return transform;
-                }
-            }
-        }
-
-        // System.out.println("Couldnt find the needed transform");
-
-        if (recentTransforms[1] != null) {
-            return recentTransforms[1];
-        }
-
-        return recentTransforms[0];
     }
 
+    private boolean isSmoothTransformReady() {
+        return true; /*transformations.size() > TRANSFORMS_SMOOTHED;*/
+    }
+
+    // Doesn't really do anything yet.
+    private ShipTransformationPacketHolder generateSmoothTransform() {
+        return transformations.pollFirst();
+    	/*
+    	double[] weights = new double[TRANSFORMS_SMOOTHED];
+    	ShipTransformationPacketHolder[] transforms = new ShipTransformationPacketHolder[TRANSFORMS_SMOOTHED];
+    	for (int i = 0; i < TRANSFORMS_SMOOTHED; i++) {
+    		weights[i] = weightGenerator.getTermWeight(.5, i);
+    		transforms[i] = transformations.get(i);
+    	}
+    	return transforms[0]; // new ShipTransformationPacketHolder(transforms, weights);
+    	*/
+    }
+
+    private class BezierWeightGenerator {
+
+        private final int order;
+
+        public BezierWeightGenerator(int order) {
+            this.order = order;
+        }
+
+        public double getTermWeight(double deltaTime, int term) {
+            return 2 * Math.pow(deltaTime, term) * Math.pow(1 - deltaTime, order - term)
+                    * binomial(TRANSFORMS_SMOOTHED - 1, term);
+        }
+
+        private int binomial(int n, int k) {
+            if (k > n - k)
+                k = n - k;
+            int b = 1;
+            for (int i = 1, m = n; i <= k; i++, m--)
+                b = b * m / i;
+            return b;
+        }
+
+    }
 }

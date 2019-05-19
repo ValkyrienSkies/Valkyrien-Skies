@@ -21,6 +21,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -29,11 +30,13 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
+import valkyrienwarfare.mod.block.tileentity.TileEntityPhysicsInfuser;
+import valkyrienwarfare.mod.physmanagement.relocation.DetectorManager;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.physics.management.ShipType;
 import valkyrienwarfare.physics.management.WorldPhysObjectManager;
-import valkyrienwarfare.mod.physmanagement.relocation.DetectorManager;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class BlockPhysicsInfuser extends Block {
@@ -45,28 +48,44 @@ public class BlockPhysicsInfuser extends Block {
         shipSpawnDetectorID = DetectorManager.DetectorIDs.ShipSpawnerGeneral.ordinal();
     }
 
+    public boolean hasTileEntity(IBlockState state) {
+        return true;
+    }
+
+    @Nullable
+    public TileEntity createTileEntity(World world, IBlockState state) {
+        return new TileEntityPhysicsInfuser();
+    }
 
     public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par4) {
-        itemInformation.add(TextFormatting.BLUE + "Turns any blocks attatched to this one into a brand new Ship, just be careful not to infuse your entire world");
+        itemInformation.add(TextFormatting.BLUE
+                + "Turns any blocks attatched to this one into a brand new Ship, just be careful not to infuse your entire world");
     }
 
     @Override
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
+                                    EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
         if (!worldIn.isRemote) {
-            WorldPhysObjectManager manager = ValkyrienWarfareMod.physicsManager.getManagerForWorld(worldIn);
+            WorldPhysObjectManager manager = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getManagerForWorld(worldIn);
             if (manager != null) {
-                PhysicsWrapperEntity wrapperEnt = manager.getManagingObjectForChunk(worldIn.getChunkFromBlockCoords(pos));
+                PhysicsWrapperEntity wrapperEnt = manager
+                        .getManagingObjectForChunk(worldIn.getChunkFromBlockCoords(pos));
                 if (wrapperEnt != null) {
-                    wrapperEnt.wrapping.doPhysics = !wrapperEnt.wrapping.doPhysics;
+                    wrapperEnt.getPhysicsObject().setPhysicsEnabled(!wrapperEnt.getPhysicsObject().isPhysicsEnabled());
+                    // Alright (try) to destroy this ship.
+                    wrapperEnt.getPhysicsObject()
+                            .tryToDeconstructShip();
                     return true;
                 }
             }
 
             if (ValkyrienWarfareMod.canChangeAirshipCounter(true, playerIn)) {
-                PhysicsWrapperEntity wrapper = new PhysicsWrapperEntity(worldIn, pos.getX(), pos.getY(), pos.getZ(), playerIn, shipSpawnDetectorID, ShipType.Full_Unlocked);
+                PhysicsWrapperEntity wrapper = new PhysicsWrapperEntity(worldIn, pos.getX(), pos.getY(), pos.getZ(),
+                        playerIn, shipSpawnDetectorID, ShipType.Full_Unlocked);
                 worldIn.spawnEntity(wrapper);
             } else {
-                playerIn.sendMessage(new TextComponentString("You've made too many airships! The limit per player is " + ValkyrienWarfareMod.maxAirships));
+                playerIn.sendMessage(new TextComponentString(
+                        "You've made too many airships! The limit per player is " + ValkyrienWarfareMod.maxAirships));
             }
         }
         return true;

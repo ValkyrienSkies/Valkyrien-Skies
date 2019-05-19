@@ -20,7 +20,7 @@ import net.minecraft.util.math.BlockPos;
 
 public class ImplCapabilityLastRelay implements ICapabilityLastRelay {
 
-    BlockPos lastRelay;
+    private BlockPos lastRelay;
 
     @Override
     public BlockPos getLastRelay() {

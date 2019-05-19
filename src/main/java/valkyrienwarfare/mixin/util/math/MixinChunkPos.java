@@ -24,13 +24,14 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.api.RotationMatrices;
-import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.api.TransformType;
+import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 @Mixin(ChunkPos.class)
 public abstract class MixinChunkPos {
 
+    private static final double TOO_MUCH_DISTANCE = 100000;
     @Shadow
     @Final
     public int x;
@@ -40,29 +41,38 @@ public abstract class MixinChunkPos {
     public int z;
 
     /**
-     * This is easier to have as an overwrite because there's less laggy hackery to be done then :P
+     * This is easier to have as an overwrite because there's less laggy hackery to
+     * be done then :P
      *
      * @author DaPorkchop_
      */
     @Overwrite
     public double getDistanceSq(Entity entityIn) {
-        double d0 = (double) (this.x * 16 + 8);
-        double d1 = (double) (this.z * 16 + 8);
+        double d0 = this.x * 16 + 8;
+        double d1 = this.z * 16 + 8;
         double d2 = d0 - entityIn.posX;
         double d3 = d1 - entityIn.posZ;
         double vanilla = d2 * d2 + d3 * d3;
 
-        if (vanilla < 91111) {
+        // A big number
+        if (vanilla < TOO_MUCH_DISTANCE) {
             return vanilla;
         }
 
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(entityIn.world, new BlockPos(d0, 127, d1));
-
-        if (wrapper != null) {
-            Vector entityPosInLocal = new Vector(entityIn);
-            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, entityPosInLocal);
-            entityPosInLocal.subtract(d0, entityPosInLocal.Y, d1);
-            return entityPosInLocal.lengthSq();
+        try {
+            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(entityIn.world,
+                    new BlockPos(d0, 127, d1));
+            if (wrapper != null) {
+                Vector entityPosInLocal = new Vector(entityIn);
+                // RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform,
+                // entityPosInLocal);
+                wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(entityPosInLocal,
+                        TransformType.GLOBAL_TO_SUBSPACE);
+                entityPosInLocal.subtract(d0, entityPosInLocal.Y, d1);
+                return entityPosInLocal.lengthSq();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return vanilla;

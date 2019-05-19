@@ -31,7 +31,7 @@ import valkyrienwarfare.api.addons.Module;
 import valkyrienwarfare.api.addons.VWAddon;
 
 @VWAddon
-public class ValkyrienWarfareOC extends Module<ValkyrienWarfareOC> {
+public class ValkyrienWarfareOC extends Module {
     public static ValkyrienWarfareOC INSTANCE;
     public Block gpsBlock;
 
@@ -72,9 +72,9 @@ public class ValkyrienWarfareOC extends Module<ValkyrienWarfareOC> {
     }
 
     @Override
-	public void registerItems(RegistryEvent.Register<Item> event) {
-		registerItemBlock(event, gpsBlock);
-	}
+    public void registerItems(RegistryEvent.Register<Item> event) {
+        registerItemBlock(event, gpsBlock);
+    }
 
     @Override
     public void registerTileEntities() {

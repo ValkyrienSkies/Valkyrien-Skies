@@ -16,16 +16,8 @@
 
 package valkyrienwarfare.mod.command;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.annotation.Nullable;
-
 import com.google.common.collect.Lists;
-
 import net.minecraft.command.CommandBase;
-import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
@@ -36,6 +28,11 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class AirshipSettingsCommand extends CommandBase {
 
@@ -66,7 +63,7 @@ public class AirshipSettingsCommand extends CommandBase {
     }
 
     @Override
-    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+    public void execute(MinecraftServer server, ICommandSender sender, String[] args) {
         if (!(sender instanceof EntityPlayer)) {
             sender.sendMessage(new TextComponentString("You need to be a player to do that!"));
             return;
@@ -83,13 +80,13 @@ public class AirshipSettingsCommand extends CommandBase {
 
         BlockPos pos = rayTraceBothSides(p, p.isCreative() ? 5.0 : 4.5, 1).getBlockPos();
 
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(p.getEntityWorld(), pos);
+        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(p.getEntityWorld(), pos);
 
         if (wrapper == null) {
             sender.sendMessage(new TextComponentString("You need to be looking at an airship to do that!"));
             return;
         }
-        if (p.entityUniqueID.toString().equals(wrapper.wrapping.creator)) {
+        if (p.entityUniqueID.toString().equals(wrapper.getPhysicsObject().getCreator())) {
             if (args[0].equals("transfer")) {
                 if (args.length == 1) {
                     return;
@@ -100,7 +97,7 @@ public class AirshipSettingsCommand extends CommandBase {
                         p.sendMessage(new TextComponentString("That player is not online!"));
                         return;
                     }
-                    switch (wrapper.wrapping.changeOwner(target)) {
+                    switch (wrapper.getPhysicsObject().changeOwner(target)) {
                         case ERROR_IMPOSSIBLE_STATUS:
                             p.sendMessage(new TextComponentString("An error occured, please report to mod devs"));
                             break;
@@ -118,11 +115,11 @@ public class AirshipSettingsCommand extends CommandBase {
                 }
             } else if (args[0].equals("allowplayer")) {
                 if (args.length == 1) {
-                    StringBuilder result = new StringBuilder("<");
-                    Iterator<String> iter = wrapper.wrapping.allowedUsers.iterator();
-                    while (iter.hasNext()) {
-                        result.append(iter.next() + (iter.hasNext() ? ", " : ">"));
-                    }
+                    StringBuilder result = new StringBuilder();
+                    wrapper.getPhysicsObject().getAllowedUsers().forEach(s -> {
+                        result.append(s);
+                        result.append(" ");
+                    });
                     p.sendMessage(new TextComponentString(result.toString()));
                     return;
                 }
@@ -132,19 +129,19 @@ public class AirshipSettingsCommand extends CommandBase {
                         p.sendMessage(new TextComponentString("That player is not online!"));
                         return;
                     }
-                    if (target.entityUniqueID.toString().equals(wrapper.wrapping.creator)) {
+                    if (target.entityUniqueID.toString().equals(wrapper.getPhysicsObject().getCreator())) {
                         p.sendMessage(new TextComponentString("You can't add yourself to your own airship!"));
                         return;
                     }
-                    wrapper.wrapping.allowedUsers.add(target.entityUniqueID.toString());
+                    wrapper.getPhysicsObject().getAllowedUsers().add(target.entityUniqueID.toString());
                     p.sendMessage(new TextComponentString("Success! " + target.getName() + " can now interact with this airship!"));
                     return;
                 }
             }
         } else {
-            if (wrapper.wrapping.creator == null || wrapper.wrapping.creator.trim().isEmpty()) {
+            if (wrapper.getPhysicsObject().getCreator() == null || wrapper.getPhysicsObject().getCreator().trim().isEmpty()) {
                 if (args.length == 1 && args[0].equals("claim")) {
-                    wrapper.wrapping.creator = p.entityUniqueID.toString();
+                    wrapper.getPhysicsObject().setCreator(p.entityUniqueID.toString());
                     p.sendMessage(new TextComponentString("You've successfully claimed an airship!"));
                     return;
                 }

@@ -30,56 +30,56 @@ import valkyrienwarfare.mod.physmanagement.interaction.ShipUUIDToPosData.ShipPos
 
 public class AirshipMapCommand extends CommandBase {
 
-	@Override
-	public String getName() {
-		return "airshipmapping";
-	}
+    @Override
+    public String getName() {
+        return "airshipmapping";
+    }
 
-	@Override
-	public String getUsage(ICommandSender sender) {
-		return "/airshipmapping tpto <Ship Name>";
-	}
+    @Override
+    public String getUsage(ICommandSender sender) {
+        return "/airshipmapping tpto <Ship Name>";
+    }
 
-	@Override
-	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-		String term = args[0];
+    @Override
+    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+        String term = args[0];
 
-		if (term.equals("tpto")) {
-			String shipName = args[1];
-			if (args.length > 2) {
-				for (int i = 2; i < args.length; i++) {
-					shipName += " " + args[i];
-				}
-			}
-			Entity player = sender.getCommandSenderEntity();
-			World world = player.world;
+        if (term.equals("tpto")) {
+            String shipName = args[1];
+            if (args.length > 2) {
+                for (int i = 2; i < args.length; i++) {
+                    shipName += " " + args[i];
+                }
+            }
+            Entity player = sender.getCommandSenderEntity();
+            World world = player.world;
 
-			ShipNameUUIDData data = ShipNameUUIDData.get(world);
+            ShipNameUUIDData data = ShipNameUUIDData.get(world);
 
-			if (data.ShipNameToLongMap.containsKey(shipName)) {
-				long shipUUIDMostSig = data.ShipNameToLongMap.get(shipName);
+            if (data.shipNameToLongMap.containsKey(shipName)) {
+                long shipUUIDMostSig = data.shipNameToLongMap.get(shipName);
 
-				ShipUUIDToPosData posData = ShipUUIDToPosData.getShipUUIDDataForWorld(world);
+                ShipUUIDToPosData posData = ShipUUIDToPosData.getShipUUIDDataForWorld(world);
 
-				ShipPositionData positionData = posData.getShipPositionData(shipUUIDMostSig);
+                ShipPositionData positionData = posData.getShipPositionData(shipUUIDMostSig);
 
-				double posX = positionData.getPosX();
-				double posY = positionData.getPosY();
-				double posZ = positionData.getPosZ();
+                double posX = positionData.getPosX();
+                double posY = positionData.getPosY();
+                double posZ = positionData.getPosZ();
 
-				// Time to teleport!
+                // Time to teleport!
 
-				if (player instanceof EntityPlayerMP) {
-					EntityPlayerMP playerMP = (EntityPlayerMP) player;
+                if (player instanceof EntityPlayerMP) {
+                    EntityPlayerMP playerMP = (EntityPlayerMP) player;
 
-					((EntityPlayerMP) player).connection.setPlayerLocation(posX, posY, posZ, 0, 0);
-				}
-			}
-		}
+                    ((EntityPlayerMP) player).connection.setPlayerLocation(posX, posY, posZ, 0, 0);
+                }
+            }
+        }
 
-		if (term.equals("help")) {
-			sender.sendMessage(new TextComponentString("tpto"));
-		}
-	}
+        if (term.equals("help")) {
+            sender.sendMessage(new TextComponentString("tpto"));
+        }
+    }
 
 }

@@ -40,7 +40,7 @@ import valkyrienwarfare.api.addons.Module;
 import valkyrienwarfare.api.addons.VWAddon;
 
 @VWAddon
-public class ValkyrienWarfareCombat extends Module<ValkyrienWarfareCombat> {
+public class ValkyrienWarfareCombat extends Module {
     public static ValkyrienWarfareCombat INSTANCE;
     public Item basicCannonSpawner;
     public Item cannonBall;
@@ -98,8 +98,8 @@ public class ValkyrienWarfareCombat extends Module<ValkyrienWarfareCombat> {
 
     @Override
     public void registerRecipes(RegistryEvent.Register<IRecipe> event) {
-        registerRecipe(event, new ItemStack(cannonBall, 4), "II ", "II ", "   ", 'I', Items.IRON_INGOT);
-        registerRecipe(event, new ItemStack(powderPouch, 4), " S ", "SGS", " S ", 'S', Items.STRING, 'G', Items.GUNPOWDER);
+        registerRecipe(event, "recipe_cannon_ball", new ItemStack(cannonBall, 4), "II ", "II ", "   ", 'I', Items.IRON_INGOT);
+        registerRecipe(event, "recipe_powder_pouch", new ItemStack(powderPouch, 4), " S ", "SGS", " S ", 'S', Items.STRING, 'G', Items.GUNPOWDER);
     }
 
     @Override

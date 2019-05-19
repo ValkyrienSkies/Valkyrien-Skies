@@ -28,18 +28,17 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import valkyrienwarfare.addon.combat.ValkyrienWarfareCombat;
 import valkyrienwarfare.addon.combat.entity.EntityCannonBall;
-import valkyrienwarfare.api.IRenderVW;
+import valkyrienwarfare.deprecated_api.IRenderVW;
 import valkyrienwarfare.mod.client.render.FastBlockModelRenderer;
 
 public class EntityCannonBallRenderer extends Render<EntityCannonBall> implements IRenderVW {
 
     public static IRenderVW instance;
+    private IBlockState cannonballState;
 
     {
         instance = this;
     }
-
-    private IBlockState cannonballState;
 
     protected EntityCannonBallRenderer(RenderManager renderManager) {
         super(renderManager);
@@ -56,7 +55,7 @@ public class EntityCannonBallRenderer extends Render<EntityCannonBall> implement
         BufferBuilder BufferBuilder = tessellator.getBuffer();
 
         GlStateManager.translate((float) (x - .25D), (float) (y - .07D), (float) (z + .278D));
-        FastBlockModelRenderer.renderBlockModel(BufferBuilder, tessellator, world, cannonballState, entity.getBrightnessForRender());
+        FastBlockModelRenderer.renderBlockModel(tessellator, world, cannonballState, entity.getBrightnessForRender());
 
         if (this.renderOutlines) {
             GlStateManager.disableOutlineMode();

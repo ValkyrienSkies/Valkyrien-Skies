@@ -16,17 +16,20 @@
 
 package valkyrienwarfare.mod.physmanagement.interaction;
 
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.MapStorage;
 import net.minecraft.world.storage.WorldSavedData;
-import valkyrienwarfare.util.NBTUtils;
-import valkyrienwarfare.mod.physmanagement.chunk.ChunkSet;
+import valkyrienwarfare.mod.physmanagement.chunk.VWChunkClaim;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.util.NBTUtils;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
@@ -35,8 +38,8 @@ public class BlockPosToShipUUIDData extends WorldSavedData {
 
     private static final String key = "BlockPosToShipUUIDData";
     //Not the persistent map, used for performance reasons
-    private HashMap<Long, UUID> chunkposToShipUUID = new HashMap<Long, UUID>();
-    private HashMap<UUID, ChunkSet> UUIDToChunkSet = new HashMap<UUID, ChunkSet>();
+    private TLongObjectMap<UUID> chunkposToShipUUID = new TLongObjectHashMap<>();
+    private Map<UUID, VWChunkClaim> UUIDToChunkSet = new HashMap<>();
 
     public BlockPosToShipUUIDData(String name) {
         super(name);
@@ -65,9 +68,9 @@ public class BlockPosToShipUUIDData extends WorldSavedData {
     public void addShipToPersistantMap(PhysicsWrapperEntity toAdd) {
         UUID shipID = toAdd.getPersistentID();
 
-        int centerX = toAdd.wrapping.ownedChunks.centerX;
-        int centerZ = toAdd.wrapping.ownedChunks.centerZ;
-        int radius = toAdd.wrapping.ownedChunks.radius;
+        int centerX = toAdd.getPhysicsObject().getOwnedChunks().getCenterX();
+        int centerZ = toAdd.getPhysicsObject().getOwnedChunks().getCenterZ();
+        int radius = toAdd.getPhysicsObject().getOwnedChunks().getRadius();
 
         for (int x = centerX - radius; x <= centerX + radius; x++) {
             for (int z = centerZ - radius; z <= centerZ + radius; z++) {
@@ -75,14 +78,14 @@ public class BlockPosToShipUUIDData extends WorldSavedData {
                 chunkposToShipUUID.put(chunkPos, shipID);
             }
         }
-        UUIDToChunkSet.put(toAdd.getPersistentID(), toAdd.wrapping.ownedChunks);
+        UUIDToChunkSet.put(toAdd.getPersistentID(), toAdd.getPhysicsObject().getOwnedChunks());
         markDirty();
     }
 
     public void removeShipFromPersistantMap(PhysicsWrapperEntity toRemove) {
-        int centerX = toRemove.wrapping.ownedChunks.centerX;
-        int centerZ = toRemove.wrapping.ownedChunks.centerZ;
-        int radius = toRemove.wrapping.ownedChunks.radius;
+        int centerX = toRemove.getPhysicsObject().getOwnedChunks().getCenterX();
+        int centerZ = toRemove.getPhysicsObject().getOwnedChunks().getCenterZ();
+        int radius = toRemove.getPhysicsObject().getOwnedChunks().getRadius();
 
         for (int x = centerX - radius; x <= centerX + radius; x++) {
             for (int z = centerZ - radius; z <= centerZ + radius; z++) {
@@ -110,7 +113,7 @@ public class BlockPosToShipUUIDData extends WorldSavedData {
 //			System.out.println("Loaded a ChunkSet at " + centerX + ":" + centerZ);
 
             UUID persistantID = new UUID(mostBits, leastBits);
-            ChunkSet set = new ChunkSet(centerX, centerZ, radius);
+            VWChunkClaim set = new VWChunkClaim(centerX, centerZ, radius);
 
             UUIDToChunkSet.put(persistantID, set);
 
@@ -124,15 +127,15 @@ public class BlockPosToShipUUIDData extends WorldSavedData {
 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-        Set<Entry<UUID, ChunkSet>> entries = UUIDToChunkSet.entrySet();
+        Set<Entry<UUID, VWChunkClaim>> entries = UUIDToChunkSet.entrySet();
 
         //2 ints, 1 byte (radius), and 2 longs for each ship, that comes out to 25 bytes per entry
         int byteArraySize = entries.size() * 25;
         ByteBuffer buffer = ByteBuffer.allocate(byteArraySize);
-        for (Entry<UUID, ChunkSet> entry : entries) {
-            int centerX = entry.getValue().centerX;
-            int centerZ = entry.getValue().centerZ;
-            byte radius = (byte) entry.getValue().radius;
+        for (Entry<UUID, VWChunkClaim> entry : entries) {
+            int centerX = entry.getValue().getCenterX();
+            int centerZ = entry.getValue().getCenterZ();
+            byte radius = (byte) entry.getValue().getRadius();
             long mostBits = entry.getKey().getMostSignificantBits();
             long leastBits = entry.getKey().getLeastSignificantBits();
 

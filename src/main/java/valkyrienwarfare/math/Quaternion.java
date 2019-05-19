@@ -17,13 +17,13 @@
 package valkyrienwarfare.math;
 
 /**
- * Used in rendering interpolation and in applying Angular Velocity in the physics Controller
+ * Used for rendering interpolation and applying angular velocity to the physics controller
  *
  * @author thebest108
  */
 public class Quaternion {
 
-    public double x, y, z, w;
+    private double x, y, z, w;
 
     public Quaternion(double xx, double yy, double zz, double ww) {
         x = xx;
@@ -47,7 +47,7 @@ public class Quaternion {
         return q;
     }
 
-    public static Quaternion getBetweenQuat(Quaternion old, Quaternion newOne, double timeStep) {
+    public static Quaternion slerpInterpolate(Quaternion old, Quaternion newOne, double timeStep) {
         double dotProduct = dotProduct(old, newOne);
         boolean makeNegative = dotProduct < 0;
         if (makeNegative) {
@@ -80,45 +80,23 @@ public class Quaternion {
         return betweenQuat;
     }
 
-    public static Quaternion fromAxisAngle(double x, double y, double z, double angle) {
-        double axismag = Math.sqrt(x * x + y * y + z * z);
-        x /= axismag;
-        y /= axismag;
-        z /= axismag;
-        Quaternion q = new Quaternion();
-        double sinMod = Math.sin(angle / 2D);
-        q.x = x * sinMod;
-        q.y = y * sinMod;
-        q.z = z * sinMod;
-        q.w = Math.cos(angle / 2D);
-        return q;
-    }
-
+    /**
+     * Creates a new Quaternion object for the given rotation.
+     *
+     * @param pitch in degrees
+     * @param yaw   in degrees
+     * @param roll  in degrees
+     * @return
+     */
     public static Quaternion fromEuler(double pitch, double yaw, double roll) {
-        double heading = Math.toRadians(pitch);
-        double attitude = Math.toRadians(yaw);
-        double bank = Math.toRadians(roll);
-        double c1 = Math.cos(heading / 2);
-        double s1 = Math.sin(heading / 2);
-        double c2 = Math.cos(attitude / 2);
-        double s2 = Math.sin(attitude / 2);
-        double c3 = Math.cos(bank / 2);
-        double s3 = Math.sin(bank / 2);
-        double c1c2 = c1 * c2;
-        double s1s2 = s1 * s2;
-        Quaternion quat = new Quaternion();
-        quat.x = s1 * c2 * c3 + c1 * s2 * s3;
-        quat.y = c1 * s2 * c3 - s1 * c2 * s3;
-        quat.z = c1c2 * s3 + s1s2 * c3;
-        quat.w = c1c2 * c3 - s1s2 * s3;
-        return quat;
+        double[] rotationMatrix = RotationMatrices.getRotationMatrix(pitch, yaw, roll);
+        return QuaternionFromMatrix(rotationMatrix);
     }
 
     public static double dotProduct(Quaternion first, Quaternion second) {
         return (first.x * second.x) + (first.y * second.y) + (first.z * second.z) + (first.w * second.w);
     }
 
-    // MicroOptimization; avoid creating an extra double
     public double[] toRadians() {
         // double test = x*y + z*w;
         double sqw = w * w;
@@ -154,7 +132,7 @@ public class Quaternion {
         y = oldw * q1.y + q1.w * oldy - oldx * q1.z + oldz * q1.x;
         z = oldw * q1.z + q1.w * oldz + oldx * q1.y - oldy * q1.x;
         oldw = x * x + y * y + z * z + w * w;
-        if (Math.abs(1D - oldw) > .0000000000000001) {
+        if (Math.abs(1D - oldw) > .001) {
             oldw = Math.sqrt(oldw);
             w /= oldw;
             x /= oldw;

@@ -33,7 +33,7 @@ import valkyrienwarfare.api.addons.Module;
 import valkyrienwarfare.api.addons.VWAddon;
 
 @VWAddon
-public class CannonMod extends Module<CannonMod> {
+public class CannonMod extends Module {
     public static CannonMod instance;
 
     public CannonMod() {

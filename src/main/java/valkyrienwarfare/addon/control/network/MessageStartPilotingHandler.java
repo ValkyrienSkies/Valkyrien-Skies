@@ -39,7 +39,7 @@ public class MessageStartPilotingHandler implements IMessageHandler<MessageStart
                 pilot.setControllerInputEnum(message.controlType);
 
                 if (message.setPhysicsWrapperEntityToPilot) {
-                    PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(Minecraft.getMinecraft().world, message.posToStartPiloting);
+                    PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(Minecraft.getMinecraft().world, message.posToStartPiloting);
                     pilot.setPilotedShip(wrapper);
                 } else {
                     pilot.setPilotedShip(null);

@@ -24,7 +24,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 @Mixin(TileEntity.class)
@@ -52,11 +52,11 @@ public abstract class MixinTileEntity implements net.minecraftforge.common.capab
             //Assume on Ship
             if (tileWorld.isRemote && toReturn > 9999999D) {
                 BlockPos pos = this.pos;
-                PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(this.world, pos);
+                PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(this.world, pos);
 
                 if (wrapper != null) {
                     Vector tilePos = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
-                    wrapper.wrapping.coordTransform.fromLocalToGlobal(tilePos);
+                    wrapper.getPhysicsObject().getShipTransformationManager().fromLocalToGlobal(tilePos);
 
                     tilePos.X -= x;
                     tilePos.Y -= y;

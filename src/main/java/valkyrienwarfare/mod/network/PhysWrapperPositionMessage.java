@@ -17,73 +17,254 @@
 package valkyrienwarfare.mod.network;
 
 import io.netty.buffer.ByteBuf;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.math.Vector;
+import valkyrienwarfare.mod.multithreaded.PhysicsShipTransform;
 import valkyrienwarfare.physics.management.PhysicsObject;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
+/**
+ * This IMessage sends all the position rotation data of a PhysicsObject from
+ * the server to the client. Usually the data sent from one of these packets is
+ * coming from the physics tick and isn't exactly the same as the game tick;
+ * this is done so that the client can see ship movement smoothly even when the
+ * server game tick is lagging.
+ *
+ * @author thebest108
+ */
 public class PhysWrapperPositionMessage implements IMessage {
 
-    public PhysicsWrapperEntity toSpawn;
-
-    public int entityID;
-    public double posX, posY, posZ;
-    public double pitch, yaw, roll;
-    public Vector centerOfMass;
-    public int relativeTick;
+    private int entityID;
+    private double posX, posY, posZ;
+    private double pitch, yaw, roll;
+    private Vector centerOfMass;
+    private int relativeTick;
+    private AxisAlignedBB shipBB;
 
     public PhysWrapperPositionMessage() {
     }
 
-    public PhysWrapperPositionMessage(PhysicsWrapperEntity toSend) {
-        toSpawn = toSend;
-        relativeTick = toSend.ticksExisted;
+    public PhysWrapperPositionMessage(PhysicsShipTransform transformData, int entityID, int relativeTick) {
+        this.setEntityID(entityID);
+        this.setRelativeTick(relativeTick);
+        this.setShipBB(transformData.getShipBoundingBox());
+        this.setPosX(transformData.getPosX());
+        this.setPosY(transformData.getPosY());
+        this.setPosZ(transformData.getPosZ());
+        this.setPitch(transformData.getPitch());
+        this.setYaw(transformData.getYaw());
+        this.setRoll(transformData.getRoll());
+        this.setCenterOfMass(transformData.getCenterOfMass());
+    }
+
+    public PhysWrapperPositionMessage(PhysicsWrapperEntity toSend, int relativeTick) {
+        this.setEntityID(toSend.getEntityId());
+        this.setRelativeTick(relativeTick);
+        this.setShipBB(toSend.getPhysicsObject().getShipBoundingBox());
+        this.setPosX(toSend.posX);
+        this.setPosY(toSend.posY);
+        this.setPosZ(toSend.posZ);
+        this.setPitch(toSend.getPitch());
+        this.setYaw(toSend.getYaw());
+        this.setRoll(toSend.getRoll());
+        this.setCenterOfMass(toSend.getPhysicsObject().getCenterCoord());
     }
 
     public PhysWrapperPositionMessage(PhysicsObject toRunLocally) {
-        posX = toRunLocally.wrapper.posX;
-        posY = toRunLocally.wrapper.posY;
-        posZ = toRunLocally.wrapper.posZ;
+        setPosX(toRunLocally.getWrapperEntity().posX);
+        setPosY(toRunLocally.getWrapperEntity().posY);
+        setPosZ(toRunLocally.getWrapperEntity().posZ);
 
-        pitch = toRunLocally.wrapper.pitch;
-        yaw = toRunLocally.wrapper.yaw;
-        roll = toRunLocally.wrapper.roll;
+        setPitch(toRunLocally.getWrapperEntity().getPitch());
+        setYaw(toRunLocally.getWrapperEntity().getYaw());
+        setRoll(toRunLocally.getWrapperEntity().getRoll());
 
-        centerOfMass = toRunLocally.centerCoord;
+        setCenterOfMass(toRunLocally.getCenterCoord());
+        setShipBB(toRunLocally.getShipBoundingBox());
     }
 
     @Override
     public void fromBytes(ByteBuf buf) {
-        entityID = buf.readInt();
-        relativeTick = buf.readInt();
+        setEntityID(buf.readInt());
+        setRelativeTick(buf.readInt());
 
-        posX = buf.readDouble();
-        posY = buf.readDouble();
-        posZ = buf.readDouble();
+        setPosX(buf.readDouble());
+        setPosY(buf.readDouble());
+        setPosZ(buf.readDouble());
 
-        pitch = buf.readDouble();
-        yaw = buf.readDouble();
-        roll = buf.readDouble();
+        setPitch(buf.readDouble());
+        setYaw(buf.readDouble());
+        setRoll(buf.readDouble());
 
-        centerOfMass = new Vector(buf.readDouble(), buf.readDouble(), buf.readDouble());
+        setCenterOfMass(new Vector(buf.readDouble(), buf.readDouble(), buf.readDouble()));
+        setShipBB(new AxisAlignedBB(buf.readDouble(), buf.readDouble(), buf.readDouble(), buf.readDouble(),
+                buf.readDouble(), buf.readDouble()));
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
-        buf.writeInt(toSpawn.getEntityId());
-        buf.writeInt(relativeTick);
+        buf.writeInt(getEntityID());
+        buf.writeInt(getRelativeTick());
 
-        buf.writeDouble(toSpawn.posX);
-        buf.writeDouble(toSpawn.posY);
-        buf.writeDouble(toSpawn.posZ);
+        buf.writeDouble(getPosX());
+        buf.writeDouble(getPosY());
+        buf.writeDouble(getPosZ());
 
-        buf.writeDouble(toSpawn.pitch);
-        buf.writeDouble(toSpawn.yaw);
-        buf.writeDouble(toSpawn.roll);
+        buf.writeDouble(getPitch());
+        buf.writeDouble(getYaw());
+        buf.writeDouble(getRoll());
 
-        buf.writeDouble(toSpawn.wrapping.centerCoord.X);
-        buf.writeDouble(toSpawn.wrapping.centerCoord.Y);
-        buf.writeDouble(toSpawn.wrapping.centerCoord.Z);
+        buf.writeDouble(getCenterOfMass().X);
+        buf.writeDouble(getCenterOfMass().Y);
+        buf.writeDouble(getCenterOfMass().Z);
+
+        buf.writeDouble(getShipBB().minX);
+        buf.writeDouble(getShipBB().minY);
+        buf.writeDouble(getShipBB().minZ);
+        buf.writeDouble(getShipBB().maxX);
+        buf.writeDouble(getShipBB().maxY);
+        buf.writeDouble(getShipBB().maxZ);
+    }
+
+    /**
+     * @return the posX
+     */
+    public double getPosX() {
+        return posX;
+    }
+
+    /**
+     * @param posX the posX to set
+     */
+    public void setPosX(double posX) {
+        this.posX = posX;
+    }
+
+    /**
+     * @return the posY
+     */
+    public double getPosY() {
+        return posY;
+    }
+
+    /**
+     * @param posY the posY to set
+     */
+    public void setPosY(double posY) {
+        this.posY = posY;
+    }
+
+    /**
+     * @return the posZ
+     */
+    public double getPosZ() {
+        return posZ;
+    }
+
+    /**
+     * @param posZ the posZ to set
+     */
+    public void setPosZ(double posZ) {
+        this.posZ = posZ;
+    }
+
+    /**
+     * @return the pitch
+     */
+    public double getPitch() {
+        return pitch;
+    }
+
+    /**
+     * @param pitch the pitch to set
+     */
+    public void setPitch(double pitch) {
+        this.pitch = pitch;
+    }
+
+    /**
+     * @return the yaw
+     */
+    public double getYaw() {
+        return yaw;
+    }
+
+    /**
+     * @param yaw the yaw to set
+     */
+    public void setYaw(double yaw) {
+        this.yaw = yaw;
+    }
+
+    /**
+     * @return the roll
+     */
+    public double getRoll() {
+        return roll;
+    }
+
+    /**
+     * @param roll the roll to set
+     */
+    public void setRoll(double roll) {
+        this.roll = roll;
+    }
+
+    /**
+     * @return the centerOfMass
+     */
+    public Vector getCenterOfMass() {
+        return centerOfMass;
+    }
+
+    /**
+     * @param centerOfMass the centerOfMass to set
+     */
+    public void setCenterOfMass(Vector centerOfMass) {
+        this.centerOfMass = centerOfMass;
+    }
+
+    /**
+     * @return the relativeTick
+     */
+    public int getRelativeTick() {
+        return relativeTick;
+    }
+
+    /**
+     * @param relativeTick the relativeTick to set
+     */
+    public void setRelativeTick(int relativeTick) {
+        this.relativeTick = relativeTick;
+    }
+
+    /**
+     * @return the shipBB
+     */
+    public AxisAlignedBB getShipBB() {
+        return shipBB;
+    }
+
+    /**
+     * @param shipBB the shipBB to set
+     */
+    public void setShipBB(AxisAlignedBB shipBB) {
+        this.shipBB = shipBB;
+    }
+
+    /**
+     * @return the entityID
+     */
+    public int getEntityID() {
+        return entityID;
+    }
+
+    /**
+     * @param entityID the entityID to set
+     */
+    public void setEntityID(int entityID) {
+        this.entityID = entityID;
     }
 
 }

@@ -17,7 +17,6 @@
 package valkyrienwarfare.addon.control.piloting;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -136,7 +135,7 @@ public class PilotControlsMessage implements IMessage {
         airshipBackward_KeyDown = VWKeyHandler.airshipBackward.isKeyDown();
         airshipLeft_KeyDown = VWKeyHandler.airshipLeft.isKeyDown();
         airshipRight_KeyDown = VWKeyHandler.airshipRight.isKeyDown();
-        airshipSprinting = Minecraft.getMinecraft().player.isSprinting();
+        airshipSprinting = VWKeyHandler.airshipSpriting.isKeyDown(); // Minecraft.getMinecraft().player.isSprinting();
 
         airshipUp_KeyPressed = airshipUp_KeyDown && !airshipUp_KeyPressedLast;
         airshipDown_KeyPressed = airshipDown_KeyDown && !airshipDown_KeyPressedLast;

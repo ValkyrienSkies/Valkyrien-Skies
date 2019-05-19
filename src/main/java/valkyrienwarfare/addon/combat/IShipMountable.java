@@ -16,7 +16,7 @@
 
 package valkyrienwarfare.addon.combat;
 
-import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.math.Vector;
 
 public interface IShipMountable {
 

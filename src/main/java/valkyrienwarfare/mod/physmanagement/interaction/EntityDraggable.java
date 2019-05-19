@@ -16,42 +16,42 @@
 
 package valkyrienwarfare.mod.physmanagement.interaction;
 
-import java.util.List;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.combat.entity.EntityCannonBall;
-import valkyrienwarfare.api.RotationMatrices;
-import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.api.TransformType;
+import valkyrienwarfare.math.RotationMatrices;
+import valkyrienwarfare.math.Vector;
+import valkyrienwarfare.mod.coordinates.ShipTransform;
 import valkyrienwarfare.mod.event.EventsClient;
-import valkyrienwarfare.physics.management.CoordTransformObject;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.physics.management.ShipTransformationManager;
 
-public abstract class EntityDraggable {
+import java.util.List;
+
+/**
+ * Bad class, delete soon!
+ *
+ * @author thebest108
+ */
+@Deprecated
+public class EntityDraggable {
+
+    /**
+     * Moves entities such that they move with the ship below them.
+     *
+     * @param world
+     */
     public static void tickAddedVelocityForWorld(World world) {
         try {
-            // TODO: Fix this
             for (int i = 0; i < world.loadedEntityList.size(); i++) {
                 Entity e = world.loadedEntityList.get(i);
-                // TODO: Maybe add a check to prevent moving entities that are fixed onto a
-                // Ship, but I like the visual effect
-                if (!(e instanceof PhysicsWrapperEntity) && !(e instanceof EntityCannonBall)) {
+                if (!(e instanceof PhysicsWrapperEntity) && !(e instanceof EntityCannonBall) && !e.isDead) {
                     IDraggable draggable = getDraggableFromEntity(e);
-                    // e.onGround = true;
-                    //
-                    doTheEntityThing(e);
-
-                    // draggable.tickAddedVelocity();
-                    //
-                    // e.onGround = true;
-                    // e.setPosition(draggable.getVelocityAddedToPlayer().X + e.posX,
-                    // draggable.getVelocityAddedToPlayer().Y + e.posY,
-                    // draggable.getVelocityAddedToPlayer().Z + e.posZ);
 
                     if (draggable.getWorldBelowFeet() == null) {
                         if (e.onGround) {
@@ -67,6 +67,12 @@ public abstract class EntityDraggable {
                             }
                         }
                     }
+                    // Only run the added velocity code if there's a significant amount to add; or if we're standing on top of a ship.
+                    if (draggable.getVelocityAddedToPlayer()
+                            .lengthSq() > .01 || draggable.getWorldBelowFeet() != null) {
+                        addEntityVelocityFromShipBelow(e);
+                    }
+
                 }
             }
         } catch (Exception e) {
@@ -74,10 +80,15 @@ public abstract class EntityDraggable {
         }
     }
 
-    public static void doTheEntityThing(Entity entity) {
+    /**
+     * Adds the ship below velocity to entity.
+     *
+     * @param entity
+     */
+    public static void addEntityVelocityFromShipBelow(Entity entity) {
         IDraggable draggable = EntityDraggable.getDraggableFromEntity(entity);
-        if (draggable.getWorldBelowFeet() != null && !ValkyrienWarfareMod.physicsManager.isEntityFixed(entity)) {
-            CoordTransformObject coordTransform = draggable.getWorldBelowFeet().wrapping.coordTransform;
+        if (draggable.getWorldBelowFeet() != null && !ValkyrienWarfareMod.VW_PHYSICS_MANAGER.isEntityFixed(entity)) {
+            ShipTransformationManager coordTransform = draggable.getWorldBelowFeet().getPhysicsObject().getShipTransformationManager();
 
             if (entity.world.isRemote && entity instanceof EntityPlayer) {
                 EventsClient.updatePlayerMouseOver(entity);
@@ -90,8 +101,19 @@ public abstract class EntityDraggable {
 
             Vector oldPos = new Vector(entity);
 
-            RotationMatrices.applyTransform(coordTransform.prevwToLTransform, coordTransform.prevWToLRotation, entity);
-            RotationMatrices.applyTransform(coordTransform.lToWTransform, coordTransform.lToWRotation, entity);
+            //            RotationMatrices.applyTransform(coordTransform.prevwToLTransform, entity);
+            // This is causing crashes
+            double[] prev = coordTransform.getPrevTickTransform().getInternalMatrix(TransformType.GLOBAL_TO_SUBSPACE);
+            double[] next = coordTransform.getCurrentTickTransform().getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL);
+
+            Vector playerPos = new Vector(entity);
+            ShipTransform betweenTransform = new ShipTransform(RotationMatrices.getMatrixProduct(next, prev));
+            // betweenTransform.transform(playerPos, TransformType.SUBSPACE_TO_GLOBAL);
+
+            RotationMatrices.applyTransform(betweenTransform, entity, TransformType.SUBSPACE_TO_GLOBAL);
+            // This is what the code used to do, but this caused problems when other threads read this data.
+            // RotationMatrices.applyTransform(coordTransform.getPrevTickTransform(), entity, TransformType.GLOBAL_TO_SUBSPACE);
+            // RotationMatrices.applyTransform(coordTransform.getCurrentTickTransform(), entity, TransformType.SUBSPACE_TO_GLOBAL);
 
             Vector newPos = new Vector(entity);
 
@@ -108,8 +130,9 @@ public abstract class EntityDraggable {
             entity.prevRotationPitch = prevPitch;
 
             Vector oldLookingPos = new Vector(entity.getLook(1.0F));
-            RotationMatrices.applyTransform(coordTransform.prevWToLRotation, oldLookingPos);
-            RotationMatrices.applyTransform(coordTransform.lToWRotation, oldLookingPos);
+            //            coordTransform.getPrevTickTransform().rotate(oldLookingPos, TransformType.GLOBAL_TO_SUBSPACE);
+            //            coordTransform.getCurrentTickTransform().rotate(oldLookingPos, TransformType.SUBSPACE_TO_GLOBAL);
+            betweenTransform.rotate(oldLookingPos, TransformType.SUBSPACE_TO_GLOBAL);
 
             double newPitch = Math.asin(oldLookingPos.Y) * -180D / Math.PI;
             double f4 = -Math.cos(-newPitch * 0.017453292D);
@@ -137,25 +160,22 @@ public abstract class EntityDraggable {
             }
         }
 
-        if (!ValkyrienWarfareMod.physicsManager.isEntityFixed(entity)) {
+        if (!ValkyrienWarfareMod.VW_PHYSICS_MANAGER.isEntityFixed(entity)) {
             boolean originallySneaking = entity.isSneaking();
             entity.setSneaking(false);
             if (draggable.getWorldBelowFeet() == null && entity.onGround) {
                 draggable.getVelocityAddedToPlayer().zero();
             }
 
-            // Bad @DaPorkChop >:/
-            // if (draggable.getWorldBelowFeet() != null) {
-            // entity.onGround = true;
-            // }
 
             Vector velocityProper = new Vector(draggable.getVelocityAddedToPlayer());
             AxisAlignedBB originalBoundingBox = entity.getEntityBoundingBox();
-            draggable.setVelocityAddedToPlayer(getVelocityProper(velocityProper, entity));
+            if (velocityProper.lengthSq() < 1000000) {
+                draggable.setVelocityAddedToPlayer(getVelocityProper(velocityProper, entity));
+            } else {
+                System.err.println(entity.getName() + " tried moving way too fast!");
+            }
 
-            // entity.move(MoverType.SELF, draggable.getVelocityAddedToPlayer().X,
-            // draggable.getVelocityAddedToPlayer().Y,
-            // draggable.getVelocityAddedToPlayer().Z);
 
             entity.setEntityBoundingBox(originalBoundingBox);
 
@@ -163,13 +183,7 @@ public abstract class EntityDraggable {
                     draggable.getVelocityAddedToPlayer().Y, draggable.getVelocityAddedToPlayer().Z));
             entity.resetPositionToBB();
 
-            if (EntityArrow.class.isInstance(entity)) {
-                entity.prevRotationYaw = entity.rotationYaw;
-                entity.rotationYaw -= draggable.getYawDifVelocity();
-            } else {
-                entity.prevRotationYaw = entity.rotationYaw;
-                entity.rotationYaw += draggable.getYawDifVelocity();
-            }
+            entity.rotationYaw += draggable.getYawDifVelocity();
 
             // Do not add this movement as if the entity were walking it
             // entity.distanceWalkedModified = originalWalked;
@@ -214,8 +228,16 @@ public abstract class EntityDraggable {
         double d3 = y;
         double d4 = z;
 
-        List<AxisAlignedBB> list1 = thisClassAsAnEntity.world.getCollisionBoxes(thisClassAsAnEntity,
-                thisClassAsAnEntity.getEntityBoundingBox().offset(x, y, z));
+        AxisAlignedBB potentialCrashBB = thisClassAsAnEntity.getEntityBoundingBox().offset(x, y, z);
+
+        // TODO: This is a band aid not a solution
+        if (potentialCrashBB.getAverageEdgeLength() > 999999) {
+            // The player went too fast, something is wrong.
+            System.err.println("Entity with ID " + thisClassAsAnEntity.getEntityId() + " went way too fast! Reseting its position.");
+            return new Vector();
+        }
+
+        List<AxisAlignedBB> list1 = thisClassAsAnEntity.world.getCollisionBoxes(thisClassAsAnEntity, potentialCrashBB);
         AxisAlignedBB axisalignedbb = thisClassAsAnEntity.getEntityBoundingBox();
 
         if (y != 0.0D) {

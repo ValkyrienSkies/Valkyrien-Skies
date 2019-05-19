@@ -16,49 +16,36 @@
 
 package valkyrienwarfare.physics.management;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
-
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraftforge.common.ForgeChunkManager;
-import net.minecraftforge.common.ForgeChunkManager.Ticket;
-import net.minecraftforge.common.ForgeChunkManager.Type;
-import valkyrienwarfare.ValkyrienWarfareMod;
+import valkyrienwarfare.mod.physmanagement.chunk.VWChunkClaim;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This class essentially handles all the issues with ticking and handling
- * physics Objects in the given world
+ * physics objects in the given world
  *
- * @author BigBastard
+ * @author thebest108
  */
 public class WorldPhysObjectManager {
 
-    private final Ticket chunkLoadingTicket;
-    private final Map<ChunkPos, PhysicsWrapperEntity> chunkPosToPhysicsEntityMap;
     public final World worldObj;
-    public final List<PhysicsWrapperEntity> physicsEntities;
-    public final List<PhysicsWrapperEntity> physicsEntitiesToUnload;
-    private final List<Callable<Void>> physCollisonCallables;
-    private Future<Void> physicsThreadStatus;
+    public final Set<PhysicsWrapperEntity> physicsEntities;
+    private final Long2ObjectMap<PhysicsWrapperEntity> chunkPosToPhysicsEntityMap;
 
     public WorldPhysObjectManager(World toManage) {
         this.worldObj = toManage;
-        this.chunkLoadingTicket = ForgeChunkManager.requestTicket(ValkyrienWarfareMod.INSTANCE, toManage, Type.NORMAL);
-        this.physicsEntities = new ArrayList<PhysicsWrapperEntity>();
-        this.physicsEntitiesToUnload = new ArrayList<PhysicsWrapperEntity>();
-        this.physCollisonCallables = new ArrayList<Callable<Void>>();
-        this.chunkPosToPhysicsEntityMap = new HashMap<ChunkPos, PhysicsWrapperEntity>();
-        this.physicsThreadStatus = null;
+        this.physicsEntities = ConcurrentHashMap.newKeySet();
+        this.chunkPosToPhysicsEntityMap = new Long2ObjectOpenHashMap<>();
     }
 
     /**
@@ -68,52 +55,7 @@ public class WorldPhysObjectManager {
      * @return
      */
     public List<PhysicsWrapperEntity> getTickablePhysicsEntities() {
-        List<PhysicsWrapperEntity> list = new ArrayList<PhysicsWrapperEntity>(physicsEntities);
-        List<PhysicsWrapperEntity> frozenShips = new ArrayList<PhysicsWrapperEntity>();
-
-        if (worldObj instanceof WorldServer) {
-            WorldServer worldServer = (WorldServer) worldObj;
-            for (PhysicsWrapperEntity wrapper : list) {
-                if (!wrapper.isDead) {
-                    if (wrapper.wrapping.surroundingWorldChunksCache != null) {
-                        int chunkCacheX = MathHelper.floor(wrapper.posX / 16D)
-                                - wrapper.wrapping.surroundingWorldChunksCache.chunkX;
-                        int chunkCacheZ = MathHelper.floor(wrapper.posZ / 16D)
-                                - wrapper.wrapping.surroundingWorldChunksCache.chunkZ;
-
-                        chunkCacheX = Math.max(0, Math.min(chunkCacheX,
-                                wrapper.wrapping.surroundingWorldChunksCache.chunkArray.length - 1));
-                        chunkCacheZ = Math.max(0, Math.min(chunkCacheZ,
-                                wrapper.wrapping.surroundingWorldChunksCache.chunkArray[0].length - 1));
-
-                        Chunk chunk = wrapper.wrapping.surroundingWorldChunksCache.chunkArray[chunkCacheX][chunkCacheZ];
-
-                        // Chunk chunk =
-                        // wrapper.wrapping.surroundingWorldChunksCache.chunkArray[(wrapper.wrapping.surroundingWorldChunksCache.chunkArray.length)/2][(wrapper.wrapping.surroundingWorldChunksCache.chunkArray[0].length)/2];
-
-                        if (chunk != null && !worldServer.playerChunkMap.contains(chunk.x, chunk.z)) {
-                            frozenShips.add(wrapper);
-                            // Then I should freeze any ships in this chunk
-                        }
-                    }
-                } else {
-                    frozenShips.add(wrapper);
-                }
-            }
-        }
-
-        List<PhysicsWrapperEntity> dumbShips = new ArrayList<PhysicsWrapperEntity>();
-
-        for (PhysicsWrapperEntity wrapper : list) {
-            if (wrapper.isDead || wrapper.wrapping == null
-                    || (wrapper.wrapping.physicsProcessor == null && !wrapper.world.isRemote)) {
-                dumbShips.add(wrapper);
-            }
-        }
-
-        list.removeAll(frozenShips);
-        list.removeAll(dumbShips);
-
+        List<PhysicsWrapperEntity> list = new ArrayList<>(physicsEntities);
         return list;
     }
 
@@ -127,14 +69,13 @@ public class WorldPhysObjectManager {
             }
             for (PhysicsWrapperEntity caught : potentialMatches) {
                 physicsEntities.remove(caught);
-                physCollisonCallables.remove(caught.wrapping.collisionCallable);
-                caught.wrapping.onThisUnload();
+                caught.getPhysicsObject().onThisUnload();
                 // System.out.println("Caught one");
             }
         }
         loaded.isDead = false;
+        loaded.getPhysicsObject().resetConsecutiveProperTicks();
         physicsEntities.add(loaded);
-        physCollisonCallables.add(loaded.wrapping.collisionCallable);
     }
 
     /**
@@ -144,9 +85,9 @@ public class WorldPhysObjectManager {
      * @param loaded
      */
     public void preloadPhysicsWrapperEntityMappings(PhysicsWrapperEntity loaded) {
-        for (int x = loaded.wrapping.ownedChunks.minX; x <= loaded.wrapping.ownedChunks.maxX; x++) {
-            for (int z = loaded.wrapping.ownedChunks.minZ; z <= loaded.wrapping.ownedChunks.maxZ; z++) {
-                chunkPosToPhysicsEntityMap.put(new ChunkPos(x, z), loaded);
+        for (int x = loaded.getPhysicsObject().getOwnedChunks().getMinX(); x <= loaded.getPhysicsObject().getOwnedChunks().getMaxX(); x++) {
+            for (int z = loaded.getPhysicsObject().getOwnedChunks().getMinZ(); z <= loaded.getPhysicsObject().getOwnedChunks().getMaxZ(); z++) {
+                chunkPosToPhysicsEntityMap.put(getLongFromInts(x, z), loaded);
             }
         }
     }
@@ -154,21 +95,35 @@ public class WorldPhysObjectManager {
     public void onUnload(PhysicsWrapperEntity loaded) {
         if (!loaded.world.isRemote) {
             physicsEntities.remove(loaded);
-            physCollisonCallables.remove(loaded.wrapping.collisionCallable);
-            loaded.wrapping.onThisUnload();
-            for (Chunk[] chunks : loaded.wrapping.claimedChunks) {
-                for (Chunk chunk : chunks) {
-                    chunkPosToPhysicsEntityMap.remove(chunk.getPos());
+            loaded.getPhysicsObject().onThisUnload();
+            VWChunkClaim vwChunkClaim = loaded.getPhysicsObject().getOwnedChunks();
+            for (int chunkX = vwChunkClaim.getMinX(); chunkX <= vwChunkClaim.getMaxX(); chunkX++) {
+                for (int chunkZ = vwChunkClaim.getMinZ(); chunkZ <= vwChunkClaim.getMaxZ(); chunkZ++) {
+                    chunkPosToPhysicsEntityMap.remove(getLongFromInts(chunkX, chunkZ));
                 }
             }
         } else {
             loaded.isDead = true;
+            loaded.getPhysicsObject()
+                    .onThisUnload();
         }
+        // Remove this ship from all our maps, we do not want to memory leak.
+        this.physicsEntities.remove(loaded);
+        List<Long> keysToRemove = new ArrayList();
+        for (Map.Entry<Long, PhysicsWrapperEntity> entry : chunkPosToPhysicsEntityMap.entrySet()) {
+            if (entry.getValue() == loaded) {
+                keysToRemove.add(entry.getKey());
+            }
+        }
+        for (Long keyToRemove : keysToRemove) {
+            chunkPosToPhysicsEntityMap.remove(keyToRemove);
+        }
+        loaded.getPhysicsObject().resetConsecutiveProperTicks();
     }
 
     /**
      * In the future this will be moved to a Mixins system, for now though this is
-     * worse
+     * worse.
      *
      * @param chunk
      * @return
@@ -179,8 +134,7 @@ public class WorldPhysObjectManager {
     }
 
     public PhysicsWrapperEntity getManagingObjectForChunkPosition(int chunkX, int chunkZ) {
-        ChunkPos chunkPos = new ChunkPos(chunkX, chunkZ);
-        return chunkPosToPhysicsEntityMap.get(chunkPos);
+        return chunkPosToPhysicsEntityMap.get(getLongFromInts(chunkX, chunkZ));
     }
 
     public List<PhysicsWrapperEntity> getNearbyPhysObjects(AxisAlignedBB toCheck) {
@@ -188,7 +142,9 @@ public class WorldPhysObjectManager {
         AxisAlignedBB expandedCheck = toCheck.expand(6, 6, 6);
 
         for (PhysicsWrapperEntity wrapper : physicsEntities) {
-            if (wrapper.wrapping.getCollisionBoundingBox().intersects(expandedCheck)) {
+            // This .expand() is only needed on server side, which tells me something is wrong with server side bounding
+            // boxes
+            if (wrapper.getPhysicsObject().getShipBoundingBox().expand(2, 2, 2).intersects(expandedCheck)) {
                 ships.add(wrapper);
             }
         }
@@ -202,7 +158,7 @@ public class WorldPhysObjectManager {
 
     public PhysicsWrapperEntity getShipFixedOnto(Entity entity) {
         for (PhysicsWrapperEntity wrapper : physicsEntities) {
-            if (wrapper.wrapping.isEntityFixed(entity)) {
+            if (wrapper.getPhysicsObject().isEntityFixed(entity)) {
                 if (wrapper.riddenByEntities.contains(entity)) {
                     return wrapper;
                 }
@@ -218,19 +174,7 @@ public class WorldPhysObjectManager {
         return null;
     }
 
-    public void setPhysicsThread(Future<Void> physicsThread) {
-        this.physicsThreadStatus = physicsThread;
-    }
-
-    // Wait for the physics thread to finish before returning
-    public void awaitPhysics() {
-        if (physicsThreadStatus != null && !physicsThreadStatus.isDone()) {
-            try {
-                // Wait for the physicsThread to return before moving on.
-                physicsThreadStatus.get();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+    private long getLongFromInts(int x, int z) {
+        return (long) x & 4294967295L | ((long) z & 4294967295L) << 32;
     }
 }

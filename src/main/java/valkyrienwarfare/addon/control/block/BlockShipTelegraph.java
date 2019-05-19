@@ -16,41 +16,29 @@
 
 package valkyrienwarfare.addon.control.block;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
-import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.tileentity.TileEntityShipTelegraph;
 
-public class BlockShipTelegraph extends Block implements ITileEntityProvider {
+public class BlockShipTelegraph extends BlockPilotableBasic {
 
     public static final PropertyDirection FACING = BlockHorizontal.FACING;
 
     public BlockShipTelegraph(Material materialIn) {
         super(materialIn);
-    }
-
-    @Override
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
-        if (!worldIn.isRemote) {
-            TileEntity tileIn = worldIn.getTileEntity(pos);
-            if (tileIn instanceof TileEntityShipTelegraph) {
-                ((TileEntityShipTelegraph) tileIn).setPilotEntity(playerIn);
-            }
-        }
-        return true;
     }
 
     @Override
@@ -62,6 +50,29 @@ public class BlockShipTelegraph extends Block implements ITileEntityProvider {
         }
 
         return this.getDefaultState().withProperty(FACING, facingHorizontal);
+    }
+
+    @Override
+    public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
+        super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
+        worldIn.setBlockState(pos.up(), ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipTelegraphDummy.getDefaultState());
+    }
+
+    @Override
+    public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
+        super.breakBlock(worldIn, pos, state);
+        if (worldIn.getBlockState(pos.up()).getBlock() == ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipTelegraphDummy) {
+            worldIn.setBlockToAir(pos.up());
+        }
+    }
+
+    @Override
+    public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
+        if (super.canPlaceBlockAt(worldIn, pos)) {
+            return worldIn.getBlockState(pos.up()).getBlock().isReplaceable(worldIn, pos);
+        } else {
+            return false;
+        }
     }
 
     @Override
@@ -102,6 +113,11 @@ public class BlockShipTelegraph extends Block implements ITileEntityProvider {
     @Override
     public TileEntity createNewTileEntity(World worldIn, int meta) {
         return new TileEntityShipTelegraph();
+    }
+
+    @Override
+    public EnumBlockRenderType getRenderType(IBlockState state) {
+        return EnumBlockRenderType.INVISIBLE;
     }
 
 }

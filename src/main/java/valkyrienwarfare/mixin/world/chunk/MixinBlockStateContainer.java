@@ -31,15 +31,14 @@ import valkyrienwarfare.physics.collision.optimization.SimpleBitOctree;
 @Mixin(BlockStateContainer.class)
 public class MixinBlockStateContainer implements IBitOctreeProvider {
 
+    @Shadow
+    @Final
+    public static IBlockState AIR_BLOCK_STATE;
     private final IBitOctree bitOctree = new SimpleBitOctree();
     @Shadow
     IBlockStatePalette palette;
     @Shadow
     BitArray storage;
-
-    @Shadow
-    @Final
-    public static IBlockState AIR_BLOCK_STATE;
 
     /**
      * @author thebest108

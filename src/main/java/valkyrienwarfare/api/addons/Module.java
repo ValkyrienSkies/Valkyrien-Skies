@@ -29,15 +29,9 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
 import valkyrienwarfare.ValkyrienWarfareMod;
 
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
+public abstract class Module {
 
-public abstract class Module<ImplName> {
-    private static final Map<ResourceLocation, AtomicInteger> registeredRecipies = new Hashtable<>();
-
-    private String name;
+    private final String name;
     private boolean donePreInit = false, doneInit = false, donePostInit = false;
     private ModuleProxy common, client, server; //tODO: call these
     private String modid;
@@ -52,10 +46,9 @@ public abstract class Module<ImplName> {
         this.modid = modid;
     }
 
-    public static final void registerRecipe(RegistryEvent.Register<IRecipe> event, ItemStack out, Object... in) {
+    public static final void registerRecipe(RegistryEvent.Register<IRecipe> event, String registryName, ItemStack out, Object... in) {
         CraftingHelper.ShapedPrimer primer = CraftingHelper.parseShaped(in);
-        event.getRegistry().register(new ShapedRecipes(ValkyrienWarfareMod.MODID, primer.width, primer.height, primer.input, out)
-                .setRegistryName(ValkyrienWarfareMod.MODID, String.format("%s_%d", out.item.getRegistryName().getResourcePath(), registeredRecipies.computeIfAbsent(out.item.getRegistryName(), a -> new AtomicInteger()).getAndIncrement())));
+        event.getRegistry().register(new ShapedRecipes(ValkyrienWarfareMod.MODID, primer.width, primer.height, primer.input, out).setRegistryName(ValkyrienWarfareMod.MODID, registryName));
     }
 
     public static final void registerItemBlock(RegistryEvent.Register<Item> event, Block block) {
@@ -116,7 +109,7 @@ public abstract class Module<ImplName> {
     }
 
     protected void registerCapabilities() {
-        
+
     }
 
     public abstract void applyConfig(Configuration config);

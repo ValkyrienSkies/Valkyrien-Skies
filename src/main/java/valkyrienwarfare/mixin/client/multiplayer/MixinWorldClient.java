@@ -26,8 +26,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.api.RotationMatrices;
-import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.api.TransformType;
+import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 import java.util.List;
@@ -47,14 +47,15 @@ public abstract class MixinWorldClient extends World {
             at = @At("HEAD"),
             cancellable = true)
     public void preDoVoidParticles(int posX, int posY, int posZ, CallbackInfo callbackInfo) {
-        if (!hasChanged && ValkyrienWarfareMod.shipsSpawnParticles) {
+        if (!hasChanged) {
             int range = 15;
             AxisAlignedBB aabb = new AxisAlignedBB(posX - range, posY - range, posZ - range, posX + range, posY + range, posZ + range);
-            List<PhysicsWrapperEntity> physEntities = ValkyrienWarfareMod.physicsManager.getManagerForWorld(WorldClient.class.cast(this)).getNearbyPhysObjects(aabb);
+            List<PhysicsWrapperEntity> physEntities = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getManagerForWorld(WorldClient.class.cast(this)).getNearbyPhysObjects(aabb);
             hasChanged = true;
             for (PhysicsWrapperEntity wrapper : physEntities) {
                 Vector playPosInShip = new Vector(posX + .5D, posY + .5D, posZ + .5D);
-                RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, playPosInShip);
+//                RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, playPosInShip);
+                wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(playPosInShip, TransformType.GLOBAL_TO_SUBSPACE);
                 this.doVoidFogParticles(MathHelper.floor(playPosInShip.X), MathHelper.floor(playPosInShip.Y), MathHelper.floor(playPosInShip.Z));
             }
             hasChanged = false;

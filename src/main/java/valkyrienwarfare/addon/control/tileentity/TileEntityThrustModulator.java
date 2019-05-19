@@ -25,32 +25,29 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import valkyrienwarfare.addon.control.controlsystems.ShipPulseImpulseControlSystem;
 import valkyrienwarfare.addon.control.network.ThrustModulatorGuiInputMessage;
-import valkyrienwarfare.addon.control.nodenetwork.Node;
+import valkyrienwarfare.addon.control.nodenetwork.VWNode_TileEntity;
 import valkyrienwarfare.addon.control.proxy.ClientProxyControl;
-import valkyrienwarfare.physics.calculations.PhysicsCalculations;
+import valkyrienwarfare.physics.PhysicsCalculations;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
 @Optional.Interface(iface = "li.cil.oc.api.network.SimpleComponent", modid = "opencomputers")
-public class TileEntityThrustModulator extends ImplPhysicsProcessorNodeTileEntity implements SimpleComponent {
+public class TileEntityThrustModulator extends ImplNodeControllerTileEntity implements SimpleComponent {
 
     public static final int PHYSICS_PROCESSOR_PRIORITY = 100;
     public double idealYHeight = 25D;
     public double maximumYVelocity = 10D;
-    private final ShipPulseImpulseControlSystem controlSystem;
 
     // Initialize this ThrustModulatorTileEntity with a default priority of 100.
     public TileEntityThrustModulator() {
         super(PHYSICS_PROCESSOR_PRIORITY);
-        controlSystem = new ShipPulseImpulseControlSystem(this);
     }
 
     @Override
     public void onPhysicsTick(PhysicsObject object, PhysicsCalculations calculations, double secondsToSimulate) {
-        // System.out.println("debug");
+        // Confirmed working
+        // System.out.println("debug1");
         // System.out.println(this.getNode().getNodeNetwork().getNetworkedNodes().size());
-        controlSystem.solveThrustValues(calculations);
     }
 
     @Override
@@ -77,8 +74,7 @@ public class TileEntityThrustModulator extends ImplPhysicsProcessorNodeTileEntit
     public void handleGUIInput(ThrustModulatorGuiInputMessage message, MessageContext ctx) {
         idealYHeight = Math.min(message.idealYHeight, 5000D);
         maximumYVelocity = Math.max(Math.min(message.maximumYVelocity, 100D), 0D);
-        Node thisTileEntitiesNode = this.getNode();
-        thisTileEntitiesNode.sendUpdatesToNearby();
+        VWNode_TileEntity thisTileEntitiesNode = this.getNode();
         this.markDirty();
     }
 
@@ -93,13 +89,14 @@ public class TileEntityThrustModulator extends ImplPhysicsProcessorNodeTileEntit
         boolean success = false;
         try {
             ThrustModulatorGuiInputMessage msg = new ThrustModulatorGuiInputMessage();
-            msg.idealYHeight = (float)args.checkDouble(0);
-            msg.maximumYVelocity = (float)maximumYVelocity;
+            msg.idealYHeight = (float) args.checkDouble(0);
+            msg.maximumYVelocity = (float) maximumYVelocity;
 
             handleGUIInput(msg, null);
             success = true;
-        } catch (IllegalArgumentException e) { }
-        return new Object[]{ success };
+        } catch (IllegalArgumentException e) {
+        }
+        return new Object[]{success};
     }
 
     @Callback
@@ -108,12 +105,13 @@ public class TileEntityThrustModulator extends ImplPhysicsProcessorNodeTileEntit
         boolean success = false;
         try {
             ThrustModulatorGuiInputMessage msg = new ThrustModulatorGuiInputMessage();
-            msg.idealYHeight = (float)idealYHeight;
-            msg.maximumYVelocity = (float)args.checkDouble(0);
+            msg.idealYHeight = (float) idealYHeight;
+            msg.maximumYVelocity = (float) args.checkDouble(0);
 
             handleGUIInput(msg, null);
             success = true;
-        } catch (IllegalArgumentException e) {  }
-        return new Object[]{ success };
+        } catch (IllegalArgumentException e) {
+        }
+        return new Object[]{success};
     }
 }

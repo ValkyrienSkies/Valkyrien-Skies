@@ -30,10 +30,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.api.RotationMatrices;
-import valkyrienwarfare.api.Vector;
-import valkyrienwarfare.physics.data.BlockMass;
-import valkyrienwarfare.physics.data.PhysicsQueuedForce;
+import valkyrienwarfare.api.TransformType;
+import valkyrienwarfare.math.Vector;
+import valkyrienwarfare.physics.BlockMass;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 import java.util.List;
@@ -67,12 +66,15 @@ public abstract class MixinExplosion {
         World worldIn = this.world;
         float radius = this.size;
 
-        AxisAlignedBB toCheck = new AxisAlignedBB(center.X - radius, center.Y - radius, center.Z - radius, center.X + radius, center.Y + radius, center.Z + radius);
-        List<PhysicsWrapperEntity> shipsNear = ValkyrienWarfareMod.physicsManager.getManagerForWorld(this.world).getNearbyPhysObjects(toCheck);
+        AxisAlignedBB toCheck = new AxisAlignedBB(center.X - radius, center.Y - radius, center.Z - radius,
+                center.X + radius, center.Y + radius, center.Z + radius);
+        List<PhysicsWrapperEntity> shipsNear = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getManagerForWorld(this.world)
+                .getNearbyPhysObjects(toCheck);
         // TODO: Make this compatible and shit!
         for (PhysicsWrapperEntity ship : shipsNear) {
             Vector inLocal = new Vector(center);
-            RotationMatrices.applyTransform(ship.wrapping.coordTransform.wToLTransform, inLocal);
+//            RotationMatrices.applyTransform(ship.wrapping.coordTransform.wToLTransform, inLocal);
+            ship.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(inLocal, TransformType.GLOBAL_TO_SUBSPACE);
             // inLocal.roundToWhole();
             Explosion expl = new Explosion(ship.world, null, inLocal.X, inLocal.Y, inLocal.Z, radius, false, false);
 
@@ -101,31 +103,36 @@ public abstract class MixinExplosion {
 
                     IBlockState state = ship.world.getBlockState(pos);
                     Block block = state.getBlock();
-                    if (!block.isAir(state, worldIn, (BlockPos) o) || ship.wrapping.explodedPositionsThisTick.contains(o)) {
+                    if (!block.isAir(state, worldIn, (BlockPos) o)) {
+                        // || ship.wrapping.explodedPositionsThisTick.contains(o)) {
                         if (block.canDropFromExplosion(expl)) {
                             block.dropBlockAsItemWithChance(ship.world, pos, state, 1.0F / expl.size, 0);
                         }
                         block.onBlockExploded(ship.world, pos, expl);
-                        if (!worldIn.isRemote) {
+                        if (!worldIn.isRemote && false) {
                             Vector posVector = new Vector(pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5);
-                            ship.wrapping.coordTransform.fromLocalToGlobal(posVector);
+                            ship.getPhysicsObject().getShipTransformationManager().fromLocalToGlobal(posVector);
 
                             double mass = BlockMass.basicMass.getMassFromState(state, pos, ship.world);
                             double explosionForce = Math.sqrt(this.size) * 1000D * mass;
-                            Vector forceVector = new Vector(pos.getX() + .5 - expl.x, pos.getY() + .5 - expl.y, pos.getZ() + .5 - expl.z);
+                            Vector forceVector = new Vector(pos.getX() + .5 - expl.x, pos.getY() + .5 - expl.y,
+                                    pos.getZ() + .5 - expl.z);
                             double vectorDist = forceVector.length();
 
                             forceVector.normalize();
                             forceVector.multiply(explosionForce / vectorDist);
 
-                            RotationMatrices.doRotationOnly(ship.wrapping.coordTransform.lToWRotation, forceVector);
-                            PhysicsQueuedForce queuedForce = new PhysicsQueuedForce(forceVector, posVector, false, 1);
+//                            RotationMatrices.doRotationOnly(ship.wrapping.coordTransform.lToWTransform, forceVector);
+                            ship.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(forceVector, TransformType.SUBSPACE_TO_GLOBAL);
+                            // TODO: Make this work again
+                            // PhysicsQueuedForce queuedForce = new PhysicsQueuedForce(forceVector,
+                            // posVector, false, 1);
 
-                            if (!ship.wrapping.explodedPositionsThisTick.contains(pos)) {
-                                ship.wrapping.explodedPositionsThisTick.add(pos);
-                            }
+                            // if (!ship.wrapping.explodedPositionsThisTick.contains(pos)) {
+                            // ship.wrapping.explodedPositionsThisTick.add(pos);
+                            // }
 
-                            ship.wrapping.queueForce(queuedForce);
+                            // ship.wrapping.queueForce(queuedForce);
                         }
                     }
                 }

@@ -34,9 +34,9 @@ public class EntityFixHandler implements IMessageHandler<EntityFixMessage, IMess
                 PhysicsWrapperEntity toFixOn = (PhysicsWrapperEntity) Minecraft.getMinecraft().world.getEntityByID(message.shipId);
                 if (toFixOn != null) {
                     if (message.isFixing) {
-                        toFixOn.wrapping.fixEntityUUID(message.entityUUID, message.localPosition);
+                        toFixOn.getPhysicsObject().fixEntityUUID(message.entityUUID, message.localPosition);
                     } else {
-                        toFixOn.wrapping.removeEntityUUID(message.entityUUID);
+                        toFixOn.getPhysicsObject().removeEntityUUID(message.entityUUID);
                     }
                 }
             }

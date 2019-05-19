@@ -16,9 +16,7 @@
 
 package valkyrienwarfare.addon.control.block;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
-import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyDirection;
@@ -37,13 +35,15 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.tileentity.TileEntityPilotsChair;
-import valkyrienwarfare.api.Vector;
+import valkyrienwarfare.math.Vector;
+import valkyrienwarfare.mod.physmanagement.interaction.EntityDraggable;
+import valkyrienwarfare.mod.physmanagement.interaction.IDraggable;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class BlockShipPilotsChair extends Block implements ITileEntityProvider {
+public class BlockShipPilotsChair extends BlockPilotableBasic {
 
     public static final PropertyDirection FACING = BlockHorizontal.FACING;
 
@@ -53,51 +53,46 @@ public class BlockShipPilotsChair extends Block implements ITileEntityProvider {
 
     public static double getChairYaw(IBlockState state, BlockPos pos) {
         EnumFacing enumFace = state.getValue(BlockShipPilotsChair.FACING);
-
         double chairYaw = -enumFace.getHorizontalAngle() - 90;
-
         return chairYaw;
     }
 
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
         if (!worldIn.isRemote) {
-            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldIn, pos);
+            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(worldIn, pos);
             if (wrapper != null) {
                 if (playerIn.getLowestRidingEntity() != wrapper.getLowestRidingEntity()) {
                     TileEntity tileEntity = worldIn.getTileEntity(pos);
                     if (tileEntity instanceof TileEntityPilotsChair) {
                         Vector playerPos = new Vector(playerIn);
 
-                        wrapper.wrapping.coordTransform.fromLocalToGlobal(playerPos);
+                        wrapper.getPhysicsObject().getShipTransformationManager().fromLocalToGlobal(playerPos);
 
                         playerIn.posX = playerPos.X;
                         playerIn.posY = playerPos.Y;
                         playerIn.posZ = playerPos.Z;
 
-                        playerIn.startRiding(wrapper);
-                        Vector localMountPos = getPlayerMountOffset(state, pos);
-                        wrapper.wrapping.fixEntity(playerIn, localMountPos);
-
-
-                        //Nope
-//                        wrapper.wrapping.pilotingController.setPilotEntity((EntityPlayerMP) playerIn, false);
+                        IDraggable entityDraggable = EntityDraggable.getDraggableFromEntity(playerIn);
+                        // Only mount the player if they're standing on the ship.
+                        if (entityDraggable.getWorldBelowFeet() == wrapper) {
+                            playerIn.startRiding(wrapper);
+                            Vector localMountPos = getPlayerMountOffset(state, pos);
+                            wrapper.getPhysicsObject().fixEntity(playerIn, localMountPos);
+                        }
 
                         ((TileEntityPilotsChair) tileEntity).setPilotEntity(playerIn);
-
-                        wrapper.wrapping.coordTransform.fromGlobalToLocal(playerPos);
+                        wrapper.getPhysicsObject().getShipTransformationManager().fromGlobalToLocal(playerPos);
 
                         playerIn.posX = playerPos.X;
                         playerIn.posY = playerPos.Y;
                         playerIn.posZ = playerPos.Z;
-
-                        return true;
                     }
                 }
             }
         }
 
-        return false;
+        return true;
     }
 
     @Override
@@ -108,7 +103,7 @@ public class BlockShipPilotsChair extends Block implements ITileEntityProvider {
 
     @Override
     public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.physicsManager.getObjectManagingPos(worldIn, pos);
+        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(worldIn, pos);
         return wrapper != null;
     }
 

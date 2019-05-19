@@ -18,67 +18,72 @@ package valkyrienwarfare.mixin.network;
 
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetHandlerPlayServer;
-import net.minecraft.network.Packet;
-import net.minecraft.network.PacketThreadUtil;
+import net.minecraft.network.play.server.SPacketPlayerPosLook;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
-import valkyrienwarfare.mod.physmanagement.interaction.EntityDraggable;
-import valkyrienwarfare.mod.physmanagement.interaction.IDraggable;
-import valkyrienwarfare.mod.physmanagement.interaction.INHPServerVW;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import valkyrienwarfare.ValkyrienWarfareMod;
+import valkyrienwarfare.api.TransformType;
+import valkyrienwarfare.math.Vector;
+import valkyrienwarfare.mod.physmanagement.chunk.PhysicsChunkManager;
+import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
-@Mixin(NetHandlerPlayServer.class)
-public abstract class MixinNetHandlerPlayServer implements INHPServerVW {
+import java.util.Set;
+
+//TODO: a lot of these mixins can probably be done using overrides instead of overwrites, i should have a look at some point
+@Mixin(value = NetHandlerPlayServer.class, priority = 5)
+public abstract class MixinNetHandlerPlayServer {
+
     @Shadow
     public EntityPlayerMP player;
+    private NetHandlerPlayServer thisAsNetHandler = NetHandlerPlayServer.class.cast(this);
+    private boolean redirectingSetPlayerLocation = false;
 
-    private double dummyBlockReachDist = 9999999999999999999999999999D;
-    private double lastGoodBlockReachDist;
-
-    @Redirect(method = "update",
-            at = @At(value = "INVOKE",
-                    target = "Lnet/minecraft/network/NetHandlerPlayServer;captureCurrentPosition()V"))
-    public void makeIDraggableNotUseless(NetHandlerPlayServer server) {
-        IDraggable draggable = EntityDraggable.getDraggableFromEntity(player);
-        server.captureCurrentPosition();
-
-        server.firstGoodX += draggable.getVelocityAddedToPlayer().X;
-        server.firstGoodY += draggable.getVelocityAddedToPlayer().Y;
-        server.firstGoodZ += draggable.getVelocityAddedToPlayer().Z;
-        server.lastGoodX += draggable.getVelocityAddedToPlayer().X;
-        server.lastGoodY += draggable.getVelocityAddedToPlayer().Y;
-        server.lastGoodZ += draggable.getVelocityAddedToPlayer().Z;
-    }
-
-    @Override
-    public double dummyBlockReachDist() {
-        return dummyBlockReachDist;
-    }
-
-    @Override
-    public void dummyBlockReachDist(double in) {
-        dummyBlockReachDist = in;
-    }
-
-    @Override
-    public double lastGoodBlockReachDist() {
-        return lastGoodBlockReachDist;
-    }
-
-    @Override
-    public void lastGoodBlockReachDist(double in) {
-        lastGoodBlockReachDist = in;
-    }
-
-    @Override
-    public void checkForPacketEnqueueTrap(Packet packetIn) {
-        PacketThreadUtil.checkThreadAndEnqueue(packetIn, NetHandlerPlayServer.class.cast(this), player.getServerWorld());
-    }
-
-    @Override
-    public EntityPlayerMP getEntityPlayerFromHandler() {
-        return player;
+    /**
+     * Fixes things such that when mods try to teleport players into the ship space,
+     * VW will either redirect the teleport or block it. Looking at you
+     * SimpleTeleporters mod >:/
+     *
+     * @param x
+     * @param y
+     * @param z
+     * @param yaw
+     * @param pitch
+     * @param relativeSet
+     * @param callbackInfo
+     */
+    @Inject(method = "setPlayerLocation(DDDFFLjava/util/Set;)V", at = @At("HEAD"), cancellable = true)
+    public void onSetPlayerLocation(double x, double y, double z, float yaw, float pitch,
+                                    Set<SPacketPlayerPosLook.EnumFlags> relativeSet, CallbackInfo callbackInfo) {
+        if (!redirectingSetPlayerLocation) {
+            BlockPos pos = new BlockPos(x, y, z);
+            // If the player is being teleported to ship space then we have to stop it.
+            if (PhysicsChunkManager.isLikelyShipChunk(pos.getX() >> 4, pos.getZ() >> 4)) {
+                callbackInfo.cancel();
+                redirectingSetPlayerLocation = true;
+                World world = player.getEntityWorld();
+                PhysicsWrapperEntity physicsEntity = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(world,
+                        pos);
+                if (physicsEntity != null) {
+                    Vector tpPos = new Vector(x, y, z);
+                    physicsEntity.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform()
+                            .transform(tpPos, TransformType.SUBSPACE_TO_GLOBAL);
+                    // Now call this again with the transformed position.
+                    // player.sendMessage(new TextComponentString("Transformed the player tp from <"
+                    // + x + ":" + y + ":" + z + "> to" + tpPos));
+                    thisAsNetHandler.setPlayerLocation(tpPos.X, tpPos.Y, tpPos.Z, yaw, pitch, relativeSet);
+                } else {
+                    player.sendMessage(new TextComponentString(
+                            "Tried teleporting you to an unloaded ship; teleportation canceled."));
+                }
+                redirectingSetPlayerLocation = false;
+            }
+        }
     }
 
     @Redirect(

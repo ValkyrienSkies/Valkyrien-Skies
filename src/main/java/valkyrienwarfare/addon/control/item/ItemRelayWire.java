@@ -16,10 +16,6 @@
 
 package valkyrienwarfare.addon.control.item;
 
-import java.util.List;
-
-import javax.annotation.Nullable;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.util.ITooltipFlag;
@@ -36,8 +32,11 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.capability.ICapabilityLastRelay;
-import valkyrienwarfare.addon.control.nodenetwork.INodeProvider;
-import valkyrienwarfare.addon.control.nodenetwork.Node;
+import valkyrienwarfare.addon.control.nodenetwork.IVWNode;
+import valkyrienwarfare.addon.control.nodenetwork.IVWNodeProvider;
+
+import javax.annotation.Nullable;
+import java.util.List;
 
 public class ItemRelayWire extends Item {
 
@@ -49,55 +48,49 @@ public class ItemRelayWire extends Item {
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation, ITooltipFlag advanced) {
-        itemInformation.add(TextFormatting.ITALIC + "" + TextFormatting.RED + TextFormatting.ITALIC + "Unfinished until v_0.91_alpha");
+    public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation,
+                               ITooltipFlag advanced) {
+        itemInformation.add(TextFormatting.ITALIC + "" + TextFormatting.RED + TextFormatting.ITALIC
+                + "Unfinished until v_0.91_alpha");
     }
 
     @Override
-    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand,
+                                      EnumFacing facing, float hitX, float hitY, float hitZ) {
         IBlockState clickedState = worldIn.getBlockState(pos);
         Block block = clickedState.getBlock();
-        
         TileEntity currentTile = worldIn.getTileEntity(pos);
-
         ItemStack stack = player.getHeldItem(hand);
 
-        if (currentTile instanceof INodeProvider && !worldIn.isRemote) {
+        if (currentTile instanceof IVWNodeProvider && !worldIn.isRemote) {
             ICapabilityLastRelay inst = stack.getCapability(ValkyrienWarfareControl.lastRelayCapability, null);
             if (inst != null) {
-                
                 if (!inst.hasLastRelay()) {
-
                     inst.setLastRelay(pos);
-                    //Draw a wire in the player's hand after this
+                    // Draw a wire in the player's hand after this
                 } else {
                     BlockPos lastPos = inst.getLastRelay();
-                    double distance = lastPos.distanceSq(pos);
-
+                    double distanceSq = lastPos.distanceSq(pos);
                     TileEntity lastPosTile = worldIn.getTileEntity(lastPos);
-
-//					System.out.println(lastPos.toString());
+                    // System.out.println(lastPos.toString());
 
                     if (!lastPos.equals(pos) && lastPosTile != null && currentTile != null) {
-
-                        if (distance < range * range) {
-                            Node lastPosNode = ((INodeProvider) lastPosTile).getNode();
-                            Node currentPosNode = ((INodeProvider) currentTile).getNode();
-                            //Connect the two bastards
-//							inst.setLastRelay(pos);
-                            inst.setLastRelay(null);
-
+                        if (distanceSq < range * range) {
+                            IVWNode lastPosNode = ((IVWNodeProvider) lastPosTile).getNode();
+                            IVWNode currentPosNode = ((IVWNodeProvider) currentTile).getNode();
                             if (lastPosNode != null && currentPosNode != null) {
-                                if (currentPosNode.canLinkToNode(lastPosNode)) {
-                                    currentPosNode.linkNode(lastPosNode);
+                                if (currentPosNode.isLinkedToNode(lastPosNode)) {
+                                    player.sendMessage(new TextComponentString("These nodes are already linked!"));
+                                } else if (currentPosNode.canLinkToOtherNode(lastPosNode)) {
+                                    currentPosNode.makeConnection(lastPosNode);
+                                    stack.damageItem(1, player);
                                 } else {
-                                    player.sendMessage(new TextComponentString("One of the connections must be to a thrust relay node"));
-                                    inst.setLastRelay(null);
+                                    // Tell the player what they did wrong
+                                    player.sendMessage(new TextComponentString(
+                                            "One of the connections is maxed out . Relay Nodes can make 4 connections, all other objects however can only make 1 connection."));
                                 }
+                                inst.setLastRelay(null);
                             }
-
-//							System.out.println("Success");
-                            stack.damageItem(1, player);
                         } else {
                             player.sendMessage(new TextComponentString("Nodes are too far away, try better wire"));
                             inst.setLastRelay(null);
@@ -109,7 +102,7 @@ public class ItemRelayWire extends Item {
             }
         }
 
-        if (currentTile instanceof INodeProvider) {
+        if (currentTile instanceof IVWNodeProvider) {
             return EnumActionResult.SUCCESS;
         }
 

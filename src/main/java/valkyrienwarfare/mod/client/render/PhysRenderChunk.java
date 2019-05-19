@@ -34,6 +34,7 @@ import org.lwjgl.opengl.GL11;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class PhysRenderChunk {
 
@@ -90,7 +91,7 @@ public class PhysRenderChunk {
         int glCallListCutout, glCallListCutoutMipped, glCallListSolid, glCallListTranslucent;
         PhysRenderChunk parent;
         boolean needsCutoutUpdate, needsCutoutMippedUpdate, needsSolidUpdate, needsTranslucentUpdate;
-        ArrayList<TileEntity> renderTiles = new ArrayList<TileEntity>();
+        List<TileEntity> renderTiles = new ArrayList<TileEntity>();
 
         public RenderLayer(Chunk chunk, int yMin, int yMax, PhysRenderChunk parent) {
             chunkToRender = chunk;
@@ -112,26 +113,14 @@ public class PhysRenderChunk {
             updateRenderTileEntities();
         }
 
+        // TODO: There's probably a faster way of doing this.
         public void updateRenderTileEntities() {
-            ArrayList<TileEntity> updatedRenderTiles = new ArrayList<TileEntity>();
-
-            MutableBlockPos pos = new MutableBlockPos();
-            for (int x = chunkToRender.x * 16; x < chunkToRender.x * 16 + 16; x++) {
-                for (int z = chunkToRender.z * 16; z < chunkToRender.z * 16 + 16; z++) {
-                    for (int y = yMin; y <= yMax; y++) {
-                        pos.setPos(x, y, z);
-
-                        TileEntity tile = chunkToRender.getWorld().getTileEntity(pos);
-                        if (tile != null) {
-                            updatedRenderTiles.add(tile);
-                        }
-                    }
-                }
+            ITileEntitiesToRenderProvider provider = ITileEntitiesToRenderProvider.class.cast(chunkToRender);
+            List<TileEntity> updatedRenderTiles = provider.getTileEntitiesToRender(yMin >> 4);
+            if (updatedRenderTiles != null) {
+                Minecraft.getMinecraft().renderGlobal.updateTileEntities(renderTiles, updatedRenderTiles);
+                renderTiles = new ArrayList<TileEntity>(updatedRenderTiles);
             }
-
-            Minecraft.getMinecraft().renderGlobal.updateTileEntities(renderTiles, updatedRenderTiles);
-
-            renderTiles = updatedRenderTiles;
         }
 
         public void deleteRenderLayer() {
@@ -178,11 +167,11 @@ public class PhysRenderChunk {
             }
         }
 
-        public void updateList(BlockRenderLayer layerToUpdate) {
-            if (parent.toRender.renderer == null) {
+        private void updateList(BlockRenderLayer layerToUpdate) {
+            if (parent.toRender.getShipRenderer() == null) {
                 return;
             }
-            BlockPos offsetPos = parent.toRender.renderer.offsetPos;
+            BlockPos offsetPos = parent.toRender.getShipRenderer().offsetPos;
             if (offsetPos == null) {
                 return;
             }

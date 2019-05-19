@@ -85,15 +85,5 @@ public abstract class MixinNetHandlerPlayServer {
             }
         }
     }
-
-    @Redirect(
-            method = "Lnet/minecraft/network/NetHandlerPlayServer;processPlayer(Lnet/minecraft/network/play/client/CPacketPlayer;)V",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/entity/player/EntityPlayerMP;isInvulnerableDimensionChange()Z"
-            )
-    )
-    private boolean redirectIsInvulnerableDimensionChange(EntityPlayerMP player)  {
-        return true;
-    }
+    
 }

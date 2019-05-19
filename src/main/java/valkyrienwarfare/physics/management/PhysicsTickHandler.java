@@ -21,18 +21,12 @@ import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.multithreaded.PhysicsShipTransform;
 import valkyrienwarfare.mod.physmanagement.interaction.EntityDraggable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class PhysicsTickHandler {
 
     public static void onWorldTickStart(World world) {
         WorldPhysObjectManager manager = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getManagerForWorld(world);
-
-        List<PhysicsWrapperEntity> toUnload = new ArrayList<PhysicsWrapperEntity>(manager.physicsEntitiesToUnload);
-        for (PhysicsWrapperEntity wrapper : toUnload) {
-            manager.onUnload(wrapper);
-        }
 
         List<PhysicsWrapperEntity> physicsEntities = manager.getTickablePhysicsEntities();
 

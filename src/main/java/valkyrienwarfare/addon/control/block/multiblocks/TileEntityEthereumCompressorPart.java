@@ -44,14 +44,16 @@ public class TileEntityEthereumCompressorPart extends TileEntityMultiblockPartFo
         if (this.isMaster() || this.getMaster() == this) {
             super.setThrustMultiplierGoal(thrustMultiplierGoal);
         } else {
-            TileEntityEthereumCompressorPart.class.cast(this.getMaster()).setThrustMultiplierGoal(thrustMultiplierGoal);
+            this.getMaster()
+                    .setThrustMultiplierGoal(thrustMultiplierGoal);
         }
     }
 
     @Override
     public double getThrustMagnitude() {
         if (this.isPartOfAssembledMultiblock() && this.getMaster() instanceof TileEntityEthereumCompressorPart) {
-            return this.getMaxThrust() * TileEntityEthereumCompressorPart.class.cast(this.getMaster()).getThrustMultiplierGoal() * this.getCurrentEtherEfficiency();
+            return this.getMaxThrust() * this.getMaster()
+                    .getThrustMultiplierGoal() * this.getCurrentEtherEfficiency();
         } else {
             return 0;
         }

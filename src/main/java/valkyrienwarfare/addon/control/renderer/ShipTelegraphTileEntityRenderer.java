@@ -32,12 +32,6 @@ import valkyrienwarfare.mod.client.render.GibsModelRegistry;
 
 public class ShipTelegraphTileEntityRenderer extends TileEntitySpecialRenderer<TileEntityShipTelegraph> {
 
-    private final Class renderedTileEntityClass;
-
-    public ShipTelegraphTileEntityRenderer(Class toRender) {
-        renderedTileEntityClass = toRender;
-    }
-
     @Override
     public void render(TileEntityShipTelegraph tileentity, double x, double y, double z, float partialTick, int destroyStage, float alpha) {
         IBlockState telegraphState = tileentity.getWorld().getBlockState(tileentity.getPos());

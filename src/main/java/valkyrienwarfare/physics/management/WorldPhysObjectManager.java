@@ -20,14 +20,13 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import valkyrienwarfare.mod.physmanagement.chunk.VWChunkClaim;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -41,14 +40,12 @@ public class WorldPhysObjectManager {
 
     public final World worldObj;
     public final Set<PhysicsWrapperEntity> physicsEntities;
-    public final List<PhysicsWrapperEntity> physicsEntitiesToUnload;
     private final Long2ObjectMap<PhysicsWrapperEntity> chunkPosToPhysicsEntityMap;
 
     public WorldPhysObjectManager(World toManage) {
         this.worldObj = toManage;
         this.physicsEntities = ConcurrentHashMap.newKeySet();
-        this.physicsEntitiesToUnload = new ArrayList<PhysicsWrapperEntity>();
-        this.chunkPosToPhysicsEntityMap = new Long2ObjectOpenHashMap<PhysicsWrapperEntity>();
+        this.chunkPosToPhysicsEntityMap = new Long2ObjectOpenHashMap<>();
     }
 
     /**
@@ -58,54 +55,7 @@ public class WorldPhysObjectManager {
      * @return
      */
     public List<PhysicsWrapperEntity> getTickablePhysicsEntities() {
-        List<PhysicsWrapperEntity> list = new ArrayList<PhysicsWrapperEntity>(physicsEntities);
-        List<PhysicsWrapperEntity> frozenShips = new ArrayList<PhysicsWrapperEntity>();
-
-        if (worldObj instanceof WorldServer) {
-            WorldServer worldServer = (WorldServer) worldObj;
-            for (PhysicsWrapperEntity wrapper : list) {
-                if (!wrapper.isDead) {
-                    if (wrapper.getPhysicsObject().getCachedSurroundingChunks() != null) {
-                        int chunkCacheX = MathHelper.floor(wrapper.posX / 16D)
-                                - wrapper.getPhysicsObject().getCachedSurroundingChunks().chunkX;
-                        int chunkCacheZ = MathHelper.floor(wrapper.posZ / 16D)
-                                - wrapper.getPhysicsObject().getCachedSurroundingChunks().chunkZ;
-
-                        chunkCacheX = Math.max(0, Math.min(chunkCacheX,
-                                wrapper.getPhysicsObject().getCachedSurroundingChunks().chunkArray.length - 1));
-                        chunkCacheZ = Math.max(0, Math.min(chunkCacheZ,
-                                wrapper.getPhysicsObject().getCachedSurroundingChunks().chunkArray[0].length - 1));
-
-                        Chunk chunk = wrapper.getPhysicsObject().getCachedSurroundingChunks().chunkArray[chunkCacheX][chunkCacheZ];
-
-                        // Chunk chunk =
-                        // wrapper.wrapping.surroundingWorldChunksCache.chunkArray[(wrapper.wrapping.surroundingWorldChunksCache.chunkArray.length)/2][(wrapper.wrapping.surroundingWorldChunksCache.chunkArray[0].length)/2];
-
-                        if (chunk != null && !worldServer.playerChunkMap.contains(chunk.x, chunk.z)) {
-                            frozenShips.add(wrapper);
-                            // Then I should freeze any ships in this chunk
-                        }
-                    }
-                } else {
-                    frozenShips.add(wrapper);
-                    wrapper.getPhysicsObject().resetConsecutiveProperTicks();
-                }
-            }
-        }
-
-        List<PhysicsWrapperEntity> dumbShips = new ArrayList<PhysicsWrapperEntity>();
-
-        for (PhysicsWrapperEntity wrapper : list) {
-            if (wrapper.isDead || wrapper.getPhysicsObject() == null
-                    || (wrapper.getPhysicsObject().getPhysicsProcessor() == null && !wrapper.world.isRemote)) {
-                dumbShips.add(wrapper);
-                wrapper.getPhysicsObject().resetConsecutiveProperTicks();
-            }
-        }
-
-        list.removeAll(frozenShips);
-        list.removeAll(dumbShips);
-
+        List<PhysicsWrapperEntity> list = new ArrayList<>(physicsEntities);
         return list;
     }
 
@@ -156,6 +106,16 @@ public class WorldPhysObjectManager {
             loaded.isDead = true;
             loaded.getPhysicsObject()
                     .onThisUnload();
+        }
+        this.physicsEntities.remove(loaded);
+        List<Long> keysToRemove = new ArrayList();
+        for (Map.Entry<Long, PhysicsWrapperEntity> entry : chunkPosToPhysicsEntityMap.entrySet()) {
+            if (entry.getValue() == loaded) {
+                keysToRemove.add(entry.getKey());
+            }
+        }
+        for (Long keyToRemove : keysToRemove) {
+            chunkPosToPhysicsEntityMap.remove(keyToRemove);
         }
         loaded.getPhysicsObject().resetConsecutiveProperTicks();
     }

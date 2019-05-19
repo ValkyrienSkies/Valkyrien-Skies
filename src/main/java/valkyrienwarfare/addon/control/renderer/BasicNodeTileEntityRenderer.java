@@ -24,13 +24,13 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import org.lwjgl.opengl.GL11;
-import valkyrienwarfare.addon.control.nodenetwork.BasicNodeTileEntity;
 import valkyrienwarfare.addon.control.nodenetwork.VWNode_TileEntity;
+import valkyrienwarfare.addon.control.tileentity.TileEntityNodeRelay;
 
-public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer<BasicNodeTileEntity> {
+public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer<TileEntityNodeRelay> {
 
     @Override
-    public void render(BasicNodeTileEntity te, double x, double y, double z, float partialTick, int destroyStage, float alpha) {
+    public void render(TileEntityNodeRelay te, double x, double y, double z, float partialTick, int destroyStage, float alpha) {
         GlStateManager.disableBlend();
         VWNode_TileEntity tileNode = te.getNode();
         if (tileNode != null) {
@@ -40,7 +40,7 @@ public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer<Basic
 
             for (BlockPos otherPos : tileNode.getLinkedNodesPos()) {
                 TileEntity otherTile = getWorld().getTileEntity(otherPos);
-                if (otherTile instanceof BasicNodeTileEntity) {
+                if (otherTile instanceof TileEntityNodeRelay) {
                     // Don't render the same connection twice.
                     if (otherTile.getPos()
                             .compareTo(te.getPos()) < 0) {

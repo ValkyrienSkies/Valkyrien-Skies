@@ -30,13 +30,6 @@ import valkyrienwarfare.mod.client.render.GibsModelRegistry;
 
 public class ShipHelmTileEntityRenderer extends TileEntitySpecialRenderer<TileEntityShipHelm> {
 
-    private final Class renderedTileEntityClass;
-    private double keyframe = 1;
-
-    public ShipHelmTileEntityRenderer(Class toRender) {
-        renderedTileEntityClass = toRender;
-    }
-
     @Override
     public void render(TileEntityShipHelm tileentity, double x, double y, double z, float partialTick, int destroyStage,
                        float alpha) {

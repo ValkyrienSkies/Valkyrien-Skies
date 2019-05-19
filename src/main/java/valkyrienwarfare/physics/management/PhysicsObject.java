@@ -355,8 +355,10 @@ public class PhysicsObject implements ISubspaceProvider {
             SpatialDetector.setPosWithRespectTo(i, centerInWorld, oldPos);
             SpatialDetector.setPosWithRespectTo(i, centerInWorld, newPos);
             newPos.setPos(newPos.getX() + centerDifference.getX(), newPos.getY() + centerDifference.getY(), newPos.getZ() + centerDifference.getZ());
+
             MoveBlocks.copyBlockToPos(getWorldObj(), oldPos, newPos, Optional.of(this));
-            // onSetBlockState(Blocks.AIR.getDefaultState(), getWorldObj().getBlockState(newPos), newPos);
+            // We still have to do this instead of relying on notifyBlockUpdate() because sponge delays notifyBlockUpdate() such that it won't happen immediately after World.setBlockState().
+            onSetBlockState(Blocks.AIR.getDefaultState(), getWorldObj().getBlockState(newPos), newPos);
         }
 
         // Then destroy all of the blocks we copied from in world.
@@ -379,16 +381,15 @@ public class PhysicsObject implements ISubspaceProvider {
             }
         }
 
+        getWrapperEntity().posX += .5;
+        getWrapperEntity().posY += .5;
+        getWrapperEntity().posZ += .5;
+
         // Some extra ship crap at the end.
         detectBlockPositions();
         setShipTransformationManager(new ShipTransformationManager(this));
+
         getPhysicsProcessor().updateParentCenterOfMass();
-
-        // Since ship spawn position is broken it might as well be funny.
-        getWrapperEntity().posY += 10;
-
-        getShipTransformationManager().updateCurrentTickTransform();
-
     }
 
     public void injectChunkIntoWorld(Chunk chunk, int x, int z, boolean putInId2ChunkMap) {

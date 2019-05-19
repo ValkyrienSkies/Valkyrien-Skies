@@ -33,7 +33,7 @@ public class MoveBlocks {
         }
         chunkToSet.storageArrays[storageIndex].set(newPos.getX() & 15, newPos.getY() & 15, newPos.getZ() & 15, state);
          */
-        world.setBlockState(newPos, world.getBlockState(oldPos), 2);
+        world.setBlockState(newPos, world.getBlockState(oldPos), 16);
 
         if (physicsObjectOptional.isPresent()) {
             int minChunkX = physicsObjectOptional.get()

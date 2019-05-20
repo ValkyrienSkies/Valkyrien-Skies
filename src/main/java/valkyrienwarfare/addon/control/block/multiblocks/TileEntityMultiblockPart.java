@@ -2,10 +2,19 @@ package valkyrienwarfare.addon.control.block.multiblocks;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.MultiblockRegistry;
 import valkyrienwarfare.addon.control.nodenetwork.BasicNodeTileEntity;
+import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.fixes.VWNetwork;
+import valkyrienwarfare.physics.collision.polygons.Polygon;
+import valkyrienwarfare.physics.management.PhysicsObject;
+
+import java.util.Optional;
 
 /**
  * Just a simple implementation of the interfaces.
@@ -119,7 +128,27 @@ public abstract class TileEntityMultiblockPart<E extends IMulitblockSchematic, F
         isAssembled = compound.getBoolean("isAssembled");
         isMaster = compound.getBoolean("isMaster");
         offsetPos = new BlockPos(compound.getInteger("offsetPosX"), compound.getInteger("offsetPosY"), compound.getInteger("offsetPosZ"));
-        this.multiblockSchematic = (E) MultiblockRegistry.getSchematicByID(compound.getString("multiblockSchematicID"));
+        multiblockSchematic = (E) MultiblockRegistry.getSchematicByID(compound.getString("multiblockSchematicID"));
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public AxisAlignedBB getRenderBoundingBox() {
+        if (isPartOfAssembledMultiblock()) {
+            AxisAlignedBB schematicRenderBB = getMultiBlockSchematic().getSchematicRenderBB(getMultiblockOrigin());
+            Optional<PhysicsObject> physicsObject = ValkyrienWarfareMod.getPhysicsObject(getWorld(), getPos());
+            if (physicsObject.isPresent()) {
+                // We're in a physics object; convert the bounding box to a polygon; put its coordinates in global space, and then return the bounding box that encloses
+                // all the points.
+                Polygon bbAsPoly = new Polygon(schematicRenderBB, physicsObject.get()
+                        .getShipTransformationManager()
+                        .getCurrentTickTransform(), TransformType.SUBSPACE_TO_GLOBAL);
+                return bbAsPoly.getEnclosedAABB();
+            }
+            return schematicRenderBB;
+        } else {
+            return super.getRenderBoundingBox();
+        }
     }
 
 }

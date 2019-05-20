@@ -2,6 +2,7 @@ package valkyrienwarfare.addon.control.block.multiblocks;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -23,6 +24,32 @@ public interface IMulitblockSchematic {
      * @return
      */
     List<BlockPosBlockPair> getStructureRelativeToCenter();
+
+    /**
+     * Returns the render bounding box tile entities should use while rendering this schematic.
+     *
+     * @return
+     */
+    default AxisAlignedBB getSchematicRenderBB(BlockPos masterPos) {
+        double minX, minY, minZ, maxX, maxY, maxZ;
+        minX = minY = minZ = Double.POSITIVE_INFINITY;
+        maxX = maxY = maxZ = Double.NEGATIVE_INFINITY;
+        for (BlockPosBlockPair pair : getStructureRelativeToCenter()) {
+            double curX = pair.getPos()
+                    .getX() + masterPos.getX();
+            double curY = pair.getPos()
+                    .getY() + masterPos.getY();
+            double curZ = pair.getPos()
+                    .getZ() + masterPos.getZ();
+            minX = Math.min(curX, minX);
+            minY = Math.min(curY, minY);
+            minZ = Math.min(curZ, minZ);
+            maxX = Math.max(curX, maxX);
+            maxY = Math.max(curY, maxY);
+            maxZ = Math.max(curZ, maxZ);
+        }
+        return new AxisAlignedBB(minX - .5, minY - .5, minZ - .5, maxX + .5, maxY + .5, maxZ + .5);
+    }
 
     /**
      * Returns a common schematic prefix for all multiblocks of this type.

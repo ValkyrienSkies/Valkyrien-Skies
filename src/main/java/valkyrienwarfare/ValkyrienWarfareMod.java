@@ -117,7 +117,7 @@ public class ValkyrienWarfareMod {
     public static final List<Module> addons = new ArrayList<Module>();
     public static final String MODID = "valkyrienwarfare";
     public static final String MODNAME = "Valkyrien Warfare";
-    public static final String MODVER = "0.9_prerelease_5";
+    public static final String MODVER = "0.9.1_prerelease_6";
     public static final int SHIP_ENTITY_PLAYER_LOAD_DISTANCE = 128;
     @CapabilityInject(IAirshipCounterCapability.class)
     public static final Capability<IAirshipCounterCapability> airshipCounter = null;

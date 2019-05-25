@@ -19,8 +19,14 @@
     "facing=east": {
       "model": "valkyrienwarfarecontrol:empty"
     },
-    "inventory": {
-      "model": "minecraft:coal_ore"
-    }
+    "inventory": [
+      {
+        "model": "valkyrienwarfarecontrol:steering_rudder/rudder_geo.obj",
+        "transform": "forge:default-block",
+        "custom": {
+          "flip-v": true
+        }
+      }
+    ]
   }
 }

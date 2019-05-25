@@ -19,8 +19,14 @@
     "facing=east": {
       "model": "valkyrienwarfarecontrol:empty"
     },
-    "inventory": {
-      "model": "minecraft:iron_block"
-    }
+    "inventory": [
+      {
+        "model": "valkyrienwarfarecontrol:multipart_engines/engine_geo.obj",
+        "transform": "forge:default-block",
+        "custom": {
+          "flip-v": true
+        }
+      }
+    ]
   }
 }

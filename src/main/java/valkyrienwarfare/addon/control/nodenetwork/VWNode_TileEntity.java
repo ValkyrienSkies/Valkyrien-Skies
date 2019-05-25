@@ -43,7 +43,7 @@ public class VWNode_TileEntity implements IVWNode {
     private final int maximumConnections;
     private boolean isValid;
     private PhysicsObject parentPhysicsObject;
-    private volatile Graph nodeGraph;
+    private Graph nodeGraph;
 
     public VWNode_TileEntity(TileEntity parent, int maximumConnections) {
         this.parentTile = parent;
@@ -206,7 +206,7 @@ public class VWNode_TileEntity implements IVWNode {
 
     private void assertValidity() {
         if (!isValid()) {
-            // System.err.println("This node at " + parentTile.getPos() + " is not valid / initialized!");
+            throw new IllegalStateException("This node at " + parentTile.getPos() + " is not valid / initialized!");
         }
     }
 

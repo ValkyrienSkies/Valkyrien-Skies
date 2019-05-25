@@ -365,7 +365,7 @@ public class PhysicsObject implements ISubspaceProvider {
             int i = iter.next();
             SpatialDetector.setPosWithRespectTo(i, centerInWorld, pos);
             TileEntity tile = getWorldObj().getTileEntity(pos);
-            if (tile != null) {
+            if (tile != null && !tile.isInvalid()) {
                 try {
                     tile.invalidate();
                 } catch (Exception e) {

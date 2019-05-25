@@ -78,15 +78,15 @@ public abstract class BasicNodeTileEntity extends TileEntity implements IVWNodeP
 
     @Override
     public void invalidate() {
-        // The Node just got destroyed
-        this.tileEntityInvalid = true;
         VWNode_TileEntity toInvalidate = getNode();
-        toInvalidate.invalidate();
         Graph graph = toInvalidate.getGraph();
         if (graph != null) {
             graph.remove(toInvalidate);
             toInvalidate.breakAllConnections();
         }
+        // The Node just got destroyed
+        this.tileEntityInvalid = true;
+        toInvalidate.invalidate();
     }
 
     /**

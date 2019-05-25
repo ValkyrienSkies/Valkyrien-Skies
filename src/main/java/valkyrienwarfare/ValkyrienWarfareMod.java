@@ -226,10 +226,15 @@ public class ValkyrienWarfareMod {
     }
 
     public static Optional<PhysicsObject> getPhysicsObject(World world, BlockPos pos) {
-        PhysicsWrapperEntity wrapperEntity = VW_PHYSICS_MANAGER.getObjectManagingPos(world, pos);
-        if (wrapperEntity != null) {
-            return Optional.of(wrapperEntity.getPhysicsObject());
-        } else {
+        try {
+            PhysicsWrapperEntity wrapperEntity = VW_PHYSICS_MANAGER.getObjectManagingPos(world, pos);
+            if (wrapperEntity != null) {
+                return Optional.of(wrapperEntity.getPhysicsObject());
+            } else {
+                return Optional.empty();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
             return Optional.empty();
         }
     }

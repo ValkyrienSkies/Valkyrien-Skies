@@ -25,7 +25,6 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
 
-import java.util.Collections;
 import java.util.Iterator;
 
 public abstract class BasicNodeTileEntity extends TileEntity implements IVWNodeProvider, ITickable {
@@ -36,7 +35,6 @@ public abstract class BasicNodeTileEntity extends TileEntity implements IVWNodeP
     public BasicNodeTileEntity() {
         this.tileNode = new VWNode_TileEntity(this, getMaximumConnections());
         this.firstUpdate = true;
-        Graph.integrate(tileNode, Collections.EMPTY_LIST, (graph) -> new GraphData());
     }
 
     @Override
@@ -83,11 +81,11 @@ public abstract class BasicNodeTileEntity extends TileEntity implements IVWNodeP
         // The Node just got destroyed
         this.tileEntityInvalid = true;
         VWNode_TileEntity toInvalidate = getNode();
-        toInvalidate.breakAllConnections();
         toInvalidate.invalidate();
         Graph graph = toInvalidate.getGraph();
         if (graph != null) {
             graph.remove(toInvalidate);
+            toInvalidate.breakAllConnections();
         }
     }
 
@@ -132,7 +130,7 @@ public abstract class BasicNodeTileEntity extends TileEntity implements IVWNodeP
     }
 
     public static class GraphData implements Mergeable<GraphData> {
-        private static int sUid = 0;
+        private static volatile int sUid = 0;
 
         private final int uid;
 

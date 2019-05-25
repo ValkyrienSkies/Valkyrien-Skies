@@ -91,6 +91,10 @@ public class TileEntityShipTelegraph extends ImplTileEntityPilotable implements 
 
     @Override
     public void update() {
+        if (this.getNode()
+                .getGraph() == null) {
+            this.tileEntityInvalid = true;
+        }
         if (getWorld().isRemote) {
             this.prevHandleRotation = this.handleRotation;
             this.handleRotation = this.handleRotation + (this.nextTelegraphState.renderRotation - this.handleRotation) * .5;

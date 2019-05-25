@@ -44,6 +44,7 @@ import net.minecraft.world.ChunkCache;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.EmptyChunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraftforge.common.DimensionManager;
@@ -357,6 +358,7 @@ public class PhysicsObject implements ISubspaceProvider {
             MoveBlocks.copyBlockToPos(getWorldObj(), oldPos, newPos, Optional.of(this));
         }
 
+
         // Then destroy all of the blocks we copied from in world.
         iter = detector.foundSet.iterator();
         while (iter.hasNext()) {
@@ -364,7 +366,16 @@ public class PhysicsObject implements ISubspaceProvider {
             SpatialDetector.setPosWithRespectTo(i, centerInWorld, pos);
             TileEntity tile = getWorldObj().getTileEntity(pos);
             if (tile != null) {
-                tile.invalidate();
+                try {
+                    tile.invalidate();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                try {
+                    getWorldObj().removeTileEntity(pos);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
             getWorldObj().setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
         }
@@ -1225,6 +1236,15 @@ public class PhysicsObject implements ISubspaceProvider {
             for (BlockPos oldPos : this.blockPositions) {
                 newPos.setPos(oldPos.getX() - centerDifference.getX(), oldPos.getY() - centerDifference.getY(), oldPos.getZ() - centerDifference.getZ());
                 MoveBlocks.copyBlockToPos(getWorldObj(), oldPos, newPos, Optional.empty());
+            }
+
+            // Delete old blocks.
+            for (int x = getOwnedChunks().getMinX(); x <= getOwnedChunks().getMaxX(); x++) {
+                for (int z = getOwnedChunks().getMinZ(); z <= getOwnedChunks().getMaxZ(); z++) {
+                    EmptyChunk chunk = new EmptyChunk(getWorldObj(), x, z);
+                    injectChunkIntoWorld(chunk, x, z, true);
+                    claimedChunks[x - getOwnedChunks().getMinX()][z - getOwnedChunks().getMinZ()] = chunk;
+                }
             }
 
             this.destroy();

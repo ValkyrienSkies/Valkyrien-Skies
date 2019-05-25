@@ -43,16 +43,16 @@ public class VWNode_TileEntity implements IVWNode {
     private final int maximumConnections;
     private boolean isValid;
     private PhysicsObject parentPhysicsObject;
-    private Graph nodeGraph;
+    private volatile Graph nodeGraph;
 
     public VWNode_TileEntity(TileEntity parent, int maximumConnections) {
         this.parentTile = parent;
-        this.linkedNodesPos = new HashSet<BlockPos>();
+        this.linkedNodesPos = new HashSet<>();
         this.unmodifiableLinkedNodesPos = Collections.unmodifiableSet(linkedNodesPos);
         this.isValid = false;
         this.parentPhysicsObject = null;
-        this.nodeGraph = null;
         this.maximumConnections = maximumConnections;
+        Graph.integrate(this, Collections.EMPTY_LIST, (graph) -> new BasicNodeTileEntity.GraphData());
     }
 
     @Nullable
@@ -124,7 +124,14 @@ public class VWNode_TileEntity implements IVWNode {
             parentTile.markDirty();
             other.breakConnection(this);
             sendNodeUpdates();
-            getGraph().removeNeighbour(this, other);
+            try {
+                // TODO: For some reason null graphs show up. Not sure why, but it seems safe to just ignore them.
+                if (this.getGraph() != null) {
+                    getGraph().removeNeighbour(this, other);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             // System.out.println(getGraph().getObjects().size());
             // getNodeGraph().removeNode(other);
         }
@@ -199,7 +206,7 @@ public class VWNode_TileEntity implements IVWNode {
 
     private void assertValidity() {
         if (!isValid()) {
-            throw new IllegalStateException("This node is not valid / initialized!");
+            // System.err.println("This node at " + parentTile.getPos() + " is not valid / initialized!");
         }
     }
 

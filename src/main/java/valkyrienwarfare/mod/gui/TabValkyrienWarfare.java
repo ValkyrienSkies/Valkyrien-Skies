@@ -29,7 +29,7 @@ public class TabValkyrienWarfare extends CreativeTabs {
 
     @Override
     public ItemStack getTabIconItem() {
-        return new ItemStack(Item.getItemFromBlock(ValkyrienWarfareMod.physicsInfuser));
+        return new ItemStack(Item.getItemFromBlock(ValkyrienWarfareMod.INSTANCE.physicsInfuser));
     }
 
 }

@@ -91,7 +91,7 @@ public class TileEntityShipTelegraph extends ImplTileEntityPilotable implements 
 
     @Override
     public void update() {
-        if (this.getNode()
+        if (this.getNode() == null || this.getNode()
                 .getGraph() == null) {
             this.tileEntityInvalid = true;
         }

@@ -1,4 +1,4 @@
-package valkyrienwarfare.mod.block.tileentity;
+package valkyrienwarfare.mod.tileentity;
 
 import net.minecraft.tileentity.TileEntity;
 

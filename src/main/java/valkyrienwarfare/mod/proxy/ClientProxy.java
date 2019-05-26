@@ -24,6 +24,7 @@ import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -36,13 +37,15 @@ import valkyrienwarfare.math.Quaternion;
 import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.mod.client.render.GibsModelRegistry;
 import valkyrienwarfare.mod.client.render.PhysObjectRenderFactory;
+import valkyrienwarfare.mod.client.render.tile_entity_renderers.PhysicsInfuserTileEntityRenderer;
 import valkyrienwarfare.mod.event.EventsClient;
+import valkyrienwarfare.mod.tileentity.TileEntityPhysicsInfuser;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public class ClientProxy extends CommonProxy {
 
     public static ICamera lastCamera;
-    VWKeyHandler keyEvents = new VWKeyHandler();
+    private final VWKeyHandler keyEvents = new VWKeyHandler();
 
     @Override
     public void preInit(FMLPreInitializationEvent e) {
@@ -69,8 +72,8 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void init(FMLInitializationEvent e) {
         super.init(e);
-        registerBlockItem(ValkyrienWarfareMod.physicsInfuser);
-        registerBlockItem(ValkyrienWarfareMod.physicsInfuserCreative);
+        registerBlockItem(ValkyrienWarfareMod.INSTANCE.physicsInfuser);
+        registerBlockItem(ValkyrienWarfareMod.INSTANCE.physicsInfuserCreative);
 
         for (Module addon : ValkyrienWarfareMod.addons) {
             ModuleProxy proxy = addon.getClientProxy();
@@ -91,6 +94,8 @@ public class ClientProxy extends CommonProxy {
                 proxy.postInit(e);
             }
         }
+        // Register physics infuser tile entity renderer.
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPhysicsInfuser.class, new PhysicsInfuserTileEntityRenderer());
     }
 
     private void registerBlockItem(Block toRegister) {

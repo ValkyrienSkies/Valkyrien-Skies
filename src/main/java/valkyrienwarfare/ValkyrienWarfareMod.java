@@ -67,7 +67,7 @@ import valkyrienwarfare.mixin.MixinLoaderForge;
 import valkyrienwarfare.mod.BlockPhysicsRegistration;
 import valkyrienwarfare.mod.block.BlockPhysicsInfuser;
 import valkyrienwarfare.mod.block.BlockPhysicsInfuserCreative;
-import valkyrienwarfare.mod.block.tileentity.TileEntityPhysicsInfuser;
+import valkyrienwarfare.mod.block.BlockPhysicsInfuserDummy;
 import valkyrienwarfare.mod.capability.IAirshipCounterCapability;
 import valkyrienwarfare.mod.capability.ImplAirshipCounterCapability;
 import valkyrienwarfare.mod.capability.StorageAirshipCounter;
@@ -83,6 +83,7 @@ import valkyrienwarfare.mod.physmanagement.chunk.ImplVWWorldDataCapability;
 import valkyrienwarfare.mod.physmanagement.chunk.StorageVWWorldData;
 import valkyrienwarfare.mod.proxy.CommonProxy;
 import valkyrienwarfare.mod.proxy.ServerProxy;
+import valkyrienwarfare.mod.tileentity.TileEntityPhysicsInfuser;
 import valkyrienwarfare.physics.management.DimensionPhysObjectManager;
 import valkyrienwarfare.physics.management.PhysicsObject;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
@@ -133,8 +134,9 @@ public class ValkyrienWarfareMod {
     public static Configuration config;
     public static Vector gravity = new Vector(0, -9.8D, 0);
     public static double physSpeed = .01D;
-    public static Block physicsInfuser;
-    public static Block physicsInfuserCreative;
+    public Block physicsInfuser;
+    public Block physicsInfuserCreative;
+    public Block physicsInfuserDummy;
     public static SimpleNetworkWrapper physWrapperNetwork;
     public static CreativeTabs vwTab = new TabValkyrienWarfare();
     @Instance(MODID)
@@ -422,9 +424,15 @@ public class ValkyrienWarfareMod {
         physicsInfuserCreative = new BlockPhysicsInfuserCreative(Material.ROCK).setHardness(12f)
                 .setUnlocalizedName("shipblockcreative").setRegistryName(MODID, "shipblockcreative")
                 .setCreativeTab(vwTab);
+        // Do not put the dummy block into the creative tab
+        physicsInfuserDummy = new BlockPhysicsInfuserDummy(Material.ROCK).setHardness(12f)
+                .setUnlocalizedName("physics_infuser_dummy")
+                .setRegistryName(MODID, "physics_infuser_dummy");
 
         event.getRegistry().register(physicsInfuser);
         event.getRegistry().register(physicsInfuserCreative);
+        event.getRegistry()
+                .register(physicsInfuserDummy);
     }
 
     public void registerItems(RegistryEvent.Register<Item> event) {

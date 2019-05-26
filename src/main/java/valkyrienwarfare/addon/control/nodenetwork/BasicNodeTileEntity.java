@@ -17,7 +17,6 @@
 package valkyrienwarfare.addon.control.nodenetwork;
 
 import gigaherz.graph.api.Graph;
-import gigaherz.graph.api.GraphObject;
 import gigaherz.graph.api.Mergeable;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -119,14 +118,9 @@ public abstract class BasicNodeTileEntity extends TileEntity implements IVWNodeP
 
     @Override
     public Iterable<IVWNode> getNetworkedConnections() {
-        Iterator<GraphObject> objects = tileNode.getGraph().getObjects().iterator();
-        Iterator<IVWNode> nodes = new IteratorCaster(objects);
-        return new Iterable<IVWNode>() {
-            @Override
-            public Iterator<IVWNode> iterator() {
-                return nodes;
-            }
-        };
+        return () -> new IteratorCaster(tileNode.getGraph()
+                .getObjects()
+                .iterator());
     }
 
     public static class GraphData implements Mergeable<GraphData> {

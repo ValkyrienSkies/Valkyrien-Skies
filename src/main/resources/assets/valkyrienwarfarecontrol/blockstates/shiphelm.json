@@ -21,6 +21,7 @@
     },
     "inventory": {
       "model": "valkyrienwarfarecontrol:shiphelmhand.obj",
+      "transform": "forge:default-block",
       "custom": {
         "flip-v": true
       }

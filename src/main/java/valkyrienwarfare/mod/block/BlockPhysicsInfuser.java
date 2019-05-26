@@ -16,9 +16,9 @@
 
 package valkyrienwarfare.mod.block;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -30,8 +30,8 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.mod.block.tileentity.TileEntityPhysicsInfuser;
 import valkyrienwarfare.mod.physmanagement.relocation.DetectorManager;
+import valkyrienwarfare.mod.tileentity.TileEntityPhysicsInfuser;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.physics.management.ShipType;
 import valkyrienwarfare.physics.management.WorldPhysObjectManager;
@@ -39,7 +39,7 @@ import valkyrienwarfare.physics.management.WorldPhysObjectManager;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class BlockPhysicsInfuser extends Block {
+public class BlockPhysicsInfuser extends BlockVWDirectional {
 
     int shipSpawnDetectorID;
 
@@ -57,9 +57,47 @@ public class BlockPhysicsInfuser extends Block {
         return new TileEntityPhysicsInfuser();
     }
 
+    @Override
+    public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
+        super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
+        if (!worldIn.isRemote) {
+            EnumFacing dummyBlockFacing = state.getValue(FACING)
+                    .rotateY()
+                    .getOpposite();
+            BlockPos dummyPos = pos.offset(dummyBlockFacing);
+            worldIn.setBlockState(dummyPos, ValkyrienWarfareMod.INSTANCE.physicsInfuserDummy.getDefaultState()
+                    .withProperty(FACING, dummyBlockFacing.getOpposite()));
+        }
+    }
+
+    @Override
+    public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
+        EnumFacing dummyBlockFacing = state.getValue(FACING)
+                .rotateY()
+                .getOpposite();
+        BlockPos dummyPos = pos.offset(dummyBlockFacing);
+        super.breakBlock(worldIn, pos, state);
+        if (worldIn.getBlockState(dummyPos)
+                .getBlock() == ValkyrienWarfareMod.INSTANCE.physicsInfuserDummy) {
+            worldIn.setBlockToAir(dummyPos);
+        }
+    }
+
     public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par4) {
         itemInformation.add(TextFormatting.BLUE
                 + "Turns any blocks attatched to this one into a brand new Ship, just be careful not to infuse your entire world");
+    }
+
+    @Override
+    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
+        EnumFacing facingHorizontal = placer.getHorizontalFacing();
+
+        if (!placer.isSneaking()) {
+            facingHorizontal = facingHorizontal.getOpposite();
+        }
+
+        return this.getDefaultState()
+                .withProperty(FACING, facingHorizontal);
     }
 
     @Override
@@ -104,6 +142,23 @@ public class BlockPhysicsInfuser extends Block {
     @Override
     public boolean isOpaqueCube(IBlockState state) {
         return false;
+    }
+
+    @Override
+    public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
+        if (super.canPlaceBlockAt(worldIn, pos)) {
+            return worldIn.getBlockState(pos.north())
+                    .getBlock()
+                    .isReplaceable(worldIn, pos) && worldIn.getBlockState(pos.south())
+                    .getBlock()
+                    .isReplaceable(worldIn, pos) && worldIn.getBlockState(pos.east())
+                    .getBlock()
+                    .isReplaceable(worldIn, pos) && worldIn.getBlockState(pos.west())
+                    .getBlock()
+                    .isReplaceable(worldIn, pos);
+        } else {
+            return false;
+        }
     }
 
 }

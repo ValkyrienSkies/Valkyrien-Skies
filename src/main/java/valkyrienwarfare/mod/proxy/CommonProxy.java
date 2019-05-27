@@ -21,9 +21,11 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.addons.Module;
 import valkyrienwarfare.api.addons.ModuleProxy;
+import valkyrienwarfare.mod.client.gui.VWGuiHandler;
 import valkyrienwarfare.mod.event.EventsCommon;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
@@ -40,6 +42,7 @@ public class CommonProxy {
 
     public void init(FMLInitializationEvent e) {
         MinecraftForge.EVENT_BUS.register(new EventsCommon());
+        NetworkRegistry.INSTANCE.registerGuiHandler(ValkyrienWarfareMod.INSTANCE, new VWGuiHandler());
 
         for (Module addon : ValkyrienWarfareMod.addons) {
             ModuleProxy proxy = addon.getCommonProxy();

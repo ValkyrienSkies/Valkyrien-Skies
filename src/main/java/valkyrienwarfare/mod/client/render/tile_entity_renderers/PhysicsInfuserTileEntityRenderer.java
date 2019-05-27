@@ -12,7 +12,6 @@ import valkyrienwarfare.mod.tileentity.TileEntityPhysicsInfuser;
 
 public class PhysicsInfuserTileEntityRenderer extends TileEntitySpecialRenderer<TileEntityPhysicsInfuser> {
 
-
     @Override
     public void render(TileEntityPhysicsInfuser tileentity, double x, double y, double z, float partialTick,
                        int destroyStage, float alpha) {
@@ -48,6 +47,9 @@ public class PhysicsInfuserTileEntityRenderer extends TileEntitySpecialRenderer<
         GlStateManager.scale(2, 2, 2);
         GibsAnimationRegistry.getAnimation("physics_infuser_empty")
                 .renderAnimation(keyframe, brightness);
+        GibsAnimationRegistry.getAnimation("physics_infuser_cores")
+                .renderAnimation(keyframe, 15728864);
+
 
         GlStateManager.popMatrix();
         GlStateManager.popMatrix();

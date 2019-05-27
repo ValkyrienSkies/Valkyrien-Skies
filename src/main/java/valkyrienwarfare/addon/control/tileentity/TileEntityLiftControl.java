@@ -32,6 +32,7 @@ public class TileEntityLiftControl extends ImplTileEntityPilotable {
     private double heightReference;
     // Assigned by onPilotsMessage(), when true the lever changes the reference height 5x quicker.
     private boolean isPilotSprinting;
+    private int pilotSprintTicks;
 
     public TileEntityLiftControl() {
         super();
@@ -40,6 +41,7 @@ public class TileEntityLiftControl extends ImplTileEntityPilotable {
         this.prevLeverOffset = .5f;
         this.heightReference = 0;
         this.isPilotSprinting = false;
+        this.pilotSprintTicks = 0;
     }
 
     public TileEntityLiftControl(World world) {
@@ -134,14 +136,25 @@ public class TileEntityLiftControl extends ImplTileEntityPilotable {
     @Override
     void processControlMessage(PilotControlsMessage message, EntityPlayerMP sender) {
         isPilotSprinting = message.airshipSprinting;
+        if (isPilotSprinting) {
+            pilotSprintTicks++;
+        } else {
+            pilotSprintTicks = 0;
+        }
 
         if (message.airshipForward_KeyDown) {
             // liftPercentage++;
             leverOffset += leverPullRate;
+            if (pilotSprintTicks > 0 && pilotSprintTicks < 5) {
+                leverOffset += 20 * leverPullRate;
+            }
         }
         if (message.airshipBackward_KeyDown) {
             // liftPercentage--;
             leverOffset -= leverPullRate;
+            if (pilotSprintTicks > 0 && pilotSprintTicks < 5) {
+                leverOffset -= 20 * leverPullRate;
+            }
         }
 
         if (!message.airshipForward_KeyDown && !message.airshipBackward_KeyDown) {
@@ -155,7 +168,11 @@ public class TileEntityLiftControl extends ImplTileEntityPilotable {
         }
 
         if (message.airshipSprinting) {
-            leverOffset = Math.max(0, Math.min(1, leverOffset));
+            if (pilotSprintTicks > 0 && pilotSprintTicks < 5) {
+                leverOffset = Math.max(0f, Math.min(1f, leverOffset));
+            } else {
+                leverOffset = Math.max(.1f, Math.min(.9f, leverOffset));
+            }
         } else {
             leverOffset = Math.max(.25f, Math.min(.75f, leverOffset));
         }

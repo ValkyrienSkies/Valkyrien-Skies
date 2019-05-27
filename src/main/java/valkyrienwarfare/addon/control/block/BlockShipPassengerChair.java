@@ -93,12 +93,6 @@ public class BlockShipPassengerChair extends Block {
         itemInformation.add(TextFormatting.BOLD + "" + TextFormatting.BOLD + TextFormatting.RED + "Can only be placed on a Ship");
     }
 
-    @Override
-    public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(worldIn, pos);
-        return wrapper != null;
-    }
-
     private Vector getPlayerMountOffset(IBlockState state, BlockPos pos) {
         EnumFacing facing = state.getValue(FACING);
         switch (facing) {

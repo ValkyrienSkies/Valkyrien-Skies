@@ -72,7 +72,6 @@ public class ImplRotationNodeWorld implements IRotationNodeWorld {
         while (nodeIterator.hasNext()) {
             Map.Entry<BlockPos, IRotationNode> entry = nodeIterator.next();
             if (entry.getValue().markedForDeletion()) {
-                System.out.println("Deleted");
                 nodeIterator.remove();
             }
         }

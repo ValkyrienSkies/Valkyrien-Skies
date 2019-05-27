@@ -20,21 +20,21 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 import valkyrienwarfare.ValkyrienWarfareMod;
+import valkyrienwarfare.mod.client.gui.VW_Gui_Enum;
 import valkyrienwarfare.mod.physmanagement.relocation.DetectorManager;
 import valkyrienwarfare.mod.tileentity.TileEntityPhysicsInfuser;
-import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
-import valkyrienwarfare.physics.management.ShipType;
-import valkyrienwarfare.physics.management.WorldPhysObjectManager;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -61,21 +61,22 @@ public class BlockPhysicsInfuser extends BlockVWDirectional {
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
         super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
         if (!worldIn.isRemote) {
-            EnumFacing dummyBlockFacing = state.getValue(FACING)
-                    .rotateY()
-                    .getOpposite();
-            BlockPos dummyPos = pos.offset(dummyBlockFacing);
+            BlockPos dummyPos = getDummyStatePos(state, pos);
             worldIn.setBlockState(dummyPos, ValkyrienWarfareMod.INSTANCE.physicsInfuserDummy.getDefaultState()
-                    .withProperty(FACING, dummyBlockFacing.getOpposite()));
+                    .withProperty(FACING, getDummyStateFacing(state)));
         }
     }
 
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
-        EnumFacing dummyBlockFacing = state.getValue(FACING)
-                .rotateY()
-                .getOpposite();
-        BlockPos dummyPos = pos.offset(dummyBlockFacing);
+        TileEntityPhysicsInfuser te = (TileEntityPhysicsInfuser) worldIn.getTileEntity(pos);
+        IItemHandler handler = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+        // Drop all the items
+        for (int slot = 0; slot < handler.getSlots(); slot++) {
+            ItemStack stack = handler.getStackInSlot(slot);
+            InventoryHelper.spawnItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), stack);
+        }
+        BlockPos dummyPos = getDummyStatePos(state, pos);
         super.breakBlock(worldIn, pos, state);
         if (worldIn.getBlockState(dummyPos)
                 .getBlock() == ValkyrienWarfareMod.INSTANCE.physicsInfuserDummy) {
@@ -104,6 +105,9 @@ public class BlockPhysicsInfuser extends BlockVWDirectional {
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
                                     EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
         if (!worldIn.isRemote) {
+            playerIn.openGui(ValkyrienWarfareMod.INSTANCE, VW_Gui_Enum.PHYSICS_INFUSER.ordinal(), worldIn, pos.getX(), pos.getY(), pos.getZ());
+
+            /*
             WorldPhysObjectManager manager = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getManagerForWorld(worldIn);
             if (manager != null) {
                 PhysicsWrapperEntity wrapperEnt = manager
@@ -125,6 +129,8 @@ public class BlockPhysicsInfuser extends BlockVWDirectional {
                 playerIn.sendMessage(new TextComponentString(
                         "You've made too many airships! The limit per player is " + ValkyrienWarfareMod.maxAirships));
             }
+
+             */
         }
         return true;
     }
@@ -161,4 +167,14 @@ public class BlockPhysicsInfuser extends BlockVWDirectional {
         }
     }
 
+    private BlockPos getDummyStatePos(IBlockState state, BlockPos pos) {
+        EnumFacing dummyBlockFacing = state.getValue(FACING)
+                .rotateY()
+                .getOpposite();
+        return pos.offset(dummyBlockFacing);
+    }
+
+    private EnumFacing getDummyStateFacing(IBlockState state) {
+        return state.getValue(FACING).rotateY();
+    }
 }

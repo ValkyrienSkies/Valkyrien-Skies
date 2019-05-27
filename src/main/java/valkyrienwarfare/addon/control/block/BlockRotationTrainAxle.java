@@ -7,7 +7,9 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import valkyrienwarfare.addon.control.block.torque.TileEntityRotationTrainAxle;
 
@@ -50,7 +52,7 @@ public class BlockRotationTrainAxle extends BlockRotatedPillar implements ITileE
     @Override
     public TileEntity createNewTileEntity(World worldIn, int meta) {
         IBlockState state = getStateFromMeta(meta);
-        return new TileEntityRotationTrainAxle((EnumFacing.Axis) state.getValue(AXIS));
+        return new TileEntityRotationTrainAxle(state.getValue(AXIS));
     }
 
     @Override
@@ -59,6 +61,20 @@ public class BlockRotationTrainAxle extends BlockRotatedPillar implements ITileE
         TileEntity tile = worldIn.getTileEntity(pos);
         if (tile != null) {
             tile.invalidate();
+        }
+    }
+
+    @Override
+    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+        switch (state.getValue(AXIS)) {
+            case X:
+                return new AxisAlignedBB(0, .4, .4, 1, .6, .6);
+            case Y:
+                return new AxisAlignedBB(.4, 0, .4, .6, 1, .6);
+            case Z:
+                return new AxisAlignedBB(.4, .4, 0, .6, .6, 1);
+            default:
+                return FULL_BLOCK_AABB;
         }
     }
 }

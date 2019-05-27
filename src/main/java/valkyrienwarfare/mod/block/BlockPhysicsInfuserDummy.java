@@ -3,11 +3,13 @@ package valkyrienwarfare.mod.block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import valkyrienwarfare.ValkyrienWarfareMod;
 
@@ -58,6 +60,12 @@ public class BlockPhysicsInfuserDummy extends BlockVWDirectional {
                 .getBlock() == ValkyrienWarfareMod.INSTANCE.physicsInfuser) {
             worldIn.setBlockToAir(parentPos);
         }
+    }
+
+    @Override
+    public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player) {
+        BlockPos parentPos = getParentPos(state, pos);
+        return ValkyrienWarfareMod.INSTANCE.physicsInfuser.getPickBlock(world.getBlockState(parentPos), target, world, parentPos, player);
     }
 
     private BlockPos getParentPos(IBlockState state, BlockPos pos) {

@@ -113,6 +113,9 @@ public abstract class BasicNodeTileEntity extends TileEntity implements IVWNodeP
     }
 
     private void init() {
+        if (tileNode.getGraph() == null) {
+            return;
+        }
         tileNode.getGraph().addNeighours(tileNode, tileNode.getNeighbours());
     }
 

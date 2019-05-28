@@ -192,10 +192,16 @@ public class PhysicsCalculations {
             updatePhysSpeedAndIters(newPhysSpeed);
             updateParentCenterOfMass();
             calculateFramedMOITensor();
-            if (!actAsArchimedes) {
-                calculateForces();
+            if (!parent.getMarkedForDeconstruction()) {
+                // We are not marked for deconstruction, act normal.
+                if (!actAsArchimedes) {
+                    calculateForces();
+                } else {
+                    calculateForcesArchimedes();
+                }
             } else {
-                calculateForcesArchimedes();
+                // We are trying to deconstruct, try to rotate the ship to grid to align with the grid.
+                calculateForcesDeconstruction();
             }
         }
     }
@@ -416,15 +422,40 @@ public class PhysicsCalculations {
         convertTorqueToVelocity();
     }
 
-    public void applyGravity() {
+    private void applyGravity() {
         if (PhysicsSettings.doGravity) {
             addForceAtPoint(new Vector(0, 0, 0),
                     ValkyrienWarfareMod.gravity.getProduct(gameTickMass * getPhysicsTimeDeltaPerPhysTick()));
         }
     }
 
-    public void calculateForcesArchimedes() {
+    private void calculateForcesArchimedes() {
         applyAirDrag();
+    }
+
+    private void calculateForcesDeconstruction() {
+        applyAirDrag();
+        Quaternion gridRotation = new Quaternion(0, 0, 0, 1);
+        Quaternion inverseCurrentRotation = parent.getShipTransformationManager()
+                .getCurrentPhysicsTransform()
+                .createRotationQuaternion(TransformType.GLOBAL_TO_SUBSPACE);
+
+        Quaternion r = gridRotation.crossProduct(inverseCurrentRotation);
+        double theta = 2D * Math.acos(r.getW());
+        if (theta > Math.PI) {
+            theta -= 2D * Math.PI;
+        }
+        Vector idealAngularVelocity = new Vector(r.getX(), r.getY(), r.getZ());
+        // Number of seconds we'd expect this angular velocity to convert us onto the grid orientation.
+        double timeStep = 1D;
+        double idealAngularVelocityMultiple = (-theta / (timeStep * idealAngularVelocity.length()));
+        idealAngularVelocity.multiply(idealAngularVelocityMultiple);
+
+        Vector angularVelocityDif = idealAngularVelocity.getSubtraction(angularVelocity);
+        // Larger values converge faster, but sacrifice collision accuracy
+        angularVelocityDif.multiply(.01);
+
+        angularVelocity.subtract(angularVelocityDif);
     }
 
     protected void applyAirDrag() {

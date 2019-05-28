@@ -1249,7 +1249,7 @@ public class PhysicsObject implements ISubspaceProvider {
         double dotProduct = Quaternion.dotProduct(zeroQuat, shipQuat);
         double anglesBetweenQuaternions = Math.toDegrees(Math.acos(dotProduct));
 
-        if (anglesBetweenQuaternions < 5) {
+        if (anglesBetweenQuaternions < .5) {
             // We're pretty close to the grid; time 2 go.
             MutableBlockPos newPos = new MutableBlockPos();
             BlockPos centerDifference = new BlockPos(Math.round(centerCoord.X - getWrapperEntity().posX),
@@ -1277,5 +1277,9 @@ public class PhysicsObject implements ISubspaceProvider {
 
     public void setPhysicsInfuserPos(BlockPos pos) {
         this.physicsInfuserPos = pos;
+    }
+
+    public boolean getMarkedForDeconstruction() {
+        return this.markedForDeconstruction;
     }
 }

@@ -141,4 +141,25 @@ public class Quaternion {
         }
     }
 
+    public Quaternion crossProduct(Quaternion other) {
+        Quaternion toReturn = new Quaternion(x, y, z, w);
+        toReturn.multiply(other);
+        return toReturn;
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public double getZ() {
+        return z;
+    }
+
+    public double getW() {
+        return w;
+    }
 }

@@ -73,6 +73,10 @@ public class TileEntityPilotsChair extends ImplTileEntityPilotable {
         BlockPos chairPosition = getPos();
         PhysicsObject controlledShip = wrapper.getPhysicsObject();
 
+        if (controlledShip.getMarkedForDeconstruction()) {
+            return;
+        }
+
         double pilotPitch = 0D;
         double pilotYaw = ((BlockShipPilotsChair) state.getBlock()).getChairYaw(state, chairPosition);
         double pilotRoll = 0D;

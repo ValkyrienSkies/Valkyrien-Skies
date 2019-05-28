@@ -34,6 +34,7 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
             // Check the status of the item slots
             if (!parentShip.isPresent() && canMainainShip()) {
                 // Create a ship with this physics infuser
+                // TODO: Make this queue something that runs either off the tick or at the end of the tick.
                 PhysicsWrapperEntity ship = new PhysicsWrapperEntity(this);
                 getWorld().spawnEntity(ship);
             }
@@ -41,7 +42,8 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
     }
 
     public boolean canMainainShip() {
-        return handler.getStackInSlot(0) != ItemStack.EMPTY;
+        ItemStack firstStack = handler.getStackInSlot(0);
+        return !firstStack.isEmpty();
     }
 
     @Override

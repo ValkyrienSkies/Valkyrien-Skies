@@ -18,6 +18,7 @@ package valkyrienwarfare.mod.proxy;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.resources.IReloadableResourceManager;
@@ -69,18 +70,13 @@ public class ClientProxy extends CommonProxy {
         mcResourceManager.registerReloadListener((resourceManager) -> GibsModelRegistry.onResourceManagerReload(resourceManager));
     }
 
-    @Override
-    public void init(FMLInitializationEvent e) {
-        super.init(e);
-        registerBlockItem(ValkyrienWarfareMod.INSTANCE.physicsInfuser);
-        registerBlockItem(ValkyrienWarfareMod.INSTANCE.physicsInfuserCreative);
-
-        for (Module addon : ValkyrienWarfareMod.addons) {
-            ModuleProxy proxy = addon.getClientProxy();
-            if (proxy != null) {
-                proxy.init(e);
-            }
-        }
+    private static void registerBlockItem(Block toRegister) {
+        Item item = Item.getItemFromBlock(toRegister);
+        Minecraft.getMinecraft()
+                .getRenderItem()
+                .getItemModelMesher()
+                .register(item, 0, new ModelResourceLocation(ValkyrienWarfareMod.MODID + ":" + item.getUnlocalizedName()
+                        .substring(5), "inventory"));
     }
 
     @Override
@@ -98,9 +94,27 @@ public class ClientProxy extends CommonProxy {
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPhysicsInfuser.class, new PhysicsInfuserTileEntityRenderer());
     }
 
-    private void registerBlockItem(Block toRegister) {
-        Item item = Item.getItemFromBlock(toRegister);
-        Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(item, 0, new ModelResourceLocation(ValkyrienWarfareMod.MODID + ":" + item.getUnlocalizedName().substring(5), "inventory"));
+    private static void registerItemModel(Item toRegister) {
+        RenderItem renderItem = Minecraft.getMinecraft()
+                .getRenderItem();
+        renderItem.getItemModelMesher()
+                .register(toRegister, 0, new ModelResourceLocation(ValkyrienWarfareMod.MODID + ":" + toRegister.getUnlocalizedName()
+                        .substring(5), "inventory"));
+    }
+
+    @Override
+    public void init(FMLInitializationEvent e) {
+        super.init(e);
+        registerBlockItem(ValkyrienWarfareMod.INSTANCE.physicsInfuser);
+        registerBlockItem(ValkyrienWarfareMod.INSTANCE.physicsInfuserCreative);
+        registerItemModel(ValkyrienWarfareMod.INSTANCE.physicsCore);
+
+        for (Module addon : ValkyrienWarfareMod.addons) {
+            ModuleProxy proxy = addon.getClientProxy();
+            if (proxy != null) {
+                proxy.init(e);
+            }
+        }
     }
 
     @Override

@@ -2,3 +2,5 @@ tile.shipblock.name=Physics Infuser
 tile.shipblockcreative.name=Physics Infuser Creative
 
 itemGroup.valkyrienwarfare=Valkyrien Warfare
+
+item.vw_phys_core.name=Physics Core

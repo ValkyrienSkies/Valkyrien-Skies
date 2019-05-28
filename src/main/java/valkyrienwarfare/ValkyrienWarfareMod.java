@@ -73,6 +73,7 @@ import valkyrienwarfare.mod.capability.ImplAirshipCounterCapability;
 import valkyrienwarfare.mod.capability.StorageAirshipCounter;
 import valkyrienwarfare.mod.command.VWModCommandRegistry;
 import valkyrienwarfare.mod.gui.TabValkyrienWarfare;
+import valkyrienwarfare.mod.item.ItemPhysicsCore;
 import valkyrienwarfare.mod.network.PhysWrapperPositionHandler;
 import valkyrienwarfare.mod.network.PhysWrapperPositionMessage;
 import valkyrienwarfare.mod.network.SubspacedEntityRecordHandler;
@@ -137,6 +138,7 @@ public class ValkyrienWarfareMod {
     public Block physicsInfuser;
     public Block physicsInfuserCreative;
     public Block physicsInfuserDummy;
+    public Item physicsCore;
     public static SimpleNetworkWrapper physWrapperNetwork;
     public static CreativeTabs vwTab = new TabValkyrienWarfare();
     @Instance(MODID)
@@ -438,6 +440,12 @@ public class ValkyrienWarfareMod {
     public void registerItems(RegistryEvent.Register<Item> event) {
         Module.registerItemBlock(event, physicsInfuser);
         Module.registerItemBlock(event, physicsInfuserCreative);
+
+        this.physicsCore = new ItemPhysicsCore().setUnlocalizedName("vw_phys_core")
+                .setRegistryName(MODID, "vw_phys_core")
+                .setCreativeTab(ValkyrienWarfareMod.vwTab);
+        event.getRegistry()
+                .register(this.physicsCore);
     }
 
     public void registerRecipies(RegistryEvent.Register<IRecipe> event) {

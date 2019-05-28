@@ -16,6 +16,7 @@
 
 package valkyrienwarfare.addon.control.tileentity;
 
+import net.minecraft.util.math.AxisAlignedBB;
 import valkyrienwarfare.addon.control.nodenetwork.BasicNodeTileEntity;
 
 public class TileEntityNodeRelay extends BasicNodeTileEntity {
@@ -29,4 +30,9 @@ public class TileEntityNodeRelay extends BasicNodeTileEntity {
         return 6;
     }
 
+    // TODO: Not the best solution, but it works for now.
+    @Override
+    public AxisAlignedBB getRenderBoundingBox() {
+        return INFINITE_EXTENT_AABB;
+    }
 }

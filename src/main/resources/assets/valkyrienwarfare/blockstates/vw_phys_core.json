@@ -1,0 +1,89 @@
+{
+  "forge_marker": 1,
+  "variants": {
+    "default": {
+      "model": "valkyrienwarfarecontrol:empty"
+    },
+    "normal": {
+      "model": "valkyrienwarfarecontrol:empty"
+    },
+    "inventory": {
+      "model": "valkyrienwarfarecontrol:basic_phys_infuser/physics_core_small1_geo.obj",
+      "custom": {
+        "flip-v": true
+      },
+      "transform": {
+        "thirdperson_lefthand": {
+          "rotation": [
+            {
+              "x": 130
+            },
+            {
+              "y": -5
+            },
+            {
+              "z": 90
+            }
+          ],
+          "scale": 4
+        },
+        "thirdperson_righthand": {
+          "rotation": [
+            {
+              "x": 130
+            },
+            {
+              "y": 5
+            },
+            {
+              "z": 90
+            }
+          ],
+          "scale": 4
+        },
+        "firstperson_lefthand": {
+          "rotation": [
+            {
+              "x": 90
+            },
+            {
+              "y": -10
+            },
+            {
+              "z": 90
+            }
+          ],
+          "scale": 4
+        },
+        "firstperson_righthand": {
+          "rotation": [
+            {
+              "x": 90
+            },
+            {
+              "y": 10
+            },
+            {
+              "z": 90
+            }
+          ],
+          "scale": 4
+        },
+        "gui": {
+          "rotation": [
+            {
+              "x": 90
+            },
+            {
+              "y": -40
+            },
+            {
+              "z": 45
+            }
+          ],
+          "scale": 1.1
+        }
+      }
+    }
+  }
+}

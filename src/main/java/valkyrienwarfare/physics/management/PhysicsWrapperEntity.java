@@ -34,9 +34,11 @@ import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.mod.capability.IAirshipCounterCapability;
 import valkyrienwarfare.mod.physmanagement.interaction.ShipNameUUIDData;
+import valkyrienwarfare.mod.tileentity.TileEntityPhysicsInfuser;
 import valkyrienwarfare.physics.collision.polygons.Polygon;
 
 import javax.annotation.Nullable;
+import java.util.UUID;
 
 /**
  * This entity's only purpose is to use the functionality of sending itself to
@@ -66,16 +68,43 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
         posY = y;
         posZ = z;
 
-        getPhysicsObject().setCreator(creator.entityUniqueID.toString());
+        if (creator != null) {
+            getPhysicsObject().setCreator(creator.entityUniqueID.toString());
+            IAirshipCounterCapability counter = creator.getCapability(ValkyrienWarfareMod.airshipCounter, null);
+            counter.onCreate();
+        } else {
+            getPhysicsObject().setCreator("unknown");
+            super.setCustomNameTag(UUID.randomUUID()
+                    .toString());
+        }
         getPhysicsObject().setDetectorID(detectorID);
         getPhysicsObject().setShipType(shipType);
         getPhysicsObject().assembleShipAsOrderedByPlayer(creator);
 
-        IAirshipCounterCapability counter = creator.getCapability(ValkyrienWarfareMod.airshipCounter, null);
-        counter.onCreate();
 
-        super.setCustomNameTag(creator.getName() + ":" + counter.getAirshipCountEver());
         ShipNameUUIDData.get(worldIn).placeShipInRegistry(this, getCustomNameTag());
+    }
+
+    public PhysicsWrapperEntity(TileEntityPhysicsInfuser te) {
+        this(te.getWorld());
+        posX = te.getPos()
+                .getX();
+        posY = te.getPos()
+                .getY();
+        posZ = te.getPos()
+                .getZ();
+
+        getPhysicsObject().setCreator("unknown");
+        super.setCustomNameTag(UUID.randomUUID()
+                .toString());
+
+        getPhysicsObject().setDetectorID(0);
+        getPhysicsObject().setShipType(ShipType.PHYSICS_CORE_INFUSED);
+        this.physicsObject.setPhysicsInfuserPos(te.getPos());
+        getPhysicsObject().assembleShipAsOrderedByPlayer(null);
+
+        ShipNameUUIDData.get(te.getWorld())
+                .placeShipInRegistry(this, getCustomNameTag());
     }
 
     @Override

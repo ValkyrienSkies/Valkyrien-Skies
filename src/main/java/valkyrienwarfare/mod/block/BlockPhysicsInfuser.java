@@ -123,7 +123,7 @@ public class BlockPhysicsInfuser extends BlockVWDirectional {
 
             if (ValkyrienWarfareMod.canChangeAirshipCounter(true, playerIn)) {
                 PhysicsWrapperEntity wrapper = new PhysicsWrapperEntity(worldIn, pos.getX(), pos.getY(), pos.getZ(),
-                        playerIn, shipSpawnDetectorID, ShipType.Full_Unlocked);
+                        playerIn, shipSpawnDetectorID, ShipType.FULL_UNLOCKED);
                 worldIn.spawnEntity(wrapper);
             } else {
                 playerIn.sendMessage(new TextComponentString(

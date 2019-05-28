@@ -72,6 +72,7 @@ import valkyrienwarfare.mod.physmanagement.chunk.VWChunkClaim;
 import valkyrienwarfare.mod.physmanagement.relocation.DetectorManager;
 import valkyrienwarfare.mod.physmanagement.relocation.MoveBlocks;
 import valkyrienwarfare.mod.physmanagement.relocation.SpatialDetector;
+import valkyrienwarfare.mod.tileentity.TileEntityPhysicsInfuser;
 import valkyrienwarfare.physics.BlockForce;
 import valkyrienwarfare.physics.PhysicsCalculations;
 import valkyrienwarfare.util.NBTUtils;
@@ -141,6 +142,8 @@ public class PhysicsObject implements ISubspaceProvider {
     private ShipType shipType;
     private volatile int gameConsecutiveTicks;
     private volatile int physicsConsecutiveTicks;
+    private BlockPos physicsInfuserPos;
+    private boolean markedForDeconstruction;
 
     public PhysicsObject(PhysicsWrapperEntity host) {
         this.wrapper = host;
@@ -164,6 +167,8 @@ public class PhysicsObject implements ISubspaceProvider {
         this.physicsControllers = Sets.newConcurrentHashSet();
         this.physicsControllersImmutable = Collections.unmodifiableSet(this.physicsControllers);
         this.blockPositionsGameTick = new TIntArrayList();
+        this.physicsInfuserPos = null;
+        this.markedForDeconstruction = false;
     }
 
     public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos posAt) {
@@ -357,8 +362,10 @@ public class PhysicsObject implements ISubspaceProvider {
 
             MoveBlocks.copyBlockToPos(getWorldObj(), oldPos, newPos, Optional.of(this));
         }
-
-
+        // Remember to update the infuser pos
+        if (this.getShipType() == ShipType.PHYSICS_CORE_INFUSED) {
+            this.physicsInfuserPos = this.physicsInfuserPos.add(centerDifference);
+        }
         // Then destroy all of the blocks we copied from in world.
         iter = detector.foundSet.iterator();
         while (iter.hasNext()) {
@@ -522,12 +529,28 @@ public class PhysicsObject implements ISubspaceProvider {
 
     public void onTick() {
         if (!getWorldObj().isRemote) {
+            if (this.getShipType() == ShipType.PHYSICS_CORE_INFUSED) {
+                TileEntity te = getWorldObj().getTileEntity(this.physicsInfuserPos);
+                if (te instanceof TileEntityPhysicsInfuser) {
+                    // Mark for keeping alive
+                    // Mark for deconstruction
+                    markedForDeconstruction = !((TileEntityPhysicsInfuser) te).canMainainShip();
+                } else {
+                    // Mark for deconstruction
+                    markedForDeconstruction = true;
+                }
+            }
+
             for (Entity e : queuedEntitiesToMount) {
                 if (e != null) {
                     e.startRiding(this.getWrapperEntity(), true);
                 }
             }
             queuedEntitiesToMount.clear();
+
+            if (markedForDeconstruction) {
+                this.tryToDeconstructShip();
+            }
         }
         gameConsecutiveTicks++;
     }
@@ -746,6 +769,7 @@ public class PhysicsObject implements ISubspaceProvider {
         compound.setString("shipType", shipType.name());
         // Write and read AABB from NBT to speed things up.
         NBTUtils.writeAABBToNBT("collision_aabb", getShipBoundingBox(), compound);
+        NBTUtils.writeBlockPosToNBT("phys_infuser_pos", physicsInfuserPos, compound);
     }
 
     public void readFromNBTTag(NBTTagCompound compound) {
@@ -780,12 +804,11 @@ public class PhysicsObject implements ISubspaceProvider {
             }
         }
 
-        String shipTypeName = compound.getString("shipType");
-        if (!shipTypeName.equals("")) {
-            shipType = ShipType.valueOf(ShipType.class, shipTypeName);
+        if (compound.hasKey("ship_type")) {
+            shipType = ShipType.valueOf(ShipType.class, compound.getString("ship_type"));
         } else {
             // Assume its an older Ship, and that its fully unlocked
-            shipType = ShipType.Full_Unlocked;
+            shipType = ShipType.FULL_UNLOCKED;
         }
 
         loadClaimedChunks();
@@ -805,6 +828,7 @@ public class PhysicsObject implements ISubspaceProvider {
         this.setShipBoundingBox(NBTUtils.readAABBFromNBT("collision_aabb", compound));
 
         setPhysicsEnabled(compound.getBoolean("doPhysics"));
+        physicsInfuserPos = NBTUtils.readBlockPosFromNBT("phys_infuser_pos", compound);
     }
 
     public void readSpawnData(ByteBuf additionalData) {
@@ -1251,4 +1275,7 @@ public class PhysicsObject implements ISubspaceProvider {
         }
     }
 
+    public void setPhysicsInfuserPos(BlockPos pos) {
+        this.physicsInfuserPos = pos;
+    }
 }

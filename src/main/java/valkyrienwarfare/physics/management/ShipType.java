@@ -18,6 +18,6 @@ package valkyrienwarfare.physics.management;
 
 public enum ShipType {
 
-    Full_Unlocked, Zepplin, Dungeon_Sky
+    FULL_UNLOCKED, PHYSICS_CORE_INFUSED
 
 }

@@ -33,10 +33,6 @@ buildscript {
     }
 }
 
-plugins {
-    id "io.franzbecker.gradle-lombok" version "1.14"
-}
-
 ext.configFile = file "project.properties"
 apply plugin: "net.minecraftforge.gradle.forge"
 apply plugin: 'org.spongepowered.mixin'

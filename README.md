@@ -1,7 +1,7 @@
 
 # Valkyrien Warfare
 [![Build 
-Status](https://jenkins.daporkchop.net/job/Valkyrien-Warfare-Revamped/badge/icon)](https://jenkins.daporkchop.net/job/Valkyrien-Warfare-Revamped/)
+Status](https://jenkins.daporkchop.net/job/Minecraft/job/ValkyrienWarfare/badge/icon)](https://jenkins.daporkchop.net/job/Minecraft/job/ValkyrienWarfare/)
 See: [LICENSE file](https://github.com/ValkyrienWarfare/Valkyrien-Warfare-Revamped/blob/8778e9d45f16c1f60e8149ab6cbdbabbdebc1278/LICENSE)
 
 The Airships Mod to end all other Airships Mods. Better compatibility, performance, collisions, interactions and physics than anything prior!
@@ -12,7 +12,7 @@ The Airships Mod to end all other Airships Mods. Better compatibility, performan
 ### Downloading
 Official and stable releases of the Valkyrien Warfare mod can be found on the [CurseForge page](https://minecraft.curseforge.com/projects/valkyrien-warfare/files).
 
-Beta releases (warning: may be unstable!) can be found on the [Jenkins build server](https://jenkins.daporkchop.net/job/Valkyrien-Warfare-Revamped/).
+Beta releases (warning: may be unstable!) can be found on the [Jenkins build server](https://jenkins.daporkchop.net/job/Minecraft/job/ValkyrienWarfare/).
 
 ### Installing on your server
 To install Valkyrien Warfare, move the downloaded `.jar` file into your Minecraft's `mods/` folder, just as you would any other mod.
@@ -46,3 +46,4 @@ To install Valkyrien Warfare, move the downloaded `.jar` file into your Minecraf
 1.  Clone the repo: `git clone https://github.com/ValkyrienWarfare/Valkyrien-Warfare-Revamped`
 2. Run `./gradlew setupDecompWorkspace idea genIntellijRuns`
 3. Open the project in IntelliJ
+

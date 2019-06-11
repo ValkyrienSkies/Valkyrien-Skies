@@ -109,12 +109,14 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
-@Mod(modid = ValkyrienWarfareMod.MODID,
+@Mod(
+        modid = ValkyrienWarfareMod.MODID,
         name = ValkyrienWarfareMod.MODNAME,
         version = ValkyrienWarfareMod.MODVER,
         guiFactory = "valkyrienwarfare.mod.gui.GuiFactoryValkyrienWarfare",
-        updateJSON = "https://raw.githubusercontent.com/Valkyrien-Warfare/Valkyrien-Warfare-Revamped/update.json",
-        certificateFingerprint = "8f639e7b2d1117d8f2c5d545e2231f0a0519f0ce")
+        updateJSON = "https://raw.githubusercontent.com/ValkyrienWarfare/Valkyrien-Warfare-Revamped/update.json",
+        certificateFingerprint = "b308676914a5e7d99459c1d2fb298744387899a7"
+)
 public class ValkyrienWarfareMod {
     public static final List<Module> addons = new ArrayList<Module>();
     public static final String MODID = "valkyrienwarfare";

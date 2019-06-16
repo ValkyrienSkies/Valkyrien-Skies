@@ -209,3 +209,21 @@ task signJar(type: SignJar, dependsOn: shadowJar) {
 }
 
 build.dependsOn signJar
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = 'valkyrienwarfare'
+            artifactId = 'valkyrienwarfare'
+            version = project.version
+
+            from components.java
+            artifact sourceJar {
+                classifier "sources"
+            }
+            artifact shadowJar {
+                classifier "full"
+            }
+        }
+    }
+}

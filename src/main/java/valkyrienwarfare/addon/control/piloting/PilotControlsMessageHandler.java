@@ -29,7 +29,7 @@ public class PilotControlsMessageHandler implements IMessageHandler<PilotControl
 
     @Override
     public IMessage onMessage(final PilotControlsMessage message, final MessageContext ctx) {
-        IThreadListener mainThread = ctx.getServerHandler().serverController;
+        IThreadListener mainThread = ctx.getServerHandler().server;
         mainThread.addScheduledTask(new Runnable() {
             @Override
             public void run() {

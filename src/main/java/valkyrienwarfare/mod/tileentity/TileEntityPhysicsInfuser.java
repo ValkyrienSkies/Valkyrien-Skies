@@ -29,7 +29,7 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
     public void update() {
         // Check if we have to create a ship
         if (!getWorld().isRemote) {
-            IPhysicsChunk chunk = (IPhysicsChunk) getWorld().getChunkFromBlockCoords(getPos());
+            IPhysicsChunk chunk = (IPhysicsChunk) getWorld().getChunk(getPos());
             Optional<PhysicsObject> parentShip = chunk.getPhysicsObjectOptional();
             // Check the status of the item slots
             if (!parentShip.isPresent() && canMainainShip()) {

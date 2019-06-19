@@ -8,7 +8,12 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkProviderServer;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class ImplShipChunkClaims implements IShipChunkClaims {
 
@@ -48,7 +53,7 @@ public class ImplShipChunkClaims implements IShipChunkClaims {
     @Override
     public boolean loadAllChunkClaims() {
         for (ChunkPos chunkPos : claimedPositions) {
-            Chunk chunk = getWorldObj().getChunkFromChunkCoords(chunkPos.x, chunkPos.z);
+            Chunk chunk = getWorldObj().getChunk(chunkPos.x, chunkPos.z);
             if (chunk == null) {
                 System.out.println("Just a loaded a null chunk");
                 chunk = new Chunk(getWorldObj(), chunkPos.x, chunkPos.z);
@@ -75,7 +80,7 @@ public class ImplShipChunkClaims implements IShipChunkClaims {
         // claimedChunks[x - getOwnedChunks().getMinX()][z - getOwnedChunks().getMinZ()] = chunk;
         loadedChunksMap.put(ChunkPos.asLong(x, z), chunk);
 
-        provider.id2ChunkMap.put(ChunkPos.asLong(x, z), chunk);
+        provider.loadedChunks.put(ChunkPos.asLong(x, z), chunk);
 
         chunk.onLoad();
 

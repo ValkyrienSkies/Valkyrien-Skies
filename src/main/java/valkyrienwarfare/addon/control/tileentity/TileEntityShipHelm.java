@@ -115,7 +115,7 @@ public class TileEntityShipHelm extends ImplTileEntityPilotable implements ITick
                         } else {
                             masterTile.attemptTorque(parentPhysicsEntity.getPhysicsObject(),
                                     torqueAttemptedNormalImmutable, -this.wheelRotation / 8D,
-                                    new Vector(EnumFacing.getFront(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipHelm
+                                    new Vector(EnumFacing.byIndex(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipHelm
                                             .getMetaFromState(this.getWorld().getBlockState(this.getPos()))).getDirectionVec()));
                         }
                     }

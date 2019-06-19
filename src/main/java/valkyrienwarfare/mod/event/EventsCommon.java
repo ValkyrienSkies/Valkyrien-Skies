@@ -298,7 +298,7 @@ public class EventsCommon {
 
                 // 20% chance of getting memed on!
                 if (Math.random() < .2) {
-                    server.mcServer.getPlayerList()
+                    server.server.getPlayerList()
                             .sendMessage(new TextComponentString(TextFormatting.BLUE + "An absolute " + TextFormatting.RED + TextFormatting.ITALIC + "legend" + TextFormatting.BLUE + " has arrived! Welcome " + TextFormatting.GOLD + TextFormatting.BOLD + player.getName()));
                 }
             }

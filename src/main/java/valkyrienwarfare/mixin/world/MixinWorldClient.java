@@ -56,7 +56,7 @@ public abstract class MixinWorldClient implements IHasShipManager {
     }
 
     @Shadow
-    public Chunk getChunkFromBlockCoords(BlockPos pos) {
+    public Chunk getChunk(BlockPos pos) {
         return null;
     }
 
@@ -125,7 +125,8 @@ public abstract class MixinWorldClient implements IHasShipManager {
      */
     @Overwrite
     public BlockPos getPrecipitationHeight(BlockPos input) {
-        BlockPos pos = this.getChunkFromBlockCoords(input).getPrecipitationHeight(input);
+        BlockPos pos = this.getChunk(input)
+                .getPrecipitationHeight(input);
         if (ValkyrienWarfareMod.accurateRain) {
             Vector traceStart = new Vector(pos.getX() + .5D, Minecraft.getMinecraft().player.posY + 50D, pos.getZ() + .5D);
             Vector traceEnd = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);

@@ -70,10 +70,6 @@ public class BlockPhysicsInfuser extends BlockVWDirectional {
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
         TileEntityPhysicsInfuser te = (TileEntityPhysicsInfuser) worldIn.getTileEntity(pos);
-        if (te == null) {
-            // Legacy support
-            return;
-        }
         IItemHandler handler = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
         // Drop all the items
         for (int slot = 0; slot < handler.getSlots(); slot++) {
@@ -140,7 +136,7 @@ public class BlockPhysicsInfuser extends BlockVWDirectional {
     }
 
     @Override
-    public BlockRenderLayer getBlockLayer() {
+    public BlockRenderLayer getRenderLayer() {
         return BlockRenderLayer.CUTOUT;
     }
 

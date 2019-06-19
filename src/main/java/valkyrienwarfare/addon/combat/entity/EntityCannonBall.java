@@ -68,7 +68,7 @@ public class EntityCannonBall extends Entity {
 
     private void processMovementForTick() {
         Vec3d origin = new Vec3d(posX, posY, posZ);
-        Vec3d traceEnd = origin.addVector(motionX, motionY, motionZ);
+        Vec3d traceEnd = origin.add(motionX, motionY, motionZ);
 
         RayTraceResult traceResult = world.rayTraceBlocks(origin, traceEnd, false, true, false);
 

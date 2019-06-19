@@ -66,7 +66,9 @@ public class ValkyrienWarfareOC extends Module {
 
     @Override
     public void registerBlocks(RegistryEvent.Register<Block> event) {
-        gpsBlock = new GPSBlock().setUnlocalizedName("gpsblock").setRegistryName(getModID(), "gpsblock").setCreativeTab(ValkyrienWarfareMod.vwTab);
+        gpsBlock = new GPSBlock().setTranslationKey("gpsblock")
+                .setRegistryName(getModID(), "gpsblock")
+                .setCreativeTab(ValkyrienWarfareMod.vwTab);
 
         event.getRegistry().register(gpsBlock);
     }

@@ -130,7 +130,7 @@ public abstract class MixinChunk implements ITileEntitiesToRenderProvider, IPhys
             // do nothing, and let vanilla code take over after our injected code is done
             // (now)
         } else {
-            Chunk realChunkFor = world.getChunkFromChunkCoords(i, j);
+            Chunk realChunkFor = world.getChunk(i, j);
             if (!realChunkFor.isEmpty() && realChunkFor.loaded) {
                 realChunkFor.addEntity(entityIn);
                 callbackInfo.cancel(); // don't run the code on this chunk!!!

@@ -27,14 +27,14 @@ public class BlockRotationTrainAxle extends BlockRotatedPillar implements ITileE
         if (result) {
             TileEntity tileEntityAxle = world.getTileEntity(pos);
             if (tileEntityAxle instanceof TileEntityRotationTrainAxle) {
-                TileEntityRotationTrainAxle.class.cast(tileEntityAxle).setAxleAxis(axisFacing.getAxis());
+                ((TileEntityRotationTrainAxle) tileEntityAxle).setAxleAxis(axisFacing.getAxis());
             }
         }
         return result;
     }
 
     @Override
-    public BlockRenderLayer getBlockLayer() {
+    public BlockRenderLayer getRenderLayer() {
         return BlockRenderLayer.CUTOUT;
     }
 

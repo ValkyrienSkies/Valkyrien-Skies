@@ -21,7 +21,7 @@ public class BlockEthereumEnginePart extends Block implements ITileEntityProvide
     }
 
     @Override
-    public BlockRenderLayer getBlockLayer() {
+    public BlockRenderLayer getRenderLayer() {
         return BlockRenderLayer.CUTOUT;
     }
 
@@ -39,7 +39,7 @@ public class BlockEthereumEnginePart extends Block implements ITileEntityProvide
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
         TileEntity tile = worldIn.getTileEntity(pos);
         if (tile instanceof TileEntityEthereumEnginePart) {
-            TileEntityEthereumEnginePart.class.cast(tile).dissembleMultiblock();
+            ((TileEntityEthereumEnginePart) tile).dissembleMultiblock();
         }
         super.breakBlock(worldIn, pos, state);
     }

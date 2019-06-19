@@ -413,7 +413,7 @@ public class PhysicsObject implements ISubspaceProvider {
         claimedChunks[x - getOwnedChunks().getMinX()][z - getOwnedChunks().getMinZ()] = chunk;
 
         if (putInId2ChunkMap) {
-            provider.id2ChunkMap.put(ChunkPos.asLong(x, z), chunk);
+            provider.loadedChunks.put(ChunkPos.asLong(x, z), chunk);
         }
 
         chunk.onLoad();
@@ -445,7 +445,7 @@ public class PhysicsObject implements ISubspaceProvider {
                     Chunk chunk = new Chunk(getWorldObj(), x, z);
                     ChunkProviderServer provider = (ChunkProviderServer) getWorldObj().getChunkProvider();
                     chunk.dirty = true;
-                    provider.id2ChunkMap.put(ChunkPos.asLong(x, z), chunk);
+                    provider.loadedChunks.put(ChunkPos.asLong(x, z), chunk);
                 }
             }
         }
@@ -618,7 +618,7 @@ public class PhysicsObject implements ISubspaceProvider {
             for (int z = getOwnedChunks().getMinZ(); z <= getOwnedChunks().getMaxZ(); z++) {
                 // Added try catch to prevent ships deleting themselves because of a failed tile entity load.
                 try {
-                    Chunk chunk = getWorldObj().getChunkFromChunkCoords(x, z);
+                    Chunk chunk = getWorldObj().getChunk(x, z);
                     if (chunk == null) {
                         System.out.println("Just a loaded a null chunk");
                         chunk = new Chunk(getWorldObj(), x, z);

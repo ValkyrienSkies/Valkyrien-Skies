@@ -33,10 +33,11 @@ public class GibsAnimationRegistry {
             IAtomAnimationBuilder animationBuilder = new BasicAtomAnimationBuilder(dataParser);
             // Then register all the models associated with this animation
             Set<String> modelsUsed = animationBuilder.getModelObjsUsed();
-            String resourceDomainName = location.getResourceDomain();
+            String resourceDomainName = location.getNamespace();
 
             String modelResourceFolder = "";
-            String[] temp = location.getResourcePath().split("/");
+            String[] temp = location.getPath()
+                    .split("/");
             for (int i = 1; i < temp.length - 1; i++) {
                 modelResourceFolder += temp[i] + "/";
             }

@@ -30,7 +30,7 @@ public class BlockGiantPropellerPart extends Block implements ITileEntityProvide
         TileEntity tileEntity = world.getTileEntity(pos);
         if (tileEntity instanceof TileEntityGiantPropellerPart) {
             TileEntityGiantPropellerPart tileCompressorPart = (TileEntityGiantPropellerPart) tileEntity;
-            return tileCompressorPart.getForceOutputUnoriented(secondsToApply, PhysicsWrapperEntity.class.cast(shipEntity).getPhysicsObject());
+            return tileCompressorPart.getForceOutputUnoriented(secondsToApply, ((PhysicsWrapperEntity) shipEntity).getPhysicsObject());
         }
         return null;
     }
@@ -44,7 +44,7 @@ public class BlockGiantPropellerPart extends Block implements ITileEntityProvide
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
         TileEntity tile = worldIn.getTileEntity(pos);
         if (tile instanceof TileEntityGiantPropellerPart) {
-            TileEntityGiantPropellerPart.class.cast(tile).dissembleMultiblock();
+            ((TileEntityGiantPropellerPart) tile).dissembleMultiblock();
         }
         super.breakBlock(worldIn, pos, state);
     }
@@ -57,7 +57,7 @@ public class BlockGiantPropellerPart extends Block implements ITileEntityProvide
 
     // Lighting crap
     @Override
-    public BlockRenderLayer getBlockLayer() {
+    public BlockRenderLayer getRenderLayer() {
         return BlockRenderLayer.CUTOUT;
     }
 

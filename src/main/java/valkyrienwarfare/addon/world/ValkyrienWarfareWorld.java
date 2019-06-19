@@ -82,9 +82,18 @@ public class ValkyrienWarfareWorld extends Module {
 
     @Override
     public void registerBlocks(RegistryEvent.Register<Block> event) {
-        ethereumOre = new BlockEthereumOre(Material.ROCK).setHardness(3f).setUnlocalizedName("ethereumore").setRegistryName(getModID(), "ethereumore").setCreativeTab(ValkyrienWarfareMod.vwTab);
-        skydungeon_controller = new BlockSkyTempleController(Material.ROCK).setHardness(10f).setUnlocalizedName("skydungeon_controller").setRegistryName(getModID(), "skydungeon_controller").setCreativeTab(ValkyrienWarfareMod.vwTab);
-        quartz_fence = new BlockQuartzFence(Material.ROCK).setHardness(4f).setUnlocalizedName("quartz_fence").setRegistryName(getModID(), "quartz_fence").setCreativeTab(ValkyrienWarfareMod.vwTab);
+        ethereumOre = new BlockEthereumOre(Material.ROCK).setHardness(3f)
+                .setTranslationKey("ethereumore")
+                .setRegistryName(getModID(), "ethereumore")
+                .setCreativeTab(ValkyrienWarfareMod.vwTab);
+        skydungeon_controller = new BlockSkyTempleController(Material.ROCK).setHardness(10f)
+                .setTranslationKey("skydungeon_controller")
+                .setRegistryName(getModID(), "skydungeon_controller")
+                .setCreativeTab(ValkyrienWarfareMod.vwTab);
+        quartz_fence = new BlockQuartzFence(Material.ROCK).setHardness(4f)
+                .setTranslationKey("quartz_fence")
+                .setRegistryName(getModID(), "quartz_fence")
+                .setCreativeTab(ValkyrienWarfareMod.vwTab);
 
         event.getRegistry().register(ethereumOre);
         event.getRegistry().register(skydungeon_controller);
@@ -93,7 +102,10 @@ public class ValkyrienWarfareWorld extends Module {
 
     @Override
     public void registerItems(RegistryEvent.Register<Item> event) {
-        ethereumCrystal = new ItemEthereumCrystal().setUnlocalizedName("ethereumcrystal").setRegistryName(getModID(), "ethereumcrystal").setCreativeTab(ValkyrienWarfareMod.vwTab).setMaxStackSize(16);
+        ethereumCrystal = new ItemEthereumCrystal().setTranslationKey("ethereumcrystal")
+                .setRegistryName(getModID(), "ethereumcrystal")
+                .setCreativeTab(ValkyrienWarfareMod.vwTab)
+                .setMaxStackSize(16);
 
         event.getRegistry().register(ethereumCrystal);
 

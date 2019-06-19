@@ -348,7 +348,7 @@ public abstract class EntityMountingWeaponBase extends Entity implements IEntity
 
     @Override
     protected void readEntityFromNBT(NBTTagCompound tagCompund) {
-        facing = EnumFacing.getHorizontal(tagCompund.getInteger("facingOrdinal"));
+        facing = EnumFacing.byHorizontalIndex(tagCompund.getInteger("facingOrdinal"));
     }
 
     @Override
@@ -364,7 +364,7 @@ public abstract class EntityMountingWeaponBase extends Entity implements IEntity
 
     @Override
     public void readSpawnData(ByteBuf additionalData) {
-        facing = EnumFacing.getHorizontal(additionalData.readInt());
+        facing = EnumFacing.byHorizontalIndex(additionalData.readInt());
     }
 
 }

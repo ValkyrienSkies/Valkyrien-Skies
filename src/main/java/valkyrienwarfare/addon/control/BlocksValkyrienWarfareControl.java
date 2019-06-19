@@ -21,7 +21,22 @@ import net.minecraft.block.material.Material;
 import net.minecraft.item.Item;
 import net.minecraftforge.event.RegistryEvent;
 import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.addon.control.block.*;
+import valkyrienwarfare.addon.control.block.BlockDopedEthereum;
+import valkyrienwarfare.addon.control.block.BlockGearbox;
+import valkyrienwarfare.addon.control.block.BlockGyroscopeDampener;
+import valkyrienwarfare.addon.control.block.BlockGyroscopeStabilizer;
+import valkyrienwarfare.addon.control.block.BlockLiftControl;
+import valkyrienwarfare.addon.control.block.BlockLiftValve;
+import valkyrienwarfare.addon.control.block.BlockNetworkDisplay;
+import valkyrienwarfare.addon.control.block.BlockRotationTrainAxle;
+import valkyrienwarfare.addon.control.block.BlockShipHelm;
+import valkyrienwarfare.addon.control.block.BlockShipPassengerChair;
+import valkyrienwarfare.addon.control.block.BlockShipPilotsChair;
+import valkyrienwarfare.addon.control.block.BlockShipTelegraph;
+import valkyrienwarfare.addon.control.block.BlockShipWheel;
+import valkyrienwarfare.addon.control.block.BlockTelegraphDummy;
+import valkyrienwarfare.addon.control.block.BlockThrustModulator;
+import valkyrienwarfare.addon.control.block.BlockThrustRelay;
 import valkyrienwarfare.addon.control.block.engine.BlockNormalEngine;
 import valkyrienwarfare.addon.control.block.engine.BlockRedstoneEngine;
 import valkyrienwarfare.addon.control.block.multiblocks.BlockEtherCompressorPart;
@@ -62,41 +77,111 @@ public class BlocksValkyrienWarfareControl {
     public BlocksValkyrienWarfareControl(ValkyrienWarfareControl mod_vwcontrol) {
         this.mod_vwcontrol = mod_vwcontrol;
 
-        basicEngine = (BlockNormalEngine) new BlockNormalEngine(Material.WOOD, 2000).setHardness(5f).setUnlocalizedName("basicengine").setRegistryName(getModID(), "basicengine").setCreativeTab(ValkyrienWarfareMod.vwTab);
-        advancedEngine = (BlockNormalEngine) new BlockNormalEngine(Material.ROCK, 2500).setHardness(6f).setUnlocalizedName("advancedengine").setRegistryName(getModID(), "advancedengine").setCreativeTab(ValkyrienWarfareMod.vwTab);
-        eliteEngine = (BlockNormalEngine) new BlockNormalEngine(Material.IRON, 5000).setHardness(8f).setUnlocalizedName("eliteengine").setRegistryName(getModID(), "eliteengine").setCreativeTab(ValkyrienWarfareMod.vwTab);
-        ultimateEngine = (BlockNormalEngine) new BlockNormalEngine(Material.GROUND, 10000).setHardness(10f).setUnlocalizedName("ultimateengine").setRegistryName(getModID(), "ultimateengine").setCreativeTab(ValkyrienWarfareMod.vwTab);
-        redstoneEngine = (BlockRedstoneEngine) new BlockRedstoneEngine(Material.REDSTONE_LIGHT, 500).setHardness(7.0f).setUnlocalizedName("redstoneengine").setRegistryName(getModID(), "redstoneengine").setCreativeTab(ValkyrienWarfareMod.vwTab);
+        basicEngine = (BlockNormalEngine) new BlockNormalEngine(Material.WOOD, 2000).setHardness(5f)
+                .setTranslationKey("basicengine")
+                .setRegistryName(getModID(), "basicengine")
+                .setCreativeTab(ValkyrienWarfareMod.vwTab);
+        advancedEngine = (BlockNormalEngine) new BlockNormalEngine(Material.ROCK, 2500).setHardness(6f)
+                .setTranslationKey("advancedengine")
+                .setRegistryName(getModID(), "advancedengine")
+                .setCreativeTab(ValkyrienWarfareMod.vwTab);
+        eliteEngine = (BlockNormalEngine) new BlockNormalEngine(Material.IRON, 5000).setHardness(8f)
+                .setTranslationKey("eliteengine")
+                .setRegistryName(getModID(), "eliteengine")
+                .setCreativeTab(ValkyrienWarfareMod.vwTab);
+        ultimateEngine = (BlockNormalEngine) new BlockNormalEngine(Material.GROUND, 10000).setHardness(10f)
+                .setTranslationKey("ultimateengine")
+                .setRegistryName(getModID(), "ultimateengine")
+                .setCreativeTab(ValkyrienWarfareMod.vwTab);
+        redstoneEngine = (BlockRedstoneEngine) new BlockRedstoneEngine(Material.REDSTONE_LIGHT, 500).setHardness(7.0f)
+                .setTranslationKey("redstoneengine")
+                .setRegistryName(getModID(), "redstoneengine")
+                .setCreativeTab(ValkyrienWarfareMod.vwTab);
 
-        dopedEthereum = new BlockDopedEthereum(Material.GLASS).setHardness(4f).setUnlocalizedName("dopedethereum").setRegistryName(getModID(), "dopedethereum").setCreativeTab(ValkyrienWarfareMod.vwTab);
-        pilotsChair = new BlockShipPilotsChair(Material.IRON).setHardness(4f).setUnlocalizedName("shippilotschair").setRegistryName(getModID(), "shippilotschair").setCreativeTab(ValkyrienWarfareMod.vwTab);
+        dopedEthereum = new BlockDopedEthereum(Material.GLASS).setHardness(4f)
+                .setTranslationKey("dopedethereum")
+                .setRegistryName(getModID(), "dopedethereum")
+                .setCreativeTab(ValkyrienWarfareMod.vwTab);
+        pilotsChair = new BlockShipPilotsChair(Material.IRON).setHardness(4f)
+                .setTranslationKey("shippilotschair")
+                .setRegistryName(getModID(), "shippilotschair")
+                .setCreativeTab(ValkyrienWarfareMod.vwTab);
 
-        passengerChair = new BlockShipPassengerChair(Material.IRON).setHardness(4f).setUnlocalizedName("shippassengerchair").setRegistryName(getModID(), "shippassengerchair").setCreativeTab(ValkyrienWarfareMod.vwTab);
-        shipHelm = new BlockShipHelm(Material.WOOD).setHardness(4f).setUnlocalizedName("shiphelm").setRegistryName(getModID(), "shiphelm").setCreativeTab(ValkyrienWarfareMod.vwTab);
-        shipWheel = new BlockShipWheel(Material.WOOD).setHardness(5f).setUnlocalizedName("shiphelmwheel").setRegistryName(getModID(), "shiphelmwheel");
-        shipTelegraph = new BlockShipTelegraph(Material.WOOD).setHardness(5f).setUnlocalizedName("shiptelegraph").setRegistryName(getModID(), "shiptelegraph").setCreativeTab(ValkyrienWarfareMod.vwTab);
+        passengerChair = new BlockShipPassengerChair(Material.IRON).setHardness(4f)
+                .setTranslationKey("shippassengerchair")
+                .setRegistryName(getModID(), "shippassengerchair")
+                .setCreativeTab(ValkyrienWarfareMod.vwTab);
+        shipHelm = new BlockShipHelm(Material.WOOD).setHardness(4f)
+                .setTranslationKey("shiphelm")
+                .setRegistryName(getModID(), "shiphelm")
+                .setCreativeTab(ValkyrienWarfareMod.vwTab);
+        shipWheel = new BlockShipWheel(Material.WOOD).setHardness(5f)
+                .setTranslationKey("shiphelmwheel")
+                .setRegistryName(getModID(), "shiphelmwheel");
+        shipTelegraph = new BlockShipTelegraph(Material.WOOD).setHardness(5f)
+                .setTranslationKey("shiptelegraph")
+                .setRegistryName(getModID(), "shiptelegraph")
+                .setCreativeTab(ValkyrienWarfareMod.vwTab);
 
-        thrustRelay = new BlockThrustRelay(Material.IRON).setHardness(5f).setUnlocalizedName("thrustrelay").setRegistryName(getModID(), "thrustrelay").setCreativeTab(ValkyrienWarfareMod.vwTab);
-        thrustModulator = new BlockThrustModulator(Material.IRON).setHardness(8f).setUnlocalizedName("thrustmodulator").setRegistryName(getModID(), "thrustmodulator").setCreativeTab(ValkyrienWarfareMod.vwTab);
+        thrustRelay = new BlockThrustRelay(Material.IRON).setHardness(5f)
+                .setTranslationKey("thrustrelay")
+                .setRegistryName(getModID(), "thrustrelay")
+                .setCreativeTab(ValkyrienWarfareMod.vwTab);
+        thrustModulator = new BlockThrustModulator(Material.IRON).setHardness(8f)
+                .setTranslationKey("thrustmodulator")
+                .setRegistryName(getModID(), "thrustmodulator")
+                .setCreativeTab(ValkyrienWarfareMod.vwTab);
 
-        gyroscopeStabilizer = new BlockGyroscopeStabilizer(Material.IRON).setHardness(5f).setUnlocalizedName("vw_gyroscope_stabilizer").setRegistryName(getModID(), "vw_gyroscope_stabilizer").setCreativeTab(ValkyrienWarfareMod.vwTab);
+        gyroscopeStabilizer = new BlockGyroscopeStabilizer(Material.IRON).setHardness(5f)
+                .setTranslationKey("vw_gyroscope_stabilizer")
+                .setRegistryName(getModID(), "vw_gyroscope_stabilizer")
+                .setCreativeTab(ValkyrienWarfareMod.vwTab);
 
-        liftValve = new BlockLiftValve(Material.IRON).setHardness(7f).setUnlocalizedName("vw_liftvalve").setRegistryName(getModID(), "vw_liftvalve").setCreativeTab(ValkyrienWarfareMod.vwTab);
-        networkDisplay = new BlockNetworkDisplay(Material.IRON).setHardness(5f).setUnlocalizedName("vw_networkdisplay").setRegistryName(getModID(), "vw_networkdisplay").setCreativeTab(ValkyrienWarfareMod.vwTab);
-        liftControl = new BlockLiftControl(Material.IRON).setHardness(5f).setUnlocalizedName("vw_liftcontrol").setRegistryName(getModID(), "vw_liftcontrol").setCreativeTab(ValkyrienWarfareMod.vwTab);
+        liftValve = new BlockLiftValve(Material.IRON).setHardness(7f)
+                .setTranslationKey("vw_liftvalve")
+                .setRegistryName(getModID(), "vw_liftvalve")
+                .setCreativeTab(ValkyrienWarfareMod.vwTab);
+        networkDisplay = new BlockNetworkDisplay(Material.IRON).setHardness(5f)
+                .setTranslationKey("vw_networkdisplay")
+                .setRegistryName(getModID(), "vw_networkdisplay")
+                .setCreativeTab(ValkyrienWarfareMod.vwTab);
+        liftControl = new BlockLiftControl(Material.IRON).setHardness(5f)
+                .setTranslationKey("vw_liftcontrol")
+                .setRegistryName(getModID(), "vw_liftcontrol")
+                .setCreativeTab(ValkyrienWarfareMod.vwTab);
 
-        etherCompressorPanel = new BlockEtherCompressorPart(Material.IRON).setHardness(6f).setUnlocalizedName("vw_ethercompressorpanel").setRegistryName(getModID(), "vw_ethercompressorpanel").setCreativeTab(ValkyrienWarfareMod.vwTab);
+        etherCompressorPanel = new BlockEtherCompressorPart(Material.IRON).setHardness(6f)
+                .setTranslationKey("vw_ethercompressorpanel")
+                .setRegistryName(getModID(), "vw_ethercompressorpanel")
+                .setCreativeTab(ValkyrienWarfareMod.vwTab);
 
-        gyroscopeDampener = new BlockGyroscopeDampener(Material.IRON).setHardness(6f).setUnlocalizedName("vw_gyroscope_dampener").setRegistryName(getModID(), "vw_gyroscope_dampener").setCreativeTab(ValkyrienWarfareMod.vwTab);
-        ethereumEnginePart = new BlockEthereumEnginePart(Material.IRON).setHardness(6f).setUnlocalizedName("vw_ethereum_enginepart").setRegistryName(getModID(), "vw_ethereum_enginepart").setCreativeTab(ValkyrienWarfareMod.vwTab);
-        gearbox = new BlockGearbox(Material.IRON).setHardness(6f).setUnlocalizedName("vw_gearbox").setRegistryName(getModID(), "vw_gearbox").setCreativeTab(ValkyrienWarfareMod.vwTab);
-        shipTelegraphDummy = new BlockTelegraphDummy(Material.WOOD).setHardness(5f).setUnlocalizedName("shiptelegraph_dummy").setRegistryName(getModID(), "shiptelegraph_dummy");
-        rudderAxelPart = new BlockRudderAxlePart(Material.IRON).setHardness(5f).setUnlocalizedName("vw_rudder_axle_part").setRegistryName(getModID(), "vw_rudder_axle_part").setCreativeTab(ValkyrienWarfareMod.vwTab);
-        ;
-        giantPropellerPart = new BlockGiantPropellerPart(Material.IRON).setHardness(5f).setUnlocalizedName("vw_giant_propeller_part").setRegistryName(getModID(), "vw_giant_propeller_part").setCreativeTab(ValkyrienWarfareMod.vwTab);
-        ;
-        rotationTrainAxle = new BlockRotationTrainAxle(Material.IRON).setHardness(5f).setUnlocalizedName("vw_block_rotation_train_axle").setRegistryName(getModID(), "vw_block_rotation_train_axle").setCreativeTab(ValkyrienWarfareMod.vwTab);
-        ;
+        gyroscopeDampener = new BlockGyroscopeDampener(Material.IRON).setHardness(6f)
+                .setTranslationKey("vw_gyroscope_dampener")
+                .setRegistryName(getModID(), "vw_gyroscope_dampener")
+                .setCreativeTab(ValkyrienWarfareMod.vwTab);
+        ethereumEnginePart = new BlockEthereumEnginePart(Material.IRON).setHardness(6f)
+                .setTranslationKey("vw_ethereum_enginepart")
+                .setRegistryName(getModID(), "vw_ethereum_enginepart")
+                .setCreativeTab(ValkyrienWarfareMod.vwTab);
+        gearbox = new BlockGearbox(Material.IRON).setHardness(6f)
+                .setTranslationKey("vw_gearbox")
+                .setRegistryName(getModID(), "vw_gearbox")
+                .setCreativeTab(ValkyrienWarfareMod.vwTab);
+        shipTelegraphDummy = new BlockTelegraphDummy(Material.WOOD).setHardness(5f)
+                .setTranslationKey("shiptelegraph_dummy")
+                .setRegistryName(getModID(), "shiptelegraph_dummy");
+        rudderAxelPart = new BlockRudderAxlePart(Material.IRON).setHardness(5f)
+                .setTranslationKey("vw_rudder_axle_part")
+                .setRegistryName(getModID(), "vw_rudder_axle_part")
+                .setCreativeTab(ValkyrienWarfareMod.vwTab);
+        giantPropellerPart = new BlockGiantPropellerPart(Material.IRON).setHardness(5f)
+                .setTranslationKey("vw_giant_propeller_part")
+                .setRegistryName(getModID(), "vw_giant_propeller_part")
+                .setCreativeTab(ValkyrienWarfareMod.vwTab);
+        rotationTrainAxle = new BlockRotationTrainAxle(Material.IRON).setHardness(5f)
+                .setTranslationKey("vw_block_rotation_train_axle")
+                .setRegistryName(getModID(), "vw_block_rotation_train_axle")
+                .setCreativeTab(ValkyrienWarfareMod.vwTab);
     }
 
     protected void registerBlocks(RegistryEvent.Register<Block> event) {

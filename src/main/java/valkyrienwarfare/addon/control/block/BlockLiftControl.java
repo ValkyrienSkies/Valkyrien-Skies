@@ -2,7 +2,6 @@ package valkyrienwarfare.addon.control.block;
 
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
@@ -30,12 +29,12 @@ public class BlockLiftControl extends BlockPilotableBasic {
 
     @Override
     protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, new IProperty[]{BlockHorizontal.FACING});
+        return new BlockStateContainer(this, BlockHorizontal.FACING);
     }
 
     @Override
     public IBlockState getStateFromMeta(int meta) {
-        EnumFacing enumfacing = EnumFacing.getFront(meta);
+        EnumFacing enumfacing = EnumFacing.byIndex(meta);
         if (enumfacing.getAxis() == EnumFacing.Axis.Y) {
             enumfacing = EnumFacing.NORTH;
         }
@@ -44,12 +43,13 @@ public class BlockLiftControl extends BlockPilotableBasic {
 
     @Override
     public int getMetaFromState(IBlockState state) {
-        int i = ((EnumFacing) state.getValue(BlockHorizontal.FACING)).getIndex();
+        int i = state.getValue(BlockHorizontal.FACING)
+                .getIndex();
         return i;
     }
 
     @Override
-    public BlockRenderLayer getBlockLayer() {
+    public BlockRenderLayer getRenderLayer() {
         return BlockRenderLayer.CUTOUT;
     }
 

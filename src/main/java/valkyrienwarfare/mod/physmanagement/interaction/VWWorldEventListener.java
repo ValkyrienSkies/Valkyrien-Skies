@@ -43,7 +43,7 @@ public class VWWorldEventListener implements IWorldEventListener {
 
     @Override
     public void notifyBlockUpdate(World worldIn, BlockPos pos, IBlockState oldState, IBlockState newState, int flags) {
-        Chunk chunk = worldIn.getChunkFromBlockCoords(pos);
+        Chunk chunk = worldIn.getChunk(pos);
         IPhysicsChunk physicsChunk = (IPhysicsChunk) chunk;
         if (physicsChunk.getPhysicsObjectOptional()
                 .isPresent()) {

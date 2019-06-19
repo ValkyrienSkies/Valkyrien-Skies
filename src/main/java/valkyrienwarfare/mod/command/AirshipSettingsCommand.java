@@ -48,7 +48,7 @@ public class AirshipSettingsCommand extends CommandBase {
     public static RayTraceResult rayTraceBothSides(EntityPlayer player, double blockReachDistance, float partialTicks) {
         Vec3d vec3d = new Vec3d(player.posX, player.posY + player.getEyeHeight(), player.posZ);
         Vec3d vec3d1 = player.getLook(partialTicks);
-        Vec3d vec3d2 = vec3d.addVector(vec3d1.x * blockReachDistance, vec3d1.y * blockReachDistance, vec3d1.z * blockReachDistance);
+        Vec3d vec3d2 = vec3d.add(vec3d1.x * blockReachDistance, vec3d1.y * blockReachDistance, vec3d1.z * blockReachDistance);
         return player.world.rayTraceBlocks(vec3d, vec3d2, false, false, true);
     }
 

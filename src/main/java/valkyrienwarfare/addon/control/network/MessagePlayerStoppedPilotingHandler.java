@@ -29,10 +29,8 @@ public class MessagePlayerStoppedPilotingHandler implements IMessageHandler<Mess
 
     @Override
     public IMessage onMessage(MessagePlayerStoppedPiloting message, MessageContext ctx) {
-        IThreadListener mainThread = ctx.getServerHandler().serverController;
-        mainThread.addScheduledTask(new Runnable() {
-            @Override
-            public void run() {
+        IThreadListener mainThread = ctx.getServerHandler().server;
+        mainThread.addScheduledTask(() -> {
                 BlockPos pos = message.posToStopPiloting;
                 EntityPlayerMP player = ctx.getServerHandler().player;
 
@@ -42,7 +40,7 @@ public class MessagePlayerStoppedPilotingHandler implements IMessageHandler<Mess
                     ((ITileEntityPilotable) tileEntity).playerWantsToStopPiloting(player);
                 }
             }
-        });
+        );
         return null;
     }
 

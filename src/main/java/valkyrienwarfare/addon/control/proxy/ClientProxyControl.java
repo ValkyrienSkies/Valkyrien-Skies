@@ -59,12 +59,18 @@ public class ClientProxyControl extends CommonProxyControl {
 
     private static void registerBlockItem(Block toRegister) {
         Item item = Item.getItemFromBlock(toRegister);
-        Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(item, 0, new ModelResourceLocation(ValkyrienWarfareControl.INSTANCE.getModID() + ":" + item.getUnlocalizedName().substring(5), "inventory"));
+        Minecraft.getMinecraft()
+                .getRenderItem()
+                .getItemModelMesher()
+                .register(item, 0, new ModelResourceLocation(ValkyrienWarfareControl.INSTANCE.getModID() + ":" + item.getTranslationKey()
+                        .substring(5), "inventory"));
     }
 
     private static void registerItemModel(Item toRegister) {
         RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
-        renderItem.getItemModelMesher().register(toRegister, 0, new ModelResourceLocation(ValkyrienWarfareControl.INSTANCE.getModID() + ":" + toRegister.getUnlocalizedName().substring(5), "inventory"));
+        renderItem.getItemModelMesher()
+                .register(toRegister, 0, new ModelResourceLocation(ValkyrienWarfareControl.INSTANCE.getModID() + ":" + toRegister.getTranslationKey()
+                        .substring(5), "inventory"));
     }
 
     private static void registerBlockItemModels() {

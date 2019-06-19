@@ -25,7 +25,7 @@ public class SubspacedEntityRecordHandler implements IMessageHandler<SubspacedEn
             world = getClientWorld();
         } else {
             // Otherwise we are receiving this on the server
-            threadScheduler = ctx.getServerHandler().serverController;
+            threadScheduler = ctx.getServerHandler().server;
             world = ctx.getServerHandler().player.world;
         }
         final World worldFinal = world;
@@ -35,8 +35,9 @@ public class SubspacedEntityRecordHandler implements IMessageHandler<SubspacedEn
             if (physicsEntity != null && subspacedEntity != null) {
                 PhysicsWrapperEntity wrapperEntity = (PhysicsWrapperEntity) physicsEntity;
                 ISubspacedEntityRecord record = message.createRecordForThisMessage(
-                        ISubspacedEntity.class.cast(subspacedEntity), wrapperEntity.getPhysicsObject().getSubspace());
-                IDraggable draggable = IDraggable.class.cast(subspacedEntity);
+                        (ISubspacedEntity) subspacedEntity, wrapperEntity.getPhysicsObject()
+                                .getSubspace());
+                IDraggable draggable = (IDraggable) subspacedEntity;
                 draggable.setForcedRelativeSubspace(wrapperEntity);
                 wrapperEntity.getPhysicsObject().getSubspace().forceSubspaceRecord(record.getParentEntity(), record);
                 // Now just synchronize the player to the data sent by the client.

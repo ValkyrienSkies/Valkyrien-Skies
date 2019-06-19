@@ -31,7 +31,7 @@ public class BlockRudderAxlePart extends Block implements ITileEntityProvider, I
     }
 
     @Override
-    public BlockRenderLayer getBlockLayer() {
+    public BlockRenderLayer getRenderLayer() {
         return BlockRenderLayer.CUTOUT;
     }
 
@@ -49,7 +49,7 @@ public class BlockRudderAxlePart extends Block implements ITileEntityProvider, I
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
         TileEntity tile = worldIn.getTileEntity(pos);
         if (tile instanceof TileEntityRudderAxlePart) {
-            TileEntityRudderAxlePart.class.cast(tile).dissembleMultiblock();
+            ((TileEntityRudderAxlePart) tile).dissembleMultiblock();
         }
         super.breakBlock(worldIn, pos, state);
     }

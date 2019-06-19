@@ -114,7 +114,7 @@ public class GibsModelRegistry {
             FastBlockModelRenderer.VERTEX_BUILDER.setVertexState(bufferState);
 
             // This code adjusts the brightness of the model rendered.
-            int j = FastBlockModelRenderer.VERTEX_BUILDER.vertexFormat.getNextOffset() >> 2;
+            int j = FastBlockModelRenderer.VERTEX_BUILDER.vertexFormat.getSize() >> 2;
             int cont = FastBlockModelRenderer.VERTEX_BUILDER.getVertexCount();
             int offsetUV = FastBlockModelRenderer.VERTEX_BUILDER.vertexFormat.getUvOffsetById(1) / 4;
             int bufferNextSize = FastBlockModelRenderer.VERTEX_BUILDER.vertexFormat.getIntegerSize();

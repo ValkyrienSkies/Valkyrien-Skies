@@ -118,7 +118,7 @@ public class BlockMass {
         if (block instanceof BlockLiquid) {
             return 0D;
         }
-        Material material = block.blockMaterial;
+        Material material = block.material;
 
         return getMassFromMaterial(material);
     }

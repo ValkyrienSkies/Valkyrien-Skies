@@ -1,9 +1,10 @@
 package valkyrienwarfare.deprecated_api;
 
-import jline.internal.Nullable;
 import net.minecraft.util.math.BlockPos;
 import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.physics.PhysicsCalculations;
+
+import javax.annotation.Nullable;
 
 public interface IBlockTorqueProvider extends Comparable<IBlockTorqueProvider> {
 

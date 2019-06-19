@@ -75,7 +75,7 @@ public class ClientProxy extends CommonProxy {
         Minecraft.getMinecraft()
                 .getRenderItem()
                 .getItemModelMesher()
-                .register(item, 0, new ModelResourceLocation(ValkyrienWarfareMod.MODID + ":" + item.getUnlocalizedName()
+                .register(item, 0, new ModelResourceLocation(ValkyrienWarfareMod.MODID + ":" + item.getTranslationKey()
                         .substring(5), "inventory"));
     }
 
@@ -98,7 +98,7 @@ public class ClientProxy extends CommonProxy {
         RenderItem renderItem = Minecraft.getMinecraft()
                 .getRenderItem();
         renderItem.getItemModelMesher()
-                .register(toRegister, 0, new ModelResourceLocation(ValkyrienWarfareMod.MODID + ":" + toRegister.getUnlocalizedName()
+                .register(toRegister, 0, new ModelResourceLocation(ValkyrienWarfareMod.MODID + ":" + toRegister.getTranslationKey()
                         .substring(5), "inventory"));
     }
 

@@ -145,7 +145,7 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
     protected abstract boolean isChunkLoaded(int x, int z, boolean allowEmpty);
 
     @Shadow
-    public abstract Chunk getChunkFromChunkCoords(int chunkX, int chunkZ);
+    public abstract Chunk getChunk(int chunkX, int chunkZ);
 
     public <T extends Entity> List<T> getEntitiesWithinAABBOriginal(Class<? extends T> clazz, AxisAlignedBB aabb,
                                                                     @Nullable Predicate<? super T> filter) {
@@ -158,7 +158,8 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
         for (int i1 = i; i1 < j; ++i1) {
             for (int j1 = k; j1 < l; ++j1) {
                 if (this.isChunkLoaded(i1, j1, true)) {
-                    this.getChunkFromChunkCoords(i1, j1).getEntitiesOfTypeWithinAABB(clazz, aabb, list, filter);
+                    this.getChunk(i1, j1)
+                            .getEntitiesOfTypeWithinAABB(clazz, aabb, list, filter);
                 }
             }
         }
@@ -181,7 +182,8 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
         for (int i1 = i; i1 <= j; ++i1) {
             for (int j1 = k; j1 <= l; ++j1) {
                 if (this.isChunkLoaded(i1, j1, true)) {
-                    this.getChunkFromChunkCoords(i1, j1).getEntitiesWithinAABBForEntity(entityIn, boundingBox, list,
+                    this.getChunk(i1, j1)
+                            .getEntitiesWithinAABBForEntity(entityIn, boundingBox, list,
                             predicate);
                 }
             }
@@ -331,7 +333,7 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
         // Get rid of the Ship that we're not supposed to be RayTracing for
         nearbyShips.remove(toIgnore);
 
-        double reachDistance = playerReachVector.lengthVector();
+        double reachDistance = playerReachVector.length();
         double worldResultDistFromPlayer = 420000000D;
         if (vanillaTrace != null && vanillaTrace.hitVec != null) {
             worldResultDistFromPlayer = vanillaTrace.hitVec.distanceTo(vec31);
@@ -352,7 +354,7 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
             playerReachVector = wrapper.getPhysicsObject().getShipTransformationManager().getRenderTransform().rotate(playerReachVector,
                     TransformType.GLOBAL_TO_SUBSPACE);
 
-            Vec3d playerEyesReachAdded = playerEyesPos.addVector(playerReachVector.x * reachDistance,
+            Vec3d playerEyesReachAdded = playerEyesPos.add(playerReachVector.x * reachDistance,
                     playerReachVector.y * reachDistance, playerReachVector.z * reachDistance);
             RayTraceResult resultInShip = thisClassAsWorld.rayTraceBlocks(playerEyesPos, playerEyesReachAdded,
                     stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);

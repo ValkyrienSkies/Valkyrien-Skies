@@ -60,7 +60,10 @@ public class ValkyrienWarfareHelp extends Module {
 
     @Override
     public void registerItems(RegistryEvent.Register<Item> event) {
-        this.manual = new ItemManual().setUnlocalizedName("manual").setRegistryName(getModID(), "manual").setCreativeTab(ValkyrienWarfareMod.vwTab).setMaxStackSize(1);
+        this.manual = new ItemManual().setTranslationKey("manual")
+                .setRegistryName(getModID(), "manual")
+                .setCreativeTab(ValkyrienWarfareMod.vwTab)
+                .setMaxStackSize(1);
 
         event.getRegistry().register(this.manual);
     }

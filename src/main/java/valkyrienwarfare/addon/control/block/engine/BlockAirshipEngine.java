@@ -60,7 +60,8 @@ public abstract class BlockAirshipEngine extends Block implements IBlockForcePro
 
     @Override
     public IBlockState getStateFromMeta(int meta) {
-        return getDefaultState().withProperty(FACING, EnumFacing.getFront(meta));
+        // &7 to remove any higher bits
+        return getDefaultState().withProperty(FACING, EnumFacing.byIndex(meta & 7));
     }
 
     @Override
@@ -113,7 +114,7 @@ public abstract class BlockAirshipEngine extends Block implements IBlockForcePro
     }
 
     @Override
-    public BlockRenderLayer getBlockLayer() {
+    public BlockRenderLayer getRenderLayer() {
         return BlockRenderLayer.CUTOUT;
     }
 

@@ -70,10 +70,22 @@ public class ValkyrienWarfareCombat extends Module {
 
     @Override
     public void registerItems(RegistryEvent.Register<Item> event) {
-        basicCannonSpawner = new ItemBasicCannon().setUnlocalizedName("basiccannonspawner").setRegistryName(getModID(), "basiccannonspawner").setCreativeTab(ValkyrienWarfareMod.vwTab).setMaxStackSize(4);
-        cannonBall = new ItemCannonBall().setUnlocalizedName("turretcannonball").setRegistryName(getModID(), "turretcannonball").setCreativeTab(ValkyrienWarfareMod.vwTab).setMaxStackSize(32);
-        powderPouch = new ItemPowderPouch().setUnlocalizedName("powderpouch").setRegistryName(getModID(), "powderpouch").setCreativeTab(ValkyrienWarfareMod.vwTab).setMaxStackSize(32);
-        explosiveArrow = new ItemExplosiveArrow().setUnlocalizedName("explosivearrow").setRegistryName(getModID(), "explosivearrow").setCreativeTab(ValkyrienWarfareMod.vwTab).setMaxStackSize(64);
+        basicCannonSpawner = new ItemBasicCannon().setTranslationKey("basiccannonspawner")
+                .setRegistryName(getModID(), "basiccannonspawner")
+                .setCreativeTab(ValkyrienWarfareMod.vwTab)
+                .setMaxStackSize(4);
+        cannonBall = new ItemCannonBall().setTranslationKey("turretcannonball")
+                .setRegistryName(getModID(), "turretcannonball")
+                .setCreativeTab(ValkyrienWarfareMod.vwTab)
+                .setMaxStackSize(32);
+        powderPouch = new ItemPowderPouch().setTranslationKey("powderpouch")
+                .setRegistryName(getModID(), "powderpouch")
+                .setCreativeTab(ValkyrienWarfareMod.vwTab)
+                .setMaxStackSize(32);
+        explosiveArrow = new ItemExplosiveArrow().setTranslationKey("explosivearrow")
+                .setRegistryName(getModID(), "explosivearrow")
+                .setCreativeTab(ValkyrienWarfareMod.vwTab)
+                .setMaxStackSize(64);
 
         event.getRegistry().register(basicCannonSpawner);
         event.getRegistry().register(cannonBall);
@@ -91,7 +103,9 @@ public class ValkyrienWarfareCombat extends Module {
 
     @Override
     public void registerBlocks(RegistryEvent.Register<Block> event) {
-        fakecannonblock = new FakeCannonBlock(Material.IRON).setHardness(5f).setUnlocalizedName("fakecannonblock").setRegistryName(getModID(), "fakecannonblock");
+        fakecannonblock = new FakeCannonBlock(Material.IRON).setHardness(5f)
+                .setTranslationKey("fakecannonblock")
+                .setRegistryName(getModID(), "fakecannonblock");
 
         event.getRegistry().register(fakecannonblock);
     }

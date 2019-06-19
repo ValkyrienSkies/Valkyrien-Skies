@@ -30,7 +30,11 @@ public class ClientProxyOC extends CommonProxyOC {
 
     private static void registerBlockItem(Block toRegister) {
         Item item = Item.getItemFromBlock(toRegister);
-        Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(item, 0, new ModelResourceLocation(ValkyrienWarfareOC.INSTANCE.getModID() + ":" + item.getUnlocalizedName().substring(5), "inventory"));
+        Minecraft.getMinecraft()
+                .getRenderItem()
+                .getItemModelMesher()
+                .register(item, 0, new ModelResourceLocation(ValkyrienWarfareOC.INSTANCE.getModID() + ":" + item.getTranslationKey()
+                        .substring(5), "inventory"));
     }
 
     @Override

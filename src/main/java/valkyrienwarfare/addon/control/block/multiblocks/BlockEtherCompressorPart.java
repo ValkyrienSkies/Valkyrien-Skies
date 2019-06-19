@@ -25,7 +25,7 @@ public class BlockEtherCompressorPart extends Block implements ITileEntityProvid
     }
 
     @Override
-    public BlockRenderLayer getBlockLayer() {
+    public BlockRenderLayer getRenderLayer() {
         return BlockRenderLayer.CUTOUT;
     }
 
@@ -50,7 +50,7 @@ public class BlockEtherCompressorPart extends Block implements ITileEntityProvid
         TileEntity tileEntity = world.getTileEntity(pos);
         if (tileEntity instanceof TileEntityEthereumCompressorPart) {
             TileEntityEthereumCompressorPart tileCompressorPart = (TileEntityEthereumCompressorPart) tileEntity;
-            return tileCompressorPart.getForceOutputUnoriented(secondsToApply, PhysicsWrapperEntity.class.cast(shipEntity).getPhysicsObject());
+            return tileCompressorPart.getForceOutputUnoriented(secondsToApply, ((PhysicsWrapperEntity) shipEntity).getPhysicsObject());
         }
         return null;
     }
@@ -59,7 +59,7 @@ public class BlockEtherCompressorPart extends Block implements ITileEntityProvid
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
         TileEntity tile = worldIn.getTileEntity(pos);
         if (tile instanceof TileEntityEthereumCompressorPart) {
-            TileEntityEthereumCompressorPart.class.cast(tile).dissembleMultiblock();
+            ((TileEntityEthereumCompressorPart) tile).dissembleMultiblock();
         }
         super.breakBlock(worldIn, pos, state);
     }

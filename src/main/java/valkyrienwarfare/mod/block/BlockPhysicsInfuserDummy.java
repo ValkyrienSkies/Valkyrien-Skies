@@ -33,7 +33,7 @@ public class BlockPhysicsInfuserDummy extends BlockVWDirectional {
     }
 
     @Override
-    public BlockRenderLayer getBlockLayer() {
+    public BlockRenderLayer getRenderLayer() {
         return BlockRenderLayer.CUTOUT;
     }
 

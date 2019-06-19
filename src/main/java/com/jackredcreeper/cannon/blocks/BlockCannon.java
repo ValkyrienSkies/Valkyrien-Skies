@@ -32,7 +32,11 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.*;
+import net.minecraft.util.EnumBlockRenderType;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.Mirror;
+import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
@@ -51,7 +55,7 @@ public class BlockCannon extends BlockDirectional implements ITileEntityProvider
         setResistance(1);
         setResistance(1);
 
-        setUnlocalizedName(CannonModReference.ModBlocks.CANNON.getUnlocalizedName());
+        setTranslationKey(CannonModReference.ModBlocks.CANNON.getUnlocalizedName());
         setRegistryName(CannonModReference.ModBlocks.CANNON.getRegistryName());
 
         this.setDefaultState(this.blockState.getBaseState().withProperty(LOOKING, EnumFacing.NORTH));
@@ -162,7 +166,8 @@ public class BlockCannon extends BlockDirectional implements ITileEntityProvider
      * Convert the given metadata into a BlockState for this block
      */
     public IBlockState getStateFromMeta(int meta) {
-        return this.getDefaultState().withProperty(LOOKING, EnumFacing.getFront(meta & 7));
+        return this.getDefaultState()
+                .withProperty(LOOKING, EnumFacing.byIndex(meta & 7));
     }
 
     /**

@@ -95,7 +95,7 @@ dependencies {
         exclude module: "launchwrapper"
     }
     // We want to prevent any conflicts with SpongeForge
-    compile("org.spongepowered:spongeforge:1.12.2-2611-7.1.0-BETA-3002:dev")  {
+    compile("org.spongepowered:spongeforge:1.12.2-2768-7.1.6-RC3686:dev")  {
         exclude group: "org.apache.logging.log4j"
     }
     compileOnly "li.cil.oc:OpenComputers:MC1.12.1-1.7.1.+:api"

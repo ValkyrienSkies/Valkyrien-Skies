@@ -87,7 +87,7 @@ public class ItemRelayWire extends Item {
                                 } else {
                                     // Tell the player what they did wrong
                                     player.sendMessage(new TextComponentString(
-                                            "One of the connections is maxed out . Relay Nodes can make 4 connections, all other objects however can only make 1 connection."));
+                                            "One of the connections is maxed out . Relay Nodes can make 8 connections, all other objects however can only make 1 connection."));
                                 }
                                 inst.setLastRelay(null);
                             }

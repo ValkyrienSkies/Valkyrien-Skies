@@ -27,7 +27,7 @@ public class TileEntityNodeRelay extends BasicNodeTileEntity {
 
     @Override
     protected int getMaximumConnections() {
-        return 6;
+        return 8;
     }
 
     // TODO: Not the best solution, but it works for now.

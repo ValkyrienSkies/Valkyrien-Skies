@@ -48,7 +48,7 @@ public class VWChunkCache {
         isChunkLoaded = new boolean[maxChunkX - minChunkX + 1][maxChunkZ - minChunkZ + 1];
         for (int x = minChunkX; x <= maxChunkX; x++) {
             for (int z = minChunkZ; z <= maxChunkZ; z++) {
-                cachedChunks[x - minChunkX][z - minChunkZ] = world.getChunkFromChunkCoords(x, z);
+                cachedChunks[x - minChunkX][z - minChunkZ] = world.getChunk(x, z);
                 isChunkLoaded[x - minChunkX][z - minChunkZ] = !cachedChunks[x - minChunkX][z - minChunkZ].isEmpty();
                 if (!isChunkLoaded[x - minChunkX][z - minChunkZ]) {
                     allLoaded = false;

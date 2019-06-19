@@ -141,8 +141,12 @@ public class ValkyrienWarfareControl extends Module {
 
     @Override
     public void registerItems(RegistryEvent.Register<Item> event) {
-        relayWire = new ItemRelayWire().setUnlocalizedName("relaywire").setRegistryName(getModID(), "relaywire").setCreativeTab(ValkyrienWarfareMod.vwTab);
-        multiblockWrench = new ItemWrench().setUnlocalizedName("vw_wrench").setRegistryName(getModID(), "vw_wrench").setCreativeTab(ValkyrienWarfareMod.vwTab);
+        relayWire = new ItemRelayWire().setTranslationKey("relaywire")
+                .setRegistryName(getModID(), "relaywire")
+                .setCreativeTab(ValkyrienWarfareMod.vwTab);
+        multiblockWrench = new ItemWrench().setTranslationKey("vw_wrench")
+                .setRegistryName(getModID(), "vw_wrench")
+                .setCreativeTab(ValkyrienWarfareMod.vwTab);
 
         event.getRegistry().register(relayWire);
         event.getRegistry().register(multiblockWrench);

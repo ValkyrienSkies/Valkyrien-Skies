@@ -82,7 +82,7 @@ public class TileEntityCannon extends TileEntity {
 
             if (CannonCooldown == CC) {
                 CannonReady = true;
-                worldIn.playSound((EntityPlayer) null, pos, SoundEvents.BLOCK_DISPENSER_DISPENSE, SoundCategory.BLOCKS, 3, 1);
+                worldIn.playSound(null, pos, SoundEvents.BLOCK_DISPENSER_DISPENSE, SoundCategory.BLOCKS, 3, 1);
             } else {
                 CannonCooldown++;
             }
@@ -97,10 +97,10 @@ public class TileEntityCannon extends TileEntity {
     public void firecannon(World worldIn, BlockPos pos, EnumFacing side, IBlockState state) {
 
         //direction
-        EnumFacing enumfacing = (EnumFacing) state.getValue(BlockCannon.LOOKING);
-        double d0 = pos.getX() + 0.5D + (float) enumfacing.getFrontOffsetX();
-        double d1 = pos.getY() + 0.4D + (float) enumfacing.getFrontOffsetY();
-        double d2 = pos.getZ() + 0.5D + (float) enumfacing.getFrontOffsetZ();
+        EnumFacing enumfacing = state.getValue(BlockCannon.LOOKING);
+        double d0 = pos.getX() + 0.5D + (float) enumfacing.getXOffset();
+        double d1 = pos.getY() + 0.4D + (float) enumfacing.getYOffset();
+        double d2 = pos.getZ() + 0.5D + (float) enumfacing.getZOffset();
 
         EntityCannonball entitycannonball = new EntityCannonball(worldIn, d0, d1, d2);
         EntityExplosiveball entityexplosiveball = new EntityExplosiveball(worldIn, d0, d1, d2);
@@ -113,19 +113,19 @@ public class TileEntityCannon extends TileEntity {
 
 
         if (Ammo == 1) {
-            entitycannonball.shoot((double) enumfacing.getFrontOffsetX(), (double) ((float) enumfacing.getFrontOffsetY() + (Angle / 100)), (double) enumfacing.getFrontOffsetZ(), 3, 1);
+            entitycannonball.shoot((double) enumfacing.getXOffset(), (double) ((float) enumfacing.getYOffset() + (Angle / 100)), (double) enumfacing.getZOffset(), 3, 1);
             worldIn.spawnEntity(entitycannonball);
         }
         if (Ammo == 2) {
-            entityexplosiveball.shoot((double) enumfacing.getFrontOffsetX(), (double) ((float) enumfacing.getFrontOffsetY() + (Angle / 100)), (double) enumfacing.getFrontOffsetZ(), 3, 1);
+            entityexplosiveball.shoot((double) enumfacing.getXOffset(), (double) ((float) enumfacing.getYOffset() + (Angle / 100)), (double) enumfacing.getZOffset(), 3, 1);
             worldIn.spawnEntity(entityexplosiveball);
         }
         if (Ammo == 3) {
-            entitygrapeshot5.shoot((double) enumfacing.getFrontOffsetX(), (double) ((float) enumfacing.getFrontOffsetY() + (Angle / 100)), (double) enumfacing.getFrontOffsetZ(), 3, 4.0F);
-            entitygrapeshot4.shoot((double) enumfacing.getFrontOffsetX(), (double) ((float) enumfacing.getFrontOffsetY() + (Angle / 100)), (double) enumfacing.getFrontOffsetZ(), 3, 4.0F);
-            entitygrapeshot3.shoot((double) enumfacing.getFrontOffsetX(), (double) ((float) enumfacing.getFrontOffsetY() + (Angle / 100)), (double) enumfacing.getFrontOffsetZ(), 3, 4.0F);
-            entitygrapeshot2.shoot((double) enumfacing.getFrontOffsetX(), (double) ((float) enumfacing.getFrontOffsetY() + (Angle / 100)), (double) enumfacing.getFrontOffsetZ(), 3, 4.0F);
-            entitygrapeshot1.shoot((double) enumfacing.getFrontOffsetX(), (double) ((float) enumfacing.getFrontOffsetY() + (Angle / 100)), (double) enumfacing.getFrontOffsetZ(), 3, 4.0F);
+            entitygrapeshot5.shoot((double) enumfacing.getXOffset(), (double) ((float) enumfacing.getYOffset() + (Angle / 100)), (double) enumfacing.getZOffset(), 3, 4.0F);
+            entitygrapeshot4.shoot((double) enumfacing.getXOffset(), (double) ((float) enumfacing.getYOffset() + (Angle / 100)), (double) enumfacing.getZOffset(), 3, 4.0F);
+            entitygrapeshot3.shoot((double) enumfacing.getXOffset(), (double) ((float) enumfacing.getYOffset() + (Angle / 100)), (double) enumfacing.getZOffset(), 3, 4.0F);
+            entitygrapeshot2.shoot((double) enumfacing.getXOffset(), (double) ((float) enumfacing.getYOffset() + (Angle / 100)), (double) enumfacing.getZOffset(), 3, 4.0F);
+            entitygrapeshot1.shoot((double) enumfacing.getXOffset(), (double) ((float) enumfacing.getYOffset() + (Angle / 100)), (double) enumfacing.getZOffset(), 3, 4.0F);
             worldIn.spawnEntity(entitygrapeshot1);
             worldIn.spawnEntity(entitygrapeshot2);
             worldIn.spawnEntity(entitygrapeshot3);
@@ -133,12 +133,12 @@ public class TileEntityCannon extends TileEntity {
             worldIn.spawnEntity(entitygrapeshot5);
         }
         if (Ammo == 4) {
-            entitysolidball.shoot((double) enumfacing.getFrontOffsetX(), (double) ((float) enumfacing.getFrontOffsetY() + (Angle / 100)), (double) enumfacing.getFrontOffsetZ(), 2, 1);
+            entitysolidball.shoot((double) enumfacing.getXOffset(), (double) ((float) enumfacing.getYOffset() + (Angle / 100)), (double) enumfacing.getZOffset(), 2, 1);
             worldIn.spawnEntity(entitysolidball);
         }
 
 
-        worldIn.playSound((EntityPlayer) null, pos, SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 2, 1.5F);
+        worldIn.playSound(null, pos, SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 2, 1.5F);
 
         Ammo = 0;
 
@@ -156,7 +156,7 @@ public class TileEntityCannon extends TileEntity {
         if (Angle < -15F) {
             Angle = 15F;
         }
-        playerIn.sendMessage(new TextComponentString("Extra Y velocity = " + Float.toString(Angle / 100)));
+        playerIn.sendMessage(new TextComponentString("Extra Y velocity = " + Angle / 100));
     }
 
     public void setAmmo(ItemStack heldItem) {

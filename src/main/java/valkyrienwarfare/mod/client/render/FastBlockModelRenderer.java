@@ -18,7 +18,11 @@ package valkyrienwarfare.mod.client.render;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.BlockRendererDispatcher;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexBuffer;
@@ -72,7 +76,7 @@ public class FastBlockModelRenderer {
             VERTEX_BUILDER.setVertexState(bufferBuilderState);
 
             // This code adjusts the brightness of the model rendered.
-            int j = VERTEX_BUILDER.vertexFormat.getNextOffset() >> 2;
+            int j = VERTEX_BUILDER.vertexFormat.getSize() >> 2;
             int cont = VERTEX_BUILDER.getVertexCount();
             int offsetUV = VERTEX_BUILDER.vertexFormat.getUvOffsetById(1) / 4;
             int bufferNextSize = VERTEX_BUILDER.vertexFormat.getIntegerSize();
@@ -215,7 +219,7 @@ public class FastBlockModelRenderer {
         tessellator.getBuffer().begin(7, DefaultVertexFormats.BLOCK);
 
         tessellator.getBuffer().setVertexState(data);
-        int j = tessellator.getBuffer().vertexFormat.getNextOffset() >> 2;
+        int j = tessellator.getBuffer().vertexFormat.getSize() >> 2;
         int cont = tessellator.getBuffer().getVertexCount();
         int offsetUV = tessellator.getBuffer().vertexFormat.getUvOffsetById(1) / 4;
         int bufferNextSize = tessellator.getBuffer().vertexFormat.getIntegerSize();

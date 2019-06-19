@@ -183,7 +183,7 @@ public class ValkyrienWarfareMod {
         File toBeReturned;
         try {
             if (FMLCommonHandler.instance().getSide().isClient()) {
-                toBeReturned = Minecraft.getMinecraft().mcDataDir;
+                toBeReturned = Minecraft.getMinecraft().gameDir;
             } else {
                 toBeReturned = FMLCommonHandler.instance().getMinecraftServerInstance().getFile("");
             }
@@ -248,7 +248,7 @@ public class ValkyrienWarfareMod {
     @Mod.EventHandler
     public void onFingerprintViolation(FMLFingerprintViolationEvent event) {
         // Don't crash for signatures if we're in dev environment.
-        if (MixinLoaderForge.isObfuscatedEnvironment) {
+        if (false && MixinLoaderForge.isObfuscatedEnvironment) {
             FMLLog.bigWarning(
                     "Valkyrien Warfare JAR fingerprint corrupted, which means this copy of the mod may have come from unofficial sources. Download the mod from CurseForge: https://minecraft.curseforge.com/projects/valkyrien-warfare");
             FMLCommonHandler.instance().exitJava(123, true);
@@ -423,14 +423,16 @@ public class ValkyrienWarfareMod {
     }
 
     public void registerBlocks(RegistryEvent.Register<Block> event) {
-        physicsInfuser = new BlockPhysicsInfuser(Material.ROCK).setHardness(8f).setUnlocalizedName("shipblock")
+        physicsInfuser = new BlockPhysicsInfuser(Material.ROCK).setHardness(8f)
+                .setTranslationKey("shipblock")
                 .setRegistryName(MODID, "shipblock").setCreativeTab(vwTab);
         physicsInfuserCreative = new BlockPhysicsInfuserCreative(Material.ROCK).setHardness(12f)
-                .setUnlocalizedName("shipblockcreative").setRegistryName(MODID, "shipblockcreative")
+                .setTranslationKey("shipblockcreative")
+                .setRegistryName(MODID, "shipblockcreative")
                 .setCreativeTab(vwTab);
         // Do not put the dummy block into the creative tab
         physicsInfuserDummy = new BlockPhysicsInfuserDummy(Material.ROCK).setHardness(12f)
-                .setUnlocalizedName("physics_infuser_dummy")
+                .setTranslationKey("physics_infuser_dummy")
                 .setRegistryName(MODID, "physics_infuser_dummy");
 
         event.getRegistry().register(physicsInfuser);
@@ -443,7 +445,7 @@ public class ValkyrienWarfareMod {
         Module.registerItemBlock(event, physicsInfuser);
         Module.registerItemBlock(event, physicsInfuserCreative);
 
-        this.physicsCore = new ItemPhysicsCore().setUnlocalizedName("vw_phys_core")
+        this.physicsCore = new ItemPhysicsCore().setTranslationKey("vw_phys_core")
                 .setRegistryName(MODID, "vw_phys_core")
                 .setCreativeTab(ValkyrienWarfareMod.vwTab);
         event.getRegistry()

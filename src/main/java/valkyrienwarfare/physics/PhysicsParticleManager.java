@@ -113,11 +113,12 @@ public class PhysicsParticleManager {
             ChunkProviderServer serverProvider = (ChunkProviderServer) world.getChunkProvider();
             // If the chunk isn't loaded, then no problem ignore it.
             long chunkKey = ChunkPos.asLong(pos.getX() >> 4, pos.getZ() >> 4);
-            if (!serverProvider.id2ChunkMap.containsKey(chunkKey)) {
+            if (!serverProvider.loadedChunks.containsKey(chunkKey)) {
                 this.isParticleDead = true;
                 return true;
             }
-            IBlockState collisionState = serverProvider.id2ChunkMap.get(chunkKey).getBlockState(pos);
+            IBlockState collisionState = serverProvider.loadedChunks.get(chunkKey)
+                    .getBlockState(pos);
             // Otherwise we have to bypass the world blockstate get because sponge has some protection on it.
             // System.out.println("oof");
             return collisionState.getBlock().isPassable(world, pos);

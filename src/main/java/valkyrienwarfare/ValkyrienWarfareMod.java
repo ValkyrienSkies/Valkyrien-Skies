@@ -58,6 +58,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.opencomputers.ValkyrienWarfareOC;
 import valkyrienwarfare.addon.world.ValkyrienWarfareWorld;
+import valkyrienwarfare.api.IPhysicsEntityManager;
 import valkyrienwarfare.api.addons.Module;
 import valkyrienwarfare.api.addons.VWAddon;
 import valkyrienwarfare.deprecated_api.DataTag;
@@ -78,6 +79,7 @@ import valkyrienwarfare.mod.network.PhysWrapperPositionHandler;
 import valkyrienwarfare.mod.network.PhysWrapperPositionMessage;
 import valkyrienwarfare.mod.network.SubspacedEntityRecordHandler;
 import valkyrienwarfare.mod.network.SubspacedEntityRecordMessage;
+import valkyrienwarfare.mod.physmanagement.VW_APIPhysicsEntityManager;
 import valkyrienwarfare.mod.physmanagement.chunk.DimensionPhysicsChunkManager;
 import valkyrienwarfare.mod.physmanagement.chunk.IVWWorldDataCapability;
 import valkyrienwarfare.mod.physmanagement.chunk.ImplVWWorldDataCapability;
@@ -96,6 +98,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -374,6 +378,22 @@ public class ValkyrienWarfareMod {
 
         addons.forEach(m -> m.doPreInit(event));
 
+        // Initialize the VW API here:
+        try {
+            Field instanceField = IPhysicsEntityManager.class.getDeclaredField("INSTANCE");
+            // Make the field accessible
+            instanceField.setAccessible(true);
+            // Remove the final modifier
+            Field modifiersField = Field.class.getDeclaredField("modifiers");
+            modifiersField.setAccessible(true);
+            modifiersField.setInt(instanceField, instanceField.getModifiers() & ~Modifier.FINAL);
+            // Finally set the new value of the field.
+            instanceField.set(null, new VW_APIPhysicsEntityManager());
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("FAILED TO INITIALIZE VW API!");
+        }
+        // Initialize VW API end.
         /*
         try {
             Field chunkCache = ForgeChunkManager.class.getDeclaredField("dormantChunkCacheSize");

@@ -39,6 +39,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.ChunkCache;
 import net.minecraft.world.World;
@@ -53,6 +54,7 @@ import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.network.EntityFixMessage;
 import valkyrienwarfare.addon.control.nodenetwork.INodeController;
+import valkyrienwarfare.api.IPhysicsEntity;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.deprecated_api.EnumChangeOwnerResult;
 import valkyrienwarfare.fixes.IPhysicsChunk;
@@ -97,7 +99,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author thebest108
  */
-public class PhysicsObject implements ISubspaceProvider {
+public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 
     public static final int MIN_TICKS_EXISTED_BEFORE_PHYSICS = 5;
 
@@ -1293,4 +1295,20 @@ public class PhysicsObject implements ISubspaceProvider {
     public boolean getMarkedForDeconstruction() {
         return this.markedForDeconstruction;
     }
+
+    // VW API Functions Begin:
+    @Override
+    public Vec3d rotateVector(Vec3d vector, TransformType transformType) {
+        return this.getShipTransformationManager()
+                .getCurrentTickTransform()
+                .rotate(vector, transformType);
+    }
+
+    @Override
+    public Vec3d transformVector(Vec3d vector, TransformType transformType) {
+        return this.getShipTransformationManager()
+                .getCurrentTickTransform()
+                .transform(vector, transformType);
+    }
+    // VW API Functions End:
 }

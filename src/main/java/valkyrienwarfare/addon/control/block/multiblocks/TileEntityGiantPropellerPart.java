@@ -58,7 +58,8 @@ public class TileEntityGiantPropellerPart extends TileEntityMultiblockPartForce<
                 Vector facingDir = new Vector(this.getPropellerFacing().getDirectionVec());
                 final double angularVelocity = this.getRotationNode().get().getAngularVelocity();
                 if (angularVelocity != 0) {
-                    facingDir.multiply(Math.signum(angularVelocity));
+                    // We don't want the propeller animation and force to be backwards.
+                    facingDir.multiply(-Math.signum(angularVelocity));
                 }
                 return new VectorImmutable(facingDir);
             }

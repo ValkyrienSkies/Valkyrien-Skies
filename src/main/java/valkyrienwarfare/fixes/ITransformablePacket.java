@@ -6,7 +6,11 @@ import net.minecraft.network.play.INetHandlerPlayServer;
 import valkyrienwarfare.MixinLoadManager;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.math.RotationMatrices;
-import valkyrienwarfare.mod.coordinates.*;
+import valkyrienwarfare.mod.coordinates.CoordinateSpaceType;
+import valkyrienwarfare.mod.coordinates.ISubspace;
+import valkyrienwarfare.mod.coordinates.ISubspaceProvider;
+import valkyrienwarfare.mod.coordinates.ISubspacedEntity;
+import valkyrienwarfare.mod.coordinates.ISubspacedEntityRecord;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 /**
@@ -43,9 +47,9 @@ public interface ITransformablePacket {
             EntityPlayerMP player = serverHandler.player;
             PhysicsWrapperEntity wrapper = getPacketParent(serverHandler);
             if (wrapper != null && wrapper.getPhysicsObject().getShipTransformationManager() != null) {
-                ISubspaceProvider worldProvider = ISubspaceProvider.class.cast(player.getServerWorld());
+                ISubspaceProvider worldProvider = (ISubspaceProvider) player.getServerWorld();
                 ISubspace worldSubspace = worldProvider.getSubspace();
-                worldSubspace.snapshotSubspacedEntity(ISubspacedEntity.class.cast(player));
+                worldSubspace.snapshotSubspacedEntity((ISubspacedEntity) player);
                 RotationMatrices.applyTransform(
                         wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform(), player,
                         TransformType.GLOBAL_TO_SUBSPACE);
@@ -67,9 +71,9 @@ public interface ITransformablePacket {
             PhysicsWrapperEntity wrapper = getPacketParent(serverHandler);
             // I don't care what happened to that ship in the time between, we must restore
             // the player to their proper coordinates.
-            ISubspaceProvider worldProvider = ISubspaceProvider.class.cast(player.getServerWorld());
+            ISubspaceProvider worldProvider = (ISubspaceProvider) player.getServerWorld();
             ISubspace worldSubspace = worldProvider.getSubspace();
-            ISubspacedEntity subspacedEntity = ISubspacedEntity.class.cast(player);
+            ISubspacedEntity subspacedEntity = (ISubspacedEntity) player;
             ISubspacedEntityRecord record = worldSubspace.getRecordForSubspacedEntity(subspacedEntity);
             // System.out.println(player.getPosition());
             if (subspacedEntity.currentSubspaceType() == CoordinateSpaceType.SUBSPACE_COORDINATES) {

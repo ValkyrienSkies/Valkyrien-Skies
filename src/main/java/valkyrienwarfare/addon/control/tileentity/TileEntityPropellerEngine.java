@@ -36,6 +36,7 @@ public class TileEntityPropellerEngine extends BasicForceNodeTileEntity {
     }
 
     public TileEntityPropellerEngine() {
+        super();
         this.propellerAngle = Math.random() * 90D;
         this.prevPropellerAngle = propellerAngle;
     }

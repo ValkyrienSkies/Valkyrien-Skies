@@ -417,6 +417,9 @@ public class PhysicsObject implements ISubspaceProvider {
         }
 
         chunk.onLoad();
+        // We need to set these otherwise certain events like Sponge's PhaseTracker will refuse to work properly with ships!
+        chunk.setTerrainPopulated(true);
+        chunk.setLightPopulated(true);
 
         PlayerChunkMap map = ((WorldServer) getWorldObj()).getPlayerChunkMap();
 
@@ -528,6 +531,14 @@ public class PhysicsObject implements ISubspaceProvider {
     }
 
     public void onTick() {
+        // idk
+        for (int x = this.ownedChunks.getMinX(); x <= this.ownedChunks.getMaxX(); x++) {
+            for (int z = this.ownedChunks.getMinZ(); z <= this.ownedChunks.getMaxZ(); z++) {
+                ((IPhysicsChunk) shipChunks.getChunkAt(x, z)).setParentPhysicsObject(Optional.of(this));
+            }
+        }
+
+
         if (!getWorldObj().isRemote) {
             if (this.getShipType() == ShipType.PHYSICS_CORE_INFUSED) {
                 TileEntity te = getWorldObj().getTileEntity(this.physicsInfuserPos);

@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import valkyrienwarfare.fixes.ITransformablePacket;
 
-@Mixin(targets = "org/spongepowered/common/network/PacketUtil", remap = false)
+@Mixin(targets = "org/spongepowered/common/event/tracking/phase/packet/PacketPhaseUtil", remap = false)
 public class MixinPacketUtil {
 
     @Inject(method = "onProcessPacket", at = @At(value = "HEAD"))

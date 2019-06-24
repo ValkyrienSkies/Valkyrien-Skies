@@ -24,9 +24,10 @@ import valkyrienwarfare.physics.PhysicsCalculations;
 
 public class TileEntityGyroscopeStabilizer extends TileEntity {
 
+    // Up to 15,000,000 newton-meters of torque generated.
+    public static final double MAXIMUM_TORQUE = 15000000;
+    // The direction we are want to align to.
     private static final Vector GRAVITY_UP = new Vector(0, 1, 0);
-    // Up to 3,000,000 newton-meters of torque generated.
-    private double maximumTorque = 3000000;
 
     public Vector getTorqueInGlobal(PhysicsCalculations physicsCalculations, BlockPos pos) {
         Vector shipLevelNormal = new Vector(GRAVITY_UP);
@@ -41,7 +42,7 @@ public class TileEntityGyroscopeStabilizer extends TileEntity {
 
         // System.out.println(angleBetween);
 
-        torqueDir.multiply(maximumTorque * torquePowerFactor * physicsCalculations.getPhysicsTimeDeltaPerPhysTick() * -1D);
+        torqueDir.multiply(MAXIMUM_TORQUE * torquePowerFactor * physicsCalculations.getPhysicsTimeDeltaPerPhysTick() * -1D);
         return torqueDir;
     }
 

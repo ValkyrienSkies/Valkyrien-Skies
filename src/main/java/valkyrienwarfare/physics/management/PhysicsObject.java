@@ -547,7 +547,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
                 if (te instanceof TileEntityPhysicsInfuser) {
                     // Mark for keeping alive
                     // Mark for deconstruction
-                    markedForDeconstruction = !((TileEntityPhysicsInfuser) te).canMainainShip();
+                    markedForDeconstruction = !((TileEntityPhysicsInfuser) te).canMaintainShip();
                 } else {
                     // Mark for deconstruction
                     markedForDeconstruction = true;
@@ -783,6 +783,12 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
         // Write and read AABB from NBT to speed things up.
         NBTUtils.writeAABBToNBT("collision_aabb", getShipBoundingBox(), compound);
         NBTUtils.writeBlockPosToNBT("phys_infuser_pos", physicsInfuserPos, compound);
+
+        try {
+            compound.setString("ship_type", shipType.name());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void readFromNBTTag(NBTTagCompound compound) {

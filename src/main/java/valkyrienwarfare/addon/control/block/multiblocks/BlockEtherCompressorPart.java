@@ -15,13 +15,16 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 public class BlockEtherCompressorPart extends Block implements ITileEntityProvider, IBlockForceProvider {
 
+    // The maximum thrust in newtons that each compressor block can provide.
+    public static final double MAX_THRUST = 2000000;
+
     public BlockEtherCompressorPart(Material materialIn) {
         super(materialIn);
     }
 
     @Override
     public TileEntity createNewTileEntity(World worldIn, int meta) {
-        return new TileEntityEthereumCompressorPart(500000D);
+        return new TileEntityEthereumCompressorPart(MAX_THRUST);
     }
 
     @Override

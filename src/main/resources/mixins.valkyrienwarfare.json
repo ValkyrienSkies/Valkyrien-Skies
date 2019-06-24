@@ -16,7 +16,6 @@
     "network.play.client.MixinCPacketPlayerTryUseItemOnBlock",
     "network.play.client.MixinCPacketUpdateSign",
     "server.management.MixinPlayerList",
-    "spongepowered.common.event.tracking.MixinPhaseTracker",
     "spongepowered.common.network.MixinPacketUtil",
     "tileentity.MixinTileEntity",
     "util.math.MixinChunkPos",

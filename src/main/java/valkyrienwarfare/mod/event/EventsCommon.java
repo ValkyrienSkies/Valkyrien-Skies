@@ -35,6 +35,7 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -57,6 +58,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.combat.entity.EntityMountingWeaponBase;
 import valkyrienwarfare.api.TransformType;
+import valkyrienwarfare.fixes.IPhysicsChunk;
 import valkyrienwarfare.math.RotationMatrices;
 import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.mod.capability.IAirshipCounterCapability;
@@ -315,8 +317,11 @@ public class EventsCommon {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onBlockBreakFirst(BlockEvent event) {
         BlockPos pos = event.getPos();
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(event.getWorld(), pos);
-        if (wrapper != null) {
+        Chunk chunk = event.getWorld()
+                .getChunk(pos);
+        IPhysicsChunk physicsChunk = (IPhysicsChunk) chunk;
+        if (physicsChunk.getPhysicsObjectOptional()
+                .isPresent()) {
             event.setResult(Result.ALLOW);
         }
     }

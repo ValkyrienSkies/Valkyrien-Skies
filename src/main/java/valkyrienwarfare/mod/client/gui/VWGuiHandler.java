@@ -5,14 +5,11 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import valkyrienwarfare.mod.container.ContainerPhysicsInfuser;
 import valkyrienwarfare.mod.tileentity.TileEntityPhysicsInfuser;
 
 import static valkyrienwarfare.mod.client.gui.VW_Gui_Enum.PHYSICS_INFUSER;
 
-@SideOnly(Side.CLIENT)
 public class VWGuiHandler implements IGuiHandler {
 
     @Override

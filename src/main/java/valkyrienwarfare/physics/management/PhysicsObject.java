@@ -45,7 +45,6 @@ import net.minecraft.world.ChunkCache;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.EmptyChunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraftforge.common.DimensionManager;
@@ -1281,10 +1280,12 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
                 MoveBlocks.copyBlockToPos(getWorldObj(), oldPos, newPos, Optional.empty());
             }
 
-            // Delete old blocks.
+            // Delete old blocks. TODO: Used to use EMPTYCHUNK to do this but that causes crashes?
             for (int x = getOwnedChunks().getMinX(); x <= getOwnedChunks().getMaxX(); x++) {
                 for (int z = getOwnedChunks().getMinZ(); z <= getOwnedChunks().getMaxZ(); z++) {
-                    EmptyChunk chunk = new EmptyChunk(getWorldObj(), x, z);
+                    Chunk chunk = new Chunk(getWorldObj(), x, z);
+                    chunk.setTerrainPopulated(true);
+                    chunk.setLightPopulated(true);
                     injectChunkIntoWorld(chunk, x, z, true);
                     claimedChunks[x - getOwnedChunks().getMinX()][z - getOwnedChunks().getMinZ()] = chunk;
                 }

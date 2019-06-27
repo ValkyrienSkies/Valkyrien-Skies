@@ -77,22 +77,22 @@ public class Vector {
     public Vector(EnumFacing facing) {
         switch (facing) {
             case DOWN:
-                Y = 1d;
+                Y = 1;
                 break;
             case UP:
-                Y = -1d;
+                Y = -1;
                 break;
             case EAST:
-                X = -1d;
+                X = -1;
                 break;
             case NORTH:
-                Z = 1d;
+                Z = 1;
                 break;
             case WEST:
-                X = 1d;
+                X = 1;
                 break;
             case SOUTH:
-                Z = -1d;
+                Z = -1;
         }
     }
 

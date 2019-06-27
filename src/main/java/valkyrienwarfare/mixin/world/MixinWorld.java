@@ -339,8 +339,6 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
             worldResultDistFromPlayer = vanillaTrace.hitVec.distanceTo(vec31);
         }
 
-        PhysicsWrapperEntity transformedEntity = null;
-
         for (PhysicsWrapperEntity wrapper : nearbyShips) {
             playerEyesPos = vec31;
             playerReachVector = vec32.subtract(vec31);
@@ -363,19 +361,12 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
                 double shipResultDistFromPlayer = resultInShip.hitVec.distanceTo(playerEyesPos);
                 if (shipResultDistFromPlayer < worldResultDistFromPlayer) {
                     worldResultDistFromPlayer = shipResultDistFromPlayer;
+                    // The hitVec must ALWAYS be in global coordinates.
                     resultInShip.hitVec = wrapper.getPhysicsObject().getShipTransformationManager().getRenderTransform()
                             .transform(resultInShip.hitVec, TransformType.SUBSPACE_TO_GLOBAL);
                     vanillaTrace = resultInShip;
-                    transformedEntity = wrapper;
                 }
             }
-        }
-
-        if (transformedEntity != null) {
-            Vec3d hitVec2 = vanillaTrace.hitVec;
-            hitVec2 = transformedEntity.getPhysicsObject().getShipTransformationManager().getRenderTransform().transform(hitVec2,
-                    TransformType.GLOBAL_TO_SUBSPACE);
-            vanillaTrace.hitVec = hitVec2;
         }
 
         dontIntercept.set(false);

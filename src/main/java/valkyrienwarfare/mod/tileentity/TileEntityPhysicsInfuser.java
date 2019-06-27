@@ -11,6 +11,7 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import valkyrienwarfare.fixes.IPhysicsChunk;
+import valkyrienwarfare.mod.physmanagement.chunk.PhysicsChunkManager;
 import valkyrienwarfare.physics.management.PhysicsObject;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
@@ -34,9 +35,11 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
             // Check the status of the item slots
             if (!parentShip.isPresent() && canMaintainShip()) {
                 // Create a ship with this physics infuser
-                // TODO: Make this queue something that runs either off the tick or at the end of the tick.
-                PhysicsWrapperEntity ship = new PhysicsWrapperEntity(this);
-                getWorld().spawnEntity(ship);
+                // Make sure we don't try to create a ship when we're already in ship space.
+                if (!PhysicsChunkManager.isLikelyShipChunk(getPos().getX() >> 4, getPos().getZ() >> 4)) {
+                    PhysicsWrapperEntity ship = new PhysicsWrapperEntity(this);
+                    getWorld().spawnEntity(ship);
+                }
             }
         }
     }

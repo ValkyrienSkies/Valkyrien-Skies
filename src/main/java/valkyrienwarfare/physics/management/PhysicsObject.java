@@ -1274,11 +1274,19 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
             BlockPos centerDifference = new BlockPos(Math.round(centerCoord.X - getWrapperEntity().posX),
                     Math.round(centerCoord.Y - getWrapperEntity().posY),
                     Math.round(centerCoord.Z - getWrapperEntity().posZ));
-            // First copy all the blocks from ship to world.
 
+            // First copy all the blocks and tile entities from ship to world.
             for (BlockPos oldPos : this.blockPositions) {
                 newPos.setPos(oldPos.getX() - centerDifference.getX(), oldPos.getY() - centerDifference.getY(), oldPos.getZ() - centerDifference.getZ());
                 MoveBlocks.copyBlockToPos(getWorldObj(), oldPos, newPos, Optional.empty());
+            }
+
+            // Delete old tile entities
+            for (BlockPos oldPos : this.blockPositions) {
+                TileEntity tileEntity = getWorldObj().getTileEntity(oldPos);
+                if (tileEntity != null) {
+                    getWorldObj().removeTileEntity(oldPos);
+                }
             }
 
             // Delete old blocks.
@@ -1289,6 +1297,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
                     claimedChunks[x - getOwnedChunks().getMinX()][z - getOwnedChunks().getMinZ()] = chunk;
                 }
             }
+
 
             this.destroy();
         }

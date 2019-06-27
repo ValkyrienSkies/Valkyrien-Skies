@@ -19,7 +19,6 @@
     "spongepowered.common.network.MixinPacketUtil",
     "tileentity.MixinTileEntity",
     "util.math.MixinChunkPos",
-    "world.MixinExplosion",
     "world.MixinWorld",
     "world.MixinWorldServer",
     "world.border.MixinWorldBorder",

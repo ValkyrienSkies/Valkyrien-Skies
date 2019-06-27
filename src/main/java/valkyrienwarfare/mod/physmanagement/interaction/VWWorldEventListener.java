@@ -18,6 +18,10 @@ package valkyrienwarfare.mod.physmanagement.interaction;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityArmorStand;
+import net.minecraft.entity.item.EntityBoat;
+import net.minecraft.entity.item.EntityFallingBlock;
+import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.play.server.SPacketBlockBreakAnim;
@@ -28,8 +32,10 @@ import net.minecraft.world.IWorldEventListener;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import valkyrienwarfare.ValkyrienWarfareMod;
+import valkyrienwarfare.addon.combat.entity.EntityMountingWeaponBase;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.fixes.IPhysicsChunk;
+import valkyrienwarfare.math.RotationMatrices;
 import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
@@ -85,9 +91,27 @@ public class VWWorldEventListener implements IWorldEventListener {
 
     // TODO: Fix conflicts with EventsCommon.onEntityJoinWorldEvent()
     @Override
-    public void onEntityAdded(Entity entityIn) {
-        if (entityIn instanceof PhysicsWrapperEntity) {
-            ValkyrienWarfareMod.VW_PHYSICS_MANAGER.onShipLoad((PhysicsWrapperEntity) entityIn);
+    public void onEntityAdded(Entity entity) {
+        if (entity instanceof PhysicsWrapperEntity) {
+            ValkyrienWarfareMod.VW_PHYSICS_MANAGER.onShipLoad((PhysicsWrapperEntity) entity);
+        } else {
+            // This is really only here because Sponge doesn't call the entity join event for some reason :/
+            // So I basically just copied the event code here as well.
+            World world = worldObj;
+            BlockPos posAt = new BlockPos(entity);
+            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(world, posAt);
+            if (!worldObj.isRemote && !(entity instanceof EntityFallingBlock) && wrapper != null && wrapper.getPhysicsObject()
+                    .getShipTransformationManager() != null) {
+                if (entity instanceof EntityMountingWeaponBase || entity instanceof EntityArmorStand
+                        || entity instanceof EntityPig || entity instanceof EntityBoat) {
+                    wrapper.getPhysicsObject().fixEntity(entity, new Vector(entity));
+                    wrapper.getPhysicsObject().queueEntityForMounting(entity);
+                }
+                world.getChunk(entity.getPosition().getX() >> 4, entity.getPosition().getZ() >> 4).removeEntity(entity);
+                RotationMatrices.applyTransform(wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform(), entity,
+                        TransformType.SUBSPACE_TO_GLOBAL);
+                world.getChunk(entity.getPosition().getX() >> 4, entity.getPosition().getZ() >> 4).addEntity(entity);
+            }
         }
     }
 

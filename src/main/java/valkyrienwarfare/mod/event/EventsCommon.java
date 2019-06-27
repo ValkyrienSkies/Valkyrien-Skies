@@ -116,9 +116,6 @@ public class EventsCommon {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onEntityJoinWorldEvent(EntityJoinWorldEvent event) {
-        if (true) {
-            return;
-        }
         Entity entity = event.getEntity();
 
         World world = entity.world;
@@ -335,10 +332,8 @@ public class EventsCommon {
         }
     }
 
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onExplosionStart(ExplosionEvent.Start event) {
-        if (true) {
-            return;
-        }
         // Only run on server side
         if (!event.getWorld().isRemote) {
             Explosion explosion = event.getExplosion();
@@ -356,7 +351,7 @@ public class EventsCommon {
 
                 ship.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(inLocal, TransformType.GLOBAL_TO_SUBSPACE);
                 // inLocal.roundToWhole();
-                Explosion expl = new Explosion(event.getWorld(), null, inLocal.X, inLocal.Y, inLocal.Z, radius,  explosion.causesFire, false);
+                Explosion expl = new Explosion(event.getWorld(), null, inLocal.X, inLocal.Y, inLocal.Z, radius,  explosion.causesFire, true);
 
                 double waterRange = .6D;
 
@@ -376,6 +371,7 @@ public class EventsCommon {
                 }
 
                 if (!cancelDueToWater) {
+                    expl.doExplosionA();
                     event.getExplosion().affectedBlockPositions.addAll(expl.affectedBlockPositions);
                 }
 

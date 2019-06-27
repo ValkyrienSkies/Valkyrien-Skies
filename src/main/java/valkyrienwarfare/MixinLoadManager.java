@@ -52,8 +52,7 @@ public class MixinLoadManager implements IMixinConfigPlugin {
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
         if (!isSpongeEnabled()) {
-            if (mixinClassName.contains("spongepowered")) {
-                FMLLog.bigWarning("Not applying" + mixinClassName + " because Sponge isn't loaded!");
+            if (mixinClassName.contains("spongepowered")) { FMLLog.bigWarning("Not applying" + mixinClassName + " because Sponge isn't loaded!");
                 return false;
             }
         }

@@ -1,10 +1,12 @@
 package valkyrienwarfare.mod.physmanagement.relocation;
 
-import net.minecraft.init.Blocks;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import valkyrienwarfare.addon.control.nodenetwork.IVWNodeProvider;
 import valkyrienwarfare.physics.management.PhysicsObject;
 
@@ -19,28 +21,21 @@ public class MoveBlocks {
      * @param physicsObjectOptional Used when we're using this to copy from world to physics object; should be empty when other way around.
      */
     public static void copyBlockToPos(World world, BlockPos oldPos, BlockPos newPos, Optional<PhysicsObject> physicsObjectOptional) {
-        // Move pos to the ship space
-
         // To avoid any updates crap, just edit the chunk data array directly.
-
-        /*
-        Chunk chunkToSet = world.getChunkFromBlockCoords(newPos);
+        // These look switched, but trust me they aren't
+        IBlockState oldState = world.getBlockState(newPos);
+        IBlockState newState = world.getBlockState(oldPos);
+        // A hacky way to set the block state within the chunk while avoiding any block updates.
+        Chunk chunkToSet = world.getChunk(newPos);
         int storageIndex = newPos.getY() >> 4;
-
         if (chunkToSet.storageArrays[storageIndex] == Chunk.NULL_BLOCK_STORAGE) {
             chunkToSet.storageArrays[storageIndex] = new ExtendedBlockStorage(storageIndex << 4, true);
         }
-        chunkToSet.storageArrays[storageIndex].set(newPos.getX() & 15, newPos.getY() & 15, newPos.getZ() & 15, state);
-         */
-        if (physicsObjectOptional.isPresent()) {
-            world.setBlockState(newPos, world.getBlockState(oldPos), 16);
-            // We still have to do this instead of relying on notifyBlockUpdate() because sponge delays notifyBlockUpdate() such that it won't happen immediately after World.setBlockState().
-            physicsObjectOptional.get()
-                    .onSetBlockState(Blocks.AIR.getDefaultState(), world.getBlockState(newPos), newPos);
-        } else {
-            world.setBlockState(newPos, world.getBlockState(oldPos), 2);
-        }
-
+        chunkToSet.storageArrays[storageIndex].set(newPos.getX() & 15, newPos.getY() & 15, newPos.getZ() & 15, newState);
+        // Only want to send the update to clients and nothing else, so we use flag 2.
+        world.notifyBlockUpdate(newPos, oldState, newState, 2);
+        // Pretty messy to put this here but it works. Basically the ship keeps track of which of its chunks are
+        // actually being used for performance reasons.
         if (physicsObjectOptional.isPresent()) {
             int minChunkX = physicsObjectOptional.get()
                     .getOwnedChunks()
@@ -51,7 +46,7 @@ public class MoveBlocks {
             physicsObjectOptional.get()
                     .getOwnedChunks().chunkOccupiedInLocal[(newPos.getX() >> 4) - minChunkX][(newPos.getZ() >> 4) - minChunkZ] = true;
         }
-
+        // Now that we've copied the block to the position, copy the tile entity
         copyTileEntityToPos(world, oldPos, newPos, physicsObjectOptional);
     }
 

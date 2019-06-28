@@ -51,15 +51,8 @@ public class MixinLoadManager implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        if (isSpongeEnabled()) {
-            if (mixinClassName.startsWith("valkyrienwarfare.mixin.world.MixinExplosion")) {
-                FMLLog.bigWarning(
-                        "Not loading valkyrienwarfare.mixin.world.MixinExplosion because SpongeForge is enabled!");
-                return false;
-            }
-        } else {
-            if (mixinClassName.contains("spongepowered")) {
-                FMLLog.bigWarning("Not applying" + mixinClassName + " because Sponge isn't here!");
+        if (!isSpongeEnabled()) {
+            if (mixinClassName.contains("spongepowered")) { FMLLog.bigWarning("Not applying" + mixinClassName + " because Sponge isn't loaded!");
                 return false;
             }
         }

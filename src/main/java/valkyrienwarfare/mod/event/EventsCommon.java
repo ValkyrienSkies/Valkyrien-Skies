@@ -16,6 +16,8 @@
 
 package valkyrienwarfare.mod.event;
 
+import net.minecraft.block.BlockLiquid;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityArmorStand;
 import net.minecraft.entity.item.EntityBoat;
@@ -30,9 +32,11 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
@@ -45,6 +49,7 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.Event.Result;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -68,6 +73,7 @@ import valkyrienwarfare.physics.management.PhysicsTickHandler;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -323,6 +329,53 @@ public class EventsCommon {
         if (physicsChunk.getPhysicsObjectOptional()
                 .isPresent()) {
             event.setResult(Result.ALLOW);
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void onExplosionStart(ExplosionEvent.Start event) {
+        // Only run on server side
+        if (!event.getWorld().isRemote) {
+            Explosion explosion = event.getExplosion();
+            Vector center = new Vector(explosion.x, explosion.y, explosion.z);
+            // Explosion radius
+            float radius = explosion.size;
+            AxisAlignedBB toCheck = new AxisAlignedBB(center.X - radius, center.Y - radius, center.Z - radius,
+                    center.X + radius, center.Y + radius, center.Z + radius);
+            // Find nearby ships, we will check if the explosion effects them
+            List<PhysicsWrapperEntity> shipsNear = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getManagerForWorld(event.getWorld())
+                    .getNearbyPhysObjects(toCheck);
+            // Process the explosion on the nearby ships
+            for (PhysicsWrapperEntity ship : shipsNear) {
+                Vector inLocal = new Vector(center);
+
+                ship.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(inLocal, TransformType.GLOBAL_TO_SUBSPACE);
+                // inLocal.roundToWhole();
+                Explosion expl = new Explosion(event.getWorld(), null, inLocal.X, inLocal.Y, inLocal.Z, radius,  explosion.causesFire, true);
+
+                double waterRange = .6D;
+
+                boolean cancelDueToWater = false;
+
+                for (int x = (int) Math.floor(expl.x - waterRange); x <= Math.ceil(expl.x + waterRange); x++) {
+                    for (int y = (int) Math.floor(expl.y - waterRange); y <= Math.ceil(expl.y + waterRange); y++) {
+                        for (int z = (int) Math.floor(expl.z - waterRange); z <= Math.ceil(expl.z + waterRange); z++) {
+                            if (!cancelDueToWater) {
+                                IBlockState state = event.getWorld().getBlockState(new BlockPos(x, y, z));
+                                if (state.getBlock() instanceof BlockLiquid) {
+                                    cancelDueToWater = true;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (!cancelDueToWater) {
+                    expl.doExplosionA();
+                    event.getExplosion().affectedBlockPositions.addAll(expl.affectedBlockPositions);
+                }
+
+            }
         }
     }
 

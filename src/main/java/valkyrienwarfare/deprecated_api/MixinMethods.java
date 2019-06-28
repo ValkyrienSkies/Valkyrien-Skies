@@ -33,7 +33,7 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 public class MixinMethods {
 
     public static EntityCollisionInjector.IntermediateMovementVariableStorage handleMove(MoverType type, double dx, double dy, double dz, Entity this_) {
-        if (PhysicsWrapperEntity.class.isInstance(this_)) {
+        if (this_ instanceof PhysicsWrapperEntity) {
             //Don't move at all
             return null;
         }
@@ -44,7 +44,7 @@ public class MixinMethods {
         double movDistSq = (dx * dx) + (dy * dy) + (dz * dz);
 
         if (movDistSq > 10000) {
-            //Assume this_ will take us to Ship coordinates
+            // Assume this_ will take us to Ship coordinates
             double newX = this_.posX + dx;
             double newY = this_.posY + dy;
             double newZ = this_.posZ + dz;
@@ -56,7 +56,7 @@ public class MixinMethods {
             }
 
             Vector endPos = new Vector(newX, newY, newZ);
-//            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, endPos);
+
             wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(endPos, TransformType.GLOBAL_TO_SUBSPACE);
             dx = endPos.X - this_.posX;
             dy = endPos.Y - this_.posY;
@@ -64,12 +64,6 @@ public class MixinMethods {
         }
 
         EntityCollisionInjector.IntermediateMovementVariableStorage alteredMovement = EntityCollisionInjector.alterEntityMovement(this_, type, dx, dy, dz);
-
-        /*if (alteredMovement == null) {
-            args.setAll(type, dx, dy, dz);
-        } else {
-            args.setAll(type, alteredMovement.dxyz.X, alteredMovement.dxyz.Y, alteredMovement.dxyz.Z);
-        }*/
 
         return alteredMovement;
     }

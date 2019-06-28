@@ -33,8 +33,6 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.piloting.IShipPilot;
 import valkyrienwarfare.api.TransformType;
@@ -266,17 +264,4 @@ public abstract class MixinEntityRenderer {
         this.cloudFog = this.mc.renderGlobal.hasCloudFog(d0, d1, d2, partialTicks);
     }
 
-    @Redirect(method = "getMouseOver",
-            at = @At(value = "INVOKE",
-                    target = "Lnet/minecraft/util/math/Vec3d;distanceTo(Lnet/minecraft/util/math/Vec3d;)D",
-                    ordinal = 0))
-    public double betterMouseOver(Vec3d vec, Vec3d in) {
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(mc.world, mc.objectMouseOver.getBlockPos());
-
-        if (wrapper == null) {
-            return vec.distanceTo(in);
-        } else {
-            return this.mc.objectMouseOver.hitVec.distanceTo(wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(in, TransformType.GLOBAL_TO_SUBSPACE));
-        }
-    }
 }

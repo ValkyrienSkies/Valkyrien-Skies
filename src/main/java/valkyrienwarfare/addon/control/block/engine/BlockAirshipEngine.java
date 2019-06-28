@@ -143,7 +143,6 @@ public abstract class BlockAirshipEngine extends Block implements IBlockForcePro
     }
 
     public TileEntity createNewTileEntity(World worldIn, int meta) {
-        Vector normalVector = new Vector(1, 0, 0);
         IBlockState state = getStateFromMeta(meta);
         return new TileEntityPropellerEngine(new Vector(state.getValue(FACING)), true, enginePower);
     }

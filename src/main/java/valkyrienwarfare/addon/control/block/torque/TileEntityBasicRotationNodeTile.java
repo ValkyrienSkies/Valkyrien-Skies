@@ -28,8 +28,8 @@ public class TileEntityBasicRotationNodeTile extends BasicNodeTileEntity impleme
 
     protected final IRotationNode rotationNode;
     // Used for rendering purposes
-    protected double rotation = 0;
-    protected double lastRotation = 0;
+    protected double rotation;
+    protected double lastRotation;
     protected double nextRotation;
     private boolean firstUpdate;
 

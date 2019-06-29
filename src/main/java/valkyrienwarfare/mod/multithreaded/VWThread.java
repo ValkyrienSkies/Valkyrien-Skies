@@ -147,14 +147,8 @@ public class VWThread extends Thread {
         // TODO: Temporary fix:
         WorldPhysObjectManager manager = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getManagerForWorld(hostWorld);
         List<PhysicsWrapperEntity> physicsEntities = manager.getTickablePhysicsEntities();
-        List<PhysicsWrapperEntity> shipsWithPhysics = new ArrayList<PhysicsWrapperEntity>();
-        for (PhysicsWrapperEntity wrapper : physicsEntities) {
-            if (wrapper.getPhysicsObject().isPhysicsEnabled()) {
-                shipsWithPhysics.add(wrapper);
-            }
-            wrapper.getPhysicsObject().advanceConsecutivePhysicsTicksCounter();
-        }
-        tickThePhysicsAndCollision(shipsWithPhysics);
+        // Tick ship physics here
+        tickThePhysicsAndCollision(physicsEntities);
         tickSendUpdatesToPlayers(physicsEntities);
     }
 

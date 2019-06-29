@@ -23,22 +23,13 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 import net.minecraft.world.IWorldEventListener;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
-import org.spongepowered.asm.mixin.Implements;
-import org.spongepowered.asm.mixin.Interface;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.Interface.Remap;
-import org.spongepowered.asm.mixin.Intrinsic;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -103,6 +94,7 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
         double deltaZ = Math.abs(aabb.maxZ - aabb.minZ);
         if (Math.max(deltaX, Math.max(deltaY, deltaZ)) > 99999D) {
             System.err.println(entityIn + "\ntried going extremely fast during the collision step");
+            new Exception().printStackTrace();
             callbackInfo.setReturnValue(Boolean.FALSE);
             callbackInfo.cancel();
         }
@@ -177,6 +169,7 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
 
         if ((boundingBox.maxX - boundingBox.minX) * (boundingBox.maxY - boundingBox.minY) * (boundingBox.maxZ - boundingBox.minZ) > 10000) {
             System.err.println("Tried getting entities from giant bounding box!");
+            new Exception().printStackTrace();
             return list;
         }
         for (int i1 = i; i1 <= j; ++i1) {

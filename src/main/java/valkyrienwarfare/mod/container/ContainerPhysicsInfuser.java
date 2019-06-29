@@ -16,12 +16,12 @@ import javax.annotation.Nonnull;
 public class ContainerPhysicsInfuser extends Container {
 
     private static final int SIZE_INVENTORY = 5;
-    private final TileEntityPhysicsInfuser te;
+    private final TileEntityPhysicsInfuser tileEntity;
     private final IItemHandler handler;
 
-    public ContainerPhysicsInfuser(EntityPlayer player, TileEntityPhysicsInfuser te) {
-        this.te = te;
-        this.handler = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+    public ContainerPhysicsInfuser(EntityPlayer player, TileEntityPhysicsInfuser tileEntity) {
+        this.tileEntity = tileEntity;
+        this.handler = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
 
         // Add physics infuser slots
         this.addSlotToContainer(new SlotPhysicsInfuser(handler, 0, 45, 22));
@@ -51,7 +51,7 @@ public class ContainerPhysicsInfuser extends Container {
 
     @Override
     public boolean canInteractWith(EntityPlayer playerIn) {
-        return te.isUseableByPlayer(playerIn);
+        return tileEntity.isUsableByPlayer(playerIn);
     }
 
     @Override

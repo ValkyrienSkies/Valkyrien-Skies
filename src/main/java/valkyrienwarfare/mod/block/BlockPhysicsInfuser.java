@@ -16,6 +16,7 @@
 
 package valkyrienwarfare.mod.block;
 
+import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
@@ -39,22 +40,13 @@ import valkyrienwarfare.mod.tileentity.TileEntityPhysicsInfuser;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class BlockPhysicsInfuser extends BlockVWDirectional {
+public class BlockPhysicsInfuser extends BlockVWDirectional implements ITileEntityProvider {
 
     int shipSpawnDetectorID;
 
     public BlockPhysicsInfuser(Material materialIn) {
         super(materialIn);
         shipSpawnDetectorID = DetectorManager.DetectorIDs.ShipSpawnerGeneral.ordinal();
-    }
-
-    public boolean hasTileEntity(IBlockState state) {
-        return true;
-    }
-
-    @Nullable
-    public TileEntity createTileEntity(World world, IBlockState state) {
-        return new TileEntityPhysicsInfuser();
     }
 
     @Override
@@ -178,7 +170,13 @@ public class BlockPhysicsInfuser extends BlockVWDirectional {
         return pos.offset(dummyBlockFacing);
     }
 
-    private EnumFacing getDummyStateFacing(IBlockState state) {
+    public EnumFacing getDummyStateFacing(IBlockState state) {
         return state.getValue(FACING).rotateY();
+    }
+
+    @Nullable
+    @Override
+    public TileEntity createNewTileEntity(World worldIn, int meta) {
+        return new TileEntityPhysicsInfuser();
     }
 }

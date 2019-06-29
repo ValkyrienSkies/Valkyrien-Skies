@@ -42,13 +42,7 @@ import valkyrienwarfare.util.NBTUtils;
 import valkyrienwarfare.util.PhysicsSettings;
 
 import javax.vecmath.Matrix3d;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PhysicsCalculations {
@@ -173,6 +167,9 @@ public class PhysicsCalculations {
     }
 
     public void rawPhysTickPreCol(double newPhysSpeed) {
+        // Advance the parent physics tick counter. We MUST do this because the PhysicsObject won't enable physics until
+        // a certain number of physics ticks have passed, so removing the line will prevent ships from properly spawning.
+        parent.advanceConsecutivePhysicsTicksCounter();
         if (getParent().getShipTransformationManager().getCurrentPhysicsTransform() == ShipTransformationManager.ZERO_TRANSFORM) {
             // Create a new physics transform.
             physRoll = getParent().getWrapperEntity().getRoll();
@@ -192,7 +189,7 @@ public class PhysicsCalculations {
             updatePhysSpeedAndIters(newPhysSpeed);
             updateParentCenterOfMass();
             calculateFramedMOITensor();
-            if (!parent.getMarkedForDeconstruction()) {
+            if (!parent.getShipAligningToGrid()) {
                 // We are not marked for deconstruction, act normal.
                 if (!actAsArchimedes) {
                     calculateForces();
@@ -237,7 +234,7 @@ public class PhysicsCalculations {
     // If the ship is moving at these speeds, its likely something in the physics
     // broke. This method helps detect that.
     private boolean isPhysicsBroken() {
-        if (angularVelocity.lengthSq() > 50000 || linearMomentum.lengthSq() * getInvMass() * getInvMass() > 50000) {
+        if (angularVelocity.lengthSq() > 50000 || linearMomentum.lengthSq() * getInvMass() * getInvMass() > 50000 || angularVelocity.isNaN() || linearMomentum.isNaN()) {
             System.out.println("Ship tried moving too fast; freezing it and reseting velocities");
             return true;
         }
@@ -446,6 +443,11 @@ public class PhysicsCalculations {
             theta -= 2D * Math.PI;
         }
         Vector idealAngularVelocity = new Vector(r.getX(), r.getY(), r.getZ());
+
+        if (idealAngularVelocity.lengthSq() < EPSILON) {
+            // We already have the perfect angular velocity, nothing left to do.
+            return;
+        }
         // Number of seconds we'd expect this angular velocity to convert us onto the grid orientation.
         double timeStep = 1D;
         double idealAngularVelocityMultiple = (-theta / (timeStep * idealAngularVelocity.length()));

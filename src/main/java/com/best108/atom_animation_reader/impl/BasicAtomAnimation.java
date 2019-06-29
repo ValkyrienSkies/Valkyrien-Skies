@@ -45,4 +45,15 @@ public class BasicAtomAnimation implements IAtomAnimation {
         return maxKeyFrame;
     }
 
+    @Override
+    public void renderAnimationNode(String nodeName, double keyframe, int brightness) {
+        for (BasicDagNodeRenderer dagNode : dagNodes) {
+            if (dagNode.getModelName().equals(nodeName)) {
+                GlStateManager.pushMatrix();
+                dagNode.render(keyframe, brightness);
+                GlStateManager.popMatrix();
+            }
+        }
+    }
+
 }

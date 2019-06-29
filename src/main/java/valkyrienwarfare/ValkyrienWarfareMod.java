@@ -41,15 +41,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLConstructionEvent;
-import net.minecraftforge.fml.common.event.FMLFingerprintViolationEvent;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
-import net.minecraftforge.fml.common.event.FMLStateEvent;
+import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
@@ -75,10 +67,7 @@ import valkyrienwarfare.mod.capability.StorageAirshipCounter;
 import valkyrienwarfare.mod.command.VWModCommandRegistry;
 import valkyrienwarfare.mod.gui.TabValkyrienWarfare;
 import valkyrienwarfare.mod.item.ItemPhysicsCore;
-import valkyrienwarfare.mod.network.PhysWrapperPositionHandler;
-import valkyrienwarfare.mod.network.PhysWrapperPositionMessage;
-import valkyrienwarfare.mod.network.SubspacedEntityRecordHandler;
-import valkyrienwarfare.mod.network.SubspacedEntityRecordMessage;
+import valkyrienwarfare.mod.network.*;
 import valkyrienwarfare.mod.physmanagement.VW_APIPhysicsEntityManager;
 import valkyrienwarfare.mod.physmanagement.chunk.DimensionPhysicsChunkManager;
 import valkyrienwarfare.mod.physmanagement.chunk.IVWWorldDataCapability;
@@ -93,11 +82,7 @@ import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.util.PhysicsSettings;
 import valkyrienwarfare.util.RealMethods;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.net.URL;
@@ -440,6 +425,7 @@ public class ValkyrienWarfareMod {
                 Side.CLIENT);
         physWrapperNetwork.registerMessage(SubspacedEntityRecordHandler.class, SubspacedEntityRecordMessage.class, 1, Side.CLIENT);
         physWrapperNetwork.registerMessage(SubspacedEntityRecordHandler.class, SubspacedEntityRecordMessage.class, 2, Side.SERVER);
+        physWrapperNetwork.registerMessage(VWGuiButtonHandler.class, VWGuiButtonMessage.class, 3, Side.SERVER);
     }
 
     public void registerBlocks(RegistryEvent.Register<Block> event) {

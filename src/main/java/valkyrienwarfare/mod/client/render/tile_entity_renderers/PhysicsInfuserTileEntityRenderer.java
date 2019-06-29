@@ -1,10 +1,13 @@
 package valkyrienwarfare.mod.client.render.tile_entity_renderers;
 
+import com.best108.atom_animation_reader.IAtomAnimation;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.EnumFacing;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.block.BlockPhysicsInfuser;
 import valkyrienwarfare.mod.client.render.GibsAnimationRegistry;
@@ -47,8 +50,21 @@ public class PhysicsInfuserTileEntityRenderer extends TileEntitySpecialRenderer<
         GlStateManager.scale(2, 2, 2);
         GibsAnimationRegistry.getAnimation("physics_infuser_empty")
                 .renderAnimation(keyframe, brightness);
-        GibsAnimationRegistry.getAnimation("physics_infuser_cores")
-                .renderAnimation(keyframe, 15728864);
+
+
+        IAtomAnimation cores_animation = GibsAnimationRegistry.getAnimation("physics_infuser_cores");
+        // Render only the cores that exist within the physics infuser's inventory.
+        IItemHandler handler = tileentity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+        if (!handler.getStackInSlot(0).isEmpty)
+            cores_animation.renderAnimationNode("physics_core_small1_geo", keyframe, 15728864);
+        if (!handler.getStackInSlot(1).isEmpty)
+            cores_animation.renderAnimationNode("physics_core_small2_geo", keyframe, 15728864);
+        if (!handler.getStackInSlot(2).isEmpty)
+            cores_animation.renderAnimationNode("physics_core_main_geo", keyframe, 15728864);
+        if (!handler.getStackInSlot(3).isEmpty)
+            cores_animation.renderAnimationNode("physics_core_small4_geo", keyframe, 15728864);
+        if (!handler.getStackInSlot(4).isEmpty)
+            cores_animation.renderAnimationNode("physics_core_small3_geo", keyframe, 15728864);
 
 
         GlStateManager.popMatrix();

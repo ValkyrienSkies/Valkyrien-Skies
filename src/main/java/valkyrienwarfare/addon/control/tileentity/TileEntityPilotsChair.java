@@ -73,7 +73,7 @@ public class TileEntityPilotsChair extends ImplTileEntityPilotable {
         BlockPos chairPosition = getPos();
         PhysicsObject controlledShip = wrapper.getPhysicsObject();
 
-        if (controlledShip.getMarkedForDeconstruction()) {
+        if (controlledShip.getShipAligningToGrid()) {
             return;
         }
 

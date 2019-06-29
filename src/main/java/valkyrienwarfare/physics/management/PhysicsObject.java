@@ -61,11 +61,7 @@
     import valkyrienwarfare.math.Vector;
     import valkyrienwarfare.mod.BlockPhysicsRegistration;
     import valkyrienwarfare.mod.client.render.PhysObjectRenderManager;
-    import valkyrienwarfare.mod.coordinates.ISubspace;
-    import valkyrienwarfare.mod.coordinates.ISubspaceProvider;
-    import valkyrienwarfare.mod.coordinates.ImplSubspace;
-    import valkyrienwarfare.mod.coordinates.ShipTransform;
-    import valkyrienwarfare.mod.coordinates.ShipTransformationPacketHolder;
+    import valkyrienwarfare.mod.coordinates.*;
     import valkyrienwarfare.mod.network.PhysWrapperPositionMessage;
     import valkyrienwarfare.mod.physmanagement.chunk.ShipChunkAllocator;
     import valkyrienwarfare.mod.physmanagement.chunk.VWChunkCache;
@@ -80,15 +76,8 @@
 
     import java.io.File;
     import java.io.IOException;
-    import java.util.ArrayList;
-    import java.util.Collections;
-    import java.util.HashSet;
-    import java.util.Iterator;
-    import java.util.List;
+    import java.util.*;
     import java.util.Map.Entry;
-    import java.util.Optional;
-    import java.util.Set;
-    import java.util.UUID;
     import java.util.concurrent.ConcurrentHashMap;
 
     /**
@@ -144,7 +133,7 @@
         private volatile int gameConsecutiveTicks;
         private volatile int physicsConsecutiveTicks;
         private BlockPos physicsInfuserPos;
-        private boolean markedForDeconstruction;
+        private boolean shipAligningToGrid;
 
         public PhysicsObject(PhysicsWrapperEntity host) {
             this.wrapper = host;
@@ -169,7 +158,7 @@
             this.physicsControllersImmutable = Collections.unmodifiableSet(this.physicsControllers);
             this.blockPositionsGameTick = new TIntArrayList();
             this.physicsInfuserPos = null;
-            this.markedForDeconstruction = false;
+            this.shipAligningToGrid = false;
         }
 
         public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos posAt) {
@@ -546,20 +535,7 @@
                 }
             }
 
-
             if (!getWorldObj().isRemote) {
-                if (this.getShipType() == ShipType.PHYSICS_CORE_INFUSED) {
-                    TileEntity te = getWorldObj().getTileEntity(this.physicsInfuserPos);
-                    if (te instanceof TileEntityPhysicsInfuser) {
-                        // Mark for keeping alive
-                        // Mark for deconstruction
-                        markedForDeconstruction = !((TileEntityPhysicsInfuser) te).canMaintainShip();
-                    } else {
-                        // Mark for deconstruction
-                        markedForDeconstruction = true;
-                    }
-                }
-
                 for (Entity e : queuedEntitiesToMount) {
                     if (e != null) {
                         e.startRiding(this.getWrapperEntity(), true);
@@ -567,10 +543,29 @@
                 }
                 queuedEntitiesToMount.clear();
 
-                if (markedForDeconstruction) {
-                    this.tryToDeconstructShip();
+
+                if (this.getShipType() == ShipType.PHYSICS_CORE_INFUSED) {
+                    TileEntity te = getWorldObj().getTileEntity(this.physicsInfuserPos);
+                    boolean shouldDeconstructShip;
+                    if (te instanceof TileEntityPhysicsInfuser) {
+                        TileEntityPhysicsInfuser physicsCore = (TileEntityPhysicsInfuser) te;
+                        // Mark for deconstruction
+                        shouldDeconstructShip = !physicsCore.canMaintainShip() || physicsCore.isTryingToDisassembleShip();
+                        shipAligningToGrid = !physicsCore.canMaintainShip() || physicsCore.isTryingToAlignShip();
+                        setPhysicsEnabled(physicsCore.isPhysicsEnabled());
+                    } else {
+                        // Mark for deconstruction
+                        shipAligningToGrid = true;
+                        shouldDeconstructShip = true;
+                        setPhysicsEnabled(true);
+                    }
+
+                    if (shouldDeconstructShip) {
+                        this.tryToDeconstructShip();
+                    }
                 }
             }
+
             gameConsecutiveTicks++;
         }
 
@@ -1318,8 +1313,8 @@
             this.physicsInfuserPos = pos;
         }
 
-        public boolean getMarkedForDeconstruction() {
-            return this.markedForDeconstruction;
+        public boolean getShipAligningToGrid() {
+            return this.shipAligningToGrid;
         }
 
         // VW API Functions Begin:

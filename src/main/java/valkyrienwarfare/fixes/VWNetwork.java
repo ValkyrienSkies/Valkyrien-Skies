@@ -23,12 +23,15 @@ import java.util.List;
  */
 public class VWNetwork {
 
+    // The radius in which tile entity packets are sent
+    public static final double TILE_PACKET_RADIUS = 128;
+
     public static void sendTileToAllNearby(TileEntity tileEntity) {
         SPacketUpdateTileEntity spacketupdatetileentity = tileEntity.getUpdatePacket();
         VWNetwork.sendToAllNearExcept(null, tileEntity.getPos()
                         .getX(), tileEntity.getPos()
                         .getY(), tileEntity.getPos()
-                        .getZ(), 128D,
+                        .getZ(), TILE_PACKET_RADIUS,
                 tileEntity.getWorld().provider.getDimension(), spacketupdatetileentity);
     }
 

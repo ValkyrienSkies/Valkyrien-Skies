@@ -28,6 +28,11 @@ public class MoveBlocks {
         // A hacky way to set the block state within the chunk while avoiding any block updates.
         Chunk chunkToSet = world.getChunk(newPos);
         int storageIndex = newPos.getY() >> 4;
+        // Check that we're placing the block in a valid position
+        if (storageIndex < 0 || storageIndex >= chunkToSet.storageArrays.length) {
+            // Invalid position, abort!
+            return;
+        }
         if (chunkToSet.storageArrays[storageIndex] == Chunk.NULL_BLOCK_STORAGE) {
             chunkToSet.storageArrays[storageIndex] = new ExtendedBlockStorage(storageIndex << 4, true);
         }

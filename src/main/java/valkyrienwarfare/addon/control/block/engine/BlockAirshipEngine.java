@@ -72,7 +72,6 @@ public abstract class BlockAirshipEngine extends Block implements IBlockForcePro
 
     @Override
     public Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state, Entity shipEntity, double secondsToApply) {
-        EnumFacing enumfacing = state.getValue(FACING);
         Vector acting = new Vector(0, 0, 0);
         if (!world.isBlockPowered(pos)) {
             return acting;
@@ -88,29 +87,6 @@ public abstract class BlockAirshipEngine extends Block implements IBlockForcePro
         }
 
         return acting;
-        //Being moved into the new Nodes control system
-        /*double power = this.getEnginePower(world, pos, state, shipEntity) * secondsToApply;
-        switch (enumfacing) {
-            case DOWN:
-                acting = new Vector(0, power, 0);
-                break;
-            case UP:
-                acting = new Vector(0, -power, 0);
-                break;
-            case EAST:
-                acting = new Vector(-power, 0, 0);
-                break;
-            case NORTH:
-                acting = new Vector(0, 0, power);
-                break;
-            case WEST:
-                acting = new Vector(power, 0, 0);
-                break;
-            case SOUTH:
-                acting = new Vector(0, 0, -power);
-                break;
-        }
-        return acting;*/
     }
 
     @Override

@@ -297,4 +297,13 @@ public class Vector {
     public VectorImmutable toImmutable() {
         return new VectorImmutable(this);
     }
+
+    /**
+     * Returns true if at least one of the components of this vector is NaN.
+     *
+     * @return
+     */
+    public boolean isNaN() {
+        return Double.isNaN(X) || Double.isNaN(Y) || Double.isNaN(Z);
+    }
 }

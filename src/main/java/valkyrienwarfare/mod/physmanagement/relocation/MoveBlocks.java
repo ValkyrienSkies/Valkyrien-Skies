@@ -80,18 +80,19 @@ public class MoveBlocks {
                             .setParentPhysicsObject(null);
                 }
             }
-            newInstance.validate();
 
-            world.setTileEntity(newPos, newInstance);
-            if (physicsObjectOptional.isPresent()) {
-                physicsObjectOptional.get()
-                        .onSetTileEntity(newPos, newInstance);
+            try {
+                newInstance.validate();
+                world.setTileEntity(newPos, newInstance);
+                if (physicsObjectOptional.isPresent()) {
+                    physicsObjectOptional.get()
+                            .onSetTileEntity(newPos, newInstance);
+                }
+                newInstance.markDirty();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            newInstance.markDirty();
         }
     }
-
-    public static void destroyBlockSilent(World world, BlockPos pos) {
-
-    }
+    
 }

@@ -1325,34 +1325,6 @@
                 MoveBlocks.copyBlockToPos(getWorldObj(), oldPos, newPos, Optional.empty());
             }
 
-            // Update the gui of any clients using the physics infuser to be that of the new one in the world.
-            if (this.getPhysicsInfuserPos() != null) {
-                TileEntity tileEntity = getWorldObj().getTileEntity(getPhysicsInfuserPos());
-                if (tileEntity instanceof TileEntityPhysicsInfuser) {
-                    // Tell players watching to use the new gui
-                    TileEntityPhysicsInfuser tileEntityPhysicsInfuser = (TileEntityPhysicsInfuser) tileEntity;
-                    List<EntityPlayerMP> watchingPlayersCopy = new ArrayList<>(tileEntityPhysicsInfuser.getWatchingPlayers());
-
-                    for (EntityPlayerMP playerMP : watchingPlayersCopy) {
-                        playerMP.closeScreen();
-                    }
-
-                    // This code doesn't work
-                    /*
-                    BlockPos newInfuserPos = getPhysicsInfuserPos().subtract(centerDifference);
-                    TileEntity te = getWorldObj().getTileEntity(newInfuserPos);
-                    SPacketBlockChange blockChangePacket = new SPacketBlockChange(getWorldObj(), newInfuserPos);
-                    VWNetwork.sendToAllNearExcept(null, newInfuserPos.getX(), newInfuserPos.getY(), newInfuserPos.getZ(), 128, getWorldObj().provider.getDimension(), blockChangePacket);
-                    VWNetwork.sendTileToAllNearby(te);
-                    for (EntityPlayerMP playerMP : watchingPlayersCopy) {
-                        playerMP.connection.server.addScheduledTask(() -> {
-                            playerMP.closeScreen();
-                            playerMP.openGui(ValkyrienWarfareMod.INSTANCE, VW_Gui_Enum.PHYSICS_INFUSER.ordinal(), getWorldObj(), newInfuserPos.getX(), newInfuserPos.getY(), newInfuserPos.getZ());
-                        });
-                    }*/
-                }
-            }
-
             // Just delete the tile entities in ship to prevent any dupe bugs.
             for (BlockPos oldPos : this.blockPositions) {
                 getWorldObj().removeTileEntity(oldPos);

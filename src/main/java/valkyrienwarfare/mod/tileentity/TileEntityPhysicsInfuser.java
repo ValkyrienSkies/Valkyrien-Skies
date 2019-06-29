@@ -2,7 +2,6 @@ package valkyrienwarfare.mod.tileentity;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -31,8 +30,6 @@ import valkyrienwarfare.physics.management.PhysicsObject;
 import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, ICapabilityProvider, IVWTileGui {
@@ -43,7 +40,6 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
     private volatile boolean tryToDisassembleShip;
     private boolean physicsEnabled;
     private boolean tryingToAlignShip;
-    private volatile List<EntityPlayerMP> watchingPlayers;
 
     public TileEntityPhysicsInfuser() {
         handler = new ItemStackHandler(5) {
@@ -57,7 +53,6 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
         tryToDisassembleShip = false;
         physicsEnabled = false;
         tryingToAlignShip = false;
-        watchingPlayers = new ArrayList<>();
     }
 
     @Override
@@ -71,11 +66,6 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
                 // Create a ship with this physics infuser
                 // Make sure we don't try to create a ship when we're already in ship space.
                 if (!PhysicsChunkManager.isLikelyShipChunk(getPos().getX() >> 4, getPos().getZ() >> 4)) {
-                    List<EntityPlayerMP> watchingPlayersCopy = new ArrayList<>(watchingPlayers);
-                    for (EntityPlayerMP playerMP : watchingPlayersCopy) {
-                        playerMP.closeScreen();
-                        // playerMP.openGui(ValkyrienWarfareMod.INSTANCE, VW_Gui_Enum.PHYSICS_INFUSER.ordinal(), getWorld(), newInfuserPos.getX(), newInfuserPos.getY(), newInfuserPos.getZ());
-                    }
                     PhysicsWrapperEntity ship = new PhysicsWrapperEntity(this);
                     getWorld().spawnEntity(ship);
                     // Also tell the watching players to open the new guy
@@ -256,15 +246,4 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
         }
     }
 
-    public void onPlayerWatch(EntityPlayer watcher) {
-        watchingPlayers.add((EntityPlayerMP) watcher);
-    }
-
-    public void onPlayerUnwatch(EntityPlayer unwatcher) {
-        watchingPlayers.remove(unwatcher);
-    }
-
-    public List<EntityPlayerMP> getWatchingPlayers() {
-        return watchingPlayers;
-    }
 }

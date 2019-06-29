@@ -47,6 +47,19 @@ public class ContainerPhysicsInfuser extends Container {
             addSlotToContainer(new Slot(playerInventory, i, 8 + i * 18,
                     142));
         }
+        // Add the player to the watchers
+        if (!tileEntity.getWorld().isRemote) {
+            tileEntity.onPlayerWatch(player);
+        }
+    }
+
+    @Override
+    public void onContainerClosed(EntityPlayer playerIn) {
+        super.onContainerClosed(playerIn);
+        // Remove the player from the watchers
+        if (!tileEntity.getWorld().isRemote) {
+            tileEntity.onPlayerUnwatch(playerIn);
+        }
     }
 
     @Override

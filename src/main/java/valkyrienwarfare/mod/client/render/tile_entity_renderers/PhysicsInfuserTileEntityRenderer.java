@@ -34,13 +34,11 @@ public class PhysicsInfuserTileEntityRenderer extends TileEntitySpecialRenderer<
         GlStateManager.translate(.5, 0, .5);
         double keyframe = 1;
 
-        IBlockState physicsInfuserState = tileentity.getWorld()
-                .getBlockState(tileentity.getPos());
-        if (physicsInfuserState.getBlock() == ValkyrienWarfareMod.INSTANCE.physicsInfuser) {
-            EnumFacing enumfacing = physicsInfuserState.getValue(BlockPhysicsInfuser.FACING);
-            float physicsInfuserRotation = -enumfacing.getHorizontalAngle() + 180;
-            GlStateManager.rotate(physicsInfuserRotation, 0, 1, 0);
-        }
+        IBlockState physicsInfuserState = ValkyrienWarfareMod.INSTANCE.physicsInfuser.getStateFromMeta(tileentity.getBlockMetadata());
+        EnumFacing enumfacing = physicsInfuserState.getValue(BlockPhysicsInfuser.FACING);
+        float physicsInfuserRotation = -enumfacing.getHorizontalAngle() + 180;
+        GlStateManager.rotate(physicsInfuserRotation, 0, 1, 0);
+
 
         GlStateManager.translate(-.5, 0, -.5);
 

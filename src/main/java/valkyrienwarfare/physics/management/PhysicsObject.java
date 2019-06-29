@@ -61,7 +61,11 @@
     import valkyrienwarfare.math.Vector;
     import valkyrienwarfare.mod.BlockPhysicsRegistration;
     import valkyrienwarfare.mod.client.render.PhysObjectRenderManager;
-    import valkyrienwarfare.mod.coordinates.*;
+    import valkyrienwarfare.mod.coordinates.ISubspace;
+    import valkyrienwarfare.mod.coordinates.ISubspaceProvider;
+    import valkyrienwarfare.mod.coordinates.ImplSubspace;
+    import valkyrienwarfare.mod.coordinates.ShipTransform;
+    import valkyrienwarfare.mod.coordinates.ShipTransformationPacketHolder;
     import valkyrienwarfare.mod.network.PhysWrapperPositionMessage;
     import valkyrienwarfare.mod.physmanagement.chunk.ShipChunkAllocator;
     import valkyrienwarfare.mod.physmanagement.chunk.VWChunkCache;
@@ -76,8 +80,15 @@
 
     import java.io.File;
     import java.io.IOException;
-    import java.util.*;
+    import java.util.ArrayList;
+    import java.util.Collections;
+    import java.util.HashSet;
+    import java.util.Iterator;
+    import java.util.List;
     import java.util.Map.Entry;
+    import java.util.Optional;
+    import java.util.Set;
+    import java.util.UUID;
     import java.util.concurrent.ConcurrentHashMap;
 
     /**
@@ -361,7 +372,8 @@
             if (this.getShipType() == ShipType.PHYSICS_CORE_INFUSED) {
                 this.physicsInfuserPos = this.physicsInfuserPos.add(centerDifference);
             }
-            // Then destroy all of the blocks we copied from in world.
+
+            // First we destroy all the tile entities we copied.
             iter = detector.foundSet.iterator();
             while (iter.hasNext()) {
                 int i = iter.next();
@@ -379,6 +391,13 @@
                         e.printStackTrace();
                     }
                 }
+            }
+
+            // Then we destroy all the blocks we copied
+            iter = detector.foundSet.iterator();
+            while (iter.hasNext()) {
+                int i = iter.next();
+                SpatialDetector.setPosWithRespectTo(i, centerInWorld, pos);
                 getWorldObj().setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
             }
 
@@ -1274,39 +1293,83 @@
             return this.refrenceBlockPos;
         }
 
-        public void tryToDeconstructShip() {
-            // First check if the ship orientation is close to that of the grid; if it isn't then don't let this ship deconstruct.
+        /**
+         * Returns true if this ship is aligned close enough to the grid that it is allowed to deconstruct back to the world.
+         *
+         * @return
+         */
+        public boolean canShipBeDeconstructed() {
             Quaternion zeroQuat = Quaternion.fromEuler(0, 0, 0);
             Quaternion shipQuat = Quaternion.fromEuler(wrapper.getPitch(), wrapper.getYaw(), wrapper.getRoll());
             double dotProduct = Quaternion.dotProduct(zeroQuat, shipQuat);
             double anglesBetweenQuaternions = Math.toDegrees(Math.acos(dotProduct));
+            // Only allow a ship to be deconstructed if the angle between the grid and its orientation is less than half a degree.
+            return anglesBetweenQuaternions < .5;
+        }
 
-            if (anglesBetweenQuaternions < .5) {
-                // We're pretty close to the grid; time 2 go.
-                MutableBlockPos newPos = new MutableBlockPos();
-                BlockPos centerDifference = new BlockPos(Math.round(centerCoord.X - getWrapperEntity().posX),
-                        Math.round(centerCoord.Y - getWrapperEntity().posY),
-                        Math.round(centerCoord.Z - getWrapperEntity().posZ));
-                // First copy all the blocks from ship to world.
-
-                for (BlockPos oldPos : this.blockPositions) {
-                    newPos.setPos(oldPos.getX() - centerDifference.getX(), oldPos.getY() - centerDifference.getY(), oldPos.getZ() - centerDifference.getZ());
-                    MoveBlocks.copyBlockToPos(getWorldObj(), oldPos, newPos, Optional.empty());
-                }
-
-                // Delete old blocks. TODO: Used to use EMPTYCHUNK to do this but that causes crashes?
-                for (int x = getOwnedChunks().getMinX(); x <= getOwnedChunks().getMaxX(); x++) {
-                    for (int z = getOwnedChunks().getMinZ(); z <= getOwnedChunks().getMaxZ(); z++) {
-                        Chunk chunk = new Chunk(getWorldObj(), x, z);
-                        chunk.setTerrainPopulated(true);
-                        chunk.setLightPopulated(true);
-                        injectChunkIntoWorld(chunk, x, z, true);
-                        claimedChunks[x - getOwnedChunks().getMinX()][z - getOwnedChunks().getMinZ()] = chunk;
-                    }
-                }
-
-                this.destroy();
+        public void tryToDeconstructShip() {
+            // First check if the ship orientation is close to that of the grid; if it isn't then don't let this ship deconstruct.
+            if (!canShipBeDeconstructed()) {
+                return;
             }
+
+            // We're pretty close to the grid; time 2 go.
+            MutableBlockPos newPos = new MutableBlockPos();
+            BlockPos centerDifference = new BlockPos(Math.round(centerCoord.X - getWrapperEntity().posX),
+                    Math.round(centerCoord.Y - getWrapperEntity().posY),
+                    Math.round(centerCoord.Z - getWrapperEntity().posZ));
+            // First copy all the blocks from ship to world.
+
+            for (BlockPos oldPos : this.blockPositions) {
+                newPos.setPos(oldPos.getX() - centerDifference.getX(), oldPos.getY() - centerDifference.getY(), oldPos.getZ() - centerDifference.getZ());
+                MoveBlocks.copyBlockToPos(getWorldObj(), oldPos, newPos, Optional.empty());
+            }
+
+            // Update the gui of any clients using the physics infuser to be that of the new one in the world.
+            if (this.getPhysicsInfuserPos() != null) {
+                TileEntity tileEntity = getWorldObj().getTileEntity(getPhysicsInfuserPos());
+                if (tileEntity instanceof TileEntityPhysicsInfuser) {
+                    // Tell players watching to use the new gui
+                    TileEntityPhysicsInfuser tileEntityPhysicsInfuser = (TileEntityPhysicsInfuser) tileEntity;
+                    List<EntityPlayerMP> watchingPlayersCopy = new ArrayList<>(tileEntityPhysicsInfuser.getWatchingPlayers());
+
+                    for (EntityPlayerMP playerMP : watchingPlayersCopy) {
+                        playerMP.closeScreen();
+                    }
+
+                    // This code doesn't work
+                    /*
+                    BlockPos newInfuserPos = getPhysicsInfuserPos().subtract(centerDifference);
+                    TileEntity te = getWorldObj().getTileEntity(newInfuserPos);
+                    SPacketBlockChange blockChangePacket = new SPacketBlockChange(getWorldObj(), newInfuserPos);
+                    VWNetwork.sendToAllNearExcept(null, newInfuserPos.getX(), newInfuserPos.getY(), newInfuserPos.getZ(), 128, getWorldObj().provider.getDimension(), blockChangePacket);
+                    VWNetwork.sendTileToAllNearby(te);
+                    for (EntityPlayerMP playerMP : watchingPlayersCopy) {
+                        playerMP.connection.server.addScheduledTask(() -> {
+                            playerMP.closeScreen();
+                            playerMP.openGui(ValkyrienWarfareMod.INSTANCE, VW_Gui_Enum.PHYSICS_INFUSER.ordinal(), getWorldObj(), newInfuserPos.getX(), newInfuserPos.getY(), newInfuserPos.getZ());
+                        });
+                    }*/
+                }
+            }
+
+            // Just delete the tile entities in ship to prevent any dupe bugs.
+            for (BlockPos oldPos : this.blockPositions) {
+                getWorldObj().removeTileEntity(oldPos);
+            }
+
+            // Delete old blocks. TODO: Used to use EMPTYCHUNK to do this but that causes crashes?
+            for (int x = getOwnedChunks().getMinX(); x <= getOwnedChunks().getMaxX(); x++) {
+                for (int z = getOwnedChunks().getMinZ(); z <= getOwnedChunks().getMaxZ(); z++) {
+                    Chunk chunk = new Chunk(getWorldObj(), x, z);
+                    chunk.setTerrainPopulated(true);
+                    chunk.setLightPopulated(true);
+                    injectChunkIntoWorld(chunk, x, z, true);
+                    claimedChunks[x - getOwnedChunks().getMinX()][z - getOwnedChunks().getMinZ()] = chunk;
+                }
+            }
+
+            this.destroy();
         }
 
         public void setPhysicsInfuserPos(BlockPos pos) {
@@ -1332,4 +1395,7 @@
                     .transform(vector, transformType);
         }
         // VW API Functions End:
+        public BlockPos getPhysicsInfuserPos() {
+            return physicsInfuserPos;
+        }
     }

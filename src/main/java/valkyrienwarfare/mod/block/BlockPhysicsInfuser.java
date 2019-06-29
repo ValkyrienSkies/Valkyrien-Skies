@@ -62,7 +62,7 @@ public class BlockPhysicsInfuser extends BlockVWDirectional implements ITileEnti
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
         TileEntityPhysicsInfuser te = (TileEntityPhysicsInfuser) worldIn.getTileEntity(pos);
-        if (te == null) {
+        if (te == null || te.isInvalid()) {
             // Bah!
             return;
         }
@@ -78,6 +78,8 @@ public class BlockPhysicsInfuser extends BlockVWDirectional implements ITileEnti
                 .getBlock() == ValkyrienWarfareMod.INSTANCE.physicsInfuserDummy) {
             worldIn.setBlockToAir(dummyPos);
         }
+        // Finally, delete the tile entity.
+        worldIn.removeTileEntity(pos);
     }
 
     public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par4) {

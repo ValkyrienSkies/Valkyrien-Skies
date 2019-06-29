@@ -24,11 +24,18 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.block.BlockShipTelegraph;
 import valkyrienwarfare.addon.control.nodenetwork.VWNode_TileEntity;
 import valkyrienwarfare.addon.control.piloting.ControllerInputType;
 import valkyrienwarfare.addon.control.piloting.PilotControlsMessage;
+import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.fixes.VWNetwork;
+import valkyrienwarfare.physics.collision.polygons.Polygon;
+import valkyrienwarfare.physics.management.PhysicsObject;
 
 import java.util.Optional;
 
@@ -155,4 +162,19 @@ public class TileEntityShipTelegraph extends ImplTileEntityPilotable implements 
         }
     }
 
+    @SideOnly(Side.CLIENT)
+    public AxisAlignedBB getRenderBoundingBox() {
+        AxisAlignedBB renderBB = new AxisAlignedBB(getPos()).expand(0, 1, 0);
+        Optional<PhysicsObject> physicsObject = ValkyrienWarfareMod.getPhysicsObject(getWorld(), getPos());
+        if (physicsObject.isPresent()) {
+            // We're in a physics object; convert the bounding box to a polygon; put its coordinates in global space, and then return the bounding box that encloses
+            // all the points.
+            Polygon bbAsPoly = new Polygon(renderBB, physicsObject.get()
+                    .getShipTransformationManager()
+                    .getCurrentTickTransform(), TransformType.SUBSPACE_TO_GLOBAL);
+            return bbAsPoly.getEnclosedAABB();
+        } else {
+            return renderBB;
+        }
+    }
 }

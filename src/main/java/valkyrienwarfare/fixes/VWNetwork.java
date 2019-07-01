@@ -5,7 +5,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketEffect;
 import net.minecraft.network.play.server.SPacketSoundEffect;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.server.management.PlayerChunkMap;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -23,16 +23,15 @@ import java.util.List;
  */
 public class VWNetwork {
 
-    // The radius in which tile entity packets are sent
-    public static final double TILE_PACKET_RADIUS = 128;
-
+    /**
+     * Don't use this!
+     *
+     * @param tileEntity
+     */
+    @Deprecated
     public static void sendTileToAllNearby(TileEntity tileEntity) {
-        SPacketUpdateTileEntity spacketupdatetileentity = tileEntity.getUpdatePacket();
-        VWNetwork.sendToAllNearExcept(null, tileEntity.getPos()
-                        .getX(), tileEntity.getPos()
-                        .getY(), tileEntity.getPos()
-                        .getZ(), TILE_PACKET_RADIUS,
-                tileEntity.getWorld().provider.getDimension(), spacketupdatetileentity);
+        PlayerChunkMap playerChunkMap = ((WorldServer) tileEntity.getWorld()).playerChunkMap;
+        playerChunkMap.markBlockForUpdate(tileEntity.getPos());
     }
 
     public static void sendToAllNearExcept(@Nullable EntityPlayer except, double x, double y, double z, double radius, int dimension, Packet<?> packetIn) {

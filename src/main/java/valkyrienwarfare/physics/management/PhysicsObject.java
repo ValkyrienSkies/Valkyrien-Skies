@@ -571,7 +571,7 @@
                         // Mark for deconstruction
                         shouldDeconstructShip = !physicsCore.canMaintainShip() || physicsCore.isTryingToDisassembleShip();
                         shipAligningToGrid = !physicsCore.canMaintainShip() || physicsCore.isTryingToAlignShip();
-                        setPhysicsEnabled(physicsCore.isPhysicsEnabled());
+                        setPhysicsEnabled(!physicsCore.canMaintainShip() || physicsCore.isPhysicsEnabled());
                     } else {
                         // Mark for deconstruction
                         shipAligningToGrid = true;
@@ -911,6 +911,10 @@
 
             setNameCustom(modifiedBuffer.readBoolean());
             shipType = modifiedBuffer.readEnumValue(ShipType.class);
+
+            if (modifiedBuffer.readBoolean()) {
+                setPhysicsInfuserPos(modifiedBuffer.readBlockPos());
+            }
         }
 
         public void writeSpawnData(ByteBuf buffer) {
@@ -941,6 +945,12 @@
 
             modifiedBuffer.writeBoolean(isNameCustom());
             modifiedBuffer.writeEnumValue(shipType);
+            // Make a local copy to avoid potential data races
+            BlockPos physicsInfuserPosLocal = getPhysicsInfuserPos();
+            modifiedBuffer.writeBoolean(physicsInfuserPosLocal != null);
+            if (physicsInfuserPosLocal != null) {
+                modifiedBuffer.writeBlockPos(physicsInfuserPosLocal);
+            }
         }
 
         /**

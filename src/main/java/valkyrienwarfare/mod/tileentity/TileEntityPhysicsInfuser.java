@@ -10,6 +10,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.fml.relauncher.Side;
@@ -61,6 +63,30 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
         if (!getWorld().isRemote) {
             IPhysicsChunk chunk = (IPhysicsChunk) getWorld().getChunk(getPos());
             Optional<PhysicsObject> parentShip = chunk.getPhysicsObjectOptional();
+            // Set the physics and align value to false if we're not in a ship
+            if (!parentShip.isPresent()) {
+                if (physicsEnabled || tryingToAlignShip) {
+                    physicsEnabled = false;
+                    tryingToAlignShip = false;
+                    sendUpdateToClients = true;
+                }
+            }
+
+            // Update the blockstate lighting
+            IBlockState infuserState = getWorld().getBlockState(getPos());
+            if (infuserState.getBlock() == ValkyrienWarfareMod.INSTANCE.physicsInfuser) {
+                if (isPhysicsEnabled() && canMaintainShip()) {
+                    if (!infuserState.getValue(BlockPhysicsInfuser.INFUSER_LIGHT_ON)) {
+                        IBlockState newState = infuserState.withProperty(BlockPhysicsInfuser.INFUSER_LIGHT_ON, true);
+                        getWorld().setBlockState(getPos(), newState);
+                    }
+                } else {
+                    if (infuserState.getValue(BlockPhysicsInfuser.INFUSER_LIGHT_ON)) {
+                        IBlockState newState = infuserState.withProperty(BlockPhysicsInfuser.INFUSER_LIGHT_ON, false);
+                        getWorld().setBlockState(getPos(), newState);
+                    }
+                }
+            }
             // Check the status of the item slots
             if (!parentShip.isPresent() && canMaintainShip() && tryToAssembleShip) {
                 // Create a ship with this physics infuser
@@ -72,14 +98,7 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
                     // BlockPos newInfuserPos = ship.getPhysicsObject().getPhysicsInfuserPos();
                 }
             }
-            // Set the physics and align value to false if we're not in a ship
-            if (!parentShip.isPresent()) {
-                if (physicsEnabled || tryingToAlignShip) {
-                    physicsEnabled = false;
-                    tryingToAlignShip = false;
-                    sendUpdateToClients = true;
-                }
-            }
+
             // Send any updates to clients
             if (sendUpdateToClients) {
                 VWNetwork.sendTileToAllNearby(this);
@@ -246,4 +265,19 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
         }
     }
 
+    @Override
+    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate) {
+        return oldState.getBlock() != newSate.getBlock();
+    }
+
+    public boolean isCenterOfShip() {
+        Optional<PhysicsObject> physicsObject = ValkyrienWarfareMod.getPhysicsObject(getWorld(), getPos());
+        if (physicsObject.isPresent()) {
+            return physicsObject.get()
+                    .getPhysicsInfuserPos()
+                    .equals(getPos());
+        } else {
+            return true;
+        }
+    }
 }

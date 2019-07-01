@@ -23,13 +23,22 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IWorldEventListener;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
-import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.Implements;
+import org.spongepowered.asm.mixin.Interface;
 import org.spongepowered.asm.mixin.Interface.Remap;
+import org.spongepowered.asm.mixin.Intrinsic;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -244,6 +253,12 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
             }
         }
 
+        if ((boundingBox.maxX - boundingBox.minX) * (boundingBox.maxY - boundingBox.minY) * (boundingBox.maxZ - boundingBox.minZ) > 10000) {
+            System.err.println("Tried getting entities from giant bounding box!");
+            new Exception().printStackTrace();
+            return new ArrayList<>();
+        }
+
         List toReturn = this.getEntitiesInAABBexcludingOriginal(entityIn, boundingBox, predicate);
 
         BlockPos pos = new BlockPos((boundingBox.minX + boundingBox.maxX) / 2D,
@@ -254,6 +269,13 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
             Polygon poly = new Polygon(boundingBox, wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform(),
                     TransformType.SUBSPACE_TO_GLOBAL);
             boundingBox = poly.getEnclosedAABB().shrink(.3D);
+
+            if ((boundingBox.maxX - boundingBox.minX) * (boundingBox.maxY - boundingBox.minY) * (boundingBox.maxZ - boundingBox.minZ) > 10000) {
+                System.err.println("Tried getting entities from giant bounding box!");
+                new Exception().printStackTrace();
+                return new ArrayList<>();
+            }
+
             toReturn.addAll(this.getEntitiesInAABBexcludingOriginal(entityIn, boundingBox, predicate));
 
             toReturn.remove(wrapper);

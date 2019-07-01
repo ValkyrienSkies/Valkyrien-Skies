@@ -18,17 +18,20 @@ package valkyrienwarfare.mod.block;
 
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.PropertyBool;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -42,11 +45,37 @@ import java.util.List;
 
 public class BlockPhysicsInfuser extends BlockVWDirectional implements ITileEntityProvider {
 
+    public static final PropertyBool INFUSER_LIGHT_ON = PropertyBool.create("infuser_light_on");
+
     int shipSpawnDetectorID;
 
     public BlockPhysicsInfuser(Material materialIn) {
         super(materialIn);
         shipSpawnDetectorID = DetectorManager.DetectorIDs.ShipSpawnerGeneral.ordinal();
+    }
+
+    @Override
+    public IBlockState getStateFromMeta(int meta) {
+        // Lower 3 bits are for enumfacing
+        EnumFacing enumfacing = EnumFacing.byIndex(meta & 7);
+        if (enumfacing.getAxis() == EnumFacing.Axis.Y) {
+            enumfacing = EnumFacing.NORTH;
+        }
+        // Highest bit is for light on
+        boolean lightOn = meta >> 3 == 1;
+        return this.getDefaultState()
+                .withProperty(FACING, enumfacing)
+                .withProperty(INFUSER_LIGHT_ON, lightOn);
+    }
+
+    @Override
+    public int getMetaFromState(IBlockState state) {
+        int stateMeta = state.getValue(FACING)
+                .getIndex();
+        if (state.getValue(INFUSER_LIGHT_ON)) {
+            stateMeta |= 8;
+        }
+        return stateMeta;
     }
 
     @Override
@@ -96,7 +125,8 @@ public class BlockPhysicsInfuser extends BlockVWDirectional implements ITileEnti
         }
 
         return this.getDefaultState()
-                .withProperty(FACING, facingHorizontal);
+                .withProperty(FACING, facingHorizontal)
+                .withProperty(INFUSER_LIGHT_ON, false);
     }
 
     @Override
@@ -104,38 +134,13 @@ public class BlockPhysicsInfuser extends BlockVWDirectional implements ITileEnti
                                     EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
         if (!worldIn.isRemote) {
             playerIn.openGui(ValkyrienWarfareMod.INSTANCE, VW_Gui_Enum.PHYSICS_INFUSER.ordinal(), worldIn, pos.getX(), pos.getY(), pos.getZ());
-
-            /*
-            WorldPhysObjectManager manager = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getManagerForWorld(worldIn);
-            if (manager != null) {
-                PhysicsWrapperEntity wrapperEnt = manager
-                        .getManagingObjectForChunk(worldIn.getChunkFromBlockCoords(pos));
-                if (wrapperEnt != null) {
-                    wrapperEnt.getPhysicsObject().setPhysicsEnabled(!wrapperEnt.getPhysicsObject().isPhysicsEnabled());
-                    // Alright (try) to destroy this ship.
-                    wrapperEnt.getPhysicsObject()
-                            .tryToDeconstructShip();
-                    return true;
-                }
-            }
-
-            if (ValkyrienWarfareMod.canChangeAirshipCounter(true, playerIn)) {
-                PhysicsWrapperEntity wrapper = new PhysicsWrapperEntity(worldIn, pos.getX(), pos.getY(), pos.getZ(),
-                        playerIn, shipSpawnDetectorID, ShipType.FULL_UNLOCKED);
-                worldIn.spawnEntity(wrapper);
-            } else {
-                playerIn.sendMessage(new TextComponentString(
-                        "You've made too many airships! The limit per player is " + ValkyrienWarfareMod.maxAirships));
-            }
-
-             */
         }
         return true;
     }
 
     @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.CUTOUT;
+    public EnumBlockRenderType getRenderType(IBlockState state) {
+        return EnumBlockRenderType.INVISIBLE;
     }
 
     @Override
@@ -180,5 +185,15 @@ public class BlockPhysicsInfuser extends BlockVWDirectional implements ITileEnti
     @Override
     public TileEntity createNewTileEntity(World worldIn, int meta) {
         return new TileEntityPhysicsInfuser();
+    }
+
+    @Override
+    public int getLightValue(IBlockState state, IBlockAccess world, BlockPos pos) {
+        return state.getValue(INFUSER_LIGHT_ON) ? 7 : 0;
+    }
+
+    @Override
+    protected BlockStateContainer createBlockState() {
+        return new BlockStateContainer(this, FACING, INFUSER_LIGHT_ON);
     }
 }

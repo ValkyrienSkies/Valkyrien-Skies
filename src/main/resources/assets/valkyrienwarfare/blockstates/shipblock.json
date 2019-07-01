@@ -1,30 +1,6 @@
 {
   "forge_marker": 1,
-  "defaults": {
-    "custom": {
-      "flip-v": true
-    },
-    "model": "valkyrienwarfarecontrol:empty"
-  },
   "variants": {
-    "default": {
-      "model": "valkyrienwarfarecontrol:empty"
-    },
-    "normal": {
-      "model": "valkyrienwarfarecontrol:empty"
-    },
-    "facing=north": {
-      "model": "valkyrienwarfarecontrol:empty"
-    },
-    "facing=south": {
-      "model": "valkyrienwarfarecontrol:empty"
-    },
-    "facing=west": {
-      "model": "valkyrienwarfarecontrol:empty"
-    },
-    "facing=east": {
-      "model": "valkyrienwarfarecontrol:empty"
-    },
     "inventory": [
       {
         "model": "valkyrienwarfarecontrol:basic_phys_infuser/physics_infuser_inventorymodel_geo.obj",

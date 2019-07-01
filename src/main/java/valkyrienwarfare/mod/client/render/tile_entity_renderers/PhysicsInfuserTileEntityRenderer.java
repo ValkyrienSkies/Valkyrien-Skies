@@ -36,6 +36,7 @@ public class PhysicsInfuserTileEntityRenderer extends TileEntitySpecialRenderer<
 
         IBlockState physicsInfuserState = ValkyrienWarfareMod.INSTANCE.physicsInfuser.getStateFromMeta(tileentity.getBlockMetadata());
         EnumFacing enumfacing = physicsInfuserState.getValue(BlockPhysicsInfuser.FACING);
+        int coreBrightness = physicsInfuserState.getValue(BlockPhysicsInfuser.INFUSER_LIGHT_ON) ? 15728864 : brightness;
         float physicsInfuserRotation = -enumfacing.getHorizontalAngle() + 180;
         GlStateManager.rotate(physicsInfuserRotation, 0, 1, 0);
 
@@ -53,16 +54,21 @@ public class PhysicsInfuserTileEntityRenderer extends TileEntitySpecialRenderer<
         IAtomAnimation cores_animation = GibsAnimationRegistry.getAnimation("physics_infuser_cores");
         // Render only the cores that exist within the physics infuser's inventory.
         IItemHandler handler = tileentity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
-        if (!handler.getStackInSlot(0).isEmpty)
-            cores_animation.renderAnimationNode("physics_core_small1_geo", keyframe, 15728864);
-        if (!handler.getStackInSlot(1).isEmpty)
-            cores_animation.renderAnimationNode("physics_core_small2_geo", keyframe, 15728864);
-        if (!handler.getStackInSlot(2).isEmpty)
-            cores_animation.renderAnimationNode("physics_core_main_geo", keyframe, 15728864);
-        if (!handler.getStackInSlot(3).isEmpty)
-            cores_animation.renderAnimationNode("physics_core_small4_geo", keyframe, 15728864);
-        if (!handler.getStackInSlot(4).isEmpty)
-            cores_animation.renderAnimationNode("physics_core_small3_geo", keyframe, 15728864);
+        if (!handler.getStackInSlot(0).isEmpty) {
+            cores_animation.renderAnimationNode("physics_core_small1_geo", keyframe, coreBrightness);
+        }
+        if (!handler.getStackInSlot(1).isEmpty) {
+            cores_animation.renderAnimationNode("physics_core_small2_geo", keyframe, coreBrightness);
+        }
+        if (!handler.getStackInSlot(2).isEmpty) {
+            cores_animation.renderAnimationNode("physics_core_main_geo", keyframe, coreBrightness);
+        }
+        if (!handler.getStackInSlot(3).isEmpty) {
+            cores_animation.renderAnimationNode("physics_core_small4_geo", keyframe, coreBrightness);
+        }
+        if (!handler.getStackInSlot(4).isEmpty) {
+            cores_animation.renderAnimationNode("physics_core_small3_geo", keyframe, coreBrightness);
+        }
 
 
         GlStateManager.popMatrix();

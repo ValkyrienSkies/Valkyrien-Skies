@@ -30,7 +30,6 @@ import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.block.BlockShipHelm;
 import valkyrienwarfare.addon.control.block.multiblocks.TileEntityEthereumCompressorPart;
@@ -40,11 +39,12 @@ import valkyrienwarfare.addon.control.piloting.ControllerInputType;
 import valkyrienwarfare.addon.control.piloting.PilotControlsMessage;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.fixes.VWNetwork;
-import valkyrienwarfare.math.Vector;
-import valkyrienwarfare.mod.coordinates.VectorImmutable;
-import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
+import valkyrienwarfare.mod.common.coordinates.VectorImmutable;
+import valkyrienwarfare.mod.common.math.Vector;
+import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 
-public class TileEntityShipHelm extends ImplTileEntityPilotable implements ITickable {
+public class TileEntityShipHelm extends TileEntityPilotableImpl implements ITickable {
 
     public double compassAngle = 0;
     public double lastCompassAngle = 0;

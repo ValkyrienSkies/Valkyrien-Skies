@@ -10,9 +10,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import valkyrienwarfare.addon.control.nodenetwork.BasicForceNodeTileEntity;
 import valkyrienwarfare.deprecated_api.IBlockForceProvider;
-import valkyrienwarfare.math.Vector;
-import valkyrienwarfare.physics.management.PhysicsObject;
-import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.math.Vector;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
+import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 
 public abstract class BlockForceProviderBasic extends Block implements ITileEntityProvider, IBlockForceProvider {
 

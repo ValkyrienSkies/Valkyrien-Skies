@@ -33,8 +33,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import valkyrienwarfare.fixes.IPhysicsChunk;
 import valkyrienwarfare.mod.client.render.ITileEntitiesToRenderProvider;
-import valkyrienwarfare.mod.physmanagement.chunk.PhysicsChunkManager;
-import valkyrienwarfare.physics.management.PhysicsObject;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
+import valkyrienwarfare.mod.common.physmanagement.chunk.PhysicsChunkManager;
 
 import java.util.ArrayList;
 import java.util.Iterator;

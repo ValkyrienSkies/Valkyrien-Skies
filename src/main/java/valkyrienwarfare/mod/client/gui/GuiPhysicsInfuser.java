@@ -7,18 +7,18 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
-import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.mod.container.ContainerPhysicsInfuser;
-import valkyrienwarfare.mod.container.InfuserButton;
-import valkyrienwarfare.mod.tileentity.TileEntityPhysicsInfuser;
+import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
+import valkyrienwarfare.mod.common.container.ContainerPhysicsInfuser;
+import valkyrienwarfare.mod.common.container.InfuserButton;
+import valkyrienwarfare.mod.common.tileentity.TileEntityPhysicsInfuser;
 
 import java.io.IOException;
 
-import static valkyrienwarfare.mod.container.InfuserButton.*;
+import static valkyrienwarfare.mod.common.container.InfuserButton.*;
 
 public class GuiPhysicsInfuser extends GuiContainer {
 
-    private static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation(ValkyrienWarfareMod.MODID, "textures/gui/container/physicsinfuserguinocoreson.png");
+    private static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation(ValkyrienWarfareMod.MOD_ID, "textures/gui/container/physicsinfuserguinocoreson.png");
     private final TileEntityPhysicsInfuser tileEntity;
     private GuiButton buttonAssembleShip;
     private GuiButton buttonEnablePhysics;

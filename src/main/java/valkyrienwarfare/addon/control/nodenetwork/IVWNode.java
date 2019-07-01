@@ -5,7 +5,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import valkyrienwarfare.physics.management.PhysicsObject;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 
 import java.util.List;
 import java.util.Set;
@@ -17,7 +17,7 @@ import java.util.Set;
  */
 public interface IVWNode extends GraphObject {
 
-    public static final String NBT_DATA_KEY = "VWNode_Tile_Data";
+    String NBT_DATA_KEY = "VWNode_Tile_Data";
 
     /**
      * This does not return the full graph of connected nodes, just the ones that

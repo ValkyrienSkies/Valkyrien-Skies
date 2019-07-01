@@ -25,9 +25,8 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import valkyrienwarfare.addon.combat.ValkyrienWarfareCombat;
 import valkyrienwarfare.api.TransformType;
-import valkyrienwarfare.fixes.IInventoryPlayerFix;
-import valkyrienwarfare.math.Vector;
-import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.math.Vector;
+import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 
 public class EntityCannonBasic extends EntityMountingWeaponBase {
 
@@ -85,7 +84,7 @@ public class EntityCannonBasic extends EntityMountingWeaponBase {
             boolean hasCannonBall = player.inventory.hasItemStack(cannonBallStack);
             boolean hasPowder = player.inventory.hasItemStack(powderStack);
             if (hasCannonBall && hasPowder || player.isCreative()) {
-                for (NonNullList<ItemStack> aitemstack : IInventoryPlayerFix.getFixFromInventory(player.inventory).getAllInventories()) {
+                for (NonNullList<ItemStack> aitemstack : player.inventory.allInventories) {
                     for (ItemStack itemstack : aitemstack) {
                         if (itemstack != null && itemstack.isItemEqual(cannonBallStack)) {
                             int itemStackSize = itemstack.getCount();
@@ -109,10 +108,8 @@ public class EntityCannonBasic extends EntityMountingWeaponBase {
             }
         } else {
             currentTicksOperated++;
-            if (currentTicksOperated > tickDelay) {
-                // currentTicksOperated = -4;
-                return true;
-            }
+            // currentTicksOperated = -4;
+            return currentTicksOperated > tickDelay;
         }
 
         return false;

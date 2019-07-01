@@ -27,7 +27,6 @@ import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
-import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.combat.entity.EntityCannonBall;
 import valkyrienwarfare.addon.combat.entity.EntityCannonBasic;
 import valkyrienwarfare.addon.combat.item.ItemBasicCannon;
@@ -38,6 +37,7 @@ import valkyrienwarfare.addon.combat.proxy.ClientProxyCombat;
 import valkyrienwarfare.addon.combat.proxy.CommonProxyCombat;
 import valkyrienwarfare.api.addons.Module;
 import valkyrienwarfare.api.addons.VWAddon;
+import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 
 @VWAddon
 public class ValkyrienWarfareCombat extends Module {

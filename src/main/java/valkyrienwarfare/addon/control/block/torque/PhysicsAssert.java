@@ -1,6 +1,6 @@
 package valkyrienwarfare.addon.control.block.torque;
 
-import valkyrienwarfare.mod.multithreaded.VWThread;
+import valkyrienwarfare.mod.common.multithreaded.VWThread;
 
 public class PhysicsAssert {
 

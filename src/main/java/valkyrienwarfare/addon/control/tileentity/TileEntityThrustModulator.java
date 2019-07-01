@@ -28,11 +28,11 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import valkyrienwarfare.addon.control.network.ThrustModulatorGuiInputMessage;
 import valkyrienwarfare.addon.control.nodenetwork.VWNode_TileEntity;
 import valkyrienwarfare.addon.control.proxy.ClientProxyControl;
-import valkyrienwarfare.physics.PhysicsCalculations;
-import valkyrienwarfare.physics.management.PhysicsObject;
+import valkyrienwarfare.mod.common.physics.PhysicsCalculations;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 
 @Optional.Interface(iface = "li.cil.oc.api.network.SimpleComponent", modid = "opencomputers")
-public class TileEntityThrustModulator extends ImplNodeControllerTileEntity implements SimpleComponent {
+public class TileEntityThrustModulator extends TileEntityNodeControllerImpl implements SimpleComponent {
 
     public static final int PHYSICS_PROCESSOR_PRIORITY = 100;
     public double idealYHeight = 25D;

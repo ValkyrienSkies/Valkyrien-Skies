@@ -23,11 +23,11 @@ import org.spongepowered.asm.mixin.Implements;
 import org.spongepowered.asm.mixin.Interface;
 import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
-import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.mod.client.render.IntrinsicTileEntityInterface;
-import valkyrienwarfare.physics.collision.polygons.Polygon;
-import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
+import valkyrienwarfare.mod.common.physics.collision.polygons.Polygon;
+import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 
 @Mixin(TileEntity.class)
 @Implements(@Interface(iface = IntrinsicTileEntityInterface.class, prefix = "vw$"))

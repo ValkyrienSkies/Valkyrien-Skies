@@ -23,12 +23,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.TransformType;
-import valkyrienwarfare.math.Vector;
-import valkyrienwarfare.mod.physmanagement.interaction.IWorldVW;
-import valkyrienwarfare.physics.collision.EntityCollisionInjector;
-import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
+import valkyrienwarfare.mod.common.math.Vector;
+import valkyrienwarfare.mod.common.physics.collision.EntityCollisionInjector;
+import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.physmanagement.interaction.IWorldVW;
 
 public class MixinMethods {
 

@@ -19,8 +19,8 @@ package valkyrienwarfare.deprecated_api;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import valkyrienwarfare.math.Vector;
-import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.math.Vector;
+import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 
 public interface DummyMethods {
     // DO NOT RUN METHODS FROM HERE! USE PhysicsEntityHooks

@@ -27,19 +27,19 @@ import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.block.BlockShipTelegraph;
 import valkyrienwarfare.addon.control.nodenetwork.VWNode_TileEntity;
 import valkyrienwarfare.addon.control.piloting.ControllerInputType;
 import valkyrienwarfare.addon.control.piloting.PilotControlsMessage;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.fixes.VWNetwork;
-import valkyrienwarfare.physics.collision.polygons.Polygon;
-import valkyrienwarfare.physics.management.PhysicsObject;
+import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
+import valkyrienwarfare.mod.common.physics.collision.polygons.Polygon;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 
 import java.util.Optional;
 
-public class TileEntityShipTelegraph extends ImplTileEntityPilotable implements ITickable {
+public class TileEntityShipTelegraph extends TileEntityPilotableImpl implements ITickable {
 
     private ShipChadburnState telegraphState;
     // The following fields are only used by the client for smooth interpolation

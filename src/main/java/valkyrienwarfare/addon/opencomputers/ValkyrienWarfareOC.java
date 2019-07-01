@@ -22,13 +22,13 @@ import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.opencomputers.block.GPSBlock;
 import valkyrienwarfare.addon.opencomputers.proxy.ClientProxyOC;
 import valkyrienwarfare.addon.opencomputers.proxy.CommonProxyOC;
 import valkyrienwarfare.addon.opencomputers.tileentity.GPSTileEntity;
 import valkyrienwarfare.api.addons.Module;
 import valkyrienwarfare.api.addons.VWAddon;
+import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 
 @VWAddon
 public class ValkyrienWarfareOC extends Module {

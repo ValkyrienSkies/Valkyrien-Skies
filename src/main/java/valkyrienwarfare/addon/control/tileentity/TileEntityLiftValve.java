@@ -16,10 +16,10 @@
 
 package valkyrienwarfare.addon.control.tileentity;
 
-import valkyrienwarfare.physics.PhysicsCalculations;
-import valkyrienwarfare.physics.management.PhysicsObject;
+import valkyrienwarfare.mod.common.physics.PhysicsCalculations;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 
-public class TileEntityLiftValve extends ImplNodeControllerTileEntity {
+public class TileEntityLiftValve extends TileEntityNodeControllerImpl {
 
     public static final int PHYSICS_PROCESSOR_PRIORITY = 10;
 

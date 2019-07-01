@@ -22,12 +22,11 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
-import valkyrienwarfare.ValkyrienWarfareMod;
+import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 
 public abstract class Module {
 
@@ -36,8 +35,10 @@ public abstract class Module {
     private ModuleProxy common, client, server; //tODO: call these
     private String modid;
 
-    public Module(String name, ModuleProxy common, ModuleProxy client, ModuleProxy server) {
-        this(name, common, ValkyrienWarfareMod.MODID);
+    public static final void registerRecipe(RegistryEvent.Register<IRecipe> event, String registryName, ItemStack out, Object... in) {
+        CraftingHelper.ShapedPrimer primer = CraftingHelper.parseShaped(in);
+        event.getRegistry()
+                .register(new ShapedRecipes(ValkyrienWarfareMod.MOD_ID, primer.width, primer.height, primer.input, out).setRegistryName(ValkyrienWarfareMod.MOD_ID, registryName));
     }
 
     public Module(String name, ModuleProxy common, String modid) {
@@ -46,9 +47,8 @@ public abstract class Module {
         this.modid = modid;
     }
 
-    public static final void registerRecipe(RegistryEvent.Register<IRecipe> event, String registryName, ItemStack out, Object... in) {
-        CraftingHelper.ShapedPrimer primer = CraftingHelper.parseShaped(in);
-        event.getRegistry().register(new ShapedRecipes(ValkyrienWarfareMod.MODID, primer.width, primer.height, primer.input, out).setRegistryName(ValkyrienWarfareMod.MODID, registryName));
+    public Module(String name, ModuleProxy common, ModuleProxy client, ModuleProxy server) {
+        this(name, common, ValkyrienWarfareMod.MOD_ID);
     }
 
     public static final void registerItemBlock(RegistryEvent.Register<Item> event, Block block) {

@@ -1,12 +1,12 @@
 package valkyrienwarfare.addon.control.block.multiblocks;
 
-import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.fuel.IEtherEngine;
 import valkyrienwarfare.api.TransformType;
-import valkyrienwarfare.math.Vector;
-import valkyrienwarfare.mod.coordinates.VectorImmutable;
-import valkyrienwarfare.physics.management.PhysicsObject;
-import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
+import valkyrienwarfare.mod.common.coordinates.VectorImmutable;
+import valkyrienwarfare.mod.common.math.Vector;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
+import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 
 public class TileEntityEthereumCompressorPart extends TileEntityMultiblockPartForce<EthereumCompressorMultiblockSchematic, TileEntityEthereumCompressorPart> implements IEtherEngine {
 

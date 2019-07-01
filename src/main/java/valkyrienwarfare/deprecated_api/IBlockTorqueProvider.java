@@ -1,8 +1,8 @@
 package valkyrienwarfare.deprecated_api;
 
 import net.minecraft.util.math.BlockPos;
-import valkyrienwarfare.math.Vector;
-import valkyrienwarfare.physics.PhysicsCalculations;
+import valkyrienwarfare.mod.common.math.Vector;
+import valkyrienwarfare.mod.common.physics.PhysicsCalculations;
 
 import javax.annotation.Nullable;
 

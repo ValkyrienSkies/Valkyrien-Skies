@@ -11,9 +11,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
-import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.math.Vector;
-import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
+import valkyrienwarfare.mod.common.math.Vector;
+import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -24,7 +24,7 @@ import java.util.List;
 public class VWNetwork {
 
     /**
-     * Don't use this!
+     * Don't use this! Use world.notifyBlockUpdate() instead!
      *
      * @param tileEntity
      */

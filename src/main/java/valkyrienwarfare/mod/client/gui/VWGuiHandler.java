@@ -5,8 +5,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
-import valkyrienwarfare.mod.container.ContainerPhysicsInfuser;
-import valkyrienwarfare.mod.tileentity.TileEntityPhysicsInfuser;
+import valkyrienwarfare.mod.common.container.ContainerPhysicsInfuser;
+import valkyrienwarfare.mod.common.tileentity.TileEntityPhysicsInfuser;
 
 import static valkyrienwarfare.mod.client.gui.VW_Gui_Enum.PHYSICS_INFUSER;
 

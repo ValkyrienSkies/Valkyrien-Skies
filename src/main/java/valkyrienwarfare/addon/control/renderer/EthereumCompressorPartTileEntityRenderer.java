@@ -7,10 +7,10 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.init.Blocks;
 import valkyrienwarfare.addon.control.block.multiblocks.TileEntityEthereumCompressorPart;
-import valkyrienwarfare.math.RotationMatrices;
-import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.mod.client.render.FastBlockModelRenderer;
 import valkyrienwarfare.mod.client.render.GibsAnimationRegistry;
+import valkyrienwarfare.mod.common.math.RotationMatrices;
+import valkyrienwarfare.mod.common.math.Vector;
 
 public class EthereumCompressorPartTileEntityRenderer extends TileEntitySpecialRenderer<TileEntityEthereumCompressorPart> {
 

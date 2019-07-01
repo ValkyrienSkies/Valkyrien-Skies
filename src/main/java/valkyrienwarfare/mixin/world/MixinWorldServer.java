@@ -6,8 +6,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import valkyrienwarfare.ship_handling.IHasShipManager;
-import valkyrienwarfare.ship_handling.WorldServerShipManager;
+import valkyrienwarfare.mod.common.ship_handling.IHasShipManager;
+import valkyrienwarfare.mod.common.ship_handling.WorldServerShipManager;
 
 @Mixin(value = WorldServer.class)
 public class MixinWorldServer implements IHasShipManager {

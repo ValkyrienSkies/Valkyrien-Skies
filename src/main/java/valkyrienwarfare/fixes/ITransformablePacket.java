@@ -3,15 +3,15 @@ package valkyrienwarfare.fixes;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.play.INetHandlerPlayServer;
-import valkyrienwarfare.MixinLoadManager;
 import valkyrienwarfare.api.TransformType;
-import valkyrienwarfare.math.RotationMatrices;
-import valkyrienwarfare.mod.coordinates.CoordinateSpaceType;
-import valkyrienwarfare.mod.coordinates.ISubspace;
-import valkyrienwarfare.mod.coordinates.ISubspaceProvider;
-import valkyrienwarfare.mod.coordinates.ISubspacedEntity;
-import valkyrienwarfare.mod.coordinates.ISubspacedEntityRecord;
-import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.MixinLoadManager;
+import valkyrienwarfare.mod.common.coordinates.CoordinateSpaceType;
+import valkyrienwarfare.mod.common.coordinates.ISubspace;
+import valkyrienwarfare.mod.common.coordinates.ISubspaceProvider;
+import valkyrienwarfare.mod.common.coordinates.ISubspacedEntity;
+import valkyrienwarfare.mod.common.coordinates.ISubspacedEntityRecord;
+import valkyrienwarfare.mod.common.math.RotationMatrices;
+import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 
 /**
  * Used to indicate when a packet must be transformed into ship space to work

@@ -17,8 +17,8 @@
 package valkyrienwarfare.addon.control.nodenetwork;
 
 import net.minecraft.util.math.BlockPos;
-import valkyrienwarfare.physics.PhysicsCalculations;
-import valkyrienwarfare.physics.management.PhysicsObject;
+import valkyrienwarfare.mod.common.physics.PhysicsCalculations;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 
 public interface INodeController extends Comparable<INodeController> {
 

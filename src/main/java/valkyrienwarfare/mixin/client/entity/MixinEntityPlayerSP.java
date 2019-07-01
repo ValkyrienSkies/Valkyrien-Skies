@@ -8,11 +8,11 @@ import net.minecraft.util.math.AxisAlignedBB;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
-import valkyrienwarfare.ValkyrienWarfareMod;
-import valkyrienwarfare.mod.coordinates.ISubspacedEntity;
-import valkyrienwarfare.mod.coordinates.ISubspacedEntityRecord;
-import valkyrienwarfare.mod.network.SubspacedEntityRecordMessage;
-import valkyrienwarfare.mod.physmanagement.interaction.IDraggable;
+import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
+import valkyrienwarfare.mod.common.coordinates.ISubspacedEntity;
+import valkyrienwarfare.mod.common.coordinates.ISubspacedEntityRecord;
+import valkyrienwarfare.mod.common.network.SubspacedEntityRecordMessage;
+import valkyrienwarfare.mod.common.physmanagement.interaction.IDraggable;
 
 @Mixin(EntityPlayerSP.class)
 public class MixinEntityPlayerSP {

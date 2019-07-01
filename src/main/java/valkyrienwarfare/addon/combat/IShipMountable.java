@@ -16,11 +16,11 @@
 
 package valkyrienwarfare.addon.combat;
 
-import valkyrienwarfare.math.Vector;
+import valkyrienwarfare.mod.common.math.Vector;
 
 public interface IShipMountable {
 
-    public Vector getPositionInLocal();
+    Vector getPositionInLocal();
 
-    public boolean isMounting();
+    boolean isMounting();
 }

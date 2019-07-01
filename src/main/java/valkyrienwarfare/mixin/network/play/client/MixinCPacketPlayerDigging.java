@@ -24,9 +24,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.fixes.ITransformablePacket;
-import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
+import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 
 @Mixin(CPacketPlayerDigging.class)
 public class MixinCPacketPlayerDigging implements ITransformablePacket {

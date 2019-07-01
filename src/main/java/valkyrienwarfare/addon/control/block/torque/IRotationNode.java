@@ -5,7 +5,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
 import valkyrienwarfare.addon.control.block.torque.custom_torque_functions.SimpleTorqueFunction;
-import valkyrienwarfare.physics.management.PhysicsObject;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 
 import java.util.ArrayList;
 import java.util.List;

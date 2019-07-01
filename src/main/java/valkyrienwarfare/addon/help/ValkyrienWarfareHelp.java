@@ -20,10 +20,10 @@ import net.minecraft.item.Item;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
-import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.help.item.ItemManual;
 import valkyrienwarfare.addon.help.proxy.ClientProxyHelp;
 import valkyrienwarfare.api.addons.Module;
+import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 
 /**
  * @author DaPorkchop_

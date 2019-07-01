@@ -30,8 +30,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
 import valkyrienwarfare.addon.world.block.BlockEthereumOre;
 import valkyrienwarfare.addon.world.capability.AntiGravityCapabilityProvider;
-import valkyrienwarfare.fixes.IInventoryPlayerFix;
-import valkyrienwarfare.util.PhysicsSettings;
+import valkyrienwarfare.mod.common.util.PhysicsSettings;
 
 public class WorldEventsCommon {
 
@@ -76,7 +75,7 @@ public class WorldEventsCommon {
             //                    --DaPorkchop_, 28/03/2017
             if (PhysicsSettings.doEtheriumLifting) {
                 if (!player.isCreative()) {
-                    for (NonNullList<ItemStack> stackArray : IInventoryPlayerFix.getFixFromInventory(player.inventory).getAllInventories()) {
+                    for (NonNullList<ItemStack> stackArray : player.inventory.allInventories) {
                         for (ItemStack stack : stackArray) {
                             if (stack != null) {
                                 if (stack.getItem() instanceof ItemBlock) {

@@ -43,17 +43,17 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.fixes.WorldChunkloadingCrashFix;
-import valkyrienwarfare.math.Vector;
-import valkyrienwarfare.mod.coordinates.ISubspace;
-import valkyrienwarfare.mod.coordinates.ISubspaceProvider;
-import valkyrienwarfare.mod.coordinates.ImplSubspace;
-import valkyrienwarfare.mod.physmanagement.interaction.IWorldVW;
-import valkyrienwarfare.physics.collision.polygons.Polygon;
-import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
-import valkyrienwarfare.physics.management.WorldPhysObjectManager;
+import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
+import valkyrienwarfare.mod.common.coordinates.ISubspace;
+import valkyrienwarfare.mod.common.coordinates.ISubspaceProvider;
+import valkyrienwarfare.mod.common.coordinates.ImplSubspace;
+import valkyrienwarfare.mod.common.math.Vector;
+import valkyrienwarfare.mod.common.physics.collision.polygons.Polygon;
+import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.physics.management.WorldPhysObjectManager;
+import valkyrienwarfare.mod.common.physmanagement.interaction.IWorldVW;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -314,9 +314,6 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
     // This is a forge method not vanilla, so we don't remap this.
     @Shadow(remap = false)
     public abstract Iterator<Chunk> getPersistentChunkIterable(Iterator<Chunk> chunkIterator);
-
-    @Shadow
-    abstract boolean isOutsideBuildHeight(BlockPos pos);
 
     @Inject(method = "rayTraceBlocks(Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Vec3d;ZZZ)Lnet/minecraft/util/math/RayTraceResult;", at = @At("HEAD"), cancellable = true)
     public void preRayTraceBlocks(Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox,

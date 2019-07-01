@@ -9,9 +9,9 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumFacing;
 import org.lwjgl.opengl.GL11;
 import valkyrienwarfare.addon.control.block.multiblocks.TileEntityRudderAxlePart;
-import valkyrienwarfare.math.RotationMatrices;
-import valkyrienwarfare.math.Vector;
 import valkyrienwarfare.mod.client.render.GibsModelRegistry;
+import valkyrienwarfare.mod.common.math.RotationMatrices;
+import valkyrienwarfare.mod.common.math.Vector;
 
 public class RudderAxlePartTileEntityRenderer extends TileEntitySpecialRenderer<TileEntityRudderAxlePart> {
 

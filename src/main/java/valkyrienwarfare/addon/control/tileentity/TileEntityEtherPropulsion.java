@@ -16,12 +16,12 @@
 
 package valkyrienwarfare.addon.control.tileentity;
 
-import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.fuel.IEtherEngine;
 import valkyrienwarfare.addon.control.nodenetwork.BasicForceNodeTileEntity;
 import valkyrienwarfare.api.TransformType;
-import valkyrienwarfare.math.Vector;
-import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
+import valkyrienwarfare.mod.common.math.Vector;
+import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 
 public abstract class TileEntityEtherPropulsion extends BasicForceNodeTileEntity implements IEtherEngine {
 

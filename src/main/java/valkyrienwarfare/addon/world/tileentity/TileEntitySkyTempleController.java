@@ -16,12 +16,12 @@
 
 package valkyrienwarfare.addon.world.tileentity;
 
-import valkyrienwarfare.addon.control.tileentity.ImplNodeControllerTileEntity;
-import valkyrienwarfare.math.Vector;
-import valkyrienwarfare.physics.PhysicsCalculations;
-import valkyrienwarfare.physics.management.PhysicsObject;
+import valkyrienwarfare.addon.control.tileentity.TileEntityNodeControllerImpl;
+import valkyrienwarfare.mod.common.math.Vector;
+import valkyrienwarfare.mod.common.physics.PhysicsCalculations;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 
-public class TileEntitySkyTempleController extends ImplNodeControllerTileEntity {
+public class TileEntitySkyTempleController extends TileEntityNodeControllerImpl {
 
     public static final int PHYSICS_PROCESSOR_PRIORITY = 105;
 

@@ -1,8 +1,8 @@
 package com.best108.atom_animation_reader.impl;
 
 import net.minecraft.client.renderer.GlStateManager;
-import valkyrienwarfare.math.Vector;
-import valkyrienwarfare.mod.coordinates.VectorImmutable;
+import valkyrienwarfare.mod.common.coordinates.VectorImmutable;
+import valkyrienwarfare.mod.common.math.Vector;
 
 import java.util.List;
 

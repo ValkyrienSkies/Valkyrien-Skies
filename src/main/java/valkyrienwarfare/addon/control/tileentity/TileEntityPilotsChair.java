@@ -25,12 +25,12 @@ import valkyrienwarfare.addon.control.block.BlockShipPilotsChair;
 import valkyrienwarfare.addon.control.piloting.ControllerInputType;
 import valkyrienwarfare.addon.control.piloting.PilotControlsMessage;
 import valkyrienwarfare.api.TransformType;
-import valkyrienwarfare.math.RotationMatrices;
-import valkyrienwarfare.math.Vector;
-import valkyrienwarfare.physics.management.PhysicsObject;
-import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.math.RotationMatrices;
+import valkyrienwarfare.mod.common.math.Vector;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
+import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 
-public class TileEntityPilotsChair extends ImplTileEntityPilotable {
+public class TileEntityPilotsChair extends TileEntityPilotableImpl {
 
     @Override
     void processControlMessage(PilotControlsMessage message, EntityPlayerMP sender) {

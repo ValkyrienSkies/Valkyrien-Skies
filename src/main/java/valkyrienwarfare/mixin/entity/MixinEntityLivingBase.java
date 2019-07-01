@@ -30,15 +30,15 @@ import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.TransformType;
-import valkyrienwarfare.math.VWMath;
-import valkyrienwarfare.math.Vector;
-import valkyrienwarfare.mod.coordinates.ISubspacedEntity;
-import valkyrienwarfare.mod.coordinates.ISubspacedEntityRecord;
-import valkyrienwarfare.mod.coordinates.VectorImmutable;
-import valkyrienwarfare.physics.collision.polygons.EntityPolygon;
-import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
+import valkyrienwarfare.mod.common.coordinates.ISubspacedEntity;
+import valkyrienwarfare.mod.common.coordinates.ISubspacedEntityRecord;
+import valkyrienwarfare.mod.common.coordinates.VectorImmutable;
+import valkyrienwarfare.mod.common.math.VWMath;
+import valkyrienwarfare.mod.common.math.Vector;
+import valkyrienwarfare.mod.common.physics.collision.polygons.EntityPolygon;
+import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 
 import java.util.List;
 

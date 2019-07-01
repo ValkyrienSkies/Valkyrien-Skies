@@ -18,7 +18,7 @@ package valkyrienwarfare.addon.control.tileentity;
 
 import net.minecraft.nbt.NBTTagCompound;
 import valkyrienwarfare.addon.control.nodenetwork.BasicForceNodeTileEntity;
-import valkyrienwarfare.math.Vector;
+import valkyrienwarfare.mod.common.math.Vector;
 
 public class TileEntityPropellerEngine extends BasicForceNodeTileEntity {
 

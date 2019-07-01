@@ -24,9 +24,9 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
-import valkyrienwarfare.physics.collision.optimization.IBitOctree;
-import valkyrienwarfare.physics.collision.optimization.IBitOctreeProvider;
-import valkyrienwarfare.physics.collision.optimization.SimpleBitOctree;
+import valkyrienwarfare.mod.common.physics.collision.optimization.IBitOctree;
+import valkyrienwarfare.mod.common.physics.collision.optimization.IBitOctreeProvider;
+import valkyrienwarfare.mod.common.physics.collision.optimization.SimpleBitOctree;
 
 @Mixin(BlockStateContainer.class)
 public class MixinBlockStateContainer implements IBitOctreeProvider {

@@ -32,12 +32,12 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.tileentity.TileEntityPilotsChair;
-import valkyrienwarfare.math.Vector;
-import valkyrienwarfare.mod.physmanagement.interaction.EntityDraggable;
-import valkyrienwarfare.mod.physmanagement.interaction.IDraggable;
-import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
+import valkyrienwarfare.mod.common.math.Vector;
+import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.physmanagement.interaction.EntityDraggable;
+import valkyrienwarfare.mod.common.physmanagement.interaction.IDraggable;
 
 import javax.annotation.Nullable;
 import java.util.List;

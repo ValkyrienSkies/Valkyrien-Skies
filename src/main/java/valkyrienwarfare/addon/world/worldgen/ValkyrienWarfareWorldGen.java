@@ -24,7 +24,7 @@ import net.minecraft.world.gen.feature.WorldGenMinable;
 import net.minecraft.world.gen.feature.WorldGenerator;
 import net.minecraftforge.fml.common.IWorldGenerator;
 import valkyrienwarfare.addon.world.ValkyrienWarfareWorld;
-import valkyrienwarfare.mod.physmanagement.chunk.PhysicsChunkManager;
+import valkyrienwarfare.mod.common.physmanagement.chunk.PhysicsChunkManager;
 
 import java.util.Random;
 

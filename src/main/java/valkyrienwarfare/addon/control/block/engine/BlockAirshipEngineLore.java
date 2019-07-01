@@ -25,9 +25,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import valkyrienwarfare.addon.control.tileentity.TileEntityPropellerEngine;
-import valkyrienwarfare.math.Vector;
-import valkyrienwarfare.mod.coordinates.VectorImmutable;
-import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.coordinates.VectorImmutable;
+import valkyrienwarfare.mod.common.math.Vector;
+import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -68,7 +68,7 @@ public abstract class BlockAirshipEngineLore extends BlockAirshipEngine {
         TileEntityPropellerEngine engineTile = (TileEntityPropellerEngine) world.getTileEntity(pos);
         if (engineTile != null) {
             VectorImmutable forceOutputNormal = engineTile.getForceOutputNormal(secondsToApply,
-                    PhysicsWrapperEntity.class.cast(shipEntity).getPhysicsObject());
+                    ((PhysicsWrapperEntity) shipEntity).getPhysicsObject());
             // System.out.println(forceOutputNormal.getX() + ":" + forceOutputNormal.getY()
             // + ":" + forceOutputNormal.getZ());
             return new Vector(pos.getX() + .5D - forceOutputNormal.getX() * .75,

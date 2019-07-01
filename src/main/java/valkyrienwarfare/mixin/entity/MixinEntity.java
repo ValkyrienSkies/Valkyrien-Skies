@@ -27,22 +27,22 @@ import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.TransformType;
-import valkyrienwarfare.math.VWMath;
-import valkyrienwarfare.math.Vector;
-import valkyrienwarfare.mod.coordinates.CoordinateSpaceType;
-import valkyrienwarfare.mod.coordinates.ISubspacedEntity;
-import valkyrienwarfare.mod.coordinates.ISubspacedEntityRecord;
-import valkyrienwarfare.mod.coordinates.VectorImmutable;
-import valkyrienwarfare.mod.physmanagement.chunk.PhysicsChunkManager;
-import valkyrienwarfare.mod.physmanagement.interaction.IDraggable;
-import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
+import valkyrienwarfare.mod.common.coordinates.CoordinateSpaceType;
+import valkyrienwarfare.mod.common.coordinates.ISubspacedEntity;
+import valkyrienwarfare.mod.common.coordinates.ISubspacedEntityRecord;
+import valkyrienwarfare.mod.common.coordinates.VectorImmutable;
+import valkyrienwarfare.mod.common.math.VWMath;
+import valkyrienwarfare.mod.common.math.Vector;
+import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.physmanagement.chunk.PhysicsChunkManager;
+import valkyrienwarfare.mod.common.physmanagement.interaction.IDraggable;
 
 @Mixin(Entity.class)
 public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
 
-    private final IDraggable thisAsDraggable = IDraggable.class.cast(this);
+    private final IDraggable thisAsDraggable = this;
     private final Entity thisAsEntity = Entity.class.cast(this);
     @Shadow
     public float rotationYaw;

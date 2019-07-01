@@ -30,28 +30,45 @@ import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import valkyrienwarfare.VWKeyHandler;
-import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.api.addons.Module;
 import valkyrienwarfare.api.addons.ModuleProxy;
-import valkyrienwarfare.math.Quaternion;
-import valkyrienwarfare.math.Vector;
+import valkyrienwarfare.mod.client.EventsClient;
+import valkyrienwarfare.mod.client.VWKeyHandler;
 import valkyrienwarfare.mod.client.render.GibsModelRegistry;
 import valkyrienwarfare.mod.client.render.PhysObjectRenderFactory;
-import valkyrienwarfare.mod.client.render.tile_entity_renderers.PhysicsInfuserTileEntityRenderer;
-import valkyrienwarfare.mod.event.EventsClient;
-import valkyrienwarfare.mod.tileentity.TileEntityPhysicsInfuser;
-import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.client.render.tile_entity_renderers.TileEntityPhysicsInfuserRenderer;
+import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
+import valkyrienwarfare.mod.common.math.Quaternion;
+import valkyrienwarfare.mod.common.math.Vector;
+import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.tileentity.TileEntityPhysicsInfuser;
 
 public class ClientProxy extends CommonProxy {
 
     public static ICamera lastCamera;
     private final VWKeyHandler keyEvents = new VWKeyHandler();
 
+    private static void registerBlockItem(Block toRegister) {
+        Item item = Item.getItemFromBlock(toRegister);
+        Minecraft.getMinecraft()
+                .getRenderItem()
+                .getItemModelMesher()
+                .register(item, 0, new ModelResourceLocation(ValkyrienWarfareMod.MOD_ID + ":" + item.getTranslationKey()
+                        .substring(5), "inventory"));
+    }
+
+    private static void registerItemModel(Item toRegister) {
+        RenderItem renderItem = Minecraft.getMinecraft()
+                .getRenderItem();
+        renderItem.getItemModelMesher()
+                .register(toRegister, 0, new ModelResourceLocation(ValkyrienWarfareMod.MOD_ID + ":" + toRegister.getTranslationKey()
+                        .substring(5), "inventory"));
+    }
+
     @Override
     public void preInit(FMLPreInitializationEvent e) {
         super.preInit(e);
-        OBJLoader.INSTANCE.addDomain(ValkyrienWarfareMod.MODID.toLowerCase());
+        OBJLoader.INSTANCE.addDomain(ValkyrienWarfareMod.MOD_ID.toLowerCase());
         RenderingRegistry.registerEntityRenderingHandler(PhysicsWrapperEntity.class, new PhysObjectRenderFactory());
         // Register events
         MinecraftForge.EVENT_BUS.register(new EventsClient());
@@ -70,15 +87,6 @@ public class ClientProxy extends CommonProxy {
         mcResourceManager.registerReloadListener((resourceManager) -> GibsModelRegistry.onResourceManagerReload(resourceManager));
     }
 
-    private static void registerBlockItem(Block toRegister) {
-        Item item = Item.getItemFromBlock(toRegister);
-        Minecraft.getMinecraft()
-                .getRenderItem()
-                .getItemModelMesher()
-                .register(item, 0, new ModelResourceLocation(ValkyrienWarfareMod.MODID + ":" + item.getTranslationKey()
-                        .substring(5), "inventory"));
-    }
-
     @Override
     public void postInit(FMLPostInitializationEvent e) {
         super.postInit(e);
@@ -91,15 +99,7 @@ public class ClientProxy extends CommonProxy {
             }
         }
         // Register physics infuser tile entity renderer.
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPhysicsInfuser.class, new PhysicsInfuserTileEntityRenderer());
-    }
-
-    private static void registerItemModel(Item toRegister) {
-        RenderItem renderItem = Minecraft.getMinecraft()
-                .getRenderItem();
-        renderItem.getItemModelMesher()
-                .register(toRegister, 0, new ModelResourceLocation(ValkyrienWarfareMod.MODID + ":" + toRegister.getTranslationKey()
-                        .substring(5), "inventory"));
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPhysicsInfuser.class, new TileEntityPhysicsInfuserRenderer());
     }
 
     @Override

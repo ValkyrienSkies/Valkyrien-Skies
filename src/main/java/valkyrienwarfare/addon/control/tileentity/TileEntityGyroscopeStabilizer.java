@@ -19,8 +19,8 @@ package valkyrienwarfare.addon.control.tileentity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import valkyrienwarfare.api.TransformType;
-import valkyrienwarfare.math.Vector;
-import valkyrienwarfare.physics.PhysicsCalculations;
+import valkyrienwarfare.mod.common.math.Vector;
+import valkyrienwarfare.mod.common.physics.PhysicsCalculations;
 
 public class TileEntityGyroscopeStabilizer extends TileEntity {
 

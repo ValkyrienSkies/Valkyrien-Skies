@@ -23,11 +23,11 @@ import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
 import org.lwjgl.opengl.GL11;
 import valkyrienwarfare.api.TransformType;
-import valkyrienwarfare.math.Quaternion;
-import valkyrienwarfare.math.Vector;
+import valkyrienwarfare.mod.common.math.Quaternion;
+import valkyrienwarfare.mod.common.math.Vector;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
+import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.proxy.ClientProxy;
-import valkyrienwarfare.physics.management.PhysicsObject;
-import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
 
 /**
  * Object owned by each physObject responsible for handling all rendering

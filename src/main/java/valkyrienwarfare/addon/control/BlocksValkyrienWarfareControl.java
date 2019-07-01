@@ -20,7 +20,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.item.Item;
 import net.minecraftforge.event.RegistryEvent;
-import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.block.BlockDopedEthereum;
 import valkyrienwarfare.addon.control.block.BlockGearbox;
 import valkyrienwarfare.addon.control.block.BlockGyroscopeDampener;
@@ -44,6 +43,7 @@ import valkyrienwarfare.addon.control.block.multiblocks.BlockEthereumEnginePart;
 import valkyrienwarfare.addon.control.block.multiblocks.BlockGiantPropellerPart;
 import valkyrienwarfare.addon.control.block.multiblocks.BlockRudderAxlePart;
 import valkyrienwarfare.api.addons.Module;
+import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 
 public class BlocksValkyrienWarfareControl {
 

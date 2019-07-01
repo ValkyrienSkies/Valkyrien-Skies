@@ -31,7 +31,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraftforge.client.ForgeHooksClient;
 import org.lwjgl.opengl.GL11;
-import valkyrienwarfare.physics.management.PhysicsObject;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -115,7 +115,7 @@ public class PhysRenderChunk {
 
         // TODO: There's probably a faster way of doing this.
         public void updateRenderTileEntities() {
-            ITileEntitiesToRenderProvider provider = ITileEntitiesToRenderProvider.class.cast(chunkToRender);
+            ITileEntitiesToRenderProvider provider = (ITileEntitiesToRenderProvider) chunkToRender;
             List<TileEntity> updatedRenderTiles = provider.getTileEntitiesToRender(yMin >> 4);
             if (updatedRenderTiles != null) {
                 Minecraft.getMinecraft().renderGlobal.updateTileEntities(renderTiles, updatedRenderTiles);

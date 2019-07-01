@@ -29,7 +29,6 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.world.block.BlockEthereumOre;
 import valkyrienwarfare.addon.world.block.BlockQuartzFence;
 import valkyrienwarfare.addon.world.block.BlockSkyTempleController;
@@ -42,6 +41,7 @@ import valkyrienwarfare.addon.world.tileentity.TileEntitySkyTempleController;
 import valkyrienwarfare.addon.world.worldgen.ValkyrienWarfareWorldGen;
 import valkyrienwarfare.api.addons.Module;
 import valkyrienwarfare.api.addons.VWAddon;
+import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 
 @VWAddon
 public class ValkyrienWarfareWorld extends Module {
@@ -70,7 +70,7 @@ public class ValkyrienWarfareWorld extends Module {
 
     @Override
     protected void init(FMLStateEvent event) {
-        EntityRegistry.registerModEntity(new ResourceLocation(ValkyrienWarfareMod.MODID, "FallingUpBlockEntity"), EntityFallingUpBlock.class, "FallingUpBlockEntity", 75, ValkyrienWarfareMod.INSTANCE, 80, 1, true);
+        EntityRegistry.registerModEntity(new ResourceLocation(ValkyrienWarfareMod.MOD_ID, "FallingUpBlockEntity"), EntityFallingUpBlock.class, "FallingUpBlockEntity", 75, ValkyrienWarfareMod.INSTANCE, 80, 1, true);
         MinecraftForge.EVENT_BUS.register(worldEventsCommon);
 
         GameRegistry.registerWorldGenerator(new ValkyrienWarfareWorldGen(), 1);

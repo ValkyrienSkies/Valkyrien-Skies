@@ -16,9 +16,9 @@
 
 package valkyrienwarfare.addon.control.nodenetwork;
 
-import valkyrienwarfare.math.Vector;
-import valkyrienwarfare.mod.coordinates.VectorImmutable;
-import valkyrienwarfare.physics.management.PhysicsObject;
+import valkyrienwarfare.mod.common.coordinates.VectorImmutable;
+import valkyrienwarfare.mod.common.math.Vector;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 
 public interface IForceTile {
 
@@ -27,14 +27,14 @@ public interface IForceTile {
      *
      * @return
      */
-    public VectorImmutable getForceOutputNormal(double secondsToApply, PhysicsObject physicsObject);
+    VectorImmutable getForceOutputNormal(double secondsToApply, PhysicsObject physicsObject);
 
     /**
      * Returns the current unoriented force output vector of this engine
      *
      * @return
      */
-    public default Vector getForceOutputUnoriented(double secondsToApply, PhysicsObject physicsObject) {
+    default Vector getForceOutputUnoriented(double secondsToApply, PhysicsObject physicsObject) {
         VectorImmutable forceVectorNormal = getForceOutputNormal(secondsToApply, physicsObject);
         if (forceVectorNormal == null) {
             return new Vector();
@@ -51,23 +51,23 @@ public interface IForceTile {
      *
      * @return
      */
-    public double getMaxThrust();
+    double getMaxThrust();
 
-    public void setMaxThrust(double maxThrust);
+    void setMaxThrust(double maxThrust);
 
     /**
      * Returns magnitude of thrust in Newtons being produced.
      *
      * @return
      */
-    public double getThrustMagnitude();
+    double getThrustMagnitude();
 
     /**
      * Returns the current force multiplier goal.
      *
      * @return
      */
-    public double getThrustMultiplierGoal();
+    double getThrustMultiplierGoal();
 
     /**
      * Sets the goal for the force output, multiplier must be between 0 and 1. The
@@ -75,6 +75,6 @@ public interface IForceTile {
      *
      * @param toUse
      */
-    public void setThrustMultiplierGoal(double thrustMultiplierGoal);
+    void setThrustMultiplierGoal(double thrustMultiplierGoal);
 
 }

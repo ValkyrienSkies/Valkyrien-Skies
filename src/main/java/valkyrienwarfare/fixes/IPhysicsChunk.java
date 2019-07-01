@@ -1,6 +1,6 @@
 package valkyrienwarfare.fixes;
 
-import valkyrienwarfare.physics.management.PhysicsObject;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 
 import java.util.Optional;
 

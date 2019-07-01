@@ -17,10 +17,10 @@
 package valkyrienwarfare.addon.control.nodenetwork;
 
 import net.minecraft.nbt.NBTTagCompound;
-import valkyrienwarfare.math.Vector;
-import valkyrienwarfare.mod.coordinates.VectorImmutable;
-import valkyrienwarfare.physics.management.PhysicsObject;
-import valkyrienwarfare.util.NBTUtils;
+import valkyrienwarfare.mod.common.coordinates.VectorImmutable;
+import valkyrienwarfare.mod.common.math.Vector;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
+import valkyrienwarfare.mod.common.util.NBTUtils;
 
 public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity implements IForceTile {
 

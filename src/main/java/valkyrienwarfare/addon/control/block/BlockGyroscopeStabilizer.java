@@ -24,8 +24,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import valkyrienwarfare.addon.control.tileentity.TileEntityGyroscopeStabilizer;
 import valkyrienwarfare.deprecated_api.IBlockTorqueProvider;
-import valkyrienwarfare.math.Vector;
-import valkyrienwarfare.physics.PhysicsCalculations;
+import valkyrienwarfare.mod.common.math.Vector;
+import valkyrienwarfare.mod.common.physics.PhysicsCalculations;
 
 public class BlockGyroscopeStabilizer extends Block implements ITileEntityProvider, IBlockTorqueProvider {
 

@@ -26,7 +26,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import valkyrienwarfare.deprecated_api.IBlockForceProvider;
-import valkyrienwarfare.math.Vector;
+import valkyrienwarfare.mod.common.math.Vector;
 
 import javax.annotation.Nullable;
 import java.util.Collections;

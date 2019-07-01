@@ -19,8 +19,8 @@ package valkyrienwarfare.deprecated_api;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import valkyrienwarfare.math.Vector;
-import valkyrienwarfare.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.math.Vector;
+import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 
 /**
  * Call whatever method you need from here. Outside of Vector, all the objects here are generic (Ships being Entities). Just be sure not to pass something wrong into here

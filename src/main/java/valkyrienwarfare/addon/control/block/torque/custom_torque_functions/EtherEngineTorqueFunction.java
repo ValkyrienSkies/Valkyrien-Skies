@@ -1,7 +1,7 @@
 package valkyrienwarfare.addon.control.block.torque.custom_torque_functions;
 
 import valkyrienwarfare.addon.control.block.torque.IRotationNode;
-import valkyrienwarfare.physics.management.PhysicsObject;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 
 public class EtherEngineTorqueFunction extends SimpleTorqueFunction {
 

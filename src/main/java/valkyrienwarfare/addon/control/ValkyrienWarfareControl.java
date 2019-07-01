@@ -32,7 +32,6 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
-import valkyrienwarfare.ValkyrienWarfareMod;
 import valkyrienwarfare.addon.control.block.multiblocks.EthereumCompressorMultiblockSchematic;
 import valkyrienwarfare.addon.control.block.multiblocks.EthereumEngineMultiblockSchematic;
 import valkyrienwarfare.addon.control.block.multiblocks.GiantPropellerMultiblockSchematic;
@@ -76,6 +75,7 @@ import valkyrienwarfare.addon.control.tileentity.TileEntityThrustModulator;
 import valkyrienwarfare.addon.world.ValkyrienWarfareWorld;
 import valkyrienwarfare.api.addons.Module;
 import valkyrienwarfare.api.addons.VWAddon;
+import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 
 @VWAddon
 public class ValkyrienWarfareControl extends Module {

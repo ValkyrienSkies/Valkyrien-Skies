@@ -17,9 +17,11 @@ import valkyrienwarfare.addon.control.nodenetwork.VWNode_TileEntity;
 import valkyrienwarfare.addon.control.piloting.ControllerInputType;
 import valkyrienwarfare.addon.control.piloting.PilotControlsMessage;
 import valkyrienwarfare.fixes.VWNetwork;
-import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.common.math.Vector;
-import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
+import valkyrienwarfare.mod.common.util.ValkyrienUtils;
+
+import java.util.Optional;
 
 public class TileEntityLiftControl extends TileEntityPilotableImpl {
 
@@ -73,11 +75,15 @@ public class TileEntityLiftControl extends TileEntityPilotableImpl {
             }
 
             VWNode_TileEntity thisNode = this.getNode();
-            PhysicsWrapperEntity parentEntity = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(this.getWorld(), this.getPos());
+            Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(getWorld(), getPos());
 
-            if (parentEntity != null) {
-                Vector linearVel = parentEntity.getPhysicsObject().getPhysicsProcessor().getVelocityAtPoint(new Vector());
-                Vector physPos = parentEntity.getPhysicsObject().getPhysicsProcessor().getCopyOfPhysCoordinates();
+            if (physicsObject.isPresent()) {
+                Vector linearVel = physicsObject.get()
+                        .getPhysicsProcessor()
+                        .getVelocityAtPoint(new Vector());
+                Vector physPos = physicsObject.get()
+                        .getPhysicsProcessor()
+                        .getCopyOfPhysCoordinates();
 
                 double totalMaxUpwardThrust = 0;
                 for (GraphObject object : thisNode.getGraph().getObjects()) {
@@ -87,7 +93,7 @@ public class TileEntityLiftControl extends TileEntityPilotableImpl {
                         BlockPos masterPos = ((TileEntityEthereumCompressorPart) tile).getMultiblockOrigin();
                         TileEntityEthereumCompressorPart masterTile = (TileEntityEthereumCompressorPart) tile.getWorld().getTileEntity(masterPos);
                         // This is a transient problem that only occurs during world loading.
-                        if (masterTile != null && parentEntity != null) {
+                        if (masterTile != null) {
                             totalMaxUpwardThrust += masterTile.getMaxThrust();
                         }
                         // masterTile.updateTicksSinceLastRecievedSignal();
@@ -107,7 +113,7 @@ public class TileEntityLiftControl extends TileEntityPilotableImpl {
                         BlockPos masterPos = ((TileEntityEthereumCompressorPart) tile).getMultiblockOrigin();
                         TileEntityEthereumCompressorPart masterTile = (TileEntityEthereumCompressorPart) tile.getWorld().getTileEntity(masterPos);
                         // This is a transient problem that only occurs during world loading.
-                        if (masterTile != null && parentEntity != null) {
+                        if (masterTile != null) {
                             masterTile.setThrustMultiplierGoal(multiplier);
                         }
                         // masterTile.updateTicksSinceLastRecievedSignal();

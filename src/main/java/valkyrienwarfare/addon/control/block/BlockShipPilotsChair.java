@@ -33,14 +33,16 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import valkyrienwarfare.addon.control.tileentity.TileEntityPilotsChair;
-import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.common.math.Vector;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.common.physmanagement.interaction.EntityDraggable;
 import valkyrienwarfare.mod.common.physmanagement.interaction.IDraggable;
+import valkyrienwarfare.mod.common.util.ValkyrienUtils;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Optional;
 
 public class BlockShipPilotsChair extends BlockPilotableBasic {
 
@@ -59,14 +61,18 @@ public class BlockShipPilotsChair extends BlockPilotableBasic {
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
         if (!worldIn.isRemote) {
-            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(worldIn, pos);
-            if (wrapper != null) {
-                if (playerIn.getLowestRidingEntity() != wrapper.getLowestRidingEntity()) {
+            Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(worldIn, pos);
+            if (physicsObject.isPresent()) {
+                PhysicsWrapperEntity wrapperEntity = physicsObject.get()
+                        .getWrapperEntity();
+                if (playerIn.getLowestRidingEntity() != wrapperEntity.getLowestRidingEntity()) {
                     TileEntity tileEntity = worldIn.getTileEntity(pos);
                     if (tileEntity instanceof TileEntityPilotsChair) {
                         Vector playerPos = new Vector(playerIn);
 
-                        wrapper.getPhysicsObject().getShipTransformationManager().fromLocalToGlobal(playerPos);
+                        wrapperEntity.getPhysicsObject()
+                                .getShipTransformationManager()
+                                .fromLocalToGlobal(playerPos);
 
                         playerIn.posX = playerPos.X;
                         playerIn.posY = playerPos.Y;
@@ -74,14 +80,17 @@ public class BlockShipPilotsChair extends BlockPilotableBasic {
 
                         IDraggable entityDraggable = EntityDraggable.getDraggableFromEntity(playerIn);
                         // Only mount the player if they're standing on the ship.
-                        if (entityDraggable.getWorldBelowFeet() == wrapper) {
-                            playerIn.startRiding(wrapper);
+                        if (entityDraggable.getWorldBelowFeet() == wrapperEntity) {
+                            playerIn.startRiding(wrapperEntity);
                             Vector localMountPos = getPlayerMountOffset(state, pos);
-                            wrapper.getPhysicsObject().fixEntity(playerIn, localMountPos);
+                            wrapperEntity.getPhysicsObject()
+                                    .fixEntity(playerIn, localMountPos);
                         }
 
                         ((TileEntityPilotsChair) tileEntity).setPilotEntity(playerIn);
-                        wrapper.getPhysicsObject().getShipTransformationManager().fromGlobalToLocal(playerPos);
+                        wrapperEntity.getPhysicsObject()
+                                .getShipTransformationManager()
+                                .fromGlobalToLocal(playerPos);
 
                         playerIn.posX = playerPos.X;
                         playerIn.posY = playerPos.Y;

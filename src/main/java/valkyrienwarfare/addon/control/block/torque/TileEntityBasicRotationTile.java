@@ -9,8 +9,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.Tuple;
 import valkyrienwarfare.fixes.VWNetwork;
-import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
+import valkyrienwarfare.mod.common.util.ValkyrienUtils;
 
 import java.util.Optional;
 
@@ -82,7 +82,7 @@ public class TileEntityBasicRotationTile extends TileEntity implements IRotation
         } else {
             if (this.firstUpdate) {
                 // Inject the rotation node into the physics world.
-                Optional<PhysicsObject> physicsObjectOptional = ValkyrienWarfareMod.getPhysicsObject(getWorld(), getPos());
+                Optional<PhysicsObject> physicsObjectOptional = ValkyrienUtils.getPhysicsObject(getWorld(), getPos());
                 if (physicsObjectOptional.isPresent()) {
                     IRotationNodeWorld nodeWorld = physicsObjectOptional.get().getPhysicsProcessor().getPhysicsRotationNodeWorld();
                     rotationNode.markInitialized();

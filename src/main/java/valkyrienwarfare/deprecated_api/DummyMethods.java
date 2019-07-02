@@ -22,6 +22,7 @@ import net.minecraft.world.World;
 import valkyrienwarfare.mod.common.math.Vector;
 import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 
+@Deprecated
 public interface DummyMethods {
     // DO NOT RUN METHODS FROM HERE! USE PhysicsEntityHooks
 

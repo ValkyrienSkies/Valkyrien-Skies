@@ -124,10 +124,7 @@ public class ShipTransformationPacketHolder {
         physObj.getWrapperEntity().setPhysicsEntityRotation(Math.toDegrees(lerpedRotationAngles[0]), Math.toDegrees(lerpedRotationAngles[1]), Math.toDegrees(lerpedRotationAngles[2]));
 
         physObj.setCenterCoord(centerOfRotation);
-
-        // Create an AABB that contains both the previous AABB and the new one, bigger
-        // is always better!
-        AxisAlignedBB expandedBB = physObj.getShipBoundingBox().union(shipBB);
-        physObj.setShipBoundingBox(expandedBB);
+        // Update the ship bounding box
+        physObj.setShipBoundingBox(shipBB);
     }
 }

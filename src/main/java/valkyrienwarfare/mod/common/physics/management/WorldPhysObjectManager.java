@@ -21,7 +21,6 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
 import valkyrienwarfare.mod.common.physmanagement.chunk.VWChunkClaim;
 
 import java.util.ArrayList;
@@ -119,22 +118,6 @@ public class WorldPhysObjectManager {
             chunkPosToPhysicsEntityMap.remove(keyToRemove);
         }
         loaded.getPhysicsObject().resetConsecutiveProperTicks();
-    }
-
-    /**
-     * In the future this will be moved to a Mixins system, for now though this is
-     * worse.
-     *
-     * @param chunk
-     * @return
-     */
-    @Deprecated
-    public PhysicsWrapperEntity getManagingObjectForChunk(Chunk chunk) {
-        return getManagingObjectForChunkPosition(chunk.x, chunk.z);
-    }
-
-    public PhysicsWrapperEntity getManagingObjectForChunkPosition(int chunkX, int chunkZ) {
-        return chunkPosToPhysicsEntityMap.get(getLongFromInts(chunkX, chunkZ));
     }
 
     public List<PhysicsWrapperEntity> getNearbyPhysObjects(AxisAlignedBB toCheck) {

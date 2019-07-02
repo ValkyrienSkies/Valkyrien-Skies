@@ -24,11 +24,14 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import valkyrienwarfare.api.TransformType;
-import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.common.math.Vector;
 import valkyrienwarfare.mod.common.physics.collision.EntityCollisionInjector;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.common.physmanagement.interaction.IWorldVW;
+import valkyrienwarfare.mod.common.util.ValkyrienUtils;
+
+import java.util.Optional;
 
 public class MixinMethods {
 
@@ -49,15 +52,17 @@ public class MixinMethods {
             double newY = this_.posY + dy;
             double newZ = this_.posZ + dz;
             BlockPos newPosInBlock = new BlockPos(newX, newY, newZ);
-            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(this_.world, newPosInBlock);
+            Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(this_.world, newPosInBlock);
 
-            if (wrapper == null) {
+            if (!physicsObject.isPresent()) {
                 return null;
             }
 
             Vector endPos = new Vector(newX, newY, newZ);
-
-            wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(endPos, TransformType.GLOBAL_TO_SUBSPACE);
+            physicsObject.get()
+                    .getShipTransformationManager()
+                    .getCurrentTickTransform()
+                    .transform(endPos, TransformType.GLOBAL_TO_SUBSPACE);
             dx = endPos.X - this_.posX;
             dy = endPos.Y - this_.posY;
             dz = endPos.Z - this_.posZ;

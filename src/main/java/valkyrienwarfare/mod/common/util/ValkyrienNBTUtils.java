@@ -27,16 +27,15 @@ import valkyrienwarfare.mod.common.math.Vector;
 
 import javax.annotation.Nullable;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * NBTUtils is filled with helper methods for saving and loading different
+ * ValkyrienNBTUtils is filled with helper methods for saving and loading different
  * objects from NBTTagCompound.
  *
  * @author thebest108
  */
-public class NBTUtils {
+public class ValkyrienNBTUtils {
 
     public static final void writeBlockPosToNBT(String name, BlockPos pos, NBTTagCompound compound) {
         compound.setInteger(name + "X", pos.getX());
@@ -49,34 +48,6 @@ public class NBTUtils {
         int y = compound.getInteger(name + "Y");
         int z = compound.getInteger(name + "Z");
         return new BlockPos(x, y, z);
-    }
-
-    public static final void writeBlockPosArrayListToNBT(String name, ArrayList<BlockPos> posArray,
-                                                         NBTTagCompound compound) {
-        int[] xArray = new int[posArray.size()];
-        int[] yArray = new int[posArray.size()];
-        int[] zArray = new int[posArray.size()];
-        for (int i = 0; i < posArray.size(); i++) {
-            BlockPos pos = posArray.get(i);
-            xArray[i] = pos.getX();
-            yArray[i] = pos.getY();
-            zArray[i] = pos.getZ();
-        }
-        compound.setIntArray(name + "xArray", xArray);
-        compound.setIntArray(name + "yArray", yArray);
-        compound.setIntArray(name + "zArray", zArray);
-    }
-
-    public static final ArrayList<BlockPos> readBlockPosArrayListFromNBT(String name, NBTTagCompound compound) {
-        int[] xArray = compound.getIntArray(name + "xArray");
-        int[] yArray = compound.getIntArray(name + "yArray");
-        int[] zArray = compound.getIntArray(name + "zArray");
-        ArrayList<BlockPos> posArray = new ArrayList<>(xArray.length + 10);
-        for (int i = 0; i < xArray.length; i++) {
-            BlockPos pos = new BlockPos(xArray[i], yArray[i], zArray[i]);
-            posArray.add(pos);
-        }
-        return posArray;
     }
 
     public static final void write3x3MatrixToNBT(String name, double[] matrix, NBTTagCompound compound) {

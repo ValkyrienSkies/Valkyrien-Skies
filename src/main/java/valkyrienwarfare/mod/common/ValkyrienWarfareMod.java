@@ -28,8 +28,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
@@ -62,6 +60,7 @@ import valkyrienwarfare.api.IPhysicsEntityManager;
 import valkyrienwarfare.api.addons.Module;
 import valkyrienwarfare.api.addons.VWAddon;
 import valkyrienwarfare.deprecated_api.DataTag;
+import valkyrienwarfare.deprecated_api.RealMethods;
 import valkyrienwarfare.deprecated_api.ValkyrienWarfareHooks;
 import valkyrienwarfare.mixin.MixinLoaderForge;
 import valkyrienwarfare.mod.client.gui.TabValkyrienWarfare;
@@ -82,7 +81,6 @@ import valkyrienwarfare.mod.common.network.VWGuiButtonHandler;
 import valkyrienwarfare.mod.common.network.VWGuiButtonMessage;
 import valkyrienwarfare.mod.common.physics.BlockPhysicsRegistration;
 import valkyrienwarfare.mod.common.physics.management.DimensionPhysObjectManager;
-import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.common.physmanagement.VW_APIPhysicsEntityManager;
 import valkyrienwarfare.mod.common.physmanagement.chunk.DimensionPhysicsChunkManager;
@@ -91,7 +89,6 @@ import valkyrienwarfare.mod.common.physmanagement.chunk.ImplVWWorldDataCapabilit
 import valkyrienwarfare.mod.common.physmanagement.chunk.StorageVWWorldData;
 import valkyrienwarfare.mod.common.tileentity.TileEntityPhysicsInfuser;
 import valkyrienwarfare.mod.common.util.PhysicsSettings;
-import valkyrienwarfare.mod.common.util.RealMethods;
 import valkyrienwarfare.mod.proxy.CommonProxy;
 import valkyrienwarfare.mod.proxy.ServerProxy;
 
@@ -106,7 +103,6 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -235,20 +231,6 @@ public class ValkyrienWarfareMod {
                 }
             }
             addons.add(module);
-        }
-    }
-
-    public static Optional<PhysicsObject> getPhysicsObject(World world, BlockPos pos) {
-        try {
-            PhysicsWrapperEntity wrapperEntity = VW_PHYSICS_MANAGER.getObjectManagingPos(world, pos);
-            if (wrapperEntity != null) {
-                return Optional.of(wrapperEntity.getPhysicsObject());
-            } else {
-                return Optional.empty();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Optional.empty();
         }
     }
 

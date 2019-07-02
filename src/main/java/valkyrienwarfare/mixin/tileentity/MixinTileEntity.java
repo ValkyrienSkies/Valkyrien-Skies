@@ -23,9 +23,11 @@ import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
-import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.common.math.Vector;
-import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
+import valkyrienwarfare.mod.common.util.ValkyrienUtils;
+
+import java.util.Optional;
 
 @Mixin(TileEntity.class)
 public abstract class MixinTileEntity implements net.minecraftforge.common.capabilities.ICapabilitySerializable<NBTTagCompound> {
@@ -52,11 +54,13 @@ public abstract class MixinTileEntity implements net.minecraftforge.common.capab
             //Assume on Ship
             if (tileWorld.isRemote && toReturn > 9999999D) {
                 BlockPos pos = this.pos;
-                PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(this.world, pos);
+                Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(world, pos);
 
-                if (wrapper != null) {
+                if (physicsObject.isPresent()) {
                     Vector tilePos = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
-                    wrapper.getPhysicsObject().getShipTransformationManager().fromLocalToGlobal(tilePos);
+                    physicsObject.get()
+                            .getShipTransformationManager()
+                            .fromLocalToGlobal(tilePos);
 
                     tilePos.X -= x;
                     tilePos.Y -= y;

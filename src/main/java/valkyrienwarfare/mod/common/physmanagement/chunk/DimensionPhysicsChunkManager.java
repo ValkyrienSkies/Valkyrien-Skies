@@ -32,7 +32,7 @@ public class DimensionPhysicsChunkManager {
     private final Map<World, PhysicsChunkManager> managerPerWorld;
 
     public DimensionPhysicsChunkManager() {
-        managerPerWorld = new HashMap<World, PhysicsChunkManager>();
+        managerPerWorld = new HashMap<>();
     }
 
     public void initWorld(World world) {

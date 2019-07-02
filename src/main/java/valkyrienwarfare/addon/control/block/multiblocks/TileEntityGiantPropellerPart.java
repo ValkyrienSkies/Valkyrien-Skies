@@ -10,10 +10,10 @@ import valkyrienwarfare.addon.control.block.torque.IRotationNodeProvider;
 import valkyrienwarfare.addon.control.block.torque.IRotationNodeWorld;
 import valkyrienwarfare.addon.control.block.torque.ImplRotationNode;
 import valkyrienwarfare.fixes.VWNetwork;
-import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.common.coordinates.VectorImmutable;
 import valkyrienwarfare.mod.common.math.Vector;
 import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
+import valkyrienwarfare.mod.common.util.ValkyrienUtils;
 
 import java.util.Optional;
 
@@ -99,7 +99,7 @@ public class TileEntityGiantPropellerPart extends TileEntityMultiblockPartForce<
             }
 
             if (this.isPartOfAssembledMultiblock()) {
-                Optional<PhysicsObject> physicsObjectOptional = ValkyrienWarfareMod.getPhysicsObject(getWorld(), getPos());
+                Optional<PhysicsObject> physicsObjectOptional = ValkyrienUtils.getPhysicsObject(getWorld(), getPos());
                 if (physicsObjectOptional.isPresent() && this.isMaster()) {
                     if (!rotationNode.hasBeenPlacedIntoNodeWorld()) {
                         IRotationNodeWorld nodeWorld = physicsObjectOptional.get().getPhysicsProcessor().getPhysicsRotationNodeWorld();
@@ -128,7 +128,7 @@ public class TileEntityGiantPropellerPart extends TileEntityMultiblockPartForce<
     @Override
     public void dissembleMultiblockLocal() {
         super.dissembleMultiblockLocal();
-        Optional<PhysicsObject> object = ValkyrienWarfareMod.getPhysicsObject(getWorld(), getPos());
+        Optional<PhysicsObject> object = ValkyrienUtils.getPhysicsObject(getWorld(), getPos());
         if (object.isPresent()) {
             this.rotationNode.queueTask(() -> rotationNode.resetNodeData());
 

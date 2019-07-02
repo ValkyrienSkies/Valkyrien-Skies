@@ -25,7 +25,7 @@ import net.minecraft.world.storage.MapStorage;
 import net.minecraft.world.storage.WorldSavedData;
 import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.common.physmanagement.chunk.VWChunkClaim;
-import valkyrienwarfare.mod.common.util.NBTUtils;
+import valkyrienwarfare.mod.common.util.ValkyrienNBTUtils;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
@@ -99,7 +99,7 @@ public class BlockPosToShipUUIDData extends WorldSavedData {
 
     @Override
     public void readFromNBT(NBTTagCompound compound) {
-        ByteBuffer buffer = NBTUtils.getByteBuf("WorldChunkSetUUIDMix", compound);
+        ByteBuffer buffer = ValkyrienNBTUtils.getByteBuf("WorldChunkSetUUIDMix", compound);
 
 //		buffer.flip();
         while (buffer.hasRemaining()) {
@@ -146,7 +146,7 @@ public class BlockPosToShipUUIDData extends WorldSavedData {
             buffer.putLong(leastBits);
         }
 
-        NBTUtils.setByteBuf("WorldChunkSetUUIDMix", buffer, compound);
+        ValkyrienNBTUtils.setByteBuf("WorldChunkSetUUIDMix", buffer, compound);
         return compound;
     }
 

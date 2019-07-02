@@ -34,11 +34,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.common.math.Vector;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.common.ship_handling.IHasShipManager;
 import valkyrienwarfare.mod.common.ship_handling.WorldClientShipManager;
+import valkyrienwarfare.mod.common.util.ValkyrienUtils;
 
 import java.util.List;
+import java.util.Optional;
 
 @Mixin(World.class)
 public abstract class MixinWorldClient implements IHasShipManager {
@@ -133,10 +136,13 @@ public abstract class MixinWorldClient implements IHasShipManager {
             RayTraceResult result = rayTraceBlocks(traceStart.toVec3d(), traceEnd.toVec3d(), true, true, false);
 
             if (result != null && result.typeOfHit != RayTraceResult.Type.MISS && result.getBlockPos() != null) {
-                PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(World.class.cast(this), result.getBlockPos());
-                if (wrapper != null) {
+                Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(World.class.cast(this), pos);
+
+                if (physicsObject.isPresent()) {
                     Vector blockPosVector = new Vector(result.getBlockPos().getX() + .5D, result.getBlockPos().getY() + .5D, result.getBlockPos().getZ() + .5D);
-                    wrapper.getPhysicsObject().getShipTransformationManager().fromLocalToGlobal(blockPosVector);
+                    physicsObject.get()
+                            .getShipTransformationManager()
+                            .fromLocalToGlobal(blockPosVector);
                     BlockPos toReturn = new BlockPos(pos.getX(), blockPosVector.Y + .5D, pos.getZ());
                     return toReturn;
                 }

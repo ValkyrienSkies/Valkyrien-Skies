@@ -66,14 +66,17 @@ import valkyrienwarfare.fixes.IPhysicsChunk;
 import valkyrienwarfare.mod.common.capability.IAirshipCounterCapability;
 import valkyrienwarfare.mod.common.math.RotationMatrices;
 import valkyrienwarfare.mod.common.math.Vector;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 import valkyrienwarfare.mod.common.physics.management.PhysicsTickHandler;
 import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.common.physmanagement.chunk.IVWWorldDataCapability;
 import valkyrienwarfare.mod.common.physmanagement.interaction.VWWorldEventListener;
+import valkyrienwarfare.mod.common.util.ValkyrienUtils;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Level;
 
 public class EventsCommon {
@@ -84,8 +87,9 @@ public class EventsCommon {
     public void onPlayerSleepInBedEvent(PlayerSleepInBedEvent event) {
         EntityPlayer player = event.getEntityPlayer();
         BlockPos pos = event.getPos();
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(player.world, pos);
-        if (wrapper != null) {
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(player.getEntityWorld(), pos);
+
+        if (physicsObject.isPresent()) {
             if (player instanceof EntityPlayerMP) {
                 EntityPlayerMP playerMP = (EntityPlayerMP) player;
                 player.sendMessage(new TextComponentString("Spawn Point Set!"));
@@ -103,9 +107,12 @@ public class EventsCommon {
                 BlockPos posAt = event.getPos();
                 EntityPlayer player = event.getEntityPlayer();
                 World world = event.getWorld();
-                PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(world, posAt);
-                if (wrapper != null) {
-                    wrapper.setCustomNameTag(stack.getDisplayName());
+                Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(world, posAt);
+
+                if (physicsObject.isPresent()) {
+                    physicsObject.get()
+                            .getWrapperEntity()
+                            .setCustomNameTag(stack.getDisplayName());
                     --stack.stackSize;
                     event.setCanceled(true);
                 }
@@ -119,15 +126,19 @@ public class EventsCommon {
 
         World world = entity.world;
         BlockPos posAt = new BlockPos(entity);
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(world, posAt);
-        if (!event.getWorld().isRemote && !(entity instanceof EntityFallingBlock) && wrapper != null && wrapper.getPhysicsObject()
-                .getShipTransformationManager() != null) {
+
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(world, posAt);
+        if (!event.getWorld().isRemote && physicsObject.isPresent() && !(entity instanceof EntityFallingBlock)) {
             if (entity instanceof EntityMountingWeaponBase || entity instanceof EntityArmorStand
                     || entity instanceof EntityPig || entity instanceof EntityBoat) {
-                wrapper.getPhysicsObject().fixEntity(entity, new Vector(entity));
-                wrapper.getPhysicsObject().queueEntityForMounting(entity);
+                physicsObject.get()
+                        .fixEntity(entity, new Vector(entity));
+                physicsObject.get()
+                        .queueEntityForMounting(entity);
             }
-            RotationMatrices.applyTransform(wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform(), entity,
+            RotationMatrices.applyTransform(physicsObject.get()
+                            .getShipTransformationManager()
+                            .getCurrentTickTransform(), entity,
                     TransformType.SUBSPACE_TO_GLOBAL);
             // TODO: This should work but it doesn't because of sponge. Instead we have to rely on MixinChunk.preAddEntity() to fix this
             // event.setCanceled(true);
@@ -212,8 +223,9 @@ public class EventsCommon {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onPlayerInteractEvent(PlayerInteractEvent event) {
         BlockPos pos = event.getPos();
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(event.getWorld(), pos);
-        if (wrapper != null) {
+
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(event.getWorld(), pos);
+        if (physicsObject.isPresent()) {
             event.setResult(Result.ALLOW);
         }
     }

@@ -37,9 +37,13 @@ import valkyrienwarfare.fixes.SoundFixWrapper;
 import valkyrienwarfare.mod.client.render.GibsModelRegistry;
 import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.common.math.Vector;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.common.physics.management.WorldPhysObjectManager;
 import valkyrienwarfare.mod.common.physmanagement.interaction.EntityDraggable;
+import valkyrienwarfare.mod.common.util.ValkyrienUtils;
+
+import java.util.Optional;
 
 public class EventsClient {
 
@@ -55,17 +59,22 @@ public class EventsClient {
 
     @SubscribeEvent
     public void onPlaySoundEvent(PlaySoundEvent event) {
-        ISound sound = event.getSound();
-        BlockPos pos = new BlockPos(sound.getXPosF(), sound.getYPosF(), sound.getZPosF());
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(Minecraft.getMinecraft().world, pos);
+        if (Minecraft.getMinecraft().world != null) {
+            ISound sound = event.getSound();
+            BlockPos pos = new BlockPos(sound.getXPosF(), sound.getYPosF(), sound.getZPosF());
 
-        if (wrapper != null) {
-            Vector newSoundLocation = new Vector(sound.getXPosF(), sound.getYPosF(), sound.getZPosF());
-            wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(newSoundLocation, TransformType.SUBSPACE_TO_GLOBAL);
+            Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(Minecraft.getMinecraft().world, pos);
+            if (physicsObject.isPresent()) {
+                Vector newSoundLocation = new Vector(sound.getXPosF(), sound.getYPosF(), sound.getZPosF());
+                physicsObject.get()
+                        .getShipTransformationManager()
+                        .getCurrentTickTransform()
+                        .transform(newSoundLocation, TransformType.SUBSPACE_TO_GLOBAL);
 
-            SoundFixWrapper soundFix = new SoundFixWrapper(sound, wrapper, newSoundLocation);
+                SoundFixWrapper soundFix = new SoundFixWrapper(sound, newSoundLocation);
 
-            event.setResultSound(soundFix);
+                event.setResultSound(soundFix);
+            }
         }
     }
 
@@ -91,8 +100,8 @@ public class EventsClient {
         GL11.glPushMatrix();
         BlockPos pos = Minecraft.getMinecraft().objectMouseOver.getBlockPos();
         if (pos != null) {
-            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(Minecraft.getMinecraft().world, pos);
-            if (wrapper != null && wrapper.getPhysicsObject() != null && wrapper.getPhysicsObject().getShipRenderer() != null && wrapper.getPhysicsObject().getCenterCoord() != null) {
+            Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(Minecraft.getMinecraft().world, pos);
+            if (physicsObject.isPresent()) {
                 RayTraceResult objectOver = Minecraft.getMinecraft().objectMouseOver;
                 if (objectOver != null && objectOver.hitVec != null) {
                     BufferBuilder buffer = Tessellator.getInstance().getBuffer();
@@ -100,10 +109,13 @@ public class EventsClient {
                     oldYOff = buffer.yOffset;
                     oldZOff = buffer.zOffset;
 
-                    buffer.setTranslation(-wrapper.getPhysicsObject().getShipRenderer().offsetPos.getX(), -wrapper.getPhysicsObject().getShipRenderer().offsetPos.getY(), -wrapper.getPhysicsObject().getShipRenderer().offsetPos.getZ());
-
-                    wrapper.getPhysicsObject().getShipRenderer().setupTranslation(event.getPartialTicks());
-//            		objectOver.hitVec = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform, objectOver.hitVec);
+                    buffer.setTranslation(-physicsObject.get()
+                            .getShipRenderer().offsetPos.getX(), -physicsObject.get()
+                            .getShipRenderer().offsetPos.getY(), -physicsObject.get()
+                            .getShipRenderer().offsetPos.getZ());
+                    physicsObject.get()
+                            .getShipRenderer()
+                            .setupTranslation(event.getPartialTicks());
                 }
             }
         }
@@ -113,16 +125,16 @@ public class EventsClient {
     public void onDrawBlockHighlightEventLast(DrawBlockHighlightEvent event) {
         BlockPos pos = Minecraft.getMinecraft().objectMouseOver.getBlockPos();
         if (pos != null) {
-            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(Minecraft.getMinecraft().world, pos);
-            if (wrapper != null && wrapper.getPhysicsObject() != null && wrapper.getPhysicsObject().getShipRenderer() != null && wrapper.getPhysicsObject().getCenterCoord() != null) {
+            Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(Minecraft.getMinecraft().world, pos);
+            if (physicsObject.isPresent()) {
                 RayTraceResult objectOver = Minecraft.getMinecraft().objectMouseOver;
                 if (objectOver != null && objectOver.hitVec != null) {
                     BufferBuilder buffer = Tessellator.getInstance().getBuffer();
                     buffer.xOffset = oldXOff;
                     buffer.yOffset = oldYOff;
                     buffer.zOffset = oldZOff;
-//            		wrapper.wrapping.renderer.inverseTransform(event.getPartialTicks());
-//            		objectOver.hitVec = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, objectOver.hitVec);
+                    // wrapper.wrapping.renderer.inverseTransform(event.getPartialTicks());
+                    // objectOver.hitVec = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, objectOver.hitVec);
                 }
             }
         }

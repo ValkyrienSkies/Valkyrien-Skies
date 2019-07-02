@@ -54,11 +54,14 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.mod.proxy.ClientProxy;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Optional;
 
 @Mixin(RenderGlobal.class)
 public abstract class MixinRenderGlobal {
@@ -125,14 +128,19 @@ public abstract class MixinRenderGlobal {
                     hasBreak = te != null && te.canRenderBreaking();
 
                 if (!hasBreak) {
-                    PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(this.world, blockpos);
-                    if (wrapper == null && (d3 * d3 + d4 * d4 + d5 * d5 > 1024.0D)) {
+                    Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(world, blockpos);
+                    if (!physicsObject.isPresent() && (d3 * d3 + d4 * d4 + d5 * d5 > 1024.0D)) {
                         iterator.remove();
                     } else {
                         IBlockState iblockstate = this.world.getBlockState(blockpos);
-                        if (wrapper != null) {
-                            wrapper.getPhysicsObject().getShipRenderer().setupTranslation(partialTicks);
-                            worldRendererIn.setTranslation(-wrapper.getPhysicsObject().getShipRenderer().offsetPos.getX(), -wrapper.getPhysicsObject().getShipRenderer().offsetPos.getY(), -wrapper.getPhysicsObject().getShipRenderer().offsetPos.getZ());
+                        if (physicsObject.isPresent()) {
+                            physicsObject.get()
+                                    .getShipRenderer()
+                                    .setupTranslation(partialTicks);
+                            worldRendererIn.setTranslation(-physicsObject.get()
+                                    .getShipRenderer().offsetPos.getX(), -physicsObject.get()
+                                    .getShipRenderer().offsetPos.getY(), -physicsObject.get()
+                                    .getShipRenderer().offsetPos.getZ());
                         }
                         if (iblockstate.getMaterial() != Material.AIR) {
                             int i = destroyblockprogress.getPartialBlockDamage();
@@ -146,10 +154,12 @@ public abstract class MixinRenderGlobal {
                         }
                         worldRendererIn.setTranslation(-d0, -d1, -d2);
                         // TODO: Reverse the Matrix Transforms here
-                        if (wrapper != null) {
+                        if (physicsObject.isPresent()) {
                             tessellatorIn.draw();
                             worldRendererIn.begin(7, DefaultVertexFormats.BLOCK);
-                            wrapper.getPhysicsObject().getShipRenderer().inverseTransform(partialTicks);
+                            physicsObject.get()
+                                    .getShipRenderer()
+                                    .inverseTransform(partialTicks);
                         }
                     }
                 }
@@ -168,9 +178,11 @@ public abstract class MixinRenderGlobal {
      */
     @Overwrite
     public void drawSelectionBox(EntityPlayer player, RayTraceResult movingObjectPositionIn, int execute, float partialTicks) {
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(player.world, movingObjectPositionIn.getBlockPos());
-        if (wrapper != null && wrapper.getPhysicsObject() != null && wrapper.getPhysicsObject().getShipRenderer() != null && wrapper.getPhysicsObject().getShipRenderer().offsetPos != null) {
-            wrapper.getPhysicsObject().getShipRenderer().setupTranslation(partialTicks);
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(player.world, movingObjectPositionIn.getBlockPos());
+        if (physicsObject.isPresent()) {
+            physicsObject.get()
+                    .getShipRenderer()
+                    .setupTranslation(partialTicks);
 
             Minecraft.getMinecraft().entityRenderer.getMouseOver(partialTicks);
 
@@ -179,9 +191,12 @@ public abstract class MixinRenderGlobal {
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder BufferBuilder = tessellator.getBuffer();
 
-            double xOff = (player.lastTickPosX + (player.posX - player.lastTickPosX) * partialTicks) - wrapper.getPhysicsObject().getShipRenderer().offsetPos.getX();
-            double yOff = (player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTicks) - wrapper.getPhysicsObject().getShipRenderer().offsetPos.getY();
-            double zOff = (player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * partialTicks) - wrapper.getPhysicsObject().getShipRenderer().offsetPos.getZ();
+            double xOff = (player.lastTickPosX + (player.posX - player.lastTickPosX) * partialTicks) - physicsObject.get()
+                    .getShipRenderer().offsetPos.getX();
+            double yOff = (player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTicks) - physicsObject.get()
+                    .getShipRenderer().offsetPos.getY();
+            double zOff = (player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * partialTicks) - physicsObject.get()
+                    .getShipRenderer().offsetPos.getZ();
 
             BufferBuilder.xOffset += xOff;
             BufferBuilder.yOffset += yOff;
@@ -193,7 +208,9 @@ public abstract class MixinRenderGlobal {
             BufferBuilder.yOffset -= yOff;
             BufferBuilder.zOffset -= zOff;
 
-            wrapper.getPhysicsObject().getShipRenderer().inverseTransform(partialTicks);
+            physicsObject.get()
+                    .getShipRenderer()
+                    .inverseTransform(partialTicks);
         } else {
             this.drawSelectionBoxOriginal(player, movingObjectPositionIn, execute, partialTicks);
         }

@@ -281,8 +281,13 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
         this.posY = posY;
         this.posZ = posZ;
         setPhysicsEntityRotation(pitch, yaw, roll);
-        this.setEntityBoundingBox(new AxisAlignedBB(this.posX, this.posY, this.posZ, this.posX, this.posY, this.posZ).grow(.1D));
     }
+
+    @Override
+    public AxisAlignedBB getEntityBoundingBox() {
+        return physicsObject.getShipBoundingBox();
+    }
+
 
     /**
      * Sets the lastTickPos fields to be the current position. Only should be used by the client.

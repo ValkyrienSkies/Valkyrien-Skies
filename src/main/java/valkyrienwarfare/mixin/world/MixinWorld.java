@@ -51,14 +51,17 @@ import valkyrienwarfare.mod.common.coordinates.ISubspaceProvider;
 import valkyrienwarfare.mod.common.coordinates.ImplSubspace;
 import valkyrienwarfare.mod.common.math.Vector;
 import valkyrienwarfare.mod.common.physics.collision.polygons.Polygon;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.common.physics.management.WorldPhysObjectManager;
 import valkyrienwarfare.mod.common.physmanagement.interaction.IWorldVW;
+import valkyrienwarfare.mod.common.util.ValkyrienUtils;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 // TODO: This class is horrible
 @Mixin(value = World.class, priority = 2018)
@@ -73,7 +76,6 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
     @Shadow
     List<IWorldEventListener> eventListeners;
 
-    private World thisClassAsWorld = World.class.cast(this);
     private WorldPhysObjectManager physManager;
 
     @Override
@@ -83,12 +85,14 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
 
     @Inject(method = "getBiomeForCoordsBody", at = @At("HEAD"), cancellable = true, remap = false)
     public void preGetBiomeForCoordsBody(BlockPos pos, CallbackInfoReturnable callbackInfo) {
-        PhysicsWrapperEntity physEntity = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(thisClassAsWorld,
-                pos);
-        if (physEntity != null) {
-            BlockPos posInGlobalCoordinates = physEntity.getPhysicsObject().getShipTransformationManager()
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(World.class.cast(this), pos);
+
+        if (physicsObject.isPresent()) {
+            BlockPos posInGlobalCoordinates = physicsObject.get()
+                    .getShipTransformationManager()
                     .getCurrentTickTransform().transform(pos, TransformType.SUBSPACE_TO_GLOBAL);
-            Biome biomeInGlobal = thisClassAsWorld.getBiomeForCoordsBody(posInGlobalCoordinates);
+            Biome biomeInGlobal = World.class.cast(this)
+                    .getBiomeForCoordsBody(posInGlobalCoordinates);
             // Cancel the rest of the method and return the biome from the global
             // coordinates.
             callbackInfo.setReturnValue(biomeInGlobal);
@@ -119,13 +123,16 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
     public void spawnParticle(int particleID, boolean ignoreRange, double x, double y, double z, double xSpeed,
                               double ySpeed, double zSpeed, int... parameters) {
         BlockPos pos = new BlockPos(x, y, z);
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(World.class.cast(this),
-                pos);
-        if (wrapper != null) {
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(World.class.cast(this), pos);
+
+        if (physicsObject.isPresent()) {
             Vector newPosVec = new Vector(x, y, z);
             // RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform,
             // newPosVec);
-            wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(newPosVec,
+            physicsObject.get()
+                    .getShipTransformationManager()
+                    .getCurrentTickTransform()
+                    .transform(newPosVec,
                     TransformType.SUBSPACE_TO_GLOBAL);
             x = newPosVec.X;
             y = newPosVec.Y;
@@ -213,15 +220,18 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
 
         BlockPos pos = new BlockPos((aabb.minX + aabb.maxX) / 2D, (aabb.minY + aabb.maxY) / 2D,
                 (aabb.minZ + aabb.maxZ) / 2D);
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(World.class.cast(this),
-                pos);
-        if (wrapper != null) {
-            Polygon poly = new Polygon(aabb, wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform(),
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(World.class.cast(this), pos);
+
+        if (physicsObject.isPresent()) {
+            Polygon poly = new Polygon(aabb, physicsObject.get()
+                    .getShipTransformationManager()
+                    .getCurrentTickTransform(),
                     TransformType.SUBSPACE_TO_GLOBAL);
             aabb = poly.getEnclosedAABB();// .contract(.3D);
             toReturn.addAll(this.getEntitiesWithinAABBOriginal(clazz, aabb, filter));
 
-            toReturn.remove(wrapper);
+            toReturn.remove(physicsObject.get()
+                    .getWrapperEntity());
         }
         return toReturn;
     }
@@ -263,10 +273,13 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
 
         BlockPos pos = new BlockPos((boundingBox.minX + boundingBox.maxX) / 2D,
                 (boundingBox.minY + boundingBox.maxY) / 2D, (boundingBox.minZ + boundingBox.maxZ) / 2D);
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(World.class.cast(this),
-                pos);
-        if (wrapper != null) {
-            Polygon poly = new Polygon(boundingBox, wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform(),
+
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(World.class.cast(this), pos);
+
+        if (physicsObject.isPresent()) {
+            Polygon poly = new Polygon(boundingBox, physicsObject.get()
+                    .getShipTransformationManager()
+                    .getCurrentTickTransform(),
                     TransformType.SUBSPACE_TO_GLOBAL);
             boundingBox = poly.getEnclosedAABB().shrink(.3D);
 
@@ -278,7 +291,8 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
 
             toReturn.addAll(this.getEntitiesInAABBexcludingOriginal(entityIn, boundingBox, predicate));
 
-            toReturn.remove(wrapper);
+            toReturn.remove(physicsObject.get()
+                    .getWrapperEntity());
         }
         return toReturn;
     }
@@ -288,11 +302,13 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
     public void prePlaySound(double x, double y, double z, SoundEvent soundIn, SoundCategory category, float volume,
                              float pitch, boolean distanceDelay, CallbackInfo callbackInfo) {
         BlockPos pos = new BlockPos(x, y, z);
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(World.class.cast(this),
-                pos);
-        if (wrapper != null) {
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(World.class.cast(this), pos);
+
+        if (physicsObject.isPresent()) {
             Vector posVec = new Vector(x, y, z);
-            wrapper.getPhysicsObject().getShipTransformationManager().fromLocalToGlobal(posVec);
+            physicsObject.get()
+                    .getShipTransformationManager()
+                    .fromLocalToGlobal(posVec);
             x = posVec.X;
             y = posVec.Y;
             z = posVec.Z;
@@ -328,7 +344,8 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
     public RayTraceResult rayTraceBlocksIgnoreShip(Vec3d vec31, Vec3d vec32, boolean stopOnLiquid,
                                                    boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock, PhysicsWrapperEntity toIgnore) {
         dontIntercept.set(true);
-        RayTraceResult vanillaTrace = thisClassAsWorld.rayTraceBlocks(vec31, vec32, stopOnLiquid,
+        RayTraceResult vanillaTrace = World.class.cast(this)
+                .rayTraceBlocks(vec31, vec32, stopOnLiquid,
                 ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
         WorldPhysObjectManager physManager = ValkyrienWarfareMod.VW_PHYSICS_MANAGER
                 .getManagerForWorld(World.class.cast(this));
@@ -366,7 +383,8 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
 
             Vec3d playerEyesReachAdded = playerEyesPos.add(playerReachVector.x * reachDistance,
                     playerReachVector.y * reachDistance, playerReachVector.z * reachDistance);
-            RayTraceResult resultInShip = thisClassAsWorld.rayTraceBlocks(playerEyesPos, playerEyesReachAdded,
+            RayTraceResult resultInShip = World.class.cast(this)
+                    .rayTraceBlocks(playerEyesPos, playerEyesReachAdded,
                     stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
             if (resultInShip != null && resultInShip.hitVec != null
                     && resultInShip.typeOfHit == RayTraceResult.Type.BLOCK) {

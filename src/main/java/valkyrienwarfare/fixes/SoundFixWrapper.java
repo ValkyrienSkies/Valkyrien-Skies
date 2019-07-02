@@ -23,17 +23,14 @@ import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import valkyrienwarfare.mod.common.math.Vector;
-import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 
 public class SoundFixWrapper implements ISound {
 
     private final Vector soundLocation;
     private final ISound wrappedSound;
-    private final PhysicsWrapperEntity wrapper;
 
-    public SoundFixWrapper(ISound wrappedSound, PhysicsWrapperEntity wrapper, Vector soundLocation) {
+    public SoundFixWrapper(ISound wrappedSound, Vector soundLocation) {
         this.wrappedSound = wrappedSound;
-        this.wrapper = wrapper;
         this.soundLocation = soundLocation;
     }
 

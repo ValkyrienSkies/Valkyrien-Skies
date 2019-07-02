@@ -26,7 +26,7 @@ import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.mod.common.math.RotationMatrices;
 import valkyrienwarfare.mod.common.math.Vector;
 import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
-import valkyrienwarfare.mod.common.util.NBTUtils;
+import valkyrienwarfare.mod.common.util.ValkyrienNBTUtils;
 
 import java.nio.ByteBuffer;
 import java.util.UUID;
@@ -84,7 +84,7 @@ public class ShipUUIDToPosData extends WorldSavedData {
 
     @Override
     public void readFromNBT(NBTTagCompound nbt) {
-        ByteBuffer buffer = NBTUtils.getByteBuf("ShipPositionByteBuf", nbt);
+        ByteBuffer buffer = ValkyrienNBTUtils.getByteBuf("ShipPositionByteBuf", nbt);
         while (buffer.hasRemaining()) {
             long mostBits = buffer.getLong();
             ShipPositionData data = new ShipPositionData(buffer);
@@ -103,7 +103,7 @@ public class ShipUUIDToPosData extends WorldSavedData {
             v.writeToByteBuffer(buffer);
             return true;
         });
-        NBTUtils.setByteBuf("ShipPositionByteBuf", buffer, compound);
+        ValkyrienNBTUtils.setByteBuf("ShipPositionByteBuf", buffer, compound);
         return compound;
     }
 

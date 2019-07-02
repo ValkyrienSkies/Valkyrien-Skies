@@ -40,7 +40,11 @@ import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.common.math.Quaternion;
 import valkyrienwarfare.mod.common.math.RotationMatrices;
 import valkyrienwarfare.mod.common.math.Vector;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.util.ValkyrienUtils;
+
+import java.util.Optional;
 
 //import valkyrienwarfare.api.MixinMethods;
 
@@ -70,15 +74,15 @@ public abstract class MixinEntityRenderer {
 
         BlockPos playerPos = new BlockPos(entity);
 
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(entity.world, playerPos);
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(entity.getEntityWorld(), playerPos);
 
-        //		Minecraft.getMinecraft().thePlayer.sleeping = false;
-
-        if (wrapper != null) {
+        if (physicsObject.isPresent()) {
             Vector playerPosNew = new Vector(entity.posX, entity.posY, entity.posZ);
-//            RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, playerPosNew);
 
-            wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(playerPosNew, TransformType.SUBSPACE_TO_GLOBAL);
+            physicsObject.get()
+                    .getShipTransformationManager()
+                    .getCurrentTickTransform()
+                    .transform(playerPosNew, TransformType.SUBSPACE_TO_GLOBAL);
             entity.posX = entity.prevPosX = entity.lastTickPosX = playerPosNew.X;
             entity.posY = entity.prevPosY = entity.lastTickPosY = playerPosNew.Y;
             entity.posZ = entity.prevPosZ = entity.lastTickPosZ = playerPosNew.Z;

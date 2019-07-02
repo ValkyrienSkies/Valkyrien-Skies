@@ -25,8 +25,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import valkyrienwarfare.fixes.ITransformablePacket;
-import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.util.ValkyrienUtils;
+
+import java.util.Optional;
 
 @Mixin(value = CPacketPlayerTryUseItemOnBlock.class)
 public class MixinCPacketPlayerTryUseItemOnBlock implements ITransformablePacket {
@@ -46,7 +49,12 @@ public class MixinCPacketPlayerTryUseItemOnBlock implements ITransformablePacket
     @Override
     public PhysicsWrapperEntity getPacketParent(NetHandlerPlayServer server) {
         World world = server.player.getEntityWorld();
-        return ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(world, thisPacketTryUse.getPos());
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(world, thisPacketTryUse.getPos());
+        if (physicsObject.isPresent()) {
+            return physicsObject.get()
+                    .getWrapperEntity();
+        } else {
+            return null;
+        }
     }
-
 }

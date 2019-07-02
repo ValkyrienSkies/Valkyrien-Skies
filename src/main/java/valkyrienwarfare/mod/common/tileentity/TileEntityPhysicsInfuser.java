@@ -30,6 +30,7 @@ import valkyrienwarfare.mod.common.physics.collision.polygons.Polygon;
 import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.common.physmanagement.chunk.PhysicsChunkManager;
+import valkyrienwarfare.mod.common.util.ValkyrienUtils;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -178,7 +179,7 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
             EnumFacing sideFacing = ((BlockPhysicsInfuser) state.getBlock()).getDummyStateFacing(state);
             // First make the aabb for the main block, then include the dummy block, then include the bits coming out the top.
             AxisAlignedBB renderBB = new AxisAlignedBB(getPos()).expand(-sideFacing.getXOffset(), -sideFacing.getYOffset(), -sideFacing.getZOffset()).expand(0, .3, 0);
-            Optional<PhysicsObject> physicsObject = ValkyrienWarfareMod.getPhysicsObject(getWorld(), getPos());
+            Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(getWorld(), getPos());
             if (physicsObject.isPresent()) {
                 // We're in a physics object; convert the bounding box to a polygon; put its coordinates in global space, and then return the bounding box that encloses
                 // all the points.
@@ -195,7 +196,7 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
     }
 
     public boolean isCurrentlyInShip() {
-        Optional<PhysicsObject> physicsObject = ValkyrienWarfareMod.getPhysicsObject(getWorld(), getPos());
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(getWorld(), getPos());
         return physicsObject.isPresent();
     }
 
@@ -255,7 +256,7 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
      * @return
      */
     public boolean canShipBeDeconstructed() {
-        Optional<PhysicsObject> physicsObject = ValkyrienWarfareMod.getPhysicsObject(getWorld(), getPos());
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(getWorld(), getPos());
         if (physicsObject.isPresent()) {
             return physicsObject.get()
                     .canShipBeDeconstructed();
@@ -271,7 +272,7 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
     }
 
     public boolean isCenterOfShip() {
-        Optional<PhysicsObject> physicsObject = ValkyrienWarfareMod.getPhysicsObject(getWorld(), getPos());
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(getWorld(), getPos());
         if (physicsObject.isPresent()) {
             return physicsObject.get()
                     .getPhysicsInfuserPos()

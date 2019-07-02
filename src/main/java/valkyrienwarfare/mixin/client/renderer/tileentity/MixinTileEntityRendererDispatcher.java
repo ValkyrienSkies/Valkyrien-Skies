@@ -26,8 +26,10 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
-import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
+import valkyrienwarfare.mod.common.util.ValkyrienUtils;
+
+import java.util.Optional;
 
 @Mixin(TileEntityRendererDispatcher.class)
 public abstract class MixinTileEntityRendererDispatcher {
@@ -53,9 +55,9 @@ public abstract class MixinTileEntityRendererDispatcher {
     public void preRender(TileEntity tileentityIn, float partialTicks, int destroyStage, CallbackInfo callbackInfo) {
         if (!hasChanged) {
             BlockPos pos = tileentityIn.getPos();
-            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(tileentityIn.getWorld(), pos);
+            Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(tileentityIn.getWorld(), tileentityIn.getPos());
 
-            if (wrapper != null && wrapper.getPhysicsObject() != null && wrapper.getPhysicsObject().getShipRenderer() != null) {
+            if (physicsObject.isPresent()) {
                 try {
                     GlStateManager.resetColor();
 
@@ -64,15 +66,20 @@ public abstract class MixinTileEntityRendererDispatcher {
                         this.preDrawBatch();
                     }
 
-                    wrapper.getPhysicsObject().getShipRenderer().setupTranslation(partialTicks);
+                    physicsObject.get()
+                            .getShipRenderer()
+                            .setupTranslation(partialTicks);
 
                     double playerX = TileEntityRendererDispatcher.staticPlayerX;
                     double playerY = TileEntityRendererDispatcher.staticPlayerY;
                     double playerZ = TileEntityRendererDispatcher.staticPlayerZ;
 
-                    TileEntityRendererDispatcher.staticPlayerX = wrapper.getPhysicsObject().getShipRenderer().offsetPos.getX();
-                    TileEntityRendererDispatcher.staticPlayerY = wrapper.getPhysicsObject().getShipRenderer().offsetPos.getY();
-                    TileEntityRendererDispatcher.staticPlayerZ = wrapper.getPhysicsObject().getShipRenderer().offsetPos.getZ();
+                    TileEntityRendererDispatcher.staticPlayerX = physicsObject.get()
+                            .getShipRenderer().offsetPos.getX();
+                    TileEntityRendererDispatcher.staticPlayerY = physicsObject.get()
+                            .getShipRenderer().offsetPos.getY();
+                    TileEntityRendererDispatcher.staticPlayerZ = physicsObject.get()
+                            .getShipRenderer().offsetPos.getZ();
 
                     hasChanged = true;
                     if (drawingBatch) {
@@ -87,7 +94,9 @@ public abstract class MixinTileEntityRendererDispatcher {
                     TileEntityRendererDispatcher.staticPlayerY = playerY;
                     TileEntityRendererDispatcher.staticPlayerZ = playerZ;
 
-                    wrapper.getPhysicsObject().getShipRenderer().inverseTransform(partialTicks);
+                    physicsObject.get()
+                            .getShipRenderer()
+                            .inverseTransform(partialTicks);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

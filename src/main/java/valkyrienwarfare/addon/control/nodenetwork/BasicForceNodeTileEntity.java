@@ -20,7 +20,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import valkyrienwarfare.mod.common.coordinates.VectorImmutable;
 import valkyrienwarfare.mod.common.math.Vector;
 import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
-import valkyrienwarfare.mod.common.util.NBTUtils;
+import valkyrienwarfare.mod.common.util.ValkyrienNBTUtils;
 
 public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity implements IForceTile {
 
@@ -96,7 +96,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
     public void readFromNBT(NBTTagCompound compound) {
         maxThrust = compound.getDouble("maxThrust");
         currentThrust = compound.getDouble("currentThrust");
-        normalVelocityUnoriented = NBTUtils.readVectorFromNBT("normalVelocityUnoriented", compound);
+        normalVelocityUnoriented = ValkyrienNBTUtils.readVectorFromNBT("normalVelocityUnoriented", compound);
         ticksSinceLastControlSignal = compound.getInteger("ticksSinceLastControlSignal");
         super.readFromNBT(compound);
     }
@@ -105,7 +105,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         compound.setDouble("maxThrust", maxThrust);
         compound.setDouble("currentThrust", currentThrust);
-        NBTUtils.writeVectorToNBT("normalVelocityUnoriented", normalVelocityUnoriented, compound);
+        ValkyrienNBTUtils.writeVectorToNBT("normalVelocityUnoriented", normalVelocityUnoriented, compound);
         compound.setInteger("ticksSinceLastControlSignal", ticksSinceLastControlSignal);
         return super.writeToNBT(compound);
     }

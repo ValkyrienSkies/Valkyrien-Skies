@@ -26,7 +26,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
-import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -126,8 +125,6 @@ public class SchematicReader {
                     }
                 }
             }
-
-            PhysicsWrapperEntity wrapperEntity = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(worldObj, centerDifference);
 
             for (int i = 0; i < tileentities.tagCount(); i++) {
                 NBTTagCompound tileData = tileentities.getCompoundTagAt(i).copy();

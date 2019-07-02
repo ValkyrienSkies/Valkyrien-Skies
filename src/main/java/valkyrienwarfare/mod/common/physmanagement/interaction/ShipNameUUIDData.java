@@ -21,7 +21,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.storage.MapStorage;
 import net.minecraft.world.storage.WorldSavedData;
 import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
-import valkyrienwarfare.mod.common.util.NBTUtils;
+import valkyrienwarfare.mod.common.util.ValkyrienNBTUtils;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -92,7 +92,7 @@ public class ShipNameUUIDData extends WorldSavedData {
 
     @Override
     public void readFromNBT(NBTTagCompound nbt) {
-        ByteBuffer buffer = NBTUtils.getByteBuf("NameToUUIDMap", nbt);
+        ByteBuffer buffer = ValkyrienNBTUtils.getByteBuf("NameToUUIDMap", nbt);
         while (buffer.hasRemaining()) {
             byte stringByteLength = buffer.get();
             byte[] stringBytes = new byte[stringByteLength];
@@ -125,7 +125,7 @@ public class ShipNameUUIDData extends WorldSavedData {
             }
             buffer.putLong(entry.getValue());
         }
-        NBTUtils.setByteBuf("NameToUUIDMap", buffer, compound);
+        ValkyrienNBTUtils.setByteBuf("NameToUUIDMap", buffer, compound);
         return compound;
     }
 

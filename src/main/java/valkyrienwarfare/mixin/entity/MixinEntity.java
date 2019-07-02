@@ -35,9 +35,13 @@ import valkyrienwarfare.mod.common.coordinates.ISubspacedEntityRecord;
 import valkyrienwarfare.mod.common.coordinates.VectorImmutable;
 import valkyrienwarfare.mod.common.math.VWMath;
 import valkyrienwarfare.mod.common.math.Vector;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.common.physmanagement.chunk.PhysicsChunkManager;
 import valkyrienwarfare.mod.common.physmanagement.interaction.IDraggable;
+import valkyrienwarfare.mod.common.util.ValkyrienUtils;
+
+import java.util.Optional;
 
 @Mixin(Entity.class)
 public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
@@ -242,11 +246,12 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
         if (vanilla < 64.0D) {
             return vanilla;
         } else {
-            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(this.world,
-                    new BlockPos(x, y, z));
-            if (wrapper != null) {
+            Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(world, new BlockPos(x, y, z));
+            if (physicsObject.isPresent()) {
                 Vector posVec = new Vector(x, y, z);
-                wrapper.getPhysicsObject().getShipTransformationManager().fromLocalToGlobal(posVec);
+                physicsObject.get()
+                        .getShipTransformationManager()
+                        .fromLocalToGlobal(posVec);
                 posVec.X -= this.posX;
                 posVec.Y -= this.posY;
                 posVec.Z -= this.posZ;
@@ -270,10 +275,12 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
         if (vanilla < 64.0D) {
             return vanilla;
         } else {
-            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(this.world, pos);
-            if (wrapper != null) {
+            Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(world, pos);
+            if (physicsObject.isPresent()) {
                 Vector posVec = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
-                wrapper.getPhysicsObject().getShipTransformationManager().fromLocalToGlobal(posVec);
+                physicsObject.get()
+                        .getShipTransformationManager()
+                        .fromLocalToGlobal(posVec);
                 posVec.X -= this.posX;
                 posVec.Y -= this.posY;
                 posVec.Z -= this.posZ;

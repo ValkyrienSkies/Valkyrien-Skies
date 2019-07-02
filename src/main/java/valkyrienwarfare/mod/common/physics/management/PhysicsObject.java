@@ -76,7 +76,7 @@
     import valkyrienwarfare.mod.common.physmanagement.relocation.MoveBlocks;
     import valkyrienwarfare.mod.common.physmanagement.relocation.SpatialDetector;
     import valkyrienwarfare.mod.common.tileentity.TileEntityPhysicsInfuser;
-    import valkyrienwarfare.mod.common.util.NBTUtils;
+    import valkyrienwarfare.mod.common.util.ValkyrienNBTUtils;
 
     import java.io.File;
     import java.io.IOException;
@@ -779,8 +779,8 @@
 
         public void writeToNBTTag(NBTTagCompound compound) {
             getOwnedChunks().writeToNBT(compound);
-            NBTUtils.writeVectorToNBT("c", getCenterCoord(), compound);
-            NBTUtils.writeShipTransformToNBT("currentTickTransform",
+            ValkyrienNBTUtils.writeVectorToNBT("c", getCenterCoord(), compound);
+            ValkyrienNBTUtils.writeShipTransformToNBT("currentTickTransform",
                     getShipTransformationManager().getCurrentTickTransform(), compound);
             compound.setBoolean("doPhysics", isPhysicsEnabled/* isPhysicsEnabled() */);
             for (int row = 0; row < getOwnedChunks().chunkOccupiedInLocal.length; row++) {
@@ -789,7 +789,7 @@
                     compound.setBoolean("CC:" + row + ":" + column, curArray[column]);
                 }
             }
-            NBTUtils.writeEntityPositionMapToNBT("entityPosHashMap", entityLocalPositions, compound);
+            ValkyrienNBTUtils.writeEntityPositionMapToNBT("entityPosHashMap", entityLocalPositions, compound);
             getPhysicsProcessor().writeToNBTTag(compound);
 
             // TODO: This is occasionally crashing the Ship save
@@ -805,8 +805,8 @@
             compound.setBoolean("isNameCustom", isNameCustom());
             compound.setString("shipType", shipType.name());
             // Write and read AABB from NBT to speed things up.
-            NBTUtils.writeAABBToNBT("collision_aabb", getShipBoundingBox(), compound);
-            NBTUtils.writeBlockPosToNBT("phys_infuser_pos", physicsInfuserPos, compound);
+            ValkyrienNBTUtils.writeAABBToNBT("collision_aabb", getShipBoundingBox(), compound);
+            ValkyrienNBTUtils.writeBlockPosToNBT("phys_infuser_pos", physicsInfuserPos, compound);
 
             try {
                 compound.setString("ship_type", shipType.name());
@@ -817,13 +817,13 @@
 
         public void readFromNBTTag(NBTTagCompound compound) {
             // This first
-            setCenterCoord(NBTUtils.readVectorFromNBT("c", compound));
+            setCenterCoord(ValkyrienNBTUtils.readVectorFromNBT("c", compound));
             // Then this second
             createPhysicsCalculations();
             assert getPhysicsProcessor() != null : "Insert error message here";
 
             setOwnedChunks(new VWChunkClaim(compound));
-            ShipTransform savedTransform = NBTUtils.readShipTransformFromNBT("currentTickTransform", compound);
+            ShipTransform savedTransform = ValkyrienNBTUtils.readShipTransformFromNBT("currentTickTransform", compound);
             if (savedTransform != null) {
                 Vector centerOfMassInGlobal = new Vector(getCenterCoord());
                 savedTransform.transform(centerOfMassInGlobal, TransformType.SUBSPACE_TO_GLOBAL);
@@ -858,7 +858,7 @@
 
             // After we have loaded which positions are stored in the ship; we load the physics calculations object.
             getPhysicsProcessor().readFromNBTTag(compound);
-            entityLocalPositions = NBTUtils.readEntityPositionMap("entityPosHashMap", compound);
+            entityLocalPositions = ValkyrienNBTUtils.readEntityPositionMap("entityPosHashMap", compound);
 
             getAllowedUsers().clear();
             Collections.addAll(getAllowedUsers(), compound.getString("allowedUsers")
@@ -869,10 +869,10 @@
             setNameCustom(compound.getBoolean("isNameCustom"));
             getWrapperEntity().dataManager.set(PhysicsWrapperEntity.IS_NAME_CUSTOM, isNameCustom());
 
-            this.setShipBoundingBox(NBTUtils.readAABBFromNBT("collision_aabb", compound));
+            this.setShipBoundingBox(ValkyrienNBTUtils.readAABBFromNBT("collision_aabb", compound));
 
             setPhysicsEnabled(compound.getBoolean("doPhysics"));
-            physicsInfuserPos = NBTUtils.readBlockPosFromNBT("phys_infuser_pos", compound);
+            physicsInfuserPos = ValkyrienNBTUtils.readBlockPosFromNBT("phys_infuser_pos", compound);
         }
 
         public void readSpawnData(ByteBuf additionalData) {
@@ -903,7 +903,7 @@
 
             try {
                 NBTTagCompound entityFixedPositionNBT = modifiedBuffer.readCompoundTag();
-                entityLocalPositions = NBTUtils.readEntityPositionMap("entityFixedPosMap", entityFixedPositionNBT);
+                entityLocalPositions = ValkyrienNBTUtils.readEntityPositionMap("entityFixedPosMap", entityFixedPositionNBT);
             } catch (IOException e) {
                 System.err.println("Couldn't load the entityFixedPosNBT; this is really bad.");
                 e.printStackTrace();
@@ -940,7 +940,7 @@
             }
 
             NBTTagCompound entityFixedPositionNBT = new NBTTagCompound();
-            NBTUtils.writeEntityPositionMapToNBT("entityFixedPosMap", entityLocalPositions, entityFixedPositionNBT);
+            ValkyrienNBTUtils.writeEntityPositionMapToNBT("entityFixedPosMap", entityLocalPositions, entityFixedPositionNBT);
             modifiedBuffer.writeCompoundTag(entityFixedPositionNBT);
 
             modifiedBuffer.writeBoolean(isNameCustom());

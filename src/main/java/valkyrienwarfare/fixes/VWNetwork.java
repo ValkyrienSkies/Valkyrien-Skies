@@ -11,12 +11,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
-import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.common.math.Vector;
-import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
+import valkyrienwarfare.mod.common.util.ValkyrienUtils;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * A few simple static implementations of functions that send packets, correctly handling for ships.
@@ -42,11 +43,10 @@ public class VWNetwork {
         } else {
             worldIn = except.world;
         }
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(worldIn, pos);
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(worldIn, pos);
         Vector packetPosition = new Vector(x, y, z);
-        if (wrapper != null && wrapper.getPhysicsObject()
-                .getShipTransformationManager() != null) {
-            wrapper.getPhysicsObject()
+        if (physicsObject.isPresent()) {
+            physicsObject.get()
                     .getShipTransformationManager()
                     .fromLocalToGlobal(packetPosition);
             // Special treatment for certain packets.

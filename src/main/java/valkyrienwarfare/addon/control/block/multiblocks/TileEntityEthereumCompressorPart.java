@@ -2,11 +2,12 @@ package valkyrienwarfare.addon.control.block.multiblocks;
 
 import valkyrienwarfare.addon.control.fuel.IEtherEngine;
 import valkyrienwarfare.api.TransformType;
-import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.common.coordinates.VectorImmutable;
 import valkyrienwarfare.mod.common.math.Vector;
 import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
-import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.util.ValkyrienUtils;
+
+import java.util.Optional;
 
 public class TileEntityEthereumCompressorPart extends TileEntityMultiblockPartForce<EthereumCompressorMultiblockSchematic, TileEntityEthereumCompressorPart> implements IEtherEngine {
 
@@ -61,10 +62,13 @@ public class TileEntityEthereumCompressorPart extends TileEntityMultiblockPartFo
 
     @Override
     public double getCurrentEtherEfficiency() {
-        PhysicsWrapperEntity tilePhysics = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(getWorld(), getPos());
-        if (tilePhysics != null) {
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(world, pos);
+        if (physicsObject.isPresent()) {
             Vector tilePos = new Vector(getPos().getX() + .5D, getPos().getY() + .5D, getPos().getZ() + .5D);
-            tilePhysics.getPhysicsObject().getShipTransformationManager().getCurrentPhysicsTransform().transform(tilePos, TransformType.SUBSPACE_TO_GLOBAL);
+            physicsObject.get()
+                    .getShipTransformationManager()
+                    .getCurrentPhysicsTransform()
+                    .transform(tilePos, TransformType.SUBSPACE_TO_GLOBAL);
             double yPos = tilePos.Y;
             return IEtherEngine.getEtherEfficiencyFromHeight(yPos);
         } else {

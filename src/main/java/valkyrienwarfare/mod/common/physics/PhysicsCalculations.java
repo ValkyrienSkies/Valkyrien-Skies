@@ -38,8 +38,8 @@ import valkyrienwarfare.mod.common.multithreaded.PhysicsShipTransform;
 import valkyrienwarfare.mod.common.physics.collision.WorldPhysicsCollider;
 import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 import valkyrienwarfare.mod.common.physics.management.ShipTransformationManager;
-import valkyrienwarfare.mod.common.util.NBTUtils;
 import valkyrienwarfare.mod.common.util.PhysicsSettings;
+import valkyrienwarfare.mod.common.util.ValkyrienNBTUtils;
 
 import javax.vecmath.Matrix3d;
 import java.util.LinkedList;
@@ -537,22 +537,22 @@ public class PhysicsCalculations {
     public void writeToNBTTag(NBTTagCompound compound) {
         compound.setDouble("mass", gameTickMass);
 
-        NBTUtils.writeVectorToNBT("linear", linearMomentum, compound);
-        NBTUtils.writeVectorToNBT("angularVelocity", angularVelocity, compound);
-        NBTUtils.writeVectorToNBT("CM", gameTickCenterOfMass, compound);
+        ValkyrienNBTUtils.writeVectorToNBT("linear", linearMomentum, compound);
+        ValkyrienNBTUtils.writeVectorToNBT("angularVelocity", angularVelocity, compound);
+        ValkyrienNBTUtils.writeVectorToNBT("CM", gameTickCenterOfMass, compound);
 
-        NBTUtils.write3x3MatrixToNBT("MOI", gameMoITensor, compound);
+        ValkyrienNBTUtils.write3x3MatrixToNBT("MOI", gameMoITensor, compound);
 
         physicsRotationNodeWorld.writeToNBTTag(compound);
         compound.setString("block_mass_ver", BlockMass.basicMass.blockMassVer());
     }
 
     public void readFromNBTTag(NBTTagCompound compound) {
-        linearMomentum = NBTUtils.readVectorFromNBT("linear", compound);
-        angularVelocity = NBTUtils.readVectorFromNBT("angularVelocity", compound);
-        gameTickCenterOfMass = NBTUtils.readVectorFromNBT("CM", compound);
+        linearMomentum = ValkyrienNBTUtils.readVectorFromNBT("linear", compound);
+        angularVelocity = ValkyrienNBTUtils.readVectorFromNBT("angularVelocity", compound);
+        gameTickCenterOfMass = ValkyrienNBTUtils.readVectorFromNBT("CM", compound);
         gameTickMass = compound.getDouble("mass");
-        gameMoITensor = NBTUtils.read3x3MatrixFromNBT("MOI", compound);
+        gameMoITensor = ValkyrienNBTUtils.read3x3MatrixFromNBT("MOI", compound);
         physicsRotationNodeWorld.readFromNBTTag(compound);
 
         if (!BlockMass.basicMass.blockMassVer().equals(compound.getString("block_mass_ver"))) {

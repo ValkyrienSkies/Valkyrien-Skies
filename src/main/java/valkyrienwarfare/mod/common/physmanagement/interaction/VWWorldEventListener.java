@@ -37,7 +37,11 @@ import valkyrienwarfare.fixes.IPhysicsChunk;
 import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.common.math.RotationMatrices;
 import valkyrienwarfare.mod.common.math.Vector;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.util.ValkyrienUtils;
+
+import java.util.Optional;
 
 public class VWWorldEventListener implements IWorldEventListener {
 
@@ -99,16 +103,20 @@ public class VWWorldEventListener implements IWorldEventListener {
             // So I basically just copied the event code here as well.
             World world = worldObj;
             BlockPos posAt = new BlockPos(entity);
-            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(world, posAt);
-            if (!worldObj.isRemote && !(entity instanceof EntityFallingBlock) && wrapper != null && wrapper.getPhysicsObject()
-                    .getShipTransformationManager() != null) {
+            Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(world, posAt);
+
+            if (!worldObj.isRemote && physicsObject.isPresent() && !(entity instanceof EntityFallingBlock)) {
                 if (entity instanceof EntityMountingWeaponBase || entity instanceof EntityArmorStand
                         || entity instanceof EntityPig || entity instanceof EntityBoat) {
-                    wrapper.getPhysicsObject().fixEntity(entity, new Vector(entity));
-                    wrapper.getPhysicsObject().queueEntityForMounting(entity);
+                    physicsObject.get()
+                            .fixEntity(entity, new Vector(entity));
+                    physicsObject.get()
+                            .queueEntityForMounting(entity);
                 }
                 world.getChunk(entity.getPosition().getX() >> 4, entity.getPosition().getZ() >> 4).removeEntity(entity);
-                RotationMatrices.applyTransform(wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform(), entity,
+                RotationMatrices.applyTransform(physicsObject.get()
+                                .getShipTransformationManager()
+                                .getCurrentTickTransform(), entity,
                         TransformType.SUBSPACE_TO_GLOBAL);
                 world.getChunk(entity.getPosition().getX() >> 4, entity.getPosition().getZ() >> 4).addEntity(entity);
             }
@@ -141,14 +149,14 @@ public class VWWorldEventListener implements IWorldEventListener {
                 if (entityplayermp != null && entityplayermp.getEntityId() != breakerId) {
                     Vector posVector = new Vector(pos.getX(), pos.getY(), pos.getZ());
 
-                    PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(worldObj,
-                            pos);
+                    Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(worldObj, pos);
 
-                    if (wrapper != null) {
-                        wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(posVector,
+                    if (physicsObject.isPresent()) {
+                        physicsObject.get()
+                                .getShipTransformationManager()
+                                .getCurrentTickTransform()
+                                .transform(posVector,
                                 TransformType.SUBSPACE_TO_GLOBAL);
-                        // RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform,
-                        // posVector);
                     }
 
                     double d0 = posVector.X - entityplayermp.posX;

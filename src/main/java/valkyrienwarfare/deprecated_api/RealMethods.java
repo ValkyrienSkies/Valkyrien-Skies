@@ -14,17 +14,20 @@
  *
  */
 
-package valkyrienwarfare.mod.common.util;
+package valkyrienwarfare.deprecated_api;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import valkyrienwarfare.api.TransformType;
-import valkyrienwarfare.deprecated_api.DummyMethods;
-import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.common.math.Vector;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.util.ValkyrienUtils;
 
+import java.util.Optional;
+
+@Deprecated
 public class RealMethods implements DummyMethods {
 
     @Override
@@ -88,8 +91,13 @@ public class RealMethods implements DummyMethods {
 
     @Override
     public PhysicsWrapperEntity getShipEntityManagingPos(World worldObj, BlockPos pos) {
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(worldObj, pos);
-        return wrapper;
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(worldObj, pos);
+        if (physicsObject.isPresent()) {
+            return physicsObject.get()
+                    .getWrapperEntity();
+        } else {
+            return null;
+        }
     }
 
     @Override

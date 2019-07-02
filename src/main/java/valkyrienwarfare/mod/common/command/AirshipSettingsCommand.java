@@ -26,13 +26,14 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
-import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
-import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
+import valkyrienwarfare.mod.common.util.ValkyrienUtils;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 public class AirshipSettingsCommand extends CommandBase {
 
@@ -80,13 +81,15 @@ public class AirshipSettingsCommand extends CommandBase {
 
         BlockPos pos = rayTraceBothSides(p, p.isCreative() ? 5.0 : 4.5, 1).getBlockPos();
 
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(p.getEntityWorld(), pos);
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(p.getEntityWorld(), pos);
 
-        if (wrapper == null) {
+        if (!physicsObject.isPresent()) {
             sender.sendMessage(new TextComponentString("You need to be looking at an airship to do that!"));
             return;
         }
-        if (p.entityUniqueID.toString().equals(wrapper.getPhysicsObject().getCreator())) {
+        if (p.entityUniqueID.toString()
+                .equals(physicsObject.get()
+                        .getCreator())) {
             if (args[0].equals("transfer")) {
                 if (args.length == 1) {
                     return;
@@ -97,7 +100,8 @@ public class AirshipSettingsCommand extends CommandBase {
                         p.sendMessage(new TextComponentString("That player is not online!"));
                         return;
                     }
-                    switch (wrapper.getPhysicsObject().changeOwner(target)) {
+                    switch (physicsObject.get()
+                            .changeOwner(target)) {
                         case ERROR_IMPOSSIBLE_STATUS:
                             p.sendMessage(new TextComponentString("An error occured, please report to mod devs"));
                             break;
@@ -116,7 +120,9 @@ public class AirshipSettingsCommand extends CommandBase {
             } else if (args[0].equals("allowplayer")) {
                 if (args.length == 1) {
                     StringBuilder result = new StringBuilder();
-                    wrapper.getPhysicsObject().getAllowedUsers().forEach(s -> {
+                    physicsObject.get()
+                            .getAllowedUsers()
+                            .forEach(s -> {
                         result.append(s);
                         result.append(" ");
                     });
@@ -129,19 +135,28 @@ public class AirshipSettingsCommand extends CommandBase {
                         p.sendMessage(new TextComponentString("That player is not online!"));
                         return;
                     }
-                    if (target.entityUniqueID.toString().equals(wrapper.getPhysicsObject().getCreator())) {
+                    if (target.entityUniqueID.toString()
+                            .equals(physicsObject.get()
+                                    .getCreator())) {
                         p.sendMessage(new TextComponentString("You can't add yourself to your own airship!"));
                         return;
                     }
-                    wrapper.getPhysicsObject().getAllowedUsers().add(target.entityUniqueID.toString());
+                    physicsObject.get()
+                            .getAllowedUsers()
+                            .add(target.entityUniqueID.toString());
                     p.sendMessage(new TextComponentString("Success! " + target.getName() + " can now interact with this airship!"));
                     return;
                 }
             }
         } else {
-            if (wrapper.getPhysicsObject().getCreator() == null || wrapper.getPhysicsObject().getCreator().trim().isEmpty()) {
+            if (physicsObject.get()
+                    .getCreator() == null || physicsObject.get()
+                    .getCreator()
+                    .trim()
+                    .isEmpty()) {
                 if (args.length == 1 && args[0].equals("claim")) {
-                    wrapper.getPhysicsObject().setCreator(p.entityUniqueID.toString());
+                    physicsObject.get()
+                            .setCreator(p.entityUniqueID.toString());
                     p.sendMessage(new TextComponentString("You've successfully claimed an airship!"));
                     return;
                 }

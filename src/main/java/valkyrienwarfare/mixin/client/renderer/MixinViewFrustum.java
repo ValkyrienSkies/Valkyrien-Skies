@@ -9,8 +9,10 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
-import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
+import valkyrienwarfare.mod.common.util.ValkyrienUtils;
+
+import java.util.Optional;
 
 @Mixin(ViewFrustum.class)
 public class MixinViewFrustum {
@@ -21,10 +23,11 @@ public class MixinViewFrustum {
 
     @Inject(at = {@At("HEAD")}, method = "markBlocksForUpdate")
     public void pre_markBlocksForUpdate(int minX, int minY, int minZ, int maxX, int maxY, int maxZ, boolean updateImmediately, CallbackInfo info) {
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(world, new BlockPos(minX, minY, minZ));
-        if (wrapper != null) {
-            // System.out.println("Update");
-            wrapper.getPhysicsObject().getShipRenderer().updateRange(minX, minY, minZ, maxX, maxY, maxZ, updateImmediately);
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(world, new BlockPos(minX, minY, minZ));
+        if (physicsObject.isPresent()) {
+            physicsObject.get()
+                    .getShipRenderer()
+                    .updateRange(minX, minY, minZ, maxX, maxY, maxZ, updateImmediately);
         }
     }
 }

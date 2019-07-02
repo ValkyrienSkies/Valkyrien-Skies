@@ -22,29 +22,34 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import valkyrienwarfare.addon.control.piloting.IShipPilotClient;
-import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
-import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
+import valkyrienwarfare.mod.common.util.ValkyrienUtils;
+
+import java.util.Optional;
 
 public class MessageStartPilotingHandler implements IMessageHandler<MessageStartPiloting, IMessage> {
 
     @Override
     public IMessage onMessage(MessageStartPiloting message, MessageContext ctx) {
         IThreadListener mainThread = Minecraft.getMinecraft();
-        mainThread.addScheduledTask(new Runnable() {
-            @Override
-            public void run() {
-                IShipPilotClient pilot = (IShipPilotClient) Minecraft.getMinecraft().player;
+        mainThread.addScheduledTask(() -> {
+            IShipPilotClient pilot = (IShipPilotClient) Minecraft.getMinecraft().player;
 
-                pilot.setPosBeingControlled(message.posToStartPiloting);
-                pilot.setControllerInputEnum(message.controlType);
+            pilot.setPosBeingControlled(message.posToStartPiloting);
+            pilot.setControllerInputEnum(message.controlType);
 
-                if (message.setPhysicsWrapperEntityToPilot) {
-                    PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(Minecraft.getMinecraft().world, message.posToStartPiloting);
-                    pilot.setPilotedShip(wrapper);
+            if (message.setPhysicsWrapperEntityToPilot) {
+                Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(Minecraft.getMinecraft().world, message.posToStartPiloting);
+                if (physicsObject.isPresent()) {
+                    pilot.setPilotedShip(physicsObject.get()
+                            .getWrapperEntity());
                 } else {
-                    pilot.setPilotedShip(null);
+                    new IllegalAccessException("Player " + ctx.getServerHandler().player.getName() + " sent an incorrect piloting packet!").printStackTrace();
                 }
+            } else {
+                pilot.setPilotedShip(null);
             }
+
         });
         return null;
     }

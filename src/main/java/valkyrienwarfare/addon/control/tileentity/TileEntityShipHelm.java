@@ -39,10 +39,13 @@ import valkyrienwarfare.addon.control.piloting.ControllerInputType;
 import valkyrienwarfare.addon.control.piloting.PilotControlsMessage;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.fixes.VWNetwork;
-import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.common.coordinates.VectorImmutable;
 import valkyrienwarfare.mod.common.math.Vector;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.util.ValkyrienUtils;
+
+import java.util.Optional;
 
 public class TileEntityShipHelm extends TileEntityPilotableImpl implements ITickable {
 
@@ -161,10 +164,12 @@ public class TileEntityShipHelm extends TileEntityPilotableImpl implements ITick
         Vector compassPoint = new Vector(getPos().getX(), getPos().getY(), getPos().getZ());
         compassPoint.add(1D, 2D, 1D);
 
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(getWorld(),
-                getPos());
-        if (wrapper != null) {
-            wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(compassPoint,
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(getWorld(), getPos());
+        if (physicsObject.isPresent()) {
+            physicsObject.get()
+                    .getShipTransformationManager()
+                    .getCurrentTickTransform()
+                    .transform(compassPoint,
                     TransformType.SUBSPACE_TO_GLOBAL);
             // RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform,
             // compassPoint);
@@ -173,8 +178,11 @@ public class TileEntityShipHelm extends TileEntityPilotableImpl implements ITick
         Vector compassDirection = new Vector(compassPoint);
         compassDirection.subtract(spawnPos.getX(), spawnPos.getY(), spawnPos.getZ());
 
-        if (wrapper != null) {
-            wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().rotate(compassDirection,
+        if (physicsObject.isPresent()) {
+            physicsObject.get()
+                    .getShipTransformationManager()
+                    .getCurrentTickTransform()
+                    .rotate(compassDirection,
                     TransformType.GLOBAL_TO_SUBSPACE);
             // RotationMatrices.doRotationOnly(wrapper.wrapping.coordTransform.wToLTransform,
             // compassDirection);

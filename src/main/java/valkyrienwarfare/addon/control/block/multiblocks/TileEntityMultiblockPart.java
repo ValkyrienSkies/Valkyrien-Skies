@@ -10,9 +10,9 @@ import valkyrienwarfare.addon.control.MultiblockRegistry;
 import valkyrienwarfare.addon.control.nodenetwork.BasicNodeTileEntity;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.fixes.VWNetwork;
-import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.common.physics.collision.polygons.Polygon;
 import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
+import valkyrienwarfare.mod.common.util.ValkyrienUtils;
 
 import java.util.Optional;
 
@@ -136,7 +136,7 @@ public abstract class TileEntityMultiblockPart<E extends IMulitblockSchematic, F
     public AxisAlignedBB getRenderBoundingBox() {
         if (isPartOfAssembledMultiblock()) {
             AxisAlignedBB schematicRenderBB = getMultiBlockSchematic().getSchematicRenderBB(getMultiblockOrigin());
-            Optional<PhysicsObject> physicsObject = ValkyrienWarfareMod.getPhysicsObject(getWorld(), getPos());
+            Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(getWorld(), getPos());
             if (physicsObject.isPresent()) {
                 // We're in a physics object; convert the bounding box to a polygon; put its coordinates in global space, and then return the bounding box that encloses
                 // all the points.

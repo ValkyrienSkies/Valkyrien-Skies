@@ -12,8 +12,8 @@ import valkyrienwarfare.addon.control.block.torque.IRotationNodeWorld;
 import valkyrienwarfare.addon.control.block.torque.ImplRotationNode;
 import valkyrienwarfare.addon.control.block.torque.custom_torque_functions.EtherEngineTorqueFunction;
 import valkyrienwarfare.fixes.VWNetwork;
-import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
+import valkyrienwarfare.mod.common.util.ValkyrienUtils;
 
 import java.util.Optional;
 
@@ -44,7 +44,7 @@ public class TileEntityEthereumEnginePart extends TileEntityMultiblockPart<Ether
             }
 
             if (this.isPartOfAssembledMultiblock()) {
-                Optional<PhysicsObject> physicsObjectOptional = ValkyrienWarfareMod.getPhysicsObject(getWorld(), getPos());
+                Optional<PhysicsObject> physicsObjectOptional = ValkyrienUtils.getPhysicsObject(getWorld(), getPos());
                 if (physicsObjectOptional.isPresent() && !rotationNode.hasBeenPlacedIntoNodeWorld() && this.getRelativePos().equals(getMultiBlockSchematic().getTorqueOutputPos())) {
                     IRotationNodeWorld nodeWorld = physicsObjectOptional.get().getPhysicsProcessor().getPhysicsRotationNodeWorld();
                     if (nodeWorld != null) {
@@ -89,7 +89,7 @@ public class TileEntityEthereumEnginePart extends TileEntityMultiblockPart<Ether
     public void assembleMultiblock(EthereumEngineMultiblockSchematic schematic, BlockPos relativePos) {
         super.assembleMultiblock(schematic, relativePos);
         if (relativePos.equals(schematic.getTorqueOutputPos())) {
-            Optional<PhysicsObject> objectOptional = ValkyrienWarfareMod.getPhysicsObject(getWorld(), getPos());
+            Optional<PhysicsObject> objectOptional = ValkyrienUtils.getPhysicsObject(getWorld(), getPos());
             if (objectOptional.isPresent()) {
                 IRotationNodeWorld nodeWorld = objectOptional.get().getPhysicsProcessor().getPhysicsRotationNodeWorld();
                 EnumFacing facing = EnumFacing.getFacingFromVector(schematic.getTorqueOutputDirection().getX(), schematic.getTorqueOutputDirection().getY(), schematic.getTorqueOutputDirection().getZ());
@@ -108,7 +108,7 @@ public class TileEntityEthereumEnginePart extends TileEntityMultiblockPart<Ether
     @Override
     public void dissembleMultiblockLocal() {
         super.dissembleMultiblockLocal();
-        Optional<PhysicsObject> object = ValkyrienWarfareMod.getPhysicsObject(getWorld(), getPos());
+        Optional<PhysicsObject> object = ValkyrienUtils.getPhysicsObject(getWorld(), getPos());
         if (object.isPresent()) {
             this.rotationNode.queueTask(() -> rotationNode.resetNodeData());
 

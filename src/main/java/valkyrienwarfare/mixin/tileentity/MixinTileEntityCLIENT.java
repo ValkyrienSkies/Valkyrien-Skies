@@ -25,9 +25,11 @@ import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.mod.client.render.IntrinsicTileEntityInterface;
-import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.common.physics.collision.polygons.Polygon;
-import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
+import valkyrienwarfare.mod.common.util.ValkyrienUtils;
+
+import java.util.Optional;
 
 @Mixin(TileEntity.class)
 @Implements(@Interface(iface = IntrinsicTileEntityInterface.class, prefix = "vw$"))
@@ -39,9 +41,11 @@ public abstract class MixinTileEntityCLIENT {
     public AxisAlignedBB vw$getRenderBoundingBox() {
         AxisAlignedBB toReturn = thisAsTileEntity.getRenderBoundingBox();
         BlockPos pos = new BlockPos(toReturn.minX, toReturn.minY, toReturn.minZ);
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(thisAsTileEntity.getWorld(), pos);
-        if (wrapper != null) {
-            Polygon poly = new Polygon(toReturn, wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform(), TransformType.SUBSPACE_TO_GLOBAL);
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(thisAsTileEntity.getWorld(), pos);
+        if (physicsObject.isPresent()) {
+            Polygon poly = new Polygon(toReturn, physicsObject.get()
+                    .getShipTransformationManager()
+                    .getCurrentTickTransform(), TransformType.SUBSPACE_TO_GLOBAL);
             return poly.getEnclosedAABB();
         }
         return toReturn;

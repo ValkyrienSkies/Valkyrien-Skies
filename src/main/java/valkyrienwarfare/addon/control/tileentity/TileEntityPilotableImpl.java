@@ -31,9 +31,12 @@ import valkyrienwarfare.addon.control.piloting.ControllerInputType;
 import valkyrienwarfare.addon.control.piloting.ITileEntityPilotable;
 import valkyrienwarfare.addon.control.piloting.PilotControlsMessage;
 import valkyrienwarfare.api.TransformType;
-import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.common.math.Vector;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.util.ValkyrienUtils;
+
+import java.util.Optional;
 
 /**
  * A basic implementation of the ITileEntityPilotable interface, other tile
@@ -88,7 +91,13 @@ public abstract class TileEntityPilotableImpl extends BasicNodeTileEntity implem
 
     @Override
     public final PhysicsWrapperEntity getParentPhysicsEntity() {
-        return ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(getWorld(), getPos());
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(world, pos);
+        if (physicsObject.isPresent()) {
+            return physicsObject.get()
+                    .getWrapperEntity();
+        } else {
+            return null;
+        }
     }
 
     // Always call this before setting the pilotPlayerEntity to equal newPilot

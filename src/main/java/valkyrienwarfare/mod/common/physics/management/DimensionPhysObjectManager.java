@@ -17,9 +17,7 @@
 package valkyrienwarfare.mod.common.physics.management;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import valkyrienwarfare.mod.common.physmanagement.chunk.PhysicsChunkManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +27,7 @@ public class DimensionPhysObjectManager {
     private final Map<World, WorldPhysObjectManager> managerPerWorld;
 
     public DimensionPhysObjectManager() {
-        managerPerWorld = new HashMap<World, WorldPhysObjectManager>();
+        managerPerWorld = new HashMap<>();
     }
 
     /**
@@ -60,39 +58,6 @@ public class DimensionPhysObjectManager {
 
     public void removeWorld(World world) {
         managerPerWorld.remove(world);
-    }
-
-    /**
-     * Returns the PhysicsWrapperEntity that claims this chunk if there is one;
-     * returns null if there is no loaded entity managing it
-     */
-
-    // TODO: Fix this
-    @Deprecated
-    public PhysicsWrapperEntity getObjectManagingPos(World world, BlockPos pos) {
-        if (world == null || pos == null) {
-            return null;
-        }
-        if (world.getChunkProvider() == null) {
-            // System.err.println("A separate mod has coded a World with no Chunks in it!");
-            return null;
-        }
-        if (!PhysicsChunkManager.isLikelyShipChunk(pos.getX() >> 4, pos.getZ() >> 4)) {
-            return null;
-        }
-        PhysicsWrapperEntity wrapperEntity = getManagerForWorld(world).getManagingObjectForChunkPosition(pos.getX() >> 4, pos.getZ() >> 4);
-        if (wrapperEntity == null) {
-            return null;
-        }
-        // I hate debug messages.
-        if (wrapperEntity.getPhysicsObject() == null || wrapperEntity.getPhysicsObject()
-                .getShipTransformationManager() == null) {
-            System.err.println("Broken ship with UUID: " + wrapperEntity.getCachedUniqueIdString() + " at " + wrapperEntity.getPositionVector());
-            System.err.println("Other info: " + wrapperEntity.getYaw());
-            new Exception().printStackTrace();
-            return null;
-        }
-        return wrapperEntity;
     }
 
     public boolean isEntityFixed(Entity entity) {

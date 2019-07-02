@@ -28,11 +28,12 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import valkyrienwarfare.api.TransformType;
-import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.common.math.Vector;
-import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 import valkyrienwarfare.mod.common.physmanagement.chunk.PhysicsChunkManager;
+import valkyrienwarfare.mod.common.util.ValkyrienUtils;
 
+import java.util.Optional;
 import java.util.Set;
 
 //TODO: a lot of these mixins can probably be done using overrides instead of overwrites, i should have a look at some point
@@ -67,11 +68,12 @@ public abstract class MixinNetHandlerPlayServer {
                 callbackInfo.cancel();
                 redirectingSetPlayerLocation = true;
                 World world = player.getEntityWorld();
-                PhysicsWrapperEntity physicsEntity = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(world,
-                        pos);
-                if (physicsEntity != null) {
+                Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(world, pos);
+                if (physicsObject.isPresent()) {
                     Vector tpPos = new Vector(x, y, z);
-                    physicsEntity.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform()
+                    physicsObject.get()
+                            .getShipTransformationManager()
+                            .getCurrentTickTransform()
                             .transform(tpPos, TransformType.SUBSPACE_TO_GLOBAL);
                     // Now call this again with the transformed position.
                     // player.sendMessage(new TextComponentString("Transformed the player tp from <"

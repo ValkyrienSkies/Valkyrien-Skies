@@ -25,8 +25,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import valkyrienwarfare.fixes.ITransformablePacket;
-import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.util.ValkyrienUtils;
+
+import java.util.Optional;
 
 @Mixin(CPacketUpdateSign.class)
 public class MixinCPacketUpdateSign implements ITransformablePacket {
@@ -46,6 +49,12 @@ public class MixinCPacketUpdateSign implements ITransformablePacket {
     @Override
     public PhysicsWrapperEntity getPacketParent(NetHandlerPlayServer server) {
         World world = server.player.getEntityWorld();
-        return ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(world, thisAsPacketSign.getPosition());
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(world, thisAsPacketSign.getPosition());
+        if (physicsObject.isPresent()) {
+            return physicsObject.get()
+                    .getWrapperEntity();
+        } else {
+            return null;
+        }
     }
 }

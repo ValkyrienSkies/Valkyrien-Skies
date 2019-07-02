@@ -32,12 +32,13 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.common.math.Vector;
-import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
+import valkyrienwarfare.mod.common.util.ValkyrienUtils;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Optional;
 
 public class BlockShipPassengerChair extends Block {
 
@@ -56,24 +57,32 @@ public class BlockShipPassengerChair extends Block {
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
         if (!worldIn.isRemote) {
-            PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getObjectManagingPos(worldIn, pos);
-            if (wrapper != null) {
-                if (playerIn.getLowestRidingEntity() != wrapper.getLowestRidingEntity()) {
+            Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(worldIn, pos);
+            if (physicsObject.isPresent()) {
+                if (playerIn.getLowestRidingEntity() != physicsObject.get()
+                        .getWrapperEntity()
+                        .getLowestRidingEntity()) {
                     Vector playerPos = new Vector(playerIn);
 
-                    wrapper.getPhysicsObject().getShipTransformationManager().fromLocalToGlobal(playerPos);
+                    physicsObject.get()
+                            .getShipTransformationManager()
+                            .fromLocalToGlobal(playerPos);
 
                     playerIn.posX = playerPos.X;
                     playerIn.posY = playerPos.Y;
                     playerIn.posZ = playerPos.Z;
 
-                    playerIn.startRiding(wrapper);
+                    playerIn.startRiding(physicsObject.get()
+                            .getWrapperEntity());
                     Vector localMountPos = getPlayerMountOffset(state, pos);
-                    wrapper.getPhysicsObject().fixEntity(playerIn, localMountPos);
+                    physicsObject.get()
+                            .fixEntity(playerIn, localMountPos);
 
 //					wrapper.wrapping.pilotingController.setPilotEntity((EntityPlayerMP) playerIn, false);
 
-                    wrapper.getPhysicsObject().getShipTransformationManager().fromGlobalToLocal(playerPos);
+                    physicsObject.get()
+                            .getShipTransformationManager()
+                            .fromGlobalToLocal(playerPos);
 
                     playerIn.posX = playerPos.X;
                     playerIn.posY = playerPos.Y;

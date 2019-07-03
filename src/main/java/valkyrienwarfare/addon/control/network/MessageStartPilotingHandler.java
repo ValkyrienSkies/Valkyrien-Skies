@@ -21,6 +21,8 @@ import net.minecraft.util.IThreadListener;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import valkyrienwarfare.addon.control.piloting.IShipPilotClient;
 import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 import valkyrienwarfare.mod.common.util.ValkyrienUtils;
@@ -30,6 +32,7 @@ import java.util.Optional;
 public class MessageStartPilotingHandler implements IMessageHandler<MessageStartPiloting, IMessage> {
 
     @Override
+    @SideOnly(Side.CLIENT)
     public IMessage onMessage(MessageStartPiloting message, MessageContext ctx) {
         IThreadListener mainThread = Minecraft.getMinecraft();
         mainThread.addScheduledTask(() -> {
@@ -44,7 +47,7 @@ public class MessageStartPilotingHandler implements IMessageHandler<MessageStart
                     pilot.setPilotedShip(physicsObject.get()
                             .getWrapperEntity());
                 } else {
-                    new IllegalAccessException("Player " + ctx.getServerHandler().player.getName() + " sent an incorrect piloting packet!").printStackTrace();
+                    new IllegalStateException("Received incorrect piloting message!").printStackTrace();
                 }
             } else {
                 pilot.setPilotedShip(null);

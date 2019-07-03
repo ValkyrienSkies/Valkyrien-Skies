@@ -34,6 +34,10 @@ public class MessageStartPiloting implements IMessage {
         this.controlType = controlType;
     }
 
+    /**
+     * All IMessage instances must have a no argument constructor.
+     */
+    @SuppressWarnings("unused")
     public MessageStartPiloting() {
     }
 

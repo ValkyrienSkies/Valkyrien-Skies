@@ -19,6 +19,10 @@ package valkyrienwarfare.addon.control.piloting;
 import net.minecraft.util.math.BlockPos;
 import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 
+/**
+ * Todo: Convert to a forge capability.
+ */
+@Deprecated
 public interface IShipPilot {
 
     PhysicsWrapperEntity getPilotedShip();

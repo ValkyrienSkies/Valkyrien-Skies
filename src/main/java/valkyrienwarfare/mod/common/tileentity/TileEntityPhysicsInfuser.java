@@ -18,7 +18,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
-import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.fixes.IPhysicsChunk;
 import valkyrienwarfare.fixes.VWNetwork;
 import valkyrienwarfare.mod.client.gui.IVWTileGui;
@@ -26,7 +25,6 @@ import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.common.block.BlockPhysicsInfuser;
 import valkyrienwarfare.mod.common.container.InfuserButton;
 import valkyrienwarfare.mod.common.network.VWGuiButtonMessage;
-import valkyrienwarfare.mod.common.physics.collision.polygons.Polygon;
 import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.common.physmanagement.chunk.PhysicsChunkManager;
@@ -175,21 +173,11 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
     @SideOnly(Side.CLIENT)
     public AxisAlignedBB getRenderBoundingBox() {
         IBlockState state = getWorld().getBlockState(getPos());
-        if (state.getBlock() instanceof BlockPhysicsInfuser) {
+        if (getBlockType() instanceof BlockPhysicsInfuser) {
             EnumFacing sideFacing = ((BlockPhysicsInfuser) state.getBlock()).getDummyStateFacing(state);
             // First make the aabb for the main block, then include the dummy block, then include the bits coming out the top.
-            AxisAlignedBB renderBB = new AxisAlignedBB(getPos()).expand(-sideFacing.getXOffset(), -sideFacing.getYOffset(), -sideFacing.getZOffset()).expand(0, .3, 0);
-            Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(getWorld(), getPos());
-            if (physicsObject.isPresent()) {
-                // We're in a physics object; convert the bounding box to a polygon; put its coordinates in global space, and then return the bounding box that encloses
-                // all the points.
-                Polygon bbAsPoly = new Polygon(renderBB, physicsObject.get()
-                        .getShipTransformationManager()
-                        .getCurrentTickTransform(), TransformType.SUBSPACE_TO_GLOBAL);
-                return bbAsPoly.getEnclosedAABB();
-            } else {
-                return renderBB;
-            }
+            return new AxisAlignedBB(getPos()).expand(-sideFacing.getXOffset(), -sideFacing.getYOffset(), -sideFacing.getZOffset())
+                    .expand(0, .3, 0);
         }
         // Default in case broken.
         return super.getRenderBoundingBox();

@@ -156,15 +156,16 @@ public class BlockPhysicsInfuser extends BlockVWDirectional implements ITileEnti
     @Override
     public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
         if (super.canPlaceBlockAt(worldIn, pos)) {
+            // Make sure the adjacent 4 blocks are free
             return worldIn.getBlockState(pos.north())
                     .getBlock()
-                    .isReplaceable(worldIn, pos) && worldIn.getBlockState(pos.south())
+                    .isReplaceable(worldIn, pos.north()) && worldIn.getBlockState(pos.south())
                     .getBlock()
-                    .isReplaceable(worldIn, pos) && worldIn.getBlockState(pos.east())
+                    .isReplaceable(worldIn, pos.south()) && worldIn.getBlockState(pos.east())
                     .getBlock()
-                    .isReplaceable(worldIn, pos) && worldIn.getBlockState(pos.west())
+                    .isReplaceable(worldIn, pos.east()) && worldIn.getBlockState(pos.west())
                     .getBlock()
-                    .isReplaceable(worldIn, pos);
+                    .isReplaceable(worldIn, pos.west());
         } else {
             return false;
         }

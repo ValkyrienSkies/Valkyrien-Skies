@@ -12,9 +12,7 @@ import valkyrienwarfare.fixes.VWNetwork;
 import valkyrienwarfare.mod.common.coordinates.VectorImmutable;
 import valkyrienwarfare.mod.common.math.RotationMatrices;
 import valkyrienwarfare.mod.common.math.Vector;
-import valkyrienwarfare.mod.common.physics.collision.polygons.Polygon;
 import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
-import valkyrienwarfare.mod.common.util.ValkyrienUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -327,17 +325,8 @@ public class TileEntityRudderAxlePart extends TileEntityMultiblockPartForce<Rudd
             int otherAxisYExpanded = otherAxis.getY() * axleLength;
             int otherAxisZExpanded = otherAxis.getZ() * axleLength;
 
-            AxisAlignedBB toReturn = (new AxisAlignedBB(minPos, maxPos)).grow(otherAxisXExpanded, otherAxisYExpanded, otherAxisZExpanded).grow(.5, .5, .5);
-
-            // Do this to transform the output when in ship space.
-            Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(getWorld(), getPos());
-            if (physicsObject.isPresent()) {
-                Polygon polygon = new Polygon(toReturn, physicsObject.get()
-                        .getShipTransformationManager()
-                        .getCurrentTickTransform(), TransformType.SUBSPACE_TO_GLOBAL);
-                toReturn = polygon.getEnclosedAABB();
-            }
-            return toReturn;
+            return new AxisAlignedBB(minPos, maxPos).grow(otherAxisXExpanded, otherAxisYExpanded, otherAxisZExpanded)
+                    .grow(.5, .5, .5);
         } else {
             return super.getRenderBoundingBox();
         }

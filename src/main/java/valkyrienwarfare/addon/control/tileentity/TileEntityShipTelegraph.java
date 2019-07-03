@@ -31,11 +31,7 @@ import valkyrienwarfare.addon.control.block.BlockShipTelegraph;
 import valkyrienwarfare.addon.control.nodenetwork.VWNode_TileEntity;
 import valkyrienwarfare.addon.control.piloting.ControllerInputType;
 import valkyrienwarfare.addon.control.piloting.PilotControlsMessage;
-import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.fixes.VWNetwork;
-import valkyrienwarfare.mod.common.physics.collision.polygons.Polygon;
-import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
-import valkyrienwarfare.mod.common.util.ValkyrienUtils;
 
 import java.util.Optional;
 
@@ -164,17 +160,6 @@ public class TileEntityShipTelegraph extends TileEntityPilotableImpl implements 
 
     @SideOnly(Side.CLIENT)
     public AxisAlignedBB getRenderBoundingBox() {
-        AxisAlignedBB renderBB = new AxisAlignedBB(getPos()).expand(0, 1, 0);
-        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(getWorld(), getPos());
-        if (physicsObject.isPresent()) {
-            // We're in a physics object; convert the bounding box to a polygon; put its coordinates in global space, and then return the bounding box that encloses
-            // all the points.
-            Polygon bbAsPoly = new Polygon(renderBB, physicsObject.get()
-                    .getShipTransformationManager()
-                    .getCurrentTickTransform(), TransformType.SUBSPACE_TO_GLOBAL);
-            return bbAsPoly.getEnclosedAABB();
-        } else {
-            return renderBB;
-        }
+        return new AxisAlignedBB(getPos()).expand(0, 1, 0);
     }
 }

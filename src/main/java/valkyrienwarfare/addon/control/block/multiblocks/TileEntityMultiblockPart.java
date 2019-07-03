@@ -8,13 +8,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import valkyrienwarfare.addon.control.MultiblockRegistry;
 import valkyrienwarfare.addon.control.nodenetwork.BasicNodeTileEntity;
-import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.fixes.VWNetwork;
-import valkyrienwarfare.mod.common.physics.collision.polygons.Polygon;
-import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
-import valkyrienwarfare.mod.common.util.ValkyrienUtils;
-
-import java.util.Optional;
 
 /**
  * Just a simple implementation of the interfaces.
@@ -135,17 +129,7 @@ public abstract class TileEntityMultiblockPart<E extends IMulitblockSchematic, F
     @SideOnly(Side.CLIENT)
     public AxisAlignedBB getRenderBoundingBox() {
         if (isPartOfAssembledMultiblock()) {
-            AxisAlignedBB schematicRenderBB = getMultiBlockSchematic().getSchematicRenderBB(getMultiblockOrigin());
-            Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(getWorld(), getPos());
-            if (physicsObject.isPresent()) {
-                // We're in a physics object; convert the bounding box to a polygon; put its coordinates in global space, and then return the bounding box that encloses
-                // all the points.
-                Polygon bbAsPoly = new Polygon(schematicRenderBB, physicsObject.get()
-                        .getShipTransformationManager()
-                        .getCurrentTickTransform(), TransformType.SUBSPACE_TO_GLOBAL);
-                return bbAsPoly.getEnclosedAABB();
-            }
-            return schematicRenderBB;
+            return getMultiBlockSchematic().getSchematicRenderBB(getMultiblockOrigin());
         } else {
             return super.getRenderBoundingBox();
         }

@@ -32,10 +32,10 @@
     "client.renderer.MixinEntityRenderer",
     "client.renderer.MixinRenderGlobal",
     "client.renderer.MixinViewFrustum",
+    "client.renderer.culling.MixinFrustum",
     "client.renderer.entity.MixinRenderManager",
     "client.renderer.tileentity.MixinTileEntityRendererDispatcher",
     "entity.MixinEntityClient",
-    "tileentity.MixinTileEntityCLIENT",
     "util.MixinMovementInputFromOptions",
     "world.MixinWorldClient"
   ]

@@ -1,5 +1,6 @@
 package valkyrienwarfare.mod.common.tileentity;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -172,9 +173,13 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
 
     @SideOnly(Side.CLIENT)
     public AxisAlignedBB getRenderBoundingBox() {
-        IBlockState state = getWorld().getBlockState(getPos());
-        if (getBlockType() instanceof BlockPhysicsInfuser) {
-            EnumFacing sideFacing = ((BlockPhysicsInfuser) state.getBlock()).getDummyStateFacing(state);
+        // Use the tile entity specific methods here instead of World for consistency with other tile entities.
+        Block blockType = getBlockType();
+        int blockMeta = getBlockMetadata();
+        // Only check this after we've gotten the block meta to avoid a data race.
+        if (blockType instanceof BlockPhysicsInfuser) {
+            IBlockState blockState = blockType.getStateFromMeta(blockMeta);
+            EnumFacing sideFacing = ((BlockPhysicsInfuser) blockType).getDummyStateFacing(blockState);
             // First make the aabb for the main block, then include the dummy block, then include the bits coming out the top.
             return new AxisAlignedBB(getPos()).expand(-sideFacing.getXOffset(), -sideFacing.getYOffset(), -sideFacing.getZOffset())
                     .expand(0, .3, 0);

@@ -29,6 +29,7 @@ public class EntityFixMessage implements IMessage {
     public boolean isFixing;
     public Vector localPosition;
 
+    @SuppressWarnings("unused")
     public EntityFixMessage() {
     }
 

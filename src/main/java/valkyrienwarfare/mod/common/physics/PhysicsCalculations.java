@@ -329,7 +329,7 @@ public class PhysicsCalculations {
         Vector crossVector = new Vector();
         World worldObj = getParent().getWorldObj();
 
-        if (PhysicsSettings.doPhysicsBlocks && getParent().areShipChunksFullyLoaded()) {
+        if (PhysicsSettings.doPhysicsBlocks) {
             // We want to loop through all the physics nodes in a sorted order. Priority Queue handles that.
             Queue<INodeController> nodesPriorityQueue = new PriorityQueue<INodeController>();
             for (INodeController processor : parent.getPhysicsControllersInShip()) {
@@ -345,7 +345,8 @@ public class PhysicsCalculations {
 
             SortedMap<IBlockTorqueProvider, List<BlockPos>> torqueProviders = new TreeMap<IBlockTorqueProvider, List<BlockPos>>();
             for (BlockPos pos : activeForcePositions) {
-                IBlockState state = getParent().getShipChunks().getBlockState(pos);
+                IBlockState state = getParent().getChunkAt(pos.getX() >> 4, pos.getZ() >> 4)
+                        .getBlockState(pos);
                 Block blockAt = state.getBlock();
 
                 if (blockAt instanceof IBlockForceProvider) {
@@ -570,7 +571,8 @@ public class PhysicsCalculations {
         gameMoITensor = RotationMatrices.getZeroMatrix(3);
         IBlockState air = Blocks.AIR.getDefaultState();
         for (BlockPos pos : getParent().getBlockPositions()) {
-            onSetBlockState(air, getParent().getShipChunks().getBlockState(pos), pos);
+            onSetBlockState(air, getParent().getChunkAt(pos.getX() >> 4, pos.getZ() >> 4)
+                    .getBlockState(pos), pos);
         }
     }
 

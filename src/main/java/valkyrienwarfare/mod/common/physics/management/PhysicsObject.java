@@ -70,7 +70,6 @@
     import valkyrienwarfare.mod.common.physics.BlockPhysicsRegistration;
     import valkyrienwarfare.mod.common.physics.PhysicsCalculations;
     import valkyrienwarfare.mod.common.physmanagement.chunk.ShipChunkAllocator;
-    import valkyrienwarfare.mod.common.physmanagement.chunk.VWChunkCache;
     import valkyrienwarfare.mod.common.physmanagement.chunk.VWChunkClaim;
     import valkyrienwarfare.mod.common.physmanagement.relocation.DetectorManager;
     import valkyrienwarfare.mod.common.physmanagement.relocation.MoveBlocks;
@@ -115,7 +114,7 @@
         private PhysObjectRenderManager shipRenderer;
         // Used when rendering to avoid horrible floating point errors, just a random
         // blockpos inside the ship space.
-        private BlockPos refrenceBlockPos;
+        private BlockPos referenceBlockPos;
         private Vector centerCoord;
         private ShipTransformationManager shipTransformationManager;
         private PhysicsCalculations physicsProcessor;
@@ -131,10 +130,7 @@
         private VWChunkClaim ownedChunks;
         // Used for faster memory access to the Chunks this object 'owns'
         private Chunk[][] claimedChunks;
-        private VWChunkCache shipChunks;
-        // Some badly written mods use these Maps to determine who to send packets to,
-        // so we need to manually fill them with nearby players
-        private PlayerChunkMapEntry[][] claimedChunksEntries;
+
         // Compatibility for ships made before the update
         private boolean claimedChunksInMap;
         private boolean isNameCustom;
@@ -153,15 +149,15 @@
             }
             this.setNameCustom(false);
             this.claimedChunksInMap = false;
-            this.queuedEntitiesToMount = new ArrayList<Entity>();
-            this.entityLocalPositions = new TIntObjectHashMap<Vector>();
+            this.queuedEntitiesToMount = new ArrayList<>();
+            this.entityLocalPositions = new TIntObjectHashMap<>();
             this.setPhysicsEnabled(false);
             // We need safe access to this across multiple threads.
             this.setBlockPositions(ConcurrentHashMap.newKeySet());
             this.shipBoundingBox = Entity.ZERO_AABB;
-            this.watchingPlayers = new ArrayList<EntityPlayerMP>();
+            this.watchingPlayers = new ArrayList<>();
             this.isPhysicsEnabled = false;
-            this.allowedUsers = new HashSet<String>();
+            this.allowedUsers = new HashSet<>();
             this.gameConsecutiveTicks = 0;
             this.physicsConsecutiveTicks = 0;
             this.shipSubspace = new ImplSubspace(this);
@@ -333,7 +329,7 @@
             ValkyrienWarfareMod.VW_PHYSICS_MANAGER.onShipPreload(getWrapperEntity());
 
             claimedChunks = new Chunk[(getOwnedChunks().getRadius() * 2) + 1][(getOwnedChunks().getRadius() * 2) + 1];
-            claimedChunksEntries = new PlayerChunkMapEntry[(getOwnedChunks().getRadius() * 2) + 1][(getOwnedChunks().getRadius() * 2) + 1];
+
             for (int x = getOwnedChunks().getMinX(); x <= getOwnedChunks().getMaxX(); x++) {
                 for (int z = getOwnedChunks().getMinZ(); z <= getOwnedChunks().getMaxZ(); z++) {
                     Chunk chunk = new Chunk(getWorldObj(), x, z);
@@ -345,9 +341,9 @@
             // Prevents weird shit from spawning at the edges of a ship
             replaceOuterChunksWithAir();
 
-            setShipChunks(new VWChunkCache(getWorldObj(), claimedChunks));
+            assignChunkPhysicObject();
 
-            setRefrenceBlockPos(getRegionCenter());
+            setReferenceBlockPos(getRegionCenter());
 
             setCenterCoord(new Vector(getReferenceBlockPos().getX() + .5, getReferenceBlockPos().getY() + .5, getReferenceBlockPos().getZ() + .5));
 
@@ -447,8 +443,6 @@
 
             entry.sentToPlayers = true;
             entry.players = getWatchingPlayers();
-
-            claimedChunksEntries[x - getOwnedChunks().getMinX()][z - getOwnedChunks().getMinZ()] = entry;
         }
 
         // Experimental, could fix issues with random shit generating inside of Ships
@@ -547,12 +541,6 @@
         }
 
         public void onTick() {
-            // idk
-            for (int x = this.ownedChunks.getMinX(); x <= this.ownedChunks.getMaxX(); x++) {
-                for (int z = this.ownedChunks.getMinZ(); z <= this.ownedChunks.getMaxZ(); z++) {
-                    ((IPhysicsChunk) shipChunks.getChunkAt(x, z)).setParentPhysicsObject(Optional.of(this));
-                }
-            }
 
             if (!getWorldObj().isRemote) {
                 for (Entity e : queuedEntitiesToMount) {
@@ -646,7 +634,6 @@
             ValkyrienWarfareMod.VW_PHYSICS_MANAGER.onShipPreload(getWrapperEntity());
 
             claimedChunks = new Chunk[(getOwnedChunks().getRadius() * 2) + 1][(getOwnedChunks().getRadius() * 2) + 1];
-            claimedChunksEntries = new PlayerChunkMapEntry[(getOwnedChunks().getRadius() * 2) + 1][(getOwnedChunks().getRadius() * 2) + 1];
             for (int x = getOwnedChunks().getMinX(); x <= getOwnedChunks().getMaxX(); x++) {
                 for (int z = getOwnedChunks().getMinZ(); z <= getOwnedChunks().getMaxZ(); z++) {
                     // Added try catch to prevent ships deleting themselves because of a failed tile entity load.
@@ -669,8 +656,8 @@
                     }
                 }
             }
-            setShipChunks(new VWChunkCache(getWorldObj(), claimedChunks));
-            setRefrenceBlockPos(getRegionCenter());
+            assignChunkPhysicObject();
+            setReferenceBlockPos(getRegionCenter());
             setShipTransformationManager(new ShipTransformationManager(this));
             if (!getWorldObj().isRemote) {
                 createPhysicsCalculations();
@@ -1042,10 +1029,6 @@
             return wrapper;
         }
 
-        public boolean areShipChunksFullyLoaded() {
-            return getShipChunks() != null;
-        }
-
         /**
          * @return true if physics are enabled
          */
@@ -1173,18 +1156,12 @@
             this.blockPositions = blockPositions;
         }
 
-        /**
-         * @return the shipChunks
-         */
-        public VWChunkCache getShipChunks() {
-            return shipChunks;
-        }
-
-        /**
-         * @param shipChunks the shipChunks to set
-         */
-        public void setShipChunks(VWChunkCache shipChunks) {
-            this.shipChunks = shipChunks;
+        private void assignChunkPhysicObject() {
+            for (int x = this.ownedChunks.getMinX(); x <= this.ownedChunks.getMaxX(); x++) {
+                for (int z = this.ownedChunks.getMinZ(); z <= this.ownedChunks.getMaxZ(); z++) {
+                    ((IPhysicsChunk) getChunkAt(x, z)).setParentPhysicsObject(Optional.of(this));
+                }
+            }
         }
 
         /**
@@ -1243,20 +1220,6 @@
             this.ownedChunks = ownedChunks;
         }
 
-        /**
-         * @return the refrenceBlockPos
-         */
-        public BlockPos getRefrenceBlockPos() {
-            return refrenceBlockPos;
-        }
-
-        /**
-         * @param refrenceBlockPos the refrenceBlockPos to set
-         */
-        public void setRefrenceBlockPos(BlockPos refrenceBlockPos) {
-            this.refrenceBlockPos = refrenceBlockPos;
-        }
-
         @Override
         public ISubspace getSubspace() {
             return this.shipSubspace;
@@ -1288,19 +1251,29 @@
         }
 
         public int getBlockPosToIntRelToShip(BlockPos pos) {
-            return SpatialDetector.getHashWithRespectTo(pos.getX(), pos.getY(), pos.getZ(), this.refrenceBlockPos);
+            return SpatialDetector.getHashWithRespectTo(pos.getX(), pos.getY(), pos.getZ(), this.referenceBlockPos);
         }
 
         public void setBlockPosFromIntRelToShop(int pos, MutableBlockPos toSet) {
-            SpatialDetector.setPosWithRespectTo(pos, this.refrenceBlockPos, toSet);
+            SpatialDetector.setPosWithRespectTo(pos, this.referenceBlockPos, toSet);
         }
 
         public TIntArrayList getBlockPositionsGameTick() {
             return blockPositionsGameTick;
         }
 
+        /**
+         * @return
+         */
         private BlockPos getReferenceBlockPos() {
-            return this.refrenceBlockPos;
+            return this.referenceBlockPos;
+        }
+
+        /**
+         * @param referenceBlockPos the referenceBlockPos to set
+         */
+        private void setReferenceBlockPos(BlockPos referenceBlockPos) {
+            this.referenceBlockPos = referenceBlockPos;
         }
 
         /**
@@ -1377,7 +1350,22 @@
                     .transform(vector, transformType);
         }
         // VW API Functions End:
+
         public BlockPos getPhysicsInfuserPos() {
             return physicsInfuserPos;
+        }
+
+        /**
+         * Gets the chunk at chunkX and chunkZ.
+         * @param chunkX
+         * @param chunkZ
+         * @return
+         */
+        public Chunk getChunkAt(int chunkX, int chunkZ) {
+            VWChunkClaim ownedChunks = getOwnedChunks();
+            if (!ownedChunks.isChunkEnclosedInSet(chunkX, chunkZ)) {
+                throw new IllegalArgumentException("Chunk at " + chunkX + " : " + chunkZ + " is not claimed by this ship.");
+            }
+            return claimedChunks[chunkX - ownedChunks.getMinX()][chunkZ - ownedChunks.getMinZ()];
         }
     }

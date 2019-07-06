@@ -216,7 +216,7 @@ public class WorldPhysicsCollider {
                 for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
                     for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
                         if (parent.ownsChunk(chunkX, chunkZ)) {
-                            final Chunk chunkIn = parent.getShipChunks().getChunkAt(chunkX, chunkZ);
+                            final Chunk chunkIn = parent.getChunkAt(chunkX, chunkZ);
 
                             int minXToCheck = chunkX << 4;
                             int maxXToCheck = minXToCheck + 15;
@@ -781,10 +781,10 @@ public class WorldPhysicsCollider {
 
                 if (parent.ownsChunk(minX >> 4, minZ >> 4) && parent.ownsChunk(maxX >> 4, maxZ >> 4)) {
 
-                    Chunk chunkIn00 = parent.getShipChunks().getChunkAt(minX >> 4, minZ >> 4);
-                    Chunk chunkIn01 = parent.getShipChunks().getChunkAt(minX >> 4, maxZ >> 4);
-                    Chunk chunkIn10 = parent.getShipChunks().getChunkAt(maxX >> 4, minZ >> 4);
-                    Chunk chunkIn11 = parent.getShipChunks().getChunkAt(maxX >> 4, maxZ >> 4);
+                    Chunk chunkIn00 = parent.getChunkAt(minX >> 4, minZ >> 4);
+                    Chunk chunkIn01 = parent.getChunkAt(minX >> 4, maxZ >> 4);
+                    Chunk chunkIn10 = parent.getChunkAt(maxX >> 4, minZ >> 4);
+                    Chunk chunkIn11 = parent.getChunkAt(maxX >> 4, maxZ >> 4);
 
                     breakThisLoop:
                     for (int localX = minX; localX < maxX; localX++) {
@@ -896,7 +896,7 @@ public class WorldPhysicsCollider {
                 for (int localZ = minZ; localZ < maxZ; localZ++) {
                     for (int localY = minY; localY < maxY; localY++) {
                         if (parent.ownsChunk(localX >> 4, localZ >> 4)) {
-                            Chunk chunkIn = parent.getShipChunks().getChunkAt(localX >> 4, localZ >> 4);
+                            Chunk chunkIn = parent.getChunkAt(localX >> 4, localZ >> 4);
                             if (localY >> 4 < 16 && chunkIn.storageArrays[localY >> 4] != null) {
                                 IBitOctreeProvider provider = (IBitOctreeProvider) chunkIn.storageArrays[localY >> 4].getData();
                                 IBitOctree octreeInLocal = provider.getBitOctree();

@@ -20,12 +20,12 @@ public class MixinMinecraft {
     private static final double SHIP_CHECK_RADIUS = 15;
 
     @Redirect(method = "runTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/WorldClient;doVoidFogParticles(III)V"))
-    private void redirectDoVoidParticles(WorldClient worldClient, int posX, int posY, int posZ) {
+    private void valkyrien$redirect$DoVoidParticles(WorldClient worldClient, int posX, int posY, int posZ) {
         AxisAlignedBB axisAlignedBB = new AxisAlignedBB(posX - SHIP_CHECK_RADIUS, posY - SHIP_CHECK_RADIUS, posZ - SHIP_CHECK_RADIUS, posX + SHIP_CHECK_RADIUS, posY + SHIP_CHECK_RADIUS, posZ + SHIP_CHECK_RADIUS);
         List<PhysicsWrapperEntity> physEntities = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getManagerForWorld(worldClient)
                 .getNearbyPhysObjects(axisAlignedBB);
         for (PhysicsWrapperEntity wrapper : physEntities) {
-            Vector playPosInShip = new Vector(posX + .5D, posY + .5D, posZ + .5D);
+            Vector playPosInShip = new Vector(posX + .5, posY + .5, posZ + .5);
             wrapper.getPhysicsObject()
                     .getShipTransformationManager()
                     .getCurrentTickTransform()

@@ -24,11 +24,9 @@ public class ContainerPhysicsInfuser extends Container {
         this.handler = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
 
         // Add physics infuser slots
-        this.addSlotToContainer(new SlotPhysicsInfuser(handler, 0, 45, 22));
-        this.addSlotToContainer(new SlotPhysicsInfuser(handler, 1, 45, 54));
-        this.addSlotToContainer(new SlotPhysicsInfuser(handler, 2, 79, 54));
-        this.addSlotToContainer(new SlotPhysicsInfuser(handler, 3, 112, 54));
-        this.addSlotToContainer(new SlotPhysicsInfuser(handler, 4, 112, 22));
+        for (TileEntityPhysicsInfuser.EnumInfuserCore infuserCore : TileEntityPhysicsInfuser.EnumInfuserCore.values()) {
+            this.addSlotToContainer(new SlotPhysicsInfuser(handler, infuserCore.coreSlotIndex, infuserCore.guiXPos, infuserCore.guiYPos));
+        }
 
         // Add player inventory slots
         InventoryPlayer playerInventory = player.inventory;

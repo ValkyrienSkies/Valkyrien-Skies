@@ -24,7 +24,7 @@ import valkyrienwarfare.fixes.VWNetwork;
 import valkyrienwarfare.mod.client.gui.IVWTileGui;
 import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.common.block.BlockPhysicsInfuser;
-import valkyrienwarfare.mod.common.container.InfuserButton;
+import valkyrienwarfare.mod.common.container.EnumInfuserButton;
 import valkyrienwarfare.mod.common.network.VWGuiButtonMessage;
 import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
@@ -32,6 +32,8 @@ import valkyrienwarfare.mod.common.physmanagement.chunk.PhysicsChunkManager;
 import valkyrienwarfare.mod.common.util.ValkyrienUtils;
 
 import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, ICapabilityProvider, IVWTileGui {
@@ -42,9 +44,11 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
     private volatile boolean tryToDisassembleShip;
     private boolean physicsEnabled;
     private boolean tryingToAlignShip;
+    // Used by the client to store the vertical offset of each core
+    private Map<EnumInfuserCore, Double> coreOffsets, coreOffsetsPrevTick;
 
     public TileEntityPhysicsInfuser() {
-        handler = new ItemStackHandler(5) {
+        handler = new ItemStackHandler(EnumInfuserCore.values().length) {
             @Override
             protected void onContentsChanged(int slot) {
                 sendUpdateToClients = true;
@@ -55,6 +59,12 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
         tryToDisassembleShip = false;
         physicsEnabled = false;
         tryingToAlignShip = false;
+        coreOffsets = new HashMap<>();
+        coreOffsetsPrevTick = new HashMap<>();
+        for (EnumInfuserCore enumInfuserCore : EnumInfuserCore.values()) {
+            coreOffsets.put(enumInfuserCore, 0D);
+            coreOffsetsPrevTick.put(enumInfuserCore, 0D);
+        }
     }
 
     @Override
@@ -104,6 +114,29 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
                 VWNetwork.sendTileToAllNearby(this);
                 sendUpdateToClients = false;
             }
+        } else {
+            // Client code to produce the physics infuser core wave effect
+            if (this.isPhysicsEnabled()) {
+                long worldTime = getWorld().getWorldTime();
+                for (EnumInfuserCore enumInfuserCore : EnumInfuserCore.values()) {
+                    coreOffsetsPrevTick.put(enumInfuserCore, coreOffsets.get(enumInfuserCore));
+                    if (!handler.getStackInSlot(enumInfuserCore.coreSlotIndex)
+                            .isEmpty()) {
+                        double sinAngle = ((worldTime % 50) * 2 * Math.PI / 50) + (2 * Math.PI / EnumInfuserCore.values().length) * enumInfuserCore.coreSlotIndex;
+                        double idealOffset = .025 * (Math.sin(sinAngle) + 1);
+                        double lerpedOffset = .9 * coreOffsets.get(enumInfuserCore) + .1 * idealOffset;
+                        coreOffsets.put(enumInfuserCore, lerpedOffset);
+                    } else {
+                        coreOffsets.put(enumInfuserCore, 0D);
+                    }
+                }
+            } else {
+                for (EnumInfuserCore enumInfuserCore : EnumInfuserCore.values()) {
+                    coreOffsetsPrevTick.put(enumInfuserCore, coreOffsets.get(enumInfuserCore));
+                    double lerpedOffset = .95 * coreOffsets.get(enumInfuserCore);
+                    coreOffsets.put(enumInfuserCore, lerpedOffset);
+                }
+            }
         }
 
         // Always set tryToAssembleShip and tryToDisassembleShip to false, they only have 1 tick to try to act.
@@ -112,7 +145,7 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
     }
 
     public boolean canMaintainShip() {
-        ItemStack mainStack = handler.getStackInSlot(2);
+        ItemStack mainStack = handler.getStackInSlot(EnumInfuserCore.MAIN.coreSlotIndex);
         return !mainStack.isEmpty();
     }
 
@@ -211,7 +244,7 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
 
     @Override
     public void onButtonPress(int buttonId, EntityPlayer presser) {
-        InfuserButton button = InfuserButton.values()[buttonId];
+        EnumInfuserButton button = EnumInfuserButton.values()[buttonId];
         this.sendUpdateToClients = true;
         // TODO: Check if presser is allowed to press this button first
         /*
@@ -272,6 +305,35 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
                     .equals(getPos());
         } else {
             return true;
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    public double getCoreVerticalOffset(EnumInfuserCore enumInfuserCore, float partialTicks) {
+        return (1 - partialTicks) * coreOffsetsPrevTick.get(enumInfuserCore) + partialTicks * coreOffsets.get(enumInfuserCore);
+    }
+
+    /**
+     * An enum representation of the different core slots for the physics infuser.
+     */
+    public enum EnumInfuserCore {
+
+        ONE("physics_core_small1_geo", 0, 45, 22),
+        TWO("physics_core_small2_geo", 1, 45, 54),
+        MAIN("physics_core_main_geo", 2, 79, 54),
+        FOUR("physics_core_small4_geo", 3, 112, 54),
+        FIVE("physics_core_small3_geo", 4, 112, 22);
+
+        // The name of the model this core will render as in the PhysicsInfuserRenderer
+        public final String coreModelName;
+        // Container and gui values.
+        public final int coreSlotIndex, guiXPos, guiYPos;
+
+        EnumInfuserCore(String coreModelName, int coreSlotIndex, int guiXPos, int guiYPos) {
+            this.coreModelName = coreModelName;
+            this.coreSlotIndex = coreSlotIndex;
+            this.guiXPos = guiXPos;
+            this.guiYPos = guiYPos;
         }
     }
 }

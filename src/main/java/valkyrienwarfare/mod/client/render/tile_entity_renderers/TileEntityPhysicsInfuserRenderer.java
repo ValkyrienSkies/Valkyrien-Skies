@@ -54,22 +54,15 @@ public class TileEntityPhysicsInfuserRenderer extends TileEntitySpecialRenderer<
         IAtomAnimation cores_animation = GibsAnimationRegistry.getAnimation("physics_infuser_cores");
         // Render only the cores that exist within the physics infuser's inventory.
         IItemHandler handler = tileentity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
-        if (!handler.getStackInSlot(0).isEmpty) {
-            cores_animation.renderAnimationNode("physics_core_small1_geo", keyframe, coreBrightness);
-        }
-        if (!handler.getStackInSlot(1).isEmpty) {
-            cores_animation.renderAnimationNode("physics_core_small2_geo", keyframe, coreBrightness);
-        }
-        if (!handler.getStackInSlot(2).isEmpty) {
-            cores_animation.renderAnimationNode("physics_core_main_geo", keyframe, coreBrightness);
-        }
-        if (!handler.getStackInSlot(3).isEmpty) {
-            cores_animation.renderAnimationNode("physics_core_small4_geo", keyframe, coreBrightness);
-        }
-        if (!handler.getStackInSlot(4).isEmpty) {
-            cores_animation.renderAnimationNode("physics_core_small3_geo", keyframe, coreBrightness);
-        }
 
+        for (TileEntityPhysicsInfuser.EnumInfuserCore infuserCore : TileEntityPhysicsInfuser.EnumInfuserCore.values()) {
+            if (!handler.getStackInSlot(infuserCore.coreSlotIndex).isEmpty) {
+                GlStateManager.pushMatrix();
+                GlStateManager.translate(0, tileentity.getCoreVerticalOffset(infuserCore, partialTick), 0);
+                cores_animation.renderAnimationNode(infuserCore.coreModelName, keyframe, coreBrightness);
+                GlStateManager.popMatrix();
+            }
+        }
 
         GlStateManager.popMatrix();
         GlStateManager.popMatrix();

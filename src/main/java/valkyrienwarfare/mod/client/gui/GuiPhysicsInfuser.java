@@ -9,12 +9,12 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.common.container.ContainerPhysicsInfuser;
-import valkyrienwarfare.mod.common.container.InfuserButton;
+import valkyrienwarfare.mod.common.container.EnumInfuserButton;
 import valkyrienwarfare.mod.common.tileentity.TileEntityPhysicsInfuser;
 
 import java.io.IOException;
 
-import static valkyrienwarfare.mod.common.container.InfuserButton.*;
+import static valkyrienwarfare.mod.common.container.EnumInfuserButton.*;
 
 public class GuiPhysicsInfuser extends GuiContainer {
 
@@ -80,7 +80,7 @@ public class GuiPhysicsInfuser extends GuiContainer {
 
     private void updateButtonStatus() {
         for (GuiButton button : buttonList) {
-            InfuserButton buttonType = InfuserButton.values()[button.id];
+            EnumInfuserButton buttonType = EnumInfuserButton.values()[button.id];
             button.displayString = I18n.format(buttonType.getButtonText(tileEntity));
             button.enabled = buttonType.buttonEnabled(tileEntity);
         }

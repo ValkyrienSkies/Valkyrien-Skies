@@ -54,17 +54,13 @@ public abstract class MixinWorldClient implements IHasShipManager {
     }
 
     @Shadow
-    public int getLightFromNeighborsFor(EnumSkyBlock type, BlockPos pos) {
-        return 0;
-    }
+    public abstract int getLightFromNeighborsFor(EnumSkyBlock type, BlockPos pos);
 
     @Shadow
-    public Chunk getChunk(BlockPos pos) {
-        return null;
-    }
+    public abstract Chunk getChunk(BlockPos pos);
 
     @Inject(method = "getCombinedLight(Lnet/minecraft/util/math/BlockPos;I)I", at = @At("HEAD"), cancellable = true)
-    public void preGetCombinedLight(BlockPos pos, int lightValue, CallbackInfoReturnable callbackInfoReturnable) {
+    private void preGetCombinedLight(BlockPos pos, int lightValue, CallbackInfoReturnable callbackInfoReturnable) {
         try {
             int i = this.getLightFromNeighborsFor(EnumSkyBlock.SKY, pos);
             int j = this.getLightFromNeighborsFor(EnumSkyBlock.BLOCK, pos);

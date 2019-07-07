@@ -30,6 +30,9 @@ import valkyrienwarfare.mod.common.util.ValkyrienUtils;
 
 import java.util.Optional;
 
+/**
+ * Necessary for now. I just wish Mojang would delete the distance function.
+ */
 @Mixin(ChunkPos.class)
 public abstract class MixinChunkPos {
 
@@ -73,7 +76,7 @@ public abstract class MixinChunkPos {
                         .getShipTransformationManager()
                         .getCurrentTickTransform()
                         .transform(entityPosInLocal,
-                        TransformType.GLOBAL_TO_SUBSPACE);
+                                TransformType.GLOBAL_TO_SUBSPACE);
                 entityPosInLocal.subtract(d0, entityPosInLocal.Y, d1);
                 return entityPosInLocal.lengthSq();
             }

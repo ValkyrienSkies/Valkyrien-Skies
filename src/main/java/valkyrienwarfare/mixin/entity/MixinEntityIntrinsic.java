@@ -28,6 +28,10 @@ import valkyrienwarfare.deprecated_api.MixinMethods;
 import valkyrienwarfare.mod.common.physics.collision.EntityCollisionInjector;
 import valkyrienwarfare.mod.common.physics.collision.EntityCollisionInjector.IntermediateMovementVariableStorage;
 
+/**
+ * Todo: Remove this mess, eventually.
+ */
+@Deprecated
 @Mixin(value = Entity.class, priority = 1)
 public abstract class MixinEntityIntrinsic {
 

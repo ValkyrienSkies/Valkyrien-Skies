@@ -16,7 +16,6 @@
 
 package valkyrienwarfare.mixin.tileentity;
 
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -29,8 +28,11 @@ import valkyrienwarfare.mod.common.util.ValkyrienUtils;
 
 import java.util.Optional;
 
+/**
+ * Necessary to allow for rendering and for players to interact with tiles (ex. chests).
+ */
 @Mixin(TileEntity.class)
-public abstract class MixinTileEntity implements net.minecraftforge.common.capabilities.ICapabilitySerializable<NBTTagCompound> {
+public abstract class MixinTileEntity {
     @Shadow
     protected BlockPos pos;
 

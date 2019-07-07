@@ -25,6 +25,10 @@ import valkyrienwarfare.addon.control.piloting.IShipPilotClient;
 import valkyrienwarfare.addon.control.piloting.PilotControlsMessage;
 import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 
+/**
+ * Todo: Replace this with a capability
+ */
+@Deprecated
 @Mixin(AbstractClientPlayer.class)
 public abstract class MixinsAbstractClientPlayer implements IShipPilotClient {
 

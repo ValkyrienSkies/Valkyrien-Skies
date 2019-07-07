@@ -36,7 +36,10 @@ import valkyrienwarfare.mod.common.util.ValkyrienUtils;
 import java.util.Optional;
 import java.util.Set;
 
-//TODO: a lot of these mixins can probably be done using overrides instead of overwrites, i should have a look at some point
+/**
+ * Todo: Replace this with forge events and capabilities.
+ */
+@Deprecated
 @Mixin(value = NetHandlerPlayServer.class, priority = 5)
 public abstract class MixinNetHandlerPlayServer {
 

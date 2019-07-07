@@ -9,6 +9,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import valkyrienwarfare.mod.common.ship_handling.IHasShipManager;
 import valkyrienwarfare.mod.common.ship_handling.WorldServerShipManager;
 
+/**
+ * More lazy programming. This can DEFINITELY be replaced with forge capabilities and events!
+ */
+@Deprecated
 @Mixin(value = WorldServer.class)
 public class MixinWorldServer implements IHasShipManager {
 

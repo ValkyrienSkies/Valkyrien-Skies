@@ -25,9 +25,9 @@
     "world.chunk.MixinChunk"
   ],
   "client": [
+    "client.MixinMinecraft",
     "client.entity.MixinEntityPlayerSP",
     "client.entity.MixinsAbstractClientPlayer",
-    "client.multiplayer.MixinWorldClient",
     "client.particle.MixinParticleManager",
     "client.renderer.MixinEntityRenderer",
     "client.renderer.MixinRenderGlobal",
@@ -35,7 +35,6 @@
     "client.renderer.culling.MixinFrustum",
     "client.renderer.entity.MixinRenderManager",
     "client.renderer.tileentity.MixinTileEntityRendererDispatcher",
-    "entity.MixinEntityClient",
     "util.MixinMovementInputFromOptions",
     "world.MixinWorldClient"
   ]

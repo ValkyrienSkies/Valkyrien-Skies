@@ -16,9 +16,7 @@
 
 package valkyrienwarfare.mixin.world.border;
 
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.border.WorldBorder;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -26,33 +24,17 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import valkyrienwarfare.mod.common.physmanagement.chunk.PhysicsChunkManager;
 
+/**
+ * We need this otherwise players can't interact with ships in worlds with a world border.
+ */
 @Mixin(WorldBorder.class)
 public abstract class MixinWorldBorder {
+
     @Inject(method = "contains(Lnet/minecraft/util/math/BlockPos;)Z",
             at = @At("HEAD"),
             cancellable = true)
     public void preContains(BlockPos pos, CallbackInfoReturnable<Boolean> callbackInfo) {
         if (PhysicsChunkManager.isLikelyShipChunk(pos.getX() >> 4, pos.getZ() >> 4)) {
-            callbackInfo.setReturnValue(true);
-        }
-    }
-
-    @Inject(method = "contains(Lnet/minecraft/util/math/ChunkPos;)Z",
-            at = @At("HEAD"),
-            cancellable = true)
-    public void preContains(ChunkPos pos, CallbackInfoReturnable<Boolean> callbackInfo) {
-        if (PhysicsChunkManager.isLikelyShipChunk(pos.x >> 4, pos.z >> 4)) {
-            callbackInfo.setReturnValue(true);
-        }
-    }
-
-    @Inject(method = "contains(Lnet/minecraft/util/math/AxisAlignedBB;)Z",
-            at = @At("HEAD"),
-            cancellable = true)
-    public void preContains(AxisAlignedBB bb, CallbackInfoReturnable<Boolean> callbackInfo) {
-        int xPos = (int) bb.minX;
-        int zPos = (int) bb.minZ;
-        if (PhysicsChunkManager.isLikelyShipChunk(xPos >> 4, zPos >> 4)) {
             callbackInfo.setReturnValue(true);
         }
     }

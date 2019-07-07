@@ -42,6 +42,10 @@ import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 
 import java.util.List;
 
+/**
+ * Todo: The ladder code should be deleted and everything else should be replaced with capabilities and events.
+ */
+@Deprecated
 @Mixin(EntityLivingBase.class)
 public abstract class MixinEntityLivingBase extends Entity implements ISubspacedEntity {
 

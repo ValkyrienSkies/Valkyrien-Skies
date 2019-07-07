@@ -34,6 +34,10 @@ import valkyrienwarfare.mod.common.physmanagement.interaction.ShipUUIDToPosData;
 
 import java.util.UUID;
 
+/**
+ * Todo: Delete preGetBedSpawnLocation and turn IShipPilot into a capability.
+ */
+@Deprecated
 @Mixin(EntityPlayer.class)
 public abstract class MixinEntityPlayer extends EntityLivingBase implements IShipPilot {
     public PhysicsWrapperEntity pilotedShip;

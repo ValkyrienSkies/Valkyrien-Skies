@@ -25,6 +25,9 @@ import valkyrienwarfare.fixes.VWNetwork;
 
 import javax.annotation.Nullable;
 
+/**
+ * As much as I don't like it, this mixin is absolutely necessary.
+ */
 @Mixin(PlayerList.class)
 public abstract class MixinPlayerList {
 

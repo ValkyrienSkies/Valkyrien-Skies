@@ -21,6 +21,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.InventoryHelper;
@@ -113,9 +114,11 @@ public class BlockPhysicsInfuser extends BlockVWDirectional implements ITileEnti
         worldIn.removeTileEntity(pos);
     }
 
-    public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par4) {
-        itemInformation.add(TextFormatting.BLUE
-                + "Turns any blocks attatched to this one into a brand new Ship, just be careful not to infuse your entire world");
+    @Override
+    public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
+        tooltip.add(TextFormatting.BLUE
+                + "Turns any blocks attached to this one into a brand new Ship, " +
+                "just be careful not to infuse your entire world");
     }
 
     @Override

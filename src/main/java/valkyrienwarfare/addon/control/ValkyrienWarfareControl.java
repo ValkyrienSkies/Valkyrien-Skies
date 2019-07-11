@@ -67,7 +67,6 @@ import valkyrienwarfare.addon.control.tileentity.TileEntityLiftControl;
 import valkyrienwarfare.addon.control.tileentity.TileEntityLiftValve;
 import valkyrienwarfare.addon.control.tileentity.TileEntityNetworkDisplay;
 import valkyrienwarfare.addon.control.tileentity.TileEntityNodeRelay;
-import valkyrienwarfare.addon.control.tileentity.TileEntityPilotsChair;
 import valkyrienwarfare.addon.control.tileentity.TileEntityPropellerEngine;
 import valkyrienwarfare.addon.control.tileentity.TileEntityShipHelm;
 import valkyrienwarfare.addon.control.tileentity.TileEntityShipTelegraph;
@@ -119,7 +118,6 @@ public class ValkyrienWarfareControl extends Module {
 
     @Override
     protected void registerTileEntities() {
-        GameRegistry.registerTileEntity(TileEntityPilotsChair.class, "tilemanualshipcontroller");
         GameRegistry.registerTileEntity(TileEntityNodeRelay.class, "tilethrustrelay");
         GameRegistry.registerTileEntity(TileEntityThrustModulator.class, "tilethrustmodulator");
         GameRegistry.registerTileEntity(TileEntityShipHelm.class, "tileshiphelm");
@@ -161,8 +159,6 @@ public class ValkyrienWarfareControl extends Module {
 
     @Override
     public void registerRecipes(RegistryEvent.Register<IRecipe> event) {
-        registerRecipe(event, "recipe_pilots_chair", new ItemStack(vwControlBlocks.pilotsChair), "SLS", "EWE", " S ", 'S', Items.STICK, 'L', Items.LEATHER, 'W', Item.getItemFromBlock(Blocks.LOG), 'E', ValkyrienWarfareWorld.INSTANCE.ethereumCrystal);
-
         registerRecipe(event, "recipe_basic_engine", new ItemStack(vwControlBlocks.basicEngine, 4), "I##", "IPP", "I##", '#', Item.getItemFromBlock(Blocks.PLANKS), 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT);
         registerRecipe(event, "recipe_advanced_engine1", new ItemStack(vwControlBlocks.advancedEngine, 4), "I##", "IPP", "I##", '#', Item.getItemFromBlock(Blocks.STONE), 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT);
         registerRecipe(event, "recipe_advanced_engine2", new ItemStack(vwControlBlocks.advancedEngine, 2), "I##", "IPP", "I##", '#', Item.getItemFromBlock(Blocks.COBBLESTONE), 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT);

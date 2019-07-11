@@ -80,7 +80,6 @@ public class ClientProxyControl extends CommonProxyControl {
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.ultimateEngine);
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.redstoneEngine);
 
-        registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.pilotsChair);
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.passengerChair);
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipHelm);
 

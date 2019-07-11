@@ -30,7 +30,6 @@ import valkyrienwarfare.addon.control.block.BlockNetworkDisplay;
 import valkyrienwarfare.addon.control.block.BlockRotationTrainAxle;
 import valkyrienwarfare.addon.control.block.BlockShipHelm;
 import valkyrienwarfare.addon.control.block.BlockShipPassengerChair;
-import valkyrienwarfare.addon.control.block.BlockShipPilotsChair;
 import valkyrienwarfare.addon.control.block.BlockShipTelegraph;
 import valkyrienwarfare.addon.control.block.BlockShipWheel;
 import valkyrienwarfare.addon.control.block.BlockTelegraphDummy;
@@ -53,7 +52,6 @@ public class BlocksValkyrienWarfareControl {
     public final BlockNormalEngine ultimateEngine;
     public final BlockRedstoneEngine redstoneEngine;
     public final Block dopedEthereum;
-    public final Block pilotsChair;
     public final Block passengerChair;
     public final Block shipHelm;
     public final Block shipWheel;
@@ -101,10 +99,6 @@ public class BlocksValkyrienWarfareControl {
         dopedEthereum = new BlockDopedEthereum(Material.GLASS).setHardness(4f)
                 .setTranslationKey("dopedethereum")
                 .setRegistryName(getModID(), "dopedethereum")
-                .setCreativeTab(ValkyrienWarfareMod.vwTab);
-        pilotsChair = new BlockShipPilotsChair(Material.IRON).setHardness(4f)
-                .setTranslationKey("shippilotschair")
-                .setRegistryName(getModID(), "shippilotschair")
                 .setCreativeTab(ValkyrienWarfareMod.vwTab);
 
         passengerChair = new BlockShipPassengerChair(Material.IRON).setHardness(4f)
@@ -192,7 +186,6 @@ public class BlocksValkyrienWarfareControl {
         event.getRegistry().register(redstoneEngine);
 
         event.getRegistry().register(dopedEthereum);
-        event.getRegistry().register(pilotsChair);
         event.getRegistry().register(passengerChair);
 
         event.getRegistry().register(shipHelm);
@@ -224,7 +217,6 @@ public class BlocksValkyrienWarfareControl {
         registerItemBlock(event, redstoneEngine);
 
         registerItemBlock(event, dopedEthereum);
-        registerItemBlock(event, pilotsChair);
         registerItemBlock(event, passengerChair);
 
         registerItemBlock(event, shipHelm);

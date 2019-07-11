@@ -3,7 +3,6 @@ item.relaywire.name=Relay Wire
 item.vw_wrench.name=VW Wrench
 
 #Blocks
-tile.shippilotschair.name=Captain's Chair
 tile.shippassengerchair.name=Passenger Chair
 tile.dopedethereum.name=Compacted Ethereum
 tile.thrustrelay.name=Network Control Relay

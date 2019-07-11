@@ -20,9 +20,6 @@ public class GuiPhysicsInfuser extends GuiContainer {
 
     private static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation(ValkyrienWarfareMod.MOD_ID, "textures/gui/container/physicsinfuserguinocoreson.png");
     private final TileEntityPhysicsInfuser tileEntity;
-    private GuiButton buttonAssembleShip;
-    private GuiButton buttonEnablePhysics;
-    private GuiButton buttonAlignShip;
 
     public GuiPhysicsInfuser(EntityPlayer player, TileEntityPhysicsInfuser tileEntity) {
         super(new ContainerPhysicsInfuser(player, tileEntity));
@@ -34,11 +31,11 @@ public class GuiPhysicsInfuser extends GuiContainer {
         super.initGui();
         super.buttonList.clear();
 
-        buttonAssembleShip = new GuiButton(ASSEMBLE_SHIP.ordinal(), (width / 2) + 90, (height / 2) - 70,
+        GuiButton buttonAssembleShip = new GuiButton(ASSEMBLE_SHIP.ordinal(), (width / 2) + 90, (height / 2) - 70,
                 98, 20, "");
-        buttonEnablePhysics = new GuiButton(ENABLE_PHYSICS.ordinal(), (width / 2) + 90, (height / 2) - 45,
+        GuiButton buttonEnablePhysics = new GuiButton(ENABLE_PHYSICS.ordinal(), (width / 2) + 90, (height / 2) - 45,
                 98, 20, "");
-        buttonAlignShip = new GuiButton(ALIGN_SHIP.ordinal(), (width / 2) + 90, (height / 2) - 20,
+        GuiButton buttonAlignShip = new GuiButton(ALIGN_SHIP.ordinal(), (width / 2) + 90, (height / 2) - 20,
                 98, 20, "");
 
         updateButtonStatus();

@@ -203,7 +203,6 @@ public class ValkyrienWarfareMod {
      * @param isAdding Should be true if you are adding a player, false if removing the
      *                 player.
      * @param player   The player to check for
-     * @return
      */
     public static boolean canChangeAirshipCounter(boolean isAdding, EntityPlayer player) {
         if (isAdding) {
@@ -353,7 +352,7 @@ public class ValkyrienWarfareMod {
         proxy.preInit(event);
         registerNetworks(event);
         runConfiguration(event);
-        registerCapibilities();
+        registerCapabilities();
         ValkyrienWarfareHooks.methods = new RealMethods();
         ValkyrienWarfareHooks.isValkyrienWarfareInstalled = true;
         VW_LOGGER = Logger.getLogger("ValkyrienWarfare");
@@ -533,7 +532,7 @@ public class ValkyrienWarfareMod {
         tag.save();
     }
 
-    public void registerCapibilities() {
+    private void registerCapabilities() {
         CapabilityManager.INSTANCE.register(IAirshipCounterCapability.class, new StorageAirshipCounter(),
                 ImplAirshipCounterCapability.class);
         CapabilityManager.INSTANCE.register(IVWWorldDataCapability.class, new StorageVWWorldData(),
@@ -542,8 +541,6 @@ public class ValkyrienWarfareMod {
 
     /**
      * Checks instance of ServerProxy to avoid calling client code on server side
-     *
-     * @return
      */
     public boolean isRunningOnClient() {
         return !(proxy instanceof ServerProxy);

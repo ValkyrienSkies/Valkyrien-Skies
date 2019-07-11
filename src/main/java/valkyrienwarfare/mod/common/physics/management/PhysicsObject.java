@@ -269,7 +269,7 @@
                 // onPlayerUntracking(wachingPlayer);
             }
             getWatchingPlayers().clear();
-            ValkyrienWarfareMod.VW_CHUNK_MANAGER.removeRegistedChunksForShip(getWrapperEntity());
+            ValkyrienWarfareMod.VW_CHUNK_MANAGER.removeRegisteredChunksForShip(getWrapperEntity());
             ValkyrienWarfareMod.VW_CHUNK_MANAGER.removeShipPosition(getWrapperEntity());
             ValkyrienWarfareMod.VW_CHUNK_MANAGER.removeShipNameRegistry(getWrapperEntity());
             ValkyrienWarfareMod.VW_PHYSICS_MANAGER.onShipUnload(getWrapperEntity());

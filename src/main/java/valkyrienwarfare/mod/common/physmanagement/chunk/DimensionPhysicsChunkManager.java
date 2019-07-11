@@ -56,7 +56,7 @@ public class DimensionPhysicsChunkManager {
         data.addShipToPersistantMap(wrapper);
     }
 
-    public void removeRegistedChunksForShip(PhysicsWrapperEntity wrapper) {
+    public void removeRegisteredChunksForShip(PhysicsWrapperEntity wrapper) {
         World shipWorld = wrapper.world;
         BlockPosToShipUUIDData data = BlockPosToShipUUIDData.get(shipWorld);
 

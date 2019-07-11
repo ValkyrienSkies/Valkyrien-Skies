@@ -32,7 +32,7 @@ public class GuiPhysicsInfuser extends GuiContainer {
     @Override
     public void initGui() {
         super.initGui();
-        buttonList.clear();
+        super.buttonList.clear();
 
         buttonAssembleShip = new GuiButton(ASSEMBLE_SHIP.ordinal(), (width / 2) + 90, (height / 2) - 70,
                 98, 20, "");
@@ -43,9 +43,9 @@ public class GuiPhysicsInfuser extends GuiContainer {
 
         updateButtonStatus();
 
-        buttonList.add(buttonAssembleShip);
-        buttonList.add(buttonEnablePhysics);
-        buttonList.add(buttonAlignShip);
+        super.buttonList.add(buttonAssembleShip);
+        super.buttonList.add(buttonEnablePhysics);
+        super.buttonList.add(buttonAlignShip);
     }
 
     @Override
@@ -75,14 +75,14 @@ public class GuiPhysicsInfuser extends GuiContainer {
     @Override
     protected void actionPerformed(GuiButton button) throws IOException {
         super.actionPerformed(button);
-        tileEntity.onButtonPress(button.id, Minecraft.getMinecraft().player);
+        this.tileEntity.onButtonPress(button.id, Minecraft.getMinecraft().player);
     }
 
     private void updateButtonStatus() {
         for (GuiButton button : buttonList) {
             EnumInfuserButton buttonType = EnumInfuserButton.values()[button.id];
-            button.displayString = I18n.format(buttonType.getButtonText(tileEntity));
-            button.enabled = buttonType.buttonEnabled(tileEntity);
+            button.displayString = I18n.format(buttonType.getButtonText(this.tileEntity));
+            button.enabled = buttonType.buttonEnabled(this.tileEntity);
         }
     }
 }

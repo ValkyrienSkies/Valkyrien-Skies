@@ -286,13 +286,16 @@
          * Generates the new chunks
          */
         public void assembleShipAsOrderedByPlayer(EntityPlayer player) {
-            BlockPos centerInWorld = new BlockPos(getWrapperEntity().posX, getWrapperEntity().posY, getWrapperEntity().posZ);
+            BlockPos centerInWorld = new BlockPos(getWrapperEntity().posX,
+                    getWrapperEntity().posY, getWrapperEntity().posZ);
             SpatialDetector detector = DetectorManager.getDetectorFor(getDetectorID(), centerInWorld, getWorldObj(),
                     ValkyrienWarfareMod.maxShipSize + 1, true);
             if (detector.foundSet.size() > ValkyrienWarfareMod.maxShipSize || detector.cleanHouse) {
                 if (player != null) {
                     player.sendMessage(new TextComponentString(
-                            "Ship construction canceled because its exceeding the ship size limit; or because it's attatched to bedrock. Raise it with /physsettings maxshipsize [number]"));
+                            "Ship construction canceled because its exceeding the ship size limit; " +
+                                    "or because it's attached to bedrock. " +
+                                    "Raise it with /physsettings maxshipsize [number]"));
                 }
                 getWrapperEntity().setDead();
                 return;
@@ -345,7 +348,9 @@
 
             setReferenceBlockPos(getRegionCenter());
 
-            setCenterCoord(new Vector(getReferenceBlockPos().getX() + .5, getReferenceBlockPos().getY() + .5, getReferenceBlockPos().getZ() + .5));
+            setCenterCoord(new Vector(getReferenceBlockPos().getX() + .5,
+                    getReferenceBlockPos().getY() + .5,
+                    getReferenceBlockPos().getZ() + .5));
 
             createPhysicsCalculations();
 
@@ -360,7 +365,9 @@
                 int i = iter.next();
                 SpatialDetector.setPosWithRespectTo(i, centerInWorld, oldPos);
                 SpatialDetector.setPosWithRespectTo(i, centerInWorld, newPos);
-                newPos.setPos(newPos.getX() + centerDifference.getX(), newPos.getY() + centerDifference.getY(), newPos.getZ() + centerDifference.getZ());
+                newPos.setPos(newPos.getX() + centerDifference.getX(),
+                        newPos.getY() + centerDifference.getY(),
+                        newPos.getZ() + centerDifference.getZ());
 
                 MoveBlocks.copyBlockToPos(getWorldObj(), oldPos, newPos, Optional.of(this));
             }
@@ -1262,9 +1269,6 @@
             return blockPositionsGameTick;
         }
 
-        /**
-         * @return
-         */
         private BlockPos getReferenceBlockPos() {
             return this.referenceBlockPos;
         }
@@ -1278,8 +1282,6 @@
 
         /**
          * Returns true if this ship is aligned close enough to the grid that it is allowed to deconstruct back to the world.
-         *
-         * @return
          */
         public boolean canShipBeDeconstructed() {
             Quaternion zeroQuat = Quaternion.fromEuler(0, 0, 0);
@@ -1359,7 +1361,6 @@
          * Gets the chunk at chunkX and chunkZ.
          * @param chunkX
          * @param chunkZ
-         * @return
          */
         public Chunk getChunkAt(int chunkX, int chunkZ) {
             VWChunkClaim ownedChunks = getOwnedChunks();

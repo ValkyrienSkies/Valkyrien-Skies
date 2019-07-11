@@ -41,8 +41,10 @@ import valkyrienwarfare.mod.common.physmanagement.relocation.DetectorManager;
 import valkyrienwarfare.mod.common.tileentity.TileEntityPhysicsInfuser;
 
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
+@ParametersAreNonnullByDefault
 public class BlockPhysicsInfuser extends BlockVWDirectional implements ITileEntityProvider {
 
     public static final PropertyBool INFUSER_LIGHT_ON = PropertyBool.create("infuser_light_on");
@@ -56,15 +58,15 @@ public class BlockPhysicsInfuser extends BlockVWDirectional implements ITileEnti
 
     @Override
     public IBlockState getStateFromMeta(int meta) {
-        // Lower 3 bits are for enumfacing
-        EnumFacing enumfacing = EnumFacing.byIndex(meta & 7);
-        if (enumfacing.getAxis() == EnumFacing.Axis.Y) {
-            enumfacing = EnumFacing.NORTH;
+        // Lower 3 bits are for enumFacing
+        EnumFacing enumFacing = EnumFacing.byIndex(meta & 7);
+        if (enumFacing.getAxis() == EnumFacing.Axis.Y) {
+            enumFacing = EnumFacing.NORTH;
         }
         // Highest bit is for light on
         boolean lightOn = meta >> 3 == 1;
         return this.getDefaultState()
-                .withProperty(FACING, enumfacing)
+                .withProperty(FACING, enumFacing)
                 .withProperty(INFUSER_LIGHT_ON, lightOn);
     }
 

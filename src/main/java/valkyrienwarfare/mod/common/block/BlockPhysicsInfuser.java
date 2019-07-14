@@ -21,6 +21,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.InventoryHelper;
@@ -41,8 +42,10 @@ import valkyrienwarfare.mod.common.physmanagement.relocation.DetectorManager;
 import valkyrienwarfare.mod.common.tileentity.TileEntityPhysicsInfuser;
 
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
+@ParametersAreNonnullByDefault
 public class BlockPhysicsInfuser extends BlockVWDirectional implements ITileEntityProvider {
 
     public static final PropertyBool INFUSER_LIGHT_ON = PropertyBool.create("infuser_light_on");
@@ -56,15 +59,15 @@ public class BlockPhysicsInfuser extends BlockVWDirectional implements ITileEnti
 
     @Override
     public IBlockState getStateFromMeta(int meta) {
-        // Lower 3 bits are for enumfacing
-        EnumFacing enumfacing = EnumFacing.byIndex(meta & 7);
-        if (enumfacing.getAxis() == EnumFacing.Axis.Y) {
-            enumfacing = EnumFacing.NORTH;
+        // Lower 3 bits are for enumFacing
+        EnumFacing enumFacing = EnumFacing.byIndex(meta & 7);
+        if (enumFacing.getAxis() == EnumFacing.Axis.Y) {
+            enumFacing = EnumFacing.NORTH;
         }
         // Highest bit is for light on
         boolean lightOn = meta >> 3 == 1;
         return this.getDefaultState()
-                .withProperty(FACING, enumfacing)
+                .withProperty(FACING, enumFacing)
                 .withProperty(INFUSER_LIGHT_ON, lightOn);
     }
 
@@ -111,9 +114,11 @@ public class BlockPhysicsInfuser extends BlockVWDirectional implements ITileEnti
         worldIn.removeTileEntity(pos);
     }
 
-    public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par4) {
-        itemInformation.add(TextFormatting.BLUE
-                + "Turns any blocks attatched to this one into a brand new Ship, just be careful not to infuse your entire world");
+    @Override
+    public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
+        tooltip.add(TextFormatting.BLUE
+                + "Turns any blocks attached to this one into a brand new Ship, " +
+                "just be careful not to infuse your entire world");
     }
 
     @Override

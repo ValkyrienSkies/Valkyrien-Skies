@@ -20,9 +20,6 @@ public class GuiPhysicsInfuser extends GuiContainer {
 
     private static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation(ValkyrienWarfareMod.MOD_ID, "textures/gui/container/physicsinfuserguinocoreson.png");
     private final TileEntityPhysicsInfuser tileEntity;
-    private GuiButton buttonAssembleShip;
-    private GuiButton buttonEnablePhysics;
-    private GuiButton buttonAlignShip;
 
     public GuiPhysicsInfuser(EntityPlayer player, TileEntityPhysicsInfuser tileEntity) {
         super(new ContainerPhysicsInfuser(player, tileEntity));
@@ -32,20 +29,20 @@ public class GuiPhysicsInfuser extends GuiContainer {
     @Override
     public void initGui() {
         super.initGui();
-        buttonList.clear();
+        super.buttonList.clear();
 
-        buttonAssembleShip = new GuiButton(ASSEMBLE_SHIP.ordinal(), (width / 2) + 90, (height / 2) - 70,
+        GuiButton buttonAssembleShip = new GuiButton(ASSEMBLE_SHIP.ordinal(), (width / 2) + 90, (height / 2) - 70,
                 98, 20, "");
-        buttonEnablePhysics = new GuiButton(ENABLE_PHYSICS.ordinal(), (width / 2) + 90, (height / 2) - 45,
+        GuiButton buttonEnablePhysics = new GuiButton(ENABLE_PHYSICS.ordinal(), (width / 2) + 90, (height / 2) - 45,
                 98, 20, "");
-        buttonAlignShip = new GuiButton(ALIGN_SHIP.ordinal(), (width / 2) + 90, (height / 2) - 20,
+        GuiButton buttonAlignShip = new GuiButton(ALIGN_SHIP.ordinal(), (width / 2) + 90, (height / 2) - 20,
                 98, 20, "");
 
         updateButtonStatus();
 
-        buttonList.add(buttonAssembleShip);
-        buttonList.add(buttonEnablePhysics);
-        buttonList.add(buttonAlignShip);
+        super.buttonList.add(buttonAssembleShip);
+        super.buttonList.add(buttonEnablePhysics);
+        super.buttonList.add(buttonAlignShip);
     }
 
     @Override
@@ -75,7 +72,7 @@ public class GuiPhysicsInfuser extends GuiContainer {
     @Override
     protected void actionPerformed(GuiButton button) throws IOException {
         super.actionPerformed(button);
-        tileEntity.onButtonPress(button.id, Minecraft.getMinecraft().player);
+        this.tileEntity.onButtonPress(button.id, Minecraft.getMinecraft().player);
     }
 
     private void updateButtonStatus() {
@@ -85,8 +82,8 @@ public class GuiPhysicsInfuser extends GuiContainer {
                 continue;
             }
             EnumInfuserButton buttonType = EnumInfuserButton.values()[button.id];
-            button.displayString = I18n.format(buttonType.getButtonText(tileEntity));
-            button.enabled = buttonType.buttonEnabled(tileEntity);
+            button.displayString = I18n.format(buttonType.getButtonText(this.tileEntity));
+            button.enabled = buttonType.buttonEnabled(this.tileEntity);
         }
     }
 }

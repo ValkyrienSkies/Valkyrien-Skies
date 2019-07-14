@@ -80,6 +80,10 @@ public class GuiPhysicsInfuser extends GuiContainer {
 
     private void updateButtonStatus() {
         for (GuiButton button : buttonList) {
+            if (button.id >= values().length) {
+                // This button is not a part of the gui, skip it.
+                continue;
+            }
             EnumInfuserButton buttonType = EnumInfuserButton.values()[button.id];
             button.displayString = I18n.format(buttonType.getButtonText(tileEntity));
             button.enabled = buttonType.buttonEnabled(tileEntity);

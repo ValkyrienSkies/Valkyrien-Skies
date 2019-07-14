@@ -244,6 +244,10 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
 
     @Override
     public void onButtonPress(int buttonId, EntityPlayer presser) {
+        if (buttonId >= EnumInfuserButton.values().length) {
+            // Button not part of the gui, skip it.
+            return;
+        }
         EnumInfuserButton button = EnumInfuserButton.values()[buttonId];
         this.sendUpdateToClients = true;
         // TODO: Check if presser is allowed to press this button first

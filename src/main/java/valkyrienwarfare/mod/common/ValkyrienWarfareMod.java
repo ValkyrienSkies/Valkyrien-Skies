@@ -154,7 +154,6 @@ public class ValkyrienWarfareMod {
     public static double shipUpperLimit = 1000D;
     public static double shipLowerLimit = -30D;
     public static int maxAirships = -1;
-    public static boolean accurateRain = false;
     public static boolean runAirshipPermissions = false;
     public static int threadCount = -1;
     public static Logger VW_LOGGER;
@@ -172,7 +171,6 @@ public class ValkyrienWarfareMod {
         shipUpperLimit = config.get(Configuration.CATEGORY_GENERAL, "Ship Y-Height Maximum", 1000D).getDouble();
         shipLowerLimit = config.get(Configuration.CATEGORY_GENERAL, "Ship Y-Height Minimum", -30D).getDouble();
         maxAirships = config.get(Configuration.CATEGORY_GENERAL, "Max airships per player", -1, "Players can't own more than this many airships at once. Set to -1 to disable.").getInt();
-        accurateRain = config.get(Configuration.CATEGORY_GENERAL, "Enable accurate rain on ships", false, "Debug feature, takes a lot of processing power").getBoolean();
         runAirshipPermissions = config.get(Configuration.CATEGORY_GENERAL, "Enable airship permissions", false, "Enables the airship permissions system").getBoolean();
         threadCount = config.get(Configuration.CATEGORY_GENERAL, "Physics thread count", Runtime.getRuntime().availableProcessors() - 2,
                 "The number of threads to use for physics, recommened to use your cpu's thread count minus 2.").getInt();

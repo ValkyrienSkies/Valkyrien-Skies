@@ -16,12 +16,17 @@
 
 package valkyrienwarfare.fixes;
 
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 
 import java.util.Iterator;
 
-public interface WorldChunkloadingCrashFix {
+public interface MixinWorldIntrinsicMethods {
 
+    @SuppressWarnings("unused")
     Iterator<Chunk> getPersistentChunkIterable(Iterator<Chunk> chunkIterator);
 
+    @SuppressWarnings("unused")
+    Biome getBiomeForCoordsBody(BlockPos pos);
 }

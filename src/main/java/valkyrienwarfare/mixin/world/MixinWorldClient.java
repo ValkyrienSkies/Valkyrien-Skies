@@ -16,16 +16,12 @@
 
 package valkyrienwarfare.mixin.world;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -33,15 +29,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
-import valkyrienwarfare.mod.common.math.Vector;
-import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.common.ship_handling.IHasShipManager;
 import valkyrienwarfare.mod.common.ship_handling.WorldClientShipManager;
-import valkyrienwarfare.mod.common.util.ValkyrienUtils;
 
 import java.util.List;
-import java.util.Optional;
 
 @Mixin(World.class)
 public abstract class MixinWorldClient implements IHasShipManager {
@@ -112,39 +104,6 @@ public abstract class MixinWorldClient implements IHasShipManager {
             System.err.println("Something just went wrong here, getting default light value instead!!!!");
             e.printStackTrace();
         }
-    }
-
-    @Shadow
-    public abstract RayTraceResult rayTraceBlocks(Vec3d start, Vec3d end, boolean bool1, boolean bool2, boolean bool3);
-
-    /**
-     * This is easier to have as an overwrite because there's less laggy hackery to be done then :P
-     *
-     * @author DaPorkchop_
-     */
-    @Overwrite
-    public BlockPos getPrecipitationHeight(BlockPos input) {
-        BlockPos pos = this.getChunk(input)
-                .getPrecipitationHeight(input);
-        if (ValkyrienWarfareMod.accurateRain) {
-            Vector traceStart = new Vector(pos.getX() + .5D, Minecraft.getMinecraft().player.posY + 50D, pos.getZ() + .5D);
-            Vector traceEnd = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
-            RayTraceResult result = rayTraceBlocks(traceStart.toVec3d(), traceEnd.toVec3d(), true, true, false);
-
-            if (result != null && result.typeOfHit != RayTraceResult.Type.MISS && result.getBlockPos() != null) {
-                Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(World.class.cast(this), pos);
-
-                if (physicsObject.isPresent()) {
-                    Vector blockPosVector = new Vector(result.getBlockPos().getX() + .5D, result.getBlockPos().getY() + .5D, result.getBlockPos().getZ() + .5D);
-                    physicsObject.get()
-                            .getShipTransformationManager()
-                            .fromLocalToGlobal(blockPosVector);
-                    BlockPos toReturn = new BlockPos(pos.getX(), blockPosVector.Y + .5D, pos.getZ());
-                    return toReturn;
-                }
-            }
-        }
-        return pos;
     }
 
     @Override

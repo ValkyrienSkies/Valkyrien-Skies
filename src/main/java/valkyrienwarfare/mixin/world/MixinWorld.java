@@ -44,7 +44,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import valkyrienwarfare.api.TransformType;
-import valkyrienwarfare.fixes.WorldChunkloadingCrashFix;
+import valkyrienwarfare.fixes.MixinWorldIntrinsicMethods;
 import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.common.coordinates.ISubspace;
 import valkyrienwarfare.mod.common.coordinates.ISubspaceProvider;
@@ -65,7 +65,7 @@ import java.util.Optional;
 
 // TODO: This class is horrible
 @Mixin(value = World.class, priority = 2018)
-@Implements(@Interface(iface = WorldChunkloadingCrashFix.class, prefix = "vw$", remap = Remap.NONE))
+@Implements(@Interface(iface = MixinWorldIntrinsicMethods.class, prefix = "vw$", remap = Remap.NONE))
 public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
 
     private static double MAX_ENTITY_RADIUS_ALT = 2.0D;
@@ -73,30 +73,34 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
     // I made this threadlocal to prevent disaster for now, but its still really bad code.
     private final ThreadLocal<Boolean> dontIntercept = ThreadLocal.withInitial(() -> false);
     private final ISubspace worldSubspace = new ImplSubspace(null);
+
     @Shadow
     List<IWorldEventListener> eventListeners;
-
-    private WorldPhysObjectManager physManager;
 
     @Override
     public ISubspace getSubspace() {
         return worldSubspace;
     }
 
-    @Inject(method = "getBiomeForCoordsBody", at = @At("HEAD"), cancellable = true, remap = false)
-    public void preGetBiomeForCoordsBody(BlockPos pos, CallbackInfoReturnable callbackInfo) {
+    @Shadow
+    public abstract Biome getBiomeForCoordsBody(BlockPos pos);
+
+    /**
+     * Enables the correct weather on ships depending on their position.
+     *
+     * @param pos
+     * @return
+     */
+    @Intrinsic(displace = true)
+    public Biome vw$getBiomeForCoordsBody(BlockPos pos) {
         Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(World.class.cast(this), pos);
 
         if (physicsObject.isPresent()) {
-            BlockPos posInGlobalCoordinates = physicsObject.get()
+            pos = physicsObject.get()
                     .getShipTransformationManager()
                     .getCurrentTickTransform().transform(pos, TransformType.SUBSPACE_TO_GLOBAL);
-            Biome biomeInGlobal = World.class.cast(this)
-                    .getBiomeForCoordsBody(posInGlobalCoordinates);
-            // Cancel the rest of the method and return the biome from the global
-            // coordinates.
-            callbackInfo.setReturnValue(biomeInGlobal);
         }
+        return getBiomeForCoordsBody(pos);
     }
 
     @Inject(method = "getCollisionBoxes(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/AxisAlignedBB;ZLjava/util/List;)Z", at = @At("HEAD"), cancellable = true)

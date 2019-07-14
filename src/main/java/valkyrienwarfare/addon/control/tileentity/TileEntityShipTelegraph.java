@@ -33,6 +33,7 @@ import valkyrienwarfare.addon.control.piloting.ControllerInputType;
 import valkyrienwarfare.addon.control.piloting.PilotControlsMessage;
 import valkyrienwarfare.fixes.VWNetwork;
 
+import java.util.Collection;
 import java.util.Optional;
 
 public class TileEntityShipTelegraph extends TileEntityPilotableImpl implements ITickable {
@@ -103,7 +104,13 @@ public class TileEntityShipTelegraph extends TileEntityPilotableImpl implements 
             this.handleRotation = this.handleRotation + (this.nextTelegraphState.renderRotation - this.handleRotation) * .5;
             this.telegraphState = nextTelegraphState;
         } else {
-            for (GraphObject object : this.getNode().getGraph().getObjects()) {
+            Collection<GraphObject> connectedGraphObjects = getNode().getGraph()
+                    .getObjects();
+            if (connectedGraphObjects == null) {
+                new IllegalStateException("Graph object neighbors are null! Skipping ship telegraph update.").printStackTrace();
+                return;
+            }
+            for (GraphObject object : connectedGraphObjects) {
                 VWNode_TileEntity otherNode = (VWNode_TileEntity) object;
                 TileEntity tile = otherNode.getParentTile();
                 if (tile instanceof TileEntityGearbox) {

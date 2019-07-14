@@ -32,17 +32,14 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.block.BlockShipHelm;
-import valkyrienwarfare.addon.control.block.multiblocks.TileEntityEthereumCompressorPart;
 import valkyrienwarfare.addon.control.block.multiblocks.TileEntityRudderAxlePart;
 import valkyrienwarfare.addon.control.nodenetwork.VWNode_TileEntity;
 import valkyrienwarfare.addon.control.piloting.ControllerInputType;
 import valkyrienwarfare.addon.control.piloting.PilotControlsMessage;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.fixes.VWNetwork;
-import valkyrienwarfare.mod.common.coordinates.VectorImmutable;
 import valkyrienwarfare.mod.common.math.Vector;
 import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
-import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.common.util.ValkyrienUtils;
 
 import java.util.Optional;
@@ -78,30 +75,6 @@ public class TileEntityShipHelm extends TileEntityPilotableImpl implements ITick
             }
 
             VWNode_TileEntity thisNode = this.getNode();
-            double totalMaxUpwardThrust = 0;
-            for (GraphObject object : thisNode.getGraph().getObjects()) {
-                VWNode_TileEntity otherNode = (VWNode_TileEntity) object;
-                TileEntity tile = otherNode.getParentTile();
-                if (tile instanceof TileEntityEthereumCompressorPart) {
-                    BlockPos masterPos = ((TileEntityEthereumCompressorPart) tile).getMultiblockOrigin();
-                    TileEntityEthereumCompressorPart masterTile = (TileEntityEthereumCompressorPart) tile.getWorld()
-                            .getTileEntity(masterPos);
-                    // This is a transient problem that only occurs during world loading.
-                    if (masterTile != null) {
-                        totalMaxUpwardThrust += masterTile.getMaxThrust();
-                    }
-                    // masterTile.updateTicksSinceLastRecievedSignal();
-                }
-            }
-
-            PhysicsWrapperEntity parentPhysicsEntity = this.getParentPhysicsEntity();
-            VectorImmutable torqueAttemptedNormalImmutable = null;
-            if (parentPhysicsEntity != null) {
-                Vector torqueAttempted = new Vector(0, Math.signum(wheelRotation), 0);
-                // parentPhysicsEntity.getPhysicsObject().getShipTransformationManager().getCurrentPhysicsTransform()
-                //		.rotate(torqueAttempted, TransformType.SUBSPACE_TO_GLOBAL);
-                torqueAttemptedNormalImmutable = torqueAttempted.toImmutable();
-            }
 
             for (GraphObject object : thisNode.getGraph().getObjects()) {
                 VWNode_TileEntity otherNode = (VWNode_TileEntity) object;
@@ -112,17 +85,8 @@ public class TileEntityShipHelm extends TileEntityPilotableImpl implements ITick
                             .getTileEntity(masterPos);
                     // This is a transient problem that only occurs during world loading.
                     if (masterTile != null) {
-                        // Wheel rotation is flipped because I'm an idiot
-                        if (parentPhysicsEntity == null) {
-                            masterTile.setRudderAngle(-this.wheelRotation / 8D);
-                        } else {
-                            masterTile.attemptTorque(parentPhysicsEntity.getPhysicsObject(),
-                                    torqueAttemptedNormalImmutable, -this.wheelRotation / 8D,
-                                    new Vector(EnumFacing.byIndex(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipHelm
-                                            .getMetaFromState(this.getWorld().getBlockState(this.getPos()))).getDirectionVec()));
-                        }
+                        masterTile.setRudderAngle(-this.wheelRotation / 8D);
                     }
-                    // masterTile.updateTicksSinceLastRecievedSignal();
                 }
 
             }

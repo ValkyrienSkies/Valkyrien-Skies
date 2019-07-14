@@ -6,7 +6,7 @@ item.relaywire.name=Câble relais
 #Blocks
 tile.shippilotschair.name=Siège de pilote
 tile.shippassengerchair.name=Siège de passager
-tile.dopedetherium.name=Etherium dopé
+tile.dopedetherium.name=Valkyrium dopé
 tile.balloonburner.name=Brûleur de ballons
 tile.basichovercraftcontroller.name=Contrôleur de flotaison basique
 tile.thrustrelay.name=Relais
@@ -22,8 +22,8 @@ tile.ultimateengine.name=Moteur ultime
 tile.redstoneengine.name=Moteur à redstone
 
 #ETHER Compressors
-tile.antigravengine.name=Compresseur d'etherium basique
-tile.advancedethercompressor.name=Compresseur d'etherium avancé
-tile.eliteethercompressor.name=Compresseur d'etherium d'elite
-tile.ultimateethercompressor.name=Compresseur d'etherium ultime
-tile.creativeethercompressor.name=Compresseur d'etherium créatif
+tile.antigravengine.name=Compresseur d'valkyrium basique
+tile.advancedethercompressor.name=Compresseur d'valkyrium avancé
+tile.eliteethercompressor.name=Compresseur d'valkyrium d'elite
+tile.ultimateethercompressor.name=Compresseur d'valkyrium ultime
+tile.creativeethercompressor.name=Compresseur d'valkyrium créatif

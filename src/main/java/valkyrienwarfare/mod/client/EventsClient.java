@@ -20,13 +20,20 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
+import net.minecraftforge.client.model.IModel;
+import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
@@ -35,6 +42,7 @@ import org.lwjgl.opengl.GL11;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.fixes.SoundFixWrapper;
 import valkyrienwarfare.mod.client.render.GibsModelRegistry;
+import valkyrienwarfare.mod.client.render.infuser_core_rendering.InfuserCoreBakedModel;
 import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.common.math.Vector;
 import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
@@ -154,5 +162,32 @@ public class EventsClient {
     @SubscribeEvent
     public void onModelBake(ModelBakeEvent event) {
         GibsModelRegistry.onModelBakeEvent(event);
+
+
+        ResourceLocation modelResourceLocation = new ResourceLocation("valkyrienwarfarecontrol:item/infuser_core_main");
+        try {
+            IModel model = ModelLoaderRegistry.getModel(modelResourceLocation);
+            IBakedModel inventoryModel = model.bake(model.getDefaultState(), DefaultVertexFormats.ITEM, ModelLoader.defaultTextureGetter());
+            IBakedModel handModel = event.getModelRegistry()
+                    .getObject(new ModelResourceLocation(ValkyrienWarfareMod.MOD_ID + ":" + ValkyrienWarfareMod.INSTANCE.physicsCore.getTranslationKey()
+                            .substring(5), "inventory"));
+
+
+            event.getModelRegistry()
+                    .putObject(new ModelResourceLocation("valkyrienwarfarecontrol:testmodel", "inventory"), new InfuserCoreBakedModel(handModel, inventoryModel));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @SubscribeEvent
+    public void onTextureStitchPre(TextureStitchEvent.Pre event) {
+        ResourceLocation mainCoreInventoryTexture = new ResourceLocation("valkyrienwarfarecontrol:items/main_core");
+        ResourceLocation smallCoreInventoryTexture = new ResourceLocation("valkyrienwarfarecontrol:items/small_core");
+        event.getMap()
+                .registerSprite(mainCoreInventoryTexture);
+        event.getMap()
+                .registerSprite(smallCoreInventoryTexture);
     }
 }

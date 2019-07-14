@@ -85,6 +85,8 @@ public class ClientProxy extends CommonProxy {
                 .getResourceManager();
         // When Minecraft reloads resources tell GibsModelRegistry to delete all its caches.
         mcResourceManager.registerReloadListener((resourceManager) -> GibsModelRegistry.onResourceManagerReload(resourceManager));
+
+        //  new ModelResourceLocation("valkyrienwarfarecontrol:infuser_core_main", "inventory"),
     }
 
     @Override
@@ -107,7 +109,14 @@ public class ClientProxy extends CommonProxy {
         super.init(e);
         registerBlockItem(ValkyrienWarfareMod.INSTANCE.physicsInfuser);
         registerBlockItem(ValkyrienWarfareMod.INSTANCE.physicsInfuserCreative);
-        registerItemModel(ValkyrienWarfareMod.INSTANCE.physicsCore);
+
+
+        // registerItemModel(ValkyrienWarfareMod.INSTANCE.physicsCore);
+
+        RenderItem renderItem = Minecraft.getMinecraft()
+                .getRenderItem();
+        renderItem.getItemModelMesher()
+                .register(ValkyrienWarfareMod.INSTANCE.physicsCore, 0, new ModelResourceLocation("valkyrienwarfarecontrol:testmodel", "inventory"));
 
         for (Module addon : ValkyrienWarfareMod.addons) {
             ModuleProxy proxy = addon.getClientProxy();

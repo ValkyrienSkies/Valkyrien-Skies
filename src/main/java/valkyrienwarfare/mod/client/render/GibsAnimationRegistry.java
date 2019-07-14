@@ -2,7 +2,6 @@ package valkyrienwarfare.mod.client.render;
 
 import com.best108.atom_animation_reader.IAtomAnimation;
 import com.best108.atom_animation_reader.IAtomAnimationBuilder;
-import com.best108.atom_animation_reader.IModelRenderer;
 import com.best108.atom_animation_reader.impl.BasicAtomAnimationBuilder;
 import com.best108.atom_animation_reader.parsers.AtomParser;
 import net.minecraft.client.Minecraft;
@@ -18,12 +17,6 @@ import java.util.Set;
 public class GibsAnimationRegistry {
 
     private static final Map<String, IAtomAnimation> ANIMATION_MAP = new HashMap<String, IAtomAnimation>();
-    private static final IModelRenderer MODEL_RENDERER = new IModelRenderer() {
-        @Override
-        public void renderModel(String modelName, int renderBrightness) {
-            GibsModelRegistry.renderGibsModel(modelName, renderBrightness);
-        }
-    };
 
     public static void registerAnimation(String name, ResourceLocation location) {
         try {

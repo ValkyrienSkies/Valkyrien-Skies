@@ -5,7 +5,7 @@ item.vw_wrench.name=VW Wrench
 #Blocks
 tile.shippilotschair.name=Captain's Chair
 tile.shippassengerchair.name=Passenger Chair
-tile.dopedethereum.name=Compacted Ethereum
+tile.dopedethereum.name=Compacted Valkyrium
 tile.thrustrelay.name=Network Control Relay
 tile.thrustmodulator.name=Old Control Block
 tile.shiphelm.name=Ship Helm
@@ -23,8 +23,8 @@ tile.eliteengine.name=Elite Engine
 tile.ultimateengine.name=Ultimate Engine
 tile.redstoneengine.name=Redstone Engine
 
-tile.vw_ethercompressorpanel.name=Ether Compressor Panel
-tile.vw_ethereum_enginepart.name=Ethereum Engine Part
+tile.vw_ethercompressorpanel.name=Valkyrium Compressor Panel
+tile.vw_ethereum_enginepart.name=Valkyrium Engine Part
 tile.vw_gearbox.name=Gear Box
 tile.vw_rudder_axle_part.name=Rudder Axle
 tile.vw_giant_propeller_part.name=Gigantic Propeller Part

@@ -32,18 +32,17 @@ public class ContainerPhysicsInfuser extends Container {
         InventoryPlayer playerInventory = player.inventory;
         // note that the slot numbers are within the player inventory so can
         // be same as the tile entity inventory
-        int i;
-        for (i = 0; i < 3; i++) {
+        for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 9; j++) {
-                addSlotToContainer(new Slot(playerInventory, j+i*9+9,
-                        8+j*18, 84+i*18));
+                addSlotToContainer(new Slot(playerInventory, j + i * 9 + 9,
+                        7 + j * 18, 83 + i * 18));
             }
         }
 
         // add hotbar slots
-        for (i = 0; i < 9; ++i) {
-            addSlotToContainer(new Slot(playerInventory, i, 8 + i * 18,
-                    142));
+        for (int i = 0; i < 9; ++i) {
+            addSlotToContainer(new Slot(playerInventory, i, 7 + i * 18,
+                    141));
         }
     }
 
@@ -109,7 +108,7 @@ public class ContainerPhysicsInfuser extends Container {
 
     private class SlotPhysicsInfuser extends SlotItemHandler {
 
-        public SlotPhysicsInfuser(IItemHandler itemHandler, int index, int xPosition, int yPosition) {
+        private SlotPhysicsInfuser(IItemHandler itemHandler, int index, int xPosition, int yPosition) {
             super(itemHandler, index, xPosition, yPosition);
         }
 

@@ -121,7 +121,7 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
                 for (EnumInfuserCore enumInfuserCore : EnumInfuserCore.values()) {
                     coreOffsetsPrevTick.put(enumInfuserCore, coreOffsets.get(enumInfuserCore));
                     if (!handler.getStackInSlot(enumInfuserCore.coreSlotIndex)
-                            .isEmpty()) {
+                            .isEmpty() && canMaintainShip()) {
                         double sinAngle = ((worldTime % 50) * 2 * Math.PI / 50) + (2 * Math.PI / EnumInfuserCore.values().length) * enumInfuserCore.coreSlotIndex;
                         double idealOffset = .025 * (Math.sin(sinAngle) + 1);
                         double lerpedOffset = .9 * coreOffsets.get(enumInfuserCore) + .1 * idealOffset;

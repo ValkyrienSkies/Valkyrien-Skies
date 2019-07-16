@@ -38,6 +38,7 @@ import valkyrienwarfare.mod.common.physmanagement.interaction.ShipNameUUIDData;
 import valkyrienwarfare.mod.common.tileentity.TileEntityPhysicsInfuser;
 
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.UUID;
 
 /**
@@ -45,6 +46,7 @@ import java.util.UUID;
  * nearby players, as well as the functionality of automatically loading with
  * the world; all other operations are handled by the PhysicsObject class.
  */
+@ParametersAreNonnullByDefault
 public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpawnData {
 
     static final DataParameter<Boolean> IS_NAME_CUSTOM = EntityDataManager.createKey(PhysicsWrapperEntity.class,
@@ -155,21 +157,21 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 
     @Override
     public void setCustomNameTag(String name) {
-        if (!world.isRemote) {
-            if (getCustomNameTag() != null && !getCustomNameTag().equals("")) {
-                // Update the name registry
-                boolean didRenameSuccessful = ShipNameUUIDData.get(world).renameShipInRegistry(this, name,
-                        getCustomNameTag());
-                if (didRenameSuccessful) {
-                    super.setCustomNameTag(name);
-                    getPhysicsObject().setNameCustom(true);
-                    dataManager.set(IS_NAME_CUSTOM, true);
-                }
-            } else {
-                super.setCustomNameTag(name);
-            }
-        } else {
+        if (this.getCustomNameTag().equals(""))
+            throw new IllegalStateException("Why is this object's custom name tag empty???");
+
+        if (world.isRemote) {
             super.setCustomNameTag(name);
+        } else {
+            // Update the name registry
+            boolean didRenameSuccessfully = ShipNameUUIDData.get(world)
+                    .renameShipInRegistry(this, name, getCustomNameTag());
+
+            if (didRenameSuccessfully) {
+                super.setCustomNameTag(name);
+                getPhysicsObject().setNameCustom(true);
+                dataManager.set(IS_NAME_CUSTOM, true);
+            }
         }
     }
 

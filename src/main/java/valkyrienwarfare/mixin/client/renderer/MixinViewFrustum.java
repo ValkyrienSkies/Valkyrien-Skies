@@ -22,12 +22,11 @@ public class MixinViewFrustum {
     protected World world;
 
     @Inject(at = {@At("HEAD")}, method = "markBlocksForUpdate")
-    public void pre_markBlocksForUpdate(int minX, int minY, int minZ, int maxX, int maxY, int maxZ, boolean updateImmediately, CallbackInfo info) {
-        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(world, new BlockPos(minX, minY, minZ));
-        if (physicsObject.isPresent()) {
-            physicsObject.get()
-                    .getShipRenderer()
-                    .updateRange(minX, minY, minZ, maxX, maxY, maxZ, updateImmediately);
-        }
+    public void pre_markBlocksForUpdate(int minX, int minY, int minZ, int maxX, int maxY, int maxZ,
+                                        boolean updateImmediately, CallbackInfo info) {
+        Optional<PhysicsObject> physicsObject =
+                ValkyrienUtils.getPhysicsObject(world, new BlockPos(minX, minY, minZ));
+        physicsObject.ifPresent(p ->
+                p.getShipRenderer().updateRange(minX, minY, minZ, maxX, maxY, maxZ, updateImmediately));
     }
 }

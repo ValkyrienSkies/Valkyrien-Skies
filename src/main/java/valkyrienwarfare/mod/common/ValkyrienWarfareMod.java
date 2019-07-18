@@ -396,8 +396,6 @@ public class ValkyrienWarfareMod {
     public void postInit(FMLPostInitializationEvent event) {
         proxy.postInit(event);
         airStateIndex = Block.getStateId(Blocks.AIR.getDefaultState());
-        BlockPhysicsRegistration.registerCustomBlockMasses();
-        BlockPhysicsRegistration.registerBlocksToNotPhysicise();
 
         addons.forEach(m -> m.doPostInit(event));
     }

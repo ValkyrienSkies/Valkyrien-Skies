@@ -20,29 +20,43 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import valkyrienwarfare.deprecated_api.IBlockMassProvider;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
-public class BlockMass {
+public class BlockPhysicsDetails {
 
+    public static final String BLOCK_MASS_VERSION = "v0.1";
     // A 1x1x1 cube of DEFAULT is 500kg.
     private final static double DEFAULT_MASS = 500D;
-    public static BlockMass basicMass = new BlockMass();
-    public HashMap<Block, Double> blockToMass = new HashMap<Block, Double>();
-    public HashMap<Material, Double> materialMass = new HashMap<Material, Double>();
 
-    public BlockMass() {
+
+    public static final BlockPhysicsDetails basicMass = new BlockPhysicsDetails();
+    /**
+     * Blocks mapped to their mass.
+     */
+    public static final HashMap<Block, Double> blockToMass = new HashMap<>();
+    /**
+     * Materials mapped to their mass.
+     */
+    public static final HashMap<Material, Double> materialMass = new HashMap<>();
+    /**
+     * Blocks that should not be infused with physics.
+     */
+    public static final ArrayList<Block> blocksToNotPhysicsInfuse = new ArrayList<>();
+
+
+    static {
+        generateBlockMasses();
         generateMaterialMasses();
+        generateBlocksToNotPhysicsInfuse();
     }
 
-    public static void registerBlockMass(Block block, double mass) {
-        basicMass.blockToMass.put(block, mass);
-    }
-
-    private void generateMaterialMasses() {
+    private static void generateMaterialMasses() {
         materialMass.put(Material.AIR, 0D);
         materialMass.put(Material.ANVIL, 8000D);
         materialMass.put(Material.BARRIER, 0D);
@@ -81,50 +95,47 @@ public class BlockMass {
         materialMass.put(Material.WOOD, 500D);
     }
 
+    private static void generateBlockMasses() {
+        blockToMass.put(Blocks.AIR, 0D);
+        blockToMass.put(Blocks.FIRE, 0D);
+        blockToMass.put(Blocks.FLOWING_WATER, 0D);
+        blockToMass.put(Blocks.FLOWING_LAVA, 0D);
+        blockToMass.put(Blocks.WATER, 0D);
+        blockToMass.put(Blocks.LAVA, 0D);
+    }
+
+    private static void generateBlocksToNotPhysicsInfuse() {
+        blocksToNotPhysicsInfuse.add(Blocks.AIR);
+        blocksToNotPhysicsInfuse.add(Blocks.WATER);
+        blocksToNotPhysicsInfuse.add(Blocks.FLOWING_WATER);
+        blocksToNotPhysicsInfuse.add(Blocks.LAVA);
+        blocksToNotPhysicsInfuse.add(Blocks.FLOWING_LAVA);
+    }
+
     /**
      * Get block mass, in kg.
-     *
-     * @param state
-     * @param pos
-     * @param world
-     * @return
      */
-    public double getMassFromState(IBlockState state, BlockPos pos, World world) {
+    public static double getMassFromState(IBlockState state, BlockPos pos, World world) {
         Block block = state.getBlock();
         if (block instanceof IBlockMassProvider) {
             return ((IBlockMassProvider) block).getBlockMass(world, pos, state);
         } else {
-            Double fromMap = blockToMass.get(block);
-            if (fromMap != null) {
-                return fromMap.doubleValue();
-            } else {
-                Double newMass = generateMassForBlock(block);
-                blockToMass.put(block, newMass);
-                return newMass;
-            }
+            return getMassOfBlock(block);
         }
     }
 
-    public double getMassFromMaterial(Material material) {
-        Double mass = materialMass.get(material);
-        if (mass == null) {
-            mass = DEFAULT_MASS;
-            materialMass.put(material, mass);
-        }
-        return mass;
+    public static double getMassOfMaterial(Material material) {
+        return materialMass.getOrDefault(material, DEFAULT_MASS);
     }
 
-    public Double generateMassForBlock(Block block) {
+    public static double getMassOfBlock(Block block) {
         if (block instanceof BlockLiquid) {
             return 0D;
+        } else if (blockToMass.get(block) != null) {
+            return blockToMass.get(block);
+        } else {
+            return getMassOfMaterial(block.material);
         }
-        Material material = block.material;
-
-        return getMassFromMaterial(material);
-    }
-
-    public String blockMassVer() {
-        return "v0.1";
     }
 
 }

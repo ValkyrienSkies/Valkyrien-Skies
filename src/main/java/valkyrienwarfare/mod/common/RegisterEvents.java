@@ -19,23 +19,32 @@ package valkyrienwarfare.mod.common;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.registry.EntityEntry;
+import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
+import valkyrienwarfare.mod.common.entity.EntityMountable;
+import valkyrienwarfare.mod.common.entity.EntityMountableChair;
+import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 
+import javax.annotation.Nonnull;
+
+import static valkyrienwarfare.mod.common.ValkyrienWarfareMod.MOD_ID;
 import static valkyrienwarfare.mod.common.ValkyrienWarfareMod.addons;
 
-@Mod.EventBusSubscriber(modid = ValkyrienWarfareMod.MOD_ID)
+@Mod.EventBusSubscriber(modid = MOD_ID)
 public class RegisterEvents {
     @SubscribeEvent
-    public static void registerBlocks(RegistryEvent.Register<Block> event) {
+    public static void registerBlocks(@Nonnull final RegistryEvent.Register<Block> event) {
         System.out.println("Registering blocks");
         ValkyrienWarfareMod.INSTANCE.registerBlocks(event);
         addons.forEach(m -> m.registerBlocks(event));
     }
 
     @SubscribeEvent
-    public static void registerItems(RegistryEvent.Register<Item> event) {
+    public static void registerItems(@Nonnull final RegistryEvent.Register<Item> event) {
         System.out.println("Registering items");
         ValkyrienWarfareMod.INSTANCE.registerItems(event);
         addons.forEach(m -> {
@@ -45,8 +54,40 @@ public class RegisterEvents {
     }
 
     @SubscribeEvent
-    public static void registerRecipes(RegistryEvent.Register<IRecipe> event) {
+    public static void registerRecipes(@Nonnull final RegistryEvent.Register<IRecipe> event) {
         ValkyrienWarfareMod.INSTANCE.registerRecipies(event);
         addons.forEach(m -> m.registerRecipes(event));
+    }
+
+    /**
+     * This method will be called by Forge when it is time for the mod to register its entity entries.
+     */
+    @SubscribeEvent
+    public static void onRegisterEntitiesEvent(@Nonnull final RegistryEvent.Register<EntityEntry> event) {
+        final ResourceLocation physicsWrapperEntity = new ResourceLocation(MOD_ID, "PhysWrapper");
+        final ResourceLocation entityMountable = new ResourceLocation(MOD_ID, "entity_mountable");
+        final ResourceLocation entityMountableChair = new ResourceLocation(MOD_ID, "entity_mountable_chair");
+        // Used to ensure no duplicates of entity network id's
+        int entityId = 0;
+        event.getRegistry()
+                .registerAll(EntityEntryBuilder.create()
+                                .entity(PhysicsWrapperEntity.class)
+                                .id(physicsWrapperEntity, entityId++)
+                                .name(physicsWrapperEntity.getPath())
+                                .tracker(ValkyrienWarfareMod.VW_ENTITY_LOAD_DISTANCE, 1, false)
+                                .build(),
+                        EntityEntryBuilder.create()
+                                .entity(EntityMountable.class)
+                                .id(entityMountable, entityId++)
+                                .name(entityMountable.getPath())
+                                .tracker(ValkyrienWarfareMod.VW_ENTITY_LOAD_DISTANCE, 1, false)
+                                .build(),
+                        EntityEntryBuilder.create()
+                                .entity(EntityMountableChair.class)
+                                .id(entityMountableChair, entityId++)
+                                .name(entityMountableChair.getPath())
+                                .tracker(ValkyrienWarfareMod.VW_ENTITY_LOAD_DISTANCE, 1, false)
+                                .build()
+                );
     }
 }

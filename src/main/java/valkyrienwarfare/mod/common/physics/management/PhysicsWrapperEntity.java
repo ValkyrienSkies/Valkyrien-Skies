@@ -310,5 +310,4 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
         this.yaw = yaw;
         this.roll = roll;
     }
-
 }

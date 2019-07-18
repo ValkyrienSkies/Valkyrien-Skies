@@ -30,15 +30,14 @@ import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import valkyrienwarfare.mod.common.entity.EntityMountableChair;
 import valkyrienwarfare.mod.common.math.Vector;
-import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
-import valkyrienwarfare.mod.common.util.ValkyrienUtils;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Optional;
 
 public class BlockShipPassengerChair extends Block {
 
@@ -57,42 +56,12 @@ public class BlockShipPassengerChair extends Block {
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
         if (!worldIn.isRemote) {
-            Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(worldIn, pos);
-            if (physicsObject.isPresent()) {
-                if (playerIn.getLowestRidingEntity() != physicsObject.get()
-                        .getWrapperEntity()
-                        .getLowestRidingEntity()) {
-                    Vector playerPos = new Vector(playerIn);
-
-                    physicsObject.get()
-                            .getShipTransformationManager()
-                            .fromLocalToGlobal(playerPos);
-
-                    playerIn.posX = playerPos.X;
-                    playerIn.posY = playerPos.Y;
-                    playerIn.posZ = playerPos.Z;
-
-                    playerIn.startRiding(physicsObject.get()
-                            .getWrapperEntity());
-                    Vector localMountPos = getPlayerMountOffset(state, pos);
-                    physicsObject.get()
-                            .fixEntity(playerIn, localMountPos);
-
-//					wrapper.wrapping.pilotingController.setPilotEntity((EntityPlayerMP) playerIn, false);
-
-                    physicsObject.get()
-                            .getShipTransformationManager()
-                            .fromGlobalToLocal(playerPos);
-
-                    playerIn.posX = playerPos.X;
-                    playerIn.posY = playerPos.Y;
-                    playerIn.posZ = playerPos.Z;
-
-                    return true;
-                }
-            }
+            Vec3d chairPos = new Vec3d(pos.getX() + .5, pos.getY() + .35, pos.getZ() + .5);
+            EntityMountableChair entityMountable = new EntityMountableChair(worldIn, chairPos, pos);
+            worldIn.spawnEntity(entityMountable);
+            playerIn.startRiding(entityMountable);
         }
-        return false;
+        return true;
     }
 
     @Override

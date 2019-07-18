@@ -99,8 +99,6 @@
      */
     public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 
-        public static final int MIN_TICKS_EXISTED_BEFORE_PHYSICS = 5;
-
         private final PhysicsWrapperEntity wrapper;
         private final List<EntityPlayerMP> watchingPlayers;
         private final Set<String> allowedUsers;
@@ -138,9 +136,9 @@
         private TIntObjectMap<Vector> entityLocalPositions;
         private ShipType shipType;
         private volatile int gameConsecutiveTicks;
-        private volatile int physicsConsecutiveTicks;
         private BlockPos physicsInfuserPos;
         private boolean shipAligningToGrid;
+        private boolean isFullyLoaded;
 
         public PhysicsObject(PhysicsWrapperEntity host) {
             this.wrapper = host;
@@ -159,13 +157,13 @@
             this.isPhysicsEnabled = false;
             this.allowedUsers = new HashSet<>();
             this.gameConsecutiveTicks = 0;
-            this.physicsConsecutiveTicks = 0;
             this.shipSubspace = new ImplSubspace(this);
             this.physicsControllers = Sets.newConcurrentHashSet();
             this.physicsControllersImmutable = Collections.unmodifiableSet(this.physicsControllers);
             this.blockPositionsGameTick = new TIntArrayList();
             this.physicsInfuserPos = null;
             this.shipAligningToGrid = false;
+            this.isFullyLoaded = false;
         }
 
         public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos posAt) {
@@ -301,6 +299,8 @@
                 return;
             }
             assembleShip(player, detector, centerInWorld);
+
+            markFullyLoaded();
         }
 
         /**
@@ -421,7 +421,7 @@
             getPhysicsProcessor().updateParentCenterOfMass();
         }
 
-        public void injectChunkIntoWorld(Chunk chunk, int x, int z, boolean putInId2ChunkMap) {
+        private void injectChunkIntoWorld(Chunk chunk, int x, int z, boolean putInId2ChunkMap) {
             // Make sure this chunk knows we own it.
             ((IPhysicsChunk) chunk).setParentPhysicsObject(Optional.of(this));
 
@@ -472,7 +472,7 @@
         /**
          * TODO: Add the methods that send the tileEntities in each given chunk
          */
-        public void preloadNewPlayers() {
+        protected void preloadNewPlayers() {
             Set<EntityPlayerMP> newWatchers = getPlayersThatJustWatched();
             for (Chunk[] chunkArray : claimedChunks) {
                 for (Chunk chunk : chunkArray) {
@@ -522,20 +522,12 @@
             for (int x = getOwnedChunks().getMinX(); x <= getOwnedChunks().getMaxX(); x++) {
                 for (int z = getOwnedChunks().getMinZ(); z <= getOwnedChunks().getMaxZ(); z++) {
                     provider.queueUnload(claimedChunks[x - getOwnedChunks().getMinX()][z - getOwnedChunks().getMinZ()]);
-
-                    // Ticket ticket =
-                    // ValkyrienWarfareMod.physicsManager.getManagerForWorld(this.worldObj).chunkLoadingTicket;
-                    // So fucking laggy!
-                    // ForgeChunkManager.unforceChunk(manager.chunkLoadingTicket, new ChunkPos(x,
-                    // z));
-                    // MinecraftForge.EVENT_BUS.post(new UnforceChunkEvent(ticket, new ChunkPos(x,
-                    // z)));
                 }
             }
         }
 
-        private Set getPlayersThatJustWatched() {
-            HashSet newPlayers = new HashSet();
+        private Set<EntityPlayerMP> getPlayersThatJustWatched() {
+            Set<EntityPlayerMP> newPlayers = new HashSet<>();
             for (Object o : ((WorldServer) getWorldObj()).getEntityTracker()
                     .getTrackingPlayers(getWrapperEntity())) {
                 EntityPlayerMP player = (EntityPlayerMP) o;
@@ -547,8 +539,7 @@
             return newPlayers;
         }
 
-        public void onTick() {
-
+        protected void onTick() {
             if (!getWorldObj().isRemote) {
                 for (Entity e : queuedEntitiesToMount) {
                     if (e != null) {
@@ -606,7 +597,7 @@
             }
 
             getShipTransformationManager().updatePrevTickTransform();
-            getShipTransformationManager().updateAllTransforms(false, true);
+            getShipTransformationManager().updateAllTransforms(false, false, true);
         }
 
         public void updateChunkCache() {
@@ -673,7 +664,7 @@
 
             }
 
-            getShipTransformationManager().updateAllTransforms(false, false);
+            // getShipTransformationManager().updateAllTransforms(false, false);
         }
 
         // Generates the blockPos array; must be loaded DIRECTLY after the chunks are
@@ -867,6 +858,8 @@
 
             setPhysicsEnabled(compound.getBoolean("doPhysics"));
             physicsInfuserPos = ValkyrienNBTUtils.readBlockPosFromNBT("phys_infuser_pos", compound);
+
+            markFullyLoaded();
         }
 
         public void readSpawnData(ByteBuf additionalData) {
@@ -909,6 +902,8 @@
             if (modifiedBuffer.readBoolean()) {
                 setPhysicsInfuserPos(modifiedBuffer.readBlockPos());
             }
+
+            markFullyLoaded();
         }
 
         public void writeSpawnData(ByteBuf buffer) {
@@ -1042,7 +1037,7 @@
         // TODO: This still breaks when the server is lagging, because it will skip
         // ticks and therefore the counter will go higher than it really should be.
         public boolean isPhysicsEnabled() {
-            return isPhysicsEnabled && gameConsecutiveTicks >= MIN_TICKS_EXISTED_BEFORE_PHYSICS && physicsConsecutiveTicks >= MIN_TICKS_EXISTED_BEFORE_PHYSICS * 5;
+            return isPhysicsEnabled;
         }
 
         /**
@@ -1058,18 +1053,13 @@
          */
         public void resetConsecutiveProperTicks() {
             this.gameConsecutiveTicks = 0;
-            this.physicsConsecutiveTicks = 0;
-        }
-
-        public void advanceConsecutivePhysicsTicksCounter() {
-            this.physicsConsecutiveTicks++;
         }
 
         /**
          * @return true if this PhysicsObject needs to update the collision cache immediately.
          */
         public boolean needsImmediateCollisionCacheUpdate() {
-            return gameConsecutiveTicks == MIN_TICKS_EXISTED_BEFORE_PHYSICS;
+            return gameConsecutiveTicks == 0;
         }
 
         /**
@@ -1368,5 +1358,14 @@
                 throw new IllegalArgumentException("Chunk at " + chunkX + " : " + chunkZ + " is not claimed by this ship.");
             }
             return claimedChunks[chunkX - ownedChunks.getMinX()][chunkZ - ownedChunks.getMinZ()];
+        }
+
+        private void markFullyLoaded() {
+            getShipTransformationManager().updateAllTransforms(!getWorldObj().isRemote, true, true);
+            isFullyLoaded = true;
+        }
+
+        public boolean isFullyLoaded() {
+            return isFullyLoaded;
         }
     }

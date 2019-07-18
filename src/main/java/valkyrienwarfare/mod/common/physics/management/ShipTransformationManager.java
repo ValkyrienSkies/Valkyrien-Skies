@@ -52,13 +52,12 @@ public class ShipTransformationManager {
 
     public ShipTransformationManager(PhysicsObject parent) {
         this.parent = parent;
-        this.currentTickTransform = ZERO_TRANSFORM;
-        this.renderTransform = ZERO_TRANSFORM;
-        this.prevTickTransform = ZERO_TRANSFORM;
-        this.currentPhysicsTransform = ZERO_TRANSFORM;
-        this.prevPhysicsTransform = ZERO_TRANSFORM;
-        this.updateAllTransforms(true, true);
-        this.normals = Vector.generateAxisAlignedNorms();
+        this.currentTickTransform = null;
+        this.renderTransform = null;
+        this.prevTickTransform = null;
+        this.currentPhysicsTransform = null;
+        this.prevPhysicsTransform = null;
+        this.normals = null;
         this.serverBuffer = new ShipTransformationBuffer();
     }
 
@@ -94,13 +93,22 @@ public class ShipTransformationManager {
      * @param updateParentAABB
      */
     @Deprecated
-    public void updateAllTransforms(boolean updateParentAABB, boolean updatePassengers) {
+    public void updateAllTransforms(boolean updatePhysicsTransform, boolean updateParentAABB, boolean updatePassengers) {
         // The client should never be updating the AABB on its own.
         if (parent.getWorldObj().isRemote) {
             updateParentAABB = false;
         }
         forceShipIntoWorldBorder();
         updateCurrentTickTransform();
+        if (prevTickTransform == null) {
+            prevTickTransform = currentTickTransform;
+        }
+        if (updatePhysicsTransform) {
+            // This should only be called once when the ship finally loads from nbt.
+            parent.getPhysicsProcessor()
+                    .generatePhysicsTransform();
+            prevPhysicsTransform = currentPhysicsTransform;
+        }
         if (updateParentAABB) {
             updateParentAABB();
         }
@@ -309,7 +317,7 @@ public class ShipTransformationManager {
      * @return the renderTransform
      */
     public ShipTransform getRenderTransform() {
-        if (!this.parent.getWorldObj().isRemote) {
+        if (!this.parent.getWorldObj().isRemote || renderTransform == null) {
             return currentTickTransform;
         }
         return renderTransform;

@@ -172,25 +172,29 @@ public class PhysicsCalculations {
         }
     }
 
+    public void generatePhysicsTransform() {
+        // Create a new physics transform.
+        physRoll = getParent().getWrapperEntity()
+                .getRoll();
+        physPitch = getParent().getWrapperEntity()
+                .getPitch();
+        physYaw = getParent().getWrapperEntity()
+                .getYaw();
+        physX = getParent().getWrapperEntity().posX;
+        physY = getParent().getWrapperEntity().posY;
+        physZ = getParent().getWrapperEntity().posZ;
+        physCenterOfMass.setValue(gameTickCenterOfMass);
+        ShipTransform physicsTransform = new PhysicsShipTransform(physX, physY, physZ, physPitch, physYaw, physRoll,
+                physCenterOfMass, getParent().getShipBoundingBox(),
+                getParent().getShipTransformationManager()
+                        .getCurrentTickTransform());
+        getParent().getShipTransformationManager()
+                .setCurrentPhysicsTransform(physicsTransform);
+        getParent().getShipTransformationManager()
+                .updatePreviousPhysicsTransform();
+    }
+
     public void rawPhysTickPreCol(double newPhysSpeed) {
-        // Advance the parent physics tick counter. We MUST do this because the PhysicsObject won't enable physics until
-        // a certain number of physics ticks have passed, so removing the line will prevent ships from properly spawning.
-        parent.advanceConsecutivePhysicsTicksCounter();
-        if (getParent().getShipTransformationManager().getCurrentPhysicsTransform() == ShipTransformationManager.ZERO_TRANSFORM) {
-            // Create a new physics transform.
-            physRoll = getParent().getWrapperEntity().getRoll();
-            physPitch = getParent().getWrapperEntity().getPitch();
-            physYaw = getParent().getWrapperEntity().getYaw();
-            physX = getParent().getWrapperEntity().posX;
-            physY = getParent().getWrapperEntity().posY;
-            physZ = getParent().getWrapperEntity().posZ;
-            physCenterOfMass.setValue(gameTickCenterOfMass);
-            ShipTransform physicsTransform = new PhysicsShipTransform(physX, physY, physZ, physPitch, physYaw, physRoll,
-                    physCenterOfMass, getParent().getShipBoundingBox(),
-                    getParent().getShipTransformationManager().getCurrentTickTransform());
-            getParent().getShipTransformationManager().setCurrentPhysicsTransform(physicsTransform);
-            getParent().getShipTransformationManager().updatePreviousPhysicsTransform();
-        }
         if (getParent().isPhysicsEnabled()) {
             updatePhysSpeedAndIters(newPhysSpeed);
             updateParentCenterOfMass();
@@ -254,7 +258,12 @@ public class PhysicsCalculations {
         if (!getParent().getCenterCoord().equals(gameTickCenterOfMass)) {
             Vector CMDif = gameTickCenterOfMass.getSubtraction(parentCM);
 
-            getParent().getShipTransformationManager().getCurrentPhysicsTransform().rotate(CMDif, TransformType.SUBSPACE_TO_GLOBAL);
+            if (getParent().getShipTransformationManager()
+                    .getCurrentPhysicsTransform() != null) {
+                getParent().getShipTransformationManager()
+                        .getCurrentPhysicsTransform()
+                        .rotate(CMDif, TransformType.SUBSPACE_TO_GLOBAL);
+            }
             getParent().getWrapperEntity().posX -= CMDif.X;
             getParent().getWrapperEntity().posY -= CMDif.Y;
             getParent().getWrapperEntity().posZ -= CMDif.Z;

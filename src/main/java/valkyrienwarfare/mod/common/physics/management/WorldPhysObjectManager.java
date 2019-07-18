@@ -127,7 +127,11 @@ public class WorldPhysObjectManager {
         for (PhysicsWrapperEntity wrapper : physicsEntities) {
             // This .expand() is only needed on server side, which tells me something is wrong with server side bounding
             // boxes
-            if (wrapper.getPhysicsObject().getShipBoundingBox().expand(2, 2, 2).intersects(expandedCheck)) {
+            if (wrapper.getPhysicsObject()
+                    .isFullyLoaded() && wrapper.getPhysicsObject()
+                    .getShipBoundingBox()
+                    .expand(2, 2, 2)
+                    .intersects(expandedCheck)) {
                 ships.add(wrapper);
             }
         }

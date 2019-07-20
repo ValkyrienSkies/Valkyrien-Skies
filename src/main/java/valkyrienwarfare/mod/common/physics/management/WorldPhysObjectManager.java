@@ -24,6 +24,7 @@ import net.minecraft.world.World;
 import valkyrienwarfare.mod.common.physmanagement.chunk.VWChunkClaim;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -55,6 +56,15 @@ public class WorldPhysObjectManager {
      */
     public List<PhysicsWrapperEntity> getTickablePhysicsEntities() {
         List<PhysicsWrapperEntity> list = new ArrayList<>(physicsEntities);
+        Iterator<PhysicsWrapperEntity> iterator = list.iterator();
+        while (iterator.hasNext()) {
+            PhysicsWrapperEntity wrapperEntity = iterator.next();
+            if (!wrapperEntity.getPhysicsObject()
+                    .isFullyLoaded()) {
+                // Don't tick ships that aren't fully loaded.
+                iterator.remove();
+            }
+        }
         return list;
     }
 

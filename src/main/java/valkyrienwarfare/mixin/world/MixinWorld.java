@@ -188,8 +188,7 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
         int l = MathHelper.floor((boundingBox.maxZ + MAX_ENTITY_RADIUS_ALT) / 16.0D);
 
         if ((boundingBox.maxX - boundingBox.minX) * (boundingBox.maxY - boundingBox.minY) * (boundingBox.maxZ - boundingBox.minZ) > 10000) {
-            System.err.println("Tried getting entities from giant bounding box!");
-            new Exception().printStackTrace();
+            new Exception("Tried getting entities from giant bounding box of " + boundingBox).printStackTrace();
             return list;
         }
         for (int i1 = i; i1 <= j; ++i1) {
@@ -268,8 +267,7 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
         }
 
         if ((boundingBox.maxX - boundingBox.minX) * (boundingBox.maxY - boundingBox.minY) * (boundingBox.maxZ - boundingBox.minZ) > 10000) {
-            System.err.println("Tried getting entities from giant bounding box!");
-            new Exception().printStackTrace();
+            new Exception("Tried getting entities from giant bounding box of " + boundingBox).printStackTrace();
             return new ArrayList<>();
         }
 
@@ -288,8 +286,7 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
             boundingBox = poly.getEnclosedAABB().shrink(.3D);
 
             if ((boundingBox.maxX - boundingBox.minX) * (boundingBox.maxY - boundingBox.minY) * (boundingBox.maxZ - boundingBox.minZ) > 10000) {
-                System.err.println("Tried getting entities from giant bounding box!");
-                new Exception().printStackTrace();
+                new Exception("Tried getting entities from giant bounding box of " + boundingBox).printStackTrace();
                 return new ArrayList<>();
             }
 

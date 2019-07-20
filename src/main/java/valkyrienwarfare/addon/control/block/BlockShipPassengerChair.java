@@ -26,6 +26,7 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -33,8 +34,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import valkyrienwarfare.mod.common.entity.EntityMountableChair;
-import valkyrienwarfare.mod.common.math.Vector;
+import valkyrienwarfare.addon.control.tileentity.TileEntityPassengerChair;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -47,6 +47,16 @@ public class BlockShipPassengerChair extends Block {
         super(materialIn);
     }
 
+    @Override
+    public boolean hasTileEntity(IBlockState state) {
+        return true;
+    }
+
+    @Override
+    public TileEntity createTileEntity(World world, IBlockState state) {
+        return new TileEntityPassengerChair();
+    }
+
     public static double getChairYaw(IBlockState state, BlockPos pos) {
         EnumFacing enumFace = state.getValue(BlockShipPassengerChair.FACING);
         double chairYaw = -enumFace.getHorizontalAngle() - 90;
@@ -56,12 +66,27 @@ public class BlockShipPassengerChair extends Block {
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
         if (!worldIn.isRemote) {
-            Vec3d chairPos = new Vec3d(pos.getX() + .5, pos.getY() + .35, pos.getZ() + .5);
-            EntityMountableChair entityMountable = new EntityMountableChair(worldIn, chairPos, pos);
-            worldIn.spawnEntity(entityMountable);
-            playerIn.startRiding(entityMountable);
+            Vec3d chairPos = getPlayerMountOffset(state, pos);
+
+            TileEntity chairTile = worldIn.getTileEntity(pos);
+            if (chairTile instanceof TileEntityPassengerChair) {
+                // Try mounting the player onto the chair if possible.
+                ((TileEntityPassengerChair) chairTile).tryToMountPlayerToChair(playerIn, chairPos);
+            } else {
+                new IllegalStateException("world.getTileEntity() returned a tile that wasn't a chair at pos " + pos).printStackTrace();
+            }
         }
         return true;
+    }
+
+    @Override
+    public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
+        TileEntityPassengerChair passengerChair = (TileEntityPassengerChair) worldIn.getTileEntity(pos);
+        if (passengerChair instanceof TileEntityPassengerChair && !passengerChair.isInvalid()) {
+            passengerChair.onBlockBroken(state);
+        }
+
+        super.breakBlock(worldIn, pos, state);
     }
 
     @Override
@@ -70,19 +95,19 @@ public class BlockShipPassengerChair extends Block {
         itemInformation.add(TextFormatting.BOLD + "" + TextFormatting.BOLD + TextFormatting.RED + "Can only be placed on a Ship");
     }
 
-    private Vector getPlayerMountOffset(IBlockState state, BlockPos pos) {
+    private Vec3d getPlayerMountOffset(IBlockState state, BlockPos pos) {
         EnumFacing facing = state.getValue(FACING);
         switch (facing) {
             case NORTH:
-                return new Vector(pos.getX() + .5D, pos.getY(), pos.getZ() + .6D);
+                return new Vec3d(pos.getX() + .5, pos.getY() + .35, pos.getZ() + .6);
             case SOUTH:
-                return new Vector(pos.getX() + .5D, pos.getY(), pos.getZ() + .4D);
+                return new Vec3d(pos.getX() + .5, pos.getY() + .35, pos.getZ() + .4);
             case WEST:
-                return new Vector(pos.getX() + .6D, pos.getY(), pos.getZ() + .5D);
+                return new Vec3d(pos.getX() + .6, pos.getY() + .35, pos.getZ() + .5);
             case EAST:
-                return new Vector(pos.getX() + .4D, pos.getY(), pos.getZ() + .5D);
+                return new Vec3d(pos.getX() + .4, pos.getY() + .35, pos.getZ() + .5);
             default:
-                return new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
+                return new Vec3d(pos.getX() + .5, pos.getY() + .35, pos.getZ() + .5);
         }
     }
 

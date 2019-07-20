@@ -47,7 +47,7 @@ import java.util.UUID;
  */
 public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpawnData {
 
-    public static final DataParameter<Boolean> IS_NAME_CUSTOM = EntityDataManager.createKey(PhysicsWrapperEntity.class,
+    static final DataParameter<Boolean> IS_NAME_CUSTOM = EntityDataManager.createKey(PhysicsWrapperEntity.class,
             DataSerializers.BOOLEAN);
     private final PhysicsObject physicsObject;
     // TODO: Replace these raw types with something safer.

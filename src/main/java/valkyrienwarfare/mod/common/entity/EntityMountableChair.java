@@ -3,6 +3,7 @@ package valkyrienwarfare.mod.common.entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import valkyrienwarfare.mod.common.coordinates.CoordinateSpaceType;
 
 public class EntityMountableChair extends EntityMountable {
 
@@ -12,8 +13,8 @@ public class EntityMountableChair extends EntityMountable {
         super(worldIn);
     }
 
-    public EntityMountableChair(World world, Vec3d mountPos, BlockPos chairPos) {
-        super(world, mountPos, chairPos);
+    public EntityMountableChair(World world, Vec3d mountPos, CoordinateSpaceType coordinateSpaceType, BlockPos chairPos) {
+        super(world, mountPos, coordinateSpaceType, chairPos);
     }
 
     @Override

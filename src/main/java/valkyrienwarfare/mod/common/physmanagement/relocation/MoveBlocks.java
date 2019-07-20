@@ -8,6 +8,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import valkyrienwarfare.addon.control.nodenetwork.IVWNodeProvider;
+import valkyrienwarfare.mod.common.coordinates.CoordinateSpaceType;
+import valkyrienwarfare.mod.common.coordinates.ShipTransform;
 import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 
 import java.util.Optional;
@@ -60,13 +62,21 @@ public class MoveBlocks {
         TileEntity worldTile = world.getTileEntity(oldPos);
         if (worldTile != null) {
             NBTTagCompound tileEntNBT = new NBTTagCompound();
-            tileEntNBT = worldTile.writeToNBT(tileEntNBT);
-            // Change the block position to be inside of the Ship
-            tileEntNBT.setInteger("x", newPos.getX());
-            tileEntNBT.setInteger("y", newPos.getY());
-            tileEntNBT.setInteger("z", newPos.getZ());
+            TileEntity newInstance;
+            if (worldTile instanceof IRelocationAwareTile) {
+                CoordinateSpaceType coordinateSpaceType = physicsObjectOptional.isPresent() ? CoordinateSpaceType.SUBSPACE_COORDINATES : CoordinateSpaceType.GLOBAL_COORDINATES;
 
-            TileEntity newInstance = TileEntity.create(world, tileEntNBT);
+                ShipTransform transform = new ShipTransform(newPos.getX() - oldPos.getX(), newPos.getY() - oldPos.getY(), newPos.getZ() - oldPos.getZ());
+
+                newInstance = ((IRelocationAwareTile) worldTile).createRelocatedTile(newPos, transform, coordinateSpaceType);
+            } else {
+                tileEntNBT = worldTile.writeToNBT(tileEntNBT);
+                // Change the block position to be inside of the Ship
+                tileEntNBT.setInteger("x", newPos.getX());
+                tileEntNBT.setInteger("y", newPos.getY());
+                tileEntNBT.setInteger("z", newPos.getZ());
+                newInstance = TileEntity.create(world, tileEntNBT);
+            }
             // Order the IVWNodeProvider to move by the given offset.
             if (newInstance != null && newInstance instanceof IVWNodeProvider) {
                 ((IVWNodeProvider) newInstance).shiftInternalData(newPos.subtract(oldPos));

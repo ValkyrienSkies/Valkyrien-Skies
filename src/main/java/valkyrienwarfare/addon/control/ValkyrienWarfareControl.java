@@ -22,6 +22,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
@@ -67,6 +68,7 @@ import valkyrienwarfare.addon.control.tileentity.TileEntityLiftControl;
 import valkyrienwarfare.addon.control.tileentity.TileEntityLiftValve;
 import valkyrienwarfare.addon.control.tileentity.TileEntityNetworkDisplay;
 import valkyrienwarfare.addon.control.tileentity.TileEntityNodeRelay;
+import valkyrienwarfare.addon.control.tileentity.TileEntityPassengerChair;
 import valkyrienwarfare.addon.control.tileentity.TileEntityPilotsChair;
 import valkyrienwarfare.addon.control.tileentity.TileEntityPropellerEngine;
 import valkyrienwarfare.addon.control.tileentity.TileEntityShipHelm;
@@ -137,6 +139,8 @@ public class ValkyrienWarfareControl extends Module {
         GameRegistry.registerTileEntity(TileEntityRudderAxlePart.class, "tile_rudder_axle_part");
         GameRegistry.registerTileEntity(TileEntityGiantPropellerPart.class, "tile_giant_propeller_part");
         GameRegistry.registerTileEntity(TileEntityRotationTrainAxle.class, "tile_rotation_train_axle");
+
+        GameRegistry.registerTileEntity(TileEntityPassengerChair.class, new ResourceLocation(INSTANCE.getModID(), "tile_passengers_chair"));
     }
 
     @Override

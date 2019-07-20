@@ -20,13 +20,15 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
-import valkyrienwarfare.mod.common.physmanagement.interaction.ShipNameUUIDData;
-import valkyrienwarfare.mod.common.physmanagement.interaction.ShipUUIDToPosData;
-import valkyrienwarfare.mod.common.physmanagement.interaction.ShipUUIDToPosData.ShipPositionData;
+import valkyrienwarfare.mod.common.physmanagement.interaction.*;
+
+import javax.management.Query;
+import java.util.Optional;
 
 public class AirshipMapCommand extends CommandBase {
 
@@ -51,29 +53,28 @@ public class AirshipMapCommand extends CommandBase {
                     shipName += " " + args[i];
                 }
             }
+
             Entity player = sender.getCommandSenderEntity();
-            World world = player.world;
+            if (!(player instanceof EntityPlayer)) return;
 
-            ShipNameUUIDData data = ShipNameUUIDData.get(world);
+            Optional<ShipData> shipDataOptional = QueryableShipData
+                    .get(player.world)
+                    .getShipFromName(shipName);
 
-            if (data.shipNameToLongMap.containsKey(shipName)) {
-                long shipUUIDMostSig = data.shipNameToLongMap.get(shipName);
-
-                ShipUUIDToPosData posData = ShipUUIDToPosData.getShipUUIDDataForWorld(world);
-
-                ShipPositionData positionData = posData.getShipPositionData(shipUUIDMostSig);
-
+            if (shipDataOptional.isPresent()) {
+                ShipPositionData positionData = shipDataOptional.get().getPositionData();
                 double posX = positionData.getPosX();
                 double posY = positionData.getPosY();
                 double posZ = positionData.getPosZ();
 
                 // Time to teleport!
-
                 if (player instanceof EntityPlayerMP) {
                     EntityPlayerMP playerMP = (EntityPlayerMP) player;
 
                     ((EntityPlayerMP) player).connection.setPlayerLocation(posX, posY, posZ, 0, 0);
                 }
+            } else {
+                sender.sendMessage(new TextComponentString("That's not a valid ship!"));
             }
         }
 

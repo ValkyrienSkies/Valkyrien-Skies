@@ -104,21 +104,20 @@ dependencies {
     compile 'net.daporkchop.lib:primitive:0.0.5'
     compile 'gigaherz.graph:GraphLib:1.4.0'
     compile 'valkyrienwarfare:api:1.0'
-    
+    testCompile 'org.junit.jupiter:junit-jupiter:5.5.0'
+
+    //TODO: REMOVE
+    compile 'de.ruedigermoeller:fst:2.56'
+
+    // Contains UUID serializer
+    compile 'de.javakaffee:kryo-serializers:0.45'
+
+    // CQEngine for in-memory nonpersistent database
+    compile 'com.googlecode.cqengine:cqengine:3.4.0'
     // Manifold http://manifold.systems
-    compile group: 'systems.manifold', name: 'manifold-all', version: '0.71-alpha'
+    compile 'systems.manifold:manifold-ext:2019.1.7'
     // For Manifold: tools.jar dependency (for Java 8 only)
     compile files("${System.properties['java.home']}/../lib/tools.jar")
-
-    // JUnit 5
-    testImplementation('org.junit.jupiter:junit-jupiter:5.5.0')
-}
-
-test {
-    useJUnitPlatform()
-    testLogging {
-        events "passed", "skipped", "failed"
-    }
 }
 
 tasks.withType(JavaCompile) {

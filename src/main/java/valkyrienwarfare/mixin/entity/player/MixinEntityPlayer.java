@@ -30,7 +30,7 @@ import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.common.math.RotationMatrices;
 import valkyrienwarfare.mod.common.math.Vector;
 import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
-import valkyrienwarfare.mod.common.physmanagement.interaction.ShipUUIDToPosData;
+import valkyrienwarfare.mod.common.physmanagement.interaction.ShipPositionData;
 
 import java.util.UUID;
 
@@ -56,9 +56,9 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements IShi
         int chunkX = bedLocation.getX() >> 4;
         int chunkZ = bedLocation.getZ() >> 4;
 
-        UUID shipManagingID = ValkyrienWarfareMod.VW_CHUNK_MANAGER.getShipIDManagingPos_Persistant(worldIn, chunkX, chunkZ);
+        UUID shipManagingID = ValkyrienWarfareMod.VW_CHUNK_MANAGER.getShipIDManagingPos_Persistent(worldIn, chunkX, chunkZ);
         if (shipManagingID != null) {
-            ShipUUIDToPosData.ShipPositionData positionData = ValkyrienWarfareMod.VW_CHUNK_MANAGER.getShipPosition_Persistant(worldIn, shipManagingID);
+            ShipPositionData positionData = ValkyrienWarfareMod.VW_CHUNK_MANAGER.getShipPosition_Persistent(worldIn, shipManagingID);
 
             if (positionData != null) {
                 double[] lToWTransform = positionData.getLToWTransform();
@@ -70,7 +70,7 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements IShi
 
                 callbackInfo.setReturnValue(bedLocation);
             } else {
-                System.err.println("A ship just had chunks claimed persistant, but not any position data persistant");
+                System.err.println("A ship just had chunks claimed persistent, but not any position data persistent");
             }
         }
     }

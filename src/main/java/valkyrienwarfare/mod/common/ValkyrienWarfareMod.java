@@ -16,6 +16,9 @@
 
 package valkyrienwarfare.mod.common;
 
+import com.esotericsoftware.kryo.Kryo;
+import com.googlecode.cqengine.ConcurrentIndexedCollection;
+import de.javakaffee.kryoserializers.UUIDSerializer;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
@@ -39,15 +42,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLConstructionEvent;
-import net.minecraftforge.fml.common.event.FMLFingerprintViolationEvent;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
-import net.minecraftforge.fml.common.event.FMLStateEvent;
+import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -72,42 +67,31 @@ import valkyrienwarfare.mod.common.capability.StorageAirshipCounter;
 import valkyrienwarfare.mod.common.command.VWModCommandRegistry;
 import valkyrienwarfare.mod.common.item.ItemPhysicsCore;
 import valkyrienwarfare.mod.common.math.Vector;
-import valkyrienwarfare.mod.common.network.PhysWrapperPositionHandler;
-import valkyrienwarfare.mod.common.network.PhysWrapperPositionMessage;
-import valkyrienwarfare.mod.common.network.SubspacedEntityRecordHandler;
-import valkyrienwarfare.mod.common.network.SubspacedEntityRecordMessage;
-import valkyrienwarfare.mod.common.network.VWGuiButtonHandler;
-import valkyrienwarfare.mod.common.network.VWGuiButtonMessage;
-import valkyrienwarfare.mod.common.physics.BlockPhysicsRegistration;
+import valkyrienwarfare.mod.common.network.*;
 import valkyrienwarfare.mod.common.physics.management.DimensionPhysObjectManager;
 import valkyrienwarfare.mod.common.physmanagement.VW_APIPhysicsEntityManager;
-import valkyrienwarfare.mod.common.physmanagement.chunk.DimensionPhysicsChunkManager;
-import valkyrienwarfare.mod.common.physmanagement.chunk.IVWWorldDataCapability;
-import valkyrienwarfare.mod.common.physmanagement.chunk.ImplVWWorldDataCapability;
-import valkyrienwarfare.mod.common.physmanagement.chunk.StorageVWWorldData;
+import valkyrienwarfare.mod.common.physmanagement.chunk.*;
+import valkyrienwarfare.mod.common.physmanagement.interaction.ShipData;
+import valkyrienwarfare.mod.common.physmanagement.interaction.ShipPositionData;
 import valkyrienwarfare.mod.common.tileentity.TileEntityPhysicsInfuser;
 import valkyrienwarfare.mod.common.util.PhysicsSettings;
 import valkyrienwarfare.mod.proxy.CommonProxy;
 import valkyrienwarfare.mod.proxy.ServerProxy;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
+
 
 @Mod(
         modid = ValkyrienWarfareMod.MOD_ID,
@@ -157,6 +141,8 @@ public class ValkyrienWarfareMod {
     public static Logger VW_LOGGER;
     private static boolean hasAddonRegistrationEnded = false;
     public DataTag tag = null;
+    private CompletableFuture<Kryo> kryoInstance;
+
 
     /**
      * Called by the game when loading the configuration file, also called whenever
@@ -345,6 +331,7 @@ public class ValkyrienWarfareMod {
     public void preInit(FMLPreInitializationEvent event) {
         hasAddonRegistrationEnded = true;
 
+        serializationInitAsync();
         proxy.preInit(event);
         registerNetworks(event);
         runConfiguration(event);
@@ -435,6 +422,29 @@ public class ValkyrienWarfareMod {
                 .register(physicsInfuserDummy);
 
         registerTileEntities();
+    }
+
+    private void serializationInitAsync() {
+        kryoInstance = CompletableFuture.supplyAsync(() -> {
+            long start = System.currentTimeMillis();
+
+            Kryo kryo = new Kryo();
+            kryo.register(ConcurrentIndexedCollection.class);
+            kryo.register(ShipData.class);
+            kryo.register(ShipPositionData.class);
+            kryo.register(VWChunkClaim.class);
+            kryo.register(HashSet.class);
+            kryo.register(UUID.class, new UUIDSerializer());
+            kryo.setRegistrationRequired(false);
+
+            System.out.println("Kryo initialization: " + (System.currentTimeMillis() - start) + "ms");
+
+            return kryo;
+        });
+    }
+
+    public Kryo getKryo() {
+        return kryoInstance.get();
     }
 
     void registerItems(RegistryEvent.Register<Item> event) {

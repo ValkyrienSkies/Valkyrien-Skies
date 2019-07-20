@@ -34,7 +34,7 @@ import javax.annotation.Nonnull;
 import static valkyrienwarfare.mod.common.ValkyrienWarfareMod.MOD_ID;
 import static valkyrienwarfare.mod.common.ValkyrienWarfareMod.addons;
 
-@Mod.EventBusSubscriber(modid = MOD_ID)
+@Mod.EventBusSubscriber(modid = ValkyrienWarfareMod.MOD_ID)
 public class RegisterEvents {
     @SubscribeEvent
     public static void registerBlocks(@Nonnull final RegistryEvent.Register<Block> event) {

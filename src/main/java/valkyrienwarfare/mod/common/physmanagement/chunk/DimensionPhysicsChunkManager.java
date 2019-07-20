@@ -18,10 +18,7 @@ package valkyrienwarfare.mod.common.physmanagement.chunk;
 
 import net.minecraft.world.World;
 import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
-import valkyrienwarfare.mod.common.physmanagement.interaction.BlockPosToShipUUIDData;
-import valkyrienwarfare.mod.common.physmanagement.interaction.ShipNameUUIDData;
-import valkyrienwarfare.mod.common.physmanagement.interaction.ShipUUIDToPosData;
-import valkyrienwarfare.mod.common.physmanagement.interaction.ShipUUIDToPosData.ShipPositionData;
+import valkyrienwarfare.mod.common.physmanagement.interaction.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -51,48 +48,31 @@ public class DimensionPhysicsChunkManager {
     }
 
     public void registerChunksForShip(PhysicsWrapperEntity wrapper) {
-        World shipWorld = wrapper.world;
-        BlockPosToShipUUIDData data = BlockPosToShipUUIDData.get(shipWorld);
-        data.addShipToPersistantMap(wrapper);
+        QueryableShipData.get(wrapper.world).addShip(wrapper);
     }
 
     public void removeRegisteredChunksForShip(PhysicsWrapperEntity wrapper) {
-        World shipWorld = wrapper.world;
-        BlockPosToShipUUIDData data = BlockPosToShipUUIDData.get(shipWorld);
-
-        data.removeShipFromPersistantMap(wrapper);
+        QueryableShipData.get(wrapper.world).removeShip(wrapper);
     }
 
-    public UUID getShipIDManagingPos_Persistant(World worldFor, int chunkX, int chunkZ) {
-        BlockPosToShipUUIDData data = BlockPosToShipUUIDData.get(worldFor);
-
-        return data.getShipUUIDFromPos(chunkX, chunkZ);
+    public UUID getShipIDManagingPos_Persistent(World worldFor, int chunkX, int chunkZ) {
+        return QueryableShipData.get(worldFor).getShipUUIDFromPos(chunkX, chunkZ);
     }
 
-    public ShipPositionData getShipPosition_Persistant(World worldFor, UUID shipID) {
-        ShipUUIDToPosData data = ShipUUIDToPosData.getShipUUIDDataForWorld(worldFor);
+    public ShipPositionData getShipPosition_Persistent(World worldFor, UUID shipID) {
+        return QueryableShipData.get(worldFor).getShip(shipID).get().positionData;
 
-        return data.getShipPositionData(shipID);
     }
 
     public void updateShipPosition(PhysicsWrapperEntity wrapper) {
-        World shipWorld = wrapper.world;
-        ShipUUIDToPosData data = ShipUUIDToPosData.getShipUUIDDataForWorld(shipWorld);
-
-        data.updateShipPosition(wrapper);
+        QueryableShipData.get(wrapper.world).updateShipPosition(wrapper);
     }
 
     public void removeShipPosition(PhysicsWrapperEntity wrapper) {
-        World shipWorld = wrapper.world;
-        ShipUUIDToPosData data = ShipUUIDToPosData.getShipUUIDDataForWorld(shipWorld);
-
-        data.removeShipFromMap(wrapper);
+        QueryableShipData.get(wrapper.world).removeShip(wrapper);
     }
 
     public void removeShipNameRegistry(PhysicsWrapperEntity wrapper) {
-        World shipWorld = wrapper.world;
-        ShipNameUUIDData data = ShipNameUUIDData.get(shipWorld);
-
-        data.removeShipFromRegistry(wrapper);
+        QueryableShipData.get(wrapper.world).removeShip(wrapper);
     }
 }

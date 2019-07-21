@@ -21,12 +21,13 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.common.config.ConfigElement;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.client.config.GuiConfig;
+import valkyrienwarfare.mod.common.ValkyrienWarfareConfig;
 import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 
 public class GuiConfigValkyrienWarfare extends GuiConfig {
 
     public GuiConfigValkyrienWarfare(GuiScreen parent) {
-        super(parent, new ConfigElement(ValkyrienWarfareMod.config.getCategory(
+        super(parent, new ConfigElement(ValkyrienWarfareMod.CONFIG.getCategory(
                 Configuration.CATEGORY_GENERAL)).getChildElements(),
                 ValkyrienWarfareMod.MOD_ID,
                 false,
@@ -51,8 +52,8 @@ public class GuiConfigValkyrienWarfare extends GuiConfig {
     protected void actionPerformed(GuiButton button) {
         // You can process any additional buttons you may have added here
         super.actionPerformed(button);
-        ValkyrienWarfareMod.applyConfig(ValkyrienWarfareMod.config);
-        ValkyrienWarfareMod.config.save();
+        ValkyrienWarfareConfig.applyConfig(ValkyrienWarfareMod.CONFIG);
+        ValkyrienWarfareMod.CONFIG.save();
     }
 
 }

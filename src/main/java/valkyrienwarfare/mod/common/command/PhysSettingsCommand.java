@@ -23,9 +23,9 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
+import valkyrienwarfare.mod.common.ValkyrienWarfareConfig;
 import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.common.math.Vector;
-import valkyrienwarfare.mod.common.util.PhysicsSettings;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -76,17 +76,17 @@ public class PhysSettingsCommand extends CommandBase {
         String key = args[0];
         if (key.equals("maxshipsize")) {
             if (args.length == 1) {
-                sender.sendMessage(new TextComponentString("maxshipsize=" + ValkyrienWarfareMod.maxShipSize + " (Default: 15000)"));
+                sender.sendMessage(new TextComponentString("maxshipsize=" + ValkyrienWarfareConfig.maxShipSize + " (Default: 15000)"));
                 return;
             } else if (args.length == 2) {
                 int value = Integer.parseInt(args[1]);
-                ValkyrienWarfareMod.maxShipSize = value;
+                ValkyrienWarfareConfig.maxShipSize = value;
                 sender.sendMessage(new TextComponentString("Set maximum ship size to " + value));
                 return;
             }
         } else if (key.equals("gravityvector")) {
             if (args.length == 1) {
-                sender.sendMessage(new TextComponentString("gravityvector=" + ValkyrienWarfareMod.gravity.toRoundedString() + " (Default: <0,-9.8,0>)"));
+                sender.sendMessage(new TextComponentString("gravityvector=" + ValkyrienWarfareConfig.gravity.toRoundedString() + " (Default: <0,-9.8,0>)"));
                 return;
             } else if (args.length == 4) {
                 Vector newVector = new Vector(0, -9.8, 0);
@@ -101,7 +101,7 @@ public class PhysSettingsCommand extends CommandBase {
                     }
                 } catch (Exception e) {
                 }
-                ValkyrienWarfareMod.gravity = newVector;
+                ValkyrienWarfareConfig.gravity = newVector;
                 sender.sendMessage(new TextComponentString("physics gravity set to " + newVector.toRoundedString() + " (Default: <0,-9.8,0>)"));
                 return;
             } else {
@@ -109,7 +109,7 @@ public class PhysSettingsCommand extends CommandBase {
             }
         } else if (key.equals("physicsspeed")) {
             if (args.length == 1) {
-                sender.sendMessage(new TextComponentString("physicsspeed=" + ValkyrienWarfareMod.physSpeed + " (Default: 100%)"));
+                sender.sendMessage(new TextComponentString("physicsspeed=" + ValkyrienWarfareConfig.physSpeed + " (Default: 100%)"));
                 return;
             } else if (args.length == 2) {
                 double value = Double.parseDouble(args[1].replace('%', ' '));
@@ -117,58 +117,58 @@ public class PhysSettingsCommand extends CommandBase {
                     sender.sendMessage(new TextComponentString("Please enter a value between 0 and 1000"));
                     return;
                 }
-                ValkyrienWarfareMod.physSpeed = value / 10000D;
+                ValkyrienWarfareConfig.physSpeed = value / 10000D;
                 sender.sendMessage(new TextComponentString("Set physicsspeed to " + value + " percent"));
                 return;
             }
         } else if (key.equals("dogravity")) {
             if (args.length == 1) {
-                sender.sendMessage(new TextComponentString("dogravity=" + PhysicsSettings.doGravity + " (Default: true)"));
+                sender.sendMessage(new TextComponentString("dogravity=" + ValkyrienWarfareConfig.doGravity + " (Default: true)"));
                 return;
             } else if (args.length == 2) {
                 boolean value = Boolean.parseBoolean(args[1]);
-                PhysicsSettings.doGravity = value;
-                sender.sendMessage(new TextComponentString("Set dogravity to " + (PhysicsSettings.doGravity ? "enabled" : "disabled")));
+                ValkyrienWarfareConfig.doGravity = value;
+                sender.sendMessage(new TextComponentString("Set dogravity to " + (ValkyrienWarfareConfig.doGravity ? "enabled" : "disabled")));
                 return;
             }
         } else if (key.equals("dophysicsblocks")) {
             if (args.length == 1) {
-                sender.sendMessage(new TextComponentString("dophysicsblocks=" + PhysicsSettings.doPhysicsBlocks + " (Default: true)"));
+                sender.sendMessage(new TextComponentString("dophysicsblocks=" + ValkyrienWarfareConfig.doPhysicsBlocks + " (Default: true)"));
                 return;
             } else if (args.length == 2) {
                 boolean value = Boolean.parseBoolean(args[1]);
-                PhysicsSettings.doPhysicsBlocks = value;
-                sender.sendMessage(new TextComponentString("Set dophysicsblocks to " + (PhysicsSettings.doPhysicsBlocks ? "enabled" : "disabled")));
+                ValkyrienWarfareConfig.doPhysicsBlocks = value;
+                sender.sendMessage(new TextComponentString("Set dophysicsblocks to " + (ValkyrienWarfareConfig.doPhysicsBlocks ? "enabled" : "disabled")));
                 return;
             }
         } else if (key.equals("doairshiprotation")) {
             if (args.length == 1) {
-                sender.sendMessage(new TextComponentString("doairshiprotation=" + PhysicsSettings.doAirshipRotation + " (Default: true)"));
+                sender.sendMessage(new TextComponentString("doairshiprotation=" + ValkyrienWarfareConfig.doAirshipRotation + " (Default: true)"));
                 return;
             } else if (args.length == 2) {
                 boolean value = Boolean.parseBoolean(args[1]);
-                PhysicsSettings.doAirshipRotation = value;
-                sender.sendMessage(new TextComponentString("Set doairshiprotation to " + (PhysicsSettings.doAirshipRotation ? "enabled" : "disabled")));
+                ValkyrienWarfareConfig.doAirshipRotation = value;
+                sender.sendMessage(new TextComponentString("Set doairshiprotation to " + (ValkyrienWarfareConfig.doAirshipRotation ? "enabled" : "disabled")));
                 return;
             }
         } else if (key.equals("doairshipmovement")) {
             if (args.length == 1) {
-                sender.sendMessage(new TextComponentString("doairshipmovement=" + PhysicsSettings.doAirshipMovement + " (Default: true)"));
+                sender.sendMessage(new TextComponentString("doairshipmovement=" + ValkyrienWarfareConfig.doAirshipMovement + " (Default: true)"));
                 return;
             } else if (args.length == 2) {
                 boolean value = Boolean.parseBoolean(args[1]);
-                PhysicsSettings.doAirshipMovement = value;
-                sender.sendMessage(new TextComponentString("Set doairshipmovement to " + (PhysicsSettings.doAirshipMovement ? "enabled" : "disabled")));
+                ValkyrienWarfareConfig.doAirshipMovement = value;
+                sender.sendMessage(new TextComponentString("Set doairshipmovement to " + (ValkyrienWarfareConfig.doAirshipMovement ? "enabled" : "disabled")));
                 return;
             }
         } else if (key.equals("doetheriumlifting")) {
             if (args.length == 1) {
-                sender.sendMessage(new TextComponentString("doetheriumlifting=" + PhysicsSettings.doEtheriumLifting + " (Default: true)"));
+                sender.sendMessage(new TextComponentString("doetheriumlifting=" + ValkyrienWarfareConfig.doEtheriumLifting + " (Default: true)"));
                 return;
             } else if (args.length == 2) {
                 boolean value = Boolean.parseBoolean(args[1]);
-                PhysicsSettings.doEtheriumLifting = value;
-                sender.sendMessage(new TextComponentString("Set doetheriumlifting to " + (PhysicsSettings.doEtheriumLifting ? "enabled" : "disabled")));
+                ValkyrienWarfareConfig.doEtheriumLifting = value;
+                sender.sendMessage(new TextComponentString("Set doetheriumlifting to " + (ValkyrienWarfareConfig.doEtheriumLifting ? "enabled" : "disabled")));
                 return;
             }
         } else if (key.equals("save")) {

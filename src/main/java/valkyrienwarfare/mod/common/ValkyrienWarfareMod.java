@@ -39,15 +39,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLConstructionEvent;
-import net.minecraftforge.fml.common.event.FMLFingerprintViolationEvent;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
-import net.minecraftforge.fml.common.event.FMLStateEvent;
+import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -72,12 +64,7 @@ import valkyrienwarfare.mod.common.capability.StorageAirshipCounter;
 import valkyrienwarfare.mod.common.command.VWModCommandRegistry;
 import valkyrienwarfare.mod.common.item.ItemPhysicsCore;
 import valkyrienwarfare.mod.common.math.Vector;
-import valkyrienwarfare.mod.common.network.PhysWrapperPositionHandler;
-import valkyrienwarfare.mod.common.network.PhysWrapperPositionMessage;
-import valkyrienwarfare.mod.common.network.SubspacedEntityRecordHandler;
-import valkyrienwarfare.mod.common.network.SubspacedEntityRecordMessage;
-import valkyrienwarfare.mod.common.network.VWGuiButtonHandler;
-import valkyrienwarfare.mod.common.network.VWGuiButtonMessage;
+import valkyrienwarfare.mod.common.network.*;
 import valkyrienwarfare.mod.common.physics.BlockPhysicsRegistration;
 import valkyrienwarfare.mod.common.physics.management.DimensionPhysObjectManager;
 import valkyrienwarfare.mod.common.physmanagement.VW_APIPhysicsEntityManager;
@@ -86,15 +73,10 @@ import valkyrienwarfare.mod.common.physmanagement.chunk.IVWWorldDataCapability;
 import valkyrienwarfare.mod.common.physmanagement.chunk.ImplVWWorldDataCapability;
 import valkyrienwarfare.mod.common.physmanagement.chunk.StorageVWWorldData;
 import valkyrienwarfare.mod.common.tileentity.TileEntityPhysicsInfuser;
-import valkyrienwarfare.mod.common.util.PhysicsSettings;
 import valkyrienwarfare.mod.proxy.CommonProxy;
 import valkyrienwarfare.mod.proxy.ServerProxy;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.net.URL;
@@ -103,7 +85,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -135,9 +116,7 @@ public class ValkyrienWarfareMod {
     @SidedProxy(clientSide = "valkyrienwarfare.mod.proxy.ClientProxy", serverSide = "valkyrienwarfare.mod.proxy.ServerProxy")
     public static CommonProxy proxy;
     public static File configFile;
-    public static Configuration config;
-    public static Vector gravity = new Vector(0, -9.8D, 0);
-    public static double physSpeed = .01D;
+    public static Configuration CONFIG;
     public Block physicsInfuser;
     public Block physicsInfuserCreative;
     public Block physicsInfuserDummy;
@@ -148,35 +127,8 @@ public class ValkyrienWarfareMod {
     public static ValkyrienWarfareMod INSTANCE = new ValkyrienWarfareMod();
     public static int airStateIndex;
     public static double standingTolerance = .42D;
-    public static int maxShipSize = 1500000;
-    public static double shipUpperLimit = 1000D;
-    public static double shipLowerLimit = -30D;
-    public static int maxAirships = -1;
-    public static boolean runAirshipPermissions = false;
-    public static int threadCount = -1;
     public static Logger VW_LOGGER;
     private static boolean hasAddonRegistrationEnded = false;
-    public DataTag tag = null;
-
-    /**
-     * Called by the game when loading the configuration file, also called whenever
-     * the player makes a change in the MOD OPTIONS menu, effectively reloading all
-     * the configuration values
-     *
-     * @param conf
-     */
-    public static void applyConfig(Configuration conf) {
-        shipUpperLimit = config.get(Configuration.CATEGORY_GENERAL, "Ship Y-Height Maximum", 1000D).getDouble();
-        shipLowerLimit = config.get(Configuration.CATEGORY_GENERAL, "Ship Y-Height Minimum", -30D).getDouble();
-        maxAirships = config.get(Configuration.CATEGORY_GENERAL, "Max airships per player", -1, "Players can't own more than this many airships at once. Set to -1 to disable.").getInt();
-        runAirshipPermissions = config.get(Configuration.CATEGORY_GENERAL, "Enable airship permissions", false, "Enables the airship permissions system").getBoolean();
-        threadCount = config.get(Configuration.CATEGORY_GENERAL, "Physics thread count", Runtime.getRuntime().availableProcessors() - 2,
-                "The number of threads to use for physics, recommened to use your cpu's thread count minus 2.").getInt();
-        if (PHYSICS_THREADS_EXECUTOR == null) {
-            PHYSICS_THREADS_EXECUTOR = Executors.newFixedThreadPool(Math.max(2, threadCount));
-        }
-        addons.forEach(m -> m.applyConfig(config));
-    }
 
     private static File getWorkingFolder() {
         File toBeReturned;
@@ -202,12 +154,12 @@ public class ValkyrienWarfareMod {
      */
     public static boolean canChangeAirshipCounter(boolean isAdding, EntityPlayer player) {
         if (isAdding) {
-            if (ValkyrienWarfareMod.maxAirships == -1) {
+            if (ValkyrienWarfareConfig.maxAirships == -1) {
                 return true;
             }
 
             return player.getCapability(ValkyrienWarfareMod.airshipCounter, null)
-                    .getAirshipCount() < ValkyrienWarfareMod.maxAirships;
+                    .getAirshipCount() < ValkyrienWarfareConfig.maxAirships;
         } else {
             return player.getCapability(ValkyrienWarfareMod.airshipCounter, null).getAirshipCount() > 0;
         }
@@ -453,77 +405,19 @@ public class ValkyrienWarfareMod {
                 Items.DIAMOND, 'O', Item.getItemFromBlock(Blocks.OBSIDIAN), 'I', Items.IRON_INGOT);
     }
 
-    void runConfiguration(FMLPreInitializationEvent event) {
-        configFile = event.getSuggestedConfigurationFile();
-        config = new Configuration(configFile);
-        config.load();
-        applyConfig(config);
-        config.save();
-    }
+	private void runConfiguration(FMLPreInitializationEvent event) {
+		configFile = event.getSuggestedConfigurationFile();
+		CONFIG = new Configuration(configFile);
+		CONFIG.load();
+		ValkyrienWarfareConfig.applyConfig(CONFIG);
+		CONFIG.save();
+	}
 
     @EventHandler
-    public void onServerStarted(FMLServerStartedEvent event) {
-        this.loadConfig();
-    }
+    public void onServerStarted(FMLServerStartedEvent event) { }
 
     @EventHandler
-    public void onServerStopping(FMLServerStoppingEvent event) {
-        this.saveConfig();
-    }
-
-    private void loadConfig() {
-        File file = new File(ValkyrienWarfareMod.getWorkingFolder(), "/valkyrienwarfaresettings.dat");
-
-        if (!file.exists()) {
-            tag = new DataTag(file);
-            tag.setBoolean("doGravity", true);
-            tag.setBoolean("doPhysicsBlocks", true);
-            tag.setBoolean("doBalloons", true);
-            tag.setBoolean("doAirshipRotation", true);
-            tag.setBoolean("doAirshipMovement", true);
-            tag.setBoolean("doSplitting", false);
-            tag.setInteger("maxShipSize", 15000);
-            tag.setDouble("gravityVecX", 0);
-            tag.setDouble("gravityVecY", -9.8);
-            tag.setDouble("gravityVecZ", 0);
-            tag.setInteger("physicsIterations", 10);
-            tag.setDouble("physicsSpeed", 0.05);
-            tag.setBoolean("doEtheriumLifting", true);
-            tag.save();
-        } else {
-            tag = new DataTag(file);
-        }
-
-        PhysicsSettings.doGravity = tag.getBoolean("doGravity", true);
-        PhysicsSettings.doPhysicsBlocks = tag.getBoolean("doPhysicsBlocks", true);
-        PhysicsSettings.doAirshipRotation = tag.getBoolean("doAirshipRotation", true);
-        PhysicsSettings.doAirshipMovement = tag.getBoolean("doAirshipMovement", true);
-        ValkyrienWarfareMod.maxShipSize = tag.getInteger("maxShipSize", 15000);
-        ValkyrienWarfareMod.physSpeed = tag.getDouble("physicsSpeed", 0.01D);
-        // TODO: Remove me later; this is just to force players VW configs to update.
-        if (ValkyrienWarfareMod.physSpeed == .05D) {
-            ValkyrienWarfareMod.physSpeed = .01D;
-        }
-        ValkyrienWarfareMod.gravity = new Vector(tag.getDouble("gravityVecX", 0.0), tag.getDouble("gravityVecY", -9.8),
-                tag.getDouble("gravityVecZ", 0.0));
-        PhysicsSettings.doEtheriumLifting = tag.getBoolean("doEtheriumLifting", true);
-
-        // save the tag in case new fields are added, this way they are saved right away
-        tag.save();
-    }
-
-    public void saveConfig() {
-        tag.setBoolean("doGravity", PhysicsSettings.doGravity);
-        tag.setBoolean("doPhysicsBlocks", PhysicsSettings.doPhysicsBlocks);
-        tag.setBoolean("doAirshipRotation", PhysicsSettings.doAirshipRotation);
-        tag.setBoolean("doAirshipMovement", PhysicsSettings.doAirshipMovement);
-        tag.setInteger("maxShipSize", ValkyrienWarfareMod.maxShipSize);
-        tag.setDouble("gravityVecX", ValkyrienWarfareMod.gravity.X);
-        tag.setDouble("gravityVecY", ValkyrienWarfareMod.gravity.Y);
-        tag.setDouble("gravityVecZ", ValkyrienWarfareMod.gravity.Z);
-        tag.setDouble("physicsSpeed", ValkyrienWarfareMod.physSpeed);
-        tag.save();
-    }
+    public void onServerStopping(FMLServerStoppingEvent event) { }
 
     private void registerCapabilities() {
         CapabilityManager.INSTANCE.register(IAirshipCounterCapability.class, new StorageAirshipCounter(),

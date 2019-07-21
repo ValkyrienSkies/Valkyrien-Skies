@@ -28,7 +28,7 @@ import valkyrienwarfare.addon.control.nodenetwork.INodeController;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.deprecated_api.IBlockForceProvider;
 import valkyrienwarfare.deprecated_api.IBlockTorqueProvider;
-import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
+import valkyrienwarfare.mod.common.ValkyrienWarfareConfig;
 import valkyrienwarfare.mod.common.coordinates.ShipTransform;
 import valkyrienwarfare.mod.common.math.Quaternion;
 import valkyrienwarfare.mod.common.math.RotationMatrices;
@@ -38,7 +38,6 @@ import valkyrienwarfare.mod.common.multithreaded.PhysicsShipTransform;
 import valkyrienwarfare.mod.common.physics.collision.WorldPhysicsCollider;
 import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 import valkyrienwarfare.mod.common.physics.management.ShipTransformationManager;
-import valkyrienwarfare.mod.common.util.PhysicsSettings;
 import valkyrienwarfare.mod.common.util.ValkyrienNBTUtils;
 
 import javax.vecmath.Matrix3d;
@@ -218,10 +217,10 @@ public class PhysicsCalculations {
             if (getParent().isPhysicsEnabled()) {
                 // This wasn't implemented very well at all! Maybe in the future I'll try again.
                 // enforceStaticFriction();
-                if (PhysicsSettings.doAirshipRotation) {
+                if (ValkyrienWarfareConfig.doAirshipRotation) {
                     integrateAngularVelocity();
                 }
-                if (PhysicsSettings.doAirshipMovement) {
+                if (ValkyrienWarfareConfig.doAirshipMovement) {
                     integrateLinearVelocity();
                 }
             }
@@ -338,7 +337,7 @@ public class PhysicsCalculations {
         Vector crossVector = new Vector();
         World worldObj = getParent().getWorldObj();
 
-        if (PhysicsSettings.doPhysicsBlocks) {
+        if (ValkyrienWarfareConfig.doPhysicsBlocks) {
             // We want to loop through all the physics nodes in a sorted order. Priority Queue handles that.
             Queue<INodeController> nodesPriorityQueue = new PriorityQueue<INodeController>();
             for (INodeController processor : parent.getPhysicsControllersInShip()) {
@@ -436,9 +435,9 @@ public class PhysicsCalculations {
     }
 
     private void applyGravity() {
-        if (PhysicsSettings.doGravity) {
+        if (ValkyrienWarfareConfig.doGravity) {
             addForceAtPoint(new Vector(0, 0, 0),
-                    ValkyrienWarfareMod.gravity.getProduct(gameTickMass * getPhysicsTimeDeltaPerPhysTick()));
+                    ValkyrienWarfareConfig.gravity.getProduct(gameTickMass * getPhysicsTimeDeltaPerPhysTick()));
         }
     }
 
@@ -532,7 +531,7 @@ public class PhysicsCalculations {
         physX += (linearMomentum.X * momentMod);
         physY += (linearMomentum.Y * momentMod);
         physZ += (linearMomentum.Z * momentMod);
-        physY = Math.min(Math.max(physY, ValkyrienWarfareMod.shipLowerLimit), ValkyrienWarfareMod.shipUpperLimit);
+        physY = Math.min(Math.max(physY, ValkyrienWarfareConfig.shipLowerLimit), ValkyrienWarfareConfig.shipUpperLimit);
     }
 
     public Vector getVelocityAtPoint(Vector inBodyWO) {

@@ -114,7 +114,7 @@ import java.util.zip.ZipInputStream;
         name = ValkyrienWarfareMod.MOD_NAME,
         version = ValkyrienWarfareMod.MOD_VERSION,
         guiFactory = "valkyrienwarfare.mod.client.gui.GuiFactoryValkyrienWarfare",
-        updateJSON = "https://raw.githubusercontent.com/ValkyrienWarfare/Valkyrien-Warfare-Revamped/update.json",
+        updateJSON = "https://raw.githubusercontent.com/ValkyrienWarfare/Valkyrien-Warfare-Revamped/master/update.json",
         certificateFingerprint = ValkyrienWarfareMod.MOD_FINGERPRINT
 )
 public class ValkyrienWarfareMod {

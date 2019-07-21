@@ -415,7 +415,7 @@ public class ValkyrienWarfareMod {
         physWrapperNetwork.registerMessage(VWGuiButtonHandler.class, VWGuiButtonMessage.class, 3, Side.SERVER);
     }
 
-    private void registerBlocks(RegistryEvent.Register<Block> event) {
+    void registerBlocks(RegistryEvent.Register<Block> event) {
         physicsInfuser = new BlockPhysicsInfuser(Material.ROCK).setHardness(8f)
                 .setTranslationKey("shipblock")
                 .setRegistryName(MOD_ID, "shipblock")
@@ -437,7 +437,7 @@ public class ValkyrienWarfareMod {
         registerTileEntities();
     }
 
-    private void registerItems(RegistryEvent.Register<Item> event) {
+    void registerItems(RegistryEvent.Register<Item> event) {
         Module.registerItemBlock(event, physicsInfuser);
         Module.registerItemBlock(event, physicsInfuserCreative);
 
@@ -448,12 +448,12 @@ public class ValkyrienWarfareMod {
                 .register(this.physicsCore);
     }
 
-    private void registerRecipes(RegistryEvent.Register<IRecipe> event) {
+    void registerRecipes(RegistryEvent.Register<IRecipe> event) {
         Module.registerRecipe(event, "recipe_physics_infuser", new ItemStack(physicsInfuser), "IEI", "ODO", "IEI", 'E', Items.ENDER_PEARL, 'D',
                 Items.DIAMOND, 'O', Item.getItemFromBlock(Blocks.OBSIDIAN), 'I', Items.IRON_INGOT);
     }
 
-    private void runConfiguration(FMLPreInitializationEvent event) {
+    void runConfiguration(FMLPreInitializationEvent event) {
         configFile = event.getSuggestedConfigurationFile();
         config = new Configuration(configFile);
         config.load();

@@ -106,19 +106,12 @@ dependencies {
     compile 'valkyrienwarfare:api:1.0'
     
     // Manifold http://manifold.systems
-    compile group: 'systems.manifold', name: 'manifold-all', version: '0.71-alpha'
+    compile group: 'systems.manifold', name: 'manifold-all', version: '2019.1.7'
     // For Manifold: tools.jar dependency (for Java 8 only)
     compile files("${System.properties['java.home']}/../lib/tools.jar")
 
     // JUnit 5
-    testImplementation('org.junit.jupiter:junit-jupiter:5.5.0')
-}
-
-test {
-    useJUnitPlatform()
-    testLogging {
-        events "passed", "skipped", "failed"
-    }
+    testCompile('org.junit.jupiter:junit-jupiter:5.5.0')
 }
 
 tasks.withType(JavaCompile) {

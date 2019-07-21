@@ -50,7 +50,6 @@ import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
@@ -81,7 +80,6 @@ import valkyrienwarfare.mod.common.network.VWGuiButtonHandler;
 import valkyrienwarfare.mod.common.network.VWGuiButtonMessage;
 import valkyrienwarfare.mod.common.physics.BlockPhysicsRegistration;
 import valkyrienwarfare.mod.common.physics.management.DimensionPhysObjectManager;
-import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.common.physmanagement.VW_APIPhysicsEntityManager;
 import valkyrienwarfare.mod.common.physmanagement.chunk.DimensionPhysicsChunkManager;
 import valkyrienwarfare.mod.common.physmanagement.chunk.IVWWorldDataCapability;
@@ -125,7 +123,7 @@ public class ValkyrienWarfareMod {
     public static final String MOD_NAME = "Valkyrien Warfare";
     public static final String MOD_VERSION = "0.9.2";
     public static final String MOD_FINGERPRINT = "b308676914a5e7d99459c1d2fb298744387899a7";
-    public static final int SHIP_ENTITY_PLAYER_LOAD_DISTANCE = 128;
+    public static final int VW_ENTITY_LOAD_DISTANCE = 128;
     @CapabilityInject(IAirshipCounterCapability.class)
     public static final Capability<IAirshipCounterCapability> airshipCounter = null;
     @CapabilityInject(IVWWorldDataCapability.class)
@@ -390,9 +388,6 @@ public class ValkyrienWarfareMod {
         System.out.println("Valyrien Warfare Initilization:");
         System.out.println("We are running on " + Runtime.getRuntime().availableProcessors() + " threads; 4 or more is recommended!");
         proxy.init(event);
-        registerTileEntities();
-        EntityRegistry.registerModEntity(new ResourceLocation(MOD_ID, "PhysWrapper"), PhysicsWrapperEntity.class,
-                "PhysWrapper", 70, this, SHIP_ENTITY_PLAYER_LOAD_DISTANCE, 5, false);
 
         addons.forEach(m -> m.doInit(event));
     }
@@ -440,6 +435,8 @@ public class ValkyrienWarfareMod {
         event.getRegistry().register(physicsInfuserCreative);
         event.getRegistry()
                 .register(physicsInfuserDummy);
+
+        registerTileEntities();
     }
 
     public void registerItems(RegistryEvent.Register<Item> event) {
@@ -545,6 +542,7 @@ public class ValkyrienWarfareMod {
     }
 
     private void registerTileEntities() {
-        GameRegistry.registerTileEntity(TileEntityPhysicsInfuser.class, "tile_phys_infuser");
+        GameRegistry.registerTileEntity(TileEntityPhysicsInfuser.class, new ResourceLocation(MOD_ID, "tile_phys_infuser"));
     }
+
 }

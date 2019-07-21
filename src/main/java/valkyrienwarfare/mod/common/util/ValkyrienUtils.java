@@ -22,16 +22,18 @@ public class ValkyrienUtils {
      * @return
      */
     public static Optional<PhysicsObject> getPhysicsObject(@Nullable World world, @Nullable BlockPos pos) {
+        return getPhysicsObject(world, pos, false);
+    }
+
+    public static Optional<PhysicsObject> getPhysicsObject(@Nullable World world, @Nullable BlockPos pos, boolean includePartiallyLoaded) {
         // No physics object manages a null world or a null pos.
         if (world != null && pos != null && world.isBlockLoaded(pos)) {
             IPhysicsChunk physicsChunk = (IPhysicsChunk) world.getChunk(pos);
             Optional<PhysicsObject> physicsObject = physicsChunk.getPhysicsObjectOptional();
             if (physicsObject.isPresent()) {
-                if (physicsObject.get()
-                        .getShipTransformationManager() != null) {
+                if (includePartiallyLoaded || physicsObject.get()
+                        .isFullyLoaded()) {
                     return physicsObject;
-                } else {
-                    new IllegalStateException("Tried accessing ship at " + pos + " but it wasn't fully initialized").printStackTrace();
                 }
             }
         }

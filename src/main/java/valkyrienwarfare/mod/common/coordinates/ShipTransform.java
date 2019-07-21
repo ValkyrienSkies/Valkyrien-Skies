@@ -34,6 +34,7 @@ import javax.annotation.concurrent.Immutable;
  * <p>
  * Used to transform vectors between the global coordinate system, and the subspace
  * (ship) coordinate system.
+ * TODO: Move this to VW API.
  *
  * @author thebest108
  */
@@ -53,6 +54,10 @@ public class ShipTransform {
         lToWTransform = RotationMatrices.rotateAndTranslate(lToWTransform, pitch, yaw, roll, centerCoord);
         this.subspaceToGlobal = lToWTransform;
         this.globalToSubspace = RotationMatrices.inverse(subspaceToGlobal);
+    }
+
+    public ShipTransform(double translateX, double translateY, double translateZ) {
+        this(translateX, translateY, translateZ, 0, 0, 0, new Vector());
     }
 
     /**

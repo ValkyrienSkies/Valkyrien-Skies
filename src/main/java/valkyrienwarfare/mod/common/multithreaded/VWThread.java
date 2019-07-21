@@ -198,7 +198,9 @@ public class VWThread extends Thread {
                     e.printStackTrace();
                 }
             } else {
-                wrapper.getPhysicsObject().getShipTransformationManager().updateAllTransforms(false, false);
+                wrapper.getPhysicsObject()
+                        .getShipTransformationManager()
+                        .updateAllTransforms(false, false, false);
             }
         }
     }

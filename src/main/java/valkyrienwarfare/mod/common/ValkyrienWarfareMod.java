@@ -450,9 +450,19 @@ public class ValkyrienWarfareMod {
                 .register(this.physicsCore);
     }
 
-    public void registerRecipies(RegistryEvent.Register<IRecipe> event) {
-        Module.registerRecipe(event, "recipe_physics_infuser", new ItemStack(physicsInfuser), "IEI", "ODO", "IEI", 'E', Items.ENDER_PEARL, 'D',
-                Items.DIAMOND, 'O', Item.getItemFromBlock(Blocks.OBSIDIAN), 'I', Items.IRON_INGOT);
+    void registerRecipies(RegistryEvent.Register<IRecipe> event) {
+        Module.registerRecipe(event, "recipe_physics_infuser", new ItemStack(physicsInfuser),
+                "IEI", "ODO", "IEI",
+                'E', Items.ENDER_PEARL,
+                'D', Items.DIAMOND,
+                'O', Item.getItemFromBlock(Blocks.OBSIDIAN),
+                'I', Items.IRON_INGOT);
+
+        Module.registerRecipe(event, "recipe_physics_core", new ItemStack(physicsCore),
+                "ERE", "EEE", "EDE",
+                'E', ValkyrienWarfareWorld.INSTANCE.ethereumCrystal,
+                'R', Items.REDSTONE,
+                'D', Items.DIAMOND);
     }
 
     private void runConfiguration(FMLPreInitializationEvent event) {

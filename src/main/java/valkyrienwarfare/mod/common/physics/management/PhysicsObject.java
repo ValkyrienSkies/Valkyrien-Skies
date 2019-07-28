@@ -67,7 +67,7 @@
     import valkyrienwarfare.mod.common.math.Vector;
     import valkyrienwarfare.mod.common.network.PhysWrapperPositionMessage;
     import valkyrienwarfare.mod.common.physics.BlockForce;
-    import valkyrienwarfare.mod.common.physics.BlockPhysicsRegistration;
+    import valkyrienwarfare.mod.common.physics.BlockPhysicsDetails;
     import valkyrienwarfare.mod.common.physics.PhysicsCalculations;
     import valkyrienwarfare.mod.common.physmanagement.chunk.ShipChunkAllocator;
     import valkyrienwarfare.mod.common.physmanagement.chunk.VWChunkClaim;
@@ -180,10 +180,10 @@
 
             // If the block here is not to be made with physics, just treat it like you'd
             // treat AIR blocks.
-            if (oldState != null && BlockPhysicsRegistration.blocksToNotPhysicise.contains(oldState.getBlock())) {
+            if (oldState != null && BlockPhysicsDetails.blocksToNotPhysicsInfuse.contains(oldState.getBlock())) {
                 oldState = Blocks.AIR.getDefaultState();
             }
-            if (newState != null && BlockPhysicsRegistration.blocksToNotPhysicise.contains(newState.getBlock())) {
+            if (newState != null && BlockPhysicsDetails.blocksToNotPhysicsInfuse.contains(newState.getBlock())) {
                 newState = Blocks.AIR.getDefaultState();
             }
 

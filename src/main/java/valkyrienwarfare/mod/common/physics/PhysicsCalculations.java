@@ -109,8 +109,8 @@ public class PhysicsCalculations {
                 activeForcePositions.remove(pos);
             }
 
-            double oldMass = BlockMass.basicMass.getMassFromState(oldState, pos, worldObj);
-            double newMass = BlockMass.basicMass.getMassFromState(newState, pos, worldObj);
+            double oldMass = BlockPhysicsDetails.getMassFromState(oldState, pos, worldObj);
+            double newMass = BlockPhysicsDetails.getMassFromState(newState, pos, worldObj);
             double deltaMass = newMass - oldMass;
             // Don't change anything if the mass is the same
             if (Math.abs(deltaMass) > EPSILON) {
@@ -554,7 +554,7 @@ public class PhysicsCalculations {
         ValkyrienNBTUtils.write3x3MatrixToNBT("MOI", gameMoITensor, compound);
 
         physicsRotationNodeWorld.writeToNBTTag(compound);
-        compound.setString("block_mass_ver", BlockMass.basicMass.blockMassVer());
+        compound.setString("block_mass_ver", BlockPhysicsDetails.BLOCK_MASS_VERSION);
     }
 
     public void readFromNBTTag(NBTTagCompound compound) {
@@ -565,7 +565,7 @@ public class PhysicsCalculations {
         gameMoITensor = ValkyrienNBTUtils.read3x3MatrixFromNBT("MOI", compound);
         physicsRotationNodeWorld.readFromNBTTag(compound);
 
-        if (!BlockMass.basicMass.blockMassVer().equals(compound.getString("block_mass_ver"))) {
+        if (!BlockPhysicsDetails.BLOCK_MASS_VERSION.equals(compound.getString("block_mass_ver"))) {
             this.recalculateShipInertia();
         }
     }

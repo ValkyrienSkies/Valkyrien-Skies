@@ -48,16 +48,9 @@ public class SchematicReader {
 
             byte[] blocks = nbtdata.getByteArray("Blocks");
             byte[] data = nbtdata.getByteArray("Data");
-            byte[] addId = new byte[0];
+            byte[] addId = nbtdata.getByteArray("AddBlocks");
 
             short[] blocksCombined = new short[blocks.length]; // Have to later combine IDs
-
-
-            if (nbtdata.getByteArray("AddBlocks") != null) {
-                addId = nbtdata.getByteArray("AddBlocks");
-            } else {
-                System.out.println("fuck");
-            }
 
             // Combine the AddBlocks data with the first 8-bit block ID
             for (int index = 0; index < blocks.length; index++) {

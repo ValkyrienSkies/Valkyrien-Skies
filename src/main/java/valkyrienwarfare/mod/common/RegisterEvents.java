@@ -55,7 +55,7 @@ public class RegisterEvents {
 
     @SubscribeEvent
     public static void registerRecipes(@Nonnull final RegistryEvent.Register<IRecipe> event) {
-        ValkyrienWarfareMod.INSTANCE.registerRecipies(event);
+        ValkyrienWarfareMod.INSTANCE.registerRecipes(event);
         addons.forEach(m -> m.registerRecipes(event));
     }
 

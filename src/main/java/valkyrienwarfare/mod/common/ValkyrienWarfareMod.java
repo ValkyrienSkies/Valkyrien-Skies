@@ -178,7 +178,7 @@ public class ValkyrienWarfareMod {
         addons.forEach(m -> m.applyConfig(config));
     }
 
-    public static File getWorkingFolder() {
+    private static File getWorkingFolder() {
         File toBeReturned;
         try {
             if (FMLCommonHandler.instance().getSide().isClient()) {
@@ -213,7 +213,7 @@ public class ValkyrienWarfareMod {
         }
     }
 
-    public static void registerAddon(Module module) {
+    private static void registerAddon(Module module) {
         if (hasAddonRegistrationEnded) {
             throw new IllegalStateException("Attempting to register addon after FMLConstructionEvent");
         } else {
@@ -396,8 +396,6 @@ public class ValkyrienWarfareMod {
     public void postInit(FMLPostInitializationEvent event) {
         proxy.postInit(event);
         airStateIndex = Block.getStateId(Blocks.AIR.getDefaultState());
-        BlockPhysicsRegistration.registerCustomBlockMasses();
-        BlockPhysicsRegistration.registerBlocksToNotPhysicise();
 
         addons.forEach(m -> m.doPostInit(event));
     }
@@ -417,7 +415,7 @@ public class ValkyrienWarfareMod {
         physWrapperNetwork.registerMessage(VWGuiButtonHandler.class, VWGuiButtonMessage.class, 3, Side.SERVER);
     }
 
-    public void registerBlocks(RegistryEvent.Register<Block> event) {
+    void registerBlocks(RegistryEvent.Register<Block> event) {
         physicsInfuser = new BlockPhysicsInfuser(Material.ROCK).setHardness(8f)
                 .setTranslationKey("shipblock")
                 .setRegistryName(MOD_ID, "shipblock")
@@ -439,7 +437,7 @@ public class ValkyrienWarfareMod {
         registerTileEntities();
     }
 
-    public void registerItems(RegistryEvent.Register<Item> event) {
+    void registerItems(RegistryEvent.Register<Item> event) {
         Module.registerItemBlock(event, physicsInfuser);
         Module.registerItemBlock(event, physicsInfuserCreative);
 
@@ -450,12 +448,12 @@ public class ValkyrienWarfareMod {
                 .register(this.physicsCore);
     }
 
-    public void registerRecipies(RegistryEvent.Register<IRecipe> event) {
+    void registerRecipes(RegistryEvent.Register<IRecipe> event) {
         Module.registerRecipe(event, "recipe_physics_infuser", new ItemStack(physicsInfuser), "IEI", "ODO", "IEI", 'E', Items.ENDER_PEARL, 'D',
                 Items.DIAMOND, 'O', Item.getItemFromBlock(Blocks.OBSIDIAN), 'I', Items.IRON_INGOT);
     }
 
-    private void runConfiguration(FMLPreInitializationEvent event) {
+    void runConfiguration(FMLPreInitializationEvent event) {
         configFile = event.getSuggestedConfigurationFile();
         config = new Configuration(configFile);
         config.load();
@@ -473,7 +471,7 @@ public class ValkyrienWarfareMod {
         this.saveConfig();
     }
 
-    public void loadConfig() {
+    private void loadConfig() {
         File file = new File(ValkyrienWarfareMod.getWorkingFolder(), "/valkyrienwarfaresettings.dat");
 
         if (!file.exists()) {

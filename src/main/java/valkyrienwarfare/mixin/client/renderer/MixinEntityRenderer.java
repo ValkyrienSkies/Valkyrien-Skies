@@ -46,8 +46,6 @@ import valkyrienwarfare.mod.common.util.ValkyrienUtils;
 
 import java.util.Optional;
 
-//import valkyrienwarfare.api.MixinMethods;
-
 @Mixin(EntityRenderer.class)
 public abstract class MixinEntityRenderer {
 

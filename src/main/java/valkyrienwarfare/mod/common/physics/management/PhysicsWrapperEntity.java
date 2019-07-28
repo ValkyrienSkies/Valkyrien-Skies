@@ -157,7 +157,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 
     @Override
     public void setCustomNameTag(String name) {
-        if (this.getCustomNameTag().equals(""))
+        if (name.equals(""))
             throw new IllegalStateException("Why is this object's custom name tag empty???");
 
         if (world.isRemote) {

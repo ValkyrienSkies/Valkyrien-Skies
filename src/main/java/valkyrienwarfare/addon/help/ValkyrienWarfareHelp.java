@@ -39,11 +39,6 @@ public class ValkyrienWarfareHelp extends Module {
     }
 
     @Override
-    public void applyConfig(Configuration config) {
-
-    }
-
-    @Override
     protected void preInit(FMLStateEvent event) {
 
     }

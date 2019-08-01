@@ -112,8 +112,6 @@ public abstract class Module {
 
     }
 
-    public abstract void applyConfig(Configuration config);
-
     public final ModuleProxy getClientProxy() {
         return client;
     }

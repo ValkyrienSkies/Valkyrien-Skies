@@ -21,7 +21,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import valkyrienwarfare.mod.common.ValkyrienWarfareConfig;
+import valkyrienwarfare.mod.common.config.VWConfig;
 import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.common.math.Vector;
 import valkyrienwarfare.mod.common.physics.collision.optimization.ShipCollisionTask;
@@ -159,8 +159,8 @@ public class VWThread extends Thread {
      * @param shipsWithPhysics
      */
     private void tickThePhysicsAndCollision(List<PhysicsWrapperEntity> shipsWithPhysics) {
-        double newPhysSpeed = ValkyrienWarfareConfig.physSpeed;
-        Vector newGravity = ValkyrienWarfareConfig.gravity;
+        double newPhysSpeed = VWConfig.physSpeed;
+        Vector newGravity = VWConfig.gravity();
         List<ShipCollisionTask> collisionTasks = new ArrayList<ShipCollisionTask>(shipsWithPhysics.size() * 2);
         for (PhysicsWrapperEntity wrapper : shipsWithPhysics) {
             if (!wrapper.firstUpdate) {

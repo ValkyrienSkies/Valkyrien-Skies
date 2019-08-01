@@ -60,11 +60,6 @@ public class ValkyrienWarfareOC extends Module {
     }
 
     @Override
-    public void applyConfig(Configuration config) {
-
-    }
-
-    @Override
     public void registerBlocks(RegistryEvent.Register<Block> event) {
         gpsBlock = new GPSBlock().setTranslationKey("gpsblock")
                 .setRegistryName(getModID(), "gpsblock")

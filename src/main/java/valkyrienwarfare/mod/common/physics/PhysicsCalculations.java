@@ -28,7 +28,7 @@ import valkyrienwarfare.addon.control.nodenetwork.INodeController;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.deprecated_api.IBlockForceProvider;
 import valkyrienwarfare.deprecated_api.IBlockTorqueProvider;
-import valkyrienwarfare.mod.common.ValkyrienWarfareConfig;
+import valkyrienwarfare.mod.common.config.VWConfig;
 import valkyrienwarfare.mod.common.coordinates.ShipTransform;
 import valkyrienwarfare.mod.common.math.Quaternion;
 import valkyrienwarfare.mod.common.math.RotationMatrices;
@@ -217,10 +217,10 @@ public class PhysicsCalculations {
             if (getParent().isPhysicsEnabled()) {
                 // This wasn't implemented very well at all! Maybe in the future I'll try again.
                 // enforceStaticFriction();
-                if (ValkyrienWarfareConfig.doAirshipRotation) {
+                if (VWConfig.doAirshipRotation) {
                     integrateAngularVelocity();
                 }
-                if (ValkyrienWarfareConfig.doAirshipMovement) {
+                if (VWConfig.doAirshipMovement) {
                     integrateLinearVelocity();
                 }
             }
@@ -337,7 +337,7 @@ public class PhysicsCalculations {
         Vector crossVector = new Vector();
         World worldObj = getParent().getWorldObj();
 
-        if (ValkyrienWarfareConfig.doPhysicsBlocks) {
+        if (VWConfig.doPhysicsBlocks) {
             // We want to loop through all the physics nodes in a sorted order. Priority Queue handles that.
             Queue<INodeController> nodesPriorityQueue = new PriorityQueue<INodeController>();
             for (INodeController processor : parent.getPhysicsControllersInShip()) {
@@ -435,9 +435,9 @@ public class PhysicsCalculations {
     }
 
     private void applyGravity() {
-        if (ValkyrienWarfareConfig.doGravity) {
+        if (VWConfig.doGravity) {
             addForceAtPoint(new Vector(0, 0, 0),
-                    ValkyrienWarfareConfig.gravity.getProduct(gameTickMass * getPhysicsTimeDeltaPerPhysTick()));
+                    VWConfig.gravity().getProduct(gameTickMass * getPhysicsTimeDeltaPerPhysTick()));
         }
     }
 
@@ -531,7 +531,7 @@ public class PhysicsCalculations {
         physX += (linearMomentum.X * momentMod);
         physY += (linearMomentum.Y * momentMod);
         physZ += (linearMomentum.Z * momentMod);
-        physY = Math.min(Math.max(physY, ValkyrienWarfareConfig.shipLowerLimit), ValkyrienWarfareConfig.shipUpperLimit);
+        physY = Math.min(Math.max(physY, VWConfig.shipLowerLimit), VWConfig.shipUpperLimit);
     }
 
     public Vector getVelocityAtPoint(Vector inBodyWO) {

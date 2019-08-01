@@ -91,8 +91,4 @@ public class CannonMod extends Module {
 
     }
 
-    @Override
-    public void applyConfig(Configuration config) {
-
-    }
 }

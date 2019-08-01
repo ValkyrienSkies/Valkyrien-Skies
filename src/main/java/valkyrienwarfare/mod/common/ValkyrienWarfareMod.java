@@ -31,6 +31,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.config.Config;
+import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -50,7 +52,6 @@ import valkyrienwarfare.addon.world.ValkyrienWarfareWorld;
 import valkyrienwarfare.api.IPhysicsEntityManager;
 import valkyrienwarfare.api.addons.Module;
 import valkyrienwarfare.api.addons.VWAddon;
-import valkyrienwarfare.deprecated_api.DataTag;
 import valkyrienwarfare.deprecated_api.RealMethods;
 import valkyrienwarfare.deprecated_api.ValkyrienWarfareHooks;
 import valkyrienwarfare.mixin.MixinLoaderForge;
@@ -62,10 +63,9 @@ import valkyrienwarfare.mod.common.capability.IAirshipCounterCapability;
 import valkyrienwarfare.mod.common.capability.ImplAirshipCounterCapability;
 import valkyrienwarfare.mod.common.capability.StorageAirshipCounter;
 import valkyrienwarfare.mod.common.command.VWModCommandRegistry;
+import valkyrienwarfare.mod.common.config.VWConfig;
 import valkyrienwarfare.mod.common.item.ItemPhysicsCore;
-import valkyrienwarfare.mod.common.math.Vector;
 import valkyrienwarfare.mod.common.network.*;
-import valkyrienwarfare.mod.common.physics.BlockPhysicsRegistration;
 import valkyrienwarfare.mod.common.physics.management.DimensionPhysObjectManager;
 import valkyrienwarfare.mod.common.physmanagement.VW_APIPhysicsEntityManager;
 import valkyrienwarfare.mod.common.physmanagement.chunk.DimensionPhysicsChunkManager;
@@ -85,6 +85,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -94,7 +95,6 @@ import java.util.zip.ZipInputStream;
         modid = ValkyrienWarfareMod.MOD_ID,
         name = ValkyrienWarfareMod.MOD_NAME,
         version = ValkyrienWarfareMod.MOD_VERSION,
-        guiFactory = "valkyrienwarfare.mod.client.gui.GuiFactoryValkyrienWarfare",
         updateJSON = "https://raw.githubusercontent.com/ValkyrienWarfare/Valkyrien-Warfare-Revamped/master/update.json",
         certificateFingerprint = ValkyrienWarfareMod.MOD_FINGERPRINT
 )
@@ -115,8 +115,6 @@ public class ValkyrienWarfareMod {
     public static ExecutorService PHYSICS_THREADS_EXECUTOR = null;
     @SidedProxy(clientSide = "valkyrienwarfare.mod.proxy.ClientProxy", serverSide = "valkyrienwarfare.mod.proxy.ServerProxy")
     public static CommonProxy proxy;
-    public static File configFile;
-    public static Configuration CONFIG;
     public Block physicsInfuser;
     public Block physicsInfuserCreative;
     public Block physicsInfuserDummy;
@@ -154,12 +152,12 @@ public class ValkyrienWarfareMod {
      */
     public static boolean canChangeAirshipCounter(boolean isAdding, EntityPlayer player) {
         if (isAdding) {
-            if (ValkyrienWarfareConfig.maxAirships == -1) {
+            if (VWConfig.maxAirships == -1) {
                 return true;
             }
 
             return player.getCapability(ValkyrienWarfareMod.airshipCounter, null)
-                    .getAirshipCount() < ValkyrienWarfareConfig.maxAirships;
+                    .getAirshipCount() < VWConfig.maxAirships;
         } else {
             return player.getCapability(ValkyrienWarfareMod.airshipCounter, null).getAirshipCount() > 0;
         }
@@ -300,6 +298,7 @@ public class ValkyrienWarfareMod {
         proxy.preInit(event);
         registerNetworks(event);
         runConfiguration(event);
+        ValkyrienWarfareMod.PHYSICS_THREADS_EXECUTOR = Executors.newFixedThreadPool(VWConfig.threadCount);
         registerCapabilities();
         ValkyrienWarfareHooks.methods = new RealMethods();
         ValkyrienWarfareHooks.isValkyrienWarfareInstalled = true;
@@ -406,11 +405,7 @@ public class ValkyrienWarfareMod {
     }
 
 	private void runConfiguration(FMLPreInitializationEvent event) {
-		configFile = event.getSuggestedConfigurationFile();
-		CONFIG = new Configuration(configFile);
-		CONFIG.load();
-		ValkyrienWarfareConfig.applyConfig(CONFIG);
-		CONFIG.save();
+        VWConfig.sync();
 	}
 
     @EventHandler

@@ -123,10 +123,4 @@ public class ValkyrienWarfareWorld extends Module {
     protected void registerCapabilities() {
         CapabilityManager.INSTANCE.register(ICapabilityAntiGravity.class, new StorageAntiGravity(), ImplCapabilityAntiGravity.class);
     }
-
-    @Override
-    public void applyConfig(Configuration config) {
-        OREGEN_ENABLED = config.get("world.generation", "OREGEN_ENABLED", true, "determines if vw ores generate in the world")
-                .getBoolean();
-    }
 }

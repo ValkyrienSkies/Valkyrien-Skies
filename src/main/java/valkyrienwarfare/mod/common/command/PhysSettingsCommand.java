@@ -23,9 +23,9 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
+import valkyrienwarfare.mod.common.config.VWConfig;
 import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.common.math.Vector;
-import valkyrienwarfare.mod.common.util.PhysicsSettings;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -45,7 +45,7 @@ public class PhysSettingsCommand extends CommandBase {
         COMPLETED_OPTIONS.add("doairshiprotation");
         COMPLETED_OPTIONS.add("doairshipmovement");
         COMPLETED_OPTIONS.add("save");
-        COMPLETED_OPTIONS.add("doetheriumlifting");
+        COMPLETED_OPTIONS.add("doethereumlifting");
         COMPLETED_OPTIONS.add("restartcrashedphysics");
     }
 
@@ -76,40 +76,46 @@ public class PhysSettingsCommand extends CommandBase {
         String key = args[0];
         if (key.equals("maxshipsize")) {
             if (args.length == 1) {
-                sender.sendMessage(new TextComponentString("maxshipsize=" + ValkyrienWarfareMod.maxShipSize + " (Default: 15000)"));
+                sender.sendMessage(new TextComponentString("maxshipsize=" + VWConfig.maxShipSize + " (Default: 15000)"));
                 return;
             } else if (args.length == 2) {
                 int value = Integer.parseInt(args[1]);
-                ValkyrienWarfareMod.maxShipSize = value;
+                VWConfig.maxShipSize = value;
                 sender.sendMessage(new TextComponentString("Set maximum ship size to " + value));
                 return;
             }
         } else if (key.equals("gravityvector")) {
             if (args.length == 1) {
-                sender.sendMessage(new TextComponentString("gravityvector=" + ValkyrienWarfareMod.gravity.toRoundedString() + " (Default: <0,-9.8,0>)"));
+                sender.sendMessage(new TextComponentString("gravityvector=" + VWConfig.gravity().toRoundedString() + " (Default: <0,-9.8,0>)"));
                 return;
             } else if (args.length == 4) {
-                Vector newVector = new Vector(0, -9.8, 0);
+                double x, y, z;
                 try {
                     if (args[1] != null && args[2] != null && args[3] != null) {
-                        newVector.X = Double.parseDouble(args[1]);
-                        newVector.Y = Double.parseDouble(args[2]);
-                        newVector.Z = Double.parseDouble(args[3]);
+                        x = Double.parseDouble(args[1]);
+                        y = Double.parseDouble(args[2]);
+                        z = Double.parseDouble(args[3]);
                     } else {
-                        sender.sendMessage(new TextComponentString("Usage: /physsettings gravityVector <x> <y> <z>"));
+                        sender.sendMessage(new TextComponentString(
+                                "Usage: /physsettings gravityVector <x> <y> <z>"));
                         return;
                     }
-                } catch (Exception e) {
+
+                    sender.sendMessage(new TextComponentString(
+                            "physics gravity set to " + x + ", " + y + ", " + z + " (Default: <0,-9.8,0>)"));
+                } catch (NumberFormatException e) {
+                    sender.sendMessage(new TextComponentString("That's not a valid number.."));
                 }
-                ValkyrienWarfareMod.gravity = newVector;
-                sender.sendMessage(new TextComponentString("physics gravity set to " + newVector.toRoundedString() + " (Default: <0,-9.8,0>)"));
+
                 return;
             } else {
-                sender.sendMessage(new TextComponentString("Usage: /physsettings gravityVector <x> <y> <z>"));
+                sender.sendMessage(new TextComponentString(
+                        "Usage: /physsettings gravityVector <x> <y> <z>"));
             }
         } else if (key.equals("physicsspeed")) {
             if (args.length == 1) {
-                sender.sendMessage(new TextComponentString("physicsspeed=" + ValkyrienWarfareMod.physSpeed + " (Default: 100%)"));
+                sender.sendMessage(new TextComponentString(
+                        "physicsspeed=" + VWConfig.physSpeed + " (Default: 100%)"));
                 return;
             } else if (args.length == 2) {
                 double value = Double.parseDouble(args[1].replace('%', ' '));
@@ -117,70 +123,83 @@ public class PhysSettingsCommand extends CommandBase {
                     sender.sendMessage(new TextComponentString("Please enter a value between 0 and 1000"));
                     return;
                 }
-                ValkyrienWarfareMod.physSpeed = value / 10000D;
+                VWConfig.physSpeed = (value / 10000D);
                 sender.sendMessage(new TextComponentString("Set physicsspeed to " + value + " percent"));
                 return;
             }
         } else if (key.equals("dogravity")) {
             if (args.length == 1) {
-                sender.sendMessage(new TextComponentString("dogravity=" + PhysicsSettings.doGravity + " (Default: true)"));
+                sender.sendMessage(new TextComponentString(
+                        "dogravity=" + VWConfig.doGravity + " (Default: true)"));
                 return;
             } else if (args.length == 2) {
                 boolean value = Boolean.parseBoolean(args[1]);
-                PhysicsSettings.doGravity = value;
-                sender.sendMessage(new TextComponentString("Set dogravity to " + (PhysicsSettings.doGravity ? "enabled" : "disabled")));
+                VWConfig.doGravity = value;
+                sender.sendMessage(new TextComponentString(
+                        "Set dogravity to " + (VWConfig.doGravity ? "enabled" : "disabled")));
                 return;
             }
         } else if (key.equals("dophysicsblocks")) {
             if (args.length == 1) {
-                sender.sendMessage(new TextComponentString("dophysicsblocks=" + PhysicsSettings.doPhysicsBlocks + " (Default: true)"));
+                sender.sendMessage(new TextComponentString(
+                        "dophysicsblocks=" + VWConfig.doPhysicsBlocks + " (Default: true)"));
                 return;
             } else if (args.length == 2) {
                 boolean value = Boolean.parseBoolean(args[1]);
-                PhysicsSettings.doPhysicsBlocks = value;
-                sender.sendMessage(new TextComponentString("Set dophysicsblocks to " + (PhysicsSettings.doPhysicsBlocks ? "enabled" : "disabled")));
+                VWConfig.doPhysicsBlocks = value;
+                sender.sendMessage(new TextComponentString(
+                        "Set dophysicsblocks to " + (VWConfig.doPhysicsBlocks ? "enabled" : "disabled")));
                 return;
             }
         } else if (key.equals("doairshiprotation")) {
             if (args.length == 1) {
-                sender.sendMessage(new TextComponentString("doairshiprotation=" + PhysicsSettings.doAirshipRotation + " (Default: true)"));
+                sender.sendMessage(new TextComponentString(
+                        "doairshiprotation=" + VWConfig.doAirshipRotation + " (Default: true)"));
                 return;
             } else if (args.length == 2) {
                 boolean value = Boolean.parseBoolean(args[1]);
-                PhysicsSettings.doAirshipRotation = value;
-                sender.sendMessage(new TextComponentString("Set doairshiprotation to " + (PhysicsSettings.doAirshipRotation ? "enabled" : "disabled")));
+                VWConfig.doAirshipRotation = value;
+                sender.sendMessage(new TextComponentString(
+                        "Set doairshiprotation to " + (VWConfig.doAirshipRotation ? "enabled" : "disabled")));
                 return;
             }
         } else if (key.equals("doairshipmovement")) {
             if (args.length == 1) {
-                sender.sendMessage(new TextComponentString("doairshipmovement=" + PhysicsSettings.doAirshipMovement + " (Default: true)"));
+                sender.sendMessage(new TextComponentString(
+                        "doairshipmovement=" + VWConfig.doAirshipMovement + " (Default: true)"));
                 return;
             } else if (args.length == 2) {
                 boolean value = Boolean.parseBoolean(args[1]);
-                PhysicsSettings.doAirshipMovement = value;
-                sender.sendMessage(new TextComponentString("Set doairshipmovement to " + (PhysicsSettings.doAirshipMovement ? "enabled" : "disabled")));
+                VWConfig.doAirshipMovement = value;
+                sender.sendMessage(new TextComponentString(
+                        "Set doairshipmovement to " +
+                                (VWConfig.doAirshipMovement ? "enabled" : "disabled")));
                 return;
             }
-        } else if (key.equals("doetheriumlifting")) {
+        } else if (key.equals("doethereumlifting")) {
             if (args.length == 1) {
-                sender.sendMessage(new TextComponentString("doetheriumlifting=" + PhysicsSettings.doEtheriumLifting + " (Default: true)"));
+                sender.sendMessage(new TextComponentString(
+                        "doethereumlifting=" + VWConfig.doEthereumLifting + " (Default: true)"));
                 return;
             } else if (args.length == 2) {
                 boolean value = Boolean.parseBoolean(args[1]);
-                PhysicsSettings.doEtheriumLifting = value;
-                sender.sendMessage(new TextComponentString("Set doetheriumlifting to " + (PhysicsSettings.doEtheriumLifting ? "enabled" : "disabled")));
+                VWConfig.doEthereumLifting = value;
+                sender.sendMessage(new TextComponentString(
+                        "Set doethereumlifting to " + 
+                                (VWConfig.doEthereumLifting ? "enabled" : "disabled")));
                 return;
             }
         } else if (key.equals("save")) {
-            ValkyrienWarfareMod.INSTANCE.saveConfig();
-            sender.sendMessage(new TextComponentString("Saved phyisics settings"));
+            sender.sendMessage(new TextComponentString("Saved physics settings"));
             return;
-        } else if (true || key.equals("help")) {
-            sender.sendMessage(new TextComponentString("Avaliable physics Commands:"));
+        } else {
+            sender.sendMessage(new TextComponentString("Available physics Commands:"));
             for (String command : COMPLETED_OPTIONS) {
                 sender.sendMessage(new TextComponentString(command));
             }
         }
+
+        VWConfig.sync();
 
         sender.sendMessage(new TextComponentString(this.getUsage(sender)));
     }

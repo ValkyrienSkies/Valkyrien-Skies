@@ -104,7 +104,6 @@ dependencies {
     compile 'net.daporkchop.lib:primitive:0.0.5'
     compile 'gigaherz.graph:GraphLib:1.4.0'
     compile 'valkyrienwarfare:api:1.0'
-    testCompile 'org.junit.jupiter:junit-jupiter:5.5.0'
 
     //TODO: REMOVE
     compile 'de.ruedigermoeller:fst:2.56'
@@ -114,15 +113,6 @@ dependencies {
 
     // CQEngine for in-memory nonpersistent database
     compile 'com.googlecode.cqengine:cqengine:3.4.0'
-    // Manifold http://manifold.systems
-    compile 'systems.manifold:manifold-ext:2019.1.7'
-    // For Manifold: tools.jar dependency (for Java 8 only)
-    compile files("${System.properties['java.home']}/../lib/tools.jar")
-}
-
-tasks.withType(JavaCompile) {
-    options.compilerArgs += '-Xplugin:Manifold strings exceptions'
-    options.fork = true
 }
 
 processResources {

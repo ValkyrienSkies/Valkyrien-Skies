@@ -56,6 +56,7 @@
     import valkyrienwarfare.api.TransformType;
     import valkyrienwarfare.deprecated_api.EnumChangeOwnerResult;
     import valkyrienwarfare.fixes.IPhysicsChunk;
+    import valkyrienwarfare.mod.common.config.VWConfig;
     import valkyrienwarfare.mod.client.render.PhysObjectRenderManager;
     import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
     import valkyrienwarfare.mod.common.coordinates.ISubspace;
@@ -287,8 +288,8 @@
             BlockPos centerInWorld = new BlockPos(getWrapperEntity().posX,
                     getWrapperEntity().posY, getWrapperEntity().posZ);
             SpatialDetector detector = DetectorManager.getDetectorFor(getDetectorID(), centerInWorld, getWorldObj(),
-                    ValkyrienWarfareMod.maxShipSize + 1, true);
-            if (detector.foundSet.size() > ValkyrienWarfareMod.maxShipSize || detector.cleanHouse) {
+                    VWConfig.maxShipSize + 1, true);
+            if (detector.foundSet.size() > VWConfig.maxShipSize || detector.cleanHouse) {
                 if (player != null) {
                     player.sendMessage(new TextComponentString(
                             "Ship construction canceled because its exceeding the ship size limit; " +

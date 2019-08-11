@@ -12,6 +12,12 @@ public class ShipPositionData {
     private final Vector shipPosition;
     private final float[] lToWTransform;
 
+    // For Kryo
+    private ShipPositionData() {
+        shipPosition = null;
+        lToWTransform = null;
+    }
+
     ShipPositionData(PhysicsWrapperEntity wrapper) {
         shipPosition = new Vector(wrapper.posX, wrapper.posY, wrapper.posZ);
         lToWTransform = RotationMatrices.convertToFloat(

@@ -1,4 +1,4 @@
-package valkyrienwarfare.mod.common.command;
+package valkyrienwarfare.mod.common.command.framework;
 
 import java.util.ArrayList;
 import java.util.StringTokenizer;
@@ -6,7 +6,7 @@ import java.util.StringTokenizer;
 public class VWCommandUtil {
 
     public static String[] toProperArgs(String[] args) {
-        return toProperArgs(String.join("", args));
+        return toProperArgs(String.join(" ", args));
     }
 
     public static String[] toProperArgs(String args) {

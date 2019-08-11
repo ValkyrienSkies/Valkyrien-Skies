@@ -16,9 +16,11 @@ import net.minecraft.world.storage.MapStorage;
 import net.minecraft.world.storage.WorldSavedData;
 import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
-import valkyrienwarfare.mod.common.physmanagement.chunk.VWChunkClaim;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import static com.googlecode.cqengine.query.QueryFactory.equal;
 
@@ -37,7 +39,6 @@ public class QueryableShipData extends WorldSavedData {
         super(name);
         allShips.addIndex(HashIndex.onAttribute(ShipData.NAME));
         allShips.addIndex(UniqueIndex.onAttribute(ShipData.UUID));
-        allShips.addIndex(UniqueIndex.onAttribute(ShipData.MOST_SIG_UUID));
         allShips.addIndex(UniqueIndex.onAttribute(ShipData.CHUNKS));
     }
 
@@ -147,11 +148,10 @@ public class QueryableShipData extends WorldSavedData {
 
     public void updateShipPosition(PhysicsWrapperEntity wrapper) {
         ShipData shipData = getOrCreateShip(wrapper);
-        ShipPositionData positionData = shipData.positionData;
-        if (positionData == null) {
-            positionData = new ShipPositionData(wrapper);
+        if (shipData.positionData == null) {
+            shipData.positionData = new ShipPositionData(wrapper);
         }
-        positionData.updateData(wrapper);
+        shipData.positionData.updateData(wrapper);
 
         markDirty();
     }

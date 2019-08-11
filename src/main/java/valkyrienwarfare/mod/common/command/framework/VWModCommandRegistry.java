@@ -14,10 +14,14 @@
  *
  */
 
-package valkyrienwarfare.mod.common.command;
+package valkyrienwarfare.mod.common.command.framework;
 
 import net.minecraft.command.ServerCommandManager;
 import net.minecraft.server.MinecraftServer;
+import valkyrienwarfare.mod.common.command.AirshipMapCommand;
+import valkyrienwarfare.mod.common.command.AirshipSettingsCommand;
+import valkyrienwarfare.mod.common.command.MainCommand;
+import valkyrienwarfare.mod.common.command.PhysSettingsCommand;
 
 public class VWModCommandRegistry {
 
@@ -25,9 +29,9 @@ public class VWModCommandRegistry {
     // a separate class
     public static void registerCommands(MinecraftServer server) {
         ServerCommandManager manager = (ServerCommandManager) server.getCommandManager();
+        manager.registerCommand(new VWCommandExecutor<>(MainCommand.class));
         manager.registerCommand(new PhysSettingsCommand());
         manager.registerCommand(new AirshipSettingsCommand());
         manager.registerCommand(new AirshipMapCommand());
-        manager.registerCommand(new VWCommandExecutor());
     }
 }

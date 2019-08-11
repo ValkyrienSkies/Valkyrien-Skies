@@ -33,6 +33,14 @@ public class VWChunkClaim implements Serializable {
     private final int centerZ;
     private final int radius;
 
+    // For Kryo
+    private VWChunkClaim() {
+        radius = 0;
+        centerX = 0;
+        centerZ = 0;
+        chunkOccupiedInLocal = null;
+    }
+
     public VWChunkClaim(int x, int z, int size) {
         this.centerX = x;
         this.centerZ = z;

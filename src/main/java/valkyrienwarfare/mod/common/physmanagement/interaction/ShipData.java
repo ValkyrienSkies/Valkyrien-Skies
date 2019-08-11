@@ -7,6 +7,7 @@ import net.minecraft.util.math.ChunkPos;
 import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.common.physmanagement.chunk.VWChunkClaim;
 
+import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -14,10 +15,11 @@ import java.util.UUID;
 
 import static com.googlecode.cqengine.query.QueryFactory.attribute;
 
-public final class ShipData implements Cloneable {
+
+public final class ShipData {
 
     // WARNING: Mutable! This field is NEVER indexed. DO NOT INDEX!
-    public ShipPositionData positionData;
+    @Nullable public ShipPositionData positionData;
     private String name;
     private UUID uuid;
     /**
@@ -91,14 +93,6 @@ public final class ShipData implements Cloneable {
         }
     }
 
-    // for Kryo
-    private ShipData() {
-        this.name = null;
-        this.uuid = null;
-        this.chunkLongs = null;
-        this.chunkClaim = null;
-    }
-
     public ShipPositionData getPositionData() {
         return positionData;
     }
@@ -122,8 +116,6 @@ public final class ShipData implements Cloneable {
     /**
      * Query by UUID most significant digits - do not use this, is only in place for legacy code
      */
-    @Deprecated
-    static final Attribute<ShipData, Long> MOST_SIG_UUID = attribute(ship -> ship.uuid.getMostSignificantBits());
     static final Attribute<ShipData, String> NAME = attribute(ship -> ship.name);
     static final Attribute<ShipData, UUID> UUID = attribute(ship -> ship.uuid);
     static final Attribute<ShipData, Long> CHUNKS = new MultiValueAttribute<ShipData, Long>() {

@@ -1,37 +1,60 @@
-package valkyrienwarfare.mod.common.command;
+package valkyrienwarfare.mod.common.command.framework;
 
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.world.World;
 import org.apache.commons.io.output.NullOutputStream;
 import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import valkyrienwarfare.mod.common.command.converters.WorldConverter;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.List;
 
-@MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-public class VWCommandExecutor extends CommandBase {
+@MethodsReturnNonnullByDefault
+public class VWCommandExecutor<K> extends CommandBase {
 
-    private static final String COMMAND_NAME = "vw";
+    private Class<K> cmdClass;
+
+    VWCommandExecutor(Class<K> cmdClass) {
+        if (cmdClass.getAnnotation(Command.class) == null) {
+            throw new IllegalArgumentException("Clazz must have the PicoCLI @Command annotation!");
+        }
+
+        this.cmdClass = cmdClass;
+    }
 
     @Override
     public String getName() {
-        return COMMAND_NAME;
+        return this.cmdClass.getAnnotation(Command.class).name();
+    }
+
+    @Override
+    public List<String> getAliases() {
+        return Arrays.asList(this.cmdClass.getAnnotation(Command.class).aliases());
     }
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "";
+        VWCommandFactory factory = new VWCommandFactory(sender);
+        CommandLine commandLine = new CommandLine(factory.create(cmdClass), factory);
+
+        return commandLine.getUsageMessage();
     }
 
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) {
-        VWCommand command = new VWCommand();
         VWCommandFactory factory = new VWCommandFactory(sender);
-        CommandLine commandLine = new CommandLine(command, factory);
+
+        CommandLine commandLine = new CommandLine(factory.create(cmdClass), factory);
+        commandLine.registerConverter(World.class, new WorldConverter());
+
 
         ChatWriter chatOut = new ChatWriter(sender);
         commandLine.setOut(chatOut);
@@ -42,7 +65,7 @@ public class VWCommandExecutor extends CommandBase {
         commandLine.execute(args);
     }
 
-    class ChatWriter extends PrintWriter {
+    static class ChatWriter extends PrintWriter {
 
         ICommandSender sender;
 

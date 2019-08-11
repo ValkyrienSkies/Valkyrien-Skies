@@ -34,9 +34,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.config.Config;
-import net.minecraftforge.common.config.ConfigManager;
-import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.FMLLog;
@@ -69,7 +66,6 @@ import valkyrienwarfare.mod.common.command.VWModCommandRegistry;
 import valkyrienwarfare.mod.common.config.VWConfig;
 import valkyrienwarfare.mod.common.item.ItemPhysicsCore;
 import valkyrienwarfare.mod.common.network.*;
-import valkyrienwarfare.mod.common.math.Vector;
 import valkyrienwarfare.mod.common.physics.management.DimensionPhysObjectManager;
 import valkyrienwarfare.mod.common.physmanagement.VW_APIPhysicsEntityManager;
 import valkyrienwarfare.mod.common.physmanagement.chunk.*;
@@ -412,7 +408,11 @@ public class ValkyrienWarfareMod {
     }
 
     public Kryo getKryo() {
-        return kryoInstance.get();
+        try {
+            return kryoInstance.get();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     void registerItems(RegistryEvent.Register<Item> event) {

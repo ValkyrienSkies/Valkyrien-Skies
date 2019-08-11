@@ -90,6 +90,11 @@ repositories {
     mavenCentral()
 }
 
+compileJava {
+    sourceCompatibility = "1.8"
+    targetCompatibility = "1.8"
+}
+
 dependencies {
     // mixin needs to be distributed with the mod, very important
     compile("org.spongepowered:mixin:0.7.5-SNAPSHOT") {
@@ -113,6 +118,8 @@ dependencies {
 
     // CQEngine for in-memory nonpersistent database
     compile 'com.googlecode.cqengine:cqengine:3.4.0'
+
+    compile fileTree(include: ['*.jar'], dir: 'dependencies')
 }
 
 processResources {
@@ -201,7 +208,7 @@ jar {
         )
     }
 }
-sourceCompatibility = targetCompatibility = "1.8"
+
 
 task signJar(type: SignJar, dependsOn: shadowJar) {
     onlyIf { // Skip the task if our secret data isn't available

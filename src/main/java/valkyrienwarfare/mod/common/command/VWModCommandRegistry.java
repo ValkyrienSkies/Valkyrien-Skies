@@ -28,6 +28,6 @@ public class VWModCommandRegistry {
         manager.registerCommand(new PhysSettingsCommand());
         manager.registerCommand(new AirshipSettingsCommand());
         manager.registerCommand(new AirshipMapCommand());
-        manager.registerCommand(new VWCommandHelp());
+        manager.registerCommand(new VWCommandExecutor());
     }
 }

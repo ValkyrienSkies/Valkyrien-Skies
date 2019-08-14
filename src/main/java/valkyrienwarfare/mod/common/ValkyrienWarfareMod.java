@@ -19,6 +19,7 @@ package valkyrienwarfare.mod.common;
 import com.esotericsoftware.kryo.Kryo;
 import com.googlecode.cqengine.ConcurrentIndexedCollection;
 import de.javakaffee.kryoserializers.UUIDSerializer;
+import de.javakaffee.kryoserializers.UnmodifiableCollectionsSerializer;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
@@ -62,7 +63,7 @@ import valkyrienwarfare.mod.common.block.BlockPhysicsInfuserDummy;
 import valkyrienwarfare.mod.common.capability.IAirshipCounterCapability;
 import valkyrienwarfare.mod.common.capability.ImplAirshipCounterCapability;
 import valkyrienwarfare.mod.common.capability.StorageAirshipCounter;
-import valkyrienwarfare.mod.common.command.VWModCommandRegistry;
+import valkyrienwarfare.mod.common.command.framework.VWModCommandRegistry;
 import valkyrienwarfare.mod.common.config.VWConfig;
 import valkyrienwarfare.mod.common.item.ItemPhysicsCore;
 import valkyrienwarfare.mod.common.network.*;
@@ -399,6 +400,8 @@ public class ValkyrienWarfareMod {
             kryo.register(VWChunkClaim.class);
             kryo.register(HashSet.class);
             kryo.register(UUID.class, new UUIDSerializer());
+            UnmodifiableCollectionsSerializer.registerSerializers(kryo);
+
             kryo.setRegistrationRequired(false);
 
             System.out.println("Kryo initialization: " + (System.currentTimeMillis() - start) + "ms");

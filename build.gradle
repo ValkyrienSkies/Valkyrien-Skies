@@ -110,8 +110,8 @@ dependencies {
     compile 'gigaherz.graph:GraphLib:1.4.0'
     compile 'valkyrienwarfare:api:1.0'
 
-    //TODO: REMOVE
-    compile 'de.ruedigermoeller:fst:2.56'
+    // Kryo for serialization
+    compile group: 'com.esotericsoftware', name: 'kryo', version: '5.0.0-RC4'
 
     // Contains UUID serializer
     compile 'de.javakaffee:kryo-serializers:0.45'
@@ -119,6 +119,10 @@ dependencies {
     // CQEngine for in-memory nonpersistent database
     compile 'com.googlecode.cqengine:cqengine:3.4.0'
 
+    // Guice Injector (included already, but this is an explicity declaration of the dependency)
+    compile group: 'com.google.inject', name: 'guice', version: '4.2.2'
+
+    // Include all dependencies in the /dependencies folder
     compile fileTree(include: ['*.jar'], dir: 'dependencies')
 }
 

@@ -30,7 +30,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
 import valkyrienwarfare.addon.world.block.BlockEthereumOre;
 import valkyrienwarfare.addon.world.capability.AntiGravityCapabilityProvider;
-import valkyrienwarfare.mod.common.util.PhysicsSettings;
+import valkyrienwarfare.mod.common.config.VWConfig;
 
 public class WorldEventsCommon {
 
@@ -73,7 +73,7 @@ public class WorldEventsCommon {
             //TODO: fix the fall damage
             // @thebest108: what fall damage?
             //                    --DaPorkchop_, 28/03/2017
-            if (PhysicsSettings.doEtheriumLifting) {
+            if (VWConfig.doEthereumLifting) {
                 if (!player.isCreative()) {
                     for (NonNullList<ItemStack> stackArray : player.inventory.allInventories) {
                         for (ItemStack stack : stackArray) {

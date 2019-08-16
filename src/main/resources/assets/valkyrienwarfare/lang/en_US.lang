@@ -13,3 +13,6 @@ gui.enable_physics=Enable Physics
 gui.disable_physics=Disable Physics
 gui.align_ship=Align Ship
 gui.stop_align_ship=Stop Alignment
+## Commands
+commands.valkyrienwarfare.list-ships.noships=This world contains no ships!
+commands.valkyrienwarfare.list-ships.ships=This world contains the following ships:\n %s

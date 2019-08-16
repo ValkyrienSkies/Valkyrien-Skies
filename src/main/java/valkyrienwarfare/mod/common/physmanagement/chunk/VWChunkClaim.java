@@ -19,17 +19,27 @@ package valkyrienwarfare.mod.common.physmanagement.chunk;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 
+import java.io.Serializable;
+
 /**
  * This stores the chunk claims for a PhysicsObject; not the chunks themselves
  *
  * @author thebest108
  */
-public class VWChunkClaim {
+public class VWChunkClaim implements Serializable {
 
     public final boolean[][] chunkOccupiedInLocal;
     private final int centerX;
     private final int centerZ;
     private final int radius;
+
+    // For Kryo
+    private VWChunkClaim() {
+        radius = 0;
+        centerX = 0;
+        centerZ = 0;
+        chunkOccupiedInLocal = null;
+    }
 
     public VWChunkClaim(int x, int z, int size) {
         this.centerX = x;

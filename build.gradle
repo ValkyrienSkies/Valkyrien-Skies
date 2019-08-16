@@ -90,6 +90,11 @@ repositories {
     mavenCentral()
 }
 
+compileJava {
+    sourceCompatibility = "1.8"
+    targetCompatibility = "1.8"
+}
+
 dependencies {
     // mixin needs to be distributed with the mod, very important
     compile("org.spongepowered:mixin:0.7.5-SNAPSHOT") {
@@ -104,6 +109,21 @@ dependencies {
     compile 'net.daporkchop.lib:primitive:0.0.5'
     compile 'gigaherz.graph:GraphLib:1.4.0'
     compile 'valkyrienwarfare:api:1.0'
+
+    // Kryo for serialization
+    compile group: 'com.esotericsoftware', name: 'kryo', version: '5.0.0-RC4'
+
+    // Contains UUID serializer
+    compile 'de.javakaffee:kryo-serializers:0.45'
+
+    // CQEngine for in-memory nonpersistent database
+    compile 'com.googlecode.cqengine:cqengine:3.4.0'
+
+    // Guice Injector (included already, but this is an explicity declaration of the dependency)
+    compile group: 'com.google.inject', name: 'guice', version: '4.2.2'
+
+    // Include all dependencies in the /dependencies folder
+    compile fileTree(include: ['*.jar'], dir: 'dependencies')
 }
 
 processResources {
@@ -192,7 +212,7 @@ jar {
         )
     }
 }
-sourceCompatibility = targetCompatibility = "1.8"
+
 
 task signJar(type: SignJar, dependsOn: shadowJar) {
     onlyIf { // Skip the task if our secret data isn't available

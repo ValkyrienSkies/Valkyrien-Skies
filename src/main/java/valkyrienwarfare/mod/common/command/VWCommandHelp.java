@@ -23,14 +23,16 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import valkyrienwarfare.mod.common.multithreaded.VWThread;
-import valkyrienwarfare.mod.common.physmanagement.interaction.ShipNameUUIDData;
-import valkyrienwarfare.mod.common.physmanagement.interaction.ShipUUIDToPosData;
+import valkyrienwarfare.mod.common.physmanagement.interaction.*;
 import valkyrienwarfare.mod.common.ship_handling.IHasShipManager;
 import valkyrienwarfare.mod.common.ship_handling.WorldServerShipManager;
 
+import javax.management.Query;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class VWCommandHelp extends CommandBase {
 
@@ -71,36 +73,33 @@ public class VWCommandHelp extends CommandBase {
                 sender.sendMessage(new TextComponentString("Player world: " + ticksPerSecondTwoDecimals + " physics ticks per second"));
             }
         } else if (args[0].toLowerCase().equals("listships")) {
-            ShipNameUUIDData shipData = ShipNameUUIDData.get(sender.getEntityWorld());
-            String delimitedListOfAllShipNames = String.join("\n", shipData.shipNameToLongMap.keySet());
-            sender.sendMessage(new TextComponentString(delimitedListOfAllShipNames));
+            String shipNames = QueryableShipData.get(sender.getEntityWorld())
+                    .getShips()
+                    .stream()
+                    .map(ShipData::getName)
+                    .collect(Collectors.joining("\n"));
+
+            sender.sendMessage(new TextComponentString(shipNames));
         } else if (args[0].toLowerCase().equals("getshiplocation")) {
             if (args.length == 1) {
                 sender.sendMessage(new TextComponentString("Please include a ship name! /vw getshiplocation <shipname>"));
                 return;
             }
             World world = sender.getEntityWorld();
-            ShipNameUUIDData shipData = ShipNameUUIDData.get(world);
-            Long shipUUID = shipData.shipNameToLongMap.get(
-                    // Combine remaining arguments
-                    String.join("", Arrays.copyOfRange(args, 1, args.length))
-            );
-
-            if (shipUUID == null) {
-                sender.sendMessage(new TextComponentString("Invalid ship name!"));
-                return;
+            Optional<ShipData> shipOptional = QueryableShipData.get(world).getShipFromName(args[2]);
+            if (!shipOptional.isPresent()) {
+                sender.sendMessage(new TextComponentString("That's not a ship!"));
+            } else {
+                ShipPositionData shipPos = shipOptional.get().positionData;
+                sender.sendMessage(new TextComponentString(
+                        String.format(
+                                "Coordinates: %.1f, %.1f, %.1f",
+                                shipPos.getPosX(),
+                                shipPos.getPosY(),
+                                shipPos.getPosZ()
+                        )
+                ));
             }
-
-            ShipUUIDToPosData shipPosData = ShipUUIDToPosData.getShipUUIDDataForWorld(sender.getEntityWorld());
-            ShipUUIDToPosData.ShipPositionData shipPos = shipPosData.getShipPositionData(shipUUID);
-            sender.sendMessage(new TextComponentString(
-                    String.format(
-                            "Coordinates: %.1f, %.1f, %.1f",
-                            shipPos.getPosX(),
-                            shipPos.getPosY(),
-                            shipPos.getPosZ()
-                    )
-            ));
         } else if (args[0].toLowerCase().equals("help")) {
             sender.sendMessage(new TextComponentString("VW sub commands:"));
             sender.sendMessage(new TextComponentString("/vw tps"));

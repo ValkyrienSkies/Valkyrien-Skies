@@ -318,12 +318,12 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
 
     @Intrinsic(displace = true)
     public Iterator<Chunk> vw$getPersistentChunkIterable(Iterator<Chunk> chunkIterator) {
-        ArrayList<Chunk> persistantChunks = new ArrayList<Chunk>();
+        ArrayList<Chunk> persistentChunks = new ArrayList<Chunk>();
         while (chunkIterator.hasNext()) {
             Chunk chunk = chunkIterator.next();
-            persistantChunks.add(chunk);
+            persistentChunks.add(chunk);
         }
-        Iterator<Chunk> replacementIterator = persistantChunks.iterator();
+        Iterator<Chunk> replacementIterator = persistentChunks.iterator();
 
         return getPersistentChunkIterable(replacementIterator);
     }

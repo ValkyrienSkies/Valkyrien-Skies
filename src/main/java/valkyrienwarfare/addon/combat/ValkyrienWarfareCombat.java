@@ -115,9 +115,4 @@ public class ValkyrienWarfareCombat extends Module {
         registerRecipe(event, "recipe_cannon_ball", new ItemStack(cannonBall, 4), "II ", "II ", "   ", 'I', Items.IRON_INGOT);
         registerRecipe(event, "recipe_powder_pouch", new ItemStack(powderPouch, 4), " S ", "SGS", " S ", 'S', Items.STRING, 'G', Items.GUNPOWDER);
     }
-
-    @Override
-    public void applyConfig(Configuration config) {
-
-    }
 }

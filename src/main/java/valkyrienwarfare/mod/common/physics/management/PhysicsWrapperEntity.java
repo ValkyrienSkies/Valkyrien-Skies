@@ -34,7 +34,7 @@ import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.common.capability.IAirshipCounterCapability;
 import valkyrienwarfare.mod.common.math.Vector;
 import valkyrienwarfare.mod.common.physics.collision.polygons.Polygon;
-import valkyrienwarfare.mod.common.physmanagement.interaction.ShipNameUUIDData;
+import valkyrienwarfare.mod.common.physmanagement.interaction.QueryableShipData;
 import valkyrienwarfare.mod.common.tileentity.TileEntityPhysicsInfuser;
 
 import javax.annotation.Nullable;
@@ -84,11 +84,12 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
         getPhysicsObject().assembleShipAsOrderedByPlayer(creator);
 
 
-        ShipNameUUIDData.get(worldIn).placeShipInRegistry(this, getCustomNameTag());
+        QueryableShipData.get(world).addShip(this);
     }
 
     public PhysicsWrapperEntity(TileEntityPhysicsInfuser te) {
         this(te.getWorld());
+
         posX = te.getPos()
                 .getX();
         posY = te.getPos()
@@ -105,8 +106,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
         this.physicsObject.setPhysicsInfuserPos(te.getPos());
         getPhysicsObject().assembleShipAsOrderedByPlayer(null);
 
-        ShipNameUUIDData.get(te.getWorld())
-                .placeShipInRegistry(this, getCustomNameTag());
+        QueryableShipData.get(world).addShip(this);
     }
 
     @Override
@@ -157,15 +157,17 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 
     @Override
     public void setCustomNameTag(String name) {
-        if (name.equals(""))
-            throw new IllegalStateException("Why is this object's custom name tag empty???");
-
         if (world.isRemote) {
             super.setCustomNameTag(name);
+        } else if (this.getCustomNameTag().equals("")) {
+            //throw new IllegalStateException("Why is this object's custom name tag empty???");
+            return;
         } else {
             // Update the name registry
-            boolean didRenameSuccessfully = ShipNameUUIDData.get(world)
-                    .renameShipInRegistry(this, name, getCustomNameTag());
+            QueryableShipData data = QueryableShipData.get(world);
+
+            // bad practice: fix?
+            boolean didRenameSuccessfully = data.renameShip(data.getShip(this).get(), name);
 
             if (didRenameSuccessfully) {
                 super.setCustomNameTag(name);

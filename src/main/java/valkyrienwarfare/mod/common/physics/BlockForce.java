@@ -34,7 +34,7 @@ public class BlockForce {
         Block block = state.getBlock();
         if (block instanceof IBlockForceProvider) {
             Vector forceVector = ((IBlockForceProvider) block).getBlockForceInWorldSpace(world, pos, state,
-                    obj.getWrapperEntity(), secondsToApply);
+                    obj, secondsToApply);
             if (forceVector == null) {
                 toSet.zero();
             } else {

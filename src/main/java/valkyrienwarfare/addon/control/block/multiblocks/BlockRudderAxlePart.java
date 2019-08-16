@@ -4,14 +4,13 @@ import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import valkyrienwarfare.deprecated_api.IBlockForceProvider;
 import valkyrienwarfare.mod.common.math.Vector;
-import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 
 import java.util.Optional;
 
@@ -55,11 +54,11 @@ public class BlockRudderAxlePart extends Block implements ITileEntityProvider, I
     }
 
     @Override
-    public Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state, Entity shipEntity,
+    public Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state, PhysicsObject physicsObject,
                                            double secondsToApply) {
         if (world.getTileEntity(pos) instanceof TileEntityRudderAxlePart) {
             TileEntityRudderAxlePart tileEntity = (TileEntityRudderAxlePart) world.getTileEntity(pos);
-            Vector forceBeforeTimeScale = tileEntity.calculateForceFromVelocity(((PhysicsWrapperEntity) shipEntity).getPhysicsObject());
+            Vector forceBeforeTimeScale = tileEntity.calculateForceFromVelocity(physicsObject);
             if (forceBeforeTimeScale != null && forceBeforeTimeScale.lengthSq() > 1) {
                 // System.out.println(forceBeforeTimeScale.toRoundedString());
                 return forceBeforeTimeScale.getProduct(secondsToApply);
@@ -72,7 +71,7 @@ public class BlockRudderAxlePart extends Block implements ITileEntityProvider, I
     }
 
     @Override
-    public Vector getCustomBlockForcePosition(World world, BlockPos pos, IBlockState state, Entity shipEntity,
+    public Vector getCustomBlockForcePosition(World world, BlockPos pos, IBlockState state, PhysicsObject physicsObject,
                                               double secondsToApply) {
         if (world.getTileEntity(pos) instanceof TileEntityRudderAxlePart) {
             TileEntityRudderAxlePart tileEntity = (TileEntityRudderAxlePart) world.getTileEntity(pos);

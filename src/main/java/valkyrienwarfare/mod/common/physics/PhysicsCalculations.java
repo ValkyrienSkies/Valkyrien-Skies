@@ -365,7 +365,7 @@ public class PhysicsCalculations {
                                 getParent(), blockForce);
                         if (blockForce != null) {
                             Vector otherPosition = ((IBlockForceProvider) blockAt).getCustomBlockForcePosition(worldObj,
-                                    pos, state, getParent().getWrapperEntity(), getPhysicsTimeDeltaPerPhysTick());
+                                    pos, state, getParent(), getPhysicsTimeDeltaPerPhysTick());
                             if (otherPosition != null) {
                                 // This changes the values of the inBodyWO vector
                                 VWMath.getBodyPosWithOrientation(otherPosition, gameTickCenterOfMass,

@@ -4,14 +4,13 @@ import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import valkyrienwarfare.deprecated_api.IBlockForceProvider;
 import valkyrienwarfare.mod.common.math.Vector;
-import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 
 import javax.annotation.Nullable;
 
@@ -23,14 +22,14 @@ public class BlockGiantPropellerPart extends Block implements ITileEntityProvide
 
     @Nullable
     @Override
-    public Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state, Entity shipEntity, double secondsToApply) {
+    public Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state, PhysicsObject physicsObject, double secondsToApply) {
         if (true) {
 //            return new Vector(0, 1000 * secondsToApply, 0);
         }
         TileEntity tileEntity = world.getTileEntity(pos);
         if (tileEntity instanceof TileEntityGiantPropellerPart) {
             TileEntityGiantPropellerPart tileCompressorPart = (TileEntityGiantPropellerPart) tileEntity;
-            return tileCompressorPart.getForceOutputUnoriented(secondsToApply, ((PhysicsWrapperEntity) shipEntity).getPhysicsObject());
+            return tileCompressorPart.getForceOutputUnoriented(secondsToApply, physicsObject);
         }
         return null;
     }

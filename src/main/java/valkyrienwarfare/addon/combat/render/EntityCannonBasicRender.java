@@ -27,24 +27,23 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 import valkyrienwarfare.addon.combat.ValkyrienWarfareCombat;
 import valkyrienwarfare.addon.combat.entity.EntityCannonBasic;
-import valkyrienwarfare.deprecated_api.IRenderVW;
 import valkyrienwarfare.mod.client.render.FastBlockModelRenderer;
 
-public class EntityCannonBasicRender extends Render<EntityCannonBasic> implements IRenderVW {
+public class EntityCannonBasicRender extends Render<EntityCannonBasic> {
 
-    public static IRenderVW instance;
     private IBlockState baseState, headState;
-
-    {
-        instance = this;
-    }
 
     protected EntityCannonBasicRender(RenderManager renderManager) {
         super(renderManager);
+        this.baseState = this.headState = null;
     }
 
     @Override
     public void doRender(EntityCannonBasic entity, double x, double y, double z, float entityYaw, float partialTicks) {
+        if (this.baseState == null) {
+            baseState = ValkyrienWarfareCombat.INSTANCE.fakecannonblock.getStateFromMeta(0);
+            headState = ValkyrienWarfareCombat.INSTANCE.fakecannonblock.getStateFromMeta(1);
+        }
         float paritalTickYaw = entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks;
         float paritalTickPitch = entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks;
 
@@ -134,9 +133,4 @@ public class EntityCannonBasicRender extends Render<EntityCannonBasic> implement
         return null;
     }
 
-    @Override
-    public void cacheStates() {
-        baseState = ValkyrienWarfareCombat.INSTANCE.fakecannonblock.getStateFromMeta(0);
-        headState = ValkyrienWarfareCombat.INSTANCE.fakecannonblock.getStateFromMeta(1);
-    }
 }

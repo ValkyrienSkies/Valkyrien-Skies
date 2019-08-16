@@ -23,8 +23,9 @@ import li.cil.oc.api.network.SimpleComponent;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.Optional;
-import valkyrienwarfare.deprecated_api.ValkyrienWarfareHooks;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.util.ValkyrienUtils;
 
 @Optional.Interface(iface = "li.cil.oc.api.network.SimpleComponent", modid = "opencomputers")
 public class GPSTileEntity extends TileEntity implements SimpleComponent {
@@ -41,8 +42,11 @@ public class GPSTileEntity extends TileEntity implements SimpleComponent {
     @Callback
     @Optional.Method(modid = "opencomputers")
     public Object[] getPosition(Context context, Arguments args) {
-        if (ValkyrienWarfareHooks.isBlockPartOfShip(world, pos)) {
-            BlockPos pos = ValkyrienWarfareHooks.getShipEntityManagingPos(getWorld(), getPos()).getPosition();
+        java.util.Optional<PhysicsObject> physicsObjectOptional = ValkyrienUtils.getPhysicsObject(getWorld(), getPos());
+        if (physicsObjectOptional.isPresent()) {
+            BlockPos pos = physicsObjectOptional.get()
+                    .getWrapperEntity()
+                    .getPosition();
             return new Object[]{pos.getX(), pos.getY(), pos.getZ()};
         }
         return null;
@@ -51,8 +55,10 @@ public class GPSTileEntity extends TileEntity implements SimpleComponent {
     @Callback
     @Optional.Method(modid = "opencomputers")
     public Object[] getRotation(Context context, Arguments args) {
-        if (ValkyrienWarfareHooks.isBlockPartOfShip(world, pos)) {
-            PhysicsWrapperEntity ship = ValkyrienWarfareHooks.getShipEntityManagingPos(getWorld(), getPos());
+        java.util.Optional<PhysicsObject> physicsObjectOptional = ValkyrienUtils.getPhysicsObject(getWorld(), getPos());
+        if (physicsObjectOptional.isPresent()) {
+            PhysicsWrapperEntity ship = physicsObjectOptional.get()
+                    .getWrapperEntity();
             return new Object[]{ship.getYaw(), ship.getPitch(), ship.getRoll()};
         }
         return null;

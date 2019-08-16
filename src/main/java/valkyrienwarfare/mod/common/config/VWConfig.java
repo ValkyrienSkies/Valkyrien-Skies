@@ -54,7 +54,7 @@ public class VWConfig {
 
 	public static double gravityVecX = 0D;
 
-	public static double gravityVecY = 9.8D;
+	public static double gravityVecY = -9.8D;
 
 	public static double gravityVecZ = 0D;
 

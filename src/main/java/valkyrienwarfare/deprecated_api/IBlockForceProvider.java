@@ -17,11 +17,12 @@
 package valkyrienwarfare.deprecated_api;
 
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import valkyrienwarfare.mod.common.math.RotationMatrices;
+import valkyrienwarfare.api.TransformType;
+import valkyrienwarfare.mod.common.coordinates.ShipTransform;
 import valkyrienwarfare.mod.common.math.Vector;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 
 import javax.annotation.Nullable;
 
@@ -34,20 +35,21 @@ public interface IBlockForceProvider {
      * @param world
      * @param pos
      * @param state
-     * @param shipEntity
+     * @param physicsObject
      * @param secondsToApply
      * @return
      */
     @Nullable
-    default Vector getBlockForceInWorldSpace(World world, BlockPos pos, IBlockState state, Entity shipEntity,
+    default Vector getBlockForceInWorldSpace(World world, BlockPos pos, IBlockState state, PhysicsObject physicsObject,
                                              double secondsToApply) {
-        Vector toReturn = getBlockForceInShipSpace(world, pos, state, shipEntity, secondsToApply);
-        if (toReturn == null || shipEntity == null) {
+        Vector toReturn = getBlockForceInShipSpace(world, pos, state, physicsObject, secondsToApply);
+        if (toReturn == null) {
             return null;
         }
         if (shouldLocalForceBeRotated(world, pos, state, secondsToApply)) {
-            double[] tranformationMatrix = ValkyrienWarfareHooks.getShipTransformMatrix(shipEntity);
-            RotationMatrices.doRotationOnly(tranformationMatrix, toReturn);
+            ShipTransform shipTransform = physicsObject.getShipTransformationManager()
+                    .getCurrentTickTransform();
+            shipTransform.rotate(toReturn, TransformType.SUBSPACE_TO_GLOBAL);
         }
         return toReturn;
     }
@@ -62,12 +64,12 @@ public interface IBlockForceProvider {
      * @param world
      * @param pos
      * @param state
-     * @param shipEntity
+     * @param physicsObject
      * @param secondsToApply
      * @return
      */
     @Nullable
-    Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state, Entity shipEntity,
+    Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state, PhysicsObject physicsObject,
                                     double secondsToApply);
 
     /**
@@ -89,12 +91,12 @@ public interface IBlockForceProvider {
      * @param world
      * @param pos
      * @param state
-     * @param shipEntity
+     * @param physicsObject
      * @param secondsToApply
      * @return
      */
     @Nullable
-    default Vector getCustomBlockForcePosition(World world, BlockPos pos, IBlockState state, Entity shipEntity,
+    default Vector getCustomBlockForcePosition(World world, BlockPos pos, IBlockState state, PhysicsObject physicsObject,
                                                double secondsToApply) {
         return null;
     }

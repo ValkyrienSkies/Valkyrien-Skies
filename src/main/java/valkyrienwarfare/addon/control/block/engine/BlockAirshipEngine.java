@@ -22,7 +22,6 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
@@ -33,7 +32,7 @@ import net.minecraft.world.World;
 import valkyrienwarfare.addon.control.tileentity.TileEntityPropellerEngine;
 import valkyrienwarfare.deprecated_api.IBlockForceProvider;
 import valkyrienwarfare.mod.common.math.Vector;
-import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 
 /**
  * All engines should extend this class, that way other kinds of engines can be made without making tons of new classes for them. Only engines that add new functionality should have their own class.
@@ -71,7 +70,7 @@ public abstract class BlockAirshipEngine extends Block implements IBlockForcePro
     }
 
     @Override
-    public Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state, Entity shipEntity, double secondsToApply) {
+    public Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state, PhysicsObject physicsObject, double secondsToApply) {
         Vector acting = new Vector(0, 0, 0);
         if (!world.isBlockPowered(pos)) {
             return acting;
@@ -80,10 +79,10 @@ public abstract class BlockAirshipEngine extends Block implements IBlockForcePro
         TileEntity tileEntity = world.getTileEntity(pos);
         if (tileEntity instanceof TileEntityPropellerEngine) {
             //Just set the Thrust to be the maximum
-            ((TileEntityPropellerEngine) tileEntity).setThrustMultiplierGoal(this.getEnginePower(world, pos, state, shipEntity));
+            ((TileEntityPropellerEngine) tileEntity).setThrustMultiplierGoal(this.getEnginePower(world, pos, state, physicsObject));
             ((TileEntityPropellerEngine) tileEntity).updateTicksSinceLastRecievedSignal();
             ((TileEntityPropellerEngine) tileEntity).setThrustMultiplierGoal(1D);
-            return ((TileEntityPropellerEngine) tileEntity).getForceOutputUnoriented(secondsToApply, ((PhysicsWrapperEntity) shipEntity).getPhysicsObject());
+            return ((TileEntityPropellerEngine) tileEntity).getForceOutputUnoriented(secondsToApply, physicsObject);
         }
 
         return acting;
@@ -114,7 +113,7 @@ public abstract class BlockAirshipEngine extends Block implements IBlockForcePro
      *
      * @return
      */
-    public double getEnginePower(World world, BlockPos pos, IBlockState state, Entity shipEntity) {
+    public double getEnginePower(World world, BlockPos pos, IBlockState state, PhysicsObject physicsObject) {
         return this.enginePower;
     }
 

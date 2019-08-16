@@ -102,7 +102,7 @@ public class PhysicsCalculations {
     public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos pos) {
         World worldObj = getParent().getWorldObj();
         if (!newState.equals(oldState)) {
-            if (BlockForce.basicForces.isBlockProvidingForce(newState, pos, worldObj)) {
+            if (BlockPhysicsDetails.isBlockProvidingForce(newState, pos, worldObj)) {
                 activeForcePositions.add(pos);
             } else {
                 activeForcePositions.remove(pos);
@@ -361,7 +361,7 @@ public class PhysicsCalculations {
                     try {
                         VWMath.getBodyPosWithOrientation(pos, physCenterOfMass, getParent().getShipTransformationManager()
                                 .getCurrentPhysicsTransform().getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL), inBodyWO);
-                        BlockForce.basicForces.getForceFromState(state, pos, worldObj, getPhysicsTimeDeltaPerPhysTick(),
+                        BlockPhysicsDetails.getForceFromState(state, pos, worldObj, getPhysicsTimeDeltaPerPhysTick(),
                                 getParent(), blockForce);
                         if (blockForce != null) {
                             Vector otherPosition = ((IBlockForceProvider) blockAt).getCustomBlockForcePosition(worldObj,

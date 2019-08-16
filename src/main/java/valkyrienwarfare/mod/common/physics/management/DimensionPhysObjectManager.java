@@ -18,6 +18,7 @@ package valkyrienwarfare.mod.common.physics.management;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
+import valkyrienwarfare.mod.common.entity.PhysicsWrapperEntity;
 
 import java.util.HashMap;
 import java.util.Map;

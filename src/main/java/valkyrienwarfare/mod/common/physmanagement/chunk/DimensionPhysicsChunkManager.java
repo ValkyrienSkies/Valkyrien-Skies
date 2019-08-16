@@ -17,8 +17,9 @@
 package valkyrienwarfare.mod.common.physmanagement.chunk;
 
 import net.minecraft.world.World;
-import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
-import valkyrienwarfare.mod.common.physmanagement.interaction.*;
+import valkyrienwarfare.mod.common.entity.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.physmanagement.interaction.QueryableShipData;
+import valkyrienwarfare.mod.common.physmanagement.interaction.ShipPositionData;
 
 import java.util.HashMap;
 import java.util.Map;

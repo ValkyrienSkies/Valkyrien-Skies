@@ -34,7 +34,6 @@ import valkyrienwarfare.addon.control.block.BlockShipPilotsChair;
 import valkyrienwarfare.addon.control.block.BlockShipTelegraph;
 import valkyrienwarfare.addon.control.block.BlockShipWheel;
 import valkyrienwarfare.addon.control.block.BlockTelegraphDummy;
-import valkyrienwarfare.addon.control.block.BlockThrustModulator;
 import valkyrienwarfare.addon.control.block.BlockThrustRelay;
 import valkyrienwarfare.addon.control.block.engine.BlockNormalEngine;
 import valkyrienwarfare.addon.control.block.engine.BlockRedstoneEngine;
@@ -60,7 +59,6 @@ public class BlocksValkyrienWarfareControl {
     public final Block shipTelegraph;
     public final Block shipTelegraphDummy;
     public final Block thrustRelay;
-    public final Block thrustModulator;
     public final Block gyroscopeStabilizer;
     public final Block liftValve;
     public final Block networkDisplay;
@@ -126,10 +124,6 @@ public class BlocksValkyrienWarfareControl {
         thrustRelay = new BlockThrustRelay(Material.IRON).setHardness(5f)
                 .setTranslationKey("thrustrelay")
                 .setRegistryName(getModID(), "thrustrelay")
-                .setCreativeTab(ValkyrienWarfareMod.vwTab);
-        thrustModulator = new BlockThrustModulator(Material.IRON).setHardness(8f)
-                .setTranslationKey("thrustmodulator")
-                .setRegistryName(getModID(), "thrustmodulator")
                 .setCreativeTab(ValkyrienWarfareMod.vwTab);
 
         gyroscopeStabilizer = new BlockGyroscopeStabilizer(Material.IRON).setHardness(5f)
@@ -199,7 +193,6 @@ public class BlocksValkyrienWarfareControl {
         event.getRegistry().register(shipWheel);
         event.getRegistry().register(shipTelegraph);
         event.getRegistry().register(thrustRelay);
-        event.getRegistry().register(thrustModulator);
 
         event.getRegistry().register(gyroscopeStabilizer);
         event.getRegistry().register(liftValve);
@@ -231,7 +224,6 @@ public class BlocksValkyrienWarfareControl {
         registerItemBlock(event, shipWheel);
         registerItemBlock(event, shipTelegraph);
         registerItemBlock(event, thrustRelay);
-        registerItemBlock(event, thrustModulator);
 
         registerItemBlock(event, gyroscopeStabilizer);
         registerItemBlock(event, liftValve);

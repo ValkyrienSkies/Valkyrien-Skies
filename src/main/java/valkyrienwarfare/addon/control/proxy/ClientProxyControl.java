@@ -33,7 +33,6 @@ import valkyrienwarfare.addon.control.block.multiblocks.TileEntityEthereumEngine
 import valkyrienwarfare.addon.control.block.multiblocks.TileEntityGiantPropellerPart;
 import valkyrienwarfare.addon.control.block.multiblocks.TileEntityRudderAxlePart;
 import valkyrienwarfare.addon.control.block.torque.TileEntityRotationTrainAxle;
-import valkyrienwarfare.addon.control.controlsystems.controlgui.ThrustModulatorGui;
 import valkyrienwarfare.addon.control.renderer.BasicNodeTileEntityRenderer;
 import valkyrienwarfare.addon.control.renderer.EthereumCompressorPartTileEntityRenderer;
 import valkyrienwarfare.addon.control.renderer.EthereumEnginePartTileEntityRenderer;
@@ -51,7 +50,6 @@ import valkyrienwarfare.addon.control.tileentity.TileEntityNodeRelay;
 import valkyrienwarfare.addon.control.tileentity.TileEntityPropellerEngine;
 import valkyrienwarfare.addon.control.tileentity.TileEntityShipHelm;
 import valkyrienwarfare.addon.control.tileentity.TileEntityShipTelegraph;
-import valkyrienwarfare.addon.control.tileentity.TileEntityThrustModulator;
 import valkyrienwarfare.mod.client.render.GibsAnimationRegistry;
 import valkyrienwarfare.mod.client.render.GibsModelRegistry;
 
@@ -88,7 +86,6 @@ public class ClientProxyControl extends CommonProxyControl {
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipTelegraph);
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.dopedEthereum);
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.thrustRelay);
-        registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.thrustModulator);
 
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.gyroscopeStabilizer);
         registerBlockItem(ValkyrienWarfareControl.INSTANCE.vwControlBlocks.liftValve);
@@ -123,13 +120,6 @@ public class ClientProxyControl extends CommonProxyControl {
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRudderAxlePart.class, new RudderAxlePartTileEntityRenderer());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityGiantPropellerPart.class, new GiantPropellerPartTileEntityRenderer());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRotationTrainAxle.class, new RotationTrainAxleTileEntityRenderer());
-    }
-
-    public static void checkForTextFieldUpdate(TileEntityThrustModulator entity) {
-        if (Minecraft.getMinecraft().currentScreen instanceof ThrustModulatorGui) {
-            ThrustModulatorGui gui = (ThrustModulatorGui) Minecraft.getMinecraft().currentScreen;
-            gui.updateTextFields();
-        }
     }
 
     @Override

@@ -1,9 +1,9 @@
 package valkyrienwarfare.mod.common.physmanagement.interaction;
 
 import valkyrienwarfare.api.TransformType;
+import valkyrienwarfare.mod.common.entity.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.common.math.RotationMatrices;
 import valkyrienwarfare.mod.common.math.Vector;
-import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 
 import java.nio.ByteBuffer;
 

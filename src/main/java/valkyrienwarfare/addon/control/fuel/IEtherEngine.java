@@ -18,7 +18,7 @@ package valkyrienwarfare.addon.control.fuel;
 
 public interface IEtherEngine {
 
-    public static final double MAX_THRUST_HEIGHT = 500;
+    double MAX_THRUST_HEIGHT = 500;
 
     /**
      * The behavior of this efficiency curve is designed to act the same as a spring

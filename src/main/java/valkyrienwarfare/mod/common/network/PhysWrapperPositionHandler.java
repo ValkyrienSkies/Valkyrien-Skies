@@ -22,7 +22,7 @@ import net.minecraft.util.IThreadListener;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.entity.PhysicsWrapperEntity;
 
 public class PhysWrapperPositionHandler implements IMessageHandler<PhysWrapperPositionMessage, IMessage> {
 

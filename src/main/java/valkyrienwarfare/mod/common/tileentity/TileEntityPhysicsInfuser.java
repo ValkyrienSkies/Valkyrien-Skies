@@ -25,9 +25,9 @@ import valkyrienwarfare.mod.client.gui.IVWTileGui;
 import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.common.block.BlockPhysicsInfuser;
 import valkyrienwarfare.mod.common.container.EnumInfuserButton;
+import valkyrienwarfare.mod.common.entity.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.common.network.VWGuiButtonMessage;
 import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
-import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.common.physmanagement.chunk.PhysicsChunkManager;
 import valkyrienwarfare.mod.common.util.ValkyrienUtils;
 

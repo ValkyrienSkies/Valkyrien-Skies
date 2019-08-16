@@ -17,7 +17,7 @@
 package valkyrienwarfare.addon.control.piloting;
 
 import net.minecraft.util.math.BlockPos;
-import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.entity.PhysicsWrapperEntity;
 
 /**
  * Todo: Convert to a forge capability.

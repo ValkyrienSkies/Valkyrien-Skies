@@ -18,6 +18,7 @@ package valkyrienwarfare.mod.common.physics.management;
 
 import net.minecraft.world.World;
 import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
+import valkyrienwarfare.mod.common.entity.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.common.multithreaded.PhysicsShipTransform;
 import valkyrienwarfare.mod.common.physmanagement.interaction.EntityDraggable;
 

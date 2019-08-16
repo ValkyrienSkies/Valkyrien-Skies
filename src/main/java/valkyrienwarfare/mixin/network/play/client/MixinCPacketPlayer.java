@@ -14,8 +14,8 @@ import valkyrienwarfare.mod.common.coordinates.ISubspace;
 import valkyrienwarfare.mod.common.coordinates.ISubspacedEntity;
 import valkyrienwarfare.mod.common.coordinates.ISubspacedEntityRecord;
 import valkyrienwarfare.mod.common.coordinates.VectorImmutable;
+import valkyrienwarfare.mod.common.entity.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.common.math.VWMath;
-import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.common.physmanagement.interaction.IDraggable;
 
 @Mixin(CPacketPlayer.class)

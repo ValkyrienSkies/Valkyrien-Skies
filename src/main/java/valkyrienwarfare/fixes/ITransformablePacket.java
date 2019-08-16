@@ -10,8 +10,8 @@ import valkyrienwarfare.mod.common.coordinates.ISubspace;
 import valkyrienwarfare.mod.common.coordinates.ISubspaceProvider;
 import valkyrienwarfare.mod.common.coordinates.ISubspacedEntity;
 import valkyrienwarfare.mod.common.coordinates.ISubspacedEntityRecord;
+import valkyrienwarfare.mod.common.entity.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.common.math.RotationMatrices;
-import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 
 /**
  * Used to indicate when a packet must be transformed into ship space to work

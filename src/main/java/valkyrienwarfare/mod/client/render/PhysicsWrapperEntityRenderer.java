@@ -14,16 +14,28 @@
  *
  */
 
-package valkyrienwarfare.addon.world.block;
+package valkyrienwarfare.mod.client.render;
 
-import net.minecraft.block.BlockFence;
-import net.minecraft.block.material.MapColor;
-import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.util.ResourceLocation;
+import valkyrienwarfare.mod.common.entity.PhysicsWrapperEntity;
 
-public class BlockQuartzFence extends BlockFence {
+/**
+ * This class is the default MC way of rendering ships. Nothing renders here on purpose.
+ *
+ * @author thebest108
+ */
+public class PhysicsWrapperEntityRenderer extends Render<PhysicsWrapperEntity> {
 
-    public BlockQuartzFence(Material materialIn) {
-        super(materialIn, MapColor.QUARTZ);
+    public PhysicsWrapperEntityRenderer(RenderManager renderManager) {
+        super(renderManager);
+    }
+
+    @Override
+    protected ResourceLocation getEntityTexture(PhysicsWrapperEntity entity) {
+        return TextureMap.LOCATION_BLOCKS_TEXTURE;
     }
 
 }

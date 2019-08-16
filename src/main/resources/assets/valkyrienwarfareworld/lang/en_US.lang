@@ -1,8 +1,5 @@
 #ITEMS
 item.ethereumcrystal.name=Valkyrium Crystal
-item.explosivearrow.name=Explosive Arrow
 
 #BLOCKS
 tile.ethereumore.name=Valkyrium Ore
-tile.skydungeon_controller.name=SkyDungeon Controller
-tile.quartz_fence.name=Quartz Fence

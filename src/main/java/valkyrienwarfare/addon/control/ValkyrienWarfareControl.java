@@ -26,7 +26,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
@@ -55,8 +54,6 @@ import valkyrienwarfare.addon.control.network.MessageStartPiloting;
 import valkyrienwarfare.addon.control.network.MessageStartPilotingHandler;
 import valkyrienwarfare.addon.control.network.MessageStopPiloting;
 import valkyrienwarfare.addon.control.network.MessageStopPilotingHandler;
-import valkyrienwarfare.addon.control.network.ThrustModulatorGuiInputHandler;
-import valkyrienwarfare.addon.control.network.ThrustModulatorGuiInputMessage;
 import valkyrienwarfare.addon.control.piloting.PilotControlsMessage;
 import valkyrienwarfare.addon.control.piloting.PilotControlsMessageHandler;
 import valkyrienwarfare.addon.control.proxy.ClientProxyControl;
@@ -73,7 +70,6 @@ import valkyrienwarfare.addon.control.tileentity.TileEntityPilotsChair;
 import valkyrienwarfare.addon.control.tileentity.TileEntityPropellerEngine;
 import valkyrienwarfare.addon.control.tileentity.TileEntityShipHelm;
 import valkyrienwarfare.addon.control.tileentity.TileEntityShipTelegraph;
-import valkyrienwarfare.addon.control.tileentity.TileEntityThrustModulator;
 import valkyrienwarfare.addon.world.ValkyrienWarfareWorld;
 import valkyrienwarfare.api.addons.Module;
 import valkyrienwarfare.api.addons.VWAddon;
@@ -123,7 +119,6 @@ public class ValkyrienWarfareControl extends Module {
     protected void registerTileEntities() {
         GameRegistry.registerTileEntity(TileEntityPilotsChair.class, "tilemanualshipcontroller");
         GameRegistry.registerTileEntity(TileEntityNodeRelay.class, "tilethrustrelay");
-        GameRegistry.registerTileEntity(TileEntityThrustModulator.class, "tilethrustmodulator");
         GameRegistry.registerTileEntity(TileEntityShipHelm.class, "tileshiphelm");
         GameRegistry.registerTileEntity(TileEntityShipTelegraph.class, "tileshiptelegraph");
         GameRegistry.registerTileEntity(TileEntityPropellerEngine.class, "tilepropellerengine");
@@ -182,7 +177,6 @@ public class ValkyrienWarfareControl extends Module {
         controlNetwork.registerMessage(MessageStartPilotingHandler.class, MessageStartPiloting.class, 3, Side.CLIENT);
         controlNetwork.registerMessage(MessageStopPilotingHandler.class, MessageStopPiloting.class, 4, Side.CLIENT);
         controlNetwork.registerMessage(MessagePlayerStoppedPilotingHandler.class, MessagePlayerStoppedPiloting.class, 5, Side.SERVER);
-        controlNetwork.registerMessage(ThrustModulatorGuiInputHandler.class, ThrustModulatorGuiInputMessage.class, 6, Side.SERVER);
     }
 
     @Override

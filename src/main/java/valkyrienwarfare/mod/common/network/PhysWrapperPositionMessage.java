@@ -19,10 +19,10 @@ package valkyrienwarfare.mod.common.network;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import valkyrienwarfare.mod.common.entity.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.common.math.Vector;
 import valkyrienwarfare.mod.common.multithreaded.PhysicsShipTransform;
 import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
-import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 
 /**
  * This IMessage sends all the position rotation data of a PhysicsObject from

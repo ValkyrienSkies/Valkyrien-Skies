@@ -14,40 +14,18 @@
  *
  */
 
-package valkyrienwarfare.mod.common.physics;
+package valkyrienwarfare.mod.client.render;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import valkyrienwarfare.mod.common.block.IBlockForceProvider;
-import valkyrienwarfare.mod.common.block.IBlockTorqueProvider;
-import valkyrienwarfare.mod.common.math.Vector;
-import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
+import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraftforge.fml.client.registry.IRenderFactory;
+import valkyrienwarfare.mod.common.entity.PhysicsWrapperEntity;
 
-public class BlockForce {
+public class PhysicsWrapperEntityRenderFactory implements IRenderFactory<PhysicsWrapperEntity> {
 
-    public static final BlockForce basicForces = new BlockForce();
-
-    public void getForceFromState(IBlockState state, BlockPos pos, World world, double secondsToApply,
-                                  PhysicsObject obj, Vector toSet) {
-        Block block = state.getBlock();
-        if (block instanceof IBlockForceProvider) {
-            Vector forceVector = ((IBlockForceProvider) block).getBlockForceInWorldSpace(world, pos, state,
-                    obj, secondsToApply);
-            if (forceVector == null) {
-                toSet.zero();
-            } else {
-                toSet.X = forceVector.X;
-                toSet.Y = forceVector.Y;
-                toSet.Z = forceVector.Z;
-            }
-        }
-    }
-
-    public boolean isBlockProvidingForce(IBlockState state, BlockPos pos, World world) {
-        Block block = state.getBlock();
-        return block instanceof IBlockForceProvider || block instanceof IBlockTorqueProvider;
+    @Override
+    public Render createRenderFor(RenderManager manager) {
+        return new PhysicsWrapperEntityRenderer(manager);
     }
 
 }

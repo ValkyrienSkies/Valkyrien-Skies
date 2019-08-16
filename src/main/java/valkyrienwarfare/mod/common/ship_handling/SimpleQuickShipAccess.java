@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * Unfinished class. Purpose is to use this to manage which ships instead of the Minecraft entity system.
+ */
 public class SimpleQuickShipAccess implements IQuickShipAccess {
 
     private final List<ShipHolder> ships;

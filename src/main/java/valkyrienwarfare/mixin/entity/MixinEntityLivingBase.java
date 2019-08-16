@@ -35,10 +35,10 @@ import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.common.coordinates.ISubspacedEntity;
 import valkyrienwarfare.mod.common.coordinates.ISubspacedEntityRecord;
 import valkyrienwarfare.mod.common.coordinates.VectorImmutable;
+import valkyrienwarfare.mod.common.entity.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.common.math.VWMath;
 import valkyrienwarfare.mod.common.math.Vector;
 import valkyrienwarfare.mod.common.physics.collision.polygons.EntityPolygon;
-import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 
 import java.util.List;
 

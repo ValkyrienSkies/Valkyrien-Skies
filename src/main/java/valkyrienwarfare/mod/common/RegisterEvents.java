@@ -27,7 +27,7 @@ import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import valkyrienwarfare.mod.common.entity.EntityMountable;
 import valkyrienwarfare.mod.common.entity.EntityMountableChair;
-import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.entity.PhysicsWrapperEntity;
 
 import javax.annotation.Nonnull;
 

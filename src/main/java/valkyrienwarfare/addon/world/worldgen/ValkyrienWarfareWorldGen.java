@@ -24,7 +24,6 @@ import net.minecraft.world.gen.feature.WorldGenMinable;
 import net.minecraft.world.gen.feature.WorldGenerator;
 import net.minecraftforge.fml.common.IWorldGenerator;
 import valkyrienwarfare.addon.world.ValkyrienWarfareWorld;
-import valkyrienwarfare.mod.common.physmanagement.chunk.PhysicsChunkManager;
 
 import java.util.Random;
 
@@ -71,7 +70,4 @@ public class ValkyrienWarfareWorldGen implements IWorldGenerator {
         }
     }
 
-    private void runDungeonGenerator(World world, Random rand, int chunk_X, int chunk_Z, int chancesToSpawn) {
-        boolean isLikelyShipChunk = PhysicsChunkManager.isLikelyShipChunk(chunk_X, chunk_Z);
-    }
 }

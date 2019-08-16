@@ -60,10 +60,10 @@ import valkyrienwarfare.mod.common.coordinates.ISubspaceProvider;
 import valkyrienwarfare.mod.common.coordinates.ImplSubspace;
 import valkyrienwarfare.mod.common.coordinates.ShipTransform;
 import valkyrienwarfare.mod.common.coordinates.ShipTransformationPacketHolder;
+import valkyrienwarfare.mod.common.entity.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.common.math.Quaternion;
 import valkyrienwarfare.mod.common.math.Vector;
 import valkyrienwarfare.mod.common.network.PhysWrapperPositionMessage;
-import valkyrienwarfare.mod.common.physics.BlockForce;
 import valkyrienwarfare.mod.common.physics.BlockPhysicsDetails;
 import valkyrienwarfare.mod.common.physics.PhysicsCalculations;
 import valkyrienwarfare.mod.common.physmanagement.chunk.ShipChunkAllocator;
@@ -436,7 +436,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 	/**
 	 * TODO: Add the methods that send the tileEntities in each given chunk
 	 */
-	protected void preloadNewPlayers() {
+	public void preloadNewPlayers() {
 		Set<EntityPlayerMP> newWatchers = getPlayersThatJustWatched();
 		for (Chunk[] chunkArray : claimedChunks) {
 			for (Chunk chunk : chunkArray) {
@@ -503,7 +503,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 		return newPlayers;
 	}
 
-	protected void onTick() {
+	public void onTick() {
 		if (!getWorldObj().isRemote) {
 			for (Entity e : queuedEntitiesToMount) {
 				if (e != null) {
@@ -655,7 +655,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 													chunk.z * 16 + z);
 											getBlockPositions().add(pos);
 											blockPositionsGameTick.add(this.getBlockPosToIntRelToShip(pos));
-											if (BlockForce.basicForces.isBlockProvidingForce(
+											if (BlockPhysicsDetails.isBlockProvidingForce(
 													getWorldObj().getBlockState(pos), pos, getWorldObj())) {
 												getPhysicsProcessor().addPotentialActiveForcePos(pos);
 											}
@@ -1163,7 +1163,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 		SpatialDetector.setPosWithRespectTo(pos, this.referenceBlockPos, toSet);
 	}
 
-	public TIntArrayList getBlockPositionsGameTick() {
+	TIntArrayList getBlockPositionsGameTick() {
 		return blockPositionsGameTick;
 	}
 

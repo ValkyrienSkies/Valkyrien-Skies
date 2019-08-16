@@ -17,8 +17,8 @@
 package valkyrienwarfare.mod.common.physmanagement.interaction;
 
 import net.minecraft.entity.MoverType;
+import valkyrienwarfare.mod.common.entity.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.common.math.Vector;
-import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 
 /**
  * This interface is really quite bad, and will be removed once subspaces are

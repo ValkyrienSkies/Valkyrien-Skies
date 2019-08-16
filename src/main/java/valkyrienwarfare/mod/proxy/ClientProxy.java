@@ -35,12 +35,12 @@ import valkyrienwarfare.api.addons.ModuleProxy;
 import valkyrienwarfare.mod.client.EventsClient;
 import valkyrienwarfare.mod.client.VWKeyHandler;
 import valkyrienwarfare.mod.client.render.GibsModelRegistry;
-import valkyrienwarfare.mod.client.render.PhysObjectRenderFactory;
+import valkyrienwarfare.mod.client.render.PhysicsWrapperEntityRenderFactory;
 import valkyrienwarfare.mod.client.render.tile_entity_renderers.TileEntityPhysicsInfuserRenderer;
 import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
+import valkyrienwarfare.mod.common.entity.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.common.math.Quaternion;
 import valkyrienwarfare.mod.common.math.Vector;
-import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.common.tileentity.TileEntityPhysicsInfuser;
 
 public class ClientProxy extends CommonProxy {
@@ -69,7 +69,7 @@ public class ClientProxy extends CommonProxy {
     public void preInit(FMLPreInitializationEvent e) {
         super.preInit(e);
         OBJLoader.INSTANCE.addDomain(ValkyrienWarfareMod.MOD_ID.toLowerCase());
-        RenderingRegistry.registerEntityRenderingHandler(PhysicsWrapperEntity.class, new PhysObjectRenderFactory());
+        RenderingRegistry.registerEntityRenderingHandler(PhysicsWrapperEntity.class, new PhysicsWrapperEntityRenderFactory());
         // Register events
         MinecraftForge.EVENT_BUS.register(new EventsClient());
         MinecraftForge.EVENT_BUS.register(keyEvents);

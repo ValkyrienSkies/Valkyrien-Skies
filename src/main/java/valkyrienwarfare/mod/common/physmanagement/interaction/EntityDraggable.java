@@ -26,9 +26,9 @@ import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.mod.client.EventsClient;
 import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.common.coordinates.ShipTransform;
+import valkyrienwarfare.mod.common.entity.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.common.math.RotationMatrices;
 import valkyrienwarfare.mod.common.math.Vector;
-import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.common.physics.management.ShipTransformationManager;
 
 import java.util.List;

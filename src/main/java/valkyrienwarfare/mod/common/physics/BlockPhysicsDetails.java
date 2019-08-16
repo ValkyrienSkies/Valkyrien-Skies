@@ -23,7 +23,11 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import valkyrienwarfare.mod.common.block.IBlockForceProvider;
 import valkyrienwarfare.mod.common.block.IBlockMassProvider;
+import valkyrienwarfare.mod.common.block.IBlockTorqueProvider;
+import valkyrienwarfare.mod.common.math.Vector;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -134,6 +138,45 @@ public class BlockPhysicsDetails {
         } else {
             return getMassOfMaterial(block.material);
         }
+    }
+
+    /**
+     * Assigns the output parameter of toSet to be the force Vector for the given IBlockState.
+     *
+     * @param state
+     * @param pos
+     * @param world
+     * @param secondsToApply
+     * @param obj
+     * @param toSet
+     */
+    public static void getForceFromState(IBlockState state, BlockPos pos, World world, double secondsToApply,
+                                         PhysicsObject obj, Vector toSet) {
+        Block block = state.getBlock();
+        if (block instanceof IBlockForceProvider) {
+            Vector forceVector = ((IBlockForceProvider) block).getBlockForceInWorldSpace(world, pos, state,
+                    obj, secondsToApply);
+            if (forceVector == null) {
+                toSet.zero();
+            } else {
+                toSet.X = forceVector.X;
+                toSet.Y = forceVector.Y;
+                toSet.Z = forceVector.Z;
+            }
+        }
+    }
+
+    /**
+     * Returns true if the given IBlockState can create force; otherwise it returns false.
+     *
+     * @param state
+     * @param pos
+     * @param world
+     * @return
+     */
+    public static boolean isBlockProvidingForce(IBlockState state, BlockPos pos, World world) {
+        Block block = state.getBlock();
+        return block instanceof IBlockForceProvider || block instanceof IBlockTorqueProvider;
     }
 
 }

@@ -14,7 +14,7 @@
  *
  */
 
-package valkyrienwarfare.mod.common.physics.management;
+package valkyrienwarfare.mod.common.entity;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
@@ -32,6 +32,8 @@ import valkyrienwarfare.addon.combat.entity.EntityMountingWeaponBase;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.mod.common.math.Vector;
 import valkyrienwarfare.mod.common.physics.collision.polygons.Polygon;
+import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
+import valkyrienwarfare.mod.common.physics.management.ShipType;
 import valkyrienwarfare.mod.common.physmanagement.interaction.QueryableShipData;
 import valkyrienwarfare.mod.common.tileentity.TileEntityPhysicsInfuser;
 
@@ -47,7 +49,7 @@ import java.util.UUID;
 @ParametersAreNonnullByDefault
 public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpawnData {
 
-    static final DataParameter<Boolean> IS_NAME_CUSTOM = EntityDataManager.createKey(PhysicsWrapperEntity.class,
+    public static final DataParameter<Boolean> IS_NAME_CUSTOM = EntityDataManager.createKey(PhysicsWrapperEntity.class,
             DataSerializers.BOOLEAN);
     private final PhysicsObject physicsObject;
     // TODO: Replace these raw types with something safer.

@@ -1,9 +1,9 @@
 package valkyrienwarfare.mod.common.coordinates;
 
 import valkyrienwarfare.api.TransformType;
+import valkyrienwarfare.mod.common.entity.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.common.math.Vector;
 import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
-import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;

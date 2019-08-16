@@ -26,7 +26,7 @@ import valkyrienwarfare.mod.common.coordinates.CoordinateSpaceType;
 import valkyrienwarfare.mod.common.coordinates.ISubspacedEntity;
 import valkyrienwarfare.mod.common.coordinates.ShipTransform;
 import valkyrienwarfare.mod.common.coordinates.VectorImmutable;
-import valkyrienwarfare.mod.common.physics.management.PhysicsWrapperEntity;
+import valkyrienwarfare.mod.common.entity.PhysicsWrapperEntity;
 
 /**
  * This class creates and processes rotation matrix transforms used by Valkyrien

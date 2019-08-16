@@ -1,0 +1,33 @@
+version: 2
+
+jobs:
+  build:
+    environment:
+      _JAVA_OPTIONS: "-Xmx3g"
+      GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2"
+    docker:
+      - image: circleci/openjdk:8-jdk-stretch
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - dependencies-{{ checksum "build.gradle" }}
+      - run:
+          name: Create JAR file
+          command: |
+            export TERM=${TERM:-dumb}
+            ./gradlew setupCiWorkspace
+            ./gradlew build
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: dependencies-{{ checksum "build.gradle" }}
+      - store_artifacts:
+          path: build/libs
+          destination: /
+
+workflows:
+  version: 2
+  workflow:
+    jobs:
+      - build

@@ -19,7 +19,7 @@ public class PhysicsParticleManager {
 
     public PhysicsParticleManager(PhysicsCalculations parent) {
         this.parent = parent;
-        this.physicsParticles = new ArrayList<PhysicsParticle>();
+        this.physicsParticles = new ArrayList<>();
     }
 
     public void spawnPhysicsParticle(float posX, float posY, float posZ, float velX, float velY, float velZ, float mass, float timeToLive) {
@@ -33,7 +33,6 @@ public class PhysicsParticleManager {
         Vector bufferVector = new Vector();
         Vector bufferVectorForcePos = new Vector();
         Vector bufferVectorForce = new Vector();
-        Vector bufferVectorCrossProduct = new Vector();
         for (PhysicsParticle physicsParticle : physicsParticles) {
             physicsParticle.tickParticle(parent, bufferBlockPos, bufferVector, timeStep);
             if (!physicsParticle.isParticleDead()) {

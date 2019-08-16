@@ -23,7 +23,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import valkyrienwarfare.deprecated_api.IBlockMassProvider;
+import valkyrienwarfare.mod.common.block.IBlockMassProvider;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,8 +34,6 @@ public class BlockPhysicsDetails {
     // A 1x1x1 cube of DEFAULT is 500kg.
     private final static double DEFAULT_MASS = 500D;
 
-
-    public static final BlockPhysicsDetails basicMass = new BlockPhysicsDetails();
     /**
      * Blocks mapped to their mass.
      */

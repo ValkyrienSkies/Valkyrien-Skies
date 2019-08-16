@@ -15,6 +15,9 @@ import javax.annotation.Nullable;
 import javax.vecmath.Matrix4f;
 import java.util.List;
 
+/**
+ * Used to create the custom infuser core render logic, such that the hard model is 3d and the inventory model is 2d. Unfortunately forge doesn't provide a better way to do this.
+ */
 @SideOnly(Side.CLIENT)
 public class InfuserCoreBakedModel implements IBakedModel {
 

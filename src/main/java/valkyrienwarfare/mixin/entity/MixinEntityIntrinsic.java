@@ -24,7 +24,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import valkyrienwarfare.deprecated_api.MixinMethods;
+import valkyrienwarfare.fixes.EntityMoveInjectionMethods;
 import valkyrienwarfare.mod.common.physics.collision.EntityCollisionInjector;
 import valkyrienwarfare.mod.common.physics.collision.EntityCollisionInjector.IntermediateMovementVariableStorage;
 
@@ -53,7 +53,7 @@ public abstract class MixinEntityIntrinsic {
     @Inject(method = "move", at = @At("HEAD"), cancellable = true)
     public void changeMoveArgs(MoverType type, double dx, double dy, double dz, CallbackInfo callbackInfo) {
         if (!hasChanged) {
-            alteredMovement = MixinMethods.handleMove(type, dx, dy, dz, thisClassAsAnEntity);
+            alteredMovement = EntityMoveInjectionMethods.handleMove(type, dx, dy, dz, thisClassAsAnEntity);
             if (alteredMovement != null) {
                 hasChanged = true;
                 this.move(type, alteredMovement.dxyz.X, alteredMovement.dxyz.Y, alteredMovement.dxyz.Z);

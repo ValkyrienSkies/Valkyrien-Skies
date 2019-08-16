@@ -1,4 +1,4 @@
-package valkyrienwarfare.deprecated_api;
+package valkyrienwarfare.mod.common.block;
 
 import net.minecraft.util.math.BlockPos;
 import valkyrienwarfare.mod.common.math.Vector;

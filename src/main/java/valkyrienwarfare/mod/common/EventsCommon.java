@@ -29,7 +29,6 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemNameTag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -63,7 +62,6 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
 import valkyrienwarfare.addon.combat.entity.EntityMountingWeaponBase;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.fixes.IPhysicsChunk;
-import valkyrienwarfare.mod.common.capability.IAirshipCounterCapability;
 import valkyrienwarfare.mod.common.math.RotationMatrices;
 import valkyrienwarfare.mod.common.math.Vector;
 import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
@@ -262,45 +260,6 @@ public class EventsCommon {
                                 .readNBT(ValkyrienWarfareMod.vwWorldData, inst, null, nbt);
                     }
                 });
-    }
-
-    // Notice that this event fires for both Entities and TileEntities, so an
-    // instanceof is needed to stop weird bugs
-    @SubscribeEvent
-    public void onEntityConstruct(AttachCapabilitiesEvent evt) {
-        if (evt.getObject() instanceof EntityPlayer) {
-            evt.addCapability(new ResourceLocation(ValkyrienWarfareMod.MOD_ID, "AirshipCounter"),
-                    new ICapabilitySerializable<NBTTagIntArray>() {
-                        IAirshipCounterCapability inst = ValkyrienWarfareMod.airshipCounter.getDefaultInstance();
-
-                        @Override
-                        public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
-                            return capability == ValkyrienWarfareMod.airshipCounter;
-                        }
-
-                        @Override
-                        public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
-                            return capability == ValkyrienWarfareMod.airshipCounter
-                                    ? ValkyrienWarfareMod.airshipCounter.<T>cast(inst)
-                                    : null;
-                        }
-
-                        @Override
-                        public NBTTagIntArray serializeNBT() {
-                            return (NBTTagIntArray) ValkyrienWarfareMod.airshipCounter.getStorage()
-                                    .writeNBT(ValkyrienWarfareMod.airshipCounter, inst, null);
-                        }
-
-                        @Override
-                        public void deserializeNBT(NBTTagIntArray nbt) {
-                            // Otherwise its old, then ignore it
-                            if (nbt instanceof NBTTagIntArray) {
-                                ValkyrienWarfareMod.airshipCounter.getStorage()
-                                        .readNBT(ValkyrienWarfareMod.airshipCounter, inst, null, nbt);
-                            }
-                        }
-                    });
-        }
     }
 
     @SubscribeEvent

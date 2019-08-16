@@ -30,8 +30,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import valkyrienwarfare.addon.combat.entity.EntityMountingWeaponBase;
 import valkyrienwarfare.api.TransformType;
-import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
-import valkyrienwarfare.mod.common.capability.IAirshipCounterCapability;
 import valkyrienwarfare.mod.common.math.Vector;
 import valkyrienwarfare.mod.common.physics.collision.polygons.Polygon;
 import valkyrienwarfare.mod.common.physmanagement.interaction.QueryableShipData;
@@ -72,8 +70,6 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 
         if (creator != null) {
             getPhysicsObject().setCreator(creator.entityUniqueID.toString());
-            IAirshipCounterCapability counter = creator.getCapability(ValkyrienWarfareMod.airshipCounter, null);
-            counter.onCreate();
         } else {
             getPhysicsObject().setCreator("unknown");
             super.setCustomNameTag(UUID.randomUUID()

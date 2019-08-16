@@ -90,34 +90,7 @@ public class AirshipSettingsCommand extends CommandBase {
         if (p.entityUniqueID.toString()
                 .equals(physicsObject.get()
                         .getCreator())) {
-            if (args[0].equals("transfer")) {
-                if (args.length == 1) {
-                    return;
-                }
-                if (!args[1].isEmpty()) {
-                    EntityPlayer target = server.getPlayerList().getPlayerByUsername(args[1]);
-                    if (target == null) {
-                        p.sendMessage(new TextComponentString("That player is not online!"));
-                        return;
-                    }
-                    switch (physicsObject.get()
-                            .changeOwner(target)) {
-                        case ERROR_IMPOSSIBLE_STATUS:
-                            p.sendMessage(new TextComponentString("An error occured, please report to mod devs"));
-                            break;
-                        case ERROR_NEWOWNER_NOT_ENOUGH:
-                            p.sendMessage(new TextComponentString("That player doesn't have enough free airship slots!"));
-                            break;
-                        case SUCCESS:
-                            p.sendMessage(new TextComponentString("Success! " + target.getName() + " is the new owner of this airship!"));
-                            break;
-                        case ALREADY_CLAIMED:
-                            p.sendMessage(new TextComponentString("Airship already claimed"));
-                            break;
-                    }
-                    return;
-                }
-            } else if (args[0].equals("allowplayer")) {
+            if (args[0].equals("allowplayer")) {
                 if (args.length == 1) {
                     StringBuilder result = new StringBuilder();
                     physicsObject.get()

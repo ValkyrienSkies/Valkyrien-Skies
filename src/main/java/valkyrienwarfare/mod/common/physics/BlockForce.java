@@ -20,8 +20,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import valkyrienwarfare.deprecated_api.IBlockForceProvider;
-import valkyrienwarfare.deprecated_api.IBlockTorqueProvider;
+import valkyrienwarfare.mod.common.block.IBlockForceProvider;
+import valkyrienwarfare.mod.common.block.IBlockTorqueProvider;
 import valkyrienwarfare.mod.common.math.Vector;
 import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 

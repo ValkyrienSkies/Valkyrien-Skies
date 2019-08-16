@@ -24,7 +24,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import valkyrienwarfare.deprecated_api.IBlockForceProvider;
+import valkyrienwarfare.mod.common.block.IBlockForceProvider;
 import valkyrienwarfare.mod.common.math.Vector;
 import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 
@@ -48,7 +48,7 @@ public class BlockDopedEthereum extends Block implements IBlockForceProvider {
      * @param world
      * @param pos
      * @param state
-     * @param shipEntity
+     * @param physicsObject
      * @param secondsToApply
      * @return
      */

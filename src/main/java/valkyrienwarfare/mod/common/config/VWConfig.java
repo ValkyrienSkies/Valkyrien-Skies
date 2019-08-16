@@ -70,6 +70,7 @@ public class VWConfig {
 	}
 
 	@Mod.EventBusSubscriber(modid = ValkyrienWarfareMod.MOD_ID)
+	@SuppressWarnings("unused")
 	private static class EventHandler {
 
 		@SubscribeEvent

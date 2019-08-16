@@ -14,7 +14,7 @@
  *
  */
 
-package valkyrienwarfare.deprecated_api;
+package valkyrienwarfare.mod.common.block;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;

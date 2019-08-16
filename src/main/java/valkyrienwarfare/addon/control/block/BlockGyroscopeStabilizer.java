@@ -23,7 +23,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import valkyrienwarfare.addon.control.tileentity.TileEntityGyroscopeStabilizer;
-import valkyrienwarfare.deprecated_api.IBlockTorqueProvider;
+import valkyrienwarfare.mod.common.block.IBlockTorqueProvider;
 import valkyrienwarfare.mod.common.math.Vector;
 import valkyrienwarfare.mod.common.physics.PhysicsCalculations;
 

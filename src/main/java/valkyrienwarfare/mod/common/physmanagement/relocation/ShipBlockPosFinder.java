@@ -20,7 +20,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.world.World;
 import valkyrienwarfare.mod.common.physics.BlockPhysicsDetails;
-import valkyrienwarfare.mod.common.physics.BlockPhysicsRegistration;
 
 public class ShipBlockPosFinder extends SpatialDetector {
 

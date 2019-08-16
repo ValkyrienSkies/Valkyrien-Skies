@@ -14,7 +14,7 @@
  *
  */
 
-package valkyrienwarfare.deprecated_api;
+package valkyrienwarfare.fixes;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
@@ -33,7 +33,10 @@ import valkyrienwarfare.mod.common.util.ValkyrienUtils;
 
 import java.util.Optional;
 
-public class MixinMethods {
+/**
+ * This class used to do more (We made Entity.java extend this class in the past); but after tons of refactors this class only exists to hold static methods.
+ */
+public class EntityMoveInjectionMethods {
 
     public static EntityCollisionInjector.IntermediateMovementVariableStorage handleMove(MoverType type, double dx, double dy, double dz, Entity this_) {
         if (this_ instanceof PhysicsWrapperEntity) {

@@ -27,7 +27,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
-import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.server.SPacketChunkData;
@@ -47,18 +46,15 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraft.world.gen.ChunkProviderServer;
-import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
 import valkyrienwarfare.addon.control.network.EntityFixMessage;
 import valkyrienwarfare.addon.control.nodenetwork.INodeController;
 import valkyrienwarfare.api.IPhysicsEntity;
 import valkyrienwarfare.api.TransformType;
-import valkyrienwarfare.deprecated_api.EnumChangeOwnerResult;
 import valkyrienwarfare.fixes.IPhysicsChunk;
-import valkyrienwarfare.mod.common.config.VWConfig;
 import valkyrienwarfare.mod.client.render.PhysObjectRenderManager;
 import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
+import valkyrienwarfare.mod.common.config.VWConfig;
 import valkyrienwarfare.mod.common.coordinates.ISubspace;
 import valkyrienwarfare.mod.common.coordinates.ISubspaceProvider;
 import valkyrienwarfare.mod.common.coordinates.ImplSubspace;
@@ -78,7 +74,6 @@ import valkyrienwarfare.mod.common.physmanagement.relocation.SpatialDetector;
 import valkyrienwarfare.mod.common.tileentity.TileEntityPhysicsInfuser;
 import valkyrienwarfare.mod.common.util.ValkyrienNBTUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -88,7 +83,6 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -212,37 +206,6 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 		}
 
 		if (getBlockPositions().isEmpty()) {
-			try {
-				if (getCreator() != null) {
-					EntityPlayer player = FMLCommonHandler.instance()
-							.getMinecraftServerInstance()
-							.getPlayerList()
-							.getPlayerByUsername(getCreator());
-					if (player != null) {
-						player.getCapability(ValkyrienWarfareMod.airshipCounter, null)
-								.onLose();
-					} else {
-						// TODO: Fix this later
-						if (false) {
-							try {
-								File f = new File(DimensionManager.getCurrentSaveRootDirectory(),
-										"playerdata/" + getCreator() + ".dat");
-								NBTTagCompound tag = CompressedStreamTools.read(f);
-								NBTTagCompound capsTag = tag.getCompoundTag("ForgeCaps");
-								capsTag.setInteger("valkyrienwarfare:IAirshipCounter",
-										capsTag.getInteger("valkyrienwarfare:IAirshipCounter") - 1);
-								CompressedStreamTools.safeWrite(tag, f);
-							} catch (IOException e) {
-								e.printStackTrace();
-							}
-						}
-					}
-				}
-
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
 			destroy();
 		}
 
@@ -941,62 +904,6 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 		if (physicsInfuserPosLocal != null) {
 			modifiedBuffer.writeBlockPos(physicsInfuserPosLocal);
 		}
-	}
-
-	/**
-	 * Tries to change the owner of this PhysicsObject.
-	 *
-	 * @param newOwner
-	 * @return
-	 */
-	public EnumChangeOwnerResult changeOwner(EntityPlayer newOwner) {
-		if (!ValkyrienWarfareMod.canChangeAirshipCounter(true, newOwner)) {
-			return EnumChangeOwnerResult.ERROR_NEWOWNER_NOT_ENOUGH;
-		}
-
-		if (newOwner.entityUniqueID.toString()
-				.equals(getCreator())) {
-			return EnumChangeOwnerResult.ALREADY_CLAIMED;
-		}
-
-		EntityPlayer player = null;
-		try {
-			player = FMLCommonHandler.instance()
-					.getMinecraftServerInstance()
-					.getPlayerList()
-					.getPlayerByUUID(UUID.fromString(getCreator()));
-		} catch (NullPointerException e) {
-			newOwner.sendMessage(new TextComponentString("That airship doesn't have an owner, you get to have it :D"));
-			newOwner.getCapability(ValkyrienWarfareMod.airshipCounter, null)
-					.onCreate();
-			getAllowedUsers().clear();
-			setCreator(newOwner.entityUniqueID.toString());
-			return EnumChangeOwnerResult.SUCCESS;
-		}
-
-		if (player != null) {
-			player.getCapability(ValkyrienWarfareMod.airshipCounter, null)
-					.onLose();
-		} else {
-			try {
-				File f = new File(DimensionManager.getCurrentSaveRootDirectory(), "playerdata/" + getCreator() + ".dat");
-				NBTTagCompound tag = CompressedStreamTools.read(f);
-				NBTTagCompound capsTag = tag.getCompoundTag("ForgeCaps");
-				capsTag.setInteger("valkyrienwarfare:IAirshipCounter",
-						capsTag.getInteger("valkyrienwarfare:IAirshipCounter") - 1);
-				CompressedStreamTools.safeWrite(tag, f);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-
-		newOwner.getCapability(ValkyrienWarfareMod.airshipCounter, null)
-				.onCreate();
-
-		getAllowedUsers().clear();
-
-		setCreator(newOwner.entityUniqueID.toString());
-		return EnumChangeOwnerResult.SUCCESS;
 	}
 
 	/*

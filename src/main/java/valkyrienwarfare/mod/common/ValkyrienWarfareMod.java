@@ -24,7 +24,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -66,9 +65,6 @@ import valkyrienwarfare.mod.client.gui.TabValkyrienWarfare;
 import valkyrienwarfare.mod.common.block.BlockPhysicsInfuser;
 import valkyrienwarfare.mod.common.block.BlockPhysicsInfuserCreative;
 import valkyrienwarfare.mod.common.block.BlockPhysicsInfuserDummy;
-import valkyrienwarfare.mod.common.capability.IAirshipCounterCapability;
-import valkyrienwarfare.mod.common.capability.ImplAirshipCounterCapability;
-import valkyrienwarfare.mod.common.capability.StorageAirshipCounter;
 import valkyrienwarfare.mod.common.command.framework.VWModCommandRegistry;
 import valkyrienwarfare.mod.common.config.VWConfig;
 import valkyrienwarfare.mod.common.item.ItemPhysicsCore;
@@ -127,8 +123,6 @@ public class ValkyrienWarfareMod {
     public static final String MOD_VERSION = "0.9.2";
     public static final String MOD_FINGERPRINT = "b308676914a5e7d99459c1d2fb298744387899a7";
     public static final int VW_ENTITY_LOAD_DISTANCE = 128;
-    @CapabilityInject(IAirshipCounterCapability.class)
-    public static final Capability<IAirshipCounterCapability> airshipCounter = null;
     @CapabilityInject(IVWWorldDataCapability.class)
     public static final Capability<IVWWorldDataCapability> vwWorldData = null;
     public static final DimensionPhysicsChunkManager VW_CHUNK_MANAGER = new DimensionPhysicsChunkManager();
@@ -164,26 +158,6 @@ public class ValkyrienWarfareMod {
             e.printStackTrace();
         }
         return null;
-    }
-
-    /**
-     * Checks to see if a player's airship counter can be changed.
-     *
-     * @param isAdding Should be true if you are adding a player, false if removing the
-     *                 player.
-     * @param player   The player to check for
-     */
-    public static boolean canChangeAirshipCounter(boolean isAdding, EntityPlayer player) {
-        if (isAdding) {
-            if (VWConfig.maxAirships == -1) {
-                return true;
-            }
-
-            return player.getCapability(ValkyrienWarfareMod.airshipCounter, null)
-                    .getAirshipCount() < VWConfig.maxAirships;
-        } else {
-            return player.getCapability(ValkyrienWarfareMod.airshipCounter, null).getAirshipCount() > 0;
-        }
     }
 
     private static void registerAddon(Module module) {
@@ -466,8 +440,6 @@ public class ValkyrienWarfareMod {
     public void onServerStopping(FMLServerStoppingEvent event) { }
 
     private void registerCapabilities() {
-        CapabilityManager.INSTANCE.register(IAirshipCounterCapability.class, new StorageAirshipCounter(),
-                ImplAirshipCounterCapability.class);
         CapabilityManager.INSTANCE.register(IVWWorldDataCapability.class, new StorageVWWorldData(),
                 ImplVWWorldDataCapability.class);
     }

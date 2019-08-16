@@ -1,7 +1,7 @@
 
 # Valkyrien Warfare
-[![Build 
-Status](https://jenkins.daporkchop.net/job/Minecraft/job/ValkyrienWarfare/badge/icon)](https://jenkins.daporkchop.net/job/Minecraft/job/ValkyrienWarfare/)
+[![CircleCI](https://circleci.com/gh/ValkyrienWarfare/Valkyrien-Warfare-Revamped.svg?style=svg)](https://circleci.com/gh/ValkyrienWarfare/Valkyrien-Warfare-Revamped)
+
 See: [LICENSE file](https://github.com/ValkyrienWarfare/Valkyrien-Warfare-Revamped/blob/8778e9d45f16c1f60e8149ab6cbdbabbdebc1278/LICENSE)
 
 The Airships Mod to end all other Airships Mods. Better compatibility, performance, collisions, interactions and physics than anything prior!
@@ -12,7 +12,9 @@ The Airships Mod to end all other Airships Mods. Better compatibility, performan
 ### Downloading
 Official and stable releases of the Valkyrien Warfare mod can be found on the [CurseForge page](https://minecraft.curseforge.com/projects/valkyrien-warfare/files).
 
-Beta releases (warning: may be unstable!) can be found on the [Jenkins build server](https://jenkins.daporkchop.net/job/Minecraft/job/ValkyrienWarfare/).
+Beta releases (warning: may be unstable!) can be found on the following:
+- the [Jenkins build server](https://jenkins.daporkchop.net/job/Minecraft/job/ValkyrienWarfare/) 
+- the [CircleCI](https://circleci.com/gh/ValkyrienWarfare/Valkyrien-Warfare-Revamped/tree/master) (click on the latest build #, then artifacts, then download the mod JAR file)
 
 ### Installing on your server
 To install Valkyrien Warfare, move the downloaded `.jar` file into your Minecraft's `mods/` folder, just as you would any other mod.

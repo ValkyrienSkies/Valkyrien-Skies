@@ -76,6 +76,7 @@ public class VWCommandExecutor<K> extends CommandBase {
 
         @Override
         public void print(String string) {
+            string = string.replace("\r", "");
             sender.sendMessage(new TextComponentString(string));
         }
     }

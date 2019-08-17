@@ -22,14 +22,15 @@ import java.util.stream.Collectors;
                 MainCommand.TPS.class})
 public class MainCommand implements Runnable {
 
-    @Spec Model.CommandSpec spec;
+    @Spec private Model.CommandSpec spec;
 
-    @Inject ICommandSender sender;
+    @Inject private ICommandSender sender;
 
     @Override
     public void run() {
-        sender.sendMessage(new TextComponentString(
-                spec.commandLine().getUsageMessage()));
+        String usageMessage = spec.commandLine().getUsageMessage().replace("\r", "");
+
+        sender.sendMessage(new TextComponentString(usageMessage));
     }
 
     @Command(name = "tps")

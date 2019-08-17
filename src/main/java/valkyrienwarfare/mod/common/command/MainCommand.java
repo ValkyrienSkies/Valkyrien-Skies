@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 @Command(name = "valkyrienwarfare", aliases = "vw",
         synopsisSubcommandLabel = "COMMAND", mixinStandardHelpOptions = true,
+        usageHelpWidth = 55,
         subcommands = {
                 HelpCommand.class,
                 MainCommand.ListShips.class,

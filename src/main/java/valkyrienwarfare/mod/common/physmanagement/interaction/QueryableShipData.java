@@ -25,17 +25,18 @@ import java.util.UUID;
 import static com.googlecode.cqengine.query.QueryFactory.equal;
 
 @MethodsReturnNonnullByDefault
+@SuppressWarnings("WeakerAccess")
 public class QueryableShipData extends WorldSavedData {
 
     private static final String MAP_STORAGE_KEY = ValkyrienWarfareMod.MOD_ID + "QueryableShipData";
     private static final String NBT_STORAGE_KEY = ValkyrienWarfareMod.MOD_ID + "QueryableShipDataNBT";
     private ConcurrentIndexedCollection<ShipData> allShips = new ConcurrentIndexedCollection<>();
 
-    private QueryableShipData() {
+    public QueryableShipData() {
         this(MAP_STORAGE_KEY);
     }
 
-    private QueryableShipData(String name) {
+    public QueryableShipData(String name) {
         super(name);
         allShips.addIndex(HashIndex.onAttribute(ShipData.NAME));
         allShips.addIndex(UniqueIndex.onAttribute(ShipData.UUID));

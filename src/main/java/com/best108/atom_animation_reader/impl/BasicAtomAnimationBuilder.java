@@ -8,12 +8,7 @@ import com.best108.atom_animation_reader.parsers.AtomParserElement;
 import valkyrienwarfare.mod.common.coordinates.VectorImmutable;
 import valkyrienwarfare.mod.common.math.Vector;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public class BasicAtomAnimationBuilder implements IAtomAnimationBuilder {
@@ -23,8 +18,8 @@ public class BasicAtomAnimationBuilder implements IAtomAnimationBuilder {
     private final List<DagNode> renderNodes;
 
     public BasicAtomAnimationBuilder(AtomParser parser) {
-        minKeyFrame = Integer.valueOf(parser.head.properties.get(6)[1]);
-        maxKeyFrame = Integer.valueOf(parser.head.properties.get(7)[1]);
+        minKeyFrame = Integer.parseInt(parser.head.properties.get(6)[1]);
+        maxKeyFrame = Integer.parseInt(parser.head.properties.get(7)[1]);
         this.renderNodes = new ArrayList<DagNode>();
 
         for (AtomParserElement dagNodesParsed : parser.head.branches) {
@@ -154,7 +149,7 @@ public class BasicAtomAnimationBuilder implements IAtomAnimationBuilder {
         return toReturn;
     }
 
-    class DagNode {
+    static class DagNode {
         final String modelName;
         // Nodes in the order their transform will be applied.
         final List<AnimationDataNode> animationNodes;
@@ -183,7 +178,7 @@ public class BasicAtomAnimationBuilder implements IAtomAnimationBuilder {
         }
     }
 
-    class AnimationDataNode {
+    static class AnimationDataNode {
         final String animationType;
         final Keyframes animKeyframes;
 
@@ -193,7 +188,7 @@ public class BasicAtomAnimationBuilder implements IAtomAnimationBuilder {
         }
     }
 
-    class Keyframes {
+    static class Keyframes {
         final List<String[]> keyframes;
 
         Keyframes(List<String[]> keyframes) {

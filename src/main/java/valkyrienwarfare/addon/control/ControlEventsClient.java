@@ -23,7 +23,7 @@ public class ControlEventsClient {
             if (playerPilot.isPiloting()) {
                 BlockPos tilePilotedPos = playerPilot.getPosBeingControlled();
                 TileEntity pilotedTile = player.getEntityWorld().getTileEntity(tilePilotedPos);
-                if (pilotedTile != null && pilotedTile instanceof TileEntityPilotableImpl) {
+                if (pilotedTile instanceof TileEntityPilotableImpl) {
                     TileEntityPilotableImpl pilotedControlEntity = (TileEntityPilotableImpl) pilotedTile;
                     ScaledResolution scaledresolution = new ScaledResolution(Minecraft.getMinecraft());
                     pilotedControlEntity.renderPilotText(fontRenderer, scaledresolution);

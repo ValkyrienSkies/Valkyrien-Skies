@@ -66,7 +66,7 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
     private final ISubspace worldSubspace = new ImplSubspace(null);
 
     @Shadow
-    List<IWorldEventListener> eventListeners;
+    protected List<IWorldEventListener> eventListeners;
 
     @Override
     public ISubspace getSubspace() {
@@ -78,9 +78,6 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
 
     /**
      * Enables the correct weather on ships depending on their position.
-     *
-     * @param pos
-     * @return
      */
     @Intrinsic(displace = true)
     public Biome vw$getBiomeForCoordsBody(BlockPos pos) {

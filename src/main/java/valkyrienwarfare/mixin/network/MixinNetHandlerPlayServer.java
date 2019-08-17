@@ -52,14 +52,6 @@ public abstract class MixinNetHandlerPlayServer {
      * Fixes things such that when mods try to teleport players into the ship space,
      * VW will either redirect the teleport or block it. Looking at you
      * SimpleTeleporters mod >:/
-     *
-     * @param x
-     * @param y
-     * @param z
-     * @param yaw
-     * @param pitch
-     * @param relativeSet
-     * @param callbackInfo
      */
     @Inject(method = "setPlayerLocation(DDDFFLjava/util/Set;)V", at = @At("HEAD"), cancellable = true)
     public void onSetPlayerLocation(double x, double y, double z, float yaw, float pitch,

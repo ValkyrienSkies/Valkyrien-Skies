@@ -38,7 +38,7 @@ public class PhysWrapperPositionHandler implements IMessageHandler<PhysWrapperPo
             public void run() {
                 if (Minecraft.getMinecraft().world != null) {
                     Entity ent = Minecraft.getMinecraft().world.getEntityByID(message.getEntityID());
-                    if (ent != null && ent instanceof PhysicsWrapperEntity) {
+                    if (ent instanceof PhysicsWrapperEntity) {
                         PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity) ent;
                         wrapper.getPhysicsObject().getShipTransformationManager().serverBuffer.pushMessage(message);
                     }

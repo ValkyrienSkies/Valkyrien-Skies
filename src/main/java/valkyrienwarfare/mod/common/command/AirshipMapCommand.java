@@ -16,6 +16,7 @@
 
 package valkyrienwarfare.mod.common.command;
 
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -24,12 +25,15 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraft.world.World;
-import valkyrienwarfare.mod.common.physmanagement.interaction.*;
+import valkyrienwarfare.mod.common.physmanagement.interaction.QueryableShipData;
+import valkyrienwarfare.mod.common.physmanagement.interaction.ShipData;
+import valkyrienwarfare.mod.common.physmanagement.interaction.ShipPositionData;
 
-import javax.management.Query;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
 
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 public class AirshipMapCommand extends CommandBase {
 
     @Override
@@ -47,10 +51,10 @@ public class AirshipMapCommand extends CommandBase {
         String term = args[0];
 
         if (term.equals("tpto")) {
-            String shipName = args[1];
+            StringBuilder shipName = new StringBuilder(args[1]);
             if (args.length > 2) {
                 for (int i = 2; i < args.length; i++) {
-                    shipName += " " + args[i];
+                    shipName.append(" ").append(args[i]);
                 }
             }
 
@@ -59,7 +63,7 @@ public class AirshipMapCommand extends CommandBase {
 
             Optional<ShipData> shipDataOptional = QueryableShipData
                     .get(player.world)
-                    .getShipFromName(shipName);
+                    .getShipFromName(shipName.toString());
 
             if (shipDataOptional.isPresent()) {
                 ShipPositionData positionData = shipDataOptional.get().getPositionData();

@@ -24,15 +24,11 @@ public interface IForceTile {
 
     /**
      * Used to tell what direction of force an engine will output at a given instant.
-     *
-     * @return
      */
     VectorImmutable getForceOutputNormal(double secondsToApply, PhysicsObject physicsObject);
 
     /**
      * Returns the current unoriented force output vector of this engine
-     *
-     * @return
      */
     default Vector getForceOutputUnoriented(double secondsToApply, PhysicsObject physicsObject) {
         VectorImmutable forceVectorNormal = getForceOutputNormal(secondsToApply, physicsObject);
@@ -48,8 +44,6 @@ public interface IForceTile {
      * Returns the maximum magnitude of force this engine can provide at this
      * instant under its current conditions. This number should never be cached in
      * any way is it is can always change.
-     *
-     * @return
      */
     double getMaxThrust();
 
@@ -57,15 +51,11 @@ public interface IForceTile {
 
     /**
      * Returns magnitude of thrust in Newtons being produced.
-     *
-     * @return
      */
     double getThrustMagnitude();
 
     /**
      * Returns the current force multiplier goal.
-     *
-     * @return
      */
     double getThrustMultiplierGoal();
 
@@ -73,8 +63,7 @@ public interface IForceTile {
      * Sets the goal for the force output, multiplier must be between 0 and 1. The
      * actual goal thrust is the getMaxThrust() * getThrustMultiplierGoal();
      *
-     * @param toUse
-     */
+	 */
     void setThrustMultiplierGoal(double thrustMultiplierGoal);
 
 }

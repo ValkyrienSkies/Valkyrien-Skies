@@ -5,11 +5,7 @@ import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.play.INetHandlerPlayServer;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.mod.common.MixinLoadManager;
-import valkyrienwarfare.mod.common.coordinates.CoordinateSpaceType;
-import valkyrienwarfare.mod.common.coordinates.ISubspace;
-import valkyrienwarfare.mod.common.coordinates.ISubspaceProvider;
-import valkyrienwarfare.mod.common.coordinates.ISubspacedEntity;
-import valkyrienwarfare.mod.common.coordinates.ISubspacedEntityRecord;
+import valkyrienwarfare.mod.common.coordinates.*;
 import valkyrienwarfare.mod.common.entity.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.common.math.RotationMatrices;
 
@@ -36,9 +32,6 @@ public interface ITransformablePacket {
     /**
      * Puts the player into local coordinates and makes a record of where they used
      * to be.
-     *
-     * @param server
-     * @param callingFromSponge
      */
     default void doPreProcessing(INetHandlerPlayServer server, boolean callingFromSponge) {
         if (isPacketOnMainThread(server, callingFromSponge)) {
@@ -60,9 +53,6 @@ public interface ITransformablePacket {
 
     /**
      * Restores the player from local coordinates to where they used to be.
-     *
-     * @param server
-     * @param callingFromSponge
      */
     default void doPostProcessing(INetHandlerPlayServer server, boolean callingFromSponge) {
         if (isPacketOnMainThread(server, callingFromSponge)) {

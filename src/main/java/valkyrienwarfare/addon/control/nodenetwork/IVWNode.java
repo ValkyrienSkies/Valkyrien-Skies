@@ -22,8 +22,6 @@ public interface IVWNode extends GraphObject {
     /**
      * This does not return the full graph of connected nodes, just the ones that
      * are directly connected to this node.
-     *
-     * @return
      */
     Iterable<IVWNode> getDirectlyConnectedNodes();
 
@@ -43,15 +41,11 @@ public interface IVWNode extends GraphObject {
 
     /**
      * Returns true if the node is safe, false if it isn't.
-     *
-     * @return
      */
     boolean isValid();
 
     /**
      * Returns null if this node doesn't have a blockpos.
-     *
-     * @return
      */
     BlockPos getNodePos();
 
@@ -78,15 +72,11 @@ public interface IVWNode extends GraphObject {
     /**
      * Can only be called while this node is invalid. Otherwise an
      * IllegalStateException is thrown.
-     *
-     * @param offset
      */
     void shiftConnections(BlockPos offset);
 
     /**
      * Should only be called when after shiftConnections()
-     *
-     * @param parent
      */
     void setParentPhysicsObject(PhysicsObject parent);
 
@@ -99,7 +89,6 @@ public interface IVWNode extends GraphObject {
     int getMaximumConnections();
 
     /**
-     * @param other
      * @return True if the nodes are linked.
      */
     default boolean isLinkedToNode(IVWNode other) {

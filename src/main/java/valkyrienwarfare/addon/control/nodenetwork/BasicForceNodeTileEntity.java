@@ -55,8 +55,6 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
 
     /**
      * True for all engines except for Ether Compressors
-     *
-     * @return
      */
     public boolean isForceOutputOriented() {
         return true;
@@ -112,8 +110,6 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
 
     /**
      * Returns false if a parent Ship exists, and true if otherwise
-     *
-     * @return
      */
     public boolean updateParentShip() {
         return true;

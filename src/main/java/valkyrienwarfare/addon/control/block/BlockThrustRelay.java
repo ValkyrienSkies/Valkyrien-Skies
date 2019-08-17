@@ -20,7 +20,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -78,7 +77,7 @@ public class BlockThrustRelay extends BlockDirectional implements ITileEntityPro
 
     @Override
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-        EnumFacing enumfacing = (EnumFacing) state.getValue(FACING);
+        EnumFacing enumfacing = state.getValue(FACING);
         switch (enumfacing) {
             case EAST:
                 return EAST;
@@ -92,9 +91,10 @@ public class BlockThrustRelay extends BlockDirectional implements ITileEntityPro
                 return UP;
             case DOWN:
                 return DOWN;
-            default:
-                return DOWN;
         }
+
+        throw new RuntimeException("Encountered an EnumFacing that was not EAST, WEST, SOUTH, NORTH, UP, or DOWN. " +
+                "This should never, ever happen.");
     }
 
     /**
@@ -150,7 +150,7 @@ public class BlockThrustRelay extends BlockDirectional implements ITileEntityPro
 
     @Override
     protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, new IProperty[]{FACING});
+        return new BlockStateContainer(this, FACING);
     }
 
     /**

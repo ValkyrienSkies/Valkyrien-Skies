@@ -151,8 +151,6 @@ public class EventsClient {
 
     /**
      * Register textures for all the models registered in the GibsModelRegistry.
-     *
-     * @param event
      */
     @SubscribeEvent
     public void onTextureStitchEvent(TextureStitchEvent.Pre event) {

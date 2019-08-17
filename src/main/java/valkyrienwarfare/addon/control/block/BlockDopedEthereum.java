@@ -34,8 +34,10 @@ import java.util.List;
 
 public class BlockDopedEthereum extends Block implements IBlockForceProvider {
 
-    public static final double DOPED_ETHEREUM_FORCE = 200000;
-    private static final String[] lore = new String[]{"" + TextFormatting.GRAY + TextFormatting.ITALIC + TextFormatting.BOLD + "Force:", "  " + DOPED_ETHEREUM_FORCE + " Newtons"};
+    private static final double DOPED_ETHEREUM_FORCE = 200000;
+    private static final String[] lore = new String[]{
+            "" + TextFormatting.GRAY + TextFormatting.ITALIC + TextFormatting.BOLD +
+                    "Force:", "  " + DOPED_ETHEREUM_FORCE + " Newtons"};
 
     public BlockDopedEthereum(Material materialIn) {
         super(materialIn);
@@ -44,17 +46,11 @@ public class BlockDopedEthereum extends Block implements IBlockForceProvider {
     /**
      * The force Vector this block gives within its local space (Not within World
      * space).
-     *
-     * @param world
-     * @param pos
-     * @param state
-     * @param physicsObject
-     * @param secondsToApply
-     * @return
      */
     @Nullable
     @Override
-    public Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state, PhysicsObject physicsObject, double secondsToApply) {
+    public Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state,
+                                           PhysicsObject physicsObject, double secondsToApply) {
         // TODO: Shouldn't this depend on the gravity vector?
         return new Vector(0, DOPED_ETHEREUM_FORCE * secondsToApply, 0);
     }
@@ -62,12 +58,6 @@ public class BlockDopedEthereum extends Block implements IBlockForceProvider {
     /**
      * Blocks that shouldn't have their force rotated (Like Ether Compressors) must
      * return false.
-     *
-     * @param world
-     * @param pos
-     * @param state
-     * @param secondsToApply
-     * @return
      */
     @Override
     public boolean shouldLocalForceBeRotated(World world, BlockPos pos, IBlockState state, double secondsToApply) {
@@ -75,7 +65,8 @@ public class BlockDopedEthereum extends Block implements IBlockForceProvider {
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation, ITooltipFlag advanced) {
+    public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation,
+                               ITooltipFlag advanced) {
         Collections.addAll(itemInformation, lore);
     }
 

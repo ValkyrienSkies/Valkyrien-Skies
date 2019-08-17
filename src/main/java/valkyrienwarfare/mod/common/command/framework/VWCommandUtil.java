@@ -74,7 +74,7 @@ public class VWCommandUtil {
         if (state == inQuote || state == inDoubleQuote) {
             throw new RuntimeException("unbalanced quotes in " + toProcess);
         }
-        return result.toArray(new String[result.size()]);
+        return result.toArray(new String[0]);
     }
 
 

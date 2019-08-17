@@ -35,7 +35,7 @@ public class MultiblockRegistry {
         return new ArrayList<IMulitblockSchematic>();
     }
 
-    public static void registerAllPossibleSchematicVariants(Class<? extends IMulitblockSchematic> class1) {
+    static void registerAllPossibleSchematicVariants(Class<? extends IMulitblockSchematic> class1) {
         try {
             // Its a dummy, don't use it for anything that isn't dumb!
             IMulitblockSchematic dummyInstance = class1.newInstance();
@@ -48,10 +48,8 @@ public class MultiblockRegistry {
                         "Duplicate multiblock prefix registered!\n" + dummyInstance.getSchematicPrefix());
             }
             MULTIBLOCK_PREFIX_TO_VARIENTS.put(dummyInstance.getSchematicPrefix(),
-                    Collections.<IMulitblockSchematic>unmodifiableList(possibilities));
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
+                    Collections.unmodifiableList(possibilities));
+        } catch (InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
 

@@ -142,16 +142,9 @@ public class BlockPhysicsDetails {
 
     /**
      * Assigns the output parameter of toSet to be the force Vector for the given IBlockState.
-     *
-     * @param state
-     * @param pos
-     * @param world
-     * @param secondsToApply
-     * @param obj
-     * @param toSet
      */
-    public static void getForceFromState(IBlockState state, BlockPos pos, World world, double secondsToApply,
-                                         PhysicsObject obj, Vector toSet) {
+    static void getForceFromState(IBlockState state, BlockPos pos, World world, double secondsToApply,
+                                  PhysicsObject obj, Vector toSet) {
         Block block = state.getBlock();
         if (block instanceof IBlockForceProvider) {
             Vector forceVector = ((IBlockForceProvider) block).getBlockForceInWorldSpace(world, pos, state,
@@ -168,11 +161,6 @@ public class BlockPhysicsDetails {
 
     /**
      * Returns true if the given IBlockState can create force; otherwise it returns false.
-     *
-     * @param state
-     * @param pos
-     * @param world
-     * @return
      */
     public static boolean isBlockProvidingForce(IBlockState state, BlockPos pos, World world) {
         Block block = state.getBlock();

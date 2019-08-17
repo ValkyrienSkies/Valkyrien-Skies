@@ -51,7 +51,7 @@ public class BasicKeyframeInterpolator {
         return 0;
     }
 
-    private class KeyFrame {
+    private static class KeyFrame {
         final double keyframe;
         final double value;
 

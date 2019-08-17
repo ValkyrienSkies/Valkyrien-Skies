@@ -63,8 +63,8 @@ public class ShipChunkAllocator {
     /**
      * Allocates a 32x32 square of chunks.
      */
-    public class ChunkAllocation {
-        public final int lowerChunkX, lowerChunkZ;
+    public static class ChunkAllocation {
+        final int lowerChunkX, lowerChunkZ;
 
         private ChunkAllocation(int lowerChunkX, int lowerChunkZ) {
             this.lowerChunkX = lowerChunkX;

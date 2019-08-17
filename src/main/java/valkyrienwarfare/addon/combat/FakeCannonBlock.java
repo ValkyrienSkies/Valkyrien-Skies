@@ -16,13 +16,14 @@
 
 package valkyrienwarfare.addon.combat;
 
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 
+@MethodsReturnNonnullByDefault
 public class FakeCannonBlock extends Block {
 
     public static final PropertyInteger modelId = PropertyInteger.create("modelid", 0, 15);
@@ -34,7 +35,7 @@ public class FakeCannonBlock extends Block {
 
     @Override
     protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, new IProperty[]{modelId});
+        return new BlockStateContainer(this, modelId);
     }
 
     @Override

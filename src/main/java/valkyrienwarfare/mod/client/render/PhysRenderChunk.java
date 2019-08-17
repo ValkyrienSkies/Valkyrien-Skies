@@ -75,7 +75,7 @@ public class PhysRenderChunk {
         }
     }
 
-    public void killRenderChunk() {
+    void killRenderChunk() {
         for (int i = 0; i < 16; i++) {
             RenderLayer layer = layers[i];
             if (layer != null) {
@@ -84,7 +84,7 @@ public class PhysRenderChunk {
         }
     }
 
-    public class RenderLayer {
+    public static class RenderLayer {
 
         Chunk chunkToRender;
         int yMin, yMax;
@@ -93,7 +93,7 @@ public class PhysRenderChunk {
         boolean needsCutoutUpdate, needsCutoutMippedUpdate, needsSolidUpdate, needsTranslucentUpdate;
         List<TileEntity> renderTiles = new ArrayList<TileEntity>();
 
-        public RenderLayer(Chunk chunk, int yMin, int yMax, PhysRenderChunk parent) {
+        RenderLayer(Chunk chunk, int yMin, int yMax, PhysRenderChunk parent) {
             chunkToRender = chunk;
             this.yMin = yMin;
             this.yMax = yMax;

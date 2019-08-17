@@ -106,7 +106,7 @@ public class ContainerPhysicsInfuser extends Container {
         return itemStack1;
     }
 
-    private class SlotPhysicsInfuser extends SlotItemHandler {
+    private static class SlotPhysicsInfuser extends SlotItemHandler {
 
         private SlotPhysicsInfuser(IItemHandler itemHandler, int index, int xPosition, int yPosition) {
             super(itemHandler, index, xPosition, yPosition);

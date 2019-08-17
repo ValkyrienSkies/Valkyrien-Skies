@@ -45,12 +45,7 @@ import valkyrienwarfare.mod.common.physics.collision.polygons.PolygonCollisionPo
 import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 import valkyrienwarfare.mod.common.physmanagement.relocation.SpatialDetector;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Queue;
-import java.util.Random;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
@@ -199,8 +194,8 @@ public class WorldPhysicsCollider {
             int maxY = MathHelper.floor(inWorld.Y + COLLISION_RANGE_CHECK);
             int maxZ = MathHelper.floor(inWorld.Z + COLLISION_RANGE_CHECK);
 
-            /**
-             * Something here is causing the game to freeze :/
+            /*
+              Something here is causing the game to freeze :/
              */
 
             int minChunkX = minX >> 4;

@@ -9,9 +9,6 @@ public interface IVWTileGui {
 
     /**
      * Called on both client and server side when a player presses the button with the given buttonId.
-     *
-     * @param buttonId
-     * @param presser
      */
     void onButtonPress(int buttonId, EntityPlayer presser);
 }

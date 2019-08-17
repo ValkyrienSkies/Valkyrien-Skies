@@ -18,13 +18,7 @@ import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Used to register and get IBakedModels for 'gibs', which are basically any
@@ -68,9 +62,6 @@ public class GibsModelRegistry {
 
     /**
      * Note this method is very unfinished, and really is only confirmed to work on obj models.
-     *
-     * @param name
-     * @param brightness
      */
     public static void renderGibsModel(String name, int brightness) {
         if (!NAMES_TO_RESOURCE_LOCATION.containsKey(name)) {
@@ -153,9 +144,6 @@ public class GibsModelRegistry {
 
     /**
      * Must be run when TextureStitchEvent.Pre is thrown.
-     *
-     * @param name
-     * @param modelLocation
      */
     public static void registerGibsModel(String name, ResourceLocation modelLocation) {
         NAMES_TO_RESOURCE_LOCATION.put(name, modelLocation);

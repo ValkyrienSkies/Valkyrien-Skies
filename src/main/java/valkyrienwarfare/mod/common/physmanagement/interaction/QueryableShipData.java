@@ -31,11 +31,11 @@ public class QueryableShipData extends WorldSavedData {
     private static final String NBT_STORAGE_KEY = ValkyrienWarfareMod.MOD_ID + "QueryableShipDataNBT";
     private ConcurrentIndexedCollection<ShipData> allShips = new ConcurrentIndexedCollection<>();
 
-    public QueryableShipData() {
+    private QueryableShipData() {
         this(MAP_STORAGE_KEY);
     }
 
-    public QueryableShipData(String name) {
+    private QueryableShipData(String name) {
         super(name);
         allShips.addIndex(HashIndex.onAttribute(ShipData.NAME));
         allShips.addIndex(UniqueIndex.onAttribute(ShipData.UUID));

@@ -247,7 +247,7 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
         if (entityIn instanceof EntityPlayer) {
             EntityPlayer player = (EntityPlayer) entityIn;
             if (player.getRidingEntity() != null &&
-                    !player.getRidingEntity().isDead && 
+                    !player.getRidingEntity().isDead &&
                     player.getRidingEntity() instanceof PhysicsWrapperEntity) {
                 AxisAlignedBB axisalignedbb = player.getEntityBoundingBox()
                         .union(player.getRidingEntity().getEntityBoundingBox()).expand(1.0D, 0.0D, 1.0D);
@@ -258,7 +258,9 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
             }
         }
 
-        if ((boundingBox.maxX - boundingBox.minX) * (boundingBox.maxY - boundingBox.minY) * (boundingBox.maxZ - boundingBox.minZ) > 10000) {
+        if ((boundingBox.maxX - boundingBox.minX) *
+                (boundingBox.maxY - boundingBox.minY) *
+                (boundingBox.maxZ - boundingBox.minZ) > 10000) {
             new Exception("Tried getting entities from giant bounding box of " + boundingBox).printStackTrace();
             return new ArrayList<>();
         }

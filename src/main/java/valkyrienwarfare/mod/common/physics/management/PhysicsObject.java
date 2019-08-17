@@ -55,11 +55,7 @@ import valkyrienwarfare.fixes.IPhysicsChunk;
 import valkyrienwarfare.mod.client.render.PhysObjectRenderManager;
 import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.common.config.VWConfig;
-import valkyrienwarfare.mod.common.coordinates.ISubspace;
-import valkyrienwarfare.mod.common.coordinates.ISubspaceProvider;
-import valkyrienwarfare.mod.common.coordinates.ImplSubspace;
-import valkyrienwarfare.mod.common.coordinates.ShipTransform;
-import valkyrienwarfare.mod.common.coordinates.ShipTransformationPacketHolder;
+import valkyrienwarfare.mod.common.coordinates.*;
 import valkyrienwarfare.mod.common.entity.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.common.math.Quaternion;
 import valkyrienwarfare.mod.common.math.Vector;
@@ -75,14 +71,8 @@ import valkyrienwarfare.mod.common.tileentity.TileEntityPhysicsInfuser;
 import valkyrienwarfare.mod.common.util.ValkyrienNBTUtils;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -239,7 +229,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 
 	public void claimNewChunks(int radius) {
 		setOwnedChunks(ValkyrienWarfareMod.VW_CHUNK_MANAGER.getManagerForWorld(getWrapperEntity().world)
-				.getNextAvaliableChunkSet(radius));
+				.getNextAvailableChunkSet(radius));
 		ValkyrienWarfareMod.VW_CHUNK_MANAGER.registerChunksForShip(getWrapperEntity());
 		claimedChunksInMap = true;
 	}

@@ -25,11 +25,9 @@ import valkyrienwarfare.mod.common.command.PhysSettingsCommand;
 
 public class VWModCommandRegistry {
 
-    // There's some Strange bug with registering commands in the Mod File (The client loading server classes, and then freaking out). Best to just do them all in
-    // a separate class
     public static void registerCommands(MinecraftServer server) {
         ServerCommandManager manager = (ServerCommandManager) server.getCommandManager();
-        manager.registerCommand(new VWCommandExecutor<>(MainCommand.class));
+        manager.registerCommand(new VWCommandBase<>(MainCommand.class));
         manager.registerCommand(new PhysSettingsCommand());
         manager.registerCommand(new AirshipSettingsCommand());
         manager.registerCommand(new AirshipMapCommand());

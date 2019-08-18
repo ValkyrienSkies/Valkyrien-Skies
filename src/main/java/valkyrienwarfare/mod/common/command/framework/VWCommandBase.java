@@ -18,11 +18,11 @@ import java.util.List;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class VWCommandExecutor<K> extends CommandBase {
+public class VWCommandBase<K> extends CommandBase {
 
     private Class<K> cmdClass;
 
-    VWCommandExecutor(Class<K> cmdClass) {
+    VWCommandBase(Class<K> cmdClass) {
         if (cmdClass.getAnnotation(Command.class) == null) {
             throw new IllegalArgumentException("Clazz must have the PicoCLI @Command annotation!");
         }

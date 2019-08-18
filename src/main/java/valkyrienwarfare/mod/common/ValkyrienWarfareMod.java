@@ -157,6 +157,7 @@ public class ValkyrienWarfareMod {
 
     @EventHandler
     public void fmlConstruct(FMLConstructionEvent event) {
+        runConfiguration();
         URLClassLoader classLoader = (URLClassLoader) getClass().getClassLoader();
         ArrayList<String> allAddons = new ArrayList<>();
         final boolean isAddonBugFixed = false;
@@ -263,7 +264,6 @@ public class ValkyrienWarfareMod {
         serializationInitAsync();
         proxy.preInit(event);
         registerNetworks(event);
-        runConfiguration(event);
         ValkyrienWarfareMod.PHYSICS_THREADS_EXECUTOR = Executors.newFixedThreadPool(VWConfig.threadCount);
         registerCapabilities();
         VW_LOGGER = Logger.getLogger("ValkyrienWarfare");
@@ -397,7 +397,7 @@ public class ValkyrienWarfareMod {
                 Items.DIAMOND, 'O', Item.getItemFromBlock(Blocks.OBSIDIAN), 'I', Items.IRON_INGOT);
     }
 
-	private void runConfiguration(FMLPreInitializationEvent event) {
+	private void runConfiguration() {
         VWConfig.sync();
 	}
 

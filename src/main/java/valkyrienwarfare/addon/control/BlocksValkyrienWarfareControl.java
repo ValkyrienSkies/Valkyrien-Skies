@@ -20,21 +20,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.item.Item;
 import net.minecraftforge.event.RegistryEvent;
-import valkyrienwarfare.addon.control.block.BlockDopedEthereum;
-import valkyrienwarfare.addon.control.block.BlockGearbox;
-import valkyrienwarfare.addon.control.block.BlockGyroscopeDampener;
-import valkyrienwarfare.addon.control.block.BlockGyroscopeStabilizer;
-import valkyrienwarfare.addon.control.block.BlockLiftControl;
-import valkyrienwarfare.addon.control.block.BlockLiftValve;
-import valkyrienwarfare.addon.control.block.BlockNetworkDisplay;
-import valkyrienwarfare.addon.control.block.BlockRotationTrainAxle;
-import valkyrienwarfare.addon.control.block.BlockShipHelm;
-import valkyrienwarfare.addon.control.block.BlockShipPassengerChair;
-import valkyrienwarfare.addon.control.block.BlockShipPilotsChair;
-import valkyrienwarfare.addon.control.block.BlockShipTelegraph;
-import valkyrienwarfare.addon.control.block.BlockShipWheel;
-import valkyrienwarfare.addon.control.block.BlockTelegraphDummy;
-import valkyrienwarfare.addon.control.block.BlockThrustRelay;
+import valkyrienwarfare.addon.control.block.*;
 import valkyrienwarfare.addon.control.block.engine.BlockNormalEngine;
 import valkyrienwarfare.addon.control.block.engine.BlockRedstoneEngine;
 import valkyrienwarfare.addon.control.block.multiblocks.BlockEtherCompressorPart;
@@ -43,6 +29,7 @@ import valkyrienwarfare.addon.control.block.multiblocks.BlockGiantPropellerPart;
 import valkyrienwarfare.addon.control.block.multiblocks.BlockRudderAxlePart;
 import valkyrienwarfare.api.addons.Module;
 import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
+import valkyrienwarfare.mod.common.config.VWConfig;
 
 public class BlocksValkyrienWarfareControl {
 
@@ -75,23 +62,23 @@ public class BlocksValkyrienWarfareControl {
     public BlocksValkyrienWarfareControl(ValkyrienWarfareControl mod_vwcontrol) {
         this.mod_vwcontrol = mod_vwcontrol;
 
-        basicEngine = (BlockNormalEngine) new BlockNormalEngine(Material.WOOD, 2000).setHardness(5f)
+        basicEngine = (BlockNormalEngine) new BlockNormalEngine(Material.WOOD, VWConfig.ENGINE_POWER.basicEnginePower).setHardness(5f)
                 .setTranslationKey("basicengine")
                 .setRegistryName(getModID(), "basicengine")
                 .setCreativeTab(ValkyrienWarfareMod.vwTab);
-        advancedEngine = (BlockNormalEngine) new BlockNormalEngine(Material.ROCK, 2500).setHardness(6f)
+        advancedEngine = (BlockNormalEngine) new BlockNormalEngine(Material.ROCK, VWConfig.ENGINE_POWER.advancedEnginePower).setHardness(6f)
                 .setTranslationKey("advancedengine")
                 .setRegistryName(getModID(), "advancedengine")
                 .setCreativeTab(ValkyrienWarfareMod.vwTab);
-        eliteEngine = (BlockNormalEngine) new BlockNormalEngine(Material.IRON, 5000).setHardness(8f)
+        eliteEngine = (BlockNormalEngine) new BlockNormalEngine(Material.IRON, VWConfig.ENGINE_POWER.eliteEnginePower).setHardness(8f)
                 .setTranslationKey("eliteengine")
                 .setRegistryName(getModID(), "eliteengine")
                 .setCreativeTab(ValkyrienWarfareMod.vwTab);
-        ultimateEngine = (BlockNormalEngine) new BlockNormalEngine(Material.GROUND, 10000).setHardness(10f)
+        ultimateEngine = (BlockNormalEngine) new BlockNormalEngine(Material.GROUND, VWConfig.ENGINE_POWER.ultimateEnginePower).setHardness(10f)
                 .setTranslationKey("ultimateengine")
                 .setRegistryName(getModID(), "ultimateengine")
                 .setCreativeTab(ValkyrienWarfareMod.vwTab);
-        redstoneEngine = (BlockRedstoneEngine) new BlockRedstoneEngine(Material.REDSTONE_LIGHT, 500).setHardness(7.0f)
+        redstoneEngine = (BlockRedstoneEngine) new BlockRedstoneEngine(Material.REDSTONE_LIGHT, VWConfig.ENGINE_POWER.redstoneEnginePower).setHardness(7.0f)
                 .setTranslationKey("redstoneengine")
                 .setRegistryName(getModID(), "redstoneengine")
                 .setCreativeTab(ValkyrienWarfareMod.vwTab);

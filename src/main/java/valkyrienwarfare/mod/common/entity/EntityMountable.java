@@ -12,9 +12,9 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import valkyrienwarfare.api.TransformType;
-import valkyrienwarfare.fixes.IPhysicsChunk;
 import valkyrienwarfare.mod.common.coordinates.CoordinateSpaceType;
 import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
+import valkyrienwarfare.mod.common.util.ValkyrienUtils;
 
 import java.util.Optional;
 
@@ -92,7 +92,7 @@ public class EntityMountable extends Entity implements IEntityAdditionalSpawnDat
         if (mountPosSpace == null) {
             throw new IllegalStateException("Mounting space type not present!");
         }
-        if (!this.isBeingRidden()) {
+        if (!getEntityWorld().isRemote && !this.isBeingRidden()) {
             this.setDead();
         }
         // Now update the position of this mounting entity.
@@ -101,12 +101,12 @@ public class EntityMountable extends Entity implements IEntityAdditionalSpawnDat
             if (!referencePos.isPresent()) {
                 throw new IllegalStateException("Mounting reference position for ship not present!");
             }
-            Optional<PhysicsObject> mountedOnto = ((IPhysicsChunk) world.getChunk(referencePos.get())).getPhysicsObjectOptional();
+            Optional<PhysicsObject> mountedOnto = getMountedShip();
             if (mountedOnto.isPresent()) {
                 entityPos = mountedOnto.get()
                         .transformVector(entityPos, TransformType.SUBSPACE_TO_GLOBAL);
             } else {
-                new IllegalStateException("Couldn't access ship with reference coordinates " + referencePos).printStackTrace();
+                // new IllegalStateException("Couldn't access ship with reference coordinates " + referencePos).printStackTrace();
                 return;
             }
 
@@ -180,5 +180,9 @@ public class EntityMountable extends Entity implements IEntityAdditionalSpawnDat
 
     public Optional<BlockPos> getReferencePos() {
         return referencePos;
+    }
+
+    public Optional<PhysicsObject> getMountedShip() {
+        return ValkyrienUtils.getPhysicsObject(world, referencePos.get(), false);
     }
 }

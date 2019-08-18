@@ -55,7 +55,13 @@ import valkyrienwarfare.fixes.IPhysicsChunk;
 import valkyrienwarfare.mod.client.render.PhysObjectRenderManager;
 import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.common.config.VWConfig;
-import valkyrienwarfare.mod.common.coordinates.*;
+import valkyrienwarfare.mod.common.coordinates.CoordinateSpaceType;
+import valkyrienwarfare.mod.common.coordinates.ISubspace;
+import valkyrienwarfare.mod.common.coordinates.ISubspaceProvider;
+import valkyrienwarfare.mod.common.coordinates.ImplSubspace;
+import valkyrienwarfare.mod.common.coordinates.ShipTransform;
+import valkyrienwarfare.mod.common.coordinates.ShipTransformationPacketHolder;
+import valkyrienwarfare.mod.common.entity.EntityMountable;
 import valkyrienwarfare.mod.common.entity.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.common.math.Quaternion;
 import valkyrienwarfare.mod.common.math.Vector;
@@ -71,8 +77,14 @@ import valkyrienwarfare.mod.common.tileentity.TileEntityPhysicsInfuser;
 import valkyrienwarfare.mod.common.util.ValkyrienNBTUtils;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -87,8 +99,6 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 	private final PhysicsWrapperEntity wrapper;
 	private final List<EntityPlayerMP> watchingPlayers;
 	private final Set<String> allowedUsers;
-	// This is used to delay mountEntity() operations by 1 tick
-	private final List<Entity> queuedEntitiesToMount;
 	private final ISubspace shipSubspace;
 	private final Set<INodeController> physicsControllers;
 	private final Set<INodeController> physicsControllersImmutable;
@@ -132,7 +142,6 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 		}
 		this.setNameCustom(false);
 		this.claimedChunksInMap = false;
-		this.queuedEntitiesToMount = new ArrayList<>();
 		this.entityLocalPositions = new TIntObjectHashMap<>();
 		this.setPhysicsEnabled(false);
 		// We need safe access to this across multiple threads.
@@ -495,14 +504,6 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 
 	public void onTick() {
 		if (!getWorldObj().isRemote) {
-			for (Entity e : queuedEntitiesToMount) {
-				if (e != null) {
-					e.startRiding(this.getWrapperEntity(), true);
-				}
-			}
-			queuedEntitiesToMount.clear();
-
-
 			if (this.getShipType() == ShipType.PHYSICS_CORE_INFUSED) {
 				TileEntity te = getWorldObj().getTileEntity(this.physicsInfuserPos);
 				boolean shouldDeconstructShip;
@@ -665,10 +666,6 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 		return getOwnedChunks().isChunkEnclosedInSet(chunkX, chunkZ);
 	}
 
-	public void queueEntityForMounting(Entity toMount) {
-		queuedEntitiesToMount.add(toMount);
-	}
-
 	/**
 	 * ONLY USE THESE 2 METHODS TO EVER ADD/REMOVE ENTITIES, OTHERWISE YOU'LL RUIN
 	 * EVERYTHING!
@@ -677,12 +674,10 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 	 * @param posInLocal
 	 */
 	public void fixEntity(Entity toFix, Vector posInLocal) {
-		EntityFixMessage entityFixingMessage = new EntityFixMessage(getWrapperEntity(), toFix, true, posInLocal);
-		for (EntityPlayerMP watcher : getWatchingPlayers()) {
-			ValkyrienWarfareControl.controlNetwork.sendTo(entityFixingMessage, watcher);
-		}
-		entityLocalPositions.put(toFix.getPersistentID()
-				.hashCode(), posInLocal);
+		EntityMountable entityMountable = new EntityMountable(getWorldObj(), posInLocal.toVec3d(), CoordinateSpaceType.SUBSPACE_COORDINATES, getReferenceBlockPos());
+
+		getWorldObj().spawnEntity(entityMountable);
+		toFix.startRiding(entityMountable);
 	}
 
 	/**
@@ -706,14 +701,28 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 	}
 
 	public boolean isEntityFixed(Entity toCheck) {
-		return entityLocalPositions.containsKey(toCheck.getPersistentID()
-				.hashCode());
+		Entity mountedOn = toCheck.getRidingEntity();
+		if (mountedOn instanceof EntityMountable) {
+			EntityMountable entityMountable = (EntityMountable) mountedOn;
+			Optional<PhysicsObject> mountedShip = entityMountable.getMountedShip();
+			if (mountedShip.isPresent()) {
+				return mountedShip.get()
+						.equals(this);
+			}
+		}
+		return false;
 	}
 
-	public Vector getLocalPositionForEntity(Entity getPositionFor) {
-		int uuidHash = getPositionFor.getPersistentID()
-				.hashCode();
-		return entityLocalPositions.get(uuidHash);
+	public Vector getLocalPositionForEntity(Entity toCheck) {
+		Entity mountedOn = toCheck.getRidingEntity();
+		if (mountedOn instanceof EntityMountable) {
+			EntityMountable entityMountable = (EntityMountable) mountedOn;
+			Optional<PhysicsObject> mountedShip = entityMountable.getMountedShip();
+			if (mountedShip.isPresent()) {
+				return new Vector(entityMountable.getMountPos());
+			}
+		}
+		return null;
 	}
 
 	public void writeToNBTTag(NBTTagCompound compound) {

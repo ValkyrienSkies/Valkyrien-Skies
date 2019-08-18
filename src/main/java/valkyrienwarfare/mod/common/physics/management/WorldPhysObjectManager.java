@@ -157,16 +157,7 @@ public class WorldPhysObjectManager {
     public PhysicsWrapperEntity getShipFixedOnto(Entity entity) {
         for (PhysicsWrapperEntity wrapper : physicsEntities) {
             if (wrapper.getPhysicsObject().isEntityFixed(entity)) {
-                if (wrapper.riddenByEntities.contains(entity)) {
-                    return wrapper;
-                }
-                // If one of the entities riding has this entity too, then be sure to check for
-                // it
-                for (Entity e : wrapper.riddenByEntities) {
-                    if (!e.isDead && e.riddenByEntities.contains(entity)) {
-                        return wrapper;
-                    }
-                }
+                return wrapper;
             }
         }
         return null;

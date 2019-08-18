@@ -41,10 +41,6 @@ import valkyrienwarfare.mod.common.entity.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.common.math.Quaternion;
 import valkyrienwarfare.mod.common.math.RotationMatrices;
 import valkyrienwarfare.mod.common.math.Vector;
-import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
-import valkyrienwarfare.mod.common.util.ValkyrienUtils;
-
-import java.util.Optional;
 
 @Mixin(EntityRenderer.class)
 public abstract class MixinEntityRenderer {
@@ -69,22 +65,6 @@ public abstract class MixinEntityRenderer {
     public void orientCamera(float partialTicks) {
         Entity entity = this.mc.getRenderViewEntity();
 
-        BlockPos playerPos = new BlockPos(entity);
-
-        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(entity.getEntityWorld(), playerPos);
-
-        if (physicsObject.isPresent()) {
-            Vector playerPosNew = new Vector(entity.posX, entity.posY, entity.posZ);
-
-            physicsObject.get()
-                    .getShipTransformationManager()
-                    .getCurrentTickTransform()
-                    .transform(playerPosNew, TransformType.SUBSPACE_TO_GLOBAL);
-            entity.posX = entity.prevPosX = entity.lastTickPosX = playerPosNew.X;
-            entity.posY = entity.prevPosY = entity.lastTickPosY = playerPosNew.Y;
-            entity.posZ = entity.prevPosZ = entity.lastTickPosZ = playerPosNew.Z;
-        }
-
         Vector eyeVector = new Vector(0, entity.getEyeHeight(), 0);
 
         if (entity instanceof EntityLivingBase && ((EntityLivingBase) entity).isPlayerSleeping()) {
@@ -96,7 +76,7 @@ public abstract class MixinEntityRenderer {
         double d2 = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * partialTicks;
 
         PhysicsWrapperEntity fixedOnto = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getShipFixedOnto(entity);
-        //Probably overkill, but this should 100% fix the crash in issue #78
+        // Probably overkill, but this should 100% fix the crash in issue #78
         if (fixedOnto != null && fixedOnto.getPhysicsObject() != null && fixedOnto.getPhysicsObject().getShipRenderer() != null && fixedOnto.getPhysicsObject().getShipRenderer().offsetPos != null) {
             Quaternion orientationQuat = fixedOnto.getPhysicsObject().getShipRenderer().getSmoothRotationQuat(partialTicks);
 

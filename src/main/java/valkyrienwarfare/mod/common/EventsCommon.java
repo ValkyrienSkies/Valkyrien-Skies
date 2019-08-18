@@ -62,6 +62,8 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
 import valkyrienwarfare.addon.combat.entity.EntityMountingWeaponBase;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.fixes.IPhysicsChunk;
+import valkyrienwarfare.mod.common.coordinates.CoordinateSpaceType;
+import valkyrienwarfare.mod.common.entity.EntityMountable;
 import valkyrienwarfare.mod.common.entity.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.common.math.RotationMatrices;
 import valkyrienwarfare.mod.common.math.Vector;
@@ -129,10 +131,9 @@ public class EventsCommon {
         if (!event.getWorld().isRemote && physicsObject.isPresent() && !(entity instanceof EntityFallingBlock)) {
             if (entity instanceof EntityMountingWeaponBase || entity instanceof EntityArmorStand
                     || entity instanceof EntityPig || entity instanceof EntityBoat) {
-                physicsObject.get()
-                        .fixEntity(entity, new Vector(entity));
-                physicsObject.get()
-                        .queueEntityForMounting(entity);
+                EntityMountable entityMountable = new EntityMountable(world, entity.getPositionVector(), CoordinateSpaceType.SUBSPACE_COORDINATES, posAt);
+                world.spawnEntity(entityMountable);
+                entity.startRiding(entityMountable);
             }
             RotationMatrices.applyTransform(physicsObject.get()
                             .getShipTransformationManager()

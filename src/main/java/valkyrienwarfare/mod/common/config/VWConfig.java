@@ -8,7 +8,9 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.common.math.Vector;
+import valkyrienwarfare.mod.common.physmanagement.relocation.ShipSpawnDetector;
 
+@SuppressWarnings("WeakerAccess") // NOTE: Any forge config option MUST be "public"
 @Config(
 		modid = ValkyrienWarfareMod.MOD_ID,
 		name = ValkyrienWarfareMod.MOD_NAME
@@ -21,7 +23,7 @@ public class VWConfig {
 	@Name("Ship Y-Height Minimum")
 	public static double shipLowerLimit = -30D;
 
-	@Name("Enable airship permissions")
+	@Name("Enable airship permissions (does nothing atm)")
 	public static boolean runAirshipPermissions = false;
 
 	@Name("Enable gravity")
@@ -77,9 +79,15 @@ public class VWConfig {
 
 	}
 
-
-
-
+	@Comment("Blocks to not be included when assembling a ship")
+	public static String[] shipSpawnDetectorBlacklist = { "minecraft:air", "minecraft:dirt", "minecraft:grass",
+			"minecraft:stone", "minecraft:tallgrass", "minecraft:water", "minecraft:flowing_water",
+			"minecraft:sand", "minecraft:sandstone", "minecraft:gravel", "minecraft:ice", "minecraft:snow",
+			"minecraft:snow_layer", "minecraft:lava", "minecraft:flowing_lava", "minecraft:grass_path",
+			"minecraft:bedrock", "minecraft:end_portal_frame", "minecraft:end_portal", "minecraft:end_gateway",
+			"minecraft:portal",
+	};
+  
 	public static Vector gravity() {
 		return new Vector(gravityVecX, gravityVecY, gravityVecZ);
 	}
@@ -89,6 +97,8 @@ public class VWConfig {
 	 */
 	public static void sync() {
 		ConfigManager.sync(ValkyrienWarfareMod.MOD_ID, Type.INSTANCE);
+
+		ShipSpawnDetector.syncWithConfig();
 	}
 
 	@Mod.EventBusSubscriber(modid = ValkyrienWarfareMod.MOD_ID)

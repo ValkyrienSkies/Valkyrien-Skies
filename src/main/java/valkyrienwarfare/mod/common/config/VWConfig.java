@@ -1,10 +1,7 @@
 package valkyrienwarfare.mod.common.config;
 
 import net.minecraftforge.common.config.Config;
-import net.minecraftforge.common.config.Config.Comment;
-import net.minecraftforge.common.config.Config.Name;
-import net.minecraftforge.common.config.Config.RangeInt;
-import net.minecraftforge.common.config.Config.Type;
+import net.minecraftforge.common.config.Config.*;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -57,6 +54,31 @@ public class VWConfig {
 	public static double gravityVecY = -9.8D;
 
 	public static double gravityVecZ = 0D;
+
+	@Name("Engine Power")
+	public static final EnginePower ENGINE_POWER = new EnginePower();
+
+	public static class EnginePower {
+
+		@RequiresMcRestart
+		public double basicEnginePower = 2000;
+
+		@RequiresMcRestart
+		public double advancedEnginePower = 2500;
+
+		@RequiresMcRestart
+		public double eliteEnginePower = 5000;
+
+		@RequiresMcRestart
+		public double ultimateEnginePower = 10000;
+
+		@RequiresMcRestart
+		public double redstoneEnginePower = 500;
+
+	}
+
+
+
 
 	public static Vector gravity() {
 		return new Vector(gravityVecX, gravityVecY, gravityVecZ);

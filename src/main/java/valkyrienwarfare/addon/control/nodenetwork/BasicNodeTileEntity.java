@@ -154,7 +154,7 @@ public abstract class BasicNodeTileEntity extends TileEntity implements IVWNodeP
         }
     }
 
-    private class IteratorCaster implements Iterator<IVWNode> {
+    private static class IteratorCaster implements Iterator<IVWNode> {
         private final Iterator toCast;
 
         private IteratorCaster(Iterator toCast) {

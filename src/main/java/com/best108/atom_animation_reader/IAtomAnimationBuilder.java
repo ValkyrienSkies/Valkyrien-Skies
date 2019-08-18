@@ -12,8 +12,6 @@ public interface IAtomAnimationBuilder {
     /**
      * Compiles the information from this builder into an animation. Throws an
      * IllegalStateException if the animation couldn't be built.
-     *
-     * @return
      */
     IAtomAnimation build(IModelRenderer modelRenderer);
 

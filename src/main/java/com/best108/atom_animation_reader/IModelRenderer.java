@@ -10,9 +10,6 @@ public interface IModelRenderer {
 
     /**
      * This render method must render the model at the origin.
-     *
-     * @param modelName
-     * @param brightness
-     */
+	 */
     void renderModel(String modelName, int renderBrightness);
 }

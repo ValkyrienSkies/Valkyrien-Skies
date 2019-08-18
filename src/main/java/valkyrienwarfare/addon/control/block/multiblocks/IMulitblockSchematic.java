@@ -12,23 +12,17 @@ public interface IMulitblockSchematic {
 
     /**
      * This should generate the getStructureRelativeToCenter() list.
-     *
-     * @param schematicID
      */
     void initializeMultiblockSchematic(String schematicID);
 
     /**
      * Should return a static immutable list that represents how this multiblock is
      * created.
-     *
-     * @return
      */
     List<BlockPosBlockPair> getStructureRelativeToCenter();
 
     /**
      * Returns the render bounding box tile entities should use while rendering this schematic.
-     *
-     * @return
      */
     default AxisAlignedBB getSchematicRenderBB(BlockPos masterPos) {
         double minX, minY, minZ, maxX, maxY, maxZ;
@@ -53,8 +47,6 @@ public interface IMulitblockSchematic {
 
     /**
      * Returns a common schematic prefix for all multiblocks of this type.
-     *
-     * @return
      */
     String getSchematicPrefix();
 
@@ -62,10 +54,6 @@ public interface IMulitblockSchematic {
 
     /**
      * Returns true if the multiblock was successfully created.
-     *
-     * @param world
-     * @param pos
-     * @return
      */
     default boolean attemptToCreateMultiblock(World world, BlockPos pos) {
         if (getStructureRelativeToCenter().size() == 0) {
@@ -115,8 +103,6 @@ public interface IMulitblockSchematic {
      * <p>
      * The order in which the schematics are in this list will be used as priority
      * order for which schematic variants are tested for first.
-     *
-     * @return
      */
     List<IMulitblockSchematic> generateAllVariants();
 

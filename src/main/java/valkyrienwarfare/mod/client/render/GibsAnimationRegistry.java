@@ -28,11 +28,11 @@ public class GibsAnimationRegistry {
             Set<String> modelsUsed = animationBuilder.getModelObjsUsed();
             String resourceDomainName = location.getNamespace();
 
-            String modelResourceFolder = "";
+            StringBuilder modelResourceFolder = new StringBuilder();
             String[] temp = location.getPath()
                     .split("/");
             for (int i = 1; i < temp.length - 1; i++) {
-                modelResourceFolder += temp[i] + "/";
+                modelResourceFolder.append(temp[i]).append("/");
             }
 
             for (String modelName : modelsUsed) {
@@ -41,7 +41,7 @@ public class GibsAnimationRegistry {
                 GibsModelRegistry.registerGibsModel(modelFullPath, modelToRegister);
             }
 
-            final String modelResourceFolderFinal = modelResourceFolder;
+            final String modelResourceFolderFinal = modelResourceFolder.toString();
             ANIMATION_MAP.put(name, animationBuilder.build((modelName, renderBrightness) ->
                     GibsModelRegistry.renderGibsModel(modelResourceFolderFinal + modelName, renderBrightness)));
         } catch (IOException e) {

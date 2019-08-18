@@ -109,9 +109,8 @@ public abstract class BlockAirshipEngine extends Block implements IBlockForcePro
     }
 
     /**
-     * Used for calculating force applied to the airship by an engine. Override this in your subclasses to make engines that are more dynamic than simply being faster engines.
-     *
-     * @return
+     * Used for calculating force applied to the airship by an engine.
+     * Override this in your subclasses to make engines that are more dynamic than simply being faster engines.
      */
     public double getEnginePower(World world, BlockPos pos, IBlockState state, PhysicsObject physicsObject) {
         return this.enginePower;

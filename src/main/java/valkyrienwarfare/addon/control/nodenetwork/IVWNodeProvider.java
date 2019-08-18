@@ -24,8 +24,6 @@ public interface IVWNodeProvider {
 
     /**
      * Shifts all of the internal state data, like connections to other nodes.
-     *
-     * @param offset
      */
     default void shiftInternalData(BlockPos offset) {
         getNode().shiftConnections(offset);
@@ -35,8 +33,6 @@ public interface IVWNodeProvider {
      * This is the result from all of the graphing code. We specifically want
      * nothing external to interact with anything but this, to so we can easily
      * replacing graph code.
-     *
-     * @return
      */
     Iterable<IVWNode> getNetworkedConnections();
 }

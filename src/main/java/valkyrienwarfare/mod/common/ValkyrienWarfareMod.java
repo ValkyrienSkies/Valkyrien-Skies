@@ -41,15 +41,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLConstructionEvent;
-import net.minecraftforge.fml.common.event.FMLFingerprintViolationEvent;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
-import net.minecraftforge.fml.common.event.FMLStateEvent;
+import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -68,39 +60,22 @@ import valkyrienwarfare.mod.common.block.BlockPhysicsInfuserDummy;
 import valkyrienwarfare.mod.common.command.framework.VWModCommandRegistry;
 import valkyrienwarfare.mod.common.config.VWConfig;
 import valkyrienwarfare.mod.common.item.ItemPhysicsCore;
-import valkyrienwarfare.mod.common.network.PhysWrapperPositionHandler;
-import valkyrienwarfare.mod.common.network.PhysWrapperPositionMessage;
-import valkyrienwarfare.mod.common.network.SubspacedEntityRecordHandler;
-import valkyrienwarfare.mod.common.network.SubspacedEntityRecordMessage;
-import valkyrienwarfare.mod.common.network.VWGuiButtonHandler;
-import valkyrienwarfare.mod.common.network.VWGuiButtonMessage;
+import valkyrienwarfare.mod.common.network.*;
 import valkyrienwarfare.mod.common.physics.management.DimensionPhysObjectManager;
 import valkyrienwarfare.mod.common.physmanagement.VW_APIPhysicsEntityManager;
-import valkyrienwarfare.mod.common.physmanagement.chunk.DimensionPhysicsChunkManager;
-import valkyrienwarfare.mod.common.physmanagement.chunk.IVWWorldDataCapability;
-import valkyrienwarfare.mod.common.physmanagement.chunk.ImplVWWorldDataCapability;
-import valkyrienwarfare.mod.common.physmanagement.chunk.StorageVWWorldData;
-import valkyrienwarfare.mod.common.physmanagement.chunk.VWChunkClaim;
+import valkyrienwarfare.mod.common.physmanagement.chunk.*;
 import valkyrienwarfare.mod.common.physmanagement.interaction.ShipData;
 import valkyrienwarfare.mod.common.physmanagement.interaction.ShipPositionData;
 import valkyrienwarfare.mod.common.tileentity.TileEntityPhysicsInfuser;
 import valkyrienwarfare.mod.proxy.CommonProxy;
 import valkyrienwarfare.mod.proxy.ServerProxy;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Scanner;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -147,17 +122,14 @@ public class ValkyrienWarfareMod {
 
     private static File getWorkingFolder() {
         File toBeReturned;
-        try {
-            if (FMLCommonHandler.instance().getSide().isClient()) {
-                toBeReturned = Minecraft.getMinecraft().gameDir;
-            } else {
-                toBeReturned = FMLCommonHandler.instance().getMinecraftServerInstance().getFile("");
-            }
-            return toBeReturned;
-        } catch (Exception e) {
-            e.printStackTrace();
+
+        if (FMLCommonHandler.instance().getSide().isClient()) {
+            toBeReturned = Minecraft.getMinecraft().gameDir;
+        } else {
+            toBeReturned = FMLCommonHandler.instance().getMinecraftServerInstance().getFile("");
         }
-        return null;
+
+        return toBeReturned;
     }
 
     private static void registerAddon(Module module) {
@@ -203,13 +175,9 @@ public class ValkyrienWarfareMod {
         if (!MixinLoaderForge.isObfuscatedEnvironment) { // if in dev, read default addons from gradle output folder
             File f = ValkyrienWarfareMod.getWorkingFolder();
             File defaultAddons;
-            String[] list = f.list();
-            boolean rootDir = false;
-            for (String s : list) {
-                if (s.endsWith("build.gradle")) {
-                    rootDir = true;
-                }
-            }
+            String[] list = Objects.requireNonNull(f.list());
+            boolean rootDir = Arrays.stream(list).anyMatch(s -> s.endsWith("build.gradle"));
+
             if (rootDir) { // assume root directory
                 defaultAddons = new File(f.getPath() + File.separatorChar + "src" + File.separatorChar + "main"
                         + File.separatorChar + "resources" + File.separatorChar + "vwAddon_default");

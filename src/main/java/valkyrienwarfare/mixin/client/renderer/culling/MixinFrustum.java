@@ -18,8 +18,6 @@ public abstract class MixinFrustum {
     /**
      * Temp code until I can manage to properly mixin displace TileEntity.getRenderBoundingBox() for every tile entity.
      *
-     * @param axisAlignedBB
-     * @return
      * @author thebest108
      */
     @Overwrite

@@ -74,11 +74,11 @@ public class ShipTransformationBuffer {
     	*/
     }
 
-    private class BezierWeightGenerator {
+    private static class BezierWeightGenerator {
 
         private final int order;
 
-        public BezierWeightGenerator(int order) {
+        BezierWeightGenerator(int order) {
             this.order = order;
         }
 

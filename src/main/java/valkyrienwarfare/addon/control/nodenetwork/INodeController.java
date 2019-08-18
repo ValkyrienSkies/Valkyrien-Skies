@@ -28,17 +28,11 @@ public interface INodeController extends Comparable<INodeController> {
 
     /**
      * Does nothing by default, insert processor logic here
-     *
-     * @param object
-     * @param calculations
-     * @param secondsToSimulate
      */
     void onPhysicsTick(PhysicsObject object, PhysicsCalculations calculations, double secondsToSimulate);
 
     /**
      * Returns the position of the TileEntity that is behind this interface.
-     *
-     * @return
      */
     BlockPos getNodePos();
 

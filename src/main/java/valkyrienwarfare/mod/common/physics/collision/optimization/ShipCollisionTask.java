@@ -205,7 +205,7 @@ public class ShipCollisionTask implements Callable<Void> {
      * @param <E>
      * @author thebest108
      */
-    private class QuasiRandomIterator<E> implements Iterator<E> {
+    private static class QuasiRandomIterator<E> implements Iterator<E> {
 
         // Any large prime number works here.
         private final static int c = 65537;
@@ -217,8 +217,6 @@ public class ShipCollisionTask implements Callable<Void> {
         /**
          * Creates a new quasi random iterator for the given list, the list passed must
          * not be empty otherwise an IllegalArgumentException is thrown.
-         *
-         * @param list
          */
         QuasiRandomIterator(List<E> list) {
             if (list.size() == 0) {

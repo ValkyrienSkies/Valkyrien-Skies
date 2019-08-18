@@ -63,7 +63,6 @@ public abstract class MixinEntityRenderer {
     public Entity pointedEntity;
 
     /**
-     * @param partialTicks
      * @author thebest108
      */
     @Overwrite

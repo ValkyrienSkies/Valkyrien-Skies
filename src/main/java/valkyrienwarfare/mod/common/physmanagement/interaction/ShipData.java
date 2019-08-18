@@ -93,6 +93,7 @@ public final class ShipData {
         }
     }
 
+    @Nullable
     public ShipPositionData getPositionData() {
         return positionData;
     }

@@ -32,10 +32,6 @@ public interface IAtomAnimation {
     /**
      * Renders the animation node with the given model name. If there is no node with the given model name, then nothing
      * is rendered.
-     *
-     * @param nodeName
-     * @param keyframe
-     * @param brightness
      */
     void renderAnimationNode(String nodeName, double keyframe, int brightness);
 }

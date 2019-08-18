@@ -34,18 +34,18 @@ import java.util.HashMap;
 
 public class BlockPhysicsDetails {
 
-    public static final String BLOCK_MASS_VERSION = "v0.1";
+    static final String BLOCK_MASS_VERSION = "v0.1";
     // A 1x1x1 cube of DEFAULT is 500kg.
     private final static double DEFAULT_MASS = 500D;
 
     /**
      * Blocks mapped to their mass.
      */
-    public static final HashMap<Block, Double> blockToMass = new HashMap<>();
+    private static final HashMap<Block, Double> blockToMass = new HashMap<>();
     /**
      * Materials mapped to their mass.
      */
-    public static final HashMap<Material, Double> materialMass = new HashMap<>();
+    private static final HashMap<Material, Double> materialMass = new HashMap<>();
     /**
      * Blocks that should not be infused with physics.
      */
@@ -117,7 +117,7 @@ public class BlockPhysicsDetails {
     /**
      * Get block mass, in kg.
      */
-    public static double getMassFromState(IBlockState state, BlockPos pos, World world) {
+    static double getMassFromState(IBlockState state, BlockPos pos, World world) {
         Block block = state.getBlock();
         if (block instanceof IBlockMassProvider) {
             return ((IBlockMassProvider) block).getBlockMass(world, pos, state);
@@ -126,11 +126,11 @@ public class BlockPhysicsDetails {
         }
     }
 
-    public static double getMassOfMaterial(Material material) {
+    private static double getMassOfMaterial(Material material) {
         return materialMass.getOrDefault(material, DEFAULT_MASS);
     }
 
-    public static double getMassOfBlock(Block block) {
+    private static double getMassOfBlock(Block block) {
         if (block instanceof BlockLiquid) {
             return 0D;
         } else if (blockToMass.get(block) != null) {
@@ -142,16 +142,9 @@ public class BlockPhysicsDetails {
 
     /**
      * Assigns the output parameter of toSet to be the force Vector for the given IBlockState.
-     *
-     * @param state
-     * @param pos
-     * @param world
-     * @param secondsToApply
-     * @param obj
-     * @param toSet
      */
-    public static void getForceFromState(IBlockState state, BlockPos pos, World world, double secondsToApply,
-                                         PhysicsObject obj, Vector toSet) {
+    static void getForceFromState(IBlockState state, BlockPos pos, World world, double secondsToApply,
+                                  PhysicsObject obj, Vector toSet) {
         Block block = state.getBlock();
         if (block instanceof IBlockForceProvider) {
             Vector forceVector = ((IBlockForceProvider) block).getBlockForceInWorldSpace(world, pos, state,
@@ -168,11 +161,6 @@ public class BlockPhysicsDetails {
 
     /**
      * Returns true if the given IBlockState can create force; otherwise it returns false.
-     *
-     * @param state
-     * @param pos
-     * @param world
-     * @return
      */
     public static boolean isBlockProvidingForce(IBlockState state, BlockPos pos, World world) {
         Block block = state.getBlock();

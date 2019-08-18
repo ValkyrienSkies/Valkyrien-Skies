@@ -22,55 +22,30 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.world.World;
+import valkyrienwarfare.mod.common.config.VWConfig;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 public class ShipSpawnDetector extends SpatialDetector {
 
-    private static final List<Block> blackList = new ArrayList<>();
+    private static final Set<Block> blacklist = new CopyOnWriteArraySet<>();
 
-    static {
-        blackList.add(Blocks.AIR);
-        blackList.add(Blocks.DIRT);
-        blackList.add(Blocks.GRASS);
-        blackList.add(Blocks.STONE);
-        blackList.add(Blocks.TALLGRASS);
-        // blackList.add(Blocks.LEAVES);
-        // blackList.add(Blocks.LEAVES2);
-        blackList.add(Blocks.WATER);
-        blackList.add(Blocks.FLOWING_WATER);
-        blackList.add(Blocks.SAND);
-        blackList.add(Blocks.SANDSTONE);
-        blackList.add(Blocks.GRAVEL);
-        blackList.add(Blocks.ICE);
-        blackList.add(Blocks.SNOW);
-        blackList.add(Blocks.SNOW_LAYER);
-        blackList.add(Blocks.LAVA);
-        blackList.add(Blocks.FLOWING_LAVA);
-        blackList.add(Blocks.GRASS_PATH);
-        blackList.add(Blocks.BEDROCK);
-        blackList.add(Blocks.END_PORTAL_FRAME);
-        blackList.add(Blocks.END_PORTAL);
-        blackList.add(Blocks.END_GATEWAY);
-        blackList.add(Blocks.PORTAL);
-    }
+    /**
+     * This is called by {@link VWConfig#sync}
+     */
+    public static void syncWithConfig() {
+        blacklist.clear();
 
-    public static void registerBlacklistEntry(Block block)  {
-        synchronized (blackList) {
-            if (block == null) {
-                throw new NullPointerException("block");
-            } else {
-                if (!blackList.contains(block)) {
-                    blackList.add(block);
-                }
-            }
-        }
+        Arrays.stream(VWConfig.shipSpawnDetectorBlacklist)
+                .map(Block::getBlockFromName)
+                .forEach(blacklist::add);
     }
 
     private final MutableBlockPos mutablePos = new MutableBlockPos();
 
-    public ShipSpawnDetector(BlockPos start, World worldIn, int maximum, boolean checkCorners) {
+    ShipSpawnDetector(BlockPos start, World worldIn, int maximum, boolean checkCorners) {
         super(start, worldIn, maximum, checkCorners);
         startDetection();
     }
@@ -83,12 +58,7 @@ public class ShipSpawnDetector extends SpatialDetector {
             cleanHouse = true;
             return false;
         }
-        return !blackList.contains(state.getBlock());
-        // if(state.getBlock()==Blocks.BEDROCK){
-        // this.cleanHouse = true;
-        // return false;
-        // }
-        // return !cache.getBlockState(x,y,z).getBlock().isAir(state, this.worldObj, this.tempPos.setPos(x, y, z));
+        return !blacklist.contains(state.getBlock());
     }
 
 }

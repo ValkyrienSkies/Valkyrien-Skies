@@ -18,11 +18,11 @@ import java.util.List;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class VWCommandExecutor<K> extends CommandBase {
+public class VWCommandBase<K> extends CommandBase {
 
     private Class<K> cmdClass;
 
-    VWCommandExecutor(Class<K> cmdClass) {
+    VWCommandBase(Class<K> cmdClass) {
         if (cmdClass.getAnnotation(Command.class) == null) {
             throw new IllegalArgumentException("Clazz must have the PicoCLI @Command annotation!");
         }
@@ -76,8 +76,15 @@ public class VWCommandExecutor<K> extends CommandBase {
 
         @Override
         public void print(String string) {
+            string = string.replace("\r", "");
             sender.sendMessage(new TextComponentString(string));
         }
+
+        @Override
+		public void println(String string) {
+        	this.print(string);
+		}
+
     }
 
 }

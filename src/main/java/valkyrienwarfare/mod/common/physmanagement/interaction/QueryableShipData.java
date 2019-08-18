@@ -25,6 +25,7 @@ import java.util.UUID;
 import static com.googlecode.cqengine.query.QueryFactory.equal;
 
 @MethodsReturnNonnullByDefault
+@SuppressWarnings("WeakerAccess")
 public class QueryableShipData extends WorldSavedData {
 
     private static final String MAP_STORAGE_KEY = ValkyrienWarfareMod.MOD_ID + "QueryableShipData";

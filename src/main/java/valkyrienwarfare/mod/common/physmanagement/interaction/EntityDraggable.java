@@ -43,8 +43,6 @@ public class EntityDraggable {
 
     /**
      * Moves entities such that they move with the ship below them.
-     *
-     * @param world
      */
     public static void tickAddedVelocityForWorld(World world) {
         try {
@@ -82,10 +80,8 @@ public class EntityDraggable {
 
     /**
      * Adds the ship below velocity to entity.
-     *
-     * @param entity
      */
-    public static void addEntityVelocityFromShipBelow(Entity entity) {
+    private static void addEntityVelocityFromShipBelow(Entity entity) {
         IDraggable draggable = EntityDraggable.getDraggableFromEntity(entity);
         if (draggable.getWorldBelowFeet() != null && !ValkyrienWarfareMod.VW_PHYSICS_MANAGER.isEntityFixed(entity)) {
             ShipTransformationManager coordTransform = draggable.getWorldBelowFeet().getPhysicsObject().getShipTransformationManager();

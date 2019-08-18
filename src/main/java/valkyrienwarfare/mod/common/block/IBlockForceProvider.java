@@ -31,13 +31,6 @@ public interface IBlockForceProvider {
     /**
      * The World space version of the force vector, calculated by default from the
      * Ship space vector, do not override unless you have a good reason to.
-     *
-     * @param world
-     * @param pos
-     * @param state
-     * @param physicsObject
-     * @param secondsToApply
-     * @return
      */
     @Nullable
     default Vector getBlockForceInWorldSpace(World world, BlockPos pos, IBlockState state, PhysicsObject physicsObject,
@@ -60,13 +53,6 @@ public interface IBlockForceProvider {
     /**
      * The force Vector this block gives within its local space (Not within World
      * space).
-     *
-     * @param world
-     * @param pos
-     * @param state
-     * @param physicsObject
-     * @param secondsToApply
-     * @return
      */
     @Nullable
     Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state, PhysicsObject physicsObject,
@@ -75,25 +61,12 @@ public interface IBlockForceProvider {
     /**
      * Blocks that shouldn't have their force rotated (Like Ether Compressors) must
      * return false.
-     *
-     * @param world
-     * @param pos
-     * @param state
-     * @param secondsToApply
-     * @return
      */
     boolean shouldLocalForceBeRotated(World world, BlockPos pos, IBlockState state, double secondsToApply);
 
     /**
      * This method returns null if no changes are needed, however some blocks like
      * the balloon Burner need to apply their force in a different position.
-     *
-     * @param world
-     * @param pos
-     * @param state
-     * @param physicsObject
-     * @param secondsToApply
-     * @return
      */
     @Nullable
     default Vector getCustomBlockForcePosition(World world, BlockPos pos, IBlockState state, PhysicsObject physicsObject,
@@ -104,8 +77,6 @@ public interface IBlockForceProvider {
     /**
      * Returns true if this force provider uses 'simulated airflow' particles.
      * Useful to make certain engines not function when placed indoors.
-     *
-     * @return
      */
     default boolean doesForceSpawnParticles() {
         return false;

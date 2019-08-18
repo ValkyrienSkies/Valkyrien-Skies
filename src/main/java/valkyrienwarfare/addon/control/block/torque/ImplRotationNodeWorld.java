@@ -6,14 +6,7 @@ import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
 import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
 
@@ -36,8 +29,6 @@ public class ImplRotationNodeWorld implements IRotationNodeWorld {
 
     /**
      * This can be run by any thread.
-     *
-     * @param task
      */
     @Override
     public void enqueueTaskOntoNode(Consumer<IRotationNode> task, BlockPos taskPos) {
@@ -107,13 +98,7 @@ public class ImplRotationNodeWorld implements IRotationNodeWorld {
     }
 
     /**
-     * @param start
-     * @param from
-     * @param sideFrom
-     * @param nodesToVisit
-     * @param timeDelta
      * @param multiplier   The relative ratio of w_i / w_0.
-     * @return
      */
     private NodeTaskProcessed processNodeNetwork(IRotationNode start, IRotationNode from, EnumFacing sideFrom, List<IRotationNode> nodesToVisit, double timeDelta, double multiplier) {
         if (!nodesToVisit.contains(start) && from != null) {
@@ -177,7 +162,6 @@ public class ImplRotationNodeWorld implements IRotationNodeWorld {
     /**
      * This can only be called by the physics thread.
      *
-     * @param pos
      * @return The node at that pos if there is one, null otherwise.
      */
     @PhysicsThreadOnly
@@ -189,9 +173,7 @@ public class ImplRotationNodeWorld implements IRotationNodeWorld {
     /**
      * This can only be called by the physics thread.
      *
-     * @param pos
-     * @param node
-     * @return The prevous node if there was one, null otherwise.
+     * @return The previous node if there was one, null otherwise.
      */
     @PhysicsThreadOnly()
     @Override
@@ -205,8 +187,7 @@ public class ImplRotationNodeWorld implements IRotationNodeWorld {
     /**
      * This can only be called by the physics thread.
      *
-     * @param pos
-     * @return The prevous node if there was one, null otherwise.
+     * @return The previous node if there was one, null otherwise.
      */
     @PhysicsThreadOnly()
     @Override

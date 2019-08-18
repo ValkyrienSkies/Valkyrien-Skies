@@ -19,8 +19,6 @@ public interface IBlockTorqueProvider extends Comparable<IBlockTorqueProvider> {
      * Lower numbers will put this Block at a higher priority for adding torque to
      * the rigid body; a higher number is used to put this Block at a lower
      * priority.
-     *
-     * @return
      */
     default int getBlockSortingIndex() {
         return 0;

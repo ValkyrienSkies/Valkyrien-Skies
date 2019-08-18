@@ -318,7 +318,7 @@ public class EntityCollisionInjector {
             entity.fallDistance = (float) (entity.fallDistance - entity.motionY);
         }
 
-        if (/** entity.canTriggerWalking() **/
+        if (/* entity.canTriggerWalking() **/
                 entity instanceof EntityPlayer && !entity.isRiding()) {
             if (dy != origDy) {
                 // if (!(entity.motionY > 0 && dy > 0)) {

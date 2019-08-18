@@ -19,6 +19,8 @@ package valkyrienwarfare.mod.common.physmanagement.chunk;
 import net.minecraft.world.World;
 import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 
+import java.util.Objects;
+
 import static valkyrienwarfare.mod.common.physmanagement.chunk.ShipChunkAllocator.MAX_SHIP_CHUNK_RADIUS;
 
 /**
@@ -35,7 +37,7 @@ public class PhysicsChunkManager {
         return likelyLegacy || ShipChunkAllocator.isLikelyShipChunk(chunkX, chunkZ);
     }
 
-    public PhysicsChunkManager(World worldFor) {
+    PhysicsChunkManager(World worldFor) {
         worldObj = worldFor;
     }
 
@@ -44,13 +46,14 @@ public class PhysicsChunkManager {
     /**
      * This finds the next empty chunkSet for use, currently only increases the xPos
      * to get new positions
-     *
-     * @return
      */
-    public VWChunkClaim getNextAvaliableChunkSet(int radius) {
-        IVWWorldDataCapability worldDataCapability = worldObj.getCapability(ValkyrienWarfareMod.vwWorldData, null);
+    public VWChunkClaim getNextAvailableChunkSet(int radius) {
+        IVWWorldDataCapability worldDataCapability =
+                worldObj.getCapability(ValkyrienWarfareMod.vwWorldData, null);
+
         // TODO: Add the ship id to the allocation eventually.
-        ShipChunkAllocator.ChunkAllocation allocatedChunks = worldDataCapability.getChunkAllocator()
+        ShipChunkAllocator.ChunkAllocation allocatedChunks = Objects.requireNonNull(worldDataCapability)
+                .getChunkAllocator()
                 .allocateChunks("insert ship id here", radius);
 
         return new VWChunkClaim(allocatedChunks.lowerChunkX + MAX_SHIP_CHUNK_RADIUS, allocatedChunks.lowerChunkZ + MAX_SHIP_CHUNK_RADIUS, radius);

@@ -80,8 +80,8 @@ public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer<TileE
         }
     }
 
-    protected void renderWire(double x, double y, double z, double entity1x, double entity1y, double entity1z,
-                              double entity2x, double entity2y, double entity2z) {
+    private void renderWire(double x, double y, double z, double entity1x, double entity1y, double entity1z,
+                            double entity2x, double entity2y, double entity2z) {
         GlStateManager.enableAlpha();
         GlStateManager.enableBlend();
         float wireR = .6f;

@@ -6,18 +6,12 @@ public interface ISubspace {
 
     /**
      * True if this subspace has a coordinate for the given ISubspacedEntity.
-     *
-     * @param subspaced
-     * @return
      */
     boolean hasRecordForSubspacedEntity(ISubspacedEntity subspaced);
 
     /**
      * Returns the coordinates Vector for the given ISubspacedEntity relative to
      * this ISubSpace.
-     *
-     * @param subspaced
-     * @return
      */
     @Nullable
     ISubspacedEntityRecord getRecordForSubspacedEntity(ISubspacedEntity subspaced);
@@ -34,8 +28,6 @@ public interface ISubspace {
     /**
      * Returns GLOBAL if this subspace is the world, and SUBSPACE for PhysicsObject
      * subspaces.
-     *
-     * @return
      */
     CoordinateSpaceType getSubspaceCoordinatesType();
 
@@ -49,8 +41,6 @@ public interface ISubspace {
      * Returns the entityID for the PhysicsWrapperEntity that owns this subspace. If
      * however this is called on the world subspace then an IllegalStateException is
      * thrown.
-     *
-     * @return
      */
     int getSubspaceParentEntityID();
 

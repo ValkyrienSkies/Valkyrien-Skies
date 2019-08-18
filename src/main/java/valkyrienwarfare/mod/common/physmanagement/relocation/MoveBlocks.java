@@ -78,7 +78,7 @@ public class MoveBlocks {
                 newInstance = TileEntity.create(world, tileEntNBT);
             }
             // Order the IVWNodeProvider to move by the given offset.
-            if (newInstance != null && newInstance instanceof IVWNodeProvider) {
+            if (newInstance instanceof IVWNodeProvider) {
                 ((IVWNodeProvider) newInstance).shiftInternalData(newPos.subtract(oldPos));
                 if (physicsObjectOptional.isPresent()) {
                     ((IVWNodeProvider) newInstance)
@@ -94,10 +94,7 @@ public class MoveBlocks {
             try {
                 newInstance.validate();
                 world.setTileEntity(newPos, newInstance);
-                if (physicsObjectOptional.isPresent()) {
-                    physicsObjectOptional.get()
-                            .onSetTileEntity(newPos, newInstance);
-                }
+                physicsObjectOptional.ifPresent(physicsObject -> physicsObject.onSetTileEntity(newPos, newInstance));
                 newInstance.markDirty();
             } catch (Exception e) {
                 e.printStackTrace();

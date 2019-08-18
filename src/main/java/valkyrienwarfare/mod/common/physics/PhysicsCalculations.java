@@ -41,13 +41,7 @@ import valkyrienwarfare.mod.common.physics.management.ShipTransformationManager;
 import valkyrienwarfare.mod.common.util.ValkyrienNBTUtils;
 
 import javax.vecmath.Matrix3d;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PhysicsCalculations {
@@ -339,10 +333,7 @@ public class PhysicsCalculations {
 
         if (VWConfig.doPhysicsBlocks) {
             // We want to loop through all the physics nodes in a sorted order. Priority Queue handles that.
-            Queue<INodeController> nodesPriorityQueue = new PriorityQueue<INodeController>();
-            for (INodeController processor : parent.getPhysicsControllersInShip()) {
-                nodesPriorityQueue.add(processor);
-            }
+            Queue<INodeController> nodesPriorityQueue = new PriorityQueue<>(parent.getPhysicsControllersInShip());
 
             while (nodesPriorityQueue.size() > 0) {
                 INodeController controller = nodesPriorityQueue.poll();

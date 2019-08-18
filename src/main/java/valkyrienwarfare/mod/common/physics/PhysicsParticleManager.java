@@ -51,7 +51,7 @@ public class PhysicsParticleManager {
         this.physicsParticles = aliveParticles;
     }
 
-    private class PhysicsParticle {
+    private static class PhysicsParticle {
 
         private float posX;
         private float posY;
@@ -65,7 +65,7 @@ public class PhysicsParticleManager {
         private boolean isParticleDead;
         private boolean addMomentumToShip;
 
-        public PhysicsParticle(float posX, float posY, float posZ, float velX, float velY, float velZ, float mass, float particleLife) {
+        PhysicsParticle(float posX, float posY, float posZ, float velX, float velY, float velZ, float mass, float particleLife) {
             this.posX = posX;
             this.posY = posY;
             this.posZ = posZ;

@@ -1,5 +1,6 @@
 package valkyrienwarfare.mod.common.tileentity;
 
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -19,7 +20,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
-import valkyrienwarfare.fixes.IPhysicsChunk;
 import valkyrienwarfare.fixes.VWNetwork;
 import valkyrienwarfare.mod.client.gui.IVWTileGui;
 import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
@@ -71,8 +71,7 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
     public void update() {
         // Check if we have to create a ship
         if (!getWorld().isRemote) {
-            IPhysicsChunk chunk = (IPhysicsChunk) getWorld().getChunk(getPos());
-            Optional<PhysicsObject> parentShip = chunk.getPhysicsObjectOptional();
+            Optional<PhysicsObject> parentShip = ValkyrienUtils.getPhysicsObject(getWorld(), getPos(), false);
             // Set the physics and align value to false if we're not in a ship
             if (!parentShip.isPresent()) {
                 if (physicsEnabled || tryingToAlignShip) {
@@ -102,8 +101,12 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
                 // Create a ship with this physics infuser
                 // Make sure we don't try to create a ship when we're already in ship space.
                 if (!PhysicsChunkManager.isLikelyShipChunk(getPos().getX() >> 4, getPos().getZ() >> 4)) {
-                    PhysicsWrapperEntity ship = new PhysicsWrapperEntity(this);
-                    getWorld().spawnEntity(ship);
+                    try {
+                        PhysicsWrapperEntity ship = new PhysicsWrapperEntity(this);
+                        getWorld().spawnEntity(ship);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                     // Also tell the watching players to open the new guy
                     // BlockPos newInfuserPos = ship.getPhysicsObject().getPhysicsInfuserPos();
                 }
@@ -190,6 +193,7 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
     }
 
     @Override
+    @MethodsReturnNonnullByDefault
     public NBTTagCompound getUpdateTag() {
         return this.writeToNBT(new NBTTagCompound());
     }
@@ -281,19 +285,12 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
     }
 
     /**
-     * If this TileEntity is in a ship then this returns whether that ship can be deconstructed or not, otherwise this returns true.
-     *
-     * @return
+     * @return If this TileEntity is in a ship then this returns whether that ship can be deconstructed or not, otherwise this returns true.
      */
     public boolean canShipBeDeconstructed() {
         Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(getWorld(), getPos());
-        if (physicsObject.isPresent()) {
-            return physicsObject.get()
-                    .canShipBeDeconstructed();
-        } else {
-            // No ship, so we don't really worry about it; just return true.
-            return true;
-        }
+        return !physicsObject.isPresent() || physicsObject.get()
+                .canShipBeDeconstructed();
     }
 
     @Override
@@ -303,13 +300,9 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
 
     public boolean isCenterOfShip() {
         Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(getWorld(), getPos());
-        if (physicsObject.isPresent()) {
-            return physicsObject.get()
-                    .getPhysicsInfuserPos()
-                    .equals(getPos());
-        } else {
-            return true;
-        }
+        return !physicsObject.isPresent() || physicsObject.get()
+                .getPhysicsInfuserPos()
+                .equals(getPos());
     }
 
     @SideOnly(Side.CLIENT)

@@ -16,7 +16,6 @@
 
 package valkyrienwarfare.mod.common.physics.management;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 import valkyrienwarfare.mod.common.entity.PhysicsWrapperEntity;
 
@@ -57,10 +56,6 @@ public class DimensionPhysObjectManager {
 
     public void removeWorld(World world) {
         managerPerWorld.remove(world);
-    }
-
-    public PhysicsWrapperEntity getShipFixedOnto(Entity entity) {
-        return getManagerForWorld(entity.world).getShipFixedOnto(entity);
     }
 
 }

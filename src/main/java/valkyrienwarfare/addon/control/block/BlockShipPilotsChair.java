@@ -83,8 +83,7 @@ public class BlockShipPilotsChair extends BlockPilotableBasic {
                         if (entityDraggable.getWorldBelowFeet() == wrapperEntity) {
                             playerIn.startRiding(wrapperEntity);
                             Vector localMountPos = getPlayerMountOffset(state, pos);
-                            wrapperEntity.getPhysicsObject()
-                                    .fixEntity(playerIn, localMountPos);
+                            ValkyrienUtils.fixEntityToShip(playerIn, localMountPos, wrapperEntity.getPhysicsObject());
                         }
 
                         ((TileEntityPilotsChair) tileEntity).setPilotEntity(playerIn);

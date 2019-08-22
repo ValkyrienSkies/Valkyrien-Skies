@@ -18,7 +18,6 @@ package valkyrienwarfare.mod.common.physics.management;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import net.minecraft.entity.Entity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 import valkyrienwarfare.mod.common.entity.PhysicsWrapperEntity;
@@ -148,19 +147,6 @@ public class WorldPhysObjectManager {
         }
 
         return ships;
-    }
-
-    public boolean isEntityFixed(Entity entity) {
-        return getShipFixedOnto(entity) != null;
-    }
-
-    public PhysicsWrapperEntity getShipFixedOnto(Entity entity) {
-        for (PhysicsWrapperEntity wrapper : physicsEntities) {
-            if (wrapper.getPhysicsObject().isEntityFixed(entity)) {
-                return wrapper;
-            }
-        }
-        return null;
     }
 
     private long getLongFromInts(int x, int z) {

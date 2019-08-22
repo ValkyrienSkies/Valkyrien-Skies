@@ -6,7 +6,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.fixes.IPhysicsChunk;
+import valkyrienwarfare.mod.common.coordinates.CoordinateSpaceType;
 import valkyrienwarfare.mod.common.entity.EntityMountable;
+import valkyrienwarfare.mod.common.math.Vector;
 import valkyrienwarfare.mod.common.physics.collision.polygons.Polygon;
 import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 
@@ -19,9 +21,9 @@ public class ValkyrienUtils {
     /**
      * The liver of this mod. Returns the PhysicsObject that managed the given pos in the given world.
      *
-     * @param world
-     * @param pos
-     * @return
+     * @param world The World we are in
+     * @param pos A BlockPos within the physics object space.
+     * @return The PhysicsObject that owns the chunk at pos within the given world.
      */
     public static Optional<PhysicsObject> getPhysicsObject(@Nullable World world, @Nullable BlockPos pos) {
         return getPhysicsObject(world, pos, false);
@@ -75,5 +77,12 @@ public class ValkyrienUtils {
             }
         }
         return new EntityShipMountData();
+    }
+
+    public static void fixEntityToShip(@Nonnull Entity toFix, @Nonnull Vector posInLocal, @Nonnull PhysicsObject mountingShip) {
+        World world = mountingShip.getWorldObj();
+        EntityMountable entityMountable = new EntityMountable(world, posInLocal.toVec3d(), CoordinateSpaceType.SUBSPACE_COORDINATES, mountingShip.getReferenceBlockPos());
+        world.spawnEntity(entityMountable);
+        toFix.startRiding(entityMountable);
     }
 }

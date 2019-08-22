@@ -16,8 +16,6 @@
 
 package valkyrienwarfare.mod.common.util;
 
-import gnu.trove.map.TIntObjectMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -27,7 +25,6 @@ import valkyrienwarfare.mod.common.math.Vector;
 
 import javax.annotation.Nullable;
 import java.nio.ByteBuffer;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * ValkyrienNBTUtils is filled with helper methods for saving and loading different
@@ -78,45 +75,6 @@ public class ValkyrienNBTUtils {
         return vector;
     }
 
-    public static final void writeEntityPositionMapToNBT(String name, TIntObjectMap<Vector> entityLocalPositions,
-                                                         NBTTagCompound compound) {
-        int[] ids = new int[entityLocalPositions.size()];
-        double[] x = new double[entityLocalPositions.size()];
-        double[] y = new double[entityLocalPositions.size()];
-        double[] z = new double[entityLocalPositions.size()];
-
-        AtomicInteger cont = new AtomicInteger(0);
-        entityLocalPositions.forEachEntry((k, v) -> {
-            int i = cont.getAndIncrement();
-            ids[i] = k;
-            x[i] = v.X;
-            y[i] = v.Y;
-            z[i] = v.Z;
-            return true;
-        });
-
-        compound.setIntArray(name + "keys", ids);
-        compound.setByteArray(name + "valX", toByteArray(x));
-        compound.setByteArray(name + "valY", toByteArray(y));
-        compound.setByteArray(name + "valZ", toByteArray(z));
-    }
-
-    public static final TIntObjectMap<Vector> readEntityPositionMap(String name, NBTTagCompound compound) {
-        int[] entityIds = compound.getIntArray(name + "keys");
-
-        double[] entityX = toDoubleArray(compound.getByteArray(name + "valX"));
-        double[] entityY = toDoubleArray(compound.getByteArray(name + "valY"));
-        double[] entityZ = toDoubleArray(compound.getByteArray(name + "valZ"));
-
-        TIntObjectMap<Vector> toReturn = new TIntObjectHashMap<>(entityIds.length + 1);
-
-        for (int i = 0; i < entityIds.length; i++) {
-            toReturn.put(entityIds[i], new Vector(entityX[i], entityY[i], entityZ[i]));
-        }
-
-        return toReturn;
-    }
-
     public static byte[] toByteArray(double[] doubleArray) {
         int times = Double.SIZE / Byte.SIZE;
         byte[] bytes = new byte[doubleArray.length * times];
@@ -133,15 +91,6 @@ public class ValkyrienNBTUtils {
             doubles[i] = ByteBuffer.wrap(byteArray, i * times, times).getDouble();
         }
         return doubles;
-    }
-
-    public static void setByteBuf(String name, ByteBuffer buffer, NBTTagCompound compound) {
-        byte[] bytes = buffer.array();
-        compound.setByteArray(name, bytes);
-    }
-
-    public static ByteBuffer getByteBuf(String name, NBTTagCompound compound) {
-        return ByteBuffer.wrap(compound.getByteArray(name));
     }
 
     public static void writeAABBToNBT(String name, AxisAlignedBB aabb, NBTTagCompound compound) {

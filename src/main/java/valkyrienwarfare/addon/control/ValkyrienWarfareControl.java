@@ -46,8 +46,6 @@ import valkyrienwarfare.addon.control.capability.ImplCapabilityLastRelay;
 import valkyrienwarfare.addon.control.capability.StorageLastRelay;
 import valkyrienwarfare.addon.control.item.ItemRelayWire;
 import valkyrienwarfare.addon.control.item.ItemWrench;
-import valkyrienwarfare.addon.control.network.EntityFixHandler;
-import valkyrienwarfare.addon.control.network.EntityFixMessage;
 import valkyrienwarfare.addon.control.network.MessagePlayerStoppedPiloting;
 import valkyrienwarfare.addon.control.network.MessagePlayerStoppedPilotingHandler;
 import valkyrienwarfare.addon.control.network.MessageStartPiloting;
@@ -172,7 +170,6 @@ public class ValkyrienWarfareControl extends Module {
     @Override
     protected void registerNetworks() {
         controlNetwork = NetworkRegistry.INSTANCE.newSimpleChannel("controlnetwork");
-        controlNetwork.registerMessage(EntityFixHandler.class, EntityFixMessage.class, 0, Side.CLIENT);
         controlNetwork.registerMessage(PilotControlsMessageHandler.class, PilotControlsMessage.class, 2, Side.SERVER);
         controlNetwork.registerMessage(MessageStartPilotingHandler.class, MessageStartPiloting.class, 3, Side.CLIENT);
         controlNetwork.registerMessage(MessageStopPilotingHandler.class, MessageStopPiloting.class, 4, Side.CLIENT);

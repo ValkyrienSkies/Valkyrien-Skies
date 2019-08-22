@@ -19,8 +19,6 @@ package valkyrienwarfare.mod.common.physics.management;
 import com.google.common.collect.Sets;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.array.TIntArrayList;
-import gnu.trove.map.TIntObjectMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -46,8 +44,6 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraft.world.gen.ChunkProviderServer;
-import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
-import valkyrienwarfare.addon.control.network.EntityFixMessage;
 import valkyrienwarfare.addon.control.nodenetwork.INodeController;
 import valkyrienwarfare.api.IPhysicsEntity;
 import valkyrienwarfare.api.TransformType;
@@ -55,13 +51,11 @@ import valkyrienwarfare.fixes.IPhysicsChunk;
 import valkyrienwarfare.mod.client.render.PhysObjectRenderManager;
 import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.common.config.VWConfig;
-import valkyrienwarfare.mod.common.coordinates.CoordinateSpaceType;
 import valkyrienwarfare.mod.common.coordinates.ISubspace;
 import valkyrienwarfare.mod.common.coordinates.ISubspaceProvider;
 import valkyrienwarfare.mod.common.coordinates.ImplSubspace;
 import valkyrienwarfare.mod.common.coordinates.ShipTransform;
 import valkyrienwarfare.mod.common.coordinates.ShipTransformationPacketHolder;
-import valkyrienwarfare.mod.common.entity.EntityMountable;
 import valkyrienwarfare.mod.common.entity.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.common.math.Quaternion;
 import valkyrienwarfare.mod.common.math.Vector;
@@ -76,7 +70,6 @@ import valkyrienwarfare.mod.common.physmanagement.relocation.SpatialDetector;
 import valkyrienwarfare.mod.common.tileentity.TileEntityPhysicsInfuser;
 import valkyrienwarfare.mod.common.util.ValkyrienNBTUtils;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -128,7 +121,6 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 	private boolean claimedChunksInMap;
 	private boolean isNameCustom;
 	private AxisAlignedBB shipBoundingBox;
-	private TIntObjectMap<Vector> entityLocalPositions;
 	private ShipType shipType;
 	private volatile int gameConsecutiveTicks;
 	private BlockPos physicsInfuserPos;
@@ -142,7 +134,6 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 		}
 		this.setNameCustom(false);
 		this.claimedChunksInMap = false;
-		this.entityLocalPositions = new TIntObjectHashMap<>();
 		this.setPhysicsEnabled(false);
 		// We need safe access to this across multiple threads.
 		this.setBlockPositions(ConcurrentHashMap.newKeySet());
@@ -666,56 +657,6 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 		return getOwnedChunks().isChunkEnclosedInSet(chunkX, chunkZ);
 	}
 
-	/**
-	 * ONLY USE THESE 2 METHODS TO EVER ADD/REMOVE ENTITIES, OTHERWISE YOU'LL RUIN
-	 * EVERYTHING!
-	 *
-	 * @param toFix
-	 * @param posInLocal
-	 */
-	public void fixEntity(Entity toFix, Vector posInLocal) {
-		EntityMountable entityMountable = new EntityMountable(getWorldObj(), posInLocal.toVec3d(), CoordinateSpaceType.SUBSPACE_COORDINATES, getReferenceBlockPos());
-
-		getWorldObj().spawnEntity(entityMountable);
-		toFix.startRiding(entityMountable);
-	}
-
-	/**
-	 * ONLY USE THESE 2 METHODS TO EVER ADD/REMOVE ENTITIES
-	 */
-	public void unFixEntity(Entity toUnfix) {
-		EntityFixMessage entityUnfixingMessage = new EntityFixMessage(getWrapperEntity(), toUnfix, false, null);
-		for (EntityPlayerMP watcher : getWatchingPlayers()) {
-			ValkyrienWarfareControl.controlNetwork.sendTo(entityUnfixingMessage, watcher);
-		}
-		entityLocalPositions.remove(toUnfix.getPersistentID()
-				.hashCode());
-	}
-
-	public void fixEntityUUID(int uuidHash, Vector localPos) {
-		entityLocalPositions.put(uuidHash, localPos);
-	}
-
-	public void removeEntityUUID(int uuidHash) {
-		entityLocalPositions.remove(uuidHash);
-	}
-
-	public boolean isEntityFixed(Entity toCheck) {
-		if (true) {
-			return false;
-		}
-		Entity mountedOn = toCheck.getRidingEntity();
-		if (mountedOn instanceof EntityMountable) {
-			EntityMountable entityMountable = (EntityMountable) mountedOn;
-			Optional<PhysicsObject> mountedShip = entityMountable.getMountedShip();
-			if (mountedShip.isPresent()) {
-				return mountedShip.get()
-						.equals(this);
-			}
-		}
-		return false;
-	}
-
 	public void writeToNBTTag(NBTTagCompound compound) {
 		getOwnedChunks().writeToNBT(compound);
 		ValkyrienNBTUtils.writeVectorToNBT("c", getCenterCoord(), compound);
@@ -728,7 +669,6 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 				compound.setBoolean("CC:" + row + ":" + column, curArray[column]);
 			}
 		}
-		ValkyrienNBTUtils.writeEntityPositionMapToNBT("entityPosHashMap", entityLocalPositions, compound);
 		getPhysicsProcessor().writeToNBTTag(compound);
 
 		// TODO: This is occasionally crashing the Ship save
@@ -797,7 +737,6 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 
 		// After we have loaded which positions are stored in the ship; we load the physics calculations object.
 		getPhysicsProcessor().readFromNBTTag(compound);
-		entityLocalPositions = ValkyrienNBTUtils.readEntityPositionMap("entityPosHashMap", compound);
 
 		getAllowedUsers().clear();
 		Collections.addAll(getAllowedUsers(), compound.getString("allowedUsers")
@@ -842,14 +781,6 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 
 		getShipTransformationManager().serverBuffer.pushMessage(new PhysWrapperPositionMessage(this));
 
-		try {
-			NBTTagCompound entityFixedPositionNBT = modifiedBuffer.readCompoundTag();
-			entityLocalPositions = ValkyrienNBTUtils.readEntityPositionMap("entityFixedPosMap", entityFixedPositionNBT);
-		} catch (IOException e) {
-			System.err.println("Couldn't load the entityFixedPosNBT; this is really bad.");
-			e.printStackTrace();
-		}
-
 		setNameCustom(modifiedBuffer.readBoolean());
 		shipType = modifiedBuffer.readEnumValue(ShipType.class);
 
@@ -881,10 +812,6 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 				modifiedBuffer.writeBoolean(b);
 			}
 		}
-
-		NBTTagCompound entityFixedPositionNBT = new NBTTagCompound();
-		ValkyrienNBTUtils.writeEntityPositionMapToNBT("entityFixedPosMap", entityLocalPositions, entityFixedPositionNBT);
-		modifiedBuffer.writeCompoundTag(entityFixedPositionNBT);
 
 		modifiedBuffer.writeBoolean(isNameCustom());
 		modifiedBuffer.writeEnumValue(shipType);
@@ -1157,7 +1084,12 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 		return blockPositionsGameTick;
 	}
 
-	private BlockPos getReferenceBlockPos() {
+	/**
+	 * Just a random block position in the ship. Used to correct floating point errors and keep track of the ship.
+	 *
+	 * @return
+	 */
+	public BlockPos getReferenceBlockPos() {
 		return this.referenceBlockPos;
 	}
 

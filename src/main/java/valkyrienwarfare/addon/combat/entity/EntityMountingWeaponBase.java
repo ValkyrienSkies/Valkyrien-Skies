@@ -32,6 +32,7 @@ import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import valkyrienwarfare.mod.common.entity.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.common.math.RotationMatrices;
 import valkyrienwarfare.mod.common.math.Vector;
+import valkyrienwarfare.mod.common.util.ValkyrienUtils;
 
 import javax.annotation.Nullable;
 
@@ -65,16 +66,11 @@ public abstract class EntityMountingWeaponBase extends Entity implements IEntity
                 Vector posInLocal = new Vector(this);
                 Vector passengerOffset = getRiderPositionOffset();
 
-//				double[] rotationMatricesCompensation = RotationMatrices.getRotationMatrix(0, 45D, 0);
-
-//				RotationMatrices.applyTransform(rotationMatricesCompensation, passengerOffset);
-
-
                 wrapper.getPhysicsObject().getShipTransformationManager().fromGlobalToLocal(posInLocal);
 
                 posInLocal.add(passengerOffset);
 
-                wrapper.getPhysicsObject().fixEntity(player, posInLocal);
+                ValkyrienUtils.fixEntityToShip(player, posInLocal, wrapper.getPhysicsObject());
             }
         }
         return false;

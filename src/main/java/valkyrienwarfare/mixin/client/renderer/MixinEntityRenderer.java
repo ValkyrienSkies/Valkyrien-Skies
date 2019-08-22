@@ -36,11 +36,11 @@ import org.spongepowered.asm.mixin.Shadow;
 import valkyrienwarfare.addon.control.piloting.IShipPilot;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.fixes.EntityMoveInjectionMethods;
-import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
-import valkyrienwarfare.mod.common.entity.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.common.math.Quaternion;
 import valkyrienwarfare.mod.common.math.RotationMatrices;
 import valkyrienwarfare.mod.common.math.Vector;
+import valkyrienwarfare.mod.common.util.EntityShipMountData;
+import valkyrienwarfare.mod.common.util.ValkyrienUtils;
 
 @Mixin(EntityRenderer.class)
 public abstract class MixinEntityRenderer {
@@ -75,10 +75,13 @@ public abstract class MixinEntityRenderer {
         double d1 = entity.prevPosY + (entity.posY - entity.prevPosY) * partialTicks;
         double d2 = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * partialTicks;
 
-        PhysicsWrapperEntity fixedOnto = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getShipFixedOnto(entity);
+        EntityShipMountData mountData = ValkyrienUtils.getMountedShipAndPos(entity);
         // Probably overkill, but this should 100% fix the crash in issue #78
-        if (fixedOnto != null && fixedOnto.getPhysicsObject() != null && fixedOnto.getPhysicsObject().getShipRenderer() != null && fixedOnto.getPhysicsObject().getShipRenderer().offsetPos != null) {
-            Quaternion orientationQuat = fixedOnto.getPhysicsObject().getShipRenderer().getSmoothRotationQuat(partialTicks);
+        if (mountData.isMounted() && mountData.getMountedShip()
+                .getShipRenderer().offsetPos != null) {
+            Quaternion orientationQuat = mountData.getMountedShip()
+                    .getShipRenderer()
+                    .getSmoothRotationQuat(partialTicks);
 
             double[] radians = orientationQuat.toRadians();
 
@@ -90,11 +93,14 @@ public abstract class MixinEntityRenderer {
 
             RotationMatrices.applyTransform(orientationMatrix, eyeVector);
 
-            Vector playerPosition = new Vector(fixedOnto.getPhysicsObject().getLocalPositionForEntity(entity));
+            Vector playerPosition = new Vector(mountData.getMountPos());
 
             //            RotationMatrices.applyTransform(fixedOnto.wrapping.coordTransform.RlToWTransform, playerPosition);
 
-            fixedOnto.getPhysicsObject().getShipTransformationManager().getRenderTransform().transform(playerPosition, TransformType.SUBSPACE_TO_GLOBAL);
+            mountData.getMountedShip()
+                    .getShipTransformationManager()
+                    .getRenderTransform()
+                    .transform(playerPosition, TransformType.SUBSPACE_TO_GLOBAL);
 
             d0 = playerPosition.X;
             d1 = playerPosition.Y;
@@ -115,8 +121,8 @@ public abstract class MixinEntityRenderer {
 
             if (!this.mc.gameSettings.debugCamEnable) {
                 //VW code starts here
-                if (fixedOnto != null) {
-                    Vector playerPosInLocal = new Vector(fixedOnto.getPhysicsObject().getLocalPositionForEntity(entity));
+                if (mountData.isMounted()) {
+                    Vector playerPosInLocal = new Vector(mountData.getMountPos());
 
                     playerPosInLocal.subtract(.5D, .6875, .5);
                     playerPosInLocal.roundToWhole();
@@ -223,8 +229,11 @@ public abstract class MixinEntityRenderer {
             GlStateManager.rotate(event.getYaw(), 0.0F, 1.0F, 0.0F);
         }
 
-        if (fixedOnto != null && fixedOnto.getPhysicsObject() != null && fixedOnto.getPhysicsObject().getShipRenderer() != null && fixedOnto.getPhysicsObject().getShipRenderer().offsetPos != null) {
-            Quaternion orientationQuat = fixedOnto.getPhysicsObject().getShipRenderer().getSmoothRotationQuat(partialTicks);
+        if (mountData.isMounted() && mountData.getMountedShip()
+                .getShipRenderer().offsetPos != null) {
+            Quaternion orientationQuat = mountData.getMountedShip()
+                    .getShipRenderer()
+                    .getSmoothRotationQuat(partialTicks);
 
             double[] radians = orientationQuat.toRadians();
 

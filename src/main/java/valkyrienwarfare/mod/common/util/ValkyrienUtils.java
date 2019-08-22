@@ -1,10 +1,12 @@
 package valkyrienwarfare.mod.common.util;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.fixes.IPhysicsChunk;
+import valkyrienwarfare.mod.common.entity.EntityMountable;
 import valkyrienwarfare.mod.common.physics.collision.polygons.Polygon;
 import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 
@@ -60,5 +62,18 @@ public class ValkyrienUtils {
         } else {
             return axisAlignedBB;
         }
+    }
+
+    @Nonnull
+    public static EntityShipMountData getMountedShipAndPos(@Nonnull Entity entity) {
+        Entity ridingEntity = entity.ridingEntity;
+        if (ridingEntity instanceof EntityMountable) {
+            EntityMountable mountable = (EntityMountable) ridingEntity;
+            Optional<PhysicsObject> mountedShip = mountable.getMountedShip();
+            if (mountedShip.isPresent()) {
+                return new EntityShipMountData(mountedShip.get(), mountable.getMountPos());
+            }
+        }
+        return new EntityShipMountData();
     }
 }

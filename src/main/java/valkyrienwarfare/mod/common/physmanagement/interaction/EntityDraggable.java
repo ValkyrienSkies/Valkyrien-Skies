@@ -24,12 +24,13 @@ import net.minecraft.world.World;
 import valkyrienwarfare.addon.combat.entity.EntityCannonBall;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.mod.client.EventsClient;
-import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.common.coordinates.ShipTransform;
 import valkyrienwarfare.mod.common.entity.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.common.math.RotationMatrices;
 import valkyrienwarfare.mod.common.math.Vector;
 import valkyrienwarfare.mod.common.physics.management.ShipTransformationManager;
+import valkyrienwarfare.mod.common.util.EntityShipMountData;
+import valkyrienwarfare.mod.common.util.ValkyrienUtils;
 
 import java.util.List;
 
@@ -83,7 +84,10 @@ public class EntityDraggable {
      */
     private static void addEntityVelocityFromShipBelow(Entity entity) {
         IDraggable draggable = EntityDraggable.getDraggableFromEntity(entity);
-        if (draggable.getWorldBelowFeet() != null && !ValkyrienWarfareMod.VW_PHYSICS_MANAGER.isEntityFixed(entity)) {
+
+        EntityShipMountData mountData = ValkyrienUtils.getMountedShipAndPos(entity);
+
+        if (draggable.getWorldBelowFeet() != null) {
             ShipTransformationManager coordTransform = draggable.getWorldBelowFeet().getPhysicsObject().getShipTransformationManager();
 
             if (entity.world.isRemote && entity instanceof EntityPlayer) {
@@ -156,7 +160,7 @@ public class EntityDraggable {
             }
         }
 
-        if (!ValkyrienWarfareMod.VW_PHYSICS_MANAGER.isEntityFixed(entity)) {
+        if (true) {
             boolean originallySneaking = entity.isSneaking();
             entity.setSneaking(false);
             if (draggable.getWorldBelowFeet() == null && entity.onGround) {
@@ -179,7 +183,9 @@ public class EntityDraggable {
                     draggable.getVelocityAddedToPlayer().Y, draggable.getVelocityAddedToPlayer().Z));
             entity.resetPositionToBB();
 
-            entity.rotationYaw += draggable.getYawDifVelocity();
+            if (!mountData.isMounted()) {
+                entity.rotationYaw += draggable.getYawDifVelocity();
+            }
 
             // Do not add this movement as if the entity were walking it
             // entity.distanceWalkedModified = originalWalked;

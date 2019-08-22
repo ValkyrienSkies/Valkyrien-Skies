@@ -30,7 +30,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import valkyrienwarfare.api.TransformType;
-import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.common.coordinates.CoordinateSpaceType;
 import valkyrienwarfare.mod.common.coordinates.ISubspacedEntity;
 import valkyrienwarfare.mod.common.coordinates.ISubspacedEntityRecord;
@@ -41,6 +40,7 @@ import valkyrienwarfare.mod.common.math.Vector;
 import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 import valkyrienwarfare.mod.common.physmanagement.chunk.PhysicsChunkManager;
 import valkyrienwarfare.mod.common.physmanagement.interaction.IDraggable;
+import valkyrienwarfare.mod.common.util.EntityShipMountData;
 import valkyrienwarfare.mod.common.util.ValkyrienUtils;
 
 import java.util.Optional;
@@ -196,9 +196,12 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
         }
         // END VANILLA CODE
 
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getShipFixedOnto(Entity.class.cast(this));
-        if (wrapper != null) {
-            return wrapper.getPhysicsObject().getShipTransformationManager().getRenderTransform().rotate(original, TransformType.SUBSPACE_TO_GLOBAL);
+        EntityShipMountData mountData = ValkyrienUtils.getMountedShipAndPos(Entity.class.cast(this));
+        if (mountData.isMounted()) {
+            return mountData.getMountedShip()
+                    .getShipTransformationManager()
+                    .getRenderTransform()
+                    .rotate(original, TransformType.SUBSPACE_TO_GLOBAL);
         } else {
             return original;
         }
@@ -219,12 +222,15 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
         Vec3d vanilla = new Vec3d(f1 * f2, f3, f * f2);
         // END VANILLA CODE
 
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getShipFixedOnto(Entity.class.cast(this));
-        if (wrapper != null) {
-            return wrapper.getPhysicsObject().getShipTransformationManager().getRenderTransform().rotate(vanilla, TransformType.SUBSPACE_TO_GLOBAL);
+        EntityShipMountData mountData = ValkyrienUtils.getMountedShipAndPos(Entity.class.cast(this));
+        if (mountData.isMounted()) {
+            return mountData.getMountedShip()
+                    .getShipTransformationManager()
+                    .getRenderTransform()
+                    .rotate(vanilla, TransformType.SUBSPACE_TO_GLOBAL);
+        } else {
+            return vanilla;
         }
-
-        return vanilla;
     }
 
     @Shadow
@@ -334,12 +340,11 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
 
     @Inject(method = "getPositionEyes(F)Lnet/minecraft/util/math/Vec3d;", at = @At("HEAD"), cancellable = true)
     public void getPositionEyesInject(float partialTicks, CallbackInfoReturnable<Vec3d> callbackInfo) {
-        PhysicsWrapperEntity wrapper = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getShipFixedOnto(Entity.class.cast(this));
+        EntityShipMountData mountData = ValkyrienUtils.getMountedShipAndPos(Entity.class.cast(this));
 
-        if (wrapper != null) {
-            Vector playerPosition = new Vector(wrapper.getPhysicsObject()
-                    .getLocalPositionForEntity(Entity.class.cast(this)));
-            wrapper.getPhysicsObject()
+        if (mountData.isMounted()) {
+            Vector playerPosition = new Vector(mountData.getMountPos());
+            mountData.getMountedShip()
                     .getShipTransformationManager()
                     .getRenderTransform()
                     .transform(playerPosition,
@@ -349,7 +354,7 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
             // Remove the original position added for the player's eyes
             // RotationMatrices.doRotationOnly(wrapper.wrapping.coordTransform.lToWTransform,
             // playerEyes);
-            wrapper.getPhysicsObject()
+            mountData.getMountedShip()
                     .getShipTransformationManager()
                     .getCurrentTickTransform()
                     .rotate(playerEyes, TransformType.SUBSPACE_TO_GLOBAL);

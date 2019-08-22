@@ -28,10 +28,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import valkyrienwarfare.addon.combat.entity.EntityMountingWeaponBase;
-import valkyrienwarfare.api.TransformType;
-import valkyrienwarfare.mod.common.math.Vector;
-import valkyrienwarfare.mod.common.physics.collision.polygons.Polygon;
 import valkyrienwarfare.mod.common.physics.management.PhysicsObject;
 import valkyrienwarfare.mod.common.physics.management.ShipType;
 import valkyrienwarfare.mod.common.physmanagement.interaction.QueryableShipData;
@@ -120,37 +116,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 
     @Override
     public void updatePassenger(Entity passenger) {
-        Vector inLocal = getPhysicsObject().getLocalPositionForEntity(passenger);
 
-        if (inLocal != null) {
-            Vector newEntityPosition = new Vector(inLocal);
-            float f = passenger.width / 2.0F;
-            float f1 = passenger.height;
-            AxisAlignedBB inLocalAABB = new AxisAlignedBB(newEntityPosition.X - f, newEntityPosition.Y,
-                    newEntityPosition.Z - f, newEntityPosition.X + f, newEntityPosition.Y + f1,
-                    newEntityPosition.Z + f);
-            getPhysicsObject().getShipTransformationManager().fromLocalToGlobal(newEntityPosition);
-            passenger.setPosition(newEntityPosition.X, newEntityPosition.Y, newEntityPosition.Z);
-            Polygon entityBBPoly = new Polygon(inLocalAABB, getPhysicsObject().getShipTransformationManager().getCurrentTickTransform(), TransformType.SUBSPACE_TO_GLOBAL);
-
-            AxisAlignedBB newEntityBB = entityBBPoly.getEnclosedAABB();
-            passenger.setEntityBoundingBox(newEntityBB);
-            if (passenger instanceof EntityMountingWeaponBase) {
-                passenger.onUpdate();
-
-                for (Entity e : passenger.riddenByEntities) {
-                    if (getPhysicsObject().isEntityFixed(e)) {
-                        Vector inLocalAgain = getPhysicsObject().getLocalPositionForEntity(e);
-                        if (inLocalAgain != null) {
-                            Vector newEntityPositionAgain = new Vector(inLocalAgain);
-                            getPhysicsObject().getShipTransformationManager().fromLocalToGlobal(newEntityPositionAgain);
-
-                            e.setPosition(newEntityPositionAgain.X, newEntityPositionAgain.Y, newEntityPositionAgain.Z);
-                        }
-                    }
-                }
-            }
-        }
     }
 
     @Override

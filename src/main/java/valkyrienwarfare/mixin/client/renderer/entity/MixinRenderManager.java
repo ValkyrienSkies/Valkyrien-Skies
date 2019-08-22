@@ -28,9 +28,10 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.common.entity.PhysicsWrapperEntity;
 import valkyrienwarfare.mod.common.math.Vector;
+import valkyrienwarfare.mod.common.util.EntityShipMountData;
+import valkyrienwarfare.mod.common.util.ValkyrienUtils;
 
 @Mixin(RenderManager.class)
 public abstract class MixinRenderManager {
@@ -44,9 +45,9 @@ public abstract class MixinRenderManager {
             cancellable = true)
     public void preDoRenderEntity(Entity entityIn, double x, double y, double z, float yaw, float partialTicks, boolean p_188391_10_, CallbackInfo callbackInfo) {
         if (!hasChanged) {
-            PhysicsWrapperEntity fixedOnto = ValkyrienWarfareMod.VW_PHYSICS_MANAGER.getShipFixedOnto(entityIn);
+            EntityShipMountData mountData = ValkyrienUtils.getMountedShipAndPos(entityIn);
 
-            if (fixedOnto != null) {
+            if (mountData.isMounted()) {
                 double oldPosX = entityIn.posX;
                 double oldPosY = entityIn.posY;
                 double oldPosZ = entityIn.posZ;
@@ -55,16 +56,21 @@ public abstract class MixinRenderManager {
                 double oldLastPosY = entityIn.lastTickPosY;
                 double oldLastPosZ = entityIn.lastTickPosZ;
 
-                Vector localPosition = fixedOnto.getPhysicsObject().getLocalPositionForEntity(entityIn);
+                Vector localPosition = new Vector(mountData.getMountPos());
 
-                fixedOnto.getPhysicsObject().getShipRenderer().setupTranslation(partialTicks);
+                mountData.getMountedShip()
+                        .getShipRenderer()
+                        .setupTranslation(partialTicks);
 
                 if (localPosition != null) {
                     localPosition = new Vector(localPosition);
 
-                    localPosition.X -= fixedOnto.getPhysicsObject().getShipRenderer().offsetPos.getX();
-                    localPosition.Y -= fixedOnto.getPhysicsObject().getShipRenderer().offsetPos.getY();
-                    localPosition.Z -= fixedOnto.getPhysicsObject().getShipRenderer().offsetPos.getZ();
+                    localPosition.X -= mountData.getMountedShip()
+                            .getShipRenderer().offsetPos.getX();
+                    localPosition.Y -= mountData.getMountedShip()
+                            .getShipRenderer().offsetPos.getY();
+                    localPosition.Z -= mountData.getMountedShip()
+                            .getShipRenderer().offsetPos.getZ();
 
                     x = entityIn.posX = entityIn.lastTickPosX = localPosition.X;
                     y = entityIn.posY = entityIn.lastTickPosY = localPosition.Y;
@@ -88,7 +94,7 @@ public abstract class MixinRenderManager {
                             makePlayerMount = true;
 
                             //Now fix the rotation of sleeping players
-                            Vector playerPosInLocal = new Vector(fixedOnto.getPhysicsObject().getLocalPositionForEntity(entityIn));
+                            Vector playerPosInLocal = new Vector(mountData.getMountPos());
 
                             playerPosInLocal.subtract(.5D, .6875, .5);
                             playerPosInLocal.roundToWhole();
@@ -122,7 +128,9 @@ public abstract class MixinRenderManager {
                 }
 
                 if (localPosition != null) {
-                    fixedOnto.getPhysicsObject().getShipRenderer().inverseTransform(partialTicks);
+                    mountData.getMountedShip()
+                            .getShipRenderer()
+                            .inverseTransform(partialTicks);
                 }
 
                 entityIn.posX = oldPosX;

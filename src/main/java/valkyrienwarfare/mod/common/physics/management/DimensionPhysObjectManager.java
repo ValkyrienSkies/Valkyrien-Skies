@@ -59,10 +59,6 @@ public class DimensionPhysObjectManager {
         managerPerWorld.remove(world);
     }
 
-    public boolean isEntityFixed(Entity entity) {
-        return getManagerForWorld(entity.world).isEntityFixed(entity);
-    }
-
     public PhysicsWrapperEntity getShipFixedOnto(Entity entity) {
         return getManagerForWorld(entity.world).getShipFixedOnto(entity);
     }

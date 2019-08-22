@@ -25,7 +25,8 @@ import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
-import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
+import valkyrienwarfare.mod.common.util.EntityShipMountData;
+import valkyrienwarfare.mod.common.util.ValkyrienUtils;
 
 import javax.annotation.Nullable;
 import java.util.Map;
@@ -44,7 +45,8 @@ public class RenderManagerOverride extends RenderManager {
      */
 
     private boolean shouldRender(Entity entity) {
-        return !ValkyrienWarfareMod.VW_PHYSICS_MANAGER.isEntityFixed(entity);
+        EntityShipMountData mountData = ValkyrienUtils.getMountedShipAndPos(entity);
+        return !mountData.isMounted();
     }
 
     @Override

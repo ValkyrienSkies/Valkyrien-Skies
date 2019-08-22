@@ -701,6 +701,9 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 	}
 
 	public boolean isEntityFixed(Entity toCheck) {
+		if (true) {
+			return false;
+		}
 		Entity mountedOn = toCheck.getRidingEntity();
 		if (mountedOn instanceof EntityMountable) {
 			EntityMountable entityMountable = (EntityMountable) mountedOn;
@@ -711,18 +714,6 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 			}
 		}
 		return false;
-	}
-
-	public Vector getLocalPositionForEntity(Entity toCheck) {
-		Entity mountedOn = toCheck.getRidingEntity();
-		if (mountedOn instanceof EntityMountable) {
-			EntityMountable entityMountable = (EntityMountable) mountedOn;
-			Optional<PhysicsObject> mountedShip = entityMountable.getMountedShip();
-			if (mountedShip.isPresent()) {
-				return new Vector(entityMountable.getMountPos());
-			}
-		}
-		return null;
 	}
 
 	public void writeToNBTTag(NBTTagCompound compound) {

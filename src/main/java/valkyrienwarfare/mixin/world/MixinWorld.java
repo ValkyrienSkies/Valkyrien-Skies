@@ -21,18 +21,24 @@ import com.google.common.collect.Lists;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IWorldEventListener;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
-import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.Implements;
+import org.spongepowered.asm.mixin.Interface;
 import org.spongepowered.asm.mixin.Interface.Remap;
+import org.spongepowered.asm.mixin.Intrinsic;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.fixes.MixinWorldIntrinsicMethods;
@@ -60,6 +66,7 @@ import java.util.Optional;
 public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
 
     private static double MAX_ENTITY_RADIUS_ALT = 2.0D;
+    private static double BOUNDING_BOX_EDGE_LIMIT = 100000D;
     // TODO: This is going to lead to a multithreaded disaster. Replace this with something sensible!
     // I made this threadlocal to prevent disaster for now, but its still really bad code.
     private final ThreadLocal<Boolean> dontIntercept = ThreadLocal.withInitial(() -> false);
@@ -91,18 +98,8 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
         return getBiomeForCoordsBody(pos);
     }
 
-    @Inject(method = "getCollisionBoxes(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/AxisAlignedBB;ZLjava/util/List;)Z", at = @At("HEAD"), cancellable = true)
-    public void preGetCollisionBoxes(@Nullable Entity entityIn, AxisAlignedBB aabb, boolean p_191504_3_,
-                                     @Nullable List<AxisAlignedBB> outList, CallbackInfoReturnable callbackInfo) {
-        double deltaX = Math.abs(aabb.maxX - aabb.minX);
-        double deltaY = Math.abs(aabb.maxY - aabb.minY);
-        double deltaZ = Math.abs(aabb.maxZ - aabb.minZ);
-        if (Math.max(deltaX, Math.max(deltaY, deltaZ)) > 99999D) {
-            System.err.println(entityIn + "\ntried going extremely fast during the collision step");
-            new Exception().printStackTrace();
-            callbackInfo.setReturnValue(Boolean.FALSE);
-            callbackInfo.cancel();
-        }
+    private static boolean isBoundingBoxTooLarge(AxisAlignedBB alignedBB) {
+        return (alignedBB.maxX - alignedBB.minX > BOUNDING_BOX_EDGE_LIMIT) || (alignedBB.maxY - alignedBB.minY > BOUNDING_BOX_EDGE_LIMIT) || (alignedBB.maxZ - alignedBB.minZ > BOUNDING_BOX_EDGE_LIMIT);
     }
 
     /**
@@ -147,7 +144,21 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
     @Shadow
     public abstract Chunk getChunk(int chunkX, int chunkZ);
 
-    public <T extends Entity> List<T> getEntitiesWithinAABBOriginal(Class<? extends T> clazz, AxisAlignedBB aabb,
+    @Inject(method = "getCollisionBoxes(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/AxisAlignedBB;ZLjava/util/List;)Z", at = @At("HEAD"), cancellable = true)
+    private void preGetCollisionBoxes(@Nullable Entity entityIn, AxisAlignedBB aabb, boolean p_191504_3_,
+                                      @Nullable List<AxisAlignedBB> outList, CallbackInfoReturnable<Boolean> callbackInfo) {
+        double deltaX = Math.abs(aabb.maxX - aabb.minX);
+        double deltaY = Math.abs(aabb.maxY - aabb.minY);
+        double deltaZ = Math.abs(aabb.maxZ - aabb.minZ);
+        if (Math.max(deltaX, Math.max(deltaY, deltaZ)) > 99999D) {
+            System.err.println(entityIn + "\ntried going extremely fast during the collision step");
+            new Exception().printStackTrace();
+            callbackInfo.setReturnValue(Boolean.FALSE);
+            callbackInfo.cancel();
+        }
+    }
+
+    private <T extends Entity> List<T> getEntitiesWithinAABBOriginal(Class<? extends T> clazz, AxisAlignedBB aabb,
                                                                     @Nullable Predicate<? super T> filter) {
         int i = MathHelper.floor((aabb.minX - MAX_ENTITY_RADIUS_ALT) / 16.0D);
         int j = MathHelper.ceil((aabb.maxX + MAX_ENTITY_RADIUS_ALT) / 16.0D);
@@ -167,15 +178,15 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
         return list;
     }
 
-    public List<Entity> getEntitiesInAABBexcludingOriginal(@Nullable Entity entityIn, AxisAlignedBB boundingBox,
-                                                           @Nullable Predicate<? super Entity> predicate) {
+    private List<Entity> getEntitiesInAABBexcludingOriginal(@Nullable Entity entityIn, AxisAlignedBB boundingBox,
+                                                            @Nullable Predicate<? super Entity> predicate) {
         List<Entity> list = Lists.newArrayList();
         int i = MathHelper.floor((boundingBox.minX - MAX_ENTITY_RADIUS_ALT) / 16.0D);
         int j = MathHelper.floor((boundingBox.maxX + MAX_ENTITY_RADIUS_ALT) / 16.0D);
         int k = MathHelper.floor((boundingBox.minZ - MAX_ENTITY_RADIUS_ALT) / 16.0D);
         int l = MathHelper.floor((boundingBox.maxZ + MAX_ENTITY_RADIUS_ALT) / 16.0D);
 
-        if ((boundingBox.maxX - boundingBox.minX) * (boundingBox.maxY - boundingBox.minY) * (boundingBox.maxZ - boundingBox.minZ) > 10000) {
+        if (isBoundingBoxTooLarge(boundingBox)) {
             new Exception("Tried getting entities from giant bounding box of " + boundingBox).printStackTrace();
             return list;
         }
@@ -203,12 +214,7 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
     @Overwrite
     public <T extends Entity> List<T> getEntitiesWithinAABB(Class<? extends T> clazz, AxisAlignedBB aabb,
                                                             @Nullable Predicate<? super T> filter) {
-        List toReturn = this.getEntitiesWithinAABBOriginal(clazz, aabb, filter);
-
-        if (ValkyrienWarfareMod.VW_PHYSICS_MANAGER == null) {
-            return toReturn;
-        }
-
+        List<T> toReturn = this.getEntitiesWithinAABBOriginal(clazz, aabb, filter);
         BlockPos pos = new BlockPos((aabb.minX + aabb.maxX) / 2D, (aabb.minY + aabb.maxY) / 2D,
                 (aabb.minZ + aabb.maxZ) / 2D);
         Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(World.class.cast(this), pos);
@@ -255,9 +261,7 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
             }
         }
 
-        if ((boundingBox.maxX - boundingBox.minX) *
-                (boundingBox.maxY - boundingBox.minY) *
-                (boundingBox.maxZ - boundingBox.minZ) > 10000) {
+        if (isBoundingBoxTooLarge(boundingBox)) {
             new Exception("Tried getting entities from giant bounding box of " + boundingBox).printStackTrace();
             return new ArrayList<>();
         }
@@ -276,7 +280,7 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
                     TransformType.SUBSPACE_TO_GLOBAL);
             boundingBox = poly.getEnclosedAABB().shrink(.3D);
 
-            if ((boundingBox.maxX - boundingBox.minX) * (boundingBox.maxY - boundingBox.minY) * (boundingBox.maxZ - boundingBox.minZ) > 10000) {
+            if (isBoundingBoxTooLarge(boundingBox)) {
                 new Exception("Tried getting entities from giant bounding box of " + boundingBox).printStackTrace();
                 return new ArrayList<>();
             }
@@ -289,27 +293,13 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
         return toReturn;
     }
 
-    // TODO: actually move the sound, i don't think this does anything yet
-    @Inject(method = "playSound(DDDLnet/minecraft/util/SoundEvent;Lnet/minecraft/util/SoundCategory;FFZ)V", at = @At("HEAD"))
-    public void prePlaySound(double x, double y, double z, SoundEvent soundIn, SoundCategory category, float volume,
-                             float pitch, boolean distanceDelay, CallbackInfo callbackInfo) {
-        BlockPos pos = new BlockPos(x, y, z);
-        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(World.class.cast(this), pos);
-
-        if (physicsObject.isPresent()) {
-            Vector posVec = new Vector(x, y, z);
-            physicsObject.get()
-                    .getShipTransformationManager()
-                    .fromLocalToGlobal(posVec);
-            x = posVec.X;
-            y = posVec.Y;
-            z = posVec.Z;
-        }
-    }
+    // This is a forge method not vanilla, so we don't remap this.
+    @Shadow(remap = false)
+    public abstract Iterator<Chunk> getPersistentChunkIterable(Iterator<Chunk> chunkIterator);
 
     @Intrinsic(displace = true)
     public Iterator<Chunk> vw$getPersistentChunkIterable(Iterator<Chunk> chunkIterator) {
-        ArrayList<Chunk> persistentChunks = new ArrayList<Chunk>();
+        ArrayList<Chunk> persistentChunks = new ArrayList<>();
         while (chunkIterator.hasNext()) {
             Chunk chunk = chunkIterator.next();
             persistentChunks.add(chunk);
@@ -319,13 +309,9 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
         return getPersistentChunkIterable(replacementIterator);
     }
 
-    // This is a forge method not vanilla, so we don't remap this.
-    @Shadow(remap = false)
-    public abstract Iterator<Chunk> getPersistentChunkIterable(Iterator<Chunk> chunkIterator);
-
     @Inject(method = "rayTraceBlocks(Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Vec3d;ZZZ)Lnet/minecraft/util/math/RayTraceResult;", at = @At("HEAD"), cancellable = true)
-    public void preRayTraceBlocks(Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox,
-                                  boolean returnLastUncollidableBlock, CallbackInfoReturnable<RayTraceResult> callbackInfo) {
+    private void preRayTraceBlocks(Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox,
+                                   boolean returnLastUncollidableBlock, CallbackInfoReturnable<RayTraceResult> callbackInfo) {
         if (!dontIntercept.get()) {
             callbackInfo.setReturnValue(rayTraceBlocksIgnoreShip(vec31, vec32, stopOnLiquid,
                     ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock, null));
@@ -345,7 +331,6 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
             return vanillaTrace;
         }
 
-        Vec3d playerEyesPos = vec31;
         Vec3d playerReachVector = vec32.subtract(vec31);
 
         AxisAlignedBB playerRangeBB = new AxisAlignedBB(vec31.x, vec31.y, vec31.z, vec32.x, vec32.y, vec32.z);
@@ -361,12 +346,8 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
         }
 
         for (PhysicsWrapperEntity wrapper : nearbyShips) {
-            playerEyesPos = vec31;
+            Vec3d playerEyesPos = vec31;
             playerReachVector = vec32.subtract(vec31);
-            // TODO: Re-enable
-            if (World.class.cast(this).isRemote) {
-                // ValkyrienWarfareMod.proxy.updateShipPartialTicks(wrapper);
-            }
 
             playerEyesPos = wrapper.getPhysicsObject().getShipTransformationManager().getRenderTransform().transform(playerEyesPos,
                     TransformType.GLOBAL_TO_SUBSPACE);

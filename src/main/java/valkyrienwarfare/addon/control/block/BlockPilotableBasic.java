@@ -14,7 +14,7 @@ import valkyrienwarfare.addon.control.piloting.ITileEntityPilotable;
 
 public abstract class BlockPilotableBasic extends Block implements ITileEntityProvider {
 
-    public BlockPilotableBasic(Material materialIn) {
+    BlockPilotableBasic(Material materialIn) {
         super(materialIn);
     }
 

@@ -23,27 +23,29 @@ import java.util.Optional;
  */
 public class EntityMountable extends Entity implements IEntityAdditionalSpawnData {
 
-    public static final DataParameter<NBTTagCompound> SHARED_NBT = EntityDataManager.createKey(EntityMountable.class,
+    private static final DataParameter<NBTTagCompound> SHARED_NBT = EntityDataManager.createKey(EntityMountable.class,
             DataSerializers.COMPOUND_TAG);
 
-    // An optional in case we try accessing it before nbt load has occurred.
+    // The position (in global or subspace) of where this entity mounts to.
     private Vec3d mountPos;
+    // This field tells us if mountPos is in global or a ship subspace
     private CoordinateSpaceType mountPosSpace;
-    // A blockpos that is a means of getting the parent ship of this entity mountable. Can be any position in the ship, and in the case of chairs is the same as the chair block position.
-    private Optional<BlockPos> referencePos;
+    // A BlockPos that is a means of getting the parent ship of this entity mountable. Can be any position in the ship, and in the case of chairs is the same as the chair block position.
+    private BlockPos referencePos;
 
+    @SuppressWarnings("WeakerAccess")
     public EntityMountable(World worldIn) {
         super(worldIn);
         // default value
         this.mountPos = null;
-        this.referencePos = Optional.empty();
+        this.referencePos = null;
         this.mountPosSpace = null;
         this.width = 0.01f;
         this.height = 0.01f;
         dataManager.register(SHARED_NBT, new NBTTagCompound());
     }
 
-    public EntityMountable(World worldIn, Vec3d chairPos, CoordinateSpaceType coordinateSpaceType) {
+    private EntityMountable(World worldIn, Vec3d chairPos, CoordinateSpaceType coordinateSpaceType) {
         this(worldIn);
         this.mountPos = chairPos;
         this.setPosition(chairPos.x, chairPos.y, chairPos.z);
@@ -52,17 +54,17 @@ public class EntityMountable extends Entity implements IEntityAdditionalSpawnDat
 
     public EntityMountable(World worldIn, Vec3d chairPos, CoordinateSpaceType coordinateSpaceType, BlockPos shipReferencePos) {
         this(worldIn, chairPos, coordinateSpaceType);
-        this.referencePos = Optional.of(shipReferencePos);
+        this.referencePos = shipReferencePos;
     }
 
-    public void setMountValues(Vec3d mountPos, CoordinateSpaceType mountPosSpace, Optional<BlockPos> referencePos) {
+    public void setMountValues(Vec3d mountPos, CoordinateSpaceType mountPosSpace, BlockPos referencePos) {
         this.mountPos = mountPos;
         this.mountPosSpace = mountPosSpace;
         this.referencePos = referencePos;
         updateSharedNBT();
     }
 
-    public void updateSharedNBT() {
+    private void updateSharedNBT() {
         NBTTagCompound tagCompound = new NBTTagCompound();
         writeEntityToNBT(tagCompound);
         dataManager.set(SHARED_NBT, tagCompound);
@@ -98,7 +100,7 @@ public class EntityMountable extends Entity implements IEntityAdditionalSpawnDat
         // Now update the position of this mounting entity.
         Vec3d entityPos = mountPos;
         if (mountPosSpace == CoordinateSpaceType.SUBSPACE_COORDINATES) {
-            if (!referencePos.isPresent()) {
+            if (referencePos == null) {
                 throw new IllegalStateException("Mounting reference position for ship not present!");
             }
             Optional<PhysicsObject> mountedOnto = getMountedShip();
@@ -106,7 +108,7 @@ public class EntityMountable extends Entity implements IEntityAdditionalSpawnDat
                 entityPos = mountedOnto.get()
                         .transformVector(entityPos, TransformType.SUBSPACE_TO_GLOBAL);
             } else {
-                // new IllegalStateException("Couldn't access ship with reference coordinates " + referencePos).printStackTrace();
+                new IllegalStateException("Couldn't access ship with reference coordinates " + referencePos).printStackTrace();
                 return;
             }
 
@@ -126,9 +128,9 @@ public class EntityMountable extends Entity implements IEntityAdditionalSpawnDat
         mountPosSpace = CoordinateSpaceType.values()[compound.getInteger("vw_coord_type")];
 
         if (compound.getBoolean("vw_ref_pos_present")) {
-            referencePos = Optional.of(new BlockPos(compound.getInteger("vw_ref_pos_x"), compound.getInteger("vw_ref_pos_y"), compound.getInteger("vw_ref_pos_z")));
+            referencePos = new BlockPos(compound.getInteger("vw_ref_pos_x"), compound.getInteger("vw_ref_pos_y"), compound.getInteger("vw_ref_pos_z"));
         } else {
-            referencePos = Optional.empty();
+            referencePos = null;
         }
     }
 
@@ -142,13 +144,11 @@ public class EntityMountable extends Entity implements IEntityAdditionalSpawnDat
 
         compound.setInteger("vw_coord_type", mountPosSpace.ordinal());
 
-        compound.setBoolean("vw_ref_pos_present", referencePos.isPresent());
-        if (referencePos.isPresent()) {
-            // Try to prevent data race
-            BlockPos shipPosLocal = referencePos.get();
-            compound.setInteger("vw_ref_pos_x", shipPosLocal.getX());
-            compound.setInteger("vw_ref_pos_y", shipPosLocal.getY());
-            compound.setInteger("vw_ref_pos_z", shipPosLocal.getZ());
+        compound.setBoolean("vw_ref_pos_present", referencePos != null);
+        if (referencePos != null) {
+            compound.setInteger("vw_ref_pos_x", referencePos.getX());
+            compound.setInteger("vw_ref_pos_y", referencePos.getY());
+            compound.setInteger("vw_ref_pos_z", referencePos.getZ());
         }
     }
 
@@ -160,9 +160,9 @@ public class EntityMountable extends Entity implements IEntityAdditionalSpawnDat
         packetBuffer.writeDouble(mountPosLocal.y);
         packetBuffer.writeDouble(mountPosLocal.z);
         packetBuffer.writeInt(mountPosSpace.ordinal());
-        packetBuffer.writeBoolean(referencePos.isPresent());
-        if (referencePos.isPresent()) {
-            packetBuffer.writeBlockPos(referencePos.get());
+        packetBuffer.writeBoolean(referencePos != null);
+        if (referencePos != null) {
+            packetBuffer.writeBlockPos(referencePos);
         }
     }
 
@@ -172,17 +172,21 @@ public class EntityMountable extends Entity implements IEntityAdditionalSpawnDat
         mountPos = new Vec3d(packetBuffer.readDouble(), packetBuffer.readDouble(), packetBuffer.readDouble());
         mountPosSpace = CoordinateSpaceType.values()[packetBuffer.readInt()];
         if (packetBuffer.readBoolean()) {
-            referencePos = Optional.of(packetBuffer.readBlockPos());
+            referencePos = packetBuffer.readBlockPos();
         } else {
-            referencePos = Optional.empty();
+            referencePos = null;
         }
     }
 
-    public Optional<BlockPos> getReferencePos() {
-        return referencePos;
+    Optional<BlockPos> getReferencePos() {
+        return Optional.ofNullable(referencePos);
     }
 
     public Optional<PhysicsObject> getMountedShip() {
-        return ValkyrienUtils.getPhysicsObject(world, referencePos.get(), false);
+        if (referencePos != null) {
+            return ValkyrienUtils.getPhysicsObject(world, referencePos, false);
+        } else {
+            return Optional.empty();
+        }
     }
 }

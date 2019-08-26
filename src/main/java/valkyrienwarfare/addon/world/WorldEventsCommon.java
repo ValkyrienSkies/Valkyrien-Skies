@@ -39,14 +39,8 @@ public class WorldEventsCommon {
         if (event.getObject() instanceof ItemStack) {
             ItemStack stack = (ItemStack) event.getObject();
             if (stack.getItem() instanceof ItemEthereumCrystal) {
-                event.addCapability(new ResourceLocation(ValkyrienWarfareWorld.INSTANCE.getModID(), "AntiGravityValue"),
+                event.addCapability(new ResourceLocation(ValkyrienWarfareWorld.MOD_ID, "AntiGravityValue"),
                         new AntiGravityCapabilityProvider());
-            } else if (stack.getItem() instanceof ItemBlock) {
-                ItemBlock itemBlock = (ItemBlock) stack.getItem();
-                if (itemBlock.getBlock() == ValkyrienWarfareWorld.INSTANCE.ethereumOre) {
-                    event.addCapability(new ResourceLocation(ValkyrienWarfareWorld.INSTANCE.getModID(), "AntiGravityValue"),
-                            new AntiGravityCapabilityProvider());
-                }
             }
         }
     }

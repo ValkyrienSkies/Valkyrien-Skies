@@ -21,6 +21,8 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 import valkyrienwarfare.mod.common.config.VWConfig;
 import valkyrienwarfare.mod.common.entity.PhysicsWrapperEntity;
@@ -39,6 +41,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @author thebest108
  */
 public class VWThread extends Thread {
+
+    private static final Logger logger = LogManager.getLogger(VWThread.class);
 
     private final static long NS_PER_TICK = 10000000;
     private final static long MAX_LOST_TIME_NS = 1000000000;
@@ -61,7 +65,7 @@ public class VWThread extends Thread {
         this.physicsTicksCount = 0;
         this.threadRunning = true;
         this.latestPhysicsTickTimes = new ConcurrentLinkedQueue<Long>();
-        ValkyrienWarfareMod.VW_LOGGER.fine(this.getName() + " thread created.");
+        logger.trace(this.getName() + " thread created.");
     }
 
     @SideOnly(Side.CLIENT)
@@ -124,7 +128,7 @@ public class VWThread extends Thread {
         }
         // If we get to this point of run(), then we are about to return and this thread
         // will terminate soon.
-        ValkyrienWarfareMod.VW_LOGGER.fine(super.getName() + " killed");
+        logger.trace(super.getName() + " killed");
     }
 
     private void runGameLoop() {
@@ -219,7 +223,7 @@ public class VWThread extends Thread {
      * finished.
      */
     public void kill() {
-        ValkyrienWarfareMod.VW_LOGGER.fine(super.getName() + " marked for death.");
+        logger.trace(super.getName() + " marked for death.");
         threadRunning = false;
     }
 

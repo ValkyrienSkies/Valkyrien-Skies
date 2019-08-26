@@ -22,8 +22,6 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
-import valkyrienwarfare.api.addons.Module;
-import valkyrienwarfare.api.addons.ModuleProxy;
 import valkyrienwarfare.mod.client.gui.VWGuiHandler;
 import valkyrienwarfare.mod.common.EventsCommon;
 import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
@@ -31,42 +29,17 @@ import valkyrienwarfare.mod.common.entity.PhysicsWrapperEntity;
 
 public class CommonProxy {
 
-    public void preInit(FMLPreInitializationEvent e) {
-        for (Module addon : ValkyrienWarfareMod.addons) {
-            ModuleProxy proxy = addon.getCommonProxy();
-            if (proxy != null) {
-                proxy.preInit(e);
-            }
-        }
-    }
+    public void preInit(FMLPreInitializationEvent e) { }
 
     public void init(FMLInitializationEvent e) {
         MinecraftForge.EVENT_BUS.register(new EventsCommon());
         NetworkRegistry.INSTANCE.registerGuiHandler(ValkyrienWarfareMod.INSTANCE, new VWGuiHandler());
-
-        for (Module addon : ValkyrienWarfareMod.addons) {
-            ModuleProxy proxy = addon.getCommonProxy();
-            if (proxy != null) {
-                proxy.init(e);
-            }
-        }
     }
 
-    public void postInit(FMLPostInitializationEvent e) {
-        for (Module addon : ValkyrienWarfareMod.addons) {
-            ModuleProxy proxy = addon.getCommonProxy();
-            if (proxy != null) {
-                proxy.postInit(e);
-            }
-        }
-    }
+    public void postInit(FMLPostInitializationEvent e) { }
 
-    public void updateShipPartialTicks(PhysicsWrapperEntity wrapper) {
+    public void updateShipPartialTicks(PhysicsWrapperEntity wrapper) { }
 
-    }
-
-    public void registerCommands(MinecraftServer server) {
-
-    }
+    public void registerCommands(MinecraftServer server) {}
 
 }

@@ -25,6 +25,8 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import valkyrienwarfare.mod.common.entity.EntityMountable;
 import valkyrienwarfare.mod.common.entity.EntityMountableChair;
 import valkyrienwarfare.mod.common.entity.PhysicsWrapperEntity;
@@ -32,31 +34,27 @@ import valkyrienwarfare.mod.common.entity.PhysicsWrapperEntity;
 import javax.annotation.Nonnull;
 
 import static valkyrienwarfare.mod.common.ValkyrienWarfareMod.MOD_ID;
-import static valkyrienwarfare.mod.common.ValkyrienWarfareMod.addons;
 
 @Mod.EventBusSubscriber(modid = ValkyrienWarfareMod.MOD_ID)
 public class RegisterEvents {
+
+    private static final Logger logger = LogManager.getLogger(RegisterEvents.class);
+
     @SubscribeEvent
     public static void registerBlocks(@Nonnull final RegistryEvent.Register<Block> event) {
-        System.out.println("Registering blocks");
+        logger.debug("Registering blocks");
         ValkyrienWarfareMod.INSTANCE.registerBlocks(event);
-        addons.forEach(m -> m.registerBlocks(event));
     }
 
     @SubscribeEvent
     public static void registerItems(@Nonnull final RegistryEvent.Register<Item> event) {
-        System.out.println("Registering items");
+        logger.debug("Registering items");
         ValkyrienWarfareMod.INSTANCE.registerItems(event);
-        addons.forEach(m -> {
-            m.registerItems(event);
-            m.registerItemBlocks(event);
-        });
     }
 
     @SubscribeEvent
     public static void registerRecipes(@Nonnull final RegistryEvent.Register<IRecipe> event) {
         ValkyrienWarfareMod.INSTANCE.registerRecipes(event);
-        addons.forEach(m -> m.registerRecipes(event));
     }
 
     /**

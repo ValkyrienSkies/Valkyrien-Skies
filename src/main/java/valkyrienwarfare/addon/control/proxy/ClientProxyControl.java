@@ -33,23 +33,8 @@ import valkyrienwarfare.addon.control.block.multiblocks.TileEntityEthereumEngine
 import valkyrienwarfare.addon.control.block.multiblocks.TileEntityGiantPropellerPart;
 import valkyrienwarfare.addon.control.block.multiblocks.TileEntityRudderAxlePart;
 import valkyrienwarfare.addon.control.block.torque.TileEntityRotationTrainAxle;
-import valkyrienwarfare.addon.control.renderer.BasicNodeTileEntityRenderer;
-import valkyrienwarfare.addon.control.renderer.EthereumCompressorPartTileEntityRenderer;
-import valkyrienwarfare.addon.control.renderer.EthereumEnginePartTileEntityRenderer;
-import valkyrienwarfare.addon.control.renderer.GearboxTileEntityRenderer;
-import valkyrienwarfare.addon.control.renderer.GiantPropellerPartTileEntityRenderer;
-import valkyrienwarfare.addon.control.renderer.LiftControlTileEntityRenderer;
-import valkyrienwarfare.addon.control.renderer.PropellerEngineTileEntityRenderer;
-import valkyrienwarfare.addon.control.renderer.RotationTrainAxleTileEntityRenderer;
-import valkyrienwarfare.addon.control.renderer.RudderAxlePartTileEntityRenderer;
-import valkyrienwarfare.addon.control.renderer.ShipHelmTileEntityRenderer;
-import valkyrienwarfare.addon.control.renderer.ShipTelegraphTileEntityRenderer;
-import valkyrienwarfare.addon.control.tileentity.TileEntityGearbox;
-import valkyrienwarfare.addon.control.tileentity.TileEntityLiftControl;
-import valkyrienwarfare.addon.control.tileentity.TileEntityNodeRelay;
-import valkyrienwarfare.addon.control.tileentity.TileEntityPropellerEngine;
-import valkyrienwarfare.addon.control.tileentity.TileEntityShipHelm;
-import valkyrienwarfare.addon.control.tileentity.TileEntityShipTelegraph;
+import valkyrienwarfare.addon.control.renderer.*;
+import valkyrienwarfare.addon.control.tileentity.*;
 import valkyrienwarfare.mod.client.render.GibsAnimationRegistry;
 import valkyrienwarfare.mod.client.render.GibsModelRegistry;
 
@@ -60,13 +45,13 @@ public class ClientProxyControl extends CommonProxyControl {
         Minecraft.getMinecraft()
                 .getRenderItem()
                 .getItemModelMesher()
-                .register(item, 0, new ModelResourceLocation(ValkyrienWarfareControl.INSTANCE.getModID() + ":" + item.getTranslationKey()
+                .register(item, 0, new ModelResourceLocation(ValkyrienWarfareControl.MOD_ID + ":" + item.getTranslationKey()
                         .substring(5), "inventory"));
     }
 
     private static void registerItemModel(Item toRegister) {
         RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
-        ModelResourceLocation modelResourceLocation = new ModelResourceLocation(ValkyrienWarfareControl.INSTANCE.getModID() + ":" + toRegister.getTranslationKey()
+        ModelResourceLocation modelResourceLocation = new ModelResourceLocation(ValkyrienWarfareControl.MOD_ID + ":" + toRegister.getTranslationKey()
                 .substring(5), "inventory");
         renderItem.getItemModelMesher()
                 .register(toRegister, 0, modelResourceLocation);
@@ -105,7 +90,7 @@ public class ClientProxyControl extends CommonProxyControl {
 
     private static void registerItemModels() {
         registerItemModel(ValkyrienWarfareControl.INSTANCE.relayWire);
-        registerItemModel(ValkyrienWarfareControl.INSTANCE.multiblockWrench);
+        registerItemModel(ValkyrienWarfareControl.INSTANCE.multiBlockWrench);
     }
 
     private static void registerTileEntityRenderers() {
@@ -127,7 +112,7 @@ public class ClientProxyControl extends CommonProxyControl {
         // Register events
         MinecraftForge.EVENT_BUS.register(new ControlEventsClient());
         // Register gibs
-        OBJLoader.INSTANCE.addDomain(ValkyrienWarfareControl.INSTANCE.getModID().toLowerCase());
+        OBJLoader.INSTANCE.addDomain(ValkyrienWarfareControl.MOD_ID.toLowerCase());
 
         registerControlGibs("chadburn_dial_simplevoxel_geo");
         registerControlGibs("chadburn_glass_simplevoxel_geo");

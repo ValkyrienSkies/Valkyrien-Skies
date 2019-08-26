@@ -30,8 +30,6 @@ import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import valkyrienwarfare.api.addons.Module;
-import valkyrienwarfare.api.addons.ModuleProxy;
 import valkyrienwarfare.mod.client.EventsClient;
 import valkyrienwarfare.mod.client.VWKeyHandler;
 import valkyrienwarfare.mod.client.render.GibsModelRegistry;
@@ -74,17 +72,12 @@ public class ClientProxy extends CommonProxy {
         MinecraftForge.EVENT_BUS.register(new EventsClient());
         MinecraftForge.EVENT_BUS.register(keyEvents);
 
-        for (Module addon : ValkyrienWarfareMod.addons) {
-            ModuleProxy proxy = addon.getClientProxy();
-            if (proxy != null) {
-                proxy.preInit(e);
-            }
-        }
         // Register VW Minecraft resource reload listener.
         IReloadableResourceManager mcResourceManager = (IReloadableResourceManager) Minecraft.getMinecraft()
                 .getResourceManager();
+
         // When Minecraft reloads resources tell GibsModelRegistry to delete all its caches.
-        mcResourceManager.registerReloadListener((resourceManager) -> GibsModelRegistry.onResourceManagerReload(resourceManager));
+        mcResourceManager.registerReloadListener(GibsModelRegistry::onResourceManagerReload);
 
         //  new ModelResourceLocation("valkyrienwarfarecontrol:infuser_core_main", "inventory"),
     }
@@ -94,12 +87,6 @@ public class ClientProxy extends CommonProxy {
         super.postInit(e);
         Minecraft.getMinecraft().getFramebuffer().enableStencil();
 
-        for (Module addon : ValkyrienWarfareMod.addons) {
-            ModuleProxy proxy = addon.getClientProxy();
-            if (proxy != null) {
-                proxy.postInit(e);
-            }
-        }
         // Register physics infuser tile entity renderer.
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPhysicsInfuser.class, new TileEntityPhysicsInfuserRenderer());
     }
@@ -116,14 +103,8 @@ public class ClientProxy extends CommonProxy {
         RenderItem renderItem = Minecraft.getMinecraft()
                 .getRenderItem();
         renderItem.getItemModelMesher()
-                .register(ValkyrienWarfareMod.INSTANCE.physicsCore, 0, new ModelResourceLocation("valkyrienwarfarecontrol:testmodel", "inventory"));
-
-        for (Module addon : ValkyrienWarfareMod.addons) {
-            ModuleProxy proxy = addon.getClientProxy();
-            if (proxy != null) {
-                proxy.init(e);
-            }
-        }
+                .register(ValkyrienWarfareMod.INSTANCE.physicsCore, 0,
+                        new ModelResourceLocation("valkyrienwarfarecontrol:testmodel", "inventory"));
     }
 
     @Override
@@ -139,9 +120,12 @@ public class ClientProxy extends CommonProxy {
         double moddedX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks;
         double moddedY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks;
         double moddedZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks;
-        double p0 = Minecraft.getMinecraft().player.lastTickPosX + (Minecraft.getMinecraft().player.posX - Minecraft.getMinecraft().player.lastTickPosX) * partialTicks;
-        double p1 = Minecraft.getMinecraft().player.lastTickPosY + (Minecraft.getMinecraft().player.posY - Minecraft.getMinecraft().player.lastTickPosY) * partialTicks;
-        double p2 = Minecraft.getMinecraft().player.lastTickPosZ + (Minecraft.getMinecraft().player.posZ - Minecraft.getMinecraft().player.lastTickPosZ) * partialTicks;
+        double p0 = Minecraft.getMinecraft().player.lastTickPosX +
+                (Minecraft.getMinecraft().player.posX - Minecraft.getMinecraft().player.lastTickPosX) * partialTicks;
+        double p1 = Minecraft.getMinecraft().player.lastTickPosY +
+                (Minecraft.getMinecraft().player.posY - Minecraft.getMinecraft().player.lastTickPosY) * partialTicks;
+        double p2 = Minecraft.getMinecraft().player.lastTickPosZ +
+                (Minecraft.getMinecraft().player.posZ - Minecraft.getMinecraft().player.lastTickPosZ) * partialTicks;
 
         Quaternion smoothRotation = entity.getPhysicsObject().getShipRenderer().getSmoothRotationQuat(partialTicks);
         double[] radians = smoothRotation.toRadians();
@@ -150,6 +134,7 @@ public class ClientProxy extends CommonProxy {
         double moddedYaw = Math.toDegrees(radians[1]);
         double moddedRoll = Math.toDegrees(radians[2]);
 
-        entity.getPhysicsObject().getShipTransformationManager().updateRenderTransform(moddedX, moddedY, moddedZ, moddedPitch, moddedYaw, moddedRoll);
+        entity.getPhysicsObject().getShipTransformationManager()
+                .updateRenderTransform(moddedX, moddedY, moddedZ, moddedPitch, moddedYaw, moddedRoll);
     }
 }

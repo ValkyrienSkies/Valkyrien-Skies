@@ -27,13 +27,16 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.FMLLog;
@@ -46,12 +49,9 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
-import valkyrienwarfare.addon.control.ValkyrienWarfareControl;
-import valkyrienwarfare.addon.opencomputers.ValkyrienWarfareOC;
-import valkyrienwarfare.addon.world.ValkyrienWarfareWorld;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import valkyrienwarfare.api.IPhysicsEntityManager;
-import valkyrienwarfare.api.addons.Module;
-import valkyrienwarfare.api.addons.VWAddon;
 import valkyrienwarfare.mixin.MixinLoaderForge;
 import valkyrienwarfare.mod.client.gui.TabValkyrienWarfare;
 import valkyrienwarfare.mod.common.block.BlockPhysicsInfuser;
@@ -70,19 +70,14 @@ import valkyrienwarfare.mod.common.tileentity.TileEntityPhysicsInfuser;
 import valkyrienwarfare.mod.proxy.CommonProxy;
 import valkyrienwarfare.mod.proxy.ServerProxy;
 
-import java.io.*;
+import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.*;
+import java.util.HashSet;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Logger;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
 
 @Mod(
         modid = ValkyrienWarfareMod.MOD_ID,
@@ -92,7 +87,8 @@ import java.util.zip.ZipInputStream;
         certificateFingerprint = ValkyrienWarfareMod.MOD_FINGERPRINT
 )
 public class ValkyrienWarfareMod {
-    public static final List<Module> addons = new ArrayList<Module>();
+    private static final Logger logger = LogManager.getLogger(ValkyrienWarfareMod.class);
+    
     public static final String MOD_ID = "valkyrienwarfare";
     public static final String MOD_NAME = "Valkyrien Warfare";
     public static final String MOD_VERSION = "0.9.2";
@@ -116,9 +112,9 @@ public class ValkyrienWarfareMod {
     public static ValkyrienWarfareMod INSTANCE = new ValkyrienWarfareMod();
     public static int airStateIndex;
     public static double standingTolerance = .42D;
-    public static Logger VW_LOGGER;
-    private static boolean hasAddonRegistrationEnded = false;
     private CompletableFuture<Kryo> kryoInstance;
+
+
 
     private static File getWorkingFolder() {
         File toBeReturned;
@@ -132,22 +128,6 @@ public class ValkyrienWarfareMod {
         return toBeReturned;
     }
 
-    private static void registerAddon(Module module) {
-        if (hasAddonRegistrationEnded) {
-            throw new IllegalStateException("Attempting to register addon after FMLConstructionEvent");
-        } else {
-            System.out.println("[VW Addon System] Registering addon: " + module.getClass().getCanonicalName());
-            for (Module registered : addons) {
-                if (registered.getClass().getCanonicalName().equals(module.getClass().getCanonicalName())) {
-                    System.out.println(
-                            "Addon " + module.getClass().getCanonicalName() + " already registered, skipping...");
-                    return;
-                }
-            }
-            addons.add(module);
-        }
-    }
-
     @Mod.EventHandler
     public void onFingerprintViolation(FMLFingerprintViolationEvent event) {
         if (MixinLoaderForge.isObfuscatedEnvironment) {
@@ -158,117 +138,18 @@ public class ValkyrienWarfareMod {
     @EventHandler
     public void fmlConstruct(FMLConstructionEvent event) {
         runConfiguration();
-        URLClassLoader classLoader = (URLClassLoader) getClass().getClassLoader();
-        ArrayList<String> allAddons = new ArrayList<>();
-        final boolean isAddonBugFixed = false;
-
-        if (!isAddonBugFixed) {
-            // ValkyrienWarfareCombat combatModule = new ValkyrienWarfareCombat();
+        /*
             ValkyrienWarfareControl controlModule = new ValkyrienWarfareControl();
             ValkyrienWarfareWorld worldModule = new ValkyrienWarfareWorld();
-            ValkyrienWarfareOC opencomputersModule = new ValkyrienWarfareOC();
-            // registerAddon(combatModule);
-            registerAddon(controlModule);
-            registerAddon(worldModule);
-            registerAddon(opencomputersModule);
-        }
-
-        if (!MixinLoaderForge.isObfuscatedEnvironment) { // if in dev, read default addons from gradle output folder
-            File f = ValkyrienWarfareMod.getWorkingFolder();
-            File defaultAddons;
-            String[] list = Objects.requireNonNull(f.list());
-            boolean rootDir = Arrays.stream(list).anyMatch(s -> s.endsWith("build.gradle"));
-
-            if (rootDir) { // assume root directory
-                defaultAddons = new File(f.getPath() + File.separatorChar + "src" + File.separatorChar + "main"
-                        + File.separatorChar + "resources" + File.separatorChar + "vwAddon_default");
-            } else { // assume run/ directory or similar
-                defaultAddons = new File(f.getAbsoluteFile().getParentFile().getParent() + File.separatorChar + "src"
-                        + File.separatorChar + "main" + File.separatorChar + "resources" + File.separatorChar
-                        + "vwAddon_default");
-            }
-            System.out.println(defaultAddons.getAbsolutePath());
-            try {
-                InputStream inputStream = new FileInputStream(defaultAddons);
-                Scanner scanner = new Scanner(inputStream);
-                while (scanner.hasNextLine()) {
-                    String className = scanner.nextLine().trim();
-                    allAddons.add(className);
-                    System.out.println("Found addon " + className);
-                }
-                scanner.close();
-                inputStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        for (URL url : classLoader.getURLs()) {
-            try {
-                // ZipFile file = new ZipFile(new File(url.toURI()));
-                ZipInputStream zis = new ZipInputStream(
-                        new BufferedInputStream(new FileInputStream(new File(url.getPath()))));
-                ZipEntry entry;
-                while ((entry = zis.getNextEntry()) != null) {
-                    if (entry.getName().startsWith("vwAddon_")) {
-                        try {
-                            ZipFile file = new ZipFile(new File(url.getPath()));
-                            InputStream inputStream = file.getInputStream(file.getEntry(entry.getName()));
-                            Scanner scanner = new Scanner(inputStream);
-                            while (scanner.hasNextLine()) {
-                                String className = scanner.nextLine().trim();
-                                allAddons.add(className);
-                                System.out.println("Found addon " + className);
-                            }
-                            scanner.close();
-                            inputStream.close();
-                        } catch (IOException e) {
-                            // wtf java
-                        }
-                        break;
-                    }
-                }
-                zis.close();
-            } catch (IOException e) {
-                // wtf java
-            }
-        }
-
-        ALL_ADDONS:
-        for (String className : allAddons) {
-            try {
-                Class<?> abstractclass = Class.forName(className);
-                if (abstractclass.isAnnotationPresent(VWAddon.class)) {
-                    for (Module registered : addons) {
-                        if (registered.getClass().getCanonicalName().equals(abstractclass.getCanonicalName())) {
-                            System.out.println(
-                                    "Addon " + abstractclass.getCanonicalName() + " already registered, skipping...");
-                            continue ALL_ADDONS;
-                        }
-                    }
-                    Module module = (Module) abstractclass.newInstance();
-                    // registerAddon(module);
-                } else {
-                    System.out.println("Class " + className + " does not have @VWAddon annonation, not loading");
-                }
-            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-                e.printStackTrace();
-                System.out.println("Not loading addon: " + className);
-            }
-        }
+            ValkyrienWarfareOC opencomputersModule = new ValkyrienWarfareOC();*/
     }
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        hasAddonRegistrationEnded = true;
-
         serializationInitAsync();
-        proxy.preInit(event);
         registerNetworks(event);
         ValkyrienWarfareMod.PHYSICS_THREADS_EXECUTOR = Executors.newFixedThreadPool(VWConfig.threadCount);
         registerCapabilities();
-        VW_LOGGER = Logger.getLogger("ValkyrienWarfare");
-
-        addons.forEach(m -> m.doPreInit(event));
 
         // Initialize the VW API here:
         try {
@@ -286,33 +167,19 @@ public class ValkyrienWarfareMod {
             System.err.println("FAILED TO INITIALIZE VW API!");
         }
         // Initialize VW API end.
-        /*
-        try {
-            Field chunkCache = ForgeChunkManager.class.getDeclaredField("dormantChunkCacheSize");
-            chunkCache.setAccessible(true);
-            chunkCache.set(null, new Integer(1000));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        */
     }
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
         // Print out a message of core count, we want this to know what AnvilNode is giving us.
-        System.out.println("Valyrien Warfare Initilization:");
-        System.out.println("We are running on " + Runtime.getRuntime().availableProcessors() + " threads; 4 or more is recommended!");
-        proxy.init(event);
-
-        addons.forEach(m -> m.doInit(event));
+        System.out.println("Valkyrien Warfare Initialization:");
+        System.out.println("We are running on " + Runtime.getRuntime().availableProcessors() +
+                " threads; 4 or more is recommended!");
     }
 
     @EventHandler
     public void postInit(FMLPostInitializationEvent event) {
-        proxy.postInit(event);
         airStateIndex = Block.getStateId(Blocks.AIR.getDefaultState());
-
-        addons.forEach(m -> m.doPostInit(event));
     }
 
     @EventHandler
@@ -346,8 +213,7 @@ public class ValkyrienWarfareMod {
 
         event.getRegistry().register(physicsInfuser);
         event.getRegistry().register(physicsInfuserCreative);
-        event.getRegistry()
-                .register(physicsInfuserDummy);
+        event.getRegistry().register(physicsInfuserDummy);
 
         registerTileEntities();
     }
@@ -382,8 +248,8 @@ public class ValkyrienWarfareMod {
     }
 
     void registerItems(RegistryEvent.Register<Item> event) {
-        Module.registerItemBlock(event, physicsInfuser);
-        Module.registerItemBlock(event, physicsInfuserCreative);
+        registerItemBlock(event, physicsInfuser);
+        registerItemBlock(event, physicsInfuserCreative);
 
         this.physicsCore = new ItemPhysicsCore().setTranslationKey("vw_phys_core")
                 .setRegistryName(MOD_ID, "vw_phys_core")
@@ -392,9 +258,22 @@ public class ValkyrienWarfareMod {
                 .register(this.physicsCore);
     }
 
+    private static void registerItemBlock(RegistryEvent.Register<Item> event, Block block) {
+        event.getRegistry().register(new ItemBlock(block).setRegistryName(block.getRegistryName()));
+    }
+
     void registerRecipes(RegistryEvent.Register<IRecipe> event) {
-        Module.registerRecipe(event, "recipe_physics_infuser", new ItemStack(physicsInfuser), "IEI", "ODO", "IEI", 'E', Items.ENDER_PEARL, 'D',
+        registerRecipe(event, "recipe_physics_infuser", new ItemStack(physicsInfuser),
+                "IEI", "ODO", "IEI", 'E', Items.ENDER_PEARL, 'D',
                 Items.DIAMOND, 'O', Item.getItemFromBlock(Blocks.OBSIDIAN), 'I', Items.IRON_INGOT);
+    }
+
+    private static void registerRecipe(RegistryEvent.Register<IRecipe> event,
+                                       String registryName, ItemStack out, Object... in) {
+        CraftingHelper.ShapedPrimer primer = CraftingHelper.parseShaped(in);
+        event.getRegistry()
+                .register(new ShapedRecipes(ValkyrienWarfareMod.MOD_ID, primer.width, primer.height, primer.input, out)
+                        .setRegistryName(ValkyrienWarfareMod.MOD_ID, registryName));
     }
 
 	private void runConfiguration() {

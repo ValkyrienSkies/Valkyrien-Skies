@@ -18,62 +18,46 @@ package valkyrienwarfare.addon.opencomputers;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
-import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.fml.common.event.FMLStateEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.Instance;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import valkyrienwarfare.addon.opencomputers.block.GPSBlock;
-import valkyrienwarfare.addon.opencomputers.proxy.ClientProxyOC;
-import valkyrienwarfare.addon.opencomputers.proxy.CommonProxyOC;
 import valkyrienwarfare.addon.opencomputers.tileentity.GPSTileEntity;
 import valkyrienwarfare.api.addons.Module;
-import valkyrienwarfare.api.addons.VWAddon;
 import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 
-@VWAddon
-public class ValkyrienWarfareOC extends Module {
-    public static ValkyrienWarfareOC INSTANCE;
+@Mod(
+        name = ValkyrienWarfareOC.MOD_NAME,
+        modid = ValkyrienWarfareOC.MOD_ID,
+        version = ValkyrienWarfareOC.MOD_VERSION,
+        dependencies = "required-after:" + ValkyrienWarfareMod.MOD_ID
+)
+public class ValkyrienWarfareOC {
+    static final String MOD_ID = "vs_open_computers";
+    static final String MOD_NAME = "Valkyrien Skies Open Computers";
+    static final String MOD_VERSION = ValkyrienWarfareMod.MOD_VERSION;
+
+    @Instance(MOD_ID)
+    public static ValkyrienWarfareOC INSTANCE = new ValkyrienWarfareOC();
     public Block gpsBlock;
 
-    public ValkyrienWarfareOC() {
-        super("VW_OpenComputers", new CommonProxyOC(), "valkyrienwarfareoc");
-        if (ValkyrienWarfareMod.INSTANCE.isRunningOnClient()) {
-            setClientProxy(new ClientProxyOC());
-        }
-
-        INSTANCE = this;
-    }
-
-    @Override
-    protected void preInit(FMLStateEvent event) {
-
-    }
-
-    @Override
-    protected void init(FMLStateEvent event) {
-
-    }
-
-    @Override
-    protected void postInit(FMLStateEvent event) {
-
-    }
-
-    @Override
+    @SubscribeEvent
     public void registerBlocks(RegistryEvent.Register<Block> event) {
         gpsBlock = new GPSBlock().setTranslationKey("gpsblock")
-                .setRegistryName(getModID(), "gpsblock")
+                .setRegistryName(MOD_ID, "gpsblock")
                 .setCreativeTab(ValkyrienWarfareMod.vwTab);
 
         event.getRegistry().register(gpsBlock);
     }
 
-    @Override
+    @SubscribeEvent
     public void registerItems(RegistryEvent.Register<Item> event) {
-        registerItemBlock(event, gpsBlock);
+        Module.registerItemBlock(event, gpsBlock);
     }
 
-    @Override
+    @SubscribeEvent
     public void registerTileEntities() {
         GameRegistry.registerTileEntity(GPSTileEntity.class, "tilegps");
     }

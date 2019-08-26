@@ -59,7 +59,8 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
-import valkyrienwarfare.addon.combat.entity.EntityMountingWeaponBase;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.fixes.IPhysicsChunk;
 import valkyrienwarfare.mod.common.coordinates.CoordinateSpaceType;
@@ -77,9 +78,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.logging.Level;
 
 public class EventsCommon {
+
+    private static final Logger logger = LogManager.getLogger(EventsCommon.class);
 
     public static final Map<EntityPlayer, Double[]> lastPositions = new HashMap<EntityPlayer, Double[]>();
 
@@ -129,7 +131,7 @@ public class EventsCommon {
 
         Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(world, posAt);
         if (!event.getWorld().isRemote && physicsObject.isPresent() && !(entity instanceof EntityFallingBlock)) {
-            if (entity instanceof EntityMountingWeaponBase || entity instanceof EntityArmorStand
+            if (entity instanceof EntityArmorStand
                     || entity instanceof EntityPig || entity instanceof EntityBoat) {
                 EntityMountable entityMountable = new EntityMountable(world, entity.getPositionVector(), CoordinateSpaceType.SUBSPACE_COORDINATES, posAt);
                 world.spawnEntity(entityMountable);
@@ -181,7 +183,7 @@ public class EventsCommon {
                     }
                 }
             } catch (NullPointerException e) {
-                ValkyrienWarfareMod.VW_LOGGER.log(Level.WARNING, "Nullpointer EventsCommon.java:onPlayerTickEvent");
+                logger.warn("Nullpointer EventsCommon.java:onPlayerTickEvent");
             }
 
             pos[0] = p.posX;

@@ -21,7 +21,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import valkyrienwarfare.addon.combat.entity.EntityCannonBall;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.mod.client.EventsClient;
 import valkyrienwarfare.mod.common.coordinates.ShipTransform;
@@ -49,7 +48,7 @@ public class EntityDraggable {
         try {
             for (int i = 0; i < world.loadedEntityList.size(); i++) {
                 Entity e = world.loadedEntityList.get(i);
-                if (!(e instanceof PhysicsWrapperEntity) && !(e instanceof EntityCannonBall) && !e.isDead) {
+                if (!(e instanceof PhysicsWrapperEntity) && !e.isDead) {
                     IDraggable draggable = getDraggableFromEntity(e);
 
                     if (draggable.getWorldBelowFeet() == null) {

@@ -31,7 +31,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorldEventListener;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
-import valkyrienwarfare.addon.combat.entity.EntityMountingWeaponBase;
 import valkyrienwarfare.api.TransformType;
 import valkyrienwarfare.fixes.IPhysicsChunk;
 import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
@@ -108,7 +107,7 @@ public class VWWorldEventListener implements IWorldEventListener {
             Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(world, posAt);
 
             if (!worldObj.isRemote && physicsObject.isPresent() && !(entity instanceof EntityFallingBlock)) {
-                if (entity instanceof EntityMountingWeaponBase || entity instanceof EntityArmorStand
+                if (entity instanceof EntityArmorStand
                         || entity instanceof EntityPig || entity instanceof EntityBoat) {
                     EntityMountable entityMountable = new EntityMountable(world, entity.getPositionVector(), CoordinateSpaceType.SUBSPACE_COORDINATES, posAt);
                     world.spawnEntity(entityMountable);
@@ -152,13 +151,11 @@ public class VWWorldEventListener implements IWorldEventListener {
 
                     Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(worldObj, pos);
 
-                    if (physicsObject.isPresent()) {
-                        physicsObject.get()
-                                .getShipTransformationManager()
-                                .getCurrentTickTransform()
-                                .transform(posVector,
-                                TransformType.SUBSPACE_TO_GLOBAL);
-                    }
+                    physicsObject.ifPresent(object -> object
+                            .getShipTransformationManager()
+                            .getCurrentTickTransform()
+                            .transform(posVector,
+                                    TransformType.SUBSPACE_TO_GLOBAL));
 
                     double d0 = posVector.X - entityplayermp.posX;
                     double d1 = posVector.Y - entityplayermp.posY;

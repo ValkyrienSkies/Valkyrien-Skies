@@ -25,79 +25,92 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.fml.common.event.FMLStateEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.Mod.Instance;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import valkyrienwarfare.addon.world.block.BlockEthereumOre;
 import valkyrienwarfare.addon.world.capability.ICapabilityAntiGravity;
 import valkyrienwarfare.addon.world.capability.ImplCapabilityAntiGravity;
 import valkyrienwarfare.addon.world.capability.StorageAntiGravity;
-import valkyrienwarfare.addon.world.proxy.ClientProxyWorld;
-import valkyrienwarfare.addon.world.proxy.CommonProxyWorld;
 import valkyrienwarfare.addon.world.worldgen.ValkyrienWarfareWorldGen;
 import valkyrienwarfare.api.addons.Module;
-import valkyrienwarfare.api.addons.VWAddon;
 import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
 
-@VWAddon
-public class ValkyrienWarfareWorld extends Module {
+@Mod(
+        name = ValkyrienWarfareWorld.MOD_NAME,
+        modid = ValkyrienWarfareWorld.MOD_ID,
+        version = ValkyrienWarfareWorld.MOD_VERSION,
+        dependencies = "required-after:" + ValkyrienWarfareMod.MOD_ID
+)
+@Mod.EventBusSubscriber(modid = ValkyrienWarfareWorld.MOD_ID)
+public class ValkyrienWarfareWorld {
+
+    private static final Logger logger = LogManager.getLogger(ValkyrienWarfareWorld.class);
+
+    public static final String MOD_ID = "vs_world";
+    static final String MOD_NAME = "Valkyrien Skies World";
+    static final String MOD_VERSION = ValkyrienWarfareMod.MOD_VERSION;
+
+    @Instance(MOD_ID)
+    public static ValkyrienWarfareWorld INSTANCE;
 
     @CapabilityInject(ICapabilityAntiGravity.class)
     public static final Capability<ICapabilityAntiGravity> ANTI_GRAVITY_CAPABILITY = null;
     private static final WorldEventsCommon worldEventsCommon = new WorldEventsCommon();
-    public static ValkyrienWarfareWorld INSTANCE;
+
     public Block ethereumOre;
     public Item ethereumCrystal;
     public static boolean OREGEN_ENABLED = true;
-
-    public ValkyrienWarfareWorld() {
-        super("VW_World", new CommonProxyWorld(), "valkyrienwarfareworld");
-        if (ValkyrienWarfareMod.INSTANCE.isRunningOnClient()) {
-            this.setClientProxy(new ClientProxyWorld());
-        }
-        INSTANCE = this;
-    }
-
-    @Override
-    protected void preInit(FMLStateEvent event) {
-    }
-
-    @Override
-    protected void init(FMLStateEvent event) {
-        EntityRegistry.registerModEntity(new ResourceLocation(ValkyrienWarfareMod.MOD_ID, "FallingUpBlockEntity"), EntityFallingUpBlock.class, "FallingUpBlockEntity", 75, ValkyrienWarfareMod.INSTANCE, 80, 1, true);
+    
+    @EventHandler
+    protected void init(FMLInitializationEvent event) {
+        EntityRegistry.registerModEntity(
+                new ResourceLocation(ValkyrienWarfareMod.MOD_ID, "FallingUpBlockEntity"), 
+                EntityFallingUpBlock.class, 
+                "FallingUpBlockEntity", 
+                75, ValkyrienWarfareMod.INSTANCE, 80, 1, true);
+        
         MinecraftForge.EVENT_BUS.register(worldEventsCommon);
-
         GameRegistry.registerWorldGenerator(new ValkyrienWarfareWorldGen(), 1);
     }
 
-    @Override
-    protected void postInit(FMLStateEvent event) {
+    @EventHandler
+    private void doPreInit(FMLPreInitializationEvent event) {
+        registerCapabilities();
     }
 
-    @Override
-    public void registerBlocks(RegistryEvent.Register<Block> event) {
-        ethereumOre = new BlockEthereumOre(Material.ROCK).setHardness(3f)
-                .setTranslationKey("ethereumore")
-                .setRegistryName(getModID(), "ethereumore")
+    @SubscribeEvent
+    public static void registerBlocks(RegistryEvent.Register<Block> event) {
+        logger.debug("Registering blocks...");
+
+        INSTANCE.ethereumOre = new BlockEthereumOre(Material.ROCK).setHardness(3f)
+                .setTranslationKey("ethereum_ore")
+                .setRegistryName(MOD_ID, "ethereum_ore")
                 .setCreativeTab(ValkyrienWarfareMod.vwTab);
 
-        event.getRegistry().register(ethereumOre);
+        event.getRegistry().register(INSTANCE.ethereumOre);
     }
 
-    @Override
-    public void registerItems(RegistryEvent.Register<Item> event) {
-        ethereumCrystal = new ItemEthereumCrystal().setTranslationKey("ethereumcrystal")
-                .setRegistryName(getModID(), "ethereumcrystal")
+    @SubscribeEvent
+    public static void registerItems(RegistryEvent.Register<Item> event) {
+        INSTANCE.ethereumCrystal = new ItemEthereumCrystal().setTranslationKey("ethereumcrystal")
+                .setRegistryName(MOD_ID, "ethereum_crystal")
                 .setCreativeTab(ValkyrienWarfareMod.vwTab)
                 .setMaxStackSize(16);
 
-        event.getRegistry().register(ethereumCrystal);
+        event.getRegistry().register(INSTANCE.ethereumCrystal);
 
-        registerItemBlock(event, ethereumOre);
+        Module.registerItemBlock(event, INSTANCE.ethereumOre);
     }
 
-    @Override
-    protected void registerCapabilities() {
+    private void registerCapabilities() {
         CapabilityManager.INSTANCE.register(ICapabilityAntiGravity.class, new StorageAntiGravity(), ImplCapabilityAntiGravity.class);
     }
 }

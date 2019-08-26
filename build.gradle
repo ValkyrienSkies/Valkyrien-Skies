@@ -188,9 +188,7 @@ allprojects {
 
 shadowJar {
     dependencies {
-        include(dependency('org.spongepowered:mixin'))
-		include(dependency(':GraphLib:'))
-		include(dependency(':api:'))
+        exclude(dependency("org.spongepowered:spongeforge:1.12.2-2825-7.1.6:dev"))
     }
     exclude 'dummyThing'
     exclude 'LICENSE.txt'

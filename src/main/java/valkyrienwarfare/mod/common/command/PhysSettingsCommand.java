@@ -16,38 +16,22 @@
 
 package valkyrienwarfare.mod.common.command;
 
-import com.google.common.collect.Lists;
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.command.CommandBase;
-import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
-import valkyrienwarfare.mod.common.config.VWConfig;
-import valkyrienwarfare.mod.common.ValkyrienWarfareMod;
-import valkyrienwarfare.mod.common.math.Vector;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@Deprecated
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 public class PhysSettingsCommand extends CommandBase {
 
-    public static final List<String> COMPLETED_OPTIONS = new ArrayList<String>();
-
-    static {
-        COMPLETED_OPTIONS.add("gravityvector");
-        COMPLETED_OPTIONS.add("maxshipsize");
-        COMPLETED_OPTIONS.add("physicsspeed");
-        COMPLETED_OPTIONS.add("dogravity");
-        COMPLETED_OPTIONS.add("dophysicsblocks");
-        COMPLETED_OPTIONS.add("doairshiprotation");
-        COMPLETED_OPTIONS.add("doairshipmovement");
-        COMPLETED_OPTIONS.add("save");
-        COMPLETED_OPTIONS.add("doethereumlifting");
-        COMPLETED_OPTIONS.add("restartcrashedphysics");
-    }
+    private static final String DEPRECATION_MESSAGE = "This command is deprecated and will be removed in a later " +
+            "release. Please go to \"Mod Options\" and then \"Valkyrien Warfare\" and then \"Config\" to change" +
+            "physics settings. Thanks!";
 
     @Override
     public String getName() {
@@ -56,7 +40,7 @@ public class PhysSettingsCommand extends CommandBase {
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "/physsettings <setting name> [value]";
+        return DEPRECATION_MESSAGE;
     }
 
     @Override
@@ -65,167 +49,7 @@ public class PhysSettingsCommand extends CommandBase {
     }
 
     @Override
-    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-        if (args.length == 0) {
-            sender.sendMessage(new TextComponentString("Avaliable physics Commands:"));
-            for (String command : COMPLETED_OPTIONS) {
-                sender.sendMessage(new TextComponentString(command));
-            }
-            return;
-        }
-        String key = args[0];
-        if (key.equals("maxshipsize")) {
-            if (args.length == 1) {
-                sender.sendMessage(new TextComponentString("maxshipsize=" + VWConfig.maxShipSize + " (Default: 15000)"));
-                return;
-            } else if (args.length == 2) {
-                int value = Integer.parseInt(args[1]);
-                VWConfig.maxShipSize = value;
-                sender.sendMessage(new TextComponentString("Set maximum ship size to " + value));
-                return;
-            }
-        } else if (key.equals("gravityvector")) {
-            if (args.length == 1) {
-                sender.sendMessage(new TextComponentString("gravityvector=" + VWConfig.gravity().toRoundedString() + " (Default: <0,-9.8,0>)"));
-                return;
-            } else if (args.length == 4) {
-                double x, y, z;
-                try {
-                    if (args[1] != null && args[2] != null && args[3] != null) {
-                        x = Double.parseDouble(args[1]);
-                        y = Double.parseDouble(args[2]);
-                        z = Double.parseDouble(args[3]);
-                    } else {
-                        sender.sendMessage(new TextComponentString(
-                                "Usage: /physsettings gravityVector <x> <y> <z>"));
-                        return;
-                    }
-
-                    sender.sendMessage(new TextComponentString(
-                            "physics gravity set to " + x + ", " + y + ", " + z + " (Default: <0,-9.8,0>)"));
-                } catch (NumberFormatException e) {
-                    sender.sendMessage(new TextComponentString("That's not a valid number.."));
-                }
-
-                return;
-            } else {
-                sender.sendMessage(new TextComponentString(
-                        "Usage: /physsettings gravityVector <x> <y> <z>"));
-            }
-        } else if (key.equals("physicsspeed")) {
-            if (args.length == 1) {
-                sender.sendMessage(new TextComponentString(
-                        "physicsspeed=" + VWConfig.physSpeed + " (Default: 100%)"));
-                return;
-            } else if (args.length == 2) {
-                double value = Double.parseDouble(args[1].replace('%', ' '));
-                if (value < 0 || value > 1000) {
-                    sender.sendMessage(new TextComponentString("Please enter a value between 0 and 1000"));
-                    return;
-                }
-                VWConfig.physSpeed = (value / 10000D);
-                sender.sendMessage(new TextComponentString("Set physicsspeed to " + value + " percent"));
-                return;
-            }
-        } else if (key.equals("dogravity")) {
-            if (args.length == 1) {
-                sender.sendMessage(new TextComponentString(
-                        "dogravity=" + VWConfig.doGravity + " (Default: true)"));
-                return;
-            } else if (args.length == 2) {
-                boolean value = Boolean.parseBoolean(args[1]);
-                VWConfig.doGravity = value;
-                sender.sendMessage(new TextComponentString(
-                        "Set dogravity to " + (VWConfig.doGravity ? "enabled" : "disabled")));
-                return;
-            }
-        } else if (key.equals("dophysicsblocks")) {
-            if (args.length == 1) {
-                sender.sendMessage(new TextComponentString(
-                        "dophysicsblocks=" + VWConfig.doPhysicsBlocks + " (Default: true)"));
-                return;
-            } else if (args.length == 2) {
-                boolean value = Boolean.parseBoolean(args[1]);
-                VWConfig.doPhysicsBlocks = value;
-                sender.sendMessage(new TextComponentString(
-                        "Set dophysicsblocks to " + (VWConfig.doPhysicsBlocks ? "enabled" : "disabled")));
-                return;
-            }
-        } else if (key.equals("doairshiprotation")) {
-            if (args.length == 1) {
-                sender.sendMessage(new TextComponentString(
-                        "doairshiprotation=" + VWConfig.doAirshipRotation + " (Default: true)"));
-                return;
-            } else if (args.length == 2) {
-                boolean value = Boolean.parseBoolean(args[1]);
-                VWConfig.doAirshipRotation = value;
-                sender.sendMessage(new TextComponentString(
-                        "Set doairshiprotation to " + (VWConfig.doAirshipRotation ? "enabled" : "disabled")));
-                return;
-            }
-        } else if (key.equals("doairshipmovement")) {
-            if (args.length == 1) {
-                sender.sendMessage(new TextComponentString(
-                        "doairshipmovement=" + VWConfig.doAirshipMovement + " (Default: true)"));
-                return;
-            } else if (args.length == 2) {
-                boolean value = Boolean.parseBoolean(args[1]);
-                VWConfig.doAirshipMovement = value;
-                sender.sendMessage(new TextComponentString(
-                        "Set doairshipmovement to " +
-                                (VWConfig.doAirshipMovement ? "enabled" : "disabled")));
-                return;
-            }
-        } else if (key.equals("doethereumlifting")) {
-            if (args.length == 1) {
-                sender.sendMessage(new TextComponentString(
-                        "doethereumlifting=" + VWConfig.doEthereumLifting + " (Default: true)"));
-                return;
-            } else if (args.length == 2) {
-                boolean value = Boolean.parseBoolean(args[1]);
-                VWConfig.doEthereumLifting = value;
-                sender.sendMessage(new TextComponentString(
-                        "Set doethereumlifting to " + 
-                                (VWConfig.doEthereumLifting ? "enabled" : "disabled")));
-                return;
-            }
-        } else if (key.equals("save")) {
-            sender.sendMessage(new TextComponentString("Saved physics settings"));
-            return;
-        } else {
-            sender.sendMessage(new TextComponentString("Available physics Commands:"));
-            for (String command : COMPLETED_OPTIONS) {
-                sender.sendMessage(new TextComponentString(command));
-            }
-        }
-
-        VWConfig.sync();
-
-        sender.sendMessage(new TextComponentString(this.getUsage(sender)));
-    }
-
-    @Override
-    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos) {
-        if (args.length == 1) {
-            List<String> possibleArgs = new ArrayList<String>(COMPLETED_OPTIONS);
-            for (Iterator<String> iterator = possibleArgs.iterator(); iterator.hasNext(); ) { //Don't like this, but I have to because concurrentmodificationexception
-                if (!iterator.next().startsWith(args[0])) {
-                    iterator.remove();
-                }
-            }
-            return possibleArgs;
-        } else if (args.length == 2) {
-            if (args[0].startsWith("do")) {
-                if (args[1].startsWith("t")) {
-                    return Lists.newArrayList("true");
-                } else if (args[1].startsWith("f")) {
-                    return Lists.newArrayList("false");
-                } else {
-                    return Lists.newArrayList("true", "false");
-                }
-            }
-        }
-
-        return null;
+    public void execute(MinecraftServer server, ICommandSender sender, String[] args) {
+        sender.sendMessage(new TextComponentString(DEPRECATION_MESSAGE));
     }
 }

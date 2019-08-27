@@ -204,9 +204,9 @@ jar {
                 "tweakClass": 'org.spongepowered.asm.launch.MixinTweaker',
                 "TweakOrder": 0,
                 'FMLCorePluginContainsFMLMod': 'true',
-                'FMLCorePlugin': 'valkyrienskies.mixin.MixinLoaderForge',
+                'FMLCorePlugin': 'org.valkyrienskies.mixin.MixinLoaderForge',
 				'ForceLoadAsMod': 'true',
-                'FMLAT': 'valkyrienwarfare_at.cfg'
+                'FMLAT': 'valkyrienskies_at.cfg'
         )
     }
 }

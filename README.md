@@ -2,7 +2,7 @@
 # Valkyrien Warfare
 [![CircleCI](https://circleci.com/gh/ValkyrienWarfare/Valkyrien-Warfare-Revamped.svg?style=svg)](https://circleci.com/gh/ValkyrienWarfare/Valkyrien-Warfare-Revamped)
 
-See: [LICENSE file](https://github.com/ValkyrienWarfare/Valkyrien-Warfare-Revamped/blob/8778e9d45f16c1f60e8149ab6cbdbabbdebc1278/LICENSE), [Project Roadmap](https://github.com/ValkyrienWarfare/Valkyrien-Warfare-Revamped/wiki/Roadmap)
+See: [LICENSE file](https://github.com/ValkyrienWarfare/Valkyrien-Warfare-Revamped/blob/8778e9d45f16c1f60e8149ab6cbdbabbdebc1278/LICENSE), [Project Roadmap](https://valkyrienskies.miraheze.org/wiki/Roadmap), [Wiki Page](https://valkyrienskies.miraheze.org/wiki/Main_Page)
 
 The Airships Mod to end all other Airships Mods. Better compatibility, performance, collisions, interactions and physics than anything prior!
 

@@ -1,6 +1,0 @@
-{
-  "parent": "item/handheld",
-  "textures": {
-    "layer0": "vs_combat:items/cannon_spawner"
-  }
-}

@@ -40,8 +40,8 @@ import org.valkyrienskies.addon.world.capability.ICapabilityAntiGravity;
 import org.valkyrienskies.addon.world.capability.ImplCapabilityAntiGravity;
 import org.valkyrienskies.addon.world.capability.StorageAntiGravity;
 import org.valkyrienskies.addon.world.worldgen.ValkyrienWarfareWorldGen;
+import org.valkyrienskies.api.addons.Module;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
-import valkyrienwarfare.api.addons.Module;
 
 @Mod(
         name = ValkyrienWarfareWorld.MOD_NAME,

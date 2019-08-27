@@ -1,0 +1,14 @@
+{
+  "forge_marker": 1,
+  "variants": {
+    "normal": {
+      "model": "vs_control:advancedethercompressor"
+    },
+    "inventory": [
+      {
+        "model": "vs_control:advancedethercompressor",
+        "transform": "forge:default-block"
+      }
+    ]
+  }
+}

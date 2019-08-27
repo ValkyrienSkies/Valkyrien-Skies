@@ -1,0 +1,105 @@
+{
+  "forge_marker": 1,
+  "variants": {
+    "default": {
+      "model": "vs_control:empty"
+    },
+    "normal": {
+      "model": "vs_control:empty"
+    },
+    "inventory": {
+      "model": "vs_control:wrench_geo.obj",
+      "custom": {
+        "flip-v": true
+      },
+      "transform": {
+        "thirdperson_lefthand": {
+          "rotation": [
+            {
+              "x": 130
+            },
+            {
+              "y": -5
+            },
+            {
+              "z": 90
+            }
+          ],
+          "translation": [
+            0,
+            0.1,
+            0.15
+          ]
+        },
+        "thirdperson_righthand": {
+          "rotation": [
+            {
+              "x": 130
+            },
+            {
+              "y": 5
+            },
+            {
+              "z": 90
+            }
+          ],
+          "translation": [
+            0,
+            0.1,
+            0.15
+          ]
+        },
+        "firstperson_lefthand": {
+          "rotation": [
+            {
+              "x": 90
+            },
+            {
+              "y": -10
+            },
+            {
+              "z": 90
+            }
+          ],
+          "translation": [
+            -0.1,
+            0.3,
+            0.2
+          ]
+        },
+        "firstperson_righthand": {
+          "rotation": [
+            {
+              "x": 90
+            },
+            {
+              "y": 10
+            },
+            {
+              "z": 90
+            }
+          ],
+          "translation": [
+            -0.1,
+            0.3,
+            0.2
+          ]
+        },
+        "gui": {
+          "rotation": [
+            {
+              "x": 90
+            },
+            {
+              "y": -40
+            },
+            {
+              "z": 45
+            }
+          ],
+          "scale": 1.1
+        }
+      }
+    }
+  }
+}

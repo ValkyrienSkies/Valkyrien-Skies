@@ -149,37 +149,37 @@ public class ClientProxyControl extends CommonProxyControl {
         registerGearboxGibs("gearboxrightengineaxel_geo");
         registerGearboxGibs("gearboxvtopengineaxel_geo");
 
-        GibsAnimationRegistry.registerAnimation("ethereum_compressor", new ResourceLocation("valkyrienwarfarecontrol", "models/block/ether_compressor/compressoranimations.atom"));
+        GibsAnimationRegistry.registerAnimation("ethereum_compressor", new ResourceLocation(ValkyrienWarfareControl.MOD_ID, "models/block/ether_compressor/compressoranimations.atom"));
 
-        GibsAnimationRegistry.registerAnimation("ethereum_engine", new ResourceLocation("valkyrienwarfarecontrol", "models/block/multipart_engines/small_engine.atom"));
+        GibsAnimationRegistry.registerAnimation("ethereum_engine", new ResourceLocation(ValkyrienWarfareControl.MOD_ID, "models/block/multipart_engines/small_engine.atom"));
 
-        GibsAnimationRegistry.registerAnimation("lift_control", new ResourceLocation("valkyrienwarfarecontrol", "models/block/controls/liftcontrol_keyframes.atom"));
+        GibsAnimationRegistry.registerAnimation("lift_control", new ResourceLocation(ValkyrienWarfareControl.MOD_ID, "models/block/controls/liftcontrol_keyframes.atom"));
 
-        GibsAnimationRegistry.registerAnimation("gearbox", new ResourceLocation("valkyrienwarfarecontrol", "models/block/gearbox/small_gearbox.atom"));
+        GibsAnimationRegistry.registerAnimation("gearbox", new ResourceLocation(ValkyrienWarfareControl.MOD_ID, "models/block/gearbox/small_gearbox.atom"));
 
-        GibsAnimationRegistry.registerAnimation("pocketwatch_body", new ResourceLocation("valkyrienwarfarecontrol", "models/block/pocketwatch/pocketwatch_keyframes.atom"));
+        GibsAnimationRegistry.registerAnimation("pocketwatch_body", new ResourceLocation(ValkyrienWarfareControl.MOD_ID, "models/block/pocketwatch/pocketwatch_keyframes.atom"));
 
-        GibsAnimationRegistry.registerAnimation("pocketwatch_lid", new ResourceLocation("valkyrienwarfarecontrol", "models/block/pocketwatch/pocketwatchlid_keyframes.atom"));
+        GibsAnimationRegistry.registerAnimation("pocketwatch_lid", new ResourceLocation(ValkyrienWarfareControl.MOD_ID, "models/block/pocketwatch/pocketwatchlid_keyframes.atom"));
 
-        GibsAnimationRegistry.registerAnimation("telescope", new ResourceLocation("valkyrienwarfarecontrol", "models/block/telescope/telescope_keyframes.atom"));
+        GibsAnimationRegistry.registerAnimation("telescope", new ResourceLocation(ValkyrienWarfareControl.MOD_ID, "models/block/telescope/telescope_keyframes.atom"));
 
-        GibsAnimationRegistry.registerAnimation("steering_rudder", new ResourceLocation("valkyrienwarfarecontrol", "models/block/steering_rudder/rudder_animation.atom"));
+        GibsAnimationRegistry.registerAnimation("steering_rudder", new ResourceLocation(ValkyrienWarfareControl.MOD_ID, "models/block/steering_rudder/rudder_animation.atom"));
 
-        GibsAnimationRegistry.registerAnimation("rotation_train_axle", new ResourceLocation("valkyrienwarfarecontrol", "models/block/rotation_train_axle/small_engine_axle.atom"));
+        GibsAnimationRegistry.registerAnimation("rotation_train_axle", new ResourceLocation(ValkyrienWarfareControl.MOD_ID, "models/block/rotation_train_axle/small_engine_axle.atom"));
 
-        GibsAnimationRegistry.registerAnimation("giant_propeller", new ResourceLocation("valkyrienwarfarecontrol", "models/block/giant_propeller/small_propeller.atom"));
+        GibsAnimationRegistry.registerAnimation("giant_propeller", new ResourceLocation(ValkyrienWarfareControl.MOD_ID, "models/block/giant_propeller/small_propeller.atom"));
     }
 
     private void registerGearboxGibs(String name) {
-        GibsModelRegistry.registerGibsModel(name, new ResourceLocation("valkyrienwarfarecontrol", "block/gearbox/" + name + ".obj"));
+        GibsModelRegistry.registerGibsModel(name, new ResourceLocation(ValkyrienWarfareControl.MOD_ID, "block/gearbox/" + name + ".obj"));
     }
 
     private void registerControlGibs(String name) {
-        GibsModelRegistry.registerGibsModel(name, new ResourceLocation("valkyrienwarfarecontrol", "block/controls/" + name + ".obj"));
+        GibsModelRegistry.registerGibsModel(name, new ResourceLocation(ValkyrienWarfareControl.MOD_ID, "block/controls/" + name + ".obj"));
     }
 
     private void registerRudderGibs(String name) {
-        GibsModelRegistry.registerGibsModel(name, new ResourceLocation("valkyrienwarfarecontrol", "block/steering_rudder/" + name + ".obj"));
+        GibsModelRegistry.registerGibsModel(name, new ResourceLocation(ValkyrienWarfareControl.MOD_ID, "block/steering_rudder/" + name + ".obj"));
     }
 
     @Override

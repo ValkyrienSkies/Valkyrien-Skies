@@ -1,0 +1,14 @@
+{
+  "forge_marker": 1,
+  "variants": {
+    "normal": {
+      "model": "vs_control:antigravengine"
+    },
+    "inventory": [
+      {
+        "model": "vs_control:antigravengine",
+        "transform": "forge:default-block"
+      }
+    ]
+  }
+}

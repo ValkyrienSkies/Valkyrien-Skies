@@ -28,27 +28,54 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.Instance;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
-import org.valkyrienskies.addon.control.block.multiblocks.*;
+import org.valkyrienskies.addon.control.block.multiblocks.EthereumCompressorMultiblockSchematic;
+import org.valkyrienskies.addon.control.block.multiblocks.EthereumEngineMultiblockSchematic;
+import org.valkyrienskies.addon.control.block.multiblocks.GiantPropellerMultiblockSchematic;
+import org.valkyrienskies.addon.control.block.multiblocks.RudderAxleMultiblockSchematic;
+import org.valkyrienskies.addon.control.block.multiblocks.TileEntityEthereumCompressorPart;
+import org.valkyrienskies.addon.control.block.multiblocks.TileEntityEthereumEnginePart;
+import org.valkyrienskies.addon.control.block.multiblocks.TileEntityGiantPropellerPart;
+import org.valkyrienskies.addon.control.block.multiblocks.TileEntityRudderAxlePart;
 import org.valkyrienskies.addon.control.block.torque.TileEntityRotationTrainAxle;
 import org.valkyrienskies.addon.control.capability.ICapabilityLastRelay;
 import org.valkyrienskies.addon.control.capability.ImplCapabilityLastRelay;
 import org.valkyrienskies.addon.control.capability.StorageLastRelay;
 import org.valkyrienskies.addon.control.item.ItemRelayWire;
 import org.valkyrienskies.addon.control.item.ItemWrench;
-import org.valkyrienskies.addon.control.network.*;
+import org.valkyrienskies.addon.control.network.MessagePlayerStoppedPiloting;
+import org.valkyrienskies.addon.control.network.MessagePlayerStoppedPilotingHandler;
+import org.valkyrienskies.addon.control.network.MessageStartPiloting;
+import org.valkyrienskies.addon.control.network.MessageStartPilotingHandler;
+import org.valkyrienskies.addon.control.network.MessageStopPiloting;
+import org.valkyrienskies.addon.control.network.MessageStopPilotingHandler;
 import org.valkyrienskies.addon.control.piloting.PilotControlsMessage;
 import org.valkyrienskies.addon.control.piloting.PilotControlsMessageHandler;
-import org.valkyrienskies.addon.control.tileentity.*;
+import org.valkyrienskies.addon.control.proxy.CommonProxyControl;
+import org.valkyrienskies.addon.control.tileentity.TileEntityGearbox;
+import org.valkyrienskies.addon.control.tileentity.TileEntityGyroscopeDampener;
+import org.valkyrienskies.addon.control.tileentity.TileEntityGyroscopeStabilizer;
+import org.valkyrienskies.addon.control.tileentity.TileEntityLiftControl;
+import org.valkyrienskies.addon.control.tileentity.TileEntityLiftValve;
+import org.valkyrienskies.addon.control.tileentity.TileEntityNetworkDisplay;
+import org.valkyrienskies.addon.control.tileentity.TileEntityNodeRelay;
+import org.valkyrienskies.addon.control.tileentity.TileEntityPassengerChair;
+import org.valkyrienskies.addon.control.tileentity.TileEntityPilotsChair;
+import org.valkyrienskies.addon.control.tileentity.TileEntityPropellerEngine;
+import org.valkyrienskies.addon.control.tileentity.TileEntityShipHelm;
+import org.valkyrienskies.addon.control.tileentity.TileEntityShipTelegraph;
 import org.valkyrienskies.addon.world.ValkyrienWarfareWorld;
+import org.valkyrienskies.api.addons.Module;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
-import valkyrienwarfare.api.addons.Module;
 
 @Mod(
         name = ValkyrienWarfareControl.MOD_NAME,
@@ -56,12 +83,14 @@ import valkyrienwarfare.api.addons.Module;
         version = ValkyrienWarfareControl.MOD_VERSION,
         dependencies = "required-after:" + ValkyrienWarfareWorld.MOD_ID
 )
-@EventBusSubscriber
+@Mod.EventBusSubscriber(modid = ValkyrienWarfareControl.MOD_ID)
 public class ValkyrienWarfareControl {
 
     public static final String MOD_ID = "vs_control";
-    static final String MOD_NAME = "Valkyrien Skies Control";
-    static final String MOD_VERSION = ValkyrienSkiesMod.MOD_VERSION;
+    public static final String MOD_NAME = "Valkyrien Skies Control";
+    public static final String MOD_VERSION = ValkyrienSkiesMod.MOD_VERSION;
+    @SidedProxy(clientSide = "org.valkyrienskies.addon.control.proxy.ClientProxyControl", serverSide = "org.valkyrienskies.addon.control.proxy.CommonProxyControl")
+    private static CommonProxyControl proxy;
 
     @Instance(MOD_ID)
     public static ValkyrienWarfareControl INSTANCE;
@@ -74,25 +103,26 @@ public class ValkyrienWarfareControl {
     public Item relayWire;
     public Item multiBlockWrench;
 
-
     @SubscribeEvent
-    public void registerBlocks(RegistryEvent.Register<Block> event) {
-        vwControlBlocks.registerBlocks(event);
+    public static void registerBlocks(RegistryEvent.Register<Block> event) {
+        INSTANCE.vwControlBlocks.registerBlocks(event);
     }
 
     @SubscribeEvent
-    public void registerItems(RegistryEvent.Register<Item> event) {
-        relayWire = new ItemRelayWire().setTranslationKey("relaywire")
+    public static void registerItems(RegistryEvent.Register<Item> event) {
+        INSTANCE.relayWire = new ItemRelayWire().setTranslationKey("relaywire")
                 .setRegistryName(MOD_ID, "relaywire")
                 .setCreativeTab(ValkyrienSkiesMod.vwTab);
-        multiBlockWrench = new ItemWrench().setTranslationKey("vw_wrench")
+        INSTANCE.multiBlockWrench = new ItemWrench().setTranslationKey("vw_wrench")
                 .setRegistryName(MOD_ID, "vw_wrench")
                 .setCreativeTab(ValkyrienSkiesMod.vwTab);
 
-        event.getRegistry().register(relayWire);
-        event.getRegistry().register(multiBlockWrench);
+        event.getRegistry()
+                .register(INSTANCE.relayWire);
+        event.getRegistry()
+                .register(INSTANCE.multiBlockWrench);
 
-        vwControlBlocks.registerBlockItems(event);
+        INSTANCE.vwControlBlocks.registerBlockItems(event);
         // This doesn't really belong here, but whatever.
         MultiblockRegistry.registerAllPossibleSchematicVariants(EthereumEngineMultiblockSchematic.class);
         MultiblockRegistry.registerAllPossibleSchematicVariants(EthereumCompressorMultiblockSchematic.class);
@@ -101,9 +131,9 @@ public class ValkyrienWarfareControl {
     }
 
     @SubscribeEvent
-    public void registerRecipes(RegistryEvent.Register<IRecipe> event) {
+    public static void registerRecipes(RegistryEvent.Register<IRecipe> event) {
         Module.registerRecipe(event, "recipe_pilots_chair",
-                new ItemStack(vwControlBlocks.pilotsChair),
+                new ItemStack(INSTANCE.vwControlBlocks.pilotsChair),
                 "SLS",
                 "EWE",
                 " S ",
@@ -113,7 +143,7 @@ public class ValkyrienWarfareControl {
                 'E', ValkyrienWarfareWorld.INSTANCE.ethereumCrystal);
 
         Module.registerRecipe(event, "recipe_basic_engine",
-                new ItemStack(vwControlBlocks.basicEngine, 4),
+                new ItemStack(INSTANCE.vwControlBlocks.basicEngine, 4),
                 "I##",
                 "IPP",
                 "I##",
@@ -121,35 +151,53 @@ public class ValkyrienWarfareControl {
                 'P', Item.getItemFromBlock(Blocks.PISTON),
                 'I', Items.IRON_INGOT);
 
-        Module.registerRecipe(event, "recipe_advanced_engine1", new ItemStack(vwControlBlocks.advancedEngine, 4), "I##", "IPP", "I##", '#', Item.getItemFromBlock(Blocks.STONE), 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT);
-        Module.registerRecipe(event, "recipe_advanced_engine2", new ItemStack(vwControlBlocks.advancedEngine, 2), "I##", "IPP", "I##", '#', Item.getItemFromBlock(Blocks.COBBLESTONE), 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT);
-        Module.registerRecipe(event, "recipe_elite_engine", new ItemStack(vwControlBlocks.eliteEngine, 4), "III", "IPP", "III", 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT);
-        Module.registerRecipe(event, "recipe_ultimate_engine", new ItemStack(vwControlBlocks.ultimateEngine, 4), "I##", "IPP", "I##", '#', Item.getItemFromBlock(Blocks.OBSIDIAN), 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT);
+        Module.registerRecipe(event, "recipe_advanced_engine1", new ItemStack(INSTANCE.vwControlBlocks.advancedEngine, 4), "I##", "IPP", "I##", '#', Item.getItemFromBlock(Blocks.STONE), 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT);
+        Module.registerRecipe(event, "recipe_advanced_engine2", new ItemStack(INSTANCE.vwControlBlocks.advancedEngine, 2), "I##", "IPP", "I##", '#', Item.getItemFromBlock(Blocks.COBBLESTONE), 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT);
+        Module.registerRecipe(event, "recipe_elite_engine", new ItemStack(INSTANCE.vwControlBlocks.eliteEngine, 4), "III", "IPP", "III", 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT);
+        Module.registerRecipe(event, "recipe_ultimate_engine", new ItemStack(INSTANCE.vwControlBlocks.ultimateEngine, 4), "I##", "IPP", "I##", '#', Item.getItemFromBlock(Blocks.OBSIDIAN), 'P', Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT);
     }
 
-    protected void registerTileEntities() {
-        GameRegistry.registerTileEntity(TileEntityPilotsChair.class, "tilemanualshipcontroller");
-        GameRegistry.registerTileEntity(TileEntityNodeRelay.class, "tilethrustrelay");
-        GameRegistry.registerTileEntity(TileEntityShipHelm.class, "tileshiphelm");
-        GameRegistry.registerTileEntity(TileEntityShipTelegraph.class, "tileshiptelegraph");
-        GameRegistry.registerTileEntity(TileEntityPropellerEngine.class, "tilepropellerengine");
-        GameRegistry.registerTileEntity(TileEntityGyroscopeStabilizer.class, "tilegyroscope_stabilizer");
-        GameRegistry.registerTileEntity(TileEntityLiftValve.class, "tileliftvalve");
-        GameRegistry.registerTileEntity(TileEntityNetworkDisplay.class, "tilenetworkdisplay");
-        GameRegistry.registerTileEntity(TileEntityLiftControl.class, "tileliftcontrol");
+    @Mod.EventHandler
+    public void preInit(FMLPreInitializationEvent event) {
+        proxy.preInit(event);
+    }
 
-        GameRegistry.registerTileEntity(TileEntityGyroscopeDampener.class, "tilegyroscope_dampener");
-        GameRegistry.registerTileEntity(TileEntityEthereumEnginePart.class, "tile_big_engine_part");
-        GameRegistry.registerTileEntity(TileEntityGearbox.class, "tile_gearbox");
-        GameRegistry.registerTileEntity(TileEntityEthereumCompressorPart.class, "tile_ethereum_compressor_part");
-        GameRegistry.registerTileEntity(TileEntityRudderAxlePart.class, "tile_rudder_axle_part");
-        GameRegistry.registerTileEntity(TileEntityGiantPropellerPart.class, "tile_giant_propeller_part");
-        GameRegistry.registerTileEntity(TileEntityRotationTrainAxle.class, "tile_rotation_train_axle");
+    @Mod.EventHandler
+    public void init(FMLInitializationEvent event) {
+        registerTileEntities();
+        registerNetworks();
+        registerCapabilities();
+        proxy.init(event);
+    }
+
+    @Mod.EventHandler
+    public void postInit(FMLPostInitializationEvent event) {
+        proxy.postInit(event);
+    }
+
+    private void registerTileEntities() {
+        GameRegistry.registerTileEntity(TileEntityPilotsChair.class, new ResourceLocation(MOD_ID, "tilemanualshipcontroller"));
+        GameRegistry.registerTileEntity(TileEntityNodeRelay.class, new ResourceLocation(MOD_ID, "tilethrustrelay"));
+        GameRegistry.registerTileEntity(TileEntityShipHelm.class, new ResourceLocation(MOD_ID, "tileshiphelm"));
+        GameRegistry.registerTileEntity(TileEntityShipTelegraph.class, new ResourceLocation(MOD_ID, "tileshiptelegraph"));
+        GameRegistry.registerTileEntity(TileEntityPropellerEngine.class, new ResourceLocation(MOD_ID, "tilepropellerengine"));
+        GameRegistry.registerTileEntity(TileEntityGyroscopeStabilizer.class, new ResourceLocation(MOD_ID, "tilegyroscope_stabilizer"));
+        GameRegistry.registerTileEntity(TileEntityLiftValve.class, new ResourceLocation(MOD_ID, "tileliftvalve"));
+        GameRegistry.registerTileEntity(TileEntityNetworkDisplay.class, new ResourceLocation(MOD_ID, "tilenetworkdisplay"));
+        GameRegistry.registerTileEntity(TileEntityLiftControl.class, new ResourceLocation(MOD_ID, "tileliftcontrol"));
+
+        GameRegistry.registerTileEntity(TileEntityGyroscopeDampener.class, new ResourceLocation(MOD_ID, "tilegyroscope_dampener"));
+        GameRegistry.registerTileEntity(TileEntityEthereumEnginePart.class, new ResourceLocation(MOD_ID, "tile_big_engine_part"));
+        GameRegistry.registerTileEntity(TileEntityGearbox.class, new ResourceLocation(MOD_ID, "tile_gearbox"));
+        GameRegistry.registerTileEntity(TileEntityEthereumCompressorPart.class, new ResourceLocation(MOD_ID, "tile_ethereum_compressor_part"));
+        GameRegistry.registerTileEntity(TileEntityRudderAxlePart.class, new ResourceLocation(MOD_ID, "tile_rudder_axle_part"));
+        GameRegistry.registerTileEntity(TileEntityGiantPropellerPart.class, new ResourceLocation(MOD_ID, "tile_giant_propeller_part"));
+        GameRegistry.registerTileEntity(TileEntityRotationTrainAxle.class, new ResourceLocation(MOD_ID, "tile_rotation_train_axle"));
 
         GameRegistry.registerTileEntity(TileEntityPassengerChair.class, new ResourceLocation(MOD_ID, "tile_passengers_chair"));
     }
 
-    protected void registerNetworks() {
+    private void registerNetworks() {
         controlNetwork = NetworkRegistry.INSTANCE.newSimpleChannel("controlnetwork");
         controlNetwork.registerMessage(PilotControlsMessageHandler.class, PilotControlsMessage.class, 2, Side.SERVER);
         controlNetwork.registerMessage(MessageStartPilotingHandler.class, MessageStartPiloting.class, 3, Side.CLIENT);
@@ -157,7 +205,7 @@ public class ValkyrienWarfareControl {
         controlNetwork.registerMessage(MessagePlayerStoppedPilotingHandler.class, MessagePlayerStoppedPiloting.class, 5, Side.SERVER);
     }
 
-    protected void registerCapabilities() {
+    private void registerCapabilities() {
         CapabilityManager.INSTANCE.register(ICapabilityLastRelay.class, new StorageLastRelay(),
                 ImplCapabilityLastRelay::new);
     }

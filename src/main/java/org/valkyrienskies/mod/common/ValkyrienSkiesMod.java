@@ -126,7 +126,7 @@ public class ValkyrienSkiesMod {
     public static SimpleNetworkWrapper physWrapperNetwork;
     public static CreativeTabs vwTab = new TabValkyrienWarfare();
     @Instance(MOD_ID)
-    public static ValkyrienSkiesMod INSTANCE = new ValkyrienSkiesMod();
+    public static ValkyrienSkiesMod INSTANCE;
     public static int airStateIndex;
     public static double standingTolerance = .42D;
     private CompletableFuture<Kryo> kryoInstance;

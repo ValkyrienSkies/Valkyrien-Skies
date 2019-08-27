@@ -20,16 +20,30 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.item.Item;
 import net.minecraftforge.event.RegistryEvent;
-import org.valkyrienskies.addon.control.block.*;
+import org.valkyrienskies.addon.control.block.BlockDopedEthereum;
+import org.valkyrienskies.addon.control.block.BlockGearbox;
+import org.valkyrienskies.addon.control.block.BlockGyroscopeDampener;
+import org.valkyrienskies.addon.control.block.BlockGyroscopeStabilizer;
+import org.valkyrienskies.addon.control.block.BlockLiftControl;
+import org.valkyrienskies.addon.control.block.BlockLiftValve;
+import org.valkyrienskies.addon.control.block.BlockNetworkDisplay;
+import org.valkyrienskies.addon.control.block.BlockRotationTrainAxle;
+import org.valkyrienskies.addon.control.block.BlockShipHelm;
+import org.valkyrienskies.addon.control.block.BlockShipPassengerChair;
+import org.valkyrienskies.addon.control.block.BlockShipPilotsChair;
+import org.valkyrienskies.addon.control.block.BlockShipTelegraph;
+import org.valkyrienskies.addon.control.block.BlockShipWheel;
+import org.valkyrienskies.addon.control.block.BlockTelegraphDummy;
+import org.valkyrienskies.addon.control.block.BlockThrustRelay;
 import org.valkyrienskies.addon.control.block.engine.BlockNormalEngine;
 import org.valkyrienskies.addon.control.block.engine.BlockRedstoneEngine;
 import org.valkyrienskies.addon.control.block.multiblocks.BlockEtherCompressorPart;
 import org.valkyrienskies.addon.control.block.multiblocks.BlockEthereumEnginePart;
 import org.valkyrienskies.addon.control.block.multiblocks.BlockGiantPropellerPart;
 import org.valkyrienskies.addon.control.block.multiblocks.BlockRudderAxlePart;
+import org.valkyrienskies.api.addons.Module;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.config.VWConfig;
-import valkyrienwarfare.api.addons.Module;
 
 public class BlocksValkyrienWarfareControl {
 
@@ -163,7 +177,7 @@ public class BlocksValkyrienWarfareControl {
                 .setCreativeTab(ValkyrienSkiesMod.vwTab);
     }
 
-    protected void registerBlocks(RegistryEvent.Register<Block> event) {
+    public void registerBlocks(RegistryEvent.Register<Block> event) {
         event.getRegistry().register(basicEngine);
         event.getRegistry().register(advancedEngine);
         event.getRegistry().register(eliteEngine);
@@ -194,7 +208,7 @@ public class BlocksValkyrienWarfareControl {
         event.getRegistry().register(rotationTrainAxle);
     }
 
-    protected void registerBlockItems(RegistryEvent.Register<Item> event) {
+    public void registerBlockItems(RegistryEvent.Register<Item> event) {
         registerItemBlock(event, basicEngine);
         registerItemBlock(event, advancedEngine);
         registerItemBlock(event, eliteEngine);

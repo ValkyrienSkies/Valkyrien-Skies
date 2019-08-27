@@ -25,8 +25,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import org.valkyrienskies.addon.opencomputers.block.GPSBlock;
 import org.valkyrienskies.addon.opencomputers.tileentity.GPSTileEntity;
+import org.valkyrienskies.api.addons.Module;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
-import valkyrienwarfare.api.addons.Module;
 
 @Mod(
         name = ValkyrienWarfareOC.MOD_NAME,

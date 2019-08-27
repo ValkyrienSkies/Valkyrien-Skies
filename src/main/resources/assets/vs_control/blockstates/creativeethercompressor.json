@@ -1,0 +1,14 @@
+{
+  "forge_marker": 1,
+  "variants": {
+    "normal": {
+      "model": "vs_control:creativeethercompressor"
+    },
+    "inventory": [
+      {
+        "model": "vs_control:creativeethercompressor",
+        "transform": "forge:default-block"
+      }
+    ]
+  }
+}

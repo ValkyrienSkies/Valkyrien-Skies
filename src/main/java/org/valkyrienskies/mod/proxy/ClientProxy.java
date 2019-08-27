@@ -107,7 +107,7 @@ public class ClientProxy extends CommonProxy {
                 .getRenderItem();
         renderItem.getItemModelMesher()
                 .register(ValkyrienSkiesMod.INSTANCE.physicsCore, 0,
-                        new ModelResourceLocation("valkyrienwarfarecontrol:testmodel", "inventory"));
+                        new ModelResourceLocation(ValkyrienSkiesMod.MOD_ID + ":testmodel", "inventory"));
     }
 
     @Override

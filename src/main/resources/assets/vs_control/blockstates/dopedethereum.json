@@ -1,0 +1,14 @@
+{
+  "forge_marker": 1,
+  "variants": {
+    "normal": {
+      "model": "vs_control:dopedethereum"
+    },
+    "inventory": [
+      {
+        "model": "vs_control:dopedethereum",
+        "transform": "forge:default-block"
+      }
+    ]
+  }
+}

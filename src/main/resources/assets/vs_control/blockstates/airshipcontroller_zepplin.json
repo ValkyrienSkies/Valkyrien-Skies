@@ -1,0 +1,29 @@
+{
+  "forge_marker": 1,
+  "variants": {
+    "default": {
+      "model": "vs_control:airshipcontroller_zepplin"
+    },
+    "facing=north": {
+      "model": "vs_control:airshipcontroller_zepplin"
+    },
+    "facing=south": {
+      "model": "vs_control:airshipcontroller_zepplin",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "vs_control:airshipcontroller_zepplin",
+      "y": 270
+    },
+    "facing=east": {
+      "model": "vs_control:airshipcontroller_zepplin",
+      "y": 90
+    },
+    "inventory": [
+      {
+        "model": "vs_control:airshipcontroller_zepplin",
+        "transform": "forge:default-block"
+      }
+    ]
+  }
+}

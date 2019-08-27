@@ -22,7 +22,6 @@ import de.javakaffee.kryoserializers.UUIDSerializer;
 import de.javakaffee.kryoserializers.UnmodifiableCollectionsSerializer;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -38,7 +37,6 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -84,10 +82,8 @@ import org.valkyrienskies.mod.common.physmanagement.interaction.ShipData;
 import org.valkyrienskies.mod.common.physmanagement.interaction.ShipPositionData;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 import org.valkyrienskies.mod.proxy.CommonProxy;
-import org.valkyrienskies.mod.proxy.ServerProxy;
 import valkyrienwarfare.api.IPhysicsEntityManager;
 
-import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.HashSet;
@@ -131,20 +127,6 @@ public class ValkyrienSkiesMod {
     public static double standingTolerance = .42D;
     private CompletableFuture<Kryo> kryoInstance;
 
-
-
-    private static File getWorkingFolder() {
-        File toBeReturned;
-
-        if (FMLCommonHandler.instance().getSide().isClient()) {
-            toBeReturned = Minecraft.getMinecraft().gameDir;
-        } else {
-            toBeReturned = FMLCommonHandler.instance().getMinecraftServerInstance().getFile("");
-        }
-
-        return toBeReturned;
-    }
-
     @Mod.EventHandler
     public void onFingerprintViolation(FMLFingerprintViolationEvent event) {
         if (MixinLoaderForge.isObfuscatedEnvironment) {
@@ -155,10 +137,6 @@ public class ValkyrienSkiesMod {
     @EventHandler
     public void fmlConstruct(FMLConstructionEvent event) {
         runConfiguration();
-        /*
-            ValkyrienSkiesControl controlModule = new ValkyrienSkiesControl();
-            ValkyrienWarfareWorld worldModule = new ValkyrienWarfareWorld();
-            ValkyrienWarfareOC opencomputersModule = new ValkyrienWarfareOC();*/
     }
 
     @EventHandler
@@ -309,13 +287,6 @@ public class ValkyrienSkiesMod {
     private void registerCapabilities() {
         CapabilityManager.INSTANCE.register(IVWWorldDataCapability.class, new StorageVWWorldData(),
                 ImplVWWorldDataCapability.class);
-    }
-
-    /**
-     * Checks instance of ServerProxy to avoid calling client code on server side
-     */
-    public boolean isRunningOnClient() {
-        return !(proxy instanceof ServerProxy);
     }
 
     private void registerTileEntities() {

@@ -28,7 +28,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import org.valkyrienskies.addon.world.EntityFallingUpBlock;
-import org.valkyrienskies.addon.world.ValkyrienWarfareWorld;
+import org.valkyrienskies.addon.world.ValkyrienSkiesWorld;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -102,7 +102,7 @@ public class BlockEthereumOre extends Block {
     //Ore Properties Start Here
     @Nullable
     public Item getItemDropped(IBlockState state, Random rand, int fortune) {
-        return ValkyrienWarfareWorld.INSTANCE.ethereumCrystal;
+        return ValkyrienSkiesWorld.INSTANCE.valkyriumCrystal;
     }
 
     public int quantityDroppedWithBonus(int fortune, Random random) {

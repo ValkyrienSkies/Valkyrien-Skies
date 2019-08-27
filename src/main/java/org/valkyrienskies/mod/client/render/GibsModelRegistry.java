@@ -18,7 +18,13 @@ import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Used to register and get IBakedModels for 'gibs', which are basically any
@@ -152,7 +158,7 @@ public class GibsModelRegistry {
     public static void onResourceManagerReload(IResourceManager resourceManager) {
         // When Minecraft resources are reloaded we must delete the render caches.
         // Otherwise we'll start rendering pink garbage.
-        System.out.println("Valkyrien Warfare got a resource reload event! " + NAMES_TO_RESOURCE_LOCATION.size());
+        System.out.println("Valkyrien Skies got a resource reload event! " + NAMES_TO_RESOURCE_LOCATION.size());
         System.out.println(NAMES_TO_RESOURCE_LOCATION.toString());
         NAMES_TO_BAKED_MODELS.clear();
         NAMES_TO_BUFFER_STATES.clear();
@@ -181,7 +187,7 @@ public class GibsModelRegistry {
     }
 
     public static void registerTextures(TextureStitchEvent event) {
-        System.out.println("Valkyrien Warfare got a register textures pre event! " + NAMES_TO_RESOURCE_LOCATION.size());
+        System.out.println("Valkyrien Skies got a register textures pre event! " + NAMES_TO_RESOURCE_LOCATION.size());
 
         for (ResourceLocation location : NAMES_TO_RESOURCE_LOCATION.values()) {
             try {
@@ -200,6 +206,6 @@ public class GibsModelRegistry {
     }
 
     public static void onModelBakeEvent(ModelBakeEvent event) {
-        System.out.println("Valkyrien Warfare got a model bake event! " + NAMES_TO_RESOURCE_LOCATION.size());
+        System.out.println("Valkyrien Skies got a model bake event! " + NAMES_TO_RESOURCE_LOCATION.size());
     }
 }

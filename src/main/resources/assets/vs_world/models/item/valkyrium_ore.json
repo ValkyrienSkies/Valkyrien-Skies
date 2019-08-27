@@ -1,5 +1,5 @@
 {
-  "parent": "valkyrienwarfareworld:block/ethereumore",
+  "parent": "vs_world:block/valkyrium_ore",
   "display": {
     "thirdperson": {
       "rotation": [

@@ -39,7 +39,7 @@ public class WorldEventsCommon {
         if (event.getObject() instanceof ItemStack) {
             ItemStack stack = (ItemStack) event.getObject();
             if (stack.getItem() instanceof ItemEthereumCrystal) {
-                event.addCapability(new ResourceLocation(ValkyrienWarfareWorld.MOD_ID, "AntiGravityValue"),
+                event.addCapability(new ResourceLocation(ValkyrienSkiesWorld.MOD_ID, "AntiGravityValue"),
                         new AntiGravityCapabilityProvider());
             }
         }
@@ -52,7 +52,7 @@ public class WorldEventsCommon {
                 if (entity instanceof EntityItem) {
                     EntityItem itemEntity = (EntityItem) entity;
                     ItemStack itemStack = itemEntity.getItem();
-                    if (itemStack.hasCapability(ValkyrienWarfareWorld.ANTI_GRAVITY_CAPABILITY, null)) {
+                    if (itemStack.hasCapability(ValkyrienSkiesWorld.ANTI_GRAVITY_CAPABILITY, null)) {
                         itemEntity.addVelocity(0, .1 - (itemEntity.motionY * .12D), 0);
                     }
                 }

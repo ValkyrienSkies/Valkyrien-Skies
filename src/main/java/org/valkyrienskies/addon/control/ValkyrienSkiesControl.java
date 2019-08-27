@@ -73,7 +73,7 @@ import org.valkyrienskies.addon.control.tileentity.TileEntityPilotsChair;
 import org.valkyrienskies.addon.control.tileentity.TileEntityPropellerEngine;
 import org.valkyrienskies.addon.control.tileentity.TileEntityShipHelm;
 import org.valkyrienskies.addon.control.tileentity.TileEntityShipTelegraph;
-import org.valkyrienskies.addon.world.ValkyrienWarfareWorld;
+import org.valkyrienskies.addon.world.ValkyrienSkiesWorld;
 import org.valkyrienskies.api.addons.Module;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 
@@ -81,7 +81,7 @@ import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
         name = ValkyrienSkiesControl.MOD_NAME,
         modid = ValkyrienSkiesControl.MOD_ID,
         version = ValkyrienSkiesControl.MOD_VERSION,
-        dependencies = "required-after:" + ValkyrienWarfareWorld.MOD_ID
+        dependencies = "required-after:" + ValkyrienSkiesWorld.MOD_ID
 )
 @Mod.EventBusSubscriber(modid = ValkyrienSkiesControl.MOD_ID)
 public class ValkyrienSkiesControl {
@@ -140,7 +140,7 @@ public class ValkyrienSkiesControl {
                 'S', Items.STICK,
                 'L', Items.LEATHER,
                 'W', Item.getItemFromBlock(Blocks.LOG),
-                'E', ValkyrienWarfareWorld.INSTANCE.ethereumCrystal);
+                'E', ValkyrienSkiesWorld.INSTANCE.valkyriumCrystal);
 
         Module.registerRecipe(event, "recipe_basic_engine",
                 new ItemStack(INSTANCE.vwControlBlocks.basicEngine, 4),

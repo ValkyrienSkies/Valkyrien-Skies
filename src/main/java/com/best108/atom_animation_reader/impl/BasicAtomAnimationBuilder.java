@@ -5,8 +5,8 @@ import com.best108.atom_animation_reader.IAtomAnimationBuilder;
 import com.best108.atom_animation_reader.IModelRenderer;
 import com.best108.atom_animation_reader.parsers.AtomParser;
 import com.best108.atom_animation_reader.parsers.AtomParserElement;
-import valkyrienwarfare.mod.common.coordinates.VectorImmutable;
-import valkyrienwarfare.mod.common.math.Vector;
+import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
+import org.valkyrienskies.mod.common.math.Vector;
 
 import java.util.*;
 import java.util.regex.Pattern;

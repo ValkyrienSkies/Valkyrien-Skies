@@ -59,7 +59,7 @@ minecraft {
     version = project.forgeVersion
     runDir = "run"
     mappings = project.mcpVersion
-    coreMod = "valkyrienwarfare.mixin.MixinLoaderForge"
+    coreMod = "valkyrienskies.mixin.MixinLoaderForge"
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 }
 
@@ -150,7 +150,7 @@ processResources {
 
 mixin {
     defaultObfuscationEnv searge
-    add sourceSets.main, "mixins.valkyrienwarfare.refmap.json"
+    add sourceSets.main, "mixins.valkyrienskies.refmap.json"
 }
 
 reobf {
@@ -200,11 +200,11 @@ build.dependsOn(shadowJar)
 jar {
     manifest {
         attributes(
-                "MixinConfigs": 'mixins.valkyrienwarfare.json',
+                "MixinConfigs": 'mixins.valkyrienskies.json',
                 "tweakClass": 'org.spongepowered.asm.launch.MixinTweaker',
                 "TweakOrder": 0,
                 'FMLCorePluginContainsFMLMod': 'true',
-                'FMLCorePlugin': 'valkyrienwarfare.mixin.MixinLoaderForge',
+                'FMLCorePlugin': 'valkyrienskies.mixin.MixinLoaderForge',
 				'ForceLoadAsMod': 'true',
                 'FMLAT': 'valkyrienwarfare_at.cfg'
         )
@@ -232,8 +232,8 @@ build.dependsOn signJar
 publishing {
     publications {
         maven(MavenPublication) {
-            groupId = 'valkyrienwarfare'
-            artifactId = 'valkyrienwarfare'
+            groupId = 'valkyrienskies'
+            artifactId = 'valkyrienskies'
             version = project.version
 
             from components.java

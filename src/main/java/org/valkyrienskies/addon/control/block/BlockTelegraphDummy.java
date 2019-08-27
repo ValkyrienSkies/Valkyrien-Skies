@@ -12,7 +12,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
-import org.valkyrienskies.addon.control.ValkyrienWarfareControl;
+import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
 
 public class BlockTelegraphDummy extends Block {
 
@@ -54,13 +54,14 @@ public class BlockTelegraphDummy extends Block {
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
         super.breakBlock(worldIn, pos, state);
-        if (worldIn.getBlockState(pos.down()).getBlock() == ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipTelegraph) {
+        if (worldIn.getBlockState(pos.down())
+                .getBlock() == ValkyrienSkiesControl.INSTANCE.vwControlBlocks.shipTelegraph) {
             worldIn.setBlockToAir(pos.down());
         }
     }
 
     @Override
     public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player) {
-        return ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipTelegraph.getPickBlock(world.getBlockState(pos.down()), target, world, pos.down(), player);
+        return ValkyrienSkiesControl.INSTANCE.vwControlBlocks.shipTelegraph.getPickBlock(world.getBlockState(pos.down()), target, world, pos.down(), player);
     }
 }

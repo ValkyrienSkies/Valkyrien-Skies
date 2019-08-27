@@ -156,7 +156,7 @@ public class ValkyrienSkiesMod {
     public void fmlConstruct(FMLConstructionEvent event) {
         runConfiguration();
         /*
-            ValkyrienWarfareControl controlModule = new ValkyrienWarfareControl();
+            ValkyrienSkiesControl controlModule = new ValkyrienSkiesControl();
             ValkyrienWarfareWorld worldModule = new ValkyrienWarfareWorld();
             ValkyrienWarfareOC opencomputersModule = new ValkyrienWarfareOC();*/
     }

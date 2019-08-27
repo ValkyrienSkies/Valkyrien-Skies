@@ -30,7 +30,7 @@ import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.valkyrienskies.addon.control.ValkyrienWarfareControl;
+import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
 import org.valkyrienskies.addon.control.block.BlockShipHelm;
 import org.valkyrienskies.addon.control.block.multiblocks.TileEntityRudderAxlePart;
 import org.valkyrienskies.addon.control.nodenetwork.VWNode_TileEntity;
@@ -118,7 +118,7 @@ public class TileEntityShipHelm extends TileEntityPilotableImpl implements ITick
         lastCompassAngle = compassAngle;
 
         IBlockState helmState = getWorld().getBlockState(getPos());
-        if (helmState.getBlock() != ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipHelm) {
+        if (helmState.getBlock() != ValkyrienSkiesControl.INSTANCE.vwControlBlocks.shipHelm) {
             return;
         }
         EnumFacing enumfacing = helmState.getValue(BlockShipHelm.FACING);

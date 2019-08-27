@@ -20,30 +20,32 @@ import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
-import org.valkyrienskies.addon.control.ValkyrienWarfareControl;
+import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
 
 public class LastNodeCapabilityProvider implements ICapabilitySerializable<NBTTagIntArray> {
 
-    private ICapabilityLastRelay inst = ValkyrienWarfareControl.lastRelayCapability.getDefaultInstance();
+    private ICapabilityLastRelay inst = ValkyrienSkiesControl.lastRelayCapability.getDefaultInstance();
 
     @Override
     public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
-        return capability == ValkyrienWarfareControl.lastRelayCapability;
+        return capability == ValkyrienSkiesControl.lastRelayCapability;
     }
 
     @Override
     public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
-        return capability == ValkyrienWarfareControl.lastRelayCapability ? ValkyrienWarfareControl.lastRelayCapability.cast(inst) : null;
+        return capability == ValkyrienSkiesControl.lastRelayCapability ? ValkyrienSkiesControl.lastRelayCapability.cast(inst) : null;
     }
 
     @Override
     public NBTTagIntArray serializeNBT() {
-        return (NBTTagIntArray) ValkyrienWarfareControl.lastRelayCapability.getStorage().writeNBT(ValkyrienWarfareControl.lastRelayCapability, inst, null);
+        return (NBTTagIntArray) ValkyrienSkiesControl.lastRelayCapability.getStorage()
+                .writeNBT(ValkyrienSkiesControl.lastRelayCapability, inst, null);
     }
 
     @Override
     public void deserializeNBT(NBTTagIntArray nbt) {
-        ValkyrienWarfareControl.lastRelayCapability.getStorage().readNBT(ValkyrienWarfareControl.lastRelayCapability, inst, null, nbt);
+        ValkyrienSkiesControl.lastRelayCapability.getStorage()
+                .readNBT(ValkyrienSkiesControl.lastRelayCapability, inst, null, nbt);
     }
 
 }

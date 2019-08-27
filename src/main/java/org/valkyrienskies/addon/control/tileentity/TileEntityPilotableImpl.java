@@ -23,7 +23,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.valkyrienskies.addon.control.ValkyrienWarfareControl;
+import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
 import org.valkyrienskies.addon.control.network.MessageStartPiloting;
 import org.valkyrienskies.addon.control.network.MessageStopPiloting;
 import org.valkyrienskies.addon.control.nodenetwork.BasicNodeTileEntity;
@@ -104,12 +104,12 @@ public abstract class TileEntityPilotableImpl extends BasicNodeTileEntity implem
     private final void sendPilotUpdatePackets(EntityPlayerMP newPilot, EntityPlayerMP oldPilot) {
         if (oldPilot != null) {
             MessageStopPiloting stopMessage = new MessageStopPiloting(getPos());
-            ValkyrienWarfareControl.controlNetwork.sendTo(stopMessage, oldPilot);
+            ValkyrienSkiesControl.controlNetwork.sendTo(stopMessage, oldPilot);
         }
         if (newPilot != null) {
             MessageStartPiloting startMessage = new MessageStartPiloting(getPos(), setClientPilotingEntireShip(),
                     getControlInputType());
-            ValkyrienWarfareControl.controlNetwork.sendTo(startMessage, newPilot);
+            ValkyrienSkiesControl.controlNetwork.sendTo(startMessage, newPilot);
         }
     }
 

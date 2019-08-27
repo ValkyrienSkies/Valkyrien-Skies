@@ -25,7 +25,7 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import org.lwjgl.opengl.GL11;
-import org.valkyrienskies.addon.control.ValkyrienWarfareControl;
+import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
 import org.valkyrienskies.addon.control.block.BlockShipTelegraph;
 import org.valkyrienskies.addon.control.tileentity.TileEntityShipTelegraph;
 import org.valkyrienskies.mod.client.render.GibsModelRegistry;
@@ -36,7 +36,7 @@ public class ShipTelegraphTileEntityRenderer extends TileEntitySpecialRenderer<T
     public void render(TileEntityShipTelegraph tileentity, double x, double y, double z, float partialTick, int destroyStage, float alpha) {
         IBlockState telegraphState = tileentity.getWorld().getBlockState(tileentity.getPos());
 
-        if (telegraphState.getBlock() != ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipTelegraph) {
+        if (telegraphState.getBlock() != ValkyrienSkiesControl.INSTANCE.vwControlBlocks.shipTelegraph) {
             return;
         }
 

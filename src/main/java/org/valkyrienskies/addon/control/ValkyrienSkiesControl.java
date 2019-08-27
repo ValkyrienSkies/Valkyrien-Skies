@@ -78,13 +78,13 @@ import org.valkyrienskies.api.addons.Module;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 
 @Mod(
-        name = ValkyrienWarfareControl.MOD_NAME,
-        modid = ValkyrienWarfareControl.MOD_ID,
-        version = ValkyrienWarfareControl.MOD_VERSION,
+        name = ValkyrienSkiesControl.MOD_NAME,
+        modid = ValkyrienSkiesControl.MOD_ID,
+        version = ValkyrienSkiesControl.MOD_VERSION,
         dependencies = "required-after:" + ValkyrienWarfareWorld.MOD_ID
 )
-@Mod.EventBusSubscriber(modid = ValkyrienWarfareControl.MOD_ID)
-public class ValkyrienWarfareControl {
+@Mod.EventBusSubscriber(modid = ValkyrienSkiesControl.MOD_ID)
+public class ValkyrienSkiesControl {
 
     public static final String MOD_ID = "vs_control";
     public static final String MOD_NAME = "Valkyrien Skies Control";
@@ -93,13 +93,13 @@ public class ValkyrienWarfareControl {
     private static CommonProxyControl proxy;
 
     @Instance(MOD_ID)
-    public static ValkyrienWarfareControl INSTANCE;
+    public static ValkyrienSkiesControl INSTANCE;
 
     @CapabilityInject(ICapabilityLastRelay.class)
     public static final Capability<ICapabilityLastRelay> lastRelayCapability = null;
 
     public static SimpleNetworkWrapper controlNetwork;
-    public final BlocksValkyrienWarfareControl vwControlBlocks = new BlocksValkyrienWarfareControl();
+    public final BlocksValkyrienSkiesControl vwControlBlocks = new BlocksValkyrienSkiesControl();
     public Item relayWire;
     public Item multiBlockWrench;
 

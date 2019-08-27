@@ -19,7 +19,7 @@ package org.valkyrienskies.mixin.client.entity;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.util.math.BlockPos;
 import org.spongepowered.asm.mixin.Mixin;
-import org.valkyrienskies.addon.control.ValkyrienWarfareControl;
+import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
 import org.valkyrienskies.addon.control.piloting.ControllerInputType;
 import org.valkyrienskies.addon.control.piloting.IShipPilotClient;
 import org.valkyrienskies.addon.control.piloting.PilotControlsMessage;
@@ -49,7 +49,7 @@ public abstract class MixinsAbstractClientPlayer implements IShipPilotClient {
         keyMessage.assignKeyBooleans(shipPiloting, type);
         keyMessage.controlBlockPos = blockBeingControlled;
 
-        ValkyrienWarfareControl.controlNetwork.sendToServer(keyMessage);
+        ValkyrienSkiesControl.controlNetwork.sendToServer(keyMessage);
     }
 
 }

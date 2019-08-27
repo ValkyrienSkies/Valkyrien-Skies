@@ -30,7 +30,7 @@ public class ControlEventsCommon {
         if (event.getObject() instanceof ItemStack) {
             ItemStack stack = (ItemStack) event.getObject();
             if (stack.getItem() instanceof ItemRelayWire) {
-                event.addCapability(new ResourceLocation(ValkyrienWarfareControl.MOD_ID, "LastRelay"),
+                event.addCapability(new ResourceLocation(ValkyrienSkiesControl.MOD_ID, "LastRelay"),
                         new LastNodeCapabilityProvider());
             }
         }

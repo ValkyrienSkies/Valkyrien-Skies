@@ -29,7 +29,7 @@ import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.valkyrienskies.addon.control.ValkyrienWarfareControl;
+import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
 import org.valkyrienskies.addon.control.tileentity.TileEntityShipTelegraph;
 
 public class BlockShipTelegraph extends BlockPilotableBasic {
@@ -54,13 +54,14 @@ public class BlockShipTelegraph extends BlockPilotableBasic {
     @Override
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
         super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
-        worldIn.setBlockState(pos.up(), ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipTelegraphDummy.getDefaultState());
+        worldIn.setBlockState(pos.up(), ValkyrienSkiesControl.INSTANCE.vwControlBlocks.shipTelegraphDummy.getDefaultState());
     }
 
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
         super.breakBlock(worldIn, pos, state);
-        if (worldIn.getBlockState(pos.up()).getBlock() == ValkyrienWarfareControl.INSTANCE.vwControlBlocks.shipTelegraphDummy) {
+        if (worldIn.getBlockState(pos.up())
+                .getBlock() == ValkyrienSkiesControl.INSTANCE.vwControlBlocks.shipTelegraphDummy) {
             worldIn.setBlockToAir(pos.up());
         }
     }

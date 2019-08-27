@@ -30,7 +30,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import org.valkyrienskies.addon.control.ValkyrienWarfareControl;
+import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
 import org.valkyrienskies.addon.control.capability.ICapabilityLastRelay;
 import org.valkyrienskies.addon.control.nodenetwork.IVWNode;
 import org.valkyrienskies.addon.control.nodenetwork.IVWNodeProvider;
@@ -63,7 +63,7 @@ public class ItemRelayWire extends Item {
         ItemStack stack = player.getHeldItem(hand);
 
         if (currentTile instanceof IVWNodeProvider && !worldIn.isRemote) {
-            ICapabilityLastRelay inst = stack.getCapability(ValkyrienWarfareControl.lastRelayCapability, null);
+            ICapabilityLastRelay inst = stack.getCapability(ValkyrienSkiesControl.lastRelayCapability, null);
             if (inst != null) {
                 if (!inst.hasLastRelay()) {
                     inst.setLastRelay(pos);

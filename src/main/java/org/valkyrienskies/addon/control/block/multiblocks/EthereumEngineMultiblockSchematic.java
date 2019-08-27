@@ -6,7 +6,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import org.valkyrienskies.addon.control.MultiblockRegistry;
-import org.valkyrienskies.addon.control.ValkyrienWarfareControl;
+import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +27,7 @@ public class EthereumEngineMultiblockSchematic implements IMulitblockSchematic {
 
     @Override
     public void initializeMultiblockSchematic(String schematicID) {
-        Block enginePart = ValkyrienWarfareControl.INSTANCE.vwControlBlocks.ethereumEnginePart;
+        Block enginePart = ValkyrienSkiesControl.INSTANCE.vwControlBlocks.ethereumEnginePart;
         for (int x = -1; x <= 1; x++) {
             for (int y = 0; y <= 1; y++) {
                 for (int z = -1; z <= 0; z++) {

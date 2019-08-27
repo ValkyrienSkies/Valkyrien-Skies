@@ -7,7 +7,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import org.valkyrienskies.addon.control.MultiblockRegistry;
-import org.valkyrienskies.addon.control.ValkyrienWarfareControl;
+import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +27,7 @@ public class GiantPropellerMultiblockSchematic implements IMulitblockSchematic {
 
     @Override
     public void initializeMultiblockSchematic(String schematicID) {
-        Block enginePart = ValkyrienWarfareControl.INSTANCE.vwControlBlocks.giantPropellerPart;
+        Block enginePart = ValkyrienSkiesControl.INSTANCE.vwControlBlocks.giantPropellerPart;
 
         Vec3i perpAxisOne = null;
         Vec3i perpAxisTwo = null;

@@ -20,7 +20,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.BlockPos;
-import org.valkyrienskies.addon.control.ValkyrienWarfareControl;
+import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
 import org.valkyrienskies.addon.control.block.BlockShipPilotsChair;
 import org.valkyrienskies.addon.control.piloting.ControllerInputType;
 import org.valkyrienskies.addon.control.piloting.PilotControlsMessage;
@@ -35,7 +35,7 @@ public class TileEntityPilotsChair extends TileEntityPilotableImpl {
     @Override
     void processControlMessage(PilotControlsMessage message, EntityPlayerMP sender) {
         IBlockState blockState = getWorld().getBlockState(getPos());
-        if (blockState.getBlock() == ValkyrienWarfareControl.INSTANCE.vwControlBlocks.pilotsChair) {
+        if (blockState.getBlock() == ValkyrienSkiesControl.INSTANCE.vwControlBlocks.pilotsChair) {
             PhysicsWrapperEntity wrapper = getParentPhysicsEntity();
             if (wrapper != null) {
                 processCalculationsForControlMessageAndApplyCalculations(wrapper, message, blockState);

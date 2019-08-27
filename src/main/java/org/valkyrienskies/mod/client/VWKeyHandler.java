@@ -25,7 +25,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
-import org.valkyrienskies.addon.control.ValkyrienWarfareControl;
+import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
 import org.valkyrienskies.addon.control.network.MessagePlayerStoppedPiloting;
 import org.valkyrienskies.addon.control.piloting.IShipPilotClient;
 
@@ -84,7 +84,7 @@ public class VWKeyHandler {
             if (dismountKey.isKeyDown() && clientPilot.isPilotingATile()) {
                 BlockPos pilotedPos = clientPilot.getPosBeingControlled();
                 MessagePlayerStoppedPiloting stopPilotingMessage = new MessagePlayerStoppedPiloting(pilotedPos);
-                ValkyrienWarfareControl.controlNetwork.sendToServer(stopPilotingMessage);
+                ValkyrienSkiesControl.controlNetwork.sendToServer(stopPilotingMessage);
                 clientPilot.stopPilotingEverything();
             }
         }

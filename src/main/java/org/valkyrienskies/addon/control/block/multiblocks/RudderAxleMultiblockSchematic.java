@@ -6,7 +6,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.valkyrienskies.addon.control.MultiblockRegistry;
-import org.valkyrienskies.addon.control.ValkyrienWarfareControl;
+import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +61,7 @@ public class RudderAxleMultiblockSchematic implements IMulitblockSchematic {
 
     @Override
     public List<IMulitblockSchematic> generateAllVariants() {
-        Block rudderAxelBlock = ValkyrienWarfareControl.INSTANCE.vwControlBlocks.rudderAxelPart;
+        Block rudderAxelBlock = ValkyrienSkiesControl.INSTANCE.vwControlBlocks.rudderAxelPart;
         // Order matters here
         List<IMulitblockSchematic> variants = new ArrayList<IMulitblockSchematic>();
         for (int length = MAX_AXLE_LENGTH; length >= MIN_AXLE_LENGTH; length--) {

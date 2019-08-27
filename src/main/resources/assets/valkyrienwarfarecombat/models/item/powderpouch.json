@@ -1,6 +1,6 @@
 {
   "parent": "item/handheld",
   "textures": {
-    "layer0": "valkyrienwarfarecombat:items/powderpouch"
+    "layer0": "vs_combat:items/powderpouch"
   }
 }

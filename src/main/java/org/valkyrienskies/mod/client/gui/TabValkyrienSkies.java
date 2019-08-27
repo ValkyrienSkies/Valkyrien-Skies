@@ -16,15 +16,17 @@
 
 package org.valkyrienskies.mod.client.gui;
 
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 
-public class TabValkyrienWarfare extends CreativeTabs {
+@MethodsReturnNonnullByDefault
+public class TabValkyrienSkies extends CreativeTabs {
 
-    public TabValkyrienWarfare() {
-        super("valkyrienwarfare");
+    public TabValkyrienSkies() {
+        super(ValkyrienSkiesMod.MOD_ID);
     }
 
     @Override

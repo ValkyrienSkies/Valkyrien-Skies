@@ -2,9 +2,9 @@
   "__comment": "Model generated using MrCrayfish's Model Creator (http://mrcrayfish.com/modelcreator/)",
   "textures": {
     "0": "blocks/planks_spruce",
-    "1": "valkyrienwarfare:blocks/Rusty shaft",
-    "2": "valkyrienwarfare:blocks/Other metal thing",
-    "particle": "valkyrienwarfare:blocks/Rusty shaft"
+    "1": "valkyrienskies:blocks/Rusty shaft",
+    "2": "valkyrienskies:blocks/Other metal thing",
+    "particle": "valkyrienskies:blocks/Rusty shaft"
   },
   "elements": [
     {

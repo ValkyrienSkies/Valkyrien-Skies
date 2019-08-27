@@ -2,13 +2,13 @@
   "forge_marker": 1,
   "variants": {
     "default": {
-      "model": "valkyrienwarfare:infuser_core_main"
+      "model": "valkyrienskies:infuser_core_main"
     },
     "normal": {
-      "model": "valkyrienwarfare:infuser_core_main"
+      "model": "valkyrienskies:infuser_core_main"
     },
     "inventory": {
-      "model": "valkyrienwarfare:basic_phys_infuser/item_models/physics_core_hand_main_core_geo.obj",
+      "model": "valkyrienskies:basic_phys_infuser/item_models/physics_core_hand_main_core_geo.obj",
       "custom": {
         "flip-v": true
       },

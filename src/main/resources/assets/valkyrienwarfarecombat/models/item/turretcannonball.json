@@ -1,6 +1,6 @@
 {
   "parent": "item/handheld",
   "textures": {
-    "layer0": "valkyrienwarfarecombat:items/turretcannonball"
+    "layer0": "vs_combat:items/turretcannonball"
   }
 }

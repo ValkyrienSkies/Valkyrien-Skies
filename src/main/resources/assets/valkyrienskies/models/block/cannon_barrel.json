@@ -2,9 +2,9 @@
   "__comment": "Cannon model - Barrel only (for animation)",
   "textures": {
     "0": "blocks/planks_spruce",
-    "1": "valkyrienwarfare:blocks/Rusty shaft",
-    "2": "valkyrienwarfare:blocks/Other metal thing",
-    "particle": "valkyrienwarfare:blocks/Rusty shaft"
+    "1": "valkyrienskies:blocks/Rusty shaft",
+    "2": "valkyrienskies:blocks/Other metal thing",
+    "particle": "valkyrienskies:blocks/Rusty shaft"
   },
   "elements": [
     {

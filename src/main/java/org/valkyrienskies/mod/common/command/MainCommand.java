@@ -9,12 +9,16 @@ import org.valkyrienskies.mod.common.physmanagement.interaction.QueryableShipDat
 import org.valkyrienskies.mod.common.physmanagement.interaction.ShipData;
 import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
 import org.valkyrienskies.mod.common.ship_handling.WorldServerShipManager;
-import picocli.CommandLine.*;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.HelpCommand;
+import picocli.CommandLine.Model;
+import picocli.CommandLine.Option;
+import picocli.CommandLine.Spec;
 
 import javax.inject.Inject;
 import java.util.stream.Collectors;
 
-@Command(name = "valkyrienwarfare", aliases = "vw",
+@Command(name = "valkyrienskies", aliases = "vs",
         synopsisSubcommandLabel = "COMMAND", mixinStandardHelpOptions = true,
         usageHelpWidth = 55,
         subcommands = {
@@ -73,7 +77,7 @@ public class MainCommand implements Runnable {
             if (data.getShips().size() == 0) {
                 // There are no ships
                 sender.sendMessage(new TextComponentTranslation(
-                        "commands.valkyrienwarfare.list-ships.noships"));
+                        "commands.valkyrienskies.list-ships.noships"));
                 return;
             }
 
@@ -103,7 +107,7 @@ public class MainCommand implements Runnable {
             }
 
             sender.sendMessage(new TextComponentTranslation(
-                    "commands.valkyrienwarfare.list-ships.ships", listOfShips));
+                    "commands.valkyrienskies.list-ships.ships", listOfShips));
         }
 
     }

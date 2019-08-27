@@ -3,7 +3,7 @@
     "category": "ambient",
     "sounds": [
       {
-        "name": "valkyrienwarfarecombat:cannonfire_1",
+        "name": "vs_combat:cannonfire_1",
         "stream": true
       }
     ]

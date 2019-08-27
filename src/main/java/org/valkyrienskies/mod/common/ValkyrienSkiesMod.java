@@ -58,7 +58,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.valkyrienskies.mixin.MixinLoaderForge;
-import org.valkyrienskies.mod.client.gui.TabValkyrienWarfare;
+import org.valkyrienskies.mod.client.gui.TabValkyrienSkies;
 import org.valkyrienskies.mod.common.block.BlockPhysicsInfuser;
 import org.valkyrienskies.mod.common.block.BlockPhysicsInfuserCreative;
 import org.valkyrienskies.mod.common.block.BlockPhysicsInfuserDummy;
@@ -101,12 +101,12 @@ import java.util.concurrent.Executors;
 )
 public class ValkyrienSkiesMod {
     private static final Logger logger = LogManager.getLogger(ValkyrienSkiesMod.class);
-    
-    public static final String MOD_ID = "valkyrienwarfare";
-    public static final String MOD_NAME = "Valkyrien Warfare";
-    public static final String MOD_VERSION = "0.9.2";
-    public static final String MOD_FINGERPRINT = "b308676914a5e7d99459c1d2fb298744387899a7";
-    public static final int VW_ENTITY_LOAD_DISTANCE = 128;
+
+    public static final String MOD_ID = "valkyrienskies";
+    public static final String MOD_NAME = "Valkyrien Skies";
+    public static final String MOD_VERSION = "1.0";
+    static final String MOD_FINGERPRINT = "b308676914a5e7d99459c1d2fb298744387899a7";
+    static final int VW_ENTITY_LOAD_DISTANCE = 128;
     @CapabilityInject(IVWWorldDataCapability.class)
     public static final Capability<IVWWorldDataCapability> vwWorldData = null;
     public static final DimensionPhysicsChunkManager VW_CHUNK_MANAGER = new DimensionPhysicsChunkManager();
@@ -120,7 +120,7 @@ public class ValkyrienSkiesMod {
     public Block physicsInfuserDummy;
     public Item physicsCore;
     public static SimpleNetworkWrapper physWrapperNetwork;
-    public static CreativeTabs vwTab = new TabValkyrienWarfare();
+    public static final CreativeTabs vwTab = new TabValkyrienSkies();
     @Instance(MOD_ID)
     public static ValkyrienSkiesMod INSTANCE;
     public static int airStateIndex;
@@ -130,7 +130,7 @@ public class ValkyrienSkiesMod {
     @Mod.EventHandler
     public void onFingerprintViolation(FMLFingerprintViolationEvent event) {
         if (MixinLoaderForge.isObfuscatedEnvironment) {
-            FMLLog.bigWarning("Valkyrien Warfare JAR fingerprint corrupted, which means this copy of the mod may have come from unofficial sources. Download the mod from CurseForge: https://minecraft.curseforge.com/projects/valkyrien-warfare");
+            FMLLog.bigWarning("Valkyrien Skies JAR fingerprint corrupted, which means this copy of the mod may have come from unofficial sources. Download the mod from CurseForge: https://minecraft.curseforge.com/projects/valkyrien-warfare");
         }
     }
 
@@ -168,7 +168,7 @@ public class ValkyrienSkiesMod {
     @EventHandler
     public void init(FMLInitializationEvent event) {
         // Print out a message of core count, we want this to know what AnvilNode is giving us.
-        System.out.println("Valkyrien Warfare Initialization:");
+        System.out.println("Valkyrien Skies Initialization:");
         System.out.println("We are running on " + Runtime.getRuntime().availableProcessors() +
                 " threads; 4 or more is recommended!");
         proxy.init(event);
@@ -286,7 +286,7 @@ public class ValkyrienSkiesMod {
 
     private void registerCapabilities() {
         CapabilityManager.INSTANCE.register(IVWWorldDataCapability.class, new StorageVWWorldData(),
-                ImplVWWorldDataCapability.class);
+                ImplVWWorldDataCapability::new);
     }
 
     private void registerTileEntities() {

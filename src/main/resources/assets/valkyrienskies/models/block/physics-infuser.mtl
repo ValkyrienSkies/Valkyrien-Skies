@@ -6,7 +6,7 @@ Tf 0.90 0.90 0.90
 Ni 1.50
 Ks 0.00 0.00 0.00
 Ns 9.80
-map_Kd valkyrienwarfare:blocks/etherium
+map_Kd valkyrienskies:blocks/etherium
 
 newmtl gold
 illum 4
@@ -16,7 +16,7 @@ Tf 1.00 1.00 1.00
 Ni 1.50
 Ks 0.00 0.00 0.00
 Ns 9.80
-map_Kd valkyrienwarfare:blocks/gold_block
+map_Kd valkyrienskies:blocks/gold_block
 
 newmtl obsidian
 illum 4
@@ -36,7 +36,7 @@ Tf 1.00 1.00 1.00
 Ni 1.50
 Ks 0.00 0.00 0.00
 Ns 9.80
-map_Kd valkyrienwarfare:blocks/gold_block
+map_Kd valkyrienskies:blocks/gold_block
 
 newmtl steel_corner
 illum 4
@@ -46,4 +46,4 @@ Tf 1.00 1.00 1.00
 Ni 1.50
 Ks 0.00 0.00 0.00
 Ns 9.80
-map_Kd valkyrienwarfare:blocks/steelcorner
+map_Kd valkyrienskies:blocks/steelcorner

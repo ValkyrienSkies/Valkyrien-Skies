@@ -1,11 +1,11 @@
 {
-  "parent": "valkyrienwarfare:block/shipcannon",
+  "parent": "valkyrienskies:block/shipblockcreative",
   "display": {
     "thirdperson": {
       "rotation": [
         10,
-        45,
-        -10
+        -45,
+        170
       ],
       "translation": [
         0,
@@ -13,9 +13,9 @@
         -2.75
       ],
       "scale": [
-        1,
-        1,
-        1
+        0.375,
+        0.375,
+        0.375
       ]
     }
   }

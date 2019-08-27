@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "default": {
+      "model": "valkyrienskies:shipcannon"
+    },
+    "normal": {
+      "model": "valkyrienskies:shipcannon"
+    },
+    "propnum=0": {
+      "model": "valkyrienskies:shipcannon"
+    },
+    "propnum=1": {
+      "model": "valkyrienskies:cannon_bracket"
+    },
+    "propnum=2": {
+      "model": "valkyrienskies:cannon_barrel"
+    }
+  }
+}

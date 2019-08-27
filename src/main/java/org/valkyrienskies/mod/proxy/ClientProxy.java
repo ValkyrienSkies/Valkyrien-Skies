@@ -81,7 +81,6 @@ public class ClientProxy extends CommonProxy {
         // When Minecraft reloads resources tell GibsModelRegistry to delete all its caches.
         mcResourceManager.registerReloadListener(GibsModelRegistry::onResourceManagerReload);
 
-        //  new ModelResourceLocation("valkyrienwarfarecontrol:infuser_core_main", "inventory"),
         registerAnimations();
     }
 
@@ -142,10 +141,10 @@ public class ClientProxy extends CommonProxy {
     }
 
     private void registerAnimations() {
-        GibsAnimationRegistry.registerAnimation("physics_infuser", new ResourceLocation("valkyrienwarfare", "models/block/basic_phys_infuser/physics_infuser.atom"));
+        GibsAnimationRegistry.registerAnimation("physics_infuser", new ResourceLocation(ValkyrienSkiesMod.MOD_ID, "models/block/basic_phys_infuser/physics_infuser.atom"));
 
-        GibsAnimationRegistry.registerAnimation("physics_infuser_empty", new ResourceLocation("valkyrienwarfare", "models/block/basic_phys_infuser/physics_infuser_empty.atom"));
+        GibsAnimationRegistry.registerAnimation("physics_infuser_empty", new ResourceLocation(ValkyrienSkiesMod.MOD_ID, "models/block/basic_phys_infuser/physics_infuser_empty.atom"));
         // Not an actual animation, just easier to put in than writing out all the core names.
-        GibsAnimationRegistry.registerAnimation("physics_infuser_cores", new ResourceLocation("valkyrienwarfare", "models/block/basic_phys_infuser/cores.atom"));
+        GibsAnimationRegistry.registerAnimation("physics_infuser_cores", new ResourceLocation(ValkyrienSkiesMod.MOD_ID, "models/block/basic_phys_infuser/cores.atom"));
     }
 }

@@ -44,7 +44,15 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.*;
+import net.minecraftforge.fml.common.event.FMLConstructionEvent;
+import net.minecraftforge.fml.common.event.FMLFingerprintViolationEvent;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
+import net.minecraftforge.fml.common.event.FMLStateEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -59,10 +67,19 @@ import org.valkyrienskies.mod.common.block.BlockPhysicsInfuserDummy;
 import org.valkyrienskies.mod.common.command.framework.VWModCommandRegistry;
 import org.valkyrienskies.mod.common.config.VWConfig;
 import org.valkyrienskies.mod.common.item.ItemPhysicsCore;
-import org.valkyrienskies.mod.common.network.*;
+import org.valkyrienskies.mod.common.network.PhysWrapperPositionHandler;
+import org.valkyrienskies.mod.common.network.PhysWrapperPositionMessage;
+import org.valkyrienskies.mod.common.network.SubspacedEntityRecordHandler;
+import org.valkyrienskies.mod.common.network.SubspacedEntityRecordMessage;
+import org.valkyrienskies.mod.common.network.VWGuiButtonHandler;
+import org.valkyrienskies.mod.common.network.VWGuiButtonMessage;
 import org.valkyrienskies.mod.common.physics.management.DimensionPhysObjectManager;
 import org.valkyrienskies.mod.common.physmanagement.VW_APIPhysicsEntityManager;
-import org.valkyrienskies.mod.common.physmanagement.chunk.*;
+import org.valkyrienskies.mod.common.physmanagement.chunk.DimensionPhysicsChunkManager;
+import org.valkyrienskies.mod.common.physmanagement.chunk.IVWWorldDataCapability;
+import org.valkyrienskies.mod.common.physmanagement.chunk.ImplVWWorldDataCapability;
+import org.valkyrienskies.mod.common.physmanagement.chunk.StorageVWWorldData;
+import org.valkyrienskies.mod.common.physmanagement.chunk.VWChunkClaim;
 import org.valkyrienskies.mod.common.physmanagement.interaction.ShipData;
 import org.valkyrienskies.mod.common.physmanagement.interaction.ShipPositionData;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
@@ -150,6 +167,7 @@ public class ValkyrienSkiesMod {
         registerNetworks(event);
         ValkyrienSkiesMod.PHYSICS_THREADS_EXECUTOR = Executors.newFixedThreadPool(VWConfig.threadCount);
         registerCapabilities();
+        proxy.preInit(event);
 
         // Initialize the VW API here:
         try {
@@ -175,11 +193,13 @@ public class ValkyrienSkiesMod {
         System.out.println("Valkyrien Warfare Initialization:");
         System.out.println("We are running on " + Runtime.getRuntime().availableProcessors() +
                 " threads; 4 or more is recommended!");
+        proxy.init(event);
     }
 
     @EventHandler
     public void postInit(FMLPostInitializationEvent event) {
         airStateIndex = Block.getStateId(Blocks.AIR.getDefaultState());
+        proxy.postInit(event);
     }
 
     @EventHandler

@@ -3,7 +3,7 @@
   "variants": {
     "inventory": [
       {
-        "model": "valkyrienwarfarecontrol:basic_phys_infuser/physics_infuser_inventorymodel_geo.obj",
+        "model": "valkyrienwarfare:basic_phys_infuser/physics_infuser_inventorymodel_geo.obj",
         "custom": {
           "flip-v": true
         },

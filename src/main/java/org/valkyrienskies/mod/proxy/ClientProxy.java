@@ -23,6 +23,7 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.item.Item;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -32,6 +33,7 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.valkyrienskies.mod.client.EventsClient;
 import org.valkyrienskies.mod.client.VWKeyHandler;
+import org.valkyrienskies.mod.client.render.GibsAnimationRegistry;
 import org.valkyrienskies.mod.client.render.GibsModelRegistry;
 import org.valkyrienskies.mod.client.render.PhysicsWrapperEntityRenderFactory;
 import org.valkyrienskies.mod.client.render.tile_entity_renderers.TileEntityPhysicsInfuserRenderer;
@@ -80,6 +82,7 @@ public class ClientProxy extends CommonProxy {
         mcResourceManager.registerReloadListener(GibsModelRegistry::onResourceManagerReload);
 
         //  new ModelResourceLocation("valkyrienwarfarecontrol:infuser_core_main", "inventory"),
+        registerAnimations();
     }
 
     @Override
@@ -136,5 +139,13 @@ public class ClientProxy extends CommonProxy {
 
         entity.getPhysicsObject().getShipTransformationManager()
                 .updateRenderTransform(moddedX, moddedY, moddedZ, moddedPitch, moddedYaw, moddedRoll);
+    }
+
+    private void registerAnimations() {
+        GibsAnimationRegistry.registerAnimation("physics_infuser", new ResourceLocation("valkyrienwarfare", "models/block/basic_phys_infuser/physics_infuser.atom"));
+
+        GibsAnimationRegistry.registerAnimation("physics_infuser_empty", new ResourceLocation("valkyrienwarfare", "models/block/basic_phys_infuser/physics_infuser_empty.atom"));
+        // Not an actual animation, just easier to put in than writing out all the core names.
+        GibsAnimationRegistry.registerAnimation("physics_infuser_cores", new ResourceLocation("valkyrienwarfare", "models/block/basic_phys_infuser/cores.atom"));
     }
 }

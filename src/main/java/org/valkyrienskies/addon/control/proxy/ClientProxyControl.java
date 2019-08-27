@@ -33,8 +33,23 @@ import org.valkyrienskies.addon.control.block.multiblocks.TileEntityEthereumEngi
 import org.valkyrienskies.addon.control.block.multiblocks.TileEntityGiantPropellerPart;
 import org.valkyrienskies.addon.control.block.multiblocks.TileEntityRudderAxlePart;
 import org.valkyrienskies.addon.control.block.torque.TileEntityRotationTrainAxle;
-import org.valkyrienskies.addon.control.renderer.*;
-import org.valkyrienskies.addon.control.tileentity.*;
+import org.valkyrienskies.addon.control.renderer.BasicNodeTileEntityRenderer;
+import org.valkyrienskies.addon.control.renderer.EthereumCompressorPartTileEntityRenderer;
+import org.valkyrienskies.addon.control.renderer.EthereumEnginePartTileEntityRenderer;
+import org.valkyrienskies.addon.control.renderer.GearboxTileEntityRenderer;
+import org.valkyrienskies.addon.control.renderer.GiantPropellerPartTileEntityRenderer;
+import org.valkyrienskies.addon.control.renderer.LiftControlTileEntityRenderer;
+import org.valkyrienskies.addon.control.renderer.PropellerEngineTileEntityRenderer;
+import org.valkyrienskies.addon.control.renderer.RotationTrainAxleTileEntityRenderer;
+import org.valkyrienskies.addon.control.renderer.RudderAxlePartTileEntityRenderer;
+import org.valkyrienskies.addon.control.renderer.ShipHelmTileEntityRenderer;
+import org.valkyrienskies.addon.control.renderer.ShipTelegraphTileEntityRenderer;
+import org.valkyrienskies.addon.control.tileentity.TileEntityGearbox;
+import org.valkyrienskies.addon.control.tileentity.TileEntityLiftControl;
+import org.valkyrienskies.addon.control.tileentity.TileEntityNodeRelay;
+import org.valkyrienskies.addon.control.tileentity.TileEntityPropellerEngine;
+import org.valkyrienskies.addon.control.tileentity.TileEntityShipHelm;
+import org.valkyrienskies.addon.control.tileentity.TileEntityShipTelegraph;
 import org.valkyrienskies.mod.client.render.GibsAnimationRegistry;
 import org.valkyrienskies.mod.client.render.GibsModelRegistry;
 
@@ -153,12 +168,6 @@ public class ClientProxyControl extends CommonProxyControl {
         GibsAnimationRegistry.registerAnimation("rotation_train_axle", new ResourceLocation("valkyrienwarfarecontrol", "models/block/rotation_train_axle/small_engine_axle.atom"));
 
         GibsAnimationRegistry.registerAnimation("giant_propeller", new ResourceLocation("valkyrienwarfarecontrol", "models/block/giant_propeller/small_propeller.atom"));
-
-        GibsAnimationRegistry.registerAnimation("physics_infuser", new ResourceLocation("valkyrienwarfarecontrol", "models/block/basic_phys_infuser/physics_infuser.atom"));
-
-        GibsAnimationRegistry.registerAnimation("physics_infuser_empty", new ResourceLocation("valkyrienwarfarecontrol", "models/block/basic_phys_infuser/physics_infuser_empty.atom"));
-        // Not an actual animation, just easier to put in than writing out all the core names.
-        GibsAnimationRegistry.registerAnimation("physics_infuser_cores", new ResourceLocation("valkyrienwarfarecontrol", "models/block/basic_phys_infuser/cores.atom"));
     }
 
     private void registerGearboxGibs(String name) {

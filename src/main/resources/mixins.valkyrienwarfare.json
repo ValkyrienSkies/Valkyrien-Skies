@@ -25,7 +25,6 @@
     "world.chunk.MixinChunk"
   ],
   "client": [
-    "client.MixinMinecraft",
     "client.entity.MixinEntityPlayerSP",
     "client.entity.MixinsAbstractClientPlayer",
     "client.particle.MixinParticleManager",

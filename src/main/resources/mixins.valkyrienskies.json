@@ -2,7 +2,7 @@
   "required": true,
   "compatibilityLevel": "JAVA_8",
   "package": "org.valkyrienskies.mixin",
-  "refmap": "mixins.valkyrienwarfare.refmap.json",
+  "refmap": "mixins.valkyrienskies.refmap.json",
   "plugin": "org.valkyrienskies.mod.common.MixinLoadManager",
   "mixins": [
     "entity.MixinEntity",

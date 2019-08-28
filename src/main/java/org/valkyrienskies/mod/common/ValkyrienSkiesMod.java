@@ -42,22 +42,13 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLConstructionEvent;
-import net.minecraftforge.fml.common.event.FMLFingerprintViolationEvent;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
-import net.minecraftforge.fml.common.event.FMLStateEvent;
+import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.valkyrienskies.mixin.MixinLoaderForge;
 import org.valkyrienskies.mod.client.gui.TabValkyrienSkies;
 import org.valkyrienskies.mod.common.block.BlockPhysicsInfuser;
 import org.valkyrienskies.mod.common.block.BlockPhysicsInfuserCreative;
@@ -65,19 +56,10 @@ import org.valkyrienskies.mod.common.block.BlockPhysicsInfuserDummy;
 import org.valkyrienskies.mod.common.command.framework.VWModCommandRegistry;
 import org.valkyrienskies.mod.common.config.VWConfig;
 import org.valkyrienskies.mod.common.item.ItemPhysicsCore;
-import org.valkyrienskies.mod.common.network.PhysWrapperPositionHandler;
-import org.valkyrienskies.mod.common.network.PhysWrapperPositionMessage;
-import org.valkyrienskies.mod.common.network.SubspacedEntityRecordHandler;
-import org.valkyrienskies.mod.common.network.SubspacedEntityRecordMessage;
-import org.valkyrienskies.mod.common.network.VWGuiButtonHandler;
-import org.valkyrienskies.mod.common.network.VWGuiButtonMessage;
+import org.valkyrienskies.mod.common.network.*;
 import org.valkyrienskies.mod.common.physics.management.DimensionPhysObjectManager;
 import org.valkyrienskies.mod.common.physmanagement.VW_APIPhysicsEntityManager;
-import org.valkyrienskies.mod.common.physmanagement.chunk.DimensionPhysicsChunkManager;
-import org.valkyrienskies.mod.common.physmanagement.chunk.IVWWorldDataCapability;
-import org.valkyrienskies.mod.common.physmanagement.chunk.ImplVWWorldDataCapability;
-import org.valkyrienskies.mod.common.physmanagement.chunk.StorageVWWorldData;
-import org.valkyrienskies.mod.common.physmanagement.chunk.VWChunkClaim;
+import org.valkyrienskies.mod.common.physmanagement.chunk.*;
 import org.valkyrienskies.mod.common.physmanagement.interaction.ShipData;
 import org.valkyrienskies.mod.common.physmanagement.interaction.ShipPositionData;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
@@ -129,9 +111,7 @@ public class ValkyrienSkiesMod {
 
     @Mod.EventHandler
     public void onFingerprintViolation(FMLFingerprintViolationEvent event) {
-        if (MixinLoaderForge.isObfuscatedEnvironment) {
-            FMLLog.bigWarning("Valkyrien Skies JAR fingerprint corrupted, which means this copy of the mod may have come from unofficial sources. Download the mod from CurseForge: https://minecraft.curseforge.com/projects/valkyrien-warfare");
-        }
+        FMLLog.bigWarning("Valkyrien Skies JAR fingerprint corrupted, which means this copy of the mod may have come from unofficial sources. Download the mod from CurseForge: https://minecraft.curseforge.com/projects/valkyrien-warfare");
     }
 
     @EventHandler

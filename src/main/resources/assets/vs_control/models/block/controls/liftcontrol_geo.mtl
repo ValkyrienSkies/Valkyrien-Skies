@@ -3,56 +3,56 @@ illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd -s 0.5 0.5 Mine.png
+map_Kd -s 0.5 0.5 vs_control:blocks/mine
 Ni 1.00
 newmtl Rudder_AxelSG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd Rudder_Rusty Shaft.png
+map_Kd vs_control:blocks/rudder_rusty shaft
 Ni 1.00
 newmtl Rudder_CableSG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd Rudder_Cable.png
+map_Kd vs_control:blocks/rudder_cable
 Ni 1.00
 newmtl Rudder_MetalSG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd Rudder_Metal.png
+map_Kd vs_control:blocks/rudder_metal
 Ni 1.00
 newmtl Rudder_SailSG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd Rudder_Sail.png
+map_Kd vs_control:blocks/rudder_sail
 Ni 1.00
 newmtl Rudder_Wood_01SG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd Rudder_Wood_01.png
+map_Kd vs_control:blocks/rudder_wood_01
 Ni 1.00
 newmtl Rudder_Wood_02SG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd Rudder_Wood_02.png
+map_Kd vs_control:blocks/rudder_wood_02
 Ni 1.00
 newmtl Rudder_Wood_03SG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd Rudder_Wood_03.png
+map_Kd vs_control:blocks/rudder_wood_03
 Ni 1.00
 newmtl initialShadingGroup
 illum 4
@@ -65,180 +65,180 @@ illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd Pipes_Rusty Shaft.png
+map_Kd vs_control:blocks/pipes_rusty_shaft
 Ni 1.00
 newmtl lambert7SG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd Pipe_Accents.png
+map_Kd vs_control:blocks/pipe_accents
 Ni 1.00
 newmtl lambert8SG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd HelmDial512.png
+map_Kd vs_control:blocks/helmdial512
 Ni 1.00
 newmtl lambert9SG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd HelmDialGlass512.PNG
+map_Kd vs_control:blocks/helmdialglass512
 Ni 1.00
 newmtl lambert10SG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd HelmWheel512.png
+map_Kd vs_control:blocks/helmwheel512
 Ni 1.00
 newmtl lambert11SG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd HelmBase512.png
+map_Kd vs_control:blocks/helmbase512
 Ni 1.00
 newmtl lambert12SG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd ChadburnDial512.png
+map_Kd vs_control:blocks/chadburndial512
 Ni 1.00
 newmtl lambert13SG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd ChadburnGlass512.png
+map_Kd vs_control:blocks/chadburnglass512
 Ni 1.00
 newmtl lambert14SG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd ChadburnShipTelegraph512.png
+map_Kd vs_control:blocks/chadburnshiptelegraph512
 Ni 1.00
 newmtl lambert15SG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd ChadburnHandles512.png
+map_Kd vs_control:blocks/chadburnhandles512
 Ni 1.00
 newmtl lambert16SG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd TelescopeGlass512.PNG
+map_Kd vs_control:blocks/telescopeglass512
 Ni 1.00
 newmtl lambert17SG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd Telescope512.png
+map_Kd vs_control:blocks/telescope512
 Ni 1.00
 newmtl lambert18SG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd Telescope512.png
+map_Kd vs_control:blocks/telescope512
 Ni 1.00
 newmtl lambert19SG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd Grapple.png
+map_Kd vs_control:blocks/grapple
 Ni 1.00
 newmtl lambert20SG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd Anchor.png
+map_Kd vs_control:blocks/anchor
 Ni 1.00
 newmtl lambert21SG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd Propeller_Sail.png
+map_Kd vs_control:blocks/propeller_sail
 Ni 1.00
 newmtl lambert22SG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd Propeller_Wood_01.png
+map_Kd vs_control:blocks/propeller_wood_01
 Ni 1.00
 newmtl lambert23SG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd Propeller_Cable.png
+map_Kd vs_control:blocks/propeller_cable
 Ni 1.00
 newmtl lambert24SG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd Propeller_Metal.png
+map_Kd vs_control:blocks/propeller_metal
 Ni 1.00
 newmtl lambert25SG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd Propeller_Wood_02.png
+map_Kd vs_control:blocks/propeller_wood_02
 Ni 1.00
 newmtl lambert26SG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd Propeller_Wood_03.png
+map_Kd vs_control:blocks/propeller_wood_03
 Ni 1.00
 newmtl lambert27SG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd Propeller_Rusty Shaft.png
+map_Kd vs_control:blocks/propeller_rusty_shaft
 Ni 1.00
 newmtl lambert28SG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd Propeller_Bearing.png
+map_Kd vs_control:blocks/propeller_bearing
 Ni 1.00
 newmtl lambert34SG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd PocketWatch512.png
+map_Kd vs_control:blocks/pocketwatch512
 Ni 1.00
 newmtl lambert35SG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd Grate.png
+map_Kd vs_control:blocks/grate
 Ni 1.00
 newmtl lambert46SG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd Wrench.png
+map_Kd vs_control:blocks/wrench
 Ni 1.00

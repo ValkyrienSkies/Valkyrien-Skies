@@ -4,16 +4,21 @@ import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import org.valkyrienskies.addon.control.nodenetwork.IVWNode;
 import org.valkyrienskies.addon.control.tileentity.TileEntityNetworkDisplay;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +29,13 @@ public class BlockNetworkDisplay extends Block implements ITileEntityProvider {
     public BlockNetworkDisplay(Material materialIn) {
         super(materialIn);
     }
+
+    @Override
+    public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation,
+                               ITooltipFlag advanced) {
+        itemInformation.add(TextFormatting.RED + I18n.format("tooltip.vs_control.network_display"));
+    }
+
 
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,

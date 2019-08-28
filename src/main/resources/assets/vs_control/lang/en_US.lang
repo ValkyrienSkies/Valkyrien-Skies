@@ -14,17 +14,35 @@ tile.vw_gyroscope_dampener.name=Ship Gyroscope Dampener
 tile.vw_liftvalve.name=Lift Valve
 tile.vw_networkdisplay.name=Network Display
 tile.vw_liftcontrol.name=Lift Lever
-
-#ENGINES
-tile.basicengine.name=Basic Engine
-tile.advancedengine.name=Advanced Engine
-tile.eliteengine.name=Elite Engine
-tile.ultimateengine.name=Ultimate Engine
-tile.redstoneengine.name=Redstone Engine
-
 tile.vw_ethercompressorpanel.name=Valkyrium Compressor Panel
 tile.vw_ethereum_enginepart.name=Valkyrium Engine Part
 tile.vw_gearbox.name=Gear Box
 tile.vw_rudder_axle_part.name=Rudder Axle
 tile.vw_giant_propeller_part.name=Gigantic Propeller Part
 tile.vw_block_rotation_train_axle.name=Rotation Axle
+tile.basicengine.name=Basic Engine
+tile.advancedengine.name=Advanced Engine
+tile.eliteengine.name=Elite Engine
+tile.ultimateengine.name=Ultimate Engine
+tile.redstoneengine.name=Redstone Engine
+
+#Tooltips
+tooltip.vs_control.pilots_chair_1=Use to mount and control Ships!
+tooltip.vs_control.pilots_chair_2=If you are standing on the ship, you will mount it upon control. Otherwise you will control the ship remotely without mounting.
+tooltip.vs_control.passenger_chair=Use to mount onto ships.
+tooltip.vs_control.wrench=Used to construct multi-blocks and to orient the gearbox.
+tooltip.vs_control.relay_wire=Used to link relays to components and other relays.
+tooltip.vs_control.ship_helm=Once linked to a control network, this block will allow control of the angle which rudders in that same network are oriented.
+tooltip.vs_control.speed_telegraph=Once linked to a control network, this block will allow control of the output axle rotation ratio of gearboxes in that same network. If setup correctly, this can be used to control the velocity of a ship.
+tooltip.vs_control.network_relay=Used to link the components of a control system together in one network.
+tooltip.vs_control.gyroscope_stabilizer=This block passively provides a torque to makes the ship level.
+tooltip.vs_control.gyroscope_dampener=This block passively provides a torque to prevent the ship from rocking.
+tooltip.vs_control.lift_valve=Unimplemented
+tooltip.vs_control.network_display=Unimplemented
+tooltip.vs_control.lift_lever_control=Once linked to a control network, this block will allow control of the height the ship flies at by adjusting the thrust output of the valkyrium compressors.
+tooltip.vs_control.valkyrium_compressor_part=Part of the 2x2x2 multiblock, the valkyrium compressor. This multiblock's purpose is to provide a lot of thrust exclusively in the upward direction.
+tooltip.vs_control.valkyrium_engine_part=Generates torque to power propellers.
+tooltip.vs_control.gearbox=Allows changing torque direction and magnitude. Output torque ratio is controlled by the ship speed telegraph block.
+tooltip.vs_control.rudder_axle_part=Changes the direction of the thrust from propellers; controlled by the ship helm block.
+tooltip.vs_control.giant_propeller_part=3x3 to 7x7 multiblock that converts torque to thrust.
+tooltip.vs_control.rotation_train_axle=Used to connect valkyrium engines to gearboxes to propellers.

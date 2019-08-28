@@ -1,6 +1,6 @@
 # This file uses centimeters as units for non-parametric coordinates.
 
-mtllib liftcontrolgrate_geo.mtl
+mtllib liftcontrol_geo.mtl
 v 0.323435 0.059138 0.524737
 v 0.323435 0.245731 0.524737
 v 0.323435 0.245731 0.085743

@@ -1,6 +1,6 @@
 # This file uses centimeters as units for non-parametric coordinates.
 
-mtllib liftcontrol_light_geo.mtl
+mtllib liftcontrol_geo.mtl
 v 0.583993 0.944494 0.844893
 v 0.583993 0.944494 0.811970
 v 0.583993 0.985794 0.844893

@@ -23,6 +23,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
@@ -171,8 +172,7 @@ public class BlockThrustRelay extends BlockDirectional implements ITileEntityPro
 	@Override
 	public void addInformation(ItemStack stack, @Nullable World player,
                                List<String> itemInformation, ITooltipFlag advanced) {
-		itemInformation.add(TextFormatting.ITALIC + "" + TextFormatting.RED + TextFormatting.ITALIC +
-                "Unfinished until v_0.91_alpha");
+		itemInformation.add(TextFormatting.BLUE + I18n.format("tooltip.vs_control.network_relay"));
 	}
 
 	@Override

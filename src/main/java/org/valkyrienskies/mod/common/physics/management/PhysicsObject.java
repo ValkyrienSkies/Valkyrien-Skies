@@ -51,7 +51,11 @@ import org.valkyrienskies.fixes.IPhysicsChunk;
 import org.valkyrienskies.mod.client.render.PhysObjectRenderManager;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.config.VSConfig;
-import org.valkyrienskies.mod.common.coordinates.*;
+import org.valkyrienskies.mod.common.coordinates.ISubspace;
+import org.valkyrienskies.mod.common.coordinates.ISubspaceProvider;
+import org.valkyrienskies.mod.common.coordinates.ImplSubspace;
+import org.valkyrienskies.mod.common.coordinates.ShipTransform;
+import org.valkyrienskies.mod.common.coordinates.ShipTransformationPacketHolder;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.math.Quaternion;
 import org.valkyrienskies.mod.common.math.Vector;
@@ -69,8 +73,14 @@ import org.valkyrienskies.mod.common.util.ValkyrienNBTUtils;
 import valkyrienwarfare.api.IPhysicsEntity;
 import valkyrienwarfare.api.TransformType;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -141,7 +151,8 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 		this.watchingPlayers = new ArrayList<>();
 		this.isPhysicsEnabled = false;
 		this.allowedUsers = new HashSet<>();
-		this.gameConsecutiveTicks.set(0);
+		this.gameConsecutiveTicks = new AtomicInteger(0);
+		// this.gameConsecutiveTicks.set(0);
 		this.shipSubspace = new ImplSubspace(this);
 		this.physicsControllers = Sets.newConcurrentHashSet();
 		this.physicsControllersImmutable = Collections.unmodifiableSet(this.physicsControllers);
@@ -149,6 +160,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 		this.physicsInfuserPos = null;
 		this.shipAligningToGrid = false;
 		this.isFullyLoaded = false;
+		this.cachedSurroundingChunks = new SurroundingChunkCacheController(this);
 	}
 
 	public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos posAt) {
@@ -243,6 +255,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 		SpatialDetector detector = DetectorManager.getDetectorFor(getDetectorID(), centerInWorld, getWorld(),
 				VSConfig.maxShipSize + 1, true);
 		if (detector.foundSet.size() > VSConfig.maxShipSize || detector.cleanHouse) {
+			System.err.println("Ship too big or bedrock detected!");
 			if (player != null) {
 				player.sendMessage(new TextComponentString(
 						"Ship construction canceled because its exceeding the ship size limit; " +
@@ -547,7 +560,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 	}
 
 	public void updateChunkCache() {
-
+		cachedSurroundingChunks.updateChunkCache();
 	}
 
 	public void loadClaimedChunks() {

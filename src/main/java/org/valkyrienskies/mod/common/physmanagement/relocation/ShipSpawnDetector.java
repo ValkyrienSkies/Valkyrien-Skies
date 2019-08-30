@@ -34,12 +34,15 @@ public class ShipSpawnDetector extends SpatialDetector {
 
     static {
         VSConfig.registerSyncEvent(ShipSpawnDetector::syncWithConfig);
+        // This static block doesn't get loaded until we try spawning a ship, so initially blacklist is empty.
+        // We run the function here to fix that.
+        syncWithConfig();
     }
 
     /**
      * This is called by {@link VSConfig#sync}
      */
-    public static void syncWithConfig() {
+    private static void syncWithConfig() {
         blacklist.clear();
 
         Arrays.stream(VSConfig.shipSpawnDetectorBlacklist)
@@ -51,6 +54,7 @@ public class ShipSpawnDetector extends SpatialDetector {
 
     ShipSpawnDetector(BlockPos start, World worldIn, int maximum, boolean checkCorners) {
         super(start, worldIn, maximum, checkCorners);
+        // syncWithConfig();
         startDetection();
     }
 

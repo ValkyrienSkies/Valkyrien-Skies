@@ -87,7 +87,7 @@ repositories {
     maven {
         url 'http://dogforce-games.com/maven'
     }
-    mavenCentral()
+    jcenter()
 }
 
 compileJava {
@@ -100,6 +100,9 @@ dependencies {
     compile("org.spongepowered:mixin:0.7.5-SNAPSHOT") {
         exclude module: "launchwrapper"
     }
+    // mixin as annotation processor
+    annotationProcessor("org.spongepowered:mixin:0.7.5-SNAPSHOT")
+
     // We want to prevent any conflicts with SpongeForge
     compile("org.spongepowered:spongeforge:1.12.2-2825-7.1.6:dev")  {
         exclude group: "org.apache.logging.log4j"
@@ -124,6 +127,10 @@ dependencies {
 
     // Include all dependencies in the /dependencies folder
     compile fileTree(include: ['*.jar'], dir: 'dependencies')
+
+    // lombok
+    compileOnly 'org.projectlombok:lombok:1.18.8'
+    annotationProcessor 'org.projectlombok:lombok:1.18.8'
 }
 
 processResources {
@@ -159,7 +166,6 @@ reobf {
         classpath = sourceSets.main.compileClasspath
     }
 }
-
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 task shadowDevJar(type: ShadowJar) {

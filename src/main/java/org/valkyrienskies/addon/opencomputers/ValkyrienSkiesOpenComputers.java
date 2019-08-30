@@ -29,19 +29,23 @@ import org.valkyrienskies.api.addons.Module;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 
 @Mod(
-        name = ValkyrienWarfareOC.MOD_NAME,
-        modid = ValkyrienWarfareOC.MOD_ID,
-        version = ValkyrienWarfareOC.MOD_VERSION,
+        name = ValkyrienSkiesOpenComputers.MOD_NAME,
+        modid = ValkyrienSkiesOpenComputers.MOD_ID,
+        version = ValkyrienSkiesOpenComputers.MOD_VERSION,
         dependencies = "required-after:" + ValkyrienSkiesMod.MOD_ID
 )
-public class ValkyrienWarfareOC {
+public class ValkyrienSkiesOpenComputers {
+    // MOD INFO CONSTANTS
     static final String MOD_ID = "vs_open_computers";
     static final String MOD_NAME = "Valkyrien Skies Open Computers";
     static final String MOD_VERSION = ValkyrienSkiesMod.MOD_VERSION;
 
+    // MOD INSTANCE
     @Instance(MOD_ID)
-    public static ValkyrienWarfareOC INSTANCE = new ValkyrienWarfareOC();
-    public Block gpsBlock;
+    public static ValkyrienSkiesOpenComputers INSTANCE = new ValkyrienSkiesOpenComputers();
+
+    // MOD CLASS MEMBERS
+    private Block gpsBlock;
 
     @SubscribeEvent
     public void registerBlocks(RegistryEvent.Register<Block> event) {

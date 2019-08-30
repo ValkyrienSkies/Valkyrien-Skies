@@ -20,21 +20,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.item.Item;
 import net.minecraftforge.event.RegistryEvent;
-import org.valkyrienskies.addon.control.block.BlockDopedEthereum;
-import org.valkyrienskies.addon.control.block.BlockGearbox;
-import org.valkyrienskies.addon.control.block.BlockGyroscopeDampener;
-import org.valkyrienskies.addon.control.block.BlockGyroscopeStabilizer;
-import org.valkyrienskies.addon.control.block.BlockLiftControl;
-import org.valkyrienskies.addon.control.block.BlockLiftValve;
-import org.valkyrienskies.addon.control.block.BlockNetworkDisplay;
-import org.valkyrienskies.addon.control.block.BlockRotationTrainAxle;
-import org.valkyrienskies.addon.control.block.BlockShipHelm;
-import org.valkyrienskies.addon.control.block.BlockShipPassengerChair;
-import org.valkyrienskies.addon.control.block.BlockShipPilotsChair;
-import org.valkyrienskies.addon.control.block.BlockShipTelegraph;
-import org.valkyrienskies.addon.control.block.BlockShipWheel;
-import org.valkyrienskies.addon.control.block.BlockTelegraphDummy;
-import org.valkyrienskies.addon.control.block.BlockThrustRelay;
+import org.valkyrienskies.addon.control.block.*;
 import org.valkyrienskies.addon.control.block.engine.BlockNormalEngine;
 import org.valkyrienskies.addon.control.block.engine.BlockRedstoneEngine;
 import org.valkyrienskies.addon.control.block.multiblocks.BlockEtherCompressorPart;
@@ -43,7 +29,7 @@ import org.valkyrienskies.addon.control.block.multiblocks.BlockGiantPropellerPar
 import org.valkyrienskies.addon.control.block.multiblocks.BlockRudderAxlePart;
 import org.valkyrienskies.api.addons.Module;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
-import org.valkyrienskies.mod.common.config.VWConfig;
+import org.valkyrienskies.mod.common.config.VSConfig;
 
 public class BlocksValkyrienSkiesControl {
 
@@ -74,23 +60,23 @@ public class BlocksValkyrienSkiesControl {
 
     public BlocksValkyrienSkiesControl() {
 
-        basicEngine = (BlockNormalEngine) new BlockNormalEngine(Material.WOOD, VWConfig.ENGINE_POWER.basicEnginePower).setHardness(5f)
+        basicEngine = (BlockNormalEngine) new BlockNormalEngine(Material.WOOD, VSConfig.ENGINE_POWER.basicEnginePower).setHardness(5f)
                 .setTranslationKey("basicengine")
                 .setRegistryName(ValkyrienSkiesControl.MOD_ID, "basicengine")
                 .setCreativeTab(ValkyrienSkiesMod.vwTab);
-        advancedEngine = (BlockNormalEngine) new BlockNormalEngine(Material.ROCK, VWConfig.ENGINE_POWER.advancedEnginePower).setHardness(6f)
+        advancedEngine = (BlockNormalEngine) new BlockNormalEngine(Material.ROCK, VSConfig.ENGINE_POWER.advancedEnginePower).setHardness(6f)
                 .setTranslationKey("advancedengine")
                 .setRegistryName(ValkyrienSkiesControl.MOD_ID, "advancedengine")
                 .setCreativeTab(ValkyrienSkiesMod.vwTab);
-        eliteEngine = (BlockNormalEngine) new BlockNormalEngine(Material.IRON, VWConfig.ENGINE_POWER.eliteEnginePower).setHardness(8f)
+        eliteEngine = (BlockNormalEngine) new BlockNormalEngine(Material.IRON, VSConfig.ENGINE_POWER.eliteEnginePower).setHardness(8f)
                 .setTranslationKey("eliteengine")
                 .setRegistryName(ValkyrienSkiesControl.MOD_ID, "eliteengine")
                 .setCreativeTab(ValkyrienSkiesMod.vwTab);
-        ultimateEngine = (BlockNormalEngine) new BlockNormalEngine(Material.GROUND, VWConfig.ENGINE_POWER.ultimateEnginePower).setHardness(10f)
+        ultimateEngine = (BlockNormalEngine) new BlockNormalEngine(Material.GROUND, VSConfig.ENGINE_POWER.ultimateEnginePower).setHardness(10f)
                 .setTranslationKey("ultimateengine")
                 .setRegistryName(ValkyrienSkiesControl.MOD_ID, "ultimateengine")
                 .setCreativeTab(ValkyrienSkiesMod.vwTab);
-        redstoneEngine = (BlockRedstoneEngine) new BlockRedstoneEngine(Material.REDSTONE_LIGHT, VWConfig.ENGINE_POWER.redstoneEnginePower).setHardness(7.0f)
+        redstoneEngine = (BlockRedstoneEngine) new BlockRedstoneEngine(Material.REDSTONE_LIGHT, VSConfig.ENGINE_POWER.redstoneEnginePower).setHardness(7.0f)
                 .setTranslationKey("redstoneengine")
                 .setRegistryName(ValkyrienSkiesControl.MOD_ID, "redstoneengine")
                 .setCreativeTab(ValkyrienSkiesMod.vwTab);

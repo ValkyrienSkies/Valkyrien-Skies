@@ -32,7 +32,7 @@ public class BlockGyroscopeDampener extends Block implements ITileEntityProvider
 
     @Override
     public Vector getTorqueInGlobal(PhysicsCalculations physicsCalculations, BlockPos pos) {
-        TileEntity thisTile = physicsCalculations.getParent().getWorldObj().getTileEntity(pos);
+        TileEntity thisTile = physicsCalculations.getParent().getWorld().getTileEntity(pos);
         if (thisTile instanceof TileEntityGyroscopeDampener) {
             TileEntityGyroscopeDampener tileGyroscope = (TileEntityGyroscopeDampener) thisTile;
             return tileGyroscope.getTorqueInGlobal(physicsCalculations, pos);

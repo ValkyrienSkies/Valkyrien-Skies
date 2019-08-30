@@ -22,7 +22,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.world.World;
-import org.valkyrienskies.mod.common.config.VWConfig;
+import org.valkyrienskies.mod.common.config.VSConfig;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -32,13 +32,17 @@ public class ShipSpawnDetector extends SpatialDetector {
 
     private static final Set<Block> blacklist = new CopyOnWriteArraySet<>();
 
+    static {
+        VSConfig.registerSyncEvent(ShipSpawnDetector::syncWithConfig);
+    }
+
     /**
-     * This is called by {@link VWConfig#sync}
+     * This is called by {@link VSConfig#sync}
      */
     public static void syncWithConfig() {
         blacklist.clear();
 
-        Arrays.stream(VWConfig.shipSpawnDetectorBlacklist)
+        Arrays.stream(VSConfig.shipSpawnDetectorBlacklist)
                 .map(Block::getBlockFromName)
                 .forEach(blacklist::add);
     }

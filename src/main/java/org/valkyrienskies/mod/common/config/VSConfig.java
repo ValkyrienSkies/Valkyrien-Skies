@@ -8,14 +8,13 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physmanagement.relocation.ShipSpawnDetector;
 
 @SuppressWarnings("WeakerAccess") // NOTE: Any forge config option MUST be "public"
 @Config(
 		modid = ValkyrienSkiesMod.MOD_ID,
 		name = ValkyrienSkiesMod.MOD_NAME
 )
-public class VWConfig {
+public class VSConfig extends VSConfigTemplate {
 
 	@Name("Ship Y-Height Maximum")
 	public static double shipUpperLimit = 1000D;
@@ -98,7 +97,7 @@ public class VWConfig {
 	public static void sync() {
 		ConfigManager.sync(ValkyrienSkiesMod.MOD_ID, Type.INSTANCE);
 
-		ShipSpawnDetector.syncWithConfig();
+		VSConfig.onSync();
 	}
 
 	@Mod.EventBusSubscriber(modid = ValkyrienSkiesMod.MOD_ID)

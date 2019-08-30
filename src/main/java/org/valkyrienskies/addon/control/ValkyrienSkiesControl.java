@@ -38,41 +38,18 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
-import org.valkyrienskies.addon.control.block.multiblocks.EthereumCompressorMultiblockSchematic;
-import org.valkyrienskies.addon.control.block.multiblocks.EthereumEngineMultiblockSchematic;
-import org.valkyrienskies.addon.control.block.multiblocks.GiantPropellerMultiblockSchematic;
-import org.valkyrienskies.addon.control.block.multiblocks.RudderAxleMultiblockSchematic;
-import org.valkyrienskies.addon.control.block.multiblocks.TileEntityEthereumCompressorPart;
-import org.valkyrienskies.addon.control.block.multiblocks.TileEntityEthereumEnginePart;
-import org.valkyrienskies.addon.control.block.multiblocks.TileEntityGiantPropellerPart;
-import org.valkyrienskies.addon.control.block.multiblocks.TileEntityRudderAxlePart;
+import org.valkyrienskies.addon.control.block.multiblocks.*;
 import org.valkyrienskies.addon.control.block.torque.TileEntityRotationTrainAxle;
 import org.valkyrienskies.addon.control.capability.ICapabilityLastRelay;
 import org.valkyrienskies.addon.control.capability.ImplCapabilityLastRelay;
 import org.valkyrienskies.addon.control.capability.StorageLastRelay;
 import org.valkyrienskies.addon.control.item.ItemRelayWire;
 import org.valkyrienskies.addon.control.item.ItemWrench;
-import org.valkyrienskies.addon.control.network.MessagePlayerStoppedPiloting;
-import org.valkyrienskies.addon.control.network.MessagePlayerStoppedPilotingHandler;
-import org.valkyrienskies.addon.control.network.MessageStartPiloting;
-import org.valkyrienskies.addon.control.network.MessageStartPilotingHandler;
-import org.valkyrienskies.addon.control.network.MessageStopPiloting;
-import org.valkyrienskies.addon.control.network.MessageStopPilotingHandler;
+import org.valkyrienskies.addon.control.network.*;
 import org.valkyrienskies.addon.control.piloting.PilotControlsMessage;
 import org.valkyrienskies.addon.control.piloting.PilotControlsMessageHandler;
 import org.valkyrienskies.addon.control.proxy.CommonProxyControl;
-import org.valkyrienskies.addon.control.tileentity.TileEntityGearbox;
-import org.valkyrienskies.addon.control.tileentity.TileEntityGyroscopeDampener;
-import org.valkyrienskies.addon.control.tileentity.TileEntityGyroscopeStabilizer;
-import org.valkyrienskies.addon.control.tileentity.TileEntityLiftControl;
-import org.valkyrienskies.addon.control.tileentity.TileEntityLiftValve;
-import org.valkyrienskies.addon.control.tileentity.TileEntityNetworkDisplay;
-import org.valkyrienskies.addon.control.tileentity.TileEntityNodeRelay;
-import org.valkyrienskies.addon.control.tileentity.TileEntityPassengerChair;
-import org.valkyrienskies.addon.control.tileentity.TileEntityPilotsChair;
-import org.valkyrienskies.addon.control.tileentity.TileEntityPropellerEngine;
-import org.valkyrienskies.addon.control.tileentity.TileEntityShipHelm;
-import org.valkyrienskies.addon.control.tileentity.TileEntityShipTelegraph;
+import org.valkyrienskies.addon.control.tileentity.*;
 import org.valkyrienskies.addon.world.ValkyrienSkiesWorld;
 import org.valkyrienskies.api.addons.Module;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
@@ -86,18 +63,24 @@ import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 @Mod.EventBusSubscriber(modid = ValkyrienSkiesControl.MOD_ID)
 public class ValkyrienSkiesControl {
 
+    // MOD INFO CONSTANTS
     public static final String MOD_ID = "vs_control";
     public static final String MOD_NAME = "Valkyrien Skies Control";
     public static final String MOD_VERSION = ValkyrienSkiesMod.MOD_VERSION;
-    @SidedProxy(clientSide = "org.valkyrienskies.addon.control.proxy.ClientProxyControl", serverSide = "org.valkyrienskies.addon.control.proxy.CommonProxyControl")
-    private static CommonProxyControl proxy;
 
+    // MOD INSTANCE
     @Instance(MOD_ID)
     public static ValkyrienSkiesControl INSTANCE;
+
+    @SidedProxy(
+            clientSide = "org.valkyrienskies.addon.control.proxy.ClientProxyControl",
+            serverSide = "org.valkyrienskies.addon.control.proxy.CommonProxyControl")
+    private static CommonProxyControl proxy;
 
     @CapabilityInject(ICapabilityLastRelay.class)
     public static final Capability<ICapabilityLastRelay> lastRelayCapability = null;
 
+    // MOD CLASS MEMBERS
     public static SimpleNetworkWrapper controlNetwork;
     public final BlocksValkyrienSkiesControl vwControlBlocks = new BlocksValkyrienSkiesControl();
     public Item relayWire;

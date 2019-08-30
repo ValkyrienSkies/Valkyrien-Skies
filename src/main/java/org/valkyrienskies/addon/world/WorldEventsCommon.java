@@ -30,7 +30,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
 import org.valkyrienskies.addon.world.block.BlockEthereumOre;
 import org.valkyrienskies.addon.world.capability.AntiGravityCapabilityProvider;
-import org.valkyrienskies.mod.common.config.VWConfig;
+import org.valkyrienskies.mod.common.config.VSConfig;
 
 public class WorldEventsCommon {
 
@@ -67,7 +67,7 @@ public class WorldEventsCommon {
             //TODO: fix the fall damage
             // @thebest108: what fall damage?
             //                    --DaPorkchop_, 28/03/2017
-            if (VWConfig.doEthereumLifting) {
+            if (VSConfig.doEthereumLifting) {
                 if (!player.isCreative()) {
                     for (NonNullList<ItemStack> stackArray : player.inventory.allInventories) {
                         for (ItemStack stack : stackArray) {

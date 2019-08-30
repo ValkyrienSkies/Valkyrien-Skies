@@ -95,7 +95,7 @@ public class ShipTransformationManager {
     @Deprecated
     public void updateAllTransforms(boolean updatePhysicsTransform, boolean updateParentAABB, boolean updatePassengers) {
         // The client should never be updating the AABB on its own.
-        if (parent.getWorldObj().isRemote) {
+        if (parent.getWorld().isRemote) {
             updateParentAABB = false;
         }
         forceShipIntoWorldBorder();
@@ -122,7 +122,7 @@ public class ShipTransformationManager {
      * Keeps the Ship in the world border
      */
     private void forceShipIntoWorldBorder() {
-        WorldBorder border = parent.getWorldObj().getWorldBorder();
+        WorldBorder border = parent.getWorld().getWorldBorder();
         AxisAlignedBB shipBB = parent.getShipBoundingBox();
 
         if (shipBB.maxX > border.maxX()) {
@@ -317,7 +317,7 @@ public class ShipTransformationManager {
      * @return the renderTransform
      */
     public ShipTransform getRenderTransform() {
-        if (!this.parent.getWorldObj().isRemote || renderTransform == null) {
+        if (!this.parent.getWorld().isRemote || renderTransform == null) {
             return currentTickTransform;
         }
         return renderTransform;

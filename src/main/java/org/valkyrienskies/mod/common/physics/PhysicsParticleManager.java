@@ -91,7 +91,7 @@ public class PhysicsParticleManager {
             this.isParticleDead = (particleLife < 0);
             // Then check for collision in the world
             bufferBlockPos.setPos(posX, posY, posZ);
-            if (!canParticlePassThrough(physicsSource.getParent().getWorldObj(), bufferBlockPos)) {
+            if (!canParticlePassThrough(physicsSource.getParent().getWorld(), bufferBlockPos)) {
                 // The particle hit a block in the world, so kill it.
                 this.isParticleDead = true;
             }
@@ -100,7 +100,7 @@ public class PhysicsParticleManager {
                 bufferVector.setValue(posX, posY, posZ);
                 physicsSource.getParent().getShipTransformationManager().getCurrentPhysicsTransform().transform(bufferVector, TransformType.GLOBAL_TO_SUBSPACE);
                 bufferBlockPos.setPos(bufferVector.X, bufferVector.Y, bufferVector.Z);
-                if (!canParticlePassThrough(physicsSource.getParent().getWorldObj(), bufferBlockPos)) {
+                if (!canParticlePassThrough(physicsSource.getParent().getWorld(), bufferBlockPos)) {
                     this.isParticleDead = true;
                     addMomentumToShip = true;
                 }

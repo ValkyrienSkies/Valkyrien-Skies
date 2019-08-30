@@ -80,7 +80,7 @@ public class ValkyrienUtils {
     }
 
     public static void fixEntityToShip(@Nonnull Entity toFix, @Nonnull Vector posInLocal, @Nonnull PhysicsObject mountingShip) {
-        World world = mountingShip.getWorldObj();
+        World world = mountingShip.getWorld();
         EntityMountable entityMountable = new EntityMountable(world, posInLocal.toVec3d(), CoordinateSpaceType.SUBSPACE_COORDINATES, mountingShip.getReferenceBlockPos());
         world.spawnEntity(entityMountable);
         toFix.startRiding(entityMountable);

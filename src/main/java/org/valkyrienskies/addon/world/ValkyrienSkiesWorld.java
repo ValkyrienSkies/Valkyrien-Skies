@@ -47,86 +47,92 @@ import org.valkyrienskies.addon.world.worldgen.ValkyrienSkiesWorldGen;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 
 @Mod(
-        name = ValkyrienSkiesWorld.MOD_NAME,
-        modid = ValkyrienSkiesWorld.MOD_ID,
-        version = ValkyrienSkiesWorld.MOD_VERSION,
-        dependencies = "required-after:" + ValkyrienSkiesMod.MOD_ID
+		name = ValkyrienSkiesWorld.MOD_NAME,
+		modid = ValkyrienSkiesWorld.MOD_ID,
+		version = ValkyrienSkiesWorld.MOD_VERSION,
+		dependencies = "required-after:" + ValkyrienSkiesMod.MOD_ID
 )
 @Mod.EventBusSubscriber(modid = ValkyrienSkiesWorld.MOD_ID)
 public class ValkyrienSkiesWorld {
 
-    private static final Logger logger = LogManager.getLogger(ValkyrienSkiesWorld.class);
+	private static final Logger logger = LogManager.getLogger(ValkyrienSkiesWorld.class);
 
-    public static final String MOD_ID = "vs_world";
-    static final String MOD_NAME = "Valkyrien Skies World";
-    static final String MOD_VERSION = ValkyrienSkiesMod.MOD_VERSION;
+	// MOD INFO CONSTANTS
+	public static final String MOD_ID = "vs_world";
+	static final String MOD_NAME = "Valkyrien Skies World";
+	static final String MOD_VERSION = ValkyrienSkiesMod.MOD_VERSION;
 
-    @SidedProxy(clientSide = "org.valkyrienskies.addon.world.proxy.ClientProxyWorld", serverSide = "org.valkyrienskies.addon.world.proxy.CommonProxyWorld")
+	// MOD INSTANCE
+	@Instance(MOD_ID)
+	public static ValkyrienSkiesWorld INSTANCE;
+
+    @SidedProxy(
+            clientSide = "org.valkyrienskies.addon.world.proxy.ClientProxyWorld",
+            serverSide = "org.valkyrienskies.addon.world.proxy.CommonProxyWorld")
     private static CommonProxyWorld proxy;
-
-    @Instance(MOD_ID)
-    public static ValkyrienSkiesWorld INSTANCE;
 
     @CapabilityInject(ICapabilityAntiGravity.class)
     public static final Capability<ICapabilityAntiGravity> ANTI_GRAVITY_CAPABILITY = null;
-    private static final WorldEventsCommon worldEventsCommon = new WorldEventsCommon();
 
-    @SubscribeEvent
-    public static void registerBlocks(RegistryEvent.Register<Block> event) {
-        logger.debug("Registering blocks...");
-
-        INSTANCE.valkyriumOre = new BlockEthereumOre(Material.ROCK).setHardness(3f)
-                .setTranslationKey("valkyrium_ore")
-                .setRegistryName(MOD_ID, "valkyrium_ore")
-                .setCreativeTab(ValkyrienSkiesMod.vwTab);
-
-        event.getRegistry()
-                .register(INSTANCE.valkyriumOre);
-
-    }
-
-    @SubscribeEvent
-    public static void registerItems(RegistryEvent.Register<Item> event) {
-        INSTANCE.valkyriumCrystal = new ItemEthereumCrystal().setTranslationKey("valkyrium_crystal")
-                .setRegistryName(MOD_ID, "valkyrium_crystal")
-                .setCreativeTab(ValkyrienSkiesMod.vwTab)
-                .setMaxStackSize(16);
-
-        event.getRegistry()
-                .register(INSTANCE.valkyriumCrystal);
-        // Register item block for valkyrium ore.
-        event.getRegistry()
-                .register(new ItemBlock(INSTANCE.valkyriumOre).setRegistryName(INSTANCE.valkyriumOre.getRegistryName()));
-    }
+	// MOD CLASS MEMBERS
+	private static final WorldEventsCommon worldEventsCommon = new WorldEventsCommon();
     public static boolean OREGEN_ENABLED = true;
     public Block valkyriumOre;
     public Item valkyriumCrystal;
 
-    @EventHandler
-    private void preInit(FMLPreInitializationEvent event) {
-        registerCapabilities();
-        proxy.preInit(event);
-    }
+	@SubscribeEvent
+	public static void registerBlocks(RegistryEvent.Register<Block> event) {
+		logger.debug("Registering blocks...");
 
-    @EventHandler
-    protected void init(FMLInitializationEvent event) {
-        EntityRegistry.registerModEntity(
-                new ResourceLocation(ValkyrienSkiesWorld.MOD_ID, "fall_up_block_entity"),
-                EntityFallingUpBlock.class,
-                "fall_up_block_entity",
-                75, ValkyrienSkiesWorld.INSTANCE, 80, 1, true);
+		INSTANCE.valkyriumOre = new BlockEthereumOre(Material.ROCK).setHardness(3f)
+				.setTranslationKey("valkyrium_ore")
+				.setRegistryName(MOD_ID, "valkyrium_ore")
+				.setCreativeTab(ValkyrienSkiesMod.vwTab);
 
-        MinecraftForge.EVENT_BUS.register(worldEventsCommon);
-        GameRegistry.registerWorldGenerator(new ValkyrienSkiesWorldGen(), 1);
-        proxy.init(event);
-    }
+		event.getRegistry()
+				.register(INSTANCE.valkyriumOre);
 
-    @Mod.EventHandler
-    public void postInit(FMLPostInitializationEvent event) {
-        proxy.postInit(event);
-    }
+	}
 
-    private void registerCapabilities() {
-        CapabilityManager.INSTANCE.register(ICapabilityAntiGravity.class, new StorageAntiGravity(), ImplCapabilityAntiGravity::new);
-    }
+	@SubscribeEvent
+	public static void registerItems(RegistryEvent.Register<Item> event) {
+		INSTANCE.valkyriumCrystal = new ItemEthereumCrystal().setTranslationKey("valkyrium_crystal")
+				.setRegistryName(MOD_ID, "valkyrium_crystal")
+				.setCreativeTab(ValkyrienSkiesMod.vwTab)
+				.setMaxStackSize(16);
+
+		event.getRegistry()
+				.register(INSTANCE.valkyriumCrystal);
+		// Register item block for valkyrium ore.
+		event.getRegistry()
+				.register(new ItemBlock(INSTANCE.valkyriumOre).setRegistryName(INSTANCE.valkyriumOre.getRegistryName()));
+	}
+
+	@EventHandler
+	private void preInit(FMLPreInitializationEvent event) {
+		registerCapabilities();
+		proxy.preInit(event);
+	}
+
+	@EventHandler
+	protected void init(FMLInitializationEvent event) {
+		EntityRegistry.registerModEntity(
+				new ResourceLocation(ValkyrienSkiesWorld.MOD_ID, "fall_up_block_entity"),
+				EntityFallingUpBlock.class,
+				"fall_up_block_entity",
+				75, ValkyrienSkiesWorld.INSTANCE, 80, 1, true);
+
+		MinecraftForge.EVENT_BUS.register(worldEventsCommon);
+		GameRegistry.registerWorldGenerator(new ValkyrienSkiesWorldGen(), 1);
+		proxy.init(event);
+	}
+
+	@Mod.EventHandler
+	public void postInit(FMLPostInitializationEvent event) {
+		proxy.postInit(event);
+	}
+
+	private void registerCapabilities() {
+		CapabilityManager.INSTANCE.register(ICapabilityAntiGravity.class, new StorageAntiGravity(), ImplCapabilityAntiGravity::new);
+	}
 }

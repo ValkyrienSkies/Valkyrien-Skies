@@ -27,7 +27,7 @@ import org.valkyrienskies.addon.control.block.torque.ImplRotationNodeWorld;
 import org.valkyrienskies.addon.control.nodenetwork.INodeController;
 import org.valkyrienskies.mod.common.block.IBlockForceProvider;
 import org.valkyrienskies.mod.common.block.IBlockTorqueProvider;
-import org.valkyrienskies.mod.common.config.VWConfig;
+import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.math.Quaternion;
 import org.valkyrienskies.mod.common.math.RotationMatrices;
@@ -94,7 +94,7 @@ public class PhysicsCalculations {
     }
 
     public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos pos) {
-        World worldObj = getParent().getWorldObj();
+        World worldObj = getParent().getWorld();
         if (!newState.equals(oldState)) {
             if (BlockPhysicsDetails.isBlockProvidingForce(newState, pos, worldObj)) {
                 activeForcePositions.add(pos);
@@ -211,10 +211,10 @@ public class PhysicsCalculations {
             if (getParent().isPhysicsEnabled()) {
                 // This wasn't implemented very well at all! Maybe in the future I'll try again.
                 // enforceStaticFriction();
-                if (VWConfig.doAirshipRotation) {
+                if (VSConfig.doAirshipRotation) {
                     integrateAngularVelocity();
                 }
-                if (VWConfig.doAirshipMovement) {
+                if (VSConfig.doAirshipMovement) {
                     integrateLinearVelocity();
                 }
             }
@@ -329,9 +329,9 @@ public class PhysicsCalculations {
         org.valkyrienskies.mod.common.math.Vector blockForce = new org.valkyrienskies.mod.common.math.Vector();
         org.valkyrienskies.mod.common.math.Vector inBodyWO = new org.valkyrienskies.mod.common.math.Vector();
         org.valkyrienskies.mod.common.math.Vector crossVector = new org.valkyrienskies.mod.common.math.Vector();
-        World worldObj = getParent().getWorldObj();
+        World worldObj = getParent().getWorld();
 
-        if (VWConfig.doPhysicsBlocks) {
+        if (VSConfig.doPhysicsBlocks) {
             // We want to loop through all the physics nodes in a sorted order. Priority Queue handles that.
             Queue<INodeController> nodesPriorityQueue = new PriorityQueue<>(parent.getPhysicsControllersInShip());
 
@@ -426,9 +426,9 @@ public class PhysicsCalculations {
     }
 
     private void applyGravity() {
-        if (VWConfig.doGravity) {
+        if (VSConfig.doGravity) {
             addForceAtPoint(new org.valkyrienskies.mod.common.math.Vector(0, 0, 0),
-                    VWConfig.gravity().getProduct(gameTickMass * getPhysicsTimeDeltaPerPhysTick()));
+                    VSConfig.gravity().getProduct(gameTickMass * getPhysicsTimeDeltaPerPhysTick()));
         }
     }
 
@@ -522,7 +522,7 @@ public class PhysicsCalculations {
         physX += (linearMomentum.X * momentMod);
         physY += (linearMomentum.Y * momentMod);
         physZ += (linearMomentum.Z * momentMod);
-        physY = Math.min(Math.max(physY, VWConfig.shipLowerLimit), VWConfig.shipUpperLimit);
+        physY = Math.min(Math.max(physY, VSConfig.shipLowerLimit), VSConfig.shipUpperLimit);
     }
 
     public org.valkyrienskies.mod.common.math.Vector getVelocityAtPoint(org.valkyrienskies.mod.common.math.Vector inBodyWO) {

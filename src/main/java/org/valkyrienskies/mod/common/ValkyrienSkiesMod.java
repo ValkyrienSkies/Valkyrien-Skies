@@ -47,14 +47,12 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.valkyrienskies.mod.client.gui.TabValkyrienSkies;
 import org.valkyrienskies.mod.common.block.BlockPhysicsInfuser;
 import org.valkyrienskies.mod.common.block.BlockPhysicsInfuserCreative;
 import org.valkyrienskies.mod.common.block.BlockPhysicsInfuserDummy;
 import org.valkyrienskies.mod.common.command.framework.VWModCommandRegistry;
-import org.valkyrienskies.mod.common.config.VWConfig;
+import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.item.ItemPhysicsCore;
 import org.valkyrienskies.mod.common.network.*;
 import org.valkyrienskies.mod.common.physics.management.DimensionPhysObjectManager;
@@ -82,12 +80,17 @@ import java.util.concurrent.Executors;
         certificateFingerprint = ValkyrienSkiesMod.MOD_FINGERPRINT
 )
 public class ValkyrienSkiesMod {
-    private static final Logger logger = LogManager.getLogger(ValkyrienSkiesMod.class);
-
+    // MOD INFO CONSTANTS
     public static final String MOD_ID = "valkyrienskies";
     public static final String MOD_NAME = "Valkyrien Skies";
     public static final String MOD_VERSION = "1.0";
     static final String MOD_FINGERPRINT = "b308676914a5e7d99459c1d2fb298744387899a7";
+
+    // MOD INSTANCE
+    @Instance(MOD_ID)
+    public static ValkyrienSkiesMod INSTANCE;
+
+    // MOD CLASS MEMBERS
     static final int VW_ENTITY_LOAD_DISTANCE = 128;
     @CapabilityInject(IVWWorldDataCapability.class)
     public static final Capability<IVWWorldDataCapability> vwWorldData = null;
@@ -103,15 +106,16 @@ public class ValkyrienSkiesMod {
     public Item physicsCore;
     public static SimpleNetworkWrapper physWrapperNetwork;
     public static final CreativeTabs vwTab = new TabValkyrienSkies();
-    @Instance(MOD_ID)
-    public static ValkyrienSkiesMod INSTANCE;
+
     public static int airStateIndex;
     public static double standingTolerance = .42D;
     private CompletableFuture<Kryo> kryoInstance;
 
     @Mod.EventHandler
     public void onFingerprintViolation(FMLFingerprintViolationEvent event) {
-        FMLLog.bigWarning("Valkyrien Skies JAR fingerprint corrupted, which means this copy of the mod may have come from unofficial sources. Download the mod from CurseForge: https://minecraft.curseforge.com/projects/valkyrien-warfare");
+        FMLLog.bigWarning("Valkyrien Skies JAR fingerprint corrupted, which means this copy of the mod may have" +
+                " come from unofficial sources. " +
+                "Download the mod from CurseForge: https://minecraft.curseforge.com/projects/valkyrien-warfare");
     }
 
     @EventHandler
@@ -123,7 +127,7 @@ public class ValkyrienSkiesMod {
     public void preInit(FMLPreInitializationEvent event) {
         serializationInitAsync();
         registerNetworks(event);
-        ValkyrienSkiesMod.PHYSICS_THREADS_EXECUTOR = Executors.newFixedThreadPool(VWConfig.threadCount);
+        ValkyrienSkiesMod.PHYSICS_THREADS_EXECUTOR = Executors.newFixedThreadPool(VSConfig.threadCount);
         registerCapabilities();
         proxy.preInit(event);
 
@@ -255,7 +259,7 @@ public class ValkyrienSkiesMod {
     }
 
 	private void runConfiguration() {
-        VWConfig.sync();
+        VSConfig.sync();
 	}
 
     @EventHandler

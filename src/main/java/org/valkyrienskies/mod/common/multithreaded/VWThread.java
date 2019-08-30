@@ -24,9 +24,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
-import org.valkyrienskies.mod.common.config.VWConfig;
+import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
-import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.collision.optimization.ShipCollisionTask;
 import org.valkyrienskies.mod.common.physics.management.WorldPhysObjectManager;
 
@@ -159,12 +158,9 @@ public class VWThread extends Thread {
 
     /**
      * Ticks physics and collision for the List of PhysicsWrapperEntity passed in.
-     *
-     * @param shipsWithPhysics
      */
     private void tickThePhysicsAndCollision(List<PhysicsWrapperEntity> shipsWithPhysics) {
-        double newPhysSpeed = VWConfig.physSpeed;
-        Vector newGravity = VWConfig.gravity();
+        double newPhysSpeed = VSConfig.physSpeed;
         List<ShipCollisionTask> collisionTasks = new ArrayList<ShipCollisionTask>(shipsWithPhysics.size() * 2);
         for (PhysicsWrapperEntity wrapper : shipsWithPhysics) {
             if (!wrapper.firstUpdate) {

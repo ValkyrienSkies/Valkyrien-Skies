@@ -17,6 +17,9 @@
 package org.valkyrienskies.mod.common.entity;
 
 import io.netty.buffer.ByteBuf;
+import java.util.UUID;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -33,19 +36,16 @@ import org.valkyrienskies.mod.common.physics.management.ShipType;
 import org.valkyrienskies.mod.common.physmanagement.interaction.QueryableShipData;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.UUID;
-
 /**
- * This entity's only purpose is to use the functionality of sending itself to
- * nearby players, as well as the functionality of automatically loading with
- * the world; all other operations are handled by the PhysicsObject class.
+ * This entity's only purpose is to use the functionality of sending itself to nearby players, as
+ * well as the functionality of automatically loading with the world; all other operations are
+ * handled by the PhysicsObject class.
  */
 @ParametersAreNonnullByDefault
 public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpawnData {
 
-    public static final DataParameter<Boolean> IS_NAME_CUSTOM = EntityDataManager.createKey(PhysicsWrapperEntity.class,
+    public static final DataParameter<Boolean> IS_NAME_CUSTOM = EntityDataManager
+        .createKey(PhysicsWrapperEntity.class,
             DataSerializers.BOOLEAN);
     private final PhysicsObject physicsObject;
     // TODO: Replace these raw types with something safer.
@@ -59,8 +59,9 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
         dataManager.register(IS_NAME_CUSTOM, false);
     }
 
-    public PhysicsWrapperEntity(World worldIn, double x, double y, double z, @Nullable EntityPlayer creator,
-                                int detectorID, ShipType shipType) {
+    public PhysicsWrapperEntity(World worldIn, double x, double y, double z,
+        @Nullable EntityPlayer creator,
+        int detectorID, ShipType shipType) {
         this(worldIn);
         posX = x;
         posY = y;
@@ -71,12 +72,11 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
         } else {
             getPhysicsObject().creator("unknown");
             super.setCustomNameTag(UUID.randomUUID()
-                    .toString());
+                .toString());
         }
         getPhysicsObject().setDetectorID(detectorID);
         getPhysicsObject().setShipType(shipType);
         getPhysicsObject().assembleShipAsOrderedByPlayer(creator);
-
 
         QueryableShipData.get(world).addShip(this);
     }
@@ -85,15 +85,15 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
         this(te.getWorld());
 
         posX = te.getPos()
-                .getX();
+            .getX();
         posY = te.getPos()
-                .getY();
+            .getY();
         posZ = te.getPos()
-                .getZ();
+            .getZ();
 
         getPhysicsObject().creator("unknown");
         super.setCustomNameTag(UUID.randomUUID()
-                .toString());
+            .toString());
 
         getPhysicsObject().setDetectorID(0);
         getPhysicsObject().setShipType(ShipType.PHYSICS_CORE_INFUSED);
@@ -175,7 +175,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
     @Override
     @SideOnly(Side.CLIENT)
     public void setPositionAndRotationDirect(double x, double y, double z, float yaw, float pitch,
-                                             int posRotationIncrements, boolean teleport) {
+        int posRotationIncrements, boolean teleport) {
     }
 
     @Override
@@ -234,8 +234,8 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
     }
 
     /**
-     * Sets the position and rotation of the PhysicsWrapperEntity, and updates the pseudo
-     * ship AABB (not the same as the actual collision one).
+     * Sets the position and rotation of the PhysicsWrapperEntity, and updates the pseudo ship AABB
+     * (not the same as the actual collision one).
      *
      * @param posX
      * @param posY
@@ -244,7 +244,8 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
      * @param yaw   in degrees
      * @param roll  in degrees
      */
-    public void setPhysicsEntityPositionAndRotation(double posX, double posY, double posZ, double pitch, double yaw, double roll) {
+    public void setPhysicsEntityPositionAndRotation(double posX, double posY, double posZ,
+        double pitch, double yaw, double roll) {
         this.posX = posX;
         this.posY = posY;
         this.posZ = posZ;

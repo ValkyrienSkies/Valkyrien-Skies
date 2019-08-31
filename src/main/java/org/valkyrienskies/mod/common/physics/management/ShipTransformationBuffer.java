@@ -16,15 +16,13 @@
 
 package org.valkyrienskies.mod.common.physics.management;
 
+import java.util.LinkedList;
 import org.valkyrienskies.mod.common.coordinates.ShipTransformationPacketHolder;
 import org.valkyrienskies.mod.common.network.PhysWrapperPositionMessage;
 
-import java.util.LinkedList;
-
 /**
- * Ideally this would smooth out data coming from the sever, but for now it
- * mostly does nothing aside from storing the previous transforms. May possibly
- * add something here in the future.
+ * Ideally this would smooth out data coming from the sever, but for now it mostly does nothing
+ * aside from storing the previous transforms. May possibly add something here in the future.
  *
  * @author thebest108
  */
@@ -84,15 +82,17 @@ public class ShipTransformationBuffer {
 
         public double getTermWeight(double deltaTime, int term) {
             return 2 * Math.pow(deltaTime, term) * Math.pow(1 - deltaTime, order - term)
-                    * binomial(TRANSFORMS_SMOOTHED - 1, term);
+                * binomial(TRANSFORMS_SMOOTHED - 1, term);
         }
 
         private int binomial(int n, int k) {
-            if (k > n - k)
+            if (k > n - k) {
                 k = n - k;
+            }
             int b = 1;
-            for (int i = 1, m = n; i <= k; i++, m--)
+            for (int i = 1, m = n; i <= k; i++, m--) {
                 b = b * m / i;
+            }
             return b;
         }
 

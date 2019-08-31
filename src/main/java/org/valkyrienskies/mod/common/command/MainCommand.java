@@ -1,5 +1,7 @@
 package org.valkyrienskies.mod.common.command;
 
+import java.util.stream.Collectors;
+import javax.inject.Inject;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -15,21 +17,20 @@ import picocli.CommandLine.Model;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Spec;
 
-import javax.inject.Inject;
-import java.util.stream.Collectors;
-
 @Command(name = "valkyrienskies", aliases = "vs",
-        synopsisSubcommandLabel = "COMMAND", mixinStandardHelpOptions = true,
-        usageHelpWidth = 55,
-        subcommands = {
-                HelpCommand.class,
-                MainCommand.ListShips.class,
-                MainCommand.TPS.class})
+    synopsisSubcommandLabel = "COMMAND", mixinStandardHelpOptions = true,
+    usageHelpWidth = 55,
+    subcommands = {
+        HelpCommand.class,
+        MainCommand.ListShips.class,
+        MainCommand.TPS.class})
 public class MainCommand implements Runnable {
 
-    @Spec private Model.CommandSpec spec;
+    @Spec
+    private Model.CommandSpec spec;
 
-    @Inject private ICommandSender sender;
+    @Inject
+    private ICommandSender sender;
 
     @Override
     public void run() {
@@ -41,23 +42,27 @@ public class MainCommand implements Runnable {
     @Command(name = "tps")
     static class TPS implements Runnable {
 
-        @Inject ICommandSender sender;
+        @Inject
+        ICommandSender sender;
 
-        @Option(names = { "--world", "-w" })
+        @Option(names = {"--world", "-w"})
         World world;
 
         @Override
         public void run() {
-            if (world == null) world = sender.getEntityWorld();
+            if (world == null) {
+                world = sender.getEntityWorld();
+            }
 
-            VWThread worldPhysicsThread = ((WorldServerShipManager) ((IHasShipManager) world).getManager()).getPhysicsThread();
+            VWThread worldPhysicsThread = ((WorldServerShipManager) ((IHasShipManager) world)
+                .getManager()).getPhysicsThread();
 
             if (worldPhysicsThread != null) {
                 long averagePhysTickTimeNano = worldPhysicsThread.getAveragePhysicsTickTimeNano();
                 double ticksPerSecond = 1000000000D / ((double) averagePhysTickTimeNano);
                 double ticksPerSecondTwoDecimals = Math.floor(ticksPerSecond * 100) / 100;
                 sender.sendMessage(new TextComponentString(
-                        "Player world: " + ticksPerSecondTwoDecimals + " physics ticks per second"));
+                    "Player world: " + ticksPerSecondTwoDecimals + " physics ticks per second"));
             }
         }
     }
@@ -65,7 +70,8 @@ public class MainCommand implements Runnable {
     @Command(name = "list-ships", aliases = "ls")
     static class ListShips implements Runnable {
 
-        @Inject ICommandSender sender;
+        @Inject
+        ICommandSender sender;
 
         @Option(names = {"-v", "--verbose"})
         boolean verbose;
@@ -77,7 +83,7 @@ public class MainCommand implements Runnable {
             if (data.getShips().size() == 0) {
                 // There are no ships
                 sender.sendMessage(new TextComponentTranslation(
-                        "commands.valkyrienskies.list-ships.noships"));
+                    "commands.valkyrienskies.list-ships.noships"));
                 return;
             }
 
@@ -85,29 +91,29 @@ public class MainCommand implements Runnable {
 
             if (verbose) {
                 listOfShips = data.getShips()
-                        .stream()
-                        .map(shipData -> {
-                            if (shipData.getPositionData() == null) {
-                                // Unknown Location (this should be an error? TODO: look into this)
-                                return String.format("%s, Unknown Location", shipData.getName());
-                            } else  {
-                                // Known Location
-                                return String.format("%s [%.1f, %.1f, %.1f]", shipData.getName(),
-                                        shipData.getPositionData().getPosX(),
-                                        shipData.getPositionData().getPosY(),
-                                        shipData.getPositionData().getPosZ());
-                            }
-                        })
-                        .collect(Collectors.joining(",\n"));
+                    .stream()
+                    .map(shipData -> {
+                        if (shipData.getPositionData() == null) {
+                            // Unknown Location (this should be an error? TODO: look into this)
+                            return String.format("%s, Unknown Location", shipData.getName());
+                        } else {
+                            // Known Location
+                            return String.format("%s [%.1f, %.1f, %.1f]", shipData.getName(),
+                                shipData.getPositionData().getPosX(),
+                                shipData.getPositionData().getPosY(),
+                                shipData.getPositionData().getPosZ());
+                        }
+                    })
+                    .collect(Collectors.joining(",\n"));
             } else {
                 listOfShips = data.getShips()
-                        .stream()
-                        .map(ShipData::getName)
-                        .collect(Collectors.joining(",\n"));
+                    .stream()
+                    .map(ShipData::getName)
+                    .collect(Collectors.joining(",\n"));
             }
 
             sender.sendMessage(new TextComponentTranslation(
-                    "commands.valkyrienskies.list-ships.ships", listOfShips));
+                "commands.valkyrienskies.list-ships.ships", listOfShips));
         }
 
     }

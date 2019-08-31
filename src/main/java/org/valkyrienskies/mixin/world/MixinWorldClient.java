@@ -16,6 +16,7 @@
 
 package org.valkyrienskies.mixin.world;
 
+import java.util.List;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.EnumSkyBlock;
@@ -33,12 +34,11 @@ import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
 import org.valkyrienskies.mod.common.ship_handling.WorldClientShipManager;
 import valkyrienwarfare.api.TransformType;
 
-import java.util.List;
-
 @Mixin(World.class)
 public abstract class MixinWorldClient implements IHasShipManager {
 
-    private final WorldClientShipManager manager = new WorldClientShipManager(World.class.cast(this));
+    private final WorldClientShipManager manager = new WorldClientShipManager(
+        World.class.cast(this));
 
     @Inject(method = "tick", at = @At("RETURN"))
     private void onTickPost(CallbackInfo callbackInfo) {
@@ -52,16 +52,20 @@ public abstract class MixinWorldClient implements IHasShipManager {
     public abstract Chunk getChunk(BlockPos pos);
 
     @Inject(method = "getCombinedLight(Lnet/minecraft/util/math/BlockPos;I)I", at = @At("HEAD"), cancellable = true)
-    private void preGetCombinedLight(BlockPos pos, int lightValue, CallbackInfoReturnable callbackInfoReturnable) {
+    private void preGetCombinedLight(BlockPos pos, int lightValue,
+        CallbackInfoReturnable callbackInfoReturnable) {
         try {
             int i = this.getLightFromNeighborsFor(EnumSkyBlock.SKY, pos);
             int j = this.getLightFromNeighborsFor(EnumSkyBlock.BLOCK, pos);
-            AxisAlignedBB lightBB = new AxisAlignedBB(pos.getX() - 2, pos.getY() - 2, pos.getZ() - 2, pos.getX() + 2, pos.getY() + 2, pos.getZ() + 2);
-            List<PhysicsWrapperEntity> physEnts = ValkyrienSkiesMod.VW_PHYSICS_MANAGER.getManagerForWorld(World.class.cast(this)).getNearbyPhysObjects(lightBB);
+            AxisAlignedBB lightBB = new AxisAlignedBB(pos.getX() - 2, pos.getY() - 2,
+                pos.getZ() - 2, pos.getX() + 2, pos.getY() + 2, pos.getZ() + 2);
+            List<PhysicsWrapperEntity> physEnts = ValkyrienSkiesMod.VW_PHYSICS_MANAGER
+                .getManagerForWorld(World.class.cast(this)).getNearbyPhysObjects(lightBB);
 
             for (PhysicsWrapperEntity physEnt : physEnts) {
 //                BlockPos posInLocal = RotationMatrices.applyTransform(physEnt.wrapping.coordTransform.wToLTransform, pos);
-                BlockPos posInLocal = physEnt.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(pos, TransformType.GLOBAL_TO_SUBSPACE);
+                BlockPos posInLocal = physEnt.getPhysicsObject().getShipTransformationManager()
+                    .getCurrentTickTransform().transform(pos, TransformType.GLOBAL_TO_SUBSPACE);
                 int localI = this.getLightFromNeighborsFor(EnumSkyBlock.SKY, posInLocal);
                 int localJ = this.getLightFromNeighborsFor(EnumSkyBlock.BLOCK, posInLocal);
                 if (localI == 0 && localJ == 0) {
@@ -101,7 +105,8 @@ public abstract class MixinWorldClient implements IHasShipManager {
             callbackInfoReturnable.cancel();
             return;
         } catch (Exception e) {
-            System.err.println("Something just went wrong here, getting default light value instead!!!!");
+            System.err
+                .println("Something just went wrong here, getting default light value instead!!!!");
             e.printStackTrace();
         }
     }

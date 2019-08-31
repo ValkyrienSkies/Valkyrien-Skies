@@ -1,5 +1,6 @@
 package org.valkyrienskies.mixin.client.renderer;
 
+import java.util.Optional;
 import net.minecraft.client.renderer.ViewFrustum;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -12,8 +13,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
-import java.util.Optional;
-
 @Mixin(ViewFrustum.class)
 public class MixinViewFrustum {
 
@@ -23,10 +22,10 @@ public class MixinViewFrustum {
 
     @Inject(at = {@At("HEAD")}, method = "markBlocksForUpdate")
     public void pre_markBlocksForUpdate(int minX, int minY, int minZ, int maxX, int maxY, int maxZ,
-                                        boolean updateImmediately, CallbackInfo info) {
+        boolean updateImmediately, CallbackInfo info) {
         Optional<PhysicsObject> physicsObject =
-                ValkyrienUtils.getPhysicsObject(world, new BlockPos(minX, minY, minZ));
+            ValkyrienUtils.getPhysicsObject(world, new BlockPos(minX, minY, minZ));
         physicsObject.ifPresent(p ->
-                p.getShipRenderer().updateRange(minX, minY, minZ, maxX, maxY, maxZ, updateImmediately));
+            p.getShipRenderer().updateRange(minX, minY, minZ, maxX, maxY, maxZ, updateImmediately));
     }
 }

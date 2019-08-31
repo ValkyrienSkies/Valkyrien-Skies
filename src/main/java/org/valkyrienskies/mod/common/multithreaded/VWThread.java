@@ -16,6 +16,10 @@
 
 package org.valkyrienskies.mod.common.multithreaded;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
@@ -28,11 +32,6 @@ import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.physics.collision.optimization.ShipCollisionTask;
 import org.valkyrienskies.mod.common.physics.management.WorldPhysObjectManager;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Handles all the physics processing for a world separate from the game tick.
@@ -149,7 +148,8 @@ public class VWThread extends Thread {
     // values.
     private void physicsTick() {
         // TODO: Temporary fix:
-        WorldPhysObjectManager manager = ValkyrienSkiesMod.VW_PHYSICS_MANAGER.getManagerForWorld(hostWorld);
+        WorldPhysObjectManager manager = ValkyrienSkiesMod.VW_PHYSICS_MANAGER
+            .getManagerForWorld(hostWorld);
         List<PhysicsWrapperEntity> physicsEntities = manager.getTickablePhysicsEntities();
         // Tick ship physics here
         tickThePhysicsAndCollision(physicsEntities);
@@ -161,16 +161,18 @@ public class VWThread extends Thread {
      */
     private void tickThePhysicsAndCollision(List<PhysicsWrapperEntity> shipsWithPhysics) {
         double newPhysSpeed = VSConfig.physSpeed;
-        List<ShipCollisionTask> collisionTasks = new ArrayList<ShipCollisionTask>(shipsWithPhysics.size() * 2);
+        List<ShipCollisionTask> collisionTasks = new ArrayList<ShipCollisionTask>(
+            shipsWithPhysics.size() * 2);
         for (PhysicsWrapperEntity wrapper : shipsWithPhysics) {
             if (!wrapper.firstUpdate) {
                 // Update the physics simulation
                 wrapper.getPhysicsObject().getPhysicsProcessor().rawPhysTickPreCol(newPhysSpeed);
                 // Update the collision task if necessary
-                wrapper.getPhysicsObject().getPhysicsProcessor().getWorldCollision().tickUpdatingTheCollisionCache();
+                wrapper.getPhysicsObject().getPhysicsProcessor().getWorldCollision()
+                    .tickUpdatingTheCollisionCache();
                 // Take the big collision and split into tiny ones
                 wrapper.getPhysicsObject().getPhysicsProcessor().getWorldCollision()
-                        .splitIntoCollisionTasks(collisionTasks);
+                    .splitIntoCollisionTasks(collisionTasks);
             }
         }
 
@@ -200,23 +202,23 @@ public class VWThread extends Thread {
                 }
             } else {
                 wrapper.getPhysicsObject()
-                        .getShipTransformationManager()
-                        .updateAllTransforms(false, false, false);
+                    .getShipTransformationManager()
+                    .updateAllTransforms(false, false, false);
             }
         }
     }
 
     private void tickSendUpdatesToPlayers(List<PhysicsWrapperEntity> ships) {
         for (PhysicsWrapperEntity wrapper : ships) {
-            wrapper.getPhysicsObject().getShipTransformationManager().sendPositionToPlayers(physicsTicksCount);
+            wrapper.getPhysicsObject().getShipTransformationManager()
+                .sendPositionToPlayers(physicsTicksCount);
         }
         physicsTicksCount++;
     }
 
     /**
-     * Marks this physics thread for death. Doesn't immediately end the thread, but
-     * instead ensures the thread will die after the current running physics tick is
-     * finished.
+     * Marks this physics thread for death. Doesn't immediately end the thread, but instead ensures
+     * the thread will die after the current running physics tick is finished.
      */
     public void kill() {
         logger.trace(super.getName() + " marked for death.");

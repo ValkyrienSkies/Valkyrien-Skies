@@ -1,6 +1,7 @@
 package org.valkyrienskies.addon.control.renderer;
 
 import com.google.common.collect.ImmutableMap;
+import java.util.Optional;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -13,26 +14,25 @@ import org.valkyrienskies.addon.control.tileentity.TileEntityGearbox;
 import org.valkyrienskies.mod.client.render.GibsAnimationRegistry;
 import org.valkyrienskies.mod.client.render.GibsModelRegistry;
 
-import java.util.Optional;
-
 public class GearboxTileEntityRenderer extends TileEntitySpecialRenderer<TileEntityGearbox> {
 
     private static final ImmutableMap<EnumFacing, String> FACING_TO_AXLE_NAME;
 
     static {
         FACING_TO_AXLE_NAME = ImmutableMap.<EnumFacing, String>builder()
-                .put(EnumFacing.DOWN, "gearboxvtopengineaxel_geo")
-                .put(EnumFacing.UP, "gearboxbottomengineaxel_geo")
-                .put(EnumFacing.SOUTH, "gearboxfrontengineaxel_geo")
-                .put(EnumFacing.NORTH, "gearboxbackengineaxel_geo")
-                .put(EnumFacing.WEST, "gearboxrightengineaxel_geo")
-                .put(EnumFacing.EAST, "gearboxleftengineaxel_geo")
-                .build();
+            .put(EnumFacing.DOWN, "gearboxvtopengineaxel_geo")
+            .put(EnumFacing.UP, "gearboxbottomengineaxel_geo")
+            .put(EnumFacing.SOUTH, "gearboxfrontengineaxel_geo")
+            .put(EnumFacing.NORTH, "gearboxbackengineaxel_geo")
+            .put(EnumFacing.WEST, "gearboxrightengineaxel_geo")
+            .put(EnumFacing.EAST, "gearboxleftengineaxel_geo")
+            .build();
     }
 
     @Override
-    public void render(TileEntityGearbox tileentity, double x, double y, double z, float partialTick,
-                       int destroyStage, float alpha) {
+    public void render(TileEntityGearbox tileentity, double x, double y, double z,
+        float partialTick,
+        int destroyStage, float alpha) {
 
         this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
         GlStateManager.pushMatrix();
@@ -44,7 +44,8 @@ public class GearboxTileEntityRenderer extends TileEntitySpecialRenderer<TileEnt
         int brightness = tileentity.getWorld().getCombinedLight(tileentity.getPos(), 0);
 
         // Render the side axles
-        float renderRotation = (float) Math.toDegrees(tileentity.getRenderRotationRadians(partialTick));
+        float renderRotation = (float) Math
+            .toDegrees(tileentity.getRenderRotationRadians(partialTick));
         // Then render the six sides:
         Optional<Double>[] connectedAngularVelocityRatios = tileentity.getConnectedSidesRatios();
         for (EnumFacing facing : EnumFacing.values()) {
@@ -56,13 +57,14 @@ public class GearboxTileEntityRenderer extends TileEntitySpecialRenderer<TileEnt
                 // The render rotation for this side. Mathematically I can add constants to this and it will still be
                 // correct.
                 double effectiveRenderRotation = renderRotation * ratio.get();
-                GlStateManager.rotate((float) effectiveRenderRotation, facingVec.getX(), facingVec.getY(), facingVec.getZ());
+                GlStateManager
+                    .rotate((float) effectiveRenderRotation, facingVec.getX(), facingVec.getY(),
+                        facingVec.getZ());
                 GlStateManager.translate(-.5, -.5, -.5);
                 GibsModelRegistry.renderGibsModel(FACING_TO_AXLE_NAME.get(facing), brightness);
                 GlStateManager.popMatrix();
             }
         }
-
 
         IBlockState gearState = Minecraft.getMinecraft().world.getBlockState(tileentity.getPos());
         if (gearState.getBlock() instanceof BlockGearbox) {

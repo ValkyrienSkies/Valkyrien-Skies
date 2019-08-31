@@ -1,16 +1,15 @@
 package org.valkyrienskies.addon.control.block.torque;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
 import org.valkyrienskies.addon.control.block.torque.custom_torque_functions.SimpleTorqueFunction;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 public interface IRotationNode extends Comparable<IRotationNode> {
 
@@ -23,7 +22,9 @@ public interface IRotationNode extends Comparable<IRotationNode> {
     default void simulate(double timeStep, PhysicsObject parent) {
         double torque = calculateInstantaneousTorque(parent);
         double deltaVelocity = (torque / getRotationalInertia()) * timeStep;
-        this.setAngularRotation(this.getAngularRotation() + (this.getAngularVelocity() * timeStep) + ((torque / getRotationalInertia()) * timeStep * timeStep / 2D));
+        this.setAngularRotation(
+            this.getAngularRotation() + (this.getAngularVelocity() * timeStep) + (
+                (torque / getRotationalInertia()) * timeStep * timeStep / 2D));
         this.setAngularVelocity(this.getAngularVelocity() + deltaVelocity);
     }
 
@@ -50,7 +51,8 @@ public interface IRotationNode extends Comparable<IRotationNode> {
         if (!connectedTo.isPresent()) {
             return false;
         }
-        return getAngularVelocityRatioFor(side).isPresent() && connectedTo.get().getAngularVelocityRatioFor(side.getOpposite()).isPresent();
+        return getAngularVelocityRatioFor(side).isPresent() && connectedTo.get()
+            .getAngularVelocityRatioFor(side.getOpposite()).isPresent();
     }
 
     @PhysicsThreadOnly
@@ -146,7 +148,8 @@ public interface IRotationNode extends Comparable<IRotationNode> {
         if (!connectedTo.isPresent()) {
             return false;
         }
-        return getAngularVelocityRatioForUnsynchronized(side).isPresent() && connectedTo.get().getAngularVelocityRatioForUnsynchronized(side.getOpposite()).isPresent();
+        return getAngularVelocityRatioForUnsynchronized(side).isPresent() && connectedTo.get()
+            .getAngularVelocityRatioForUnsynchronized(side.getOpposite()).isPresent();
     }
 
     Optional<IRotationNode> getTileOnSideUnsynchronized(EnumFacing side);

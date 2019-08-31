@@ -1,6 +1,7 @@
 package org.valkyrienskies.mod.common.entity;
 
 import io.netty.buffer.ByteBuf;
+import java.util.Optional;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
@@ -16,14 +17,14 @@ import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
-import java.util.Optional;
-
 /**
- * A simple entity whose only purpose is to allow mounting onto chairs, as well as fixing entities onto ships.
+ * A simple entity whose only purpose is to allow mounting onto chairs, as well as fixing entities
+ * onto ships.
  */
 public class EntityMountable extends Entity implements IEntityAdditionalSpawnData {
 
-    private static final DataParameter<NBTTagCompound> SHARED_NBT = EntityDataManager.createKey(EntityMountable.class,
+    private static final DataParameter<NBTTagCompound> SHARED_NBT = EntityDataManager
+        .createKey(EntityMountable.class,
             DataSerializers.COMPOUND_TAG);
 
     // The position (in global or subspace) of where this entity mounts to.
@@ -45,19 +46,22 @@ public class EntityMountable extends Entity implements IEntityAdditionalSpawnDat
         dataManager.register(SHARED_NBT, new NBTTagCompound());
     }
 
-    private EntityMountable(World worldIn, Vec3d chairPos, CoordinateSpaceType coordinateSpaceType) {
+    private EntityMountable(World worldIn, Vec3d chairPos,
+        CoordinateSpaceType coordinateSpaceType) {
         this(worldIn);
         this.mountPos = chairPos;
         this.setPosition(chairPos.x, chairPos.y, chairPos.z);
         this.mountPosSpace = coordinateSpaceType;
     }
 
-    public EntityMountable(World worldIn, Vec3d chairPos, CoordinateSpaceType coordinateSpaceType, BlockPos shipReferencePos) {
+    public EntityMountable(World worldIn, Vec3d chairPos, CoordinateSpaceType coordinateSpaceType,
+        BlockPos shipReferencePos) {
         this(worldIn, chairPos, coordinateSpaceType);
         this.referencePos = shipReferencePos;
     }
 
-    public void setMountValues(Vec3d mountPos, CoordinateSpaceType mountPosSpace, BlockPos referencePos) {
+    public void setMountValues(Vec3d mountPos, CoordinateSpaceType mountPosSpace,
+        BlockPos referencePos) {
         this.mountPos = mountPos;
         this.mountPosSpace = mountPosSpace;
         this.referencePos = referencePos;
@@ -101,14 +105,17 @@ public class EntityMountable extends Entity implements IEntityAdditionalSpawnDat
         Vec3d entityPos = mountPos;
         if (mountPosSpace == CoordinateSpaceType.SUBSPACE_COORDINATES) {
             if (referencePos == null) {
-                throw new IllegalStateException("Mounting reference position for ship not present!");
+                throw new IllegalStateException(
+                    "Mounting reference position for ship not present!");
             }
             Optional<PhysicsObject> mountedOnto = getMountedShip();
             if (mountedOnto.isPresent()) {
                 entityPos = mountedOnto.get()
-                        .transformVector(entityPos, TransformType.SUBSPACE_TO_GLOBAL);
+                    .transformVector(entityPos, TransformType.SUBSPACE_TO_GLOBAL);
             } else {
-                new IllegalStateException("Couldn't access ship with reference coordinates " + referencePos).printStackTrace();
+                new IllegalStateException(
+                    "Couldn't access ship with reference coordinates " + referencePos)
+                    .printStackTrace();
                 return;
             }
 
@@ -124,11 +131,13 @@ public class EntityMountable extends Entity implements IEntityAdditionalSpawnDat
 
     @Override
     protected void readEntityFromNBT(NBTTagCompound compound) {
-        mountPos = new Vec3d(compound.getDouble("vw_mount_pos_x"), compound.getDouble("vw_mount_pos_y"), compound.getDouble("vw_mount_pos_z"));
+        mountPos = new Vec3d(compound.getDouble("vw_mount_pos_x"),
+            compound.getDouble("vw_mount_pos_y"), compound.getDouble("vw_mount_pos_z"));
         mountPosSpace = CoordinateSpaceType.values()[compound.getInteger("vw_coord_type")];
 
         if (compound.getBoolean("vw_ref_pos_present")) {
-            referencePos = new BlockPos(compound.getInteger("vw_ref_pos_x"), compound.getInteger("vw_ref_pos_y"), compound.getInteger("vw_ref_pos_z"));
+            referencePos = new BlockPos(compound.getInteger("vw_ref_pos_x"),
+                compound.getInteger("vw_ref_pos_y"), compound.getInteger("vw_ref_pos_z"));
         } else {
             referencePos = null;
         }
@@ -169,7 +178,8 @@ public class EntityMountable extends Entity implements IEntityAdditionalSpawnDat
     @Override
     public void readSpawnData(ByteBuf additionalData) {
         PacketBuffer packetBuffer = new PacketBuffer(additionalData);
-        mountPos = new Vec3d(packetBuffer.readDouble(), packetBuffer.readDouble(), packetBuffer.readDouble());
+        mountPos = new Vec3d(packetBuffer.readDouble(), packetBuffer.readDouble(),
+            packetBuffer.readDouble());
         mountPosSpace = CoordinateSpaceType.values()[packetBuffer.readInt()];
         if (packetBuffer.readBoolean()) {
             referencePos = packetBuffer.readBlockPos();

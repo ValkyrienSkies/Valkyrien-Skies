@@ -30,7 +30,8 @@ import org.valkyrienskies.addon.control.tileentity.TileEntityNodeRelay;
 public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer<TileEntityNodeRelay> {
 
     @Override
-    public void render(TileEntityNodeRelay te, double x, double y, double z, float partialTick, int destroyStage, float alpha) {
+    public void render(TileEntityNodeRelay te, double x, double y, double z, float partialTick,
+        int destroyStage, float alpha) {
         GlStateManager.disableBlend();
         VWNode_TileEntity tileNode = te.getNode();
         if (tileNode != null) {
@@ -43,7 +44,7 @@ public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer<TileE
                 if (otherTile instanceof TileEntityNodeRelay) {
                     // Don't render the same connection twice.
                     if (otherTile.getPos()
-                            .compareTo(te.getPos()) < 0) {
+                        .compareTo(te.getPos()) < 0) {
                         continue;
                     }
                 }
@@ -52,11 +53,11 @@ public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer<TileE
                 // GlStateManager.resetColor();
 
                 double startX = te.getPos()
-                        .getX();
+                    .getX();
                 double startY = te.getPos()
-                        .getY();
+                    .getY();
                 double startZ = te.getPos()
-                        .getZ();
+                    .getZ();
 
                 double endX = (startX * 2) - otherPos.getX();
                 double endY = (startY * 2) - otherPos.getY() - 1.5;
@@ -80,8 +81,9 @@ public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer<TileE
         }
     }
 
-    private void renderWire(double x, double y, double z, double entity1x, double entity1y, double entity1z,
-                            double entity2x, double entity2y, double entity2z) {
+    private void renderWire(double x, double y, double z, double entity1x, double entity1y,
+        double entity1z,
+        double entity2x, double entity2y, double entity2z) {
         GlStateManager.enableAlpha();
         GlStateManager.enableBlend();
         float wireR = .6f;
@@ -134,12 +136,14 @@ public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer<TileE
 
         for (int j = 0; j <= 24; ++j) {
             float f3 = j / 24.0F;
-            bufferbuilder.pos(x + d13 * f3 + 0.0D, y + d14 * (f3 * f3 + f3) * 0.5D + ((24.0F - j) / 18.0F + 0.125F),
-                    z + d15 * f3).color(wireR, wireG, wireB, wireAlpha).endVertex();
+            bufferbuilder.pos(x + d13 * f3 + 0.0D,
+                y + d14 * (f3 * f3 + f3) * 0.5D + ((24.0F - j) / 18.0F + 0.125F),
+                z + d15 * f3).color(wireR, wireG, wireB, wireAlpha).endVertex();
             bufferbuilder
-                    .pos(x + d13 * f3 + 0.025D,
-                            y + d14 * (f3 * f3 + f3) * 0.5D + ((24.0F - j) / 18.0F + 0.125F) + 0.025D, z + d15 * f3)
-                    .color(wireR, wireG, wireB, wireAlpha).endVertex();
+                .pos(x + d13 * f3 + 0.025D,
+                    y + d14 * (f3 * f3 + f3) * 0.5D + ((24.0F - j) / 18.0F + 0.125F) + 0.025D,
+                    z + d15 * f3)
+                .color(wireR, wireG, wireB, wireAlpha).endVertex();
         }
 
         tessellator.draw();
@@ -162,10 +166,12 @@ public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer<TileE
 
             float f7 = k / 24.0F;
             bufferbuilder.pos(x + d13 * f7 + 0.0D,
-                    y + d14 * (f7 * f7 + f7) * 0.5D + ((24.0F - k) / 18.0F + 0.125F) + 0.025D, z + d15 * f7)
-                    .color(wireR, wireG, wireB, wireAlpha).endVertex();
-            bufferbuilder.pos(x + d13 * f7 + 0.025D, y + d14 * (f7 * f7 + f7) * 0.5D + ((24.0F - k) / 18.0F + 0.125F),
-                    z + d15 * f7 + 0.025D).color(wireR, wireG, wireB, wireAlpha).endVertex();
+                y + d14 * (f7 * f7 + f7) * 0.5D + ((24.0F - k) / 18.0F + 0.125F) + 0.025D,
+                z + d15 * f7)
+                .color(wireR, wireG, wireB, wireAlpha).endVertex();
+            bufferbuilder.pos(x + d13 * f7 + 0.025D,
+                y + d14 * (f7 * f7 + f7) * 0.5D + ((24.0F - k) / 18.0F + 0.125F),
+                z + d15 * f7 + 0.025D).color(wireR, wireG, wireB, wireAlpha).endVertex();
         }
 
         tessellator.draw();

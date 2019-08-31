@@ -16,6 +16,8 @@
 
 package org.valkyrienskies.mod.common.command;
 
+import java.util.Optional;
+import javax.annotation.ParametersAreNonnullByDefault;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
@@ -28,9 +30,6 @@ import net.minecraft.util.text.TextComponentString;
 import org.valkyrienskies.mod.common.physmanagement.interaction.QueryableShipData;
 import org.valkyrienskies.mod.common.physmanagement.interaction.ShipData;
 import org.valkyrienskies.mod.common.physmanagement.interaction.ShipPositionData;
-
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Optional;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
@@ -47,7 +46,8 @@ public class AirshipMapCommand extends CommandBase {
     }
 
     @Override
-    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+    public void execute(MinecraftServer server, ICommandSender sender, String[] args)
+        throws CommandException {
         String term = args[0];
 
         if (term.equals("tpto")) {
@@ -59,11 +59,13 @@ public class AirshipMapCommand extends CommandBase {
             }
 
             Entity player = sender.getCommandSenderEntity();
-            if (!(player instanceof EntityPlayer)) return;
+            if (!(player instanceof EntityPlayer)) {
+                return;
+            }
 
             Optional<ShipData> shipDataOptional = QueryableShipData
-                    .get(player.world)
-                    .getShipFromName(shipName.toString());
+                .get(player.world)
+                .getShipFromName(shipName.toString());
 
             if (shipDataOptional.isPresent()) {
                 ShipPositionData positionData = shipDataOptional.get().getPositionData();

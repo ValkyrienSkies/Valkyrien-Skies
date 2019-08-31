@@ -1,8 +1,7 @@
 package org.valkyrienskies.mod.common.ship_handling;
 
-import net.minecraft.util.math.AxisAlignedBB;
-
 import java.util.Iterator;
+import net.minecraft.util.math.AxisAlignedBB;
 
 public interface IQuickShipAccess {
 

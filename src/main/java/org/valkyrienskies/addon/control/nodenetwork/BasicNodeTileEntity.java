@@ -18,13 +18,12 @@ package org.valkyrienskies.addon.control.nodenetwork;
 
 import gigaherz.graph.api.Graph;
 import gigaherz.graph.api.Mergeable;
+import java.util.Iterator;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
-
-import java.util.Iterator;
 
 public abstract class BasicNodeTileEntity extends TileEntity implements IVWNodeProvider, ITickable {
 
@@ -38,7 +37,8 @@ public abstract class BasicNodeTileEntity extends TileEntity implements IVWNodeP
 
     @Override
     public SPacketUpdateTileEntity getUpdatePacket() {
-        SPacketUpdateTileEntity packet = new SPacketUpdateTileEntity(pos, 0, writeToNBT(new NBTTagCompound()));
+        SPacketUpdateTileEntity packet = new SPacketUpdateTileEntity(pos, 0,
+            writeToNBT(new NBTTagCompound()));
         return packet;
     }
 
@@ -122,11 +122,12 @@ public abstract class BasicNodeTileEntity extends TileEntity implements IVWNodeP
     @Override
     public Iterable<IVWNode> getNetworkedConnections() {
         return () -> new IteratorCaster(tileNode.getGraph()
-                .getObjects()
-                .iterator());
+            .getObjects()
+            .iterator());
     }
 
     public static class GraphData implements Mergeable<GraphData> {
+
         private static volatile int sUid = 0;
 
         private final int uid;
@@ -155,6 +156,7 @@ public abstract class BasicNodeTileEntity extends TileEntity implements IVWNodeP
     }
 
     private static class IteratorCaster implements Iterator<IVWNode> {
+
         private final Iterator toCast;
 
         private IteratorCaster(Iterator toCast) {

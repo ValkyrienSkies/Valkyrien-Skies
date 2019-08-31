@@ -19,13 +19,13 @@ public abstract class BlockVWDirectional extends BlockDirectional {
             enumfacing = EnumFacing.NORTH;
         }
         return this.getDefaultState()
-                .withProperty(FACING, enumfacing);
+            .withProperty(FACING, enumfacing);
     }
 
     @Override
     public int getMetaFromState(IBlockState state) {
         return state.getValue(FACING)
-                .getIndex();
+            .getIndex();
     }
 
     @Override

@@ -16,9 +16,15 @@
 
 package org.valkyrienskies.mod.client.render;
 
+import java.util.HashMap;
+import java.util.Map;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.BlockRendererDispatcher;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexBuffer;
@@ -28,9 +34,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
-
-import java.util.HashMap;
-import java.util.Map;
 
 // TODO: Upon further inspection this class does the exact opposite of what its name implies 
 // and takes a stupid slow approach to rendering simple geometries. Remove this and create a 
@@ -45,7 +48,8 @@ public class FastBlockModelRenderer {
     // Used to make sure that when we simulate rendering models they're not affected by light from other blocks.
     private static final BlockPos offsetPos = new BlockPos(0, 512, 0);
 
-    public static void renderBlockModel(Tessellator tessellator, World world, IBlockState blockstateToRender, int brightness) {
+    public static void renderBlockModel(Tessellator tessellator, World world,
+        IBlockState blockstateToRender, int brightness) {
         GL11.glPushMatrix();
         GL11.glTranslated(-offsetPos.getX(), -offsetPos.getY(), -offsetPos.getZ());
         renderBlockModelHighQualityHighRam(tessellator, world, blockstateToRender, brightness);
@@ -53,7 +57,7 @@ public class FastBlockModelRenderer {
     }
 
     private static void renderBlockModelHighQualityHighRam(Tessellator tessellator, World world,
-                                                           IBlockState blockstateToRender, int brightness) {
+        IBlockState blockstateToRender, int brightness) {
         if (!blockstateToVertexData.containsKey(blockstateToRender)) {
             generateRenderDataFor(world, blockstateToRender);
         }
@@ -61,7 +65,8 @@ public class FastBlockModelRenderer {
         // We're using the VBO, check if a compiled VertexBuffer already exists. If
         // there isn't one we will create it, then render.
         if (!blockstateBrightnessToVertexBuffer.containsKey(blockstateToRender)) {
-            blockstateBrightnessToVertexBuffer.put(blockstateToRender, new HashMap<Integer, VertexBuffer>());
+            blockstateBrightnessToVertexBuffer
+                .put(blockstateToRender, new HashMap<Integer, VertexBuffer>());
         }
         if (!blockstateBrightnessToVertexBuffer.get(blockstateToRender).containsKey(brightness)) {
             // We have to create the VertexBuffer
@@ -98,7 +103,8 @@ public class FastBlockModelRenderer {
             VERTEX_BUILDER.reset();
             blockVertexBuffer.bufferData(VERTEX_BUILDER.getByteBuffer());
             // Put the VertexBuffer for that data into the Map for future rendering.
-            blockstateBrightnessToVertexBuffer.get(blockstateToRender).put(brightness, blockVertexBuffer);
+            blockstateBrightnessToVertexBuffer.get(blockstateToRender)
+                .put(brightness, blockVertexBuffer);
         }
 
         // Just to test the look of the State in case I ever need to.
@@ -110,7 +116,8 @@ public class FastBlockModelRenderer {
             tessellator.draw();
         }
 
-        renderVertexBuffer(blockstateBrightnessToVertexBuffer.get(blockstateToRender).get(brightness));
+        renderVertexBuffer(
+            blockstateBrightnessToVertexBuffer.get(blockstateToRender).get(brightness));
     }
 
     protected static void renderVertexBuffer(VertexBuffer vertexBuffer) {
@@ -168,7 +175,8 @@ public class FastBlockModelRenderer {
         GlStateManager.resetColor();
 
         for (VertexFormatElement vertexformatelement : DefaultVertexFormats.BLOCK.getElements()) {
-            VertexFormatElement.EnumUsage vertexformatelement$enumusage = vertexformatelement.getUsage();
+            VertexFormatElement.EnumUsage vertexformatelement$enumusage = vertexformatelement
+                .getUsage();
             int i = vertexformatelement.getIndex();
 
             switch (vertexformatelement$enumusage) {
@@ -200,7 +208,8 @@ public class FastBlockModelRenderer {
         GlStateManager.popMatrix();
     }
 
-    private static void renderBlockModelHighQuality(Tessellator tessellator, World world, IBlockState blockstateToRender, int brightness) {
+    private static void renderBlockModelHighQuality(Tessellator tessellator, World world,
+        IBlockState blockstateToRender, int brightness) {
         BufferBuilder.State vertexData = blockstateToVertexData.get(blockstateToRender);
 
         if (vertexData == null) {
@@ -210,7 +219,8 @@ public class FastBlockModelRenderer {
         renderVertexState(vertexData, tessellator, brightness);
     }
 
-    private static void renderVertexState(BufferBuilder.State data, Tessellator tessellator, int brightness) {
+    private static void renderVertexState(BufferBuilder.State data, Tessellator tessellator,
+        int brightness) {
         GL11.glPushMatrix();
         tessellator.getBuffer().begin(7, DefaultVertexFormats.BLOCK);
 
@@ -240,9 +250,12 @@ public class FastBlockModelRenderer {
 
     private static void generateRenderDataFor(World world, IBlockState state) {
         VERTEX_BUILDER.begin(7, DefaultVertexFormats.BLOCK);
-        BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
+        BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft()
+            .getBlockRendererDispatcher();
         IBakedModel modelFromState = blockrendererdispatcher.getModelForState(state);
-        blockrendererdispatcher.getBlockModelRenderer().renderModel(Minecraft.getMinecraft().world, modelFromState, Blocks.AIR.getDefaultState(), offsetPos, VERTEX_BUILDER, false, 0);
+        blockrendererdispatcher.getBlockModelRenderer()
+            .renderModel(Minecraft.getMinecraft().world, modelFromState,
+                Blocks.AIR.getDefaultState(), offsetPos, VERTEX_BUILDER, false, 0);
         BufferBuilder.State toReturn = VERTEX_BUILDER.getVertexState();
         VERTEX_BUILDER.finishDrawing();
         VERTEX_BUILDER.reset();

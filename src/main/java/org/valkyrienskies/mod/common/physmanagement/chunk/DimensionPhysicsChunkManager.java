@@ -16,14 +16,13 @@
 
 package org.valkyrienskies.mod.common.physmanagement.chunk;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import net.minecraft.world.World;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.physmanagement.interaction.QueryableShipData;
 import org.valkyrienskies.mod.common.physmanagement.interaction.ShipPositionData;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
 public class DimensionPhysicsChunkManager {
 

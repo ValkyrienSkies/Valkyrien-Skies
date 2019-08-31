@@ -16,6 +16,8 @@
 
 package org.valkyrienskies.addon.control.block;
 
+import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
@@ -31,19 +33,19 @@ import org.valkyrienskies.mod.common.block.IBlockTorqueProvider;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
 
-import javax.annotation.Nullable;
-import java.util.List;
-
-public class BlockGyroscopeStabilizer extends Block implements ITileEntityProvider, IBlockTorqueProvider {
+public class BlockGyroscopeStabilizer extends Block implements ITileEntityProvider,
+    IBlockTorqueProvider {
 
     public BlockGyroscopeStabilizer(Material materialIn) {
         super(materialIn);
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation,
-                               ITooltipFlag advanced) {
-        itemInformation.add(TextFormatting.BLUE + I18n.format("tooltip.vs_control.gyroscope_stabilizer"));
+    public void addInformation(ItemStack stack, @Nullable World player,
+        List<String> itemInformation,
+        ITooltipFlag advanced) {
+        itemInformation
+            .add(TextFormatting.BLUE + I18n.format("tooltip.vs_control.gyroscope_stabilizer"));
     }
 
     @Override

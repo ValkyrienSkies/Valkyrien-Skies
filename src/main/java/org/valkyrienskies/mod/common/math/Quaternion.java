@@ -65,8 +65,12 @@ public class Quaternion {
             oldMod = Math.sin(oldMod * betweenAngle) / sinMod;
             newMod = Math.sin(timeStep * betweenAngle) / sinMod;
         }
-        Quaternion betweenQuat = new Quaternion(old.x * oldMod + newOne.x * newMod, old.y * oldMod + newOne.y * newMod, old.z * oldMod + newOne.z * newMod, old.w * oldMod + newOne.w * newMod);
-        double betweenLength = Math.sqrt(betweenQuat.x * betweenQuat.x + betweenQuat.y * betweenQuat.y + betweenQuat.z * betweenQuat.z + betweenQuat.w * betweenQuat.w);
+        Quaternion betweenQuat = new Quaternion(old.x * oldMod + newOne.x * newMod,
+            old.y * oldMod + newOne.y * newMod, old.z * oldMod + newOne.z * newMod,
+            old.w * oldMod + newOne.w * newMod);
+        double betweenLength = Math.sqrt(
+            betweenQuat.x * betweenQuat.x + betweenQuat.y * betweenQuat.y
+                + betweenQuat.z * betweenQuat.z + betweenQuat.w * betweenQuat.w);
         betweenQuat.x /= betweenLength;
         betweenQuat.y /= betweenLength;
         betweenQuat.z /= betweenLength;
@@ -94,7 +98,8 @@ public class Quaternion {
     }
 
     public static double dotProduct(Quaternion first, Quaternion second) {
-        return (first.x * second.x) + (first.y * second.y) + (first.z * second.z) + (first.w * second.w);
+        return (first.x * second.x) + (first.y * second.y) + (first.z * second.z) + (first.w
+            * second.w);
     }
 
     public double[] toRadians() {

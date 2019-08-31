@@ -29,17 +29,21 @@ import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 
 public class CommonProxy {
 
-    public void preInit(FMLPreInitializationEvent e) { }
+    public void preInit(FMLPreInitializationEvent e) {
+    }
 
     public void init(FMLInitializationEvent e) {
         MinecraftForge.EVENT_BUS.register(new EventsCommon());
         NetworkRegistry.INSTANCE.registerGuiHandler(ValkyrienSkiesMod.INSTANCE, new VWGuiHandler());
     }
 
-    public void postInit(FMLPostInitializationEvent e) { }
+    public void postInit(FMLPostInitializationEvent e) {
+    }
 
-    public void updateShipPartialTicks(PhysicsWrapperEntity wrapper) { }
+    public void updateShipPartialTicks(PhysicsWrapperEntity wrapper) {
+    }
 
-    public void registerCommands(MinecraftServer server) {}
+    public void registerCommands(MinecraftServer server) {
+    }
 
 }

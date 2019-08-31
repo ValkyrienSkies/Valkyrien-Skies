@@ -17,6 +17,11 @@
 package org.valkyrienskies.mod.common.command;
 
 import com.google.common.collect.Lists;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
+import javax.annotation.Nullable;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
@@ -29,12 +34,6 @@ import net.minecraft.util.text.TextFormatting;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-
 public class AirshipSettingsCommand extends CommandBase {
 
     public static final List<String> COMPLETION_OPTIONS = new ArrayList<String>();
@@ -46,10 +45,12 @@ public class AirshipSettingsCommand extends CommandBase {
     }
 
     //Ripoff of world.rayTraceBlocks(), blame LEX and his Side code
-    public static RayTraceResult rayTraceBothSides(EntityPlayer player, double blockReachDistance, float partialTicks) {
+    public static RayTraceResult rayTraceBothSides(EntityPlayer player, double blockReachDistance,
+        float partialTicks) {
         Vec3d vec3d = new Vec3d(player.posX, player.posY + player.getEyeHeight(), player.posZ);
         Vec3d vec3d1 = player.getLook(partialTicks);
-        Vec3d vec3d2 = vec3d.add(vec3d1.x * blockReachDistance, vec3d1.y * blockReachDistance, vec3d1.z * blockReachDistance);
+        Vec3d vec3d2 = vec3d.add(vec3d1.x * blockReachDistance, vec3d1.y * blockReachDistance,
+            vec3d1.z * blockReachDistance);
         return player.world.rayTraceBlocks(vec3d, vec3d2, false, false, true);
     }
 
@@ -60,7 +61,8 @@ public class AirshipSettingsCommand extends CommandBase {
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "/airshipsettings <setting name> [value]" + "\n" + "Avaliable Settings: [transfer, allowplayer, claim]";
+        return "/airshipsettings <setting name> [value]" + "\n"
+            + "Avaliable Settings: [transfer, allowplayer, claim]";
     }
 
     @Override
@@ -71,7 +73,8 @@ public class AirshipSettingsCommand extends CommandBase {
         }
 
         if (args.length == 0) {
-            sender.sendMessage(new TextComponentString(TextFormatting.RED + "Usage: " + getUsage(sender)));
+            sender.sendMessage(
+                new TextComponentString(TextFormatting.RED + "Usage: " + getUsage(sender)));
             return;
         }
 
@@ -81,24 +84,26 @@ public class AirshipSettingsCommand extends CommandBase {
 
         BlockPos pos = rayTraceBothSides(p, p.isCreative() ? 5.0 : 4.5, 1).getBlockPos();
 
-        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(p.getEntityWorld(), pos);
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils
+            .getPhysicsObject(p.getEntityWorld(), pos);
 
         if (!physicsObject.isPresent()) {
-            sender.sendMessage(new TextComponentString("You need to be looking at an airship to do that!"));
+            sender.sendMessage(
+                new TextComponentString("You need to be looking at an airship to do that!"));
             return;
         }
         if (p.entityUniqueID.toString()
-                .equals(physicsObject.get()
-                        .creator())) {
+            .equals(physicsObject.get()
+                .creator())) {
             if (args[0].equals("allowplayer")) {
                 if (args.length == 1) {
                     StringBuilder result = new StringBuilder();
                     physicsObject.get()
-                            .allowedUsers()
-                            .forEach(s -> {
-                        result.append(s);
-                        result.append(" ");
-                    });
+                        .allowedUsers()
+                        .forEach(s -> {
+                            result.append(s);
+                            result.append(" ");
+                        });
                     p.sendMessage(new TextComponentString(result.toString()));
                     return;
                 }
@@ -109,32 +114,36 @@ public class AirshipSettingsCommand extends CommandBase {
                         return;
                     }
                     if (target.entityUniqueID.toString()
-                            .equals(physicsObject.get()
-                                    .creator())) {
-                        p.sendMessage(new TextComponentString("You can't add yourself to your own airship!"));
+                        .equals(physicsObject.get()
+                            .creator())) {
+                        p.sendMessage(
+                            new TextComponentString("You can't add yourself to your own airship!"));
                         return;
                     }
                     physicsObject.get()
-                            .allowedUsers()
-                            .add(target.entityUniqueID.toString());
-                    p.sendMessage(new TextComponentString("Success! " + target.getName() + " can now interact with this airship!"));
+                        .allowedUsers()
+                        .add(target.entityUniqueID.toString());
+                    p.sendMessage(new TextComponentString(
+                        "Success! " + target.getName() + " can now interact with this airship!"));
                     return;
                 }
             }
         } else {
             if (physicsObject.get()
-                    .creator() == null || physicsObject.get()
-                    .creator()
-                    .trim()
-                    .isEmpty()) {
+                .creator() == null || physicsObject.get()
+                .creator()
+                .trim()
+                .isEmpty()) {
                 if (args.length == 1 && args[0].equals("claim")) {
                     physicsObject.get()
-                            .creator(p.entityUniqueID.toString());
-                    p.sendMessage(new TextComponentString("You've successfully claimed an airship!"));
+                        .creator(p.entityUniqueID.toString());
+                    p.sendMessage(
+                        new TextComponentString("You've successfully claimed an airship!"));
                     return;
                 }
             }
-            p.sendMessage(new TextComponentString("You need to be the owner of an airship to change airship settings!"));
+            p.sendMessage(new TextComponentString(
+                "You need to be the owner of an airship to change airship settings!"));
         }
         if (args[0].equals("help")) {
             for (String command : COMPLETION_OPTIONS) {
@@ -142,15 +151,18 @@ public class AirshipSettingsCommand extends CommandBase {
             }
         }
 
-        sender.sendMessage(new TextComponentString(TextFormatting.RED + "Usage: " + getUsage(sender)));
+        sender.sendMessage(
+            new TextComponentString(TextFormatting.RED + "Usage: " + getUsage(sender)));
     }
 
     @Override
-    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos) {
+    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender,
+        String[] args, @Nullable BlockPos pos) {
         if (args.length == 1) {
             List<String> possibleArgs = new ArrayList<String>(COMPLETION_OPTIONS);
 
-            for (Iterator<String> iterator = possibleArgs.iterator(); iterator.hasNext(); ) { //Don't like this, but I have to because concurrentmodificationexception
+            for (Iterator<String> iterator = possibleArgs.iterator(); iterator
+                .hasNext(); ) { //Don't like this, but I have to because concurrentmodificationexception
                 if (!iterator.next().startsWith(args[0])) {
                     iterator.remove();
                 }

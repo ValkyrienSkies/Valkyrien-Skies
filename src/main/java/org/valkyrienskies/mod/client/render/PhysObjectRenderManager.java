@@ -30,8 +30,7 @@ import org.valkyrienskies.mod.proxy.ClientProxy;
 import valkyrienwarfare.api.TransformType;
 
 /**
- * Object owned by each physObject responsible for handling all rendering
- * operations
+ * Object owned by each physObject responsible for handling all rendering operations
  *
  * @author thebest108
  */
@@ -66,12 +65,14 @@ public class PhysObjectRenderManager {
 
     public void renderBlockLayer(BlockRenderLayer layerToRender, double partialTicks, int pass) {
         if (renderChunks == null) {
-            renderChunks = new PhysRenderChunk[parent.getOwnedChunks().getChunkLengthX()][parent.getOwnedChunks()
-                    .getChunkLengthZ()];
+            renderChunks = new PhysRenderChunk[parent.getOwnedChunks().getChunkLengthX()][parent
+                .getOwnedChunks()
+                .getChunkLengthZ()];
             for (int xChunk = 0; xChunk < parent.getOwnedChunks().getChunkLengthX(); xChunk++) {
                 for (int zChunk = 0; zChunk < parent.getOwnedChunks().getChunkLengthZ(); zChunk++) {
                     renderChunks[xChunk][zChunk] = new PhysRenderChunk(parent, parent
-                            .getChunkAt(xChunk + parent.getOwnedChunks().getMinX(), zChunk + parent.getOwnedChunks().getMinZ()));
+                        .getChunkAt(xChunk + parent.getOwnedChunks().getMinX(),
+                            zChunk + parent.getOwnedChunks().getMinZ()));
                 }
             }
         }
@@ -107,7 +108,8 @@ public class PhysObjectRenderManager {
         }
     }
 
-    public void updateRange(int minX, int minY, int minZ, int maxX, int maxY, int maxZ, boolean updateImmediately) {
+    public void updateRange(int minX, int minY, int minZ, int maxX, int maxY, int maxZ,
+        boolean updateImmediately) {
         if (renderChunks == null || parent == null || parent.getOwnedChunks() == null) {
             return;
         }
@@ -130,15 +132,18 @@ public class PhysObjectRenderManager {
             for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
                 // TODO: Fix this render bug
                 try {
-                    if (chunkX >= parent.getOwnedChunks().getMinX() && chunkZ >= parent.getOwnedChunks().getMinZ()
-                            && chunkX - parent.getOwnedChunks().getMinX() < renderChunks.length
-                            && chunkZ - parent.getOwnedChunks().getMinZ() < renderChunks[0].length) {
-                        PhysRenderChunk renderChunk = renderChunks[chunkX - parent.getOwnedChunks().getMinX()][chunkZ
-                                - parent.getOwnedChunks().getMinZ()];
+                    if (chunkX >= parent.getOwnedChunks().getMinX() && chunkZ >= parent
+                        .getOwnedChunks().getMinZ()
+                        && chunkX - parent.getOwnedChunks().getMinX() < renderChunks.length
+                        && chunkZ - parent.getOwnedChunks().getMinZ() < renderChunks[0].length) {
+                        PhysRenderChunk renderChunk = renderChunks[chunkX - parent.getOwnedChunks()
+                            .getMinX()][chunkZ
+                            - parent.getOwnedChunks().getMinZ()];
                         if (renderChunk != null) {
                             renderChunk.updateLayers(minBlockArrayY, maxBlockArrayY);
                         } else {
-                            System.err.println("SHIP RENDER CHUNK CAME OUT NULL! THIS IS VERY WRONG!!");
+                            System.err
+                                .println("SHIP RENDER CHUNK CAME OUT NULL! THIS IS VERY WRONG!!");
                         }
                     } else {
                         // ValkyrienWarfareMod.VWLogger.info("updateRange Just attempted to update
@@ -182,11 +187,14 @@ public class PhysObjectRenderManager {
         // System.out.println(entity.roll - entity.prevRoll);
 
         double p0 = Minecraft.getMinecraft().player.lastTickPosX
-                + (Minecraft.getMinecraft().player.posX - Minecraft.getMinecraft().player.lastTickPosX) * partialTicks;
+            + (Minecraft.getMinecraft().player.posX - Minecraft.getMinecraft().player.lastTickPosX)
+            * partialTicks;
         double p1 = Minecraft.getMinecraft().player.lastTickPosY
-                + (Minecraft.getMinecraft().player.posY - Minecraft.getMinecraft().player.lastTickPosY) * partialTicks;
+            + (Minecraft.getMinecraft().player.posY - Minecraft.getMinecraft().player.lastTickPosY)
+            * partialTicks;
         double p2 = Minecraft.getMinecraft().player.lastTickPosZ
-                + (Minecraft.getMinecraft().player.posZ - Minecraft.getMinecraft().player.lastTickPosZ) * partialTicks;
+            + (Minecraft.getMinecraft().player.posZ - Minecraft.getMinecraft().player.lastTickPosZ)
+            * partialTicks;
 
         Quaternion smoothRotation = getSmoothRotationQuat(partialTicks);
         double[] radians = smoothRotation.toRadians();
@@ -195,7 +203,8 @@ public class PhysObjectRenderManager {
         double moddedYaw = Math.toDegrees(radians[1]);
         double moddedRoll = Math.toDegrees(radians[2]);
 
-        parent.getShipTransformationManager().updateRenderTransform(moddedX, moddedY, moddedZ, moddedPitch, moddedYaw, moddedRoll);
+        parent.getShipTransformationManager()
+            .updateRenderTransform(moddedX, moddedY, moddedZ, moddedPitch, moddedYaw, moddedRoll);
 
         if (offsetPos != null) {
             double offsetX = offsetPos.getX() - centerOfRotation.X;
@@ -213,9 +222,9 @@ public class PhysObjectRenderManager {
 
     public Quaternion getSmoothRotationQuat(double partialTick) {
         Quaternion oneTickBefore = parent.getShipTransformationManager().getPrevTickTransform()
-                .createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
+            .createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
         Quaternion nextQuat = parent.getShipTransformationManager().getCurrentTickTransform()
-                .createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
+            .createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
         return Quaternion.slerpInterpolate(oneTickBefore, nextQuat, partialTick);
     }
 
@@ -228,11 +237,14 @@ public class PhysObjectRenderManager {
         double moddedY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks;
         double moddedZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks;
         double p0 = Minecraft.getMinecraft().player.lastTickPosX
-                + (Minecraft.getMinecraft().player.posX - Minecraft.getMinecraft().player.lastTickPosX) * partialTicks;
+            + (Minecraft.getMinecraft().player.posX - Minecraft.getMinecraft().player.lastTickPosX)
+            * partialTicks;
         double p1 = Minecraft.getMinecraft().player.lastTickPosY
-                + (Minecraft.getMinecraft().player.posY - Minecraft.getMinecraft().player.lastTickPosY) * partialTicks;
+            + (Minecraft.getMinecraft().player.posY - Minecraft.getMinecraft().player.lastTickPosY)
+            * partialTicks;
         double p2 = Minecraft.getMinecraft().player.lastTickPosZ
-                + (Minecraft.getMinecraft().player.posZ - Minecraft.getMinecraft().player.lastTickPosZ) * partialTicks;
+            + (Minecraft.getMinecraft().player.posZ - Minecraft.getMinecraft().player.lastTickPosZ)
+            * partialTicks;
 
         Quaternion smoothRotation = getSmoothRotationQuat(partialTicks);
         double[] radians = smoothRotation.toRadians();

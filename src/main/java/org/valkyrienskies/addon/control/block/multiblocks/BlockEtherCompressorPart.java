@@ -1,5 +1,7 @@
 package org.valkyrienskies.addon.control.block.multiblocks;
 
+import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
@@ -16,10 +18,8 @@ import org.valkyrienskies.mod.common.block.IBlockForceProvider;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 
-import javax.annotation.Nullable;
-import java.util.List;
-
-public class BlockEtherCompressorPart extends Block implements ITileEntityProvider, IBlockForceProvider {
+public class BlockEtherCompressorPart extends Block implements ITileEntityProvider,
+    IBlockForceProvider {
 
     // The maximum thrust in newtons that each compressor block can provide.
     public static final double COMPRESSOR_PART_MAX_THRUST = 1300000;
@@ -29,9 +29,11 @@ public class BlockEtherCompressorPart extends Block implements ITileEntityProvid
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation,
-                               ITooltipFlag advanced) {
-        itemInformation.add(TextFormatting.BLUE + I18n.format("tooltip.vs_control.valkyrium_compressor_part"));
+    public void addInformation(ItemStack stack, @Nullable World player,
+        List<String> itemInformation,
+        ITooltipFlag advanced) {
+        itemInformation
+            .add(TextFormatting.BLUE + I18n.format("tooltip.vs_control.valkyrium_compressor_part"));
     }
 
     @Override
@@ -55,13 +57,15 @@ public class BlockEtherCompressorPart extends Block implements ITileEntityProvid
     }
 
     @Override
-    public boolean shouldLocalForceBeRotated(World world, BlockPos pos, IBlockState state, double secondsToApply) {
+    public boolean shouldLocalForceBeRotated(World world, BlockPos pos, IBlockState state,
+        double secondsToApply) {
         return false;
     }
 
     @Override
-    public Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state, PhysicsObject physicsObject,
-                                           double secondsToApply) {
+    public Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state,
+        PhysicsObject physicsObject,
+        double secondsToApply) {
         TileEntity tileEntity = world.getTileEntity(pos);
         if (tileEntity instanceof TileEntityEthereumCompressorPart) {
             TileEntityEthereumCompressorPart tileCompressorPart = (TileEntityEthereumCompressorPart) tileEntity;

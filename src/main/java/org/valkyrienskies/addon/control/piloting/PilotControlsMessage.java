@@ -17,13 +17,12 @@
 package org.valkyrienskies.addon.control.piloting;
 
 import io.netty.buffer.ByteBuf;
+import java.util.UUID;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import org.valkyrienskies.mod.client.VWKeyHandler;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
-
-import java.util.UUID;
 
 public class PilotControlsMessage implements IMessage {
 
@@ -135,7 +134,8 @@ public class PilotControlsMessage implements IMessage {
         airshipBackward_KeyDown = VWKeyHandler.airshipBackward.isKeyDown();
         airshipLeft_KeyDown = VWKeyHandler.airshipLeft.isKeyDown();
         airshipRight_KeyDown = VWKeyHandler.airshipRight.isKeyDown();
-        airshipSprinting = VWKeyHandler.airshipSpriting.isKeyDown(); // Minecraft.getMinecraft().player.isSprinting();
+        airshipSprinting = VWKeyHandler.airshipSpriting
+            .isKeyDown(); // Minecraft.getMinecraft().player.isSprinting();
 
         airshipUp_KeyPressed = airshipUp_KeyDown && !airshipUp_KeyPressedLast;
         airshipDown_KeyPressed = airshipDown_KeyDown && !airshipDown_KeyPressedLast;

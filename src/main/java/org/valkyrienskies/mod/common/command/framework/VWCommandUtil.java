@@ -15,6 +15,7 @@ public class VWCommandUtil {
 
     /**
      * This was pretty much copy-pasted from Apache Ant's Commandline#translateCommandLine
+     *
      * @see <a href="https://bit.ly/2YYbczE">CommandLine.java</a>
      */
     private static String[] translateCommandline(String toProcess) {

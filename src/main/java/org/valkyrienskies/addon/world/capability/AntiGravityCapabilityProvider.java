@@ -24,7 +24,8 @@ import org.valkyrienskies.addon.world.ValkyrienSkiesWorld;
 
 public class AntiGravityCapabilityProvider implements ICapabilitySerializable<NBTTagDouble> {
 
-    private ICapabilityAntiGravity inst = ValkyrienSkiesWorld.ANTI_GRAVITY_CAPABILITY.getDefaultInstance();
+    private ICapabilityAntiGravity inst = ValkyrienSkiesWorld.ANTI_GRAVITY_CAPABILITY
+        .getDefaultInstance();
 
     @Override
     public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
@@ -33,19 +34,20 @@ public class AntiGravityCapabilityProvider implements ICapabilitySerializable<NB
 
     @Override
     public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
-        return capability == ValkyrienSkiesWorld.ANTI_GRAVITY_CAPABILITY ? ValkyrienSkiesWorld.ANTI_GRAVITY_CAPABILITY.cast(inst) : null;
+        return capability == ValkyrienSkiesWorld.ANTI_GRAVITY_CAPABILITY
+            ? ValkyrienSkiesWorld.ANTI_GRAVITY_CAPABILITY.cast(inst) : null;
     }
 
     @Override
     public NBTTagDouble serializeNBT() {
         return (NBTTagDouble) ValkyrienSkiesWorld.ANTI_GRAVITY_CAPABILITY.getStorage()
-                .writeNBT(ValkyrienSkiesWorld.ANTI_GRAVITY_CAPABILITY, inst, null);
+            .writeNBT(ValkyrienSkiesWorld.ANTI_GRAVITY_CAPABILITY, inst, null);
     }
 
     @Override
     public void deserializeNBT(NBTTagDouble nbt) {
         ValkyrienSkiesWorld.ANTI_GRAVITY_CAPABILITY.getStorage()
-                .readNBT(ValkyrienSkiesWorld.ANTI_GRAVITY_CAPABILITY, inst, null, nbt);
+            .readNBT(ValkyrienSkiesWorld.ANTI_GRAVITY_CAPABILITY, inst, null, nbt);
     }
 
 }

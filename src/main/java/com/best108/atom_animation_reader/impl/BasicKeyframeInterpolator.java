@@ -45,13 +45,15 @@ public class BasicKeyframeInterpolator {
 
                 double frameDelta = (keyframe - lastKeyFrame) / (currentKeyframe - lastKeyFrame);
 
-                return lastKeyFrameValue + ((currentKeyFrameValue - lastKeyFrameValue) * frameDelta);
+                return lastKeyFrameValue + ((currentKeyFrameValue - lastKeyFrameValue)
+                    * frameDelta);
             }
         }
         return 0;
     }
 
     private static class KeyFrame {
+
         final double keyframe;
         final double value;
 

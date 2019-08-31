@@ -3,8 +3,7 @@ package org.valkyrienskies.mod.common.coordinates;
 import org.valkyrienskies.mod.common.math.Vector;
 
 /**
- * An interface that allows entities to interact safely within the context of
- * multiple subspaces.
+ * An interface that allows entities to interact safely within the context of multiple subspaces.
  *
  * @author thebest108
  */

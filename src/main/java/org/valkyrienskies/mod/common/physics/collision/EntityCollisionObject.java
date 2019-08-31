@@ -20,8 +20,8 @@ import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
 
 /**
- * An enhanced version of the collision Object, designed to prevent entities
- * from moving through a polygon
+ * An enhanced version of the collision Object, designed to prevent entities from moving through a
+ * polygon
  *
  * @author thebest108
  */
@@ -37,7 +37,8 @@ public class EntityCollisionObject {
     private boolean originallyCollided;
     private double velDot;
 
-    public EntityCollisionObject(Polygon movable_, Polygon stationary, Vector axes, Vector entityVel) {
+    public EntityCollisionObject(Polygon movable_, Polygon stationary, Vector axes,
+        Vector entityVel) {
         axis = axes;
         movable = movable_;
         fixed = stationary;

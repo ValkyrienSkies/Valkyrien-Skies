@@ -1,5 +1,6 @@
 package org.valkyrienskies.addon.control.block.multiblocks;
 
+import java.util.Optional;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
@@ -15,9 +16,9 @@ import org.valkyrienskies.fixes.VWNetwork;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
-import java.util.Optional;
-
-public class TileEntityEthereumEnginePart extends TileEntityMultiblockPart<EthereumEngineMultiblockSchematic, TileEntityEthereumEnginePart> implements IRotationNodeProvider<TileEntityEthereumEnginePart> {
+public class TileEntityEthereumEnginePart extends
+    TileEntityMultiblockPart<EthereumEngineMultiblockSchematic, TileEntityEthereumEnginePart> implements
+    IRotationNodeProvider<TileEntityEthereumEnginePart> {
 
     public static final int ROTATION_NODE_SORT_PRIORITY = 10000;
     protected final IRotationNode rotationNode;
@@ -44,20 +45,28 @@ public class TileEntityEthereumEnginePart extends TileEntityMultiblockPart<Ether
             }
 
             if (this.isPartOfAssembledMultiblock()) {
-                Optional<PhysicsObject> physicsObjectOptional = ValkyrienUtils.getPhysicsObject(getWorld(), getPos());
-                if (physicsObjectOptional.isPresent() && !rotationNode.hasBeenPlacedIntoNodeWorld() && this.getRelativePos().equals(getMultiBlockSchematic().getTorqueOutputPos())) {
-                    IRotationNodeWorld nodeWorld = physicsObjectOptional.get().getPhysicsProcessor().getPhysicsRotationNodeWorld();
+                Optional<PhysicsObject> physicsObjectOptional = ValkyrienUtils
+                    .getPhysicsObject(getWorld(), getPos());
+                if (physicsObjectOptional.isPresent() && !rotationNode.hasBeenPlacedIntoNodeWorld()
+                    && this.getRelativePos()
+                    .equals(getMultiBlockSchematic().getTorqueOutputPos())) {
+                    IRotationNodeWorld nodeWorld = physicsObjectOptional.get().getPhysicsProcessor()
+                        .getPhysicsRotationNodeWorld();
                     if (nodeWorld != null) {
-                        nodeWorld.enqueueTaskOntoWorld(() -> nodeWorld.setNodeFromPos(getPos(), rotationNode));
+                        nodeWorld.enqueueTaskOntoWorld(
+                            () -> nodeWorld.setNodeFromPos(getPos(), rotationNode));
                     }
                 }
 
-                BlockPos torqueOutputPos = this.getMultiBlockSchematic().getTorqueOutputPos().add(this.getPos());
+                BlockPos torqueOutputPos = this.getMultiBlockSchematic().getTorqueOutputPos()
+                    .add(this.getPos());
                 TileEntity tileEntity = this.getWorld().getTileEntity(torqueOutputPos);
                 if (tileEntity instanceof TileEntityEthereumEnginePart) {
                     if (((TileEntityEthereumEnginePart) tileEntity).getRotationNode().isPresent()) {
                         prevKeyframe = currentKeyframe;
-                        double radiansRotatedThisTick = ((TileEntityEthereumEnginePart) tileEntity).getRotationNode().get().getAngularVelocityUnsynchronized() / 20D;
+                        double radiansRotatedThisTick =
+                            ((TileEntityEthereumEnginePart) tileEntity).getRotationNode().get()
+                                .getAngularVelocityUnsynchronized() / 20D;
                         // Thats about right, although the x1.3 multiplier tells me the world node math is wrong.
                         currentKeyframe += radiansRotatedThisTick * 99D / (6D * Math.PI);
                         currentKeyframe = currentKeyframe % 99;
@@ -86,20 +95,29 @@ public class TileEntityEthereumEnginePart extends TileEntityMultiblockPart<Ether
     }
 
     @Override
-    public void assembleMultiblock(EthereumEngineMultiblockSchematic schematic, BlockPos relativePos) {
+    public void assembleMultiblock(EthereumEngineMultiblockSchematic schematic,
+        BlockPos relativePos) {
         super.assembleMultiblock(schematic, relativePos);
         if (relativePos.equals(schematic.getTorqueOutputPos())) {
-            Optional<PhysicsObject> objectOptional = ValkyrienUtils.getPhysicsObject(getWorld(), getPos());
+            Optional<PhysicsObject> objectOptional = ValkyrienUtils
+                .getPhysicsObject(getWorld(), getPos());
             if (objectOptional.isPresent()) {
-                IRotationNodeWorld nodeWorld = objectOptional.get().getPhysicsProcessor().getPhysicsRotationNodeWorld();
-                EnumFacing facing = EnumFacing.getFacingFromVector(schematic.getTorqueOutputDirection().getX(), schematic.getTorqueOutputDirection().getY(), schematic.getTorqueOutputDirection().getZ());
-                assert getRotationNode().isPresent() : "How the heck did we try assembling the multiblock without a rotation node initialized!";
+                IRotationNodeWorld nodeWorld = objectOptional.get().getPhysicsProcessor()
+                    .getPhysicsRotationNodeWorld();
+                EnumFacing facing = EnumFacing
+                    .getFacingFromVector(schematic.getTorqueOutputDirection().getX(),
+                        schematic.getTorqueOutputDirection().getY(),
+                        schematic.getTorqueOutputDirection().getZ());
+                assert getRotationNode()
+                    .isPresent() : "How the heck did we try assembling the multiblock without a rotation node initialized!";
 //				System.out.println(rotationNode.getNodePos());
                 this.rotationNode.queueTask(() -> {
                     rotationNode.setAngularVelocityRatio(facing, Optional.of(-1D));
-                    rotationNode.setCustomTorqueFunction(new EtherEngineTorqueFunction(rotationNode));
+                    rotationNode
+                        .setCustomTorqueFunction(new EtherEngineTorqueFunction(rotationNode));
                 });
-                nodeWorld.enqueueTaskOntoWorld(() -> nodeWorld.setNodeFromPos(pos, this.rotationNode));
+                nodeWorld
+                    .enqueueTaskOntoWorld(() -> nodeWorld.setNodeFromPos(pos, this.rotationNode));
             }
 
         }

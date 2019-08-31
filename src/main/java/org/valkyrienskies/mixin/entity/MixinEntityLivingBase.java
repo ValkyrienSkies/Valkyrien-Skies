@@ -16,6 +16,7 @@
 
 package org.valkyrienskies.mixin.entity;
 
+import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -40,10 +41,9 @@ import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.collision.polygons.EntityPolygon;
 import valkyrienwarfare.api.TransformType;
 
-import java.util.List;
-
 /**
- * Todo: The ladder code should be deleted and everything else should be replaced with capabilities and events.
+ * Todo: The ladder code should be deleted and everything else should be replaced with capabilities
+ * and events.
  */
 @Deprecated
 @Mixin(EntityLivingBase.class)
@@ -52,7 +52,8 @@ public abstract class MixinEntityLivingBase extends Entity implements ISubspaced
     private final EntityLivingBase thisAsEntity = EntityLivingBase.class.cast(this);
 
     /**
-     * This constructor is needed to make java compile this class, but doesn't actually affect anything
+     * This constructor is needed to make java compile this class, but doesn't actually affect
+     * anything
      */
     public MixinEntityLivingBase(World world) {
         super(world);
@@ -105,10 +106,12 @@ public abstract class MixinEntityLivingBase extends Entity implements ISubspaced
         if (EntityPlayer.class.isInstance(this) && EntityPlayer.class.cast(this).isSpectator()) {
             return false;
         }
-        List<PhysicsWrapperEntity> nearbyPhys = ValkyrienSkiesMod.VW_PHYSICS_MANAGER.getManagerForWorld(this.world).getNearbyPhysObjects(this.getEntityBoundingBox());
+        List<PhysicsWrapperEntity> nearbyPhys = ValkyrienSkiesMod.VW_PHYSICS_MANAGER
+            .getManagerForWorld(this.world).getNearbyPhysObjects(this.getEntityBoundingBox());
         for (PhysicsWrapperEntity physWrapper : nearbyPhys) {
             Vector playerPos = new Vector(EntityLivingBase.class.cast(this));
-            physWrapper.getPhysicsObject().getShipTransformationManager().fromGlobalToLocal(playerPos);
+            physWrapper.getPhysicsObject().getShipTransformationManager()
+                .fromGlobalToLocal(playerPos);
             int i = MathHelper.floor(playerPos.X);
             int j = MathHelper.floor(playerPos.Y);
             int k = MathHelper.floor(playerPos.Z);
@@ -122,14 +125,17 @@ public abstract class MixinEntityLivingBase extends Entity implements ISubspaced
                 return false;*/
             //not needed, we already do this check
 
-            EntityPolygon playerPoly = new EntityPolygon(this.getEntityBoundingBox(), physWrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform(), TransformType.GLOBAL_TO_SUBSPACE, this);
+            EntityPolygon playerPoly = new EntityPolygon(this.getEntityBoundingBox(),
+                physWrapper.getPhysicsObject().getShipTransformationManager()
+                    .getCurrentTickTransform(), TransformType.GLOBAL_TO_SUBSPACE, this);
             AxisAlignedBB bb = playerPoly.getEnclosedAABB();
             for (int x = MathHelper.floor(bb.minX); x < bb.maxX; x++) {
                 for (int y = MathHelper.floor(bb.minY); y < bb.maxY; y++) {
                     for (int z = MathHelper.floor(bb.minZ); z < bb.maxZ; z++) {
                         BlockPos pos = new BlockPos(x, y, z);
                         IBlockState checkState = this.world.getBlockState(pos);
-                        if (checkState.getBlock().isLadder(checkState, this.world, pos, EntityLivingBase.class.cast(this))) {
+                        if (checkState.getBlock().isLadder(checkState, this.world, pos,
+                            EntityLivingBase.class.cast(this))) {
                             return true;
                             // AxisAlignedBB ladderBB = checkState.getBlock().getBoundingBox(checkState, base.worldObj, pos).offset(pos).expandXyz(.1D);
                             // Polygon checkBlock = new Polygon(ladderBB);
@@ -154,6 +160,8 @@ public abstract class MixinEntityLivingBase extends Entity implements ISubspaced
         int k = MathHelper.floor(this.posZ);
         BlockPos blockpos = new BlockPos(i, j, k);
         IBlockState iblockstate = this.world.getBlockState(blockpos);
-        return net.minecraftforge.common.ForgeHooks.isLivingOnLadder(iblockstate, world, new BlockPos(i, j, k), EntityLivingBase.class.cast(this));
+        return net.minecraftforge.common.ForgeHooks
+            .isLivingOnLadder(iblockstate, world, new BlockPos(i, j, k),
+                EntityLivingBase.class.cast(this));
     }
 }

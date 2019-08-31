@@ -41,9 +41,9 @@ public interface IForceTile {
     }
 
     /**
-     * Returns the maximum magnitude of force this engine can provide at this
-     * instant under its current conditions. This number should never be cached in
-     * any way is it is can always change.
+     * Returns the maximum magnitude of force this engine can provide at this instant under its
+     * current conditions. This number should never be cached in any way is it is can always
+     * change.
      */
     double getMaxThrust();
 
@@ -60,10 +60,9 @@ public interface IForceTile {
     double getThrustMultiplierGoal();
 
     /**
-     * Sets the goal for the force output, multiplier must be between 0 and 1. The
-     * actual goal thrust is the getMaxThrust() * getThrustMultiplierGoal();
-     *
-	 */
+     * Sets the goal for the force output, multiplier must be between 0 and 1. The actual goal
+     * thrust is the getMaxThrust() * getThrustMultiplierGoal();
+     */
     void setThrustMultiplierGoal(double thrustMultiplierGoal);
 
 }

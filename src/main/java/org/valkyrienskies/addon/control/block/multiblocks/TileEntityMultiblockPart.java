@@ -16,7 +16,8 @@ import org.valkyrienskies.fixes.VWNetwork;
  * @param <E> The type of schematic for this TileEntity to use.
  * @param <F> The type of class extending this class.
  */
-public abstract class TileEntityMultiblockPart<E extends IMulitblockSchematic, F extends TileEntityMultiblockPart> extends BasicNodeTileEntity implements ITileEntityMultiblockPart<E, F> {
+public abstract class TileEntityMultiblockPart<E extends IMulitblockSchematic, F extends TileEntityMultiblockPart> extends
+    BasicNodeTileEntity implements ITileEntityMultiblockPart<E, F> {
 
     private boolean isAssembled;
     private boolean isMaster;
@@ -121,8 +122,10 @@ public abstract class TileEntityMultiblockPart<E extends IMulitblockSchematic, F
         super.readFromNBT(compound);
         isAssembled = compound.getBoolean("isAssembled");
         isMaster = compound.getBoolean("isMaster");
-        offsetPos = new BlockPos(compound.getInteger("offsetPosX"), compound.getInteger("offsetPosY"), compound.getInteger("offsetPosZ"));
-        multiblockSchematic = (E) MultiblockRegistry.getSchematicByID(compound.getString("multiblockSchematicID"));
+        offsetPos = new BlockPos(compound.getInteger("offsetPosX"),
+            compound.getInteger("offsetPosY"), compound.getInteger("offsetPosZ"));
+        multiblockSchematic = (E) MultiblockRegistry
+            .getSchematicByID(compound.getString("multiblockSchematicID"));
     }
 
     @Override

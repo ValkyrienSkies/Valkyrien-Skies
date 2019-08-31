@@ -1,5 +1,6 @@
 package org.valkyrienskies.addon.control.block.multiblocks;
 
+import java.util.Optional;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -14,9 +15,8 @@ import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 import valkyrienwarfare.api.TransformType;
 
-import java.util.Optional;
-
-public class TileEntityRudderAxlePart extends TileEntityMultiblockPartForce<RudderAxleMultiblockSchematic, TileEntityRudderAxlePart> {
+public class TileEntityRudderAxlePart extends
+    TileEntityMultiblockPartForce<RudderAxleMultiblockSchematic, TileEntityRudderAxlePart> {
 
     // Angle must be between -90 and 90
     private double rudderAngle;
@@ -44,7 +44,8 @@ public class TileEntityRudderAxlePart extends TileEntityMultiblockPartForce<Rudd
     public Vector getForcePositionInShipSpace() {
         Vector facingOffset = getForcePosRelativeToAxleInShipSpace();
         if (facingOffset != null) {
-            return new Vector(facingOffset.X + pos.getX() + .5, facingOffset.Y + pos.getY() + .5, facingOffset.Z + pos.getZ() + .5);
+            return new Vector(facingOffset.X + pos.getX() + .5, facingOffset.Y + pos.getY() + .5,
+                facingOffset.Z + pos.getZ() + .5);
         } else {
             return null;
         }
@@ -54,13 +55,16 @@ public class TileEntityRudderAxlePart extends TileEntityMultiblockPartForce<Rudd
         if (getRudderAxleSchematic().isPresent()) {
             Vec3i directionFacing = getRudderAxleFacingDirection().get().getDirectionVec();
             Vec3i directionAxle = this.getRudderAxleAxisDirection().get().getDirectionVec();
-            Vector facingOffset = new Vector(directionFacing.getX(), directionFacing.getY(), directionFacing.getZ());
+            Vector facingOffset = new Vector(directionFacing.getX(), directionFacing.getY(),
+                directionFacing.getZ());
             double axleLength = getRudderAxleLength().get();
             // Then estimate the torque output for both, and use the one that has a positive
             // dot product to torqueAttemptNormal.
             facingOffset.multiply(axleLength / 2D);
             // Then rotate the offset vector
-            double[] rotationMatrix = RotationMatrices.getRotationMatrix(directionAxle.getX(), directionAxle.getY(), directionAxle.getZ(), Math.toRadians(rudderAngle));
+            double[] rotationMatrix = RotationMatrices
+                .getRotationMatrix(directionAxle.getX(), directionAxle.getY(), directionAxle.getZ(),
+                    Math.toRadians(rudderAngle));
             RotationMatrices.applyTransform(rotationMatrix, facingOffset);
             return facingOffset;
         } else {
@@ -72,12 +76,15 @@ public class TileEntityRudderAxlePart extends TileEntityMultiblockPartForce<Rudd
         if (getRudderAxleSchematic().isPresent()) {
             Vector directionFacing = this.getForcePosRelativeToAxleInShipSpace();
             Vector forcePosRelativeToShipCenter = this.getForcePositionInShipSpace();
-            forcePosRelativeToShipCenter.subtract(physicsObject.getPhysicsProcessor().gameTickCenterOfMass);
-            physicsObject.getShipTransformationManager().getCurrentPhysicsTransform().rotate(forcePosRelativeToShipCenter, TransformType.SUBSPACE_TO_GLOBAL);
+            forcePosRelativeToShipCenter
+                .subtract(physicsObject.getPhysicsProcessor().gameTickCenterOfMass);
+            physicsObject.getShipTransformationManager().getCurrentPhysicsTransform()
+                .rotate(forcePosRelativeToShipCenter, TransformType.SUBSPACE_TO_GLOBAL);
 
-
-            Vector velocity = physicsObject.getPhysicsProcessor().getVelocityAtPoint(forcePosRelativeToShipCenter);
-            physicsObject.getShipTransformationManager().getCurrentPhysicsTransform().rotate(velocity, TransformType.GLOBAL_TO_SUBSPACE);
+            Vector velocity = physicsObject.getPhysicsProcessor()
+                .getVelocityAtPoint(forcePosRelativeToShipCenter);
+            physicsObject.getShipTransformationManager().getCurrentPhysicsTransform()
+                .rotate(velocity, TransformType.GLOBAL_TO_SUBSPACE);
             // Now we have the velocity in local, the position in local, and the position relative to the axle
             Vec3i directionAxle = this.getRudderAxleAxisDirection().get().getDirectionVec();
             Vector directionAxleVector = new Vector(directionAxle);
@@ -109,7 +116,8 @@ public class TileEntityRudderAxlePart extends TileEntityMultiblockPartForce<Rudd
     }
 
     @Override
-    public void onDataPacket(net.minecraft.network.NetworkManager net, net.minecraft.network.play.server.SPacketUpdateTileEntity pkt) {
+    public void onDataPacket(net.minecraft.network.NetworkManager net,
+        net.minecraft.network.play.server.SPacketUpdateTileEntity pkt) {
         double currentRudderAngle = rudderAngle;
         super.onDataPacket(net, pkt);
         nextRudderAngle = pkt.getNbtCompound().getDouble("rudderAngle");
@@ -182,7 +190,8 @@ public class TileEntityRudderAxlePart extends TileEntityMultiblockPartForce<Rudd
     @Override
     @SideOnly(Side.CLIENT)
     public AxisAlignedBB getRenderBoundingBox() {
-        if (this.isPartOfAssembledMultiblock() && this.isMaster() && getRudderAxleAxisDirection().isPresent()) {
+        if (this.isPartOfAssembledMultiblock() && this.isMaster() && getRudderAxleAxisDirection()
+            .isPresent()) {
             BlockPos minPos = this.pos;
             EnumFacing axleAxis = getRudderAxleAxisDirection().get();
             EnumFacing axleFacing = getRudderAxleFacingDirection().get();
@@ -204,8 +213,9 @@ public class TileEntityRudderAxlePart extends TileEntityMultiblockPartForce<Rudd
             int otherAxisYExpanded = otherAxis.getY() * axleLength;
             int otherAxisZExpanded = otherAxis.getZ() * axleLength;
 
-            return new AxisAlignedBB(minPos, maxPos).grow(otherAxisXExpanded, otherAxisYExpanded, otherAxisZExpanded)
-                    .grow(.5, .5, .5);
+            return new AxisAlignedBB(minPos, maxPos)
+                .grow(otherAxisXExpanded, otherAxisYExpanded, otherAxisZExpanded)
+                .grow(.5, .5, .5);
         } else {
             return super.getRenderBoundingBox();
         }

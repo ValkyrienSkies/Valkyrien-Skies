@@ -1,14 +1,13 @@
 package org.valkyrienskies.addon.control.nodenetwork;
 
 import gigaherz.graph.api.GraphObject;
+import java.util.List;
+import java.util.Set;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
-
-import java.util.List;
-import java.util.Set;
 
 /**
  * The nodes that form the graphs of control elements.
@@ -20,8 +19,8 @@ public interface IVWNode extends GraphObject {
     String NBT_DATA_KEY = "VWNode_Tile_Data";
 
     /**
-     * This does not return the full graph of connected nodes, just the ones that
-     * are directly connected to this node.
+     * This does not return the full graph of connected nodes, just the ones that are directly
+     * connected to this node.
      */
     Iterable<IVWNode> getDirectlyConnectedNodes();
 
@@ -64,14 +63,14 @@ public interface IVWNode extends GraphObject {
     }
 
     default boolean canLinkToOtherNode(IVWNode other) {
-        return getLinkedNodesPos().size() < getMaximumConnections() && other.getLinkedNodesPos().size() < other.getMaximumConnections();
+        return getLinkedNodesPos().size() < getMaximumConnections()
+            && other.getLinkedNodesPos().size() < other.getMaximumConnections();
     }
 
     void sendNodeUpdates();
 
     /**
-     * Can only be called while this node is invalid. Otherwise an
-     * IllegalStateException is thrown.
+     * Can only be called while this node is invalid. Otherwise an IllegalStateException is thrown.
      */
     void shiftConnections(BlockPos offset);
 

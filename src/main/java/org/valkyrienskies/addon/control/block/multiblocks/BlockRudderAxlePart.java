@@ -1,5 +1,8 @@
 package org.valkyrienskies.addon.control.block.multiblocks;
 
+import java.util.List;
+import java.util.Optional;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
@@ -16,10 +19,6 @@ import org.valkyrienskies.mod.common.block.IBlockForceProvider;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 
-import javax.annotation.Nullable;
-import java.util.List;
-import java.util.Optional;
-
 public class BlockRudderAxlePart extends Block implements ITileEntityProvider, IBlockForceProvider {
 
     public BlockRudderAxlePart(Material materialIn) {
@@ -27,9 +26,11 @@ public class BlockRudderAxlePart extends Block implements ITileEntityProvider, I
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation,
-                               ITooltipFlag advanced) {
-        itemInformation.add(TextFormatting.BLUE + I18n.format("tooltip.vs_control.rudder_axle_part"));
+    public void addInformation(ItemStack stack, @Nullable World player,
+        List<String> itemInformation,
+        ITooltipFlag advanced) {
+        itemInformation
+            .add(TextFormatting.BLUE + I18n.format("tooltip.vs_control.rudder_axle_part"));
     }
 
     private static Optional<Double> getRudderRotationDegrees(World world, BlockPos pos) {
@@ -66,10 +67,12 @@ public class BlockRudderAxlePart extends Block implements ITileEntityProvider, I
     }
 
     @Override
-    public Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state, PhysicsObject physicsObject,
-                                           double secondsToApply) {
+    public Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state,
+        PhysicsObject physicsObject,
+        double secondsToApply) {
         if (world.getTileEntity(pos) instanceof TileEntityRudderAxlePart) {
-            TileEntityRudderAxlePart tileEntity = (TileEntityRudderAxlePart) world.getTileEntity(pos);
+            TileEntityRudderAxlePart tileEntity = (TileEntityRudderAxlePart) world
+                .getTileEntity(pos);
             Vector forceBeforeTimeScale = tileEntity.calculateForceFromVelocity(physicsObject);
             if (forceBeforeTimeScale != null && forceBeforeTimeScale.lengthSq() > 1) {
                 // System.out.println(forceBeforeTimeScale.toRoundedString());
@@ -83,10 +86,12 @@ public class BlockRudderAxlePart extends Block implements ITileEntityProvider, I
     }
 
     @Override
-    public Vector getCustomBlockForcePosition(World world, BlockPos pos, IBlockState state, PhysicsObject physicsObject,
-                                              double secondsToApply) {
+    public Vector getCustomBlockForcePosition(World world, BlockPos pos, IBlockState state,
+        PhysicsObject physicsObject,
+        double secondsToApply) {
         if (world.getTileEntity(pos) instanceof TileEntityRudderAxlePart) {
-            TileEntityRudderAxlePart tileEntity = (TileEntityRudderAxlePart) world.getTileEntity(pos);
+            TileEntityRudderAxlePart tileEntity = (TileEntityRudderAxlePart) world
+                .getTileEntity(pos);
             return null; // tileEntity.getForcePositionInShipSpace();
         } else {
             return null;
@@ -94,7 +99,8 @@ public class BlockRudderAxlePart extends Block implements ITileEntityProvider, I
     }
 
     @Override
-    public boolean shouldLocalForceBeRotated(World world, BlockPos pos, IBlockState state, double secondsToApply) {
+    public boolean shouldLocalForceBeRotated(World world, BlockPos pos, IBlockState state,
+        double secondsToApply) {
         return true;
     }
 

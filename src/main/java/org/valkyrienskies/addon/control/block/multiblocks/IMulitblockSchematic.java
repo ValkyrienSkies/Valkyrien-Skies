@@ -1,12 +1,11 @@
 package org.valkyrienskies.addon.control.block.multiblocks;
 
+import java.util.List;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-
-import java.util.List;
 
 public interface IMulitblockSchematic {
 
@@ -16,8 +15,7 @@ public interface IMulitblockSchematic {
     void initializeMultiblockSchematic(String schematicID);
 
     /**
-     * Should return a static immutable list that represents how this multiblock is
-     * created.
+     * Should return a static immutable list that represents how this multiblock is created.
      */
     List<BlockPosBlockPair> getStructureRelativeToCenter();
 
@@ -30,11 +28,11 @@ public interface IMulitblockSchematic {
         maxX = maxY = maxZ = Double.NEGATIVE_INFINITY;
         for (BlockPosBlockPair pair : getStructureRelativeToCenter()) {
             double curX = pair.getPos()
-                    .getX() + masterPos.getX();
+                .getX() + masterPos.getX();
             double curY = pair.getPos()
-                    .getY() + masterPos.getY();
+                .getY() + masterPos.getY();
             double curZ = pair.getPos()
-                    .getZ() + masterPos.getZ();
+                .getZ() + masterPos.getZ();
             minX = Math.min(curX, minX);
             minY = Math.min(curY, minY);
             minZ = Math.min(curZ, minZ);
@@ -98,11 +96,11 @@ public interface IMulitblockSchematic {
     void applyMultiblockCreation(World world, BlockPos tilePos, BlockPos relativePos);
 
     /**
-     * Should only be called once by initialization code. Doesn't have any non
-     * static properties but java doesn't allow static interface methods.
+     * Should only be called once by initialization code. Doesn't have any non static properties but
+     * java doesn't allow static interface methods.
      * <p>
-     * The order in which the schematics are in this list will be used as priority
-     * order for which schematic variants are tested for first.
+     * The order in which the schematics are in this list will be used as priority order for which
+     * schematic variants are tested for first.
      */
     List<IMulitblockSchematic> generateAllVariants();
 

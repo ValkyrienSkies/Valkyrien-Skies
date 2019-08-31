@@ -1,11 +1,10 @@
 package com.best108.atom_animation_reader.impl;
 
 import com.best108.atom_animation_reader.IModelRenderer;
+import java.util.List;
 import net.minecraft.client.renderer.GlStateManager;
 import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
 import org.valkyrienskies.mod.common.math.Vector;
-
-import java.util.List;
 
 public class BasicDagNodeRenderer {
 
@@ -14,7 +13,8 @@ public class BasicDagNodeRenderer {
     private final IModelRenderer modelRenderer;
     protected VectorImmutable pivot;
 
-    public BasicDagNodeRenderer(String modelName, List<BasicAnimationTransform> transformations, IModelRenderer modelRenderer) {
+    public BasicDagNodeRenderer(String modelName, List<BasicAnimationTransform> transformations,
+        IModelRenderer modelRenderer) {
         this.modelName = modelName;
         this.transformations = transformations;
         this.modelRenderer = modelRenderer;

@@ -29,8 +29,7 @@ import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import valkyrienwarfare.api.TransformType;
 
 /**
- * This class creates and processes rotation matrix transforms used by Valkyrien
- * Warfare
+ * This class creates and processes rotation matrix transforms used by Valkyrien Warfare
  *
  * @author thebest108
  */
@@ -45,25 +44,25 @@ public class RotationMatrices {
     }
 
     public static double[] rotateAndTranslate(double[] input, double pitch, double yaw, double roll,
-                                              Vector localOrigin) {
+        Vector localOrigin) {
         input = RotationMatrices.getMatrixProduct(input,
-                RotationMatrices.getRotationMatrix(1.0D, 0.0D, 0.0D, Math.toRadians(pitch)));
+            RotationMatrices.getRotationMatrix(1.0D, 0.0D, 0.0D, Math.toRadians(pitch)));
         input = RotationMatrices.getMatrixProduct(input,
-                RotationMatrices.getRotationMatrix(0.0D, 1.0D, 0.0D, Math.toRadians(yaw)));
+            RotationMatrices.getRotationMatrix(0.0D, 1.0D, 0.0D, Math.toRadians(yaw)));
         input = RotationMatrices.getMatrixProduct(input,
-                RotationMatrices.getRotationMatrix(0.0D, 0.0D, 1.0D, Math.toRadians(roll)));
+            RotationMatrices.getRotationMatrix(0.0D, 0.0D, 1.0D, Math.toRadians(roll)));
         input = RotationMatrices.getMatrixProduct(input,
-                RotationMatrices.getTranslationMatrix(-localOrigin.X, -localOrigin.Y, -localOrigin.Z));
+            RotationMatrices.getTranslationMatrix(-localOrigin.X, -localOrigin.Y, -localOrigin.Z));
         return input;
     }
 
     public static double[] rotateOnly(double[] input, double pitch, double yaw, double roll) {
         input = RotationMatrices.getMatrixProduct(input,
-                RotationMatrices.getRotationMatrix(1.0D, 0.0D, 0.0D, Math.toRadians(pitch)));
+            RotationMatrices.getRotationMatrix(1.0D, 0.0D, 0.0D, Math.toRadians(pitch)));
         input = RotationMatrices.getMatrixProduct(input,
-                RotationMatrices.getRotationMatrix(0.0D, 1.0D, 0.0D, Math.toRadians(yaw)));
+            RotationMatrices.getRotationMatrix(0.0D, 1.0D, 0.0D, Math.toRadians(yaw)));
         input = RotationMatrices.getMatrixProduct(input,
-                RotationMatrices.getRotationMatrix(0.0D, 0.0D, 1.0D, Math.toRadians(roll)));
+            RotationMatrices.getRotationMatrix(0.0D, 0.0D, 1.0D, Math.toRadians(roll)));
         return input;
     }
 
@@ -76,11 +75,12 @@ public class RotationMatrices {
      * @return
      */
     public static double[] getRotationMatrix(double pitch, double yaw, double roll) {
-        double[] input = RotationMatrices.getRotationMatrix(1.0D, 0.0D, 0.0D, Math.toRadians(pitch));
+        double[] input = RotationMatrices
+            .getRotationMatrix(1.0D, 0.0D, 0.0D, Math.toRadians(pitch));
         input = RotationMatrices.getMatrixProduct(input,
-                RotationMatrices.getRotationMatrix(0.0D, 1.0D, 0.0D, Math.toRadians(yaw)));
+            RotationMatrices.getRotationMatrix(0.0D, 1.0D, 0.0D, Math.toRadians(yaw)));
         input = RotationMatrices.getMatrixProduct(input,
-                RotationMatrices.getRotationMatrix(0.0D, 0.0D, 1.0D, Math.toRadians(roll)));
+            RotationMatrices.getRotationMatrix(0.0D, 0.0D, 1.0D, Math.toRadians(roll)));
         return input;
     }
 
@@ -163,26 +163,31 @@ public class RotationMatrices {
      * @param transformType
      */
     @Deprecated
-    public static void applyTransform(ShipTransform shipTransform, Entity entity, TransformType transformType) {
+    public static void applyTransform(ShipTransform shipTransform, Entity entity,
+        TransformType transformType) {
         if (entity instanceof PhysicsWrapperEntity) {
             throw new IllegalArgumentException(
-                    "Tried applying a transform to the PhysicsWrapeerEntity, this creates instability so we crash here!");
+                "Tried applying a transform to the PhysicsWrapeerEntity, this creates instability so we crash here!");
         }
         ISubspacedEntity entitySubspaceTracker = (ISubspacedEntity) entity;
 
         // RIP
         if (false) {
             if (transformType == TransformType.SUBSPACE_TO_GLOBAL
-                    && entitySubspaceTracker.currentSubspaceType() != CoordinateSpaceType.SUBSPACE_COORDINATES) {
+                && entitySubspaceTracker.currentSubspaceType()
+                != CoordinateSpaceType.SUBSPACE_COORDINATES) {
                 // throw new IllegalArgumentException(
                 // "Entity " + entity.getName() + " is already in global coordinates. This is
                 // wrong!");
-                System.err.println("Entity " + entity.getName() + " is already in global coordinates. This is wrong!");
+                System.err.println("Entity " + entity.getName()
+                    + " is already in global coordinates. This is wrong!");
             }
             if (transformType == TransformType.GLOBAL_TO_SUBSPACE
-                    && entitySubspaceTracker.currentSubspaceType() != CoordinateSpaceType.GLOBAL_COORDINATES) {
+                && entitySubspaceTracker.currentSubspaceType()
+                != CoordinateSpaceType.GLOBAL_COORDINATES) {
                 throw new IllegalArgumentException(
-                        "Entity " + entity.getName() + " is already in subspace coordinates. This is wrong!");
+                    "Entity " + entity.getName()
+                        + " is already in subspace coordinates. This is wrong!");
             }
         }
 
@@ -234,8 +239,9 @@ public class RotationMatrices {
     public static BlockPos applyTransform(double[] M, BlockPos pos) {
         Vector blockPosVec = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
         applyTransform(M, blockPosVec);
-        BlockPos newPos = new BlockPos(Math.round(blockPosVec.X - .5D), Math.round(blockPosVec.Y - .5D),
-                Math.round(blockPosVec.Z - .5D));
+        BlockPos newPos = new BlockPos(Math.round(blockPosVec.X - .5D),
+            Math.round(blockPosVec.Y - .5D),
+            Math.round(blockPosVec.Z - .5D));
         return newPos;
     }
 
@@ -243,8 +249,9 @@ public class RotationMatrices {
         double x = vec.x;
         double y = vec.y;
         double z = vec.z;
-        return new Vec3d((x * M[0] + y * M[1] + z * M[2] + M[3]), (x * M[4] + y * M[5] + z * M[6] + M[7]),
-                (x * M[8] + y * M[9] + z * M[10] + M[11]));
+        return new Vec3d((x * M[0] + y * M[1] + z * M[2] + M[3]),
+            (x * M[4] + y * M[5] + z * M[6] + M[7]),
+            (x * M[8] + y * M[9] + z * M[10] + M[11]));
     }
 
     public static void applyTransform3by3(double[] M, Vector vec) {
@@ -326,7 +333,7 @@ public class RotationMatrices {
                 inverse[(i * 4 + j)] = matrix[(i + j * 4)];
             }
             inverse[(i * 4 + 3)] = (-inverse[(i * 4)] * matrix[3] - inverse[(i * 4 + 1)] * matrix[7]
-                    - inverse[(i * 4 + 2)] * matrix[11]);
+                - inverse[(i * 4 + 2)] * matrix[11]);
         }
         inverse[12] = 0.0D;
         inverse[13] = 0.0D;

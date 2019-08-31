@@ -16,6 +16,7 @@
 
 package org.valkyrienskies.mod.common.physmanagement.interaction;
 
+import java.util.Optional;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityArmorStand;
@@ -42,8 +43,6 @@ import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
-import java.util.Optional;
-
 public class VWWorldEventListener implements IWorldEventListener {
 
     private final World worldObj;
@@ -53,14 +52,15 @@ public class VWWorldEventListener implements IWorldEventListener {
     }
 
     @Override
-    public void notifyBlockUpdate(World worldIn, BlockPos pos, IBlockState oldState, IBlockState newState, int flags) {
+    public void notifyBlockUpdate(World worldIn, BlockPos pos, IBlockState oldState,
+        IBlockState newState, int flags) {
         Chunk chunk = worldIn.getChunk(pos);
         IPhysicsChunk physicsChunk = (IPhysicsChunk) chunk;
         if (physicsChunk.getPhysicsObjectOptional()
-                .isPresent()) {
+            .isPresent()) {
             physicsChunk.getPhysicsObjectOptional()
-                    .get()
-                    .onSetBlockState(oldState, newState, pos);
+                .get()
+                .onSetBlockState(oldState, newState, pos);
         }
     }
 
@@ -71,13 +71,15 @@ public class VWWorldEventListener implements IWorldEventListener {
     }
 
     @Override
-    public void markBlockRangeForRenderUpdate(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
+    public void markBlockRangeForRenderUpdate(int minX, int minY, int minZ, int maxX, int maxY,
+        int maxZ) {
         // this.markBlocksForUpdate(minX - 1, minY - 1, minZ - 1, maxX + 1, maxY + 1, maxZ + 1, false);
     }
 
     @Override
-    public void playSoundToAllNearExcept(EntityPlayer player, SoundEvent soundIn, SoundCategory category, double x,
-                                         double y, double z, float volume, float pitch) {
+    public void playSoundToAllNearExcept(EntityPlayer player, SoundEvent soundIn,
+        SoundCategory category, double x,
+        double y, double z, float volume, float pitch) {
 
     }
 
@@ -88,8 +90,9 @@ public class VWWorldEventListener implements IWorldEventListener {
     }
 
     @Override
-    public void spawnParticle(int particleID, boolean ignoreRange, double x, double y, double z, double xSpeed,
-                              double ySpeed, double zSpeed, int... parameters) {
+    public void spawnParticle(int particleID, boolean ignoreRange, double x, double y, double z,
+        double xSpeed,
+        double ySpeed, double zSpeed, int... parameters) {
         // TODO Auto-generated method stub
 
     }
@@ -106,19 +109,24 @@ public class VWWorldEventListener implements IWorldEventListener {
             BlockPos posAt = new BlockPos(entity);
             Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(world, posAt);
 
-            if (!worldObj.isRemote && physicsObject.isPresent() && !(entity instanceof EntityFallingBlock)) {
+            if (!worldObj.isRemote && physicsObject.isPresent()
+                && !(entity instanceof EntityFallingBlock)) {
                 if (entity instanceof EntityArmorStand
-                        || entity instanceof EntityPig || entity instanceof EntityBoat) {
-                    EntityMountable entityMountable = new EntityMountable(world, entity.getPositionVector(), CoordinateSpaceType.SUBSPACE_COORDINATES, posAt);
+                    || entity instanceof EntityPig || entity instanceof EntityBoat) {
+                    EntityMountable entityMountable = new EntityMountable(world,
+                        entity.getPositionVector(), CoordinateSpaceType.SUBSPACE_COORDINATES,
+                        posAt);
                     world.spawnEntity(entityMountable);
                     entity.startRiding(entityMountable);
                 }
-                world.getChunk(entity.getPosition().getX() >> 4, entity.getPosition().getZ() >> 4).removeEntity(entity);
+                world.getChunk(entity.getPosition().getX() >> 4, entity.getPosition().getZ() >> 4)
+                    .removeEntity(entity);
                 RotationMatrices.applyTransform(physicsObject.get()
-                                .getShipTransformationManager()
-                                .getCurrentTickTransform(), entity,
-                        TransformType.SUBSPACE_TO_GLOBAL);
-                world.getChunk(entity.getPosition().getX() >> 4, entity.getPosition().getZ() >> 4).addEntity(entity);
+                        .getShipTransformationManager()
+                        .getCurrentTickTransform(), entity,
+                    TransformType.SUBSPACE_TO_GLOBAL);
+                world.getChunk(entity.getPosition().getX() >> 4, entity.getPosition().getZ() >> 4)
+                    .addEntity(entity);
             }
         }
     }
@@ -149,13 +157,14 @@ public class VWWorldEventListener implements IWorldEventListener {
                 if (entityplayermp != null && entityplayermp.getEntityId() != breakerId) {
                     Vector posVector = new Vector(pos.getX(), pos.getY(), pos.getZ());
 
-                    Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(worldObj, pos);
+                    Optional<PhysicsObject> physicsObject = ValkyrienUtils
+                        .getPhysicsObject(worldObj, pos);
 
                     physicsObject.ifPresent(object -> object
-                            .getShipTransformationManager()
-                            .getCurrentTickTransform()
-                            .transform(posVector,
-                                    TransformType.SUBSPACE_TO_GLOBAL));
+                        .getShipTransformationManager()
+                        .getCurrentTickTransform()
+                        .transform(posVector,
+                            TransformType.SUBSPACE_TO_GLOBAL));
 
                     double d0 = posVector.X - entityplayermp.posX;
                     double d1 = posVector.Y - entityplayermp.posY;
@@ -163,7 +172,7 @@ public class VWWorldEventListener implements IWorldEventListener {
 
                     if (d0 * d0 + d1 * d1 + d2 * d2 < 1024.0D) {
                         ((EntityPlayerMP) entityplayermp).connection
-                                .sendPacket(new SPacketBlockBreakAnim(breakerId, pos, progress));
+                            .sendPacket(new SPacketBlockBreakAnim(breakerId, pos, progress));
                     }
                 }
             }
@@ -171,9 +180,11 @@ public class VWWorldEventListener implements IWorldEventListener {
     }
 
     @Override
-    public void spawnParticle(int p_190570_1_, boolean p_190570_2_, boolean p_190570_3_, double p_190570_4_,
-                              double p_190570_6_, double p_190570_8_, double p_190570_10_, double p_190570_12_, double p_190570_14_,
-                              int... p_190570_16_) {
+    public void spawnParticle(int p_190570_1_, boolean p_190570_2_, boolean p_190570_3_,
+        double p_190570_4_,
+        double p_190570_6_, double p_190570_8_, double p_190570_10_, double p_190570_12_,
+        double p_190570_14_,
+        int... p_190570_16_) {
         // TODO Auto-generated method stub
 
     }

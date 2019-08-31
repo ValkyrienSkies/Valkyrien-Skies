@@ -24,8 +24,8 @@ import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 import valkyrienwarfare.api.TransformType;
 
 /**
- * This class holds the information from a received PositionMessage, and has
- * code to apply it onto a PhysicsObject.
+ * This class holds the information from a received PositionMessage, and has code to apply it onto a
+ * PhysicsObject.
  *
  * @author thebest108
  */
@@ -56,7 +56,8 @@ public class ShipTransformationPacketHolder {
         creationTimeNano = System.nanoTime();
     }
 
-    public ShipTransformationPacketHolder(ShipTransformationPacketHolder[] transformations, double[] weights) {
+    public ShipTransformationPacketHolder(ShipTransformationPacketHolder[] transformations,
+        double[] weights) {
         double x = 0;
         double y = 0;
         double z = 0;
@@ -91,16 +92,17 @@ public class ShipTransformationPacketHolder {
     }
 
     /**
-     * Apply this physics transform similar to how a vanilla boat would. Not the
-     * best solution, but its simple and robust, and works well enough for now.
+     * Apply this physics transform similar to how a vanilla boat would. Not the best solution, but
+     * its simple and robust, and works well enough for now.
      *
      * @param physObj    The PhysicsObject to apply this transform to.
-     * @param lerpFactor A number between 0 and 1, where 0 applies none of the transform
-     *                   and 1 applies all of it. A number around .7 or .8 is ideal here.
+     * @param lerpFactor A number between 0 and 1, where 0 applies none of the transform and 1
+     *                   applies all of it. A number around .7 or .8 is ideal here.
      */
     public void applySmoothLerp(PhysicsObject physObj, double lerpFactor) {
         Vector CMDif = centerOfRotation.getSubtraction(physObj.getCenterCoord());
-        physObj.getShipTransformationManager().getCurrentTickTransform().rotate(CMDif, TransformType.SUBSPACE_TO_GLOBAL);
+        physObj.getShipTransformationManager().getCurrentTickTransform()
+            .rotate(CMDif, TransformType.SUBSPACE_TO_GLOBAL);
         // CMDif.multiply(lerpFactor);
 
         physObj.getWrapperEntity().posX -= CMDif.X;
@@ -116,12 +118,14 @@ public class ShipTransformationPacketHolder {
         physObj.getWrapperEntity().posZ += (posZ - physObj.getWrapperEntity().posZ) * lerpFactor;
 
         Quaternion prevRotation = physObj.getShipTransformationManager().getCurrentTickTransform()
-                .createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
+            .createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
         Quaternion newRotation = Quaternion.fromEuler(pitch, yaw, roll);
-        Quaternion lerpedRotation = Quaternion.slerpInterpolate(prevRotation, newRotation, lerpFactor);
+        Quaternion lerpedRotation = Quaternion
+            .slerpInterpolate(prevRotation, newRotation, lerpFactor);
         double[] lerpedRotationAngles = lerpedRotation.toRadians();
 
-        physObj.getWrapperEntity().setPhysicsEntityRotation(Math.toDegrees(lerpedRotationAngles[0]), Math.toDegrees(lerpedRotationAngles[1]), Math.toDegrees(lerpedRotationAngles[2]));
+        physObj.getWrapperEntity().setPhysicsEntityRotation(Math.toDegrees(lerpedRotationAngles[0]),
+            Math.toDegrees(lerpedRotationAngles[1]), Math.toDegrees(lerpedRotationAngles[2]));
 
         physObj.setCenterCoord(centerOfRotation);
         // Update the ship bounding box

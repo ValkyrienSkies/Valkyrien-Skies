@@ -1,8 +1,11 @@
 package org.valkyrienskies.addon.control;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.valkyrienskies.addon.control.block.multiblocks.IMulitblockSchematic;
-
-import java.util.*;
 
 public class MultiblockRegistry {
 
@@ -16,7 +19,8 @@ public class MultiblockRegistry {
             throw new IllegalArgumentException("Duplicate entry for " + schematicID);
         }
         if (schematicID.equals(EMPTY_SCHEMATIC_ID)) {
-            throw new IllegalArgumentException("The ID \"" + EMPTY_SCHEMATIC_ID + "\" is reserved!");
+            throw new IllegalArgumentException(
+                "The ID \"" + EMPTY_SCHEMATIC_ID + "\" is reserved!");
         }
         MULTIBLOCK_ID_MAP.put(schematicID, schematic);
     }
@@ -45,10 +49,11 @@ public class MultiblockRegistry {
             }
             if (MULTIBLOCK_PREFIX_TO_VARIENTS.containsKey(dummyInstance.getSchematicPrefix())) {
                 throw new IllegalArgumentException(
-                        "Duplicate multiblock prefix registered!\n" + dummyInstance.getSchematicPrefix());
+                    "Duplicate multiblock prefix registered!\n" + dummyInstance
+                        .getSchematicPrefix());
             }
             MULTIBLOCK_PREFIX_TO_VARIENTS.put(dummyInstance.getSchematicPrefix(),
-                    Collections.unmodifiableList(possibilities));
+                Collections.unmodifiableList(possibilities));
         } catch (InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }

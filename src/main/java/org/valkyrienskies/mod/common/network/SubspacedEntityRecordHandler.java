@@ -13,10 +13,12 @@ import org.valkyrienskies.mod.common.coordinates.ISubspacedEntityRecord;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.physmanagement.interaction.IDraggable;
 
-public class SubspacedEntityRecordHandler implements IMessageHandler<SubspacedEntityRecordMessage, IMessage> {
+public class SubspacedEntityRecordHandler implements
+    IMessageHandler<SubspacedEntityRecordMessage, IMessage> {
 
     @Override
-    public IMessage onMessage(final SubspacedEntityRecordMessage message, final MessageContext ctx) {
+    public IMessage onMessage(final SubspacedEntityRecordMessage message,
+        final MessageContext ctx) {
         IThreadListener threadScheduler = null;
         World world = null;
         if (ctx.side.isClient()) {
@@ -35,11 +37,12 @@ public class SubspacedEntityRecordHandler implements IMessageHandler<SubspacedEn
             if (physicsEntity != null && subspacedEntity != null) {
                 PhysicsWrapperEntity wrapperEntity = (PhysicsWrapperEntity) physicsEntity;
                 ISubspacedEntityRecord record = message.createRecordForThisMessage(
-                        (ISubspacedEntity) subspacedEntity, wrapperEntity.getPhysicsObject()
-                                .getSubspace());
+                    (ISubspacedEntity) subspacedEntity, wrapperEntity.getPhysicsObject()
+                        .getSubspace());
                 IDraggable draggable = (IDraggable) subspacedEntity;
                 draggable.setForcedRelativeSubspace(wrapperEntity);
-                wrapperEntity.getPhysicsObject().getSubspace().forceSubspaceRecord(record.getParentEntity(), record);
+                wrapperEntity.getPhysicsObject().getSubspace()
+                    .forceSubspaceRecord(record.getParentEntity(), record);
                 // Now just synchronize the player to the data sent by the client.
             } else {
                 System.err.println("An incorrect SubspacedEntityRecordMessage has been thrown out");

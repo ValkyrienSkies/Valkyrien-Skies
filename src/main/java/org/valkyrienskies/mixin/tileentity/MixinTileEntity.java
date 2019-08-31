@@ -16,6 +16,7 @@
 
 package org.valkyrienskies.mixin.tileentity;
 
+import java.util.Optional;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -26,13 +27,12 @@ import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
-import java.util.Optional;
-
 /**
  * Necessary to allow for rendering and for players to interact with tiles (ex. chests).
  */
 @Mixin(TileEntity.class)
 public abstract class MixinTileEntity {
+
     @Shadow
     protected BlockPos pos;
 
@@ -59,10 +59,11 @@ public abstract class MixinTileEntity {
                 Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(world, pos);
 
                 if (physicsObject.isPresent()) {
-                    Vector tilePos = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
+                    Vector tilePos = new Vector(pos.getX() + .5D, pos.getY() + .5D,
+                        pos.getZ() + .5D);
                     physicsObject.get()
-                            .getShipTransformationManager()
-                            .fromLocalToGlobal(tilePos);
+                        .getShipTransformationManager()
+                        .fromLocalToGlobal(tilePos);
 
                     tilePos.X -= x;
                     tilePos.Y -= y;

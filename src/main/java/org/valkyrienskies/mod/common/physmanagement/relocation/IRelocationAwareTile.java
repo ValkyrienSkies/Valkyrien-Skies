@@ -6,10 +6,12 @@ import org.valkyrienskies.mod.common.coordinates.CoordinateSpaceType;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 
 /**
- * Allows a TileEntity to intelligently copy themselves when being moved; for example, during ship assembly and disassembly. If the TileEntity being copied doesn't implement this then it will be copied using nbt.
- * TODO: Move this to VW API.
+ * Allows a TileEntity to intelligently copy themselves when being moved; for example, during ship
+ * assembly and disassembly. If the TileEntity being copied doesn't implement this then it will be
+ * copied using nbt. TODO: Move this to VW API.
  */
 public interface IRelocationAwareTile {
 
-    TileEntity createRelocatedTile(BlockPos newPos, ShipTransform shipTransform, CoordinateSpaceType coordinateSpaceType);
+    TileEntity createRelocatedTile(BlockPos newPos, ShipTransform shipTransform,
+        CoordinateSpaceType coordinateSpaceType);
 }

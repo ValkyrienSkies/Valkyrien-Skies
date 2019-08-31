@@ -1,12 +1,11 @@
 package org.valkyrienskies.mod.common.ship_handling;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.world.World;
-import org.valkyrienskies.mod.common.multithreaded.VWThread;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.World;
+import org.valkyrienskies.mod.common.multithreaded.VWThread;
 
 public class WorldServerShipManager implements IWorldShipManager {
 

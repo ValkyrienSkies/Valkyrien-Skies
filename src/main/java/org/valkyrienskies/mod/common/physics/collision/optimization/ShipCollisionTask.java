@@ -16,6 +16,10 @@
 
 package org.valkyrienskies.mod.common.physics.collision.optimization;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.Callable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
@@ -29,11 +33,6 @@ import org.valkyrienskies.mod.common.physics.collision.polygons.PhysPolygonColli
 import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
 import org.valkyrienskies.mod.common.physmanagement.relocation.SpatialDetector;
 import valkyrienwarfare.api.TransformType;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.Callable;
 
 public class ShipCollisionTask implements Callable<Void> {
 
@@ -80,9 +79,9 @@ public class ShipCollisionTask implements Callable<Void> {
     }
 
     /**
-     * Returns an iterator that loops over the collision information in quasi-random
-     * order. This is important to avoid biasing one side over another, because
-     * otherwise one side would slowly sink into the ground.
+     * Returns an iterator that loops over the collision information in quasi-random order. This is
+     * important to avoid biasing one side over another, because otherwise one side would slowly
+     * sink into the ground.
      *
      * @return
      */
@@ -104,7 +103,8 @@ public class ShipCollisionTask implements Callable<Void> {
         inWorld.Z = mutablePos.getZ() + .5;
 
 //        toTask.getParent().coordTransform.fromGlobalToLocal(inWorld);
-        toTask.getParent().getShipTransformationManager().getCurrentPhysicsTransform().transform(inWorld, TransformType.GLOBAL_TO_SUBSPACE);
+        toTask.getParent().getShipTransformationManager().getCurrentPhysicsTransform()
+            .transform(inWorld, TransformType.GLOBAL_TO_SUBSPACE);
 
         int midX = MathHelper.floor(inWorld.X + .5D);
         int midY = MathHelper.floor(inWorld.Y + .5D);
@@ -145,7 +145,7 @@ public class ShipCollisionTask implements Callable<Void> {
 
     public void checkPosition(int x, int y, int z, int positionHash) {
         final Chunk chunkIn = toTask.getParent()
-                .getChunkAt(x >> 4, z >> 4);
+            .getChunkAt(x >> 4, z >> 4);
         y = Math.max(0, Math.min(y, 255));
 
         ExtendedBlockStorage storage = chunkIn.storageArrays[y >> 4];
@@ -163,10 +163,12 @@ public class ShipCollisionTask implements Callable<Void> {
 
                 inLocalPos.setPos(x, y, z);
 
-                AxisAlignedBB inLocalBB = new AxisAlignedBB(inLocalPos.getX(), inLocalPos.getY(), inLocalPos.getZ(),
-                        inLocalPos.getX() + 1, inLocalPos.getY() + 1, inLocalPos.getZ() + 1);
-                AxisAlignedBB inGlobalBB = new AxisAlignedBB(mutablePos.getX(), mutablePos.getY(), mutablePos.getZ(),
-                        mutablePos.getX() + 1, mutablePos.getY() + 1, mutablePos.getZ() + 1);
+                AxisAlignedBB inLocalBB = new AxisAlignedBB(inLocalPos.getX(), inLocalPos.getY(),
+                    inLocalPos.getZ(),
+                    inLocalPos.getX() + 1, inLocalPos.getY() + 1, inLocalPos.getZ() + 1);
+                AxisAlignedBB inGlobalBB = new AxisAlignedBB(mutablePos.getX(), mutablePos.getY(),
+                    mutablePos.getZ(),
+                    mutablePos.getX() + 1, mutablePos.getY() + 1, mutablePos.getZ() + 1);
 
                 // This changes the box bounding box to the real bounding box, not sure if this
                 // is better or worse for this mod
@@ -174,19 +176,21 @@ public class ShipCollisionTask implements Callable<Void> {
                 // inLocalBB = colBB.get(0);
 
                 Polygon shipInWorld = new Polygon(inLocalBB,
-                        toTask.getParent().getShipTransformationManager().getCurrentPhysicsTransform(), TransformType.SUBSPACE_TO_GLOBAL);
+                    toTask.getParent().getShipTransformationManager().getCurrentPhysicsTransform(),
+                    TransformType.SUBSPACE_TO_GLOBAL);
                 Polygon worldPoly = new Polygon(inGlobalBB);
 
                 // TODO: Remove the normals crap
                 PhysPolygonCollider collider = new PhysPolygonCollider(shipInWorld, worldPoly,
-                        toTask.getParent().getShipTransformationManager().normals);
+                    toTask.getParent().getShipTransformationManager().normals);
 
                 if (!collider.seperated) {
                     // return handleActualCollision(collider, mutablePos, inLocalPos, inWorldState,
                     // inLocalState);
-                    CollisionInformationHolder holder = new CollisionInformationHolder(collider, mutablePos.getX(),
-                            mutablePos.getY(), mutablePos.getZ(), inLocalPos.getX(), inLocalPos.getY(),
-                            inLocalPos.getZ(), inWorldState, inLocalState);
+                    CollisionInformationHolder holder = new CollisionInformationHolder(collider,
+                        mutablePos.getX(),
+                        mutablePos.getY(), mutablePos.getZ(), inLocalPos.getX(), inLocalPos.getY(),
+                        inLocalPos.getZ(), inWorldState, inLocalState);
 
                     collisionInformationGenerated.add(holder);
                 }
@@ -199,8 +203,8 @@ public class ShipCollisionTask implements Callable<Void> {
     }
 
     /**
-     * Quasi-Random Iterator that uses a linear congruential generator to generate
-     * the order of iteration.
+     * Quasi-Random Iterator that uses a linear congruential generator to generate the order of
+     * iteration.
      *
      * @param <E>
      * @author thebest108
@@ -215,8 +219,8 @@ public class ShipCollisionTask implements Callable<Void> {
         private boolean isFinished;
 
         /**
-         * Creates a new quasi random iterator for the given list, the list passed must
-         * not be empty otherwise an IllegalArgumentException is thrown.
+         * Creates a new quasi random iterator for the given list, the list passed must not be empty
+         * otherwise an IllegalArgumentException is thrown.
          */
         QuasiRandomIterator(List<E> list) {
             if (list.size() == 0) {
@@ -242,8 +246,8 @@ public class ShipCollisionTask implements Callable<Void> {
         }
 
         /**
-         * Sets index to be the next value in the linear congruential generator. Also
-         * marks the iterator as finished once a full period has occured.
+         * Sets index to be the next value in the linear congruential generator. Also marks the
+         * iterator as finished once a full period has occured.
          */
         private void advanceIndex() {
             index = (index + c) % internalList.size();

@@ -35,8 +35,8 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
     private boolean hasAlreadyCheckedForParent;
 
     /**
-     * Only used for the NBT creation, other <init> calls should go through the
-     * other constructors first
+     * Only used for the NBT creation, other <init> calls should go through the other constructors
+     * first
      */
     public BasicForceNodeTileEntity() {
         this.maxThrust = 5000D;
@@ -47,7 +47,8 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
         this.hasAlreadyCheckedForParent = false;
     }
 
-    public BasicForceNodeTileEntity(Vector normalVelocityUnoriented, boolean isForceOutputOriented, double maxThrust) {
+    public BasicForceNodeTileEntity(Vector normalVelocityUnoriented, boolean isForceOutputOriented,
+        double maxThrust) {
         this();
         this.normalVelocityUnoriented = normalVelocityUnoriented;
         this.maxThrust = maxThrust;
@@ -94,7 +95,8 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
     public void readFromNBT(NBTTagCompound compound) {
         maxThrust = compound.getDouble("maxThrust");
         currentThrust = compound.getDouble("currentThrust");
-        normalVelocityUnoriented = ValkyrienNBTUtils.readVectorFromNBT("normalVelocityUnoriented", compound);
+        normalVelocityUnoriented = ValkyrienNBTUtils
+            .readVectorFromNBT("normalVelocityUnoriented", compound);
         ticksSinceLastControlSignal = compound.getInteger("ticksSinceLastControlSignal");
         super.readFromNBT(compound);
     }
@@ -103,7 +105,8 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         compound.setDouble("maxThrust", maxThrust);
         compound.setDouble("currentThrust", currentThrust);
-        ValkyrienNBTUtils.writeVectorToNBT("normalVelocityUnoriented", normalVelocityUnoriented, compound);
+        ValkyrienNBTUtils
+            .writeVectorToNBT("normalVelocityUnoriented", normalVelocityUnoriented, compound);
         compound.setInteger("ticksSinceLastControlSignal", ticksSinceLastControlSignal);
         return super.writeToNBT(compound);
     }

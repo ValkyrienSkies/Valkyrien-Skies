@@ -1,5 +1,7 @@
 package org.valkyrienskies.addon.control.tileentity;
 
+import java.util.Optional;
+import java.util.UUID;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -17,9 +19,6 @@ import org.valkyrienskies.mod.common.physmanagement.relocation.IRelocationAwareT
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
-import java.util.Optional;
-import java.util.UUID;
-
 @MethodsReturnNonnullByDefault
 public class TileEntityPassengerChair extends TileEntity implements IRelocationAwareTile {
 
@@ -32,7 +31,8 @@ public class TileEntityPassengerChair extends TileEntity implements IRelocationA
 
     public void tryToMountPlayerToChair(EntityPlayer player, Vec3d mountPos) {
         if (getWorld().isRemote) {
-            throw new IllegalStateException("tryToMountPlayerToChair is not designed to be called on client side!");
+            throw new IllegalStateException(
+                "tryToMountPlayerToChair is not designed to be called on client side!");
         }
         boolean isChairEmpty;
         if (chairEntityUUID != null) {
@@ -59,9 +59,13 @@ public class TileEntityPassengerChair extends TileEntity implements IRelocationA
         }
         if (isChairEmpty) {
             // Chair is guaranteed empty.
-            Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(getWorld(), getPos());
-            CoordinateSpaceType mountCoordType = physicsObject.isPresent() ? CoordinateSpaceType.SUBSPACE_COORDINATES : CoordinateSpaceType.GLOBAL_COORDINATES;
-            EntityMountableChair entityMountable = new EntityMountableChair(getWorld(), mountPos, mountCoordType, getPos());
+            Optional<PhysicsObject> physicsObject = ValkyrienUtils
+                .getPhysicsObject(getWorld(), getPos());
+            CoordinateSpaceType mountCoordType =
+                physicsObject.isPresent() ? CoordinateSpaceType.SUBSPACE_COORDINATES
+                    : CoordinateSpaceType.GLOBAL_COORDINATES;
+            EntityMountableChair entityMountable = new EntityMountableChair(getWorld(), mountPos,
+                mountCoordType, getPos());
             chairEntityUUID = entityMountable.getPersistentID();
             markDirty();
             getWorld().spawnEntity(entityMountable);
@@ -99,15 +103,18 @@ public class TileEntityPassengerChair extends TileEntity implements IRelocationA
     }
 
     @Override
-    public TileEntity createRelocatedTile(BlockPos newPos, ShipTransform transform, CoordinateSpaceType coordinateSpaceType) {
+    public TileEntity createRelocatedTile(BlockPos newPos, ShipTransform transform,
+        CoordinateSpaceType coordinateSpaceType) {
         TileEntityPassengerChair relocatedTile = new TileEntityPassengerChair();
         relocatedTile.setWorld(getWorld());
         relocatedTile.setPos(newPos);
 
         if (chairEntityUUID != null) {
-            EntityMountableChair chairEntity = (EntityMountableChair) ((WorldServer) getWorld()).getEntityFromUuid(chairEntityUUID);
+            EntityMountableChair chairEntity = (EntityMountableChair) ((WorldServer) getWorld())
+                .getEntityFromUuid(chairEntityUUID);
             if (chairEntity != null) {
-                Vec3d newMountPos = transform.transform(chairEntity.getMountPos(), TransformType.SUBSPACE_TO_GLOBAL);
+                Vec3d newMountPos = transform
+                    .transform(chairEntity.getMountPos(), TransformType.SUBSPACE_TO_GLOBAL);
                 chairEntity.setMountValues(newMountPos, coordinateSpaceType, newPos);
             } else {
                 chairEntityUUID = null;

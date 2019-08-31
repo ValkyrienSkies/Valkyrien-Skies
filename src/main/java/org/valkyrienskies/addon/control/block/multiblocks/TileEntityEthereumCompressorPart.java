@@ -1,5 +1,6 @@
 package org.valkyrienskies.addon.control.block.multiblocks;
 
+import java.util.Optional;
 import org.valkyrienskies.addon.control.fuel.IEtherEngine;
 import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
 import org.valkyrienskies.mod.common.math.Vector;
@@ -7,9 +8,9 @@ import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
-import java.util.Optional;
-
-public class TileEntityEthereumCompressorPart extends TileEntityMultiblockPartForce<EthereumCompressorMultiblockSchematic, TileEntityEthereumCompressorPart> implements IEtherEngine {
+public class TileEntityEthereumCompressorPart extends
+    TileEntityMultiblockPartForce<EthereumCompressorMultiblockSchematic, TileEntityEthereumCompressorPart> implements
+    IEtherEngine {
 
     private static final VectorImmutable FORCE_NORMAL = new VectorImmutable(0, 1, 0);
     private double prevKeyframe;
@@ -46,15 +47,16 @@ public class TileEntityEthereumCompressorPart extends TileEntityMultiblockPartFo
             super.setThrustMultiplierGoal(thrustMultiplierGoal);
         } else {
             this.getMaster()
-                    .setThrustMultiplierGoal(thrustMultiplierGoal);
+                .setThrustMultiplierGoal(thrustMultiplierGoal);
         }
     }
 
     @Override
     public double getThrustMagnitude() {
-        if (this.isPartOfAssembledMultiblock() && this.getMaster() instanceof TileEntityEthereumCompressorPart) {
+        if (this.isPartOfAssembledMultiblock() && this
+            .getMaster() instanceof TileEntityEthereumCompressorPart) {
             return this.getMaxThrust() * this.getMaster()
-                    .getThrustMultiplierGoal() * this.getCurrentEtherEfficiency();
+                .getThrustMultiplierGoal() * this.getCurrentEtherEfficiency();
         } else {
             return 0;
         }
@@ -64,11 +66,12 @@ public class TileEntityEthereumCompressorPart extends TileEntityMultiblockPartFo
     public double getCurrentEtherEfficiency() {
         Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(world, pos);
         if (physicsObject.isPresent()) {
-            Vector tilePos = new Vector(getPos().getX() + .5D, getPos().getY() + .5D, getPos().getZ() + .5D);
+            Vector tilePos = new Vector(getPos().getX() + .5D, getPos().getY() + .5D,
+                getPos().getZ() + .5D);
             physicsObject.get()
-                    .getShipTransformationManager()
-                    .getCurrentPhysicsTransform()
-                    .transform(tilePos, TransformType.SUBSPACE_TO_GLOBAL);
+                .getShipTransformationManager()
+                .getCurrentPhysicsTransform()
+                .transform(tilePos, TransformType.SUBSPACE_TO_GLOBAL);
             double yPos = tilePos.Y;
             return IEtherEngine.getEtherEfficiencyFromHeight(yPos);
         } else {

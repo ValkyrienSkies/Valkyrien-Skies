@@ -102,7 +102,7 @@ public class Vector {
 
     public static Vector[] generateAxisAlignedNorms() {
         Vector[] norms = new Vector[]{new Vector(1.0D, 0.0D, 0.0D), new Vector(0.0D, 1.0D, 0.0D),
-                new Vector(0.0D, 0.0D, 1.0D)};
+            new Vector(0.0D, 0.0D, 1.0D)};
         return norms;
     }
 
@@ -227,7 +227,8 @@ public class Vector {
     }
 
     public String toRoundedString() {
-        String coords = "<" + Math.round(X * 100.0) / 100.0 + ", " + Math.round(Y * 100.0) / 100.0 + ", "
+        String coords =
+            "<" + Math.round(X * 100.0) / 100.0 + ", " + Math.round(Y * 100.0) / 100.0 + ", "
                 + Math.round(Z * 100.0) / 100.0 + ">";
         return coords;
     }

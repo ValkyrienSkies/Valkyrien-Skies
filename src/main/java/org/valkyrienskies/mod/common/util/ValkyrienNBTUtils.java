@@ -16,6 +16,8 @@
 
 package org.valkyrienskies.mod.common.util;
 
+import java.nio.ByteBuffer;
+import javax.annotation.Nullable;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -23,18 +25,16 @@ import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.math.Vector;
 import valkyrienwarfare.api.TransformType;
 
-import javax.annotation.Nullable;
-import java.nio.ByteBuffer;
-
 /**
- * ValkyrienNBTUtils is filled with helper methods for saving and loading different
- * objects from NBTTagCompound.
+ * ValkyrienNBTUtils is filled with helper methods for saving and loading different objects from
+ * NBTTagCompound.
  *
  * @author thebest108
  */
 public class ValkyrienNBTUtils {
 
-    public static final void writeBlockPosToNBT(String name, BlockPos pos, NBTTagCompound compound) {
+    public static final void writeBlockPosToNBT(String name, BlockPos pos,
+        NBTTagCompound compound) {
         compound.setInteger(name + "X", pos.getX());
         compound.setInteger(name + "Y", pos.getY());
         compound.setInteger(name + "Z", pos.getZ());
@@ -47,7 +47,8 @@ public class ValkyrienNBTUtils {
         return new BlockPos(x, y, z);
     }
 
-    public static final void write3x3MatrixToNBT(String name, double[] matrix, NBTTagCompound compound) {
+    public static final void write3x3MatrixToNBT(String name, double[] matrix,
+        NBTTagCompound compound) {
         for (int i = 0; i < 9; i++) {
             compound.setDouble(name + i, matrix[i]);
         }
@@ -103,14 +104,18 @@ public class ValkyrienNBTUtils {
     }
 
     public static AxisAlignedBB readAABBFromNBT(String name, NBTTagCompound compound) {
-        AxisAlignedBB aabb = new AxisAlignedBB(compound.getDouble(name + "minX"), compound.getDouble(name + "minY"),
-                compound.getDouble(name + "minZ"), compound.getDouble(name + "maxX"), compound.getDouble(name + "maxY"),
-                compound.getDouble(name + "maxZ"));
+        AxisAlignedBB aabb = new AxisAlignedBB(compound.getDouble(name + "minX"),
+            compound.getDouble(name + "minY"),
+            compound.getDouble(name + "minZ"), compound.getDouble(name + "maxX"),
+            compound.getDouble(name + "maxY"),
+            compound.getDouble(name + "maxZ"));
         return aabb;
     }
 
-    public static void writeShipTransformToNBT(String name, ShipTransform shipTransform, NBTTagCompound compound) {
-        double[] localToGlobalInternalArray = shipTransform.getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL);
+    public static void writeShipTransformToNBT(String name, ShipTransform shipTransform,
+        NBTTagCompound compound) {
+        double[] localToGlobalInternalArray = shipTransform
+            .getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL);
         byte[] localToGlobalAsBytes = toByteArray(localToGlobalInternalArray);
         compound.setByteArray("vw_ST_" + name, localToGlobalAsBytes);
     }
@@ -118,15 +123,15 @@ public class ValkyrienNBTUtils {
     /**
      * @param name
      * @param compound
-     * @return Returns null if there was an error loading the ShipTransform.
-     * Otherwise the proper ShipTransform is returned.
+     * @return Returns null if there was an error loading the ShipTransform. Otherwise the proper
+     * ShipTransform is returned.
      */
     @Nullable
     public static ShipTransform readShipTransformFromNBT(String name, NBTTagCompound compound) {
         byte[] localToGlobalAsBytes = compound.getByteArray("vw_ST_" + name);
         if (localToGlobalAsBytes.length == 0) {
             System.err.println(
-                    "Loading from the ShipTransform has failed, now we are forced to fallback on Vanilla MC positions. This probably won't go well at all!");
+                "Loading from the ShipTransform has failed, now we are forced to fallback on Vanilla MC positions. This probably won't go well at all!");
             return null;
         }
         double[] localToGlobalInternalArray = toDoubleArray(localToGlobalAsBytes);

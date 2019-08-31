@@ -27,7 +27,8 @@ public class TileEntityPropellerEngine extends BasicForceNodeTileEntity {
     private boolean isPowered;
     private double propellerAngularVelocity;
 
-    public TileEntityPropellerEngine(Vector normalVeclocityUnoriented, boolean isForceOutputOriented, double maxThrust) {
+    public TileEntityPropellerEngine(Vector normalVeclocityUnoriented,
+        boolean isForceOutputOriented, double maxThrust) {
         super(normalVeclocityUnoriented, isForceOutputOriented, maxThrust);
         this.isPowered = false;
         this.propellerAngle = Math.random() * 90D;

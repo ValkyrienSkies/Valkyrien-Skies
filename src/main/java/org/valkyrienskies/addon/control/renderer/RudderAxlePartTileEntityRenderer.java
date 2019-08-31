@@ -13,11 +13,13 @@ import org.valkyrienskies.mod.client.render.GibsModelRegistry;
 import org.valkyrienskies.mod.common.math.RotationMatrices;
 import org.valkyrienskies.mod.common.math.Vector;
 
-public class RudderAxlePartTileEntityRenderer extends TileEntitySpecialRenderer<TileEntityRudderAxlePart> {
+public class RudderAxlePartTileEntityRenderer extends
+    TileEntitySpecialRenderer<TileEntityRudderAxlePart> {
 
     @Override
-    public void render(TileEntityRudderAxlePart tileentity, double x, double y, double z, float partialTick,
-                       int destroyStage, float alpha) {
+    public void render(TileEntityRudderAxlePart tileentity, double x, double y, double z,
+        float partialTick,
+        int destroyStage, float alpha) {
         double RUDDER_AXLE_SCALE_FACTOR = 4D;
 
         Tessellator tessellator = Tessellator.getInstance();
@@ -70,7 +72,7 @@ public class RudderAxlePartTileEntityRenderer extends TileEntitySpecialRenderer<
                 }
 
                 Vector facingDirection = new Vector(axleFacing.getDirectionVec().getX(),
-                        axleFacing.getDirectionVec().getY(), axleFacing.getDirectionVec().getZ());
+                    axleFacing.getDirectionVec().getY(), axleFacing.getDirectionVec().getZ());
 
                 double[] rotationMatrix = RotationMatrices.getRotationMatrix(-pitchRot, 0, 0);
                 // I'll be honest this doesn't make much sense, but it shouldn't matter anywhere outside of here anyway.
@@ -78,7 +80,9 @@ public class RudderAxlePartTileEntityRenderer extends TileEntitySpecialRenderer<
                 RotationMatrices.applyTransform(rotationMatrix2, facingDirection);
                 RotationMatrices.applyTransform(rotationMatrix, facingDirection);
 
-                EnumFacing facingDirectionNew = EnumFacing.getFacingFromVector((float) facingDirection.X, (float) facingDirection.Y, (float) facingDirection.Z);
+                EnumFacing facingDirectionNew = EnumFacing
+                    .getFacingFromVector((float) facingDirection.X, (float) facingDirection.Y,
+                        (float) facingDirection.Z);
 
                 // Pitch rotation
                 GL11.glTranslated(0, 0.5, 0.5);

@@ -1,11 +1,10 @@
 package org.valkyrienskies.mod.common.physmanagement.interaction;
 
+import java.nio.ByteBuffer;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.math.RotationMatrices;
 import org.valkyrienskies.mod.common.math.Vector;
 import valkyrienwarfare.api.TransformType;
-
-import java.nio.ByteBuffer;
 
 public class ShipPositionData {
 
@@ -21,10 +20,10 @@ public class ShipPositionData {
     ShipPositionData(PhysicsWrapperEntity wrapper) {
         shipPosition = new Vector(wrapper.posX, wrapper.posY, wrapper.posZ);
         lToWTransform = RotationMatrices.convertToFloat(
-                wrapper.getPhysicsObject()
-                        .getShipTransformationManager()
-                        .getCurrentTickTransform()
-                        .getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL));
+            wrapper.getPhysicsObject()
+                .getShipTransformationManager()
+                .getCurrentTickTransform()
+                .getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL));
     }
 
     ShipPositionData(ByteBuffer buffer) {
@@ -48,7 +47,9 @@ public class ShipPositionData {
         shipPosition.X = wrapper.posX;
         shipPosition.Y = wrapper.posY;
         shipPosition.Z = wrapper.posZ;
-        RotationMatrices.convertToFloat(wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL), lToWTransform);
+        RotationMatrices.convertToFloat(
+            wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform()
+                .getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL), lToWTransform);
     }
 
     public double getPosX() {

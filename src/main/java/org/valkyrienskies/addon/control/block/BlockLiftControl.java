@@ -1,5 +1,8 @@
 package org.valkyrienskies.addon.control.block;
 
+import java.util.List;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
@@ -16,10 +19,6 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import org.valkyrienskies.addon.control.tileentity.TileEntityLiftControl;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.List;
-
 public class BlockLiftControl extends BlockPilotableBasic {
 
     public BlockLiftControl(Material materialIn) {
@@ -27,15 +26,18 @@ public class BlockLiftControl extends BlockPilotableBasic {
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation,
-                               ITooltipFlag advanced) {
-        itemInformation.add(TextFormatting.BLUE + I18n.format("tooltip.vs_control.lift_lever_control"));
+    public void addInformation(ItemStack stack, @Nullable World player,
+        List<String> itemInformation,
+        ITooltipFlag advanced) {
+        itemInformation
+            .add(TextFormatting.BLUE + I18n.format("tooltip.vs_control.lift_lever_control"));
     }
 
     @Override
     @SuppressWarnings("deprecation")
     @Nonnull
-    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
+    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing,
+        float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
         EnumFacing facingHorizontal = placer.getHorizontalFacing();
         if (!placer.isSneaking()) {
             facingHorizontal = facingHorizontal.getOpposite();
@@ -63,7 +65,7 @@ public class BlockLiftControl extends BlockPilotableBasic {
     @Override
     public int getMetaFromState(IBlockState state) {
         return state.getValue(BlockHorizontal.FACING)
-                .getIndex();
+            .getIndex();
     }
 
     @Override

@@ -35,11 +35,13 @@ public abstract class MixinsAbstractClientPlayer implements IShipPilotClient {
     @Override
     public void onClientTick() {
         if (isPiloting()) {
-            sendPilotKeysToServer(this.getControllerInputEnum(), getPilotedShip(), getPosBeingControlled());
+            sendPilotKeysToServer(this.getControllerInputEnum(), getPilotedShip(),
+                getPosBeingControlled());
         }
     }
 
-    private void sendPilotKeysToServer(ControllerInputType type, PhysicsWrapperEntity shipPiloting, BlockPos blockBeingControlled) {
+    private void sendPilotKeysToServer(ControllerInputType type, PhysicsWrapperEntity shipPiloting,
+        BlockPos blockBeingControlled) {
         PilotControlsMessage keyMessage = new PilotControlsMessage();
         if (type == null) {
             System.out.println("This is totally wrong");

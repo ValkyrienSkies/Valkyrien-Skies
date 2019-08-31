@@ -51,32 +51,36 @@ public class ClientProxy extends CommonProxy {
     private static void registerBlockItem(Block toRegister) {
         Item item = Item.getItemFromBlock(toRegister);
         Minecraft.getMinecraft()
-                .getRenderItem()
-                .getItemModelMesher()
-                .register(item, 0, new ModelResourceLocation(ValkyrienSkiesMod.MOD_ID + ":" + item.getTranslationKey()
-                        .substring(5), "inventory"));
+            .getRenderItem()
+            .getItemModelMesher()
+            .register(item, 0,
+                new ModelResourceLocation(ValkyrienSkiesMod.MOD_ID + ":" + item.getTranslationKey()
+                    .substring(5), "inventory"));
     }
 
     private static void registerItemModel(Item toRegister) {
         RenderItem renderItem = Minecraft.getMinecraft()
-                .getRenderItem();
+            .getRenderItem();
         renderItem.getItemModelMesher()
-                .register(toRegister, 0, new ModelResourceLocation(ValkyrienSkiesMod.MOD_ID + ":" + toRegister.getTranslationKey()
-                        .substring(5), "inventory"));
+            .register(toRegister, 0, new ModelResourceLocation(
+                ValkyrienSkiesMod.MOD_ID + ":" + toRegister.getTranslationKey()
+                    .substring(5), "inventory"));
     }
 
     @Override
     public void preInit(FMLPreInitializationEvent e) {
         super.preInit(e);
         OBJLoader.INSTANCE.addDomain(ValkyrienSkiesMod.MOD_ID.toLowerCase());
-        RenderingRegistry.registerEntityRenderingHandler(PhysicsWrapperEntity.class, new PhysicsWrapperEntityRenderFactory());
+        RenderingRegistry.registerEntityRenderingHandler(PhysicsWrapperEntity.class,
+            new PhysicsWrapperEntityRenderFactory());
         // Register events
         MinecraftForge.EVENT_BUS.register(new EventsClient());
         MinecraftForge.EVENT_BUS.register(keyEvents);
 
         // Register VW Minecraft resource reload listener.
-        IReloadableResourceManager mcResourceManager = (IReloadableResourceManager) Minecraft.getMinecraft()
-                .getResourceManager();
+        IReloadableResourceManager mcResourceManager = (IReloadableResourceManager) Minecraft
+            .getMinecraft()
+            .getResourceManager();
 
         // When Minecraft reloads resources tell GibsModelRegistry to delete all its caches.
         mcResourceManager.registerReloadListener(GibsModelRegistry::onResourceManagerReload);
@@ -90,7 +94,8 @@ public class ClientProxy extends CommonProxy {
         Minecraft.getMinecraft().getFramebuffer().enableStencil();
 
         // Register physics infuser tile entity renderer.
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPhysicsInfuser.class, new TileEntityPhysicsInfuserRenderer());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPhysicsInfuser.class,
+            new TileEntityPhysicsInfuserRenderer());
     }
 
     @Override
@@ -99,14 +104,13 @@ public class ClientProxy extends CommonProxy {
         registerBlockItem(ValkyrienSkiesMod.INSTANCE.physicsInfuser);
         registerBlockItem(ValkyrienSkiesMod.INSTANCE.physicsInfuserCreative);
 
-
         // registerItemModel(ValkyrienWarfareMod.INSTANCE.physicsCore);
 
         RenderItem renderItem = Minecraft.getMinecraft()
-                .getRenderItem();
+            .getRenderItem();
         renderItem.getItemModelMesher()
-                .register(ValkyrienSkiesMod.INSTANCE.physicsCore, 0,
-                        new ModelResourceLocation(ValkyrienSkiesMod.MOD_ID + ":testmodel", "inventory"));
+            .register(ValkyrienSkiesMod.INSTANCE.physicsCore, 0,
+                new ModelResourceLocation(ValkyrienSkiesMod.MOD_ID + ":testmodel", "inventory"));
     }
 
     @Override
@@ -123,13 +127,17 @@ public class ClientProxy extends CommonProxy {
         double moddedY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks;
         double moddedZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks;
         double p0 = Minecraft.getMinecraft().player.lastTickPosX +
-                (Minecraft.getMinecraft().player.posX - Minecraft.getMinecraft().player.lastTickPosX) * partialTicks;
+            (Minecraft.getMinecraft().player.posX - Minecraft.getMinecraft().player.lastTickPosX)
+                * partialTicks;
         double p1 = Minecraft.getMinecraft().player.lastTickPosY +
-                (Minecraft.getMinecraft().player.posY - Minecraft.getMinecraft().player.lastTickPosY) * partialTicks;
+            (Minecraft.getMinecraft().player.posY - Minecraft.getMinecraft().player.lastTickPosY)
+                * partialTicks;
         double p2 = Minecraft.getMinecraft().player.lastTickPosZ +
-                (Minecraft.getMinecraft().player.posZ - Minecraft.getMinecraft().player.lastTickPosZ) * partialTicks;
+            (Minecraft.getMinecraft().player.posZ - Minecraft.getMinecraft().player.lastTickPosZ)
+                * partialTicks;
 
-        Quaternion smoothRotation = entity.getPhysicsObject().getShipRenderer().getSmoothRotationQuat(partialTicks);
+        Quaternion smoothRotation = entity.getPhysicsObject().getShipRenderer()
+            .getSmoothRotationQuat(partialTicks);
         double[] radians = smoothRotation.toRadians();
 
         double moddedPitch = Math.toDegrees(radians[0]);
@@ -137,14 +145,20 @@ public class ClientProxy extends CommonProxy {
         double moddedRoll = Math.toDegrees(radians[2]);
 
         entity.getPhysicsObject().getShipTransformationManager()
-                .updateRenderTransform(moddedX, moddedY, moddedZ, moddedPitch, moddedYaw, moddedRoll);
+            .updateRenderTransform(moddedX, moddedY, moddedZ, moddedPitch, moddedYaw, moddedRoll);
     }
 
     private void registerAnimations() {
-        GibsAnimationRegistry.registerAnimation("physics_infuser", new ResourceLocation(ValkyrienSkiesMod.MOD_ID, "models/block/basic_phys_infuser/physics_infuser.atom"));
+        GibsAnimationRegistry.registerAnimation("physics_infuser",
+            new ResourceLocation(ValkyrienSkiesMod.MOD_ID,
+                "models/block/basic_phys_infuser/physics_infuser.atom"));
 
-        GibsAnimationRegistry.registerAnimation("physics_infuser_empty", new ResourceLocation(ValkyrienSkiesMod.MOD_ID, "models/block/basic_phys_infuser/physics_infuser_empty.atom"));
+        GibsAnimationRegistry.registerAnimation("physics_infuser_empty",
+            new ResourceLocation(ValkyrienSkiesMod.MOD_ID,
+                "models/block/basic_phys_infuser/physics_infuser_empty.atom"));
         // Not an actual animation, just easier to put in than writing out all the core names.
-        GibsAnimationRegistry.registerAnimation("physics_infuser_cores", new ResourceLocation(ValkyrienSkiesMod.MOD_ID, "models/block/basic_phys_infuser/cores.atom"));
+        GibsAnimationRegistry.registerAnimation("physics_infuser_cores",
+            new ResourceLocation(ValkyrienSkiesMod.MOD_ID,
+                "models/block/basic_phys_infuser/cores.atom"));
     }
 }

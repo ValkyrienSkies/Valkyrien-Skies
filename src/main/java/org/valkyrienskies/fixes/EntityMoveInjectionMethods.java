@@ -16,6 +16,7 @@
 
 package org.valkyrienskies.fixes;
 
+import java.util.Optional;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
@@ -32,14 +33,14 @@ import org.valkyrienskies.mod.common.physmanagement.interaction.IWorldVW;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
-import java.util.Optional;
-
 /**
- * This class used to do more (We made Entity.java extend this class in the past); but after tons of refactors this class only exists to hold static methods.
+ * This class used to do more (We made Entity.java extend this class in the past); but after tons of
+ * refactors this class only exists to hold static methods.
  */
 public class EntityMoveInjectionMethods {
 
-    public static IntermediateMovementVariableStorage handleMove(MoverType type, double dx, double dy, double dz, Entity this_) {
+    public static IntermediateMovementVariableStorage handleMove(MoverType type, double dx,
+        double dy, double dz, Entity this_) {
         if (this_ instanceof PhysicsWrapperEntity) {
             //Don't move at all
             return null;
@@ -56,7 +57,8 @@ public class EntityMoveInjectionMethods {
             double newY = this_.posY + dy;
             double newZ = this_.posZ + dz;
             BlockPos newPosInBlock = new BlockPos(newX, newY, newZ);
-            Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(this_.world, newPosInBlock);
+            Optional<PhysicsObject> physicsObject = ValkyrienUtils
+                .getPhysicsObject(this_.world, newPosInBlock);
 
             if (!physicsObject.isPresent()) {
                 return null;
@@ -64,20 +66,25 @@ public class EntityMoveInjectionMethods {
 
             Vector endPos = new Vector(newX, newY, newZ);
             physicsObject.get()
-                    .getShipTransformationManager()
-                    .getCurrentTickTransform()
-                    .transform(endPos, TransformType.GLOBAL_TO_SUBSPACE);
+                .getShipTransformationManager()
+                .getCurrentTickTransform()
+                .transform(endPos, TransformType.GLOBAL_TO_SUBSPACE);
             dx = endPos.X - this_.posX;
             dy = endPos.Y - this_.posY;
             dz = endPos.Z - this_.posZ;
         }
 
-        IntermediateMovementVariableStorage alteredMovement = EntityCollisionInjector.alterEntityMovement(this_, type, dx, dy, dz);
+        IntermediateMovementVariableStorage alteredMovement = EntityCollisionInjector
+            .alterEntityMovement(this_, type, dx, dy, dz);
 
         return alteredMovement;
     }
 
-    public static RayTraceResult rayTraceBlocksIgnoreShip(World world, Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock, PhysicsWrapperEntity toIgnore) {
-        return ((IWorldVW) world).rayTraceBlocksIgnoreShip(vec31, vec32, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock, toIgnore);
+    public static RayTraceResult rayTraceBlocksIgnoreShip(World world, Vec3d vec31, Vec3d vec32,
+        boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox,
+        boolean returnLastUncollidableBlock, PhysicsWrapperEntity toIgnore) {
+        return ((IWorldVW) world)
+            .rayTraceBlocksIgnoreShip(vec31, vec32, stopOnLiquid, ignoreBlockWithoutBoundingBox,
+                returnLastUncollidableBlock, toIgnore);
     }
 }

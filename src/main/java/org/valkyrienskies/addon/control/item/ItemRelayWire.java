@@ -16,6 +16,8 @@
 
 package org.valkyrienskies.addon.control.item;
 
+import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
@@ -36,9 +38,6 @@ import org.valkyrienskies.addon.control.capability.ICapabilityLastRelay;
 import org.valkyrienskies.addon.control.nodenetwork.IVWNode;
 import org.valkyrienskies.addon.control.nodenetwork.IVWNodeProvider;
 
-import javax.annotation.Nullable;
-import java.util.List;
-
 public class ItemRelayWire extends Item {
 
     public static double range = 8D;
@@ -49,14 +48,16 @@ public class ItemRelayWire extends Item {
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation,
-                               ITooltipFlag advanced) {
+    public void addInformation(ItemStack stack, @Nullable World player,
+        List<String> itemInformation,
+        ITooltipFlag advanced) {
         itemInformation.add(TextFormatting.BLUE + I18n.format("tooltip.vs_control.relay_wire"));
     }
 
     @Override
-    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand,
-                                      EnumFacing facing, float hitX, float hitY, float hitZ) {
+    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos,
+        EnumHand hand,
+        EnumFacing facing, float hitX, float hitY, float hitZ) {
         IBlockState clickedState = worldIn.getBlockState(pos);
         Block block = clickedState.getBlock();
         TileEntity currentTile = worldIn.getTileEntity(pos);
@@ -64,7 +65,8 @@ public class ItemRelayWire extends Item {
 
         if (currentTile instanceof IVWNodeProvider && !worldIn.isRemote) {
             System.out.println("On server!");
-            ICapabilityLastRelay inst = stack.getCapability(ValkyrienSkiesControl.lastRelayCapability, null);
+            ICapabilityLastRelay inst = stack
+                .getCapability(ValkyrienSkiesControl.lastRelayCapability, null);
             if (inst != null) {
                 if (!inst.hasLastRelay()) {
                     inst.setLastRelay(pos);
@@ -81,19 +83,21 @@ public class ItemRelayWire extends Item {
                             IVWNode currentPosNode = ((IVWNodeProvider) currentTile).getNode();
                             if (lastPosNode != null && currentPosNode != null) {
                                 if (currentPosNode.isLinkedToNode(lastPosNode)) {
-                                    player.sendMessage(new TextComponentString("These nodes are already linked!"));
+                                    player.sendMessage(
+                                        new TextComponentString("These nodes are already linked!"));
                                 } else if (currentPosNode.canLinkToOtherNode(lastPosNode)) {
                                     currentPosNode.makeConnection(lastPosNode);
                                     stack.damageItem(1, player);
                                 } else {
                                     // Tell the player what they did wrong
                                     player.sendMessage(new TextComponentString(
-                                            "One of the connections is maxed out . Relay Nodes can make 8 connections, all other objects however can only make 1 connection."));
+                                        "One of the connections is maxed out . Relay Nodes can make 8 connections, all other objects however can only make 1 connection."));
                                 }
                                 inst.setLastRelay(null);
                             }
                         } else {
-                            player.sendMessage(new TextComponentString("Nodes are too far away, try better wire"));
+                            player.sendMessage(
+                                new TextComponentString("Nodes are too far away, try better wire"));
                             inst.setLastRelay(null);
                         }
                     } else {

@@ -16,6 +16,7 @@
 
 package org.valkyrienskies.mixin.entity;
 
+import java.util.Optional;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.util.math.BlockPos;
@@ -42,8 +43,6 @@ import org.valkyrienskies.mod.common.physmanagement.interaction.IDraggable;
 import org.valkyrienskies.mod.common.util.EntityShipMountData;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
-
-import java.util.Optional;
 
 @Mixin(Entity.class)
 public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
@@ -79,7 +78,8 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
     public CoordinateSpaceType currentSubspaceType() {
         int entityChunkXPosition = ((int) posX) >> 4;
         int entityChunkZPosition = ((int) posZ) >> 4;
-        boolean isInShipChunks = PhysicsChunkManager.isLikelyShipChunk(entityChunkXPosition, entityChunkZPosition);
+        boolean isInShipChunks = PhysicsChunkManager
+            .isLikelyShipChunk(entityChunkXPosition, entityChunkZPosition);
         if (isInShipChunks) {
             return CoordinateSpaceType.SUBSPACE_COORDINATES;
         } else {
@@ -94,7 +94,8 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
 
     @Override
     public Vector createLastTickPositionVector() {
-        return new Vector(thisAsEntity.lastTickPosX, thisAsEntity.lastTickPosY, thisAsEntity.lastTickPosZ);
+        return new Vector(thisAsEntity.lastTickPosX, thisAsEntity.lastTickPosY,
+            thisAsEntity.lastTickPosZ);
     }
 
     @Override
@@ -178,8 +179,7 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
     }
 
     /**
-     * This is easier to have as an overwrite because there's less laggy hackery to
-     * be done then :P
+     * This is easier to have as an overwrite because there's less laggy hackery to be done then :P
      *
      * @author DaPorkchop_
      */
@@ -190,18 +190,21 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
         if (partialTicks == 1.0F) {
             original = this.getVectorForRotation(this.rotationPitch, this.rotationYaw);
         } else {
-            float f = this.prevRotationPitch + (this.rotationPitch - this.prevRotationPitch) * partialTicks;
-            float f1 = this.prevRotationYaw + (this.rotationYaw - this.prevRotationYaw) * partialTicks;
+            float f = this.prevRotationPitch
+                + (this.rotationPitch - this.prevRotationPitch) * partialTicks;
+            float f1 =
+                this.prevRotationYaw + (this.rotationYaw - this.prevRotationYaw) * partialTicks;
             original = this.getVectorForRotation(f, f1);
         }
         // END VANILLA CODE
 
-        EntityShipMountData mountData = ValkyrienUtils.getMountedShipAndPos(Entity.class.cast(this));
+        EntityShipMountData mountData = ValkyrienUtils
+            .getMountedShipAndPos(Entity.class.cast(this));
         if (mountData.isMounted()) {
             return mountData.getMountedShip()
-                    .getShipTransformationManager()
-                    .getRenderTransform()
-                    .rotate(original, TransformType.SUBSPACE_TO_GLOBAL);
+                .getShipTransformationManager()
+                .getRenderTransform()
+                .rotate(original, TransformType.SUBSPACE_TO_GLOBAL);
         } else {
             return original;
         }
@@ -222,12 +225,13 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
         Vec3d vanilla = new Vec3d(f1 * f2, f3, f * f2);
         // END VANILLA CODE
 
-        EntityShipMountData mountData = ValkyrienUtils.getMountedShipAndPos(Entity.class.cast(this));
+        EntityShipMountData mountData = ValkyrienUtils
+            .getMountedShipAndPos(Entity.class.cast(this));
         if (mountData.isMounted()) {
             return mountData.getMountedShip()
-                    .getShipTransformationManager()
-                    .getRenderTransform()
-                    .rotate(vanilla, TransformType.SUBSPACE_TO_GLOBAL);
+                .getShipTransformationManager()
+                .getRenderTransform()
+                .rotate(vanilla, TransformType.SUBSPACE_TO_GLOBAL);
         } else {
             return vanilla;
         }
@@ -240,8 +244,7 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
     protected abstract void copyDataFromOld(Entity entityIn);
 
     /**
-     * This is easier to have as an overwrite because there's less laggy hackery to
-     * be done then :P
+     * This is easier to have as an overwrite because there's less laggy hackery to be done then :P
      *
      * @author DaPorkchop_
      */
@@ -254,12 +257,13 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
         if (vanilla < 64.0D) {
             return vanilla;
         } else {
-            Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(world, new BlockPos(x, y, z));
+            Optional<PhysicsObject> physicsObject = ValkyrienUtils
+                .getPhysicsObject(world, new BlockPos(x, y, z));
             if (physicsObject.isPresent()) {
                 Vector posVec = new Vector(x, y, z);
                 physicsObject.get()
-                        .getShipTransformationManager()
-                        .fromLocalToGlobal(posVec);
+                    .getShipTransformationManager()
+                    .fromLocalToGlobal(posVec);
                 posVec.X -= this.posX;
                 posVec.Y -= this.posY;
                 posVec.Z -= this.posZ;
@@ -272,8 +276,7 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
     }
 
     /**
-     * This is easier to have as an overwrite because there's less laggy hackery to
-     * be done then :P
+     * This is easier to have as an overwrite because there's less laggy hackery to be done then :P
      *
      * @author DaPorkchop_
      */
@@ -287,8 +290,8 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
             if (physicsObject.isPresent()) {
                 Vector posVec = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
                 physicsObject.get()
-                        .getShipTransformationManager()
-                        .fromLocalToGlobal(posVec);
+                    .getShipTransformationManager()
+                    .fromLocalToGlobal(posVec);
                 posVec.X -= this.posX;
                 posVec.Y -= this.posY;
                 posVec.Z -= this.posZ;
@@ -310,7 +313,8 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
         } else {
             searchVector = new Vector(this.posX, this.posY - 0.20000000298023224D, this.posZ);
 //            searchVector.transform(worldBelow.wrapping.coordTransform.wToLTransform);
-            worldBelow.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(searchVector, TransformType.GLOBAL_TO_SUBSPACE);
+            worldBelow.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform()
+                .transform(searchVector, TransformType.GLOBAL_TO_SUBSPACE);
             return MathHelper.floor(searchVector.X);
         }
     }
@@ -339,25 +343,27 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
     }
 
     @Inject(method = "getPositionEyes(F)Lnet/minecraft/util/math/Vec3d;", at = @At("HEAD"), cancellable = true)
-    public void getPositionEyesInject(float partialTicks, CallbackInfoReturnable<Vec3d> callbackInfo) {
-        EntityShipMountData mountData = ValkyrienUtils.getMountedShipAndPos(Entity.class.cast(this));
+    public void getPositionEyesInject(float partialTicks,
+        CallbackInfoReturnable<Vec3d> callbackInfo) {
+        EntityShipMountData mountData = ValkyrienUtils
+            .getMountedShipAndPos(Entity.class.cast(this));
 
         if (mountData.isMounted()) {
             Vector playerPosition = new Vector(mountData.getMountPos());
             mountData.getMountedShip()
-                    .getShipTransformationManager()
-                    .getRenderTransform()
-                    .transform(playerPosition,
-                            TransformType.SUBSPACE_TO_GLOBAL);
+                .getShipTransformationManager()
+                .getRenderTransform()
+                .transform(playerPosition,
+                    TransformType.SUBSPACE_TO_GLOBAL);
 
             Vector playerEyes = new Vector(0, this.getEyeHeight(), 0);
             // Remove the original position added for the player's eyes
             // RotationMatrices.doRotationOnly(wrapper.wrapping.coordTransform.lToWTransform,
             // playerEyes);
             mountData.getMountedShip()
-                    .getShipTransformationManager()
-                    .getCurrentTickTransform()
-                    .rotate(playerEyes, TransformType.SUBSPACE_TO_GLOBAL);
+                .getShipTransformationManager()
+                .getCurrentTickTransform()
+                .rotate(playerEyes, TransformType.SUBSPACE_TO_GLOBAL);
             // Add the new rotate player eyes to the position
             playerPosition.add(playerEyes);
             callbackInfo.setReturnValue(playerPosition.toVec3d());

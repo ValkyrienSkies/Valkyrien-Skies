@@ -9,8 +9,9 @@ public class ImplSubspacedEntityRecord implements ISubspacedEntityRecord {
     private final VectorImmutable lookVector;
     private final VectorImmutable velocity;
 
-    public ImplSubspacedEntityRecord(ISubspacedEntity parentEntity, ISubspace parentSubspace, VectorImmutable position,
-                                     VectorImmutable positionLastTick, VectorImmutable lookVector, VectorImmutable velocity) {
+    public ImplSubspacedEntityRecord(ISubspacedEntity parentEntity, ISubspace parentSubspace,
+        VectorImmutable position,
+        VectorImmutable positionLastTick, VectorImmutable lookVector, VectorImmutable velocity) {
         this.parentEntity = parentEntity;
         this.parentSubspace = parentSubspace;
         this.position = position;

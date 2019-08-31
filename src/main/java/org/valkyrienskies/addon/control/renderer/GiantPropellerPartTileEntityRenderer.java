@@ -8,11 +8,13 @@ import net.minecraft.util.EnumFacing;
 import org.valkyrienskies.addon.control.block.multiblocks.TileEntityGiantPropellerPart;
 import org.valkyrienskies.mod.client.render.GibsAnimationRegistry;
 
-public class GiantPropellerPartTileEntityRenderer extends TileEntitySpecialRenderer<TileEntityGiantPropellerPart> {
+public class GiantPropellerPartTileEntityRenderer extends
+    TileEntitySpecialRenderer<TileEntityGiantPropellerPart> {
 
     @Override
-    public void render(TileEntityGiantPropellerPart tileentity, double x, double y, double z, float partialTick,
-                       int destroyStage, float alpha) {
+    public void render(TileEntityGiantPropellerPart tileentity, double x, double y, double z,
+        float partialTick,
+        int destroyStage, float alpha) {
         Tessellator tessellator = Tessellator.getInstance();
         this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
         GlStateManager.pushMatrix();

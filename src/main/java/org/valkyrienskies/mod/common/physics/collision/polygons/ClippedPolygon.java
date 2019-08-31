@@ -16,11 +16,10 @@
 
 package org.valkyrienskies.mod.common.physics.collision.polygons;
 
-import org.valkyrienskies.mod.common.math.Vector;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.valkyrienskies.mod.common.math.Vector;
 
 public class ClippedPolygon extends Polygon {
 
@@ -47,7 +46,8 @@ public class ClippedPolygon extends Polygon {
         return clippedVerticesUnmodifiable;
     }
 
-    private boolean isVerticeInFrontOfCullingPlane(Vector vertice, Vector planeNormal, Vector planePos) {
+    private boolean isVerticeInFrontOfCullingPlane(Vector vertice, Vector planeNormal,
+        Vector planePos) {
         Vector difference = vertice.getSubtraction(planePos);
         // If its less than zero, we are behind the culling plane, so we do not cull this point
         return difference.dot(planeNormal) < 0;

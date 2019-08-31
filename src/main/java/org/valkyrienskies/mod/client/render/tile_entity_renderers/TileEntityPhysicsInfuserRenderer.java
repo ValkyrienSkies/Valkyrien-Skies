@@ -13,11 +13,13 @@ import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.block.BlockPhysicsInfuser;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 
-public class TileEntityPhysicsInfuserRenderer extends TileEntitySpecialRenderer<TileEntityPhysicsInfuser> {
+public class TileEntityPhysicsInfuserRenderer extends
+    TileEntitySpecialRenderer<TileEntityPhysicsInfuser> {
 
     @Override
-    public void render(TileEntityPhysicsInfuser tileentity, double x, double y, double z, float partialTick,
-                       int destroyStage, float alpha) {
+    public void render(TileEntityPhysicsInfuser tileentity, double x, double y, double z,
+        float partialTick,
+        int destroyStage, float alpha) {
 
         this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
         GlStateManager.pushMatrix();
@@ -29,37 +31,42 @@ public class TileEntityPhysicsInfuserRenderer extends TileEntitySpecialRenderer<
         GlStateManager.pushMatrix();
 
         int brightness = tileentity.getWorld()
-                .getCombinedLight(tileentity.getPos(), 0);
+            .getCombinedLight(tileentity.getPos(), 0);
 
         GlStateManager.translate(.5, 0, .5);
         double keyframe = 1;
 
-        IBlockState physicsInfuserState = ValkyrienSkiesMod.INSTANCE.physicsInfuser.getStateFromMeta(tileentity.getBlockMetadata());
+        IBlockState physicsInfuserState = ValkyrienSkiesMod.INSTANCE.physicsInfuser
+            .getStateFromMeta(tileentity.getBlockMetadata());
         EnumFacing enumfacing = physicsInfuserState.getValue(BlockPhysicsInfuser.FACING);
-        int coreBrightness = physicsInfuserState.getValue(BlockPhysicsInfuser.INFUSER_LIGHT_ON) ? 15728864 : brightness;
+        int coreBrightness =
+            physicsInfuserState.getValue(BlockPhysicsInfuser.INFUSER_LIGHT_ON) ? 15728864
+                : brightness;
         float physicsInfuserRotation = -enumfacing.getHorizontalAngle() + 180;
         GlStateManager.rotate(physicsInfuserRotation, 0, 1, 0);
 
-
         GlStateManager.translate(-.5, 0, -.5);
-
 
         // First translate the model one block to the right
         GlStateManager.translate(-1, 0, 0);
         GlStateManager.scale(2, 2, 2);
         GibsAnimationRegistry.getAnimation("physics_infuser_empty")
-                .renderAnimation(keyframe, brightness);
+            .renderAnimation(keyframe, brightness);
 
-
-        IAtomAnimation cores_animation = GibsAnimationRegistry.getAnimation("physics_infuser_cores");
+        IAtomAnimation cores_animation = GibsAnimationRegistry
+            .getAnimation("physics_infuser_cores");
         // Render only the cores that exist within the physics infuser's inventory.
-        IItemHandler handler = tileentity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+        IItemHandler handler = tileentity
+            .getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
 
-        for (TileEntityPhysicsInfuser.EnumInfuserCore infuserCore : TileEntityPhysicsInfuser.EnumInfuserCore.values()) {
+        for (TileEntityPhysicsInfuser.EnumInfuserCore infuserCore : TileEntityPhysicsInfuser.EnumInfuserCore
+            .values()) {
             if (!handler.getStackInSlot(infuserCore.coreSlotIndex).isEmpty) {
                 GlStateManager.pushMatrix();
-                GlStateManager.translate(0, tileentity.getCoreVerticalOffset(infuserCore, partialTick), 0);
-                cores_animation.renderAnimationNode(infuserCore.coreModelName, keyframe, coreBrightness);
+                GlStateManager
+                    .translate(0, tileentity.getCoreVerticalOffset(infuserCore, partialTick), 0);
+                cores_animation
+                    .renderAnimationNode(infuserCore.coreModelName, keyframe, coreBrightness);
                 GlStateManager.popMatrix();
             }
         }

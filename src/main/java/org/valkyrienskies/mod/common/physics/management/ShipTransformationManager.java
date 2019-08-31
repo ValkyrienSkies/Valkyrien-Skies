@@ -62,20 +62,25 @@ public class ShipTransformationManager {
     }
 
     /**
-     * Polls position and rotation data from the parent ship, and creates a new
-     * current transform made from this data.
+     * Polls position and rotation data from the parent ship, and creates a new current transform
+     * made from this data.
      */
     public void updateCurrentTickTransform() {
-        double[] lToWTransform = RotationMatrices.getTranslationMatrix(parent.getWrapperEntity().posX, parent.getWrapperEntity().posY,
+        double[] lToWTransform = RotationMatrices
+            .getTranslationMatrix(parent.getWrapperEntity().posX, parent.getWrapperEntity().posY,
                 parent.getWrapperEntity().posZ);
-        lToWTransform = RotationMatrices.rotateAndTranslate(lToWTransform, parent.getWrapperEntity().getPitch(),
-                parent.getWrapperEntity().getYaw(), parent.getWrapperEntity().getRoll(), parent.getCenterCoord());
+        lToWTransform = RotationMatrices
+            .rotateAndTranslate(lToWTransform, parent.getWrapperEntity().getPitch(),
+                parent.getWrapperEntity().getYaw(), parent.getWrapperEntity().getRoll(),
+                parent.getCenterCoord());
         setCurrentTickTransform(new ShipTransform(lToWTransform));
     }
 
-    public void updateRenderTransform(double x, double y, double z, double pitch, double yaw, double roll) {
+    public void updateRenderTransform(double x, double y, double z, double pitch, double yaw,
+        double roll) {
         double[] RlToWTransform = RotationMatrices.getTranslationMatrix(x, y, z);
-        RlToWTransform = RotationMatrices.rotateAndTranslate(RlToWTransform, pitch, yaw, roll, parent.getCenterCoord());
+        RlToWTransform = RotationMatrices
+            .rotateAndTranslate(RlToWTransform, pitch, yaw, roll, parent.getCenterCoord());
         setRenderTransform(new ShipTransform(RlToWTransform));
     }
 
@@ -93,7 +98,8 @@ public class ShipTransformationManager {
      * @param updateParentAABB
      */
     @Deprecated
-    public void updateAllTransforms(boolean updatePhysicsTransform, boolean updateParentAABB, boolean updatePassengers) {
+    public void updateAllTransforms(boolean updatePhysicsTransform, boolean updateParentAABB,
+        boolean updatePassengers) {
         // The client should never be updating the AABB on its own.
         if (parent.getWorld().isRemote) {
             updateParentAABB = false;
@@ -106,7 +112,7 @@ public class ShipTransformationManager {
         if (updatePhysicsTransform) {
             // This should only be called once when the ship finally loads from nbt.
             parent.getPhysicsProcessor()
-                    .generatePhysicsTransform();
+                .generatePhysicsTransform();
             prevPhysicsTransform = currentPhysicsTransform;
         }
         if (updateParentAABB) {
@@ -148,8 +154,9 @@ public class ShipTransformationManager {
     public void sendPositionToPlayers(int positionTickID) {
         PhysWrapperPositionMessage posMessage = null;
         if (getCurrentPhysicsTransform() != ZERO_TRANSFORM) {
-            posMessage = new PhysWrapperPositionMessage((PhysicsShipTransform) getCurrentPhysicsTransform(),
-                    parent.getWrapperEntity().getEntityId(), positionTickID);
+            posMessage = new PhysWrapperPositionMessage(
+                (PhysicsShipTransform) getCurrentPhysicsTransform(),
+                parent.getWrapperEntity().getEntityId(), positionTickID);
         } else {
             posMessage = new PhysWrapperPositionMessage(parent.getWrapperEntity(), positionTickID);
         }
@@ -238,7 +245,8 @@ public class ShipTransformationManager {
             return;
         }
         final BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
-        final double[] MDouble = getCurrentPhysicsTransform().getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL);
+        final double[] MDouble = getCurrentPhysicsTransform()
+            .getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL);
         final float[] M = new float[MDouble.length];
         for (int i = 0; i < MDouble.length; i++) {
             M[i] = (float) MDouble[i];

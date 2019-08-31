@@ -1,5 +1,6 @@
 package org.valkyrienskies.addon.control.block.multiblocks;
 
+import java.util.Optional;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
@@ -15,9 +16,9 @@ import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
-import java.util.Optional;
-
-public class TileEntityGiantPropellerPart extends TileEntityMultiblockPartForce<GiantPropellerMultiblockSchematic, TileEntityGiantPropellerPart> implements IRotationNodeProvider<TileEntityGiantPropellerPart> {
+public class TileEntityGiantPropellerPart extends
+    TileEntityMultiblockPartForce<GiantPropellerMultiblockSchematic, TileEntityGiantPropellerPart> implements
+    IRotationNodeProvider<TileEntityGiantPropellerPart> {
 
     public static final int GIANT_PROPELLER_SORTING_PRIORITY = 50;
     protected final IRotationNode rotationNode;
@@ -38,7 +39,8 @@ public class TileEntityGiantPropellerPart extends TileEntityMultiblockPartForce<
     }
 
     @Override
-    public VectorImmutable getForceOutputNormal(double secondsToApply, PhysicsObject physicsObject) {
+    public VectorImmutable getForceOutputNormal(double secondsToApply,
+        PhysicsObject physicsObject) {
         if (!this.isPartOfAssembledMultiblock()) {
             return null;
         } else {
@@ -94,24 +96,32 @@ public class TileEntityGiantPropellerPart extends TileEntityMultiblockPartForce<
         if (!this.getWorld().isRemote) {
             if (firstUpdate) {
                 this.rotationNode.markInitialized();
-                this.rotationNode.queueTask(() -> this.rotationNode.setAngularVelocityRatio(this.getMultiBlockSchematic().getPropellerFacing().getOpposite(), Optional.of(-1D)));
+                this.rotationNode.queueTask(() -> this.rotationNode.setAngularVelocityRatio(
+                    this.getMultiBlockSchematic().getPropellerFacing().getOpposite(),
+                    Optional.of(-1D)));
                 firstUpdate = false;
             }
 
             if (this.isPartOfAssembledMultiblock()) {
-                Optional<PhysicsObject> physicsObjectOptional = ValkyrienUtils.getPhysicsObject(getWorld(), getPos());
+                Optional<PhysicsObject> physicsObjectOptional = ValkyrienUtils
+                    .getPhysicsObject(getWorld(), getPos());
                 if (physicsObjectOptional.isPresent() && this.isMaster()) {
                     if (!rotationNode.hasBeenPlacedIntoNodeWorld()) {
-                        IRotationNodeWorld nodeWorld = physicsObjectOptional.get().getPhysicsProcessor().getPhysicsRotationNodeWorld();
+                        IRotationNodeWorld nodeWorld = physicsObjectOptional.get()
+                            .getPhysicsProcessor().getPhysicsRotationNodeWorld();
                         if (nodeWorld != null) {
-                            nodeWorld.enqueueTaskOntoWorld(() -> nodeWorld.setNodeFromPos(getPos(), rotationNode));
+                            nodeWorld.enqueueTaskOntoWorld(
+                                () -> nodeWorld.setNodeFromPos(getPos(), rotationNode));
                         }
-                        final int propellerRadius = this.getMultiBlockSchematic().getPropellerRadius();
-                        this.rotationNode.queueTask(() -> this.rotationNode.setRotationalInertia(propellerRadius * propellerRadius));
+                        final int propellerRadius = this.getMultiBlockSchematic()
+                            .getPropellerRadius();
+                        this.rotationNode.queueTask(() -> this.rotationNode
+                            .setRotationalInertia(propellerRadius * propellerRadius));
                     }
                     this.prevPropellerAngle = this.propellerAngle;
                     // May need to convert to degrees from radians.
-                    this.propellerAngle = Math.toDegrees(rotationNode.getAngularRotationUnsynchronized());
+                    this.propellerAngle = Math
+                        .toDegrees(rotationNode.getAngularRotationUnsynchronized());
                 }
                 VWNetwork.sendTileToAllNearby(this);
             }

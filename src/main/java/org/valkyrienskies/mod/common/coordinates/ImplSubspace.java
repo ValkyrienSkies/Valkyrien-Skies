@@ -1,13 +1,12 @@
 package org.valkyrienskies.mod.common.coordinates;
 
+import java.util.HashMap;
+import java.util.Map;
+import javax.annotation.Nullable;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 import valkyrienwarfare.api.TransformType;
-
-import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * A basic implementation of the ISubspace interface.
@@ -38,15 +37,18 @@ public class ImplSubspace implements ISubspace {
     @Override
     public void snapshotSubspacedEntity(ISubspacedEntity subspaced) {
         if (subspaced.currentSubspaceType() != CoordinateSpaceType.GLOBAL_COORDINATES) {
-            throw new IllegalArgumentException("Subspace snapshots can only be taken for entities that in the global coordinates system!");
+            throw new IllegalArgumentException(
+                "Subspace snapshots can only be taken for entities that in the global coordinates system!");
         }
         if (subspaced instanceof PhysicsWrapperEntity) {
-            throw new IllegalArgumentException("Do not create subspace records for PhysicsWrapperEntities!!");
+            throw new IllegalArgumentException(
+                "Do not create subspace records for PhysicsWrapperEntities!!");
         }
         subspacedEntityRecords.put(subspaced, createRecordForSubspacedEntity(subspaced));
     }
 
-    private ISubspacedEntityRecord createRecordForSubspacedEntity(ISubspacedEntity subspacedEntity) {
+    private ISubspacedEntityRecord createRecordForSubspacedEntity(
+        ISubspacedEntity subspacedEntity) {
         Vector position = subspacedEntity.createCurrentPositionVector();
         Vector positionLastTick = subspacedEntity.createLastTickPositionVector();
         Vector look = subspacedEntity.createCurrentLookVector();
@@ -58,7 +60,7 @@ public class ImplSubspace implements ISubspace {
             subspaceTransform.rotate(velocity, TransformType.GLOBAL_TO_SUBSPACE);
         }
         return new ImplSubspacedEntityRecord(subspacedEntity, this, position.toImmutable(),
-                positionLastTick.toImmutable(), look.toImmutable(), velocity.toImmutable());
+            positionLastTick.toImmutable(), look.toImmutable(), velocity.toImmutable());
     }
 
     @Override
@@ -75,10 +77,11 @@ public class ImplSubspace implements ISubspace {
         if (getSubspaceCoordinatesType() == CoordinateSpaceType.GLOBAL_COORDINATES) {
             return null;
         } else {
-            ShipTransform transform = parent.getShipTransformationManager().getCurrentTickTransform();
+            ShipTransform transform = parent.getShipTransformationManager()
+                .getCurrentTickTransform();
             if (transform == null) {
                 throw new IllegalStateException(
-                        "A PhysicsObject got a request to use its subspace, but it had no transforms loaded. This is crash worthy.");
+                    "A PhysicsObject got a request to use its subspace, but it had no transforms loaded. This is crash worthy.");
             }
             return transform;
         }
@@ -88,7 +91,7 @@ public class ImplSubspace implements ISubspace {
     public int getSubspaceParentEntityID() {
         if (getSubspaceCoordinatesType() == CoordinateSpaceType.GLOBAL_COORDINATES) {
             throw new IllegalStateException(
-                    "The World coordinate subspace doesn't have an entity ID. Don't call this method unless you're sure that the subspace isn't the world.");
+                "The World coordinate subspace doesn't have an entity ID. Don't call this method unless you're sure that the subspace isn't the world.");
         }
         return parent.getWrapperEntity().getEntityId();
     }

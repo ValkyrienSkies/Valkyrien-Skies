@@ -18,14 +18,16 @@ public class ControlEventsClient {
         Minecraft minecraft = Minecraft.getMinecraft();
         EntityPlayer player = Minecraft.getMinecraft().player;
         FontRenderer fontRenderer = minecraft.fontRenderer;
-        if (fontRenderer != null && player != null && event.getType() == net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType.TEXT) {
+        if (fontRenderer != null && player != null && event.getType()
+            == net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType.TEXT) {
             IShipPilot playerPilot = (IShipPilot) player;
             if (playerPilot.isPiloting()) {
                 BlockPos tilePilotedPos = playerPilot.getPosBeingControlled();
                 TileEntity pilotedTile = player.getEntityWorld().getTileEntity(tilePilotedPos);
                 if (pilotedTile instanceof TileEntityPilotableImpl) {
                     TileEntityPilotableImpl pilotedControlEntity = (TileEntityPilotableImpl) pilotedTile;
-                    ScaledResolution scaledresolution = new ScaledResolution(Minecraft.getMinecraft());
+                    ScaledResolution scaledresolution = new ScaledResolution(
+                        Minecraft.getMinecraft());
                     pilotedControlEntity.renderPilotText(fontRenderer, scaledresolution);
                 }
             }

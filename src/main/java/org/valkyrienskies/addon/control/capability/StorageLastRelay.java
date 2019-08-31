@@ -26,7 +26,8 @@ import net.minecraftforge.common.capabilities.Capability.IStorage;
 public class StorageLastRelay implements IStorage<ICapabilityLastRelay> {
 
     @Override
-    public NBTBase writeNBT(Capability<ICapabilityLastRelay> capability, ICapabilityLastRelay instance, EnumFacing side) {
+    public NBTBase writeNBT(Capability<ICapabilityLastRelay> capability,
+        ICapabilityLastRelay instance, EnumFacing side) {
         int x = 0, y = 0, z = 0;
 
         if (instance.hasLastRelay()) {
@@ -39,7 +40,8 @@ public class StorageLastRelay implements IStorage<ICapabilityLastRelay> {
     }
 
     @Override
-    public void readNBT(Capability<ICapabilityLastRelay> capability, ICapabilityLastRelay instance, EnumFacing side, NBTBase nbt) {
+    public void readNBT(Capability<ICapabilityLastRelay> capability, ICapabilityLastRelay instance,
+        EnumFacing side, NBTBase nbt) {
         NBTTagIntArray tag = (NBTTagIntArray) nbt;
         int[] backingArray = tag.getIntArray();
         //If all these values are 0, then assume the blockPos was just null anyways

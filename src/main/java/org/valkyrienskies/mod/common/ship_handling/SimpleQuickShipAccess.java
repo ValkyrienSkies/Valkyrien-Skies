@@ -1,13 +1,13 @@
 package org.valkyrienskies.mod.common.ship_handling;
 
-import net.minecraft.util.math.AxisAlignedBB;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import net.minecraft.util.math.AxisAlignedBB;
 
 /**
- * Unfinished class. Purpose is to use this to manage which ships instead of the Minecraft entity system.
+ * Unfinished class. Purpose is to use this to manage which ships instead of the Minecraft entity
+ * system.
  */
 public class SimpleQuickShipAccess implements IQuickShipAccess {
 
@@ -58,7 +58,9 @@ public class SimpleQuickShipAccess implements IQuickShipAccess {
         double rangeSq = range * range;
         List<ShipHolder> ships = new ArrayList<>();
         for (ShipHolder shipHolder : ships) {
-            double distanceSq = (shipHolder.getShipPosX() - posX) * (shipHolder.getShipPosX() - posX) + (shipHolder.getShipPosZ() - posZ) * (shipHolder.getShipPosZ() - posZ);
+            double distanceSq =
+                (shipHolder.getShipPosX() - posX) * (shipHolder.getShipPosX() - posX)
+                    + (shipHolder.getShipPosZ() - posZ) * (shipHolder.getShipPosZ() - posZ);
             if (distanceSq < rangeSq) {
                 ships.add(shipHolder);
             }

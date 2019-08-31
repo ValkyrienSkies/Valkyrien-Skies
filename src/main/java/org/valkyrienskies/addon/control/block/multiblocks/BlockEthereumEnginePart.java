@@ -1,5 +1,7 @@
 package org.valkyrienskies.addon.control.block.multiblocks;
 
+import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
@@ -13,9 +15,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
-import javax.annotation.Nullable;
-import java.util.List;
-
 public class BlockEthereumEnginePart extends Block implements ITileEntityProvider {
 
     public BlockEthereumEnginePart(Material materialIn) {
@@ -23,9 +22,11 @@ public class BlockEthereumEnginePart extends Block implements ITileEntityProvide
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation,
-                               ITooltipFlag advanced) {
-        itemInformation.add(TextFormatting.BLUE + I18n.format("tooltip.vs_control.valkyrium_engine_part"));
+    public void addInformation(ItemStack stack, @Nullable World player,
+        List<String> itemInformation,
+        ITooltipFlag advanced) {
+        itemInformation
+            .add(TextFormatting.BLUE + I18n.format("tooltip.vs_control.valkyrium_engine_part"));
     }
 
     @Override

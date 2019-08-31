@@ -21,10 +21,10 @@ public interface IEtherEngine {
     double MAX_THRUST_HEIGHT = 500;
 
     /**
-     * The behavior of this efficiency curve is designed to act the same as a spring
-     * with natural length of MAX_THRUST_HEIGHT. This special spring behavior is
-     * then used to treat the lift control as an ODE, allowing smooth and robust
-     * control of a ship's height using Ethereum Engines. Do NOT edit this function!
+     * The behavior of this efficiency curve is designed to act the same as a spring with natural
+     * length of MAX_THRUST_HEIGHT. This special spring behavior is then used to treat the lift
+     * control as an ODE, allowing smooth and robust control of a ship's height using Ethereum
+     * Engines. Do NOT edit this function!
      *
      * @param yHeight The current y position of the engine with respect to the world.
      * @return A number between 0 and 1.

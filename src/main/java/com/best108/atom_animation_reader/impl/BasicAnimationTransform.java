@@ -1,9 +1,8 @@
 package com.best108.atom_animation_reader.impl;
 
+import java.util.List;
 import net.minecraft.client.renderer.GlStateManager;
 import org.valkyrienskies.mod.common.math.Vector;
-
-import java.util.List;
 
 public class BasicAnimationTransform {
 

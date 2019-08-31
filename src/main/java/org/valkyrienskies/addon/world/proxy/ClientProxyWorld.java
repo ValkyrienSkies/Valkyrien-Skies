@@ -16,7 +16,8 @@ public class ClientProxyWorld extends CommonProxyWorld {
     @Override
     public void preInit(FMLStateEvent e) {
         super.preInit(e);
-        RenderingRegistry.registerEntityRenderingHandler(EntityFallingUpBlock.class, RenderFallingBlock::new);
+        RenderingRegistry
+            .registerEntityRenderingHandler(EntityFallingUpBlock.class, RenderFallingBlock::new);
     }
 
     @Override
@@ -34,18 +35,20 @@ public class ClientProxyWorld extends CommonProxyWorld {
     private void registerBlockItem(Block toRegister) {
         Item item = Item.getItemFromBlock(toRegister);
         Minecraft.getMinecraft()
-                .getRenderItem()
-                .getItemModelMesher()
-                .register(item, 0, new ModelResourceLocation(ValkyrienSkiesWorld.MOD_ID + ":" + item.getTranslationKey()
-                        .substring(5), "inventory"));
+            .getRenderItem()
+            .getItemModelMesher()
+            .register(item, 0, new ModelResourceLocation(
+                ValkyrienSkiesWorld.MOD_ID + ":" + item.getTranslationKey()
+                    .substring(5), "inventory"));
     }
 
     private void registerItemModel(Item toRegister) {
         RenderItem renderItem = Minecraft.getMinecraft()
-                .getRenderItem();
+            .getRenderItem();
         renderItem.getItemModelMesher()
-                .register(toRegister, 0, new ModelResourceLocation(ValkyrienSkiesWorld.MOD_ID + ":" + toRegister.getTranslationKey()
-                        .substring(5), "inventory"));
+            .register(toRegister, 0, new ModelResourceLocation(
+                ValkyrienSkiesWorld.MOD_ID + ":" + toRegister.getTranslationKey()
+                    .substring(5), "inventory"));
     }
 
 }

@@ -16,6 +16,8 @@
 
 package org.valkyrienskies.addon.control.block;
 
+import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyDirection;
@@ -35,9 +37,6 @@ import net.minecraft.world.World;
 import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
 import org.valkyrienskies.addon.control.tileentity.TileEntityShipTelegraph;
 
-import javax.annotation.Nullable;
-import java.util.List;
-
 public class BlockShipTelegraph extends BlockPilotableBasic {
 
     public static final PropertyDirection FACING = BlockHorizontal.FACING;
@@ -47,13 +46,16 @@ public class BlockShipTelegraph extends BlockPilotableBasic {
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation,
-                               ITooltipFlag advanced) {
-        itemInformation.add(TextFormatting.BLUE + I18n.format("tooltip.vs_control.speed_telegraph"));
+    public void addInformation(ItemStack stack, @Nullable World player,
+        List<String> itemInformation,
+        ITooltipFlag advanced) {
+        itemInformation
+            .add(TextFormatting.BLUE + I18n.format("tooltip.vs_control.speed_telegraph"));
     }
 
     @Override
-    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
+    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing,
+        float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
         EnumFacing facingHorizontal = placer.getHorizontalFacing();
 
         if (!placer.isSneaking()) {
@@ -64,16 +66,18 @@ public class BlockShipTelegraph extends BlockPilotableBasic {
     }
 
     @Override
-    public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
+    public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state,
+        EntityLivingBase placer, ItemStack stack) {
         super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
-        worldIn.setBlockState(pos.up(), ValkyrienSkiesControl.INSTANCE.vwControlBlocks.shipTelegraphDummy.getDefaultState());
+        worldIn.setBlockState(pos.up(),
+            ValkyrienSkiesControl.INSTANCE.vwControlBlocks.shipTelegraphDummy.getDefaultState());
     }
 
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
         super.breakBlock(worldIn, pos, state);
         if (worldIn.getBlockState(pos.up())
-                .getBlock() == ValkyrienSkiesControl.INSTANCE.vwControlBlocks.shipTelegraphDummy) {
+            .getBlock() == ValkyrienSkiesControl.INSTANCE.vwControlBlocks.shipTelegraphDummy) {
             worldIn.setBlockToAir(pos.up());
         }
     }
@@ -104,7 +108,7 @@ public class BlockShipTelegraph extends BlockPilotableBasic {
     @Override
     public int getMetaFromState(IBlockState state) {
         int i = state.getValue(FACING)
-                .getIndex();
+            .getIndex();
         return i;
     }
 

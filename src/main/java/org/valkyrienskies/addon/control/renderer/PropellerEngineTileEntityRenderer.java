@@ -29,17 +29,20 @@ import org.valkyrienskies.addon.control.block.engine.BlockAirshipEngine;
 import org.valkyrienskies.addon.control.tileentity.TileEntityPropellerEngine;
 import org.valkyrienskies.mod.client.render.FastBlockModelRenderer;
 
-public class PropellerEngineTileEntityRenderer extends TileEntitySpecialRenderer<TileEntityPropellerEngine> {
+public class PropellerEngineTileEntityRenderer extends
+    TileEntitySpecialRenderer<TileEntityPropellerEngine> {
 
     @Override
-    public void render(TileEntityPropellerEngine tileentity, double x, double y, double z, float partialTick,
-                       int destroyStage, float alpha) {
+    public void render(TileEntityPropellerEngine tileentity, double x, double y, double z,
+        float partialTick,
+        int destroyStage, float alpha) {
         IBlockState state = tileentity.getWorld().getBlockState(tileentity.getPos());
         if (state.getBlock() instanceof BlockAirshipEngine) {
             EnumFacing facing = state.getValue(BlockAirshipEngine.FACING);
 
             IBlockState engineRenderState = getRenderState(state);
-            IBlockState propellerRenderState = ValkyrienSkiesControl.INSTANCE.vwControlBlocks.shipWheel.getStateFromMeta(14);
+            IBlockState propellerRenderState = ValkyrienSkiesControl.INSTANCE.vwControlBlocks.shipWheel
+                .getStateFromMeta(14);
 
             this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
             GlStateManager.pushMatrix();
@@ -87,7 +90,7 @@ public class PropellerEngineTileEntityRenderer extends TileEntitySpecialRenderer
             GL11.glTranslated(-0.5D, -0.5D, -0.5D);
 
             FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(),
-                    engineRenderState, brightness);
+                engineRenderState, brightness);
 
             GL11.glPushMatrix();
 
@@ -97,7 +100,7 @@ public class PropellerEngineTileEntityRenderer extends TileEntitySpecialRenderer
             GL11.glTranslated(-0.5D, -0.214D, -0.5D);
 
             FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(),
-                    propellerRenderState, brightness);
+                propellerRenderState, brightness);
 
             GL11.glPopMatrix();
 
@@ -108,10 +111,12 @@ public class PropellerEngineTileEntityRenderer extends TileEntitySpecialRenderer
     }
 
     private IBlockState getRenderState(IBlockState inWorldState) {
-        if (inWorldState.getBlock() == ValkyrienSkiesControl.INSTANCE.vwControlBlocks.ultimateEngine) {
+        if (inWorldState.getBlock()
+            == ValkyrienSkiesControl.INSTANCE.vwControlBlocks.ultimateEngine) {
             return ValkyrienSkiesControl.INSTANCE.vwControlBlocks.shipWheel.getStateFromMeta(9);
         }
-        if (inWorldState.getBlock() == ValkyrienSkiesControl.INSTANCE.vwControlBlocks.redstoneEngine) {
+        if (inWorldState.getBlock()
+            == ValkyrienSkiesControl.INSTANCE.vwControlBlocks.redstoneEngine) {
             return ValkyrienSkiesControl.INSTANCE.vwControlBlocks.shipWheel.getStateFromMeta(10);
         }
         if (inWorldState.getBlock() == ValkyrienSkiesControl.INSTANCE.vwControlBlocks.eliteEngine) {
@@ -120,7 +125,8 @@ public class PropellerEngineTileEntityRenderer extends TileEntitySpecialRenderer
         if (inWorldState.getBlock() == ValkyrienSkiesControl.INSTANCE.vwControlBlocks.basicEngine) {
             return ValkyrienSkiesControl.INSTANCE.vwControlBlocks.shipWheel.getStateFromMeta(12);
         }
-        if (inWorldState.getBlock() == ValkyrienSkiesControl.INSTANCE.vwControlBlocks.advancedEngine) {
+        if (inWorldState.getBlock()
+            == ValkyrienSkiesControl.INSTANCE.vwControlBlocks.advancedEngine) {
             return ValkyrienSkiesControl.INSTANCE.vwControlBlocks.shipWheel.getStateFromMeta(13);
         }
 

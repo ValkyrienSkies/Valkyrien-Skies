@@ -25,7 +25,9 @@ public class CollisionInformationHolder {
     protected final int inWorldX, inWorldY, inWorldZ, inLocalX, inLocalY, inLocalZ;
     protected final IBlockState inWorldState, inLocalState;
 
-    public CollisionInformationHolder(PhysPolygonCollider collider, int inWorldX, int inWorldY, int inWorldZ, int inLocalX, int inLocalY, int inLocalZ, IBlockState inWorldState, IBlockState inLocalState) {
+    public CollisionInformationHolder(PhysPolygonCollider collider, int inWorldX, int inWorldY,
+        int inWorldZ, int inLocalX, int inLocalY, int inLocalZ, IBlockState inWorldState,
+        IBlockState inLocalState) {
         this.collider = collider;
 
         this.inWorldX = inWorldX;

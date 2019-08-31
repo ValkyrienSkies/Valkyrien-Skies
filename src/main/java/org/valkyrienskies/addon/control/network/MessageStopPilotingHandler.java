@@ -34,7 +34,8 @@ public class MessageStopPilotingHandler implements IMessageHandler<MessageStopPi
 
             BlockPos posToStopPiloting = message.posToStopPiloting;
 
-            if (pilot.getPosBeingControlled() != null && pilot.getPosBeingControlled().equals(posToStopPiloting)) {
+            if (pilot.getPosBeingControlled() != null && pilot.getPosBeingControlled()
+                .equals(posToStopPiloting)) {
                 pilot.stopPilotingEverything();
             }
         });

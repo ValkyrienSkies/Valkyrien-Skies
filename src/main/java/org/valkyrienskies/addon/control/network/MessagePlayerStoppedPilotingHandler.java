@@ -25,7 +25,8 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import org.valkyrienskies.addon.control.piloting.ITileEntityPilotable;
 
-public class MessagePlayerStoppedPilotingHandler implements IMessageHandler<MessagePlayerStoppedPiloting, IMessage> {
+public class MessagePlayerStoppedPilotingHandler implements
+    IMessageHandler<MessagePlayerStoppedPiloting, IMessage> {
 
     @Override
     public IMessage onMessage(MessagePlayerStoppedPiloting message, MessageContext ctx) {

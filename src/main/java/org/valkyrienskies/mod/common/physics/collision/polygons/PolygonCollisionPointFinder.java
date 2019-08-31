@@ -25,7 +25,8 @@ public class PolygonCollisionPointFinder {
         Polygon bottomPoly = null;
         Vector collisionNormal = collisionInfo.collision_normal;
 
-        Vector centerDifference = collisionInfo.movable.getCenter().getSubtraction(collisionInfo.fixed.getCenter());
+        Vector centerDifference = collisionInfo.movable.getCenter()
+            .getSubtraction(collisionInfo.fixed.getCenter());
         if (centerDifference.dot(collisionNormal) > 0) {
             // Then the movable is the bottom
             topPoly = collisionInfo.fixed;
@@ -64,7 +65,8 @@ public class PolygonCollisionPointFinder {
 
         if (useFastCollision) {
             // TODO: We're oversolving for the collision here, but it prevents things going through eachother.
-            return new Vector[]{currentTopVertice, currentBottomVertice, currentTopVertice, currentBottomVertice};
+            return new Vector[]{currentTopVertice, currentBottomVertice, currentTopVertice,
+                currentBottomVertice};
             // return new Vector[] { currentTopVertice, currentBottomVertice };
         } else {
             // Now use the surface normals that are most perpendicular to the collision
@@ -98,13 +100,16 @@ public class PolygonCollisionPointFinder {
                 bottomCullingNormal = new Vector(bottomCullingNormal, -1);
             }
 
-            ClippedPolygon clippedTop = new ClippedPolygon(topPoly, bottomCullingNormal, currentBottomVertice);
-            ClippedPolygon clippedBottom = new ClippedPolygon(bottomPoly, topCullingNormal, currentTopVertice);
+            ClippedPolygon clippedTop = new ClippedPolygon(topPoly, bottomCullingNormal,
+                currentBottomVertice);
+            ClippedPolygon clippedBottom = new ClippedPolygon(bottomPoly, topCullingNormal,
+                currentTopVertice);
 
             // Now with our normals found and the plane vertice, we now search for the
             // points of collision.
             // TODO: Find a real algorithm for this please!
-            return new Vector[]{currentTopVertice, currentBottomVertice, currentTopVertice, currentBottomVertice};
+            return new Vector[]{currentTopVertice, currentBottomVertice, currentTopVertice,
+                currentBottomVertice};
         }
     }
 

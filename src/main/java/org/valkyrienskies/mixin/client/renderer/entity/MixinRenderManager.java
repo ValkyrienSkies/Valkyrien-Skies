@@ -35,15 +35,18 @@ import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
 @Mixin(RenderManager.class)
 public abstract class MixinRenderManager {
+
     private boolean hasChanged = false;
 
     @Shadow
-    public abstract void renderEntity(Entity entityIn, double x, double y, double z, float yaw, float partialTicks, boolean p_188391_10_);
+    public abstract void renderEntity(Entity entityIn, double x, double y, double z, float yaw,
+        float partialTicks, boolean p_188391_10_);
 
     @Inject(method = "renderEntity",
-            at = @At("HEAD"),
-            cancellable = true)
-    public void preDoRenderEntity(Entity entityIn, double x, double y, double z, float yaw, float partialTicks, boolean p_188391_10_, CallbackInfo callbackInfo) {
+        at = @At("HEAD"),
+        cancellable = true)
+    public void preDoRenderEntity(Entity entityIn, double x, double y, double z, float yaw,
+        float partialTicks, boolean p_188391_10_, CallbackInfo callbackInfo) {
         if (!hasChanged) {
             EntityShipMountData mountData = ValkyrienUtils.getMountedShipAndPos(entityIn);
 
@@ -59,18 +62,18 @@ public abstract class MixinRenderManager {
                 Vector localPosition = new Vector(mountData.getMountPos());
 
                 mountData.getMountedShip()
-                        .getShipRenderer()
-                        .setupTranslation(partialTicks);
+                    .getShipRenderer()
+                    .setupTranslation(partialTicks);
 
                 if (localPosition != null) {
                     localPosition = new Vector(localPosition);
 
                     localPosition.X -= mountData.getMountedShip()
-                            .getShipRenderer().offsetPos.getX();
+                        .getShipRenderer().offsetPos.getX();
                     localPosition.Y -= mountData.getMountedShip()
-                            .getShipRenderer().offsetPos.getY();
+                        .getShipRenderer().offsetPos.getY();
                     localPosition.Z -= mountData.getMountedShip()
-                            .getShipRenderer().offsetPos.getZ();
+                        .getShipRenderer().offsetPos.getZ();
 
                     x = entityIn.posX = entityIn.lastTickPosX = localPosition.X;
                     y = entityIn.posY = entityIn.lastTickPosY = localPosition.Y;
@@ -99,7 +102,8 @@ public abstract class MixinRenderManager {
                             playerPosInLocal.subtract(.5D, .6875, .5);
                             playerPosInLocal.roundToWhole();
 
-                            BlockPos bedPos = new BlockPos(playerPosInLocal.X, playerPosInLocal.Y, playerPosInLocal.Z);
+                            BlockPos bedPos = new BlockPos(playerPosInLocal.X, playerPosInLocal.Y,
+                                playerPosInLocal.Z);
                             IBlockState state = entityIn.world.getBlockState(bedPos);
 
                             Block block = state.getBlock();
@@ -108,8 +112,11 @@ public abstract class MixinRenderManager {
 
 //	                	player.setRenderOffsetForSleep(EnumFacing.SOUTH);
 
-                            if (block != null && block.isBed(state, entityIn.world, bedPos, entityIn)) {
-                                angleYaw = (float) (block.getBedDirection(state, entityIn.world, bedPos).getHorizontalIndex() * 90);
+                            if (block != null && block
+                                .isBed(state, entityIn.world, bedPos, entityIn)) {
+                                angleYaw = (float) (
+                                    block.getBedDirection(state, entityIn.world, bedPos)
+                                        .getHorizontalIndex() * 90);
 //	                    	angleYaw += 180;
                             }
                             GL11.glRotatef(angleYaw, 0, 1F, 0);
@@ -129,8 +136,8 @@ public abstract class MixinRenderManager {
 
                 if (localPosition != null) {
                     mountData.getMountedShip()
-                            .getShipRenderer()
-                            .inverseTransform(partialTicks);
+                        .getShipRenderer()
+                        .inverseTransform(partialTicks);
                 }
 
                 entityIn.posX = oldPosX;

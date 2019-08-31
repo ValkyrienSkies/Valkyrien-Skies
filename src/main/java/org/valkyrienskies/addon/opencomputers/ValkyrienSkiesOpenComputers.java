@@ -29,12 +29,13 @@ import org.valkyrienskies.api.addons.Module;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 
 @Mod(
-        name = ValkyrienSkiesOpenComputers.MOD_NAME,
-        modid = ValkyrienSkiesOpenComputers.MOD_ID,
-        version = ValkyrienSkiesOpenComputers.MOD_VERSION,
-        dependencies = "required-after:" + ValkyrienSkiesMod.MOD_ID
+    name = ValkyrienSkiesOpenComputers.MOD_NAME,
+    modid = ValkyrienSkiesOpenComputers.MOD_ID,
+    version = ValkyrienSkiesOpenComputers.MOD_VERSION,
+    dependencies = "required-after:" + ValkyrienSkiesMod.MOD_ID
 )
 public class ValkyrienSkiesOpenComputers {
+
     // MOD INFO CONSTANTS
     static final String MOD_ID = "vs_open_computers";
     static final String MOD_NAME = "Valkyrien Skies Open Computers";
@@ -50,8 +51,8 @@ public class ValkyrienSkiesOpenComputers {
     @SubscribeEvent
     public void registerBlocks(RegistryEvent.Register<Block> event) {
         gpsBlock = new GPSBlock().setTranslationKey("gpsblock")
-                .setRegistryName(MOD_ID, "gpsblock")
-                .setCreativeTab(ValkyrienSkiesMod.vwTab);
+            .setRegistryName(MOD_ID, "gpsblock")
+            .setCreativeTab(ValkyrienSkiesMod.vwTab);
 
         event.getRegistry().register(gpsBlock);
     }

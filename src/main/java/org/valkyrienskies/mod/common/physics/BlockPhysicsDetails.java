@@ -16,6 +16,8 @@
 
 package org.valkyrienskies.mod.common.physics;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
@@ -28,9 +30,6 @@ import org.valkyrienskies.mod.common.block.IBlockMassProvider;
 import org.valkyrienskies.mod.common.block.IBlockTorqueProvider;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 
 public class BlockPhysicsDetails {
 
@@ -143,11 +142,13 @@ public class BlockPhysicsDetails {
     /**
      * Assigns the output parameter of toSet to be the force Vector for the given IBlockState.
      */
-    static void getForceFromState(IBlockState state, BlockPos pos, World world, double secondsToApply,
-                                  PhysicsObject obj, Vector toSet) {
+    static void getForceFromState(IBlockState state, BlockPos pos, World world,
+        double secondsToApply,
+        PhysicsObject obj, Vector toSet) {
         Block block = state.getBlock();
         if (block instanceof IBlockForceProvider) {
-            Vector forceVector = ((IBlockForceProvider) block).getBlockForceInWorldSpace(world, pos, state,
+            Vector forceVector = ((IBlockForceProvider) block)
+                .getBlockForceInWorldSpace(world, pos, state,
                     obj, secondsToApply);
             if (forceVector == null) {
                 toSet.zero();

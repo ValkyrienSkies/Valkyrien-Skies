@@ -1,5 +1,7 @@
 package org.valkyrienskies.mod.common.physmanagement.interaction;
 
+import static com.googlecode.cqengine.query.QueryFactory.equal;
+
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
@@ -8,6 +10,10 @@ import com.googlecode.cqengine.index.hash.HashIndex;
 import com.googlecode.cqengine.index.unique.UniqueIndex;
 import com.googlecode.cqengine.query.Query;
 import com.googlecode.cqengine.resultset.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.ChunkPos;
@@ -16,13 +22,6 @@ import net.minecraft.world.storage.MapStorage;
 import net.minecraft.world.storage.WorldSavedData;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-import static com.googlecode.cqengine.query.QueryFactory.equal;
 
 @MethodsReturnNonnullByDefault
 @SuppressWarnings("WeakerAccess")
@@ -45,7 +44,8 @@ public class QueryableShipData extends WorldSavedData {
 
     public static QueryableShipData get(World world) {
         MapStorage storage = world.getPerWorldStorage();
-        QueryableShipData data = (QueryableShipData) storage.getOrLoadData(QueryableShipData.class, MAP_STORAGE_KEY);
+        QueryableShipData data = (QueryableShipData) storage
+            .getOrLoadData(QueryableShipData.class, MAP_STORAGE_KEY);
         if (data == null) {
             data = new QueryableShipData();
             world.setData(MAP_STORAGE_KEY, data);
@@ -57,8 +57,8 @@ public class QueryableShipData extends WorldSavedData {
         Query<ShipData> query = equal(ShipData.NAME, newName);
         if (allShips.retrieve(query).isEmpty()) {
             ShipData newData = new ShipData.Builder(data)
-                    .setName(newName)
-                    .build();
+                .setName(newName)
+                .build();
 
             allShips.remove(data);
             allShips.add(newData);

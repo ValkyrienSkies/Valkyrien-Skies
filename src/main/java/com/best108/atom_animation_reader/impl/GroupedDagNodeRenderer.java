@@ -1,16 +1,16 @@
 package com.best108.atom_animation_reader.impl;
 
+import java.util.List;
 import net.minecraft.client.renderer.GlStateManager;
 import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
 import org.valkyrienskies.mod.common.math.Vector;
-
-import java.util.List;
 
 public class GroupedDagNodeRenderer extends BasicDagNodeRenderer {
 
     private final List<BasicDagNodeRenderer> children;
 
-    public GroupedDagNodeRenderer(String modelName, List<BasicAnimationTransform> transformations, List<BasicDagNodeRenderer> children, VectorImmutable pivot) {
+    public GroupedDagNodeRenderer(String modelName, List<BasicAnimationTransform> transformations,
+        List<BasicDagNodeRenderer> children, VectorImmutable pivot) {
         super(modelName, transformations, null);
         this.children = children;
         this.pivot = pivot;
@@ -22,11 +22,11 @@ public class GroupedDagNodeRenderer extends BasicDagNodeRenderer {
             Vector customPivot = pivot.createMutibleVectorCopy();
             for (int j = transformations.size() - 1; j > i; j--) {
                 transformations.get(j)
-                        .changePivot(customPivot, keyframe);
+                    .changePivot(customPivot, keyframe);
             }
             GlStateManager.translate(customPivot.X, customPivot.Y, customPivot.Z);
             transformations.get(i)
-                    .transform(keyframe);
+                .transform(keyframe);
             GlStateManager.translate(-customPivot.X, -customPivot.Y, -customPivot.Z);
         }
 

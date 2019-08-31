@@ -16,6 +16,8 @@
 
 package org.valkyrienskies.addon.control.block;
 
+import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
@@ -36,9 +38,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import org.valkyrienskies.addon.control.tileentity.TileEntityPassengerChair;
-
-import javax.annotation.Nullable;
-import java.util.List;
 
 public class BlockShipPassengerChair extends Block {
 
@@ -65,7 +64,8 @@ public class BlockShipPassengerChair extends Block {
     }
 
     @Override
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state,
+        EntityPlayer playerIn, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
         if (!worldIn.isRemote) {
             Vec3d chairPos = getPlayerMountOffset(state, pos);
 
@@ -74,7 +74,9 @@ public class BlockShipPassengerChair extends Block {
                 // Try mounting the player onto the chair if possible.
                 ((TileEntityPassengerChair) chairTile).tryToMountPlayerToChair(playerIn, chairPos);
             } else {
-                new IllegalStateException("world.getTileEntity() returned a tile that wasn't a chair at pos " + pos).printStackTrace();
+                new IllegalStateException(
+                    "world.getTileEntity() returned a tile that wasn't a chair at pos " + pos)
+                    .printStackTrace();
             }
         }
         return true;
@@ -82,7 +84,8 @@ public class BlockShipPassengerChair extends Block {
 
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
-        TileEntityPassengerChair passengerChair = (TileEntityPassengerChair) worldIn.getTileEntity(pos);
+        TileEntityPassengerChair passengerChair = (TileEntityPassengerChair) worldIn
+            .getTileEntity(pos);
         if (passengerChair instanceof TileEntityPassengerChair && !passengerChair.isInvalid()) {
             passengerChair.onBlockBroken(state);
         }
@@ -91,8 +94,10 @@ public class BlockShipPassengerChair extends Block {
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation, ITooltipFlag advanced) {
-        itemInformation.add(TextFormatting.ITALIC + "" + TextFormatting.BLUE + I18n.format("tooltip.vs_control.passenger_chair"));
+    public void addInformation(ItemStack stack, @Nullable World player,
+        List<String> itemInformation, ITooltipFlag advanced) {
+        itemInformation.add(TextFormatting.ITALIC + "" + TextFormatting.BLUE + I18n
+            .format("tooltip.vs_control.passenger_chair"));
     }
 
     private Vec3d getPlayerMountOffset(IBlockState state, BlockPos pos) {
@@ -112,8 +117,11 @@ public class BlockShipPassengerChair extends Block {
     }
 
     @Override
-    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
-        return this.getDefaultState().withProperty(FACING, placer.isSneaking() ? placer.getHorizontalFacing().getOpposite() : placer.getHorizontalFacing());
+    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing,
+        float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
+        return this.getDefaultState().withProperty(FACING,
+            placer.isSneaking() ? placer.getHorizontalFacing().getOpposite()
+                : placer.getHorizontalFacing());
     }
 
     @Override

@@ -16,7 +16,8 @@ import org.valkyrienskies.fixes.ITransformablePacket;
 public class MixinPacketUtil {
 
     @Inject(method = "onProcessPacket", at = @At(value = "HEAD"))
-    private static void preOnProcessPacket(Packet packetIn, INetHandler netHandler, CallbackInfo info) {
+    private static void preOnProcessPacket(Packet packetIn, INetHandler netHandler,
+        CallbackInfo info) {
         if (packetIn instanceof ITransformablePacket) {
             ITransformablePacket transformPacket = (ITransformablePacket) packetIn;
             transformPacket.doPreProcessing((NetHandlerPlayServer) netHandler, true);
@@ -24,7 +25,8 @@ public class MixinPacketUtil {
     }
 
     @Inject(method = "onProcessPacket", at = @At(value = "RETURN"))
-    private static void postOnProcessPacket(Packet packetIn, INetHandler netHandler, CallbackInfo info) {
+    private static void postOnProcessPacket(Packet packetIn, INetHandler netHandler,
+        CallbackInfo info) {
         if (packetIn instanceof ITransformablePacket) {
             ITransformablePacket transformPacket = (ITransformablePacket) packetIn;
             transformPacket.doPostProcessing((NetHandlerPlayServer) netHandler, true);

@@ -51,12 +51,15 @@ public abstract class MixinEntityIntrinsic {
     public abstract void move(MoverType type, double x, double y, double z);
 
     @Inject(method = "move", at = @At("HEAD"), cancellable = true)
-    public void changeMoveArgs(MoverType type, double dx, double dy, double dz, CallbackInfo callbackInfo) {
+    public void changeMoveArgs(MoverType type, double dx, double dy, double dz,
+        CallbackInfo callbackInfo) {
         if (!hasChanged) {
-            alteredMovement = EntityMoveInjectionMethods.handleMove(type, dx, dy, dz, thisClassAsAnEntity);
+            alteredMovement = EntityMoveInjectionMethods
+                .handleMove(type, dx, dy, dz, thisClassAsAnEntity);
             if (alteredMovement != null) {
                 hasChanged = true;
-                this.move(type, alteredMovement.dxyz.X, alteredMovement.dxyz.Y, alteredMovement.dxyz.Z);
+                this.move(type, alteredMovement.dxyz.X, alteredMovement.dxyz.Y,
+                    alteredMovement.dxyz.Z);
                 hasChanged = false;
                 callbackInfo.cancel();
             }

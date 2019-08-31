@@ -36,9 +36,9 @@ public class MessageStopPiloting implements IMessage {
     public void fromBytes(ByteBuf buf) {
         PacketBuffer packetBuf = new PacketBuffer(buf);
         posToStopPiloting = new BlockPos(
-                packetBuf.readInt(),
-                packetBuf.readInt(),
-                packetBuf.readInt()
+            packetBuf.readInt(),
+            packetBuf.readInt(),
+            packetBuf.readInt()
         );
     }
 

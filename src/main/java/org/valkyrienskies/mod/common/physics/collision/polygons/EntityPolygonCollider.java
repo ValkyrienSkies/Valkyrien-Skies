@@ -20,7 +20,9 @@ import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.collision.EntityCollisionObject;
 
 /**
- * Heavily modified version of the original Polygon Collider, with checks on polygons passing through eachother, normals not to be considered, and a consideration for Net Velocity between the polygons
+ * Heavily modified version of the original Polygon Collider, with checks on polygons passing
+ * through eachother, normals not to be considered, and a consideration for Net Velocity between the
+ * polygons
  *
  * @author thebest108
  */
@@ -36,7 +38,8 @@ public class EntityPolygonCollider {
     private double minDistance;
     private boolean originallySeperated;
 
-    public EntityPolygonCollider(EntityPolygon movable, Polygon stationary, Vector[] axes, Vector entityVel) {
+    public EntityPolygonCollider(EntityPolygon movable, Polygon stationary, Vector[] axes,
+        Vector entityVel) {
         collisionAxes = axes;
         entity = movable;
         block = stationary;
@@ -49,7 +52,8 @@ public class EntityPolygonCollider {
         seperated = false;
         for (int i = 0; i < collisions.length; i++) {
             if (!seperated) {
-                collisions[i] = new EntityCollisionObject(entity, block, collisionAxes[i], entityVelocity);
+                collisions[i] = new EntityCollisionObject(entity, block, collisionAxes[i],
+                    entityVelocity);
                 if (collisions[i].arePolygonsSeperated()) {
                     seperated = true;
                     break;
@@ -63,9 +67,13 @@ public class EntityPolygonCollider {
             minDistance = 420;
             for (int i = 0; i < collisions.length; i++) {
                 if (originallySeperated) {
-                    if (Math.abs((collisions[i].getCollisionPenetrationDistance() - collisions[i].getVelDot()) / collisions[i].getVelDot()) < minDistance && !collisions[i].werePolygonsInitiallyColliding()) {
+                    if (Math.abs((collisions[i].getCollisionPenetrationDistance() - collisions[i]
+                        .getVelDot()) / collisions[i].getVelDot()) < minDistance && !collisions[i]
+                        .werePolygonsInitiallyColliding()) {
                         minDistanceIndex = i;
-                        minDistance = Math.abs((collisions[i].getCollisionPenetrationDistance() - collisions[i].getVelDot()) / collisions[i].getVelDot());
+                        minDistance = Math.abs(
+                            (collisions[i].getCollisionPenetrationDistance() - collisions[i]
+                                .getVelDot()) / collisions[i].getVelDot());
                     }
                 } else {
                     // This is wrong

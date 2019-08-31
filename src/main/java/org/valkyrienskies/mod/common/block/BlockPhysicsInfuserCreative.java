@@ -16,16 +16,15 @@
 
 package org.valkyrienskies.mod.common.block;
 
+import java.util.List;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import org.valkyrienskies.mod.common.physmanagement.relocation.DetectorManager;
-
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.List;
 
 @ParametersAreNonnullByDefault
 public class BlockPhysicsInfuserCreative extends BlockPhysicsInfuser {
@@ -36,12 +35,14 @@ public class BlockPhysicsInfuserCreative extends BlockPhysicsInfuser {
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
-        tooltip.add(TextFormatting.BLUE + "Turns any blocks attached to this one into a brand new Ship, " +
+    public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip,
+        ITooltipFlag flagIn) {
+        tooltip.add(
+            TextFormatting.BLUE + "Turns any blocks attached to this one into a brand new Ship, " +
                 "just be careful not to infuse your entire world");
         tooltip.add(TextFormatting.RED.toString() + TextFormatting.RED + TextFormatting.ITALIC +
-                "Warning, the creative infuser has no block limits, and it will infuse " +
-                "everything it touches! Use with extreme caution.");
+            "Warning, the creative infuser has no block limits, and it will infuse " +
+            "everything it touches! Use with extreme caution.");
     }
 
 }

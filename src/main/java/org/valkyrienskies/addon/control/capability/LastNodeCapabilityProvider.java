@@ -24,7 +24,8 @@ import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
 
 public class LastNodeCapabilityProvider implements ICapabilitySerializable<NBTTagIntArray> {
 
-    private ICapabilityLastRelay inst = ValkyrienSkiesControl.lastRelayCapability.getDefaultInstance();
+    private ICapabilityLastRelay inst = ValkyrienSkiesControl.lastRelayCapability
+        .getDefaultInstance();
 
     @Override
     public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
@@ -33,19 +34,20 @@ public class LastNodeCapabilityProvider implements ICapabilitySerializable<NBTTa
 
     @Override
     public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
-        return capability == ValkyrienSkiesControl.lastRelayCapability ? ValkyrienSkiesControl.lastRelayCapability.cast(inst) : null;
+        return capability == ValkyrienSkiesControl.lastRelayCapability
+            ? ValkyrienSkiesControl.lastRelayCapability.cast(inst) : null;
     }
 
     @Override
     public NBTTagIntArray serializeNBT() {
         return (NBTTagIntArray) ValkyrienSkiesControl.lastRelayCapability.getStorage()
-                .writeNBT(ValkyrienSkiesControl.lastRelayCapability, inst, null);
+            .writeNBT(ValkyrienSkiesControl.lastRelayCapability, inst, null);
     }
 
     @Override
     public void deserializeNBT(NBTTagIntArray nbt) {
         ValkyrienSkiesControl.lastRelayCapability.getStorage()
-                .readNBT(ValkyrienSkiesControl.lastRelayCapability, inst, null, nbt);
+            .readNBT(ValkyrienSkiesControl.lastRelayCapability, inst, null, nbt);
     }
 
 }

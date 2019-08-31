@@ -4,16 +4,19 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.play.INetHandlerPlayServer;
 import org.valkyrienskies.mod.common.MixinLoadManager;
-import org.valkyrienskies.mod.common.coordinates.*;
+import org.valkyrienskies.mod.common.coordinates.CoordinateSpaceType;
+import org.valkyrienskies.mod.common.coordinates.ISubspace;
+import org.valkyrienskies.mod.common.coordinates.ISubspaceProvider;
+import org.valkyrienskies.mod.common.coordinates.ISubspacedEntity;
+import org.valkyrienskies.mod.common.coordinates.ISubspacedEntityRecord;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.math.RotationMatrices;
 import valkyrienwarfare.api.TransformType;
 
 /**
- * Used to indicate when a packet must be transformed into ship space to work
- * properly (Digging packets for example). Also comes with functionality to
- * store and retrieve a player data backup to prevent the player from getting
- * teleported somewhere else, but this is not necessarily required.
+ * Used to indicate when a packet must be transformed into ship space to work properly (Digging
+ * packets for example). Also comes with functionality to store and retrieve a player data backup to
+ * prevent the player from getting teleported somewhere else, but this is not necessarily required.
  *
  * @author thebest108
  */
@@ -30,8 +33,7 @@ public interface ITransformablePacket {
     }
 
     /**
-     * Puts the player into local coordinates and makes a record of where they used
-     * to be.
+     * Puts the player into local coordinates and makes a record of where they used to be.
      */
     default void doPreProcessing(INetHandlerPlayServer server, boolean callingFromSponge) {
         if (isPacketOnMainThread(server, callingFromSponge)) {
@@ -39,13 +41,15 @@ public interface ITransformablePacket {
             NetHandlerPlayServer serverHandler = (NetHandlerPlayServer) server;
             EntityPlayerMP player = serverHandler.player;
             PhysicsWrapperEntity wrapper = getPacketParent(serverHandler);
-            if (wrapper != null && wrapper.getPhysicsObject().getShipTransformationManager() != null) {
+            if (wrapper != null
+                && wrapper.getPhysicsObject().getShipTransformationManager() != null) {
                 ISubspaceProvider worldProvider = (ISubspaceProvider) player.getServerWorld();
                 ISubspace worldSubspace = worldProvider.getSubspace();
                 worldSubspace.snapshotSubspacedEntity((ISubspacedEntity) player);
                 RotationMatrices.applyTransform(
-                        wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform(), player,
-                        TransformType.GLOBAL_TO_SUBSPACE);
+                    wrapper.getPhysicsObject().getShipTransformationManager()
+                        .getCurrentTickTransform(), player,
+                    TransformType.GLOBAL_TO_SUBSPACE);
             }
 
         }
@@ -64,7 +68,8 @@ public interface ITransformablePacket {
             ISubspaceProvider worldProvider = (ISubspaceProvider) player.getServerWorld();
             ISubspace worldSubspace = worldProvider.getSubspace();
             ISubspacedEntity subspacedEntity = (ISubspacedEntity) player;
-            ISubspacedEntityRecord record = worldSubspace.getRecordForSubspacedEntity(subspacedEntity);
+            ISubspacedEntityRecord record = worldSubspace
+                .getRecordForSubspacedEntity(subspacedEntity);
             // System.out.println(player.getPosition());
             if (subspacedEntity.currentSubspaceType() == CoordinateSpaceType.SUBSPACE_COORDINATES) {
                 subspacedEntity.restoreSubspacedEntityStateToRecord(record);

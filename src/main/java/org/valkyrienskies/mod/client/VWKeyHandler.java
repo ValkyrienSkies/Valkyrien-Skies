@@ -34,24 +34,39 @@ public class VWKeyHandler {
     private static final String VW_KEYBIND_IDENTIFIER = "Valkyrien Warfare";
 
     // Movement Keys
-    public static final KeyBinding airshipUp = new KeyBinding("Airship Up", Keyboard.KEY_SPACE, VW_KEYBIND_IDENTIFIER);
-    public static final KeyBinding airshipForward = new KeyBinding("Airship Forward", Keyboard.KEY_W, VW_KEYBIND_IDENTIFIER);
-    public static final KeyBinding airshipBackward = new KeyBinding("Airship Backward", Keyboard.KEY_S, VW_KEYBIND_IDENTIFIER);
-    public static final KeyBinding airshipLeft = new KeyBinding("Airship Turn Left", Keyboard.KEY_A, VW_KEYBIND_IDENTIFIER);
-    public static final KeyBinding airshipRight = new KeyBinding("Airship Turn Right", Keyboard.KEY_D, VW_KEYBIND_IDENTIFIER);
-    public static final KeyBinding airshipDown = new KeyBinding("Airship Down", Keyboard.KEY_X, VW_KEYBIND_IDENTIFIER);
-    public static final KeyBinding airshipSpriting = new KeyBinding("Airship Sprinting", Keyboard.KEY_LCONTROL, VW_KEYBIND_IDENTIFIER);
+    public static final KeyBinding airshipUp = new KeyBinding("Airship Up", Keyboard.KEY_SPACE,
+        VW_KEYBIND_IDENTIFIER);
+    public static final KeyBinding airshipForward = new KeyBinding("Airship Forward",
+        Keyboard.KEY_W, VW_KEYBIND_IDENTIFIER);
+    public static final KeyBinding airshipBackward = new KeyBinding("Airship Backward",
+        Keyboard.KEY_S, VW_KEYBIND_IDENTIFIER);
+    public static final KeyBinding airshipLeft = new KeyBinding("Airship Turn Left", Keyboard.KEY_A,
+        VW_KEYBIND_IDENTIFIER);
+    public static final KeyBinding airshipRight = new KeyBinding("Airship Turn Right",
+        Keyboard.KEY_D, VW_KEYBIND_IDENTIFIER);
+    public static final KeyBinding airshipDown = new KeyBinding("Airship Down", Keyboard.KEY_X,
+        VW_KEYBIND_IDENTIFIER);
+    public static final KeyBinding airshipSpriting = new KeyBinding("Airship Sprinting",
+        Keyboard.KEY_LCONTROL, VW_KEYBIND_IDENTIFIER);
 
-    public static final KeyBinding airshipUp_Zepplin = new KeyBinding("Zepplin Airship Up", Keyboard.KEY_ADD, VW_KEYBIND_IDENTIFIER);
-    public static final KeyBinding airshipForward_Zepplin = new KeyBinding("Zepplin Airship Forward", Keyboard.KEY_NUMPAD8, VW_KEYBIND_IDENTIFIER);
-    public static final KeyBinding airshipBackward_Zepplin = new KeyBinding("Zepplin Airship Backward", Keyboard.KEY_NUMPAD2, VW_KEYBIND_IDENTIFIER);
-    public static final KeyBinding airshipLeft_Zepplin = new KeyBinding("Zepplin Airship Turn Left", Keyboard.KEY_NUMPAD4, VW_KEYBIND_IDENTIFIER);
-    public static final KeyBinding airshipRight_Zepplin = new KeyBinding("Zepplin Airship Turn Right", Keyboard.KEY_NUMPAD6, VW_KEYBIND_IDENTIFIER);
-    public static final KeyBinding airshipDown_Zepplin = new KeyBinding("Zepplin Airship Down", Keyboard.KEY_SUBTRACT, VW_KEYBIND_IDENTIFIER);
-    public static final KeyBinding airshipStop_Zepplin = new KeyBinding("Zepplin Airship Stop", Keyboard.KEY_NUMPAD5, VW_KEYBIND_IDENTIFIER);
+    public static final KeyBinding airshipUp_Zepplin = new KeyBinding("Zepplin Airship Up",
+        Keyboard.KEY_ADD, VW_KEYBIND_IDENTIFIER);
+    public static final KeyBinding airshipForward_Zepplin = new KeyBinding(
+        "Zepplin Airship Forward", Keyboard.KEY_NUMPAD8, VW_KEYBIND_IDENTIFIER);
+    public static final KeyBinding airshipBackward_Zepplin = new KeyBinding(
+        "Zepplin Airship Backward", Keyboard.KEY_NUMPAD2, VW_KEYBIND_IDENTIFIER);
+    public static final KeyBinding airshipLeft_Zepplin = new KeyBinding("Zepplin Airship Turn Left",
+        Keyboard.KEY_NUMPAD4, VW_KEYBIND_IDENTIFIER);
+    public static final KeyBinding airshipRight_Zepplin = new KeyBinding(
+        "Zepplin Airship Turn Right", Keyboard.KEY_NUMPAD6, VW_KEYBIND_IDENTIFIER);
+    public static final KeyBinding airshipDown_Zepplin = new KeyBinding("Zepplin Airship Down",
+        Keyboard.KEY_SUBTRACT, VW_KEYBIND_IDENTIFIER);
+    public static final KeyBinding airshipStop_Zepplin = new KeyBinding("Zepplin Airship Stop",
+        Keyboard.KEY_NUMPAD5, VW_KEYBIND_IDENTIFIER);
 
     // Dismount Key
-    public static final KeyBinding dismountKey = new KeyBinding("VW Controller Dismount Key", Keyboard.KEY_LSHIFT, VW_KEYBIND_IDENTIFIER);
+    public static final KeyBinding dismountKey = new KeyBinding("VW Controller Dismount Key",
+        Keyboard.KEY_LSHIFT, VW_KEYBIND_IDENTIFIER);
 
     static {
         ClientRegistry.registerKeyBinding(airshipUp);
@@ -75,15 +90,17 @@ public class VWKeyHandler {
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public void playerTick(PlayerTickEvent event) {
-        if (event.side == Side.SERVER)
+        if (event.side == Side.SERVER) {
             return;
+        }
         if (event.phase == Phase.START) {
             IShipPilotClient clientPilot = (IShipPilotClient) event.player;
             clientPilot.onClientTick();
 
             if (dismountKey.isKeyDown() && clientPilot.isPilotingATile()) {
                 BlockPos pilotedPos = clientPilot.getPosBeingControlled();
-                MessagePlayerStoppedPiloting stopPilotingMessage = new MessagePlayerStoppedPiloting(pilotedPos);
+                MessagePlayerStoppedPiloting stopPilotingMessage = new MessagePlayerStoppedPiloting(
+                    pilotedPos);
                 ValkyrienSkiesControl.controlNetwork.sendToServer(stopPilotingMessage);
                 clientPilot.stopPilotingEverything();
             }

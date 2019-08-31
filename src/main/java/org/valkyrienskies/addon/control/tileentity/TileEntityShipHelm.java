@@ -17,6 +17,7 @@
 package org.valkyrienskies.addon.control.tileentity;
 
 import gigaherz.graph.api.GraphObject;
+import java.util.Optional;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
@@ -41,8 +42,6 @@ import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
-
-import java.util.Optional;
 
 public class TileEntityShipHelm extends TileEntityPilotableImpl implements ITickable {
 
@@ -69,7 +68,8 @@ public class TileEntityShipHelm extends TileEntityPilotableImpl implements ITick
                     wheelRotation = 0;
                 } else {
                     // wheelRotation -= math.signum(wheelRotation) * wheelRotation;
-                    double deltaForce = Math.max(Math.abs(wheelRotation * toOriginRate) - friction, 0);
+                    double deltaForce = Math
+                        .max(Math.abs(wheelRotation * toOriginRate) - friction, 0);
                     wheelRotation += deltaForce * -1 * Math.signum(wheelRotation);
                 }
             }
@@ -82,7 +82,7 @@ public class TileEntityShipHelm extends TileEntityPilotableImpl implements ITick
                 if (tile instanceof TileEntityRudderAxlePart) {
                     BlockPos masterPos = ((TileEntityRudderAxlePart) tile).getMultiblockOrigin();
                     TileEntityRudderAxlePart masterTile = (TileEntityRudderAxlePart) tile.getWorld()
-                            .getTileEntity(masterPos);
+                        .getTileEntity(masterPos);
                     // This is a transient problem that only occurs during world loading.
                     if (masterTile != null) {
                         masterTile.setRudderAngle(-this.wheelRotation / 8D);
@@ -128,12 +128,13 @@ public class TileEntityShipHelm extends TileEntityPilotableImpl implements ITick
         Vector compassPoint = new Vector(getPos().getX(), getPos().getY(), getPos().getZ());
         compassPoint.add(1D, 2D, 1D);
 
-        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(getWorld(), getPos());
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils
+            .getPhysicsObject(getWorld(), getPos());
         if (physicsObject.isPresent()) {
             physicsObject.get()
-                    .getShipTransformationManager()
-                    .getCurrentTickTransform()
-                    .transform(compassPoint,
+                .getShipTransformationManager()
+                .getCurrentTickTransform()
+                .transform(compassPoint,
                     TransformType.SUBSPACE_TO_GLOBAL);
             // RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform,
             // compassPoint);
@@ -144,9 +145,9 @@ public class TileEntityShipHelm extends TileEntityPilotableImpl implements ITick
 
         if (physicsObject.isPresent()) {
             physicsObject.get()
-                    .getShipTransformationManager()
-                    .getCurrentTickTransform()
-                    .rotate(compassDirection,
+                .getShipTransformationManager()
+                .getCurrentTickTransform()
+                .rotate(compassDirection,
                     TransformType.GLOBAL_TO_SUBSPACE);
             // RotationMatrices.doRotationOnly(wrapper.wrapping.coordTransform.wToLTransform,
             // compassDirection);
@@ -154,7 +155,7 @@ public class TileEntityShipHelm extends TileEntityPilotableImpl implements ITick
 
         compassDirection.normalize();
         compassAngle = Math.toDegrees(Math.atan2(compassDirection.X, compassDirection.Z))
-                - wheelAndCompassStateRotation;
+            - wheelAndCompassStateRotation;
         compassAngle = (compassAngle + 360D) % 360D;
     }
 
@@ -172,7 +173,7 @@ public class TileEntityShipHelm extends TileEntityPilotableImpl implements ITick
     }
 
     @Override
-	ControllerInputType getControlInputType() {
+    ControllerInputType getControlInputType() {
         return ControllerInputType.ShipHelm;
     }
 

@@ -18,16 +18,30 @@ package org.valkyrienskies.mixin.world;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
+import javax.annotation.Nullable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IWorldEventListener;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
-import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.Implements;
+import org.spongepowered.asm.mixin.Interface;
 import org.spongepowered.asm.mixin.Interface.Remap;
+import org.spongepowered.asm.mixin.Intrinsic;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -45,12 +59,6 @@ import org.valkyrienskies.mod.common.physmanagement.interaction.IWorldVW;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-
 // TODO: This class is horrible
 @Mixin(value = World.class, priority = 2018)
 @Implements(@Interface(iface = MixinWorldIntrinsicMethods.class, prefix = "vw$", remap = Remap.NONE))
@@ -62,7 +70,8 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
     // I made this threadlocal to prevent disaster for now, but its still really bad code.
     private final ThreadLocal<Boolean> dontIntercept = ThreadLocal.withInitial(() -> false);
     // Pork added on to this already bad code because it was already like this so he doesn't feel bad about it
-    private final ThreadLocal<PhysicsWrapperEntity> dontInterceptShip = ThreadLocal.withInitial(() -> null);
+    private final ThreadLocal<PhysicsWrapperEntity> dontInterceptShip = ThreadLocal
+        .withInitial(() -> null);
     private final ISubspace worldSubspace = new ImplSubspace(null);
 
     @Shadow
@@ -81,47 +90,52 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
      */
     @Intrinsic(displace = true)
     public Biome vw$getBiomeForCoordsBody(BlockPos pos) {
-        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(World.class.cast(this), pos);
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils
+            .getPhysicsObject(World.class.cast(this), pos);
 
         if (physicsObject.isPresent()) {
             pos = physicsObject.get()
-                    .getShipTransformationManager()
-                    .getCurrentTickTransform().transform(pos, TransformType.SUBSPACE_TO_GLOBAL);
+                .getShipTransformationManager()
+                .getCurrentTickTransform().transform(pos, TransformType.SUBSPACE_TO_GLOBAL);
         }
         return getBiomeForCoordsBody(pos);
     }
 
     private static boolean isBoundingBoxTooLarge(AxisAlignedBB alignedBB) {
-        return (alignedBB.maxX - alignedBB.minX > BOUNDING_BOX_EDGE_LIMIT) || (alignedBB.maxY - alignedBB.minY > BOUNDING_BOX_EDGE_LIMIT) || (alignedBB.maxZ - alignedBB.minZ > BOUNDING_BOX_EDGE_LIMIT);
+        return (alignedBB.maxX - alignedBB.minX > BOUNDING_BOX_EDGE_LIMIT) || (
+            alignedBB.maxY - alignedBB.minY > BOUNDING_BOX_EDGE_LIMIT) || (
+            alignedBB.maxZ - alignedBB.minZ > BOUNDING_BOX_EDGE_LIMIT);
     }
 
     /**
-     * This is easier to have as an overwrite because there's less laggy hackery to
-     * be done then :P
+     * This is easier to have as an overwrite because there's less laggy hackery to be done then :P
      *
      * @author DaPorkchop_
      */
     @Overwrite
-    public void spawnParticle(int particleID, boolean ignoreRange, double x, double y, double z, double xSpeed,
-                              double ySpeed, double zSpeed, int... parameters) {
+    public void spawnParticle(int particleID, boolean ignoreRange, double x, double y, double z,
+        double xSpeed,
+        double ySpeed, double zSpeed, int... parameters) {
         BlockPos pos = new BlockPos(x, y, z);
-        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(World.class.cast(this), pos);
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils
+            .getPhysicsObject(World.class.cast(this), pos);
 
         if (physicsObject.isPresent()) {
             Vector newPosVec = new Vector(x, y, z);
             // RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform,
             // newPosVec);
             physicsObject.get()
-                    .getShipTransformationManager()
-                    .getCurrentTickTransform()
-                    .transform(newPosVec,
+                .getShipTransformationManager()
+                .getCurrentTickTransform()
+                .transform(newPosVec,
                     TransformType.SUBSPACE_TO_GLOBAL);
             x = newPosVec.X;
             y = newPosVec.Y;
             z = newPosVec.Z;
         }
         for (int i = 0; i < this.eventListeners.size(); ++i) {
-            this.eventListeners.get(i).spawnParticle(particleID, ignoreRange, x, y, z, xSpeed, ySpeed, zSpeed,
+            this.eventListeners.get(i)
+                .spawnParticle(particleID, ignoreRange, x, y, z, xSpeed, ySpeed, zSpeed,
                     parameters);
         }
     }
@@ -138,8 +152,9 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
     public abstract Chunk getChunk(int chunkX, int chunkZ);
 
     @Inject(method = "getCollisionBoxes(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/AxisAlignedBB;ZLjava/util/List;)Z", at = @At("HEAD"), cancellable = true)
-    private void preGetCollisionBoxes(@Nullable Entity entityIn, AxisAlignedBB aabb, boolean p_191504_3_,
-                                      @Nullable List<AxisAlignedBB> outList, CallbackInfoReturnable<Boolean> callbackInfo) {
+    private void preGetCollisionBoxes(@Nullable Entity entityIn, AxisAlignedBB aabb,
+        boolean p_191504_3_,
+        @Nullable List<AxisAlignedBB> outList, CallbackInfoReturnable<Boolean> callbackInfo) {
         double deltaX = Math.abs(aabb.maxX - aabb.minX);
         double deltaY = Math.abs(aabb.maxY - aabb.minY);
         double deltaZ = Math.abs(aabb.maxZ - aabb.minZ);
@@ -151,8 +166,9 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
         }
     }
 
-    private <T extends Entity> List<T> getEntitiesWithinAABBOriginal(Class<? extends T> clazz, AxisAlignedBB aabb,
-                                                                    @Nullable Predicate<? super T> filter) {
+    private <T extends Entity> List<T> getEntitiesWithinAABBOriginal(Class<? extends T> clazz,
+        AxisAlignedBB aabb,
+        @Nullable Predicate<? super T> filter) {
         int i = MathHelper.floor((aabb.minX - MAX_ENTITY_RADIUS_ALT) / 16.0D);
         int j = MathHelper.ceil((aabb.maxX + MAX_ENTITY_RADIUS_ALT) / 16.0D);
         int k = MathHelper.floor((aabb.minZ - MAX_ENTITY_RADIUS_ALT) / 16.0D);
@@ -163,7 +179,7 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
             for (int j1 = k; j1 < l; ++j1) {
                 if (this.isChunkLoaded(i1, j1, true)) {
                     this.getChunk(i1, j1)
-                            .getEntitiesOfTypeWithinAABB(clazz, aabb, list, filter);
+                        .getEntitiesOfTypeWithinAABB(clazz, aabb, list, filter);
                 }
             }
         }
@@ -171,8 +187,9 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
         return list;
     }
 
-    private List<Entity> getEntitiesInAABBexcludingOriginal(@Nullable Entity entityIn, AxisAlignedBB boundingBox,
-                                                            @Nullable Predicate<? super Entity> predicate) {
+    private List<Entity> getEntitiesInAABBexcludingOriginal(@Nullable Entity entityIn,
+        AxisAlignedBB boundingBox,
+        @Nullable Predicate<? super Entity> predicate) {
         List<Entity> list = Lists.newArrayList();
         int i = MathHelper.floor((boundingBox.minX - MAX_ENTITY_RADIUS_ALT) / 16.0D);
         int j = MathHelper.floor((boundingBox.maxX + MAX_ENTITY_RADIUS_ALT) / 16.0D);
@@ -180,14 +197,15 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
         int l = MathHelper.floor((boundingBox.maxZ + MAX_ENTITY_RADIUS_ALT) / 16.0D);
 
         if (isBoundingBoxTooLarge(boundingBox)) {
-            new Exception("Tried getting entities from giant bounding box of " + boundingBox).printStackTrace();
+            new Exception("Tried getting entities from giant bounding box of " + boundingBox)
+                .printStackTrace();
             return list;
         }
         for (int i1 = i; i1 <= j; ++i1) {
             for (int j1 = k; j1 <= l; ++j1) {
                 if (this.isChunkLoaded(i1, j1, true)) {
                     this.getChunk(i1, j1)
-                            .getEntitiesWithinAABBForEntity(entityIn, boundingBox, list,
+                        .getEntitiesWithinAABBForEntity(entityIn, boundingBox, list,
                             predicate);
                 }
             }
@@ -205,23 +223,25 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
      * @author thebest108
      */
     @Overwrite
-    public <T extends Entity> List<T> getEntitiesWithinAABB(Class<? extends T> clazz, AxisAlignedBB aabb,
-                                                            @Nullable Predicate<? super T> filter) {
+    public <T extends Entity> List<T> getEntitiesWithinAABB(Class<? extends T> clazz,
+        AxisAlignedBB aabb,
+        @Nullable Predicate<? super T> filter) {
         List<T> toReturn = this.getEntitiesWithinAABBOriginal(clazz, aabb, filter);
         BlockPos pos = new BlockPos((aabb.minX + aabb.maxX) / 2D, (aabb.minY + aabb.maxY) / 2D,
-                (aabb.minZ + aabb.maxZ) / 2D);
-        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(World.class.cast(this), pos);
+            (aabb.minZ + aabb.maxZ) / 2D);
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils
+            .getPhysicsObject(World.class.cast(this), pos);
 
         if (physicsObject.isPresent()) {
             Polygon poly = new Polygon(aabb, physicsObject.get()
-                    .getShipTransformationManager()
-                    .getCurrentTickTransform(),
-                    TransformType.SUBSPACE_TO_GLOBAL);
+                .getShipTransformationManager()
+                .getCurrentTickTransform(),
+                TransformType.SUBSPACE_TO_GLOBAL);
             aabb = poly.getEnclosedAABB();// .contract(.3D);
             toReturn.addAll(this.getEntitiesWithinAABBOriginal(clazz, aabb, filter));
 
             toReturn.remove(physicsObject.get()
-                    .getWrapperEntity());
+                .getWrapperEntity());
         }
         return toReturn;
     }
@@ -232,9 +252,11 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
      * @author xd
      */
     @Overwrite
-    public List<Entity> getEntitiesInAABBexcluding(@Nullable Entity entityIn, AxisAlignedBB boundingBox,
-                                                   @Nullable Predicate<? super Entity> predicate) {
-        if ((boundingBox.maxX - boundingBox.minX) * (boundingBox.maxZ - boundingBox.minZ) > 1000000D) {
+    public List<Entity> getEntitiesInAABBexcluding(@Nullable Entity entityIn,
+        AxisAlignedBB boundingBox,
+        @Nullable Predicate<? super Entity> predicate) {
+        if ((boundingBox.maxX - boundingBox.minX) * (boundingBox.maxZ - boundingBox.minZ)
+            > 1000000D) {
             return new ArrayList<>();
         }
 
@@ -243,10 +265,11 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
         if (entityIn instanceof EntityPlayer) {
             EntityPlayer player = (EntityPlayer) entityIn;
             if (player.getRidingEntity() != null &&
-                    !player.getRidingEntity().isDead &&
-                    player.getRidingEntity() instanceof PhysicsWrapperEntity) {
+                !player.getRidingEntity().isDead &&
+                player.getRidingEntity() instanceof PhysicsWrapperEntity) {
                 AxisAlignedBB axisalignedbb = player.getEntityBoundingBox()
-                        .union(player.getRidingEntity().getEntityBoundingBox()).expand(1.0D, 0.0D, 1.0D);
+                    .union(player.getRidingEntity().getEntityBoundingBox())
+                    .expand(1.0D, 0.0D, 1.0D);
 
                 if (boundingBox.equals(axisalignedbb)) {
                     boundingBox = player.getEntityBoundingBox().expand(1.0D, 0.5D, 1.0D);
@@ -255,33 +278,38 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
         }
 
         if (isBoundingBoxTooLarge(boundingBox)) {
-            new Exception("Tried getting entities from giant bounding box of " + boundingBox).printStackTrace();
+            new Exception("Tried getting entities from giant bounding box of " + boundingBox)
+                .printStackTrace();
             return new ArrayList<>();
         }
 
-        List<Entity> toReturn = this.getEntitiesInAABBexcludingOriginal(entityIn, boundingBox, predicate);
+        List<Entity> toReturn = this
+            .getEntitiesInAABBexcludingOriginal(entityIn, boundingBox, predicate);
 
         BlockPos pos = new BlockPos((boundingBox.minX + boundingBox.maxX) / 2D,
-                (boundingBox.minY + boundingBox.maxY) / 2D, (boundingBox.minZ + boundingBox.maxZ) / 2D);
+            (boundingBox.minY + boundingBox.maxY) / 2D, (boundingBox.minZ + boundingBox.maxZ) / 2D);
 
-        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(World.class.cast(this), pos);
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils
+            .getPhysicsObject(World.class.cast(this), pos);
 
         if (physicsObject.isPresent()) {
             Polygon poly = new Polygon(boundingBox, physicsObject.get()
-                    .getShipTransformationManager()
-                    .getCurrentTickTransform(),
-                    TransformType.SUBSPACE_TO_GLOBAL);
+                .getShipTransformationManager()
+                .getCurrentTickTransform(),
+                TransformType.SUBSPACE_TO_GLOBAL);
             boundingBox = poly.getEnclosedAABB().shrink(.3D);
 
             if (isBoundingBoxTooLarge(boundingBox)) {
-                new Exception("Tried getting entities from giant bounding box of " + boundingBox).printStackTrace();
+                new Exception("Tried getting entities from giant bounding box of " + boundingBox)
+                    .printStackTrace();
                 return new ArrayList<>();
             }
 
-            toReturn.addAll(this.getEntitiesInAABBexcludingOriginal(entityIn, boundingBox, predicate));
+            toReturn
+                .addAll(this.getEntitiesInAABBexcludingOriginal(entityIn, boundingBox, predicate));
 
             toReturn.remove(physicsObject.get()
-                    .getWrapperEntity());
+                .getWrapperEntity());
         }
         return toReturn;
     }
@@ -304,7 +332,7 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
 
     @Override
     public void excludeShipFromRayTracer(PhysicsWrapperEntity entity) {
-        if (this.dontInterceptShip.get() != null)   {
+        if (this.dontInterceptShip.get() != null) {
             throw new IllegalStateException("excluded ship is already set!");
         }
         this.dontInterceptShip.set(entity);
@@ -312,37 +340,41 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
 
     @Override
     public void unexcludeShipFromRayTracer(PhysicsWrapperEntity entity) {
-        if (this.dontInterceptShip.get() != entity)   {
+        if (this.dontInterceptShip.get() != entity) {
             throw new IllegalStateException("must exclude the same ship!");
         }
         this.dontInterceptShip.set(null);
     }
 
     @Inject(method = "rayTraceBlocks(Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Vec3d;ZZZ)Lnet/minecraft/util/math/RayTraceResult;", at = @At("HEAD"), cancellable = true)
-    private void preRayTraceBlocks(Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox,
-                                   boolean returnLastUncollidableBlock, CallbackInfoReturnable<RayTraceResult> callbackInfo) {
+    private void preRayTraceBlocks(Vec3d vec31, Vec3d vec32, boolean stopOnLiquid,
+        boolean ignoreBlockWithoutBoundingBox,
+        boolean returnLastUncollidableBlock, CallbackInfoReturnable<RayTraceResult> callbackInfo) {
         if (!this.dontIntercept.get()) {
             callbackInfo.setReturnValue(rayTraceBlocksIgnoreShip(vec31, vec32, stopOnLiquid,
-                    ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock, this.dontInterceptShip.get()));
+                ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock,
+                this.dontInterceptShip.get()));
         }
     }
 
     @Override
     public RayTraceResult rayTraceBlocksIgnoreShip(Vec3d vec31, Vec3d vec32, boolean stopOnLiquid,
-                                                   boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock, PhysicsWrapperEntity toIgnore) {
+        boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock,
+        PhysicsWrapperEntity toIgnore) {
         this.dontIntercept.set(true);
         RayTraceResult vanillaTrace = World.class.cast(this)
-                .rayTraceBlocks(vec31, vec32, stopOnLiquid,
+            .rayTraceBlocks(vec31, vec32, stopOnLiquid,
                 ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
         WorldPhysObjectManager physManager = ValkyrienSkiesMod.VW_PHYSICS_MANAGER
-                .getManagerForWorld(World.class.cast(this));
+            .getManagerForWorld(World.class.cast(this));
         if (physManager == null) {
             return vanillaTrace;
         }
 
         Vec3d playerReachVector = vec32.subtract(vec31);
 
-        AxisAlignedBB playerRangeBB = new AxisAlignedBB(vec31.x, vec31.y, vec31.z, vec32.x, vec32.y, vec32.z);
+        AxisAlignedBB playerRangeBB = new AxisAlignedBB(vec31.x, vec31.y, vec31.z, vec32.x, vec32.y,
+            vec32.z);
 
         List<PhysicsWrapperEntity> nearbyShips = physManager.getNearbyPhysObjects(playerRangeBB);
         // Get rid of the Ship that we're not supposed to be RayTracing for
@@ -358,24 +390,27 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
             Vec3d playerEyesPos = vec31;
             playerReachVector = vec32.subtract(vec31);
 
-            playerEyesPos = wrapper.getPhysicsObject().getShipTransformationManager().getRenderTransform().transform(playerEyesPos,
+            playerEyesPos = wrapper.getPhysicsObject().getShipTransformationManager()
+                .getRenderTransform().transform(playerEyesPos,
                     TransformType.GLOBAL_TO_SUBSPACE);
-            playerReachVector = wrapper.getPhysicsObject().getShipTransformationManager().getRenderTransform().rotate(playerReachVector,
+            playerReachVector = wrapper.getPhysicsObject().getShipTransformationManager()
+                .getRenderTransform().rotate(playerReachVector,
                     TransformType.GLOBAL_TO_SUBSPACE);
 
             Vec3d playerEyesReachAdded = playerEyesPos.add(playerReachVector.x * reachDistance,
-                    playerReachVector.y * reachDistance, playerReachVector.z * reachDistance);
+                playerReachVector.y * reachDistance, playerReachVector.z * reachDistance);
             RayTraceResult resultInShip = World.class.cast(this)
-                    .rayTraceBlocks(playerEyesPos, playerEyesReachAdded,
+                .rayTraceBlocks(playerEyesPos, playerEyesReachAdded,
                     stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
             if (resultInShip != null && resultInShip.hitVec != null
-                    && resultInShip.typeOfHit == RayTraceResult.Type.BLOCK) {
+                && resultInShip.typeOfHit == RayTraceResult.Type.BLOCK) {
                 double shipResultDistFromPlayer = resultInShip.hitVec.distanceTo(playerEyesPos);
                 if (shipResultDistFromPlayer < worldResultDistFromPlayer) {
                     worldResultDistFromPlayer = shipResultDistFromPlayer;
                     // The hitVec must ALWAYS be in global coordinates.
-                    resultInShip.hitVec = wrapper.getPhysicsObject().getShipTransformationManager().getRenderTransform()
-                            .transform(resultInShip.hitVec, TransformType.SUBSPACE_TO_GLOBAL);
+                    resultInShip.hitVec = wrapper.getPhysicsObject().getShipTransformationManager()
+                        .getRenderTransform()
+                        .transform(resultInShip.hitVec, TransformType.SUBSPACE_TO_GLOBAL);
                     vanillaTrace = resultInShip;
                 }
             }

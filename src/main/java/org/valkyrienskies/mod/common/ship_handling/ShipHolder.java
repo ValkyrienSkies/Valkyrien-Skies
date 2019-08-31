@@ -1,10 +1,9 @@
 package org.valkyrienskies.mod.common.ship_handling;
 
-import net.minecraft.entity.player.EntityPlayerMP;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
-
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.entity.player.EntityPlayerMP;
+import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 
 public class ShipHolder {
 

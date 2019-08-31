@@ -22,12 +22,10 @@ import org.valkyrienskies.mod.common.math.Vector;
 import valkyrienwarfare.api.TransformType;
 
 /**
- * The basis for the entire collision engine, this implementation of Polygon
- * stores normals as well as vertices and supports transformations, creating
- * AABB, and checking for collision with other Polygon objects. The polygon can
- * theoretically support an arbitrary amount of vertices and normals, but
- * typically eight vertices and three normals are used. Only supports convex
- * polygons.
+ * The basis for the entire collision engine, this implementation of Polygon stores normals as well
+ * as vertices and supports transformations, creating AABB, and checking for collision with other
+ * Polygon objects. The polygon can theoretically support an arbitrary amount of vertices and
+ * normals, but typically eight vertices and three normals are used. Only supports convex polygons.
  *
  * @author thebest108
  */
@@ -53,10 +51,11 @@ public class Polygon {
     }
 
     private static Vector[] getCornersForAABB(AxisAlignedBB bb) {
-        return new Vector[]{new Vector(bb.minX, bb.minY, bb.minZ), new Vector(bb.minX, bb.maxY, bb.minZ),
-                new Vector(bb.minX, bb.minY, bb.maxZ), new Vector(bb.minX, bb.maxY, bb.maxZ),
-                new Vector(bb.maxX, bb.minY, bb.minZ), new Vector(bb.maxX, bb.maxY, bb.minZ),
-                new Vector(bb.maxX, bb.minY, bb.maxZ), new Vector(bb.maxX, bb.maxY, bb.maxZ)};
+        return new Vector[]{new Vector(bb.minX, bb.minY, bb.minZ),
+            new Vector(bb.minX, bb.maxY, bb.minZ),
+            new Vector(bb.minX, bb.minY, bb.maxZ), new Vector(bb.minX, bb.maxY, bb.maxZ),
+            new Vector(bb.maxX, bb.minY, bb.minZ), new Vector(bb.maxX, bb.maxY, bb.minZ),
+            new Vector(bb.maxX, bb.minY, bb.maxZ), new Vector(bb.maxX, bb.maxY, bb.maxZ)};
     }
 
     public Vector[] getVertices() {

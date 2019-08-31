@@ -16,6 +16,8 @@
 
 package org.valkyrienskies.addon.control.block;
 
+import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
@@ -27,9 +29,6 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import org.valkyrienskies.addon.control.tileentity.TileEntityLiftValve;
 
-import javax.annotation.Nullable;
-import java.util.List;
-
 public class BlockLiftValve extends Block implements ITileEntityProvider {
 
     public BlockLiftValve(Material materialIn) {
@@ -37,8 +36,9 @@ public class BlockLiftValve extends Block implements ITileEntityProvider {
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation,
-                               ITooltipFlag advanced) {
+    public void addInformation(ItemStack stack, @Nullable World player,
+        List<String> itemInformation,
+        ITooltipFlag advanced) {
         itemInformation.add(TextFormatting.RED + I18n.format("tooltip.vs_control.lift_valve"));
     }
 

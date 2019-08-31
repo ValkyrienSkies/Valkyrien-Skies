@@ -1,13 +1,12 @@
 package org.valkyrienskies.mod.common.physmanagement;
 
+import javax.annotation.Nullable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import org.valkyrienskies.fixes.IPhysicsChunk;
 import valkyrienwarfare.api.IPhysicsEntity;
 import valkyrienwarfare.api.IPhysicsEntityManager;
-
-import javax.annotation.Nullable;
 
 public class VW_APIPhysicsEntityManager implements IPhysicsEntityManager {
 
@@ -17,9 +16,9 @@ public class VW_APIPhysicsEntityManager implements IPhysicsEntityManager {
         Chunk chunk = world.getChunk(pos);
         IPhysicsChunk physicsChunk = (IPhysicsChunk) chunk;
         if (physicsChunk.getPhysicsObjectOptional()
-                .isPresent()) {
+            .isPresent()) {
             return physicsChunk.getPhysicsObjectOptional()
-                    .get();
+                .get();
         } else {
             return null;
         }

@@ -1,5 +1,7 @@
 package org.valkyrienskies.addon.control.block;
 
+import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.block.BlockRotatedPillar;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
@@ -17,9 +19,6 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import org.valkyrienskies.addon.control.block.torque.TileEntityRotationTrainAxle;
 
-import javax.annotation.Nullable;
-import java.util.List;
-
 public class BlockRotationTrainAxle extends BlockRotatedPillar implements ITileEntityProvider {
 
     public BlockRotationTrainAxle(Material material) {
@@ -27,9 +26,11 @@ public class BlockRotationTrainAxle extends BlockRotatedPillar implements ITileE
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation,
-                               ITooltipFlag advanced) {
-        itemInformation.add(TextFormatting.BLUE + I18n.format("tooltip.vs_control.rotation_train_axle"));
+    public void addInformation(ItemStack stack, @Nullable World player,
+        List<String> itemInformation,
+        ITooltipFlag advanced) {
+        itemInformation
+            .add(TextFormatting.BLUE + I18n.format("tooltip.vs_control.rotation_train_axle"));
     }
 
     @Override

@@ -1,14 +1,13 @@
 package org.valkyrienskies.mod.common.coordinates;
 
 import io.netty.buffer.ByteBuf;
+import javax.annotation.concurrent.Immutable;
 import org.valkyrienskies.mod.common.math.Vector;
 
-import javax.annotation.concurrent.Immutable;
-
 /**
- * An immutable version of the Vector class that is wrapping another vector.
- * Used to ensure that the the data used by ISubspace objects is never tampered,
- * and we can therefore consider it completely safe.
+ * An immutable version of the Vector class that is wrapping another vector. Used to ensure that the
+ * the data used by ISubspace objects is never tampered, and we can therefore consider it completely
+ * safe.
  *
  * @author thebest108
  */
@@ -31,7 +30,8 @@ public class VectorImmutable {
     }
 
     public static VectorImmutable readFromByteBuf(ByteBuf bufToRead) {
-        return new VectorImmutable(bufToRead.readDouble(), bufToRead.readDouble(), bufToRead.readDouble());
+        return new VectorImmutable(bufToRead.readDouble(), bufToRead.readDouble(),
+            bufToRead.readDouble());
     }
 
     public double getX() {

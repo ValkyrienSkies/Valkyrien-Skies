@@ -12,11 +12,13 @@ import org.valkyrienskies.addon.control.block.BlockLiftControl;
 import org.valkyrienskies.addon.control.tileentity.TileEntityLiftControl;
 import org.valkyrienskies.mod.client.render.GibsAnimationRegistry;
 
-public class LiftControlTileEntityRenderer extends TileEntitySpecialRenderer<TileEntityLiftControl> {
+public class LiftControlTileEntityRenderer extends
+    TileEntitySpecialRenderer<TileEntityLiftControl> {
 
     @Override
-    public void render(TileEntityLiftControl tileentity, double x, double y, double z, float partialTick,
-                       int destroyStage, float alpha) {
+    public void render(TileEntityLiftControl tileentity, double x, double y, double z,
+        float partialTick,
+        int destroyStage, float alpha) {
 
         this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
         GlStateManager.pushMatrix();
@@ -31,7 +33,6 @@ public class LiftControlTileEntityRenderer extends TileEntitySpecialRenderer<Til
         IBlockState gearState = Minecraft.getMinecraft().world.getBlockState(tileentity.getPos());
         if (gearState.getBlock() instanceof BlockLiftControl) {
             EnumFacing facing = gearState.getValue(BlockHorizontal.FACING);
-
 
             GlStateManager.translate(0.5, 0.5, 0.5);
             switch (facing) {
@@ -57,7 +58,8 @@ public class LiftControlTileEntityRenderer extends TileEntitySpecialRenderer<Til
             GlStateManager.translate(-0.5, -0.5, -0.5);
         }
 
-        float leverOffset = tileentity.getPrevLeverOffset() + (tileentity.getLeverOffset() - tileentity.getPrevLeverOffset()) * partialTick;
+        float leverOffset = tileentity.getPrevLeverOffset()
+            + (tileentity.getLeverOffset() - tileentity.getPrevLeverOffset()) * partialTick;
 
         // double keyframe = ((Minecraft.getMinecraft().world.getTotalWorldTime() + partialTick) % 44) + 1;
 

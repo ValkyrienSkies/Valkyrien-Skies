@@ -1,6 +1,7 @@
 package org.valkyrienskies.addon.control.block.torque;
 
 import com.google.common.collect.ImmutableMap;
+import java.util.Optional;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
@@ -12,27 +13,29 @@ import org.valkyrienskies.fixes.VWNetwork;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
-import java.util.Optional;
-
 /**
  * A simple implementation of an IRotationNodeProvider tile entity.
  */
-public class TileEntityBasicRotationTile extends TileEntity implements IRotationNodeProvider, ITickable {
+public class TileEntityBasicRotationTile extends TileEntity implements IRotationNodeProvider,
+    ITickable {
 
     // Maps EnumFacing.Axis to both possible EnumFacing values.
     public static final ImmutableMap<EnumFacing.Axis, Tuple<EnumFacing, EnumFacing>> AXIS_TO_FACING_MAP;
     public static final ImmutableMap<EnumFacing, Double> FACING_TO_RATIO_MAP;
 
     static {
-        AXIS_TO_FACING_MAP = ImmutableMap.of(EnumFacing.Axis.X, new Tuple<>(EnumFacing.EAST, EnumFacing.WEST), EnumFacing.Axis.Y, new Tuple<>(EnumFacing.UP, EnumFacing.DOWN), EnumFacing.Axis.Z, new Tuple<>(EnumFacing.SOUTH, EnumFacing.NORTH));
+        AXIS_TO_FACING_MAP = ImmutableMap
+            .of(EnumFacing.Axis.X, new Tuple<>(EnumFacing.EAST, EnumFacing.WEST), EnumFacing.Axis.Y,
+                new Tuple<>(EnumFacing.UP, EnumFacing.DOWN), EnumFacing.Axis.Z,
+                new Tuple<>(EnumFacing.SOUTH, EnumFacing.NORTH));
         FACING_TO_RATIO_MAP = ImmutableMap.<EnumFacing, Double>builder()
-                .put(EnumFacing.EAST, 1D)
-                .put(EnumFacing.WEST, -1D)
-                .put(EnumFacing.UP, 1D)
-                .put(EnumFacing.DOWN, -1D)
-                .put(EnumFacing.SOUTH, 1D)
-                .put(EnumFacing.NORTH, -1D)
-                .build();
+            .put(EnumFacing.EAST, 1D)
+            .put(EnumFacing.WEST, -1D)
+            .put(EnumFacing.UP, 1D)
+            .put(EnumFacing.DOWN, -1D)
+            .put(EnumFacing.SOUTH, 1D)
+            .put(EnumFacing.NORTH, -1D)
+            .build();
     }
 
     protected final IRotationNode rotationNode;
@@ -64,7 +67,8 @@ public class TileEntityBasicRotationTile extends TileEntity implements IRotation
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
         rotationNode.readFromNBT(compound);
-        this.lastRotation = this.rotation = this.nextRotation = rotationNode.getAngularRotationUnsynchronized();
+        this.lastRotation = this.rotation = this.nextRotation = rotationNode
+            .getAngularRotationUnsynchronized();
     }
 
     @Override
@@ -82,11 +86,14 @@ public class TileEntityBasicRotationTile extends TileEntity implements IRotation
         } else {
             if (this.firstUpdate) {
                 // Inject the rotation node into the physics world.
-                Optional<PhysicsObject> physicsObjectOptional = ValkyrienUtils.getPhysicsObject(getWorld(), getPos());
+                Optional<PhysicsObject> physicsObjectOptional = ValkyrienUtils
+                    .getPhysicsObject(getWorld(), getPos());
                 if (physicsObjectOptional.isPresent()) {
-                    IRotationNodeWorld nodeWorld = physicsObjectOptional.get().getPhysicsProcessor().getPhysicsRotationNodeWorld();
+                    IRotationNodeWorld nodeWorld = physicsObjectOptional.get().getPhysicsProcessor()
+                        .getPhysicsRotationNodeWorld();
                     rotationNode.markInitialized();
-                    nodeWorld.enqueueTaskOntoWorld(() -> nodeWorld.setNodeFromPos(getPos(), rotationNode));
+                    nodeWorld.enqueueTaskOntoWorld(
+                        () -> nodeWorld.setNodeFromPos(getPos(), rotationNode));
                     // nodeWorld.enqueueTaskOntoNode((task) -> task.setCustomTorqueFunction((physObject) -> 0.1D), getPos());
                 }
                 this.firstUpdate = false;

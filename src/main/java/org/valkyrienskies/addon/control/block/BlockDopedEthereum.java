@@ -16,6 +16,9 @@
 
 package org.valkyrienskies.addon.control.block;
 
+import java.util.Collections;
+import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -28,45 +31,41 @@ import org.valkyrienskies.mod.common.block.IBlockForceProvider;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 
-import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.List;
-
 public class BlockDopedEthereum extends Block implements IBlockForceProvider {
 
     private static final double DOPED_ETHEREUM_FORCE = 200000;
     private static final String[] lore = new String[]{
-            "" + TextFormatting.GRAY + TextFormatting.ITALIC + TextFormatting.BOLD +
-                    "Force:", "  " + DOPED_ETHEREUM_FORCE + " Newtons"};
+        "" + TextFormatting.GRAY + TextFormatting.ITALIC + TextFormatting.BOLD +
+            "Force:", "  " + DOPED_ETHEREUM_FORCE + " Newtons"};
 
     public BlockDopedEthereum(Material materialIn) {
         super(materialIn);
     }
 
     /**
-     * The force Vector this block gives within its local space (Not within World
-     * space).
+     * The force Vector this block gives within its local space (Not within World space).
      */
     @Nullable
     @Override
     public Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state,
-										   PhysicsObject physicsObject, double secondsToApply) {
+        PhysicsObject physicsObject, double secondsToApply) {
         // TODO: Shouldn't this depend on the gravity vector?
         return new Vector(0, DOPED_ETHEREUM_FORCE * secondsToApply, 0);
     }
 
     /**
-     * Blocks that shouldn't have their force rotated (Like Ether Compressors) must
-     * return false.
+     * Blocks that shouldn't have their force rotated (Like Ether Compressors) must return false.
      */
     @Override
-    public boolean shouldLocalForceBeRotated(World world, BlockPos pos, IBlockState state, double secondsToApply) {
+    public boolean shouldLocalForceBeRotated(World world, BlockPos pos, IBlockState state,
+        double secondsToApply) {
         return false;
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation,
-                               ITooltipFlag advanced) {
+    public void addInformation(ItemStack stack, @Nullable World player,
+        List<String> itemInformation,
+        ITooltipFlag advanced) {
         Collections.addAll(itemInformation, lore);
     }
 

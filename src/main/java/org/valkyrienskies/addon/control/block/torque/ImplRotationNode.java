@@ -1,5 +1,10 @@
 package org.valkyrienskies.addon.control.block.torque;
 
+import java.lang.reflect.Constructor;
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -7,13 +12,8 @@ import net.minecraft.util.math.BlockPos;
 import org.valkyrienskies.addon.control.block.torque.custom_torque_functions.EtherEngineTorqueFunction;
 import org.valkyrienskies.addon.control.block.torque.custom_torque_functions.SimpleTorqueFunction;
 
-import java.lang.reflect.Constructor;
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-public class ImplRotationNode<T extends TileEntity & IRotationNodeProvider> implements IRotationNode {
+public class ImplRotationNode<T extends TileEntity & IRotationNodeProvider> implements
+    IRotationNode {
 
     private final T tileEntity;
     private final Optional<Double>[] angularVelocityRatios;
@@ -31,7 +31,8 @@ public class ImplRotationNode<T extends TileEntity & IRotationNodeProvider> impl
     public ImplRotationNode(T entity, double rotationalInertia) {
         this.tileEntity = entity;
         // Size 6 because there are 6 sides
-        this.angularVelocityRatios = new Optional[]{Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()};
+        this.angularVelocityRatios = new Optional[]{Optional.empty(), Optional.empty(),
+            Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()};
         this.angularVelocity = 0;
         this.angularRotation = 0;
         this.rotationalInertia = rotationalInertia;
@@ -170,7 +171,8 @@ public class ImplRotationNode<T extends TileEntity & IRotationNodeProvider> impl
 
         if (customTorqueFunction.isPresent()) {
             this.customTorqueFunction = Optional.of(new EtherEngineTorqueFunction(this));
-            compound.setString("custom_torque_funct", customTorqueFunction.get().getClass().getName());
+            compound
+                .setString("custom_torque_funct", customTorqueFunction.get().getClass().getName());
         }
     }
 
@@ -185,12 +187,15 @@ public class ImplRotationNode<T extends TileEntity & IRotationNodeProvider> impl
         }
 
         if (compound.getBoolean("a_has_pos")) {
-            this.nodePos = Optional.of(new BlockPos(compound.getInteger("a_posX"), compound.getInteger("a_posY"), compound.getInteger("a_posZ")));
+            this.nodePos = Optional
+                .of(new BlockPos(compound.getInteger("a_posX"), compound.getInteger("a_posY"),
+                    compound.getInteger("a_posZ")));
         }
 
         for (int i = 0; i < 6; i++) {
             if (compound.hasKey("a_vel_ratios_" + i)) {
-                angularVelocityRatios[i] = Optional.of((double) compound.getFloat("a_vel_ratios_" + i));
+                angularVelocityRatios[i] = Optional
+                    .of((double) compound.getFloat("a_vel_ratios_" + i));
             }
         }
 
@@ -200,7 +205,8 @@ public class ImplRotationNode<T extends TileEntity & IRotationNodeProvider> impl
                 Class<?> c = Class.forName(className);
                 Constructor<?> cons = c.getConstructor(IRotationNode.class);
                 Object customTorqueFunction = cons.newInstance(this);
-                this.customTorqueFunction = Optional.of((SimpleTorqueFunction) customTorqueFunction);
+                this.customTorqueFunction = Optional
+                    .of((SimpleTorqueFunction) customTorqueFunction);
             } catch (Exception e) {
                 System.err.println("Failed to load class: " + className);
                 e.printStackTrace();

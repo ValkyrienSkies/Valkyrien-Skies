@@ -31,8 +31,8 @@ import org.valkyrienskies.mod.common.physmanagement.chunk.PhysicsChunkManager;
 public abstract class MixinWorldBorder {
 
     @Inject(method = "contains(Lnet/minecraft/util/math/BlockPos;)Z",
-            at = @At("HEAD"),
-            cancellable = true)
+        at = @At("HEAD"),
+        cancellable = true)
     public void preContains(BlockPos pos, CallbackInfoReturnable<Boolean> callbackInfo) {
         if (PhysicsChunkManager.isLikelyShipChunk(pos.getX() >> 4, pos.getZ() >> 4)) {
             callbackInfo.setReturnValue(true);

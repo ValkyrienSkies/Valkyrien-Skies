@@ -25,11 +25,10 @@ import org.valkyrienskies.mod.common.multithreaded.PhysicsShipTransform;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 
 /**
- * This IMessage sends all the position rotation data of a PhysicsObject from
- * the server to the client. Usually the data sent from one of these packets is
- * coming from the physics tick and isn't exactly the same as the game tick;
- * this is done so that the client can see ship movement smoothly even when the
- * server game tick is lagging.
+ * This IMessage sends all the position rotation data of a PhysicsObject from the server to the
+ * client. Usually the data sent from one of these packets is coming from the physics tick and isn't
+ * exactly the same as the game tick; this is done so that the client can see ship movement smoothly
+ * even when the server game tick is lagging.
  *
  * @author thebest108
  */
@@ -45,7 +44,8 @@ public class PhysWrapperPositionMessage implements IMessage {
     public PhysWrapperPositionMessage() {
     }
 
-    public PhysWrapperPositionMessage(PhysicsShipTransform transformData, int entityID, int relativeTick) {
+    public PhysWrapperPositionMessage(PhysicsShipTransform transformData, int entityID,
+        int relativeTick) {
         this.setEntityID(entityID);
         this.setRelativeTick(relativeTick);
         this.setShipBB(transformData.getShipBoundingBox());
@@ -98,8 +98,9 @@ public class PhysWrapperPositionMessage implements IMessage {
         setRoll(buf.readDouble());
 
         setCenterOfMass(new Vector(buf.readDouble(), buf.readDouble(), buf.readDouble()));
-        setShipBB(new AxisAlignedBB(buf.readDouble(), buf.readDouble(), buf.readDouble(), buf.readDouble(),
-                buf.readDouble(), buf.readDouble()));
+        setShipBB(new AxisAlignedBB(buf.readDouble(), buf.readDouble(), buf.readDouble(),
+            buf.readDouble(),
+            buf.readDouble(), buf.readDouble()));
     }
 
     @Override

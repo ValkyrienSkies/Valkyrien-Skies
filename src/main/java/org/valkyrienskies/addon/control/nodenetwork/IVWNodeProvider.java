@@ -30,9 +30,8 @@ public interface IVWNodeProvider {
     }
 
     /**
-     * This is the result from all of the graphing code. We specifically want
-     * nothing external to interact with anything but this, to so we can easily
-     * replacing graph code.
+     * This is the result from all of the graphing code. We specifically want nothing external to
+     * interact with anything but this, to so we can easily replacing graph code.
      */
     Iterable<IVWNode> getNetworkedConnections();
 }

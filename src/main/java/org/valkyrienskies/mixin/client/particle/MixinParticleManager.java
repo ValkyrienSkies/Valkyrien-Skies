@@ -16,6 +16,7 @@
 
 package org.valkyrienskies.mixin.client.particle;
 
+import java.util.Optional;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.util.math.BlockPos;
@@ -27,8 +28,6 @@ import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
-
-import java.util.Optional;
 
 @Mixin(ParticleManager.class)
 public abstract class MixinParticleManager {
@@ -46,13 +45,13 @@ public abstract class MixinParticleManager {
             Vector posVec = new Vector(effect.posX, effect.posY, effect.posZ);
             Vector velocity = new Vector(effect.motionX, effect.motionY, effect.motionZ);
             physicsObject.get()
-                    .getShipTransformationManager()
-                    .fromLocalToGlobal(posVec);
+                .getShipTransformationManager()
+                .fromLocalToGlobal(posVec);
 //            RotationMatrices.doRotationOnly(wrapper.wrapping.coordTransform.lToWTransform, velocity);
             physicsObject.get()
-                    .getShipTransformationManager()
-                    .getCurrentTickTransform()
-                    .rotate(velocity, TransformType.SUBSPACE_TO_GLOBAL);
+                .getShipTransformationManager()
+                .getCurrentTickTransform()
+                .rotate(velocity, TransformType.SUBSPACE_TO_GLOBAL);
             effect.setPosition(posVec.X, posVec.Y, posVec.Z);
             effect.motionX = velocity.X;
             effect.motionY = velocity.Y;

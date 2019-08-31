@@ -1,5 +1,8 @@
 package org.valkyrienskies.mod.client.render.infuser_core_rendering;
 
+import java.util.List;
+import javax.annotation.Nullable;
+import javax.vecmath.Matrix4f;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
@@ -11,12 +14,9 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.tuple.Pair;
 
-import javax.annotation.Nullable;
-import javax.vecmath.Matrix4f;
-import java.util.List;
-
 /**
- * Used to create the custom infuser core render logic, such that the hard model is 3d and the inventory model is 2d. Unfortunately forge doesn't provide a better way to do this.
+ * Used to create the custom infuser core render logic, such that the hard model is 3d and the
+ * inventory model is 2d. Unfortunately forge doesn't provide a better way to do this.
  */
 @SideOnly(Side.CLIENT)
 public class InfuserCoreBakedModel implements IBakedModel {
@@ -29,7 +29,8 @@ public class InfuserCoreBakedModel implements IBakedModel {
     }
 
     @Override
-    public Pair<? extends IBakedModel, Matrix4f> handlePerspective(ItemCameraTransforms.TransformType cameraTransformType) {
+    public Pair<? extends IBakedModel, Matrix4f> handlePerspective(
+        ItemCameraTransforms.TransformType cameraTransformType) {
         switch (cameraTransformType) {
             case GUI:
                 return inventoryModel.handlePerspective(cameraTransformType);
@@ -40,7 +41,8 @@ public class InfuserCoreBakedModel implements IBakedModel {
 
     // The rest of the crap past here doesn't matter.
     @Override
-    public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
+    public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side,
+        long rand) {
         return null;
     }
 

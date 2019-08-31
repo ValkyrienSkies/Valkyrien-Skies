@@ -1,5 +1,9 @@
 package org.valkyrienskies.mod.common.command.framework;
 
+import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.List;
+import javax.annotation.ParametersAreNonnullByDefault;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
@@ -10,11 +14,6 @@ import org.apache.commons.io.output.NullOutputStream;
 import org.valkyrienskies.mod.common.command.converters.WorldConverter;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
-
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.io.PrintWriter;
-import java.util.Arrays;
-import java.util.List;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
@@ -55,7 +54,6 @@ public class VWCommandBase<K> extends CommandBase {
         CommandLine commandLine = new CommandLine(factory.create(cmdClass), factory);
         commandLine.registerConverter(World.class, new WorldConverter());
 
-
         ChatWriter chatOut = new ChatWriter(sender);
         commandLine.setOut(chatOut);
         commandLine.setErr(chatOut);
@@ -81,9 +79,9 @@ public class VWCommandBase<K> extends CommandBase {
         }
 
         @Override
-		public void println(String string) {
-        	this.print(string);
-		}
+        public void println(String string) {
+            this.print(string);
+        }
 
     }
 

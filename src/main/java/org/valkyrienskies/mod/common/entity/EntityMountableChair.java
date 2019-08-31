@@ -13,7 +13,8 @@ public class EntityMountableChair extends EntityMountable {
         super(worldIn);
     }
 
-    public EntityMountableChair(World world, Vec3d mountPos, CoordinateSpaceType coordinateSpaceType, BlockPos chairPos) {
+    public EntityMountableChair(World world, Vec3d mountPos,
+        CoordinateSpaceType coordinateSpaceType, BlockPos chairPos) {
         super(world, mountPos, coordinateSpaceType, chairPos);
     }
 
@@ -21,7 +22,8 @@ public class EntityMountableChair extends EntityMountable {
     public void onUpdate() {
         if (!getReferencePos().isPresent()) {
             // Some error occurred, kill this chair.
-            new IllegalStateException("Chair mountable entity has no reference position.").printStackTrace();
+            new IllegalStateException("Chair mountable entity has no reference position.")
+                .printStackTrace();
             this.setDead();
             return;
         }

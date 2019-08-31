@@ -11,10 +11,12 @@ import org.valkyrienskies.addon.control.block.BlockRotationTrainAxle;
 import org.valkyrienskies.addon.control.block.torque.TileEntityRotationTrainAxle;
 import org.valkyrienskies.mod.client.render.GibsAnimationRegistry;
 
-public class RotationTrainAxleTileEntityRenderer extends TileEntitySpecialRenderer<TileEntityRotationTrainAxle> {
+public class RotationTrainAxleTileEntityRenderer extends
+    TileEntitySpecialRenderer<TileEntityRotationTrainAxle> {
 
     @Override
-    public void render(TileEntityRotationTrainAxle tileentity, double x, double y, double z, float partialTick, int destroyStage, float alpha) {
+    public void render(TileEntityRotationTrainAxle tileentity, double x, double y, double z,
+        float partialTick, int destroyStage, float alpha) {
         this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
         GlStateManager.pushMatrix();
         GlStateManager.disableLighting();
@@ -42,12 +44,14 @@ public class RotationTrainAxleTileEntityRenderer extends TileEntitySpecialRender
                     GL11.glRotated(-90, 0, 1, 0);
                     break;
             }
-            GL11.glRotated(Math.toDegrees(tileentity.getRenderRotationRadians(partialTick)), 1, 0, 0);
+            GL11.glRotated(Math.toDegrees(tileentity.getRenderRotationRadians(partialTick)), 1, 0,
+                0);
             GlStateManager.translate(-0.5, -0.5, -0.5);
         }
 
         double keyframe = 1;
-        GibsAnimationRegistry.getAnimation("rotation_train_axle").renderAnimation(keyframe, brightness);
+        GibsAnimationRegistry.getAnimation("rotation_train_axle")
+            .renderAnimation(keyframe, brightness);
 
         GlStateManager.popMatrix();
         GlStateManager.enableLighting();

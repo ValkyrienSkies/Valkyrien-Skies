@@ -30,8 +30,8 @@ import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
 
 /**
- * This class essentially handles all the issues with ticking and handling
- * physics objects in the given world
+ * This class essentially handles all the issues with ticking and handling physics objects in the
+ * given world
  *
  * @author thebest108
  */
@@ -48,8 +48,8 @@ public class WorldPhysObjectManager {
     }
 
     /**
-     * Returns the list of PhysicsEntities that aren't too far away from players to
-     * justify being ticked
+     * Returns the list of PhysicsEntities that aren't too far away from players to justify being
+     * ticked
      *
      * @return
      */
@@ -59,7 +59,7 @@ public class WorldPhysObjectManager {
         while (iterator.hasNext()) {
             PhysicsWrapperEntity wrapperEntity = iterator.next();
             if (!wrapperEntity.getPhysicsObject()
-                    .isFullyLoaded()) {
+                .isFullyLoaded()) {
                 // Don't tick ships that aren't fully loaded.
                 iterator.remove();
             }
@@ -87,14 +87,16 @@ public class WorldPhysObjectManager {
     }
 
     /**
-     * By preloading this, TileEntities loaded within ship chunks can have a direct
-     * link to the ship object while it still loading
+     * By preloading this, TileEntities loaded within ship chunks can have a direct link to the ship
+     * object while it still loading
      *
      * @param loaded
      */
     public void preloadPhysicsWrapperEntityMappings(PhysicsWrapperEntity loaded) {
-        for (int x = loaded.getPhysicsObject().getOwnedChunks().getMinX(); x <= loaded.getPhysicsObject().getOwnedChunks().getMaxX(); x++) {
-            for (int z = loaded.getPhysicsObject().getOwnedChunks().getMinZ(); z <= loaded.getPhysicsObject().getOwnedChunks().getMaxZ(); z++) {
+        for (int x = loaded.getPhysicsObject().getOwnedChunks().getMinX();
+            x <= loaded.getPhysicsObject().getOwnedChunks().getMaxX(); x++) {
+            for (int z = loaded.getPhysicsObject().getOwnedChunks().getMinZ();
+                z <= loaded.getPhysicsObject().getOwnedChunks().getMaxZ(); z++) {
                 chunkPosToPhysicsEntityMap.put(getLongFromInts(x, z), loaded);
             }
         }
@@ -106,14 +108,15 @@ public class WorldPhysObjectManager {
             loaded.getPhysicsObject().onThisUnload();
             VSChunkClaim vwChunkClaim = loaded.getPhysicsObject().getOwnedChunks();
             for (int chunkX = vwChunkClaim.getMinX(); chunkX <= vwChunkClaim.getMaxX(); chunkX++) {
-                for (int chunkZ = vwChunkClaim.getMinZ(); chunkZ <= vwChunkClaim.getMaxZ(); chunkZ++) {
+                for (int chunkZ = vwChunkClaim.getMinZ(); chunkZ <= vwChunkClaim.getMaxZ();
+                    chunkZ++) {
                     chunkPosToPhysicsEntityMap.remove(getLongFromInts(chunkX, chunkZ));
                 }
             }
         } else {
             loaded.isDead = true;
             loaded.getPhysicsObject()
-                    .onThisUnload();
+                .onThisUnload();
         }
         // Remove this ship from all our maps, we do not want to memory leak.
         this.physicsEntities.remove(loaded);
@@ -137,10 +140,10 @@ public class WorldPhysObjectManager {
             // This .expand() is only needed on server side, which tells me something is wrong with server side bounding
             // boxes
             if (wrapper.getPhysicsObject()
-                    .isFullyLoaded() && wrapper.getPhysicsObject()
-                    .getShipBoundingBox()
-                    .expand(2, 2, 2)
-                    .intersects(expandedCheck)) {
+                .isFullyLoaded() && wrapper.getPhysicsObject()
+                .getShipBoundingBox()
+                .expand(2, 2, 2)
+                .intersects(expandedCheck)) {
                 ships.add(wrapper);
             }
         }

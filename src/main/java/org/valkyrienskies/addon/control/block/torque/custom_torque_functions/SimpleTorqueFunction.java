@@ -4,8 +4,8 @@ import org.valkyrienskies.addon.control.block.torque.IRotationNode;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 
 /**
- * Torque functions are used by the rotation nodes to determine their torque each physics tick. They must not be
- * replaced by lambdas otherwise undefined behavior may occur.
+ * Torque functions are used by the rotation nodes to determine their torque each physics tick. They
+ * must not be replaced by lambdas otherwise undefined behavior may occur.
  */
 public class SimpleTorqueFunction {
 

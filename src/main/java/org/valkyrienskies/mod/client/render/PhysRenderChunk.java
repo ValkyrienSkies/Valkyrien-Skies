@@ -16,6 +16,8 @@
 
 package org.valkyrienskies.mod.client.render;
 
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -32,9 +34,6 @@ import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraftforge.client.ForgeHooksClient;
 import org.lwjgl.opengl.GL11;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class PhysRenderChunk {
 
@@ -69,7 +68,8 @@ public class PhysRenderChunk {
             if (layer != null) {
                 layer.markDirtyRenderLists();
             } else {
-                RenderLayer renderLayer = new RenderLayer(renderChunk, layerY * 16, layerY * 16 + 15, this);
+                RenderLayer renderLayer = new RenderLayer(renderChunk, layerY * 16,
+                    layerY * 16 + 15, this);
                 layers[layerY] = renderLayer;
             }
         }
@@ -118,7 +118,8 @@ public class PhysRenderChunk {
             ITileEntitiesToRenderProvider provider = (ITileEntitiesToRenderProvider) chunkToRender;
             List<TileEntity> updatedRenderTiles = provider.getTileEntitiesToRender(yMin >> 4);
             if (updatedRenderTiles != null) {
-                Minecraft.getMinecraft().renderGlobal.updateTileEntities(renderTiles, updatedRenderTiles);
+                Minecraft.getMinecraft().renderGlobal
+                    .updateTileEntities(renderTiles, updatedRenderTiles);
                 renderTiles = new ArrayList<TileEntity>(updatedRenderTiles);
             }
         }
@@ -136,7 +137,8 @@ public class PhysRenderChunk {
             GLAllocation.deleteDisplayLists(glCallListTranslucent);
         }
 
-        public void renderBlockLayer(BlockRenderLayer layerToRender, double partialTicks, int pass) {
+        public void renderBlockLayer(BlockRenderLayer layerToRender, double partialTicks,
+            int pass) {
             switch (layerToRender) {
                 case CUTOUT:
                     if (needsCutoutUpdate) {
@@ -217,11 +219,15 @@ public class PhysRenderChunk {
                         pos.setPos(x, y, z);
                         iblockstate = chunkToRender.getBlockState(pos);
                         try {
-                            if (iblockstate.getBlock().canRenderInLayer(iblockstate, layerToUpdate)) {
-                                Minecraft.getMinecraft().getBlockRendererDispatcher().renderBlock(iblockstate, pos, chunkToRender.world, worldrenderer);
+                            if (iblockstate.getBlock()
+                                .canRenderInLayer(iblockstate, layerToUpdate)) {
+                                Minecraft.getMinecraft().getBlockRendererDispatcher()
+                                    .renderBlock(iblockstate, pos, chunkToRender.world,
+                                        worldrenderer);
                             }
                         } catch (NullPointerException e) {
-                            System.out.println("Something was null! LValkyrienWarfareBase/render/PhysRenderChunk#updateList");
+                            System.out.println(
+                                "Something was null! LValkyrienWarfareBase/render/PhysRenderChunk#updateList");
                         }
                     }
                 }

@@ -1,5 +1,7 @@
 package org.valkyrienskies.addon.control.block;
 
+import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.ITileEntityProvider;
@@ -18,11 +20,9 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import org.valkyrienskies.addon.control.tileentity.TileEntityGearbox;
 
-import javax.annotation.Nullable;
-import java.util.List;
-
 /**
- * Class for the Gearbox block. Note that the FACING property is only used to determine the initial orientation of the gearbox. Afterwards the value stored by the tile tile entity dominates.
+ * Class for the Gearbox block. Note that the FACING property is only used to determine the initial
+ * orientation of the gearbox. Afterwards the value stored by the tile tile entity dominates.
  */
 public class BlockGearbox extends Block implements ITileEntityProvider {
 
@@ -31,13 +31,15 @@ public class BlockGearbox extends Block implements ITileEntityProvider {
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation,
-                               ITooltipFlag advanced) {
+    public void addInformation(ItemStack stack, @Nullable World player,
+        List<String> itemInformation,
+        ITooltipFlag advanced) {
         itemInformation.add(TextFormatting.BLUE + I18n.format("tooltip.vs_control.gearbox"));
     }
 
     @Override
-    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
+    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing,
+        float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
         EnumFacing facingHorizontal = placer.getHorizontalFacing();
         if (!placer.isSneaking()) {
             facingHorizontal = facingHorizontal.getOpposite();
@@ -62,7 +64,7 @@ public class BlockGearbox extends Block implements ITileEntityProvider {
     @Override
     public int getMetaFromState(IBlockState state) {
         int i = state.getValue(BlockHorizontal.FACING)
-                .getIndex();
+            .getIndex();
         return i;
     }
 

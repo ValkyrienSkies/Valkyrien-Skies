@@ -23,8 +23,7 @@ import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
 import valkyrienwarfare.api.TransformType;
 
 /**
- * An extension of ShipTransform with extra data not required by most other
- * ShipTransform objects.
+ * An extension of ShipTransform with extra data not required by most other ShipTransform objects.
  *
  * @author thebest108
  */
@@ -41,6 +40,7 @@ public class PhysicsShipTransform extends ShipTransform {
 
     /**
      * Creates the PhysicsShipTransform.
+     *
      * @param physX
      * @param physY
      * @param physZ
@@ -51,8 +51,10 @@ public class PhysicsShipTransform extends ShipTransform {
      * @param gameTickShipBoundingBox
      * @param gameTickTransform
      */
-    public PhysicsShipTransform(double physX, double physY, double physZ, double physPitch, double physYaw,
-                                double physRoll, Vector physCenterOfMass, AxisAlignedBB gameTickShipBoundingBox, ShipTransform gameTickTransform) {
+    public PhysicsShipTransform(double physX, double physY, double physZ, double physPitch,
+        double physYaw,
+        double physRoll, Vector physCenterOfMass, AxisAlignedBB gameTickShipBoundingBox,
+        ShipTransform gameTickTransform) {
         super(physX, physY, physZ, physPitch, physYaw, physRoll, physCenterOfMass);
         this.posX = physX;
         this.posY = physY;
@@ -65,14 +67,14 @@ public class PhysicsShipTransform extends ShipTransform {
     }
 
     /**
-     * Makes a reasonable approximation for what the parent AABB would be with the
-     * physics transformation instead of the game transformation. Reasonably
-     * accurate for small differences in time, but shouldn't be used for time deltas
-     * greater than a tick or two.
+     * Makes a reasonable approximation for what the parent AABB would be with the physics
+     * transformation instead of the game transformation. Reasonably accurate for small differences
+     * in time, but shouldn't be used for time deltas greater than a tick or two.
      *
      * @return An approximation of a physics collision bounding box.
      */
-    private AxisAlignedBB createApproxBoundingBox(AxisAlignedBB gameTickBB, ShipTransform gameTickTransform) {
+    private AxisAlignedBB createApproxBoundingBox(AxisAlignedBB gameTickBB,
+        ShipTransform gameTickTransform) {
         Polygon gameTickBBPoly = new Polygon(gameTickBB);
         gameTickBBPoly.transform(gameTickTransform, TransformType.GLOBAL_TO_SUBSPACE);
         gameTickBBPoly.transform(this, TransformType.SUBSPACE_TO_GLOBAL);
@@ -108,11 +110,11 @@ public class PhysicsShipTransform extends ShipTransform {
     }
 
     /**
-     * Used for approximation purposes such that the AABB only has to be properly
-     * recalculated every game tick instead of every physics tick.
+     * Used for approximation purposes such that the AABB only has to be properly recalculated every
+     * game tick instead of every physics tick.
      *
-     * @return An approximation for what the ship collision bounding box would be
-     * using the physics transformations instead of game transformation.
+     * @return An approximation for what the ship collision bounding box would be using the physics
+     * transformations instead of game transformation.
      */
     public AxisAlignedBB getShipBoundingBox() {
         return shipBoundingBox;

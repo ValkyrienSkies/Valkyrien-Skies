@@ -1,5 +1,9 @@
 package org.valkyrienskies.mod.common.tileentity;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import javax.annotation.Nullable;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -31,12 +35,8 @@ import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.chunk.PhysicsChunkManager;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
-import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
-public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, ICapabilityProvider, IVWTileGui {
+public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, ICapabilityProvider,
+    IVWTileGui {
 
     private final ItemStackHandler handler;
     private volatile boolean sendUpdateToClients;
@@ -71,7 +71,8 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
     public void update() {
         // Check if we have to create a ship
         if (!getWorld().isRemote) {
-            Optional<PhysicsObject> parentShip = ValkyrienUtils.getPhysicsObject(getWorld(), getPos(), false);
+            Optional<PhysicsObject> parentShip = ValkyrienUtils
+                .getPhysicsObject(getWorld(), getPos(), false);
             // Set the physics and align value to false if we're not in a ship
             if (!parentShip.isPresent()) {
                 if (physicsEnabled || tryingToAlignShip) {
@@ -86,12 +87,14 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
             if (infuserState.getBlock() == ValkyrienSkiesMod.INSTANCE.physicsInfuser) {
                 if (isPhysicsEnabled() && canMaintainShip()) {
                     if (!infuserState.getValue(BlockPhysicsInfuser.INFUSER_LIGHT_ON)) {
-                        IBlockState newState = infuserState.withProperty(BlockPhysicsInfuser.INFUSER_LIGHT_ON, true);
+                        IBlockState newState = infuserState
+                            .withProperty(BlockPhysicsInfuser.INFUSER_LIGHT_ON, true);
                         getWorld().setBlockState(getPos(), newState);
                     }
                 } else {
                     if (infuserState.getValue(BlockPhysicsInfuser.INFUSER_LIGHT_ON)) {
-                        IBlockState newState = infuserState.withProperty(BlockPhysicsInfuser.INFUSER_LIGHT_ON, false);
+                        IBlockState newState = infuserState
+                            .withProperty(BlockPhysicsInfuser.INFUSER_LIGHT_ON, false);
                         getWorld().setBlockState(getPos(), newState);
                     }
                 }
@@ -100,7 +103,8 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
             if (!parentShip.isPresent() && canMaintainShip() && tryToAssembleShip) {
                 // Create a ship with this physics infuser
                 // Make sure we don't try to create a ship when we're already in ship space.
-                if (!PhysicsChunkManager.isLikelyShipChunk(getPos().getX() >> 4, getPos().getZ() >> 4)) {
+                if (!PhysicsChunkManager
+                    .isLikelyShipChunk(getPos().getX() >> 4, getPos().getZ() >> 4)) {
                     try {
                         PhysicsWrapperEntity ship = new PhysicsWrapperEntity(this);
                         getWorld().spawnEntity(ship);
@@ -124,10 +128,13 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
                 for (EnumInfuserCore enumInfuserCore : EnumInfuserCore.values()) {
                     coreOffsetsPrevTick.put(enumInfuserCore, coreOffsets.get(enumInfuserCore));
                     if (!handler.getStackInSlot(enumInfuserCore.coreSlotIndex)
-                            .isEmpty() && canMaintainShip()) {
-                        double sinAngle = ((worldTime % 50) * 2 * Math.PI / 50) + (2 * Math.PI / EnumInfuserCore.values().length) * enumInfuserCore.coreSlotIndex;
+                        .isEmpty() && canMaintainShip()) {
+                        double sinAngle = ((worldTime % 50) * 2 * Math.PI / 50)
+                            + (2 * Math.PI / EnumInfuserCore.values().length)
+                            * enumInfuserCore.coreSlotIndex;
                         double idealOffset = .025 * (Math.sin(sinAngle) + 1);
-                        double lerpedOffset = .9 * coreOffsets.get(enumInfuserCore) + .1 * idealOffset;
+                        double lerpedOffset =
+                            .9 * coreOffsets.get(enumInfuserCore) + .1 * idealOffset;
                         coreOffsets.put(enumInfuserCore, lerpedOffset);
                     } else {
                         coreOffsets.put(enumInfuserCore, 0D);
@@ -188,7 +195,9 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
         if (this.world.getTileEntity(this.pos) != this) {
             return false;
         } else {
-            return player.getDistanceSq((double) this.pos.getX() + 0.5D, (double) this.pos.getY() + 0.5D, (double) this.pos.getZ() + 0.5D) <= 64.0D;
+            return player
+                .getDistanceSq((double) this.pos.getX() + 0.5D, (double) this.pos.getY() + 0.5D,
+                    (double) this.pos.getZ() + 0.5D) <= 64.0D;
         }
     }
 
@@ -216,17 +225,21 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
         // Only check this after we've gotten the block meta to avoid a data race.
         if (blockType instanceof BlockPhysicsInfuser) {
             IBlockState blockState = blockType.getStateFromMeta(blockMeta);
-            EnumFacing sideFacing = ((BlockPhysicsInfuser) blockType).getDummyStateFacing(blockState);
+            EnumFacing sideFacing = ((BlockPhysicsInfuser) blockType)
+                .getDummyStateFacing(blockState);
             // First make the aabb for the main block, then include the dummy block, then include the bits coming out the top.
-            return new AxisAlignedBB(getPos()).expand(-sideFacing.getXOffset(), -sideFacing.getYOffset(), -sideFacing.getZOffset())
-                    .expand(0, .3, 0);
+            return new AxisAlignedBB(getPos())
+                .expand(-sideFacing.getXOffset(), -sideFacing.getYOffset(),
+                    -sideFacing.getZOffset())
+                .expand(0, .3, 0);
         }
         // Default in case broken.
         return super.getRenderBoundingBox();
     }
 
     public boolean isCurrentlyInShip() {
-        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(getWorld(), getPos());
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils
+            .getPhysicsObject(getWorld(), getPos());
         return physicsObject.isPresent();
     }
 
@@ -280,34 +293,40 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
 
         if (getWorld().isRemote) {
             // If client, then send a packet telling the server we pressed this button.
-            ValkyrienSkiesMod.physWrapperNetwork.sendToServer(new VWGuiButtonMessage(this, button.ordinal()));
+            ValkyrienSkiesMod.physWrapperNetwork
+                .sendToServer(new VWGuiButtonMessage(this, button.ordinal()));
         }
     }
 
     /**
-     * @return If this TileEntity is in a ship then this returns whether that ship can be deconstructed or not, otherwise this returns true.
+     * @return If this TileEntity is in a ship then this returns whether that ship can be
+     * deconstructed or not, otherwise this returns true.
      */
     public boolean canShipBeDeconstructed() {
-        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(getWorld(), getPos());
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils
+            .getPhysicsObject(getWorld(), getPos());
         return !physicsObject.isPresent() || physicsObject.get()
-                .canShipBeDeconstructed();
+            .canShipBeDeconstructed();
     }
 
     @Override
-    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate) {
+    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState,
+        IBlockState newSate) {
         return oldState.getBlock() != newSate.getBlock();
     }
 
     public boolean isCenterOfShip() {
-        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(getWorld(), getPos());
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils
+            .getPhysicsObject(getWorld(), getPos());
         return !physicsObject.isPresent() || physicsObject.get()
-                .getPhysicsInfuserPos()
-                .equals(getPos());
+            .getPhysicsInfuserPos()
+            .equals(getPos());
     }
 
     @SideOnly(Side.CLIENT)
     public double getCoreVerticalOffset(EnumInfuserCore enumInfuserCore, float partialTicks) {
-        return (1 - partialTicks) * coreOffsetsPrevTick.get(enumInfuserCore) + partialTicks * coreOffsets.get(enumInfuserCore);
+        return (1 - partialTicks) * coreOffsetsPrevTick.get(enumInfuserCore)
+            + partialTicks * coreOffsets.get(enumInfuserCore);
     }
 
     /**

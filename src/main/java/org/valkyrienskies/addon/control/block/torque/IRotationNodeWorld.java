@@ -1,14 +1,14 @@
 package org.valkyrienskies.addon.control.block.torque;
 
+import java.util.function.Consumer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 
-import java.util.function.Consumer;
-
 /**
- * This class is designed to carefully organize synchronization across the physics and game tick threads. Some of the
- * methods will be designed to only be called on the physics thread, and others to only be called on the game thread.
- * If these conventions are not respected then the game will likely break, so PLEASE follow each methods instructions!
+ * This class is designed to carefully organize synchronization across the physics and game tick
+ * threads. Some of the methods will be designed to only be called on the physics thread, and others
+ * to only be called on the game thread. If these conventions are not respected then the game will
+ * likely break, so PLEASE follow each methods instructions!
  */
 public interface IRotationNodeWorld {
 

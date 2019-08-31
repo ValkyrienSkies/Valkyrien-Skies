@@ -41,9 +41,10 @@ public class MixinCPacketPlayer implements ITransformablePacket {
             if (parent != null) {
                 ISubspace parentSubspace = parent.getPhysicsObject().getSubspace();
                 ISubspacedEntityRecord entityRecord = parentSubspace
-                        .getRecordForSubspacedEntity((ISubspacedEntity) getPacketPlayer(server));
+                    .getRecordForSubspacedEntity((ISubspacedEntity) getPacketPlayer(server));
                 VectorImmutable positionGlobal = entityRecord.getPositionInGlobalCoordinates();
-                VectorImmutable lookVectorGlobal = entityRecord.getLookDirectionInGlobalCoordinates();
+                VectorImmutable lookVectorGlobal = entityRecord
+                    .getLookDirectionInGlobalCoordinates();
 
                 float pitch = (float) VWMath.getPitchFromVectorImmutable(lookVectorGlobal);
                 float yaw = (float) VWMath.getYawFromVectorImmutable(lookVectorGlobal, pitch);
@@ -77,7 +78,7 @@ public class MixinCPacketPlayer implements ITransformablePacket {
             PhysicsWrapperEntity parent = getPacketParent((NetHandlerPlayServer) server);
             if (parent != null) {
                 parent.getPhysicsObject().getSubspace()
-                        .forceSubspaceRecord((ISubspacedEntity) getPacketPlayer(server), null);
+                    .forceSubspaceRecord((ISubspacedEntity) getPacketPlayer(server), null);
             }
             IDraggable draggable = (IDraggable) getPacketPlayer(server);
             draggable.setForcedRelativeSubspace(null);

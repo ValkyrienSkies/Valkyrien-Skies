@@ -1,9 +1,8 @@
 package org.valkyrienskies.mod.client.render;
 
-import net.minecraft.tileentity.TileEntity;
-
-import javax.annotation.Nullable;
 import java.util.List;
+import javax.annotation.Nullable;
+import net.minecraft.tileentity.TileEntity;
 
 public interface ITileEntitiesToRenderProvider {
 

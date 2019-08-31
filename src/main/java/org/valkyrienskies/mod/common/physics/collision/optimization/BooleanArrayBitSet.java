@@ -17,8 +17,8 @@
 package org.valkyrienskies.mod.common.physics.collision.optimization;
 
 /**
- * Not as space efficient as BitSet (about 8x the size), but also has a much
- * lower cpu cost. Has no bounds checking to reduce overhead.
+ * Not as space efficient as BitSet (about 8x the size), but also has a much lower cpu cost. Has no
+ * bounds checking to reduce overhead.
  */
 public class BooleanArrayBitSet implements IBitSet {
 

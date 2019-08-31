@@ -16,6 +16,7 @@
 
 package org.valkyrienskies.mixin.network.play.client;
 
+import java.util.Optional;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.play.INetHandlerPlayServer;
 import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
@@ -29,12 +30,11 @@ import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
-import java.util.Optional;
-
 @Mixin(value = CPacketPlayerTryUseItemOnBlock.class)
 public class MixinCPacketPlayerTryUseItemOnBlock implements ITransformablePacket {
 
-    private final CPacketPlayerTryUseItemOnBlock thisPacketTryUse = CPacketPlayerTryUseItemOnBlock.class.cast(this);
+    private final CPacketPlayerTryUseItemOnBlock thisPacketTryUse = CPacketPlayerTryUseItemOnBlock.class
+        .cast(this);
 
     @Inject(method = "processPacket", at = @At(value = "HEAD"))
     public void preHandleUseItemPacket(INetHandlerPlayServer server, CallbackInfo info) {
@@ -49,10 +49,11 @@ public class MixinCPacketPlayerTryUseItemOnBlock implements ITransformablePacket
     @Override
     public PhysicsWrapperEntity getPacketParent(NetHandlerPlayServer server) {
         World world = server.player.getEntityWorld();
-        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(world, thisPacketTryUse.getPos());
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils
+            .getPhysicsObject(world, thisPacketTryUse.getPos());
         if (physicsObject.isPresent()) {
             return physicsObject.get()
-                    .getWrapperEntity();
+                .getWrapperEntity();
         } else {
             return null;
         }

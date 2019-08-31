@@ -12,11 +12,13 @@ import org.valkyrienskies.mod.client.render.GibsAnimationRegistry;
 import org.valkyrienskies.mod.common.math.RotationMatrices;
 import org.valkyrienskies.mod.common.math.Vector;
 
-public class EthereumCompressorPartTileEntityRenderer extends TileEntitySpecialRenderer<TileEntityEthereumCompressorPart> {
+public class EthereumCompressorPartTileEntityRenderer extends
+    TileEntitySpecialRenderer<TileEntityEthereumCompressorPart> {
 
     @Override
-    public void render(TileEntityEthereumCompressorPart tileentity, double x, double y, double z, float partialTick,
-                       int destroyStage, float alpha) {
+    public void render(TileEntityEthereumCompressorPart tileentity, double x, double y, double z,
+        float partialTick,
+        int destroyStage, float alpha) {
 
         this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
         GlStateManager.pushMatrix();
@@ -32,17 +34,21 @@ public class EthereumCompressorPartTileEntityRenderer extends TileEntitySpecialR
         if (!tileentity.isPartOfAssembledMultiblock()) {
             IBlockState state = Blocks.GOLD_BLOCK.getDefaultState();
             Tessellator tessellator = Tessellator.getInstance();
-            FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(), state, brightness);
+            FastBlockModelRenderer
+                .renderBlockModel(tessellator, tileentity.getWorld(), state, brightness);
         } else {
             if (tileentity.isMaster()) {
                 double keyframe = tileentity.getCurrentKeyframe(partialTick);
 
                 GlStateManager.pushMatrix();
 
-                float rotationYaw = tileentity.getMultiBlockSchematic().getMultiblockRotation().getYaw();
+                float rotationYaw = tileentity.getMultiBlockSchematic().getMultiblockRotation()
+                    .getYaw();
 
                 Vector centerOffset = new Vector(.5, 0, .5);
-                RotationMatrices.applyTransform(RotationMatrices.getRotationMatrix(0, -rotationYaw, 0), centerOffset);
+                RotationMatrices
+                    .applyTransform(RotationMatrices.getRotationMatrix(0, -rotationYaw, 0),
+                        centerOffset);
                 GlStateManager.translate(centerOffset.X, centerOffset.Y, centerOffset.Z);
 
                 GlStateManager.translate(.5, 0, .5);
@@ -50,7 +56,8 @@ public class EthereumCompressorPartTileEntityRenderer extends TileEntitySpecialR
                 GlStateManager.rotate(-rotationYaw, 0, 1, 0);
                 GlStateManager.translate(-.5, 0, -.5);
 
-                GibsAnimationRegistry.getAnimation("ethereum_compressor").renderAnimation(keyframe, brightness);
+                GibsAnimationRegistry.getAnimation("ethereum_compressor")
+                    .renderAnimation(keyframe, brightness);
                 GlStateManager.popMatrix();
             }
         }

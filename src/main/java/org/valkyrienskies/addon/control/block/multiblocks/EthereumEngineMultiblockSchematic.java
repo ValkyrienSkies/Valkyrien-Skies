@@ -1,5 +1,7 @@
 package org.valkyrienskies.addon.control.block.multiblocks;
 
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -7,9 +9,6 @@ import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import org.valkyrienskies.addon.control.MultiblockRegistry;
 import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class EthereumEngineMultiblockSchematic implements IMulitblockSchematic {
 
@@ -31,7 +30,8 @@ public class EthereumEngineMultiblockSchematic implements IMulitblockSchematic {
         for (int x = -1; x <= 1; x++) {
             for (int y = 0; y <= 1; y++) {
                 for (int z = -1; z <= 0; z++) {
-                    structureRelativeToCenter.add(new BlockPosBlockPair(new BlockPos(x, y, z), enginePart));
+                    structureRelativeToCenter
+                        .add(new BlockPosBlockPair(new BlockPos(x, y, z), enginePart));
                 }
             }
         }
@@ -72,7 +72,8 @@ public class EthereumEngineMultiblockSchematic implements IMulitblockSchematic {
         for (EnumMultiblockRotation potentialRotation : EnumMultiblockRotation.values()) {
             EthereumEngineMultiblockSchematic variant = new EthereumEngineMultiblockSchematic();
 
-            variant.initializeMultiblockSchematic(getSchematicPrefix() + ":rot:" + potentialRotation.toString());
+            variant.initializeMultiblockSchematic(
+                getSchematicPrefix() + ":rot:" + potentialRotation.toString());
 
             List<BlockPosBlockPair> rotatedPairs = new ArrayList<BlockPosBlockPair>();
             for (BlockPosBlockPair unrotatedPairs : variant.structureRelativeToCenter) {
@@ -83,7 +84,8 @@ public class EthereumEngineMultiblockSchematic implements IMulitblockSchematic {
             variant.structureRelativeToCenter.addAll(rotatedPairs);
             variant.multiblockRotation = potentialRotation;
             variant.torqueOutputPos = potentialRotation.rotatePos(variant.torqueOutputPos);
-            variant.torqueOutputDirection = potentialRotation.rotatePos((BlockPos) variant.torqueOutputDirection);
+            variant.torqueOutputDirection = potentialRotation
+                .rotatePos((BlockPos) variant.torqueOutputDirection);
             variants.add(variant);
         }
         // TODO Auto-generated method stub

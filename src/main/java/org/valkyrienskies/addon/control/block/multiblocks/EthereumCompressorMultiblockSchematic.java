@@ -1,14 +1,13 @@
 package org.valkyrienskies.addon.control.block.multiblocks;
 
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.valkyrienskies.addon.control.MultiblockRegistry;
 import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class EthereumCompressorMultiblockSchematic implements IMulitblockSchematic {
 
@@ -27,7 +26,8 @@ public class EthereumCompressorMultiblockSchematic implements IMulitblockSchemat
         for (int x = 0; x <= 1; x++) {
             for (int y = 0; y <= 1; y++) {
                 for (int z = 0; z <= 1; z++) {
-                    structureRelativeToCenter.add(new BlockPosBlockPair(new BlockPos(x, y, z), enginePart));
+                    structureRelativeToCenter
+                        .add(new BlockPosBlockPair(new BlockPos(x, y, z), enginePart));
                 }
             }
         }
@@ -66,7 +66,8 @@ public class EthereumCompressorMultiblockSchematic implements IMulitblockSchemat
         for (EnumMultiblockRotation potentialRotation : EnumMultiblockRotation.values()) {
             EthereumCompressorMultiblockSchematic varient = new EthereumCompressorMultiblockSchematic();
 
-            varient.initializeMultiblockSchematic(getSchematicPrefix() + ":rot:" + potentialRotation.toString());
+            varient.initializeMultiblockSchematic(
+                getSchematicPrefix() + ":rot:" + potentialRotation.toString());
 
             List<BlockPosBlockPair> rotatedPairs = new ArrayList<BlockPosBlockPair>();
             for (BlockPosBlockPair unrotatedPairs : varient.structureRelativeToCenter) {

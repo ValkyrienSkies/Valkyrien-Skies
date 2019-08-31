@@ -21,8 +21,8 @@ import net.minecraft.world.World;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 
 /**
- * This class is responsible for finding/allocating the Chunks for
- * PhysicsObjects; also ensures the custom chunk-loading system in place
+ * This class is responsible for finding/allocating the Chunks for PhysicsObjects; also ensures the
+ * custom chunk-loading system in place
  *
  * @author thebest108
  */
@@ -41,19 +41,22 @@ public class PhysicsChunkManager {
     public final World worldObj;
 
     /**
-     * This finds the next empty chunkSet for use, currently only increases the xPos
-     * to get new positions
+     * This finds the next empty chunkSet for use, currently only increases the xPos to get new
+     * positions
      */
     public VSChunkClaim getNextAvailableChunkSet(int radius) {
         IVWWorldDataCapability worldDataCapability =
-                worldObj.getCapability(ValkyrienSkiesMod.vwWorldData, null);
+            worldObj.getCapability(ValkyrienSkiesMod.vwWorldData, null);
 
         // TODO: Add the ship id to the allocation eventually.
-        ShipChunkAllocator.ChunkAllocation allocatedChunks = Objects.requireNonNull(worldDataCapability)
-                .getChunkAllocator()
-                .allocateChunks("insert ship id here", radius);
+        ShipChunkAllocator.ChunkAllocation allocatedChunks = Objects
+            .requireNonNull(worldDataCapability)
+            .getChunkAllocator()
+            .allocateChunks("insert ship id here", radius);
 
-        return new VSChunkClaim(allocatedChunks.lowerChunkX + ShipChunkAllocator.MAX_SHIP_CHUNK_RADIUS, allocatedChunks.lowerChunkZ + ShipChunkAllocator.MAX_SHIP_CHUNK_RADIUS, radius);
+        return new VSChunkClaim(
+            allocatedChunks.lowerChunkX + ShipChunkAllocator.MAX_SHIP_CHUNK_RADIUS,
+            allocatedChunks.lowerChunkZ + ShipChunkAllocator.MAX_SHIP_CHUNK_RADIUS, radius);
     }
 
 }

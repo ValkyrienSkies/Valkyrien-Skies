@@ -1,5 +1,7 @@
 package org.valkyrienskies.addon.control.block.multiblocks;
 
+import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
@@ -16,24 +18,25 @@ import org.valkyrienskies.mod.common.block.IBlockForceProvider;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 
-import javax.annotation.Nullable;
-import java.util.List;
-
-public class BlockGiantPropellerPart extends Block implements ITileEntityProvider, IBlockForceProvider {
+public class BlockGiantPropellerPart extends Block implements ITileEntityProvider,
+    IBlockForceProvider {
 
     public BlockGiantPropellerPart(Material materialIn) {
         super(materialIn);
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation,
-                               ITooltipFlag advanced) {
-        itemInformation.add(TextFormatting.BLUE + I18n.format("tooltip.vs_control.giant_propeller_part"));
+    public void addInformation(ItemStack stack, @Nullable World player,
+        List<String> itemInformation,
+        ITooltipFlag advanced) {
+        itemInformation
+            .add(TextFormatting.BLUE + I18n.format("tooltip.vs_control.giant_propeller_part"));
     }
 
     @Nullable
     @Override
-    public Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state, PhysicsObject physicsObject, double secondsToApply) {
+    public Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state,
+        PhysicsObject physicsObject, double secondsToApply) {
         if (true) {
 //            return new Vector(0, 1000 * secondsToApply, 0);
         }
@@ -46,7 +49,8 @@ public class BlockGiantPropellerPart extends Block implements ITileEntityProvide
     }
 
     @Override
-    public boolean shouldLocalForceBeRotated(World world, BlockPos pos, IBlockState state, double secondsToApply) {
+    public boolean shouldLocalForceBeRotated(World world, BlockPos pos, IBlockState state,
+        double secondsToApply) {
         return true;
     }
 

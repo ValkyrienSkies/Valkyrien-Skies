@@ -1,5 +1,7 @@
 package org.valkyrienskies.addon.control.block.multiblocks;
 
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -8,9 +10,6 @@ import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import org.valkyrienskies.addon.control.MultiblockRegistry;
 import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class GiantPropellerMultiblockSchematic implements IMulitblockSchematic {
 
@@ -51,7 +50,9 @@ public class GiantPropellerMultiblockSchematic implements IMulitblockSchematic {
                 int relativeX = (perpAxisOne.getX() * x) + (perpAxisTwo.getX() * y);
                 int relativeY = (perpAxisOne.getY() * x) + (perpAxisTwo.getY() * y);
                 int relativeZ = (perpAxisOne.getZ() * x) + (perpAxisTwo.getZ() * y);
-                structureRelativeToCenter.add(new BlockPosBlockPair(new BlockPos(relativeX, relativeY, relativeZ), enginePart));
+                structureRelativeToCenter.add(
+                    new BlockPosBlockPair(new BlockPos(relativeX, relativeY, relativeZ),
+                        enginePart));
             }
         }
         this.schematicID = schematicID;
@@ -92,7 +93,9 @@ public class GiantPropellerMultiblockSchematic implements IMulitblockSchematic {
 
                 variant.propellerRadius = radius;
                 variant.propellerFacing = variantPropellerFacing;
-                variant.initializeMultiblockSchematic(getSchematicPrefix() + ":facing:" + variantPropellerFacing.toString() + ":radius:" + radius);
+                variant.initializeMultiblockSchematic(
+                    getSchematicPrefix() + ":facing:" + variantPropellerFacing.toString()
+                        + ":radius:" + radius);
 
                 variants.add(variant);
             }

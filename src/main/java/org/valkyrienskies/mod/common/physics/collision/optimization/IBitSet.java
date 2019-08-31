@@ -22,6 +22,7 @@ package org.valkyrienskies.mod.common.physics.collision.optimization;
  * @author DaPorkchop_
  */
 public interface IBitSet {
+
     /**
      * Sets the flag at the index to true
      *

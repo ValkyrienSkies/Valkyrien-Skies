@@ -16,6 +16,10 @@
 
 package org.valkyrienskies.mixin.world.chunk;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
@@ -35,11 +39,6 @@ import org.valkyrienskies.fixes.IPhysicsChunk;
 import org.valkyrienskies.mod.client.render.ITileEntitiesToRenderProvider;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.chunk.PhysicsChunkManager;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
 
 @Mixin(value = Chunk.class, priority = 1001)
 public abstract class MixinChunk implements ITileEntitiesToRenderProvider, IPhysicsChunk {
@@ -79,13 +78,14 @@ public abstract class MixinChunk implements ITileEntitiesToRenderProvider, IPhys
     }
 
     @Inject(method = "addTileEntity(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/tileentity/TileEntity;)V", at = @At("TAIL"))
-    public void post_addTileEntity(BlockPos pos, TileEntity tileEntityIn, CallbackInfo callbackInfo) {
+    public void post_addTileEntity(BlockPos pos, TileEntity tileEntityIn,
+        CallbackInfo callbackInfo) {
         int yIndex = pos.getY() >> 4;
         removeTileEntityFromIndex(pos, yIndex);
         tileEntitesByExtendedData[yIndex].add(tileEntityIn);
         if (getPhysicsObjectOptional().isPresent()) {
             getPhysicsObjectOptional().get()
-                    .onSetTileEntity(pos, tileEntityIn);
+                .onSetTileEntity(pos, tileEntityIn);
         }
     }
 
@@ -95,7 +95,7 @@ public abstract class MixinChunk implements ITileEntitiesToRenderProvider, IPhys
         removeTileEntityFromIndex(pos, yIndex);
         if (getPhysicsObjectOptional().isPresent()) {
             getPhysicsObjectOptional().get()
-                    .onRemoveTileEntity(pos);
+                .onRemoveTileEntity(pos);
         }
     }
 
@@ -113,7 +113,8 @@ public abstract class MixinChunk implements ITileEntitiesToRenderProvider, IPhys
     }
 
     @Inject(method = "populate(Lnet/minecraft/world/chunk/IChunkProvider;Lnet/minecraft/world/gen/IChunkGenerator;)V", at = @At("HEAD"), cancellable = true)
-    public void prePopulateChunk(IChunkProvider provider, IChunkGenerator generator, CallbackInfo callbackInfo) {
+    public void prePopulateChunk(IChunkProvider provider, IChunkGenerator generator,
+        CallbackInfo callbackInfo) {
         if (PhysicsChunkManager.isLikelyShipChunk(this.x, this.z)) {
             callbackInfo.cancel();
         }

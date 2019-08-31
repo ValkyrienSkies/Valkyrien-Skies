@@ -15,19 +15,25 @@ public class TileEntityGyroscopeDampener extends TileEntity {
 
     public Vector getTorqueInGlobal(PhysicsCalculations physicsCalculations, BlockPos pos) {
         Vector shipLevelNormal = new Vector(GRAVITY_UP);
-        physicsCalculations.getParent().getShipTransformationManager().getCurrentPhysicsTransform().rotate(shipLevelNormal, TransformType.SUBSPACE_TO_GLOBAL);
+        physicsCalculations.getParent().getShipTransformationManager().getCurrentPhysicsTransform()
+            .rotate(shipLevelNormal, TransformType.SUBSPACE_TO_GLOBAL);
 
         double dampingComponent = shipLevelNormal.dot(physicsCalculations.angularVelocity);
-        Vector angularChangeAllowed = shipLevelNormal.getProduct(shipLevelNormal.dot(physicsCalculations.angularVelocity));
-        Vector angularVelocityToDamp = physicsCalculations.angularVelocity.getSubtraction(angularChangeAllowed);
+        Vector angularChangeAllowed = shipLevelNormal
+            .getProduct(shipLevelNormal.dot(physicsCalculations.angularVelocity));
+        Vector angularVelocityToDamp = physicsCalculations.angularVelocity
+            .getSubtraction(angularChangeAllowed);
 
-        Vector dampingTorque = angularVelocityToDamp.getProduct(physicsCalculations.getPhysicsTimeDeltaPerPhysTick());
+        Vector dampingTorque = angularVelocityToDamp
+            .getProduct(physicsCalculations.getPhysicsTimeDeltaPerPhysTick());
 
-        Vector dampingTorqueWithRespectToInertia = RotationMatrices.get3by3TransformedVec(physicsCalculations.getPhysMOITensor(), dampingTorque);
+        Vector dampingTorqueWithRespectToInertia = RotationMatrices
+            .get3by3TransformedVec(physicsCalculations.getPhysMOITensor(), dampingTorque);
 
         double dampingTorqueRespectMagnitude = dampingTorqueWithRespectToInertia.length();
         if (dampingTorqueRespectMagnitude > maximumTorque) {
-            dampingTorqueWithRespectToInertia.multiply(maximumTorque / dampingTorqueRespectMagnitude);
+            dampingTorqueWithRespectToInertia
+                .multiply(maximumTorque / dampingTorqueRespectMagnitude);
             // System.out.println("yee");
         }
 

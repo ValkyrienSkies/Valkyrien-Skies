@@ -52,10 +52,13 @@ public class MixinEntityPlayerSP {
 
         IDraggable draggable = (IDraggable) this;
         if (draggable.getWorldBelowFeet() != null) {
-            draggable.getWorldBelowFeet().getPhysicsObject().getSubspace().snapshotSubspacedEntity(thisAsSubspaced);
-            ISubspacedEntityRecord entityRecord = draggable.getWorldBelowFeet().getPhysicsObject().getSubspace()
-                    .getRecordForSubspacedEntity(thisAsSubspaced);
-            SubspacedEntityRecordMessage recordMessage = new SubspacedEntityRecordMessage(entityRecord);
+            draggable.getWorldBelowFeet().getPhysicsObject().getSubspace()
+                .snapshotSubspacedEntity(thisAsSubspaced);
+            ISubspacedEntityRecord entityRecord = draggable.getWorldBelowFeet().getPhysicsObject()
+                .getSubspace()
+                .getRecordForSubspacedEntity(thisAsSubspaced);
+            SubspacedEntityRecordMessage recordMessage = new SubspacedEntityRecordMessage(
+                entityRecord);
             ValkyrienSkiesMod.physWrapperNetwork.sendToServer(recordMessage);
         }
 
@@ -65,9 +68,11 @@ public class MixinEntityPlayerSP {
 
         if (flag != serverSprintState) {
             if (flag) {
-                player.connection.sendPacket(new CPacketEntityAction(player, CPacketEntityAction.Action.START_SPRINTING));
+                player.connection.sendPacket(
+                    new CPacketEntityAction(player, CPacketEntityAction.Action.START_SPRINTING));
             } else {
-                player.connection.sendPacket(new CPacketEntityAction(player, CPacketEntityAction.Action.STOP_SPRINTING));
+                player.connection.sendPacket(
+                    new CPacketEntityAction(player, CPacketEntityAction.Action.STOP_SPRINTING));
             }
 
             serverSprintState = flag;
@@ -77,9 +82,11 @@ public class MixinEntityPlayerSP {
 
         if (flag1 != serverSneakState) {
             if (flag1) {
-                player.connection.sendPacket(new CPacketEntityAction(player, CPacketEntityAction.Action.START_SNEAKING));
+                player.connection.sendPacket(
+                    new CPacketEntityAction(player, CPacketEntityAction.Action.START_SNEAKING));
             } else {
-                player.connection.sendPacket(new CPacketEntityAction(player, CPacketEntityAction.Action.STOP_SNEAKING));
+                player.connection.sendPacket(
+                    new CPacketEntityAction(player, CPacketEntityAction.Action.STOP_SNEAKING));
             }
 
             serverSneakState = flag1;
@@ -98,14 +105,22 @@ public class MixinEntityPlayerSP {
             boolean flag3 = true; // d3 != 0.0D || d4 != 0.0D;
 
             if (player.isRiding()) {
-                player.connection.sendPacket(new CPacketPlayer.PositionRotation(player.motionX, -999.0D, player.motionZ, player.rotationYaw, player.rotationPitch, player.onGround));
+                player.connection.sendPacket(
+                    new CPacketPlayer.PositionRotation(player.motionX, -999.0D, player.motionZ,
+                        player.rotationYaw, player.rotationPitch, player.onGround));
                 flag2 = false;
             } else if (flag2 && flag3) {
-                player.connection.sendPacket(new CPacketPlayer.PositionRotation(player.posX, axisalignedbb.minY, player.posZ, player.rotationYaw, player.rotationPitch, player.onGround));
+                player.connection.sendPacket(
+                    new CPacketPlayer.PositionRotation(player.posX, axisalignedbb.minY, player.posZ,
+                        player.rotationYaw, player.rotationPitch, player.onGround));
             } else if (flag2) {
-                player.connection.sendPacket(new CPacketPlayer.Position(player.posX, axisalignedbb.minY, player.posZ, player.onGround));
+                player.connection.sendPacket(
+                    new CPacketPlayer.Position(player.posX, axisalignedbb.minY, player.posZ,
+                        player.onGround));
             } else if (flag3) {
-                player.connection.sendPacket(new CPacketPlayer.Rotation(player.rotationYaw, player.rotationPitch, player.onGround));
+                player.connection.sendPacket(
+                    new CPacketPlayer.Rotation(player.rotationYaw, player.rotationPitch,
+                        player.onGround));
             }
 
             if (flag2) {

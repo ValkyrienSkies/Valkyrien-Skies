@@ -16,6 +16,9 @@
 
 package org.valkyrienskies.mod.common.physmanagement.relocation;
 
+import java.util.Arrays;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -23,10 +26,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.world.World;
 import org.valkyrienskies.mod.common.config.VSConfig;
-
-import java.util.Arrays;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 public class ShipSpawnDetector extends SpatialDetector {
 
@@ -46,8 +45,8 @@ public class ShipSpawnDetector extends SpatialDetector {
         blacklist.clear();
 
         Arrays.stream(VSConfig.shipSpawnDetectorBlacklist)
-                .map(Block::getBlockFromName)
-                .forEach(blacklist::add);
+            .map(Block::getBlockFromName)
+            .forEach(blacklist::add);
     }
 
     private final MutableBlockPos mutablePos = new MutableBlockPos();

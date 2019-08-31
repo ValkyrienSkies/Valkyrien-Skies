@@ -21,7 +21,8 @@ import net.minecraft.util.math.BlockPos;
 import org.valkyrienskies.addon.control.nodenetwork.BasicNodeTileEntity;
 import org.valkyrienskies.addon.control.nodenetwork.INodeController;
 
-public abstract class TileEntityNodeControllerImpl extends BasicNodeTileEntity implements INodeController {
+public abstract class TileEntityNodeControllerImpl extends BasicNodeTileEntity implements
+    INodeController {
 
     /**
      * If -1, the algorithm will ignore this processor

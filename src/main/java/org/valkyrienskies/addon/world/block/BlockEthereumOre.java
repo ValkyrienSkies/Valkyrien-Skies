@@ -16,6 +16,9 @@
 
 package org.valkyrienskies.addon.world.block;
 
+import java.util.List;
+import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFalling;
 import net.minecraft.block.material.Material;
@@ -30,10 +33,6 @@ import net.minecraft.world.World;
 import org.valkyrienskies.addon.world.EntityFallingUpBlock;
 import org.valkyrienskies.addon.world.ValkyrienSkiesWorld;
 
-import javax.annotation.Nullable;
-import java.util.List;
-import java.util.Random;
-
 public class BlockEthereumOre extends Block {
 
     public BlockEthereumOre(Material materialIn) {
@@ -44,12 +43,15 @@ public class BlockEthereumOre extends Block {
     public static boolean canFallThrough(IBlockState state) {
         Block block = state.getBlock();
         Material material = state.getMaterial();
-        return block == Blocks.FIRE || material == Material.AIR || material == Material.WATER || material == Material.LAVA;
+        return block == Blocks.FIRE || material == Material.AIR || material == Material.WATER
+            || material == Material.LAVA;
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation, ITooltipFlag advanced) {
-        itemInformation.add(TextFormatting.ITALIC + "" + TextFormatting.BLUE + TextFormatting.ITALIC + "A mysterious floating ore.");
+    public void addInformation(ItemStack stack, @Nullable World player,
+        List<String> itemInformation, ITooltipFlag advanced) {
+        itemInformation.add(TextFormatting.ITALIC + "" + TextFormatting.BLUE + TextFormatting.ITALIC
+            + "A mysterious floating ore.");
     }
 
     @Override
@@ -58,7 +60,8 @@ public class BlockEthereumOre extends Block {
     }
 
     @Override
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn,
+        BlockPos fromPos) {
         worldIn.scheduleUpdate(pos, this, this.tickRate(worldIn));
     }
 
@@ -75,13 +78,17 @@ public class BlockEthereumOre extends Block {
 
     private void tryFallingUp(World worldIn, BlockPos pos) {
         BlockPos downPos = pos.up();
-        if ((worldIn.isAirBlock(downPos) || canFallThrough(worldIn.getBlockState(downPos))) && pos.getY() >= 0) {
+        if ((worldIn.isAirBlock(downPos) || canFallThrough(worldIn.getBlockState(downPos)))
+            && pos.getY() >= 0) {
             int i = 32;
 
-            if (!BlockFalling.fallInstantly && worldIn.isAreaLoaded(pos.add(-32, -32, -32), pos.add(32, 32, 32))) {
+            if (!BlockFalling.fallInstantly && worldIn
+                .isAreaLoaded(pos.add(-32, -32, -32), pos.add(32, 32, 32))) {
                 if (!worldIn.isRemote) {
                     // Start falling up
-                    EntityFallingUpBlock entityfallingblock = new EntityFallingUpBlock(worldIn, (double) pos.getX() + 0.5D, (double) pos.getY(), (double) pos.getZ() + 0.5D, worldIn.getBlockState(pos));
+                    EntityFallingUpBlock entityfallingblock = new EntityFallingUpBlock(worldIn,
+                        (double) pos.getX() + 0.5D, (double) pos.getY(), (double) pos.getZ() + 0.5D,
+                        worldIn.getBlockState(pos));
                     worldIn.spawnEntity(entityfallingblock);
                 }
             } else {
@@ -89,7 +96,9 @@ public class BlockEthereumOre extends Block {
                 worldIn.setBlockToAir(pos);
                 BlockPos blockpos;
 
-                for (blockpos = pos.up(); (worldIn.isAirBlock(blockpos) || canFallThrough(worldIn.getBlockState(blockpos))) && blockpos.getY() < 255; blockpos = blockpos.up()) {
+                for (blockpos = pos.up(); (worldIn.isAirBlock(blockpos) || canFallThrough(
+                    worldIn.getBlockState(blockpos))) && blockpos.getY() < 255;
+                    blockpos = blockpos.up()) {
                 }
 
                 if (blockpos.getY() < 255) {
@@ -117,7 +126,8 @@ public class BlockEthereumOre extends Block {
     }
 
     @Override
-    public int getExpDrop(IBlockState state, net.minecraft.world.IBlockAccess world, BlockPos pos, int fortune) {
+    public int getExpDrop(IBlockState state, net.minecraft.world.IBlockAccess world, BlockPos pos,
+        int fortune) {
         if (this.getItemDropped(state, RANDOM, fortune) != Item.getItemFromBlock(this)) {
             return 16 + RANDOM.nextInt(10);
         }

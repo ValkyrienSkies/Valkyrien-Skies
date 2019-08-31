@@ -29,6 +29,7 @@ import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
 @Optional.Interface(iface = "li.cil.oc.api.network.SimpleComponent", modid = "opencomputers")
 public class GPSTileEntity extends TileEntity implements SimpleComponent {
+
     public GPSTileEntity() {
         super();
     }
@@ -42,11 +43,12 @@ public class GPSTileEntity extends TileEntity implements SimpleComponent {
     @Callback
     @Optional.Method(modid = "opencomputers")
     public Object[] getPosition(Context context, Arguments args) {
-        java.util.Optional<PhysicsObject> physicsObjectOptional = ValkyrienUtils.getPhysicsObject(getWorld(), getPos());
+        java.util.Optional<PhysicsObject> physicsObjectOptional = ValkyrienUtils
+            .getPhysicsObject(getWorld(), getPos());
         if (physicsObjectOptional.isPresent()) {
             BlockPos pos = physicsObjectOptional.get()
-                    .getWrapperEntity()
-                    .getPosition();
+                .getWrapperEntity()
+                .getPosition();
             return new Object[]{pos.getX(), pos.getY(), pos.getZ()};
         }
         return null;
@@ -55,10 +57,11 @@ public class GPSTileEntity extends TileEntity implements SimpleComponent {
     @Callback
     @Optional.Method(modid = "opencomputers")
     public Object[] getRotation(Context context, Arguments args) {
-        java.util.Optional<PhysicsObject> physicsObjectOptional = ValkyrienUtils.getPhysicsObject(getWorld(), getPos());
+        java.util.Optional<PhysicsObject> physicsObjectOptional = ValkyrienUtils
+            .getPhysicsObject(getWorld(), getPos());
         if (physicsObjectOptional.isPresent()) {
             PhysicsWrapperEntity ship = physicsObjectOptional.get()
-                    .getWrapperEntity();
+                .getWrapperEntity();
             return new Object[]{ship.getYaw(), ship.getPitch(), ship.getRoll()};
         }
         return null;

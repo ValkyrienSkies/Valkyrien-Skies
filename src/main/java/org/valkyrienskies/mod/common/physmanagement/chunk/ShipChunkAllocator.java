@@ -1,9 +1,8 @@
 package org.valkyrienskies.mod.common.physmanagement.chunk;
 
-import net.minecraft.nbt.NBTTagCompound;
-
 import java.util.HashMap;
 import java.util.Map;
+import net.minecraft.nbt.NBTTagCompound;
 
 public class ShipChunkAllocator {
 
@@ -26,8 +25,10 @@ public class ShipChunkAllocator {
     public ChunkAllocation allocateChunks(String shipId, int chunkRadius) {
         // Don't go over the maximum
         if (chunkRadius > MAX_SHIP_CHUNK_RADIUS) {
-            System.err.println(shipId + " just tried allocating chunks with a radius of: " + chunkRadius);
-            System.err.println("This is just too big! Expect bad luck and decades of instability after this!");
+            System.err
+                .println(shipId + " just tried allocating chunks with a radius of: " + chunkRadius);
+            System.err.println(
+                "This is just too big! Expect bad luck and decades of instability after this!");
             return null;
         }
         ChunkAllocation nextAllocation = allocateNext();
@@ -52,7 +53,8 @@ public class ShipChunkAllocator {
             nextChunkX = compound.getInteger("nextChunkX");
             nextChunkZ = compound.getInteger("nextChunkZ");
         } else {
-            System.err.println("Either you created a new world, or Valkyrien Warfare just lost track of every single ship chunk! If its case #2 then good luck dude your ships are screwed.");
+            System.err.println(
+                "Either you created a new world, or Valkyrien Warfare just lost track of every single ship chunk! If its case #2 then good luck dude your ships are screwed.");
             nextChunkX = SHIP_CHUNK_X_START;
             nextChunkZ = SHIP_CHUNK_Z_START;
         }
@@ -64,6 +66,7 @@ public class ShipChunkAllocator {
      * Allocates a 32x32 square of chunks.
      */
     public static class ChunkAllocation {
+
         final int lowerChunkX, lowerChunkZ;
 
         private ChunkAllocation(int lowerChunkX, int lowerChunkZ) {
@@ -75,7 +78,8 @@ public class ShipChunkAllocator {
         public boolean equals(Object other) {
             if (other instanceof ChunkAllocation) {
                 ChunkAllocation otherChunk = (ChunkAllocation) other;
-                return otherChunk.lowerChunkX == lowerChunkX && otherChunk.lowerChunkZ == lowerChunkZ;
+                return otherChunk.lowerChunkX == lowerChunkX
+                    && otherChunk.lowerChunkZ == lowerChunkZ;
             }
             return false;
         }

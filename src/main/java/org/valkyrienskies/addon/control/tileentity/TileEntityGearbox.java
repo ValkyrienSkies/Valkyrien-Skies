@@ -1,5 +1,6 @@
 package org.valkyrienskies.addon.control.tileentity;
 
+import java.util.Optional;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
@@ -9,8 +10,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.valkyrienskies.addon.control.block.torque.IRotationNode;
 import org.valkyrienskies.addon.control.block.torque.TileEntityBasicRotationNodeTile;
 import org.valkyrienskies.addon.control.block.torque.TileEntityBasicRotationTile;
-
-import java.util.Optional;
 
 public class TileEntityGearbox extends TileEntityBasicRotationNodeTile {
 
@@ -27,7 +26,8 @@ public class TileEntityGearbox extends TileEntityBasicRotationNodeTile {
         super(GEARBOX_SORTING_PRIORITY);
         this.inputFacing = inputFacing;
         this.outputRatio = Optional.of(1D);
-        this.connectedSidesRatios = new Optional[]{Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()};
+        this.connectedSidesRatios = new Optional[]{Optional.empty(), Optional.empty(),
+            Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()};
         updateRotationNodeRatios();
     }
 
@@ -35,7 +35,8 @@ public class TileEntityGearbox extends TileEntityBasicRotationNodeTile {
     public void update() {
         super.update();
         if (!this.getWorld().isRemote) {
-            Optional<Double>[] rotationNodeRatios = this.rotationNode.connectedRotationRatiosUnsychronized();
+            Optional<Double>[] rotationNodeRatios = this.rotationNode
+                .connectedRotationRatiosUnsychronized();
             for (EnumFacing facing : EnumFacing.values()) {
                 if (!this.rotationNode.isConnectedToSideUnsynchronized(facing)) {
                     rotationNodeRatios[facing.ordinal()] = Optional.empty();
@@ -61,7 +62,8 @@ public class TileEntityGearbox extends TileEntityBasicRotationNodeTile {
                     rotationNode.setAngularVelocityRatio(facing, Optional.of(convention));
                 } else {
                     if (outputRatioFinal.isPresent()) {
-                        rotationNode.setAngularVelocityRatio(facing, Optional.of(convention * outputRatioFinal.get()));
+                        rotationNode.setAngularVelocityRatio(facing,
+                            Optional.of(convention * outputRatioFinal.get()));
                     } else {
                         rotationNode.setAngularVelocityRatio(facing, Optional.empty());
                     }
@@ -112,7 +114,8 @@ public class TileEntityGearbox extends TileEntityBasicRotationNodeTile {
         for (int i = 0; i < 6; i++) {
             if (connectedSidesRatios[i].isPresent()) {
                 validSides |= 1 << i;
-                tagToSend.setFloat("side_rotation_ratio" + i, connectedSidesRatios[i].get().floatValue());
+                tagToSend.setFloat("side_rotation_ratio" + i,
+                    connectedSidesRatios[i].get().floatValue());
             }
         }
 
@@ -124,11 +127,12 @@ public class TileEntityGearbox extends TileEntityBasicRotationNodeTile {
     public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
         nextRotation = pkt.getNbtCompound().getDouble("rotation");
         inputFacing = EnumFacing.values()[pkt.getNbtCompound()
-                .getByte("input_facing")];
+            .getByte("input_facing")];
         byte validSidesByte = pkt.getNbtCompound().getByte("valid_sides_byte");
         for (int i = 0; i < 6; i++) {
             if ((validSidesByte & (1 << i)) != 0) {
-                this.connectedSidesRatios[i] = Optional.of((double) pkt.getNbtCompound().getFloat("side_rotation_ratio" + i));
+                this.connectedSidesRatios[i] = Optional
+                    .of((double) pkt.getNbtCompound().getFloat("side_rotation_ratio" + i));
             } else {
                 this.connectedSidesRatios[i] = Optional.empty();
             }

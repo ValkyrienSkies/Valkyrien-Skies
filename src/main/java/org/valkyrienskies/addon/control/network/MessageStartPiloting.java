@@ -28,7 +28,8 @@ public class MessageStartPiloting implements IMessage {
     public boolean setPhysicsWrapperEntityToPilot;
     public ControllerInputType controlType;
 
-    public MessageStartPiloting(BlockPos posToStartPiloting, boolean setPhysicsWrapperEntityToPilot, ControllerInputType controlType) {
+    public MessageStartPiloting(BlockPos posToStartPiloting, boolean setPhysicsWrapperEntityToPilot,
+        ControllerInputType controlType) {
         this.posToStartPiloting = posToStartPiloting;
         this.setPhysicsWrapperEntityToPilot = setPhysicsWrapperEntityToPilot;
         this.controlType = controlType;
@@ -45,9 +46,9 @@ public class MessageStartPiloting implements IMessage {
     public void fromBytes(ByteBuf buf) {
         PacketBuffer packetBuf = new PacketBuffer(buf);
         posToStartPiloting = new BlockPos(
-                packetBuf.readInt(),
-                packetBuf.readInt(),
-                packetBuf.readInt()
+            packetBuf.readInt(),
+            packetBuf.readInt(),
+            packetBuf.readInt()
         );
         setPhysicsWrapperEntityToPilot = packetBuf.readBoolean();
         controlType = packetBuf.readEnumValue(ControllerInputType.class);

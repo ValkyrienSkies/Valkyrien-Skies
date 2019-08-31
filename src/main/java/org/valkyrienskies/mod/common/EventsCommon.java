@@ -16,6 +16,10 @@
 
 package org.valkyrienskies.mod.common;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -74,11 +78,6 @@ import org.valkyrienskies.mod.common.physmanagement.interaction.VWWorldEventList
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 public class EventsCommon {
 
     private static final Logger logger = LogManager.getLogger(EventsCommon.class);
@@ -89,7 +88,8 @@ public class EventsCommon {
     public void onPlayerSleepInBedEvent(PlayerSleepInBedEvent event) {
         EntityPlayer player = event.getEntityPlayer();
         BlockPos pos = event.getPos();
-        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(player.getEntityWorld(), pos);
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils
+            .getPhysicsObject(player.getEntityWorld(), pos);
 
         if (physicsObject.isPresent()) {
             if (player instanceof EntityPlayerMP) {
@@ -109,12 +109,13 @@ public class EventsCommon {
                 BlockPos posAt = event.getPos();
                 EntityPlayer player = event.getEntityPlayer();
                 World world = event.getWorld();
-                Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(world, posAt);
+                Optional<PhysicsObject> physicsObject = ValkyrienUtils
+                    .getPhysicsObject(world, posAt);
 
                 if (physicsObject.isPresent()) {
                     physicsObject.get()
-                            .getWrapperEntity()
-                            .setCustomNameTag(stack.getDisplayName());
+                        .getWrapperEntity()
+                        .setCustomNameTag(stack.getDisplayName());
                     --stack.stackSize;
                     event.setCanceled(true);
                 }
@@ -130,17 +131,19 @@ public class EventsCommon {
         BlockPos posAt = new BlockPos(entity);
 
         Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(world, posAt);
-        if (!event.getWorld().isRemote && physicsObject.isPresent() && !(entity instanceof EntityFallingBlock)) {
+        if (!event.getWorld().isRemote && physicsObject.isPresent()
+            && !(entity instanceof EntityFallingBlock)) {
             if (entity instanceof EntityArmorStand
-                    || entity instanceof EntityPig || entity instanceof EntityBoat) {
-                EntityMountable entityMountable = new EntityMountable(world, entity.getPositionVector(), CoordinateSpaceType.SUBSPACE_COORDINATES, posAt);
+                || entity instanceof EntityPig || entity instanceof EntityBoat) {
+                EntityMountable entityMountable = new EntityMountable(world,
+                    entity.getPositionVector(), CoordinateSpaceType.SUBSPACE_COORDINATES, posAt);
                 world.spawnEntity(entityMountable);
                 entity.startRiding(entityMountable);
             }
             RotationMatrices.applyTransform(physicsObject.get()
-                            .getShipTransformationManager()
-                            .getCurrentTickTransform(), entity,
-                    TransformType.SUBSPACE_TO_GLOBAL);
+                    .getShipTransformationManager()
+                    .getCurrentTickTransform(), entity,
+                TransformType.SUBSPACE_TO_GLOBAL);
             // TODO: This should work but it doesn't because of sponge. Instead we have to rely on MixinChunk.preAddEntity() to fix this
             // event.setCanceled(true);
             // event.getWorld().spawnEntity(entity);
@@ -175,11 +178,12 @@ public class EventsCommon {
             }
             try {
                 if (pos[0] != p.posX || pos[2] != p.posZ) { // Player has moved
-                    if (Math.abs(p.posX) > 27000000 || Math.abs(p.posZ) > 27000000) { // Player is outside of world
+                    if (Math.abs(p.posX) > 27000000
+                        || Math.abs(p.posZ) > 27000000) { // Player is outside of world
                         // border, tp them back
                         p.attemptTeleport(pos[0], pos[1], pos[2]);
                         p.sendMessage(new TextComponentString(
-                                "You can't go beyond 27000000 blocks because airships are stored there!"));
+                            "You can't go beyond 27000000 blocks because airships are stored there!"));
                     }
                 }
             } catch (NullPointerException e) {
@@ -216,7 +220,8 @@ public class EventsCommon {
         if (!event.getEntityPlayer().world.isRemote) {
             Entity ent = event.getTarget();
             if (ent instanceof PhysicsWrapperEntity) {
-                ((PhysicsWrapperEntity) ent).getPhysicsObject().onPlayerUntracking(event.getEntityPlayer());
+                ((PhysicsWrapperEntity) ent).getPhysicsObject()
+                    .onPlayerUntracking(event.getEntityPlayer());
             }
         }
     }
@@ -225,7 +230,8 @@ public class EventsCommon {
     public void onPlayerInteractEvent(PlayerInteractEvent event) {
         BlockPos pos = event.getPos();
 
-        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(event.getWorld(), pos);
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils
+            .getPhysicsObject(event.getWorld(), pos);
         if (physicsObject.isPresent()) {
             event.setResult(Result.ALLOW);
         }
@@ -233,36 +239,37 @@ public class EventsCommon {
 
     @SubscribeEvent
     public void attachWorldCapabilities(AttachCapabilitiesEvent<World> event) {
-        event.addCapability(new ResourceLocation(ValkyrienSkiesMod.MOD_ID, "vw_world_data_capability"),
-                new ICapabilitySerializable<NBTBase>() {
-                    IVWWorldDataCapability inst = ValkyrienSkiesMod.vwWorldData.getDefaultInstance()
-                            .setWorld(event.getObject());
+        event.addCapability(
+            new ResourceLocation(ValkyrienSkiesMod.MOD_ID, "vw_world_data_capability"),
+            new ICapabilitySerializable<NBTBase>() {
+                IVWWorldDataCapability inst = ValkyrienSkiesMod.vwWorldData.getDefaultInstance()
+                    .setWorld(event.getObject());
 
-                    @Override
-                    public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
-                        return capability == ValkyrienSkiesMod.vwWorldData;
-                    }
+                @Override
+                public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
+                    return capability == ValkyrienSkiesMod.vwWorldData;
+                }
 
-                    @Override
-                    public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
-                        return capability == ValkyrienSkiesMod.vwWorldData
-                                ? ValkyrienSkiesMod.vwWorldData.<T>cast(inst)
-                                : null;
-                    }
+                @Override
+                public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
+                    return capability == ValkyrienSkiesMod.vwWorldData
+                        ? ValkyrienSkiesMod.vwWorldData.<T>cast(inst)
+                        : null;
+                }
 
-                    @Override
-                    public NBTBase serializeNBT() {
-                        return ValkyrienSkiesMod.vwWorldData.getStorage()
-                                .writeNBT(ValkyrienSkiesMod.vwWorldData, inst, null);
-                    }
+                @Override
+                public NBTBase serializeNBT() {
+                    return ValkyrienSkiesMod.vwWorldData.getStorage()
+                        .writeNBT(ValkyrienSkiesMod.vwWorldData, inst, null);
+                }
 
-                    @Override
-                    public void deserializeNBT(NBTBase nbt) {
-                        // Otherwise its old, then ignore it
-                        ValkyrienSkiesMod.vwWorldData.getStorage()
-                                .readNBT(ValkyrienSkiesMod.vwWorldData, inst, null, nbt);
-                    }
-                });
+                @Override
+                public void deserializeNBT(NBTBase nbt) {
+                    // Otherwise its old, then ignore it
+                    ValkyrienSkiesMod.vwWorldData.getStorage()
+                        .readNBT(ValkyrienSkiesMod.vwWorldData, inst, null, nbt);
+                }
+            });
     }
 
     @SubscribeEvent
@@ -272,15 +279,19 @@ public class EventsCommon {
             lastPositions.put(player, new Double[]{0D, 256D, 0D});
 
             if (player.getName()
-                    .equals("Drake_Eldridge") || player.getName()
-                    .equals("thebest108") || player.getName()
-                    .equals("DaPorkChop_")) {
+                .equals("Drake_Eldridge") || player.getName()
+                .equals("thebest108") || player.getName()
+                .equals("DaPorkChop_")) {
                 WorldServer server = (WorldServer) event.player.world;
 
                 // 20% chance of getting memed on!
                 if (Math.random() < .2) {
                     server.server.getPlayerList()
-                            .sendMessage(new TextComponentString(TextFormatting.BLUE + "An absolute " + TextFormatting.RED + TextFormatting.ITALIC + "legend" + TextFormatting.BLUE + " has arrived! Welcome " + TextFormatting.GOLD + TextFormatting.BOLD + player.getName()));
+                        .sendMessage(new TextComponentString(
+                            TextFormatting.BLUE + "An absolute " + TextFormatting.RED
+                                + TextFormatting.ITALIC + "legend" + TextFormatting.BLUE
+                                + " has arrived! Welcome " + TextFormatting.GOLD
+                                + TextFormatting.BOLD + player.getName()));
                 }
             }
         }
@@ -297,10 +308,10 @@ public class EventsCommon {
     public void onBlockBreakFirst(BlockEvent event) {
         BlockPos pos = event.getPos();
         Chunk chunk = event.getWorld()
-                .getChunk(pos);
+            .getChunk(pos);
         IPhysicsChunk physicsChunk = (IPhysicsChunk) chunk;
         if (physicsChunk.getPhysicsObjectOptional()
-                .isPresent()) {
+            .isPresent()) {
             event.setResult(Result.ALLOW);
         }
     }
@@ -313,28 +324,36 @@ public class EventsCommon {
             Vector center = new Vector(explosion.x, explosion.y, explosion.z);
             // Explosion radius
             float radius = explosion.size;
-            AxisAlignedBB toCheck = new AxisAlignedBB(center.X - radius, center.Y - radius, center.Z - radius,
-                    center.X + radius, center.Y + radius, center.Z + radius);
+            AxisAlignedBB toCheck = new AxisAlignedBB(center.X - radius, center.Y - radius,
+                center.Z - radius,
+                center.X + radius, center.Y + radius, center.Z + radius);
             // Find nearby ships, we will check if the explosion effects them
-            List<PhysicsWrapperEntity> shipsNear = ValkyrienSkiesMod.VW_PHYSICS_MANAGER.getManagerForWorld(event.getWorld())
-                    .getNearbyPhysObjects(toCheck);
+            List<PhysicsWrapperEntity> shipsNear = ValkyrienSkiesMod.VW_PHYSICS_MANAGER
+                .getManagerForWorld(event.getWorld())
+                .getNearbyPhysObjects(toCheck);
             // Process the explosion on the nearby ships
             for (PhysicsWrapperEntity ship : shipsNear) {
                 Vector inLocal = new Vector(center);
 
-                ship.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(inLocal, TransformType.GLOBAL_TO_SUBSPACE);
+                ship.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform()
+                    .transform(inLocal, TransformType.GLOBAL_TO_SUBSPACE);
                 // inLocal.roundToWhole();
-                Explosion expl = new Explosion(event.getWorld(), null, inLocal.X, inLocal.Y, inLocal.Z, radius,  explosion.causesFire, true);
+                Explosion expl = new Explosion(event.getWorld(), null, inLocal.X, inLocal.Y,
+                    inLocal.Z, radius, explosion.causesFire, true);
 
                 double waterRange = .6D;
 
                 boolean cancelDueToWater = false;
 
-                for (int x = (int) Math.floor(expl.x - waterRange); x <= Math.ceil(expl.x + waterRange); x++) {
-                    for (int y = (int) Math.floor(expl.y - waterRange); y <= Math.ceil(expl.y + waterRange); y++) {
-                        for (int z = (int) Math.floor(expl.z - waterRange); z <= Math.ceil(expl.z + waterRange); z++) {
+                for (int x = (int) Math.floor(expl.x - waterRange);
+                    x <= Math.ceil(expl.x + waterRange); x++) {
+                    for (int y = (int) Math.floor(expl.y - waterRange);
+                        y <= Math.ceil(expl.y + waterRange); y++) {
+                        for (int z = (int) Math.floor(expl.z - waterRange);
+                            z <= Math.ceil(expl.z + waterRange); z++) {
                             if (!cancelDueToWater) {
-                                IBlockState state = event.getWorld().getBlockState(new BlockPos(x, y, z));
+                                IBlockState state = event.getWorld()
+                                    .getBlockState(new BlockPos(x, y, z));
                                 if (state.getBlock() instanceof BlockLiquid) {
                                     cancelDueToWater = true;
                                 }

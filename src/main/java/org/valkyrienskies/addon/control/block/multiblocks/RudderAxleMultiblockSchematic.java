@@ -1,5 +1,7 @@
 package org.valkyrienskies.addon.control.block.multiblocks;
 
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -7,9 +9,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.valkyrienskies.addon.control.MultiblockRegistry;
 import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class RudderAxleMultiblockSchematic implements IMulitblockSchematic {
 
@@ -67,10 +66,12 @@ public class RudderAxleMultiblockSchematic implements IMulitblockSchematic {
         for (int length = MAX_AXLE_LENGTH; length >= MIN_AXLE_LENGTH; length--) {
             for (EnumFacing possibleAxleAxisDirection : EnumFacing.VALUES) {
                 for (EnumFacing possibleAxleFacingDirection : EnumFacing.VALUES) {
-                    if (possibleAxleAxisDirection.getAxis() != possibleAxleFacingDirection.getAxis()) {
+                    if (possibleAxleAxisDirection.getAxis() != possibleAxleFacingDirection
+                        .getAxis()) {
                         BlockPos originPos = new BlockPos(0, 0, 0);
                         RudderAxleMultiblockSchematic schematicVariant = new RudderAxleMultiblockSchematic();
-                        schematicVariant.initializeMultiblockSchematic(getSchematicPrefix() + "axel_axis_direction:"
+                        schematicVariant.initializeMultiblockSchematic(
+                            getSchematicPrefix() + "axel_axis_direction:"
                                 + possibleAxleAxisDirection.toString() + ":axel_facing:"
                                 + possibleAxleFacingDirection.toString() + ":length:" + length);
                         schematicVariant.axleAxis = possibleAxleAxisDirection;
@@ -78,7 +79,9 @@ public class RudderAxleMultiblockSchematic implements IMulitblockSchematic {
                         schematicVariant.axleLength = length;
                         for (int i = 0; i < length; i++) {
                             schematicVariant.structureRelativeToCenter
-                                    .add(new BlockPosBlockPair(BlockPos.ORIGIN.offset(possibleAxleAxisDirection, i), rudderAxelBlock));
+                                .add(new BlockPosBlockPair(
+                                    BlockPos.ORIGIN.offset(possibleAxleAxisDirection, i),
+                                    rudderAxelBlock));
                         }
                         variants.add(schematicVariant);
                     }

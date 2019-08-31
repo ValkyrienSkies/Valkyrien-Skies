@@ -21,8 +21,7 @@ import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.math.Vector;
 
 /**
- * This interface is really quite bad, and will be removed once subspaces are
- * complete.
+ * This interface is really quite bad, and will be removed once subspaces are complete.
  *
  * @author thebest108
  */

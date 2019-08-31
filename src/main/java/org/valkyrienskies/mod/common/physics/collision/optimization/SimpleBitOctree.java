@@ -84,9 +84,9 @@ public class SimpleBitOctree implements IBitOctree {
 
     private void updateOctreeLevelThree(int levelThreeIndex) {
         if (bitbuffer.get(levelThreeIndex + 1) || bitbuffer.get(levelThreeIndex + 10)
-                || bitbuffer.get(levelThreeIndex + 19) || bitbuffer.get(levelThreeIndex + 28)
-                || bitbuffer.get(levelThreeIndex + 37) || bitbuffer.get(levelThreeIndex + 46)
-                || bitbuffer.get(levelThreeIndex + 55) || bitbuffer.get(levelThreeIndex + 64)) {
+            || bitbuffer.get(levelThreeIndex + 19) || bitbuffer.get(levelThreeIndex + 28)
+            || bitbuffer.get(levelThreeIndex + 37) || bitbuffer.get(levelThreeIndex + 46)
+            || bitbuffer.get(levelThreeIndex + 55) || bitbuffer.get(levelThreeIndex + 64)) {
             bitbuffer.set(levelThreeIndex);
         } else {
             bitbuffer.clear(levelThreeIndex);
@@ -95,10 +95,11 @@ public class SimpleBitOctree implements IBitOctree {
 
     // Returns true if the next level of octree should be updated
     private boolean updateOctreeLevelTwo(int levelTwoIndex) {
-        if (bitbuffer.get(levelTwoIndex + 1) || bitbuffer.get(levelTwoIndex + 2) || bitbuffer.get(levelTwoIndex + 3)
-                || bitbuffer.get(levelTwoIndex + 4) || bitbuffer.get(levelTwoIndex + 5)
-                || bitbuffer.get(levelTwoIndex + 6) || bitbuffer.get(levelTwoIndex + 7)
-                || bitbuffer.get(levelTwoIndex + 8)) {
+        if (bitbuffer.get(levelTwoIndex + 1) || bitbuffer.get(levelTwoIndex + 2) || bitbuffer
+            .get(levelTwoIndex + 3)
+            || bitbuffer.get(levelTwoIndex + 4) || bitbuffer.get(levelTwoIndex + 5)
+            || bitbuffer.get(levelTwoIndex + 6) || bitbuffer.get(levelTwoIndex + 7)
+            || bitbuffer.get(levelTwoIndex + 8)) {
             if (!bitbuffer.get(levelTwoIndex)) {
                 bitbuffer.set(levelTwoIndex);
                 return true;
@@ -118,8 +119,9 @@ public class SimpleBitOctree implements IBitOctree {
         x &= 0x0E;
         y &= 0x0E;
         z &= 0x0E;
-        if (get(x, y, z) || get(x, y, z + 1) || get(x, y + 1, z) || get(x, y + 1, z + 1) || get(x + 1, y, z)
-                || get(x + 1, y, z + 1) || get(x + 1, y + 1, z) || get(x + 1, y + 1, z + 1)) {
+        if (get(x, y, z) || get(x, y, z + 1) || get(x, y + 1, z) || get(x, y + 1, z + 1) || get(
+            x + 1, y, z)
+            || get(x + 1, y, z + 1) || get(x + 1, y + 1, z) || get(x + 1, y + 1, z + 1)) {
             if (!bitbuffer.get(levelOneIndex)) {
                 bitbuffer.set(levelOneIndex);
                 return true;

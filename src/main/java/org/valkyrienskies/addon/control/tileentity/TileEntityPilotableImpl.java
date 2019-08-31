@@ -16,6 +16,7 @@
 
 package org.valkyrienskies.addon.control.tileentity;
 
+import java.util.Optional;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.player.EntityPlayer;
@@ -36,15 +37,14 @@ import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
-import java.util.Optional;
-
 /**
- * A basic implementation of the ITileEntityPilotable interface, other tile
- * entities can extend this for easy controls
+ * A basic implementation of the ITileEntityPilotable interface, other tile entities can extend this
+ * for easy controls
  *
  * @author thebest108
  */
-public abstract class TileEntityPilotableImpl extends BasicNodeTileEntity implements ITileEntityPilotable {
+public abstract class TileEntityPilotableImpl extends BasicNodeTileEntity implements
+    ITileEntityPilotable {
 
     private EntityPlayer pilotPlayerEntity;
 
@@ -94,7 +94,7 @@ public abstract class TileEntityPilotableImpl extends BasicNodeTileEntity implem
         Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(world, pos);
         if (physicsObject.isPresent()) {
             return physicsObject.get()
-                    .getWrapperEntity();
+                .getWrapperEntity();
         } else {
             return null;
         }
@@ -107,8 +107,9 @@ public abstract class TileEntityPilotableImpl extends BasicNodeTileEntity implem
             ValkyrienSkiesControl.controlNetwork.sendTo(stopMessage, oldPilot);
         }
         if (newPilot != null) {
-            MessageStartPiloting startMessage = new MessageStartPiloting(getPos(), setClientPilotingEntireShip(),
-                    getControlInputType());
+            MessageStartPiloting startMessage = new MessageStartPiloting(getPos(),
+                setClientPilotingEntireShip(),
+                getControlInputType());
             ValkyrienSkiesControl.controlNetwork.sendTo(startMessage, newPilot);
         }
     }
@@ -131,8 +132,8 @@ public abstract class TileEntityPilotableImpl extends BasicNodeTileEntity implem
     }
 
     /**
-     * Unique for each tileentity type, only called if the sender player is the same
-     * as the pilotPlayerEntity
+     * Unique for each tileentity type, only called if the sender player is the same as the
+     * pilotPlayerEntity
      *
      * @return
      */
@@ -145,18 +146,21 @@ public abstract class TileEntityPilotableImpl extends BasicNodeTileEntity implem
      */
     protected boolean isPlayerInFront(EntityPlayer player, EnumFacing blockFacing) {
         Vector tileRelativePos = new Vector(this.getPos().getX() + .5, this.getPos().getY() + .5,
-                this.getPos().getZ() + .5);
+            this.getPos().getZ() + .5);
         if (this.getParentPhysicsEntity() != null) {
-            this.getParentPhysicsEntity().getPhysicsObject().getShipTransformationManager().getCurrentTickTransform()
-                    .transform(tileRelativePos, TransformType.SUBSPACE_TO_GLOBAL);
+            this.getParentPhysicsEntity().getPhysicsObject().getShipTransformationManager()
+                .getCurrentTickTransform()
+                .transform(tileRelativePos, TransformType.SUBSPACE_TO_GLOBAL);
         }
         tileRelativePos.subtract(player.posX, player.posY, player.posZ);
-        Vector normal = new Vector(blockFacing.getDirectionVec().getX() * -1, blockFacing.getDirectionVec().getY(),
-                blockFacing.getDirectionVec().getZ());
+        Vector normal = new Vector(blockFacing.getDirectionVec().getX() * -1,
+            blockFacing.getDirectionVec().getY(),
+            blockFacing.getDirectionVec().getZ());
 
         if (this.getParentPhysicsEntity() != null) {
-            this.getParentPhysicsEntity().getPhysicsObject().getShipTransformationManager().getCurrentTickTransform()
-                    .rotate(normal, TransformType.SUBSPACE_TO_GLOBAL);
+            this.getParentPhysicsEntity().getPhysicsObject().getShipTransformationManager()
+                .getCurrentTickTransform()
+                .rotate(normal, TransformType.SUBSPACE_TO_GLOBAL);
         }
 
         double dotProduct = tileRelativePos.dot(normal);
@@ -164,8 +168,8 @@ public abstract class TileEntityPilotableImpl extends BasicNodeTileEntity implem
     }
 
     /**
-     * This is called during the post render of every frame in Minecraft. Override
-     * this to allow a pilot tileentity to display info as text on the screen.
+     * This is called during the post render of every frame in Minecraft. Override this to allow a
+     * pilot tileentity to display info as text on the screen.
      *
      * @param renderer
      * @param gameResolution

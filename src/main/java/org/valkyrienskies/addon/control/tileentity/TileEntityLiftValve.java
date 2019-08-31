@@ -28,7 +28,8 @@ public class TileEntityLiftValve extends TileEntityNodeControllerImpl {
     }
 
     @Override
-    public void onPhysicsTick(PhysicsObject object, PhysicsCalculations calculations, double secondsToSimulate) {
+    public void onPhysicsTick(PhysicsObject object, PhysicsCalculations calculations,
+        double secondsToSimulate) {
         // Confirmed working
         /*
          * int size = 0; for (Object o : this.getNetworkedConnections()) { size++; }

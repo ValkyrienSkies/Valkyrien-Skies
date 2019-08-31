@@ -16,12 +16,11 @@
 
 package org.valkyrienskies.mod.common.math;
 
+import java.util.List;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
-
-import java.util.List;
 
 /**
  * A lot of useful math functions belong here
@@ -46,8 +45,8 @@ public class VWMath {
     }
 
     /**
-     * Sorts the array, returns a new array of 2 elements. Element 0 is the minimum
-     * of the array passed in, element 1 is the maximum of the array.
+     * Sorts the array, returns a new array of 2 elements. Element 0 is the minimum of the array
+     * passed in, element 1 is the maximum of the array.
      *
      * @param elements
      * @return
@@ -65,14 +64,16 @@ public class VWMath {
         return minMax;
     }
 
-    public static void getBodyPosWithOrientation(BlockPos pos, Vector centerOfMass, double[] rotationTransform, Vector inBody) {
+    public static void getBodyPosWithOrientation(BlockPos pos, Vector centerOfMass,
+        double[] rotationTransform, Vector inBody) {
         inBody.X = pos.getX() + .5D - centerOfMass.X;
         inBody.Y = pos.getY() + .5D - centerOfMass.Y;
         inBody.Z = pos.getZ() + .5D - centerOfMass.Z;
         RotationMatrices.doRotationOnly(rotationTransform, inBody);
     }
 
-    public static void getBodyPosWithOrientation(Vector pos, Vector centerOfMass, double[] rotationTransform, Vector inBody) {
+    public static void getBodyPosWithOrientation(Vector pos, Vector centerOfMass,
+        double[] rotationTransform, Vector inBody) {
         inBody.X = pos.X - centerOfMass.X;
         inBody.Y = pos.Y - centerOfMass.Y;
         inBody.Z = pos.Z - centerOfMass.Z;
@@ -80,7 +81,8 @@ public class VWMath {
     }
 
     /**
-     * Prevents sliding when moving on small angles dictated by the tolerance set in the ValkyrianWarfareMod class
+     * Prevents sliding when moving on small angles dictated by the tolerance set in the
+     * ValkyrianWarfareMod class
      *
      * @param normal
      * @return true/false
@@ -164,27 +166,33 @@ public class VWMath {
     }
 
     private static boolean intersectInX(AxisAlignedBB bb1, AxisAlignedBB bb2) {
-        return ((bb1.maxX >= bb2.minX) && (bb1.maxX < bb2.maxX)) || ((bb1.minX > bb2.minX) && (bb1.minX <= bb2.maxX));
+        return ((bb1.maxX >= bb2.minX) && (bb1.maxX < bb2.maxX)) || ((bb1.minX > bb2.minX) && (
+            bb1.minX <= bb2.maxX));
     }
 
     private static boolean intersectInY(AxisAlignedBB bb1, AxisAlignedBB bb2) {
-        return ((bb1.maxY >= bb2.minY) && (bb1.maxY < bb2.maxY)) || ((bb1.minY > bb2.minY) && (bb1.minY <= bb2.maxY));
+        return ((bb1.maxY >= bb2.minY) && (bb1.maxY < bb2.maxY)) || ((bb1.minY > bb2.minY) && (
+            bb1.minY <= bb2.maxY));
     }
 
     private static boolean intersectInZ(AxisAlignedBB bb1, AxisAlignedBB bb2) {
-        return ((bb1.maxZ >= bb2.minZ) && (bb1.maxZ < bb2.maxZ)) || ((bb1.minZ > bb2.minZ) && (bb1.minZ <= bb2.maxZ));
+        return ((bb1.maxZ >= bb2.minZ) && (bb1.maxZ < bb2.maxZ)) || ((bb1.minZ > bb2.minZ) && (
+            bb1.minZ <= bb2.maxZ));
     }
 
     private static boolean areXAligned(AxisAlignedBB bb1, AxisAlignedBB bb2) {
-        return (bb1.minY == bb2.minY) && (bb1.minZ == bb2.minZ) && (bb1.maxY == bb2.maxY) && (bb1.maxZ == bb2.maxZ);
+        return (bb1.minY == bb2.minY) && (bb1.minZ == bb2.minZ) && (bb1.maxY == bb2.maxY) && (
+            bb1.maxZ == bb2.maxZ);
     }
 
     private static boolean areYAligned(AxisAlignedBB bb1, AxisAlignedBB bb2) {
-        return (bb1.minX == bb2.minX) && (bb1.minZ == bb2.minZ) && (bb1.maxX == bb2.maxX) && (bb1.maxZ == bb2.maxZ);
+        return (bb1.minX == bb2.minX) && (bb1.minZ == bb2.minZ) && (bb1.maxX == bb2.maxX) && (
+            bb1.maxZ == bb2.maxZ);
     }
 
     private static boolean areZAligned(AxisAlignedBB bb1, AxisAlignedBB bb2) {
-        return (bb1.minX == bb2.minX) && (bb1.minY == bb2.minY) && (bb1.maxX == bb2.maxX) && (bb1.maxY == bb2.maxY);
+        return (bb1.minX == bb2.minX) && (bb1.minY == bb2.minY) && (bb1.maxX == bb2.maxX) && (
+            bb1.maxY == bb2.maxY);
     }
 
 }

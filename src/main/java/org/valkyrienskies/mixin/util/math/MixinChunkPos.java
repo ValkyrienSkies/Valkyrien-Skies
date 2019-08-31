@@ -16,6 +16,7 @@
 
 package org.valkyrienskies.mixin.util.math;
 
+import java.util.Optional;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -27,8 +28,6 @@ import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
-
-import java.util.Optional;
 
 /**
  * Necessary for now. I just wish Mojang would delete the distance function.
@@ -46,8 +45,7 @@ public abstract class MixinChunkPos {
     public int z;
 
     /**
-     * This is easier to have as an overwrite because there's less laggy hackery to
-     * be done then :P
+     * This is easier to have as an overwrite because there's less laggy hackery to be done then :P
      *
      * @author DaPorkchop_
      */
@@ -66,17 +64,17 @@ public abstract class MixinChunkPos {
 
         try {
             Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(entityIn.world,
-                    new BlockPos(d0, 127, d1));
+                new BlockPos(d0, 127, d1));
 
             if (physicsObject.isPresent()) {
                 Vector entityPosInLocal = new Vector(entityIn);
                 // RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform,
                 // entityPosInLocal);
                 physicsObject.get()
-                        .getShipTransformationManager()
-                        .getCurrentTickTransform()
-                        .transform(entityPosInLocal,
-                                TransformType.GLOBAL_TO_SUBSPACE);
+                    .getShipTransformationManager()
+                    .getCurrentTickTransform()
+                    .transform(entityPosInLocal,
+                        TransformType.GLOBAL_TO_SUBSPACE);
                 entityPosInLocal.subtract(d0, entityPosInLocal.Y, d1);
                 return entityPosInLocal.lengthSq();
             }

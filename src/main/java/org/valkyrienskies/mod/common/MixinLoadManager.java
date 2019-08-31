@@ -16,13 +16,12 @@
 
 package org.valkyrienskies.mod.common;
 
+import java.util.List;
+import java.util.Set;
 import net.minecraftforge.fml.common.FMLLog;
 import org.spongepowered.asm.lib.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
-
-import java.util.List;
-import java.util.Set;
 
 public class MixinLoadManager implements IMixinConfigPlugin {
 
@@ -40,7 +39,7 @@ public class MixinLoadManager implements IMixinConfigPlugin {
         isSpongeEnabled = isSpongeEnabledSlow();
         if (isSpongeEnabled()) {
             FMLLog.bigWarning(
-                    "Valkyrien Warfare has detected SpongeForge!");
+                "Valkyrien Warfare has detected SpongeForge!");
         }
     }
 
@@ -53,7 +52,8 @@ public class MixinLoadManager implements IMixinConfigPlugin {
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
         if (!isSpongeEnabled()) {
             if (mixinClassName.contains("spongepowered")) {
-                FMLLog.bigWarning("Not applying" + mixinClassName + " because Sponge isn't loaded!");
+                FMLLog
+                    .bigWarning("Not applying" + mixinClassName + " because Sponge isn't loaded!");
                 return false;
             }
         }
@@ -82,11 +82,13 @@ public class MixinLoadManager implements IMixinConfigPlugin {
     }
 
     @Override
-    public void preApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
+    public void preApply(String targetClassName, ClassNode targetClass, String mixinClassName,
+        IMixinInfo mixinInfo) {
     }
 
     @Override
-    public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
+    public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName,
+        IMixinInfo mixinInfo) {
     }
 
 }

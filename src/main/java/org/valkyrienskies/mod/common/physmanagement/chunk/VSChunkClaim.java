@@ -48,7 +48,8 @@ public class VSChunkClaim implements Serializable {
     }
 
     public VSChunkClaim(NBTTagCompound readFrom) {
-        this(readFrom.getInteger("centerX"), readFrom.getInteger("centerZ"), readFrom.getInteger("radius"));
+        this(readFrom.getInteger("centerX"), readFrom.getInteger("centerZ"),
+            readFrom.getInteger("radius"));
     }
 
     public void writeToNBT(NBTTagCompound toSave) {
@@ -78,7 +79,8 @@ public class VSChunkClaim implements Serializable {
     public boolean equals(Object o) {
         if (o instanceof VSChunkClaim) {
             VSChunkClaim other = (VSChunkClaim) o;
-            return other.getCenterX() == getCenterX() && other.getCenterZ() == getCenterZ() && other.getRadius() == getRadius();
+            return other.getCenterX() == getCenterX() && other.getCenterZ() == getCenterZ()
+                && other.getRadius() == getRadius();
         }
         return false;
     }

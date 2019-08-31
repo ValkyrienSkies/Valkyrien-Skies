@@ -44,7 +44,8 @@ public class EntityFallingUpBlock extends EntityFallingBlock {
         fallTile = ValkyrienSkiesWorld.INSTANCE.valkyriumOre.getDefaultState();
     }
 
-    public EntityFallingUpBlock(World worldIn, double x, double y, double z, IBlockState fallingBlockState) {
+    public EntityFallingUpBlock(World worldIn, double x, double y, double z,
+        IBlockState fallingBlockState) {
         super(worldIn, x, y, z, fallingBlockState);
     }
 
@@ -85,11 +86,17 @@ public class EntityFallingUpBlock extends EntityFallingBlock {
                 if (!onGround && collidedVertically) {
                     IBlockState iblockstate = this.world.getBlockState(blockpos1);
 
-                    if (this.world.isAirBlock(new BlockPos(this.posX, this.posY + 1.009999999776482582D, this.posZ))) // Forge: Don't indent below.
-                        if (BlockFalling.canFallThrough(this.world.getBlockState(new BlockPos(this.posX, this.posY + 1.009999999776482582D, this.posZ)))) {
+                    if (this.world.isAirBlock(
+                        new BlockPos(this.posX, this.posY + 1.009999999776482582D,
+                            this.posZ))) // Forge: Don't indent below.
+                    {
+                        if (BlockFalling.canFallThrough(this.world.getBlockState(
+                            new BlockPos(this.posX, this.posY + 1.009999999776482582D,
+                                this.posZ)))) {
                             this.collidedVertically = false;
                             return;
                         }
+                    }
 
                     this.motionX *= 0.699999988079071D;
                     this.motionZ *= 0.699999988079071D;
@@ -99,23 +106,29 @@ public class EntityFallingUpBlock extends EntityFallingBlock {
                         this.setDead();
 
                         if (!this.dontSetBlock) {
-                            if (this.world.mayPlace(block, blockpos1, true, EnumFacing.UP, null) && !BlockFalling.canFallThrough(this.world.getBlockState(blockpos1.up())) && world.setBlockState(blockpos1, this.fallTile, 3)) {
+                            if (this.world.mayPlace(block, blockpos1, true, EnumFacing.UP, null)
+                                && !BlockFalling
+                                .canFallThrough(this.world.getBlockState(blockpos1.up())) && world
+                                .setBlockState(blockpos1, this.fallTile, 3)) {
                                 if (block instanceof BlockFalling) {
                                     ((BlockFalling) block).onEndFalling(this.world, blockpos1,
-                                            //not used by this xd
-                                            null, null);
+                                        //not used by this xd
+                                        null, null);
                                 }
 
-                                if (this.tileEntityData != null && block instanceof ITileEntityProvider) {
+                                if (this.tileEntityData != null
+                                    && block instanceof ITileEntityProvider) {
                                     TileEntity tileentity = this.world.getTileEntity(blockpos1);
 
                                     if (tileentity != null) {
-                                        NBTTagCompound nbttagcompound = tileentity.writeToNBT(new NBTTagCompound());
+                                        NBTTagCompound nbttagcompound = tileentity
+                                            .writeToNBT(new NBTTagCompound());
 
                                         for (String s : this.tileEntityData.getKeySet()) {
                                             NBTBase nbtbase = this.tileEntityData.getTag(s);
 
-                                            if (!"x".equals(s) && !"y".equals(s) && !"z".equals(s)) {
+                                            if (!"x".equals(s) && !"y".equals(s) && !"z"
+                                                .equals(s)) {
                                                 nbttagcompound.setTag(s, nbtbase.copy());
                                             }
                                         }
@@ -124,14 +137,20 @@ public class EntityFallingUpBlock extends EntityFallingBlock {
                                         tileentity.markDirty();
                                     }
                                 }
-                            } else if (this.shouldDropItem && this.world.getGameRules().getBoolean("doEntityDrops")) {
-                                this.entityDropItem(new ItemStack(block, 1, block.damageDropped(this.fallTile)), 0.0F);
+                            } else if (this.shouldDropItem && this.world.getGameRules()
+                                .getBoolean("doEntityDrops")) {
+                                this.entityDropItem(
+                                    new ItemStack(block, 1, block.damageDropped(this.fallTile)),
+                                    0.0F);
                             }
                         }
                     }
-                } else if (this.fallTime > 100 && (blockpos1.getY() < 1 || blockpos1.getY() > 256) || this.fallTime > 600) {
-                    if (this.shouldDropItem && this.world.getGameRules().getBoolean("doEntityDrops")) {
-                        this.entityDropItem(new ItemStack(block, 1, block.damageDropped(this.fallTile)), 0.0F);
+                } else if (this.fallTime > 100 && (blockpos1.getY() < 1 || blockpos1.getY() > 256)
+                    || this.fallTime > 600) {
+                    if (this.shouldDropItem && this.world.getGameRules()
+                        .getBoolean("doEntityDrops")) {
+                        this.entityDropItem(
+                            new ItemStack(block, 1, block.damageDropped(this.fallTile)), 0.0F);
                     }
 
                     this.setDead();

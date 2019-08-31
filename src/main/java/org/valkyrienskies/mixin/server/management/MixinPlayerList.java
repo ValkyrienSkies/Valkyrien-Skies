@@ -16,14 +16,13 @@
 
 package org.valkyrienskies.mixin.server.management;
 
+import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.Packet;
 import net.minecraft.server.management.PlayerList;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.valkyrienskies.fixes.VWNetwork;
-
-import javax.annotation.Nullable;
 
 /**
  * As much as I don't like it, this mixin is absolutely necessary.
@@ -37,7 +36,8 @@ public abstract class MixinPlayerList {
      * @author thebest108
      */
     @Overwrite
-    public void sendToAllNearExcept(@Nullable EntityPlayer except, double x, double y, double z, double radius, int dimension, Packet<?> packetIn) {
+    public void sendToAllNearExcept(@Nullable EntityPlayer except, double x, double y, double z,
+        double radius, int dimension, Packet<?> packetIn) {
         VWNetwork.sendToAllNearExcept(except, x, y, z, radius, dimension, packetIn);
     }
 

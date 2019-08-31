@@ -1,9 +1,8 @@
 package org.valkyrienskies.addon.control.block.torque;
 
+import java.util.Optional;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Tuple;
-
-import java.util.Optional;
 
 public class TileEntityRotationTrainAxle extends TileEntityBasicRotationTile {
 

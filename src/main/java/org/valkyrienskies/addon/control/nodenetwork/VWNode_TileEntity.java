@@ -18,15 +18,18 @@ package org.valkyrienskies.addon.control.nodenetwork;
 
 import gigaherz.graph.api.Graph;
 import gigaherz.graph.api.GraphObject;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import javax.annotation.Nullable;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.valkyrienskies.fixes.VWNetwork;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
-
-import javax.annotation.Nullable;
-import java.util.*;
 
 public class VWNode_TileEntity implements IVWNode {
 
@@ -48,7 +51,8 @@ public class VWNode_TileEntity implements IVWNode {
         this.isValid = false;
         this.parentPhysicsObject = null;
         this.maximumConnections = maximumConnections;
-        Graph.integrate(this, Collections.EMPTY_LIST, (graph) -> new BasicNodeTileEntity.GraphData());
+        Graph.integrate(this, Collections.EMPTY_LIST,
+            (graph) -> new BasicNodeTileEntity.GraphData());
     }
 
     @Nullable
@@ -202,14 +206,16 @@ public class VWNode_TileEntity implements IVWNode {
 
     private void assertValidity() {
         if (!isValid()) {
-            throw new IllegalStateException("This node at " + parentTile.getPos() + " is not valid / initialized!");
+            throw new IllegalStateException(
+                "This node at " + parentTile.getPos() + " is not valid / initialized!");
         }
     }
 
     @Override
     public void shiftConnections(BlockPos offset) {
         if (isValid()) {
-            throw new IllegalStateException("Cannot shift the connections of a Node while it is valid and in use!");
+            throw new IllegalStateException(
+                "Cannot shift the connections of a Node while it is valid and in use!");
         }
         List<BlockPos> shiftedNodesPos = new ArrayList<BlockPos>(linkedNodesPos.size());
         for (BlockPos originalPos : linkedNodesPos) {
@@ -223,7 +229,7 @@ public class VWNode_TileEntity implements IVWNode {
     public void setParentPhysicsObject(PhysicsObject parent) {
         if (isValid()) {
             throw new IllegalStateException(
-                    "Cannot change the parent physics object of a Node while it is valid and in use!");
+                "Cannot change the parent physics object of a Node while it is valid and in use!");
         }
         this.parentPhysicsObject = parent;
     }

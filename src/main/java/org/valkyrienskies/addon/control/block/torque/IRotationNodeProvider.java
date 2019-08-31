@@ -1,8 +1,7 @@
 package org.valkyrienskies.addon.control.block.torque;
 
-import net.minecraft.tileentity.TileEntity;
-
 import java.util.Optional;
+import net.minecraft.tileentity.TileEntity;
 
 public interface IRotationNodeProvider<T extends TileEntity> {
 

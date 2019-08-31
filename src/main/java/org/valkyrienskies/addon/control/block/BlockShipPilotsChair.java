@@ -16,6 +16,9 @@
 
 package org.valkyrienskies.addon.control.block;
 
+import java.util.List;
+import java.util.Optional;
+import javax.annotation.Nullable;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyDirection;
@@ -41,10 +44,6 @@ import org.valkyrienskies.mod.common.physmanagement.interaction.EntityDraggable;
 import org.valkyrienskies.mod.common.physmanagement.interaction.IDraggable;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
-import javax.annotation.Nullable;
-import java.util.List;
-import java.util.Optional;
-
 public class BlockShipPilotsChair extends BlockPilotableBasic {
 
     public static final PropertyDirection FACING = BlockHorizontal.FACING;
@@ -60,37 +59,40 @@ public class BlockShipPilotsChair extends BlockPilotableBasic {
     }
 
     @Override
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state,
+        EntityPlayer playerIn, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
         if (!worldIn.isRemote) {
             Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(worldIn, pos);
             if (physicsObject.isPresent()) {
                 PhysicsWrapperEntity wrapperEntity = physicsObject.get()
-                        .getWrapperEntity();
+                    .getWrapperEntity();
                 if (playerIn.getLowestRidingEntity() != wrapperEntity.getLowestRidingEntity()) {
                     TileEntity tileEntity = worldIn.getTileEntity(pos);
                     if (tileEntity instanceof TileEntityPilotsChair) {
                         Vector playerPos = new Vector(playerIn);
 
                         wrapperEntity.getPhysicsObject()
-                                .getShipTransformationManager()
-                                .fromLocalToGlobal(playerPos);
+                            .getShipTransformationManager()
+                            .fromLocalToGlobal(playerPos);
 
                         playerIn.posX = playerPos.X;
                         playerIn.posY = playerPos.Y;
                         playerIn.posZ = playerPos.Z;
 
-                        IDraggable entityDraggable = EntityDraggable.getDraggableFromEntity(playerIn);
+                        IDraggable entityDraggable = EntityDraggable
+                            .getDraggableFromEntity(playerIn);
                         // Only mount the player if they're standing on the ship.
                         if (entityDraggable.getWorldBelowFeet() == wrapperEntity) {
                             playerIn.startRiding(wrapperEntity);
                             Vector localMountPos = getPlayerMountOffset(state, pos);
-                            ValkyrienUtils.fixEntityToShip(playerIn, localMountPos, wrapperEntity.getPhysicsObject());
+                            ValkyrienUtils.fixEntityToShip(playerIn, localMountPos,
+                                wrapperEntity.getPhysicsObject());
                         }
 
                         ((TileEntityPilotsChair) tileEntity).setPilotEntity(playerIn);
                         wrapperEntity.getPhysicsObject()
-                                .getShipTransformationManager()
-                                .fromGlobalToLocal(playerPos);
+                            .getShipTransformationManager()
+                            .fromGlobalToLocal(playerPos);
 
                         playerIn.posX = playerPos.X;
                         playerIn.posY = playerPos.Y;
@@ -104,9 +106,12 @@ public class BlockShipPilotsChair extends BlockPilotableBasic {
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation, ITooltipFlag advanced) {
-        itemInformation.add(TextFormatting.ITALIC + "" + TextFormatting.BLUE + I18n.format("tooltip.vs_control.pilots_chair_1"));
-        itemInformation.add(TextFormatting.RED + "" + TextFormatting.ITALIC + I18n.format("tooltip.vs_control.pilots_chair_2"));
+    public void addInformation(ItemStack stack, @Nullable World player,
+        List<String> itemInformation, ITooltipFlag advanced) {
+        itemInformation.add(TextFormatting.ITALIC + "" + TextFormatting.BLUE + I18n
+            .format("tooltip.vs_control.pilots_chair_1"));
+        itemInformation.add(TextFormatting.RED + "" + TextFormatting.ITALIC + I18n
+            .format("tooltip.vs_control.pilots_chair_2"));
     }
 
     private Vector getPlayerMountOffset(IBlockState state, BlockPos pos) {
@@ -131,11 +136,15 @@ public class BlockShipPilotsChair extends BlockPilotableBasic {
     }
 
     @Override
-    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
-        return this.getDefaultState().withProperty(FACING, placer.isSneaking() ? placer.getHorizontalFacing().getOpposite() : placer.getHorizontalFacing());
+    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing,
+        float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
+        return this.getDefaultState().withProperty(FACING,
+            placer.isSneaking() ? placer.getHorizontalFacing().getOpposite()
+                : placer.getHorizontalFacing());
     }
 
-    public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
+    public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX,
+        float hitY, float hitZ, int meta, EntityLivingBase placer) {
         EnumFacing facingHorizontal = placer.getHorizontalFacing();
 
         if (!placer.isSneaking()) {
@@ -162,7 +171,7 @@ public class BlockShipPilotsChair extends BlockPilotableBasic {
     @Override
     public int getMetaFromState(IBlockState state) {
         int i = state.getValue(FACING)
-                .getIndex();
+            .getIndex();
         return i;
     }
 

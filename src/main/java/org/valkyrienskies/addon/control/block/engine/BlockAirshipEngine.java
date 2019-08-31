@@ -35,9 +35,12 @@ import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 
 /**
- * All engines should extend this class, that way other kinds of engines can be made without making tons of new classes for them. Only engines that add new functionality should have their own class.
+ * All engines should extend this class, that way other kinds of engines can be made without making
+ * tons of new classes for them. Only engines that add new functionality should have their own
+ * class.
  */
-public abstract class BlockAirshipEngine extends Block implements IBlockForceProvider, ITileEntityProvider {
+public abstract class BlockAirshipEngine extends Block implements IBlockForceProvider,
+    ITileEntityProvider {
 
     public static final PropertyDirection FACING = PropertyDirection.create("facing");
     protected double enginePower;
@@ -48,8 +51,10 @@ public abstract class BlockAirshipEngine extends Block implements IBlockForcePro
     }
 
     @Override
-    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
-        return this.getDefaultState().withProperty(FACING, EnumFacing.getDirectionFromEntityLiving(pos, placer));
+    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing,
+        float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
+        return this.getDefaultState()
+            .withProperty(FACING, EnumFacing.getDirectionFromEntityLiving(pos, placer));
     }
 
     @Override
@@ -70,7 +75,8 @@ public abstract class BlockAirshipEngine extends Block implements IBlockForcePro
     }
 
     @Override
-    public Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state, PhysicsObject physicsObject, double secondsToApply) {
+    public Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state,
+        PhysicsObject physicsObject, double secondsToApply) {
         Vector acting = new Vector(0, 0, 0);
         if (!world.isBlockPowered(pos)) {
             return acting;
@@ -79,10 +85,12 @@ public abstract class BlockAirshipEngine extends Block implements IBlockForcePro
         TileEntity tileEntity = world.getTileEntity(pos);
         if (tileEntity instanceof TileEntityPropellerEngine) {
             //Just set the Thrust to be the maximum
-            ((TileEntityPropellerEngine) tileEntity).setThrustMultiplierGoal(this.getEnginePower(world, pos, state, physicsObject));
+            ((TileEntityPropellerEngine) tileEntity)
+                .setThrustMultiplierGoal(this.getEnginePower(world, pos, state, physicsObject));
             ((TileEntityPropellerEngine) tileEntity).updateTicksSinceLastRecievedSignal();
             ((TileEntityPropellerEngine) tileEntity).setThrustMultiplierGoal(1D);
-            return ((TileEntityPropellerEngine) tileEntity).getForceOutputUnoriented(secondsToApply, physicsObject);
+            return ((TileEntityPropellerEngine) tileEntity)
+                .getForceOutputUnoriented(secondsToApply, physicsObject);
         }
 
         return acting;
@@ -104,15 +112,17 @@ public abstract class BlockAirshipEngine extends Block implements IBlockForcePro
     }
 
     @Override
-    public boolean canConnectRedstone(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing face) {
+    public boolean canConnectRedstone(IBlockState state, IBlockAccess world, BlockPos pos,
+        EnumFacing face) {
         return true;
     }
 
     /**
-     * Used for calculating force applied to the airship by an engine.
-     * Override this in your subclasses to make engines that are more dynamic than simply being faster engines.
+     * Used for calculating force applied to the airship by an engine. Override this in your
+     * subclasses to make engines that are more dynamic than simply being faster engines.
      */
-    public double getEnginePower(World world, BlockPos pos, IBlockState state, PhysicsObject physicsObject) {
+    public double getEnginePower(World world, BlockPos pos, IBlockState state,
+        PhysicsObject physicsObject) {
         return this.enginePower;
     }
 
@@ -126,8 +136,8 @@ public abstract class BlockAirshipEngine extends Block implements IBlockForcePro
     }
 
     /**
-     * The spinning rotor engines must obey the rules of airflow, otherwise idiots
-     * would stick all their engines inside leaving nothing exposed.
+     * The spinning rotor engines must obey the rules of airflow, otherwise idiots would stick all
+     * their engines inside leaving nothing exposed.
      */
     @Override
     public boolean doesForceSpawnParticles() {

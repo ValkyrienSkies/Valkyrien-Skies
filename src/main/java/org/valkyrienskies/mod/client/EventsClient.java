@@ -16,6 +16,7 @@
 
 package org.valkyrienskies.mod.client;
 
+import java.util.Optional;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -51,8 +52,6 @@ import org.valkyrienskies.mod.common.physmanagement.interaction.EntityDraggable;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
-import java.util.Optional;
-
 public class EventsClient {
 
     private static double oldXOff;
@@ -61,7 +60,8 @@ public class EventsClient {
 
     public static void updatePlayerMouseOver(Entity entity) {
         if (entity == Minecraft.getMinecraft().player) {
-            Minecraft.getMinecraft().entityRenderer.getMouseOver(Minecraft.getMinecraft().getRenderPartialTicks());
+            Minecraft.getMinecraft().entityRenderer
+                .getMouseOver(Minecraft.getMinecraft().getRenderPartialTicks());
         }
     }
 
@@ -71,13 +71,15 @@ public class EventsClient {
             ISound sound = event.getSound();
             BlockPos pos = new BlockPos(sound.getXPosF(), sound.getYPosF(), sound.getZPosF());
 
-            Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(Minecraft.getMinecraft().world, pos);
+            Optional<PhysicsObject> physicsObject = ValkyrienUtils
+                .getPhysicsObject(Minecraft.getMinecraft().world, pos);
             if (physicsObject.isPresent()) {
-                Vector newSoundLocation = new Vector(sound.getXPosF(), sound.getYPosF(), sound.getZPosF());
+                Vector newSoundLocation = new Vector(sound.getXPosF(), sound.getYPosF(),
+                    sound.getZPosF());
                 physicsObject.get()
-                        .getShipTransformationManager()
-                        .getCurrentTickTransform()
-                        .transform(newSoundLocation, TransformType.SUBSPACE_TO_GLOBAL);
+                    .getShipTransformationManager()
+                    .getCurrentTickTransform()
+                    .transform(newSoundLocation, TransformType.SUBSPACE_TO_GLOBAL);
 
                 SoundFixWrapper soundFix = new SoundFixWrapper(sound, newSoundLocation);
 
@@ -91,7 +93,8 @@ public class EventsClient {
         Minecraft mc = Minecraft.getMinecraft();
         if (mc.world != null) {
             if (!mc.isGamePaused()) {
-                WorldPhysObjectManager manager = ValkyrienSkiesMod.VW_PHYSICS_MANAGER.getManagerForWorld(mc.world);
+                WorldPhysObjectManager manager = ValkyrienSkiesMod.VW_PHYSICS_MANAGER
+                    .getManagerForWorld(mc.world);
                 if (event.phase == Phase.END) {
                     for (PhysicsWrapperEntity wrapper : manager.physicsEntities) {
                         wrapper.getPhysicsObject().onPostTickClient();
@@ -108,7 +111,8 @@ public class EventsClient {
         GL11.glPushMatrix();
         BlockPos pos = Minecraft.getMinecraft().objectMouseOver.getBlockPos();
         if (pos != null) {
-            Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(Minecraft.getMinecraft().world, pos);
+            Optional<PhysicsObject> physicsObject = ValkyrienUtils
+                .getPhysicsObject(Minecraft.getMinecraft().world, pos);
             if (physicsObject.isPresent()) {
                 RayTraceResult objectOver = Minecraft.getMinecraft().objectMouseOver;
                 if (objectOver != null && objectOver.hitVec != null) {
@@ -118,12 +122,12 @@ public class EventsClient {
                     oldZOff = buffer.zOffset;
 
                     buffer.setTranslation(-physicsObject.get()
-                            .getShipRenderer().offsetPos.getX(), -physicsObject.get()
-                            .getShipRenderer().offsetPos.getY(), -physicsObject.get()
-                            .getShipRenderer().offsetPos.getZ());
+                        .getShipRenderer().offsetPos.getX(), -physicsObject.get()
+                        .getShipRenderer().offsetPos.getY(), -physicsObject.get()
+                        .getShipRenderer().offsetPos.getZ());
                     physicsObject.get()
-                            .getShipRenderer()
-                            .setupTranslation(event.getPartialTicks());
+                        .getShipRenderer()
+                        .setupTranslation(event.getPartialTicks());
                 }
             }
         }
@@ -133,7 +137,8 @@ public class EventsClient {
     public void onDrawBlockHighlightEventLast(DrawBlockHighlightEvent event) {
         BlockPos pos = Minecraft.getMinecraft().objectMouseOver.getBlockPos();
         if (pos != null) {
-            Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(Minecraft.getMinecraft().world, pos);
+            Optional<PhysicsObject> physicsObject = ValkyrienUtils
+                .getPhysicsObject(Minecraft.getMinecraft().world, pos);
             if (physicsObject.isPresent()) {
                 RayTraceResult objectOver = Minecraft.getMinecraft().objectMouseOver;
                 if (objectOver != null && objectOver.hitVec != null) {
@@ -161,18 +166,23 @@ public class EventsClient {
     public void onModelBake(ModelBakeEvent event) {
         GibsModelRegistry.onModelBakeEvent(event);
 
-
-        ResourceLocation modelResourceLocation = new ResourceLocation(ValkyrienSkiesMod.MOD_ID, "item/infuser_core_main");
+        ResourceLocation modelResourceLocation = new ResourceLocation(ValkyrienSkiesMod.MOD_ID,
+            "item/infuser_core_main");
         try {
             IModel model = ModelLoaderRegistry.getModel(modelResourceLocation);
-            IBakedModel inventoryModel = model.bake(model.getDefaultState(), DefaultVertexFormats.ITEM, ModelLoader.defaultTextureGetter());
+            IBakedModel inventoryModel = model
+                .bake(model.getDefaultState(), DefaultVertexFormats.ITEM,
+                    ModelLoader.defaultTextureGetter());
             IBakedModel handModel = event.getModelRegistry()
-                    .getObject(new ModelResourceLocation(ValkyrienSkiesMod.MOD_ID + ":" + ValkyrienSkiesMod.INSTANCE.physicsCore.getTranslationKey()
-                            .substring(5), "inventory"));
-
+                .getObject(new ModelResourceLocation(
+                    ValkyrienSkiesMod.MOD_ID + ":" + ValkyrienSkiesMod.INSTANCE.physicsCore
+                        .getTranslationKey()
+                        .substring(5), "inventory"));
 
             event.getModelRegistry()
-                    .putObject(new ModelResourceLocation(ValkyrienSkiesMod.MOD_ID + ":testmodel", "inventory"), new InfuserCoreBakedModel(handModel, inventoryModel));
+                .putObject(
+                    new ModelResourceLocation(ValkyrienSkiesMod.MOD_ID + ":testmodel", "inventory"),
+                    new InfuserCoreBakedModel(handModel, inventoryModel));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -181,11 +191,13 @@ public class EventsClient {
 
     @SubscribeEvent
     public void onTextureStitchPre(TextureStitchEvent.Pre event) {
-        ResourceLocation mainCoreInventoryTexture = new ResourceLocation(ValkyrienSkiesMod.MOD_ID, "items/main_core");
-        ResourceLocation smallCoreInventoryTexture = new ResourceLocation(ValkyrienSkiesMod.MOD_ID, "items/small_core");
+        ResourceLocation mainCoreInventoryTexture = new ResourceLocation(ValkyrienSkiesMod.MOD_ID,
+            "items/main_core");
+        ResourceLocation smallCoreInventoryTexture = new ResourceLocation(ValkyrienSkiesMod.MOD_ID,
+            "items/small_core");
         event.getMap()
-                .registerSprite(mainCoreInventoryTexture);
+            .registerSprite(mainCoreInventoryTexture);
         event.getMap()
-                .registerSprite(smallCoreInventoryTexture);
+            .registerSprite(smallCoreInventoryTexture);
     }
 }

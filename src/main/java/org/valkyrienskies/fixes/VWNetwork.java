@@ -1,5 +1,8 @@
 package org.valkyrienskies.fixes;
 
+import java.util.List;
+import java.util.Optional;
+import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.Packet;
@@ -15,12 +18,9 @@ import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
-import javax.annotation.Nullable;
-import java.util.List;
-import java.util.Optional;
-
 /**
- * A few simple static implementations of functions that send packets, correctly handling for ships.
+ * A few simple static implementations of functions that send packets, correctly handling for
+ * ships.
  */
 public class VWNetwork {
 
@@ -35,7 +35,8 @@ public class VWNetwork {
         playerChunkMap.markBlockForUpdate(tileEntity.getPos());
     }
 
-    public static void sendToAllNearExcept(@Nullable EntityPlayer except, double x, double y, double z, double radius, int dimension, Packet<?> packetIn) {
+    public static void sendToAllNearExcept(@Nullable EntityPlayer except, double x, double y,
+        double z, double radius, int dimension, Packet<?> packetIn) {
         BlockPos pos = new BlockPos(x, y, z);
         World worldIn;
         if (except == null) {
@@ -47,18 +48,22 @@ public class VWNetwork {
         Vector packetPosition = new Vector(x, y, z);
         if (physicsObject.isPresent()) {
             physicsObject.get()
-                    .getShipTransformationManager()
-                    .fromLocalToGlobal(packetPosition);
+                .getShipTransformationManager()
+                .fromLocalToGlobal(packetPosition);
             // Special treatment for certain packets.
             if (packetIn instanceof SPacketSoundEffect) {
                 SPacketSoundEffect soundEffect = (SPacketSoundEffect) packetIn;
-                packetIn = new SPacketSoundEffect(soundEffect.sound, soundEffect.category, packetPosition.X, packetPosition.Y, packetPosition.Z, soundEffect.soundVolume, soundEffect.soundPitch);
+                packetIn = new SPacketSoundEffect(soundEffect.sound, soundEffect.category,
+                    packetPosition.X, packetPosition.Y, packetPosition.Z, soundEffect.soundVolume,
+                    soundEffect.soundPitch);
             }
 
             if (packetIn instanceof SPacketEffect) {
                 SPacketEffect effect = (SPacketEffect) packetIn;
-                BlockPos blockpos = new BlockPos(packetPosition.X, packetPosition.Y, packetPosition.Z);
-                packetIn = new SPacketEffect(effect.soundType, blockpos, effect.soundData, effect.serverWide);
+                BlockPos blockpos = new BlockPos(packetPosition.X, packetPosition.Y,
+                    packetPosition.Z);
+                packetIn = new SPacketEffect(effect.soundType, blockpos, effect.soundData,
+                    effect.serverWide);
             }
         }
 
@@ -78,7 +83,8 @@ public class VWNetwork {
                 double d5 = packetPosition.Z - entityplayermp.posZ;
 
                 // Cover both cases; if player is in ship space or if player is in world space.
-                if ((d0 * d0 + d1 * d1 + d2 * d2 < radius * radius) || (d3 * d3 + d4 * d4 + d5 * d5 < radius * radius)) {
+                if ((d0 * d0 + d1 * d1 + d2 * d2 < radius * radius) || (d3 * d3 + d4 * d4 + d5 * d5
+                    < radius * radius)) {
                     entityplayermp.connection.sendPacket(packetIn);
                 }
             }

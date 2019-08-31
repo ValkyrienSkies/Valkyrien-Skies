@@ -89,13 +89,14 @@ import org.valkyrienskies.mod.proxy.CommonProxy;
 import valkyrienwarfare.api.IPhysicsEntityManager;
 
 @Mod(
-        modid = ValkyrienSkiesMod.MOD_ID,
-        name = ValkyrienSkiesMod.MOD_NAME,
-        version = ValkyrienSkiesMod.MOD_VERSION,
-        updateJSON = "https://raw.githubusercontent.com/ValkyrienWarfare/Valkyrien-Warfare-Revamped/master/update.json",
-        certificateFingerprint = ValkyrienSkiesMod.MOD_FINGERPRINT
+    modid = ValkyrienSkiesMod.MOD_ID,
+    name = ValkyrienSkiesMod.MOD_NAME,
+    version = ValkyrienSkiesMod.MOD_VERSION,
+    updateJSON = "https://raw.githubusercontent.com/ValkyrienWarfare/Valkyrien-Warfare-Revamped/master/update.json",
+    certificateFingerprint = ValkyrienSkiesMod.MOD_FINGERPRINT
 )
 public class ValkyrienSkiesMod {
+
     // MOD INFO CONSTANTS
     public static final String MOD_ID = "valkyrienskies";
     public static final String MOD_NAME = "Valkyrien Skies";
@@ -129,7 +130,8 @@ public class ValkyrienSkiesMod {
 
     @Mod.EventHandler
     public void onFingerprintViolation(FMLFingerprintViolationEvent event) {
-        FMLLog.bigWarning("Valkyrien Skies JAR fingerprint corrupted, which means this copy of the mod may have" +
+        FMLLog.bigWarning(
+            "Valkyrien Skies JAR fingerprint corrupted, which means this copy of the mod may have" +
                 " come from unofficial sources. " +
                 "Download the mod from CurseForge: https://minecraft.curseforge.com/projects/valkyrien-warfare");
     }
@@ -143,7 +145,8 @@ public class ValkyrienSkiesMod {
     public void preInit(FMLPreInitializationEvent event) {
         serializationInitAsync();
         registerNetworks(event);
-        ValkyrienSkiesMod.PHYSICS_THREADS_EXECUTOR = Executors.newFixedThreadPool(VSConfig.threadCount);
+        ValkyrienSkiesMod.PHYSICS_THREADS_EXECUTOR = Executors
+            .newFixedThreadPool(VSConfig.threadCount);
         registerCapabilities();
         proxy.preInit(event);
 
@@ -170,7 +173,7 @@ public class ValkyrienSkiesMod {
         // Print out a message of core count, we want this to know what AnvilNode is giving us.
         System.out.println("Valkyrien Skies Initialization:");
         System.out.println("We are running on " + Runtime.getRuntime().availableProcessors() +
-                " threads; 4 or more is recommended!");
+            " threads; 4 or more is recommended!");
         proxy.init(event);
     }
 
@@ -188,26 +191,32 @@ public class ValkyrienSkiesMod {
 
     private void registerNetworks(FMLStateEvent event) {
         physWrapperNetwork = NetworkRegistry.INSTANCE.newSimpleChannel("physChannel");
-        physWrapperNetwork.registerMessage(PhysWrapperPositionHandler.class, PhysWrapperPositionMessage.class, 0,
+        physWrapperNetwork
+            .registerMessage(PhysWrapperPositionHandler.class, PhysWrapperPositionMessage.class, 0,
                 Side.CLIENT);
-        physWrapperNetwork.registerMessage(SubspacedEntityRecordHandler.class, SubspacedEntityRecordMessage.class, 1, Side.CLIENT);
-        physWrapperNetwork.registerMessage(SubspacedEntityRecordHandler.class, SubspacedEntityRecordMessage.class, 2, Side.SERVER);
-        physWrapperNetwork.registerMessage(VWGuiButtonHandler.class, VWGuiButtonMessage.class, 3, Side.SERVER);
+        physWrapperNetwork
+            .registerMessage(SubspacedEntityRecordHandler.class, SubspacedEntityRecordMessage.class,
+                1, Side.CLIENT);
+        physWrapperNetwork
+            .registerMessage(SubspacedEntityRecordHandler.class, SubspacedEntityRecordMessage.class,
+                2, Side.SERVER);
+        physWrapperNetwork
+            .registerMessage(VWGuiButtonHandler.class, VWGuiButtonMessage.class, 3, Side.SERVER);
     }
 
     void registerBlocks(RegistryEvent.Register<Block> event) {
         physicsInfuser = new BlockPhysicsInfuser(Material.ROCK).setHardness(8f)
-                .setTranslationKey("shipblock")
-                .setRegistryName(MOD_ID, "shipblock")
-                .setCreativeTab(vwTab);
+            .setTranslationKey("shipblock")
+            .setRegistryName(MOD_ID, "shipblock")
+            .setCreativeTab(vwTab);
         physicsInfuserCreative = new BlockPhysicsInfuserCreative(Material.ROCK).setHardness(12f)
-                .setTranslationKey("shipblockcreative")
-                .setRegistryName(MOD_ID, "shipblockcreative")
-                .setCreativeTab(vwTab);
+            .setTranslationKey("shipblockcreative")
+            .setRegistryName(MOD_ID, "shipblockcreative")
+            .setCreativeTab(vwTab);
         // Do not put the dummy block into the creative tab
         physicsInfuserDummy = new BlockPhysicsInfuserDummy(Material.ROCK).setHardness(12f)
-                .setTranslationKey("physics_infuser_dummy")
-                .setRegistryName(MOD_ID, "physics_infuser_dummy");
+            .setTranslationKey("physics_infuser_dummy")
+            .setRegistryName(MOD_ID, "physics_infuser_dummy");
 
         event.getRegistry().register(physicsInfuser);
         event.getRegistry().register(physicsInfuserCreative);
@@ -231,7 +240,8 @@ public class ValkyrienSkiesMod {
 
             kryo.setRegistrationRequired(false);
 
-            System.out.println("Kryo initialization: " + (System.currentTimeMillis() - start) + "ms");
+            System.out
+                .println("Kryo initialization: " + (System.currentTimeMillis() - start) + "ms");
 
             return kryo;
         });
@@ -250,10 +260,10 @@ public class ValkyrienSkiesMod {
         registerItemBlock(event, physicsInfuserCreative);
 
         this.physicsCore = new ItemPhysicsCore().setTranslationKey("vw_phys_core")
-                .setRegistryName(MOD_ID, "vw_phys_core")
-                .setCreativeTab(ValkyrienSkiesMod.vwTab);
+            .setRegistryName(MOD_ID, "vw_phys_core")
+            .setCreativeTab(ValkyrienSkiesMod.vwTab);
         event.getRegistry()
-                .register(this.physicsCore);
+            .register(this.physicsCore);
     }
 
     private static void registerItemBlock(RegistryEvent.Register<Item> event, Block block) {
@@ -262,35 +272,39 @@ public class ValkyrienSkiesMod {
 
     void registerRecipes(RegistryEvent.Register<IRecipe> event) {
         registerRecipe(event, "recipe_physics_infuser", new ItemStack(physicsInfuser),
-                "IEI", "ODO", "IEI", 'E', Items.ENDER_PEARL, 'D',
-                Items.DIAMOND, 'O', Item.getItemFromBlock(Blocks.OBSIDIAN), 'I', Items.IRON_INGOT);
+            "IEI", "ODO", "IEI", 'E', Items.ENDER_PEARL, 'D',
+            Items.DIAMOND, 'O', Item.getItemFromBlock(Blocks.OBSIDIAN), 'I', Items.IRON_INGOT);
     }
 
     private static void registerRecipe(RegistryEvent.Register<IRecipe> event,
-                                       String registryName, ItemStack out, Object... in) {
+        String registryName, ItemStack out, Object... in) {
         CraftingHelper.ShapedPrimer primer = CraftingHelper.parseShaped(in);
         event.getRegistry()
-                .register(new ShapedRecipes(ValkyrienSkiesMod.MOD_ID, primer.width, primer.height, primer.input, out)
-                        .setRegistryName(ValkyrienSkiesMod.MOD_ID, registryName));
+            .register(new ShapedRecipes(ValkyrienSkiesMod.MOD_ID, primer.width, primer.height,
+                primer.input, out)
+                .setRegistryName(ValkyrienSkiesMod.MOD_ID, registryName));
     }
 
-	private void runConfiguration() {
+    private void runConfiguration() {
         VSConfig.sync();
-	}
+    }
 
     @EventHandler
-    public void onServerStarted(FMLServerStartedEvent event) { }
+    public void onServerStarted(FMLServerStartedEvent event) {
+    }
 
     @EventHandler
-    public void onServerStopping(FMLServerStoppingEvent event) { }
+    public void onServerStopping(FMLServerStoppingEvent event) {
+    }
 
     private void registerCapabilities() {
         CapabilityManager.INSTANCE.register(IVWWorldDataCapability.class, new StorageVWWorldData(),
-                ImplVWWorldDataCapability::new);
+            ImplVWWorldDataCapability::new);
     }
 
     private void registerTileEntities() {
-        GameRegistry.registerTileEntity(TileEntityPhysicsInfuser.class, new ResourceLocation(MOD_ID, "tile_phys_infuser"));
+        GameRegistry.registerTileEntity(TileEntityPhysicsInfuser.class,
+            new ResourceLocation(MOD_ID, "tile_phys_infuser"));
     }
 
 }

@@ -16,6 +16,8 @@
 
 package org.valkyrienskies.addon.control.block;
 
+import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyDirection;
@@ -33,9 +35,6 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import org.valkyrienskies.addon.control.tileentity.TileEntityShipHelm;
 
-import javax.annotation.Nullable;
-import java.util.List;
-
 public class BlockShipHelm extends BlockPilotableBasic {
 
     public static final PropertyDirection FACING = BlockHorizontal.FACING;
@@ -45,13 +44,15 @@ public class BlockShipHelm extends BlockPilotableBasic {
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation,
-                               ITooltipFlag advanced) {
+    public void addInformation(ItemStack stack, @Nullable World player,
+        List<String> itemInformation,
+        ITooltipFlag advanced) {
         itemInformation.add(TextFormatting.BLUE + I18n.format("tooltip.vs_control.ship_helm"));
     }
 
     @Override
-    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
+    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing,
+        float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
         EnumFacing facingHorizontal = placer.getHorizontalFacing();
 
         if (!placer.isSneaking()) {
@@ -78,7 +79,7 @@ public class BlockShipHelm extends BlockPilotableBasic {
     @Override
     public int getMetaFromState(IBlockState state) {
         int i = state.getValue(FACING)
-                .getIndex();
+            .getIndex();
         return i;
     }
 

@@ -10,11 +10,13 @@ import org.valkyrienskies.addon.control.block.multiblocks.TileEntityEthereumEngi
 import org.valkyrienskies.mod.client.render.FastBlockModelRenderer;
 import org.valkyrienskies.mod.client.render.GibsAnimationRegistry;
 
-public class EthereumEnginePartTileEntityRenderer extends TileEntitySpecialRenderer<TileEntityEthereumEnginePart> {
+public class EthereumEnginePartTileEntityRenderer extends
+    TileEntitySpecialRenderer<TileEntityEthereumEnginePart> {
 
     @Override
-    public void render(TileEntityEthereumEnginePart tileentity, double x, double y, double z, float partialTick,
-                       int destroyStage, float alpha) {
+    public void render(TileEntityEthereumEnginePart tileentity, double x, double y, double z,
+        float partialTick,
+        int destroyStage, float alpha) {
 
         this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
         GlStateManager.pushMatrix();
@@ -30,11 +32,13 @@ public class EthereumEnginePartTileEntityRenderer extends TileEntitySpecialRende
         if (!tileentity.isPartOfAssembledMultiblock()) {
             IBlockState state = Blocks.IRON_BLOCK.getDefaultState();
             Tessellator tessellator = Tessellator.getInstance();
-            FastBlockModelRenderer.renderBlockModel(tessellator, tileentity.getWorld(), state, brightness);
+            FastBlockModelRenderer
+                .renderBlockModel(tessellator, tileentity.getWorld(), state, brightness);
         } else if (tileentity.isMaster()) {
             // Im not sure why this has to be done, something is wrong with my rotation
             // intuition.
-            float tileYaw = -tileentity.getMultiBlockSchematic().getMultiblockRotation().getYaw() + 180;
+            float tileYaw =
+                -tileentity.getMultiBlockSchematic().getMultiblockRotation().getYaw() + 180;
 
             GlStateManager.translate(.5, 0, .5);
             GlStateManager.scale(3, 3, 3);
@@ -43,7 +47,8 @@ public class EthereumEnginePartTileEntityRenderer extends TileEntitySpecialRende
 
             double keyframe = tileentity.getCurrentKeyframe(partialTick);
 
-            GibsAnimationRegistry.getAnimation("ethereum_engine").renderAnimation(keyframe, brightness);
+            GibsAnimationRegistry.getAnimation("ethereum_engine")
+                .renderAnimation(keyframe, brightness);
         }
 
         GlStateManager.popMatrix();

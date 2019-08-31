@@ -24,7 +24,8 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 
-public class PhysWrapperPositionHandler implements IMessageHandler<PhysWrapperPositionMessage, IMessage> {
+public class PhysWrapperPositionHandler implements
+    IMessageHandler<PhysWrapperPositionMessage, IMessage> {
 
     @Override
     public IMessage onMessage(final PhysWrapperPositionMessage message, MessageContext ctx) {
@@ -37,10 +38,12 @@ public class PhysWrapperPositionHandler implements IMessageHandler<PhysWrapperPo
             @Override
             public void run() {
                 if (Minecraft.getMinecraft().world != null) {
-                    Entity ent = Minecraft.getMinecraft().world.getEntityByID(message.getEntityID());
+                    Entity ent = Minecraft.getMinecraft().world
+                        .getEntityByID(message.getEntityID());
                     if (ent instanceof PhysicsWrapperEntity) {
                         PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity) ent;
-                        wrapper.getPhysicsObject().getShipTransformationManager().serverBuffer.pushMessage(message);
+                        wrapper.getPhysicsObject().getShipTransformationManager().serverBuffer
+                            .pushMessage(message);
                     }
                 }
             }

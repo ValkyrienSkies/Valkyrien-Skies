@@ -25,7 +25,8 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 
-public class PilotControlsMessageHandler implements IMessageHandler<PilotControlsMessage, IMessage> {
+public class PilotControlsMessageHandler implements
+    IMessageHandler<PilotControlsMessage, IMessage> {
 
     @Override
     public IMessage onMessage(final PilotControlsMessage message, final MessageContext ctx) {
@@ -40,7 +41,8 @@ public class PilotControlsMessageHandler implements IMessageHandler<PilotControl
                     TileEntity tile = worldObj.getTileEntity(posFor);
 
                     if (tile instanceof ITileEntityPilotable) {
-                        ((ITileEntityPilotable) tile).onPilotControlsMessage(message, ctx.getServerHandler().player);
+                        ((ITileEntityPilotable) tile)
+                            .onPilotControlsMessage(message, ctx.getServerHandler().player);
                     }
                 }
             }

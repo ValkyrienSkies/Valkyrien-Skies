@@ -16,11 +16,10 @@
 
 package org.valkyrienskies.fixes;
 
+import java.util.Iterator;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
-
-import java.util.Iterator;
 
 public interface MixinWorldIntrinsicMethods {
 

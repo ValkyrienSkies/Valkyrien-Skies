@@ -29,10 +29,12 @@ import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 @Deprecated
 public class Module {
 
-    public static void registerRecipe(RegistryEvent.Register<IRecipe> event, String registryName, ItemStack out, Object... in) {
+    public static void registerRecipe(RegistryEvent.Register<IRecipe> event, String registryName,
+        ItemStack out, Object... in) {
         CraftingHelper.ShapedPrimer primer = CraftingHelper.parseShaped(in);
         event.getRegistry()
-                .register(new ShapedRecipes(ValkyrienSkiesMod.MOD_ID, primer.width, primer.height, primer.input, out).setRegistryName(ValkyrienSkiesMod.MOD_ID, registryName));
+            .register(new ShapedRecipes(ValkyrienSkiesMod.MOD_ID, primer.width, primer.height,
+                primer.input, out).setRegistryName(ValkyrienSkiesMod.MOD_ID, registryName));
     }
 
     public static void registerItemBlock(RegistryEvent.Register<Item> event, Block block) {

@@ -16,20 +16,21 @@
 
 package org.valkyrienskies.addon.world;
 
+import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
-import javax.annotation.Nullable;
-import java.util.List;
-
 public class ItemEthereumCrystal extends Item {
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation, ITooltipFlag advanced) {
-        itemInformation.add(TextFormatting.ITALIC + "" + TextFormatting.BLUE + TextFormatting.ITALIC +
+    public void addInformation(ItemStack stack, @Nullable World player,
+        List<String> itemInformation, ITooltipFlag advanced) {
+        itemInformation
+            .add(TextFormatting.ITALIC + "" + TextFormatting.BLUE + TextFormatting.ITALIC +
                 "Holding too much can be deadly.");
     }
 

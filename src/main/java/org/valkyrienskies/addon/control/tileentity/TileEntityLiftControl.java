@@ -1,6 +1,7 @@
 package org.valkyrienskies.addon.control.tileentity;
 
 import gigaherz.graph.api.GraphObject;
+import java.util.Optional;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
@@ -20,8 +21,6 @@ import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
-
-import java.util.Optional;
 
 public class TileEntityLiftControl extends TileEntityPilotableImpl {
 
@@ -52,7 +51,7 @@ public class TileEntityLiftControl extends TileEntityPilotableImpl {
     }
 
     @Override
-	ControllerInputType getControlInputType() {
+    ControllerInputType getControlInputType() {
         return ControllerInputType.LiftControl;
     }
 
@@ -63,13 +62,15 @@ public class TileEntityLiftControl extends TileEntityPilotableImpl {
             this.leverOffset = (float) (((nextLeverOffset - leverOffset) * .7) + leverOffset);
         } else {
             if (!hasHeightBeenSet) {
-                Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(getWorld(), getPos());
+                Optional<PhysicsObject> physicsObject = ValkyrienUtils
+                    .getPhysicsObject(getWorld(), getPos());
                 if (physicsObject.isPresent()) {
-                    Vector currentPos = new Vector(getPos().getX() + .5, getPos().getY() + .5, getPos().getZ() + .5);
+                    Vector currentPos = new Vector(getPos().getX() + .5, getPos().getY() + .5,
+                        getPos().getZ() + .5);
                     physicsObject.get()
-                            .getShipTransformationManager()
-                            .getCurrentTickTransform()
-                            .transform(currentPos, TransformType.SUBSPACE_TO_GLOBAL);
+                        .getShipTransformationManager()
+                        .getCurrentTickTransform()
+                        .transform(currentPos, TransformType.SUBSPACE_TO_GLOBAL);
                     targetYPosition = currentPos.Y;
                 } else {
                     targetYPosition = getPos().getY() + .5;
@@ -88,19 +89,21 @@ public class TileEntityLiftControl extends TileEntityPilotableImpl {
             }
 
             VWNode_TileEntity thisNode = this.getNode();
-            Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(getWorld(), getPos());
+            Optional<PhysicsObject> physicsObject = ValkyrienUtils
+                .getPhysicsObject(getWorld(), getPos());
 
             if (physicsObject.isPresent()) {
                 // The linear velocity of the ship
                 Vector linearVel = physicsObject.get()
-                        .getPhysicsProcessor()
-                        .getVelocityAtPoint(new Vector());
+                    .getPhysicsProcessor()
+                    .getVelocityAtPoint(new Vector());
                 // The global coordinates of this tile entity
-                Vector tilePos = new Vector(getPos().getX() + .5, getPos().getY() + .5, getPos().getZ() + .5);
+                Vector tilePos = new Vector(getPos().getX() + .5, getPos().getY() + .5,
+                    getPos().getZ() + .5);
                 physicsObject.get()
-                        .getShipTransformationManager()
-                        .getCurrentPhysicsTransform()
-                        .transform(tilePos, TransformType.SUBSPACE_TO_GLOBAL);
+                    .getShipTransformationManager()
+                    .getCurrentPhysicsTransform()
+                    .transform(tilePos, TransformType.SUBSPACE_TO_GLOBAL);
 
                 // Utilizing a proper PI controller for very smooth control.
                 double heightWithIntegral = tilePos.Y + linearVel.Y * .3D;
@@ -112,8 +115,10 @@ public class TileEntityLiftControl extends TileEntityPilotableImpl {
                     VWNode_TileEntity otherNode = (VWNode_TileEntity) object;
                     TileEntity tile = otherNode.getParentTile();
                     if (tile instanceof TileEntityEthereumCompressorPart) {
-                        BlockPos masterPos = ((TileEntityEthereumCompressorPart) tile).getMultiblockOrigin();
-                        TileEntityEthereumCompressorPart masterTile = (TileEntityEthereumCompressorPart) tile.getWorld().getTileEntity(masterPos);
+                        BlockPos masterPos = ((TileEntityEthereumCompressorPart) tile)
+                            .getMultiblockOrigin();
+                        TileEntityEthereumCompressorPart masterTile = (TileEntityEthereumCompressorPart) tile
+                            .getWorld().getTileEntity(masterPos);
                         // This is a transient problem that only occurs during world loading.
                         if (masterTile != null) {
                             masterTile.setThrustMultiplierGoal(multiplier);
@@ -207,7 +212,7 @@ public class TileEntityLiftControl extends TileEntityPilotableImpl {
     public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
         nextLeverOffset = pkt.getNbtCompound().getFloat("leverOffset");
         targetYPosition = pkt.getNbtCompound()
-                .getDouble("targetYPosition");
+            .getDouble("targetYPosition");
     }
 
     @Override

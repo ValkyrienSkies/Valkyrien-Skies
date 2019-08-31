@@ -16,6 +16,7 @@
 
 package org.valkyrienskies.mod.common.coordinates;
 
+import javax.annotation.concurrent.Immutable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import org.valkyrienskies.mod.common.math.Quaternion;
@@ -24,17 +25,13 @@ import org.valkyrienskies.mod.common.math.Vector;
 import scala.actors.threadpool.Arrays;
 import valkyrienwarfare.api.TransformType;
 
-import javax.annotation.concurrent.Immutable;
-
 /**
- * Immutable wrapper around the rotation matrices used by ships. The
- * immutability is extremely important to enforce for preventing multi-threaded
- * access issues. All access to the internal arrays is blocked to guarantee
- * nothing goes wrong.
+ * Immutable wrapper around the rotation matrices used by ships. The immutability is extremely
+ * important to enforce for preventing multi-threaded access issues. All access to the internal
+ * arrays is blocked to guarantee nothing goes wrong.
  * <p>
- * Used to transform vectors between the global coordinate system, and the subspace
- * (ship) coordinate system.
- * TODO: Move this to VW API.
+ * Used to transform vectors between the global coordinate system, and the subspace (ship)
+ * coordinate system. TODO: Move this to VW API.
  *
  * @author thebest108
  */
@@ -49,9 +46,11 @@ public class ShipTransform {
         this.globalToSubspace = RotationMatrices.inverse(subspaceToGlobal);
     }
 
-    public ShipTransform(double posX, double posY, double posZ, double pitch, double yaw, double roll, Vector centerCoord) {
+    public ShipTransform(double posX, double posY, double posZ, double pitch, double yaw,
+        double roll, Vector centerCoord) {
         double[] lToWTransform = RotationMatrices.getTranslationMatrix(posX, posY, posZ);
-        lToWTransform = RotationMatrices.rotateAndTranslate(lToWTransform, pitch, yaw, roll, centerCoord);
+        lToWTransform = RotationMatrices
+            .rotateAndTranslate(lToWTransform, pitch, yaw, roll, centerCoord);
         this.subspaceToGlobal = lToWTransform;
         this.globalToSubspace = RotationMatrices.inverse(subspaceToGlobal);
     }
@@ -73,8 +72,10 @@ public class ShipTransform {
      * @param toCopy
      */
     public ShipTransform(ShipTransform toCopy) {
-        this.subspaceToGlobal = Arrays.copyOf(toCopy.subspaceToGlobal, toCopy.subspaceToGlobal.length);
-        this.globalToSubspace = Arrays.copyOf(toCopy.globalToSubspace, toCopy.globalToSubspace.length);
+        this.subspaceToGlobal = Arrays
+            .copyOf(toCopy.subspaceToGlobal, toCopy.subspaceToGlobal.length);
+        this.globalToSubspace = Arrays
+            .copyOf(toCopy.globalToSubspace, toCopy.globalToSubspace.length);
     }
 
     public void transform(Vector vector, TransformType transformType) {
@@ -100,7 +101,8 @@ public class ShipTransform {
     public BlockPos transform(BlockPos pos, TransformType transformType) {
         Vector blockPosAsVector = new Vector(pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5);
         transform(blockPosAsVector, transformType);
-        return new BlockPos(blockPosAsVector.X - .5D, blockPosAsVector.Y - .5D, blockPosAsVector.Z - .5D);
+        return new BlockPos(blockPosAsVector.X - .5D, blockPosAsVector.Y - .5D,
+            blockPosAsVector.Z - .5D);
     }
 
     public Quaternion createRotationQuaternion(TransformType transformType) {
@@ -108,9 +110,8 @@ public class ShipTransform {
     }
 
     /**
-     * Please do not ever use this unless it is absolutely necessary! This exposes
-     * the internal arrays and they unfortunately cannot be made safe without
-     * sacrificing a lot of performance.
+     * Please do not ever use this unless it is absolutely necessary! This exposes the internal
+     * arrays and they unfortunately cannot be made safe without sacrificing a lot of performance.
      *
      * @param transformType
      * @return Unsafe internal arrays; for the love of god do not modify them!
@@ -122,7 +123,8 @@ public class ShipTransform {
         } else if (transformType == TransformType.GLOBAL_TO_SUBSPACE) {
             return globalToSubspace;
         } else {
-            throw new IllegalArgumentException("Unexpected TransformType Enum " + transformType + "!");
+            throw new IllegalArgumentException(
+                "Unexpected TransformType Enum " + transformType + "!");
         }
     }
 

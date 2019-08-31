@@ -16,6 +16,9 @@
 
 package org.valkyrienskies.mod.common.physics.collision;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSlime;
 import net.minecraft.block.SoundType;
@@ -46,18 +49,15 @@ import org.valkyrienskies.mod.common.physmanagement.interaction.EntityDraggable;
 import org.valkyrienskies.mod.common.physmanagement.interaction.IDraggable;
 import valkyrienwarfare.api.TransformType;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-
 public class EntityCollisionInjector {
 
     private static final double errorSignificance = .001D;
 
     // Returns false if game should use default collision
     @Nullable
-    public static IntermediateMovementVariableStorage alterEntityMovement(Entity entity, MoverType type, double dx,
-                                                                          double dy, double dz) {
+    public static IntermediateMovementVariableStorage alterEntityMovement(Entity entity,
+        MoverType type, double dx,
+        double dy, double dz) {
 
         Vector velVec = new Vector(dx, dy, dz);
         double origDx = dx;
@@ -87,37 +87,47 @@ public class EntityCollisionInjector {
                 ShipPolygon shipPoly = (ShipPolygon) poly;
                 try {
 
-                    EntityPolygonCollider fast = new EntityPolygonCollider(playerBeforeMove, shipPoly, shipPoly.normals,
-                            velVec.getAddition(total));
+                    EntityPolygonCollider fast = new EntityPolygonCollider(playerBeforeMove,
+                        shipPoly, shipPoly.normals,
+                        velVec.getAddition(total));
                     if (!fast.arePolygonsSeperated()) {
                         // fastCollisions.add(fast);
                         worldBelow = shipPoly.shipFrom.getWrapperEntity();
 
-                        Vector response = fast.getCollisions()[fast.getMinDistanceIndex()].getResponse();
+                        Vector response = fast.getCollisions()[fast.getMinDistanceIndex()]
+                            .getResponse();
                         // TODO: Add more potential yResponses
                         double stepSquared = entity.stepHeight * entity.stepHeight;
                         boolean isStep = isLiving && entity.onGround;
                         if (response.Y >= 0
-                                && VWMath.canStandOnNormal(fast.getCollisionAxes()[fast.getMinDistanceIndex()])) {
-                            Vector slowButStopped = new Vector(0, -fast.getCollisions()[fast.getMinDistanceIndex()].getCollisionPenetrationDistance() / fast.getCollisionAxes()[fast.getMinDistanceIndex()].Y, 0);
+                            && VWMath.canStandOnNormal(
+                            fast.getCollisionAxes()[fast.getMinDistanceIndex()])) {
+                            Vector slowButStopped = new Vector(0,
+                                -fast.getCollisions()[fast.getMinDistanceIndex()]
+                                    .getCollisionPenetrationDistance() / fast
+                                    .getCollisionAxes()[fast.getMinDistanceIndex()].Y, 0);
 
                             response = slowButStopped;
                         }
                         if (isStep) {
                             EntityLivingBase living = (EntityLivingBase) entity;
-                            if (Math.abs(living.moveForward) > .01D || Math.abs(living.moveStrafing) > .01D) {
+                            if (Math.abs(living.moveForward) > .01D
+                                || Math.abs(living.moveStrafing) > .01D) {
                                 for (int i = 3; i < 6; i++) {
                                     Vector tempResponse = fast.getCollisions()[i].getResponse();
                                     if (tempResponse.Y > 0
-                                            && VWMath.canStandOnNormal(fast.getCollisions()[i].getCollisionNormal())
-                                            && tempResponse.lengthSq() < stepSquared) {
+                                        && VWMath.canStandOnNormal(
+                                        fast.getCollisions()[i].getCollisionNormal())
+                                        && tempResponse.lengthSq() < stepSquared) {
                                         if (tempResponse.lengthSq() < .1D) {
                                             // Too small to be a real step, let it through
                                             response = tempResponse;
                                         } else {
                                             // System.out.println("Try Stepping!");
-                                            AxisAlignedBB axisalignedbb = entity.getEntityBoundingBox()
-                                                    .offset(tempResponse.X, tempResponse.Y, tempResponse.Z);
+                                            AxisAlignedBB axisalignedbb = entity
+                                                .getEntityBoundingBox()
+                                                .offset(tempResponse.X, tempResponse.Y,
+                                                    tempResponse.Z);
                                             entity.setEntityBoundingBox(axisalignedbb);
                                             // I think this correct, but it may create more problems than it solves
                                             response.zero();
@@ -148,7 +158,8 @@ public class EntityCollisionInjector {
                         posOffestY += response.Y;
                         posOffestZ += response.Z;
 
-                        AxisAlignedBB axisalignedbb = entity.getEntityBoundingBox().offset(response.X, response.Y,
+                        AxisAlignedBB axisalignedbb = entity.getEntityBoundingBox()
+                            .offset(response.X, response.Y,
                                 response.Z);
                         entity.setEntityBoundingBox(axisalignedbb);
                         entity.resetPositionToBB();
@@ -161,7 +172,8 @@ public class EntityCollisionInjector {
 
         }
 
-        AxisAlignedBB axisalignedbb = entity.getEntityBoundingBox().offset(-posOffestX, -posOffestY, -posOffestZ);
+        AxisAlignedBB axisalignedbb = entity.getEntityBoundingBox()
+            .offset(-posOffestX, -posOffestY, -posOffestZ);
         entity.setEntityBoundingBox(axisalignedbb);
         entity.resetPositionToBB();
 
@@ -238,11 +250,13 @@ public class EntityCollisionInjector {
             // worldBelow.wrapping.queueForce(queuedForce);
         }
 
-        return new IntermediateMovementVariableStorage(dxyz, origDxyz, origPosXyz, alreadyOnGround, motionYBefore,
-                oldFallDistance);
+        return new IntermediateMovementVariableStorage(dxyz, origDxyz, origPosXyz, alreadyOnGround,
+            motionYBefore,
+            oldFallDistance);
     }
 
-    public static void alterEntityMovementPost(Entity entity, IntermediateMovementVariableStorage storage) {
+    public static void alterEntityMovementPost(Entity entity,
+        IntermediateMovementVariableStorage storage) {
         double dx = storage.dxyz.X;
         double dy = storage.dxyz.Y;
         double dz = storage.dxyz.Z;
@@ -263,14 +277,18 @@ public class EntityCollisionInjector {
 
         PhysicsWrapperEntity worldBelow = draggable.getWorldBelowFeet();
 
-        entity.collidedHorizontally = (motionInterfering(dx, origDx)) || (motionInterfering(dz, origDz));
+        entity.collidedHorizontally =
+            (motionInterfering(dx, origDx)) || (motionInterfering(dz, origDz));
         entity.collidedVertically = isDifSignificant(dy, origDy);
-        entity.onGround = entity.collidedVertically && origDy < 0 || alreadyOnGround || entity.onGround;
+        entity.onGround =
+            entity.collidedVertically && origDy < 0 || alreadyOnGround || entity.onGround;
         entity.collided = entity.collidedHorizontally || entity.collidedVertically;
 
-        Vector entityPosInShip = new Vector(entity.posX, entity.posY - 0.20000000298023224D, entity.posZ);
+        Vector entityPosInShip = new Vector(entity.posX, entity.posY - 0.20000000298023224D,
+            entity.posZ);
 
-        worldBelow.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(entityPosInShip,
+        worldBelow.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform()
+            .transform(entityPosInShip,
                 TransformType.GLOBAL_TO_SUBSPACE);
 
         int j4 = MathHelper.floor(entityPosInShip.X);
@@ -298,11 +316,14 @@ public class EntityCollisionInjector {
                     double d0 = Math.min(0.2F + f / 15.0F, 2.5D);
 
                     int i = (int) (150.0D * d0);
-                    if (!iblockstate.getBlock().addLandingEffects(iblockstate, (WorldServer) entity.world, blockpos,
-                            iblockstate, (EntityLivingBase) entity, i))
-                        ((WorldServer) entity.world).spawnParticle(EnumParticleTypes.BLOCK_DUST, entity.posX,
+                    if (!iblockstate.getBlock()
+                        .addLandingEffects(iblockstate, (WorldServer) entity.world, blockpos,
+                            iblockstate, (EntityLivingBase) entity, i)) {
+                        ((WorldServer) entity.world)
+                            .spawnParticle(EnumParticleTypes.BLOCK_DUST, entity.posX,
                                 entity.posY, entity.posZ, i, 0.0D, 0.0D, 0.0D, 0.15000000596046448D,
                                 Block.getStateId(iblockstate));
+                    }
                 }
             }
         }
@@ -310,7 +331,8 @@ public class EntityCollisionInjector {
         if (entity.onGround) {
             if (entity.fallDistance > 0.0F) {
                 // Responsible for breaking crops when you jump on them
-                iblockstate.getBlock().onFallenUpon(entity.world, blockpos, entity, entity.fallDistance);
+                iblockstate.getBlock()
+                    .onFallenUpon(entity.world, blockpos, entity, entity.fallDistance);
             }
 
             entity.fallDistance = 0.0F;
@@ -319,7 +341,7 @@ public class EntityCollisionInjector {
         }
 
         if (/* entity.canTriggerWalking() **/
-                entity instanceof EntityPlayer && !entity.isRiding()) {
+            entity instanceof EntityPlayer && !entity.isRiding()) {
             if (dy != origDy) {
                 // if (!(entity.motionY > 0 && dy > 0)) {
                 block.onLanded(entity.world, entity);
@@ -337,7 +359,7 @@ public class EntityCollisionInjector {
             // (double)MathHelper.sqrt_double(d12 * d12 + d13 * d13 + d14 * d14) * 0.6D);
 
             if (entity.distanceWalkedOnStepModified > entity.nextStepDistance
-                    && iblockstate.getMaterial() != Material.AIR) {
+                && iblockstate.getMaterial() != Material.AIR) {
                 entity.nextStepDistance = (int) entity.distanceWalkedOnStepModified + 1;
 
                 /*
@@ -355,14 +377,17 @@ public class EntityCollisionInjector {
                 // entity.playStepSound(blockpos, block);
 
                 // TODO: In future, replace this with entity.playStepSound()
-                SoundType soundtype = block.getSoundType(entity.world.getBlockState(blockpos), entity.world, blockpos,
+                SoundType soundtype = block
+                    .getSoundType(entity.world.getBlockState(blockpos), entity.world, blockpos,
                         entity);
 
                 if (entity.world.getBlockState(blockpos.up()).getBlock() == Blocks.SNOW_LAYER) {
                     soundtype = Blocks.SNOW_LAYER.getSoundType();
-                    entity.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.15F, soundtype.getPitch());
+                    entity.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.15F,
+                        soundtype.getPitch());
                 } else if (!block.getDefaultState().getMaterial().isLiquid()) {
-                    entity.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.15F, soundtype.getPitch());
+                    entity.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.15F,
+                        soundtype.getPitch());
                 }
             }
         }
@@ -384,12 +409,15 @@ public class EntityCollisionInjector {
      * This method generates an arrayList of Polygons that the player is colliding
      * with
      */
-    public static ArrayList<Polygon> getCollidingPolygonsAndDoBlockCols(Entity entity, Vec3d velocity) {
+    public static ArrayList<Polygon> getCollidingPolygonsAndDoBlockCols(Entity entity,
+        Vec3d velocity) {
         ArrayList<Polygon> collisions = new ArrayList<Polygon>();
-        AxisAlignedBB entityBB = entity.getEntityBoundingBox().offset(velocity.x, velocity.y, velocity.z).expand(1, 1,
+        AxisAlignedBB entityBB = entity.getEntityBoundingBox()
+            .offset(velocity.x, velocity.y, velocity.z).expand(1, 1,
                 1);
 
-        WorldPhysObjectManager localPhysManager = ValkyrienSkiesMod.VW_PHYSICS_MANAGER.getManagerForWorld(entity.world);
+        WorldPhysObjectManager localPhysManager = ValkyrienSkiesMod.VW_PHYSICS_MANAGER
+            .getManagerForWorld(entity.world);
 
         List<PhysicsWrapperEntity> ships = localPhysManager.getNearbyPhysObjects(entityBB);
         // If a player is riding a Ship, don't process any collision between that Ship
@@ -398,8 +426,9 @@ public class EntityCollisionInjector {
             try {
                 if (!entity.isRidingSameEntity(wrapper)) {
                     Polygon playerInLocal = new Polygon(entityBB,
-                            wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform(),
-                            TransformType.GLOBAL_TO_SUBSPACE);
+                        wrapper.getPhysicsObject().getShipTransformationManager()
+                            .getCurrentTickTransform(),
+                        TransformType.GLOBAL_TO_SUBSPACE);
                     AxisAlignedBB bb = playerInLocal.getEnclosedAABB();
 
                     if ((bb.maxX - bb.minX) * (bb.maxZ - bb.minZ) > 9898989) {
@@ -415,9 +444,11 @@ public class EntityCollisionInjector {
 
                     for (AxisAlignedBB inLocal : collidingBBs) {
                         ShipPolygon poly = new ShipPolygon(inLocal,
-                                wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform(),
-                                TransformType.SUBSPACE_TO_GLOBAL, wrapper.getPhysicsObject().getShipTransformationManager().normals,
-                                wrapper.getPhysicsObject());
+                            wrapper.getPhysicsObject().getShipTransformationManager()
+                                .getCurrentTickTransform(),
+                            TransformType.SUBSPACE_TO_GLOBAL,
+                            wrapper.getPhysicsObject().getShipTransformationManager().normals,
+                            wrapper.getPhysicsObject());
                         collisions.add(poly);
                     }
                 }
@@ -434,7 +465,8 @@ public class EntityCollisionInjector {
 
                 Vector entityPos = new Vector(posX, posY, posZ);
 
-                wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform().transform(entityPos,
+                wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform()
+                    .transform(entityPos,
                         TransformType.GLOBAL_TO_SUBSPACE);
                 // RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform,
                 // entityPos);
@@ -446,7 +478,7 @@ public class EntityCollisionInjector {
 
                 if (wrapper.getPhysicsObject().ownsChunk(entityChunkX, entityChunkZ)) {
                     Chunk chunkIn = wrapper.getPhysicsObject()
-                            .getChunkAt(entityChunkX, entityChunkZ);
+                        .getChunkAt(entityChunkX, entityChunkZ);
 
                     int chunkYIndex = MathHelper.floor(entity.posY / 16.0D);
 
@@ -488,6 +520,7 @@ public class EntityCollisionInjector {
     }
 
     public static class IntermediateMovementVariableStorage {
+
         public final Vector dxyz;
         public final Vector origDxyz;
         public final Vector origPosXyz;
@@ -496,7 +529,7 @@ public class EntityCollisionInjector {
         public final float oldFallDistance;
 
         public IntermediateMovementVariableStorage(Vector dxyz, Vector origDxyz, Vector origPosXyz,
-                                                   boolean alreadyOnGround, double motionYBefore, float oldFallDistance) {
+            boolean alreadyOnGround, double motionYBefore, float oldFallDistance) {
             this.dxyz = dxyz;
             this.origDxyz = origDxyz;
             this.origPosXyz = origPosXyz;

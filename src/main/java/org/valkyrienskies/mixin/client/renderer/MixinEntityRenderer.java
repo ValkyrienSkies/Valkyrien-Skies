@@ -19,32 +19,23 @@ package org.valkyrienskies.mixin.client.renderer;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.lib.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Constant;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.valkyrienskies.addon.control.piloting.IShipPilot;
-import org.valkyrienskies.fixes.EntityMoveInjectionMethods;
 import org.valkyrienskies.mod.common.math.Quaternion;
 import org.valkyrienskies.mod.common.math.RotationMatrices;
 import org.valkyrienskies.mod.common.math.Vector;
@@ -56,13 +47,15 @@ import valkyrienwarfare.api.TransformType;
 /**
  * This used to be one giant overwrite, and has now been cleaned up to be a mess of various mixins.
  * <p>
- * This uses member variables to store things that would be local and can't be due to the fact that we're not using an overwrite, however it shouldn't
- * be an issue since rendering is single-threaded anyway.
+ * This uses member variables to store things that would be local and can't be due to the fact that
+ * we're not using an overwrite, however it shouldn't be an issue since rendering is single-threaded
+ * anyway.
  *
  * @author DaPorkchop_
  */
 @Mixin(EntityRenderer.class)
 public abstract class MixinEntityRenderer {
+
     protected final Vector eyeVector = new Vector();
     protected final Vector cachedPosition = new Vector();
     protected EntityShipMountData mountData;
@@ -79,11 +72,11 @@ public abstract class MixinEntityRenderer {
     public boolean cloudFog;
 
     @Redirect(
-            method = "Lnet/minecraft/client/renderer/EntityRenderer;orientCamera(F)V",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/Minecraft;getRenderViewEntity()Lnet/minecraft/entity/Entity;"
-            ))
+        method = "Lnet/minecraft/client/renderer/EntityRenderer;orientCamera(F)V",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/client/Minecraft;getRenderViewEntity()Lnet/minecraft/entity/Entity;"
+        ))
     private Entity resetThingsBeforeOrientCamera(Minecraft mc, float partialTicks) {
         Entity entity = mc.getRenderViewEntity();
 
@@ -91,12 +84,16 @@ public abstract class MixinEntityRenderer {
             this.vs_partialTicks = partialTicks;
             EntityShipMountData mountData = ValkyrienUtils.getMountedShipAndPos(entity);
             this.mountData = mountData.isMounted() ? mountData : null;
-            this.eyeVector.setValue(0.0d, entity.getEyeHeight() + (entity instanceof EntityLivingBase && ((EntityLivingBase) entity).isPlayerSleeping() ? 0.7d : 0.0d), 0.0d);
+            this.eyeVector.setValue(0.0d, entity.getEyeHeight() + (
+                entity instanceof EntityLivingBase && ((EntityLivingBase) entity).isPlayerSleeping()
+                    ? 0.7d : 0.0d), 0.0d);
         }
 
-        if (this.mountData != null && this.mountData.getMountedShip().getShipRenderer().offsetPos != null) {
+        if (this.mountData != null
+            && this.mountData.getMountedShip().getShipRenderer().offsetPos != null) {
             //transform vectors
-            Quaternion orientationQuat = this.mountData.getMountedShip().getShipRenderer().getSmoothRotationQuat(partialTicks);
+            Quaternion orientationQuat = this.mountData.getMountedShip().getShipRenderer()
+                .getSmoothRotationQuat(partialTicks);
 
             double[] radians = orientationQuat.toRadians();
 
@@ -104,114 +101,126 @@ public abstract class MixinEntityRenderer {
             float moddedYaw = (float) Math.toDegrees(radians[1]);
             float moddedRoll = (float) Math.toDegrees(radians[2]);
 
-            double[] orientationMatrix = RotationMatrices.getRotationMatrix(moddedPitch, moddedYaw, moddedRoll);
+            double[] orientationMatrix = RotationMatrices
+                .getRotationMatrix(moddedPitch, moddedYaw, moddedRoll);
 
             RotationMatrices.applyTransform(orientationMatrix, this.eyeVector);
 
             this.cachedPosition.setValue(this.mountData.getMountPos());
-            this.mountData.getMountedShip().getShipTransformationManager().getRenderTransform().transform(this.cachedPosition, TransformType.SUBSPACE_TO_GLOBAL);
+            this.mountData.getMountedShip().getShipTransformationManager().getRenderTransform()
+                .transform(this.cachedPosition, TransformType.SUBSPACE_TO_GLOBAL);
         }
 
         return entity;
     }
 
     @Redirect(
-            method = "Lnet/minecraft/client/renderer/EntityRenderer;orientCamera(F)V",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/entity/Entity;getEyeHeight()F"
-            ))
+        method = "Lnet/minecraft/client/renderer/EntityRenderer;orientCamera(F)V",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/entity/Entity;getEyeHeight()F"
+        ))
     private float dontGetEyeHeight(Entity e) {
         return 0.0f;
     }
 
     @ModifyVariable(
-            method = "Lnet/minecraft/client/renderer/EntityRenderer;orientCamera(F)V",
-            index = 4,
-            at = @At(
-                    value = "JUMP",
-                    opcode = Opcodes.IFEQ,
-                    ordinal = 0,
-                    shift = At.Shift.BY,
-                    by = -2
-            ))
+        method = "Lnet/minecraft/client/renderer/EntityRenderer;orientCamera(F)V",
+        index = 4,
+        at = @At(
+            value = "JUMP",
+            opcode = Opcodes.IFEQ,
+            ordinal = 0,
+            shift = At.Shift.BY,
+            by = -2
+        ))
     private double offsetXIfMounted(double oldVal) {
-        return (this.mountData != null && this.mountData.getMountedShip().getShipRenderer().offsetPos != null ? this.cachedPosition.X : oldVal) + this.eyeVector.X;
+        return (this.mountData != null
+            && this.mountData.getMountedShip().getShipRenderer().offsetPos != null
+            ? this.cachedPosition.X : oldVal) + this.eyeVector.X;
     }
 
     @ModifyVariable(
-            method = "Lnet/minecraft/client/renderer/EntityRenderer;orientCamera(F)V",
-            index = 6,
-            at = @At(
-                    value = "JUMP",
-                    opcode = Opcodes.IFEQ,
-                    ordinal = 0,
-                    shift = At.Shift.BY,
-                    by = -2
-            ))
+        method = "Lnet/minecraft/client/renderer/EntityRenderer;orientCamera(F)V",
+        index = 6,
+        at = @At(
+            value = "JUMP",
+            opcode = Opcodes.IFEQ,
+            ordinal = 0,
+            shift = At.Shift.BY,
+            by = -2
+        ))
     private double offsetYIfMounted(double oldVal) {
-        return (this.mountData != null && this.mountData.getMountedShip().getShipRenderer().offsetPos != null ? this.cachedPosition.Y : oldVal) + this.eyeVector.Y;
+        return (this.mountData != null
+            && this.mountData.getMountedShip().getShipRenderer().offsetPos != null
+            ? this.cachedPosition.Y : oldVal) + this.eyeVector.Y;
     }
 
     @ModifyVariable(
-            method = "Lnet/minecraft/client/renderer/EntityRenderer;orientCamera(F)V",
-            index = 8,
-            at = @At(
-                    value = "JUMP",
-                    opcode = Opcodes.IFEQ,
-                    ordinal = 0,
-                    shift = At.Shift.BY,
-                    by = -2
-            ))
+        method = "Lnet/minecraft/client/renderer/EntityRenderer;orientCamera(F)V",
+        index = 8,
+        at = @At(
+            value = "JUMP",
+            opcode = Opcodes.IFEQ,
+            ordinal = 0,
+            shift = At.Shift.BY,
+            by = -2
+        ))
     private double offsetZIfMounted(double oldVal) {
-        return (this.mountData != null && this.mountData.getMountedShip().getShipRenderer().offsetPos != null ? this.cachedPosition.Z : oldVal) + this.eyeVector.Z;
+        return (this.mountData != null
+            && this.mountData.getMountedShip().getShipRenderer().offsetPos != null
+            ? this.cachedPosition.Z : oldVal) + this.eyeVector.Z;
     }
 
     @ModifyConstant(
-            method = "Lnet/minecraft/client/renderer/EntityRenderer;orientCamera(F)V",
-            constant = @Constant(
-                    doubleValue = 1.0d,
-                    ordinal = 0
-            ))
+        method = "Lnet/minecraft/client/renderer/EntityRenderer;orientCamera(F)V",
+        constant = @Constant(
+            doubleValue = 1.0d,
+            ordinal = 0
+        ))
     private double dontIncrementF(double one) {
         return 0.0d;
     }
 
     @Redirect(
-            method = "Lnet/minecraft/client/renderer/EntityRenderer;orientCamera(F)V",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/renderer/GlStateManager;translate(FFF)V",
-                    ordinal = 0
-            ))
+        method = "Lnet/minecraft/client/renderer/EntityRenderer;orientCamera(F)V",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/client/renderer/GlStateManager;translate(FFF)V",
+            ordinal = 0
+        ))
     private void dontDoTranslate1(float x, float y, float z) {
     }
 
     @Redirect(
-            method = "Lnet/minecraft/client/renderer/EntityRenderer;orientCamera(F)V",
-            at = @At(
-                    value = "FIELD",
-                    target = "Lnet/minecraft/client/settings/GameSettings;debugCamEnable:Z",
-                    ordinal = 0
-            ))
-    private boolean dontRotateIfMounted(GameSettings settings, float partialTicks)   {
-        if (!settings.debugCamEnable)   {
+        method = "Lnet/minecraft/client/renderer/EntityRenderer;orientCamera(F)V",
+        at = @At(
+            value = "FIELD",
+            target = "Lnet/minecraft/client/settings/GameSettings;debugCamEnable:Z",
+            ordinal = 0
+        ))
+    private boolean dontRotateIfMounted(GameSettings settings, float partialTicks) {
+        if (!settings.debugCamEnable) {
             Entity entity = this.mc.getRenderViewEntity();
 
-            if (this.mountData != null && this.mountData.getMountedShip().getShipRenderer().offsetPos != null)  {
+            if (this.mountData != null
+                && this.mountData.getMountedShip().getShipRenderer().offsetPos != null) {
                 Vector playerPosInLocal = new Vector(this.mountData.getMountPos());
 
                 playerPosInLocal.subtract(0.5d, 0.6875d, 0.5d);
                 playerPosInLocal.roundToWhole();
 
-                BlockPos bedPos = new BlockPos(playerPosInLocal.X, playerPosInLocal.Y, playerPosInLocal.Z);
+                BlockPos bedPos = new BlockPos(playerPosInLocal.X, playerPosInLocal.Y,
+                    playerPosInLocal.Z);
                 IBlockState state = this.mc.world.getBlockState(bedPos);
 
                 Block block = state.getBlock();
                 float angleYaw = 0.0f;
 
                 if (block != null && block.isBed(state, entity.world, bedPos, entity)) {
-                    angleYaw = block.getBedDirection(state, entity.world, bedPos).getHorizontalIndex() * 90.0f;
+                    angleYaw =
+                        block.getBedDirection(state, entity.world, bedPos).getHorizontalIndex()
+                            * 90.0f;
                     angleYaw += 180.0f;
                 }
 
@@ -226,27 +235,28 @@ public abstract class MixinEntityRenderer {
     }
 
     @ModifyVariable(
-            method = "Lnet/minecraft/client/renderer/EntityRenderer;orientCamera(F)V",
-            index = 10,
-            at = @At(
-                    value = "FIELD",
-                    target = "Lnet/minecraft/client/settings/GameSettings;debugCamEnable:Z",
-                    ordinal = 1
-            ))
-    private double zoomOutIfPiloting(double oldZoom)    {
+        method = "Lnet/minecraft/client/renderer/EntityRenderer;orientCamera(F)V",
+        index = 10,
+        at = @At(
+            value = "FIELD",
+            target = "Lnet/minecraft/client/settings/GameSettings;debugCamEnable:Z",
+            ordinal = 1
+        ))
+    private double zoomOutIfPiloting(double oldZoom) {
         //TODO: Make this number scale with the Ship
         return ((IShipPilot) this.mc.player).isPilotingShip() ? 15.0d : oldZoom;
     }
 
     @Redirect(
-            method = "Lnet/minecraft/client/renderer/EntityRenderer;orientCamera(F)V",
-            at = @At(
-                    value = "FIELD",
-                    target = "Lnet/minecraft/client/settings/GameSettings;thirdPersonView:I",
-                    ordinal = 1
-            ))
+        method = "Lnet/minecraft/client/renderer/EntityRenderer;orientCamera(F)V",
+        at = @At(
+            value = "FIELD",
+            target = "Lnet/minecraft/client/settings/GameSettings;thirdPersonView:I",
+            ordinal = 1
+        ))
     private int excludeShipFromRayTracerBeforeDepthProbe(GameSettings settings) {
-        ((IWorldVW) this.mc.world).excludeShipFromRayTracer(((IShipPilot) this.mc.player).getPilotedShip());
+        ((IWorldVW) this.mc.world)
+            .excludeShipFromRayTracer(((IShipPilot) this.mc.player).getPilotedShip());
 
         return settings.thirdPersonView;
     }
@@ -254,30 +264,33 @@ public abstract class MixinEntityRenderer {
     //8 ray traces come here
 
     @Redirect(
-            method = "Lnet/minecraft/client/renderer/EntityRenderer;orientCamera(F)V",
-            at = @At(
-                    value = "FIELD",
-                    target = "Lnet/minecraft/client/settings/GameSettings;thirdPersonView:I",
-                    ordinal = 2
-            ))
+        method = "Lnet/minecraft/client/renderer/EntityRenderer;orientCamera(F)V",
+        at = @At(
+            value = "FIELD",
+            target = "Lnet/minecraft/client/settings/GameSettings;thirdPersonView:I",
+            ordinal = 2
+        ))
     private int unexcludeShipFromRayTracerAfterDepthProbe(GameSettings settings) {
-        ((IWorldVW) this.mc.world).unexcludeShipFromRayTracer(((IShipPilot) this.mc.player).getPilotedShip());
+        ((IWorldVW) this.mc.world)
+            .unexcludeShipFromRayTracer(((IShipPilot) this.mc.player).getPilotedShip());
 
         return settings.thirdPersonView;
     }
 
     @Redirect(
-            method = "Lnet/minecraft/client/renderer/EntityRenderer;orientCamera(F)V",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/renderer/GlStateManager;translate(FFF)V",
-                    ordinal = 4
-            ))
+        method = "Lnet/minecraft/client/renderer/EntityRenderer;orientCamera(F)V",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/client/renderer/GlStateManager;translate(FFF)V",
+            ordinal = 4
+        ))
     private void rotateCameraAndFixFinalTranslate(float x, float y, float z, float partialTicks) {
-        if (this.mountData != null && this.mountData.getMountedShip().getShipRenderer().getSmoothRotationQuat(partialTicks) != null)    {
+        if (this.mountData != null
+            && this.mountData.getMountedShip().getShipRenderer().getSmoothRotationQuat(partialTicks)
+            != null) {
             Quaternion orientationQuat = this.mountData.getMountedShip()
-                    .getShipRenderer()
-                    .getSmoothRotationQuat(partialTicks);
+                .getShipRenderer()
+                .getSmoothRotationQuat(partialTicks);
 
             double[] radians = orientationQuat.toRadians();
 
@@ -298,13 +311,16 @@ public abstract class MixinEntityRenderer {
 
 
     @Redirect(
-            method = "Lnet/minecraft/client/renderer/EntityRenderer;orientCamera(F)V",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/renderer/RenderGlobal;hasCloudFog(DDDF)Z"
-            ))
-    private boolean fixHasCloudFogCoordinates(RenderGlobal renderGlobal, double x, double y, double z, float partialTicks)  {
-        return renderGlobal.hasCloudFog(x + this.eyeVector.X, y + this.eyeVector.Y, z + this.eyeVector.Z, partialTicks);
+        method = "Lnet/minecraft/client/renderer/EntityRenderer;orientCamera(F)V",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/client/renderer/RenderGlobal;hasCloudFog(DDDF)Z"
+        ))
+    private boolean fixHasCloudFogCoordinates(RenderGlobal renderGlobal, double x, double y,
+        double z, float partialTicks) {
+        return renderGlobal
+            .hasCloudFog(x + this.eyeVector.X, y + this.eyeVector.Y, z + this.eyeVector.Z,
+                partialTicks);
     }
 
     /**

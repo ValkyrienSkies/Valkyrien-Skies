@@ -1,14 +1,17 @@
 package org.valkyrienskies.mod.common.network;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import org.valkyrienskies.mod.common.coordinates.*;
-
 import javax.annotation.Nullable;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import org.valkyrienskies.mod.common.coordinates.CoordinateSpaceType;
+import org.valkyrienskies.mod.common.coordinates.ISubspace;
+import org.valkyrienskies.mod.common.coordinates.ISubspacedEntity;
+import org.valkyrienskies.mod.common.coordinates.ISubspacedEntityRecord;
+import org.valkyrienskies.mod.common.coordinates.ImplSubspacedEntityRecord;
+import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
 
 /**
- * A message that sends the SubspacedEntityRecord from server to client and from
- * client to server.s
+ * A message that sends the SubspacedEntityRecord from server to client and from client to server.s
  *
  * @author thebest108
  */
@@ -48,9 +51,10 @@ public class SubspacedEntityRecordMessage implements IMessage {
 
     @Override
     public void toBytes(ByteBuf buf) {
-        if (subspacedEntityRecord.getParentSubspace().getSubspaceCoordinatesType() == CoordinateSpaceType.GLOBAL_COORDINATES) {
+        if (subspacedEntityRecord.getParentSubspace().getSubspaceCoordinatesType()
+            == CoordinateSpaceType.GLOBAL_COORDINATES) {
             throw new IllegalStateException(
-                    "Just tried sending SubspacedEntityRecordMessage for a record that was made by the world subspace. This isn't right so we crash right here.");
+                "Just tried sending SubspacedEntityRecordMessage for a record that was made by the world subspace. This isn't right so we crash right here.");
         }
         buf.writeInt(subspacedEntityRecord.getParentSubspace().getSubspaceParentEntityID());
         buf.writeInt(subspacedEntityRecord.getParentEntity().getSubspacedEntityID());
@@ -60,8 +64,10 @@ public class SubspacedEntityRecordMessage implements IMessage {
         subspacedEntityRecord.getVelocity().writeToByteBuf(buf);
     }
 
-    public ISubspacedEntityRecord createRecordForThisMessage(ISubspacedEntity entity, ISubspace provider) {
-        return new ImplSubspacedEntityRecord(entity, provider, position, positionLastTick, lookDirection, velocity);
+    public ISubspacedEntityRecord createRecordForThisMessage(ISubspacedEntity entity,
+        ISubspace provider) {
+        return new ImplSubspacedEntityRecord(entity, provider, position, positionLastTick,
+            lookDirection, velocity);
     }
 
 }

@@ -30,7 +30,8 @@ public class EntityPolygon extends Polygon {
         entityFor = ent;
     }
 
-    public EntityPolygon(AxisAlignedBB bb, ShipTransform transform, TransformType transformType, Entity ent) {
+    public EntityPolygon(AxisAlignedBB bb, ShipTransform transform, TransformType transformType,
+        Entity ent) {
         super(bb, transform, transformType);
         entityFor = ent;
     }

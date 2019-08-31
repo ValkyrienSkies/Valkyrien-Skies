@@ -1,5 +1,7 @@
 package org.valkyrienskies.addon.control.item;
 
+import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
@@ -23,9 +25,6 @@ import org.valkyrienskies.addon.control.block.multiblocks.TileEntityGiantPropell
 import org.valkyrienskies.addon.control.block.multiblocks.TileEntityRudderAxlePart;
 import org.valkyrienskies.addon.control.tileentity.TileEntityGearbox;
 
-import javax.annotation.Nullable;
-import java.util.List;
-
 public class ItemWrench extends Item {
 
     public ItemWrench() {
@@ -34,15 +33,17 @@ public class ItemWrench extends Item {
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World player, List<String> itemInformation,
-                               ITooltipFlag advanced) {
+    public void addInformation(ItemStack stack, @Nullable World player,
+        List<String> itemInformation,
+        ITooltipFlag advanced) {
         itemInformation.add(TextFormatting.BLUE + I18n.format("tooltip.vs_control.wrench"));
     }
 
 
     @Override
-    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand,
-                                      EnumFacing facing, float hitX, float hitY, float hitZ) {
+    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos,
+        EnumHand hand,
+        EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (worldIn.isRemote) {
             return EnumActionResult.SUCCESS;
         }
@@ -51,7 +52,7 @@ public class ItemWrench extends Item {
 
         if (blockTile instanceof TileEntityEthereumEnginePart) {
             List<IMulitblockSchematic> ethereumEngineMultiblockSchematics = MultiblockRegistry
-                    .getSchematicsWithPrefix("multiblock_ether_engine");
+                .getSchematicsWithPrefix("multiblock_ether_engine");
             for (IMulitblockSchematic schematic : ethereumEngineMultiblockSchematics) {
                 if (schematic.attemptToCreateMultiblock(worldIn, pos)) {
                     return EnumActionResult.SUCCESS;
@@ -61,7 +62,7 @@ public class ItemWrench extends Item {
 
         if (blockTile instanceof TileEntityEthereumCompressorPart) {
             List<IMulitblockSchematic> ethereumEngineMultiblockSchematics = MultiblockRegistry
-                    .getSchematicsWithPrefix("multiblock_ether_compressor");
+                .getSchematicsWithPrefix("multiblock_ether_compressor");
             for (IMulitblockSchematic schematic : ethereumEngineMultiblockSchematics) {
                 if (schematic.attemptToCreateMultiblock(worldIn, pos)) {
                     return EnumActionResult.SUCCESS;
@@ -71,7 +72,7 @@ public class ItemWrench extends Item {
 
         if (blockTile instanceof TileEntityRudderAxlePart) {
             List<IMulitblockSchematic> rudderAxelMultiblockSchematics = MultiblockRegistry
-                    .getSchematicsWithPrefix("multiblock_rudder_axle");
+                .getSchematicsWithPrefix("multiblock_rudder_axle");
             for (IMulitblockSchematic schematic : rudderAxelMultiblockSchematics) {
                 RudderAxleMultiblockSchematic rudderSchem = (RudderAxleMultiblockSchematic) schematic;
                 if (facing.getAxis() != rudderSchem.getAxleAxisDirection().getAxis()) {
@@ -87,7 +88,7 @@ public class ItemWrench extends Item {
 
         if (blockTile instanceof TileEntityGiantPropellerPart) {
             List<IMulitblockSchematic> giantPropellerMultiblockSchematics = MultiblockRegistry
-                    .getSchematicsWithPrefix("multiblock_giant_propeller");
+                .getSchematicsWithPrefix("multiblock_giant_propeller");
             for (IMulitblockSchematic schematic : giantPropellerMultiblockSchematics) {
                 GiantPropellerMultiblockSchematic propSchem = (GiantPropellerMultiblockSchematic) schematic;
                 if (propSchem.getPropellerFacing() == facing) {
@@ -99,7 +100,8 @@ public class ItemWrench extends Item {
         }
 
         if (blockTile instanceof TileEntityGearbox) {
-            ((TileEntityGearbox) blockTile).setInputFacing(!player.isSneaking() ? facing : facing.getOpposite());
+            ((TileEntityGearbox) blockTile)
+                .setInputFacing(!player.isSneaking() ? facing : facing.getOpposite());
         }
 
         return EnumActionResult.PASS;

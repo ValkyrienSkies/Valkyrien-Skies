@@ -51,11 +51,7 @@ import org.valkyrienskies.fixes.IPhysicsChunk;
 import org.valkyrienskies.mod.client.render.PhysObjectRenderManager;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.config.VSConfig;
-import org.valkyrienskies.mod.common.coordinates.ISubspace;
-import org.valkyrienskies.mod.common.coordinates.ISubspaceProvider;
-import org.valkyrienskies.mod.common.coordinates.ImplSubspace;
-import org.valkyrienskies.mod.common.coordinates.ShipTransform;
-import org.valkyrienskies.mod.common.coordinates.ShipTransformationPacketHolder;
+import org.valkyrienskies.mod.common.coordinates.*;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.math.Quaternion;
 import org.valkyrienskies.mod.common.math.Vector;
@@ -73,14 +69,8 @@ import org.valkyrienskies.mod.common.util.ValkyrienNBTUtils;
 import valkyrienwarfare.api.IPhysicsEntity;
 import valkyrienwarfare.api.TransformType;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -313,16 +303,16 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 
 		assignChunkPhysicObject();
 
-		setReferenceBlockPos(getRegionCenter());
+		referenceBlockPos(getRegionCenter());
 
-		setCenterCoord(new Vector(getReferenceBlockPos().getX() + .5,
-				getReferenceBlockPos().getY() + .5,
-				getReferenceBlockPos().getZ() + .5));
+		setCenterCoord(new Vector(referenceBlockPos().getX() + .5,
+				referenceBlockPos().getY() + .5,
+				referenceBlockPos().getZ() + .5));
 
 		createPhysicsCalculations();
 
 		iter = detector.foundSet.iterator();
-		BlockPos centerDifference = getReferenceBlockPos().subtract(centerInWorld);
+		BlockPos centerDifference = referenceBlockPos().subtract(centerInWorld);
 
 		MutableBlockPos oldPos = new MutableBlockPos();
 		MutableBlockPos newPos = new MutableBlockPos();
@@ -590,7 +580,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 			}
 		}
 		assignChunkPhysicObject();
-		setReferenceBlockPos(getRegionCenter());
+		referenceBlockPos(getRegionCenter());
 		setShipTransformationManager(new ShipTransformationManager(this));
 		if (!getWorld().isRemote) {
 			createPhysicsCalculations();
@@ -668,7 +658,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 		// });
 		// compound.setString("allowedUsers", result.substring(0, result.length() - 1));
 
-		compound.setString("owner", this.getCreator());
+		compound.setString("owner", this.creator());
 		compound.setBoolean("claimedChunksInMap", claimedChunksInMap);
 		compound.setBoolean("isNameCustom", isNameCustom());
 		compound.setString("shipType", shipType.name());
@@ -727,11 +717,11 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 		// After we have loaded which positions are stored in the ship; we load the physics calculations object.
 		getPhysicsProcessor().readFromNBTTag(compound);
 
-		getAllowedUsers().clear();
-		Collections.addAll(getAllowedUsers(), compound.getString("allowedUsers")
+		allowedUsers().clear();
+		Collections.addAll(allowedUsers(), compound.getString("allowedUsers")
 				.split(";"));
 
-		setCreator(compound.getString("owner"));
+		creator(compound.getString("owner"));
 		claimedChunksInMap = compound.getBoolean("claimedChunksInMap");
 		setNameCustom(compound.getBoolean("isNameCustom"));
 		getWrapperEntity().dataManager.set(PhysicsWrapperEntity.IS_NAME_CUSTOM, isNameCustom());
@@ -766,7 +756,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 			}
 		}
 		loadClaimedChunks();
-		getShipRenderer().updateOffsetPos(getReferenceBlockPos());
+		getShipRenderer().updateOffsetPos(referenceBlockPos());
 
 		getShipTransformationManager().serverBuffer.pushMessage(new PhysWrapperPositionMessage(this));
 

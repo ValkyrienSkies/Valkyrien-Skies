@@ -67,9 +67,9 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
         posZ = z;
 
         if (creator != null) {
-            getPhysicsObject().setCreator(creator.entityUniqueID.toString());
+            getPhysicsObject().creator(creator.entityUniqueID.toString());
         } else {
-            getPhysicsObject().setCreator("unknown");
+            getPhysicsObject().creator("unknown");
             super.setCustomNameTag(UUID.randomUUID()
                     .toString());
         }
@@ -91,7 +91,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
         posZ = te.getPos()
                 .getZ();
 
-        getPhysicsObject().setCreator("unknown");
+        getPhysicsObject().creator("unknown");
         super.setCustomNameTag(UUID.randomUUID()
                 .toString());
 

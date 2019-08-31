@@ -252,3 +252,26 @@ publishing {
         }
     }
 }
+
+//sets additional JVM args for genIntellijRuns
+import java.util.concurrent.atomic.AtomicReference
+AtomicReference<String> mixinPath = new AtomicReference<>(null);
+configurations.compile.each {
+    String absolutePath = it.absolutePath
+    if(absolutePath.contains("mixin")) {
+        mixinPath.set(absolutePath)
+    }
+}
+if (mixinPath != null)  {
+    minecraft.clientJvmArgs = minecraft.serverJvmArgs = Arrays.asList(
+            "-Dmixin.checks.interfaces=true",
+            "-Dmixin.debug.export=true",
+            "-Dmixin.debug.verbose=true",
+            "-Dmixin.hotSwap=true",
+            "-javaagent:" + mixinPath,
+            "-ea",
+            "-da:io.netty..."
+    )
+} else {
+    throw new IllegalStateException("Unable to find mixin path!")
+}

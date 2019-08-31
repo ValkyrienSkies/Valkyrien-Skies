@@ -63,6 +63,7 @@ public class ItemRelayWire extends Item {
         ItemStack stack = player.getHeldItem(hand);
 
         if (currentTile instanceof IVWNodeProvider && !worldIn.isRemote) {
+            System.out.println("On server!");
             ICapabilityLastRelay inst = stack.getCapability(ValkyrienSkiesControl.lastRelayCapability, null);
             if (inst != null) {
                 if (!inst.hasLastRelay()) {
@@ -106,7 +107,7 @@ public class ItemRelayWire extends Item {
             return EnumActionResult.SUCCESS;
         }
 
-        return EnumActionResult.FAIL;
+        return EnumActionResult.PASS;
     }
 
 }

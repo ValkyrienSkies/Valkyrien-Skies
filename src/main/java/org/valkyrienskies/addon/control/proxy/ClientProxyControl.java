@@ -124,6 +124,8 @@ public class ClientProxyControl extends CommonProxyControl {
 
     @Override
     public void preInit(FMLStateEvent event) {
+        super.preInit(event);
+
         // Register events
         MinecraftForge.EVENT_BUS.register(new ControlEventsClient());
         // Register gibs
@@ -184,10 +186,12 @@ public class ClientProxyControl extends CommonProxyControl {
 
     @Override
     public void init(FMLStateEvent event) {
+        super.init(event);
     }
 
     @Override
     public void postInit(FMLStateEvent event) {
+        super.postInit(event);
         registerBlockItemModels();
         registerItemModels();
         registerTileEntityRenderers();

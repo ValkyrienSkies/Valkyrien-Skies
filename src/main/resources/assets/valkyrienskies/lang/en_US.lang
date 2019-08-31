@@ -1,6 +1,6 @@
 # Blocks
 tile.shipblock.name=Physics Infuser
-tile.shipblockcreative.name=Physics Infuser Creative
+tile.shipblockcreative.name=Creative Physics Infuser
 # Items
 item.vw_phys_core.name=Physics Core
 # Item Tab

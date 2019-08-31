@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Statistic">
+    <option name="excludedDirectories">
+      <list>
+        <option value="$PROJECT_DIR$/build" />
+        <option value="$PROJECT_DIR$/out" />
+        <option value="$PROJECT_DIR$/run" />
+        <option value="$PROJECT_DIR$/upcoming_features" />
+        <option value="$PROJECT_DIR$/gradle" />
+        <option value="$PROJECT_DIR$/.gradle" />
+        <option value="$PROJECT_DIR$/.config" />
+        <option value="$PROJECT_DIR$/.circleci" />
+        <option value="$PROJECT_DIR$/build" />
+        <option value="$PROJECT_DIR$/changelogs" />
+        <option value="$PROJECT_DIR$/dependencies" />
+        <option value="$PROJECT_DIR$/mods" />
+      </list>
+    </option>
+  </component>
+</project>

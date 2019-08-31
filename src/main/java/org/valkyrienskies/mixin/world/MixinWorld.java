@@ -61,6 +61,8 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
     // TODO: This is going to lead to a multithreaded disaster. Replace this with something sensible!
     // I made this threadlocal to prevent disaster for now, but its still really bad code.
     private final ThreadLocal<Boolean> dontIntercept = ThreadLocal.withInitial(() -> false);
+    // Pork added on to this already bad code because it was already like this so he doesn't feel bad about it
+    private final ThreadLocal<PhysicsWrapperEntity> dontInterceptShip = ThreadLocal.withInitial(() -> null);
     private final ISubspace worldSubspace = new ImplSubspace(null);
 
     @Shadow
@@ -300,19 +302,35 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
         return getPersistentChunkIterable(replacementIterator);
     }
 
+    @Override
+    public void excludeShipFromRayTracer(PhysicsWrapperEntity entity) {
+        if (this.dontInterceptShip.get() != null)   {
+            throw new IllegalStateException("excluded ship is already set!");
+        }
+        this.dontInterceptShip.set(entity);
+    }
+
+    @Override
+    public void unexcludeShipFromRayTracer(PhysicsWrapperEntity entity) {
+        if (this.dontInterceptShip.get() != entity)   {
+            throw new IllegalStateException("must exclude the same ship!");
+        }
+        this.dontInterceptShip.set(null);
+    }
+
     @Inject(method = "rayTraceBlocks(Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Vec3d;ZZZ)Lnet/minecraft/util/math/RayTraceResult;", at = @At("HEAD"), cancellable = true)
     private void preRayTraceBlocks(Vec3d vec31, Vec3d vec32, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox,
                                    boolean returnLastUncollidableBlock, CallbackInfoReturnable<RayTraceResult> callbackInfo) {
-        if (!dontIntercept.get()) {
+        if (!this.dontIntercept.get()) {
             callbackInfo.setReturnValue(rayTraceBlocksIgnoreShip(vec31, vec32, stopOnLiquid,
-                    ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock, null));
+                    ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock, this.dontInterceptShip.get()));
         }
     }
 
     @Override
     public RayTraceResult rayTraceBlocksIgnoreShip(Vec3d vec31, Vec3d vec32, boolean stopOnLiquid,
                                                    boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock, PhysicsWrapperEntity toIgnore) {
-        dontIntercept.set(true);
+        this.dontIntercept.set(true);
         RayTraceResult vanillaTrace = World.class.cast(this)
                 .rayTraceBlocks(vec31, vec32, stopOnLiquid,
                 ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
@@ -363,7 +381,7 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
             }
         }
 
-        dontIntercept.set(false);
+        this.dontIntercept.set(false);
         return vanillaTrace;
     }
 }

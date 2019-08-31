@@ -264,6 +264,10 @@ public class Vector {
         setValue(toCopy.X, toCopy.Y, toCopy.Z);
     }
 
+    public void setValue(Vec3d toCopy) {
+        setValue(toCopy.x, toCopy.y, toCopy.z);
+    }
+
     /**
      * @param other
      * @return The angle between these two vectors in radians.

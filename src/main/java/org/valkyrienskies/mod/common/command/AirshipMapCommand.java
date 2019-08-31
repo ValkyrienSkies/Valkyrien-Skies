@@ -51,7 +51,7 @@ public class AirshipMapCommand extends CommandBase {
         String term = args[0];
 
         if (term.equals("tpto")) {
-            StringBuilder shipName = new StringBuilder(args[1]);
+            StringBuilder shipName = new StringBuilder(args.length < 2 ? "" : args[1]);
             if (args.length > 2) {
                 for (int i = 2; i < args.length; i++) {
                     shipName.append(" ").append(args[i]);

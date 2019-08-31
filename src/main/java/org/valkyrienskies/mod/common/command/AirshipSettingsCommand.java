@@ -89,12 +89,12 @@ public class AirshipSettingsCommand extends CommandBase {
         }
         if (p.entityUniqueID.toString()
                 .equals(physicsObject.get()
-                        .getCreator())) {
+                        .creator())) {
             if (args[0].equals("allowplayer")) {
                 if (args.length == 1) {
                     StringBuilder result = new StringBuilder();
                     physicsObject.get()
-                            .getAllowedUsers()
+                            .allowedUsers()
                             .forEach(s -> {
                         result.append(s);
                         result.append(" ");
@@ -110,12 +110,12 @@ public class AirshipSettingsCommand extends CommandBase {
                     }
                     if (target.entityUniqueID.toString()
                             .equals(physicsObject.get()
-                                    .getCreator())) {
+                                    .creator())) {
                         p.sendMessage(new TextComponentString("You can't add yourself to your own airship!"));
                         return;
                     }
                     physicsObject.get()
-                            .getAllowedUsers()
+                            .allowedUsers()
                             .add(target.entityUniqueID.toString());
                     p.sendMessage(new TextComponentString("Success! " + target.getName() + " can now interact with this airship!"));
                     return;
@@ -123,13 +123,13 @@ public class AirshipSettingsCommand extends CommandBase {
             }
         } else {
             if (physicsObject.get()
-                    .getCreator() == null || physicsObject.get()
-                    .getCreator()
+                    .creator() == null || physicsObject.get()
+                    .creator()
                     .trim()
                     .isEmpty()) {
                 if (args.length == 1 && args[0].equals("claim")) {
                     physicsObject.get()
-                            .setCreator(p.entityUniqueID.toString());
+                            .creator(p.entityUniqueID.toString());
                     p.sendMessage(new TextComponentString("You've successfully claimed an airship!"));
                     return;
                 }

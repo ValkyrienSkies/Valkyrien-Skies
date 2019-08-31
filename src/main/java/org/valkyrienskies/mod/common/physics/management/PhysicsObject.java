@@ -132,7 +132,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 	private boolean isNameCustom;
 	private AxisAlignedBB shipBoundingBox;
 	private ShipType shipType;
-	private AtomicInteger gameConsecutiveTicks;
+	private AtomicInteger gameConsecutiveTicks = new AtomicInteger();
 	private BlockPos physicsInfuserPos;
 	private boolean shipAligningToGrid;
 	private boolean isFullyLoaded;

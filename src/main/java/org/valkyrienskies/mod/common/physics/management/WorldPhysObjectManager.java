@@ -18,13 +18,16 @@ package org.valkyrienskies.mod.common.physics.management;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
-import org.valkyrienskies.mod.common.physmanagement.chunk.VWChunkClaim;
-
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
 
 /**
  * This class essentially handles all the issues with ticking and handling
@@ -101,7 +104,7 @@ public class WorldPhysObjectManager {
         if (!loaded.world.isRemote) {
             physicsEntities.remove(loaded);
             loaded.getPhysicsObject().onThisUnload();
-            VWChunkClaim vwChunkClaim = loaded.getPhysicsObject().getOwnedChunks();
+            VSChunkClaim vwChunkClaim = loaded.getPhysicsObject().getOwnedChunks();
             for (int chunkX = vwChunkClaim.getMinX(); chunkX <= vwChunkClaim.getMaxX(); chunkX++) {
                 for (int chunkZ = vwChunkClaim.getMinZ(); chunkZ <= vwChunkClaim.getMaxZ(); chunkZ++) {
                     chunkPosToPhysicsEntityMap.remove(getLongFromInts(chunkX, chunkZ));

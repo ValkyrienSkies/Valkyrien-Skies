@@ -16,17 +16,16 @@
 
 package org.valkyrienskies.mod.common.physmanagement.chunk;
 
+import java.io.Serializable;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
-
-import java.io.Serializable;
 
 /**
  * This stores the chunk claims for a PhysicsObject; not the chunks themselves
  *
  * @author thebest108
  */
-public class VWChunkClaim implements Serializable {
+public class VSChunkClaim implements Serializable {
 
     public final boolean[][] chunkOccupiedInLocal;
     private final int centerX;
@@ -34,21 +33,21 @@ public class VWChunkClaim implements Serializable {
     private final int radius;
 
     // For Kryo
-    private VWChunkClaim() {
+    private VSChunkClaim() {
         radius = 0;
         centerX = 0;
         centerZ = 0;
         chunkOccupiedInLocal = null;
     }
 
-    public VWChunkClaim(int x, int z, int size) {
+    public VSChunkClaim(int x, int z, int size) {
         this.centerX = x;
         this.centerZ = z;
         this.radius = size;
         this.chunkOccupiedInLocal = new boolean[(getRadius() * 2) + 1][(getRadius() * 2) + 1];
     }
 
-    public VWChunkClaim(NBTTagCompound readFrom) {
+    public VSChunkClaim(NBTTagCompound readFrom) {
         this(readFrom.getInteger("centerX"), readFrom.getInteger("centerZ"), readFrom.getInteger("radius"));
     }
 
@@ -77,8 +76,8 @@ public class VWChunkClaim implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof VWChunkClaim) {
-            VWChunkClaim other = (VWChunkClaim) o;
+        if (o instanceof VSChunkClaim) {
+            VSChunkClaim other = (VSChunkClaim) o;
             return other.getCenterX() == getCenterX() && other.getCenterZ() == getCenterZ() && other.getRadius() == getRadius();
         }
         return false;

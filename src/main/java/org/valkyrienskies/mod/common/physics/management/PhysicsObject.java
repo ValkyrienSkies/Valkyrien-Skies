@@ -74,7 +74,7 @@ import org.valkyrienskies.mod.common.physics.BlockPhysicsDetails;
 import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
 import org.valkyrienskies.mod.common.physics.management.util.SurroundingChunkCacheController;
 import org.valkyrienskies.mod.common.physmanagement.chunk.ShipChunkAllocator;
-import org.valkyrienskies.mod.common.physmanagement.chunk.VWChunkClaim;
+import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
 import org.valkyrienskies.mod.common.physmanagement.relocation.DetectorManager;
 import org.valkyrienskies.mod.common.physmanagement.relocation.MoveBlocks;
 import org.valkyrienskies.mod.common.physmanagement.relocation.SpatialDetector;
@@ -122,7 +122,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 	// The closest Chunks to the Ship cached in here
 	private SurroundingChunkCacheController cachedSurroundingChunks;
 	// TODO: Make for re-organizing these to make Ship sizes Dynamic
-	private VWChunkClaim ownedChunks;
+	private VSChunkClaim ownedChunks;
 	// Used for faster memory access to the Chunks this object 'owns'
 	private Chunk[][] claimedChunks;
 
@@ -694,7 +694,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 		createPhysicsCalculations();
 		assert getPhysicsProcessor() != null : "Insert error message here";
 
-		setOwnedChunks(new VWChunkClaim(compound));
+		setOwnedChunks(new VSChunkClaim(compound));
 		ShipTransform savedTransform = ValkyrienNBTUtils.readShipTransformFromNBT("currentTickTransform", compound);
 		if (savedTransform != null) {
 			Vector centerOfMassInGlobal = new Vector(getCenterCoord());
@@ -751,7 +751,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 	public void readSpawnData(ByteBuf additionalData) {
 		PacketBuffer modifiedBuffer = new PacketBuffer(additionalData);
 
-		setOwnedChunks(new VWChunkClaim(modifiedBuffer.readInt(), modifiedBuffer.readInt(), modifiedBuffer.readInt()));
+		setOwnedChunks(new VSChunkClaim(modifiedBuffer.readInt(), modifiedBuffer.readInt(), modifiedBuffer.readInt()));
 
 		double posX = modifiedBuffer.readDouble();
 		double posY = modifiedBuffer.readDouble();
@@ -988,14 +988,14 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 	/**
 	 * @return the ownedChunks
 	 */
-	public VWChunkClaim getOwnedChunks() {
+	public VSChunkClaim getOwnedChunks() {
 		return ownedChunks;
 	}
 
 	/**
 	 * @param ownedChunks the ownedChunks to set
 	 */
-	public void setOwnedChunks(VWChunkClaim ownedChunks) {
+	public void setOwnedChunks(VSChunkClaim ownedChunks) {
 		this.ownedChunks = ownedChunks;
 	}
 
@@ -1122,7 +1122,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 	 * Gets the chunk at chunkX and chunkZ.
 	 */
 	public Chunk getChunkAt(int chunkX, int chunkZ) {
-		VWChunkClaim ownedChunks = getOwnedChunks();
+		VSChunkClaim ownedChunks = getOwnedChunks();
 		if (!ownedChunks.isChunkEnclosedInSet(chunkX, chunkZ)) {
 			throw new IllegalArgumentException("Chunk at " + chunkX + " : " + chunkZ + " is not claimed by this ship.");
 		}

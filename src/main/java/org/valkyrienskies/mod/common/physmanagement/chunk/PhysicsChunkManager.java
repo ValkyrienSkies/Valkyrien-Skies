@@ -16,10 +16,9 @@
 
 package org.valkyrienskies.mod.common.physmanagement.chunk;
 
+import java.util.Objects;
 import net.minecraft.world.World;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
-
-import java.util.Objects;
 
 /**
  * This class is responsible for finding/allocating the Chunks for
@@ -45,7 +44,7 @@ public class PhysicsChunkManager {
      * This finds the next empty chunkSet for use, currently only increases the xPos
      * to get new positions
      */
-    public VWChunkClaim getNextAvailableChunkSet(int radius) {
+    public VSChunkClaim getNextAvailableChunkSet(int radius) {
         IVWWorldDataCapability worldDataCapability =
                 worldObj.getCapability(ValkyrienSkiesMod.vwWorldData, null);
 
@@ -54,7 +53,7 @@ public class PhysicsChunkManager {
                 .getChunkAllocator()
                 .allocateChunks("insert ship id here", radius);
 
-        return new VWChunkClaim(allocatedChunks.lowerChunkX + ShipChunkAllocator.MAX_SHIP_CHUNK_RADIUS, allocatedChunks.lowerChunkZ + ShipChunkAllocator.MAX_SHIP_CHUNK_RADIUS, radius);
+        return new VSChunkClaim(allocatedChunks.lowerChunkX + ShipChunkAllocator.MAX_SHIP_CHUNK_RADIUS, allocatedChunks.lowerChunkZ + ShipChunkAllocator.MAX_SHIP_CHUNK_RADIUS, radius);
     }
 
 }

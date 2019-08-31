@@ -1,34 +1,35 @@
 package org.valkyrienskies.mod.common.physmanagement.interaction;
 
+import static com.googlecode.cqengine.query.QueryFactory.attribute;
+
 import com.googlecode.cqengine.attribute.Attribute;
 import com.googlecode.cqengine.attribute.MultiValueAttribute;
 import com.googlecode.cqengine.query.option.QueryOptions;
-import net.minecraft.util.math.ChunkPos;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
-import org.valkyrienskies.mod.common.physmanagement.chunk.VWChunkClaim;
-
-import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-
-import static com.googlecode.cqengine.query.QueryFactory.attribute;
+import javax.annotation.Nullable;
+import net.minecraft.util.math.ChunkPos;
+import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
+import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
 
 
 public final class ShipData {
 
     // WARNING: Mutable! This field is NEVER indexed. DO NOT INDEX!
-    @Nullable public ShipPositionData positionData;
+    @Nullable
+    public ShipPositionData positionData;
     private String name;
     private UUID uuid;
     /**
      * Unmodifiable set
      */
     private Set<Long> chunkLongs;
-    private VWChunkClaim chunkClaim;
+    private VSChunkClaim chunkClaim;
 
     public static class Builder {
+
         private ShipData shipData;
 
         public Builder(ShipData data) {
@@ -66,17 +67,18 @@ public final class ShipData {
             return this;
         }
 
-        public Builder setChunkClaim(VWChunkClaim chunkClaim) {
+        public Builder setChunkClaim(VSChunkClaim chunkClaim) {
             shipData.chunkClaim = chunkClaim;
             return this;
         }
 
         /**
-         * @return Every Chunk that this entity owns/claims represented as a long; for indexing purposes
+         * @return Every Chunk that this entity owns/claims represented as a long; for indexing
+         * purposes
          */
         private static Set<Long> getChunkLongs(PhysicsWrapperEntity entity) {
             Set<Long> chunkLongs = new HashSet<>();
-            VWChunkClaim ownedChunks = entity.getPhysicsObject().getOwnedChunks();
+            VSChunkClaim ownedChunks = entity.getPhysicsObject().getOwnedChunks();
 
             int centerX = ownedChunks.getCenterX();
             int centerZ = ownedChunks.getCenterZ();
@@ -110,7 +112,7 @@ public final class ShipData {
         return chunkLongs;
     }
 
-    public VWChunkClaim getChunkClaim() {
+    public VSChunkClaim getChunkClaim() {
         return chunkClaim;
     }
 

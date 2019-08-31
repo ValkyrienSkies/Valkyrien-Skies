@@ -20,6 +20,16 @@ import com.google.common.collect.Sets;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.array.TIntArrayList;
 import io.netty.buffer.ByteBuf;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.block.state.IBlockState;
@@ -51,7 +61,11 @@ import org.valkyrienskies.fixes.IPhysicsChunk;
 import org.valkyrienskies.mod.client.render.PhysObjectRenderManager;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.config.VSConfig;
-import org.valkyrienskies.mod.common.coordinates.*;
+import org.valkyrienskies.mod.common.coordinates.ISubspace;
+import org.valkyrienskies.mod.common.coordinates.ISubspaceProvider;
+import org.valkyrienskies.mod.common.coordinates.ImplSubspace;
+import org.valkyrienskies.mod.common.coordinates.ShipTransform;
+import org.valkyrienskies.mod.common.coordinates.ShipTransformationPacketHolder;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.math.Quaternion;
 import org.valkyrienskies.mod.common.math.Vector;
@@ -68,11 +82,6 @@ import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 import org.valkyrienskies.mod.common.util.ValkyrienNBTUtils;
 import valkyrienwarfare.api.IPhysicsEntity;
 import valkyrienwarfare.api.TransformType;
-
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * The heart and soul of this mod. The physics object does everything from
@@ -122,7 +131,13 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 	private boolean isNameCustom;
 	private AxisAlignedBB shipBoundingBox;
 	private ShipType shipType;
-	private AtomicInteger gameConsecutiveTicks = new AtomicInteger();
+
+	/**
+	 * If this PhysicsObject needs to update the collision cache immediately
+	 */
+	@Getter @Setter(AccessLevel.PRIVATE)
+	private boolean needsCollisionCacheUpdate = true;
+
 	private BlockPos physicsInfuserPos;
 	private boolean shipAligningToGrid;
 	private boolean isFullyLoaded;
@@ -141,7 +156,6 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 		this.watchingPlayers = new ArrayList<>();
 		this.isPhysicsEnabled = false;
 		this.allowedUsers = new HashSet<>();
-		this.gameConsecutiveTicks = new AtomicInteger(0);
 		// this.gameConsecutiveTicks.set(0);
 		this.shipSubspace = new ImplSubspace(this);
 		this.physicsControllers = Sets.newConcurrentHashSet();
@@ -520,7 +534,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 			}
 		}
 
-		gameConsecutiveTicks.getAndIncrement();
+		this.needsCollisionCacheUpdate(false);
 	}
 
 	public void onPostTick() {
@@ -856,16 +870,8 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 	 * Sets the consecutive tick counter to 0.
 	 */
 	public void resetConsecutiveProperTicks() {
-		this.gameConsecutiveTicks.set(0);
+		this.needsCollisionCacheUpdate(true);
 	}
-
-	/**
-	 * @return true if this PhysicsObject needs to update the collision cache immediately.
-	 */
-	public boolean needsImmediateCollisionCacheUpdate() {
-		return gameConsecutiveTicks.get() == 0;
-	}
-
 	/**
 	 * @return this ships ShipTransformationManager
 	 */

@@ -20,6 +20,13 @@ import gnu.trove.TCollections;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Queue;
+import java.util.Random;
+import java.util.function.Consumer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -44,9 +51,6 @@ import org.valkyrienskies.mod.common.physics.collision.polygons.PolygonCollision
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.relocation.SpatialDetector;
 import valkyrienwarfare.api.TransformType;
-
-import java.util.*;
-import java.util.function.Consumer;
 
 /**
  * Handles the task of finding and processing collisions between a PhysicsObject
@@ -114,7 +118,7 @@ public class WorldPhysicsCollider {
             cachedPotentialHits.remove(cachedHitsToRemove.get(i));
         }
         cachedHitsToRemove.resetQuick();
-        if (ticksSinceCacheUpdate > CACHE_UPDATE_FREQUENCY || parent.needsImmediateCollisionCacheUpdate()) {
+        if (ticksSinceCacheUpdate > CACHE_UPDATE_FREQUENCY || parent.needsCollisionCacheUpdate()) {
             updatePotentialCollisionCache();
             updateCollisionTasksCache = true;
         }

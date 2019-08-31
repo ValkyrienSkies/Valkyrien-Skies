@@ -17,9 +17,9 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.8">
-      <module name="Valkyrien-Warfare-Revamped.api" target="1.8" />
-      <module name="Valkyrien-Warfare-Revamped.main" target="1.8" />
-      <module name="Valkyrien-Warfare-Revamped.test" target="1.8" />
+      <module name="ValkyrienSkies.api" target="1.8" />
+      <module name="ValkyrienSkies.main" target="1.8" />
+      <module name="ValkyrienSkies.test" target="1.8" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">

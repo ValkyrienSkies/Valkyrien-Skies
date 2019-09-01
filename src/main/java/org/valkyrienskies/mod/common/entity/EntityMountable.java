@@ -2,6 +2,7 @@ package org.valkyrienskies.mod.common.entity;
 
 import io.netty.buffer.ByteBuf;
 import java.util.Optional;
+import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
@@ -21,6 +22,7 @@ import valkyrienwarfare.api.TransformType;
  * A simple entity whose only purpose is to allow mounting onto chairs, as well as fixing entities
  * onto ships.
  */
+@ParametersAreNonnullByDefault
 public class EntityMountable extends Entity implements IEntityAdditionalSpawnData {
 
     private static final DataParameter<NBTTagCompound> SHARED_NBT = EntityDataManager
@@ -197,6 +199,13 @@ public class EntityMountable extends Entity implements IEntityAdditionalSpawnDat
             return ValkyrienUtils.getPhysicsObject(world, referencePos, false);
         } else {
             return Optional.empty();
+        }
+    }
+
+    @Override
+    public void updatePassenger(Entity passenger) {
+        if (this.isPassenger(passenger)) {
+            passenger.setPosition(this.posX, this.posY, this.posZ);
         }
     }
 }

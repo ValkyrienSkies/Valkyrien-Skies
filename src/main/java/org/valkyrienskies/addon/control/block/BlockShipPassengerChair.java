@@ -18,6 +18,8 @@ package org.valkyrienskies.addon.control.block;
 
 import java.util.List;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
@@ -39,12 +41,19 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import org.valkyrienskies.addon.control.tileentity.TileEntityPassengerChair;
 
+@MethodsReturnNonnullByDefault
+@ParametersAreNonnullByDefault
 public class BlockShipPassengerChair extends Block {
 
     public static final PropertyDirection FACING = BlockHorizontal.FACING;
 
     public BlockShipPassengerChair(Material materialIn) {
         super(materialIn);
+    }
+
+    public static double getChairYaw(IBlockState state, BlockPos pos) {
+        EnumFacing enumFace = state.getValue(BlockShipPassengerChair.FACING);
+        return -enumFace.getHorizontalAngle() - 90;
     }
 
     @Override
@@ -55,12 +64,6 @@ public class BlockShipPassengerChair extends Block {
     @Override
     public TileEntity createTileEntity(World world, IBlockState state) {
         return new TileEntityPassengerChair();
-    }
-
-    public static double getChairYaw(IBlockState state, BlockPos pos) {
-        EnumFacing enumFace = state.getValue(BlockShipPassengerChair.FACING);
-        double chairYaw = -enumFace.getHorizontalAngle() - 90;
-        return chairYaw;
     }
 
     @Override
@@ -84,12 +87,10 @@ public class BlockShipPassengerChair extends Block {
 
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
-        TileEntityPassengerChair passengerChair = (TileEntityPassengerChair) worldIn
-            .getTileEntity(pos);
+        TileEntity passengerChair = worldIn.getTileEntity(pos);
         if (passengerChair instanceof TileEntityPassengerChair && !passengerChair.isInvalid()) {
-            passengerChair.onBlockBroken(state);
+            ((TileEntityPassengerChair) passengerChair).onBlockBroken(state);
         }
-
         super.breakBlock(worldIn, pos, state);
     }
 
@@ -104,18 +105,19 @@ public class BlockShipPassengerChair extends Block {
         EnumFacing facing = state.getValue(FACING);
         switch (facing) {
             case NORTH:
-                return new Vec3d(pos.getX() + .5, pos.getY() + .35, pos.getZ() + .6);
+                return new Vec3d(pos.getX() + .5, pos.getY(), pos.getZ() + .6);
             case SOUTH:
-                return new Vec3d(pos.getX() + .5, pos.getY() + .35, pos.getZ() + .4);
+                return new Vec3d(pos.getX() + .5, pos.getY(), pos.getZ() + .4);
             case WEST:
-                return new Vec3d(pos.getX() + .6, pos.getY() + .35, pos.getZ() + .5);
+                return new Vec3d(pos.getX() + .6, pos.getY(), pos.getZ() + .5);
             case EAST:
-                return new Vec3d(pos.getX() + .4, pos.getY() + .35, pos.getZ() + .5);
+                return new Vec3d(pos.getX() + .4, pos.getY(), pos.getZ() + .5);
             default:
-                return new Vec3d(pos.getX() + .5, pos.getY() + .35, pos.getZ() + .5);
+                return new Vec3d(pos.getX() + .5, pos.getY(), pos.getZ() + .5);
         }
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing,
         float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
@@ -129,6 +131,7 @@ public class BlockShipPassengerChair extends Block {
         return new BlockStateContainer(this, FACING);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public IBlockState getStateFromMeta(int meta) {
         EnumFacing enumfacing = EnumFacing.byIndex(meta);
@@ -140,8 +143,7 @@ public class BlockShipPassengerChair extends Block {
 
     @Override
     public int getMetaFromState(IBlockState state) {
-        int i = state.getValue(FACING).getIndex();
-        return i;
+        return state.getValue(FACING).getIndex();
     }
 
     @Override
@@ -149,11 +151,13 @@ public class BlockShipPassengerChair extends Block {
         return BlockRenderLayer.CUTOUT;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public boolean isFullCube(IBlockState state) {
         return false;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public boolean isOpaqueCube(IBlockState state) {
         return false;

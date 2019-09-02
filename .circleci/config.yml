@@ -1,4 +1,7 @@
-version: 2
+version: 2.1
+
+orbs:
+  slack: circleci/slack@3.3.0
 
 jobs:
   build:
@@ -31,6 +34,12 @@ jobs:
       - store_artifacts:
           path: build/libs
           destination: /
+      - slack/status:
+          color: '#42e2f4'
+          success_message: >
+            Branch $CIRCLE_BRANCH, build #$CIRCLE_BUILD_NUM passed.
+            Download at: $CIRCLE_BUILD_URL#artifacts/containers/0
+          webhook: $DISCORD_WEBHOOK
 
 workflows:
   version: 2

@@ -21,12 +21,6 @@ jobs:
             export TERM=${TERM:-dumb}
             ./gradlew setupCiWorkspace
             ./gradlew build
-            cd build/libs
-            sudo apt-get update
-            sudo apt-get install rename
-            export CIRCLE_BRANCH
-            export CIRCLE_BUILD_NUM
-            rename 's/.jar/-$ENV{CIRCLE_BRANCH}-$ENV{CIRCLE_BUILD_NUM}.jar/' *
       - save_cache:
           paths:
             - ~/.gradle
@@ -35,12 +29,7 @@ jobs:
           path: build/libs
           destination: /
       - slack/status:
-          success_message: |
-            **Branch `$CIRCLE_BRANCH` PASSED :white_check_mark:**
-            **Build #$CIRCLE_BUILD_NUM**
-            [DOWNLOAD]($CIRCLE_BUILD_URL#artifacts/containers/0)
-          include_project_field: false
-          include_job_number_field: false
+          success_message: Branch $CIRCLE_BRANCH, build $CIRCLE_BUILD_NUM passed. Download at $CIRCLE_BUILD_URL#artifacts/containers/0
 
 workflows:
   version: 2

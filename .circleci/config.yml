@@ -35,7 +35,6 @@ jobs:
           path: build/libs
           destination: /
       - slack/status:
-          color: '#42e2f4'
           success_message: >
             Branch $CIRCLE_BRANCH, build #$CIRCLE_BUILD_NUM passed.
             Download at: $CIRCLE_BUILD_URL#artifacts/containers/0

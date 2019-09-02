@@ -21,8 +21,8 @@ import java.util.Map;
 import java.util.UUID;
 import net.minecraft.world.World;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
-import org.valkyrienskies.mod.common.physmanagement.interaction.QueryableShipData;
 import org.valkyrienskies.mod.common.physmanagement.interaction.ShipPositionData;
+import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
 public class DimensionPhysicsChunkManager {
 
@@ -48,31 +48,30 @@ public class DimensionPhysicsChunkManager {
     }
 
     public void registerChunksForShip(PhysicsWrapperEntity wrapper) {
-        QueryableShipData.get(wrapper.world).addShip(wrapper);
+        ValkyrienUtils.getQueryableData(wrapper.world).addShip(wrapper);
     }
 
     public void removeRegisteredChunksForShip(PhysicsWrapperEntity wrapper) {
-        QueryableShipData.get(wrapper.world).removeShip(wrapper);
+        ValkyrienUtils.getQueryableData(wrapper.world).removeShip(wrapper);
     }
 
     public UUID getShipIDManagingPos_Persistent(World worldFor, int chunkX, int chunkZ) {
-        return QueryableShipData.get(worldFor).getShipUUIDFromPos(chunkX, chunkZ);
+        return ValkyrienUtils.getQueryableData(worldFor).getShipUUIDFromPos(chunkX, chunkZ);
     }
 
     public ShipPositionData getShipPosition_Persistent(World worldFor, UUID shipID) {
-        return QueryableShipData.get(worldFor).getShip(shipID).get().positionData;
-
+        return ValkyrienUtils.getQueryableData(worldFor).getShip(shipID).get().positionData;
     }
 
     public void updateShipPosition(PhysicsWrapperEntity wrapper) {
-        QueryableShipData.get(wrapper.world).updateShipPosition(wrapper);
+        ValkyrienUtils.getQueryableData(wrapper.world).updateShipPosition(wrapper);
     }
 
     public void removeShipPosition(PhysicsWrapperEntity wrapper) {
-        QueryableShipData.get(wrapper.world).removeShip(wrapper);
+        ValkyrienUtils.getQueryableData(wrapper.world).removeShip(wrapper);
     }
 
     public void removeShipNameRegistry(PhysicsWrapperEntity wrapper) {
-        QueryableShipData.get(wrapper.world).removeShip(wrapper);
+        ValkyrienUtils.getQueryableData(wrapper.world).removeShip(wrapper);
     }
 }

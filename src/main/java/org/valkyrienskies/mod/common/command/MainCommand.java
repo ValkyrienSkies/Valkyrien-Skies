@@ -11,6 +11,7 @@ import org.valkyrienskies.mod.common.physmanagement.interaction.QueryableShipDat
 import org.valkyrienskies.mod.common.physmanagement.interaction.ShipData;
 import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
 import org.valkyrienskies.mod.common.ship_handling.WorldServerShipManager;
+import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.HelpCommand;
 import picocli.CommandLine.Model;
@@ -78,7 +79,7 @@ public class MainCommand implements Runnable {
 
         public void run() {
             World world = sender.getEntityWorld();
-            QueryableShipData data = QueryableShipData.get(world);
+            QueryableShipData data = ValkyrienUtils.getQueryableData(world);
 
             if (data.getShips().size() == 0) {
                 // There are no ships

@@ -17,40 +17,23 @@ import java.util.UUID;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.World;
-import net.minecraft.world.storage.MapStorage;
-import net.minecraft.world.storage.WorldSavedData;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 
 @MethodsReturnNonnullByDefault
 @SuppressWarnings("WeakerAccess")
-public class QueryableShipData extends WorldSavedData {
+public class QueryableShipData {
 
-    private static final String MAP_STORAGE_KEY = ValkyrienSkiesMod.MOD_ID + "QueryableShipData";
+    // The key used to store/read the allShips collection from nbt.
     private static final String NBT_STORAGE_KEY = ValkyrienSkiesMod.MOD_ID + "QueryableShipDataNBT";
+    // Where every ship data instance is stored, regardless if the corresponding PhysicsObject is
+    // loaded in the World or not.
     private ConcurrentIndexedCollection<ShipData> allShips = new ConcurrentIndexedCollection<>();
 
     public QueryableShipData() {
-        this(MAP_STORAGE_KEY);
-    }
-
-    public QueryableShipData(String name) {
-        super(name);
         allShips.addIndex(HashIndex.onAttribute(ShipData.NAME));
         allShips.addIndex(UniqueIndex.onAttribute(ShipData.UUID));
         allShips.addIndex(UniqueIndex.onAttribute(ShipData.CHUNKS));
-    }
-
-    public static QueryableShipData get(World world) {
-        MapStorage storage = world.getPerWorldStorage();
-        QueryableShipData data = (QueryableShipData) storage
-            .getOrLoadData(QueryableShipData.class, MAP_STORAGE_KEY);
-        if (data == null) {
-            data = new QueryableShipData();
-            world.setData(MAP_STORAGE_KEY, data);
-        }
-        return data;
     }
 
     public boolean renameShip(ShipData data, String newName) {
@@ -128,10 +111,7 @@ public class QueryableShipData extends WorldSavedData {
     public void removeShip(UUID uuid) {
         Optional<ShipData> shipOptional = getShip(uuid);
 
-        shipOptional.ifPresent(ship -> {
-            allShips.remove(ship);
-            markDirty();
-        });
+        shipOptional.ifPresent(ship -> allShips.remove(ship));
     }
 
     public void addShip(ShipData ship) {
@@ -153,23 +133,30 @@ public class QueryableShipData extends WorldSavedData {
             shipData.positionData = new ShipPositionData(wrapper);
         }
         shipData.positionData.updateData(wrapper);
-
-        markDirty();
     }
 
-    @Override
     @SuppressWarnings("unchecked")
     public void readFromNBT(NBTTagCompound nbt) {
         long start = System.currentTimeMillis();
 
         Kryo kryo = ValkyrienSkiesMod.INSTANCE.getKryo();
         Input input = new Input(nbt.getByteArray(NBT_STORAGE_KEY));
-        allShips = kryo.readObject(input, ConcurrentIndexedCollection.class);
+        try {
+            allShips = kryo.readObject(input, ConcurrentIndexedCollection.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            allShips = new ConcurrentIndexedCollection<>();
+        }
+        if (allShips == null) {
+            // This should NEVER EVER happen! So I don't feel bad crashing the game, for now.
+            throw new IllegalStateException(
+                "Kryo read allships returned null! Making a new empty allships instance");
+            // allShips = new ConcurrentIndexedCollection<>();
+        }
 
         System.out.println("Price of read: " + (System.currentTimeMillis() - start) + "ms");
     }
 
-    @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         long start = System.currentTimeMillis();
 

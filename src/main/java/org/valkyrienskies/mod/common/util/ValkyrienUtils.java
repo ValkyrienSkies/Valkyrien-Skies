@@ -1,20 +1,31 @@
 package org.valkyrienskies.mod.common.util;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+import lombok.experimental.UtilityClass;
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.valkyrienskies.fixes.IPhysicsChunk;
+import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.coordinates.CoordinateSpaceType;
 import org.valkyrienskies.mod.common.entity.EntityMountable;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.physmanagement.chunk.IVWWorldDataCapability;
+import org.valkyrienskies.mod.common.physmanagement.interaction.QueryableShipData;
 import valkyrienwarfare.api.TransformType;
 
+/**
+ * This class contains various helper functions for Valkyrien Skies.
+ */
+@UtilityClass
+@MethodsReturnNonnullByDefault
+@ParametersAreNonnullByDefault
 public class ValkyrienUtils {
 
     /**
@@ -55,12 +66,12 @@ public class ValkyrienUtils {
      * @param pos
      * @return
      */
-    public static AxisAlignedBB getAABBInGlobal(@Nonnull AxisAlignedBB axisAlignedBB,
+    public static AxisAlignedBB getAABBInGlobal(AxisAlignedBB axisAlignedBB,
         @Nullable World world, @Nullable BlockPos pos) {
         Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(world, pos);
         if (physicsObject.isPresent()) {
-            // We're in a physics object; convert the bounding box to a polygon; put its coordinates in global space, and then return the bounding box that encloses
-            // all the points.
+            // We're in a physics object; convert the bounding box to a polygon; put its coordinates
+            // in global space, and then return the bounding box that encloses all the points.
             Polygon bbAsPoly = new Polygon(axisAlignedBB, physicsObject.get()
                 .getShipTransformationManager()
                 .getCurrentTickTransform(), TransformType.SUBSPACE_TO_GLOBAL);
@@ -70,8 +81,7 @@ public class ValkyrienUtils {
         }
     }
 
-    @Nonnull
-    public static EntityShipMountData getMountedShipAndPos(@Nonnull Entity entity) {
+    public static EntityShipMountData getMountedShipAndPos(Entity entity) {
         Entity ridingEntity = entity.ridingEntity;
         if (ridingEntity instanceof EntityMountable) {
             EntityMountable mountable = (EntityMountable) ridingEntity;
@@ -83,12 +93,31 @@ public class ValkyrienUtils {
         return new EntityShipMountData();
     }
 
-    public static void fixEntityToShip(@Nonnull Entity toFix, @Nonnull Vector posInLocal,
-        @Nonnull PhysicsObject mountingShip) {
+    public static void fixEntityToShip(Entity toFix, Vector posInLocal,
+        PhysicsObject mountingShip) {
         World world = mountingShip.getWorld();
         EntityMountable entityMountable = new EntityMountable(world, posInLocal.toVec3d(),
             CoordinateSpaceType.SUBSPACE_COORDINATES, mountingShip.referenceBlockPos());
         world.spawnEntity(entityMountable);
         toFix.startRiding(entityMountable);
+    }
+
+    /**
+     * This method basically grabs the IVWWorldDataCapability from the world and then returns the
+     *
+     * @param world The world we are getting the QueryableShipData from.
+     * @return The QueryableShipData corresponding to the given world.
+     */
+    public static QueryableShipData getQueryableData(World world) {
+        IVWWorldDataCapability ivwWorldDataCapability = world
+            .getCapability(ValkyrienSkiesMod.vwWorldData, null);
+        if (ivwWorldDataCapability == null) {
+            // I hate it when other mods add their custom worlds without calling the forge world
+            // load events, so I don't feel bad crashing the game here. Although we could also get
+            // away with just adding the capability to world instead of crashing.
+            throw new IllegalStateException(
+                "World " + world + " doesn't have an IVWWorldDataCapability. This is wrong!");
+        }
+        return ivwWorldDataCapability.getQueryableShipData();
     }
 }

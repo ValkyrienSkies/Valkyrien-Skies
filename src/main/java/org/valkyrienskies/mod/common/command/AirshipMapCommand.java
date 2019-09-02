@@ -27,9 +27,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
-import org.valkyrienskies.mod.common.physmanagement.interaction.QueryableShipData;
 import org.valkyrienskies.mod.common.physmanagement.interaction.ShipData;
 import org.valkyrienskies.mod.common.physmanagement.interaction.ShipPositionData;
+import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
@@ -63,8 +63,7 @@ public class AirshipMapCommand extends CommandBase {
                 return;
             }
 
-            Optional<ShipData> shipDataOptional = QueryableShipData
-                .get(player.world)
+            Optional<ShipData> shipDataOptional = ValkyrienUtils.getQueryableData(player.world)
                 .getShipFromName(shipName.toString());
 
             if (shipDataOptional.isPresent()) {

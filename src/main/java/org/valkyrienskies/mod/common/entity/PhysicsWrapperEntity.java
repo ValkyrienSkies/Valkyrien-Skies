@@ -35,6 +35,7 @@ import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 import org.valkyrienskies.mod.common.physics.management.ShipType;
 import org.valkyrienskies.mod.common.physmanagement.interaction.QueryableShipData;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
+import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
 /**
  * This entity's only purpose is to use the functionality of sending itself to nearby players, as
@@ -78,7 +79,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
         getPhysicsObject().setShipType(shipType);
         getPhysicsObject().assembleShipAsOrderedByPlayer(creator);
 
-        QueryableShipData.get(world).addShip(this);
+        ValkyrienUtils.getQueryableData(world).addShip(this);
     }
 
     public PhysicsWrapperEntity(TileEntityPhysicsInfuser te) {
@@ -100,7 +101,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
         this.physicsObject.setPhysicsInfuserPos(te.getPos());
         getPhysicsObject().assembleShipAsOrderedByPlayer(null);
 
-        QueryableShipData.get(world).addShip(this);
+        ValkyrienUtils.getQueryableData(world).addShip(this);
     }
 
     @Override
@@ -128,7 +129,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
             return;
         } else {
             // Update the name registry
-            QueryableShipData data = QueryableShipData.get(world);
+            QueryableShipData data = ValkyrienUtils.getQueryableData(world);
 
             // bad practice: fix?
             boolean didRenameSuccessfully = data.renameShip(data.getShip(this).get(), name);

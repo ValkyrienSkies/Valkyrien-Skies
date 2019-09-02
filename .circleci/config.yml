@@ -35,10 +35,7 @@ jobs:
           path: build/libs
           destination: /
       - slack/status:
-          success_message: >
-            Branch $CIRCLE_BRANCH, build #$CIRCLE_BUILD_NUM passed.
-            Download at: $CIRCLE_BUILD_URL#artifacts/containers/0
-          webhook: $DISCORD_WEBHOOK
+          success_message: Branch $CIRCLE_BRANCH, build $CIRCLE_BUILD_NUM passed. Download at $CIRCLE_BUILD_URL#artifacts/containers/0
 
 workflows:
   version: 2

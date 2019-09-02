@@ -18,6 +18,12 @@ jobs:
             export TERM=${TERM:-dumb}
             ./gradlew setupCiWorkspace
             ./gradlew build
+            cd build/libs
+            sudo apt-get update
+            sudo apt-get install rename
+            export CIRCLE_BRANCH
+            export CIRCLE_BUILD_NUM
+            rename 's/.jar/-$ENV{CIRCLE_BRANCH}-$ENV{CIRCLE_BUILD_NUM}.jar/' *
       - save_cache:
           paths:
             - ~/.gradle

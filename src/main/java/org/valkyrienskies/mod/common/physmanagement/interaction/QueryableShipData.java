@@ -144,14 +144,14 @@ public class QueryableShipData {
         try {
             allShips = kryo.readObject(input, ConcurrentIndexedCollection.class);
         } catch (Exception e) {
+            // Error reading allShips from memory, just make a new empty one.
             e.printStackTrace();
             allShips = new ConcurrentIndexedCollection<>();
         }
         if (allShips == null) {
             // This should NEVER EVER happen! So I don't feel bad crashing the game, for now.
             throw new IllegalStateException(
-                "Kryo read allships returned null! Making a new empty allships instance");
-            // allShips = new ConcurrentIndexedCollection<>();
+                "Kryo read allships as null! Making a new empty allships instance");
         }
 
         System.out.println("Price of read: " + (System.currentTimeMillis() - start) + "ms");

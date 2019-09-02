@@ -1,17 +1,14 @@
 package org.valkyrienskies.mod.common.physmanagement.chunk;
 
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.World;
 import org.valkyrienskies.mod.common.physmanagement.interaction.QueryableShipData;
 
-public class ImplVWWorldDataCapability implements IVWWorldDataCapability {
+public class ImplValkyrienSkiesWorldData implements IValkyrienSkiesWorldData {
 
-    // The world this capability belongs to.
-    private World world;
     private final ShipChunkAllocator shipChunkAllocator;
     private final QueryableShipData queryableShipData;
 
-    public ImplVWWorldDataCapability() {
+    public ImplValkyrienSkiesWorldData() {
         shipChunkAllocator = new ShipChunkAllocator();
         queryableShipData = new QueryableShipData();
     }
@@ -28,12 +25,6 @@ public class ImplVWWorldDataCapability implements IVWWorldDataCapability {
     public void readFromNBT(NBTTagCompound compound) {
         shipChunkAllocator.readFromNBT(compound);
         queryableShipData.readFromNBT(compound);
-    }
-
-    @Override
-    public IVWWorldDataCapability setWorld(World world) {
-        this.world = world;
-        return this;
     }
 
     @Override

@@ -73,16 +73,15 @@ import org.valkyrienskies.mod.common.math.RotationMatrices;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 import org.valkyrienskies.mod.common.physics.management.PhysicsTickHandler;
-import org.valkyrienskies.mod.common.physmanagement.chunk.IVWWorldDataCapability;
+import org.valkyrienskies.mod.common.physmanagement.chunk.IValkyrienSkiesWorldData;
 import org.valkyrienskies.mod.common.physmanagement.interaction.VWWorldEventListener;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
 public class EventsCommon {
 
-    private static final Logger logger = LogManager.getLogger(EventsCommon.class);
-
     public static final Map<EntityPlayer, Double[]> lastPositions = new HashMap<EntityPlayer, Double[]>();
+    private static final Logger logger = LogManager.getLogger(EventsCommon.class);
 
     @SubscribeEvent()
     public void onPlayerSleepInBedEvent(PlayerSleepInBedEvent event) {
@@ -240,34 +239,34 @@ public class EventsCommon {
     @SubscribeEvent
     public void attachWorldCapabilities(AttachCapabilitiesEvent<World> event) {
         event.addCapability(
-            new ResourceLocation(ValkyrienSkiesMod.MOD_ID, "vw_world_data_capability"),
+            new ResourceLocation(ValkyrienSkiesMod.MOD_ID, "world_data_capability"),
             new ICapabilitySerializable<NBTBase>() {
-                IVWWorldDataCapability inst = ValkyrienSkiesMod.vwWorldData.getDefaultInstance()
-                    .setWorld(event.getObject());
+                IValkyrienSkiesWorldData inst = ValkyrienSkiesMod.VS_WORLD_DATA
+                    .getDefaultInstance();
 
                 @Override
                 public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
-                    return capability == ValkyrienSkiesMod.vwWorldData;
+                    return capability == ValkyrienSkiesMod.VS_WORLD_DATA;
                 }
 
                 @Override
                 public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
-                    return capability == ValkyrienSkiesMod.vwWorldData
-                        ? ValkyrienSkiesMod.vwWorldData.<T>cast(inst)
+                    return capability == ValkyrienSkiesMod.VS_WORLD_DATA
+                        ? ValkyrienSkiesMod.VS_WORLD_DATA.<T>cast(inst)
                         : null;
                 }
 
                 @Override
                 public NBTBase serializeNBT() {
-                    return ValkyrienSkiesMod.vwWorldData.getStorage()
-                        .writeNBT(ValkyrienSkiesMod.vwWorldData, inst, null);
+                    return ValkyrienSkiesMod.VS_WORLD_DATA.getStorage()
+                        .writeNBT(ValkyrienSkiesMod.VS_WORLD_DATA, inst, null);
                 }
 
                 @Override
                 public void deserializeNBT(NBTBase nbt) {
                     // Otherwise its old, then ignore it
-                    ValkyrienSkiesMod.vwWorldData.getStorage()
-                        .readNBT(ValkyrienSkiesMod.vwWorldData, inst, null, nbt);
+                    ValkyrienSkiesMod.VS_WORLD_DATA.getStorage()
+                        .readNBT(ValkyrienSkiesMod.VS_WORLD_DATA, inst, null, nbt);
                 }
             });
     }

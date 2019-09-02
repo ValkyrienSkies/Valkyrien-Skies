@@ -78,9 +78,9 @@ import org.valkyrienskies.mod.common.network.VWGuiButtonMessage;
 import org.valkyrienskies.mod.common.physics.management.DimensionPhysObjectManager;
 import org.valkyrienskies.mod.common.physmanagement.VW_APIPhysicsEntityManager;
 import org.valkyrienskies.mod.common.physmanagement.chunk.DimensionPhysicsChunkManager;
-import org.valkyrienskies.mod.common.physmanagement.chunk.IVWWorldDataCapability;
-import org.valkyrienskies.mod.common.physmanagement.chunk.ImplVWWorldDataCapability;
-import org.valkyrienskies.mod.common.physmanagement.chunk.StorageVWWorldData;
+import org.valkyrienskies.mod.common.physmanagement.chunk.IValkyrienSkiesWorldData;
+import org.valkyrienskies.mod.common.physmanagement.chunk.ImplValkyrienSkiesWorldData;
+import org.valkyrienskies.mod.common.physmanagement.chunk.StorageValkyrienSkiesWorldData;
 import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
 import org.valkyrienskies.mod.common.physmanagement.interaction.ShipData;
 import org.valkyrienskies.mod.common.physmanagement.interaction.ShipPositionData;
@@ -109,8 +109,8 @@ public class ValkyrienSkiesMod {
 
     // MOD CLASS MEMBERS
     static final int VW_ENTITY_LOAD_DISTANCE = 128;
-    @CapabilityInject(IVWWorldDataCapability.class)
-    public static final Capability<IVWWorldDataCapability> vwWorldData = null;
+    @CapabilityInject(IValkyrienSkiesWorldData.class)
+    public static final Capability<IValkyrienSkiesWorldData> VS_WORLD_DATA = null;
     public static final DimensionPhysicsChunkManager VW_CHUNK_MANAGER = new DimensionPhysicsChunkManager();
     public static final DimensionPhysObjectManager VW_PHYSICS_MANAGER = new DimensionPhysObjectManager();
     // This service is directly responsible for running collision tasks.
@@ -298,8 +298,9 @@ public class ValkyrienSkiesMod {
     }
 
     private void registerCapabilities() {
-        CapabilityManager.INSTANCE.register(IVWWorldDataCapability.class, new StorageVWWorldData(),
-            ImplVWWorldDataCapability::new);
+        CapabilityManager.INSTANCE
+            .register(IValkyrienSkiesWorldData.class, new StorageValkyrienSkiesWorldData(),
+                ImplValkyrienSkiesWorldData::new);
     }
 
     private void registerTileEntities() {

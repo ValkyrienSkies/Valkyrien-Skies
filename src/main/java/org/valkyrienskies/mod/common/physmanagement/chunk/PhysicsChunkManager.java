@@ -45,8 +45,8 @@ public class PhysicsChunkManager {
      * positions
      */
     public VSChunkClaim getNextAvailableChunkSet(int radius) {
-        IVWWorldDataCapability worldDataCapability =
-            worldObj.getCapability(ValkyrienSkiesMod.vwWorldData, null);
+        IValkyrienSkiesWorldData worldDataCapability =
+            worldObj.getCapability(ValkyrienSkiesMod.VS_WORLD_DATA, null);
 
         // TODO: Add the ship id to the allocation eventually.
         ShipChunkAllocator.ChunkAllocation allocatedChunks = Objects

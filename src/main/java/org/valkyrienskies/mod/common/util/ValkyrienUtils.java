@@ -16,7 +16,7 @@ import org.valkyrienskies.mod.common.entity.EntityMountable;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
-import org.valkyrienskies.mod.common.physmanagement.chunk.IVWWorldDataCapability;
+import org.valkyrienskies.mod.common.physmanagement.chunk.IValkyrienSkiesWorldData;
 import org.valkyrienskies.mod.common.physmanagement.interaction.QueryableShipData;
 import valkyrienwarfare.api.TransformType;
 
@@ -109,15 +109,15 @@ public class ValkyrienUtils {
      * @return The QueryableShipData corresponding to the given world.
      */
     public static QueryableShipData getQueryableData(World world) {
-        IVWWorldDataCapability ivwWorldDataCapability = world
-            .getCapability(ValkyrienSkiesMod.vwWorldData, null);
-        if (ivwWorldDataCapability == null) {
+        IValkyrienSkiesWorldData worldData = world
+            .getCapability(ValkyrienSkiesMod.VS_WORLD_DATA, null);
+        if (worldData == null) {
             // I hate it when other mods add their custom worlds without calling the forge world
             // load events, so I don't feel bad crashing the game here. Although we could also get
             // away with just adding the capability to world instead of crashing.
             throw new IllegalStateException(
                 "World " + world + " doesn't have an IVWWorldDataCapability. This is wrong!");
         }
-        return ivwWorldDataCapability.getQueryableShipData();
+        return worldData.getQueryableShipData();
     }
 }

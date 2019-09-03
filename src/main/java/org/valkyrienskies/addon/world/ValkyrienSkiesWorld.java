@@ -134,7 +134,7 @@ public class ValkyrienSkiesWorld {
     }
 
     private void registerCapabilities() {
-        CapabilityManager.INSTANCE.register(ICapabilityAntiGravity.class, new StorageAntiGravity(1),
+        CapabilityManager.INSTANCE.register(ICapabilityAntiGravity.class, new StorageAntiGravity(),
             ImplCapabilityAntiGravity::new);
     }
 }

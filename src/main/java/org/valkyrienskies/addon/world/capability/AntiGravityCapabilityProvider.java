@@ -24,12 +24,11 @@ import org.valkyrienskies.addon.world.ValkyrienSkiesWorld;
 
 public class AntiGravityCapabilityProvider implements ICapabilitySerializable<NBTTagDouble> {
 
-    private ICapabilityAntiGravity inst = ValkyrienSkiesWorld.ANTI_GRAVITY_CAPABILITY
-        .getDefaultInstance();
+    private ICapabilityAntiGravity inst = ValkyrienSkiesWorld.ANTI_GRAVITY_CAPABILITY.getDefaultInstance();
 
     public AntiGravityCapabilityProvider(double multiplier) {
-      super();
-      inst.multiplier = multiplier;
+        super();
+        inst.setMultiplier(multiplier);
     }
 
     @Override

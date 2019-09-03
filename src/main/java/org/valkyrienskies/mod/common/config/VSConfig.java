@@ -60,6 +60,14 @@ public class VSConfig extends VSConfigTemplate {
 
     public static double gravityVecZ = 0D;
 
+    @Name("Valkyrium Crystal Anti-Gravity force")
+    @Comment("Default is 1. Set to 0 to disable.")
+    public static double valkyriumCrystalForce = 1D;
+
+    @Name("Valkyrium Ore Anti-Gravity force")
+    @Comment("1 is the same as a crystal, default is 4. Set to 0 to disable.")
+    public static double valkyriumOreForce = 4D;
+
     @Name("Engine Power")
     public static final EnginePower ENGINE_POWER = new EnginePower();
 

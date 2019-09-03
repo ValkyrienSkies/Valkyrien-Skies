@@ -18,7 +18,13 @@ package org.valkyrienskies.addon.world.capability;
 
 public class ImplCapabilityAntiGravity implements ICapabilityAntiGravity {
     private double antiGravity;
+    private double multiplier = 1;
 
+		@Override
+		public double getMultiplier() {
+        return multiplier;
+		}
+		
     @Override
     public double getAntiGravity() {
         return antiGravity;
@@ -28,4 +34,9 @@ public class ImplCapabilityAntiGravity implements ICapabilityAntiGravity {
     public void setAntiGravity(double antiGravity) {
         this.antiGravity = antiGravity;
     }
+
+		@Override
+		public void setMultiplier(double multiplier) {
+        multiplier = 1;
+		}
 }

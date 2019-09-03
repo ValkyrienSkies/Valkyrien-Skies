@@ -16,7 +16,7 @@
 
 package org.valkyrienskies.mod.common.physics.collision.polygons;
 
-import org.valkyrienskies.mod.common.math.VWMath;
+import org.valkyrienskies.mod.common.math.VSMath;
 import org.valkyrienskies.mod.common.math.Vector;
 
 public class PhysCollisionObject {
@@ -39,8 +39,8 @@ public class PhysCollisionObject {
     }
 
     public void generateCollision() {
-        playerMinMax = VWMath.getMinMaxOfArray(movable.getProjectionOnVector(collision_normal));
-        blockMinMax = VWMath.getMinMaxOfArray(fixed.getProjectionOnVector(collision_normal));
+        playerMinMax = VSMath.getMinMaxOfArray(movable.getProjectionOnVector(collision_normal));
+        blockMinMax = VSMath.getMinMaxOfArray(fixed.getProjectionOnVector(collision_normal));
         movMaxFixMin = playerMinMax[0] - blockMinMax[1];
         movMinFixMax = playerMinMax[1] - blockMinMax[0];
         if (movMaxFixMin > 0 || movMinFixMax < 0) {

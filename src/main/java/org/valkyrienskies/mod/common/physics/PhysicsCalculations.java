@@ -40,7 +40,7 @@ import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.math.Quaternion;
 import org.valkyrienskies.mod.common.math.RotationMatrices;
-import org.valkyrienskies.mod.common.math.VWMath;
+import org.valkyrienskies.mod.common.math.VSMath;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.multithreaded.PhysicsShipTransform;
 import org.valkyrienskies.mod.common.physics.collision.WorldPhysicsCollider;
@@ -373,7 +373,7 @@ public class PhysicsCalculations {
 
                 if (blockAt instanceof IBlockForceProvider) {
                     try {
-                        VWMath.getBodyPosWithOrientation(pos, physCenterOfMass,
+                        VSMath.getBodyPosWithOrientation(pos, physCenterOfMass,
                             getParent().getShipTransformationManager()
                                 .getCurrentPhysicsTransform()
                                 .getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL), inBodyWO);
@@ -386,7 +386,7 @@ public class PhysicsCalculations {
                                     pos, state, getParent(), getPhysicsTimeDeltaPerPhysTick());
                             if (otherPosition != null) {
                                 // This changes the values of the inBodyWO vector
-                                VWMath
+                                VSMath
                                     .getBodyPosWithOrientation(otherPosition, gameTickCenterOfMass,
                                         getParent().getShipTransformationManager()
                                             .getCurrentPhysicsTransform()

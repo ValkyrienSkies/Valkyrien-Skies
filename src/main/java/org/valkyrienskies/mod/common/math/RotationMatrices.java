@@ -217,8 +217,8 @@ public class RotationMatrices {
 
         // ===== Fix change the entity rotation to be proper relative to ship space =====
         VectorImmutable entityLookImmutable = entityLook.toImmutable();
-        double pitch = VWMath.getPitchFromVectorImmutable(entityLookImmutable);
-        double yaw = VWMath.getYawFromVectorImmutable(entityLookImmutable, pitch);
+        double pitch = VSMath.getPitchFromVectorImmutable(entityLookImmutable);
+        double yaw = VSMath.getYawFromVectorImmutable(entityLookImmutable, pitch);
         entity.rotationYaw = (float) yaw;
         entity.rotationPitch = (float) pitch;
 

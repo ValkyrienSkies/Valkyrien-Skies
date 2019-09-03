@@ -27,7 +27,7 @@ import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
  *
  * @author thebest108
  */
-public class VWMath {
+public class VSMath {
 
     public static final int AABB_MERGE_PASSES = 5;
 

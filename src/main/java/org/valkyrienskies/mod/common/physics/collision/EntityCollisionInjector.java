@@ -38,7 +38,7 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
-import org.valkyrienskies.mod.common.math.VWMath;
+import org.valkyrienskies.mod.common.math.VSMath;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.collision.polygons.EntityPolygon;
 import org.valkyrienskies.mod.common.physics.collision.polygons.EntityPolygonCollider;
@@ -100,7 +100,7 @@ public class EntityCollisionInjector {
                         double stepSquared = entity.stepHeight * entity.stepHeight;
                         boolean isStep = isLiving && entity.onGround;
                         if (response.Y >= 0
-                            && VWMath.canStandOnNormal(
+                            && VSMath.canStandOnNormal(
                             fast.getCollisionAxes()[fast.getMinDistanceIndex()])) {
                             Vector slowButStopped = new Vector(0,
                                 -fast.getCollisions()[fast.getMinDistanceIndex()]
@@ -116,7 +116,7 @@ public class EntityCollisionInjector {
                                 for (int i = 3; i < 6; i++) {
                                     Vector tempResponse = fast.getCollisions()[i].getResponse();
                                     if (tempResponse.Y > 0
-                                        && VWMath.canStandOnNormal(
+                                        && VSMath.canStandOnNormal(
                                         fast.getCollisions()[i].getCollisionNormal())
                                         && tempResponse.lengthSq() < stepSquared) {
                                         if (tempResponse.lengthSq() < .1D) {
@@ -439,7 +439,7 @@ public class EntityCollisionInjector {
 
                     // TODO: Fix the performance of this!
                     if (entity.world.isRemote || entity instanceof EntityPlayer) {
-                        VWMath.mergeAABBList(collidingBBs);
+                        VSMath.mergeAABBList(collidingBBs);
                     }
 
                     for (AxisAlignedBB inLocal : collidingBBs) {

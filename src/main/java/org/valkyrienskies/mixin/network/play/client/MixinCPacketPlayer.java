@@ -15,7 +15,7 @@ import org.valkyrienskies.mod.common.coordinates.ISubspacedEntity;
 import org.valkyrienskies.mod.common.coordinates.ISubspacedEntityRecord;
 import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
-import org.valkyrienskies.mod.common.math.VWMath;
+import org.valkyrienskies.mod.common.math.VSMath;
 import org.valkyrienskies.mod.common.physmanagement.interaction.IDraggable;
 
 @Mixin(CPacketPlayer.class)
@@ -46,8 +46,8 @@ public class MixinCPacketPlayer implements ITransformablePacket {
                 VectorImmutable lookVectorGlobal = entityRecord
                     .getLookDirectionInGlobalCoordinates();
 
-                float pitch = (float) VWMath.getPitchFromVectorImmutable(lookVectorGlobal);
-                float yaw = (float) VWMath.getYawFromVectorImmutable(lookVectorGlobal, pitch);
+                float pitch = (float) VSMath.getPitchFromVectorImmutable(lookVectorGlobal);
+                float yaw = (float) VSMath.getYawFromVectorImmutable(lookVectorGlobal, pitch);
 
                 // ===== Set the proper position values for the player packet ====
                 thisPacket.moving = true;

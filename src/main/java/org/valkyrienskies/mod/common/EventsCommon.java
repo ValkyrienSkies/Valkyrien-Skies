@@ -73,8 +73,8 @@ import org.valkyrienskies.mod.common.math.RotationMatrices;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 import org.valkyrienskies.mod.common.physics.management.PhysicsTickHandler;
-import org.valkyrienskies.mod.common.physmanagement.chunk.IValkyrienSkiesWorldData;
 import org.valkyrienskies.mod.common.physmanagement.interaction.VWWorldEventListener;
+import org.valkyrienskies.mod.common.physmanagement.shipdata.IValkyrienSkiesWorldData;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 

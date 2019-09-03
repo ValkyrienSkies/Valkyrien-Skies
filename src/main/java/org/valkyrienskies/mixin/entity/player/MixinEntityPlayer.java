@@ -31,7 +31,7 @@ import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.math.RotationMatrices;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physmanagement.interaction.ShipPositionData;
+import org.valkyrienskies.mod.common.physmanagement.shipdata.ShipPositionData;
 
 /**
  * Todo: Delete preGetBedSpawnLocation and turn IShipPilot into a capability.

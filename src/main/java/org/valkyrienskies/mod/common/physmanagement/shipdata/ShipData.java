@@ -1,4 +1,4 @@
-package org.valkyrienskies.mod.common.physmanagement.interaction;
+package org.valkyrienskies.mod.common.physmanagement.shipdata;
 
 import static com.googlecode.cqengine.query.QueryFactory.attribute;
 

@@ -78,12 +78,12 @@ import org.valkyrienskies.mod.common.network.VWGuiButtonMessage;
 import org.valkyrienskies.mod.common.physics.management.DimensionPhysObjectManager;
 import org.valkyrienskies.mod.common.physmanagement.VW_APIPhysicsEntityManager;
 import org.valkyrienskies.mod.common.physmanagement.chunk.DimensionPhysicsChunkManager;
-import org.valkyrienskies.mod.common.physmanagement.chunk.IValkyrienSkiesWorldData;
-import org.valkyrienskies.mod.common.physmanagement.chunk.ImplValkyrienSkiesWorldData;
-import org.valkyrienskies.mod.common.physmanagement.chunk.StorageValkyrienSkiesWorldData;
 import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
-import org.valkyrienskies.mod.common.physmanagement.interaction.ShipData;
-import org.valkyrienskies.mod.common.physmanagement.interaction.ShipPositionData;
+import org.valkyrienskies.mod.common.physmanagement.shipdata.IValkyrienSkiesWorldData;
+import org.valkyrienskies.mod.common.physmanagement.shipdata.ImplValkyrienSkiesWorldData;
+import org.valkyrienskies.mod.common.physmanagement.shipdata.ShipData;
+import org.valkyrienskies.mod.common.physmanagement.shipdata.ShipPositionData;
+import org.valkyrienskies.mod.common.physmanagement.shipdata.StorageValkyrienSkiesWorldData;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 import org.valkyrienskies.mod.proxy.CommonProxy;
 import valkyrienwarfare.api.IPhysicsEntityManager;
@@ -298,9 +298,9 @@ public class ValkyrienSkiesMod {
     }
 
     private void registerCapabilities() {
-        CapabilityManager.INSTANCE
-            .register(IValkyrienSkiesWorldData.class, new StorageValkyrienSkiesWorldData(),
-                ImplValkyrienSkiesWorldData::new);
+        CapabilityManager.INSTANCE.register(IValkyrienSkiesWorldData.class,
+            new StorageValkyrienSkiesWorldData(),
+            ImplValkyrienSkiesWorldData::new);
     }
 
     private void registerTileEntities() {

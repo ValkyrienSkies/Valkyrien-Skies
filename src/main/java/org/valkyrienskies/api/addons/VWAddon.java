@@ -14,7 +14,7 @@
  *
  */
 
-package valkyrienwarfare.api.addons;
+package org.valkyrienskies.api.addons;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -19,7 +19,7 @@ package org.valkyrienskies.addon.control.proxy;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
 import org.valkyrienskies.addon.control.ControlEventsCommon;
-import valkyrienwarfare.api.addons.ModuleProxy;
+import org.valkyrienskies.api.addons.ModuleProxy;
 
 public class CommonProxyControl extends ModuleProxy {
 

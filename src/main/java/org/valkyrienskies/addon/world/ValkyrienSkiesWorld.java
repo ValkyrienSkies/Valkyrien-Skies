@@ -1,7 +1,7 @@
 /*
  * Adapted from the Wizardry License
  *
- * Copyright (c) 2015-2018 the Valkyrien Warfare team
+ * Copyright (c) 2015-2019 the Valkyrien Warfare team
  *
  * Permission is hereby granted to any persons and/or organizations using this software to copy, modify, merge, publish, and distribute it.
  * Said persons and/or organizations are not allowed to use the software or any derivatives of the work for commercial use or any other means to generate income unless it is to be used as a part of a larger project (IE: "modpacks"), nor are they allowed to claim this software as their own.
@@ -134,7 +134,7 @@ public class ValkyrienSkiesWorld {
     }
 
     private void registerCapabilities() {
-        CapabilityManager.INSTANCE.register(ICapabilityAntiGravity.class, new StorageAntiGravity(),
+        CapabilityManager.INSTANCE.register(ICapabilityAntiGravity.class, new StorageAntiGravity(1),
             ImplCapabilityAntiGravity::new);
     }
 }

@@ -1,7 +1,7 @@
 /*
  * Adapted from the Wizardry License
  *
- * Copyright (c) 2015-2018 the Valkyrien Warfare team
+ * Copyright (c) 2015-2019 the Valkyrien Warfare team
  *
  * Permission is hereby granted to any persons and/or organizations using this software to copy, modify, merge, publish, and distribute it.
  * Said persons and/or organizations are not allowed to use the software or any derivatives of the work for commercial use or any other means to generate income unless it is to be used as a part of a larger project (IE: "modpacks"), nor are they allowed to claim this software as their own.
@@ -38,10 +38,16 @@ public class WorldEventsCommon {
     public void onAttachCapabilityEventItem(AttachCapabilitiesEvent event) {
         if (event.getObject() instanceof ItemStack) {
             ItemStack stack = (ItemStack) event.getObject();
-            if (stack.getItem() instanceof ItemEthereumCrystal) {
+            Item item = stack.getItem();
+
+            if (item instanceof ItemEthereumCrystal) {
                 event.addCapability(
                     new ResourceLocation(ValkyrienSkiesWorld.MOD_ID, "AntiGravityValue"),
-                    new AntiGravityCapabilityProvider());
+                    new AntiGravityCapabilityProvider(1));
+            } else if (item instanceof BlockEthereumOre) {
+                event.addCapability(
+                    new ResourceLocation(ValyrienSkiesWorld.MOD_ID, "AntiGravityValue"),
+                    new AntiGravityCapabilityProvider(4));
             }
         }
     }
@@ -53,9 +59,10 @@ public class WorldEventsCommon {
                 if (entity instanceof EntityItem) {
                     EntityItem itemEntity = (EntityItem) entity;
                     ItemStack itemStack = itemEntity.getItem();
-                    if (itemStack
-                        .hasCapability(ValkyrienSkiesWorld.ANTI_GRAVITY_CAPABILITY, null)) {
-                        itemEntity.addVelocity(0, .1 - (itemEntity.motionY * .12D), 0);
+                    Capability capability = itemStack.getCapability(ValkyrienSkiesWorld.ANTI_GRAVITY_CAPABILITY, null);
+                    if (capability != null) {
+                        double multiplier = 0.12 / capability.multiplier; // trust me it multiplies Y increase
+                        itemEntity.addVelocity(0, .1 - (itemEntity.motionY * multiplier), 0);
                     }
                 }
             }

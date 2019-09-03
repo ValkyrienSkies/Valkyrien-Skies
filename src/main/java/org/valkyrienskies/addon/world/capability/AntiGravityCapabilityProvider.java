@@ -27,6 +27,11 @@ public class AntiGravityCapabilityProvider implements ICapabilitySerializable<NB
     private ICapabilityAntiGravity inst = ValkyrienSkiesWorld.ANTI_GRAVITY_CAPABILITY
         .getDefaultInstance();
 
+    public AntiGravityCapabilityProvider(double multiplier) {
+      super();
+      inst.multiplier = multiplier;
+    }
+
     @Override
     public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
         return capability == ValkyrienSkiesWorld.ANTI_GRAVITY_CAPABILITY;

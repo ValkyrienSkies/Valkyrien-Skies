@@ -33,7 +33,7 @@ import org.valkyrienskies.addon.control.block.BlockShipTelegraph;
 import org.valkyrienskies.addon.control.nodenetwork.VWNode_TileEntity;
 import org.valkyrienskies.addon.control.piloting.ControllerInputType;
 import org.valkyrienskies.addon.control.piloting.PilotControlsMessage;
-import org.valkyrienskies.fixes.VWNetwork;
+import org.valkyrienskies.fixes.VSNetwork;
 
 public class TileEntityShipTelegraph extends TileEntityPilotableImpl implements ITickable {
 
@@ -129,7 +129,7 @@ public class TileEntityShipTelegraph extends TileEntityPilotableImpl implements 
                     }
                 }
             }
-            VWNetwork.sendTileToAllNearby(this);
+            VSNetwork.sendTileToAllNearby(this);
         }
     }
 

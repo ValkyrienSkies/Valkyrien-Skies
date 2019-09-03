@@ -8,7 +8,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.valkyrienskies.addon.control.MultiblockRegistry;
 import org.valkyrienskies.addon.control.nodenetwork.BasicNodeTileEntity;
-import org.valkyrienskies.fixes.VWNetwork;
+import org.valkyrienskies.fixes.VSNetwork;
 
 /**
  * Just a simple implementation of the interfaces.
@@ -82,7 +82,7 @@ public abstract class TileEntityMultiblockPart<E extends IMulitblockSchematic, F
         this.isAssembled = false;
         this.isMaster = false;
         this.multiblockSchematic = null;
-        VWNetwork.sendTileToAllNearby(this);
+        VSNetwork.sendTileToAllNearby(this);
         this.markDirty();
     }
 
@@ -92,7 +92,7 @@ public abstract class TileEntityMultiblockPart<E extends IMulitblockSchematic, F
         this.isMaster = relativePos.equals(BlockPos.ORIGIN);
         this.offsetPos = relativePos;
         this.multiblockSchematic = schematic;
-        VWNetwork.sendTileToAllNearby(this);
+        VSNetwork.sendTileToAllNearby(this);
         this.markDirty();
     }
 

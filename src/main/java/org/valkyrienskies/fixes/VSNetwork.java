@@ -22,12 +22,10 @@ import org.valkyrienskies.mod.common.util.ValkyrienUtils;
  * A few simple static implementations of functions that send packets, correctly handling for
  * ships.
  */
-public class VWNetwork {
+public class VSNetwork {
 
     /**
      * Don't use this! Use world.notifyBlockUpdate() instead!
-     *
-     * @param tileEntity
      */
     @Deprecated
     public static void sendTileToAllNearby(TileEntity tileEntity) {

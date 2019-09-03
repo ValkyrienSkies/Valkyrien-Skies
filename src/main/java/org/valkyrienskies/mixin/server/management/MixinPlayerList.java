@@ -22,7 +22,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.server.management.PlayerList;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
-import org.valkyrienskies.fixes.VWNetwork;
+import org.valkyrienskies.fixes.VSNetwork;
 
 /**
  * As much as I don't like it, this mixin is absolutely necessary.
@@ -38,7 +38,7 @@ public abstract class MixinPlayerList {
     @Overwrite
     public void sendToAllNearExcept(@Nullable EntityPlayer except, double x, double y, double z,
         double radius, int dimension, Packet<?> packetIn) {
-        VWNetwork.sendToAllNearExcept(except, x, y, z, radius, dimension, packetIn);
+        VSNetwork.sendToAllNearExcept(except, x, y, z, radius, dimension, packetIn);
     }
 
 }

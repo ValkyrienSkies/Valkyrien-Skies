@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.UUID;
 import net.minecraft.world.World;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
-import org.valkyrienskies.mod.common.physmanagement.interaction.ShipPositionData;
+import org.valkyrienskies.mod.common.physmanagement.shipdata.ShipPositionData;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
 public class DimensionPhysicsChunkManager {

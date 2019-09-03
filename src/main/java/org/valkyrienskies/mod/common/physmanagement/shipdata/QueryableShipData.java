@@ -1,4 +1,4 @@
-package org.valkyrienskies.mod.common.physmanagement.interaction;
+package org.valkyrienskies.mod.common.physmanagement.shipdata;
 
 import static com.googlecode.cqengine.query.QueryFactory.equal;
 
@@ -36,6 +36,11 @@ public class QueryableShipData {
         allShips.addIndex(UniqueIndex.onAttribute(ShipData.CHUNKS));
     }
 
+    /**
+     * @param data The ship to be renamed
+     * @param newName The new name of the ship
+     * @return True of the rename was successful, false if it wasn't.
+     */
     public boolean renameShip(ShipData data, String newName) {
         Query<ShipData> query = equal(ShipData.NAME, newName);
         if (allShips.retrieve(query).isEmpty()) {
@@ -51,6 +56,9 @@ public class QueryableShipData {
         return false;
     }
 
+    /**
+     * Retrieves a list of all ships.
+     */
     public List<ShipData> getShips() {
         return new ArrayList<>(allShips);
     }

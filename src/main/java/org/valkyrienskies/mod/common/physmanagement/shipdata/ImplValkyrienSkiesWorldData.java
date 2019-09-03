@@ -1,7 +1,7 @@
-package org.valkyrienskies.mod.common.physmanagement.chunk;
+package org.valkyrienskies.mod.common.physmanagement.shipdata;
 
 import net.minecraft.nbt.NBTTagCompound;
-import org.valkyrienskies.mod.common.physmanagement.interaction.QueryableShipData;
+import org.valkyrienskies.mod.common.physmanagement.chunk.ShipChunkAllocator;
 
 public class ImplValkyrienSkiesWorldData implements IValkyrienSkiesWorldData {
 

@@ -1,4 +1,4 @@
-package org.valkyrienskies.mod.common.physmanagement.chunk;
+package org.valkyrienskies.mod.common.physmanagement.shipdata;
 
 import javax.annotation.Nullable;
 import net.minecraft.nbt.NBTBase;

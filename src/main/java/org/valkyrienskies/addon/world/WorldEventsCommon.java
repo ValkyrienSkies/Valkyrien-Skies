@@ -19,6 +19,7 @@ package org.valkyrienskies.addon.world;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
@@ -28,6 +29,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
+import org.valkyrienskies.addon.world.capability.ICapabilityAntiGravity;
 import org.valkyrienskies.addon.world.block.BlockEthereumOre;
 import org.valkyrienskies.addon.world.capability.AntiGravityCapabilityProvider;
 import org.valkyrienskies.mod.common.config.VSConfig;
@@ -46,7 +48,7 @@ public class WorldEventsCommon {
                     new AntiGravityCapabilityProvider(1));
             } else if (item instanceof BlockEthereumOre) {
                 event.addCapability(
-                    new ResourceLocation(ValyrienSkiesWorld.MOD_ID, "AntiGravityValue"),
+                    new ResourceLocation(ValkyrienSkiesWorld.MOD_ID, "AntiGravityValue"),
                     new AntiGravityCapabilityProvider(4));
             }
         }
@@ -59,7 +61,7 @@ public class WorldEventsCommon {
                 if (entity instanceof EntityItem) {
                     EntityItem itemEntity = (EntityItem) entity;
                     ItemStack itemStack = itemEntity.getItem();
-                    Capability capability = itemStack.getCapability(ValkyrienSkiesWorld.ANTI_GRAVITY_CAPABILITY, null);
+                    ICapabilityAntiGravity capability = itemStack.getCapability(ValkyrienSkiesWorld.ANTI_GRAVITY_CAPABILITY, null);
                     if (capability != null) {
                         double multiplier = 0.12 / capability.multiplier; // trust me it multiplies Y increase
                         itemEntity.addVelocity(0, .1 - (itemEntity.motionY * multiplier), 0);

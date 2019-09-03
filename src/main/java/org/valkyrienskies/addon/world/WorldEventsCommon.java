@@ -45,11 +45,11 @@ public class WorldEventsCommon {
             if (item instanceof ItemEthereumCrystal) {
                 event.addCapability(
                     new ResourceLocation(ValkyrienSkiesWorld.MOD_ID, "AntiGravityValue"),
-                    new AntiGravityCapabilityProvider(1));
-            } else if (item instanceof BlockEthereumOre) {
+                    new AntiGravityCapabilityProvider(VSConfig.valkyriumCrystalForce));
+            } else if (item.getRegistryName() == new ResourceLocation(ValkyrienSkiesWorld.MOD_ID, "valkyrium_ore")) {
                 event.addCapability(
                     new ResourceLocation(ValkyrienSkiesWorld.MOD_ID, "AntiGravityValue"),
-                    new AntiGravityCapabilityProvider(4));
+                    new AntiGravityCapabilityProvider(VSConfig.valkyriumOreForce));
             }
         }
     }
@@ -63,8 +63,10 @@ public class WorldEventsCommon {
                     ItemStack itemStack = itemEntity.getItem();
                     ICapabilityAntiGravity capability = itemStack.getCapability(ValkyrienSkiesWorld.ANTI_GRAVITY_CAPABILITY, null);
                     if (capability != null) {
-                        double multiplier = 0.12 / capability.multiplier; // trust me it multiplies Y increase
-                        itemEntity.addVelocity(0, .1 - (itemEntity.motionY * multiplier), 0);
+                        if (capability.getMultiplier() != 0) {
+                            double multiplier = 0.12 / capability.getMultiplier(); // trust me it multiplies Y increase
+                            itemEntity.addVelocity(0, .1 - (itemEntity.motionY * multiplier), 0);
+                        }
                     }
                 }
             }

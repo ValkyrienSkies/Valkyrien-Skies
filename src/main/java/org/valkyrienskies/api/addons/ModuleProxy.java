@@ -14,7 +14,7 @@
  *
  */
 
-package valkyrienwarfare.api.addons;
+package org.valkyrienskies.api.addons;
 
 import net.minecraftforge.fml.common.event.FMLStateEvent;
 

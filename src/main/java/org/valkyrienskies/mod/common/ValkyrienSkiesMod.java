@@ -108,15 +108,26 @@ public class ValkyrienSkiesMod {
     public static ValkyrienSkiesMod INSTANCE;
 
     // MOD CLASS MEMBERS
-    static final int VW_ENTITY_LOAD_DISTANCE = 128;
+    /**
+     * This capability provides data attached to the world.
+     */
     @CapabilityInject(IValkyrienSkiesWorldData.class)
     public static final Capability<IValkyrienSkiesWorldData> VS_WORLD_DATA = null;
-    public static final DimensionPhysicsChunkManager VW_CHUNK_MANAGER = new DimensionPhysicsChunkManager();
-    public static final DimensionPhysObjectManager VW_PHYSICS_MANAGER = new DimensionPhysObjectManager();
-    // This service is directly responsible for running collision tasks.
-    public static ExecutorService PHYSICS_THREADS_EXECUTOR = null;
-    @SidedProxy(clientSide = "org.valkyrienskies.mod.proxy.ClientProxy", serverSide = "org.valkyrienskies.mod.proxy.ServerProxy")
+
+    @SidedProxy(
+        clientSide = "org.valkyrienskies.mod.proxy.ClientProxy",
+        serverSide = "org.valkyrienskies.mod.proxy.ServerProxy")
     public static CommonProxy proxy;
+
+    static final int VW_ENTITY_LOAD_DISTANCE = 128;
+    public static final DimensionPhysicsChunkManager VW_CHUNK_MANAGER =
+        new DimensionPhysicsChunkManager();
+    public static final DimensionPhysObjectManager VW_PHYSICS_MANAGER =
+        new DimensionPhysObjectManager();
+    /**
+     * This service is directly responsible for running collision tasks.
+     */
+    public static ExecutorService PHYSICS_THREADS_EXECUTOR = null;
     public Block physicsInfuser;
     public Block physicsInfuserCreative;
     public Block physicsInfuserDummy;
@@ -131,9 +142,9 @@ public class ValkyrienSkiesMod {
     @Mod.EventHandler
     public void onFingerprintViolation(FMLFingerprintViolationEvent event) {
         FMLLog.bigWarning(
-            "Valkyrien Skies JAR fingerprint corrupted, which means this copy of the mod may have" +
-                " come from unofficial sources. " +
-                "Download the mod from CurseForge: https://minecraft.curseforge.com/projects/valkyrien-warfare");
+            "Valkyrien Skies JAR fingerprint corrupted, which means this copy of the mod "
+                + "may have come from unofficial sources. Please check out our official website: "
+                + "https://valkyrienskies.org");
     }
 
     @EventHandler

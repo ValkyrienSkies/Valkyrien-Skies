@@ -53,6 +53,7 @@ import org.valkyrienskies.addon.control.tileentity.TileEntityShipTelegraph;
 import org.valkyrienskies.mod.client.render.GibsAnimationRegistry;
 import org.valkyrienskies.mod.client.render.GibsModelRegistry;
 
+@SuppressWarnings("unused")
 public class ClientProxyControl extends CommonProxyControl {
 
     private static void registerBlockItem(Block toRegister) {

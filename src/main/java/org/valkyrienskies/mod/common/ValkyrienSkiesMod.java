@@ -49,7 +49,6 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLConstructionEvent;
 import net.minecraftforge.fml.common.event.FMLFingerprintViolationEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -146,14 +145,10 @@ public class ValkyrienSkiesMod {
                 + "may have come from unofficial sources. Please check out our official website: "
                 + "https://valkyrienskies.org");
     }
-
-    @EventHandler
-    public void fmlConstruct(FMLConstructionEvent event) {
-        runConfiguration();
-    }
-
+    
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
+        runConfiguration();
         serializationInitAsync();
         registerNetworks(event);
         ValkyrienSkiesMod.PHYSICS_THREADS_EXECUTOR = Executors

@@ -19,6 +19,7 @@ package org.valkyrienskies.mod.common.physmanagement.chunk;
 import java.util.Objects;
 import net.minecraft.world.World;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
+import org.valkyrienskies.mod.common.physmanagement.shipdata.IValkyrienSkiesWorldData;
 
 /**
  * This class is responsible for finding/allocating the Chunks for PhysicsObjects; also ensures the

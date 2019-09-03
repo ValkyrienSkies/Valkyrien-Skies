@@ -1,4 +1,4 @@
-package org.valkyrienskies.mod.common.physmanagement.interaction;
+package org.valkyrienskies.mod.common.physmanagement.shipdata;
 
 import java.nio.ByteBuffer;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;

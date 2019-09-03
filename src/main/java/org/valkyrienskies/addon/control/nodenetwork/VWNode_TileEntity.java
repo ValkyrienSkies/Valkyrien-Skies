@@ -28,7 +28,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.valkyrienskies.fixes.VWNetwork;
+import org.valkyrienskies.fixes.VSNetwork;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 
 public class VWNode_TileEntity implements IVWNode {
@@ -199,7 +199,7 @@ public class VWNode_TileEntity implements IVWNode {
         if (!this.getNodeWorld().isRemote) {
             // System.out.println("help");
             if (!parentTile.isInvalid()) {
-                VWNetwork.sendTileToAllNearby(this.parentTile);
+                VSNetwork.sendTileToAllNearby(this.parentTile);
             }
         }
     }

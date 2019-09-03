@@ -9,7 +9,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.Tuple;
-import org.valkyrienskies.fixes.VWNetwork;
+import org.valkyrienskies.fixes.VSNetwork;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
@@ -99,7 +99,7 @@ public class TileEntityBasicRotationTile extends TileEntity implements IRotation
                 this.firstUpdate = false;
             }
             rotation = this.rotationNode.getAngularRotationUnsynchronized();
-            VWNetwork.sendTileToAllNearby(this);
+            VSNetwork.sendTileToAllNearby(this);
             this.markDirty();
         }
     }

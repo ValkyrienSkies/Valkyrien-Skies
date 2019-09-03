@@ -15,32 +15,33 @@ import java.util.List;
  * <p>
  * Example:
  * <pre>{@code
- *    @Config(
- *        modid = ValkyrienSkiesMod.MOD_ID,
- * 		name = ValkyrienSkiesMod.MOD_NAME
- * 	)
- * 	public class VSConfig extends VSConfigTemplate {
- *        @Name("Enable gravity")
- * 		public static boolean doGravity = true;
+ * @Config(
+ *     modid = ValkyrienSkiesMod.MOD_ID,
+ *     name = ValkyrienSkiesMod.MOD_NAME
+ * )
+ * public class VSConfig extends VSConfigTemplate {
  *
- * 		public static void sync() {
- * 			ConfigManager.sync(ValkyrienSkiesMod.MOD_ID, Type.INSTANCE);
+ *     @Name("Enable gravity")
+ *     public static boolean doGravity = true;
  *
- * 			VSConfig.onSync();
- *        }
+ *     public static void sync() {
+ *         ConfigManager.sync(ValkyrienSkiesMod.MOD_ID, Type.INSTANCE);
  *
- *        @Mod.EventBusSubscriber(modid = ValkyrienSkiesMod.MOD_ID)
- * 		private static class EventHandler {
+ *         VSConfig.onSync();
+ *     }
  *
- *            @SubscribeEvent
- *            public static void onConfigChanged(final ConfigChangedEvent.OnConfigChangedEvent event) {
- * 				if (event.getModID().equals(ValkyrienSkiesMod.MOD_ID)) {
- * 					sync();
- *                }
- *            }
- *        }
- *    }
- * }</pre>
+ *     @Mod.EventBusSubscriber(modid = ValkyrienSkiesMod.MOD_ID)
+ *     private static class EventHandler {
+ *
+ *         @SubscribeEvent
+ *         public static void onConfigChanged(final ConfigChangedEvent.OnConfigChangedEvent event) {
+ *             if (event.getModID().equals(ValkyrienSkiesMod.MOD_ID)) {
+ *                 sync();
+ *             }
+ *         }
+ *     }
+ * }
+ * </pre>
  */
 public class VSConfigTemplate {
 

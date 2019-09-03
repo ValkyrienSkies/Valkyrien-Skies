@@ -27,8 +27,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
-import org.valkyrienskies.mod.common.physmanagement.interaction.ShipData;
-import org.valkyrienskies.mod.common.physmanagement.interaction.ShipPositionData;
+import org.valkyrienskies.mod.common.physmanagement.shipdata.ShipData;
+import org.valkyrienskies.mod.common.physmanagement.shipdata.ShipPositionData;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
 @ParametersAreNonnullByDefault

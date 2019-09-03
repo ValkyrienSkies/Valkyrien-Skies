@@ -37,7 +37,7 @@ import org.valkyrienskies.addon.control.block.multiblocks.TileEntityRudderAxlePa
 import org.valkyrienskies.addon.control.nodenetwork.VWNode_TileEntity;
 import org.valkyrienskies.addon.control.piloting.ControllerInputType;
 import org.valkyrienskies.addon.control.piloting.PilotControlsMessage;
-import org.valkyrienskies.fixes.VWNetwork;
+import org.valkyrienskies.fixes.VSNetwork;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
@@ -91,7 +91,7 @@ public class TileEntityShipHelm extends TileEntityPilotableImpl implements ITick
 
             }
 
-            VWNetwork.sendTileToAllNearby(this);
+            VSNetwork.sendTileToAllNearby(this);
         }
     }
 

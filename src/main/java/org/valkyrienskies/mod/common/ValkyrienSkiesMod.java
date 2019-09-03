@@ -27,6 +27,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import lombok.extern.log4j.Log4j2;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
@@ -53,9 +54,7 @@ import net.minecraftforge.fml.common.event.FMLFingerprintViolationEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
@@ -94,6 +93,7 @@ import valkyrienwarfare.api.IPhysicsEntityManager;
     updateJSON = "https://raw.githubusercontent.com/ValkyrienWarfare/Valkyrien-Warfare-Revamped/master/update.json",
     certificateFingerprint = ValkyrienSkiesMod.MOD_FINGERPRINT
 )
+@Log4j2
 public class ValkyrienSkiesMod {
 
     // MOD INFO CONSTANTS
@@ -145,7 +145,7 @@ public class ValkyrienSkiesMod {
                 + "may have come from unofficial sources. Please check out our official website: "
                 + "https://valkyrienskies.org");
     }
-    
+
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         runConfiguration();
@@ -177,8 +177,8 @@ public class ValkyrienSkiesMod {
     @EventHandler
     public void init(FMLInitializationEvent event) {
         // Print out a message of core count, we want this to know what AnvilNode is giving us.
-        System.out.println("Valkyrien Skies Initialization:");
-        System.out.println("We are running on " + Runtime.getRuntime().availableProcessors() +
+        log.info("Valkyrien Skies Initialization:");
+        log.info("We are running on " + Runtime.getRuntime().availableProcessors() +
             " threads; 4 or more is recommended!");
         proxy.init(event);
     }
@@ -231,6 +231,10 @@ public class ValkyrienSkiesMod {
         registerTileEntities();
     }
 
+    /**
+     * Create our new instance of Kryo. This is done asynchronously with CompletableFuture so
+     * as not to slow down initialization. We save a lot of time this way!
+     */
     private void serializationInitAsync() {
         kryoInstance = CompletableFuture.supplyAsync(() -> {
             long start = System.currentTimeMillis();
@@ -246,13 +250,15 @@ public class ValkyrienSkiesMod {
 
             kryo.setRegistrationRequired(false);
 
-            System.out
-                .println("Kryo initialization: " + (System.currentTimeMillis() - start) + "ms");
+            log.debug("Kryo initialization: " + (System.currentTimeMillis() - start) + "ms");
 
             return kryo;
         });
     }
 
+    /**
+     * @return The Kryo instance for the mod. This operation is blocking!
+     */
     public Kryo getKryo() {
         try {
             return kryoInstance.get();
@@ -291,16 +297,11 @@ public class ValkyrienSkiesMod {
                 .setRegistryName(ValkyrienSkiesMod.MOD_ID, registryName));
     }
 
+    /**
+     * Initializes VSConfig
+     */
     private void runConfiguration() {
         VSConfig.sync();
-    }
-
-    @EventHandler
-    public void onServerStarted(FMLServerStartedEvent event) {
-    }
-
-    @EventHandler
-    public void onServerStopping(FMLServerStoppingEvent event) {
     }
 
     private void registerCapabilities() {

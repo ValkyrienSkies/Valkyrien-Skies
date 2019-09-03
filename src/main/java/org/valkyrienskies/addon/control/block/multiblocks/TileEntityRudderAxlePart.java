@@ -8,7 +8,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.valkyrienskies.fixes.VWNetwork;
+import org.valkyrienskies.fixes.VSNetwork;
 import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
 import org.valkyrienskies.mod.common.math.RotationMatrices;
 import org.valkyrienskies.mod.common.math.Vector;
@@ -180,7 +180,7 @@ public class TileEntityRudderAxlePart extends
 
     public void setRudderAngle(double forcedValue) {
         this.rudderAngle = forcedValue;
-        VWNetwork.sendTileToAllNearby(this);
+        VSNetwork.sendTileToAllNearby(this);
     }
 
     public double getRenderRudderAngle(double partialTicks) {

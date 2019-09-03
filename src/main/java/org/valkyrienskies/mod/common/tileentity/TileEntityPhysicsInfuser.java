@@ -24,7 +24,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
-import org.valkyrienskies.fixes.VWNetwork;
+import org.valkyrienskies.fixes.VSNetwork;
 import org.valkyrienskies.mod.client.gui.IVWTileGui;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.block.BlockPhysicsInfuser;
@@ -118,7 +118,7 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
 
             // Send any updates to clients
             if (sendUpdateToClients) {
-                VWNetwork.sendTileToAllNearby(this);
+                VSNetwork.sendTileToAllNearby(this);
                 sendUpdateToClients = false;
             }
         } else {

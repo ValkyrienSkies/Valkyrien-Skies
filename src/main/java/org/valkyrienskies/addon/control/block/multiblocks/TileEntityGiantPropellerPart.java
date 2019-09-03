@@ -10,7 +10,7 @@ import org.valkyrienskies.addon.control.block.torque.IRotationNode;
 import org.valkyrienskies.addon.control.block.torque.IRotationNodeProvider;
 import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorld;
 import org.valkyrienskies.addon.control.block.torque.ImplRotationNode;
-import org.valkyrienskies.fixes.VWNetwork;
+import org.valkyrienskies.fixes.VSNetwork;
 import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
@@ -123,7 +123,7 @@ public class TileEntityGiantPropellerPart extends
                     this.propellerAngle = Math
                         .toDegrees(rotationNode.getAngularRotationUnsynchronized());
                 }
-                VWNetwork.sendTileToAllNearby(this);
+                VSNetwork.sendTileToAllNearby(this);
             }
         } else {
             this.prevPropellerAngle = this.propellerAngle;

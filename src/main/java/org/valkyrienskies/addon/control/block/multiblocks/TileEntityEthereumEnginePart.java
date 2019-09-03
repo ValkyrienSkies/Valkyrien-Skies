@@ -12,7 +12,7 @@ import org.valkyrienskies.addon.control.block.torque.IRotationNodeProvider;
 import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorld;
 import org.valkyrienskies.addon.control.block.torque.ImplRotationNode;
 import org.valkyrienskies.addon.control.block.torque.custom_torque_functions.EtherEngineTorqueFunction;
-import org.valkyrienskies.fixes.VWNetwork;
+import org.valkyrienskies.fixes.VSNetwork;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
@@ -72,7 +72,7 @@ public class TileEntityEthereumEnginePart extends
                         currentKeyframe = currentKeyframe % 99;
                     }
                 }
-                VWNetwork.sendTileToAllNearby(this);
+                VSNetwork.sendTileToAllNearby(this);
             }
             this.markDirty();
         } else {

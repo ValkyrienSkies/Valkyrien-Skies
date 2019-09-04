@@ -41,8 +41,9 @@ public class WorldEventsCommon {
         if (event.getObject() instanceof ItemStack) {
             ItemStack stack = (ItemStack) event.getObject();
             Item item = stack.getItem();
+            ItemBlock blockItem = null;
             try {
-              ItemBlock blockItem = (ItemBlock) stack.getItem();
+              blockItem = (ItemBlock) stack.getItem();
             } catch (ClassCastException e) { // It's not a block
             }
 

@@ -51,7 +51,7 @@ public class WorldEventsCommon {
                 event.addCapability(
                     new ResourceLocation(ValkyrienSkiesWorld.MOD_ID, "AntiGravityValue"),
                     new AntiGravityCapabilityProvider(VSConfig.valkyriumCrystalForce));
-            } else if (blockItem.getBlock() instanceof BlockEthereumOre) {
+            } else if (blockItem != null && blockItem.getBlock() instanceof BlockEthereumOre) {
                 event.addCapability(
                     new ResourceLocation(ValkyrienSkiesWorld.MOD_ID, "AntiGravityValue"),
                     new AntiGravityCapabilityProvider(VSConfig.valkyriumOreForce));

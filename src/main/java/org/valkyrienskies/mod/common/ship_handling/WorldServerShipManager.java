@@ -14,19 +14,13 @@ public class WorldServerShipManager implements IWorldShipManager {
     private transient Map<EntityPlayer, List<ShipHolder>> playerToWatchingShips;
     private transient VWThread physicsThread;
 
-    public WorldServerShipManager() {
-        this.world = null;
-        this.playerToWatchingShips = null;
-        this.shipAccess = new SimpleQuickShipAccess();
-    }
-
-    public void initializeTransients(World world) {
+    public WorldServerShipManager(World world) {
         this.world = world;
         this.playerToWatchingShips = new HashMap<>();
+        this.shipAccess = new SimpleQuickShipAccess();
         this.physicsThread = new VWThread(this.world);
         this.physicsThread.start();
     }
-
     @Override
     public void onWorldUnload() {
         this.world = null;

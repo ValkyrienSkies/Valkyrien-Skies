@@ -36,7 +36,7 @@ import org.valkyrienskies.mod.common.coordinates.ISubspacedEntity;
 import org.valkyrienskies.mod.common.coordinates.ISubspacedEntityRecord;
 import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
-import org.valkyrienskies.mod.common.math.VWMath;
+import org.valkyrienskies.mod.common.math.VSMath;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.collision.polygons.EntityPolygon;
 import valkyrienwarfare.api.TransformType;
@@ -70,8 +70,8 @@ public abstract class MixinEntityLivingBase extends Entity implements ISubspaced
         thisAsEntity.lastTickPosY = coordinatesLastTick.getY();
         thisAsEntity.lastTickPosZ = coordinatesLastTick.getZ();
 
-        double pitch = VWMath.getPitchFromVectorImmutable(lookVector);
-        double yaw = VWMath.getYawFromVectorImmutable(lookVector, pitch);
+        double pitch = VSMath.getPitchFromVectorImmutable(lookVector);
+        double yaw = VSMath.getYawFromVectorImmutable(lookVector, pitch);
 
         this.rotationPitch = (float) pitch;
         this.rotationYaw = (float) yaw;

@@ -59,10 +59,9 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
+import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.valkyrienskies.fixes.IPhysicsChunk;
@@ -75,6 +74,9 @@ import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 import org.valkyrienskies.mod.common.physics.management.PhysicsTickHandler;
 import org.valkyrienskies.mod.common.physmanagement.interaction.VWWorldEventListener;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.IValkyrienSkiesWorldData;
+import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
+import org.valkyrienskies.mod.common.ship_handling.WorldClientShipManager;
+import org.valkyrienskies.mod.common.ship_handling.WorldServerShipManager;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
@@ -149,19 +151,23 @@ public class EventsCommon {
         }
     }
 
-
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onTickEvent(TickEvent event) {
-        if (event instanceof WorldTickEvent) {
-            World worldFor = ((WorldTickEvent) event).world;
-            // Only run the WorldTickEvent on Server side
-            if (!worldFor.isRemote) {
-                if (event.phase == Phase.START) {
-                    PhysicsTickHandler.onWorldTickStart(worldFor);
-                } else if (event.phase == Phase.END) {
-                    PhysicsTickHandler.onWorldTickEnd(worldFor);
-                }
-            }
+    public void onWorldTickEvent(WorldTickEvent event) {
+        // This only gets called server side, because forge wants it that way. But in case they
+        // change their mind, this exception will crash the game to notify us of the change.
+        if (event.side == Side.CLIENT) {
+            throw new IllegalStateException("This event should never get called client side");
+        }
+        World world = event.world;
+        switch (event.phase) {
+            case START:
+                PhysicsTickHandler.onWorldTickStart(world);
+                break;
+            case END:
+                IHasShipManager shipManager = (IHasShipManager) world;
+                shipManager.getManager().tick();
+                PhysicsTickHandler.onWorldTickEnd(world);
+                break;
         }
     }
 
@@ -197,9 +203,14 @@ public class EventsCommon {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onWorldLoad(WorldEvent.Load event) {
-        event.getWorld().addEventListener(new VWWorldEventListener(event.getWorld()));
+        World world = event.getWorld();
+        event.getWorld().addEventListener(new VWWorldEventListener(world));
+        IHasShipManager shipManager = (IHasShipManager) world;
         if (!event.getWorld().isRemote) {
-            ValkyrienSkiesMod.VW_CHUNK_MANAGER.initWorld(event.getWorld());
+            ValkyrienSkiesMod.VW_CHUNK_MANAGER.initWorld(world);
+            shipManager.setManager(WorldServerShipManager::new);
+        } else {
+            shipManager.setManager(WorldClientShipManager::new);
         }
     }
 
@@ -212,6 +223,8 @@ public class EventsCommon {
             lastPositions.clear();
         }
         ValkyrienSkiesMod.VW_PHYSICS_MANAGER.removeWorld(event.getWorld());
+        IHasShipManager shipManager = (IHasShipManager) event.getWorld();
+        shipManager.getManager().onWorldUnload();
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)

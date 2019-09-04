@@ -43,7 +43,7 @@ public class WorldEventsCommon {
             Item item = stack.getItem();
             try {
               ItemBlock blockItem = (ItemBlock) stack.getItem();
-            catch (ClassCastException e) { // It's not a block
+            } catch (ClassCastException e) { // It's not a block
             }
 
             if (item instanceof ItemEthereumCrystal) {

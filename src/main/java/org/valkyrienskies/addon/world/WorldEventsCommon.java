@@ -41,20 +41,19 @@ public class WorldEventsCommon {
         if (event.getObject() instanceof ItemStack) {
             ItemStack stack = (ItemStack) event.getObject();
             Item item = stack.getItem();
-            ItemBlock blockItem = null;
-            try {
-              blockItem = (ItemBlock) stack.getItem();
-            } catch (ClassCastException e) { // It's not a block
-            }
 
             if (item instanceof ItemEthereumCrystal) {
                 event.addCapability(
                     new ResourceLocation(ValkyrienSkiesWorld.MOD_ID, "AntiGravityValue"),
                     new AntiGravityCapabilityProvider(VSConfig.valkyriumCrystalForce));
-            } else if (blockItem != null && blockItem.getBlock() instanceof BlockEthereumOre) {
-                event.addCapability(
-                    new ResourceLocation(ValkyrienSkiesWorld.MOD_ID, "AntiGravityValue"),
-                    new AntiGravityCapabilityProvider(VSConfig.valkyriumOreForce));
+            }
+            if (stack.getItem() instanceof ItemBlock) {
+                ItemBlock blockItem = (ItemBlock) stack.getItem();
+                if (blockItem.getBlock() instanceof BlockEthereumOre) {
+                    event.addCapability(
+                        new ResourceLocation(ValkyrienSkiesWorld.MOD_ID, "AntiGravityValue"),
+                        new AntiGravityCapabilityProvider(VSConfig.valkyriumOreForce));
+                }
             }
         }
     }

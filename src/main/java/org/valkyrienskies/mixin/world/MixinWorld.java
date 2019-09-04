@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -56,16 +57,18 @@ import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 import org.valkyrienskies.mod.common.physics.management.WorldPhysObjectManager;
 import org.valkyrienskies.mod.common.physmanagement.interaction.IWorldVW;
+import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
+import org.valkyrienskies.mod.common.ship_handling.IWorldShipManager;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
 // TODO: This class is horrible
 @Mixin(value = World.class, priority = 2018)
 @Implements(@Interface(iface = MixinWorldIntrinsicMethods.class, prefix = "vw$", remap = Remap.NONE))
-public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
+public abstract class MixinWorld implements IWorldVW, ISubspaceProvider, IHasShipManager {
 
-    private static double MAX_ENTITY_RADIUS_ALT = 2.0D;
-    private static double BOUNDING_BOX_EDGE_LIMIT = 100000D;
+    private static final double MAX_ENTITY_RADIUS_ALT = 2.0D;
+    private static final double BOUNDING_BOX_EDGE_LIMIT = 100000D;
     // TODO: This is going to lead to a multithreaded disaster. Replace this with something sensible!
     // I made this threadlocal to prevent disaster for now, but its still really bad code.
     private final ThreadLocal<Boolean> dontIntercept = ThreadLocal.withInitial(() -> false);
@@ -73,6 +76,9 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
     private final ThreadLocal<PhysicsWrapperEntity> dontInterceptShip = ThreadLocal
         .withInitial(() -> null);
     private final ISubspace worldSubspace = new ImplSubspace(null);
+    private final World world = World.class.cast(this);
+    // The IWorldShipManager
+    private IWorldShipManager manager = null;
 
     @Shadow
     protected List<IWorldEventListener> eventListeners;
@@ -91,7 +97,7 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
     @Intrinsic(displace = true)
     public Biome vw$getBiomeForCoordsBody(BlockPos pos) {
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
-            .getPhysicsObject(World.class.cast(this), pos);
+            .getPhysicsObject(world, pos);
 
         if (physicsObject.isPresent()) {
             pos = physicsObject.get()
@@ -118,7 +124,7 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
         double ySpeed, double zSpeed, int... parameters) {
         BlockPos pos = new BlockPos(x, y, z);
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
-            .getPhysicsObject(World.class.cast(this), pos);
+            .getPhysicsObject(world, pos);
 
         if (physicsObject.isPresent()) {
             Vector newPosVec = new Vector(x, y, z);
@@ -230,7 +236,7 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
         BlockPos pos = new BlockPos((aabb.minX + aabb.maxX) / 2D, (aabb.minY + aabb.maxY) / 2D,
             (aabb.minZ + aabb.maxZ) / 2D);
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
-            .getPhysicsObject(World.class.cast(this), pos);
+            .getPhysicsObject(world, pos);
 
         if (physicsObject.isPresent()) {
             Polygon poly = new Polygon(aabb, physicsObject.get()
@@ -290,7 +296,7 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
             (boundingBox.minY + boundingBox.maxY) / 2D, (boundingBox.minZ + boundingBox.maxZ) / 2D);
 
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
-            .getPhysicsObject(World.class.cast(this), pos);
+            .getPhysicsObject(world, pos);
 
         if (physicsObject.isPresent()) {
             Polygon poly = new Polygon(boundingBox, physicsObject.get()
@@ -362,11 +368,11 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
         boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock,
         PhysicsWrapperEntity toIgnore) {
         this.dontIntercept.set(true);
-        RayTraceResult vanillaTrace = World.class.cast(this)
+        RayTraceResult vanillaTrace = world
             .rayTraceBlocks(vec31, vec32, stopOnLiquid,
                 ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
         WorldPhysObjectManager physManager = ValkyrienSkiesMod.VW_PHYSICS_MANAGER
-            .getManagerForWorld(World.class.cast(this));
+            .getManagerForWorld(world);
         if (physManager == null) {
             return vanillaTrace;
         }
@@ -399,7 +405,7 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
 
             Vec3d playerEyesReachAdded = playerEyesPos.add(playerReachVector.x * reachDistance,
                 playerReachVector.y * reachDistance, playerReachVector.z * reachDistance);
-            RayTraceResult resultInShip = World.class.cast(this)
+            RayTraceResult resultInShip = world
                 .rayTraceBlocks(playerEyesPos, playerEyesReachAdded,
                     stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
             if (resultInShip != null && resultInShip.hitVec != null
@@ -419,4 +425,19 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider {
         this.dontIntercept.set(false);
         return vanillaTrace;
     }
+
+    @Override
+    public IWorldShipManager getManager() {
+        if (manager == null) {
+            throw new IllegalStateException(
+                "We can't be accessing this manager since WorldEvent.load() was never called!");
+        }
+        return manager;
+    }
+
+    @Override
+    public void setManager(Function<World, IWorldShipManager> managerSupplier) {
+        manager = managerSupplier.apply(world);
+    }
+
 }

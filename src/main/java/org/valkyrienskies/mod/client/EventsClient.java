@@ -28,6 +28,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.world.World;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
@@ -49,6 +50,7 @@ import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 import org.valkyrienskies.mod.common.physics.management.WorldPhysObjectManager;
 import org.valkyrienskies.mod.common.physmanagement.interaction.EntityDraggable;
+import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
@@ -62,6 +64,26 @@ public class EventsClient {
         if (entity == Minecraft.getMinecraft().player) {
             Minecraft.getMinecraft().entityRenderer
                 .getMouseOver(Minecraft.getMinecraft().getRenderPartialTicks());
+        }
+    }
+
+    @SubscribeEvent
+    public void onClientTick(ClientTickEvent event) {
+        World world = Minecraft.getMinecraft().world;
+        if (world == null) {
+            // There's no world, so there's nothing to run.
+            return;
+        }
+        // Pretend this is the world tick, because diesieben07 doesn't want WorldClient to make world tick events.
+        switch (event.phase) {
+            case START:
+                // Nothing for now
+                break;
+            case END:
+                // Tick the IShipManager on the world client.
+                IHasShipManager shipManager = (IHasShipManager) world;
+                shipManager.getManager().tick();
+                break;
         }
     }
 
@@ -110,25 +132,23 @@ public class EventsClient {
     public void onDrawBlockHighlightEventFirst(DrawBlockHighlightEvent event) {
         GL11.glPushMatrix();
         BlockPos pos = Minecraft.getMinecraft().objectMouseOver.getBlockPos();
-        if (pos != null) {
-            Optional<PhysicsObject> physicsObject = ValkyrienUtils
-                .getPhysicsObject(Minecraft.getMinecraft().world, pos);
-            if (physicsObject.isPresent()) {
-                RayTraceResult objectOver = Minecraft.getMinecraft().objectMouseOver;
-                if (objectOver != null && objectOver.hitVec != null) {
-                    BufferBuilder buffer = Tessellator.getInstance().getBuffer();
-                    oldXOff = buffer.xOffset;
-                    oldYOff = buffer.yOffset;
-                    oldZOff = buffer.zOffset;
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils
+            .getPhysicsObject(Minecraft.getMinecraft().world, pos);
+        if (physicsObject.isPresent()) {
+            RayTraceResult objectOver = Minecraft.getMinecraft().objectMouseOver;
+            if (objectOver != null && objectOver.hitVec != null) {
+                BufferBuilder buffer = Tessellator.getInstance().getBuffer();
+                oldXOff = buffer.xOffset;
+                oldYOff = buffer.yOffset;
+                oldZOff = buffer.zOffset;
 
-                    buffer.setTranslation(-physicsObject.get()
-                        .getShipRenderer().offsetPos.getX(), -physicsObject.get()
-                        .getShipRenderer().offsetPos.getY(), -physicsObject.get()
-                        .getShipRenderer().offsetPos.getZ());
-                    physicsObject.get()
-                        .getShipRenderer()
-                        .setupTranslation(event.getPartialTicks());
-                }
+                buffer.setTranslation(-physicsObject.get()
+                    .getShipRenderer().offsetPos.getX(), -physicsObject.get()
+                    .getShipRenderer().offsetPos.getY(), -physicsObject.get()
+                    .getShipRenderer().offsetPos.getZ());
+                physicsObject.get()
+                    .getShipRenderer()
+                    .setupTranslation(event.getPartialTicks());
             }
         }
     }
@@ -136,19 +156,17 @@ public class EventsClient {
     @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
     public void onDrawBlockHighlightEventLast(DrawBlockHighlightEvent event) {
         BlockPos pos = Minecraft.getMinecraft().objectMouseOver.getBlockPos();
-        if (pos != null) {
-            Optional<PhysicsObject> physicsObject = ValkyrienUtils
-                .getPhysicsObject(Minecraft.getMinecraft().world, pos);
-            if (physicsObject.isPresent()) {
-                RayTraceResult objectOver = Minecraft.getMinecraft().objectMouseOver;
-                if (objectOver != null && objectOver.hitVec != null) {
-                    BufferBuilder buffer = Tessellator.getInstance().getBuffer();
-                    buffer.xOffset = oldXOff;
-                    buffer.yOffset = oldYOff;
-                    buffer.zOffset = oldZOff;
-                    // wrapper.wrapping.renderer.inverseTransform(event.getPartialTicks());
-                    // objectOver.hitVec = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, objectOver.hitVec);
-                }
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils
+            .getPhysicsObject(Minecraft.getMinecraft().world, pos);
+        if (physicsObject.isPresent()) {
+            RayTraceResult objectOver = Minecraft.getMinecraft().objectMouseOver;
+            if (objectOver != null && objectOver.hitVec != null) {
+                BufferBuilder buffer = Tessellator.getInstance().getBuffer();
+                buffer.xOffset = oldXOff;
+                buffer.yOffset = oldYOff;
+                buffer.zOffset = oldZOff;
+                // wrapper.wrapping.renderer.inverseTransform(event.getPartialTicks());
+                // objectOver.hitVec = RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform, objectOver.hitVec);
             }
         }
         GL11.glPopMatrix();

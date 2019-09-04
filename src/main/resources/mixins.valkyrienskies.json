@@ -19,7 +19,6 @@
     "tileentity.MixinTileEntity",
     "util.math.MixinChunkPos",
     "world.MixinWorld",
-    "world.MixinWorldServer",
     "world.border.MixinWorldBorder",
     "world.chunk.MixinBlockStateContainer",
     "world.chunk.MixinChunk"
@@ -35,6 +34,6 @@
     "client.renderer.entity.MixinRenderManager",
     "client.renderer.tileentity.MixinTileEntityRendererDispatcher",
     "util.MixinMovementInputFromOptions",
-    "world.MixinWorldClient"
+    "world.MixinClientWorld"
   ]
 }

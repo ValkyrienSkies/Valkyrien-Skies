@@ -41,7 +41,10 @@ public class WorldEventsCommon {
         if (event.getObject() instanceof ItemStack) {
             ItemStack stack = (ItemStack) event.getObject();
             Item item = stack.getItem();
-            ItemBlock blockItem = (ItemBlock) stack.getItem();
+            try {
+              ItemBlock blockItem = (ItemBlock) stack.getItem();
+            catch (ClassCastException e) { // It's not a block
+            }
 
             if (item instanceof ItemEthereumCrystal) {
                 event.addCapability(

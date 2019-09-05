@@ -101,7 +101,6 @@ public class MoveBlocks {
             }
 
             try {
-                newInstance.validate();
                 world.setTileEntity(newPos, newInstance);
                 physicsObjectOptional
                     .ifPresent(physicsObject -> physicsObject.onSetTileEntity(newPos, newInstance));

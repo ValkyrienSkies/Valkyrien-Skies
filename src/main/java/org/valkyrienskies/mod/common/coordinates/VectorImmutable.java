@@ -62,7 +62,6 @@ public class VectorImmutable {
 
     @Override
     public String toString() {
-        String coords = "<" + x + ", " + y + ", " + z + ">";
-        return coords;
+        return "<" + x + ", " + y + ", " + z + ">";
     }
 }

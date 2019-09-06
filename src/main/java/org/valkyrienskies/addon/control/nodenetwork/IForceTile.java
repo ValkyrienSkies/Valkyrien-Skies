@@ -35,7 +35,7 @@ public interface IForceTile {
         if (forceVectorNormal == null) {
             return new Vector();
         }
-        Vector forceVector = forceVectorNormal.createMutibleVectorCopy();
+        Vector forceVector = new Vector(forceVectorNormal);
         forceVector.multiply(getThrustMagnitude() * secondsToApply);
         return forceVector;
     }

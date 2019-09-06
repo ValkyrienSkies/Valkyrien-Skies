@@ -19,7 +19,7 @@ public class GroupedDagNodeRenderer extends BasicDagNodeRenderer {
     @Override
     public void render(double keyframe, int brightness) {
         for (int i = 0; i < transformations.size(); i++) {
-            Vector customPivot = pivot.createMutibleVectorCopy();
+            Vector customPivot = new Vector(pivot);
             for (int j = transformations.size() - 1; j > i; j--) {
                 transformations.get(j)
                     .changePivot(customPivot, keyframe);

@@ -40,7 +40,13 @@ public class Vector {
         Z = z;
     }
 
-    public Vector() {
+    public Vector() {}
+
+    /**
+     * Construct a copy of a {@link VectorImmutable}
+     */
+    public Vector(VectorImmutable vec) {
+        this(vec.getX(), vec.getY(), vec.getZ());
     }
 
     public Vector(double x, double y, double z, double[] rotationMatrix) {

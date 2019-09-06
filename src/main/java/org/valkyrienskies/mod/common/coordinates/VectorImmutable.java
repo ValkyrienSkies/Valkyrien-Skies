@@ -46,8 +46,12 @@ public class VectorImmutable {
         return z;
     }
 
-    public Vector createMutibleVectorCopy() {
-        return new Vector(x, y, z);
+    /**
+     * Do not use this method. Use <code>new Vector(VectorImmutable vec)</code> instead.
+     */
+    @Deprecated
+    public Vector createMutableVectorCopy() {
+        return new Vector(this);
     }
 
     public void writeToByteBuf(ByteBuf bufToWrite) {

@@ -148,13 +148,13 @@ public class ShipTransform {
     }
 
     public VectorImmutable transform(VectorImmutable vector, TransformType transformType) {
-        Vector vectorMutable = vector.createMutibleVectorCopy();
+        Vector vectorMutable = new Vector(vector);
         this.transform(vectorMutable, transformType);
         return vectorMutable.toImmutable();
     }
 
     public VectorImmutable rotate(VectorImmutable vector, TransformType transformType) {
-        Vector vectorMutable = vector.createMutibleVectorCopy();
+        Vector vectorMutable = new Vector(vector);
         this.rotate(vectorMutable, transformType);
         return vectorMutable.toImmutable();
     }

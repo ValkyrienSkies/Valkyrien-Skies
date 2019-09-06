@@ -84,19 +84,17 @@ public class WorldEventsCommon {
             //TODO: fix the fall damage
             // @thebest108: what fall damage?
             //                    --DaPorkchop_, 28/03/2017
-            if (VSConfig.doEthereumLifting) {
-                if (!player.isCreative()) {
-                    for (NonNullList<ItemStack> stackArray : player.inventory.allInventories) {
-                        for (ItemStack stack : stackArray) {
-                            if (stack != null) {
-                                if (stack.getItem() instanceof ItemBlock) {
-                                    ItemBlock blockItem = (ItemBlock) stack.getItem();
-                                    if (blockItem.getBlock() instanceof BlockEthereumOre) {
-                                        player.addVelocity(0, .0025D * stack.stackSize * VSConfig.valkyriumOreForce, 0);
-                                    }
-                                } else if (stack.getItem() instanceof ItemEthereumCrystal) {
-                                    player.addVelocity(0, .0025D * stack.stackSize * VSConfig.valkyriumCrystalForce, 0);
+            if (VSConfig.doEthereumLifting && !player.isCreative()) {
+                for (NonNullList<ItemStack> stackArray : player.inventory.allInventories) {
+                    for (ItemStack stack : stackArray) {
+                        if (stack != null) {
+                            if (stack.getItem() instanceof ItemBlock) {
+                                ItemBlock blockItem = (ItemBlock) stack.getItem();
+                                if (blockItem.getBlock() instanceof BlockEthereumOre) {
+                                    player.addVelocity(0, .0025D * stack.stackSize * VSConfig.valkyriumOreForce, 0);
                                 }
+                            } else if (stack.getItem() instanceof ItemEthereumCrystal) {
+                                player.addVelocity(0, .0025D * stack.stackSize * VSConfig.valkyriumCrystalForce, 0);
                             }
                         }
                     }

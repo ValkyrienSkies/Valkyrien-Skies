@@ -27,6 +27,8 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -126,7 +128,8 @@ public class ValkyrienSkiesMod {
     /**
      * This service is directly responsible for running collision tasks.
      */
-    public static ExecutorService PHYSICS_THREADS_EXECUTOR = null;
+    @Getter
+    private static ExecutorService PHYSICS_THREADS_EXECUTOR = null;
     public Block physicsInfuser;
     public Block physicsInfuserCreative;
     public Block physicsInfuserDummy;
@@ -147,14 +150,20 @@ public class ValkyrienSkiesMod {
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
+        log.trace("Initializing configuration");
         runConfiguration();
+
+        log.trace("Instantiating the physics thread executor");
+        ValkyrienSkiesMod.PHYSICS_THREADS_EXECUTOR = Executors.newFixedThreadPool(VSConfig.threadCount);
+
+        log.trace("Beginning asynchronous Kryo initialization");
         serializationInitAsync();
+
         registerNetworks(event);
-        ValkyrienSkiesMod.PHYSICS_THREADS_EXECUTOR = Executors
-            .newFixedThreadPool(VSConfig.threadCount);
         registerCapabilities();
         proxy.preInit(event);
 
+        log.trace("Initializing the VS API");
         // Initialize the VW API here:
         try {
             Field instanceField = IPhysicsEntityManager.class.getDeclaredField("INSTANCE");
@@ -168,7 +177,7 @@ public class ValkyrienSkiesMod {
             instanceField.set(null, new VW_APIPhysicsEntityManager());
         } catch (Exception e) {
             e.printStackTrace();
-            System.err.println("FAILED TO INITIALIZE VW API!");
+            log.fatal("FAILED TO INITIALIZE VW API!");
         }
         // Initialize VW API end.
     }
@@ -231,7 +240,7 @@ public class ValkyrienSkiesMod {
     }
 
     /**
-     * Create our new instance of Kryo. This is done asynchronously with CompletableFuture so
+     * Create our new instance of {@link Kryo}. This is done asynchronously with CompletableFuture so
      * as not to slow down initialization. We save a lot of time this way!
      */
     private void serializationInitAsync() {
@@ -297,7 +306,7 @@ public class ValkyrienSkiesMod {
     }
 
     /**
-     * Initializes VSConfig
+     * Initializes the configuration - {@link VSConfig}
      */
     private void runConfiguration() {
         VSConfig.sync();

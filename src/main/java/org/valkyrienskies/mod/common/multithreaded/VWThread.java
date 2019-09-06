@@ -179,7 +179,7 @@ public class VWThread extends Thread {
         try {
             // The individual collision tasks will sort through a lot of data to find
             // collision points
-            ValkyrienSkiesMod.PHYSICS_THREADS_EXECUTOR.invokeAll(collisionTasks);
+            ValkyrienSkiesMod.PHYSICS_THREADS_EXECUTOR().invokeAll(collisionTasks);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

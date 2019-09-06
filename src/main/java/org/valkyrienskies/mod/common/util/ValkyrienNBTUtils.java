@@ -17,13 +17,10 @@
 package org.valkyrienskies.mod.common.util;
 
 import java.nio.ByteBuffer;
-import javax.annotation.Nullable;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.math.Vector;
-import valkyrienwarfare.api.TransformType;
 
 /**
  * ValkyrienNBTUtils is filled with helper methods for saving and loading different objects from
@@ -110,32 +107,6 @@ public class ValkyrienNBTUtils {
             compound.getDouble(name + "maxY"),
             compound.getDouble(name + "maxZ"));
         return aabb;
-    }
-
-    public static void writeShipTransformToNBT(String name, ShipTransform shipTransform,
-        NBTTagCompound compound) {
-        double[] localToGlobalInternalArray = shipTransform
-            .getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL);
-        byte[] localToGlobalAsBytes = toByteArray(localToGlobalInternalArray);
-        compound.setByteArray("vw_ST_" + name, localToGlobalAsBytes);
-    }
-
-    /**
-     * @param name
-     * @param compound
-     * @return Returns null if there was an error loading the ShipTransform. Otherwise the proper
-     * ShipTransform is returned.
-     */
-    @Nullable
-    public static ShipTransform readShipTransformFromNBT(String name, NBTTagCompound compound) {
-        byte[] localToGlobalAsBytes = compound.getByteArray("vw_ST_" + name);
-        if (localToGlobalAsBytes.length == 0) {
-            System.err.println(
-                "Loading from the ShipTransform has failed, now we are forced to fallback on Vanilla MC positions. This probably won't go well at all!");
-            return null;
-        }
-        double[] localToGlobalInternalArray = toDoubleArray(localToGlobalAsBytes);
-        return new ShipTransform(localToGlobalInternalArray);
     }
 
 }

@@ -10,7 +10,6 @@ import org.valkyrienskies.mod.common.coordinates.ISubspaceProvider;
 import org.valkyrienskies.mod.common.coordinates.ISubspacedEntity;
 import org.valkyrienskies.mod.common.coordinates.ISubspacedEntityRecord;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
-import org.valkyrienskies.mod.common.math.RotationMatrices;
 import valkyrienwarfare.api.TransformType;
 
 /**
@@ -46,9 +45,8 @@ public interface ITransformablePacket {
                 ISubspaceProvider worldProvider = (ISubspaceProvider) player.getServerWorld();
                 ISubspace worldSubspace = worldProvider.getSubspace();
                 worldSubspace.snapshotSubspacedEntity((ISubspacedEntity) player);
-                RotationMatrices.applyTransform(
-                    wrapper.getPhysicsObject().getShipTransformationManager()
-                        .getCurrentTickTransform(), player,
+                wrapper.getPhysicsObject().getShipTransformationManager()
+                    .getCurrentTickTransform().transform(player,
                     TransformType.GLOBAL_TO_SUBSPACE);
             }
 

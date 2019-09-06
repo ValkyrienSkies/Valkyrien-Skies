@@ -245,6 +245,7 @@ public class ShipTransformationManager {
             return;
         }
         final BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+        // TODO: This is bad, but its fast
         final double[] MDouble = getCurrentPhysicsTransform()
             .getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL);
         final float[] M = new float[MDouble.length];

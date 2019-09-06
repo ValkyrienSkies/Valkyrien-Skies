@@ -1,55 +1,37 @@
 package org.valkyrienskies.mod.common.physmanagement.shipdata;
 
-import java.nio.ByteBuffer;
+import lombok.Getter;
+import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
-import org.valkyrienskies.mod.common.math.RotationMatrices;
 import org.valkyrienskies.mod.common.math.Vector;
-import valkyrienwarfare.api.TransformType;
 
 public class ShipPositionData {
 
     private final Vector shipPosition;
-    private final float[] lToWTransform;
+    @Getter
+    private ShipTransform transform;
 
     // For Kryo
+    @SuppressWarnings("unused")
     private ShipPositionData() {
         shipPosition = null;
-        lToWTransform = null;
+        transform = null;
     }
 
     ShipPositionData(PhysicsWrapperEntity wrapper) {
         shipPosition = new Vector(wrapper.posX, wrapper.posY, wrapper.posZ);
-        lToWTransform = RotationMatrices.convertToFloat(
+        transform =
             wrapper.getPhysicsObject()
                 .getShipTransformationManager()
-                .getCurrentTickTransform()
-                .getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL));
-    }
-
-    ShipPositionData(ByteBuffer buffer) {
-        shipPosition = new Vector(buffer.getFloat(), buffer.getFloat(), buffer.getFloat());
-        lToWTransform = new float[16];
-        for (int i = 0; i < 16; i++) {
-            lToWTransform[i] = buffer.getFloat();
-        }
-    }
-
-    void writeToByteBuffer(ByteBuffer buffer) {
-        buffer.putFloat((float) shipPosition.X);
-        buffer.putFloat((float) shipPosition.Y);
-        buffer.putFloat((float) shipPosition.Z);
-        for (int i = 0; i < 16; i++) {
-            buffer.putFloat(lToWTransform[i]);
-        }
+                .getCurrentTickTransform();
     }
 
     void updateData(PhysicsWrapperEntity wrapper) {
         shipPosition.X = wrapper.posX;
         shipPosition.Y = wrapper.posY;
         shipPosition.Z = wrapper.posZ;
-        RotationMatrices.convertToFloat(
-            wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform()
-                .getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL), lToWTransform);
+        transform =
+            wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform();
     }
 
     public double getPosX() {
@@ -64,8 +46,4 @@ public class ShipPositionData {
         return shipPosition.Z;
     }
 
-    // Returns a copy of of the lToWTransform as a double array.
-    public double[] getLToWTransform() {
-        return RotationMatrices.convertToDouble(lToWTransform);
-    }
 }

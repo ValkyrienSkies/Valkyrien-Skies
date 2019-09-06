@@ -56,16 +56,6 @@ public class RotationMatrices {
         return input;
     }
 
-    public static double[] rotateOnly(double[] input, double pitch, double yaw, double roll) {
-        input = RotationMatrices.getMatrixProduct(input,
-            RotationMatrices.getRotationMatrix(1.0D, 0.0D, 0.0D, Math.toRadians(pitch)));
-        input = RotationMatrices.getMatrixProduct(input,
-            RotationMatrices.getRotationMatrix(0.0D, 1.0D, 0.0D, Math.toRadians(yaw)));
-        input = RotationMatrices.getMatrixProduct(input,
-            RotationMatrices.getRotationMatrix(0.0D, 0.0D, 1.0D, Math.toRadians(roll)));
-        return input;
-    }
-
     /**
      * Returns a rotation matrix with the described rotation and no translation.
      *
@@ -300,12 +290,6 @@ public class RotationMatrices {
         return vec;
     }
 
-    public static Vector getTransformedVec(double[] M, Vector v) {
-        Vector vec = new Vector(v);
-        applyTransform(M, vec);
-        return vec;
-    }
-
     public static double[] inverse3by3(double[] matrix) {
         double[] inverse = new double[9];
         inverse[0] = (matrix[4] * matrix[8] - matrix[5] * matrix[7]);
@@ -340,12 +324,6 @@ public class RotationMatrices {
         inverse[14] = 0.0D;
         inverse[15] = 1.0D;
         return inverse;
-    }
-
-    public static Vec3d doRotationOnly(double[] transform, Vec3d vanilla) {
-        Vector converted = new Vector(vanilla);
-        doRotationOnly(transform, converted);
-        return converted.toVec3d();
     }
 
 }

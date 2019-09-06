@@ -29,9 +29,9 @@ import org.valkyrienskies.addon.control.piloting.ControllerInputType;
 import org.valkyrienskies.addon.control.piloting.IShipPilot;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
-import org.valkyrienskies.mod.common.math.RotationMatrices;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.ShipPositionData;
+import valkyrienwarfare.api.TransformType;
 
 /**
  * Todo: Delete preGetBedSpawnLocation and turn IShipPilot into a capability.
@@ -64,11 +64,10 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements IShi
                 .getShipPosition_Persistent(worldIn, shipManagingID);
 
             if (positionData != null) {
-                double[] lToWTransform = positionData.getLToWTransform();
-
                 Vector bedPositionInWorld = new Vector(bedLocation.getX() + .5D,
                     bedLocation.getY() + .5D, bedLocation.getZ() + .5D);
-                RotationMatrices.applyTransform(lToWTransform, bedPositionInWorld);
+                positionData.transform()
+                    .transform(bedPositionInWorld, TransformType.SUBSPACE_TO_GLOBAL);
                 bedPositionInWorld.Y += 1D;
                 bedLocation = new BlockPos(bedPositionInWorld.X, bedPositionInWorld.Y,
                     bedPositionInWorld.Z);

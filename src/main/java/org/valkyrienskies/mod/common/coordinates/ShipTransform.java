@@ -16,12 +16,16 @@
 
 package org.valkyrienskies.mod.common.coordinates;
 
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import net.minecraft.entity.Entity;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import org.valkyrienskies.mod.common.math.Quaternion;
 import org.valkyrienskies.mod.common.math.RotationMatrices;
 import org.valkyrienskies.mod.common.math.Vector;
+import org.valkyrienskies.mod.common.util.ValkyrienNBTUtils;
 import scala.actors.threadpool.Arrays;
 import valkyrienwarfare.api.TransformType;
 
@@ -41,8 +45,30 @@ public class ShipTransform {
     private final double[] subspaceToGlobal;
     private final double[] globalToSubspace;
 
+    /**
+     * Don't use, we're planning on moving the math to a proper library eventually.
+     *
+     * @param subspaceToGlobal
+     */
+    @Deprecated
     public ShipTransform(double[] subspaceToGlobal) {
         this.subspaceToGlobal = subspaceToGlobal;
+        this.globalToSubspace = RotationMatrices.inverse(subspaceToGlobal);
+    }
+
+    /**
+     * Creates a new ship transform that moves positions from the current transform to the next
+     * one.
+     *
+     * @param current
+     * @param next
+     */
+    public ShipTransform(ShipTransform current, ShipTransform next) {
+        double[] currentWorldToLocal = current.globalToSubspace;
+        double[] nextLocaltoWorld = next.subspaceToGlobal;
+        double[] currentWorldToNextWorld = RotationMatrices
+            .getMatrixProduct(nextLocaltoWorld, currentWorldToLocal);
+        this.subspaceToGlobal = currentWorldToNextWorld;
         this.globalToSubspace = RotationMatrices.inverse(subspaceToGlobal);
     }
 
@@ -109,23 +135,16 @@ public class ShipTransform {
         return Quaternion.QuaternionFromMatrix(getInternalMatrix(transformType));
     }
 
-    /**
-     * Please do not ever use this unless it is absolutely necessary! This exposes the internal
-     * arrays and they unfortunately cannot be made safe without sacrificing a lot of performance.
-     *
-     * @param transformType
-     * @return Unsafe internal arrays; for the love of god do not modify them!
-     */
-    @Deprecated
-    public double[] getInternalMatrix(TransformType transformType) {
-        if (transformType == TransformType.SUBSPACE_TO_GLOBAL) {
-            return subspaceToGlobal;
-        } else if (transformType == TransformType.GLOBAL_TO_SUBSPACE) {
-            return globalToSubspace;
-        } else {
-            throw new IllegalArgumentException(
-                "Unexpected TransformType Enum " + transformType + "!");
+    @Nullable
+    public static ShipTransform readFromNBT(NBTTagCompound compound, String name) {
+        byte[] localToGlobalAsBytes = compound.getByteArray(name);
+        if (localToGlobalAsBytes.length == 0) {
+            System.err.println(
+                "Loading from the ShipTransform has failed, now we are forced to fallback on Vanilla MC positions. This probably won't go well at all!");
+            return null;
         }
+        double[] localToGlobalInternalArray = ValkyrienNBTUtils.toDoubleArray(localToGlobalAsBytes);
+        return new ShipTransform(localToGlobalInternalArray);
     }
 
     public VectorImmutable transform(VectorImmutable vector, TransformType transformType) {
@@ -138,5 +157,34 @@ public class ShipTransform {
         Vector vectorMutable = vector.createMutibleVectorCopy();
         this.rotate(vectorMutable, transformType);
         return vectorMutable.toImmutable();
+    }
+
+    /**
+     * Please do not ever use this unless it is absolutely necessary! This exposes implementation
+     * details that will be changed eventually.
+     *
+     * @param transformType
+     * @return Unsafe internal arrays; for the love of god do not modify them!
+     */
+    @Deprecated
+    public double[] getInternalMatrix(TransformType transformType) {
+        switch (transformType) {
+            case SUBSPACE_TO_GLOBAL:
+                return Arrays.copyOf(subspaceToGlobal, subspaceToGlobal.length);
+            case GLOBAL_TO_SUBSPACE:
+                return Arrays.copyOf(globalToSubspace, globalToSubspace.length);
+            default:
+                throw new IllegalArgumentException(
+                    "Unexpected TransformType Enum: " + transformType);
+        }
+    }
+
+    @Deprecated
+    public void transform(Entity entity, TransformType subspaceToGlobal) {
+        RotationMatrices.applyTransform(this, entity, subspaceToGlobal);
+    }
+
+    public void writeToNBT(NBTTagCompound compound, String name) {
+        compound.setByteArray(name, ValkyrienNBTUtils.toByteArray(subspaceToGlobal));
     }
 }

@@ -18,8 +18,6 @@ package org.valkyrienskies.mod.common.math;
 
 import java.util.List;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
 
 /**
@@ -30,6 +28,7 @@ import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
 public class VSMath {
 
     public static final int AABB_MERGE_PASSES = 5;
+    public static final double STANDING_TOLERANCE = .42D;
 
     public static double getPitchFromVectorImmutable(VectorImmutable vec) {
         double pitchFromRotVec = -Math.asin(vec.getY()) * 180 / Math.PI;
@@ -64,32 +63,16 @@ public class VSMath {
         return minMax;
     }
 
-    public static void getBodyPosWithOrientation(BlockPos pos, Vector centerOfMass,
-        double[] rotationTransform, Vector inBody) {
-        inBody.X = pos.getX() + .5D - centerOfMass.X;
-        inBody.Y = pos.getY() + .5D - centerOfMass.Y;
-        inBody.Z = pos.getZ() + .5D - centerOfMass.Z;
-        RotationMatrices.doRotationOnly(rotationTransform, inBody);
-    }
-
-    public static void getBodyPosWithOrientation(Vector pos, Vector centerOfMass,
-        double[] rotationTransform, Vector inBody) {
-        inBody.X = pos.X - centerOfMass.X;
-        inBody.Y = pos.Y - centerOfMass.Y;
-        inBody.Z = pos.Z - centerOfMass.Z;
-        RotationMatrices.doRotationOnly(rotationTransform, inBody);
-    }
-
     /**
-     * Prevents sliding when moving on small angles dictated by the tolerance set in the
-     * ValkyrianWarfareMod class
+     * Used by the collision code to determine if the player should slide when standing on a ship.
+     * That depends on the angle of the normal relative to the Y vector (0, 1, 0).
      *
      * @param normal
      * @return true/false
      */
     public static boolean canStandOnNormal(Vector normal) {
         double radius = normal.X * normal.X + normal.Z * normal.Z;
-        return radius < ValkyrienSkiesMod.standingTolerance;
+        return radius < STANDING_TOLERANCE;
     }
 
     /**

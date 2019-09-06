@@ -135,7 +135,6 @@ public class ValkyrienSkiesMod {
     public static final CreativeTabs vwTab = new TabValkyrienSkies();
 
     public static int airStateIndex;
-    public static double standingTolerance = .42D;
     private CompletableFuture<Kryo> kryoInstance;
 
     @Mod.EventHandler

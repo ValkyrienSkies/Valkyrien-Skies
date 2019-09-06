@@ -25,7 +25,6 @@ import net.minecraft.world.World;
 import org.valkyrienskies.mod.client.EventsClient;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
-import org.valkyrienskies.mod.common.math.RotationMatrices;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.ShipTransformationManager;
 import org.valkyrienskies.mod.common.util.EntityShipMountData;
@@ -101,23 +100,9 @@ public class EntityDraggable {
 
             Vector oldPos = new Vector(entity);
 
-            //            RotationMatrices.applyTransform(coordTransform.prevwToLTransform, entity);
-            // This is causing crashes
-            double[] prev = coordTransform.getPrevTickTransform()
-                .getInternalMatrix(TransformType.GLOBAL_TO_SUBSPACE);
-            double[] next = coordTransform.getCurrentTickTransform()
-                .getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL);
-
-            Vector playerPos = new Vector(entity);
             ShipTransform betweenTransform = new ShipTransform(
-                RotationMatrices.getMatrixProduct(next, prev));
-            // betweenTransform.transform(playerPos, TransformType.SUBSPACE_TO_GLOBAL);
-
-            RotationMatrices
-                .applyTransform(betweenTransform, entity, TransformType.SUBSPACE_TO_GLOBAL);
-            // This is what the code used to do, but this caused problems when other threads read this data.
-            // RotationMatrices.applyTransform(coordTransform.getPrevTickTransform(), entity, TransformType.GLOBAL_TO_SUBSPACE);
-            // RotationMatrices.applyTransform(coordTransform.getCurrentTickTransform(), entity, TransformType.SUBSPACE_TO_GLOBAL);
+                coordTransform.getPrevTickTransform(), coordTransform.getCurrentTickTransform());
+            betweenTransform.transform(entity, TransformType.SUBSPACE_TO_GLOBAL);
 
             Vector newPos = new Vector(entity);
 

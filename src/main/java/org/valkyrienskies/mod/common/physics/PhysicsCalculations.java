@@ -40,7 +40,6 @@ import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.math.Quaternion;
 import org.valkyrienskies.mod.common.math.RotationMatrices;
-import org.valkyrienskies.mod.common.math.VSMath;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.multithreaded.PhysicsShipTransform;
 import org.valkyrienskies.mod.common.physics.collision.WorldPhysicsCollider;
@@ -373,58 +372,57 @@ public class PhysicsCalculations {
 
                 if (blockAt instanceof IBlockForceProvider) {
                     try {
-                        VSMath.getBodyPosWithOrientation(pos, physCenterOfMass,
-                            getParent().getShipTransformationManager()
-                                .getCurrentPhysicsTransform()
-                                .getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL), inBodyWO);
                         BlockPhysicsDetails.getForceFromState(state, pos, worldObj,
                             getPhysicsTimeDeltaPerPhysTick(),
                             getParent(), blockForce);
-                        if (blockForce != null) {
-                            org.valkyrienskies.mod.common.math.Vector otherPosition = ((IBlockForceProvider) blockAt)
-                                .getCustomBlockForcePosition(worldObj,
-                                    pos, state, getParent(), getPhysicsTimeDeltaPerPhysTick());
+
+                        Vector otherPosition = ((IBlockForceProvider) blockAt)
+                            .getCustomBlockForcePosition(worldObj,
+                                pos, state, getParent(), getPhysicsTimeDeltaPerPhysTick());
+
+                        if (otherPosition != null) {
+                            inBodyWO.setValue(otherPosition);
+                            inBodyWO.subtract(physCenterOfMass);
+                            getParent().getShipTransformationManager().getCurrentPhysicsTransform()
+                                .rotate(inBodyWO, TransformType.SUBSPACE_TO_GLOBAL);
+                        } else {
+                            inBodyWO.setValue(pos.getX() + .5,
+                                pos.getY() + .5, pos.getZ() + .5);
+                            inBodyWO.subtract(physCenterOfMass);
+                            getParent().getShipTransformationManager().getCurrentPhysicsTransform()
+                                .rotate(inBodyWO, TransformType.SUBSPACE_TO_GLOBAL);
+                        }
+
+                        addForceAtPoint(inBodyWO, blockForce, crossVector);
+                        // Add particles here.
+                        if (((IBlockForceProvider) blockAt).doesForceSpawnParticles()) {
+                            org.valkyrienskies.mod.common.math.Vector particlePos;
                             if (otherPosition != null) {
-                                // This changes the values of the inBodyWO vector
-                                VSMath
-                                    .getBodyPosWithOrientation(otherPosition, gameTickCenterOfMass,
-                                        getParent().getShipTransformationManager()
-                                            .getCurrentPhysicsTransform()
-                                            .getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL),
-                                        inBodyWO);
+                                particlePos = new org.valkyrienskies.mod.common.math.Vector(
+                                    otherPosition);
+                            } else {
+                                particlePos = new org.valkyrienskies.mod.common.math.Vector(
+                                    pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5);
                             }
+                            parent.getShipTransformationManager().getCurrentPhysicsTransform()
+                                .transform(particlePos, TransformType.SUBSPACE_TO_GLOBAL);
+                            // System.out.println(particlePos);
+                            float posX = (float) particlePos.X;
+                            float posY = (float) particlePos.Y;
+                            float posZ = (float) particlePos.Z;
+                            float particleMass = 5f;
+                            float velX = (float) -(blockForce.X / particleMass);
+                            float velY = (float) -(blockForce.Y / particleMass);
+                            float velZ = (float) -(blockForce.Z / particleMass);
+                            // Half a second
+                            float particleLife = .5f;
+                            // System.out.println(blockForce);
+                            // System.out.println(posX + ":" + posY + ":" + posZ);
+                            // System.out.println(velX + ":" + velY + ":" + velZ);
 
-                            addForceAtPoint(inBodyWO, blockForce, crossVector);
-                            // Add particles here.
-                            if (((IBlockForceProvider) blockAt).doesForceSpawnParticles()) {
-                                org.valkyrienskies.mod.common.math.Vector particlePos;
-                                if (otherPosition != null) {
-                                    particlePos = new org.valkyrienskies.mod.common.math.Vector(
-                                        otherPosition);
-                                } else {
-                                    particlePos = new org.valkyrienskies.mod.common.math.Vector(
-                                        pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5);
-                                }
-                                parent.getShipTransformationManager().getCurrentPhysicsTransform()
-                                    .transform(particlePos, TransformType.SUBSPACE_TO_GLOBAL);
-                                // System.out.println(particlePos);
-                                float posX = (float) particlePos.X;
-                                float posY = (float) particlePos.Y;
-                                float posZ = (float) particlePos.Z;
-                                float particleMass = 5f;
-                                float velX = (float) -(blockForce.X / particleMass);
-                                float velY = (float) -(blockForce.Y / particleMass);
-                                float velZ = (float) -(blockForce.Z / particleMass);
-                                // Half a second
-                                float particleLife = .5f;
-                                // System.out.println(blockForce);
-                                // System.out.println(posX + ":" + posY + ":" + posZ);
-                                // System.out.println(velX + ":" + velY + ":" + velZ);
-
-                                this.particleManager
-                                    .spawnPhysicsParticle(posX, posY, posZ, velX, velY, velZ,
-                                        particleMass, particleLife);
-                            }
+                            this.particleManager
+                                .spawnPhysicsParticle(posX, posY, posZ, velX, velY, velZ,
+                                    particleMass, particleLife);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -542,14 +540,16 @@ public class PhysicsCalculations {
         double[] rotationChange = RotationMatrices
             .getRotationMatrix(angularVelocity.X, angularVelocity.Y,
                 angularVelocity.Z, angularVelocity.length() * getPhysicsTimeDeltaPerPhysTick());
-        Quaternion finalTransform = Quaternion
-            .QuaternionFromMatrix(RotationMatrices.getMatrixProduct(rotationChange,
-                coordTrans.getCurrentPhysicsTransform()
-                    .getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL)));
 
-        double[] radians = finalTransform.toRadians();
+        // Take the product of the current rotation with the change in rotation that results from
+        // the angular velocity. Then change our pitch/yaw/roll based on the result.
+        Quaternion rotationChangeQuat = Quaternion.QuaternionFromMatrix(rotationChange);
+        Quaternion initialRotation = coordTrans.getCurrentPhysicsTransform()
+            .createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
+        Quaternion finalRotation = initialRotation.crossProduct(rotationChangeQuat);
 
-        // Update the pitch/yaw/roll angles for the physics object
+        // Update the pitch/yaw/roll angles.
+        double[] radians = finalRotation.toRadians();
         physPitch = Double.isNaN(radians[0]) ? 0.0f : (float) Math.toDegrees(radians[0]);
         physYaw = Double.isNaN(radians[1]) ? 0.0f : (float) Math.toDegrees(radians[1]);
         physRoll = Double.isNaN(radians[2]) ? 0.0f : (float) Math.toDegrees(radians[2]);

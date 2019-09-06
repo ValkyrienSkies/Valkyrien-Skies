@@ -37,7 +37,6 @@ import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.coordinates.CoordinateSpaceType;
 import org.valkyrienskies.mod.common.entity.EntityMountable;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
-import org.valkyrienskies.mod.common.math.RotationMatrices;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
@@ -121,9 +120,9 @@ public class VWWorldEventListener implements IWorldEventListener {
                 }
                 world.getChunk(entity.getPosition().getX() >> 4, entity.getPosition().getZ() >> 4)
                     .removeEntity(entity);
-                RotationMatrices.applyTransform(physicsObject.get()
-                        .getShipTransformationManager()
-                        .getCurrentTickTransform(), entity,
+                physicsObject.get()
+                    .getShipTransformationManager()
+                    .getCurrentTickTransform().transform(entity,
                     TransformType.SUBSPACE_TO_GLOBAL);
                 world.getChunk(entity.getPosition().getX() >> 4, entity.getPosition().getZ() >> 4)
                     .addEntity(entity);

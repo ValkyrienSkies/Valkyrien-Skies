@@ -68,7 +68,6 @@ import org.valkyrienskies.fixes.IPhysicsChunk;
 import org.valkyrienskies.mod.common.coordinates.CoordinateSpaceType;
 import org.valkyrienskies.mod.common.entity.EntityMountable;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
-import org.valkyrienskies.mod.common.math.RotationMatrices;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 import org.valkyrienskies.mod.common.physics.management.PhysicsTickHandler;
@@ -82,7 +81,7 @@ import valkyrienwarfare.api.TransformType;
 
 public class EventsCommon {
 
-    public static final Map<EntityPlayer, Double[]> lastPositions = new HashMap<EntityPlayer, Double[]>();
+    public static final Map<EntityPlayer, double[]> lastPositions = new HashMap<>();
     private static final Logger logger = LogManager.getLogger(EventsCommon.class);
 
     @SubscribeEvent()
@@ -141,9 +140,9 @@ public class EventsCommon {
                 world.spawnEntity(entityMountable);
                 entity.startRiding(entityMountable);
             }
-            RotationMatrices.applyTransform(physicsObject.get()
-                    .getShipTransformationManager()
-                    .getCurrentTickTransform(), entity,
+            physicsObject.get()
+                .getShipTransformationManager()
+                .getCurrentTickTransform().transform(entity,
                 TransformType.SUBSPACE_TO_GLOBAL);
             // TODO: This should work but it doesn't because of sponge. Instead we have to rely on MixinChunk.preAddEntity() to fix this
             // event.setCanceled(true);
@@ -176,9 +175,9 @@ public class EventsCommon {
         if (!event.player.world.isRemote && event.player != null) {
             EntityPlayerMP p = (EntityPlayerMP) event.player;
 
-            Double[] pos = lastPositions.get(p);
+            double[] pos = lastPositions.get(p);
             if (pos == null) {
-                pos = new Double[3];
+                pos = new double[3];
                 lastPositions.put(p, pos);
             }
             try {
@@ -288,7 +287,7 @@ public class EventsCommon {
     public void onJoin(PlayerLoggedInEvent event) {
         if (!event.player.world.isRemote) {
             EntityPlayerMP player = (EntityPlayerMP) event.player;
-            lastPositions.put(player, new Double[]{0D, 256D, 0D});
+            lastPositions.put(player, new double[]{0D, 256D, 0D});
 
             if (player.getName()
                 .equals("Drake_Eldridge") || player.getName()

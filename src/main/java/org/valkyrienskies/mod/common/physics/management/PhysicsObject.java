@@ -676,8 +676,8 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
     public void writeToNBTTag(NBTTagCompound compound) {
         getOwnedChunks().writeToNBT(compound);
         ValkyrienNBTUtils.writeVectorToNBT("c", getCenterCoord(), compound);
-        ValkyrienNBTUtils.writeShipTransformToNBT("currentTickTransform",
-            getShipTransformationManager().getCurrentTickTransform(), compound);
+        getShipTransformationManager().getCurrentTickTransform()
+            .writeToNBT(compound, "current_tick_transform");
         compound.setBoolean("doPhysics", isPhysicsEnabled/* isPhysicsEnabled() */);
         for (int row = 0; row < getOwnedChunks().chunkOccupiedInLocal.length; row++) {
             boolean[] curArray = getOwnedChunks().chunkOccupiedInLocal[row];
@@ -718,8 +718,8 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
         assert getPhysicsProcessor() != null : "Insert error message here";
 
         setOwnedChunks(new VSChunkClaim(compound));
-        ShipTransform savedTransform = ValkyrienNBTUtils
-            .readShipTransformFromNBT("currentTickTransform", compound);
+        ShipTransform savedTransform = ShipTransform
+            .readFromNBT(compound, "current_tick_transform");
         if (savedTransform != null) {
             Vector centerOfMassInGlobal = new Vector(getCenterCoord());
             savedTransform.transform(centerOfMassInGlobal, TransformType.SUBSPACE_TO_GLOBAL);

@@ -22,7 +22,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
-import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
 
 /**
  * Custom Vector class used by Valkyrien Warfare
@@ -104,16 +103,6 @@ public class Vector {
         Vector[] norms = new Vector[]{new Vector(1.0D, 0.0D, 0.0D), new Vector(0.0D, 1.0D, 0.0D),
             new Vector(0.0D, 0.0D, 1.0D)};
         return norms;
-    }
-
-    public static void writeToBuffer(Vector vector, ByteBuf buffer) {
-        buffer.writeFloat((float) vector.X);
-        buffer.writeFloat((float) vector.Y);
-        buffer.writeFloat((float) vector.Z);
-    }
-
-    public static Vector readFromBuffer(ByteBuf buffer) {
-        return new Vector(buffer.readFloat(), buffer.readFloat(), buffer.readFloat());
     }
 
     public Vector getSubtraction(Vector v) {
@@ -226,13 +215,6 @@ public class Vector {
         return coords;
     }
 
-    public String toRoundedString() {
-        String coords =
-            "<" + Math.round(X * 100.0) / 100.0 + ", " + Math.round(Y * 100.0) / 100.0 + ", "
-                + Math.round(Z * 100.0) / 100.0 + ">";
-        return coords;
-    }
-
     public Vector crossAndUnit(Vector v) {
         Vector crossProduct = cross(v);
         crossProduct.normalize();
@@ -277,26 +259,6 @@ public class Vector {
         double dotProduct = this.dot(other);
         double normalizedDotProduect = dotProduct / (this.length() * other.length());
         return Math.acos(dotProduct);
-    }
-
-    /**
-     * Returns true if both vectors are parallel.
-     *
-     * @param other
-     * @return
-     */
-    public boolean isParrallelTo(Vector other) {
-        return (this.dot(other) * this.dot(other)) / (this.lengthSq() * other.lengthSq()) > .99;
-    }
-
-    /**
-     * Returns true if both vectors are perpendicular.
-     *
-     * @param other
-     * @return
-     */
-    public boolean isPerpendicularTo(Vector other) {
-        return Math.abs(this.dot(other)) < PhysicsCalculations.EPSILON;
     }
 
     public VectorImmutable toImmutable() {

@@ -107,7 +107,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
     @Override
     public void onUpdate() {
         if (world.isRemote) {
-            getPhysicsObject().setNameCustom(dataManager.get(IS_NAME_CUSTOM));
+            getPhysicsObject().isNameCustom(dataManager.get(IS_NAME_CUSTOM));
         }
         // super.onUpdate();
         getPhysicsObject().onTick();
@@ -136,7 +136,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 
             if (didRenameSuccessfully) {
                 super.setCustomNameTag(name);
-                getPhysicsObject().setNameCustom(true);
+                getPhysicsObject().isNameCustom(true);
                 dataManager.set(IS_NAME_CUSTOM, true);
             }
         }

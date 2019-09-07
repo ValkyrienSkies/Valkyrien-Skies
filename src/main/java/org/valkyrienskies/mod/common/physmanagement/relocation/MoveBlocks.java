@@ -48,13 +48,13 @@ public class MoveBlocks {
         // actually being used for performance reasons.
         if (physicsObjectOptional.isPresent()) {
             int minChunkX = physicsObjectOptional.get()
-                .getOwnedChunks()
-                .getMinX();
+                .ownedChunks()
+                .minX();
             int minChunkZ = physicsObjectOptional.get()
-                .getOwnedChunks()
-                .getMinZ();
+                .ownedChunks()
+                .minZ();
             physicsObjectOptional.get()
-                .getOwnedChunks().chunkOccupiedInLocal[(newPos.getX() >> 4) - minChunkX][
+                .ownedChunks().chunkOccupiedInLocal[(newPos.getX() >> 4) - minChunkX][
                 (newPos.getZ() >> 4) - minChunkZ] = true;
         }
         // Now that we've copied the block to the position, copy the tile entity

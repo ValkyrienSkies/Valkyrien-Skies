@@ -65,14 +65,14 @@ public class PhysObjectRenderManager {
 
     public void renderBlockLayer(BlockRenderLayer layerToRender, double partialTicks, int pass) {
         if (renderChunks == null) {
-            renderChunks = new PhysRenderChunk[parent.getOwnedChunks().getChunkLengthX()][parent
-                .getOwnedChunks()
-                .getChunkLengthZ()];
-            for (int xChunk = 0; xChunk < parent.getOwnedChunks().getChunkLengthX(); xChunk++) {
-                for (int zChunk = 0; zChunk < parent.getOwnedChunks().getChunkLengthZ(); zChunk++) {
+            renderChunks = new PhysRenderChunk[parent.ownedChunks().chunkLengthX()][parent
+                .ownedChunks()
+                .chunkLengthZ()];
+            for (int xChunk = 0; xChunk < parent.ownedChunks().chunkLengthX(); xChunk++) {
+                for (int zChunk = 0; zChunk < parent.ownedChunks().chunkLengthZ(); zChunk++) {
                     renderChunks[xChunk][zChunk] = new PhysRenderChunk(parent, parent
-                        .getChunkAt(xChunk + parent.getOwnedChunks().getMinX(),
-                            zChunk + parent.getOwnedChunks().getMinZ()));
+                        .getChunkAt(xChunk + parent.ownedChunks().minX(),
+                            zChunk + parent.ownedChunks().minZ()));
                 }
             }
         }
@@ -110,7 +110,7 @@ public class PhysObjectRenderManager {
 
     public void updateRange(int minX, int minY, int minZ, int maxX, int maxY, int maxZ,
         boolean updateImmediately) {
-        if (renderChunks == null || parent == null || parent.getOwnedChunks() == null) {
+        if (renderChunks == null || parent == null || parent.ownedChunks() == null) {
             return;
         }
 
@@ -132,13 +132,13 @@ public class PhysObjectRenderManager {
             for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
                 // TODO: Fix this render bug
                 try {
-                    if (chunkX >= parent.getOwnedChunks().getMinX() && chunkZ >= parent
-                        .getOwnedChunks().getMinZ()
-                        && chunkX - parent.getOwnedChunks().getMinX() < renderChunks.length
-                        && chunkZ - parent.getOwnedChunks().getMinZ() < renderChunks[0].length) {
-                        PhysRenderChunk renderChunk = renderChunks[chunkX - parent.getOwnedChunks()
-                            .getMinX()][chunkZ
-                            - parent.getOwnedChunks().getMinZ()];
+                    if (chunkX >= parent.ownedChunks().minX() && chunkZ >= parent
+                        .ownedChunks().minZ()
+                        && chunkX - parent.ownedChunks().minX() < renderChunks.length
+                        && chunkZ - parent.ownedChunks().minZ() < renderChunks[0].length) {
+                        PhysRenderChunk renderChunk = renderChunks[chunkX - parent.ownedChunks()
+                            .minX()][chunkZ
+                            - parent.ownedChunks().minZ()];
                         if (renderChunk != null) {
                             renderChunk.updateLayers(minBlockArrayY, maxBlockArrayY);
                         } else {

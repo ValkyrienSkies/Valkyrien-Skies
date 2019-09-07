@@ -17,6 +17,8 @@
 package org.valkyrienskies.mod.common.physmanagement.chunk;
 
 import java.io.Serializable;
+
+import lombok.Getter;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 
@@ -28,8 +30,11 @@ import net.minecraft.util.math.BlockPos;
 public class VSChunkClaim implements Serializable {
 
     public final boolean[][] chunkOccupiedInLocal;
+    @Getter
     private final int centerX;
+    @Getter
     private final int centerZ;
+    @Getter
     private final int radius;
 
     // For Kryo
@@ -44,7 +49,7 @@ public class VSChunkClaim implements Serializable {
         this.centerX = x;
         this.centerZ = z;
         this.radius = size;
-        this.chunkOccupiedInLocal = new boolean[(getRadius() * 2) + 1][(getRadius() * 2) + 1];
+        this.chunkOccupiedInLocal = new boolean[(radius() * 2) + 1][(radius() * 2) + 1];
     }
 
     public VSChunkClaim(NBTTagCompound readFrom) {
@@ -53,96 +58,85 @@ public class VSChunkClaim implements Serializable {
     }
 
     public void writeToNBT(NBTTagCompound toSave) {
-        toSave.setInteger("centerX", getCenterX());
-        toSave.setInteger("centerZ", getCenterZ());
-        toSave.setInteger("radius", getRadius());
+        toSave.setInteger("centerX", centerX());
+        toSave.setInteger("centerZ", centerZ());
+        toSave.setInteger("radius", radius());
     }
 
-    public boolean isChunkEnclosedInMaxSet(int chunkX, int chunkZ) {
-        boolean inX = (chunkX >= getCenterX() - 12) && (chunkX <= getCenterX() + 12);
-        boolean inZ = (chunkZ >= getCenterZ() - 12) && (chunkZ <= getCenterZ() + 12);
+    /**
+     * Checks if a chunk is contained within this {@link VSChunkClaim}
+     *
+     * @param chunkX The X value of the chunk
+     * @param chunkZ The Y value of the chunk
+     * @return True if the specified chunk is contained within this {@link VSChunkClaim}
+     */
+    public boolean containsChunk(int chunkX, int chunkZ) {
+        boolean inX = (chunkX >= minX()) && (chunkX <= maxX());
+        boolean inZ = (chunkZ >= minZ()) && (chunkZ <= maxZ());
         return inX && inZ;
     }
 
-    public boolean isChunkEnclosedInSet(int chunkX, int chunkZ) {
-        boolean inX = (chunkX >= getMinX()) && (chunkX <= getMaxX());
-        boolean inZ = (chunkZ >= getMinZ()) && (chunkZ <= getMaxZ());
-        return inX && inZ;
+    /**
+     * Checks if a block is contained within this {@link VSChunkClaim}
+     *
+     * @return True if the specified block is contained within this {@link VSChunkClaim}
+     */
+    public boolean containsBlock(BlockPos pos) {
+        return containsChunk(pos.getX() >> 4, pos.getZ() >> 4);
     }
 
     @Override
     public String toString() {
-        return getCenterX() + ":" + getCenterZ() + ":" + getRadius();
+        return centerX() + ":" + centerZ() + ":" + radius();
     }
 
     @Override
     public boolean equals(Object o) {
         if (o instanceof VSChunkClaim) {
             VSChunkClaim other = (VSChunkClaim) o;
-            return other.getCenterX() == getCenterX() && other.getCenterZ() == getCenterZ()
-                && other.getRadius() == getRadius();
+            return other.centerX() == centerX() && other.centerZ() == centerZ()
+                && other.radius() == radius();
         }
         return false;
     }
 
     /**
-     * @return the centerX
-     */
-    public int getCenterX() {
-        return centerX;
-    }
-
-    /**
-     * @return the centerZ
-     */
-    public int getCenterZ() {
-        return centerZ;
-    }
-
-    /**
-     * @return the radius
-     */
-    public int getRadius() {
-        return radius;
-    }
-
-    /**
      * @return the maxX
      */
-    public int getMaxX() {
-        return getCenterX() + getRadius();
+    public int maxX() {
+        return centerX() + radius();
     }
 
     /**
      * @return the maxZ
      */
-    public int getMaxZ() {
-        return getCenterZ() + getRadius();
+    public int maxZ() {
+        return centerZ() + radius();
     }
 
     /**
      * @return the minZ
      */
-    public int getMinZ() {
-        return getCenterZ() - getRadius();
+    public int minZ() {
+        return centerZ() - radius();
     }
 
     /**
      * @return the minX
      */
-    public int getMinX() {
-        return getCenterX() - getRadius();
+    public int minX() {
+        return centerX() - radius();
     }
 
-    public BlockPos getRegionCenter() {
-        return new BlockPos(this.getCenterX() * 16, 128, this.getCenterZ() * 16);
+    public BlockPos regionCenter() {
+        return new BlockPos(this.centerX() * 16, 128, this.centerZ() * 16);
     }
 
-    public int getChunkLengthX() {
-        return getMaxX() - getMinX() + 1;
+    public int chunkLengthX() {
+        return maxX() - minX() + 1;
     }
 
-    public int getChunkLengthZ() {
-        return getMaxZ() - getMinZ() + 1;
+    public int chunkLengthZ() {
+        return maxZ() - minZ() + 1;
     }
 }

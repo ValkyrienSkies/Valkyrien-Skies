@@ -18,6 +18,8 @@ package org.valkyrienskies.mod.common.coordinates;
 
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+
+import lombok.extern.log4j.Log4j2;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
@@ -26,8 +28,9 @@ import org.valkyrienskies.mod.common.math.Quaternion;
 import org.valkyrienskies.mod.common.math.RotationMatrices;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.util.ValkyrienNBTUtils;
-import scala.actors.threadpool.Arrays;
 import valkyrienwarfare.api.TransformType;
+
+import java.util.Arrays;
 
 /**
  * Immutable wrapper around the rotation matrices used by ships. The immutability is extremely
@@ -40,6 +43,7 @@ import valkyrienwarfare.api.TransformType;
  * @author thebest108
  */
 @Immutable
+@Log4j2
 public class ShipTransform {
 
     private final double[] subspaceToGlobal;
@@ -139,8 +143,8 @@ public class ShipTransform {
     public static ShipTransform readFromNBT(NBTTagCompound compound, String name) {
         byte[] localToGlobalAsBytes = compound.getByteArray(name);
         if (localToGlobalAsBytes.length == 0) {
-            System.err.println(
-                "Loading from the ShipTransform has failed, now we are forced to fallback on Vanilla MC positions. This probably won't go well at all!");
+            log.error("Loading from the ShipTransform has failed, now we are forced to fallback on " +
+                    "Vanilla MC positions. This probably won't go well at all!");
             return null;
         }
         double[] localToGlobalInternalArray = ValkyrienNBTUtils.toDoubleArray(localToGlobalAsBytes);

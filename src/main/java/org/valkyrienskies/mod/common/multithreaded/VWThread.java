@@ -20,13 +20,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import lombok.extern.log4j.Log4j2;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
@@ -38,9 +37,8 @@ import org.valkyrienskies.mod.common.physics.management.WorldPhysObjectManager;
  *
  * @author thebest108
  */
+@Log4j2
 public class VWThread extends Thread {
-
-    private static final Logger logger = LogManager.getLogger(VWThread.class);
 
     private final static long NS_PER_TICK = 10000000;
     private final static long MAX_LOST_TIME_NS = 1000000000;
@@ -63,7 +61,7 @@ public class VWThread extends Thread {
         this.physicsTicksCount = 0;
         this.threadRunning = true;
         this.latestPhysicsTickTimes = new ConcurrentLinkedQueue<Long>();
-        logger.trace(this.getName() + " thread created.");
+        log.trace(this.getName() + " thread created.");
     }
 
     @SideOnly(Side.CLIENT)
@@ -126,7 +124,7 @@ public class VWThread extends Thread {
         }
         // If we get to this point of run(), then we are about to return and this thread
         // will terminate soon.
-        logger.trace(super.getName() + " killed");
+        log.trace(super.getName() + " killed");
     }
 
     private void runGameLoop() {
@@ -166,12 +164,12 @@ public class VWThread extends Thread {
         for (PhysicsWrapperEntity wrapper : shipsWithPhysics) {
             if (!wrapper.firstUpdate) {
                 // Update the physics simulation
-                wrapper.getPhysicsObject().getPhysicsProcessor().rawPhysTickPreCol(newPhysSpeed);
+                wrapper.getPhysicsObject().physicsProcessor().rawPhysTickPreCol(newPhysSpeed);
                 // Update the collision task if necessary
-                wrapper.getPhysicsObject().getPhysicsProcessor().getWorldCollision()
+                wrapper.getPhysicsObject().physicsProcessor().getWorldCollision()
                     .tickUpdatingTheCollisionCache();
                 // Take the big collision and split into tiny ones
-                wrapper.getPhysicsObject().getPhysicsProcessor().getWorldCollision()
+                wrapper.getPhysicsObject().physicsProcessor().getWorldCollision()
                     .splitIntoCollisionTasks(collisionTasks);
             }
         }
@@ -187,7 +185,7 @@ public class VWThread extends Thread {
         // Then those collision points have to be processed sequentially afterwards, all in
         // this thread. Thankfully this step is not cpu intensive.
         for (ShipCollisionTask task : collisionTasks) {
-            PhysicsWrapperEntity wrapper = task.getToTask().getParent().getWrapperEntity();
+            PhysicsWrapperEntity wrapper = task.getToTask().getParent().wrapperEntity();
             if (!wrapper.firstUpdate) {
                 task.getToTask().processCollisionTask(task);
             }
@@ -196,13 +194,13 @@ public class VWThread extends Thread {
         for (PhysicsWrapperEntity wrapper : shipsWithPhysics) {
             if (!wrapper.firstUpdate) {
                 try {
-                    wrapper.getPhysicsObject().getPhysicsProcessor().rawPhysTickPostCol();
+                    wrapper.getPhysicsObject().physicsProcessor().rawPhysTickPostCol();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             } else {
                 wrapper.getPhysicsObject()
-                    .getShipTransformationManager()
+                    .shipTransformationManager()
                     .updateAllTransforms(false, false, false);
             }
         }
@@ -210,7 +208,7 @@ public class VWThread extends Thread {
 
     private void tickSendUpdatesToPlayers(List<PhysicsWrapperEntity> ships) {
         for (PhysicsWrapperEntity wrapper : ships) {
-            wrapper.getPhysicsObject().getShipTransformationManager()
+            wrapper.getPhysicsObject().shipTransformationManager()
                 .sendPositionToPlayers(physicsTicksCount);
         }
         physicsTicksCount++;
@@ -221,7 +219,7 @@ public class VWThread extends Thread {
      * the thread will die after the current running physics tick is finished.
      */
     public void kill() {
-        logger.trace(super.getName() + " marked for death.");
+        log.trace(super.getName() + " marked for death.");
         threadRunning = false;
     }
 

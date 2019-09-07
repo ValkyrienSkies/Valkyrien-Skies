@@ -170,10 +170,10 @@ public class PhysRenderChunk {
         }
 
         private void updateList(BlockRenderLayer layerToUpdate) {
-            if (parent.toRender.getShipRenderer() == null) {
+            if (parent.toRender.shipRenderer() == null) {
                 return;
             }
-            BlockPos offsetPos = parent.toRender.getShipRenderer().offsetPos;
+            BlockPos offsetPos = parent.toRender.shipRenderer().offsetPos;
             if (offsetPos == null) {
                 return;
             }

@@ -58,7 +58,7 @@ public class TileEntityPilotsChair extends TileEntityPilotableImpl {
 
     @Override
     public final void onStartTileUsage(EntityPlayer player) {
-        getParentPhysicsEntity().getPhysicsObject().getPhysicsProcessor().actAsArchimedes = true;
+        getParentPhysicsEntity().getPhysicsObject().physicsProcessor().actAsArchimedes = true;
     }
 
     @Override
@@ -66,7 +66,7 @@ public class TileEntityPilotsChair extends TileEntityPilotableImpl {
         // Sanity check, sometimes we can be piloting something that's been destroyed so there's nothing to change physics on.
         if (getParentPhysicsEntity() != null) {
             getParentPhysicsEntity().getPhysicsObject()
-                .getPhysicsProcessor().actAsArchimedes = false;
+                .physicsProcessor().actAsArchimedes = false;
         }
     }
 
@@ -109,9 +109,9 @@ public class TileEntityPilotsChair extends TileEntityPilotableImpl {
             idealLinearVelocity.subtract(playerDirection);
         }
 
-        controlledShip.getShipTransformationManager().getCurrentTickTransform()
+        controlledShip.shipTransformationManager().getCurrentTickTransform()
             .rotate(idealLinearVelocity, TransformType.SUBSPACE_TO_GLOBAL);
-        controlledShip.getShipTransformationManager().getCurrentTickTransform()
+        controlledShip.shipTransformationManager().getCurrentTickTransform()
             .rotate(shipUp, TransformType.SUBSPACE_TO_GLOBAL);
 
         if (message.airshipUp_KeyDown) {
@@ -133,7 +133,7 @@ public class TileEntityPilotsChair extends TileEntityPilotableImpl {
         }
 
         Vector sidesRotationAxis = new Vector(playerDirection);
-        controlledShip.getShipTransformationManager().getCurrentTickTransform()
+        controlledShip.shipTransformationManager().getCurrentTickTransform()
             .rotate(sidesRotationAxis, TransformType.SUBSPACE_TO_GLOBAL);
 
         double[] rotationSidesTransform = RotationMatrices
@@ -150,7 +150,7 @@ public class TileEntityPilotsChair extends TileEntityPilotableImpl {
         shipUpRotationVector.multiply(shipUpTheta);
 
         idealAngularDirection.add(shipUpRotationVector);
-        idealLinearVelocity.multiply(20D * controlledShip.getPhysicsProcessor().getMass());
+        idealLinearVelocity.multiply(20D * controlledShip.physicsProcessor().getMass());
 
         // Move the ship faster if the player holds the sprint key.
         if (message.airshipSprinting) {
@@ -159,15 +159,15 @@ public class TileEntityPilotsChair extends TileEntityPilotableImpl {
 
         double lerpFactor = .2D;
         Vector linearMomentumDif = idealLinearVelocity
-            .getSubtraction(controlledShip.getPhysicsProcessor().linearMomentum);
+            .getSubtraction(controlledShip.physicsProcessor().linearMomentum);
         Vector angularVelocityDif = idealAngularDirection
-            .getSubtraction(controlledShip.getPhysicsProcessor().angularVelocity);
+            .getSubtraction(controlledShip.physicsProcessor().angularVelocity);
 
         linearMomentumDif.multiply(lerpFactor);
         angularVelocityDif.multiply(lerpFactor);
 
-        controlledShip.getPhysicsProcessor().linearMomentum.subtract(linearMomentumDif);
-        controlledShip.getPhysicsProcessor().angularVelocity.subtract(angularVelocityDif);
+        controlledShip.physicsProcessor().linearMomentum.subtract(linearMomentumDif);
+        controlledShip.physicsProcessor().angularVelocity.subtract(angularVelocityDif);
     }
 
 }

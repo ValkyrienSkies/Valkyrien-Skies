@@ -117,11 +117,11 @@ public class ClientProxy extends CommonProxy {
     public void updateShipPartialTicks(PhysicsWrapperEntity entity) {
         double partialTicks = Minecraft.getMinecraft().getRenderPartialTicks();
         // entity.wrapping.renderer.updateTranslation(partialTicks);
-        Vector centerOfRotation = entity.getPhysicsObject().getCenterCoord();
-        if (entity.getPhysicsObject().getShipRenderer() == null) {
+        Vector centerOfRotation = entity.getPhysicsObject().centerCoord();
+        if (entity.getPhysicsObject().shipRenderer() == null) {
             return;
         }
-        entity.getPhysicsObject().getShipRenderer().curPartialTick = partialTicks;
+        entity.getPhysicsObject().shipRenderer().curPartialTick = partialTicks;
 
         double moddedX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks;
         double moddedY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks;
@@ -136,7 +136,7 @@ public class ClientProxy extends CommonProxy {
             (Minecraft.getMinecraft().player.posZ - Minecraft.getMinecraft().player.lastTickPosZ)
                 * partialTicks;
 
-        Quaternion smoothRotation = entity.getPhysicsObject().getShipRenderer()
+        Quaternion smoothRotation = entity.getPhysicsObject().shipRenderer()
             .getSmoothRotationQuat(partialTicks);
         double[] radians = smoothRotation.toRadians();
 
@@ -144,7 +144,7 @@ public class ClientProxy extends CommonProxy {
         double moddedYaw = Math.toDegrees(radians[1]);
         double moddedRoll = Math.toDegrees(radians[2]);
 
-        entity.getPhysicsObject().getShipTransformationManager()
+        entity.getPhysicsObject().shipTransformationManager()
             .updateRenderTransform(moddedX, moddedY, moddedZ, moddedPitch, moddedYaw, moddedRoll);
     }
 

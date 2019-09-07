@@ -66,17 +66,17 @@ public class ShipTransformationManager {
      * made from this data.
      */
     public void updateCurrentTickTransform() {
-        PhysicsWrapperEntity wrapperEntity = parent.getWrapperEntity();
+        PhysicsWrapperEntity wrapperEntity = parent.wrapperEntity();
         ShipTransform newTickTransform = new ShipTransform(wrapperEntity.posX, wrapperEntity.posY,
             wrapperEntity.posZ, wrapperEntity.getPitch(), wrapperEntity.getYaw(),
-            wrapperEntity.getRoll(), parent.getCenterCoord());
+            wrapperEntity.getRoll(), parent.centerCoord());
         setCurrentTickTransform(newTickTransform);
     }
 
     public void updateRenderTransform(double x, double y, double z, double pitch, double yaw,
         double roll) {
         ShipTransform newRenderTransform = new ShipTransform(x, y, z, pitch, yaw, roll,
-            parent.getCenterCoord());
+            parent.centerCoord());
         setRenderTransform(newRenderTransform);
     }
 
@@ -97,7 +97,7 @@ public class ShipTransformationManager {
     public void updateAllTransforms(boolean updatePhysicsTransform, boolean updateParentAABB,
         boolean updatePassengers) {
         // The client should never be updating the AABB on its own.
-        if (parent.getWorld().isRemote) {
+        if (parent.world().isRemote) {
             updateParentAABB = false;
         }
         forceShipIntoWorldBorder();
@@ -107,7 +107,7 @@ public class ShipTransformationManager {
         }
         if (updatePhysicsTransform) {
             // This should only be called once when the ship finally loads from nbt.
-            parent.getPhysicsProcessor()
+            parent.physicsProcessor()
                 .generatePhysicsTransform();
             prevPhysicsTransform = currentPhysicsTransform;
         }
@@ -124,26 +124,26 @@ public class ShipTransformationManager {
      * Keeps the Ship in the world border
      */
     private void forceShipIntoWorldBorder() {
-        WorldBorder border = parent.getWorld().getWorldBorder();
-        AxisAlignedBB shipBB = parent.getShipBoundingBox();
+        WorldBorder border = parent.world().getWorldBorder();
+        AxisAlignedBB shipBB = parent.shipBoundingBox();
 
         if (shipBB.maxX > border.maxX()) {
-            parent.getWrapperEntity().posX += border.maxX() - shipBB.maxX;
+            parent.wrapperEntity().posX += border.maxX() - shipBB.maxX;
         }
         if (shipBB.minX < border.minX()) {
-            parent.getWrapperEntity().posX += border.minX() - shipBB.minX;
+            parent.wrapperEntity().posX += border.minX() - shipBB.minX;
         }
         if (shipBB.maxZ > border.maxZ()) {
-            parent.getWrapperEntity().posZ += border.maxZ() - shipBB.maxZ;
+            parent.wrapperEntity().posZ += border.maxZ() - shipBB.maxZ;
         }
         if (shipBB.minZ < border.minZ()) {
-            parent.getWrapperEntity().posZ += border.minZ() - shipBB.minZ;
+            parent.wrapperEntity().posZ += border.minZ() - shipBB.minZ;
         }
     }
 
     public void updatePassengerPositions() {
-        for (Entity entity : parent.getWrapperEntity().riddenByEntities) {
-            parent.getWrapperEntity().updatePassenger(entity);
+        for (Entity entity : parent.wrapperEntity().riddenByEntities) {
+            parent.wrapperEntity().updatePassenger(entity);
         }
     }
 
@@ -152,14 +152,14 @@ public class ShipTransformationManager {
         if (getCurrentPhysicsTransform() != ZERO_TRANSFORM) {
             posMessage = new PhysWrapperPositionMessage(
                 (PhysicsShipTransform) getCurrentPhysicsTransform(),
-                parent.getWrapperEntity().getEntityId(), positionTickID);
+                parent.wrapperEntity().getEntityId(), positionTickID);
         } else {
-            posMessage = new PhysWrapperPositionMessage(parent.getWrapperEntity(), positionTickID);
+            posMessage = new PhysWrapperPositionMessage(parent.wrapperEntity(), positionTickID);
         }
 
         // Do a standard loop here to avoid a concurrentModificationException. A standard for each loop could cause a crash.
-        for (int i = 0; i < parent.getWatchingPlayers().size(); i++) {
-            EntityPlayerMP player = parent.getWatchingPlayers().get(i);
+        for (int i = 0; i < parent.watchingPlayers().size(); i++) {
+            EntityPlayerMP player = parent.watchingPlayers().get(i);
             if (player != null) {
                 ValkyrienSkiesMod.physWrapperNetwork.sendTo(posMessage, player);
             }
@@ -210,7 +210,7 @@ public class ShipTransformationManager {
         // Note: This Vector array still contains potential 0 vectors, those are removed
         // later
         Vector[] normals = new Vector[15];
-        Vector[] otherNorms = other.getShipTransformationManager().normals;
+        Vector[] otherNorms = other.shipTransformationManager().normals;
         Vector[] rotatedNorms = normals;
         for (int i = 0; i < 6; i++) {
             if (i < 3) {
@@ -237,7 +237,7 @@ public class ShipTransformationManager {
     // TODO: Use Octrees to optimize this, or more preferably QuickHull3D.
     public void updateParentAABB() {
         // Don't run otherwise make the game freeze
-        if (parent.getBlockPositionsGameTick().isEmpty()) {
+        if (parent.blockPositionsGameTick().isEmpty()) {
             return;
         }
         final BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
@@ -252,9 +252,9 @@ public class ShipTransformationManager {
 
         // We loop through this int list instead of a blockpos list because they fit much better in
         // the cache,
-        for (int i = parent.getBlockPositionsGameTick().size() - 1; i >= 0; i--) {
+        for (int i = parent.blockPositionsGameTick().size() - 1; i >= 0; i--) {
             // Don't bother doing any bounds checking.
-            int blockPos = parent.getBlockPositionsGameTick().getQuick(i);
+            int blockPos = parent.blockPositionsGameTick().getQuick(i);
             parent.setBlockPosFromIntRelToShop(blockPos, pos);
 
             float x = pos.getX() + .5f;
@@ -275,7 +275,7 @@ public class ShipTransformationManager {
         AxisAlignedBB newBB = new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ).grow(3D);
         // Just a quick sanity check
         if (newBB.getAverageEdgeLength() < 1000000D) {
-            parent.setShipBoundingBox(newBB);
+            parent.shipBoundingBox(newBB);
         } else {
             throw new IllegalStateException("Unexpectedly large ship bounding box!\n" + newBB);
         }
@@ -320,7 +320,7 @@ public class ShipTransformationManager {
      * @return the renderTransform
      */
     public ShipTransform getRenderTransform() {
-        if (!this.parent.getWorld().isRemote || renderTransform == null) {
+        if (!this.parent.world().isRemote || renderTransform == null) {
             return currentTickTransform;
         }
         return renderTransform;

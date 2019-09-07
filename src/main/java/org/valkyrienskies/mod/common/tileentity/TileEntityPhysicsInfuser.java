@@ -318,9 +318,8 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
     public boolean isCenterOfShip() {
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
             .getPhysicsObject(getWorld(), getPos());
-        return !physicsObject.isPresent() || physicsObject.get()
-            .getPhysicsInfuserPos()
-            .equals(getPos());
+        return !physicsObject.isPresent() ||
+            physicsObject.get().physicsInfuserPos().equals(getPos());
     }
 
     @SideOnly(Side.CLIENT)

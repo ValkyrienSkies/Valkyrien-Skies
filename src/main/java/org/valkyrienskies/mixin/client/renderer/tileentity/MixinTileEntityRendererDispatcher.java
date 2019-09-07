@@ -68,7 +68,7 @@ public abstract class MixinTileEntityRendererDispatcher {
                     }
 
                     physicsObject.get()
-                        .getShipRenderer()
+                        .shipRenderer()
                         .setupTranslation(partialTicks);
 
                     double playerX = TileEntityRendererDispatcher.staticPlayerX;
@@ -76,11 +76,11 @@ public abstract class MixinTileEntityRendererDispatcher {
                     double playerZ = TileEntityRendererDispatcher.staticPlayerZ;
 
                     TileEntityRendererDispatcher.staticPlayerX = physicsObject.get()
-                        .getShipRenderer().offsetPos.getX();
+                        .shipRenderer().offsetPos.getX();
                     TileEntityRendererDispatcher.staticPlayerY = physicsObject.get()
-                        .getShipRenderer().offsetPos.getY();
+                        .shipRenderer().offsetPos.getY();
                     TileEntityRendererDispatcher.staticPlayerZ = physicsObject.get()
-                        .getShipRenderer().offsetPos.getZ();
+                        .shipRenderer().offsetPos.getZ();
 
                     hasChanged = true;
                     if (drawingBatch) {
@@ -96,7 +96,7 @@ public abstract class MixinTileEntityRendererDispatcher {
                     TileEntityRendererDispatcher.staticPlayerZ = playerZ;
 
                     physicsObject.get()
-                        .getShipRenderer()
+                        .shipRenderer()
                         .inverseTransform(partialTicks);
                 } catch (Exception e) {
                     e.printStackTrace();

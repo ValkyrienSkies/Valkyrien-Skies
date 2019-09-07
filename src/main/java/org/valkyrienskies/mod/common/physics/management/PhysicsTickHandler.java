@@ -32,9 +32,9 @@ public class PhysicsTickHandler {
         List<PhysicsWrapperEntity> physicsEntities = manager.getTickablePhysicsEntities();
 
         for (PhysicsWrapperEntity wrapper : physicsEntities) {
-            wrapper.getPhysicsObject().getShipTransformationManager().updatePrevTickTransform();
+            wrapper.getPhysicsObject().shipTransformationManager().updatePrevTickTransform();
 
-            if (wrapper.getPhysicsObject().getShipTransformationManager()
+            if (wrapper.getPhysicsObject().shipTransformationManager()
                 .getCurrentPhysicsTransform() instanceof PhysicsShipTransform) {
                 // Here we poll our transforms from the physics tick, and apply the latest one
                 // to the game tick.
@@ -43,7 +43,7 @@ public class PhysicsTickHandler {
                 // depends on ship movement should go right here! Will possibly be moved to the
                 // end of the game tick instead.
                 PhysicsShipTransform physTransform = (PhysicsShipTransform) wrapper
-                    .getPhysicsObject().getShipTransformationManager()
+                    .getPhysicsObject().shipTransformationManager()
                     .getCurrentPhysicsTransform();
 
                 wrapper.physicsUpdateLastTickPositions();
@@ -51,7 +51,7 @@ public class PhysicsTickHandler {
                     physTransform.getPosY(), physTransform.getPosZ(), physTransform.getPitch(),
                     physTransform.getYaw(), physTransform.getRoll());
                 wrapper.getPhysicsObject()
-                    .getShipTransformationManager()
+                    .shipTransformationManager()
                     .updateAllTransforms(false, true, true);
             }
 

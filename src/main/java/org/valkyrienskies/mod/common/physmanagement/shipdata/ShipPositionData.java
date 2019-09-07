@@ -22,7 +22,7 @@ public class ShipPositionData {
         shipPosition = new Vector(wrapper.posX, wrapper.posY, wrapper.posZ);
         transform =
             wrapper.getPhysicsObject()
-                .getShipTransformationManager()
+                .shipTransformationManager()
                 .getCurrentTickTransform();
     }
 
@@ -31,7 +31,7 @@ public class ShipPositionData {
         shipPosition.Y = wrapper.posY;
         shipPosition.Z = wrapper.posZ;
         transform =
-            wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform();
+            wrapper.getPhysicsObject().shipTransformationManager().getCurrentTickTransform();
     }
 
     public double getPosX() {

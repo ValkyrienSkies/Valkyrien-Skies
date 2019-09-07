@@ -53,7 +53,7 @@ public class MixinCPacketPlayerTryUseItemOnBlock implements ITransformablePacket
             .getPhysicsObject(world, thisPacketTryUse.getPos());
         if (physicsObject.isPresent()) {
             return physicsObject.get()
-                .getWrapperEntity();
+                .wrapperEntity();
         } else {
             return null;
         }

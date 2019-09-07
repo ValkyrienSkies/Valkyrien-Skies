@@ -69,7 +69,7 @@ public class TileEntityEthereumCompressorPart extends
             Vector tilePos = new Vector(getPos().getX() + .5D, getPos().getY() + .5D,
                 getPos().getZ() + .5D);
             physicsObject.get()
-                .getShipTransformationManager()
+                .shipTransformationManager()
                 .getCurrentPhysicsTransform()
                 .transform(tilePos, TransformType.SUBSPACE_TO_GLOBAL);
             double yPos = tilePos.Y;

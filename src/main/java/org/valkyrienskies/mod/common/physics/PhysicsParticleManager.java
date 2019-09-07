@@ -42,9 +42,9 @@ public class PhysicsParticleManager {
             } else {
                 if (physicsParticle.addMomentumToShip) {
                     bufferVectorForcePos
-                        .setValue(physicsParticle.posX - parent.getParent().getWrapperEntity().posX,
-                            physicsParticle.posY - parent.getParent().getWrapperEntity().posY,
-                            physicsParticle.posZ - parent.getParent().getWrapperEntity().posZ);
+                        .setValue(physicsParticle.posX - parent.getParent().wrapperEntity().posX,
+                            physicsParticle.posY - parent.getParent().wrapperEntity().posY,
+                            physicsParticle.posZ - parent.getParent().wrapperEntity().posZ);
                     bufferVectorForce.setValue(physicsParticle.velX * physicsParticle.mass,
                         physicsParticle.velY * physicsParticle.mass,
                         physicsParticle.velZ * physicsParticle.mass);
@@ -98,18 +98,18 @@ public class PhysicsParticleManager {
             this.isParticleDead = (particleLife < 0);
             // Then check for collision in the world
             bufferBlockPos.setPos(posX, posY, posZ);
-            if (!canParticlePassThrough(physicsSource.getParent().getWorld(), bufferBlockPos)) {
+            if (!canParticlePassThrough(physicsSource.getParent().world(), bufferBlockPos)) {
                 // The particle hit a block in the world, so kill it.
                 this.isParticleDead = true;
             }
             // If the particle still isn't dead then check for collision in ship
             if (!isParticleDead) {
                 bufferVector.setValue(posX, posY, posZ);
-                physicsSource.getParent().getShipTransformationManager()
+                physicsSource.getParent().shipTransformationManager()
                     .getCurrentPhysicsTransform()
                     .transform(bufferVector, TransformType.GLOBAL_TO_SUBSPACE);
                 bufferBlockPos.setPos(bufferVector.X, bufferVector.Y, bufferVector.Z);
-                if (!canParticlePassThrough(physicsSource.getParent().getWorld(), bufferBlockPos)) {
+                if (!canParticlePassThrough(physicsSource.getParent().world(), bufferBlockPos)) {
                     this.isParticleDead = true;
                     addMomentumToShip = true;
                 }

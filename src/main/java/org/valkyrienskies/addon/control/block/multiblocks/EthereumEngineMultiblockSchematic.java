@@ -10,7 +10,7 @@ import net.minecraft.world.World;
 import org.valkyrienskies.addon.control.MultiblockRegistry;
 import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
 
-public class EthereumEngineMultiblockSchematic implements IMulitblockSchematic {
+public class EthereumEngineMultiblockSchematic implements IMultiblockSchematic {
 
     private final List<BlockPosBlockPair> structureRelativeToCenter;
     private String schematicID;
@@ -66,8 +66,8 @@ public class EthereumEngineMultiblockSchematic implements IMulitblockSchematic {
     }
 
     @Override
-    public List<IMulitblockSchematic> generateAllVariants() {
-        List<IMulitblockSchematic> variants = new ArrayList<IMulitblockSchematic>();
+    public List<IMultiblockSchematic> generateAllVariants() {
+        List<IMultiblockSchematic> variants = new ArrayList<IMultiblockSchematic>();
 
         for (EnumMultiblockRotation potentialRotation : EnumMultiblockRotation.values()) {
             EthereumEngineMultiblockSchematic variant = new EthereumEngineMultiblockSchematic();
@@ -88,7 +88,6 @@ public class EthereumEngineMultiblockSchematic implements IMulitblockSchematic {
                 .rotatePos((BlockPos) variant.torqueOutputDirection);
             variants.add(variant);
         }
-        // TODO Auto-generated method stub
         return variants;
     }
 

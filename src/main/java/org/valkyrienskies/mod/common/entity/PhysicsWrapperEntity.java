@@ -76,7 +76,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
                 .toString());
         }
         getPhysicsObject().setDetectorID(detectorID);
-        getPhysicsObject().setShipType(shipType);
+        getPhysicsObject().shipType(shipType);
         getPhysicsObject().assembleShipAsOrderedByPlayer(creator);
 
         ValkyrienUtils.getQueryableData(world).addShip(this);
@@ -97,8 +97,8 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
             .toString());
 
         getPhysicsObject().setDetectorID(0);
-        getPhysicsObject().setShipType(ShipType.PHYSICS_CORE_INFUSED);
-        this.physicsObject.setPhysicsInfuserPos(te.getPos());
+        getPhysicsObject().shipType(ShipType.PHYSICS_CORE_INFUSED);
+        this.physicsObject.physicsInfuserPos(te.getPos());
         getPhysicsObject().assembleShipAsOrderedByPlayer(null);
 
         ValkyrienUtils.getQueryableData(world).addShip(this);
@@ -155,7 +155,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
     @Override
     @SideOnly(Side.CLIENT)
     public AxisAlignedBB getRenderBoundingBox() {
-        return getPhysicsObject().getShipBoundingBox();
+        return getPhysicsObject().shipBoundingBox();
     }
 
     @Override
@@ -255,7 +255,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 
     @Override
     public AxisAlignedBB getEntityBoundingBox() {
-        return physicsObject.getShipBoundingBox();
+        return physicsObject.shipBoundingBox();
     }
 
 

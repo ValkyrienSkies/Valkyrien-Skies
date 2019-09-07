@@ -41,11 +41,11 @@ public interface ITransformablePacket {
             EntityPlayerMP player = serverHandler.player;
             PhysicsWrapperEntity wrapper = getPacketParent(serverHandler);
             if (wrapper != null
-                && wrapper.getPhysicsObject().getShipTransformationManager() != null) {
+                && wrapper.getPhysicsObject().shipTransformationManager() != null) {
                 ISubspaceProvider worldProvider = (ISubspaceProvider) player.getServerWorld();
                 ISubspace worldSubspace = worldProvider.getSubspace();
                 worldSubspace.snapshotSubspacedEntity((ISubspacedEntity) player);
-                wrapper.getPhysicsObject().getShipTransformationManager()
+                wrapper.getPhysicsObject().shipTransformationManager()
                     .getCurrentTickTransform().transform(player,
                     TransformType.GLOBAL_TO_SUBSPACE);
             }

@@ -139,12 +139,12 @@ public abstract class MixinRenderGlobal {
                         IBlockState iblockstate = this.world.getBlockState(blockpos);
                         if (physicsObject.isPresent()) {
                             physicsObject.get()
-                                .getShipRenderer()
+                                .shipRenderer()
                                 .setupTranslation(partialTicks);
                             worldRendererIn.setTranslation(-physicsObject.get()
-                                .getShipRenderer().offsetPos.getX(), -physicsObject.get()
-                                .getShipRenderer().offsetPos.getY(), -physicsObject.get()
-                                .getShipRenderer().offsetPos.getZ());
+                                .shipRenderer().offsetPos.getX(), -physicsObject.get()
+                                .shipRenderer().offsetPos.getY(), -physicsObject.get()
+                                .shipRenderer().offsetPos.getZ());
                         }
                         if (iblockstate.getMaterial() != Material.AIR) {
                             int i = destroyblockprogress.getPartialBlockDamage();
@@ -165,7 +165,7 @@ public abstract class MixinRenderGlobal {
                             tessellatorIn.draw();
                             worldRendererIn.begin(7, DefaultVertexFormats.BLOCK);
                             physicsObject.get()
-                                .getShipRenderer()
+                                .shipRenderer()
                                 .inverseTransform(partialTicks);
                         }
                     }
@@ -190,7 +190,7 @@ public abstract class MixinRenderGlobal {
             .getPhysicsObject(player.world, movingObjectPositionIn.getBlockPos());
         if (physicsObject.isPresent()) {
             physicsObject.get()
-                .getShipRenderer()
+                .shipRenderer()
                 .setupTranslation(partialTicks);
 
             Minecraft.getMinecraft().entityRenderer.getMouseOver(partialTicks);
@@ -202,13 +202,13 @@ public abstract class MixinRenderGlobal {
 
             double xOff = (player.lastTickPosX + (player.posX - player.lastTickPosX) * partialTicks)
                 - physicsObject.get()
-                .getShipRenderer().offsetPos.getX();
+                .shipRenderer().offsetPos.getX();
             double yOff = (player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTicks)
                 - physicsObject.get()
-                .getShipRenderer().offsetPos.getY();
+                .shipRenderer().offsetPos.getY();
             double zOff = (player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * partialTicks)
                 - physicsObject.get()
-                .getShipRenderer().offsetPos.getZ();
+                .shipRenderer().offsetPos.getZ();
 
             BufferBuilder.xOffset += xOff;
             BufferBuilder.yOffset += yOff;
@@ -221,7 +221,7 @@ public abstract class MixinRenderGlobal {
             BufferBuilder.zOffset -= zOff;
 
             physicsObject.get()
-                .getShipRenderer()
+                .shipRenderer()
                 .inverseTransform(partialTicks);
         } else {
             this.drawSelectionBoxOriginal(player, movingObjectPositionIn, execute, partialTicks);
@@ -274,9 +274,9 @@ public abstract class MixinRenderGlobal {
             .getManagerForWorld(this.world)
             .getTickablePhysicsEntities()) {
             GL11.glPushMatrix();
-            if (wrapper.getPhysicsObject().getShipRenderer() != null && wrapper.getPhysicsObject()
-                .getShipRenderer().shouldRender()) {
-                wrapper.getPhysicsObject().getShipRenderer()
+            if (wrapper.getPhysicsObject().shipRenderer() != null && wrapper.getPhysicsObject()
+                .shipRenderer().shouldRender()) {
+                wrapper.getPhysicsObject().shipRenderer()
                     .renderBlockLayer(blockLayerIn, partialTicks, pass);
             }
             GL11.glPopMatrix();

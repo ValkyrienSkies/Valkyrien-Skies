@@ -141,7 +141,7 @@ public class WorldPhysObjectManager {
             // boxes
             if (wrapper.getPhysicsObject()
                 .isFullyLoaded() && wrapper.getPhysicsObject()
-                .getShipBoundingBox()
+                .shipBoundingBox()
                 .expand(2, 2, 2)
                 .intersects(expandedCheck)) {
                 ships.add(wrapper);

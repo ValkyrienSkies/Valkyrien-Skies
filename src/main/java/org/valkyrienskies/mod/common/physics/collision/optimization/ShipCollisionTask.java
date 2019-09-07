@@ -103,7 +103,7 @@ public class ShipCollisionTask implements Callable<Void> {
         inWorld.Z = mutablePos.getZ() + .5;
 
 //        toTask.getParent().coordTransform.fromGlobalToLocal(inWorld);
-        toTask.getParent().getShipTransformationManager().getCurrentPhysicsTransform()
+        toTask.getParent().shipTransformationManager().getCurrentPhysicsTransform()
             .transform(inWorld, TransformType.GLOBAL_TO_SUBSPACE);
 
         int midX = MathHelper.floor(inWorld.X + .5D);
@@ -176,13 +176,13 @@ public class ShipCollisionTask implements Callable<Void> {
                 // inLocalBB = colBB.get(0);
 
                 Polygon shipInWorld = new Polygon(inLocalBB,
-                    toTask.getParent().getShipTransformationManager().getCurrentPhysicsTransform(),
+                    toTask.getParent().shipTransformationManager().getCurrentPhysicsTransform(),
                     TransformType.SUBSPACE_TO_GLOBAL);
                 Polygon worldPoly = new Polygon(inGlobalBB);
 
                 // TODO: Remove the normals crap
                 PhysPolygonCollider collider = new PhysPolygonCollider(shipInWorld, worldPoly,
-                    toTask.getParent().getShipTransformationManager().normals);
+                    toTask.getParent().shipTransformationManager().normals);
 
                 if (!collider.seperated) {
                     // return handleActualCollision(collider, mutablePos, inLocalPos, inWorldState,

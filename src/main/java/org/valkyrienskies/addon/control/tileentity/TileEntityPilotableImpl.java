@@ -94,7 +94,7 @@ public abstract class TileEntityPilotableImpl extends BasicNodeTileEntity implem
         Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(world, pos);
         if (physicsObject.isPresent()) {
             return physicsObject.get()
-                .getWrapperEntity();
+                .wrapperEntity();
         } else {
             return null;
         }
@@ -148,7 +148,7 @@ public abstract class TileEntityPilotableImpl extends BasicNodeTileEntity implem
         Vector tileRelativePos = new Vector(this.getPos().getX() + .5, this.getPos().getY() + .5,
             this.getPos().getZ() + .5);
         if (this.getParentPhysicsEntity() != null) {
-            this.getParentPhysicsEntity().getPhysicsObject().getShipTransformationManager()
+            this.getParentPhysicsEntity().getPhysicsObject().shipTransformationManager()
                 .getCurrentTickTransform()
                 .transform(tileRelativePos, TransformType.SUBSPACE_TO_GLOBAL);
         }
@@ -158,7 +158,7 @@ public abstract class TileEntityPilotableImpl extends BasicNodeTileEntity implem
             blockFacing.getDirectionVec().getZ());
 
         if (this.getParentPhysicsEntity() != null) {
-            this.getParentPhysicsEntity().getPhysicsObject().getShipTransformationManager()
+            this.getParentPhysicsEntity().getPhysicsObject().shipTransformationManager()
                 .getCurrentTickTransform()
                 .rotate(normal, TransformType.SUBSPACE_TO_GLOBAL);
         }

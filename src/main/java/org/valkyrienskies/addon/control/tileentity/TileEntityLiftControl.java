@@ -68,7 +68,7 @@ public class TileEntityLiftControl extends TileEntityPilotableImpl {
                     Vector currentPos = new Vector(getPos().getX() + .5, getPos().getY() + .5,
                         getPos().getZ() + .5);
                     physicsObject.get()
-                        .getShipTransformationManager()
+                        .shipTransformationManager()
                         .getCurrentTickTransform()
                         .transform(currentPos, TransformType.SUBSPACE_TO_GLOBAL);
                     targetYPosition = currentPos.Y;
@@ -95,13 +95,13 @@ public class TileEntityLiftControl extends TileEntityPilotableImpl {
             if (physicsObject.isPresent()) {
                 // The linear velocity of the ship
                 Vector linearVel = physicsObject.get()
-                    .getPhysicsProcessor()
+                    .physicsProcessor()
                     .getVelocityAtPoint(new Vector());
                 // The global coordinates of this tile entity
                 Vector tilePos = new Vector(getPos().getX() + .5, getPos().getY() + .5,
                     getPos().getZ() + .5);
                 physicsObject.get()
-                    .getShipTransformationManager()
+                    .shipTransformationManager()
                     .getCurrentPhysicsTransform()
                     .transform(tilePos, TransformType.SUBSPACE_TO_GLOBAL);
 

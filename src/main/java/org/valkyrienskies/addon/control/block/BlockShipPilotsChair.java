@@ -65,14 +65,14 @@ public class BlockShipPilotsChair extends BlockPilotableBasic {
             Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(worldIn, pos);
             if (physicsObject.isPresent()) {
                 PhysicsWrapperEntity wrapperEntity = physicsObject.get()
-                    .getWrapperEntity();
+                    .wrapperEntity();
                 if (playerIn.getLowestRidingEntity() != wrapperEntity.getLowestRidingEntity()) {
                     TileEntity tileEntity = worldIn.getTileEntity(pos);
                     if (tileEntity instanceof TileEntityPilotsChair) {
                         Vector playerPos = new Vector(playerIn);
 
                         wrapperEntity.getPhysicsObject()
-                            .getShipTransformationManager()
+                            .shipTransformationManager()
                             .fromLocalToGlobal(playerPos);
 
                         playerIn.posX = playerPos.X;
@@ -91,7 +91,7 @@ public class BlockShipPilotsChair extends BlockPilotableBasic {
 
                         ((TileEntityPilotsChair) tileEntity).setPilotEntity(playerIn);
                         wrapperEntity.getPhysicsObject()
-                            .getShipTransformationManager()
+                            .shipTransformationManager()
                             .fromGlobalToLocal(playerPos);
 
                         playerIn.posX = playerPos.X;

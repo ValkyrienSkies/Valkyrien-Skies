@@ -132,7 +132,7 @@ public class TileEntityShipHelm extends TileEntityPilotableImpl implements ITick
             .getPhysicsObject(getWorld(), getPos());
         if (physicsObject.isPresent()) {
             physicsObject.get()
-                .getShipTransformationManager()
+                .shipTransformationManager()
                 .getCurrentTickTransform()
                 .transform(compassPoint,
                     TransformType.SUBSPACE_TO_GLOBAL);
@@ -145,7 +145,7 @@ public class TileEntityShipHelm extends TileEntityPilotableImpl implements ITick
 
         if (physicsObject.isPresent()) {
             physicsObject.get()
-                .getShipTransformationManager()
+                .shipTransformationManager()
                 .getCurrentTickTransform()
                 .rotate(compassDirection,
                     TransformType.GLOBAL_TO_SUBSPACE);

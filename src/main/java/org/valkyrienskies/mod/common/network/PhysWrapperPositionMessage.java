@@ -61,27 +61,27 @@ public class PhysWrapperPositionMessage implements IMessage {
     public PhysWrapperPositionMessage(PhysicsWrapperEntity toSend, int relativeTick) {
         this.setEntityID(toSend.getEntityId());
         this.setRelativeTick(relativeTick);
-        this.setShipBB(toSend.getPhysicsObject().getShipBoundingBox());
+        this.setShipBB(toSend.getPhysicsObject().shipBoundingBox());
         this.setPosX(toSend.posX);
         this.setPosY(toSend.posY);
         this.setPosZ(toSend.posZ);
         this.setPitch(toSend.getPitch());
         this.setYaw(toSend.getYaw());
         this.setRoll(toSend.getRoll());
-        this.setCenterOfMass(toSend.getPhysicsObject().getCenterCoord());
+        this.setCenterOfMass(toSend.getPhysicsObject().centerCoord());
     }
 
     public PhysWrapperPositionMessage(PhysicsObject toRunLocally) {
-        setPosX(toRunLocally.getWrapperEntity().posX);
-        setPosY(toRunLocally.getWrapperEntity().posY);
-        setPosZ(toRunLocally.getWrapperEntity().posZ);
+        setPosX(toRunLocally.wrapperEntity().posX);
+        setPosY(toRunLocally.wrapperEntity().posY);
+        setPosZ(toRunLocally.wrapperEntity().posZ);
 
-        setPitch(toRunLocally.getWrapperEntity().getPitch());
-        setYaw(toRunLocally.getWrapperEntity().getYaw());
-        setRoll(toRunLocally.getWrapperEntity().getRoll());
+        setPitch(toRunLocally.wrapperEntity().getPitch());
+        setYaw(toRunLocally.wrapperEntity().getYaw());
+        setRoll(toRunLocally.wrapperEntity().getRoll());
 
-        setCenterOfMass(toRunLocally.getCenterCoord());
-        setShipBB(toRunLocally.getShipBoundingBox());
+        setCenterOfMass(toRunLocally.centerCoord());
+        setShipBB(toRunLocally.shipBoundingBox());
     }
 
     @Override

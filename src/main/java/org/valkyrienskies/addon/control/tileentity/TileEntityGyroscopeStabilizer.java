@@ -31,7 +31,7 @@ public class TileEntityGyroscopeStabilizer extends TileEntity {
 
     public Vector getTorqueInGlobal(PhysicsCalculations physicsCalculations, BlockPos pos) {
         Vector shipLevelNormal = new Vector(GRAVITY_UP);
-        physicsCalculations.getParent().getShipTransformationManager().getCurrentPhysicsTransform()
+        physicsCalculations.getParent().shipTransformationManager().getCurrentPhysicsTransform()
             .rotate(shipLevelNormal, TransformType.SUBSPACE_TO_GLOBAL);
         Vector torqueDir = GRAVITY_UP.cross(shipLevelNormal);
         double angleBetween = Math.toDegrees(GRAVITY_UP.angleBetween(shipLevelNormal));

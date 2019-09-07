@@ -16,8 +16,6 @@
 
 package org.valkyrienskies.mod.common.physmanagement.chunk;
 
-import java.io.Serializable;
-
 import lombok.Getter;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
@@ -27,7 +25,7 @@ import net.minecraft.util.math.BlockPos;
  *
  * @author thebest108
  */
-public class VSChunkClaim implements Serializable {
+public class VSChunkClaim {
 
     public final boolean[][] chunkOccupiedInLocal;
     @Getter

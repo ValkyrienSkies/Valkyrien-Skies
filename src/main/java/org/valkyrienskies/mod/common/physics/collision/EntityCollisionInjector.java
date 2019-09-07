@@ -92,7 +92,7 @@ public class EntityCollisionInjector {
                         velVec.getAddition(total));
                     if (!fast.arePolygonsSeperated()) {
                         // fastCollisions.add(fast);
-                        worldBelow = shipPoly.shipFrom.getWrapperEntity();
+                        worldBelow = shipPoly.shipFrom.wrapperEntity();
 
                         Vector response = fast.getCollisions()[fast.getMinDistanceIndex()]
                             .getResponse();
@@ -287,7 +287,7 @@ public class EntityCollisionInjector {
         Vector entityPosInShip = new Vector(entity.posX, entity.posY - 0.20000000298023224D,
             entity.posZ);
 
-        worldBelow.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform()
+        worldBelow.getPhysicsObject().shipTransformationManager().getCurrentTickTransform()
             .transform(entityPosInShip,
                 TransformType.GLOBAL_TO_SUBSPACE);
 
@@ -426,7 +426,7 @@ public class EntityCollisionInjector {
             try {
                 if (!entity.isRidingSameEntity(wrapper)) {
                     Polygon playerInLocal = new Polygon(entityBB,
-                        wrapper.getPhysicsObject().getShipTransformationManager()
+                        wrapper.getPhysicsObject().shipTransformationManager()
                             .getCurrentTickTransform(),
                         TransformType.GLOBAL_TO_SUBSPACE);
                     AxisAlignedBB bb = playerInLocal.getEnclosedAABB();
@@ -444,10 +444,10 @@ public class EntityCollisionInjector {
 
                     for (AxisAlignedBB inLocal : collidingBBs) {
                         ShipPolygon poly = new ShipPolygon(inLocal,
-                            wrapper.getPhysicsObject().getShipTransformationManager()
+                            wrapper.getPhysicsObject().shipTransformationManager()
                                 .getCurrentTickTransform(),
                             TransformType.SUBSPACE_TO_GLOBAL,
-                            wrapper.getPhysicsObject().getShipTransformationManager().normals,
+                            wrapper.getPhysicsObject().shipTransformationManager().normals,
                             wrapper.getPhysicsObject());
                         collisions.add(poly);
                     }
@@ -465,7 +465,7 @@ public class EntityCollisionInjector {
 
                 Vector entityPos = new Vector(posX, posY, posZ);
 
-                wrapper.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform()
+                wrapper.getPhysicsObject().shipTransformationManager().getCurrentTickTransform()
                     .transform(entityPos,
                         TransformType.GLOBAL_TO_SUBSPACE);
                 // RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform,

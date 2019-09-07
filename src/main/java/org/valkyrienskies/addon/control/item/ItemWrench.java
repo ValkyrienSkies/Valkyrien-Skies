@@ -17,7 +17,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import org.valkyrienskies.addon.control.MultiblockRegistry;
 import org.valkyrienskies.addon.control.block.multiblocks.GiantPropellerMultiblockSchematic;
-import org.valkyrienskies.addon.control.block.multiblocks.IMulitblockSchematic;
+import org.valkyrienskies.addon.control.block.multiblocks.IMultiblockSchematic;
 import org.valkyrienskies.addon.control.block.multiblocks.RudderAxleMultiblockSchematic;
 import org.valkyrienskies.addon.control.block.multiblocks.TileEntityEthereumCompressorPart;
 import org.valkyrienskies.addon.control.block.multiblocks.TileEntityEthereumEnginePart;
@@ -51,9 +51,9 @@ public class ItemWrench extends Item {
         TileEntity blockTile = worldIn.getTileEntity(pos);
 
         if (blockTile instanceof TileEntityEthereumEnginePart) {
-            List<IMulitblockSchematic> ethereumEngineMultiblockSchematics = MultiblockRegistry
+            List<IMultiblockSchematic> ethereumEngineMultiblockSchematics = MultiblockRegistry
                 .getSchematicsWithPrefix("multiblock_ether_engine");
-            for (IMulitblockSchematic schematic : ethereumEngineMultiblockSchematics) {
+            for (IMultiblockSchematic schematic : ethereumEngineMultiblockSchematics) {
                 if (schematic.attemptToCreateMultiblock(worldIn, pos)) {
                     return EnumActionResult.SUCCESS;
                 }
@@ -61,9 +61,9 @@ public class ItemWrench extends Item {
         }
 
         if (blockTile instanceof TileEntityEthereumCompressorPart) {
-            List<IMulitblockSchematic> ethereumEngineMultiblockSchematics = MultiblockRegistry
+            List<IMultiblockSchematic> ethereumEngineMultiblockSchematics = MultiblockRegistry
                 .getSchematicsWithPrefix("multiblock_ether_compressor");
-            for (IMulitblockSchematic schematic : ethereumEngineMultiblockSchematics) {
+            for (IMultiblockSchematic schematic : ethereumEngineMultiblockSchematics) {
                 if (schematic.attemptToCreateMultiblock(worldIn, pos)) {
                     return EnumActionResult.SUCCESS;
                 }
@@ -71,9 +71,9 @@ public class ItemWrench extends Item {
         }
 
         if (blockTile instanceof TileEntityRudderAxlePart) {
-            List<IMulitblockSchematic> rudderAxelMultiblockSchematics = MultiblockRegistry
+            List<IMultiblockSchematic> rudderAxelMultiblockSchematics = MultiblockRegistry
                 .getSchematicsWithPrefix("multiblock_rudder_axle");
-            for (IMulitblockSchematic schematic : rudderAxelMultiblockSchematics) {
+            for (IMultiblockSchematic schematic : rudderAxelMultiblockSchematics) {
                 RudderAxleMultiblockSchematic rudderSchem = (RudderAxleMultiblockSchematic) schematic;
                 if (facing.getAxis() != rudderSchem.getAxleAxisDirection().getAxis()) {
                     if (rudderSchem.getAxleFacingDirection() == facing) {
@@ -87,9 +87,9 @@ public class ItemWrench extends Item {
         }
 
         if (blockTile instanceof TileEntityGiantPropellerPart) {
-            List<IMulitblockSchematic> giantPropellerMultiblockSchematics = MultiblockRegistry
+            List<IMultiblockSchematic> giantPropellerMultiblockSchematics = MultiblockRegistry
                 .getSchematicsWithPrefix("multiblock_giant_propeller");
-            for (IMulitblockSchematic schematic : giantPropellerMultiblockSchematics) {
+            for (IMultiblockSchematic schematic : giantPropellerMultiblockSchematics) {
                 GiantPropellerMultiblockSchematic propSchem = (GiantPropellerMultiblockSchematic) schematic;
                 if (propSchem.getPropellerFacing() == facing) {
                     if (schematic.attemptToCreateMultiblock(worldIn, pos)) {

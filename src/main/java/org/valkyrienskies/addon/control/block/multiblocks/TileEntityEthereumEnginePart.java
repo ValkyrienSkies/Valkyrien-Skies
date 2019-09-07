@@ -50,7 +50,7 @@ public class TileEntityEthereumEnginePart extends
                 if (physicsObjectOptional.isPresent() && !rotationNode.hasBeenPlacedIntoNodeWorld()
                     && this.getRelativePos()
                     .equals(getMultiBlockSchematic().getTorqueOutputPos())) {
-                    IRotationNodeWorld nodeWorld = physicsObjectOptional.get().getPhysicsProcessor()
+                    IRotationNodeWorld nodeWorld = physicsObjectOptional.get().physicsProcessor()
                         .getPhysicsRotationNodeWorld();
                     if (nodeWorld != null) {
                         nodeWorld.enqueueTaskOntoWorld(
@@ -102,7 +102,7 @@ public class TileEntityEthereumEnginePart extends
             Optional<PhysicsObject> objectOptional = ValkyrienUtils
                 .getPhysicsObject(getWorld(), getPos());
             if (objectOptional.isPresent()) {
-                IRotationNodeWorld nodeWorld = objectOptional.get().getPhysicsProcessor()
+                IRotationNodeWorld nodeWorld = objectOptional.get().physicsProcessor()
                     .getPhysicsRotationNodeWorld();
                 EnumFacing facing = EnumFacing
                     .getFacingFromVector(schematic.getTorqueOutputDirection().getX(),

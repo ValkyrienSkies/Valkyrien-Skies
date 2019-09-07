@@ -90,9 +90,9 @@ public abstract class MixinEntityRenderer {
         }
 
         if (this.mountData != null
-            && this.mountData.getMountedShip().getShipRenderer().offsetPos != null) {
+            && this.mountData.getMountedShip().shipRenderer().offsetPos != null) {
             //transform vectors
-            Quaternion orientationQuat = this.mountData.getMountedShip().getShipRenderer()
+            Quaternion orientationQuat = this.mountData.getMountedShip().shipRenderer()
                 .getSmoothRotationQuat(partialTicks);
 
             double[] radians = orientationQuat.toRadians();
@@ -107,7 +107,7 @@ public abstract class MixinEntityRenderer {
             RotationMatrices.applyTransform(orientationMatrix, this.eyeVector);
 
             this.cachedPosition.setValue(this.mountData.getMountPos());
-            this.mountData.getMountedShip().getShipTransformationManager().getRenderTransform()
+            this.mountData.getMountedShip().shipTransformationManager().getRenderTransform()
                 .transform(this.cachedPosition, TransformType.SUBSPACE_TO_GLOBAL);
         }
 
@@ -136,7 +136,7 @@ public abstract class MixinEntityRenderer {
         ))
     private double offsetXIfMounted(double oldVal) {
         return (this.mountData != null
-            && this.mountData.getMountedShip().getShipRenderer().offsetPos != null
+            && this.mountData.getMountedShip().shipRenderer().offsetPos != null
             ? this.cachedPosition.X : oldVal) + this.eyeVector.X;
     }
 
@@ -152,7 +152,7 @@ public abstract class MixinEntityRenderer {
         ))
     private double offsetYIfMounted(double oldVal) {
         return (this.mountData != null
-            && this.mountData.getMountedShip().getShipRenderer().offsetPos != null
+            && this.mountData.getMountedShip().shipRenderer().offsetPos != null
             ? this.cachedPosition.Y : oldVal) + this.eyeVector.Y;
     }
 
@@ -168,7 +168,7 @@ public abstract class MixinEntityRenderer {
         ))
     private double offsetZIfMounted(double oldVal) {
         return (this.mountData != null
-            && this.mountData.getMountedShip().getShipRenderer().offsetPos != null
+            && this.mountData.getMountedShip().shipRenderer().offsetPos != null
             ? this.cachedPosition.Z : oldVal) + this.eyeVector.Z;
     }
 
@@ -204,7 +204,7 @@ public abstract class MixinEntityRenderer {
             Entity entity = this.mc.getRenderViewEntity();
 
             if (this.mountData != null
-                && this.mountData.getMountedShip().getShipRenderer().offsetPos != null) {
+                && this.mountData.getMountedShip().shipRenderer().offsetPos != null) {
                 Vector playerPosInLocal = new Vector(this.mountData.getMountPos());
 
                 playerPosInLocal.subtract(0.5d, 0.6875d, 0.5d);
@@ -286,10 +286,10 @@ public abstract class MixinEntityRenderer {
         ))
     private void rotateCameraAndFixFinalTranslate(float x, float y, float z, float partialTicks) {
         if (this.mountData != null
-            && this.mountData.getMountedShip().getShipRenderer().getSmoothRotationQuat(partialTicks)
+            && this.mountData.getMountedShip().shipRenderer().getSmoothRotationQuat(partialTicks)
             != null) {
             Quaternion orientationQuat = this.mountData.getMountedShip()
-                .getShipRenderer()
+                .shipRenderer()
                 .getSmoothRotationQuat(partialTicks);
 
             double[] radians = orientationQuat.toRadians();

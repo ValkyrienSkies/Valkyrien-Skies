@@ -16,7 +16,7 @@ import org.valkyrienskies.fixes.VSNetwork;
  * @param <E> The type of schematic for this TileEntity to use.
  * @param <F> The type of class extending this class.
  */
-public abstract class TileEntityMultiblockPart<E extends IMulitblockSchematic, F extends TileEntityMultiblockPart> extends
+public abstract class TileEntityMultiblockPart<E extends IMultiblockSchematic, F extends TileEntityMultiblockPart> extends
     BasicNodeTileEntity implements ITileEntityMultiblockPart<E, F> {
 
     private boolean isAssembled;
@@ -45,7 +45,6 @@ public abstract class TileEntityMultiblockPart<E extends IMulitblockSchematic, F
 
     @Override
     public F getMaster() {
-        // TODO Auto-generated method stub
         TileEntity masterTile = this.getWorld().getTileEntity(this.getMultiblockOrigin());
         if (masterTile instanceof ITileEntityMultiblockPart) {
             return (F) masterTile;

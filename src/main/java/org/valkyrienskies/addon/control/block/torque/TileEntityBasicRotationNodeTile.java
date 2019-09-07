@@ -85,7 +85,7 @@ public class TileEntityBasicRotationNodeTile extends BasicNodeTileEntity impleme
                 Optional<PhysicsObject> physicsObjectOptional = ValkyrienUtils
                     .getPhysicsObject(getWorld(), getPos());
                 if (physicsObjectOptional.isPresent()) {
-                    IRotationNodeWorld nodeWorld = physicsObjectOptional.get().getPhysicsProcessor()
+                    IRotationNodeWorld nodeWorld = physicsObjectOptional.get().physicsProcessor()
                         .getPhysicsRotationNodeWorld();
                     rotationNode.markInitialized();
                     nodeWorld.enqueueTaskOntoWorld(

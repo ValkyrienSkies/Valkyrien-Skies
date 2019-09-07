@@ -99,7 +99,7 @@ public class EventsClient {
                 Vector newSoundLocation = new Vector(sound.getXPosF(), sound.getYPosF(),
                     sound.getZPosF());
                 physicsObject.get()
-                    .getShipTransformationManager()
+                    .shipTransformationManager()
                     .getCurrentTickTransform()
                     .transform(newSoundLocation, TransformType.SUBSPACE_TO_GLOBAL);
 
@@ -143,11 +143,11 @@ public class EventsClient {
                 oldZOff = buffer.zOffset;
 
                 buffer.setTranslation(-physicsObject.get()
-                    .getShipRenderer().offsetPos.getX(), -physicsObject.get()
-                    .getShipRenderer().offsetPos.getY(), -physicsObject.get()
-                    .getShipRenderer().offsetPos.getZ());
+                    .shipRenderer().offsetPos.getX(), -physicsObject.get()
+                    .shipRenderer().offsetPos.getY(), -physicsObject.get()
+                    .shipRenderer().offsetPos.getZ());
                 physicsObject.get()
-                    .getShipRenderer()
+                    .shipRenderer()
                     .setupTranslation(event.getPartialTicks());
             }
         }

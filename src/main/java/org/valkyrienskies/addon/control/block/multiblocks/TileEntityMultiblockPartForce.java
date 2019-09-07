@@ -3,7 +3,7 @@ package org.valkyrienskies.addon.control.block.multiblocks;
 import net.minecraft.nbt.NBTTagCompound;
 import org.valkyrienskies.addon.control.nodenetwork.IForceTile;
 
-public abstract class TileEntityMultiblockPartForce<E extends IMulitblockSchematic, F extends TileEntityMultiblockPartForce> extends
+public abstract class TileEntityMultiblockPartForce<E extends IMultiblockSchematic, F extends TileEntityMultiblockPartForce> extends
     TileEntityMultiblockPart<E, F> implements IForceTile {
 
     private double thrustMultiplierGoal;

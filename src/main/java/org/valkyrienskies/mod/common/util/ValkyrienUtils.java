@@ -73,7 +73,7 @@ public class ValkyrienUtils {
             // We're in a physics object; convert the bounding box to a polygon; put its coordinates
             // in global space, and then return the bounding box that encloses all the points.
             Polygon bbAsPoly = new Polygon(axisAlignedBB, physicsObject.get()
-                .getShipTransformationManager()
+                .shipTransformationManager()
                 .getCurrentTickTransform(), TransformType.SUBSPACE_TO_GLOBAL);
             return bbAsPoly.getEnclosedAABB();
         } else {
@@ -95,7 +95,7 @@ public class ValkyrienUtils {
 
     public static void fixEntityToShip(Entity toFix, Vector posInLocal,
         PhysicsObject mountingShip) {
-        World world = mountingShip.getWorld();
+        World world = mountingShip.world();
         EntityMountable entityMountable = new EntityMountable(world, posInLocal.toVec3d(),
             CoordinateSpaceType.SUBSPACE_COORDINATES, mountingShip.referenceBlockPos());
         world.spawnEntity(entityMountable);

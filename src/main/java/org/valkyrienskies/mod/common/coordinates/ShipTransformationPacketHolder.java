@@ -100,25 +100,25 @@ public class ShipTransformationPacketHolder {
      *                   applies all of it. A number around .7 or .8 is ideal here.
      */
     public void applySmoothLerp(PhysicsObject physObj, double lerpFactor) {
-        Vector CMDif = centerOfRotation.getSubtraction(physObj.getCenterCoord());
-        physObj.getShipTransformationManager().getCurrentTickTransform()
+        Vector CMDif = centerOfRotation.getSubtraction(physObj.centerCoord());
+        physObj.shipTransformationManager().getCurrentTickTransform()
             .rotate(CMDif, TransformType.SUBSPACE_TO_GLOBAL);
         // CMDif.multiply(lerpFactor);
 
-        physObj.getWrapperEntity().posX -= CMDif.X;
-        physObj.getWrapperEntity().posY -= CMDif.Y;
-        physObj.getWrapperEntity().posZ -= CMDif.Z;
+        physObj.wrapperEntity().posX -= CMDif.X;
+        physObj.wrapperEntity().posY -= CMDif.Y;
+        physObj.wrapperEntity().posZ -= CMDif.Z;
 
-        physObj.getWrapperEntity().lastTickPosX = physObj.getWrapperEntity().posX;
-        physObj.getWrapperEntity().lastTickPosY = physObj.getWrapperEntity().posY;
-        physObj.getWrapperEntity().lastTickPosZ = physObj.getWrapperEntity().posZ;
+        physObj.wrapperEntity().lastTickPosX = physObj.wrapperEntity().posX;
+        physObj.wrapperEntity().lastTickPosY = physObj.wrapperEntity().posY;
+        physObj.wrapperEntity().lastTickPosZ = physObj.wrapperEntity().posZ;
 
-        physObj.getWrapperEntity().posX += (posX - physObj.getWrapperEntity().posX) * lerpFactor;
-        physObj.getWrapperEntity().posY += (posY - physObj.getWrapperEntity().posY) * lerpFactor;
-        physObj.getWrapperEntity().posZ += (posZ - physObj.getWrapperEntity().posZ) * lerpFactor;
+        physObj.wrapperEntity().posX += (posX - physObj.wrapperEntity().posX) * lerpFactor;
+        physObj.wrapperEntity().posY += (posY - physObj.wrapperEntity().posY) * lerpFactor;
+        physObj.wrapperEntity().posZ += (posZ - physObj.wrapperEntity().posZ) * lerpFactor;
 
         // Create the quaternion for the old physics tick
-        Quaternion prevRotation = physObj.getShipTransformationManager().getCurrentTickTransform()
+        Quaternion prevRotation = physObj.shipTransformationManager().getCurrentTickTransform()
             .createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
 
         // Create the quaternion for the next physics tick
@@ -132,12 +132,12 @@ public class ShipTransformationPacketHolder {
             .slerpInterpolate(prevRotation, newRotation, lerpFactor);
         double[] slerpedRotationAngles = slerpedRotation.toRadians();
 
-        physObj.getWrapperEntity()
+        physObj.wrapperEntity()
             .setPhysicsEntityRotation(Math.toDegrees(slerpedRotationAngles[0]),
                 Math.toDegrees(slerpedRotationAngles[1]), Math.toDegrees(slerpedRotationAngles[2]));
 
-        physObj.setCenterCoord(centerOfRotation);
+        physObj.centerCoord(centerOfRotation);
         // Update the ship bounding box
-        physObj.setShipBoundingBox(shipBB);
+        physObj.shipBoundingBox(shipBB);
     }
 }

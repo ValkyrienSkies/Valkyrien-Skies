@@ -1,5 +1,6 @@
 package org.valkyrienskies.mod.common.physics.management.util;
 
+import lombok.Getter;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ChunkCache;
@@ -8,6 +9,7 @@ import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 
 public class SurroundingChunkCacheController {
 
+    @Getter
     private ChunkCache cachedChunks;
     private PhysicsObject physicsObject;
 
@@ -16,14 +18,14 @@ public class SurroundingChunkCacheController {
     }
 
     public void updateChunkCache() {
-        AxisAlignedBB cacheBB = physicsObject.getShipBoundingBox();
+        AxisAlignedBB cacheBB = physicsObject.shipBoundingBox();
 
         // Check if all those surrounding chunks are loaded
         BlockPos min = new BlockPos(cacheBB.minX, Math.max(cacheBB.minY, 0), cacheBB.minZ);
         BlockPos max = new BlockPos(cacheBB.maxX, Math.min(cacheBB.maxY, 255), cacheBB.maxZ);
 
-        if (!physicsObject.getWorld().isRemote) {
-            ChunkProviderServer serverChunkProvider = (ChunkProviderServer) physicsObject.getWorld()
+        if (!physicsObject.world().isRemote) {
+            ChunkProviderServer serverChunkProvider = (ChunkProviderServer) physicsObject.world()
                 .getChunkProvider();
 
             int chunkMinX = min.getX() >> 4;
@@ -44,16 +46,12 @@ public class SurroundingChunkCacheController {
             }
 
             if (areSurroundingChunksLoaded) {
-                cachedChunks = new ChunkCache(physicsObject.getWorld(), min, max, 0);
+                cachedChunks = new ChunkCache(physicsObject.world(), min, max, 0);
             } else {
                 physicsObject.resetConsecutiveProperTicks();
             }
         } else {
-            cachedChunks = new ChunkCache(physicsObject.getWorld(), min, max, 0);
+            cachedChunks = new ChunkCache(physicsObject.world(), min, max, 0);
         }
-    }
-
-    public ChunkCache cachedChunks() {
-        return cachedChunks;
     }
 }

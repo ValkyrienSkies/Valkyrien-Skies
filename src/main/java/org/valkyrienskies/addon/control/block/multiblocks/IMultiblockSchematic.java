@@ -7,7 +7,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public interface IMulitblockSchematic {
+public interface IMultiblockSchematic {
 
     /**
      * This should generate the getStructureRelativeToCenter() list.
@@ -102,7 +102,7 @@ public interface IMulitblockSchematic {
      * The order in which the schematics are in this list will be used as priority order for which
      * schematic variants are tested for first.
      */
-    List<IMulitblockSchematic> generateAllVariants();
+    List<IMultiblockSchematic> generateAllVariants();
 
     default EnumMultiblockRotation getMultiblockRotation() {
         return EnumMultiblockRotation.None;

@@ -110,7 +110,7 @@ public abstract class MixinEntityLivingBase extends Entity implements ISubspaced
             .getManagerForWorld(this.world).getNearbyPhysObjects(this.getEntityBoundingBox());
         for (PhysicsWrapperEntity physWrapper : nearbyPhys) {
             Vector playerPos = new Vector(EntityLivingBase.class.cast(this));
-            physWrapper.getPhysicsObject().getShipTransformationManager()
+            physWrapper.getPhysicsObject().shipTransformationManager()
                 .fromGlobalToLocal(playerPos);
             int i = MathHelper.floor(playerPos.X);
             int j = MathHelper.floor(playerPos.Y);
@@ -126,7 +126,7 @@ public abstract class MixinEntityLivingBase extends Entity implements ISubspaced
             //not needed, we already do this check
 
             EntityPolygon playerPoly = new EntityPolygon(this.getEntityBoundingBox(),
-                physWrapper.getPhysicsObject().getShipTransformationManager()
+                physWrapper.getPhysicsObject().shipTransformationManager()
                     .getCurrentTickTransform(), TransformType.GLOBAL_TO_SUBSPACE, this);
             AxisAlignedBB bb = playerPoly.getEnclosedAABB();
             for (int x = MathHelper.floor(bb.minX); x < bb.maxX; x++) {

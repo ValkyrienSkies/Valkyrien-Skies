@@ -10,7 +10,7 @@ import net.minecraft.world.World;
 import org.valkyrienskies.addon.control.MultiblockRegistry;
 import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
 
-public class RudderAxleMultiblockSchematic implements IMulitblockSchematic {
+public class RudderAxleMultiblockSchematic implements IMultiblockSchematic {
 
     public static final int MIN_AXLE_LENGTH = 2;
     public static final int MAX_AXLE_LENGTH = 6;
@@ -59,10 +59,10 @@ public class RudderAxleMultiblockSchematic implements IMulitblockSchematic {
     }
 
     @Override
-    public List<IMulitblockSchematic> generateAllVariants() {
+    public List<IMultiblockSchematic> generateAllVariants() {
         Block rudderAxelBlock = ValkyrienSkiesControl.INSTANCE.vwControlBlocks.rudderAxelPart;
         // Order matters here
-        List<IMulitblockSchematic> variants = new ArrayList<IMulitblockSchematic>();
+        List<IMultiblockSchematic> variants = new ArrayList<IMultiblockSchematic>();
         for (int length = MAX_AXLE_LENGTH; length >= MIN_AXLE_LENGTH; length--) {
             for (EnumFacing possibleAxleAxisDirection : EnumFacing.VALUES) {
                 for (EnumFacing possibleAxleFacingDirection : EnumFacing.VALUES) {

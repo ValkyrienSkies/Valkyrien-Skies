@@ -63,7 +63,6 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
 
     @Override
     public VectorImmutable getForceOutputNormal(double secondsToApply, PhysicsObject object) {
-        // TODO Auto-generated method stub
         return normalVelocityUnoriented.toImmutable();
     }
 

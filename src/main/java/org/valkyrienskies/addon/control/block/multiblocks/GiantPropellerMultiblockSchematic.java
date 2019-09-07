@@ -11,7 +11,7 @@ import net.minecraft.world.World;
 import org.valkyrienskies.addon.control.MultiblockRegistry;
 import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
 
-public class GiantPropellerMultiblockSchematic implements IMulitblockSchematic {
+public class GiantPropellerMultiblockSchematic implements IMultiblockSchematic {
 
     private final List<BlockPosBlockPair> structureRelativeToCenter;
     private String schematicID;
@@ -84,8 +84,8 @@ public class GiantPropellerMultiblockSchematic implements IMulitblockSchematic {
     }
 
     @Override
-    public List<IMulitblockSchematic> generateAllVariants() {
-        List<IMulitblockSchematic> variants = new ArrayList<IMulitblockSchematic>();
+    public List<IMultiblockSchematic> generateAllVariants() {
+        List<IMultiblockSchematic> variants = new ArrayList<IMultiblockSchematic>();
 
         for (EnumFacing variantPropellerFacing : EnumFacing.values()) {
             for (int radius = 3; radius >= 1; radius--) {

@@ -47,7 +47,7 @@ public class GPSTileEntity extends TileEntity implements SimpleComponent {
             .getPhysicsObject(getWorld(), getPos());
         if (physicsObjectOptional.isPresent()) {
             BlockPos pos = physicsObjectOptional.get()
-                .getWrapperEntity()
+                .wrapperEntity()
                 .getPosition();
             return new Object[]{pos.getX(), pos.getY(), pos.getZ()};
         }
@@ -61,7 +61,7 @@ public class GPSTileEntity extends TileEntity implements SimpleComponent {
             .getPhysicsObject(getWorld(), getPos());
         if (physicsObjectOptional.isPresent()) {
             PhysicsWrapperEntity ship = physicsObjectOptional.get()
-                .getWrapperEntity();
+                .wrapperEntity();
             return new Object[]{ship.getYaw(), ship.getPitch(), ship.getRoll()};
         }
         return null;

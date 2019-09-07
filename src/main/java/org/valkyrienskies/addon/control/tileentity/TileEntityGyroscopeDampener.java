@@ -15,7 +15,7 @@ public class TileEntityGyroscopeDampener extends TileEntity {
 
     public Vector getTorqueInGlobal(PhysicsCalculations physicsCalculations, BlockPos pos) {
         Vector shipLevelNormal = new Vector(GRAVITY_UP);
-        physicsCalculations.getParent().getShipTransformationManager().getCurrentPhysicsTransform()
+        physicsCalculations.getParent().shipTransformationManager().getCurrentPhysicsTransform()
             .rotate(shipLevelNormal, TransformType.SUBSPACE_TO_GLOBAL);
 
         double dampingComponent = shipLevelNormal.dot(physicsCalculations.angularVelocity);

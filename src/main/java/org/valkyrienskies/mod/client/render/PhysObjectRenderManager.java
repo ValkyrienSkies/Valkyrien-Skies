@@ -158,11 +158,11 @@ public class PhysObjectRenderManager {
     }
 
     public boolean shouldRender() {
-        if (parent.getWrapperEntity().isDead) {
+        if (parent.wrapperEntity().isDead) {
             return false;
         }
         ICamera camera = ClientProxy.lastCamera;
-        return camera == null || camera.isBoundingBoxInFrustum(parent.getShipBoundingBox());
+        return camera == null || camera.isBoundingBoxInFrustum(parent.shipBoundingBox());
     }
 
     public void setupTranslation(double partialTicks) {
@@ -176,8 +176,8 @@ public class PhysObjectRenderManager {
     }
 
     public void updateTranslation(double partialTicks) {
-        PhysicsWrapperEntity entity = parent.getWrapperEntity();
-        Vector centerOfRotation = entity.getPhysicsObject().getCenterCoord();
+        PhysicsWrapperEntity entity = parent.wrapperEntity();
+        Vector centerOfRotation = entity.getPhysicsObject().centerCoord();
         curPartialTick = partialTicks;
 
         double moddedX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks;
@@ -203,7 +203,7 @@ public class PhysObjectRenderManager {
         double moddedYaw = Math.toDegrees(radians[1]);
         double moddedRoll = Math.toDegrees(radians[2]);
 
-        parent.getShipTransformationManager()
+        parent.shipTransformationManager()
             .updateRenderTransform(moddedX, moddedY, moddedZ, moddedPitch, moddedYaw, moddedRoll);
 
         if (offsetPos != null) {
@@ -221,16 +221,16 @@ public class PhysObjectRenderManager {
     }
 
     public Quaternion getSmoothRotationQuat(double partialTick) {
-        Quaternion oneTickBefore = parent.getShipTransformationManager().getPrevTickTransform()
+        Quaternion oneTickBefore = parent.shipTransformationManager().getPrevTickTransform()
             .createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
-        Quaternion nextQuat = parent.getShipTransformationManager().getCurrentTickTransform()
+        Quaternion nextQuat = parent.shipTransformationManager().getCurrentTickTransform()
             .createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
         return Quaternion.slerpInterpolate(oneTickBefore, nextQuat, partialTick);
     }
 
     public void inverseTransform(double partialTicks) {
-        PhysicsWrapperEntity entity = parent.getWrapperEntity();
-        Vector centerOfRotation = entity.getPhysicsObject().getCenterCoord();
+        PhysicsWrapperEntity entity = parent.wrapperEntity();
+        Vector centerOfRotation = entity.getPhysicsObject().centerCoord();
         curPartialTick = partialTicks;
 
         double moddedX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks;

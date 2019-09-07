@@ -1,0 +1,187 @@
+package org.valkyrienskies.mod.common.physics.management.util;
+
+import java.util.Map.Entry;
+import java.util.Optional;
+import lombok.extern.log4j.Log4j2;
+import net.minecraft.server.management.PlayerChunkMap;
+import net.minecraft.server.management.PlayerChunkMapEntry;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
+import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.gen.ChunkProviderServer;
+import org.valkyrienskies.fixes.IPhysicsChunk;
+import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
+
+/**
+ * The ClaimedChunkCacheController is a chunk cache controller used by the {@link PhysicsObject}. It
+ * keeps all of a ship's chunks in cache for fast access.
+ */
+@Log4j2
+public class ClaimedChunkCacheController {
+
+    private Chunk[][] claimedChunks;
+
+    private PhysicsObject parent;
+    private World world;
+
+    /**
+     * This constructor is expensive; it loads all the chunks when it's called. Be warned.
+     *
+     * @param parent The PhysicsObject that is using this ChunkCacheController
+     * @param loaded Whether or not the chunks that are being cached have been loaded before. e.g.,
+     *               whether they are being loaded from NBT or from the world.
+     */
+    public ClaimedChunkCacheController(PhysicsObject parent, boolean loaded) {
+        this.world = parent.world();
+        this.parent = parent;
+
+        if (loaded) {
+            loadLoadedChunks();
+        } else {
+            loadNewChunks();
+        }
+    }
+
+    /**
+     * Retrieves a chunk from cache from its absolute position.
+     *
+     * @param chunkX The X position of the chunk
+     * @param chunkZ The Z position of the chunk
+     * @return The chunk from the cache
+     */
+    public Chunk getChunkAt(int chunkX, int chunkZ) {
+        VSChunkClaim claim = parent.ownedChunks();
+        return claimedChunks[chunkX - claim.minX()][chunkZ - claim.minZ()];
+    }
+
+    /**
+     * Retrieves a chunk from cache from its position relative to the chunk claim.
+     *
+     * @param relativeX The X value relative to the chunk claim
+     * @param relativeZ the Z value relative to the chunk claim
+     * @return The chunk from the cache.
+     */
+    public Chunk getChunkRelative(int relativeX, int relativeZ) {
+        return claimedChunks[relativeX][relativeZ];
+    }
+
+    /**
+     * Retrieves a chunk from cache from its position relative to the chunk claim.
+     *
+     * @param relativeX The X value relative to the chunk claim
+     * @param relativeZ the Z value relative to the chunk claim
+     * @param chunk The chunk to cache.
+     */
+    public void setChunkRelative(int relativeX, int relativeZ, Chunk chunk) {
+        claimedChunks[relativeX][relativeZ] = chunk;
+    }
+
+    /**
+     * Retrieves a chunk from cache from its absolute position.
+     *
+     * @param chunkX The X position of the chunk
+     * @param chunkZ The Z position of the chunk
+     * @param chunk The chunk to cache.
+     */
+    public void setChunkAt(int chunkX, int chunkZ, Chunk chunk) {
+        VSChunkClaim claim = parent.ownedChunks();
+        claimedChunks[chunkX - claim.minX()][chunkZ - claim.minZ()] = chunk;
+    }
+
+    /**
+     * Let's try not to use this
+     */
+    @Deprecated
+    public Chunk[][] getCacheArray() {
+        return claimedChunks;
+    }
+
+    /**
+     * Loads chunks that have been generated before into the cache
+     */
+    private void loadLoadedChunks() {
+        VSChunkClaim chunkClaim = parent.ownedChunks();
+
+        claimedChunks = new Chunk[(chunkClaim.radius() * 2) + 1][
+            (chunkClaim.radius() * 2) + 1];
+        for (int x = chunkClaim.minX(); x <= chunkClaim.maxX(); x++) {
+            for (int z = chunkClaim.minZ(); z <= chunkClaim.maxZ(); z++) {
+                // Added try catch to prevent ships deleting themselves because of a failed tile entity load.
+                try {
+                    Chunk chunk = world.getChunk(x, z);
+                    if (chunk == null) {
+                        log.error("Just a loaded a null chunk");
+                        chunk = new Chunk(world, x, z);
+                    }
+                    // Do this to get it re-integrated into the world
+                    if (!world.isRemote) {
+                        injectChunkIntoWorld(chunk, x, z, false);
+                    }
+                    for (Entry<BlockPos, TileEntity> entry : chunk.tileEntities.entrySet()) {
+                        parent.onSetTileEntity(entry.getKey(), entry.getValue());
+                    }
+                    claimedChunks[x - chunkClaim.minX()][z - chunkClaim
+                        .minZ()] = chunk;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
+     * Loads chunks that haven't been generated before into the cache
+     */
+    private void loadNewChunks() {
+        VSChunkClaim chunkClaim = parent.ownedChunks();
+
+        claimedChunks = new Chunk[(chunkClaim.radius() * 2) + 1][
+            (chunkClaim.radius() * 2) + 1];
+
+        for (int x = chunkClaim.minX(); x <= chunkClaim.maxX(); x++) {
+            for (int z = chunkClaim.minZ(); z <= chunkClaim.maxZ(); z++) {
+                Chunk chunk = new Chunk(world, x, z);
+                injectChunkIntoWorld(chunk, x, z, true);
+                claimedChunks[x - chunkClaim.minX()][z - chunkClaim.minZ()] = chunk;
+            }
+        }
+    }
+
+    private void injectChunkIntoWorld(Chunk chunk, int x, int z, boolean putInId2ChunkMap) {
+        VSChunkClaim chunkClaim = parent.ownedChunks();
+
+        // Make sure this chunk knows we own it.
+        ((IPhysicsChunk) chunk).setParentPhysicsObject(Optional.of(this.parent));
+
+        ChunkProviderServer provider = (ChunkProviderServer) world.getChunkProvider();
+        chunk.dirty = true;
+        claimedChunks[x - chunkClaim.minX()][z - chunkClaim.minZ()] = chunk;
+
+        if (putInId2ChunkMap) {
+            provider.loadedChunks.put(ChunkPos.asLong(x, z), chunk);
+        }
+
+        chunk.onLoad();
+        // We need to set these otherwise certain events like Sponge's PhaseTracker will refuse to work properly with ships!
+        chunk.setTerrainPopulated(true);
+        chunk.setLightPopulated(true);
+
+        PlayerChunkMap map = ((WorldServer) world).getPlayerChunkMap();
+
+        PlayerChunkMapEntry entry = new PlayerChunkMapEntry(map, x, z);
+
+        // TODO: This is causing concurrency crashes
+        long i = PlayerChunkMap.getIndex(x, z);
+
+        map.entryMap.put(i, entry);
+        map.entries.add(entry);
+
+        entry.sentToPlayers = true;
+        entry.players = parent.watchingPlayers();
+    }
+
+}

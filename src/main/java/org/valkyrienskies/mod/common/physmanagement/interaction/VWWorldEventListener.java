@@ -64,10 +64,7 @@ public class VWWorldEventListener implements IWorldEventListener {
     }
 
     @Override
-    public void notifyLightSet(BlockPos pos) {
-        // TODO Auto-generated method stub
-
-    }
+    public void notifyLightSet(BlockPos pos) { }
 
     @Override
     public void markBlockRangeForRenderUpdate(int minX, int minY, int minZ, int maxX, int maxY,
@@ -83,18 +80,12 @@ public class VWWorldEventListener implements IWorldEventListener {
     }
 
     @Override
-    public void playRecord(SoundEvent soundIn, BlockPos pos) {
-        // TODO Auto-generated method stub
-
-    }
+    public void playRecord(SoundEvent soundIn, BlockPos pos) { }
 
     @Override
     public void spawnParticle(int particleID, boolean ignoreRange, double x, double y, double z,
         double xSpeed,
-        double ySpeed, double zSpeed, int... parameters) {
-        // TODO Auto-generated method stub
-
-    }
+        double ySpeed, double zSpeed, int... parameters) { }
 
     // TODO: Fix conflicts with EventsCommon.onEntityJoinWorldEvent()
     @Override
@@ -121,7 +112,7 @@ public class VWWorldEventListener implements IWorldEventListener {
                 world.getChunk(entity.getPosition().getX() >> 4, entity.getPosition().getZ() >> 4)
                     .removeEntity(entity);
                 physicsObject.get()
-                    .getShipTransformationManager()
+                    .shipTransformationManager()
                     .getCurrentTickTransform().transform(entity,
                     TransformType.SUBSPACE_TO_GLOBAL);
                 world.getChunk(entity.getPosition().getX() >> 4, entity.getPosition().getZ() >> 4)
@@ -138,16 +129,10 @@ public class VWWorldEventListener implements IWorldEventListener {
     }
 
     @Override
-    public void broadcastSound(int soundID, BlockPos pos, int data) {
-        // TODO Auto-generated method stub
-
-    }
+    public void broadcastSound(int soundID, BlockPos pos, int data) { }
 
     @Override
-    public void playEvent(EntityPlayer player, int type, BlockPos blockPosIn, int data) {
-        // TODO Auto-generated method stub
-
-    }
+    public void playEvent(EntityPlayer player, int type, BlockPos blockPosIn, int data) { }
 
     @Override
     public void sendBlockBreakProgress(int breakerId, BlockPos pos, int progress) {
@@ -160,7 +145,7 @@ public class VWWorldEventListener implements IWorldEventListener {
                         .getPhysicsObject(worldObj, pos);
 
                     physicsObject.ifPresent(object -> object
-                        .getShipTransformationManager()
+                        .shipTransformationManager()
                         .getCurrentTickTransform()
                         .transform(posVector,
                             TransformType.SUBSPACE_TO_GLOBAL));
@@ -183,9 +168,6 @@ public class VWWorldEventListener implements IWorldEventListener {
         double p_190570_4_,
         double p_190570_6_, double p_190570_8_, double p_190570_10_, double p_190570_12_,
         double p_190570_14_,
-        int... p_190570_16_) {
-        // TODO Auto-generated method stub
-
-    }
+        int... p_190570_16_) { }
 
 }

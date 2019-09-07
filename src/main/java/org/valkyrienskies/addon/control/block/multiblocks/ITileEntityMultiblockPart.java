@@ -2,7 +2,7 @@ package org.valkyrienskies.addon.control.block.multiblocks;
 
 import net.minecraft.util.math.BlockPos;
 
-public interface ITileEntityMultiblockPart<E extends IMulitblockSchematic, F extends ITileEntityMultiblockPart> {
+public interface ITileEntityMultiblockPart<E extends IMultiblockSchematic, F extends ITileEntityMultiblockPart> {
 
     boolean isPartOfAssembledMultiblock();
 

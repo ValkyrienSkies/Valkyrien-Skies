@@ -21,7 +21,7 @@ public class TileEntityGiantPropellerPart extends
     IRotationNodeProvider<TileEntityGiantPropellerPart> {
 
     public static final int GIANT_PROPELLER_SORTING_PRIORITY = 50;
-    protected final IRotationNode rotationNode;
+    private final IRotationNode rotationNode;
     private double prevPropellerAngle;
     private double propellerAngle;
     private double nextPropellerAngle;
@@ -108,7 +108,7 @@ public class TileEntityGiantPropellerPart extends
                 if (physicsObjectOptional.isPresent() && this.isMaster()) {
                     if (!rotationNode.hasBeenPlacedIntoNodeWorld()) {
                         IRotationNodeWorld nodeWorld = physicsObjectOptional.get()
-                            .getPhysicsProcessor().getPhysicsRotationNodeWorld();
+                            .physicsProcessor().getPhysicsRotationNodeWorld();
                         if (nodeWorld != null) {
                             nodeWorld.enqueueTaskOntoWorld(
                                 () -> nodeWorld.setNodeFromPos(getPos(), rotationNode));
@@ -138,11 +138,9 @@ public class TileEntityGiantPropellerPart extends
     @Override
     public void dissembleMultiblockLocal() {
         super.dissembleMultiblockLocal();
-        Optional<PhysicsObject> object = ValkyrienUtils.getPhysicsObject(getWorld(), getPos());
-        if (object.isPresent()) {
-            this.rotationNode.queueTask(() -> rotationNode.resetNodeData());
 
-        }
+        Optional<PhysicsObject> object = ValkyrienUtils.getPhysicsObject(getWorld(), getPos());
+        object.ifPresent(obj -> this.rotationNode.queueTask(rotationNode::resetNodeData));
     }
 
     @Override

@@ -16,6 +16,7 @@
 
 package org.valkyrienskies.mod.common.coordinates;
 
+import java.util.Arrays;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import javax.vecmath.Matrix3d;
@@ -29,8 +30,6 @@ import org.valkyrienskies.mod.common.math.RotationMatrices;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.util.ValkyrienNBTUtils;
 import valkyrienwarfare.api.TransformType;
-
-import java.util.Arrays;
 
 /**
  * Immutable wrapper around the rotation matrices used by ships. The immutability is extremely
@@ -149,13 +148,13 @@ public class ShipTransform {
     }
 
     public VectorImmutable transform(VectorImmutable vector, TransformType transformType) {
-        Vector vectorMutable = vector.createMutibleVectorCopy();
+        Vector vectorMutable = vector.createMutableVectorCopy();
         this.transform(vectorMutable, transformType);
         return vectorMutable.toImmutable();
     }
 
     public VectorImmutable rotate(VectorImmutable vector, TransformType transformType) {
-        Vector vectorMutable = vector.createMutibleVectorCopy();
+        Vector vectorMutable = vector.createMutableVectorCopy();
         this.rotate(vectorMutable, transformType);
         return vectorMutable.toImmutable();
     }

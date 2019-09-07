@@ -77,13 +77,13 @@ public class TileEntityRudderAxlePart extends
             Vector directionFacing = this.getForcePosRelativeToAxleInShipSpace();
             Vector forcePosRelativeToShipCenter = this.getForcePositionInShipSpace();
             forcePosRelativeToShipCenter
-                .subtract(physicsObject.getPhysicsProcessor().gameTickCenterOfMass);
-            physicsObject.getShipTransformationManager().getCurrentPhysicsTransform()
+                .subtract(physicsObject.physicsProcessor().gameTickCenterOfMass);
+            physicsObject.shipTransformationManager().getCurrentPhysicsTransform()
                 .rotate(forcePosRelativeToShipCenter, TransformType.SUBSPACE_TO_GLOBAL);
 
-            Vector velocity = physicsObject.getPhysicsProcessor()
+            Vector velocity = physicsObject.physicsProcessor()
                 .getVelocityAtPoint(forcePosRelativeToShipCenter);
-            physicsObject.getShipTransformationManager().getCurrentPhysicsTransform()
+            physicsObject.shipTransformationManager().getCurrentPhysicsTransform()
                 .rotate(velocity, TransformType.GLOBAL_TO_SUBSPACE);
             // Now we have the velocity in local, the position in local, and the position relative to the axle
             Vec3i directionAxle = this.getRudderAxleAxisDirection().get().getDirectionVec();

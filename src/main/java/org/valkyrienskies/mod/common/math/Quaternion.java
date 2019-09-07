@@ -21,6 +21,7 @@ package org.valkyrienskies.mod.common.math;
  *
  * @author thebest108
  */
+@Deprecated
 public class Quaternion {
 
     private double x, y, z, w;
@@ -82,19 +83,6 @@ public class Quaternion {
             old.w *= -1;
         }
         return betweenQuat;
-    }
-
-    /**
-     * Creates a new Quaternion object for the given rotation.
-     *
-     * @param pitch in degrees
-     * @param yaw   in degrees
-     * @param roll  in degrees
-     * @return
-     */
-    public static Quaternion fromEuler(double pitch, double yaw, double roll) {
-        double[] rotationMatrix = RotationMatrices.getRotationMatrix(pitch, yaw, roll);
-        return QuaternionFromMatrix(rotationMatrix);
     }
 
     public static double dotProduct(Quaternion first, Quaternion second) {

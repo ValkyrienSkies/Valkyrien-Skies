@@ -19,8 +19,6 @@ package org.valkyrienskies.mod.common.math;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.projectile.EntityFireball;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import org.valkyrienskies.mod.common.coordinates.CoordinateSpaceType;
 import org.valkyrienskies.mod.common.coordinates.ISubspacedEntity;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
@@ -226,24 +224,6 @@ public class RotationMatrices {
         entity.setPosition(entityPos.X, entityPos.Y, entityPos.Z);
     }
 
-    public static BlockPos applyTransform(double[] M, BlockPos pos) {
-        Vector blockPosVec = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
-        applyTransform(M, blockPosVec);
-        BlockPos newPos = new BlockPos(Math.round(blockPosVec.X - .5D),
-            Math.round(blockPosVec.Y - .5D),
-            Math.round(blockPosVec.Z - .5D));
-        return newPos;
-    }
-
-    public static Vec3d applyTransform(double[] M, Vec3d vec) {
-        double x = vec.x;
-        double y = vec.y;
-        double z = vec.z;
-        return new Vec3d((x * M[0] + y * M[1] + z * M[2] + M[3]),
-            (x * M[4] + y * M[5] + z * M[6] + M[7]),
-            (x * M[8] + y * M[9] + z * M[10] + M[11]));
-    }
-
     public static void applyTransform3by3(double[] M, Vector vec) {
         double xx = vec.X;
         double yy = vec.Y;
@@ -260,28 +240,6 @@ public class RotationMatrices {
         vec.X = x * M[0] + y * M[1] + z * M[2];
         vec.Y = x * M[4] + y * M[5] + z * M[6];
         vec.Z = x * M[8] + y * M[9] + z * M[10];
-    }
-
-    public static float[] convertToFloat(double[] array) {
-        float[] floatArray = new float[array.length];
-        for (int i = 0; i < array.length; i++) {
-            floatArray[i] = (float) array[i];
-        }
-        return floatArray;
-    }
-
-    public static void convertToFloat(double[] toConvert, float[] toFill) {
-        for (int i = 0; i < toConvert.length; i++) {
-            toFill[i] = (float) toConvert[i];
-        }
-    }
-
-    public static double[] convertToDouble(float[] array) {
-        double[] doubleArray = new double[array.length];
-        for (int i = 0; i < array.length; i++) {
-            doubleArray[i] = array[i];
-        }
-        return doubleArray;
     }
 
     public static Vector get3by3TransformedVec(double[] M, Vector v) {

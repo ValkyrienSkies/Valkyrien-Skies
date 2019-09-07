@@ -23,7 +23,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.border.WorldBorder;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
-import org.valkyrienskies.mod.common.math.RotationMatrices;
+import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.multithreaded.PhysicsShipTransform;
 import org.valkyrienskies.mod.common.network.PhysWrapperPositionMessage;
@@ -66,22 +66,18 @@ public class ShipTransformationManager {
      * made from this data.
      */
     public void updateCurrentTickTransform() {
-        double[] lToWTransform = RotationMatrices
-            .getTranslationMatrix(parent.getWrapperEntity().posX, parent.getWrapperEntity().posY,
-                parent.getWrapperEntity().posZ);
-        lToWTransform = RotationMatrices
-            .rotateAndTranslate(lToWTransform, parent.getWrapperEntity().getPitch(),
-                parent.getWrapperEntity().getYaw(), parent.getWrapperEntity().getRoll(),
-                parent.getCenterCoord());
-        setCurrentTickTransform(new ShipTransform(lToWTransform));
+        PhysicsWrapperEntity wrapperEntity = parent.getWrapperEntity();
+        ShipTransform newTickTransform = new ShipTransform(wrapperEntity.posX, wrapperEntity.posY,
+            wrapperEntity.posZ, wrapperEntity.getPitch(), wrapperEntity.getYaw(),
+            wrapperEntity.getRoll(), parent.getCenterCoord());
+        setCurrentTickTransform(newTickTransform);
     }
 
     public void updateRenderTransform(double x, double y, double z, double pitch, double yaw,
         double roll) {
-        double[] RlToWTransform = RotationMatrices.getTranslationMatrix(x, y, z);
-        RlToWTransform = RotationMatrices
-            .rotateAndTranslate(RlToWTransform, pitch, yaw, roll, parent.getCenterCoord());
-        setRenderTransform(new ShipTransform(RlToWTransform));
+        ShipTransform newRenderTransform = new ShipTransform(x, y, z, pitch, yaw, roll,
+            parent.getCenterCoord());
+        setRenderTransform(newRenderTransform);
     }
 
     /**
@@ -245,45 +241,43 @@ public class ShipTransformationManager {
             return;
         }
         final BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
-        // TODO: This is bad, but its fast
-        final double[] MDouble = getCurrentPhysicsTransform()
-            .getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL);
-        final float[] M = new float[MDouble.length];
-        for (int i = 0; i < MDouble.length; i++) {
-            M[i] = (float) MDouble[i];
-        }
+        // TODO: This is bad, but its fast. Actually this whole algorithm for calculating an AABB
+        //  for a ship is already bad, so we're not really making it much worse.
+        final float[] rawMatrix = getCurrentPhysicsTransform()
+            .generateFastRawTransformMatrix(TransformType.SUBSPACE_TO_GLOBAL);
 
         float minX, minY, minZ, maxX, maxY, maxZ;
         minX = minY = minZ = Float.MAX_VALUE;
         maxX = maxY = maxZ = -Float.MAX_VALUE;
 
-        // We loop through this int list instead of a blockpos list because they fit much better in the cache,
+        // We loop through this int list instead of a blockpos list because they fit much better in
+        // the cache,
         for (int i = parent.getBlockPositionsGameTick().size() - 1; i >= 0; i--) {
-            int blockPos = parent.getBlockPositionsGameTick().get(i);
+            // Don't bother doing any bounds checking.
+            int blockPos = parent.getBlockPositionsGameTick().getQuick(i);
             parent.setBlockPosFromIntRelToShop(blockPos, pos);
 
             float x = pos.getX() + .5f;
             float y = pos.getY() + .5f;
             float z = pos.getZ() + .5f;
 
-            float newX = x * M[0] + y * M[1] + z * M[2] + M[3];
-            float newY = x * M[4] + y * M[5] + z * M[6] + M[7];
-            float newZ = x * M[8] + y * M[9] + z * M[10] + M[11];
+            float newX = x * rawMatrix[0] + y * rawMatrix[1] + z * rawMatrix[2] + rawMatrix[3];
+            float newY = x * rawMatrix[4] + y * rawMatrix[5] + z * rawMatrix[6] + rawMatrix[7];
+            float newZ = x * rawMatrix[8] + y * rawMatrix[9] + z * rawMatrix[10] + rawMatrix[11];
 
-            minX = Math.min(newX - .5f, minX);
-            maxX = Math.max(newX + .5f, maxX);
-            minY = Math.min(newY - .5f, minY);
-            maxY = Math.max(newY + .5f, maxY);
-            minZ = Math.min(newZ - .5f, minZ);
-            maxZ = Math.max(newZ + .5f, maxZ);
+            minX = Math.min(newX, minX);
+            maxX = Math.max(newX, maxX);
+            minY = Math.min(newY, minY);
+            maxY = Math.max(newY, maxY);
+            minZ = Math.min(newZ, minZ);
+            maxZ = Math.max(newZ, maxZ);
         }
         AxisAlignedBB newBB = new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ).grow(3D);
         // Just a quick sanity check
         if (newBB.getAverageEdgeLength() < 1000000D) {
             parent.setShipBoundingBox(newBB);
         } else {
-            // throw new IllegalStateException("Unexpectedly large shipBB!!!");
-
+            throw new IllegalStateException("Unexpectedly large ship bounding box!\n" + newBB);
         }
     }
 

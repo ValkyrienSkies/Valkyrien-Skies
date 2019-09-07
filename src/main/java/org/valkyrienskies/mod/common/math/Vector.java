@@ -263,8 +263,8 @@ public class Vector {
      */
     public double angleBetween(Vector other) {
         double dotProduct = this.dot(other);
-        double normalizedDotProduect = dotProduct / (this.length() * other.length());
-        return Math.acos(dotProduct);
+        double normalizedDotProduct = dotProduct / (this.length() * other.length());
+        return Math.acos(normalizedDotProduct);
     }
 
     public VectorImmutable toImmutable() {

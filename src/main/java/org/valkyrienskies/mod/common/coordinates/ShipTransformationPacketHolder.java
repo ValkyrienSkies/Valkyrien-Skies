@@ -117,15 +117,24 @@ public class ShipTransformationPacketHolder {
         physObj.getWrapperEntity().posY += (posY - physObj.getWrapperEntity().posY) * lerpFactor;
         physObj.getWrapperEntity().posZ += (posZ - physObj.getWrapperEntity().posZ) * lerpFactor;
 
+        // Create the quaternion for the old physics tick
         Quaternion prevRotation = physObj.getShipTransformationManager().getCurrentTickTransform()
             .createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
-        Quaternion newRotation = Quaternion.fromEuler(pitch, yaw, roll);
-        Quaternion lerpedRotation = Quaternion
-            .slerpInterpolate(prevRotation, newRotation, lerpFactor);
-        double[] lerpedRotationAngles = lerpedRotation.toRadians();
 
-        physObj.getWrapperEntity().setPhysicsEntityRotation(Math.toDegrees(lerpedRotationAngles[0]),
-            Math.toDegrees(lerpedRotationAngles[1]), Math.toDegrees(lerpedRotationAngles[2]));
+        // Create the quaternion for the next physics tick
+        ShipTransform newRotationTransform = ShipTransform
+            .createRotationTransform(pitch, yaw, roll);
+        Quaternion newRotation = newRotationTransform
+            .createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
+
+        // Interpolate between two based on the current time-step.
+        Quaternion slerpedRotation = Quaternion
+            .slerpInterpolate(prevRotation, newRotation, lerpFactor);
+        double[] slerpedRotationAngles = slerpedRotation.toRadians();
+
+        physObj.getWrapperEntity()
+            .setPhysicsEntityRotation(Math.toDegrees(slerpedRotationAngles[0]),
+                Math.toDegrees(slerpedRotationAngles[1]), Math.toDegrees(slerpedRotationAngles[2]));
 
         physObj.setCenterCoord(centerOfRotation);
         // Update the ship bounding box

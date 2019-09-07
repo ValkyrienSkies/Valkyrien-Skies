@@ -30,28 +30,28 @@ import org.valkyrienskies.mod.common.math.Vector;
  */
 public class ValkyrienNBTUtils {
 
-    public static final void writeBlockPosToNBT(String name, BlockPos pos,
+    public static void writeBlockPosToNBT(String name, BlockPos pos,
         NBTTagCompound compound) {
         compound.setInteger(name + "X", pos.getX());
         compound.setInteger(name + "Y", pos.getY());
         compound.setInteger(name + "Z", pos.getZ());
     }
 
-    public static final BlockPos readBlockPosFromNBT(String name, NBTTagCompound compound) {
+    public static BlockPos readBlockPosFromNBT(String name, NBTTagCompound compound) {
         int x = compound.getInteger(name + "X");
         int y = compound.getInteger(name + "Y");
         int z = compound.getInteger(name + "Z");
         return new BlockPos(x, y, z);
     }
 
-    public static final void write3x3MatrixToNBT(String name, double[] matrix,
+    public static void write3x3MatrixToNBT(String name, double[] matrix,
         NBTTagCompound compound) {
         for (int i = 0; i < 9; i++) {
             compound.setDouble(name + i, matrix[i]);
         }
     }
 
-    public static final double[] read3x3MatrixFromNBT(String name, NBTTagCompound compound) {
+    public static double[] read3x3MatrixFromNBT(String name, NBTTagCompound compound) {
         double[] matrix = new double[9];
         for (int i = 0; i < 9; i++) {
             matrix[i] = compound.getDouble(name + i);
@@ -59,13 +59,13 @@ public class ValkyrienNBTUtils {
         return matrix;
     }
 
-    public static final void writeVectorToNBT(String name, Vector vector, NBTTagCompound compound) {
+    public static void writeVectorToNBT(String name, Vector vector, NBTTagCompound compound) {
         compound.setDouble(name + "X", vector.X);
         compound.setDouble(name + "Y", vector.Y);
         compound.setDouble(name + "Z", vector.Z);
     }
 
-    public static final Vector readVectorFromNBT(String name, NBTTagCompound compound) {
+    public static Vector readVectorFromNBT(String name, NBTTagCompound compound) {
         Vector vector = new Vector();
         vector.X = compound.getDouble(name + "X");
         vector.Y = compound.getDouble(name + "Y");

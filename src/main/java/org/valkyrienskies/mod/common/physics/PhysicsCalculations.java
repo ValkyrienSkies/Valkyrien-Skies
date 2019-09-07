@@ -310,15 +310,9 @@ public class PhysicsCalculations {
     private void calculateFramedMOITensor() {
         double[] framedMOI = RotationMatrices.getZeroMatrix(3);
 
-        double[] internalRotationMatrix = getParent().getShipTransformationManager()
-            .getCurrentPhysicsTransform()
-            .getInternalMatrix(TransformType.SUBSPACE_TO_GLOBAL);
-
         // Copy the rotation matrix, ignore the translation and scaling parts.
-        Matrix3d rotationMatrix = new Matrix3d(internalRotationMatrix[0], internalRotationMatrix[1],
-            internalRotationMatrix[2], internalRotationMatrix[4], internalRotationMatrix[5],
-            internalRotationMatrix[6], internalRotationMatrix[8], internalRotationMatrix[9],
-            internalRotationMatrix[10]);
+        Matrix3d rotationMatrix = getParent().getShipTransformationManager()
+            .getCurrentPhysicsTransform().createRotationMatrix(TransformType.SUBSPACE_TO_GLOBAL);
 
         Matrix3d inertiaBodyFrame = new Matrix3d(gameMoITensor);
         // The product of the overall rotation matrix with the inertia tensor.

@@ -18,7 +18,7 @@ package org.valkyrienskies.mod.common.coordinates;
 
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-
+import javax.vecmath.Matrix3d;
 import lombok.extern.log4j.Log4j2;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
@@ -96,16 +96,9 @@ public class ShipTransform {
         this(RotationMatrices.getDoubleIdentity());
     }
 
-    /**
-     * Initializes this as a copy of the given ShipTransform.
-     *
-     * @param toCopy
-     */
-    public ShipTransform(ShipTransform toCopy) {
-        this.subspaceToGlobal = Arrays
-            .copyOf(toCopy.subspaceToGlobal, toCopy.subspaceToGlobal.length);
-        this.globalToSubspace = Arrays
-            .copyOf(toCopy.globalToSubspace, toCopy.globalToSubspace.length);
+    public static ShipTransform createRotationTransform(double pitch, double yaw, double roll) {
+        double[] rotationOnlyMatrix = RotationMatrices.getRotationMatrix(pitch, yaw, roll);
+        return new ShipTransform(rotationOnlyMatrix);
     }
 
     public void transform(Vector vector, TransformType transformType) {
@@ -139,6 +132,10 @@ public class ShipTransform {
         return Quaternion.QuaternionFromMatrix(getInternalMatrix(transformType));
     }
 
+    public void writeToNBT(NBTTagCompound compound, String name) {
+        compound.setByteArray(name, ValkyrienNBTUtils.toByteArray(subspaceToGlobal));
+    }
+
     @Nullable
     public static ShipTransform readFromNBT(NBTTagCompound compound, String name) {
         byte[] localToGlobalAsBytes = compound.getByteArray(name);
@@ -152,13 +149,13 @@ public class ShipTransform {
     }
 
     public VectorImmutable transform(VectorImmutable vector, TransformType transformType) {
-        Vector vectorMutable = new Vector(vector);
+        Vector vectorMutable = vector.createMutibleVectorCopy();
         this.transform(vectorMutable, transformType);
         return vectorMutable.toImmutable();
     }
 
     public VectorImmutable rotate(VectorImmutable vector, TransformType transformType) {
-        Vector vectorMutable = new Vector(vector);
+        Vector vectorMutable = vector.createMutibleVectorCopy();
         this.rotate(vectorMutable, transformType);
         return vectorMutable.toImmutable();
     }
@@ -171,7 +168,7 @@ public class ShipTransform {
      * @return Unsafe internal arrays; for the love of god do not modify them!
      */
     @Deprecated
-    public double[] getInternalMatrix(TransformType transformType) {
+    private double[] getInternalMatrix(TransformType transformType) {
         switch (transformType) {
             case SUBSPACE_TO_GLOBAL:
                 return Arrays.copyOf(subspaceToGlobal, subspaceToGlobal.length);
@@ -188,7 +185,27 @@ public class ShipTransform {
         RotationMatrices.applyTransform(this, entity, subspaceToGlobal);
     }
 
-    public void writeToNBT(NBTTagCompound compound, String name) {
-        compound.setByteArray(name, ValkyrienNBTUtils.toByteArray(subspaceToGlobal));
+    /**
+     * Creates a standard 3x3 rotation matrix for this transform and the given transform type.
+     *
+     * @param transformType
+     * @return
+     */
+    public Matrix3d createRotationMatrix(TransformType transformType) {
+        double[] internalRotationMatrix = getInternalMatrix(transformType);
+        return new Matrix3d(internalRotationMatrix[0], internalRotationMatrix[1],
+            internalRotationMatrix[2], internalRotationMatrix[4], internalRotationMatrix[5],
+            internalRotationMatrix[6], internalRotationMatrix[8], internalRotationMatrix[9],
+            internalRotationMatrix[10]);
+    }
+
+    @Deprecated
+    public float[] generateFastRawTransformMatrix(TransformType transformType) {
+        double[] internalMatrix = getInternalMatrix(transformType);
+        float[] floatMatrix = new float[internalMatrix.length];
+        for (int i = 0; i < internalMatrix.length; i++) {
+            floatMatrix[i] = (float) internalMatrix[i];
+        }
+        return floatMatrix;
     }
 }

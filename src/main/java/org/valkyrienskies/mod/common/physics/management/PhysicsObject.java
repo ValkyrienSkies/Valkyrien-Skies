@@ -1047,10 +1047,16 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
      * deconstruct back to the world.
      */
     public boolean canShipBeDeconstructed() {
-        Quaternion zeroQuat = Quaternion.fromEuler(0, 0, 0);
-        Quaternion shipQuat = Quaternion
-                .fromEuler(wrapper.getPitch(), wrapper.getYaw(), wrapper.getRoll());
+        ShipTransform zeroTransform = ShipTransform.createRotationTransform(0, 0, 0);
+        // The quaternion with the world's orientation (which is zero because the world never moves
+        // or rotates)
+        Quaternion zeroQuat = zeroTransform
+            .createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
+        // The quaternion with the ship's orientation
+        Quaternion shipQuat = getShipTransformationManager().getCurrentTickTransform()
+            .createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
         double dotProduct = Quaternion.dotProduct(zeroQuat, shipQuat);
+        // Calculate the angle between the two quaternions
         double anglesBetweenQuaternions = Math.toDegrees(Math.acos(dotProduct));
         // Only allow a ship to be deconstructed if the angle between the grid and its orientation is less than half a degree.
         return anglesBetweenQuaternions < .5;

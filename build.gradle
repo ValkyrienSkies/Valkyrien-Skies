@@ -121,11 +121,9 @@ dependencies {
     annotationProcessor("org.spongepowered:mixin:$mixinVersion")
 
     // We want to prevent any conflicts with SpongeForge
-    //Commented out afor now, people can re-add this locally if they want to but it adds
-    //a lot of bloat to dev environments for no reason
-    /*compile("org.spongepowered:spongeforge:$spongeVersion:dev") {
+    compile("org.spongepowered:spongeforge:$spongeVersion:dev") {
         exclude group: "org.apache.logging.log4j"
-    }*/
+    }
 
     compile "li.cil.oc:OpenComputers:$opencomputersVersion:api"
 

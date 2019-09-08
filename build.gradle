@@ -120,9 +120,9 @@ dependencies {
     // mixin as annotation processor
     annotationProcessor("org.spongepowered:mixin:$mixinVersion")
 
-    // We want to prevent any conflicts with SpongeForge
-    compile("org.spongepowered:spongeforge:$spongeVersion:dev") {
-        exclude group: "org.apache.logging.log4j"
+    // Needs to be present at compile-time because we mix in to spongeforge, however marking it as compile makes forge load it as a mod in a dev environment, which is very annoying
+    compileOnly("org.spongepowered:spongeforge:$spongeVersion:dev") {
+        transitive = false
     }
 
     compile "li.cil.oc:OpenComputers:$opencomputersVersion:api"
@@ -131,7 +131,13 @@ dependencies {
     shade "valkyrienwarfare:api:$vsApiVersion"
 
     // CQEngine for in-memory nonpersistent database
-    shade "com.googlecode.cqengine:cqengine:$cqengineVersion"
+    shade("com.googlecode.cqengine:cqengine:$cqengineVersion")  {
+        exclude module: "sqlite-jdbc" //11.1 MB
+
+        //exclude module: "antlr4-runtime" //648.0 KB
+        //exclude module: "javassist" //1.5 MB
+        //exclude module: "typetools" //23.5 KB
+    }
 
     // Include all dependencies in the /dependencies folder
     shade fileTree(include: ["*.jar"], dir: "dependencies")

@@ -215,8 +215,8 @@ task signJar(type: SignJar, dependsOn: jar) {
         alias = project.keyStoreAlias
         storePass = project.keyStorePass
         keyPass = project.keyStoreKeyPass
-        inputFile = shadowJar.archivePath
-        outputFile = shadowJar.archivePath
+        inputFile = jar.archivePath
+        outputFile = jar.archivePath
     }
 }
 

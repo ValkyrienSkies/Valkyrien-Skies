@@ -380,7 +380,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 
         for (int x = ownedChunks().minX(); x <= ownedChunks().maxX(); x++) {
             for (int z = ownedChunks().minZ(); z <= ownedChunks().maxZ(); z++) {
-                claimedChunkCache.getChunkRelative(x, z).generateSkylightMap();
+                claimedChunkCache.getChunkAt(x, z).generateSkylightMap();
             }
         }
 
@@ -401,7 +401,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 
         ChunkProviderServer provider = (ChunkProviderServer) world().getChunkProvider();
         chunk.dirty = true;
-        claimedChunkCache.setChunkRelative(x, z, chunk);
+        claimedChunkCache.setChunkAt(x, z, chunk);
 
         if (putInId2ChunkMap) {
             provider.loadedChunks.put(ChunkPos.asLong(x, z), chunk);
@@ -492,7 +492,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
         ChunkProviderServer provider = (ChunkProviderServer) world().getChunkProvider();
         for (int x = ownedChunks().minX(); x <= ownedChunks().maxX(); x++) {
             for (int z = ownedChunks().minZ(); z <= ownedChunks().maxZ(); z++) {
-                provider.queueUnload(claimedChunkCache.getChunkRelative(x, z));
+                provider.queueUnload(claimedChunkCache.getChunkAt(x, z));
             }
         }
     }
@@ -956,7 +956,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
                 chunk.setTerrainPopulated(true);
                 chunk.setLightPopulated(true);
                 injectChunkIntoWorld(chunk, x, z, true);
-                claimedChunkCache.setChunkRelative(x, z, chunk);
+                claimedChunkCache.setChunkAt(x, z, chunk);
             }
         }
 

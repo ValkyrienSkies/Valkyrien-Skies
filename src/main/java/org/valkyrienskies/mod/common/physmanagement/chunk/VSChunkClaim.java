@@ -16,9 +16,11 @@
 
 package org.valkyrienskies.mod.common.physmanagement.chunk;
 
+import java.util.stream.Stream;
 import lombok.Getter;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 
 /**
  * This stores the chunk claims for a PhysicsObject; not the chunks themselves
@@ -96,6 +98,21 @@ public class VSChunkClaim {
                 && other.radius() == radius();
         }
         return false;
+    }
+
+    /**
+     * @return A stream of the {@link ChunkPos} of every chunk inside of this claim.
+     */
+    public Stream<ChunkPos> stream() {
+        Stream.Builder<ChunkPos> builder = Stream.builder();
+
+        for (int x = minX(); x <= maxX(); x++) {
+            for (int z = minZ(); z <= maxZ(); z++) {
+                builder.add(new ChunkPos(x, z));
+            }
+        }
+
+        return builder.build();
     }
 
     /**

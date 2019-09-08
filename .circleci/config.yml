@@ -19,7 +19,7 @@ jobs:
           name: Create JAR file
           command: |
             export TERM=${TERM:-dumb}
-            ./gradlew setupCiWorkspace
+            ./gradlew setupDecompWorkspace
             ./gradlew build
       - save_cache:
           paths:
@@ -30,6 +30,7 @@ jobs:
           destination: /
       - slack/status:
           success_message: Branch $CIRCLE_BRANCH, build $CIRCLE_BUILD_NUM passed. Download at $CIRCLE_BUILD_URL#artifacts/containers/0
+          failure_message: Branch $CIRCLE_BRANCH, build $CIRCLE_BUILD_NUM failed. $CIRCLE_BUILD_URL
 
 workflows:
   version: 2

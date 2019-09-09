@@ -6,7 +6,7 @@
     "version": "1.0",
     "mcversion": "1.12.2",
     "url": "https://goo.gl/M2W0N5",
-    "updateUrl": "https://raw.githubusercontent.com/valkyrienskies/VW-Updates/master/update.json",
+    "updateUrl": "https://raw.githubusercontent.com/ValkyrienSkies/VW-Updates/master/update.json",
     "authorList": [
       "thebest108",
       "DaPorkchop_",
@@ -14,7 +14,7 @@
       "RubyJunk"
     ],
     "credits": "",
-    "logoFile": "VW_Logo2.png",
+    "logoFile": "banner.png",
     "screenshots": [],
     "dependencies": []
   },

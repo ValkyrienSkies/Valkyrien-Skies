@@ -133,9 +133,8 @@ dependencies {
     // CQEngine for in-memory nonpersistent database
     shade("com.googlecode.cqengine:cqengine:$cqengineVersion")  {
         exclude module: "sqlite-jdbc" //11.1 MB
-
-        //exclude module: "antlr4-runtime" //648.0 KB
-        //exclude module: "javassist" //1.5 MB
+        exclude module: "antlr4-runtime" //648.0 KB
+        exclude module: "javassist" //1.5 MB
         //exclude module: "typetools" //23.5 KB
     }
 

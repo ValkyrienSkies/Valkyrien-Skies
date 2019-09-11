@@ -1,6 +1,7 @@
 package org.valkyrienskies.mod.common.command;
 
 import java.util.stream.Collectors;
+import javax.inject.Inject;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -29,6 +30,7 @@ public class MainCommand implements Runnable {
     @Spec
     private Model.CommandSpec spec;
 
+    @Inject
     private ICommandSender sender;
 
     @Override
@@ -40,6 +42,7 @@ public class MainCommand implements Runnable {
 
     @Command(name = "tps")
     static class TPS implements Runnable {
+        @Inject
         ICommandSender sender;
 
         @Option(names = {"--world", "-w"})
@@ -66,6 +69,7 @@ public class MainCommand implements Runnable {
 
     @Command(name = "list-ships", aliases = "ls")
     static class ListShips implements Runnable {
+        @Inject
         ICommandSender sender;
 
         @Option(names = {"-v", "--verbose"})

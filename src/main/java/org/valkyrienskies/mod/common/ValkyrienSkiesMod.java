@@ -27,7 +27,6 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import net.minecraft.block.Block;
@@ -67,7 +66,7 @@ import org.valkyrienskies.mod.client.gui.TabValkyrienSkies;
 import org.valkyrienskies.mod.common.block.BlockPhysicsInfuser;
 import org.valkyrienskies.mod.common.block.BlockPhysicsInfuserCreative;
 import org.valkyrienskies.mod.common.block.BlockPhysicsInfuserDummy;
-import org.valkyrienskies.mod.common.command.framework.VWModCommandRegistry;
+import org.valkyrienskies.mod.common.command.framework.VSModCommandRegistry;
 import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.item.ItemPhysicsCore;
 import org.valkyrienskies.mod.common.network.PhysWrapperPositionHandler;
@@ -203,7 +202,7 @@ public class ValkyrienSkiesMod {
     @EventHandler
     public void serverStart(FMLServerStartingEvent event) {
         MinecraftServer server = event.getServer();
-        VWModCommandRegistry.registerCommands(server);
+        VSModCommandRegistry.registerCommands(server);
     }
 
     private void registerNetworks(FMLStateEvent event) {

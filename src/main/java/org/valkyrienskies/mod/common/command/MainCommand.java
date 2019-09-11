@@ -6,7 +6,7 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
-import org.valkyrienskies.mod.common.multithreaded.VWThread;
+import org.valkyrienskies.mod.common.multithreaded.VSThread;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.ShipData;
 import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
@@ -54,7 +54,7 @@ public class MainCommand implements Runnable {
                 world = sender.getEntityWorld();
             }
 
-            VWThread worldPhysicsThread = ((WorldServerShipManager) ((IHasShipManager) world)
+            VSThread worldPhysicsThread = ((WorldServerShipManager) ((IHasShipManager) world)
                 .getManager()).getPhysicsThread();
 
             if (worldPhysicsThread != null) {

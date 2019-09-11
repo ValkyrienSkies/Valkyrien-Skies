@@ -17,11 +17,11 @@ import picocli.CommandLine.Command;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class VWCommandBase<K> extends CommandBase {
+public class VSCommandBase<K> extends CommandBase {
 
     private Class<K> cmdClass;
 
-    VWCommandBase(Class<K> cmdClass) {
+    VSCommandBase(Class<K> cmdClass) {
         if (cmdClass.getAnnotation(Command.class) == null) {
             throw new IllegalArgumentException("Clazz must have the PicoCLI @Command annotation!");
         }
@@ -41,7 +41,7 @@ public class VWCommandBase<K> extends CommandBase {
 
     @Override
     public String getUsage(ICommandSender sender) {
-        VWCommandFactory factory = new VWCommandFactory(sender);
+        VSCommandFactory factory = new VSCommandFactory(sender);
         CommandLine commandLine = new CommandLine(factory.create(cmdClass), factory);
 
         return commandLine.getUsageMessage();
@@ -49,7 +49,7 @@ public class VWCommandBase<K> extends CommandBase {
 
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) {
-        VWCommandFactory factory = new VWCommandFactory(sender);
+        VSCommandFactory factory = new VSCommandFactory(sender);
 
         CommandLine commandLine = new CommandLine(factory.create(cmdClass), factory);
         commandLine.registerConverter(World.class, new WorldConverter());
@@ -58,7 +58,7 @@ public class VWCommandBase<K> extends CommandBase {
         commandLine.setOut(chatOut);
         commandLine.setErr(chatOut);
 
-        args = VWCommandUtil.toProperArgs(args);
+        args = VSCommandUtil.toProperArgs(args);
 
         commandLine.execute(args);
     }

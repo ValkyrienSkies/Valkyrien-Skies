@@ -7,10 +7,10 @@ import javax.inject.Inject;
 import net.minecraft.command.ICommandSender;
 import picocli.CommandLine;
 
-public class VWCommandFactory implements CommandLine.IFactory {
+public class VSCommandFactory implements CommandLine.IFactory {
     private ICommandSender sender;
 
-    VWCommandFactory(ICommandSender sender) {
+    VSCommandFactory(ICommandSender sender) {
         this.sender = sender;
     }
 

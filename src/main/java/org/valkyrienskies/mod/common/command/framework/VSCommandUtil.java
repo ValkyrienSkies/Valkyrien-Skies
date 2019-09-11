@@ -3,7 +3,7 @@ package org.valkyrienskies.mod.common.command.framework;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
-public class VWCommandUtil {
+public class VSCommandUtil {
 
     public static String[] toProperArgs(String[] args) {
         return toProperArgs(String.join(" ", args));

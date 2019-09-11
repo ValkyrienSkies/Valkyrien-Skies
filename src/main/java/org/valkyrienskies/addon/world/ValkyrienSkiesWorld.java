@@ -16,6 +16,7 @@
 
 package org.valkyrienskies.addon.world;
 
+import lombok.extern.log4j.Log4j2;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.item.Item;
@@ -36,8 +37,6 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.valkyrienskies.addon.world.block.BlockEthereumOre;
 import org.valkyrienskies.addon.world.capability.ICapabilityAntiGravity;
 import org.valkyrienskies.addon.world.capability.ImplCapabilityAntiGravity;
@@ -53,9 +52,8 @@ import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
     dependencies = "required-after:" + ValkyrienSkiesMod.MOD_ID
 )
 @Mod.EventBusSubscriber(modid = ValkyrienSkiesWorld.MOD_ID)
+@Log4j2
 public class ValkyrienSkiesWorld {
-
-    private static final Logger logger = LogManager.getLogger(ValkyrienSkiesWorld.class);
 
     // MOD INFO CONSTANTS
     public static final String MOD_ID = "vs_world";
@@ -82,7 +80,7 @@ public class ValkyrienSkiesWorld {
 
     @SubscribeEvent
     public static void registerBlocks(RegistryEvent.Register<Block> event) {
-        logger.debug("Registering blocks...");
+        log.debug("Registering blocks...");
 
         INSTANCE.valkyriumOre = new BlockEthereumOre(Material.ROCK).setHardness(3f)
             .setTranslationKey("valkyrium_ore")

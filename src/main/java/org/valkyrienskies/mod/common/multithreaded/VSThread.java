@@ -38,7 +38,7 @@ import org.valkyrienskies.mod.common.physics.management.WorldPhysObjectManager;
  * @author thebest108
  */
 @Log4j2
-public class VWThread extends Thread {
+public class VSThread extends Thread {
 
     private final static long NS_PER_TICK = 10000000;
     private final static long MAX_LOST_TIME_NS = 1000000000;
@@ -54,7 +54,7 @@ public class VWThread extends Thread {
     // Used by the game thread to mark this thread for death.
     private volatile boolean threadRunning;
 
-    public VWThread(World host) {
+    public VSThread(World host) {
         super("VW World Thread " + threadID);
         threadID++;
         this.hostWorld = host;

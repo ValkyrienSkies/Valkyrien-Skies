@@ -23,13 +23,14 @@ import org.valkyrienskies.mod.common.command.AirshipSettingsCommand;
 import org.valkyrienskies.mod.common.command.MainCommand;
 import org.valkyrienskies.mod.common.command.PhysSettingsCommand;
 
-public class VWModCommandRegistry {
+public class VSModCommandRegistry {
 
     public static void registerCommands(MinecraftServer server) {
         ServerCommandManager manager = (ServerCommandManager) server.getCommandManager();
-        manager.registerCommand(new VWCommandBase<>(MainCommand.class));
+        manager.registerCommand(new VSCommandBase<>(MainCommand.class));
         manager.registerCommand(new PhysSettingsCommand());
         manager.registerCommand(new AirshipSettingsCommand());
         manager.registerCommand(new AirshipMapCommand());
     }
+
 }

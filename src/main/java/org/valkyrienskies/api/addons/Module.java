@@ -29,6 +29,7 @@ import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 @Deprecated
 public class Module {
 
+    @Deprecated
     public static void registerRecipe(RegistryEvent.Register<IRecipe> event, String registryName,
         ItemStack out, Object... in) {
         CraftingHelper.ShapedPrimer primer = CraftingHelper.parseShaped(in);
@@ -37,6 +38,7 @@ public class Module {
                 primer.input, out).setRegistryName(ValkyrienSkiesMod.MOD_ID, registryName));
     }
 
+    @Deprecated
     public static void registerItemBlock(RegistryEvent.Register<Item> event, Block block) {
         event.getRegistry().register(new ItemBlock(block).setRegistryName(block.getRegistryName()));
     }

@@ -52,7 +52,7 @@ public class ValkyrienSkiesOpenComputers {
     public void registerBlocks(RegistryEvent.Register<Block> event) {
         gpsBlock = new GPSBlock().setTranslationKey("gpsblock")
             .setRegistryName(MOD_ID, "gpsblock")
-            .setCreativeTab(ValkyrienSkiesMod.vwTab);
+            .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
 
         event.getRegistry().register(gpsBlock);
     }

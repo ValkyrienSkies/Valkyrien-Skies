@@ -207,7 +207,7 @@ public class EventsCommon {
         event.getWorld().addEventListener(new VWWorldEventListener(world));
         IHasShipManager shipManager = (IHasShipManager) world;
         if (!event.getWorld().isRemote) {
-            ValkyrienSkiesMod.VW_CHUNK_MANAGER.initWorld(world);
+            ValkyrienSkiesMod.VS_CHUNK_MANAGER.initWorld(world);
             shipManager.setManager(WorldServerShipManager::new);
         } else {
             shipManager.setManager(WorldClientShipManager::new);
@@ -217,12 +217,12 @@ public class EventsCommon {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onWorldUnload(WorldEvent.Unload event) {
         if (!event.getWorld().isRemote) {
-            ValkyrienSkiesMod.VW_CHUNK_MANAGER.removeWorld(event.getWorld());
+            ValkyrienSkiesMod.VS_CHUNK_MANAGER.removeWorld(event.getWorld());
         } else {
             // Fixes memory leak; @DaPorkChop please don't leave static maps lying around D:
             lastPositions.clear();
         }
-        ValkyrienSkiesMod.VW_PHYSICS_MANAGER.removeWorld(event.getWorld());
+        ValkyrienSkiesMod.VS_PHYSICS_MANAGER.removeWorld(event.getWorld());
         IHasShipManager shipManager = (IHasShipManager) event.getWorld();
         shipManager.getManager().onWorldUnload();
     }
@@ -340,7 +340,7 @@ public class EventsCommon {
                 center.Z - radius,
                 center.X + radius, center.Y + radius, center.Z + radius);
             // Find nearby ships, we will check if the explosion effects them
-            List<PhysicsWrapperEntity> shipsNear = ValkyrienSkiesMod.VW_PHYSICS_MANAGER
+            List<PhysicsWrapperEntity> shipsNear = ValkyrienSkiesMod.VS_PHYSICS_MANAGER
                 .getManagerForWorld(event.getWorld())
                 .getNearbyPhysObjects(toCheck);
             // Process the explosion on the nearby ships

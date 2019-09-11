@@ -91,7 +91,7 @@ public class VWWorldEventListener implements IWorldEventListener {
     @Override
     public void onEntityAdded(Entity entity) {
         if (entity instanceof PhysicsWrapperEntity) {
-            ValkyrienSkiesMod.VW_PHYSICS_MANAGER.onShipLoad((PhysicsWrapperEntity) entity);
+            ValkyrienSkiesMod.VS_PHYSICS_MANAGER.onShipLoad((PhysicsWrapperEntity) entity);
         } else {
             // This is really only here because Sponge doesn't call the entity join event for some reason :/
             // So I basically just copied the event code here as well.
@@ -124,7 +124,7 @@ public class VWWorldEventListener implements IWorldEventListener {
     @Override
     public void onEntityRemoved(Entity entityIn) {
         if (entityIn instanceof PhysicsWrapperEntity) {
-            ValkyrienSkiesMod.VW_PHYSICS_MANAGER.onShipUnload((PhysicsWrapperEntity) entityIn);
+            ValkyrienSkiesMod.VS_PHYSICS_MANAGER.onShipUnload((PhysicsWrapperEntity) entityIn);
         }
     }
 

@@ -30,7 +30,7 @@ public class MixinClientWorld {
             int j = world.getLightFromNeighborsFor(EnumSkyBlock.BLOCK, pos);
             AxisAlignedBB lightBB = new AxisAlignedBB(pos.getX() - 2, pos.getY() - 2,
                 pos.getZ() - 2, pos.getX() + 2, pos.getY() + 2, pos.getZ() + 2);
-            List<PhysicsWrapperEntity> physEnts = ValkyrienSkiesMod.VW_PHYSICS_MANAGER
+            List<PhysicsWrapperEntity> physEnts = ValkyrienSkiesMod.VS_PHYSICS_MANAGER
                 .getManagerForWorld(world).getNearbyPhysObjects(lightBB);
 
             for (PhysicsWrapperEntity physEnt : physEnts) {

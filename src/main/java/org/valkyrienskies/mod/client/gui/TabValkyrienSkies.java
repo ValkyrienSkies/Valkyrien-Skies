@@ -25,8 +25,8 @@ import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 @MethodsReturnNonnullByDefault
 public class TabValkyrienSkies extends CreativeTabs {
 
-    public TabValkyrienSkies() {
-        super(ValkyrienSkiesMod.MOD_ID);
+    public TabValkyrienSkies(String label) {
+        super(label);
     }
 
     @Override

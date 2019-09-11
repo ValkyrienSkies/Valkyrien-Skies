@@ -270,7 +270,7 @@ public abstract class MixinRenderGlobal {
         Entity entityIn, CallbackInfoReturnable callbackInfo) {
         RenderHelper.disableStandardItemLighting();
 
-        for (PhysicsWrapperEntity wrapper : ValkyrienSkiesMod.VW_PHYSICS_MANAGER
+        for (PhysicsWrapperEntity wrapper : ValkyrienSkiesMod.VS_PHYSICS_MANAGER
             .getManagerForWorld(this.world)
             .getTickablePhysicsEntities()) {
             GL11.glPushMatrix();

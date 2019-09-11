@@ -115,7 +115,7 @@ public class EventsClient {
         Minecraft mc = Minecraft.getMinecraft();
         if (mc.world != null) {
             if (!mc.isGamePaused()) {
-                WorldPhysObjectManager manager = ValkyrienSkiesMod.VW_PHYSICS_MANAGER
+                WorldPhysObjectManager manager = ValkyrienSkiesMod.VS_PHYSICS_MANAGER
                     .getManagerForWorld(mc.world);
                 if (event.phase == Phase.END) {
                     for (PhysicsWrapperEntity wrapper : manager.physicsEntities) {

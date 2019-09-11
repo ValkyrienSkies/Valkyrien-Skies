@@ -246,16 +246,16 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
             // onPlayerUntracking(wachingPlayer);
         }
         watchingPlayers().clear();
-        ValkyrienSkiesMod.VW_CHUNK_MANAGER.removeRegisteredChunksForShip(wrapperEntity());
-        ValkyrienSkiesMod.VW_CHUNK_MANAGER.removeShipPosition(wrapperEntity());
-        ValkyrienSkiesMod.VW_CHUNK_MANAGER.removeShipNameRegistry(wrapperEntity());
-        ValkyrienSkiesMod.VW_PHYSICS_MANAGER.onShipUnload(wrapperEntity());
+        ValkyrienSkiesMod.VS_CHUNK_MANAGER.removeRegisteredChunksForShip(wrapperEntity());
+        ValkyrienSkiesMod.VS_CHUNK_MANAGER.removeShipPosition(wrapperEntity());
+        ValkyrienSkiesMod.VS_CHUNK_MANAGER.removeShipNameRegistry(wrapperEntity());
+        ValkyrienSkiesMod.VS_PHYSICS_MANAGER.onShipUnload(wrapperEntity());
     }
 
     public void claimNewChunks(int radius) {
-        ownedChunks(ValkyrienSkiesMod.VW_CHUNK_MANAGER.getManagerForWorld(wrapperEntity().world)
+        ownedChunks(ValkyrienSkiesMod.VS_CHUNK_MANAGER.getManagerForWorld(wrapperEntity().world)
             .getNextAvailableChunkSet(radius));
-        ValkyrienSkiesMod.VW_CHUNK_MANAGER.registerChunksForShip(wrapperEntity());
+        ValkyrienSkiesMod.VS_CHUNK_MANAGER.registerChunksForShip(wrapperEntity());
         claimedChunksInMap = true;
     }
 
@@ -311,7 +311,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 
         radiusNeeded = Math.min(radiusNeeded, ShipChunkAllocator.MAX_SHIP_CHUNK_RADIUS);
         claimNewChunks(radiusNeeded);
-        ValkyrienSkiesMod.VW_PHYSICS_MANAGER.onShipPreload(wrapperEntity());
+        ValkyrienSkiesMod.VS_PHYSICS_MANAGER.onShipPreload(wrapperEntity());
 
         claimedChunkCache = new ClaimedChunkCacheController(this, false);
 
@@ -542,10 +542,10 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 
     public void onPostTick() {
         if (!wrapperEntity().isDead && !wrapperEntity().world.isRemote) {
-            ValkyrienSkiesMod.VW_CHUNK_MANAGER.updateShipPosition(wrapperEntity());
+            ValkyrienSkiesMod.VS_CHUNK_MANAGER.updateShipPosition(wrapperEntity());
             if (!claimedChunksInMap) {
                 // Old ships not in the map will add themselves in once loaded
-                ValkyrienSkiesMod.VW_CHUNK_MANAGER.registerChunksForShip(wrapperEntity());
+                ValkyrienSkiesMod.VS_CHUNK_MANAGER.registerChunksForShip(wrapperEntity());
                 System.out.println("Old ship detected, adding to the registered Chunks map");
                 claimedChunksInMap = true;
             }
@@ -572,7 +572,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
     }
 
     public void loadClaimedChunks() {
-        ValkyrienSkiesMod.VW_PHYSICS_MANAGER.onShipPreload(wrapperEntity());
+        ValkyrienSkiesMod.VS_PHYSICS_MANAGER.onShipPreload(wrapperEntity());
 
         claimedChunkCache = new ClaimedChunkCacheController(this, true);
 

@@ -120,10 +120,10 @@ public class ValkyrienSkiesMod {
         serverSide = "org.valkyrienskies.mod.proxy.ServerProxy")
     public static CommonProxy proxy;
 
-    static final int VW_ENTITY_LOAD_DISTANCE = 128;
-    public static final DimensionPhysicsChunkManager VW_CHUNK_MANAGER =
+    static final int VS_ENTITY_LOAD_DISTANCE = 128;
+    public static final DimensionPhysicsChunkManager VS_CHUNK_MANAGER =
         new DimensionPhysicsChunkManager();
-    public static final DimensionPhysObjectManager VW_PHYSICS_MANAGER =
+    public static final DimensionPhysObjectManager VS_PHYSICS_MANAGER =
         new DimensionPhysObjectManager();
     /**
      * This service is directly responsible for running collision tasks.
@@ -135,7 +135,7 @@ public class ValkyrienSkiesMod {
     public Block physicsInfuserDummy;
     public Item physicsCore;
     public static SimpleNetworkWrapper physWrapperNetwork;
-    public static final CreativeTabs vwTab = new TabValkyrienSkies();
+    public static final CreativeTabs VS_CREATIVE_TAB = new TabValkyrienSkies(MOD_ID);
 
     public static int airStateIndex;
     private CompletableFuture<Kryo> kryoInstance;
@@ -224,11 +224,11 @@ public class ValkyrienSkiesMod {
         physicsInfuser = new BlockPhysicsInfuser(Material.ROCK).setHardness(8f)
             .setTranslationKey("shipblock")
             .setRegistryName(MOD_ID, "shipblock")
-            .setCreativeTab(vwTab);
+            .setCreativeTab(VS_CREATIVE_TAB);
         physicsInfuserCreative = new BlockPhysicsInfuserCreative(Material.ROCK).setHardness(12f)
             .setTranslationKey("shipblockcreative")
             .setRegistryName(MOD_ID, "shipblockcreative")
-            .setCreativeTab(vwTab);
+            .setCreativeTab(VS_CREATIVE_TAB);
         // Do not put the dummy block into the creative tab
         physicsInfuserDummy = new BlockPhysicsInfuserDummy(Material.ROCK).setHardness(12f)
             .setTranslationKey("physics_infuser_dummy")
@@ -283,7 +283,7 @@ public class ValkyrienSkiesMod {
 
         this.physicsCore = new ItemPhysicsCore().setTranslationKey("vw_phys_core")
             .setRegistryName(MOD_ID, "vw_phys_core")
-            .setCreativeTab(ValkyrienSkiesMod.vwTab);
+            .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
         event.getRegistry()
             .register(this.physicsCore);
     }

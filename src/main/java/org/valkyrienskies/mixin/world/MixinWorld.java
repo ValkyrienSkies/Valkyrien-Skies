@@ -371,7 +371,7 @@ public abstract class MixinWorld implements IWorldVW, ISubspaceProvider, IHasShi
         RayTraceResult vanillaTrace = world
             .rayTraceBlocks(vec31, vec32, stopOnLiquid,
                 ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
-        WorldPhysObjectManager physManager = ValkyrienSkiesMod.VW_PHYSICS_MANAGER
+        WorldPhysObjectManager physManager = ValkyrienSkiesMod.VS_PHYSICS_MANAGER
             .getManagerForWorld(world);
         if (physManager == null) {
             return vanillaTrace;

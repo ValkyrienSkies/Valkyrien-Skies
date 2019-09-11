@@ -416,7 +416,7 @@ public class EntityCollisionInjector {
             .offset(velocity.x, velocity.y, velocity.z).expand(1, 1,
                 1);
 
-        WorldPhysObjectManager localPhysManager = ValkyrienSkiesMod.VW_PHYSICS_MANAGER
+        WorldPhysObjectManager localPhysManager = ValkyrienSkiesMod.VS_PHYSICS_MANAGER
             .getManagerForWorld(entity.world);
 
         List<PhysicsWrapperEntity> ships = localPhysManager.getNearbyPhysObjects(entityBB);

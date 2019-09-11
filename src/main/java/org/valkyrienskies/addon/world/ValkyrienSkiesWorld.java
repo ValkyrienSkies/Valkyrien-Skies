@@ -85,7 +85,7 @@ public class ValkyrienSkiesWorld {
         INSTANCE.valkyriumOre = new BlockEthereumOre(Material.ROCK).setHardness(3f)
             .setTranslationKey("valkyrium_ore")
             .setRegistryName(MOD_ID, "valkyrium_ore")
-            .setCreativeTab(ValkyrienSkiesMod.vwTab);
+            .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
 
         event.getRegistry()
             .register(INSTANCE.valkyriumOre);
@@ -96,7 +96,7 @@ public class ValkyrienSkiesWorld {
     public static void registerItems(RegistryEvent.Register<Item> event) {
         INSTANCE.valkyriumCrystal = new ItemEthereumCrystal().setTranslationKey("valkyrium_crystal")
             .setRegistryName(MOD_ID, "valkyrium_crystal")
-            .setCreativeTab(ValkyrienSkiesMod.vwTab)
+            .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB)
             .setMaxStackSize(16);
 
         event.getRegistry()

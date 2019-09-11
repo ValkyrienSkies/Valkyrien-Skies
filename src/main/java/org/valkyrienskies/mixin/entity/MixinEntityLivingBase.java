@@ -106,7 +106,7 @@ public abstract class MixinEntityLivingBase extends Entity implements ISubspaced
         if (EntityPlayer.class.isInstance(this) && EntityPlayer.class.cast(this).isSpectator()) {
             return false;
         }
-        List<PhysicsWrapperEntity> nearbyPhys = ValkyrienSkiesMod.VW_PHYSICS_MANAGER
+        List<PhysicsWrapperEntity> nearbyPhys = ValkyrienSkiesMod.VS_PHYSICS_MANAGER
             .getManagerForWorld(this.world).getNearbyPhysObjects(this.getEntityBoundingBox());
         for (PhysicsWrapperEntity physWrapper : nearbyPhys) {
             Vector playerPos = new Vector(EntityLivingBase.class.cast(this));

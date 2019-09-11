@@ -118,10 +118,10 @@ public class ValkyrienSkiesControl {
     public static void registerItems(RegistryEvent.Register<Item> event) {
         INSTANCE.relayWire = new ItemRelayWire().setTranslationKey("relaywire")
             .setRegistryName(MOD_ID, "relaywire")
-            .setCreativeTab(ValkyrienSkiesMod.vwTab);
+            .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
         INSTANCE.multiBlockWrench = new ItemWrench().setTranslationKey("vw_wrench")
             .setRegistryName(MOD_ID, "vw_wrench")
-            .setCreativeTab(ValkyrienSkiesMod.vwTab);
+            .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
 
         event.getRegistry()
             .register(INSTANCE.relayWire);

@@ -146,7 +146,7 @@ public class VSThread extends Thread {
     // values.
     private void physicsTick() {
         // TODO: Temporary fix:
-        WorldPhysObjectManager manager = ValkyrienSkiesMod.VW_PHYSICS_MANAGER
+        WorldPhysObjectManager manager = ValkyrienSkiesMod.VS_PHYSICS_MANAGER
             .getManagerForWorld(hostWorld);
         List<PhysicsWrapperEntity> physicsEntities = manager.getTickablePhysicsEntities();
         // Tick ship physics here

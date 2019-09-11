@@ -26,7 +26,7 @@ import org.valkyrienskies.mod.common.physmanagement.interaction.EntityDraggable;
 public class PhysicsTickHandler {
 
     public static void onWorldTickStart(World world) {
-        WorldPhysObjectManager manager = ValkyrienSkiesMod.VW_PHYSICS_MANAGER
+        WorldPhysObjectManager manager = ValkyrienSkiesMod.VS_PHYSICS_MANAGER
             .getManagerForWorld(world);
 
         List<PhysicsWrapperEntity> physicsEntities = manager.getTickablePhysicsEntities();
@@ -73,7 +73,7 @@ public class PhysicsTickHandler {
     }
 
     public static void onWorldTickEnd(World world) {
-        WorldPhysObjectManager manager = ValkyrienSkiesMod.VW_PHYSICS_MANAGER
+        WorldPhysObjectManager manager = ValkyrienSkiesMod.VS_PHYSICS_MANAGER
             .getManagerForWorld(world);
         List<PhysicsWrapperEntity> physicsEntities = manager.getTickablePhysicsEntities();
         // manager.awaitPhysics();

@@ -74,19 +74,19 @@ public class RegisterEvents {
                     .entity(PhysicsWrapperEntity.class)
                     .id(physicsWrapperEntity, entityId++)
                     .name(physicsWrapperEntity.getPath())
-                    .tracker(ValkyrienSkiesMod.VW_ENTITY_LOAD_DISTANCE, 1, false)
+                    .tracker(ValkyrienSkiesMod.VS_ENTITY_LOAD_DISTANCE, 1, false)
                     .build(),
                 EntityEntryBuilder.create()
                     .entity(EntityMountable.class)
                     .id(entityMountable, entityId++)
                     .name(entityMountable.getPath())
-                    .tracker(ValkyrienSkiesMod.VW_ENTITY_LOAD_DISTANCE, 1, false)
+                    .tracker(ValkyrienSkiesMod.VS_ENTITY_LOAD_DISTANCE, 1, false)
                     .build(),
                 EntityEntryBuilder.create()
                     .entity(EntityMountableChair.class)
                     .id(entityMountableChair, entityId++)
                     .name(entityMountableChair.getPath())
-                    .tracker(ValkyrienSkiesMod.VW_ENTITY_LOAD_DISTANCE, 1, false)
+                    .tracker(ValkyrienSkiesMod.VS_ENTITY_LOAD_DISTANCE, 1, false)
                     .build()
             );
     }

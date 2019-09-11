@@ -35,7 +35,7 @@ public class PilotControlsMessageHandler implements
             @Override
             public void run() {
                 World worldObj = ctx.getServerHandler().player.world;
-                if (ValkyrienSkiesMod.VW_PHYSICS_MANAGER.getManagerForWorld(worldObj) != null) {
+                if (ValkyrienSkiesMod.VS_PHYSICS_MANAGER.getManagerForWorld(worldObj) != null) {
 //                	UUID shipId = message.shipFor;
                     BlockPos posFor = message.controlBlockPos;
                     TileEntity tile = worldObj.getTileEntity(posFor);

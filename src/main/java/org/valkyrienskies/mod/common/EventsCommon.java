@@ -47,6 +47,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.EntityTravelToDimensionEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
@@ -382,4 +383,11 @@ public class EventsCommon {
         }
     }
 
+    @SubscribeEvent
+    public void onEntityTravelToDimension(EntityTravelToDimensionEvent event)   {
+        if (event.getEntity() instanceof PhysicsWrapperEntity)  {
+            //prevent ships from changing dimensions, because it can and will break everything very badly
+            event.setCanceled(true);
+        }
+    }
 }

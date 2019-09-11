@@ -62,6 +62,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
+import org.valkyrienskies.mixin.MixinLoaderForge;
 import org.valkyrienskies.mod.client.gui.TabValkyrienSkies;
 import org.valkyrienskies.mod.common.block.BlockPhysicsInfuser;
 import org.valkyrienskies.mod.common.block.BlockPhysicsInfuserCreative;
@@ -142,10 +143,12 @@ public class ValkyrienSkiesMod {
 
     @Mod.EventHandler
     public void onFingerprintViolation(FMLFingerprintViolationEvent event) {
-        FMLLog.bigWarning(
-            "Valkyrien Skies JAR fingerprint corrupted, which means this copy of the mod "
-                + "may have come from unofficial sources. Please check out our official website: "
-                + "https://valkyrienskies.org");
+        if (MixinLoaderForge.isObfuscatedEnvironment)  { //only print signature warning in obf
+            FMLLog.bigWarning(
+                    "Valkyrien Skies JAR fingerprint corrupted, which means this copy of the mod "
+                            + "may have come from unofficial sources. Please check out our official website: "
+                            + "https://valkyrienskies.org");
+        }
     }
 
     @EventHandler

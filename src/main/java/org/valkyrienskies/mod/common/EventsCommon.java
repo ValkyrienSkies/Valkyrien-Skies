@@ -106,7 +106,7 @@ public class EventsCommon {
     public void onRightClickBlock(RightClickBlock event) {
         if (!event.getWorld().isRemote) {
             ItemStack stack = event.getItemStack();
-            if (stack != null && stack.getItem() instanceof ItemNameTag) {
+            if (stack.getItem() instanceof ItemNameTag) {
                 BlockPos posAt = event.getPos();
                 EntityPlayer player = event.getEntityPlayer();
                 World world = event.getWorld();
@@ -173,14 +173,10 @@ public class EventsCommon {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onPlayerTickEvent(PlayerTickEvent event) {
-        if (!event.player.world.isRemote && event.player != null) {
+        if (!event.player.world.isRemote) {
             EntityPlayerMP p = (EntityPlayerMP) event.player;
 
-            double[] pos = lastPositions.get(p);
-            if (pos == null) {
-                pos = new double[3];
-                lastPositions.put(p, pos);
-            }
+            double[] pos = lastPositions.computeIfAbsent(p, k -> new double[3]);
             try {
                 if (pos[0] != p.posX || pos[2] != p.posZ) { // Player has moved
                     if (Math.abs(p.posX) > 27000000

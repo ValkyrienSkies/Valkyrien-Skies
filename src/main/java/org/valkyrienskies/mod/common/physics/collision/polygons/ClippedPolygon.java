@@ -29,10 +29,10 @@ public class ClippedPolygon extends Polygon {
     public ClippedPolygon(Polygon other, Vector planeNormal, Vector planePos) {
         super(other);
         this.clippedVertices = new ArrayList<Vector>();
-        for (Vector originalVertice : other.getVertices()) {
-            if (isVerticeInFrontOfCullingPlane(originalVertice, planeNormal, planePos)) {
-                // If the vertice is in front of the culling plane, we do not need to cull it.
-                clippedVertices.add(originalVertice);
+        for (Vector originalVertex : other.getVertices()) {
+            if (isVertexInFrontOfCullingPlane(originalVertex, planeNormal, planePos)) {
+                // If the vertex is in front of the culling plane, we do not need to cull it.
+                clippedVertices.add(originalVertex);
             } else {
                 // If its behind the culling plane, we do need to cull it.
                 // *Insert Culling Here*
@@ -46,9 +46,9 @@ public class ClippedPolygon extends Polygon {
         return clippedVerticesUnmodifiable;
     }
 
-    private boolean isVerticeInFrontOfCullingPlane(Vector vertice, Vector planeNormal,
+    private boolean isVertexInFrontOfCullingPlane(Vector vertex, Vector planeNormal,
         Vector planePos) {
-        Vector difference = vertice.getSubtraction(planePos);
+        Vector difference = vertex.getSubtraction(planePos);
         // If its less than zero, we are behind the culling plane, so we do not cull this point
         return difference.dot(planeNormal) < 0;
     }

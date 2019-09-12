@@ -58,16 +58,16 @@ public class PolygonCollisionPointFinder {
             }
         }
 
-        Vector currentTopVertice = topPoly.getVertices()[topPointIndex];
-        Vector currentBottomVertice = bottomPoly.getVertices()[bottomPointIndex];
+        Vector currentTopVertex = topPoly.getVertices()[topPointIndex];
+        Vector currentBottomVertex = bottomPoly.getVertices()[bottomPointIndex];
 
         boolean useFastCollision = true;
 
         if (useFastCollision) {
             // TODO: We're oversolving for the collision here, but it prevents things going through eachother.
-            return new Vector[]{currentTopVertice, currentBottomVertice, currentTopVertice,
-                currentBottomVertice};
-            // return new Vector[] { currentTopVertice, currentBottomVertice };
+            return new Vector[]{currentTopVertex, currentBottomVertex, currentTopVertex,
+                currentBottomVertex};
+            // return new Vector[] { currentTopVertex, currentBottomVertex };
         } else {
             // Now use the surface normals that are most perpendicular to the collision
             // normals for
@@ -101,15 +101,15 @@ public class PolygonCollisionPointFinder {
             }
 
             ClippedPolygon clippedTop = new ClippedPolygon(topPoly, bottomCullingNormal,
-                currentBottomVertice);
+                currentBottomVertex);
             ClippedPolygon clippedBottom = new ClippedPolygon(bottomPoly, topCullingNormal,
-                currentTopVertice);
+                currentTopVertex);
 
-            // Now with our normals found and the plane vertice, we now search for the
+            // Now with our normals found and the plane vertex, we now search for the
             // points of collision.
             // TODO: Find a real algorithm for this please!
-            return new Vector[]{currentTopVertice, currentBottomVertice, currentTopVertice,
-                currentBottomVertice};
+            return new Vector[]{currentTopVertex, currentBottomVertex, currentTopVertex,
+                currentBottomVertex};
         }
     }
 

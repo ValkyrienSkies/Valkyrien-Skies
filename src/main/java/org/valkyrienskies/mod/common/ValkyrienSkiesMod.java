@@ -152,20 +152,20 @@ public class ValkyrienSkiesMod {
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        log.trace("Initializing configuration");
+        log.debug("Initializing configuration");
         runConfiguration();
 
-        log.trace("Instantiating the physics thread executor");
+        log.debug("Instantiating the physics thread executor");
         ValkyrienSkiesMod.PHYSICS_THREADS_EXECUTOR = Executors.newFixedThreadPool(VSConfig.threadCount);
 
-        log.trace("Beginning asynchronous Kryo initialization");
+        log.debug("Beginning asynchronous Kryo initialization");
         serializationInitAsync();
 
         registerNetworks(event);
         registerCapabilities();
         proxy.preInit(event);
 
-        log.trace("Initializing the VS API");
+        log.debug("Initializing the VS API");
         // Initialize the VW API here:
         try {
             Field instanceField = IPhysicsEntityManager.class.getDeclaredField("INSTANCE");

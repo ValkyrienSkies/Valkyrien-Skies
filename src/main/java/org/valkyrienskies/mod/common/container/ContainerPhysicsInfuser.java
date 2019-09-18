@@ -1,6 +1,8 @@
 package org.valkyrienskies.mod.common.container;
 
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
@@ -12,15 +14,16 @@ import net.minecraftforge.items.SlotItemHandler;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 public class ContainerPhysicsInfuser extends Container {
 
     private static final int SIZE_INVENTORY = 5;
     private final TileEntityPhysicsInfuser tileEntity;
-    private final IItemHandler handler;
 
     public ContainerPhysicsInfuser(EntityPlayer player, TileEntityPhysicsInfuser tileEntity) {
         this.tileEntity = tileEntity;
-        this.handler = tileEntity
+        IItemHandler handler = tileEntity
             .getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
 
         // Add physics infuser slots
@@ -70,7 +73,7 @@ public class ContainerPhysicsInfuser extends Container {
 
             if (slotIndex >= SIZE_INVENTORY) {
                 // check if we clicked on the player inventory
-                if (slotIndex >= SIZE_INVENTORY && slotIndex < SIZE_INVENTORY + 27) {
+                if (slotIndex < SIZE_INVENTORY + 27) {
                     // We clicked a player inventory slot
                     // First try putting the itemstack into the physics infuser
                     if (!mergeItemStack(itemStack2, 0, SIZE_INVENTORY, false)) {
@@ -81,8 +84,7 @@ public class ContainerPhysicsInfuser extends Container {
                             return ItemStack.EMPTY;
                         }
                     }
-                } else if (slotIndex >= SIZE_INVENTORY + 27
-                    && slotIndex < SIZE_INVENTORY + 36
+                } else if (slotIndex < SIZE_INVENTORY + 36
                     && !mergeItemStack(itemStack2, 0, SIZE_INVENTORY, false)
                     && !mergeItemStack(itemStack2, SIZE_INVENTORY + 1,
                     SIZE_INVENTORY + 27, false)) {

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Nullable;
+import lombok.Getter;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -40,10 +41,10 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
 
     private final ItemStackHandler handler;
     private volatile boolean sendUpdateToClients;
-    private volatile boolean tryToAssembleShip;
-    private volatile boolean tryToDisassembleShip;
-    private boolean physicsEnabled;
-    private boolean tryingToAlignShip;
+    @Getter private volatile boolean isTryingToAssembleShip;
+    @Getter private volatile boolean isTryingToDisassembleShip;
+    @Getter private boolean isPhysicsEnabled;
+    @Getter private boolean isTryingToAlignShip;
     // Used by the client to store the vertical offset of each core
     private Map<EnumInfuserCore, Double> coreOffsets, coreOffsetsPrevTick;
 
@@ -55,10 +56,10 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
             }
         };
         sendUpdateToClients = false;
-        tryToAssembleShip = false;
-        tryToDisassembleShip = false;
-        physicsEnabled = false;
-        tryingToAlignShip = false;
+        isTryingToAssembleShip = false;
+        isTryingToDisassembleShip = false;
+        isPhysicsEnabled = false;
+        isTryingToAlignShip = false;
         coreOffsets = new HashMap<>();
         coreOffsetsPrevTick = new HashMap<>();
         for (EnumInfuserCore enumInfuserCore : EnumInfuserCore.values()) {
@@ -75,9 +76,9 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
                 .getPhysicsObject(getWorld(), getPos(), false);
             // Set the physics and align value to false if we're not in a ship
             if (!parentShip.isPresent()) {
-                if (physicsEnabled || tryingToAlignShip) {
-                    physicsEnabled = false;
-                    tryingToAlignShip = false;
+                if (isPhysicsEnabled || isTryingToAlignShip) {
+                    isPhysicsEnabled = false;
+                    isTryingToAlignShip = false;
                     sendUpdateToClients = true;
                 }
             }
@@ -100,7 +101,7 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
                 }
             }
             // Check the status of the item slots
-            if (!parentShip.isPresent() && canMaintainShip() && tryToAssembleShip) {
+            if (!parentShip.isPresent() && canMaintainShip() && isTryingToAssembleShip) {
                 // Create a ship with this physics infuser
                 // Make sure we don't try to create a ship when we're already in ship space.
                 if (!PhysicsChunkManager
@@ -150,8 +151,8 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
         }
 
         // Always set tryToAssembleShip and tryToDisassembleShip to false, they only have 1 tick to try to act.
-        tryToAssembleShip = false;
-        tryToDisassembleShip = false;
+        isTryingToAssembleShip = false;
+        isTryingToDisassembleShip = false;
     }
 
     public boolean canMaintainShip() {
@@ -162,16 +163,16 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         compound.setTag("item_stack_handler", handler.serializeNBT());
-        compound.setBoolean("physics_enabled", physicsEnabled);
-        compound.setBoolean("try_to_align_ship", tryingToAlignShip);
+        compound.setBoolean("physics_enabled", isPhysicsEnabled);
+        compound.setBoolean("try_to_align_ship", isTryingToAlignShip);
         return super.writeToNBT(compound);
     }
 
     @Override
     public void readFromNBT(NBTTagCompound compound) {
         handler.deserializeNBT(compound.getCompoundTag("item_stack_handler"));
-        physicsEnabled = compound.getBoolean("physics_enabled");
-        tryingToAlignShip = compound.getBoolean("try_to_align_ship");
+        isPhysicsEnabled = compound.getBoolean("physics_enabled");
+        isTryingToAlignShip = compound.getBoolean("try_to_align_ship");
         super.readFromNBT(compound);
     }
 
@@ -243,22 +244,6 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
         return physicsObject.isPresent();
     }
 
-    public boolean isPhysicsEnabled() {
-        return physicsEnabled;
-    }
-
-    public boolean isTryingToAlignShip() {
-        return tryingToAlignShip;
-    }
-
-    public boolean isTryingToAssembleShip() {
-        return tryToAssembleShip;
-    }
-
-    public boolean isTryingToDisassembleShip() {
-        return tryToDisassembleShip;
-    }
-
     @Override
     public void onButtonPress(int buttonId, EntityPlayer presser) {
         if (buttonId >= EnumInfuserButton.values().length) {
@@ -277,17 +262,17 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
             case ASSEMBLE_SHIP:
                 if (!this.isCurrentlyInShip()) {
                     // Create a ship
-                    this.tryToAssembleShip = true;
+                    this.isTryingToAssembleShip = true;
                 } else {
                     // Destroy the ship if possible
-                    this.tryToDisassembleShip = true;
+                    this.isTryingToDisassembleShip = true;
                 }
                 break;
             case ENABLE_PHYSICS:
-                this.physicsEnabled = !isPhysicsEnabled();
+                this.isPhysicsEnabled = !isPhysicsEnabled();
                 break;
             case ALIGN_SHIP:
-                this.tryingToAlignShip = !isTryingToAlignShip();
+                this.isTryingToAlignShip = !isTryingToAlignShip();
                 break;
         }
 

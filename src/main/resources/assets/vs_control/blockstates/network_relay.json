@@ -1,0 +1,42 @@
+{
+  "forge_marker": 1,
+  "variants": {
+    "default": {
+      "model": "vs_control:network_relay"
+    },
+    "normal": {
+      "model": "vs_control:network_relay"
+    },
+    "facing=down": {
+      "model": "vs_control:network_relay",
+      "x": 180
+    },
+    "facing=up": {
+      "model": "vs_control:network_relay"
+    },
+    "facing=north": {
+      "model": "vs_control:network_relay",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "vs_control:network_relay",
+      "x": 270
+    },
+    "facing=west": {
+      "model": "vs_control:network_relay",
+      "y": 270,
+      "x": 90
+    },
+    "facing=east": {
+      "model": "vs_control:network_relay",
+      "y": 90,
+      "x": 90
+    },
+    "inventory": [
+      {
+        "model": "vs_control:network_relay",
+        "transform": "forge:default-block"
+      }
+    ]
+  }
+}

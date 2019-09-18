@@ -8,7 +8,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
-import org.valkyrienskies.addon.control.nodenetwork.IVWNodeProvider;
+import org.valkyrienskies.addon.control.nodenetwork.IVSNodeProvider;
 import org.valkyrienskies.mod.common.coordinates.CoordinateSpaceType;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
@@ -86,15 +86,15 @@ public class MoveBlocks {
                 tileEntNBT.setInteger("z", newPos.getZ());
                 newInstance = TileEntity.create(world, tileEntNBT);
             }
-            // Order the IVWNodeProvider to move by the given offset.
-            if (newInstance instanceof IVWNodeProvider) {
-                ((IVWNodeProvider) newInstance).shiftInternalData(newPos.subtract(oldPos));
+            // Order the IVSNodeProvider to move by the given offset.
+            if (newInstance instanceof IVSNodeProvider) {
+                ((IVSNodeProvider) newInstance).shiftInternalData(newPos.subtract(oldPos));
                 if (physicsObjectOptional.isPresent()) {
-                    ((IVWNodeProvider) newInstance)
+                    ((IVSNodeProvider) newInstance)
                         .getNode()
                         .setParentPhysicsObject(physicsObjectOptional.get());
                 } else {
-                    ((IVWNodeProvider) newInstance)
+                    ((IVSNodeProvider) newInstance)
                         .getNode()
                         .setParentPhysicsObject(null);
                 }

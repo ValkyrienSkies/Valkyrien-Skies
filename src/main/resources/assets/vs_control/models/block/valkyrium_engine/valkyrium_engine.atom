@@ -1,0 +1,719 @@
+atomVersion 1.0;
+mayaVersion 2018;
+mayaSceneFile D:/Drakes Documents/Projects/VS/MODELS/FINAL MODELS/vsmodels/vsmodels09.ma;
+timeUnit film;
+linearUnit cm;
+angularUnit deg;
+startTime 1;
+endTime 100;
+dagNode {
+  valkyrium_engine_connection_rod_geo 2 1;
+  anim translate.translateX translateX 0;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0 auto auto 1 0 0;
+      6 -0.018 auto auto 1 0 0;
+      12 -0.035 auto auto 1 0 0;
+      18 -0.044 auto auto 1 0 0;
+      25 -0.046 auto auto 1 0 0;
+      30 -0.04 auto auto 1 0 0;
+      36 -0.028 auto auto 1 0 0;
+      42 -0.011 auto auto 1 0 0;
+      50 0.018 auto auto 1 0 0;
+      56 0.04 auto auto 1 0 0;
+      62 0.058 auto auto 1 0 0;
+      68 0.071 auto auto 1 0 0;
+      75 0.074 auto auto 1 0 0;
+      81 0.066 auto auto 1 0 0;
+      87 0.05 auto auto 1 0 0;
+      93 0.027 auto auto 1 0 0;
+      100 0 auto auto 1 0 0;
+    }
+  }
+  anim translate.translateY translateY 1;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0 auto auto 1 0 0;
+    }
+  }
+  anim translate.translateZ translateZ 2;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0 auto auto 1 0 0;
+    }
+  }
+  anim rotate.rotateZ rotateZ 3;
+  animData {
+    input time;
+    output angular;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0 auto auto 1 0 0;
+      6 0.45 auto auto 1 0 0;
+      12 2.35 auto auto 1 0 0;
+      18 5.35 auto auto 1 0 0;
+      25 9.63 auto auto 1 0 0;
+      30 12.6 auto auto 1 0 0;
+      36 15.75 auto auto 1 0 0;
+      42 18.1 auto auto 1 0 0;
+      50 19.35 auto auto 1 0 0;
+      56 18.77 auto auto 1 0 0;
+      62 16.9 auto auto 1 0 0;
+      68 14.06 auto auto 1 0 0;
+      75 10.01 auto auto 1 0 0;
+      81 6.43 auto auto 1 0 0;
+      87 3.28 auto auto 1 0 0;
+      93 1.05 auto auto 1 0 0;
+      100 0 auto auto 1 0 0;
+    }
+  }
+}
+dagNode {
+  valkyrium_engine_piston_geo 2 1;
+  anim translate.translateX translateX 0;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 -4.2215679e-05 linear linear 1 0 0;
+      6 -0.018499323 linear linear 1 0 0;
+      12 -0.035190411 linear linear 1 0 0;
+      18 -0.044398316 linear linear 1 0 0;
+      25 -0.045655199 linear linear 1 0 0;
+      30 -0.040394016 linear linear 1 0 0;
+      36 -0.028325029 linear linear 1 0 0;
+      42 -0.010752865 linear linear 1 0 0;
+      50 0.017744533 linear linear 1 0 0;
+      56 0.039738826 linear linear 1 0 0;
+      62 0.058342091 linear linear 1 0 0;
+      68 0.070657841 linear linear 1 0 0;
+      75 0.073623292 linear linear 1 0 0;
+      81 0.065584175 linear linear 1 0 0;
+      87 0.049663417 linear linear 1 0 0;
+      93 0.0273078 linear linear 1 0 0;
+      100 -4.2215679e-05 linear linear 1 0 0;
+    }
+  }
+  anim translate.translateY translateY 1;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0 auto auto 1 0 0;
+    }
+  }
+  anim translate.translateZ translateZ 2;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0 auto auto 1 0 0;
+    }
+  }
+}
+dagNode {
+  valkyrium_engine_valve_wheel_geo 2 1;
+  anim translate.translateX translateX 0;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0 auto auto 1 0 0;
+    }
+  }
+  anim translate.translateY translateY 1;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0 auto auto 1 0 0;
+    }
+  }
+  anim translate.translateZ translateZ 2;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0 auto auto 1 0 0;
+    }
+  }
+}
+dagNode {
+  valkyrium_engine_gauge_hand1_geo 2 1;
+  anim rotate.rotateZ rotateZ 0;
+  animData {
+    input time;
+    output angular;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0 auto auto 1 0 0;
+      15 62.498587 auto auto 1 0 0;
+      25 46.410105 auto auto 1 0 0;
+      40 -5.1803811 auto auto 1 0 0;
+      52 99.676861 auto auto 1 0 0;
+      71 13.032652 auto auto 1 0 0;
+      89 77.679823 auto auto 1 0 0;
+      100 0 fixed fixed 1 0 0 0 1 0 1;
+    }
+  }
+  anim translate.translateX translateX 1;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0 auto auto 1 0 0;
+    }
+  }
+  anim translate.translateY translateY 2;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0 auto auto 1 0 0;
+    }
+  }
+  anim translate.translateZ translateZ 3;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0 auto auto 1 0 0;
+    }
+  }
+}
+dagNode {
+  valkyrium_engine_gauge_hand2_geo 2 1;
+  anim rotate.rotateZ rotateZ 0;
+  animData {
+    input time;
+    output angular;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0 auto auto 1 0 0;
+      15 30.106419 auto auto 1 0 0;
+      25 70.848228 auto auto 1 0 0;
+      41 30.332385 auto auto 1 0 0;
+      60 -5.4101756 auto auto 1 0 0;
+      75 85.762164 auto auto 1 0 0;
+      89 6.0395351 auto auto 1 0 0;
+      95 34.673642 auto auto 1 0 0;
+      100 0 auto auto 1 0 0;
+    }
+  }
+  anim translate.translateX translateX 1;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0 auto auto 1 0 0;
+    }
+  }
+  anim translate.translateY translateY 2;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0 auto auto 1 0 0;
+    }
+  }
+  anim translate.translateZ translateZ 3;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0 auto auto 1 0 0;
+    }
+  }
+}
+dagNode {
+  valkyrium_engine_geo 2 1;
+  anim translate.translateX translateX 0;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0 auto auto 1 0 0;
+    }
+  }
+  anim translate.translateY translateY 1;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0 auto auto 1 0 0;
+    }
+  }
+  anim translate.translateZ translateZ 2;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0 auto auto 1 0 0;
+    }
+  }
+}
+dagNode {
+  valkyrium_engine_main_cog_geo 2 1;
+  anim rotate.rotateZ rotateZ 0;
+  animData {
+    input time;
+    output angular;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0 linear linear 1 0 0;
+      6 18.75 linear linear 1 0 0;
+      12 41.25 linear linear 1 0 0;
+      18 63.75 linear linear 1 0 0;
+      25 90 linear linear 1 0 0;
+      30 108 linear linear 1 0 0;
+      37 133.2 linear linear 1 0 0;
+      43 154.8 linear linear 1 0 0;
+      50 180 linear linear 1 0 0;
+      55 198 linear linear 1 0 0;
+      62 223.2 linear linear 1 0 0;
+      68 244.8 linear linear 1 0 0;
+      75 270 linear linear 1 0 0;
+      81 291.6 linear linear 1 0 0;
+      87 313.2 linear linear 1 0 0;
+      93 334.8 linear linear 1 0 0;
+      100 360 linear linear 1 0 0;
+    }
+  }
+  anim translate.translateX translateX 1;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0 auto auto 1 0 0;
+    }
+  }
+  anim translate.translateY translateY 2;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0 auto auto 1 0 0;
+    }
+  }
+  anim translate.translateZ translateZ 3;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0 auto auto 1 0 0;
+    }
+  }
+}
+dagNode {
+  valkyrium_engine_power_cog_geo 2 1;
+  anim rotate.rotateX rotateX 0;
+  animData {
+    input time;
+    output angular;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0 linear linear 1 0 0;
+      100 1080 linear linear 1 0 0;
+    }
+  }
+  anim translate.translateX translateX 1;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0 auto auto 1 0 0;
+    }
+  }
+  anim translate.translateY translateY 2;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0 auto auto 1 0 0;
+    }
+  }
+  anim translate.translateZ translateZ 3;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0 auto auto 1 0 0;
+    }
+  }
+}
+dagNode {
+  valkyrium_engine_connection_rod_geo_pivot 2 1;
+  anim translate.translateX translateX 0;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0.59195781 auto auto 1 0 0;
+    }
+  }
+  anim translate.translateY translateY 1;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0.241 auto auto 1 0 0;
+    }
+  }
+  anim translate.translateZ translateZ 2;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0.621 auto auto 1 0 0;
+    }
+  }
+}
+dagNode {
+  valkyrium_engine_piston_geo_pivot 2 1;
+  anim translate.translateX translateX 0;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0.59195778 auto auto 1 0 0;
+    }
+  }
+  anim translate.translateY translateY 1;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0.241 auto auto 1 0 0;
+    }
+  }
+  anim translate.translateZ translateZ 2;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0.622 auto auto 1 0 0;
+    }
+  }
+}
+dagNode {
+  valkyrium_engine_valve_wheel_geo_pivot 2 1;
+  anim translate.translateX translateX 0;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0.5933531 auto auto 1 0 0;
+    }
+  }
+  anim translate.translateY translateY 1;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0.355 auto auto 1 0 0;
+    }
+  }
+  anim translate.translateZ translateZ 2;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0.714 auto auto 1 0 0;
+    }
+  }
+}
+dagNode {
+  valkyrium_engine_gauge_hand1_geo_pivot 2 1;
+  anim translate.translateX translateX 0;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0.69935244 auto auto 1 0 0;
+    }
+  }
+  anim translate.translateY translateY 1;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0.363 auto auto 1 0 0;
+    }
+  }
+  anim translate.translateZ translateZ 2;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0.712 auto auto 1 0 0;
+    }
+  }
+}
+dagNode {
+  valkyrium_engine_gauge_hand2_geo_pivot 2 1;
+  anim translate.translateX translateX 0;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0.68028653 auto auto 1 0 0;
+    }
+  }
+  anim translate.translateY translateY 1;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0.345 auto auto 1 0 0;
+    }
+  }
+  anim translate.translateZ translateZ 2;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0.712 auto auto 1 0 0;
+    }
+  }
+}
+dagNode {
+  valkyrium_engine_geo_pivot 2 1;
+  anim translate.translateX translateX 0;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0.51707209 auto auto 1 0 0;
+    }
+  }
+  anim translate.translateY translateY 1;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0.26739329 auto auto 1 0 0;
+    }
+  }
+  anim translate.translateZ translateZ 2;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0.74810667 auto auto 1 0 0;
+    }
+  }
+}
+dagNode {
+  valkyrium_engine_main_cog_geo_pivot 2 1;
+  anim translate.translateX translateX 0;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0.252 auto auto 1 0 0;
+    }
+  }
+  anim translate.translateY translateY 1;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0.3 auto auto 1 0 0;
+    }
+  }
+  anim translate.translateZ translateZ 2;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0.69699997 auto auto 1 0 0;
+    }
+  }
+}
+dagNode {
+  valkyrium_engine_power_cog_geo_pivot 2 1;
+  anim translate.translateX translateX 0;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0.474 auto auto 1 0 0;
+    }
+  }
+  anim translate.translateY translateY 1;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0.166 auto auto 1 0 0;
+    }
+  }
+  anim translate.translateZ translateZ 2;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0.833 auto auto 1 0 0;
+    }
+  }
+}

@@ -1,14 +1,14 @@
 /*
  * Adapted from the Wizardry License
  *
- * Copyright (c) 2015-2018 the Valkyrien Warfare team
+ * Copyright (c) 2015-2019 the Valkyrien Skies team
  *
  * Permission is hereby granted to any persons and/or organizations using this software to copy, modify, merge, publish, and distribute it.
  * Said persons and/or organizations are not allowed to use the software or any derivatives of the work for commercial use or any other means to generate income unless it is to be used as a part of a larger project (IE: "modpacks"), nor are they allowed to claim this software as their own.
  *
- * The persons and/or organizations are also disallowed from sub-licensing and/or trademarking this software without explicit permission from the Valkyrien Warfare team.
+ * The persons and/or organizations are also disallowed from sub-licensing and/or trademarking this software without explicit permission from the Valkyrien Skies team.
  *
- * Any persons and/or organizations using this software must disclose their source code and have it publicly available, include this license, provide sufficient credit to the original authors of the project (IE: The Valkyrien Warfare team), as well as provide a link to the original project.
+ * Any persons and/or organizations using this software must disclose their source code and have it publicly available, include this license, provide sufficient credit to the original authors of the project (IE: The Valkyrien Skies team), as well as provide a link to the original project.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
@@ -73,10 +73,10 @@ import org.valkyrienskies.mod.common.network.PhysWrapperPositionHandler;
 import org.valkyrienskies.mod.common.network.PhysWrapperPositionMessage;
 import org.valkyrienskies.mod.common.network.SubspacedEntityRecordHandler;
 import org.valkyrienskies.mod.common.network.SubspacedEntityRecordMessage;
-import org.valkyrienskies.mod.common.network.VWGuiButtonHandler;
-import org.valkyrienskies.mod.common.network.VWGuiButtonMessage;
+import org.valkyrienskies.mod.common.network.VSGuiButtonHandler;
+import org.valkyrienskies.mod.common.network.VSGuiButtonMessage;
 import org.valkyrienskies.mod.common.physics.management.DimensionPhysObjectManager;
-import org.valkyrienskies.mod.common.physmanagement.VW_APIPhysicsEntityManager;
+import org.valkyrienskies.mod.common.physmanagement.VS_APIPhysicsEntityManager;
 import org.valkyrienskies.mod.common.physmanagement.chunk.DimensionPhysicsChunkManager;
 import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.IValkyrienSkiesWorldData;
@@ -92,7 +92,7 @@ import valkyrienwarfare.api.IPhysicsEntityManager;
     modid = ValkyrienSkiesMod.MOD_ID,
     name = ValkyrienSkiesMod.MOD_NAME,
     version = ValkyrienSkiesMod.MOD_VERSION,
-    updateJSON = "https://raw.githubusercontent.com/ValkyrienWarfare/Valkyrien-Warfare-Revamped/master/update.json",
+    updateJSON = "https://raw.githubusercontent.com/ValkyrienSkies/Valkyrien-Skies/master/update.json",
     certificateFingerprint = ValkyrienSkiesMod.MOD_FINGERPRINT
 )
 @Log4j2
@@ -160,13 +160,12 @@ public class ValkyrienSkiesMod {
 
         log.debug("Beginning asynchronous Kryo initialization");
         serializationInitAsync();
-
         registerNetworks(event);
+
         registerCapabilities();
         proxy.preInit(event);
 
         log.debug("Initializing the VS API");
-        // Initialize the VW API here:
         try {
             Field instanceField = IPhysicsEntityManager.class.getDeclaredField("INSTANCE");
             // Make the field accessible
@@ -176,12 +175,12 @@ public class ValkyrienSkiesMod {
             modifiersField.setAccessible(true);
             modifiersField.setInt(instanceField, instanceField.getModifiers() & ~Modifier.FINAL);
             // Finally set the new value of the field.
-            instanceField.set(null, new VW_APIPhysicsEntityManager());
+            instanceField.set(null, new VS_APIPhysicsEntityManager());
         } catch (Exception e) {
             e.printStackTrace();
-            log.fatal("FAILED TO INITIALIZE VW API!");
+            log.fatal("FAILED TO INITIALIZE VS API!");
         }
-        // Initialize VW API end.
+        // Initialize VS API end.
     }
 
     @EventHandler
@@ -217,22 +216,23 @@ public class ValkyrienSkiesMod {
             .registerMessage(SubspacedEntityRecordHandler.class, SubspacedEntityRecordMessage.class,
                 2, Side.SERVER);
         physWrapperNetwork
-            .registerMessage(VWGuiButtonHandler.class, VWGuiButtonMessage.class, 3, Side.SERVER);
+            .registerMessage(VSGuiButtonHandler.class, VSGuiButtonMessage.class, 3, Side.SERVER);
     }
 
     void registerBlocks(RegistryEvent.Register<Block> event) {
         physicsInfuser = new BlockPhysicsInfuser(Material.ROCK).setHardness(8f)
-            .setTranslationKey("shipblock")
-            .setRegistryName(MOD_ID, "shipblock")
+            .setTranslationKey("physics_infuser")
+            .setRegistryName(MOD_ID, "physics_infuser")
             .setCreativeTab(VS_CREATIVE_TAB);
         physicsInfuserCreative = new BlockPhysicsInfuserCreative(Material.ROCK).setHardness(12f)
-            .setTranslationKey("shipblockcreative")
-            .setRegistryName(MOD_ID, "shipblockcreative")
+            .setTranslationKey("creative_physics_infuser")
+            .setRegistryName(MOD_ID, "creative_physics_infuser")
             .setCreativeTab(VS_CREATIVE_TAB);
-        // Do not put the dummy block into the creative tab
+        // // Do not put the VS_CREATIVE_TAB block into the creative tab
         physicsInfuserDummy = new BlockPhysicsInfuserDummy(Material.ROCK).setHardness(12f)
-            .setTranslationKey("physics_infuser_dummy")
-            .setRegistryName(MOD_ID, "physics_infuser_dummy");
+            .setTranslationKey("dummy_physics_infuser")
+            .setRegistryName(MOD_ID, "dummy_physics_infuser")
+            .setCreativeTab(VS_CREATIVE_TAB);
 
         event.getRegistry().register(physicsInfuser);
         event.getRegistry().register(physicsInfuserCreative);
@@ -281,8 +281,8 @@ public class ValkyrienSkiesMod {
         registerItemBlock(event, physicsInfuser);
         registerItemBlock(event, physicsInfuserCreative);
 
-        this.physicsCore = new ItemPhysicsCore().setTranslationKey("vw_phys_core")
-            .setRegistryName(MOD_ID, "vw_phys_core")
+        this.physicsCore = new ItemPhysicsCore().setTranslationKey("physics_core")
+            .setRegistryName(MOD_ID, "physics_core")
             .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
         event.getRegistry()
             .register(this.physicsCore);
@@ -322,7 +322,7 @@ public class ValkyrienSkiesMod {
 
     private void registerTileEntities() {
         GameRegistry.registerTileEntity(TileEntityPhysicsInfuser.class,
-            new ResourceLocation(MOD_ID, "tile_phys_infuser"));
+            new ResourceLocation(MOD_ID, "tile_physics_infuser"));
     }
 
 }

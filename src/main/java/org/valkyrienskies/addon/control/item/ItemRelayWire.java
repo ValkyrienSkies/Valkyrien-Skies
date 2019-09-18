@@ -1,14 +1,14 @@
 /*
  * Adapted from the Wizardry License
  *
- * Copyright (c) 2015-2018 the Valkyrien Warfare team
+ * Copyright (c) 2015-2019 the Valkyrien Skies team
  *
  * Permission is hereby granted to any persons and/or organizations using this software to copy, modify, merge, publish, and distribute it.
  * Said persons and/or organizations are not allowed to use the software or any derivatives of the work for commercial use or any other means to generate income unless it is to be used as a part of a larger project (IE: "modpacks"), nor are they allowed to claim this software as their own.
  *
- * The persons and/or organizations are also disallowed from sub-licensing and/or trademarking this software without explicit permission from the Valkyrien Warfare team.
+ * The persons and/or organizations are also disallowed from sub-licensing and/or trademarking this software without explicit permission from the Valkyrien Skies team.
  *
- * Any persons and/or organizations using this software must disclose their source code and have it publicly available, include this license, provide sufficient credit to the original authors of the project (IE: The Valkyrien Warfare team), as well as provide a link to the original project.
+ * Any persons and/or organizations using this software must disclose their source code and have it publicly available, include this license, provide sufficient credit to the original authors of the project (IE: The Valkyrien Skies team), as well as provide a link to the original project.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
@@ -35,15 +35,12 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
 import org.valkyrienskies.addon.control.capability.ICapabilityLastRelay;
-import org.valkyrienskies.addon.control.nodenetwork.IVWNode;
-import org.valkyrienskies.addon.control.nodenetwork.IVWNodeProvider;
+import org.valkyrienskies.addon.control.nodenetwork.IVSNode;
+import org.valkyrienskies.addon.control.nodenetwork.IVSNodeProvider;
+import org.valkyrienskies.mod.common.config.VSConfig;
 
 public class ItemRelayWire extends Item {
-
-    public static double range = 8D;
-
     public ItemRelayWire() {
-        this.setMaxStackSize(1);
         this.setMaxDamage(80);
     }
 
@@ -63,8 +60,7 @@ public class ItemRelayWire extends Item {
         TileEntity currentTile = worldIn.getTileEntity(pos);
         ItemStack stack = player.getHeldItem(hand);
 
-        if (currentTile instanceof IVWNodeProvider && !worldIn.isRemote) {
-            System.out.println("On server!");
+        if (currentTile instanceof IVSNodeProvider && !worldIn.isRemote) {
             ICapabilityLastRelay inst = stack
                 .getCapability(ValkyrienSkiesControl.lastRelayCapability, null);
             if (inst != null) {
@@ -78,9 +74,9 @@ public class ItemRelayWire extends Item {
                     // System.out.println(lastPos.toString());
 
                     if (!lastPos.equals(pos) && lastPosTile != null && currentTile != null) {
-                        if (distanceSq < range * range) {
-                            IVWNode lastPosNode = ((IVWNodeProvider) lastPosTile).getNode();
-                            IVWNode currentPosNode = ((IVWNodeProvider) currentTile).getNode();
+                        if (distanceSq < VSConfig.relayWireLength * VSConfig.relayWireLength) {
+                            IVSNode lastPosNode = ((IVSNodeProvider) lastPosTile).getNode();
+                            IVSNode currentPosNode = ((IVSNodeProvider) currentTile).getNode();
                             if (lastPosNode != null && currentPosNode != null) {
                                 if (currentPosNode.isLinkedToNode(lastPosNode)) {
                                     player.sendMessage(
@@ -90,14 +86,15 @@ public class ItemRelayWire extends Item {
                                     stack.damageItem(1, player);
                                 } else {
                                     // Tell the player what they did wrong
-                                    player.sendMessage(new TextComponentString(
-                                        "One of the connections is maxed out . Relay Nodes can make 8 connections, all other objects however can only make 1 connection."));
+                                    player.sendMessage(new TextComponentString(TextFormatting.RED +
+                                        I18n.format("message.vs_control.error_relay_wire_limit", VSConfig.networkRelayLimit)));
                                 }
                                 inst.setLastRelay(null);
                             }
                         } else {
                             player.sendMessage(
-                                new TextComponentString("Nodes are too far away, try better wire"));
+                                new TextComponentString(TextFormatting.RED +
+                                    I18n.format("message.vs_control.error_relay_wire_length")));
                             inst.setLastRelay(null);
                         }
                     } else {
@@ -107,7 +104,7 @@ public class ItemRelayWire extends Item {
             }
         }
 
-        if (currentTile instanceof IVWNodeProvider) {
+        if (currentTile instanceof IVSNodeProvider) {
             return EnumActionResult.SUCCESS;
         }
 

@@ -13,7 +13,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 
-public class BlockPhysicsInfuserDummy extends BlockVWDirectional {
+public class BlockPhysicsInfuserDummy extends BlockVSDirectional {
 
     public BlockPhysicsInfuserDummy(Material materialIn) {
         super(materialIn);

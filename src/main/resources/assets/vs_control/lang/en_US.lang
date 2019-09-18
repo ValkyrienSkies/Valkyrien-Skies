@@ -1,48 +1,86 @@
-#ITEMS
-item.relaywire.name=Relay Wire
-item.vw_wrench.name=VW Wrench
+# Items
+item.relay_wire.name=Relay Wire
+tooltip.vs_control.relay_wire=Used to connect relays to components and other relays.
+message.vs_control.error_relay_wire_limit=One of the connections is maxed out. Relay Nodes can make %d connections, all other objects can only make 1 connection.
+message.vs_control.error_relay_wire_length=The wire is too short to connect these nodes!
 
-#Blocks
-tile.shippilotschair.name=Captain's Chair
-tile.shippassengerchair.name=Passenger Chair
-tile.dopedethereum.name=Compacted Valkyrium
-tile.thrustrelay.name=Network Control Relay
-tile.shiphelm.name=Ship Helm
-tile.shiptelegraph.name=Speed Telegraph
-tile.vw_gyroscope_stabilizer.name=Ship Gyroscope Stabilizer
-tile.vw_gyroscope_dampener.name=Ship Gyroscope Dampener
-tile.vw_liftvalve.name=Lift Valve
-tile.vw_networkdisplay.name=Network Display
-tile.vw_liftcontrol.name=Lift Lever
-tile.vw_ethercompressorpanel.name=Valkyrium Compressor Panel
-tile.vw_ethereum_enginepart.name=Valkyrium Engine Part
-tile.vw_gearbox.name=Gear Box
-tile.vw_rudder_axle_part.name=Rudder Axle
-tile.vw_giant_propeller_part.name=Gigantic Propeller Part
-tile.vw_block_rotation_train_axle.name=Rotation Axle
-tile.basicengine.name=Basic Engine
-tile.advancedengine.name=Advanced Engine
-tile.eliteengine.name=Elite Engine
-tile.ultimateengine.name=Ultimate Engine
-tile.redstoneengine.name=Redstone Engine
+item.vs_wrench.name=VS Wrench
+tooltip.vs_control.wrench=Used to construct multi-blocks and orient the gearbox.
+tooltip.vs_control.wrench_usage=A VS Wrench is needed to construct this.
 
-#Tooltips
-tooltip.vs_control.pilots_chair_1=Use to mount and control Ships!
-tooltip.vs_control.pilots_chair_2=If you are standing on the ship, you will mount it upon control. Otherwise you will control the ship remotely without mounting.
-tooltip.vs_control.passenger_chair=Use to mount onto ships.
-tooltip.vs_control.wrench=Used to construct multi-blocks and to orient the gearbox.
-tooltip.vs_control.relay_wire=Used to link relays to components and other relays.
-tooltip.vs_control.ship_helm=Once linked to a control network, this block will allow control of the angle which rudders in that same network are oriented.
-tooltip.vs_control.speed_telegraph=Once linked to a control network, this block will allow control of the output axle rotation ratio of gearboxes in that same network. If setup correctly, this can be used to control the velocity of a ship.
-tooltip.vs_control.network_relay=Used to link the components of a control system together in one network.
-tooltip.vs_control.gyroscope_stabilizer=This block passively provides a torque to makes the ship level.
-tooltip.vs_control.gyroscope_dampener=This block passively provides a torque to prevent the ship from rocking.
-tooltip.vs_control.lift_valve=Unimplemented
-tooltip.vs_control.network_display=Unimplemented
-tooltip.vs_control.lift_lever_control=Once linked to a control network, this block will allow control of the height the ship flies at by adjusting the thrust output of the valkyrium compressors.
-tooltip.vs_control.valkyrium_compressor_part=Part of the 2x2x2 multiblock, the valkyrium compressor. This multiblock's purpose is to provide a lot of thrust exclusively in the upward direction.
-tooltip.vs_control.valkyrium_engine_part=Generates torque to power propellers.
-tooltip.vs_control.gearbox=Allows changing torque direction and magnitude. Output torque ratio is controlled by the ship speed telegraph block.
-tooltip.vs_control.rudder_axle_part=Changes the direction of the thrust from propellers; controlled by the ship helm block.
+
+
+# Blocks
+## Ship blocks
+tile.captains_chair.name=Captain's Chair
+tooltip.vs_control.captains_chair_1=Use to mount and control Ships!
+tooltip.vs_control.captains_chair_2=If you are standing on the ship, you will mount it upon control. Otherwise you will control the ship remotely without mounting.
+
+tile.passenger_chair.name=Passenger Chair
+tooltip.vs_control.passenger_chair=Use to sit tight on ships.
+
+tile.ship_helm.name=Ship Helm
+tooltip.vs_control.ship_helm=This block will let you turn rudders in the same network as it.
+
+tile.speed_telegraph.name=Speed Telegraph
+tooltip.vs_control.speed_telegraph=This block will allow you to control the output speed of gearboxes, and thus control propeller speeds.
+
+tile.dummy_telegraph.name=Dummy Telegraph
+tooltip.vs_control.dummy_telegraph=A non-functioning Speed Telegraph.
+
+tile.lift_lever.name=Lift Lever
+tooltip.vs_control.lift_lever=This block lets you set the target altitude of Valkyrium Compressors.
+
+tile.gearbox.name=Gearbox
+tooltip.vs_control.gearbox_1=Allows changing torque direction and power.
+tooltip.vs_control.gearbox_2=Connect to a Speed Telegraph to control torque output.
+
+tile.rotation_axle.name=Rotation Axle
+tooltip.vs_control.rotation_axle=Used to connect valkyrium engines from gearboxes to propellers.
+
+tile.network_relay.name=Network Relay
+tooltip.vs_control.network_relay=Lets you connect %d components, including relays, to this using Relay Wire.
+
+
+## Multi-Block parts
+tile.valkyrium_compressor_part.name=Valkyrium Compressor Part
+tooltip.vs_control.valkyrium_compressor_part_1=Part of a 2x2x2 multiblock, the Valkyrium Compressor.
+tooltip.vs_control.valkyrium_compressor_part_2=This multiblock's purpose is to provide a lot of thrust up or down.
+
+tile.rudder_part.name=Rudder Part
+tooltip.vs_control.rudder_part=Changes the direction of the thrust from propellers; controlled by the Ship Helm.
+
+tile.giant_propeller_part.name=Giant Propeller Part
 tooltip.vs_control.giant_propeller_part=3x3 to 7x7 multiblock that converts torque to thrust.
-tooltip.vs_control.rotation_train_axle=Used to connect valkyrium engines to gearboxes to propellers.
+
+tile.valkyrium_engine_part.name=Valkyrium Engine Part
+tooltip.vs_control.valkyrium_engine_part=Part of a multiblock that generates torque to power propellers.
+
+
+## Legacy engines
+tile.basic_engine.name=Basic Engine
+tile.advanced_engine.name=Advanced Engine
+tile.elite_engine.name=Elite Engine
+tile.ultimate_engine.name=Ultimate Engine
+tile.redstone_engine.name=Redstone Engine
+
+tooltip.vs_control.legacy_engine=Legacy engine, only requires a redstone signal to function.
+
+
+## Misc.
+tile.compacted_valkyrium.name=Compacted Valkyrium
+# Upward force: 200KN
+
+tile.gyroscope_stabilizer.name=Ship Gyroscope Stabilizer
+tooltip.vs_control.gyroscope_stabilizer=This block passively provides a torque to makes the ship level.
+
+tile.gyroscope_dampener.name=Ship Gyroscope Dampener
+tooltip.vs_control.gyroscope_dampener=This block passively provides a torque to prevent the ship from rocking.
+
+
+## Not Yet Implemented
+tile.lift_valve.name=Lift Valve
+tooltip.vs_control.lift_valve=Not yet implemented.
+
+tile.network_display.name=Network Display
+tooltip.vs_control.network_display=Not yet implemented.

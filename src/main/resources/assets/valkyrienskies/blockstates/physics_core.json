@@ -1,0 +1,18 @@
+{
+  "forge_marker": 1,
+  "variants": {
+    "default": {
+      "model": "valkyrienskies:physics_core_main"
+    },
+    "normal": {
+      "model": "valkyrienskies:physics_core_main"
+    },
+    "inventory": {
+      "model": "valkyrienskies:physics_infuser/item_models/physics_core_hand_main_core_geo.obj",
+      "custom": {
+        "flip-v": true
+      },
+      "transform": "forge:default-block"
+    }
+  }
+}

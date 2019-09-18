@@ -1,14 +1,14 @@
 /*
  * Adapted from the Wizardry License
  *
- * Copyright (c) 2015-2018 the Valkyrien Warfare team
+ * Copyright (c) 2015-2019 the Valkyrien Skies team
  *
  * Permission is hereby granted to any persons and/or organizations using this software to copy, modify, merge, publish, and distribute it.
  * Said persons and/or organizations are not allowed to use the software or any derivatives of the work for commercial use or any other means to generate income unless it is to be used as a part of a larger project (IE: "modpacks"), nor are they allowed to claim this software as their own.
  *
- * The persons and/or organizations are also disallowed from sub-licensing and/or trademarking this software without explicit permission from the Valkyrien Warfare team.
+ * The persons and/or organizations are also disallowed from sub-licensing and/or trademarking this software without explicit permission from the Valkyrien Skies team.
  *
- * Any persons and/or organizations using this software must disclose their source code and have it publicly available, include this license, provide sufficient credit to the original authors of the project (IE: The Valkyrien Warfare team), as well as provide a link to the original project.
+ * Any persons and/or organizations using this software must disclose their source code and have it publicly available, include this license, provide sufficient credit to the original authors of the project (IE: The Valkyrien Skies team), as well as provide a link to the original project.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
@@ -44,7 +44,7 @@ public class VSThread extends Thread {
     private final static long MAX_LOST_TIME_NS = 1000000000;
     // The number of physics ticks to be considered in the average tick time.
     private final static long TICK_TIME_QUEUE = 100;
-    // Used to give each VW thread a unique name
+    // Used to give each VS thread a unique name
     private static int threadID = 0;
     private final World hostWorld;
     private final Queue<Long> latestPhysicsTickTimes;
@@ -55,7 +55,7 @@ public class VSThread extends Thread {
     private volatile boolean threadRunning;
 
     public VSThread(World host) {
-        super("VW World Thread " + threadID);
+        super("VS World Thread " + threadID);
         threadID++;
         this.hostWorld = host;
         this.physicsTicksCount = 0;

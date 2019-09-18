@@ -9,8 +9,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import org.valkyrienskies.addon.control.block.torque.custom_torque_functions.EtherEngineTorqueFunction;
 import org.valkyrienskies.addon.control.block.torque.custom_torque_functions.SimpleTorqueFunction;
+import org.valkyrienskies.addon.control.block.torque.custom_torque_functions.ValkyriumEngineTorqueFunction;
 
 public class ImplRotationNode<T extends TileEntity & IRotationNodeProvider> implements
     IRotationNode {
@@ -170,7 +170,7 @@ public class ImplRotationNode<T extends TileEntity & IRotationNodeProvider> impl
         }
 
         if (customTorqueFunction.isPresent()) {
-            this.customTorqueFunction = Optional.of(new EtherEngineTorqueFunction(this));
+            this.customTorqueFunction = Optional.of(new ValkyriumEngineTorqueFunction(this));
             compound
                 .setString("custom_torque_funct", customTorqueFunction.get().getClass().getName());
         }

@@ -34,7 +34,8 @@ public class BlockGearbox extends Block implements ITileEntityProvider {
     public void addInformation(ItemStack stack, @Nullable World player,
         List<String> itemInformation,
         ITooltipFlag advanced) {
-        itemInformation.add(TextFormatting.BLUE + I18n.format("tooltip.vs_control.gearbox"));
+        itemInformation.add(TextFormatting.BLUE + I18n.format("tooltip.vs_control.gearbox_1"));
+        itemInformation.add(TextFormatting.BLUE + I18n.format("tooltip.vs_control.gearbox_2"));
     }
 
     @Override

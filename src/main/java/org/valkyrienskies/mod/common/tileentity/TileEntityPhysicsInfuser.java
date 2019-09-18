@@ -26,18 +26,18 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import org.valkyrienskies.fixes.VSNetwork;
-import org.valkyrienskies.mod.client.gui.IVWTileGui;
+import org.valkyrienskies.mod.client.gui.IVSTileGui;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.block.BlockPhysicsInfuser;
 import org.valkyrienskies.mod.common.container.EnumInfuserButton;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
-import org.valkyrienskies.mod.common.network.VWGuiButtonMessage;
+import org.valkyrienskies.mod.common.network.VSGuiButtonMessage;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.chunk.PhysicsChunkManager;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
 public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, ICapabilityProvider,
-    IVWTileGui {
+    IVSTileGui {
 
     private final ItemStackHandler handler;
     private volatile boolean sendUpdateToClients;
@@ -279,12 +279,12 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
         if (getWorld().isRemote) {
             // If client, then send a packet telling the server we pressed this button.
             ValkyrienSkiesMod.physWrapperNetwork
-                .sendToServer(new VWGuiButtonMessage(this, button.ordinal()));
+                .sendToServer(new VSGuiButtonMessage(this, button.ordinal()));
         }
     }
 
     /**
-     * @return If this TileEntity is in a ship then this returns whether that ship can be
+     * @return If this TileEntity is in a ship then this returns whvalkyrium that ship can be
      * deconstructed or not, otherwise this returns true.
      */
     public boolean canShipBeDeconstructed() {

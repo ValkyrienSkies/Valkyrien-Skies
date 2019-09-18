@@ -1,0 +1,5468 @@
+{
+  "__comment": "TODO: make new textures for the rotors",
+  "textures": {
+    "0": "minecraft:blocks/planks_oak",
+    "1": "minecraft:blocks/planks_spruce",
+    "2": "minecraft:blocks/planks_birch",
+    "3": "minecraft:blocks/planks_jungle",
+    "4": "vs_control:blocks/rusty shaft",
+    "5": "vs_control:blocks/red lamp",
+    "6": "vs_control:blocks/green lamp",
+    "main": "vs_control:blocks/basic_engine_rotor",
+    "particle": "vs_control:blocks/rusty shaft"
+  },
+  "elements": [
+    {
+      "name": "Base left",
+      "from": [
+        2,
+        0,
+        0
+      ],
+      "to": [
+        4,
+        2,
+        25
+      ],
+      "faces": {
+        "north": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            2,
+            2
+          ]
+        },
+        "east": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            25,
+            2
+          ]
+        },
+        "south": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            2,
+            2
+          ]
+        },
+        "west": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            25,
+            2
+          ]
+        },
+        "up": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            2,
+            25
+          ]
+        },
+        "down": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            2,
+            25
+          ]
+        }
+      }
+    },
+    {
+      "name": "Base right",
+      "from": [
+        12,
+        0,
+        0
+      ],
+      "to": [
+        14,
+        2,
+        25
+      ],
+      "faces": {
+        "north": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            2,
+            2
+          ]
+        },
+        "east": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            25,
+            2
+          ]
+        },
+        "south": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            2,
+            2
+          ]
+        },
+        "west": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            25,
+            2
+          ]
+        },
+        "up": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            2,
+            25
+          ]
+        },
+        "down": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            2,
+            25
+          ]
+        }
+      }
+    },
+    {
+      "name": "Base front",
+      "from": [
+        2,
+        0,
+        0
+      ],
+      "to": [
+        14,
+        2,
+        2
+      ],
+      "faces": {
+        "north": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            12,
+            2
+          ]
+        },
+        "east": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            2,
+            2
+          ]
+        },
+        "south": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            12,
+            2
+          ]
+        },
+        "west": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            2,
+            2
+          ]
+        },
+        "up": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            12,
+            2
+          ]
+        },
+        "down": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            12,
+            2
+          ]
+        }
+      }
+    },
+    {
+      "name": "Base back",
+      "from": [
+        2,
+        0,
+        23
+      ],
+      "to": [
+        14,
+        2,
+        25
+      ],
+      "faces": {
+        "north": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            12,
+            2
+          ]
+        },
+        "east": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            2,
+            2
+          ]
+        },
+        "south": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            12,
+            2
+          ]
+        },
+        "west": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            2,
+            2
+          ]
+        },
+        "up": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            12,
+            2
+          ]
+        },
+        "down": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            12,
+            2
+          ]
+        }
+      }
+    },
+    {
+      "name": "Fuel tank main",
+      "from": [
+        5,
+        3,
+        17
+      ],
+      "to": [
+        11,
+        8,
+        22
+      ],
+      "faces": {
+        "north": {
+          "texture": "#1",
+          "uv": [
+            0,
+            0,
+            6,
+            5
+          ]
+        },
+        "east": {
+          "texture": "#1",
+          "uv": [
+            0,
+            0,
+            5,
+            5
+          ]
+        },
+        "south": {
+          "texture": "#1",
+          "uv": [
+            0,
+            0,
+            6,
+            5
+          ]
+        },
+        "west": {
+          "texture": "#1",
+          "uv": [
+            0,
+            0,
+            5,
+            5
+          ]
+        },
+        "up": {
+          "texture": "#1",
+          "uv": [
+            0,
+            0,
+            6,
+            5
+          ]
+        },
+        "down": {
+          "texture": "#1",
+          "uv": [
+            0,
+            0,
+            6,
+            5
+          ]
+        }
+      }
+    },
+    {
+      "name": "Fuel tank slope left",
+      "from": [
+        5,
+        3,
+        17
+      ],
+      "to": [
+        6,
+        5.4,
+        22
+      ],
+      "rotation": {
+        "origin": [
+          5,
+          3,
+          4
+        ],
+        "axis": "z",
+        "angle": 22.5,
+        "rescale": true
+      },
+      "faces": {
+        "north": {
+          "texture": "#1",
+          "uv": [
+            0,
+            0,
+            1,
+            2.4
+          ]
+        },
+        "east": {
+          "texture": "#1",
+          "uv": [
+            0,
+            0,
+            5,
+            2.4
+          ]
+        },
+        "south": {
+          "texture": "#1",
+          "uv": [
+            0,
+            0,
+            1,
+            2.4000000000000004
+          ]
+        },
+        "west": {
+          "texture": "#1",
+          "uv": [
+            0,
+            0,
+            5,
+            2.4
+          ]
+        },
+        "up": {
+          "texture": "#1",
+          "uv": [
+            0,
+            0,
+            1,
+            5
+          ]
+        },
+        "down": {
+          "texture": "#1",
+          "uv": [
+            0,
+            0,
+            1,
+            5
+          ]
+        }
+      }
+    },
+    {
+      "name": "Fuel tank side left",
+      "from": [
+        4.1,
+        5,
+        17
+      ],
+      "to": [
+        5.1,
+        8,
+        22
+      ],
+      "faces": {
+        "north": {
+          "texture": "#1",
+          "uv": [
+            0,
+            0,
+            1,
+            3
+          ]
+        },
+        "east": {
+          "texture": "#1",
+          "uv": [
+            0,
+            0,
+            5,
+            3
+          ]
+        },
+        "south": {
+          "texture": "#1",
+          "uv": [
+            0,
+            0,
+            1,
+            3
+          ]
+        },
+        "west": {
+          "texture": "#1",
+          "uv": [
+            0,
+            0,
+            5,
+            3
+          ]
+        },
+        "up": {
+          "texture": "#1",
+          "uv": [
+            0,
+            0,
+            1,
+            5
+          ]
+        },
+        "down": {
+          "texture": "#1",
+          "uv": [
+            0,
+            0,
+            1,
+            5
+          ]
+        }
+      }
+    },
+    {
+      "name": "Fuel tank slope right",
+      "from": [
+        10,
+        3,
+        17
+      ],
+      "to": [
+        11,
+        5.4,
+        22
+      ],
+      "rotation": {
+        "origin": [
+          11,
+          3,
+          4
+        ],
+        "axis": "z",
+        "angle": -22.5
+      },
+      "faces": {
+        "north": {
+          "texture": "#1",
+          "uv": [
+            0,
+            0,
+            1,
+            2.4
+          ]
+        },
+        "east": {
+          "texture": "#1",
+          "uv": [
+            0,
+            0,
+            5,
+            2.4
+          ]
+        },
+        "south": {
+          "texture": "#1",
+          "uv": [
+            0,
+            0,
+            1,
+            2.4
+          ]
+        },
+        "west": {
+          "texture": "#1",
+          "uv": [
+            0,
+            0,
+            5,
+            2.4
+          ]
+        },
+        "up": {
+          "texture": "#1",
+          "uv": [
+            0,
+            0,
+            1,
+            5
+          ]
+        },
+        "down": {
+          "texture": "#1",
+          "uv": [
+            0,
+            0,
+            1,
+            5
+          ]
+        }
+      }
+    },
+    {
+      "name": "Fuel tank side right",
+      "from": [
+        10.9,
+        5,
+        17
+      ],
+      "to": [
+        11.9,
+        8,
+        22
+      ],
+      "faces": {
+        "north": {
+          "texture": "#1",
+          "uv": [
+            0,
+            0,
+            1,
+            3
+          ]
+        },
+        "east": {
+          "texture": "#1",
+          "uv": [
+            0,
+            0,
+            5,
+            3
+          ]
+        },
+        "south": {
+          "texture": "#1",
+          "uv": [
+            0,
+            0,
+            1,
+            3
+          ]
+        },
+        "west": {
+          "texture": "#1",
+          "uv": [
+            0,
+            0,
+            5,
+            3
+          ]
+        },
+        "up": {
+          "texture": "#1",
+          "uv": [
+            0,
+            0,
+            1,
+            5
+          ]
+        },
+        "down": {
+          "texture": "#1",
+          "uv": [
+            0,
+            0,
+            1,
+            5
+          ]
+        }
+      }
+    },
+    {
+      "name": "Fuel tank strut left",
+      "from": [
+        2,
+        2,
+        18
+      ],
+      "to": [
+        3,
+        6,
+        20
+      ],
+      "rotation": {
+        "origin": [
+          2,
+          2,
+          5
+        ],
+        "axis": "z",
+        "angle": -45
+      },
+      "faces": {
+        "north": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            1,
+            4
+          ]
+        },
+        "east": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            2,
+            4
+          ]
+        },
+        "south": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            1,
+            4
+          ]
+        },
+        "west": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            2,
+            4
+          ]
+        },
+        "up": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            1,
+            2
+          ]
+        },
+        "down": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            1,
+            2
+          ]
+        }
+      }
+    },
+    {
+      "name": "Fuel tank strut right",
+      "from": [
+        13,
+        2,
+        18
+      ],
+      "to": [
+        14,
+        6,
+        20
+      ],
+      "rotation": {
+        "origin": [
+          14,
+          2,
+          5
+        ],
+        "axis": "z",
+        "angle": 45
+      },
+      "faces": {
+        "north": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            1,
+            4
+          ]
+        },
+        "east": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            2,
+            4
+          ]
+        },
+        "south": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            1,
+            4
+          ]
+        },
+        "west": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            2,
+            4
+          ]
+        },
+        "up": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            1,
+            2
+          ]
+        },
+        "down": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            1,
+            2
+          ]
+        }
+      }
+    },
+    {
+      "name": "Fuel line",
+      "from": [
+        7.5,
+        4.5,
+        12
+      ],
+      "to": [
+        8.5,
+        5.5,
+        17
+      ],
+      "faces": {
+        "north": {
+          "texture": "#2",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "east": {
+          "texture": "#2",
+          "uv": [
+            0,
+            0,
+            5,
+            1
+          ]
+        },
+        "south": {
+          "texture": "#2",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "west": {
+          "texture": "#2",
+          "uv": [
+            0,
+            0,
+            5,
+            1
+          ]
+        },
+        "up": {
+          "texture": "#2",
+          "uv": [
+            0,
+            0,
+            1,
+            5
+          ]
+        },
+        "down": {
+          "texture": "#2",
+          "uv": [
+            0,
+            0,
+            1,
+            5
+          ]
+        }
+      }
+    },
+    {
+      "name": "Fuel cap shaft",
+      "from": [
+        6,
+        8,
+        19
+      ],
+      "to": [
+        7.5,
+        8.5,
+        20.5
+      ],
+      "rotation": {
+        "origin": [
+          7,
+          8,
+          20
+        ],
+        "axis": "y",
+        "angle": -45
+      },
+      "faces": {
+        "north": {
+          "texture": "#2",
+          "uv": [
+            0,
+            0,
+            1.5,
+            0.5
+          ]
+        },
+        "east": {
+          "texture": "#2",
+          "uv": [
+            0,
+            0,
+            1.5,
+            0.5
+          ]
+        },
+        "south": {
+          "texture": "#2",
+          "uv": [
+            0,
+            0,
+            1.5,
+            0.5
+          ]
+        },
+        "west": {
+          "texture": "#2",
+          "uv": [
+            0,
+            0,
+            1.5,
+            0.5
+          ]
+        },
+        "up": {
+          "texture": "#2",
+          "uv": [
+            0,
+            0,
+            1.5,
+            1.5
+          ]
+        },
+        "down": {
+          "texture": "#2",
+          "uv": [
+            0,
+            0,
+            1.5,
+            1.5
+          ]
+        }
+      }
+    },
+    {
+      "name": "Fuel cap",
+      "from": [
+        5.9,
+        8.2,
+        18.9
+      ],
+      "to": [
+        7.6000000000000005,
+        8.5,
+        20.599999999999998
+      ],
+      "rotation": {
+        "origin": [
+          7,
+          8,
+          20
+        ],
+        "axis": "y",
+        "angle": -45
+      },
+      "faces": {
+        "north": {
+          "texture": "#2",
+          "uv": [
+            0,
+            0,
+            1.7,
+            0.3
+          ]
+        },
+        "east": {
+          "texture": "#2",
+          "uv": [
+            0,
+            0,
+            1.7,
+            0.3
+          ]
+        },
+        "south": {
+          "texture": "#2",
+          "uv": [
+            0,
+            0,
+            1.7,
+            0.3
+          ]
+        },
+        "west": {
+          "texture": "#2",
+          "uv": [
+            0,
+            0,
+            1.7,
+            0.3
+          ]
+        },
+        "up": {
+          "texture": "#2",
+          "uv": [
+            0,
+            0,
+            1.7,
+            1.7
+          ]
+        },
+        "down": {
+          "texture": "#2",
+          "uv": [
+            0,
+            0,
+            1.7,
+            1.7
+          ]
+        }
+      }
+    },
+    {
+      "name": "Engine base",
+      "from": [
+        5,
+        3,
+        6
+      ],
+      "to": [
+        11,
+        6,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#3",
+          "uv": [
+            0,
+            0,
+            6,
+            3
+          ]
+        },
+        "east": {
+          "texture": "#3",
+          "uv": [
+            0,
+            0,
+            10,
+            3
+          ]
+        },
+        "south": {
+          "texture": "#3",
+          "uv": [
+            0,
+            0,
+            6,
+            3
+          ]
+        },
+        "west": {
+          "texture": "#3",
+          "uv": [
+            0,
+            0,
+            10,
+            3
+          ]
+        },
+        "up": {
+          "texture": "#3",
+          "uv": [
+            0,
+            0,
+            6,
+            10
+          ]
+        },
+        "down": {
+          "texture": "#3",
+          "uv": [
+            0,
+            0,
+            6,
+            10
+          ]
+        }
+      }
+    },
+    {
+      "name": "Back left cylinder",
+      "from": [
+        5,
+        5,
+        13
+      ],
+      "to": [
+        7,
+        9,
+        15
+      ],
+      "rotation": {
+        "origin": [
+          5,
+          5,
+          13
+        ],
+        "axis": "z",
+        "angle": 22.5
+      },
+      "faces": {
+        "north": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            2,
+            4
+          ]
+        },
+        "east": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            2,
+            4
+          ]
+        },
+        "south": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            2,
+            4
+          ]
+        },
+        "west": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            2,
+            4
+          ]
+        },
+        "up": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            2,
+            2
+          ]
+        },
+        "down": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            2,
+            2
+          ]
+        }
+      }
+    },
+    {
+      "name": "Middle left cylinder",
+      "from": [
+        5,
+        5,
+        10
+      ],
+      "to": [
+        7,
+        9,
+        12
+      ],
+      "rotation": {
+        "origin": [
+          5,
+          5,
+          13
+        ],
+        "axis": "z",
+        "angle": 22.5
+      },
+      "faces": {
+        "north": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            2,
+            4
+          ]
+        },
+        "east": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            2,
+            4
+          ]
+        },
+        "south": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            2,
+            4
+          ]
+        },
+        "west": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            2,
+            4
+          ]
+        },
+        "up": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            2,
+            2
+          ]
+        },
+        "down": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            2,
+            2
+          ]
+        }
+      }
+    },
+    {
+      "name": "Front left cylinder",
+      "from": [
+        5,
+        5,
+        7
+      ],
+      "to": [
+        7,
+        9,
+        9
+      ],
+      "rotation": {
+        "origin": [
+          5,
+          5,
+          13
+        ],
+        "axis": "z",
+        "angle": 22.5
+      },
+      "faces": {
+        "north": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            2,
+            4
+          ]
+        },
+        "east": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            2,
+            4
+          ]
+        },
+        "south": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            2,
+            4
+          ]
+        },
+        "west": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            2,
+            4
+          ]
+        },
+        "up": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            2,
+            2
+          ]
+        },
+        "down": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            2,
+            2
+          ]
+        }
+      }
+    },
+    {
+      "name": "Back right cylinder",
+      "from": [
+        9,
+        5,
+        13
+      ],
+      "to": [
+        11,
+        9,
+        15
+      ],
+      "rotation": {
+        "origin": [
+          11,
+          5,
+          13
+        ],
+        "axis": "z",
+        "angle": -22.5
+      },
+      "faces": {
+        "north": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            2,
+            4
+          ]
+        },
+        "east": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            2,
+            4
+          ]
+        },
+        "south": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            2,
+            4
+          ]
+        },
+        "west": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            2,
+            4
+          ]
+        },
+        "up": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            2,
+            2
+          ]
+        },
+        "down": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            2,
+            2
+          ]
+        }
+      }
+    },
+    {
+      "name": "Middle right cylinder",
+      "from": [
+        9,
+        5,
+        10
+      ],
+      "to": [
+        11,
+        9,
+        12
+      ],
+      "rotation": {
+        "origin": [
+          11,
+          5,
+          13
+        ],
+        "axis": "z",
+        "angle": -22.5
+      },
+      "faces": {
+        "north": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            2,
+            4
+          ]
+        },
+        "east": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            2,
+            4
+          ]
+        },
+        "south": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            2,
+            4
+          ]
+        },
+        "west": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            2,
+            4
+          ]
+        },
+        "up": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            2,
+            2
+          ]
+        },
+        "down": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            2,
+            2
+          ]
+        }
+      }
+    },
+    {
+      "name": "Front right cylinder",
+      "from": [
+        9,
+        5,
+        7
+      ],
+      "to": [
+        11,
+        9,
+        9
+      ],
+      "rotation": {
+        "origin": [
+          11,
+          5,
+          13
+        ],
+        "axis": "z",
+        "angle": -22.5
+      },
+      "faces": {
+        "north": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            2,
+            4
+          ]
+        },
+        "east": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            2,
+            4
+          ]
+        },
+        "south": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            2,
+            4
+          ]
+        },
+        "west": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            2,
+            4
+          ]
+        },
+        "up": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            2,
+            2
+          ]
+        },
+        "down": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            2,
+            2
+          ]
+        }
+      }
+    },
+    {
+      "name": "Central engine block",
+      "from": [
+        6,
+        6,
+        6
+      ],
+      "to": [
+        10,
+        9,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#2",
+          "uv": [
+            0,
+            0,
+            4,
+            3
+          ]
+        },
+        "east": {
+          "texture": "#2",
+          "uv": [
+            0,
+            0,
+            10,
+            3
+          ]
+        },
+        "south": {
+          "texture": "#2",
+          "uv": [
+            0,
+            0,
+            4,
+            3
+          ]
+        },
+        "west": {
+          "texture": "#2",
+          "uv": [
+            0,
+            0,
+            10,
+            3
+          ]
+        },
+        "up": {
+          "texture": "#2",
+          "uv": [
+            0,
+            0,
+            4,
+            10
+          ]
+        },
+        "down": {
+          "texture": "#2",
+          "uv": [
+            0,
+            0,
+            4,
+            10
+          ]
+        }
+      }
+    },
+    {
+      "name": "Driveshaft",
+      "from": [
+        7,
+        5,
+        -3
+      ],
+      "to": [
+        9,
+        7,
+        6
+      ],
+      "rotation": {
+        "origin": [
+          8,
+          6,
+          1
+        ],
+        "axis": "z",
+        "angle": -45
+      },
+      "faces": {
+        "north": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.25,
+            2.25
+          ]
+        },
+        "east": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            1.125,
+            2.25
+          ]
+        },
+        "south": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.25,
+            2.25
+          ]
+        },
+        "west": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            1.125,
+            2.25
+          ]
+        },
+        "up": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.25,
+            3.125
+          ]
+        },
+        "down": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.25,
+            3.125
+          ]
+        }
+      }
+    },
+    {
+      "name": "Front left engine support",
+      "from": [
+        3,
+        1,
+        7
+      ],
+      "to": [
+        4,
+        4,
+        8
+      ],
+      "rotation": {
+        "origin": [
+          3,
+          1,
+          7
+        ],
+        "axis": "z",
+        "angle": -22.5
+      },
+      "faces": {
+        "north": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            3
+          ]
+        },
+        "east": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            3
+          ]
+        },
+        "south": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            3
+          ]
+        },
+        "west": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            3
+          ]
+        },
+        "up": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "down": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      }
+    },
+    {
+      "name": "Back left engine support",
+      "from": [
+        3,
+        1,
+        14
+      ],
+      "to": [
+        4,
+        4,
+        15
+      ],
+      "rotation": {
+        "origin": [
+          3,
+          1,
+          7
+        ],
+        "axis": "z",
+        "angle": -22.5
+      },
+      "faces": {
+        "north": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            3
+          ]
+        },
+        "east": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            3
+          ]
+        },
+        "south": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            3
+          ]
+        },
+        "west": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            3
+          ]
+        },
+        "up": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "down": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      }
+    },
+    {
+      "name": "Front left engine support bolt",
+      "from": [
+        4,
+        3,
+        7
+      ],
+      "to": [
+        5,
+        4,
+        8
+      ],
+      "faces": {
+        "north": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "east": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "south": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "west": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "up": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "down": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      }
+    },
+    {
+      "name": "Back left engine support bolt",
+      "from": [
+        4,
+        3,
+        14
+      ],
+      "to": [
+        5,
+        4,
+        15
+      ],
+      "faces": {
+        "north": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "east": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "south": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "west": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "up": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "down": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      }
+    },
+    {
+      "name": "Front right engine support",
+      "from": [
+        12,
+        1,
+        7
+      ],
+      "to": [
+        13,
+        4,
+        8
+      ],
+      "rotation": {
+        "origin": [
+          13,
+          1,
+          7
+        ],
+        "axis": "z",
+        "angle": 22.5
+      },
+      "faces": {
+        "north": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            3
+          ]
+        },
+        "east": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            3
+          ]
+        },
+        "south": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            3
+          ]
+        },
+        "west": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            3
+          ]
+        },
+        "up": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "down": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      }
+    },
+    {
+      "name": "Back right engine support",
+      "from": [
+        12,
+        1,
+        14
+      ],
+      "to": [
+        13,
+        4,
+        15
+      ],
+      "rotation": {
+        "origin": [
+          13,
+          1,
+          7
+        ],
+        "axis": "z",
+        "angle": 22.5
+      },
+      "faces": {
+        "north": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            3
+          ]
+        },
+        "east": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            3
+          ]
+        },
+        "south": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            3
+          ]
+        },
+        "west": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            3
+          ]
+        },
+        "up": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "down": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      }
+    },
+    {
+      "name": "Front right engine support bolt",
+      "from": [
+        11,
+        3,
+        7
+      ],
+      "to": [
+        12,
+        4,
+        8
+      ],
+      "faces": {
+        "north": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "east": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "south": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "west": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "up": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "down": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      }
+    },
+    {
+      "name": "Back right engine support bolt",
+      "from": [
+        11,
+        3,
+        14
+      ],
+      "to": [
+        12,
+        4,
+        15
+      ],
+      "faces": {
+        "north": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "east": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "south": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "west": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "up": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "down": {
+          "texture": "#4",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      }
+    },
+    {
+      "name": "Shaft bearing left",
+      "from": [
+        6,
+        2,
+        0
+      ],
+      "to": [
+        7,
+        8,
+        1
+      ],
+      "faces": {
+        "north": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            1,
+            6
+          ]
+        },
+        "east": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            1,
+            6
+          ]
+        },
+        "south": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            1,
+            6
+          ]
+        },
+        "west": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            1,
+            6
+          ]
+        },
+        "up": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "down": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      }
+    },
+    {
+      "name": "Shaft bearing right",
+      "from": [
+        9,
+        2,
+        0
+      ],
+      "to": [
+        10,
+        8,
+        1
+      ],
+      "faces": {
+        "north": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            1,
+            6
+          ]
+        },
+        "east": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            1,
+            6
+          ]
+        },
+        "south": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            1,
+            6
+          ]
+        },
+        "west": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            1,
+            6
+          ]
+        },
+        "up": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "down": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      }
+    },
+    {
+      "name": "Shaft bearing bottom",
+      "from": [
+        6,
+        4,
+        0
+      ],
+      "to": [
+        9,
+        5,
+        1
+      ],
+      "faces": {
+        "north": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            3,
+            1
+          ]
+        },
+        "east": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "south": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            3,
+            1
+          ]
+        },
+        "west": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "up": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            3,
+            1
+          ]
+        },
+        "down": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            3,
+            1
+          ]
+        }
+      }
+    },
+    {
+      "name": "Shaft bearing top",
+      "from": [
+        6,
+        7,
+        0
+      ],
+      "to": [
+        9,
+        8,
+        1
+      ],
+      "faces": {
+        "north": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            3,
+            1
+          ]
+        },
+        "east": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "south": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            3,
+            1
+          ]
+        },
+        "west": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "up": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            3,
+            1
+          ]
+        },
+        "down": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            3,
+            1
+          ]
+        }
+      }
+    },
+    {
+      "name": "Driveshaft part 2",
+      "from": [
+        7,
+        5,
+        -3
+      ],
+      "to": [
+        9,
+        7,
+        6
+      ],
+      "faces": {
+        "north": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.25,
+            2.25
+          ]
+        },
+        "east": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            1.125,
+            2.25
+          ]
+        },
+        "south": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.25,
+            2.25
+          ]
+        },
+        "west": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            1.125,
+            2.25
+          ]
+        },
+        "up": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.25,
+            3.125
+          ]
+        },
+        "down": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.25,
+            3.125
+          ]
+        }
+      }
+    },
+    {
+      "name": "Rotor blade bottom",
+      "from": [
+        7,
+        0,
+        -2.8
+      ],
+      "to": [
+        8,
+        5,
+        -1.9999999999999998
+      ],
+      "faces": {
+        "north": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.125,
+            2.625
+          ]
+        },
+        "east": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.1,
+            2.625
+          ]
+        },
+        "south": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.125,
+            2.625
+          ]
+        },
+        "west": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.1,
+            2.625
+          ]
+        },
+        "up": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.125,
+            2.1
+          ]
+        },
+        "down": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.125,
+            2.1
+          ]
+        }
+      }
+    },
+    {
+      "name": "Rotor blade top",
+      "from": [
+        8,
+        7,
+        -2.8
+      ],
+      "to": [
+        9,
+        12,
+        -1.9999999999999998
+      ],
+      "faces": {
+        "north": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.125,
+            2.625
+          ]
+        },
+        "east": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.1,
+            2.625
+          ]
+        },
+        "south": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.125,
+            2.625
+          ]
+        },
+        "west": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.1,
+            2.625
+          ]
+        },
+        "up": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.125,
+            2.1
+          ]
+        },
+        "down": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.125,
+            2.1
+          ]
+        }
+      }
+    },
+    {
+      "name": "Rotor blade left",
+      "from": [
+        2,
+        6,
+        -2.8
+      ],
+      "to": [
+        7,
+        7,
+        -1.9999999999999998
+      ],
+      "faces": {
+        "north": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.625,
+            2.125
+          ]
+        },
+        "east": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.1,
+            2.125
+          ]
+        },
+        "south": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.625,
+            2.125
+          ]
+        },
+        "west": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.1,
+            2.125
+          ]
+        },
+        "up": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.625,
+            2.1
+          ]
+        },
+        "down": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.625,
+            2.1
+          ]
+        }
+      }
+    },
+    {
+      "name": "Rotor blade right",
+      "from": [
+        9,
+        5,
+        -2.8
+      ],
+      "to": [
+        14,
+        6,
+        -1.9999999999999998
+      ],
+      "faces": {
+        "north": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.625,
+            2.125
+          ]
+        },
+        "east": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.1,
+            2.125
+          ]
+        },
+        "south": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.625,
+            2.125
+          ]
+        },
+        "west": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.1,
+            2.125
+          ]
+        },
+        "up": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.625,
+            2.1
+          ]
+        },
+        "down": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.625,
+            2.1
+          ]
+        }
+      }
+    },
+    {
+      "name": "Rotor surface bottom",
+      "from": [
+        8,
+        1,
+        -2.5
+      ],
+      "to": [
+        9,
+        5,
+        -2
+      ],
+      "faces": {
+        "north": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.125,
+            2.5
+          ]
+        },
+        "east": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.0625,
+            2.5
+          ]
+        },
+        "south": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.125,
+            2.5
+          ]
+        },
+        "west": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.0625,
+            2.5
+          ]
+        },
+        "up": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.125,
+            2.0625
+          ]
+        },
+        "down": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.125,
+            2.0625
+          ]
+        }
+      }
+    },
+    {
+      "name": "Rotor surface top",
+      "from": [
+        7,
+        7,
+        -2.5
+      ],
+      "to": [
+        8,
+        11,
+        -2
+      ],
+      "faces": {
+        "north": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.125,
+            2.5
+          ]
+        },
+        "east": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.0625,
+            2.5
+          ]
+        },
+        "south": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.125,
+            2.5
+          ]
+        },
+        "west": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.0625,
+            2.5
+          ]
+        },
+        "up": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.125,
+            2.0625
+          ]
+        },
+        "down": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.125,
+            2.0625
+          ]
+        }
+      }
+    },
+    {
+      "name": "Rotor surface left",
+      "from": [
+        3,
+        5,
+        -2.5
+      ],
+      "to": [
+        7,
+        6,
+        -2
+      ],
+      "faces": {
+        "north": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.5,
+            2.125
+          ]
+        },
+        "east": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.0625,
+            2.125
+          ]
+        },
+        "south": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.5,
+            2.125
+          ]
+        },
+        "west": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.0625,
+            2.125
+          ]
+        },
+        "up": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.5,
+            2.0625
+          ]
+        },
+        "down": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.5,
+            2.0625
+          ]
+        }
+      }
+    },
+    {
+      "name": "Rotor surface right",
+      "from": [
+        9,
+        6,
+        -2.5
+      ],
+      "to": [
+        13,
+        7,
+        -2
+      ],
+      "faces": {
+        "north": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.5,
+            2.125
+          ]
+        },
+        "east": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.0625,
+            2.125
+          ]
+        },
+        "south": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.5,
+            2.125
+          ]
+        },
+        "west": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.0625,
+            2.125
+          ]
+        },
+        "up": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.5,
+            2.0625
+          ]
+        },
+        "down": {
+          "texture": "#main",
+          "uv": [
+            0,
+            2,
+            0.5,
+            2.0625
+          ]
+        }
+      }
+    },
+    {
+      "name": "Driveshaft",
+      "from": [
+        7,
+        5,
+        -3
+      ],
+      "to": [
+        9,
+        7,
+        6
+      ],
+      "rotation": {
+        "origin": [
+          8,
+          6,
+          1
+        ],
+        "axis": "z",
+        "angle": -22.5
+      },
+      "faces": {
+        "north": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.25,
+            2.25
+          ]
+        },
+        "east": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            9.125,
+            2.25
+          ]
+        },
+        "south": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.25,
+            2.25
+          ]
+        },
+        "west": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            9.125,
+            2.25
+          ]
+        },
+        "up": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.25,
+            3.125
+          ]
+        },
+        "down": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.25,
+            3.125
+          ]
+        }
+      }
+    },
+    {
+      "name": "Driveshaft part 2",
+      "from": [
+        7,
+        5,
+        -3
+      ],
+      "to": [
+        9,
+        7,
+        6
+      ],
+      "rotation": {
+        "origin": [
+          8,
+          6,
+          1
+        ],
+        "axis": "z",
+        "angle": 22.5
+      },
+      "faces": {
+        "north": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.25,
+            2.25
+          ]
+        },
+        "east": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            9.125,
+            2.25
+          ]
+        },
+        "south": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.25,
+            2.25
+          ]
+        },
+        "west": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            9.125,
+            2.25
+          ]
+        },
+        "up": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.25,
+            3.125
+          ]
+        },
+        "down": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.25,
+            3.125
+          ]
+        }
+      }
+    },
+    {
+      "name": "Rotor blade top",
+      "from": [
+        8,
+        7,
+        -2.8
+      ],
+      "to": [
+        9,
+        12,
+        -2
+      ],
+      "rotation": {
+        "origin": [
+          8,
+          6,
+          1
+        ],
+        "axis": "z",
+        "angle": 22.5
+      },
+      "faces": {
+        "north": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.125,
+            2.625
+          ]
+        },
+        "east": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.1,
+            2.625
+          ]
+        },
+        "south": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.125,
+            2.625
+          ]
+        },
+        "west": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.1,
+            2.625
+          ]
+        },
+        "up": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.125,
+            2.1
+          ]
+        },
+        "down": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.125,
+            2.1
+          ]
+        }
+      }
+    },
+    {
+      "name": "Rotor blade left",
+      "from": [
+        2,
+        6,
+        -2.8
+      ],
+      "to": [
+        7,
+        7,
+        -2
+      ],
+      "rotation": {
+        "origin": [
+          8,
+          6,
+          1
+        ],
+        "axis": "z",
+        "angle": 22.5
+      },
+      "faces": {
+        "north": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.625,
+            2.125
+          ]
+        },
+        "east": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.1,
+            2.125
+          ]
+        },
+        "south": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.625,
+            2.125
+          ]
+        },
+        "west": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.1,
+            2.125
+          ]
+        },
+        "up": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.625,
+            2.1
+          ]
+        },
+        "down": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.625,
+            2.1
+          ]
+        }
+      }
+    },
+    {
+      "name": "Rotor blade right",
+      "from": [
+        9,
+        5,
+        -2.8
+      ],
+      "to": [
+        14,
+        6,
+        -2
+      ],
+      "rotation": {
+        "origin": [
+          8,
+          6,
+          1
+        ],
+        "axis": "z",
+        "angle": 22.5
+      },
+      "faces": {
+        "north": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.625,
+            2.125
+          ]
+        },
+        "east": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.1,
+            2.125
+          ]
+        },
+        "south": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.625,
+            2.125
+          ]
+        },
+        "west": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.1,
+            2.125
+          ]
+        },
+        "up": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.625,
+            2.1
+          ]
+        },
+        "down": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.625,
+            2.1
+          ]
+        }
+      }
+    },
+    {
+      "name": "Rotor surface bottom",
+      "from": [
+        8,
+        1,
+        -2.5
+      ],
+      "to": [
+        9,
+        5,
+        -2
+      ],
+      "rotation": {
+        "origin": [
+          8,
+          6,
+          8
+        ],
+        "axis": "z",
+        "angle": 22.5
+      },
+      "faces": {
+        "north": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.125,
+            2.5
+          ]
+        },
+        "east": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.0625,
+            2.5
+          ]
+        },
+        "south": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.125,
+            2.5
+          ]
+        },
+        "west": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.0625,
+            2.5
+          ]
+        },
+        "up": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.125,
+            2.0625
+          ]
+        },
+        "down": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.125,
+            2.0625
+          ]
+        }
+      }
+    },
+    {
+      "name": "Rotor surface top",
+      "from": [
+        7,
+        7,
+        -2.5
+      ],
+      "to": [
+        8,
+        11,
+        -2
+      ],
+      "rotation": {
+        "origin": [
+          8,
+          6,
+          8
+        ],
+        "axis": "z",
+        "angle": 22.5
+      },
+      "faces": {
+        "north": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.125,
+            2.5
+          ]
+        },
+        "east": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.0625,
+            2.5
+          ]
+        },
+        "south": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.125,
+            2.5
+          ]
+        },
+        "west": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.0625,
+            2.5
+          ]
+        },
+        "up": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.125,
+            2.0625
+          ]
+        },
+        "down": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.125,
+            2.0625
+          ]
+        }
+      }
+    },
+    {
+      "name": "Rotor surface left",
+      "from": [
+        3,
+        5,
+        -2.5
+      ],
+      "to": [
+        7,
+        6,
+        -2
+      ],
+      "rotation": {
+        "origin": [
+          8,
+          6,
+          8
+        ],
+        "axis": "z",
+        "angle": 22.5
+      },
+      "faces": {
+        "north": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.5,
+            2.125
+          ]
+        },
+        "east": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.0625,
+            2.125
+          ]
+        },
+        "south": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.5,
+            2.125
+          ]
+        },
+        "west": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.0625,
+            2.125
+          ]
+        },
+        "up": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.5,
+            2.0625
+          ]
+        },
+        "down": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.5,
+            2.0625
+          ]
+        }
+      }
+    },
+    {
+      "name": "Rotor surface right",
+      "from": [
+        9,
+        6,
+        -2.5
+      ],
+      "to": [
+        13,
+        7,
+        -2
+      ],
+      "rotation": {
+        "origin": [
+          8,
+          6,
+          8
+        ],
+        "axis": "z",
+        "angle": 22.5
+      },
+      "faces": {
+        "north": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.5,
+            2.125
+          ]
+        },
+        "east": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.0625,
+            2.125
+          ]
+        },
+        "south": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.5,
+            2.125
+          ]
+        },
+        "west": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.0625,
+            2.125
+          ]
+        },
+        "up": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.5,
+            2.0625
+          ]
+        },
+        "down": {
+          "texture": "#main",
+          "uv": [
+            8,
+            2,
+            8.5,
+            2.0625
+          ]
+        }
+      }
+    },
+    {
+      "name": "Driveshaft",
+      "from": [
+        7,
+        5,
+        -3
+      ],
+      "to": [
+        9,
+        7,
+        6
+      ],
+      "rotation": {
+        "origin": [
+          8,
+          6,
+          1
+        ],
+        "axis": "z",
+        "angle": 0
+      },
+      "faces": {
+        "north": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.25,
+            10.25
+          ]
+        },
+        "east": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            1.125,
+            10.25
+          ]
+        },
+        "south": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.25,
+            10.25
+          ]
+        },
+        "west": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            1.125,
+            10.25
+          ]
+        },
+        "up": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.25,
+            11.125
+          ]
+        },
+        "down": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.25,
+            11.125
+          ]
+        }
+      }
+    },
+    {
+      "name": "Driveshaft part 2",
+      "from": [
+        7,
+        5,
+        -3
+      ],
+      "to": [
+        9,
+        7,
+        6
+      ],
+      "rotation": {
+        "origin": [
+          8,
+          6,
+          1
+        ],
+        "axis": "z",
+        "angle": 45
+      },
+      "faces": {
+        "north": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.25,
+            10.25
+          ]
+        },
+        "east": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            1.125,
+            10.25
+          ]
+        },
+        "south": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.25,
+            10.25
+          ]
+        },
+        "west": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            1.125,
+            10.25
+          ]
+        },
+        "up": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.25,
+            11.125
+          ]
+        },
+        "down": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.25,
+            11.125
+          ]
+        }
+      }
+    },
+    {
+      "name": "Rotor blade bottom",
+      "from": [
+        7,
+        0,
+        -2.8
+      ],
+      "to": [
+        8,
+        5,
+        -2
+      ],
+      "rotation": {
+        "origin": [
+          8,
+          6,
+          1
+        ],
+        "axis": "z",
+        "angle": 45
+      },
+      "faces": {
+        "north": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.125,
+            10.625
+          ]
+        },
+        "east": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.1,
+            10.625
+          ]
+        },
+        "south": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.125,
+            10.625
+          ]
+        },
+        "west": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.1,
+            10.625
+          ]
+        },
+        "up": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.125,
+            10.1
+          ]
+        },
+        "down": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.125,
+            10.1
+          ]
+        }
+      }
+    },
+    {
+      "name": "Rotor blade top",
+      "from": [
+        8,
+        7,
+        -2.8
+      ],
+      "to": [
+        9,
+        12,
+        -2
+      ],
+      "rotation": {
+        "origin": [
+          8,
+          6,
+          1
+        ],
+        "axis": "z",
+        "angle": 45
+      },
+      "faces": {
+        "north": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.125,
+            10.625
+          ]
+        },
+        "east": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.1,
+            10.625
+          ]
+        },
+        "south": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.125,
+            10.625
+          ]
+        },
+        "west": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.1,
+            10.625
+          ]
+        },
+        "up": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.125,
+            10.1
+          ]
+        },
+        "down": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.125,
+            10.1
+          ]
+        }
+      }
+    },
+    {
+      "name": "Rotor blade left",
+      "from": [
+        2,
+        6,
+        -2.8
+      ],
+      "to": [
+        7,
+        7,
+        -2
+      ],
+      "rotation": {
+        "origin": [
+          8,
+          6,
+          1
+        ],
+        "axis": "z",
+        "angle": 45
+      },
+      "faces": {
+        "north": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.625,
+            10.125
+          ]
+        },
+        "east": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.1,
+            10.125
+          ]
+        },
+        "south": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.625,
+            10.125
+          ]
+        },
+        "west": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.1,
+            10.125
+          ]
+        },
+        "up": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.625,
+            10.1
+          ]
+        },
+        "down": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.625,
+            10.1
+          ]
+        }
+      }
+    },
+    {
+      "name": "Rotor blade right",
+      "from": [
+        9,
+        5,
+        -2.8
+      ],
+      "to": [
+        14,
+        6,
+        -2
+      ],
+      "rotation": {
+        "origin": [
+          8,
+          6,
+          1
+        ],
+        "axis": "z",
+        "angle": 45
+      },
+      "faces": {
+        "north": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.625,
+            10.125
+          ]
+        },
+        "east": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.1,
+            10.125
+          ]
+        },
+        "south": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.625,
+            10.125
+          ]
+        },
+        "west": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.1,
+            10.125
+          ]
+        },
+        "up": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.625,
+            10.1
+          ]
+        },
+        "down": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.625,
+            10.1
+          ]
+        }
+      }
+    },
+    {
+      "name": "Rotor surface bottom",
+      "from": [
+        8,
+        1,
+        -2.5
+      ],
+      "to": [
+        9,
+        5,
+        -2
+      ],
+      "rotation": {
+        "origin": [
+          8,
+          6,
+          8
+        ],
+        "axis": "z",
+        "angle": 45
+      },
+      "faces": {
+        "north": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.125,
+            10.5
+          ]
+        },
+        "east": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.0625,
+            10.5
+          ]
+        },
+        "south": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.125,
+            10.5
+          ]
+        },
+        "west": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.0625,
+            10.5
+          ]
+        },
+        "up": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.125,
+            10.0625
+          ]
+        },
+        "down": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.125,
+            10.0625
+          ]
+        }
+      }
+    },
+    {
+      "name": "Rotor surface top",
+      "from": [
+        7,
+        7,
+        -2.5
+      ],
+      "to": [
+        8,
+        11,
+        -2
+      ],
+      "rotation": {
+        "origin": [
+          8,
+          6,
+          8
+        ],
+        "axis": "z",
+        "angle": 45
+      },
+      "faces": {
+        "north": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.125,
+            10.5
+          ]
+        },
+        "east": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.0625,
+            10.5
+          ]
+        },
+        "south": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.125,
+            10.5
+          ]
+        },
+        "west": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.0625,
+            10.5
+          ]
+        },
+        "up": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.125,
+            10.0625
+          ]
+        },
+        "down": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.125,
+            10.0625
+          ]
+        }
+      }
+    },
+    {
+      "name": "Rotor surface left",
+      "from": [
+        3,
+        5,
+        -2.5
+      ],
+      "to": [
+        7,
+        6,
+        -2
+      ],
+      "rotation": {
+        "origin": [
+          8,
+          6,
+          8
+        ],
+        "axis": "z",
+        "angle": 45
+      },
+      "faces": {
+        "north": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.5,
+            10.125
+          ]
+        },
+        "east": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.0625,
+            10.125
+          ]
+        },
+        "south": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.5,
+            10.125
+          ]
+        },
+        "west": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.0625,
+            10.125
+          ]
+        },
+        "up": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.5,
+            10.0625
+          ]
+        },
+        "down": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.5,
+            10.0625
+          ]
+        }
+      }
+    },
+    {
+      "name": "Rotor surface right",
+      "from": [
+        9,
+        6,
+        -2.5
+      ],
+      "to": [
+        13,
+        7,
+        -2
+      ],
+      "rotation": {
+        "origin": [
+          8,
+          6,
+          8
+        ],
+        "axis": "z",
+        "angle": 45
+      },
+      "faces": {
+        "north": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.5,
+            10.125
+          ]
+        },
+        "east": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.0625,
+            10.125
+          ]
+        },
+        "south": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.5,
+            10.125
+          ]
+        },
+        "west": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.0625,
+            10.125
+          ]
+        },
+        "up": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.5,
+            10.0625
+          ]
+        },
+        "down": {
+          "texture": "#main",
+          "uv": [
+            0,
+            10,
+            0.5,
+            10.0625
+          ]
+        }
+      }
+    },
+    {
+      "name": "Driveshaft",
+      "from": [
+        7,
+        5,
+        -3
+      ],
+      "to": [
+        9,
+        7,
+        6
+      ],
+      "rotation": {
+        "origin": [
+          8,
+          6,
+          1
+        ],
+        "axis": "z",
+        "angle": -22.5
+      },
+      "faces": {
+        "north": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.25,
+            10.25
+          ]
+        },
+        "east": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            9.125,
+            10.25
+          ]
+        },
+        "south": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.25,
+            10.25
+          ]
+        },
+        "west": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            9.125,
+            10.25
+          ]
+        },
+        "up": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.25,
+            11.125
+          ]
+        },
+        "down": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.25,
+            11.125
+          ]
+        }
+      }
+    },
+    {
+      "name": "Driveshaft part 2",
+      "from": [
+        7,
+        5,
+        -3
+      ],
+      "to": [
+        9,
+        7,
+        6
+      ],
+      "rotation": {
+        "origin": [
+          8,
+          6,
+          1
+        ],
+        "axis": "z",
+        "angle": 22.5
+      },
+      "faces": {
+        "north": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.25,
+            10.25
+          ]
+        },
+        "east": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            9.125,
+            10.25
+          ]
+        },
+        "south": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.25,
+            10.25
+          ]
+        },
+        "west": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            9.125,
+            10.25
+          ]
+        },
+        "up": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.25,
+            11.125
+          ]
+        },
+        "down": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.25,
+            11.125
+          ]
+        }
+      }
+    },
+    {
+      "name": "Rotor blade bottom",
+      "from": [
+        7,
+        0,
+        -2.8
+      ],
+      "to": [
+        8,
+        5,
+        -2
+      ],
+      "rotation": {
+        "origin": [
+          8,
+          6,
+          1
+        ],
+        "axis": "z",
+        "angle": -22.5
+      },
+      "faces": {
+        "north": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.125,
+            10.625
+          ]
+        },
+        "east": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.1,
+            10.625
+          ]
+        },
+        "south": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.125,
+            10.625
+          ]
+        },
+        "west": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.1,
+            10.625
+          ]
+        },
+        "up": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.125,
+            10.1
+          ]
+        },
+        "down": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.125,
+            10.1
+          ]
+        }
+      }
+    },
+    {
+      "name": "Rotor blade top",
+      "from": [
+        8,
+        7,
+        -2.8
+      ],
+      "to": [
+        9,
+        12,
+        -2
+      ],
+      "rotation": {
+        "origin": [
+          8,
+          6,
+          1
+        ],
+        "axis": "z",
+        "angle": -22.5
+      },
+      "faces": {
+        "north": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.125,
+            10.625
+          ]
+        },
+        "east": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.1,
+            10.625
+          ]
+        },
+        "south": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.125,
+            10.625
+          ]
+        },
+        "west": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.1,
+            10.625
+          ]
+        },
+        "up": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.125,
+            10.1
+          ]
+        },
+        "down": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.125,
+            10.1
+          ]
+        }
+      }
+    },
+    {
+      "name": "Rotor blade left",
+      "from": [
+        2,
+        6,
+        -2.8
+      ],
+      "to": [
+        7,
+        7,
+        -2
+      ],
+      "rotation": {
+        "origin": [
+          8,
+          6,
+          1
+        ],
+        "axis": "z",
+        "angle": -22.5
+      },
+      "faces": {
+        "north": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.625,
+            10.125
+          ]
+        },
+        "east": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.1,
+            10.125
+          ]
+        },
+        "south": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.625,
+            10.125
+          ]
+        },
+        "west": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.1,
+            10.125
+          ]
+        },
+        "up": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.625,
+            10.1
+          ]
+        },
+        "down": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.625,
+            10.1
+          ]
+        }
+      }
+    },
+    {
+      "name": "Rotor blade right",
+      "from": [
+        9,
+        5,
+        -2.8
+      ],
+      "to": [
+        14,
+        6,
+        -2
+      ],
+      "rotation": {
+        "origin": [
+          8,
+          6,
+          1
+        ],
+        "axis": "z",
+        "angle": -22.5
+      },
+      "faces": {
+        "north": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.625,
+            10.125
+          ]
+        },
+        "east": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.1,
+            10.125
+          ]
+        },
+        "south": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.625,
+            10.125
+          ]
+        },
+        "west": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.1,
+            10.125
+          ]
+        },
+        "up": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.625,
+            10.1
+          ]
+        },
+        "down": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.625,
+            10.1
+          ]
+        }
+      }
+    },
+    {
+      "name": "Rotor surface bottom",
+      "from": [
+        8,
+        1,
+        -2.5
+      ],
+      "to": [
+        9,
+        5,
+        -2
+      ],
+      "rotation": {
+        "origin": [
+          8,
+          6,
+          8
+        ],
+        "axis": "z",
+        "angle": -22.5
+      },
+      "faces": {
+        "north": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.125,
+            10.5
+          ]
+        },
+        "east": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.0625,
+            10.5
+          ]
+        },
+        "south": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.125,
+            10.5
+          ]
+        },
+        "west": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.0625,
+            10.5
+          ]
+        },
+        "up": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.125,
+            10.0625
+          ]
+        },
+        "down": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.125,
+            10.0625
+          ]
+        }
+      }
+    },
+    {
+      "name": "Rotor surface top",
+      "from": [
+        7,
+        7,
+        -2.5
+      ],
+      "to": [
+        8,
+        11,
+        -2
+      ],
+      "rotation": {
+        "origin": [
+          8,
+          6,
+          8
+        ],
+        "axis": "z",
+        "angle": -22.5
+      },
+      "faces": {
+        "north": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.125,
+            10.5
+          ]
+        },
+        "east": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.0625,
+            10.5
+          ]
+        },
+        "south": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.125,
+            10.5
+          ]
+        },
+        "west": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.0625,
+            10.5
+          ]
+        },
+        "up": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.125,
+            10.0625
+          ]
+        },
+        "down": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.125,
+            10.0625
+          ]
+        }
+      }
+    },
+    {
+      "name": "Rotor surface left",
+      "from": [
+        3,
+        5,
+        -2.5
+      ],
+      "to": [
+        7,
+        6,
+        -2
+      ],
+      "rotation": {
+        "origin": [
+          8,
+          6,
+          8
+        ],
+        "axis": "z",
+        "angle": -22.5
+      },
+      "faces": {
+        "north": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.5,
+            10.125
+          ]
+        },
+        "east": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.0625,
+            10.125
+          ]
+        },
+        "south": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.5,
+            10.125
+          ]
+        },
+        "west": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.0625,
+            10.125
+          ]
+        },
+        "up": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.5,
+            10.0625
+          ]
+        },
+        "down": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.5,
+            10.0625
+          ]
+        }
+      }
+    },
+    {
+      "name": "Rotor surface right",
+      "from": [
+        9,
+        6,
+        -2.5
+      ],
+      "to": [
+        13,
+        7,
+        -2
+      ],
+      "rotation": {
+        "origin": [
+          8,
+          6,
+          8
+        ],
+        "axis": "z",
+        "angle": -22.5
+      },
+      "faces": {
+        "north": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.5,
+            10.125
+          ]
+        },
+        "east": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.0625,
+            10.125
+          ]
+        },
+        "south": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.5,
+            10.125
+          ]
+        },
+        "west": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.0625,
+            10.125
+          ]
+        },
+        "up": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.5,
+            10.0625
+          ]
+        },
+        "down": {
+          "texture": "#main",
+          "uv": [
+            8,
+            10,
+            8.5,
+            10.0625
+          ]
+        }
+      }
+    }
+  ]
+}

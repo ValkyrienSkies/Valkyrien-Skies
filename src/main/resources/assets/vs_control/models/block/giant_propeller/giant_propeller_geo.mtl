@@ -1,0 +1,56 @@
+newmtl propellersail_mtlSG
+illum 4
+Kd 1.00 1.00 1.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd vs_control:blocks/propeller_sail
+Ni 1.00
+newmtl propellerwood01_mtlSG
+illum 4
+Kd 1.00 1.00 1.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd vs_control:blocks/propeller_wood_01
+Ni 1.00
+newmtl propellercable_mtlSG
+illum 4
+Kd 1.00 1.00 1.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd vs_control:blocks/propeller_cable
+Ni 1.00
+newmtl propellermetal_mtlSG
+illum 4
+Kd 1.00 1.00 1.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd vs_control:blocks/propeller_metal
+Ni 1.00
+newmtl propellerwood02_mtlSG
+illum 4
+Kd 1.00 1.00 1.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd vs_control:blocks/propeller_wood_02
+Ni 1.00
+newmtl propellerwood03_mtlSG
+illum 4
+Kd 1.00 1.00 1.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd vs_control:blocks/propeller_wood_03
+Ni 1.00
+newmtl propelleraxle_mtlSG
+illum 4
+Kd 1.00 1.00 1.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd vs_control:blocks/propeller_rusty_shaft
+Ni 1.00
+newmtl propellerbearing_mtlSG
+illum 4
+Kd 1.00 1.00 1.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd vs_control:blocks/propeller_bearing
+Ni 1.00

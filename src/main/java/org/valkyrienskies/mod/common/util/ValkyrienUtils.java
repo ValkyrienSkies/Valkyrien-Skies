@@ -103,7 +103,7 @@ public class ValkyrienUtils {
     }
 
     /**
-     * This method basically grabs the IVWWorldDataCapability from the world and then returns the
+     * This method basically grabs the IVSWorldDataCapability from the world and then returns the
      *
      * @param world The world we are getting the QueryableShipData from.
      * @return The QueryableShipData corresponding to the given world.
@@ -116,7 +116,7 @@ public class ValkyrienUtils {
             // load events, so I don't feel bad crashing the game here. Although we could also get
             // away with just adding the capability to world instead of crashing.
             throw new IllegalStateException(
-                "World " + world + " doesn't have an IVWWorldDataCapability. This is wrong!");
+                "World " + world + " doesn't have an IVSWorldDataCapability. This is wrong!");
         }
         return worldData.getQueryableShipData();
     }

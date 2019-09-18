@@ -26,7 +26,7 @@ public class GiantPropellerMultiblockSchematic implements IMultiblockSchematic {
 
     @Override
     public void initializeMultiblockSchematic(String schematicID) {
-        Block enginePart = ValkyrienSkiesControl.INSTANCE.vwControlBlocks.giantPropellerPart;
+        Block enginePart = ValkyrienSkiesControl.INSTANCE.vsControlBlocks.giantPropellerPart;
 
         Vec3i perpAxisOne = null;
         Vec3i perpAxisTwo = null;

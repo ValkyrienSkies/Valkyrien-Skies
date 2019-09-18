@@ -21,7 +21,7 @@ import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 public class GuiPhysicsInfuser extends GuiContainer {
 
     private static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation(
-        ValkyrienSkiesMod.MOD_ID, "textures/gui/container/physicsinfuserguinocoreson.png");
+        ValkyrienSkiesMod.MOD_ID, "textures/gui/container/physics_infuser_gui.png");
     private final TileEntityPhysicsInfuser tileEntity;
 
     public GuiPhysicsInfuser(EntityPlayer player, TileEntityPhysicsInfuser tileEntity) {

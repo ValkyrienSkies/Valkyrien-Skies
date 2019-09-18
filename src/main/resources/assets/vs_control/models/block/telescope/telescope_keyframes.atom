@@ -1,6 +1,6 @@
 atomVersion 1.0;
 mayaVersion 2018;
-mayaSceneFile D:/Drakes Documents/Projects/VW/MODELS/FINAL MODELS/vwmodels/vwmodels.ma;
+mayaSceneFile D:/Drakes Documents/Projects/VS/MODELS/FINAL MODELS/vsmodels/vsmodels.ma;
 timeUnit film;
 linearUnit cm;
 angularUnit deg;

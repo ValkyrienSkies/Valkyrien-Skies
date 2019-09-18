@@ -29,8 +29,8 @@ public class BlockGiantPropellerPart extends Block implements ITileEntityProvide
     public void addInformation(ItemStack stack, @Nullable World player,
         List<String> itemInformation,
         ITooltipFlag advanced) {
-        itemInformation
-            .add(TextFormatting.BLUE + I18n.format("tooltip.vs_control.giant_propeller_part"));
+        itemInformation.add(TextFormatting.BLUE + I18n.format("tooltip.vs_control.giant_propeller_part"));
+				itemInformation.add(TextFormatting.BLUE + "" + TextFormatting.ITALIC + I18n.format("tooltip.vs_control.wrench_usage"));
     }
 
     @Nullable

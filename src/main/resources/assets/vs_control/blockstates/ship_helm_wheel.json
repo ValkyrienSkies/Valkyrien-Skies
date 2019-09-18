@@ -1,0 +1,119 @@
+{
+  "forge_marker": 1,
+  "variants": {
+    "default": {
+      "model": "vs_control:ship_helm_wheel.obj",
+      "custom": {
+        "flip-v": true
+      }
+    },
+    "normal": {
+      "model": "vs_control:ship_helm_wheel.obj",
+      "custom": {
+        "flip-v": true
+      }
+    },
+    "modelid=0": {
+      "model": "vs_control:ship_helm_wheel.obj",
+      "custom": {
+        "flip-v": true
+      }
+    },
+    "modelid=1": {
+      "model": "vs_control:ship_helm_dial.obj",
+      "custom": {
+        "flip-v": true
+      }
+    },
+    "modelid=2": {
+      "model": "vs_control:ship_helm_dial_glass.obj",
+      "custom": {
+        "flip-v": true
+      }
+    },
+    "modelid=3": {
+      "model": "vs_control:ship_helm_base.obj",
+      "custom": {
+        "flip-v": true
+      }
+    },
+    "modelid=4": {
+      "model": "vs_control:chadburn_base.obj",
+      "custom": {
+        "flip-v": true
+      }
+    },
+    "modelid=5": {
+      "model": "vs_control:chadburn_right_handle.obj",
+      "custom": {
+        "flip-v": true
+      }
+    },
+    "modelid=6": {
+      "model": "vs_control:chadburn_left_handle.obj",
+      "custom": {
+        "flip-v": true
+      }
+    },
+    "modelid=7": {
+      "model": "vs_control:chadburn_dial.obj",
+      "custom": {
+        "flip-v": true
+      }
+    },
+    "modelid=8": {
+      "model": "vs_control:chadburn_glass.obj",
+      "custom": {
+        "flip-v": true
+      }
+    },
+    "modelid=9": {
+      "model": "vs_control:ultimate_engine.obj",
+      "custom": {
+        "flip-v": true
+      }
+    },
+    "modelid=10": {
+      "model": "vs_control:redstone_engine.obj",
+      "custom": {
+        "flip-v": true
+      }
+    },
+    "modelid=11": {
+      "model": "vs_control:elite_engine.obj",
+      "custom": {
+        "flip-v": true
+      }
+    },
+    "modelid=12": {
+      "model": "vs_control:basic_engine.obj",
+      "custom": {
+        "flip-v": true
+      }
+    },
+    "modelid=13": {
+      "model": "vs_control:advanced_engine.obj",
+      "custom": {
+        "flip-v": true
+      }
+    },
+    "modelid=14": {
+      "model": "vs_control:giant_propeller.obj",
+      "custom": {
+        "flip-v": true
+      }
+    },
+    "modelid=15": {
+      "model": "vs_control:ship_helm_wheel.obj",
+      "custom": {
+        "flip-v": true
+      }
+    },
+    "inventory": {
+      "model": "vs_control:ship_helm_wheel.obj",
+      "custom": {
+        "flip-v": true
+      }
+    }
+  }
+}

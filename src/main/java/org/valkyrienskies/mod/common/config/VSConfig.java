@@ -1,3 +1,19 @@
+/*
+ * Adapted from the Wizardry License
+ *
+ * Copyright (c) 2015-2019 the Valkyrien Skies team
+ *
+ * Permission is hereby granted to any persons and/or organizations using this software to copy, modify, merge, publish, and distribute it.
+ * Said persons and/or organizations are not allowed to use the software or any derivatives of the work for commercial use or any other means to generate income unless it is to be used as a part of a larger project (IE: "modpacks"), nor are they allowed to claim this software as their own.
+ *
+ * The persons and/or organizations are also disallowed from sub-licensing and/or trademarking this software without explicit permission from the Valkyrien Skies team.
+ *
+ * Any persons and/or organizations using this software must disclose their source code and have it publicly available, include this license, provide sufficient credit to the original authors of the project (IE: The Valkyrien Skies team), as well as provide a link to the original project.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ */
+
 package org.valkyrienskies.mod.common.config;
 
 import net.minecraftforge.common.config.Config;
@@ -34,7 +50,7 @@ public class VSConfig extends VSConfigTemplate {
 
     public static boolean doPhysicsBlocks = true;
 
-    public static boolean doEthereumLifting = true;
+    public static boolean doValkyriumLifting = true;
 
     public static boolean doAirshipRotation = true;
 
@@ -67,6 +83,14 @@ public class VSConfig extends VSConfigTemplate {
     @Name("Valkyrium Ore Anti-Gravity force")
     @Comment("1 is the same as a crystal, default is 4. Set to 0 to disable.")
     public static double valkyriumOreForce = 4D;
+
+    @Name("Network Relay connections limit")
+    @Comment("How many components or relays can be connected, default is 8.")
+    public static int networkRelayLimit = 8;
+
+    @Name("Relay Wire Length")
+    @Comment("How long, in metres, a single relay wire can extend. Default is 8m.")
+    public static double relayWireLength = 8D;
 
     @Name("Engine Power")
     public static final EnginePower ENGINE_POWER = new EnginePower();

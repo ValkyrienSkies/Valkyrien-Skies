@@ -51,16 +51,16 @@ public class RudderAxleMultiblockSchematic implements IMultiblockSchematic {
     @Override
     public void applyMultiblockCreation(World world, BlockPos tilePos, BlockPos relativePos) {
         TileEntity tileEntity = world.getTileEntity(tilePos);
-        if (!(tileEntity instanceof TileEntityRudderAxlePart)) {
+        if (!(tileEntity instanceof TileEntityRudderPart)) {
             throw new IllegalStateException();
         }
-        TileEntityRudderAxlePart enginePart = (TileEntityRudderAxlePart) tileEntity;
+        TileEntityRudderPart enginePart = (TileEntityRudderPart) tileEntity;
         enginePart.assembleMultiblock(this, relativePos);
     }
 
     @Override
     public List<IMultiblockSchematic> generateAllVariants() {
-        Block rudderAxelBlock = ValkyrienSkiesControl.INSTANCE.vwControlBlocks.rudderAxelPart;
+        Block rudderAxleBlock = ValkyrienSkiesControl.INSTANCE.vsControlBlocks.rudderPart;
         // Order matters here
         List<IMultiblockSchematic> variants = new ArrayList<IMultiblockSchematic>();
         for (int length = MAX_AXLE_LENGTH; length >= MIN_AXLE_LENGTH; length--) {
@@ -71,8 +71,8 @@ public class RudderAxleMultiblockSchematic implements IMultiblockSchematic {
                         BlockPos originPos = new BlockPos(0, 0, 0);
                         RudderAxleMultiblockSchematic schematicVariant = new RudderAxleMultiblockSchematic();
                         schematicVariant.initializeMultiblockSchematic(
-                            getSchematicPrefix() + "axel_axis_direction:"
-                                + possibleAxleAxisDirection.toString() + ":axel_facing:"
+                            getSchematicPrefix() + "axle_axis_direction:"
+                                + possibleAxleAxisDirection.toString() + ":axle_facing:"
                                 + possibleAxleFacingDirection.toString() + ":length:" + length);
                         schematicVariant.axleAxis = possibleAxleAxisDirection;
                         schematicVariant.axleFacing = possibleAxleFacingDirection;
@@ -81,7 +81,7 @@ public class RudderAxleMultiblockSchematic implements IMultiblockSchematic {
                             schematicVariant.structureRelativeToCenter
                                 .add(new BlockPosBlockPair(
                                     BlockPos.ORIGIN.offset(possibleAxleAxisDirection, i),
-                                    rudderAxelBlock));
+                                    rudderAxleBlock));
                         }
                         variants.add(schematicVariant);
                     }

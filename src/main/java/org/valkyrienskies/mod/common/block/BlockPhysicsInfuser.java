@@ -1,14 +1,14 @@
 /*
  * Adapted from the Wizardry License
  *
- * Copyright (c) 2015-2018 the Valkyrien Warfare team
+ * Copyright (c) 2015-2019 the Valkyrien Skies team
  *
  * Permission is hereby granted to any persons and/or organizations using this software to copy, modify, merge, publish, and distribute it.
  * Said persons and/or organizations are not allowed to use the software or any derivatives of the work for commercial use or any other means to generate income unless it is to be used as a part of a larger project (IE: "modpacks"), nor are they allowed to claim this software as their own.
  *
- * The persons and/or organizations are also disallowed from sub-licensing and/or trademarking this software without explicit permission from the Valkyrien Warfare team.
+ * The persons and/or organizations are also disallowed from sub-licensing and/or trademarking this software without explicit permission from the Valkyrien Skies team.
  *
- * Any persons and/or organizations using this software must disclose their source code and have it publicly available, include this license, provide sufficient credit to the original authors of the project (IE: The Valkyrien Warfare team), as well as provide a link to the original project.
+ * Any persons and/or organizations using this software must disclose their source code and have it publicly available, include this license, provide sufficient credit to the original authors of the project (IE: The Valkyrien Skies team), as well as provide a link to the original project.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
@@ -25,6 +25,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -40,14 +41,14 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
-import org.valkyrienskies.mod.client.gui.VW_Gui_Enum;
+import org.valkyrienskies.mod.client.gui.VS_Gui_Enum;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.physmanagement.relocation.DetectorManager;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class BlockPhysicsInfuser extends BlockVWDirectional implements ITileEntityProvider {
+public class BlockPhysicsInfuser extends BlockVSDirectional implements ITileEntityProvider {
 
     public static final PropertyBool INFUSER_LIGHT_ON = PropertyBool.create("infuser_light_on");
 
@@ -126,9 +127,7 @@ public class BlockPhysicsInfuser extends BlockVWDirectional implements ITileEnti
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip,
         ITooltipFlag flagIn) {
-        tooltip.add(TextFormatting.BLUE
-            + "Turns any blocks attached to this one into a brand new Ship, " +
-            "just be careful not to infuse your entire world");
+        tooltip.add(TextFormatting.BLUE + I18n.format("tooltip.valkyrienskies.physics_infuser"));
     }
 
     @Override
@@ -166,7 +165,7 @@ public class BlockPhysicsInfuser extends BlockVWDirectional implements ITileEnti
         EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
         if (!worldIn.isRemote) {
             playerIn
-                .openGui(ValkyrienSkiesMod.INSTANCE, VW_Gui_Enum.PHYSICS_INFUSER.ordinal(), worldIn,
+                .openGui(ValkyrienSkiesMod.INSTANCE, VS_Gui_Enum.PHYSICS_INFUSER.ordinal(), worldIn,
                     pos.getX(), pos.getY(), pos.getZ());
         }
         return true;

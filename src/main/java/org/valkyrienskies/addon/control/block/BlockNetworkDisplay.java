@@ -20,7 +20,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import org.valkyrienskies.addon.control.nodenetwork.IVWNode;
+import org.valkyrienskies.addon.control.nodenetwork.IVSNode;
 import org.valkyrienskies.addon.control.tileentity.TileEntityNetworkDisplay;
 
 public class BlockNetworkDisplay extends Block implements ITileEntityProvider {
@@ -45,10 +45,10 @@ public class BlockNetworkDisplay extends Block implements ITileEntityProvider {
             TileEntity tile = worldIn.getTileEntity(pos);
             if (tile instanceof TileEntityNetworkDisplay) {
                 TileEntityNetworkDisplay displayTile = (TileEntityNetworkDisplay) tile;
-                Iterable<IVWNode> networkedObjects = displayTile.getNetworkedConnections();
-                List<IVWNode> connectedNodes = new ArrayList<IVWNode>();
+                Iterable<IVSNode> networkedObjects = displayTile.getNetworkedConnections();
+                List<IVSNode> connectedNodes = new ArrayList<IVSNode>();
                 Map<String, Integer> networkedClassTypeCounts = new HashMap<String, Integer>();
-                for (IVWNode node : networkedObjects) {
+                for (IVSNode node : networkedObjects) {
                     connectedNodes.add(node);
                     Class nodeClass = node.getParentTile().getClass();
                     String tileClassName = nodeClass.getSimpleName();

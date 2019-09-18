@@ -133,13 +133,13 @@ public class EntityMountable extends Entity implements IEntityAdditionalSpawnDat
 
     @Override
     protected void readEntityFromNBT(NBTTagCompound compound) {
-        mountPos = new Vec3d(compound.getDouble("vw_mount_pos_x"),
-            compound.getDouble("vw_mount_pos_y"), compound.getDouble("vw_mount_pos_z"));
-        mountPosSpace = CoordinateSpaceType.values()[compound.getInteger("vw_coord_type")];
+        mountPos = new Vec3d(compound.getDouble("vs_mount_pos_x"),
+            compound.getDouble("vs_mount_pos_y"), compound.getDouble("vs_mount_pos_z"));
+        mountPosSpace = CoordinateSpaceType.values()[compound.getInteger("vs_coord_type")];
 
-        if (compound.getBoolean("vw_ref_pos_present")) {
-            referencePos = new BlockPos(compound.getInteger("vw_ref_pos_x"),
-                compound.getInteger("vw_ref_pos_y"), compound.getInteger("vw_ref_pos_z"));
+        if (compound.getBoolean("vs_ref_pos_present")) {
+            referencePos = new BlockPos(compound.getInteger("vs_ref_pos_x"),
+                compound.getInteger("vs_ref_pos_y"), compound.getInteger("vs_ref_pos_z"));
         } else {
             referencePos = null;
         }
@@ -149,17 +149,17 @@ public class EntityMountable extends Entity implements IEntityAdditionalSpawnDat
     protected void writeEntityToNBT(NBTTagCompound compound) {
         // Try to prevent data race
         Vec3d mountPosLocal = mountPos;
-        compound.setDouble("vw_mount_pos_x", mountPosLocal.x);
-        compound.setDouble("vw_mount_pos_y", mountPosLocal.y);
-        compound.setDouble("vw_mount_pos_z", mountPosLocal.z);
+        compound.setDouble("vs_mount_pos_x", mountPosLocal.x);
+        compound.setDouble("vs_mount_pos_y", mountPosLocal.y);
+        compound.setDouble("vs_mount_pos_z", mountPosLocal.z);
 
-        compound.setInteger("vw_coord_type", mountPosSpace.ordinal());
+        compound.setInteger("vs_coord_type", mountPosSpace.ordinal());
 
-        compound.setBoolean("vw_ref_pos_present", referencePos != null);
+        compound.setBoolean("vs_ref_pos_present", referencePos != null);
         if (referencePos != null) {
-            compound.setInteger("vw_ref_pos_x", referencePos.getX());
-            compound.setInteger("vw_ref_pos_y", referencePos.getY());
-            compound.setInteger("vw_ref_pos_z", referencePos.getZ());
+            compound.setInteger("vs_ref_pos_x", referencePos.getX());
+            compound.setInteger("vs_ref_pos_y", referencePos.getY());
+            compound.setInteger("vs_ref_pos_z", referencePos.getZ());
         }
     }
 

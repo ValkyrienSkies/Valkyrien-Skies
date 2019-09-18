@@ -54,7 +54,7 @@ public class ShipChunkAllocator {
             nextChunkZ = compound.getInteger("nextChunkZ");
         } else {
             System.err.println(
-                "Either you created a new world, or Valkyrien Warfare just lost track of every single ship chunk! If its case #2 then good luck dude your ships are screwed.");
+                "Either you created a new world, or Valkyrien Skies just lost track of every single ship chunk! If its case #2 then good luck dude your ships are screwed.");
             nextChunkX = SHIP_CHUNK_X_START;
             nextChunkZ = SHIP_CHUNK_Z_START;
         }

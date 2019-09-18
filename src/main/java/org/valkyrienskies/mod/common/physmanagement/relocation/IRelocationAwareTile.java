@@ -8,7 +8,7 @@ import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 /**
  * Allows a TileEntity to intelligently copy themselves when being moved; for example, during ship
  * assembly and disassembly. If the TileEntity being copied doesn't implement this then it will be
- * copied using nbt. TODO: Move this to VW API.
+ * copied using nbt. TODO: Move this to VS API.
  */
 public interface IRelocationAwareTile {
 

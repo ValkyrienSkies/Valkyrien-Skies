@@ -45,7 +45,7 @@
   {
     "modid": "vs_world",
     "name": "Valkyrien Skies World",
-    "description": "World Generation for Valkyrien Warfare",
+    "description": "World Generation for Valkyrien Skies",
     "version": "1.0",
     "logoFile": "",
     "parent": "valkyrienskies",
@@ -56,8 +56,8 @@
   },
   {
     "modid": "vs_oc",
-    "name": "Valkyrien Warfare OpenComputers",
-    "description": "OpenComputers support for Valkyrien Warfare",
+    "name": "Valkyrien Skies OpenComputers",
+    "description": "OpenComputers support for Valkyrien Skies",
     "version": "1.0",
     "logoFile": "",
     "parent": "valkyrienskies",

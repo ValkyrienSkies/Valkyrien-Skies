@@ -1,14 +1,14 @@
 /*
  * Adapted from the Wizardry License
  *
- * Copyright (c) 2015-2018 the Valkyrien Warfare team
+ * Copyright (c) 2015-2019 the Valkyrien Skies team
  *
  * Permission is hereby granted to any persons and/or organizations using this software to copy, modify, merge, publish, and distribute it.
  * Said persons and/or organizations are not allowed to use the software or any derivatives of the work for commercial use or any other means to generate income unless it is to be used as a part of a larger project (IE: "modpacks"), nor are they allowed to claim this software as their own.
  *
- * The persons and/or organizations are also disallowed from sub-licensing and/or trademarking this software without explicit permission from the Valkyrien Warfare team.
+ * The persons and/or organizations are also disallowed from sub-licensing and/or trademarking this software without explicit permission from the Valkyrien Skies team.
  *
- * Any persons and/or organizations using this software must disclose their source code and have it publicly available, include this license, provide sufficient credit to the original authors of the project (IE: The Valkyrien Warfare team), as well as provide a link to the original project.
+ * Any persons and/or organizations using this software must disclose their source code and have it publicly available, include this license, provide sufficient credit to the original authors of the project (IE: The Valkyrien Skies team), as well as provide a link to the original project.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
@@ -28,28 +28,28 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
 import org.valkyrienskies.addon.control.ControlEventsClient;
 import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
-import org.valkyrienskies.addon.control.block.multiblocks.TileEntityEthereumCompressorPart;
-import org.valkyrienskies.addon.control.block.multiblocks.TileEntityEthereumEnginePart;
 import org.valkyrienskies.addon.control.block.multiblocks.TileEntityGiantPropellerPart;
-import org.valkyrienskies.addon.control.block.multiblocks.TileEntityRudderAxlePart;
-import org.valkyrienskies.addon.control.block.torque.TileEntityRotationTrainAxle;
+import org.valkyrienskies.addon.control.block.multiblocks.TileEntityRudderPart;
+import org.valkyrienskies.addon.control.block.multiblocks.TileEntityValkyriumCompressorPart;
+import org.valkyrienskies.addon.control.block.multiblocks.TileEntityValkyriumEnginePart;
+import org.valkyrienskies.addon.control.block.torque.TileEntityRotationAxle;
 import org.valkyrienskies.addon.control.renderer.BasicNodeTileEntityRenderer;
-import org.valkyrienskies.addon.control.renderer.EthereumCompressorPartTileEntityRenderer;
-import org.valkyrienskies.addon.control.renderer.EthereumEnginePartTileEntityRenderer;
 import org.valkyrienskies.addon.control.renderer.GearboxTileEntityRenderer;
 import org.valkyrienskies.addon.control.renderer.GiantPropellerPartTileEntityRenderer;
-import org.valkyrienskies.addon.control.renderer.LiftControlTileEntityRenderer;
+import org.valkyrienskies.addon.control.renderer.LiftLeverTileEntityRenderer;
 import org.valkyrienskies.addon.control.renderer.PropellerEngineTileEntityRenderer;
-import org.valkyrienskies.addon.control.renderer.RotationTrainAxleTileEntityRenderer;
-import org.valkyrienskies.addon.control.renderer.RudderAxlePartTileEntityRenderer;
+import org.valkyrienskies.addon.control.renderer.RotationAxleTileEntityRenderer;
+import org.valkyrienskies.addon.control.renderer.RudderPartTileEntityRenderer;
 import org.valkyrienskies.addon.control.renderer.ShipHelmTileEntityRenderer;
-import org.valkyrienskies.addon.control.renderer.ShipTelegraphTileEntityRenderer;
+import org.valkyrienskies.addon.control.renderer.SpeedTelegraphTileEntityRenderer;
+import org.valkyrienskies.addon.control.renderer.ValkyriumCompressorPartTileEntityRenderer;
+import org.valkyrienskies.addon.control.renderer.ValkyriumEnginePartTileEntityRenderer;
 import org.valkyrienskies.addon.control.tileentity.TileEntityGearbox;
-import org.valkyrienskies.addon.control.tileentity.TileEntityLiftControl;
-import org.valkyrienskies.addon.control.tileentity.TileEntityNodeRelay;
+import org.valkyrienskies.addon.control.tileentity.TileEntityLiftLever;
+import org.valkyrienskies.addon.control.tileentity.TileEntityNetworkRelay;
 import org.valkyrienskies.addon.control.tileentity.TileEntityPropellerEngine;
 import org.valkyrienskies.addon.control.tileentity.TileEntityShipHelm;
-import org.valkyrienskies.addon.control.tileentity.TileEntityShipTelegraph;
+import org.valkyrienskies.addon.control.tileentity.TileEntitySpeedTelegraph;
 import org.valkyrienskies.mod.client.render.GibsAnimationRegistry;
 import org.valkyrienskies.mod.client.render.GibsModelRegistry;
 
@@ -76,34 +76,34 @@ public class ClientProxyControl extends CommonProxyControl {
     }
 
     private static void registerBlockItemModels() {
-        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vwControlBlocks.basicEngine);
-        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vwControlBlocks.advancedEngine);
-        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vwControlBlocks.eliteEngine);
-        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vwControlBlocks.ultimateEngine);
-        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vwControlBlocks.redstoneEngine);
+        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vsControlBlocks.basicEngine);
+        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vsControlBlocks.advancedEngine);
+        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vsControlBlocks.eliteEngine);
+        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vsControlBlocks.ultimateEngine);
+        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vsControlBlocks.redstoneEngine);
 
-        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vwControlBlocks.pilotsChair);
-        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vwControlBlocks.passengerChair);
-        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vwControlBlocks.shipHelm);
+        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vsControlBlocks.captainsChair);
+        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vsControlBlocks.passengerChair);
+        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vsControlBlocks.shipHelm);
 
-        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vwControlBlocks.shipTelegraph);
-        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vwControlBlocks.dopedEthereum);
-        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vwControlBlocks.thrustRelay);
+        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vsControlBlocks.speedTelegraph);
+        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vsControlBlocks.compactedValkyrium);
+        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vsControlBlocks.networkRelay);
 
-        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vwControlBlocks.gyroscopeStabilizer);
-        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vwControlBlocks.liftValve);
-        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vwControlBlocks.networkDisplay);
-        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vwControlBlocks.liftControl);
+        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vsControlBlocks.gyroscopeStabilizer);
+        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vsControlBlocks.liftValve);
+        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vsControlBlocks.networkDisplay);
+        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vsControlBlocks.liftLever);
 
-        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vwControlBlocks.etherCompressorPanel);
-        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vwControlBlocks.gyroscopeDampener);
+        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vsControlBlocks.valkyriumCompressorPart);
+        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vsControlBlocks.gyroscopeDampener);
 
-        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vwControlBlocks.ethereumEnginePart);
-        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vwControlBlocks.gearbox);
-        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vwControlBlocks.rudderAxelPart);
+        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vsControlBlocks.valkyriumEnginePart);
+        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vsControlBlocks.gearbox);
+        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vsControlBlocks.rudderPart);
 
-        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vwControlBlocks.giantPropellerPart);
-        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vwControlBlocks.rotationTrainAxle);
+        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vsControlBlocks.giantPropellerPart);
+        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vsControlBlocks.rotationAxle);
     }
 
     private static void registerItemModels() {
@@ -112,28 +112,28 @@ public class ClientProxyControl extends CommonProxyControl {
     }
 
     private static void registerTileEntityRenderers() {
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityNodeRelay.class,
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityNetworkRelay.class,
             new BasicNodeTileEntityRenderer());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityShipHelm.class,
             new ShipHelmTileEntityRenderer());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityShipTelegraph.class,
-            new ShipTelegraphTileEntityRenderer());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntitySpeedTelegraph.class,
+            new SpeedTelegraphTileEntityRenderer());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPropellerEngine.class,
             new PropellerEngineTileEntityRenderer());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityEthereumEnginePart.class,
-            new EthereumEnginePartTileEntityRenderer());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityValkyriumEnginePart.class,
+            new ValkyriumEnginePartTileEntityRenderer());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityGearbox.class,
             new GearboxTileEntityRenderer());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityLiftControl.class,
-            new LiftControlTileEntityRenderer());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityEthereumCompressorPart.class,
-            new EthereumCompressorPartTileEntityRenderer());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRudderAxlePart.class,
-            new RudderAxlePartTileEntityRenderer());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityLiftLever.class,
+            new LiftLeverTileEntityRenderer());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityValkyriumCompressorPart.class,
+            new ValkyriumCompressorPartTileEntityRenderer());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRudderPart.class,
+            new RudderPartTileEntityRenderer());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityGiantPropellerPart.class,
             new GiantPropellerPartTileEntityRenderer());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRotationTrainAxle.class,
-            new RotationTrainAxleTileEntityRenderer());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRotationAxle.class,
+            new RotationAxleTileEntityRenderer());
     }
 
     @Override
@@ -148,38 +148,38 @@ public class ClientProxyControl extends CommonProxyControl {
         registerControlGibs("chadburn_dial_simplevoxel_geo");
         registerControlGibs("chadburn_glass_simplevoxel_geo");
         registerControlGibs("chadburn_handles_simplevoxel_geo");
-        registerControlGibs("chadburn_speedtelegraph_simplevoxel_geo");
+        registerControlGibs("chadburn_speed_telegraph_simplevoxel_geo");
 
-        registerControlGibs("shiphelmbase");
-        registerControlGibs("shiphelmdial");
-        registerControlGibs("shiphelmdialglass");
-        registerControlGibs("shiphelmwheel");
+        registerControlGibs("ship_helm_base");
+        registerControlGibs("ship_helm_dial");
+        registerControlGibs("ship_helm_dial_glass");
+        registerControlGibs("ship_helm_wheel");
 
         registerRudderGibs("rudder_geo");
-        registerRudderGibs("rudder_axel_geo");
+        registerRudderGibs("rudder_axle_geo");
 
-        registerGearboxGibs("gearboxbackengineaxel_geo");
-        registerGearboxGibs("gearboxbottomengineaxel_geo");
-        registerGearboxGibs("gearboxfrontengineaxel_geo");
-        registerGearboxGibs("gearboxleftengineaxel_geo");
-        registerGearboxGibs("gearboxrightengineaxel_geo");
-        registerGearboxGibs("gearboxvtopengineaxel_geo");
+        registerGearboxGibs("gearbox_back_geo");
+        registerGearboxGibs("gearbox_bottom_geo");
+        registerGearboxGibs("gearbox_front_geo");
+        registerGearboxGibs("gearbox_left_geo");
+        registerGearboxGibs("gearbox_right_geo");
+        registerGearboxGibs("gearbox_top_geo");
 
-        GibsAnimationRegistry.registerAnimation("ethereum_compressor",
+        GibsAnimationRegistry.registerAnimation("valkyrium_compressor",
             new ResourceLocation(ValkyrienSkiesControl.MOD_ID,
-                "models/block/ether_compressor/compressoranimations.atom"));
+                "models/block/valkyrium_compressor/compressor_animations.atom"));
 
-        GibsAnimationRegistry.registerAnimation("ethereum_engine",
+        GibsAnimationRegistry.registerAnimation("valkyrium_engine",
             new ResourceLocation(ValkyrienSkiesControl.MOD_ID,
-                "models/block/multipart_engines/small_engine.atom"));
+                "models/block/valkyrium_engine/valkyrium_engine.atom"));
 
-        GibsAnimationRegistry.registerAnimation("lift_control",
+        GibsAnimationRegistry.registerAnimation("lift_lever",
             new ResourceLocation(ValkyrienSkiesControl.MOD_ID,
-                "models/block/controls/liftcontrol_keyframes.atom"));
+                "models/block/controls/lift_lever_keyframes.atom"));
 
         GibsAnimationRegistry.registerAnimation("gearbox",
             new ResourceLocation(ValkyrienSkiesControl.MOD_ID,
-                "models/block/gearbox/small_gearbox.atom"));
+                "models/block/gearbox/gearbox.atom"));
 
         GibsAnimationRegistry.registerAnimation("pocketwatch_body",
             new ResourceLocation(ValkyrienSkiesControl.MOD_ID,
@@ -187,23 +187,23 @@ public class ClientProxyControl extends CommonProxyControl {
 
         GibsAnimationRegistry.registerAnimation("pocketwatch_lid",
             new ResourceLocation(ValkyrienSkiesControl.MOD_ID,
-                "models/block/pocketwatch/pocketwatchlid_keyframes.atom"));
+                "models/block/pocketwatch/pocketwatch_lid_keyframes.atom"));
 
         GibsAnimationRegistry.registerAnimation("telescope",
             new ResourceLocation(ValkyrienSkiesControl.MOD_ID,
                 "models/block/telescope/telescope_keyframes.atom"));
 
-        GibsAnimationRegistry.registerAnimation("steering_rudder",
+        GibsAnimationRegistry.registerAnimation("rudder",
             new ResourceLocation(ValkyrienSkiesControl.MOD_ID,
-                "models/block/steering_rudder/rudder_animation.atom"));
+                "models/block/rudder/rudder_animation.atom"));
 
-        GibsAnimationRegistry.registerAnimation("rotation_train_axle",
+        GibsAnimationRegistry.registerAnimation("rotation_axle",
             new ResourceLocation(ValkyrienSkiesControl.MOD_ID,
-                "models/block/rotation_train_axle/small_engine_axle.atom"));
+                "models/block/rotation_axle/rotation_axle.atom"));
 
         GibsAnimationRegistry.registerAnimation("giant_propeller",
             new ResourceLocation(ValkyrienSkiesControl.MOD_ID,
-                "models/block/giant_propeller/small_propeller.atom"));
+                "models/block/giant_propeller/giant_propeller.atom"));
     }
 
     private void registerGearboxGibs(String name) {
@@ -218,7 +218,7 @@ public class ClientProxyControl extends CommonProxyControl {
 
     private void registerRudderGibs(String name) {
         GibsModelRegistry.registerGibsModel(name, new ResourceLocation(ValkyrienSkiesControl.MOD_ID,
-            "block/steering_rudder/" + name + ".obj"));
+            "block/rudder/" + name + ".obj"));
     }
 
     @Override

@@ -1,0 +1,49 @@
+newmtl rudderaxle_mtlSG
+illum 4
+Kd 1.00 1.00 1.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd vs_control:blocks/rudder/rudder_rusty_shaft
+Ni 1.00
+newmtl ruddercable_mtlSG
+illum 4
+Kd 1.00 1.00 1.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd vs_control:blocks/rudder/rudder_cable
+Ni 1.00
+newmtl ruddermetal_mtlSG
+illum 4
+Kd 1.00 1.00 1.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd vs_control:blocks/rudder/rudder_metal
+Ni 1.00
+newmtl rudderood01_mtlSG
+illum 4
+Kd 1.00 1.00 1.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd vs_control:blocks/rudder/rudder_wood_01
+Ni 1.00
+newmtl ruddersail_mtlSG
+illum 4
+Kd 1.00 1.00 1.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd vs_control:blocks/rudder/rudder_sail
+Ni 1.00
+newmtl rudderwood02_mtlSG
+illum 4
+Kd 1.00 1.00 1.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd vs_control:blocks/rudder/rudder_wood_02
+Ni 1.00
+newmtl rudderwood03_mtlSG
+illum 4
+Kd 1.00 1.00 1.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd vs_control:blocks/rudder/rudder_wood_03
+Ni 1.00

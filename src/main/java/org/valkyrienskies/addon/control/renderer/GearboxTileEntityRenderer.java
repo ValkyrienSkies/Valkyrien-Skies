@@ -20,12 +20,12 @@ public class GearboxTileEntityRenderer extends TileEntitySpecialRenderer<TileEnt
 
     static {
         FACING_TO_AXLE_NAME = ImmutableMap.<EnumFacing, String>builder()
-            .put(EnumFacing.DOWN, "gearboxvtopengineaxel_geo")
-            .put(EnumFacing.UP, "gearboxbottomengineaxel_geo")
-            .put(EnumFacing.SOUTH, "gearboxfrontengineaxel_geo")
-            .put(EnumFacing.NORTH, "gearboxbackengineaxel_geo")
-            .put(EnumFacing.WEST, "gearboxrightengineaxel_geo")
-            .put(EnumFacing.EAST, "gearboxleftengineaxel_geo")
+            .put(EnumFacing.DOWN, "gearboxvtopengineaxle_geo")
+            .put(EnumFacing.UP, "gearboxbottomengineaxle_geo")
+            .put(EnumFacing.SOUTH, "gearboxfrontengineaxle_geo")
+            .put(EnumFacing.NORTH, "gearboxbackengineaxle_geo")
+            .put(EnumFacing.WEST, "gearboxrightengineaxle_geo")
+            .put(EnumFacing.EAST, "gearboxleftengineaxle_geo")
             .build();
     }
 

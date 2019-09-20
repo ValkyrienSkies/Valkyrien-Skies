@@ -113,10 +113,6 @@ public class ClaimedChunkCacheController {
                 // Added try catch to prevent ships deleting themselves because of a failed tile entity load.
                 try {
                     Chunk chunk = world.getChunk(x, z);
-                    if (chunk == null) {
-                        log.error("Just a loaded a null chunk");
-                        chunk = new Chunk(world, x, z);
-                    }
                     // Do this to get it re-integrated into the world
                     if (!world.isRemote) {
                         injectChunkIntoWorld(chunk, x, z, false);

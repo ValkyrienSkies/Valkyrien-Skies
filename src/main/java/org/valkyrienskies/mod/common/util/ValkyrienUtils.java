@@ -60,11 +60,6 @@ public class ValkyrienUtils {
     /**
      * If the given AxisAlignedBB is in ship space, then this will return that AxisAlignedBB
      * transformed to global space. Otherwise it just returns the input AxisAlignedBB.
-     *
-     * @param axisAlignedBB
-     * @param world
-     * @param pos
-     * @return
      */
     public static AxisAlignedBB getAABBInGlobal(AxisAlignedBB axisAlignedBB,
         @Nullable World world, @Nullable BlockPos pos) {

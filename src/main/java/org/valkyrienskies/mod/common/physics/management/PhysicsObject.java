@@ -70,8 +70,8 @@ import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.network.PhysWrapperPositionMessage;
 import org.valkyrienskies.mod.common.physics.BlockPhysicsDetails;
 import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
-import org.valkyrienskies.mod.common.physics.management.util.ClaimedChunkCacheController;
-import org.valkyrienskies.mod.common.physics.management.util.SurroundingChunkCacheController;
+import org.valkyrienskies.mod.common.physics.management.chunkcache.ClaimedChunkCacheController;
+import org.valkyrienskies.mod.common.physics.management.chunkcache.SurroundingChunkCacheController;
 import org.valkyrienskies.mod.common.physmanagement.chunk.ShipChunkAllocator;
 import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
 import org.valkyrienskies.mod.common.physmanagement.relocation.DetectorManager;
@@ -125,7 +125,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
     // TODO: This still breaks when the server is lagging, because it will skip
     // ticks and therefore the counter will go higher than it really should be.
     @Getter @Setter
-    private boolean isPhysicsEnabled;
+    private boolean isPhysicsEnabled = false;
     @Getter @Setter
     private String creator;
     private int detectorID;
@@ -140,8 +140,9 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
     private ClaimedChunkCacheController claimedChunkCache;
 
     // Compatibility for ships made before the update
-    private boolean claimedChunksInMap;
-    private boolean isNameCustom;
+    private boolean claimedChunksInMap = false;
+    @Getter @Setter
+    private boolean isNameCustom = false;
     @Getter @Setter
     private AxisAlignedBB shipBoundingBox;
     @Getter @Setter
@@ -153,32 +154,26 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
     @Getter @Setter(AccessLevel.PRIVATE)
     private boolean needsCollisionCacheUpdate = true;
     @Getter @Setter
-    private BlockPos physicsInfuserPos;
-    private boolean shipAligningToGrid;
-    private boolean isFullyLoaded;
+    private BlockPos physicsInfuserPos = null;
+    private boolean shipAligningToGrid = false;
+    @Getter
+    private boolean isFullyLoaded = false;
 
     public PhysicsObject(PhysicsWrapperEntity host) {
         this.wrapperEntity = host;
         if (host.world.isRemote) {
             this.shipRenderer = new PhysObjectRenderManager(this);
         }
-        this.isNameCustom(false);
-        this.claimedChunksInMap = false;
-        this.isPhysicsEnabled(false);
         // We need safe access to this across multiple threads.
         this.blockPositions = ConcurrentHashMap.newKeySet();
         this.shipBoundingBox = Entity.ZERO_AABB;
         this.watchingPlayers = new ArrayList<>();
-        this.isPhysicsEnabled = false;
         this.allowedUsers = new HashSet<>();
         // this.gameConsecutiveTicks.set(0);
         this.shipSubspace = new ImplSubspace(this);
         this.physicsControllers = Sets.newConcurrentHashSet();
         this.physicsControllersImmutable = Collections.unmodifiableSet(this.physicsControllers);
         this.blockPositionsGameTick = new TIntArrayList();
-        this.physicsInfuserPos = null;
-        this.shipAligningToGrid = false;
-        this.isFullyLoaded = false;
         this.cachedSurroundingChunks = new SurroundingChunkCacheController(this);
     }
 
@@ -854,20 +849,6 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
     }
 
     /**
-     * @return the isNameCustom
-     */
-    public boolean isNameCustom() {
-        return isNameCustom;
-    }
-
-    /**
-     * @param isNameCustom the isNameCustom to set
-     */
-    public void isNameCustom(boolean isNameCustom) {
-        this.isNameCustom = isNameCustom;
-    }
-
-    /**
      * @return the cachedSurroundingChunks
      */
     public ChunkCache getCachedSurroundingChunks() {
@@ -985,12 +966,10 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 
     /**
      * Gets the chunk at chunkX and chunkZ.
+     *
+     * @see ClaimedChunkCacheController#getChunkAt(int, int)
      */
     public Chunk getChunkAt(int chunkX, int chunkZ) {
-        if (!ownedChunks.containsChunk(chunkX, chunkZ)) {
-            throw new IllegalArgumentException(
-                "Chunk at " + chunkX + " : " + chunkZ + " is not claimed by this ship.");
-        }
         return claimedChunkCache.getChunkAt(chunkX, chunkZ);
     }
 
@@ -999,7 +978,4 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
         isFullyLoaded = true;
     }
 
-    public boolean isFullyLoaded() {
-        return isFullyLoaded;
-    }
 }

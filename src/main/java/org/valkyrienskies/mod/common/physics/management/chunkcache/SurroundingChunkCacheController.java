@@ -1,4 +1,4 @@
-package org.valkyrienskies.mod.common.physics.management.util;
+package org.valkyrienskies.mod.common.physics.management.chunkcache;
 
 import lombok.Getter;
 import net.minecraft.util.math.AxisAlignedBB;

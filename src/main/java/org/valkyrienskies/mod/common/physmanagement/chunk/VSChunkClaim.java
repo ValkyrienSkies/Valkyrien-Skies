@@ -76,6 +76,10 @@ public class VSChunkClaim {
         return inX && inZ;
     }
 
+    public boolean containsChunk(ChunkPos pos) {
+        return containsChunk(pos.x, pos.z);
+    }
+
     /**
      * Checks if a block is contained within this {@link VSChunkClaim}
      *

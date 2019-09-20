@@ -1,4 +1,4 @@
-package org.valkyrienskies.mod.common.physics.management.util;
+package org.valkyrienskies.mod.common.physics.management.chunkcache;
 
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -55,6 +55,11 @@ public class ClaimedChunkCacheController {
      */
     public Chunk getChunkAt(int chunkX, int chunkZ) {
         VSChunkClaim claim = parent.ownedChunks();
+
+        if (!claim.containsChunk(chunkX, chunkZ)) {
+            throw new ChunkNotInClaimException(chunkX, chunkZ);
+        }
+
         return claimedChunks[chunkX - claim.minX()][chunkZ - claim.minZ()];
     }
 
@@ -74,7 +79,7 @@ public class ClaimedChunkCacheController {
      *
      * @param relativeX The X value relative to the chunk claim
      * @param relativeZ the Z value relative to the chunk claim
-     * @param chunk The chunk to cache.
+     * @param chunk     The chunk to cache.
      */
     public void setChunkRelative(int relativeX, int relativeZ, Chunk chunk) {
         claimedChunks[relativeX][relativeZ] = chunk;
@@ -85,10 +90,15 @@ public class ClaimedChunkCacheController {
      *
      * @param chunkX The X position of the chunk
      * @param chunkZ The Z position of the chunk
-     * @param chunk The chunk to cache.
+     * @param chunk  The chunk to cache.
      */
     public void setChunkAt(int chunkX, int chunkZ, Chunk chunk) {
         VSChunkClaim claim = parent.ownedChunks();
+
+        if (!claim.containsChunk(chunkX, chunkZ)) {
+            throw new ChunkNotInClaimException(chunkX, chunkZ);
+        }
+
         claimedChunks[chunkX - claim.minX()][chunkZ - claim.minZ()] = chunk;
     }
 

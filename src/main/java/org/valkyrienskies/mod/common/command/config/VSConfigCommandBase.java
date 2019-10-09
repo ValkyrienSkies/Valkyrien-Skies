@@ -107,16 +107,10 @@ public class VSConfigCommandBase extends CommandBase {
             String fieldDisplayName = fieldShortName == null ?
                 field.getName() : fieldShortName.value();
 
-            System.out.printf("Checking field %s on category %s\n", fieldDisplayName,
-                subcatDisplayName);
-
             // Ensure field is public NOT static and supported
             if (!Modifier.isStatic(field.getModifiers()) &&
                 Modifier.isPublic(field.getModifiers()) &&
                 ConfigCommandUtils.isSupportedType(field.getType())) {
-
-                System.out.printf("Adding field %s on category %s\n", fieldDisplayName,
-                    subcatDisplayName);
 
                 subcategoryNode.addChild(new ConfigCommandEndNode(fieldDisplayName,
                     str -> ConfigCommandUtils.setFieldFromString(str, field, subcategoryObj),

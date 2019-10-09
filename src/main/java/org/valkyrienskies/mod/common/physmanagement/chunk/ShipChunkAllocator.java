@@ -1,9 +1,9 @@
 package org.valkyrienskies.mod.common.physmanagement.chunk;
 
-import java.util.HashMap;
-import java.util.Map;
+import lombok.extern.log4j.Log4j2;
 import net.minecraft.nbt.NBTTagCompound;
 
+@Log4j2
 public class ShipChunkAllocator {
 
     // Each ship gets its own 32x32 square of chunks to do whatever it wants
@@ -20,20 +20,19 @@ public class ShipChunkAllocator {
     private int nextChunkX = SHIP_CHUNK_X_START;
     private int nextChunkZ = SHIP_CHUNK_Z_START;
 
-    private Map<ChunkAllocation, String> chunkAllocationToShipIds = new HashMap<>();
 
     public ChunkAllocation allocateChunks(String shipId, int chunkRadius) {
         // Don't go over the maximum
         if (chunkRadius > MAX_SHIP_CHUNK_RADIUS) {
-            System.err
-                .println(shipId + " just tried allocating chunks with a radius of: " + chunkRadius);
-            System.err.println(
-                "This is just too big! Expect bad luck and decades of instability after this!");
-            return null;
+            log.error(
+                shipId + " just tried allocating chunks with a radius of: " + chunkRadius + "\n" +
+                    "This is just too big! Expect bad luck and decades of instability after this!");
+
+            throw new RuntimeException(shipId + " just tried allocating chunks with a radius of: " +
+                chunkRadius + "\n" + "This is just too big! Expect bad luck and decades of "
+                + "instability after this!");
         }
-        ChunkAllocation nextAllocation = allocateNext();
-        chunkAllocationToShipIds.put(nextAllocation, shipId);
-        return nextAllocation;
+        return allocateNext();
     }
 
     private ChunkAllocation allocateNext() {
@@ -53,13 +52,11 @@ public class ShipChunkAllocator {
             nextChunkX = compound.getInteger("nextChunkX");
             nextChunkZ = compound.getInteger("nextChunkZ");
         } else {
-            System.err.println(
-                "Either you created a new world, or Valkyrien Skies just lost track of every single ship chunk! If its case #2 then good luck dude your ships are screwed.");
+            log.error("Either you created a new world, or Valkyrien Skies just lost track of every "
+                + "single ship chunk! If its case #2 then good luck dude your ships are screwed.");
             nextChunkX = SHIP_CHUNK_X_START;
             nextChunkZ = SHIP_CHUNK_Z_START;
         }
-        // Then load the stuff I might end up implementing eventually.
-        // TODO: Save the chunkAllocationToShipIds map
     }
 
     /**

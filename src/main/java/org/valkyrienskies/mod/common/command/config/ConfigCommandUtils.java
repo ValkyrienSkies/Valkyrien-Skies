@@ -11,7 +11,6 @@ public class ConfigCommandUtils {
 
     // TODO: continue
     public static void setFieldFromString(String string, Field field, @Nullable Object object) {
-        // this is abit awful
         try {
             if (field.getType() == int.class) {
                 field.setInt(object, Integer.parseInt(string));
@@ -21,6 +20,14 @@ public class ConfigCommandUtils {
                 field.setFloat(object, Float.parseFloat(string));
             } else if (field.getType() == boolean.class) {
                 field.setBoolean(object, Boolean.parseBoolean(string));
+            } else if (field.getType() == byte.class) {
+                field.setByte(object, Byte.parseByte(string));
+            } else if (field.getType() == long.class) {
+                field.setLong(object, Long.parseLong(string));
+            } else if (field.getType() == short.class) {
+                field.setShort(object, Short.parseShort(string));
+            } else if (field.getType() == char.class) {
+                field.setChar(object, string.charAt(0));
             }
         } catch (Exception ex) {
             throw new RuntimeException(ex);

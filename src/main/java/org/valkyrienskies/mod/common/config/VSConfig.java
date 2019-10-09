@@ -27,6 +27,7 @@ import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
+import org.valkyrienskies.mod.common.command.config.ShortName;
 import org.valkyrienskies.mod.common.math.Vector;
 
 @SuppressWarnings("WeakerAccess") // NOTE: Any forge config option MUST be "public"
@@ -93,6 +94,7 @@ public class VSConfig extends VSConfigTemplate {
     public static double relayWireLength = 8D;
 
     @Name("Engine Power")
+    @ShortName("enginePower")
     public static final EnginePower ENGINE_POWER = new EnginePower();
 
     public static class EnginePower {

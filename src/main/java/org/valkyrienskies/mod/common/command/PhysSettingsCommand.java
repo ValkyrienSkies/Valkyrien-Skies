@@ -30,9 +30,8 @@ public class PhysSettingsCommand extends CommandBase {
 
     private static final String DEPRECATION_MESSAGE =
         "This command is deprecated and will be removed in a later " +
-            "release. Please go to \"Mod Options\" and then \"Valkyrien Skies\" and then \"Config\" to change"
-            +
-            "physics settings. Thanks!";
+            "release. Please use /vsconfig or, alternatively, go to \"Mod Options\" and then "
+            + "\"Valkyrien Skies\" and then \"Config\" to change physics settings. Thanks!";
 
     @Override
     public String getName() {

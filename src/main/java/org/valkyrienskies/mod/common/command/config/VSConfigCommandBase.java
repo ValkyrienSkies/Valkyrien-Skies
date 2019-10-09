@@ -52,18 +52,17 @@ public class VSConfigCommandBase extends CommandBase {
         for (Field field : configClass.getFields()) {
             // Ensure the field is public static and supported
             if (Modifier.isStatic(field.getModifiers()) &&
-                Modifier.isPublic(field.getModifiers()) &&
-                ConfigCommandUtils.isSupportedType(field.getType())) {
+                Modifier.isPublic(field.getModifiers())) {
 
                 if (subcategories.contains(field.getType())) {
                     // If the field is the instance for a subcategory
                     processFieldForSubcategory(field.getType(), field, root);
-                } else {
-                    // Otherwise its a normal field
+                } else if (ConfigCommandUtils.isSupportedType(field.getType())) {
+                    // Or its a normal field
                     root.addChild(new ConfigCommandEndNode(field.getName(),
                         str -> ConfigCommandUtils.setFieldFromString(str, field),
                         () -> ConfigCommandUtils.getStringFromField(field)));
-                }
+                } // Ignore fields that aren't supported or a subcategory
             }
         }
     }

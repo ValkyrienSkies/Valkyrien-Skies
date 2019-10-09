@@ -2,7 +2,7 @@ package org.valkyrienskies.mod.common.command.config;
 
 import lombok.Getter;
 
-public abstract class ConfigCommandNode {
+abstract class ConfigCommandNode {
 
     @Getter
     private String name;

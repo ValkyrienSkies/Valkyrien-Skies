@@ -18,6 +18,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import org.valkyrienskies.mod.common.command.framework.VSCommandUtil;
 
+/**
+ * This class is used to generate a command for a VS/Forge config. It's used by
+ * <code>/vsconfig</code>
+ */
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class VSConfigCommandBase extends CommandBase {
@@ -27,22 +31,38 @@ public class VSConfigCommandBase extends CommandBase {
     private ConfigCommandParentNode root;
     private Method sync;
 
-    public VSConfigCommandBase(String name, Class<?> configClass) {
+    private List<String> aliases;
+
+    /**
+     * @param name        This is the name of the command that's going to be generated
+     * @param configClass This is the class of the config that's going to have a command generated
+     *                    for it. It should define a public static void sync().
+     * @param aliases     These are the alternative names for the command that's going to be
+     *                    generated
+     */
+    public VSConfigCommandBase(String name, Class<?> configClass, String... aliases) {
         try {
             this.sync = configClass.getMethod("sync");
 
-            if (!Modifier.isStatic(this.sync.getModifiers()))
+            if (!Modifier.isStatic(this.sync.getModifiers())) {
                 throw new IllegalArgumentException(
                     "That class does not have a public static sync method on it!");
+            }
         } catch (NoSuchMethodException e) {
             throw new IllegalArgumentException(
                 "That class does not have a public static sync method on it!", e);
         }
 
         this.name = name;
+        this.aliases = Arrays.asList(aliases);
         root = new ConfigCommandParentNode(name, Collections.emptyMap());
 
         processFields(configClass, root);
+    }
+
+    @Override
+    public List<String> getAliases() {
+        return this.aliases;
     }
 
     // TODO: allow usage of arrays

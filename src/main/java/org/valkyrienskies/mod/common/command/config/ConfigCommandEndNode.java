@@ -4,7 +4,11 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import lombok.Getter;
 
-public class ConfigCommandEndNode extends ConfigCommandNode {
+/**
+ * Node at the end of a config command, e.g. in <code>/vsc enginePower basicEngineForce</code>,
+ * <code>basicEngineForce</code> is the End Node
+ */
+class ConfigCommandEndNode extends ConfigCommandNode {
 
     @Getter
     private Consumer<String> setOption;

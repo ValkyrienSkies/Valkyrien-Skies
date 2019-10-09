@@ -3,12 +3,27 @@ package org.valkyrienskies.mod.common.command.config;
 import java.lang.reflect.Field;
 import javax.annotation.Nullable;
 
-public class ConfigCommandUtils {
+class ConfigCommandUtils {
 
+    /**
+     * Sets a field from a string, assuming the field is static. It only supports fields where
+     * {@link ConfigCommandUtils#isSupportedType(Class)} for {@link Field#getType()}
+     *
+     * @param string The string to set the field's value to
+     * @param field  The field to set
+     */
     public static void setFieldFromString(String string, Field field) {
         setFieldFromString(string, field, null);
     }
 
+    /**
+     * Sets a field from a string. It only supports fields where {@link
+     * ConfigCommandUtils#isSupportedType(Class)} for {@link Field#getType()}
+     *
+     * @param string The string to set the field's value to
+     * @param field  The field to set
+     * @param object The object upon which to set the field
+     */
     public static void setFieldFromString(String string, Field field, @Nullable Object object) {
         if (!isSupportedType(field.getType())) {
             throw new IllegalArgumentException("Unsupported field type");
@@ -38,16 +53,29 @@ public class ConfigCommandUtils {
         }
     }
 
+    /**
+     * Whether or not this type is supported by {@link ConfigCommandUtils#setFieldFromString(String,
+     * Field, Object)}
+     *
+     * @param type The type of the field
+     */
     public static boolean isSupportedType(Class<?> type) {
         return type == int.class || type == double.class || type == float.class
             || type == boolean.class || type == byte.class || type == long.class
             || type == short.class || type == char.class || type == String.class;
     }
 
+    /**
+     * Basically a shortcut for <code>field.get(null).toString()</code>
+     */
     public static String getStringFromField(Field field) {
         return getStringFromField(field, null);
     }
 
+
+    /**
+     * Basically a shortcut for <code>field.get(object).toString()</code>
+     */
     public static String getStringFromField(Field field, @Nullable Object object) {
         try {
             return field.get(object).toString();

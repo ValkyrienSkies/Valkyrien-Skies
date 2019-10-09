@@ -9,8 +9,10 @@ public class ConfigCommandUtils {
         setFieldFromString(string, field, null);
     }
 
-    // TODO: continue
     public static void setFieldFromString(String string, Field field, @Nullable Object object) {
+        if (!isSupportedType(field.getType())) {
+            throw new IllegalArgumentException("Unsupported field type");
+        }
         try {
             if (field.getType() == int.class) {
                 field.setInt(object, Integer.parseInt(string));
@@ -28,10 +30,18 @@ public class ConfigCommandUtils {
                 field.setShort(object, Short.parseShort(string));
             } else if (field.getType() == char.class) {
                 field.setChar(object, string.charAt(0));
+            } else if (field.getType() == String.class) {
+                field.set(object, string);
             }
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    public static boolean isSupportedType(Class<?> type) {
+        return type == int.class || type == double.class || type == float.class
+            || type == boolean.class || type == byte.class || type == long.class
+            || type == short.class || type == char.class || type == String.class;
     }
 
     public static String getStringFromField(Field field) {

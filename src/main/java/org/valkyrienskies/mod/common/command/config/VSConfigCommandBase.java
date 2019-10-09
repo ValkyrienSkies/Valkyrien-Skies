@@ -45,13 +45,15 @@ public class VSConfigCommandBase extends CommandBase {
         processFields(configClass, root);
     }
 
+    // TODO: allow usage of arrays
     private static void processFields(Class<?> configClass, ConfigCommandParentNode root) {
         List<Class<?>> subcategories = Arrays.asList(configClass.getDeclaredClasses());
 
         for (Field field : configClass.getFields()) {
-            // Ensure the field is public static
+            // Ensure the field is public static and supported
             if (Modifier.isStatic(field.getModifiers()) &&
-                Modifier.isPublic(field.getModifiers())) {
+                Modifier.isPublic(field.getModifiers()) &&
+                ConfigCommandUtils.isSupportedType(field.getType())) {
 
                 if (subcategories.contains(field.getType())) {
                     // If the field is the instance for a subcategory
@@ -66,6 +68,7 @@ public class VSConfigCommandBase extends CommandBase {
         }
     }
 
+    // TODO: allow usage of arrays
     @SneakyThrows(IllegalAccessException.class)
     private static void processFieldForSubcategory(Class<?> subcategory, Field subcatField,
         ConfigCommandParentNode root) {
@@ -88,9 +91,10 @@ public class VSConfigCommandBase extends CommandBase {
             System.out.printf("Checking field %s on category %s\n", fieldDisplayName,
                 subcatDisplayName);
 
-            // Ensure field is public NOT static
+            // Ensure field is public NOT static and supported
             if (!Modifier.isStatic(field.getModifiers()) &&
-                Modifier.isPublic(field.getModifiers())) {
+                Modifier.isPublic(field.getModifiers()) &&
+                ConfigCommandUtils.isSupportedType(field.getType())) {
 
                 System.out.printf("Adding field %s on category %s\n", fieldDisplayName,
                     subcatDisplayName);

@@ -1,6 +1,6 @@
 
 # Valkyrien Warfare
-[![CircleCI](https://circleci.com/gh/ValkyrienSkies/Valkyrien-Skies.svg?style=svg)](https://circleci.com/gh/ValkyrienSkies/Valkyrien)
+[![CircleCI](https://circleci.com/gh/ValkyrienSkies/Valkyrien-Skies.svg?style=svg)](https://circleci.com/gh/ValkyrienSkies/Valkyrien-Skies)
 
 See: [LICENSE file](https://github.com/ValkyrienWarfare/Valkyrien-Warfare-Revamped/blob/8778e9d45f16c1f60e8149ab6cbdbabbdebc1278/LICENSE), [Project Roadmap](https://wiki.valkyrienskies.org/wiki/Roadmap), [Wiki Page](https://wiki.valkyrienskies.org/wiki/Main_Page)
 

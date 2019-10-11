@@ -20,6 +20,9 @@ import net.minecraft.util.math.ChunkPos;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 
+/**
+ * A class that keeps track of ship data
+ */
 @MethodsReturnNonnullByDefault
 @SuppressWarnings("WeakerAccess")
 public class QueryableShipData {

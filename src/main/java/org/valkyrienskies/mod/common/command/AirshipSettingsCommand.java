@@ -18,6 +18,7 @@ package org.valkyrienskies.mod.common.command;
 
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -36,13 +37,8 @@ import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
 public class AirshipSettingsCommand extends CommandBase {
 
-    public static final List<String> COMPLETION_OPTIONS = new ArrayList<String>();
-
-    static {
-        COMPLETION_OPTIONS.add("transfer");
-        COMPLETION_OPTIONS.add("allowplayer");
-        COMPLETION_OPTIONS.add("claim");
-    }
+    public static final List<String> COMPLETION_OPTIONS = Arrays
+        .asList("transfer", "allowplayer", "claim");
 
     //Ripoff of world.rayTraceBlocks(), blame LEX and his Side code
     public static RayTraceResult rayTraceBothSides(EntityPlayer player, double blockReachDistance,

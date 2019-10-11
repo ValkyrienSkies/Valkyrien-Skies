@@ -42,6 +42,7 @@ public class MainCommand implements Runnable {
 
     @Command(name = "tps")
     static class TPS implements Runnable {
+
         @Inject
         ICommandSender sender;
 
@@ -69,6 +70,7 @@ public class MainCommand implements Runnable {
 
     @Command(name = "list-ships", aliases = "ls")
     static class ListShips implements Runnable {
+
         @Inject
         ICommandSender sender;
 

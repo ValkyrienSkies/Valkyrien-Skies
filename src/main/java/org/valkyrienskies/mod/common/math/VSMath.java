@@ -178,4 +178,26 @@ public class VSMath {
             bb1.maxY == bb2.maxY);
     }
 
+    /**
+     * Interpolates between 2 circular numbers by assuming the shortest path taken.
+     *
+     * @param prev        Can be anything.
+     * @param current     Can be anything.
+     * @param partialStep Must be between 0 and 1.
+     * @param modulus     Must be greater than 0.
+     * @return Smoothly interpolated number.
+     */
+    public static double interpolateModulatedNumbers(double prev, double current,
+        double partialStep, double modulus) {
+        double delta = current - prev;
+        double deltaForward = (delta + modulus) % modulus;
+        double deltaBackward = deltaForward - modulus;
+        // Choose the smallest of either delta based on their absolute value
+        double shortestDelta = deltaForward < -deltaBackward ? deltaForward : deltaBackward;
+        // Then we will interpolate in the shortest direction, being careful to limit the answer
+        // between 0 and modulus.
+        double interpolatedButPossiblyNegative = prev + shortestDelta * partialStep;
+        return ((interpolatedButPossiblyNegative % modulus) + modulus) % modulus;
+    }
+
 }

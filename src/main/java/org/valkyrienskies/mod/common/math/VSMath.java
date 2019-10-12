@@ -31,8 +31,7 @@ public class VSMath {
     public static final double STANDING_TOLERANCE = .42D;
 
     public static double getPitchFromVectorImmutable(VectorImmutable vec) {
-        double pitchFromRotVec = -Math.asin(vec.getY()) * 180 / Math.PI;
-        return pitchFromRotVec;
+        return -Math.asin(vec.getY()) * 180 / Math.PI;
     }
 
     public static double getYawFromVectorImmutable(VectorImmutable vec, double rotPitch) {
@@ -79,7 +78,6 @@ public class VSMath {
      * Takes an arrayList of AABB's and merges them into larger AABB's
      *
      * @param toFuse
-     * @return
      */
     public static void mergeAABBList(List<AxisAlignedBB> toFuse) {
         boolean changed = true;
@@ -190,14 +188,27 @@ public class VSMath {
     public static double interpolateModulatedNumbers(double prev, double current,
         double partialStep, double modulus) {
         double delta = current - prev;
-        double deltaForward = (delta + modulus) % modulus;
+        double deltaForward = calculateRemainder(delta, modulus);
         double deltaBackward = deltaForward - modulus;
         // Choose the smallest of either delta based on their absolute value
         double shortestDelta = deltaForward < -deltaBackward ? deltaForward : deltaBackward;
         // Then we will interpolate in the shortest direction, being careful to limit the answer
         // between 0 and modulus.
         double interpolatedButPossiblyNegative = prev + shortestDelta * partialStep;
-        return ((interpolatedButPossiblyNegative % modulus) + modulus) % modulus;
+        return calculateRemainder(interpolatedButPossiblyNegative, modulus);
     }
 
+    /**
+     * @param dividend The number we calculate the remainder of; can be anything.
+     * @param divisor  The number that we divide the dividend by the calculate the remainder; must
+     *                 be greater than 0.
+     * @return A number in the range [0, dividend).
+     */
+    private static double calculateRemainder(double dividend, double divisor) {
+        double remainder = dividend % divisor;
+        if (remainder < 0) {
+            remainder += divisor;
+        }
+        return remainder;
+    }
 }

@@ -3,7 +3,9 @@ package org.valkyrienskies.mod.common.command.framework;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -20,6 +22,7 @@ import org.valkyrienskies.mod.common.command.converters.WorldConverter;
 import picocli.AutoComplete;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.ITypeConverter;
 import picocli.CommandLine.Model.CommandSpec;
 
 @ParametersAreNonnullByDefault
@@ -29,6 +32,15 @@ public class VSCommandBase<K> extends CommandBase {
     private Class<K> cmdClass;
     private List<String> aliases;
     private String name;
+    /**
+     * These are ITypeConverters that do not need to be instantiated multiple times and are
+     * singletons or effectively static.
+     */
+    private static Map<Class, ITypeConverter> pureConverters = new HashMap<>();
+
+    static {
+        pureConverters.put(World.class, new WorldConverter());
+    }
 
     VSCommandBase(Class<K> cmdClass) {
         if (cmdClass.getAnnotation(Command.class) == null) {
@@ -86,7 +98,7 @@ public class VSCommandBase<K> extends CommandBase {
         VSCommandFactory factory = new VSCommandFactory(sender);
 
         CommandLine commandLine = new CommandLine(factory.create(cmdClass), factory);
-        commandLine.registerConverter(World.class, new WorldConverter());
+        pureConverters.forEach(commandLine::registerConverter);
 
         ChatWriter chatOut = new ChatWriter(sender);
         commandLine.setOut(chatOut);

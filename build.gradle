@@ -120,7 +120,8 @@ dependencies {
     // mixin as annotation processor
     annotationProcessor("org.spongepowered:mixin:$mixinVersion")
 
-    // Needs to be present at compile-time because we mix in to spongeforge, however marking it as compile makes forge load it as a mod in a dev environment, which is very annoying
+    // Needs to be present at compile-time because we mix in to spongeforge, however marking it as
+    // compile makes forge load it as a mod in a dev environment, which is very annoying
     compileOnly("org.spongepowered:spongeforge:$spongeVersion:dev") {
         transitive = false
     }
@@ -135,7 +136,7 @@ dependencies {
 
 
     // CQEngine for in-memory nonpersistent database
-    shade("com.googlecode.cqengine:cqengine:$cqengineVersion")  {
+    shade("com.googlecode.cqengine:cqengine:$cqengineVersion") {
         exclude module: "sqlite-jdbc" //11.1 MB
         exclude module: "antlr4-runtime" //648.0 KB
         exclude module: "javassist" //1.5 MB
@@ -245,6 +246,7 @@ publishing {
 //sets additional JVM args for genIntellijRuns
 
 import java.util.concurrent.atomic.AtomicReference
+
 AtomicReference<String> mixinPath = new AtomicReference<>(null);
 configurations.compile.each {
     String absolutePath = it.absolutePath

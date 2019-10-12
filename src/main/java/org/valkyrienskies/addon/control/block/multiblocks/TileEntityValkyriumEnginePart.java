@@ -13,6 +13,7 @@ import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorld;
 import org.valkyrienskies.addon.control.block.torque.ImplRotationNode;
 import org.valkyrienskies.addon.control.block.torque.custom_torque_functions.ValkyriumEngineTorqueFunction;
 import org.valkyrienskies.fixes.VSNetwork;
+import org.valkyrienskies.mod.common.math.VSMath;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
@@ -62,7 +63,8 @@ public class TileEntityValkyriumEnginePart extends
                     .add(this.getPos());
                 TileEntity tileEntity = this.getWorld().getTileEntity(torqueOutputPos);
                 if (tileEntity instanceof TileEntityValkyriumEnginePart) {
-                    if (((TileEntityValkyriumEnginePart) tileEntity).getRotationNode().isPresent()) {
+                    if (((TileEntityValkyriumEnginePart) tileEntity).getRotationNode()
+                        .isPresent()) {
                         prevKeyframe = currentKeyframe;
                         double radiansRotatedThisTick =
                             ((TileEntityValkyriumEnginePart) tileEntity).getRotationNode().get()
@@ -76,22 +78,16 @@ public class TileEntityValkyriumEnginePart extends
             }
             this.markDirty();
         } else {
+            // Client keyframe interpolating logic, use .85 to smoothly slide towards actual value
+            // to appear more fluid when the server lags.
             prevKeyframe = currentKeyframe;
-            double increment = nextKeyframe - currentKeyframe;
-            if (increment < 0) {
-                increment += 99;
-            }
-            currentKeyframe += (increment * .85);
-            currentKeyframe %= 99;
+            currentKeyframe = VSMath
+                .interpolateModulatedNumbers(currentKeyframe, nextKeyframe, .85, 99);
         }
     }
 
     public double getCurrentKeyframe(double partialTick) {
-        double increment = currentKeyframe - prevKeyframe;
-        if (increment < 0) {
-            increment += 99;
-        }
-        return ((prevKeyframe + (increment * partialTick)) % 99) + 1;
+        return VSMath.interpolateModulatedNumbers(prevKeyframe, currentKeyframe, partialTick, 99);
     }
 
     @Override
@@ -128,7 +124,7 @@ public class TileEntityValkyriumEnginePart extends
         super.dissembleMultiblockLocal();
         Optional<PhysicsObject> object = ValkyrienUtils.getPhysicsObject(getWorld(), getPos());
         if (object.isPresent()) {
-            this.rotationNode.queueTask(() -> rotationNode.resetNodeData());
+            this.rotationNode.queueTask(rotationNode::resetNodeData);
 
         }
     }

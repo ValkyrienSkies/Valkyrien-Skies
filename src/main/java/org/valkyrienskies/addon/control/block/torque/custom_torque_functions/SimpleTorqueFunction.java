@@ -9,14 +9,25 @@ import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
  */
 public class SimpleTorqueFunction {
 
+    public static final double DEFAULT_ANGULAR_FRICTION = .4;
     protected final IRotationNode rotationNode;
 
     public SimpleTorqueFunction(IRotationNode rotationNode) {
         this.rotationNode = rotationNode;
     }
 
-    public double apply(PhysicsObject object) {
-        return rotationNode.getAngularVelocity() * -.4 * rotationNode.getRotationalInertia();
+    /**
+     * Calculate the torque for the rotationNode this function manages. This method gets executed by
+     * the physics thread and should not reference anything outside of rotationNode for the sake of
+     * avoiding race conditions.
+     *
+     * @param object The PhysicsObject that rotationNode lives in.
+     * @return The torque created by this node.
+     */
+    public double calculateTorque(PhysicsObject object) {
+        // Default torque implementation.
+        return rotationNode.getAngularVelocity() * rotationNode.getRotationalInertia()
+            * DEFAULT_ANGULAR_FRICTION;
     }
 
 }

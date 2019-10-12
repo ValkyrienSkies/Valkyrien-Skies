@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,7 +24,7 @@ public class ImplRotationNodeWorld implements IRotationNodeWorld {
     public ImplRotationNodeWorld(PhysicsObject parent) {
         this.parent = parent;
         this.posToNodeMap = new HashMap<>();
-        this.queuedTasks = new ConcurrentLinkedQueue();
+        this.queuedTasks = new ConcurrentLinkedQueue<>();
     }
 
     @Override
@@ -65,104 +64,191 @@ public class ImplRotationNodeWorld implements IRotationNodeWorld {
     }
 
     /**
-     * This can only be called by the physics thread.
+     * Advances the gear train simulation forward by 1 timestep.
+     *
+     * @param timeDelta The time step that will be simulated.
      */
     @PhysicsThreadOnly
     @Override
     public void processTorquePhysics(double timeDelta) {
         PhysicsAssert.assertPhysicsThread();
-
-        Iterator<Map.Entry<BlockPos, IRotationNode>> nodeIterator = posToNodeMap.entrySet()
-            .iterator();
-        while (nodeIterator.hasNext()) {
-            Map.Entry<BlockPos, IRotationNode> entry = nodeIterator.next();
-            if (entry.getValue().markedForDeletion()) {
-                nodeIterator.remove();
-            }
-        }
+        // Remove rotation nodes that were marked for deletion
+        posToNodeMap.entrySet().removeIf(entry -> entry.getValue().markedForDeletion());
 
         processQueuedTasks();
-        // Write da code here!
-        List<IRotationNode> nodesToVisit = new ArrayList<>(posToNodeMap.values());
-        Collections.sort(nodesToVisit);
-        // System.out.println(nodesToVisit.size());
-        while (nodesToVisit.size() > 0) {
-            IRotationNode start = nodesToVisit.remove(nodesToVisit.size() - 1);
-            try {
-                NodeTaskProcessed nodeNetworkResult = processNodeNetwork(start, null, null,
-                    nodesToVisit, timeDelta, 1D);
-                double firstNodeNewVelocity = Math
-                    .sqrt(nodeNetworkResult.totalEnergy * 2D / nodeNetworkResult.v_sqr_coefficent);
-                if (nodeNetworkResult.momentumMultDotProduct != 0D) {
-                    firstNodeNewVelocity *= Math.signum(nodeNetworkResult.momentumMultDotProduct);
-                }
 
-                processNodeNetworkPhase2(start, firstNodeNewVelocity, new HashSet<>());
-            } catch (Exception e) {
-                // Otherwise we shall set everything to zero!
-                processNodeNetworkPhase2(start, 0, new HashSet<>());
-                e.printStackTrace();
-            }
+        List<IRotationNode> nodesToVisit = new ArrayList<>(posToNodeMap.values());
+        Collections.shuffle(nodesToVisit);
+
+        // Very naive inefficient algorithm, but I think it works pretty well.
+        // For reference, omega is angular velocity.
+        while (nodesToVisit.size() > 0) {
+            IRotationNode startNode = nodesToVisit.get(0);
+            Set<IRotationNode> visitedNodes = new HashSet<>();
+            double apparentTorque = calculateApparentTorque(startNode, visitedNodes);
+            visitedNodes.clear(); // not the best practice
+            double apparentInertia = calculateApparentInertia(startNode, visitedNodes);
+            visitedNodes.clear(); // not the best practice
+            // Maybe I should replace apparent omega with apparent angular momentum.
+            double apparentOmega = calculateApparentOmega(startNode, visitedNodes);
+            visitedNodes.clear(); // not the best practice
+            double gearTrainEnergy = calculateTotalEnergy(startNode, visitedNodes);
+            visitedNodes.clear(); // not the best practice
+            double apparentAngularAcceleration = apparentTorque / apparentInertia;
+            double deltaOmega = apparentAngularAcceleration * timeDelta;
+            // Try to estimate the best guess for the current omega based on gear train energy
+            double omegaGuess = Math.sqrt(2 * gearTrainEnergy / apparentInertia);
+            // Guess the direction of rotation based on apparent omega.
+            omegaGuess = omegaGuess * Math.signum(apparentOmega);
+            // Apply deltaOmega to all rotation nodes.
+            applyNewOmega(startNode, omegaGuess + deltaOmega, timeDelta, visitedNodes);
+            // Remove the nodes we just processed from those that must be visited.
+            nodesToVisit.removeAll(visitedNodes);
         }
     }
 
     /**
-     * @param multiplier The relative ratio of w_i / w_0.
+     * Set the angular velocity for an entire gear train based on the gear ratios.
+     *
+     * @param start        The node that will get get angular velocity of newOmega.
+     * @param newOmega     The new angular velocity of the node start.
+     * @param deltaTime    The timestep used in our gear train simulation.
+     * @param visitedNodes Nodes that won't have their angular velocity changed.
      */
-    private NodeTaskProcessed processNodeNetwork(IRotationNode start, IRotationNode from,
-        EnumFacing sideFrom, List<IRotationNode> nodesToVisit, double timeDelta,
-        double multiplier) {
-        if (!nodesToVisit.contains(start) && from != null) {
-            throw new IllegalStateException("This is not an acyclic graph!");
-        }
+    private void applyNewOmega(IRotationNode start, double newOmega, double deltaTime,
+        Set<IRotationNode> visitedNodes) {
+        visitedNodes.add(start); // kind of a bad spot to put this
 
-        // This first
-        nodesToVisit.remove(start);
-        // Then simulate torque added energy
-        start.simulate(timeDelta, this.parent);
-        // Then add energy to the count
-        double totalEnergy = start.getEnergy();
-        // Calculate the dot; TODO change this to simulate entire gear networks as just 1 gear.
-        double dotProduct =
-            start.getRotationalInertia() * start.getAngularVelocity() * Math.signum(multiplier);
-        // Then calculate the coefficient
-        double coefficientAdded = start.getRotationalInertia() * multiplier * multiplier;
+        start.setAngularRotation(
+            start.getAngularRotation() + (start.getAngularVelocity() * deltaTime) + (
+                (newOmega - start.getAngularVelocity()) * deltaTime / 2D));
+
+        start.setAngularVelocity(newOmega);
+
         for (Tuple<IRotationNode, EnumFacing> connectedNode : start.connectedTorqueTilesList()) {
-            if (nodesToVisit.contains(connectedNode.getFirst())) {
-                double newMultiplier =
-                    multiplier * start.getAngularVelocityRatioFor(connectedNode.getSecond()).get()
-                        / connectedNode.getFirst()
-                        .getAngularVelocityRatioFor(connectedNode.getSecond().getOpposite()).get();
-
-                NodeTaskProcessed subTask = processNodeNetwork(connectedNode.getFirst(), start,
-                    connectedNode.getSecond(), nodesToVisit, timeDelta, newMultiplier);
-                totalEnergy += subTask.totalEnergy;
-                coefficientAdded += subTask.v_sqr_coefficent;
-                dotProduct += subTask.momentumMultDotProduct;
+            IRotationNode endNode = connectedNode.getFirst();
+            EnumFacing exploreDirection = connectedNode.getSecond();
+            if (visitedNodes.contains(connectedNode.getFirst())) {
+                continue;
             }
-        }
+            double ratioStart = start.getAngularVelocityRatioFor(exploreDirection).get();
+            double ratioEnd = endNode.getAngularVelocityRatioFor(exploreDirection.getOpposite())
+                .get();
+            double multiplier = -ratioStart / ratioEnd;
 
-        // Finally multiply by the input ratio (Except in the case of the first one)
-        if (from != null) {
-//            coefficient *= (from.getAngularVelocityRatioFor(sideFrom).get() / start.getAngularVelocityRatioFor(sideFrom.getOpposite()).get());
+            applyNewOmega(endNode, newOmega * multiplier, deltaTime, visitedNodes);
         }
-        return new NodeTaskProcessed(totalEnergy, coefficientAdded, dotProduct);
     }
 
-    private void processNodeNetworkPhase2(IRotationNode start, double newAngularVel,
-        Set<IRotationNode> visitedNodes) {
-        assert !visitedNodes.contains(start) : "This isn't right!";
-        visitedNodes.add(start);
-        start.setAngularVelocity(newAngularVel);
+    /**
+     * Calculate the rotational total energy stored in a gear train (not including any nodes in
+     * visitedNodes).
+     *
+     * @param start
+     * @param visitedNodes Nodes we ignore in our calculations.
+     * @return
+     */
+    private double calculateTotalEnergy(IRotationNode start, Set<IRotationNode> visitedNodes) {
+        visitedNodes.add(start); // kind of a bad spot to put this
+        // actual code start
+        double totalEnergy = start.getEnergy();
         for (Tuple<IRotationNode, EnumFacing> connectedNode : start.connectedTorqueTilesList()) {
-            if (!visitedNodes.contains(connectedNode.getFirst())) {
-                processNodeNetworkPhase2(connectedNode.getFirst(),
-                    newAngularVel * -1 * start.getAngularVelocityRatioFor(connectedNode.getSecond())
-                        .get() / connectedNode.getFirst()
-                        .getAngularVelocityRatioFor(connectedNode.getSecond().getOpposite()).get(),
-                    visitedNodes);
+            IRotationNode endNode = connectedNode.getFirst();
+            EnumFacing exploreDirection = connectedNode.getSecond();
+            if (visitedNodes.contains(connectedNode.getFirst())) {
+                continue;
             }
+            // double ratioStart = start.getAngularVelocityRatioFor(exploreDirection).get();
+            // double ratioEnd = endNode.getAngularVelocityRatioFor(exploreDirection.getOpposite()).get();
+            // double multiplier = -ratioStart / ratioEnd;
+
+            totalEnergy += calculateTotalEnergy(endNode, visitedNodes);
         }
+        return totalEnergy;
+    }
+
+    /**
+     * Calculate the rotational inertia of the start node with the gear train (not including any
+     * nodes in visitedNodes) attached. Reference: https://www.engineersedge.com/motors/gear_drive_system.htm
+     *
+     * @param start        The node which we calculate the inertia relative to.
+     * @param visitedNodes Nodes we ignore in our calculations.
+     * @return
+     */
+    private double calculateApparentInertia(IRotationNode start, Set<IRotationNode> visitedNodes) {
+        visitedNodes.add(start); // kind of a bad spot to put this
+        // actual code start
+        double apparentInertia = start.getRotationalInertia();
+        for (Tuple<IRotationNode, EnumFacing> connectedNode : start.connectedTorqueTilesList()) {
+            IRotationNode endNode = connectedNode.getFirst();
+            EnumFacing exploreDirection = connectedNode.getSecond();
+            if (visitedNodes.contains(connectedNode.getFirst())) {
+                continue;
+            }
+            double ratioStart = start.getAngularVelocityRatioFor(exploreDirection).get();
+            double ratioEnd = endNode.getAngularVelocityRatioFor(exploreDirection.getOpposite())
+                .get();
+            double multiplier = -ratioStart / ratioEnd;
+
+            apparentInertia += (multiplier * multiplier * calculateApparentInertia(endNode,
+                visitedNodes));
+        }
+        return apparentInertia;
+    }
+
+    /**
+     * Calculate the 'apparent' angular velocity of a gear train (not including any nodes in
+     * visitedNodes) relative to start. This probably isn't physically correct, but its good enough
+     * for our purposes.
+     *
+     * @param start        The node we calculate the apparent angular velocity relative to.
+     * @param visitedNodes Nodes we ignore in our calculations.
+     * @return
+     */
+    private double calculateApparentOmega(IRotationNode start, Set<IRotationNode> visitedNodes) {
+        visitedNodes.add(start); // kind of a bad spot to put this
+        // actual code start
+        double apparentOmega = start.getAngularVelocity();
+        for (Tuple<IRotationNode, EnumFacing> connectedNode : start.connectedTorqueTilesList()) {
+            IRotationNode endNode = connectedNode.getFirst();
+            EnumFacing exploreDirection = connectedNode.getSecond();
+            if (visitedNodes.contains(connectedNode.getFirst())) {
+                continue;
+            }
+            double ratioStart = start.getAngularVelocityRatioFor(exploreDirection).get();
+            double ratioEnd = endNode.getAngularVelocityRatioFor(exploreDirection.getOpposite())
+                .get();
+            double multiplier = -ratioStart / ratioEnd;
+            apparentOmega += (multiplier * calculateApparentOmega(endNode, visitedNodes));
+        }
+        return apparentOmega;
+    }
+
+    /**
+     * Calculate the net torque experienced by the gear train (not including any nodes in
+     * visitedNodes) relative to start.
+     *
+     * @param start        The node we calculate the apparent torque relative to.
+     * @param visitedNodes Nodes we ignore in our calculations.
+     * @return
+     */
+    private double calculateApparentTorque(IRotationNode start, Set<IRotationNode> visitedNodes) {
+        visitedNodes.add(start); // kind of a bad spot to put this
+        // actual code start
+        double apparentTorque = start.calculateInstantaneousTorque(parent);
+        for (Tuple<IRotationNode, EnumFacing> connectedNode : start.connectedTorqueTilesList()) {
+            IRotationNode endNode = connectedNode.getFirst();
+            EnumFacing exploreDirection = connectedNode.getSecond();
+            if (visitedNodes.contains(connectedNode.getFirst())) {
+                continue;
+            }
+            double ratioStart = start.getAngularVelocityRatioFor(exploreDirection).get();
+            double ratioEnd = endNode.getAngularVelocityRatioFor(exploreDirection.getOpposite())
+                .get();
+            double multiplier = -ratioStart / ratioEnd;
+            apparentTorque += (multiplier * calculateApparentTorque(endNode, visitedNodes));
+        }
+        return apparentTorque;
     }
 
     /**
@@ -230,17 +316,4 @@ public class ImplRotationNodeWorld implements IRotationNodeWorld {
 
     }
 
-    private static class NodeTaskProcessed {
-
-        private double totalEnergy;
-        private double v_sqr_coefficent;
-        private double momentumMultDotProduct;
-
-        private NodeTaskProcessed(double totalEnergy, double v_sqr_coefficent,
-            double momentumMultDotProduct) {
-            this.totalEnergy = totalEnergy;
-            this.v_sqr_coefficent = v_sqr_coefficent;
-            this.momentumMultDotProduct = momentumMultDotProduct;
-        }
-    }
 }

@@ -35,7 +35,7 @@ public interface IRotationNode extends Comparable<IRotationNode> {
             return getAngularVelocity() * -.4 * getRotationalInertia();
         } else {
             // System.out.println("test");
-            return getCustomTorqueFunction().get().apply(parent);
+            return getCustomTorqueFunction().get().calculateTorque(parent);
         }
     }
 
@@ -118,7 +118,11 @@ public interface IRotationNode extends Comparable<IRotationNode> {
         List<Tuple<IRotationNode, EnumFacing>> connectedTiles = new ArrayList<>();
         for (EnumFacing facing : EnumFacing.values()) {
             if (isConnectedToSide(facing)) {
-                connectedTiles.add(new Tuple(getTileOnSide(facing).get(), facing));
+                Optional<IRotationNode> tileOnSide = getTileOnSide(facing);
+                if (!tileOnSide.isPresent()) {
+                    throw new IllegalStateException("I thought this was impossible!");
+                }
+                connectedTiles.add(new Tuple<>(tileOnSide.get(), facing));
             }
         }
         return connectedTiles;

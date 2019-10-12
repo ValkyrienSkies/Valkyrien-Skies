@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import lombok.Getter;
+import lombok.Setter;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -43,7 +44,7 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
     private volatile boolean sendUpdateToClients;
     @Getter private volatile boolean isTryingToAssembleShip;
     @Getter private volatile boolean isTryingToDisassembleShip;
-    @Getter private boolean isPhysicsEnabled;
+    @Getter @Setter private boolean isPhysicsEnabled;
     @Getter private boolean isTryingToAlignShip;
     // Used by the client to store the vertical offset of each core
     private Map<EnumInfuserCore, Double> coreOffsets, coreOffsetsPrevTick;

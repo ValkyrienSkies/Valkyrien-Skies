@@ -17,8 +17,10 @@ import java.util.UUID;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.World;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
+import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
 /**
  * A class that keeps track of ship data
@@ -39,6 +41,13 @@ public class QueryableShipData {
         allShips.addIndex(UniqueIndex.onAttribute(ShipData.CHUNKS));
     }
 
+    /**
+     * {@link ValkyrienUtils#getQueryableData(World)}
+     */
+    public static QueryableShipData get(World world) {
+        return ValkyrienUtils.getQueryableData(world);
+    }
+    
     /**
      * @param data The ship to be renamed
      * @param newName The new name of the ship

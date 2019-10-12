@@ -98,10 +98,11 @@ public class ValkyrienUtils {
     }
 
     /**
-     * This method basically grabs the IVSWorldDataCapability from the world and then returns the
+     * This method basically grabs the {@link IValkyrienSkiesWorldData} capability from the world
+     * and then returns the QueryableShipData associated with it
      *
-     * @param world The world we are getting the QueryableShipData from.
-     * @return The QueryableShipData corresponding to the given world.
+     * @param world The world we are getting the QueryableShipData from
+     * @return The QueryableShipData corresponding to the given world
      */
     public static QueryableShipData getQueryableData(World world) {
         IValkyrienSkiesWorldData worldData = world

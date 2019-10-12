@@ -1,21 +1,29 @@
 package org.valkyrienskies.mod.common.command;
 
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
+import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.multithreaded.VSThread;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.ShipData;
 import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
 import org.valkyrienskies.mod.common.ship_handling.WorldServerShipManager;
+import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.HelpCommand;
 import picocli.CommandLine.Model;
+import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Option;
+import picocli.CommandLine.Parameters;
 import picocli.CommandLine.Spec;
 
 @Command(name = "valkyrienskies", aliases = "vs",
@@ -24,6 +32,7 @@ import picocli.CommandLine.Spec;
     subcommands = {
         HelpCommand.class,
         MainCommand.ListShips.class,
+        MainCommand.DisableShip.class,
         MainCommand.TPS.class})
 public class MainCommand implements Runnable {
 
@@ -68,6 +77,68 @@ public class MainCommand implements Runnable {
         }
     }
 
+    @Command(name = "ship-physics")
+    static class DisableShip implements Runnable {
+
+        @Inject
+        ICommandSender sender;
+
+        @Spec
+        CommandSpec spec;
+
+        @Parameters(index = "0")
+        String shipName;
+
+        @Parameters(index = "1", arity = "0..1")
+        boolean enabled;
+
+        @Override
+        public void run() {
+            World world = sender.getEntityWorld();
+            QueryableShipData data = QueryableShipData.get(world);
+            Optional<ShipData> oTargetShipData = data.getShipFromName(shipName);
+
+            if (!oTargetShipData.isPresent()) {
+                sender.sendMessage(new TextComponentString(
+                    "That ship, " + shipName + " could not be found"));
+                return;
+            }
+
+            ShipData targetShipData = oTargetShipData.get();
+            Optional<Entity> oEntity = world.getLoadedEntityList().stream()
+                .filter(e -> e.getPersistentID().equals(targetShipData.getUUID()))
+                .findFirst();
+
+            if (!oEntity.isPresent()) {
+                throw new RuntimeException("QueryableShipData is incorrect?");
+            }
+
+            try {
+                PhysicsWrapperEntity wrapperEntity = (PhysicsWrapperEntity) oEntity.get();
+                BlockPos infuserPos = wrapperEntity.getPhysicsObject().physicsInfuserPos();
+                TileEntityPhysicsInfuser infuser = Objects.requireNonNull(
+                    (TileEntityPhysicsInfuser) world.getTileEntity(infuserPos));
+
+                if (spec.commandLine().getParseResult().hasMatchedPositional(1)) {
+                    infuser.isPhysicsEnabled(enabled);
+                    sender.sendMessage(new TextComponentString(
+                        "Successfully set the physics of ship " + shipName + " to " +
+                            (infuser.isPhysicsEnabled() ? "enabled" : "disabled")
+                    ));
+                } else {
+                    sender.sendMessage(new TextComponentString(
+                        "The physics of the ship " + shipName + " is " +
+                            (infuser.isPhysicsEnabled() ? "enabled" : "disabled")
+                    ));
+                }
+
+            } catch (ClassCastException e) {
+                throw new RuntimeException("Ship entity is not PhysicsWrapperEntity or "
+                    + "Physics infuser is not a physics infuser?", e);
+            }
+        }
+    }
+
     @Command(name = "list-ships", aliases = "ls")
     static class ListShips implements Runnable {
 
@@ -77,6 +148,7 @@ public class MainCommand implements Runnable {
         @Option(names = {"-v", "--verbose"})
         boolean verbose;
 
+        @Override
         public void run() {
             World world = sender.getEntityWorld();
             QueryableShipData data = ValkyrienUtils.getQueryableData(world);

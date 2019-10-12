@@ -86,15 +86,13 @@ repositories {
         name = "OpenComputers"
         url = "http://maven.cil.li/"
     }
-    // This one is for porky datastructures.
-    maven {
-        name = "DaPorkchop_"
-        url = "https://maven.daporkchop.net/"
-    }
     // This one is for graph datastructures.
     maven {
         name = "Dogforce Games"
         url = "http://dogforce-games.com/maven"
+    }
+    maven {
+        url 'https://jitpack.io'
     }
     jcenter()
 }
@@ -106,7 +104,7 @@ ext {
     mixinVersion = "0.7.11-SNAPSHOT"
     opencomputersVersion = "MC1.12.1-1.7.1.+"
     spongeVersion = "1.12.2-2825-7.1.6"
-    vsApiVersion = "1.0"
+    vsApiVersion = "master-SNAPSHOT"
 }
 
 dependencies {
@@ -129,11 +127,10 @@ dependencies {
     compile "li.cil.oc:OpenComputers:$opencomputersVersion:api"
 
     shade "gigaherz.graph:GraphLib:$graphlibVersion"
-    shade "valkyrienwarfare:api:$vsApiVersion"
+    shade "com.github.ValkyrienSkies:Valkyrien-Skies-API:$vsApiVersion"
 
     // javax inject annotation
     shade group: 'javax.inject', name: 'javax.inject', version: '1' // 2KB
-
 
     // CQEngine for in-memory nonpersistent database
     shade("com.googlecode.cqengine:cqengine:$cqengineVersion") {

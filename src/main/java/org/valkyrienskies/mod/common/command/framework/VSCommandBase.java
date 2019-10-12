@@ -27,6 +27,8 @@ import picocli.CommandLine.Model.CommandSpec;
 public class VSCommandBase<K> extends CommandBase {
 
     private Class<K> cmdClass;
+    private List<String> aliases;
+    private String name;
 
     VSCommandBase(Class<K> cmdClass) {
         if (cmdClass.getAnnotation(Command.class) == null) {
@@ -34,16 +36,18 @@ public class VSCommandBase<K> extends CommandBase {
         }
 
         this.cmdClass = cmdClass;
+        this.name = this.cmdClass.getAnnotation(Command.class).name();
+        this.aliases = Arrays.asList(this.cmdClass.getAnnotation(Command.class).aliases());
     }
 
     @Override
     public String getName() {
-        return this.cmdClass.getAnnotation(Command.class).name();
+        return name;
     }
 
     @Override
     public List<String> getAliases() {
-        return Arrays.asList(this.cmdClass.getAnnotation(Command.class).aliases());
+        return aliases;
     }
 
     @SneakyThrows
@@ -89,7 +93,6 @@ public class VSCommandBase<K> extends CommandBase {
         commandLine.setErr(chatOut);
 
         args = VSCommandUtil.toProperArgs(args);
-
         commandLine.execute(args);
     }
 

@@ -32,6 +32,7 @@ import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.physmanagement.relocation.DetectorManager.DetectorIDs;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
@@ -73,7 +74,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
             super.setCustomNameTag(UUID.randomUUID()
                 .toString());
         }
-        getPhysicsObject().setDetectorID(detectorID);
+        getPhysicsObject().detectorID(DetectorIDs.values()[detectorID]);
         getPhysicsObject().assembleShipAsOrderedByPlayer(creator);
 
         ValkyrienUtils.getQueryableData(world).addShip(this);
@@ -93,7 +94,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
         super.setCustomNameTag(UUID.randomUUID()
             .toString());
 
-        getPhysicsObject().setDetectorID(0);
+        getPhysicsObject().detectorID(DetectorIDs.ShipSpawnerGeneral);
         this.physicsObject.physicsInfuserPos(te.getPos());
         getPhysicsObject().assembleShipAsOrderedByPlayer(null);
 

@@ -23,19 +23,22 @@ public class DetectorManager {
 
     public static SpatialDetector getDetectorFor(int id, BlockPos start, World worldIn, int maximum,
         boolean checkCorners) {
-        if (id == DetectorIDs.ShipSpawnerGeneral.ordinal()) {
-            return new ShipSpawnDetector(start, worldIn, maximum, checkCorners);
-        }
+        return getDetectorFor(DetectorIDs.values()[id], start, worldIn, maximum, checkCorners);
+    }
 
-        if (id == DetectorIDs.BlockPosFinder.ordinal()) {
-            return new ShipBlockPosFinder(start, worldIn, maximum, checkCorners);
-        }
 
-        if (id == DetectorIDs.SingleBlockPosFinder.ordinal()) {
-            return new SingeBlockPosDetector(start, worldIn, maximum, checkCorners);
+    public static SpatialDetector getDetectorFor(DetectorIDs id, BlockPos start, World worldIn, int maximum,
+        boolean checkCorners) {
+        switch (id) {
+            case ShipSpawnerGeneral:
+                return new ShipSpawnDetector(start, worldIn, maximum, checkCorners);
+            case BlockPosFinder:
+                return new ShipBlockPosFinder(start, worldIn, maximum, checkCorners);
+            case SingleBlockPosFinder:
+                return new SingleBlockPosDetector(start, worldIn, maximum, checkCorners);
+            default:
+                throw new IllegalArgumentException("Unrecognized detector");
         }
-
-        return null;
     }
 
     public enum DetectorIDs {

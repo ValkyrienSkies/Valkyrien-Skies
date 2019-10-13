@@ -24,9 +24,9 @@ import net.minecraft.world.World;
  *
  * @author thebest108
  */
-public class SingeBlockPosDetector extends SpatialDetector {
+public class SingleBlockPosDetector extends SpatialDetector {
 
-    public SingeBlockPosDetector(BlockPos start, World worldIn, int maximum, boolean checkCorners) {
+    public SingleBlockPosDetector(BlockPos start, World worldIn, int maximum, boolean checkCorners) {
         super(start, worldIn, maximum, false);
         startDetection();
     }

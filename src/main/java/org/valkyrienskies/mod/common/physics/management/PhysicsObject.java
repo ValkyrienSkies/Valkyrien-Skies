@@ -74,6 +74,7 @@ import org.valkyrienskies.mod.common.physics.management.chunkcache.SurroundingCh
 import org.valkyrienskies.mod.common.physmanagement.chunk.ShipChunkAllocator;
 import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
 import org.valkyrienskies.mod.common.physmanagement.relocation.DetectorManager;
+import org.valkyrienskies.mod.common.physmanagement.relocation.DetectorManager.DetectorIDs;
 import org.valkyrienskies.mod.common.physmanagement.relocation.MoveBlocks;
 import org.valkyrienskies.mod.common.physmanagement.relocation.SpatialDetector;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
@@ -115,7 +116,8 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
     private PhysicsCalculations physicsProcessor;
     /**
      * Has to be concurrent, only exists properly on the server. Do not use this for anything client
-     * side!
+     * side! Contains all of the non-air block positions on the ship. This is used for generating
+     * AABBs and deconstructing the ship.
      */
     @Getter
     private Set<BlockPos> blockPositions;
@@ -123,7 +125,8 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
     private boolean isPhysicsEnabled = false;
     @Getter @Setter
     private String creator;
-    private int detectorID;
+    @Getter @Setter
+    private DetectorIDs detectorID;
     // The closest Chunks to the Ship cached in here
     private SurroundingChunkCacheController cachedSurroundingChunks;
     // TODO: Make for re-organizing these to make Ship sizes Dynamic
@@ -246,9 +249,9 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
     public void assembleShipAsOrderedByPlayer(EntityPlayer player) {
         BlockPos centerInWorld = new BlockPos(wrapperEntity().posX,
             wrapperEntity().posY, wrapperEntity().posZ);
-        SpatialDetector detector = DetectorManager
-            .getDetectorFor(getDetectorID(), centerInWorld, world(),
-                VSConfig.maxShipSize + 1, true);
+        SpatialDetector detector = DetectorManager.getDetectorFor(
+            detectorID(), centerInWorld, world(), VSConfig.maxShipSize + 1, true);
+
         if (detector.foundSet.size() > VSConfig.maxShipSize || detector.cleanHouse) {
             System.err.println("Ship too big or bedrock detected!");
             if (player != null) {
@@ -747,20 +750,6 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
                 ((IPhysicsChunk) getChunkAt(x, z)).setParentPhysicsObject(Optional.of(this));
             }
         }
-    }
-
-    /**
-     * @return the detectorID
-     */
-    public int getDetectorID() {
-        return detectorID;
-    }
-
-    /**
-     * @param detectorID the detectorID to set
-     */
-    public void setDetectorID(int detectorID) {
-        this.detectorID = detectorID;
     }
 
     /**

@@ -1,12 +1,10 @@
 package org.valkyrienskies.addon.control.block.torque;
 
 import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Retention(RetentionPolicy.RUNTIME)
+/**
+ * This method may only be accessed on the physics thread
+ */
 @Target(ElementType.METHOD)
-public @interface PhysicsThreadOnly {
-
-}
+public @interface PhysicsThreadOnly {}

@@ -54,6 +54,7 @@ import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.coordinates.ISubspace;
 import org.valkyrienskies.mod.common.coordinates.ISubspaceProvider;
 import org.valkyrienskies.mod.common.coordinates.ImplSubspace;
+import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
@@ -115,9 +116,17 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
     }
 
     private static boolean isBoundingBoxTooLarge(AxisAlignedBB alignedBB) {
-        return (alignedBB.maxX - alignedBB.minX > BOUNDING_BOX_EDGE_LIMIT) || (
-            alignedBB.maxY - alignedBB.minY > BOUNDING_BOX_EDGE_LIMIT) || (
-            alignedBB.maxZ - alignedBB.minZ > BOUNDING_BOX_EDGE_LIMIT);
+        if (alignedBB.maxX - alignedBB.minX > BOUNDING_BOX_EDGE_LIMIT ||
+            alignedBB.maxY - alignedBB.minY > BOUNDING_BOX_EDGE_LIMIT ||
+            alignedBB.maxZ - alignedBB.minZ > BOUNDING_BOX_EDGE_LIMIT) {
+            return true;
+        }
+        return alignedBB.maxX > Integer.MAX_VALUE || alignedBB.maxX < Integer.MIN_VALUE
+            || alignedBB.minX > Integer.MAX_VALUE || alignedBB.minX < Integer.MIN_VALUE
+            || alignedBB.maxY > Integer.MAX_VALUE || alignedBB.maxY < Integer.MIN_VALUE
+            || alignedBB.minY > Integer.MAX_VALUE || alignedBB.minY < Integer.MIN_VALUE
+            || alignedBB.maxZ > Integer.MAX_VALUE || alignedBB.maxZ < Integer.MIN_VALUE
+            || alignedBB.minZ > Integer.MAX_VALUE || alignedBB.minZ < Integer.MIN_VALUE;
     }
 
     /**
@@ -403,12 +412,13 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
             Vec3d playerEyesPos = vec31;
             playerReachVector = vec32.subtract(vec31);
 
-            playerEyesPos = wrapper.getPhysicsObject().shipTransformationManager()
-                .getRenderTransform().transform(playerEyesPos,
-                    TransformType.GLOBAL_TO_SUBSPACE);
-            playerReachVector = wrapper.getPhysicsObject().shipTransformationManager()
-                .getRenderTransform().rotate(playerReachVector,
-                    TransformType.GLOBAL_TO_SUBSPACE);
+            ShipTransform shipTransform = wrapper.getPhysicsObject().shipTransformationManager()
+                .getRenderTransform();
+
+            playerEyesPos = shipTransform.transform(playerEyesPos,
+                TransformType.GLOBAL_TO_SUBSPACE);
+            playerReachVector = shipTransform.rotate(playerReachVector,
+                TransformType.GLOBAL_TO_SUBSPACE);
 
             Vec3d playerEyesReachAdded = playerEyesPos.add(playerReachVector.x * reachDistance,
                 playerReachVector.y * reachDistance, playerReachVector.z * reachDistance);
@@ -421,8 +431,7 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
                 if (shipResultDistFromPlayer < worldResultDistFromPlayer) {
                     worldResultDistFromPlayer = shipResultDistFromPlayer;
                     // The hitVec must ALWAYS be in global coordinates.
-                    resultInShip.hitVec = wrapper.getPhysicsObject().shipTransformationManager()
-                        .getRenderTransform()
+                    resultInShip.hitVec = shipTransform
                         .transform(resultInShip.hitVec, TransformType.SUBSPACE_TO_GLOBAL);
                     vanillaTrace = resultInShip;
                 }

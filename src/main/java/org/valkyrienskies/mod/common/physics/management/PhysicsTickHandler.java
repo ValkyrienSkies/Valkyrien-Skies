@@ -32,8 +32,6 @@ public class PhysicsTickHandler {
         List<PhysicsWrapperEntity> physicsEntities = manager.getTickablePhysicsEntities();
 
         for (PhysicsWrapperEntity wrapper : physicsEntities) {
-            wrapper.getPhysicsObject().shipTransformationManager().updatePrevTickTransform();
-
             if (wrapper.getPhysicsObject().shipTransformationManager()
                 .getCurrentPhysicsTransform() instanceof PhysicsShipTransform) {
                 // Here we poll our transforms from the physics tick, and apply the latest one

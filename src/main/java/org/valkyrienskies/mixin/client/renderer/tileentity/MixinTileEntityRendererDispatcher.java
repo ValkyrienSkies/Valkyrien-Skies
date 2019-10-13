@@ -51,7 +51,7 @@ public abstract class MixinTileEntityRendererDispatcher {
     @Inject(method = "render(Lnet/minecraft/tileentity/TileEntity;FI)V",
         at = @At("HEAD"),
         cancellable = true)
-    public void preRender(TileEntity tileentityIn, float partialTicks, int destroyStage,
+    private void preRender(TileEntity tileentityIn, float partialTicks, int destroyStage,
         CallbackInfo callbackInfo) {
         if (!hasChanged) {
             BlockPos pos = tileentityIn.getPos();
@@ -69,7 +69,7 @@ public abstract class MixinTileEntityRendererDispatcher {
 
                     physicsObject.get()
                         .shipRenderer()
-                        .setupTranslation(partialTicks);
+                        .applyRenderTransform(partialTicks);
 
                     double playerX = TileEntityRendererDispatcher.staticPlayerX;
                     double playerY = TileEntityRendererDispatcher.staticPlayerY;

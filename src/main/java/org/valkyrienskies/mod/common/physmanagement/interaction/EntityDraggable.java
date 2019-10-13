@@ -22,7 +22,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import org.valkyrienskies.mod.client.EventsClient;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.math.Vector;
@@ -90,7 +89,7 @@ public class EntityDraggable {
                 .getPhysicsObject().shipTransformationManager();
 
             if (entity.world.isRemote && entity instanceof EntityPlayer) {
-                EventsClient.updatePlayerMouseOver(entity);
+                // EventsClient.updatePlayerMouseOver(entity);
             }
 
             float rotYaw = entity.rotationYaw;

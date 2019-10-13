@@ -82,7 +82,8 @@ import valkyrienwarfare.api.TransformType;
 
 public class EventsCommon {
 
-    public static final Map<EntityPlayer, double[]> lastPositions = new HashMap<>();
+    @Deprecated
+    private static final Map<EntityPlayer, double[]> lastPositions = new HashMap<>();
     private static final Logger logger = LogManager.getLogger(EventsCommon.class);
 
     @SubscribeEvent()
@@ -330,6 +331,12 @@ public class EventsCommon {
         if (!event.getWorld().isRemote) {
             Explosion explosion = event.getExplosion();
             Vector center = new Vector(explosion.x, explosion.y, explosion.z);
+            Optional<PhysicsObject> optionalPhysicsObject = ValkyrienUtils
+                .getPhysicsObject(event.getWorld(),
+                    new BlockPos(event.getExplosion().getPosition()), true);
+            if (optionalPhysicsObject.isPresent()) {
+                return;
+            }
             // Explosion radius
             float radius = explosion.size;
             AxisAlignedBB toCheck = new AxisAlignedBB(center.X - radius, center.Y - radius,
@@ -345,13 +352,11 @@ public class EventsCommon {
 
                 ship.getPhysicsObject().shipTransformationManager().getCurrentTickTransform()
                     .transform(inLocal, TransformType.GLOBAL_TO_SUBSPACE);
-                // inLocal.roundToWhole();
+
                 Explosion expl = new Explosion(event.getWorld(), null, inLocal.X, inLocal.Y,
                     inLocal.Z, radius, explosion.causesFire, true);
 
                 double waterRange = .6D;
-
-                boolean cancelDueToWater = false;
 
                 for (int x = (int) Math.floor(expl.x - waterRange);
                     x <= Math.ceil(expl.x + waterRange); x++) {
@@ -359,29 +364,24 @@ public class EventsCommon {
                         y <= Math.ceil(expl.y + waterRange); y++) {
                         for (int z = (int) Math.floor(expl.z - waterRange);
                             z <= Math.ceil(expl.z + waterRange); z++) {
-                            if (!cancelDueToWater) {
-                                IBlockState state = event.getWorld()
-                                    .getBlockState(new BlockPos(x, y, z));
-                                if (state.getBlock() instanceof BlockLiquid) {
-                                    cancelDueToWater = true;
-                                }
+                            IBlockState state = event.getWorld()
+                                .getBlockState(new BlockPos(x, y, z));
+                            if (state.getBlock() instanceof BlockLiquid) {
+                                return;
                             }
                         }
                     }
                 }
 
-                if (!cancelDueToWater) {
-                    expl.doExplosionA();
-                    event.getExplosion().affectedBlockPositions.addAll(expl.affectedBlockPositions);
-                }
-
+                expl.doExplosionA();
+                event.getExplosion().affectedBlockPositions.addAll(expl.affectedBlockPositions);
             }
         }
     }
 
     @SubscribeEvent
-    public void onEntityTravelToDimension(EntityTravelToDimensionEvent event)   {
-        if (event.getEntity() instanceof PhysicsWrapperEntity)  {
+    public void onEntityTravelToDimension(EntityTravelToDimensionEvent event) {
+        if (event.getEntity() instanceof PhysicsWrapperEntity) {
             //prevent ships from changing dimensions, because it can and will break everything very badly
             event.setCanceled(true);
         }

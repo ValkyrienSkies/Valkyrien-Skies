@@ -84,7 +84,7 @@ public abstract class MixinEntityLivingBase extends Entity implements ISubspaced
     }
 
     @Inject(method = "dismountEntity", at = @At("HEAD"), cancellable = true)
-    public void dismountEntity(Entity entityIn, CallbackInfo info) {
+    private void dismountEntity(Entity entityIn, CallbackInfo info) {
         if (entityIn instanceof PhysicsWrapperEntity) {
             this.ridingEntity = null;
             this.posY += 1.45D;
@@ -129,6 +129,10 @@ public abstract class MixinEntityLivingBase extends Entity implements ISubspaced
                 physWrapper.getPhysicsObject().shipTransformationManager()
                     .getCurrentTickTransform(), TransformType.GLOBAL_TO_SUBSPACE, this);
             AxisAlignedBB bb = playerPoly.getEnclosedAABB();
+            double bbEdgeLen = bb.getAverageEdgeLength();
+            if (bbEdgeLen > 100) {
+                return false;
+            }
             for (int x = MathHelper.floor(bb.minX); x < bb.maxX; x++) {
                 for (int y = MathHelper.floor(bb.minY); y < bb.maxY; y++) {
                     for (int z = MathHelper.floor(bb.minZ); z < bb.maxZ; z++) {
@@ -154,7 +158,7 @@ public abstract class MixinEntityLivingBase extends Entity implements ISubspaced
         return false;
     }
 
-    public boolean isOnLadderOriginalButSlightlyOptimized() {
+    private boolean isOnLadderOriginalButSlightlyOptimized() {
         int i = MathHelper.floor(this.posX);
         int j = MathHelper.floor(this.getEntityBoundingBox().minY);
         int k = MathHelper.floor(this.posZ);

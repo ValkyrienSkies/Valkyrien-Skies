@@ -20,6 +20,7 @@ import java.util.Arrays;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import javax.vecmath.Matrix3d;
+import javax.vecmath.Matrix4d;
 import lombok.extern.log4j.Log4j2;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
@@ -196,6 +197,11 @@ public class ShipTransform {
             internalRotationMatrix[2], internalRotationMatrix[4], internalRotationMatrix[5],
             internalRotationMatrix[6], internalRotationMatrix[8], internalRotationMatrix[9],
             internalRotationMatrix[10]);
+    }
+
+    public Matrix4d createTransformMatrix(TransformType transformType) {
+        double[] internalMatrix = getInternalMatrix(transformType);
+        return new Matrix4d(internalMatrix);
     }
 
     @Deprecated

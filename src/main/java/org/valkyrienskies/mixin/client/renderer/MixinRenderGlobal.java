@@ -140,7 +140,7 @@ public abstract class MixinRenderGlobal {
                         if (physicsObject.isPresent()) {
                             physicsObject.get()
                                 .shipRenderer()
-                                .setupTranslation(partialTicks);
+                                .applyRenderTransform(partialTicks);
                             worldRendererIn.setTranslation(-physicsObject.get()
                                 .shipRenderer().offsetPos.getX(), -physicsObject.get()
                                 .shipRenderer().offsetPos.getY(), -physicsObject.get()
@@ -191,11 +191,7 @@ public abstract class MixinRenderGlobal {
         if (physicsObject.isPresent()) {
             physicsObject.get()
                 .shipRenderer()
-                .setupTranslation(partialTicks);
-
-            Minecraft.getMinecraft().entityRenderer.getMouseOver(partialTicks);
-
-            movingObjectPositionIn = Minecraft.getMinecraft().objectMouseOver;
+                .applyRenderTransform(partialTicks);
 
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder BufferBuilder = tessellator.getBuffer();
@@ -228,7 +224,8 @@ public abstract class MixinRenderGlobal {
         }
     }
 
-    public void drawSelectionBoxOriginal(EntityPlayer player, RayTraceResult movingObjectPositionIn,
+    private void drawSelectionBoxOriginal(EntityPlayer player,
+        RayTraceResult movingObjectPositionIn,
         int execute, float partialTicks) {
         if (execute == 0 && movingObjectPositionIn.typeOfHit == RayTraceResult.Type.BLOCK) {
             GlStateManager.enableBlend();
@@ -260,13 +257,13 @@ public abstract class MixinRenderGlobal {
     }
 
     @Inject(method = "renderEntities(Lnet/minecraft/entity/Entity;Lnet/minecraft/client/renderer/culling/ICamera;F)V", at = @At("HEAD"))
-    public void preRenderEntities(Entity renderViewEntity, ICamera camera, float partialTicks,
+    private void preRenderEntities(Entity renderViewEntity, ICamera camera, float partialTicks,
         CallbackInfo callbackInfo) {
         ClientProxy.lastCamera = camera;
     }
 
     @Inject(method = "renderBlockLayer(Lnet/minecraft/util/BlockRenderLayer;DILnet/minecraft/entity/Entity;)I", at = @At("HEAD"))
-    public void preRenderBlockLayer(BlockRenderLayer blockLayerIn, double partialTicks, int pass,
+    private void preRenderBlockLayer(BlockRenderLayer blockLayerIn, double partialTicks, int pass,
         Entity entityIn, CallbackInfoReturnable callbackInfo) {
         RenderHelper.disableStandardItemLighting();
 

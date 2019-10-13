@@ -22,7 +22,7 @@ import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
 import org.lwjgl.opengl.GL11;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
+import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.math.Quaternion;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
@@ -40,7 +40,6 @@ public class PhysObjectRenderManager {
     // It's actual value is completely irrelevant as long as it's close to the
     // Ship's centerBlockPos
     public BlockPos offsetPos;
-    public double curPartialTick;
     private int glCallListSolid;
     private int glCallListTranslucent;
     private int glCallListCutout;
@@ -55,7 +54,6 @@ public class PhysObjectRenderManager {
         this.glCallListCutout = -1;
         this.glCallListCutoutMipped = -1;
         this.offsetPos = null;
-        this.curPartialTick = 0;
         this.renderChunks = null;
     }
 
@@ -87,7 +85,7 @@ public class PhysObjectRenderManager {
         // j, (float) k);
         // GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
-        setupTranslation(partialTicks);
+        applyRenderTransform(partialTicks);
         for (PhysRenderChunk[] chunkArray : renderChunks) {
             for (PhysRenderChunk renderChunk : chunkArray) {
                 renderChunk.renderBlockLayer(layerToRender, partialTicks, pass);
@@ -165,26 +163,8 @@ public class PhysObjectRenderManager {
         return camera == null || camera.isBoundingBoxInFrustum(parent.shipBoundingBox());
     }
 
-    public void setupTranslation(double partialTicks) {
-        updateTranslation(partialTicks);
-        // if(curPartialTick!=partialTicks){
-        // updateTranslation(partialTicks);
-        // }else{
-        // updateTranslation(partialTicks);
-        // curPartialTick = partialTicks;
-        // }
-    }
-
-    public void updateTranslation(double partialTicks) {
-        PhysicsWrapperEntity entity = parent.wrapperEntity();
-        Vector centerOfRotation = entity.getPhysicsObject().centerCoord();
-        curPartialTick = partialTicks;
-
-        double moddedX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks;
-        double moddedY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks;
-        double moddedZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks;
-
-        // System.out.println(entity.roll - entity.prevRoll);
+    public void applyRenderTransform(double partialTicks) {
+        Vector centerOfRotation = parent.centerCoord();
 
         double p0 = Minecraft.getMinecraft().player.lastTickPosX
             + (Minecraft.getMinecraft().player.posX - Minecraft.getMinecraft().player.lastTickPosX)
@@ -196,16 +176,22 @@ public class PhysObjectRenderManager {
             + (Minecraft.getMinecraft().player.posZ - Minecraft.getMinecraft().player.lastTickPosZ)
             * partialTicks;
 
-        Quaternion smoothRotation = getSmoothRotationQuat(partialTicks);
-        double[] radians = smoothRotation.toRadians();
+        ShipTransform renderTransform = parent.shipTransformationManager().getRenderTransform();
+
+        Vector renderPos = new Vector(centerOfRotation);
+        renderTransform.transform(renderPos, TransformType.SUBSPACE_TO_GLOBAL);
+
+        double moddedX = renderPos.X;
+        double moddedY = renderPos.Y;
+        double moddedZ = renderPos.Z;
+
+        double[] radians = renderTransform
+            .createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL).toRadians();
 
         double moddedPitch = Math.toDegrees(radians[0]);
         double moddedYaw = Math.toDegrees(radians[1]);
         double moddedRoll = Math.toDegrees(radians[2]);
-
-        parent.shipTransformationManager()
-            .updateRenderTransform(moddedX, moddedY, moddedZ, moddedPitch, moddedYaw, moddedRoll);
-
+        // Offset pos is used to prevent floating point errors when rendering stuff thats very far away.
         if (offsetPos != null) {
             double offsetX = offsetPos.getX() - centerOfRotation.X;
             double offsetY = offsetPos.getY() - centerOfRotation.Y;
@@ -216,10 +202,10 @@ public class PhysObjectRenderManager {
             GL11.glRotated(moddedYaw, 0, 1D, 0);
             GL11.glRotated(moddedRoll, 0, 0, 1D);
             GL11.glTranslated(offsetX, offsetY, offsetZ);
-            // transformBuffer = BufferUtils.createFloatBuffer(16);
         }
     }
 
+    @Deprecated
     public Quaternion getSmoothRotationQuat(double partialTick) {
         Quaternion oneTickBefore = parent.shipTransformationManager().getPrevTickTransform()
             .createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
@@ -229,13 +215,8 @@ public class PhysObjectRenderManager {
     }
 
     public void inverseTransform(double partialTicks) {
-        PhysicsWrapperEntity entity = parent.wrapperEntity();
-        Vector centerOfRotation = entity.getPhysicsObject().centerCoord();
-        curPartialTick = partialTicks;
+        Vector centerOfRotation = parent.centerCoord();
 
-        double moddedX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks;
-        double moddedY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks;
-        double moddedZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks;
         double p0 = Minecraft.getMinecraft().player.lastTickPosX
             + (Minecraft.getMinecraft().player.posX - Minecraft.getMinecraft().player.lastTickPosX)
             * partialTicks;
@@ -246,15 +227,21 @@ public class PhysObjectRenderManager {
             + (Minecraft.getMinecraft().player.posZ - Minecraft.getMinecraft().player.lastTickPosZ)
             * partialTicks;
 
-        Quaternion smoothRotation = getSmoothRotationQuat(partialTicks);
-        double[] radians = smoothRotation.toRadians();
+        ShipTransform renderTransform = parent.shipTransformationManager().getRenderTransform();
+
+        Vector renderPos = new Vector(centerOfRotation);
+        renderTransform.transform(renderPos, TransformType.SUBSPACE_TO_GLOBAL);
+
+        double moddedX = renderPos.X;
+        double moddedY = renderPos.Y;
+        double moddedZ = renderPos.Z;
+
+        double[] radians = renderTransform
+            .createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL).toRadians();
 
         double moddedPitch = Math.toDegrees(radians[0]);
         double moddedYaw = Math.toDegrees(radians[1]);
         double moddedRoll = Math.toDegrees(radians[2]);
-
-        // parent.coordTransform.updateRenderMatrices(moddedX, moddedY, moddedZ,
-        // moddedPitch, moddedYaw, moddedRoll);
 
         if (offsetPos != null) {
             double offsetX = offsetPos.getX() - centerOfRotation.X;
@@ -266,7 +253,6 @@ public class PhysObjectRenderManager {
             GL11.glRotated(-moddedYaw, 0, 1D, 0);
             GL11.glRotated(-moddedPitch, 1D, 0, 0);
             GlStateManager.translate(p0 - moddedX, p1 - moddedY, p2 - moddedZ);
-            // transformBuffer = BufferUtils.createFloatBuffer(16);
         }
     }
 

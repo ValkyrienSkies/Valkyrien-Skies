@@ -39,8 +39,6 @@ import org.valkyrienskies.mod.client.render.PhysicsWrapperEntityRenderFactory;
 import org.valkyrienskies.mod.client.render.tile_entity_renderers.TileEntityPhysicsInfuserRenderer;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
-import org.valkyrienskies.mod.common.math.Quaternion;
-import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 
 public class ClientProxy extends CommonProxy {
@@ -111,41 +109,6 @@ public class ClientProxy extends CommonProxy {
         renderItem.getItemModelMesher()
             .register(ValkyrienSkiesMod.INSTANCE.physicsCore, 0,
                 new ModelResourceLocation(ValkyrienSkiesMod.MOD_ID + ":testmodel", "inventory"));
-    }
-
-    @Override
-    public void updateShipPartialTicks(PhysicsWrapperEntity entity) {
-        double partialTicks = Minecraft.getMinecraft().getRenderPartialTicks();
-        // entity.wrapping.renderer.updateTranslation(partialTicks);
-        Vector centerOfRotation = entity.getPhysicsObject().centerCoord();
-        if (entity.getPhysicsObject().shipRenderer() == null) {
-            return;
-        }
-        entity.getPhysicsObject().shipRenderer().curPartialTick = partialTicks;
-
-        double moddedX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks;
-        double moddedY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks;
-        double moddedZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks;
-        double p0 = Minecraft.getMinecraft().player.lastTickPosX +
-            (Minecraft.getMinecraft().player.posX - Minecraft.getMinecraft().player.lastTickPosX)
-                * partialTicks;
-        double p1 = Minecraft.getMinecraft().player.lastTickPosY +
-            (Minecraft.getMinecraft().player.posY - Minecraft.getMinecraft().player.lastTickPosY)
-                * partialTicks;
-        double p2 = Minecraft.getMinecraft().player.lastTickPosZ +
-            (Minecraft.getMinecraft().player.posZ - Minecraft.getMinecraft().player.lastTickPosZ)
-                * partialTicks;
-
-        Quaternion smoothRotation = entity.getPhysicsObject().shipRenderer()
-            .getSmoothRotationQuat(partialTicks);
-        double[] radians = smoothRotation.toRadians();
-
-        double moddedPitch = Math.toDegrees(radians[0]);
-        double moddedYaw = Math.toDegrees(radians[1]);
-        double moddedRoll = Math.toDegrees(radians[2]);
-
-        entity.getPhysicsObject().shipTransformationManager()
-            .updateRenderTransform(moddedX, moddedY, moddedZ, moddedPitch, moddedYaw, moddedRoll);
     }
 
     private void registerAnimations() {

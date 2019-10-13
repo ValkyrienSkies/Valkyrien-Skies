@@ -63,7 +63,7 @@ public abstract class MixinRenderManager {
 
                 mountData.getMountedShip()
                     .shipRenderer()
-                    .setupTranslation(partialTicks);
+                    .applyRenderTransform(partialTicks);
 
                 if (localPosition != null) {
                     localPosition = new Vector(localPosition);

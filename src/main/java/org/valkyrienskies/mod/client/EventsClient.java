@@ -40,6 +40,7 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
+import net.minecraftforge.fml.common.gameevent.TickEvent.RenderTickEvent;
 import org.lwjgl.opengl.GL11;
 import org.valkyrienskies.fixes.SoundFixWrapper;
 import org.valkyrienskies.mod.client.render.GibsModelRegistry;
@@ -78,6 +79,16 @@ public class EventsClient {
         switch (event.phase) {
             case START:
                 // Nothing for now
+                for (PhysicsWrapperEntity wrapper : ValkyrienSkiesMod.VS_PHYSICS_MANAGER
+                    .getManagerForWorld(world)
+                    .getTickablePhysicsEntities()) {
+                    // This is necessary because Minecraft will run a raytrace right after this
+                    // event to determine what the player is looking at for interaction purposes.
+                    // That raytrace will use the render transform, so we must have the render
+                    // transform set to a partialTick of 1.0.
+                    wrapper.getPhysicsObject().shipTransformationManager()
+                        .updateRenderTransform(1.0);
+                }
                 break;
             case END:
                 // Tick the IShipManager on the world client.
@@ -148,7 +159,7 @@ public class EventsClient {
                     .shipRenderer().offsetPos.getZ());
                 physicsObject.get()
                     .shipRenderer()
-                    .setupTranslation(event.getPartialTicks());
+                    .applyRenderTransform(event.getPartialTicks());
             }
         }
     }
@@ -217,5 +228,26 @@ public class EventsClient {
             .registerSprite(mainCoreInventoryTexture);
         event.getMap()
             .registerSprite(smallCoreInventoryTexture);
+    }
+
+    @SubscribeEvent
+    public void onRenderTickEvent(RenderTickEvent event) {
+        World world = Minecraft.getMinecraft().world;
+        if (world == null) {
+            return; // No ships to worry about.
+        }
+        double partialTicks = event.renderTickTime;
+        if (Minecraft.getMinecraft().isGamePaused()) {
+            partialTicks = Minecraft.getMinecraft().renderPartialTicksPaused;
+        }
+
+        if (event.phase == Phase.START) {
+            for (PhysicsWrapperEntity wrapper : ValkyrienSkiesMod.VS_PHYSICS_MANAGER
+                .getManagerForWorld(world)
+                .getTickablePhysicsEntities()) {
+                wrapper.getPhysicsObject().shipTransformationManager()
+                    .updateRenderTransform(partialTicks);
+            }
+        }
     }
 }

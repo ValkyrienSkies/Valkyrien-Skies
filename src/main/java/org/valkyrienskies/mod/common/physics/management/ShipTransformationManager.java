@@ -24,6 +24,7 @@ import net.minecraft.world.border.WorldBorder;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
+import org.valkyrienskies.mod.common.math.Quaternion;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.multithreaded.PhysicsShipTransform;
 import org.valkyrienskies.mod.common.network.PhysWrapperPositionMessage;
@@ -73,21 +74,6 @@ public class ShipTransformationManager {
         setCurrentTickTransform(newTickTransform);
     }
 
-    public void updateRenderTransform(double x, double y, double z, double pitch, double yaw,
-        double roll) {
-        ShipTransform newRenderTransform = new ShipTransform(x, y, z, pitch, yaw, roll,
-            parent.centerCoord());
-        setRenderTransform(newRenderTransform);
-    }
-
-    /**
-     * Sets the previous transform to the current transform.
-     */
-    public void updatePrevTickTransform() {
-        // Transformation objects are immutable, so this is 100% safe!
-        setPrevTickTransform(getCurrentTickTransform());
-    }
-
     /**
      * Updates all the transformations, only updates the AABB if passed true.
      *
@@ -96,6 +82,7 @@ public class ShipTransformationManager {
     @Deprecated
     public void updateAllTransforms(boolean updatePhysicsTransform, boolean updateParentAABB,
         boolean updatePassengers) {
+        prevTickTransform = currentTickTransform;
         // The client should never be updating the AABB on its own.
         if (parent.world().isRemote) {
             updateParentAABB = false;
@@ -327,25 +314,10 @@ public class ShipTransformationManager {
     }
 
     /**
-     * @param renderTransform the renderTransform to set
-     */
-    @Deprecated
-    private void setRenderTransform(ShipTransform renderTransform) {
-        this.renderTransform = renderTransform;
-    }
-
-    /**
      * @return the prevTransform
      */
     public ShipTransform getPrevTickTransform() {
         return prevTickTransform;
-    }
-
-    /**
-     * @param prevTransform the prevTransform to set
-     */
-    private void setPrevTickTransform(ShipTransform prevTransform) {
-        this.prevTickTransform = prevTransform;
     }
 
     /**
@@ -372,6 +344,39 @@ public class ShipTransformationManager {
 
     public void updatePreviousPhysicsTransform() {
         this.prevPhysicsTransform = currentPhysicsTransform;
+    }
+
+    public void updateRenderTransform(double partialTick) {
+        if (partialTick == 0) {
+            renderTransform = prevTickTransform;
+            return;
+        } else if (partialTick == 1) {
+            renderTransform = currentTickTransform;
+            return;
+        }
+        ShipTransform prev = prevTickTransform;
+        ShipTransform cur = currentTickTransform;
+        Vector shipCenter = parent.centerCoord();
+
+        Vector prevPos = new Vector(shipCenter);
+        Vector curPos = new Vector(shipCenter);
+        prev.transform(prevPos, TransformType.SUBSPACE_TO_GLOBAL);
+        cur.transform(curPos, TransformType.SUBSPACE_TO_GLOBAL);
+        Vector deltaPos = prevPos.getSubtraction(curPos);
+        deltaPos.multiply(partialTick);
+        Vector partialPos = new Vector(prevPos);
+        partialPos.add(deltaPos); // Now partialPos is complete
+
+        Quaternion prevRot = prev.createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
+        Quaternion curRot = cur.createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
+        Quaternion partialRot = Quaternion.slerpInterpolate(prevRot, curRot, partialTick);
+        double[] partialAngles = partialRot
+            .toRadians(); // Now partial angles {pitch, yaw, roll} are complete.
+        // Put it all together to get the render transform.
+        renderTransform = new ShipTransform(partialPos.X, partialPos.Y,
+            partialPos.Z, Math.toDegrees(partialAngles[0]), Math.toDegrees(partialAngles[1]),
+            Math.toDegrees(partialAngles[2]),
+            parent.centerCoord());
     }
 
 }

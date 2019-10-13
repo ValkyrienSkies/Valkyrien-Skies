@@ -16,7 +16,6 @@
 
 package org.valkyrienskies.mod.proxy;
 
-import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -25,7 +24,6 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import org.valkyrienskies.mod.client.gui.VSGuiHandler;
 import org.valkyrienskies.mod.common.EventsCommon;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 
 public class CommonProxy {
 
@@ -38,12 +36,6 @@ public class CommonProxy {
     }
 
     public void postInit(FMLPostInitializationEvent e) {
-    }
-
-    public void updateShipPartialTicks(PhysicsWrapperEntity wrapper) {
-    }
-
-    public void registerCommands(MinecraftServer server) {
     }
 
 }

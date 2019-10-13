@@ -558,7 +558,6 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
             toUse.applySmoothLerp(this, .6D);
         }
 
-        shipTransformationManager().updatePrevTickTransform();
         shipTransformationManager().updateAllTransforms(false, false, true);
     }
 

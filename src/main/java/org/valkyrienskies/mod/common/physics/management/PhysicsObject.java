@@ -30,6 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -296,7 +297,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
         claimedChunkCache = new ClaimedChunkCacheController(this, false);
 
         // Prevents weird shit from spawning at the edges of a ship
-        replaceOuterChunksWithAir();
+        //replaceOuterChunksWithAir();
 
         assignChunkPhysicObject();
 
@@ -535,6 +536,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
         Chunk chunk;
         ExtendedBlockStorage storage;
         Chunk[][] claimedChunks = claimedChunkCache.getCacheArray();
+        int airStateIndex = Block.getStateId(Blocks.AIR.getDefaultState());
 
         for (chunkX = claimedChunks.length - 1; chunkX > -1; chunkX--) {
             for (chunkZ = claimedChunks[0].length - 1; chunkZ > -1; chunkZ--) {
@@ -548,7 +550,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
                                     for (z = 0; z < 16; z++) {
                                         if (storage.data.storage
                                             .getAt(y << 8 | z << 4 | x)
-                                            != ValkyrienSkiesMod.airStateIndex) {
+                                            != airStateIndex) {
                                             BlockPos pos = new BlockPos(chunk.x * 16 + x,
                                                 index * 16 + y,
                                                 chunk.z * 16 + z);

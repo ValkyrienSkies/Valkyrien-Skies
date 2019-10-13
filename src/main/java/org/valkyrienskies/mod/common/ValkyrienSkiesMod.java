@@ -137,7 +137,6 @@ public class ValkyrienSkiesMod {
     public static SimpleNetworkWrapper physWrapperNetwork;
     public static final CreativeTabs VS_CREATIVE_TAB = new TabValkyrienSkies(MOD_ID);
 
-    public static int airStateIndex;
     private CompletableFuture<Kryo> kryoInstance;
 
     @Mod.EventHandler
@@ -194,7 +193,6 @@ public class ValkyrienSkiesMod {
 
     @EventHandler
     public void postInit(FMLPostInitializationEvent event) {
-        airStateIndex = Block.getStateId(Blocks.AIR.getDefaultState());
         proxy.postInit(event);
     }
 

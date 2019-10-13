@@ -92,8 +92,6 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
     private final PhysicsWrapperEntity wrapperEntity;
     @Getter
     private final List<EntityPlayerMP> watchingPlayers;
-    @Getter
-    private final Set<String> allowedUsers;
     private final ISubspace shipSubspace;
     private final Set<INodeController> physicsControllers;
     private final Set<INodeController> physicsControllersImmutable;
@@ -137,8 +135,6 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
      */
     private ClaimedChunkCacheController claimedChunkCache;
 
-    // Compatibility for ships made before the update
-    private boolean claimedChunksInMap = false;
     @Getter @Setter
     private AxisAlignedBB shipBoundingBox;
 
@@ -162,8 +158,6 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
         this.blockPositions = ConcurrentHashMap.newKeySet();
         this.shipBoundingBox = Entity.ZERO_AABB;
         this.watchingPlayers = new ArrayList<>();
-        this.allowedUsers = new HashSet<>();
-        // this.gameConsecutiveTicks.set(0);
         this.shipSubspace = new ImplSubspace(this);
         this.physicsControllers = Sets.newConcurrentHashSet();
         this.physicsControllersImmutable = Collections.unmodifiableSet(this.physicsControllers);
@@ -245,7 +239,6 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
         ownedChunks(ValkyrienSkiesMod.VS_CHUNK_MANAGER.getManagerForWorld(wrapperEntity().world)
             .getNextAvailableChunkSet(radius));
         ValkyrienSkiesMod.VS_CHUNK_MANAGER.registerChunksForShip(wrapperEntity());
-        claimedChunksInMap = true;
     }
 
     /**
@@ -496,12 +489,6 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
     public void onPostTick() {
         if (!wrapperEntity().isDead && !wrapperEntity().world.isRemote) {
             ValkyrienSkiesMod.VS_CHUNK_MANAGER.updateShipPosition(wrapperEntity());
-            if (!claimedChunksInMap) {
-                // Old ships not in the map will add themselves in once loaded
-                ValkyrienSkiesMod.VS_CHUNK_MANAGER.registerChunksForShip(wrapperEntity());
-                System.out.println("Old ship detected, adding to the registered Chunks map");
-                claimedChunksInMap = true;
-            }
         }
     }
 
@@ -614,7 +601,6 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
         // compound.setString("allowedUsers", result.substring(0, result.length() - 1));
 
         compound.setString("owner", this.creator());
-        compound.setBoolean("claimedChunksInMap", claimedChunksInMap);
         // Write and read AABB from NBT to speed things up.
         ValkyrienNBTUtils.writeAABBToNBT("collision_aabb", shipBoundingBox(), compound);
         ValkyrienNBTUtils.writeBlockPosToNBT("physics_infuser_pos", physicsInfuserPos, compound);
@@ -663,12 +649,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
         // After we have loaded which positions are stored in the ship; we load the physics calculations object.
         physicsProcessor().readFromNBTTag(compound);
 
-        allowedUsers().clear();
-        Collections.addAll(allowedUsers(), compound.getString("allowedUsers")
-            .split(";"));
-
         creator(compound.getString("owner"));
-        claimedChunksInMap = compound.getBoolean("claimedChunksInMap");
 
         this.shipBoundingBox(ValkyrienNBTUtils.readAABBFromNBT("collision_aabb", compound));
 

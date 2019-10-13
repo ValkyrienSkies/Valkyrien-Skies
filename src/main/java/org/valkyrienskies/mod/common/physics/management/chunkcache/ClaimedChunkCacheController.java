@@ -157,7 +157,7 @@ public class ClaimedChunkCacheController {
         }
     }
 
-    private void injectChunkIntoWorld(Chunk chunk, int x, int z, boolean putInId2ChunkMap) {
+    public void injectChunkIntoWorld(Chunk chunk, int x, int z, boolean putInId2ChunkMap) {
         VSChunkClaim chunkClaim = parent.ownedChunks();
 
         // Make sure this chunk knows we own it.

@@ -39,8 +39,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.server.SPacketChunkData;
 import net.minecraft.network.play.server.SPacketUnloadChunk;
-import net.minecraft.server.management.PlayerChunkMap;
-import net.minecraft.server.management.PlayerChunkMapEntry;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -142,11 +140,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
     // Compatibility for ships made before the update
     private boolean claimedChunksInMap = false;
     @Getter @Setter
-    private boolean isNameCustom = false;
-    @Getter @Setter
     private AxisAlignedBB shipBoundingBox;
-    @Getter @Setter
-    private ShipType shipType;
 
     /**
      * If this PhysicsObject needs to update the collision cache immediately
@@ -340,10 +334,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 
             MoveBlocks.copyBlockToPos(world(), oldPos, newPos, Optional.of(this));
         }
-        // Remember to update the infuser pos
-        if (this.shipType() == ShipType.PHYSICS_CORE_INFUSED) {
-            this.physicsInfuserPos = this.physicsInfuserPos.add(centerDifference);
-        }
+        this.physicsInfuserPos = this.physicsInfuserPos.add(centerDifference);
 
         // First we destroy all the tile entities we copied.
         iter = detector.foundSet.iterator();
@@ -388,37 +379,6 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
         shipTransformationManager(new ShipTransformationManager(this));
 
         physicsProcessor().updateParentCenterOfMass();
-    }
-
-    private void injectChunkIntoWorld(Chunk chunk, int x, int z, boolean putInId2ChunkMap) {
-        // Make sure this chunk knows we own it.
-        ((IPhysicsChunk) chunk).setParentPhysicsObject(Optional.of(this));
-
-        ChunkProviderServer provider = (ChunkProviderServer) world().getChunkProvider();
-        chunk.dirty = true;
-        claimedChunkCache.setChunkAt(x, z, chunk);
-
-        if (putInId2ChunkMap) {
-            provider.loadedChunks.put(ChunkPos.asLong(x, z), chunk);
-        }
-
-        chunk.onLoad();
-        // We need to set these otherwise certain events like Sponge's PhaseTracker will refuse to work properly with ships!
-        chunk.setTerrainPopulated(true);
-        chunk.setLightPopulated(true);
-
-        PlayerChunkMap map = ((WorldServer) world()).getPlayerChunkMap();
-
-        PlayerChunkMapEntry entry = new PlayerChunkMapEntry(map, x, z);
-
-        // TODO: This is causing concurrency crashes
-        long i = PlayerChunkMap.getIndex(x, z);
-
-        map.entryMap.put(i, entry);
-        map.entries.add(entry);
-
-        entry.sentToPlayers = true;
-        entry.players = watchingPlayers();
     }
 
     // Experimental, could fix issues with random shit generating inside of Ships
@@ -507,28 +467,26 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 
     public void onTick() {
         if (!world().isRemote) {
-            if (this.shipType() == ShipType.PHYSICS_CORE_INFUSED) {
-                TileEntity te = world().getTileEntity(this.physicsInfuserPos);
-                boolean shouldDeconstructShip;
-                if (te instanceof TileEntityPhysicsInfuser) {
-                    TileEntityPhysicsInfuser physicsCore = (TileEntityPhysicsInfuser) te;
-                    // Mark for deconstruction
-                    shouldDeconstructShip =
-                        !physicsCore.canMaintainShip() || physicsCore.isTryingToDisassembleShip();
-                    shipAligningToGrid =
-                        !physicsCore.canMaintainShip() || physicsCore.isTryingToAlignShip();
-                    isPhysicsEnabled(
-                        !physicsCore.canMaintainShip() || physicsCore.isPhysicsEnabled());
-                } else {
-                    // Mark for deconstruction
-                    shipAligningToGrid = true;
-                    shouldDeconstructShip = true;
-                    isPhysicsEnabled(true);
-                }
+            TileEntity te = world().getTileEntity(this.physicsInfuserPos);
+            boolean shouldDeconstructShip;
+            if (te instanceof TileEntityPhysicsInfuser) {
+                TileEntityPhysicsInfuser physicsCore = (TileEntityPhysicsInfuser) te;
+                // Mark for deconstruction
+                shouldDeconstructShip =
+                    !physicsCore.canMaintainShip() || physicsCore.isTryingToDisassembleShip();
+                shipAligningToGrid =
+                    !physicsCore.canMaintainShip() || physicsCore.isTryingToAlignShip();
+                isPhysicsEnabled(
+                    !physicsCore.canMaintainShip() || physicsCore.isPhysicsEnabled());
+            } else {
+                // Mark for deconstruction
+                shipAligningToGrid = true;
+                shouldDeconstructShip = true;
+                isPhysicsEnabled(true);
+            }
 
-                if (shouldDeconstructShip) {
-                    this.tryToDeconstructShip();
-                }
+            if (shouldDeconstructShip) {
+                this.tryToDeconstructShip();
             }
         }
 
@@ -657,17 +615,9 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 
         compound.setString("owner", this.creator());
         compound.setBoolean("claimedChunksInMap", claimedChunksInMap);
-        compound.setBoolean("isNameCustom", isNameCustom());
-        compound.setString("shipType", shipType.name());
         // Write and read AABB from NBT to speed things up.
         ValkyrienNBTUtils.writeAABBToNBT("collision_aabb", shipBoundingBox(), compound);
         ValkyrienNBTUtils.writeBlockPosToNBT("physics_infuser_pos", physicsInfuserPos, compound);
-
-        try {
-            compound.setString("ship_type", shipType.name());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     public void readFromNBTTag(NBTTagCompound compound) {
@@ -708,13 +658,6 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
             }
         }
 
-        if (compound.hasKey("ship_type")) {
-            shipType = ShipType.valueOf(ShipType.class, compound.getString("ship_type"));
-        } else {
-            // Assume its an older Ship, and that its fully unlocked
-            shipType = ShipType.FULL_UNLOCKED;
-        }
-
         loadClaimedChunks();
 
         // After we have loaded which positions are stored in the ship; we load the physics calculations object.
@@ -726,8 +669,6 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 
         creator(compound.getString("owner"));
         claimedChunksInMap = compound.getBoolean("claimedChunksInMap");
-        isNameCustom(compound.getBoolean("isNameCustom"));
-        wrapperEntity().dataManager.set(PhysicsWrapperEntity.IS_NAME_CUSTOM, isNameCustom());
 
         this.shipBoundingBox(ValkyrienNBTUtils.readAABBFromNBT("collision_aabb", compound));
 
@@ -765,9 +706,6 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
         shipTransformationManager().serverBuffer
             .pushMessage(new PhysWrapperPositionMessage(this));
 
-        isNameCustom(modifiedBuffer.readBoolean());
-        shipType = modifiedBuffer.readEnumValue(ShipType.class);
-
         if (modifiedBuffer.readBoolean()) {
             physicsInfuserPos(modifiedBuffer.readBlockPos());
         }
@@ -796,9 +734,6 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
                 modifiedBuffer.writeBoolean(b);
             }
         }
-
-        modifiedBuffer.writeBoolean(isNameCustom());
-        modifiedBuffer.writeEnumValue(shipType);
         // Make a local copy to avoid potential data races
         BlockPos physicsInfuserPosLocal = physicsInfuserPos();
         modifiedBuffer.writeBoolean(physicsInfuserPosLocal != null);
@@ -935,7 +870,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
                 Chunk chunk = new Chunk(world(), x, z);
                 chunk.setTerrainPopulated(true);
                 chunk.setLightPopulated(true);
-                injectChunkIntoWorld(chunk, x, z, true);
+                claimedChunkCache.injectChunkIntoWorld(chunk, x, z, true);
                 claimedChunkCache.setChunkAt(x, z, chunk);
             }
         }

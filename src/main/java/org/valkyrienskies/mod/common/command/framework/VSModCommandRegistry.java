@@ -29,7 +29,8 @@ public class VSModCommandRegistry {
 
     public static void registerCommands(MinecraftServer server) {
         ServerCommandManager manager = (ServerCommandManager) server.getCommandManager();
-        manager.registerCommand(new VSConfigCommandBase("vsconfig", VSConfig.class, "vsc"));
+        manager.registerCommand(
+            new VSConfigCommandBase("vsconfig", VSConfig.class, "vsc"));
         manager.registerCommand(new VSCommandBase<>(MainCommand.class));
         manager.registerCommand(new PhysSettingsCommand());
         manager.registerCommand(new AirshipSettingsCommand());

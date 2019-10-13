@@ -41,6 +41,7 @@ public class SimpleQuickShipAccess implements IQuickShipAccess {
     @Override
     public void updateShipPositions() {
         // TODO: A more efficient implementation will make use of this
+
     }
 
     @Override

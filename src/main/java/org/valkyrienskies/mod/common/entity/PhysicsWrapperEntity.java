@@ -32,7 +32,6 @@ import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
-import org.valkyrienskies.mod.common.physics.management.ShipType;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
@@ -46,8 +45,7 @@ import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpawnData {
 
     public static final DataParameter<Boolean> IS_NAME_CUSTOM = EntityDataManager
-        .createKey(PhysicsWrapperEntity.class,
-            DataSerializers.BOOLEAN);
+        .createKey(PhysicsWrapperEntity.class, DataSerializers.BOOLEAN);
     private final PhysicsObject physicsObject;
     // TODO: Replace these raw types with something safer.
     private double pitch;
@@ -62,7 +60,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 
     public PhysicsWrapperEntity(World worldIn, double x, double y, double z,
         @Nullable EntityPlayer creator,
-        int detectorID, ShipType shipType) {
+        int detectorID) {
         this(worldIn);
         posX = x;
         posY = y;
@@ -76,7 +74,6 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
                 .toString());
         }
         getPhysicsObject().setDetectorID(detectorID);
-        getPhysicsObject().shipType(shipType);
         getPhysicsObject().assembleShipAsOrderedByPlayer(creator);
 
         ValkyrienUtils.getQueryableData(world).addShip(this);
@@ -97,7 +94,6 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
             .toString());
 
         getPhysicsObject().setDetectorID(0);
-        getPhysicsObject().shipType(ShipType.PHYSICS_CORE_INFUSED);
         this.physicsObject.physicsInfuserPos(te.getPos());
         getPhysicsObject().assembleShipAsOrderedByPlayer(null);
 
@@ -106,9 +102,6 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 
     @Override
     public void onUpdate() {
-        if (world.isRemote) {
-            getPhysicsObject().isNameCustom(dataManager.get(IS_NAME_CUSTOM));
-        }
         // super.onUpdate();
         getPhysicsObject().onTick();
 
@@ -136,8 +129,6 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 
             if (didRenameSuccessfully) {
                 super.setCustomNameTag(name);
-                getPhysicsObject().isNameCustom(true);
-                dataManager.set(IS_NAME_CUSTOM, true);
             }
         }
     }
@@ -182,7 +173,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
     @Override
     @SideOnly(Side.CLIENT)
     public boolean getAlwaysRenderNameTagForRender() {
-        return getPhysicsObject().isNameCustom();
+        return false;
     }
 
     @Override

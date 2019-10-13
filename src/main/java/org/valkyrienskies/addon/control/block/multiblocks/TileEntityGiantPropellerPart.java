@@ -9,6 +9,7 @@ import net.minecraft.util.math.MathHelper;
 import org.valkyrienskies.addon.control.block.torque.IRotationNode;
 import org.valkyrienskies.addon.control.block.torque.IRotationNodeProvider;
 import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorld;
+import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorldProvider;
 import org.valkyrienskies.addon.control.block.torque.ImplRotationNode;
 import org.valkyrienskies.fixes.VSNetwork;
 import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
@@ -105,14 +106,20 @@ public class TileEntityGiantPropellerPart extends
             if (this.isPartOfAssembledMultiblock()) {
                 Optional<PhysicsObject> physicsObjectOptional = ValkyrienUtils
                     .getPhysicsObject(getWorld(), getPos());
-                if (physicsObjectOptional.isPresent() && this.isMaster()) {
+                if (this.isMaster()) {
                     if (!rotationNode.hasBeenPlacedIntoNodeWorld()) {
-                        IRotationNodeWorld nodeWorld = physicsObjectOptional.get()
-                            .physicsProcessor().getPhysicsRotationNodeWorld();
-                        if (nodeWorld != null) {
-                            nodeWorld.enqueueTaskOntoWorld(
-                                () -> nodeWorld.setNodeFromPos(getPos(), rotationNode));
+                        IRotationNodeWorld nodeWorld;
+                        if (physicsObjectOptional.isPresent()) {
+                            nodeWorld = physicsObjectOptional.get()
+                                .physicsProcessor().getPhysicsRotationNodeWorld();
+                        } else {
+                            IRotationNodeWorldProvider provider = (IRotationNodeWorldProvider) getWorld();
+                            nodeWorld = provider.getPhysicsRotationNodeWorld();
                         }
+
+                        nodeWorld.enqueueTaskOntoWorld(
+                            () -> nodeWorld.setNodeFromPos(getPos(), rotationNode));
+
                         final int propellerRadius = this.getMultiBlockSchematic()
                             .getPropellerRadius();
                         this.rotationNode.queueTask(() -> this.rotationNode
@@ -188,8 +195,7 @@ public class TileEntityGiantPropellerPart extends
         NBTTagCompound toSend = super.writeToNBT(new NBTTagCompound());
         toSend.setDouble("propeller_angle", propellerAngle);
         // Use super.writeToNBT to avoid sending the rotation node over nbt.
-        SPacketUpdateTileEntity packet = new SPacketUpdateTileEntity(pos, 0, toSend);
-        return packet;
+        return new SPacketUpdateTileEntity(pos, 0, toSend);
     }
 
     @Override

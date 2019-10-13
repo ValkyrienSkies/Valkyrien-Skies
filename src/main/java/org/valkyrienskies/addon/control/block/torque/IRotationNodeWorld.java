@@ -15,17 +15,19 @@ public interface IRotationNodeWorld {
     /**
      * This can be run by any thread.
      *
-     * @param task
+     * @param task The task to be executed.
      */
     void enqueueTaskOntoWorld(Runnable task);
 
     /**
      * This can be run by any thread.
      *
-     * @param task
-     * @param taskPos
+     * @param task    The task to be executed.
+     * @param taskPos The position of the node that will execute the task.
      */
-    void enqueueTaskOntoNode(Consumer<IRotationNode> task, BlockPos taskPos);
+    default void enqueueTaskOntoNode(Consumer<IRotationNode> task, BlockPos taskPos) {
+        enqueueTaskOntoWorld(() -> task.accept(getNodeFromPos(taskPos)));
+    }
 
     /**
      * This can only be called by the physics thread.
@@ -60,9 +62,9 @@ public interface IRotationNodeWorld {
     /**
      * This can only be called by the physics thread.
      *
-     * @param pos
-     * @param node
-     * @return The prevous node if there was one, null otherwise.
+     * @param pos  The position where the node will be placed in the rotation world.
+     * @param node The node to be placed.
+     * @return The previous node if there was one, null otherwise.
      */
     @PhysicsThreadOnly()
     IRotationNode setNodeFromPos(BlockPos pos, IRotationNode node);

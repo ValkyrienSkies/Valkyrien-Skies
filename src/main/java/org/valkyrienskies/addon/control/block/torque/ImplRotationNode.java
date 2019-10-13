@@ -78,7 +78,16 @@ public class ImplRotationNode<T extends TileEntity & IRotationNodeProvider> impl
         PhysicsAssert.assertPhysicsThread();
         assertInitialized();
         BlockPos sideTilePos = nodePos.get().add(side.getDirectionVec());
-        TileEntity sideTile = tileEntity.getWorld().getTileEntity(sideTilePos);
+
+        TileEntity sideTile;
+        try {
+            // This is in case of a race condition that results form world.removeTileEntity() and
+            // world.getTileEntity() being called at the same time.
+            sideTile = tileEntity.getWorld().getTileEntity(sideTilePos);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
         if (!(sideTile instanceof IRotationNodeProvider)) {
             return Optional.empty();
         } else {

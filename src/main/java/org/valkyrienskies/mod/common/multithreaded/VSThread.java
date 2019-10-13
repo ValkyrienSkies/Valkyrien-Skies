@@ -26,6 +26,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorldProvider;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
@@ -60,7 +61,7 @@ public class VSThread extends Thread {
         this.hostWorld = host;
         this.physicsTicksCount = 0;
         this.threadRunning = true;
-        this.latestPhysicsTickTimes = new ConcurrentLinkedQueue<Long>();
+        this.latestPhysicsTickTimes = new ConcurrentLinkedQueue<>();
         log.trace(this.getName() + " thread created.");
     }
 
@@ -129,6 +130,7 @@ public class VSThread extends Thread {
 
     private void runGameLoop() {
         MinecraftServer mcServer = hostWorld.getMinecraftServer();
+        assert mcServer != null;
         if (mcServer.isServerRunning()) {
             if (mcServer.isDedicatedServer()) {
                 // Always tick the physics
@@ -159,7 +161,7 @@ public class VSThread extends Thread {
      */
     private void tickThePhysicsAndCollision(List<PhysicsWrapperEntity> shipsWithPhysics) {
         double newPhysSpeed = VSConfig.physSpeed;
-        List<ShipCollisionTask> collisionTasks = new ArrayList<ShipCollisionTask>(
+        List<ShipCollisionTask> collisionTasks = new ArrayList<>(
             shipsWithPhysics.size() * 2);
         for (PhysicsWrapperEntity wrapper : shipsWithPhysics) {
             if (!wrapper.firstUpdate) {
@@ -173,6 +175,10 @@ public class VSThread extends Thread {
                     .splitIntoCollisionTasks(collisionTasks);
             }
         }
+
+        // Process gear physics simulation for the game worlds.
+        IRotationNodeWorldProvider rotationNodeWorldProvider = (IRotationNodeWorldProvider) hostWorld;
+        rotationNodeWorldProvider.getPhysicsRotationNodeWorld().processTorquePhysics(newPhysSpeed);
 
         try {
             // The individual collision tasks will sort through a lot of data to find

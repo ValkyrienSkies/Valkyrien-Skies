@@ -1,13 +1,10 @@
 package org.valkyrienskies.addon.control.block.torque;
 
-import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
-import net.minecraft.util.Tuple;
 import org.valkyrienskies.addon.control.nodenetwork.BasicNodeTileEntity;
 import org.valkyrienskies.fixes.VSNetwork;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
@@ -18,16 +15,6 @@ import org.valkyrienskies.mod.common.util.ValkyrienUtils;
  */
 public class TileEntityBasicRotationNodeTile extends BasicNodeTileEntity implements
     IRotationNodeProvider, ITickable {
-
-    // Maps EnumFacing.Axis to both possible EnumFacing values.
-    public static final ImmutableMap<EnumFacing.Axis, Tuple<EnumFacing, EnumFacing>> AXIS_TO_FACING_MAP;
-
-    static {
-        AXIS_TO_FACING_MAP = ImmutableMap
-            .of(EnumFacing.Axis.X, new Tuple<>(EnumFacing.EAST, EnumFacing.WEST), EnumFacing.Axis.Y,
-                new Tuple<>(EnumFacing.UP, EnumFacing.DOWN), EnumFacing.Axis.Z,
-                new Tuple<>(EnumFacing.SOUTH, EnumFacing.NORTH));
-    }
 
     protected final IRotationNode rotationNode;
     // Used for rendering purposes
@@ -80,18 +67,22 @@ public class TileEntityBasicRotationNodeTile extends BasicNodeTileEntity impleme
             lastRotation = rotation;
             rotation += (nextRotation - rotation) * .85D;
         } else {
-            if (this.firstUpdate) {
+            if (this.firstUpdate || !rotationNode.isInitialized()) {
                 // Inject the rotation node into the physics world.
                 Optional<PhysicsObject> physicsObjectOptional = ValkyrienUtils
                     .getPhysicsObject(getWorld(), getPos());
+                IRotationNodeWorld nodeWorld;
                 if (physicsObjectOptional.isPresent()) {
-                    IRotationNodeWorld nodeWorld = physicsObjectOptional.get().physicsProcessor()
+                    nodeWorld = physicsObjectOptional.get().physicsProcessor()
                         .getPhysicsRotationNodeWorld();
-                    rotationNode.markInitialized();
-                    nodeWorld.enqueueTaskOntoWorld(
-                        () -> nodeWorld.setNodeFromPos(getPos(), rotationNode));
-                    // nodeWorld.enqueueTaskOntoNode((task) -> task.setCustomTorqueFunction((physObject) -> 0.1D), getPos());
+                } else {
+                    IRotationNodeWorldProvider provider = (IRotationNodeWorldProvider) getWorld();
+                    nodeWorld = provider.getPhysicsRotationNodeWorld();
                 }
+                rotationNode.markInitialized();
+                nodeWorld.enqueueTaskOntoWorld(
+                    () -> nodeWorld.setNodeFromPos(getPos(), rotationNode));
+                // nodeWorld.enqueueTaskOntoNode((task) -> task.setCustomTorqueFunction((physObject) -> 0.1D), getPos());
                 this.firstUpdate = false;
             }
             rotation = this.rotationNode.getAngularRotationUnsynchronized();

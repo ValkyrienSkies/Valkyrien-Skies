@@ -10,6 +10,7 @@ import net.minecraft.util.math.BlockPos;
 import org.valkyrienskies.addon.control.block.torque.IRotationNode;
 import org.valkyrienskies.addon.control.block.torque.IRotationNodeProvider;
 import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorld;
+import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorldProvider;
 import org.valkyrienskies.addon.control.block.torque.ImplRotationNode;
 import org.valkyrienskies.addon.control.block.torque.custom_torque_functions.ValkyriumEngineTorqueFunction;
 import org.valkyrienskies.fixes.VSNetwork;
@@ -21,13 +22,15 @@ public class TileEntityValkyriumEnginePart extends
     TileEntityMultiblockPart<ValkyriumEngineMultiblockSchematic, TileEntityValkyriumEnginePart> implements
     IRotationNodeProvider<TileEntityValkyriumEnginePart> {
 
-    public static final int ROTATION_NODE_SORT_PRIORITY = 10000;
+    private static final int ROTATION_NODE_SORT_PRIORITY = 10000;
+    @SuppressWarnings("WeakerAccess")
     protected final IRotationNode rotationNode;
     private double prevKeyframe;
     private double currentKeyframe;
     private double nextKeyframe;
     private boolean firstUpdate;
 
+    @SuppressWarnings("WeakerAccess")
     public TileEntityValkyriumEnginePart() {
         super();
         this.prevKeyframe = 0;
@@ -48,15 +51,20 @@ public class TileEntityValkyriumEnginePart extends
             if (this.isPartOfAssembledMultiblock()) {
                 Optional<PhysicsObject> physicsObjectOptional = ValkyrienUtils
                     .getPhysicsObject(getWorld(), getPos());
+
+                IRotationNodeWorld nodeWorld;
+                if (physicsObjectOptional.isPresent()) {
+                    nodeWorld = physicsObjectOptional.get().physicsProcessor()
+                        .getPhysicsRotationNodeWorld();
+                } else {
+                    IRotationNodeWorldProvider provider = (IRotationNodeWorldProvider) getWorld();
+                    nodeWorld = provider.getPhysicsRotationNodeWorld();
+                }
                 if (physicsObjectOptional.isPresent() && !rotationNode.hasBeenPlacedIntoNodeWorld()
                     && this.getRelativePos()
                     .equals(getMultiBlockSchematic().getTorqueOutputPos())) {
-                    IRotationNodeWorld nodeWorld = physicsObjectOptional.get().physicsProcessor()
-                        .getPhysicsRotationNodeWorld();
-                    if (nodeWorld != null) {
-                        nodeWorld.enqueueTaskOntoWorld(
-                            () -> nodeWorld.setNodeFromPos(getPos(), rotationNode));
-                    }
+                    nodeWorld.enqueueTaskOntoWorld(
+                        () -> nodeWorld.setNodeFromPos(getPos(), rotationNode));
                 }
 
                 BlockPos torqueOutputPos = this.getMultiBlockSchematic().getTorqueOutputPos()
@@ -97,24 +105,29 @@ public class TileEntityValkyriumEnginePart extends
         if (relativePos.equals(schematic.getTorqueOutputPos())) {
             Optional<PhysicsObject> objectOptional = ValkyrienUtils
                 .getPhysicsObject(getWorld(), getPos());
+            IRotationNodeWorld nodeWorld;
             if (objectOptional.isPresent()) {
-                IRotationNodeWorld nodeWorld = objectOptional.get().physicsProcessor()
+                nodeWorld = objectOptional.get().physicsProcessor()
                     .getPhysicsRotationNodeWorld();
-                EnumFacing facing = EnumFacing
-                    .getFacingFromVector(schematic.getTorqueOutputDirection().getX(),
-                        schematic.getTorqueOutputDirection().getY(),
-                        schematic.getTorqueOutputDirection().getZ());
-                assert getRotationNode()
-                    .isPresent() : "How the heck did we try assembling the multiblock without a rotation node initialized!";
-//				System.out.println(rotationNode.getNodePos());
-                this.rotationNode.queueTask(() -> {
-                    rotationNode.setAngularVelocityRatio(facing, Optional.of(-1D));
-                    rotationNode
-                        .setCustomTorqueFunction(new ValkyriumEngineTorqueFunction(rotationNode));
-                });
-                nodeWorld
-                    .enqueueTaskOntoWorld(() -> nodeWorld.setNodeFromPos(pos, this.rotationNode));
+            } else {
+                IRotationNodeWorldProvider provider = (IRotationNodeWorldProvider) getWorld();
+                nodeWorld = provider.getPhysicsRotationNodeWorld();
             }
+            EnumFacing facing = EnumFacing
+                .getFacingFromVector(schematic.getTorqueOutputDirection().getX(),
+                    schematic.getTorqueOutputDirection().getY(),
+                    schematic.getTorqueOutputDirection().getZ());
+            assert getRotationNode()
+                .isPresent() : "How the heck did we try assembling the multiblock without a rotation node initialized!";
+
+            this.rotationNode.queueTask(() -> {
+                rotationNode.setAngularVelocityRatio(facing, Optional.of(-1D));
+                rotationNode
+                    .setCustomTorqueFunction(new ValkyriumEngineTorqueFunction(rotationNode));
+            });
+            nodeWorld
+                .enqueueTaskOntoWorld(() -> nodeWorld.setNodeFromPos(pos, this.rotationNode));
+
 
         }
     }

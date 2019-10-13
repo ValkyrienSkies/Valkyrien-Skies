@@ -46,6 +46,9 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorld;
+import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorldProvider;
+import org.valkyrienskies.addon.control.block.torque.ImplRotationNodeWorld;
 import org.valkyrienskies.fixes.MixinWorldIntrinsicMethods;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.coordinates.ISubspace;
@@ -65,7 +68,8 @@ import valkyrienwarfare.api.TransformType;
 // TODO: This class is horrible
 @Mixin(value = World.class, priority = 2018)
 @Implements(@Interface(iface = MixinWorldIntrinsicMethods.class, prefix = "vs$", remap = Remap.NONE))
-public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShipManager {
+public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShipManager,
+    IRotationNodeWorldProvider {
 
     private static final double MAX_ENTITY_RADIUS_ALT = 2.0D;
     private static final double BOUNDING_BOX_EDGE_LIMIT = 100000D;
@@ -79,6 +83,9 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
     private final World world = World.class.cast(this);
     // The IWorldShipManager
     private IWorldShipManager manager = null;
+    // Rotation Node World fields. Note this is only used in multiplayer, but making a MixinWorldServer
+    // just for one field would be wasteful.
+    private ImplRotationNodeWorld rotationNodeWorld = new ImplRotationNodeWorld(null);
 
     @Shadow
     protected List<IWorldEventListener> eventListeners;
@@ -438,6 +445,11 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
     @Override
     public void setManager(Function<World, IWorldShipManager> managerSupplier) {
         manager = managerSupplier.apply(world);
+    }
+
+    @Override
+    public IRotationNodeWorld getPhysicsRotationNodeWorld() {
+        return rotationNodeWorld;
     }
 
 }

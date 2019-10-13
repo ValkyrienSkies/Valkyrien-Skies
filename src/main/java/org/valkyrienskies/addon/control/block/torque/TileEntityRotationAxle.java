@@ -24,6 +24,7 @@ import net.minecraft.util.Tuple;
 public class TileEntityRotationAxle extends TileEntityBasicRotationTile {
 
     // Used internally by Minecraft
+    @SuppressWarnings("WeakerAccess")
     public TileEntityRotationAxle() {
     }
 

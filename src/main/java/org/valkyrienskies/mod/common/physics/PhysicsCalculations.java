@@ -32,6 +32,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorld;
+import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorldProvider;
 import org.valkyrienskies.addon.control.block.torque.ImplRotationNodeWorld;
 import org.valkyrienskies.addon.control.nodenetwork.INodeController;
 import org.valkyrienskies.mod.common.block.IBlockForceProvider;
@@ -48,7 +49,7 @@ import org.valkyrienskies.mod.common.physics.management.ShipTransformationManage
 import org.valkyrienskies.mod.common.util.ValkyrienNBTUtils;
 import valkyrienwarfare.api.TransformType;
 
-public class PhysicsCalculations {
+public class PhysicsCalculations implements IRotationNodeWorldProvider {
 
     public static final double DRAG_CONSTANT = .99D;
     public static final double INERTIA_OFFSET = .4D;

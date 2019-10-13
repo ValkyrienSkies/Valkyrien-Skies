@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Tuple;
@@ -17,11 +19,14 @@ import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 
 public class ImplRotationNodeWorld implements IRotationNodeWorld {
 
+    @Nullable
     private final PhysicsObject parent;
+    @Nonnull
     private final Map<BlockPos, IRotationNode> posToNodeMap;
+    @Nonnull
     private final ConcurrentLinkedQueue<Runnable> queuedTasks;
 
-    public ImplRotationNodeWorld(PhysicsObject parent) {
+    public ImplRotationNodeWorld(@Nullable PhysicsObject parent) {
         this.parent = parent;
         this.posToNodeMap = new HashMap<>();
         this.queuedTasks = new ConcurrentLinkedQueue<>();
@@ -100,10 +105,39 @@ public class ImplRotationNodeWorld implements IRotationNodeWorld {
             double omegaGuess = Math.sqrt(2 * gearTrainEnergy / apparentInertia);
             // Guess the direction of rotation based on apparent omega.
             omegaGuess = omegaGuess * Math.signum(apparentOmega);
-            // Apply deltaOmega to all rotation nodes.
-            applyNewOmega(startNode, omegaGuess + deltaOmega, timeDelta, visitedNodes);
+            double newOmega = omegaGuess + deltaOmega;
+            if (!Double.isNaN(newOmega)) {
+                // Apply deltaOmega to all rotation nodes.
+                applyNewOmega(startNode, newOmega, timeDelta, visitedNodes);
+            } else {
+                System.err.println(
+                    "Gear Train Simulation Error, Resetting Rotation Nodes.\nOmega guess is "
+                        + omegaGuess
+                        + "\nDelta omega is " + deltaOmega);
+                resetGearTrain(startNode, visitedNodes);
+            }
+
             // Remove the nodes we just processed from those that must be visited.
             nodesToVisit.removeAll(visitedNodes);
+        }
+    }
+
+    /**
+     * @param start        The node where we start our traversal of the gear train graph to reset
+     *                     the train.
+     * @param visitedNodes Nodes that have already been reset.
+     */
+    private void resetGearTrain(IRotationNode start, Set<IRotationNode> visitedNodes) {
+        visitedNodes.add(start); // kind of a bad spot to put this
+        start.setAngularRotation(0);
+        start.setAngularVelocity(0);
+
+        for (Tuple<IRotationNode, EnumFacing> connectedNode : start.connectedTorqueTilesList()) {
+            IRotationNode endNode = connectedNode.getFirst();
+            if (visitedNodes.contains(connectedNode.getFirst())) {
+                continue;
+            }
+            resetGearTrain(endNode, visitedNodes);
         }
     }
 
@@ -254,7 +288,7 @@ public class ImplRotationNodeWorld implements IRotationNodeWorld {
     /**
      * This can only be called by the physics thread.
      *
-     * @param pos
+     * @param pos The pos of the node we want.
      * @return The node at that pos if there is one, null otherwise.
      */
     @PhysicsThreadOnly

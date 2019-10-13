@@ -118,8 +118,6 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
      */
     @Getter
     private Set<BlockPos> blockPositions;
-    // TODO: This still breaks when the server is lagging, because it will skip
-    // ticks and therefore the counter will go higher than it really should be.
     @Getter @Setter
     private boolean isPhysicsEnabled = false;
     @Getter @Setter

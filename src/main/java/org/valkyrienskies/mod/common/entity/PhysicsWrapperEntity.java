@@ -18,10 +18,8 @@ package org.valkyrienskies.mod.common.entity;
 
 import io.netty.buffer.ByteBuf;
 import java.util.UUID;
-import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
@@ -31,6 +29,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.valkyrienskies.mod.common.multithreaded.TickSyncCompletableFuture;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.relocation.DetectorManager.DetectorIDs;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
@@ -59,46 +58,27 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
         dataManager.register(IS_NAME_CUSTOM, false);
     }
 
-    public PhysicsWrapperEntity(World worldIn, double x, double y, double z,
-        @Nullable EntityPlayer creator,
-        int detectorID) {
-        this(worldIn);
-        posX = x;
-        posY = y;
-        posZ = z;
+    public static TickSyncCompletableFuture<PhysicsWrapperEntity> createWrapperEntity(
+        TileEntityPhysicsInfuser te) {
+        PhysicsWrapperEntity w = new PhysicsWrapperEntity(te.getWorld());
 
-        if (creator != null) {
-            getPhysicsObject().creator(creator.entityUniqueID.toString());
-        } else {
-            getPhysicsObject().creator("unknown");
-            super.setCustomNameTag(UUID.randomUUID()
-                .toString());
-        }
-        getPhysicsObject().detectorID(DetectorIDs.values()[detectorID]);
-        getPhysicsObject().assembleShipAsOrderedByPlayer(creator);
-
-        ValkyrienUtils.getQueryableData(world).addShip(this);
-    }
-
-    public PhysicsWrapperEntity(TileEntityPhysicsInfuser te) {
-        this(te.getWorld());
-
-        posX = te.getPos()
+        w.posX = te.getPos()
             .getX();
-        posY = te.getPos()
+        w.posY = te.getPos()
             .getY();
-        posZ = te.getPos()
+        w.posZ = te.getPos()
             .getZ();
 
-        getPhysicsObject().creator("unknown");
-        super.setCustomNameTag(UUID.randomUUID()
+        w.getPhysicsObject().creator("unknown");
+        w.setCustomNameTag(UUID.randomUUID()
             .toString());
 
-        getPhysicsObject().detectorID(DetectorIDs.ShipSpawnerGeneral);
-        this.physicsObject.physicsInfuserPos(te.getPos());
-        getPhysicsObject().assembleShipAsOrderedByPlayer(null);
-
-        ValkyrienUtils.getQueryableData(world).addShip(this);
+        w.getPhysicsObject().detectorID(DetectorIDs.ShipSpawnerGeneral);
+        w.physicsObject.physicsInfuserPos(te.getPos());
+        return w.getPhysicsObject().assembleShipAsOrderedByPlayer(null).thenRun(() -> {
+            System.out.println("Adding ship in thread " + Thread.currentThread().getName());
+            ValkyrienUtils.getQueryableData(te.getWorld()).addShip(w);
+        }).thenApply(any -> w);
     }
 
     @Override

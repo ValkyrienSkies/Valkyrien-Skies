@@ -108,8 +108,11 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
                 if (!PhysicsChunkManager
                     .isLikelyShipChunk(getPos().getX() >> 4, getPos().getZ() >> 4)) {
                     try {
-                        PhysicsWrapperEntity ship = new PhysicsWrapperEntity(this);
-                        getWorld().spawnEntity(ship);
+                        PhysicsWrapperEntity.createWrapperEntity(this)
+                            .thenAcceptTickSync(ship -> {
+                                System.out.println("Spawning ship entity in thread " + Thread.currentThread().getName());
+                                getWorld().spawnEntity(ship);
+                            });
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

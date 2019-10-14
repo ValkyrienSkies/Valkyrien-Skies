@@ -66,6 +66,7 @@ import org.valkyrienskies.mod.common.coordinates.ShipTransformationPacketHolder;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.math.Quaternion;
 import org.valkyrienskies.mod.common.math.Vector;
+import org.valkyrienskies.mod.common.multithreaded.TickSyncCompletableFuture;
 import org.valkyrienskies.mod.common.network.PhysWrapperPositionMessage;
 import org.valkyrienskies.mod.common.physics.BlockPhysicsDetails;
 import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
@@ -246,26 +247,30 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
     /**
      * Generates the new chunks
      */
-    public void assembleShipAsOrderedByPlayer(EntityPlayer player) {
+    public TickSyncCompletableFuture<Void> assembleShipAsOrderedByPlayer(EntityPlayer player) {
         BlockPos centerInWorld = new BlockPos(wrapperEntity().posX,
             wrapperEntity().posY, wrapperEntity().posZ);
-        SpatialDetector detector = DetectorManager.getDetectorFor(
-            detectorID(), centerInWorld, world(), VSConfig.maxShipSize + 1, true);
 
-        if (detector.foundSet.size() > VSConfig.maxShipSize || detector.cleanHouse) {
-            System.err.println("Ship too big or bedrock detected!");
-            if (player != null) {
-                player.sendMessage(new TextComponentString(
-                    "Ship construction canceled because its exceeding the ship size limit; " +
-                        "or because it's attached to bedrock. " +
-                        "Raise it with /physsettings maxshipsize [number]"));
-            }
-            wrapperEntity().setDead();
-            return;
-        }
-        assembleShip(player, detector, centerInWorld);
+        return TickSyncCompletableFuture.supplyAsync(() -> DetectorManager.getDetectorFor(
+            detectorID(), centerInWorld, world(), VSConfig.maxShipSize + 1, true))
+            .thenAcceptTickSync(detector -> {
+                if (detector.foundSet.size() > VSConfig.maxShipSize || detector.cleanHouse) {
+                    System.err.println("Ship too big or bedrock detected!");
+                    if (player != null) {
+                        player.sendMessage(new TextComponentString(
+                            "Ship construction canceled because its exceeding the ship size limit; "
+                                +
+                                "or because it's attached to bedrock. " +
+                                "Raise it with /physsettings maxshipsize [number]"));
+                    }
+                    wrapperEntity().setDead();
+                    return;
+                }
+                assembleShip(player, detector, centerInWorld);
 
-        markFullyLoaded();
+                markFullyLoaded();
+                System.out.println("Finish ticksync " + Thread.currentThread().getName());
+            }).thenRun(() -> System.out.println("HELLO!"));
     }
 
     /**

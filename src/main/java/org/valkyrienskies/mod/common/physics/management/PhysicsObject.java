@@ -136,6 +136,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
     /**
      * Used for faster memory access to the Chunks this object 'owns'
      */
+    @Getter
     private ClaimedChunkCacheController claimedChunkCache;
 
     @Getter @Setter
@@ -201,9 +202,9 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
                 this.blockPositionsGameTick.add(this.getBlockPosToIntRelToShip(posAt));
             }
 
-            int chunkX = (posAt.getX() >> 4) - ownedChunks().minX();
-            int chunkZ = (posAt.getZ() >> 4) - ownedChunks().minZ();
-            ownedChunks().chunkOccupiedInLocal[chunkX][chunkZ] = true;
+            int chunkRelativeX = (posAt.getX() >> 4) - ownedChunks().minX();
+            int chunkRelativeZ = (posAt.getZ() >> 4) - ownedChunks().minZ();
+            claimedChunkCache.setChunkOccupiedRelative(chunkRelativeX, chunkRelativeZ, true);
         }
 
         if (blockPositions().isEmpty()) {
@@ -549,7 +550,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
         for (chunkX = claimedChunks.length - 1; chunkX > -1; chunkX--) {
             for (chunkZ = claimedChunks[0].length - 1; chunkZ > -1; chunkZ--) {
                 chunk = claimedChunks[chunkX][chunkZ];
-                if (chunk != null && ownedChunks().chunkOccupiedInLocal[chunkX][chunkZ]) {
+                if (chunk != null && claimedChunkCache.isChunkOccupiedRelative(chunkX, chunkZ)) {
                     for (index = 0; index < 16; index++) {
                         storage = chunk.getBlockStorageArray()[index];
                         if (storage != null) {
@@ -592,8 +593,8 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
         shipTransformationManager().getCurrentTickTransform()
             .writeToNBT(compound, "current_tick_transform");
         compound.setBoolean("doPhysics", isPhysicsEnabled/* isPhysicsEnabled() */);
-        for (int row = 0; row < ownedChunks().chunkOccupiedInLocal.length; row++) {
-            boolean[] curArray = ownedChunks().chunkOccupiedInLocal[row];
+        for (int row = 0; row < ownedChunks().dimension(); row++) {
+            boolean[] curArray = claimedChunkCache.chunkOccupiedInLocal()[row];
             for (int column = 0; column < curArray.length; column++) {
                 compound.setBoolean("CC:" + row + ":" + column, curArray[column]);
             }
@@ -645,8 +646,8 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
                     compound.getDouble("roll"));
         }
 
-        for (int row = 0; row < ownedChunks().chunkOccupiedInLocal.length; row++) {
-            boolean[] curArray = ownedChunks().chunkOccupiedInLocal[row];
+        for (int row = 0; row < ownedChunks().dimension(); row++) {
+            boolean[] curArray = claimedChunkCache.chunkOccupiedInLocal()[row];
             for (int column = 0; column < curArray.length; column++) {
                 curArray[column] = compound.getBoolean("CC:" + row + ":" + column);
             }
@@ -684,7 +685,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
         wrapperEntity().physicsUpdateLastTickPositions();
 
         centerCoord(new Vector(modifiedBuffer));
-        for (boolean[] array : ownedChunks().chunkOccupiedInLocal) {
+        for (boolean[] array : claimedChunkCache.chunkOccupiedInLocal()) {
             for (int i = 0; i < array.length; i++) {
                 array[i] = modifiedBuffer.readBoolean();
             }
@@ -718,7 +719,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
         modifiedBuffer.writeDouble(wrapperEntity().getRoll());
 
         centerCoord().writeToByteBuf(modifiedBuffer);
-        for (boolean[] array : ownedChunks().chunkOccupiedInLocal) {
+        for (boolean[] array : claimedChunkCache.chunkOccupiedInLocal()) {
             for (boolean b : array) {
                 modifiedBuffer.writeBoolean(b);
             }

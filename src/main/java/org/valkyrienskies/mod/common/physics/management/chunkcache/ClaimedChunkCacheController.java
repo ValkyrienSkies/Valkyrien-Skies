@@ -2,6 +2,7 @@ package org.valkyrienskies.mod.common.physics.management.chunkcache;
 
 import java.util.Map.Entry;
 import java.util.Optional;
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import net.minecraft.server.management.PlayerChunkMap;
 import net.minecraft.server.management.PlayerChunkMapEntry;
@@ -23,10 +24,39 @@ import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
 @Log4j2
 public class ClaimedChunkCacheController {
 
+    /**
+     * You should ideally not be accessing this directly
+     */
+    @Getter(onMethod=@__({@Deprecated}))
+    private final boolean[][] chunkOccupiedInLocal;
+    private final PhysicsObject parent;
+    private final World world;
+
     private Chunk[][] claimedChunks;
 
-    private PhysicsObject parent;
-    private World world;
+    public boolean isChunkOccupiedRelative(int relativeX, int relativeZ) {
+        return chunkOccupiedInLocal[relativeX][relativeZ];
+    }
+
+    public boolean isChunkOccupied(int chunkX, int chunkZ) {
+        VSChunkClaim claim = parent.ownedChunks();
+
+        throwIfOutOfBounds(claim, chunkX, chunkZ);
+
+        return isChunkOccupiedRelative(chunkX - claim.minX(), chunkZ - claim.minZ());
+    }
+
+    public void setChunkOccupiedRelative(int relativeX, int relativeZ, boolean isOccupied) {
+        chunkOccupiedInLocal[relativeX][relativeZ] = true;
+    }
+
+    public void setChunkOccupied(int chunkX, int chunkZ, boolean isOccupied) {
+        VSChunkClaim claim = parent.ownedChunks();
+
+        throwIfOutOfBounds(claim, chunkX, chunkZ);
+
+        setChunkOccupiedRelative(chunkX - claim.minX(), chunkZ - claim.minZ(), isOccupied);
+    }
 
     /**
      * This constructor is expensive; it loads all the chunks when it's called. Be warned.
@@ -38,6 +68,9 @@ public class ClaimedChunkCacheController {
     public ClaimedChunkCacheController(PhysicsObject parent, boolean loaded) {
         this.world = parent.world();
         this.parent = parent;
+
+        int dimension = parent.ownedChunks().dimension();
+        chunkOccupiedInLocal = new boolean[dimension][dimension];
 
         if (loaded) {
             loadLoadedChunks();
@@ -56,11 +89,9 @@ public class ClaimedChunkCacheController {
     public Chunk getChunkAt(int chunkX, int chunkZ) {
         VSChunkClaim claim = parent.ownedChunks();
 
-        if (!claim.containsChunk(chunkX, chunkZ)) {
-            throw new ChunkNotInClaimException(chunkX, chunkZ);
-        }
+        throwIfOutOfBounds(claim, chunkX, chunkZ);
 
-        return claimedChunks[chunkX - claim.minX()][chunkZ - claim.minZ()];
+        return getChunkRelative(chunkX - claim.minX(), chunkZ - claim.minZ());
     }
 
     /**
@@ -95,11 +126,15 @@ public class ClaimedChunkCacheController {
     public void setChunkAt(int chunkX, int chunkZ, Chunk chunk) {
         VSChunkClaim claim = parent.ownedChunks();
 
+        throwIfOutOfBounds(claim, chunkX, chunkZ);
+
+        setChunkRelative(chunkX - claim.minX(), chunkZ - claim.minZ(), chunk);
+    }
+
+    private static void throwIfOutOfBounds(VSChunkClaim claim, int chunkX, int chunkZ) {
         if (!claim.containsChunk(chunkX, chunkZ)) {
             throw new ChunkNotInClaimException(chunkX, chunkZ);
         }
-
-        claimedChunks[chunkX - claim.minX()][chunkZ - claim.minZ()] = chunk;
     }
 
     /**

@@ -16,6 +16,9 @@
 
 package org.valkyrienskies.mod.common.physmanagement.chunk;
 
+import com.google.common.collect.Streams;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 import lombok.Getter;
 import net.minecraft.nbt.NBTTagCompound;
@@ -29,7 +32,6 @@ import net.minecraft.util.math.ChunkPos;
  */
 public class VSChunkClaim {
 
-    public final boolean[][] chunkOccupiedInLocal;
     @Getter
     private final int centerX;
     @Getter
@@ -38,18 +40,17 @@ public class VSChunkClaim {
     private final int radius;
 
     // For Kryo
+    @SuppressWarnings("unused")
     private VSChunkClaim() {
         radius = 0;
         centerX = 0;
         centerZ = 0;
-        chunkOccupiedInLocal = null;
     }
 
     public VSChunkClaim(int x, int z, int size) {
         this.centerX = x;
         this.centerZ = z;
         this.radius = size;
-        this.chunkOccupiedInLocal = new boolean[(radius() * 2) + 1][(radius() * 2) + 1];
     }
 
     public VSChunkClaim(NBTTagCompound readFrom) {
@@ -89,6 +90,14 @@ public class VSChunkClaim {
         return containsChunk(pos.getX() >> 4, pos.getZ() >> 4);
     }
 
+    public ChunkPos absoluteToRelative(ChunkPos pos) {
+        return new ChunkPos(pos.x - minX(), pos.z - minZ());
+    }
+
+    public ChunkPos relativeToAbsolute(ChunkPos pos) {
+        return new ChunkPos(pos.x + minX(), pos.z + minZ());
+    }
+
     @Override
     public String toString() {
         return centerX() + ":" + centerZ() + ":" + radius();
@@ -108,15 +117,7 @@ public class VSChunkClaim {
      * @return A stream of the {@link ChunkPos} of every chunk inside of this claim.
      */
     public Stream<ChunkPos> stream() {
-        Stream.Builder<ChunkPos> builder = Stream.builder();
-
-        for (int x = minX(); x <= maxX(); x++) {
-            for (int z = minZ(); z <= maxZ(); z++) {
-                builder.add(new ChunkPos(x, z));
-            }
-        }
-
-        return builder.build();
+        return Streams.stream(new ChunkPosIterator());
     }
 
     /**
@@ -147,6 +148,14 @@ public class VSChunkClaim {
         return centerX() - radius();
     }
 
+    /**
+     * @return the size of this chunk claim. E.g., if the chunk claim has a radius of 2, then it is
+     * 5x5 and the dimension is 5
+     */
+    public int dimension() {
+        return radius() * 2 + 1;
+    }
+
     public BlockPos regionCenter() {
         return new BlockPos(this.centerX() * 16, 128, this.centerZ() * 16);
     }
@@ -157,5 +166,24 @@ public class VSChunkClaim {
 
     public int chunkLengthZ() {
         return maxZ() - minZ() + 1;
+    }
+
+    class ChunkPosIterator implements Iterator<ChunkPos> {
+        int index = 0;
+
+        @Override
+        public boolean hasNext() {
+            return index < dimension() * dimension();
+        }
+
+        @Override
+        public ChunkPos next() {
+            if (!hasNext()) throw new NoSuchElementException();
+
+            int x = (index % dimension()) + minX();
+            int z = (index / dimension()) + minZ();
+            index++;
+            return new ChunkPos(x, z);
+        }
     }
 }

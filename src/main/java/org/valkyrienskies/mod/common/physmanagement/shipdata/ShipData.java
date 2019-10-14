@@ -2,6 +2,7 @@ package org.valkyrienskies.mod.common.physmanagement.shipdata;
 
 import static com.googlecode.cqengine.query.QueryFactory.attribute;
 
+import com.google.common.collect.ImmutableSet;
 import com.googlecode.cqengine.attribute.Attribute;
 import com.googlecode.cqengine.attribute.MultiValueAttribute;
 import com.googlecode.cqengine.query.option.QueryOptions;
@@ -13,7 +14,6 @@ import javax.annotation.Nullable;
 import net.minecraft.util.math.ChunkPos;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
-
 
 public final class ShipData {
 
@@ -40,7 +40,7 @@ public final class ShipData {
             shipData = new ShipData();
             shipData.name = wrapperEntity.getCustomNameTag();
             shipData.uuid = wrapperEntity.getPersistentID();
-            shipData.chunkLongs = Collections.unmodifiableSet(getChunkLongs(wrapperEntity));
+            shipData.chunkLongs = ImmutableSet.copyOf(getChunkLongs(wrapperEntity));
             shipData.chunkClaim = wrapperEntity.getPhysicsObject().ownedChunks();
         }
 

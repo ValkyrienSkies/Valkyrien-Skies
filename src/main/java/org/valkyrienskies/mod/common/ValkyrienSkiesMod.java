@@ -18,15 +18,6 @@ package org.valkyrienskies.mod.common;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.googlecode.cqengine.ConcurrentIndexedCollection;
-import de.javakaffee.kryoserializers.ArraysAsListSerializer;
-import de.javakaffee.kryoserializers.CollectionsEmptyListSerializer;
-import de.javakaffee.kryoserializers.CollectionsEmptyMapSerializer;
-import de.javakaffee.kryoserializers.CollectionsEmptySetSerializer;
-import de.javakaffee.kryoserializers.CollectionsSingletonListSerializer;
-import de.javakaffee.kryoserializers.CollectionsSingletonMapSerializer;
-import de.javakaffee.kryoserializers.CollectionsSingletonSetSerializer;
-import de.javakaffee.kryoserializers.GregorianCalendarSerializer;
-import de.javakaffee.kryoserializers.JdkProxySerializer;
 import de.javakaffee.kryoserializers.SynchronizedCollectionsSerializer;
 import de.javakaffee.kryoserializers.UUIDSerializer;
 import de.javakaffee.kryoserializers.UnmodifiableCollectionsSerializer;
@@ -46,11 +37,7 @@ import de.javakaffee.kryoserializers.guava.TreeBasedTableSerializer;
 import de.javakaffee.kryoserializers.guava.TreeMultimapSerializer;
 import de.javakaffee.kryoserializers.guava.UnmodifiableNavigableSetSerializer;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -278,28 +265,10 @@ public class ValkyrienSkiesMod {
             long start = System.currentTimeMillis();
 
             Kryo kryo = new Kryo();
-            kryo.register(ConcurrentIndexedCollection.class);
-            kryo.register(ShipData.class);
-            kryo.register(ShipPositionData.class);
-            kryo.register(VSChunkClaim.class);
-            kryo.register(HashSet.class);
-            kryo.register(UUID.class, new UUIDSerializer());
 
             // region More serializers
 
             //noinspection ArraysAsListWithZeroOrOneArgument
-            kryo.register(Arrays.asList("").getClass(), new ArraysAsListSerializer());
-            kryo.register(Collections.EMPTY_LIST.getClass(), new CollectionsEmptyListSerializer());
-            kryo.register(Collections.EMPTY_MAP.getClass(), new CollectionsEmptyMapSerializer());
-            kryo.register(Collections.EMPTY_SET.getClass(), new CollectionsEmptySetSerializer());
-            kryo.register(Collections.singletonList("").getClass(),
-                new CollectionsSingletonListSerializer());
-            kryo.register(Collections.singleton("").getClass(),
-                new CollectionsSingletonSetSerializer());
-            kryo.register(Collections.singletonMap("", "").getClass(),
-                new CollectionsSingletonMapSerializer());
-            kryo.register(GregorianCalendar.class, new GregorianCalendarSerializer());
-            kryo.register(InvocationHandler.class, new JdkProxySerializer());
             UnmodifiableCollectionsSerializer.registerSerializers(kryo);
             SynchronizedCollectionsSerializer.registerSerializers(kryo);
 
@@ -321,6 +290,13 @@ public class ValkyrienSkiesMod {
             TreeBasedTableSerializer.registerSerializers(kryo);
 
             // endregion
+
+            kryo.register(ConcurrentIndexedCollection.class);
+            kryo.register(ShipData.class);
+            kryo.register(ShipPositionData.class);
+            kryo.register(VSChunkClaim.class);
+            kryo.register(HashSet.class);
+            kryo.register(UUID.class, new UUIDSerializer());
 
             // This should be changed to true but only once we're stable
             kryo.setRegistrationRequired(false);

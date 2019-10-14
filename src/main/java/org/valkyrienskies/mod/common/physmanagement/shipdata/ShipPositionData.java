@@ -1,22 +1,17 @@
 package org.valkyrienskies.mod.common.physmanagement.shipdata;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.math.Vector;
 
+@NoArgsConstructor(force = true) // For Kryo
 public class ShipPositionData {
 
     private final Vector shipPosition;
     @Getter
     private ShipTransform transform;
-
-    // For Kryo
-    @SuppressWarnings("unused")
-    private ShipPositionData() {
-        shipPosition = null;
-        transform = null;
-    }
 
     ShipPositionData(PhysicsWrapperEntity wrapper) {
         shipPosition = new Vector(wrapper.posX, wrapper.posY, wrapper.posZ);

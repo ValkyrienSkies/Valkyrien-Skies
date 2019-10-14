@@ -20,7 +20,11 @@ import com.google.common.collect.Streams;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
-import lombok.Getter;
+import javax.annotation.concurrent.Immutable;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.Value;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -30,28 +34,15 @@ import net.minecraft.util.math.ChunkPos;
  *
  * @author thebest108
  */
+@Immutable
+@Value
+@AllArgsConstructor
+@NoArgsConstructor(force = true, access = AccessLevel.PRIVATE) // For Kryo
 public class VSChunkClaim {
 
-    @Getter
     private final int centerX;
-    @Getter
     private final int centerZ;
-    @Getter
     private final int radius;
-
-    // For Kryo
-    @SuppressWarnings("unused")
-    private VSChunkClaim() {
-        radius = 0;
-        centerX = 0;
-        centerZ = 0;
-    }
-
-    public VSChunkClaim(int x, int z, int size) {
-        this.centerX = x;
-        this.centerZ = z;
-        this.radius = size;
-    }
 
     public VSChunkClaim(NBTTagCompound readFrom) {
         this(readFrom.getInteger("centerX"), readFrom.getInteger("centerZ"),
@@ -101,16 +92,6 @@ public class VSChunkClaim {
     @Override
     public String toString() {
         return centerX() + ":" + centerZ() + ":" + radius();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o instanceof VSChunkClaim) {
-            VSChunkClaim other = (VSChunkClaim) o;
-            return other.centerX() == centerX() && other.centerZ() == centerZ()
-                && other.radius() == radius();
-        }
-        return false;
     }
 
     /**

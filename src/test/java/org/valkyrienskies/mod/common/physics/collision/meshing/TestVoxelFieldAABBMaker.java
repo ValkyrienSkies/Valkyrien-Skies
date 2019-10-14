@@ -1,4 +1,4 @@
-package org.valkyrienskies;
+package org.valkyrienskies.mod.common.physics.collision.meshing;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Random;
 import net.minecraft.util.math.BlockPos;
 import org.junit.jupiter.api.RepeatedTest;
-import org.valkyrienskies.mod.common.physics.collision.meshing.ExtremelyNaiveVoxelFieldAABBMaker;
-import org.valkyrienskies.mod.common.physics.collision.meshing.NaiveVoxelFieldAABBMaker;
 
 public class TestVoxelFieldAABBMaker {
 
@@ -94,4 +92,5 @@ public class TestVoxelFieldAABBMaker {
             assertEquals(extreme.makeVoxelFieldAABB(), naive.makeVoxelFieldAABB());
         }
     }
+
 }

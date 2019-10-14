@@ -137,6 +137,7 @@ dependencies {
     shade group: 'javax.inject', name: 'javax.inject', version: '1' // 2KB
 
     // CQEngine for in-memory nonpersistent database
+    // Provides Kryo
     shade("com.googlecode.cqengine:cqengine:$cqengineVersion") {
         exclude module: "sqlite-jdbc" //11.1 MB
         exclude module: "antlr4-runtime" //648.0 KB

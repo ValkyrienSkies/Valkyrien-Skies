@@ -1,19 +1,22 @@
 package org.valkyrienskies.mod.common.physmanagement.shipdata;
 
 import static com.googlecode.cqengine.query.QueryFactory.equal;
+import static com.googlecode.cqengine.query.QueryFactory.startsWith;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
+import com.google.common.collect.ImmutableList;
 import com.googlecode.cqengine.ConcurrentIndexedCollection;
 import com.googlecode.cqengine.index.hash.HashIndex;
 import com.googlecode.cqengine.index.unique.UniqueIndex;
 import com.googlecode.cqengine.query.Query;
 import com.googlecode.cqengine.resultset.ResultSet;
-import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.ChunkPos;
@@ -27,7 +30,7 @@ import org.valkyrienskies.mod.common.util.ValkyrienUtils;
  */
 @MethodsReturnNonnullByDefault
 @SuppressWarnings("WeakerAccess")
-public class QueryableShipData {
+public class QueryableShipData implements Iterable<ShipData> {
 
     // The key used to store/read the allShips collection from nbt.
     private static final String NBT_STORAGE_KEY = ValkyrienSkiesMod.MOD_ID + "QueryableShipDataNBT";
@@ -68,11 +71,17 @@ public class QueryableShipData {
         return false;
     }
 
+    public Stream<ShipData> getShipsFromNameStartingWith(String startsWith) {
+        Query<ShipData> query = startsWith(ShipData.NAME, startsWith);
+
+        return allShips.retrieve(query).stream();
+    }
+
     /**
      * Retrieves a list of all ships.
      */
     public List<ShipData> getShips() {
-        return new ArrayList<>(allShips);
+        return ImmutableList.copyOf(allShips);
     }
 
     public UUID getShipUUIDFromPos(int chunkX, int chunkZ) {
@@ -190,4 +199,12 @@ public class QueryableShipData {
         return compound;
     }
 
+    @Override
+    public Iterator<ShipData> iterator() {
+        return allShips.iterator();
+    }
+
+    public Stream<ShipData> stream() {
+        return allShips.stream();
+    }
 }

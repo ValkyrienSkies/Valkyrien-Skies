@@ -17,7 +17,6 @@
 package org.valkyrienskies.mod.common.entity;
 
 import io.netty.buffer.ByteBuf;
-import java.util.UUID;
 import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
@@ -35,6 +34,7 @@ import org.valkyrienskies.mod.common.physmanagement.relocation.DetectorManager.D
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
+import org.valkyrienskies.mod.common.util.names.NounListNameGenerator;
 
 /**
  * This entity's only purpose is to use the functionality of sending itself to nearby players, as
@@ -70,8 +70,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
             .getZ();
 
         w.getPhysicsObject().creator("unknown");
-        w.setCustomNameTag(UUID.randomUUID()
-            .toString());
+        w.superSetCustomName(NounListNameGenerator.instance().generateName());
 
         w.getPhysicsObject().detectorID(DetectorIDs.ShipSpawnerGeneral);
         w.physicsObject.physicsInfuserPos(te.getPos());
@@ -79,6 +78,10 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
             System.out.println("Adding ship in thread " + Thread.currentThread().getName());
             ValkyrienUtils.getQueryableData(te.getWorld()).addShip(w);
         }).thenApply(any -> w);
+    }
+
+    private void superSetCustomName(String name) {
+        super.setCustomNameTag(name);
     }
 
     @Override
@@ -93,6 +96,8 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
     public void updatePassenger(Entity passenger) {
 
     }
+
+
 
     @Override
     public void setCustomNameTag(String name) {

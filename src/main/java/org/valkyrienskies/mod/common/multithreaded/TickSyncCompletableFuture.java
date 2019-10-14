@@ -38,6 +38,8 @@ import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
  *      .supplyAsync(() -> generatePi())
  *      .thenAcceptTickSync(pi -> player.sendMessage(pi));
  * }</pre>
+ *
+ * @author Rubydesic
  */
 @EventBusSubscriber(modid = ValkyrienSkiesMod.MOD_ID)
 public class TickSyncCompletableFuture<T> {

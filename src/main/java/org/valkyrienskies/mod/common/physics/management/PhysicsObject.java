@@ -251,8 +251,9 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
         BlockPos centerInWorld = new BlockPos(wrapperEntity().posX,
             wrapperEntity().posY, wrapperEntity().posZ);
 
-        return TickSyncCompletableFuture.supplyAsync(() -> DetectorManager.getDetectorFor(
-            detectorID(), centerInWorld, world(), VSConfig.maxShipSize + 1, true))
+        return TickSyncCompletableFuture
+            .supplyAsync(() -> DetectorManager.getDetectorFor(detectorID(), centerInWorld, world(),
+                VSConfig.maxShipSize + 1, true))
             .thenAcceptTickSync(detector -> {
                 if (detector.foundSet.size() > VSConfig.maxShipSize || detector.cleanHouse) {
                     System.err.println("Ship too big or bedrock detected!");
@@ -269,8 +270,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
                 assembleShip(player, detector, centerInWorld);
 
                 markFullyLoaded();
-                System.out.println("Finish ticksync " + Thread.currentThread().getName());
-            }).thenRun(() -> System.out.println("HELLO!"));
+            });
     }
 
     /**

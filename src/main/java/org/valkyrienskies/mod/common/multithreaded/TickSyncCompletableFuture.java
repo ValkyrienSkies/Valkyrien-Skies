@@ -1,11 +1,11 @@
 package org.valkyrienskies.mod.common.multithreaded;
 
-import java.util.Map;
-import java.util.Queue;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
@@ -15,11 +15,9 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import lombok.SneakyThrows;
-import net.minecraftforge.common.MinecraftForge;
+import javax.annotation.Nonnull;
+import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 
 /**
@@ -45,9 +43,6 @@ import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 public class TickSyncCompletableFuture<T> {
 
     private CompletableFuture<T> base;
-    private Map<TickSyncCompletableFuture, Function<? super T, ?>> applyFunctions =
-        new ConcurrentHashMap<>();
-    private static Queue<CompletableSupplier> toRunOnNextTick = new ConcurrentLinkedQueue<>();
     private boolean isRegistered = false;
 
     // region Internal Methods
@@ -61,43 +56,6 @@ public class TickSyncCompletableFuture<T> {
 
     public static <U> TickSyncCompletableFuture<U> from(CompletableFuture<U> future) {
         return new TickSyncCompletableFuture<>(future);
-    }
-
-    private synchronized void registerWithEventBus() {
-        if (!isRegistered) {
-            MinecraftForge.EVENT_BUS.register(this);
-            isRegistered = true;
-        }
-    }
-
-    private synchronized void unregisterWithEventBus() {
-        if (isRegistered) {
-            MinecraftForge.EVENT_BUS.unregister(this);
-            isRegistered = false;
-        }
-    }
-
-    @SneakyThrows
-    @SubscribeEvent
-    @SuppressWarnings("unchecked")
-    public void onTick(ServerTickEvent e) {
-        if (base.isDone() && !applyFunctions.isEmpty()) {
-            applyFunctions.forEach((future, function) -> {
-                try {
-                    future.complete(function.apply(base.get()));
-                } catch (Throwable ex) {
-                    future.completeExceptionally(ex);
-                }
-            });
-            applyFunctions.clear();
-            unregisterWithEventBus();
-        }
-    }
-
-    @SubscribeEvent
-    public static void onStaticTick(ServerTickEvent e) {
-        toRunOnNextTick.forEach(CompletableSupplier::complete);
-        toRunOnNextTick.clear();
     }
 
     private static Supplier<Void> runnableToSupplier(Runnable runnable) {
@@ -114,10 +72,6 @@ public class TickSyncCompletableFuture<T> {
         };
     }
 
-    private static Consumer<Void> runnableToConsumer(Runnable runnable) {
-        return k -> runnable.run();
-    }
-
     /**
      * Simple utility function to convert a {@code Consumer<K>} to a {@code Function<K, Void>}
      */
@@ -128,14 +82,47 @@ public class TickSyncCompletableFuture<T> {
         };
     }
 
+    /**
+     * Maps a function to a callable
+     *
+     * @param function The function to convert to a callable
+     * @param value    The value with which to call the function
+     * @param <T>      The type of the value with which to call the function
+     * @param <R>      The type of the functions return value
+     * @return The Callable form of this function
+     */
+    private static <T, R> Callable<R> functionToCallable(Function<T, R> function, T value) {
+        return () -> function.apply(value);
+    }
+
+    /**
+     * Convert a ListenableFuture to a TickSyncCompletableFuture
+     *
+     * @param listenableFuture The ListenableFuture
+     * @param <K>              The type of the futures
+     * @return The TickSyncCompletableFuture
+     */
+    private static <K> TickSyncCompletableFuture<K> toCompletableFuture(
+        final ListenableFuture<K> listenableFuture) {
+        final TickSyncCompletableFuture<K> completableFuture = new TickSyncCompletableFuture<>();
+        Futures.addCallback(listenableFuture, new FutureCallback<K>() {
+            public void onFailure(@Nonnull Throwable throwable) {
+                completableFuture.completeExceptionally(throwable);
+            }
+
+            public void onSuccess(K t) {
+                completableFuture.complete(t);
+            }
+        });
+        return completableFuture;
+    }
+
     // endregion
 
     // region API methods
 
     public static <K> TickSyncCompletableFuture<K> supplyTickSync(Supplier<K> supplier) {
-        TickSyncCompletableFuture<K> toReturn = new TickSyncCompletableFuture<>();
-        toRunOnNextTick.add(new CompletableSupplier<>(supplier, toReturn.base));
-        return toReturn;
+        return toCompletableFuture(Minecraft.getMinecraft().addScheduledTask(supplier::get));
     }
 
     public static TickSyncCompletableFuture<Void> runTickSync(Runnable runnable) {
@@ -144,9 +131,14 @@ public class TickSyncCompletableFuture<T> {
 
     public <K> TickSyncCompletableFuture<K> thenApplyTickSync(
         Function<? super T, ? extends K> action) {
-        registerWithEventBus();
+
         TickSyncCompletableFuture<K> toReturn = new TickSyncCompletableFuture<>();
-        applyFunctions.put(toReturn, action);
+        base.thenAccept(result -> // Consumer<T> --> ListenableFuture<Void>
+            Minecraft.getMinecraft().addScheduledTask( // Callable<K> --> ListenableFuture<K>
+                // (callback) 3. Apply the function
+                () -> toReturn.complete(action.apply(result)) // Function<T, K> --> Callable<K>
+            ));
+
         return toReturn;
     }
 
